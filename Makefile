@@ -31,7 +31,9 @@ tooling-check:
 	@./scripts/tooling/test-check-go-loc.sh
 	@python3 ./scripts/tooling/test-container-context-input.py
 	@./scripts/tooling/test-go-coverage-input.sh
-	@./scripts/tooling/test-stryker-report.sh
+	@pnpm --dir scripts/quality install --frozen-lockfile
+	@node scripts/tooling/test-script-lint.mjs
+	@python3 scripts/tooling/test-verify-deleted-e2e.py
 	@./scripts/tooling/test-architecture-explorer.py
 	@./scripts/tooling/generate-architecture-explorer.py player --check
 	@./scripts/tooling/generate-architecture-explorer.py subtitles --check

@@ -181,14 +181,9 @@ if [[ "$app_path" == apps/player && -n "$native_files" ]]; then
   run_stage native-client "$native_inputs" make client-check
 fi
 
-native_css_files="$(grep -E '^apps/native/.*\.css$' <<<"$changed" || true)"
-if [[ "$app_path" == apps/player ]]; then
-  while IFS= read -r file; do
-    [[ -z "$file" ]] || run_stage "ui-lint:$file" "$file" python3 "$repo/.codex/skills/anti-ai-slop-ui/scripts/ui_lint.py" "$file"
-  done <<<"$native_css_files"
-fi
-
-e2e_files="$(grep -E '^e2e/.*\.spec\.ts$' <<<"$changed" || true)"
+e2e_files="$(while IFS= read -r file; do
+  [[ "$file" == e2e/*.spec.ts && -f "$file" ]] && printf '%s\n' "$file"
+done <<<"$changed"; true)"
 if [[ -n "$e2e_files" ]]; then
   e2e_args=()
   while IFS= read -r file; do [[ -z "$file" ]] || e2e_args+=("$file"); done <<<"$e2e_files"

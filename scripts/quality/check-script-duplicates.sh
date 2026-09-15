@@ -4,8 +4,7 @@ source "$(dirname "${BASH_SOURCE[0]}")/../tooling/gates-pause.sh"
 set -euo pipefail
 
 repo="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
-native="$repo/apps/player/apps/native"
-pnpm --dir "$native" exec jscpd \
+pnpm --dir "$repo/scripts/quality" exec jscpd \
 	--format javascript,typescript \
 	--ignore '**/hls.min.js,**/htmx.min.js' \
 	--min-lines 5 \
@@ -15,6 +14,4 @@ pnpm --dir "$native" exec jscpd \
 	"$repo/packages/webassets/static" \
 	"$repo/apps/player/internal/server/static" \
 	"$repo/apps/subtitles/internal/server/static" \
-	"$repo/apps/dashboard/internal/server/web/static" \
-	"$native/src" \
-	"$native/plugins"
+	"$repo/apps/dashboard/internal/server/web/static"

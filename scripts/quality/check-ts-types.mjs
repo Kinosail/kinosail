@@ -7,8 +7,8 @@ import { resolve } from 'node:path';
 import process from 'node:process';
 
 const repo = resolve(new URL('../..', import.meta.url).pathname);
-const nativeManifest = resolve(repo, 'apps/player/apps/native/package.json');
-const require = createRequire(nativeManifest);
+const manifest = resolve(repo, 'scripts/quality/package.json');
+const require = createRequire(manifest);
 const ts = require('typescript');
 const files = execFileSync('git', ['ls-files', '--cached', '--others', '--exclude-standard', '*.ts', '*.tsx'], {
   cwd: repo,

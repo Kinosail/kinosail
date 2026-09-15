@@ -25,7 +25,7 @@ updates:
     schedule:
       interval: weekly
   - package-ecosystem: npm
-    directory: /apps/player/apps/native
+    directory: /scripts/quality
     schedule:
       interval: weekly
   - package-ecosystem: npm

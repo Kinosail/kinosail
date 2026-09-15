@@ -21,7 +21,7 @@ make hooks
 - Player/Subtitles runtime work outside containers also needs FFmpeg/ffprobe; consult the app's [Brewfile](apps/player/Brewfile) and configuration templates for the other tools used by specific features.
 - On macOS, `make -C apps/player bootstrap` or `make -C apps/subtitles bootstrap` installs the app's declared Homebrew tools and shared Git hooks. Review the Brewfile first.
 - Browser tooling uses Node and pnpm, with versions/dependencies declared in each app's `e2e/package.json` and lockfile.
-- Native Apple development uses [Xcode and the Swift build scripts](apps/player/apps/native/README.md). Legacy JavaScript checks do not verify these apps.
+- Native Apple development uses [Xcode and the Swift build scripts](apps/player/apps/native/README.md). Shared JavaScript quality tools live in `scripts/quality`; browser tests keep their app-scoped packages.
 
 Compile without starting a service:
 

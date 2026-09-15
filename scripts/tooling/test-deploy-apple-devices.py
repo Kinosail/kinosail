@@ -62,11 +62,11 @@ class AppleDeployTests(unittest.TestCase):
                 run.assert_not_called()
 
     @unittest.skipUnless(shutil.which('rsync'), 'rsync is required by the deployment tool')
-    def test_sync_updates_nested_native_sources_and_preserves_generated_project(self):
+    def test_sync_updates_nested_swift_sources_and_preserves_project(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             fixture = root / 'fixture'
-            native_file = fixture / 'modules/downloads/ios/Downloads.swift'
+            native_file = fixture / 'Sources/Platform/Downloads.swift'
             native_file.parent.mkdir(parents=True)
             native_file.write_text('new native implementation')
             generated = root / 'iphone/ios/Project.pbxproj'
@@ -87,7 +87,7 @@ class AppleDeployTests(unittest.TestCase):
                     raise OSError('stop before the native build')
             with patch.object(updater, 'run', side_effect=command), self.assertRaises(OSError):
                 updater.deploy(root, root / 'repo.git', 'rev', 'a' * 40, 'iphone', 'device', 'team')
-            self.assertEqual((root / 'iphone/modules/downloads/ios/Downloads.swift').read_text(), 'new native implementation')
+            self.assertEqual((root / 'iphone/Sources/Platform/Downloads.swift').read_text(), 'new native implementation')
             self.assertEqual(generated.read_text(), 'generated project')
 
     def test_confirmed_tree_is_not_reinstalled(self):

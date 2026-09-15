@@ -59,7 +59,6 @@ class GatePauseTests(unittest.TestCase):
 
     def test_package_gate_commands_are_disabled(self):
         paths = list((ROOT / 'apps').glob('*/e2e/package.json'))
-        paths.append(ROOT / 'apps/player/apps/native/package.json')
         for path in paths:
             for name, command in json.loads(path.read_text())['scripts'].items():
                 if not name.startswith(('test', 'lint', 'typecheck', 'verify', 'format:check')):

@@ -32,7 +32,7 @@ The project uses Swift 6, strict concurrency, Observation, SwiftUI, AVFoundation
 
 [IMPLEMENTATION.md](IMPLEMENTATION.md) describes ownership, supported behavior and verification boundaries. [VERIFICATION.md](VERIFICATION.md) records the evidence for this implementation. The former preview gallery and service stubs have been removed.
 
-The previous Apple `src/`, `modules/` and JavaScript tooling remain reference material, outside the Xcode app targets. Their tests do not certify the Swift implementation. Removing shared legacy quality dependencies would require work beyond the native app scope; existing Expo prebuilds remain blocked.
+The retired Expo/React Native client, bridges, patches and browser fixtures have been removed. Swift source and tests live in `Sources/` and `Tests/`. Shared web quality tools live in the repository’s `scripts/quality` package.
 
 Root `.gates-disabled` keeps test and quality suites disabled. Test sources are supplied but must not be run until the user enables gates. Compilation and manual simulator observations are distinct from physical-device and receiver verification.
 

@@ -139,7 +139,7 @@ cd apps/player
 go build ./cmd/kinosail
 ```
 
-Apple client builds require macOS and Xcode with the iOS/tvOS 26 SDKs. The active Swift apps do not require the retained Expo tooling.
+Apple client builds require macOS and Xcode with the iOS/tvOS 26 SDKs. The Swift apps build directly with Xcode.
 
 **Verification status:** while `.gates-disabled` exists, quality suites and hooks are disabled by repository policy. Do not interpret a skipped command as a pass or remove the marker without maintainer authorization. See [verification policy](CONTRIBUTING.md#verification).
 

@@ -8,7 +8,7 @@ repo="$(cd "$quality/../.." && pwd)"
 python3 "$quality/check-dependency-integrity.py"
 "$quality/check-lint.sh"
 "$quality/check-loc.sh"
-pnpm --dir "$repo/apps/player/apps/native" install --frozen-lockfile
+pnpm --dir "$repo/scripts/quality" install --frozen-lockfile
 "$quality/check-ts-types.mjs"
 "$quality/check-script-lint.sh"
 "$quality/check-complexity.sh"

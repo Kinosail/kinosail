@@ -16,7 +16,7 @@ require_text() {
 for script in \
   check-complexity.sh check-coverage.sh check-crap.sh check-deadcode.sh \
   check-duplicates.sh check-full.sh check-halstead.sh check-lint.sh check-loc.sh \
-  check-mutation.sh check-native-mutation.sh check-script-duplicates.sh check-script-lint.sh check-static.sh check-stryker-report.mjs \
+  check-mutation.sh check-script-duplicates.sh check-script-lint.sh check-static.sh \
   check-ts-halstead.mjs check-ts-types.mjs git-relative-diff.sh; do
   [[ -x "$repo/scripts/quality/$script" ]] || {
     printf 'quality gate is not executable: %s\n' "$script" >&2
@@ -24,7 +24,7 @@ for script in \
   }
 done
 
-for hook in check-staged-quality.sh pre-commit.sh pre-push-main.sh test-stryker-report.sh worktree_guard.py test-worktree-guard.py; do
+for hook in check-staged-quality.sh pre-commit.sh pre-push-main.sh worktree_guard.py test-worktree-guard.py; do
   [[ -x "$repo/scripts/tooling/$hook" ]] || {
     printf 'hook entrypoint is not executable: %s\n' "$hook" >&2
     exit 1
@@ -47,14 +47,6 @@ require_text scripts/quality/check-coverage.sh '*/archivetest|*/commandtest|*/co
 require_text scripts/quality/check-crap.sh '*/archivetest|*/commandtest|*/configurationtest|*/servertest'
 require_text scripts/quality/check-mutation.sh '(^|/)(archivetest|commandtest|configurationtest|servertest)/'
 require_text scripts/quality/check-deadcode.sh '(archivetest|commandtest|configurationtest|servertest)'
-require_text scripts/quality/check-full.sh '"$quality/check-native-mutation.sh"'
-require_text scripts/quality/check-native-mutation.sh 'test:mutation'
-require_text scripts/quality/check-native-mutation.sh 'check-stryker-report.mjs'
-require_text scripts/quality/check-stryker-report.mjs "mutant.status === 'Ignored' && mutant.statusReason?.trim()"
-require_text apps/player/apps/native/stryker.config.mjs 'break: 100'
-require_text apps/player/apps/native/stryker.config.mjs "'src/**/*.{ts,tsx}'"
-require_text apps/player/apps/native/stryker.config.mjs "'--relative'"
-require_text apps/player/apps/native/stryker.config.mjs "replaceAll('[', '[[]')"
 require_text Makefile 'install -m 755 scripts/tooling/pre-commit.sh "$$hooks/pre-commit"'
 require_text Makefile './scripts/tooling/worktree_guard.py audit'
 require_text Makefile './scripts/tooling/test-worktree-guard.py'
@@ -69,10 +61,12 @@ require_text .github/workflows/quality.yml './scripts/quality/check-static.sh'
 require_text .github/workflows/quality.yml './scripts/quality/check-coverage.sh'
 require_text .github/workflows/quality.yml './scripts/quality/check-crap.sh'
 require_text .github/workflows/quality.yml './scripts/quality/check-mutation.sh "${{ matrix.app }}"'
-require_text .github/workflows/quality.yml './scripts/quality/check-native-mutation.sh'
 
 for app in player subtitles dashboard; do
   workflow=".github/workflows/$app-release.yml"
   require_text "$workflow" 'uses: ./.github/workflows/quality.yml'
   require_text "$workflow" 'needs: quality'
 done
+
+require_text scripts/quality/check-static.sh 'pnpm --dir "$repo/scripts/quality" install --frozen-lockfile'
+require_text scripts/quality/check-script-duplicates.sh '--threshold 0'

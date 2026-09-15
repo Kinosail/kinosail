@@ -8,7 +8,7 @@ import process from 'node:process';
 
 const limit = 80;
 const repo = resolve(new URL('../..', import.meta.url).pathname);
-const manifest = resolve(repo, 'apps/player/apps/native/package.json');
+const manifest = resolve(repo, 'scripts/quality/package.json');
 const require = createRequire(manifest);
 const ts = require('typescript');
 const operands = new Set([
@@ -42,9 +42,7 @@ const productionFile = (file) =>
   !file.match(/\.(test|spec)\.[^.]+$/) &&
   !file.match(/\/(hls|htmx)\.min\.js$/) &&
   (/^apps\/[^/]+\/internal\/.*\.js$/.test(file) ||
-    /^packages\/webassets\/static\/.*\.js$/.test(file) ||
-    /^apps\/player\/apps\/native\/src\/.*\.tsx?$/.test(file) ||
-    /^apps\/player\/apps\/native\/plugins\/[^/]+\.js$/.test(file));
+    /^packages\/webassets\/static\/.*\.js$/.test(file));
 
 const files = execFileSync(
   'git',

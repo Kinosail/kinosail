@@ -1,4 +1,4 @@
-.PHONY: bootstrap package-installer deploy-nox hooks install-nox-autodeploy browser-test check check-fast ci-local ci-status client-browser-test client-check client-prebuild-mobile client-prebuild-tv container-test coverage deadcode installer-test native-build format lint local-pipeline local-pipeline-test performance-test media-server-benchmark-test playback-test publish-main test test-instance-check test-race tidy-check verify-changed verify-watch vuln secrets max-loc single-container shellcheck actionlint
+.PHONY: bootstrap package-installer deploy-nox hooks install-nox-autodeploy browser-test check check-fast ci-local ci-status client-check container-test coverage deadcode installer-test native-build format lint local-pipeline local-pipeline-test performance-test media-server-benchmark-test playback-test publish-main test test-instance-check test-race tidy-check verify-changed verify-watch vuln secrets max-loc single-container shellcheck actionlint
 
 bootstrap:
 	brew bundle
@@ -27,17 +27,13 @@ ci-status:
 	@./scripts/ci-mode.sh status
 
 client-check:
-	@pnpm --dir apps/native install --frozen-lockfile
-	@pnpm --dir apps/native verify
-	@pnpm --dir apps/native export:web
+	@./apps/native/scripts/build-apple.sh ios
+	@./apps/native/scripts/build-apple.sh tvos
 
-client-browser-test:
-	@./scripts/test-native-client-browser.sh
-
-client-build-ios client-prebuild-mobile:
+client-build-ios:
 	@./apps/native/scripts/build-apple.sh ios
 
-client-build-tvos client-prebuild-tv:
+client-build-tvos:
 	@./apps/native/scripts/build-apple.sh tvos
 
 .PHONY: client-build-ios client-build-tvos
@@ -129,4 +125,4 @@ actionlint:
 	actionlint
 
 # Preserve recipes; suppress every gate until the user removes .gates-disabled.
-browser-test ci-local client-check client-browser-test check check-fast container-test coverage deadcode installer-test native-build local-pipeline local-pipeline-test lint performance-test media-server-benchmark-test playback-test test test-instance-check test-race verify-changed verify-watch tidy-check vuln secrets max-loc single-container shellcheck actionlint: SHELL := $(abspath ../../scripts/tooling/gate-shell.sh)
+browser-test ci-local client-check check check-fast container-test coverage deadcode installer-test native-build local-pipeline local-pipeline-test lint performance-test media-server-benchmark-test playback-test test test-instance-check test-race verify-changed verify-watch tidy-check vuln secrets max-loc single-container shellcheck actionlint: SHELL := $(abspath ../../scripts/tooling/gate-shell.sh)

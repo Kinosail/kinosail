@@ -51,7 +51,7 @@ require_once "$dependabot" '    directory: /apps/player'
 require_once "$dependabot" '    directory: /apps/subtitles'
 require_once "$dependabot" '    directory: /apps/dashboard'
 require_once "$dependabot" '    directory: /apps/player/e2e'
-require_once "$dependabot" '    directory: /apps/player/apps/native'
+require_once "$dependabot" '    directory: /scripts/quality'
 require_once "$dependabot" '    directory: /apps/subtitles/e2e'
 require_once "$dependabot" '  - package-ecosystem: github-actions'
 [[ -f "$pull_request_template" ]] || fail "missing root pull request template"

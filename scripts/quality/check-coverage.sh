@@ -64,8 +64,4 @@ else
 	fi
 fi
 
-pnpm --dir "$repo/apps/player/apps/native" install --frozen-lockfile
-if ! pnpm --dir "$repo/apps/player/apps/native" test:coverage; then
-	status=1
-fi
 exit "$status"

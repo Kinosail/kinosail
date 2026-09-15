@@ -21,7 +21,7 @@ The active implementation is a SwiftUI media client with iOS and tvOS targets in
 ## Capabilities and Constraints
 
 - AGENTS.md and IMPLEMENTATION.md own the active migration scope and work items.
-- Compile Sources/; the previous src/ and modules/ implementation is reference only.
+- Compile Sources/; Tests/ owns native regressions. The former Expo implementation has been removed.
 - Preserve /api/v1 compatibility and Direct First playback; never fabricate successful server state for unimplemented operations.
 - Only iOS and tvOS are current targets. Do not add other platform targets through design work.
 - The user has granted creative freedom for this rewrite; previous layouts, colors, fonts, and feature parity are not requirements.
