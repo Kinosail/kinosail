@@ -1,0 +1,76 @@
+version: 1
+
+# Uncomment only settings that you want this file to manage.
+# Omitted settings remain editable in Owner Settings.
+# Environment variables override this file.
+# server:
+#   name: Kinosail
+# libraries:
+#   - /media
+# playback:
+#   mode: automatic
+#   autoplay: true
+#   subtitles: on
+#   auto_skip: [intro, credits]
+# transcoding:
+#   quality: automatic
+#   codec: auto
+#   accelerator: auto
+#   tone_map: false
+# subtitles:
+#   language: en
+# scanning:
+#   interval: 10m
+#   frequency: default
+# dlna:
+#   url: http://minidlna:8200
+#   enabled: true
+# backup:
+#   directory: /backups
+#   key_file: /run/secrets/kinosail-backup-key
+#   interval: 24h
+#   retention: 7
+# logging:
+#   level: info
+#   audit_retention: 8760h
+#   playback_retention: 2160h
+# paths:
+#   media: /media
+#   data: /config
+#   cache: /cache
+# binaries:
+#   ffmpeg: ffmpeg
+#   ffprobe: ffprobe
+#   fpcalc: fpcalc
+# remote:
+#   proxy_token_file: /run/secrets/kinosail-proxy-token
+# integrations:
+#   tmdb:
+#     url: https://api.themoviedb.org
+#     image_url: https://image.tmdb.org/t/p
+#     token_file: /run/secrets/kinosail-tmdb-token
+#   subdl:
+#     url: https://api.subdl.com/api/v1
+#     api_key_file: /run/secrets/kinosail-subdl-api-key
+#   oidc:
+#     issuer: https://identity.example.com
+#     client_id: kinosail
+#     client_secret_file: /run/secrets/kinosail-oidc-client-secret
+#     redirect_url: https://kinosail.example.com/login/oidc/callback
+#     identity_claim: sub
+#   saml:
+#     metadata_url: https://identity.example.com/application/metadata
+#     identity_attribute: NameID
+#     # Use metadata_xml instead when the provider supplies a downloaded document.
+#   scim:
+#     token_file: /run/secrets/kinosail-scim-token
+#     token_expires_at: "2026-09-01T00:00:00Z"
+#   mcp:
+#     resource_url: https://kinosail.example.com/mcp
+#     authorization_server: https://identity.example.com
+#     introspection_url: https://identity.example.com/oauth2/introspect
+#     client_id: kinosail-mcp-resource
+#     client_secret_file: /run/secrets/kinosail-mcp-client-secret
+#   webhook:
+#     url: https://hooks.example.com/kinosail
+#     token_file: /run/secrets/kinosail-webhook-token

@@ -1,0 +1,2034 @@
+[
+  {
+    "id": "15 minutes",
+    "other": "15분"
+  },
+  {
+    "id": "30 minutes",
+    "other": "30분"
+  },
+  {
+    "id": "45 minutes",
+    "other": "45분"
+  },
+  {
+    "id": "60 minutes",
+    "other": "60분"
+  },
+  {
+    "id": "Access",
+    "other": "액세스"
+  },
+  {
+    "id": "Account · Kinosail Player",
+    "other": "계정 · Kinosail Player"
+  },
+  {
+    "id": "Actions",
+    "other": "작업"
+  },
+  {
+    "id": "active session(s)",
+    "other": "활성 세션"
+  },
+  {
+    "id": "Add a passkey",
+    "other": "암호 추가"
+  },
+  {
+    "id": "Add folder",
+    "other": "폴더 추가"
+  },
+  {
+    "id": "Add media or try another search.",
+    "other": "미디어를 추가하거나 다른 검색을 시도해 보세요."
+  },
+  {
+    "id": "Add Profile",
+    "other": "프로필 추가"
+  },
+  {
+    "id": "Add this secret or URI to your authenticator app.",
+    "other": "이 비밀 번호 또는 URI를 인증 앱에 추가하세요."
+  },
+  {
+    "id": "Add to",
+    "other": "추가"
+  },
+  {
+    "id": "Administer server",
+    "other": "서버 관리"
+  },
+  {
+    "id": "Album",
+    "other": "앨범"
+  },
+  {
+    "id": "Albums",
+    "other": "앨범"
+  },
+  {
+    "id": "all",
+    "other": "all"
+  },
+  {
+    "id": "All ratings",
+    "other": "모든 평가"
+  },
+  {
+    "id": "Allow downloads",
+    "other": "다운로드 허용"
+  },
+  {
+    "id": "Allow transcoding",
+    "other": "트랜스코딩 허용"
+  },
+  {
+    "id": "AMD AMF",
+    "other": "AMD AMF"
+  },
+  {
+    "id": "Analyze playback segments now",
+    "other": "지금 재생 세그먼트 분석"
+  },
+  {
+    "id": "analyzed item(s)",
+    "other": "분석된 항목"
+  },
+  {
+    "id": "API key name",
+    "other": "API 키 이름"
+  },
+  {
+    "id": "API key scope does not allow this request",
+    "other": "API 키 범위는 이 요청을 허용하지 않습니다"
+  },
+  {
+    "id": "API key view failed",
+    "other": "API 키 보기 실패"
+  },
+  {
+    "id": "API key · Kinosail Player",
+    "other": "API 키 · Kinosail Player"
+  },
+  {
+    "id": "API keys",
+    "other": "API 키"
+  },
+  {
+    "id": "Appearance",
+    "other": "외관"
+  },
+  {
+    "id": "Apple VideoToolbox",
+    "other": "Apple VideoToolbox"
+  },
+  {
+    "id": "Apply",
+    "other": "신청"
+  },
+  {
+    "id": "Audio",
+    "other": "오디오"
+  },
+  {
+    "id": "Audiobooks",
+    "other": "오디오북"
+  },
+  {
+    "id": "Authentication code",
+    "other": "인증 코드"
+  },
+  {
+    "id": "Authentication or recovery code",
+    "other": "인증 또는 복구 코드"
+  },
+  {
+    "id": "authentication required",
+    "other": "인증 필요"
+  },
+  {
+    "id": "Authorize device",
+    "other": "기기 승인"
+  },
+  {
+    "id": "Automatic",
+    "other": "자동"
+  },
+  {
+    "id": "automatic",
+    "other": "자동"
+  },
+  {
+    "id": "Automatic (best detected)",
+    "other": "자동(최적 감지)"
+  },
+  {
+    "id": "Automatic (browser)",
+    "other": "자동(브라우저)"
+  },
+  {
+    "id": "Automatic backups",
+    "other": "자동 백업"
+  },
+  {
+    "id": "Automatic maintenance",
+    "other": "자동 유지관리"
+  },
+  {
+    "id": "Available devices use a direct connection to this Server.",
+    "other": "사용 가능한 장치는 이 서버에 대한 직접 연결을 사용합니다."
+  },
+  {
+    "id": "Back to library",
+    "other": "도서관으로 돌아가기"
+  },
+  {
+    "id": "Back to settings",
+    "other": "설정으로 돌아가기"
+  },
+  {
+    "id": "Back up now",
+    "other": "지금 백업"
+  },
+  {
+    "id": "Backup and recovery",
+    "other": "백업 및 복구"
+  },
+  {
+    "id": "backup is unavailable",
+    "other": "백업을 사용할 수 없습니다"
+  },
+  {
+    "id": "Backups need setup.",
+    "other": "백업 설정이 필요합니다."
+  },
+  {
+    "id": "Backups run automatically without encryption.",
+    "other": "백업은 암호화 없이 자동으로 실행됩니다."
+  },
+  {
+    "id": "Backups · Kinosail Player",
+    "other": "백업 · Kinosail Player"
+  },
+  {
+    "id": "Book",
+    "other": "도서"
+  },
+  {
+    "id": "Books",
+    "other": "도서"
+  },
+  {
+    "id": "Books and comics",
+    "other": "도서 및 만화"
+  },
+  {
+    "id": "Browse library",
+    "other": "라이브러리 찾아보기"
+  },
+  {
+    "id": "Cancel",
+    "other": "취소"
+  },
+  {
+    "id": "Cast",
+    "other": "캐스트"
+  },
+  {
+    "id": "Chapters",
+    "other": "챕터"
+  },
+  {
+    "id": "Choose the language for this browser.",
+    "other": "이 브라우저의 언어를 선택하세요."
+  },
+  {
+    "id": "Clear transcode cache",
+    "other": "트랜스코드 캐시 지우기"
+  },
+  {
+    "id": "Code",
+    "other": "코드"
+  },
+  {
+    "id": "Collection",
+    "other": "수집"
+  },
+  {
+    "id": "Collections",
+    "other": "컬렉션"
+  },
+  {
+    "id": "Commercial",
+    "other": "상업용"
+  },
+  {
+    "id": "Compatibility",
+    "other": "호환성"
+  },
+  {
+    "id": "Compatibility Connection",
+    "other": "호환성 연결"
+  },
+  {
+    "id": "Compatibility stream",
+    "other": "호환성 스트림"
+  },
+  {
+    "id": "compatible",
+    "other": "호환"
+  },
+  {
+    "id": "Concurrent streams",
+    "other": "동시 스트림"
+  },
+  {
+    "id": "Configuration error",
+    "other": "구성 오류"
+  },
+  {
+    "id": "Configuration · Kinosail Player",
+    "other": "구성 · Kinosail Player"
+  },
+  {
+    "id": "Configured; value hidden",
+    "other": "구성됨; 숨겨진 값"
+  },
+  {
+    "id": "Confirm delete",
+    "other": "삭제 확인"
+  },
+  {
+    "id": "Confirm remove",
+    "other": "제거 확인"
+  },
+  {
+    "id": "Connect",
+    "other": "연결"
+  },
+  {
+    "id": "Connect a device",
+    "other": "기기 연결"
+  },
+  {
+    "id": "Connected",
+    "other": "연결됨"
+  },
+  {
+    "id": "Connecting",
+    "other": "연결 중"
+  },
+  {
+    "id": "Connecting…",
+    "other": "연결 중…"
+  },
+  {
+    "id": "Connection error",
+    "other": "연결 오류"
+  },
+  {
+    "id": "Content",
+    "other": "콘텐츠"
+  },
+  {
+    "id": "Continue Watching",
+    "other": "계속 시청하기"
+  },
+  {
+    "id": "Continue watching",
+    "other": "계속 시청하기"
+  },
+  {
+    "id": "from Continue Watching",
+    "other": "계속 시청 중"
+  },
+  {
+    "id": "Copy this key now. Kinosail stores only its hash.",
+    "other": "지금 이 키를 복사하세요. Kinosail은 해시만 저장합니다."
+  },
+  {
+    "id": "could not create MFA enrollment",
+    "other": "MFA 등록을 생성할 수 없습니다"
+  },
+  {
+    "id": "could not create Owner Profile",
+    "other": "소유자 프로필을 생성할 수 없습니다"
+  },
+  {
+    "id": "could not create session",
+    "other": "세션을 생성할 수 없습니다"
+  },
+  {
+    "id": "could not end session",
+    "other": "세션을 종료할 수 없습니다"
+  },
+  {
+    "id": "could not read subtitles",
+    "other": "자막을 읽을 수 없습니다"
+  },
+  {
+    "id": "Create",
+    "other": "만들기"
+  },
+  {
+    "id": "Create a passkey",
+    "other": "패스키 만들기"
+  },
+  {
+    "id": "Create API key",
+    "other": "API 키 생성"
+  },
+  {
+    "id": "Create passkey",
+    "other": "비밀번호 생성"
+  },
+  {
+    "id": "Create smart playlist",
+    "other": "스마트 재생목록 만들기"
+  },
+  {
+    "id": "Create your Owner Profile",
+    "other": "소유자 프로필 만들기"
+  },
+  {
+    "id": "Created once",
+    "other": "한 번 생성됨"
+  },
+  {
+    "id": "Credentials configured",
+    "other": "자격 증명이 구성됨"
+  },
+  {
+    "id": "Credits",
+    "other": "크레딧"
+  },
+  {
+    "id": "cross-origin request denied",
+    "other": "교차 출처 요청이 거부되었습니다"
+  },
+  {
+    "id": "Curate",
+    "other": "선별"
+  },
+  {
+    "id": "Dark",
+    "other": "어두움"
+  },
+  {
+    "id": "default",
+    "other": "default"
+  },
+  {
+    "id": "Default playback",
+    "other": "기본 재생"
+  },
+  {
+    "id": "Delete",
+    "other": "삭제"
+  },
+  {
+    "id": "Deployment configuration",
+    "other": "배포 구성"
+  },
+  {
+    "id": "Destination",
+    "other": "목적지"
+  },
+  {
+    "id": "detected, unavailable",
+    "other": "감지됨, 사용할 수 없음"
+  },
+  {
+    "id": "Device or app",
+    "other": "기기 또는 앱"
+  },
+  {
+    "id": "Diagnostics",
+    "other": "진단"
+  },
+  {
+    "id": "Direct",
+    "other": "직접"
+  },
+  {
+    "id": "direct",
+    "other": "직접"
+  },
+  {
+    "id": "Direct connection unavailable",
+    "other": "직접 연결 불가"
+  },
+  {
+    "id": "Direct from",
+    "other": "직접"
+  },
+  {
+    "id": "Direct stream",
+    "other": "직접 스트림"
+  },
+  {
+    "id": "Directed by",
+    "other": "감독"
+  },
+  {
+    "id": "Disable and revoke",
+    "other": "비활성화 및 취소"
+  },
+  {
+    "id": "Disable two-factor authentication",
+    "other": "2단계 인증 비활성화"
+  },
+  {
+    "id": "Disaster recovery",
+    "other": "재해 복구"
+  },
+  {
+    "id": "DLNA",
+    "other": "DLNA"
+  },
+  {
+    "id": "Download",
+    "other": "다운로드"
+  },
+  {
+    "id": "Download media",
+    "other": "미디어 다운로드"
+  },
+  {
+    "id": "Download original",
+    "other": "원본 다운로드"
+  },
+  {
+    "id": "Download portable state archive",
+    "other": "이동식 상태 아카이브 다운로드"
+  },
+  {
+    "id": "Download safe diagnostics",
+    "other": "안전 진단 다운로드"
+  },
+  {
+    "id": "Download WireGuard profile",
+    "other": "WireGuard 프로필 다운로드"
+  },
+  {
+    "id": "Downloads",
+    "other": "다운로드"
+  },
+  {
+    "id": "downloads are not enabled for this Viewer Profile",
+    "other": "이 뷰어 프로필에서는 다운로드가 활성화되지 않습니다"
+  },
+  {
+    "id": "Edit metadata",
+    "other": "메타데이터 수정"
+  },
+  {
+    "id": "Edit skip markers",
+    "other": "건너뛰기 마커 수정"
+  },
+  {
+    "id": "embedded subtitles are unavailable",
+    "other": "내장된 자막을 사용할 수 없습니다"
+  },
+  {
+    "id": "Enable DLNA",
+    "other": "DLNA 활성화"
+  },
+  {
+    "id": "Enable two-factor authentication",
+    "other": "2단계 인증 활성화"
+  },
+  {
+    "id": "Enabled",
+    "other": "활성화됨"
+  },
+  {
+    "id": "Encrypted backups run automatically.",
+    "other": "암호화된 백업이 자동으로 실행됩니다."
+  },
+  {
+    "id": "Encryption is off by default.",
+    "other": "암호화는 기본적으로 꺼져 있습니다."
+  },
+  {
+    "id": "Encryption is on.",
+    "other": "암호화가 켜져 있습니다."
+  },
+  {
+    "id": "End in seconds",
+    "other": "초 안에 종료"
+  },
+  {
+    "id": "Enter the code shown by your TV or app. It will inherit your Profile Policy.",
+    "other": "TV 또는 앱에 표시된 코드를 입력하세요. 프로필 정책이 상속됩니다."
+  },
+  {
+    "id": "Environment and YAML values are authoritative. GUI changes shown here take effect after the Server restarts.",
+    "other": "환경 및 YAML 값은 신뢰할 수 있습니다. 여기에 표시된 GUI 변경 사항은 서버가 다시 시작된 후에 적용됩니다."
+  },
+  {
+    "id": "Environment default",
+    "other": "환경 기본값"
+  },
+  {
+    "id": "Event webhook",
+    "other": "이벤트 웹훅"
+  },
+  {
+    "id": "Every 15 minutes",
+    "other": "15분마다"
+  },
+  {
+    "id": "Every 5 minutes",
+    "other": "5분마다"
+  },
+  {
+    "id": "Everything",
+    "other": "모든 것"
+  },
+  {
+    "id": "Export full activity journal",
+    "other": "전체 활동 일지 내보내기"
+  },
+  {
+    "id": "Expose direct media URLs to devices on this local network. Disabling revokes the discovery capability.",
+    "other": "이 로컬 네트워크의 장치에 직접 미디어 URL을 노출합니다. 비활성화하면 검색 기능이 취소됩니다."
+  },
+  {
+    "id": "Externally managed",
+    "other": "외부 관리"
+  },
+  {
+    "id": "Find",
+    "other": "찾기"
+  },
+  {
+    "id": "Find something",
+    "other": "뭔가 찾기"
+  },
+  {
+    "id": "Finish setup",
+    "other": "설정 완료"
+  },
+  {
+    "id": "Finish sign in",
+    "other": "로그인 완료"
+  },
+  {
+    "id": "Folder inside media mount",
+    "other": "미디어 마운트 내부 폴더"
+  },
+  {
+    "id": "Follow this device or choose a fixed theme.",
+    "other": "이 기기를 팔로우하거나 고정 테마를 선택하세요."
+  },
+  {
+    "id": "Following the room leader",
+    "other": "방장을 따라가기"
+  },
+  {
+    "id": "From",
+    "other": "From"
+  },
+  {
+    "id": "from",
+    "other": "from"
+  },
+  {
+    "id": "General",
+    "other": "일반"
+  },
+  {
+    "id": "Genres",
+    "other": "장르"
+  },
+  {
+    "id": "Got it",
+    "other": "알겠습니다"
+  },
+  {
+    "id": "Group",
+    "other": "그룹"
+  },
+  {
+    "id": "Hardware",
+    "other": "하드웨어"
+  },
+  {
+    "id": "History",
+    "other": "역사"
+  },
+  {
+    "id": "Home",
+    "other": "홈"
+  },
+  {
+    "id": "Hourly",
+    "other": "시간별"
+  },
+  {
+    "id": "if enabled",
+    "other": "활성화된 경우"
+  },
+  {
+    "id": "Install",
+    "other": "설치"
+  },
+  {
+    "id": "Install Kinosail Player",
+    "other": "Kinosail 설치"
+  },
+  {
+    "id": "Integrations",
+    "other": "통합"
+  },
+  {
+    "id": "Intel Quick Sync",
+    "other": "인텔 빠른 동기화"
+  },
+  {
+    "id": "Intro",
+    "other": "소개"
+  },
+  {
+    "id": "invalid authentication code",
+    "other": "인증 코드가 잘못되었습니다"
+  },
+  {
+    "id": "invalid Collection state",
+    "other": "잘못된 수집 상태"
+  },
+  {
+    "id": "invalid credentials",
+    "other": "잘못된 자격 증명"
+  },
+  {
+    "id": "invalid list state",
+    "other": "잘못된 목록 상태"
+  },
+  {
+    "id": "invalid playlist state",
+    "other": "잘못된 재생목록 상태"
+  },
+  {
+    "id": "invalid progress",
+    "other": "진행이 잘못되었습니다"
+  },
+  {
+    "id": "invalid watched state",
+    "other": "감시 상태가 잘못되었습니다"
+  },
+  {
+    "id": "Invite link",
+    "other": "초대 링크"
+  },
+  {
+    "id": "Keep",
+    "other": "Keep"
+  },
+  {
+    "id": "Keep backups on storage outside this host. Backups are unencrypted unless a backup key is configured. Restore while the Server is stopped.",
+    "other": "이 호스트 외부의 스토리지에 백업을 유지합니다. 백업 키가 구성되지 않으면 백업이 암호화되지 않습니다. 서버가 중지된 동안 복원합니다."
+  },
+  {
+    "id": "Keep Kinosail Player close",
+    "other": "Kinosail을 가까이 두세요"
+  },
+  {
+    "id": "Keys are shown once and stored as hashes. Browse access is the safe default.",
+    "other": "키는 한 번 표시되고 해시로 저장됩니다. 찾아보기 액세스는 안전한 기본값입니다."
+  },
+  {
+    "id": "Kinosail",
+    "other": "Kinosail"
+  },
+  {
+    "id": "Kinosail Player cannot reach this Server. Check your network or Direct Connection, then try again.",
+    "other": "Kinosail이 이 서버에 연결할 수 없습니다. 네트워크 또는 직접 연결을 확인한 후 다시 시도하세요."
+  },
+  {
+    "id": "Kinosail maintains itself automatically.",
+    "other": "Kinosail은 자동으로 유지 관리됩니다."
+  },
+  {
+    "id": "Kinosail Player Reader",
+    "other": "Kinosail 리더"
+  },
+  {
+    "id": "Language",
+    "other": "언어"
+  },
+  {
+    "id": "language is invalid",
+    "other": "언어가 잘못되었습니다"
+  },
+  {
+    "id": "Last error",
+    "other": "마지막 오류"
+  },
+  {
+    "id": "Last scan error",
+    "other": "마지막 검사 오류"
+  },
+  {
+    "id": "Last successful backup",
+    "other": "마지막으로 성공한 백업"
+  },
+  {
+    "id": "Last successful scan",
+    "other": "마지막으로 성공한 스캔"
+  },
+  {
+    "id": "Last verified",
+    "other": "마지막 확인"
+  },
+  {
+    "id": "Latest",
+    "other": "최신"
+  },
+  {
+    "id": "Libraries",
+    "other": "라이브러리"
+  },
+  {
+    "id": "Library",
+    "other": "도서관"
+  },
+  {
+    "id": "Library discovery",
+    "other": "라이브러리 검색"
+  },
+  {
+    "id": "Library folders",
+    "other": "라이브러리 폴더"
+  },
+  {
+    "id": "Library items",
+    "other": "라이브러리 항목"
+  },
+  {
+    "id": "Library organization",
+    "other": "도서관 조직"
+  },
+  {
+    "id": "Library views",
+    "other": "라이브러리 보기"
+  },
+  {
+    "id": "Licensed credential configured",
+    "other": "라이센스 자격 증명이 구성됨"
+  },
+  {
+    "id": "Light",
+    "other": "Light"
+  },
+  {
+    "id": "Link OpenID Connect",
+    "other": "OpenID Connect 연결"
+  },
+  {
+    "id": "Local account",
+    "other": "로컬 계정"
+  },
+  {
+    "id": "M3U playlist",
+    "other": "M3U 재생 목록"
+  },
+  {
+    "id": "Manage personal library state",
+    "other": "개인 라이브러리 상태 관리"
+  },
+  {
+    "id": "Managed externally and read-only.",
+    "other": "외부에서 관리되며 읽기 전용입니다."
+  },
+  {
+    "id": "Managed remote access",
+    "other": "관리형 원격 액세스"
+  },
+  {
+    "id": "Mark",
+    "other": "Mark"
+  },
+  {
+    "id": "marker",
+    "other": "marker"
+  },
+  {
+    "id": "Match text",
+    "other": "텍스트 일치"
+  },
+  {
+    "id": "Media",
+    "other": "미디어"
+  },
+  {
+    "id": "Media information",
+    "other": "미디어 정보"
+  },
+  {
+    "id": "Media mount",
+    "other": "미디어 마운트"
+  },
+  {
+    "id": "metadata could not be saved",
+    "other": "메타데이터를 저장할 수 없습니다"
+  },
+  {
+    "id": "metadata is invalid",
+    "other": "메타데이터가 잘못되었습니다"
+  },
+  {
+    "id": "Metadata provider",
+    "other": "메타데이터 제공자"
+  },
+  {
+    "id": "metadata provider unavailable",
+    "other": "메타데이터 제공자를 사용할 수 없습니다"
+  },
+  {
+    "id": "Metrics",
+    "other": "측정항목"
+  },
+  {
+    "id": "Movies",
+    "other": "영화"
+  },
+  {
+    "id": "Music",
+    "other": "음악"
+  },
+  {
+    "id": "Music and audiobooks",
+    "other": "음악 및 오디오북"
+  },
+  {
+    "id": "My List",
+    "other": "내 목록"
+  },
+  {
+    "id": "Name",
+    "other": "이름"
+  },
+  {
+    "id": "name and a 12-character password are required",
+    "other": "이름과 12자리 비밀번호가 필요합니다"
+  },
+  {
+    "id": "Never",
+    "other": "사용하지 않음"
+  },
+  {
+    "id": "New Collection",
+    "other": "새 컬렉션"
+  },
+  {
+    "id": "New Collection name",
+    "other": "새 컬렉션 이름"
+  },
+  {
+    "id": "New media is detected automatically after copying finishes. Safety scans repair missed filesystem events on Windows, macOS, Linux, containers, and network mounts.",
+    "other": "복사가 완료된 후 새 미디어가 자동으로 감지됩니다. 안전 검사는 Windows, macOS, Linux, 컨테이너 및 네트워크 마운트에서 누락된 파일 시스템 이벤트를 복구합니다."
+  },
+  {
+    "id": "New password",
+    "other": "새 비밀번호"
+  },
+  {
+    "id": "New playlist",
+    "other": "새 재생목록"
+  },
+  {
+    "id": "New playlist name",
+    "other": "새 재생목록 이름"
+  },
+  {
+    "id": "New profile name",
+    "other": "새 프로필 이름"
+  },
+  {
+    "id": "New profile password",
+    "other": "새 프로필 비밀번호"
+  },
+  {
+    "id": "New secret",
+    "other": "새 비밀"
+  },
+  {
+    "id": "New smart playlist",
+    "other": "새로운 스마트 재생목록"
+  },
+  {
+    "id": "New Viewers start with family ratings and no libraries. Add folder names or",
+    "other": "신규 시청자는 라이브러리 없이 가족 등급으로 시작합니다. 폴더 이름 추가 또는"
+  },
+  {
+    "id": "Newest",
+    "other": "최신"
+  },
+  {
+    "id": "No activity recorded yet.",
+    "other": "아직 기록된 활동이 없습니다."
+  },
+  {
+    "id": "No channels configured.",
+    "other": "구성된 채널이 없습니다."
+  },
+  {
+    "id": "No device selected",
+    "other": "선택한 기기 없음"
+  },
+  {
+    "id": "No offline downloads yet.",
+    "other": "아직 오프라인 다운로드가 없습니다."
+  },
+  {
+    "id": "No playback recorded yet.",
+    "other": "아직 재생이 기록되지 않았습니다."
+  },
+  {
+    "id": "None",
+    "other": "없음"
+  },
+  {
+    "id": "None; use all or folder names",
+    "other": "없음; 전체 또는 폴더 이름 사용"
+  },
+  {
+    "id": "Not configured",
+    "other": "구성되지 않음"
+  },
+  {
+    "id": "not detected",
+    "other": "감지되지 않음"
+  },
+  {
+    "id": "not found",
+    "other": "찾을 수 없음"
+  },
+  {
+    "id": "Not now",
+    "other": "지금은 아님"
+  },
+  {
+    "id": "Nothing found.",
+    "other": "아무 것도 찾을 수 없습니다."
+  },
+  {
+    "id": "Now viewing",
+    "other": "지금 보는 중"
+  },
+  {
+    "id": "NVIDIA NVENC/NVDEC",
+    "other": "NVIDIA NVENC/NVDEC"
+  },
+  {
+    "id": "Off",
+    "other": "끄기"
+  },
+  {
+    "id": "offline",
+    "other": "오프라인"
+  },
+  {
+    "id": "Offline downloads",
+    "other": "오프라인 다운로드"
+  },
+  {
+    "id": "Offline downloads · Kinosail Player",
+    "other": "오프라인 다운로드 · Kinosail Player"
+  },
+  {
+    "id": "On",
+    "other": "켜기"
+  },
+  {
+    "id": "On iPhone or iPad, tap Share, choose Add to Home Screen, turn on Open as Web App, then tap Add.",
+    "other": "iPhone 또는 iPad에서 공유를 탭하고 홈 화면에 추가를 선택한 다음 웹 앱으로 열기를 켠 다음 추가를 탭하세요."
+  },
+  {
+    "id": "One-time reveal",
+    "other": "일회성 공개"
+  },
+  {
+    "id": "OpenID Connect",
+    "other": "OpenID Connect"
+  },
+  {
+    "id": "OpenSubtitles",
+    "other": "자막 열기"
+  },
+  {
+    "id": "Outro",
+    "other": "아웃트로"
+  },
+  {
+    "id": "Owner",
+    "other": "소유자"
+  },
+  {
+    "id": "Owner access required",
+    "other": "소유자 액세스가 필요함"
+  },
+  {
+    "id": "Owner controls",
+    "other": "소유자 제어"
+  },
+  {
+    "id": "Passkey added.",
+    "other": "비밀번호가 추가되었습니다."
+  },
+  {
+    "id": "Passkey failed.",
+    "other": "비밀번호가 실패했습니다."
+  },
+  {
+    "id": "Passkeys need the configured Server address and trusted HTTPS. Open that address, trust the Server certificate, or use an authenticator.",
+    "other": "Passkeys need the configured Server address and trusted HTTPS. Open that address, trust the Server certificate, or use an authenticator."
+  },
+  {
+    "id": "Password",
+    "other": "비밀번호"
+  },
+  {
+    "id": "Photos",
+    "other": "사진"
+  },
+  {
+    "id": "Play",
+    "other": "Play"
+  },
+  {
+    "id": "Play on device",
+    "other": "기기에서 재생"
+  },
+  {
+    "id": "Play the next Episode automatically",
+    "other": "다음 에피소드 자동으로 재생"
+  },
+  {
+    "id": "Playback",
+    "other": "재생"
+  },
+  {
+    "id": "Playback history",
+    "other": "재생 기록"
+  },
+  {
+    "id": "Playback segment analysis",
+    "other": "재생 세그먼트 분석"
+  },
+  {
+    "id": "Playback speed",
+    "other": "재생 속도"
+  },
+  {
+    "id": "Playing here",
+    "other": "여기서 플레이하기"
+  },
+  {
+    "id": "Playing on device",
+    "other": "기기에서 재생 중"
+  },
+  {
+    "id": "Playlist",
+    "other": "재생 목록"
+  },
+  {
+    "id": "Playlists",
+    "other": "재생 목록"
+  },
+  {
+    "id": "Plot",
+    "other": "플롯"
+  },
+  {
+    "id": "Polling for changes",
+    "other": "변경 사항 폴링"
+  },
+  {
+    "id": "Prefer quality",
+    "other": "품질 선호"
+  },
+  {
+    "id": "Prefer speed",
+    "other": "속도 선호"
+  },
+  {
+    "id": "Preferred language",
+    "other": "기본 언어"
+  },
+  {
+    "id": "Prepare",
+    "other": "준비"
+  },
+  {
+    "id": "preview unavailable",
+    "other": "미리보기를 사용할 수 없습니다"
+  },
+  {
+    "id": "Private by design",
+    "other": "비공개 설계"
+  },
+  {
+    "id": "Profile",
+    "other": "프로필"
+  },
+  {
+    "id": "profile storage is unavailable",
+    "other": "프로필 저장을 사용할 수 없습니다"
+  },
+  {
+    "id": "Profile to reset",
+    "other": "재설정할 프로필"
+  },
+  {
+    "id": "Profile type",
+    "other": "프로필 유형"
+  },
+  {
+    "id": "Profiles",
+    "other": "프로필"
+  },
+  {
+    "id": "Protected automatically",
+    "other": "자동으로 보호됨"
+  },
+  {
+    "id": "MFA - Require extra sign-in protection for every Viewer Profile",
+    "other": "MFA - Require extra sign-in protection for every Viewer Profile"
+  },
+  {
+    "id": "Quality",
+    "other": "품질"
+  },
+  {
+    "id": "quality",
+    "other": "품질"
+  },
+  {
+    "id": "Quick Connect",
+    "other": "빠른 연결"
+  },
+  {
+    "id": "Quick Connect · Kinosail Player",
+    "other": "빠른 연결 · Kinosail Player"
+  },
+  {
+    "id": "Rating",
+    "other": "등급"
+  },
+  {
+    "id": "Read now",
+    "other": "지금 읽기"
+  },
+  {
+    "id": "reader",
+    "other": "독자"
+  },
+  {
+    "id": "Reading order",
+    "other": "읽기 순서"
+  },
+  {
+    "id": "ready",
+    "other": "준비"
+  },
+  {
+    "id": "Ready offline",
+    "other": "오프라인 준비됨"
+  },
+  {
+    "id": "Recap",
+    "other": "요약"
+  },
+  {
+    "id": "Recent activity",
+    "other": "최근 활동"
+  },
+  {
+    "id": "Recent playback",
+    "other": "최근 재생"
+  },
+  {
+    "id": "Recently added",
+    "other": "최근 추가됨"
+  },
+  {
+    "id": "Recently played",
+    "other": "최근 플레이한 게임"
+  },
+  {
+    "id": "Recovery",
+    "other": "복구"
+  },
+  {
+    "id": "Recovery codes",
+    "other": "복구 코드"
+  },
+  {
+    "id": "Refresh from TMDB",
+    "other": "TMDB에서 새로 고침"
+  },
+  {
+    "id": "Refresh missing metadata",
+    "other": "누락된 메타데이터 새로고침"
+  },
+  {
+    "id": "Recommended",
+    "other": "권장"
+  },
+  {
+    "id": "Remote access",
+    "other": "원격 액세스"
+  },
+  {
+    "id": "Remove",
+    "other": "제거"
+  },
+  {
+    "id": "Remove from",
+    "other": "에서 제거"
+  },
+  {
+    "id": "request",
+    "other": "요청"
+  },
+  {
+    "id": "Request could not be completed.",
+    "other": "요청을 완료할 수 없습니다."
+  },
+  {
+    "id": "request is too large",
+    "other": "요청이 너무 큽니다"
+  },
+  {
+    "id": "Reset password",
+    "other": "비밀번호 재설정"
+  },
+  {
+    "id": "Return to settings",
+    "other": "설정으로 돌아가기"
+  },
+  {
+    "id": "Revoke",
+    "other": "취소"
+  },
+  {
+    "id": "Rockchip RKMPP",
+    "other": "록칩 RKMPP"
+  },
+  {
+    "id": "Room connected · following leader",
+    "other": "방이 연결됨 · 리더를 팔로우"
+  },
+  {
+    "id": "Room connected · you lead",
+    "other": "방이 연결됨 · 당신이 이끄는"
+  },
+  {
+    "id": "Room disconnected · reload to reconnect",
+    "other": "방 연결이 끊어졌습니다. 다시 연결하려면 새로고침하세요"
+  },
+  {
+    "id": "Run library scan now",
+    "other": "지금 라이브러리 스캔 실행"
+  },
+  {
+    "id": "Run maintenance now",
+    "other": "지금 유지 관리 실행"
+  },
+  {
+    "id": "Safety scan",
+    "other": "안전 검사"
+  },
+  {
+    "id": "Save",
+    "other": "저장"
+  },
+  {
+    "id": "Save file",
+    "other": "파일 저장"
+  },
+  {
+    "id": "Save for restart",
+    "other": "다시 시작하기 위해 저장"
+  },
+  {
+    "id": "Save marker",
+    "other": "마커 저장"
+  },
+  {
+    "id": "Save metadata",
+    "other": "메타데이터 저장"
+  },
+  {
+    "id": "Save schedule",
+    "other": "일정 저장"
+  },
+  {
+    "id": "Schedule",
+    "other": "일정"
+  },
+  {
+    "id": "Search library",
+    "other": "도서관 검색"
+  },
+  {
+    "id": "Search results",
+    "other": "검색결과"
+  },
+  {
+    "id": "Secrets are hidden and included only in encrypted recovery backups.",
+    "other": "비밀번호는 숨겨져 있으며 암호화된 복구 백업에만 포함됩니다."
+  },
+  {
+    "id": "Secure your account",
+    "other": "계정을 보호하세요"
+  },
+  {
+    "id": "Secure your account · Kinosail Player",
+    "other": "계정을 보호하세요 · Kinosail Player"
+  },
+  {
+    "id": "Send this private connection URL to the Viewer. It is shown only once.",
+    "other": "이 비공개 연결 URL을 뷰어에게 보냅니다. 한 번만 표시됩니다."
+  },
+  {
+    "id": "Server name",
+    "other": "서버 이름"
+  },
+  {
+    "id": "Server settings",
+    "other": "서버 설정"
+  },
+  {
+    "id": "Server unavailable",
+    "other": "서버를 사용할 수 없습니다"
+  },
+  {
+    "id": "Server unavailable · Kinosail Player",
+    "other": "서버를 사용할 수 없음 · Kinosail Player"
+  },
+  {
+    "id": "Set up Kinosail Player",
+    "other": "Kinosail 설정"
+  },
+  {
+    "id": "Set up or replace authenticator",
+    "other": "인증자 설정 또는 교체"
+  },
+  {
+    "id": "Set up two-factor authentication",
+    "other": "2단계 인증 설정"
+  },
+  {
+    "id": "Set up two-factor authentication · Kinosail Player",
+    "other": "2단계 인증 설정 · Kinosail Player"
+  },
+  {
+    "id": "Settings",
+    "other": "설정"
+  },
+  {
+    "id": "Settings sections",
+    "other": "설정 섹션"
+  },
+  {
+    "id": "Settings · Kinosail Player",
+    "other": "설정 · Kinosail Player"
+  },
+  {
+    "id": "Shape the experience, protect your library, and keep every stream running beautifully.",
+    "other": "경험을 형성하고, 라이브러리를 보호하고, 모든 스트림을 아름답게 실행하세요."
+  },
+  {
+    "id": "Show",
+    "other": "표시"
+  },
+  {
+    "id": "Shows",
+    "other": "쇼"
+  },
+  {
+    "id": "Sign in",
+    "other": "로그인"
+  },
+  {
+    "id": "Sign in to your private media universe.",
+    "other": "개인 미디어 세계에 로그인하세요."
+  },
+  {
+    "id": "Sign in with passkey",
+    "other": "비밀번호로 로그인"
+  },
+  {
+    "id": "Sign in with SSO",
+    "other": "SSO"
+  },
+  {
+    "id": "Sign in · Kinosail Player",
+    "other": "로그인 · Kinosail Player"
+  },
+  {
+    "id": "Sign out",
+    "other": "로그아웃"
+  },
+  {
+    "id": "Sign out other devices",
+    "other": "다른 기기에서 로그아웃"
+  },
+  {
+    "id": "Sign-in methods",
+    "other": "로그인 방법"
+  },
+  {
+    "id": "Sign-in, same-origin browser protections, private responses, bounded requests, and revocable access are always on. There are no security switches to manage.",
+    "other": "로그인, 동일 출처 브라우저 보호, 비공개 응답, 제한된 요청 및 취소 가능한 액세스가 항상 켜져 있습니다. 관리할 보안 스위치가 없습니다."
+  },
+  {
+    "id": "Single sign-on",
+    "other": "싱글 사인온"
+  },
+  {
+    "id": "Skip",
+    "other": "건너뛰기"
+  },
+  {
+    "id": "Skip commercials automatically",
+    "other": "광고 자동 건너뛰기"
+  },
+  {
+    "id": "Skip credits automatically",
+    "other": "크레딧 자동 건너뛰기"
+  },
+  {
+    "id": "Skip intros automatically",
+    "other": "소개를 자동으로 건너뛰기"
+  },
+  {
+    "id": "Skip outros automatically",
+    "other": "아웃로스 자동 건너뛰기"
+  },
+  {
+    "id": "Skip recaps automatically",
+    "other": "자동으로 요약 건너뛰기"
+  },
+  {
+    "id": "Skip to content",
+    "other": "콘텐츠로 건너뛰기"
+  },
+  {
+    "id": "Sleep timer",
+    "other": "취침 타이머"
+  },
+  {
+    "id": "Sleep timer ended",
+    "other": "취침 타이머가 종료되었습니다"
+  },
+  {
+    "id": "Smart playlist",
+    "other": "스마트 재생목록"
+  },
+  {
+    "id": "Smart playlist name",
+    "other": "스마트 재생목록 이름"
+  },
+  {
+    "id": "Software",
+    "other": "소프트웨어"
+  },
+  {
+    "id": "Sort",
+    "other": "정렬"
+  },
+  {
+    "id": "Source",
+    "other": "출처"
+  },
+  {
+    "id": "speed",
+    "other": "속도"
+  },
+  {
+    "id": "SSO challenge is invalid or expired",
+    "other": "SSO 챌린지가 유효하지 않거나 만료되었습니다"
+  },
+  {
+    "id": "SSO code exchange failed",
+    "other": "SSO 코드 교환 실패"
+  },
+  {
+    "id": "SSO identity is not linked to a Viewer Profile",
+    "other": "SSO ID가 뷰어 프로필에 연결되어 있지 않습니다"
+  },
+  {
+    "id": "SSO is unavailable",
+    "other": "SSO를 사용할 수 없습니다"
+  },
+  {
+    "id": "SSO session could not be created",
+    "other": "SSO 세션을 생성할 수 없습니다"
+  },
+  {
+    "id": "SSO state is invalid or expired",
+    "other": "SSO 상태가 잘못되었거나 만료되었습니다"
+  },
+  {
+    "id": "SSO token validation failed",
+    "other": "SSO 토큰 검증 실패"
+  },
+  {
+    "id": "Start in seconds",
+    "other": "곧 시작"
+  },
+  {
+    "id": "Start Watch Together",
+    "other": "함께 시청 시작"
+  },
+  {
+    "id": "Status",
+    "other": "상태"
+  },
+  {
+    "id": "Stops in {minutes} minutes",
+    "other": "{minutes}분 후에 정차"
+  },
+  {
+    "id": "Store these codes somewhere safe. Each works once.",
+    "other": "이 코드를 안전한 곳에 보관하세요. 각각은 한 번만 작동합니다."
+  },
+  {
+    "id": "Stored here. Streamed directly.",
+    "other": "여기에 저장되어 있습니다. 직접 스트리밍했습니다."
+  },
+  {
+    "id": "Stream media",
+    "other": "스트림 미디어"
+  },
+  {
+    "id": "Subscription required",
+    "other": "구독 필요"
+  },
+  {
+    "id": "Subtitle provider",
+    "other": "자막 제공업체"
+  },
+  {
+    "id": "subtitle provider unavailable",
+    "other": "자막 제공업체를 사용할 수 없음"
+  },
+  {
+    "id": "subtitle track(s)",
+    "other": "자막 트랙"
+  },
+  {
+    "id": "Subtitles",
+    "other": "자막"
+  },
+  {
+    "id": "subtitles",
+    "other": "자막"
+  },
+  {
+    "id": "Sync",
+    "other": "동기화"
+  },
+  {
+    "id": "System",
+    "other": "시스템"
+  },
+  {
+    "id": "Tagline",
+    "other": "태그라인"
+  },
+  {
+    "id": "The backup contains account and session state. Keep unencrypted backup storage private, or configure a backup key.",
+    "other": "백업에는 계정 및 세션 상태가 포함됩니다. 암호화되지 않은 백업 저장소를 비공개로 유지하거나 백업 키를 구성하세요."
+  },
+  {
+    "id": "Theme",
+    "other": "테마"
+  },
+  {
+    "id": "These settings are read-only until removed from YAML or the environment",
+    "other": "이러한 설정은 YAML 또는 환경에서 제거될 때까지 읽기 전용입니다"
+  },
+  {
+    "id": "This Collection is empty.",
+    "other": "이 컬렉션은 비어 있습니다."
+  },
+  {
+    "id": "This permanently deletes the Collection.",
+    "other": "이렇게 하면 컬렉션이 영구적으로 삭제됩니다."
+  },
+  {
+    "id": "This permanently deletes the playlist.",
+    "other": "재생목록이 영구적으로 삭제됩니다."
+  },
+  {
+    "id": "This playlist is empty.",
+    "other": "이 재생목록은 비어 있습니다."
+  },
+  {
+    "id": "This product uses the TMDB API but is not endorsed or certified by TMDB.",
+    "other": "이 제품은 TMDB API를 사용하지만 TMDB에서 보증하거나 인증하지 않습니다."
+  },
+  {
+    "id": "This signs out the profile and deletes it.",
+    "other": "이렇게 하면 프로필이 로그아웃되고 삭제됩니다."
+  },
+  {
+    "id": "Through PG / TV-PG",
+    "other": "PG/TV-PG를 통해"
+  },
+  {
+    "id": "Through PG-13 / TV-14",
+    "other": "PG-13 / TV-14를 통해"
+  },
+  {
+    "id": "Title",
+    "other": "제목"
+  },
+  {
+    "id": "Title, artist, genre",
+    "other": "제목, 아티스트, 장르"
+  },
+  {
+    "id": "Title, artist, genre…",
+    "other": "제목, 아티스트, 장르…"
+  },
+  {
+    "id": "TMDB",
+    "other": "TMDB"
+  },
+  {
+    "id": "Tone-map HDR to SDR",
+    "other": "HDR을 SDR로 톤 매핑"
+  },
+  {
+    "id": "too many login attempts",
+    "other": "로그인 시도 횟수가 너무 많음"
+  },
+  {
+    "id": "too many Watch Together rooms",
+    "other": "함께 시청하기 방이 너무 많습니다"
+  },
+  {
+    "id": "Track",
+    "other": "추적"
+  },
+  {
+    "id": "transcode cache",
+    "other": "트랜스코드 캐시"
+  },
+  {
+    "id": "Transcoder",
+    "other": "트랜스코더"
+  },
+  {
+    "id": "transcoding is not allowed",
+    "other": "트랜스코딩은 허용되지 않습니다"
+  },
+  {
+    "id": "Try again",
+    "other": "다시 시도"
+  },
+  {
+    "id": "Two-factor authentication",
+    "other": "2단계 인증"
+  },
+  {
+    "id": "Two-factor authentication · Kinosail Player",
+    "other": "2단계 인증 · Kinosail Player"
+  },
+  {
+    "id": "Type",
+    "other": "유형"
+  },
+  {
+    "id": "Unlink OpenID Connect",
+    "other": "OpenID Connect 연결 해제"
+  },
+  {
+    "id": "Until",
+    "other": "기한"
+  },
+  {
+    "id": "Unwatched",
+    "other": "감시되지 않음"
+  },
+  {
+    "id": "unwatched",
+    "other": "시청되지 않음"
+  },
+  {
+    "id": "Use default",
+    "other": "기본값 사용"
+  },
+  {
+    "id": "Use Face ID, Touch ID, Windows Hello, or your device PIN to sign in. Your password will still work.",
+    "other": "Face ID, Touch ID, Windows Hello 또는 기기 PIN을 사용하여 로그인하세요. 비밀번호는 계속 작동합니다."
+  },
+  {
+    "id": "VA-API (AMD/Intel)",
+    "other": "VA-API(AMD/인텔)"
+  },
+  {
+    "id": "Verified Direct Connection",
+    "other": "직접 연결 확인"
+  },
+  {
+    "id": "Verified Direct Connection is not configured",
+    "other": "확인된 직접 연결이 구성되지 않았습니다"
+  },
+  {
+    "id": "Verify latest backup",
+    "other": "최신 백업 확인"
+  },
+  {
+    "id": "Video",
+    "other": "동영상"
+  },
+  {
+    "id": "Viewer",
+    "other": "뷰어"
+  },
+  {
+    "id": "Viewer access is not available",
+    "other": "뷰어 액세스를 사용할 수 없습니다"
+  },
+  {
+    "id": "Viewer device",
+    "other": "뷰어 장치"
+  },
+  {
+    "id": "Viewer name",
+    "other": "뷰어 이름"
+  },
+  {
+    "id": "Waiting for your passkey…",
+    "other": "패스키를 기다리는 중…"
+  },
+  {
+    "id": "Watch Together state is invalid",
+    "other": "Watch Together 상태가 잘못되었습니다."
+  },
+  {
+    "id": "watched",
+    "other": "시청함"
+  },
+  {
+    "id": "Watched",
+    "other": "시청함"
+  },
+  {
+    "id": "Watched ✓",
+    "other": "시청함 ✓"
+  },
+  {
+    "id": "Watching for changes",
+    "other": "변경 사항 관찰 중"
+  },
+  {
+    "id": "Welcome aboard",
+    "other": "탑승을 환영합니다"
+  },
+  {
+    "id": "when ready.",
+    "other": "준비되면."
+  },
+  {
+    "id": "WireGuard Viewer not found",
+    "other": "WireGuard 뷰어를 찾을 수 없습니다"
+  },
+  {
+    "id": "XMLTV guide",
+    "other": "XMLTV 가이드"
+  },
+  {
+    "id": "Year",
+    "other": "연도"
+  },
+  {
+    "id": "You lead this room",
+    "other": "당신이 이 방을 이끌고 있습니다"
+  },
+  {
+    "id": "Your library",
+    "other": "내 도서관"
+  },
+  {
+    "id": "Your library and viewing activity stay on this Server.",
+    "other": "귀하의 라이브러리 및 시청 활동은 이 서버에 유지됩니다."
+  },
+  {
+    "id": "← Books",
+    "other": "← 도서"
+  },
+  {
+    "id": "← Library",
+    "other": "← 도서관"
+  },
+  {
+    "id": "← Settings",
+    "other": "← 설정"
+  },
+  {
+    "id": "Generated API key",
+    "other": "생성된 API 키"
+  },
+  {
+    "id": "Copy API key",
+    "other": "API 키 복사"
+  },
+  {
+    "id": "Copied.",
+    "other": "복사했습니다."
+  },
+  {
+    "id": "Select Copy in your browser.",
+    "other": "브라우저에서 복사를 선택하세요."
+  },
+  {
+    "id": "Set up trusted HTTPS",
+    "other": "신뢰할 수 있는 HTTPS 설정"
+  },
+  {
+    "id": "Review trusted HTTPS setup",
+    "other": "신뢰할 수 있는 HTTPS 설정 검토"
+  },
+  {
+    "id": "Offline copy",
+    "other": "오프라인 사본"
+  },
+  {
+    "id": "Verified file stored on this device.",
+    "other": "검증된 파일이 이 기기에 저장되었습니다."
+  },
+  {
+    "id": "Ready offline on this device",
+    "other": "이 기기에서 오프라인으로 사용 가능"
+  },
+  {
+    "id": "Playback method",
+    "other": "재생 방식"
+  },
+  {
+    "id": "Open playback settings.",
+    "other": "재생 설정 열기."
+  },
+  {
+    "id": "Offline copy is unavailable.",
+    "other": "오프라인 사본을 사용할 수 없습니다."
+  },
+  {
+    "id": "Offline playback needs an active service worker",
+    "other": "오프라인 재생에는 활성 서비스 워커가 필요합니다"
+  },
+  {
+    "id": "Could not remove local offline data.",
+    "other": "로컬 오프라인 데이터를 삭제하지 못했습니다."
+  },
+  {
+    "id": "stored on this device",
+    "other": "이 기기에 저장됨"
+  },
+  {
+    "id": "This device does not have enough storage for this download",
+    "other": "이 기기에 다운로드를 저장할 공간이 부족합니다"
+  },
+  {
+    "id": "This browser cannot store offline media safely",
+    "other": "이 브라우저는 오프라인 미디어를 안전하게 저장할 수 없습니다"
+  },
+  {
+    "id": "The download could not be verified",
+    "other": "다운로드를 확인하지 못했습니다"
+  },
+  {
+    "id": "The download is no longer available",
+    "other": "다운로드를 더 이상 사용할 수 없습니다"
+  },
+  {
+    "id": "No verified downloads are ready for this Viewer Profile.",
+    "other": "이 시청자 프로필에 준비된 확인된 다운로드가 없습니다."
+  },
+  {
+    "id": "Open Kinosail online and choose a Viewer Profile first.",
+    "other": "Kinosail을 온라인으로 열고 먼저 시청자 프로필을 선택하세요."
+  },
+  {
+    "id": "All libraries",
+    "other": "All libraries"
+  },
+  {
+    "id": "Audio tracks",
+    "other": "Audio tracks"
+  },
+  {
+    "id": "Back to downloads",
+    "other": "Back to downloads"
+  },
+  {
+    "id": "Could not save progress. Return to Downloads and try again.",
+    "other": "Could not save progress. Return to Downloads and try again."
+  },
+  {
+    "id": "Manage offline downloads",
+    "other": "Manage offline downloads"
+  },
+  {
+    "id": "Movie",
+    "other": "Movie"
+  },
+  {
+    "id": "Open Server downloads",
+    "other": "Open Server downloads"
+  },
+  {
+    "id": "Open previous page",
+    "other": "Open previous page"
+  },
+  {
+    "id": "Playback behavior",
+    "other": "Playback behavior"
+  },
+  {
+    "id": "Prepare offline copy",
+    "other": "Prepare offline copy"
+  },
+  {
+    "id": "Progress saved on this device. Open Server downloads to sync.",
+    "other": "Progress saved on this device. Open Server downloads to sync."
+  },
+  {
+    "id": "Request needs another try",
+    "other": "Request needs another try"
+  },
+  {
+    "id": "Return to form",
+    "other": "Return to form"
+  },
+  {
+    "id": "Search all libraries",
+    "other": "Search all libraries"
+  },
+  {
+    "id": "Search everything",
+    "other": "Search everything"
+  },
+  {
+    "id": "This file could not play. Return to Downloads, reconnect to the Server, and download it again.",
+    "other": "This file could not play. Return to Downloads, reconnect to the Server, and download it again."
+  },
+  {
+    "id": "invalid title request",
+    "other": "invalid title request"
+  },
+  {
+    "id": "Audio is fixed in this downloaded copy.",
+    "other": "Audio is fixed in this downloaded copy."
+  }
+]

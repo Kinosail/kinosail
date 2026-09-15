@@ -1,0 +1,68 @@
+---
+title: Frequently asked questions
+description: Get concise answers about Kinosail requirements, privacy, clients, playback, remote access, and licensing.
+section: Project
+last_reviewed: 2026-08-29
+---
+
+# Frequently asked questions
+
+## What is Kinosail?
+
+Kinosail is a private, self-hosted media Server for the Library Content that you control. It combines the API, web app, background work, embedded SQLite, scanner, and FFmpeg playback work in one container.
+
+## Does Kinosail require a hosted account or subscription?
+
+No. Local use does not require a hosted account or subscription. Optional metadata, subtitle, identity, DNS, notification, supporter, and agent integrations make their own network requests only when enabled.
+
+## Does Kinosail upload my media?
+
+No Kinosail-operated service relays or stores your media. The Server scans a read-only local mount and serves direct media from the owner-hosted Server. Optional providers receive only the requests needed for the features that you enable.
+
+## How many containers do I need?
+
+The supported self-hosted deployment uses one Kinosail Server container. It includes embedded SQLite and does not require a database sidecar.
+
+## What files can Kinosail scan?
+
+It scans common video, audio, audiobook, photo, and book extensions. See the complete [media compatibility reference]({{ '/reference/media-compatibility/' | relative_url }}). Scanner ingest does not guarantee direct playback on every device.
+
+## What is the difference between Direct, Automatic, and Compatibility playback?
+
+Direct uses the source representation. Automatic starts Direct and can fall back to an adaptive compatible representation. Compatibility requests Server-generated HLS. The internal API value is `compatible`. The Viewer policy must permit playback and, for fallback, transcoding.
+
+## Why is an item scanned but not playing directly?
+
+The source container, codec, resolution, bitrate, HDR format, subtitle mode, client capabilities, or policy may require remuxing or transcoding. Check `GET /api/v1/items/{id}/playback` for the selected mode and reason.
+
+## Can I use Jellyfin clients?
+
+Kinosail includes an optional Jellyfin-compatible surface for tested common flows. Compatibility is not universal physical-device certification. The setup wizard requires trusted HTTPS through DuckDNS or deSEC before it enables Jellyfin apps. This avoids manual certificate installs and unsafe certificate bypasses. Follow [Connect phones, TVs, and Jellyfin apps]({{ '/getting-started/connect-devices/' | relative_url }}) for the complete steps.
+
+## Can I access Kinosail from the internet?
+
+Yes, if the Owner configures WireGuard or public HTTPS and the network has public reachability. Public HTTPS is off by default, uses a restricted Viewer boundary, and does not provide a media relay. CGNAT or blocked inbound traffic still requires a solution from the internet provider.
+
+## Can remote users sign in with a password?
+
+No. Public password login is disabled. Remote Viewers use a passkey or a short-lived Quick Connect request approved from a strongly authenticated local path.
+
+## Where does Kinosail keep configuration and backups?
+
+Configuration and application state use `/config`, the playback and analysis cache uses `/cache`, Library Content uses read-only `/media`, and backups use `/backups` by default. See [Configuration]({{ '/reference/configuration/' | relative_url }}) for source precedence and mounted paths.
+
+## How do I configure Kinosail without the web interface?
+
+Use `kinosail.yaml` for deployment-owned values and environment variables for container-owned values. Environment variables override YAML, which overrides Owner settings. Secret `_FILE` forms keep supported secrets out of environment text.
+
+## Is Kinosail open source?
+
+Kinosail Server is source-available under the PolyForm Perimeter License 1.0.1. It is not an Open Source Initiative-approved open-source license. Read the repository's [licensing terms](https://github.com/MikeO7/kinosail/blob/main/apps/player/LICENSING.md) before redistributing, rebranding, reselling, hosting, or providing a competing product.
+
+## How do I report a security problem?
+
+Do not publish exploit details, credentials, tokens, private paths, or media information in an issue. Use GitHub's private **Security → Advisories → Report a vulnerability** flow when available. See the [security policy](https://github.com/MikeO7/kinosail/blob/main/apps/player/SECURITY.md).
+
+## Where is the API contract?
+
+Open `/api/v1/openapi.json` on the running Server. It is the live OpenAPI 3.1 document for versioned API routes. See the [API reference]({{ '/reference/api/' | relative_url }}).

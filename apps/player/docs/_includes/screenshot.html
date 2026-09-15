@@ -1,0 +1,8 @@
+<figure class="screenshot-placeholder">
+  <div role="img" aria-label="Screenshot planned: {{ include.alt | escape }}">
+    <span>Screenshot planned</span>
+    <strong>{{ include.title }}</strong>
+    {% if include.description %}<small>{{ include.description }}</small>{% endif %}
+  </div>
+  <figcaption>{{ include.alt }}</figcaption>
+</figure>

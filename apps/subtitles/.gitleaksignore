@@ -1,0 +1,13 @@
+# This historical documentation example used the literal placeholder YOUR_TOKEN.
+6ddfdcc6cdf65007c4942571d3c8c4f55dfef4f0:docs/reference/api.md:curl-auth-header:30
+
+# Historical Code Atlas symbol snapshots triggered generic-api-key without containing credentials.
+435d31fa3545f7ee523a5bd3d7b1957d041560b9:docs/architecture-explorer/index.html:generic-api-key:391
+435d31fa3545f7ee523a5bd3d7b1957d041560b9:engineering/architecture-explorer/index.html:generic-api-key:391
+82c0e32f6a46bc2c726f677b4db80512749e0252:engineering/architecture-explorer/index.html:generic-api-key:391
+6cc15b14619e3735dd6cf175f42a42e713c965aa:engineering/architecture-explorer/index.html:generic-api-key:334
+fc3213b9f4d0fba6b2718c049a9669361f908d6b:engineering/architecture-explorer/index.html:generic-api-key:391
+34767658f326595f44e89139a6dc6b22d32ff281:docs/architecture-explorer/index.html:generic-api-key:391
+34767658f326595f44e89139a6dc6b22d32ff281:engineering/architecture-explorer/index.html:generic-api-key:391
+fc3213b9f4d0fba6b2718c049a9669361f908d6b:docs/architecture-explorer/index.html:generic-api-key:391
+b89e55e382310fffa6fb589149f5324a7794446b:engineering/architecture-explorer/index.html:generic-api-key:391

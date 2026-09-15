@@ -1,0 +1,38 @@
+version: 2
+updates:
+  - package-ecosystem: gomod
+    directory: /packages
+    schedule:
+      interval: weekly
+  - package-ecosystem: gomod
+    directory: /apps/player
+    schedule:
+      interval: weekly
+  - package-ecosystem: gomod
+    directory: /apps/subtitles
+    schedule:
+      interval: weekly
+  - package-ecosystem: gomod
+    directory: /apps/dashboard
+    schedule:
+      interval: weekly
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+  - package-ecosystem: npm
+    directory: /apps/player/e2e
+    schedule:
+      interval: weekly
+  - package-ecosystem: npm
+    directory: /apps/player/apps/native
+    schedule:
+      interval: weekly
+  - package-ecosystem: npm
+    directory: /apps/subtitles/e2e
+    schedule:
+      interval: weekly
+  - package-ecosystem: npm
+    directory: /apps/dashboard/e2e
+    schedule:
+      interval: weekly

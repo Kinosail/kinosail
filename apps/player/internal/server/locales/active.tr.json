@@ -1,0 +1,2034 @@
+[
+  {
+    "id": "15 minutes",
+    "other": "15 dakika"
+  },
+  {
+    "id": "30 minutes",
+    "other": "30 dakika"
+  },
+  {
+    "id": "45 minutes",
+    "other": "45 dakika"
+  },
+  {
+    "id": "60 minutes",
+    "other": "60 dakika"
+  },
+  {
+    "id": "Access",
+    "other": "Erişim"
+  },
+  {
+    "id": "Account · Kinosail Player",
+    "other": "Hesap · Kinosail Player"
+  },
+  {
+    "id": "Actions",
+    "other": "Eylemler"
+  },
+  {
+    "id": "active session(s)",
+    "other": "etkin oturum(lar)"
+  },
+  {
+    "id": "Add a passkey",
+    "other": "Şifre ekle"
+  },
+  {
+    "id": "Add folder",
+    "other": "Klasör ekle"
+  },
+  {
+    "id": "Add media or try another search.",
+    "other": "Medya ekleyin veya başka bir arama yapmayı deneyin."
+  },
+  {
+    "id": "Add Profile",
+    "other": "Profil Ekle"
+  },
+  {
+    "id": "Add this secret or URI to your authenticator app.",
+    "other": "Bu sırrı veya URI'yi kimlik doğrulayıcı uygulamanıza ekleyin."
+  },
+  {
+    "id": "Add to",
+    "other": "Şuna ekle"
+  },
+  {
+    "id": "Administer server",
+    "other": "Sunucuyu yönet"
+  },
+  {
+    "id": "Album",
+    "other": "Albüm"
+  },
+  {
+    "id": "Albums",
+    "other": "Albümler"
+  },
+  {
+    "id": "all",
+    "other": "tümü"
+  },
+  {
+    "id": "All ratings",
+    "other": "Tüm derecelendirmeler"
+  },
+  {
+    "id": "Allow downloads",
+    "other": "İndirmelere izin ver"
+  },
+  {
+    "id": "Allow transcoding",
+    "other": "Kod dönüştürmeye izin ver"
+  },
+  {
+    "id": "AMD AMF",
+    "other": "AMD AMF"
+  },
+  {
+    "id": "Analyze playback segments now",
+    "other": "Oynatma bölümlerini şimdi analiz edin"
+  },
+  {
+    "id": "analyzed item(s)",
+    "other": "analiz edilen öğeler"
+  },
+  {
+    "id": "API key name",
+    "other": "API anahtar adı"
+  },
+  {
+    "id": "API key scope does not allow this request",
+    "other": "API anahtar kapsamı bu isteğe izin vermiyor"
+  },
+  {
+    "id": "API key view failed",
+    "other": "API anahtarı görünümü başarısız oldu"
+  },
+  {
+    "id": "API key · Kinosail Player",
+    "other": "API anahtarı · Kinosail Player"
+  },
+  {
+    "id": "API keys",
+    "other": "API anahtarları"
+  },
+  {
+    "id": "Appearance",
+    "other": "Görünüm"
+  },
+  {
+    "id": "Apple VideoToolbox",
+    "other": "Apple VideoToolbox"
+  },
+  {
+    "id": "Apply",
+    "other": "Uygula"
+  },
+  {
+    "id": "Audio",
+    "other": "Ses"
+  },
+  {
+    "id": "Audiobooks",
+    "other": "Sesli kitaplar"
+  },
+  {
+    "id": "Authentication code",
+    "other": "Kimlik doğrulama kodu"
+  },
+  {
+    "id": "Authentication or recovery code",
+    "other": "Kimlik doğrulama veya kurtarma kodu"
+  },
+  {
+    "id": "authentication required",
+    "other": "kimlik doğrulama gerekli"
+  },
+  {
+    "id": "Authorize device",
+    "other": "Cihazı yetkilendir"
+  },
+  {
+    "id": "Automatic",
+    "other": "Otomatik"
+  },
+  {
+    "id": "automatic",
+    "other": "otomatik"
+  },
+  {
+    "id": "Automatic (best detected)",
+    "other": "Otomatik (en iyi tespit edilir)"
+  },
+  {
+    "id": "Automatic (browser)",
+    "other": "Otomatik (tarayıcı)"
+  },
+  {
+    "id": "Automatic backups",
+    "other": "Otomatik yedeklemeler"
+  },
+  {
+    "id": "Automatic maintenance",
+    "other": "Otomatik bakım"
+  },
+  {
+    "id": "Available devices use a direct connection to this Server.",
+    "other": "Mevcut cihazlar bu Sunucuya doğrudan bağlantı kullanır."
+  },
+  {
+    "id": "Back to library",
+    "other": "Kitaplığa geri dön"
+  },
+  {
+    "id": "Back to settings",
+    "other": "Ayarlara dön"
+  },
+  {
+    "id": "Back up now",
+    "other": "Şimdi yedekle"
+  },
+  {
+    "id": "Backup and recovery",
+    "other": "Yedekleme ve kurtarma"
+  },
+  {
+    "id": "backup is unavailable",
+    "other": "yedekleme kullanılamıyor"
+  },
+  {
+    "id": "Backups need setup.",
+    "other": "Yedeklemelerin kurulması gerekiyor."
+  },
+  {
+    "id": "Backups run automatically without encryption.",
+    "other": "Yedeklemeler şifreleme olmadan otomatik olarak çalışır."
+  },
+  {
+    "id": "Backups · Kinosail Player",
+    "other": "Yedeklemeler · Kinosail Player"
+  },
+  {
+    "id": "Book",
+    "other": "Kitap"
+  },
+  {
+    "id": "Books",
+    "other": "Kitaplar"
+  },
+  {
+    "id": "Books and comics",
+    "other": "Kitaplar ve çizgi romanlar"
+  },
+  {
+    "id": "Browse library",
+    "other": "Kitaplığa göz atın"
+  },
+  {
+    "id": "Cancel",
+    "other": "İptal"
+  },
+  {
+    "id": "Cast",
+    "other": "Oyuncular"
+  },
+  {
+    "id": "Chapters",
+    "other": "Bölümler"
+  },
+  {
+    "id": "Choose the language for this browser.",
+    "other": "Bu tarayıcının dilini seçin."
+  },
+  {
+    "id": "Clear transcode cache",
+    "other": "Kod dönüştürme önbelleğini temizle"
+  },
+  {
+    "id": "Code",
+    "other": "Kod"
+  },
+  {
+    "id": "Collection",
+    "other": "Koleksiyon"
+  },
+  {
+    "id": "Collections",
+    "other": "Koleksiyonlar"
+  },
+  {
+    "id": "Commercial",
+    "other": "Ticari"
+  },
+  {
+    "id": "Compatibility",
+    "other": "Uyumluluk"
+  },
+  {
+    "id": "Compatibility Connection",
+    "other": "Uyumluluk Bağlantısı"
+  },
+  {
+    "id": "Compatibility stream",
+    "other": "Uyumluluk akışı"
+  },
+  {
+    "id": "compatible",
+    "other": "uyumlu"
+  },
+  {
+    "id": "Concurrent streams",
+    "other": "Eşzamanlı akışlar"
+  },
+  {
+    "id": "Configuration error",
+    "other": "Yapılandırma hatası"
+  },
+  {
+    "id": "Configuration · Kinosail Player",
+    "other": "Yapılandırma · Kinosail Player"
+  },
+  {
+    "id": "Configured; value hidden",
+    "other": "Yapılandırıldı; gizli değer"
+  },
+  {
+    "id": "Confirm delete",
+    "other": "Silmeyi onayla"
+  },
+  {
+    "id": "Confirm remove",
+    "other": "Kaldırma işlemini onaylayın"
+  },
+  {
+    "id": "Connect",
+    "other": "Bağlan"
+  },
+  {
+    "id": "Connect a device",
+    "other": "Bir cihaz bağlayın"
+  },
+  {
+    "id": "Connected",
+    "other": "Bağlandı"
+  },
+  {
+    "id": "Connecting",
+    "other": "Bağlanıyor"
+  },
+  {
+    "id": "Connecting…",
+    "other": "Bağlanıyor…"
+  },
+  {
+    "id": "Connection error",
+    "other": "Bağlantı hatası"
+  },
+  {
+    "id": "Content",
+    "other": "İçerik"
+  },
+  {
+    "id": "Continue Watching",
+    "other": "İzlemeye Devam Edin"
+  },
+  {
+    "id": "Continue watching",
+    "other": "İzlemeye devam edin"
+  },
+  {
+    "id": "from Continue Watching",
+    "other": "İzlemeye Devam Etme'den"
+  },
+  {
+    "id": "Copy this key now. Kinosail stores only its hash.",
+    "other": "Bu anahtarı şimdi kopyalayın. Kinosail yalnızca karma değerini saklar."
+  },
+  {
+    "id": "could not create MFA enrollment",
+    "other": "MFA kaydı oluşturulamadı"
+  },
+  {
+    "id": "could not create Owner Profile",
+    "other": "Sahip Profili oluşturulamadı"
+  },
+  {
+    "id": "could not create session",
+    "other": "oturum oluşturulamadı"
+  },
+  {
+    "id": "could not end session",
+    "other": "oturum sonlandırılamadı"
+  },
+  {
+    "id": "could not read subtitles",
+    "other": "altyazılar okunamadı"
+  },
+  {
+    "id": "Create",
+    "other": "Oluştur"
+  },
+  {
+    "id": "Create a passkey",
+    "other": "Parola oluşturun"
+  },
+  {
+    "id": "Create API key",
+    "other": "API anahtarı oluştur"
+  },
+  {
+    "id": "Create passkey",
+    "other": "Şifre oluştur"
+  },
+  {
+    "id": "Create smart playlist",
+    "other": "Akıllı oynatma listesi oluştur"
+  },
+  {
+    "id": "Create your Owner Profile",
+    "other": "Sahip Profilinizi oluşturun"
+  },
+  {
+    "id": "Created once",
+    "other": "Bir kez oluşturuldu"
+  },
+  {
+    "id": "Credentials configured",
+    "other": "Kimlik bilgileri yapılandırıldı"
+  },
+  {
+    "id": "Credits",
+    "other": "Kredi"
+  },
+  {
+    "id": "cross-origin request denied",
+    "other": "kaynaklar arası istek reddedildi"
+  },
+  {
+    "id": "Curate",
+    "other": "Küratörlük"
+  },
+  {
+    "id": "Dark",
+    "other": "Koyu"
+  },
+  {
+    "id": "default",
+    "other": "varsayılan"
+  },
+  {
+    "id": "Default playback",
+    "other": "Varsayılan oynatma"
+  },
+  {
+    "id": "Delete",
+    "other": "Sil"
+  },
+  {
+    "id": "Deployment configuration",
+    "other": "Dağıtım yapılandırması"
+  },
+  {
+    "id": "Destination",
+    "other": "Hedef"
+  },
+  {
+    "id": "detected, unavailable",
+    "other": "algılandı, kullanılamıyor"
+  },
+  {
+    "id": "Device or app",
+    "other": "Cihaz veya uygulama"
+  },
+  {
+    "id": "Diagnostics",
+    "other": "Teşhis"
+  },
+  {
+    "id": "Direct",
+    "other": "Doğrudan"
+  },
+  {
+    "id": "direct",
+    "other": "doğrudan"
+  },
+  {
+    "id": "Direct connection unavailable",
+    "other": "Doğrudan bağlantı kullanılamıyor"
+  },
+  {
+    "id": "Direct from",
+    "other": "Doğrudan"
+  },
+  {
+    "id": "Direct stream",
+    "other": "Doğrudan akış"
+  },
+  {
+    "id": "Directed by",
+    "other": "Yönetmen"
+  },
+  {
+    "id": "Disable and revoke",
+    "other": "Devre dışı bırak ve iptal et"
+  },
+  {
+    "id": "Disable two-factor authentication",
+    "other": "İki faktörlü kimlik doğrulamayı devre dışı bırakın"
+  },
+  {
+    "id": "Disaster recovery",
+    "other": "Olağanüstü durum kurtarma"
+  },
+  {
+    "id": "DLNA",
+    "other": "DLNA"
+  },
+  {
+    "id": "Download",
+    "other": "İndir"
+  },
+  {
+    "id": "Download media",
+    "other": "Medyayı indir"
+  },
+  {
+    "id": "Download original",
+    "other": "Orijinali indir"
+  },
+  {
+    "id": "Download portable state archive",
+    "other": "Taşınabilir durum arşivini indirin"
+  },
+  {
+    "id": "Download safe diagnostics",
+    "other": "Güvenli teşhisleri indirin"
+  },
+  {
+    "id": "Download WireGuard profile",
+    "other": "WireGuard profilini indirin"
+  },
+  {
+    "id": "Downloads",
+    "other": "İndirilenler"
+  },
+  {
+    "id": "downloads are not enabled for this Viewer Profile",
+    "other": "indirmeler bu Görüntüleyici Profili için etkin değil"
+  },
+  {
+    "id": "Edit metadata",
+    "other": "Meta verileri düzenle"
+  },
+  {
+    "id": "Edit skip markers",
+    "other": "Atlama işaretçilerini düzenle"
+  },
+  {
+    "id": "embedded subtitles are unavailable",
+    "other": "yerleşik altyazılar mevcut değil"
+  },
+  {
+    "id": "Enable DLNA",
+    "other": "DLNA'yı etkinleştir"
+  },
+  {
+    "id": "Enable two-factor authentication",
+    "other": "İki faktörlü kimlik doğrulamayı etkinleştirin"
+  },
+  {
+    "id": "Enabled",
+    "other": "Etkin"
+  },
+  {
+    "id": "Encrypted backups run automatically.",
+    "other": "Şifrelenmiş yedeklemeler otomatik olarak çalışır."
+  },
+  {
+    "id": "Encryption is off by default.",
+    "other": "Şifreleme varsayılan olarak kapalıdır."
+  },
+  {
+    "id": "Encryption is on.",
+    "other": "Şifreleme açık."
+  },
+  {
+    "id": "End in seconds",
+    "other": "Saniyeler içinde bitiyor"
+  },
+  {
+    "id": "Enter the code shown by your TV or app. It will inherit your Profile Policy.",
+    "other": "TV'nizin veya uygulamanızın gösterdiği kodu girin. Profil Politikanızı devralacaktır."
+  },
+  {
+    "id": "Environment and YAML values are authoritative. GUI changes shown here take effect after the Server restarts.",
+    "other": "Ortam ve YAML değerleri yetkilidir. Burada gösterilen GUI değişiklikleri Sunucu yeniden başlatıldıktan sonra etkili olur."
+  },
+  {
+    "id": "Environment default",
+    "other": "Ortam varsayılanı"
+  },
+  {
+    "id": "Event webhook",
+    "other": "Etkinlik web kancası"
+  },
+  {
+    "id": "Every 15 minutes",
+    "other": "Her 15 dakikada bir"
+  },
+  {
+    "id": "Every 5 minutes",
+    "other": "Her 5 dakikada bir"
+  },
+  {
+    "id": "Everything",
+    "other": "Her şey"
+  },
+  {
+    "id": "Export full activity journal",
+    "other": "Tam etkinlik günlüğünü dışa aktar"
+  },
+  {
+    "id": "Expose direct media URLs to devices on this local network. Disabling revokes the discovery capability.",
+    "other": "Doğrudan medya URL'lerini bu yerel ağdaki cihazlara gösterin. Devre dışı bırakmak keşif özelliğini iptal eder."
+  },
+  {
+    "id": "Externally managed",
+    "other": "Harici olarak yönetilir"
+  },
+  {
+    "id": "Find",
+    "other": "Bul"
+  },
+  {
+    "id": "Find something",
+    "other": "Bir şeyler bulun"
+  },
+  {
+    "id": "Finish setup",
+    "other": "Kurulumu bitir"
+  },
+  {
+    "id": "Finish sign in",
+    "other": "Oturum açmayı bitir"
+  },
+  {
+    "id": "Folder inside media mount",
+    "other": "Medya montajının içindeki klasör"
+  },
+  {
+    "id": "Follow this device or choose a fixed theme.",
+    "other": "Bu cihazı takip edin veya sabit bir tema seçin."
+  },
+  {
+    "id": "Following the room leader",
+    "other": "Oda liderini takip ediyorum"
+  },
+  {
+    "id": "From",
+    "other": "Gönderen"
+  },
+  {
+    "id": "from",
+    "other": "-den"
+  },
+  {
+    "id": "General",
+    "other": "Genel"
+  },
+  {
+    "id": "Genres",
+    "other": "Türler"
+  },
+  {
+    "id": "Got it",
+    "other": "Anladım"
+  },
+  {
+    "id": "Group",
+    "other": "Grup"
+  },
+  {
+    "id": "Hardware",
+    "other": "Donanım"
+  },
+  {
+    "id": "History",
+    "other": "Geçmiş"
+  },
+  {
+    "id": "Home",
+    "other": "Ana Sayfa"
+  },
+  {
+    "id": "Hourly",
+    "other": "Saatlik"
+  },
+  {
+    "id": "if enabled",
+    "other": "etkinse"
+  },
+  {
+    "id": "Install",
+    "other": "Yükle"
+  },
+  {
+    "id": "Install Kinosail Player",
+    "other": "Kinosail'i yükleyin"
+  },
+  {
+    "id": "Integrations",
+    "other": "Entegrasyonlar"
+  },
+  {
+    "id": "Intel Quick Sync",
+    "other": "Intel Quick Sync"
+  },
+  {
+    "id": "Intro",
+    "other": "Giriş"
+  },
+  {
+    "id": "invalid authentication code",
+    "other": "geçersiz kimlik doğrulama kodu"
+  },
+  {
+    "id": "invalid Collection state",
+    "other": "geçersiz Toplama durumu"
+  },
+  {
+    "id": "invalid credentials",
+    "other": "geçersiz kimlik bilgileri"
+  },
+  {
+    "id": "invalid list state",
+    "other": "geçersiz liste durumu"
+  },
+  {
+    "id": "invalid playlist state",
+    "other": "geçersiz oynatma listesi durumu"
+  },
+  {
+    "id": "invalid progress",
+    "other": "geçersiz ilerleme"
+  },
+  {
+    "id": "invalid watched state",
+    "other": "geçersiz izlenme durumu"
+  },
+  {
+    "id": "Invite link",
+    "other": "Davet bağlantısı"
+  },
+  {
+    "id": "Keep",
+    "other": "Tut"
+  },
+  {
+    "id": "Keep backups on storage outside this host. Backups are unencrypted unless a backup key is configured. Restore while the Server is stopped.",
+    "other": "Yedeklemeleri bu ana bilgisayarın dışındaki depolama alanında tutun. Yedekleme anahtarı yapılandırılmadığı sürece yedeklemeler şifrelenmez. Sunucu durdurulduğunda geri yükleyin."
+  },
+  {
+    "id": "Keep Kinosail Player close",
+    "other": "Kinosail'i yakın tutun"
+  },
+  {
+    "id": "Keys are shown once and stored as hashes. Browse access is the safe default.",
+    "other": "Anahtarlar bir kez gösterilir ve karma olarak saklanır. Göz atma erişimi varsayılan güvenli seçenektir."
+  },
+  {
+    "id": "Kinosail",
+    "other": "Kinosail"
+  },
+  {
+    "id": "Kinosail Player cannot reach this Server. Check your network or Direct Connection, then try again.",
+    "other": "Kinosail bu Sunucuya ulaşamıyor. Ağınızı veya Doğrudan Bağlantınızı kontrol edip tekrar deneyin."
+  },
+  {
+    "id": "Kinosail maintains itself automatically.",
+    "other": "Kinosail otomatik olarak kendini korur."
+  },
+  {
+    "id": "Kinosail Player Reader",
+    "other": "Kinosail Okuyucu"
+  },
+  {
+    "id": "Language",
+    "other": "Dil"
+  },
+  {
+    "id": "language is invalid",
+    "other": "dil geçersiz"
+  },
+  {
+    "id": "Last error",
+    "other": "Son hata"
+  },
+  {
+    "id": "Last scan error",
+    "other": "Son tarama hatası"
+  },
+  {
+    "id": "Last successful backup",
+    "other": "Son başarılı yedekleme"
+  },
+  {
+    "id": "Last successful scan",
+    "other": "Son başarılı tarama"
+  },
+  {
+    "id": "Last verified",
+    "other": "Son doğrulandı"
+  },
+  {
+    "id": "Latest",
+    "other": "En Son"
+  },
+  {
+    "id": "Libraries",
+    "other": "Kütüphaneler"
+  },
+  {
+    "id": "Library",
+    "other": "Kütüphane"
+  },
+  {
+    "id": "Library discovery",
+    "other": "Kütüphane keşfi"
+  },
+  {
+    "id": "Library folders",
+    "other": "Kütüphane klasörleri"
+  },
+  {
+    "id": "Library items",
+    "other": "Kütüphane öğeleri"
+  },
+  {
+    "id": "Library organization",
+    "other": "Kütüphane organizasyonu"
+  },
+  {
+    "id": "Library views",
+    "other": "Kütüphane görünümleri"
+  },
+  {
+    "id": "Licensed credential configured",
+    "other": "Lisanslı kimlik bilgileri yapılandırıldı"
+  },
+  {
+    "id": "Light",
+    "other": "Hafif"
+  },
+  {
+    "id": "Link OpenID Connect",
+    "other": "OpenID Bağlantısını Bağlayın"
+  },
+  {
+    "id": "Local account",
+    "other": "Yerel hesap"
+  },
+  {
+    "id": "M3U playlist",
+    "other": "M3U oynatma listesi"
+  },
+  {
+    "id": "Manage personal library state",
+    "other": "Kişisel kitaplık durumunu yönet"
+  },
+  {
+    "id": "Managed externally and read-only.",
+    "other": "Harici olarak yönetilir ve salt okunurdur."
+  },
+  {
+    "id": "Managed remote access",
+    "other": "Yönetilen uzaktan erişim"
+  },
+  {
+    "id": "Mark",
+    "other": "Mark"
+  },
+  {
+    "id": "marker",
+    "other": "işaretçi"
+  },
+  {
+    "id": "Match text",
+    "other": "Metni eşleştir"
+  },
+  {
+    "id": "Media",
+    "other": "Medya"
+  },
+  {
+    "id": "Media information",
+    "other": "Medya bilgileri"
+  },
+  {
+    "id": "Media mount",
+    "other": "Medya montajı"
+  },
+  {
+    "id": "metadata could not be saved",
+    "other": "meta veriler kaydedilemedi"
+  },
+  {
+    "id": "metadata is invalid",
+    "other": "meta veriler geçersiz"
+  },
+  {
+    "id": "Metadata provider",
+    "other": "Meta veri sağlayıcı"
+  },
+  {
+    "id": "metadata provider unavailable",
+    "other": "meta veri sağlayıcısı kullanılamıyor"
+  },
+  {
+    "id": "Metrics",
+    "other": "Metrikler"
+  },
+  {
+    "id": "Movies",
+    "other": "Filmler"
+  },
+  {
+    "id": "Music",
+    "other": "Müzik"
+  },
+  {
+    "id": "Music and audiobooks",
+    "other": "Müzik ve sesli kitaplar"
+  },
+  {
+    "id": "My List",
+    "other": "Listem"
+  },
+  {
+    "id": "Name",
+    "other": "Ad"
+  },
+  {
+    "id": "name and a 12-character password are required",
+    "other": "adı ve 12 karakterlik şifre gerekli"
+  },
+  {
+    "id": "Never",
+    "other": "Asla"
+  },
+  {
+    "id": "New Collection",
+    "other": "Yeni Koleksiyon"
+  },
+  {
+    "id": "New Collection name",
+    "other": "Yeni Koleksiyon adı"
+  },
+  {
+    "id": "New media is detected automatically after copying finishes. Safety scans repair missed filesystem events on Windows, macOS, Linux, containers, and network mounts.",
+    "other": "Kopyalama bittikten sonra yeni ortam otomatik olarak algılanır. Güvenlik taramaları Windows, macOS, Linux, kapsayıcılar ve ağ bağlantılarında gözden kaçan dosya sistemi olaylarını onarır."
+  },
+  {
+    "id": "New password",
+    "other": "Yeni şifre"
+  },
+  {
+    "id": "New playlist",
+    "other": "Yeni oynatma listesi"
+  },
+  {
+    "id": "New playlist name",
+    "other": "Yeni oynatma listesi adı"
+  },
+  {
+    "id": "New profile name",
+    "other": "Yeni profil adı"
+  },
+  {
+    "id": "New profile password",
+    "other": "Yeni profil şifresi"
+  },
+  {
+    "id": "New secret",
+    "other": "Yeni sır"
+  },
+  {
+    "id": "New smart playlist",
+    "other": "Yeni akıllı oynatma listesi"
+  },
+  {
+    "id": "New Viewers start with family ratings and no libraries. Add folder names or",
+    "other": "Yeni İzleyiciler aile derecelendirmeleriyle başlar ve kitaplık içermez. Klasör adları ekleyin veya"
+  },
+  {
+    "id": "Newest",
+    "other": "En yeni"
+  },
+  {
+    "id": "No activity recorded yet.",
+    "other": "Henüz kayıtlı etkinlik yok."
+  },
+  {
+    "id": "No channels configured.",
+    "other": "Yapılandırılan kanal yok."
+  },
+  {
+    "id": "No device selected",
+    "other": "Cihaz seçilmedi"
+  },
+  {
+    "id": "No offline downloads yet.",
+    "other": "Henüz çevrimdışı indirme yok."
+  },
+  {
+    "id": "No playback recorded yet.",
+    "other": "Henüz kayıttan yürütme kaydedilmedi."
+  },
+  {
+    "id": "None",
+    "other": "Yok"
+  },
+  {
+    "id": "None; use all or folder names",
+    "other": "Yok; tümünü veya klasör adlarını kullan"
+  },
+  {
+    "id": "Not configured",
+    "other": "Yapılandırılmadı"
+  },
+  {
+    "id": "not detected",
+    "other": "algılanmadı"
+  },
+  {
+    "id": "not found",
+    "other": "bulunamadı"
+  },
+  {
+    "id": "Not now",
+    "other": "Şimdi değil"
+  },
+  {
+    "id": "Nothing found.",
+    "other": "Hiçbir şey bulunamadı."
+  },
+  {
+    "id": "Now viewing",
+    "other": "Şimdi görüntüleniyor"
+  },
+  {
+    "id": "NVIDIA NVENC/NVDEC",
+    "other": "NVIDIA NVENC/NVDEC"
+  },
+  {
+    "id": "Off",
+    "other": "Kapalı"
+  },
+  {
+    "id": "offline",
+    "other": "çevrimdışı"
+  },
+  {
+    "id": "Offline downloads",
+    "other": "Çevrimdışı indirmeler"
+  },
+  {
+    "id": "Offline downloads · Kinosail Player",
+    "other": "Çevrimdışı indirmeler · Kinosail Player"
+  },
+  {
+    "id": "On",
+    "other": "On"
+  },
+  {
+    "id": "On iPhone or iPad, tap Share, choose Add to Home Screen, turn on Open as Web App, then tap Add.",
+    "other": "iPhone veya iPad'de Paylaş'a dokunun, Ana Ekrana Ekle'yi seçin, Web Uygulaması Olarak Aç'ı açın ve ardından Ekle'ye dokunun."
+  },
+  {
+    "id": "One-time reveal",
+    "other": "Tek seferlik açıklama"
+  },
+  {
+    "id": "OpenID Connect",
+    "other": "OpenID Connect"
+  },
+  {
+    "id": "OpenSubtitles",
+    "other": "__"
+  },
+  {
+    "id": "Outro",
+    "other": "Çıkış"
+  },
+  {
+    "id": "Owner",
+    "other": "Sahip"
+  },
+  {
+    "id": "Owner access required",
+    "other": "Sahip erişimi gerekli"
+  },
+  {
+    "id": "Owner controls",
+    "other": "Sahip kontrolleri"
+  },
+  {
+    "id": "Passkey added.",
+    "other": "Şifre eklendi."
+  },
+  {
+    "id": "Passkey failed.",
+    "other": "Şifre başarısız oldu."
+  },
+  {
+    "id": "Passkeys need the configured Server address and trusted HTTPS. Open that address, trust the Server certificate, or use an authenticator.",
+    "other": "Passkeys need the configured Server address and trusted HTTPS. Open that address, trust the Server certificate, or use an authenticator."
+  },
+  {
+    "id": "Password",
+    "other": "Şifre"
+  },
+  {
+    "id": "Photos",
+    "other": "Fotoğraflar"
+  },
+  {
+    "id": "Play",
+    "other": "Oyna"
+  },
+  {
+    "id": "Play on device",
+    "other": "Cihazda oynat"
+  },
+  {
+    "id": "Play the next Episode automatically",
+    "other": "Sonraki Bölümü otomatik olarak oynat"
+  },
+  {
+    "id": "Playback",
+    "other": "Oynatma"
+  },
+  {
+    "id": "Playback history",
+    "other": "Oynatma geçmişi"
+  },
+  {
+    "id": "Playback segment analysis",
+    "other": "Oynatma segmenti analizi"
+  },
+  {
+    "id": "Playback speed",
+    "other": "Oynatma hızı"
+  },
+  {
+    "id": "Playing here",
+    "other": "Burada oynuyor"
+  },
+  {
+    "id": "Playing on device",
+    "other": "Cihazda oynatılıyor"
+  },
+  {
+    "id": "Playlist",
+    "other": "Oynatma listesi"
+  },
+  {
+    "id": "Playlists",
+    "other": "Oynatma listeleri"
+  },
+  {
+    "id": "Plot",
+    "other": "Konu"
+  },
+  {
+    "id": "Polling for changes",
+    "other": "Değişiklikler için oylama"
+  },
+  {
+    "id": "Prefer quality",
+    "other": "Kaliteyi tercih edin"
+  },
+  {
+    "id": "Prefer speed",
+    "other": "Hızı tercih et"
+  },
+  {
+    "id": "Preferred language",
+    "other": "Tercih edilen dil"
+  },
+  {
+    "id": "Prepare",
+    "other": "Hazırlan"
+  },
+  {
+    "id": "preview unavailable",
+    "other": "önizleme kullanılamıyor"
+  },
+  {
+    "id": "Private by design",
+    "other": "Tasarım gereği özel"
+  },
+  {
+    "id": "Profile",
+    "other": "Profil"
+  },
+  {
+    "id": "profile storage is unavailable",
+    "other": "profil depolama alanı kullanılamıyor"
+  },
+  {
+    "id": "Profile to reset",
+    "other": "Sıfırlanacak profil"
+  },
+  {
+    "id": "Profile type",
+    "other": "Profil türü"
+  },
+  {
+    "id": "Profiles",
+    "other": "Profiller"
+  },
+  {
+    "id": "Protected automatically",
+    "other": "Otomatik olarak korunur"
+  },
+  {
+    "id": "MFA - Require extra sign-in protection for every Viewer Profile",
+    "other": "MFA - Require extra sign-in protection for every Viewer Profile"
+  },
+  {
+    "id": "Quality",
+    "other": "Kalite"
+  },
+  {
+    "id": "quality",
+    "other": "kalite"
+  },
+  {
+    "id": "Quick Connect",
+    "other": "Hızlı Bağlantı"
+  },
+  {
+    "id": "Quick Connect · Kinosail Player",
+    "other": "Hızlı Bağlantı · Kinosail Player"
+  },
+  {
+    "id": "Rating",
+    "other": "Derecelendirme"
+  },
+  {
+    "id": "Read now",
+    "other": "Şimdi okuyun"
+  },
+  {
+    "id": "reader",
+    "other": "okuyucu"
+  },
+  {
+    "id": "Reading order",
+    "other": "Okuma sırası"
+  },
+  {
+    "id": "ready",
+    "other": "hazır"
+  },
+  {
+    "id": "Ready offline",
+    "other": "Çevrimdışı hazır"
+  },
+  {
+    "id": "Recap",
+    "other": "Özet"
+  },
+  {
+    "id": "Recent activity",
+    "other": "Son etkinlik"
+  },
+  {
+    "id": "Recent playback",
+    "other": "En son oynatma"
+  },
+  {
+    "id": "Recently added",
+    "other": "Son eklenen"
+  },
+  {
+    "id": "Recently played",
+    "other": "Son zamanlarda oynanan"
+  },
+  {
+    "id": "Recovery",
+    "other": "Kurtarma"
+  },
+  {
+    "id": "Recovery codes",
+    "other": "Kurtarma kodları"
+  },
+  {
+    "id": "Refresh from TMDB",
+    "other": "TMDB'den yenile"
+  },
+  {
+    "id": "Refresh missing metadata",
+    "other": "Eksik meta verileri yenileyin"
+  },
+  {
+    "id": "Recommended",
+    "other": "Önerilen"
+  },
+  {
+    "id": "Remote access",
+    "other": "Uzaktan erişim"
+  },
+  {
+    "id": "Remove",
+    "other": "Kaldır"
+  },
+  {
+    "id": "Remove from",
+    "other": "Şuradan kaldır"
+  },
+  {
+    "id": "request",
+    "other": "istek"
+  },
+  {
+    "id": "Request could not be completed.",
+    "other": "İstek tamamlanamadı."
+  },
+  {
+    "id": "request is too large",
+    "other": "istek çok büyük"
+  },
+  {
+    "id": "Reset password",
+    "other": "Şifreyi sıfırla"
+  },
+  {
+    "id": "Return to settings",
+    "other": "Ayarlara dön"
+  },
+  {
+    "id": "Revoke",
+    "other": "İptal Et"
+  },
+  {
+    "id": "Rockchip RKMPP",
+    "other": "Rockchip RKMPP"
+  },
+  {
+    "id": "Room connected · following leader",
+    "other": "Oda bağlı · lideri takip ediyor"
+  },
+  {
+    "id": "Room connected · you lead",
+    "other": "Oda bağlantılı · siz yönlendiriyorsunuz"
+  },
+  {
+    "id": "Room disconnected · reload to reconnect",
+    "other": "Odanın bağlantısı kesildi · yeniden bağlanmak için yeniden yükleyin"
+  },
+  {
+    "id": "Run library scan now",
+    "other": "Kütüphane taramasını şimdi çalıştır"
+  },
+  {
+    "id": "Run maintenance now",
+    "other": "Bakımı şimdi çalıştırın"
+  },
+  {
+    "id": "Safety scan",
+    "other": "Güvenlik taraması"
+  },
+  {
+    "id": "Save",
+    "other": "Kaydet"
+  },
+  {
+    "id": "Save file",
+    "other": "Dosyayı kaydet"
+  },
+  {
+    "id": "Save for restart",
+    "other": "Yeniden başlatmak için kaydet"
+  },
+  {
+    "id": "Save marker",
+    "other": "İşaretçiyi kaydet"
+  },
+  {
+    "id": "Save metadata",
+    "other": "Meta verileri kaydet"
+  },
+  {
+    "id": "Save schedule",
+    "other": "Planlamayı kaydet"
+  },
+  {
+    "id": "Schedule",
+    "other": "Plan"
+  },
+  {
+    "id": "Search library",
+    "other": "Kitaplıkta arama"
+  },
+  {
+    "id": "Search results",
+    "other": "Arama sonuçları"
+  },
+  {
+    "id": "Secrets are hidden and included only in encrypted recovery backups.",
+    "other": "Gizli bilgiler gizlenir ve yalnızca şifrelenmiş kurtarma yedeklerine dahil edilir."
+  },
+  {
+    "id": "Secure your account",
+    "other": "Hesabınızın güvenliğini sağlayın"
+  },
+  {
+    "id": "Secure your account · Kinosail Player",
+    "other": "Hesabınızın güvenliğini sağlayın · Kinosail Player"
+  },
+  {
+    "id": "Send this private connection URL to the Viewer. It is shown only once.",
+    "other": "Bu özel bağlantı URL'sini Görüntüleyiciye gönderin. Yalnızca bir kez gösterilir."
+  },
+  {
+    "id": "Server name",
+    "other": "Sunucu adı"
+  },
+  {
+    "id": "Server settings",
+    "other": "Sunucu ayarları"
+  },
+  {
+    "id": "Server unavailable",
+    "other": "Sunucu kullanılamıyor"
+  },
+  {
+    "id": "Server unavailable · Kinosail Player",
+    "other": "Sunucu kullanılamıyor · Kinosail Player"
+  },
+  {
+    "id": "Set up Kinosail Player",
+    "other": "Kinosail'i kurun"
+  },
+  {
+    "id": "Set up or replace authenticator",
+    "other": "Kimlik doğrulayıcıyı kurun veya değiştirin"
+  },
+  {
+    "id": "Set up two-factor authentication",
+    "other": "İki faktörlü kimlik doğrulamayı ayarlayın"
+  },
+  {
+    "id": "Set up two-factor authentication · Kinosail Player",
+    "other": "İki faktörlü kimlik doğrulamayı kurun · Kinosail Player"
+  },
+  {
+    "id": "Settings",
+    "other": "Ayarlar"
+  },
+  {
+    "id": "Settings sections",
+    "other": "Ayarlar bölümleri"
+  },
+  {
+    "id": "Settings · Kinosail Player",
+    "other": "Ayarlar · Kinosail Player"
+  },
+  {
+    "id": "Shape the experience, protect your library, and keep every stream running beautifully.",
+    "other": "Deneyimi şekillendirin, kitaplığınızı koruyun ve her akışın güzel bir şekilde çalışmasını sağlayın."
+  },
+  {
+    "id": "Show",
+    "other": "Göster"
+  },
+  {
+    "id": "Shows",
+    "other": "Gösteriler"
+  },
+  {
+    "id": "Sign in",
+    "other": "Oturum açın"
+  },
+  {
+    "id": "Sign in to your private media universe.",
+    "other": "Özel medya evreninizde oturum açın."
+  },
+  {
+    "id": "Sign in with passkey",
+    "other": "Şifreyle oturum açın"
+  },
+  {
+    "id": "Sign in with SSO",
+    "other": "SSO"
+  },
+  {
+    "id": "Sign in · Kinosail Player",
+    "other": "Oturum aç · Kinosail Player"
+  },
+  {
+    "id": "Sign out",
+    "other": "Oturumu kapat"
+  },
+  {
+    "id": "Sign out other devices",
+    "other": "Diğer cihazlarda oturumu kapatın"
+  },
+  {
+    "id": "Sign-in methods",
+    "other": "Oturum açma yöntemleri"
+  },
+  {
+    "id": "Sign-in, same-origin browser protections, private responses, bounded requests, and revocable access are always on. There are no security switches to manage.",
+    "other": "Oturum açma, aynı kaynaklı tarayıcı korumaları, özel yanıtlar, sınırlı istekler ve iptal edilebilir erişim her zaman açıktır. Yönetilecek güvenlik anahtarı yok."
+  },
+  {
+    "id": "Single sign-on",
+    "other": "Tek oturum açma"
+  },
+  {
+    "id": "Skip",
+    "other": "Atla"
+  },
+  {
+    "id": "Skip commercials automatically",
+    "other": "Reklamları otomatik olarak atla"
+  },
+  {
+    "id": "Skip credits automatically",
+    "other": "Kredileri otomatik olarak atla"
+  },
+  {
+    "id": "Skip intros automatically",
+    "other": "Girişleri otomatik olarak atla"
+  },
+  {
+    "id": "Skip outros automatically",
+    "other": "Outro'ları otomatik olarak atla"
+  },
+  {
+    "id": "Skip recaps automatically",
+    "other": "Özetleri otomatik olarak atla"
+  },
+  {
+    "id": "Skip to content",
+    "other": "İçeriğe atla"
+  },
+  {
+    "id": "Sleep timer",
+    "other": "Uyku zamanlayıcısı"
+  },
+  {
+    "id": "Sleep timer ended",
+    "other": "Uyku zamanlayıcısı sona erdi"
+  },
+  {
+    "id": "Smart playlist",
+    "other": "Akıllı oynatma listesi"
+  },
+  {
+    "id": "Smart playlist name",
+    "other": "Akıllı oynatma listesi adı"
+  },
+  {
+    "id": "Software",
+    "other": "Yazılım"
+  },
+  {
+    "id": "Sort",
+    "other": "Sırala"
+  },
+  {
+    "id": "Source",
+    "other": "Kaynak"
+  },
+  {
+    "id": "speed",
+    "other": "hız"
+  },
+  {
+    "id": "SSO challenge is invalid or expired",
+    "other": "SSO sorgulaması geçersiz veya süresi dolmuş"
+  },
+  {
+    "id": "SSO code exchange failed",
+    "other": "SSO kod alışverişi başarısız oldu"
+  },
+  {
+    "id": "SSO identity is not linked to a Viewer Profile",
+    "other": "SSO kimliği Görüntüleyici Profiline bağlı değil"
+  },
+  {
+    "id": "SSO is unavailable",
+    "other": "SSO kullanılamıyor"
+  },
+  {
+    "id": "SSO session could not be created",
+    "other": "SSO oturumu oluşturulamadı"
+  },
+  {
+    "id": "SSO state is invalid or expired",
+    "other": "SSO durumu geçersiz veya süresi dolmuş"
+  },
+  {
+    "id": "SSO token validation failed",
+    "other": "SSO belirteci doğrulaması başarısız oldu"
+  },
+  {
+    "id": "Start in seconds",
+    "other": "Saniyeler içinde başlayın"
+  },
+  {
+    "id": "Start Watch Together",
+    "other": "Birlikte İzlemeye Başlayın"
+  },
+  {
+    "id": "Status",
+    "other": "Durum"
+  },
+  {
+    "id": "Stops in {minutes} minutes",
+    "other": "{minutes} dakika sonra durur"
+  },
+  {
+    "id": "Store these codes somewhere safe. Each works once.",
+    "other": "Bu kodları güvenli bir yerde saklayın. Her biri bir kez çalışır."
+  },
+  {
+    "id": "Stored here. Streamed directly.",
+    "other": "Burada depolanıyor. Doğrudan akış yapıldı."
+  },
+  {
+    "id": "Stream media",
+    "other": "Medya akışı"
+  },
+  {
+    "id": "Subscription required",
+    "other": "Abonelik gerekli"
+  },
+  {
+    "id": "Subtitle provider",
+    "other": "Altyazı sağlayıcı"
+  },
+  {
+    "id": "subtitle provider unavailable",
+    "other": "altyazı sağlayıcısı kullanılamıyor"
+  },
+  {
+    "id": "subtitle track(s)",
+    "other": "altyazı parçaları"
+  },
+  {
+    "id": "Subtitles",
+    "other": "Altyazılar"
+  },
+  {
+    "id": "subtitles",
+    "other": "altyazılar"
+  },
+  {
+    "id": "Sync",
+    "other": "Senkronizasyon"
+  },
+  {
+    "id": "System",
+    "other": "Sistem"
+  },
+  {
+    "id": "Tagline",
+    "other": "Takvim"
+  },
+  {
+    "id": "The backup contains account and session state. Keep unencrypted backup storage private, or configure a backup key.",
+    "other": "Yedekleme, hesap ve oturum durumunu içerir. Şifrelenmemiş yedekleme depolama alanını gizli tutun veya bir yedekleme anahtarı yapılandırın."
+  },
+  {
+    "id": "Theme",
+    "other": "Tema"
+  },
+  {
+    "id": "These settings are read-only until removed from YAML or the environment",
+    "other": "Bu ayarlar YAML'den veya ortamdan kaldırılana kadar salt okunurdur"
+  },
+  {
+    "id": "This Collection is empty.",
+    "other": "Bu Koleksiyon boş."
+  },
+  {
+    "id": "This permanently deletes the Collection.",
+    "other": "Bu, Koleksiyonu kalıcı olarak siler."
+  },
+  {
+    "id": "This permanently deletes the playlist.",
+    "other": "Bu, oynatma listesini kalıcı olarak siler."
+  },
+  {
+    "id": "This playlist is empty.",
+    "other": "Bu oynatma listesi boş."
+  },
+  {
+    "id": "This product uses the TMDB API but is not endorsed or certified by TMDB.",
+    "other": "Bu ürün TMDB API'sini kullanır ancak TMDB tarafından onaylanmaz veya onaylanmaz."
+  },
+  {
+    "id": "This signs out the profile and deletes it.",
+    "other": "Bu, profilin oturumunu kapatır ve siler."
+  },
+  {
+    "id": "Through PG / TV-PG",
+    "other": "PG / TV-PG"
+  },
+  {
+    "id": "Through PG-13 / TV-14",
+    "other": "PG-13 / TV-14"
+  },
+  {
+    "id": "Title",
+    "other": "Başlık"
+  },
+  {
+    "id": "Title, artist, genre",
+    "other": "Başlık, sanatçı, tür"
+  },
+  {
+    "id": "Title, artist, genre…",
+    "other": "Başlık, sanatçı, tür…"
+  },
+  {
+    "id": "TMDB",
+    "other": "TMDB"
+  },
+  {
+    "id": "Tone-map HDR to SDR",
+    "other": "HDR'den SDR'ye ton eşlemesi"
+  },
+  {
+    "id": "too many login attempts",
+    "other": "çok fazla giriş denemesi"
+  },
+  {
+    "id": "too many Watch Together rooms",
+    "other": "çok fazla Birlikte İzle odası"
+  },
+  {
+    "id": "Track",
+    "other": "Parça"
+  },
+  {
+    "id": "transcode cache",
+    "other": "kod dönüştürme önbelleği"
+  },
+  {
+    "id": "Transcoder",
+    "other": "Kod Dönüştürücü"
+  },
+  {
+    "id": "transcoding is not allowed",
+    "other": "kod dönüştürmeye izin verilmiyor"
+  },
+  {
+    "id": "Try again",
+    "other": "Tekrar deneyin"
+  },
+  {
+    "id": "Two-factor authentication",
+    "other": "İki faktörlü kimlik doğrulama"
+  },
+  {
+    "id": "Two-factor authentication · Kinosail Player",
+    "other": "İki faktörlü kimlik doğrulama · Kinosail Player"
+  },
+  {
+    "id": "Type",
+    "other": "Tür"
+  },
+  {
+    "id": "Unlink OpenID Connect",
+    "other": "OpenID Connect Bağlantısını Kaldır"
+  },
+  {
+    "id": "Until",
+    "other": "Şu zamana kadar"
+  },
+  {
+    "id": "Unwatched",
+    "other": "İzlenmeyen"
+  },
+  {
+    "id": "unwatched",
+    "other": "izlenmedi"
+  },
+  {
+    "id": "Use default",
+    "other": "Varsayılanı kullan"
+  },
+  {
+    "id": "Use Face ID, Touch ID, Windows Hello, or your device PIN to sign in. Your password will still work.",
+    "other": "Oturum açmak için Face ID'yi, Touch ID'yi, Windows Hello'yu veya cihazınızın PIN'ini kullanın. Şifreniz yine de çalışacaktır."
+  },
+  {
+    "id": "VA-API (AMD/Intel)",
+    "other": "VA-API (AMD/Intel)"
+  },
+  {
+    "id": "Verified Direct Connection",
+    "other": "Doğrulanmış Doğrudan Bağlantı"
+  },
+  {
+    "id": "Verified Direct Connection is not configured",
+    "other": "Doğrulanmış Doğrudan Bağlantı yapılandırılmamış"
+  },
+  {
+    "id": "Verify latest backup",
+    "other": "En son yedeklemeyi doğrula"
+  },
+  {
+    "id": "Video",
+    "other": "Video"
+  },
+  {
+    "id": "Viewer",
+    "other": "Görüntüleyici"
+  },
+  {
+    "id": "Viewer access is not available",
+    "other": "İzleyici erişimi mevcut değil"
+  },
+  {
+    "id": "Viewer device",
+    "other": "Görüntüleyici cihaz"
+  },
+  {
+    "id": "Viewer name",
+    "other": "Görüntüleyici adı"
+  },
+  {
+    "id": "Waiting for your passkey…",
+    "other": "Şifreniz bekleniyor…"
+  },
+  {
+    "id": "Watch Together state is invalid",
+    "other": "Birlikte İzleme durumu geçersiz"
+  },
+  {
+    "id": "watched",
+    "other": "izlendi"
+  },
+  {
+    "id": "Watched",
+    "other": "İzlendi"
+  },
+  {
+    "id": "Watched ✓",
+    "other": "İzlendi ✓"
+  },
+  {
+    "id": "Watching for changes",
+    "other": "Değişiklikleri izliyor"
+  },
+  {
+    "id": "Welcome aboard",
+    "other": "Gemiye hoş geldiniz"
+  },
+  {
+    "id": "when ready.",
+    "other": "hazır olduğunda."
+  },
+  {
+    "id": "WireGuard Viewer not found",
+    "other": "WireGuard Görüntüleyici bulunamadı"
+  },
+  {
+    "id": "XMLTV guide",
+    "other": "XMLTV rehberi"
+  },
+  {
+    "id": "Year",
+    "other": "Yıl"
+  },
+  {
+    "id": "You lead this room",
+    "other": "Bu odaya siz liderlik ediyorsunuz"
+  },
+  {
+    "id": "Your library",
+    "other": "Kütüphaneniz"
+  },
+  {
+    "id": "Your library and viewing activity stay on this Server.",
+    "other": "Kitaplığınız ve görüntüleme etkinliğiniz bu Sunucuda kalır."
+  },
+  {
+    "id": "← Books",
+    "other": "← Kitaplar"
+  },
+  {
+    "id": "← Library",
+    "other": "← Kütüphane"
+  },
+  {
+    "id": "← Settings",
+    "other": "← Ayarlar"
+  },
+  {
+    "id": "Generated API key",
+    "other": "Oluşturulan API anahtarı"
+  },
+  {
+    "id": "Copy API key",
+    "other": "API anahtarını kopyala"
+  },
+  {
+    "id": "Copied.",
+    "other": "Kopyalandı."
+  },
+  {
+    "id": "Select Copy in your browser.",
+    "other": "Tarayıcınızda Kopyala'yı seçin."
+  },
+  {
+    "id": "Set up trusted HTTPS",
+    "other": "Güvenilir HTTPS'yi ayarlayın"
+  },
+  {
+    "id": "Review trusted HTTPS setup",
+    "other": "Güvenilir HTTPS ayarlarını gözden geçirin"
+  },
+  {
+    "id": "Offline copy",
+    "other": "Çevrimdışı kopya"
+  },
+  {
+    "id": "Verified file stored on this device.",
+    "other": "Doğrulanmış dosya bu cihazda saklanıyor."
+  },
+  {
+    "id": "Ready offline on this device",
+    "other": "Bu cihazda çevrimdışı hazır"
+  },
+  {
+    "id": "Playback method",
+    "other": "Oynatma yöntemi"
+  },
+  {
+    "id": "Open playback settings.",
+    "other": "Oynatma ayarlarını aç."
+  },
+  {
+    "id": "Offline copy is unavailable.",
+    "other": "Çevrimdışı kopya kullanılamıyor."
+  },
+  {
+    "id": "Offline playback needs an active service worker",
+    "other": "Çevrimdışı oynatma etkin bir service worker gerektirir"
+  },
+  {
+    "id": "Could not remove local offline data.",
+    "other": "Yerel çevrimdışı veriler kaldırılamadı."
+  },
+  {
+    "id": "stored on this device",
+    "other": "bu cihazda saklandı"
+  },
+  {
+    "id": "This device does not have enough storage for this download",
+    "other": "Bu cihazda indirme için yeterli depolama alanı yok"
+  },
+  {
+    "id": "This browser cannot store offline media safely",
+    "other": "Bu tarayıcı çevrimdışı medyayı güvenli şekilde saklayamıyor"
+  },
+  {
+    "id": "The download could not be verified",
+    "other": "İndirme doğrulanamadı"
+  },
+  {
+    "id": "The download is no longer available",
+    "other": "İndirme artık kullanılamıyor"
+  },
+  {
+    "id": "No verified downloads are ready for this Viewer Profile.",
+    "other": "Bu İzleyici Profili için hazır doğrulanmış indirme yok."
+  },
+  {
+    "id": "Open Kinosail online and choose a Viewer Profile first.",
+    "other": "Kinosail’i çevrimiçi açın ve önce bir İzleyici Profili seçin."
+  },
+  {
+    "id": "All libraries",
+    "other": "All libraries"
+  },
+  {
+    "id": "Audio tracks",
+    "other": "Audio tracks"
+  },
+  {
+    "id": "Back to downloads",
+    "other": "Back to downloads"
+  },
+  {
+    "id": "Could not save progress. Return to Downloads and try again.",
+    "other": "Could not save progress. Return to Downloads and try again."
+  },
+  {
+    "id": "Manage offline downloads",
+    "other": "Manage offline downloads"
+  },
+  {
+    "id": "Movie",
+    "other": "Movie"
+  },
+  {
+    "id": "Open Server downloads",
+    "other": "Open Server downloads"
+  },
+  {
+    "id": "Open previous page",
+    "other": "Open previous page"
+  },
+  {
+    "id": "Playback behavior",
+    "other": "Playback behavior"
+  },
+  {
+    "id": "Prepare offline copy",
+    "other": "Prepare offline copy"
+  },
+  {
+    "id": "Progress saved on this device. Open Server downloads to sync.",
+    "other": "Progress saved on this device. Open Server downloads to sync."
+  },
+  {
+    "id": "Request needs another try",
+    "other": "Request needs another try"
+  },
+  {
+    "id": "Return to form",
+    "other": "Return to form"
+  },
+  {
+    "id": "Search all libraries",
+    "other": "Search all libraries"
+  },
+  {
+    "id": "Search everything",
+    "other": "Search everything"
+  },
+  {
+    "id": "This file could not play. Return to Downloads, reconnect to the Server, and download it again.",
+    "other": "This file could not play. Return to Downloads, reconnect to the Server, and download it again."
+  },
+  {
+    "id": "invalid title request",
+    "other": "invalid title request"
+  },
+  {
+    "id": "Audio is fixed in this downloaded copy.",
+    "other": "Audio is fixed in this downloaded copy."
+  }
+]

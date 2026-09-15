@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark light">
+  <title>Kinosail Code Atlas</title>
+  <style>
+__KINOSAIL_ARCHITECTURE_STYLES__
+  </style>
+</head>
+<body>
+  <div class="shell" id="atlas">
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 32 32" fill="none"><circle cx="16" cy="16" r="10.5" stroke="currentColor" stroke-width="2.5"/><path d="M13 11.5 21 16l-8 4.5v-9Z" fill="currentColor"/><path d="M16 2.8v3M16 26.2v3M2.8 16h3M26.2 16h3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        </div>
+        <div><p class="eyebrow">Kinosail / Engineering</p><h1>Code Atlas</h1></div>
+      </div>
+      <div class="snapshot" aria-label="Snapshot metadata">
+        <span class="snapshot-state">source snapshot</span>
+        <code id="snapshot-commit">—</code>
+      </div>
+    </header>
+
+    <div class="layout">
+      <aside class="rail" aria-label="Atlas controls">
+        <div class="rail-intro">Follow the package boundaries, then open a module to inspect its files, symbols, and consumers.</div>
+        <div class="rail-tools">
+          <div>
+            <label class="field-label" for="search">Find a package or symbol</label>
+            <div class="search-wrap">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 5 5"/></svg>
+              <input id="search" type="search" placeholder="server, playback, type…" autocomplete="off">
+            </div>
+          </div>
+          <div class="view-switch" role="group" aria-label="Atlas view">
+            <button type="button" data-view="map" aria-pressed="true">Map</button>
+            <button type="button" data-view="table" aria-pressed="false">Table</button>
+            <button type="button" data-view="journey" aria-pressed="false">Journey</button>
+          </div>
+        </div>
+        <details class="mission-deck" open>
+          <summary>Mission deck</summary>
+          <div class="mission-list" id="mission-list"></div>
+          <div class="mission-progress" id="mission-progress">Choose a route to begin.</div>
+          <button class="mission-continue" id="mission-continue" type="button" disabled>Choose a mission</button>
+        </details>
+        <p class="section-label">Packages</p>
+        <div class="package-list" id="package-list"></div>
+        <div class="legend" aria-label="Map legend">
+          <div class="legend-row"><span class="legend-swatch"></span> first-party package</div>
+          <div class="legend-row"><span class="legend-swatch command"></span> executable package</div>
+          <div class="legend-row"><span class="legend-swatch edge"></span> imports shown in direction</div>
+        </div>
+      </aside>
+
+      <main class="workspace">
+        <div class="workspace-head">
+          <div>
+            <p class="eyebrow">System view</p>
+            <h2>Dependency field</h2>
+            <p>Package boundaries and first-party imports across the server.</p>
+          </div>
+          <div class="graph-meta" id="graph-meta">Loading snapshot…</div>
+        </div>
+        <div class="canvas-frame" id="canvas-frame">
+          <svg id="graph" role="img" aria-label="Interactive package dependency graph"></svg>
+          <div class="table-view" id="table-view"></div>
+          <div class="journey-view" id="journey-view"></div>
+          <div class="graph-help">drag · scroll to zoom · select a node</div>
+        </div>
+        <div class="status-line" id="status-line" role="status" aria-live="polite"></div>
+        <section class="detail" aria-label="Selected package detail">
+          <div>
+            <div class="detail-header">
+              <div><p class="eyebrow">Selected module</p><h3 id="detail-name">—</h3><p class="detail-path" id="detail-path">—</p></div>
+            </div>
+            <p class="detail-copy" id="detail-copy">Select a package to inspect its structure.</p>
+            <dl class="metrics" id="metrics"></dl>
+            <div class="detail-section"><h4>Imports</h4><div class="chip-list" id="imports"></div></div>
+            <div class="detail-section"><h4>Imported by</h4><div class="chip-list" id="dependents"></div></div>
+            <p class="source-note">Generated from <code>go list -json ./...</code> and production source files. Test-file counts are included; symbol extraction is declaration-level.</p>
+          </div>
+          <div class="detail-section detail-structure"><h4>Structure</h4><div class="file-tree" id="file-tree"></div></div>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <script>
+    const snapshot = __KINOSAIL_ARCHITECTURE_DATA__;
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js" integrity="sha384-CjloA8y00+1SDAUkjs099PVfnY2KmDC2BZnws9kh8D/lX1s46w6EPhpXdqMfjK6i" crossorigin="anonymous"></script>
+  <script>
+__KINOSAIL_ARCHITECTURE_SCRIPT__
+  </script>
+</body>
+</html>

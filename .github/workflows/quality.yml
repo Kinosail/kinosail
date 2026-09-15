@@ -1,0 +1,129 @@
+name: Repository Quality
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+  workflow_call:
+
+concurrency:
+  group: quality-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  gates:
+    name: Check temporary gate pause
+    runs-on: ubuntu-latest
+    outputs:
+      enabled: ${{ steps.state.outputs.enabled }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+      - id: state
+        run: |
+          if [ -f .gates-disabled ]; then
+            echo "enabled=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "enabled=true" >> "$GITHUB_OUTPUT"
+          fi
+
+  static:
+    needs: gates
+    if: needs.gates.outputs.enabled == 'true'
+    name: Static quality policy
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7
+        with:
+          go-version: "1.27"
+          cache: false
+      - uses: pnpm/action-setup@0977fd99725f1db4007ccb2928dbb4e90d06cc86 # v6
+        with:
+          version: 11.22.0
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with:
+          node-version: 26
+          package-manager-cache: false
+      - run: ./scripts/quality/check-static.sh
+        env:
+          KINOSAIL_LINT_BASE: ${{ github.event.pull_request.base.sha || github.event.before }}
+
+  coverage:
+    needs: gates
+    if: needs.gates.outputs.enabled == 'true'
+    name: Coverage and CRAP policy
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7
+        with:
+          go-version: "1.27"
+          cache: false
+      - uses: pnpm/action-setup@0977fd99725f1db4007ccb2928dbb4e90d06cc86 # v6
+        with:
+          version: 11.22.0
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with:
+          node-version: 26
+          package-manager-cache: false
+      - name: Install archive test dependency
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libarchive-tools
+      - run: ./scripts/quality/check-coverage.sh
+      - if: always()
+        run: ./scripts/quality/check-crap.sh
+
+  mutation:
+    needs: gates
+    if: needs.gates.outputs.enabled == 'true'
+    name: Mutation policy (${{ matrix.app }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 360
+    strategy:
+      fail-fast: false
+      matrix:
+        app: [player, subtitles, dashboard, packages]
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7
+        with:
+          go-version: "1.27"
+          cache: false
+      - name: Install archive test dependency
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libarchive-tools
+      - run: ./scripts/quality/check-mutation.sh "${{ matrix.app }}"
+
+  native-mutation:
+    needs: gates
+    if: needs.gates.outputs.enabled == 'true'
+    name: Native TypeScript mutation policy
+    runs-on: ubuntu-latest
+    timeout-minutes: 360
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+      - uses: pnpm/action-setup@0977fd99725f1db4007ccb2928dbb4e90d06cc86 # v6
+        with:
+          version: 11.22.0
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with:
+          node-version: 26
+          package-manager-cache: false
+      - run: ./scripts/quality/check-native-mutation.sh

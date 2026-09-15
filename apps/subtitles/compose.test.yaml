@@ -1,0 +1,16 @@
+services:
+  kinosail:
+    build:
+      dockerfile: apps/subtitles/Containerfile.test
+    image: localhost/kinosail-subtitles:test-instance
+    entrypoint: ["/bin/sh", "-c"]
+    command: ["httpd -f -p 127.0.0.1:8090 -h /media & exec kinosail"]
+    environment:
+      KINOSAIL_SERVER_NAME: Kinosail Test Server
+      KINOSAIL_LIBRARIES: '["Movies","Shows","Music","Audiobooks","Books","Photos"]'
+      KINOSAIL_TMDB_URL: http://127.0.0.1:8090/TMDB/api
+      KINOSAIL_TMDB_IMAGE_URL: http://127.0.0.1:8090/TMDB/images
+      KINOSAIL_TMDB_TOKEN: local-synthetic-test-catalogue
+      KINOSAIL_BACKUP_KEY: local-test-instance-backup-key
+    volumes:
+      - "${KINOSAIL_TEST_ROOT:-./.kinosail-test}/media:/media:ro"

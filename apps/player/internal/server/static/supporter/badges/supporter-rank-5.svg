@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title">
+  <title id="title">Kinosail supporter rank five steward wheel</title>
+  <defs>
+    <linearGradient id="gold" x1=".08" y1="0" x2=".92" y2="1"><stop stop-color="#fff4cc"/><stop offset=".4" stop-color="#dfbd66"/><stop offset="1" stop-color="#684524"/></linearGradient>
+    <radialGradient id="sea"><stop stop-color="#226052"/><stop offset="1" stop-color="#07100e"/></radialGradient>
+    <filter id="shadow" x="-30%" y="-30%" width="160%" height="170%"><feDropShadow dy="13" stdDeviation="11" flood-color="#000" flood-opacity=".6"/></filter>
+  </defs>
+  <g filter="url(#shadow)">
+    <path d="M256 43v55M256 414v55M43 256h55M414 256h55M105 105l39 39M368 368l39 39M407 105l-39 39M144 368l-39 39" stroke="url(#gold)" stroke-linecap="round" stroke-width="21"/>
+    <g fill="#fff4cc" stroke="#74502b" stroke-width="4"><circle cx="256" cy="51" r="15"/><circle cx="256" cy="461" r="15"/><circle cx="51" cy="256" r="15"/><circle cx="461" cy="256" r="15"/><circle cx="111" cy="111" r="14"/><circle cx="401" cy="401" r="14"/><circle cx="401" cy="111" r="14"/><circle cx="111" cy="401" r="14"/></g>
+    <circle cx="256" cy="256" r="178" fill="#090c0b" stroke="url(#gold)" stroke-width="14"/>
+    <circle cx="256" cy="256" r="145" fill="url(#sea)" stroke="#8f6735" stroke-width="5"/>
+    <circle cx="256" cy="256" r="125" fill="none" stroke="#9edcca" stroke-dasharray="3 14" stroke-width="5"/>
+    <path fill="#fff4cc" d="M247 126c-38 47-59 106-59 174 34-14 69-15 109-3-27-52-41-108-50-171Z"/>
+    <path fill="url(#gold)" d="M259 149c48 45 72 94 72 149-31-14-62-16-91-9 17-43 23-90 19-140Z"/>
+    <path fill="#08110f" d="m247 220 46 28-46 28Z"/>
+    <path d="M142 311c44-29 74-4 107-3 40 2 61-29 113-8M151 340c40-23 67-5 99-4 40 2 65-23 108-10" fill="none" stroke="#a6e1cf" stroke-linecap="round" stroke-width="8"/>
+    <path d="M205 431h102l-17 42-34-18-34 18Z" fill="#6d4927" stroke="url(#gold)" stroke-linejoin="round" stroke-width="7"/>
+  </g>
+</svg>

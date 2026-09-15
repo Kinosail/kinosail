@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title">
+  <title id="title">Kinosail supporter rank two harbor token</title>
+  <defs>
+    <linearGradient id="gold" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#fff1bd"/><stop offset=".42" stop-color="#d7b45e"/><stop offset="1" stop-color="#684526"/></linearGradient>
+    <radialGradient id="sea"><stop stop-color="#1d5549"/><stop offset="1" stop-color="#07110f"/></radialGradient>
+    <filter id="shadow" x="-30%" y="-30%" width="160%" height="170%"><feDropShadow dy="12" stdDeviation="10" flood-color="#000" flood-opacity=".55"/></filter>
+  </defs>
+  <g filter="url(#shadow)">
+    <path d="m256 48 142 82 34 160-110 134H190L80 290l34-160Z" fill="#080b0a" stroke="url(#gold)" stroke-linejoin="round" stroke-width="13"/>
+    <path d="m256 76 121 70 28 135-94 114H201l-94-114 28-135Z" fill="url(#sea)" stroke="#7b5932" stroke-width="4"/>
+    <circle cx="256" cy="247" r="116" fill="none" stroke="#8ccfbc" stroke-dasharray="2 13" stroke-linecap="round" stroke-width="7"/>
+    <path fill="#fff1c1" d="M246 123c-37 48-59 109-59 179 34-14 71-15 111-2-27-54-42-112-52-177Z"/>
+    <path fill="url(#gold)" d="M258 147c47 47 72 98 74 154-32-14-64-17-93-9 17-46 23-94 19-145Z"/>
+    <path fill="#08110f" d="m246 218 46 28-46 28Z"/>
+    <path d="M137 315c46-31 76-5 111-4 41 2 61-31 116-8M145 342c43-25 71-5 105-4 42 1 67-25 113-12" fill="none" stroke="#9adac7" stroke-linecap="round" stroke-width="8"/>
+    <g fill="#fff1c1" stroke="#8a632f" stroke-width="3"><circle cx="116" cy="270" r="8"/><circle cx="396" cy="270" r="8"/></g>
+  </g>
+</svg>

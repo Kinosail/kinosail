@@ -1,0 +1,79 @@
+diff --git a/apple/Handlers/RNFlingHandler.m b/apple/Handlers/RNFlingHandler.m
+index eeb48043b3ba27fa31b2b250f94e39473c952885..0100e395003c45b88ef67b1e14bd302aee776245 100644
+--- a/apple/Handlers/RNFlingHandler.m
++++ b/apple/Handlers/RNFlingHandler.m
+@@ -254,7 +254,7 @@ - (void)resetConfig
+ {
+   [super resetConfig];
+   RNBetterSwipeGestureRecognizer *recognizer = (RNBetterSwipeGestureRecognizer *)_recognizer;
+-  recognizer.direction = RNGestureHandlerDirectionRight;
++  recognizer.direction = UISwipeGestureRecognizerDirectionRight;
+ #if !TARGET_OS_TV
+   recognizer.numberOfTouchesRequired = 1;
+ #endif
+diff --git a/apple/Handlers/RNPanHandler.m b/apple/Handlers/RNPanHandler.m
+index 361bf4b592bc4ea16adb5a221872f4dde95c45b8..6defbf48139f2b4443ccabf33fce81179feea6dd 100644
+--- a/apple/Handlers/RNPanHandler.m
++++ b/apple/Handlers/RNPanHandler.m
+@@ -112,7 +112,7 @@ - (void)tryUpdateStylusData:(UIEvent *)event
+ }
+ #endif
+ 
+-- (void)activateAfterLongPress
++- (void)activateDelayedPan
+ {
+   self.state = UIGestureRecognizerStateBegan;
+   // Send event in ACTIVE state because UIGestureRecognizerStateBegan is mapped to RNGestureHandlerStateBegan
+@@ -148,7 +148,7 @@ - (void)interactionsBegan:(NSSet *)touches withEvent:(UIEvent *)event
+   [self triggerAction];
+ 
+   if (!isnan(_activateAfterLongPress)) {
+-    [self performSelector:@selector(activateAfterLongPress) withObject:nil afterDelay:_activateAfterLongPress];
++    [self performSelector:@selector(activateDelayedPan) withObject:nil afterDelay:_activateAfterLongPress];
+   }
+ }
+ 
+@@ -263,7 +263,7 @@ - (void)reset
+ {
+   [self triggerActionFromReset];
+   [_gestureHandler.pointerTracker reset];
+-  [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(activateAfterLongPress) object:nil];
++  [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(activateDelayedPan) object:nil];
+   self.enabled = YES;
+   [super reset];
+   [_gestureHandler reset];
+@@ -289,7 +289,7 @@ - (BOOL)shouldFailUnderCustomCriteria
+ #endif
+   // Apple docs say that 10 units is the default allowable movement for UILongPressGestureRecognizer
+   if (!isnan(_activateAfterLongPress) && trans.x * trans.x + trans.y * trans.y > 100) {
+-    [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(activateAfterLongPress) object:nil];
++    [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(activateDelayedPan) object:nil];
+     return YES;
+   }
+ 
+diff --git a/apple/RNGHStylusData.h b/apple/RNGHStylusData.h
+index 0e950d095ea741d442aa490fddc459a471574f5a..1d3103574c081915036814f252852853a5dfad96 100644
+--- a/apple/RNGHStylusData.h
++++ b/apple/RNGHStylusData.h
+@@ -20,7 +20,7 @@
+ 
+ @end
+ 
+-static CGPoint ghSpherical2tilt(double altitudeAngle, double azimuthAngle)
++static inline CGPoint ghSpherical2tilt(double altitudeAngle, double azimuthAngle)
+ {
+   CGPoint tilts = {.x = 0.0, .y = 0.0};
+ 
+diff --git a/apple/RNGestureHandlerManager.mm b/apple/RNGestureHandlerManager.mm
+index d9799b31cb862742395a97fd990b11dfaff44069..5aacccbd92ab21b215e96b9333e25949051e90dd 100644
+--- a/apple/RNGestureHandlerManager.mm
++++ b/apple/RNGestureHandlerManager.mm
+@@ -170,7 +170,7 @@ - (void)attachGestureHandler:(nonnull NSNumber *)handlerTag
+       [_attachRetryCounter setObject:counter forKey:viewTag];
+ 
+       dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+-        if (![_droppedHandlers containsObject:handlerTag]) {
++        if (![self->_droppedHandlers containsObject:handlerTag]) {
+           [self attachGestureHandler:handlerTag toViewWithTag:viewTag withActionType:actionType];
+         }
+       });

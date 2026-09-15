@@ -1,0 +1,44 @@
+services:
+  kinosail:
+    environment:
+      KINOSAIL_REMOTE_MODE: https
+      KINOSAIL_PUBLIC_GATEWAY: "true"
+      KINOSAIL_DUCKDNS_TOKEN_FILE: /run/secrets/kinosail_duckdns_token
+    volumes:
+      - "${KINOSAIL_DUCKDNS_TOKEN_PATH:-./secrets/duckdns_token}:/run/secrets/kinosail_duckdns_token:ro"
+      - kinosail-public-transport:/public-transport
+  public-gateway:
+    image: "${KINOSAIL_IMAGE:?Set KINOSAIL_IMAGE to the image used by your Kinosail Server}"
+    command: ["public-gateway"]
+    restart: unless-stopped
+    init: true
+    user: "10001:10001"
+    depends_on: [kinosail]
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: ["no-new-privileges:true"]
+    pids_limit: 64
+    mem_limit: 256m
+    cpus: "1"
+    ulimits:
+      nofile: 2048
+    ports:
+      - "${KINOSAIL_REMOTE_BIND:-0.0.0.0}:443:8443"
+    environment:
+      KINOSAIL_PUBLIC_HOSTNAME: "${KINOSAIL_DUCKDNS_DOMAIN:?Set your DuckDNS hostname}.duckdns.org"
+    volumes:
+      - kinosail-public-transport:/public-transport:ro
+    tmpfs:
+      - /tmp:rw,noexec,nosuid,nodev,size=16m
+      - /config:ro,noexec,nosuid,nodev,size=64k
+      - /cache:ro,noexec,nosuid,nodev,size=64k
+      - /backups:ro,noexec,nosuid,nodev,size=64k
+    healthcheck:
+      disable: true
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+volumes:
+  kinosail-public-transport:

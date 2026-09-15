@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title">
+  <title id="title">Kinosail supporter rank one medallion</title>
+  <defs>
+    <linearGradient id="gold" x1=".15" y1="0" x2=".85" y2="1"><stop stop-color="#fff0b3"/><stop offset=".45" stop-color="#d8b968"/><stop offset="1" stop-color="#70502d"/></linearGradient>
+    <radialGradient id="sea"><stop stop-color="#17483e"/><stop offset="1" stop-color="#07100e"/></radialGradient>
+    <filter id="shadow" x="-30%" y="-30%" width="160%" height="170%"><feDropShadow dy="12" stdDeviation="10" flood-color="#000" flood-opacity=".55"/></filter>
+  </defs>
+  <g filter="url(#shadow)">
+    <circle cx="256" cy="256" r="186" fill="#080b0a" stroke="url(#gold)" stroke-width="14"/>
+    <circle cx="256" cy="256" r="163" fill="url(#sea)" stroke="#70502d" stroke-width="4"/>
+    <path fill="#fff2c5" d="M247 130c-38 48-62 111-62 186 35-15 72-16 115-2-29-56-43-119-53-184Z"/>
+    <path fill="url(#gold)" d="M257 151c52 50 78 104 78 163-34-16-66-18-96-10 19-48 24-99 18-153Z"/>
+    <path fill="#08110f" d="m248 226 48 29-48 29Z"/>
+    <path d="M139 327c46-31 76-5 111-4 41 2 61-31 116-8M151 351c37-22 67-7 96-4 43 4 70-21 109-14" fill="none" stroke="#8dd8c1" stroke-linecap="round" stroke-width="8"/>
+    <path d="m256 88 8 18 19 8-19 8-8 19-8-19-19-8 19-8Z" fill="#fff2c5" stroke="#d8b968" stroke-width="3"/>
+  </g>
+</svg>

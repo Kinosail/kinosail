@@ -1,0 +1,1874 @@
+[
+  {
+    "id": "15 minutes",
+    "other": "15 分"
+  },
+  {
+    "id": "30 minutes",
+    "other": "30 分"
+  },
+  {
+    "id": "45 minutes",
+    "other": "45 分"
+  },
+  {
+    "id": "60 minutes",
+    "other": "60 分"
+  },
+  {
+    "id": "Access",
+    "other": "アクセス"
+  },
+  {
+    "id": "Account · Kinosail Subtitles",
+    "other": "アカウント · キノセイル"
+  },
+  {
+    "id": "Actions",
+    "other": "アクション"
+  },
+  {
+    "id": "active session(s)",
+    "other": "アクティブなセッション"
+  },
+  {
+    "id": "Add a passkey",
+    "other": "パスキーを追加"
+  },
+  {
+    "id": "Add folder",
+    "other": "フォルダーを追加"
+  },
+  {
+    "id": "Add media or try another search.",
+    "other": "メディアを追加するか、別の検索を試してください。"
+  },
+  {
+    "id": "Add Profile",
+    "other": "プロフィールを追加"
+  },
+  {
+    "id": "Add this secret or URI to your authenticator app.",
+    "other": "このシークレットまたは URI を認証アプリに追加します。"
+  },
+  {
+    "id": "Add to",
+    "other": "追加"
+  },
+  {
+    "id": "Administer server",
+    "other": "サーバーの管理"
+  },
+  {
+    "id": "Album",
+    "other": "アルバム"
+  },
+  {
+    "id": "Albums",
+    "other": "アルバム"
+  },
+  {
+    "id": "all",
+    "other": "すべて"
+  },
+  {
+    "id": "All ratings",
+    "other": "すべての評価"
+  },
+  {
+    "id": "Allow downloads",
+    "other": "ダウンロードを許可"
+  },
+  {
+    "id": "Allow transcoding",
+    "other": "トランスコーディングを許可"
+  },
+  {
+    "id": "AMD AMF",
+    "other": "AMD AMF"
+  },
+  {
+    "id": "Analyze playback segments now",
+    "other": "再生セグメントを今すぐ分析"
+  },
+  {
+    "id": "analyzed item(s)",
+    "other": "分析項目"
+  },
+  {
+    "id": "API key name",
+    "other": "API キー名"
+  },
+  {
+    "id": "API key scope does not allow this request",
+    "other": "API キーのスコープではこのリクエストは許可されません"
+  },
+  {
+    "id": "API key view failed",
+    "other": "API キーの表示に失敗しました"
+  },
+  {
+    "id": "API key · Kinosail Subtitles",
+    "other": "API キー · キノセイル"
+  },
+  {
+    "id": "API keys",
+    "other": "API キー"
+  },
+  {
+    "id": "Appearance",
+    "other": "外観"
+  },
+  {
+    "id": "Apple VideoToolbox",
+    "other": "Apple VideoToolbox"
+  },
+  {
+    "id": "Apply",
+    "other": "適用"
+  },
+  {
+    "id": "Audio",
+    "other": "オーディオ"
+  },
+  {
+    "id": "Audiobooks",
+    "other": "オーディオブック"
+  },
+  {
+    "id": "Authentication code",
+    "other": "認証コード"
+  },
+  {
+    "id": "Authentication or recovery code",
+    "other": "認証または回復コード"
+  },
+  {
+    "id": "authentication required",
+    "other": "認証が必要"
+  },
+  {
+    "id": "Authorize device",
+    "other": "デバイスを認証"
+  },
+  {
+    "id": "Automatic",
+    "other": "自動"
+  },
+  {
+    "id": "automatic",
+    "other": "自動"
+  },
+  {
+    "id": "Automatic (best detected)",
+    "other": "自動 (最もよく検出される)"
+  },
+  {
+    "id": "Automatic (browser)",
+    "other": "自動 (ブラウザ)"
+  },
+  {
+    "id": "Automatic backups",
+    "other": "自動バックアップ"
+  },
+  {
+    "id": "Automatic maintenance",
+    "other": "自動メンテナンス"
+  },
+  {
+    "id": "Available devices use a direct connection to this Server.",
+    "other": "利用可能なデバイスは、このサーバーへの直接接続を使用します。"
+  },
+  {
+    "id": "Back to library",
+    "other": "ライブラリに戻る"
+  },
+  {
+    "id": "Back to settings",
+    "other": "設定に戻る"
+  },
+  {
+    "id": "Back up now",
+    "other": "今すぐバックアップ"
+  },
+  {
+    "id": "Backup and recovery",
+    "other": "バックアップとリカバリ"
+  },
+  {
+    "id": "backup is unavailable",
+    "other": "バックアップは利用できません"
+  },
+  {
+    "id": "Backups need setup.",
+    "other": "バックアップを設定する必要があります。"
+  },
+  {
+    "id": "Backups run automatically without encryption.",
+    "other": "バックアップは暗号化なしで自動的に実行されます。"
+  },
+  {
+    "id": "Backups · Kinosail Subtitles",
+    "other": "バックアップ · Kinosail Subtitles"
+  },
+  {
+    "id": "Book",
+    "other": "予約"
+  },
+  {
+    "id": "Books",
+    "other": "書籍"
+  },
+  {
+    "id": "Books and comics",
+    "other": "本とコミック"
+  },
+  {
+    "id": "Browse library",
+    "other": "ライブラリを参照"
+  },
+  {
+    "id": "Cancel",
+    "other": "キャンセル"
+  },
+  {
+    "id": "Cast",
+    "other": "キャスト"
+  },
+  {
+    "id": "Chapters",
+    "other": "章"
+  },
+  {
+    "id": "Choose the language for this browser.",
+    "other": "このブラウザの言語を選択してください。"
+  },
+  {
+    "id": "Clear transcode cache",
+    "other": "トランスコード キャッシュをクリア"
+  },
+  {
+    "id": "Code",
+    "other": "コード"
+  },
+  {
+    "id": "Collection",
+    "other": "コレクション"
+  },
+  {
+    "id": "Collections",
+    "other": "コレクション"
+  },
+  {
+    "id": "Commercial",
+    "other": "商用"
+  },
+  {
+    "id": "Compatibility",
+    "other": "互換性"
+  },
+  {
+    "id": "Compatibility Connection",
+    "other": "互換性接続"
+  },
+  {
+    "id": "Compatibility stream",
+    "other": "互換性ストリーム"
+  },
+  {
+    "id": "compatible",
+    "other": "互換"
+  },
+  {
+    "id": "Concurrent streams",
+    "other": "同時ストリーム"
+  },
+  {
+    "id": "Configuration error",
+    "other": "構成エラー"
+  },
+  {
+    "id": "Configuration · Kinosail Subtitles",
+    "other": "構成 · キノセイル"
+  },
+  {
+    "id": "Configured; value hidden",
+    "other": "設定済み。値が非表示"
+  },
+  {
+    "id": "Confirm delete",
+    "other": "削除を確認"
+  },
+  {
+    "id": "Confirm remove",
+    "other": "削除を確認"
+  },
+  {
+    "id": "Connect",
+    "other": "接続"
+  },
+  {
+    "id": "Connect a device",
+    "other": "デバイスを接続"
+  },
+  {
+    "id": "Connected",
+    "other": "接続済み"
+  },
+  {
+    "id": "Connecting",
+    "other": "接続中"
+  },
+  {
+    "id": "Connecting…",
+    "other": "接続中…"
+  },
+  {
+    "id": "Connection error",
+    "other": "接続エラー"
+  },
+  {
+    "id": "Content",
+    "other": "コンテンツ"
+  },
+  {
+    "id": "Continue Watching",
+    "other": "視聴を続ける"
+  },
+  {
+    "id": "Continue watching",
+    "other": "引き続き視聴"
+  },
+  {
+    "id": "from Continue Watching",
+    "other": "続きを見る"
+  },
+  {
+    "id": "Copy this key now. Kinosail stores only its hash.",
+    "other": "このキーを今すぐコピーしてください。 Kinosail はハッシュのみを保存します。"
+  },
+  {
+    "id": "could not create MFA enrollment",
+    "other": "MFA 登録を作成できません"
+  },
+  {
+    "id": "could not create Owner Profile",
+    "other": "所有者プロフィールを作成できません"
+  },
+  {
+    "id": "could not create session",
+    "other": "セッションを作成できません"
+  },
+  {
+    "id": "could not end session",
+    "other": "セッションを終了できません"
+  },
+  {
+    "id": "could not read subtitles",
+    "other": "字幕を読めません"
+  },
+  {
+    "id": "Create",
+    "other": "作成"
+  },
+  {
+    "id": "Create a passkey",
+    "other": "パスキーを作成"
+  },
+  {
+    "id": "Create API key",
+    "other": "API キーの作成"
+  },
+  {
+    "id": "Create passkey",
+    "other": "パスキーの作成"
+  },
+  {
+    "id": "Create smart playlist",
+    "other": "スマート プレイリストを作成"
+  },
+  {
+    "id": "Create your Owner Profile",
+    "other": "オーナー プロフィールを作成"
+  },
+  {
+    "id": "Created once",
+    "other": "一度作成"
+  },
+  {
+    "id": "Credentials configured",
+    "other": "資格情報が構成されました"
+  },
+  {
+    "id": "Credits",
+    "other": "クレジット"
+  },
+  {
+    "id": "cross-origin request denied",
+    "other": "クロスオリジンリクエストが拒否されました"
+  },
+  {
+    "id": "Curate",
+    "other": "キュレート"
+  },
+  {
+    "id": "Dark",
+    "other": "ダーク"
+  },
+  {
+    "id": "default",
+    "other": "デフォルト"
+  },
+  {
+    "id": "Default playback",
+    "other": "デフォルト再生"
+  },
+  {
+    "id": "Delete",
+    "other": "削除"
+  },
+  {
+    "id": "Deployment configuration",
+    "other": "展開構成"
+  },
+  {
+    "id": "Destination",
+    "other": "目的地"
+  },
+  {
+    "id": "detected, unavailable",
+    "other": "検出されました、利用できません"
+  },
+  {
+    "id": "Device or app",
+    "other": "デバイスまたはアプリ"
+  },
+  {
+    "id": "Diagnostics",
+    "other": "診断"
+  },
+  {
+    "id": "Direct",
+    "other": "直接"
+  },
+  {
+    "id": "direct",
+    "other": "直接"
+  },
+  {
+    "id": "Direct connection unavailable",
+    "other": "直接接続は利用できません"
+  },
+  {
+    "id": "Direct from",
+    "other": "直接配信元"
+  },
+  {
+    "id": "Direct stream",
+    "other": "ダイレクト ストリーム"
+  },
+  {
+    "id": "Directed by",
+    "other": "監督"
+  },
+  {
+    "id": "Disable and revoke",
+    "other": "無効にして取り消す"
+  },
+  {
+    "id": "Disable two-factor authentication",
+    "other": "2 要素認証を無効にする"
+  },
+  {
+    "id": "Disaster recovery",
+    "other": "災害復旧"
+  },
+  {
+    "id": "DLNA",
+    "other": "DLNA"
+  },
+  {
+    "id": "Download",
+    "other": "ダウンロード"
+  },
+  {
+    "id": "Download media",
+    "other": "メディアをダウンロード"
+  },
+  {
+    "id": "Download original",
+    "other": "オリジナルをダウンロード"
+  },
+  {
+    "id": "Download portable state archive",
+    "other": "ポータブル状態アーカイブをダウンロード"
+  },
+  {
+    "id": "Download safe diagnostics",
+    "other": "安全な診断をダウンロード"
+  },
+  {
+    "id": "Download WireGuard profile",
+    "other": "WireGuard プロファイルをダウンロード"
+  },
+  {
+    "id": "Downloads",
+    "other": "ダウンロード"
+  },
+  {
+    "id": "downloads are not enabled for this Viewer Profile",
+    "other": "この視聴者プロフィールではダウンロードが有効になっていません"
+  },
+  {
+    "id": "Edit metadata",
+    "other": "メタデータの編集"
+  },
+  {
+    "id": "Edit skip markers",
+    "other": "スキップ マーカーを編集"
+  },
+  {
+    "id": "embedded subtitles are unavailable",
+    "other": "埋め込み字幕は利用できません"
+  },
+  {
+    "id": "Enable DLNA",
+    "other": "DLNA を有効にする"
+  },
+  {
+    "id": "Enable two-factor authentication",
+    "other": "2 要素認証を有効にする"
+  },
+  {
+    "id": "Enabled",
+    "other": "有効"
+  },
+  {
+    "id": "Encrypted backups run automatically.",
+    "other": "暗号化されたバックアップは自動的に実行されます。"
+  },
+  {
+    "id": "Encryption is off by default.",
+    "other": "暗号化はデフォルトでオフになっています。"
+  },
+  {
+    "id": "Encryption is on.",
+    "other": "暗号化がオンになっています。"
+  },
+  {
+    "id": "End in seconds",
+    "other": "数秒で終了"
+  },
+  {
+    "id": "Enter the code shown by your TV or app. It will inherit your Profile Policy.",
+    "other": "テレビまたはアプリに表示されたコードを入力してください。プロファイル ポリシーが継承されます。"
+  },
+  {
+    "id": "Environment and YAML values are authoritative. GUI changes shown here take effect after the Server restarts.",
+    "other": "環境と YAML の値には信頼性があります。ここに示す GUI の変更は、サーバーの再起動後に有効になります。"
+  },
+  {
+    "id": "Environment default",
+    "other": "環境のデフォルト"
+  },
+  {
+    "id": "Event webhook",
+    "other": "イベント Webhook"
+  },
+  {
+    "id": "Every 15 minutes",
+    "other": "15分ごと"
+  },
+  {
+    "id": "Every 5 minutes",
+    "other": "5分ごと"
+  },
+  {
+    "id": "Everything",
+    "other": "すべて"
+  },
+  {
+    "id": "Export full activity journal",
+    "other": "完全なアクティビティ ジャーナルをエクスポート"
+  },
+  {
+    "id": "Expose direct media URLs to devices on this local network. Disabling revokes the discovery capability.",
+    "other": "このローカル ネットワーク上のデバイスにダイレクト メディア URL を公開します。無効にすると、検出機能が取り消されます。"
+  },
+  {
+    "id": "Externally managed",
+    "other": "外部管理"
+  },
+  {
+    "id": "Find",
+    "other": "検索"
+  },
+  {
+    "id": "Find something",
+    "other": "何かを見つけてください"
+  },
+  {
+    "id": "Finish setup",
+    "other": "セットアップを完了"
+  },
+  {
+    "id": "Finish sign in",
+    "other": "サインインを完了"
+  },
+  {
+    "id": "Folder inside media mount",
+    "other": "メディア マウント内のフォルダー"
+  },
+  {
+    "id": "Follow this device or choose a fixed theme.",
+    "other": "このデバイスをフォローするか、固定テーマを選択してください。"
+  },
+  {
+    "id": "Following the room leader",
+    "other": "ルームリーダーをフォロー"
+  },
+  {
+    "id": "From",
+    "other": "開始"
+  },
+  {
+    "id": "from",
+    "other": "から"
+  },
+  {
+    "id": "General",
+    "other": "全般"
+  },
+  {
+    "id": "Genres",
+    "other": "ジャンル"
+  },
+  {
+    "id": "Got it",
+    "other": "わかりました"
+  },
+  {
+    "id": "Group",
+    "other": "グループ"
+  },
+  {
+    "id": "Hardware",
+    "other": "ハードウェア"
+  },
+  {
+    "id": "History",
+    "other": "歴史"
+  },
+  {
+    "id": "Home",
+    "other": "ホーム"
+  },
+  {
+    "id": "Hourly",
+    "other": "時間ごと"
+  },
+  {
+    "id": "if enabled",
+    "other": "有効な場合"
+  },
+  {
+    "id": "Install",
+    "other": "インストール"
+  },
+  {
+    "id": "Install Kinosail Subtitles",
+    "other": "Kinosail をインストール"
+  },
+  {
+    "id": "Integrations",
+    "other": "統合"
+  },
+  {
+    "id": "Intel Quick Sync",
+    "other": "インテル クイック同期"
+  },
+  {
+    "id": "Intro",
+    "other": "紹介"
+  },
+  {
+    "id": "invalid authentication code",
+    "other": "無効な認証コード"
+  },
+  {
+    "id": "invalid Collection state",
+    "other": "無効なコレクション状態"
+  },
+  {
+    "id": "invalid credentials",
+    "other": "無効な認証情報"
+  },
+  {
+    "id": "invalid list state",
+    "other": "リストの状態が無効です"
+  },
+  {
+    "id": "invalid playlist state",
+    "other": "プレイリストの状態が無効です"
+  },
+  {
+    "id": "invalid progress",
+    "other": "無効な進行状況"
+  },
+  {
+    "id": "invalid watched state",
+    "other": "監視状態が無効です"
+  },
+  {
+    "id": "Invite link",
+    "other": "リンクを招待"
+  },
+  {
+    "id": "Keep",
+    "other": "キープ"
+  },
+  {
+    "id": "Keep backups on storage outside this host. Backups are unencrypted unless a backup key is configured. Restore while the Server is stopped.",
+    "other": "このホストの外部のストレージにバックアップを保存します。バックアップ キーが設定されていない限り、バックアップは暗号化されません。サーバーが停止している間に復元します。"
+  },
+  {
+    "id": "Keep Kinosail Subtitles close",
+    "other": "キノセイルを近づけないでください"
+  },
+  {
+    "id": "Keys are shown once and stored as hashes. Browse access is the safe default.",
+    "other": "キーは 1 回表示され、ハッシュとして保存されます。参照アクセスが安全なデフォルトです。"
+  },
+  {
+    "id": "Kinosail",
+    "other": "キノセイル"
+  },
+  {
+    "id": "Kinosail Subtitles cannot reach this Server. Check your network or Direct Connection, then try again.",
+    "other": "Kinosail はこのサーバーに到達できません。ネットワークまたは直接接続を確認して、もう一度試してください。"
+  },
+  {
+    "id": "Kinosail maintains itself automatically.",
+    "other": "Kinosail は自動的にメンテナンスされます。"
+  },
+  {
+    "id": "Kinosail Subtitles Reader",
+    "other": "Kinosail リーダー"
+  },
+  {
+    "id": "Language",
+    "other": "言語"
+  },
+  {
+    "id": "language is invalid",
+    "other": "言語が無効です"
+  },
+  {
+    "id": "Last error",
+    "other": "最後のエラー"
+  },
+  {
+    "id": "Last scan error",
+    "other": "最後のスキャン エラー"
+  },
+  {
+    "id": "Last successful backup",
+    "other": "最後に成功したバックアップ"
+  },
+  {
+    "id": "Last successful scan",
+    "other": "最後に成功したスキャン"
+  },
+  {
+    "id": "Last verified",
+    "other": "最終確認"
+  },
+  {
+    "id": "Latest",
+    "other": "最新"
+  },
+  {
+    "id": "Libraries",
+    "other": "ライブラリ"
+  },
+  {
+    "id": "Library",
+    "other": "ライブラリ"
+  },
+  {
+    "id": "Library discovery",
+    "other": "ライブラリの発見"
+  },
+  {
+    "id": "Library folders",
+    "other": "ライブラリ フォルダー"
+  },
+  {
+    "id": "Library items",
+    "other": "ライブラリ アイテム"
+  },
+  {
+    "id": "Library organization",
+    "other": "図書館組織"
+  },
+  {
+    "id": "Library views",
+    "other": "ライブラリ ビュー"
+  },
+  {
+    "id": "Licensed credential configured",
+    "other": "ライセンス認証情報が構成されました"
+  },
+  {
+    "id": "Light",
+    "other": "ライト"
+  },
+  {
+    "id": "Link OpenID Connect",
+    "other": "OpenID Connectをリンク"
+  },
+  {
+    "id": "Local account",
+    "other": "ローカル アカウント"
+  },
+  {
+    "id": "M3U playlist",
+    "other": "M3U プレイリスト"
+  },
+  {
+    "id": "Manage personal library state",
+    "other": "個人ライブラリの状態を管理"
+  },
+  {
+    "id": "Managed externally and read-only.",
+    "other": "外部で読み取り専用で管理されます。"
+  },
+  {
+    "id": "Managed remote access",
+    "other": "マネージド リモート アクセス"
+  },
+  {
+    "id": "Mark",
+    "other": "マーク"
+  },
+  {
+    "id": "marker",
+    "other": "マーカー"
+  },
+  {
+    "id": "Match text",
+    "other": "テキストの一致"
+  },
+  {
+    "id": "Media",
+    "other": "メディア"
+  },
+  {
+    "id": "Media information",
+    "other": "メディア情報"
+  },
+  {
+    "id": "Media mount",
+    "other": "メディア マウント"
+  },
+  {
+    "id": "metadata could not be saved",
+    "other": "メタデータを保存できませんでした"
+  },
+  {
+    "id": "metadata is invalid",
+    "other": "メタデータが無効です"
+  },
+  {
+    "id": "Metadata provider",
+    "other": "メタデータ プロバイダー"
+  },
+  {
+    "id": "metadata provider unavailable",
+    "other": "メタデータ プロバイダーが利用できません"
+  },
+  {
+    "id": "Metrics",
+    "other": "メトリクス"
+  },
+  {
+    "id": "Movies",
+    "other": "映画"
+  },
+  {
+    "id": "Music",
+    "other": "音楽"
+  },
+  {
+    "id": "Music and audiobooks",
+    "other": "音楽とオーディオブック"
+  },
+  {
+    "id": "My List",
+    "other": "マイリスト"
+  },
+  {
+    "id": "Name",
+    "other": "名前"
+  },
+  {
+    "id": "name and a 12-character password are required",
+    "other": "名前と12文字のパスワードが必要です"
+  },
+  {
+    "id": "Never",
+    "other": "絶対に"
+  },
+  {
+    "id": "New Collection",
+    "other": "新しいコレクション"
+  },
+  {
+    "id": "New Collection name",
+    "other": "新しいコレクション名"
+  },
+  {
+    "id": "New media is detected automatically after copying finishes. Safety scans repair missed filesystem events on Windows, macOS, Linux, containers, and network mounts.",
+    "other": "コピーが完了すると、新しいメディアが自動的に検出されます。セーフティ スキャンは、Windows、macOS、Linux、コンテナー、およびネットワーク マウントで失われたファイル システム イベントを修復します。"
+  },
+  {
+    "id": "New password",
+    "other": "新しいパスワード"
+  },
+  {
+    "id": "New playlist",
+    "other": "新しいプレイリスト"
+  },
+  {
+    "id": "New playlist name",
+    "other": "新しいプレイリスト名"
+  },
+  {
+    "id": "New profile name",
+    "other": "新しいプロファイル名"
+  },
+  {
+    "id": "New profile password",
+    "other": "新しいプロフィールのパスワード"
+  },
+  {
+    "id": "New secret",
+    "other": "新しい秘密"
+  },
+  {
+    "id": "New smart playlist",
+    "other": "新しいスマート プレイリスト"
+  },
+  {
+    "id": "New Viewers start with family ratings and no libraries. Add folder names or",
+    "other": "新規視聴者は、ライブラリなしでファミリー評価から始まります。フォルダー名を追加するか"
+  },
+  {
+    "id": "Newest",
+    "other": "最新"
+  },
+  {
+    "id": "No activity recorded yet.",
+    "other": "アクティビティはまだ記録されていません。"
+  },
+  {
+    "id": "No channels configured.",
+    "other": "チャネルが設定されていません。"
+  },
+  {
+    "id": "No device selected",
+    "other": "デバイスが選択されていません"
+  },
+  {
+    "id": "No offline downloads yet.",
+    "other": "オフライン ダウンロードはまだありません。"
+  },
+  {
+    "id": "No playback recorded yet.",
+    "other": "再生はまだ記録されていません。"
+  },
+  {
+    "id": "None",
+    "other": "なし"
+  },
+  {
+    "id": "None; use all or folder names",
+    "other": "なし。すべてまたはフォルダー名を使用"
+  },
+  {
+    "id": "Not configured",
+    "other": "未設定"
+  },
+  {
+    "id": "not detected",
+    "other": "検出されません"
+  },
+  {
+    "id": "not found",
+    "other": "見つかりません"
+  },
+  {
+    "id": "Not now",
+    "other": "今はありません"
+  },
+  {
+    "id": "Nothing found.",
+    "other": "何も見つかりませんでした。"
+  },
+  {
+    "id": "Now viewing",
+    "other": "閲覧中"
+  },
+  {
+    "id": "NVIDIA NVENC/NVDEC",
+    "other": "NVIDIA NVENC/NVDEC"
+  },
+  {
+    "id": "Off",
+    "other": "オフ"
+  },
+  {
+    "id": "offline",
+    "other": "オフライン"
+  },
+  {
+    "id": "Offline downloads",
+    "other": "オフライン ダウンロード"
+  },
+  {
+    "id": "Offline downloads · Kinosail Subtitles",
+    "other": "オフライン ダウンロード · キノセイル"
+  },
+  {
+    "id": "On",
+    "other": "オン"
+  },
+  {
+    "id": "On iPhone or iPad, tap Share, choose Add to Home Screen, turn on Open as Web App, then tap Add.",
+    "other": "iPhone または iPad では、[共有] をタップし、[ホーム画面に追加] を選択し、[Web アプリとして開く] をオンにして、[追加] をタップします。"
+  },
+  {
+    "id": "One-time reveal",
+    "other": "1 回限りの公開"
+  },
+  {
+    "id": "OpenID Connect",
+    "other": "OpenID Connect"
+  },
+  {
+    "id": "OpenSubtitles",
+    "other": "オープン字幕"
+  },
+  {
+    "id": "Outro",
+    "other": "アウトロ"
+  },
+  {
+    "id": "Owner",
+    "other": "オーナー"
+  },
+  {
+    "id": "Owner access required",
+    "other": "所有者アクセスが必要"
+  },
+  {
+    "id": "Owner controls",
+    "other": "オーナー コントロール"
+  },
+  {
+    "id": "Passkey added.",
+    "other": "パスキーが追加されました。"
+  },
+  {
+    "id": "Passkey failed.",
+    "other": "パスキーが失敗しました。"
+  },
+  {
+    "id": "Passkeys need the configured Server address and trusted HTTPS. Open that address, trust the Server certificate, or use an authenticator.",
+    "other": "Passkeys need the configured Server address and trusted HTTPS. Open that address, trust the Server certificate, or use an authenticator."
+  },
+  {
+    "id": "Password",
+    "other": "パスワード"
+  },
+  {
+    "id": "Photos",
+    "other": "写真"
+  },
+  {
+    "id": "Play",
+    "other": "プレイ"
+  },
+  {
+    "id": "Play on device",
+    "other": "デバイスで再生"
+  },
+  {
+    "id": "Play the next Episode automatically",
+    "other": "次のエピソードを自動的に再生"
+  },
+  {
+    "id": "Playback",
+    "other": "再生"
+  },
+  {
+    "id": "Playback history",
+    "other": "再生履歴"
+  },
+  {
+    "id": "Playback segment analysis",
+    "other": "再生セグメント分析"
+  },
+  {
+    "id": "Playback speed",
+    "other": "再生速度"
+  },
+  {
+    "id": "Playing here",
+    "other": "ここでプレイ"
+  },
+  {
+    "id": "Playing on device",
+    "other": "デバイスで再生中"
+  },
+  {
+    "id": "Playlist",
+    "other": "プレイリスト"
+  },
+  {
+    "id": "Playlists",
+    "other": "プレイリスト"
+  },
+  {
+    "id": "Plot",
+    "other": "プロット"
+  },
+  {
+    "id": "Polling for changes",
+    "other": "変更のポーリング"
+  },
+  {
+    "id": "Prefer quality",
+    "other": "品質を優先"
+  },
+  {
+    "id": "Prefer speed",
+    "other": "スピード優先"
+  },
+  {
+    "id": "Preferred language",
+    "other": "希望言語"
+  },
+  {
+    "id": "Prepare",
+    "other": "準備"
+  },
+  {
+    "id": "preview unavailable",
+    "other": "プレビューは利用できません"
+  },
+  {
+    "id": "Private by design",
+    "other": "仕様により非公開"
+  },
+  {
+    "id": "Profile",
+    "other": "プロフィール"
+  },
+  {
+    "id": "profile storage is unavailable",
+    "other": "プロファイル ストレージが利用できません"
+  },
+  {
+    "id": "Profile to reset",
+    "other": "リセットするプロファイル"
+  },
+  {
+    "id": "Profile type",
+    "other": "プロファイル タイプ"
+  },
+  {
+    "id": "Profiles",
+    "other": "プロフィール"
+  },
+  {
+    "id": "Protected automatically",
+    "other": "自動的に保護"
+  },
+  {
+    "id": "Quality",
+    "other": "品質"
+  },
+  {
+    "id": "quality",
+    "other": "品質"
+  },
+  {
+    "id": "Quick Connect",
+    "other": "クイック接続"
+  },
+  {
+    "id": "Quick Connect · Kinosail Subtitles",
+    "other": "クイック接続 · キノセイル"
+  },
+  {
+    "id": "Rating",
+    "other": "評価"
+  },
+  {
+    "id": "Read now",
+    "other": "今すぐ読む"
+  },
+  {
+    "id": "reader",
+    "other": "読者"
+  },
+  {
+    "id": "Reading order",
+    "other": "順序を読む"
+  },
+  {
+    "id": "ready",
+    "other": "準備完了"
+  },
+  {
+    "id": "Ready offline",
+    "other": "オフライン準備完了"
+  },
+  {
+    "id": "Recap",
+    "other": "要約"
+  },
+  {
+    "id": "Recent activity",
+    "other": "最近のアクティビティ"
+  },
+  {
+    "id": "Recent playback",
+    "other": "最近の再生"
+  },
+  {
+    "id": "Recently added",
+    "other": "最近追加された"
+  },
+  {
+    "id": "Recently played",
+    "other": "最近プレイした"
+  },
+  {
+    "id": "Recovery",
+    "other": "リカバリ"
+  },
+  {
+    "id": "Recovery codes",
+    "other": "リカバリ コード"
+  },
+  {
+    "id": "Refresh from TMDB",
+    "other": "TMDB から更新"
+  },
+  {
+    "id": "Refresh missing metadata",
+    "other": "不足しているメタデータを更新"
+  },
+  {
+    "id": "Recommended",
+    "other": "推奨"
+  },
+  {
+    "id": "Remote access",
+    "other": "リモート アクセス"
+  },
+  {
+    "id": "Remove",
+    "other": "削除"
+  },
+  {
+    "id": "Remove from",
+    "other": "削除"
+  },
+  {
+    "id": "request",
+    "other": "リクエスト"
+  },
+  {
+    "id": "Request could not be completed.",
+    "other": "リクエストを完了できませんでした。"
+  },
+  {
+    "id": "request is too large",
+    "other": "リクエストが大きすぎます"
+  },
+  {
+    "id": "Reset password",
+    "other": "パスワードをリセット"
+  },
+  {
+    "id": "Return to settings",
+    "other": "設定に戻る"
+  },
+  {
+    "id": "Revoke",
+    "other": "取り消し"
+  },
+  {
+    "id": "Rockchip RKMPP",
+    "other": "ロックチップ RKMPP"
+  },
+  {
+    "id": "Room connected · following leader",
+    "other": "ルームが接続されました · リーダーをフォローしています"
+  },
+  {
+    "id": "Room connected · you lead",
+    "other": "ルームが接続されました · あなたがリードします"
+  },
+  {
+    "id": "Room disconnected · reload to reconnect",
+    "other": "ルームが切断されました · 再接続するにはリロードしてください"
+  },
+  {
+    "id": "Run library scan now",
+    "other": "今すぐライブラリ スキャンを実行"
+  },
+  {
+    "id": "Run maintenance now",
+    "other": "今すぐメンテナンスを実行"
+  },
+  {
+    "id": "Safety scan",
+    "other": "セーフティスキャン"
+  },
+  {
+    "id": "Save",
+    "other": "保存"
+  },
+  {
+    "id": "Save file",
+    "other": "ファイルを保存"
+  },
+  {
+    "id": "Save for restart",
+    "other": "再起動のために保存"
+  },
+  {
+    "id": "Save marker",
+    "other": "マーカーを保存"
+  },
+  {
+    "id": "Save metadata",
+    "other": "メタデータを保存"
+  },
+  {
+    "id": "Save schedule",
+    "other": "スケジュールを保存"
+  },
+  {
+    "id": "Schedule",
+    "other": "スケジュール"
+  },
+  {
+    "id": "Search library",
+    "other": "ライブラリを検索"
+  },
+  {
+    "id": "Search results",
+    "other": "検索結果"
+  },
+  {
+    "id": "Secrets are hidden and included only in encrypted recovery backups.",
+    "other": "シークレットは隠されており、暗号化されたリカバリ バックアップにのみ含まれます。"
+  },
+  {
+    "id": "Secure your account",
+    "other": "アカウントを保護"
+  },
+  {
+    "id": "Secure your account · Kinosail Subtitles",
+    "other": "アカウントを保護 · Kinosail Subtitles"
+  },
+  {
+    "id": "Send this private connection URL to the Viewer. It is shown only once.",
+    "other": "このプライベート接続 URL をビューアに送信します。 1 回だけ表示されます。"
+  },
+  {
+    "id": "Server name",
+    "other": "サーバー名"
+  },
+  {
+    "id": "Server settings",
+    "other": "サーバー設定"
+  },
+  {
+    "id": "Server unavailable",
+    "other": "サーバーが利用できません"
+  },
+  {
+    "id": "Server unavailable · Kinosail Subtitles",
+    "other": "サーバーが利用できません · Kinosail Subtitles"
+  },
+  {
+    "id": "Set up Kinosail Subtitles",
+    "other": "Kinosail をセットアップする"
+  },
+  {
+    "id": "Set up or replace authenticator",
+    "other": "認証システムのセットアップまたは置き換え"
+  },
+  {
+    "id": "Set up two-factor authentication",
+    "other": "2 要素認証を設定する"
+  },
+  {
+    "id": "Set up two-factor authentication · Kinosail Subtitles",
+    "other": "2 要素認証を設定する · Kinosail Subtitles"
+  },
+  {
+    "id": "Settings",
+    "other": "設定"
+  },
+  {
+    "id": "Settings sections",
+    "other": "設定セクション"
+  },
+  {
+    "id": "Settings · Kinosail Subtitles",
+    "other": "設定 · キノセイル"
+  },
+  {
+    "id": "Shape the experience, protect your library, and keep every stream running beautifully.",
+    "other": "エクスペリエンスを形成し、ライブラリを保護し、すべてのストリームを美しく実行し続けます。"
+  },
+  {
+    "id": "Show",
+    "other": "シリーズ"
+  },
+  {
+    "id": "Shows",
+    "other": "ショー"
+  },
+  {
+    "id": "Sign in",
+    "other": "ログイン"
+  },
+  {
+    "id": "Sign in to your private media universe.",
+    "other": "プライベート メディア ユニバースにログインします。"
+  },
+  {
+    "id": "Sign in with passkey",
+    "other": "パスキーでサインイン"
+  },
+  {
+    "id": "Sign in with SSO",
+    "other": "SSO でサインイン"
+  },
+  {
+    "id": "Sign in · Kinosail Subtitles",
+    "other": "サインイン · キノセイル"
+  },
+  {
+    "id": "Sign out",
+    "other": "ログアウト"
+  },
+  {
+    "id": "Sign out other devices",
+    "other": "他のデバイスからログアウト"
+  },
+  {
+    "id": "Sign-in methods",
+    "other": "サインイン方法"
+  },
+  {
+    "id": "Sign-in, same-origin browser protections, private responses, bounded requests, and revocable access are always on. There are no security switches to manage.",
+    "other": "サインイン、同一オリジンブラウザ保護、プライベート応答、制限付きリクエスト、および取り消し可能なアクセスは常にオンになっています。管理するセキュリティ スイッチはありません。"
+  },
+  {
+    "id": "Single sign-on",
+    "other": "シングル サインオン"
+  },
+  {
+    "id": "Skip",
+    "other": "スキップ"
+  },
+  {
+    "id": "Skip commercials automatically",
+    "other": "コマーシャルを自動的にスキップ"
+  },
+  {
+    "id": "Skip credits automatically",
+    "other": "クレジットを自動的にスキップ"
+  },
+  {
+    "id": "Skip intros automatically",
+    "other": "イントロを自動的にスキップ"
+  },
+  {
+    "id": "Skip outros automatically",
+    "other": "アウトロを自動的にスキップ"
+  },
+  {
+    "id": "Skip recaps automatically",
+    "other": "要約を自動的にスキップ"
+  },
+  {
+    "id": "Skip to content",
+    "other": "コンテンツにスキップ"
+  },
+  {
+    "id": "Sleep timer",
+    "other": "スリープタイマー"
+  },
+  {
+    "id": "Sleep timer ended",
+    "other": "スリープタイマーが終了しました"
+  },
+  {
+    "id": "Smart playlist",
+    "other": "スマート プレイリスト"
+  },
+  {
+    "id": "Smart playlist name",
+    "other": "スマート プレイリスト名"
+  },
+  {
+    "id": "Software",
+    "other": "ソフトウェア"
+  },
+  {
+    "id": "Sort",
+    "other": "並べ替え"
+  },
+  {
+    "id": "Source",
+    "other": "出典"
+  },
+  {
+    "id": "speed",
+    "other": "速度"
+  },
+  {
+    "id": "SSO challenge is invalid or expired",
+    "other": "SSO チャレンジが無効か期限切れです"
+  },
+  {
+    "id": "SSO code exchange failed",
+    "other": "SSO コード交換に失敗しました"
+  },
+  {
+    "id": "SSO identity is not linked to a Viewer Profile",
+    "other": "SSO ID は閲覧者プロフィールにリンクされていません"
+  },
+  {
+    "id": "SSO is unavailable",
+    "other": "SSO は利用できません"
+  },
+  {
+    "id": "SSO session could not be created",
+    "other": "SSO セッションを作成できませんでした"
+  },
+  {
+    "id": "SSO state is invalid or expired",
+    "other": "SSO 状態が無効か期限切れです"
+  },
+  {
+    "id": "SSO token validation failed",
+    "other": "SSO トークンの検証に失敗しました"
+  },
+  {
+    "id": "Start in seconds",
+    "other": "数秒で開始"
+  },
+  {
+    "id": "Start Watch Together",
+    "other": "一緒に視聴を開始"
+  },
+  {
+    "id": "Status",
+    "other": "ステータス"
+  },
+  {
+    "id": "Stops in {minutes} minutes",
+    "other": "{minutes}分後に停止"
+  },
+  {
+    "id": "Store these codes somewhere safe. Each works once.",
+    "other": "これらのコードは安全な場所に保管してください。それぞれ 1 回だけ機能します。"
+  },
+  {
+    "id": "Stored here. Streamed directly.",
+    "other": "ここに保存されています。直接ストリーミング。"
+  },
+  {
+    "id": "Stream media",
+    "other": "メディアのストリーミング"
+  },
+  {
+    "id": "Subscription required",
+    "other": "定期購読が必要"
+  },
+  {
+    "id": "Subtitle provider",
+    "other": "字幕プロバイダー"
+  },
+  {
+    "id": "subtitle provider unavailable",
+    "other": "字幕プロバイダーが利用できません"
+  },
+  {
+    "id": "subtitle track(s)",
+    "other": "字幕トラック"
+  },
+  {
+    "id": "Subtitles",
+    "other": "字幕"
+  },
+  {
+    "id": "subtitles",
+    "other": "字幕"
+  },
+  {
+    "id": "Sync",
+    "other": "同期"
+  },
+  {
+    "id": "System",
+    "other": "システム"
+  },
+  {
+    "id": "Tagline",
+    "other": "キャッチフレーズ"
+  },
+  {
+    "id": "The backup contains account and session state. Keep unencrypted backup storage private, or configure a backup key.",
+    "other": "バックアップにはアカウントとセッション状態が含まれています。暗号化されていないバックアップ ストレージを非公開にしておくか、バックアップ キーを構成してください。"
+  },
+  {
+    "id": "Theme",
+    "other": "テーマ"
+  },
+  {
+    "id": "These settings are read-only until removed from YAML or the environment",
+    "other": "これらの設定は、YAML または環境から削除されるまで読み取り専用です"
+  },
+  {
+    "id": "This Collection is empty.",
+    "other": "このコレクションは空です。"
+  },
+  {
+    "id": "This permanently deletes the Collection.",
+    "other": "これにより、コレクションが完全に削除されます。"
+  },
+  {
+    "id": "This permanently deletes the playlist.",
+    "other": "これにより、プレイリストが完全に削除されます。"
+  },
+  {
+    "id": "This playlist is empty.",
+    "other": "このプレイリストは空です。"
+  },
+  {
+    "id": "This product uses the TMDB API but is not endorsed or certified by TMDB.",
+    "other": "この製品は TMDB API を使用していますが、TMDB によって承認または認定されていません。"
+  },
+  {
+    "id": "This signs out the profile and deletes it.",
+    "other": "これにより、プロファイルがサインアウトされ、削除されます。"
+  },
+  {
+    "id": "Through PG / TV-PG",
+    "other": "PG / TV-PG を通じて"
+  },
+  {
+    "id": "Through PG-13 / TV-14",
+    "other": "PG-13 / TV-14 経由"
+  },
+  {
+    "id": "Title",
+    "other": "タイトル"
+  },
+  {
+    "id": "Title, artist, genre",
+    "other": "タイトル、アーティスト、ジャンル"
+  },
+  {
+    "id": "Title, artist, genre…",
+    "other": "タイトル、アーティスト、ジャンル…"
+  },
+  {
+    "id": "TMDB",
+    "other": "TMDB"
+  },
+  {
+    "id": "Tone-map HDR to SDR",
+    "other": "HDR から SDR へのトーンマップ"
+  },
+  {
+    "id": "too many login attempts",
+    "other": "ログイン試行が多すぎます"
+  },
+  {
+    "id": "too many Watch Together rooms",
+    "other": "一緒に見るルームが多すぎます"
+  },
+  {
+    "id": "Track",
+    "other": "追跡"
+  },
+  {
+    "id": "transcode cache",
+    "other": "トランスコード キャッシュ"
+  },
+  {
+    "id": "Transcoder",
+    "other": "トランスコーダー"
+  },
+  {
+    "id": "transcoding is not allowed",
+    "other": "トランスコーディングは許可されていません"
+  },
+  {
+    "id": "Try again",
+    "other": "もう一度試してください"
+  },
+  {
+    "id": "Two-factor authentication",
+    "other": "2 要素認証"
+  },
+  {
+    "id": "Two-factor authentication · Kinosail Subtitles",
+    "other": "2 要素認証 · Kinosail Subtitles"
+  },
+  {
+    "id": "Type",
+    "other": "種類"
+  },
+  {
+    "id": "Unlink OpenID Connect",
+    "other": "OpenID Connect のリンクを解除"
+  },
+  {
+    "id": "Until",
+    "other": "終了"
+  },
+  {
+    "id": "Unwatched",
+    "other": "未視聴"
+  },
+  {
+    "id": "unwatched",
+    "other": "未視聴"
+  },
+  {
+    "id": "Use default",
+    "other": "デフォルトを使用"
+  },
+  {
+    "id": "Use Face ID, Touch ID, Windows Hello, or your device PIN to sign in. Your password will still work.",
+    "other": "Face ID、Touch ID、Windows Hello、またはデバイスの PIN を使用してサインインします。パスワードは引き続き機能します。"
+  },
+  {
+    "id": "VA-API (AMD/Intel)",
+    "other": "VA-API (AMD/インテル)"
+  },
+  {
+    "id": "Verified Direct Connection",
+    "other": "直接接続を確認しました"
+  },
+  {
+    "id": "Verified Direct Connection is not configured",
+    "other": "直接接続が構成されていないことを確認しました"
+  },
+  {
+    "id": "Verify latest backup",
+    "other": "最新のバックアップを確認"
+  },
+  {
+    "id": "Video",
+    "other": "ビデオ"
+  },
+  {
+    "id": "Viewer",
+    "other": "閲覧者"
+  },
+  {
+    "id": "Viewer access is not available",
+    "other": "閲覧者アクセスは利用できません"
+  },
+  {
+    "id": "Viewer device",
+    "other": "ビューアデバイス"
+  },
+  {
+    "id": "Viewer name",
+    "other": "視聴者名"
+  },
+  {
+    "id": "Waiting for your passkey…",
+    "other": "パスキーを待っています…"
+  },
+  {
+    "id": "Watch Together state is invalid",
+    "other": "一緒に見る状態が無効です"
+  },
+  {
+    "id": "watched",
+    "other": "見ました"
+  },
+  {
+    "id": "Watched",
+    "other": "視聴しました"
+  },
+  {
+    "id": "Watched ✓",
+    "other": "視聴しました ✓"
+  },
+  {
+    "id": "Watching for changes",
+    "other": "変更を監視中"
+  },
+  {
+    "id": "Welcome aboard",
+    "other": "ようこそ"
+  },
+  {
+    "id": "when ready.",
+    "other": "準備ができたら。"
+  },
+  {
+    "id": "WireGuard Viewer not found",
+    "other": "WireGuard ビューアが見つかりません"
+  },
+  {
+    "id": "XMLTV guide",
+    "other": "XMLTV ガイド"
+  },
+  {
+    "id": "Year",
+    "other": "年"
+  },
+  {
+    "id": "You lead this room",
+    "other": "あなたがこの部屋のリーダーです"
+  },
+  {
+    "id": "Your library",
+    "other": "あなたのライブラリ"
+  },
+  {
+    "id": "Your library and viewing activity stay on this Server.",
+    "other": "ライブラリと閲覧アクティビティはこのサーバー上に残ります。"
+  },
+  {
+    "id": "← Books",
+    "other": "←書籍"
+  },
+  {
+    "id": "← Library",
+    "other": "← ライブラリ"
+  },
+  {
+    "id": "← Settings",
+    "other": "← 設定"
+  }
+]

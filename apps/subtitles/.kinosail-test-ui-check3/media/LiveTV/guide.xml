@@ -1,0 +1,2 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tv><channel id="example-test"><display-name>Example Live TV Channel</display-name></channel><programme start="20000101000000 +0000" stop="20991231235959 +0000" channel="example-test"><title>Example Broadcast Loop</title><desc>Locally generated abstract video and tone.</desc></programme></tv>

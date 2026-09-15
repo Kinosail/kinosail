@@ -1,0 +1,50 @@
+FROM --platform=$BUILDPLATFORM docker.io/library/golang:1.27-alpine@sha256:4c9fe60190a2a3350ddc51de80d0224b8a6698d12bdfc999fee45ea9d6c46dbc AS build
+WORKDIR /src
+COPY packages/go.mod ./packages/go.mod
+COPY apps/player/go.mod apps/player/go.sum ./apps/player/
+RUN cd apps/player && go mod download
+COPY packages ./packages
+COPY apps/player/cmd ./apps/player/cmd
+COPY apps/player/internal ./apps/player/internal
+ARG VERSION=dev
+ARG TARGETOS
+ARG TARGETARCH
+RUN cd apps/player && CGO_ENABLED=0 GOOS=$TARGETOS GOARCH=$TARGETARCH go build -trimpath -ldflags="-s -w -X main.version=${VERSION}" -o /kinosail ./cmd/kinosail
+
+FROM docker.io/library/debian:trixie-slim@sha256:d7e12182ce18b85b93007c1dedf31f2d29e01ccf3182cc4017c709b6259bc132
+ARG VERSION=dev
+ARG REVISION=unknown
+LABEL org.opencontainers.image.version=$VERSION org.opencontainers.image.revision=$REVISION
+ARG JELLYFIN_FFMPEG_VERSION=7.1.4-3
+RUN apt-get update \
+    && apt-get upgrade -y \
+    && apt-get install -y --no-install-recommends ca-certificates libaom3 libarchive-tools libchromaprint-tools mesa-va-drivers socat tzdata wget \
+    && dpkg --compare-versions "$(dpkg-query -W -f='${Version}' libaom3)" ge 3.12.1-1+deb13u1 \
+    && arch="$(dpkg --print-architecture)" \
+    && case "$arch" in \
+      amd64) checksum=8e30f9f7f3958c524bec8334540e4241145ad4300b328a08a55783c619187225; apt-get install -y --no-install-recommends i965-va-driver intel-media-va-driver ;; \
+      arm64) checksum=a8fa3ec7cf8fbaf06bb4fdb768d4dd7798277fe4c4b66884c777dc7d575877fb ;; \
+      *) echo "unsupported architecture: $arch" >&2; exit 1 ;; \
+    esac \
+    && wget -q -O /tmp/jellyfin-ffmpeg.deb "https://github.com/jellyfin/jellyfin-ffmpeg/releases/download/v${JELLYFIN_FFMPEG_VERSION}/jellyfin-ffmpeg7_${JELLYFIN_FFMPEG_VERSION}-trixie_${arch}.deb" \
+    && echo "$checksum  /tmp/jellyfin-ffmpeg.deb" | sha256sum -c - \
+    && apt-get install -y --no-install-recommends /tmp/jellyfin-ffmpeg.deb \
+    && apt-get purge -y --auto-remove wget \
+    && ln -s /usr/lib/jellyfin-ffmpeg/ffmpeg /usr/local/bin/ffmpeg \
+    && ln -s /usr/lib/jellyfin-ffmpeg/ffprobe /usr/local/bin/ffprobe \
+    && groupadd -g 10001 kinosail \
+    && useradd -M -u 10001 -g kinosail -s /usr/sbin/nologin kinosail \
+	&& mkdir -p /config /cache /media /backups /public-transport \
+	&& chown -R kinosail:kinosail /config /cache /backups /public-transport \
+    && rm -f /tmp/jellyfin-ffmpeg.deb \
+    && rm -rf /var/lib/apt/lists/*
+COPY --from=build /kinosail /usr/local/bin/kinosail
+COPY apps/player/LICENSE apps/player/LICENSING.md apps/player/THIRD_PARTY_NOTICES.md /licenses/
+COPY apps/player/third_party /licenses/third_party
+COPY packages/third_party /licenses/third_party
+USER kinosail
+ENV KINOSAIL_LISTEN=:38127
+VOLUME ["/config", "/cache", "/backups"]
+EXPOSE 38127
+HEALTHCHECK CMD kinosail healthcheck
+ENTRYPOINT ["kinosail"]

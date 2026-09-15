@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800" role="img" aria-labelledby="title">
+<title id="title">Sample Friend Patron Order certificate</title>
+<rect width="1200" height="800" fill="#090a08"/><rect x="28" y="28" width="1144" height="744" rx="3" fill="none" stroke="#726a4f"/>
+<path d="M48 92V48H92 M1108 48H1152V92 M48 708V752H92 M1108 752H1152V708" fill="none" stroke="#e4cf9f" stroke-width="2"/>
+<g font-family="Arial, sans-serif" text-anchor="middle">
+<text x="600" y="96" fill="#dfe7d5" font-size="18" letter-spacing="6">KINOSAIL PLAYER</text>
+<g transform="translate(453 114) scale(.82)"><defs><linearGradient id="certificate-metal" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#bcd3e9"/><stop offset=".35" stop-color="#fff4dc"/><stop offset=".6" stop-color="#947347"/><stop offset=".83" stop-color="#bcd3e9"/></linearGradient><linearGradient id="certificate-field" x2="0" y2="1"><stop stop-color="#212d40"/><stop offset="1" stop-color="#0c1310"/></linearGradient></defs><g transform="translate(180 180)"><path d="M0 -123 L24 -97 L86 -86 L97 -24 L123 0 L97 24 L86 86 L24 97 L0 123 L-24 97 L-86 86 L-97 24 L-123 0 L-97 -24 L-86 -86 L-24 -97 Z" fill="url(#certificate-field)" stroke="url(#certificate-metal)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" /><circle cx="0" cy="104" r="4" fill="url(#certificate-metal)" stroke="none" stroke-width="2"/><g color="#bcd3e9" transform="scale(0.87)"><polygon points="0.00,-61.00 10.35,-10.35 61.00,0.00 10.35,10.35 0.00,61.00 -10.35,10.35 -61.00,0.00 -10.35,-10.35" fill="currentColor"/></g></g></g>
+<text x="600" y="457" fill="#d8c59c" font-size="14" letter-spacing="4">PATRON ORDER</text>
+<text x="600" y="524" fill="#f6f8ef" font-size="54">Friend</text>
+<text x="600" y="570" fill="#c0c7b6" font-size="18">With gratitude for helping Kinosail continue to grow.</text>
+<text x="600" y="616" fill="#aeb6a2" font-size="14">Permanent recognition · Issued September 6, 2026</text>
+<path d="M525 656H675" stroke="#726a4f"/>
+<text x="600" y="693" fill="#c6cebb" font-size="16">Thank you for being part of the story.</text>
+<text x="600" y="728" fill="#aeb6a2" font-size="11" letter-spacing="2">DESIGN SAMPLE · NOT PROOF OF PAYMENT</text>
+</g></svg>

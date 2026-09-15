@@ -1,0 +1,6 @@
+services:
+  kinosail:
+    environment:
+      KINOSAIL_CONFIG_FILE: /etc/kinosail/config.yaml
+    volumes:
+      - ./kinosail.yaml:/etc/kinosail/config.yaml:ro

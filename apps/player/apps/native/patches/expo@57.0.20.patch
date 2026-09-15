@@ -1,0 +1,48 @@
+diff --git a/ios/Fetch/FetchExceptions.swift b/ios/Fetch/FetchExceptions.swift
+index bd5981db8298f9308da0cb9d0e17b2ab85297d8d..7b3af92a0e4da7f102cc51ec4388b37348838c94 100644
+--- a/ios/Fetch/FetchExceptions.swift
++++ b/ios/Fetch/FetchExceptions.swift
+@@ -2,25 +2,25 @@
+ 
+ import ExpoModulesCore
+ 
+-internal final class FetchUnknownException: Exception {
++internal final class FetchUnknownException: Exception, @unchecked Sendable {
+   override var reason: String {
+     "Unknown error"
+   }
+ }
+ 
+-internal final class FetchRequestCanceledException: Exception {
++internal final class FetchRequestCanceledException: Exception, @unchecked Sendable {
+   override var reason: String {
+     "Fetch request has been canceled"
+   }
+ }
+ 
+-internal final class FetchRedirectException: Exception {
++internal final class FetchRedirectException: Exception, @unchecked Sendable {
+   override var reason: String {
+     "Redirect is not allowed when redirect mode is 'error'"
+   }
+ }
+ 
+-internal final class FetchBlobModuleUnavailableException: Exception {
++internal final class FetchBlobModuleUnavailableException: Exception, @unchecked Sendable {
+   override var reason: String {
+     "Unable to store the response body as a blob because React Native's BlobModule is not available. " +
+     "Make sure your app includes the React Native blob support (React-RCTBlob) or read the body with arrayBuffer() instead"
+diff --git a/src/async-require/fetchThenEvalJs.ts b/src/async-require/fetchThenEvalJs.ts
+--- a/src/async-require/fetchThenEvalJs.ts
++++ b/src/async-require/fetchThenEvalJs.ts
+@@ -22,8 +22,9 @@ export function fetchThenEvalAsync(url: string): Promise<void> {
+     }
+ 
+     if (status === 200) {
++      // Metro bundles execute in global scope; Hermes does not support lexical eval.
+       // eslint-disable-next-line no-eval
+-      return eval(body);
++      return globalThis.eval(body);
+     } else {
+       // Format Metro errors if possible.
+       if (process.env.NODE_ENV === 'development') {

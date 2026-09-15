@@ -1,0 +1,8 @@
+go 1.27
+
+use (
+	./apps/dashboard
+	./apps/player
+	./apps/subtitles
+	./packages
+)

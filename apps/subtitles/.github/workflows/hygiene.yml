@@ -1,0 +1,242 @@
+name: Hygiene
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: hygiene-${{ github.event_name }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  pull-requests: read # Static checks need pull request metadata.
+
+jobs:
+  static:
+    name: Static checks
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7
+        with:
+          go-version: stable
+          cache: true
+          cache-dependency-path: |
+            go.mod
+            .golangci.yml
+      - uses: golangci/golangci-lint-action@ba0d7d2ec06a0ea1cb5fa41b2e4a3ab91d21278a # v9
+        if: hashFiles('**/go.mod') != '' || hashFiles('**/go.work') != ''
+        with:
+          version: v2.13.1
+          args: --timeout=5m
+      - name: Enforce maximum file size
+        run: ./scripts/check-max-loc.sh 300
+      - name: Check shell scripts
+        uses: ludeeus/action-shellcheck@00b27aa7cb85167568cb48a3838b75f4265f2bca # master
+      - name: Check workflow files
+        uses: raven-actions/actionlint@3d39aea434753780c3b3d4a1a31c854b4dbf49d7 # v2
+      - name: Check module files
+        run: ./scripts/with-go-module.sh go mod tidy -diff
+
+  security:
+    name: Security (${{ matrix.check }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        check: [vulnerabilities, secrets]
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7
+        if: matrix.check == 'vulnerabilities'
+        with:
+          go-version: stable
+          cache: true
+      - name: Scan Go vulnerabilities
+        if: matrix.check == 'vulnerabilities'
+        uses: golang/govulncheck-action@032d45514ae346b1db93c04b0c90b841c370344f # v1
+        with:
+          go-version-input: stable
+          go-package: ./...
+          repo-checkout: false
+          check-latest: false
+          cache: false
+      - name: Scan secrets
+        if: matrix.check == 'secrets'
+        uses: gitleaks/gitleaks-action@e0c47f4f8be36e29cdc102c57e68cb5cbf0e8d1e # v3
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  race:
+    name: Test with race detector (${{ matrix.shard }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - shard: server
+            cache-dependency-path: go.mod
+          - shard: remaining
+            cache-dependency-path: go.sum
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7
+        with:
+          go-version: stable
+          cache: true
+          cache-dependency-path: ${{ matrix.cache-dependency-path }}
+      - name: Test server package
+        if: matrix.shard == 'server'
+        run: ./scripts/with-go-module.sh go test -race ./internal/server
+      - name: Test remaining packages
+        if: matrix.shard == 'remaining'
+        run: go list ./... | grep -v '/internal/server$' | xargs ./scripts/with-go-module.sh go test -race
+
+  coverage:
+    name: Enforce Go coverage baseline
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7
+        with:
+          go-version: stable
+          cache: true
+          cache-dependency-path: go.sum
+      - run: ./scripts/test-coverage.sh
+
+  scheduled:
+    name: Scheduled ${{ matrix.check }}
+    if: github.event_name == 'schedule'
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        check: [performance, fuzz, deadcode]
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7
+        with:
+          go-version: stable
+          cache: true
+      - name: Measure Server performance
+        if: matrix.check == 'performance'
+        run: make performance-test
+      - name: Fuzz backup restore boundary
+        if: matrix.check == 'fuzz'
+        run: |
+          ./scripts/with-go-module.sh go test -list '^FuzzRestoreWritesOnlyConfigurationState$' ./internal/backup | grep -Fx FuzzRestoreWritesOnlyConfigurationState
+          ./scripts/with-go-module.sh go test -run '^$' -fuzz '^FuzzRestoreWritesOnlyConfigurationState$' -fuzztime 30s ./internal/backup
+      - name: Report unreachable Go functions
+        if: matrix.check == 'deadcode'
+        run: make deadcode
+
+  system:
+    name: System (${{ matrix.platform }})
+    runs-on: ${{ matrix.runner }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: linux/amd64
+            runner: ubuntu-latest
+          - platform: linux/arm64
+            runner: ubuntu-24.04-arm
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+      - uses: pnpm/action-setup@0977fd99725f1db4007ccb2928dbb4e90d06cc86 # v6
+        if: matrix.platform == 'linux/amd64'
+        with:
+          version: 11.22.0
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        if: matrix.platform == 'linux/amd64'
+        with:
+          node-version: 26
+          package-manager-cache: false
+      - name: Install browser-test dependencies
+        if: matrix.platform == 'linux/amd64'
+        working-directory: e2e
+        run: pnpm install --frozen-lockfile
+      - name: Install browser-test runtime
+        if: matrix.platform == 'linux/amd64'
+        working-directory: e2e
+        run: pnpm exec playwright install --with-deps chromium firefox webkit
+      - uses: docker/setup-buildx-action@37fe631027851001ddb9b187196cc803df7f5f0e # v4
+      - name: Build test image
+        uses: docker/build-push-action@53b7df96c91f9c12dcc8a07bcb9ccacbed38856a # v7
+        with:
+          context: .
+          file: Containerfile
+          platforms: ${{ matrix.platform }}
+          load: true
+          tags: |
+            localhost/kinosail:test
+            localhost/kinosail:dev
+      - name: Test ARM64 production container and restart persistence
+        if: matrix.platform == 'linux/arm64'
+        env:
+          CONTAINER_ENGINE: docker
+          KINOSAIL_PLATFORM: ${{ matrix.platform }}
+          KINOSAIL_TEST_IMAGE_READY: "1"
+        run: ./scripts/test-container.sh
+      - name: Test AMD64 production and browser paths
+        if: matrix.platform == 'linux/amd64'
+        env:
+          CONTAINER_ENGINE: docker
+          KINOSAIL_BROWSER_MATRIX: full
+          KINOSAIL_BROWSER_WORKERS: "3"
+          KINOSAIL_PLATFORM: ${{ matrix.platform }}
+          KINOSAIL_TEST_IMAGE_READY: "1"
+        run: |
+          status=0
+          ./scripts/test-container.sh &
+          production_pid=$!
+          KINOSAIL_BROWSER_TEST=1 ./scripts/test-container.sh &
+          browser_pid=$!
+          wait "$production_pid" || status=$?
+          wait "$browser_pid" || status=$?
+          exit "$status"
+
+  auto-revert:
+    name: Revert failing current main
+    if: ${{ always() && github.event_name == 'push' && contains(needs.*.result, 'failure') }}
+    needs: [static, security, race, coverage, system]
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read # The job checks the parent Hygiene result.
+      contents: write # The job can revert only the failing main commit.
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Require a green parent before automatic rollback
+        id: parent
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          parent="$(git rev-parse "$GITHUB_SHA^")"
+          conclusion="$(gh run list --repo "$GITHUB_REPOSITORY" --workflow hygiene.yml --commit "$parent" --event push --limit 1 --json conclusion --jq '.[0].conclusion')"
+          [[ "$conclusion" == success ]] && echo eligible=true >>"$GITHUB_OUTPUT" || echo "SKIP auto-revert: parent Hygiene result is ${conclusion:-missing}"
+      - if: steps.parent.outputs.eligible == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh auth setup-git
+          ./scripts/auto-revert-main.sh origin main "$GITHUB_SHA"

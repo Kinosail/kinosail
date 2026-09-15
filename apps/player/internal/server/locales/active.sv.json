@@ -1,0 +1,2034 @@
+[
+  {
+    "id": "15 minutes",
+    "other": "15 minuter"
+  },
+  {
+    "id": "30 minutes",
+    "other": "30 minuter"
+  },
+  {
+    "id": "45 minutes",
+    "other": "45 minuter"
+  },
+  {
+    "id": "60 minutes",
+    "other": "60 minuter"
+  },
+  {
+    "id": "Access",
+    "other": "Åtkomst"
+  },
+  {
+    "id": "Account · Kinosail Player",
+    "other": "Konto · Kinosail Player"
+  },
+  {
+    "id": "Actions",
+    "other": "Åtgärder"
+  },
+  {
+    "id": "active session(s)",
+    "other": "aktiv(a) session(er)"
+  },
+  {
+    "id": "Add a passkey",
+    "other": "Lägg till en lösenordsnyckel"
+  },
+  {
+    "id": "Add folder",
+    "other": "Lägg till mapp"
+  },
+  {
+    "id": "Add media or try another search.",
+    "other": "Lägg till media eller försök en annan sökning."
+  },
+  {
+    "id": "Add Profile",
+    "other": "Lägg till profil"
+  },
+  {
+    "id": "Add this secret or URI to your authenticator app.",
+    "other": "Lägg till denna hemlighet eller URI till din autentiseringsapp."
+  },
+  {
+    "id": "Add to",
+    "other": "Lägg till i"
+  },
+  {
+    "id": "Administer server",
+    "other": "Administrera server"
+  },
+  {
+    "id": "Album",
+    "other": "Album"
+  },
+  {
+    "id": "Albums",
+    "other": "Album"
+  },
+  {
+    "id": "all",
+    "other": "alla"
+  },
+  {
+    "id": "All ratings",
+    "other": "Alla betyg"
+  },
+  {
+    "id": "Allow downloads",
+    "other": "Tillåt nedladdningar"
+  },
+  {
+    "id": "Allow transcoding",
+    "other": "Tillåt omkodning"
+  },
+  {
+    "id": "AMD AMF",
+    "other": "AMD AMF"
+  },
+  {
+    "id": "Analyze playback segments now",
+    "other": "Analysera uppspelningssegment nu"
+  },
+  {
+    "id": "analyzed item(s)",
+    "other": "analyserade objekt(er)"
+  },
+  {
+    "id": "API key name",
+    "other": "API-nyckelnamn"
+  },
+  {
+    "id": "API key scope does not allow this request",
+    "other": "API-nyckelomfattning tillåter inte denna begäran"
+  },
+  {
+    "id": "API key view failed",
+    "other": "API-nyckelvy misslyckades"
+  },
+  {
+    "id": "API key · Kinosail Player",
+    "other": "API-nyckel · Kinosail Player"
+  },
+  {
+    "id": "API keys",
+    "other": "API-nycklar"
+  },
+  {
+    "id": "Appearance",
+    "other": "Utseende"
+  },
+  {
+    "id": "Apple VideoToolbox",
+    "other": "Apple VideoToolbox"
+  },
+  {
+    "id": "Apply",
+    "other": "Ansök"
+  },
+  {
+    "id": "Audio",
+    "other": "Ljud"
+  },
+  {
+    "id": "Audiobooks",
+    "other": "Ljudböcker"
+  },
+  {
+    "id": "Authentication code",
+    "other": "Autentiseringskod"
+  },
+  {
+    "id": "Authentication or recovery code",
+    "other": "Autentiserings- eller återställningskod"
+  },
+  {
+    "id": "authentication required",
+    "other": "autentisering krävs"
+  },
+  {
+    "id": "Authorize device",
+    "other": "Auktorisera enhet"
+  },
+  {
+    "id": "Automatic",
+    "other": "Automatisk"
+  },
+  {
+    "id": "automatic",
+    "other": "automatisk"
+  },
+  {
+    "id": "Automatic (best detected)",
+    "other": "Automatisk (bäst upptäckt)"
+  },
+  {
+    "id": "Automatic (browser)",
+    "other": "Automatisk (webbläsare)"
+  },
+  {
+    "id": "Automatic backups",
+    "other": "Automatiska säkerhetskopieringar"
+  },
+  {
+    "id": "Automatic maintenance",
+    "other": "Automatiskt underhåll"
+  },
+  {
+    "id": "Available devices use a direct connection to this Server.",
+    "other": "Tillgängliga enheter använder en direkt anslutning till denna server."
+  },
+  {
+    "id": "Back to library",
+    "other": "Tillbaka till biblioteket"
+  },
+  {
+    "id": "Back to settings",
+    "other": "Tillbaka till inställningar"
+  },
+  {
+    "id": "Back up now",
+    "other": "Säkerhetskopiera nu"
+  },
+  {
+    "id": "Backup and recovery",
+    "other": "Säkerhetskopiering och återställning"
+  },
+  {
+    "id": "backup is unavailable",
+    "other": "säkerhetskopiering är inte tillgänglig"
+  },
+  {
+    "id": "Backups need setup.",
+    "other": "Säkerhetskopieringar behöver konfigureras."
+  },
+  {
+    "id": "Backups run automatically without encryption.",
+    "other": "Säkerhetskopiering körs automatiskt utan kryptering."
+  },
+  {
+    "id": "Backups · Kinosail Player",
+    "other": "Säkerhetskopieringar · Kinosail Player"
+  },
+  {
+    "id": "Book",
+    "other": "Bok"
+  },
+  {
+    "id": "Books",
+    "other": "Böcker"
+  },
+  {
+    "id": "Books and comics",
+    "other": "Böcker och serier"
+  },
+  {
+    "id": "Browse library",
+    "other": "Bläddra i biblioteket"
+  },
+  {
+    "id": "Cancel",
+    "other": "Avbryt"
+  },
+  {
+    "id": "Cast",
+    "other": "Cast"
+  },
+  {
+    "id": "Chapters",
+    "other": "Kapitel"
+  },
+  {
+    "id": "Choose the language for this browser.",
+    "other": "Välj språk för den här webbläsaren."
+  },
+  {
+    "id": "Clear transcode cache",
+    "other": "Rensa omkodningscache"
+  },
+  {
+    "id": "Code",
+    "other": "Kod"
+  },
+  {
+    "id": "Collection",
+    "other": "Samling"
+  },
+  {
+    "id": "Collections",
+    "other": "Samlingar"
+  },
+  {
+    "id": "Commercial",
+    "other": "Kommersiell"
+  },
+  {
+    "id": "Compatibility",
+    "other": "Kompatibilitet"
+  },
+  {
+    "id": "Compatibility Connection",
+    "other": "Kompatibilitetsanslutning"
+  },
+  {
+    "id": "Compatibility stream",
+    "other": "Kompatibilitetsström"
+  },
+  {
+    "id": "compatible",
+    "other": "kompatibel"
+  },
+  {
+    "id": "Concurrent streams",
+    "other": "Samtidiga strömmar"
+  },
+  {
+    "id": "Configuration error",
+    "other": "Konfigurationsfel"
+  },
+  {
+    "id": "Configuration · Kinosail Player",
+    "other": "Konfiguration · Kinosail Player"
+  },
+  {
+    "id": "Configured; value hidden",
+    "other": "Konfigurerad; värde dolt"
+  },
+  {
+    "id": "Confirm delete",
+    "other": "Bekräfta borttagning"
+  },
+  {
+    "id": "Confirm remove",
+    "other": "Bekräfta borttagning"
+  },
+  {
+    "id": "Connect",
+    "other": "Anslut"
+  },
+  {
+    "id": "Connect a device",
+    "other": "Anslut en enhet"
+  },
+  {
+    "id": "Connected",
+    "other": "Ansluten"
+  },
+  {
+    "id": "Connecting",
+    "other": "Ansluter"
+  },
+  {
+    "id": "Connecting…",
+    "other": "Ansluter..."
+  },
+  {
+    "id": "Connection error",
+    "other": "Anslutningsfel"
+  },
+  {
+    "id": "Content",
+    "other": "Innehåll"
+  },
+  {
+    "id": "Continue Watching",
+    "other": "Fortsätt titta"
+  },
+  {
+    "id": "Continue watching",
+    "other": "Fortsätt titta"
+  },
+  {
+    "id": "from Continue Watching",
+    "other": "från Fortsätt titta"
+  },
+  {
+    "id": "Copy this key now. Kinosail stores only its hash.",
+    "other": "Kopiera den här nyckeln nu. Kinosail lagrar endast sin hash."
+  },
+  {
+    "id": "could not create MFA enrollment",
+    "other": "kunde inte skapa MFA-registrering"
+  },
+  {
+    "id": "could not create Owner Profile",
+    "other": "kunde inte skapa ägarprofil"
+  },
+  {
+    "id": "could not create session",
+    "other": "kunde inte skapa session"
+  },
+  {
+    "id": "could not end session",
+    "other": "kunde inte avsluta sessionen"
+  },
+  {
+    "id": "could not read subtitles",
+    "other": "kunde inte läsa undertexter"
+  },
+  {
+    "id": "Create",
+    "other": "Skapa"
+  },
+  {
+    "id": "Create a passkey",
+    "other": "Skapa en lösenordsnyckel"
+  },
+  {
+    "id": "Create API key",
+    "other": "Skapa API-nyckel"
+  },
+  {
+    "id": "Create passkey",
+    "other": "Skapa lösenord"
+  },
+  {
+    "id": "Create smart playlist",
+    "other": "Skapa smart spellista"
+  },
+  {
+    "id": "Create your Owner Profile",
+    "other": "Skapa din ägarprofil"
+  },
+  {
+    "id": "Created once",
+    "other": "Skapat en gång"
+  },
+  {
+    "id": "Credentials configured",
+    "other": "Inloggningsuppgifter konfigurerade"
+  },
+  {
+    "id": "Credits",
+    "other": "Krediter"
+  },
+  {
+    "id": "cross-origin request denied",
+    "other": "övergångsbegäran nekad"
+  },
+  {
+    "id": "Curate",
+    "other": "Curate"
+  },
+  {
+    "id": "Dark",
+    "other": "Mörkt"
+  },
+  {
+    "id": "default",
+    "other": "standard"
+  },
+  {
+    "id": "Default playback",
+    "other": "Standarduppspelning"
+  },
+  {
+    "id": "Delete",
+    "other": "Ta bort"
+  },
+  {
+    "id": "Deployment configuration",
+    "other": "Isättningskonfiguration"
+  },
+  {
+    "id": "Destination",
+    "other": "Destination"
+  },
+  {
+    "id": "detected, unavailable",
+    "other": "upptäckt, otillgänglig"
+  },
+  {
+    "id": "Device or app",
+    "other": "Enhet eller app"
+  },
+  {
+    "id": "Diagnostics",
+    "other": "Diagnostik"
+  },
+  {
+    "id": "Direct",
+    "other": "Direkt"
+  },
+  {
+    "id": "direct",
+    "other": "direkt"
+  },
+  {
+    "id": "Direct connection unavailable",
+    "other": "Direktanslutning otillgänglig"
+  },
+  {
+    "id": "Direct from",
+    "other": "Direkt från"
+  },
+  {
+    "id": "Direct stream",
+    "other": "Direktström"
+  },
+  {
+    "id": "Directed by",
+    "other": "Regisserad av"
+  },
+  {
+    "id": "Disable and revoke",
+    "other": "Inaktivera och återkalla"
+  },
+  {
+    "id": "Disable two-factor authentication",
+    "other": "Inaktivera tvåfaktorsautentisering"
+  },
+  {
+    "id": "Disaster recovery",
+    "other": "Återställning efter katastrof"
+  },
+  {
+    "id": "DLNA",
+    "other": "DLNA"
+  },
+  {
+    "id": "Download",
+    "other": "Ladda ner"
+  },
+  {
+    "id": "Download media",
+    "other": "Ladda ned media"
+  },
+  {
+    "id": "Download original",
+    "other": "Ladda ner original"
+  },
+  {
+    "id": "Download portable state archive",
+    "other": "Ladda ner portabelt tillståndsarkiv"
+  },
+  {
+    "id": "Download safe diagnostics",
+    "other": "Ladda ner säker diagnostik"
+  },
+  {
+    "id": "Download WireGuard profile",
+    "other": "Ladda ner WireGuard-profil"
+  },
+  {
+    "id": "Downloads",
+    "other": "Nedladdningar"
+  },
+  {
+    "id": "downloads are not enabled for this Viewer Profile",
+    "other": "nedladdningar är inte aktiverade för den här tittarprofilen"
+  },
+  {
+    "id": "Edit metadata",
+    "other": "Redigera metadata"
+  },
+  {
+    "id": "Edit skip markers",
+    "other": "Redigera överhoppningsmarkörer"
+  },
+  {
+    "id": "embedded subtitles are unavailable",
+    "other": "inbäddade undertexter är inte tillgängliga"
+  },
+  {
+    "id": "Enable DLNA",
+    "other": "Aktivera DLNA"
+  },
+  {
+    "id": "Enable two-factor authentication",
+    "other": "Aktivera tvåfaktorsautentisering"
+  },
+  {
+    "id": "Enabled",
+    "other": "Aktiverad"
+  },
+  {
+    "id": "Encrypted backups run automatically.",
+    "other": "Krypterade säkerhetskopior körs automatiskt."
+  },
+  {
+    "id": "Encryption is off by default.",
+    "other": "Kryptering är avstängd som standard."
+  },
+  {
+    "id": "Encryption is on.",
+    "other": "Kryptering är på."
+  },
+  {
+    "id": "End in seconds",
+    "other": "Slutar om sekunder"
+  },
+  {
+    "id": "Enter the code shown by your TV or app. It will inherit your Profile Policy.",
+    "other": "Ange koden som visas av din TV eller app. Den kommer att ärva din profilpolicy."
+  },
+  {
+    "id": "Environment and YAML values are authoritative. GUI changes shown here take effect after the Server restarts.",
+    "other": "Miljö- och YAML-värden är auktoritativa. GUI-ändringar som visas här träder i kraft efter att servern startat om."
+  },
+  {
+    "id": "Environment default",
+    "other": "Miljöstandard"
+  },
+  {
+    "id": "Event webhook",
+    "other": "Event webhook"
+  },
+  {
+    "id": "Every 15 minutes",
+    "other": "Var 15:e minut"
+  },
+  {
+    "id": "Every 5 minutes",
+    "other": "Var 5:e minut"
+  },
+  {
+    "id": "Everything",
+    "other": "Allt"
+  },
+  {
+    "id": "Export full activity journal",
+    "other": "Exportera fullständig aktivitetsdagbok"
+  },
+  {
+    "id": "Expose direct media URLs to devices on this local network. Disabling revokes the discovery capability.",
+    "other": "Exponera direkta media-URL:er för enheter på det här lokala nätverket. Om du inaktiverar återkallas upptäcktsförmågan."
+  },
+  {
+    "id": "Externally managed",
+    "other": "Externt hanterad"
+  },
+  {
+    "id": "Find",
+    "other": "Hitta"
+  },
+  {
+    "id": "Find something",
+    "other": "Hitta något"
+  },
+  {
+    "id": "Finish setup",
+    "other": "Slutför installationen"
+  },
+  {
+    "id": "Finish sign in",
+    "other": "Slutför inloggningen"
+  },
+  {
+    "id": "Folder inside media mount",
+    "other": "Mapp inuti mediafäste"
+  },
+  {
+    "id": "Follow this device or choose a fixed theme.",
+    "other": "Följ den här enheten eller välj ett fast tema."
+  },
+  {
+    "id": "Following the room leader",
+    "other": "Följer rumsledaren"
+  },
+  {
+    "id": "From",
+    "other": "Från"
+  },
+  {
+    "id": "from",
+    "other": "från"
+  },
+  {
+    "id": "General",
+    "other": "Allmänt"
+  },
+  {
+    "id": "Genres",
+    "other": "Genrer"
+  },
+  {
+    "id": "Got it",
+    "other": "Fick det"
+  },
+  {
+    "id": "Group",
+    "other": "Grupp"
+  },
+  {
+    "id": "Hardware",
+    "other": "Hårdvara"
+  },
+  {
+    "id": "History",
+    "other": "Historik"
+  },
+  {
+    "id": "Home",
+    "other": "Hem"
+  },
+  {
+    "id": "Hourly",
+    "other": "Varje timme"
+  },
+  {
+    "id": "if enabled",
+    "other": "om aktiverat"
+  },
+  {
+    "id": "Install",
+    "other": "Installera"
+  },
+  {
+    "id": "Install Kinosail Player",
+    "other": "Installera Kinosail"
+  },
+  {
+    "id": "Integrations",
+    "other": "Integrationer"
+  },
+  {
+    "id": "Intel Quick Sync",
+    "other": "Intel Quick Sync"
+  },
+  {
+    "id": "Intro",
+    "other": "Intro"
+  },
+  {
+    "id": "invalid authentication code",
+    "other": "ogiltig autentiseringskod"
+  },
+  {
+    "id": "invalid Collection state",
+    "other": "ogiltig samlingstillstånd"
+  },
+  {
+    "id": "invalid credentials",
+    "other": "ogiltiga referenser"
+  },
+  {
+    "id": "invalid list state",
+    "other": "ogiltig listtillstånd"
+  },
+  {
+    "id": "invalid playlist state",
+    "other": "ogiltig spellistastatus"
+  },
+  {
+    "id": "invalid progress",
+    "other": "ogiltiga framsteg"
+  },
+  {
+    "id": "invalid watched state",
+    "other": "ogiltigt bevakat tillstånd"
+  },
+  {
+    "id": "Invite link",
+    "other": "Inbjudningslänk"
+  },
+  {
+    "id": "Keep",
+    "other": "Behåll"
+  },
+  {
+    "id": "Keep backups on storage outside this host. Backups are unencrypted unless a backup key is configured. Restore while the Server is stopped.",
+    "other": "Behåll säkerhetskopior på lagring utanför denna värd. Säkerhetskopieringar är okrypterade såvida inte en reservnyckel är konfigurerad. Återställ medan servern är stoppad."
+  },
+  {
+    "id": "Keep Kinosail Player close",
+    "other": "Håll Kinosail nära"
+  },
+  {
+    "id": "Keys are shown once and stored as hashes. Browse access is the safe default.",
+    "other": "Nycklar visas en gång och lagras som hash. Bläddringsåtkomst är den säkra standarden."
+  },
+  {
+    "id": "Kinosail",
+    "other": "Kinosail"
+  },
+  {
+    "id": "Kinosail Player cannot reach this Server. Check your network or Direct Connection, then try again.",
+    "other": "Kinosail kan inte nå denna server. Kontrollera ditt nätverk eller direktanslutning och försök sedan igen."
+  },
+  {
+    "id": "Kinosail maintains itself automatically.",
+    "other": "Kinosail underhåller sig själv automatiskt."
+  },
+  {
+    "id": "Kinosail Player Reader",
+    "other": "Kinosagelläsare"
+  },
+  {
+    "id": "Language",
+    "other": "Språk"
+  },
+  {
+    "id": "language is invalid",
+    "other": "språket är ogiltigt"
+  },
+  {
+    "id": "Last error",
+    "other": "Senaste fel"
+  },
+  {
+    "id": "Last scan error",
+    "other": "Fel vid senaste genomsökning"
+  },
+  {
+    "id": "Last successful backup",
+    "other": "Senaste lyckade säkerhetskopiering"
+  },
+  {
+    "id": "Last successful scan",
+    "other": "Senaste lyckade genomsökning"
+  },
+  {
+    "id": "Last verified",
+    "other": "Senast verifierad"
+  },
+  {
+    "id": "Latest",
+    "other": "Senaste"
+  },
+  {
+    "id": "Libraries",
+    "other": "Bibliotek"
+  },
+  {
+    "id": "Library",
+    "other": "Bibliotek"
+  },
+  {
+    "id": "Library discovery",
+    "other": "Bibliotek upptäckt"
+  },
+  {
+    "id": "Library folders",
+    "other": "Bibliotekmappar"
+  },
+  {
+    "id": "Library items",
+    "other": "Bibliotekets föremål"
+  },
+  {
+    "id": "Library organization",
+    "other": "Bibliotekets organisation"
+  },
+  {
+    "id": "Library views",
+    "other": "Bibliotekvisningar"
+  },
+  {
+    "id": "Licensed credential configured",
+    "other": "Licensierad autentiseringsinformation konfigurerad"
+  },
+  {
+    "id": "Light",
+    "other": "Lätt"
+  },
+  {
+    "id": "Link OpenID Connect",
+    "other": "Link OpenID Connect"
+  },
+  {
+    "id": "Local account",
+    "other": "Lokalt konto"
+  },
+  {
+    "id": "M3U playlist",
+    "other": "M3U-spellista"
+  },
+  {
+    "id": "Manage personal library state",
+    "other": "Hantera personligt bibliotekstillstånd"
+  },
+  {
+    "id": "Managed externally and read-only.",
+    "other": "Hanteras externt och skrivskyddad."
+  },
+  {
+    "id": "Managed remote access",
+    "other": "Hanterad fjärråtkomst"
+  },
+  {
+    "id": "Mark",
+    "other": "Mark"
+  },
+  {
+    "id": "marker",
+    "other": "markör"
+  },
+  {
+    "id": "Match text",
+    "other": "Matchningstext"
+  },
+  {
+    "id": "Media",
+    "other": "Media"
+  },
+  {
+    "id": "Media information",
+    "other": "Medieinformation"
+  },
+  {
+    "id": "Media mount",
+    "other": "Mediefäste"
+  },
+  {
+    "id": "metadata could not be saved",
+    "other": "metadata kunde inte sparas"
+  },
+  {
+    "id": "metadata is invalid",
+    "other": "metadata är ogiltig"
+  },
+  {
+    "id": "Metadata provider",
+    "other": "Metadataleverantör"
+  },
+  {
+    "id": "metadata provider unavailable",
+    "other": "metadataleverantör inte tillgänglig"
+  },
+  {
+    "id": "Metrics",
+    "other": "Metrics"
+  },
+  {
+    "id": "Movies",
+    "other": "Filmer"
+  },
+  {
+    "id": "Music",
+    "other": "Musik"
+  },
+  {
+    "id": "Music and audiobooks",
+    "other": "Musik och ljudböcker"
+  },
+  {
+    "id": "My List",
+    "other": "Min lista"
+  },
+  {
+    "id": "Name",
+    "other": "Namn"
+  },
+  {
+    "id": "name and a 12-character password are required",
+    "other": "namn och ett 12-teckens lösenord krävs"
+  },
+  {
+    "id": "Never",
+    "other": "Aldrig"
+  },
+  {
+    "id": "New Collection",
+    "other": "Ny samling"
+  },
+  {
+    "id": "New Collection name",
+    "other": "Nytt samlingsnamn"
+  },
+  {
+    "id": "New media is detected automatically after copying finishes. Safety scans repair missed filesystem events on Windows, macOS, Linux, containers, and network mounts.",
+    "other": "Nytt media upptäcks automatiskt efter att kopieringen är klar. Säkerhetsskanningar reparerar missade filsystemhändelser på Windows, macOS, Linux, containrar och nätverksfästen."
+  },
+  {
+    "id": "New password",
+    "other": "Nytt lösenord"
+  },
+  {
+    "id": "New playlist",
+    "other": "Ny spellista"
+  },
+  {
+    "id": "New playlist name",
+    "other": "Nytt spellistanamn"
+  },
+  {
+    "id": "New profile name",
+    "other": "Nytt profilnamn"
+  },
+  {
+    "id": "New profile password",
+    "other": "Nytt profillösenord"
+  },
+  {
+    "id": "New secret",
+    "other": "Ny hemlighet"
+  },
+  {
+    "id": "New smart playlist",
+    "other": "Ny smart spellista"
+  },
+  {
+    "id": "New Viewers start with family ratings and no libraries. Add folder names or",
+    "other": "Nya tittare börjar med familjebetyg och inga bibliotek. Lägg till mappnamn eller"
+  },
+  {
+    "id": "Newest",
+    "other": "Nyast"
+  },
+  {
+    "id": "No activity recorded yet.",
+    "other": "Ingen aktivitet registrerad ännu."
+  },
+  {
+    "id": "No channels configured.",
+    "other": "Inga kanaler har konfigurerats."
+  },
+  {
+    "id": "No device selected",
+    "other": "Ingen enhet har valts"
+  },
+  {
+    "id": "No offline downloads yet.",
+    "other": "Inga offlinenedladdningar ännu."
+  },
+  {
+    "id": "No playback recorded yet.",
+    "other": "Ingen uppspelning inspelad ännu."
+  },
+  {
+    "id": "None",
+    "other": "Ingen"
+  },
+  {
+    "id": "None; use all or folder names",
+    "other": "Ingen; använd alla eller mappnamn"
+  },
+  {
+    "id": "Not configured",
+    "other": "Inte konfigurerad"
+  },
+  {
+    "id": "not detected",
+    "other": "inte upptäckt"
+  },
+  {
+    "id": "not found",
+    "other": "hittades inte"
+  },
+  {
+    "id": "Not now",
+    "other": "Inte nu"
+  },
+  {
+    "id": "Nothing found.",
+    "other": "Inget hittades."
+  },
+  {
+    "id": "Now viewing",
+    "other": "Visar nu"
+  },
+  {
+    "id": "NVIDIA NVENC/NVDEC",
+    "other": "NVIDIA NVENC/NVDEC"
+  },
+  {
+    "id": "Off",
+    "other": "Av"
+  },
+  {
+    "id": "offline",
+    "other": "offline"
+  },
+  {
+    "id": "Offline downloads",
+    "other": "Offlinenedladdningar"
+  },
+  {
+    "id": "Offline downloads · Kinosail Player",
+    "other": "Offlinenedladdningar · Kinosail Player"
+  },
+  {
+    "id": "On",
+    "other": "På"
+  },
+  {
+    "id": "On iPhone or iPad, tap Share, choose Add to Home Screen, turn on Open as Web App, then tap Add.",
+    "other": "På iPhone eller iPad trycker du på Dela, väljer Lägg till på startskärmen, aktiverar Öppna som webbapp och trycker sedan på Lägg till."
+  },
+  {
+    "id": "One-time reveal",
+    "other": "Engångsavslöjande"
+  },
+  {
+    "id": "OpenID Connect",
+    "other": "OpenID Connect"
+  },
+  {
+    "id": "OpenSubtitles",
+    "other": "OpenSubtitles"
+  },
+  {
+    "id": "Outro",
+    "other": "Outro"
+  },
+  {
+    "id": "Owner",
+    "other": "Ägare"
+  },
+  {
+    "id": "Owner access required",
+    "other": "Ägaråtkomst krävs"
+  },
+  {
+    "id": "Owner controls",
+    "other": "Ägarkontroller"
+  },
+  {
+    "id": "Passkey added.",
+    "other": "Lösenord har lagts till."
+  },
+  {
+    "id": "Passkey failed.",
+    "other": "Lösenord misslyckades."
+  },
+  {
+    "id": "Passkeys need the configured Server address and trusted HTTPS. Open that address, trust the Server certificate, or use an authenticator.",
+    "other": "Passkeys need the configured Server address and trusted HTTPS. Open that address, trust the Server certificate, or use an authenticator."
+  },
+  {
+    "id": "Password",
+    "other": "Lösenord"
+  },
+  {
+    "id": "Photos",
+    "other": "Foton"
+  },
+  {
+    "id": "Play",
+    "other": "Spela"
+  },
+  {
+    "id": "Play on device",
+    "other": "Spela på enheten"
+  },
+  {
+    "id": "Play the next Episode automatically",
+    "other": "Spela nästa avsnitt automatiskt"
+  },
+  {
+    "id": "Playback",
+    "other": "Uppspelning"
+  },
+  {
+    "id": "Playback history",
+    "other": "Uppspelningshistorik"
+  },
+  {
+    "id": "Playback segment analysis",
+    "other": "Uppspelningssegmentanalys"
+  },
+  {
+    "id": "Playback speed",
+    "other": "Uppspelningshastighet"
+  },
+  {
+    "id": "Playing here",
+    "other": "Spelar här"
+  },
+  {
+    "id": "Playing on device",
+    "other": "Spelar på enheten"
+  },
+  {
+    "id": "Playlist",
+    "other": "Spellista"
+  },
+  {
+    "id": "Playlists",
+    "other": "Spellistor"
+  },
+  {
+    "id": "Plot",
+    "other": "Plot"
+  },
+  {
+    "id": "Polling for changes",
+    "other": "Polaring för ändringar"
+  },
+  {
+    "id": "Prefer quality",
+    "other": "Föredrar kvalitet"
+  },
+  {
+    "id": "Prefer speed",
+    "other": "Föredrar hastighet"
+  },
+  {
+    "id": "Preferred language",
+    "other": "Önskat språk"
+  },
+  {
+    "id": "Prepare",
+    "other": "Förbereda"
+  },
+  {
+    "id": "preview unavailable",
+    "other": "förhandsgranskning ej tillgänglig"
+  },
+  {
+    "id": "Private by design",
+    "other": "Privat by design"
+  },
+  {
+    "id": "Profile",
+    "other": "Profil"
+  },
+  {
+    "id": "profile storage is unavailable",
+    "other": "profillagring är inte tillgänglig"
+  },
+  {
+    "id": "Profile to reset",
+    "other": "Profil att återställa"
+  },
+  {
+    "id": "Profile type",
+    "other": "Profiltyp"
+  },
+  {
+    "id": "Profiles",
+    "other": "Profiler"
+  },
+  {
+    "id": "Protected automatically",
+    "other": "Skyddas automatiskt"
+  },
+  {
+    "id": "MFA - Require extra sign-in protection for every Viewer Profile",
+    "other": "MFA - Require extra sign-in protection for every Viewer Profile"
+  },
+  {
+    "id": "Quality",
+    "other": "Kvalitet"
+  },
+  {
+    "id": "quality",
+    "other": "kvalitet"
+  },
+  {
+    "id": "Quick Connect",
+    "other": "Snabbanslutning"
+  },
+  {
+    "id": "Quick Connect · Kinosail Player",
+    "other": "Snabbanslutning · Kinosail Player"
+  },
+  {
+    "id": "Rating",
+    "other": "Betyg"
+  },
+  {
+    "id": "Read now",
+    "other": "Läs nu"
+  },
+  {
+    "id": "reader",
+    "other": "läsare"
+  },
+  {
+    "id": "Reading order",
+    "other": "Läsbeställning"
+  },
+  {
+    "id": "ready",
+    "other": "klar"
+  },
+  {
+    "id": "Ready offline",
+    "other": "Redo offline"
+  },
+  {
+    "id": "Recap",
+    "other": "Recap"
+  },
+  {
+    "id": "Recent activity",
+    "other": "Senaste aktivitet"
+  },
+  {
+    "id": "Recent playback",
+    "other": "Senaste uppspelningen"
+  },
+  {
+    "id": "Recently added",
+    "other": "Nyligen tillagd"
+  },
+  {
+    "id": "Recently played",
+    "other": "Nyligen spelade"
+  },
+  {
+    "id": "Recovery",
+    "other": "Återställning"
+  },
+  {
+    "id": "Recovery codes",
+    "other": "Återställningskoder"
+  },
+  {
+    "id": "Refresh from TMDB",
+    "other": "Uppdatera från TMDB"
+  },
+  {
+    "id": "Refresh missing metadata",
+    "other": "Uppdatera saknad metadata"
+  },
+  {
+    "id": "Recommended",
+    "other": "Rekommenderas"
+  },
+  {
+    "id": "Remote access",
+    "other": "Fjärråtkomst"
+  },
+  {
+    "id": "Remove",
+    "other": "Ta bort"
+  },
+  {
+    "id": "Remove from",
+    "other": "Ta bort från"
+  },
+  {
+    "id": "request",
+    "other": "begäran"
+  },
+  {
+    "id": "Request could not be completed.",
+    "other": "Begäran kunde inte slutföras."
+  },
+  {
+    "id": "request is too large",
+    "other": "förfrågan är för stor"
+  },
+  {
+    "id": "Reset password",
+    "other": "Återställ lösenord"
+  },
+  {
+    "id": "Return to settings",
+    "other": "Återgå till inställningar"
+  },
+  {
+    "id": "Revoke",
+    "other": "Återkalla"
+  },
+  {
+    "id": "Rockchip RKMPP",
+    "other": "Rockchip RKMPP"
+  },
+  {
+    "id": "Room connected · following leader",
+    "other": "Rum anslutet · följer ledare"
+  },
+  {
+    "id": "Room connected · you lead",
+    "other": "Rum anslutet · du leder"
+  },
+  {
+    "id": "Room disconnected · reload to reconnect",
+    "other": "Rum frånkopplat · ladda om för att återansluta"
+  },
+  {
+    "id": "Run library scan now",
+    "other": "Kör biblioteksskanning nu"
+  },
+  {
+    "id": "Run maintenance now",
+    "other": "Kör underhåll nu"
+  },
+  {
+    "id": "Safety scan",
+    "other": "Säkerhetsskanning"
+  },
+  {
+    "id": "Save",
+    "other": "Spara"
+  },
+  {
+    "id": "Save file",
+    "other": "Spara fil"
+  },
+  {
+    "id": "Save for restart",
+    "other": "Spara för omstart"
+  },
+  {
+    "id": "Save marker",
+    "other": "Spara markör"
+  },
+  {
+    "id": "Save metadata",
+    "other": "Spara metadata"
+  },
+  {
+    "id": "Save schedule",
+    "other": "Spara schema"
+  },
+  {
+    "id": "Schedule",
+    "other": "Schema"
+  },
+  {
+    "id": "Search library",
+    "other": "Sök i bibliotek"
+  },
+  {
+    "id": "Search results",
+    "other": "Sökresultat"
+  },
+  {
+    "id": "Secrets are hidden and included only in encrypted recovery backups.",
+    "other": "Hemligheter är dolda och ingår endast i krypterade återställningssäkerhetskopior."
+  },
+  {
+    "id": "Secure your account",
+    "other": "Säkra ditt konto"
+  },
+  {
+    "id": "Secure your account · Kinosail Player",
+    "other": "Säkra ditt konto · Kinosail Player"
+  },
+  {
+    "id": "Send this private connection URL to the Viewer. It is shown only once.",
+    "other": "Skicka denna privata anslutnings-URL till Viewer. Den visas bara en gång."
+  },
+  {
+    "id": "Server name",
+    "other": "Servernamn"
+  },
+  {
+    "id": "Server settings",
+    "other": "Serverinställningar"
+  },
+  {
+    "id": "Server unavailable",
+    "other": "Server inte tillgänglig"
+  },
+  {
+    "id": "Server unavailable · Kinosail Player",
+    "other": "Server inte tillgänglig · KinoSAIL"
+  },
+  {
+    "id": "Set up Kinosail Player",
+    "other": "Konfigurera Kinosail"
+  },
+  {
+    "id": "Set up or replace authenticator",
+    "other": "Konfigurera eller byt ut autentiseringsverktyg"
+  },
+  {
+    "id": "Set up two-factor authentication",
+    "other": "Konfigurera tvåfaktorsautentisering"
+  },
+  {
+    "id": "Set up two-factor authentication · Kinosail Player",
+    "other": "Konfigurera tvåfaktorsautentisering · Kinosail Player"
+  },
+  {
+    "id": "Settings",
+    "other": "Inställningar"
+  },
+  {
+    "id": "Settings sections",
+    "other": "Inställningssektioner"
+  },
+  {
+    "id": "Settings · Kinosail Player",
+    "other": "Inställningar · Kinosail Player"
+  },
+  {
+    "id": "Shape the experience, protect your library, and keep every stream running beautifully.",
+    "other": "Forma upplevelsen, skydda ditt bibliotek och se till att varje stream fungerar vackert."
+  },
+  {
+    "id": "Show",
+    "other": "Visa"
+  },
+  {
+    "id": "Shows",
+    "other": "Shows"
+  },
+  {
+    "id": "Sign in",
+    "other": "Logga in"
+  },
+  {
+    "id": "Sign in to your private media universe.",
+    "other": "Logga in på ditt privata medieuniversum."
+  },
+  {
+    "id": "Sign in with passkey",
+    "other": "Logga in med lösenord"
+  },
+  {
+    "id": "Sign in with SSO",
+    "other": "Logga in med SSO"
+  },
+  {
+    "id": "Sign in · Kinosail Player",
+    "other": "Logga in · Kinosail Player"
+  },
+  {
+    "id": "Sign out",
+    "other": "Logga ut"
+  },
+  {
+    "id": "Sign out other devices",
+    "other": "Logga ut andra enheter"
+  },
+  {
+    "id": "Sign-in methods",
+    "other": "Inloggningsmetoder"
+  },
+  {
+    "id": "Sign-in, same-origin browser protections, private responses, bounded requests, and revocable access are always on. There are no security switches to manage.",
+    "other": "Inloggning, webbläsarskydd med samma ursprung, privata svar, begränsade förfrågningar och återkallbar åtkomst är alltid på. Det finns inga säkerhetsväxlar att hantera."
+  },
+  {
+    "id": "Single sign-on",
+    "other": "Enkel inloggning"
+  },
+  {
+    "id": "Skip",
+    "other": "Hoppa över"
+  },
+  {
+    "id": "Skip commercials automatically",
+    "other": "Hoppa över reklam automatiskt"
+  },
+  {
+    "id": "Skip credits automatically",
+    "other": "Hoppa över krediter automatiskt"
+  },
+  {
+    "id": "Skip intros automatically",
+    "other": "Hoppa över intros automatiskt"
+  },
+  {
+    "id": "Skip outros automatically",
+    "other": "Hoppa över outros automatiskt"
+  },
+  {
+    "id": "Skip recaps automatically",
+    "other": "Hoppa över sammanfattningar automatiskt"
+  },
+  {
+    "id": "Skip to content",
+    "other": "Hoppa till innehåll"
+  },
+  {
+    "id": "Sleep timer",
+    "other": "Sömntimer"
+  },
+  {
+    "id": "Sleep timer ended",
+    "other": "Sömntimer avslutad"
+  },
+  {
+    "id": "Smart playlist",
+    "other": "Smart spellista"
+  },
+  {
+    "id": "Smart playlist name",
+    "other": "Smart spellista namn"
+  },
+  {
+    "id": "Software",
+    "other": "Programvara"
+  },
+  {
+    "id": "Sort",
+    "other": "Sortera"
+  },
+  {
+    "id": "Source",
+    "other": "Källa"
+  },
+  {
+    "id": "speed",
+    "other": "hastighet"
+  },
+  {
+    "id": "SSO challenge is invalid or expired",
+    "other": "SSO-utmaningen är ogiltig eller har löpt ut"
+  },
+  {
+    "id": "SSO code exchange failed",
+    "other": "SSO-kodutbyte misslyckades"
+  },
+  {
+    "id": "SSO identity is not linked to a Viewer Profile",
+    "other": "SSO-identitet är inte länkad till en tittarprofil"
+  },
+  {
+    "id": "SSO is unavailable",
+    "other": "SSO är inte tillgänglig"
+  },
+  {
+    "id": "SSO session could not be created",
+    "other": "SSO-sessionen kunde inte skapas"
+  },
+  {
+    "id": "SSO state is invalid or expired",
+    "other": "SSO-tillståndet är ogiltigt eller har löpt ut"
+  },
+  {
+    "id": "SSO token validation failed",
+    "other": "SSO-tokenvalidering misslyckades"
+  },
+  {
+    "id": "Start in seconds",
+    "other": "Starta om sekunder"
+  },
+  {
+    "id": "Start Watch Together",
+    "other": "Börja titta tillsammans"
+  },
+  {
+    "id": "Status",
+    "other": "Status"
+  },
+  {
+    "id": "Stops in {minutes} minutes",
+    "other": "Stoppar om {minutes} minuter"
+  },
+  {
+    "id": "Store these codes somewhere safe. Each works once.",
+    "other": "Förvara dessa koder på ett säkert ställe. Var och en fungerar en gång."
+  },
+  {
+    "id": "Stored here. Streamed directly.",
+    "other": "Lagrad här. Strömmas direkt."
+  },
+  {
+    "id": "Stream media",
+    "other": "Strömma media"
+  },
+  {
+    "id": "Subscription required",
+    "other": "Prenumeration krävs"
+  },
+  {
+    "id": "Subtitle provider",
+    "other": "Undertextleverantör"
+  },
+  {
+    "id": "subtitle provider unavailable",
+    "other": "undertextleverantör ej tillgänglig"
+  },
+  {
+    "id": "subtitle track(s)",
+    "other": "undertextspår"
+  },
+  {
+    "id": "Subtitles",
+    "other": "Undertexter"
+  },
+  {
+    "id": "subtitles",
+    "other": "undertexter"
+  },
+  {
+    "id": "Sync",
+    "other": "Synkronisera"
+  },
+  {
+    "id": "System",
+    "other": "System"
+  },
+  {
+    "id": "Tagline",
+    "other": "Tagline"
+  },
+  {
+    "id": "The backup contains account and session state. Keep unencrypted backup storage private, or configure a backup key.",
+    "other": "Säkerhetskopieringen innehåller konto- och sessionstillstånd. Håll okrypterad säkerhetskopieringslagring privat eller konfigurera en reservnyckel."
+  },
+  {
+    "id": "Theme",
+    "other": "Tema"
+  },
+  {
+    "id": "These settings are read-only until removed from YAML or the environment",
+    "other": "Dessa inställningar är skrivskyddade tills de tas bort från YAML eller miljön"
+  },
+  {
+    "id": "This Collection is empty.",
+    "other": "Denna samling är tom."
+  },
+  {
+    "id": "This permanently deletes the Collection.",
+    "other": "Detta raderar samlingen permanent."
+  },
+  {
+    "id": "This permanently deletes the playlist.",
+    "other": "Detta tar bort spellistan permanent."
+  },
+  {
+    "id": "This playlist is empty.",
+    "other": "Den här spellistan är tom."
+  },
+  {
+    "id": "This product uses the TMDB API but is not endorsed or certified by TMDB.",
+    "other": "Denna produkt använder TMDB API men är inte godkänd eller certifierad av TMDB."
+  },
+  {
+    "id": "This signs out the profile and deletes it.",
+    "other": "Detta loggar ut profilen och tar bort den."
+  },
+  {
+    "id": "Through PG / TV-PG",
+    "other": "Genom PG / TV-PG"
+  },
+  {
+    "id": "Through PG-13 / TV-14",
+    "other": "Till PG-13 / TV-14"
+  },
+  {
+    "id": "Title",
+    "other": "Titel"
+  },
+  {
+    "id": "Title, artist, genre",
+    "other": "Titel, artist, genre"
+  },
+  {
+    "id": "Title, artist, genre…",
+    "other": "Titel, artist, genre..."
+  },
+  {
+    "id": "TMDB",
+    "other": "TMDB"
+  },
+  {
+    "id": "Tone-map HDR to SDR",
+    "other": "Tonkarta HDR till SDR"
+  },
+  {
+    "id": "too many login attempts",
+    "other": "för många inloggningsförsök"
+  },
+  {
+    "id": "too many Watch Together rooms",
+    "other": "för många Titta tillsammans-rum"
+  },
+  {
+    "id": "Track",
+    "other": "Spår"
+  },
+  {
+    "id": "transcode cache",
+    "other": "koda om cache"
+  },
+  {
+    "id": "Transcoder",
+    "other": "Transcoder"
+  },
+  {
+    "id": "transcoding is not allowed",
+    "other": "omkodning är inte tillåten"
+  },
+  {
+    "id": "Try again",
+    "other": "Försök igen"
+  },
+  {
+    "id": "Two-factor authentication",
+    "other": "Tvåfaktorsautentisering"
+  },
+  {
+    "id": "Two-factor authentication · Kinosail Player",
+    "other": "Tvåfaktorsautentisering · Kinosail Player"
+  },
+  {
+    "id": "Type",
+    "other": "Typ"
+  },
+  {
+    "id": "Unlink OpenID Connect",
+    "other": "Ta bort länken OpenID Connect"
+  },
+  {
+    "id": "Until",
+    "other": "Tills"
+  },
+  {
+    "id": "Unwatched",
+    "other": "Obevakad"
+  },
+  {
+    "id": "unwatched",
+    "other": "obevakad"
+  },
+  {
+    "id": "Use default",
+    "other": "Använd standard"
+  },
+  {
+    "id": "Use Face ID, Touch ID, Windows Hello, or your device PIN to sign in. Your password will still work.",
+    "other": "Använd Face ID, Touch ID, Windows Hello eller enhetens PIN-kod för att logga in. Ditt lösenord kommer fortfarande att fungera."
+  },
+  {
+    "id": "VA-API (AMD/Intel)",
+    "other": "VA-API (AMD/Intel)"
+  },
+  {
+    "id": "Verified Direct Connection",
+    "other": "Verifierad direktanslutning"
+  },
+  {
+    "id": "Verified Direct Connection is not configured",
+    "other": "Verifierad direktanslutning är inte konfigurerad"
+  },
+  {
+    "id": "Verify latest backup",
+    "other": "Verifiera senaste säkerhetskopian"
+  },
+  {
+    "id": "Video",
+    "other": "Video"
+  },
+  {
+    "id": "Viewer",
+    "other": "Viewer"
+  },
+  {
+    "id": "Viewer access is not available",
+    "other": "Tittaråtkomst är inte tillgänglig"
+  },
+  {
+    "id": "Viewer device",
+    "other": "Viewer-enhet"
+  },
+  {
+    "id": "Viewer name",
+    "other": "Tittarens namn"
+  },
+  {
+    "id": "Waiting for your passkey…",
+    "other": "Väntar på ditt lösenord..."
+  },
+  {
+    "id": "Watch Together state is invalid",
+    "other": "Titta tillsammans-tillståndet är ogiltigt"
+  },
+  {
+    "id": "watched",
+    "other": "tittade"
+  },
+  {
+    "id": "Watched",
+    "other": "Sedda"
+  },
+  {
+    "id": "Watched ✓",
+    "other": "Sedd ✓"
+  },
+  {
+    "id": "Watching for changes",
+    "other": "Bevakar ändringar"
+  },
+  {
+    "id": "Welcome aboard",
+    "other": "Välkommen ombord"
+  },
+  {
+    "id": "when ready.",
+    "other": "när redo."
+  },
+  {
+    "id": "WireGuard Viewer not found",
+    "other": "WireGuard Viewer hittades inte"
+  },
+  {
+    "id": "XMLTV guide",
+    "other": "XMLTV-guide"
+  },
+  {
+    "id": "Year",
+    "other": "År"
+  },
+  {
+    "id": "You lead this room",
+    "other": "Du leder det här rummet"
+  },
+  {
+    "id": "Your library",
+    "other": "Ditt bibliotek"
+  },
+  {
+    "id": "Your library and viewing activity stay on this Server.",
+    "other": "Ditt bibliotek och visningsaktivitet stannar på den här servern."
+  },
+  {
+    "id": "← Books",
+    "other": "← Böcker"
+  },
+  {
+    "id": "← Library",
+    "other": "← Bibliotek"
+  },
+  {
+    "id": "← Settings",
+    "other": "← Inställningar"
+  },
+  {
+    "id": "Generated API key",
+    "other": "Genererad API-nyckel"
+  },
+  {
+    "id": "Copy API key",
+    "other": "Kopiera API-nyckel"
+  },
+  {
+    "id": "Copied.",
+    "other": "Kopierad."
+  },
+  {
+    "id": "Select Copy in your browser.",
+    "other": "Välj Kopiera i webbläsaren."
+  },
+  {
+    "id": "Set up trusted HTTPS",
+    "other": "Konfigurera betrodd HTTPS"
+  },
+  {
+    "id": "Review trusted HTTPS setup",
+    "other": "Granska konfigurationen för betrodd HTTPS"
+  },
+  {
+    "id": "Offline copy",
+    "other": "Offlinekopia"
+  },
+  {
+    "id": "Verified file stored on this device.",
+    "other": "Verifierad fil lagrad på den här enheten."
+  },
+  {
+    "id": "Ready offline on this device",
+    "other": "Redo offline på den här enheten"
+  },
+  {
+    "id": "Playback method",
+    "other": "Uppspelningsmetod"
+  },
+  {
+    "id": "Open playback settings.",
+    "other": "Öppna uppspelningsinställningar."
+  },
+  {
+    "id": "Offline copy is unavailable.",
+    "other": "Offlinekopian är inte tillgänglig."
+  },
+  {
+    "id": "Offline playback needs an active service worker",
+    "other": "Offlineuppspelning kräver en aktiv service worker"
+  },
+  {
+    "id": "Could not remove local offline data.",
+    "other": "Det gick inte att ta bort lokala offlinedata."
+  },
+  {
+    "id": "stored on this device",
+    "other": "lagrat på den här enheten"
+  },
+  {
+    "id": "This device does not have enough storage for this download",
+    "other": "Enheten har inte tillräckligt med utrymme för hämtningen"
+  },
+  {
+    "id": "This browser cannot store offline media safely",
+    "other": "Webbläsaren kan inte lagra offlinemedier säkert"
+  },
+  {
+    "id": "The download could not be verified",
+    "other": "Hämtningen kunde inte verifieras"
+  },
+  {
+    "id": "The download is no longer available",
+    "other": "Hämtningen är inte längre tillgänglig"
+  },
+  {
+    "id": "No verified downloads are ready for this Viewer Profile.",
+    "other": "Inga verifierade hämtningar är klara för den här Tittarprofilen."
+  },
+  {
+    "id": "Open Kinosail online and choose a Viewer Profile first.",
+    "other": "Öppna Kinosail online och välj först en Tittarprofil."
+  },
+  {
+    "id": "All libraries",
+    "other": "All libraries"
+  },
+  {
+    "id": "Audio tracks",
+    "other": "Audio tracks"
+  },
+  {
+    "id": "Back to downloads",
+    "other": "Back to downloads"
+  },
+  {
+    "id": "Could not save progress. Return to Downloads and try again.",
+    "other": "Could not save progress. Return to Downloads and try again."
+  },
+  {
+    "id": "Manage offline downloads",
+    "other": "Manage offline downloads"
+  },
+  {
+    "id": "Movie",
+    "other": "Movie"
+  },
+  {
+    "id": "Open Server downloads",
+    "other": "Open Server downloads"
+  },
+  {
+    "id": "Open previous page",
+    "other": "Open previous page"
+  },
+  {
+    "id": "Playback behavior",
+    "other": "Playback behavior"
+  },
+  {
+    "id": "Prepare offline copy",
+    "other": "Prepare offline copy"
+  },
+  {
+    "id": "Progress saved on this device. Open Server downloads to sync.",
+    "other": "Progress saved on this device. Open Server downloads to sync."
+  },
+  {
+    "id": "Request needs another try",
+    "other": "Request needs another try"
+  },
+  {
+    "id": "Return to form",
+    "other": "Return to form"
+  },
+  {
+    "id": "Search all libraries",
+    "other": "Search all libraries"
+  },
+  {
+    "id": "Search everything",
+    "other": "Search everything"
+  },
+  {
+    "id": "This file could not play. Return to Downloads, reconnect to the Server, and download it again.",
+    "other": "This file could not play. Return to Downloads, reconnect to the Server, and download it again."
+  },
+  {
+    "id": "invalid title request",
+    "other": "invalid title request"
+  },
+  {
+    "id": "Audio is fixed in this downloaded copy.",
+    "other": "Audio is fixed in this downloaded copy."
+  }
+]

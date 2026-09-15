@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title">
+  <title id="title">Kinosail Signal Sail logo concept</title>
+  <rect width="512" height="512" rx="112" fill="#090a08"/>
+  <circle cx="256" cy="256" r="138" fill="none" stroke="#c8f169" stroke-width="34"/>
+  <path fill="#f6f8ef" d="m224 168 112 88-112 88z"/>
+  <path fill="#090a08" d="M155 278h202v24H155z"/>
+</svg>

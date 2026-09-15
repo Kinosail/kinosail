@@ -1,0 +1,13 @@
+;FFMETADATA1
+title=Example Audiobook
+artist=Kinosail Test Lab
+[CHAPTER]
+TIMEBASE=1/1000
+START=0
+END=6000
+title=Example Chapter One
+[CHAPTER]
+TIMEBASE=1/1000
+START=6000
+END=12000
+title=Example Chapter Two

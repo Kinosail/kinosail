@@ -1,0 +1,20 @@
+{{define "file"}}
+<details class="subtitle-file" id="subtitle-file-{{.ID}}" data-file-id="{{.ID}}">
+<summary>
+<span class="subtitle-file-identity"><span class="subtitle-file-art" aria-hidden="true">{{if .Artwork}}<img src="/art/{{.ID}}" alt="" width="40" height="56" loading="lazy" decoding="async">{{else}}{{icon "shows"}}{{end}}</span><span class="subtitle-file-title"><strong>{{.Title}}</strong><small>{{if .Context}}{{.Context}}{{else}}{{if .Year}}{{.Year}} · {{end}}Movie{{end}}</small></span></span>
+<span class="subtitle-file-status"><span class="subtitle-state {{if eq .State "ready"}}ready{{else if eq .State "wanted"}}wanted{{else if eq .State "unavailable"}}unavailable{{else}}pending{{end}}">{{if .Pending}}Checking{{else if .Unavailable}}Not checked{{else if .Ready}}Ready{{else}}Wanted{{end}}</span><small>{{if .Pending}}Reading tracks{{else if .Unavailable}}Check file access{{else if .Missing}}Missing {{range $index, $language := .Missing}}{{if $index}}, {{end}}{{$language}}{{end}}{{else if .Frozen}}Protected from upgrades{{else if .NeedsSidecar}}Embedded text{{else}}Preferred languages covered{{end}}</small></span>
+<span class="subtitle-file-expand" aria-hidden="true">+</span>
+</summary>
+<div class="subtitle-file-detail">
+<div class="subtitle-file-detail-heading"><span class="subtitle-kicker">File details</span><a class="subtitle-text-link" href="/subtitles/inspect/{{.ID}}">Open subtitle editor <span aria-hidden="true">↗</span></a></div>
+<dl class="subtitle-file-facts"><div class="subtitle-file-path"><dt>Media file</dt><dd><code>{{.File}}</code></dd></div><div><dt>Tracks</dt><dd>{{if .Pending}}Checking in the background{{else if .Unavailable}}Unavailable{{else if .Tracks}}{{.Tracks}}{{else}}No text subtitles{{end}}</dd></div>{{if not (or .Pending .Unavailable)}}<div><dt>Last search</dt><dd>{{if .LastSearch}}{{.LastSearch}}{{else}}Not searched yet{{end}}</dd></div><div><dt>Coverage</dt><dd>{{.WantedReason}}{{if .NextRetry}}<small>Next automatic search <time>{{.NextRetry}}</time></small>{{end}}</dd></div>{{end}}</dl>
+{{if not (or .Pending .Unavailable)}}
+<div class="subtitle-file-actions">
+{{if .NeedsSidecar}}<form action="/subtitles/manage/{{.ID}}/fetch" method="post" data-subtitle-action data-api="/api/v1/subtitle-library/{{.ID}}/fetch" data-language="{{.ActionLanguage}}"><button>Save compatible subtitle file</button></form>{{else if and (not .Ready) .Searchable}}<form action="/subtitles/manage/{{.ID}}/fetch" method="post" data-subtitle-action data-api="/api/v1/subtitle-library/{{.ID}}/fetch" data-language="{{.ActionLanguage}}"><button>Find {{.ActionLanguage}} subtitles</button></form>{{else if not .Ready}}<a class="quiet button" href="/subtitles/inspect/{{.ID}}">Add a local subtitle</a>{{end}}
+{{if .Ready}}<form action="/subtitles/manage/{{.ID}}/replacement" method="post" data-subtitle-action data-api="/api/v1/subtitle-library/{{.ID}}/replacement"><button class="quiet" name="replaceable" value="{{if .Frozen}}true{{else}}false{{end}}">{{if .Frozen}}Allow automatic upgrades{{else}}Keep this version{{end}}</button></form>{{end}}
+{{if .Restorable}}<form action="/subtitles/manage/{{.ID}}/restore" method="post" data-subtitle-action data-api="/api/v1/subtitle-library/{{.ID}}/restore"><button class="quiet">Restore previous subtitle</button></form>{{end}}
+</div>
+{{if .Source}}<details class="subtitle-install-history"><summary>Installation history</summary><dl class="subtitle-file-facts"><div><dt>Source</dt><dd>{{.Source}}</dd></div><div><dt>Match</dt><dd>{{.Score}} score · {{.ReleaseMatch}} release</dd></div><div><dt>Installed</dt><dd>{{if .Installed}}<time>{{.Installed}}</time>{{else}}Not recorded{{end}}</dd></div><div><dt>Cleanup</dt><dd>{{if .Cleanup}}{{.Cleanup}}{{else}}None recorded{{end}}</dd></div><div><dt>Synchronization</dt><dd>{{if .Synchronization}}{{.Synchronization}}{{else}}None recorded{{end}}</dd></div></dl></details>{{end}}
+{{end}}
+</div></details>
+{{end}}

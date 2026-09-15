@@ -1,0 +1,35 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-09-12T00:00:00Z",
+  "title": "Design System: Kinosail logo family",
+  "extensions": {
+    "scope": "Logo assets only; original Kino palette. No synthesized interface tokens or tonal ramps.",
+    "verification": "Source and rendered contact-sheet inspection only; gates disabled."
+  },
+  "components": [
+    {
+      "name": "Player logo",
+      "kind": "custom",
+      "description": "Player authored web icon.",
+      "html": "<svg width=\"96\" height=\"96\" xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 512 512\">\n  <rect width=\"512\" height=\"512\" rx=\"112\" fill=\"#090a08\"/>\n  <path fill=\"#c8f169\" d=\"M160 112 384 256 160 304Z\"/><path fill=\"#f6f8ef\" d=\"m160 336 128-28-128 92Z\"/>\n</svg>\n",
+      "css": ""
+    },
+    {
+      "name": "Subtitles logo",
+      "kind": "custom",
+      "description": "Subtitles authored web icon.",
+      "html": "<svg width=\"96\" height=\"96\" xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 512 512\">\n  <rect width=\"512\" height=\"512\" rx=\"112\" fill=\"#090a08\"/>\n  <path fill=\"#c8f169\" d=\"M128 144h256v96H184l-56 48Z\"/><path fill=\"#f6f8ef\" d=\"M128 272h256v112l-56-32H128Z\"/>\n</svg>\n",
+      "css": ""
+    },
+    {
+      "name": "Dashboard logo",
+      "kind": "custom",
+      "description": "Dashboard authored web icon.",
+      "html": "<svg width=\"96\" height=\"96\" xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 512 512\">\n  <rect width=\"512\" height=\"512\" rx=\"112\" fill=\"#090a08\"/>\n  <path fill=\"#c8f169\" d=\"M128 128h112v256H128Z\"/><path fill=\"#f6f8ef\" d=\"M272 128h112v112H272Z\"/><path fill=\"#c8f169\" d=\"M272 272h112v112H272Z\"/>\n</svg>\n",
+      "css": ""
+    }
+  ],
+  "narrative": {
+    "overview": "Player, Subtitles, and Dashboard share the original Kino colors and flat, solid geometry. Each app has a distinct silhouette: a split sail for Player, paired caption bands for Subtitles, and three dashboard panels. This document governs logo assets only."
+  }
+}

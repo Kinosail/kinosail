@@ -1,0 +1,566 @@
+// !$*UTF8*$!
+{
+	"archiveVersion" = 1;
+	"classes" = {
+	};
+	"objectVersion" = 77;
+	"objects" = {
+		4A419C504A5B6CAD4F610ED7 = {
+			"isa" = "PBXFileSystemSynchronizedRootGroup";
+			"path" = "Sources";
+			"sourceTree" = "<group>";
+		};
+		3EC6D11BEEF7253C16E09FDF = {
+			"isa" = "PBXFileSystemSynchronizedRootGroup";
+			"path" = "Tests";
+			"sourceTree" = "<group>";
+		};
+		CD0ACFFF9F93025CCF567118 = {
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "text.xml";
+			"path" = "Resources/PrivacyInfo.xcprivacy";
+			"sourceTree" = "<group>";
+		};
+		4F62CA20BF0D6C65D69896FC = {
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "folder.assetcatalog";
+			"path" = "Resources/iOS.xcassets";
+			"sourceTree" = "<group>";
+		};
+		FA2C79B22DC2E156D3845D23 = {
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "text.plist.xml";
+			"path" = "Configuration/iOS-Info.plist";
+			"sourceTree" = "<group>";
+		};
+		99A64CCF75F24274F0027F7E = {
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "folder.assetcatalog";
+			"path" = "Resources/tvOS.xcassets";
+			"sourceTree" = "<group>";
+		};
+		AC29D74436D094327D2CC417 = {
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "text.plist.xml";
+			"path" = "Configuration/tvOS-Info.plist";
+			"sourceTree" = "<group>";
+		};
+		AB71AAF0440FAE0E5062446F = {
+			"isa" = "PBXGroup";
+			"children" = (C87BA4C13320E285D0730317, 1523F6D69D5D948BDA2EF1FC, B833FD8937156128B3514625, 1594338D089D65A2F5D19212);
+			"name" = "Products";
+			"sourceTree" = "<group>";
+		};
+		C45E4BB25E55B2F6328A5DD4 = {
+			"isa" = "PBXGroup";
+			"children" = (4A419C504A5B6CAD4F610ED7, 3EC6D11BEEF7253C16E09FDF, 4F62CA20BF0D6C65D69896FC, 99A64CCF75F24274F0027F7E, CD0ACFFF9F93025CCF567118, FA2C79B22DC2E156D3845D23, AC29D74436D094327D2CC417, AB71AAF0440FAE0E5062446F);
+			"sourceTree" = "<group>";
+		};
+		7E5873D6031943950F185742 = {
+			"isa" = "XCBuildConfiguration";
+			"name" = "Debug";
+			"buildSettings" = {
+				"ALWAYS_SEARCH_USER_PATHS" = "NO";
+				"CLANG_ENABLE_MODULES" = "YES";
+				"CLANG_ENABLE_OBJC_ARC" = "YES";
+				"SWIFT_VERSION" = "6.0";
+				"SWIFT_STRICT_CONCURRENCY" = "complete";
+				"SWIFT_APPROACHABLE_CONCURRENCY" = "YES";
+				"ENABLE_USER_SCRIPT_SANDBOXING" = "YES";
+				"COPY_PHASE_STRIP" = "NO";
+				"DEBUG_INFORMATION_FORMAT" = "dwarf";
+				"SWIFT_OPTIMIZATION_LEVEL" = "-Onone";
+				"SWIFT_COMPILATION_MODE" = "singlefile";
+				"ENABLE_TESTABILITY" = "YES";
+				"SWIFT_ACTIVE_COMPILATION_CONDITIONS" = "$(inherited) DEBUG";
+			};
+		};
+		72D0AB4E21FA60F772735C18 = {
+			"isa" = "XCBuildConfiguration";
+			"name" = "Release";
+			"buildSettings" = {
+				"ALWAYS_SEARCH_USER_PATHS" = "NO";
+				"CLANG_ENABLE_MODULES" = "YES";
+				"CLANG_ENABLE_OBJC_ARC" = "YES";
+				"SWIFT_VERSION" = "6.0";
+				"SWIFT_STRICT_CONCURRENCY" = "complete";
+				"SWIFT_APPROACHABLE_CONCURRENCY" = "YES";
+				"ENABLE_USER_SCRIPT_SANDBOXING" = "YES";
+				"COPY_PHASE_STRIP" = "NO";
+				"DEBUG_INFORMATION_FORMAT" = "dwarf-with-dsym";
+				"SWIFT_OPTIMIZATION_LEVEL" = "-O";
+				"SWIFT_COMPILATION_MODE" = "wholemodule";
+				"ENABLE_TESTABILITY" = "NO";
+				"SWIFT_ACTIVE_COMPILATION_CONDITIONS" = "$(inherited)";
+			};
+		};
+		259CECEF5201BDDFA515B114 = {
+			"isa" = "XCConfigurationList";
+			"buildConfigurations" = (7E5873D6031943950F185742, 72D0AB4E21FA60F772735C18);
+			"defaultConfigurationIsVisible" = 0;
+			"defaultConfigurationName" = "Release";
+		};
+		C87BA4C13320E285D0730317 = {
+			"isa" = "PBXFileReference";
+			"explicitFileType" = "wrapper.application";
+			"includeInIndex" = 0;
+			"path" = "KinosailPlayer.app";
+			"sourceTree" = "BUILT_PRODUCTS_DIR";
+		};
+		0F18A4264E2CB26C8DF1A32D = {
+			"isa" = "PBXSourcesBuildPhase";
+			"buildActionMask" = 2147483647;
+			"files" = ();
+			"runOnlyForDeploymentPostprocessing" = 0;
+		};
+		3DB127EBAD1FAD5C44765452 = {
+			"isa" = "PBXFrameworksBuildPhase";
+			"buildActionMask" = 2147483647;
+			"files" = ();
+			"runOnlyForDeploymentPostprocessing" = 0;
+		};
+		A94CDB0D79D4D1B14CFAEA50 = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = 4F62CA20BF0D6C65D69896FC;
+		};
+		896B626A1D3F111BAC1EDA37 = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = CD0ACFFF9F93025CCF567118;
+		};
+		09C06150177587BCE5327187 = {
+			"isa" = "PBXResourcesBuildPhase";
+			"buildActionMask" = 2147483647;
+			"files" = (A94CDB0D79D4D1B14CFAEA50, 896B626A1D3F111BAC1EDA37);
+			"runOnlyForDeploymentPostprocessing" = 0;
+		};
+		65B1DF8A51A8719E1DE8192C = {
+			"isa" = "XCBuildConfiguration";
+			"name" = "Debug";
+			"buildSettings" = {
+				"PRODUCT_NAME" = "KinosailPlayer";
+				"PRODUCT_MODULE_NAME" = "KinosailPlayer";
+				"PRODUCT_BUNDLE_IDENTIFIER" = "com.kinosail.player";
+				"SDKROOT" = "iphoneos";
+				"SUPPORTED_PLATFORMS" = "iphoneos iphonesimulator";
+				"TARGETED_DEVICE_FAMILY" = "1,2";
+				"IPHONEOS_DEPLOYMENT_TARGET" = "26.0";
+				"TVOS_DEPLOYMENT_TARGET" = "26.0";
+				"SUPPORTS_MACCATALYST" = "NO";
+				"SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD" = "NO";
+				"SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD" = "NO";
+				"CODE_SIGN_STYLE" = "Automatic";
+				"MARKETING_VERSION" = "0.2.0";
+				"CURRENT_PROJECT_VERSION" = "1";
+				"KINOSAIL_SOURCE_REVISION" = "development";
+				"LD_RUNPATH_SEARCH_PATHS" = ("$(inherited)", "@executable_path/Frameworks");
+				"SWIFT_EMIT_LOC_STRINGS" = "YES";
+				"GENERATE_INFOPLIST_FILE" = "NO";
+				"INFOPLIST_FILE" = "Configuration/iOS-Info.plist";
+				"ASSETCATALOG_COMPILER_APPICON_NAME" = "AppIcon";
+				"ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS" = "YES";
+			};
+		};
+		F2B0EA9D549E4C2969E6754E = {
+			"isa" = "XCBuildConfiguration";
+			"name" = "Release";
+			"buildSettings" = {
+				"PRODUCT_NAME" = "KinosailPlayer";
+				"PRODUCT_MODULE_NAME" = "KinosailPlayer";
+				"PRODUCT_BUNDLE_IDENTIFIER" = "com.kinosail.player";
+				"SDKROOT" = "iphoneos";
+				"SUPPORTED_PLATFORMS" = "iphoneos iphonesimulator";
+				"TARGETED_DEVICE_FAMILY" = "1,2";
+				"IPHONEOS_DEPLOYMENT_TARGET" = "26.0";
+				"TVOS_DEPLOYMENT_TARGET" = "26.0";
+				"SUPPORTS_MACCATALYST" = "NO";
+				"SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD" = "NO";
+				"SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD" = "NO";
+				"CODE_SIGN_STYLE" = "Automatic";
+				"MARKETING_VERSION" = "0.2.0";
+				"CURRENT_PROJECT_VERSION" = "1";
+				"KINOSAIL_SOURCE_REVISION" = "development";
+				"LD_RUNPATH_SEARCH_PATHS" = ("$(inherited)", "@executable_path/Frameworks");
+				"SWIFT_EMIT_LOC_STRINGS" = "YES";
+				"GENERATE_INFOPLIST_FILE" = "NO";
+				"INFOPLIST_FILE" = "Configuration/iOS-Info.plist";
+				"ASSETCATALOG_COMPILER_APPICON_NAME" = "AppIcon";
+				"ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS" = "YES";
+			};
+		};
+		BC556F5651A5A3B645BC9FF8 = {
+			"isa" = "XCConfigurationList";
+			"buildConfigurations" = (65B1DF8A51A8719E1DE8192C, F2B0EA9D549E4C2969E6754E);
+			"defaultConfigurationIsVisible" = 0;
+			"defaultConfigurationName" = "Release";
+		};
+		7A7BC14A88F12E941988D9EC = {
+			"isa" = "PBXNativeTarget";
+			"buildConfigurationList" = BC556F5651A5A3B645BC9FF8;
+			"buildPhases" = (0F18A4264E2CB26C8DF1A32D, 3DB127EBAD1FAD5C44765452, 09C06150177587BCE5327187);
+			"buildRules" = ();
+			"dependencies" = ();
+			"fileSystemSynchronizedGroups" = (4A419C504A5B6CAD4F610ED7);
+			"name" = "Kinosail-iOS";
+			"packageProductDependencies" = ();
+			"productName" = "KinosailPlayer";
+			"productReference" = C87BA4C13320E285D0730317;
+			"productType" = "com.apple.product-type.application";
+		};
+		1523F6D69D5D948BDA2EF1FC = {
+			"isa" = "PBXFileReference";
+			"explicitFileType" = "wrapper.cfbundle";
+			"includeInIndex" = 0;
+			"path" = "KinosailPlayerTests.xctest";
+			"sourceTree" = "BUILT_PRODUCTS_DIR";
+		};
+		B999AC38BC47FA172E8A0CD3 = {
+			"isa" = "PBXSourcesBuildPhase";
+			"buildActionMask" = 2147483647;
+			"files" = ();
+			"runOnlyForDeploymentPostprocessing" = 0;
+		};
+		2E6E904E1EA00DF06AD1402D = {
+			"isa" = "PBXFrameworksBuildPhase";
+			"buildActionMask" = 2147483647;
+			"files" = ();
+			"runOnlyForDeploymentPostprocessing" = 0;
+		};
+		014AC4DAF12CBCE918B6DCBF = {
+			"isa" = "PBXResourcesBuildPhase";
+			"buildActionMask" = 2147483647;
+			"files" = ();
+			"runOnlyForDeploymentPostprocessing" = 0;
+		};
+		3D58BFF0BAF6155D8772806C = {
+			"isa" = "XCBuildConfiguration";
+			"name" = "Debug";
+			"buildSettings" = {
+				"PRODUCT_NAME" = "KinosailPlayerTests";
+				"PRODUCT_MODULE_NAME" = "KinosailPlayerTests";
+				"PRODUCT_BUNDLE_IDENTIFIER" = "com.kinosail.player.tests";
+				"SDKROOT" = "iphoneos";
+				"SUPPORTED_PLATFORMS" = "iphoneos iphonesimulator";
+				"TARGETED_DEVICE_FAMILY" = "1,2";
+				"IPHONEOS_DEPLOYMENT_TARGET" = "26.0";
+				"TVOS_DEPLOYMENT_TARGET" = "26.0";
+				"SUPPORTS_MACCATALYST" = "NO";
+				"SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD" = "NO";
+				"SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD" = "NO";
+				"CODE_SIGN_STYLE" = "Automatic";
+				"MARKETING_VERSION" = "0.2.0";
+				"CURRENT_PROJECT_VERSION" = "1";
+				"KINOSAIL_SOURCE_REVISION" = "development";
+				"LD_RUNPATH_SEARCH_PATHS" = ("$(inherited)", "@executable_path/Frameworks");
+				"SWIFT_EMIT_LOC_STRINGS" = "YES";
+				"GENERATE_INFOPLIST_FILE" = "YES";
+				"TEST_HOST" = "$(BUILT_PRODUCTS_DIR)/KinosailPlayer.app/KinosailPlayer";
+				"BUNDLE_LOADER" = "$(TEST_HOST)";
+			};
+		};
+		0C27A56780D62B7229CB823A = {
+			"isa" = "XCBuildConfiguration";
+			"name" = "Release";
+			"buildSettings" = {
+				"PRODUCT_NAME" = "KinosailPlayerTests";
+				"PRODUCT_MODULE_NAME" = "KinosailPlayerTests";
+				"PRODUCT_BUNDLE_IDENTIFIER" = "com.kinosail.player.tests";
+				"SDKROOT" = "iphoneos";
+				"SUPPORTED_PLATFORMS" = "iphoneos iphonesimulator";
+				"TARGETED_DEVICE_FAMILY" = "1,2";
+				"IPHONEOS_DEPLOYMENT_TARGET" = "26.0";
+				"TVOS_DEPLOYMENT_TARGET" = "26.0";
+				"SUPPORTS_MACCATALYST" = "NO";
+				"SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD" = "NO";
+				"SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD" = "NO";
+				"CODE_SIGN_STYLE" = "Automatic";
+				"MARKETING_VERSION" = "0.2.0";
+				"CURRENT_PROJECT_VERSION" = "1";
+				"KINOSAIL_SOURCE_REVISION" = "development";
+				"LD_RUNPATH_SEARCH_PATHS" = ("$(inherited)", "@executable_path/Frameworks");
+				"SWIFT_EMIT_LOC_STRINGS" = "YES";
+				"GENERATE_INFOPLIST_FILE" = "YES";
+				"TEST_HOST" = "$(BUILT_PRODUCTS_DIR)/KinosailPlayer.app/KinosailPlayer";
+				"BUNDLE_LOADER" = "$(TEST_HOST)";
+			};
+		};
+		8239A415A144A3D259813A0D = {
+			"isa" = "XCConfigurationList";
+			"buildConfigurations" = (3D58BFF0BAF6155D8772806C, 0C27A56780D62B7229CB823A);
+			"defaultConfigurationIsVisible" = 0;
+			"defaultConfigurationName" = "Release";
+		};
+		0A377EB060DC08A0514F82EE = {
+			"isa" = "PBXContainerItemProxy";
+			"containerPortal" = BD78DBAA6F46B4C8AAFFC3B5;
+			"proxyType" = 1;
+			"remoteGlobalIDString" = 7A7BC14A88F12E941988D9EC;
+			"remoteInfo" = "Kinosail-iOS";
+		};
+		099B2EC262C839648C8E307D = {
+			"isa" = "PBXTargetDependency";
+			"target" = 7A7BC14A88F12E941988D9EC;
+			"targetProxy" = 0A377EB060DC08A0514F82EE;
+		};
+		E027A92FD049716B2B6E30FC = {
+			"isa" = "PBXNativeTarget";
+			"buildConfigurationList" = 8239A415A144A3D259813A0D;
+			"buildPhases" = (B999AC38BC47FA172E8A0CD3, 2E6E904E1EA00DF06AD1402D, 014AC4DAF12CBCE918B6DCBF);
+			"buildRules" = ();
+			"dependencies" = (099B2EC262C839648C8E307D);
+			"fileSystemSynchronizedGroups" = (3EC6D11BEEF7253C16E09FDF);
+			"name" = "Kinosail-iOSTests";
+			"packageProductDependencies" = ();
+			"productName" = "KinosailPlayerTests";
+			"productReference" = 1523F6D69D5D948BDA2EF1FC;
+			"productType" = "com.apple.product-type.bundle.unit-test";
+		};
+		B833FD8937156128B3514625 = {
+			"isa" = "PBXFileReference";
+			"explicitFileType" = "wrapper.application";
+			"includeInIndex" = 0;
+			"path" = "KinosailPlayer.app";
+			"sourceTree" = "BUILT_PRODUCTS_DIR";
+		};
+		A10815134DFF25D1763A6BDB = {
+			"isa" = "PBXSourcesBuildPhase";
+			"buildActionMask" = 2147483647;
+			"files" = ();
+			"runOnlyForDeploymentPostprocessing" = 0;
+		};
+		D2C59A65FC8C0133CDE02975 = {
+			"isa" = "PBXFrameworksBuildPhase";
+			"buildActionMask" = 2147483647;
+			"files" = ();
+			"runOnlyForDeploymentPostprocessing" = 0;
+		};
+		C4A9DB84B2E3CEBEAE964D4D = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = 99A64CCF75F24274F0027F7E;
+		};
+		850D08C0C1CA8421C2E9CFE1 = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = CD0ACFFF9F93025CCF567118;
+		};
+		F1C9DCF6904074962C248AF6 = {
+			"isa" = "PBXResourcesBuildPhase";
+			"buildActionMask" = 2147483647;
+			"files" = (C4A9DB84B2E3CEBEAE964D4D, 850D08C0C1CA8421C2E9CFE1);
+			"runOnlyForDeploymentPostprocessing" = 0;
+		};
+		4151805F181185000BB7BE15 = {
+			"isa" = "XCBuildConfiguration";
+			"name" = "Debug";
+			"buildSettings" = {
+				"PRODUCT_NAME" = "KinosailPlayer";
+				"PRODUCT_MODULE_NAME" = "KinosailPlayer";
+				"PRODUCT_BUNDLE_IDENTIFIER" = "com.kinosail.player";
+				"SDKROOT" = "appletvos";
+				"SUPPORTED_PLATFORMS" = "appletvos appletvsimulator";
+				"TARGETED_DEVICE_FAMILY" = "3";
+				"IPHONEOS_DEPLOYMENT_TARGET" = "26.0";
+				"TVOS_DEPLOYMENT_TARGET" = "26.0";
+				"SUPPORTS_MACCATALYST" = "NO";
+				"SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD" = "NO";
+				"SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD" = "NO";
+				"CODE_SIGN_STYLE" = "Automatic";
+				"MARKETING_VERSION" = "0.2.0";
+				"CURRENT_PROJECT_VERSION" = "1";
+				"KINOSAIL_SOURCE_REVISION" = "development";
+				"LD_RUNPATH_SEARCH_PATHS" = ("$(inherited)", "@executable_path/Frameworks");
+				"SWIFT_EMIT_LOC_STRINGS" = "YES";
+				"GENERATE_INFOPLIST_FILE" = "NO";
+				"INFOPLIST_FILE" = "Configuration/tvOS-Info.plist";
+				"ASSETCATALOG_COMPILER_APPICON_NAME" = "AppIcon";
+				"ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS" = "YES";
+			};
+		};
+		F6FAACA876B9A14FB1CC16D2 = {
+			"isa" = "XCBuildConfiguration";
+			"name" = "Release";
+			"buildSettings" = {
+				"PRODUCT_NAME" = "KinosailPlayer";
+				"PRODUCT_MODULE_NAME" = "KinosailPlayer";
+				"PRODUCT_BUNDLE_IDENTIFIER" = "com.kinosail.player";
+				"SDKROOT" = "appletvos";
+				"SUPPORTED_PLATFORMS" = "appletvos appletvsimulator";
+				"TARGETED_DEVICE_FAMILY" = "3";
+				"IPHONEOS_DEPLOYMENT_TARGET" = "26.0";
+				"TVOS_DEPLOYMENT_TARGET" = "26.0";
+				"SUPPORTS_MACCATALYST" = "NO";
+				"SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD" = "NO";
+				"SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD" = "NO";
+				"CODE_SIGN_STYLE" = "Automatic";
+				"MARKETING_VERSION" = "0.2.0";
+				"CURRENT_PROJECT_VERSION" = "1";
+				"KINOSAIL_SOURCE_REVISION" = "development";
+				"LD_RUNPATH_SEARCH_PATHS" = ("$(inherited)", "@executable_path/Frameworks");
+				"SWIFT_EMIT_LOC_STRINGS" = "YES";
+				"GENERATE_INFOPLIST_FILE" = "NO";
+				"INFOPLIST_FILE" = "Configuration/tvOS-Info.plist";
+				"ASSETCATALOG_COMPILER_APPICON_NAME" = "AppIcon";
+				"ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS" = "YES";
+			};
+		};
+		87E2F81D1BCF141D6B5AA38A = {
+			"isa" = "XCConfigurationList";
+			"buildConfigurations" = (4151805F181185000BB7BE15, F6FAACA876B9A14FB1CC16D2);
+			"defaultConfigurationIsVisible" = 0;
+			"defaultConfigurationName" = "Release";
+		};
+		BA7E0317BF05ADD1A09AC29C = {
+			"isa" = "PBXNativeTarget";
+			"buildConfigurationList" = 87E2F81D1BCF141D6B5AA38A;
+			"buildPhases" = (A10815134DFF25D1763A6BDB, D2C59A65FC8C0133CDE02975, F1C9DCF6904074962C248AF6);
+			"buildRules" = ();
+			"dependencies" = ();
+			"fileSystemSynchronizedGroups" = (4A419C504A5B6CAD4F610ED7);
+			"name" = "Kinosail-tvOS";
+			"packageProductDependencies" = ();
+			"productName" = "KinosailPlayer";
+			"productReference" = B833FD8937156128B3514625;
+			"productType" = "com.apple.product-type.application";
+		};
+		1594338D089D65A2F5D19212 = {
+			"isa" = "PBXFileReference";
+			"explicitFileType" = "wrapper.cfbundle";
+			"includeInIndex" = 0;
+			"path" = "KinosailPlayerTests.xctest";
+			"sourceTree" = "BUILT_PRODUCTS_DIR";
+		};
+		0B8BB435639E0F9ECB7813EC = {
+			"isa" = "PBXSourcesBuildPhase";
+			"buildActionMask" = 2147483647;
+			"files" = ();
+			"runOnlyForDeploymentPostprocessing" = 0;
+		};
+		B1FD9DD22DEF852BDCEDC817 = {
+			"isa" = "PBXFrameworksBuildPhase";
+			"buildActionMask" = 2147483647;
+			"files" = ();
+			"runOnlyForDeploymentPostprocessing" = 0;
+		};
+		D4DFD354C4581965640CF84A = {
+			"isa" = "PBXResourcesBuildPhase";
+			"buildActionMask" = 2147483647;
+			"files" = ();
+			"runOnlyForDeploymentPostprocessing" = 0;
+		};
+		03F9ABB12766E1825F05B5F9 = {
+			"isa" = "XCBuildConfiguration";
+			"name" = "Debug";
+			"buildSettings" = {
+				"PRODUCT_NAME" = "KinosailPlayerTests";
+				"PRODUCT_MODULE_NAME" = "KinosailPlayerTests";
+				"PRODUCT_BUNDLE_IDENTIFIER" = "com.kinosail.player.tests";
+				"SDKROOT" = "appletvos";
+				"SUPPORTED_PLATFORMS" = "appletvos appletvsimulator";
+				"TARGETED_DEVICE_FAMILY" = "3";
+				"IPHONEOS_DEPLOYMENT_TARGET" = "26.0";
+				"TVOS_DEPLOYMENT_TARGET" = "26.0";
+				"SUPPORTS_MACCATALYST" = "NO";
+				"SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD" = "NO";
+				"SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD" = "NO";
+				"CODE_SIGN_STYLE" = "Automatic";
+				"MARKETING_VERSION" = "0.2.0";
+				"CURRENT_PROJECT_VERSION" = "1";
+				"KINOSAIL_SOURCE_REVISION" = "development";
+				"LD_RUNPATH_SEARCH_PATHS" = ("$(inherited)", "@executable_path/Frameworks");
+				"SWIFT_EMIT_LOC_STRINGS" = "YES";
+				"GENERATE_INFOPLIST_FILE" = "YES";
+				"TEST_HOST" = "$(BUILT_PRODUCTS_DIR)/KinosailPlayer.app/KinosailPlayer";
+				"BUNDLE_LOADER" = "$(TEST_HOST)";
+			};
+		};
+		65C8BA305CCFF3B7960C13C8 = {
+			"isa" = "XCBuildConfiguration";
+			"name" = "Release";
+			"buildSettings" = {
+				"PRODUCT_NAME" = "KinosailPlayerTests";
+				"PRODUCT_MODULE_NAME" = "KinosailPlayerTests";
+				"PRODUCT_BUNDLE_IDENTIFIER" = "com.kinosail.player.tests";
+				"SDKROOT" = "appletvos";
+				"SUPPORTED_PLATFORMS" = "appletvos appletvsimulator";
+				"TARGETED_DEVICE_FAMILY" = "3";
+				"IPHONEOS_DEPLOYMENT_TARGET" = "26.0";
+				"TVOS_DEPLOYMENT_TARGET" = "26.0";
+				"SUPPORTS_MACCATALYST" = "NO";
+				"SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD" = "NO";
+				"SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD" = "NO";
+				"CODE_SIGN_STYLE" = "Automatic";
+				"MARKETING_VERSION" = "0.2.0";
+				"CURRENT_PROJECT_VERSION" = "1";
+				"KINOSAIL_SOURCE_REVISION" = "development";
+				"LD_RUNPATH_SEARCH_PATHS" = ("$(inherited)", "@executable_path/Frameworks");
+				"SWIFT_EMIT_LOC_STRINGS" = "YES";
+				"GENERATE_INFOPLIST_FILE" = "YES";
+				"TEST_HOST" = "$(BUILT_PRODUCTS_DIR)/KinosailPlayer.app/KinosailPlayer";
+				"BUNDLE_LOADER" = "$(TEST_HOST)";
+			};
+		};
+		8DF595F1DF6A92A9AB687786 = {
+			"isa" = "XCConfigurationList";
+			"buildConfigurations" = (03F9ABB12766E1825F05B5F9, 65C8BA305CCFF3B7960C13C8);
+			"defaultConfigurationIsVisible" = 0;
+			"defaultConfigurationName" = "Release";
+		};
+		E432B122341CE669D5D300AD = {
+			"isa" = "PBXContainerItemProxy";
+			"containerPortal" = BD78DBAA6F46B4C8AAFFC3B5;
+			"proxyType" = 1;
+			"remoteGlobalIDString" = BA7E0317BF05ADD1A09AC29C;
+			"remoteInfo" = "Kinosail-tvOS";
+		};
+		A7D98A3F64B4FCFFE63C7BCA = {
+			"isa" = "PBXTargetDependency";
+			"target" = BA7E0317BF05ADD1A09AC29C;
+			"targetProxy" = E432B122341CE669D5D300AD;
+		};
+		E443E9C03FD7ACF1982CC7B1 = {
+			"isa" = "PBXNativeTarget";
+			"buildConfigurationList" = 8DF595F1DF6A92A9AB687786;
+			"buildPhases" = (0B8BB435639E0F9ECB7813EC, B1FD9DD22DEF852BDCEDC817, D4DFD354C4581965640CF84A);
+			"buildRules" = ();
+			"dependencies" = (A7D98A3F64B4FCFFE63C7BCA);
+			"fileSystemSynchronizedGroups" = (3EC6D11BEEF7253C16E09FDF);
+			"name" = "Kinosail-tvOSTests";
+			"packageProductDependencies" = ();
+			"productName" = "KinosailPlayerTests";
+			"productReference" = 1594338D089D65A2F5D19212;
+			"productType" = "com.apple.product-type.bundle.unit-test";
+		};
+		BD78DBAA6F46B4C8AAFFC3B5 = {
+			"isa" = "PBXProject";
+			"attributes" = {
+				"BuildIndependentTargetsInParallel" = "YES";
+				"LastSwiftUpdateCheck" = "2660";
+				"LastUpgradeCheck" = "2660";
+				"TargetAttributes" = {
+					7A7BC14A88F12E941988D9EC = {
+						"CreatedOnToolsVersion" = "26.6";
+					};
+					BA7E0317BF05ADD1A09AC29C = {
+						"CreatedOnToolsVersion" = "26.6";
+					};
+					E027A92FD049716B2B6E30FC = {
+						"CreatedOnToolsVersion" = "26.6";
+					};
+					E443E9C03FD7ACF1982CC7B1 = {
+						"CreatedOnToolsVersion" = "26.6";
+					};
+				};
+			};
+			"buildConfigurationList" = 259CECEF5201BDDFA515B114;
+			"compatibilityVersion" = "Xcode 16.0";
+			"developmentRegion" = "en";
+			"hasScannedForEncodings" = 0;
+			"knownRegions" = ("en", "Base");
+			"mainGroup" = C45E4BB25E55B2F6328A5DD4;
+			"preferredProjectObjectVersion" = 77;
+			"productRefGroup" = AB71AAF0440FAE0E5062446F;
+			"projectDirPath" = "";
+			"projectRoot" = "";
+			"targets" = (7A7BC14A88F12E941988D9EC, BA7E0317BF05ADD1A09AC29C, E027A92FD049716B2B6E30FC, E443E9C03FD7ACF1982CC7B1);
+		};
+	};
+	"rootObject" = BD78DBAA6F46B4C8AAFFC3B5;
+}

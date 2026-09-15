@@ -1,0 +1,2034 @@
+[
+  {
+    "id": "15 minutes",
+    "other": "15 хвилин"
+  },
+  {
+    "id": "30 minutes",
+    "other": "30 хвилин"
+  },
+  {
+    "id": "45 minutes",
+    "other": "45 хвилин"
+  },
+  {
+    "id": "60 minutes",
+    "other": "60 хвилин"
+  },
+  {
+    "id": "Access",
+    "other": "Доступ"
+  },
+  {
+    "id": "Account · Kinosail Player",
+    "other": "Обліковий запис · Kinosail Player"
+  },
+  {
+    "id": "Actions",
+    "other": "Дії"
+  },
+  {
+    "id": "active session(s)",
+    "other": "активні сеанси"
+  },
+  {
+    "id": "Add a passkey",
+    "other": "Додати ключ"
+  },
+  {
+    "id": "Add folder",
+    "other": "Додати папку"
+  },
+  {
+    "id": "Add media or try another search.",
+    "other": "Додайте медіафайли або спробуйте інший пошук."
+  },
+  {
+    "id": "Add Profile",
+    "other": "Додати профіль"
+  },
+  {
+    "id": "Add this secret or URI to your authenticator app.",
+    "other": "Додайте цей секрет або URI до програми автентифікації."
+  },
+  {
+    "id": "Add to",
+    "other": "Додати до"
+  },
+  {
+    "id": "Administer server",
+    "other": "Сервер адміністрування"
+  },
+  {
+    "id": "Album",
+    "other": "Альбом"
+  },
+  {
+    "id": "Albums",
+    "other": "Альбоми"
+  },
+  {
+    "id": "all",
+    "other": "всі"
+  },
+  {
+    "id": "All ratings",
+    "other": "Усі оцінки"
+  },
+  {
+    "id": "Allow downloads",
+    "other": "Дозволити завантаження"
+  },
+  {
+    "id": "Allow transcoding",
+    "other": "Дозволити перекодування"
+  },
+  {
+    "id": "AMD AMF",
+    "other": "AMD AMF"
+  },
+  {
+    "id": "Analyze playback segments now",
+    "other": "Проаналізуйте сегменти відтворення зараз"
+  },
+  {
+    "id": "analyzed item(s)",
+    "other": "проаналізовані елементи"
+  },
+  {
+    "id": "API key name",
+    "other": "Назва ключа API"
+  },
+  {
+    "id": "API key scope does not allow this request",
+    "other": "Область ключа API не дозволяє цей запит"
+  },
+  {
+    "id": "API key view failed",
+    "other": "Помилка перегляду ключа API"
+  },
+  {
+    "id": "API key · Kinosail Player",
+    "other": "API ключ · Kinosail Player"
+  },
+  {
+    "id": "API keys",
+    "other": "API ключі"
+  },
+  {
+    "id": "Appearance",
+    "other": "Зовнішній вигляд"
+  },
+  {
+    "id": "Apple VideoToolbox",
+    "other": "Apple VideoToolbox"
+  },
+  {
+    "id": "Apply",
+    "other": "Подати заявку"
+  },
+  {
+    "id": "Audio",
+    "other": "Аудіо"
+  },
+  {
+    "id": "Audiobooks",
+    "other": "Аудіокниги"
+  },
+  {
+    "id": "Authentication code",
+    "other": "Код автентифікації"
+  },
+  {
+    "id": "Authentication or recovery code",
+    "other": "Код автентифікації або відновлення"
+  },
+  {
+    "id": "authentication required",
+    "other": "потрібна автентифікація"
+  },
+  {
+    "id": "Authorize device",
+    "other": "Авторизувати пристрій"
+  },
+  {
+    "id": "Automatic",
+    "other": "Автоматичний"
+  },
+  {
+    "id": "automatic",
+    "other": "автоматичний"
+  },
+  {
+    "id": "Automatic (best detected)",
+    "other": "Автоматично (найкраще розпізнається)"
+  },
+  {
+    "id": "Automatic (browser)",
+    "other": "Автоматично (браузер)"
+  },
+  {
+    "id": "Automatic backups",
+    "other": "Автоматичні резервні копії"
+  },
+  {
+    "id": "Automatic maintenance",
+    "other": "Автоматичне обслуговування"
+  },
+  {
+    "id": "Available devices use a direct connection to this Server.",
+    "other": "Доступні пристрої використовують пряме з’єднання з цим сервером."
+  },
+  {
+    "id": "Back to library",
+    "other": "Назад до бібліотеки"
+  },
+  {
+    "id": "Back to settings",
+    "other": "Назад до налаштувань"
+  },
+  {
+    "id": "Back up now",
+    "other": "Створити резервну копію"
+  },
+  {
+    "id": "Backup and recovery",
+    "other": "Резервне копіювання та відновлення"
+  },
+  {
+    "id": "backup is unavailable",
+    "other": "резервне копіювання недоступне"
+  },
+  {
+    "id": "Backups need setup.",
+    "other": "Потрібно налаштувати резервні копії."
+  },
+  {
+    "id": "Backups run automatically without encryption.",
+    "other": "Резервні копії запускаються автоматично без шифрування."
+  },
+  {
+    "id": "Backups · Kinosail Player",
+    "other": "Резервні копії · Kinosail Player"
+  },
+  {
+    "id": "Book",
+    "other": "Книга"
+  },
+  {
+    "id": "Books",
+    "other": "Книги"
+  },
+  {
+    "id": "Books and comics",
+    "other": "Книги та комікси"
+  },
+  {
+    "id": "Browse library",
+    "other": "Переглянути бібліотеку"
+  },
+  {
+    "id": "Cancel",
+    "other": "Скасувати"
+  },
+  {
+    "id": "Cast",
+    "other": "Cast"
+  },
+  {
+    "id": "Chapters",
+    "other": "Розділи"
+  },
+  {
+    "id": "Choose the language for this browser.",
+    "other": "Виберіть мову для цього браузера."
+  },
+  {
+    "id": "Clear transcode cache",
+    "other": "Очистити кеш перекодування"
+  },
+  {
+    "id": "Code",
+    "other": "Код"
+  },
+  {
+    "id": "Collection",
+    "other": "Колекція"
+  },
+  {
+    "id": "Collections",
+    "other": "Колекції"
+  },
+  {
+    "id": "Commercial",
+    "other": "Комерційний"
+  },
+  {
+    "id": "Compatibility",
+    "other": "Сумісність"
+  },
+  {
+    "id": "Compatibility Connection",
+    "other": "Підключення сумісності"
+  },
+  {
+    "id": "Compatibility stream",
+    "other": "Потік сумісності"
+  },
+  {
+    "id": "compatible",
+    "other": "сумісний"
+  },
+  {
+    "id": "Concurrent streams",
+    "other": "Параллельні потоки"
+  },
+  {
+    "id": "Configuration error",
+    "other": "Помилка конфігурації"
+  },
+  {
+    "id": "Configuration · Kinosail Player",
+    "other": "Конфігурація · Kinosail Player"
+  },
+  {
+    "id": "Configured; value hidden",
+    "other": "Налаштовано; значення приховано"
+  },
+  {
+    "id": "Confirm delete",
+    "other": "Підтвердити видалення"
+  },
+  {
+    "id": "Confirm remove",
+    "other": "Підтвердити видалення"
+  },
+  {
+    "id": "Connect",
+    "other": "Підключити"
+  },
+  {
+    "id": "Connect a device",
+    "other": "Підключити пристрій"
+  },
+  {
+    "id": "Connected",
+    "other": "Підключено"
+  },
+  {
+    "id": "Connecting",
+    "other": "Підключення"
+  },
+  {
+    "id": "Connecting…",
+    "other": "Підключення…"
+  },
+  {
+    "id": "Connection error",
+    "other": "Помилка підключення"
+  },
+  {
+    "id": "Content",
+    "other": "Зміст"
+  },
+  {
+    "id": "Continue Watching",
+    "other": "Продовжити перегляд"
+  },
+  {
+    "id": "Continue watching",
+    "other": "Продовжити перегляд"
+  },
+  {
+    "id": "from Continue Watching",
+    "other": "з Продовжити перегляд"
+  },
+  {
+    "id": "Copy this key now. Kinosail stores only its hash.",
+    "other": "Скопіюйте цей ключ зараз. Kinosail зберігає лише свій хеш."
+  },
+  {
+    "id": "could not create MFA enrollment",
+    "other": "не вдалося створити реєстрацію MFA"
+  },
+  {
+    "id": "could not create Owner Profile",
+    "other": "не вдалося створити профіль власника"
+  },
+  {
+    "id": "could not create session",
+    "other": "не вдалося створити сеанс"
+  },
+  {
+    "id": "could not end session",
+    "other": "не вдалося завершити сеанс"
+  },
+  {
+    "id": "could not read subtitles",
+    "other": "не вдалося прочитати субтитри"
+  },
+  {
+    "id": "Create",
+    "other": "Створити"
+  },
+  {
+    "id": "Create a passkey",
+    "other": "Створити ключ"
+  },
+  {
+    "id": "Create API key",
+    "other": "Створити ключ API"
+  },
+  {
+    "id": "Create passkey",
+    "other": "Створити ключ"
+  },
+  {
+    "id": "Create smart playlist",
+    "other": "Створіть розумний список відтворення"
+  },
+  {
+    "id": "Create your Owner Profile",
+    "other": "Створіть свій профіль власника"
+  },
+  {
+    "id": "Created once",
+    "other": "Створено один раз"
+  },
+  {
+    "id": "Credentials configured",
+    "other": "Облікові дані налаштовано"
+  },
+  {
+    "id": "Credits",
+    "other": "Кредити"
+  },
+  {
+    "id": "cross-origin request denied",
+    "other": "перехресний запит відхилено"
+  },
+  {
+    "id": "Curate",
+    "other": "Курувати"
+  },
+  {
+    "id": "Dark",
+    "other": "Dark"
+  },
+  {
+    "id": "default",
+    "other": "за умовчанням"
+  },
+  {
+    "id": "Default playback",
+    "other": "Відтворення за умовчанням"
+  },
+  {
+    "id": "Delete",
+    "other": "Видалити"
+  },
+  {
+    "id": "Deployment configuration",
+    "other": "Конфігурація розгортання"
+  },
+  {
+    "id": "Destination",
+    "other": "Пункт призначення"
+  },
+  {
+    "id": "detected, unavailable",
+    "other": "виявлено, недоступно"
+  },
+  {
+    "id": "Device or app",
+    "other": "Пристрій або програма"
+  },
+  {
+    "id": "Diagnostics",
+    "other": "Діагностика"
+  },
+  {
+    "id": "Direct",
+    "other": "Прямий"
+  },
+  {
+    "id": "direct",
+    "other": "прямий"
+  },
+  {
+    "id": "Direct connection unavailable",
+    "other": "Пряме підключення недоступне"
+  },
+  {
+    "id": "Direct from",
+    "other": "Прямо від"
+  },
+  {
+    "id": "Direct stream",
+    "other": "Прямий потік"
+  },
+  {
+    "id": "Directed by",
+    "other": "Режисер"
+  },
+  {
+    "id": "Disable and revoke",
+    "other": "Вимкнути та відкликати"
+  },
+  {
+    "id": "Disable two-factor authentication",
+    "other": "Вимкнути двофакторну автентифікацію"
+  },
+  {
+    "id": "Disaster recovery",
+    "other": "Аварійне відновлення"
+  },
+  {
+    "id": "DLNA",
+    "other": "DLNA"
+  },
+  {
+    "id": "Download",
+    "other": "Завантажити"
+  },
+  {
+    "id": "Download media",
+    "other": "Завантажити медіа"
+  },
+  {
+    "id": "Download original",
+    "other": "Завантажити оригінал"
+  },
+  {
+    "id": "Download portable state archive",
+    "other": "Завантажити портативний державний архів"
+  },
+  {
+    "id": "Download safe diagnostics",
+    "other": "Завантажити безпечну діагностику"
+  },
+  {
+    "id": "Download WireGuard profile",
+    "other": "Завантажити профіль WireGuard"
+  },
+  {
+    "id": "Downloads",
+    "other": "Завантаження"
+  },
+  {
+    "id": "downloads are not enabled for this Viewer Profile",
+    "other": "завантаження не увімкнено для цього профілю глядача"
+  },
+  {
+    "id": "Edit metadata",
+    "other": "Редагувати метадані"
+  },
+  {
+    "id": "Edit skip markers",
+    "other": "Редагувати маркери пропуску"
+  },
+  {
+    "id": "embedded subtitles are unavailable",
+    "other": "вбудовані субтитри недоступні"
+  },
+  {
+    "id": "Enable DLNA",
+    "other": "Увімкнути DLNA"
+  },
+  {
+    "id": "Enable two-factor authentication",
+    "other": "Увімкнути двофакторну автентифікацію"
+  },
+  {
+    "id": "Enabled",
+    "other": "Увімкнено"
+  },
+  {
+    "id": "Encrypted backups run automatically.",
+    "other": "Зашифровані резервні копії виконуються автоматично."
+  },
+  {
+    "id": "Encryption is off by default.",
+    "other": "Шифрування вимкнено за умовчанням."
+  },
+  {
+    "id": "Encryption is on.",
+    "other": "Шифрування ввімкнено."
+  },
+  {
+    "id": "End in seconds",
+    "other": "Закінчити за секунд"
+  },
+  {
+    "id": "Enter the code shown by your TV or app. It will inherit your Profile Policy.",
+    "other": "Введіть код, який відображається на телевізорі чи в додатку. Він успадкує вашу політику профілю."
+  },
+  {
+    "id": "Environment and YAML values are authoritative. GUI changes shown here take effect after the Server restarts.",
+    "other": "Значення середовища та YAML є авторитетними. Показані тут зміни GUI вступають в силу після перезапуску Сервера."
+  },
+  {
+    "id": "Environment default",
+    "other": "Середовище за замовчуванням"
+  },
+  {
+    "id": "Event webhook",
+    "other": "Вебхук подій"
+  },
+  {
+    "id": "Every 15 minutes",
+    "other": "Кожні 15 хвилин"
+  },
+  {
+    "id": "Every 5 minutes",
+    "other": "Кожні 5 хвилин"
+  },
+  {
+    "id": "Everything",
+    "other": "Усе"
+  },
+  {
+    "id": "Export full activity journal",
+    "other": "Експортувати повний журнал активності"
+  },
+  {
+    "id": "Expose direct media URLs to devices on this local network. Disabling revokes the discovery capability.",
+    "other": "Надати прямі медіа-URL для пристроїв у цій локальній мережі. Вимкнення скасовує можливість виявлення."
+  },
+  {
+    "id": "Externally managed",
+    "other": "Зовнішнє керування"
+  },
+  {
+    "id": "Find",
+    "other": "Знайти"
+  },
+  {
+    "id": "Find something",
+    "other": "Знайти щось"
+  },
+  {
+    "id": "Finish setup",
+    "other": "Завершити налаштування"
+  },
+  {
+    "id": "Finish sign in",
+    "other": "Завершити вхід"
+  },
+  {
+    "id": "Folder inside media mount",
+    "other": "Папка всередині носіїв"
+  },
+  {
+    "id": "Follow this device or choose a fixed theme.",
+    "other": "Слідкуйте за цим пристроєм або виберіть фіксовану тему."
+  },
+  {
+    "id": "Following the room leader",
+    "other": "За лідером кімнати"
+  },
+  {
+    "id": "From",
+    "other": "Від"
+  },
+  {
+    "id": "from",
+    "other": "від"
+  },
+  {
+    "id": "General",
+    "other": "Загальні"
+  },
+  {
+    "id": "Genres",
+    "other": "Жанри"
+  },
+  {
+    "id": "Got it",
+    "other": "Зрозуміло"
+  },
+  {
+    "id": "Group",
+    "other": "Група"
+  },
+  {
+    "id": "Hardware",
+    "other": "Апаратне забезпечення"
+  },
+  {
+    "id": "History",
+    "other": "Історія"
+  },
+  {
+    "id": "Home",
+    "other": "Домашня"
+  },
+  {
+    "id": "Hourly",
+    "other": "Щогодинно"
+  },
+  {
+    "id": "if enabled",
+    "other": "якщо ввімкнено"
+  },
+  {
+    "id": "Install",
+    "other": "Установити"
+  },
+  {
+    "id": "Install Kinosail Player",
+    "other": "Установити Kinosail"
+  },
+  {
+    "id": "Integrations",
+    "other": "Інтеграції"
+  },
+  {
+    "id": "Intel Quick Sync",
+    "other": "Intel Quick Sync"
+  },
+  {
+    "id": "Intro",
+    "other": "Intro"
+  },
+  {
+    "id": "invalid authentication code",
+    "other": "недійсний код автентифікації"
+  },
+  {
+    "id": "invalid Collection state",
+    "other": "недійсний стан колекції"
+  },
+  {
+    "id": "invalid credentials",
+    "other": "недійсні облікові дані"
+  },
+  {
+    "id": "invalid list state",
+    "other": "недійсний стан списку"
+  },
+  {
+    "id": "invalid playlist state",
+    "other": "недійсний стан списку відтворення"
+  },
+  {
+    "id": "invalid progress",
+    "other": "недійсний прогрес"
+  },
+  {
+    "id": "invalid watched state",
+    "other": "недійсний стан перегляду"
+  },
+  {
+    "id": "Invite link",
+    "other": "Посилання для запрошення"
+  },
+  {
+    "id": "Keep",
+    "other": "Зберегти"
+  },
+  {
+    "id": "Keep backups on storage outside this host. Backups are unencrypted unless a backup key is configured. Restore while the Server is stopped.",
+    "other": "Зберігайте резервні копії в сховищі за межами цього хосту. Резервні копії не зашифровані, якщо не налаштовано резервний ключ. Відновлення, коли сервер зупинено."
+  },
+  {
+    "id": "Keep Kinosail Player close",
+    "other": "Тримайте Kinosail поруч"
+  },
+  {
+    "id": "Keys are shown once and stored as hashes. Browse access is the safe default.",
+    "other": "Ключі показуються один раз і зберігаються як хеші. Доступ до перегляду є безпечним за умовчанням."
+  },
+  {
+    "id": "Kinosail",
+    "other": "Kinosail"
+  },
+  {
+    "id": "Kinosail Player cannot reach this Server. Check your network or Direct Connection, then try again.",
+    "other": "Kinosail не може підключитися до цього сервера. Перевірте мережу чи пряме підключення, а потім повторіть спробу."
+  },
+  {
+    "id": "Kinosail maintains itself automatically.",
+    "other": "Kinosail підтримує себе автоматично."
+  },
+  {
+    "id": "Kinosail Player Reader",
+    "other": "Kinosail Player Reader"
+  },
+  {
+    "id": "Language",
+    "other": "Мова"
+  },
+  {
+    "id": "language is invalid",
+    "other": "мова недійсна"
+  },
+  {
+    "id": "Last error",
+    "other": "Остання помилка"
+  },
+  {
+    "id": "Last scan error",
+    "other": "Помилка останнього сканування"
+  },
+  {
+    "id": "Last successful backup",
+    "other": "Останнє успішне резервне копіювання"
+  },
+  {
+    "id": "Last successful scan",
+    "other": "Останнє успішне сканування"
+  },
+  {
+    "id": "Last verified",
+    "other": "Остання перевірка"
+  },
+  {
+    "id": "Latest",
+    "other": "Останнє"
+  },
+  {
+    "id": "Libraries",
+    "other": "Бібліотеки"
+  },
+  {
+    "id": "Library",
+    "other": "Бібліотека"
+  },
+  {
+    "id": "Library discovery",
+    "other": "Відкриття бібліотеки"
+  },
+  {
+    "id": "Library folders",
+    "other": "Папки бібліотеки"
+  },
+  {
+    "id": "Library items",
+    "other": "Елементи бібліотеки"
+  },
+  {
+    "id": "Library organization",
+    "other": "Організація бібліотеки"
+  },
+  {
+    "id": "Library views",
+    "other": "Перегляди бібліотеки"
+  },
+  {
+    "id": "Licensed credential configured",
+    "other": "Ліцензійні облікові дані налаштовано"
+  },
+  {
+    "id": "Light",
+    "other": "Light"
+  },
+  {
+    "id": "Link OpenID Connect",
+    "other": "Посилання OpenID Connect"
+  },
+  {
+    "id": "Local account",
+    "other": "Локальний обліковий запис"
+  },
+  {
+    "id": "M3U playlist",
+    "other": "M3U список відтворення"
+  },
+  {
+    "id": "Manage personal library state",
+    "other": "Керувати станом особистої бібліотеки"
+  },
+  {
+    "id": "Managed externally and read-only.",
+    "other": "Керується ззовні та доступний лише для читання."
+  },
+  {
+    "id": "Managed remote access",
+    "other": "Керований віддалений доступ"
+  },
+  {
+    "id": "Mark",
+    "other": "Mark"
+  },
+  {
+    "id": "marker",
+    "other": "маркер"
+  },
+  {
+    "id": "Match text",
+    "other": "Відповідність тексту"
+  },
+  {
+    "id": "Media",
+    "other": "Медіа"
+  },
+  {
+    "id": "Media information",
+    "other": "Інформація про ЗМІ"
+  },
+  {
+    "id": "Media mount",
+    "other": "Медіакріплення"
+  },
+  {
+    "id": "metadata could not be saved",
+    "other": "не вдалося зберегти метадані"
+  },
+  {
+    "id": "metadata is invalid",
+    "other": "метадані недійсні"
+  },
+  {
+    "id": "Metadata provider",
+    "other": "Постачальник метаданих"
+  },
+  {
+    "id": "metadata provider unavailable",
+    "other": "постачальник метаданих недоступний"
+  },
+  {
+    "id": "Metrics",
+    "other": "Метрики"
+  },
+  {
+    "id": "Movies",
+    "other": "Фільми"
+  },
+  {
+    "id": "Music",
+    "other": "Музика"
+  },
+  {
+    "id": "Music and audiobooks",
+    "other": "Музика та аудіокниги"
+  },
+  {
+    "id": "My List",
+    "other": "Мій список"
+  },
+  {
+    "id": "Name",
+    "other": "Назва"
+  },
+  {
+    "id": "name and a 12-character password are required",
+    "other": "ім’я та пароль із 12 символів"
+  },
+  {
+    "id": "Never",
+    "other": "Ніколи"
+  },
+  {
+    "id": "New Collection",
+    "other": "Нова колекція"
+  },
+  {
+    "id": "New Collection name",
+    "other": "Назва нової колекції"
+  },
+  {
+    "id": "New media is detected automatically after copying finishes. Safety scans repair missed filesystem events on Windows, macOS, Linux, containers, and network mounts.",
+    "other": "Нові носії виявляються автоматично після завершення копіювання. Сканування безпеки виправляє пропущені події файлової системи в Windows, macOS, Linux, контейнерах і мережевих підключеннях."
+  },
+  {
+    "id": "New password",
+    "other": "Новий пароль"
+  },
+  {
+    "id": "New playlist",
+    "other": "Новий список відтворення"
+  },
+  {
+    "id": "New playlist name",
+    "other": "Нова назва списку відтворення"
+  },
+  {
+    "id": "New profile name",
+    "other": "Нова назва профілю"
+  },
+  {
+    "id": "New profile password",
+    "other": "Новий пароль профілю"
+  },
+  {
+    "id": "New secret",
+    "other": "Новий секрет"
+  },
+  {
+    "id": "New smart playlist",
+    "other": "Новий розумний список відтворення"
+  },
+  {
+    "id": "New Viewers start with family ratings and no libraries. Add folder names or",
+    "other": "Нові глядачі починають із сімейних рейтингів і без бібліотек. Додайте назви папок або"
+  },
+  {
+    "id": "Newest",
+    "other": "Найновіший"
+  },
+  {
+    "id": "No activity recorded yet.",
+    "other": "Дії ще не зареєстровано."
+  },
+  {
+    "id": "No channels configured.",
+    "other": "Канали не налаштовано."
+  },
+  {
+    "id": "No device selected",
+    "other": "Не вибрано жодного пристрою"
+  },
+  {
+    "id": "No offline downloads yet.",
+    "other": "Поки що немає офлайн-завантажень."
+  },
+  {
+    "id": "No playback recorded yet.",
+    "other": "Відтворення ще не записано."
+  },
+  {
+    "id": "None",
+    "other": "Жодного"
+  },
+  {
+    "id": "None; use all or folder names",
+    "other": "Немає; використовувати всі або назви папок"
+  },
+  {
+    "id": "Not configured",
+    "other": "Не налаштовано"
+  },
+  {
+    "id": "not detected",
+    "other": "не виявлено"
+  },
+  {
+    "id": "not found",
+    "other": "не знайдено"
+  },
+  {
+    "id": "Not now",
+    "other": "Не зараз"
+  },
+  {
+    "id": "Nothing found.",
+    "other": "Нічого не знайдено."
+  },
+  {
+    "id": "Now viewing",
+    "other": "Зараз переглядаю"
+  },
+  {
+    "id": "NVIDIA NVENC/NVDEC",
+    "other": "NVIDIA NVENC/NVDEC"
+  },
+  {
+    "id": "Off",
+    "other": "Вимкнено"
+  },
+  {
+    "id": "offline",
+    "other": "офлайн"
+  },
+  {
+    "id": "Offline downloads",
+    "other": "Офлайн-завантаження"
+  },
+  {
+    "id": "Offline downloads · Kinosail Player",
+    "other": "Офлайн-завантаження · Kinosail Player"
+  },
+  {
+    "id": "On",
+    "other": "На"
+  },
+  {
+    "id": "On iPhone or iPad, tap Share, choose Add to Home Screen, turn on Open as Web App, then tap Add.",
+    "other": "На iPhone або iPad натисніть «Поділитися», виберіть «Додати на головний екран», увімкніть «Відкрити як веб-програму», а потім торкніть «Додати»."
+  },
+  {
+    "id": "One-time reveal",
+    "other": "Одноразове відкриття"
+  },
+  {
+    "id": "OpenID Connect",
+    "other": "OpenID Connect"
+  },
+  {
+    "id": "OpenSubtitles",
+    "other": "OpenSubtitles"
+  },
+  {
+    "id": "Outro",
+    "other": "Outro"
+  },
+  {
+    "id": "Owner",
+    "other": "Власник"
+  },
+  {
+    "id": "Owner access required",
+    "other": "Потрібен доступ власника"
+  },
+  {
+    "id": "Owner controls",
+    "other": "Елементи керування власника"
+  },
+  {
+    "id": "Passkey added.",
+    "other": "Ключ доступу додано."
+  },
+  {
+    "id": "Passkey failed.",
+    "other": "Не вдалося ввести пароль."
+  },
+  {
+    "id": "Passkeys need the configured Server address and trusted HTTPS. Open that address, trust the Server certificate, or use an authenticator.",
+    "other": "Passkeys need the configured Server address and trusted HTTPS. Open that address, trust the Server certificate, or use an authenticator."
+  },
+  {
+    "id": "Password",
+    "other": "Пароль"
+  },
+  {
+    "id": "Photos",
+    "other": "Фотографії"
+  },
+  {
+    "id": "Play",
+    "other": "Грати"
+  },
+  {
+    "id": "Play on device",
+    "other": "Грати на пристрої"
+  },
+  {
+    "id": "Play the next Episode automatically",
+    "other": "Автоматично відтворити наступну серію"
+  },
+  {
+    "id": "Playback",
+    "other": "Відтворення"
+  },
+  {
+    "id": "Playback history",
+    "other": "Історія відтворення"
+  },
+  {
+    "id": "Playback segment analysis",
+    "other": "Аналіз сегментів відтворення"
+  },
+  {
+    "id": "Playback speed",
+    "other": "Швидкість відтворення"
+  },
+  {
+    "id": "Playing here",
+    "other": "Граю тут"
+  },
+  {
+    "id": "Playing on device",
+    "other": "Відтворення на пристрої"
+  },
+  {
+    "id": "Playlist",
+    "other": "Список відтворення"
+  },
+  {
+    "id": "Playlists",
+    "other": "Списки відтворення"
+  },
+  {
+    "id": "Plot",
+    "other": "Сюжет"
+  },
+  {
+    "id": "Polling for changes",
+    "other": "Опитування змін"
+  },
+  {
+    "id": "Prefer quality",
+    "other": "Віддавайте перевагу якості"
+  },
+  {
+    "id": "Prefer speed",
+    "other": "Надаю перевагу швидкості"
+  },
+  {
+    "id": "Preferred language",
+    "other": "Бажана мова"
+  },
+  {
+    "id": "Prepare",
+    "other": "Підготувати"
+  },
+  {
+    "id": "preview unavailable",
+    "other": "попередній перегляд недоступний"
+  },
+  {
+    "id": "Private by design",
+    "other": "Приватний за дизайном"
+  },
+  {
+    "id": "Profile",
+    "other": "Профіль"
+  },
+  {
+    "id": "profile storage is unavailable",
+    "other": "сховище профілю недоступне"
+  },
+  {
+    "id": "Profile to reset",
+    "other": "Профіль для скидання"
+  },
+  {
+    "id": "Profile type",
+    "other": "Тип профілю"
+  },
+  {
+    "id": "Profiles",
+    "other": "Профілі"
+  },
+  {
+    "id": "Protected automatically",
+    "other": "Захищено автоматично"
+  },
+  {
+    "id": "MFA - Require extra sign-in protection for every Viewer Profile",
+    "other": "MFA - Require extra sign-in protection for every Viewer Profile"
+  },
+  {
+    "id": "Quality",
+    "other": "Якість"
+  },
+  {
+    "id": "quality",
+    "other": "якість"
+  },
+  {
+    "id": "Quick Connect",
+    "other": "Швидке підключення"
+  },
+  {
+    "id": "Quick Connect · Kinosail Player",
+    "other": "Швидке підключення · Kinosail Player"
+  },
+  {
+    "id": "Rating",
+    "other": "Рейтинг"
+  },
+  {
+    "id": "Read now",
+    "other": "Читати зараз"
+  },
+  {
+    "id": "reader",
+    "other": "читач"
+  },
+  {
+    "id": "Reading order",
+    "other": "Порядок читання"
+  },
+  {
+    "id": "ready",
+    "other": "готовий"
+  },
+  {
+    "id": "Ready offline",
+    "other": "Готовий офлайн"
+  },
+  {
+    "id": "Recap",
+    "other": "Резюме"
+  },
+  {
+    "id": "Recent activity",
+    "other": "Остання активність"
+  },
+  {
+    "id": "Recent playback",
+    "other": "Останнє відтворення"
+  },
+  {
+    "id": "Recently added",
+    "other": "Нещодавно доданий"
+  },
+  {
+    "id": "Recently played",
+    "other": "Нещодавно зіграно"
+  },
+  {
+    "id": "Recovery",
+    "other": "Відновлення"
+  },
+  {
+    "id": "Recovery codes",
+    "other": "Коди відновлення"
+  },
+  {
+    "id": "Refresh from TMDB",
+    "other": "Оновити з TMDB"
+  },
+  {
+    "id": "Refresh missing metadata",
+    "other": "Оновити відсутні метадані"
+  },
+  {
+    "id": "Recommended",
+    "other": "Рекомендовано"
+  },
+  {
+    "id": "Remote access",
+    "other": "Віддалений доступ"
+  },
+  {
+    "id": "Remove",
+    "other": "Видалити"
+  },
+  {
+    "id": "Remove from",
+    "other": "Видалити з"
+  },
+  {
+    "id": "request",
+    "other": "запит"
+  },
+  {
+    "id": "Request could not be completed.",
+    "other": "Не вдалося виконати запит."
+  },
+  {
+    "id": "request is too large",
+    "other": "запит занадто великий"
+  },
+  {
+    "id": "Reset password",
+    "other": "Скинути пароль"
+  },
+  {
+    "id": "Return to settings",
+    "other": "Повернутися до налаштувань"
+  },
+  {
+    "id": "Revoke",
+    "other": "Відкликати"
+  },
+  {
+    "id": "Rockchip RKMPP",
+    "other": "Rockchip RKMPP"
+  },
+  {
+    "id": "Room connected · following leader",
+    "other": "Кімната підключена · стежить за лідером"
+  },
+  {
+    "id": "Room connected · you lead",
+    "other": "Кімната підключена · ви ведете"
+  },
+  {
+    "id": "Room disconnected · reload to reconnect",
+    "other": "Кімнату відключено · перезавантажте, щоб повторно підключитися"
+  },
+  {
+    "id": "Run library scan now",
+    "other": "Запустити сканування бібліотеки зараз"
+  },
+  {
+    "id": "Run maintenance now",
+    "other": "Запустити технічне обслуговування зараз"
+  },
+  {
+    "id": "Safety scan",
+    "other": "Сканування безпеки"
+  },
+  {
+    "id": "Save",
+    "other": "Зберегти"
+  },
+  {
+    "id": "Save file",
+    "other": "Зберегти файл"
+  },
+  {
+    "id": "Save for restart",
+    "other": "Зберегти для перезапуску"
+  },
+  {
+    "id": "Save marker",
+    "other": "Зберегти маркер"
+  },
+  {
+    "id": "Save metadata",
+    "other": "Зберегти метадані"
+  },
+  {
+    "id": "Save schedule",
+    "other": "Зберегти розклад"
+  },
+  {
+    "id": "Schedule",
+    "other": "Розклад"
+  },
+  {
+    "id": "Search library",
+    "other": "Пошук у бібліотеці"
+  },
+  {
+    "id": "Search results",
+    "other": "Результати пошуку"
+  },
+  {
+    "id": "Secrets are hidden and included only in encrypted recovery backups.",
+    "other": "Секрети приховані та включені лише в зашифровані резервні копії відновлення."
+  },
+  {
+    "id": "Secure your account",
+    "other": "Захистіть свій обліковий запис"
+  },
+  {
+    "id": "Secure your account · Kinosail Player",
+    "other": "Захистіть свій обліковий запис · Kinosail Player"
+  },
+  {
+    "id": "Send this private connection URL to the Viewer. It is shown only once.",
+    "other": "Надішліть цю URL-адресу приватного з’єднання програмі перегляду. Показується лише один раз."
+  },
+  {
+    "id": "Server name",
+    "other": "Назва сервера"
+  },
+  {
+    "id": "Server settings",
+    "other": "Налаштування сервера"
+  },
+  {
+    "id": "Server unavailable",
+    "other": "Сервер недоступний"
+  },
+  {
+    "id": "Server unavailable · Kinosail Player",
+    "other": "Сервер недоступний · Kinosail Player"
+  },
+  {
+    "id": "Set up Kinosail Player",
+    "other": "Налаштувати Kinosail"
+  },
+  {
+    "id": "Set up or replace authenticator",
+    "other": "Налаштувати або замінити автентифікатор"
+  },
+  {
+    "id": "Set up two-factor authentication",
+    "other": "Налаштувати двофакторну автентифікацію"
+  },
+  {
+    "id": "Set up two-factor authentication · Kinosail Player",
+    "other": "Налаштувати двофакторну автентифікацію · Kinosail Player"
+  },
+  {
+    "id": "Settings",
+    "other": "Налаштування"
+  },
+  {
+    "id": "Settings sections",
+    "other": "Розділи налаштувань"
+  },
+  {
+    "id": "Settings · Kinosail Player",
+    "other": "Налаштування · Kinosail Player"
+  },
+  {
+    "id": "Shape the experience, protect your library, and keep every stream running beautifully.",
+    "other": "Створюйте враження, захищайте свою бібліотеку та забезпечуйте чудову роботу кожного потоку."
+  },
+  {
+    "id": "Show",
+    "other": "Показати"
+  },
+  {
+    "id": "Shows",
+    "other": "Шоу"
+  },
+  {
+    "id": "Sign in",
+    "other": "Увійти"
+  },
+  {
+    "id": "Sign in to your private media universe.",
+    "other": "Увійдіть у свій приватний медіа-всесвіт."
+  },
+  {
+    "id": "Sign in with passkey",
+    "other": "Увійти за допомогою пароля"
+  },
+  {
+    "id": "Sign in with SSO",
+    "other": "Увійти за допомогою SSO"
+  },
+  {
+    "id": "Sign in · Kinosail Player",
+    "other": "Увійти · Kinosail Player"
+  },
+  {
+    "id": "Sign out",
+    "other": "Вийти"
+  },
+  {
+    "id": "Sign out other devices",
+    "other": "Вийти з інших пристроїв"
+  },
+  {
+    "id": "Sign-in methods",
+    "other": "Способи входу"
+  },
+  {
+    "id": "Sign-in, same-origin browser protections, private responses, bounded requests, and revocable access are always on. There are no security switches to manage.",
+    "other": "Вхід, захист веб-переглядача того самого джерела, приватні відповіді, обмежені запити та відкликаний доступ завжди ввімкнено. Немає перемикачів безпеки, якими можна керувати."
+  },
+  {
+    "id": "Single sign-on",
+    "other": "Єдиний вхід"
+  },
+  {
+    "id": "Skip",
+    "other": "Пропустити"
+  },
+  {
+    "id": "Skip commercials automatically",
+    "other": "Автоматично пропускати рекламу"
+  },
+  {
+    "id": "Skip credits automatically",
+    "other": "Автоматично пропускати титри"
+  },
+  {
+    "id": "Skip intros automatically",
+    "other": "Автоматично пропускати введення"
+  },
+  {
+    "id": "Skip outros automatically",
+    "other": "Автоматично пропускати вихідні"
+  },
+  {
+    "id": "Skip recaps automatically",
+    "other": "Автоматично пропускати підсумки"
+  },
+  {
+    "id": "Skip to content",
+    "other": "Перейти до вмісту"
+  },
+  {
+    "id": "Sleep timer",
+    "other": "Таймер сну"
+  },
+  {
+    "id": "Sleep timer ended",
+    "other": "Таймер сну закінчився"
+  },
+  {
+    "id": "Smart playlist",
+    "other": "Розумний список відтворення"
+  },
+  {
+    "id": "Smart playlist name",
+    "other": "Назва розумного списку відтворення"
+  },
+  {
+    "id": "Software",
+    "other": "Програмне забезпечення"
+  },
+  {
+    "id": "Sort",
+    "other": "Сортувати"
+  },
+  {
+    "id": "Source",
+    "other": "Джерело"
+  },
+  {
+    "id": "speed",
+    "other": "швидкість"
+  },
+  {
+    "id": "SSO challenge is invalid or expired",
+    "other": "Виклик SSO недійсний або термін дії минув"
+  },
+  {
+    "id": "SSO code exchange failed",
+    "other": "Помилка обміну кодами SSO"
+  },
+  {
+    "id": "SSO identity is not linked to a Viewer Profile",
+    "other": "Ідентифікація SSO не пов’язана з профілем глядача"
+  },
+  {
+    "id": "SSO is unavailable",
+    "other": "SSO недоступний"
+  },
+  {
+    "id": "SSO session could not be created",
+    "other": "Не вдалося створити сеанс SSO"
+  },
+  {
+    "id": "SSO state is invalid or expired",
+    "other": "Стан SSO недійсний або термін дії минув"
+  },
+  {
+    "id": "SSO token validation failed",
+    "other": "Не вдалося перевірити маркер SSO"
+  },
+  {
+    "id": "Start in seconds",
+    "other": "Початок за секунди"
+  },
+  {
+    "id": "Start Watch Together",
+    "other": "Почніть дивитися разом"
+  },
+  {
+    "id": "Status",
+    "other": "Статус"
+  },
+  {
+    "id": "Stops in {minutes} minutes",
+    "other": "Зупиняється через {minutes} хвилин"
+  },
+  {
+    "id": "Store these codes somewhere safe. Each works once.",
+    "other": "Зберігайте ці коди в безпечному місці. Кожен працює один раз."
+  },
+  {
+    "id": "Stored here. Streamed directly.",
+    "other": "Зберігається тут. Пряма трансляція."
+  },
+  {
+    "id": "Stream media",
+    "other": "Потокове медіа"
+  },
+  {
+    "id": "Subscription required",
+    "other": "Потрібна підписка"
+  },
+  {
+    "id": "Subtitle provider",
+    "other": "Постачальник субтитрів"
+  },
+  {
+    "id": "subtitle provider unavailable",
+    "other": "постачальник субтитрів недоступний"
+  },
+  {
+    "id": "subtitle track(s)",
+    "other": "доріжки субтитрів"
+  },
+  {
+    "id": "Subtitles",
+    "other": "Субтитри"
+  },
+  {
+    "id": "subtitles",
+    "other": "субтитри"
+  },
+  {
+    "id": "Sync",
+    "other": "Sync"
+  },
+  {
+    "id": "System",
+    "other": "Система"
+  },
+  {
+    "id": "Tagline",
+    "other": "Слоган"
+  },
+  {
+    "id": "The backup contains account and session state. Keep unencrypted backup storage private, or configure a backup key.",
+    "other": "Резервна копія містить обліковий запис і стан сеансу. Зберігайте незашифроване резервне сховище приватним або налаштуйте резервний ключ."
+  },
+  {
+    "id": "Theme",
+    "other": "Тема"
+  },
+  {
+    "id": "These settings are read-only until removed from YAML or the environment",
+    "other": "Ці налаштування доступні лише для читання, доки їх не буде видалено з YAML або середовища"
+  },
+  {
+    "id": "This Collection is empty.",
+    "other": "Ця колекція порожня."
+  },
+  {
+    "id": "This permanently deletes the Collection.",
+    "other": "Колекцію буде видалено назавжди."
+  },
+  {
+    "id": "This permanently deletes the playlist.",
+    "other": "Це назавжди видаляє список відтворення."
+  },
+  {
+    "id": "This playlist is empty.",
+    "other": "Цей список відтворення порожній."
+  },
+  {
+    "id": "This product uses the TMDB API but is not endorsed or certified by TMDB.",
+    "other": "Цей продукт використовує API TMDB, але не схвалений і не сертифікований TMDB."
+  },
+  {
+    "id": "This signs out the profile and deletes it.",
+    "other": "Це виходить із профілю та видаляє його."
+  },
+  {
+    "id": "Through PG / TV-PG",
+    "other": "Через PG / TV-PG"
+  },
+  {
+    "id": "Through PG-13 / TV-14",
+    "other": "Через PG-13 / TV-14"
+  },
+  {
+    "id": "Title",
+    "other": "Назва"
+  },
+  {
+    "id": "Title, artist, genre",
+    "other": "Назва, виконавець, жанр"
+  },
+  {
+    "id": "Title, artist, genre…",
+    "other": "Назва, виконавець, жанр…"
+  },
+  {
+    "id": "TMDB",
+    "other": "TMDB"
+  },
+  {
+    "id": "Tone-map HDR to SDR",
+    "other": "Тональна карта HDR до SDR"
+  },
+  {
+    "id": "too many login attempts",
+    "other": "забагато спроб входу"
+  },
+  {
+    "id": "too many Watch Together rooms",
+    "other": "забагато кімнат Дивитися разом"
+  },
+  {
+    "id": "Track",
+    "other": "Track"
+  },
+  {
+    "id": "transcode cache",
+    "other": "перекодувати кеш"
+  },
+  {
+    "id": "Transcoder",
+    "other": "Транскодер"
+  },
+  {
+    "id": "transcoding is not allowed",
+    "other": "перекодування заборонено"
+  },
+  {
+    "id": "Try again",
+    "other": "Спробуйте ще раз"
+  },
+  {
+    "id": "Two-factor authentication",
+    "other": "Двофакторна автентифікація"
+  },
+  {
+    "id": "Two-factor authentication · Kinosail Player",
+    "other": "Двофакторна автентифікація · Kinosail Player"
+  },
+  {
+    "id": "Type",
+    "other": "Тип"
+  },
+  {
+    "id": "Unlink OpenID Connect",
+    "other": "Від’єднати OpenID Connect"
+  },
+  {
+    "id": "Until",
+    "other": "До"
+  },
+  {
+    "id": "Unwatched",
+    "other": "Непереглянуто"
+  },
+  {
+    "id": "unwatched",
+    "other": "непереглянуто"
+  },
+  {
+    "id": "Use default",
+    "other": "Використовувати за умовчанням"
+  },
+  {
+    "id": "Use Face ID, Touch ID, Windows Hello, or your device PIN to sign in. Your password will still work.",
+    "other": "Використовуйте Face ID, Touch ID, Windows Hello або PIN-код свого пристрою для входу. Ваш пароль усе одно працюватиме."
+  },
+  {
+    "id": "VA-API (AMD/Intel)",
+    "other": "VA-API (AMD/Intel)"
+  },
+  {
+    "id": "Verified Direct Connection",
+    "other": "Підтверджене пряме з’єднання"
+  },
+  {
+    "id": "Verified Direct Connection is not configured",
+    "other": "Перевірене пряме підключення не налаштовано"
+  },
+  {
+    "id": "Verify latest backup",
+    "other": "Перевірте останню резервну копію"
+  },
+  {
+    "id": "Video",
+    "other": "Відео"
+  },
+  {
+    "id": "Viewer",
+    "other": "Переглядач"
+  },
+  {
+    "id": "Viewer access is not available",
+    "other": "Доступ для перегляду недоступний"
+  },
+  {
+    "id": "Viewer device",
+    "other": "Пристрій перегляду"
+  },
+  {
+    "id": "Viewer name",
+    "other": "Ім’я глядача"
+  },
+  {
+    "id": "Waiting for your passkey…",
+    "other": "Очікуємо на ваш ключ доступу…"
+  },
+  {
+    "id": "Watch Together state is invalid",
+    "other": "Стан «Дивитися разом» недійсний"
+  },
+  {
+    "id": "watched",
+    "other": "переглянув"
+  },
+  {
+    "id": "Watched",
+    "other": "Переглянув"
+  },
+  {
+    "id": "Watched ✓",
+    "other": "Переглянули ✓"
+  },
+  {
+    "id": "Watching for changes",
+    "other": "Чекаємо змін"
+  },
+  {
+    "id": "Welcome aboard",
+    "other": "Ласкаво просимо на борт"
+  },
+  {
+    "id": "when ready.",
+    "other": "коли буде готово."
+  },
+  {
+    "id": "WireGuard Viewer not found",
+    "other": "WireGuard Viewer не знайдено"
+  },
+  {
+    "id": "XMLTV guide",
+    "other": "XMLTV посібник"
+  },
+  {
+    "id": "Year",
+    "other": "Рік"
+  },
+  {
+    "id": "You lead this room",
+    "other": "Ви керуєте цією кімнатою"
+  },
+  {
+    "id": "Your library",
+    "other": "Ваша бібліотека"
+  },
+  {
+    "id": "Your library and viewing activity stay on this Server.",
+    "other": "Ваша бібліотека та активність перегляду залишаються на цьому сервері."
+  },
+  {
+    "id": "← Books",
+    "other": "← Книги"
+  },
+  {
+    "id": "← Library",
+    "other": "← Бібліотека"
+  },
+  {
+    "id": "← Settings",
+    "other": "← Налаштування"
+  },
+  {
+    "id": "Generated API key",
+    "other": "Створений ключ API"
+  },
+  {
+    "id": "Copy API key",
+    "other": "Копіювати ключ API"
+  },
+  {
+    "id": "Copied.",
+    "other": "Скопійовано."
+  },
+  {
+    "id": "Select Copy in your browser.",
+    "other": "Виберіть «Копіювати» у браузері."
+  },
+  {
+    "id": "Set up trusted HTTPS",
+    "other": "Налаштувати довірений HTTPS"
+  },
+  {
+    "id": "Review trusted HTTPS setup",
+    "other": "Переглянути налаштування довіреного HTTPS"
+  },
+  {
+    "id": "Offline copy",
+    "other": "Офлайн-копія"
+  },
+  {
+    "id": "Verified file stored on this device.",
+    "other": "Перевірений файл збережено на цьому пристрої."
+  },
+  {
+    "id": "Ready offline on this device",
+    "other": "Доступно офлайн на цьому пристрої"
+  },
+  {
+    "id": "Playback method",
+    "other": "Спосіб відтворення"
+  },
+  {
+    "id": "Open playback settings.",
+    "other": "Відкрити налаштування відтворення."
+  },
+  {
+    "id": "Offline copy is unavailable.",
+    "other": "Офлайн-копія недоступна."
+  },
+  {
+    "id": "Offline playback needs an active service worker",
+    "other": "Для офлайн-відтворення потрібен активний service worker"
+  },
+  {
+    "id": "Could not remove local offline data.",
+    "other": "Не вдалося видалити локальні офлайн-дані."
+  },
+  {
+    "id": "stored on this device",
+    "other": "збережено на цьому пристрої"
+  },
+  {
+    "id": "This device does not have enough storage for this download",
+    "other": "На цьому пристрої недостатньо місця для завантаження"
+  },
+  {
+    "id": "This browser cannot store offline media safely",
+    "other": "Цей браузер не може безпечно зберігати медіафайли офлайн"
+  },
+  {
+    "id": "The download could not be verified",
+    "other": "Не вдалося перевірити завантаження"
+  },
+  {
+    "id": "The download is no longer available",
+    "other": "Завантаження більше недоступне"
+  },
+  {
+    "id": "No verified downloads are ready for this Viewer Profile.",
+    "other": "Для цього Профілю глядача немає готових перевірених завантажень."
+  },
+  {
+    "id": "Open Kinosail online and choose a Viewer Profile first.",
+    "other": "Відкрийте Kinosail у мережі та спочатку виберіть Профіль глядача."
+  },
+  {
+    "id": "All libraries",
+    "other": "All libraries"
+  },
+  {
+    "id": "Audio tracks",
+    "other": "Audio tracks"
+  },
+  {
+    "id": "Back to downloads",
+    "other": "Back to downloads"
+  },
+  {
+    "id": "Could not save progress. Return to Downloads and try again.",
+    "other": "Could not save progress. Return to Downloads and try again."
+  },
+  {
+    "id": "Manage offline downloads",
+    "other": "Manage offline downloads"
+  },
+  {
+    "id": "Movie",
+    "other": "Movie"
+  },
+  {
+    "id": "Open Server downloads",
+    "other": "Open Server downloads"
+  },
+  {
+    "id": "Open previous page",
+    "other": "Open previous page"
+  },
+  {
+    "id": "Playback behavior",
+    "other": "Playback behavior"
+  },
+  {
+    "id": "Prepare offline copy",
+    "other": "Prepare offline copy"
+  },
+  {
+    "id": "Progress saved on this device. Open Server downloads to sync.",
+    "other": "Progress saved on this device. Open Server downloads to sync."
+  },
+  {
+    "id": "Request needs another try",
+    "other": "Request needs another try"
+  },
+  {
+    "id": "Return to form",
+    "other": "Return to form"
+  },
+  {
+    "id": "Search all libraries",
+    "other": "Search all libraries"
+  },
+  {
+    "id": "Search everything",
+    "other": "Search everything"
+  },
+  {
+    "id": "This file could not play. Return to Downloads, reconnect to the Server, and download it again.",
+    "other": "This file could not play. Return to Downloads, reconnect to the Server, and download it again."
+  },
+  {
+    "id": "invalid title request",
+    "other": "invalid title request"
+  },
+  {
+    "id": "Audio is fixed in this downloaded copy.",
+    "other": "Audio is fixed in this downloaded copy."
+  }
+]

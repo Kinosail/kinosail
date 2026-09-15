@@ -1,0 +1,152 @@
+{
+  "schemaVersion": 3,
+  "scope": "machine",
+  "product": {
+    "name": "Kinosail Server",
+    "packageId": "com.kinosail.server",
+    "singleInstance": true,
+    "installModes": ["install", "upgrade", "repair", "uninstall"]
+  },
+  "defaults": {
+    "bind": "127.0.0.1",
+    "port": 38128,
+    "openFirewall": false,
+    "automaticUpdates": true,
+    "rebootRequired": false,
+    "preserveDataOnUninstall": true
+  },
+  "environment": {
+    "media": "KINOSAIL_MEDIA_DIR",
+    "data": "KINOSAIL_DATA_DIR",
+    "cache": "KINOSAIL_CACHE_DIR",
+    "backups": "KINOSAIL_BACKUP_DIR",
+    "ffmpeg": "KINOSAIL_FFMPEG",
+    "ffprobe": "KINOSAIL_FFPROBE",
+    "fpcalc": "KINOSAIL_FPCALC"
+  },
+  "experience": {
+    "wizardSteps": ["media", "updates", "review", "install", "owner-setup"],
+    "advancedOptions": ["port"],
+    "openOwnerSetup": true,
+    "repair": true,
+    "unattended": true
+  },
+  "mediaAccess": {
+    "mode": "selected-folders-read-only",
+    "changeOwnership": false,
+    "removeGrantedAccessOnUninstall": true
+  },
+  "update": {
+    "schemaVersion": 2,
+    "manifest": "kinosail-release.json",
+    "signatureBundle": "kinosail-release.json.sigstore.json",
+    "signatureIdentity": "^https://github\\.com/MikeO7/kinosail/\\.github/workflows/subtitles-release\\.yml@refs/tags/subtitles-v(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)$",
+    "agent": {
+      "schemaVersion": 1,
+      "installWithServer": true,
+      "removeWithServer": true,
+      "singleInstance": true,
+      "runAs": "system",
+      "command": ["run-once"],
+      "planCommand": ["kinosail", "update-plan"],
+      "reportCommand": ["kinosail", "update-report"],
+      "schedule": {
+        "afterStartupSeconds": 120,
+        "intervalSeconds": 60,
+        "jitterSeconds": 15
+      },
+      "networkWithoutRequest": false,
+      "requiresPinnedTarget": true,
+      "manualAndAutomaticSamePath": true
+    },
+    "recovery": {
+      "backupCommand": ["backup"],
+      "verifyCommand": ["backup", "verify"],
+      "restoreCommand": ["restore"],
+      "format": "kinosail-backup-v1-encrypted",
+      "includesSecrets": true,
+      "requiresInstallationKey": true,
+      "restoreOnRollback": true
+    },
+    "compatibility": {
+      "stateSchema": ["minimumStateSchema", "stateSchema"],
+      "configurationSchema": ["minimumConfigurationSchema", "configurationSchema"]
+    },
+    "preflight": ["supported-platform", "supported-architecture", "writable-data", "writable-cache", "readable-media", "available-port", "runtime-commands", "free-space"],
+    "health": {
+      "command": ["healthcheck"],
+      "timeoutSeconds": 20
+    },
+    "transaction": {
+      "schemaVersion": 1,
+      "maximumBytes": 16384,
+      "permissions": "owner-read-write",
+      "write": "atomic-replace-and-sync",
+      "requiredFields": ["schemaVersion", "requestId", "targetVersion", "previousVersion", "phase", "startedAt", "updatedAt"],
+      "optionalFields": ["backupPath", "artifactPath", "errorCode"],
+      "crashRecovery": ["read-journal", "inspect-installed-version", "health-check", "complete-target-if-healthy", "resume-before-replace", "restore-backup-otherwise"],
+      "clearAfter": ["current", "rolled-back"]
+    },
+    "phases": ["waiting-for-idle", "backing-up", "verifying-backup", "downloading", "verifying-release", "stopping", "replacing", "starting", "checking-health", "restoring-backup"],
+    "errorCodes": ["download-failed", "signature-invalid", "digest-mismatch", "backup-failed", "service-stop-failed", "install-failed", "service-start-failed", "health-check-failed", "restore-failed", "rollback-failed", "insufficient-space", "permission-denied"],
+    "steps": ["defer-playback", "backup", "verify-backup", "verify-signature", "verify-digest", "stop", "replace", "start", "health-check", "restore-backup-on-failure"],
+    "terminalStates": ["current", "rolled-back"]
+  },
+  "platforms": [
+    {
+      "os": "linux",
+      "packageId": "kinosail-server",
+      "service": "kinosail.service",
+      "serviceAccount": "kinosail",
+      "executable": "/usr/lib/kinosail/kinosail",
+      "runtime": "/usr/lib/kinosail/runtime",
+      "configuration": "/etc/kinosail",
+      "data": "/var/lib/kinosail",
+      "cache": "/var/cache/kinosail",
+      "backups": "/var/lib/kinosail/backups",
+      "updateAgent": "/usr/lib/kinosail/kinosail-updater",
+      "updateScheduler": "systemd-timer",
+      "updateTask": "kinosail-update.timer",
+      "updateState": "/var/lib/kinosail/update/transaction.json",
+      "installerLog": "/var/log/kinosail/install.log",
+      "logs": "journal"
+    },
+    {
+      "os": "macos",
+      "packageId": "com.kinosail.server",
+      "service": "com.kinosail.server",
+      "serviceAccount": "_kinosail",
+      "executable": "/Library/Application Support/Kinosail/bin/kinosail",
+      "runtime": "/Library/Application Support/Kinosail/runtime",
+      "configuration": "/Library/Application Support/Kinosail/config",
+      "data": "/Library/Application Support/Kinosail/data",
+      "cache": "/Library/Caches/Kinosail",
+      "backups": "/Library/Application Support/Kinosail/backups",
+      "updateAgent": "/Library/Application Support/Kinosail/bin/kinosail-updater",
+      "updateScheduler": "launchd",
+      "updateTask": "com.kinosail.update",
+      "updateState": "/Library/Application Support/Kinosail/update/transaction.json",
+      "installerLog": "/Library/Logs/Kinosail/install.log",
+      "logs": "unified-log"
+    },
+    {
+      "os": "windows",
+      "packageId": "Kinosail.Server",
+      "upgradeCode": "{D3D7B6C9-7F51-4F64-AD7C-CFA9B5A9A0E8}",
+      "service": "Kinosail",
+      "serviceAccount": "NT SERVICE\\Kinosail",
+      "executable": "%ProgramFiles%\\Kinosail\\kinosail.exe",
+      "runtime": "%ProgramFiles%\\Kinosail\\runtime",
+      "configuration": "%ProgramData%\\Kinosail\\config",
+      "data": "%ProgramData%\\Kinosail\\data",
+      "cache": "%ProgramData%\\Kinosail\\cache",
+      "backups": "%ProgramData%\\Kinosail\\backups",
+      "updateAgent": "%ProgramFiles%\\Kinosail\\kinosail-updater.exe",
+      "updateScheduler": "task-scheduler",
+      "updateTask": "Kinosail Update",
+      "updateState": "%ProgramData%\\Kinosail\\update\\transaction.json",
+      "installerLog": "%ProgramData%\\Kinosail\\logs\\install.log",
+      "logs": "windows-event-log"
+    }
+  ]
+}

@@ -1,0 +1,41 @@
+import {expect, test} from '@playwright/test';
+import {downloadsSource} from './static-sources';
+const markup = (revision = 0) => `<main id="downloads" data-downloads-pending="false"><h1 tabindex="-1">Offline downloads</h1><article data-download-job="aaaaaaaaaaaaaaaa"><p role="status">Revision ${revision}</p><details><summary data-download-focus="remove-menu">Remove download</summary><button data-download-focus="remove">Confirm remove</button></details></article></main><button id="outside">Outside</button>`;
+test('refresh preserves the focused download action and expanded confirmation', async ({page}) => {
+ let revision=0;
+ await page.route('https://kinosail.test/', route=>route.fulfill({contentType:'text/html',body:markup()}));
+ await page.route('https://kinosail.test/offline-downloads', route=>route.fulfill({contentType:'text/html',body:markup(++revision)}));
+ await page.goto('https://kinosail.test/');
+ await page.addScriptTag({content:downloadsSource});
+ await page.getByText('Remove download',{exact:true}).click();
+ await page.getByRole('button',{name:'Confirm remove'}).focus();
+ await page.evaluate('refreshDownloads()');
+ await expect(page.getByRole('button',{name:'Confirm remove'})).toBeFocused();
+ await expect(page.locator('details')).toHaveAttribute('open','');
+ await expect(page.getByText('Revision 1')).toBeVisible();
+});
+test('a response does not steal focus moved outside downloads while the request was pending', async ({page}) => {
+ let release!:()=>void;
+ const pending = new Promise<void>(resolve=>release=resolve);
+ await page.route('https://kinosail.test/',route=>route.fulfill({contentType:'text/html',body:markup()}));
+ await page.route('https://kinosail.test/offline-downloads',async route=>{await pending;await route.fulfill({contentType:'text/html',body:markup(1)});});
+ await page.goto('https://kinosail.test/');
+ await page.addScriptTag({content:downloadsSource});
+ await page.getByText('Remove download',{exact:true}).click();
+ const requested=page.waitForRequest('https://kinosail.test/offline-downloads');
+ await page.evaluate('void refreshDownloads()');
+ await requested;
+ await page.getByRole('button',{name:'Outside'}).focus();
+ release();
+ await expect(page.getByText('Revision 1')).toBeVisible();
+ await expect(page.getByRole('button',{name:'Outside'})).toBeFocused();
+});
+test('a removed job moves focus to the downloads heading', async ({page}) => {
+ await page.route('https://kinosail.test/',route=>route.fulfill({contentType:'text/html',body:markup()}));
+ await page.route('https://kinosail.test/offline-downloads',route=>route.fulfill({contentType:'text/html',body:'<main id="downloads"><h1 tabindex="-1">Offline downloads</h1></main>'}));
+ await page.goto('https://kinosail.test/');
+ await page.addScriptTag({content:downloadsSource});
+ await page.getByText('Remove download',{exact:true}).click();
+ await page.evaluate('refreshDownloads()');
+ await expect(page.getByRole('heading',{name:'Offline downloads'})).toBeFocused();
+});

@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title">
+  <title id="title">Kinosail supporter rank nine north star crown</title>
+  <defs>
+    <linearGradient id="gold" x1=".03" y1="0" x2=".97" y2="1"><stop stop-color="#fff9e5"/><stop offset=".35" stop-color="#ebcd75"/><stop offset="1" stop-color="#603d1d"/></linearGradient>
+    <linearGradient id="jade" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#d2fbe9"/><stop offset=".42" stop-color="#38a185"/><stop offset="1" stop-color="#0a2c25"/></linearGradient>
+    <radialGradient id="sea"><stop stop-color="#2b7562"/><stop offset="1" stop-color="#070f0d"/></radialGradient>
+    <filter id="shadow" x="-35%" y="-35%" width="170%" height="180%"><feDropShadow dy="15" stdDeviation="13" flood-color="#000" flood-opacity=".7"/></filter>
+  </defs>
+  <g filter="url(#shadow)">
+    <path d="M161 137 117 61l85 31 54-75 54 75 85-31-44 76Z" fill="#13100b" stroke="url(#gold)" stroke-linejoin="round" stroke-width="10"/>
+    <g fill="url(#jade)" stroke="#fff9e5" stroke-width="4"><path d="m117 61 14 22-14 22-14-22Z"/><path d="m256 17 17 29-17 29-17-29Z"/><path d="m395 61 14 22-14 22-14-22Z"/></g>
+    <path d="m256 55 35 99 103-24-38 98 94 50-99 35 24 103-98-38-50 94-35-99-103 24 38-98-94-50 99-35-24-103 98 38Z" fill="#0a0c0b" stroke="url(#gold)" stroke-linejoin="round" stroke-width="9"/>
+    <circle cx="256" cy="264" r="151" fill="url(#sea)" stroke="#9a7340" stroke-width="6"/>
+    <ellipse cx="256" cy="264" rx="178" ry="91" fill="none" stroke="#b9efdd" stroke-width="4" transform="rotate(-25 256 264)"/>
+    <ellipse cx="256" cy="264" rx="171" ry="83" fill="none" stroke="#ebcd75" stroke-dasharray="4 14" stroke-width="4" transform="rotate(32 256 264)"/>
+    <g fill="#fff9e5"><circle cx="136" cy="176" r="6"/><circle cx="374" cy="203" r="8"/><circle cx="386" cy="340" r="5"/><circle cx="165" cy="374" r="7"/><path d="m318 133 6 13 14 6-14 6-6 14-6-14-14-6 14-6Z"/></g>
+    <path fill="#fff9e5" d="M247 139c-38 45-59 101-59 166 34-13 69-14 109-3-27-49-41-103-50-163Z"/>
+    <path fill="url(#gold)" d="M259 161c48 43 72 90 72 142-31-13-62-15-91-8 17-41 23-86 19-134Z"/>
+    <path fill="#08110f" d="m247 229 46 27-46 27Z"/>
+    <path d="M142 316c44-27 74-4 107-3 40 1 61-28 113-8M151 343c40-21 67-5 99-3 40 1 65-22 108-10" fill="none" stroke="#bdf2e0" stroke-linecap="round" stroke-width="8"/>
+  </g>
+</svg>

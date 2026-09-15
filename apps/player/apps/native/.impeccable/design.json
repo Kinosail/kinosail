@@ -1,0 +1,389 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-09-12T21:44:43.945222+00:00",
+  "title": "Design System: Kinosail native Player",
+  "extensions": {
+    "colorMeta": {
+      "background": {
+        "role": "neutral",
+        "displayName": "Black-green canvas",
+        "tonalRamp": [
+          "oklch(15% 0.0053 145.31)",
+          "oklch(26% 0.0053 145.31)",
+          "oklch(38% 0.0053 145.31)",
+          "oklch(49% 0.0053 145.31)",
+          "oklch(61% 0.0053 145.31)",
+          "oklch(72% 0.0053 145.31)",
+          "oklch(84% 0.0053 145.31)",
+          "oklch(95% 0.0053 145.31)"
+        ]
+      },
+      "surface": {
+        "role": "neutral",
+        "displayName": "Quiet surface",
+        "tonalRamp": [
+          "oklch(15% 0.0115 139.43)",
+          "oklch(26% 0.0115 139.43)",
+          "oklch(38% 0.0115 139.43)",
+          "oklch(49% 0.0115 139.43)",
+          "oklch(61% 0.0115 139.43)",
+          "oklch(72% 0.0115 139.43)",
+          "oklch(84% 0.0115 139.43)",
+          "oklch(95% 0.0115 139.43)"
+        ]
+      },
+      "raised": {
+        "role": "neutral",
+        "displayName": "Raised surface",
+        "tonalRamp": [
+          "oklch(15% 0.0192 138.76)",
+          "oklch(26% 0.0192 138.76)",
+          "oklch(38% 0.0192 138.76)",
+          "oklch(49% 0.0192 138.76)",
+          "oklch(61% 0.0192 138.76)",
+          "oklch(72% 0.0192 138.76)",
+          "oklch(84% 0.0192 138.76)",
+          "oklch(95% 0.0192 138.76)"
+        ]
+      },
+      "text": {
+        "role": "neutral",
+        "displayName": "Off-white text",
+        "tonalRamp": [
+          "oklch(15% 0.0082 121.63)",
+          "oklch(26% 0.0082 121.63)",
+          "oklch(38% 0.0082 121.63)",
+          "oklch(49% 0.0082 121.63)",
+          "oklch(61% 0.0082 121.63)",
+          "oklch(72% 0.0082 121.63)",
+          "oklch(84% 0.0082 121.63)",
+          "oklch(95% 0.0082 121.63)"
+        ]
+      },
+      "muted": {
+        "role": "neutral",
+        "displayName": "Sage-gray supporting text",
+        "tonalRamp": [
+          "oklch(15% 0.0175 133.87)",
+          "oklch(26% 0.0175 133.87)",
+          "oklch(38% 0.0175 133.87)",
+          "oklch(49% 0.0175 133.87)",
+          "oklch(61% 0.0175 133.87)",
+          "oklch(72% 0.0175 133.87)",
+          "oklch(84% 0.0175 133.87)",
+          "oklch(95% 0.0175 133.87)"
+        ]
+      },
+      "signal": {
+        "role": "primary",
+        "displayName": "Electric green",
+        "tonalRamp": [
+          "oklch(15% 0.2115 126.03)",
+          "oklch(26% 0.2115 126.03)",
+          "oklch(38% 0.2115 126.03)",
+          "oklch(49% 0.2115 126.03)",
+          "oklch(61% 0.2115 126.03)",
+          "oklch(72% 0.2115 126.03)",
+          "oklch(84% 0.2115 126.03)",
+          "oklch(95% 0.2115 126.03)"
+        ]
+      },
+      "signal-ink": {
+        "role": "primary",
+        "displayName": "Action ink",
+        "tonalRamp": [
+          "oklch(15% 0.0578 127.12)",
+          "oklch(26% 0.0578 127.12)",
+          "oklch(38% 0.0578 127.12)",
+          "oklch(49% 0.0578 127.12)",
+          "oklch(61% 0.0578 127.12)",
+          "oklch(72% 0.0578 127.12)",
+          "oklch(84% 0.0578 127.12)",
+          "oklch(95% 0.0578 127.12)"
+        ]
+      },
+      "light-background": {
+        "role": "neutral",
+        "displayName": "Light appearance: Black-green canvas",
+        "tonalRamp": [
+          "oklch(15% 0.0126 126.37)",
+          "oklch(26% 0.0126 126.37)",
+          "oklch(38% 0.0126 126.37)",
+          "oklch(49% 0.0126 126.37)",
+          "oklch(61% 0.0126 126.37)",
+          "oklch(72% 0.0126 126.37)",
+          "oklch(84% 0.0126 126.37)",
+          "oklch(95% 0.0126 126.37)"
+        ]
+      },
+      "light-surface": {
+        "role": "neutral",
+        "displayName": "Light appearance: Quiet surface",
+        "tonalRamp": [
+          "oklch(15% 0.0000 89.88)",
+          "oklch(26% 0.0000 89.88)",
+          "oklch(38% 0.0000 89.88)",
+          "oklch(49% 0.0000 89.88)",
+          "oklch(61% 0.0000 89.88)",
+          "oklch(72% 0.0000 89.88)",
+          "oklch(84% 0.0000 89.88)",
+          "oklch(95% 0.0000 89.88)"
+        ]
+      },
+      "light-raised": {
+        "role": "neutral",
+        "displayName": "Light appearance: Raised surface",
+        "tonalRamp": [
+          "oklch(15% 0.0184 127.15)",
+          "oklch(26% 0.0184 127.15)",
+          "oklch(38% 0.0184 127.15)",
+          "oklch(49% 0.0184 127.15)",
+          "oklch(61% 0.0184 127.15)",
+          "oklch(72% 0.0184 127.15)",
+          "oklch(84% 0.0184 127.15)",
+          "oklch(95% 0.0184 127.15)"
+        ]
+      },
+      "light-text": {
+        "role": "neutral",
+        "displayName": "Light appearance: Off-white text",
+        "tonalRamp": [
+          "oklch(15% 0.0313 135.62)",
+          "oklch(26% 0.0313 135.62)",
+          "oklch(38% 0.0313 135.62)",
+          "oklch(49% 0.0313 135.62)",
+          "oklch(61% 0.0313 135.62)",
+          "oklch(72% 0.0313 135.62)",
+          "oklch(84% 0.0313 135.62)",
+          "oklch(95% 0.0313 135.62)"
+        ]
+      },
+      "light-muted": {
+        "role": "neutral",
+        "displayName": "Light appearance: Sage-gray supporting text",
+        "tonalRamp": [
+          "oklch(15% 0.0375 132.63)",
+          "oklch(26% 0.0375 132.63)",
+          "oklch(38% 0.0375 132.63)",
+          "oklch(49% 0.0375 132.63)",
+          "oklch(61% 0.0375 132.63)",
+          "oklch(72% 0.0375 132.63)",
+          "oklch(84% 0.0375 132.63)",
+          "oklch(95% 0.0375 132.63)"
+        ]
+      },
+      "light-signal": {
+        "role": "primary",
+        "displayName": "Light appearance: Electric green",
+        "tonalRamp": [
+          "oklch(15% 0.1216 130.65)",
+          "oklch(26% 0.1216 130.65)",
+          "oklch(38% 0.1216 130.65)",
+          "oklch(49% 0.1216 130.65)",
+          "oklch(61% 0.1216 130.65)",
+          "oklch(72% 0.1216 130.65)",
+          "oklch(84% 0.1216 130.65)",
+          "oklch(95% 0.1216 130.65)"
+        ]
+      },
+      "light-signal-ink": {
+        "role": "primary",
+        "displayName": "Light appearance: Action ink",
+        "tonalRamp": [
+          "oklch(15% 0.0000 89.88)",
+          "oklch(26% 0.0000 89.88)",
+          "oklch(38% 0.0000 89.88)",
+          "oklch(49% 0.0000 89.88)",
+          "oklch(61% 0.0000 89.88)",
+          "oklch(72% 0.0000 89.88)",
+          "oklch(84% 0.0000 89.88)",
+          "oklch(95% 0.0000 89.88)"
+        ]
+      },
+      "increased-dark-muted": {
+        "role": "neutral",
+        "displayName": "Increased Contrast: Sage-gray supporting text",
+        "tonalRamp": [
+          "oklch(15% 0.0219 130.03)",
+          "oklch(26% 0.0219 130.03)",
+          "oklch(38% 0.0219 130.03)",
+          "oklch(49% 0.0219 130.03)",
+          "oklch(61% 0.0219 130.03)",
+          "oklch(72% 0.0219 130.03)",
+          "oklch(84% 0.0219 130.03)",
+          "oklch(95% 0.0219 130.03)"
+        ]
+      },
+      "increased-light-muted": {
+        "role": "neutral",
+        "displayName": "Increased Contrast: Sage-gray supporting text",
+        "tonalRamp": [
+          "oklch(15% 0.0466 132.62)",
+          "oklch(26% 0.0466 132.62)",
+          "oklch(38% 0.0466 132.62)",
+          "oklch(49% 0.0466 132.62)",
+          "oklch(61% 0.0466 132.62)",
+          "oklch(72% 0.0466 132.62)",
+          "oklch(84% 0.0466 132.62)",
+          "oklch(95% 0.0466 132.62)"
+        ]
+      },
+      "increased-dark-signal": {
+        "role": "primary",
+        "displayName": "Increased Contrast: Electric green",
+        "tonalRamp": [
+          "oklch(15% 0.1351 125.02)",
+          "oklch(26% 0.1351 125.02)",
+          "oklch(38% 0.1351 125.02)",
+          "oklch(49% 0.1351 125.02)",
+          "oklch(61% 0.1351 125.02)",
+          "oklch(72% 0.1351 125.02)",
+          "oklch(84% 0.1351 125.02)",
+          "oklch(95% 0.1351 125.02)"
+        ]
+      },
+      "increased-light-signal": {
+        "role": "primary",
+        "displayName": "Increased Contrast: Electric green",
+        "tonalRamp": [
+          "oklch(15% 0.1042 130.32)",
+          "oklch(26% 0.1042 130.32)",
+          "oklch(38% 0.1042 130.32)",
+          "oklch(49% 0.1042 130.32)",
+          "oklch(61% 0.1042 130.32)",
+          "oklch(72% 0.1042 130.32)",
+          "oklch(84% 0.1042 130.32)",
+          "oklch(95% 0.1042 130.32)"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Scaled rounded hero title",
+        "purpose": "36pt iOS and 56pt tvOS bases relative to largeTitle; not fixed rendered sizes."
+      },
+      "headline": {
+        "displayName": "Semantic Apple headings",
+        "purpose": "Native largeTitle, title2 and headline roles."
+      },
+      "body": {
+        "displayName": "SF Pro body",
+        "purpose": "Native body text with Dynamic Type."
+      },
+      "label": {
+        "displayName": "SF Pro labels",
+        "purpose": "Native caption and control roles."
+      }
+    },
+    "shadows": [],
+    "motion": [
+      {
+        "name": "native-feedback",
+        "value": "SwiftUI system controls and tvOS card focus",
+        "purpose": "Preserve native focus; crossfade backdrops over 450ms after 300ms settled focus, with no animation under Reduce Motion."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "wide-hero",
+        "value": "iOS regular horizontal size class or tvOS, excluding accessibility Dynamic Type sizes"
+      },
+      {
+        "name": "stacked-hero",
+        "value": "iOS compact horizontal size class or accessibility Dynamic Type sizes"
+      }
+    ],
+    "sources": [
+      "apps/player/apps/native/Sources/Design/KinoTheme.swift",
+      "apps/player/apps/native/Sources/Design/CinemaHero.swift",
+      "apps/player/apps/native/Sources/Design/MediaViews.swift",
+      "apps/player/apps/native/Sources/Design/WatchPosition.swift",
+      "apps/player/apps/native/Sources/Features/Home/HomeScreen.swift",
+      "apps/player/apps/native/Sources/App/PlayerTabs.swift",
+      "apps/player/apps/native/Sources/Features/Settings/TabPreferencesScreen.swift"
+    ],
+    "previewNote": "HTML snippets are schematic browser translations for documentation only. They are not native components or evidence of platform behavior; SwiftUI owns materials, SF metrics, Dynamic Type and focus.",
+    "tonalRampNote": "Supplemental OKLCH ramps are synthesized for inspection; they are not production color tokens."
+  },
+  "components": [
+    {
+      "name": "Native prominent action",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "A static browser translation of the native capsule; SwiftUI owns actual metrics and focus.",
+      "html": "<button class=\"ds-native-primary\">Resume</button>",
+      "css": ".ds-native-primary{font-family:-apple-system,BlinkMacSystemFont,sans-serif;padding:12px 20px;border:0;border-radius:999px;background:#c4ff47;color:#142000;font-weight:700;font-size:17px}.ds-native-primary:hover{filter:brightness(1.06)}.ds-native-primary:focus-visible{outline:2px solid #daff98;outline-offset:4px}"
+    },
+    {
+      "name": "Native supporting action",
+      "kind": "button",
+      "refersTo": "button-secondary",
+      "description": "Raised tint and normal text distinguish the supporting native capsule.",
+      "html": "<button class=\"ds-native-secondary\">Details</button>",
+      "css": ".ds-native-secondary{font-family:-apple-system,BlinkMacSystemFont,sans-serif;padding:12px 20px;border:0;border-radius:999px;background:#20271e;color:#f6f8f2;font-size:17px}.ds-native-secondary:hover{filter:brightness(1.06)}.ds-native-secondary:focus-visible{outline:2px solid #daff98;outline-offset:4px}"
+    },
+    {
+      "name": "Native media card",
+      "kind": "card",
+      "refersTo": "artwork-card",
+      "description": "Schematic poster geometry and adaptive metadata. Production artwork and SF metrics remain native.",
+      "html": "<a class=\"ds-native-card\" href=\"#\"><span aria-hidden=\"true\"></span><strong>Media title</strong><small>Media metadata</small></a>",
+      "css": ".ds-native-card{font-family:-apple-system,BlinkMacSystemFont,sans-serif;display:grid;gap:10px;width:164px;color:#f6f8f2;text-decoration:none}.ds-native-card span{display:block;aspect-ratio:2/3;border-radius:12px;background:#151914}.ds-native-card strong{font-size:17px}.ds-native-card small{color:#a0a79c}.ds-native-card:hover span,.ds-native-card:focus-visible span{outline:2px solid #daff98;outline-offset:4px}.ds-native-card:focus-visible{outline:none}"
+    },
+    {
+      "name": "Native watch position",
+      "kind": "custom",
+      "refersTo": "watch-progress",
+      "description": "Illustrative native progress sample; known position remains when duration is unavailable.",
+      "html": "<div class=\"ds-native-progress\"><progress aria-label=\"Watch progress\" value=\".35\" max=\"1\"></progress><small>Saved position</small></div>",
+      "css": ".ds-native-progress{font-family:-apple-system,BlinkMacSystemFont,sans-serif;display:grid;gap:8px;color:#a0a79c;font-variant-numeric:tabular-nums}.ds-native-progress progress{width:100%;accent-color:#c4ff47}.ds-native-progress small{font-size:13px}"
+    },
+    {
+      "name": "Personal destinations",
+      "kind": "nav",
+      "refersTo": "navigation",
+      "description": "Content-order preview only. Actual TabView/sidebar materials and focus remain platform-owned.",
+      "html": "<nav class=\"ds-native-tabs\" aria-label=\"Personal destinations\"><a href=\"#\" aria-current=\"page\">Home</a><a href=\"#\">TV Shows</a><a href=\"#\">Movies</a><a href=\"#\">Search</a><a href=\"#\">More</a></nav>",
+      "css": ".ds-native-tabs{font-family:-apple-system,BlinkMacSystemFont,sans-serif;display:flex;gap:20px;color:#f6f8f2}.ds-native-tabs a{display:inline-flex;align-items:center;min-height:44px;color:inherit;text-decoration:none}.ds-native-tabs a[aria-current]{color:#c4ff47}.ds-native-tabs a:hover{color:#daff98}.ds-native-tabs a:focus-visible{outline:2px solid #daff98;outline-offset:4px}"
+    },
+    {
+      "name": "Tab editor target",
+      "kind": "button",
+      "refersTo": "tab-editor-action",
+      "description": "The native icon label owns a minimum 44×44pt content shape. Text is used here to keep the preview independent of SF Symbols.",
+      "html": "<button class=\"ds-native-tab-action\" aria-label=\"Move Movies earlier\">Move earlier</button>",
+      "css": ".ds-native-tab-action{font-family:-apple-system,BlinkMacSystemFont,sans-serif;min-width:44px;min-height:44px;padding:8px;border:0;background:transparent;color:#c4ff47}.ds-native-tab-action:hover{background:#20271e}.ds-native-tab-action:focus-visible{outline:2px solid #daff98;outline-offset:4px}.ds-native-tab-action:disabled{opacity:.5}"
+    }
+  ],
+  "narrative": {
+    "northStar": "Electric",
+    "overview": "Electric makes the media title and next action clear while letting artwork keep its own color. Home places title, truthful progress and a green action beside a cinematic backdrop on wide screens, followed by landscape Continue watching cards. Compact screens keep feature information below the artwork. Home-first navigation keeps Continue watching immediately available.\n\nThe user selected Electric option 1 and authorized replacing the previous coral system across iPhone, iPad and Apple TV. `Sources/Design/KinoTheme.swift`, `CinemaHero.swift`, `MediaViews.swift`, `WatchPosition.swift` and `Sources/App/PlayerTabs.swift` are the implementation authority. This workspace's `PRODUCT.md` and `AGENTS.md` preserve privacy, Direct First playback, existing server contracts and native accessibility. The active SwiftUI implementation is `Sources/`; legacy client sources do not define this system.",
+    "keyCharacteristics": [
+      "Cinematic backdrops fading into an adaptive canvas; untinted poster cards.",
+      "Electric actions with SF Pro text and rounded feature titles.",
+      "Personal destinations and platform-owned navigation, touch and remote focus."
+    ],
+    "rules": [
+      {
+        "name": "The Adaptive Role Rule",
+        "body": "Let KinoTheme resolve appearance and contrast traits; do not derive the shell palette from artwork or mistake the action color for proof of state.",
+        "section": "colors"
+      },
+      {
+        "name": "The Native State Rule",
+        "body": "Let native controls own focus and interaction feedback. iOS media links use plain style; tvOS media links retain card style and focus sections. Preserve tvOS focus movement and platform Reduce Motion behavior rather than imposing the web no-lift rule.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "Do resolve shared colors through KinoTheme and preserve native appearance and contrast traits.",
+      "Do keep saved position, pending feedback and failure recovery truthful.",
+      "Do preserve native navigation, Dynamic Type, accessibility labels and tvOS focus behavior."
+    ],
+    "donts": [
+      "Don't place information over the exposed portion of a backdrop; preserve the opaque reading region and accessibility fallback.",
+      "Don't impose web geometry or the web no-lift rule on Apple system controls.",
+      "Don't treat simulator captures or successful compilation as physical-device or accessibility certification."
+    ]
+  }
+}

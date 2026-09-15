@@ -1,0 +1,10 @@
+repos:
+  - repo: local
+    hooks:
+      - id: local-pipeline-manual
+        name: local publication pipeline (manual)
+        entry: ./scripts/local-pipeline.sh
+        language: system
+        pass_filenames: false
+        always_run: true
+        stages: [manual]

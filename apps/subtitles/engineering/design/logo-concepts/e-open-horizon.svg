@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title">
+  <title id="title">Kinosail Open Horizon logo concept</title>
+  <rect width="512" height="512" rx="112" fill="#090a08"/>
+  <path d="M118 286a138 138 0 0 1 276 0" fill="none" stroke="#c8f169" stroke-width="34" stroke-linecap="round"/>
+  <path fill="#f6f8ef" d="m256 128 90 158H256z"/>
+  <path d="M112 330h288" fill="none" stroke="#f6f8ef" stroke-width="30" stroke-linecap="round"/>
+  <path d="M158 382h196" fill="none" stroke="#c8f169" stroke-width="18" stroke-linecap="round"/>
+</svg>

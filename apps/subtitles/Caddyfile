@@ -1,0 +1,5 @@
+{$KINOSAIL_HOSTNAME} {
+	reverse_proxy kinosail:38128 {
+		header_up X-Kinosail-Proxy-Token {$KINOSAIL_PROXY_TOKEN}
+	}
+}

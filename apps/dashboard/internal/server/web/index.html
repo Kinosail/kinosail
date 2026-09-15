@@ -1,0 +1,220 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <script src="/static/appearance.js?v=electric-1"></script>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#0b0d0b">
+  <title>Kinosail Dashboard</title>
+  <link rel="manifest" href="/manifest.webmanifest">
+  <link rel="icon" href="/favicon.svg?v=5" type="image/svg+xml"><link rel="apple-touch-icon" href="/static/apple-touch-icon.png?v=5">
+  <link rel="stylesheet" href="/static/base.css">
+  <link rel="stylesheet" href="/static/dashboard.css">
+  <link rel="stylesheet" href="/static/last-light.css?v=electric-1">
+  <link rel="modulepreload" href="/static/api.js">
+  <link rel="modulepreload" href="/static/dom.js">
+  <link rel="modulepreload" href="/static/drag.js">
+  <link rel="modulepreload" href="/static/editor.js">
+  <link rel="modulepreload" href="/static/board-view.js">
+  <link rel="modulepreload" href="/static/settings-editor.js">
+</head>
+<body data-passkey-storage="kinosail-dashboard-passkey">
+  <a class="skip-link" href="#board">Skip to applications</a>
+  <header class="app-header dashboard-header">
+    <a class="brand brand-lockup" href="/" aria-label="Kinosail Dashboard home">
+      <img class="brand-icon" src="/static/icon.svg?v=5" width="38" height="38" alt="">
+      <span class="brand-name">Kinosail</span>
+    </a>
+    <span class="dashboard-product">Dashboard</span>
+    <div class="header-actions">
+      <button class="quiet-button" id="command-button" disabled data-needs-board type="button" aria-label="Find applications and commands" aria-keyshortcuts="Meta+K Control+K">
+        <svg aria-hidden="true"><use href="/static/icons.svg#search"></use></svg>
+        <span>Find</span><kbd>⌘K</kbd>
+      </button>
+      <button class="quiet-button" id="settings-button" disabled data-needs-board type="button" aria-label="Open board settings">
+        <svg aria-hidden="true"><use href="/static/icons.svg#settings"></use></svg>
+        <span>Settings</span>
+      </button>
+      <button class="quiet-button" id="view-button" disabled data-needs-board type="button" aria-label="Switch dashboard view" aria-pressed="false">
+        <svg aria-hidden="true"><use href="/static/icons.svg#monitor"></use></svg>
+        <span>Household</span>
+      </button>
+    </div>
+  </header>
+  <div id="offline-banner" class="offline-banner" role="status" hidden>Dashboard connection lost. Showing the last loaded board.</div>
+
+  <main aria-busy="true" id="board" class="board-shell last-light">
+    <header class="dashboard-masthead">
+      <h1 id="board-title">Home</h1>
+      <p>Your household, connected.</p>
+    </header>
+    <section class="service-pulse" aria-labelledby="pulse-title">
+      <div>
+        <h2 id="pulse-title">Service status</h2>
+        <p id="pulse-copy" class="pulse-copy" aria-live="polite">Checking your services…</p>
+      </div>
+      <button class="text-button" id="check-all-button" disabled data-needs-board type="button">
+        <svg aria-hidden="true"><use href="/static/icons.svg#refresh"></use></svg>
+        Check now
+      </button>
+    </section>
+
+    <section class="board-tools" aria-label="Board controls">
+      <label class="search-field" for="board-search">
+        <svg aria-hidden="true"><use href="/static/icons.svg#search"></use></svg>
+        <input id="board-search" disabled data-needs-board type="search" autocomplete="off" placeholder="Find an application" aria-label="Find an application">
+        <span class="search-count" id="search-count" aria-hidden="true"></span>
+      </label>
+      <div class="tool-actions">
+        <button class="quiet-button" id="edit-button" disabled data-needs-board type="button">
+          <svg aria-hidden="true"><use href="/static/icons.svg#edit"></use></svg>
+          <span>Edit board</span>
+        </button>
+        <button class="primary-button" id="add-button" disabled data-needs-board type="button">
+          <svg aria-hidden="true"><use href="/static/icons.svg#plus"></use></svg>
+          <span>Add application</span>
+        </button>
+      </div>
+    </section>
+    <div class="directory-head">
+      <h2 id="apps-heading">Applications</h2>
+      <p id="directory-summary">Loading your applications…</p>
+    </div>
+    <nav id="category-filters" class="filter-row" aria-label="Filter applications"></nav>
+
+    <div id="loading-state" class="loading-grid" role="status" aria-label="Loading applications">
+      <span aria-hidden="true"></span><span aria-hidden="true"></span><span aria-hidden="true"></span><span aria-hidden="true"></span><span aria-hidden="true"></span><span aria-hidden="true"></span>
+    </div>
+    <section id="empty-state" class="empty-state" hidden>
+      <svg aria-hidden="true"><use href="/static/icons.svg#grid"></use></svg>
+      <h2>Your board is ready</h2>
+      <p>Add the applications your household uses. Kinosail checks whether they are reachable and opens them at their own addresses.</p>
+      <button class="primary-button" id="empty-add-button" type="button">Add the first application</button>
+    </section>
+    <section id="no-results" class="empty-state compact" hidden>
+      <h2 id="no-results-title">No matching applications</h2>
+      <p id="no-results-copy">Try another name, category, or address.</p>
+      <button class="text-button" id="clear-search-button" type="button">Clear search</button>
+    </section>
+    <section id="app-grid" class="app-grid" aria-label="Applications"></section>
+  </main>
+
+  <aside id="edit-bar" class="edit-bar" aria-label="Board editing status" hidden>
+    <span>Editing the shared board</span>
+    <button class="primary-button" id="done-editing-button" type="button">Done</button>
+  </aside>
+
+  <dialog id="app-dialog" class="sheet-dialog" aria-labelledby="app-dialog-title">
+    <form id="app-form">
+      <header class="dialog-header">
+        <div><h2 id="app-dialog-title">Add application</h2></div>
+        <button class="icon-button" type="button" data-close-dialog aria-label="Close"><svg aria-hidden="true"><use href="/static/icons.svg#close"></use></svg></button>
+      </header>
+      <div class="catalog-header"><div><p class="field-help">Choose an application to fill in its name and category.</p></div><input id="catalog-search" type="search" placeholder="Search known applications" autocomplete="off" aria-label="Search known applications"></div>
+      <div id="catalog-picker" class="catalog-picker" aria-label="Common applications"></div>
+      <input id="app-id" type="hidden">
+      <div class="form-grid">
+        <label>Name<input id="app-name" name="name" maxlength="60" required autocomplete="off"></label>
+        <label>Category<input id="app-category" name="category" maxlength="40" autocomplete="off"></label>
+        <label class="wide">Application address<input id="app-url" name="url" type="url" maxlength="2048" required placeholder="http://service.local:8096" inputmode="url" autocomplete="url"></label>
+        <label class="wide">Health address <span>Optional</span><input id="app-health-url" name="healthUrl" type="url" maxlength="2048" placeholder="Uses the application address" inputmode="url"><small>Kinosail checks this address from the Server on its configured schedule.</small></label>
+        <label class="wide">Description <span>Optional</span><input id="app-description" name="description" maxlength="120" autocomplete="off"></label>
+        <fieldset id="app-accent" class="choice-field accent-choices wide"><legend>Accent</legend><label data-accent="lime"><input type="radio" name="accent" value="lime"><span>Lime</span></label><label data-accent="ocean"><input type="radio" name="accent" value="ocean"><span>Ocean</span></label><label data-accent="amber"><input type="radio" name="accent" value="amber"><span>Amber</span></label><label data-accent="coral"><input type="radio" name="accent" value="coral"><span>Coral</span></label><label data-accent="sky"><input type="radio" name="accent" value="sky"><span>Sky</span></label><label data-accent="violet"><input type="radio" name="accent" value="violet"><span>Violet</span></label><label data-accent="slate"><input type="radio" name="accent" value="slate" checked><span>Slate</span></label></fieldset>
+        <label class="check-label"><input id="app-check-enabled" name="checkEnabled" type="checkbox" checked> Check availability automatically</label>
+        <label class="check-label"><input id="app-favorite" name="favorite" type="checkbox"> Mark as a favorite</label>
+      </div>
+      <p class="form-error" id="app-form-error" role="alert" hidden></p>
+      <footer class="dialog-actions">
+        <button class="danger-button" id="remove-button" type="button" hidden>Remove from Dashboard</button>
+        <span class="action-spacer"></span>
+        <button class="quiet-button" type="button" data-close-dialog>Cancel</button>
+        <button class="primary-button" id="save-app-button" type="submit">Add application</button>
+      </footer>
+    </form>
+  </dialog>
+
+  <dialog id="settings-dialog" class="sheet-dialog narrow" aria-labelledby="settings-dialog-title">
+    <form id="settings-form">
+      <header class="dialog-header">
+        <div><h2 id="settings-dialog-title">Settings and backup</h2></div>
+        <button class="icon-button" type="button" data-close-dialog aria-label="Close"><svg aria-hidden="true"><use href="/static/icons.svg#close"></use></svg></button>
+      </header>
+      <label>Board name<input id="settings-title" maxlength="60" required></label>
+      <label>Appearance<select data-theme-choice aria-describedby="appearance-help"><option value="system">System</option><option value="light">Light</option><option value="dark">Dark</option></select><small id="appearance-help">Applies immediately in this browser.</small></label>
+      <div class="settings-section" id="passkey-section">
+        <h3>Passkeys</h3>
+        <p>Add a passkey without replacing the Owner password. Bitwarden, a nearby device, or a security key can store it.</p>
+        <div class="button-row"><button class="quiet-button" id="add-passkey-button" type="button" data-passkey-add>Add a passkey</button><button class="text-button" id="passkey-not-now" type="button" data-close-dialog hidden>Not now</button></div>
+        <output class="passkey-status" data-passkey-status aria-live="polite"></output>
+      </div>
+      <details class="settings-section settings-disclosure">
+        <summary>Owner password</summary>
+        <p>Change the Owner password. Other browsers will be signed out, and the current MCP token will be revoked.</p>
+        <div class="password-grid">
+          <label class="wide">Current password<input id="current-password" type="password" minlength="1" maxlength="72" autocomplete="current-password"></label>
+          <label>New password<input id="new-password" type="password" minlength="12" maxlength="72" autocomplete="new-password"></label>
+          <label>Confirm new password<input id="confirm-new-password" type="password" minlength="12" maxlength="72" autocomplete="new-password"></label>
+        </div>
+        <button class="quiet-button" id="change-password-button" type="button">Change password</button>
+      </details>
+      <div class="settings-section">
+        <h3>Supporter Badge Case</h3>
+        <p>Collect Dashboard honors. Support never unlocks or limits Dashboard features.</p>
+        <a class="quiet-button" href="/supporter">Open Badge Case</a>
+      </div>
+      <details class="settings-section settings-disclosure">
+        <summary>Backup</summary>
+        <p>Export application addresses and board order. Passwords and sessions are never included.</p>
+        <div class="button-row"><a class="quiet-button" href="/api/v1/export" download>Export backup</a><label class="quiet-button file-button">Choose backup<input id="import-file" type="file" accept="application/json,.json"></label></div>
+        <div class="import-tools">
+          <fieldset id="external-import-source" class="choice-field segmented-choice"><legend>Import format</legend><label><input type="radio" name="externalImportSource" value="homarr" checked><span>Homarr</span></label><label><input type="radio" name="externalImportSource" value="homepage"><span>Homepage</span></label><label><input type="radio" name="externalImportSource" value="dashy"><span>Dashy</span></label></fieldset>
+          <label class="quiet-button file-button">Choose config<input id="external-import-file" type="file" accept="application/json,.json,.yaml,.yml"></label>
+        </div>
+        <div id="external-import-preview" class="import-preview" hidden>
+          <strong id="external-import-title"></strong>
+          <p id="external-import-summary"></p>
+          <ul id="external-import-list"></ul>
+          <p id="external-import-warning" class="field-help"></p>
+          <button class="primary-button" id="external-import-confirm" type="button">Add these applications</button>
+        </div>
+      </details>
+      <div class="settings-section">
+        <h3>Household view</h3>
+        <p>Choose how much detail to show. This choice is saved in this browser.</p>
+        <fieldset id="profile-select" class="choice-field choice-cards"><legend>View mode</legend><label><input type="radio" name="viewMode" value="household"><span><strong>Household</strong><small>Prioritize names and simple status.</small></span></label><label><input type="radio" name="viewMode" value="operations"><span><strong>Operations</strong><small>Show addresses and full service detail.</small></span></label><label><input type="radio" name="viewMode" value="tv"><span><strong>TV / remote</strong><small>Enlarge tiles for distant viewing.</small></span></label></fieldset>
+      </div>
+      <div class="settings-section">
+        <h3>Local usage</h3>
+        <p id="usage-summary">Your recent application history is saved only in this browser.</p>
+        <button class="text-button" id="clear-local-data" type="button">Clear local recents</button>
+      </div>
+      <details class="settings-section settings-disclosure">
+        <summary>MCP access</summary>
+        <p>Create one full-owner token for a trusted Model Context Protocol (MCP) client. The token appears once.</p>
+        <div class="button-row"><button class="quiet-button" id="create-mcp-token" type="button">Create MCP token</button><button class="text-button" id="revoke-mcp-token" type="button">Revoke token</button></div>
+        <div id="mcp-token-output" class="token-output" hidden><label>New MCP token<textarea id="mcp-token-value" rows="3" readonly></textarea></label><button class="text-button" id="copy-mcp-token" type="button">Copy token</button></div>
+      </details>
+      <details class="settings-section settings-disclosure">
+        <summary>Recent changes</summary>
+        <ol id="audit-list" class="audit-list" tabindex="0" aria-label="Recent changes history"></ol>
+      </details>
+      <details class="settings-section settings-disclosure">
+        <summary>Recently removed</summary>
+        <p>Restore an application after the Undo message expires.</p>
+        <div id="removed-list" class="removed-list"></div>
+      </details>
+      <p class="form-error" id="settings-error" role="alert" hidden></p>
+      <footer class="dialog-actions"><button class="quiet-button" id="sign-out-button" type="button">Sign out</button><span class="action-spacer"></span><button class="quiet-button" type="button" data-close-dialog>Cancel</button><button class="primary-button" type="submit">Save board</button></footer>
+    </form>
+  </dialog>
+
+  <dialog id="command-dialog" class="command-dialog" aria-label="Find applications and commands">
+    <label class="command-search"><svg aria-hidden="true"><use href="/static/icons.svg#search"></use></svg><input id="command-search" autocomplete="off" placeholder="Open or manage…" aria-label="Search commands"></label>
+    <div id="command-results" class="command-results"></div>
+  </dialog>
+
+  <div id="toast" class="toast" role="status" aria-live="polite" hidden><span id="toast-message"></span><button id="toast-action" type="button" hidden></button></div>
+  <script type="module" src="/static/app.js"></script>
+  <script type="module" src="/static/passkeys.js"></script>
+</body>
+</html>

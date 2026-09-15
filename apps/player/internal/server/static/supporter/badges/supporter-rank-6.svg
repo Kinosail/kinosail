@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title">
+  <title id="title">Kinosail supporter rank six lighthouse standard</title>
+  <defs>
+    <linearGradient id="gold" x1=".08" y1="0" x2=".92" y2="1"><stop stop-color="#fff5d1"/><stop offset=".4" stop-color="#e0bd64"/><stop offset="1" stop-color="#674321"/></linearGradient>
+    <linearGradient id="beam" x1="0" y1=".5" x2="1" y2=".5"><stop stop-color="#c8f169" stop-opacity="0"/><stop offset=".5" stop-color="#eaffad" stop-opacity=".7"/><stop offset="1" stop-color="#c8f169" stop-opacity="0"/></linearGradient>
+    <radialGradient id="sea"><stop stop-color="#236456"/><stop offset="1" stop-color="#07100e"/></radialGradient>
+    <filter id="shadow" x="-30%" y="-30%" width="160%" height="170%"><feDropShadow dy="13" stdDeviation="11" flood-color="#000" flood-opacity=".62"/></filter>
+  </defs>
+  <g filter="url(#shadow)">
+    <path d="M256 31 402 121l-25 250-121 110-121-110-25-250Z" fill="#090c0b" stroke="url(#gold)" stroke-linejoin="round" stroke-width="13"/>
+    <path d="M256 66 371 138l-20 215-95 87-95-87-20-215Z" fill="url(#sea)" stroke="#7b542b" stroke-width="5"/>
+    <path d="m87 177 169 32 169-32-169 82Z" fill="url(#beam)"/>
+    <path d="M208 175h96l-14 42h-68Z" fill="#fff5d1" stroke="#8b6130" stroke-width="5"/>
+    <path d="m223 175 10-32h46l10 32M246 143V92h20v51" fill="#0b1713" stroke="url(#gold)" stroke-linejoin="round" stroke-width="7"/>
+    <path fill="#fff5d1" d="M247 176c-37 42-58 94-59 154 34-13 69-14 109-3-27-46-41-96-50-151Z"/>
+    <path fill="url(#gold)" d="M259 196c47 40 71 83 72 132-31-12-62-14-91-8 17-38 23-80 19-124Z"/>
+    <path fill="#08110f" d="m247 254 46 26-46 26Z"/>
+    <path d="M145 340c42-26 71-4 103-3 40 1 61-27 111-7M155 366c37-20 63-4 94-3 39 1 63-20 105-9" fill="none" stroke="#a9e4d1" stroke-linecap="round" stroke-width="8"/>
+    <path d="m256 43 9 20 21 9-21 9-9 21-9-21-21-9 21-9Z" fill="#c8f169" stroke="#fff5d1" stroke-width="4"/>
+  </g>
+</svg>

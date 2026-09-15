@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title">
+  <title id="title">Kinosail supporter rank four orbital shield</title>
+  <defs>
+    <linearGradient id="gold" x1=".1" y1="0" x2=".9" y2="1"><stop stop-color="#fff3c8"/><stop offset=".42" stop-color="#d9b75f"/><stop offset="1" stop-color="#6b4726"/></linearGradient>
+    <radialGradient id="sea"><stop stop-color="#205c4e"/><stop offset="1" stop-color="#07100e"/></radialGradient>
+    <filter id="shadow" x="-30%" y="-30%" width="160%" height="170%"><feDropShadow dy="12" stdDeviation="10" flood-color="#000" flood-opacity=".58"/></filter>
+  </defs>
+  <g filter="url(#shadow)">
+    <path d="M256 43 412 109v134c0 106-63 184-156 226C163 427 100 349 100 243V109Z" fill="#090c0b" stroke="url(#gold)" stroke-linejoin="round" stroke-width="12"/>
+    <path d="M256 76 382 129v111c0 84-48 149-126 187-78-38-126-103-126-187V129Z" fill="url(#sea)" stroke="#76512b" stroke-width="4"/>
+    <ellipse cx="256" cy="247" rx="172" ry="103" fill="none" stroke="#9bd9c7" stroke-width="5" transform="rotate(-18 256 247)"/>
+    <ellipse cx="256" cy="247" rx="172" ry="103" fill="none" stroke="#d9b75f" stroke-dasharray="5 16" stroke-width="4" transform="rotate(31 256 247)"/>
+    <g fill="#fff3c8" stroke="#76512b" stroke-width="3"><circle cx="111" cy="219" r="11"/><circle cx="391" cy="170" r="9"/><circle cx="401" cy="302" r="12"/><circle cx="161" cy="363" r="8"/></g>
+    <path fill="#fff3c8" d="M247 124c-37 47-58 105-59 173 34-14 69-15 109-3-27-51-41-107-50-170Z"/>
+    <path fill="url(#gold)" d="M259 147c48 45 71 94 72 149-31-14-62-16-91-9 17-43 23-90 19-140Z"/>
+    <path fill="#08110f" d="m247 218 46 28-46 28Z"/>
+    <path d="M143 309c44-29 73-4 106-3 40 2 61-29 112-8M153 337c38-22 65-5 96-4 40 2 64-22 107-10" fill="none" stroke="#a2dfcd" stroke-linecap="round" stroke-width="8"/>
+  </g>
+</svg>

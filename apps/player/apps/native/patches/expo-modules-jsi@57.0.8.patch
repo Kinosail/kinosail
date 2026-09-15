@@ -1,0 +1,13 @@
+diff --git a/apple/scripts/build-xcframework.sh b/apple/scripts/build-xcframework.sh
+--- a/apple/scripts/build-xcframework.sh
++++ b/apple/scripts/build-xcframework.sh
+@@ -239,6 +239,9 @@
+     SWIFT_COMPILATION_MODE=wholemodule \
+     CLANG_ENABLE_CODE_COVERAGE=NO \
+     CLANG_COVERAGE_MAPPING=NO \
++    GCC_WARN_INHIBIT_ALL_WARNINGS="${GCC_WARN_INHIBIT_ALL_WARNINGS:-NO}" \
++    SWIFT_SUPPRESS_WARNINGS="${SWIFT_SUPPRESS_WARNINGS:-NO}" \
++    LD_SUPPRESS_WARNINGS="${LD_SUPPRESS_WARNINGS:-NO}" \
+   )
+ 
+   local product_path="${BUILD_PRODUCTS_PATH}/${build_dir_name}"

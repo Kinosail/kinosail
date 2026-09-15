@@ -1,0 +1,88 @@
+package server
+
+import (
+	"context"
+	"os"
+	"time"
+
+	"github.com/MikeO7/kinosail/packages/library"
+)
+
+func (manager *subtitleManager) embeddedReady() bool {
+	return manager.probe != nil && manager.probe.executable != "" && manager.probe.ffmpeg != ""
+}
+
+func (manager *subtitleManager) fetchSidecar(ctx context.Context, item library.Item, language string) error { //nolint:gocognit // Embedded extraction and durable ledger rollback form one atomic operation.
+	if manager.embeddedReady() {
+		if data, found := manager.embeddedSubtitle(ctx, item, language); found {
+			cleaned, err := cleanSubtitle(data)
+			if err == nil {
+				target := subtitleSidecarPath(item, language)
+				if err = saveSubtitleExclusive(target, cleaned.Data); err == nil {
+					now := time.Now().Unix()
+					record := completeSubtitleRecord(target, cleaned.Data, subtitleRecord{Source: "embedded", Score: 100, ReleaseMatch: 1, CheckedAt: now, InstalledAt: now, Cleanup: cleaned.Cleanup, Synchronization: "none", TimingEvidence: "embedded", Managed: true})
+					if track, found := manager.embeddedSubtitleTrack(ctx, item, language); found {
+						record.Role = track.Role
+					}
+					err = manager.provider.retainSubtitleOriginal(cleaned.Original, &record)
+					if err == nil {
+						err = manager.provider.ledger.store(subtitleRecordKey(item.ID, language), record)
+					}
+					if err != nil {
+						_ = os.Remove(target)
+					} else {
+						manager.provider.ledger.noteSearch(subtitleSearchKey(item.ID, language, manager.settings.subtitlePreference()), "installed", "", time.Now())
+					}
+				}
+				return err
+			}
+		}
+	}
+	return manager.provider.fetchSidecar(ctx, item, language)
+}
+
+func (manager *subtitleManager) embeddedSubtitle(ctx context.Context, item library.Item, language string) ([]byte, bool) { //nolint:cyclop // Track selection and probe-cache extraction are one embedded subtitle operation.
+	best, found := manager.embeddedSubtitleTrack(ctx, item, language)
+	if !found {
+		return nil, false
+	}
+	path, data, err := manager.probe.extractEmbedded(ctx, item, best.SourceIndex)
+	if err != nil {
+		return nil, false
+	}
+	if path != "" {
+		data, err = os.ReadFile(path) //nolint:gosec // The path is the probe-owned embedded subtitle cache.
+	}
+	return data, err == nil && len(data) > 0
+}
+
+func (manager *subtitleManager) embeddedSubtitleTrack(ctx context.Context, item library.Item, language string) (SubtitleFacts, bool) { //nolint:cyclop // Embedded-track selection validates all media variants together.
+	if !manager.embeddedReady() {
+		return SubtitleFacts{}, false
+	}
+	return manager.embeddedSubtitleFacts(manager.probe.facts(ctx, item), language)
+}
+
+func (manager *subtitleManager) embeddedSubtitleFacts(media probeResult, language string) (SubtitleFacts, bool) {
+	best, score := SubtitleFacts{}, -1
+	preference := manager.preference()
+	for _, track := range media.SubtitleFacts {
+		if !track.Text || track.Forced || !subtitleLanguageMatches(language, track.Language) || preference == "sdh" && track.Role != "captions" {
+			continue
+		}
+		trackScore := 0
+		if track.Role == "translation" {
+			trackScore += 2
+		}
+		if track.Default {
+			trackScore++
+		}
+		if trackScore > score {
+			best, score = track, trackScore
+		}
+	}
+	if score < 0 {
+		return SubtitleFacts{}, false
+	}
+	return best, true
+}

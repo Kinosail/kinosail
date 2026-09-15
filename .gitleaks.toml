@@ -1,0 +1,6 @@
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Generated architecture maps contain symbol metadata, not source literals"
+paths = ['''^apps/(player|subtitles)/(docs|engineering)/architecture-explorer/index\.html$''']

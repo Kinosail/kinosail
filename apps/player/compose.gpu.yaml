@@ -1,0 +1,6 @@
+services:
+  kinosail:
+    devices:
+      - "${KINOSAIL_GPU_DEVICE:-/dev/dri:/dev/dri}"
+    group_add:
+      - "${KINOSAIL_GPU_GROUP:-10001}"

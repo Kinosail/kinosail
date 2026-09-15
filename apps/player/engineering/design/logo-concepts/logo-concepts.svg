@@ -1,0 +1,80 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 1120" role="img" aria-labelledby="title desc">
+  <title id="title">Five Kinosail logo directions</title>
+  <desc id="desc">Five dark rounded-square app icon concepts using off-white and signal green.</desc>
+  <rect width="1600" height="1120" fill="#090a08"/>
+  <circle cx="1320" cy="-80" r="360" fill="#c8f169" opacity=".05"/>
+  <text x="90" y="105" fill="#c8f169" font-family="Inter,Arial,sans-serif" font-size="20" font-weight="800" letter-spacing="5">KINOSAIL IDENTITY STUDY</text>
+  <text x="90" y="175" fill="#f6f8ef" font-family="Inter,Arial,sans-serif" font-size="62" font-weight="760" letter-spacing="-3">Five directions. One signal.</text>
+  <text x="90" y="218" fill="#9ca391" font-family="Inter,Arial,sans-serif" font-size="22">Original vector marks designed to survive app icon, favicon, and wordmark use.</text>
+
+  <g transform="translate(90 285)">
+    <rect width="440" height="350" rx="28" fill="#12140f" stroke="#2a2d26"/>
+    <g transform="translate(50 34) scale(.48)">
+      <rect width="512" height="512" rx="112" fill="#090a08" stroke="#32362d" stroke-width="4"/>
+      <path fill="#f6f8ef" d="M134 112h46v288h-46z"/>
+      <path fill="#c8f169" d="m198 252 152-140 28 140z"/>
+      <path fill="#f6f8ef" d="m198 278 180 122-42-122z"/>
+    </g>
+    <text x="320" y="92" fill="#c8f169" font-family="Inter,Arial,sans-serif" font-size="18" font-weight="800">A</text>
+    <text x="320" y="132" fill="#f6f8ef" font-family="Inter,Arial,sans-serif" font-size="26" font-weight="750">Wake K</text>
+    <text x="320" y="168" fill="#9ca391" font-family="Inter,Arial,sans-serif" font-size="17">K + sail</text>
+    <text x="320" y="194" fill="#9ca391" font-family="Inter,Arial,sans-serif" font-size="17">Instantly ownable</text>
+  </g>
+
+  <g transform="translate(580 285)">
+    <rect width="440" height="350" rx="28" fill="#12140f" stroke="#2a2d26"/>
+    <g transform="translate(50 34) scale(.48)">
+      <rect width="512" height="512" rx="112" fill="#090a08" stroke="#32362d" stroke-width="4"/>
+      <circle cx="256" cy="256" r="138" fill="none" stroke="#c8f169" stroke-width="34"/>
+      <path fill="#f6f8ef" d="m224 168 112 88-112 88z"/>
+      <path fill="#090a08" d="M155 278h202v24H155z"/>
+    </g>
+    <text x="320" y="92" fill="#c8f169" font-family="Inter,Arial,sans-serif" font-size="18" font-weight="800">B</text>
+    <text x="320" y="132" fill="#f6f8ef" font-family="Inter,Arial,sans-serif" font-size="26" font-weight="750">Signal Sail</text>
+    <text x="320" y="168" fill="#9ca391" font-family="Inter,Arial,sans-serif" font-size="17">Stream + horizon</text>
+    <text x="320" y="194" fill="#9ca391" font-family="Inter,Arial,sans-serif" font-size="17">Clean and digital</text>
+  </g>
+
+  <g transform="translate(1070 285)">
+    <rect width="440" height="350" rx="28" fill="#12140f" stroke="#2a2d26"/>
+    <g transform="translate(50 34) scale(.48)">
+      <rect width="512" height="512" rx="112" fill="#090a08" stroke="#32362d" stroke-width="4"/>
+      <path fill="#f6f8ef" d="m256 90 54 112 112 54-112 54-54 112-54-112-112-54 112-54z"/>
+      <path fill="#c8f169" d="m256 156 98 100-98 34z"/>
+      <circle cx="256" cy="256" r="22" fill="#090a08"/>
+    </g>
+    <text x="320" y="92" fill="#c8f169" font-family="Inter,Arial,sans-serif" font-size="18" font-weight="800">C</text>
+    <text x="320" y="132" fill="#f6f8ef" font-family="Inter,Arial,sans-serif" font-size="26" font-weight="750">North Play</text>
+    <text x="320" y="168" fill="#9ca391" font-family="Inter,Arial,sans-serif" font-size="17">Navigation + media</text>
+    <text x="320" y="194" fill="#9ca391" font-family="Inter,Arial,sans-serif" font-size="17">Premium and iconic</text>
+  </g>
+
+  <g transform="translate(335 685)">
+    <rect width="440" height="350" rx="28" fill="#12140f" stroke="#2a2d26"/>
+    <g transform="translate(50 34) scale(.48)">
+      <rect width="512" height="512" rx="112" fill="#090a08" stroke="#32362d" stroke-width="4"/>
+      <path d="M110 314c72-112 128-112 200 0 38 60 64 62 94 12" fill="none" stroke="#c8f169" stroke-width="32" stroke-linecap="round"/>
+      <path d="M110 382c72-112 128-112 200 0 38 60 64 62 94 12" fill="none" stroke="#f6f8ef" stroke-width="24" stroke-linecap="round"/>
+      <path fill="#f6f8ef" d="m194 112 138 96-138 72z"/>
+    </g>
+    <text x="320" y="92" fill="#c8f169" font-family="Inter,Arial,sans-serif" font-size="18" font-weight="800">D</text>
+    <text x="320" y="132" fill="#f6f8ef" font-family="Inter,Arial,sans-serif" font-size="26" font-weight="750">Double Wake</text>
+    <text x="320" y="168" fill="#9ca391" font-family="Inter,Arial,sans-serif" font-size="17">Playback + motion</text>
+    <text x="320" y="194" fill="#9ca391" font-family="Inter,Arial,sans-serif" font-size="17">Expressive and fluid</text>
+  </g>
+
+  <g transform="translate(825 685)">
+    <rect width="440" height="350" rx="28" fill="#12140f" stroke="#2a2d26"/>
+    <g transform="translate(50 34) scale(.48)">
+      <rect width="512" height="512" rx="112" fill="#090a08" stroke="#32362d" stroke-width="4"/>
+      <path d="M118 286a138 138 0 0 1 276 0" fill="none" stroke="#c8f169" stroke-width="34" stroke-linecap="round"/>
+      <path fill="#f6f8ef" d="m256 128 90 158H256z"/>
+      <path d="M112 330h288" fill="none" stroke="#f6f8ef" stroke-width="30" stroke-linecap="round"/>
+      <path d="M158 382h196" fill="none" stroke="#c8f169" stroke-width="18" stroke-linecap="round"/>
+    </g>
+    <text x="320" y="92" fill="#c8f169" font-family="Inter,Arial,sans-serif" font-size="18" font-weight="800">E</text>
+    <text x="320" y="132" fill="#f6f8ef" font-family="Inter,Arial,sans-serif" font-size="26" font-weight="750">Open Horizon</text>
+    <text x="320" y="168" fill="#9ca391" font-family="Inter,Arial,sans-serif" font-size="17">Sail + sunrise</text>
+    <text x="320" y="194" fill="#9ca391" font-family="Inter,Arial,sans-serif" font-size="17">Warm and cinematic</text>
+  </g>
+</svg>

@@ -1,0 +1,1874 @@
+[
+  {
+    "id": "15 minutes",
+    "other": "15 دقيقة"
+  },
+  {
+    "id": "30 minutes",
+    "other": "30 دقيقة"
+  },
+  {
+    "id": "45 minutes",
+    "other": "45 دقيقة"
+  },
+  {
+    "id": "60 minutes",
+    "other": "60 دقيقة"
+  },
+  {
+    "id": "Access",
+    "other": "الوصول"
+  },
+  {
+    "id": "Account · Kinosail Subtitles",
+    "other": "الحساب · Kinosail Subtitles"
+  },
+  {
+    "id": "Actions",
+    "other": "الإجراءات"
+  },
+  {
+    "id": "active session(s)",
+    "other": "الجلسة (الجلسات) النشطة"
+  },
+  {
+    "id": "Add a passkey",
+    "other": "أضف مفتاح مرور"
+  },
+  {
+    "id": "Add folder",
+    "other": "إضافة مجلد"
+  },
+  {
+    "id": "Add media or try another search.",
+    "other": "أضف الوسائط أو حاول بحثًا آخر."
+  },
+  {
+    "id": "Add Profile",
+    "other": "إضافة ملف تعريف"
+  },
+  {
+    "id": "Add this secret or URI to your authenticator app.",
+    "other": "أضف هذا السر أو URI إلى تطبيق المصادقة الخاص بك."
+  },
+  {
+    "id": "Add to",
+    "other": "إضافة إلى"
+  },
+  {
+    "id": "Administer server",
+    "other": "إدارة الخادم"
+  },
+  {
+    "id": "Album",
+    "other": "الألبوم"
+  },
+  {
+    "id": "Albums",
+    "other": "الألبومات"
+  },
+  {
+    "id": "all",
+    "other": "all"
+  },
+  {
+    "id": "All ratings",
+    "other": "جميع التقييمات"
+  },
+  {
+    "id": "Allow downloads",
+    "other": "السماح بالتنزيلات"
+  },
+  {
+    "id": "Allow transcoding",
+    "other": "السماح بتحويل الشفرة"
+  },
+  {
+    "id": "AMD AMF",
+    "other": "AMD AMF"
+  },
+  {
+    "id": "Analyze playback segments now",
+    "other": "تحليل مقاطع التشغيل الآن"
+  },
+  {
+    "id": "analyzed item(s)",
+    "other": "العناصر التي تم تحليلها"
+  },
+  {
+    "id": "API key name",
+    "other": "اسم مفتاح واجهة برمجة التطبيقات"
+  },
+  {
+    "id": "API key scope does not allow this request",
+    "other": "نطاق مفتاح واجهة برمجة التطبيقات (API) لا يسمح بهذا الطلب"
+  },
+  {
+    "id": "API key view failed",
+    "other": "فشل عرض مفتاح واجهة برمجة التطبيقات"
+  },
+  {
+    "id": "API key · Kinosail Subtitles",
+    "other": "مفتاح واجهة برمجة التطبيقات · Kinosail Subtitles"
+  },
+  {
+    "id": "API keys",
+    "other": "مفاتيح واجهة برمجة التطبيقات"
+  },
+  {
+    "id": "Appearance",
+    "other": "المظهر"
+  },
+  {
+    "id": "Apple VideoToolbox",
+    "other": "Apple VideoToolbox"
+  },
+  {
+    "id": "Apply",
+    "other": "تطبيق"
+  },
+  {
+    "id": "Audio",
+    "other": "الصوت"
+  },
+  {
+    "id": "Audiobooks",
+    "other": "الكتب الصوتية"
+  },
+  {
+    "id": "Authentication code",
+    "other": "رمز التوثيق"
+  },
+  {
+    "id": "Authentication or recovery code",
+    "other": "رمز المصادقة أو الاسترداد"
+  },
+  {
+    "id": "authentication required",
+    "other": "المصادقة مطلوبة"
+  },
+  {
+    "id": "Authorize device",
+    "other": "تخويل الجهاز"
+  },
+  {
+    "id": "Automatic",
+    "other": "تلقائي"
+  },
+  {
+    "id": "automatic",
+    "other": "تلقائي"
+  },
+  {
+    "id": "Automatic (best detected)",
+    "other": "تلقائي (أفضل اكتشاف)"
+  },
+  {
+    "id": "Automatic (browser)",
+    "other": "تلقائي (المتصفح)"
+  },
+  {
+    "id": "Automatic backups",
+    "other": "النسخ الاحتياطي التلقائي"
+  },
+  {
+    "id": "Automatic maintenance",
+    "other": "الصيانة التلقائية"
+  },
+  {
+    "id": "Available devices use a direct connection to this Server.",
+    "other": "الأجهزة المتاحة تستخدم اتصالاً مباشرًا بهذا الخادم."
+  },
+  {
+    "id": "Back to library",
+    "other": "الرجوع إلى المكتبة"
+  },
+  {
+    "id": "Back to settings",
+    "other": "الرجوع إلى الإعدادات"
+  },
+  {
+    "id": "Back up now",
+    "other": "النسخ الاحتياطي الآن"
+  },
+  {
+    "id": "Backup and recovery",
+    "other": "النسخ الاحتياطي والاسترداد"
+  },
+  {
+    "id": "backup is unavailable",
+    "other": "النسخ الاحتياطي غير متاح"
+  },
+  {
+    "id": "Backups need setup.",
+    "other": "تحتاج النسخ الاحتياطية إلى الإعداد."
+  },
+  {
+    "id": "Backups run automatically without encryption.",
+    "other": "يتم تشغيل النسخ الاحتياطية تلقائيًا بدون تشفير."
+  },
+  {
+    "id": "Backups · Kinosail Subtitles",
+    "other": "النسخ الاحتياطية · Kinosail Subtitles"
+  },
+  {
+    "id": "Book",
+    "other": "كتاب"
+  },
+  {
+    "id": "Books",
+    "other": "الكتب"
+  },
+  {
+    "id": "Books and comics",
+    "other": "الكتب والقصص المصورة"
+  },
+  {
+    "id": "Browse library",
+    "other": "تصفح المكتبة"
+  },
+  {
+    "id": "Cancel",
+    "other": "إلغاء"
+  },
+  {
+    "id": "Cast",
+    "other": "Cast"
+  },
+  {
+    "id": "Chapters",
+    "other": "الفصول"
+  },
+  {
+    "id": "Choose the language for this browser.",
+    "other": "اختر لغة هذا المتصفح."
+  },
+  {
+    "id": "Clear transcode cache",
+    "other": "مسح ذاكرة التخزين المؤقت لتحويل التعليمات البرمجية"
+  },
+  {
+    "id": "Code",
+    "other": "الرمز"
+  },
+  {
+    "id": "Collection",
+    "other": "المجموعة"
+  },
+  {
+    "id": "Collections",
+    "other": "المجموعات"
+  },
+  {
+    "id": "Commercial",
+    "other": "تجاري"
+  },
+  {
+    "id": "Compatibility",
+    "other": "التوافق"
+  },
+  {
+    "id": "Compatibility Connection",
+    "other": "اتصال التوافق"
+  },
+  {
+    "id": "Compatibility stream",
+    "other": "تيار التوافق"
+  },
+  {
+    "id": "compatible",
+    "other": "متوافق"
+  },
+  {
+    "id": "Concurrent streams",
+    "other": "التدفقات المتزامنة"
+  },
+  {
+    "id": "Configuration error",
+    "other": "خطأ في التكوين"
+  },
+  {
+    "id": "Configuration · Kinosail Subtitles",
+    "other": "التكوين · Kinosail Subtitles"
+  },
+  {
+    "id": "Configured; value hidden",
+    "other": "تم التهيئة؛ القيمة مخفية"
+  },
+  {
+    "id": "Confirm delete",
+    "other": "تأكيد الحذف"
+  },
+  {
+    "id": "Confirm remove",
+    "other": "تأكيد الإزالة"
+  },
+  {
+    "id": "Connect",
+    "other": "الاتصال"
+  },
+  {
+    "id": "Connect a device",
+    "other": "توصيل جهاز"
+  },
+  {
+    "id": "Connected",
+    "other": "متصل"
+  },
+  {
+    "id": "Connecting",
+    "other": "الاتصال"
+  },
+  {
+    "id": "Connecting…",
+    "other": "جارٍ الاتصال…"
+  },
+  {
+    "id": "Connection error",
+    "other": "خطأ في الاتصال"
+  },
+  {
+    "id": "Content",
+    "other": "المحتوى"
+  },
+  {
+    "id": "Continue Watching",
+    "other": "متابعة المشاهدة"
+  },
+  {
+    "id": "Continue watching",
+    "other": "تابع المشاهدة"
+  },
+  {
+    "id": "from Continue Watching",
+    "other": "من متابعة المشاهدة"
+  },
+  {
+    "id": "Copy this key now. Kinosail stores only its hash.",
+    "other": "انسخ هذا المفتاح الآن. يقوم Kinosail بتخزين التجزئة الخاصة به فقط."
+  },
+  {
+    "id": "could not create MFA enrollment",
+    "other": "تعذر إنشاء تسجيل MFA"
+  },
+  {
+    "id": "could not create Owner Profile",
+    "other": "تعذر إنشاء ملف تعريف المالك"
+  },
+  {
+    "id": "could not create session",
+    "other": "تعذر إنشاء جلسة"
+  },
+  {
+    "id": "could not end session",
+    "other": "تعذر إنهاء الجلسة"
+  },
+  {
+    "id": "could not read subtitles",
+    "other": "تعذر قراءة الترجمة"
+  },
+  {
+    "id": "Create",
+    "other": "إنشاء"
+  },
+  {
+    "id": "Create a passkey",
+    "other": "إنشاء مفتاح مرور"
+  },
+  {
+    "id": "Create API key",
+    "other": "إنشاء مفتاح واجهة برمجة التطبيقات"
+  },
+  {
+    "id": "Create passkey",
+    "other": "إنشاء مفتاح مرور"
+  },
+  {
+    "id": "Create smart playlist",
+    "other": "إنشاء قائمة تشغيل ذكية"
+  },
+  {
+    "id": "Create your Owner Profile",
+    "other": "إنشاء ملف تعريف المالك الخاص بك"
+  },
+  {
+    "id": "Created once",
+    "other": "تم الإنشاء مرة واحدة"
+  },
+  {
+    "id": "Credentials configured",
+    "other": "تم تكوين بيانات الاعتماد"
+  },
+  {
+    "id": "Credits",
+    "other": "الاعتمادات"
+  },
+  {
+    "id": "cross-origin request denied",
+    "other": "تم رفض الطلب عبر الأصل"
+  },
+  {
+    "id": "Curate",
+    "other": "تنظيم"
+  },
+  {
+    "id": "Dark",
+    "other": "غامق"
+  },
+  {
+    "id": "default",
+    "other": "default"
+  },
+  {
+    "id": "Default playback",
+    "other": "التشغيل الافتراضي"
+  },
+  {
+    "id": "Delete",
+    "other": "حذف"
+  },
+  {
+    "id": "Deployment configuration",
+    "other": "تكوين النشر"
+  },
+  {
+    "id": "Destination",
+    "other": "الوجهة"
+  },
+  {
+    "id": "detected, unavailable",
+    "other": "تم اكتشافه، غير متاح"
+  },
+  {
+    "id": "Device or app",
+    "other": "الجهاز أو التطبيق"
+  },
+  {
+    "id": "Diagnostics",
+    "other": "التشخيصات"
+  },
+  {
+    "id": "Direct",
+    "other": "مباشر"
+  },
+  {
+    "id": "direct",
+    "other": "direct"
+  },
+  {
+    "id": "Direct connection unavailable",
+    "other": "الاتصال المباشر غير متاح"
+  },
+  {
+    "id": "Direct from",
+    "other": "مباشرة من"
+  },
+  {
+    "id": "Direct stream",
+    "other": "البث المباشر"
+  },
+  {
+    "id": "Directed by",
+    "other": "إخراج"
+  },
+  {
+    "id": "Disable and revoke",
+    "other": "تعطيل وإلغاء"
+  },
+  {
+    "id": "Disable two-factor authentication",
+    "other": "تعطيل المصادقة الثنائية"
+  },
+  {
+    "id": "Disaster recovery",
+    "other": "التعافي من الكوارث"
+  },
+  {
+    "id": "DLNA",
+    "other": "DLNA"
+  },
+  {
+    "id": "Download",
+    "other": "تنزيل"
+  },
+  {
+    "id": "Download media",
+    "other": "تنزيل الوسائط"
+  },
+  {
+    "id": "Download original",
+    "other": "تنزيل النسخة الأصلية"
+  },
+  {
+    "id": "Download portable state archive",
+    "other": "تنزيل أرشيف الحالة المحمولة"
+  },
+  {
+    "id": "Download safe diagnostics",
+    "other": "تنزيل التشخيص الآمن"
+  },
+  {
+    "id": "Download WireGuard profile",
+    "other": "تنزيل ملف تعريف WireGuard"
+  },
+  {
+    "id": "Downloads",
+    "other": "التنزيلات"
+  },
+  {
+    "id": "downloads are not enabled for this Viewer Profile",
+    "other": "التنزيلات غير ممكنة لملف تعريف العارض هذا"
+  },
+  {
+    "id": "Edit metadata",
+    "other": "تحرير البيانات الوصفية"
+  },
+  {
+    "id": "Edit skip markers",
+    "other": "تحرير علامات التخطي"
+  },
+  {
+    "id": "embedded subtitles are unavailable",
+    "other": "الترجمات المضمنة غير متاحة"
+  },
+  {
+    "id": "Enable DLNA",
+    "other": "تمكين DLNA"
+  },
+  {
+    "id": "Enable two-factor authentication",
+    "other": "تمكين المصادقة الثنائية"
+  },
+  {
+    "id": "Enabled",
+    "other": "ممكّن"
+  },
+  {
+    "id": "Encrypted backups run automatically.",
+    "other": "يتم تشغيل النسخ الاحتياطية المشفرة تلقائيًا."
+  },
+  {
+    "id": "Encryption is off by default.",
+    "other": "التشفير معطل بشكل افتراضي."
+  },
+  {
+    "id": "Encryption is on.",
+    "other": "التشفير قيد التشغيل."
+  },
+  {
+    "id": "End in seconds",
+    "other": "تنتهي خلال ثوانٍ"
+  },
+  {
+    "id": "Enter the code shown by your TV or app. It will inherit your Profile Policy.",
+    "other": "أدخل الرمز الذي يظهر على التلفزيون أو التطبيق. سوف يرث سياسة ملفك الشخصي."
+  },
+  {
+    "id": "Environment and YAML values are authoritative. GUI changes shown here take effect after the Server restarts.",
+    "other": "قيم البيئة وYAML موثوقة. تدخل تغييرات واجهة المستخدم الرسومية الموضحة هنا حيز التنفيذ بعد إعادة تشغيل الخادم."
+  },
+  {
+    "id": "Environment default",
+    "other": "البيئة الافتراضية"
+  },
+  {
+    "id": "Event webhook",
+    "other": "الخطاف الشبكي للحدث"
+  },
+  {
+    "id": "Every 15 minutes",
+    "other": "كل 15 دقيقة"
+  },
+  {
+    "id": "Every 5 minutes",
+    "other": "كل 5 دقائق"
+  },
+  {
+    "id": "Everything",
+    "other": "كل شيء"
+  },
+  {
+    "id": "Export full activity journal",
+    "other": "تصدير دفتر يومية النشاط الكامل"
+  },
+  {
+    "id": "Expose direct media URLs to devices on this local network. Disabling revokes the discovery capability.",
+    "other": "اعرض عناوين URL المباشرة للوسائط على الأجهزة الموجودة على هذه الشبكة المحلية. يؤدي التعطيل إلى إلغاء إمكانية الاكتشاف."
+  },
+  {
+    "id": "Externally managed",
+    "other": "مُدار خارجيًا"
+  },
+  {
+    "id": "Find",
+    "other": "البحث عن"
+  },
+  {
+    "id": "Find something",
+    "other": "ابحث عن شيء"
+  },
+  {
+    "id": "Finish setup",
+    "other": "إنهاء الإعداد"
+  },
+  {
+    "id": "Finish sign in",
+    "other": "إنهاء تسجيل الدخول"
+  },
+  {
+    "id": "Folder inside media mount",
+    "other": "مجلد داخل حامل الوسائط"
+  },
+  {
+    "id": "Follow this device or choose a fixed theme.",
+    "other": "اتبع هذا الجهاز أو اختر سمة ثابتة."
+  },
+  {
+    "id": "Following the room leader",
+    "other": "متابعة قائد الغرفة"
+  },
+  {
+    "id": "From",
+    "other": "من"
+  },
+  {
+    "id": "from",
+    "other": "من"
+  },
+  {
+    "id": "General",
+    "other": "عام"
+  },
+  {
+    "id": "Genres",
+    "other": "الأنواع"
+  },
+  {
+    "id": "Got it",
+    "other": "فهمت"
+  },
+  {
+    "id": "Group",
+    "other": "المجموعة"
+  },
+  {
+    "id": "Hardware",
+    "other": "الأجهزة"
+  },
+  {
+    "id": "History",
+    "other": "التاريخ"
+  },
+  {
+    "id": "Home",
+    "other": "الصفحة الرئيسية"
+  },
+  {
+    "id": "Hourly",
+    "other": "كل ساعة"
+  },
+  {
+    "id": "if enabled",
+    "other": "إذا تم تمكينه"
+  },
+  {
+    "id": "Install",
+    "other": "تثبيت"
+  },
+  {
+    "id": "Install Kinosail Subtitles",
+    "other": "تثبيت Kinosail"
+  },
+  {
+    "id": "Integrations",
+    "other": "عمليات التكامل"
+  },
+  {
+    "id": "Intel Quick Sync",
+    "other": "Intel Quick Sync"
+  },
+  {
+    "id": "Intro",
+    "other": "مقدمة"
+  },
+  {
+    "id": "invalid authentication code",
+    "other": "رمز المصادقة غير صالح"
+  },
+  {
+    "id": "invalid Collection state",
+    "other": "حالة المجموعة غير صالحة"
+  },
+  {
+    "id": "invalid credentials",
+    "other": "بيانات اعتماد غير صالحة"
+  },
+  {
+    "id": "invalid list state",
+    "other": "حالة القائمة غير صالحة"
+  },
+  {
+    "id": "invalid playlist state",
+    "other": "حالة قائمة التشغيل غير صالحة"
+  },
+  {
+    "id": "invalid progress",
+    "other": "تقدم غير صالح"
+  },
+  {
+    "id": "invalid watched state",
+    "other": "حالة المشاهدة غير صالحة"
+  },
+  {
+    "id": "Invite link",
+    "other": "رابط الدعوة"
+  },
+  {
+    "id": "Keep",
+    "other": "Keep"
+  },
+  {
+    "id": "Keep backups on storage outside this host. Backups are unencrypted unless a backup key is configured. Restore while the Server is stopped.",
+    "other": "احتفظ بنسخ احتياطية على مساحة تخزين خارج هذا المضيف. النسخ الاحتياطية غير مشفرة ما لم يتم تكوين مفتاح النسخ الاحتياطي. قم بالاستعادة أثناء توقف الخادم."
+  },
+  {
+    "id": "Keep Kinosail Subtitles close",
+    "other": "أبقِ كينوسيل قريبًا"
+  },
+  {
+    "id": "Keys are shown once and stored as hashes. Browse access is the safe default.",
+    "other": "يتم عرض المفاتيح مرة واحدة ويتم تخزينها كتجزئة. الوصول للتصفح هو الوضع الافتراضي الآمن."
+  },
+  {
+    "id": "Kinosail",
+    "other": "Kinosail"
+  },
+  {
+    "id": "Kinosail Subtitles cannot reach this Server. Check your network or Direct Connection, then try again.",
+    "other": "لا يمكن لـKinosail الوصول إلى هذا الخادم. تحقق من شبكتك أو اتصالك المباشر، ثم حاول مرة أخرى."
+  },
+  {
+    "id": "Kinosail maintains itself automatically.",
+    "other": "Kinosail يحافظ على نفسه تلقائيًا."
+  },
+  {
+    "id": "Kinosail Subtitles Reader",
+    "other": "قارئ كينوسايل"
+  },
+  {
+    "id": "Language",
+    "other": "اللغة"
+  },
+  {
+    "id": "language is invalid",
+    "other": "اللغة غير صالحة"
+  },
+  {
+    "id": "Last error",
+    "other": "الخطأ الأخير"
+  },
+  {
+    "id": "Last scan error",
+    "other": "خطأ الفحص الأخير"
+  },
+  {
+    "id": "Last successful backup",
+    "other": "آخر نسخة احتياطية ناجحة"
+  },
+  {
+    "id": "Last successful scan",
+    "other": "آخر فحص ناجح"
+  },
+  {
+    "id": "Last verified",
+    "other": "آخر التحقق"
+  },
+  {
+    "id": "Latest",
+    "other": "الأحدث"
+  },
+  {
+    "id": "Libraries",
+    "other": "المكتبات"
+  },
+  {
+    "id": "Library",
+    "other": "مكتبة"
+  },
+  {
+    "id": "Library discovery",
+    "other": "اكتشاف المكتبة"
+  },
+  {
+    "id": "Library folders",
+    "other": "مجلدات المكتبة"
+  },
+  {
+    "id": "Library items",
+    "other": "عناصر المكتبة"
+  },
+  {
+    "id": "Library organization",
+    "other": "تنظيم المكتبة"
+  },
+  {
+    "id": "Library views",
+    "other": "مشاهدات المكتبة"
+  },
+  {
+    "id": "Licensed credential configured",
+    "other": "تم تكوين بيانات الاعتماد المرخصة"
+  },
+  {
+    "id": "Light",
+    "other": "Light"
+  },
+  {
+    "id": "Link OpenID Connect",
+    "other": "ربط OpenID Connect"
+  },
+  {
+    "id": "Local account",
+    "other": "الحساب المحلي"
+  },
+  {
+    "id": "M3U playlist",
+    "other": "قائمة تشغيل M3U"
+  },
+  {
+    "id": "Manage personal library state",
+    "other": "إدارة حالة المكتبة الشخصية"
+  },
+  {
+    "id": "Managed externally and read-only.",
+    "other": "تتم إدارته خارجيًا وللقراءة فقط."
+  },
+  {
+    "id": "Managed remote access",
+    "other": "الوصول عن بعد المُدار"
+  },
+  {
+    "id": "Mark",
+    "other": "مارك"
+  },
+  {
+    "id": "marker",
+    "other": "علامة"
+  },
+  {
+    "id": "Match text",
+    "other": "نص مطابق"
+  },
+  {
+    "id": "Media",
+    "other": "الوسائط"
+  },
+  {
+    "id": "Media information",
+    "other": "معلومات الوسائط"
+  },
+  {
+    "id": "Media mount",
+    "other": "حامل الوسائط"
+  },
+  {
+    "id": "metadata could not be saved",
+    "other": "تعذر حفظ البيانات الوصفية"
+  },
+  {
+    "id": "metadata is invalid",
+    "other": "البيانات الوصفية غير صالحة"
+  },
+  {
+    "id": "Metadata provider",
+    "other": "موفر البيانات الوصفية"
+  },
+  {
+    "id": "metadata provider unavailable",
+    "other": "موفر بيانات التعريف غير متاح"
+  },
+  {
+    "id": "Metrics",
+    "other": "المقاييس"
+  },
+  {
+    "id": "Movies",
+    "other": "أفلام"
+  },
+  {
+    "id": "Music",
+    "other": "موسيقى"
+  },
+  {
+    "id": "Music and audiobooks",
+    "other": "الموسيقى والكتب الصوتية"
+  },
+  {
+    "id": "My List",
+    "other": "قائمتي"
+  },
+  {
+    "id": "Name",
+    "other": "الاسم"
+  },
+  {
+    "id": "name and a 12-character password are required",
+    "other": "الاسم وكلمة المرور المكونة من 12 حرفًا مطلوبة"
+  },
+  {
+    "id": "Never",
+    "other": "أبدًا"
+  },
+  {
+    "id": "New Collection",
+    "other": "مجموعة جديدة"
+  },
+  {
+    "id": "New Collection name",
+    "other": "اسم المجموعة الجديدة"
+  },
+  {
+    "id": "New media is detected automatically after copying finishes. Safety scans repair missed filesystem events on Windows, macOS, Linux, containers, and network mounts.",
+    "other": "يتم اكتشاف الوسائط الجديدة تلقائيًا بعد انتهاء النسخ. تعمل عمليات فحص الأمان على إصلاح أحداث نظام الملفات المفقودة على أنظمة التشغيل Windows وmacOS وLinux والحاويات ووحدات تثبيت الشبكة."
+  },
+  {
+    "id": "New password",
+    "other": "كلمة المرور الجديدة"
+  },
+  {
+    "id": "New playlist",
+    "other": "قائمة تشغيل جديدة"
+  },
+  {
+    "id": "New playlist name",
+    "other": "اسم قائمة التشغيل الجديدة"
+  },
+  {
+    "id": "New profile name",
+    "other": "اسم الملف الشخصي الجديد"
+  },
+  {
+    "id": "New profile password",
+    "other": "كلمة المرور الجديدة للملف الشخصي"
+  },
+  {
+    "id": "New secret",
+    "other": "سر جديد"
+  },
+  {
+    "id": "New smart playlist",
+    "other": "قائمة تشغيل ذكية جديدة"
+  },
+  {
+    "id": "New Viewers start with family ratings and no libraries. Add folder names or",
+    "other": "يبدأ المشاهدون الجدد بتقييمات عائلية وليس لديهم مكتبات. أضف أسماء المجلدات أو"
+  },
+  {
+    "id": "Newest",
+    "other": "الأحدث"
+  },
+  {
+    "id": "No activity recorded yet.",
+    "other": "لم يتم تسجيل أي نشاط حتى الآن."
+  },
+  {
+    "id": "No channels configured.",
+    "other": "لم يتم تكوين أي قنوات."
+  },
+  {
+    "id": "No device selected",
+    "other": "لم يتم تحديد أي جهاز"
+  },
+  {
+    "id": "No offline downloads yet.",
+    "other": "لم يتم إجراء أي تنزيلات في وضع عدم الاتصال حتى الآن."
+  },
+  {
+    "id": "No playback recorded yet.",
+    "other": "لم يتم تسجيل التشغيل بعد."
+  },
+  {
+    "id": "None",
+    "other": "لا شيء"
+  },
+  {
+    "id": "None; use all or folder names",
+    "other": "لا شيء؛ استخدم أسماء الكل أو المجلدات"
+  },
+  {
+    "id": "Not configured",
+    "other": "لم يتم تكوينه"
+  },
+  {
+    "id": "not detected",
+    "other": "لم يتم اكتشافه"
+  },
+  {
+    "id": "not found",
+    "other": "لم يتم العثور عليه"
+  },
+  {
+    "id": "Not now",
+    "other": "ليس الآن"
+  },
+  {
+    "id": "Nothing found.",
+    "other": "لم يتم العثور على شيء."
+  },
+  {
+    "id": "Now viewing",
+    "other": "تشاهد الآن"
+  },
+  {
+    "id": "NVIDIA NVENC/NVDEC",
+    "other": "NVIDIA NVENC/NVDEC"
+  },
+  {
+    "id": "Off",
+    "other": "إيقاف"
+  },
+  {
+    "id": "offline",
+    "other": "غير متصل"
+  },
+  {
+    "id": "Offline downloads",
+    "other": "التنزيلات دون اتصال"
+  },
+  {
+    "id": "Offline downloads · Kinosail Subtitles",
+    "other": "التنزيلات دون اتصال بالإنترنت · Kinosail Subtitles"
+  },
+  {
+    "id": "On",
+    "other": "On"
+  },
+  {
+    "id": "On iPhone or iPad, tap Share, choose Add to Home Screen, turn on Open as Web App, then tap Add.",
+    "other": "على iPhone أو iPad، اضغط على \"مشاركة\"، واختر \"إضافة إلى الشاشة الرئيسية\"، وقم بتشغيل \"فتح كتطبيق ويب\"، ثم اضغط على \"إضافة\"."
+  },
+  {
+    "id": "One-time reveal",
+    "other": "الكشف لمرة واحدة"
+  },
+  {
+    "id": "OpenID Connect",
+    "other": "OpenID Connect"
+  },
+  {
+    "id": "OpenSubtitles",
+    "other": "OpenSubtitles"
+  },
+  {
+    "id": "Outro",
+    "other": "Outro"
+  },
+  {
+    "id": "Owner",
+    "other": "المالك"
+  },
+  {
+    "id": "Owner access required",
+    "other": "يلزم وصول المالك"
+  },
+  {
+    "id": "Owner controls",
+    "other": "عناصر تحكم المالك"
+  },
+  {
+    "id": "Passkey added.",
+    "other": "تمت إضافة مفتاح المرور."
+  },
+  {
+    "id": "Passkey failed.",
+    "other": "فشل مفتاح المرور."
+  },
+  {
+    "id": "Passkeys need the configured Server address and trusted HTTPS. Open that address, trust the Server certificate, or use an authenticator.",
+    "other": "Passkeys need the configured Server address and trusted HTTPS. Open that address, trust the Server certificate, or use an authenticator."
+  },
+  {
+    "id": "Password",
+    "other": "كلمة المرور"
+  },
+  {
+    "id": "Photos",
+    "other": "صور"
+  },
+  {
+    "id": "Play",
+    "other": "تشغيل"
+  },
+  {
+    "id": "Play on device",
+    "other": "التشغيل على الجهاز"
+  },
+  {
+    "id": "Play the next Episode automatically",
+    "other": "تشغيل الحلقة التالية تلقائيًا"
+  },
+  {
+    "id": "Playback",
+    "other": "تشغيل"
+  },
+  {
+    "id": "Playback history",
+    "other": "سجل التشغيل"
+  },
+  {
+    "id": "Playback segment analysis",
+    "other": "تحليل مقطع التشغيل"
+  },
+  {
+    "id": "Playback speed",
+    "other": "سرعة التشغيل"
+  },
+  {
+    "id": "Playing here",
+    "other": "التشغيل هنا"
+  },
+  {
+    "id": "Playing on device",
+    "other": "التشغيل على الجهاز"
+  },
+  {
+    "id": "Playlist",
+    "other": "قائمة التشغيل"
+  },
+  {
+    "id": "Playlists",
+    "other": "قوائم التشغيل"
+  },
+  {
+    "id": "Plot",
+    "other": "المؤامرة"
+  },
+  {
+    "id": "Polling for changes",
+    "other": "استطلاع للتغييرات"
+  },
+  {
+    "id": "Prefer quality",
+    "other": "تفضل الجودة"
+  },
+  {
+    "id": "Prefer speed",
+    "other": "تفضل السرعة"
+  },
+  {
+    "id": "Preferred language",
+    "other": "اللغة المفضلة"
+  },
+  {
+    "id": "Prepare",
+    "other": "التحضير"
+  },
+  {
+    "id": "preview unavailable",
+    "other": "المعاينة غير متاحة"
+  },
+  {
+    "id": "Private by design",
+    "other": "خاص حسب التصميم"
+  },
+  {
+    "id": "Profile",
+    "other": "الملف الشخصي"
+  },
+  {
+    "id": "profile storage is unavailable",
+    "other": "مساحة تخزين الملف الشخصي غير متاحة"
+  },
+  {
+    "id": "Profile to reset",
+    "other": "الملف الشخصي المراد إعادة تعيينه"
+  },
+  {
+    "id": "Profile type",
+    "other": "نوع الملف الشخصي"
+  },
+  {
+    "id": "Profiles",
+    "other": "الملفات الشخصية"
+  },
+  {
+    "id": "Protected automatically",
+    "other": "محمي تلقائيًا"
+  },
+  {
+    "id": "Quality",
+    "other": "الجودة"
+  },
+  {
+    "id": "quality",
+    "other": "الجودة"
+  },
+  {
+    "id": "Quick Connect",
+    "other": "اتصال سريع"
+  },
+  {
+    "id": "Quick Connect · Kinosail Subtitles",
+    "other": "اتصال سريع · Kinosail Subtitles"
+  },
+  {
+    "id": "Rating",
+    "other": "التقييم"
+  },
+  {
+    "id": "Read now",
+    "other": "اقرأ الآن"
+  },
+  {
+    "id": "reader",
+    "other": "reader"
+  },
+  {
+    "id": "Reading order",
+    "other": "قراءة الطلب"
+  },
+  {
+    "id": "ready",
+    "other": "جاهز"
+  },
+  {
+    "id": "Ready offline",
+    "other": "جاهز بلا إنترنت"
+  },
+  {
+    "id": "Recap",
+    "other": "ملخص"
+  },
+  {
+    "id": "Recent activity",
+    "other": "الأنشطة الأخيرة"
+  },
+  {
+    "id": "Recent playback",
+    "other": "التشغيل الأخير"
+  },
+  {
+    "id": "Recently added",
+    "other": "تمت إضافته مؤخرًا"
+  },
+  {
+    "id": "Recently played",
+    "other": "تم تشغيله مؤخرًا"
+  },
+  {
+    "id": "Recovery",
+    "other": "الاسترداد"
+  },
+  {
+    "id": "Recovery codes",
+    "other": "رموز الاسترداد"
+  },
+  {
+    "id": "Refresh from TMDB",
+    "other": "التحديث من TMDB"
+  },
+  {
+    "id": "Refresh missing metadata",
+    "other": "تحديث البيانات الوصفية المفقودة"
+  },
+  {
+    "id": "Recommended",
+    "other": "موصى به"
+  },
+  {
+    "id": "Remote access",
+    "other": "الوصول عن بعد"
+  },
+  {
+    "id": "Remove",
+    "other": "إزالة"
+  },
+  {
+    "id": "Remove from",
+    "other": "إزالة من"
+  },
+  {
+    "id": "request",
+    "other": "طلب"
+  },
+  {
+    "id": "Request could not be completed.",
+    "other": "تعذر إكمال الطلب."
+  },
+  {
+    "id": "request is too large",
+    "other": "الطلب كبير جدًا"
+  },
+  {
+    "id": "Reset password",
+    "other": "إعادة تعيين كلمة المرور"
+  },
+  {
+    "id": "Return to settings",
+    "other": "الرجوع إلى الإعدادات"
+  },
+  {
+    "id": "Revoke",
+    "other": "إبطال"
+  },
+  {
+    "id": "Rockchip RKMPP",
+    "other": "Rockchip RKMPP"
+  },
+  {
+    "id": "Room connected · following leader",
+    "other": "الغرفة متصلة · القائد التالي"
+  },
+  {
+    "id": "Room connected · you lead",
+    "other": "الغرفة متصلة · أنت تقود"
+  },
+  {
+    "id": "Room disconnected · reload to reconnect",
+    "other": "تم قطع اتصال الغرفة · أعد التحميل لإعادة الاتصال"
+  },
+  {
+    "id": "Run library scan now",
+    "other": "قم بتشغيل فحص المكتبة الآن"
+  },
+  {
+    "id": "Run maintenance now",
+    "other": "قم بإجراء الصيانة الآن"
+  },
+  {
+    "id": "Safety scan",
+    "other": "فحص السلامة"
+  },
+  {
+    "id": "Save",
+    "other": "حفظ"
+  },
+  {
+    "id": "Save file",
+    "other": "حفظ الملف"
+  },
+  {
+    "id": "Save for restart",
+    "other": "حفظ لإعادة التشغيل"
+  },
+  {
+    "id": "Save marker",
+    "other": "حفظ العلامة"
+  },
+  {
+    "id": "Save metadata",
+    "other": "حفظ البيانات الوصفية"
+  },
+  {
+    "id": "Save schedule",
+    "other": "حفظ الجدول الزمني"
+  },
+  {
+    "id": "Schedule",
+    "other": "الجدول الزمني"
+  },
+  {
+    "id": "Search library",
+    "other": "مكتبة البحث"
+  },
+  {
+    "id": "Search results",
+    "other": "نتائج البحث"
+  },
+  {
+    "id": "Secrets are hidden and included only in encrypted recovery backups.",
+    "other": "الأسرار مخفية ويتم تضمينها فقط في النسخ الاحتياطية المشفرة للاسترداد."
+  },
+  {
+    "id": "Secure your account",
+    "other": "تأمين حسابك"
+  },
+  {
+    "id": "Secure your account · Kinosail Subtitles",
+    "other": "تأمين حسابك · Kinosail Subtitles"
+  },
+  {
+    "id": "Send this private connection URL to the Viewer. It is shown only once.",
+    "other": "أرسل عنوان URL للاتصال الخاص هذا إلى العارض. يتم عرضه مرة واحدة فقط."
+  },
+  {
+    "id": "Server name",
+    "other": "اسم الخادم"
+  },
+  {
+    "id": "Server settings",
+    "other": "إعدادات الخادم"
+  },
+  {
+    "id": "Server unavailable",
+    "other": "الخادم غير متاح"
+  },
+  {
+    "id": "Server unavailable · Kinosail Subtitles",
+    "other": "الخادم غير متاح · Kinosail Subtitles"
+  },
+  {
+    "id": "Set up Kinosail Subtitles",
+    "other": "إعداد Kinosail"
+  },
+  {
+    "id": "Set up or replace authenticator",
+    "other": "إعداد أداة المصادقة أو استبدالها"
+  },
+  {
+    "id": "Set up two-factor authentication",
+    "other": "إعداد المصادقة الثنائية"
+  },
+  {
+    "id": "Set up two-factor authentication · Kinosail Subtitles",
+    "other": "إعداد المصادقة الثنائية · Kinosail Subtitles"
+  },
+  {
+    "id": "Settings",
+    "other": "الإعدادات"
+  },
+  {
+    "id": "Settings sections",
+    "other": "أقسام الإعدادات"
+  },
+  {
+    "id": "Settings · Kinosail Subtitles",
+    "other": "الإعدادات · Kinosail Subtitles"
+  },
+  {
+    "id": "Shape the experience, protect your library, and keep every stream running beautifully.",
+    "other": "شكل التجربة، واحم مكتبتك، وحافظ على تشغيل كل بث بشكل جميل."
+  },
+  {
+    "id": "Show",
+    "other": "عرض"
+  },
+  {
+    "id": "Shows",
+    "other": "العروض"
+  },
+  {
+    "id": "Sign in",
+    "other": "تسجيل الدخول"
+  },
+  {
+    "id": "Sign in to your private media universe.",
+    "other": "قم بتسجيل الدخول إلى عالم الوسائط الخاص بك."
+  },
+  {
+    "id": "Sign in with passkey",
+    "other": "تسجيل الدخول باستخدام مفتاح المرور"
+  },
+  {
+    "id": "Sign in with SSO",
+    "other": "تسجيل الدخول باستخدام SSO"
+  },
+  {
+    "id": "Sign in · Kinosail Subtitles",
+    "other": "تسجيل الدخول · Kinosail Subtitles"
+  },
+  {
+    "id": "Sign out",
+    "other": "تسجيل الخروج"
+  },
+  {
+    "id": "Sign out other devices",
+    "other": "تسجيل الخروج من الأجهزة الأخرى"
+  },
+  {
+    "id": "Sign-in methods",
+    "other": "طرق تسجيل الدخول"
+  },
+  {
+    "id": "Sign-in, same-origin browser protections, private responses, bounded requests, and revocable access are always on. There are no security switches to manage.",
+    "other": "تسجيل الدخول، وحماية المتصفح من نفس المصدر، والاستجابات الخاصة، والطلبات المحدودة، والوصول القابل للإلغاء قيد التشغيل دائمًا. لا توجد مفاتيح أمان لإدارتها."
+  },
+  {
+    "id": "Single sign-on",
+    "other": "الدخول الموحد"
+  },
+  {
+    "id": "Skip",
+    "other": "تخطي"
+  },
+  {
+    "id": "Skip commercials automatically",
+    "other": "تخطي الإعلانات التجارية تلقائيًا"
+  },
+  {
+    "id": "Skip credits automatically",
+    "other": "تخطي الاعتمادات تلقائيًا"
+  },
+  {
+    "id": "Skip intros automatically",
+    "other": "تخطي المقدمات تلقائيًا"
+  },
+  {
+    "id": "Skip outros automatically",
+    "other": "تخطي الخاتمة تلقائيًا"
+  },
+  {
+    "id": "Skip recaps automatically",
+    "other": "تخطي الملخصات تلقائيًا"
+  },
+  {
+    "id": "Skip to content",
+    "other": "انتقل إلى المحتوى"
+  },
+  {
+    "id": "Sleep timer",
+    "other": "مؤقت النوم"
+  },
+  {
+    "id": "Sleep timer ended",
+    "other": "انتهى مؤقت النوم"
+  },
+  {
+    "id": "Smart playlist",
+    "other": "قائمة التشغيل الذكية"
+  },
+  {
+    "id": "Smart playlist name",
+    "other": "اسم قائمة التشغيل الذكية"
+  },
+  {
+    "id": "Software",
+    "other": "البرامج"
+  },
+  {
+    "id": "Sort",
+    "other": "فرز"
+  },
+  {
+    "id": "Source",
+    "other": "المصدر"
+  },
+  {
+    "id": "speed",
+    "other": "السرعة"
+  },
+  {
+    "id": "SSO challenge is invalid or expired",
+    "other": "اختبار الدخول الموحّد (SSO) غير صالح أو منتهي الصلاحية"
+  },
+  {
+    "id": "SSO code exchange failed",
+    "other": "فشل تبادل رمز SSO"
+  },
+  {
+    "id": "SSO identity is not linked to a Viewer Profile",
+    "other": "هوية SSO غير مرتبطة بملف تعريف العارض"
+  },
+  {
+    "id": "SSO is unavailable",
+    "other": "SSO غير متاح"
+  },
+  {
+    "id": "SSO session could not be created",
+    "other": "تعذر إنشاء جلسة SSO"
+  },
+  {
+    "id": "SSO state is invalid or expired",
+    "other": "حالة الدخول الموحّد (SSO) غير صالحة أو منتهية الصلاحية"
+  },
+  {
+    "id": "SSO token validation failed",
+    "other": "فشل التحقق من صحة الرمز المميز SSO"
+  },
+  {
+    "id": "Start in seconds",
+    "other": "ابدأ خلال ثوانٍ"
+  },
+  {
+    "id": "Start Watch Together",
+    "other": "ابدأ المشاهدة معًا"
+  },
+  {
+    "id": "Status",
+    "other": "الحالة"
+  },
+  {
+    "id": "Stops in {minutes} minutes",
+    "other": "يتوقف خلال {minutes} دقيقة"
+  },
+  {
+    "id": "Store these codes somewhere safe. Each works once.",
+    "other": "قم بتخزين هذه الرموز في مكان آمن. يعمل كل منها مرة واحدة."
+  },
+  {
+    "id": "Stored here. Streamed directly.",
+    "other": "مخزن هنا. تم البث مباشرة."
+  },
+  {
+    "id": "Stream media",
+    "other": "وسائط البث"
+  },
+  {
+    "id": "Subscription required",
+    "other": "الاشتراك مطلوب"
+  },
+  {
+    "id": "Subtitle provider",
+    "other": "موفر الترجمة"
+  },
+  {
+    "id": "subtitle provider unavailable",
+    "other": "موفر الترجمة غير متاح"
+  },
+  {
+    "id": "subtitle track(s)",
+    "other": "مسار (مسارات) الترجمة"
+  },
+  {
+    "id": "Subtitles",
+    "other": "الترجمات المصاحبة"
+  },
+  {
+    "id": "subtitles",
+    "other": "الترجمات المصاحبة"
+  },
+  {
+    "id": "Sync",
+    "other": "Sync"
+  },
+  {
+    "id": "System",
+    "other": "النظام"
+  },
+  {
+    "id": "Tagline",
+    "other": "الشعار"
+  },
+  {
+    "id": "The backup contains account and session state. Keep unencrypted backup storage private, or configure a backup key.",
+    "other": "تحتوي النسخة الاحتياطية على الحساب وحالة الجلسة. حافظ على خصوصية مساحة تخزين النسخ الاحتياطي غير المشفرة، أو قم بتكوين مفتاح احتياطي."
+  },
+  {
+    "id": "Theme",
+    "other": "الموضوع"
+  },
+  {
+    "id": "These settings are read-only until removed from YAML or the environment",
+    "other": "هذه الإعدادات للقراءة فقط حتى تتم إزالتها من YAML أو البيئة"
+  },
+  {
+    "id": "This Collection is empty.",
+    "other": "هذه المجموعة فارغة."
+  },
+  {
+    "id": "This permanently deletes the Collection.",
+    "other": "يؤدي هذا إلى حذف المجموعة نهائيًا."
+  },
+  {
+    "id": "This permanently deletes the playlist.",
+    "other": "يؤدي هذا إلى حذف قائمة التشغيل نهائيًا."
+  },
+  {
+    "id": "This playlist is empty.",
+    "other": "قائمة التشغيل هذه فارغة."
+  },
+  {
+    "id": "This product uses the TMDB API but is not endorsed or certified by TMDB.",
+    "other": "يستخدم هذا المنتج واجهة برمجة تطبيقات TMDB ولكنه غير معتمد أو معتمد من TMDB."
+  },
+  {
+    "id": "This signs out the profile and deletes it.",
+    "other": "يؤدي هذا إلى تسجيل الخروج من الملف الشخصي وحذفه."
+  },
+  {
+    "id": "Through PG / TV-PG",
+    "other": "من خلال PG / TV-PG"
+  },
+  {
+    "id": "Through PG-13 / TV-14",
+    "other": "عبر PG-13 / TV-14"
+  },
+  {
+    "id": "Title",
+    "other": "العنوان"
+  },
+  {
+    "id": "Title, artist, genre",
+    "other": "العنوان، الفنان، النوع"
+  },
+  {
+    "id": "Title, artist, genre…",
+    "other": "العنوان، الفنان، النوع…"
+  },
+  {
+    "id": "TMDB",
+    "other": "TMDB"
+  },
+  {
+    "id": "Tone-map HDR to SDR",
+    "other": "ضبط النغمات HDR على SDR"
+  },
+  {
+    "id": "too many login attempts",
+    "other": "محاولات تسجيل دخول كثيرة جدًا"
+  },
+  {
+    "id": "too many Watch Together rooms",
+    "other": "عدد كبير جدًا من غرف المشاهدة معًا"
+  },
+  {
+    "id": "Track",
+    "other": "المسار"
+  },
+  {
+    "id": "transcode cache",
+    "other": "تحويل ذاكرة التخزين المؤقت"
+  },
+  {
+    "id": "Transcoder",
+    "other": "جهاز تحويل الشفرة"
+  },
+  {
+    "id": "transcoding is not allowed",
+    "other": "تحويل الترميز غير مسموح به"
+  },
+  {
+    "id": "Try again",
+    "other": "حاول مرة أخرى"
+  },
+  {
+    "id": "Two-factor authentication",
+    "other": "المصادقة الثنائية"
+  },
+  {
+    "id": "Two-factor authentication · Kinosail Subtitles",
+    "other": "المصادقة الثنائية · Kinosail Subtitles"
+  },
+  {
+    "id": "Type",
+    "other": "النوع"
+  },
+  {
+    "id": "Unlink OpenID Connect",
+    "other": "إلغاء ربط OpenID Connect"
+  },
+  {
+    "id": "Until",
+    "other": "حتى"
+  },
+  {
+    "id": "Unwatched",
+    "other": "لم تتم مشاهدته"
+  },
+  {
+    "id": "unwatched",
+    "other": "لم تتم مشاهدته"
+  },
+  {
+    "id": "Use default",
+    "other": "استخدم الافتراضي"
+  },
+  {
+    "id": "Use Face ID, Touch ID, Windows Hello, or your device PIN to sign in. Your password will still work.",
+    "other": "استخدم Face ID أو Touch ID أو Windows Hello أو رقم التعريف الشخصي لجهازك لتسجيل الدخول. ستظل كلمة المرور الخاصة بك تعمل."
+  },
+  {
+    "id": "VA-API (AMD/Intel)",
+    "other": "VA-API (AMD/Intel)"
+  },
+  {
+    "id": "Verified Direct Connection",
+    "other": "اتصال مباشر تم التحقق منه"
+  },
+  {
+    "id": "Verified Direct Connection is not configured",
+    "other": "لم يتم تكوين الاتصال المباشر الذي تم التحقق منه"
+  },
+  {
+    "id": "Verify latest backup",
+    "other": "التحقق من أحدث نسخة احتياطية"
+  },
+  {
+    "id": "Video",
+    "other": "فيديو"
+  },
+  {
+    "id": "Viewer",
+    "other": "العارض"
+  },
+  {
+    "id": "Viewer access is not available",
+    "other": "وصول المشاهد غير متاح"
+  },
+  {
+    "id": "Viewer device",
+    "other": "جهاز العارض"
+  },
+  {
+    "id": "Viewer name",
+    "other": "اسم المشاهد"
+  },
+  {
+    "id": "Waiting for your passkey…",
+    "other": "في انتظار مفتاح المرور الخاص بك…"
+  },
+  {
+    "id": "Watch Together state is invalid",
+    "other": "حالة المشاهدة معًا غير صالحة"
+  },
+  {
+    "id": "watched",
+    "other": "شاهد"
+  },
+  {
+    "id": "Watched",
+    "other": "تمت المشاهدة"
+  },
+  {
+    "id": "Watched ✓",
+    "other": "تمت المشاهدة ✓"
+  },
+  {
+    "id": "Watching for changes",
+    "other": "مراقبة التغييرات"
+  },
+  {
+    "id": "Welcome aboard",
+    "other": "مرحبًا بك على متن الطائرة"
+  },
+  {
+    "id": "when ready.",
+    "other": "عندما يكون جاهزًا."
+  },
+  {
+    "id": "WireGuard Viewer not found",
+    "other": "لم يتم العثور على عارض WireGuard"
+  },
+  {
+    "id": "XMLTV guide",
+    "other": "دليل تلفزيون XML"
+  },
+  {
+    "id": "Year",
+    "other": "السنة"
+  },
+  {
+    "id": "You lead this room",
+    "other": "أنت تقود هذه الغرفة"
+  },
+  {
+    "id": "Your library",
+    "other": "مكتبتك"
+  },
+  {
+    "id": "Your library and viewing activity stay on this Server.",
+    "other": "مكتبتك ونشاط العرض يظلان على هذا الخادم."
+  },
+  {
+    "id": "← Books",
+    "other": "← الكتب"
+  },
+  {
+    "id": "← Library",
+    "other": "← المكتبة"
+  },
+  {
+    "id": "← Settings",
+    "other": "← الإعدادات"
+  }
+]

@@ -1,0 +1,14 @@
+{
+  "name": "@kinosail/dashboard-e2e",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@11.22.0",
+  "scripts": {
+    "test": "../../../scripts/tooling/gate-shell.sh -c 'playwright test'",
+    "test:chromium": "../../../scripts/tooling/gate-shell.sh -c 'playwright test --project=chromium'"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "4.13.0",
+    "@playwright/test": "1.63.0"
+  }
+}

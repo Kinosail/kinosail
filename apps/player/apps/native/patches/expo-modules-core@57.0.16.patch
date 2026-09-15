@@ -1,0 +1,31 @@
+diff --git a/ios/Interfaces/FileSystem/EXFileSystemInterface.h b/ios/Interfaces/FileSystem/EXFileSystemInterface.h
+index fca4649b40d98652842c5f60b613c2b4813cb021..0bfb2e5fdc553ccbfa5305cd6d576dfbab89cef3 100644
+--- a/ios/Interfaces/FileSystem/EXFileSystemInterface.h
++++ b/ios/Interfaces/FileSystem/EXFileSystemInterface.h
+@@ -2,6 +2,8 @@
+ 
+ #import <Foundation/Foundation.h>
+ 
++NS_ASSUME_NONNULL_BEGIN
++
+ typedef NS_OPTIONS(unsigned int, EXFileSystemPermissionFlags) {
+   EXFileSystemPermissionNone = 0,
+   EXFileSystemPermissionRead = 1 << 1,
+@@ -21,3 +23,5 @@ typedef NS_OPTIONS(unsigned int, EXFileSystemPermissionFlags) {
+ - (BOOL)ensureDirExistsWithPath:(NSString *)path;
+ 
+ @end
++
++NS_ASSUME_NONNULL_END
+diff --git a/ios/Legacy/ModuleRegistryAdapter/EXModuleRegistryHolderReactModule.h b/ios/Legacy/ModuleRegistryAdapter/EXModuleRegistryHolderReactModule.h
+index 40307db806314a5f14ff104a82f63dbb4d3980aa..ad35f3f6b990fd659726b9070674a9afefd7e13e 100644
+--- a/ios/Legacy/ModuleRegistryAdapter/EXModuleRegistryHolderReactModule.h
++++ b/ios/Legacy/ModuleRegistryAdapter/EXModuleRegistryHolderReactModule.h
+@@ -1,6 +1,6 @@
+ // Copyright 2018-present 650 Industries. All rights reserved.
+ 
+-@protocol RCTBridgeModule;
++#import <React/RCTBridgeModule.h>
+ 
+ #import <ExpoModulesCore/EXModuleRegistry.h>
+ 

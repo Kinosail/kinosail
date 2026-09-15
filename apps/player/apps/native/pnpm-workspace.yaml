@@ -1,0 +1,31 @@
+# Android Prefab rejects the equals sign in patched isolated dependency paths.
+nodeLinker: hoisted
+
+packages:
+  - .
+
+allowBuilds:
+  unrs-resolver: true
+
+overrides:
+  'typed-rest-client>qs': 6.16.0
+  'query-string>decode-uri-component': 0.5.0
+  'xcode>uuid': 11.1.1
+
+patchedDependencies:
+  expo-video@57.0.3: patches/expo-video@57.0.3.patch
+  expo-file-system@57.0.6: patches/expo-file-system@57.0.6.patch
+  expo-modules-core@57.0.16: patches/expo-modules-core@57.0.16.patch
+  expo-modules-jsi@57.0.8: patches/expo-modules-jsi@57.0.8.patch
+  expo@57.0.20: patches/expo@57.0.20.patch
+  react-native-gesture-handler@2.32.0: patches/react-native-gesture-handler@2.32.0.patch
+  react-native-reanimated@4.5.5: patches/react-native-reanimated@4.5.5.patch
+  react-native-safe-area-context@5.9.1: patches/react-native-safe-area-context@5.9.1.patch
+  react-native-screens@4.27.0: patches/react-native-screens@4.27.0.patch
+  react-native-tvos@0.86.2-0: patches/react-native-tvos@0.86.2-0.patch
+  react-native-worklets@0.10.1: patches/react-native-worklets@0.10.1.patch
+
+peerDependencyRules:
+  allowedVersions:
+    '@react-native/jest-preset': 0.86.3
+    react-native: '>=0.86.2-0 <0.87'

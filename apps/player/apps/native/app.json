@@ -1,0 +1,73 @@
+{
+  "expo": {
+    "name": "Kinosail Player",
+    "slug": "kinosail-player",
+    "version": "0.1.1",
+    "scheme": "kinosail",
+    "icon": "./assets/images/icon.png",
+    "userInterfaceStyle": "automatic",
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.kinosail.player",
+      "infoPlist": {
+        "NSLocalNetworkUsageDescription": "Kinosail Player connects to your Server and discovers compatible TVs and speakers on your local network.",
+        "NSAppTransportSecurity": {
+          "NSAllowsLocalNetworking": true
+        },
+        "NSBonjourServices": [
+          "_kinosail-player._tcp"
+        ]
+      }
+    },
+    "web": {
+      "output": "static",
+      "favicon": "./assets/images/favicon.png"
+    },
+    "plugins": [
+      "expo-router",
+      [
+        "expo-splash-screen",
+        {
+          "backgroundColor": "#090A08",
+          "image": "./assets/images/splash-icon.png",
+          "imageWidth": 112
+        }
+      ],
+      [
+        "@react-native-tvos/config-tv",
+        {
+          "appleTVImages": {
+            "icon": "./assets/tv_icons/icon-1280x768.png",
+            "iconSmall": "./assets/tv_icons/icon-400x240.png",
+            "iconSmall2x": "./assets/tv_icons/icon-800x480.png",
+            "topShelf": "./assets/tv_icons/icon-1920x720.png",
+            "topShelf2x": "./assets/tv_icons/icon-3840x1440.png",
+            "topShelfWide": "./assets/tv_icons/icon-2320x720.png",
+            "topShelfWide2x": "./assets/tv_icons/icon-4640x1440.png"
+          }
+        }
+      ],
+      "expo-image",
+      "expo-status-bar",
+      [
+        "expo-video",
+        {
+          "supportsPictureInPicture": true,
+          "supportsBackgroundPlayback": true
+        }
+      ],
+      "expo-secure-store",
+      "./plugins/with-xcode-build-cleanup",
+      "./plugins/with-google-cast",
+      "./plugins/with-swift-reference-only"
+    ],
+    "experiments": {
+      "typedRoutes": true,
+      "reactCompiler": true
+    },
+    "platforms": [
+      "ios",
+      "web"
+    ]
+  }
+}

@@ -1,0 +1,13 @@
+*
+!Containerfile
+!go.mod
+!go.sum
+!LICENSE
+!LICENSING.md
+!THIRD_PARTY_NOTICES.md
+!cmd/
+!cmd/**
+!internal/
+!internal/**
+!third_party/
+!third_party/**

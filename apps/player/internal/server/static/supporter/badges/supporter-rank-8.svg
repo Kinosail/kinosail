@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title">
+  <title id="title">Kinosail supporter rank eight admiral star</title>
+  <defs>
+    <linearGradient id="gold" x1=".04" y1="0" x2=".96" y2="1"><stop stop-color="#fff8de"/><stop offset=".37" stop-color="#e8c86f"/><stop offset="1" stop-color="#62401f"/></linearGradient>
+    <linearGradient id="jade" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#c7f7e4"/><stop offset=".45" stop-color="#31937a"/><stop offset="1" stop-color="#0b2e27"/></linearGradient>
+    <radialGradient id="sea"><stop stop-color="#286e5d"/><stop offset="1" stop-color="#07100e"/></radialGradient>
+    <filter id="shadow" x="-30%" y="-30%" width="160%" height="175%"><feDropShadow dy="14" stdDeviation="12" flood-color="#000" flood-opacity=".68"/></filter>
+  </defs>
+  <g filter="url(#shadow)">
+    <path d="m256 24 43 91 82-64 4 104 103-12-66 81 90 52-100 31 43 95-100-13-5 104-77-70-53 89-31-99-92 49 13-104-104-5 75-72-84-61 102-22-34-99 96 40Z" fill="#0b0d0c" stroke="url(#gold)" stroke-linejoin="round" stroke-width="8"/>
+    <circle cx="256" cy="256" r="166" fill="#11100c" stroke="url(#gold)" stroke-width="13"/>
+    <circle cx="256" cy="256" r="139" fill="url(#sea)" stroke="#94703c" stroke-width="5"/>
+    <circle cx="256" cy="256" r="120" fill="none" stroke="#b4ebd8" stroke-dasharray="3 12" stroke-width="5"/>
+    <g fill="url(#jade)" stroke="#fff8de" stroke-width="3"><path d="m256 67 13 24-13 24-13-24Z"/><path d="m445 256-24 13-24-13 24-13Z"/><path d="m256 445-13-24 13-24 13 24Z"/><path d="m67 256 24-13 24 13-24 13Z"/></g>
+    <path fill="#fff8de" d="M247 128c-38 47-59 105-59 173 34-14 69-15 109-3-27-51-41-107-50-170Z"/>
+    <path fill="url(#gold)" d="M259 151c48 45 72 93 72 148-31-13-62-16-91-8 17-43 23-90 19-140Z"/>
+    <path fill="#08110f" d="m247 221 46 28-46 28Z"/>
+    <path d="M142 313c44-29 74-4 107-3 40 2 61-29 113-8M151 341c40-22 67-5 99-4 40 2 65-22 108-10" fill="none" stroke="#b5ebda" stroke-linecap="round" stroke-width="8"/>
+    <path d="M210 105 228 73l28 19 28-19 18 32" fill="#15100a" stroke="url(#gold)" stroke-linejoin="round" stroke-width="8"/>
+  </g>
+</svg>

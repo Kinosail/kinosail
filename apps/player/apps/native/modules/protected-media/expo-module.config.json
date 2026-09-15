@@ -1,0 +1,15 @@
+{
+  "platforms": [
+    "apple"
+  ],
+  "apple": {
+    "modules": [
+      "ProtectedMediaModule",
+      "ProtectedReaderModule",
+      "PlaybackCapabilitiesModule"
+    ],
+    "appDelegateSubscribers": [
+      "DownloadsAppDelegateSubscriber"
+    ]
+  }
+}

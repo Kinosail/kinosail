@@ -1,0 +1,154 @@
+import AxeBuilder from "@axe-core/playwright";
+import { expect, test } from "@playwright/test";
+import { compactViewports, expectNoHorizontalOverflow, expectSkipLinkOffscreen, initiallyOccludedTargets, occludedTargets, setSubtitleLanguages, supportedViewports } from "./subtitle-dashboard-helpers";
+
+export function registerSubtitleLanguageTests() {
+test("Owner sees real coverage, wanted files, and a focused setup path", async ({ page }) => {
+  await expect(page.getByRole("heading", { name: "Overview", exact: true })).toBeVisible();
+  await expect(page.getByRole("region", { name: "Subtitle coverage" })).toContainText(/\d+%/);
+  await expect(page.getByRole("meter", { name: "Subtitle coverage" })).toHaveAttribute("aria-valuetext", /\d+ of \d+ files ready/);
+  await expect(page.getByRole("link", { name: /Connect a subtitle source/ })).toBeVisible();
+  await expect(page.getByText("Needs one correction", { exact: true })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Server readiness" })).toBeVisible();
+  await expect(page.getByText("Media library readable", { exact: true })).toBeVisible();
+  await expect(page.getByText("Last successful subtitle write", { exact: true })).toBeVisible();
+  await expect(page.getByRole("region", { name: "Subtitle sources" })).toBeVisible();
+  await expect(page.getByText(/Add a subtitle source/)).toBeVisible();
+  await page.getByRole("link", { name: "Wanted", exact: true }).click();
+  await expect(page).toHaveURL(/view=wanted/);
+  await expect(page.getByRole("heading", { name: "Wanted", exact: true })).toBeVisible();
+  await expect(page.locator(".subtitle-file-list").getByText("Wanted", { exact: true }).first()).toBeVisible();
+  await page.getByRole("link", { name: "Settings", exact: true }).click();
+  await expect(page.getByRole("heading", { name: "Subtitle settings" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Preferred languages" })).toBeVisible();
+  await expect(page.getByRole("group", { name: "Preferred subtitle role" }).locator('input[value="standard"]')).toBeChecked();
+  await expect(page.getByRole("button", { name: "Test provider credentials" })).toBeVisible();
+  await expect(page.getByRole("link", { name: "Configure SubDL" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "SubSource" })).toBeVisible();
+  await expect(page.getByLabel(/Use SubSource only for personal household use/)).toBeVisible();
+  await expect(page.getByRole("link", { name: "Configure OpenSubtitles" })).toBeVisible();
+  await expect(page.getByText("Media Libraries", { exact: true })).toBeVisible();
+  await expect(page.getByRole("link", { name: "Access", exact: true })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Trusted HTTPS" })).toBeVisible();
+  await expect(page.getByText("myhome.duckdns.org", { exact: true })).toBeVisible();
+  await expect(page.getByText("myhome-subtitles.duckdns.org", { exact: true })).toBeVisible();
+});
+
+test("Owner manages an ordered preferred-language list at every supported width", async ({ page, browserName }, testInfo) => {
+  await page.goto("/settings#language");
+  const languageSection = page.locator("#language");
+  const languageList = languageSection.getByRole("list", { name: "Preferred subtitle languages" });
+  const addLanguage = languageSection.getByLabel("Add a language");
+  const addButton = languageSection.getByRole("button", { name: "Add language" });
+
+  await expect(languageList.getByRole("listitem")).toHaveCount(1);
+  await expect(languageList.getByText("English", { exact: true })).toBeVisible();
+  const availableTags = await addLanguage.locator("option").evaluateAll((options) => options.map((option) => (option as HTMLOptionElement).value));
+  expect(availableTags.length).toBeGreaterThan(187);
+  expect(availableTags.indexOf("es")).toBeLessThan(availableTags.indexOf("aa"));
+  expect(availableTags.indexOf("es-419")).toBeLessThan(availableTags.indexOf("aa"));
+
+  await page.setViewportSize({ width: 320, height: 800 });
+  await page.evaluate(async () => { await document.fonts.ready; });
+  await page.waitForTimeout(250);
+  const initialGeometry = await languageSection.evaluate((section) => {
+    const navigationBox = document.querySelector<HTMLElement>(".app-header nav")?.getBoundingClientRect();
+    const controls = [...section.querySelectorAll<HTMLElement>("button, select")];
+    const overlaps = (left: DOMRect, right: DOMRect) => left.bottom > right.top && left.top < right.bottom && left.right > right.left && left.left < right.right;
+    return {
+      smallTouchTarget: controls.some((control) => {
+        const box = control.getBoundingClientRect();
+        return box.width < 44 || box.height < 44;
+      }),
+      navigationControlOverlap: navigationBox ? controls.some((control) => overlaps(control.getBoundingClientRect(), navigationBox)) : false,
+    };
+  });
+  expect(initialGeometry).toEqual({ smallTouchTarget: false, navigationControlOverlap: false });
+
+  await addLanguage.focus();
+  await expect(addLanguage).toBeFocused();
+  await addLanguage.selectOption("es");
+  await page.keyboard.press(browserName === "webkit" && process.platform === "darwin" ? "Alt+Tab" : "Tab");
+  await expect(addButton).toBeFocused();
+  await Promise.all([
+    page.waitForURL((url) => url.pathname === "/settings" && url.hash === "#language"),
+    page.keyboard.press("Enter"),
+  ]);
+
+  const spanish = languageList.getByRole("listitem").filter({ has: page.getByText("Spanish", { exact: true }) });
+  try {
+    await expect(spanish).toContainText("SubDL, OpenSubtitles, SubSource");
+    const moveSpanishEarlier = spanish.getByRole("button", { name: "Move Spanish earlier" });
+    await moveSpanishEarlier.focus();
+    await expect(moveSpanishEarlier).toBeFocused();
+    await Promise.all([
+      page.waitForURL((url) => url.pathname === "/settings" && url.hash === "#language"),
+      page.keyboard.press("Enter"),
+    ]);
+    await expect(languageList.locator("li strong")).toHaveText(["Spanish", "English"]);
+    await expect(spanish).toContainText("Primary");
+
+    for (const viewport of supportedViewports) {
+      await page.setViewportSize(viewport);
+      await languageSection.scrollIntoViewIfNeeded();
+      await languageSection.evaluate((section) => {
+        const navigationBox = document.querySelector<HTMLElement>(".app-header nav")?.getBoundingClientRect();
+        const addButtonBox = section.querySelector<HTMLElement>(".subtitle-language-add button")?.getBoundingClientRect();
+        if (navigationBox && addButtonBox && addButtonBox.bottom > navigationBox.top - 8) {
+          window.scrollTo({ top: window.scrollY + addButtonBox.bottom - navigationBox.top + 8, behavior: "instant" as ScrollBehavior });
+        }
+      });
+      const geometry = await languageSection.evaluate((section) => {
+        const sectionBox = section.getBoundingClientRect();
+        const rows = [...section.querySelectorAll<HTMLElement>(".subtitle-language-list li")];
+        const navigationBox = document.querySelector<HTMLElement>(".app-header nav")?.getBoundingClientRect();
+        const overlaps = (left: DOMRect, right: DOMRect) => left.bottom > right.top && left.top < right.bottom && left.right > right.left && left.left < right.right;
+        return {
+          pageOverflow: document.documentElement.scrollWidth - document.documentElement.clientWidth,
+          rowOverflow: rows.some((row) => row.scrollWidth > row.clientWidth + 1),
+          controlsOutside: rows.some((row) => {
+            const rowBox = row.getBoundingClientRect();
+            return [...row.querySelectorAll<HTMLElement>("button")].some((button) => {
+              const buttonBox = button.getBoundingClientRect();
+              return buttonBox.left < rowBox.left - 1 || buttonBox.right > rowBox.right + 1;
+            });
+          }),
+          outsideSection: rows.some((row) => {
+            const rowBox = row.getBoundingClientRect();
+            return rowBox.left < sectionBox.left - 1 || rowBox.right > sectionBox.right + 1;
+          }),
+          smallTouchTarget: [...section.querySelectorAll<HTMLElement>(".subtitle-language-list button, .subtitle-language-add button, .subtitle-language-add select")].some((control) => {
+            const controlBox = control.getBoundingClientRect();
+            return controlBox.width < 44 || controlBox.height < 44;
+          }),
+          navigationControlOverlap: navigationBox ? [...section.querySelectorAll<HTMLElement>("button, select")].some((control) => overlaps(control.getBoundingClientRect(), navigationBox)) : false,
+        };
+      });
+      expect(geometry).toEqual({ pageOverflow: 0, rowOverflow: false, controlsOutside: false, outsideSection: false, smallTouchTarget: false, navigationControlOverlap: false });
+      expect((await new AxeBuilder({ page }).include("#language").analyze()).violations).toEqual([]);
+      await page.screenshot({ path: testInfo.outputPath(`${viewport.width}-subtitle-languages.png`), fullPage: true });
+    }
+
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.emulateMedia({ reducedMotion: "reduce", forcedColors: "active" });
+    await expect(spanish.getByRole("button", { name: "Remove Spanish" })).toBeVisible();
+    await page.screenshot({ path: testInfo.outputPath("subtitle-languages-forced-colors.png"), fullPage: true });
+  } finally {
+    await page.emulateMedia({ reducedMotion: "no-preference", forcedColors: "none" });
+    await page.goto("/settings#language");
+    const removeSpanish = page.getByRole("button", { name: "Remove Spanish" });
+    if (await removeSpanish.isVisible().catch(() => false)) {
+      await removeSpanish.focus();
+      await expect(removeSpanish).toBeFocused();
+      await Promise.all([
+        page.waitForURL((url) => url.pathname === "/settings" && url.hash === "#language"),
+        page.keyboard.press("Enter"),
+      ]);
+    }
+  }
+
+  await expect(languageList.getByRole("listitem")).toHaveCount(1);
+  await expect(languageList.getByText("English", { exact: true })).toBeVisible();
+  await expect(languageList).toContainText("Primary");
+});
+}

@@ -1,0 +1,10 @@
+repos:
+  - repo: local
+    hooks:
+      - id: kinosail-quality
+        name: Kinosail quality policy
+        entry: ./scripts/tooling/pre-commit.sh
+        language: system
+        pass_filenames: false
+        always_run: true
+        stages: [pre-commit]

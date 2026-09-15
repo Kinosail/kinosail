@@ -1,0 +1,2034 @@
+[
+  {
+    "id": "15 minutes",
+    "other": "15 minuti"
+  },
+  {
+    "id": "30 minutes",
+    "other": "30 minuti"
+  },
+  {
+    "id": "45 minutes",
+    "other": "45 minuti"
+  },
+  {
+    "id": "60 minutes",
+    "other": "60 minuti"
+  },
+  {
+    "id": "Access",
+    "other": "Accesso"
+  },
+  {
+    "id": "Account · Kinosail Player",
+    "other": "Account · Kinosail Player"
+  },
+  {
+    "id": "Actions",
+    "other": "Azioni"
+  },
+  {
+    "id": "active session(s)",
+    "other": "sessioni attive"
+  },
+  {
+    "id": "Add a passkey",
+    "other": "Aggiungi una passkey"
+  },
+  {
+    "id": "Add folder",
+    "other": "Aggiungi cartella"
+  },
+  {
+    "id": "Add media or try another search.",
+    "other": "Aggiungi file multimediale o prova un'altra ricerca."
+  },
+  {
+    "id": "Add Profile",
+    "other": "Aggiungi profilo"
+  },
+  {
+    "id": "Add this secret or URI to your authenticator app.",
+    "other": "Aggiungi questo segreto o URI alla tua app di autenticazione."
+  },
+  {
+    "id": "Add to",
+    "other": "Aggiungi a"
+  },
+  {
+    "id": "Administer server",
+    "other": "Amministra il server"
+  },
+  {
+    "id": "Album",
+    "other": "Album"
+  },
+  {
+    "id": "Albums",
+    "other": "Album"
+  },
+  {
+    "id": "all",
+    "other": "tutti"
+  },
+  {
+    "id": "All ratings",
+    "other": "Tutte le valutazioni"
+  },
+  {
+    "id": "Allow downloads",
+    "other": "Consenti download"
+  },
+  {
+    "id": "Allow transcoding",
+    "other": "Consenti transcodifica"
+  },
+  {
+    "id": "AMD AMF",
+    "other": "AMD AMF"
+  },
+  {
+    "id": "Analyze playback segments now",
+    "other": "Analizza i segmenti di riproduzione adesso"
+  },
+  {
+    "id": "analyzed item(s)",
+    "other": "elemento/i analizzato/i"
+  },
+  {
+    "id": "API key name",
+    "other": "Nome chiave API"
+  },
+  {
+    "id": "API key scope does not allow this request",
+    "other": "L'ambito della chiave API non consente questa richiesta"
+  },
+  {
+    "id": "API key view failed",
+    "other": "Visualizzazione chiave API non riuscita"
+  },
+  {
+    "id": "API key · Kinosail Player",
+    "other": "Chiave API · Kinosail Player"
+  },
+  {
+    "id": "API keys",
+    "other": "Chiavi API"
+  },
+  {
+    "id": "Appearance",
+    "other": "Aspetto"
+  },
+  {
+    "id": "Apple VideoToolbox",
+    "other": "Apple VideoToolbox"
+  },
+  {
+    "id": "Apply",
+    "other": "Applica"
+  },
+  {
+    "id": "Audio",
+    "other": "Audio"
+  },
+  {
+    "id": "Audiobooks",
+    "other": "Audiolibri"
+  },
+  {
+    "id": "Authentication code",
+    "other": "Codice di autenticazione"
+  },
+  {
+    "id": "Authentication or recovery code",
+    "other": "Codice di autenticazione o ripristino"
+  },
+  {
+    "id": "authentication required",
+    "other": "autenticazione richiesta"
+  },
+  {
+    "id": "Authorize device",
+    "other": "Autorizza dispositivo"
+  },
+  {
+    "id": "Automatic",
+    "other": "Automatico"
+  },
+  {
+    "id": "automatic",
+    "other": "automatico"
+  },
+  {
+    "id": "Automatic (best detected)",
+    "other": "Automatico (rilevato meglio)"
+  },
+  {
+    "id": "Automatic (browser)",
+    "other": "Automatico (browser)"
+  },
+  {
+    "id": "Automatic backups",
+    "other": "Backup automatici"
+  },
+  {
+    "id": "Automatic maintenance",
+    "other": "Manutenzione automatica"
+  },
+  {
+    "id": "Available devices use a direct connection to this Server.",
+    "other": "I dispositivi disponibili utilizzano una connessione diretta a questo server."
+  },
+  {
+    "id": "Back to library",
+    "other": "Torna alla libreria"
+  },
+  {
+    "id": "Back to settings",
+    "other": "Torna alle impostazioni"
+  },
+  {
+    "id": "Back up now",
+    "other": "Esegui il backup adesso"
+  },
+  {
+    "id": "Backup and recovery",
+    "other": "Backup e ripristino"
+  },
+  {
+    "id": "backup is unavailable",
+    "other": "il backup non è disponibile"
+  },
+  {
+    "id": "Backups need setup.",
+    "other": "I backup devono essere configurati."
+  },
+  {
+    "id": "Backups run automatically without encryption.",
+    "other": "I backup vengono eseguiti automaticamente senza crittografia."
+  },
+  {
+    "id": "Backups · Kinosail Player",
+    "other": "Backup · Kinosail Player"
+  },
+  {
+    "id": "Book",
+    "other": "Prenota"
+  },
+  {
+    "id": "Books",
+    "other": "Libri"
+  },
+  {
+    "id": "Books and comics",
+    "other": "Libri e fumetti"
+  },
+  {
+    "id": "Browse library",
+    "other": "Sfoglia libreria"
+  },
+  {
+    "id": "Cancel",
+    "other": "Annulla"
+  },
+  {
+    "id": "Cast",
+    "other": "Trasmetti"
+  },
+  {
+    "id": "Chapters",
+    "other": "Capitoli"
+  },
+  {
+    "id": "Choose the language for this browser.",
+    "other": "Scegli la lingua per questo browser."
+  },
+  {
+    "id": "Clear transcode cache",
+    "other": "Svuota cache di transcodifica"
+  },
+  {
+    "id": "Code",
+    "other": "Codice"
+  },
+  {
+    "id": "Collection",
+    "other": "Collezione"
+  },
+  {
+    "id": "Collections",
+    "other": "Collezioni"
+  },
+  {
+    "id": "Commercial",
+    "other": "Commerciale"
+  },
+  {
+    "id": "Compatibility",
+    "other": "Compatibilità"
+  },
+  {
+    "id": "Compatibility Connection",
+    "other": "Connessione compatibile"
+  },
+  {
+    "id": "Compatibility stream",
+    "other": "Stream di compatibilità"
+  },
+  {
+    "id": "compatible",
+    "other": "compatibile"
+  },
+  {
+    "id": "Concurrent streams",
+    "other": "Stream simultanei"
+  },
+  {
+    "id": "Configuration error",
+    "other": "Errore di configurazione"
+  },
+  {
+    "id": "Configuration · Kinosail Player",
+    "other": "Configurazione · Kinosail Player"
+  },
+  {
+    "id": "Configured; value hidden",
+    "other": "Configurato; valore nascosto"
+  },
+  {
+    "id": "Confirm delete",
+    "other": "Conferma eliminazione"
+  },
+  {
+    "id": "Confirm remove",
+    "other": "Conferma rimozione"
+  },
+  {
+    "id": "Connect",
+    "other": "Connetti"
+  },
+  {
+    "id": "Connect a device",
+    "other": "Collega un dispositivo"
+  },
+  {
+    "id": "Connected",
+    "other": "Connesso"
+  },
+  {
+    "id": "Connecting",
+    "other": "Connessione"
+  },
+  {
+    "id": "Connecting…",
+    "other": "Connessione…"
+  },
+  {
+    "id": "Connection error",
+    "other": "Errore di connessione"
+  },
+  {
+    "id": "Content",
+    "other": "Contenuto"
+  },
+  {
+    "id": "Continue Watching",
+    "other": "Continua a guardare"
+  },
+  {
+    "id": "Continue watching",
+    "other": "Continua a guardare"
+  },
+  {
+    "id": "from Continue Watching",
+    "other": "da Continua a guardare"
+  },
+  {
+    "id": "Copy this key now. Kinosail stores only its hash.",
+    "other": "Copia questa chiave adesso. Kinosail memorizza solo il suo hash."
+  },
+  {
+    "id": "could not create MFA enrollment",
+    "other": "impossibile creare l'iscrizione MFA"
+  },
+  {
+    "id": "could not create Owner Profile",
+    "other": "impossibile creare il profilo proprietario"
+  },
+  {
+    "id": "could not create session",
+    "other": "impossibile creare la sessione"
+  },
+  {
+    "id": "could not end session",
+    "other": "impossibile terminare la sessione"
+  },
+  {
+    "id": "could not read subtitles",
+    "other": "impossibile leggere i sottotitoli"
+  },
+  {
+    "id": "Create",
+    "other": "Crea"
+  },
+  {
+    "id": "Create a passkey",
+    "other": "Crea una passkey"
+  },
+  {
+    "id": "Create API key",
+    "other": "Crea chiave API"
+  },
+  {
+    "id": "Create passkey",
+    "other": "Crea passkey"
+  },
+  {
+    "id": "Create smart playlist",
+    "other": "Crea playlist intelligente"
+  },
+  {
+    "id": "Create your Owner Profile",
+    "other": "Crea il tuo profilo proprietario"
+  },
+  {
+    "id": "Created once",
+    "other": "Creato una volta"
+  },
+  {
+    "id": "Credentials configured",
+    "other": "Credenziali configurate"
+  },
+  {
+    "id": "Credits",
+    "other": "Crediti"
+  },
+  {
+    "id": "cross-origin request denied",
+    "other": "richiesta multiorigine negata"
+  },
+  {
+    "id": "Curate",
+    "other": "Curato"
+  },
+  {
+    "id": "Dark",
+    "other": "Scuro"
+  },
+  {
+    "id": "default",
+    "other": "default"
+  },
+  {
+    "id": "Default playback",
+    "other": "Riproduzione predefinita"
+  },
+  {
+    "id": "Delete",
+    "other": "Elimina"
+  },
+  {
+    "id": "Deployment configuration",
+    "other": "Configurazione della distribuzione"
+  },
+  {
+    "id": "Destination",
+    "other": "Destinazione"
+  },
+  {
+    "id": "detected, unavailable",
+    "other": "rilevato, non disponibile"
+  },
+  {
+    "id": "Device or app",
+    "other": "Dispositivo o app"
+  },
+  {
+    "id": "Diagnostics",
+    "other": "Diagnostica"
+  },
+  {
+    "id": "Direct",
+    "other": "Diretto"
+  },
+  {
+    "id": "direct",
+    "other": "diretto"
+  },
+  {
+    "id": "Direct connection unavailable",
+    "other": "Connessione diretta non disponibile"
+  },
+  {
+    "id": "Direct from",
+    "other": "Diretto da"
+  },
+  {
+    "id": "Direct stream",
+    "other": "Streaming diretto"
+  },
+  {
+    "id": "Directed by",
+    "other": "Diretto da"
+  },
+  {
+    "id": "Disable and revoke",
+    "other": "Disabilita e revoca"
+  },
+  {
+    "id": "Disable two-factor authentication",
+    "other": "Disattiva l'autenticazione a due fattori"
+  },
+  {
+    "id": "Disaster recovery",
+    "other": "Recupero in caso di disastro"
+  },
+  {
+    "id": "DLNA",
+    "other": "DLNA"
+  },
+  {
+    "id": "Download",
+    "other": "Scarica"
+  },
+  {
+    "id": "Download media",
+    "other": "Scarica file multimediali"
+  },
+  {
+    "id": "Download original",
+    "other": "Scarica originale"
+  },
+  {
+    "id": "Download portable state archive",
+    "other": "Scarica archivio di stato portatile"
+  },
+  {
+    "id": "Download safe diagnostics",
+    "other": "Scarica la diagnostica sicura"
+  },
+  {
+    "id": "Download WireGuard profile",
+    "other": "Scarica il profilo WireGuard"
+  },
+  {
+    "id": "Downloads",
+    "other": "Download"
+  },
+  {
+    "id": "downloads are not enabled for this Viewer Profile",
+    "other": "download non sono abilitati per questo profilo visualizzatore"
+  },
+  {
+    "id": "Edit metadata",
+    "other": "Modifica metadati"
+  },
+  {
+    "id": "Edit skip markers",
+    "other": "Modifica indicatori di salto"
+  },
+  {
+    "id": "embedded subtitles are unavailable",
+    "other": "i sottotitoli incorporati non sono disponibili"
+  },
+  {
+    "id": "Enable DLNA",
+    "other": "Abilita DLNA"
+  },
+  {
+    "id": "Enable two-factor authentication",
+    "other": "Abilita autenticazione a due fattori"
+  },
+  {
+    "id": "Enabled",
+    "other": "Abilitato"
+  },
+  {
+    "id": "Encrypted backups run automatically.",
+    "other": "I backup crittografati vengono eseguiti automaticamente."
+  },
+  {
+    "id": "Encryption is off by default.",
+    "other": "La crittografia è disattivata per impostazione predefinita."
+  },
+  {
+    "id": "Encryption is on.",
+    "other": "La crittografia è attiva."
+  },
+  {
+    "id": "End in seconds",
+    "other": "Finisci tra secondi"
+  },
+  {
+    "id": "Enter the code shown by your TV or app. It will inherit your Profile Policy.",
+    "other": "Inserisci il codice mostrato dalla tua TV o dall'app. Erediterà le tue norme sul profilo."
+  },
+  {
+    "id": "Environment and YAML values are authoritative. GUI changes shown here take effect after the Server restarts.",
+    "other": "I valori ambientali e YAML sono autorevoli. Le modifiche alla GUI mostrate qui diventano effettive dopo il riavvio del server."
+  },
+  {
+    "id": "Environment default",
+    "other": "Ambiente predefinito"
+  },
+  {
+    "id": "Event webhook",
+    "other": "Webhook evento"
+  },
+  {
+    "id": "Every 15 minutes",
+    "other": "Ogni 15 minuti"
+  },
+  {
+    "id": "Every 5 minutes",
+    "other": "Ogni 5 minuti"
+  },
+  {
+    "id": "Everything",
+    "other": "Tutto"
+  },
+  {
+    "id": "Export full activity journal",
+    "other": "Esporta diario completo delle attività"
+  },
+  {
+    "id": "Expose direct media URLs to devices on this local network. Disabling revokes the discovery capability.",
+    "other": "Esponi gli URL dei media diretti ai dispositivi su questa rete locale. La disattivazione revoca la funzionalità di rilevamento."
+  },
+  {
+    "id": "Externally managed",
+    "other": "Gestito esternamente"
+  },
+  {
+    "id": "Find",
+    "other": "Trova"
+  },
+  {
+    "id": "Find something",
+    "other": "Trova qualcosa"
+  },
+  {
+    "id": "Finish setup",
+    "other": "Termina la configurazione"
+  },
+  {
+    "id": "Finish sign in",
+    "other": "Termina l'accesso"
+  },
+  {
+    "id": "Folder inside media mount",
+    "other": "Cartella all'interno del supporto multimediale"
+  },
+  {
+    "id": "Follow this device or choose a fixed theme.",
+    "other": "Segui questo dispositivo o scegli un tema fisso."
+  },
+  {
+    "id": "Following the room leader",
+    "other": "Seguendo il leader della stanza"
+  },
+  {
+    "id": "From",
+    "other": "Da"
+  },
+  {
+    "id": "from",
+    "other": "da"
+  },
+  {
+    "id": "General",
+    "other": "Generale"
+  },
+  {
+    "id": "Genres",
+    "other": "Generi"
+  },
+  {
+    "id": "Got it",
+    "other": "Capito"
+  },
+  {
+    "id": "Group",
+    "other": "Gruppo"
+  },
+  {
+    "id": "Hardware",
+    "other": "Hardware"
+  },
+  {
+    "id": "History",
+    "other": "Storia"
+  },
+  {
+    "id": "Home",
+    "other": "Home"
+  },
+  {
+    "id": "Hourly",
+    "other": "Ogni ora"
+  },
+  {
+    "id": "if enabled",
+    "other": "se abilitato"
+  },
+  {
+    "id": "Install",
+    "other": "Installa"
+  },
+  {
+    "id": "Install Kinosail Player",
+    "other": "Installa Kinosail"
+  },
+  {
+    "id": "Integrations",
+    "other": "Integrazioni"
+  },
+  {
+    "id": "Intel Quick Sync",
+    "other": "Intel Quick Sync"
+  },
+  {
+    "id": "Intro",
+    "other": "Introduzione"
+  },
+  {
+    "id": "invalid authentication code",
+    "other": "codice di autenticazione non valido"
+  },
+  {
+    "id": "invalid Collection state",
+    "other": "Stato di ritiro non valido"
+  },
+  {
+    "id": "invalid credentials",
+    "other": "credenziali non valide"
+  },
+  {
+    "id": "invalid list state",
+    "other": "stato elenco non valido"
+  },
+  {
+    "id": "invalid playlist state",
+    "other": "stato playlist non valido"
+  },
+  {
+    "id": "invalid progress",
+    "other": "progressi non validi"
+  },
+  {
+    "id": "invalid watched state",
+    "other": "stato di visualizzazione non valido"
+  },
+  {
+    "id": "Invite link",
+    "other": "Link invito"
+  },
+  {
+    "id": "Keep",
+    "other": "Mantieni"
+  },
+  {
+    "id": "Keep backups on storage outside this host. Backups are unencrypted unless a backup key is configured. Restore while the Server is stopped.",
+    "other": "Conserva i backup nello spazio di archiviazione esterno a questo host. I backup non sono crittografati a meno che non venga configurata una chiave di backup. Ripristina mentre il server è arrestato."
+  },
+  {
+    "id": "Keep Kinosail Player close",
+    "other": "Tieni Kinosail vicino"
+  },
+  {
+    "id": "Keys are shown once and stored as hashes. Browse access is the safe default.",
+    "other": "Le chiavi vengono visualizzate una volta e archiviate come hash. L'accesso in navigazione è l'impostazione predefinita sicura."
+  },
+  {
+    "id": "Kinosail",
+    "other": "Kinosail"
+  },
+  {
+    "id": "Kinosail Player cannot reach this Server. Check your network or Direct Connection, then try again.",
+    "other": "Kinosail non può raggiungere questo server. Controlla la tua rete o la connessione diretta, quindi riprova."
+  },
+  {
+    "id": "Kinosail maintains itself automatically.",
+    "other": "Kinosail si mantiene automaticamente."
+  },
+  {
+    "id": "Kinosail Player Reader",
+    "other": "Lettore Kinosail"
+  },
+  {
+    "id": "Language",
+    "other": "Lingua"
+  },
+  {
+    "id": "language is invalid",
+    "other": "la lingua non è valida"
+  },
+  {
+    "id": "Last error",
+    "other": "Ultimo errore"
+  },
+  {
+    "id": "Last scan error",
+    "other": "Errore ultima scansione"
+  },
+  {
+    "id": "Last successful backup",
+    "other": "Ultimo backup riuscito"
+  },
+  {
+    "id": "Last successful scan",
+    "other": "Ultima scansione riuscita"
+  },
+  {
+    "id": "Last verified",
+    "other": "Ultimo verificato"
+  },
+  {
+    "id": "Latest",
+    "other": "Più recente"
+  },
+  {
+    "id": "Libraries",
+    "other": "Biblioteche"
+  },
+  {
+    "id": "Library",
+    "other": "Biblioteca"
+  },
+  {
+    "id": "Library discovery",
+    "other": "Scoperta libreria"
+  },
+  {
+    "id": "Library folders",
+    "other": "Cartelle della libreria"
+  },
+  {
+    "id": "Library items",
+    "other": "Elementi della libreria"
+  },
+  {
+    "id": "Library organization",
+    "other": "Organizzazione della biblioteca"
+  },
+  {
+    "id": "Library views",
+    "other": "Visualizzazioni raccolta"
+  },
+  {
+    "id": "Licensed credential configured",
+    "other": "Credenziali con licenza configurate"
+  },
+  {
+    "id": "Light",
+    "other": "Leggero"
+  },
+  {
+    "id": "Link OpenID Connect",
+    "other": "Link OpenID Connect"
+  },
+  {
+    "id": "Local account",
+    "other": "Account locale"
+  },
+  {
+    "id": "M3U playlist",
+    "other": "Playlist M3U"
+  },
+  {
+    "id": "Manage personal library state",
+    "other": "Gestisci lo stato della libreria personale"
+  },
+  {
+    "id": "Managed externally and read-only.",
+    "other": "Gestito esternamente e di sola lettura."
+  },
+  {
+    "id": "Managed remote access",
+    "other": "Accesso remoto gestito"
+  },
+  {
+    "id": "Mark",
+    "other": "Mark"
+  },
+  {
+    "id": "marker",
+    "other": "marker"
+  },
+  {
+    "id": "Match text",
+    "other": "Testo corrispondente"
+  },
+  {
+    "id": "Media",
+    "other": "Media"
+  },
+  {
+    "id": "Media information",
+    "other": "Informazioni per i media"
+  },
+  {
+    "id": "Media mount",
+    "other": "Supporto multimediale"
+  },
+  {
+    "id": "metadata could not be saved",
+    "other": "Impossibile salvare i metadati"
+  },
+  {
+    "id": "metadata is invalid",
+    "other": "metadati non validi"
+  },
+  {
+    "id": "Metadata provider",
+    "other": "Fornitore di metadati"
+  },
+  {
+    "id": "metadata provider unavailable",
+    "other": "fornitore di metadati non disponibile"
+  },
+  {
+    "id": "Metrics",
+    "other": "Metriche"
+  },
+  {
+    "id": "Movies",
+    "other": "Film"
+  },
+  {
+    "id": "Music",
+    "other": "Musica"
+  },
+  {
+    "id": "Music and audiobooks",
+    "other": "Musica e audiolibri"
+  },
+  {
+    "id": "My List",
+    "other": "La mia lista"
+  },
+  {
+    "id": "Name",
+    "other": "Nome"
+  },
+  {
+    "id": "name and a 12-character password are required",
+    "other": "nome e una password di 12 caratteri"
+  },
+  {
+    "id": "Never",
+    "other": "Mai"
+  },
+  {
+    "id": "New Collection",
+    "other": "Nuova Collezione"
+  },
+  {
+    "id": "New Collection name",
+    "other": "Nuovo nome della raccolta"
+  },
+  {
+    "id": "New media is detected automatically after copying finishes. Safety scans repair missed filesystem events on Windows, macOS, Linux, containers, and network mounts.",
+    "other": "Il nuovo supporto viene rilevato automaticamente al termine della copia. Le scansioni di sicurezza riparano gli eventi mancanti del file system su Windows, macOS, Linux, contenitori e montaggi di rete."
+  },
+  {
+    "id": "New password",
+    "other": "Nuova password"
+  },
+  {
+    "id": "New playlist",
+    "other": "Nuova playlist"
+  },
+  {
+    "id": "New playlist name",
+    "other": "Nuovo nome playlist"
+  },
+  {
+    "id": "New profile name",
+    "other": "Nuovo nome profilo"
+  },
+  {
+    "id": "New profile password",
+    "other": "Nuova password del profilo"
+  },
+  {
+    "id": "New secret",
+    "other": "Nuovo segreto"
+  },
+  {
+    "id": "New smart playlist",
+    "other": "Nuova playlist intelligente"
+  },
+  {
+    "id": "New Viewers start with family ratings and no libraries. Add folder names or",
+    "other": "I nuovi visualizzatori iniziano con valutazioni per famiglia e senza librerie. Aggiungi nomi di cartelle o"
+  },
+  {
+    "id": "Newest",
+    "other": "Più recente"
+  },
+  {
+    "id": "No activity recorded yet.",
+    "other": "Nessuna attività ancora registrata."
+  },
+  {
+    "id": "No channels configured.",
+    "other": "Nessun canale configurato."
+  },
+  {
+    "id": "No device selected",
+    "other": "Nessun dispositivo selezionato"
+  },
+  {
+    "id": "No offline downloads yet.",
+    "other": "Nessun download offline ancora."
+  },
+  {
+    "id": "No playback recorded yet.",
+    "other": "Nessuna riproduzione ancora registrata."
+  },
+  {
+    "id": "None",
+    "other": "Nessuno"
+  },
+  {
+    "id": "None; use all or folder names",
+    "other": "Nessuno; utilizza tutti o i nomi delle cartelle"
+  },
+  {
+    "id": "Not configured",
+    "other": "Non configurato"
+  },
+  {
+    "id": "not detected",
+    "other": "non rilevato"
+  },
+  {
+    "id": "not found",
+    "other": "non trovato"
+  },
+  {
+    "id": "Not now",
+    "other": "Non ora"
+  },
+  {
+    "id": "Nothing found.",
+    "other": "Niente trovato."
+  },
+  {
+    "id": "Now viewing",
+    "other": "Ora visualizzo"
+  },
+  {
+    "id": "NVIDIA NVENC/NVDEC",
+    "other": "NVIDIA NVENC/NVDEC"
+  },
+  {
+    "id": "Off",
+    "other": "Off"
+  },
+  {
+    "id": "offline",
+    "other": "offline"
+  },
+  {
+    "id": "Offline downloads",
+    "other": "Download offline"
+  },
+  {
+    "id": "Offline downloads · Kinosail Player",
+    "other": "Download offline · Kinosail Player"
+  },
+  {
+    "id": "On",
+    "other": "Il"
+  },
+  {
+    "id": "On iPhone or iPad, tap Share, choose Add to Home Screen, turn on Open as Web App, then tap Add.",
+    "other": "Su iPhone o iPad, tocca Condividi, scegli Aggiungi alla schermata iniziale, attiva Apri come app Web, quindi tocca Aggiungi."
+  },
+  {
+    "id": "One-time reveal",
+    "other": "Rivelazione una tantum"
+  },
+  {
+    "id": "OpenID Connect",
+    "other": "OpenID Connect"
+  },
+  {
+    "id": "OpenSubtitles",
+    "other": "OpenSubtitles"
+  },
+  {
+    "id": "Outro",
+    "other": "Contro"
+  },
+  {
+    "id": "Owner",
+    "other": "Proprietario"
+  },
+  {
+    "id": "Owner access required",
+    "other": "Accesso come proprietario richiesto"
+  },
+  {
+    "id": "Owner controls",
+    "other": "Controlli proprietario"
+  },
+  {
+    "id": "Passkey added.",
+    "other": "Passkey aggiunta."
+  },
+  {
+    "id": "Passkey failed.",
+    "other": "Passkey non riuscita."
+  },
+  {
+    "id": "Passkeys need the configured Server address and trusted HTTPS. Open that address, trust the Server certificate, or use an authenticator.",
+    "other": "Passkeys need the configured Server address and trusted HTTPS. Open that address, trust the Server certificate, or use an authenticator."
+  },
+  {
+    "id": "Password",
+    "other": "Password"
+  },
+  {
+    "id": "Photos",
+    "other": "Foto"
+  },
+  {
+    "id": "Play",
+    "other": "Gioca"
+  },
+  {
+    "id": "Play on device",
+    "other": "Gioca sul dispositivo"
+  },
+  {
+    "id": "Play the next Episode automatically",
+    "other": "Riproduci automaticamente l'episodio successivo"
+  },
+  {
+    "id": "Playback",
+    "other": "Riproduzione"
+  },
+  {
+    "id": "Playback history",
+    "other": "Cronologia riproduzione"
+  },
+  {
+    "id": "Playback segment analysis",
+    "other": "Analisi del segmento di riproduzione"
+  },
+  {
+    "id": "Playback speed",
+    "other": "Velocità di riproduzione"
+  },
+  {
+    "id": "Playing here",
+    "other": "Giocando qui"
+  },
+  {
+    "id": "Playing on device",
+    "other": "Riproduzione sul dispositivo"
+  },
+  {
+    "id": "Playlist",
+    "other": "Playlist"
+  },
+  {
+    "id": "Playlists",
+    "other": "Playlist"
+  },
+  {
+    "id": "Plot",
+    "other": "Trama"
+  },
+  {
+    "id": "Polling for changes",
+    "other": "Sondaggio per modifiche"
+  },
+  {
+    "id": "Prefer quality",
+    "other": "Preferisci la qualità"
+  },
+  {
+    "id": "Prefer speed",
+    "other": "Preferisci la velocità"
+  },
+  {
+    "id": "Preferred language",
+    "other": "Lingua preferita"
+  },
+  {
+    "id": "Prepare",
+    "other": "Prepara"
+  },
+  {
+    "id": "preview unavailable",
+    "other": "anteprima non disponibile"
+  },
+  {
+    "id": "Private by design",
+    "other": "Privato per design"
+  },
+  {
+    "id": "Profile",
+    "other": "Profilo"
+  },
+  {
+    "id": "profile storage is unavailable",
+    "other": "archiviazione del profilo non disponibile"
+  },
+  {
+    "id": "Profile to reset",
+    "other": "Profilo da reimpostare"
+  },
+  {
+    "id": "Profile type",
+    "other": "Tipo di profilo"
+  },
+  {
+    "id": "Profiles",
+    "other": "Profili"
+  },
+  {
+    "id": "Protected automatically",
+    "other": "Protetto automaticamente"
+  },
+  {
+    "id": "MFA - Require extra sign-in protection for every Viewer Profile",
+    "other": "MFA - Require extra sign-in protection for every Viewer Profile"
+  },
+  {
+    "id": "Quality",
+    "other": "Qualità"
+  },
+  {
+    "id": "quality",
+    "other": "qualità"
+  },
+  {
+    "id": "Quick Connect",
+    "other": "Connessione rapida"
+  },
+  {
+    "id": "Quick Connect · Kinosail Player",
+    "other": "Connessione rapida · Kinosail Player"
+  },
+  {
+    "id": "Rating",
+    "other": "Valutazione"
+  },
+  {
+    "id": "Read now",
+    "other": "Leggi ora"
+  },
+  {
+    "id": "reader",
+    "other": "lettore"
+  },
+  {
+    "id": "Reading order",
+    "other": "Ordine di lettura"
+  },
+  {
+    "id": "ready",
+    "other": "pronto"
+  },
+  {
+    "id": "Ready offline",
+    "other": "Pronto offline"
+  },
+  {
+    "id": "Recap",
+    "other": "Riepilogo"
+  },
+  {
+    "id": "Recent activity",
+    "other": "Attività recente"
+  },
+  {
+    "id": "Recent playback",
+    "other": "Riproduzione recente"
+  },
+  {
+    "id": "Recently added",
+    "other": "Aggiunto di recente"
+  },
+  {
+    "id": "Recently played",
+    "other": "Giocato di recente"
+  },
+  {
+    "id": "Recovery",
+    "other": "Recupero"
+  },
+  {
+    "id": "Recovery codes",
+    "other": "Codici di recupero"
+  },
+  {
+    "id": "Refresh from TMDB",
+    "other": "Aggiorna da TMDB"
+  },
+  {
+    "id": "Refresh missing metadata",
+    "other": "Aggiorna metadati mancanti"
+  },
+  {
+    "id": "Recommended",
+    "other": "Consigliato"
+  },
+  {
+    "id": "Remote access",
+    "other": "Accesso remoto"
+  },
+  {
+    "id": "Remove",
+    "other": "Rimuovi"
+  },
+  {
+    "id": "Remove from",
+    "other": "Rimuovi da"
+  },
+  {
+    "id": "request",
+    "other": "richiesta"
+  },
+  {
+    "id": "Request could not be completed.",
+    "other": "Impossibile completare la richiesta."
+  },
+  {
+    "id": "request is too large",
+    "other": "la richiesta è troppo grande"
+  },
+  {
+    "id": "Reset password",
+    "other": "Reimposta password"
+  },
+  {
+    "id": "Return to settings",
+    "other": "Torna alle impostazioni"
+  },
+  {
+    "id": "Revoke",
+    "other": "Revoca"
+  },
+  {
+    "id": "Rockchip RKMPP",
+    "other": "Rockchip RKMPP"
+  },
+  {
+    "id": "Room connected · following leader",
+    "other": "Stanza connessa · segue il leader"
+  },
+  {
+    "id": "Room connected · you lead",
+    "other": "Stanza connessa · sei tu a condurre"
+  },
+  {
+    "id": "Room disconnected · reload to reconnect",
+    "other": "Stanza disconnessa · ricarica per riconnettersi"
+  },
+  {
+    "id": "Run library scan now",
+    "other": "Esegui la scansione della libreria adesso"
+  },
+  {
+    "id": "Run maintenance now",
+    "other": "Esegui la manutenzione adesso"
+  },
+  {
+    "id": "Safety scan",
+    "other": "Scansione di sicurezza"
+  },
+  {
+    "id": "Save",
+    "other": "Salva"
+  },
+  {
+    "id": "Save file",
+    "other": "Salva file"
+  },
+  {
+    "id": "Save for restart",
+    "other": "Salva per il riavvio"
+  },
+  {
+    "id": "Save marker",
+    "other": "Salva indicatore"
+  },
+  {
+    "id": "Save metadata",
+    "other": "Salva metadati"
+  },
+  {
+    "id": "Save schedule",
+    "other": "Salva programma"
+  },
+  {
+    "id": "Schedule",
+    "other": "Programma"
+  },
+  {
+    "id": "Search library",
+    "other": "Cerca nella libreria"
+  },
+  {
+    "id": "Search results",
+    "other": "Risultati della ricerca"
+  },
+  {
+    "id": "Secrets are hidden and included only in encrypted recovery backups.",
+    "other": "I segreti sono nascosti e inclusi solo nei backup di ripristino crittografati."
+  },
+  {
+    "id": "Secure your account",
+    "other": "Proteggi il tuo account"
+  },
+  {
+    "id": "Secure your account · Kinosail Player",
+    "other": "Proteggi il tuo account · Kinosail Player"
+  },
+  {
+    "id": "Send this private connection URL to the Viewer. It is shown only once.",
+    "other": "Invia questo URL di connessione privata al visualizzatore. Viene mostrato solo una volta."
+  },
+  {
+    "id": "Server name",
+    "other": "Nome server"
+  },
+  {
+    "id": "Server settings",
+    "other": "Impostazioni server"
+  },
+  {
+    "id": "Server unavailable",
+    "other": "Server non disponibile"
+  },
+  {
+    "id": "Server unavailable · Kinosail Player",
+    "other": "Server non disponibile · Kinosail Player"
+  },
+  {
+    "id": "Set up Kinosail Player",
+    "other": "Configura Kinosail"
+  },
+  {
+    "id": "Set up or replace authenticator",
+    "other": "Imposta o sostituisci l'autenticatore"
+  },
+  {
+    "id": "Set up two-factor authentication",
+    "other": "Imposta l'autenticazione a due fattori"
+  },
+  {
+    "id": "Set up two-factor authentication · Kinosail Player",
+    "other": "Imposta l'autenticazione a due fattori · Kinosail Player"
+  },
+  {
+    "id": "Settings",
+    "other": "Impostazioni"
+  },
+  {
+    "id": "Settings sections",
+    "other": "Sezioni Impostazioni"
+  },
+  {
+    "id": "Settings · Kinosail Player",
+    "other": "Impostazioni · Kinosail Player"
+  },
+  {
+    "id": "Shape the experience, protect your library, and keep every stream running beautifully.",
+    "other": "Dai forma all'esperienza, proteggi la tua raccolta e mantieni ogni streaming in perfetta esecuzione."
+  },
+  {
+    "id": "Show",
+    "other": "Mostra"
+  },
+  {
+    "id": "Shows",
+    "other": "Spettacoli"
+  },
+  {
+    "id": "Sign in",
+    "other": "Accedi"
+  },
+  {
+    "id": "Sign in to your private media universe.",
+    "other": "Accedi al tuo universo multimediale privato."
+  },
+  {
+    "id": "Sign in with passkey",
+    "other": "Accedi con la passkey"
+  },
+  {
+    "id": "Sign in with SSO",
+    "other": "Accedi con SSO"
+  },
+  {
+    "id": "Sign in · Kinosail Player",
+    "other": "Accedi · Kinosail Player"
+  },
+  {
+    "id": "Sign out",
+    "other": "Esci"
+  },
+  {
+    "id": "Sign out other devices",
+    "other": "Esci da altri dispositivi"
+  },
+  {
+    "id": "Sign-in methods",
+    "other": "Metodi di accesso"
+  },
+  {
+    "id": "Sign-in, same-origin browser protections, private responses, bounded requests, and revocable access are always on. There are no security switches to manage.",
+    "other": "Accesso, protezioni del browser della stessa origine, risposte private, richieste limitate e accesso revocabile sono sempre attivi. Non ci sono interruttori di sicurezza da gestire."
+  },
+  {
+    "id": "Single sign-on",
+    "other": "Accesso singolo"
+  },
+  {
+    "id": "Skip",
+    "other": "Salta"
+  },
+  {
+    "id": "Skip commercials automatically",
+    "other": "Salta automaticamente la pubblicità"
+  },
+  {
+    "id": "Skip credits automatically",
+    "other": "Salta i crediti automaticamente"
+  },
+  {
+    "id": "Skip intros automatically",
+    "other": "Salta automaticamente le introduzioni"
+  },
+  {
+    "id": "Skip outros automatically",
+    "other": "Salta gli outro automaticamente"
+  },
+  {
+    "id": "Skip recaps automatically",
+    "other": "Salta automaticamente i riepiloghi"
+  },
+  {
+    "id": "Skip to content",
+    "other": "Vai al contenuto"
+  },
+  {
+    "id": "Sleep timer",
+    "other": "Sleeptimer"
+  },
+  {
+    "id": "Sleep timer ended",
+    "other": "Timer spegnimento terminato"
+  },
+  {
+    "id": "Smart playlist",
+    "other": "Playlist intelligente"
+  },
+  {
+    "id": "Smart playlist name",
+    "other": "Nome playlist intelligente"
+  },
+  {
+    "id": "Software",
+    "other": "Software"
+  },
+  {
+    "id": "Sort",
+    "other": "Ordina"
+  },
+  {
+    "id": "Source",
+    "other": "Fonte"
+  },
+  {
+    "id": "speed",
+    "other": "velocità"
+  },
+  {
+    "id": "SSO challenge is invalid or expired",
+    "other": "SSO la sfida non è valida o è scaduta"
+  },
+  {
+    "id": "SSO code exchange failed",
+    "other": "Scambio codice SSO non riuscito"
+  },
+  {
+    "id": "SSO identity is not linked to a Viewer Profile",
+    "other": "L'identità SSO non è collegata a un profilo visualizzatore"
+  },
+  {
+    "id": "SSO is unavailable",
+    "other": "SSO non è disponibile"
+  },
+  {
+    "id": "SSO session could not be created",
+    "other": "la sessione SSO"
+  },
+  {
+    "id": "SSO state is invalid or expired",
+    "other": "Lo stato SSO non è valido o è scaduto"
+  },
+  {
+    "id": "SSO token validation failed",
+    "other": "Convalida token SSO non riuscita"
+  },
+  {
+    "id": "Start in seconds",
+    "other": "Inizia in pochi secondi"
+  },
+  {
+    "id": "Start Watch Together",
+    "other": "Inizia a guardare insieme"
+  },
+  {
+    "id": "Status",
+    "other": "Stato"
+  },
+  {
+    "id": "Stops in {minutes} minutes",
+    "other": "Ferme tra {minutes} minuti"
+  },
+  {
+    "id": "Store these codes somewhere safe. Each works once.",
+    "other": "Conserva questi codici in un posto sicuro. Ciascuno funziona una volta."
+  },
+  {
+    "id": "Stored here. Streamed directly.",
+    "other": "Memorizzato qui. Trasmesso direttamente in streaming."
+  },
+  {
+    "id": "Stream media",
+    "other": "Streaming multimediale"
+  },
+  {
+    "id": "Subscription required",
+    "other": "Abbonamento richiesto"
+  },
+  {
+    "id": "Subtitle provider",
+    "other": "Fornitore di sottotitoli"
+  },
+  {
+    "id": "subtitle provider unavailable",
+    "other": "fornitore di sottotitoli non disponibile"
+  },
+  {
+    "id": "subtitle track(s)",
+    "other": "traccia/e sottotitoli"
+  },
+  {
+    "id": "Subtitles",
+    "other": "Sottotitoli"
+  },
+  {
+    "id": "subtitles",
+    "other": "sottotitoli"
+  },
+  {
+    "id": "Sync",
+    "other": "Sincronizza"
+  },
+  {
+    "id": "System",
+    "other": "Sistema"
+  },
+  {
+    "id": "Tagline",
+    "other": "Slogan"
+  },
+  {
+    "id": "The backup contains account and session state. Keep unencrypted backup storage private, or configure a backup key.",
+    "other": "Il backup contiene l'account e lo stato della sessione. Mantieni privato l'archivio di backup non crittografato o configura una chiave di backup."
+  },
+  {
+    "id": "Theme",
+    "other": "Tema"
+  },
+  {
+    "id": "These settings are read-only until removed from YAML or the environment",
+    "other": "Queste impostazioni sono di sola lettura finché non vengono rimosse da YAML o dall'ambiente"
+  },
+  {
+    "id": "This Collection is empty.",
+    "other": "Questa raccolta è vuota."
+  },
+  {
+    "id": "This permanently deletes the Collection.",
+    "other": "Questa operazione eliminerà definitivamente la raccolta."
+  },
+  {
+    "id": "This permanently deletes the playlist.",
+    "other": "Questa operazione elimina definitivamente la playlist."
+  },
+  {
+    "id": "This playlist is empty.",
+    "other": "Questa playlist è vuota."
+  },
+  {
+    "id": "This product uses the TMDB API but is not endorsed or certified by TMDB.",
+    "other": "Questo prodotto utilizza l'API TMDB ma non è approvato o certificato da TMDB."
+  },
+  {
+    "id": "This signs out the profile and deletes it.",
+    "other": "In questo modo si esce dal profilo e lo si elimina."
+  },
+  {
+    "id": "Through PG / TV-PG",
+    "other": "Attraverso PG / TV-PG"
+  },
+  {
+    "id": "Through PG-13 / TV-14",
+    "other": "Attraverso PG-13 / TV-14"
+  },
+  {
+    "id": "Title",
+    "other": "Titolo"
+  },
+  {
+    "id": "Title, artist, genre",
+    "other": "Titolo, artista, genere"
+  },
+  {
+    "id": "Title, artist, genre…",
+    "other": "Titolo, artista, genere…"
+  },
+  {
+    "id": "TMDB",
+    "other": "TMDB"
+  },
+  {
+    "id": "Tone-map HDR to SDR",
+    "other": "Mappa tono HDR in SDR"
+  },
+  {
+    "id": "too many login attempts",
+    "other": "troppi tentativi di accesso"
+  },
+  {
+    "id": "too many Watch Together rooms",
+    "other": "troppe stanze di Guarda insieme"
+  },
+  {
+    "id": "Track",
+    "other": "Traccia"
+  },
+  {
+    "id": "transcode cache",
+    "other": "transcodifica cache"
+  },
+  {
+    "id": "Transcoder",
+    "other": "Transcodificatore"
+  },
+  {
+    "id": "transcoding is not allowed",
+    "other": "la transcodifica non è consentita"
+  },
+  {
+    "id": "Try again",
+    "other": "Riprova"
+  },
+  {
+    "id": "Two-factor authentication",
+    "other": "Autenticazione a due fattori"
+  },
+  {
+    "id": "Two-factor authentication · Kinosail Player",
+    "other": "Autenticazione a due fattori · Kinosail Player"
+  },
+  {
+    "id": "Type",
+    "other": "Digita"
+  },
+  {
+    "id": "Unlink OpenID Connect",
+    "other": "Scollega OpenID Connect"
+  },
+  {
+    "id": "Until",
+    "other": "Fino al"
+  },
+  {
+    "id": "Unwatched",
+    "other": "Non guardato"
+  },
+  {
+    "id": "unwatched",
+    "other": "non guardato"
+  },
+  {
+    "id": "Use default",
+    "other": "Utilizza predefinito"
+  },
+  {
+    "id": "Use Face ID, Touch ID, Windows Hello, or your device PIN to sign in. Your password will still work.",
+    "other": "Utilizza Face ID, Touch ID, Windows Hello o il PIN del tuo dispositivo per accedere. La tua password continuerà a funzionare."
+  },
+  {
+    "id": "VA-API (AMD/Intel)",
+    "other": "VA-API (AMD/Intel)"
+  },
+  {
+    "id": "Verified Direct Connection",
+    "other": "Connessione diretta verificata"
+  },
+  {
+    "id": "Verified Direct Connection is not configured",
+    "other": "La connessione diretta verificata non è configurata"
+  },
+  {
+    "id": "Verify latest backup",
+    "other": "Verifica ultimo backup"
+  },
+  {
+    "id": "Video",
+    "other": "Video"
+  },
+  {
+    "id": "Viewer",
+    "other": "Visualizzatore"
+  },
+  {
+    "id": "Viewer access is not available",
+    "other": "L'accesso come visualizzatore non è disponibile"
+  },
+  {
+    "id": "Viewer device",
+    "other": "Dispositivo visualizzatore"
+  },
+  {
+    "id": "Viewer name",
+    "other": "Nome visualizzatore"
+  },
+  {
+    "id": "Waiting for your passkey…",
+    "other": "In attesa della tua passkey…"
+  },
+  {
+    "id": "Watch Together state is invalid",
+    "other": "Guarda insieme non è valido"
+  },
+  {
+    "id": "watched",
+    "other": "guardato"
+  },
+  {
+    "id": "Watched",
+    "other": "Guardato"
+  },
+  {
+    "id": "Watched ✓",
+    "other": "Guardato ✓"
+  },
+  {
+    "id": "Watching for changes",
+    "other": "Attenzione ai cambiamenti"
+  },
+  {
+    "id": "Welcome aboard",
+    "other": "Benvenuto a bordo"
+  },
+  {
+    "id": "when ready.",
+    "other": "quando sarà pronto."
+  },
+  {
+    "id": "WireGuard Viewer not found",
+    "other": "Visualizzatore WireGuard non trovato"
+  },
+  {
+    "id": "XMLTV guide",
+    "other": "XMLTV guida"
+  },
+  {
+    "id": "Year",
+    "other": "Anno"
+  },
+  {
+    "id": "You lead this room",
+    "other": "Conduci tu questa stanza"
+  },
+  {
+    "id": "Your library",
+    "other": "La tua libreria"
+  },
+  {
+    "id": "Your library and viewing activity stay on this Server.",
+    "other": "La tua libreria e l'attività di visualizzazione rimangono su questo server."
+  },
+  {
+    "id": "← Books",
+    "other": "← Libri"
+  },
+  {
+    "id": "← Library",
+    "other": "← Biblioteca"
+  },
+  {
+    "id": "← Settings",
+    "other": "← Impostazioni"
+  },
+  {
+    "id": "Generated API key",
+    "other": "Chiave API generata"
+  },
+  {
+    "id": "Copy API key",
+    "other": "Copia chiave API"
+  },
+  {
+    "id": "Copied.",
+    "other": "Copiata."
+  },
+  {
+    "id": "Select Copy in your browser.",
+    "other": "Seleziona Copia nel browser."
+  },
+  {
+    "id": "Set up trusted HTTPS",
+    "other": "Configura HTTPS attendibile"
+  },
+  {
+    "id": "Review trusted HTTPS setup",
+    "other": "Verifica la configurazione HTTPS attendibile"
+  },
+  {
+    "id": "Offline copy",
+    "other": "Copia offline"
+  },
+  {
+    "id": "Verified file stored on this device.",
+    "other": "File verificato archiviato su questo dispositivo."
+  },
+  {
+    "id": "Ready offline on this device",
+    "other": "Disponibile offline su questo dispositivo"
+  },
+  {
+    "id": "Playback method",
+    "other": "Metodo di riproduzione"
+  },
+  {
+    "id": "Open playback settings.",
+    "other": "Apri impostazioni di riproduzione."
+  },
+  {
+    "id": "Offline copy is unavailable.",
+    "other": "La copia offline non è disponibile."
+  },
+  {
+    "id": "Offline playback needs an active service worker",
+    "other": "La riproduzione offline richiede un service worker attivo"
+  },
+  {
+    "id": "Could not remove local offline data.",
+    "other": "Impossibile rimuovere i dati offline locali."
+  },
+  {
+    "id": "stored on this device",
+    "other": "salvato su questo dispositivo"
+  },
+  {
+    "id": "This device does not have enough storage for this download",
+    "other": "Questo dispositivo non ha spazio sufficiente per il download"
+  },
+  {
+    "id": "This browser cannot store offline media safely",
+    "other": "Questo browser non può archiviare contenuti offline in modo sicuro"
+  },
+  {
+    "id": "The download could not be verified",
+    "other": "Non è stato possibile verificare il download"
+  },
+  {
+    "id": "The download is no longer available",
+    "other": "Il download non è più disponibile"
+  },
+  {
+    "id": "No verified downloads are ready for this Viewer Profile.",
+    "other": "Nessun download verificato è pronto per questo Profilo spettatore."
+  },
+  {
+    "id": "Open Kinosail online and choose a Viewer Profile first.",
+    "other": "Apri Kinosail online e scegli prima un Profilo spettatore."
+  },
+  {
+    "id": "All libraries",
+    "other": "All libraries"
+  },
+  {
+    "id": "Audio tracks",
+    "other": "Audio tracks"
+  },
+  {
+    "id": "Back to downloads",
+    "other": "Back to downloads"
+  },
+  {
+    "id": "Could not save progress. Return to Downloads and try again.",
+    "other": "Could not save progress. Return to Downloads and try again."
+  },
+  {
+    "id": "Manage offline downloads",
+    "other": "Manage offline downloads"
+  },
+  {
+    "id": "Movie",
+    "other": "Movie"
+  },
+  {
+    "id": "Open Server downloads",
+    "other": "Open Server downloads"
+  },
+  {
+    "id": "Open previous page",
+    "other": "Open previous page"
+  },
+  {
+    "id": "Playback behavior",
+    "other": "Playback behavior"
+  },
+  {
+    "id": "Prepare offline copy",
+    "other": "Prepare offline copy"
+  },
+  {
+    "id": "Progress saved on this device. Open Server downloads to sync.",
+    "other": "Progress saved on this device. Open Server downloads to sync."
+  },
+  {
+    "id": "Request needs another try",
+    "other": "Request needs another try"
+  },
+  {
+    "id": "Return to form",
+    "other": "Return to form"
+  },
+  {
+    "id": "Search all libraries",
+    "other": "Search all libraries"
+  },
+  {
+    "id": "Search everything",
+    "other": "Search everything"
+  },
+  {
+    "id": "This file could not play. Return to Downloads, reconnect to the Server, and download it again.",
+    "other": "This file could not play. Return to Downloads, reconnect to the Server, and download it again."
+  },
+  {
+    "id": "invalid title request",
+    "other": "invalid title request"
+  },
+  {
+    "id": "Audio is fixed in this downloaded copy.",
+    "other": "Audio is fixed in this downloaded copy."
+  }
+]

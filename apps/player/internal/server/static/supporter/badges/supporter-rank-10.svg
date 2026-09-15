@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title">
+  <title id="title">Kinosail supporter rank ten Sovereign Full Sail</title>
+  <defs>
+    <linearGradient id="gold" x1=".02" y1="0" x2=".98" y2="1"><stop stop-color="#fffbea"/><stop offset=".32" stop-color="#efd27a"/><stop offset=".68" stop-color="#b38442"/><stop offset="1" stop-color="#593717"/></linearGradient>
+    <linearGradient id="jade" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#dcfff0"/><stop offset=".4" stop-color="#45b394"/><stop offset="1" stop-color="#092a23"/></linearGradient>
+    <radialGradient id="sea"><stop stop-color="#307c67"/><stop offset=".62" stop-color="#12372f"/><stop offset="1" stop-color="#060e0c"/></radialGradient>
+    <filter id="shadow" x="-40%" y="-40%" width="180%" height="190%"><feDropShadow dy="16" stdDeviation="14" flood-color="#000" flood-opacity=".75"/></filter>
+  </defs>
+  <g filter="url(#shadow)">
+    <path d="M189 199C129 104 78 73 21 79c44 45 60 94 54 145 36-20 73-29 112-25-48 17-91 48-126 92 58-11 110 2 158 38Z" fill="#15120d" stroke="url(#gold)" stroke-linejoin="round" stroke-width="9"/>
+    <path d="M323 199c60-95 111-126 168-120-44 45-60 94-54 145-36-20-73-29-112-25 48 17 91 48 126 92-58-11-110 2-158 38Z" fill="#15120d" stroke="url(#gold)" stroke-linejoin="round" stroke-width="9"/>
+    <path d="M178 162 126 72l85 32 45-76 45 76 85-32-52 90Z" fill="#100d09" stroke="url(#gold)" stroke-linejoin="round" stroke-width="10"/>
+    <g fill="url(#jade)" stroke="#fffbea" stroke-width="4"><path d="m126 72 15 24-15 24-15-24Z"/><path d="m256 28 18 29-18 29-18-29Z"/><path d="m386 72 15 24-15 24-15-24Z"/></g>
+    <path d="m256 48 30 79 72-45-7 85 85-7-45 72 79 30-79 30 45 72-85-7 7 85-72-45-30 79-30-79-72 45 7-85-85 7 45-72-79-30 79-30-45-72 85 7-7-85 72 45Z" fill="#0a0c0b" stroke="url(#gold)" stroke-linejoin="round" stroke-width="8"/>
+    <circle cx="256" cy="263" r="155" fill="url(#sea)" stroke="url(#gold)" stroke-width="12"/>
+    <circle cx="256" cy="263" r="132" fill="none" stroke="#c5f5e4" stroke-dasharray="3 11" stroke-width="5"/>
+    <path d="M130 357c-52 28-77 67-82 116 28-24 57-34 87-31 5-32 21-61 50-86M382 357c52 28 77 67 82 116-28-24-57-34-87-31-5-32-21-61-50-86" fill="none" stroke="url(#gold)" stroke-linecap="round" stroke-width="12"/>
+    <path d="M81 421c21-3 40 2 57 15M431 421c-21-3-40 2-57 15M95 389c22-1 42 6 58 21M417 389c-22-1-42 6-58 21" fill="none" stroke="#c7f5e5" stroke-linecap="round" stroke-width="6"/>
+    <g fill="#fffbea"><circle cx="163" cy="179" r="6"/><circle cx="360" cy="182" r="8"/><circle cx="381" cy="313" r="5"/><circle cx="146" cy="325" r="7"/><path d="m324 127 7 16 16 7-16 7-7 16-7-16-16-7 16-7Z"/></g>
+    <path fill="#fffbea" d="M247 137c-38 46-59 103-59 169 34-14 69-15 109-3-27-50-41-105-50-166Z"/>
+    <path fill="url(#gold)" d="M259 160c48 44 72 91 72 144-31-13-62-15-91-8 17-42 23-87 19-136Z"/>
+    <path fill="#07100e" d="m247 229 47 28-47 28Z"/>
+    <path d="M141 317c44-28 74-4 108-3 40 2 61-29 113-8M150 345c40-22 67-5 99-4 40 2 65-22 109-10" fill="none" stroke="#c8f6e6" stroke-linecap="round" stroke-width="8"/>
+    <path d="M179 430h154l-19 54-58-26-58 26Z" fill="#543519" stroke="url(#gold)" stroke-linejoin="round" stroke-width="9"/>
+    <path d="m256 70 12 27 28 12-28 12-12 28-12-28-28-12 28-12Z" fill="url(#jade)" stroke="#fffbea" stroke-width="4"/>
+  </g>
+</svg>

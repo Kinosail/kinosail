@@ -1,0 +1,81 @@
+import SwiftUI
+
+struct PlayerTabs: View {
+    @AppStorage private var stored: String
+    @State private var selection = PlayerTab.home
+    init(profileKey: String) {
+        let legacy = UserDefaults.standard.string(forKey: "kinosail.tabs.\(profileKey)")
+        _stored = AppStorage(wrappedValue: PlayerTab.legacyDefault(legacy), "kinosail.tabs.v2.\(profileKey)")
+    }
+    private var pinned: [PlayerTab] { (try? PlayerTab.parse(stored)) ?? PlayerTab.defaults }
+    var body: some View {
+        TabView(selection: $selection) {
+            ForEach(pinned) { tab in
+                #if os(iOS)
+                let role: TabRole? = tab == .search ? .search : nil
+                #else
+                let role: TabRole? = nil
+                #endif
+                Tab(value: tab, role: role) { stack { PlayerTabScreen(tab: tab, showsSearch: !pinned.contains(.search)) } } label: {
+                    Label(tab.title, systemImage: tab.symbol)
+                    #if os(tvOS)
+                        .foregroundStyle(selection == tab ? KinoTheme.signalInk : KinoTheme.text)
+                    #endif
+                }
+            }
+            Tab("More", systemImage: "ellipsis", value: PlayerTab.more) {
+                stack {
+                    List {
+                        Section {
+                            ForEach(PlayerTab.available.filter { !pinned.contains($0) }) { tab in
+                                NavigationLink(value: tab) { Label(tab.title, systemImage: tab.symbol) }
+                            }
+                        }
+                        Section { NavigationLink("Customize tabs", value: ScreenDestination.tabPreferences) }
+                    }
+                    #if os(iOS)
+                    .scrollContentBackground(.hidden)
+                    #endif
+                    .background(KinoTheme.background).navigationTitle("More")
+                }
+            }
+        }
+        #if os(iOS)
+        .tabViewStyle(.sidebarAdaptable)
+        #endif
+        .onAppear { if !pinned.contains(selection) && selection != .more { selection = pinned[0] } }
+        .onChange(of: stored) { _, _ in
+            if !pinned.contains(selection) && selection != .more { selection = pinned[0] }
+        }
+    }
+    private func stack<Content: View>(@ViewBuilder content: () -> Content) -> some View {
+        NavigationStack {
+            content()
+                .navigationDestination(for: PlayerTab.self) { PlayerTabScreen(tab: $0, showsSearch: !pinned.contains(.search)) }
+                .navigationDestination(for: ScreenDestination.self) { DestinationScreen(destination: $0) }
+        }
+    }
+}
+
+private struct PlayerTabScreen: View {
+    let tab: PlayerTab
+    let showsSearch: Bool
+    var body: some View {
+        switch tab {
+        case .movies: LibraryScreen(initialView: .movies)
+        case .shows: LibraryScreen(initialView: .shows)
+        case .home: HomeScreen(showsSearch: showsSearch)
+        case .search: LibraryScreen(searchMode: true)
+        case .list: LibraryScreen(initialView: .list)
+        case .library: LibraryHubScreen()
+        case .music: MusicScreen()
+        case .audiobooks: LibraryScreen(initialView: .audiobooks)
+        case .books: LibraryScreen(initialView: .books)
+        case .photos: LibraryScreen(initialView: .photos)
+        case .collections: CollectionsScreen()
+        case .downloads: DownloadsScreen()
+        case .settings: SettingsScreen()
+        case .more: EmptyView()
+        }
+    }
+}

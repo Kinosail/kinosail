@@ -1,0 +1,1874 @@
+[
+  {
+    "id": "15 minutes",
+    "other": "15 минут"
+  },
+  {
+    "id": "30 minutes",
+    "other": "30 минут"
+  },
+  {
+    "id": "45 minutes",
+    "other": "45 минут"
+  },
+  {
+    "id": "60 minutes",
+    "other": "60 минут"
+  },
+  {
+    "id": "Access",
+    "other": "Доступ"
+  },
+  {
+    "id": "Account · Kinosail Subtitles",
+    "other": "Аккаунт · Kinosail Subtitles"
+  },
+  {
+    "id": "Actions",
+    "other": "Действия"
+  },
+  {
+    "id": "active session(s)",
+    "other": "активные сеансы"
+  },
+  {
+    "id": "Add a passkey",
+    "other": "Добавьте ключ доступа"
+  },
+  {
+    "id": "Add folder",
+    "other": "Добавить папку"
+  },
+  {
+    "id": "Add media or try another search.",
+    "other": "Добавьте медиафайлы или попробуйте другой поиск."
+  },
+  {
+    "id": "Add Profile",
+    "other": "Добавить профиль"
+  },
+  {
+    "id": "Add this secret or URI to your authenticator app.",
+    "other": "Добавьте этот секретный код или URI в свое приложение для аутентификации."
+  },
+  {
+    "id": "Add to",
+    "other": "Добавить в"
+  },
+  {
+    "id": "Administer server",
+    "other": "Администрирование сервера"
+  },
+  {
+    "id": "Album",
+    "other": "Альбом"
+  },
+  {
+    "id": "Albums",
+    "other": "Альбомы"
+  },
+  {
+    "id": "all",
+    "other": "все"
+  },
+  {
+    "id": "All ratings",
+    "other": "Все рейтинги"
+  },
+  {
+    "id": "Allow downloads",
+    "other": "Разрешить скачивание"
+  },
+  {
+    "id": "Allow transcoding",
+    "other": "Разрешить перекодирование"
+  },
+  {
+    "id": "AMD AMF",
+    "other": "AMD AMF"
+  },
+  {
+    "id": "Analyze playback segments now",
+    "other": "Проанализируйте сегменты воспроизведения прямо сейчас"
+  },
+  {
+    "id": "analyzed item(s)",
+    "other": "проанализированные элементы"
+  },
+  {
+    "id": "API key name",
+    "other": "Имя ключа API"
+  },
+  {
+    "id": "API key scope does not allow this request",
+    "other": "Область ключа API не допускает этот запрос"
+  },
+  {
+    "id": "API key view failed",
+    "other": "Не удалось просмотреть ключ API"
+  },
+  {
+    "id": "API key · Kinosail Subtitles",
+    "other": "API-ключ · Kinosail Subtitles"
+  },
+  {
+    "id": "API keys",
+    "other": "API-ключи"
+  },
+  {
+    "id": "Appearance",
+    "other": "Внешний вид"
+  },
+  {
+    "id": "Apple VideoToolbox",
+    "other": "Apple VideoToolbox"
+  },
+  {
+    "id": "Apply",
+    "other": "Применить"
+  },
+  {
+    "id": "Audio",
+    "other": "Аудио"
+  },
+  {
+    "id": "Audiobooks",
+    "other": "Аудиокниги"
+  },
+  {
+    "id": "Authentication code",
+    "other": "Код аутентификации"
+  },
+  {
+    "id": "Authentication or recovery code",
+    "other": "Код аутентификации или восстановления"
+  },
+  {
+    "id": "authentication required",
+    "other": "требуется аутентификация"
+  },
+  {
+    "id": "Authorize device",
+    "other": "Авторизовать устройство"
+  },
+  {
+    "id": "Automatic",
+    "other": "Автоматически"
+  },
+  {
+    "id": "automatic",
+    "other": "автоматически"
+  },
+  {
+    "id": "Automatic (best detected)",
+    "other": "Автоматически (наилучшее обнаружение)"
+  },
+  {
+    "id": "Automatic (browser)",
+    "other": "Автоматически (браузер)"
+  },
+  {
+    "id": "Automatic backups",
+    "other": "Автоматическое резервное копирование"
+  },
+  {
+    "id": "Automatic maintenance",
+    "other": "Автоматическое обслуживание"
+  },
+  {
+    "id": "Available devices use a direct connection to this Server.",
+    "other": "Доступные устройства используют прямое соединение с этим сервером."
+  },
+  {
+    "id": "Back to library",
+    "other": "Вернуться в библиотеку"
+  },
+  {
+    "id": "Back to settings",
+    "other": "Вернуться к настройкам"
+  },
+  {
+    "id": "Back up now",
+    "other": "Создать резервную копию сейчас"
+  },
+  {
+    "id": "Backup and recovery",
+    "other": "Резервное копирование и восстановление"
+  },
+  {
+    "id": "backup is unavailable",
+    "other": "резервная копия недоступна"
+  },
+  {
+    "id": "Backups need setup.",
+    "other": "Необходимо настроить резервные копии."
+  },
+  {
+    "id": "Backups run automatically without encryption.",
+    "other": "Резервное копирование выполняется автоматически без шифрования."
+  },
+  {
+    "id": "Backups · Kinosail Subtitles",
+    "other": "Резервные копии · Kinosail Subtitles"
+  },
+  {
+    "id": "Book",
+    "other": "Забронировать"
+  },
+  {
+    "id": "Books",
+    "other": "Книги"
+  },
+  {
+    "id": "Books and comics",
+    "other": "Книги и комиксы"
+  },
+  {
+    "id": "Browse library",
+    "other": "Просмотреть библиотеку"
+  },
+  {
+    "id": "Cancel",
+    "other": "Отмена"
+  },
+  {
+    "id": "Cast",
+    "other": "В ролях"
+  },
+  {
+    "id": "Chapters",
+    "other": "Главы"
+  },
+  {
+    "id": "Choose the language for this browser.",
+    "other": "Выберите язык для этого браузера."
+  },
+  {
+    "id": "Clear transcode cache",
+    "other": "Очистить кеш перекодирования"
+  },
+  {
+    "id": "Code",
+    "other": "Код"
+  },
+  {
+    "id": "Collection",
+    "other": "Коллекция"
+  },
+  {
+    "id": "Collections",
+    "other": "Коллекции"
+  },
+  {
+    "id": "Commercial",
+    "other": "Коммерческий"
+  },
+  {
+    "id": "Compatibility",
+    "other": "Совместимость"
+  },
+  {
+    "id": "Compatibility Connection",
+    "other": "Совместимое соединение"
+  },
+  {
+    "id": "Compatibility stream",
+    "other": "Поток совместимости"
+  },
+  {
+    "id": "compatible",
+    "other": "совместимый"
+  },
+  {
+    "id": "Concurrent streams",
+    "other": "Параллельные потоки"
+  },
+  {
+    "id": "Configuration error",
+    "other": "Ошибка конфигурации"
+  },
+  {
+    "id": "Configuration · Kinosail Subtitles",
+    "other": "Конфигурация · Kinosail Subtitles"
+  },
+  {
+    "id": "Configured; value hidden",
+    "other": "Настроено; значение скрыто"
+  },
+  {
+    "id": "Confirm delete",
+    "other": "Подтвердить удаление"
+  },
+  {
+    "id": "Confirm remove",
+    "other": "Подтвердите удаление"
+  },
+  {
+    "id": "Connect",
+    "other": "Подключиться"
+  },
+  {
+    "id": "Connect a device",
+    "other": "Подключите устройство"
+  },
+  {
+    "id": "Connected",
+    "other": "Подключено"
+  },
+  {
+    "id": "Connecting",
+    "other": "Подключение"
+  },
+  {
+    "id": "Connecting…",
+    "other": "Подключение…"
+  },
+  {
+    "id": "Connection error",
+    "other": "Ошибка подключения"
+  },
+  {
+    "id": "Content",
+    "other": "Содержимое"
+  },
+  {
+    "id": "Continue Watching",
+    "other": "Продолжить просмотр"
+  },
+  {
+    "id": "Continue watching",
+    "other": "Продолжить просмотр"
+  },
+  {
+    "id": "from Continue Watching",
+    "other": "из Продолжить просмотр"
+  },
+  {
+    "id": "Copy this key now. Kinosail stores only its hash.",
+    "other": "Скопируйте этот ключ сейчас. Kinosail хранит только свой хеш."
+  },
+  {
+    "id": "could not create MFA enrollment",
+    "other": "не удалось создать регистрацию MFA"
+  },
+  {
+    "id": "could not create Owner Profile",
+    "other": "не удалось создать профиль владельца"
+  },
+  {
+    "id": "could not create session",
+    "other": "не удалось создать сеанс"
+  },
+  {
+    "id": "could not end session",
+    "other": "не удалось завершить сеанс"
+  },
+  {
+    "id": "could not read subtitles",
+    "other": "не удалось прочитать субтитры"
+  },
+  {
+    "id": "Create",
+    "other": "Создать"
+  },
+  {
+    "id": "Create a passkey",
+    "other": "Создайте пароль"
+  },
+  {
+    "id": "Create API key",
+    "other": "Создать ключ API"
+  },
+  {
+    "id": "Create passkey",
+    "other": "Создать ключ доступа"
+  },
+  {
+    "id": "Create smart playlist",
+    "other": "Создать умный плейлист"
+  },
+  {
+    "id": "Create your Owner Profile",
+    "other": "Создайте свой профиль владельца"
+  },
+  {
+    "id": "Created once",
+    "other": "Создан один раз"
+  },
+  {
+    "id": "Credentials configured",
+    "other": "Учетные данные настроены"
+  },
+  {
+    "id": "Credits",
+    "other": "Кредиты"
+  },
+  {
+    "id": "cross-origin request denied",
+    "other": "запрос между источниками отклонен"
+  },
+  {
+    "id": "Curate",
+    "other": "Куратор"
+  },
+  {
+    "id": "Dark",
+    "other": "Тёмный"
+  },
+  {
+    "id": "default",
+    "other": "по умолчанию"
+  },
+  {
+    "id": "Default playback",
+    "other": "Воспроизведение по умолчанию"
+  },
+  {
+    "id": "Delete",
+    "other": "Удалить"
+  },
+  {
+    "id": "Deployment configuration",
+    "other": "Конфигурация развертывания"
+  },
+  {
+    "id": "Destination",
+    "other": "Место назначения"
+  },
+  {
+    "id": "detected, unavailable",
+    "other": "обнаружен, недоступен"
+  },
+  {
+    "id": "Device or app",
+    "other": "Устройство или приложение"
+  },
+  {
+    "id": "Diagnostics",
+    "other": "Диагностика"
+  },
+  {
+    "id": "Direct",
+    "other": "Прямой"
+  },
+  {
+    "id": "direct",
+    "other": "директ"
+  },
+  {
+    "id": "Direct connection unavailable",
+    "other": "Прямое соединение недоступно"
+  },
+  {
+    "id": "Direct from",
+    "other": "Прямо с"
+  },
+  {
+    "id": "Direct stream",
+    "other": "Прямая трансляция"
+  },
+  {
+    "id": "Directed by",
+    "other": "Режиссер"
+  },
+  {
+    "id": "Disable and revoke",
+    "other": "Отключить и отозвать"
+  },
+  {
+    "id": "Disable two-factor authentication",
+    "other": "Отключить двухфакторную аутентификацию"
+  },
+  {
+    "id": "Disaster recovery",
+    "other": "Аварийное восстановление"
+  },
+  {
+    "id": "DLNA",
+    "other": "DLNA"
+  },
+  {
+    "id": "Download",
+    "other": "Скачать"
+  },
+  {
+    "id": "Download media",
+    "other": "Загрузить медиа"
+  },
+  {
+    "id": "Download original",
+    "other": "Загрузить оригинал"
+  },
+  {
+    "id": "Download portable state archive",
+    "other": "Скачать переносной государственный архив"
+  },
+  {
+    "id": "Download safe diagnostics",
+    "other": "Загрузить безопасную диагностику"
+  },
+  {
+    "id": "Download WireGuard profile",
+    "other": "Загрузить профиль WireGuard"
+  },
+  {
+    "id": "Downloads",
+    "other": "Загрузки"
+  },
+  {
+    "id": "downloads are not enabled for this Viewer Profile",
+    "other": "загрузка не включена для этого профиля зрителя"
+  },
+  {
+    "id": "Edit metadata",
+    "other": "Редактировать метаданные"
+  },
+  {
+    "id": "Edit skip markers",
+    "other": "Редактировать маркеры пропуска"
+  },
+  {
+    "id": "embedded subtitles are unavailable",
+    "other": "встроенные субтитры недоступны"
+  },
+  {
+    "id": "Enable DLNA",
+    "other": "Включить DLNA"
+  },
+  {
+    "id": "Enable two-factor authentication",
+    "other": "Включить двухфакторную аутентификацию"
+  },
+  {
+    "id": "Enabled",
+    "other": "Включено"
+  },
+  {
+    "id": "Encrypted backups run automatically.",
+    "other": "Зашифрованное резервное копирование выполняется автоматически."
+  },
+  {
+    "id": "Encryption is off by default.",
+    "other": "Шифрование по умолчанию отключено."
+  },
+  {
+    "id": "Encryption is on.",
+    "other": "Шифрование включено."
+  },
+  {
+    "id": "End in seconds",
+    "other": "Завершится через несколько секунд"
+  },
+  {
+    "id": "Enter the code shown by your TV or app. It will inherit your Profile Policy.",
+    "other": "Введите код, показанный на телевизоре или в приложении. Он унаследует политику вашего профиля."
+  },
+  {
+    "id": "Environment and YAML values are authoritative. GUI changes shown here take effect after the Server restarts.",
+    "other": "Значения среды и YAML являются авторитетными. Показанные здесь изменения графического интерфейса вступают в силу после перезагрузки Сервера."
+  },
+  {
+    "id": "Environment default",
+    "other": "Среда по умолчанию"
+  },
+  {
+    "id": "Event webhook",
+    "other": "Вебхук событий"
+  },
+  {
+    "id": "Every 15 minutes",
+    "other": "Каждые 15 минут"
+  },
+  {
+    "id": "Every 5 minutes",
+    "other": "Каждые 5 минут"
+  },
+  {
+    "id": "Everything",
+    "other": "Все"
+  },
+  {
+    "id": "Export full activity journal",
+    "other": "Экспортировать полный журнал активности"
+  },
+  {
+    "id": "Expose direct media URLs to devices on this local network. Disabling revokes the discovery capability.",
+    "other": "Предоставьте прямые URL-адреса мультимедиа устройствам в этой локальной сети. Отключение отменяет возможность обнаружения."
+  },
+  {
+    "id": "Externally managed",
+    "other": "Внешнее управление"
+  },
+  {
+    "id": "Find",
+    "other": "Найти"
+  },
+  {
+    "id": "Find something",
+    "other": "Найди что-нибудь"
+  },
+  {
+    "id": "Finish setup",
+    "other": "Завершить настройку"
+  },
+  {
+    "id": "Finish sign in",
+    "other": "Завершить вход"
+  },
+  {
+    "id": "Folder inside media mount",
+    "other": "Папка внутри носителя"
+  },
+  {
+    "id": "Follow this device or choose a fixed theme.",
+    "other": "Подпишитесь на это устройство или выберите фиксированную тему."
+  },
+  {
+    "id": "Following the room leader",
+    "other": "Следуя за лидером комнаты"
+  },
+  {
+    "id": "From",
+    "other": "От"
+  },
+  {
+    "id": "from",
+    "other": "из"
+  },
+  {
+    "id": "General",
+    "other": "Общие"
+  },
+  {
+    "id": "Genres",
+    "other": "Жанры"
+  },
+  {
+    "id": "Got it",
+    "other": "Понял"
+  },
+  {
+    "id": "Group",
+    "other": "Группа"
+  },
+  {
+    "id": "Hardware",
+    "other": "Аппаратное обеспечение"
+  },
+  {
+    "id": "History",
+    "other": "История"
+  },
+  {
+    "id": "Home",
+    "other": "Главная"
+  },
+  {
+    "id": "Hourly",
+    "other": "Ежечасно"
+  },
+  {
+    "id": "if enabled",
+    "other": "если включен"
+  },
+  {
+    "id": "Install",
+    "other": "Установить"
+  },
+  {
+    "id": "Install Kinosail Subtitles",
+    "other": "Установить Kinosail"
+  },
+  {
+    "id": "Integrations",
+    "other": "Интеграция"
+  },
+  {
+    "id": "Intel Quick Sync",
+    "other": "Intel Quick Sync"
+  },
+  {
+    "id": "Intro",
+    "other": "Введение"
+  },
+  {
+    "id": "invalid authentication code",
+    "other": "неверный код аутентификации"
+  },
+  {
+    "id": "invalid Collection state",
+    "other": "неверное состояние коллекции"
+  },
+  {
+    "id": "invalid credentials",
+    "other": "неверные учетные данные"
+  },
+  {
+    "id": "invalid list state",
+    "other": "недопустимое состояние списка"
+  },
+  {
+    "id": "invalid playlist state",
+    "other": "недопустимое состояние плейлиста"
+  },
+  {
+    "id": "invalid progress",
+    "other": "неверный прогресс"
+  },
+  {
+    "id": "invalid watched state",
+    "other": "недопустимое состояние просмотра"
+  },
+  {
+    "id": "Invite link",
+    "other": "Ссылка для приглашения"
+  },
+  {
+    "id": "Keep",
+    "other": "Сохранить"
+  },
+  {
+    "id": "Keep backups on storage outside this host. Backups are unencrypted unless a backup key is configured. Restore while the Server is stopped.",
+    "other": "Храните резервные копии в хранилище за пределами этого хоста. Резервные копии не зашифрованы, если не настроен резервный ключ. Восстановить, пока Сервер остановлен."
+  },
+  {
+    "id": "Keep Kinosail Subtitles close",
+    "other": "Держите Kinosail рядом"
+  },
+  {
+    "id": "Keys are shown once and stored as hashes. Browse access is the safe default.",
+    "other": "Ключи отображаются один раз и сохраняются в виде хешей. Доступ к просмотру является безопасным вариантом по умолчанию."
+  },
+  {
+    "id": "Kinosail",
+    "other": "Kinosail"
+  },
+  {
+    "id": "Kinosail Subtitles cannot reach this Server. Check your network or Direct Connection, then try again.",
+    "other": "Kinosail не может подключиться к этому Серверу. Проверьте свою сеть или прямое соединение и повторите попытку."
+  },
+  {
+    "id": "Kinosail maintains itself automatically.",
+    "other": "Kinosail поддерживает себя автоматически."
+  },
+  {
+    "id": "Kinosail Subtitles Reader",
+    "other": "Kinosail Subtitles Reader"
+  },
+  {
+    "id": "Language",
+    "other": "Язык"
+  },
+  {
+    "id": "language is invalid",
+    "other": "неверный язык"
+  },
+  {
+    "id": "Last error",
+    "other": "Последняя ошибка"
+  },
+  {
+    "id": "Last scan error",
+    "other": "Ошибка последнего сканирования"
+  },
+  {
+    "id": "Last successful backup",
+    "other": "Последнее успешное резервное копирование"
+  },
+  {
+    "id": "Last successful scan",
+    "other": "Последнее успешное сканирование"
+  },
+  {
+    "id": "Last verified",
+    "other": "Последняя проверка"
+  },
+  {
+    "id": "Latest",
+    "other": "Последние"
+  },
+  {
+    "id": "Libraries",
+    "other": "Библиотеки"
+  },
+  {
+    "id": "Library",
+    "other": "Библиотека"
+  },
+  {
+    "id": "Library discovery",
+    "other": "Обнаружение библиотеки"
+  },
+  {
+    "id": "Library folders",
+    "other": "Папки библиотеки"
+  },
+  {
+    "id": "Library items",
+    "other": "Элементы библиотеки"
+  },
+  {
+    "id": "Library organization",
+    "other": "Библиотечная организация"
+  },
+  {
+    "id": "Library views",
+    "other": "Просмотры библиотеки"
+  },
+  {
+    "id": "Licensed credential configured",
+    "other": "Лицензионные учетные данные настроены"
+  },
+  {
+    "id": "Light",
+    "other": "Свет"
+  },
+  {
+    "id": "Link OpenID Connect",
+    "other": "Link OpenID Connect"
+  },
+  {
+    "id": "Local account",
+    "other": "Локальная учетная запись"
+  },
+  {
+    "id": "M3U playlist",
+    "other": "Плейлист M3U"
+  },
+  {
+    "id": "Manage personal library state",
+    "other": "Управление состоянием личной библиотеки"
+  },
+  {
+    "id": "Managed externally and read-only.",
+    "other": "Управляется извне и только для чтения."
+  },
+  {
+    "id": "Managed remote access",
+    "other": "Управляемый удаленный доступ"
+  },
+  {
+    "id": "Mark",
+    "other": "Отметить"
+  },
+  {
+    "id": "marker",
+    "other": "маркер"
+  },
+  {
+    "id": "Match text",
+    "other": "Сопоставить текст"
+  },
+  {
+    "id": "Media",
+    "other": "Медиа"
+  },
+  {
+    "id": "Media information",
+    "other": "Информация для СМИ"
+  },
+  {
+    "id": "Media mount",
+    "other": "Медиа-крепление"
+  },
+  {
+    "id": "metadata could not be saved",
+    "other": "не удалось сохранить метаданные"
+  },
+  {
+    "id": "metadata is invalid",
+    "other": "метаданные недействительны"
+  },
+  {
+    "id": "Metadata provider",
+    "other": "Поставщик метаданных"
+  },
+  {
+    "id": "metadata provider unavailable",
+    "other": "поставщик метаданных недоступен"
+  },
+  {
+    "id": "Metrics",
+    "other": "Показатели"
+  },
+  {
+    "id": "Movies",
+    "other": "Фильмы"
+  },
+  {
+    "id": "Music",
+    "other": "Музыка"
+  },
+  {
+    "id": "Music and audiobooks",
+    "other": "Музыка и аудиокниги"
+  },
+  {
+    "id": "My List",
+    "other": "Мой список"
+  },
+  {
+    "id": "Name",
+    "other": "Имя"
+  },
+  {
+    "id": "name and a 12-character password are required",
+    "other": "требуется имя и 12-значный пароль"
+  },
+  {
+    "id": "Never",
+    "other": "Никогда"
+  },
+  {
+    "id": "New Collection",
+    "other": "Новая коллекция"
+  },
+  {
+    "id": "New Collection name",
+    "other": "Название новой коллекции"
+  },
+  {
+    "id": "New media is detected automatically after copying finishes. Safety scans repair missed filesystem events on Windows, macOS, Linux, containers, and network mounts.",
+    "other": "Новый носитель обнаруживается автоматически после завершения копирования. Сканирование безопасности устраняет пропущенные события файловой системы в Windows, macOS, Linux, контейнерах и сетевых подключениях."
+  },
+  {
+    "id": "New password",
+    "other": "Новый пароль"
+  },
+  {
+    "id": "New playlist",
+    "other": "Новый плейлист"
+  },
+  {
+    "id": "New playlist name",
+    "other": "Новое название плейлиста"
+  },
+  {
+    "id": "New profile name",
+    "other": "Новое имя профиля"
+  },
+  {
+    "id": "New profile password",
+    "other": "Новый пароль профиля"
+  },
+  {
+    "id": "New secret",
+    "other": "Новый секрет"
+  },
+  {
+    "id": "New smart playlist",
+    "other": "Новый умный плейлист"
+  },
+  {
+    "id": "New Viewers start with family ratings and no libraries. Add folder names or",
+    "other": "Новые зрители начинают с семейного рейтинга и без библиотек. Добавьте названия папок или"
+  },
+  {
+    "id": "Newest",
+    "other": "Новинка"
+  },
+  {
+    "id": "No activity recorded yet.",
+    "other": "Активность пока не зарегистрирована."
+  },
+  {
+    "id": "No channels configured.",
+    "other": "Каналы не настроены."
+  },
+  {
+    "id": "No device selected",
+    "other": "Устройство не выбрано"
+  },
+  {
+    "id": "No offline downloads yet.",
+    "other": "Офлайн-загрузок пока нет."
+  },
+  {
+    "id": "No playback recorded yet.",
+    "other": "Воспроизведение еще не записано."
+  },
+  {
+    "id": "None",
+    "other": "Нет"
+  },
+  {
+    "id": "None; use all or folder names",
+    "other": "Нет; используйте все имена или имена папок"
+  },
+  {
+    "id": "Not configured",
+    "other": "Не настроено"
+  },
+  {
+    "id": "not detected",
+    "other": "не обнаружено"
+  },
+  {
+    "id": "not found",
+    "other": "не найден"
+  },
+  {
+    "id": "Not now",
+    "other": "Не сейчас"
+  },
+  {
+    "id": "Nothing found.",
+    "other": "Ничего не найдено."
+  },
+  {
+    "id": "Now viewing",
+    "other": "Сейчас просматриваю"
+  },
+  {
+    "id": "NVIDIA NVENC/NVDEC",
+    "other": "NVIDIA NVENC/NVDEC"
+  },
+  {
+    "id": "Off",
+    "other": "Выкл."
+  },
+  {
+    "id": "offline",
+    "other": "офлайн"
+  },
+  {
+    "id": "Offline downloads",
+    "other": "Офлайн-загрузка"
+  },
+  {
+    "id": "Offline downloads · Kinosail Subtitles",
+    "other": "Офлайн-загрузка · Kinosail Subtitles"
+  },
+  {
+    "id": "On",
+    "other": "На"
+  },
+  {
+    "id": "On iPhone or iPad, tap Share, choose Add to Home Screen, turn on Open as Web App, then tap Add.",
+    "other": "На iPhone или iPad нажмите «Поделиться», выберите «Добавить на главный экран», включите параметр «Открыть как веб-приложение», затем нажмите «Добавить»."
+  },
+  {
+    "id": "One-time reveal",
+    "other": "Разовое открытие"
+  },
+  {
+    "id": "OpenID Connect",
+    "other": "OpenID Connect"
+  },
+  {
+    "id": "OpenSubtitles",
+    "other": "OpenSubtitles"
+  },
+  {
+    "id": "Outro",
+    "other": "Завершение"
+  },
+  {
+    "id": "Owner",
+    "other": "Владелец"
+  },
+  {
+    "id": "Owner access required",
+    "other": "Требуется доступ владельца"
+  },
+  {
+    "id": "Owner controls",
+    "other": "Контроль владельца"
+  },
+  {
+    "id": "Passkey added.",
+    "other": "Добавлен пароль."
+  },
+  {
+    "id": "Passkey failed.",
+    "other": "Не удалось ввести пароль."
+  },
+  {
+    "id": "Passkeys need the configured Server address and trusted HTTPS. Open that address, trust the Server certificate, or use an authenticator.",
+    "other": "Passkeys need the configured Server address and trusted HTTPS. Open that address, trust the Server certificate, or use an authenticator."
+  },
+  {
+    "id": "Password",
+    "other": "Пароль"
+  },
+  {
+    "id": "Photos",
+    "other": "Фотографии"
+  },
+  {
+    "id": "Play",
+    "other": "Играть"
+  },
+  {
+    "id": "Play on device",
+    "other": "Воспроизвести на устройстве"
+  },
+  {
+    "id": "Play the next Episode automatically",
+    "other": "Автоматическое воспроизведение следующего эпизода"
+  },
+  {
+    "id": "Playback",
+    "other": "Воспроизведение"
+  },
+  {
+    "id": "Playback history",
+    "other": "История воспроизведения"
+  },
+  {
+    "id": "Playback segment analysis",
+    "other": "Анализ сегмента воспроизведения"
+  },
+  {
+    "id": "Playback speed",
+    "other": "Скорость воспроизведения"
+  },
+  {
+    "id": "Playing here",
+    "other": "Играем здесь"
+  },
+  {
+    "id": "Playing on device",
+    "other": "Воспроизведение на устройстве"
+  },
+  {
+    "id": "Playlist",
+    "other": "Плейлист"
+  },
+  {
+    "id": "Playlists",
+    "other": "Плейлисты"
+  },
+  {
+    "id": "Plot",
+    "other": "План"
+  },
+  {
+    "id": "Polling for changes",
+    "other": "Опрос на предмет изменений"
+  },
+  {
+    "id": "Prefer quality",
+    "other": "Предпочитаю качество"
+  },
+  {
+    "id": "Prefer speed",
+    "other": "Предпочитаю скорость"
+  },
+  {
+    "id": "Preferred language",
+    "other": "Предпочитаемый язык"
+  },
+  {
+    "id": "Prepare",
+    "other": "Подготовьте"
+  },
+  {
+    "id": "preview unavailable",
+    "other": "предварительный просмотр недоступен"
+  },
+  {
+    "id": "Private by design",
+    "other": "Частный дизайн"
+  },
+  {
+    "id": "Profile",
+    "other": "Профиль"
+  },
+  {
+    "id": "profile storage is unavailable",
+    "other": "хранилище профилей недоступно"
+  },
+  {
+    "id": "Profile to reset",
+    "other": "Профиль для сброса"
+  },
+  {
+    "id": "Profile type",
+    "other": "Тип профиля"
+  },
+  {
+    "id": "Profiles",
+    "other": "Профили"
+  },
+  {
+    "id": "Protected automatically",
+    "other": "Защищается автоматически"
+  },
+  {
+    "id": "Quality",
+    "other": "Качество"
+  },
+  {
+    "id": "quality",
+    "other": "качество"
+  },
+  {
+    "id": "Quick Connect",
+    "other": "Быстрое подключение"
+  },
+  {
+    "id": "Quick Connect · Kinosail Subtitles",
+    "other": "Быстрое подключение · Kinosail Subtitles"
+  },
+  {
+    "id": "Rating",
+    "other": "Рейтинг"
+  },
+  {
+    "id": "Read now",
+    "other": "Читать сейчас"
+  },
+  {
+    "id": "reader",
+    "other": "читалка"
+  },
+  {
+    "id": "Reading order",
+    "other": "Порядок чтения"
+  },
+  {
+    "id": "ready",
+    "other": "готово"
+  },
+  {
+    "id": "Ready offline",
+    "other": "Готовность в автономном режиме"
+  },
+  {
+    "id": "Recap",
+    "other": "Резюме"
+  },
+  {
+    "id": "Recent activity",
+    "other": "Последние действия"
+  },
+  {
+    "id": "Recent playback",
+    "other": "Недавнее воспроизведение"
+  },
+  {
+    "id": "Recently added",
+    "other": "Недавно добавлено"
+  },
+  {
+    "id": "Recently played",
+    "other": "Недавно играл"
+  },
+  {
+    "id": "Recovery",
+    "other": "Восстановление"
+  },
+  {
+    "id": "Recovery codes",
+    "other": "Коды восстановления"
+  },
+  {
+    "id": "Refresh from TMDB",
+    "other": "Обновить из TMDB"
+  },
+  {
+    "id": "Refresh missing metadata",
+    "other": "Обновить отсутствующие метаданные"
+  },
+  {
+    "id": "Recommended",
+    "other": "Рекомендуется"
+  },
+  {
+    "id": "Remote access",
+    "other": "Удаленный доступ"
+  },
+  {
+    "id": "Remove",
+    "other": "Удалить"
+  },
+  {
+    "id": "Remove from",
+    "other": "Удалить из"
+  },
+  {
+    "id": "request",
+    "other": "запрос"
+  },
+  {
+    "id": "Request could not be completed.",
+    "other": "Запрос не может быть выполнен."
+  },
+  {
+    "id": "request is too large",
+    "other": "запрос слишком велик"
+  },
+  {
+    "id": "Reset password",
+    "other": "Сбросить пароль"
+  },
+  {
+    "id": "Return to settings",
+    "other": "Вернуться к настройкам"
+  },
+  {
+    "id": "Revoke",
+    "other": "Отменить"
+  },
+  {
+    "id": "Rockchip RKMPP",
+    "other": "Rockchip RKMPP"
+  },
+  {
+    "id": "Room connected · following leader",
+    "other": "Комната подключена · Следование за лидером"
+  },
+  {
+    "id": "Room connected · you lead",
+    "other": "Комната подключена · вы лидируете"
+  },
+  {
+    "id": "Room disconnected · reload to reconnect",
+    "other": "Комната отключена · перезагрузите компьютер для повторного подключения"
+  },
+  {
+    "id": "Run library scan now",
+    "other": "Запустите сканирование библиотеки сейчас"
+  },
+  {
+    "id": "Run maintenance now",
+    "other": "Выполните техническое обслуживание сейчас"
+  },
+  {
+    "id": "Safety scan",
+    "other": "Сканирование безопасности"
+  },
+  {
+    "id": "Save",
+    "other": "Сохранить"
+  },
+  {
+    "id": "Save file",
+    "other": "Сохранить файл"
+  },
+  {
+    "id": "Save for restart",
+    "other": "Сохранить для перезапуска"
+  },
+  {
+    "id": "Save marker",
+    "other": "Сохранить маркер"
+  },
+  {
+    "id": "Save metadata",
+    "other": "Сохранить метаданные"
+  },
+  {
+    "id": "Save schedule",
+    "other": "Сохранить расписание"
+  },
+  {
+    "id": "Schedule",
+    "other": "Расписание"
+  },
+  {
+    "id": "Search library",
+    "other": "Поиск в библиотеке"
+  },
+  {
+    "id": "Search results",
+    "other": "Результаты поиска"
+  },
+  {
+    "id": "Secrets are hidden and included only in encrypted recovery backups.",
+    "other": "Секреты скрыты и включаются только в зашифрованные резервные копии для восстановления."
+  },
+  {
+    "id": "Secure your account",
+    "other": "Защитите свой аккаунт"
+  },
+  {
+    "id": "Secure your account · Kinosail Subtitles",
+    "other": "Защитите свой аккаунт · Kinosail Subtitles"
+  },
+  {
+    "id": "Send this private connection URL to the Viewer. It is shown only once.",
+    "other": "Отправьте этот URL-адрес частного подключения в программу просмотра. Показывается только один раз."
+  },
+  {
+    "id": "Server name",
+    "other": "Имя сервера"
+  },
+  {
+    "id": "Server settings",
+    "other": "Настройки сервера"
+  },
+  {
+    "id": "Server unavailable",
+    "other": "Сервер недоступен"
+  },
+  {
+    "id": "Server unavailable · Kinosail Subtitles",
+    "other": "Сервер недоступен · Kinosail Subtitles"
+  },
+  {
+    "id": "Set up Kinosail Subtitles",
+    "other": "Настройка Kinosail"
+  },
+  {
+    "id": "Set up or replace authenticator",
+    "other": "Настроить или заменить аутентификатор"
+  },
+  {
+    "id": "Set up two-factor authentication",
+    "other": "Настройте двухфакторную аутентификацию"
+  },
+  {
+    "id": "Set up two-factor authentication · Kinosail Subtitles",
+    "other": "Настройка двухфакторной аутентификации · Kinosail Subtitles"
+  },
+  {
+    "id": "Settings",
+    "other": "Настройки"
+  },
+  {
+    "id": "Settings sections",
+    "other": "Разделы настроек"
+  },
+  {
+    "id": "Settings · Kinosail Subtitles",
+    "other": "Настройки · Kinosail Subtitles"
+  },
+  {
+    "id": "Shape the experience, protect your library, and keep every stream running beautifully.",
+    "other": "Формируйте впечатления, защищайте свою библиотеку и следите за тем, чтобы каждый поток работал безупречно."
+  },
+  {
+    "id": "Show",
+    "other": "Показать"
+  },
+  {
+    "id": "Shows",
+    "other": "Показывает"
+  },
+  {
+    "id": "Sign in",
+    "other": "Войти"
+  },
+  {
+    "id": "Sign in to your private media universe.",
+    "other": "Войдите в свою личную медиа-вселенную."
+  },
+  {
+    "id": "Sign in with passkey",
+    "other": "Войдите с паролем"
+  },
+  {
+    "id": "Sign in with SSO",
+    "other": "Войдите с помощью единого входа"
+  },
+  {
+    "id": "Sign in · Kinosail Subtitles",
+    "other": "Войти · Kinosail Subtitles"
+  },
+  {
+    "id": "Sign out",
+    "other": "Выйти"
+  },
+  {
+    "id": "Sign out other devices",
+    "other": "Выйти из других устройств"
+  },
+  {
+    "id": "Sign-in methods",
+    "other": "Способы входа"
+  },
+  {
+    "id": "Sign-in, same-origin browser protections, private responses, bounded requests, and revocable access are always on. There are no security switches to manage.",
+    "other": "Вход в систему, защита браузера того же источника, частные ответы, ограниченные запросы и отзывной доступ всегда включены. Нет переключателей безопасности, которыми нужно было бы управлять."
+  },
+  {
+    "id": "Single sign-on",
+    "other": "Единый вход"
+  },
+  {
+    "id": "Skip",
+    "other": "Пропустить"
+  },
+  {
+    "id": "Skip commercials automatically",
+    "other": "Автоматический пропуск рекламы"
+  },
+  {
+    "id": "Skip credits automatically",
+    "other": "Автоматический пропуск титров"
+  },
+  {
+    "id": "Skip intros automatically",
+    "other": "Автоматически пропускать вступления"
+  },
+  {
+    "id": "Skip outros automatically",
+    "other": "Автоматически пропускать концовки"
+  },
+  {
+    "id": "Skip recaps automatically",
+    "other": "Автоматически пропускать повторы"
+  },
+  {
+    "id": "Skip to content",
+    "other": "Перейти к содержимому"
+  },
+  {
+    "id": "Sleep timer",
+    "other": "Таймер сна"
+  },
+  {
+    "id": "Sleep timer ended",
+    "other": "Таймер сна закончился"
+  },
+  {
+    "id": "Smart playlist",
+    "other": "Умный плейлист"
+  },
+  {
+    "id": "Smart playlist name",
+    "other": "Название умного плейлиста"
+  },
+  {
+    "id": "Software",
+    "other": "Программное обеспечение"
+  },
+  {
+    "id": "Sort",
+    "other": "Сортировать"
+  },
+  {
+    "id": "Source",
+    "other": "Источник"
+  },
+  {
+    "id": "speed",
+    "other": "скорость"
+  },
+  {
+    "id": "SSO challenge is invalid or expired",
+    "other": "Вызов единого входа недействителен или срок его действия истек"
+  },
+  {
+    "id": "SSO code exchange failed",
+    "other": "Не удалось обменять код SSO"
+  },
+  {
+    "id": "SSO identity is not linked to a Viewer Profile",
+    "other": "Идентификатор SSO не связан с профилем зрителя"
+  },
+  {
+    "id": "SSO is unavailable",
+    "other": "SSO недоступен"
+  },
+  {
+    "id": "SSO session could not be created",
+    "other": "Не удалось создать сеанс единого входа"
+  },
+  {
+    "id": "SSO state is invalid or expired",
+    "other": "Состояние единого входа недействительно или срок его действия истек"
+  },
+  {
+    "id": "SSO token validation failed",
+    "other": "Проверка токена SSO не удалась"
+  },
+  {
+    "id": "Start in seconds",
+    "other": "Начните через несколько секунд"
+  },
+  {
+    "id": "Start Watch Together",
+    "other": "Начните смотреть вместе"
+  },
+  {
+    "id": "Status",
+    "other": "Статус"
+  },
+  {
+    "id": "Stops in {minutes} minutes",
+    "other": "Остановка через {minutes} минут"
+  },
+  {
+    "id": "Store these codes somewhere safe. Each works once.",
+    "other": "Сохраните эти коды в надежном месте. Каждый работает один раз."
+  },
+  {
+    "id": "Stored here. Streamed directly.",
+    "other": "Хранится здесь. Прямая трансляция."
+  },
+  {
+    "id": "Stream media",
+    "other": "Потоковое мультимедиа"
+  },
+  {
+    "id": "Subscription required",
+    "other": "Требуется подписка"
+  },
+  {
+    "id": "Subtitle provider",
+    "other": "Поставщик субтитров"
+  },
+  {
+    "id": "subtitle provider unavailable",
+    "other": "поставщик субтитров недоступен"
+  },
+  {
+    "id": "subtitle track(s)",
+    "other": "дорожки с субтитрами"
+  },
+  {
+    "id": "Subtitles",
+    "other": "Субтитры"
+  },
+  {
+    "id": "subtitles",
+    "other": "субтитры"
+  },
+  {
+    "id": "Sync",
+    "other": "Синхронизировать"
+  },
+  {
+    "id": "System",
+    "other": "Система"
+  },
+  {
+    "id": "Tagline",
+    "other": "Слоган"
+  },
+  {
+    "id": "The backup contains account and session state. Keep unencrypted backup storage private, or configure a backup key.",
+    "other": "Резервная копия содержит состояние учетной записи и сеанса. Сохраняйте незашифрованное хранилище резервных копий конфиденциальным или настройте резервный ключ."
+  },
+  {
+    "id": "Theme",
+    "other": "Тема"
+  },
+  {
+    "id": "These settings are read-only until removed from YAML or the environment",
+    "other": "Эти настройки доступны только для чтения, пока они не будут удалены из YAML или среды"
+  },
+  {
+    "id": "This Collection is empty.",
+    "other": "Эта коллекция пуста."
+  },
+  {
+    "id": "This permanently deletes the Collection.",
+    "other": "Коллекция будет удалена без возможности восстановления."
+  },
+  {
+    "id": "This permanently deletes the playlist.",
+    "other": "При этом плейлист будет удален без возможности восстановления."
+  },
+  {
+    "id": "This playlist is empty.",
+    "other": "Этот плейлист пуст."
+  },
+  {
+    "id": "This product uses the TMDB API but is not endorsed or certified by TMDB.",
+    "other": "Этот продукт использует API TMDB, но не одобрен и не сертифицирован TMDB."
+  },
+  {
+    "id": "This signs out the profile and deletes it.",
+    "other": "Это приведет к выходу из профиля и его удалению."
+  },
+  {
+    "id": "Through PG / TV-PG",
+    "other": "Через PG/TV-PG"
+  },
+  {
+    "id": "Through PG-13 / TV-14",
+    "other": "Через PG-13/TV-14"
+  },
+  {
+    "id": "Title",
+    "other": "Название"
+  },
+  {
+    "id": "Title, artist, genre",
+    "other": "Название, исполнитель, жанр"
+  },
+  {
+    "id": "Title, artist, genre…",
+    "other": "Название, исполнитель, жанр…"
+  },
+  {
+    "id": "TMDB",
+    "other": "TMDB"
+  },
+  {
+    "id": "Tone-map HDR to SDR",
+    "other": "Преобразование HDR в SDR"
+  },
+  {
+    "id": "too many login attempts",
+    "other": "слишком много попыток входа"
+  },
+  {
+    "id": "too many Watch Together rooms",
+    "other": "слишком много комнат «Смотреть вместе»"
+  },
+  {
+    "id": "Track",
+    "other": "Отслеживать"
+  },
+  {
+    "id": "transcode cache",
+    "other": "перекодировать кэш"
+  },
+  {
+    "id": "Transcoder",
+    "other": "Транскодер"
+  },
+  {
+    "id": "transcoding is not allowed",
+    "other": "перекодирование запрещено"
+  },
+  {
+    "id": "Try again",
+    "other": "Попробуйте еще раз"
+  },
+  {
+    "id": "Two-factor authentication",
+    "other": "Двухфакторная аутентификация"
+  },
+  {
+    "id": "Two-factor authentication · Kinosail Subtitles",
+    "other": "Двухфакторная аутентификация · Kinosail Subtitles"
+  },
+  {
+    "id": "Type",
+    "other": "Тип"
+  },
+  {
+    "id": "Unlink OpenID Connect",
+    "other": "Отменить привязку OpenID Connect"
+  },
+  {
+    "id": "Until",
+    "other": "До"
+  },
+  {
+    "id": "Unwatched",
+    "other": "Непросмотрено"
+  },
+  {
+    "id": "unwatched",
+    "other": "непросмотрено"
+  },
+  {
+    "id": "Use default",
+    "other": "Использовать по умолчанию"
+  },
+  {
+    "id": "Use Face ID, Touch ID, Windows Hello, or your device PIN to sign in. Your password will still work.",
+    "other": "Для входа в систему используйте Face ID, Touch ID, Windows Hello или PIN-код вашего устройства. Ваш пароль по-прежнему будет работать."
+  },
+  {
+    "id": "VA-API (AMD/Intel)",
+    "other": "VA-API (AMD/Intel)"
+  },
+  {
+    "id": "Verified Direct Connection",
+    "other": "Проверенное прямое соединение"
+  },
+  {
+    "id": "Verified Direct Connection is not configured",
+    "other": "Проверенное прямое соединение не настроено"
+  },
+  {
+    "id": "Verify latest backup",
+    "other": "Проверьте последнюю резервную копию"
+  },
+  {
+    "id": "Video",
+    "other": "Видео"
+  },
+  {
+    "id": "Viewer",
+    "other": "Просмотр"
+  },
+  {
+    "id": "Viewer access is not available",
+    "other": "Доступ для просмотра недоступен"
+  },
+  {
+    "id": "Viewer device",
+    "other": "Устройство просмотра"
+  },
+  {
+    "id": "Viewer name",
+    "other": "Имя зрителя"
+  },
+  {
+    "id": "Waiting for your passkey…",
+    "other": "Ожидание пароля…"
+  },
+  {
+    "id": "Watch Together state is invalid",
+    "other": "Состояние «Смотреть вместе» недействительно"
+  },
+  {
+    "id": "watched",
+    "other": "просмотрел"
+  },
+  {
+    "id": "Watched",
+    "other": "Просмотрено"
+  },
+  {
+    "id": "Watched ✓",
+    "other": "Просмотрено ✓"
+  },
+  {
+    "id": "Watching for changes",
+    "other": "Ждем изменений"
+  },
+  {
+    "id": "Welcome aboard",
+    "other": "Добро пожаловать на борт"
+  },
+  {
+    "id": "when ready.",
+    "other": "когда будет готово."
+  },
+  {
+    "id": "WireGuard Viewer not found",
+    "other": "Программа просмотра WireGuard не найдена"
+  },
+  {
+    "id": "XMLTV guide",
+    "other": "XMLTV-руководство"
+  },
+  {
+    "id": "Year",
+    "other": "Год"
+  },
+  {
+    "id": "You lead this room",
+    "other": "Вы возглавляете эту комнату"
+  },
+  {
+    "id": "Your library",
+    "other": "Ваша библиотека"
+  },
+  {
+    "id": "Your library and viewing activity stay on this Server.",
+    "other": "Ваша библиотека и действия по просмотру остаются на этом сервере."
+  },
+  {
+    "id": "← Books",
+    "other": "← Книги"
+  },
+  {
+    "id": "← Library",
+    "other": "← Библиотека"
+  },
+  {
+    "id": "← Settings",
+    "other": "← Настройки"
+  }
+]

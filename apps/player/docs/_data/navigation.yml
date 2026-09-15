@@ -1,0 +1,95 @@
+- title: Start here
+  url: /getting-started/
+  pages:
+    - title: Choose an install path
+      url: /getting-started/
+    - title: Install Kinosail
+      url: /getting-started/install/
+    - title: Complete first setup
+      url: /getting-started/first-setup/
+    - title: Connect phones, TVs, and apps
+      url: /getting-started/connect-devices/
+    - title: Add your media
+      url: /getting-started/add-media/
+- title: Use Kinosail
+  url: /user-guide/
+  pages:
+    - title: User guide
+      url: /user-guide/
+    - title: Browse and search
+      url: /user-guide/browse-and-search/
+    - title: Play media
+      url: /user-guide/playback/
+    - title: Profiles and household access
+      url: /user-guide/profiles/
+    - title: Lists and collections
+      url: /user-guide/lists-and-collections/
+    - title: Share and watch together
+      url: /user-guide/sharing/
+- title: Own the Server
+  url: /owner-guide/
+  pages:
+    - title: Owner guide
+      url: /owner-guide/
+    - title: Manage libraries
+      url: /owner-guide/libraries/
+    - title: Configure playback
+      url: /owner-guide/playback/
+    - title: Secure accounts
+      url: /owner-guide/security/
+    - title: Configure remote access
+      url: /owner-guide/remote-access/
+    - title: Connect integrations
+      url: /owner-guide/integrations/
+    - title: Back up and update
+      url: /owner-guide/backups-and-updates/
+- title: Build with Kinosail
+  url: /developer-guide/
+  pages:
+    - title: Developer guide
+      url: /developer-guide/
+    - title: API quickstart
+      url: /developer-guide/api-quickstart/
+    - title: API workflows
+      url: /developer-guide/api-workflows/
+    - title: Connect an MCP client
+      url: /developer-guide/mcp/
+    - title: API reference
+      url: /reference/api/
+- title: Reference
+  url: /reference/
+  pages:
+    - title: Reference home
+      url: /reference/
+    - title: Configuration
+      url: /reference/configuration/
+    - title: API
+      url: /reference/api/
+    - title: Media compatibility
+      url: /reference/media-compatibility/
+    - title: Architecture and privacy
+      url: /reference/architecture-and-privacy/
+    - title: Interactive code atlas
+      url: /reference/code-atlas/
+    - title: Glossary
+      url: /reference/glossary/
+- title: Fix a problem
+  url: /troubleshooting/
+  pages:
+    - title: Troubleshooting
+      url: /troubleshooting/
+    - title: Install and startup
+      url: /troubleshooting/install-and-startup/
+    - title: Scanning and metadata
+      url: /troubleshooting/scanning-and-metadata/
+    - title: Playback
+      url: /troubleshooting/playback/
+    - title: Sign-in and access
+      url: /troubleshooting/sign-in-and-access/
+- title: Project
+  url: /faq/
+  pages:
+    - title: Frequently asked questions
+      url: /faq/
+    - title: Documentation guide
+      url: /contributing/documentation/

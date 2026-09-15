@@ -1,0 +1,145 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1800 740" role="img" aria-labelledby="title desc">
+  <title id="title">7. Wake Crests supporter badge vector set</title>
+  <desc id="desc">Ten levels shown in Living Standard signal green and Patron Order brass. The artwork contains SVG geometry only.</desc>
+  <style>
+    text{font-family:Inter,ui-sans-serif,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}.eyebrow,.rank,.elite,.family-label,.proof{font-weight:800;letter-spacing:2px}.body{stroke-width:3.5;stroke-linejoin:round}.inner{fill:#090a08;stroke-width:2.5;stroke-linejoin:round}.detail{fill:none;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}.detail-fill{stroke:#090a08;stroke-width:1.4;stroke-linejoin:round}.caption{fill:#090a08;stroke-width:3.5;stroke-linejoin:round}.caption-lines{fill:none;stroke-width:5;stroke-linecap:round}.living .body{fill:#18210f;stroke:#c8f169}.living .inner,.living .detail{stroke:#c8f169}.living .detail-fill{fill:#c8f169}.living .caption{stroke:#f6f8ef}.living .caption-lines{stroke:#c8f169}.patron .body{fill:#211a10;stroke:#b49350}.patron .inner,.patron .detail{stroke:#b49350}.patron .detail-fill{fill:#d6b96d}.patron .caption{stroke:#fff4bd}.patron .caption-lines{stroke:#b49350}.rank{fill:#f6f8ef;font-size:11px}.elite{fill:#d6b96d;font-size:9px}.family-label{font-size:13px}.proof{fill:#9ca391;font-size:11px}
+  </style>
+  <rect width="1800" height="740" fill="#090a08"/>
+  <path d="M0 181H1800M0 433H1800M0 685H1800" fill="none" stroke="#2a2d26"/>
+  <text class="eyebrow" x="48" y="48" fill="#c8f169" font-size="15">KINOSAIL SUPPORTER BADGE STUDY / SET 07</text>
+  <text id="set-name" x="48" y="99" fill="#f6f8ef" font-size="45" font-weight="760" letter-spacing="-2">Wake Crests</text>
+  <text x="48" y="133" fill="#9ca391" font-size="18">Layered wakes sit inside a protective maritime crest.</text>
+  <text class="proof" x="1752" y="48" text-anchor="end">SVG GEOMETRY / ZERO RASTER ASSETS</text>
+  <text class="family-label" x="48" y="211" fill="#c8f169">LIVING STANDARD / ACTIVE SIGNAL ENAMEL</text>
+  <g class="living" data-badge="living-1" data-family="living" data-rank="1" role="group" aria-label="Living Standard level 1" transform="translate(94 297)">
+  <g aria-hidden="true"><path class="body" d="M-42.4-35Q-21.2-51 0-39Q21.2-51 42.4-35L47.4 8Q-34.4 40 0 54.5Q34.4 40 47.4 8Z"/><path class="inner" d="M-37-29Q-18-39.5 0-31Q18-39.5 37-29L41 9Q32 32 0 46Q-32 32-41 9Z"/><path class="detail" d="M-42 27q10-9 20 0t20 0t20 0t20 0"/>
+  <path class="caption" d="M-29-17h58v37H8L-10 31V20h-19Z"/>
+  <path class="caption-lines" d="M-17-5h34M-17 8H9"/></g>
+  <text class="rank" x="0" y="82" text-anchor="middle">LEVEL 01</text>
+</g>
+<g class="living" data-badge="living-2" data-family="living" data-rank="2" role="group" aria-label="Living Standard level 2" transform="translate(273 297)">
+  <g aria-hidden="true"><path class="body" d="M-43.8-35Q-21.9-52 0-39Q21.9-52 43.8-35L48.8 8Q-35.8 40 0 55Q35.8 40 48.8 8Z"/><path class="inner" d="M-37-29Q-18-40 0-31Q18-40 37-29L41 9Q32 32 0 46Q-32 32-41 9Z"/><path class="detail" d="M-42 27q10-9 20 0t20 0t20 0t20 0"/>
+  <path class="caption" d="M-29-17h58v37H8L-10 31V20h-19Z"/>
+  <path class="caption-lines" d="M-17-5h34M-17 8H9"/></g>
+  <text class="rank" x="0" y="82" text-anchor="middle">LEVEL 02</text>
+</g>
+<g class="living" data-badge="living-3" data-family="living" data-rank="3" role="group" aria-label="Living Standard level 3" transform="translate(452 297)">
+  <g aria-hidden="true"><path class="body" d="M-45.2-35Q-22.6-53 0-39Q22.6-53 45.2-35L50.2 8Q-37.2 40 0 55.5Q37.2 40 50.2 8Z"/><path class="inner" d="M-37-29Q-18-40.5 0-31Q18-40.5 37-29L41 9Q32 32 0 46Q-32 32-41 9Z"/><path class="detail" d="M-42 27q10-9 20 0t20 0t20 0t20 0"/><path class="detail" d="M-42 35q10-9 20 0t20 0t20 0t20 0"/>
+  <path class="caption" d="M-29-17h58v37H8L-10 31V20h-19Z"/>
+  <path class="caption-lines" d="M-17-5h34M-17 8H9"/></g>
+  <text class="rank" x="0" y="82" text-anchor="middle">LEVEL 03</text>
+</g>
+<g class="living" data-badge="living-4" data-family="living" data-rank="4" role="group" aria-label="Living Standard level 4" transform="translate(631 297)">
+  <g aria-hidden="true"><path class="body" d="M-46.6-35Q-23.3-54 0-39Q23.3-54 46.6-35L51.6 8Q-38.6 40 0 56Q38.6 40 51.6 8Z"/><path class="detail-fill" d="M-44.6-14l-12 14 17 7M44.6-14l12 14-17 7"/><path class="inner" d="M-37-29Q-18-41 0-31Q18-41 37-29L41 9Q32 32 0 46Q-32 32-41 9Z"/><path class="detail" d="M-42 27q10-9 20 0t20 0t20 0t20 0"/><path class="detail" d="M-42 35q10-9 20 0t20 0t20 0t20 0"/>
+  <path class="caption" d="M-29-17h58v37H8L-10 31V20h-19Z"/>
+  <path class="caption-lines" d="M-17-5h34M-17 8H9"/></g>
+  <text class="rank" x="0" y="82" text-anchor="middle">LEVEL 04</text>
+</g>
+<g class="living" data-badge="living-5" data-family="living" data-rank="5" role="group" aria-label="Living Standard level 5" transform="translate(810 297)">
+  <g aria-hidden="true"><path class="body" d="M-48-35Q-24-55 0-39Q24-55 48-35L53 8Q-40 40 0 56.5Q40 40 53 8Z"/><path class="detail-fill" d="M-46-14l-13 14.5 18 7M46-14l13 14.5-18 7"/><path class="inner" d="M-37-29Q-18-41.5 0-31Q18-41.5 37-29L41 9Q32 32 0 46Q-32 32-41 9Z"/><path class="detail" d="M-42 27q10-9 20 0t20 0t20 0t20 0"/><path class="detail" d="M-42 35q10-9 20 0t20 0t20 0t20 0"/>
+  <path class="caption" d="M-29-17h58v37H8L-10 31V20h-19Z"/>
+  <path class="caption-lines" d="M-17-5h34M-17 8H9"/></g>
+  <text class="rank" x="0" y="82" text-anchor="middle">LEVEL 05</text>
+</g>
+<g class="living" data-badge="living-6" data-family="living" data-rank="6" role="group" aria-label="Living Standard level 6" transform="translate(989 297)">
+  <g aria-hidden="true"><path class="body" d="M-49.4-35Q-24.7-56 0-39Q24.7-56 49.4-35L54.4 8Q-41.4 40 0 57Q41.4 40 54.4 8Z"/><path class="detail-fill" d="M-47.4-14l-14 15 19 7M47.4-14l14 15-19 7"/><path class="inner" d="M-37-29Q-18-42 0-31Q18-42 37-29L41 9Q32 32 0 46Q-32 32-41 9Z"/><path class="detail" d="M-42 27q10-9 20 0t20 0t20 0t20 0"/><path class="detail" d="M-42 35q10-9 20 0t20 0t20 0t20 0"/><path class="detail" d="M-42 43q10-9 20 0t20 0t20 0t20 0"/>
+  <path class="caption" d="M-29-17h58v37H8L-10 31V20h-19Z"/>
+  <path class="caption-lines" d="M-17-5h34M-17 8H9"/></g>
+  <text class="rank" x="0" y="82" text-anchor="middle">LEVEL 06</text>
+</g>
+<g class="living" data-badge="living-7" data-family="living" data-rank="7" role="group" aria-label="Living Standard level 7, elite" transform="translate(1168 297)">
+  <g aria-hidden="true"><path class="body" d="M-50.8-35Q-25.4-57 0-39Q25.4-57 50.8-35L55.8 8Q-26 40-8 55L0 48l8 7Q26 40 55.8 8Z"/><path class="detail-fill" d="M-48.8-14l-15 15.5 20 7M48.8-14l15 15.5-20 7"/><path class="detail" d="M-24-42v-12l12 5-12 5M24-42v-12l-12 5 12 5"/><path class="inner" d="M-37-29Q-18-42.5 0-31Q18-42.5 37-29L41 9Q32 32 0 46Q-32 32-41 9Z"/><path class="detail" d="M-42 27q10-9 20 0t20 0t20 0t20 0"/><path class="detail" d="M-42 35q10-9 20 0t20 0t20 0t20 0"/><path class="detail" d="M-42 43q10-9 20 0t20 0t20 0t20 0"/>
+  <path class="caption" d="M-29-17h58v37H8L-10 31V20h-19Z"/>
+  <path class="caption-lines" d="M-17-5h34M-17 8H9"/></g>
+  <text class="rank" x="0" y="82" text-anchor="middle">LEVEL 07</text>
+  <text class="elite" x="0" y="99" text-anchor="middle">ELITE</text>
+</g>
+<g class="living" data-badge="living-8" data-family="living" data-rank="8" role="group" aria-label="Living Standard level 8, elite" transform="translate(1347 297)">
+  <g aria-hidden="true"><path class="body" d="M-52.2-35Q-26.1-58 0-39Q26.1-58 52.2-35L57.2 8Q-26 40-8 55L0 48l8 7Q26 40 57.2 8Z"/><path class="detail-fill" d="M-50.2-14l-16 16 21 7M50.2-14l16 16-21 7"/><path class="detail" d="M-24-42v-12l12 5-12 5M24-42v-12l-12 5 12 5"/><path class="inner" d="M-37-29Q-18-43 0-31Q18-43 37-29L41 9Q32 32 0 46Q-32 32-41 9Z"/><path class="detail" d="M-42 27q10-9 20 0t20 0t20 0t20 0"/><path class="detail" d="M-42 35q10-9 20 0t20 0t20 0t20 0"/><path class="detail" d="M-42 43q10-9 20 0t20 0t20 0t20 0"/>
+  <path class="caption" d="M-29-17h58v37H8L-10 31V20h-19Z"/>
+  <path class="caption-lines" d="M-17-5h34M-17 8H9"/></g>
+  <text class="rank" x="0" y="82" text-anchor="middle">LEVEL 08</text>
+  <text class="elite" x="0" y="99" text-anchor="middle">ELITE</text>
+</g>
+<g class="living" data-badge="living-9" data-family="living" data-rank="9" role="group" aria-label="Living Standard level 9, elite" transform="translate(1526 297)">
+  <g aria-hidden="true"><path class="body" d="M-53.6-35Q-26.8-59 0-39Q26.8-59 53.6-35L58.6 8Q-26 40-8 55L0 48l8 7Q26 40 58.6 8Z"/><path class="detail-fill" d="M-51.6-14l-17 16.5 22 7M51.6-14l17 16.5-22 7"/><path class="detail" d="M-24-42v-12l12 5-12 5M24-42v-12l-12 5 12 5"/><path class="detail" d="M-29-44l10-14L0-45l19-13 10 14"/><path class="inner" d="M-37-29Q-18-43.5 0-31Q18-43.5 37-29L41 9Q32 32 0 46Q-32 32-41 9Z"/><path class="detail" d="M-42 27q10-9 20 0t20 0t20 0t20 0"/><path class="detail" d="M-42 35q10-9 20 0t20 0t20 0t20 0"/><path class="detail" d="M-42 43q10-9 20 0t20 0t20 0t20 0"/><path class="detail" d="M-42 51q10-9 20 0t20 0t20 0t20 0"/>
+  <path class="caption" d="M-29-17h58v37H8L-10 31V20h-19Z"/>
+  <path class="caption-lines" d="M-17-5h34M-17 8H9"/></g>
+  <text class="rank" x="0" y="82" text-anchor="middle">LEVEL 09</text>
+  <text class="elite" x="0" y="99" text-anchor="middle">ELITE</text>
+</g>
+<g class="living" data-badge="living-10" data-family="living" data-rank="10" role="group" aria-label="Living Standard level 10, elite" transform="translate(1705 297)">
+  <g aria-hidden="true"><path class="body" d="M-55-35Q-27.5-60 0-39Q27.5-60 55-35L60 8Q-26 40-8 55L0 48l8 7Q26 40 60 8Z"/><path class="detail-fill" d="M-53-14l-18 17 23 7M53-14l18 17-23 7"/><path class="detail" d="M-24-42v-12l12 5-12 5M24-42v-12l-12 5 12 5"/><path class="detail" d="M-29-44l10-14L0-45l19-13 10 14"/><path class="inner" d="M-37-29Q-18-44 0-31Q18-44 37-29L41 9Q32 32 0 46Q-32 32-41 9Z"/><path class="detail" d="M-42 27q10-9 20 0t20 0t20 0t20 0"/><path class="detail" d="M-42 35q10-9 20 0t20 0t20 0t20 0"/><path class="detail" d="M-42 43q10-9 20 0t20 0t20 0t20 0"/><path class="detail" d="M-42 51q10-9 20 0t20 0t20 0t20 0"/>
+  <path class="caption" d="M-29-17h58v37H8L-10 31V20h-19Z"/>
+  <path class="caption-lines" d="M-17-5h34M-17 8H9"/></g>
+  <text class="rank" x="0" y="82" text-anchor="middle">LEVEL 10</text>
+  <text class="elite" x="0" y="99" text-anchor="middle">ELITE</text>
+</g>
+  <text class="family-label" x="48" y="463" fill="#d6b96d">PATRON ORDER / PERMANENT BRASS ENAMEL</text>
+  <g class="patron" data-badge="patron-1" data-family="patron" data-rank="1" role="group" aria-label="Patron Order level 1" transform="translate(94 552)">
+  <g aria-hidden="true"><path class="body" d="M-42.4-35Q-21.2-51 0-39Q21.2-51 42.4-35L47.4 8Q-34.4 40 0 54.5Q34.4 40 47.4 8Z"/><path class="inner" d="M-37-29Q-18-39.5 0-31Q18-39.5 37-29L41 9Q32 32 0 46Q-32 32-41 9Z"/><path class="detail" d="M-42 27q10-9 20 0t20 0t20 0t20 0"/>
+  <path class="caption" d="M-29-17h58v37H8L-10 31V20h-19Z"/>
+  <path class="caption-lines" d="M-17-5h34M-17 8H9"/></g>
+  <text class="rank" x="0" y="82" text-anchor="middle">LEVEL 01</text>
+</g>
+<g class="patron" data-badge="patron-2" data-family="patron" data-rank="2" role="group" aria-label="Patron Order level 2" transform="translate(273 552)">
+  <g aria-hidden="true"><path class="body" d="M-43.8-35Q-21.9-52 0-39Q21.9-52 43.8-35L48.8 8Q-35.8 40 0 55Q35.8 40 48.8 8Z"/><path class="inner" d="M-37-29Q-18-40 0-31Q18-40 37-29L41 9Q32 32 0 46Q-32 32-41 9Z"/><path class="detail" d="M-42 27q10-9 20 0t20 0t20 0t20 0"/>
+  <path class="caption" d="M-29-17h58v37H8L-10 31V20h-19Z"/>
+  <path class="caption-lines" d="M-17-5h34M-17 8H9"/></g>
+  <text class="rank" x="0" y="82" text-anchor="middle">LEVEL 02</text>
+</g>
+<g class="patron" data-badge="patron-3" data-family="patron" data-rank="3" role="group" aria-label="Patron Order level 3" transform="translate(452 552)">
+  <g aria-hidden="true"><path class="body" d="M-45.2-35Q-22.6-53 0-39Q22.6-53 45.2-35L50.2 8Q-37.2 40 0 55.5Q37.2 40 50.2 8Z"/><path class="inner" d="M-37-29Q-18-40.5 0-31Q18-40.5 37-29L41 9Q32 32 0 46Q-32 32-41 9Z"/><path class="detail" d="M-42 27q10-9 20 0t20 0t20 0t20 0"/><path class="detail" d="M-42 35q10-9 20 0t20 0t20 0t20 0"/>
+  <path class="caption" d="M-29-17h58v37H8L-10 31V20h-19Z"/>
+  <path class="caption-lines" d="M-17-5h34M-17 8H9"/></g>
+  <text class="rank" x="0" y="82" text-anchor="middle">LEVEL 03</text>
+</g>
+<g class="patron" data-badge="patron-4" data-family="patron" data-rank="4" role="group" aria-label="Patron Order level 4" transform="translate(631 552)">
+  <g aria-hidden="true"><path class="body" d="M-46.6-35Q-23.3-54 0-39Q23.3-54 46.6-35L51.6 8Q-38.6 40 0 56Q38.6 40 51.6 8Z"/><path class="detail-fill" d="M-44.6-14l-12 14 17 7M44.6-14l12 14-17 7"/><path class="inner" d="M-37-29Q-18-41 0-31Q18-41 37-29L41 9Q32 32 0 46Q-32 32-41 9Z"/><path class="detail" d="M-42 27q10-9 20 0t20 0t20 0t20 0"/><path class="detail" d="M-42 35q10-9 20 0t20 0t20 0t20 0"/>
+  <path class="caption" d="M-29-17h58v37H8L-10 31V20h-19Z"/>
+  <path class="caption-lines" d="M-17-5h34M-17 8H9"/></g>
+  <text class="rank" x="0" y="82" text-anchor="middle">LEVEL 04</text>
+</g>
+<g class="patron" data-badge="patron-5" data-family="patron" data-rank="5" role="group" aria-label="Patron Order level 5" transform="translate(810 552)">
+  <g aria-hidden="true"><path class="body" d="M-48-35Q-24-55 0-39Q24-55 48-35L53 8Q-40 40 0 56.5Q40 40 53 8Z"/><path class="detail-fill" d="M-46-14l-13 14.5 18 7M46-14l13 14.5-18 7"/><path class="inner" d="M-37-29Q-18-41.5 0-31Q18-41.5 37-29L41 9Q32 32 0 46Q-32 32-41 9Z"/><path class="detail" d="M-42 27q10-9 20 0t20 0t20 0t20 0"/><path class="detail" d="M-42 35q10-9 20 0t20 0t20 0t20 0"/>
+  <path class="caption" d="M-29-17h58v37H8L-10 31V20h-19Z"/>
+  <path class="caption-lines" d="M-17-5h34M-17 8H9"/></g>
+  <text class="rank" x="0" y="82" text-anchor="middle">LEVEL 05</text>
+</g>
+<g class="patron" data-badge="patron-6" data-family="patron" data-rank="6" role="group" aria-label="Patron Order level 6" transform="translate(989 552)">
+  <g aria-hidden="true"><path class="body" d="M-49.4-35Q-24.7-56 0-39Q24.7-56 49.4-35L54.4 8Q-41.4 40 0 57Q41.4 40 54.4 8Z"/><path class="detail-fill" d="M-47.4-14l-14 15 19 7M47.4-14l14 15-19 7"/><path class="inner" d="M-37-29Q-18-42 0-31Q18-42 37-29L41 9Q32 32 0 46Q-32 32-41 9Z"/><path class="detail" d="M-42 27q10-9 20 0t20 0t20 0t20 0"/><path class="detail" d="M-42 35q10-9 20 0t20 0t20 0t20 0"/><path class="detail" d="M-42 43q10-9 20 0t20 0t20 0t20 0"/>
+  <path class="caption" d="M-29-17h58v37H8L-10 31V20h-19Z"/>
+  <path class="caption-lines" d="M-17-5h34M-17 8H9"/></g>
+  <text class="rank" x="0" y="82" text-anchor="middle">LEVEL 06</text>
+</g>
+<g class="patron" data-badge="patron-7" data-family="patron" data-rank="7" role="group" aria-label="Patron Order level 7, elite" transform="translate(1168 552)">
+  <g aria-hidden="true"><path class="body" d="M-50.8-35Q-25.4-57 0-39Q25.4-57 50.8-35L55.8 8Q-26 40-8 55L0 48l8 7Q26 40 55.8 8Z"/><path class="detail-fill" d="M-48.8-14l-15 15.5 20 7M48.8-14l15 15.5-20 7"/><path class="detail" d="M-24-42v-12l12 5-12 5M24-42v-12l-12 5 12 5"/><path class="inner" d="M-37-29Q-18-42.5 0-31Q18-42.5 37-29L41 9Q32 32 0 46Q-32 32-41 9Z"/><path class="detail" d="M-42 27q10-9 20 0t20 0t20 0t20 0"/><path class="detail" d="M-42 35q10-9 20 0t20 0t20 0t20 0"/><path class="detail" d="M-42 43q10-9 20 0t20 0t20 0t20 0"/>
+  <path class="caption" d="M-29-17h58v37H8L-10 31V20h-19Z"/>
+  <path class="caption-lines" d="M-17-5h34M-17 8H9"/></g>
+  <text class="rank" x="0" y="82" text-anchor="middle">LEVEL 07</text>
+  <text class="elite" x="0" y="99" text-anchor="middle">ELITE</text>
+</g>
+<g class="patron" data-badge="patron-8" data-family="patron" data-rank="8" role="group" aria-label="Patron Order level 8, elite" transform="translate(1347 552)">
+  <g aria-hidden="true"><path class="body" d="M-52.2-35Q-26.1-58 0-39Q26.1-58 52.2-35L57.2 8Q-26 40-8 55L0 48l8 7Q26 40 57.2 8Z"/><path class="detail-fill" d="M-50.2-14l-16 16 21 7M50.2-14l16 16-21 7"/><path class="detail" d="M-24-42v-12l12 5-12 5M24-42v-12l-12 5 12 5"/><path class="inner" d="M-37-29Q-18-43 0-31Q18-43 37-29L41 9Q32 32 0 46Q-32 32-41 9Z"/><path class="detail" d="M-42 27q10-9 20 0t20 0t20 0t20 0"/><path class="detail" d="M-42 35q10-9 20 0t20 0t20 0t20 0"/><path class="detail" d="M-42 43q10-9 20 0t20 0t20 0t20 0"/>
+  <path class="caption" d="M-29-17h58v37H8L-10 31V20h-19Z"/>
+  <path class="caption-lines" d="M-17-5h34M-17 8H9"/></g>
+  <text class="rank" x="0" y="82" text-anchor="middle">LEVEL 08</text>
+  <text class="elite" x="0" y="99" text-anchor="middle">ELITE</text>
+</g>
+<g class="patron" data-badge="patron-9" data-family="patron" data-rank="9" role="group" aria-label="Patron Order level 9, elite" transform="translate(1526 552)">
+  <g aria-hidden="true"><path class="body" d="M-53.6-35Q-26.8-59 0-39Q26.8-59 53.6-35L58.6 8Q-26 40-8 55L0 48l8 7Q26 40 58.6 8Z"/><path class="detail-fill" d="M-51.6-14l-17 16.5 22 7M51.6-14l17 16.5-22 7"/><path class="detail" d="M-24-42v-12l12 5-12 5M24-42v-12l-12 5 12 5"/><path class="detail" d="M-29-44l10-14L0-45l19-13 10 14"/><path class="inner" d="M-37-29Q-18-43.5 0-31Q18-43.5 37-29L41 9Q32 32 0 46Q-32 32-41 9Z"/><path class="detail" d="M-42 27q10-9 20 0t20 0t20 0t20 0"/><path class="detail" d="M-42 35q10-9 20 0t20 0t20 0t20 0"/><path class="detail" d="M-42 43q10-9 20 0t20 0t20 0t20 0"/><path class="detail" d="M-42 51q10-9 20 0t20 0t20 0t20 0"/>
+  <path class="caption" d="M-29-17h58v37H8L-10 31V20h-19Z"/>
+  <path class="caption-lines" d="M-17-5h34M-17 8H9"/></g>
+  <text class="rank" x="0" y="82" text-anchor="middle">LEVEL 09</text>
+  <text class="elite" x="0" y="99" text-anchor="middle">ELITE</text>
+</g>
+<g class="patron" data-badge="patron-10" data-family="patron" data-rank="10" role="group" aria-label="Patron Order level 10, elite" transform="translate(1705 552)">
+  <g aria-hidden="true"><path class="body" d="M-55-35Q-27.5-60 0-39Q27.5-60 55-35L60 8Q-26 40-8 55L0 48l8 7Q26 40 60 8Z"/><path class="detail-fill" d="M-53-14l-18 17 23 7M53-14l18 17-23 7"/><path class="detail" d="M-24-42v-12l12 5-12 5M24-42v-12l-12 5 12 5"/><path class="detail" d="M-29-44l10-14L0-45l19-13 10 14"/><path class="inner" d="M-37-29Q-18-44 0-31Q18-44 37-29L41 9Q32 32 0 46Q-32 32-41 9Z"/><path class="detail" d="M-42 27q10-9 20 0t20 0t20 0t20 0"/><path class="detail" d="M-42 35q10-9 20 0t20 0t20 0t20 0"/><path class="detail" d="M-42 43q10-9 20 0t20 0t20 0t20 0"/><path class="detail" d="M-42 51q10-9 20 0t20 0t20 0t20 0"/>
+  <path class="caption" d="M-29-17h58v37H8L-10 31V20h-19Z"/>
+  <path class="caption-lines" d="M-17-5h34M-17 8H9"/></g>
+  <text class="rank" x="0" y="82" text-anchor="middle">LEVEL 10</text>
+  <text class="elite" x="0" y="99" text-anchor="middle">ELITE</text>
+</g>
+  <text x="48" y="718" fill="#9ca391" font-size="13">Same caption emblem. Ten distinct rank silhouettes. Levels 7–10 receive added regalia.</text>
+  <text class="proof" x="1752" y="718" text-anchor="end">OPEN AND EDIT AS SVG</text>
+</svg>

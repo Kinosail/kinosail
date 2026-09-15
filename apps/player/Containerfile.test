@@ -1,0 +1,8 @@
+FROM localhost/kinosail:dev
+
+USER root
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends busybox \
+    && ln -s /bin/busybox /usr/local/bin/httpd \
+    && rm -rf /var/lib/apt/lists/*
+USER kinosail

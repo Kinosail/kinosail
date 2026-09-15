@@ -1,0 +1,2034 @@
+[
+  {
+    "id": "15 minutes",
+    "other": "15 分鐘"
+  },
+  {
+    "id": "30 minutes",
+    "other": "30 分鐘"
+  },
+  {
+    "id": "45 minutes",
+    "other": "45 分鐘"
+  },
+  {
+    "id": "60 minutes",
+    "other": "60 分鐘"
+  },
+  {
+    "id": "Access",
+    "other": "訪問"
+  },
+  {
+    "id": "Account · Kinosail Player",
+    "other": "帳號·Kinosail"
+  },
+  {
+    "id": "Actions",
+    "other": "操作"
+  },
+  {
+    "id": "active session(s)",
+    "other": "活動會話"
+  },
+  {
+    "id": "Add a passkey",
+    "other": "新增金鑰"
+  },
+  {
+    "id": "Add folder",
+    "other": "新增資料夾"
+  },
+  {
+    "id": "Add media or try another search.",
+    "other": "新增媒體或嘗試其他搜尋。"
+  },
+  {
+    "id": "Add Profile",
+    "other": "新增個人資料"
+  },
+  {
+    "id": "Add this secret or URI to your authenticator app.",
+    "other": "將此機密或 URI 新增至您的驗證器應用程式。"
+  },
+  {
+    "id": "Add to",
+    "other": "加入到"
+  },
+  {
+    "id": "Administer server",
+    "other": "管理伺服器"
+  },
+  {
+    "id": "Album",
+    "other": "相簿"
+  },
+  {
+    "id": "Albums",
+    "other": "相簿"
+  },
+  {
+    "id": "all",
+    "other": "全部"
+  },
+  {
+    "id": "All ratings",
+    "other": "所有評分"
+  },
+  {
+    "id": "Allow downloads",
+    "other": "允許下載"
+  },
+  {
+    "id": "Allow transcoding",
+    "other": "允許轉碼"
+  },
+  {
+    "id": "AMD AMF",
+    "other": "AMD AMF"
+  },
+  {
+    "id": "Analyze playback segments now",
+    "other": "立即分析播放片段"
+  },
+  {
+    "id": "analyzed item(s)",
+    "other": "分析的項目"
+  },
+  {
+    "id": "API key name",
+    "other": "API 金鑰名稱"
+  },
+  {
+    "id": "API key scope does not allow this request",
+    "other": "API 金鑰範圍不允許此請求"
+  },
+  {
+    "id": "API key view failed",
+    "other": "API 金鑰查看失敗"
+  },
+  {
+    "id": "API key · Kinosail Player",
+    "other": "API 金鑰·Kinosail"
+  },
+  {
+    "id": "API keys",
+    "other": "API 金鑰"
+  },
+  {
+    "id": "Appearance",
+    "other": "外觀"
+  },
+  {
+    "id": "Apple VideoToolbox",
+    "other": "Apple VideoToolbox"
+  },
+  {
+    "id": "Apply",
+    "other": "應用"
+  },
+  {
+    "id": "Audio",
+    "other": "音訊"
+  },
+  {
+    "id": "Audiobooks",
+    "other": "有聲書"
+  },
+  {
+    "id": "Authentication code",
+    "other": "驗證碼"
+  },
+  {
+    "id": "Authentication or recovery code",
+    "other": "驗證或復原代碼"
+  },
+  {
+    "id": "authentication required",
+    "other": "需要驗證"
+  },
+  {
+    "id": "Authorize device",
+    "other": "授權設備"
+  },
+  {
+    "id": "Automatic",
+    "other": "自動"
+  },
+  {
+    "id": "automatic",
+    "other": "自動"
+  },
+  {
+    "id": "Automatic (best detected)",
+    "other": "自動（最佳偵測）"
+  },
+  {
+    "id": "Automatic (browser)",
+    "other": "自動（瀏覽器）"
+  },
+  {
+    "id": "Automatic backups",
+    "other": "自動備份"
+  },
+  {
+    "id": "Automatic maintenance",
+    "other": "自動維護"
+  },
+  {
+    "id": "Available devices use a direct connection to this Server.",
+    "other": "可用設備使用與此伺服器的直接連接。"
+  },
+  {
+    "id": "Back to library",
+    "other": "回傳庫"
+  },
+  {
+    "id": "Back to settings",
+    "other": "回傳設定"
+  },
+  {
+    "id": "Back up now",
+    "other": "立即備份"
+  },
+  {
+    "id": "Backup and recovery",
+    "other": "備份和還原"
+  },
+  {
+    "id": "backup is unavailable",
+    "other": "備份不可用"
+  },
+  {
+    "id": "Backups need setup.",
+    "other": "需要設定備份。"
+  },
+  {
+    "id": "Backups run automatically without encryption.",
+    "other": "備份會自動運行，無需加密。"
+  },
+  {
+    "id": "Backups · Kinosail Player",
+    "other": "備份·Kinosail"
+  },
+  {
+    "id": "Book",
+    "other": "預訂"
+  },
+  {
+    "id": "Books",
+    "other": "書籍"
+  },
+  {
+    "id": "Books and comics",
+    "other": "書籍和漫畫"
+  },
+  {
+    "id": "Browse library",
+    "other": "瀏覽庫"
+  },
+  {
+    "id": "Cancel",
+    "other": "取消"
+  },
+  {
+    "id": "Cast",
+    "other": "演員表"
+  },
+  {
+    "id": "Chapters",
+    "other": "章"
+  },
+  {
+    "id": "Choose the language for this browser.",
+    "other": "選擇此瀏覽器的語言。"
+  },
+  {
+    "id": "Clear transcode cache",
+    "other": "清除轉碼快取"
+  },
+  {
+    "id": "Code",
+    "other": "代碼"
+  },
+  {
+    "id": "Collection",
+    "other": "收藏"
+  },
+  {
+    "id": "Collections",
+    "other": "集合"
+  },
+  {
+    "id": "Commercial",
+    "other": "商業"
+  },
+  {
+    "id": "Compatibility",
+    "other": "相容性"
+  },
+  {
+    "id": "Compatibility Connection",
+    "other": "相容性連接"
+  },
+  {
+    "id": "Compatibility stream",
+    "other": "相容性流"
+  },
+  {
+    "id": "compatible",
+    "other": "相容"
+  },
+  {
+    "id": "Concurrent streams",
+    "other": "併發流"
+  },
+  {
+    "id": "Configuration error",
+    "other": "配置錯誤"
+  },
+  {
+    "id": "Configuration · Kinosail Player",
+    "other": "配置·Kinosail"
+  },
+  {
+    "id": "Configured; value hidden",
+    "other": "已配置；隱藏值"
+  },
+  {
+    "id": "Confirm delete",
+    "other": "確認刪除"
+  },
+  {
+    "id": "Confirm remove",
+    "other": "確認刪除"
+  },
+  {
+    "id": "Connect",
+    "other": "連接"
+  },
+  {
+    "id": "Connect a device",
+    "other": "連接設備"
+  },
+  {
+    "id": "Connected",
+    "other": "已連接"
+  },
+  {
+    "id": "Connecting",
+    "other": "正在連接"
+  },
+  {
+    "id": "Connecting…",
+    "other": "正在連線..."
+  },
+  {
+    "id": "Connection error",
+    "other": "連接錯誤"
+  },
+  {
+    "id": "Content",
+    "other": "內容"
+  },
+  {
+    "id": "Continue Watching",
+    "other": "繼續觀看"
+  },
+  {
+    "id": "Continue watching",
+    "other": "繼續觀看"
+  },
+  {
+    "id": "from Continue Watching",
+    "other": "來自繼續觀看"
+  },
+  {
+    "id": "Copy this key now. Kinosail stores only its hash.",
+    "other": "立即複製此金鑰。 Kinosail 僅儲存其雜湊值。"
+  },
+  {
+    "id": "could not create MFA enrollment",
+    "other": "無法建立 MFA 註冊"
+  },
+  {
+    "id": "could not create Owner Profile",
+    "other": "無法建立擁有者個人資料"
+  },
+  {
+    "id": "could not create session",
+    "other": "無法建立會話"
+  },
+  {
+    "id": "could not end session",
+    "other": "無法結束會話"
+  },
+  {
+    "id": "could not read subtitles",
+    "other": "無法讀取字幕"
+  },
+  {
+    "id": "Create",
+    "other": "建立"
+  },
+  {
+    "id": "Create a passkey",
+    "other": "建立金鑰"
+  },
+  {
+    "id": "Create API key",
+    "other": "建立 API 金鑰"
+  },
+  {
+    "id": "Create passkey",
+    "other": "建立金鑰"
+  },
+  {
+    "id": "Create smart playlist",
+    "other": "建立智慧型播放清單"
+  },
+  {
+    "id": "Create your Owner Profile",
+    "other": "建立您的擁有者個人資料"
+  },
+  {
+    "id": "Created once",
+    "other": "建立一次"
+  },
+  {
+    "id": "Credentials configured",
+    "other": "已配置憑證"
+  },
+  {
+    "id": "Credits",
+    "other": "製作人員"
+  },
+  {
+    "id": "cross-origin request denied",
+    "other": "跨來源請求被拒絕"
+  },
+  {
+    "id": "Curate",
+    "other": "規劃"
+  },
+  {
+    "id": "Dark",
+    "other": "黑暗"
+  },
+  {
+    "id": "default",
+    "other": "預設"
+  },
+  {
+    "id": "Default playback",
+    "other": "預設播放"
+  },
+  {
+    "id": "Delete",
+    "other": "刪除"
+  },
+  {
+    "id": "Deployment configuration",
+    "other": "部署配置"
+  },
+  {
+    "id": "Destination",
+    "other": "目的地"
+  },
+  {
+    "id": "detected, unavailable",
+    "other": "已偵測到，不可用"
+  },
+  {
+    "id": "Device or app",
+    "other": "設備或應用"
+  },
+  {
+    "id": "Diagnostics",
+    "other": "診斷"
+  },
+  {
+    "id": "Direct",
+    "other": "直接"
+  },
+  {
+    "id": "direct",
+    "other": "直接"
+  },
+  {
+    "id": "Direct connection unavailable",
+    "other": "直接連接不可用"
+  },
+  {
+    "id": "Direct from",
+    "other": "直接來自"
+  },
+  {
+    "id": "Direct stream",
+    "other": "直接流"
+  },
+  {
+    "id": "Directed by",
+    "other": "導演："
+  },
+  {
+    "id": "Disable and revoke",
+    "other": "停用和撤銷"
+  },
+  {
+    "id": "Disable two-factor authentication",
+    "other": "停用雙重認證"
+  },
+  {
+    "id": "Disaster recovery",
+    "other": "災難復原"
+  },
+  {
+    "id": "DLNA",
+    "other": "DLNA"
+  },
+  {
+    "id": "Download",
+    "other": "下載"
+  },
+  {
+    "id": "Download media",
+    "other": "下載媒體"
+  },
+  {
+    "id": "Download original",
+    "other": "下載正本"
+  },
+  {
+    "id": "Download portable state archive",
+    "other": "下載便攜式狀態存檔"
+  },
+  {
+    "id": "Download safe diagnostics",
+    "other": "下載安全診斷"
+  },
+  {
+    "id": "Download WireGuard profile",
+    "other": "下載 WireGuard 設定檔"
+  },
+  {
+    "id": "Downloads",
+    "other": "下載"
+  },
+  {
+    "id": "downloads are not enabled for this Viewer Profile",
+    "other": "此檢視者個人資料未啟用下載"
+  },
+  {
+    "id": "Edit metadata",
+    "other": "編輯元資料"
+  },
+  {
+    "id": "Edit skip markers",
+    "other": "編輯跳過標記"
+  },
+  {
+    "id": "embedded subtitles are unavailable",
+    "other": "嵌入字幕不可用"
+  },
+  {
+    "id": "Enable DLNA",
+    "other": "啟用 DLNA"
+  },
+  {
+    "id": "Enable two-factor authentication",
+    "other": "啟用雙重認證"
+  },
+  {
+    "id": "Enabled",
+    "other": "已啟用"
+  },
+  {
+    "id": "Encrypted backups run automatically.",
+    "other": "加密備份自動運作。"
+  },
+  {
+    "id": "Encryption is off by default.",
+    "other": "加密預設為關閉。"
+  },
+  {
+    "id": "Encryption is on.",
+    "other": "加密已開啟。"
+  },
+  {
+    "id": "End in seconds",
+    "other": "幾秒後結束"
+  },
+  {
+    "id": "Enter the code shown by your TV or app. It will inherit your Profile Policy.",
+    "other": "輸入您的電視或應用程式顯示的代碼。它將繼承您的個人資料政策。"
+  },
+  {
+    "id": "Environment and YAML values are authoritative. GUI changes shown here take effect after the Server restarts.",
+    "other": "環境和 YAML 值具有權威性。此處顯示的 GUI 變更將在伺服器重新啟動後生效。"
+  },
+  {
+    "id": "Environment default",
+    "other": "環境預設"
+  },
+  {
+    "id": "Event webhook",
+    "other": "事件網路鉤子"
+  },
+  {
+    "id": "Every 15 minutes",
+    "other": "每 15 分鐘"
+  },
+  {
+    "id": "Every 5 minutes",
+    "other": "每 5 分鐘"
+  },
+  {
+    "id": "Everything",
+    "other": "一切"
+  },
+  {
+    "id": "Export full activity journal",
+    "other": "匯出完整活動日誌"
+  },
+  {
+    "id": "Expose direct media URLs to devices on this local network. Disabling revokes the discovery capability.",
+    "other": "向該本地網路上的裝置公開直接媒體 URL。停用會撤銷發現功能。"
+  },
+  {
+    "id": "Externally managed",
+    "other": "外部管理"
+  },
+  {
+    "id": "Find",
+    "other": "查找"
+  },
+  {
+    "id": "Find something",
+    "other": "找東西"
+  },
+  {
+    "id": "Finish setup",
+    "other": "完成設定"
+  },
+  {
+    "id": "Finish sign in",
+    "other": "完成登入"
+  },
+  {
+    "id": "Folder inside media mount",
+    "other": "介質裝載內的資料夾"
+  },
+  {
+    "id": "Follow this device or choose a fixed theme.",
+    "other": "關注此設備或選擇固定主題。"
+  },
+  {
+    "id": "Following the room leader",
+    "other": "跟著房間負責人"
+  },
+  {
+    "id": "From",
+    "other": "來自"
+  },
+  {
+    "id": "from",
+    "other": "來自"
+  },
+  {
+    "id": "General",
+    "other": "常規"
+  },
+  {
+    "id": "Genres",
+    "other": "流派"
+  },
+  {
+    "id": "Got it",
+    "other": "知道了"
+  },
+  {
+    "id": "Group",
+    "other": "群組"
+  },
+  {
+    "id": "Hardware",
+    "other": "硬體"
+  },
+  {
+    "id": "History",
+    "other": "歷史"
+  },
+  {
+    "id": "Home",
+    "other": "首頁"
+  },
+  {
+    "id": "Hourly",
+    "other": "每小時"
+  },
+  {
+    "id": "if enabled",
+    "other": "如果啟用"
+  },
+  {
+    "id": "Install",
+    "other": "安裝"
+  },
+  {
+    "id": "Install Kinosail Player",
+    "other": "安裝 Kinosail"
+  },
+  {
+    "id": "Integrations",
+    "other": "整合"
+  },
+  {
+    "id": "Intel Quick Sync",
+    "other": "英特爾快速同步"
+  },
+  {
+    "id": "Intro",
+    "other": "簡介"
+  },
+  {
+    "id": "invalid authentication code",
+    "other": "驗證碼無效"
+  },
+  {
+    "id": "invalid Collection state",
+    "other": "無效的集合狀態"
+  },
+  {
+    "id": "invalid credentials",
+    "other": "無效憑證"
+  },
+  {
+    "id": "invalid list state",
+    "other": "無效清單狀態"
+  },
+  {
+    "id": "invalid playlist state",
+    "other": "播放清單狀態無效"
+  },
+  {
+    "id": "invalid progress",
+    "other": "無效進度"
+  },
+  {
+    "id": "invalid watched state",
+    "other": "觀看狀態無效"
+  },
+  {
+    "id": "Invite link",
+    "other": "邀請連結"
+  },
+  {
+    "id": "Keep",
+    "other": "保留"
+  },
+  {
+    "id": "Keep backups on storage outside this host. Backups are unencrypted unless a backup key is configured. Restore while the Server is stopped.",
+    "other": "將備份保留在此主機外部的儲存空間上。除非配置了備份金鑰，否則備份不會加密。伺服器停止時恢復。"
+  },
+  {
+    "id": "Keep Kinosail Player close",
+    "other": "保持 Kinosail 關閉"
+  },
+  {
+    "id": "Keys are shown once and stored as hashes. Browse access is the safe default.",
+    "other": "金鑰顯示一次並儲存為雜湊值。瀏覽存取是安全的預設設定。"
+  },
+  {
+    "id": "Kinosail",
+    "other": "KinoSAIL"
+  },
+  {
+    "id": "Kinosail Player cannot reach this Server. Check your network or Direct Connection, then try again.",
+    "other": "Kinosail 無法存取此伺服器。檢查您的網路或直接連接，然後重試。"
+  },
+  {
+    "id": "Kinosail maintains itself automatically.",
+    "other": "Kinosail 自動維護。"
+  },
+  {
+    "id": "Kinosail Player Reader",
+    "other": "Kinosail 讀取器"
+  },
+  {
+    "id": "Language",
+    "other": "語言"
+  },
+  {
+    "id": "language is invalid",
+    "other": "語言無效"
+  },
+  {
+    "id": "Last error",
+    "other": "最後一個錯誤"
+  },
+  {
+    "id": "Last scan error",
+    "other": "上次掃描錯誤"
+  },
+  {
+    "id": "Last successful backup",
+    "other": "上次成功備份"
+  },
+  {
+    "id": "Last successful scan",
+    "other": "上次成功掃描"
+  },
+  {
+    "id": "Last verified",
+    "other": "上次驗證"
+  },
+  {
+    "id": "Latest",
+    "other": "最新"
+  },
+  {
+    "id": "Libraries",
+    "other": "庫"
+  },
+  {
+    "id": "Library",
+    "other": "庫"
+  },
+  {
+    "id": "Library discovery",
+    "other": "庫發現"
+  },
+  {
+    "id": "Library folders",
+    "other": "庫資料夾"
+  },
+  {
+    "id": "Library items",
+    "other": "庫項目"
+  },
+  {
+    "id": "Library organization",
+    "other": "圖書館組織"
+  },
+  {
+    "id": "Library views",
+    "other": "庫視圖"
+  },
+  {
+    "id": "Licensed credential configured",
+    "other": "已配置許可證憑證"
+  },
+  {
+    "id": "Light",
+    "other": "光"
+  },
+  {
+    "id": "Link OpenID Connect",
+    "other": "連結 OpenID Connect"
+  },
+  {
+    "id": "Local account",
+    "other": "本機帳號"
+  },
+  {
+    "id": "M3U playlist",
+    "other": "M3U 播放清單"
+  },
+  {
+    "id": "Manage personal library state",
+    "other": "管理個人庫狀態"
+  },
+  {
+    "id": "Managed externally and read-only.",
+    "other": "外部管理且唯讀。"
+  },
+  {
+    "id": "Managed remote access",
+    "other": "託管遠端存取"
+  },
+  {
+    "id": "Mark",
+    "other": "標記"
+  },
+  {
+    "id": "marker",
+    "other": "標記"
+  },
+  {
+    "id": "Match text",
+    "other": "匹配文字"
+  },
+  {
+    "id": "Media",
+    "other": "媒體"
+  },
+  {
+    "id": "Media information",
+    "other": "媒體資訊"
+  },
+  {
+    "id": "Media mount",
+    "other": "介質安裝"
+  },
+  {
+    "id": "metadata could not be saved",
+    "other": "無法保存元資料"
+  },
+  {
+    "id": "metadata is invalid",
+    "other": "元資料無效"
+  },
+  {
+    "id": "Metadata provider",
+    "other": "元資料提供者"
+  },
+  {
+    "id": "metadata provider unavailable",
+    "other": "元資料提供者不可用"
+  },
+  {
+    "id": "Metrics",
+    "other": "指標"
+  },
+  {
+    "id": "Movies",
+    "other": "電影"
+  },
+  {
+    "id": "Music",
+    "other": "音樂"
+  },
+  {
+    "id": "Music and audiobooks",
+    "other": "音樂和有聲書"
+  },
+  {
+    "id": "My List",
+    "other": "我的清單"
+  },
+  {
+    "id": "Name",
+    "other": "名稱"
+  },
+  {
+    "id": "name and a 12-character password are required",
+    "other": "需要名稱和 12 個字元的密碼"
+  },
+  {
+    "id": "Never",
+    "other": "從不"
+  },
+  {
+    "id": "New Collection",
+    "other": "新系列"
+  },
+  {
+    "id": "New Collection name",
+    "other": "新集合名稱"
+  },
+  {
+    "id": "New media is detected automatically after copying finishes. Safety scans repair missed filesystem events on Windows, macOS, Linux, containers, and network mounts.",
+    "other": "複製完成後會自動偵測新媒體。安全掃描可修復 Windows、macOS、Linux、容器和網路安裝上遺失的檔案系統事件。"
+  },
+  {
+    "id": "New password",
+    "other": "新密碼"
+  },
+  {
+    "id": "New playlist",
+    "other": "新播放清單"
+  },
+  {
+    "id": "New playlist name",
+    "other": "新播放清單名稱"
+  },
+  {
+    "id": "New profile name",
+    "other": "新個人資料名稱"
+  },
+  {
+    "id": "New profile password",
+    "other": "新個人資料密碼"
+  },
+  {
+    "id": "New secret",
+    "other": "新秘密"
+  },
+  {
+    "id": "New smart playlist",
+    "other": "新的智慧播放清單"
+  },
+  {
+    "id": "New Viewers start with family ratings and no libraries. Add folder names or",
+    "other": "新觀眾從家庭分級開始，沒有圖書館。新增資料夾名稱或"
+  },
+  {
+    "id": "Newest",
+    "other": "最新"
+  },
+  {
+    "id": "No activity recorded yet.",
+    "other": "尚未記錄任何活動。"
+  },
+  {
+    "id": "No channels configured.",
+    "other": "未配置通道。"
+  },
+  {
+    "id": "No device selected",
+    "other": "未選擇任何裝置"
+  },
+  {
+    "id": "No offline downloads yet.",
+    "other": "尚無離線下載。"
+  },
+  {
+    "id": "No playback recorded yet.",
+    "other": "尚未錄製播放。"
+  },
+  {
+    "id": "None",
+    "other": "無"
+  },
+  {
+    "id": "None; use all or folder names",
+    "other": "無；使用全部名稱或資料夾名稱"
+  },
+  {
+    "id": "Not configured",
+    "other": "未配置"
+  },
+  {
+    "id": "not detected",
+    "other": "未偵測到"
+  },
+  {
+    "id": "not found",
+    "other": "未找到"
+  },
+  {
+    "id": "Not now",
+    "other": "現在不行"
+  },
+  {
+    "id": "Nothing found.",
+    "other": "未找到任何內容。"
+  },
+  {
+    "id": "Now viewing",
+    "other": "正在查看"
+  },
+  {
+    "id": "NVIDIA NVENC/NVDEC",
+    "other": "NVIDIA NVENC/NVDEC"
+  },
+  {
+    "id": "Off",
+    "other": "關閉"
+  },
+  {
+    "id": "offline",
+    "other": "離線"
+  },
+  {
+    "id": "Offline downloads",
+    "other": "離線下載"
+  },
+  {
+    "id": "Offline downloads · Kinosail Player",
+    "other": "離線下載 · Kinosail Player"
+  },
+  {
+    "id": "On",
+    "other": "於"
+  },
+  {
+    "id": "On iPhone or iPad, tap Share, choose Add to Home Screen, turn on Open as Web App, then tap Add.",
+    "other": "在 iPhone 或 iPad 上，點選“共享”，選擇“新增至主畫面”，開啟“作為網頁應用程式開啟”，然後點選“新增”。"
+  },
+  {
+    "id": "One-time reveal",
+    "other": "一次揭示"
+  },
+  {
+    "id": "OpenID Connect",
+    "other": "OpenID Connect"
+  },
+  {
+    "id": "OpenSubtitles",
+    "other": "OpenSubtitles"
+  },
+  {
+    "id": "Outro",
+    "other": "尾奏"
+  },
+  {
+    "id": "Owner",
+    "other": "所有者"
+  },
+  {
+    "id": "Owner access required",
+    "other": "需要擁有者存取權限"
+  },
+  {
+    "id": "Owner controls",
+    "other": "所有者控制"
+  },
+  {
+    "id": "Passkey added.",
+    "other": "已新增金鑰。"
+  },
+  {
+    "id": "Passkey failed.",
+    "other": "金鑰失敗。"
+  },
+  {
+    "id": "Passkeys need the configured Server address and trusted HTTPS. Open that address, trust the Server certificate, or use an authenticator.",
+    "other": "Passkeys need the configured Server address and trusted HTTPS. Open that address, trust the Server certificate, or use an authenticator."
+  },
+  {
+    "id": "Password",
+    "other": "密碼"
+  },
+  {
+    "id": "Photos",
+    "other": "照片"
+  },
+  {
+    "id": "Play",
+    "other": "玩"
+  },
+  {
+    "id": "Play on device",
+    "other": "在裝置上播放"
+  },
+  {
+    "id": "Play the next Episode automatically",
+    "other": "自動播放下一集"
+  },
+  {
+    "id": "Playback",
+    "other": "播放"
+  },
+  {
+    "id": "Playback history",
+    "other": "播放歷史記錄"
+  },
+  {
+    "id": "Playback segment analysis",
+    "other": "播放片段分析"
+  },
+  {
+    "id": "Playback speed",
+    "other": "播放速度"
+  },
+  {
+    "id": "Playing here",
+    "other": "在這裡播放"
+  },
+  {
+    "id": "Playing on device",
+    "other": "在裝置上播放"
+  },
+  {
+    "id": "Playlist",
+    "other": "播放清單"
+  },
+  {
+    "id": "Playlists",
+    "other": "播放清單"
+  },
+  {
+    "id": "Plot",
+    "other": "情節"
+  },
+  {
+    "id": "Polling for changes",
+    "other": "輪詢更改"
+  },
+  {
+    "id": "Prefer quality",
+    "other": "注重質量"
+  },
+  {
+    "id": "Prefer speed",
+    "other": "首選速度"
+  },
+  {
+    "id": "Preferred language",
+    "other": "首選語言"
+  },
+  {
+    "id": "Prepare",
+    "other": "準備"
+  },
+  {
+    "id": "preview unavailable",
+    "other": "預覽不可用"
+  },
+  {
+    "id": "Private by design",
+    "other": "設計為私密"
+  },
+  {
+    "id": "Profile",
+    "other": "個人資料"
+  },
+  {
+    "id": "profile storage is unavailable",
+    "other": "設定檔儲存不可用"
+  },
+  {
+    "id": "Profile to reset",
+    "other": "要重設的個人資料"
+  },
+  {
+    "id": "Profile type",
+    "other": "設定檔類型"
+  },
+  {
+    "id": "Profiles",
+    "other": "個人資料"
+  },
+  {
+    "id": "Protected automatically",
+    "other": "自動保護"
+  },
+  {
+    "id": "MFA - Require extra sign-in protection for every Viewer Profile",
+    "other": "MFA - Require extra sign-in protection for every Viewer Profile"
+  },
+  {
+    "id": "Quality",
+    "other": "質量"
+  },
+  {
+    "id": "quality",
+    "other": "質量"
+  },
+  {
+    "id": "Quick Connect",
+    "other": "快速連接"
+  },
+  {
+    "id": "Quick Connect · Kinosail Player",
+    "other": "快速連接·Kinosail"
+  },
+  {
+    "id": "Rating",
+    "other": "評級"
+  },
+  {
+    "id": "Read now",
+    "other": "立即閱讀"
+  },
+  {
+    "id": "reader",
+    "other": "讀者"
+  },
+  {
+    "id": "Reading order",
+    "other": "閱讀順序"
+  },
+  {
+    "id": "ready",
+    "other": "準備好"
+  },
+  {
+    "id": "Ready offline",
+    "other": "離線就緒"
+  },
+  {
+    "id": "Recap",
+    "other": "回顧"
+  },
+  {
+    "id": "Recent activity",
+    "other": "最近活動"
+  },
+  {
+    "id": "Recent playback",
+    "other": "最近播放"
+  },
+  {
+    "id": "Recently added",
+    "other": "最近新增"
+  },
+  {
+    "id": "Recently played",
+    "other": "最近玩過"
+  },
+  {
+    "id": "Recovery",
+    "other": "恢復"
+  },
+  {
+    "id": "Recovery codes",
+    "other": "恢復代碼"
+  },
+  {
+    "id": "Refresh from TMDB",
+    "other": "從 TMDB 刷新"
+  },
+  {
+    "id": "Refresh missing metadata",
+    "other": "刷新缺失的元資料"
+  },
+  {
+    "id": "Recommended",
+    "other": "推薦"
+  },
+  {
+    "id": "Remote access",
+    "other": "遠端存取"
+  },
+  {
+    "id": "Remove",
+    "other": "刪除"
+  },
+  {
+    "id": "Remove from",
+    "other": "從"
+  },
+  {
+    "id": "request",
+    "other": "請求"
+  },
+  {
+    "id": "Request could not be completed.",
+    "other": "無法完成請求。"
+  },
+  {
+    "id": "request is too large",
+    "other": "請求太大"
+  },
+  {
+    "id": "Reset password",
+    "other": "重設密碼"
+  },
+  {
+    "id": "Return to settings",
+    "other": "回傳設定"
+  },
+  {
+    "id": "Revoke",
+    "other": "撤銷"
+  },
+  {
+    "id": "Rockchip RKMPP",
+    "other": "瑞芯微RKMPP"
+  },
+  {
+    "id": "Room connected · following leader",
+    "other": "房間已連接·跟隨領導"
+  },
+  {
+    "id": "Room connected · you lead",
+    "other": "房間連接·由您領導"
+  },
+  {
+    "id": "Room disconnected · reload to reconnect",
+    "other": "房間已斷開連接·重新加載以重新連接"
+  },
+  {
+    "id": "Run library scan now",
+    "other": "立即執行庫掃描"
+  },
+  {
+    "id": "Run maintenance now",
+    "other": "立即運作維護"
+  },
+  {
+    "id": "Safety scan",
+    "other": "安全掃描"
+  },
+  {
+    "id": "Save",
+    "other": "保存"
+  },
+  {
+    "id": "Save file",
+    "other": "保存文件"
+  },
+  {
+    "id": "Save for restart",
+    "other": "保存以重新啟動"
+  },
+  {
+    "id": "Save marker",
+    "other": "保存標記"
+  },
+  {
+    "id": "Save metadata",
+    "other": "保存元資料"
+  },
+  {
+    "id": "Save schedule",
+    "other": "保存行程"
+  },
+  {
+    "id": "Schedule",
+    "other": "時間表"
+  },
+  {
+    "id": "Search library",
+    "other": "搜尋庫"
+  },
+  {
+    "id": "Search results",
+    "other": "搜尋結果"
+  },
+  {
+    "id": "Secrets are hidden and included only in encrypted recovery backups.",
+    "other": "秘密被隱藏並僅包含在加密復原備份中。"
+  },
+  {
+    "id": "Secure your account",
+    "other": "保護您的帳號"
+  },
+  {
+    "id": "Secure your account · Kinosail Player",
+    "other": "保護您的帳號 · Kinosail Player"
+  },
+  {
+    "id": "Send this private connection URL to the Viewer. It is shown only once.",
+    "other": "將此專用連線 URL 傳送至檢視器。僅顯示一次。"
+  },
+  {
+    "id": "Server name",
+    "other": "伺服器名稱"
+  },
+  {
+    "id": "Server settings",
+    "other": "伺服器設定"
+  },
+  {
+    "id": "Server unavailable",
+    "other": "伺服器不可用"
+  },
+  {
+    "id": "Server unavailable · Kinosail Player",
+    "other": "伺服器不可用 · Kinosail Player"
+  },
+  {
+    "id": "Set up Kinosail Player",
+    "other": "設定 Kinosail"
+  },
+  {
+    "id": "Set up or replace authenticator",
+    "other": "設定或更換驗證器"
+  },
+  {
+    "id": "Set up two-factor authentication",
+    "other": "設定雙重認證"
+  },
+  {
+    "id": "Set up two-factor authentication · Kinosail Player",
+    "other": "設定雙重認證 · Kinosail Player"
+  },
+  {
+    "id": "Settings",
+    "other": "設定"
+  },
+  {
+    "id": "Settings sections",
+    "other": "設定部分"
+  },
+  {
+    "id": "Settings · Kinosail Player",
+    "other": "設定·Kinosail"
+  },
+  {
+    "id": "Shape the experience, protect your library, and keep every stream running beautifully.",
+    "other": "打造體驗、保護您的媒體庫並讓每個直播都完美運作。"
+  },
+  {
+    "id": "Show",
+    "other": "顯示"
+  },
+  {
+    "id": "Shows",
+    "other": "演出"
+  },
+  {
+    "id": "Sign in",
+    "other": "登入"
+  },
+  {
+    "id": "Sign in to your private media universe.",
+    "other": "登入您的私人媒體世界。"
+  },
+  {
+    "id": "Sign in with passkey",
+    "other": "使用金鑰登入"
+  },
+  {
+    "id": "Sign in with SSO",
+    "other": "使用 SSO 登入"
+  },
+  {
+    "id": "Sign in · Kinosail Player",
+    "other": "登入 · Kinosail Player"
+  },
+  {
+    "id": "Sign out",
+    "other": "退出"
+  },
+  {
+    "id": "Sign out other devices",
+    "other": "註銷其他設備"
+  },
+  {
+    "id": "Sign-in methods",
+    "other": "登入方法"
+  },
+  {
+    "id": "Sign-in, same-origin browser protections, private responses, bounded requests, and revocable access are always on. There are no security switches to manage.",
+    "other": "登入、同源瀏覽器保護、私人回應、有限請求和可撤銷存取始終處於開啟狀態。沒有需要管理的安全開關。"
+  },
+  {
+    "id": "Single sign-on",
+    "other": "單一登入"
+  },
+  {
+    "id": "Skip",
+    "other": "跳過"
+  },
+  {
+    "id": "Skip commercials automatically",
+    "other": "自動跳過廣告"
+  },
+  {
+    "id": "Skip credits automatically",
+    "other": "自動跳過片尾"
+  },
+  {
+    "id": "Skip intros automatically",
+    "other": "自動跳過介紹"
+  },
+  {
+    "id": "Skip outros automatically",
+    "other": "自動跳過結尾"
+  },
+  {
+    "id": "Skip recaps automatically",
+    "other": "自動跳過回顧"
+  },
+  {
+    "id": "Skip to content",
+    "other": "跳至內容"
+  },
+  {
+    "id": "Sleep timer",
+    "other": "睡眠定時器"
+  },
+  {
+    "id": "Sleep timer ended",
+    "other": "睡眠定時器已結束"
+  },
+  {
+    "id": "Smart playlist",
+    "other": "智慧播放清單"
+  },
+  {
+    "id": "Smart playlist name",
+    "other": "智慧型播放清單名稱"
+  },
+  {
+    "id": "Software",
+    "other": "軟體"
+  },
+  {
+    "id": "Sort",
+    "other": "排序"
+  },
+  {
+    "id": "Source",
+    "other": "來源"
+  },
+  {
+    "id": "speed",
+    "other": "速度"
+  },
+  {
+    "id": "SSO challenge is invalid or expired",
+    "other": "SSO 質詢無效或已過期"
+  },
+  {
+    "id": "SSO code exchange failed",
+    "other": "SSO 代碼交換失敗"
+  },
+  {
+    "id": "SSO identity is not linked to a Viewer Profile",
+    "other": "SSO 身分未連結至檢視者個人資料"
+  },
+  {
+    "id": "SSO is unavailable",
+    "other": "SSO 不可用"
+  },
+  {
+    "id": "SSO session could not be created",
+    "other": "無法建立 SSO 會話"
+  },
+  {
+    "id": "SSO state is invalid or expired",
+    "other": "SSO 狀態無效或已過期"
+  },
+  {
+    "id": "SSO token validation failed",
+    "other": "SSO 令牌驗證失敗"
+  },
+  {
+    "id": "Start in seconds",
+    "other": "幾秒後開始"
+  },
+  {
+    "id": "Start Watch Together",
+    "other": "開始一起觀看"
+  },
+  {
+    "id": "Status",
+    "other": "狀態"
+  },
+  {
+    "id": "Stops in {minutes} minutes",
+    "other": "在 {minutes} 分鐘後停靠"
+  },
+  {
+    "id": "Store these codes somewhere safe. Each works once.",
+    "other": "將這些代碼儲存在安全的地方。每個工作一次。"
+  },
+  {
+    "id": "Stored here. Streamed directly.",
+    "other": "儲存在這裡。直接直播."
+  },
+  {
+    "id": "Stream media",
+    "other": "串流"
+  },
+  {
+    "id": "Subscription required",
+    "other": "需要訂閱"
+  },
+  {
+    "id": "Subtitle provider",
+    "other": "字幕提供者"
+  },
+  {
+    "id": "subtitle provider unavailable",
+    "other": "字幕提供者不可用"
+  },
+  {
+    "id": "subtitle track(s)",
+    "other": "字幕軌道"
+  },
+  {
+    "id": "Subtitles",
+    "other": "字幕"
+  },
+  {
+    "id": "subtitles",
+    "other": "字幕"
+  },
+  {
+    "id": "Sync",
+    "other": "同步"
+  },
+  {
+    "id": "System",
+    "other": "系统"
+  },
+  {
+    "id": "Tagline",
+    "other": "标语"
+  },
+  {
+    "id": "The backup contains account and session state. Keep unencrypted backup storage private, or configure a backup key.",
+    "other": "備份包含帳戶和會話狀態。將未加密的備份儲存保密，或配置備份金鑰。"
+  },
+  {
+    "id": "Theme",
+    "other": "主题"
+  },
+  {
+    "id": "These settings are read-only until removed from YAML or the environment",
+    "other": "這些設定在從 YAML 或環境中刪除之前都是唯讀的"
+  },
+  {
+    "id": "This Collection is empty.",
+    "other": "此集合為空。"
+  },
+  {
+    "id": "This permanently deletes the Collection.",
+    "other": "這將永久刪除該集合。"
+  },
+  {
+    "id": "This permanently deletes the playlist.",
+    "other": "這將永久刪除播放清單。"
+  },
+  {
+    "id": "This playlist is empty.",
+    "other": "此播放列表为空。"
+  },
+  {
+    "id": "This product uses the TMDB API but is not endorsed or certified by TMDB.",
+    "other": "本產品使用 TMDB API，但未經 TMDB 認可或認證。"
+  },
+  {
+    "id": "This signs out the profile and deletes it.",
+    "other": "這會登出設定檔並將其刪除。"
+  },
+  {
+    "id": "Through PG / TV-PG",
+    "other": "透過 PG/TV-PG"
+  },
+  {
+    "id": "Through PG-13 / TV-14",
+    "other": "透過 PG-13 / TV-14"
+  },
+  {
+    "id": "Title",
+    "other": "標題"
+  },
+  {
+    "id": "Title, artist, genre",
+    "other": "標題、藝術家、類型"
+  },
+  {
+    "id": "Title, artist, genre…",
+    "other": "標題、藝術家、類型…"
+  },
+  {
+    "id": "TMDB",
+    "other": "TMDB"
+  },
+  {
+    "id": "Tone-map HDR to SDR",
+    "other": "將 HDR 色調對應到 SDR"
+  },
+  {
+    "id": "too many login attempts",
+    "other": "登入嘗試次數過多"
+  },
+  {
+    "id": "too many Watch Together rooms",
+    "other": "「一起觀看」房間太多"
+  },
+  {
+    "id": "Track",
+    "other": "跟踪"
+  },
+  {
+    "id": "transcode cache",
+    "other": "轉碼快取"
+  },
+  {
+    "id": "Transcoder",
+    "other": "轉碼器"
+  },
+  {
+    "id": "transcoding is not allowed",
+    "other": "不允許轉碼"
+  },
+  {
+    "id": "Try again",
+    "other": "重试"
+  },
+  {
+    "id": "Two-factor authentication",
+    "other": "雙重認證"
+  },
+  {
+    "id": "Two-factor authentication · Kinosail Player",
+    "other": "雙重認證·Kinosail"
+  },
+  {
+    "id": "Type",
+    "other": "类型"
+  },
+  {
+    "id": "Unlink OpenID Connect",
+    "other": "取消 OpenID Connect 連結"
+  },
+  {
+    "id": "Until",
+    "other": "直到"
+  },
+  {
+    "id": "Unwatched",
+    "other": "未觀看"
+  },
+  {
+    "id": "unwatched",
+    "other": "未觀看"
+  },
+  {
+    "id": "Use default",
+    "other": "使用預設值"
+  },
+  {
+    "id": "Use Face ID, Touch ID, Windows Hello, or your device PIN to sign in. Your password will still work.",
+    "other": "使用面容 ID、觸控 ID、Windows Hello 或您的裝置 PIN 碼登入。您的密碼仍然有效。"
+  },
+  {
+    "id": "VA-API (AMD/Intel)",
+    "other": "VA-API（AMD/英特爾）"
+  },
+  {
+    "id": "Verified Direct Connection",
+    "other": "已驗證的直接連接"
+  },
+  {
+    "id": "Verified Direct Connection is not configured",
+    "other": "未配置已驗證的直接連接"
+  },
+  {
+    "id": "Verify latest backup",
+    "other": "驗證最新備份"
+  },
+  {
+    "id": "Video",
+    "other": "视频"
+  },
+  {
+    "id": "Viewer",
+    "other": "查看者"
+  },
+  {
+    "id": "Viewer access is not available",
+    "other": "查看者存取權限不可用"
+  },
+  {
+    "id": "Viewer device",
+    "other": "檢視器設備"
+  },
+  {
+    "id": "Viewer name",
+    "other": "觀看者姓名"
+  },
+  {
+    "id": "Waiting for your passkey…",
+    "other": "正在等待您的金鑰..."
+  },
+  {
+    "id": "Watch Together state is invalid",
+    "other": "Watch Together 狀態無效"
+  },
+  {
+    "id": "watched",
+    "other": "观看"
+  },
+  {
+    "id": "Watched",
+    "other": "已觀看"
+  },
+  {
+    "id": "Watched ✓",
+    "other": "已觀看 ✓"
+  },
+  {
+    "id": "Watching for changes",
+    "other": "觀察變化"
+  },
+  {
+    "id": "Welcome aboard",
+    "other": "歡迎加入"
+  },
+  {
+    "id": "when ready.",
+    "other": "準備好後."
+  },
+  {
+    "id": "WireGuard Viewer not found",
+    "other": "未找到 WireGuard 檢視器"
+  },
+  {
+    "id": "XMLTV guide",
+    "other": "XMLTV 指南"
+  },
+  {
+    "id": "Year",
+    "other": "年"
+  },
+  {
+    "id": "You lead this room",
+    "other": "您领导这个房间"
+  },
+  {
+    "id": "Your library",
+    "other": "您的图书馆"
+  },
+  {
+    "id": "Your library and viewing activity stay on this Server.",
+    "other": "您的图书馆和查看活动保留在此服务器上。"
+  },
+  {
+    "id": "← Books",
+    "other": "← 書"
+  },
+  {
+    "id": "← Library",
+    "other": "← 庫"
+  },
+  {
+    "id": "← Settings",
+    "other": "← 設定"
+  },
+  {
+    "id": "Generated API key",
+    "other": "已產生的 API 金鑰"
+  },
+  {
+    "id": "Copy API key",
+    "other": "複製 API 金鑰"
+  },
+  {
+    "id": "Copied.",
+    "other": "已複製。"
+  },
+  {
+    "id": "Select Copy in your browser.",
+    "other": "請在瀏覽器中選取「複製」。"
+  },
+  {
+    "id": "Set up trusted HTTPS",
+    "other": "設定受信任的 HTTPS"
+  },
+  {
+    "id": "Review trusted HTTPS setup",
+    "other": "檢視受信任的 HTTPS 設定"
+  },
+  {
+    "id": "Offline copy",
+    "other": "離線副本"
+  },
+  {
+    "id": "Verified file stored on this device.",
+    "other": "已驗證的檔案儲存在此裝置上。"
+  },
+  {
+    "id": "Ready offline on this device",
+    "other": "已可在此裝置上離線使用"
+  },
+  {
+    "id": "Playback method",
+    "other": "播放方式"
+  },
+  {
+    "id": "Open playback settings.",
+    "other": "開啟播放設定。"
+  },
+  {
+    "id": "Offline copy is unavailable.",
+    "other": "離線副本無法使用。"
+  },
+  {
+    "id": "Offline playback needs an active service worker",
+    "other": "離線播放需要使用中的 Service Worker"
+  },
+  {
+    "id": "Could not remove local offline data.",
+    "other": "無法移除本機離線資料。"
+  },
+  {
+    "id": "stored on this device",
+    "other": "已儲存在此裝置上"
+  },
+  {
+    "id": "This device does not have enough storage for this download",
+    "other": "此裝置沒有足夠空間儲存此下載內容"
+  },
+  {
+    "id": "This browser cannot store offline media safely",
+    "other": "此瀏覽器無法安全儲存離線媒體"
+  },
+  {
+    "id": "The download could not be verified",
+    "other": "無法驗證下載內容"
+  },
+  {
+    "id": "The download is no longer available",
+    "other": "此下載內容已無法使用"
+  },
+  {
+    "id": "No verified downloads are ready for this Viewer Profile.",
+    "other": "此觀看者資料沒有已驗證且可用的下載內容。"
+  },
+  {
+    "id": "Open Kinosail online and choose a Viewer Profile first.",
+    "other": "請先在線上開啟 Kinosail 並選擇觀看者資料。"
+  },
+  {
+    "id": "All libraries",
+    "other": "All libraries"
+  },
+  {
+    "id": "Audio tracks",
+    "other": "Audio tracks"
+  },
+  {
+    "id": "Back to downloads",
+    "other": "Back to downloads"
+  },
+  {
+    "id": "Could not save progress. Return to Downloads and try again.",
+    "other": "Could not save progress. Return to Downloads and try again."
+  },
+  {
+    "id": "Manage offline downloads",
+    "other": "Manage offline downloads"
+  },
+  {
+    "id": "Movie",
+    "other": "Movie"
+  },
+  {
+    "id": "Open Server downloads",
+    "other": "Open Server downloads"
+  },
+  {
+    "id": "Open previous page",
+    "other": "Open previous page"
+  },
+  {
+    "id": "Playback behavior",
+    "other": "Playback behavior"
+  },
+  {
+    "id": "Prepare offline copy",
+    "other": "Prepare offline copy"
+  },
+  {
+    "id": "Progress saved on this device. Open Server downloads to sync.",
+    "other": "Progress saved on this device. Open Server downloads to sync."
+  },
+  {
+    "id": "Request needs another try",
+    "other": "Request needs another try"
+  },
+  {
+    "id": "Return to form",
+    "other": "Return to form"
+  },
+  {
+    "id": "Search all libraries",
+    "other": "Search all libraries"
+  },
+  {
+    "id": "Search everything",
+    "other": "Search everything"
+  },
+  {
+    "id": "This file could not play. Return to Downloads, reconnect to the Server, and download it again.",
+    "other": "This file could not play. Return to Downloads, reconnect to the Server, and download it again."
+  },
+  {
+    "id": "invalid title request",
+    "other": "invalid title request"
+  },
+  {
+    "id": "Audio is fixed in this downloaded copy.",
+    "other": "Audio is fixed in this downloaded copy."
+  }
+]

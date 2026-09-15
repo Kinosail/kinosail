@@ -1,0 +1,49 @@
+{
+  "source_sha256": "73fc381fe750e5afc8be27c123682635bc344ac83602784cb834bbd7f939a9b8",
+  "model_sha256": "b8df2e6e32753b7aa47ab59571b0d9d0b490a223f8dc9118bb388efeaec6f8e3",
+  "official_onnx_sha256": "1e0b195ad4806595ef4466f419d16fca7e4afcfc6669b8c0b5f76ea87547c769",
+  "weight_reproduction": "byte-for-byte equal",
+  "float32_weight_count": 309633,
+  "model_size_bytes": 1238532,
+  "onnx_operators": [
+    "Add",
+    "Cast",
+    "Concat",
+    "Constant",
+    "ConstantOfShape",
+    "Conv",
+    "Equal",
+    "Gather",
+    "If",
+    "Pad",
+    "Pow",
+    "ReduceMean",
+    "Relu",
+    "Reshape",
+    "Shape",
+    "Sigmoid",
+    "Slice",
+    "Sqrt",
+    "Squeeze",
+    "Transpose",
+    "Unsqueeze"
+  ],
+  "versions": {
+    "numpy": "2.5.2",
+    "onnx": "1.22.0",
+    "onnxruntime": "1.29.0"
+  },
+  "supplied_reference": {
+    "frames": 20,
+    "max_go_onnx_absolute_difference": 1.8477439880371094e-06,
+    "mean_difference": 1.555308699607849e-07,
+    "fixture_sha256": "23fca128fabe341e4130e0ba6b52b38534c3dda7a079ae6c3b6eb6de34e4c704",
+    "max_stored_reference_onnx_difference": 0.0
+  },
+  "independent_synthetic": {
+    "frames": 576,
+    "max_go_onnx_absolute_difference": 1.0132789611816406e-06,
+    "mean_difference": 3.277870064266608e-08,
+    "fixture_sha256": "133214ba71b6f6fac32b9cd04598bf399571d67656f44b7efcbcabc273129df3"
+  }
+}

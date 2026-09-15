@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <script src="/static/appearance.js?v=electric-1"></script>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#0b0d0b">
+  <title>Supporter · Kinosail Dashboard</title>
+  <link rel="icon" href="/favicon.svg?v=5" type="image/svg+xml"><link rel="apple-touch-icon" href="/static/apple-touch-icon.png?v=5">
+  <link rel="stylesheet" href="/static/base.css">
+  <link rel="stylesheet" href="/static/supporter.css">
+<link rel="stylesheet" href="/static/last-light.css?v=electric-1"></head>
+<body>
+  <a class="skip-link" href="#badge-case">Skip to Badge Case</a>
+  <header class="supporter-masthead">
+    <a class="supporter-brand" href="/" aria-label="Back to Kinosail Dashboard"><img src="/static/icon.svg?v=5" width="34" height="34" alt=""><span>Kinosail <strong>Dashboard</strong></span></a>
+    <a class="quiet-button" href="/">Back to board</a>
+  </header>
+
+  <main id="badge-case" class="supporter-shell">
+    <header class="supporter-heading">
+      <div><p class="eyebrow">Dashboard collection · 20 honors</p><h1>Your Badge Case</h1><p>One-time and recurring support earn separate badge families. Collect both to earn Fleet Command; its level matches the lower of the two.</p></div>
+      <div class="collection-count"><strong id="unlocked-count">0</strong><span>of 20 collected</span></div>
+    </header>
+
+    <div id="supporter-loading" class="supporter-loading" role="status">Opening the case…<div class="loading-grid" aria-hidden="true"><span></span><span></span><span></span><span></span></div></div>
+    <div id="supporter-content" hidden>
+      <section id="masterwork" class="masterwork is-empty" aria-labelledby="masterwork-title">
+        <div class="masterwork-mark" aria-hidden="true"><span class="masterwork-left"></span><span class="masterwork-core"><i></i><i></i><i></i></span><span class="masterwork-right"></span></div>
+        <div><p class="eyebrow" id="masterwork-kicker">Dashboard masterwork</p><h2 id="masterwork-title">Fleet Command awaits</h2><p id="masterwork-copy">Collect a badge from each family to earn Fleet Command. Its level matches the lower of the two.</p><strong id="masterwork-state">Not yet forged</strong></div>
+      </section>
+
+      <section class="family-section living" aria-labelledby="living-title">
+        <header><div><p class="eyebrow">Recurring support · refreshable signal</p><h2 id="living-title">Living Standard</h2></div><span id="living-state" class="family-state">Not collected</span></header>
+        <p>An active subscription powers the case signal. Every reached level remains in your collection.</p>
+        <ol id="living-badges" class="badge-grid" aria-label="Living Standard Dashboard badges"></ol>
+      </section>
+
+      <section class="family-section patron" aria-labelledby="patron-title">
+        <header><div><p class="eyebrow">One-time support · permanent command marks</p><h2 id="patron-title">Patron Order</h2></div><span id="patron-state" class="family-state">Not collected</span></header>
+        <p>Each one-time level becomes a permanent honor. Higher levels include every earlier design.</p>
+        <ol id="patron-badges" class="badge-grid" aria-label="Patron Order Dashboard badges"></ol>
+      </section>
+
+      <section id="activate" class="activation" aria-labelledby="activate-title">
+        <div><p class="eyebrow">Existing Supporter key</p><h2 id="activate-title">Add an honor to this Dashboard</h2><p>Dashboard sends only your key, its app ID, a random installation marker, and an optional recognition name. It never sends application addresses, health checks, board names, or household data.</p></div>
+        <form id="activation-form">
+          <label>Supporter key<input id="supporter-key" type="password" minlength="8" maxlength="128" pattern="[A-Za-z0-9_-]+" required autocomplete="off" spellcheck="false"></label>
+          <label>Recognition name <span>Optional for elite levels</span><input id="recognition-name" maxlength="80" autocomplete="off"></label>
+          <button class="primary-button" type="submit">Verify and add to case</button>
+          <output id="activation-message" class="activation-message" aria-live="polite"></output>
+        </form>
+      </section>
+    </div>
+  </main>
+  <script type="module" src="/static/supporter.js"></script>
+</body>
+</html>

@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="theme-color" content="#090a08">
+    <meta name="description" content="{{ page.description | default: site.description | escape }}">
+    <meta property="og:title" content="{{ page.title | escape }} · {{ site.title }}">
+    <meta property="og:description" content="{{ page.description | default: site.description | escape }}">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="{{ page.url | absolute_url }}">
+    <link rel="canonical" href="{{ page.url | absolute_url }}">
+    <link rel="icon" href="{{ '/assets/images/kinosail-mark.svg' | relative_url }}">
+    <link rel="stylesheet" href="{{ '/assets/css/docs.css' | relative_url }}">
+    <script>document.documentElement.classList.add('js');try{const t=localStorage.getItem('kinosail-docs-theme');if(t==='light'||t==='dark')document.documentElement.dataset.theme=t}catch{}</script>
+    <script defer src="{{ '/assets/js/docs.js' | relative_url }}"></script>
+    <script>addEventListener('DOMContentLoaded',()=>document.querySelector('.skip-link')?.addEventListener('click',()=>requestAnimationFrame(()=>document.querySelector('#main-content')?.focus())))</script>
+    <title>{{ page.title }} · {{ site.title }}</title>
+  </head>
+  <body>
+    <a class="skip-link" href="#main-content">Skip to content</a>
+    <header class="site-header">
+      <a class="brand" href="{{ '/' | relative_url }}" aria-label="Kinosail documentation home">
+        <img src="{{ '/assets/images/kinosail-mark.svg' | relative_url }}" alt="">
+        <span>Kinosail <b>Docs</b></span>
+      </a>
+      <div class="header-actions">
+        <a href="{{ site.github_url }}">GitHub</a>
+        <button class="quiet-button" type="button" data-theme-toggle aria-label="Use light theme">Theme</button>
+        <button class="menu-button" type="button" data-menu-toggle aria-controls="docs-navigation" aria-expanded="false">Menu</button>
+      </div>
+    </header>
+    <div class="docs-shell">
+      <aside class="sidebar" id="docs-navigation" data-sidebar>
+        <form class="docs-search" role="search" data-search-form data-index-url="{{ '/search.json' | relative_url }}">
+          <label for="docs-search">Search documentation</label>
+          <input id="docs-search" type="search" placeholder="Search the docs" autocomplete="off" data-search-input>
+          <div class="search-results" data-search-results aria-live="polite" hidden></div>
+        </form>
+        <nav aria-label="Documentation">
+          {% for group in site.data.navigation %}
+          <section>
+            <h2>{{ group.title }}</h2>
+            <ul>
+              {% for item in group.pages %}
+              {% assign item_url = item.url | relative_url %}
+              <li><a href="{{ item_url }}"{% if page.url == item.url %} aria-current="page"{% endif %}>{{ item.title }}</a></li>
+              {% endfor %}
+            </ul>
+          </section>
+          {% endfor %}
+        </nav>
+      </aside>
+      <main class="content" id="main-content" tabindex="-1">
+        {% unless page.url == '/' %}
+        <nav class="breadcrumbs" aria-label="Breadcrumb">
+          <ol>
+            <li><a href="{{ '/' | relative_url }}">Docs</a></li>
+            {% for group in site.data.navigation %}{% if group.title == page.section %}
+            <li><a href="{{ group.url | relative_url }}">{{ group.title }}</a></li>
+            {% endif %}{% endfor %}
+            <li aria-current="page">{{ page.title }}</li>
+          </ol>
+        </nav>
+        <p class="eyebrow">{{ page.section | default: "Kinosail documentation" }}</p>
+        {% endunless %}
+        <article class="prose">
+          {{ content }}
+        </article>
+        {% assign previous_page = nil %}
+        {% assign next_page = nil %}
+        {% for group in site.data.navigation %}{% if group.title == page.section %}
+          {% for item in group.pages %}{% if item.url == page.url %}
+            {% assign previous_index = forloop.index0 | minus: 1 %}
+            {% assign next_index = forloop.index0 | plus: 1 %}
+            {% if previous_index >= 0 %}{% assign previous_page = group.pages[previous_index] %}{% endif %}
+            {% if next_index < group.pages.size %}{% assign next_page = group.pages[next_index] %}{% endif %}
+          {% endif %}{% endfor %}
+        {% endif %}{% endfor %}
+        {% if previous_page or next_page %}
+        <nav class="page-sequence" aria-label="Pages in this guide">
+          {% if previous_page %}<a rel="prev" href="{{ previous_page.url | relative_url }}"><span>Previous</span>{{ previous_page.title }}</a>{% endif %}
+          {% if next_page %}<a rel="next" href="{{ next_page.url | relative_url }}"><span>Next</span>{{ next_page.title }}</a>{% endif %}
+        </nav>
+        {% endif %}
+        {% unless page.hide_contribute %}
+        <footer class="page-footer">
+          <p>Last reviewed {{ page.last_reviewed | date: "%B %-d, %Y" }} by {{ page.review_owner }}.</p>
+          <a href="{{ site.github_url }}/issues/new">Open an issue</a>
+          <a href="{{ site.github_url }}/edit/main/docs/{{ page.path }}">Edit this page</a>
+        </footer>
+        {% endunless %}
+      </main>
+    </div>
+  </body>
+</html>
