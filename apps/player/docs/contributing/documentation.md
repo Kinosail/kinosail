@@ -1,38 +1,28 @@
 ---
 title: Documentation guide
-description: Maintain accurate, accessible, task-oriented Kinosail documentation and replace planned screenshots.
+description: Maintain accurate and accessible task-oriented Kinosail documentation.
 section: Project
+last_reviewed: 2026-09-15
 ---
 
 # Documentation guide
 
-Kinosail documentation uses tutorials, task guides, reference, and explanation as separate content types. Each page must have one clear purpose.
+Write each page for one reader task. Separate tutorials, operational procedures, reference, and explanation. Start with the outcome, prerequisites, and the directory in which commands run.
 
-## Page rules
+## Accuracy
 
-- Start task pages with the reader goal and prerequisites.
-- Use exact interface labels and verified commands.
-- Put warnings before the action they qualify.
-- Keep reference factual. Link to a task guide for procedures.
-- Use descriptive link text. Preserve one logical heading order.
-- Never publish credentials, tokens, private hostnames, or personal media details.
+Check ports, configuration names/defaults, file permissions, mount behavior, API routes, and flags against the installed source version. Distinguish source setup from a published signed release. Explain expected output, likely failures, recovery, and the next step. Keep app-specific workflows in their own app's guides.
 
-## Screenshot placeholders
+Use reserved example domains and synthetic media. Never include credentials, private addresses, account data, personal library titles, or unlicensed artwork.
 
-Use the shared include until the application design is final:
+## Structure and images
 
-{% raw %}
-```liquid
-{% include screenshot.html
-  title="Library home"
-  alt="Future screenshot of a populated library home."
-  description="Show desktop navigation and Continue Watching."
-%}
-```
-{% endraw %}
+Use front matter with a unique title, description, section, and honest review date. Keep one H1 and a logical heading order. Add pages to `_data/navigation.yml` and link related tasks. Use the `relative_url` filter for site paths so the site works below a hosting subpath.
 
-Replace the placeholder with an optimized local image. Keep the caption and useful alternative text. Do not use a screenshot to carry instructions that the page does not state in text.
+Published instructions must work without screenshots. Add a local optimized image only when it clarifies a step, with useful alt text and a caption. Keep unfilled screenshot plans in engineering notes; do not ship empty screenshot placeholders as user instructions.
 
-## Verify a change
+## Preview and verification
 
-Check front matter, internal links, heading order, code blocks, narrow reflow, keyboard navigation, focus, light and dark themes, and the generated GitHub Pages base path.
+The docs README explains Jekyll preview and deployment settings. Inspect rendered headings, links, code, tables, search, light/dark themes, narrow reflow, keyboard navigation, and focus at the intended hosting base path. A source review does not prove a deployed site works.
+
+Repository gate policy still applies: while `.gates-disabled` exists, do not run disabled suites or describe skipped checks as passing. Record manual observations separately. Site publication, signed app release, and application acceptance are different outcomes.

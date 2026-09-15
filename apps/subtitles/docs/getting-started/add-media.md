@@ -1,68 +1,29 @@
 ---
-title: Add your media
-description: Organize folders, mount media for subtitle sidecar writes, and run the first scan.
+title: Add movie and episode folders
+description: Choose writable folders inside the configured media mount.
 section: Start here
+last_reviewed: 2026-09-15
 ---
 
-# Add your media
+# Add movie and episode folders
 
-Kinosail reads media from the configured media mount. Add folders inside that mount in **Settings → Library folders**, then run a scan and check the result in Library.
+The host directory in `KINOSAIL_MEDIA_PATH` appears at `/media` inside the container. Select relative subfolders in setup or library settings. For example, host `/srv/media/Movies` appears as `/media/Movies`, and the folder entry is `Movies`.
 
-## Prepare the media path
+```text
+media/
+  Movies/
+    Example Film (2025)/
+      Example Film (2025).mkv
+      Example Film (2025).en.srt
+  Shows/
+    Example Show/
+      Season 01/
+        Example Show S01E01.mkv
+        Example Show S01E01.en.srt
+```
 
-Create one or more folders on the host. Use clear folder names, such as `Movies`, `Shows`, `Music`, `Books`, or `Photos`. The host path must exist before you run the installer or start Compose.
+Start with a small folder you control. The whole mount is selected when the folder list is `.`; adding a specific folder narrows the scope. Scan and confirm that videos appear before requesting subtitles. Keep season/episode identifiers and useful release information so providers can distinguish versions.
 
-The release Compose file mounts `${KINOSAIL_MEDIA_PATH}` at `/media:rw`. Kinosail can read video files and create validated subtitle sidecars through this mount. It does not rename or delete Media Files. Copy and organize files on the host, then wait for the copy to finish before scanning.
+An exact untagged sidecar such as `Film.srt` counts as a default subtitle. A tagged sidecar such as `Film.en.srt` covers that language. Provider downloads must pass validation before an atomic write beside the scanned video.
 
-## Add a Library folder
-
-1. Sign in as an Owner.
-2. Open **Settings**.
-3. Find **Library folders** under **Library**.
-4. Confirm the **Media mount** path.
-5. Enter a folder relative to the media mount in **Folder inside media mount**. For example, enter `Movies`, not `/media/Movies`.
-6. Select **Add folder**.
-
-Kinosail accepts an existing folder inside the media mount. It rejects absolute paths, missing folders, symlink-resolved paths outside the mount, and overlapping folders. Adding `.` means the complete media mount. Do not add both `.` and `Movies`, or add a parent and child folder together.
-
-{% include screenshot.html title="Library folders" alt="Future screenshot of Settings showing the media mount, existing folders, and the Folder inside media mount field." description="Show a safe local path such as Movies. Do not show a real host username or private folder name." %}
-
-## Run the first scan
-
-In **Settings → Library discovery**, select **Run library scan now**. Kinosail reports the number of discovered items and the last scan time. New media is detected automatically after copying finishes. Safety scans repair missed file-system events on Windows, macOS, Linux, containers, and network mounts.
-
-For ongoing checks, choose **Safety scan**:
-
-- **Environment default**;
-- **Off**;
-- **Every 5 minutes**;
-- **Every 15 minutes**; or
-- **Hourly**.
-
-Select **Save schedule**. Kinosail can also watch for changes. The page shows **Watching for changes** or **Polling for changes**.
-
-If a metadata provider is configured, select **Refresh missing metadata** after the scan. Metadata enrichment is optional. Local NFO files, embedded tags, and folder artwork remain local inputs.
-
-## Check the result
-
-Open **Library** and verify one item from each folder. Check the title, media type, artwork, year, seasons or tracks, and playback action. Use a small file first so you can isolate path and permission errors.
-
-If the item is missing:
-
-1. Confirm the host file exists inside the configured host media path.
-2. Confirm the folder is listed relative to `/media`.
-3. Confirm the container user can read the host path.
-4. Run **Run library scan now** again.
-5. Open **Settings → System** and inspect the scan status.
-
-Grant write access only to the media folders where Kinosail should create Subtitle Files. Host permissions remain the final boundary.
-
-## Remove or reorganize a folder
-
-In **Settings → Library folders**, select **Remove** beside the folder. Removing a configured root stops future discovery from that root. It does not delete host files. Move files on the host, update the folder list, and run a new scan.
-
-When a value is managed by YAML or the environment, the page marks it **Read-only**. Change the external value and restart Kinosail instead.
-
-## Source of truth
-
-Sources: `internal/server/settings_library.go`, `internal/server/settings_http.go`, `internal/server/library.go`, `compose.release.yaml`, and `README.md`.
+Subtitles needs write access. Player can read the same media tree through its own read-only mount, but the apps must not share their configuration databases. See [library management]({{ '/owner-guide/libraries/' | relative_url }}).

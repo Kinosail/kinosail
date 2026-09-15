@@ -32,9 +32,8 @@ The Owner can limit a Viewer by library, content rating, viewing hours, remote a
 4. Use **Add to My List** when you want to return later.
 5. Use **Playback & downloads** for playback mode, offline preparation, and subtitle search when those actions are available.
 
-If a page does not show a control, the item type, your Profile policy, or the Server configuration may not permit it. See [Troubleshooting](../troubleshooting/).
+If a page does not show a control, the item type, your Profile policy, or the Server configuration may not permit it. See [Troubleshooting]({{ '/troubleshooting/' | relative_url }}).
 
-{% include screenshot.html title="User guide entry point" alt="Future screenshot of the Kinosail home page with library destinations and personal shelves." description="Capture a populated home page without private media names or host details." %}
 
 ## Keep the boundary clear
 

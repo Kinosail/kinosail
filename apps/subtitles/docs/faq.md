@@ -1,56 +1,32 @@
 ---
-title: Frequently asked questions
-description: Concise answers about Kinosail Subtitles, privacy, providers, files, and deployment.
+title: Subtitles FAQ
+description: Answers about providers, privacy, writes, and app boundaries.
 section: Project
-last_reviewed: 2026-08-30
+last_reviewed: 2026-09-15
 ---
 
-# Frequently asked questions
+# Subtitles FAQ
 
-## What is Kinosail Subtitles?
+## Do I need Kinosail Player?
 
-Kinosail Subtitles is a private, self-hosted subtitle manager for movies and episodes you control. It is the subtitle app in the Kinosail family and shares Kinosail Player's setup, security, visual language, container, API, and verification framework.
+No. Subtitles writes sidecars for videos in folders you control. A compatible player can use those files.
 
-## Is this a replacement for Bazarr?
+## Do I need a provider?
 
-Kinosail now covers the core Bazarr workflow without Sonarr, Radarr, a database sidecar, or provider scrapers. It scans media directly, tracks wanted subtitles, searches configured free providers, ranks candidates, validates downloads, writes safe sidecars, synchronizes weak matches, upgrades managed files, and exposes the same operations through its versioned API.
+Local scanning and coverage work without one. Provider downloads require a configured account/key and available quota. See [provider setup]({{ '/owner-guide/integrations/' | relative_url }}).
 
-## Does it require a hosted account or subscription?
+## Are my videos uploaded?
 
-No. Local use requires neither. An optional subtitle provider can have its own account or limits.
+No. Providers receive bounded search metadata and, where used, a locally calculated hash. See [privacy]({{ '/reference/architecture-and-privacy/' | relative_url }}).
 
-## What leaves my Server?
+## Can it replace an existing sidecar?
 
-Nothing leaves for local inventory and coverage. When the Owner enables a provider and starts a search, the provider receives the title, requested language, media type, and episode identity needed for that search. Media bytes are not uploaded or relayed.
+Yes, under conservative maintenance rules. Managed files need a meaningful score improvement; unknown sidecars require an exact OpenSubtitles hash match and retain a `.kinosail.bak` original. SubSource files stay unchanged under its terms.
 
-## Why is the media mount writable?
+## Does an app backup include my subtitles?
 
-The app creates subtitle sidecars such as `Arrival.en.srt` beside the corresponding video. The target comes from an already scanned video path and a validated language code; callers cannot choose an arbitrary filesystem path.
+No. Sidecars live in the media tree. Back up media and sidecars separately from application state, external configuration, and keys.
 
-## Will it overwrite my subtitles?
+## Where are the production downloads?
 
-No. A preferred-language or default sidecar counts as covered, and final file creation fails if another file already owns the target name—even when two requests race.
-
-## Which subtitle files count as coverage?
-
-An untagged sidecar such as `Arrival.srt` counts as the default subtitle. A tagged sidecar such as `Arrival.en.srt` covers that language. SRT and WebVTT files found by the scanner are included.
-
-## Which providers are supported?
-
-Kinosail supports SubDL, OpenSubtitles.com, and SubSource. One provider is enough. It searches every configured provider and selects one result automatically. SubSource requires personal-use acceptance and its downloaded bytes stay unchanged.
-
-## How many containers do I need?
-
-One. The supported deployment includes the Go Server and embedded SQLite state without a database sidecar.
-
-## Where are configuration and backups kept?
-
-Application state uses `/config`, caches use `/cache`, writable media and subtitle files use `/media`, and backups use `/backups` by default. Environment variables override YAML, which overrides Owner settings.
-
-## Where is the API contract?
-
-Open `/api/v1/openapi.json` on the running Server. Subtitle inventory and fetch operations live under `/api/v1/subtitle-library`.
-
-## Is Kinosail Subtitles open source?
-
-Kinosail Subtitles is source-available under the PolyForm Perimeter License 1.0.1. Read the repository's licensing terms before redistribution, rebranding, resale, hosting, or competing use.
+As of September 15, 2026, this monorepo has no published GitHub releases. Use the documented source setup and evaluate the app's release checklist before production deployment. A source build is not a signed-release acceptance result.

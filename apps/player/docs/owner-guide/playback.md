@@ -48,7 +48,6 @@ Run **Run quick check** under **Quick compatibility check**. The check makes a s
 
 Open **Video compatibility** for detected formats, available conversion methods, and focused setup guidance.
 
-{% include screenshot.html title="Video conversion and quick compatibility check" alt="Future screenshot of Video conversion settings showing Automatic choices and a passed quick compatibility check." description="Show the test status without a real media title." %}
 
 ## Control Viewer capacity
 

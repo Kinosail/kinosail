@@ -24,7 +24,6 @@ Video and audio progress is private to your Profile. Kinosail records progress w
 
 Audiobooks also provide playback speed and a sleep timer. Music queues support low-gap playback when the device supports it. Photos use an image viewer instead of audio or video controls.
 
-{% include screenshot.html title="Player controls" alt="Future screenshot of the Kinosail player with the seek bar, subtitle control, settings menu, and chapter disclosure." description="Capture a title with safe synthetic media and visible player status." %}
 
 ## Choose a playback mode
 

@@ -11,11 +11,11 @@ Build against the Kinosail Server that a household operates. The versioned HTTP 
 
 ## Choose a starting point
 
-- [API quickstart](api-quickstart) makes an authenticated request and updates viewing progress.
-- [API workflows](api-workflows) maps common integration tasks to safe request sequences.
-- [Connect an MCP client](mcp) connects an assistant through the Model Context Protocol.
-- [API reference](../reference/api) explains authentication, scopes, media boundaries, and the live contract.
-- [Home Assistant integration](../owner-guide/integrations#configure-home-assistant) covers the supported household integration.
+- [API quickstart]({{ '/developer-guide/api-quickstart/' | relative_url }}) makes an authenticated request and updates viewing progress.
+- [API workflows]({{ '/developer-guide/api-workflows/' | relative_url }}) maps common integration tasks to safe request sequences.
+- [Connect an MCP client]({{ '/developer-guide/mcp/' | relative_url }}) connects an assistant through the Model Context Protocol.
+- [API reference]({{ '/reference/api/' | relative_url }}) explains authentication, scopes, media boundaries, and the live contract.
+- [Home Assistant integration]({{ '/owner-guide/integrations/#configure-home-assistant' | relative_url }}) covers the supported household integration.
 
 ## Use the right documentation layer
 
@@ -23,10 +23,10 @@ The API document and these guides have different jobs:
 
 | You need to... | Use... |
 | --- | --- |
-| Generate requests or inspect every operation | The live [OpenAPI document](../reference/api#discover-the-contract) |
+| Generate requests or inspect every operation | The live [OpenAPI document]({{ '/reference/api/#discover-the-contract' | relative_url }}) |
 | Learn a complete integration task | A developer guide |
-| Check authentication, scopes, limits, or privacy rules | The [API reference](../reference/api) |
-| Configure an Owner-controlled integration | The [Owner guide](../owner-guide/integrations) |
+| Check authentication, scopes, limits, or privacy rules | The [API reference]({{ '/reference/api/' | relative_url }}) |
+| Configure an Owner-controlled integration | The [Owner guide]({{ '/owner-guide/integrations/' | relative_url }}) |
 
 ## Know the boundary
 

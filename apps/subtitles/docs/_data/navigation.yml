@@ -1,49 +1,41 @@
 - title: Start here
   url: /getting-started/
   pages:
-    - title: Choose an install path
+    - title: Get started
       url: /getting-started/
-    - title: Install Kinosail
+    - title: Install Subtitles
       url: /getting-started/install/
-    - title: Complete first setup
+    - title: First setup
       url: /getting-started/first-setup/
-    - title: Connect phones, TVs, and apps
-      url: /getting-started/connect-devices/
-    - title: Add your media
+    - title: Add media
       url: /getting-started/add-media/
-- title: Use Kinosail
+    - title: Connect another device
+      url: /getting-started/connect-devices/
+- title: Use Subtitles
   url: /user-guide/
   pages:
-    - title: User guide
+    - title: Find and manage subtitles
       url: /user-guide/
-    - title: Browse and search
+    - title: Browse coverage
       url: /user-guide/browse-and-search/
-    - title: Play media
+    - title: Check matching and timing
       url: /user-guide/playback/
-    - title: Profiles and household access
-      url: /user-guide/profiles/
-    - title: Lists and collections
-      url: /user-guide/lists-and-collections/
-    - title: Share and watch together
-      url: /user-guide/sharing/
 - title: Own the Server
   url: /owner-guide/
   pages:
     - title: Owner guide
       url: /owner-guide/
-    - title: Manage libraries
+    - title: Library folders
       url: /owner-guide/libraries/
-    - title: Configure playback
-      url: /owner-guide/playback/
-    - title: Secure accounts
-      url: /owner-guide/security/
-    - title: Configure remote access
-      url: /owner-guide/remote-access/
-    - title: Connect integrations
+    - title: Subtitle providers
       url: /owner-guide/integrations/
-    - title: Back up and update
+    - title: Language and automation
+      url: /owner-guide/playback/
+    - title: Secure access
+      url: /owner-guide/security/
+    - title: Backups and updates
       url: /owner-guide/backups-and-updates/
-- title: Build with Kinosail
+- title: Build with Subtitles
   url: /developer-guide/
   pages:
     - title: Developer guide
@@ -52,24 +44,22 @@
       url: /developer-guide/api-quickstart/
     - title: API workflows
       url: /developer-guide/api-workflows/
-    - title: Connect an MCP client
+    - title: MCP boundaries
       url: /developer-guide/mcp/
-    - title: API reference
-      url: /reference/api/
 - title: Reference
   url: /reference/
   pages:
-    - title: Reference home
+    - title: Reference
       url: /reference/
     - title: Configuration
       url: /reference/configuration/
-    - title: API
+    - title: HTTP API
       url: /reference/api/
-    - title: Media compatibility
+    - title: Subtitle compatibility
       url: /reference/media-compatibility/
     - title: Architecture and privacy
       url: /reference/architecture-and-privacy/
-    - title: Interactive code atlas
+    - title: Code Atlas
       url: /reference/code-atlas/
     - title: Glossary
       url: /reference/glossary/
@@ -78,18 +68,18 @@
   pages:
     - title: Troubleshooting
       url: /troubleshooting/
-    - title: Install and startup
+    - title: Startup
       url: /troubleshooting/install-and-startup/
-    - title: Scanning and metadata
+    - title: Scanning and matching
       url: /troubleshooting/scanning-and-metadata/
-    - title: Playback
+    - title: Timing and saves
       url: /troubleshooting/playback/
-    - title: Sign-in and access
+    - title: Sign-in
       url: /troubleshooting/sign-in-and-access/
 - title: Project
   url: /faq/
   pages:
-    - title: Frequently asked questions
+    - title: FAQ
       url: /faq/
     - title: Documentation guide
       url: /contributing/documentation/

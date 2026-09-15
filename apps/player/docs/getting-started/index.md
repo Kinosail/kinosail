@@ -6,7 +6,7 @@ section: Start here
 
 # Choose an install path
 
-Choose one path before you begin. The release installer is the supported production path. A source install is useful for development. The synthetic test Server is useful for a safe trial.
+Choose one path before you begin. As of September 15, 2026, this monorepo has no published GitHub releases. Source installation is available now; the signed-release installer applies once the matching release is published. A source build does not establish production acceptance.
 
 ## Choose the release installer
 
@@ -24,12 +24,14 @@ Continue with [Install Kinosail]({{ '/getting-started/install/' | relative_url }
 
 ## Choose a source install
 
-Use a source install when you are developing Kinosail or need to test a local change. You need the repository, Podman Compose or Docker Compose, and the tools required by the project. Source Compose does not mount the release installer backup key.
+Use a source install for the current checkout. Clone the complete monorepo and run these commands from `apps/player/`. You need the repository, Podman Compose or Docker Compose, and the tools required by the project. Source Compose does not mount the release installer backup key.
 
 ```sh
 cp .env.example .env
-# Set KINOSAIL_MEDIA_PATH to an absolute path in .env.
-KINOSAIL_BACKUP_KEY_FILE= podman compose up --build --detach
+chmod 600 .env
+# Set KINOSAIL_MEDIA_PATH to an existing absolute path in .env.
+# Also clear KINOSAIL_BACKUP_KEY_FILE= in .env for the source quickstart.
+podman compose up --build --detach
 ```
 
 Use `docker compose` instead when Docker is your runtime. Hardware acceleration needs the additional `compose.gpu.yaml` file and a supported host device.
@@ -37,6 +39,8 @@ Use `docker compose` instead when Docker is your runtime. Hardware acceleration 
 Open the local Server address. Create the first Owner directly from the setup page.
 
 ## Choose the synthetic test Server
+
+Run the fixture only when repository quality gates are enabled. While `.gates-disabled` exists, do not run disabled verification suites.
 
 Use the test fixture when you want to explore Kinosail without downloading third-party creative media. It creates original synthetic movies, Shows, music, an audiobook, a book, photos, and a local TMDB-compatible catalogue.
 

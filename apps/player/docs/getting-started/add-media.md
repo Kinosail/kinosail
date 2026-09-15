@@ -25,7 +25,6 @@ The release Compose file mounts `${KINOSAIL_MEDIA_PATH}` at `/media:ro`. Kinosai
 
 Kinosail accepts an existing folder inside the media mount. It rejects absolute paths, missing folders, symlink-resolved paths outside the mount, and overlapping folders. Adding `.` means the complete media mount. Do not add both `.` and `Movies`, or add a parent and child folder together.
 
-{% include screenshot.html title="Library folders" alt="Future screenshot of Settings showing the media mount, existing folders, and the Folder inside media mount field." description="Show a safe local path such as Movies. Do not show a real host username or private folder name." %}
 
 ## Run the first scan
 

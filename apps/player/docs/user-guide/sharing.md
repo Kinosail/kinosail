@@ -25,7 +25,6 @@ The recipient opens the link and sees **Opening shared media**. After the claim 
 
 Do not post a Media Share link in a public channel. Anyone who has the unexpired link may claim an available device slot. An Owner can open **Settings → Media Shares** and select **Revoke**. Revocation removes active sessions for that share.
 
-{% include screenshot.html title="Media Share controls" alt="Future screenshot of the Owner Media Shares page with selected items, expiry, device limit, rights confirmation, and revoke controls." description="Use synthetic titles and a placeholder domain. Never capture a real claim token." %}
 
 ## Start a Watch Room
 

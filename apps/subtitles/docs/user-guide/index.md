@@ -1,43 +1,33 @@
 ---
-title: User guide
-description: Learn the daily Kinosail browsing, playback, profile, organization, and sharing workflows.
-section: Use Kinosail
+title: Find and manage subtitles
+description: Read coverage and fetch or upgrade subtitle sidecars.
+section: Use Subtitles
+last_reviewed: 2026-09-15
 ---
 
-# User guide
+# Find and manage subtitles
 
-Use this guide to browse, play, organize, and share Library Content in Kinosail.
+The dashboard shows local coverage for your preferred language, wanted items, and scanned videos. Start with [first setup]({{ '/getting-started/first-setup/' | relative_url }}) if no library or provider is configured.
 
-## Choose a task
+## Fetch one subtitle
 
-- [Browse and search]({{ '/user-guide/browse-and-search/' | relative_url }}) to find a title, album, book, photo, or episode.
-- [Play media]({{ '/user-guide/playback/' | relative_url }}) to resume playback, select tracks, use chapters, and understand playback modes.
-- [Profiles and household access]({{ '/user-guide/profiles/' | relative_url }}) to understand Owner and Viewer access.
-- [Lists and collections]({{ '/user-guide/lists-and-collections/' | relative_url }}) to save, curate, and queue media.
-- [Share and watch together]({{ '/user-guide/sharing/' | relative_url }}) to use Media Shares, Watch Rooms, and permitted downloads.
+1. Locate a movie or episode in the library/wanted view.
+2. Review the video identity and preferred language.
+3. Fetch a subtitle and read the operation result.
+4. Check the saved sidecar beside the video and verify it in your player.
 
-## Know your role
+A wanted batch from the dashboard handles up to ten items. The HTTP API accepts bounded batches up to 50. A batch can have mixed outcomes; retry only the items that still need work after resolving the cause.
 
-An Owner manages the Server and Profiles. An Owner can create and change Viewer Profiles, libraries, playback settings, integrations, backups, and shares.
+## Automatic maintenance
 
-A Viewer uses only the libraries and actions allowed by the Owner. A Viewer cannot manage the Server. A Viewer’s viewing history, progress, ratings, and My List are separate from other Profiles.
+After scans, maintenance fills missing subtitles and considers safer upgrades, with a minimum of 15 minutes between bounded automatic cycles. Existing embedded text and sidecars are considered before a provider search. Provider requests still depend on account quotas and network availability.
 
-The Owner can limit a Viewer by library, content rating, viewing hours, remote access, transcoding, and downloads. A restriction applies at the Server, not only in the web interface.
+Managed sidecars require a score improvement of at least ten points for the conservative automatic upgrade. Unknown sidecars require an exact OpenSubtitles file-hash match; the replaced original is kept as a `.kinosail.bak` recovery copy. Keep that original until the replacement is checked. SubSource sidecars are preserved unchanged under its terms.
 
-## A short first session
+## Review uncertain results
 
-1. Open the Kinosail address and sign in with your Profile.
-2. Choose a destination such as **Movies**, **Shows**, **Music**, **Books**, or **Photos**.
-3. Open a title and select **Play**.
-4. Use **Add to My List** when you want to return later.
-5. Use **Playback & downloads** for playback mode, offline preparation, and subtitle search when those actions are available.
+Check language, episode, release, and timing when a subtitle is wrong. Optional OCR/transcription creates drafts for review and does not automatically replace sidecars. Review changes before accepting them. See [matching and timing]({{ '/user-guide/playback/' | relative_url }}) and [recovery]({{ '/owner-guide/backups-and-updates/' | relative_url }}).
 
-If a page does not show a control, the item type, your Profile policy, or the Server configuration may not permit it. See [Troubleshooting](../troubleshooting/).
+## Keep or restore a sidecar
 
-{% include screenshot.html title="User guide entry point" alt="Future screenshot of the Kinosail home page with library destinations and personal shelves." description="Capture a populated home page without private media names or host details." %}
-
-## Keep the boundary clear
-
-Kinosail sends media directly between your device and the owner-hosted Server. Kinosail does not operate a media relay. Optional metadata, subtitle, identity, DNS, or notification services receive only the requests needed for the integration that the Owner enables.
-
-Source of truth: current web handlers and product behavior.
+Use the item's replacement control to freeze a subtitle that should be kept. When a preserved original is available, use restore for the intended language and check the file again in your player. Review the inspector's source, match evidence, and warnings before previewing or applying edits. The API exposes the same [replacement, restore, and review operations]({{ '/reference/api/' | relative_url }}).

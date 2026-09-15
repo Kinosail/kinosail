@@ -6,7 +6,9 @@ section: Start here
 
 # Install Kinosail
 
-Run the release installer from the Kinosail release bundle. It verifies the image, creates protected recovery material, starts one Server container, and binds it to localhost until you create the first Owner.
+As of September 15, 2026, this monorepo has no published GitHub releases. Use [source installation]({{ '/getting-started/' | relative_url }}) for the current checkout. The steps below apply when a signed Player release is available.
+
+Download the matching Player installer from [Releases](https://github.com/MikeO7/kinosail/releases), verify the supplied checksum and signature, extract it, and run commands from that bundle directory. Run the release installer from the Kinosail release bundle. It verifies the image, creates protected recovery material, starts one Server container, and binds it to localhost until you create the first Owner.
 
 ## Prerequisites
 
@@ -35,7 +37,6 @@ The installer selects `podman compose` when available. It falls back to `docker 
 
 The installer pulls `ghcr.io/mikeo7/kinosail-player:<version>`, verifies its keyless signature, pins the resolved SHA-256 digest in `.env`, and starts the service. It waits for the `kinosail healthcheck` command to pass.
 
-{% include screenshot.html title="Healthy local Server" alt="Future screenshot of the Kinosail Server ready at its localhost address." description="Show the installer success message and the local sign-in address without a real hostname or media name." %}
 
 ## Open the Server
 
@@ -69,7 +70,7 @@ Open the reported LAN address from another device. Use the exact HTTPS name in t
 
 ## Update an existing release
 
-Run the installer again with the same media path and port. If the service is running, the installer writes a recovery archive under `backups/kinosail-before-update-<timestamp>.tar.gz` before it pulls the new image. It keeps the existing `.env` values.
+Run the installer again with the same media path and port. If the service is running, the installer writes a recovery archive under `backups/kinosail-before-update-<timestamp>.kinosail-backup` before it pulls the new image. It keeps the existing `.env` values.
 
 Check the resulting state:
 

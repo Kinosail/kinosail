@@ -10,3 +10,5 @@ Each skill's frontmatter provides its current trigger. Load only the skill and r
 - **Explain and route:** `show-me`, `ask-matt`
 
 User instructions and repository policy take precedence over skill guidance. A skill does not grant permission for external side effects.
+
+This directory is maintainer tooling, not a user installation prerequisite. Start with the [root README](../../README.md) and [contribution guide](../../CONTRIBUTING.md) for app setup and development. Read the selected skill's `SKILL.md` before applying it.

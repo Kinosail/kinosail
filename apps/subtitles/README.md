@@ -2,6 +2,8 @@
 
 Kinosail Subtitles finds, validates, and adds subtitle sidecar files to movies and episodes you control. It is the subtitle automation app in the Kinosail family.
 
+[Repository home](../../README.md) · [User documentation](docs/README.md) · [Support](../../SUPPORT.md) · [Contributing](../../CONTRIBUTING.md)
+
 The application uses the same foundation as Kinosail Player: a Go API-driven monolith, server-rendered HTML with small browser enhancements, embedded SQLite, one hardened container, local-first authentication, and the shared Kinosail design and verification system.
 
 ## What works
@@ -10,7 +12,7 @@ The application uses the same foundation as Kinosail Player: a Go API-driven mon
 - Detects untagged and language-tagged SRT or WebVTT sidecar files.
 - Shows preferred-language coverage, wanted items, and every scanned video.
 - Uses an existing sidecar or embedded text track before a provider request.
-- Searches the free SubDL, OpenSubtitles.com, and SubSource APIs for movies and individual episodes.
+- Searches the SubDL, OpenSubtitles.com, and SubSource APIs for movies and individual episodes.
 - Ranks exact IDs, the OpenSubtitles file hash, release names, episodes, language, accessibility, and translation source.
 - Cleans safe SRT or WebVTT, rejects invalid timing, and aligns weak release matches against local speech before writing. SubSource files stay unchanged under its terms.
 - Validates provider responses, download hosts, archive cardinality, file size, subtitle timing content, and null bytes.
@@ -24,11 +26,15 @@ The default is deliberately conservative. Kinosail upgrades its own sidecars onl
 
 ## Install from source
 
-Kinosail Subtitles needs write access to the media folders where it creates sidecar files.
+Install Git and Docker Compose or Podman with a Compose provider. Use a 64-bit Linux container host; macOS can run the image in the engine's Linux VM. Clone the complete monorepo and run these commands from `apps/subtitles/`.
+
+Kinosail Subtitles needs write access to the media folders where it creates sidecar files. The image runs as UID/GID 10001; grant appropriate access to the chosen folders without making the whole library world-writable. Keep backups of existing sidecars and media.
 
 ```sh
 cp .env.example .env
-# Set KINOSAIL_MEDIA_PATH to an absolute movie and television library path.
+chmod 600 .env
+# Set KINOSAIL_MEDIA_PATH to an existing absolute movie/episode directory.
+# Set KINOSAIL_BACKUP_KEY_FILE= to empty: source Compose does not mount that secret.
 podman compose up --build --detach
 ```
 
@@ -36,7 +42,7 @@ Docker users can replace `podman compose` with `docker compose`.
 
 Open `https://localhost:38128`. Create the first Owner with a unique password of at least 12 characters. Kinosail requires a passkey or time-based one-time password for every Owner.
 
-The container remains non-root, read-only, capability-free, and protected by `no-new-privileges`. Only the configured media mount is writable. Host permissions still control which folders the container can change.
+The container remains non-root, read-only, capability-free, and protected by `no-new-privileges`. Application state, cache, backups, and the media mount have separate writable locations. Host permissions still control which folders the container can change. The web port stays on localhost until you change its binding; finish Owner setup before doing so. Automatic encrypted backups require a configured key; see [backups](docs/owner-guide/backups-and-updates.md).
 
 Useful commands:
 
@@ -47,7 +53,7 @@ podman compose down
 
 ## Configure subtitle search
 
-Configure one or more free providers. One provider is enough. Kinosail searches every configured provider and selects one result automatically.
+Open Settings to configure provider credentials and the preferred language. Use the guided setup links, or follow the [provider guide](docs/owner-guide/integrations.md). Configure one or more providers; availability, quotas, and account terms belong to each provider. One provider is enough. Kinosail searches every configured provider and selects one result automatically.
 
 ```sh
 KINOSAIL_SUBDL_API_KEY=your-key
@@ -69,11 +75,29 @@ KINOSAIL_SUBSOURCE_URL=https://api.subsource.net/api/v1
 KINOSAIL_SUBTITLE_LANGUAGE=en
 ```
 
-Secrets also support `_FILE` variants. Deployment-managed values stay visible but read-only in Owner Settings.
+The variables above are native-process configuration names. A Compose `.env` value reaches the container only when `compose.yaml` forwards it. The supplied Compose files forward SubDL and OpenSubtitles settings; they currently do not forward SubSource settings. Configure SubSource through Owner Settings, or explicitly add its environment/secret mappings in a local Compose override. Do not assume that adding an unforwarded key to `.env` configures the app.
+
+Secrets also support `_FILE` variants; the referenced file must be mounted into the container. Deployment-managed values stay visible but read-only in Owner Settings.
 
 SubSource downloads stay unchanged on disk. Kinosail validates them, but does not rewrite, synchronize, shift, or convert the stored sidecar.
 
 The dashboard uses a lowercase ISO language code such as `en` or `pt-br`. An exact sidecar such as `Arrival.srt` counts as a default subtitle. A language sidecar such as `Arrival.en.srt` covers only that language.
+
+## First successful subtitle
+
+1. Open the local address and create the Owner with a unique password and required authenticator.
+2. Choose movie/episode folders in setup and scan them.
+3. Set your preferred language and at least one provider.
+4. Select a wanted item, fetch a subtitle, and check the resulting language sidecar beside that video.
+5. Review the dashboard status before relying on automatic maintenance.
+
+Scanning can show local coverage without a provider. A provider quota, unmatched episode, read-only folder, or invalid download can prevent a fetch; see [troubleshooting](docs/troubleshooting/index.md). Exact naming matters: `Film.en.srt` covers English for `Film.mkv`.
+
+## Updates and recovery
+
+Keep the same Compose project and volumes when updating. Back up application state, deployment secrets, and media/sidecars separately; the app backup does not contain the media tree. Read [Back up and update](docs/owner-guide/backups-and-updates.md) before `podman compose up --build --detach`. `podman compose down` preserves volumes; adding `--volumes` deletes app state.
+
+A managed sidecar may be upgraded; an unknown sidecar requires an exact OpenSubtitles hash match and is preserved as a `.kinosail.bak` copy. Keep that original until you have checked the replacement. SubSource files remain unchanged under its terms.
 
 ## HTTP API
 
@@ -119,13 +143,13 @@ Kinosail Subtitles deliberately retains the Kinosail repository framework:
 - `engineering/` contains architecture decisions, research, release procedures, and agent guidance.
 - `docs/` is reserved for published user documentation.
 - `internal/server` keeps the web and versioned API adapters on shared operations.
-- `packages/library` owns bounded local-media discovery.
+- `../../packages/library` owns bounded local-media discovery.
 
-The copied Kinosail Player adapters remain available while the subtitle product is extracted at stable seams. The production binary enables subtitle-app mode, so the primary user interface is the subtitle command center.
+The binary enables subtitle-app mode. The user-facing product is the subtitle command center; use Player for household media playback. Shared internals do not imply that Player features are supported Subtitles workflows.
 
 ## Development and verification
 
-Run focused server coverage while editing:
+Follow the [root contribution guide](../../CONTRIBUTING.md). While `.gates-disabled` exists, do not run the suites below or count skipped checks as passes. GitHub Actions is disabled. When gates are enabled, run focused server coverage while editing:
 
 ```sh
 go test ./internal/server -run 'TestSubtitle(App|Dashboard|Mutations)'

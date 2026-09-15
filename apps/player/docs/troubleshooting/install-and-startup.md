@@ -91,6 +91,5 @@ The release installer creates a recovery backup before updating a running instal
 
 If the Server is still unavailable, preserve the installer output and the last 50 log lines. Stop before restoring or deleting state. Use the [backup and recovery guide]({{ '/owner-guide/backups-and-updates/' | relative_url }}) when you have a verified backup and its key.
 
-{% include screenshot.html title="System diagnostics" alt="Future screenshot of Settings → System with health, scan, maintenance, cache, and recent activity status." description="Capture status values only. Remove hostnames, paths, and identifiers." %}
 
 Source of truth: `scripts/install.sh`, Compose files, and system settings handlers.

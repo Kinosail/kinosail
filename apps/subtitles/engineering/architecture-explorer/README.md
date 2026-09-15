@@ -1,4 +1,4 @@
-# Kinosail Code Atlas
+# Kinosail Subtitles Code Atlas
 
 This folder contains a generated, standalone explorer for the Go package graph. It is code documentation only; it is not part of the Kinosail application.
 
@@ -16,7 +16,7 @@ Use [`REPEATABLE_PROMPT.md`](./REPEATABLE_PROMPT.md) to rebuild or expand this d
 
 ## Refresh the snapshot
 
-Run this command from the repository root after package changes. It refreshes both the local engineering copy and the GitHub Pages copy:
+Use Go 1.27 or newer and Python 3 with the full monorepo available. Run this command from the monorepo root after package changes. It refreshes both the local engineering copy and the GitHub Pages copy:
 
 ```sh
 python3 scripts/tooling/generate-architecture-explorer.py subtitles
@@ -26,4 +26,6 @@ The shared generator reads the Subtitles and `packages` modules from the root te
 
 The document loads D3 7.9.0 from jsDelivr with Subresource Integrity for force layout and zoom. The table and inspector remain available if the graph library cannot load.
 
-The published copy lives at [`docs/architecture-explorer/index.html`](../../docs/architecture-explorer/index.html) and is linked from the docs Reference section.
+The documentation-site source copy lives at [`docs/architecture-explorer/index.html`](../../docs/architecture-explorer/index.html) and is linked from the docs Reference section.
+
+Regeneration updates a source snapshot; it does not publish a website or prove current runtime behavior. Follow the [documentation README](../../docs/README.md) for site preparation.

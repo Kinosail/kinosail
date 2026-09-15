@@ -21,7 +21,6 @@ The Owner can change Server settings, manage Profiles, and perform recovery. Kin
 
 If you do not enable TOTP in this step, sign in and add a passkey from your Profile page. A passkey needs the configured Server address and trusted HTTPS. Keep your password in a password manager.
 
-{% include screenshot.html title="Owner account step" alt="Future screenshot of the Set up Kinosail form with Name, Password, and two-factor authentication controls." description="Show safe example values only. Do not capture a real password, recovery code, or hostname." %}
 
 ## Step 2: Choose how devices connect
 
@@ -58,7 +57,6 @@ Select **Preview import**. The preview makes no changes and expires. Review watc
 
 Kinosail does not transfer passwords, permissions, PINs, or source credentials. It does not write to the source. Plex Universal Watchlist is not imported because Plex's documented local Server interface does not expose it. The onboarding path does not offer recurring pulls; configure those later in **Settings → Migration**.
 
-{% include screenshot.html title="Viewing activity preview" alt="Future screenshot of a Kinosail viewing activity preview with item counts and an Import once action." description="Show synthetic source names and counts. Do not show access tokens or private media titles." %}
 
 ## Confirm setup
 

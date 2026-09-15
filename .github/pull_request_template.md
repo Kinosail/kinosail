@@ -1,17 +1,24 @@
-## Summary
+## Problem and result
 
-<!-- Describe the change and why it is needed. -->
+<!-- Describe the concrete problem and the resulting behavior. Name the affected apps. -->
 
 ## Verification
 
-<!-- List the exact checks you ran and anything you did not run. -->
+<!-- List exact commands/results, manual observations, and remaining boundaries. -->
+<!-- If .gates-disabled exists, record disabled checks as not run; do not claim they passed. -->
+
+## Documentation and compatibility
+
+<!-- Link changed setup/API/configuration/recovery docs, or state why no docs change is needed. -->
+<!-- Describe migration, state, permissions, or client compatibility impact where relevant. -->
 
 ## Architecture
 
-- [ ] Every added or changed capability is available through the versioned HTTP API and shares its application operation with the web adapter, or this change adds no capability.
-- [ ] The supported installation still starts exactly one Kinosail Server container and defines no Kinosail-managed sidecar, or this change does not affect runtime packaging.
+- [ ] Changed capabilities share application validation across web and versioned API adapters, or this is a documentation-only change.
+- [ ] Each app retains its independent Server container; public Player/Subtitles HTTPS uses the separate restricted gateway where applicable.
+- [ ] No secrets, private media, account data, or unrelated task changes are included.
 
 ## Contributor agreement
 
-- [ ] I have read and agree to the Kinosail Individual Contributor License Agreement.
-- [ ] I am entitled to submit this contribution, including any required employer authorization or Corporate CLA.
+- [ ] I have read and agree to the [Kinosail Individual Contributor License Agreement](https://github.com/MikeO7/kinosail/blob/main/apps/player/CLA.md).
+- [ ] I am entitled to submit this contribution, including any required employer authorization or [Corporate CLA](https://github.com/MikeO7/kinosail/blob/main/apps/player/CCLA.md).

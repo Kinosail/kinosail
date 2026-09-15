@@ -39,9 +39,13 @@ The `paths.data` value is resolved before stored Owner settings load. This lets 
 
 Do not place secrets in a committed YAML file. Prefer a mounted secret file or the Owner settings flow. Secret values are never returned by the configuration API.
 
+## Compose and application settings
+
+The table lists application-process variables. Compose only passes variables explicitly declared in the chosen Compose files; setting an arbitrary variable in `.env` does not forward it. Host mount/binding variables such as `KINOSAIL_MEDIA_PATH`, `KINOSAIL_BACKUP_PATH`, `KINOSAIL_BIND`, and `KINOSAIL_PORT` configure Compose itself. Read `.env.example` alongside `compose.yaml` and any overrides.
+
 ## Settings
 
-The following table is the complete typed setting inventory. A blank default means that the feature is not configured by default.
+The following table describes typed application settings. Use the running configuration API and the source definitions for the exact inventory of your installed version. A blank default means that the feature is not configured by default.
 
 | Key | Environment variable | Type | Default | Restart |
 | --- | --- | --- | --- | --- |
@@ -139,7 +143,7 @@ A deployment-managed deSEC value is one secret JSON object:
 
 Kinosail still accepts the previous DuckDNS object without `provider`. It treats that object as `duckdns` and requires no Owner action.
 
-LAN trusted HTTPS requires TLS. It cannot run with public HTTPS remote mode. A DuckDNS-based WireGuard deployment must use a different DuckDNS label for its remote connection. Follow [Connect phones, TVs, and Jellyfin apps]({{ '/getting-started/connect-devices/' | relative_url }}) for the Owner workflow and privacy effects.
+LAN trusted HTTPS requires TLS. It cannot run with public HTTPS remote mode. A DuckDNS-based WireGuard deployment must use a different DuckDNS label for its remote connection. Follow [Connect devices]({{ '/getting-started/connect-devices/' | relative_url }}) for the Owner workflow and privacy effects.
 
 ## Owner-managed configuration API
 

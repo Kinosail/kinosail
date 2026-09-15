@@ -1,61 +1,16 @@
 ---
-title: Configure playback
-description: Choose direct-first playback, transcoding policy, hardware acceleration, and automatic skip behavior.
+title: Configure language and automation
+description: Choose subtitle language, role, and scanning behavior.
 section: Own the Server
+last_reviewed: 2026-09-15
 ---
 
-# Configure playback
+# Configure language and automation
 
-Set playback policy in **Settings → Playback**. Start with **Automatic**. It uses Direct playback when the device supports the source and falls back to remuxing, audio conversion, or HLS transcoding when needed.
+In the subtitle setup plan, select the primary language and the preferred subtitle role (standard dialogue or SDH/captions). Choose the appropriate catalog language tag, such as `en` or `pt-br`. The deployment equivalent for the primary language is `KINOSAIL_SUBTITLE_LANGUAGE`.
 
-## Select a playback mode
+Existing embedded text is preferred before requesting a provider download. A language-tagged sidecar covers that language; changing the language does not translate a sidecar.
 
-Choose **Default playback**:
+Choose a safety scan schedule in setup. Filesystem events help detect completed copies, and scheduled scans catch changes they miss. Background provider maintenance runs in bounded cycles with a minimum 15-minute interval. Provider quotas and failures can leave items wanted for a later cycle.
 
-- **Automatic** is the recommended direct-first choice.
-- **Direct** never transcodes. It is useful when every target device supports the source.
-- **Compatibility** favors a broadly supported format and can use more Server capacity.
-
-Select whether **Subtitles** are **On** or **Off**. Enable **Play the next Episode automatically** when you want episode autoplay. Save the form after you change a value.
-
-## Configure automatic skip
-
-Select any of these options in **Playback**:
-
-- **Skip intros automatically**;
-- **Skip recaps automatically**;
-- **Skip commercials automatically**;
-- **Skip outros automatically**; and
-- **Skip credits automatically**.
-
-Kinosail applies detected markers to the playback timeline. Analyze markers first from **Settings → Playback segment analysis**. A marker can be absent or incorrect when the source does not provide enough evidence.
-
-## Select video conversion policy
-
-In **Settings → Video conversion**, choose **Conversion preference**:
-
-- **Automatic (Recommended)** balances interactive playback and output quality.
-- **Prefer speed** reduces waiting and uses less complex processing.
-- **Prefer quality** favors output quality and can use more capacity.
-
-Choose a **Video format**. **Automatic per device (Recommended)** tries newer formats when the device and Server support them. Otherwise, Kinosail uses H.264.
-
-Choose **Speed up with**. **Automatic (Recommended)** shows the selected processor or graphics path below the control. The other choices depend on usable Server hardware.
-
-Select **Improve HDR colors on non-HDR screens** when a target device cannot display high dynamic range (HDR). Save the setting.
-
-Run **Run quick check** under **Quick compatibility check**. The check makes a small test video. It does not use Library Content. A passed check does not certify every file or playback device.
-
-Open **Video compatibility** for detected formats, available conversion methods, and focused setup guidance.
-
-{% include screenshot.html title="Video conversion and quick compatibility check" alt="Future screenshot of Video conversion settings showing Automatic choices and a passed quick compatibility check." description="Show the test status without a real media title." %}
-
-## Control Viewer capacity
-
-In **Settings → Profiles**, clear **Allow transcoding** for a Viewer who must not consume transcoder capacity. A Viewer without permission receives the policy denial. Direct playback still depends on the device and source.
-
-Clear the cache from **Settings → Automatic maintenance → Clear transcode cache** when prepared files are stale. Kinosail can recreate this cache; it is not a recovery backup.
-
-## Source of truth
-
-Sources: `internal/server/settings_http.go`, `internal/server/transcoder_support_html.go`, `internal/server/playback_timeline.go`, `README.md`, and `compose.release.yaml`.
+Use a one-item fetch to validate your plan before relying on maintenance. See [subtitle management]({{ '/user-guide/' | relative_url }}) for upgrade and preservation rules.

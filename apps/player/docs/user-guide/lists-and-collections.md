@@ -47,7 +47,6 @@ Collections are Owner-managed. Open **Collections**, create a collection, search
 
 Viewers can open collections that contain items they can view. A Viewer cannot add to, remove from, or delete a collection.
 
-{% include screenshot.html title="Lists and collections" alt="Future screenshot of the organization view with My List, playlists, smart playlists, and collections." description="Capture both a populated list and an empty-state example with synthetic titles." %}
 
 ## Build a queue
 

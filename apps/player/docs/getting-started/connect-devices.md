@@ -83,7 +83,7 @@ This setup does not require installing the Kinosail local certificate.
 4. Open the setup wizard and go to **Devices**.
 5. Enter the complete hostname. For DuckDNS, the short subdomain also works.
 6. Enter the provider token.
-7. Enter the Kinosail LAN address as a private IPv4 address or a local hostname such as `server.nox`.
+7. Enter the Kinosail LAN address as a private IPv4 address or a local hostname such as `server.example.test`.
 8. Accept the Let's Encrypt subscriber agreement.
 9. Select **Save trusted HTTPS**.
 10. Enable Jellyfin apps on the same wizard page.

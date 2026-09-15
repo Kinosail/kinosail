@@ -87,7 +87,7 @@
         <footer class="page-footer">
           <p>Last reviewed {{ page.last_reviewed | date: "%B %-d, %Y" }} by {{ page.review_owner }}.</p>
           <a href="{{ site.github_url }}/issues/new">Open an issue</a>
-          <a href="{{ site.github_url }}/edit/main/docs/{{ page.path }}">Edit this page</a>
+          <a href="{{ site.github_url }}/edit/main/{{ site.source_path }}/{{ page.path }}">Edit this page</a>
         </footer>
         {% endunless %}
       </main>

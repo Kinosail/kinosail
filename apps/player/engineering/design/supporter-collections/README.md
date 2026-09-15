@@ -43,6 +43,8 @@ Ranks 1–3 establish the motif, 4–6 introduce framing and construction, 7–9
 
 ## Regeneration and verification
 
+Run from this directory. Verification commands remain disabled while the root `.gates-disabled` marker exists; generation does not certify production behavior.
+
 ```sh
 python3 generate.py
 python3 verify.py

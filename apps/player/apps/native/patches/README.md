@@ -1,4 +1,6 @@
-# Native build patches
+# Legacy native build patches
+
+These patches belong to the retained Expo/React Native implementation. They are not compiled into the active [Swift clients](../README.md) and are not required for their builds.
 
 These patches apply through `pnpm install --frozen-lockfile`. Review and remove a patch when its upstream release contains the fix; changing dependency versions must not silently skip patches.
 

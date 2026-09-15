@@ -1,8 +1,14 @@
-# Kinosail
+# Kinosail Player
 
-Kinosail is a private, self-hosted media server for the movies, Shows, music, audiobooks, books, photos, and live television you control. It combines a Go server, an HTMX web interface, embedded SQLite, and FFmpeg in one container. Library Content is mounted read-only and never needs to pass through a Kinosail-operated service.
+Kinosail is a private, self-hosted media server for the movies, Shows, music, audiobooks, books, photos you control. It combines a Go server, an HTMX web interface, embedded SQLite, and FFmpeg in one container. Library Content is mounted read-only and never needs to pass through a Kinosail-operated service.
 
-The quickest production path is the release installer below.
+[Repository home](../../README.md) · [User documentation](docs/README.md) · [Support](../../SUPPORT.md) · [Contributing](../../CONTRIBUTING.md)
+
+## Start here
+
+Use [Run from source](#run-from-source) for the current checkout. Run commands in this README from `apps/player/` unless a step says otherwise. Keep the complete monorepo: the container builds from the repository root and uses shared `packages/`.
+
+The monorepo has no published GitHub releases as of September 15, 2026. [Release installation](#install-a-release) describes the signed bundle path once available; it is not a claim that a customer release is ready. See the [release checklist](engineering/release-checklist.md).
 
 ## Core features
 
@@ -79,6 +85,8 @@ Kinosail cannot stop a volumetric attack before traffic reaches the home connect
 
 ## Install a release
 
+Download the matching Player installer bundle from [Releases](https://github.com/MikeO7/kinosail/releases) when one is published. Verify its supplied checksum and signature, extract it into a stable directory, and run the following commands there. Do not substitute a source archive or unsigned development image for the signed release bundle. The installer requires `cosign` and Docker Compose or Podman Compose.
+
 Kinosail supports 64-bit Intel/AMD and Arm Linux. Docker Compose and Podman Compose can run the same container on macOS for local use. Release bundles include a checksummed installer; the installer verifies the published image's keyless signature, pins its digest, generates the automatic-backup key, and initially binds Kinosail to localhost so another device cannot claim the first Owner Profile.
 
 The central install command is:
@@ -91,21 +99,24 @@ Open `https://localhost:38127`, accept the generated local-certificate warning, 
 
 ## Run from source
 
-Copy the environment template, set the absolute media path, and start the development image:
+Install Git and Docker Compose or Podman with a Compose provider. Use a 64-bit Linux host (`amd64` or `arm64`); on macOS, start the engine's Linux VM. The image includes Go build dependencies and FFmpeg, so host Go is unnecessary for this path. Start with enough free disk for state, artwork, cache, and backups; transcoding demand depends on your sources and devices.
+
+From the repository root, `cd apps/player`. Copy the environment template, set the absolute media path, and start the development image:
 
 ```sh
 cp .env.example .env
-# Edit KINOSAIL_MEDIA_PATH in .env.
-# The source Compose file does not mount the release installer's backup key.
-KINOSAIL_BACKUP_KEY_FILE= podman compose up --build --detach
+chmod 600 .env
+# Edit KINOSAIL_MEDIA_PATH in .env to an existing absolute directory.
+# Also set KINOSAIL_BACKUP_KEY_FILE= to empty in .env for this quickstart.
+podman compose up --build --detach
 ```
 
-Open `https://localhost:38127`. Configuration, TLS material, backups, cache data, and Library Content use separate persistent locations; the Library Content mount is read-only.
+Open `https://localhost:38127` on the host and complete [first setup](docs/getting-started/first-setup.md). Create and secure the first Owner before changing the localhost web binding. For a headless host, connect through a private SSH port forward. Configuration, TLS material, backups, cache data, and Library Content use separate persistent locations; the Library Content mount is read-only.
 
 For hardware transcoding on a supported host:
 
 ```sh
-KINOSAIL_BACKUP_KEY_FILE= podman compose --file compose.yaml --file compose.gpu.yaml up --build --detach
+podman compose --file compose.yaml --file compose.gpu.yaml up --build --detach
 ```
 
 Select Automatic in Settings. Source installs can override `KINOSAIL_GPU_DEVICE` and `KINOSAIL_GPU_GROUP` for a different device or host group.
@@ -119,7 +130,9 @@ podman compose logs --follow kinosail
 podman compose down
 ```
 
-Docker users can replace `podman compose` with `docker compose`.
+Docker users can replace `podman compose` with `docker compose`. `down` preserves named volumes; `down --volumes` deletes stored state. Keep the same Compose project name when updating.
+
+Automatic encrypted backups need a configured key; clearing the unset source secret-file path does not enable backups. Follow [Back up and update](docs/owner-guide/backups-and-updates.md) to configure recovery before relying on this installation. If startup fails, inspect `podman compose logs --tail 100 kinosail`; common causes are a missing media directory, permissions, an occupied port, or a secret-file path that is not mounted.
 
 ## Configuration and integrations
 
@@ -164,15 +177,19 @@ The release installer configures daily authenticated encrypted backups with seve
 Backups contain portable UI-managed configuration, credential hashes, sessions, playback state, and retained activity. They do not contain externally managed YAML, environment or secret files, Library Content, or reproducible transcode cache data. Protect those deployment files separately.
 
 ```sh
-podman compose --file compose.release.yaml run --rm --no-deps kinosail backup > kinosail-backup.tar.gz
+umask 077
+podman compose --file compose.release.yaml run --rm --no-deps -T kinosail backup > kinosail-backup.kinosail-backup
+podman compose --file compose.release.yaml run --rm --no-deps -T kinosail backup verify < kinosail-backup.kinosail-backup
 podman compose --file compose.release.yaml stop kinosail
-podman compose --file compose.release.yaml run --rm --no-deps --no-tty kinosail restore < kinosail-backup.tar.gz
+podman compose --file compose.release.yaml run --rm --no-deps --no-tty kinosail restore < kinosail-backup.kinosail-backup
 podman compose --file compose.release.yaml up --detach
 ```
 
 Restore validates the manifest and every entry before writing. It rejects unknown paths, malformed or duplicate state, and oversized entries.
 
 ## Try the synthetic test Server
+
+These fixture commands are for development after quality gates are explicitly enabled. Do not run disabled suites while the root `.gates-disabled` marker exists.
 
 The public test fixture creates original synthetic movies, Shows, music, an audiobook, a book, photos, and a local TMDB-compatible catalogue without downloading third-party creative media.
 
@@ -188,7 +205,7 @@ Open `https://localhost:38127` and sign in as `Owner` with password `test-instan
 
 ## Development and verification
 
-Kinosail's authoritative repository gate is:
+Follow the root [contribution guide](../../CONTRIBUTING.md). While `.gates-disabled` exists, do not run the suites below or count skipped results as passes. GitHub Actions is disabled. When gates are enabled, the app gate is:
 
 ```sh
 make check

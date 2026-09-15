@@ -93,4 +93,4 @@ Errors use a JSON object with an `error` string. Common responses include:
 
 Never retry a `401` with the same token. Never log the token, cookies, playback URLs, or full request URLs.
 
-Continue with [API workflows](api-workflows) or inspect the [API reference](../reference/api).
+Continue with [API workflows]({{ '/developer-guide/api-workflows/' | relative_url }}) or inspect the [API reference]({{ '/reference/api/' | relative_url }}).

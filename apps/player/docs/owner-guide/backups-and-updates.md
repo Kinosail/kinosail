@@ -1,71 +1,65 @@
 ---
 title: Back up and update
-description: Protect Server state, verify backups, restore safely, and update the one-container installation.
+description: Create and verify backups, restore application state, and update safely.
 section: Own the Server
+last_reviewed: 2026-09-15
 ---
 
 # Back up and update
 
-Protect the Kinosail state before an update or host change. Backups contain portable Server state. They do not contain Library Content or reproducible transcode cache data.
+Back up before changing versions, storage, or configuration. Keep app-state archives, external deployment files, media, and backup keys separately. For Subtitles, sidecars and `.kinosail.bak` originals belong to the media backup, not the app-state archive.
 
-## Configure encrypted automatic backups
+## Configure encryption
 
-The release installer creates `secrets/backup_key` with mode `600`. Configure a private backup directory on another disk or NAS with `KINOSAIL_BACKUP_PATH`. Keep an independent copy of both the backup archives and the key.
+Automatic backups require a key and fail closed without one. The signed-release installer creates `secrets/backup_key`; a source Compose installation does not mount that file automatically.
 
-In **Settings → Automatic maintenance**, open **Backup and recovery**. Confirm **Encryption is on**, the destination, schedule, retention, latest archive, and last verification time. The release defaults are daily backups and seven retained files.
+For source Compose, use a strong random backup key stored privately in your password manager. Put it in `KINOSAIL_BACKUP_KEY` in the app's uncommitted `.env` and leave `KINOSAIL_BACKUP_KEY_FILE=` empty. Protect `.env` with `chmod 600 .env`. Alternatively, configure a mounted secret file and set only its `_FILE` variable; the container must be able to read it. Do not set both forms.
 
-Select **Back up now** for an immediate encrypted archive. Select **Verify latest backup** after the archive appears. A failed backup stays visible as a last error; automatic creation fails closed without a key.
+Recreate the source service with `docker compose up --detach`. Confirm encryption, backup destination, interval, and retention in Owner Settings. Use **Back up now** and **Verify latest backup**, then keep an independent off-host copy of the archive and key. `KINOSAIL_BACKUP_PATH` can point to a private host directory mounted at `/backups`; check container write permissions.
 
-{% include screenshot.html title="Backup and recovery" alt="Future screenshot of the Backup and recovery page showing encryption, destination, schedule, latest archive, and verification actions." description="Show placeholder paths only. Never capture the backup key or real host path." %}
+Scheduled defaults are daily backups with seven retained files. Verify your effective settings; deployment overrides can change them.
 
-## Understand what a backup contains
+## What the archive contains
 
-Portable state includes configuration managed by the UI, credential hashes, sessions, playback state, and retained activity. Encrypted recovery backups can include hidden secrets. Backups do not include:
+Application backups contain portable stored state such as UI-managed settings, credential hashes, sessions, and retained activity. Encrypted recovery archives can include private stored secrets. They do not contain the external media tree, reproducible cache, deployment YAML, `.env`, or independently mounted secret files.
 
-- Library Content;
-- YAML files or environment files;
-- secret files outside the backup state; or
-- transcode cache data.
+The CLI `backup` command uses encryption when a key is configured. Without one, it can produce an unencrypted portable archive that omits private secret state; that is not a complete encrypted recovery backup. Treat every archive as sensitive.
 
-Back up media and deployment files separately. Protect unencrypted archives as sensitive account data.
+## Create and verify an archive
 
-## Create a portable archive from Compose
+Run from `apps/player/` for source Compose. Use the exact Compose files/project that own your installation. Release installations must add `--file compose.release.yaml` and their applicable overrides to every command below. Replace Docker with Podman if appropriate.
 
-From the installation root, run:
+Choose a new private output filename so redirection cannot overwrite your only backup:
 
 ```sh
-podman compose --file compose.release.yaml run --rm --no-deps kinosail backup > kinosail-backup.tar.gz
+umask 077
+docker compose run --rm --no-deps -T kinosail backup > before-update.kinosail-backup
+docker compose run --rm --no-deps -T kinosail backup verify < before-update.kinosail-backup
 ```
 
-Use `docker compose` when Docker runs the service. Keep the output in a private location. Do not upload it to a public issue or place it in a documentation repository.
+Proceed only if both commands succeed. Retain the key, source/image revision, configuration, and archive together in your recovery records, with the key stored separately.
 
-## Restore after a failure
+## Restore deliberately
 
-Stop the service, restore the archive, then start it:
+Restore replaces stored application state. Confirm the target Compose project/volume, retain a copy of its current state, and verify the archive first. Use a known-compatible app revision and the correct backup key. Stop the running service before restoration:
 
 ```sh
-podman compose --file compose.release.yaml stop kinosail
-podman compose --file compose.release.yaml run --rm --no-deps --no-tty kinosail restore < kinosail-backup.tar.gz
-podman compose --file compose.release.yaml up --detach
+docker compose stop kinosail
+docker compose run --rm --no-deps -T kinosail restore < before-update.kinosail-backup
+docker compose up --detach
+docker compose exec -T kinosail kinosail healthcheck
 ```
 
-Restore validates the manifest and every entry before writing. It rejects unknown paths, duplicate or malformed state, and oversized entries. Restore into the correct Kinosail data location. Keep the backup key available for encrypted recovery material.
+If restore fails, keep the service stopped while investigating the error and preserve the original state/backup. Restore validates the archive before writing, including unknown paths, duplicates, malformed state, and size limits.
 
-After restart, run `kinosail healthcheck`, sign in, check Profiles, and verify one Library item. Reconnect external deployment values because YAML and environment files are outside the archive.
+After restart, verify sign-in, configuration, and a library item and playback progress. Reapply externally managed environment/YAML/secret files separately. Verify recovery on a disposable installation before depending on it for host-loss recovery.
 
-## Update a release
+## Update or roll back
 
-Run the release installer again with the same media path and port. When the service is running, the installer creates `backups/kinosail-before-update-<timestamp>.tar.gz`, pulls the signed image, pins its digest, recreates the service, and waits for health.
+For source installs, back up, fetch/review the desired revision, and run `docker compose up --build --detach` from the same app directory. Keep the same project name and volumes. Check health, sign-in, and the primary workflow after the update.
 
-Check the service:
+When signed releases are available, use the matching release installer. It verifies the image and, for a running installation, creates and verifies an encrypted `backups/kinosail-before-update-<timestamp>.kinosail-backup` before the update. Check the app release notes and installer output; do not bypass signature checks.
 
-```sh
-podman compose --file compose.release.yaml ps
-podman compose --file compose.release.yaml exec -T kinosail kinosail healthcheck
-```
+For rollback, retain the previous image/source and its matching state backup. Restore that pair deliberately; do not assume an older binary can read newly migrated state. Never use `down --volumes` as a troubleshooting step.
 
-If the new service is unhealthy, preserve the recovery archive and logs. Do not remove volumes or run a destructive cleanup while diagnosing. Use the [install and startup troubleshooting guide]({{ '/troubleshooting/install-and-startup/' | relative_url }}) for focused checks.
-
-## Source of truth
-
-Sources: `README.md`, `compose.release.yaml`, `internal/server/settings_backups.go`, `internal/backup/backup.go`, `internal/backup/encrypted.go`, and `docs/research/documentation-information-architecture.md`.
+Source of truth: app `compose.yaml`, `compose.release.yaml`, `scripts/install.sh`, and shared `packages/backup/`.

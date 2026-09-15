@@ -1,9 +1,10 @@
-title: Kinosail Docs
-description: Install, use, and operate your private Kinosail media server.
-url: https://mikeo7.github.io
-baseurl: /Kinosail
-repository: MikeO7/Kinosail
-github_url: https://github.com/MikeO7/kinosail/tree/main/apps/subtitles
+title: Kinosail Subtitles Docs
+description: Find, validate, and maintain subtitles for your movies and episodes.
+url: ""
+baseurl: ""
+repository: MikeO7/kinosail
+github_url: https://github.com/MikeO7/kinosail
+source_path: apps/subtitles/docs
 markdown: kramdown
 permalink: pretty
 strict_front_matter: true

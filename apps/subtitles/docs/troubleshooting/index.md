@@ -1,30 +1,26 @@
 ---
-title: Troubleshooting
-description: Start from a Kinosail symptom and find the shortest safe diagnostic path.
+title: Troubleshoot Subtitles
+description: Start with the visible symptom and preserve your data.
 section: Fix a problem
+last_reviewed: 2026-09-15
 ---
 
-# Troubleshooting
+# Troubleshoot Subtitles
 
-Start with the visible symptom. Use the smallest diagnostic that can confirm the cause.
+| Symptom | First check |
+| --- | --- |
+| Server will not start | Read container logs; check the media path, port, configuration, and mounted secret-file paths. |
+| No videos appear | Check the container's `/media` mapping, selected relative folders, permissions, and scan status. |
+| No provider results | Confirm credentials, language, episode/release identity, and provider quota. A configured provider may have no match. |
+| Subtitle cannot be saved | Check write permission for the container account and whether an existing sidecar is protected. |
+| Subtitle language/timing is wrong | Confirm the selected language and release; inspect the result in a player before accepting a replacement. |
+| A setting is read-only | Change its managing environment or YAML value, then restart if required. |
 
-## Choose a symptom
+From `apps/subtitles/`, inspect `docker compose ps` and `docker compose logs --tail 100 kinosail` (or Podman equivalents). Keep credentials, private titles/paths, and backup files out of reports.
 
-- [Install and startup problems]({{ '/troubleshooting/install-and-startup/' | relative_url }}) covers containers, ports, HTTPS, health, storage, and startup.
-- [Scanning and metadata problems]({{ '/troubleshooting/scanning-and-metadata/' | relative_url }}) covers missing items, wrong matches, artwork, permissions, and providers.
-- [Playback problems]({{ '/troubleshooting/playback/' | relative_url }}) covers unavailable playback, buffering, tracks, subtitles, seeking, and device differences.
-- [Sign-in and access problems]({{ '/troubleshooting/sign-in-and-access/' | relative_url }}) covers passwords, passkeys, TOTP, profiles, Jellyfin apps, certificates, remote access, and shares.
+- [Installation and startup]({{ '/troubleshooting/install-and-startup/' | relative_url }})
+- [Scanning and matching]({{ '/troubleshooting/scanning-and-metadata/' | relative_url }})
+- [Subtitle timing and saves]({{ '/troubleshooting/playback/' | relative_url }})
+- [Sign-in and access]({{ '/troubleshooting/sign-in-and-access/' | relative_url }})
 
-## Use this safe order
-
-1. Record the exact message, page, item title, device, and time.
-2. Check whether the problem affects one item, one Profile, one device, or the whole Server.
-3. Check **Settings → System** as an Owner. Review scan status, diagnostics, recent activity, sessions, and cache status.
-4. Retry one time after a small, reversible change.
-5. Collect a short log excerpt and remove secrets before sharing it.
-
-Do not paste passwords, passkeys, TOTP secrets, recovery codes, API keys, Media Share links, cookies, private hostnames, or full request URLs. Kinosail logs redact sensitive values, but review any excerpt yourself.
-
-If an issue can affect data, stop before deleting a volume, library path, configuration file, or backup. Make a verified backup first.
-
-Source of truth: current Server diagnostics and recovery paths.
+Do not delete the state volume to fix sign-in or startup. Restore deliberately from a known backup; see [recovery]({{ '/owner-guide/backups-and-updates/' | relative_url }}).

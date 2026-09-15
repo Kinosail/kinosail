@@ -14,9 +14,11 @@ The concepts preserve three parts of the current system:
 
 Levels 7–10 add visible regalia. Lower ranks remain quieter and easier to read at small sizes.
 
-Run these commands after geometry changes:
+From `apps/subtitles/`, regenerate after geometry changes. Run verification only when repository gates are enabled:
 
 ```sh
 node engineering/design/supporter-badge-vector-samples/generate.mjs
 node engineering/design/supporter-badge-vector-samples/verify.mjs
 ```
+
+These are design studies, not shipped benefits or checkout behavior. See the [app README](../../../README.md) for the actual product and [contribution guide](../../../../../CONTRIBUTING.md) for repository policy.

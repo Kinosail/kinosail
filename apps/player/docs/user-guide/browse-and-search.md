@@ -30,7 +30,6 @@ Search results are ranked by exact title, title prefix, word match, and then oth
 
 To clear a search, use the clear control or remove the query. Search is separate from a letter jump and from sorting.
 
-{% include screenshot.html title="Search and library filters" alt="Future screenshot of a populated library with the search field, media view, sort control, and letter navigation." description="Capture a search result with safe synthetic titles and no private paths." %}
 
 ## Filter and sort
 

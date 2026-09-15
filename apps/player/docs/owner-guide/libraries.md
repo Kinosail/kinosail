@@ -19,7 +19,6 @@ Kinosail rejects absolute paths, missing folders, symlink-resolved paths outside
 
 Select **Remove** beside a root to stop discovery from that root. This does not delete files. Move or delete host files with host tools, never through Kinosail.
 
-{% include screenshot.html title="Manage Library folders" alt="Future screenshot of the Library folders section with the media mount, roots, and Add folder control." description="Show relative example folders and no private host paths." %}
 
 ## Run and schedule discovery
 

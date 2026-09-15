@@ -40,7 +40,6 @@ sudo systemctl enable --now wg-quick@kinosail
 
 Forward UDP `51820`. After you add or revoke a Viewer, run `sudo ./scripts/sync-wireguard.sh`. Kinosail sign-in is still required. This legacy Viewer subnet cannot authorize Owner management; migrate Owner devices to the separate private management flow below.
 
-{% include screenshot.html title="Remote access status" alt="Future screenshot of Settings showing Remote access status, readiness checks, and the public-access kill switch." description="Use a synthetic hostname and hide every token, address, and real Profile name." %}
 
 ## Add the router rule
 

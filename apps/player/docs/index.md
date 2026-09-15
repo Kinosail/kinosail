@@ -19,7 +19,6 @@ Kinosail brings movies, shows, music, audiobooks, books, and photos together on 
   <a href="{{ '/troubleshooting/' | relative_url }}"><strong>Fix a problem</strong><span>Start from the symptom and follow focused checks.</span></a>
 </div>
 
-{% include screenshot.html title="Kinosail library home" alt="Future screenshot of a populated Kinosail home library on desktop." description="Add this image after the application visual design is final." %}
 
 ## What makes Kinosail different
 

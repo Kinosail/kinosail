@@ -69,4 +69,4 @@ Kinosail sends Library Content directly between the device and the household Ser
 
 Use HTTPS for remote access. Store tokens in a secret manager. Redact authorization headers, cookies, playback URLs, Media Share tokens, and private Server addresses from logs and support reports.
 
-For exact routes, schemas, and security requirements, use the [API reference](../reference/api).
+For exact routes, schemas, and security requirements, use the [API reference]({{ '/reference/api/' | relative_url }}).

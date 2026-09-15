@@ -54,6 +54,5 @@ Remote password login is disabled. A remote Viewer uses a verified passkey or a 
 
 If sign-in fails, do not share a password, passkey credential, TOTP secret, recovery code, or session cookie. Use [Sign-in and access problems]({{ '/troubleshooting/sign-in-and-access/' | relative_url }}).
 
-{% include screenshot.html title="Profile policy" alt="Future screenshot of an Owner editing a Viewer Profile with library, rating, schedule, remote, transcoding, and download controls." description="Capture policy labels without real names or private library paths." %}
 
 Source of truth: `internal/server/profiles.go`, `profile_policy.go`, and authentication handlers.

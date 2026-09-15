@@ -1,77 +1,42 @@
 ---
-title: API reference
-description: Authenticate to the versioned Kinosail HTTP API and use the live OpenAPI document.
-section: Build with Kinosail
-last_reviewed: 2026-08-29
+title: Subtitle HTTP API
+description: Use bounded subtitle inventory and mutation operations.
+section: Reference
+last_reviewed: 2026-09-15
 ---
 
-# API reference
+# Subtitle HTTP API
 
-The Kinosail API is a versioned JSON API. The running Server publishes its current OpenAPI document at `/api/v1/openapi.json`.
+The web dashboard and HTTP API call the same validated application operations. Use `/api/v1/openapi.json` on your running Server for its complete contract. All subtitle routes require Owner authority. For API keys, inventory uses the `library` scope; management operations use `admin`. Browser session, same-origin, and recent-authentication rules still apply.
 
-## Discover the contract
-
-Use these endpoints on the Server that you operate:
-
-```text
-GET /api/v1
-GET /api/v1/openapi.json
-```
-
-`/api/v1` reports the API name, version, and OpenAPI URL. `/api/v1/openapi.json` returns an OpenAPI 3.1 document with the title `Kinosail Server API`, document version `1.0.0`, and the versioned `/api/v1` paths. Treat the live document as the contract for request and response details. The checked-in source copy is [`internal/server/api_openapi.json`](https://github.com/MikeO7/kinosail/blob/main/apps/subtitles/internal/server/api_openapi.json).
-
-The Server checks that every registered versioned route appears in the OpenAPI document. This keeps the document and the implementation aligned.
-
-## Authenticate
-
-Send an API key or session token as a Bearer token:
-
-```sh
-curl --fail \
-  -H "Authorization: Bearer $KINOSAIL_API_TOKEN" \
-  https://kinosail.example.test/api/v1/library
-```
-
-Create an Owner or Viewer session with `POST /api/v1/session`. A local password login can require a second-factor `code`. Public password login is disabled. Public HTTPS users must use a passkey or Owner-approved Quick Connect request.
-
-Owners create scoped API keys in the Owner settings. A key is shown once and Kinosail stores only its hash. Normal API keys expire after 30 days. The supported scopes are:
-
-| Scope | Grants |
+| Method and route | Purpose |
 | --- | --- |
-| `library` | Read the library, metadata views, history, and the OpenAPI document |
-| `write` | Change viewing progress, lists, playlists, and Watch Rooms |
-| `stream` | Stream media, subtitles, reader assets, and Watch Room events |
-| `download` | Prepare, list, retrieve, and delete offline downloads |
-| `admin` | Owner administration and maintenance routes |
+| `GET /api/v1/subtitle-library` | Read subtitle inventory and coverage. |
+| `POST /api/v1/subtitle-library/{id}/fetch` | Fetch for a scanned item. |
+| `POST /api/v1/subtitle-library/fetch-wanted` | Fetch a bounded wanted batch. |
+| `POST /api/v1/subtitle-library/maintain` | Fill missing subtitles and consider safe upgrades. |
+| `POST /api/v1/subtitle-library/{id}/restore` | Restore an available preserved original for a language. |
+| `POST /api/v1/subtitle-library/{id}/replacement` | Permit or freeze replacement for an item. |
+| `POST /api/v1/subtitle-providers/test` | Check configured provider credentials and report health. |
+| `GET /api/v1/subtitle-library/{id}/inspect` | Inspect installed subtitle content and matching evidence. |
+| `GET /api/v1/subtitle-library/{id}/export` | Export a subtitle in a supported format. |
+| `GET` / `POST /api/v1/subtitle-library/{id}/draft` | Inspect or create a reviewable local draft. |
+| `POST /api/v1/subtitle-library/{id}/audio` | Run the supported local audio-draft operation. |
+| `POST /api/v1/subtitle-library/{id}/preview` | Preview a subtitle edit. |
+| `POST /api/v1/subtitle-library/{id}/apply` | Apply a validated reviewed edit. |
 
-API keys cannot use session-only routes, such as passkey enrollment, MFA changes, or sign-out. Profile policy still applies to every request.
+Use an item ID returned by inventory; do not submit a filesystem path. For a single fetch, send `{}` to use the configured language, or `{"language":"es"}` for an explicit language. Batch operations accept, for example:
 
-## Resource groups
+```json
+{"language":"en","limit":10}
+```
 
-The live document includes these resource groups:
+Limits must be integers from 1 through 50. Unknown fields, malformed JSON, invalid languages, and invalid limits are rejected before provider requests or file writes. Read operation results; a successful batch request does not imply that every wanted item received a file.
 
-- setup, sessions, passkeys, MFA, OIDC linking, and Quick Connect;
-- the library, Shows, albums, items, playback plans, markers, and subtitles;
-- progress, history, My List, playlists, smart playlists, collections, and Watch Rooms;
-- books and reader progress;
-- offline downloads and media shares;
-- metadata edits, metadata refresh, and viewing activity import or sync;
-- Owner settings, configuration, libraries, Profiles, devices, sessions, API keys, and tasks;
-- remote access, activity, diagnostics, metrics, maintenance, and encrypted backups; and
-- optional supporter and agent-connection operations.
+See [API quickstart]({{ '/developer-guide/api-quickstart/' | relative_url }}) and [API workflows]({{ '/developer-guide/api-workflows/' | relative_url }}).
 
-The direct media adapters use paths such as `/media/{id}`, `/hls/{id}/{file}`, `/subtitle/{id}`, `/read/{id}/file`, and `/download/{id}`. They use the same Viewer policy and API-key scope checks as versioned operations. Library Content remains direct-only: Kinosail does not send it through a hosted media proxy.
+## Recovery and replacement payloads
 
-## Request rules
+Restore accepts `{}` for the configured language or `{"language":"en"}`. Replacement requires a boolean, for example `{"replaceable":false}` to freeze replacement. Provider testing accepts `{}`. Read current inspect/preview/draft schemas from OpenAPI before editing; do not invent stale fingerprints or approval data.
 
-JSON requests must contain one object. Unknown fields are rejected. Request bodies are limited to 1 MiB before decoding. Each operation also validates its own required fields, ranges, and permissions. Do not use a successful HTTP status as proof that an operation is safe for a different Profile; the Server evaluates the authenticated Profile on every request.
-
-## Errors and compatibility
-
-Errors use a JSON object with an `error` string. Common statuses are `400` for invalid input, `401` for missing or invalid credentials, `403` for a policy denial, `404` for an unknown resource, `409` for a state or configuration conflict, `429` for throttled login attempts, and `500` or `503` for Server failure or unavailable work.
-
-The bundled web interface and optional Jellyfin-compatible surface call the same application operations as the API. Jellyfin protocol coverage is tested for supported flows; it is not a certification of every physical client.
-
-## Keep clients stable
-
-Call only `/api/v1` routes and inspect the live OpenAPI document at startup. Do not depend on HTML markup, private JSON fields, filesystem paths, or unversioned implementation routes. Store tokens outside source control and rotate or revoke them when a device or automation is no longer trusted.
+Inspect accepts the `language` query field. Export additionally accepts `format=srt`, `vtt`, or `original`. Duplicate/unknown query fields and invalid values are rejected. Export returns bytes directly to the authenticated client and is not exposed through MCP.

@@ -39,9 +39,15 @@ The `paths.data` value is resolved before stored Owner settings load. This lets 
 
 Do not place secrets in a committed YAML file. Prefer a mounted secret file or the Owner settings flow. Secret values are never returned by the configuration API.
 
+## Compose and application settings
+
+The table lists application-process variables. Compose only passes variables explicitly declared in the chosen Compose files; setting an arbitrary variable in `.env` does not forward it. Host mount/binding variables such as `KINOSAIL_MEDIA_PATH`, `KINOSAIL_BACKUP_PATH`, `KINOSAIL_BIND`, and `KINOSAIL_PORT` configure Compose itself. Read `.env.example` alongside `compose.yaml` and any overrides.
+
+For SubSource, prefer Owner Settings unless you explicitly add its environment mappings; the supplied Compose files do not forward those provider variables. Playback compatibility fields in this shared configuration describe retained framework settings, not a household Player workflow.
+
 ## Settings
 
-The following table is the complete typed setting inventory. A blank default means that the feature is not configured by default.
+The following table describes typed application settings. Use the running configuration API and the source definitions for the exact inventory of your installed version. A blank default means that the feature is not configured by default.
 
 | Key | Environment variable | Type | Default | Restart |
 | --- | --- | --- | --- | --- |
@@ -119,6 +125,10 @@ The following table is the complete typed setting inventory. A blank default mea
 | `integrations.mcp.client_secret` | `KINOSAIL_MCP_CLIENT_SECRET` | secret text | blank | yes |
 | `integrations.webhook.url` | `KINOSAIL_WEBHOOK_URL` | URL | blank | yes |
 | `integrations.webhook.token` | `KINOSAIL_WEBHOOK_TOKEN` | secret text | blank | yes |
+| `binaries.tesseract` | `KINOSAIL_TESSERACT` | text | `tesseract` | yes |
+| `binaries.whisper` | `KINOSAIL_WHISPER` | text | `whisper-cli` | yes |
+| `subtitles.transcription_model` | `KINOSAIL_TRANSCRIPTION_MODEL` | text | blank | yes |
+| `subtitles.transcription_architecture` | `KINOSAIL_TRANSCRIPTION_ARCHITECTURE` | text | `small` | yes |
 
 ## Enum values and validation
 
@@ -144,11 +154,11 @@ A deployment-managed deSEC value is one secret JSON object:
 
 `provider` is `duckdns` or `desec`. `domain` is the lowercase subdomain label for DuckDNS. It is a lowercase full hostname for deSEC.
 
-`address` must be a private IPv4 address. `termsAccepted` records acceptance of the Let's Encrypt subscriber agreement. Store the complete object through the environment variable `_FILE` form or another protected secret source.
+`address` is normalized to a private IPv4 address. Owner setup also accepts a local hostname that resolves to exactly one private IPv4 address. `termsAccepted` records acceptance of the Let's Encrypt subscriber agreement. Store the complete object through the environment variable `_FILE` form or another protected secret source.
 
 Kinosail still accepts the previous DuckDNS object without `provider`. It treats that object as `duckdns` and requires no Owner action.
 
-LAN trusted HTTPS requires TLS. It cannot run with public HTTPS remote mode. A DuckDNS-based WireGuard deployment must use a different DuckDNS label for its remote connection. Follow [Connect phones, TVs, and Jellyfin apps]({{ '/getting-started/connect-devices/' | relative_url }}) for the Owner workflow and privacy effects.
+LAN trusted HTTPS requires TLS. It cannot run with public HTTPS remote mode. A DuckDNS-based WireGuard deployment must use a different DuckDNS label for its remote connection. Follow [Connect devices]({{ '/getting-started/connect-devices/' | relative_url }}) for the Owner workflow and privacy effects.
 
 ## Owner-managed configuration API
 

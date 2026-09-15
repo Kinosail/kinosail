@@ -9,7 +9,7 @@ last_reviewed: 2026-08-29
 
 Kinosail provides an optional Model Context Protocol (MCP) connection for assistants that need to search a household library, prepare recommendations, or perform approved API operations.
 
-MCP is an additional interface. It does not replace the [versioned HTTP API](../reference/api), and it does not move media through Kinosail or another hosted service.
+MCP is an additional interface. It does not replace the [versioned HTTP API]({{ '/reference/api/' | relative_url }}), and it does not move media through Kinosail or another hosted service.
 
 ## Choose a connection
 
