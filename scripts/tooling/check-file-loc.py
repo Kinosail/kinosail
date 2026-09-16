@@ -14,14 +14,12 @@ EXCLUDED = {'.codex', 'third_party', 'testdata', 'docs', 'engineering', 'assets'
 # Remove each exception when its responsibility-based refactor lands. Never grow it.
 LEGACY = {
     'apps/dashboard/internal/server/web/static/dashboard.css': 316,
-    'apps/player/apps/native/Sources/Design/MediaViews.swift': 363,
-    'apps/player/apps/native/Sources/Platform/OfflineDownloadManager.swift': 347,
     'apps/player/apps/native/Sources/Platform/PlaybackCoordinator.swift': 616,
     'apps/player/e2e/player-direct-fallback.spec.ts': 313,
     'apps/player/e2e/player-experience.spec.ts': 311,
     'apps/subtitles/internal/server/static/subtitle-dashboard.css': 342,
-    'packages/webassets/static/downloads.js': 335,
     'packages/webassets/static/player-app.css': 304,
+    'packages/webassets/static/downloads.js': 335,
     'packages/webassets/static/player-controls.js': 396,
 }
 
