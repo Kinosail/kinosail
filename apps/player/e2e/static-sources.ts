@@ -7,6 +7,7 @@ export async function readStaticSource(paths: string[], base = import.meta.url):
 export const downloadsSource = await readStaticSource([
 	"../../../packages/webassets/static/offline-runtime.js",
 	"../../../packages/webassets/static/downloads.js",
+	"../../../packages/webassets/static/downloads-integrity.js",
 	"../../../packages/webassets/static/downloads-storage.js",
 	"../../../packages/webassets/static/downloads-transfer.js",
 	"../../../packages/webassets/static/downloads-progress.js",
@@ -21,6 +22,7 @@ export const playerSource = await readStaticSource([
 	"../internal/server/static/player-streaming-recovery.js",
 	"../internal/server/static/player-streaming-offline.js",
 	"../../../packages/webassets/static/player-controls.js",
+	"../../../packages/webassets/static/player-presentation.js",
 	"../../../packages/webassets/static/player-devices.js",
 	"../../../packages/webassets/static/player-progress.js",
 ]);

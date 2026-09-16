@@ -3,7 +3,7 @@ import { createServer } from "node:http";
 import type { AddressInfo } from "node:net";
 import { readStaticSource } from "./static-sources";
 
-const currentDownloads = await readStaticSource(["../../../packages/webassets/static/downloads.js"]);
+const currentDownloads = await readStaticSource(["../../../packages/webassets/static/downloads.js", "../../../packages/webassets/static/downloads-integrity.js"]);
 const currentPWA = await readStaticSource(["../../../packages/webassets/static/pwa.js"]);
 const currentWorker = currentDownloads.match(/const offlineWorkerPath = "([^"]+)"/)![1];
 const oldWorker = "/service-worker.js?v=38";

@@ -19,8 +19,6 @@ LEGACY = {
     'apps/player/e2e/player-experience.spec.ts': 311,
     'apps/subtitles/internal/server/static/subtitle-dashboard.css': 342,
     'packages/webassets/static/player-app.css': 304,
-    'packages/webassets/static/downloads.js': 335,
-    'packages/webassets/static/player-controls.js': 396,
 }
 
 

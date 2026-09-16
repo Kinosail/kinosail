@@ -15,7 +15,10 @@ var (
 	//go:embed static/artwork-palette.js
 	ArtworkPalette []byte
 	//go:embed static/downloads.js
-	Downloads []byte
+	downloadsCore []byte
+	//go:embed static/downloads-integrity.js
+	downloadsIntegrity []byte
+	Downloads          = append(append([]byte(nil), downloadsCore...), downloadsIntegrity...)
 	//go:embed static/downloads-storage.js
 	DownloadsStorage []byte
 
@@ -35,7 +38,10 @@ var (
 	//go:embed static/public-login.js
 	PublicLogin []byte
 	//go:embed static/player-controls.js
-	PlayerControls []byte
+	playerControls []byte
+	//go:embed static/player-presentation.js
+	playerPresentation []byte
+	PlayerControls     = append(append([]byte(nil), playerControls...), playerPresentation...)
 	//go:embed static/player-core.js
 	PlayerCore []byte
 	//go:embed static/player-devices.js
