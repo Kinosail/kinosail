@@ -3,7 +3,7 @@
 check: max-loc tidy-check lint deadcode coverage test-race vuln consumer-test
 
 max-loc:
-	@../scripts/tooling/check-go-loc.sh packages 300
+	@../scripts/quality/check-loc.sh --scope packages
 
 tidy-check:
 	@go mod tidy -diff
@@ -31,5 +31,5 @@ consumer-test:
 	@cd ../apps/subtitles && go test -run '^$$' ./...
 	@cd ../apps/dashboard && go test -run '^$$' ./...
 
-# Preserve recipes; suppress every gate until the user removes .gates-disabled.
-check max-loc tidy-check lint deadcode coverage test test-race vuln consumer-test: SHELL := $(abspath ../scripts/tooling/gate-shell.sh)
+# The file cap is enabled; preserve the pause for all other gates.
+check tidy-check lint deadcode coverage test test-race vuln consumer-test: SHELL := $(abspath ../scripts/tooling/gate-shell.sh)

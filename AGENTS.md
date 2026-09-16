@@ -2,7 +2,7 @@
 
 ## Gate disable override
 
-- While `.gates-disabled` exists, all quality gates are disabled, including manual gate commands, Git hooks, CI, and publication checks. This overrides verification requirements below and in app guidance.
+- While `.gates-disabled` exists, quality gates are disabled except the explicitly enabled 300-line source-file cap (`make max-loc`, including commit and push hooks). Existing oversized files have frozen allowances in `scripts/tooling/check-file-loc.py`; remove each allowance as its refactor lands. Use `scripts/quality/check-loc.sh --strict` to list remaining debt. This overrides verification requirements below and in app guidance.
 - Do not run the disabled suites or remove the marker unless the user explicitly enables gates. There is no expiry. Preserve their implementations and thresholds.
 
 

@@ -113,7 +113,7 @@ secrets:
 	gitleaks git --config ../../.gitleaks.toml --no-banner --redact --gitleaks-ignore-path ../../.gitleaksignore .
 
 max-loc:
-	@../../scripts/tooling/check-go-loc.sh apps/player 300
+	@../../scripts/quality/check-loc.sh --scope apps/player
 
 single-container:
 	@./scripts/check-single-container.sh
@@ -124,5 +124,5 @@ shellcheck:
 actionlint:
 	actionlint
 
-# Preserve recipes; suppress every gate until the user removes .gates-disabled.
-browser-test ci-local client-check check check-fast container-test coverage deadcode installer-test native-build local-pipeline local-pipeline-test lint performance-test media-server-benchmark-test playback-test test test-instance-check test-race verify-changed verify-watch tidy-check vuln secrets max-loc single-container shellcheck actionlint: SHELL := $(abspath ../../scripts/tooling/gate-shell.sh)
+# The file cap is enabled; preserve the pause for all other gates.
+browser-test ci-local client-check check check-fast container-test coverage deadcode installer-test native-build local-pipeline local-pipeline-test lint performance-test media-server-benchmark-test playback-test test test-instance-check test-race verify-changed verify-watch tidy-check vuln secrets single-container shellcheck actionlint: SHELL := $(abspath ../../scripts/tooling/gate-shell.sh)

@@ -76,6 +76,11 @@ class GatePauseTests(unittest.TestCase):
                 subprocess.run(['git', 'init', '-q', directory], check=True)
                 tooling = repo / 'scripts' / 'tooling'
                 tooling.mkdir(parents=True)
+                shutil.copy2(ROOT / 'scripts/tooling/check-file-loc.py',
+                             tooling / 'check-file-loc.py')
+                subprocess.run(['git', '-C', directory, '-c', 'user.name=Test',
+                                '-c', 'user.email=test@example.invalid',
+                                'commit', '--allow-empty', '-qm', 'fixture'], check=True)
                 guard = tooling / 'worktree_guard.py'
                 guard.write_text('#!/bin/sh\ntouch enforcement-ran\nexit 23\n')
                 guard.chmod(0o755)

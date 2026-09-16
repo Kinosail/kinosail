@@ -29,6 +29,7 @@ tooling-check:
 	@./scripts/tooling/test-quality-controls.sh
 	@python3 scripts/tooling/test-gates-paused.py
 	@./scripts/tooling/test-check-go-loc.sh
+	@python3 scripts/tooling/test-file-loc.py
 	@python3 ./scripts/tooling/test-container-context-input.py
 	@./scripts/tooling/test-go-coverage-input.sh
 	@pnpm --dir scripts/quality install --frozen-lockfile
@@ -50,8 +51,7 @@ verify-changed: tooling-check packages-check
 	$(call run_all,verify-changed,KINOSAIL_PACKAGES_VERIFIED=1)
 
 max-loc:
-	@$(MAKE) -C packages max-loc
-	$(call run_all,max-loc)
+	@./scripts/quality/check-loc.sh
 
 quality-static:
 	@./scripts/quality/check-static.sh
@@ -81,5 +81,5 @@ worktree-cleanup:
 agent-finish:
 	@./scripts/tooling/worktree_guard.py finish --task "$(TASK)"
 
-# Preserve recipes; suppress every gate until the user removes .gates-disabled.
-packages-check tooling-check check verify-changed max-loc quality-static quality container-test test-instance-check: SHELL := $(abspath scripts/tooling/gate-shell.sh)
+# The file cap is enabled; preserve the pause for all other gates.
+packages-check tooling-check check verify-changed quality-static quality container-test test-instance-check: SHELL := $(abspath scripts/tooling/gate-shell.sh)

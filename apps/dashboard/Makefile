@@ -37,7 +37,7 @@ container-test:
 	@./scripts/test-container.sh
 
 max-loc:
-	@../../scripts/tooling/check-go-loc.sh apps/dashboard 300
+	@../../scripts/quality/check-loc.sh --scope apps/dashboard
 
 single-container:
 	@./scripts/check-single-container.sh
@@ -71,5 +71,5 @@ verify-watch:
 coverage:
 	@go test ./... -cover
 
-# Preserve recipes; suppress every gate until the user removes .gates-disabled.
-test test-instance-check test-race race lint tidy-check browser-test container-test max-loc single-container secrets shellcheck actionlint vuln check-fast check local-pipeline verify-changed verify-watch coverage: SHELL := $(abspath ../../scripts/tooling/gate-shell.sh)
+# The file cap is enabled; preserve the pause for all other gates.
+test test-instance-check test-race race lint tidy-check browser-test container-test single-container secrets shellcheck actionlint vuln check-fast check local-pipeline verify-changed verify-watch coverage: SHELL := $(abspath ../../scripts/tooling/gate-shell.sh)
