@@ -27,7 +27,7 @@
     private var eventsFinished = false
     private var completion: (@MainActor @Sendable () -> Void)?
     private var authorization: DownloadAuthorization?
-    private let root: URL
+    private let store: DownloadJournalStore
     private let configuration: URLSessionConfiguration
 
     private lazy var session: URLSession = {
@@ -49,56 +49,19 @@
     }()
 
     init(directory: URL? = nil, configuration: URLSessionConfiguration? = nil) {
-      root = directory?.resolvingSymlinksInPath() ?? FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0].resolvingSymlinksInPath().appendingPathComponent("kinosail-swift-offline", isDirectory: true)
+      store = DownloadJournalStore(directory: directory)
       self.configuration = (configuration?.copy() as? URLSessionConfiguration) ?? URLSessionConfiguration.background(withIdentifier: Self.identifier)
       super.init()
       queue.async {
         do {
-          var metadataBytes = 0
-          let scopes = FileManager.default.fileExists(atPath: self.root.path)
-            ? try FileManager.default.contentsOfDirectory(at: self.root, includingPropertiesForKeys: nil) : []
-          for scope in scopes where OfflineManifest.digest(scope.lastPathComponent) {
-            guard scope.resolvingSymlinksInPath().standardizedFileURL == scope.standardizedFileURL,
-                  let files = try? FileManager.default.contentsOfDirectory(at: scope, includingPropertiesForKeys: [.fileSizeKey, .isRegularFileKey]) else { continue }
-            var deleting = Set<String>()
-            for file in files where file.pathExtension == "deleting" && OfflineManifest.digest(file.deletingPathExtension().lastPathComponent) {
-              let key = file.deletingPathExtension().lastPathComponent
-              deleting.insert(key)
-              try? self.deleteFiles(scope: scope.lastPathComponent, key: key)
-            }
-            for file in files where ["transfer", "planning"].contains(file.pathExtension) && !deleting.contains(file.deletingPathExtension().lastPathComponent) {
-              do {
-                let values = try file.resourceValues(forKeys: [.fileSizeKey, .isRegularFileKey])
-                let size = values.fileSize ?? 0
-                guard values.isRegularFile == true, size > 0, size <= 2 * 1024 * 1024,
-                      metadataBytes <= 32 * 1024 * 1024 - size, self.jobs.count + self.plans.count < 1000,
-                      file.resolvingSymlinksInPath().standardizedFileURL == file.standardizedFileURL else { throw self.failure() }
-                metadataBytes += size
-                let data = try Data(contentsOf: file)
-                if file.pathExtension == "planning" {
-                  let plan = try decodeOffline(DownloadPreparation.self, from: data)
-                  try plan.validate()
-                  guard file == self.planFile(plan), self.plans[plan.id] == nil else { throw self.failure() }
-                  self.plans[plan.id] = plan
-                } else {
-                  let job = try decodeOffline(VerifiedDownload.self, from: data)
-                  try job.validate()
-                  guard file == self.journal(job), self.jobs[job.id] == nil else { throw self.failure() }
-                  self.jobs[job.id] = job
-                }
-              } catch {
-                // Isolate one bad journal; never follow its contents to a different path.
-                let quarantine = file.appendingPathExtension("invalid")
-                if !FileManager.default.fileExists(atPath: quarantine.path) { try? FileManager.default.moveItem(at: file, to: quarantine) }
-              }
-            }
-          }
+          let saved = try self.store.load()
+          self.jobs = saved.jobs; self.plans = saved.plans
         } catch { self.storageError = true }
         self.session.getAllTasks { found in
           self.queue.async {
             for id in self.jobs.keys {
               if let plan = self.plans.removeValue(forKey: id) {
-                try? FileManager.default.removeItem(at: self.planFile(plan))
+                try? self.store.removePlan(plan)
               }
             }
             for case let task as URLSessionDownloadTask in found {
@@ -140,35 +103,8 @@
       VerifiedDownload.failure("The saved download could not be read. Remove it and try again.")
     }
 
-    private func directory(_ job: VerifiedDownload) -> URL {
-      root.appendingPathComponent(job.scope, isDirectory: true)
-    }
-
-    private func journal(_ job: VerifiedDownload) -> URL {
-      directory(job).appendingPathComponent(job.key + ".transfer")
-    }
-
-    private func media(_ job: VerifiedDownload) -> URL {
-      directory(job).appendingPathComponent(job.key + ".media")
-    }
-
-    private func staging(_ job: VerifiedDownload) -> URL {
-      directory(job).appendingPathComponent(job.key + ".media.part")
-    }
-
-    private func prepare(_ url: URL) throws {
-      guard url.resolvingSymlinksInPath().standardizedFileURL == url.standardizedFileURL else { throw failure() }
-      try FileManager.default.createDirectory(at: url, withIntermediateDirectories: true,
-                                              attributes: [.protectionKey: FileProtectionType.completeUntilFirstUserAuthentication])
-      var url = url
-      var values = URLResourceValues(); values.isExcludedFromBackup = true
-      try url.setResourceValues(values)
-    }
-
     private func persist(_ job: VerifiedDownload) throws {
-      try job.validate()
-      try prepare(directory(job))
-      try JSONEncoder().encode(job).write(to: journal(job), options: [.atomic, .completeFileProtectionUntilFirstUserAuthentication])
+      try store.save(job)
       jobs[job.id] = job
     }
 
@@ -227,7 +163,7 @@
       guard quota.int64Value == 0 || used + job.manifest.size <= quota.int64Value else {
         throw VerifiedDownload.failure("The download storage limit has been reached.")
       }
-      let final = media(job), partial = staging(job)
+      let final = store.media(job), partial = store.staging(job)
       guard final.resolvingSymlinksInPath().standardizedFileURL == final.standardizedFileURL,
             partial.resolvingSymlinksInPath().standardizedFileURL == partial.standardizedFileURL else { throw failure() }
       // Missing/truncated payloads must clear their missing bits before scheduling.
@@ -235,13 +171,13 @@
       let readable = FileManager.default.fileExists(atPath: partial.path) ? partial : final
       let size = (try? readable.resourceValues(forKeys: [.fileSizeKey]).fileSize).map(Int64.init) ?? 0
       for index in job.verified.indices where Int64(index) * manifest.chunkSize + manifest.length(index) > size { job.verified[index] = false }
-      let available = try FileManager.default.attributesOfFileSystem(forPath: root.deletingLastPathComponent().path)[.systemFreeSize] as? NSNumber
+      let available = try store.availableBytes()
       let reserved = jobs.values.filter { $0.id != job.id && $0.status != "complete" }.reduce(Int64(0)) { $0 + $1.manifest.size - $1.bytes }
-      guard let available, available.int64Value - reserved - 512 * 1024 * 1024 >= job.manifest.size - job.bytes else {
+      guard let available, available - reserved - 512 * 1024 * 1024 >= job.manifest.size - job.bytes else {
         throw VerifiedDownload.failure("Not enough space. Remove a download and resume.")
       }
       cancel(job.id)
-      try prepare(directory(job))
+      try store.prepare(job)
       if FileManager.default.fileExists(atPath: final.path), !FileManager.default.fileExists(atPath: partial.path) {
         try FileManager.default.moveItem(at: final, to: partial)
       }
@@ -373,7 +309,7 @@
               try location.resourceValues(forKeys: [.fileSizeKey]).fileSize == Int(end - start + 1)
         else { throw failure() }
         let input = try FileHandle(forReadingFrom: location); defer { try? input.close() }
-        let output = try FileHandle(forWritingTo: staging(job)); defer { try? output.close() }
+        let output = try FileHandle(forWritingTo: store.staging(job)); defer { try? output.close() }
         var corrupt = false
         for index in extent.first ..< (extent.first + extent.count) {
           let block = try input.read(upToCount: Int(job.manifest.length(index))) ?? Data()
@@ -429,7 +365,7 @@
       var job = input
       job.status = "verifying"
       do { try persist(job) } catch { storageError = true; return }
-      let path = FileManager.default.fileExists(atPath: staging(job).path) ? staging(job) : media(job)
+      let path = FileManager.default.fileExists(atPath: store.staging(job).path) ? store.staging(job) : store.media(job)
       let verification = DownloadVerification()
       checking.insert(job.id); verifications[job.id] = verification
       let candidate = job
@@ -467,9 +403,9 @@
             var current = jobs[input.id], current.status == "verifying" else { return }
       do {
         guard let stamp, playable, stamp == (try DownloadFileStamp(path)) else { throw failure() }
-        if path != media(current) { try FileManager.default.moveItem(at: path, to: media(current)) }
+        if path != store.media(current) { try FileManager.default.moveItem(at: path, to: store.media(current)) }
         current.status = "complete"; current.error = ""
-        let finalStamp = try DownloadFileStamp(media(current))
+        let finalStamp = try DownloadFileStamp(store.media(current))
         try persist(current)
         verifiedFiles[current.id] = finalStamp
       } catch {
@@ -515,24 +451,10 @@
         guard OfflineManifest.digest(scope), OfflineManifest.digest(key) else { throw self.failure() }
         let id = scope + "/" + key
         self.cancelPlan(id); self.cancel(id)
-        try self.deleteFiles(scope: scope, key: key)
+        try self.store.remove(scope: scope, key: key)
         self.plans.removeValue(forKey: id); self.jobs.removeValue(forKey: id)
         self.pump(); self.finishBackgroundEvents()
       }
-    }
-
-    private func deleteFiles(scope: String, key: String) throws {
-      let folder = root.appendingPathComponent(scope)
-      try prepare(folder)
-      let marker = folder.appendingPathComponent(key + ".deleting")
-      guard marker.resolvingSymlinksInPath().standardizedFileURL == marker.standardizedFileURL else { throw failure() }
-      try Data().write(to: marker, options: [.atomic, .completeFileProtectionUntilFirstUserAuthentication])
-      // Keep the durable intent until both payloads and journals are gone.
-      for suffix in [".media", ".media.part", ".transfer", ".planning", ".transfer.invalid", ".planning.invalid"] {
-        let file = folder.appendingPathComponent(key + suffix)
-        if FileManager.default.fileExists(atPath: file.path) { try FileManager.default.removeItem(at: file) }
-      }
-      try FileManager.default.removeItem(at: marker)
     }
 
     func close() async {
@@ -547,8 +469,7 @@
             for id in Array(self.jobs.keys) { self.cancel(id) }
             for id in Array(self.plans.keys) { self.cancelPlan(id) }
             do {
-              guard self.root.resolvingSymlinksInPath().standardizedFileURL == self.root.standardizedFileURL else { throw self.failure() }
-              if FileManager.default.fileExists(atPath: self.root.path) { try FileManager.default.removeItem(at: self.root) }
+              try self.store.reset()
               self.jobs.removeAll(); self.plans.removeAll(); self.checking.removeAll(); self.storageError = false
               continuation.resume()
             } catch { continuation.resume(throwing: error) }
@@ -597,7 +518,7 @@
         try self.requireScope(scope)
         _ = try Input.hex(key, count: 64)
         guard let job = self.jobs[scope + "/" + key], job.status == "complete" else { throw ClientError.invalidInput("This download has not passed verification.") }
-        let url = self.media(job)
+        let url = self.store.media(job)
         guard url.resolvingSymlinksInPath().standardizedFileURL == url.standardizedFileURL,
           try url.resourceValues(forKeys: [.isRegularFileKey, .fileSizeKey]).isRegularFile == true,
           try url.resourceValues(forKeys: [.fileSizeKey]).fileSize == Int(job.manifest.size) else { throw self.failure() }
@@ -611,7 +532,7 @@
         try self.requireScope(scope)
         guard OfflineManifest.digest(scope), OfflineManifest.digest(key) else { throw self.failure() }
         if let job = self.jobs[scope + "/" + key], job.status == "complete" {
-          if self.verifiedFiles[job.id] != (try? DownloadFileStamp(self.media(job))) { self.finish(job) }
+          if self.verifiedFiles[job.id] != (try? DownloadFileStamp(self.store.media(job))) { self.finish(job) }
         }
       }
     }
@@ -697,13 +618,8 @@
     func urlSession(_ session: URLSession, task: URLSessionTask, willPerformHTTPRedirection response: HTTPURLResponse,
                     newRequest request: URLRequest, completionHandler: @escaping @Sendable (URLRequest?) -> Void) { completionHandler(nil) }
 
-    private func planFile(_ plan: DownloadPreparation) -> URL {
-      root.appendingPathComponent(plan.scope).appendingPathComponent(plan.key + ".planning")
-    }
-
     private func savePlan(_ plan: DownloadPreparation) throws {
-      try plan.validate(); try prepare(root.appendingPathComponent(plan.scope))
-      try JSONEncoder().encode(plan).write(to: planFile(plan), options: [.atomic, .completeFileProtectionUntilFirstUserAuthentication])
+      try store.save(plan)
       plans[plan.id] = plan
     }
 
@@ -769,7 +685,7 @@
         let input: [String: Any] = try ["scope": plan.scope, "key": plan.key, "uri": plan.uri, "kind": plan.kind, "wifiOnly": plan.wifiOnly, "quota": plan.quota,
                                         "authorization": credential(plan.scope, uri: plan.uri), "manifest": JSONSerialization.jsonObject(with: JSONEncoder().encode(manifest))]
         try start(String(data: JSONSerialization.data(withJSONObject: input), encoding: .utf8)!)
-        try FileManager.default.removeItem(at: planFile(plan)); plans.removeValue(forKey: id)
+        try store.removePlan(plan); plans.removeValue(forKey: id)
       } catch { plan.status = "paused"; plan.error = "Preparation could not finish. Check Server access and storage, then resume."; try? savePlan(plan) }
     }
   }
