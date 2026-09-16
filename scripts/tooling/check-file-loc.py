@@ -17,7 +17,6 @@ LEGACY = {
     'apps/player/apps/native/Sources/Design/MediaViews.swift': 363,
     'apps/player/apps/native/Sources/Platform/OfflineDownloadManager.swift': 347,
     'apps/player/apps/native/Sources/Platform/PlaybackCoordinator.swift': 616,
-    'apps/player/apps/native/Sources/Platform/VerifiedDownloads.swift': 692,
     'apps/player/e2e/player-direct-fallback.spec.ts': 313,
     'apps/player/e2e/player-experience.spec.ts': 311,
     'apps/player/scripts/setup-remote-access.sh': 330,
