@@ -7,15 +7,6 @@ extension ServerClient {
         return try PlaybackSource(await request("/api/v1/items/\(id)/playback?\(capabilities.query)").body, itemID: id, server: server)
     }
 
-    func saveProgress(itemID: String, progress: WatchProgress, playbackToken: String) async throws -> WatchProgress {
-        let valid = try progress.validated(required: true)
-        var body = try valid.json.object()
-        body["playbackToken"] = .string(try Input.text(playbackToken, max: 8192, label: "playback token", empty: true))
-        let saved = try WatchProgress(await request("/api/v1/items/\(Input.id(itemID))/progress", method: .put, body: .object(body)).body)
-        await invalidateCatalog()
-        return saved
-    }
-
     func syncProgress(itemID: String, progress: WatchProgress, expected: WatchProgress, playbackToken: String) async throws -> ProgressSyncResult {
         let valid = try progress.validated(required: true)
         let baseline = try expected.validated(required: false)

@@ -1,7 +1,6 @@
 package servertest
 
 import (
-	"bytes"
 	"fmt"
 	"net/http"
 	"net/http/httptest"
@@ -58,22 +57,5 @@ func (fixture AssetsFixture) VersionedStaticAssetsUseImmutableCaching(t *testing
 		if response.Code != http.StatusOK || response.Header().Get("Cache-Control") != expected {
 			t.Fatalf("%s cache = %d %q", target, response.Code, response.Header().Get("Cache-Control"))
 		}
-	}
-}
-
-// VersionedApplicationStylesheet checks the exact app CSS derivative and immutable response.
-func (fixture AssetsFixture) VersionedApplicationStylesheet(t *testing.T, target string, baseCSS []byte) {
-	t.Helper()
-	t.Parallel()
-	supporter, err := os.ReadFile("static/supporter.css")
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	response := httptest.NewRecorder()
-	fixture.NewHandler("", "", false).ServeHTTP(response, httptest.NewRequestWithContext(t.Context(), http.MethodGet, target, nil))
-	want := append(append([]byte(nil), baseCSS...), supporter...)
-	if response.Code != http.StatusOK || response.Header().Get("Cache-Control") != "public, max-age=31536000, immutable" || !bytes.Equal(response.Body.Bytes(), want) {
-		t.Fatalf("versioned application stylesheet = status %d, cache %q, bytes %d; want bytes %d", response.Code, response.Header().Get("Cache-Control"), response.Body.Len(), len(want))
 	}
 }

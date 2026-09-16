@@ -20,7 +20,6 @@ MODULES = {
 if APP not in MODULES or (len(sys.argv) == 3 and not CHECK):
     raise SystemExit(f"usage: {sys.argv[0]} {{player|subtitles}} [--check]")
 APP_ROOT = REPO / "apps" / APP
-HERE = APP_ROOT / "engineering" / "architecture-explorer"
 PUBLISHED = APP_ROOT / "docs" / "architecture-explorer" / "index.html"
 TEMPLATE = REPO / "scripts" / "tooling" / "architecture-explorer-template.html"
 TEMPLATE_STYLES = TEMPLATE.with_suffix(".css")
@@ -211,16 +210,14 @@ def main() -> None:
         .replace("__KINOSAIL_ARCHITECTURE_DATA__", data)
         .replace("__KINOSAIL_ARCHITECTURE_SCRIPT__", TEMPLATE_SCRIPT.read_text(encoding="utf-8").rstrip("\n"))
     )
-    destinations = [HERE / "index.html", PUBLISHED]
-    for destination in destinations:
-        if CHECK:
-            if not destination.is_file() or destination.read_text(encoding="utf-8") != output:
-                raise SystemExit(f"stale architecture snapshot: {destination}")
-            print(f"checked {destination}")
-            continue
-        destination.parent.mkdir(parents=True, exist_ok=True)
-        destination.write_text(output, encoding="utf-8")
-        print(f"generated {destination}")
+    if CHECK:
+        if not PUBLISHED.is_file() or PUBLISHED.read_text(encoding="utf-8") != output:
+            raise SystemExit(f"stale architecture snapshot: {PUBLISHED}")
+        print(f"checked {PUBLISHED}")
+        return
+    PUBLISHED.parent.mkdir(parents=True, exist_ok=True)
+    PUBLISHED.write_text(output, encoding="utf-8")
+    print(f"generated {PUBLISHED}")
 
 
 if __name__ == "__main__":

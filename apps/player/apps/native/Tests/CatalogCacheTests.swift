@@ -14,7 +14,7 @@ struct CatalogCacheTests {
         defer { fixture.remove() }
         _ = try await fixture.client.episodes(showID: id, policy: .automatic)
         await fixture.client.close()
-        let reopened = try ServerClient(server: fixture.client.server, viewer: profile(),
+        let reopened = try await ServerClient(server: fixture.client.server, viewer: profile(),
                                         protocolClasses: [FixtureURLProtocol.self], cacheDirectory: directory)
         let episodes = try await reopened.episodes(showID: id, policy: .automatic)
         #expect(episodes.first?.artwork == "/art/movie?variant=episode")
@@ -30,7 +30,7 @@ struct CatalogCacheTests {
         defer { fixture.remove() }
         _ = try await fixture.client.library(policy: .automatic)
         await fixture.client.close()
-        let reopened = try ServerClient(server: fixture.client.server, token: "new-token", viewer: viewer,
+        let reopened = try await ServerClient(server: fixture.client.server, token: "new-token", viewer: viewer,
                                         protocolClasses: [FixtureURLProtocol.self], cacheDirectory: directory)
         let page = try await reopened.library(policy: .automatic)
         #expect(page.items.first?.id == "movie")
@@ -55,7 +55,7 @@ struct CatalogCacheTests {
         ] {
             await #expect(throws: CatalogCacheMiss.self) { try await operation() }
         }
-        let other = try ServerClient(server: fixture.client.server, token: "other-token", viewer: profile(id: "other"),
+        let other = try await ServerClient(server: fixture.client.server, token: "other-token", viewer: profile(id: "other"),
                                      protocolClasses: [FixtureURLProtocol.self], cacheDirectory: directory)
         await #expect(throws: CatalogCacheMiss.self) { try await other.library(policy: .cached) }
         #expect(fixture.requests.count == 1)
@@ -158,7 +158,7 @@ struct CatalogCacheTests {
             $0[fixture.host]?.routes["/api/v1/session"] = .init(data: Data("{}".utf8), status: 503, headers: [:])
         }
         await #expect(throws: ClientError.http(503)) { try await fixture.client.signOut() }
-        let reopened = try ServerClient(server: fixture.client.server, viewer: viewer,
+        let reopened = try await ServerClient(server: fixture.client.server, viewer: viewer,
                                         protocolClasses: [FixtureURLProtocol.self], cacheDirectory: directory)
         await #expect(throws: CatalogCacheMiss.self) { try await reopened.library(policy: .cached) }
         await reopened.close(); await fixture.client.close()

@@ -40,7 +40,6 @@ let adaptiveStarting = false;
 let adaptiveGeneration = 0;
 let adaptiveOffset = 0;
 let adaptiveSeekSwitch = false;
-let networkRecoveries = 0;
 let mediaRecoveries = 0;
 let hlsLoader;
 let streamNegotiated = false;

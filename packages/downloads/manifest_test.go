@@ -25,7 +25,7 @@ func TestManifestSealsExactBlocksAndFinalPartialBlock(t *testing.T) { //nolint:c
 	if err := os.WriteFile(path, content, 0o600); err != nil {
 		t.Fatal(err)
 	}
-	manifest, err := sealManifest(path, "0123456789abcdef")
+	manifest, err := sealManifestContext(t.Context(), path, "0123456789abcdef")
 	whole := sha256.Sum256(content)
 	last := sha256.Sum256([]byte("last block"))
 	if err != nil || manifest.Size != int64(len(content)) || len(manifest.Chunks) != 2 || manifest.SHA256 != hex.EncodeToString(whole[:]) || manifest.Chunks[1] != hex.EncodeToString(last[:]) {
@@ -54,7 +54,7 @@ func TestManifestRejectsInvalidMetadataAndEmptyAssets(t *testing.T) {
 	if err := os.WriteFile(path, nil, 0o600); err != nil {
 		t.Fatal(err)
 	}
-	if _, err := sealManifest(path, "0123456789abcdef"); err == nil {
+	if _, err := sealManifestContext(t.Context(), path, "0123456789abcdef"); err == nil {
 		t.Fatal("empty file accepted")
 	}
 	good := Manifest{Version: 1, ID: "0123456789abcdef", Size: 1, SHA256: hex.EncodeToString(make([]byte, 32)), ChunkSize: ChunkSize, Chunks: []string{hex.EncodeToString(make([]byte, 32))}}
@@ -169,7 +169,7 @@ func TestServeConditionalRangeUsesResponseIntegrity(t *testing.T) {
 	if err := os.WriteFile(path, content, 0o600); err != nil {
 		t.Fatal(err)
 	}
-	manifest, err := sealManifest(path, "0123456789abcdef")
+	manifest, err := sealManifestContext(t.Context(), path, "0123456789abcdef")
 	if err != nil {
 		t.Fatal(err)
 	}

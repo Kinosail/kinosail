@@ -26,7 +26,7 @@ func TestCompatibleDownloadCopiesVideoWithoutEncoderOptions(t *testing.T) {
 	}, inspect: func(context.Context, library.Item) playback.MediaFacts {
 		return playback.MediaFacts{Kind: "video", Container: "mp4", Duration: 1, Video: playback.VideoFacts{Codec: "h264", Width: 64, Height: 64, BitDepth: 8, FrameRate: 1, PixelFormat: "yuv420p"}}
 	}}
-	if err := manager.encodeSelected(library.Item{Kind: "video", Path: input}, "compatible", output, false, &TrackSelection{Audio: []int{}, Subtitles: []int{}}); err != nil {
+	if err := manager.encodeSelectedContext(t.Context(), library.Item{Kind: "video", Path: input}, "compatible", output, false, &TrackSelection{Audio: []int{}, Subtitles: []int{}}); err != nil {
 		t.Fatal(err)
 	}
 	if result, err := exec.CommandContext(t.Context(), ffmpeg, "-v", "error", "-i", output, "-f", "null", "-").CombinedOutput(); err != nil {

@@ -43,7 +43,7 @@ func TestProbeRemainingExecutionAndCancellationEdges(t *testing.T) { //nolint:cy
 
 func TestProbeRemainingParsingEdges(t *testing.T) { //nolint:cyclop // One parser matrix covers independent normalized metadata alternatives.
 	t.Parallel()
-	if result := Parse([]byte("{")); !reflect.DeepEqual(result, Result{}) {
+	if result, valid := parse([]byte("{")); valid || !reflect.DeepEqual(result, Result{}) {
 		t.Fatalf("malformed probe = %#v", result)
 	}
 	video := videoFactsFor(probeStream{PixelFormat: "yuv420p10le", ColorTransfer: "arib-std-b67"})

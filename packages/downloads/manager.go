@@ -146,10 +146,6 @@ func (manager *Manager) work() {
 	}
 }
 
-func (manager *Manager) prepare(job Job, item library.Item) {
-	manager.prepareTask(task{job: job, item: item})
-}
-
 func (manager *Manager) prepareTask(next task) {
 	job, item := next.job, next.item
 	ctx := manager.ctx

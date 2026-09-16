@@ -181,17 +181,17 @@ func TestSearchListAndProgressRules(t *testing.T) { //nolint:cyclop,gocognit // 
 	}
 
 	progress := map[string]PlaybackState{"legacy": {Seconds: 1}}
-	previous, current, next, changed, err := ChangeProgress(progress, "viewer:item", func(state PlaybackState) (PlaybackState, bool, error) {
+	previous, current, changed, err := progressChange(progress, "viewer:item", func(state PlaybackState) (PlaybackState, bool, error) {
 		state.Seconds = 42
 		return state, true, nil
 	})
-	if err != nil || previous.Seconds != 0 || current.Seconds != 42 || !changed || next["viewer:item"].Seconds != 42 || len(progress) != 1 {
-		t.Fatalf("progress change = %#v %#v %#v %t %v", previous, current, next, changed, err)
+	if err != nil || previous.Seconds != 0 || current.Seconds != 42 || !changed || len(progress) != 1 {
+		t.Fatalf("progress change = %#v %#v %t %v", previous, current, changed, err)
 	}
-	if _, _, _, _, err := ChangeProgress(progress, "", func(PlaybackState) (PlaybackState, bool, error) { return PlaybackState{}, true, nil }); !errors.Is(err, ErrInvalidProgressState) {
+	if _, _, _, err := progressChange(progress, "", func(PlaybackState) (PlaybackState, bool, error) { return PlaybackState{}, true, nil }); !errors.Is(err, ErrInvalidProgressState) {
 		t.Fatalf("invalid key error = %v", err)
 	}
-	if _, _, _, changed, err := ChangeProgress(progress, "x", func(state PlaybackState) (PlaybackState, bool, error) { return state, false, errors.New("stop") }); changed || err == nil {
+	if _, _, changed, err := progressChange(progress, "x", func(state PlaybackState) (PlaybackState, bool, error) { return state, false, errors.New("stop") }); changed || err == nil {
 		t.Fatal("rejected progress change was not preserved")
 	}
 	if ValidateStoredProgress(map[string]PlaybackState{"x": {Seconds: math.NaN()}}) == nil || !ValidPlaybackState(PlaybackState{Seconds: 1, ReaderPage: 1, Session: "s"}) {

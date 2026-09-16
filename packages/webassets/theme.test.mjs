@@ -23,11 +23,11 @@ function loadTheme(saved, dark = false, storageError = false) {
 test('system appearance resolves to an explicit CSS theme and follows changes', () => {
   const {root, meta, media} = loadTheme('system');
   assert.equal(root.dataset.theme, 'light');
-  assert.equal(meta.content, '#f5f7fb');
+  assert.equal(meta.content, '#f4f8ef');
   media.matches = true;
   media.change();
   assert.equal(root.dataset.theme, 'dark');
-  assert.equal(meta.content, '#10151e');
+  assert.equal(meta.content, '#0b0d0b');
 });
 
 test('explicit appearance is stable when system appearance changes', () => {

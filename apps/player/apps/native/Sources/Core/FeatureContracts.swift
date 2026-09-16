@@ -54,8 +54,6 @@ struct CompatibilitySource: Sendable {
     let reason: String
     let progressToken: String
     let timeline: MediaTimeline
-    var duration: Double { timeline.duration }
-    var omitted: [Range<Double>] { timeline.omitted }
 }
 
 struct ExternalSubtitle: Identifiable, Sendable {

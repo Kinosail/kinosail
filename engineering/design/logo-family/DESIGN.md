@@ -37,7 +37,7 @@ Web icons use a square 512-unit viewBox and a rounded background. Maskable Playe
 
 Authoritative web SVGs are `apps/player/internal/server/static/icon.svg`, `apps/subtitles/internal/server/static/icon.svg`, and `apps/dashboard/internal/server/web/static/icon.svg`. Player and Subtitles keep adjacent `icon-maskable.svg` variants. Inline header marks and documentation copies must track their app's authored geometry.
 
-Player native sources live in `apps/player/apps/native/assets/source/`. The native `icon.svg` uses a square background so Apple owns the final corner treatment. `tv-foreground.svg` contains the transparent mark; `tv-background.svg` supplies the background for the tvOS image stacks. `tv-banner.svg`, `top-shelf.svg`, and `top-shelf-wide.svg` own the corresponding compositions.
+Player native sources live in `apps/player/apps/native/assets/source/`. The native `icon.svg` uses a square background so Apple owns the final corner treatment. `tv-foreground.svg` contains the transparent mark; `tv-background.svg` supplies the background for the tvOS image stacks. `top-shelf.svg` and `top-shelf-wide.svg` own the top-shelf compositions.
 
 Regenerate the Swift asset catalogs from the repository root on macOS:
 

@@ -25,7 +25,7 @@ struct ArtworkLoaderTests {
         let fixture = try HTTPFixture(body: "{}")
         defer { fixture.remove() }
         try installImage(fixture, path: "/art/movie", width: 1600, height: 1000)
-        let other = try ServerClient(server: fixture.client.server, token: "another-token", protocolClasses: [FixtureURLProtocol.self])
+        let other = try await ServerClient(server: fixture.client.server, token: "another-token", protocolClasses: [FixtureURLProtocol.self])
         let loader = ArtworkLoader()
         let small = try await loader.image(path: "/art/movie", client: fixture.client, dimension: 800)
         let large = try await loader.image(path: "/art/movie", client: fixture.client, dimension: 1600)

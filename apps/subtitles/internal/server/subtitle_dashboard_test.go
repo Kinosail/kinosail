@@ -33,7 +33,7 @@ func TestSubtitleAppShowsCoverageAndWantedFiles(t *testing.T) { //nolint:cyclop 
 	if overview.Code != http.StatusOK || !strings.Contains(overview.Body.String(), "50%") || !strings.Contains(overview.Body.String(), "file needs") || !strings.Contains(overview.Body.String(), "Arrival") || strings.Contains(overview.Body.String(), "soundtrack") {
 		t.Fatalf("overview = %d %q", overview.Code, overview.Body.String())
 	}
-	for _, expected := range []string{`class="library-page subtitle-app subtitle-dashboard"`, `class="app-header"`, `class="brand-lockup"`, `href="/?view=summary"`, `aria-current="page"`, `/static/app.css?v=impeccable-1`} {
+	for _, expected := range []string{`class="library-page subtitle-app subtitle-dashboard"`, `class="app-header"`, `class="brand-lockup"`, `href="/?view=summary"`, `aria-current="page"`, `/static/app.css?v=electric-1`} {
 		if !strings.Contains(overview.Body.String(), expected) {
 			t.Fatalf("overview shell missing %q: %q", expected, overview.Body.String())
 		}

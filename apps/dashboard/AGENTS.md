@@ -1,6 +1,6 @@
 # Dashboard agent guidance
 
-Use `engineering/agents/issue-tracker.md`, `triage-labels.md`, and `domain.md` when their workflows apply. Keep agent guidance and decisions under `engineering/`; reserve `docs/` for published user documentation.
+Use the repository-root `engineering/agents/issue-tracker.md`, `triage-labels.md`, and `domain.md` when their workflows apply. Keep agent guidance and decisions under `engineering/`; reserve `docs/` for published user documentation.
 
 - Use Kinosail Dashboard and Viewer Profile consistently.
 - Read `CONTEXT.md` when domain vocabulary or behavior is changing.

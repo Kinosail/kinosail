@@ -1,4 +1,4 @@
-const cacheName = "kinosail-shell-v28";
+const cacheName = "kinosail-shell-v45";
 const chunkSize = 8 * 1024 * 1024;
 const offlineDatabase = "kinosail-offline-v1";
 const retiredOfflinePages = "kinosail-offline-pages-v1";

@@ -13,25 +13,23 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"net"
 	"net/http"
 	"net/url"
 	"os"
 	"path/filepath"
-	"strconv"
 	"strings"
 	"sync"
-	"unicode"
-	"unicode/utf8"
 
 	"github.com/MikeO7/kinosail/packages/httpguard"
 	"github.com/MikeO7/kinosail/packages/identitycore"
 	"github.com/MikeO7/kinosail/packages/privatefile"
 )
 
-const Address = "10.92.0.1"
-const Port = 51821
-const maxDevices = 32
+const (
+	Address    = "10.92.0.1"
+	Port       = 51821
+	maxDevices = 32
+)
 
 type Device struct {
 	Label        string `json:"label"`
@@ -287,67 +285,4 @@ func (m *Manager) save(value state) error {
 		return err
 	}
 	return m.write(filepath.Join(m.config.Directory, "owner-access.json"), data)
-}
-
-func eligible(p identitycore.Profile) bool {
-	return p.Owner && !p.Disabled && !p.SCIMDeleted && p.Secured() && p.Revision > 0
-}
-func decodeKey(raw string) []byte {
-	b, err := base64.StdEncoding.DecodeString(raw)
-	if err != nil || len(b) != 32 || base64.StdEncoding.EncodeToString(b) != raw {
-		return nil
-	}
-	return b
-}
-func validText(s string, maximum int) bool {
-	return s != "" && len(s) <= maximum && utf8.ValidString(s) && strings.TrimSpace(s) == s && strings.IndexFunc(s, unicode.IsControl) < 0
-}
-func validLabel(s string) bool { return validText(s, 320) && utf8.RuneCountInString(s) <= 80 }
-func validID(s string) bool    { return validText(s, 128) && strings.IndexFunc(s, unicode.IsSpace) < 0 }
-func validEndpoint(s string) bool {
-	host, port, err := net.SplitHostPort(s)
-	number, portErr := strconv.Atoi(port)
-	return err == nil && portErr == nil && number >= 1024 && number <= 65535 && strconv.Itoa(number) == port && validHostname(host) && s == net.JoinHostPort(host, port)
-}
-func validHostname(host string) bool {
-	if len(host) > 253 || !strings.Contains(host, ".") || net.ParseIP(host) != nil {
-		return false
-	}
-	for _, label := range strings.Split(host, ".") {
-		if label == "" || len(label) > 63 || label[0] == '-' || label[len(label)-1] == '-' {
-			return false
-		}
-		for _, c := range label {
-			if !(c >= 'a' && c <= 'z' || c >= '0' && c <= '9' || c == '-') {
-				return false
-			}
-		}
-	}
-	return true
-}
-func validOrigin(raw string) bool {
-	u, err := url.Parse(raw)
-	if err != nil {
-		return false
-	}
-	port := u.Port()
-	number, portErr := strconv.Atoi(port)
-	return u.Scheme == "https" && validHostname(u.Hostname()) && u.User == nil && u.Path == "" && u.RawQuery == "" && !u.ForceQuery && u.Fragment == "" && (port == "" || portErr == nil && number > 0 && number <= 65535 && strconv.Itoa(number) == port)
-}
-func validState(s state) bool {
-	if !s.Enabled {
-		return s.Endpoint == "" && s.PrivateKey == "" && len(s.Devices) == 0
-	}
-	if !validEndpoint(s.Endpoint) || decodeKey(s.PrivateKey) == nil || len(s.Devices) > maxDevices {
-		return false
-	}
-	keys, addresses := map[string]bool{}, map[string]bool{}
-	for _, d := range s.Devices {
-		ip := net.ParseIP(d.Address).To4()
-		if !validLabel(d.Label) || !validID(d.ProfileID) || d.Revision == 0 || decodeKey(d.PublicKey) == nil || decodeKey(d.PresharedKey) == nil || ip == nil || ip.String() != d.Address || ip[0] != 10 || ip[1] != 92 || ip[2] != 0 || ip[3] < 2 || ip[3] > 254 || keys[d.PublicKey] || addresses[d.Address] {
-			return false
-		}
-		keys[d.PublicKey], addresses[d.Address] = true, true
-	}
-	return true
 }

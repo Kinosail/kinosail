@@ -60,10 +60,6 @@ func (store *profileStore) createStrongSession(id, name string, browser bool) (s
 	return store.sessionModule().CreateStrong(id, name, browser)
 }
 
-func (store *profileStore) createStrongPublicSession(id, name string, browser bool) (string, error) {
-	return store.sessionModule().CreateStrongPublic(id, name, browser)
-}
-
 func (store *profileStore) createSessionKind(id, name string, browser, strong bool) (string, error) {
 	return store.sessionModule().CreateLocal(id, name, browser, strong)
 }

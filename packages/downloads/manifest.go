@@ -28,10 +28,6 @@ type Manifest struct {
 	Chunks    []string `json:"chunks"`
 }
 
-func sealManifest(path, id string) (Manifest, error) {
-	return sealManifestContext(context.Background(), path, id)
-}
-
 func sealManifestContext(ctx context.Context, path, id string) (Manifest, error) {
 	file, err := os.Open(path) //nolint:gosec // Manager-owned cache path.
 	if err != nil {

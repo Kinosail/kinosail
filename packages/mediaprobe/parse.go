@@ -11,12 +11,6 @@ import (
 	"github.com/MikeO7/kinosail/packages/metadata"
 )
 
-// Parse normalizes one bounded FFprobe response.
-func Parse(data []byte) Result { //nolint:cyclop,funlen,gocognit // The probe schema is normalized in one pass.
-	result, _ := parse(data)
-	return result
-}
-
 func parse(data []byte) (Result, bool) { //nolint:cyclop,funlen,gocognit // Preserve rejection separately from empty normalized facts.
 	if len(data) > maximumProbeOutput {
 		return Result{}, false

@@ -137,7 +137,7 @@ func TestPublicSessionsAreStrongShortLivedAndBounded(t *testing.T) { //nolint:cy
 	}
 	store.profiles[0].Remote, store.profiles[0].TOTPSecret = true, "secret"
 	for range 10 {
-		token, createErr := store.createStrongPublicSession(profile.ID, "Browser", true)
+		token, createErr := store.sessionModule().CreateStrongPublic(profile.ID, "Browser", true)
 		if createErr != nil {
 			t.Fatal(createErr)
 		}
@@ -146,7 +146,7 @@ func TestPublicSessionsAreStrongShortLivedAndBounded(t *testing.T) { //nolint:cy
 			t.Fatalf("public session = %+v", session)
 		}
 	}
-	if _, err := store.createStrongPublicSession(profile.ID, "Browser", true); err == nil {
+	if _, err := store.sessionModule().CreateStrongPublic(profile.ID, "Browser", true); err == nil {
 		t.Fatal("eleventh active public session was accepted")
 	}
 	cookie := publicSessionCookie("token")
@@ -170,7 +170,7 @@ func TestPublicSessionCannotSurviveProfilePolicyRevision(t *testing.T) {
 	}
 	store.profiles[0].Owner = false
 	store.profiles[0].Remote, store.profiles[0].TOTPSecret = true, "secret"
-	token, err := store.createStrongPublicSession(profile.ID, "Browser", true)
+	token, err := store.sessionModule().CreateStrongPublic(profile.ID, "Browser", true)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -194,7 +194,7 @@ func TestSessionCreationRejectsInactiveAndInvalidPublicProfiles(t *testing.T) {
 	} {
 		t.Run(name, func(t *testing.T) {
 			store := &profileStore{profiles: []viewerProfile{profile}, sessions: map[string]viewerSession{}, persist: func(string, any) error { return nil }}
-			if _, err := store.createStrongPublicSession(profile.ID, "Browser", true); err == nil {
+			if _, err := store.sessionModule().CreateStrongPublic(profile.ID, "Browser", true); err == nil {
 				t.Fatal("invalid public profile received a session")
 			}
 			if len(store.sessions) != 0 {

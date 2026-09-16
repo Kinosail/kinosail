@@ -96,7 +96,7 @@ func TestCopyAndSealUseSameIntegrityContract(t *testing.T) { //nolint:cyclop // 
 	if err != nil {
 		t.Fatal(err)
 	}
-	sealed, err := sealManifest(output, copied.ID)
+	sealed, err := sealManifestContext(t.Context(), output, copied.ID)
 	if err != nil || sealed.SHA256 != copied.SHA256 || sealed.Size != copied.Size || len(copied.Chunks) != 2 {
 		t.Fatalf("manifest = %#v, %#v, %v", copied, sealed, err)
 	}
@@ -132,7 +132,7 @@ func TestRestoredMediaIsUnavailableUntilVerified(t *testing.T) { //nolint:cyclop
 			if err := os.WriteFile(job.File, []byte("sealed media"), 0o600); err != nil {
 				t.Fatal(err)
 			}
-			manifest, err := sealManifest(job.File, job.ID)
+			manifest, err := sealManifestContext(t.Context(), job.File, job.ID)
 			if err != nil {
 				t.Fatal(err)
 			}

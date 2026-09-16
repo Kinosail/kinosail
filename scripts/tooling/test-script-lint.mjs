@@ -2,6 +2,10 @@ import assert from 'node:assert/strict';
 import { createRequire } from 'node:module';
 import { fileURLToPath } from 'node:url';
 import { test } from 'node:test';
+import { mkdtempSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import path from 'node:path';
+import { browserScriptBundles } from '../quality/browser-script-bundles.mjs';
 
 const require = createRequire(new URL('../quality/package.json', import.meta.url));
 const { ESLint } = require('eslint');
@@ -11,6 +15,38 @@ const eslint = new ESLint({
   overrideConfigFile: fileURLToPath(new URL('../quality/eslint.config.mjs', import.meta.url)),
 });
 const options = { filePath: 'packages/webassets/static/lint-fixture.js' };
+
+test('lint follows the production Go bundle order and shared scopes', async () => {
+  const bundles = browserScriptBundles(repo);
+  const player = bundles.find(bundle => bundle.name === 'player.playerJS');
+  assert.ok(player.files.indexOf('packages/webassets/static/player-core.js') < player.files.indexOf('apps/player/internal/server/static/player.js'));
+  assert.ok(player.files.indexOf('apps/player/internal/server/static/player.js') < player.files.indexOf('apps/player/internal/server/static/player-streaming-adaptive.js'));
+  assert.ok(bundles.find(bundle => bundle.name === 'player.mainBundle'));
+  for (const bundle of bundles) {
+    const source = bundle.files.map(file => readFileSync(path.join(repo, file), 'utf8')).join('');
+    const [result] = await eslint.lintText(source, options);
+    assert.deepEqual(result.messages, [], bundle.name);
+    const [invalid] = await eslint.lintText(`${source}\nmissingGlobal();`, options);
+    assert.ok(invalid.messages.some(message => message.ruleId === 'no-undef'));
+  }
+});
+
+for (const [name, expression] of [
+  ['unknown dependency', 'joinScripts(shared, missing)'],
+  ['circular dependency', 'joinScripts(shared, bundle)'],
+  ['unsupported append', 'append(append([]byte(nil), shared...), extra(), last...)'],
+]) {
+  test(`bundle discovery rejects ${name}`, () => {
+    const fixture = mkdtempSync(path.join(tmpdir(), 'kinosail-script-lint-'));
+    try {
+      for (const file of ['packages/webassets/webassets.go', 'apps/player/internal/server/assets.go', 'apps/subtitles/internal/server/assets.go']) {
+        mkdirSync(path.dirname(path.join(fixture, file)), { recursive: true });
+        writeFileSync(path.join(fixture, file), `//go:embed static/shared.js\nshared []byte\nbundle = ${expression}\n`);
+      }
+      assert.throws(() => browserScriptBundles(fixture));
+    } finally { rmSync(fixture, { recursive: true, force: true }); }
+  });
+}
 
 test('browser globals and module imports work without native dependencies', async () => {
   const [result] = await eslint.lintText(

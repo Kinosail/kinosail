@@ -33,13 +33,13 @@ func TestCopyAndIntegrityReportFileFailures(t *testing.T) {
 	if err := os.WriteFile(input, []byte("media"), 0o600); err != nil {
 		t.Fatal(err)
 	}
-	if err := copyFile(input, filepath.Join(t.TempDir(), "missing", "output")); err == nil {
+	if err := copyFileContext(t.Context(), input, filepath.Join(t.TempDir(), "missing", "output")); err == nil {
 		t.Fatal("missing output directory was accepted")
 	}
-	if err := copyFile(t.TempDir(), filepath.Join(t.TempDir(), "output")); err == nil {
+	if err := copyFileContext(t.Context(), t.TempDir(), filepath.Join(t.TempDir(), "output")); err == nil {
 		t.Fatal("directory input was copied")
 	}
-	if _, _, err := fileIntegrity(filepath.Join(t.TempDir(), "missing")); !os.IsNotExist(err) {
+	if _, err := sealManifestContext(t.Context(), filepath.Join(t.TempDir(), "missing"), "0123456789abcdef"); !os.IsNotExist(err) {
 		t.Fatalf("missing integrity file error = %v", err)
 	}
 }
@@ -51,7 +51,7 @@ func TestVideoDownloadRejectsMissingInspectionBeforeEncoding(t *testing.T) {
 		return transcodepolicy.Settings{Codec: "h264", Accelerator: "none", Encoder: "libx264"}
 	}}
 	item := library.Item{Kind: "video", Path: "/library/movie.mkv"}
-	if err := manager.encode(item, "720p", output, false); err == nil {
+	if err := manager.encodeSelectedContext(t.Context(), item, "720p", output, false, nil); err == nil {
 		t.Fatal("missing source facts were accepted")
 	}
 	if _, err := os.Stat(output); !os.IsNotExist(err) {
@@ -60,7 +60,7 @@ func TestVideoDownloadRejectsMissingInspectionBeforeEncoding(t *testing.T) {
 	manager.inspect = func(context.Context, library.Item) playback.MediaFacts {
 		return playback.MediaFacts{Video: playback.VideoFacts{Codec: "hevc", HDR: "dolby-vision", DolbyVisionCompatibility: 0}}
 	}
-	if err := manager.encode(item, "720p", output, false); err == nil {
+	if err := manager.encodeSelectedContext(t.Context(), item, "720p", output, false, nil); err == nil {
 		t.Fatal("unsupported Dolby conversion was accepted")
 	}
 	if _, err := os.Stat(output); !os.IsNotExist(err) {

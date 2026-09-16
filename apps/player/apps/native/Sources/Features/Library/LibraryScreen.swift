@@ -5,7 +5,6 @@ struct LibraryScreen: View {
     private let searchMode: Bool
     @State private var query = ""
     @State private var showsSearch = false
-    @State private var draftQuery = ""
     @State private var selection: LibraryView
     @State private var sort = LibrarySort.title
     @State private var items: [MediaItem] = []
@@ -15,6 +14,7 @@ struct LibraryScreen: View {
     @State private var generation = UUID()
     @State private var loadedKey: String?
     #if os(tvOS)
+    @State private var draftQuery = ""
     @State private var focusedItem: MediaItem?
     @State private var backdropItem: MediaItem?
     #endif

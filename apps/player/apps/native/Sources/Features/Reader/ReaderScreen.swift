@@ -77,11 +77,11 @@ struct ReaderScreen: View {
                     .navigationTitle("Contents").toolbar { ToolbarItem(placement: .cancellationAction) { Button("Done") { showsContents = false } } }
             }
         }
-        .sheet(isPresented: $showsBookmarks) { NavigationStack { BookmarksScreen(itemID: itemID, readingPosition: position) { newPosition in position = newPosition; jump = UUID(); save(immediate: true) } } }
+        .sheet(isPresented: $showsBookmarks) { NavigationStack { BookmarksScreen(itemID: itemID, readingPosition: position) { newPosition in position = newPosition; jump = UUID(); save() } } }
         .sheet(isPresented: $showsPreferences, onDismiss: { Task { await reloadPreferences() } }) { NavigationStack { ReaderPreferencesScreen() } }
         .task(id: "\(session.profileKey ?? ""):\(itemID):\(loadRevision)") { await load() }
         .onAppear { session.reading = true }
-        .onDisappear { session.reading = false; save(immediate: true) }
+        .onDisappear { session.reading = false; save() }
         #else
         ContentUnavailableView("Read on iPhone or iPad", systemImage: "book", description: Text("Open this title in Kinosail on your iPhone or iPad."))
         #endif
@@ -107,7 +107,7 @@ struct ReaderScreen: View {
             if let pending, pending.position.total == remote.total {
                 position = pending.position
                 if remote != pending.expected && remote != pending.position { conflict = remote }
-                else { save(immediate: true) }
+                else { save() }
             } else if pending != nil { notice = "The book’s page order changed. The Server’s current position is shown." }
             jump = UUID()
         } catch is CancellationError {} catch { if generation == attempt { failure = AppSession.message(error) } }
@@ -119,9 +119,9 @@ struct ReaderScreen: View {
     private func turn(to page: Int) {
         guard (1...position.total).contains(page) else { return }
         position = ReaderPosition(page: page, total: position.total, offset: 0); jump = UUID(); notice = nil
-        save(immediate: true)
+        save()
     }
-    private func save(immediate: Bool = false) {
+    private func save() {
         guard let writer, book != nil, conflict == nil else { return }
         let position = position, attempt = generation
         saveTask = Task {
@@ -140,7 +140,7 @@ struct ReaderScreen: View {
     private func chooseDevice(_ remote: ReaderPosition) {
         guard let writer else { return }
         Task {
-            do { _ = try await writer.chooseDevice(over: remote); conflict = nil; save(immediate: true) }
+            do { _ = try await writer.chooseDevice(over: remote); conflict = nil; save() }
             catch { notice = AppSession.message(error) }
         }
     }

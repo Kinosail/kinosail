@@ -6,7 +6,8 @@ Contributor and agent material lives here. Start with the [app README](../README
 - [Architecture decisions](adr/): durable choices and their context.
 - [Code Atlas](architecture-explorer/README.md): generated package explorer and refresh instructions.
 - [Research](research/): dated investigations; verify current behavior before relying on findings.
-- [Design studies](design/): proposals and assets, not automatically shipped behavior.
-- [Agent workflow](agents/issue-tracker.md) and [domain vocabulary](agents/domain.md).
+- [Shared research](../../../engineering/research/): cross-app investigations kept in one place.
+- [Current design](../DESIGN.md): the active interface specification.
+- [Agent workflow](../../../engineering/agents/issue-tracker.md) and [domain vocabulary](../../../engineering/agents/domain.md).
 
 While the root `.gates-disabled` marker exists, do not run disabled checks. Source publication, deployment, health, TLS, and device acceptance remain separate facts. See the [cross-app engineering guide](../../../engineering/README.md).

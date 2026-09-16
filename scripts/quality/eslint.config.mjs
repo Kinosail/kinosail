@@ -11,6 +11,10 @@ export default [
       sourceType: 'module',
       globals: {
         ...globals.browser,
+        // Supplied by the embedded HLS library and the on-demand Cast sender.
+        Hls: 'readonly',
+        cast: 'readonly',
+        chrome: 'readonly',
         exports: 'readonly',
         global: 'readonly',
         module: 'readonly',

@@ -76,10 +76,6 @@ extension OfflineManifest {
     }
     static func digest(_ value: String) -> Bool { (try? Input.hex(value, count: 64)) != nil }
     func length(_ index: Int) -> Int64 { min(chunkSize, size - Int64(index) * chunkSize) }
-    var json: JSONValue {
-        .object(["version": .number(Double(version)), "id": .string(id), "size": .number(Double(size)), "sha256": .string(sha256),
-                 "chunkSize": .number(Double(chunkSize)), "chunks": .array(chunks.map(JSONValue.string))])
-    }
 }
 
 struct DownloadAuthorization: Sendable {

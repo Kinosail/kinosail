@@ -9,7 +9,7 @@ let installPrompt;
 let installComplete = standalone;
 
 if ("serviceWorker" in navigator && window.isSecureContext) {
-  navigator.serviceWorker.register("/service-worker.js?v=43").then(() => navigator.serviceWorker.ready).catch(() => {});
+  navigator.serviceWorker.register("/service-worker.js?v=45").then(() => navigator.serviceWorker.ready).catch(() => {});
 }
 if (appleMobile && !standalone && installs.length) {
   for (const install of installs) {

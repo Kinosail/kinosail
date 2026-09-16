@@ -2,8 +2,6 @@ package downloads
 
 import (
 	"context"
-	"crypto/sha256"
-	"encoding/hex"
 	"errors"
 	"io"
 	"os"
@@ -25,14 +23,6 @@ func Transcoding(current func() transcodepolicy.Settings, softwareEncoder func(s
 		}
 		return settings
 	}
-}
-
-func (manager *Manager) encode(item library.Item, quality, output string, software bool) error {
-	return manager.encodeSelected(item, quality, output, software, nil)
-}
-
-func (manager *Manager) encodeSelected(item library.Item, quality, output string, software bool, selection *TrackSelection) error {
-	return manager.encodeSelectedContext(manager.ctx, item, quality, output, software, selection)
 }
 
 func (manager *Manager) encodeSelectedContext(ctx context.Context, item library.Item, quality, output string, software bool, selection *TrackSelection) error {
@@ -71,10 +61,6 @@ func (manager *Manager) encodeSelectedContext(ctx context.Context, item library.
 	return exec.CommandContext(ctx, manager.ffmpeg, args...).Run()
 }
 
-func copyFile(inputPath, outputPath string) error {
-	return copyFileContext(context.Background(), inputPath, outputPath)
-}
-
 func copyFileContext(ctx context.Context, inputPath, outputPath string) error { //nolint:cyclop // One copy checks source stability and reports copy, sync, and close failures in order.
 	if err := ctx.Err(); err != nil {
 		return err
@@ -105,17 +91,6 @@ func copyFileContext(ctx context.Context, inputPath, outputPath string) error { 
 		return copyErr
 	}
 	return closeErr
-}
-
-func fileIntegrity(path string) (string, int64, error) {
-	file, err := os.Open(path) //nolint:gosec // Manager derived this cache path.
-	if err != nil {
-		return "", 0, err
-	}
-	defer file.Close()
-	digest := sha256.New()
-	size, err := io.Copy(digest, file)
-	return hex.EncodeToString(digest.Sum(nil)), size, err
 }
 
 func (manager *Manager) copyOriginal(ctx context.Context, source, output string) error {

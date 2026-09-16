@@ -95,7 +95,7 @@ func TestPrepareReportsFinalPersistenceFailure(t *testing.T) {
 		t.Fatal(err)
 	}
 	manager.jobs[job.ID] = job
-	manager.prepare(job, item)
+	manager.prepareTask(task{job: job, item: item})
 	failed, found := manager.Get("viewer", job.ID)
 	if !found || failed.State != "failed" || failed.ReadyOffline || failed.Error != "download state could not be saved" {
 		t.Fatalf("failed preparation = %#v, %v", failed, found)

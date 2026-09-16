@@ -31,7 +31,7 @@ func TestKillSwitchRevokesEveryPublicAuthorizationArtifact(t *testing.T) { //nol
 	}
 	viewer, _ := profiles.byID(viewerID)
 	profiles.profiles[1].TOTPSecret = "secret"
-	if _, err = profiles.createStrongPublicSession(viewerID, "Browser", true); err != nil {
+	if _, err = profiles.sessionModule().CreateStrongPublic(viewerID, "Browser", true); err != nil {
 		t.Fatal(err)
 	}
 	quick := newQuickConnect(time.Minute)

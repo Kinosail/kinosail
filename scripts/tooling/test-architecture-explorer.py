@@ -14,9 +14,8 @@ from pathlib import Path
 REPO = Path(__file__).resolve().parents[2]
 APPS = ("player", "subtitles")
 OUTPUTS = tuple(
-    REPO / "apps" / app / area / "architecture-explorer" / "index.html"
+    REPO / "apps" / app / "docs" / "architecture-explorer" / "index.html"
     for app in APPS
-    for area in ("engineering", "docs")
 )
 
 
@@ -26,13 +25,10 @@ def digest(path: Path) -> str:
 
 before = {path: digest(path) for path in OUTPUTS}
 commands = [
-    [sys.executable, str(REPO / "scripts/tooling/generate-architecture-explorer.py")],
-    [sys.executable, str(REPO / "scripts/tooling/generate-architecture-explorer.py"), "unknown"],
+    [sys.executable, str(REPO / "scripts/tooling/generate-architecture-explorer.py"), *arguments]
+    for arguments in ([], ["unknown"], [""], ["player", "--unknown"],
+                      ["player", "--check", "extra"], ["x" * 4096])
 ]
-commands.extend(
-    [sys.executable, str(REPO / f"apps/{app}/engineering/architecture-explorer/generate.py"), "unknown"]
-    for app in APPS
-)
 for command in commands:
     if subprocess.run(command, cwd=REPO, capture_output=True, check=False).returncode == 0:
         raise SystemExit(f"invalid generator input was accepted: {' '.join(command)}")
@@ -42,9 +38,9 @@ if before != {path: digest(path) for path in OUTPUTS}:
 for app in APPS:
     engineering = REPO / f"apps/{app}/engineering/architecture-explorer/index.html"
     published = REPO / f"apps/{app}/docs/architecture-explorer/index.html"
-    if engineering.read_bytes() != published.read_bytes():
-        raise SystemExit(f"{app} architecture snapshots differ")
-    html = engineering.read_text(encoding="utf-8")
+    if engineering.exists():
+        raise SystemExit(f"{app} contains a redundant engineering snapshot")
+    html = published.read_text(encoding="utf-8")
     match = re.search(r"const snapshot = (\{.*\});\n", html)
     if not match:
         raise SystemExit(f"{app} architecture snapshot data is missing")

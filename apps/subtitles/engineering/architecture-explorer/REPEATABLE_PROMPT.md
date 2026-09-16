@@ -49,12 +49,11 @@ Implementation guidance
 - Do not make the visual graph the only source of truth.
 
 Deliverables
-- `engineering/architecture-explorer/index.html`: generated standalone document.
-- `docs/architecture-explorer/index.html`: generated GitHub Pages copy of the standalone document.
+- `docs/architecture-explorer/index.html`: the single generated standalone document.
 - `../../../../scripts/tooling/architecture-explorer-template.html`: shared editable HTML, CSS, and JavaScript template.
 - `../../../../scripts/tooling/generate-architecture-explorer.py`: shared repeatable snapshot generator.
 - `engineering/architecture-explorer/README.md`: usage and refresh instructions.
-- `engineering/research/interactive-code-explorer-patterns.md`: cited research and design rationale.
+- the repository-root `engineering/research/interactive-code-explorer-patterns.md`: cited research and design rationale.
 - `engineering/architecture-explorer/REPEATABLE_PROMPT.md`: this prompt.
 - `docs/reference/code-atlas.md`: documentation entry point for the published explorer.
 

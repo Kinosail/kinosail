@@ -48,10 +48,6 @@ func (store *profileStore) sessionModule() *identitycore.RequestSessions {
 	return identitycore.NewRequestSessions(config, sessionToken)
 }
 
-func (store *profileStore) createStrongPublicSession(id, name string, browser bool) (string, error) {
-	return store.sessionModule().CreateStrongPublic(id, name, browser)
-}
-
 func (store *profileStore) createStrongSession(id, name string, browser bool) (string, error) {
 	return store.sessionModule().CreateStrong(id, name, browser)
 }

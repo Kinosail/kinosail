@@ -145,7 +145,7 @@ function bindSupporterShare() {
 		  }
         }
 		downloadSupporterShare(file, status);
-      } catch (error) {
+      } catch {
 		if (status) status.textContent = "Could not prepare the share image. Download the certificate instead.";
       } finally {
         button.disabled = false;

@@ -67,18 +67,6 @@ func (storage ProgressStorage) Update(key string, change ProgressChange) (Playba
 	return previous, current, true, nil
 }
 
-// ChangeProgress validates a change and returns a detached state map for persistence.
-func ChangeProgress(values map[string]PlaybackState, key string, change ProgressChange) (PlaybackState, PlaybackState, map[string]PlaybackState, bool, error) {
-	previous, current, changed, err := progressChange(values, key, change)
-	if err != nil || !changed {
-		return previous, current, nil, changed, err
-	}
-
-	next := maps.Clone(values)
-	next[key] = current
-	return previous, current, next, true, nil
-}
-
 func progressChange(values map[string]PlaybackState, key string, change ProgressChange) (PlaybackState, PlaybackState, bool, error) {
 	previous := values[key]
 	current, changed, err := change(previous)

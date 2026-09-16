@@ -4,7 +4,7 @@ Research snapshot: 2026-08-23. This review compares the current dirty Kinosail c
 
 ## Conclusion
 
-Kinosail is not missing a broad Google lint stack. It already covers formatting and imports, `go vet`, Staticcheck, the race detector, native fuzzing, called-code vulnerability analysis, dependency updates, coverage, and several stricter third-party checks. ([formatter and linter configuration](../../.golangci.yml), [`make check`](../../Makefile), [CI hygiene workflow](../../.github/workflows/hygiene.yml), [Dependabot configuration](../../.github/dependabot.yml))
+Kinosail is not missing a broad Google lint stack. It already covers formatting and imports, `go vet`, Staticcheck, the race detector, native fuzzing, called-code vulnerability analysis, dependency updates, coverage, and several stricter third-party checks. ([formatter and linter configuration](../../.golangci.yml), [`make check`](../../Makefile), [CI hygiene workflow](../../.github/workflows/hygiene.yml), [Dependabot configuration](../../../../.github/dependabot.yml))
 
 The useful additions, in priority order, are:
 

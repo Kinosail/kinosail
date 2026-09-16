@@ -33,14 +33,6 @@ func (manager *subtitleManager) searchableSubtitleFacts(languages []string, medi
 	return "", false
 }
 
-func (manager *subtitleManager) planCoverageAll(ctx context.Context, item library.Item, languages []string) (bool, []string, []string) {
-	var media probeResult
-	if manager.probe != nil {
-		media = manager.probe.facts(ctx, item)
-	}
-	return manager.planCoverageAllFacts(item, languages, media)
-}
-
 func (manager *subtitleManager) planCoverageAllFacts(item library.Item, languages []string, media probeResult) (bool, []string, []string) {
 	tracks, missing := make([]string, 0), make([]string, 0, len(languages))
 	for _, language := range languages {

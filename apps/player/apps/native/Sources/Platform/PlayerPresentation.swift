@@ -15,6 +15,7 @@ final class PlayerPresentation: NSObject, AVPlayerViewControllerDelegate {
     @ObservationIgnored private var pip: AVPictureInPictureController?
     @ObservationIgnored private var pipObservation: NSKeyValueObservation?
     #else
+    @ObservationIgnored private let captions = UILabel()
     @ObservationIgnored let controller = AVPlayerViewController()
     #endif
     @ObservationIgnored var visible = false
@@ -22,7 +23,6 @@ final class PlayerPresentation: NSObject, AVPlayerViewControllerDelegate {
     @ObservationIgnored var restore: (() -> Void)?
     @ObservationIgnored var closedPictureInPicture: (() -> Void)?
     @ObservationIgnored private var restorationCompletion: ((Bool) -> Void)?
-    @ObservationIgnored private let captions = UILabel()
 
     override init() {
         super.init()

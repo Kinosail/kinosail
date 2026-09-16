@@ -150,7 +150,7 @@ struct ActorTests {
         defer { fixture.remove() }
         _ = try await fixture.client.actor(name: "Amy Adams", policy: .automatic)
         await fixture.client.close()
-        let reopened = try ServerClient(server: fixture.client.server, viewer: viewer,
+        let reopened = try await ServerClient(server: fixture.client.server, viewer: viewer,
                                         protocolClasses: [FixtureURLProtocol.self], cacheDirectory: directory)
         let saved = try await reopened.actor(name: "Amy Adams", policy: .cached)
         #expect(saved.movies.first?.title == "Arrival")

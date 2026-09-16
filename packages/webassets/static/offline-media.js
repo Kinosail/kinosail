@@ -1,3 +1,14 @@
+const offlineRequestURL = (event) => {
+  if (event.request.method !== "GET") return;
+  const url = new URL(event.request.url);
+  return url.origin === self.location.origin ? url : undefined;
+};
+
+const registerOfflineLifecycle = (cacheName, retiredCache, populate) => {
+  self.addEventListener("install", (event) => event.waitUntil(caches.open(cacheName).then(populate).then(() => self.skipWaiting())));
+  self.addEventListener("activate", (event) => event.waitUntil(caches.keys().then((names) => Promise.all(names.filter((name) => name === retiredCache || name.startsWith("kinosail-shell-") && name !== cacheName).map((name) => caches.delete(name)))).then(() => self.clients.claim())));
+};
+
 const openDatabase = openOfflineDatabaseConnection;
 const readStore = async (store, action) => {
   const database = await openDatabase();

@@ -78,7 +78,7 @@ actor LocalMediaCache {
         do {
             try prepareDirectory()
             let file = root.appendingPathComponent("catalog-invalidation")
-            guard file.resolvingSymlinksInPath() == file else { return }
+            guard file.resolvingSymlinksInPath().path == file.path else { return }
             var bits = freshAfter!.timeIntervalSince1970.bitPattern.bigEndian
             let data = withUnsafeBytes(of: &bits) { Data($0) }
             try data.write(to: file, options: [.atomic, .completeFileProtectionUntilFirstUserAuthentication])
@@ -88,7 +88,7 @@ actor LocalMediaCache {
     func close(purge: Bool) {
         closed = true
         memory = [:]; memoryBytes = 0
-        if purge, root.resolvingSymlinksInPath() == root { try? manager.removeItem(at: root) }
+        if purge, root.resolvingSymlinksInPath().path == root.path { try? manager.removeItem(at: root) }
     }
 
     private func entryWithFreshness(_ entry: Entry, kind: Kind) -> Entry? {
@@ -110,16 +110,16 @@ actor LocalMediaCache {
 
     private func location(_ key: String, kind: Kind) throws -> URL {
         guard !key.isEmpty, key.utf8.count <= 16_384, key.rangeOfCharacter(from: .controlCharacters) == nil,
-              root.resolvingSymlinksInPath() == root else { throw ClientError.invalidResponse }
+              root.resolvingSymlinksInPath().path == root.path else { throw ClientError.invalidResponse }
         let hash = SHA256.hash(data: Data(key.utf8)).map { String(format: "%02x", $0) }.joined()
         let file = root.appendingPathComponent("\(kind.rawValue)-\(hash).cache")
-        guard file.resolvingSymlinksInPath() == file else { throw ClientError.invalidResponse }
+        guard file.resolvingSymlinksInPath().path == file.path else { throw ClientError.invalidResponse }
         return file
     }
 
     private func boundedData(_ file: URL, maximum: Int) throws -> Data {
         let values = try file.resourceValues(forKeys: [.isRegularFileKey, .fileSizeKey])
-        guard file.resolvingSymlinksInPath() == file, values.isRegularFile == true,
+        guard file.resolvingSymlinksInPath().path == file.path, values.isRegularFile == true,
               let size = values.fileSize, size <= maximum else { throw ClientError.invalidResponse }
         let handle = try FileHandle(forReadingFrom: file)
         defer { try? handle.close() }
@@ -129,7 +129,7 @@ actor LocalMediaCache {
     }
 
     private func prepareDirectory() throws {
-        guard root.resolvingSymlinksInPath() == root else { throw ClientError.invalidResponse }
+        guard root.resolvingSymlinksInPath().path == root.path else { throw ClientError.invalidResponse }
         try manager.createDirectory(at: root, withIntermediateDirectories: true,
                                     attributes: [.protectionKey: FileProtectionType.completeUntilFirstUserAuthentication])
         var directory = root
@@ -146,7 +146,7 @@ actor LocalMediaCache {
             seen += 1
             guard seen <= 4096 else { throw ClientError.invalidResponse }
             guard file != replacing, file.lastPathComponent.hasPrefix(kind.rawValue + "-"), file.pathExtension == "cache",
-                  file.resolvingSymlinksInPath() == file else { continue }
+                  file.resolvingSymlinksInPath().path == file.path else { continue }
             let values = try file.resourceValues(forKeys: Set(keys))
             guard values.isRegularFile == true, let size = values.fileSize else { continue }
             entries.append((file, size, values.contentModificationDate ?? .distantPast))

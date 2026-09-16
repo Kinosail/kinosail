@@ -22,7 +22,7 @@ func BenchmarkSealedDownloadHEAD(b *testing.B) {
 	if err = file.Close(); err != nil {
 		b.Fatal(err)
 	}
-	manifest, err := sealManifest(path, "0123456789abcdef")
+	manifest, err := sealManifestContext(b.Context(), path, "0123456789abcdef")
 	if err != nil {
 		b.Fatal(err)
 	}

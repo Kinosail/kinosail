@@ -93,7 +93,7 @@ func TestReservationFailureDoesNotRetryOrEncode(t *testing.T) {
 		t.Fatal(err)
 	}
 	manager.jobs[job.ID] = job
-	manager.prepare(job, item)
+	manager.prepareTask(task{job: job, item: item})
 	failed, _ := manager.Get("viewer", job.ID)
 	if failed.State != "failed" || failed.Error != "reservation failed" {
 		t.Fatalf("reservation failure = %#v", failed)

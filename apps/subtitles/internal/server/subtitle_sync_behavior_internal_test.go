@@ -9,6 +9,8 @@ import (
 	"testing"
 	"time"
 
+	"github.com/MikeO7/kinosail/packages/library"
+
 	"github.com/zserge/govad"
 )
 
@@ -58,27 +60,27 @@ func TestSynchronizeSubtitleLeavesAnAlignedDocumentUnchanged(t *testing.T) {
 func TestProcessSubtitleAudioHandlesFramesAndReadFailures(t *testing.T) {
 	t.Parallel()
 	input := bytes.Repeat([]byte{0xff}, govad.SamplesPerFrame*4)
-	probabilities, err := processSubtitleAudio(bytes.NewReader(input))
-	if err != nil || len(probabilities) != 2 {
-		t.Fatalf("audio probabilities = %d, error %v", len(probabilities), err)
+	reference, err := processSubtitleAudioReference(bytes.NewReader(input))
+	if err != nil || len(reference.Speech) != 2 {
+		t.Fatalf("audio probabilities = %d, error %v", len(reference.Speech), err)
 	}
-	probabilities, err = processSubtitleAudio(bytes.NewReader(input[:len(input)-1]))
-	if err != nil || len(probabilities) != 1 {
-		t.Fatalf("partial audio probabilities = %d, error %v", len(probabilities), err)
+	reference, err = processSubtitleAudioReference(bytes.NewReader(input[:len(input)-1]))
+	if err != nil || len(reference.Speech) != 1 {
+		t.Fatalf("partial audio probabilities = %d, error %v", len(reference.Speech), err)
 	}
 	want := errors.New("read failed")
-	if _, err = processSubtitleAudio(errorReader{want}); err == nil {
+	if _, err = processSubtitleAudioReference(errorReader{want}); err == nil {
 		t.Fatal("audio read failure was accepted")
 	}
 }
 
 func TestSpeechProbabilityAnalysisRejectsUnavailableTools(t *testing.T) {
 	t.Parallel()
-	if _, err := newSubtitleSynchronizer("").speechProbabilities(t.Context(), "film.mkv"); err == nil {
+	if _, err := newSubtitleSynchronizer("").analyzeAudio(t.Context(), library.Item{Path: "film.mkv"}, ""); err == nil {
 		t.Fatal("missing FFmpeg was accepted")
 	}
 	missing := filepath.Join(t.TempDir(), "missing-ffmpeg")
-	if _, err := newSubtitleSynchronizer(missing).speechProbabilities(t.Context(), "film.mkv"); err == nil {
+	if _, err := newSubtitleSynchronizer(missing).analyzeAudio(t.Context(), library.Item{Path: "film.mkv"}, ""); err == nil {
 		t.Fatal("unavailable FFmpeg was accepted")
 	}
 }
@@ -90,15 +92,15 @@ func TestSpeechProbabilityAnalysisReadsBoundedPCM(t *testing.T) {
 	if err := os.WriteFile(success, []byte("#!/bin/sh\ndd if=/dev/zero bs=1920000 count=1 2>/dev/null\n"), 0o700); err != nil { //nolint:gosec // The owner-only file is an executable test fixture.
 		t.Fatal(err)
 	}
-	probabilities, err := newSubtitleSynchronizer(success).speechProbabilities(t.Context(), "film.mkv")
-	if err != nil || len(probabilities) != int(time.Minute/subtitleFrame) {
-		t.Fatalf("speech probabilities = %d, error %v", len(probabilities), err)
+	reference, err := newSubtitleSynchronizer(success).analyzeAudio(t.Context(), library.Item{Path: "film.mkv"}, "")
+	if err != nil || len(reference.Speech) != int(time.Minute/subtitleFrame) {
+		t.Fatalf("speech probabilities = %d, error %v", len(reference.Speech), err)
 	}
 	empty := filepath.Join(directory, "ffmpeg-empty")
 	if err = os.WriteFile(empty, []byte("#!/bin/sh\nexit 0\n"), 0o700); err != nil { //nolint:gosec // The owner-only file is an executable test fixture.
 		t.Fatal(err)
 	}
-	if _, err = newSubtitleSynchronizer(empty).speechProbabilities(t.Context(), "film.mkv"); err == nil {
+	if _, err = newSubtitleSynchronizer(empty).analyzeAudio(t.Context(), library.Item{Path: "film.mkv"}, ""); err == nil {
 		t.Fatal("empty PCM analysis was accepted")
 	}
 }

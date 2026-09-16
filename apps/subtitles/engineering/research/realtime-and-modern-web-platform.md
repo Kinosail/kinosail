@@ -40,12 +40,12 @@ Do not send media through Server-Sent Events, WebSockets, WebTransport, WebRTC, 
 - HLS publishes playable segment lists in [`hls_playlist.go`](../../internal/server/hls_playlist.go).
 - Watch Together exposes a WebSocket route in [`watch_together.go`](../../internal/server/watch_together.go). It limits messages to 4 KiB and rechecks access each second.
 - The first-party browser code did not create the existing Watch Together WebSocket before this change.
-- Library monitoring uses file events, a stability delay, and polling fallback in [`library_watch.go`](../../internal/server/library_watch.go).
+- Library monitoring uses file events, a stability delay, and polling fallback in [`library_watch.go`](../../../../packages/catalog/watch.go).
 - Offline preparation is a bounded server job in [`downloads.go`](../../internal/server/downloads.go).
-- Browser downloads use 8 MiB IndexedDB chunks in [`downloads.js`](../../internal/server/static/downloads.js).
+- Browser downloads use 8 MiB IndexedDB chunks in [`downloads.js`](../../../../packages/webassets/static/downloads.js).
 - The prior service worker verified chunks, created one full `Blob`, and served local ranges in [`service-worker.js`](../../internal/server/static/service-worker.js).
 - The prior service worker cached authenticated `/watch/` HTML. That created stale-session and profile-isolation risk.
-- The prior player used Media Capabilities with one fixed 1080p sample. It also used Media Session in [`player.js`](../../internal/server/static/player.js).
+- The prior player used Media Capabilities with one fixed 1080p sample. It also used Media Session in [`player.js`](../../../../packages/webassets/static/player-core.js).
 - Kinosail already sends optional outbound webhook events in [`notification.go`](../../internal/server/notification.go).
 
 HTTP remains the correct media transport. HTTP range requests support efficient recovery from partial transfers ([RFC 9110, section 14](https://www.rfc-editor.org/rfc/rfc9110.html#name-range-requests)). HLS clients fetch listed segments and reload playlists for new segments ([RFC 8216](https://www.rfc-editor.org/rfc/rfc8216.html)).

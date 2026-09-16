@@ -90,11 +90,6 @@ func browsePage(items []*library.Item, offset, pageEnd, limit int) []library.Ite
 	return result
 }
 
-// ApplyItems projects app-owned visibility and Viewer state into one browse result.
-func (browse Browse) ApplyItems(items []*library.Item, visible func(library.Item) bool, state func(string) (bool, PlaybackState)) (Result, error) {
-	return browse.Apply(itemCandidates(items, visible, state))
-}
-
 func itemCandidates(items []*library.Item, visible func(library.Item) bool, state func(string) (bool, PlaybackState)) []Candidate {
 	candidates := make([]Candidate, 0, len(items))
 	for _, item := range items {

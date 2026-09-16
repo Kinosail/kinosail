@@ -131,8 +131,8 @@ func TestProbeChapterMarkerAndTagNormalization(t *testing.T) { //nolint:cyclop /
 		`{"start_time":"40","end_time":"50","tags":{"title":"Credit roll"}},` +
 		`{"start_time":"bad","end_time":"60"},{"start_time":"60","end_time":"60"}],` +
 		`"format":{"tags":{"TRACK":"2/9","disc":"bad"}}}`
-	result := Parse([]byte(data))
-	if len(result.Markers) != 4 || len(result.Chapters) != 5 || result.Audio[0].Label != "Audio 1 · AAC" || result.Tags.Track != 2 || result.Tags.Disc != 0 {
+	result, valid := parse([]byte(data))
+	if !valid || len(result.Markers) != 4 || len(result.Chapters) != 5 || result.Audio[0].Label != "Audio 1 · AAC" || result.Tags.Track != 2 || result.Tags.Disc != 0 {
 		t.Fatalf("normalized result = %#v", result)
 	}
 	if (Chapter{Start: 65}).Timestamp() != "1:05" || (Chapter{Start: 3661}).Timestamp() != "1:01:01" {

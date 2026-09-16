@@ -103,7 +103,7 @@
         else heading?.scrollIntoView({block: "start", behavior: "instant"});
       }
       return true;
-    } catch (error) {
+    } catch {
       if (controller === navigation && (!controller.signal.aborted || controller.signal.reason === "timeout")) feedback(label("errorLabel"), true, target.href);
       return false;
     } finally {

@@ -98,7 +98,7 @@
       if (!window.isSecureContext) throw new Error('Open Kinosail over HTTPS to use Google Cast in the browser.');
       await new Promise((resolve, reject) => {
         const timeout = setTimeout(() => reject(new Error('Google Cast did not load. Try a supported Chrome browser.')), 20000);
-        window.__onGCastApiAvailable = (available) => { clearTimeout(timeout); available ? resolve() : reject(new Error('Google Cast is unavailable in this browser.')); };
+        window.__onGCastApiAvailable = (available) => { clearTimeout(timeout); if (available) resolve(); else reject(new Error('Google Cast is unavailable in this browser.')); };
         const script = document.createElement('script'); script.src = 'https://www.gstatic.com/cv/js/sender/v1/cast_sender.js?loadCastFramework=1'; script.onerror = () => { clearTimeout(timeout); reject(new Error('Google Cast could not load.')); }; document.head.append(script);
       });
       castContext = cast.framework.CastContext.getInstance();

@@ -8,8 +8,8 @@ import (
 func TestParseProbeSummarizesMediaAndAudioTracks(t *testing.T) {
 	t.Parallel()
 
-	result := Parse([]byte(`{"streams":[{"codec_type":"video","codec_name":"hevc","width":3840,"height":2160},{"codec_type":"audio","codec_name":"eac3","tags":{"language":"eng"}},{"codec_type":"audio","codec_name":"aac","tags":{"title":"Director commentary"}}],"format":{"duration":"3661.2"}}`))
-	if result.Summary != "3840x2160 HEVC · 1h1m1s" || len(result.Audio) != 2 || result.Audio[0].Label != "ENG · EAC3" || result.Audio[1].Label != "Director commentary · AAC" {
+	result, valid := parse([]byte(`{"streams":[{"codec_type":"video","codec_name":"hevc","width":3840,"height":2160},{"codec_type":"audio","codec_name":"eac3","tags":{"language":"eng"}},{"codec_type":"audio","codec_name":"aac","tags":{"title":"Director commentary"}}],"format":{"duration":"3661.2"}}`))
+	if !valid || result.Summary != "3840x2160 HEVC · 1h1m1s" || len(result.Audio) != 2 || result.Audio[0].Label != "ENG · EAC3" || result.Audio[1].Label != "Director commentary · AAC" {
 		t.Fatalf("probe = %#v", result)
 	}
 }
@@ -17,7 +17,7 @@ func TestParseProbeSummarizesMediaAndAudioTracks(t *testing.T) {
 func TestParseProbeNormalizesPlaybackAndAccessibilityFacts(t *testing.T) { //nolint:cyclop // One fixture verifies the related playback facts together.
 	t.Parallel()
 
-	result := Parse([]byte(`{
+	result, valid := parse([]byte(`{
 		"streams":[
 			{"index":0,"codec_type":"video","codec_name":"hevc","profile":"Main 10","level":153,"pix_fmt":"yuv420p10le","width":3840,"height":2160,"r_frame_rate":"24000/1001","sample_aspect_ratio":"1:1","color_range":"tv","color_space":"bt2020nc","color_transfer":"smpte2084","color_primaries":"bt2020","bits_per_raw_sample":"10","side_data_list":[{"side_data_type":"Mastering display metadata"},{"side_data_type":"Content light level metadata"}]},
 			{"index":2,"codec_type":"audio","codec_name":"eac3","profile":"E-AC-3+Atmos","sample_rate":"48000","channels":8,"channel_layout":"7.1","disposition":{"default":1,"visual_impaired":1},"tags":{"language":"eng","title":"English audio description"}},
@@ -26,7 +26,7 @@ func TestParseProbeNormalizesPlaybackAndAccessibilityFacts(t *testing.T) { //nol
 		],
 		"format":{"format_name":"matroska,webm","duration":"3600.5","bit_rate":"18000000"}
 	}`))
-	if result.Container != "matroska" || result.Bitrate != 18_000_000 || result.Video.Profile != "Main 10" || result.Video.BitDepth != 10 || result.Video.HDR != "hdr10" || result.Video.SampleAspectRatio != "1:1" || result.Video.Primaries != "bt2020" || result.Video.Transfer != "smpte2084" {
+	if !valid || result.Container != "matroska" || result.Bitrate != 18_000_000 || result.Video.Profile != "Main 10" || result.Video.BitDepth != 10 || result.Video.HDR != "hdr10" || result.Video.SampleAspectRatio != "1:1" || result.Video.Primaries != "bt2020" || result.Video.Transfer != "smpte2084" {
 		t.Fatalf("format/video facts = %#v", result)
 	}
 	if len(result.AudioFacts) != 1 || result.AudioFacts[0].SourceIndex != 2 || result.AudioFacts[0].Role != "description" || result.AudioFacts[0].ChannelLayout != "7.1" {

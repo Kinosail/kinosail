@@ -76,7 +76,6 @@ const useAdaptive = (preference = "auto", resume = false, target = resume ? pend
     ...(selected.offset ? {startPosition: target - selected.offset, timelineOffset: selected.offset} : {}),
   });
   const activeHls = hls;
-  networkRecoveries = 0;
   mediaRecoveries = 0;
   hls.on(Hls.Events.MANIFEST_PARSED, (_, {levels}) => {
     if (hls !== activeHls) return;

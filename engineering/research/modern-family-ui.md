@@ -2,7 +2,7 @@
 
 **Research checked:** 6 September 2026\
 **Purpose:** a working reference for ambitious redesigns across the Kinosail family.\
-**Companion:** [Interactive design reference](../design/modern-family-ui.html).\
+**Companion:** The implementation prototype was retired after the product design work.\
 **Next evidence review:** before the next substantial redesign, and by 6 December 2026 for platform and browser claims.
 
 ## Start here
@@ -250,6 +250,6 @@ Future agents should read this reference and the affected app's design contract,
 
 ### Companion verification
 
-Run `pnpm --dir apps/dashboard/e2e install --frozen-lockfile`, install its Playwright browsers if needed, then run `node engineering/design/modern-family-ui.test.cjs` from the repository root. The script prints the temporary screenshot directory.
+The retired prototype’s historical verification is recorded below. Current interface verification uses the app-specific suites.
 
 On 6 September 2026 the companion passed Chromium 151.0.7922.34, Firefox 153.0, and WebKit 26.5 checks at 1440, 1024, 720, 390, and 320 CSS px in dark and light appearances: 30 axe scans, horizontal reflow, unobscured mobile anchor headings, scenario/density selection, save timing, immediate switch feedback, search/no-results/retained selection, native selection, radio arrow keys, and dialog Escape/focus recovery. Reduced-motion preference changes were checked, and forced-color renders were also produced. Desktop and narrow responsive screenshots were visually inspected. These are prototype engineering checks, not disabled-user research, app-wide certification, or physical-device evidence.

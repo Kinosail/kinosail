@@ -11,11 +11,11 @@ function fixture(overrides = {}) {
     addEventListener() {}, removeEventListener() {}, document:{addEventListener(){},removeEventListener(){}},
     offlineItemID:/^[A-Za-z0-9_-]{1,128}$/, offlineProfileID:/^[A-Za-z0-9_-]{1,128}$/,
     offlineTransferIDOf: value => /^[a-f0-9]{32}$/.test(value?.transferID ?? '') ? value.transferID : '',
-    activeOfflineProfile: () => 'viewer-a', AbortSignal, crypto: {randomUUID:()=> 'session-1'}, performance: {now:()=>6000},
-    fetch: async (...args) => {calls.push(args); return {ok:true,text:async()=>JSON.stringify({item:{id:'movie',progress:snapshot},profileId:'viewer-a'})};},
+    activeOfflineProfile: () => 'viewer-a', AbortSignal, TextDecoder, crypto: {randomUUID:()=> 'session-1'}, performance: {now:()=>6000},
+    fetch: async (...args) => {calls.push(args); return new Response(JSON.stringify({item:{id:'movie',progress:snapshot},profileId:'viewer-a'}));},
     ...overrides,
   });
-  vm.runInContext(source, context);
+  vm.runInContext(source + '\nglobalThis.offlineProgressMatches = offlineProgressMatches;', context);
   return {context,calls};
 }
 for (const value of [null, {}, [], {...snapshot,extra:true}, {...snapshot,seconds:-1}, {...snapshot,seconds:31536001}, {...snapshot,watched:'false'}, {...snapshot,session:'a\n'}, {...snapshot,revision:1.5}, {...snapshot,revision:Number.MAX_SAFE_INTEGER+1}]) {
@@ -68,7 +68,7 @@ for (const action of ['fallback', 'exit', 'autoplay']) test(`online player resto
   let cancels=0, plays=0, fallbackTime, binding;
   const writes=[];
   const f=fixture({
-    player:media, destroyed:false, adaptiveGeneration:0, adaptiveStarting:false, hls:undefined,
+    player:media, cancelNetworkRecovery(){}, networkWantsPlay:action==='autoplay', destroyed:false, adaptiveGeneration:0, adaptiveStarting:false, hls:undefined,
     direct:'/stream/movie', stream:'', adaptiveActive:false, playbackTraceMethod:'direct', playbackTimelineOffset:0, playbackTimelineSeek:undefined,
     pendingResume:{seconds:12,playing:false,cancel(){cancels++;media.removeEventListener('loadedmetadata',oldResume);}},
     location:{pathname:'/watch/movie'}, qualityControl:{hidden:false}, playbackTrace(){}, showPlaybackMode(){}, requestPlay:async()=>{plays++;},
@@ -86,6 +86,7 @@ for (const action of ['fallback', 'exit', 'autoplay']) test(`online player resto
   vm.runInContext(streamingSource,f.context);
   await new Promise(resolve=>setImmediate(resolve));
   media.dispatchEvent(new Event('loadedmetadata'));
+  media.dispatchEvent(new Event('loadeddata'));
   assert.equal(cancels,1);
   assert.equal(plays,action==='autoplay'?1:0);
   assert.equal(media.currentTime,30);

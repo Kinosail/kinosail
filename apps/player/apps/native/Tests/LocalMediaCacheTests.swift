@@ -144,7 +144,8 @@ struct LocalMediaCacheTests {
         let first = try await ArtworkLoader().image(path: path, client: fixture.client, dimension: 800)
         #expect(first.width == 800)
         await fixture.client.close()
-        let reopened = try ServerClient(server: fixture.client.server, viewer: viewer,
+        let server = await fixture.client.server
+        let reopened = try ServerClient(server: server, viewer: viewer,
                                         protocolClasses: [FixtureURLProtocol.self], cacheDirectory: directory)
         let second = try await ArtworkLoader().image(path: path, client: reopened, dimension: 1600)
         #expect(second.width == 1200)

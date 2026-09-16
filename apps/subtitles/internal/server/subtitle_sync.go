@@ -99,19 +99,6 @@ func synchronizeSubtitle(probabilities []float64, subtitle cleanedSubtitle) (cle
 	return aligned, err == nil, err
 }
 
-func (synchronizer *subtitleSynchronizer) speechProbabilities(ctx context.Context, media string) ([]float64, error) {
-	return synchronizer.speechProbabilitiesFor(ctx, library.Item{ID: subtitleFingerprint([]byte(media))[:16], Path: media})
-}
-
-func (synchronizer *subtitleSynchronizer) speechProbabilitiesFor(ctx context.Context, item library.Item) ([]float64, error) {
-	return synchronizer.analyzeSpeech(ctx, item, "")
-}
-
-func (synchronizer *subtitleSynchronizer) analyzeSpeech(ctx context.Context, item library.Item, language string) ([]float64, error) {
-	reference, err := synchronizer.analyzeAudio(ctx, item, language)
-	return reference.Speech, err
-}
-
 func (synchronizer *subtitleSynchronizer) analyzeAudio(ctx context.Context, item library.Item, language string) (subtitleAudioReference, error) {
 	media := item.Path
 	if synchronizer.ffmpeg == "" {
@@ -153,11 +140,6 @@ func (synchronizer *subtitleSynchronizer) analyzeAudio(ctx context.Context, item
 type subtitleAudioReference struct {
 	Speech   []float64
 	Waveform []float64
-}
-
-func processSubtitleAudio(reader io.Reader) ([]float64, error) {
-	reference, err := processSubtitleAudioReference(reader)
-	return reference.Speech, err
 }
 
 func processSubtitleAudioReference(reader io.Reader) (subtitleAudioReference, error) {

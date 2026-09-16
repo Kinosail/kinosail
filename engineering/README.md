@@ -11,7 +11,7 @@ Start with [CONTRIBUTING.md](../CONTRIBUTING.md) for development and Git workflo
 | Dashboard operations and architecture | [Dashboard engineering](../apps/dashboard/engineering/README.md) |
 | Apple implementation and evidence | [Native client](../apps/player/apps/native/README.md) |
 | Shared domain and application operations | [Packages](../packages/README.md) |
-| Cross-app design | [Design studies](design/) |
+| Cross-app design | [Current design direction](design/cinema-direction.md) |
 | Cross-app investigation | [Research](research/) |
 | Agent issue workflow | [Issue tracker](agents/issue-tracker.md) |
 
