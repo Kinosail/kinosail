@@ -11,14 +11,14 @@ extension OfflineDownloadManager {
     func enqueue(item: MediaItem, quality: DownloadQuality, tracks: DownloadTrackSelection? = nil, client: ServerClient) async throws {
         try Self.validate(item: item, quality: quality, tracks: tracks)
         guard !operation, let scope, let storage, catalog.records.count < 50 else { throw ClientError.invalidInput("Wait for the current operation, or remove a download before adding another.") }
-        operation = true; busy = true
         let attempt = generation
-        defer { operation = false; busy = false }
-        let preferences = try await enqueuePreferences(client: client, scope: scope, attempt: attempt)
-        try await enqueueOwned(item: item, quality: quality, tracks: tracks, client: client, scope: scope, storage: storage, preferences: preferences, attempt: attempt)
+        try await performEnqueue {
+            let preferences = try await enqueuePreferences(client: client, scope: scope, attempt: attempt)
+            try await enqueueOwned(item: item, quality: quality, tracks: tracks, client: client, scope: scope, storage: storage, preferences: preferences, attempt: attempt)
+        }
     }
 
-    func enqueuePreferences(client: ServerClient, scope: String, attempt: UUID) async throws -> MediaPreferences {
+    private func enqueuePreferences(client: ServerClient, scope: String, attempt: UUID) async throws -> MediaPreferences {
         let access = try await client.downloadAuthorization()
         try check(attempt)
         guard access.scope == scope else { throw ClientError.http(403) }
@@ -29,7 +29,7 @@ extension OfflineDownloadManager {
         return preferences
     }
 
-    func enqueueOwned(item: MediaItem, quality: DownloadQuality, tracks: DownloadTrackSelection?, client: ServerClient,
+    private func enqueueOwned(item: MediaItem, quality: DownloadQuality, tracks: DownloadTrackSelection?, client: ServerClient,
                               scope: String, storage: OfflineCatalogStore, preferences: MediaPreferences, attempt: UUID) async throws {
         try check(attempt)
         try Self.validate(item: item, quality: quality, tracks: tracks)
@@ -42,9 +42,7 @@ extension OfflineDownloadManager {
         guard prepared.state != .failed else { throw ClientError.invalidInput(prepared.error ?? "The Server could not prepare this title.") }
         let record = try OfflineRecord(item: item, jobID: prepared.id, quality: quality, tracks: tracks)
         var next = catalog; next.preferences = preferences; next.records.append(record)
-        try await storage.save(next)
-        try check(attempt)
-        catalog = next; self.preferences = preferences
+        try await saveEnqueuedCatalog(next, storage: storage, attempt: attempt)
         do {
             try await engine.enqueuePreparation(scope: scope, key: record.key, uri: client.server.mediaURL("/api/v1/downloads/\(prepared.id)/file").absoluteString,
                                                 kind: item.kind == .music ? "audio" : item.kind.rawValue, wifiOnly: preferences.wifiOnly, quota: quota)
@@ -61,26 +59,26 @@ extension OfflineDownloadManager {
               let first = episodes.first, !first.showID.isEmpty, episodes.allSatisfy({ $0.kind == .video && $0.showID == first.showID && $0.season == first.season }),
               quality != .audio else { throw ClientError.invalidInput("Choose up to 50 episodes from one season, with enough room in Downloads.") }
         guard !operation, let scope, let storage else { throw ClientError.invalidInput("Wait for the current download operation to finish.") }
-        operation = true; busy = true
         let attempt = generation
-        defer { operation = false; busy = false }
-        let preferences = try await enqueuePreferences(client: client, scope: scope, attempt: attempt)
-        var queued = 0
-        do {
-            for item in episodes {
+        try await performEnqueue {
+            let preferences = try await enqueuePreferences(client: client, scope: scope, attempt: attempt)
+            var queued = 0
+            do {
+                for item in episodes {
+                    try check(attempt)
+                    let tracks: DownloadTrackSelection?
+                    if quality == .original { tracks = nil }
+                    else { tracks = try await DownloadTrackSelection(audio: client.downloadTracks(itemID: item.id).audio.map(\.index), subtitles: []) }
+                    try check(attempt)
+                    let expected = try OfflineRecord(item: item, jobID: String(repeating: "0", count: 16), quality: quality, tracks: tracks)
+                    if catalog.records.contains(where: { $0.key == expected.key }) { queued += 1; continue }
+                    try await enqueueOwned(item: item, quality: quality, tracks: tracks, client: client, scope: scope, storage: storage, preferences: preferences, attempt: attempt)
+                    queued += 1
+                }
+            } catch {
                 try check(attempt)
-                let tracks: DownloadTrackSelection?
-                if quality == .original { tracks = nil }
-                else { tracks = try await DownloadTrackSelection(audio: client.downloadTracks(itemID: item.id).audio.map(\.index), subtitles: []) }
-                try check(attempt)
-                let expected = try OfflineRecord(item: item, jobID: String(repeating: "0", count: 16), quality: quality, tracks: tracks)
-                if catalog.records.contains(where: { $0.key == expected.key }) { queued += 1; continue }
-                try await enqueueOwned(item: item, quality: quality, tracks: tracks, client: client, scope: scope, storage: storage, preferences: preferences, attempt: attempt)
-                queued += 1
+                throw ClientError.invalidInput("Added \(queued) of \(episodes.count) episodes to Downloads. Add the season again to continue. \(AppSession.message(error))")
             }
-        } catch {
-            try check(attempt)
-            throw ClientError.invalidInput("Added \(queued) of \(episodes.count) episodes to Downloads. Add the season again to continue. \(AppSession.message(error))")
         }
     }
 

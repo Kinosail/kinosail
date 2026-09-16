@@ -2,7 +2,7 @@
   import Foundation
   import UIKit
 
-  extension VerifiedDownloads {
+  extension VerifiedDownloadEngine {
     func urlSession(_: URLSession, downloadTask: URLSessionDownloadTask, didWriteData _: Int64,
                     totalBytesWritten: Int64, totalBytesExpectedToWrite: Int64)
     {

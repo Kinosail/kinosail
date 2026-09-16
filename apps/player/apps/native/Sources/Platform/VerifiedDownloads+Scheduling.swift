@@ -2,7 +2,7 @@
   import Foundation
   import UIKit
 
-  extension VerifiedDownloads {
+  extension VerifiedDownloadEngine {
     func start(_ raw: String) throws {
       _ = try StrictJSON.decode(Data(raw.utf8))
       guard raw.utf8.count <= 2 * 1024 * 1024, let data = raw.data(using: .utf8),

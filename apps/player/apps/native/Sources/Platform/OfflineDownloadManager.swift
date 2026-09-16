@@ -6,16 +6,16 @@ import Observation
 final class OfflineDownloadManager {
     private(set) var downloads: [OfflineDownload] = []
     private(set) var message: String?
-    var busy = false
-    var preferences = MediaPreferences()
+    private(set) var busy = false
+    private(set) var preferences = MediaPreferences()
     let engine = VerifiedDownloads.shared
     var catalog = OfflineCatalog()
-    var storage: OfflineCatalogStore?
-    var scope: String?
-    var client: ServerClient?
-    var generation = UUID()
+    private(set) var storage: OfflineCatalogStore?
+    private(set) var scope: String?
+    private var client: ServerClient?
+    private(set) var generation = UUID()
     private var playback = false
-    var operation = false
+    private(set) var operation = false
     private var completedItems: [OfflineCompletion] = []
     private var smartRetry = Date.distantPast
     private var processingSmart = false
@@ -53,6 +53,18 @@ final class OfflineDownloadManager {
             try check(attempt)
             await refresh()
         } catch { if generation == attempt { await engine.lock(); message = AppSession.message(error) } }
+    }
+
+    func performEnqueue(_ action: () async throws -> Void) async rethrows {
+        operation = true; busy = true
+        defer { operation = false; busy = false }
+        try await action()
+    }
+
+    func saveEnqueuedCatalog(_ next: OfflineCatalog, storage: OfflineCatalogStore, attempt: UUID) async throws {
+        try await storage.save(next)
+        try check(attempt)
+        catalog = next; preferences = next.preferences
     }
 
     func pause(id: String) async throws {

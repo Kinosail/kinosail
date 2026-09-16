@@ -2,7 +2,7 @@
   import Foundation
   import UIKit
 
-  extension VerifiedDownloads {
+  extension VerifiedDownloadEngine {
     func persist(_ job: VerifiedDownload) throws {
       try store.save(job)
       jobs[job.id] = job

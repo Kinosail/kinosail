@@ -3,11 +3,44 @@
   import Foundation
   import UIKit
 
+  /// Public download operations hide queue-confined transfer state.
+  final class VerifiedDownloads: Sendable {
+    static let shared = VerifiedDownloads()
+    static let identifier = VerifiedDownloadEngine.identifier
+    private let engine: VerifiedDownloadEngine
+
+    init(directory: URL? = nil, configuration: URLSessionConfiguration? = nil) {
+      engine = VerifiedDownloadEngine(directory: directory, configuration: configuration)
+    }
+
+    func snapshot(_ scope: String) async throws -> [VerifiedDownloadSnapshot] { try await engine.snapshot(scope) }
+    func pause(_ scope: String, key: String) async throws { try await engine.pause(scope, key: key) }
+    func remove(_ scope: String, key: String) async throws { try await engine.remove(scope, key: key) }
+    func close() async { await engine.close() }
+    func reset() async throws { try await engine.reset() }
+    func lock() async { await engine.lock() }
+    func resume(_ scope: String, key: String, wifiOnly: Bool, quota: Int64) async throws {
+      try await engine.resume(scope, key: key, wifiOnly: wifiOnly, quota: quota)
+    }
+    func file(_ scope: String, key: String) async throws -> URL { try await engine.file(scope, key: key) }
+    func check(_ scope: String, key: String) async throws { try await engine.check(scope, key: key) }
+    func setPlayback(_ active: Bool) { engine.setPlayback(active) }
+    func backgroundCompletion(_ completion: @escaping @MainActor @Sendable () -> Void) { engine.backgroundCompletion(completion) }
+    func authorize(_ access: DownloadAuthorization, wifiOnly: Bool? = nil, quota: Int64 = 0) async throws {
+      try await engine.authorize(access, wifiOnly: wifiOnly, quota: quota)
+    }
+    func updatePolicy(scope: String, wifiOnly: Bool, quota: Int64) async throws {
+      try await engine.updatePolicy(scope: scope, wifiOnly: wifiOnly, quota: quota)
+    }
+    func enqueuePreparation(scope: String, key: String, uri: String, kind: String, wifiOnly: Bool, quota: Int64) async throws {
+      try await engine.enqueuePreparation(scope: scope, key: key, uri: uri, kind: kind, wifiOnly: wifiOnly, quota: quota)
+    }
+  }
+
   /// OS-owned extent transfers; verified blocks live in an app-owned staging file.
   /// The serial utility queue owns journals; a separate bounded worker hashes payloads.
   /// Public async adapters cross that queue; delegate callbacks run on it.
-  final class VerifiedDownloads: NSObject, URLSessionDownloadDelegate, @unchecked Sendable {
-    static let shared = VerifiedDownloads()
+  final class VerifiedDownloadEngine: NSObject, URLSessionDownloadDelegate, @unchecked Sendable {
     // State below is confined to queue, including the implementation extensions.
     static let identifier = "com.kinosail.player.offline.swift.v1"
     let queue = DispatchQueue(label: "com.kinosail.player.offline", qos: .utility)
@@ -49,7 +82,7 @@
       return URLSession(configuration: configuration, delegate: self, delegateQueue: delegates)
     }()
 
-    init(directory: URL? = nil, configuration: URLSessionConfiguration? = nil) {
+    fileprivate init(directory: URL? = nil, configuration: URLSessionConfiguration? = nil) {
       store = DownloadJournalStore(directory: directory)
       self.configuration = (configuration?.copy() as? URLSessionConfiguration) ?? URLSessionConfiguration.background(withIdentifier: Self.identifier)
       super.init()
