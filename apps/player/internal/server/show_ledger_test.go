@@ -57,6 +57,7 @@ func assertShowEpisodeLedger(t *testing.T, body, secondID string) {
 	for _, expected := range []string{
 		`class="episode-still" aria-hidden="true"`, `loading="lazy" width="160" height="90"`,
 		`class="season-reel"`, `class="episode-preview"`, `class="episode-ledger"`,
+		`detail-page show-detail`, `href="#seasons"`, `Jump to seasons`, `id="seasons"`,
 		`class="episode-preview" href="/watch/` + secondID + `"`, `src="/art/` + secondID + `?variant=episode"`,
 		`data-episode-art="/art/` + secondID + `?variant=episode"`, `>02</span>`, `>Second</strong>`,
 		`<script defer src="/static/main.kinosail.bundle.js`,
