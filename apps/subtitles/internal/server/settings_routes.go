@@ -5,6 +5,7 @@ import (
 
 	"github.com/MikeO7/kinosail/packages/remoteaccess"
 	settingsops "github.com/MikeO7/kinosail/packages/settings"
+	"github.com/MikeO7/kinosail/packages/transcodepolicy"
 	"github.com/MikeO7/kinosail/packages/trustedhttps"
 )
 
@@ -49,7 +50,7 @@ func registerSettings(mux *http.ServeMux, settings *settingsStore, updates *upda
 	registerSecuritySettings(mux, settings, auth)
 	mux.Handle("POST /settings/playback", auth.owner(savePlayback(settings)))
 	mux.Handle("POST /settings/transcoder", auth.owner(saveTranscoder(settings)))
-	mux.Handle("POST /settings/transcoder/test", auth.owner(testTranscoder(settings)))
+	mux.Handle("POST /settings/transcoder/test", auth.owner(transcodepolicy.CheckHandler(settings.transcoderState().CheckCoordinator(settings.ffmpeg, settings.hardware).Run)))
 	mux.Handle("POST /settings/subtitles", auth.owner(saveSubtitleLanguage(settings, "/settings#language")))
 	registerSubSourceConfiguration(mux, auth, settings)
 	mux.Handle("POST /settings/scans", auth.owner(saveScanFrequency(settings, index, "/settings")))

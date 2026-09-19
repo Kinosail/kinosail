@@ -14,6 +14,7 @@ import (
 	sharednavigation "github.com/MikeO7/kinosail/packages/navigation"
 	settingsops "github.com/MikeO7/kinosail/packages/settings"
 	"github.com/MikeO7/kinosail/packages/transcodehardware"
+	"github.com/MikeO7/kinosail/packages/transcodepolicy"
 )
 
 var errManagedSetting = errors.New("setting is externally managed")
@@ -54,7 +55,7 @@ type settingsStore struct {
 	value           installationSettings
 	config          configuration.Snapshot
 	hardware        hardwareCapabilities
-	transcoderCheck transcoderCheckResult
+	transcoderCheck transcodepolicy.CheckResult
 	persist         func(string, any) error
 	err             error
 }

@@ -87,3 +87,20 @@ func (state SelectionState) CheckSettings(capabilities Capabilities) (transcodep
 	}
 	return candidates.Settings(state.current(), "")
 }
+
+// CheckCoordinator binds persisted selection and hardware evidence to the
+// shared explicit-check lifecycle.
+func (state SelectionState) CheckCoordinator(ffmpeg string, capabilities Capabilities) transcodepolicy.CheckCoordinator {
+	return transcodepolicy.NewCheckCoordinator(transcodepolicy.CheckCoordinatorDependencies{
+		Lock: state.Lock, Result: state.Check, FFmpeg: ffmpeg,
+		Resolve: func() (transcodepolicy.Settings, error) {
+			return state.CheckSettings(capabilities)
+		},
+		Pending: func() transcodepolicy.Settings {
+			settings, _ := state.Settings(capabilities, "")
+			return settings
+		},
+		BackendName:    func(accelerator string) string { return capabilities.Backend(accelerator).Name },
+		RecordHardware: capabilities.RecordCheck,
+	})
+}

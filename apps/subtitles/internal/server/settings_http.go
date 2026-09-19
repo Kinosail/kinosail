@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/MikeO7/kinosail/packages/remoteaccess"
+	"github.com/MikeO7/kinosail/packages/transcodepolicy"
 	"github.com/MikeO7/kinosail/packages/trustedhttps"
 )
 
@@ -122,7 +123,7 @@ func showSettings(settings *settingsStore, updates *updateChecker, profiles *pro
 		trustedView := settings.trustedHTTPS()
 		scanFrequency, subtitleLanguage := settings.scanFrequency(), settings.subtitleLanguage()
 		autoplay, autoSkip := settings.autoplay(), settings.autoSkip()
-		transcoderCheck := settings.currentTranscoderCheck()
+		transcoderCheck := settings.transcoderState().CheckCoordinator(settings.ffmpeg, settings.hardware).Current()
 		markerState, markerItems, markerError := markers.Status()
 		watching, _ := index.Monitoring()
 		navigation := settings.navigationPreferences(preferredLanguage(request))
@@ -172,7 +173,7 @@ func showSettings(settings *settingsStore, updates *updateChecker, profiles *pro
 			Maintenance                                                  maintenanceStatus
 			ViewingSyncs                                                 []viewingSyncView
 			RequireMFA                                                   bool
-			TranscoderTest                                               transcoderCheckResult
+			TranscoderTest                                               transcodepolicy.CheckResult
 			JellyfinCompatibility                                        bool
 			Internet                                                     remoteaccess.Status
 			Trusted                                                      trustedHTTPSView

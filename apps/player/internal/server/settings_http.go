@@ -8,6 +8,7 @@ import (
 
 	"github.com/MikeO7/kinosail/packages/remoteaccess"
 	settingsops "github.com/MikeO7/kinosail/packages/settings"
+	"github.com/MikeO7/kinosail/packages/transcodepolicy"
 	"github.com/MikeO7/kinosail/packages/trustedhttps"
 )
 
@@ -123,7 +124,7 @@ func showSettings(settings *settingsStore, updates *updateChecker, profiles *pro
 		trustedView := settings.trustedHTTPS()
 		scanFrequency, subtitleLanguage := settings.scanFrequency(), settings.subtitleLanguage()
 		autoplay, autoSkip := settings.autoplay(), settings.autoSkip()
-		transcoderCheck := settings.currentTranscoderCheck()
+		transcoderCheck := settings.transcoderState().CheckCoordinator(settings.ffmpeg, settings.hardware).Current()
 		markerState, markerItems, markerError := markers.Status()
 		watching, _ := index.Monitoring()
 		navigation := settings.navigationPreferences(preferredLanguage(request))
@@ -173,7 +174,7 @@ func showSettings(settings *settingsStore, updates *updateChecker, profiles *pro
 			Maintenance                                                  maintenanceStatus
 			ViewingSyncs                                                 []viewingSyncView
 			RequireMFA                                                   bool
-			TranscoderTest                                               transcoderCheckResult
+			TranscoderTest                                               transcodepolicy.CheckResult
 			JellyfinCompatibility                                        bool
 			Internet                                                     remoteaccess.Status
 			Trusted                                                      trustedHTTPSView
@@ -244,7 +245,7 @@ func registerSettings(mux *http.ServeMux, settings *settingsStore, updates *upda
 	registerSecuritySettings(mux, settings, auth)
 	mux.Handle("POST /settings/playback", auth.owner(savePlayback(settings)))
 	mux.Handle("POST /settings/transcoder", auth.owner(saveTranscoder(settings)))
-	mux.Handle("POST /settings/transcoder/test", auth.owner(testTranscoder(settings)))
+	mux.Handle("POST /settings/transcoder/test", auth.owner(transcodepolicy.CheckHandler(settings.transcoderState().CheckCoordinator(settings.ffmpeg, settings.hardware).Run)))
 	mux.Handle("POST /settings/subtitles", auth.owner(saveSubtitleLanguage(settings)))
 	mux.Handle("POST /settings/scans", auth.owner(saveScanFrequency(settings, index)))
 	mux.Handle("POST /settings/dlna", auth.owner(saveDLNA(settings)))
