@@ -24,7 +24,7 @@ func TestPasskeyCeremoniesAreLocalAndServerSide(t *testing.T) {
 	request.Host = "localhost:8080"
 	request.AddCookie(owner)
 	handler.ServeHTTP(account, request)
-	if account.Code != http.StatusOK || !strings.Contains(account.Body.String(), "Add a passkey") || !strings.Contains(account.Body.String(), "Add one directly on another device") || !strings.Contains(account.Body.String(), "/static/app.css?v=electric-11") || !strings.Contains(account.Body.String(), "/static/passkeys.js?v=13") {
+	if account.Code != http.StatusOK || !strings.Contains(account.Body.String(), "Add a passkey") || !strings.Contains(account.Body.String(), "Add one directly on another device") || !strings.Contains(account.Body.String(), "/static/app.css?v=electric-13") || !strings.Contains(account.Body.String(), "/static/passkeys.js?v=13") {
 		t.Fatalf("account = %d %q", account.Code, account.Body.String())
 	}
 	prompt := httptest.NewRecorder()
