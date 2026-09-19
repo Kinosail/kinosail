@@ -150,6 +150,9 @@ struct MediaShelf: View {
                 LazyHStack(alignment: .top, spacing: 18) {
                     ForEach(items) { item in MediaCard(item: item, landscape: landscape, resumesPlayback: resumesPlayback).frame(width: width) }
                 }
+                #if os(tvOS)
+                .padding(.horizontal, 24)
+                #endif
                 .padding(.vertical, 24)
                 .scrollTargetLayout()
             }

@@ -16,6 +16,7 @@ struct CastShelf: View {
                         LazyHStack(alignment: .top, spacing: 18) { cards }
                             .scrollTargetLayout()
                             #if os(tvOS)
+                            .padding(.horizontal, 24)
                             .padding(.vertical, 24)
                             .focusSection()
                             #endif
