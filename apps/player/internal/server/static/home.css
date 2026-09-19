@@ -123,6 +123,7 @@ body .library-shell:has(>.home-sections) .supporter-signature{margin:0;padding:0
   body.show-detail>.app-header nav{min-width:0;gap:.15rem}
   body.show-detail>.app-header nav>a,body.show-detail>.app-header nav>.nav-more>summary{min-height:40px;padding:.4rem .85rem;font-size:.82rem}
   body.show-detail>.app-header .search input{min-height:40px}
+  body.show-detail .season-heading{position:sticky;top:4.75rem;z-index:10;padding-top:.75rem;background:var(--bg)}
 }
 body.show-detail .detail-shell{padding-top:1rem}
 body.show-detail .media-hero.has-media-backdrop{gap:2rem;padding:0 0 1rem}
