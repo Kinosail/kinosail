@@ -8,7 +8,7 @@ final class ContentProvider: TVTopShelfContentProvider {
         for shelf in ShelfSnapshot.Section.allCases {
             var items: [TVTopShelfSectionedItem] = []
             for entry in snapshot.items where entry.section == shelf.rawValue {
-                guard let play = snapshot.url(for: entry, play: true), let detail = snapshot.url(for: entry, play: false) else { continue }
+                guard let play = snapshot.url(for: entry, play: true) else { continue }
                 let file = root.appendingPathComponent("\(entry.id).jpg")
                 guard file.resolvingSymlinksInPath() == file.standardizedFileURL else { continue }
                 do { try entry.image.write(to: file, options: .atomic) } catch { continue }
@@ -17,7 +17,7 @@ final class ContentProvider: TVTopShelfContentProvider {
                 item.imageShape = .poster
                 item.setImageURL(file, for: .screenScale1x)
                 item.playAction = TVTopShelfAction(url: play)
-                item.displayAction = TVTopShelfAction(url: detail)
+                item.displayAction = TVTopShelfAction(url: play)
                 items.append(item)
             }
             if !items.isEmpty {
