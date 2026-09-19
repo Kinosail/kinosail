@@ -30,7 +30,7 @@ func TestVersionedApplicationStylesheetIncludesSupporterStyles(t *testing.T) {
 	}
 	want := append(append(append(append([]byte(nil), webassets.PlayerCSS...), webassets.LastLightCSS...), supporter...), home...)
 	response := httptest.NewRecorder()
-	assetContracts.NewHandler("", "", false).ServeHTTP(response, httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/static/app.css?v=electric-7", nil))
+	assetContracts.NewHandler("", "", false).ServeHTTP(response, httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/static/app.css?v=electric-8", nil))
 	if response.Code != http.StatusOK || response.Header().Get("Cache-Control") != "public, max-age=31536000, immutable" || !bytes.Equal(response.Body.Bytes(), want) {
 		t.Fatalf("versioned application stylesheet = status %d, cache %q, bytes %d; want bytes %d", response.Code, response.Header().Get("Cache-Control"), response.Body.Len(), len(want))
 	}
