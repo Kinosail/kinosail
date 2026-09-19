@@ -5,7 +5,7 @@ import TVServices
 struct TopShelfPublishing: ViewModifier {
     @Environment(AppSession.self) private var session
     @Environment(\.scenePhase) private var scenePhase
-    @AppStorage("kinosail.topShelf.enabled") private var enabled = false
+    @AppStorage("kinosail.topShelf.enabled") private var enabled = true
     static func clear() {
         ShelfSnapshot.clear()
         TVTopShelfContentProvider.topShelfContentDidChange()

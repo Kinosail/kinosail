@@ -249,7 +249,6 @@ final class AppSession {
     private func clearSystemContent() {
         pendingMediaLink = nil
         #if os(tvOS)
-        UserDefaults.standard.set(false, forKey: "kinosail.topShelf.enabled")
         TopShelfPublishing.clear()
         #endif
     }
