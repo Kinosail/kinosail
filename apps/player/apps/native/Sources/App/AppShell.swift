@@ -47,6 +47,9 @@ struct AppShell: View {
             )) {
                 Button("OK") { session.notice = nil }
             } message: { Text(session.notice ?? "") }
+            .fullScreenCover(item: $session.pendingMediaLink) { link in
+                NavigationStack { MediaLinkScreen(link: link) }.id(link.id)
+            }
             .task { await session.restore() }
             .task(id: scenePhase) { if scenePhase == .active { await session.casting.monitor() } }
             #if os(iOS)

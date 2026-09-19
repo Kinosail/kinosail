@@ -1,14 +1,22 @@
 import SwiftUI
 import UIKit
+#if os(iOS)
+import AppIntents
+#endif
 
 @main
 struct KinosailApp: App {
     #if os(iOS)
     @UIApplicationDelegateAdaptor(AppleAppDelegate.self) private var appDelegate
     #endif
-    @State private var session = AppSession()
+    @State private var session: AppSession
 
     init() {
+        let session = AppSession()
+        _session = State(initialValue: session)
+        #if os(iOS)
+        AppDependencyManager.shared.add(dependency: session)
+        #endif
         #if os(tvOS)
         // tvOS requires the legacy bar API even though the newer appearance
         // properties compile; setting standardAppearance raises at runtime.
@@ -24,13 +32,14 @@ struct KinosailApp: App {
     var body: some Scene {
         WindowGroup {
             AppShell()
-                .environment(session)
                 .tint(KinoTheme.signal)
                 #if os(tvOS)
+                .modifier(TopShelfPublishing())
                 .preferredColorScheme(.dark)
                 .foregroundStyle(KinoTheme.text, KinoTheme.muted)
                 #endif
-                .onOpenURL { session.handleIncomingURL($0) }
+                .environment(session)
+                .onOpenURL { url in Task { await session.restore(); session.handleIncomingURL(url) } }
         }
     }
 }

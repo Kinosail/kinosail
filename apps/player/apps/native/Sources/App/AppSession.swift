@@ -16,6 +16,7 @@ final class AppSession {
     var notice: String?
     private(set) var pendingApprovalCode: String?
     var reading = false
+    var pendingMediaLink: MediaLink?
     var contentRevision = UUID()
     let player = PlaybackCoordinator()
     let casting = CastCoordinator()
@@ -26,7 +27,7 @@ final class AppSession {
     #endif
 
     private let keychain = SessionKeychain()
-    private var restored = false
+    private var restoreTask: Task<Void, Never>?
     private var generation = UUID()
     private var pairingTask: Task<Void, Never>?
     private var pairingClient: ServerClient?
@@ -48,8 +49,11 @@ final class AppSession {
     }
 
     func restore() async {
-        guard !restored else { return }
-        restored = true
+        if restoreTask == nil { restoreTask = Task { await restoreSession() } }
+        await restoreTask?.value
+    }
+
+    private func restoreSession() async {
         let attempt = generation
         var restoredClient: UUID?
         defer { restoring = false }
@@ -75,6 +79,7 @@ final class AppSession {
                 await candidate.close(purgeCache: revoked)
                 if client?.identity == candidate.identity {
                     player.stop()
+                    clearSystemContent()
                     client = nil; viewer = nil; progress = nil
                     await artwork.clear()
                     if revoked { try await keychain.discard(saved) }
@@ -137,6 +142,7 @@ final class AppSession {
                         await artwork.clear()
                         guard generation == attempt, !Task.isCancelled else { try await keychain.discard(saved); throw CancellationError() }
                         let previous = client
+                        clearSystemContent()
                         client = authenticated
                         viewer = profile
                         configureProgress()
@@ -197,6 +203,7 @@ final class AppSession {
     }
 
     func disconnect() async {
+        clearSystemContent()
         await cancelPairing()
         let attempt = generation
         player.stop()
@@ -212,6 +219,7 @@ final class AppSession {
         viewer = nil
         progress = nil
         pendingApprovalCode = nil
+        pendingMediaLink = nil
         offline = false
         showsSetup = false
         contentRevision = UUID()
@@ -231,11 +239,28 @@ final class AppSession {
         catch { progress = nil; notice = Self.message(error) }
     }
 
+    private func clearSystemContent() {
+        pendingMediaLink = nil
+        #if os(tvOS)
+        UserDefaults.standard.set(false, forKey: "kinosail.topShelf.enabled")
+        TopShelfPublishing.clear()
+        #endif
+    }
+
     func handleIncomingURL(_ url: URL) {
         do {
+            if url.host == "media" {
+                try openMediaLink(MediaLink(url: url))
+                return
+            }
             guard let client else { throw ClientError.invalidInput("Connect to your Server before approving a TV.") }
             pendingApprovalCode = try ApprovalLink.code(url, server: client.server)
         } catch { notice = Self.message(error) }
+    }
+
+    func openMediaLink(_ link: MediaLink) throws {
+        guard link.scope == profileKey else { throw ClientError.invalidInput("Open this title using the Server and Viewer Profile it belongs to.") }
+        pendingMediaLink = link
     }
 
     func dismissApproval() {

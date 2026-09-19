@@ -23,8 +23,12 @@ struct LibraryScreen: View {
     #endif
     @State private var loadedRevision: UUID?
 
-    init(initialView: LibraryView = .all, searchMode: Bool = false) {
+    init(initialView: LibraryView = .all, searchMode: Bool = false, initialQuery: String = "") {
         _selection = State(initialValue: initialView)
+        _query = State(initialValue: initialQuery)
+        #if os(tvOS)
+        _draftQuery = State(initialValue: initialQuery)
+        #endif
         self.searchMode = searchMode
     }
     private var requestKey: String { "\(selection.rawValue):\(sort.rawValue):\(query)" }
