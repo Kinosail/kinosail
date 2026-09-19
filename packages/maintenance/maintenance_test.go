@@ -9,9 +9,14 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"reflect"
+	"sync"
 	"sync/atomic"
 	"testing"
 	"time"
+
+	sharedbackup "github.com/MikeO7/kinosail/packages/backup"
+	"github.com/MikeO7/kinosail/packages/markers"
+	"github.com/MikeO7/kinosail/packages/playback"
 )
 
 type fixture struct {
@@ -71,6 +76,22 @@ func TestNewBoundConnectsIdleWait(t *testing.T) {
 	}
 	if err := wait(t.Context()); err != nil || manager.Busy() {
 		t.Fatalf("idle wait = %v, busy=%t", err, manager.Busy())
+	}
+}
+
+func TestNewApplicationBindsSubsystems(t *testing.T) {
+	var cacheLock sync.Mutex
+	var metadataPrunes atomic.Int64
+	manager := NewApplication(canceledContext(t), time.Hour, 7, playback.NewHLSCacheControl("", &cacheLock, func(string) bool { return false }, func() bool { return false }, playback.HLSRecipePolicy{}), sharedbackup.NewManager(sharedbackup.ManagerConfig{}), func() error {
+		metadataPrunes.Add(1)
+		return nil
+	}, func() bool { return true }, markers.NewAnalyzer(markers.Config{}))
+	if err := manager.Run(); err != nil || metadataPrunes.Load() != 1 {
+		t.Fatalf("bound maintenance run = %v with %d metadata prunes", err, metadataPrunes.Load())
+	}
+	status := manager.Status()
+	if status.Metadata.Mode != "automatic" || status.Cache.Limit != 7 || status.Analysis.State != "idle" {
+		t.Fatalf("bound maintenance status = %#v", status)
 	}
 }
 
