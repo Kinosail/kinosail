@@ -64,6 +64,10 @@ struct PlayerTabs: View {
                 .navigationDestination(for: PlayerTab.self) { PlayerTabScreen(tab: $0, showsSearch: !pinned.contains(.search)) }
                 .navigationDestination(for: ScreenDestination.self) { DestinationScreen(destination: $0) }
         }
+        #if os(tvOS)
+        .toolbarBackground(.hidden, for: .navigationBar, .tabBar)
+        .toolbarColorScheme(.dark, for: .navigationBar, .tabBar)
+        #endif
     }
 }
 
