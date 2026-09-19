@@ -62,9 +62,20 @@ def implementation_state(raw):
     return state
 
 
+def next_build(count, installed, built):
+    if not isinstance(count, str) or not re.fullmatch(r'[1-9][0-9]{0,7}', count):
+        raise ValueError('invalid revision count')
+    number = max(1000 + int(count), int(installed.get('build', '0')) + 1,
+                 int(built.get('build', '0')) + 1)
+    if number > 99_999_999:
+        raise ValueError('Apple build number limit reached')
+    return str(number)
+
+
 def deploy(root, mirror, revision, tree, name, device, team):
     state = root / f'{name}.json'
-    if read_record(state).get('tree') == tree:
+    installed = read_record(state)
+    if installed.get('tree') == tree:
         return
     platform = 'iOS' if name == 'iphone' else 'tvOS'
     configuration = run('git', f'--git-dir={mirror}', 'show',
@@ -73,11 +84,12 @@ def deploy(root, mirror, revision, tree, name, device, team):
         print(f'{name}: Swift scaffold is build-only; installed device app is unchanged', flush=True)
         return
     source = root / name
-    source.mkdir(exist_ok=True)
     artifact = root / f'{name}-build/Build/Products/Release-{ "iphoneos" if name == "iphone" else "appletvos"}/KinosailPlayer.app'
     built = root / f'{name}-built.json'
     record = read_record(built)
     if record.get('tree') != tree or not artifact.exists():
+        build = next_build(run('git', f'--git-dir={mirror}', 'rev-list', '--count', revision, capture=True), installed, record)
+        source.mkdir(exist_ok=True)
         with tempfile.TemporaryDirectory(dir=root) as temporary:
             archive = Path(temporary) / 'source.tar'
             run('git', f'--git-dir={mirror}', 'archive', f'--output={archive}', f'{revision}:{NATIVE}')
@@ -86,7 +98,6 @@ def deploy(root, mirror, revision, tree, name, device, team):
             run('tar', '-xf', str(archive), '-C', str(unpacked))
             run('rsync', '-a', '--delete', '--exclude=/.build/', '--exclude=/node_modules/',
                 '--exclude=/ios/', '--exclude=/dist/', f'{unpacked}/', f'{source}/')
-        build = str(1000 + int(run('git', f'--git-dir={mirror}', 'rev-list', '--count', revision, capture=True)))
         run('xcodebuild', '-project', 'Kinosail.xcodeproj', '-scheme', f'Kinosail-{platform}',
             '-configuration', 'Release', '-destination', f'generic/platform={"iOS" if name == "iphone" else "tvOS"}',
             '-derivedDataPath', str(root / f'{name}-build'), '-jobs', '4',

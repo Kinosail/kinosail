@@ -15,6 +15,35 @@ spec.loader.exec_module(updater)
 
 
 class AppleDeployTests(unittest.TestCase):
+    def test_build_number_advances_past_installed_and_built_receipts(self):
+        for count, installed, built, expected in [
+            ('58', {}, {}, '1058'),
+            ('58', {'build': '2561'}, {'build': '2560'}, '2562'),
+            ('58', {'build': '2561'}, {'build': '2564'}, '2565'),
+            ('2000', {'build': '2561'}, {}, '3000'),
+        ]:
+            with self.subTest(count=count, installed=installed, built=built):
+                self.assertEqual(updater.next_build(count, installed, built), expected)
+
+    def test_invalid_revision_counts_stop_before_archive_or_device_effects(self):
+        invalid = ['', '0', '-1', '+1', '01', '1.0', '1 2', '1\n', 'x' * 10000,
+                   '99999999', None]
+        for count in invalid:
+            with self.subTest(count=count), tempfile.TemporaryDirectory() as directory:
+                root = Path(directory)
+                metadata = updater.plistlib.dumps({'KinosailImplementationState': 'implemented'}).decode()
+                with patch.object(updater, 'run', side_effect=[metadata, count]) as run:
+                    with self.assertRaises(ValueError):
+                        updater.deploy(root, root / 'repo.git', 'rev', 'a' * 40, 'tv', 'device', 'team')
+                    self.assertEqual(len(run.call_args_list), 2)
+                    self.assertTrue(all(call.args[0] == 'git' for call in run.call_args_list))
+                    self.assertEqual(list(root.iterdir()), [])
+
+    def test_build_number_exhaustion_is_rejected(self):
+        for installed, built in [({'build': '99999999'}, {}), ({}, {'build': '99999999'})]:
+            with self.assertRaises(ValueError):
+                updater.next_build('1', installed, built)
+
     def test_invalid_implementation_metadata_has_no_device_side_effects(self):
         invalid = ['', 'invalid plist', 'x' * 65537]
         invalid += [updater.plistlib.dumps(value).decode() for value in (
@@ -80,7 +109,7 @@ class AppleDeployTests(unittest.TestCase):
                 elif args[0] == 'git':
                     output = next(arg.removeprefix('--output=') for arg in args if arg.startswith('--output='))
                     with tarfile.open(output, 'w') as archive:
-                        archive.add(fixture / 'modules', arcname='modules')
+                        archive.add(fixture / 'Sources', arcname='Sources')
                 elif args[0] in ('tar', 'rsync'):
                     subprocess.run(args, check=True)
                 else:
