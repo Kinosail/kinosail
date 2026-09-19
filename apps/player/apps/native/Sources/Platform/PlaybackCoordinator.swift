@@ -45,6 +45,7 @@ final class PlaybackCoordinator {
     }
 
     func play(_ item: MediaItem, client: ServerClient, store: ProgressSyncStore) async throws { try await engine.play(item, client: client, store: store) }
+    func prepare(_ item: MediaItem, client: ServerClient) async throws { try await engine.prepare(item, client: client) }
     #if os(iOS)
     func playOffline(_ item: MediaItem, file: URL, downloadID: String, client: ServerClient, store: ProgressSyncStore, preferences: PlaybackPreferences) async throws {
         try await engine.playOffline(item, file: file, downloadID: downloadID, client: client, store: store, preferences: preferences)
@@ -124,6 +125,10 @@ final class PlaybackEngine {
     @ObservationIgnored var networkStableSince: Date?
     @ObservationIgnored var recoveryPosition: Double?
     @ObservationIgnored var nativeRecoveryPosition: Double?
+    @ObservationIgnored var playbackPreparation: PlaybackPreparation?
+    @ObservationIgnored var playbackPreparationTask: Task<PlaybackPreparation, Error>?
+    @ObservationIgnored var playbackPreparationItemID: String?
+    @ObservationIgnored var playbackPreparationClientID: UUID?
 
     fileprivate init() {
         presentation.closedPictureInPicture = { [weak self] in self?.stop() }
@@ -136,13 +141,14 @@ final class PlaybackEngine {
         self.client = client; self.store = store; currentItem = item; loading = true; wantsPlayback = true
         defer { if generation == attempt { loading = false } }
         do {
-            async let playback = client.playback(itemID: item.id)
-            async let savedPreferences = client.playbackPreferences(itemID: item.id)
-            let details = try await playback
-            let saved = try await savedPreferences
+            let prepared: PlaybackPreparation
+            do { prepared = try await preparedPlayback(for: item, client: client) }
+            catch is CancellationError { throw CancellationError() }
+            catch { prepared = try await fetchPlaybackPreparation(for: item, client: client) }
+            let details = prepared.source
             try check(attempt)
             source = details
-            preferences = saved.playback
+            preferences = prepared.preferences
             duration = details.duration
             writer = try ProgressWriter(itemID: item.id, expected: item.progress, client: client, store: store)
             let pending = try await store.pending().first { $0.itemID == item.id }

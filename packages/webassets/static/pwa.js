@@ -9,7 +9,13 @@ let installPrompt;
 let installComplete = standalone;
 
 if ("serviceWorker" in navigator && window.isSecureContext) {
-  navigator.serviceWorker.register("/service-worker.js?v=45").then(() => navigator.serviceWorker.ready).catch(() => {});
+  const profile = document.body.dataset.viewerProfile || document.querySelector("[data-nav-profile]")?.dataset.navProfile || "";
+  const identify = (registration) => {
+    const worker = registration.active || registration.waiting || registration.installing;
+    worker?.postMessage({type: "profile", profile});
+    return registration;
+  };
+  navigator.serviceWorker.register("/service-worker.js?v=46").then(identify).then(() => navigator.serviceWorker.ready).then(identify).catch(() => {});
 }
 if (appleMobile && !standalone && installs.length) {
   for (const install of installs) {
@@ -46,6 +52,21 @@ document.querySelector("[data-copy-managed-url]")?.addEventListener("click", asy
   await navigator.clipboard.writeText(event.currentTarget.dataset.copyManagedUrl);
   event.currentTarget.textContent = "Copied";
 });
+
+const prefetchedWatchURLs = new Set(), watchPrefetchPattern = /^\/watch\/[A-Za-z0-9_-]{1,256}$/;
+const prefetchWatch = (link) => {
+  const url = new URL(link.href, location.href);
+  if (prefetchedWatchURLs.size >= 8 || url.origin !== location.origin || !watchPrefetchPattern.test(url.pathname) || prefetchedWatchURLs.has(url.href)) return;
+  prefetchedWatchURLs.add(url.href);
+  const hint = document.createElement("link"); hint.rel = "prefetch"; hint.as = "document"; hint.href = url.href; document.head.append(hint);
+};
+const scheduleWatchPrefetch = (event) => {
+  const link = event.target.closest?.('a[href^="/watch/"]');
+  if (!link || link.dataset.watchPrefetchScheduled) return;
+  link.dataset.watchPrefetchScheduled = "true";
+  window.setTimeout(() => { if (document.contains(link)) prefetchWatch(link); }, 160);
+};
+for (const event of ["pointerover", "focusin", "touchstart"]) document.addEventListener(event, scheduleWatchPrefetch, {passive: true});
 
 for (const reel of document.querySelectorAll("[data-season-reel]")) {
   const preview = reel.querySelector("[data-preview-link]");

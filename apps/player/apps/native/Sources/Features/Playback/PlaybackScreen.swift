@@ -45,7 +45,9 @@ struct PlaybackScreen: View {
             guard let client = session.client, let store = session.progress else { failure = "Connect to your Server to play this title."; return }
             if session.player.currentItem?.id == itemID, session.player.player != nil || session.player.loading, revision == 0 { return }
             do {
-                let item = try await client.item(id: itemID)
+                let item: MediaItem
+                if let cached = try? await client.item(id: itemID, policy: .cached) { item = cached }
+                else { item = try await client.item(id: itemID, policy: .automatic) }
                 try Task.checkCancellation()
                 try await session.player.play(item, client: client, store: store)
             } catch is CancellationError {} catch { failure = AppSession.message(error) }
