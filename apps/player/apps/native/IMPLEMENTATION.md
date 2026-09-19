@@ -26,6 +26,9 @@ The Xcode synchronized groups include new Swift files automatically. `Kinosail-i
 | Reading, iOS | Native PDFKit; EPUB and comic resources through a nonpersistent WebKit view with JavaScript disabled and same-book resource isolation. Contents, bookmarks, reading position, font/theme preferences and explicit position-conflict choices. |
 | Photos | Bounded authenticated loading, pinch/double-tap zoom and pan on iOS; zoom and directional movement with the TV remote. |
 | Receivers | Explicit DLNA discovery, start/status/play/pause/seek/stop and ticket revocation. iOS exposes Apple's audio route picker and directions for Control Center screen mirroring. |
+| Siri and Shortcuts, iOS | Authenticated foreground actions for library search, exact-title playback and the first playable Continue watching title. Ambiguous or truncated exact-title matches are rejected. Actions use the active app session and existing media screens. |
+| Apple TV Home | Opt-in Top Shelf extension for Continue watching, My List and recently added videos; up to six posters per section. Settings explains visibility. Expired snapshots (24 hours), invalid input and failed refreshes expose no dynamic content. |
+| Apple TV users | App and Top Shelf run as the current Apple TV user, with separate storage and default per-user Keychain. Each user connects their own Viewer Profile. Switching users and account migration still require physical verification. |
 
 ## Security and persistence boundaries
 
@@ -39,7 +42,9 @@ The download engine stores only verified media and bounded recovery journals in 
 
 Reading resources are restricted to the active book. Each chapter has request, concurrency and byte budgets; PDF and image dimensions are bounded. PDF physical pages map to the Server's single logical PDF page using its offset. The existing reading API lacks atomic compare-and-set, so the client checks before writing and offers conflict choices, but simultaneous writes between those two requests remain a Server-contract limitation.
 
-`Resources/PrivacyInfo.xcprivacy` declares disk-space reason E174.1: insufficient capacity prevents a download. Disk-space values are not transmitted. No analytics, tracking SDK or developer data collection was added. Apple documents the reason in [NSPrivacyAccessedAPIType](https://developer.apple.com/documentation/bundleresources/app-privacy-configuration/nsprivacyaccessedapitypes/nsprivacyaccessedapitype).
+`Resources/PrivacyInfo.xcprivacy` declares disk-space reason E174.1, app-container metadata reason C617.1 and app-only preferences reason CA92.1. Disk-space values are not transmitted. The Top Shelf extension declares C617.1 for its App Group snapshot metadata. No analytics, tracking SDK or developer data collection was added. Apple documents these reasons in [NSPrivacyAccessedAPIType](https://developer.apple.com/documentation/bundleresources/app-privacy-configuration/nsprivacyaccessedapitypes/nsprivacyaccessedapitype).
+
+`TopShelfShared` owns the credential-free snapshot contract, shared with `TopShelf`. The extension reuses Core's strict JSON parser, rejects unknown/duplicate fields and enforces byte, item, identifier, image and age limits before rendering. Snapshots refresh on foreground/library changes and clear on sign-out, profile change, disabled sharing or refresh failure. Changing connections resets the sharing preference to off. Revocation while the app is not running cannot be detected by the offline extension; a cached snapshot expires after 24 hours. Playback always goes through current Server authorization. TV signing must provision both bundle identifiers with App Group `group.com.kinosail.player` and User Management.
 
 ## Deliberate limits
 

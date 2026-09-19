@@ -26,7 +26,9 @@ From `apps/player/apps/native/`, open `Kinosail.xcodeproj` and select `Kinosail-
 
 Output is `.build/<platform>-<simulator|device>/Build/Products/`. Repository aliases are `make -C apps/player client-build-ios` and `make -C apps/player client-build-tvos`.
 
-The project uses Swift 6, strict concurrency, Observation, SwiftUI, AVFoundation, AVKit, Network, Security, PDFKit and a protected WebKit reader. The deployment baseline is iOS/tvOS 26. It builds with the selected installed Xcode SDK; [RESEARCH.md](RESEARCH.md) records the dated toolchain research. No third-party runtime, Expo prebuild, CocoaPods or package installation is needed.
+The project uses Swift 6, strict concurrency, Observation, SwiftUI, App Intents, AVFoundation, AVKit, Network, Security, PDFKit and a protected WebKit reader. The deployment baseline is iOS/tvOS 26; current builds use SDK 27. [RESEARCH.md](RESEARCH.md) records the dated toolchain research. No third-party runtime, Expo prebuild, CocoaPods or package installation is needed.
+
+Siri/Shortcuts on iPhone and iPad offers Search library, Play title and Continue watching. Connect to a Server first; playback by title requires an unambiguous exact match. Apple TV users each connect to their own Viewer Profile. In TV Settings, enable **Show titles on Apple TV Home**, then put Kinosail in the top row to use dynamic Top Shelf. The TV app and `KinosailTopShelf` extension require provisioning with App Group `group.com.kinosail.player` and User Management; unsigned simulator builds do not prove those hardware capabilities.
 
 ## Implementation and verification
 
@@ -42,7 +44,7 @@ The Info plists declare `KinosailImplementationState=implemented`. The configure
 
 - **Cannot connect:** use the Server's reachable HTTPS address, confirm network permission and certificate trust, and check the Server from the same device's browser.
 - **Quick Connect expires:** start a new request and approve it from a recently authenticated local or private-management session.
-- **Xcode build cannot find an SDK:** select an Xcode installation with iOS/tvOS 26 SDKs using Xcode settings or `xcode-select`; inspect the script's error before changing signing.
+- **Xcode build cannot find an SDK:** select an Xcode installation with iOS/tvOS 27 SDKs using Xcode settings or `xcode-select`; inspect the script's error before changing signing.
 - **Unsigned device build will not install:** building with `device` does not sign or provision an app for hardware. Configure an authorized development team in Xcode for physical deployment.
 
 Report the client platform, OS, source commit, Server version, and redacted error through [Support](../../../../SUPPORT.md). Follow [Security](../../../../SECURITY.md) for vulnerability reports.
