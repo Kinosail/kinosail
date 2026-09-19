@@ -24,7 +24,7 @@ struct CastShelf: View {
                     #if os(tvOS)
                     .scrollClipDisabled()
                     #else
-                    .scrollBounceBehavior(.basedOnSize, axes: .vertical)
+                    .scrollBounceBehavior(.basedOnSize, axes: .horizontal)
                     .contentShape(.interaction, .rect)
                     #endif
                 }
