@@ -10,7 +10,7 @@ listed license files control. Kinosail's license does not replace them.
 | govad | 2026-03-30 revision | MIT | [`third_party/govad.LICENSE`](third_party/govad.LICENSE) |
 | Silero VAD model | v5 weights | MIT | [`third_party/silero-vad.LICENSE`](third_party/silero-vad.LICENSE) |
 | SecLists test fixture | Pinned repository revision | MIT | [`third_party/seclists.LICENSE`](third_party/seclists.LICENSE) |
-| Jellyfin FFmpeg runtime | 7.1.4-3 | Upstream and Debian package terms | [Jellyfin FFmpeg](https://github.com/jellyfin/jellyfin-ffmpeg) |
+| Jellyfin FFmpeg runtime | 8.1.2-5 | Upstream and Debian package terms | [Jellyfin FFmpeg](https://github.com/jellyfin/jellyfin-ffmpeg) |
 | libarchive tools | Debian runtime package | BSD-2-Clause and Debian package terms | [libarchive](https://github.com/libarchive/libarchive) |
 
 SecLists is used only by repository tests and is not included in the runtime

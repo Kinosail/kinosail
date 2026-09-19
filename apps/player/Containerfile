@@ -15,18 +15,18 @@ FROM docker.io/library/debian:trixie-slim@sha256:d7e12182ce18b85b93007c1dedf31f2
 ARG VERSION=dev
 ARG REVISION=unknown
 LABEL org.opencontainers.image.version=$VERSION org.opencontainers.image.revision=$REVISION
-ARG JELLYFIN_FFMPEG_VERSION=7.1.4-3
+ARG JELLYFIN_FFMPEG_VERSION=8.1.2-5
 RUN apt-get update \
     && apt-get upgrade -y \
     && apt-get install -y --no-install-recommends ca-certificates libaom3 libarchive-tools libchromaprint-tools mesa-va-drivers socat tzdata wget \
     && dpkg --compare-versions "$(dpkg-query -W -f='${Version}' libaom3)" ge 3.12.1-1+deb13u1 \
     && arch="$(dpkg --print-architecture)" \
     && case "$arch" in \
-      amd64) checksum=8e30f9f7f3958c524bec8334540e4241145ad4300b328a08a55783c619187225; apt-get install -y --no-install-recommends i965-va-driver intel-media-va-driver ;; \
-      arm64) checksum=a8fa3ec7cf8fbaf06bb4fdb768d4dd7798277fe4c4b66884c777dc7d575877fb ;; \
+      amd64) checksum=30d9957e80051dd45740d4d4509941fdf2babf5a29c79bee109310b31dae0f6f; apt-get install -y --no-install-recommends i965-va-driver intel-media-va-driver ;; \
+      arm64) checksum=f3af50c1fdd76197867b9cd812fe8a3a1c671829a3f626a0ddc58a8e48654740 ;; \
       *) echo "unsupported architecture: $arch" >&2; exit 1 ;; \
     esac \
-    && wget -q -O /tmp/jellyfin-ffmpeg.deb "https://github.com/jellyfin/jellyfin-ffmpeg/releases/download/v${JELLYFIN_FFMPEG_VERSION}/jellyfin-ffmpeg7_${JELLYFIN_FFMPEG_VERSION}-trixie_${arch}.deb" \
+    && wget -q -O /tmp/jellyfin-ffmpeg.deb "https://github.com/jellyfin/jellyfin-ffmpeg/releases/download/v${JELLYFIN_FFMPEG_VERSION}/jellyfin-ffmpeg8_${JELLYFIN_FFMPEG_VERSION}-trixie_${arch}.deb" \
     && echo "$checksum  /tmp/jellyfin-ffmpeg.deb" | sha256sum -c - \
     && apt-get install -y --no-install-recommends /tmp/jellyfin-ffmpeg.deb \
     && apt-get purge -y --auto-remove wget \

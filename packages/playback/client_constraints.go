@@ -93,6 +93,7 @@ func conditionValue(property string, facts MediaFacts, audio AudioFacts) (string
 	video := facts.Video
 	values := map[string]string{
 		"VideoProfile": video.Profile, "VideoLevel": video.Level,
+		"Width": strconv.Itoa(video.Width), "Height": strconv.Itoa(video.Height), "VideoRotation": strconv.Itoa(video.Rotation),
 		"VideoBitDepth": strconv.Itoa(video.BitDepth), "VideoWidth": strconv.Itoa(video.Width), "VideoHeight": strconv.Itoa(video.Height),
 		"VideoFramerate": strconv.FormatFloat(video.FrameRate, 'f', -1, 64), "VideoRangeType": jellyfinRange(video.HDR),
 		"AudioChannels": strconv.Itoa(audio.Channels), "AudioSampleRate": strconv.Itoa(audio.SampleRate),
@@ -183,6 +184,15 @@ func validProfileCondition(condition JellyfinProfileCondition) bool {
 }
 
 func validProfileValue(condition JellyfinProfileCondition) bool {
+	if condition.Property == "VideoRotation" {
+		for _, raw := range strings.Split(condition.Value, "|") {
+			value, err := strconv.Atoi(raw)
+			if err != nil || strconv.Itoa(value) != raw || value < -360 || value > 360 || value%90 != 0 {
+				return false
+			}
+		}
+		return condition.Condition == "EqualsAny" || !strings.Contains(condition.Value, "|")
+	}
 	if condition.Condition == "LessThanEqual" || condition.Condition == "GreaterThanEqual" {
 		value, err := strconv.ParseFloat(condition.Value, 64)
 		if err != nil || math.IsNaN(value) || math.IsInf(value, 0) || value < 0 || value > 1e12 {

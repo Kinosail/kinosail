@@ -8,7 +8,7 @@ listed license files control. Kinosail's license does not replace them.
 | hls.js | 1.7.1 | Apache License 2.0 | [`third_party/hls.js/LICENSE`](third_party/hls.js/LICENSE) |
 | HTMX | 2.0.10 | Zero-Clause BSD | [`third_party/htmx/LICENSE`](third_party/htmx/LICENSE) |
 | SecLists test fixture | Pinned repository revision | MIT | [`third_party/seclists.LICENSE`](third_party/seclists.LICENSE) |
-| Jellyfin FFmpeg runtime | 7.1.4-3 | Upstream and Debian package terms | [Jellyfin FFmpeg](https://github.com/jellyfin/jellyfin-ffmpeg) |
+| Jellyfin FFmpeg runtime | 8.1.2-5 | Upstream and Debian package terms | [Jellyfin FFmpeg](https://github.com/jellyfin/jellyfin-ffmpeg) |
 | libarchive tools | Debian runtime package | BSD-2-Clause and Debian package terms | [libarchive](https://github.com/libarchive/libarchive) |
 
 SecLists is used only by repository tests and is not included in the runtime
