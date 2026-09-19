@@ -46,7 +46,7 @@ func TestQuickConnectPageUsesSixDigitAutoSubmitControl(t *testing.T) {
 	handler := server.New(server.Config{DataDir: t.TempDir(), RequireAuth: true})
 	owner := signInTestProfile(t, handler, "/setup", "name=Owner&password=owner-password")
 	page := requestWithCookie(t, handler, http.MethodGet, "/quick-connect", "", owner)
-	for _, expected := range []string{`/static/app.css?v=electric-19`, `/static/quick-connect.js?v=1`, `data-quick-connect-digit`, `maxlength="1"`, `inputmode="numeric"`, `pattern="[0-9]"`, `aria-label="Digit 6 of 6"`, "six-digit code"} {
+	for _, expected := range []string{`/static/app.css?v=electric-20`, `/static/quick-connect.js?v=1`, `data-quick-connect-digit`, `maxlength="1"`, `inputmode="numeric"`, `pattern="[0-9]"`, `aria-label="Digit 6 of 6"`, "six-digit code"} {
 		if !strings.Contains(page.Body.String(), expected) {
 			t.Fatalf("Quick Connect page missing %q: %q", expected, page.Body.String())
 		}

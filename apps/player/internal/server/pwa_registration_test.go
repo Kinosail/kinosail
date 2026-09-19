@@ -136,7 +136,7 @@ func TestNavigationPagesRefreshCachedAssets(t *testing.T) {
 		response := httptest.NewRecorder()
 		handler.ServeHTTP(response, httptest.NewRequestWithContext(t.Context(), http.MethodGet, path, nil))
 		body := response.Body.String()
-		if response.Code != http.StatusOK || !strings.Contains(body, `main.kinosail.bundle.js?v=26`) || !strings.Contains(body, `app.css?v=electric-19`) {
+		if response.Code != http.StatusOK || !strings.Contains(body, `main.kinosail.bundle.js?v=26`) || !strings.Contains(body, `app.css?v=electric-20`) {
 			t.Fatalf("%s did not receive current navigation assets", path)
 		}
 	}
