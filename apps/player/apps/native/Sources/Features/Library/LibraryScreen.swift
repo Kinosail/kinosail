@@ -5,6 +5,9 @@ struct LibraryScreen: View {
     private let searchMode: Bool
     @State private var query = ""
     @State private var showsSearch = false
+    #if os(iOS)
+    @State private var showsLetterJump = false
+    #endif
     @State private var selection: LibraryView
     @State private var sort = LibrarySort.title
     @State private var items: [MediaItem] = []
@@ -88,6 +91,11 @@ struct LibraryScreen: View {
         #endif
         #if os(iOS)
         .searchable(text: $query, isPresented: $showsSearch, prompt: "Search your library")
+        .sheet(isPresented: $showsLetterJump) {
+            LetterJumpSheet(letters: page?.letters ?? []) { letter in
+                Task { await load(reset: true, start: letter.offset) }
+            }
+        }
         #else
         .sheet(isPresented: $showsSearch) {
             NavigationStack {
@@ -142,11 +150,21 @@ struct LibraryScreen: View {
         sortPicker
         #endif
         if let page, !page.letters.isEmpty, sort == .title {
+            #if os(iOS)
+            Button { showsLetterJump = true } label: {
+                Label("A–Z", systemImage: "textformat.abc")
+            }
+            .buttonStyle(.bordered)
+            .buttonBorderShape(.capsule)
+            .tint(KinoTheme.raised)
+            .foregroundStyle(KinoTheme.text)
+            #else
             Menu("Jump to letter", systemImage: "textformat.abc") {
                 ForEach(page.letters) { letter in
                     Button("\(letter.label) · \(letter.count)") { Task { await load(reset: true, start: letter.offset) } }
                 }
             }.tint(KinoTheme.raised).foregroundStyle(KinoTheme.text)
+            #endif
         }
     }
 
@@ -200,3 +218,55 @@ struct LibraryScreen: View {
         }
     }
 }
+
+#if os(iOS)
+private struct LetterJumpSheet: View {
+    let letters: [LibraryPage.Letter]
+    let onSelect: (LibraryPage.Letter) -> Void
+    @Environment(\.dismiss) private var dismiss
+
+    var body: some View {
+        NavigationStack {
+            ScrollView {
+                VStack(alignment: .leading, spacing: 16) {
+                    Text("Choose a starting letter. Titles stay sorted A–Z.")
+                        .font(.subheadline)
+                        .foregroundStyle(KinoTheme.muted)
+
+                    LazyVGrid(columns: [GridItem(.adaptive(minimum: 76), spacing: 12)], spacing: 12) {
+                        ForEach(letters) { letter in
+                            Button {
+                                onSelect(letter)
+                                dismiss()
+                            } label: {
+                                VStack(spacing: 4) {
+                                    Text(letter.label)
+                                        .font(.title3.weight(.semibold))
+                                    Text("\(letter.count) \(letter.count == 1 ? "title" : "titles")")
+                                        .font(.caption)
+                                        .foregroundStyle(KinoTheme.muted)
+                                }
+                                .frame(maxWidth: .infinity, minHeight: 72)
+                            }
+                            .buttonStyle(.bordered)
+                            .buttonBorderShape(.roundedRectangle(radius: 14))
+                            .tint(KinoTheme.raised)
+                            .foregroundStyle(KinoTheme.text)
+                        }
+                    }
+                }
+                .padding(KinoTheme.contentPadding)
+            }
+            .background(KinoTheme.background)
+            .navigationTitle("Browse by title")
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Done") { dismiss() }
+                }
+            }
+        }
+        .presentationDetents([.medium, .large])
+        .presentationDragIndicator(.visible)
+    }
+}
+#endif
