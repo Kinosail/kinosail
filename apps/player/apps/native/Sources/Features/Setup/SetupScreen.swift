@@ -42,6 +42,7 @@ struct SetupScreen: View {
                                         Text(server.address.url.absoluteString).font(.caption).foregroundStyle(.secondary)
                                     }
                                 }
+                                .accessibilityElement(children: .combine)
                                 .disabled(session.connecting)
                             }
                             if discovery.servers.isEmpty {
@@ -96,17 +97,18 @@ struct PairingCodeScreen: View {
     let code: String
     let server: ServerAddress
     @Environment(AppSession.self) private var session
+    @ScaledMetric(relativeTo: .largeTitle) private var codeSize = 44.0
 
     var body: some View {
         ScrollView {
             VStack(spacing: 24) {
-                Text("Approve this device").font(.title.bold())
+                Text("Approve this device").font(.title.bold()).accessibilityAddTraits(.isHeader)
                 if let url = try? ApprovalLink.url(server: server, code: code) {
                     QRCodeView(value: url.absoluteString)
                         .frame(width: 224, height: 224)
                         .accessibilityLabel("Scan with your phone to approve this device")
                 }
-                Text(code).font(.system(size: 44, weight: .semibold, design: .monospaced))
+                Text(code).font(.system(size: codeSize, weight: .semibold, design: .monospaced))
                     .accessibilityLabel("Approval code \(code.map(String.init).joined(separator: " "))")
                 Text("Scan the QR code with your phone, or enter the six-digit code in Settings → Connect a TV on a signed-in Player.")
                     .multilineTextAlignment(.center).frame(maxWidth: 540)
