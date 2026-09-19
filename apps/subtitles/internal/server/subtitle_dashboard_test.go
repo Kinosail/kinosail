@@ -181,7 +181,7 @@ func TestSubtitleAppUsesKinosailSisterSetupAndFocusedSettings(t *testing.T) { //
 	start := requestApp(t, handler, http.MethodGet, "/onboarding", "")
 	onboarding := requestApp(t, handler, http.MethodGet, "/onboarding/connection", "")
 	setupBody := setup.Body.String()
-	if setup.Code != http.StatusOK || !strings.Contains(setupBody, "Kinosail Subtitles") || !strings.Contains(setupBody, "your subtitle plan") || !strings.Contains(setupBody, "sidecar") || !strings.Contains(setupBody, `app.css?v=80`) || !strings.Contains(setupBody, `class="language-picker"`) || strings.Index(setupBody, `class="language-picker"`) > strings.Index(setupBody, `class="wizard-stage"`) {
+	if setup.Code != http.StatusOK || !strings.Contains(setupBody, "Kinosail Subtitles") || !strings.Contains(setupBody, "your subtitle settings") || !strings.Contains(setupBody, "saved subtitle files") || !strings.Contains(setupBody, `/static/app.css?v=electric-1`) || !strings.Contains(setupBody, `class="language-picker"`) || strings.Index(setupBody, `class="language-picker"`) > strings.Index(setupBody, `class="wizard-stage"`) {
 		t.Fatalf("setup = %d %q", setup.Code, setup.Body.String())
 	}
 	if settings.Code != http.StatusOK {
@@ -197,7 +197,7 @@ func TestSubtitleAppUsesKinosailSisterSetupAndFocusedSettings(t *testing.T) { //
 	if onboarding.Code != http.StatusOK {
 		t.Fatalf("onboarding = %d %q", onboarding.Code, onboarding.Body.String())
 	}
-	assertResponseContains(t, "onboarding", onboarding, "Connect a provider. Let Kinosail handle the rest.", "Primary language", `aria-describedby="language-help"`, `value="en" selected`, `value="es-419"`, "writable media scope", "Connect a subtitle provider", "Create a free account, open its API panel", "Create or sign in to an OpenSubtitles.com account", "open My Profile", `href="/settings/configuration#integrations.subdl.api_key"`, `href="/settings/configuration#integrations.opensubtitles"`, `href="/settings#provider"`, "Not configured", "Finish and open overview")
+	assertResponseContains(t, "onboarding", onboarding, "Connect a provider. Let Kinosail handle the rest.", "Primary language", `aria-describedby="language-help"`, `value="en" selected`, `value="es-419"`, "needs permission to write", "Connect a subtitle provider", "Create a free account, open its API panel", "Create or sign in to an OpenSubtitles.com account", "open My Profile", `href="/settings/configuration#integrations.subdl.api_key"`, `href="/settings/configuration#integrations.opensubtitles"`, `href="/settings#provider"`, "Not configured", "Finish and open overview")
 }
 
 func assertResponseContains(t *testing.T, name string, response *httptest.ResponseRecorder, fragments ...string) {
