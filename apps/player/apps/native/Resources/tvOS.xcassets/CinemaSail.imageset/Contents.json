@@ -1,9 +1,14 @@
 {
   "images" : [
     {
-      "filename" : "CinemaSail.png",
+      "filename" : "CinemaSail-1920x1080.png",
       "idiom" : "universal",
       "scale" : "1x"
+    },
+    {
+      "filename" : "CinemaSail-3840x2160.png",
+      "idiom" : "universal",
+      "scale" : "2x"
     }
   ],
   "info" : {
