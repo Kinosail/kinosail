@@ -19,12 +19,15 @@ import (
 // Operation records an actual encoder/format check on one device. DecodeH264
 // certifies only the tested 8-bit H.264 input, never all codecs on that backend.
 type Operation struct {
-	identity   string
-	Codec      string `json:"codec"`
-	Device     string `json:"-"`
-	OutputHDR  string `json:"outputHDR,omitempty"`
-	DecodeH264 bool   `json:"decodeH264"`
-	Status     string `json:"status"`
+	ToneMapSoftwareFrames bool `json:"toneMapSoftwareFrames,omitempty"`
+	identity              string
+	Codec                 string `json:"codec"`
+	Device                string `json:"-"`
+	OutputHDR             string `json:"outputHDR,omitempty"`
+	HardwareToneMap       string `json:"hardwareToneMap,omitempty"`
+	ToneMapInput          string `json:"toneMapInput,omitempty"`
+	DecodeH264            bool   `json:"decodeH264"`
+	Status                string `json:"status"`
 }
 
 type verification struct {
@@ -55,7 +58,7 @@ func (backend Backend) operation(codec, hdr string) (Operation, bool) {
 		return Operation{Codec: codec, Device: backend.Device}, backend.Usable && backend.encoders[codec] != "" && hdr == ""
 	}
 	for _, operation := range backend.verification.operationsFor(backend.ID, codec) {
-		if operation.OutputHDR == hdr {
+		if operation.OutputHDR == hdr && operation.HardwareToneMap == "" {
 			return operation, true
 		}
 	}
@@ -97,16 +100,19 @@ func (capabilities Capabilities) RecordCheck(options transcodepolicy.Settings, r
 		return
 	}
 	if result.Status != "passed" {
-		capabilities.RecordFailure(options)
+		capabilities.RecordProcessingFailure(options)
+		return
+	}
+	if result.HardwareToneMap != options.HardwareToneMap || result.HardwareToneMap != "" && result.ToneMapInput != options.ToneMapInput {
 		return
 	}
 	state := capabilities.verification
 	state.mu.Lock()
 	defer state.mu.Unlock()
 	delete(state.failed, operationKey(options.Accelerator, options.Device, options.Codec))
-	operation := Operation{identity: operationIdentity(state.ffmpeg, options.Device), Codec: options.Codec, Device: options.Device, OutputHDR: options.OutputHDR, DecodeH264: result.HardwareDecode, Status: "passed"}
+	operation := Operation{identity: operationIdentity(state.ffmpeg, options.Device), Codec: options.Codec, Device: options.Device, OutputHDR: options.OutputHDR, HardwareToneMap: result.HardwareToneMap, ToneMapInput: result.ToneMapInput, ToneMapSoftwareFrames: options.HardwareToneMap != "" && transcodepolicy.ToneMapSoftwareFrames(options), DecodeH264: result.HardwareDecode, Status: "passed"}
 	for index, previous := range state.operations[options.Accelerator] {
-		if previous.Codec == operation.Codec && previous.Device == operation.Device && previous.OutputHDR == operation.OutputHDR {
+		if previous.Codec == operation.Codec && previous.Device == operation.Device && previous.OutputHDR == operation.OutputHDR && previous.HardwareToneMap == operation.HardwareToneMap && previous.ToneMapInput == operation.ToneMapInput && previous.ToneMapSoftwareFrames == operation.ToneMapSoftwareFrames {
 			state.operations[options.Accelerator][index] = operation
 			return
 		}
@@ -118,6 +124,7 @@ func verify(ctx context.Context, options ProbeOptions, capabilities Capabilities
 	if !options.Enabled || options.FFmpeg == "" {
 		return capabilities
 	}
+	parent := ctx
 	ctx, cancel := context.WithTimeout(ctx, 30*time.Second)
 	defer cancel()
 	state := &verification{ffmpeg: options.FFmpeg, operations: make(map[string][]Operation), failed: make(map[string]time.Time)}
@@ -148,6 +155,7 @@ func verify(ctx context.Context, options ProbeOptions, capabilities Capabilities
 			capabilities.Selected = backend.ID
 		}
 	}
+	state.verifyToneMaps(parent, options, capabilities.Backends, check)
 	capabilities.Codecs = codecCapabilities(capabilities)
 	return capabilities
 }
@@ -200,7 +208,7 @@ func backendDevices(backend Backend, devices []string) []string {
 	if len(result) > 8 {
 		result = result[:8]
 	}
-	if !slices.Contains([]string{"qsv", "vaapi", "cuda"}, backend.ID) {
+	if !slices.Contains([]string{"qsv", "vaapi", "cuda", "rkmpp"}, backend.ID) {
 		return []string{""}
 	}
 	if len(result) == 0 && backend.Device == "" {
@@ -236,7 +244,7 @@ func operationIdentity(ffmpeg, device string) string {
 
 func backendDevice(backend, device string) string {
 	kind := hardwareDeviceKind(device)
-	if (backend == "vaapi" || backend == "qsv") && kind == "render" {
+	if (backend == "vaapi" || backend == "qsv" || backend == "rkmpp") && kind == "render" {
 		vendor, _ := os.ReadFile(filepath.Join("/sys/class/drm", filepath.Base(device), "device/vendor"))
 		if backend == "qsv" && len(vendor) > 0 && strings.TrimSpace(string(vendor)) != "0x8086" {
 			return ""

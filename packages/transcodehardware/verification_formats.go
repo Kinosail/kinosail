@@ -26,7 +26,7 @@ func (state *verification) verifyCodec(ctx context.Context, options ProbeOptions
 
 func (state *verification) verifyBaselineDecode(ctx context.Context, options ProbeOptions, backend *Backend, codec string, check func(context.Context, string, transcodepolicy.Settings, string) transcodepolicy.CheckResult) {
 	for _, operation := range state.operations[backend.ID] {
-		if operation.Status != "passed" {
+		if operation.Status != "passed" || operation.HardwareToneMap != "" {
 			continue
 		}
 		settings := transcodepolicy.Settings{Name: "automatic", Codec: codec, Accelerator: backend.ID, Encoder: backend.encoders[codec], Device: operation.Device, Preset: "veryfast", CRF: "22"}
@@ -37,7 +37,7 @@ func (state *verification) verifyBaselineDecode(ctx context.Context, options Pro
 func (state *verification) verifyOptionalFormats(ctx context.Context, options ProbeOptions, backend *Backend, check func(context.Context, string, transcodepolicy.Settings, string) transcodepolicy.CheckResult) {
 	baseline := append([]Operation(nil), state.operations[backend.ID]...)
 	for _, operation := range baseline {
-		if operation.Status != "passed" {
+		if operation.Status != "passed" || operation.HardwareToneMap != "" {
 			continue
 		}
 		settings := transcodepolicy.Settings{Name: "automatic", Codec: operation.Codec, Accelerator: backend.ID, Encoder: backend.encoders[operation.Codec], Device: operation.Device, Preset: "veryfast", CRF: "22"}

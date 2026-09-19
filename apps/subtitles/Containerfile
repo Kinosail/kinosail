@@ -27,7 +27,7 @@ ARG REVISION=unknown
 LABEL org.opencontainers.image.version=$VERSION org.opencontainers.image.revision=$REVISION
 ARG JELLYFIN_FFMPEG_VERSION=8.1.2-5
 RUN apt-get update \
-    && apt-get install -y --no-install-recommends ca-certificates libaom3 libarchive-tools libchromaprint-tools mesa-va-drivers socat tzdata wget libstdc++6 tesseract-ocr tesseract-ocr-eng \
+    && apt-get install -y --no-install-recommends ca-certificates libaom3 libarchive-tools libchromaprint-tools mesa-va-drivers mesa-vulkan-drivers socat tzdata wget libstdc++6 tesseract-ocr tesseract-ocr-eng \
     && dpkg --compare-versions "$(dpkg-query -W -f='${Version}' libaom3)" ge 3.12.1-1+deb13u1 \
     && arch="$(dpkg --print-architecture)" \
     && case "$arch" in \

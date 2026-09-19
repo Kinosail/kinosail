@@ -3,6 +3,9 @@ package transcodepolicy
 import "strings"
 
 func frameArguments(options Settings, width string) ([]string, string) {
+	if input, filter := hardwareToneMapFrames(options, width); filter != "" {
+		return input, filter
+	}
 	if options.HardwareDecode && !options.SoftwareFilters && !options.ToneMap && !options.Deinterlace {
 		if input, filter := acceleratedFrames(options, width); len(input) > 0 {
 			return input, filter
@@ -90,9 +93,7 @@ func softwareFrameFilters(options Settings, width string) []string {
 	}
 	if options.ToneMap {
 		filters = append(filters, "zscale=t=linear:npl=100,format=gbrpf32le,zscale=p=bt709,tonemap=hable:desat=0,zscale=t=bt709:m=bt709:r=tv")
-		for _, kind := range []string{"MASTERING_DISPLAY_METADATA", "CONTENT_LIGHT_LEVEL", "DYNAMIC_HDR_PLUS", "DOVI_RPU_BUFFER", "DOVI_METADATA"} {
-			filters = append(filters, "sidedata=mode=delete:type="+kind)
-		}
+		filters = append(filters, removeHDRMetadata()...)
 	}
 	filters = append(filters, "scale=w="+width+":h='trunc(ow/dar/2)*2'", "setsar=1", "format="+PixelFormat(options))
 	return filters

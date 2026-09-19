@@ -33,7 +33,7 @@ Jellyfin removing legacy routes from its own server does not require Kinosail to
 | Intel, NVIDIA, AMD, Apple, Rockchip | Backend definitions and codec-specific verification exist | Runtime/device/driver access still required. |
 | V4L2 and Windows Media Foundation | Additional backend definitions exist | Broader catalog does not prove superior working coverage. |
 | HDR10/HLG preservation | HEVC 10-bit output and color signaling paths exist | Potential capability beyond Jellyfin's documented SDR conversion; real HDR samples and display verification remain required. |
-| GPU tone mapping | `frames.go` deliberately takes software filters when ToneMap is set | Gap: newer FFmpeg alone does not activate Jellyfin's GPU tone-mapping pipelines. |
+| GPU tone mapping | Dedicated CUDA, QSV, VA-API, Vulkan/libplacebo, OpenCL, VideoToolbox and D3D11 paths now have device/codec/HDR/frame-path smoke-check selection | Implemented; real GPU execution and comparative performance remain unverified. |
 | HLG BT.2446 Method B | Existing zscale/Hable pipeline | Gap: no explicit equivalent algorithm selection. |
 | Dolby Vision Profile 5 | Planner rejects conversion without a compatible base layer | Gap: safe rejection remains; no claim of P5 tone mapping or compliant P5 HLS variant delivery. Parsing dvh1 initialization alone is insufficient. |
 | Audio output | Conversion emits stereo AAC | Gap against Jellyfin's broader codec/channel output options. |
@@ -47,4 +47,18 @@ See [Jellyfin transcoding documentation](https://jellyfin.org/docs/general/post-
 
 The repository's `.gates-disabled` policy prohibits test, build, container and acceptance suites unless explicitly enabled. Regression tests were added but have not been run. Runtime, deployed revision, real-client, GPU, audio synchronization and display evidence remain unverified. The enabled source-file cap is checked separately during delivery.
 
-Do not claim all current Jellyfin players are certified or that Kinosail meets or exceeds all transcoding capabilities. This change closes the runtime pin and profile-property gaps; GPU tone mapping, Dolby Vision P5, richer audio/subtitle output, and real-client acceptance remain substantial work.
+Do not claim all current Jellyfin players are certified or that Kinosail meets or exceeds all transcoding capabilities. The release update closes the runtime pin and profile-property gaps. The follow-up adds hardware tone-mapping selection and recovery. Dolby Vision P5, richer audio/subtitle output, and real-client/GPU acceptance remain outstanding.
+
+## Hardware tone-mapping follow-up
+
+Both applications use the shared policy. HDR10 and HLG are checked independently for each encoder/device and for GPU-resident versus CPU-filter delivery. HDR10+ uses its HDR10 base; supported Dolby Vision base layers retain the existing HDR10/HLG conversion boundary. Profile 5 conversion remains rejected.
+
+CUDA/QSV/VA-API can retain SDR frames on the GPU through scaling and encoding when no CPU filters are needed. Subtitle burn-in, interlacing, rotation, anamorphic sources and server-side cuts use the separately checked download/software-filter path. OpenCL/Vulkan derive from the selected DRM device; Rockchip records its render-device identity. Mesa Vulkan drivers are included in both containers. Native installation driver availability still depends on the host.
+
+Smoke checks create actual ten-bit HDR pixels, check the encoded SDR format, decode it, and reject unchanged/flat luminance output. This detects no-op conversion but does not certify perceptual quality. Native QSV/VA-API tone mapping is excluded for HLG. Optional tone-map checks have a separate 30-second budget after existing checks, preserving codec discovery; this can add up to 30 seconds to startup probing. Missing or unfinished evidence keeps software tone mapping.
+
+Recovery first retains the hardware encoder while disabling hardware tone mapping, then uses the existing bounded encoder fallback. A failed tone-mapping operation does not erase unrelated encode/HDR evidence. Cache policy advances and seek identity includes the tone mapper to avoid mixing processing implementations within one presentation.
+
+Regression coverage was added for device/codec/HDR isolation, source base layers, subtitle filter order, malformed/conflicting check requests without side effects, no-op pixel rejection, optional probe ordering, recovery and seek identity. These tests were not executed under the disabled-gates policy. Independent source review and the enabled line cap passed; FFmpeg execution, container builds, physical GPU color and performance comparison remain unverified.
+
+Protocol/filter references: [Jellyfin encoding paths](https://github.com/jellyfin/jellyfin/blob/v12.1/MediaBrowser.Controller/MediaEncoding/EncodingHelper.cs), [Jellyfin FFmpeg patches](https://github.com/jellyfin/jellyfin-ffmpeg/tree/v8.1.2-5/debian/patches), [Vulkan device derivation](https://github.com/jellyfin/jellyfin-ffmpeg/blob/v8.1.2-5/libavutil/hwcontext_vulkan.c). The implementations use these filter interfaces; no Jellyfin server source is incorporated.

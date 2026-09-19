@@ -41,9 +41,24 @@ func ResolveHLSSource(recipe HLSRecipe, facts MediaFacts, sidecars []string) (HL
 func SourceTranscoding(options transcodepolicy.Settings, facts MediaFacts, recipe HLSRecipe) transcodepolicy.Settings {
 	options.ToneMap = recipe.ToneMap
 	options.OutputHDR = ""
+	options.HardwareToneMap, options.ToneMapInput = "", ""
 	options = sourceColor(options, facts.Video.HDR, recipe)
+	if options.ToneMap {
+		options.ToneMapInput = facts.Video.HDR
+		if options.ToneMapInput == "hdr10+" {
+			options.ToneMapInput = "hdr10"
+		}
+		if facts.Video.HDR == "dolby-vision" {
+			if facts.Video.DolbyVisionCompatibility == 1 {
+				options.ToneMapInput = "hdr10"
+			}
+			if facts.Video.DolbyVisionCompatibility == 4 {
+				options.ToneMapInput = "hlg"
+			}
+		}
+	}
 	options.Deinterlace = Interlaced(facts.Video)
-	options.SoftwareFilters = recipe.Burn != "" || len(recipe.Omitted) > 0
+	options.SoftwareFilters = recipe.Burn != "" || len(recipe.Omitted) > 0 || facts.Video.Rotation != 0 || facts.Video.SampleAspectRatio != "" && facts.Video.SampleAspectRatio != "1:1"
 	options.HardwareDecode = options.HardwareDecode && testedDecodeInput(facts.Video) && options.OutputHDR == ""
 	options.HardwareDecode = options.HardwareDecode && !options.ToneMap && !options.Deinterlace && !options.SoftwareFilters
 	return options

@@ -109,7 +109,7 @@ func (capabilities Capabilities) Settings(selection Selection, requestedCodec st
 	// device. HLS separately binds seek work to the encoder that made its init.
 	settings := transcodepolicy.Settings{
 		Name: name, Preset: "veryfast", CRF: "22", Codec: codec, Accelerator: accelerator, Encoder: encoder,
-		Cache: name + ":" + codec + ":" + NormalizeAccelerator(selection.Accelerator) + ":policy=2", ToneMap: selection.ToneMap,
+		Cache: name + ":" + codec + ":" + NormalizeAccelerator(selection.Accelerator) + ":policy=3", ToneMap: selection.ToneMap,
 	}
 	if operation, ok := capabilities.Backend(accelerator).operation(codec, ""); ok {
 		settings.Device = operation.Device
@@ -127,11 +127,11 @@ func (capabilities Capabilities) Settings(selection Selection, requestedCodec st
 	return settings, nil
 }
 
-// ColorSettings requires independent ten-bit evidence for HDR output. If that
-// operation is unavailable, fail before encoding instead of changing colors.
+// ColorSettings selects independently verified HDR processing. Tone mapping
+// falls back to software; unverified HDR output fails without changing colors.
 func (capabilities Capabilities) ColorSettings(options transcodepolicy.Settings) (transcodepolicy.Settings, error) {
 	if options.OutputHDR == "" {
-		return options, nil
+		return capabilities.toneMapSettings(options), nil
 	}
 	operation, ok := capabilities.Backend(options.Accelerator).operation(options.Codec, options.OutputHDR)
 	if !ok || operation.Device != options.Device {

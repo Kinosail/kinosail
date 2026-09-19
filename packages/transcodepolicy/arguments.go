@@ -2,19 +2,22 @@ package transcodepolicy
 
 // Settings contains validated Player transcoder selections.
 type Settings struct {
-	Name            string
-	Preset          string
-	CRF             string
-	Codec           string
-	Accelerator     string
-	Encoder         string
-	Cache           string
-	Device          string
-	ToneMap         bool
-	HardwareDecode  bool
-	SoftwareFilters bool
-	Deinterlace     bool
-	OutputHDR       string
+	Name                   string
+	Preset                 string
+	CRF                    string
+	Codec                  string
+	Accelerator            string
+	Encoder                string
+	Cache                  string
+	Device                 string
+	HardwareToneMap        string
+	ToneMapInput           string
+	DisableHardwareToneMap bool
+	ToneMap                bool
+	HardwareDecode         bool
+	SoftwareFilters        bool
+	Deinterlace            bool
+	OutputHDR              string
 }
 
 // VideoArguments builds a complete frame path. Hardware encoding does not imply

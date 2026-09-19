@@ -15,7 +15,7 @@ func HardwareFailure(detail string) bool {
 			return false
 		}
 	}
-	for _, marker := range []string{"device setup failed", "device creation failed", "cannot load libcuda", "no capable devices", "no device available", "failed to initialise vaapi", "error initializing an internal mfx", "error while opening encoder", "failed to initialize encoder", "failed setup for format", "impossible to convert between the formats"} {
+	for _, marker := range []string{"device setup failed", "device creation failed", "cannot load libcuda", "no capable devices", "no device available", "failed to initialise vaapi", "error initializing an internal mfx", "error while opening encoder", "failed to initialize encoder", "failed setup for format", "impossible to convert between the formats", "tonemap_cuda", "tonemap_opencl", "tonemap_vaapi", "tonemap_videotoolbox", "tonemap_d3d11", "vpp_qsv", "libplacebo", "failed to create vulkan", "failed to initialise opencl", "failed to initialize opencl", "parsed_hwupload", "parsed_hwmap", "parsed_scale_cuda", "parsed_scale_qsv", "parsed_scale_vaapi"} {
 		if strings.Contains(detail, marker) {
 			return true
 		}
@@ -27,7 +27,11 @@ func HardwareFailure(detail string) bool {
 // to H.264; expensive formats require a newly negotiated presentation.
 func (capabilities Capabilities) Recovery(options transcodepolicy.Settings) []transcodepolicy.Settings {
 	var result []transcodepolicy.Settings
-	if options.HardwareDecode {
+	if options.HardwareToneMap != "" {
+		next := options
+		next.HardwareToneMap, next.HardwareDecode, next.DisableHardwareToneMap = "", false, true
+		result = append(result, next)
+	} else if options.HardwareDecode {
 		next := options
 		next.HardwareDecode = false
 		result = append(result, next)
@@ -41,6 +45,7 @@ func (capabilities Capabilities) Recovery(options transcodepolicy.Settings) []tr
 			continue
 		}
 		next := options
+		next.HardwareToneMap, next.DisableHardwareToneMap = "", true
 		next.Accelerator, next.Encoder, next.Device, next.HardwareDecode = backend.ID, backend.encoders[options.Codec], operation.Device, false
 		result = append(result, next)
 		if len(result) == 3 {

@@ -13,7 +13,10 @@ import (
 // BindHLSEncoder keeps seek segments on the encoder that produced the existing
 // initialization data, while cache readers use the unchanged playback policy.
 func BindHLSEncoder(directory string, options transcodepolicy.Settings, resume bool) error {
-	identity := struct{ Accelerator, Encoder, Device, Codec, HDR string }{options.Accelerator, options.Encoder, options.Device, options.Codec, options.OutputHDR}
+	identity := struct {
+		Accelerator, Encoder, Device, Codec, HDR string
+		ToneMap                                  string `json:",omitempty"`
+	}{options.Accelerator, options.Encoder, options.Device, options.Codec, options.OutputHDR, options.HardwareToneMap}
 	data, err := json.Marshal(identity)
 	if err != nil || len(data) > 1024 || identity.Encoder == "" {
 		return errors.New("HLS encoder identity is invalid")

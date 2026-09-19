@@ -158,12 +158,11 @@ func (manager *hlsManager) encode(item library.Item, job *hlsJob, options transc
 		job.err = manager.encodeVariants(item, directory, options, recipe)
 		if job.err != nil && recipe.mode == "transcode" && options.Accelerator != "none" && manager.ctx.Err() == nil && transcodehardware.HardwareFailure(hlsDiagnostic(job.err)) {
 			options = playback.SourceTranscoding(options, mediaFactsFor(item, manager.probe.inspect(manager.ctx, item)), sharedHLSRecipe(recipe))
-			candidates := manager.settings.hardware.Recovery(options)
-			if options.HardwareDecode {
-				manager.settings.hardware.RecordDecodeFailure(options)
-			} else {
-				manager.settings.hardware.RecordFailure(options)
+			if colored, err := manager.settings.hardware.ColorSettings(options); err == nil {
+				options = colored
 			}
+			candidates := manager.settings.hardware.Recovery(options)
+			manager.settings.hardware.RecordProcessingFailure(options)
 			for _, fallback := range candidates {
 				if _, err := os.Stat(filepath.Join(directory, "index.m3u8")); err == nil {
 					break

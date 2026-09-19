@@ -21,6 +21,10 @@ func (manager *hlsManager) retrySoftwareHLSEncode(ctx context.Context, item libr
 		return false
 	}
 	options = playback.SourceTranscoding(options, mediaFactsFor(item, manager.probe.facts(ctx, item)), sharedHLSRecipe(recipe))
+	options, colorErr := manager.settings.hardware.ColorSettings(options)
+	if colorErr != nil {
+		return false
+	}
 	candidates := manager.settings.hardware.Recovery(options)
 	manager.recordHLSHardwareFailure(options)
 	retried := false
@@ -54,9 +58,5 @@ func resetHLSDirectory(directory string) error {
 }
 
 func (manager *hlsManager) recordHLSHardwareFailure(options transcodeSettings) {
-	if options.HardwareDecode {
-		manager.settings.hardware.RecordDecodeFailure(options)
-	} else {
-		manager.settings.hardware.RecordFailure(options)
-	}
+	manager.settings.hardware.RecordProcessingFailure(options)
 }

@@ -77,7 +77,7 @@ func TestReconcileSelectionPreservesExplicitChoicesAndRepairsDefaults(t *testing
 func TestSettingsResolvesPlayerProfilesAndErrors(t *testing.T) { //nolint:cyclop // One table verifies each stable conversion profile.
 	unprobed := Capabilities{Selected: "none"}
 	settings, err := unprobed.Settings(Selection{ToneMap: true}, "")
-	want := transcodepolicy.Settings{Name: "automatic", Preset: "veryfast", CRF: "22", Codec: "h264", Accelerator: "none", Encoder: "libx264", Cache: "automatic:h264:auto:policy=2:hdr", ToneMap: true}
+	want := transcodepolicy.Settings{Name: "automatic", Preset: "veryfast", CRF: "22", Codec: "h264", Accelerator: "none", Encoder: "libx264", Cache: "automatic:h264:auto:policy=3:hdr", ToneMap: true}
 	if err != nil || !reflect.DeepEqual(settings, want) {
 		t.Fatalf("automatic settings = %#v, error %v", settings, err)
 	}
