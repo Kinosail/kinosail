@@ -1,6 +1,8 @@
 // Package configuration resolves typed Server configuration from GUI state, YAML, and the environment.
 package configuration
 
+import "github.com/MikeO7/kinosail/packages/configurationcore"
+
 type Source string
 
 const (
@@ -26,72 +28,14 @@ type Spec struct {
 	Secret, Restart   bool
 }
 
-var specs = []Spec{
-	{"listen", "KINOSAIL_LISTEN", "127.0.0.1:38127", text, false, true},
-	{"tls.enabled", "KINOSAIL_TLS_ENABLED", "true", boolean, false, true},
-	{"tls.hosts", "KINOSAIL_TLS_HOSTS", "", list, false, true},
-	{"tls.duckdns", "KINOSAIL_DUCKDNS_HTTPS", "", text, true, true},
-	{"paths.media", "KINOSAIL_MEDIA_DIR", "/media", text, false, true},
-	{"paths.data", "KINOSAIL_DATA_DIR", "/config", text, false, true},
-	{"paths.cache", "KINOSAIL_CACHE_DIR", "/cache", text, false, true},
-	{"binaries.ffmpeg", "KINOSAIL_FFMPEG", "ffmpeg", text, false, true},
-	{"binaries.ffprobe", "KINOSAIL_FFPROBE", "ffprobe", text, false, true},
-	{"binaries.fpcalc", "KINOSAIL_FPCALC", "fpcalc", text, false, true},
-	{"server.name", "KINOSAIL_SERVER_NAME", "", text, false, false},
-	{"supporter.activation_url", "KINOSAIL_SUPPORTER_ACTIVATION_URL", "https://kinosail-cloud.workers.dev/v1/supporters/activate", text, false, true},
-	{"supporter.url", "KINOSAIL_SUPPORT_URL", "https://github.com/MikeO7/kinosail/tree/main/apps/player", text, false, true},
-	{"security.require_mfa", "KINOSAIL_REQUIRE_MFA", "true", boolean, false, false},
-	{"auth.url", "KINOSAIL_AUTH_URL", "", text, false, true},
-	{"libraries", "KINOSAIL_LIBRARIES", "", list, false, false},
-	{"playback.mode", "KINOSAIL_PLAYBACK_MODE", "", text, false, false},
-	{"playback.autoplay", "KINOSAIL_AUTOPLAY", "", boolean, false, false},
-	{"playback.subtitles", "KINOSAIL_SUBTITLES", "", text, false, false},
-	{"playback.auto_skip", "KINOSAIL_AUTO_SKIP", "", list, false, false},
-	{"transcoding.quality", "KINOSAIL_TRANSCODE_QUALITY", "", text, false, false},
-	{"transcoding.codec", "KINOSAIL_TRANSCODE_CODEC", "", text, false, false},
-	{"transcoding.accelerator", "KINOSAIL_TRANSCODE_ACCELERATOR", "", text, false, false},
-	{"transcoding.tone_map", "KINOSAIL_TONE_MAP", "", boolean, false, false},
-	{"subtitles.language", "KINOSAIL_SUBTITLE_LANGUAGE", "", text, false, false},
-	{"scanning.interval", "KINOSAIL_SCAN_INTERVAL", "10m", duration, false, true},
-	{"scanning.frequency", "KINOSAIL_SCAN_FREQUENCY", "", text, false, false},
-	{"dlna.url", "KINOSAIL_DLNA_URL", "", text, false, true},
-	{"dlna.enabled", "KINOSAIL_DLNA_ENABLED", "", boolean, false, false},
-	{"backup.directory", "KINOSAIL_BACKUP_DIR", "/backups", text, false, true},
-	{"backup.key", "KINOSAIL_BACKUP_KEY", "", text, true, true},
-	{"backup.interval", "KINOSAIL_BACKUP_INTERVAL", "24h", duration, false, true},
-	{"backup.retention", "KINOSAIL_BACKUP_RETENTION", "7", number, false, true},
-	{"logging.level", "KINOSAIL_LOG_LEVEL", "info", text, false, true},
-	{"logging.audit_retention", "KINOSAIL_AUDIT_RETENTION", "8760h", duration, false, true},
-	{"logging.playback_retention", "KINOSAIL_PLAYBACK_RETENTION", "2160h", duration, false, true},
-	{"remote.proxy_token", "KINOSAIL_PROXY_TOKEN", "", text, true, true},
-	{"remote.mode", "KINOSAIL_REMOTE_MODE", "off", text, false, true},
-	{"remote.gateway", "KINOSAIL_PUBLIC_GATEWAY", "false", boolean, false, true},
-	{"remote.duckdns_domain", "KINOSAIL_DUCKDNS_DOMAIN", "", text, false, true},
-	{"remote.duckdns_token", "KINOSAIL_DUCKDNS_TOKEN", "", text, true, true},
-	{"remote.listen", "KINOSAIL_REMOTE_LISTEN", ":8443", text, false, true},
-	{"remote.wireguard_dir", "KINOSAIL_WIREGUARD_DIR", "/wireguard", text, false, true},
-	{"integrations.tmdb.url", "KINOSAIL_TMDB_URL", "", text, false, true},
-	{"integrations.tmdb.image_url", "KINOSAIL_TMDB_IMAGE_URL", "", text, false, true},
-	{"integrations.tmdb.token", "KINOSAIL_TMDB_TOKEN", "", text, true, true},
-	{"integrations.jellyfin.enabled", "KINOSAIL_JELLYFIN_ENABLED", "", boolean, false, false},
-	{"integrations.home_assistant.enabled", "KINOSAIL_HOME_ASSISTANT_ENABLED", "", boolean, false, false},
-	{"integrations.oidc.issuer", "KINOSAIL_OIDC_ISSUER", "", text, false, true},
-	{"integrations.oidc.client_id", "KINOSAIL_OIDC_CLIENT_ID", "", text, false, true},
-	{"integrations.oidc.client_secret", "KINOSAIL_OIDC_CLIENT_SECRET", "", text, true, true},
-	{"integrations.oidc.redirect_url", "KINOSAIL_OIDC_REDIRECT_URL", "", text, false, true},
-	{"integrations.oidc.identity_claim", "KINOSAIL_OIDC_IDENTITY_CLAIM", "sub", text, false, true},
-	{"integrations.saml.metadata_url", "KINOSAIL_SAML_METADATA_URL", "", text, false, true},
-	{"integrations.saml.metadata_xml", "KINOSAIL_SAML_METADATA_XML", "", text, false, true},
-	{"integrations.saml.identity_attribute", "KINOSAIL_SAML_IDENTITY_ATTRIBUTE", "NameID", text, false, true},
-	{"integrations.scim.token", "KINOSAIL_SCIM_TOKEN", "", text, true, true},
-	{"integrations.scim.token_expires_at", "KINOSAIL_SCIM_TOKEN_EXPIRES_AT", "", text, false, true},
-	{"integrations.mcp.resource_url", "KINOSAIL_MCP_RESOURCE_URL", "", text, false, true},
-	{"integrations.mcp.authorization_server", "KINOSAIL_MCP_AUTHORIZATION_SERVER", "", text, false, true},
-	{"integrations.mcp.introspection_url", "KINOSAIL_MCP_INTROSPECTION_URL", "", text, false, true},
-	{"integrations.mcp.client_id", "KINOSAIL_MCP_CLIENT_ID", "", text, false, true},
-	{"integrations.mcp.client_secret", "KINOSAIL_MCP_CLIENT_SECRET", "", text, true, true},
-	{"integrations.webhook.url", "KINOSAIL_WEBHOOK_URL", "", text, false, true},
-	{"integrations.webhook.token", "KINOSAIL_WEBHOOK_TOKEN", "", text, true, true},
+var specs = applicationSpecs(configurationcore.CommonApplicationFields("127.0.0.1:38127", "https://github.com/MikeO7/kinosail/tree/main/apps/player"))
+
+func applicationSpecs(fields []configurationcore.ApplicationField) []Spec {
+	result := make([]Spec, len(fields))
+	for index, field := range fields {
+		result[index] = Spec{field.Key, field.Env, field.Default, kind(field.Kind), field.Secret, field.Restart}
+	}
+	return result
 }
 
 type value struct {

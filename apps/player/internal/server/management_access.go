@@ -1,68 +1,23 @@
 package server
 
 import (
-	"context"
-	"crypto/tls"
-	"errors"
-	"log/slog"
 	"net"
 	"net/http"
 	"net/url"
-	"path/filepath"
 
 	"github.com/MikeO7/kinosail/packages/identitycore"
 	"github.com/MikeO7/kinosail/packages/owneraccess"
-	"github.com/MikeO7/kinosail/packages/remoteaccess"
-	"github.com/MikeO7/kinosail/packages/trustedhttps"
 )
 
 var managementView = newLocalizedTemplate("management", owneraccess.View)
 
 func newOwnerAccess(config Config, auth *authentication) *owneraccess.Manager {
-	if config.DataDir == "" {
-		return nil
-	}
-	var tunnelCertificate *trustedhttps.Manager
-	domain, token := config.Configuration.String("remote.duckdns_domain"), config.Configuration.String("remote.duckdns_token")
-	if origin, err := url.Parse(config.AuthURL); err == nil && origin.Hostname() == domain+".duckdns.org" && domain != "" && token != "" {
-		tunnelCertificate, err = trustedhttps.NewTunnelCertificate(domain, token, owneraccess.Address, filepath.Join(config.DataDir, "owner-https"))
-		if err == nil && config.Lifecycle != nil {
-			go tunnelCertificate.Run(config.Lifecycle)
-		}
-	}
-	manager, err := owneraccess.Open(owneraccess.Config{
-		Directory: config.DataDir, Origin: config.AuthURL, Profile: auth.profiles.byID,
-		MaintainEndpoint: func(ctx context.Context, endpoint string) error {
-			hostname, _, _ := net.SplitHostPort(endpoint)
-			if domain != "" && hostname == domain+".duckdns.org" {
-				return remoteaccess.UpdateDNS(ctx, domain, token)
-			}
-			return nil
-		},
-		Certificate: func(hello *tls.ClientHelloInfo) (*tls.Certificate, error) {
-			if tunnelCertificate != nil {
-				if cert := tunnelCertificate.Certificate(hello.ServerName); cert != nil {
-					return cert, nil
-				}
-			}
-			if config.TrustedHTTPS != nil {
-				if cert := config.TrustedHTTPS.Certificate(hello.ServerName); cert != nil {
-					return cert, nil
-				}
-			}
-			if config.InternetAccess != nil {
-				if cert := config.InternetAccess.Certificate(hello.ServerName); cert != nil {
-					return cert, nil
-				}
-			}
-			return nil, errors.New("trusted HTTPS is not ready")
-		},
+	return owneraccess.OpenRuntime(owneraccess.RuntimeConfig{
+		Directory: config.DataDir, Origin: config.AuthURL, Lifecycle: config.Lifecycle,
+		DuckDNSDomain: config.Configuration.String("remote.duckdns_domain"),
+		DuckDNSToken:  config.Configuration.String("remote.duckdns_token"), Profile: auth.profiles.byID,
+		TrustedCertificate: config.TrustedHTTPS.Certificate, InternetCertificate: config.InternetAccess.Certificate,
 	})
-	if err != nil {
-		slog.Error("private management unavailable", "error", err)
-		return nil
-	}
-	return manager
 }
 
 func (auth *authentication) freshOwner(next http.Handler) http.Handler {

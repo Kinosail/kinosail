@@ -3,6 +3,7 @@ package mediaprobe
 import (
 	"context"
 	"encoding/json"
+	"path/filepath"
 	"sort"
 	"strconv"
 	"strings"
@@ -57,6 +58,20 @@ type Result struct {
 	RandomAccess  []float64
 	Tags          Tags
 	ReplayGain    ReplayGain
+}
+
+// MediaFacts adapts one probe result to the shared playback decision model.
+func (result Result) MediaFacts(item library.Item, fileVersion string, subtitleLanguage func(string, string) string, subtitleRole func(string) string) playback.MediaFacts {
+	container := result.Container
+	if container == "" {
+		container = playback.Lower(item.Container)
+	}
+	facts := playback.MediaFacts{Kind: item.Kind, FileVersion: fileVersion, Container: playback.NormalizeContainer(container), Bitrate: result.Bitrate, Duration: result.Duration, Seekable: true, Video: result.Video, Audio: append([]AudioFacts(nil), result.AudioFacts...), Subtitles: append([]SubtitleFacts(nil), result.SubtitleFacts...), RandomAccess: append([]float64(nil), result.RandomAccess...)}
+	for externalIndex, path := range item.Subtitles {
+		index := len(facts.Subtitles)
+		facts.Subtitles = append(facts.Subtitles, SubtitleFacts{Index: index, SourceIndex: -1, Codec: playback.Lower(strings.TrimPrefix(filepath.Ext(path), ".")), Language: subtitleLanguage(item.Path, path), Role: subtitleRole(path), Text: true, External: true, ExternalIndex: externalIndex})
+	}
+	return facts
 }
 
 type Tags struct {

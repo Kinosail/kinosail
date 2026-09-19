@@ -12,21 +12,19 @@ type DecisionPolicy struct {
 }
 
 // Decide chooses the least-transforming representation allowed by every input.
-func Decide(facts MediaFacts, client ClientCapabilities, policy ViewerPolicy, intent NetworkIntent, product DecisionPolicy) PlaybackPlan { //nolint:cyclop,gocognit,funlen // The ordered compatibility ladder is Player's playback policy.
+func Decide(facts MediaFacts, client ClientCapabilities, policy ViewerPolicy, intent NetworkIntent, product DecisionPolicy) PlaybackPlan {
 	audioOnly := facts.Kind == "audio" || facts.Kind == "audiobook"
 	if audioOnly {
 		facts.Video = VideoFacts{}
 	}
 	plan := PlaybackPlan{Mode: "direct", Reason: "compatible", Container: Lower(facts.Container), VideoCodec: Lower(facts.Video.Codec), SubtitleMode: "none", ColorMode: "preserve", SubtitleIndex: -1, Width: facts.Video.Width, Height: facts.Video.Height}
 	if !policy.AllowPlayback {
-		plan.Mode, plan.Reason = "denied", "playback-not-allowed"
-		return plan
+		return denied(plan, "playback-not-allowed")
 	}
 	audio := selectAudio(facts.Audio, client.AudioCodecs, intent, product)
 	plan.AudioIndex, plan.AudioCodec = audio.Index, Lower(audio.Codec)
-	if intent.AudioIndex != nil && !hasAudio(facts.Audio, *intent.AudioIndex) || intent.SubtitleIndex != nil && !hasSubtitle(facts.Subtitles, *intent.SubtitleIndex) {
-		plan.Mode, plan.Reason = "denied", "track-unavailable"
-		return plan
+	if tracksUnavailable(facts, intent) {
+		return denied(plan, "track-unavailable")
 	}
 	if !audioOnly {
 		applySubtitle(&plan, facts.Subtitles, intent.SubtitleIndex, client)
@@ -41,37 +39,57 @@ func Decide(facts MediaFacts, client ClientCapabilities, policy ViewerPolicy, in
 	if audioOnly && plan.Mode != "direct" {
 		plan.Mode, plan.Reason = "audio-transcode", "audio-compatibility"
 	}
-	if plan.Mode != "direct" && !policy.AllowTranscode {
-		plan.Mode, plan.Reason = "denied", "transcoding-not-allowed"
-		return plan
+	return finalize(&plan, facts, client, policy, audioOnly, limit)
+}
+
+func denied(plan PlaybackPlan, reason string) PlaybackPlan {
+	plan.Mode, plan.Reason = "denied", reason
+	return plan
+}
+
+func tracksUnavailable(facts MediaFacts, intent NetworkIntent) bool {
+	return intent.AudioIndex != nil && !hasAudio(facts.Audio, *intent.AudioIndex) || intent.SubtitleIndex != nil && !hasSubtitle(facts.Subtitles, *intent.SubtitleIndex)
+}
+
+func finalize(plan *PlaybackPlan, facts MediaFacts, client ClientCapabilities, policy ViewerPolicy, audioOnly bool, limit int64) PlaybackPlan {
+	if plan.Mode == "direct" {
+		plan.Allowed = true
+		return *plan
 	}
-	if plan.Mode != "direct" {
-		plan.Container = "mp4"
+	if !policy.AllowTranscode {
+		return denied(*plan, "transcoding-not-allowed")
 	}
-	applyPlaybackConversion(&plan, facts, client, limit)
+	plan.Container = "mp4"
+	applyPlaybackConversion(plan, facts, client, limit)
 	if len(facts.Audio) == 0 {
 		plan.AudioCodec = ""
 	}
-	if audioOnly && plan.Mode != "direct" && len(facts.Audio) == 0 {
-		plan.Mode, plan.Reason = "denied", "conversion-unsupported"
-		return plan
+	if reason := conversionFailure(*plan, facts, audioOnly); reason != "" {
+		return denied(*plan, reason)
 	}
-	if plan.Mode == "transcode" && (plan.VideoCodec == "" || facts.Video.HDR == "dolby-vision" && facts.Video.DolbyVisionCompatibility != 1 && facts.Video.DolbyVisionCompatibility != 4) {
-		plan.Mode, plan.Reason = "denied", "conversion-unsupported"
-		return plan
+	if !compatibleDelivery(client, *plan) && !audioOnly && plan.Mode != "transcode" {
+		plan.Mode, plan.Reason = "transcode", "delivery-format-unsupported"
+		applyPlaybackConversion(plan, facts, client, limit)
 	}
-	if plan.Mode != "direct" && !compatibleDelivery(client, plan) {
-		if !audioOnly && plan.Mode != "transcode" {
-			plan.Mode, plan.Reason = "transcode", "delivery-format-unsupported"
-			applyPlaybackConversion(&plan, facts, client, limit)
-		}
-	}
-	if plan.Mode != "direct" && (!compatibleDelivery(client, plan) || !outputConstraints(client, plan, facts)) {
-		plan.Mode, plan.Reason = "denied", "delivery-format-unsupported"
-		return plan
+	if !compatibleDelivery(client, *plan) || !outputConstraints(client, *plan, facts) {
+		return denied(*plan, "delivery-format-unsupported")
 	}
 	plan.Allowed = true
-	return plan
+	return *plan
+}
+
+func conversionFailure(plan PlaybackPlan, facts MediaFacts, audioOnly bool) string {
+	if audioOnly && plan.Mode != "direct" && len(facts.Audio) == 0 {
+		return "conversion-unsupported"
+	}
+	if plan.Mode == "transcode" && (plan.VideoCodec == "" || dolbyVisionNeedsConversion(facts.Video)) {
+		return "conversion-unsupported"
+	}
+	return ""
+}
+
+func dolbyVisionNeedsConversion(video VideoFacts) bool {
+	return video.HDR == "dolby-vision" && video.DolbyVisionCompatibility != 1 && video.DolbyVisionCompatibility != 4
 }
 
 type compatibility struct {

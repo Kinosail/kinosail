@@ -86,74 +86,50 @@ func hasInvalidRecordText(value string, multiline bool) bool {
 // ApplyMissing fills only empty scanned library fields from a stored record.
 func ApplyMissing(item *library.Item, record Record) {
 	applyRecordCast(item, record)
-	if item.Year == "" {
-		item.Year = record.Year
-	}
-	if item.Plot == "" {
-		item.Plot = record.Plot
-	}
-	if item.Artwork == "" {
-		item.Artwork = record.Artwork
-	}
-	if item.ShowTitle == "" {
-		item.ShowTitle = record.ShowTitle
-	}
-	if item.ShowYear == "" {
-		item.ShowYear = record.ShowYear
-	}
-	if item.ShowPlot == "" {
-		item.ShowPlot = record.ShowPlot
-	}
-	if item.ShowArtwork == "" {
-		item.ShowArtwork = record.ShowArtwork
-	}
+	fillString(&item.Year, record.Year)
+	fillString(&item.Plot, record.Plot)
+	fillString(&item.Artwork, record.Artwork)
+	fillString(&item.ShowTitle, record.ShowTitle)
+	fillString(&item.ShowYear, record.ShowYear)
+	fillString(&item.ShowPlot, record.ShowPlot)
+	fillString(&item.ShowArtwork, record.ShowArtwork)
 	if len(item.ShowProviderIDs) == 0 && len(record.ShowProviderIDs) > 0 {
 		item.ShowProviderIDs = maps.Clone(record.ShowProviderIDs)
 	}
 }
 
 // Apply overlays every populated owner-controlled field onto one item.
-func Apply(item *library.Item, record Record) { //nolint:cyclop // Each optional persisted field is applied independently without erasing scanned metadata.
+func Apply(item *library.Item, record Record) {
 	applyRecordCast(item, record)
-	if record.Title != "" {
-		item.Title = record.Title
-	}
-	if record.Year != "" {
-		item.Year = record.Year
-	}
-	if record.Plot != "" {
-		item.Plot = record.Plot
-	}
-	if record.Rating != "" {
-		item.Rating = record.Rating
-	}
-	if record.Tagline != "" {
-		item.Tagline = record.Tagline
-	}
-	if record.Genres != "" {
-		item.Genres = record.Genres
-	}
-	if record.Artwork != "" {
-		item.Artwork = record.Artwork
-	}
+	setString(&item.Title, record.Title)
+	setString(&item.Year, record.Year)
+	setString(&item.Plot, record.Plot)
+	setString(&item.Rating, record.Rating)
+	setString(&item.Tagline, record.Tagline)
+	setString(&item.Genres, record.Genres)
+	setString(&item.Artwork, record.Artwork)
 	item.Collection = record.Collection
 	if len(record.ProviderIDs) > 0 {
 		item.ProviderIDs = record.ProviderIDs
 	}
-	if record.ShowTitle != "" {
-		item.ShowTitle = record.ShowTitle
-	}
-	if record.ShowYear != "" {
-		item.ShowYear = record.ShowYear
-	}
-	if record.ShowPlot != "" {
-		item.ShowPlot = record.ShowPlot
-	}
-	if record.ShowArtwork != "" {
-		item.ShowArtwork = record.ShowArtwork
-	}
+	setString(&item.ShowTitle, record.ShowTitle)
+	setString(&item.ShowYear, record.ShowYear)
+	setString(&item.ShowPlot, record.ShowPlot)
+	setString(&item.ShowArtwork, record.ShowArtwork)
 	if len(record.ShowProviderIDs) > 0 {
 		item.ShowProviderIDs = record.ShowProviderIDs
+	}
+}
+
+func fillString(target *string, value string) {
+	if *target == "" {
+		*target = value
+	}
+}
+
+func setString(target *string, value string) {
+	if value != "" {
+		*target = value
 	}
 }
 

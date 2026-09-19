@@ -5,7 +5,6 @@ import (
 	"io"
 	"net/http"
 	"os"
-	"time"
 
 	"github.com/MikeO7/kinosail-subtitles/internal/backup"
 	"github.com/MikeO7/kinosail-subtitles/internal/configuration"
@@ -64,60 +63,19 @@ func newConfiguredHTTPServerWithAccess(ctx context.Context, configured configura
 	return servertransport.NewServer(configured.String("listen"), handler)
 }
 
-func configuredServerConfig(ctx context.Context, configured configuration.Snapshot, internet *remoteaccess.Manager, trusted *trustedhttps.Manager) server.Config { //nolint:funlen // The single process transports share one application configuration.
-	scimTokenExpiresAt, _ := time.Parse(time.RFC3339, configured.String("integrations.scim.token_expires_at"))
+func configuredServerConfig(ctx context.Context, configured configuration.Snapshot, internet *remoteaccess.Manager, trusted *trustedhttps.Manager) server.Config {
+	values := appcli.BuildServerValues(configured, configuredAuthURL(configured))
 	config := server.Config{
-		SubtitleApp:     true,
-		Lifecycle:       ctx,
-		MediaDir:        configured.String("paths.media"),
-		DataDir:         configured.String("paths.data"),
-		CacheDir:        configured.String("paths.cache"),
-		BackupDir:       configured.String("backup.directory"),
-		BackupKey:       configured.String("backup.key"),
-		BackupInterval:  configured.Duration("backup.interval"),
-		BackupRetention: configured.Int("backup.retention"),
-		FFmpeg:          configured.String("binaries.ffmpeg"),
-		FFprobe:         configured.String("binaries.ffprobe"),
-		ProbeHardware:   true,
-		FPCalc:          configured.String("binaries.fpcalc"),
-		RequireAuth:     true,
-		AuthURL:         configuredAuthURL(configured),
-		ProxyToken:      configured.String("remote.proxy_token"),
-		ScanInterval:    configured.Duration("scanning.interval"),
-		DLNAURL:         configured.String("dlna.url"),
-		Configuration:   configured,
-		Supporter:       server.SupporterConfig{ActivationURL: configured.String("supporter.activation_url"), SupportURL: configured.String("supporter.url")},
-		Subtitles:       configuredSubtitleProviders(configured),
-		Metadata: server.MetadataConfig{
-			URL:      configured.String("integrations.tmdb.url"),
-			ImageURL: configured.String("integrations.tmdb.image_url"),
-			Token:    configured.String("integrations.tmdb.token"),
-		},
-		OIDC: server.OIDCConfig{
-			Issuer:        configured.String("integrations.oidc.issuer"),
-			ClientID:      configured.String("integrations.oidc.client_id"),
-			ClientSecret:  configured.String("integrations.oidc.client_secret"),
-			RedirectURL:   configured.String("integrations.oidc.redirect_url"),
-			IdentityClaim: configured.String("integrations.oidc.identity_claim"),
-		},
-		SAML: server.SAMLConfig{MetadataURL: configured.String("integrations.saml.metadata_url"), MetadataXML: configured.String("integrations.saml.metadata_xml"), IdentityAttribute: configured.String("integrations.saml.identity_attribute"), RootURL: configuredAuthURL(configured), DataDir: configured.String("paths.data")},
-		SCIM: server.SCIMConfig{Token: configured.String("integrations.scim.token"), TokenExpiresAt: scimTokenExpiresAt},
-		MCP: server.MCPConfig{
-			ResourceURL:         configured.String("integrations.mcp.resource_url"),
-			AuthorizationServer: configured.String("integrations.mcp.authorization_server"),
-			IntrospectionURL:    configured.String("integrations.mcp.introspection_url"),
-			ClientID:            configured.String("integrations.mcp.client_id"),
-			ClientSecret:        configured.String("integrations.mcp.client_secret"),
-		},
-		Notifications: server.NotificationConfig{
-			URL: configured.String("integrations.webhook.url"), Token: configured.String("integrations.webhook.token"),
-		},
+		SubtitleApp: true, Lifecycle: ctx, MediaDir: values.MediaDir, DataDir: values.DataDir, CacheDir: values.CacheDir,
+		BackupDir: values.BackupDir, BackupKey: values.BackupKey, BackupInterval: values.BackupInterval, BackupRetention: values.BackupRetention,
+		FFmpeg: values.FFmpeg, FFprobe: values.FFprobe, ProbeHardware: true, FPCalc: values.FPCalc, RequireAuth: true,
+		AuthURL: values.AuthURL, ProxyToken: values.ProxyToken, ScanInterval: values.ScanInterval, DLNAURL: values.DLNAURL,
+		Configuration: configured, Supporter: server.SupporterConfig{ActivationURL: values.SupporterActivationURL, SupportURL: values.SupportURL},
+		Subtitles: configuredSubtitleProviders(configured), Metadata: values.Metadata, OIDC: values.OIDC, SAML: values.SAML,
+		SCIM: values.SCIM, MCP: values.MCP, Notifications: values.Notifications,
 	}
 	config.InternetAccess, config.TrustedHTTPS = internet, trusted
-	if configured.String("remote.mode") == "wireguard" {
-		config.WireGuardDir = configured.String("remote.wireguard_dir")
-		config.WireGuardEndpoint = configured.String("remote.duckdns_domain") + ".duckdns.org:51820"
-	}
+	config.WireGuardDir, config.WireGuardEndpoint = values.WireGuardDir, values.WireGuardEndpoint
 	return config
 }
 

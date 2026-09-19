@@ -13,7 +13,6 @@ import (
 
 	"github.com/MikeO7/kinosail/packages/library"
 	"github.com/MikeO7/kinosail/packages/playback"
-	"github.com/MikeO7/kinosail/packages/transcodehardware"
 	"github.com/MikeO7/kinosail/packages/workload"
 )
 
@@ -156,36 +155,7 @@ func (manager *hlsManager) encode(item library.Item, job *hlsJob, options transc
 	}
 	if job.err == nil {
 		job.err = manager.encodeVariants(item, directory, options, recipe)
-		if job.err != nil && recipe.mode == "transcode" && options.Accelerator != "none" && manager.ctx.Err() == nil && transcodehardware.HardwareFailure(hlsDiagnostic(job.err)) {
-			options = playback.SourceTranscoding(options, mediaFactsFor(item, manager.probe.inspect(manager.ctx, item)), sharedHLSRecipe(recipe))
-			if colored, err := manager.settings.hardware.ColorSettings(options); err == nil {
-				options = colored
-			}
-			candidates := manager.settings.hardware.Recovery(options)
-			manager.settings.hardware.RecordProcessingFailure(options)
-			for _, fallback := range candidates {
-				if _, err := os.Stat(filepath.Join(directory, "index.m3u8")); err == nil {
-					break
-				}
-				if manager.ctx.Err() != nil {
-					break
-				}
-				if err := os.RemoveAll(directory); err != nil {
-					job.err = err
-					break
-				}
-				if err := os.MkdirAll(directory, 0o700); err != nil {
-					job.err = err
-					break
-				}
-				softwareFallback = true
-				job.err = manager.encodeVariants(item, directory, fallback, recipe)
-				if job.err == nil || !transcodehardware.HardwareFailure(hlsDiagnostic(job.err)) {
-					break
-				}
-				manager.settings.hardware.RecordFailure(fallback)
-			}
-		}
+		softwareFallback = manager.retrySoftwareHLSEncode(manager.ctx, item, job, directory, options, recipe)
 		if job.err != nil {
 			job.err = newHLSDiagnosticError(job.err, hlsDiagnostic(job.err, item.Path, directory), item.Path, directory)
 			slog.Error("HLS transcode failed", "request_id", job.requestID, "playback_session", job.playbackSession, "mode", recipe.mode, "accelerator", options.Accelerator, "software_fallback", softwareFallback, "duration_ms", time.Since(started).Milliseconds(), "error", hlsDiagnostic(job.err))

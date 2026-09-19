@@ -18,19 +18,31 @@ func (manager *Manager) Start(profileID string, item library.Item, quality strin
 	return manager.StartSelected(profileID, item, quality, nil)
 }
 
-func (manager *Manager) StartSelected(profileID string, item library.Item, quality string, selection *TrackSelection) (Job, error) { //nolint:cyclop,gocognit,funlen // Validation, durable staging, and async launch form one atomic operation.
+func (manager *Manager) StartSelected(profileID string, item library.Item, quality string, selection *TrackSelection) (Job, error) {
 	if manager.root == "" {
 		return Job{}, errors.New("offline download cache is not configured")
 	}
 	if !validateSelection(selection) || quality == "original" && selection != nil {
 		return Job{}, errors.New("download track selection is invalid")
 	}
+	job, err := manager.prepareJob(profileID, item, quality, selection)
+	if err != nil {
+		return Job{}, err
+	}
+	job, work, err := manager.reserveJob(job)
+	if err != nil || work == nil {
+		return job, err
+	}
+	manager.emit(job)
+	return manager.enqueue(job, item, work)
+}
+
+func (manager *Manager) prepareJob(profileID string, item library.Item, quality string, selection *TrackSelection) (Job, error) {
 	job, err := newJob(manager.root, profileID, item, quality)
 	if err != nil {
 		return Job{}, err
 	}
-	job.Tracks = selection
-	job.SourceVersion = playback.SourceVersion(item.Path)
+	job.Tracks, job.SourceVersion = selection, playback.SourceVersion(item.Path)
 	recipe, _ := json.Marshal(selection)
 	revision := sha256.Sum256([]byte(job.ID + "\x00" + job.SourceVersion + "\x00tracks-v1\x00" + string(recipe)))
 	job.ID = hex.EncodeToString(revision[:8])
@@ -41,7 +53,6 @@ func (manager *Manager) StartSelected(profileID string, item library.Item, quali
 	if full {
 		return Job{}, ErrCapacity
 	}
-	extension := ""
 	if quality != "original" && item.Kind == "video" {
 		if manager.inspect == nil {
 			return Job{}, errors.New("download media inspection is unavailable")
@@ -51,51 +62,52 @@ func (manager *Manager) StartSelected(profileID string, item library.Item, quali
 			return Job{}, err
 		}
 		if matroska {
-			extension = ".mkv"
+			job.Extension = ".mkv"
 		}
 	}
-	if extension != "" {
-		job.Extension = extension
-	}
 	job.File = filepath.Join(manager.root, job.ID+job.extension())
+	return job, nil
+}
+
+func (manager *Manager) reserveJob(job Job) (Job, *attempt, error) {
 	manager.mu.Lock()
 	if manager.err != nil {
 		manager.mu.Unlock()
-		return Job{}, manager.err
+		return Job{}, nil, manager.err
 	}
 	if existing, ok := manager.jobs[job.ID]; ok {
 		if existing.Profile != job.Profile || existing.ItemID != job.ItemID || existing.Quality != job.Quality || existing.SourceVersion != job.SourceVersion {
 			manager.mu.Unlock()
-			return Job{}, errors.New("download revision conflict")
+			return Job{}, nil, errors.New("download revision conflict")
 		}
 		if existing.State != "failed" {
 			manager.mu.Unlock()
-			return existing, nil
+			return existing, nil, nil
 		}
 	}
 	if _, known := manager.jobs[job.ID]; !known && len(manager.jobs) >= maximumJobs {
 		manager.mu.Unlock()
-		return Job{}, ErrCapacity
+		return Job{}, nil, ErrCapacity
 	}
 	if err := manager.ctx.Err(); err != nil {
 		manager.mu.Unlock()
-		return Job{}, err
+		return Job{}, nil, err
 	}
 	select {
 	case manager.pending <- struct{}{}:
 	default:
 		manager.mu.Unlock()
-		return Job{}, ErrQueueFull
+		return Job{}, nil, ErrQueueFull
 	}
 	if err := os.MkdirAll(manager.root, 0o700); err != nil {
 		manager.mu.Unlock()
 		<-manager.pending
-		return Job{}, err
+		return Job{}, nil, err
 	}
 	if err := manager.save(job); err != nil {
 		manager.mu.Unlock()
 		<-manager.pending
-		return Job{}, err
+		return Job{}, nil, err
 	}
 	ctx, cancel := context.WithCancel(manager.ctx)
 	work := &attempt{ctx, cancel}
@@ -105,7 +117,10 @@ func (manager *Manager) StartSelected(profileID string, item library.Item, quali
 	manager.attempts[job.ID] = work
 	manager.jobs[job.ID] = job
 	manager.mu.Unlock()
-	manager.emit(job)
+	return job, work, nil
+}
+
+func (manager *Manager) enqueue(job Job, item library.Item, work *attempt) (Job, error) {
 	select {
 	case manager.tasks <- task{job: job, item: item, attempt: work}:
 		return job, nil

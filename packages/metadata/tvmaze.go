@@ -106,24 +106,12 @@ func (provider *TVMazeProvider) Fill(ctx context.Context, item library.Item, rec
 	if !ok {
 		return
 	}
-	if record.Title == "" {
-		record.Title = result.Record.Title
-	}
-	if record.Plot == "" {
-		record.Plot = result.Record.Plot
-	}
-	if record.Year == "" {
-		record.Year = result.Record.Year
-	}
-	if record.ShowTitle == "" {
-		record.ShowTitle = result.Record.ShowTitle
-	}
-	if record.ShowYear == "" {
-		record.ShowYear = result.Record.ShowYear
-	}
-	if record.ShowPlot == "" {
-		record.ShowPlot = result.Record.ShowPlot
-	}
+	fillString(&record.Title, result.Record.Title)
+	fillString(&record.Plot, result.Record.Plot)
+	fillString(&record.Year, result.Record.Year)
+	fillString(&record.ShowTitle, result.Record.ShowTitle)
+	fillString(&record.ShowYear, result.Record.ShowYear)
+	fillString(&record.ShowPlot, result.Record.ShowPlot)
 	if record.ProviderIDs == nil {
 		record.ProviderIDs = make(map[string]string)
 	}
