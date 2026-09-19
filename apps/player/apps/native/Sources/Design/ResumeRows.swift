@@ -45,7 +45,10 @@ private struct ResumeRow: View {
         NavigationLink(value: item.playingDestination) {
             HStack(spacing: 12) {
                 if !dynamicType.isAccessibilitySize {
-                    Artwork(path: item.backdrop.isEmpty ? item.poster : item.backdrop, symbol: item.kind.symbol, ratio: 16 / 9, dimension: 800)
+                    let usesBackdrop = !item.backdrop.isEmpty
+                    Artwork(path: usesBackdrop ? item.backdrop : item.poster, symbol: item.kind.symbol,
+                            ratio: usesBackdrop ? 16 / 9 : item.isAudio ? 1 : 2 / 3,
+                            dimension: 800, isBackdrop: usesBackdrop)
                         .frame(width: artworkWidth).clipShape(.rect(cornerRadius: 8))
                 }
                 VStack(alignment: .leading, spacing: 4) {

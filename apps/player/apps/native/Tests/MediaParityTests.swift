@@ -3,6 +3,12 @@ import Testing
 @testable import KinosailPlayer
 
 struct MediaParityTests {
+    @Test func posterArtworkFitsWhileBackdropsFill() {
+        #expect(Artwork.contentMode(isBackdrop: false, fillsFrame: false) == .fit)
+        #expect(Artwork.contentMode(isBackdrop: true, fillsFrame: false) == .fill)
+        #expect(Artwork.contentMode(isBackdrop: false, fillsFrame: true) == .fill)
+    }
+
     @Test func serverDatesAcceptBoundedRFC3339Offsets() throws {
         let utc = try Input.date("2026-09-12T17:12:29.677181668Z")
         #expect(try Input.date("2026-09-12T11:12:29.677181668-06:00") == utc)

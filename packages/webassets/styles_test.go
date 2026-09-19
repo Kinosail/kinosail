@@ -24,6 +24,15 @@ func TestApplicationStylesPreserveFrozenBytes(t *testing.T) {
 	}
 }
 
+func TestForegroundArtworkPreservesItsSourceRatio(t *testing.T) {
+	t.Parallel()
+
+	if !bytes.Contains(LastLightCSS, []byte("body :is(img.poster,.poster img,.card img,.hero-poster){height:auto;object-fit:contain}")) ||
+		!bytes.Contains(LastLightCSS, []byte("body :is(.curation-poster>img,.collection-poster>img){object-fit:contain}")) {
+		t.Fatal("shared light stylesheet does not preserve foreground artwork")
+	}
+}
+
 func TestApplyStylePatchSupportsUnifiedHunks(t *testing.T) {
 	t.Parallel()
 

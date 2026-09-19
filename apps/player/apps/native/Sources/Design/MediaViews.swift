@@ -18,7 +18,11 @@ struct Artwork: View {
     var body: some View {
         canvas
             .overlay {
-                if let image { Image(uiImage: image).resizable().scaledToFill().id(imageIdentity).transition(.opacity) }
+                if let image {
+                    Image(uiImage: image).resizable()
+                        .aspectRatio(contentMode: Self.contentMode(isBackdrop: isBackdrop, fillsFrame: fillsFrame))
+                        .id(imageIdentity).transition(.opacity)
+                }
                 else if !isBackdrop { Rectangle().fill(KinoTheme.surface).overlay { if !loading { Image(systemName: symbol).font(.largeTitle).foregroundStyle(KinoTheme.muted) } } }
             }
             .clipped()
@@ -48,6 +52,10 @@ struct Artwork: View {
         if fillsFrame { Color.clear }
         else { Color.clear.aspectRatio(ratio, contentMode: .fit) }
     }
+
+    static func contentMode(isBackdrop: Bool, fillsFrame: Bool) -> ContentMode {
+        isBackdrop || fillsFrame ? .fill : .fit
+    }
 }
 
 struct MediaCard: View {
@@ -62,9 +70,11 @@ struct MediaCard: View {
     var body: some View {
         NavigationLink(value: resumesPlayback ? item.playingDestination : item.destination) {
             VStack(alignment: .leading, spacing: 10) {
-                Artwork(path: landscape && !item.backdrop.isEmpty ? item.backdrop : item.poster,
-                        symbol: item.kind.symbol, ratio: landscape ? 16 / 9 : item.isAudio ? 1 : 2 / 3,
-                        dimension: landscape || dynamicTypeSize.isAccessibilitySize ? 1600 : 800)
+                let usesBackdrop = landscape && !item.backdrop.isEmpty
+                Artwork(path: usesBackdrop ? item.backdrop : item.poster,
+                        symbol: item.kind.symbol, ratio: usesBackdrop ? 16 / 9 : item.isAudio ? 1 : 2 / 3,
+                        dimension: landscape || dynamicTypeSize.isAccessibilitySize ? 1600 : 800,
+                        isBackdrop: usesBackdrop)
                     .clipShape(.rect(cornerRadius: 12))
                 VStack(alignment: .leading, spacing: 8) {
                     Text(item.title).font(.headline).foregroundStyle(KinoTheme.text)

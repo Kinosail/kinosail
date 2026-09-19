@@ -140,3 +140,6 @@ body :is(.button.quiet,.quiet-button){border-radius:12px}
 body .app-header nav a.active::after{background:var(--signal)}
 body .home-shelf>header>a{color:var(--signal)}
 body :is(.settings-intro,.library-masthead,.dashboard-masthead) h1,body .library-masthead h2{font-weight:750}
+/* Keep foreground posters visible at their source ratio; only cinematic backdrops may fill and crop. */
+body :is(img.poster,.poster img,.card img,.hero-poster){height:auto;object-fit:contain}
+body :is(.curation-poster>img,.collection-poster>img){object-fit:contain}
