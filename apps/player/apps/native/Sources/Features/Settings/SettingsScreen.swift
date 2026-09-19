@@ -16,7 +16,7 @@ struct SettingsScreen: View {
                 if let client = session.client { Text(client.server.url.absoluteString).font(.caption).foregroundStyle(.secondary) }
                 Button("Change Server", systemImage: "network") { session.showsSetup = true }
                 #if os(tvOS)
-                Text("Each Apple TV user connects to their own Viewer Profile. Switch users in Apple TV Control Center.")
+                Text("Everyone using this Apple TV shares the connected Viewer Profile, including its library access and watch history.")
                     .font(.footnote).foregroundStyle(.secondary)
                 #endif
                 NavigationLink("Connect a TV", value: ScreenDestination.approval)
@@ -25,7 +25,7 @@ struct SettingsScreen: View {
                 NavigationLink("Customize tabs", value: ScreenDestination.tabPreferences)
                 #if os(tvOS)
                 Toggle("Show titles on Apple TV Home", isOn: $topShelf)
-                Text("Show Continue watching, My List and recent titles when Kinosail is selected in the top row. Titles and artwork are visible to anyone using this Apple TV user.")
+                Text("Show Continue watching, My List and recent titles when Kinosail is selected in the top row. Titles and artwork are visible to anyone using this Apple TV.")
                     .font(.footnote).foregroundStyle(.secondary)
                 #endif
             }

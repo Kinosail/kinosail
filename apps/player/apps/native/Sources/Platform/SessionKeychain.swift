@@ -32,8 +32,8 @@ actor SessionKeychain {
     private let service: String
     init(service: String = "com.kinosail.player.swift.session.v1") { self.service = service }
     private var query: [String: Any] {
-        // The tvOS user-management entitlement makes the default Keychain per-user.
-        // Never opt Viewer Profile tokens into kSecUseUserIndependentKeychain.
+        // Apple TV uses one shared Viewer Profile on this device.
+        // Keep its token in the app Keychain, never the Top Shelf App Group.
         [kSecClass as String: kSecClassGenericPassword, kSecAttrService as String: service,
          kSecAttrAccount as String: "active", kSecAttrSynchronizable as String: false]
     }
