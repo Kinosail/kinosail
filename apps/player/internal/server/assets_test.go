@@ -56,7 +56,7 @@ func TestPagesUseSharedModernStyles(t *testing.T) {
 	for body, fragments := range map[string][]string{
 		page.Body.String():     {`class="brand-mark"`},
 		styles.Body.String():   {"--signal:#c8f169", "--focus:#e4ff9c", `url("/static/cinema-backdrop.jpg")`, "flex-wrap:wrap", ".resume-link:focus-visible", ".resume-action"},
-		home.Body.String():     {`class="library-masthead"`, `/static/app.css?v=electric-14`},
+		home.Body.String():     {`class="home-sections"`, `/static/app.css?v=electric-15`},
 		settings.Body.String(): {"settings-page"},
 	} {
 		for _, fragment := range fragments {
@@ -64,6 +64,9 @@ func TestPagesUseSharedModernStyles(t *testing.T) {
 				t.Fatalf("asset contract missing %q: %q", fragment, body)
 			}
 		}
+	}
+	if strings.Contains(home.Body.String(), "Your evening.") {
+		t.Fatal("home still renders the removed greeting")
 	}
 	backdrop := httptest.NewRecorder()
 	handler.ServeHTTP(backdrop, httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/static/cinema-backdrop.jpg", nil))
