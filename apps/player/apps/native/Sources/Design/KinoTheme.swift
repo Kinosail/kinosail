@@ -12,6 +12,16 @@ enum KinoTheme {
     static let signal = adaptive(dark: 0xC4FF47, light: 0x3C6100, highDark: 0xDAFF98, highLight: 0x304E00)
     static let signalInk = adaptive(dark: 0x142000, light: 0xFFFFFF)
 
+    // tvOS uses dark label ink on focused bordered controls. A dark surface
+    // tint makes that system focus state unreadable. Keep its fill light.
+    static var secondaryControlTint: Color {
+        #if os(tvOS)
+        .white
+        #else
+        raised
+        #endif
+    }
+
     static var contentPadding: CGFloat {
         #if os(tvOS)
         64

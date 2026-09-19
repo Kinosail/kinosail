@@ -35,7 +35,7 @@ private struct DetailContent: View {
             information
                 .frame(maxWidth: 900, alignment: .leading)
                 #if os(tvOS)
-                .buttonStyle(.bordered).tint(KinoTheme.raised).foregroundStyle(KinoTheme.text)
+                .buttonStyle(.bordered).tint(KinoTheme.secondaryControlTint).foregroundStyle(KinoTheme.text)
                 #endif
             CastShelf(people: item.cast ?? [])
         }
@@ -74,10 +74,10 @@ private struct DetailContent: View {
         Button {
             change { client in listed = try await client.setListed(itemID: item.id, listed: !(listed ?? detail.listed)) }
         } label: { Label((listed ?? detail.listed) ? "In My List" : "My List", systemImage: (listed ?? detail.listed) ? "checkmark" : "plus") }
-            .buttonStyle(.bordered).buttonBorderShape(.capsule).tint(KinoTheme.raised).foregroundStyle(KinoTheme.text).disabled(busy)
+            .buttonStyle(.bordered).buttonBorderShape(.capsule).tint(KinoTheme.secondaryControlTint).foregroundStyle(KinoTheme.text).disabled(busy)
         #if os(iOS)
         if session.viewer?.downloads == true && (item.kind == .video || item.isAudio) {
-            Button { showsDownloads = true } label: { Label("Download", systemImage: "arrow.down") }.buttonStyle(.bordered).buttonBorderShape(.capsule).tint(KinoTheme.raised).foregroundStyle(KinoTheme.text)
+            Button { showsDownloads = true } label: { Label("Download", systemImage: "arrow.down") }.buttonStyle(.bordered).buttonBorderShape(.capsule).tint(KinoTheme.secondaryControlTint).foregroundStyle(KinoTheme.text)
         }
         #endif
     }

@@ -39,7 +39,7 @@ struct LibraryQuickLinks: View {
                 LibraryDestinationLink("Music", "music.note", .library(.music))
                 LibraryDestinationLink("All media", "square.grid.2x2", .library(.all))
             }
-            .buttonStyle(.bordered).buttonBorderShape(.capsule).tint(KinoTheme.raised).foregroundStyle(KinoTheme.text)
+            .buttonStyle(.bordered).buttonBorderShape(.capsule).tint(KinoTheme.secondaryControlTint).foregroundStyle(KinoTheme.text)
             .padding(.vertical, 8)
         }
         .scrollIndicators(.hidden)

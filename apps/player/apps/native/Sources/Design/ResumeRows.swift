@@ -11,7 +11,7 @@ struct ResumeRows: View {
                 NavigationLink("See all", value: ScreenDestination.library(.history))
                     .font(.callout).frame(minHeight: 44)
                     #if os(tvOS)
-                    .buttonStyle(.bordered).tint(KinoTheme.raised).foregroundStyle(KinoTheme.text)
+                    .buttonStyle(.bordered).tint(KinoTheme.secondaryControlTint).foregroundStyle(KinoTheme.text)
                     #else
                     .foregroundStyle(KinoTheme.signal)
                     #endif

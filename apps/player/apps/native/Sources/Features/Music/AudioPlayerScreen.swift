@@ -34,16 +34,16 @@ struct AudioPlayerScreen: View {
                         HStack { Text(session.player.seconds.clock); Spacer(); Text(session.player.duration.clock) }.font(.caption.monospacedDigit()).foregroundStyle(.secondary)
                     }
                     HStack(spacing: 12) {
-                        Button("Back 15 seconds", systemImage: "gobackward.15") { perform { try await session.player.seek(to: max(0, session.player.seconds - 15)) } }.labelStyle(.iconOnly).buttonStyle(.bordered).buttonBorderShape(.capsule).tint(KinoTheme.raised).foregroundStyle(KinoTheme.text).controlSize(.large)
+                        Button("Back 15 seconds", systemImage: "gobackward.15") { perform { try await session.player.seek(to: max(0, session.player.seconds - 15)) } }.labelStyle(.iconOnly).buttonStyle(.bordered).buttonBorderShape(.capsule).tint(KinoTheme.secondaryControlTint).foregroundStyle(KinoTheme.text).controlSize(.large)
                         Button(session.player.isPlaying ? "Pause" : "Play", systemImage: session.player.isPlaying ? "pause.fill" : "play.fill") { session.player.togglePlayback() }
                             .labelStyle(.iconOnly).font(.largeTitle).buttonStyle(.borderedProminent).buttonBorderShape(.capsule).tint(KinoTheme.signal).foregroundStyle(KinoTheme.signalInk)
-                        Button("Forward 30 seconds", systemImage: "goforward.30") { perform { try await session.player.seek(to: min(session.player.duration, session.player.seconds + 30)) } }.labelStyle(.iconOnly).buttonStyle(.bordered).buttonBorderShape(.capsule).tint(KinoTheme.raised).foregroundStyle(KinoTheme.text).controlSize(.large)
+                        Button("Forward 30 seconds", systemImage: "goforward.30") { perform { try await session.player.seek(to: min(session.player.duration, session.player.seconds + 30)) } }.labelStyle(.iconOnly).buttonStyle(.bordered).buttonBorderShape(.capsule).tint(KinoTheme.secondaryControlTint).foregroundStyle(KinoTheme.text).controlSize(.large)
                     }.font(.title2).disabled(session.player.player == nil)
                     if item.kind == .music {
                         HStack(spacing: 24) {
                             Button("Previous", systemImage: "backward.end.fill") { perform { try await session.player.previousTrack() } }
                             Button("Next", systemImage: "forward.end.fill") { perform { try await session.player.nextTrack() } }
-                        }.labelStyle(.iconOnly).font(.title2).buttonStyle(.bordered).buttonBorderShape(.capsule).tint(KinoTheme.raised).foregroundStyle(KinoTheme.text).controlSize(.large).disabled(session.player.player == nil)
+                        }.labelStyle(.iconOnly).font(.title2).buttonStyle(.bordered).buttonBorderShape(.capsule).tint(KinoTheme.secondaryControlTint).foregroundStyle(KinoTheme.text).controlSize(.large).disabled(session.player.player == nil)
                     }
                     ViewThatFits(in: .horizontal) {
                         HStack(spacing: 12) { audioOptions(item) }
@@ -116,8 +116,8 @@ struct MiniPlayer: View {
                         VStack(alignment: .leading) { Text(item.title).font(.headline).lineLimit(1); Text(item.artist).font(.caption).foregroundStyle(.secondary).lineLimit(1) }
                     }.frame(maxWidth: .infinity, alignment: .leading)
                 }.buttonStyle(.plain).accessibilityLabel("Now playing: \(item.title)")
-                Button(session.player.isPlaying ? "Pause" : "Play", systemImage: session.player.isPlaying ? "pause.fill" : "play.fill") { session.player.togglePlayback() }.labelStyle(.iconOnly).buttonStyle(.bordered).buttonBorderShape(.capsule).tint(KinoTheme.raised).foregroundStyle(KinoTheme.text).controlSize(.large)
-                Button("Stop", systemImage: "xmark") { session.player.stop(); session.contentRevision = UUID() }.labelStyle(.iconOnly).buttonStyle(.bordered).buttonBorderShape(.capsule).tint(KinoTheme.raised).foregroundStyle(KinoTheme.text).controlSize(.large)
+                Button(session.player.isPlaying ? "Pause" : "Play", systemImage: session.player.isPlaying ? "pause.fill" : "play.fill") { session.player.togglePlayback() }.labelStyle(.iconOnly).buttonStyle(.bordered).buttonBorderShape(.capsule).tint(KinoTheme.secondaryControlTint).foregroundStyle(KinoTheme.text).controlSize(.large)
+                Button("Stop", systemImage: "xmark") { session.player.stop(); session.contentRevision = UUID() }.labelStyle(.iconOnly).buttonStyle(.bordered).buttonBorderShape(.capsule).tint(KinoTheme.secondaryControlTint).foregroundStyle(KinoTheme.text).controlSize(.large)
             }
             .padding(.horizontal, 24).padding(.vertical, 10).background(.regularMaterial)
             .sheet(isPresented: $expanded) { NavigationStack { AudioPlayerScreen(itemID: item.id) }.presentationSizing(.page) }

@@ -75,7 +75,7 @@ struct LibraryScreen: View {
                     if let failure { Text(failure).foregroundStyle(KinoTheme.muted) }
                     if let page, page.offset + page.items.count < page.total {
                         Button(loading ? "Loading more…" : "Load more") { Task { await load(reset: false) } }
-                            .buttonStyle(.bordered).buttonBorderShape(.capsule).tint(KinoTheme.raised).foregroundStyle(KinoTheme.text).disabled(loading)
+                            .buttonStyle(.bordered).buttonBorderShape(.capsule).tint(KinoTheme.secondaryControlTint).foregroundStyle(KinoTheme.text).disabled(loading)
                     }
                 }
             }
@@ -108,7 +108,7 @@ struct LibraryScreen: View {
                     TextField("Search your library", text: $draftQuery).onSubmit { query = draftQuery; showsSearch = false }
                     Button("Search") { query = draftQuery; showsSearch = false }
                         .buttonStyle(.borderedProminent).tint(KinoTheme.signal).foregroundStyle(KinoTheme.signalInk)
-                    Button("Cancel") { showsSearch = false }.tint(KinoTheme.raised).foregroundStyle(KinoTheme.text)
+                    Button("Cancel") { showsSearch = false }.tint(KinoTheme.secondaryControlTint).foregroundStyle(KinoTheme.text)
                 }.navigationTitle("Search library")
             }
         }
@@ -144,15 +144,15 @@ struct LibraryScreen: View {
         }
         #else
         Button { draftQuery = query; showsSearch = true } label: { Label("Search", systemImage: "magnifyingglass") }
-            .buttonStyle(.bordered).tint(KinoTheme.raised).foregroundStyle(KinoTheme.text)
+            .buttonStyle(.bordered).tint(KinoTheme.secondaryControlTint).foregroundStyle(KinoTheme.text)
         NavigationLink { LibraryHubScreen() } label: { Label("Browse library", systemImage: "square.grid.2x2") }
-            .buttonStyle(.bordered).tint(KinoTheme.raised).foregroundStyle(KinoTheme.text)
+            .buttonStyle(.bordered).tint(KinoTheme.secondaryControlTint).foregroundStyle(KinoTheme.text)
         #endif
         #if os(tvOS)
         Menu {
             sortPicker
         } label: { Label("Sort: \(sort.title)", systemImage: "arrow.up.arrow.down") }
-            .tint(KinoTheme.raised).foregroundStyle(KinoTheme.text)
+            .tint(KinoTheme.secondaryControlTint).foregroundStyle(KinoTheme.text)
         #else
         sortPicker
         #endif
@@ -163,14 +163,14 @@ struct LibraryScreen: View {
             }
             .buttonStyle(.bordered)
             .buttonBorderShape(.capsule)
-            .tint(KinoTheme.raised)
+            .tint(KinoTheme.secondaryControlTint)
             .foregroundStyle(KinoTheme.text)
             #else
             Menu("Jump to letter", systemImage: "textformat.abc") {
                 ForEach(page.letters) { letter in
                     Button("\(letter.label) · \(letter.count)") { Task { await load(reset: true, start: letter.offset) } }
                 }
-            }.tint(KinoTheme.raised).foregroundStyle(KinoTheme.text)
+            }.tint(KinoTheme.secondaryControlTint).foregroundStyle(KinoTheme.text)
             #endif
         }
     }
@@ -259,7 +259,7 @@ private struct LetterJumpSheet: View {
                             }
                             .buttonStyle(.bordered)
                             .buttonBorderShape(.roundedRectangle(radius: 14))
-                            .tint(KinoTheme.raised)
+                            .tint(KinoTheme.secondaryControlTint)
                             .foregroundStyle(KinoTheme.text)
                         }
                     }

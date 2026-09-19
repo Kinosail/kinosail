@@ -12,7 +12,7 @@ struct HomeScreen: View {
                 NavigationLink("My List", value: ScreenDestination.library(.list))
                     .font(.callout).frame(minHeight: 44)
                     #if os(tvOS)
-                    .buttonStyle(.bordered).tint(KinoTheme.raised).foregroundStyle(KinoTheme.text)
+                    .buttonStyle(.bordered).tint(KinoTheme.secondaryControlTint).foregroundStyle(KinoTheme.text)
                     #else
                     .foregroundStyle(KinoTheme.muted)
                     #endif
@@ -31,7 +31,7 @@ struct HomeScreen: View {
                             NavigationLink(value: featured.playingDestination) {
                                 Label(featured.playLabel, systemImage: featured.kind == .book ? "book.fill" : "play.fill").frame(maxWidth: .infinity)
                             }.buttonStyle(.borderedProminent).buttonBorderShape(.capsule).tint(KinoTheme.signal).foregroundStyle(KinoTheme.signalInk)
-                            NavigationLink("Details", value: featured.destination).buttonStyle(.bordered).buttonBorderShape(.capsule).tint(KinoTheme.raised).foregroundStyle(KinoTheme.text)
+                            NavigationLink("Details", value: featured.destination).buttonStyle(.bordered).buttonBorderShape(.capsule).tint(KinoTheme.secondaryControlTint).foregroundStyle(KinoTheme.text)
                         }
                     }
                     if !home.continueWatching.isEmpty {
