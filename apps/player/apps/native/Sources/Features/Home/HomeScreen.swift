@@ -3,6 +3,9 @@ import SwiftUI
 struct HomeScreen: View {
     var showsSearch = true
     @Environment(AppSession.self) private var session
+    #if os(tvOS)
+    @Namespace private var homeFocus
+    #endif
     var body: some View {
         ScrollView {
             HStack(spacing: 28) {
@@ -31,6 +34,9 @@ struct HomeScreen: View {
                             NavigationLink(value: featured.playingDestination) {
                                 Label(featured.playLabel, systemImage: featured.kind == .book ? "book.fill" : "play.fill").frame(maxWidth: .infinity)
                             }.buttonStyle(.borderedProminent).buttonBorderShape(.capsule).tint(KinoTheme.signal).foregroundStyle(KinoTheme.signalInk)
+                            #if os(tvOS)
+                            .tvOSDefaultPlayFocus(in: homeFocus, enabled: featured.kind == .video || featured.isAudio)
+                            #endif
                             NavigationLink("Details", value: featured.destination).buttonStyle(.bordered).buttonBorderShape(.capsule).tint(KinoTheme.secondaryControlTint).foregroundStyle(KinoTheme.text)
                         }
                     }
@@ -57,6 +63,7 @@ struct HomeScreen: View {
         }
         .cinemaBackground()
         #if os(tvOS)
+        .focusScope(homeFocus)
         .navigationTitle("")
         #else
         .navigationTitle("Kinosail")

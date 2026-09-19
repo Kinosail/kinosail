@@ -9,6 +9,9 @@ struct AudioPlayerScreen: View {
     @State private var showsTools = false
     @State private var seekValue: Double = 0
     @State private var seeking = false
+    #if os(tvOS)
+    @Namespace private var audioFocus
+    #endif
     private var upcoming: [MediaItem] { Array(session.player.queue.items.dropFirst((session.player.queue.currentIndex ?? 0) + 1).prefix(20)) }
 
     var body: some View {
@@ -37,6 +40,9 @@ struct AudioPlayerScreen: View {
                         Button("Back 15 seconds", systemImage: "gobackward.15") { perform { try await session.player.seek(to: max(0, session.player.seconds - 15)) } }.labelStyle(.iconOnly).buttonStyle(.bordered).buttonBorderShape(.capsule).tint(KinoTheme.secondaryControlTint).foregroundStyle(KinoTheme.text).controlSize(.large)
                         Button(session.player.isPlaying ? "Pause" : "Play", systemImage: session.player.isPlaying ? "pause.fill" : "play.fill") { session.player.togglePlayback() }
                             .labelStyle(.iconOnly).font(.largeTitle).buttonStyle(.borderedProminent).buttonBorderShape(.capsule).tint(KinoTheme.signal).foregroundStyle(KinoTheme.signalInk)
+                            #if os(tvOS)
+                            .tvOSDefaultPlayFocus(in: audioFocus, enabled: !session.player.isPlaying && session.player.player != nil)
+                            #endif
                         Button("Forward 30 seconds", systemImage: "goforward.30") { perform { try await session.player.seek(to: min(session.player.duration, session.player.seconds + 30)) } }.labelStyle(.iconOnly).buttonStyle(.bordered).buttonBorderShape(.capsule).tint(KinoTheme.secondaryControlTint).foregroundStyle(KinoTheme.text).controlSize(.large)
                     }.font(.title2).disabled(session.player.player == nil)
                     if item.kind == .music {
@@ -62,6 +68,9 @@ struct AudioPlayerScreen: View {
             } else { LoadingState(title: "Opening audio…").padding(KinoTheme.contentPadding) }
         }
         .navigationTitle("Now playing")
+        #if os(tvOS)
+        .focusScope(audioFocus)
+        #endif
         .toolbar { ToolbarItem(placement: .primaryAction) { Button("Playback options", systemImage: "ellipsis.circle") { showsTools = true } } }
         .sheet(isPresented: $showsTools) { NavigationStack { PlaybackToolsScreen() } }
         .task(id: "\(itemID):\(revision)") { await load() }

@@ -34,6 +34,9 @@ struct AlbumScreen: View {
     @State private var message: String?
     @State private var starting = false
     @State private var showsPlayer = false
+    #if os(tvOS)
+    @Namespace private var albumFocus
+    #endif
 
     var body: some View {
         ScrollView {
@@ -56,12 +59,18 @@ struct AlbumScreen: View {
                                 Image(systemName: session.player.currentItem?.id == item.id && session.player.isPlaying ? "waveform" : "play.fill")
                             }.padding(.vertical, 12).contentShape(.rect)
                         }.buttonStyle(.plain).disabled(starting)
+                        #if os(tvOS)
+                        .tvOSDefaultPlayFocus(in: albumFocus, enabled: index == 0)
+                        #endif
                         Divider()
                     }
                 }.frame(maxWidth: 1100, alignment: .leading).frame(maxWidth: .infinity)
             }.padding(KinoTheme.contentPadding)
         }
         .navigationTitle("Album")
+        #if os(tvOS)
+        .focusScope(albumFocus)
+        #endif
         .sheet(isPresented: $showsPlayer) { if let item = session.player.currentItem { NavigationStack { AudioPlayerScreen(itemID: item.id) }.presentationSizing(.page) } }
     }
 

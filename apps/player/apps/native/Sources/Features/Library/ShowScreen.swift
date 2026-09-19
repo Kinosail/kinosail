@@ -4,6 +4,9 @@ struct ShowScreen: View {
     let showID: String
     @Environment(AppSession.self) private var session
     @State private var selectedSeason: Int?
+    #if os(tvOS)
+    @Namespace private var showFocus
+    #endif
     #if os(iOS)
     @State private var downloading = false
     @State private var message: String?
@@ -23,6 +26,9 @@ struct ShowScreen: View {
                                 NavigationLink(value: ScreenDestination.playback(next.id)) {
                                     Label("\(next.playLabel) · S\(next.season) E\(next.episode)", systemImage: "play.fill")
                                 }.buttonStyle(.borderedProminent).buttonBorderShape(.capsule).tint(KinoTheme.signal).foregroundStyle(KinoTheme.signalInk)
+                                #if os(tvOS)
+                                .tvOSDefaultPlayFocus(in: showFocus)
+                                #endif
                             }
                         }
                         CastShelf(people: show.cast)
@@ -53,6 +59,9 @@ struct ShowScreen: View {
             .padding(KinoTheme.contentPadding)
         }
         .cinemaBackground()
+        #if os(tvOS)
+        .focusScope(showFocus)
+        #endif
         .navigationTitle("Seasons & episodes")
     }
 }

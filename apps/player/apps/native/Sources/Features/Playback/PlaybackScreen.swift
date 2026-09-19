@@ -93,6 +93,9 @@ struct PlaybackToolsScreen: View {
     @Environment(AppSession.self) private var session
     @Environment(\.dismiss) private var dismiss
     @State private var message: String?
+    #if os(tvOS)
+    @Namespace private var playbackToolsFocus
+    #endif
 
     var body: some View {
         List {
@@ -121,12 +124,19 @@ struct PlaybackToolsScreen: View {
                             guard let client = session.client, let store = session.progress else { throw ClientError.unavailable }
                             try await session.player.play(client.item(id: next), client: client, store: store)
                             dismiss()
-                        } } }
+                        } }
+                        #if os(tvOS)
+                        .tvOSDefaultPlayFocus(in: playbackToolsFocus)
+                        #endif
+                        }
                     }
                 }
             }
         }
         .navigationTitle("Playback options")
+        #if os(tvOS)
+        .focusScope(playbackToolsFocus)
+        #endif
         .toolbar { ToolbarItem(placement: .cancellationAction) { Button("Done") { dismiss() } } }
         .navigationDestination(for: ScreenDestination.self) { DestinationScreen(destination: $0) }
     }

@@ -9,6 +9,9 @@ struct PlayOnTVScreen: View {
     @State private var scanned = false
     @State private var message: String?
     @State private var seekPosition = 0.0
+    #if os(tvOS)
+    @Namespace private var castFocus
+    #endif
 
     var body: some View {
         List {
@@ -30,6 +33,9 @@ struct PlayOnTVScreen: View {
                         Text("\(status.state.rawValue.capitalized) · \(status.position.clock) / \(status.duration.clock)")
                         HStack {
                             Button("Play", systemImage: "play.fill") { perform { try await session.casting.command(.play) } }
+                                #if os(tvOS)
+                                .tvOSDefaultPlayFocus(in: castFocus)
+                                #endif
                             Button("Pause", systemImage: "pause.fill") { perform { try await session.casting.command(.pause) } }
                             Button("Stop", systemImage: "stop.fill") { perform { try await session.casting.command(.stop) } }
                         }.disabled(session.casting.busy)
@@ -60,6 +66,9 @@ struct PlayOnTVScreen: View {
             if let message { Section { Text(message).foregroundStyle(.secondary) } }
         }
         .navigationTitle("Play on TV")
+        #if os(tvOS)
+        .focusScope(castFocus)
+        #endif
         .onChange(of: session.casting.session?.id) { _, _ in seekPosition = session.casting.session?.position ?? 0 }
     }
 
