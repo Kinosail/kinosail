@@ -7,6 +7,8 @@ import (
 	"slices"
 	"strings"
 	"testing"
+
+	"github.com/MikeO7/kinosail/packages/library"
 )
 
 func listOperationStorage(persist func(string, any) error) ListStorage {
@@ -127,6 +129,48 @@ func TestListOperationsPreserveOrderIsolationAndCommitDocuments(t *testing.T) {
 		t.Fatal("order aliases input")
 	}
 	assertListCurationAndDeletion(t, storage, run)
+}
+
+func TestCollectionOperationsPreserveMembershipExclusionsAndAtomicCommit(t *testing.T) {
+	t.Parallel()
+	var documents []string
+	storage := listOperationStorage(func(path string, _ any) error {
+		documents = append(documents, path)
+		return nil
+	})
+	if err := storage.CreateCollection(t.Context(), " Shelf "); err != nil {
+		t.Fatal(err)
+	}
+	collection, found := (*storage.Playlists)["collection:Shelf"]
+	if !slices.Contains(documents, "playlists") || !found || collection["!collection"] {
+		t.Fatalf("created collection = %#v, documents = %v", *storage.Playlists, documents)
+	}
+	item := library.Item{ID: "item", Collection: "Shelf"}
+	if err := storage.SetCollection(t.Context(), "Shelf", item, true); err != nil {
+		t.Fatal(err)
+	}
+	if !(*storage.Playlists)["collection:Shelf"][item.ID] {
+		t.Fatal("included item was not persisted")
+	}
+	if err := storage.SetCollection(t.Context(), "Shelf", item, false); err != nil {
+		t.Fatal(err)
+	}
+	if (*storage.Playlists)["collection:Shelf"][item.ID] || !(*storage.Playlists)["collection:Shelf"]["!"+item.ID] {
+		t.Fatal("collection exclusion was not persisted")
+	}
+	if err := storage.DeleteCollection(t.Context(), "Shelf", []library.Item{item}); err != nil {
+		t.Fatal(err)
+	}
+	if !(*storage.Playlists)["collection:Shelf"]["!collection"] || !slices.Equal(documents, []string{"playlists", "playlists", "playlists", "playlists"}) {
+		t.Fatalf("deleted collection = %#v, documents = %v", *storage.Playlists, documents)
+	}
+
+	failure := errors.New("storage blocked")
+	failed := listOperationStorage(func(string, any) error { return failure })
+	before := failed.State()
+	if err := failed.CreateCollection(t.Context(), "New"); !errors.Is(err, failure) || !reflect.DeepEqual(before, failed.State()) {
+		t.Fatal("failed Collection commit changed memory")
+	}
 }
 
 func assertListCurationAndDeletion(t *testing.T, storage ListStorage, run func(func(context.Context) error, ...string)) {

@@ -78,7 +78,7 @@ func (handlers PlaylistHandlers) Browse(writer http.ResponseWriter, request *htt
 	if smart {
 		mode, description = "Smart", DescribePlaylistRule(rule)
 	} else {
-		candidates = PlaylistCandidates(items, members, query)
+		candidates = CurationCandidates(items, members, query)
 	}
 	writer.Header().Set("Content-Type", "text/html; charset=utf-8")
 	if err := handlers.config.Render(writer, request, PlaylistPage{
@@ -168,8 +168,8 @@ func ParseCurationQuery(values url.Values) (string, error) {
 	return SingleValue(values, "q", 200)
 }
 
-// PlaylistCandidates returns bounded visible items not already in a manual playlist.
-func PlaylistCandidates(items, members []library.Item, query string) []library.Item {
+// CurationCandidates returns bounded visible items not already in a curation.
+func CurationCandidates(items, members []library.Item, query string) []library.Item {
 	if query == "" {
 		return nil
 	}
