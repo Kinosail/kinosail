@@ -275,30 +275,3 @@ body[data-tv-active=true] .player-controls{display:none!important}
 .request-skeleton:after{content:"";position:absolute;z-index:8;inset:0;pointer-events:none;background:linear-gradient(var(--line),var(--line)) 1rem 1.5rem/45% 1.5rem no-repeat,linear-gradient(var(--line),var(--line)) 1rem 4.5rem/85% .8rem no-repeat,linear-gradient(var(--line),var(--line)) 1rem 6.5rem/65% .8rem no-repeat,var(--bg)}
 button[aria-busy=true]:after{content:"";display:inline-block;width:2rem;height:.5rem;margin-inline-start:.5rem;border-radius:3px;background:currentColor;opacity:.35}
 @media(forced-colors:active){.buffer-skeleton,.pagination[aria-busy=true] [data-library-next]:after{background:GrayText}.request-skeleton:after{border:1px solid GrayText}}
-
-/* Playback comes first; inline utility actions sit beneath the picture. */
-.player-page .title-block{margin:1.5rem 0 1rem;padding:0;border-radius:0;background:none;backdrop-filter:none;width:auto}
-.player-page .title-block h1{max-width:100%;font-size:clamp(1.75rem,3vw,2.75rem);line-height:1.15;letter-spacing:-.035em;text-shadow:none;overflow-wrap:anywhere;text-wrap:pretty}
-.player-page .title-block h1 small{font-size:.5em;white-space:nowrap}
-.player-page .primary-player-actions{background:transparent!important;box-shadow:none;backdrop-filter:none}
-.player-page .primary-action-row form button{background:var(--surface);border:1px solid var(--line);color:var(--text);border-radius:10px}
-.player-page:not(.player-theater) .media-stage:has(>video):not(:fullscreen){display:grid;grid-template-columns:minmax(0,1fr);aspect-ratio:auto;background:#000;border-radius:12px;box-shadow:none}
-.player-page:not(.player-theater) .media-stage:not(:fullscreen)>video{grid-area:1/1;aspect-ratio:16/9;height:auto}
-.player-page:not(.player-theater) .media-stage:not(:fullscreen)>.player-stage-toolbar{position:relative;grid-area:2/1;flex-wrap:wrap;gap:.5rem;padding:.5rem .75rem;background:var(--bg);color:var(--text)}
-.player-page:not(.player-theater) .media-stage:not(:fullscreen)>.player-stage-toolbar>strong{display:none}
-.player-page:not(.player-theater) .media-stage:not(:fullscreen)>.player-stage-toolbar button{min-height:44px;background:transparent;color:var(--text);border-color:var(--line)}
-.player-page:not(.player-theater) .media-stage:not(:fullscreen) .player-mode-status{margin-left:0;margin-right:auto;max-width:100%;font-weight:600}
-.player-page:not(.player-theater) .media-stage:not(:fullscreen)>.player-controls,
-.player-page:not(.player-theater) .media-stage:not(:fullscreen)>.marker-actions,
-.player-page:not(.player-theater) .media-stage:not(:fullscreen)>.player-settings{grid-area:1/1/2/2}
-.player-page:not(.player-theater) .media-stage:not(:fullscreen)>.player-buffer{position:relative;grid-area:1/1;place-self:center;top:auto;left:auto;transform:none;box-sizing:border-box;margin:.6rem;min-width:0;width:min(20rem,calc(100% - 1.2rem))}
-.player-page .player-buffer .buffer-skeleton{width:3rem;height:.5rem;border:0;border-radius:3px;background:currentColor;opacity:.35}
-@media(forced-colors:active){.player-page .player-buffer{background:Canvas;color:CanvasText;border-color:CanvasText}.player-page .player-buffer .buffer-skeleton{background:GrayText}}
-@media(max-width:700px){
-  .player-page .player-shell{padding-top:max(.75rem,env(safe-area-inset-top));padding-inline:max(.75rem,env(safe-area-inset-left)) max(.75rem,env(safe-area-inset-right))}
-  .player-page .title-block{margin-top:1.25rem}
-  .player-page:not(.player-theater) .media-stage:not(:fullscreen){margin-inline:0}
-  .player-page:not(.player-theater) .media-stage.has-settings:not(:fullscreen)>.player-settings{grid-area:auto;top:100%}
-}
-
-.player-control-feedback{position:absolute;z-index:6;top:3rem;left:1rem;right:1rem;margin:0;padding:.75rem;background:var(--overlay);color:var(--text);border:1px solid var(--line);border-radius:10px;pointer-events:none}.player-control-feedback[hidden]{display:none}.player-controls button:disabled{opacity:.45;cursor:default}.media-stage:focus-visible{outline:2px solid var(--focus);outline-offset:2px}

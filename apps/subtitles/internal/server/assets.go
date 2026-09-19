@@ -25,7 +25,10 @@ var (
 	//go:embed static/subtitle-inspector.css
 	subtitleInspectorCSS []byte
 	//go:embed static/subtitle-dashboard.css
-	subtitleDashboardCSS []byte
+	subtitleDashboardBaseCSS []byte
+	//go:embed static/subtitle-workspace.css
+	subtitleWorkspaceCSS []byte
+	subtitleDashboardCSS = append(append([]byte(nil), subtitleDashboardBaseCSS...), subtitleWorkspaceCSS...)
 	//go:embed static/hls.min.js
 	hlsJS []byte
 	//go:embed static/manifest.webmanifest

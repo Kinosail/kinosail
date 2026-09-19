@@ -1,7 +1,7 @@
 import { expect, test } from "@playwright/test";
 import { readStaticSource } from "./static-sources";
 
-const css = await readStaticSource(["../../../packages/webassets/static/player-app.css"]);
+const css = await readStaticSource(["../../../packages/webassets/static/player-app.css", "../../../packages/webassets/static/player-stage.css"]);
 
 for (const width of [320, 390, 430, 700, 1024]) {
   for (const recovery of [false, true]) {

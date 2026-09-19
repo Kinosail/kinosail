@@ -6,7 +6,7 @@ final class NowPlayingController {
     private var handlers: [(MPRemoteCommand, Any)] = []
     private var metadata: [String: Any] = [:]
 
-    func activate(item: MediaItem, coordinator: PlaybackCoordinator) {
+    func activate(item: MediaItem, coordinator: PlaybackEngine) {
         deactivate()
         metadata = [MPMediaItemPropertyTitle: item.title, MPMediaItemPropertyArtist: item.artist,
                     MPMediaItemPropertyAlbumTitle: item.album, MPNowPlayingInfoPropertyIsLiveStream: false,

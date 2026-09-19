@@ -132,6 +132,9 @@ func serveAsset(prefix string) http.HandlerFunc {
 			http.NotFound(writer, request)
 			return
 		}
+		if path == "web/static/dashboard.css" {
+			data = dashboardCSS
+		}
 		contentType := mime.TypeByExtension(filepath.Ext(name))
 		if contentType == "" {
 			contentType = "application/octet-stream"

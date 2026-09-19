@@ -11,7 +11,10 @@ import (
 
 var (
 	//go:embed static/player-app.css
-	PlayerCSS []byte
+	playerBaseCSS []byte
+	//go:embed static/player-stage.css
+	playerStageCSS []byte
+	PlayerCSS      = append(append([]byte(nil), playerBaseCSS...), playerStageCSS...)
 	//go:embed static/subtitles-app.css.patch
 	subtitlesCSSPatch []byte
 
