@@ -2,10 +2,21 @@
 import SwiftUI
 import TVServices
 
+enum TopShelfPreferences {
+    static let enabledKey = "kinosail.topShelf.enabled"
+    private static let defaultOnMigrationKey = "kinosail.topShelf.defaultOnMigration.v1"
+
+    static func migrateToDefaultOn(in defaults: UserDefaults = .standard) {
+        guard !defaults.bool(forKey: defaultOnMigrationKey) else { return }
+        defaults.set(true, forKey: enabledKey)
+        defaults.set(true, forKey: defaultOnMigrationKey)
+    }
+}
+
 struct TopShelfPublishing: ViewModifier {
     @Environment(AppSession.self) private var session
     @Environment(\.scenePhase) private var scenePhase
-    @AppStorage("kinosail.topShelf.enabled") private var enabled = true
+    @AppStorage(TopShelfPreferences.enabledKey) private var enabled = true
     static func clear() {
         ShelfSnapshot.clear()
         TVTopShelfContentProvider.topShelfContentDidChange()

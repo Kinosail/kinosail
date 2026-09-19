@@ -4,7 +4,7 @@ struct SettingsScreen: View {
     @Environment(AppSession.self) private var session
     @State private var signingOut = false
     #if os(tvOS)
-    @AppStorage("kinosail.topShelf.enabled") private var topShelf = true
+    @AppStorage(TopShelfPreferences.enabledKey) private var topShelf = true
     #endif
     var body: some View {
         Form {

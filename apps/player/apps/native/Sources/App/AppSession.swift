@@ -34,6 +34,9 @@ final class AppSession {
     private var challenge: ConnectChallenge?
 
     init() {
+        #if os(tvOS)
+        TopShelfPreferences.migrateToDefaultOn()
+        #endif
         #if os(iOS)
         player.onCompleted = { [weak self] item, nextID in
             guard let self, let client = self.client else { return }
