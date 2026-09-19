@@ -8,7 +8,7 @@ import (
 
 var (
 	detailSources = catalog.MustDetailSources(catalog.DetailPresentation{
-		Product: "Kinosail Player", ThemeVersion: "cinema-1", StyleVersion: "electric-16",
+		Product: "Kinosail Player", ThemeVersion: "cinema-1", StyleVersion: "electric-17",
 	})
 	detailPages = catalog.NewDetailHTTP(
 		newLocalizedTemplate("album", detailSources.Album),

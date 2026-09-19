@@ -150,7 +150,7 @@ The strong primary action uses the capsule radius. Ordinary fields and controls 
 
 ### Buttons
 
-Play or Resume is a green capsule with action ink and a minimum 50px height. View details is a quieter raised-surface button with the quiet radius. The action group keeps a 0.75rem gap and the primary expands into the available width. Actions wrap onto separate rows when enlarged text needs more space. Hover slightly brightens the action without moving it. Shared primary actions retain their actual routes and permissions.
+Play or Resume is a green capsule with action ink and a minimum 50px height. View details is a quieter raised-surface button with the quiet radius. The action group keeps a 0.75rem gap and the primary uses a content-sized width. Actions wrap onto separate rows when enlarged text needs more space. Hover slightly brightens the action without moving it. Shared primary actions retain their actual routes and permissions.
 
 ### Inputs / Fields
 
@@ -164,7 +164,7 @@ The tab editor is a native HTML dialog capped at 34rem wide and 85dvh high. Its 
 
 ### Cards / Containers
 
-Posters retain real media artwork, the artwork radius and media-specific proportions; hover or keyboard focus outlines the poster without moving it. Resume rows preserve the title, real saved position, direct media action and separate removal action. Browse destinations are open divider rows. The app's approved sail mark keeps its geometry in Electric green.
+Posters retain real media artwork, the artwork radius and media-specific proportions; hover or keyboard focus outlines the poster without moving it. The home feature uses a compact portrait and details composition, with a landscape fallback when only a backdrop is available. Resume rows use portrait artwork and bounded widths, preserving the title, real saved position, direct media action and separate removal action. The featured resume title is omitted from the shelf and keeps its removal action beside the featured controls. Browse destinations are open divider rows. The app's approved sail mark keeps its geometry in Electric green.
 
 ### Progress, pending and recovery
 
