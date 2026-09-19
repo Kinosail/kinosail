@@ -1,4 +1,4 @@
-const supporterFundingMessage = "Help keep Kinosail growing. Your support helps pay for the AI tokens used to build and improve it.";
+const supporterFundingMessage = "Help fund development.";
 
 function ensureSupporterSignature(main) {
   createSupporterSignature(main, {hide: true});

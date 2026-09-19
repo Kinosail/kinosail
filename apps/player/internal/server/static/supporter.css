@@ -40,3 +40,6 @@
 .owned-badge .supporter-certificate-actions{gap:8px;margin-top:16px}.owned-badge .supporter-certificate-actions .mode{background:none;color:var(--text);border:1px solid var(--line)}.owned-badge .supporter-certificate-actions a,.owned-badge .supporter-certificate-actions button{font-size:13px}.supporter-shell footer a{display:inline-flex;align-items:center;min-height:44px}
 
 .supporter-certificate-preview summary{cursor:pointer;min-height:44px;padding:12px 0;font-size:13px}.supporter-certificate-preview img{display:block;width:100%;height:auto}.supporter-billing[hidden]{display:none}
+
+body .library-masthead>.supporter-signature{flex-direction:row;align-items:center;gap:0 .75rem;margin:0;padding:0;text-align:left}
+body .library-masthead>.supporter-signature>a{display:inline-flex;align-items:center;min-height:44px}
