@@ -105,3 +105,22 @@ func assertPhoneLandingRecovery(t *testing.T, handler http.Handler, code, secret
 		t.Fatal("unsafe landing")
 	}
 }
+
+func TestPhoneScannerCameraPolicyIsLimitedToPlayerConnectPage(t *testing.T) {
+	t.Parallel()
+	handler := server.New(server.Config{DataDir: t.TempDir(), RequireAuth: true})
+	owner := signInTestProfile(t, handler, "/setup", "name=Owner&password=owner-password")
+	for _, path := range []string{"/quick-connect", "/account"} {
+		response := requestWithCookie(t, handler, http.MethodGet, path, "", owner)
+		want := "camera=(), microphone=(), geolocation=()"
+		if path == "/quick-connect" {
+			want = "camera=(self), microphone=(), geolocation=()"
+			if !strings.Contains(response.Body.String(), "Scan QR code") || !strings.Contains(response.Body.String(), "data-quick-connect-digit") {
+				t.Fatal("scanner or manual entry is missing")
+			}
+		}
+		if response.Header().Get("Permissions-Policy") != want {
+			t.Fatalf("%s camera policy = %q", path, response.Header().Get("Permissions-Policy"))
+		}
+	}
+}

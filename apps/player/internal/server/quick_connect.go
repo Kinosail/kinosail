@@ -51,6 +51,8 @@ func (broker *quickConnectBroker) application(profiles *profileStore) *quickconn
 }
 
 func (broker *quickConnectBroker) register(mux *http.ServeMux, profiles *profileStore) {
+	mux.HandleFunc("GET /static/quick-connect-scan.js", serveScript(quickConnectScanJS))
+	mux.HandleFunc("GET /static/qr-decoder.js", serveScript(qrDecoderJS))
 	mux.HandleFunc("GET /static/public-login.js", serveScript(webassets.PublicLogin))
 	browser := broker.application(profiles)
 	mux.HandleFunc("POST /auth/quick-connect", browser.StartBrowser)
@@ -87,6 +89,7 @@ func (broker *quickConnectBroker) consumeCompatibility(profiles *profileStore, s
 }
 
 func (broker *quickConnectBroker) page(writer http.ResponseWriter, request *http.Request) {
+	writer.Header().Set("Permissions-Policy", "camera=(self), microphone=(), geolocation=()")
 	broker.application(nil).Page(writer, request)
 }
 

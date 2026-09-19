@@ -31,6 +31,10 @@ var (
 	homeCSS []byte
 	//go:embed static/connect.js
 	connectJS []byte
+	//go:embed static/third_party/jsqr/jsQR.js
+	qrDecoderJS []byte
+	//go:embed static/quick-connect-scan.js
+	quickConnectScanJS []byte
 	//go:embed static/quick-connect.js
 	quickConnectJS []byte
 	//go:embed static/hls.min.js

@@ -178,3 +178,5 @@ body .destination-card>span:nth-child(2){min-width:0;overflow-wrap:anywhere}
 .player-control-row{flex-wrap:wrap}
 .player-control-row output{min-width:0;white-space:normal}
 @media(max-width:520px){.player-control-row output{flex:1}.player-control-row :is(.player-control-spacer,[data-player-toggle],[data-player-back],[data-player-forward],[data-player-mute]){display:none}}
+
+[data-qr-video]{display:block;width:100%;max-height:45dvh;object-fit:contain;background:var(--surface-2);border-radius:var(--radius,12px);margin-bottom:.75rem}
