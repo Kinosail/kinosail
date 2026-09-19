@@ -49,7 +49,6 @@ struct ShowScreen: View {
                         MediaGrid(landscape: true, items: episodes.filter { $0.season == (selectedSeason ?? seasons.first ?? 0) })
                     } else { ContentUnavailableView("No episodes", systemImage: "tv", description: Text("This show has no available episodes.")) }
                 }
-                .cinemaBackdrop(path: episodes.first?.backdrop ?? "")
             }
             .padding(KinoTheme.contentPadding)
         }

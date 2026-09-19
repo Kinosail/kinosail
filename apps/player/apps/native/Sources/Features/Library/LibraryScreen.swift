@@ -19,11 +19,6 @@ struct LibraryScreen: View {
     @State private var loadedKey: String?
     #if os(tvOS)
     @State private var draftQuery = ""
-    @State private var focusedItem: MediaItem?
-    @State private var backdropItem: MediaItem?
-    private var featuredItem: MediaItem? {
-        items.first(where: { $0.id == backdropItem?.id }) ?? items.first
-    }
     #endif
     @State private var loadedRevision: UUID?
 
@@ -58,19 +53,7 @@ struct LibraryScreen: View {
                                               message: query.isEmpty ? "Try another part of your library." : "Try a different title, artist or show.") }
                 } else {
                     #if os(tvOS)
-                    if let featured = featuredItem {
-                        HStack(spacing: 24) {
-                            if !featured.backdrop.isEmpty {
-                                Artwork(path: featured.backdrop, ratio: 16 / 9, isBackdrop: true)
-                                    .frame(width: 320).clipShape(.rect(cornerRadius: 12))
-                            }
-                            VStack(alignment: .leading, spacing: 8) {
-                                Text(featured.title).font(.title2.weight(.semibold)).fixedSize(horizontal: false, vertical: true)
-                                Text(featured.subtitle).font(.callout).foregroundStyle(KinoTheme.muted)
-                            }
-                        }.frame(maxWidth: .infinity, minHeight: 180, alignment: .leading).accessibilityHidden(true)
-                    }
-                    MediaGrid(items: items, onFocus: { focusedItem = $0 })
+                    MediaGrid(items: items)
                     #else
                     if let page { Text("\(page.total.formatted()) titles").font(.callout).foregroundStyle(KinoTheme.muted) }
                     MediaGrid(items: items)
@@ -87,17 +70,8 @@ struct LibraryScreen: View {
         }
         #if os(tvOS)
         .scrollClipDisabled()
-        .cinemaBackdrop(path: featuredItem?.backdrop ?? "")
-        .cinemaBackground()
-        .task(id: focusedItem?.id) {
-            guard let focusedItem else { return }
-            do { try await Task.sleep(for: .milliseconds(300)) }
-            catch { return }
-            backdropItem = focusedItem
-        }
-        #else
-        .background(KinoTheme.background)
         #endif
+        .cinemaBackground()
         #if os(iOS)
         .searchable(text: $query, isPresented: $showsSearch, prompt: "Search your library")
         .sheet(isPresented: $showsLetterJump) {
@@ -122,7 +96,9 @@ struct LibraryScreen: View {
         #else
         .navigationTitle(searchMode ? "Search" : selection.title)
         #endif
+        #if os(iOS)
         .onAppear { if searchMode && query.isEmpty { showsSearch = true } }
+        #endif
         .task(id: "\(requestKey):\(session.contentRevision):\(scenePhase)") {
             guard scenePhase == .active else { return }
             // Preserve an expanded or letter-jump result when returning to it.
@@ -194,9 +170,6 @@ struct LibraryScreen: View {
             generation = UUID()
             if loadedKey != key {
                 items = []; page = nil
-            #if os(tvOS)
-                focusedItem = nil; backdropItem = nil
-            #endif
             }
         }
         let attempt = generation

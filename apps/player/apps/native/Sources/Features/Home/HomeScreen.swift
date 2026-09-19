@@ -47,7 +47,6 @@ struct HomeScreen: View {
                         LibraryQuickLinks()
                     }
                 }
-                .cinemaBackdrop(path: (home.continueWatching.first ?? home.recent.first)?.backdrop ?? "")
             }
             .padding([.horizontal, .bottom], KinoTheme.contentPadding)
             .padding(.top, 12)

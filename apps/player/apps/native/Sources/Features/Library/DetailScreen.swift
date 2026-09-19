@@ -9,7 +9,7 @@ struct DetailScreen: View {
             ResourceView(identity: "\(session.profileKey ?? ""):\(itemID)", refreshID: session.contentRevision.uuidString, loadingLayout: .detail, load: { policy in
                 guard let client = session.client else { throw ClientError.unavailable }
                 return try await client.details(id: itemID, policy: policy)
-            }) { detail in DetailContent(detail: detail).id(itemID).cinemaBackdrop(path: detail.item.backdrop) }
+            }) { detail in DetailContent(detail: detail).id(itemID) }
             .padding(KinoTheme.contentPadding)
         }
         .cinemaBackground()

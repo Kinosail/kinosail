@@ -76,7 +76,7 @@ The user selected Electric option 1 and authorized replacing the previous coral 
 
 **Key Characteristics:**
 
-- Untinted, contained artwork; Apple TV adds an immersive backdrop behind browsing content.
+- Untinted, contained artwork; dark iOS and Apple TV browsing surfaces share a static immersive sail backdrop.
 - Electric actions with SF Pro text and rounded feature titles.
 - Personal destinations and platform-owned navigation, touch and remote focus.
 
@@ -110,9 +110,9 @@ Media grids adapt from 144pt posters or 280pt landscape cards on iOS, and 230pt 
 
 ## Elevation & Depth
 
-Apple TV Home, library, title details and episode browsing use real title backdrops to establish cinematic depth, as selected by the user from the immersive background mockup. The backdrop stays fixed behind the scroll viewport and extends into safe areas. A dark vertical fade protects text and settles into the shared canvas beneath the feature. Foreground artwork remains contained and untinted; forms, playback and iOS retain their existing surfaces. The shared Artwork loader owns authentication, caching, cancellation and reduced-motion crossfades. Empty or failed artwork uses the neutral canvas; Increased Contrast and Reduce Transparency omit the decorative image entirely. Backgrounds do not receive focus, input or accessibility traversal.
+Dark iOS and Apple TV Home, library, title details and episode browsing use one bundled CinemaSail image to establish cinematic depth. The sail stays fixed behind the scroll viewport and extends into safe areas. A dark vertical fade protects text and settles into the shared canvas beneath the feature. Foreground artwork remains contained and untinted; forms, playback and light appearance retain their existing surfaces. Increased Contrast and Reduce Transparency omit the decorative image entirely. The background is decorative only and does not receive focus, input or accessibility traversal.
 
-Apple TV library headers combine compact navigation controls with a contained landscape thumbnail and the focused title above the grid. The same title supplies the immersive background. After focus settles for 300ms, the artwork changes through a 450ms crossfade; Reduce Motion removes that animation. The previous image stays visible only while its replacement loads within the same session; missing or failed artwork resolves to the neutral canvas. Native card focus has vertical breathing room and unclipped shelf edges.
+Apple TV library content keeps compact navigation controls and the media grid without a focused-title header. Selection changes card focus only; it does not replace the shared sail or add a changing title above the grid. Native card focus has vertical breathing room and unclipped shelf edges.
 
 **The Native State Rule.** Let native controls own focus and interaction feedback. iOS media links use plain style; tvOS media links retain card style and focus sections. Preserve tvOS focus movement and platform Reduce Motion behavior rather than imposing the web no-lift rule.
 
