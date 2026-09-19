@@ -5,8 +5,8 @@ colors:
   kino-lime: "#c8f169"
   kino-paper: "#f6f8ef"
   kino-ink: "#090a08"
-rounded:
-  web-icon: "112px"
+background:
+  web-icon: "full-bleed square"
 ---
 
 # Design System: Kinosail logo family
@@ -23,7 +23,7 @@ Kino lime carries the main shape, Kino paper supplies the contrasting shape, and
 
 ## Layout
 
-Web icons use a square 512-unit viewBox and a rounded background. Maskable Player and Subtitles variants use a full-bleed square background and transform the mark with `translate(51.2 51.2) scale(.8)` to create additional crop clearance. Preserve those variants instead of applying the ordinary rounded icon to a maskable slot.
+Web icons use a square 512-unit viewBox and a full-bleed black background; the corners must not be transparent, and the marks do not use a decorative circle. Maskable Player and Subtitles variants use the same full-bleed square background and transform the mark with `translate(51.2 51.2) scale(.8)` to create additional crop clearance.
 
 ## Shapes
 
