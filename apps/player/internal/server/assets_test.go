@@ -56,7 +56,7 @@ func TestPagesUseSharedModernStyles(t *testing.T) {
 	for body, fragments := range map[string][]string{
 		page.Body.String():     {`class="brand-mark"`},
 		styles.Body.String():   {"--signal:#c8f169", "--focus:#e4ff9c", `url("/static/cinema-backdrop.jpg")`, "flex-wrap:wrap", ".resume-link:focus-visible", ".resume-action"},
-		home.Body.String():     {`class="home-sections"`, `/static/app.css?v=electric-15`},
+		home.Body.String():     {`class="home-sections"`, `/static/app.css?v=electric-16`},
 		settings.Body.String(): {"settings-page"},
 	} {
 		for _, fragment := range fragments {

@@ -1,5 +1,9 @@
+const supporterFundingMessage = "Help keep Kinosail growing. Your support helps pay for the AI tokens used to build and improve it.";
+
 function ensureSupporterSignature(main) {
   createSupporterSignature(main, {hide: true});
+  const copy = main?.querySelector(".supporter-signature:not(.is-active) p");
+  if (copy) copy.textContent = supporterFundingMessage;
 }
 
 function revealSupporterSignature(main) {
@@ -37,7 +41,7 @@ function resetSupporterRecognition(main, archived = false) {
   if (!signature) return;
   signature.classList.remove("is-active");
   const copy = document.createElement("p");
-  copy.textContent = archived ? "Community edition · Living Standard archived." : "Community edition · Free and supporter-funded.";
+  copy.textContent = archived ? "Community edition · Living Standard archived." : supporterFundingMessage;
   const link = document.createElement("a");
   link.href = "/supporter";
   link.textContent = archived ? "View supporter archive" : "Support Kinosail";

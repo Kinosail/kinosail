@@ -198,3 +198,21 @@ test("Supporter badge rendering and share conversion remain responsive", async (
 	await expect(page.locator('[data-supporter-share-status="living-standard"]')).toHaveText("Share image downloaded.");
 	await context.close();
 });
+
+test("Home explains development funding and respects hidden supporter recognition", async ({ page }) => {
+  await login(page);
+  await page.route("**/api/v1/supporter", route => route.fulfill({ json: { active: false } }));
+  await page.route("**/api/v1/supporter/display", route => route.fulfill({ json: { display: "automatic" } }));
+  for (const width of [1440, 390, 320]) {
+    await page.setViewportSize({ width, height: 900 });
+    await page.goto("/");
+    const notice = page.getByRole("complementary", { name: "Kinosail supporter status" });
+    await expect(notice).toBeVisible();
+    await expect(notice).toContainText("AI tokens used to build and improve it");
+    await expect(notice.getByRole("link", { name: "Support Kinosail" })).toHaveAttribute("href", "/supporter");
+    expect(await notice.evaluate(el => el.scrollWidth <= el.clientWidth)).toBe(true);
+  }
+  await page.route("**/api/v1/supporter/display", route => route.fulfill({ json: { display: "hidden" } }));
+  await page.reload();
+  await expect(page.locator(".supporter-signature")).toBeHidden();
+});

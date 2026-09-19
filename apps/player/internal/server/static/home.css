@@ -112,7 +112,10 @@ body .library-shell.request-skeleton::before{content:"";position:absolute;z-inde
   body .app-header nav>a.active,body .home-sections a[aria-current],body .home-shelf>header>a{color:LinkText}
 }
 
-body .library-shell:has(>.home-sections)>.supporter-signature{display:none}
+body .library-shell:has(>.home-sections)>.supporter-signature{display:flex;align-items:center;justify-content:space-between;gap:.5rem 1.5rem;margin:0 0 1.5rem;padding:.75rem 0;border-bottom:1px solid var(--line);font-size:.875rem}
+body .library-shell:has(>.home-sections)>.supporter-signature p{flex:1 1 28rem;max-width:70ch}
+body .library-shell:has(>.home-sections)>.supporter-signature>a{display:inline-flex;align-items:center;min-height:44px;color:var(--signal);white-space:nowrap}
+body .library-shell:has(>.home-sections)>.supporter-signature[hidden]{display:none}
 body.show-detail .season-heading{position:sticky;top:4.5rem;z-index:10;padding:.75rem 0;background:var(--bg)}
 body.show-detail .episode-preview{top:9rem}
 /* Show details keep the season artwork in the first viewport and offer a direct section jump. */
