@@ -26,7 +26,7 @@ func TestLastLightHomeUsesRealLibraryArtwork(t *testing.T) {
 	if response.Code != http.StatusOK {
 		t.Fatalf("home: %d %s", response.Code, body)
 	}
-	for _, fragment := range []string{`class="home-feature"`, `class="watch-progress"`, `aria-label="Watch progress"`, `data-feature-title="Arrival"`, `class="app-header"`, `Recently added`, `/static/app.css?v=electric-13`} {
+	for _, fragment := range []string{`class="home-feature"`, `class="watch-progress"`, `aria-label="Watch progress"`, `data-feature-title="Arrival"`, `class="app-header"`, `Recently added`, `/static/app.css?v=electric-14`} {
 		if !strings.Contains(body, fragment) {
 			t.Fatalf("home missing %s", fragment)
 		}
