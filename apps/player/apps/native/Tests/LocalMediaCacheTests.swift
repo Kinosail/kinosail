@@ -8,6 +8,32 @@ struct LocalMediaCacheTests {
     private let scope = String(repeating: "a", count: 64)
     private let data = Data("{\"items\":[]}".utf8)
 
+    @Test func pageInvalidationPreservesSiblingWritesAndSurvivesRestart() async throws {
+        let directory = temporary()
+        defer { try? FileManager.default.removeItem(at: directory) }
+        let cache = try LocalMediaCache(scope: scope, directory: directory)
+        let revision = await cache.revision
+        let pagesRevision = await cache.pagesRevision
+        let first = "/api/v1/library?view=history&offset=0"
+        let sibling = "/api/v1/library?sort=added&offset=0"
+        let later = "/api/v1/library?offset=60"
+        try await cache.write(data, key: first, kind: .catalog, revision: revision)
+        try await cache.write(data, key: later, kind: .catalog, revision: revision)
+        await cache.invalidatePages()
+        try await cache.write(data, key: sibling, kind: .catalog, revision: revision)
+        try await cache.write(Data("late".utf8), key: later, kind: .catalog,
+                              revision: revision, pagesRevision: pagesRevision)
+        #expect(await cache.read(first, kind: .catalog)?.fresh == true)
+        #expect(await cache.read(sibling, kind: .catalog)?.fresh == true)
+        #expect(await cache.read(later, kind: .catalog)?.data == data)
+        #expect(await cache.read(later, kind: .catalog)?.fresh == false)
+        await cache.close(purge: false)
+        let restarted = try LocalMediaCache(scope: scope, directory: directory)
+        #expect(await restarted.read(sibling, kind: .catalog)?.fresh == true)
+        #expect(await restarted.read(later, kind: .catalog)?.fresh == false)
+        await restarted.close(purge: false)
+    }
+
     @Test func persistsAcrossInstancesAndInvalidationSurvivesRestart() async throws {
         let directory = temporary()
         defer { try? FileManager.default.removeItem(at: directory) }

@@ -2,6 +2,7 @@ import SwiftUI
 
 struct LibraryScreen: View {
     @Environment(AppSession.self) private var session
+    @Environment(\.scenePhase) private var scenePhase
     private let searchMode: Bool
     @State private var query = ""
     @State private var showsSearch = false
@@ -118,8 +119,10 @@ struct LibraryScreen: View {
         .navigationTitle(searchMode ? "Search" : selection.title)
         #endif
         .onAppear { if searchMode && query.isEmpty { showsSearch = true } }
-        .task(id: "\(requestKey):\(session.contentRevision)") {
-            guard loadedKey != requestKey || loadedRevision != session.contentRevision else { return }
+        .task(id: "\(requestKey):\(session.contentRevision):\(scenePhase)") {
+            guard scenePhase == .active else { return }
+            // Preserve an expanded or letter-jump result when returning to it.
+            if loadedKey == requestKey, loadedRevision == session.contentRevision, let page, page.offset > 0 { return }
             do { if !query.isEmpty { try await Task.sleep(for: .milliseconds(250)) } }
             catch { return }
             await load(reset: true)
@@ -185,10 +188,12 @@ struct LibraryScreen: View {
         let revision = session.contentRevision
         if reset {
             generation = UUID()
-            if loadedKey != key { items = []; page = nil }
+            if loadedKey != key {
+                items = []; page = nil
             #if os(tvOS)
-            focusedItem = nil; backdropItem = nil
+                focusedItem = nil; backdropItem = nil
             #endif
+            }
         }
         let attempt = generation
         loading = true

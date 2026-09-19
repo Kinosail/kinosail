@@ -94,10 +94,13 @@ struct LoadingState: View {
 
 struct ResourceView<Value: Sendable, Content: View>: View {
     let identity: String
+    var refreshID = ""
     var loadingLayout = LoadingLayout.shelf
     var allowsPullToRefresh = true
+    var revalidates = true
     let load: (CatalogPolicy) async throws -> Value
     @ViewBuilder let content: (Value) -> Content
+    @Environment(\.scenePhase) private var scenePhase
     @State private var value: Value?
     @State private var failure: String?
     @State private var revision = 0
@@ -112,7 +115,15 @@ struct ResourceView<Value: Sendable, Content: View>: View {
                 resourceContent
             }
         }
-        .task(id: "\(identity):\(revision)") { await refresh(force: revision > 0) }
+        .task(id: "\(identity):\(refreshID):\(revision):\(revalidates ? String(describing: scenePhase) : "once")") {
+            guard !revalidates || scenePhase == .active else { return }
+            await refresh(force: revision > 0)
+            while revalidates && !Task.isCancelled {
+                do { try await Task.sleep(for: .seconds(60)) }
+                catch { return }
+                await refresh(force: false)
+            }
+        }
     }
 
     private var resourceContent: some View {
@@ -154,4 +165,3 @@ struct ResourceView<Value: Sendable, Content: View>: View {
         }
     }
 }
-

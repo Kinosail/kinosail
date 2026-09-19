@@ -21,7 +21,9 @@ actor LocalMediaCache {
     private let scope: String
     private var closed = false
     private(set) var revision = UUID()
+    private(set) var pagesRevision = UUID()
     private var freshAfter: Date?
+    private var pagesFreshAfter: Date?
     private var memory: [String: Entry] = [:]
     private var memoryBytes = 0
     private let manager = FileManager.default
@@ -39,7 +41,7 @@ actor LocalMediaCache {
         do {
             let file = try location(key, kind: kind)
             let id = file.lastPathComponent
-            if kind == .catalog, let entry = memory[id] { return entryWithFreshness(entry, kind: kind) }
+            if kind == .catalog, let entry = memory[id] { return entryWithFreshness(entry, kind: kind, key: key) }
             let data = try boundedData(file, maximum: kind.maximum + 48)
             guard data.count >= 48, data.prefix(40) == header(key, kind: kind) else { return nil }
             let seconds = Double(bitPattern: UInt64(bigEndian: data.withUnsafeBytes { $0.loadUnaligned(fromByteOffset: 40, as: UInt64.self) }))
@@ -47,12 +49,14 @@ actor LocalMediaCache {
             guard seconds.isFinite, age >= -60, age <= 30 * 86_400 else { return nil }
             let entry = Entry(data: Data(data.dropFirst(48)), saved: Date(timeIntervalSince1970: seconds), fresh: false)
             if kind == .catalog { remember(entry, id: id) }
-            return entryWithFreshness(entry, kind: kind)
+            return entryWithFreshness(entry, kind: kind, key: key)
         } catch { return nil }
     }
 
-    func write(_ data: Data, key: String, kind: Kind, revision expectedRevision: UUID? = nil) throws {
+    func write(_ data: Data, key: String, kind: Kind, revision expectedRevision: UUID? = nil,
+               pagesRevision expectedPagesRevision: UUID? = nil) throws {
         guard !closed, expectedRevision == nil || expectedRevision == revision else { return }
+        guard expectedPagesRevision == nil || expectedPagesRevision == pagesRevision else { return }
         let file = try location(key, kind: kind)
         guard !data.isEmpty, data.count <= kind.maximum else { throw ClientError.invalidResponse }
         try prepareDirectory()
@@ -76,12 +80,23 @@ actor LocalMediaCache {
     func invalidateCatalog() {
         revision = UUID()
         freshAfter = Date()
+        saveInvalidation(freshAfter!, name: "catalog-invalidation")
+    }
+
+    /// A changed first page only makes later offsets stale, not sibling queries.
+    func invalidatePages() {
+        pagesRevision = UUID()
+        pagesFreshAfter = Date()
+        saveInvalidation(pagesFreshAfter!, name: "catalog-pages-invalidation")
+    }
+
+    private func saveInvalidation(_ date: Date, name: String) {
         guard !closed else { return }
         do {
             try prepareDirectory()
-            let file = root.appendingPathComponent("catalog-invalidation")
+            let file = root.appendingPathComponent(name)
             guard file.resolvingSymlinksInPath().path == file.path else { return }
-            var bits = freshAfter!.timeIntervalSince1970.bitPattern.bigEndian
+            var bits = date.timeIntervalSince1970.bitPattern.bigEndian
             let data = withUnsafeBytes(of: &bits) { Data($0) }
             try data.write(to: file, options: [.atomic, .completeFileProtectionUntilFirstUserAuthentication])
         } catch { /* Cache failure must not turn a successful Server mutation into failure. */ }
@@ -93,20 +108,26 @@ actor LocalMediaCache {
         if purge, root.resolvingSymlinksInPath().path == root.path { try? manager.removeItem(at: root) }
     }
 
-    private func entryWithFreshness(_ entry: Entry, kind: Kind) -> Entry? {
+    private func entryWithFreshness(_ entry: Entry, kind: Kind, key: String) -> Entry? {
         let age = Date().timeIntervalSince(entry.saved)
         guard age >= -60, age <= 30 * 86_400 else { return nil }
         if kind == .artwork {
             return Entry(data: entry.data, saved: entry.saved, fresh: age < Self.artworkFreshLifetime)
         }
-        if freshAfter == nil {
-            let file = root.appendingPathComponent("catalog-invalidation")
-            if let data = try? boundedData(file, maximum: 8), data.count == 8 {
-                let seconds = Double(bitPattern: UInt64(bigEndian: data.withUnsafeBytes { $0.loadUnaligned(as: UInt64.self) }))
-                freshAfter = seconds.isFinite && seconds >= 0 && seconds <= Date().timeIntervalSince1970 + 60 ? Date(timeIntervalSince1970: seconds) : Date()
-            } else { freshAfter = manager.fileExists(atPath: file.path) ? Date() : .distantPast }
+        if freshAfter == nil { freshAfter = invalidationDate("catalog-invalidation") }
+        if pagesFreshAfter == nil { pagesFreshAfter = invalidationDate("catalog-pages-invalidation") }
+        let laterPage = URLComponents(string: key)?.queryItems?.contains { $0.name == "offset" && $0.value != "0" } == true
+        let cutoff = laterPage ? max(freshAfter!, pagesFreshAfter!) : freshAfter!
+        return Entry(data: entry.data, saved: entry.saved, fresh: age < 60 && entry.saved >= cutoff)
+    }
+
+    private func invalidationDate(_ name: String) -> Date {
+        let file = root.appendingPathComponent(name)
+        guard let data = try? boundedData(file, maximum: 8), data.count == 8 else {
+            return manager.fileExists(atPath: file.path) ? Date() : .distantPast
         }
-        return Entry(data: entry.data, saved: entry.saved, fresh: age < 300 && entry.saved >= freshAfter!)
+        let seconds = Double(bitPattern: UInt64(bigEndian: data.withUnsafeBytes { $0.loadUnaligned(as: UInt64.self) }))
+        return seconds.isFinite && seconds >= 0 && seconds <= Date().timeIntervalSince1970 + 60 ? Date(timeIntervalSince1970: seconds) : Date()
     }
 
     private func header(_ key: String, kind: Kind) -> Data {

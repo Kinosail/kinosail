@@ -51,6 +51,13 @@ struct AppShell: View {
                 NavigationStack { MediaLinkScreen(link: link) }.id(link.id)
             }
             .task { await session.restore() }
+            .task(id: "\(session.client?.identity.uuidString ?? ""):\(session.restoring):\(scenePhase)") {
+                guard scenePhase == .active, !session.restoring, let client = session.client else { return }
+                // Visible requests take priority; warm only the three main landing pages.
+                do { try await Task.sleep(for: .seconds(1)) }
+                catch { return }
+                await client.warmCatalog()
+            }
             .task(id: scenePhase) { if scenePhase == .active { await session.casting.monitor() } }
             #if os(iOS)
             .task(id: scenePhase) { if scenePhase == .active { await session.downloads.monitor() } }

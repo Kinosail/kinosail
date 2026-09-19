@@ -17,7 +17,7 @@ actor ArtworkLoader {
 
     func image(path: String, client: ServerClient, dimension: Int = 1600) async throws -> CGImage {
         try Task.checkCancellation()
-        guard [800, 1600, 4096].contains(dimension) else { throw ClientError.invalidInput("The artwork size is invalid.") }
+        guard [400, 800, 1600, 4096].contains(dimension) else { throw ClientError.invalidInput("The artwork size is invalid.") }
         let url = try client.server.mediaURL(path)
         guard ["/art/", "/backdrop/", "/person/", "/media/"].contains(where: { url.path.hasPrefix($0) }) else {
             throw ClientError.invalidResponse
@@ -41,16 +41,20 @@ actor ArtworkLoader {
         guard pending.count < 64 else { throw ClientError.unavailable }
         let request = Task {
             defer { if generation == attempt { pending[key] = nil } }
-            try await self.acquire()
-            defer { self.release() }
             try Task.checkCancellation()
             let persist = URLComponents(url: url, resolvingAgainstBaseURL: false).map(ServerClient.cacheableMediaURL) == true
             let store = persist ? try await client.cacheStore() : nil
             let saved = await store?.read(url.absoluteString, kind: .artwork)
             if let saved, let image = try? Self.decodedThumbnail(saved.data, dimension: dimension) {
+                try Task.checkCancellation()
+                guard generation == attempt else { throw CancellationError() }
+                remember(image, key: key, saved: saved.saved)
                 return Loaded(image: image, stale: !saved.fresh)
             }
             if saved != nil { await store?.remove(url.absoluteString, kind: .artwork) }
+            // Local hits must not queue behind slow network artwork requests.
+            try await self.acquire()
+            defer { self.release() }
             let (data, type) = try await client.resource(url.absoluteString, maximum: 32 * 1024 * 1024)
             guard type.hasPrefix("image/") else { throw ClientError.invalidResponse }
             let image = try Self.decodedThumbnail(data, dimension: dimension)
@@ -71,7 +75,7 @@ actor ArtworkLoader {
     }
 
     static func decodedThumbnail(_ data: Data, dimension: Int) throws -> CGImage {
-        guard [800, 1600, 4096].contains(dimension), data.count <= 32 * 1024 * 1024 else { throw ClientError.invalidResponse }
+        guard [400, 800, 1600, 4096].contains(dimension), data.count <= 32 * 1024 * 1024 else { throw ClientError.invalidResponse }
         guard let source = CGImageSourceCreateWithData(data as CFData, [kCGImageSourceShouldCache: false] as CFDictionary),
               CGImageSourceGetCount(source) <= 256,
               let properties = CGImageSourceCopyPropertiesAtIndex(source, 0, nil) as? [CFString: Any],

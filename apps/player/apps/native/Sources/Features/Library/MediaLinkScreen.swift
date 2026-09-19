@@ -13,7 +13,7 @@ struct MediaLinkScreen: View {
                 case .search: LibraryScreen(searchMode: true, initialQuery: link.value)
                 case .detail: DetailScreen(itemID: link.value)
                 case .play:
-                    ResourceView(identity: link.id, load: { _ in
+                    ResourceView(identity: link.id, revalidates: false, load: { _ in
                         guard let client = session.client else { throw ClientError.unavailable }
                         return try await client.item(id: link.value, policy: .reload)
                     }) { item in

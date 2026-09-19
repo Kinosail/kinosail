@@ -3,7 +3,7 @@ import Foundation
 enum CatalogPolicy: Sendable { case cached, automatic, reload }
 enum CatalogCacheMiss: Error { case missing }
 struct CatalogRequest: Sendable {
-    let id = UUID()
+    let id: UUID
     let task: Task<JSONValue, Error>
 }
 
@@ -11,7 +11,7 @@ extension ServerClient {
     /// Domain validation runs on both remote and persisted data. This seam is
     /// deliberately limited to catalog reads, never playback or authentication.
     func catalog<Value: Sendable>(_ path: String, policy: CatalogPolicy,
-                                 decode: (JSONValue) throws -> Value) async throws -> Value {
+                                 decode: @escaping (JSONValue) throws -> Value) async throws -> Value {
         try Task.checkCancellation()
         let url = try authorizedRequest(path).url!
         let parts = url.path.split(separator: "/")
@@ -21,7 +21,9 @@ extension ServerClient {
               ["library", "actor"].contains(parts[2]) || url.query == nil else { throw ClientError.invalidInput("The catalog request is invalid.") }
         let generation = catalogGeneration
         let store = try cacheStore()
-        var cacheRevision = await store?.revision
+        let cacheRevision = await store?.revision
+        let pagesRevision = await store?.pagesRevision
+        let offset = URLComponents(url: url, resolvingAgainstBaseURL: false)?.queryItems?.first { $0.name == "offset" }?.value
         let entry = await store?.read(path, kind: .catalog)
         let previous = entry.flatMap { try? StrictJSON.decode($0.data) }
         if policy != .reload, let entry, let previous {
@@ -38,34 +40,38 @@ extension ServerClient {
         if let pending = catalogRequests[path] { request = pending }
         else {
             guard catalogRequests.count < 32 else { throw ClientError.unavailable }
-            request = CatalogRequest(task: Task { try await self.request(path).body })
+            let id = UUID()
+            // The producer owns persistence. Leaving a screen must not throw away
+            // a successful fetch shared with another screen or a future visit.
+            request = CatalogRequest(id: id, task: Task {
+                defer { if catalogRequests[path]?.id == id { catalogRequests[path] = nil } }
+                do {
+                    let raw = try await self.request(path).body
+                    try Task.checkCancellation()
+                    guard catalogGeneration == generation else { throw CancellationError() }
+                    _ = try decode(raw)
+                    if let previous, previous != raw, parts[2] == "library", offset == "0" {
+                        await store?.invalidatePages()
+                    }
+                    try Task.checkCancellation()
+                    guard catalogGeneration == generation else { throw CancellationError() }
+                    if Self.cacheableCatalog(raw), let data = try? JSONEncoder().encode(raw) {
+                        try? await store?.write(data, key: path, kind: .catalog, revision: cacheRevision,
+                                               pagesRevision: offset != nil && offset != "0" ? pagesRevision : nil)
+                    } else { await store?.remove(path, kind: .catalog) }
+                    return raw
+                } catch {
+                    if error as? ClientError == .http(401) || error as? ClientError == .http(403) { await discardMediaCache() }
+                    else if error as? ClientError == .http(404) { await store?.remove(path, kind: .catalog) }
+                    throw error
+                }
+            })
             catalogRequests[path] = request
         }
-        defer { if catalogRequests[path]?.id == request.id { catalogRequests[path] = nil } }
-        do {
-            let raw = try await request.task.value
-            try Task.checkCancellation()
-            guard catalogGeneration == generation else { throw CancellationError() }
-            let value = try decode(raw)
-            if let previous, previous != raw, parts[2] == "library",
-               URLComponents(url: url, resolvingAgainstBaseURL: false)?.queryItems?.contains(where: { $0.name == "offset" && $0.value == "0" }) == true {
-                // A changed first page can shift every later offset. Keep those
-                // pages for immediate display, but do not treat them as fresh.
-                await store?.invalidateCatalog()
-                cacheRevision = await store?.revision
-            }
-            guard catalogGeneration == generation else { throw CancellationError() }
-            if Self.cacheableCatalog(raw), let data = try? JSONEncoder().encode(raw) {
-                try? await store?.write(data, key: path, kind: .catalog, revision: cacheRevision)
-            } else { await store?.remove(path, kind: .catalog) }
-            try Task.checkCancellation()
-            guard catalogGeneration == generation else { throw CancellationError() }
-            return value
-        } catch {
-            if error as? ClientError == .http(401) || error as? ClientError == .http(403) { await discardMediaCache() }
-            else if error as? ClientError == .http(404) { await store?.remove(path, kind: .catalog) }
-            throw error
-        }
+        let raw = try await request.task.value
+        try Task.checkCancellation()
+        guard catalogGeneration == generation else { throw CancellationError() }
+        return try decode(raw)
     }
 
     func invalidateCatalog() async {

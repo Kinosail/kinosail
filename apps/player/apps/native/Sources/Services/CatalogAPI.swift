@@ -1,6 +1,15 @@
 import Foundation
 
 extension ServerClient {
+    func warmCatalog() async {
+        guard !Task.isCancelled else { return }
+        _ = try? await home(policy: .automatic)
+        for view in [LibraryView.movies, .shows] {
+            guard !Task.isCancelled else { return }
+            _ = try? await library(view: view, policy: .automatic)
+        }
+    }
+
     func home(policy: CatalogPolicy = .reload) async throws -> HomeSnapshot {
         let profile: Viewer
         if let associatedViewer { profile = associatedViewer }
@@ -18,7 +27,7 @@ extension ServerClient {
             throw ClientError.invalidInput("The requested library page is invalid.")
         }
         let path = "/api/v1/library?q=\(Input.segment(query))&view=\(view.rawValue)&sort=\(sort.rawValue)&offset=\(offset)&limit=\(limit)"
-        return try await catalog(path, policy: policy) { raw in
+        return try await catalog(path, policy: policy) { [self] raw in
             let page = try LibraryPage(raw, server: server)
             guard page.offset == offset, page.limit == limit else { throw ClientError.invalidResponse }
             let fields = try raw.object()
@@ -31,7 +40,7 @@ extension ServerClient {
 
     func details(id: String, policy: CatalogPolicy = .reload) async throws -> ItemDetail {
         let id = try Input.id(id)
-        return try await catalog("/api/v1/items/\(id)", policy: policy) { raw in
+        return try await catalog("/api/v1/items/\(id)", policy: policy) { [self] raw in
             let value = try raw.object(allowing: ["item", "listed", "profileId"])
             let item = try MediaItem(value.required("item"), server: server)
             guard item.id == id else { throw ClientError.invalidResponse }
@@ -70,7 +79,7 @@ extension ServerClient {
 
     func show(id showID: String, policy: CatalogPolicy = .reload) async throws -> ShowDetail {
         let id = try Input.hex(showID, count: 16)
-        return try await catalog("/api/v1/shows/\(id)", policy: policy) { raw in
+        return try await catalog("/api/v1/shows/\(id)", policy: policy) { [self] raw in
             let value = try raw.object(allowing: [
                 "id", "title", "backdrop", "play", "episodes", "cast", "year", "plot", "genres", "studio"
             ])
@@ -97,7 +106,7 @@ extension ServerClient {
 
     func collection(name: String, policy: CatalogPolicy = .reload) async throws -> [MediaItem] {
         let name = try Input.collection(name)
-        return try await catalog("/api/v1/collections/\(Input.segment(name))", policy: policy) { raw in
+        return try await catalog("/api/v1/collections/\(Input.segment(name))", policy: policy) { [self] raw in
             let value = try raw.object(allowing: ["name", "items"])
             guard try value.text("name", max: 64, required: true) == name else { throw ClientError.invalidResponse }
             return try mediaItems(value.required("items"))
@@ -105,7 +114,7 @@ extension ServerClient {
     }
 
     func albums(policy: CatalogPolicy = .reload) async throws -> [Album] {
-        return try await catalog("/api/v1/albums", policy: policy) { raw in
+        return try await catalog("/api/v1/albums", policy: policy) { [self] raw in
             let value = try raw.object(allowing: ["albums"])
             return try Input.unique(value.required("albums").array(max: 10_000).map { raw in
                 let album = try raw.object(allowing: ["id", "title", "artist", "artwork"])
@@ -120,7 +129,7 @@ extension ServerClient {
 
     func album(id: String, policy: CatalogPolicy = .reload) async throws -> AlbumDetail {
         let id = try Input.id(id)
-        return try await catalog("/api/v1/albums/\(id)", policy: policy) { raw in
+        return try await catalog("/api/v1/albums/\(id)", policy: policy) { [self] raw in
             let value = try raw.object(allowing: ["id", "title", "artist", "tracks"])
             guard try value.text("id", required: true) == id else { throw ClientError.invalidResponse }
             let tracks = try mediaItems(value.required("tracks"))

@@ -6,7 +6,7 @@ struct DetailScreen: View {
 
     var body: some View {
         ScrollView {
-            ResourceView(identity: "\(session.profileKey ?? ""):\(itemID):\(session.contentRevision)", loadingLayout: .detail, load: { policy in
+            ResourceView(identity: "\(session.profileKey ?? ""):\(itemID)", refreshID: session.contentRevision.uuidString, loadingLayout: .detail, load: { policy in
                 guard let client = session.client else { throw ClientError.unavailable }
                 return try await client.details(id: itemID, policy: policy)
             }) { detail in DetailContent(detail: detail).id(itemID) }

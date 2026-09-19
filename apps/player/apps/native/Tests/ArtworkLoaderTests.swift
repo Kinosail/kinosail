@@ -5,6 +5,24 @@ import UniformTypeIdentifiers
 @testable import KinosailPlayer
 
 struct ArtworkLoaderTests {
+    @Test func diskHitsRetainDecodedPixelsIncludingTopShelfSize() async throws {
+        let directory = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+        defer { try? FileManager.default.removeItem(at: directory) }
+        let viewer = try Viewer(.object(["server": .string("Test"), "serverId": .string("test-server"),
+            "viewer": .object(["id": .string("viewer"), "name": .string("Viewer"), "owner": .bool(true), "downloads": .bool(true), "transcode": .bool(true), "remote": .bool(false)])]))
+        let fixture = try HTTPFixture(body: "{}", viewer: viewer, cacheDirectory: directory)
+        defer { fixture.remove() }
+        try installImage(fixture, path: "/art/movie", width: 800, height: 400)
+        _ = try await ArtworkLoader().image(path: "/art/movie", client: fixture.client, dimension: 400)
+        let loader = ArtworkLoader()
+        let disk = try await loader.image(path: "/art/movie", client: fixture.client, dimension: 400)
+        let memory = try await loader.image(path: "/art/movie", client: fixture.client, dimension: 400)
+        #expect(disk === memory)
+        #expect(disk.width == 400)
+        #expect(fixture.requests.count == 1)
+        await fixture.client.close()
+    }
+
     @Test func sharesDecodedPixelsAcrossConcurrentAndRepeatedCards() async throws {
         let fixture = try HTTPFixture(body: "{}")
         defer { fixture.remove() }
