@@ -154,10 +154,11 @@ final class PlaybackEngine {
             let pending = try await store.pending().first { $0.itemID == item.id }
             try check(attempt)
             let start = pending?.progress.seconds ?? details.start
-            do { try await install(details: details, compatible: details.direct == nil, at: start, attempt: attempt) }
+            let preferCompatible = details.direct == nil || details.shouldPreferCompatibleOnAppleTV
+            do { try await install(details: details, compatible: preferCompatible, at: start, attempt: attempt) }
             catch {
                 try check(attempt)
-                guard details.direct != nil, details.compatible != nil, Self.isFormatFailure(error) else { throw error }
+                guard !preferCompatible, details.direct != nil, details.compatible != nil, Self.isFormatFailure(error) else { throw error }
                 try await install(details: details, compatible: true, at: start, attempt: attempt)
             }
             try check(attempt)

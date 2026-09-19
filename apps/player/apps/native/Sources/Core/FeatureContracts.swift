@@ -46,6 +46,20 @@ struct PlaybackSource: Sendable {
     let subtitles: [ExternalSubtitle]
     let markers: [PlaybackMarker]
     let autoSkip: Set<String>
+
+    #if os(tvOS)
+    /// Automatic playback may offer an original file first even when its
+    /// container is outside AVPlayer's tvOS contract. Prefer the validated
+    /// compatible source instead of waiting for a black surface and a late
+    /// decoder failure.
+    var shouldPreferCompatibleOnAppleTV: Bool {
+        guard compatible != nil else { return false }
+        let mediaType = contentType.split(separator: ";", maxSplits: 1, omittingEmptySubsequences: true).first.map(String.init)?.lowercased() ?? ""
+        return mediaType != "video/mp4" && mediaType != "video/quicktime"
+    }
+    #else
+    var shouldPreferCompatibleOnAppleTV: Bool { false }
+    #endif
 }
 
 struct CompatibilitySource: Sendable {

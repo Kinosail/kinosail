@@ -10,6 +10,14 @@ struct PlaybackChapterTests {
         return try PlaybackSource(StrictJSON.decode(Data(body.utf8)), itemID: "movie", server: ServerAddress("https://example.com"))
     }
 
+    private func sourceWithDirectType(_ directType: String) throws -> PlaybackSource {
+        let escapedDirectType = directType.replacingOccurrences(of: "\"", with: "\\\"")
+        let body = """
+        {"media":{"duration":60},"plan":{"allowed":true,"mode":"direct","reason":"direct-preferred"},"duration":60,"start":0,"directAllowed":true,"direct":"/media/movie","directType":"\(escapedDirectType)","compatibleDuration":60,"compatible":"/hls/movie/index.m3u8","compatiblePlan":{"allowed":true,"mode":"remux","reason":"compatibility-requested"},"chapters":[]}
+        """
+        return try PlaybackSource(StrictJSON.decode(Data(body.utf8)), itemID: "movie", server: ServerAddress("https://example.com"))
+    }
+
     @Test func acceptsServerChapterIndexes() throws {
         let result = try source("""
         [{"index":0,"title":"Opening","start":0,"end":30},{"index":1,"title":"Ending","start":30,"end":60}]
@@ -27,6 +35,17 @@ struct PlaybackChapterTests {
         for invalid in ["-1", "31536001", "null", "true", "\"12\""] {
             #expect(throws: ClientError.self) { try source("[]", start: invalid) }
         }
+    }
+
+    @Test func prefersCompatibleSourceForUnsupportedAppleTVOriginals() throws {
+        #if os(tvOS)
+        let unsupportedOriginal = true
+        #else
+        let unsupportedOriginal = false
+        #endif
+        #expect(try sourceWithDirectType("video/mp4; codecs=\"avc1.640028, mp4a.40.2\"").shouldPreferCompatibleOnAppleTV == false)
+        #expect(try sourceWithDirectType("video/x-matroska").shouldPreferCompatibleOnAppleTV == unsupportedOriginal)
+        #expect(try sourceWithDirectType("").shouldPreferCompatibleOnAppleTV == unsupportedOriginal)
     }
 
     @Test(arguments: ["-1", "1", "1024", "0.5", "true", "null", "\"0\""])
