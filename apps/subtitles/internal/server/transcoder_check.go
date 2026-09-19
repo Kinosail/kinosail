@@ -10,28 +10,23 @@ import (
 type transcoderCheckResult = transcodepolicy.CheckResult
 
 func (store *settingsStore) runTranscoderCheck(ctx context.Context) transcoderCheckResult {
-	options, _ := store.transcoderState().CheckSettings(store.hardware)
-	result := transcodepolicy.Check(ctx, store.ffmpeg, options, store.hardware.Backend(options.Accelerator).Name)
-	store.hardware.RecordCheck(options, result)
-	return store.recordTranscoderCheck(result)
-}
-
-func (store *settingsStore) recordTranscoderCheck(result transcoderCheckResult) transcoderCheckResult {
-	store.mu.Lock()
-	store.transcoderCheck = result
-	store.mu.Unlock()
-	return result
+	return store.transcoderCheckCoordinator().Run(ctx)
 }
 
 func (store *settingsStore) currentTranscoderCheck() transcoderCheckResult {
-	store.mu.RLock()
-	result := store.transcoderCheck
-	store.mu.RUnlock()
-	if result.Status == "" {
-		options := store.transcoding()
-		result = transcodepolicy.PendingCheck(options, store.hardware.Backend(options.Accelerator).Name)
-	}
-	return result
+	return store.transcoderCheckCoordinator().Current()
+}
+
+func (store *settingsStore) transcoderCheckCoordinator() transcodepolicy.CheckCoordinator {
+	return transcodepolicy.NewCheckCoordinator(transcodepolicy.CheckCoordinatorDependencies{
+		Lock: &store.mu, Result: &store.transcoderCheck, FFmpeg: store.ffmpeg,
+		Resolve: func() (transcodepolicy.Settings, error) {
+			return store.transcoderState().CheckSettings(store.hardware)
+		},
+		Pending:        func() transcodepolicy.Settings { return store.transcoding() },
+		BackendName:    func(accelerator string) string { return store.hardware.Backend(accelerator).Name },
+		RecordHardware: store.hardware.RecordCheck,
+	})
 }
 
 func testTranscoder(settings *settingsStore) http.HandlerFunc {
