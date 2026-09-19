@@ -6,4 +6,6 @@ Report vulnerabilities privately through the repository's **Security → Advisor
 
 Create and secure the first Owner over a private connection before exposing network access. Protect external configuration, credentials, backup keys, and media separately from application-state backups. Consult the [README](README.md) and [release checklist](engineering/release-checklist.md) before deployment.
 
+The canonical [API authorization matrix](../../SECURITY.md#api-authorization-matrix) defines the route-default, session, Viewer, Owner, API-key, capability, and remote-access rules enforced by this app.
+
 GitHub Actions is disabled. While `.gates-disabled` exists, quality checks are disabled too. Workflow definitions, development images, and skipped checks are not release or security certification.
