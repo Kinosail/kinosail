@@ -27,6 +27,9 @@ private struct DetailContent: View {
     @State private var busy = false
     @State private var message: String?
     @State private var showsDownloads = false
+    #if os(tvOS)
+    @Namespace private var detailFocus
+    #endif
     private var item: MediaItem { detail.item }
 
     var body: some View {
@@ -40,6 +43,9 @@ private struct DetailContent: View {
             CastShelf(people: item.cast ?? [])
         }
         .frame(maxWidth: .infinity, alignment: .center)
+        #if os(tvOS)
+        .focusScope(detailFocus)
+        #endif
         #if os(iOS)
         .sheet(isPresented: $showsDownloads) { NavigationStack { DownloadOptionsScreen(item: item) } }
         #endif
@@ -70,7 +76,11 @@ private struct DetailContent: View {
     @ViewBuilder private var actions: some View {
         NavigationLink(value: item.playingDestination) {
             Label(item.kind == .photo ? "View photo" : item.playLabel, systemImage: item.kind == .book ? "book.fill" : item.kind == .photo ? "photo" : "play.fill")
-        }.buttonStyle(.borderedProminent).buttonBorderShape(.capsule).tint(KinoTheme.signal).foregroundStyle(KinoTheme.signalInk)
+        }
+        .buttonStyle(.borderedProminent).buttonBorderShape(.capsule).tint(KinoTheme.signal).foregroundStyle(KinoTheme.signalInk)
+        #if os(tvOS)
+        .prefersDefaultFocus(item.kind == .video, in: detailFocus)
+        #endif
         Button {
             change { client in listed = try await client.setListed(itemID: item.id, listed: !(listed ?? detail.listed)) }
         } label: { Label((listed ?? detail.listed) ? "In My List" : "My List", systemImage: (listed ?? detail.listed) ? "checkmark" : "plus") }

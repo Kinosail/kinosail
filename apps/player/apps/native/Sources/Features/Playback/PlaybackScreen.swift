@@ -18,23 +18,22 @@ struct PlaybackScreen: View {
             if let failure { RetryState(message: failure) { revision += 1 } }
             else if let message = session.player.message, !session.player.recoveringNetwork { RetryState(message: message) { revision += 1 } }
             else if let player = session.player.player {
-                NativePlayerView(player: player, presentation: session.player.presentation,
-                                 options: { showsTools = true }, restore: { session.showsVideoPlayer = true })
-                    .overlay {
-                        if !session.player.presentation.readyForDisplay {
-                            ProgressView("Opening your movie…")
-                                .tint(.white).foregroundStyle(.white)
-                                .padding().background(.black.opacity(0.8), in: RoundedRectangle(cornerRadius: 12))
-                                .allowsHitTesting(false)
-                        }
-                    }
+                    NativePlayerView(player: player, presentation: session.player.presentation,
+                                     options: { showsTools = true }, restore: { session.showsVideoPlayer = true })
                     .background(.black)
                     #if os(tvOS)
                     .ignoresSafeArea()
                     #else
                     .ignoresSafeArea(edges: .bottom)
                     #endif
-            } else { LoadingState(title: "Opening video…").padding(KinoTheme.contentPadding) }
+            } else {
+                ZStack {
+                    Color.black.ignoresSafeArea()
+                    ProgressView("Opening video…")
+                        .tint(.white).foregroundStyle(.white)
+                }
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+            }
             #endif
         }
         .navigationTitle(session.player.currentItem?.title ?? "Playback")
