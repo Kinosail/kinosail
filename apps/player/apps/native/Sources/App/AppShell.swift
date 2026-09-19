@@ -51,6 +51,7 @@ struct AppShell: View {
                 NavigationStack { MediaLinkScreen(link: link) }.id(link.id)
             }
             .task { await session.restore() }
+            .modifier(ConnectionMonitoring())
             .task(id: "\(session.client?.identity.uuidString ?? ""):\(session.restoring):\(scenePhase)") {
                 guard scenePhase == .active, !session.restoring, let client = session.client else { return }
                 // Visible requests take priority; warm only the three main landing pages.

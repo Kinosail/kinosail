@@ -23,6 +23,10 @@ actor ServerClient {
     private let cacheDirectory: URL?
     var catalogGeneration = UUID()
     var catalogRequests: [String: CatalogRequest] = [:]
+    var reachability = ServerReachability.unknown
+    var connectionObserver: (id: UUID, continuation: AsyncStream<ServerReachability>.Continuation)?
+    var connectionSequence: UInt64 = 0
+    private var requestSequence: UInt64 = 0
 
     init(server: ServerAddress, token: String = "", viewer: Viewer? = nil, protocolClasses: [AnyClass]? = nil, cacheDirectory: URL? = nil) throws {
         self.server = server
@@ -103,15 +107,24 @@ actor ServerClient {
 
     private func receive(_ request: URLRequest, maximum: Int, expected: Set<Int> = [200]) async throws -> (Data, HTTPURLResponse) {
         try Task.checkCancellation()
+        requestSequence &+= 1
+        let sequence = requestSequence
         do {
             let (data, http) = try await BoundedHTTPResponse.receive(request, session: session, maximum: maximum, expected: expected)
             try Task.checkCancellation()
             guard !closed else { throw CancellationError() }
+            recordConnection(.reachable, sequence: sequence)
             return (data, http)
         } catch is CancellationError { throw CancellationError() }
-        catch let error as ClientError { throw error }
+        catch let error as ClientError {
+            if case .http(let status) = error {
+                recordConnection(status >= 500 ? .unreachable : .reachable, sequence: sequence)
+            }
+            throw error
+        }
         catch {
             if Task.isCancelled || (error as? URLError)?.code == .cancelled { throw CancellationError() }
+            recordConnection(.unreachable, sequence: sequence)
             throw ClientError.unavailable
         }
     }
@@ -146,6 +159,8 @@ actor ServerClient {
     func close(purgeCache: Bool = false) async {
         if purgeCache { await discardMediaCache() }
         closed = true
+        connectionObserver?.continuation.finish()
+        connectionObserver = nil
         catalogGeneration = UUID()
         for request in catalogRequests.values { request.task.cancel() }
         catalogRequests = [:]

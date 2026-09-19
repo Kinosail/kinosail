@@ -7,6 +7,7 @@ final class OfflineDownloadManager {
     private(set) var downloads: [OfflineDownload] = []
     private(set) var message: String?
     private(set) var busy = false
+    private(set) var restoring = false
     private(set) var preferences = MediaPreferences()
     let engine = VerifiedDownloads.shared
     var catalog = OfflineCatalog()
@@ -22,6 +23,8 @@ final class OfflineDownloadManager {
 
     func restore(viewer: Viewer, server: ServerAddress, client: ServerClient) async {
         let attempt = UUID(); generation = attempt
+        restoring = true
+        defer { if generation == attempt { restoring = false } }
         downloads = []; catalog = OfflineCatalog(); scope = nil; message = nil; storage = nil; self.client = nil; completedItems = []; smartRetry = .distantPast
         guard viewer.downloads else { await engine.lock(); return }
         do {
@@ -151,6 +154,7 @@ final class OfflineDownloadManager {
     }
 
     func lock() async {
+        restoring = false
         generation = UUID(); downloads = []; catalog = OfflineCatalog(); scope = nil; client = nil; storage = nil; completedItems = []
         await engine.lock()
     }

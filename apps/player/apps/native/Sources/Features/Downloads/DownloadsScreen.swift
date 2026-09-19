@@ -11,18 +11,27 @@ struct DownloadsScreen: View {
     var body: some View {
         #if os(iOS)
         List {
+            if session.connection.unavailable {
+                Section {
+                    Text("Completed downloads are ready to play offline. Unfinished downloads need a connection to continue.")
+                        .foregroundStyle(KinoTheme.muted)
+                }
+            }
             if let message = failure ?? session.downloads.message {
                 Section {
                     Text(message).foregroundStyle(.secondary)
                     if session.downloads.message != nil { Button("Reset downloads on this device", role: .destructive) { reset = true } }
                 }
             }
-            if session.viewer?.downloads != true {
+            if session.downloads.restoring {
+                ProgressView("Opening your downloads…")
+            } else if session.viewer?.downloads != true {
                 ContentUnavailableView("Downloads aren’t available", systemImage: "arrow.down.circle", description: Text("Downloads must be enabled for your Viewer Profile on the Server."))
             } else if session.downloads.downloads.isEmpty {
-                ContentUnavailableView("Take a title with you", systemImage: "arrow.down.circle", description: Text("Open a movie, episode, or audiobook in your library and choose Download."))
+                ContentUnavailableView(session.connection.unavailable ? "No downloads on this device" : "Take a title with you", systemImage: "arrow.down.circle",
+                    description: Text(session.connection.unavailable ? "When you’re connected again, open a title and choose Download to save it for offline playback." : "Open a movie, episode, or audiobook in your library and choose Download."))
             }
-            ForEach(session.downloads.downloads) { download in
+            ForEach(session.downloads.downloads.filter { $0.state == .ready } + session.downloads.downloads.filter { $0.state != .ready }) { download in
                 HStack(alignment: .top, spacing: 16) {
                     Artwork(path: download.item.poster, symbol: download.item.kind.symbol, ratio: download.item.isAudio ? 1 : 2 / 3, dimension: 800)
                         .frame(width: 76).clipShape(.rect(cornerRadius: 10))
@@ -44,6 +53,7 @@ struct DownloadsScreen: View {
                         HStack {
                             if [.paused, .failed].contains(download.state) {
                                 Button("Resume") { perform { try await session.downloads.resume(id: download.id) } }
+                                    .disabled(session.connection.unavailable)
                             } else if download.state != .ready && download.state != .verifying {
                                 Button("Pause") { perform { try await session.downloads.pause(id: download.id) } }
                             }

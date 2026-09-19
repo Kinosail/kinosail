@@ -8,7 +8,7 @@ final class AppSession {
     private(set) var viewer: Viewer?
     private(set) var restoring = true
     private(set) var connecting = false
-    private(set) var offline = false
+    let connection = ConnectionStatus()
     private(set) var pairingCode: String?
     private(set) var pairingAddress: ServerAddress?
     var showsSetup = false
@@ -68,11 +68,15 @@ final class AppSession {
             viewer = saved.viewer
             configureProgress()
             restoring = false
+            #if os(iOS)
+            // Restore local media before waiting for a possibly unreachable Server.
+            await downloads.restore(viewer: saved.viewer, server: saved.server, client: candidate)
+            guard client?.identity == candidate.identity else { await candidate.close(); return }
+            #endif
             let profile: Viewer
             do { profile = try await candidate.viewer() }
             catch let error as ClientError where error.permitsOfflineRestore {
                 profile = saved.viewer
-                if client?.identity == candidate.identity { offline = true }
             }
             catch {
                 let revoked = error as? ClientError == .http(401) || error as? ClientError == .http(403)
@@ -81,6 +85,9 @@ final class AppSession {
                     player.stop()
                     clearSystemContent()
                     client = nil; viewer = nil; progress = nil
+                    #if os(iOS)
+                    await downloads.lock()
+                    #endif
                     await artwork.clear()
                     if revoked { try await keychain.discard(saved) }
                     notice = Self.message(error)
@@ -93,7 +100,9 @@ final class AppSession {
             guard client?.identity == candidate.identity else { try await keychain.discard(updated); await candidate.close(); return }
             viewer = profile
             #if os(iOS)
-            await downloads.restore(viewer: profile, server: saved.server, client: candidate)
+            if profile.downloads != saved.viewer.downloads {
+                await downloads.restore(viewer: profile, server: saved.server, client: candidate)
+            }
             #endif
         } catch { if generation == attempt || client?.identity == restoredClient { notice = Self.message(error) } }
     }
@@ -146,7 +155,6 @@ final class AppSession {
                         client = authenticated
                         viewer = profile
                         configureProgress()
-                        offline = false
                         showsSetup = false
                         contentRevision = UUID()
                         #if os(iOS)
@@ -220,7 +228,6 @@ final class AppSession {
         progress = nil
         pendingApprovalCode = nil
         pendingMediaLink = nil
-        offline = false
         showsSetup = false
         contentRevision = UUID()
         #if os(iOS)
