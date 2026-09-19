@@ -1,6 +1,12 @@
 import Foundation
 
 struct ShelfSnapshot: Codable, Sendable {
+    enum Section: String, CaseIterable, Sendable {
+        case continueWatching = "Continue watching"
+        case myList = "My List"
+        case recentlyAdded = "Recently added"
+    }
+
     struct Item: Codable, Sendable {
         let id: String
         let title: String
@@ -33,7 +39,7 @@ struct ShelfSnapshot: Codable, Sendable {
                   item.id.utf8.allSatisfy({ (48...57).contains($0) || (65...90).contains($0) || (97...122).contains($0) || $0 == 45 || $0 == 95 }),
                   !item.title.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty, item.title.utf8.count <= 2048,
                   item.title.rangeOfCharacter(from: .controlCharacters) == nil,
-                  ["Continue watching", "My List", "Recently added"].contains(item.section),
+                  Section.allCases.map(\.rawValue).contains(item.section),
                   item.image.count <= Self.maximumImage, item.image.starts(with: [0xff, 0xd8, 0xff]) else { throw CocoaError(.fileReadCorruptFile) }
         }
         return self
