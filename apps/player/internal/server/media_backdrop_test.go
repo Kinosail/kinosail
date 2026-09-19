@@ -88,6 +88,37 @@ func TestShowUsesItsLandscapeArtworkAsTheBackdrop(t *testing.T) {
 	}
 }
 
+func TestShowPosterFallbackKeepsThePosterSeparateFromBackdrop(t *testing.T) {
+	t.Parallel()
+
+	mediaDir := filepath.Join(t.TempDir(), "Example Show", "Season 01")
+	if err := os.MkdirAll(mediaDir, 0o700); err != nil {
+		t.Fatal(err)
+	}
+	for path, content := range map[string]string{
+		filepath.Join(filepath.Dir(mediaDir), "poster.jpg"):      "poster",
+		filepath.Join(mediaDir, "Example Show S01E01 Pilot.mkv"): "episode",
+	} {
+		if err := os.WriteFile(path, []byte(content), 0o600); err != nil {
+			t.Fatal(err)
+		}
+	}
+	handler := server.New(server.Config{MediaDir: filepath.Dir(filepath.Dir(mediaDir))})
+	home := httptest.NewRecorder()
+	handler.ServeHTTP(home, httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/?view=shows", nil))
+	showID := regexp.MustCompile(`/show/([a-f0-9]+)`).FindStringSubmatch(home.Body.String())[1]
+
+	show := httptest.NewRecorder()
+	handler.ServeHTTP(show, httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/show/"+showID, nil))
+	body := show.Body.String()
+	if strings.Contains(body, `class="media-hero has-media-backdrop"`) || strings.Contains(body, `class="media-backdrop"`) {
+		t.Fatalf("poster fallback was rendered as backdrop: %q", body)
+	}
+	if !strings.Contains(body, `class="hero-poster" src="/art/`) {
+		t.Fatalf("poster fallback is missing poster artwork: %q", body)
+	}
+}
+
 func TestBackdropFallsBackToPosterAndMissingArtworkStaysPlain(t *testing.T) { //nolint:cyclop,gocognit // One table covers the fallback and no-art branches end to end.
 	t.Parallel()
 

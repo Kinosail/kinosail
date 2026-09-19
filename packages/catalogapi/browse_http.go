@@ -86,11 +86,11 @@ func BackdropURL(id string, available bool) string {
 
 // ShowBackdropID selects the best Show-level backdrop route identifier.
 func ShowBackdropID(show library.Show) string {
-	if show.ArtworkID != "" {
-		return show.ArtworkID
-	}
 	if len(show.Episodes) != 0 && show.Backdrop != "" {
 		return show.Episodes[0].ID
+	}
+	if show.ArtworkID != "" {
+		return show.ArtworkID
 	}
 	return ""
 }

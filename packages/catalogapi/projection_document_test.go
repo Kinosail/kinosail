@@ -43,6 +43,9 @@ func TestBrowseProjectionHelpersCoverAvailableAndMissingMedia(t *testing.T) { //
 	if id := ShowBackdropID(library.Show{ArtworkID: "art"}); id != "art" {
 		t.Fatalf("artwork backdrop ID = %q", id)
 	}
+	if id := ShowBackdropID(library.Show{ArtworkID: "art", Backdrop: "backdrop", Episodes: []library.Item{{ID: "episode"}}}); id != "episode" {
+		t.Fatalf("landscape backdrop priority = %q", id)
+	}
 	if id := ShowBackdropID(library.Show{Backdrop: "backdrop", Episodes: []library.Item{{ID: "episode"}}}); id != "episode" {
 		t.Fatalf("episode backdrop ID = %q", id)
 	}
