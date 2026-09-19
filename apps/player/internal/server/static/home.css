@@ -93,6 +93,8 @@ body .library-shell.request-skeleton::before{content:"";position:absolute;z-inde
   body .library-shell{padding-top:1rem}
   body .app-header .search input{background:var(--surface);box-shadow:none}
   body .app-header nav{border-top:1px solid var(--line);padding-bottom:max(.4rem,env(safe-area-inset-bottom))}
+  body .media-hero{grid-template-columns:1fr;align-items:start;gap:1rem;padding:0 0 2rem}
+  body .media-hero>.hero-poster{width:min(100%,18rem);max-width:100%;min-width:0;height:auto;justify-self:start}
   .home-sections{margin-bottom:.75rem}
   .home-feature{grid-template-columns:minmax(5rem,9rem) minmax(0,1fr);gap:1.25rem;margin-bottom:2rem}
   .home-feature[data-artwork="backdrop"]{grid-template-columns:minmax(0,1fr)}

@@ -102,6 +102,53 @@ test("media artwork keeps its intended ratio in the populated library", async ({
 	expect(photo!.height / photo!.width).toBeCloseTo(.75, 2);
 });
 
+test("mobile media detail heroes stack artwork across every detail family", async ({ page }) => {
+	await page.setViewportSize({ width: 390, height: 844 });
+	await login(page);
+
+	const routes: string[] = [];
+	for (const [view, selector] of [
+		["movies", 'a.card[href^="/item/"]'],
+		["shows", 'a.show-details[href^="/show/"]'],
+		["music", 'a.card[href^="/album/"]'],
+		["books", 'a.card[href^="/book/"]'],
+	] as const) {
+		await page.goto(`/?view=${view}`, { waitUntil: "domcontentloaded" });
+		const href = await page.locator(selector).first().getAttribute("href");
+		expect(href, `${view} detail link`).toBeTruthy();
+		routes.push(href!);
+	}
+
+	await page.goto(routes[1], { waitUntil: "domcontentloaded" });
+	const actor = await page.locator('a[href^="/actor?name="]').first().getAttribute("href");
+	if (actor) routes.push(actor);
+
+	for (const route of routes) {
+		await page.goto(route, { waitUntil: "domcontentloaded" });
+		const hero = page.locator(".media-hero");
+		await expect(hero, route).toBeVisible();
+		const layout = await hero.evaluate((element) => {
+			const visibleChildren = [...element.children].filter((child) => getComputedStyle(child).display !== "none");
+			const artwork = visibleChildren.find((child) => child.matches(".hero-poster, .media-backdrop")) as HTMLElement;
+			const copy = visibleChildren.at(-1) as HTMLElement;
+			const artworkBox = artwork.getBoundingClientRect();
+			const copyBox = copy.getBoundingClientRect();
+			const heroBox = element.getBoundingClientRect();
+			return {
+				artworkBottom: artworkBox.bottom,
+				artworkWidth: artworkBox.width,
+				copyTop: copyBox.top,
+				heroWidth: heroBox.width,
+				isBackdrop: artwork.matches(".media-backdrop"),
+				overflow: document.documentElement.scrollWidth - innerWidth,
+			};
+		});
+		expect(layout.copyTop, `${route} copy follows artwork`).toBeGreaterThanOrEqual(layout.artworkBottom - 1);
+		if (!layout.isBackdrop) expect(layout.artworkWidth, `${route} poster fits the phone`).toBeLessThanOrEqual(Math.min(layout.heroWidth, 288) + 1);
+		expect(layout.overflow, `${route} has no page overflow`).toBe(0);
+	}
+});
+
 test("show episodes expose their 16:9 still artwork", async ({ page }, testInfo) => {
 	await login(page);
 	await page.goto("/?view=shows");

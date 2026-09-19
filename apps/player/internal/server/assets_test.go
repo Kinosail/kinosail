@@ -56,7 +56,7 @@ func TestPagesUseSharedModernStyles(t *testing.T) {
 	for body, fragments := range map[string][]string{
 		page.Body.String():     {`class="brand-mark"`},
 		styles.Body.String():   {"--signal:#c8f169", "--focus:#e4ff9c", `url("/static/cinema-backdrop.jpg")`, "flex-wrap:wrap", ".resume-link:focus-visible", ".resume-action"},
-		home.Body.String():     {`class="home-sections"`, `/static/app.css?v=electric-18`},
+		home.Body.String():     {`class="home-sections"`, `/static/app.css?v=electric-19`},
 		settings.Body.String(): {"settings-page"},
 	} {
 		for _, fragment := range fragments {
@@ -72,6 +72,22 @@ func TestPagesUseSharedModernStyles(t *testing.T) {
 	handler.ServeHTTP(backdrop, httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/static/cinema-backdrop.jpg", nil))
 	if backdrop.Code != http.StatusOK || backdrop.Header().Get("Content-Type") != "image/jpeg" || backdrop.Body.Len() < 100_000 {
 		t.Fatalf("backdrop = %d %q, bytes = %d", backdrop.Code, backdrop.Header().Get("Content-Type"), backdrop.Body.Len())
+	}
+}
+
+func TestMobileMediaHeroesStackTheirArtworkAndCopy(t *testing.T) {
+	t.Parallel()
+
+	styles := httptest.NewRecorder()
+	server.New(server.Config{}).ServeHTTP(styles, httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/static/app.css", nil))
+	css := styles.Body.String()
+	for _, fragment := range []string{
+		`body .media-hero{grid-template-columns:1fr;align-items:start;gap:1rem;padding:0 0 2rem}`,
+		`body .media-hero>.hero-poster{width:min(100%,18rem);max-width:100%;min-width:0;height:auto;justify-self:start}`,
+	} {
+		if !strings.Contains(css, fragment) {
+			t.Fatalf("mobile media hero stylesheet missing %q", fragment)
+		}
 	}
 }
 
