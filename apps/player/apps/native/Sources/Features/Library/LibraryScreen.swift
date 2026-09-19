@@ -5,8 +5,8 @@ struct LibraryScreen: View {
     @Environment(\.scenePhase) private var scenePhase
     private let searchMode: Bool
     @State private var query = ""
-    @State private var showsSearch = false
     #if os(iOS)
+    @State private var showsSearch = false
     @State private var showsLetterJump = false
     #endif
     @State private var selection: LibraryView
@@ -17,17 +17,11 @@ struct LibraryScreen: View {
     @State private var failure: String?
     @State private var generation = UUID()
     @State private var loadedKey: String?
-    #if os(tvOS)
-    @State private var draftQuery = ""
-    #endif
     @State private var loadedRevision: UUID?
 
     init(initialView: LibraryView = .all, searchMode: Bool = false, initialQuery: String = "") {
         _selection = State(initialValue: initialView)
         _query = State(initialValue: initialQuery)
-        #if os(tvOS)
-        _draftQuery = State(initialValue: initialQuery)
-        #endif
         self.searchMode = searchMode
     }
     private var requestKey: String { "\(selection.rawValue):\(sort.rawValue):\(query)" }
@@ -80,16 +74,7 @@ struct LibraryScreen: View {
             }
         }
         #else
-        .sheet(isPresented: $showsSearch) {
-            NavigationStack {
-                Form {
-                    TextField("Search your library", text: $draftQuery).onSubmit { query = draftQuery; showsSearch = false }
-                    Button("Search") { query = draftQuery; showsSearch = false }
-                        .buttonStyle(.borderedProminent).tint(KinoTheme.signal).foregroundStyle(KinoTheme.signalInk)
-                    Button("Cancel") { showsSearch = false }.tint(KinoTheme.secondaryControlTint).foregroundStyle(KinoTheme.text)
-                }.navigationTitle("Search library")
-            }
-        }
+        .searchable(text: $query, prompt: "Search your library")
         #endif
         #if os(tvOS)
         .navigationTitle("")
@@ -123,8 +108,6 @@ struct LibraryScreen: View {
             ForEach(LibraryView.allCases) { Text($0.title).tag($0) }
         }
         #else
-        Button { draftQuery = query; showsSearch = true } label: { Label("Search", systemImage: "magnifyingglass") }
-            .buttonStyle(.bordered).tint(KinoTheme.secondaryControlTint).foregroundStyle(KinoTheme.text)
         NavigationLink { LibraryHubScreen() } label: { Label("Browse library", systemImage: "square.grid.2x2") }
             .buttonStyle(.bordered).tint(KinoTheme.secondaryControlTint).foregroundStyle(KinoTheme.text)
         #endif
