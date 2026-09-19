@@ -508,10 +508,6 @@
     "other": "下載安全診斷"
   },
   {
-    "id": "Download WireGuard profile",
-    "other": "下載 WireGuard 設定檔"
-  },
-  {
     "id": "Downloads",
     "other": "下載"
   },
@@ -1776,14 +1772,6 @@
     "other": "VA-API（AMD/英特爾）"
   },
   {
-    "id": "Verified Direct Connection",
-    "other": "已驗證的直接連接"
-  },
-  {
-    "id": "Verified Direct Connection is not configured",
-    "other": "未配置已驗證的直接連接"
-  },
-  {
     "id": "Verify latest backup",
     "other": "驗證最新備份"
   },
@@ -1798,10 +1786,6 @@
   {
     "id": "Viewer access is not available",
     "other": "查看者存取權限不可用"
-  },
-  {
-    "id": "Viewer device",
-    "other": "檢視器設備"
   },
   {
     "id": "Viewer name",
@@ -1838,10 +1822,6 @@
   {
     "id": "when ready.",
     "other": "準備好後."
-  },
-  {
-    "id": "WireGuard Viewer not found",
-    "other": "未找到 WireGuard 檢視器"
   },
   {
     "id": "XMLTV guide",

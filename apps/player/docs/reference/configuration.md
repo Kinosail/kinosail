@@ -86,12 +86,11 @@ The following table describes typed application settings. Use the running config
 | `logging.audit_retention` | `KINOSAIL_AUDIT_RETENTION` | positive duration | `8760h` | yes |
 | `logging.playback_retention` | `KINOSAIL_PLAYBACK_RETENTION` | positive duration | `2160h` | yes |
 | `remote.proxy_token` | `KINOSAIL_PROXY_TOKEN` | secret text | blank | yes |
-| `remote.mode` | `KINOSAIL_REMOTE_MODE` | `off`, `wireguard`, `https` | `off` | yes |
+| `remote.mode` | `KINOSAIL_REMOTE_MODE` | `off`, `https` | `off` | yes |
 | `remote.gateway` | `KINOSAIL_PUBLIC_GATEWAY` | boolean; requires `https` mode | `false` | yes |
 | `remote.duckdns_domain` | `KINOSAIL_DUCKDNS_DOMAIN` | DNS label | blank | yes |
 | `remote.duckdns_token` | `KINOSAIL_DUCKDNS_TOKEN` | secret text | blank | yes |
 | `remote.listen` | `KINOSAIL_REMOTE_LISTEN` | address | `:8443` | yes |
-| `remote.wireguard_dir` | `KINOSAIL_WIREGUARD_DIR` | absolute path | `/wireguard` | yes |
 | `integrations.tmdb.url` | `KINOSAIL_TMDB_URL` | URL | blank | yes |
 | `integrations.tmdb.image_url` | `KINOSAIL_TMDB_IMAGE_URL` | URL | blank | yes |
 | `integrations.tmdb.token` | `KINOSAIL_TMDB_TOKEN` | secret text | blank | yes |
@@ -123,9 +122,9 @@ The following table describes typed application settings. Use the running config
 - `transcoding.accelerator`: `none`, `auto`, `vaapi`, `qsv`, `cuda`, `videotoolbox`, `rkmpp`, `v4l2m2m`, `amf`, or `mf`.
 - `transcoding.codec`: `auto`, `h264`, `hevc`, `av1`, or `vp9`.
 - `scanning.frequency`: `default`, `off`, `5m`, `15m`, or `1h`.
-- `remote.mode`: `off`, `wireguard`, or `https`.
+- `remote.mode`: `off` or `https`.
 
-Remote access requires a DuckDNS domain and token. HTTPS mode also requires `auth.url` to be the exact `https://<domain>.duckdns.org` origin. WireGuard mode requires an absolute clean directory. Enabling DLNA requires `dlna.url`. SCIM requires both its token and a future expiration time. MCP requires all five MCP OAuth values and a resource URL ending in `/mcp`.
+Remote HTTPS requires a DuckDNS domain and token plus an exact `https://<domain>.duckdns.org` `auth.url`. Enabling DLNA requires `dlna.url`. SCIM requires both its token and a future expiration time. MCP requires all five MCP OAuth values and a resource URL ending in `/mcp`.
 
 `integrations.jellyfin.enabled` is `false` when it is unset. Setting it to `true` requires a valid trusted HTTPS value. Kinosail rejects the configuration before it exposes Jellyfin routes when trusted HTTPS is missing.
 
@@ -143,7 +142,7 @@ A deployment-managed deSEC value is one secret JSON object:
 
 Kinosail still accepts the previous DuckDNS object without `provider`. It treats that object as `duckdns` and requires no Owner action.
 
-LAN trusted HTTPS requires TLS. It cannot run with public HTTPS remote mode. A DuckDNS-based WireGuard deployment must use a different DuckDNS label for its remote connection. Follow [Connect devices]({{ '/getting-started/connect-devices/' | relative_url }}) for the Owner workflow and privacy effects.
+LAN trusted HTTPS requires TLS. It cannot run with public HTTPS remote mode. Follow [Connect devices]({{ '/getting-started/connect-devices/' | relative_url }}) for the Owner workflow and privacy effects.
 
 ## Owner-managed configuration API
 

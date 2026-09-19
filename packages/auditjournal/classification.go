@@ -76,7 +76,6 @@ func staticAuditAction(request *http.Request, overrides map[string]string) strin
 		"/settings/profiles": "profile.created", "/settings/profiles/remove": "profile.removed", "/settings/profiles/password": "profile.password", "/settings/profiles/permissions": "profile.permissions",
 		"/settings/sessions/revoke": "sessions.revoked", "/settings/sessions/device": "session.revoked", "/settings/api-keys": "api-key.created", "/settings/api-keys/revoke": "api-key.revoked", "/quick-connect": "quick-connect.approved",
 		"/settings/tasks/scan": "task.library-scan", "/settings/tasks/metadata": "task.metadata-refresh", "/settings/tasks/maintain": "task.maintenance", "/settings/cache/clear": "task.cache-clear", "/scan": "task.library-scan",
-		"/settings/remote/wireguard": "wireguard-peer.created", "/settings/remote/wireguard/revoke": "wireguard-peer.revoked",
 		"/settings/encrypted-backup": "backup.created", "/settings/backups/verify": "backup.verified", "/settings/marker-analysis": "task.marker-analysis",
 		"/account/mfa/setup": "mfa.setup", "/account/mfa/enable": "mfa.enabled", "/account/mfa/disable": "mfa.disabled", "/account/oidc/unlink": "oidc.unlinked", "/account/saml/unlink": "saml.unlinked",
 		"/account/passkeys/remove": "passkey.removed",

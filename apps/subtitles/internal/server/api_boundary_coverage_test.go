@@ -46,8 +46,6 @@ func TestVersionedAPIRejectsMalformedMutationBodies(t *testing.T) { //nolint:fun
 		{http.MethodPut, "/api/v1/profiles/missing"},
 		{http.MethodPut, "/api/v1/profiles/missing/password"},
 		{http.MethodPost, "/api/v1/api-keys"},
-		{http.MethodPost, "/api/v1/remote-access/wireguard"},
-		{http.MethodDelete, "/api/v1/remote-access/wireguard"},
 		{http.MethodPost, "/api/v1/viewing-imports/preview"},
 		{http.MethodPost, "/api/v1/viewing-syncs"},
 		{http.MethodPost, "/api/v1/quick-connect"},

@@ -56,38 +56,6 @@ func TestPublicPasskeyOriginKeepsExplicitLANAliasesAvailable(t *testing.T) {
 	}
 }
 
-func TestRemoteAccessStatusReportsModeWithoutCredentials(t *testing.T) {
-	t.Parallel()
-	manager, err := remoteaccess.New(remoteaccess.Config{Enabled: true, Domain: "family-media", Token: strings.Repeat("s", 32)})
-	if err != nil {
-		t.Fatal(err)
-	}
-	handler := server.New(server.Config{DataDir: t.TempDir(), RequireAuth: true, InternetAccess: manager})
-	owner := signInTestProfile(t, handler, "/setup", "name=Owner&password=owner-password")
-	response := serveRequest(handler, requestWithCookieRequest(t, http.MethodGet, "/api/v1/remote-access", "", owner))
-	if response.Code != http.StatusOK || !strings.Contains(response.Body.String(), `"hostname":"family-media.duckdns.org"`) || !strings.Contains(response.Body.String(), `"mode":"wireguard"`) || strings.Contains(response.Body.String(), strings.Repeat("s", 32)) {
-		t.Fatalf("remote access status = %d %q", response.Code, response.Body.String())
-	}
-	settings := serveRequest(handler, requestWithCookieRequest(t, http.MethodGet, "/settings", "", owner))
-	if settings.Code != http.StatusOK || !strings.Contains(settings.Body.String(), "family-media.duckdns.org") || strings.Contains(settings.Body.String(), strings.Repeat("s", 32)) {
-		t.Fatalf("settings remote access status = %d %q", settings.Code, settings.Body.String())
-	}
-}
-
-func TestWireGuardStatusDoesNotOfferPublicHTTPSKillSwitch(t *testing.T) {
-	t.Parallel()
-	manager, err := remoteaccess.New(remoteaccess.Config{Enabled: true, Domain: "family-media", Token: strings.Repeat("w", 32)})
-	if err != nil {
-		t.Fatal(err)
-	}
-	handler := server.New(server.Config{DataDir: t.TempDir(), RequireAuth: true, InternetAccess: manager})
-	owner := signInTestProfile(t, handler, "/setup", "name=Owner&password=owner-password")
-	settings := serveRequest(handler, requestWithCookieRequest(t, http.MethodGet, "/settings", "", owner))
-	if settings.Code != http.StatusOK || strings.Contains(settings.Body.String(), "Emergency public-access kill switch") {
-		t.Fatalf("WireGuard settings = %d %q", settings.Code, settings.Body.String())
-	}
-}
-
 func TestPublicQuickConnectCannotInheritOwnerAccess(t *testing.T) {
 	t.Parallel()
 	handler := server.New(server.Config{DataDir: t.TempDir(), RequireAuth: true})

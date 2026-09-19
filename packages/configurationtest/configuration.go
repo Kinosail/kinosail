@@ -116,11 +116,11 @@ func (configuration contract[Source, PublicValue, Snapshot]) testTrustedHTTPSCon
 	raw := `{"domain":"family-media","token":"` + strings.Repeat("t", 32) + `","address":"192.168.1.10","termsAccepted":true}`
 	valid := map[string]string{"KINOSAIL_DUCKDNS_HTTPS": raw, "KINOSAIL_LISTEN": ":" + configuration.Port + ""}
 	for name, changes := range map[string]map[string]string{
-		"TLS disabled":        {"KINOSAIL_TLS_ENABLED": "false"},
-		"wrong auth origin":   {"KINOSAIL_AUTH_URL": "https://other.duckdns.org:" + configuration.Port + ""},
-		"nonnumeric port":     {"KINOSAIL_LISTEN": ":https"},
-		"public HTTPS mode":   {"KINOSAIL_REMOTE_MODE": "https", "KINOSAIL_DUCKDNS_DOMAIN": "remote-media", "KINOSAIL_DUCKDNS_TOKEN": strings.Repeat("r", 32), "KINOSAIL_AUTH_URL": "https://remote-media.duckdns.org"},
-		"shared remote label": {"KINOSAIL_REMOTE_MODE": "wireguard", "KINOSAIL_DUCKDNS_DOMAIN": "family-media", "KINOSAIL_DUCKDNS_TOKEN": strings.Repeat("r", 32)},
+		"TLS disabled":            {"KINOSAIL_TLS_ENABLED": "false"},
+		"wrong auth origin":       {"KINOSAIL_AUTH_URL": "https://other.duckdns.org:" + configuration.Port + ""},
+		"nonnumeric port":         {"KINOSAIL_LISTEN": ":https"},
+		"public HTTPS mode":       {"KINOSAIL_REMOTE_MODE": "https", "KINOSAIL_DUCKDNS_DOMAIN": "remote-media", "KINOSAIL_DUCKDNS_TOKEN": strings.Repeat("r", 32), "KINOSAIL_AUTH_URL": "https://remote-media.duckdns.org"},
+		"unsupported remote mode": {"KINOSAIL_REMOTE_MODE": "invalid", "KINOSAIL_DUCKDNS_DOMAIN": "family-media", "KINOSAIL_DUCKDNS_TOKEN": strings.Repeat("r", 32)},
 	} {
 		t.Run(name, func(t *testing.T) {
 			environment := make(map[string]string, len(valid)+len(changes))
@@ -194,14 +194,6 @@ func (configuration contract[Source, PublicValue, Snapshot]) testSecureRemoteAcc
 				t.Fatal("invalid remote access configuration was accepted")
 			}
 		})
-	}
-	wireGuard := map[string]string{"KINOSAIL_REMOTE_MODE": "wireguard", "KINOSAIL_DUCKDNS_DOMAIN": "family-media", "KINOSAIL_DUCKDNS_TOKEN": strings.Repeat("a", 32), "KINOSAIL_WIREGUARD_DIR": "/wireguard"}
-	if _, err := configuration.Load(t.TempDir(), "", func(key string) (string, bool) { value, ok := wireGuard[key]; return value, ok }); err != nil {
-		t.Fatalf("WireGuard configuration = %v", err)
-	}
-	wireGuard["KINOSAIL_WIREGUARD_DIR"] = "relative"
-	if _, err := configuration.Load(t.TempDir(), "", func(key string) (string, bool) { value, ok := wireGuard[key]; return value, ok }); err == nil {
-		t.Fatal("relative WireGuard directory was accepted")
 	}
 }
 

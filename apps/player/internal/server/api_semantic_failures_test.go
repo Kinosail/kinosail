@@ -47,8 +47,6 @@ func TestVersionedAPIFailsClosedOnInvalidCapabilityInputs(t *testing.T) { //noli
 		{Method: http.MethodPost, Path: "/api/v1/tasks/unknown", Body: nil, Status: http.StatusNotFound},
 		{Method: http.MethodPost, Path: "/api/v1/backups", Body: nil, Status: http.StatusServiceUnavailable},
 		{Method: http.MethodPost, Path: "/api/v1/backups/verify", Body: nil, Status: http.StatusServiceUnavailable},
-		{Method: http.MethodPost, Path: "/api/v1/remote-access/wireguard", Body: map[string]any{"label": "Viewer"}, Status: http.StatusNotFound},
-		{Method: http.MethodDelete, Path: "/api/v1/remote-access/wireguard", Body: map[string]any{"publicKey": "missing"}, Status: http.StatusNotFound},
 		{Method: http.MethodPost, Path: "/api/v1/viewing-imports/preview", Body: map[string]any{"source": "unknown"}, Status: http.StatusBadRequest},
 		{Method: http.MethodPost, Path: "/api/v1/viewing-syncs", Body: map[string]any{"previewId": "missing", "interval": "now"}, Status: http.StatusBadRequest},
 		{Method: http.MethodPut, Path: "/api/v1/me/mfa", Body: map[string]any{"code": "000000"}, Status: http.StatusBadRequest},

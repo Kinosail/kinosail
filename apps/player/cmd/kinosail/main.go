@@ -74,7 +74,6 @@ func configuredServerConfig(ctx context.Context, configured configuration.Snapsh
 		Metadata: values.Metadata, OIDC: values.OIDC, SAML: values.SAML, SCIM: values.SCIM, MCP: values.MCP, Notifications: values.Notifications,
 	}
 	config.InternetAccess, config.TrustedHTTPS = internet, trusted
-	config.WireGuardDir, config.WireGuardEndpoint = values.WireGuardDir, values.WireGuardEndpoint
 	return config
 }
 

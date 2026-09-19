@@ -162,14 +162,8 @@ banner "Secure Kinosail remote access"
 
 stage "Choose the private boundary"
 [[ -f "$ENV_FILE" ]] || { warn "Install Kinosail and create the Owner Profile first."; exit 1; }
-say "Use HTTPS for ordinary viewing apps. The legacy WireGuard mode pairs Viewer devices. For Owner access while away, use Settings → Manage while away."
-ask KINOSAIL_REMOTE_MODE "Mode (https or wireguard) [https]:"
-KINOSAIL_REMOTE_MODE="${KINOSAIL_REMOTE_MODE:-https}"
-[[ "$KINOSAIL_REMOTE_MODE" == "off" ]] && KINOSAIL_REMOTE_MODE=https
-case "$KINOSAIL_REMOTE_MODE" in
-  wireguard|https) ;;
-  *) warn "Mode must be wireguard or https."; exit 2 ;;
-esac
+KINOSAIL_REMOTE_MODE=https
+say "Use HTTPS for ordinary viewing apps. For Owner access while away, use Settings → Manage while away."
 if command -v podman >/dev/null && podman compose version >/dev/null 2>&1; then
   compose=(podman compose)
 elif command -v docker >/dev/null && docker compose version >/dev/null 2>&1; then
@@ -177,15 +171,11 @@ elif command -v docker >/dev/null && docker compose version >/dev/null 2>&1; the
 else
   warn "Install Podman Compose or Docker Compose first."; exit 1
 fi
-if [[ "$KINOSAIL_REMOTE_MODE" == "https" ]]; then
-  say "Public HTTPS is for watching away from home. Owner settings stay on your home network or a separately paired private management device."
-  step "Before continuing, create a remote-enabled Viewer in Settings and limit it to the Libraries they need."
-  step "Sign in locally as that Viewer, open Account, and set up an authenticator app. Keep this device signed in for Quick Connect approval."
-  note "For playback only, leave Allow downloads off. Public password-only sign-in and public passkey registration are blocked."
-  pause "Press Enter when the Viewer is ready"
-else
-  note "WireGuard exposes no public Kinosail HTTPS listener."
-fi
+say "Public HTTPS is for watching away from home. Owner settings stay on your home network or a separately paired private management device."
+step "Before continuing, create a remote-enabled Viewer in Settings and limit it to the Libraries they need."
+step "Sign in locally as that Viewer, open Account, and set up an authenticator app. Keep this device signed in for Quick Connect approval."
+note "For playback only, leave Allow downloads off. Public password-only sign-in and public passkey registration are blocked."
+pause "Press Enter when the Viewer is ready"
 
 stage "Create the DuckDNS name"
 open_url "https://www.duckdns.org/"
@@ -217,34 +207,16 @@ write_env KINOSAIL_DUCKDNS_TOKEN_PATH ./secrets/duckdns_token
 stage "Enable Kinosail"
 previous_mode="$(_existing KINOSAIL_REMOTE_MODE || true)"
 write_env KINOSAIL_REMOTE_MODE "$KINOSAIL_REMOTE_MODE"
-if [[ "$KINOSAIL_REMOTE_MODE" == "https" ]]; then
-  # Save the original even when empty; reruns must not replace it with the public origin.
-  if ! _existing KINOSAIL_LOCAL_AUTH_URL >/dev/null; then
-    local_auth="$(_existing KINOSAIL_AUTH_URL || true)"
-    [[ "$previous_mode" != "https" ]] || local_auth=""
-    write_env KINOSAIL_LOCAL_AUTH_URL "$local_auth"
-  fi
-  write_env KINOSAIL_AUTH_URL "https://$KINOSAIL_DUCKDNS_DOMAIN.duckdns.org"
-  write_env KINOSAIL_REMOTE_LISTEN :8443
-  say "Restart Kinosail with its secure HTTPS override:"
-  step "Run ./scripts/install.sh using the same media path and port as the current installation."
-else
-  if _existing KINOSAIL_LOCAL_AUTH_URL >/dev/null; then
-    write_env KINOSAIL_AUTH_URL "$(_existing KINOSAIL_LOCAL_AUTH_URL)"
-  fi
-	  if command -v sudo >/dev/null 2>&1; then
-	    sudo install -d -o 10001 -g 10001 -m 700 "$root/wireguard"
-	  else
-	    warn "sudo is required once to create the private WireGuard state directory for Kinosail's unprivileged user."
-	    exit 1
-	  fi
-	  write_env KINOSAIL_WIREGUARD_PATH ./wireguard
-	  write_env KINOSAIL_WIREGUARD_DIR /wireguard
-	  say "Restart Kinosail with its WireGuard override, then create Viewer device profiles in Settings → Watch away from home."
-	  step "After creating the first Viewer profile, run: sudo install -m 600 '$root/wireguard/wg_confs/kinosail.conf' /etc/wireguard/kinosail.conf"
-	  step "Enable the private interface: sudo systemctl enable --now wg-quick@kinosail"
-	  note "After adding or revoking another Viewer, run sudo ./scripts/sync-wireguard.sh to apply the new peer list without restarting Kinosail."
+# Save the original even when empty; reruns must not replace it with the public origin.
+if ! _existing KINOSAIL_LOCAL_AUTH_URL >/dev/null; then
+  local_auth="$(_existing KINOSAIL_AUTH_URL || true)"
+  [[ "$previous_mode" != "https" ]] || local_auth=""
+  write_env KINOSAIL_LOCAL_AUTH_URL "$local_auth"
 fi
+write_env KINOSAIL_AUTH_URL "https://$KINOSAIL_DUCKDNS_DOMAIN.duckdns.org"
+write_env KINOSAIL_REMOTE_LISTEN :8443
+say "Restart Kinosail with its secure HTTPS override:"
+step "Run ./scripts/install.sh using the same media path and port as the current installation."
 
 image="$(_existing KINOSAIL_IMAGE || true)"
 compose_file=compose.yaml
@@ -271,28 +243,23 @@ else
 fi
 
 stage "Open only the selected path"
-if [[ "$KINOSAIL_REMOTE_MODE" == "https" ]]; then
-  step "Reserve this Server's LAN IP in your router's connected-device list (DHCP reservation)."
-  step "In the router app or settings, find Port forwarding (also called Virtual server or NAT forwarding)."
-  say "Name / service:          Kinosail HTTPS"
-  say "Device / internal IP:    The Server computer's reserved LAN address"
-  say "Protocol:                TCP only"
-  say "External / public port:  443"
-  say "Internal / private port: 443"
-  note "For start and end ports, enter 443 in both. Save this single rule."
-  step "Allow inbound TCP 443 in the Server firewall. The container maps host 443 to container 8443; do not forward to host 8443."
-  note "Do not expose TCP 80 or the LAN port, disable the firewall, or use a router DMZ."
-  note "If your router has a private WAN address or carrier-grade NAT, ask your provider for a public address or use an owner-controlled VPN compatible with your network. Two routers may need forwarding on both."
-  step "Open Settings → Watch away from home → Set up access away from home for official router guides, troubleshooting, and Server checks."
-  step "Turn Wi-Fi off on your phone. Open https://$KINOSAIL_DUCKDNS_DOMAIN.duckdns.org in a browser and choose Get a sign-in code."
-  note "In Kinosail or a compatible Jellyfin app, add that address and choose Quick Connect."
-  step "On the home device, approve the matching code as your remote-enabled Viewer. Play a movie and try seeking."
-  note "Never approve an unexpected code or bypass a certificate warning at the public address."
-  note "The first certificate can take a short time. Settings shows starting, ready, error, or killed without revealing the token."
-else
-  step "Forward router UDP 51820 to the WireGuard host. Do not expose Kinosail's HTTPS port."
-  step "Import the downloaded Viewer profile into the WireGuard app, connect, then open the Kinosail address in that profile."
-fi
+step "Reserve this Server's LAN IP in your router's connected-device list (DHCP reservation)."
+step "In the router app or settings, find Port forwarding (also called Virtual server or NAT forwarding)."
+say "Name / service:          Kinosail HTTPS"
+say "Device / internal IP:    The Server computer's reserved LAN address"
+say "Protocol:                TCP only"
+say "External / public port:  443"
+say "Internal / private port: 443"
+note "For start and end ports, enter 443 in both. Save this single rule."
+step "Allow inbound TCP 443 in the Server firewall. The container maps host 443 to container 8443; do not forward to host 8443."
+note "Do not expose TCP 80 or the LAN port, disable the firewall, or use a router DMZ."
+note "If your router has a private WAN address or carrier-grade NAT, ask your provider for a public address or use an owner-controlled VPN compatible with your network. Two routers may need forwarding on both."
+step "Open Settings → Watch away from home → Set up access away from home for official router guides, troubleshooting, and Server checks."
+step "Turn Wi-Fi off on your phone. Open https://$KINOSAIL_DUCKDNS_DOMAIN.duckdns.org in a browser and choose Get a sign-in code."
+note "In Kinosail or a compatible Jellyfin app, add that address and choose Quick Connect."
+step "On the home device, approve the matching code as your remote-enabled Viewer. Play a movie and try seeking."
+note "Never approve an unexpected code or bypass a certificate warning at the public address."
+note "The first certificate can take a short time. Settings shows starting, ready, error, or killed without revealing the token."
 say "Emergency stop: use Settings → Watch away from home, or run ./scripts/disable-remote-access.sh on the host."
 
 SKIPPED+=("Confirm outside access from cellular data; local health does not prove router ports are reachable")

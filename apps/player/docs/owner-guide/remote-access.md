@@ -14,7 +14,6 @@ Public viewing and management while away are separate and off by default. Use pu
 | --- | --- | --- |
 | LAN HTTPS | Devices on the trusted home network | None from the internet |
 | Private management | Individually paired Owner devices, with two-step sign-in | Forward UDP `51821` in the standard installation |
-| Legacy Viewer WireGuard | Paired Viewer devices | Forward UDP `51820` |
 | Public HTTPS | Remote-enabled Viewers and compatible Jellyfin apps | Forward TCP `443` |
 
 Kinosail does not operate a hosted relay, tunnel service, media proxy, or cache. The optional private management tunnel runs on your own Server. Carrier-grade NAT or blocked inbound traffic needs public reachability from the internet provider.
@@ -27,19 +26,9 @@ Complete local setup first. From the bundle root, run:
 ./scripts/setup-remote-access.sh
 ```
 
-For ordinary viewing, choose `https` when the wizard asks for `https` or the legacy Viewer `wireguard` mode. Then enter a DuckDNS subdomain label. It stores the DuckDNS token in `secrets/duckdns_token` with mode `600` and writes only the token file path to `.env`.
+The wizard configures public HTTPS and asks for a DuckDNS subdomain label. It stores the DuckDNS token in `secrets/duckdns_token` with mode `600` and writes only the token file path to `.env`.
 
 For public HTTPS, the wizard sets `KINOSAIL_REMOTE_MODE=https`, `KINOSAIL_AUTH_URL=https://<name>.duckdns.org`, and `KINOSAIL_REMOTE_LISTEN=:8443`. Forward router TCP `443` to the host's TCP `443`; do not expose TCP `80` or the LAN port. Test from cellular data with a remote-enabled Viewer.
-
-For legacy Viewer WireGuard, the wizard creates the protected state directory, sets `KINOSAIL_REMOTE_MODE=wireguard`, and asks you to restart. In **Settings → Watch away from home → Verified Direct Connection**, choose a Viewer device label and Profile, then select **Download WireGuard profile**. Install the downloaded profile, then install and enable the host profile:
-
-```sh
-sudo install -m 600 ./wireguard/wg_confs/kinosail.conf /etc/wireguard/kinosail.conf
-sudo systemctl enable --now wg-quick@kinosail
-```
-
-Forward UDP `51820`. After you add or revoke a Viewer, run `sudo ./scripts/sync-wireguard.sh`. Kinosail sign-in is still required. This legacy Viewer subnet cannot authorize Owner management; migrate Owner devices to the separate private management flow below.
-
 
 ## Add the router rule
 
@@ -59,7 +48,7 @@ Open **Settings → Watch away from home → Set up access away from home**. The
 
 If there are start and end port fields, put `443` in both. Save the rule. On the Server computer's firewall, allow incoming TCP `443` while keeping the firewall enabled. The standard container installation maps host `443` to container `8443`; the router must target host `443`.
 
-Never use DMZ, open a range, forward the LAN port, or enable router administration from the internet. These instructions apply to the standard public HTTPS installation, not a custom reverse proxy or WireGuard setup.
+Never use DMZ, open a range, forward the LAN port, or enable router administration from the internet. These instructions apply to the standard public HTTPS installation, not a custom reverse proxy.
 
 Official router guides: [TP-Link](https://www.tp-link.com/us/support/faq/1379/), [ASUS](https://www.asus.com/us/support/faq/1037906/), [NETGEAR](https://kb.netgear.com/24289/How-do-I-set-up-port-forwarding-to-a-local-server-on-my-NETGEAR-router), [eero](https://eero.com/support/articles/how-do-i-set-up-port-forwarding), [Google Nest Wifi / Google Wifi](https://support.google.com/googlehome/answer/6274503?hl=en), and [Xfinity Gateway](https://www.xfinity.com/support/articles/xfi-port-forwarding). Use the Kinosail values above instead of any example ports in a guide. For another model, use the manufacturer's support site.
 

@@ -508,10 +508,6 @@
     "other": "Baixar diagnósticos seguros"
   },
   {
-    "id": "Download WireGuard profile",
-    "other": "Baixe o perfil WireGuard"
-  },
-  {
     "id": "Downloads",
     "other": "Downloads"
   },
@@ -1772,14 +1768,6 @@
     "other": "VA-API (AMD/Intel)"
   },
   {
-    "id": "Verified Direct Connection",
-    "other": "Conexão direta verificada"
-  },
-  {
-    "id": "Verified Direct Connection is not configured",
-    "other": "A conexão direta verificada não está configurada"
-  },
-  {
     "id": "Verify latest backup",
     "other": "Verifique o backup mais recente"
   },
@@ -1794,10 +1782,6 @@
   {
     "id": "Viewer access is not available",
     "other": "O acesso do visualizador não está disponível"
-  },
-  {
-    "id": "Viewer device",
-    "other": "Dispositivo visualizador"
   },
   {
     "id": "Viewer name",
@@ -1834,10 +1818,6 @@
   {
     "id": "when ready.",
     "other": "quando estiver pronto."
-  },
-  {
-    "id": "WireGuard Viewer not found",
-    "other": "WireGuard Viewer não encontrado"
   },
   {
     "id": "XMLTV guide",

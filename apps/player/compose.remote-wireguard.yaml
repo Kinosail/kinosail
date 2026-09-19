@@ -1,9 +1,0 @@
-services:
-  kinosail:
-    environment:
-      KINOSAIL_REMOTE_MODE: wireguard
-      KINOSAIL_DUCKDNS_TOKEN_FILE: /run/secrets/kinosail_duckdns_token
-      KINOSAIL_WIREGUARD_DIR: /wireguard
-    volumes:
-      - "${KINOSAIL_DUCKDNS_TOKEN_PATH:-./secrets/duckdns_token}:/run/secrets/kinosail_duckdns_token:ro"
-      - "${KINOSAIL_WIREGUARD_PATH:-./wireguard}:/wireguard"

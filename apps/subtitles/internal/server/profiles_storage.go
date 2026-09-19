@@ -2,16 +2,10 @@ package server
 
 import (
 	"github.com/MikeO7/kinosail/packages/identitycore"
-	"github.com/MikeO7/kinosail/packages/wireguard"
 )
 
 func (store *profileStore) byID(id string) (viewerProfile, bool) {
 	return store.profileModule().ByID(id)
-}
-
-func (store *profileStore) WireGuardProfile(id string) (wireguard.Profile, bool) {
-	profile, found := store.byID(id)
-	return wireguard.Profile{ID: profile.ID, Owner: profile.Owner}, found
 }
 
 func (store *profileStore) list() []viewerProfile {

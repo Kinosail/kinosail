@@ -6,7 +6,7 @@ fixture="$(mktemp -d)"
 trap 'rm -rf "$fixture"' EXIT
 mkdir -p "$fixture/app/scripts" "$fixture/bin" "$fixture/media"
 cp "$source_root/scripts/install.sh" "$source_root/scripts/uninstall.sh" "$fixture/app/scripts/"
-cp "$source_root/compose.release.yaml" "$source_root/compose.config.yaml" "$source_root/compose.gpu.yaml" "$source_root/compose.rkmpp.yaml" "$source_root/compose.remote-https.yaml" "$source_root/compose.remote-wireguard.yaml" "$fixture/app/"
+cp "$source_root/compose.release.yaml" "$source_root/compose.config.yaml" "$source_root/compose.gpu.yaml" "$source_root/compose.rkmpp.yaml" "$source_root/compose.remote-https.yaml" "$fixture/app/"
 grep -Fq "\${KINOSAIL_BIND:-127.0.0.1}" "$fixture/app/compose.release.yaml"
 grep -Fq "name: \"\${KINOSAIL_PROJECT_NAME:-kinosail}\"" "$fixture/app/compose.release.yaml"
 # shellcheck disable=SC2016 # The literal Compose interpolation is the assertion target.

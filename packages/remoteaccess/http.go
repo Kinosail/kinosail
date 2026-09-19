@@ -3,8 +3,6 @@ package remoteaccess
 import (
 	"errors"
 	"net/http"
-
-	"github.com/MikeO7/kinosail/packages/wireguard"
 )
 
 // WriteError preserves one application's localized web error response.
@@ -32,18 +30,14 @@ func ResetKillHTTP(manager *Manager, writeError WriteError) http.HandlerFunc {
 	}
 }
 
-// StatusAPI reports verified-direct peers and public HTTPS readiness.
-func StatusAPI[R any](verified *wireguard.Manager, internet *Manager, readiness func(Status) R, write func(http.ResponseWriter, any, int)) http.HandlerFunc {
+// StatusAPI reports public HTTPS readiness.
+func StatusAPI[R any](internet *Manager, readiness func(Status) R, write func(http.ResponseWriter, any, int)) http.HandlerFunc {
 	return func(writer http.ResponseWriter, _ *http.Request) {
-		peers := []wireguard.Viewer(nil)
-		if verified != nil {
-			peers = verified.Peers()
-		}
 		internetStatus := Status{State: "disabled", Mode: "off"}
 		if internet != nil {
 			internetStatus = internet.Status()
 		}
-		write(writer, map[string]any{"directOnly": true, "verifiedDirect": map[string]any{"enabled": verified != nil, "peers": peers, "identityBinding": "profile-bound"}, "internet": internetStatus, "securePublic": readiness(internetStatus)}, http.StatusOK)
+		write(writer, map[string]any{"directOnly": true, "internet": internetStatus, "securePublic": readiness(internetStatus)}, http.StatusOK)
 	}
 }
 

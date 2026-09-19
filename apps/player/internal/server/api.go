@@ -11,7 +11,6 @@ import (
 	"github.com/MikeO7/kinosail/packages/library"
 	"github.com/MikeO7/kinosail/packages/remoteaccess"
 	"github.com/MikeO7/kinosail/packages/trustedhttps"
-	"github.com/MikeO7/kinosail/packages/wireguard"
 )
 
 type clientItem = catalogapi.ClientItem
@@ -28,7 +27,6 @@ type apiServices struct {
 	rooms         *watchRoomAdapter
 	backups       *backupManager
 	downloads     *downloadManager
-	verified      *wireguard.Manager
 	maintenance   *maintenanceManager
 	imports       *viewingImportManager
 	connections   *mcpConnections

@@ -53,7 +53,6 @@ func CommonApplicationFields(listen, supportURL string) []ApplicationField {
 		{"remote.duckdns_domain", "KINOSAIL_DUCKDNS_DOMAIN", "", "text", false, true},
 		{"remote.duckdns_token", "KINOSAIL_DUCKDNS_TOKEN", "", "text", true, true},
 		{"remote.listen", "KINOSAIL_REMOTE_LISTEN", ":8443", "text", false, true},
-		{"remote.wireguard_dir", "KINOSAIL_WIREGUARD_DIR", "/wireguard", "text", false, true},
 		{"integrations.tmdb.url", "KINOSAIL_TMDB_URL", "", "text", false, true},
 		{"integrations.tmdb.image_url", "KINOSAIL_TMDB_IMAGE_URL", "", "text", false, true},
 		{"integrations.tmdb.token", "KINOSAIL_TMDB_TOKEN", "", "text", true, true},

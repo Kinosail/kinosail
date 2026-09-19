@@ -508,10 +508,6 @@
     "other": "Ladda ner säker diagnostik"
   },
   {
-    "id": "Download WireGuard profile",
-    "other": "Ladda ner WireGuard-profil"
-  },
-  {
     "id": "Downloads",
     "other": "Nedladdningar"
   },
@@ -1772,14 +1768,6 @@
     "other": "VA-API (AMD/Intel)"
   },
   {
-    "id": "Verified Direct Connection",
-    "other": "Verifierad direktanslutning"
-  },
-  {
-    "id": "Verified Direct Connection is not configured",
-    "other": "Verifierad direktanslutning är inte konfigurerad"
-  },
-  {
     "id": "Verify latest backup",
     "other": "Verifiera senaste säkerhetskopian"
   },
@@ -1794,10 +1782,6 @@
   {
     "id": "Viewer access is not available",
     "other": "Tittaråtkomst är inte tillgänglig"
-  },
-  {
-    "id": "Viewer device",
-    "other": "Viewer-enhet"
   },
   {
     "id": "Viewer name",
@@ -1834,10 +1818,6 @@
   {
     "id": "when ready.",
     "other": "när redo."
-  },
-  {
-    "id": "WireGuard Viewer not found",
-    "other": "WireGuard Viewer hittades inte"
   },
   {
     "id": "XMLTV guide",

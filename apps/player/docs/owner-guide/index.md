@@ -14,7 +14,7 @@ Use this guide after first setup. Every task requires an Owner session unless th
 - [Configure playback]({{ '/owner-guide/playback/' | relative_url }}) to choose Direct, Automatic, Compatibility, subtitles, and hardware transcoding.
 - [Secure accounts]({{ '/owner-guide/security/' | relative_url }}) to manage Owners, Viewers, passkeys, authenticators, sessions, and API keys.
 - [Connect phones, TVs, and Jellyfin apps]({{ '/getting-started/connect-devices/' | relative_url }}) to use secure local access or required trusted HTTPS for Jellyfin apps.
-- [Configure remote access]({{ '/owner-guide/remote-access/' | relative_url }}) to select LAN, WireGuard, or public HTTPS.
+- [Configure remote access]({{ '/owner-guide/remote-access/' | relative_url }}) to configure public viewing or private Owner management.
 - [Connect integrations]({{ '/owner-guide/integrations/' | relative_url }}) to configure metadata, subtitles, identity, webhooks, DLNA, and clients.
 - [Back up and update]({{ '/owner-guide/backups-and-updates/' | relative_url }}) to protect state and recover from a host or storage failure.
 

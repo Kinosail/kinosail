@@ -18,8 +18,7 @@ func PrivateNetwork(next http.Handler) http.Handler {
 			return
 		}
 		ip := net.IP(address.WithZone("").AsSlice())
-		legacyViewerTunnel := ip.To4() != nil && ip.To4()[0] == 10 && ip.To4()[1] == 91 && ip.To4()[2] == 0
-		if legacyViewerTunnel || !ip.IsLoopback() && !ip.IsPrivate() && !ip.IsLinkLocalUnicast() {
+		if !ip.IsLoopback() && !ip.IsPrivate() && !ip.IsLinkLocalUnicast() {
 			r = markRemote(r)
 		}
 		next.ServeHTTP(w, r)

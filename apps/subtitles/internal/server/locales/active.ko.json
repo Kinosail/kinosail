@@ -508,10 +508,6 @@
     "other": "안전 진단 다운로드"
   },
   {
-    "id": "Download WireGuard profile",
-    "other": "WireGuard 프로필 다운로드"
-  },
-  {
     "id": "Downloads",
     "other": "다운로드"
   },
@@ -1772,14 +1768,6 @@
     "other": "VA-API(AMD/인텔)"
   },
   {
-    "id": "Verified Direct Connection",
-    "other": "직접 연결 확인"
-  },
-  {
-    "id": "Verified Direct Connection is not configured",
-    "other": "확인된 직접 연결이 구성되지 않았습니다"
-  },
-  {
     "id": "Verify latest backup",
     "other": "최신 백업 확인"
   },
@@ -1794,10 +1782,6 @@
   {
     "id": "Viewer access is not available",
     "other": "뷰어 액세스를 사용할 수 없습니다"
-  },
-  {
-    "id": "Viewer device",
-    "other": "뷰어 장치"
   },
   {
     "id": "Viewer name",
@@ -1834,10 +1818,6 @@
   {
     "id": "when ready.",
     "other": "준비되면."
-  },
-  {
-    "id": "WireGuard Viewer not found",
-    "other": "WireGuard 뷰어를 찾을 수 없습니다"
   },
   {
     "id": "XMLTV guide",

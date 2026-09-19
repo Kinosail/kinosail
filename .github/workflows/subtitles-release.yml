@@ -119,7 +119,7 @@ jobs:
         env:
           APP_VERSION: ${{ steps.version.outputs.version }}
         run: |
-          tar --create --gzip --file kinosail-subtitles-install.tar.gz scripts/install.sh scripts/uninstall.sh scripts/setup-remote-access.sh scripts/disable-remote-access.sh scripts/sync-wireguard.sh compose.release.yaml compose.config.yaml compose.gpu.yaml compose.rkmpp.yaml compose.remote-https.yaml compose.remote-wireguard.yaml kinosail.example.yaml .env.example README.md LICENSE LICENSING.md THIRD_PARTY_NOTICES.md SECURITY.md CONTRIBUTING.md CLA.md CCLA.md TRADEMARKS.md third_party/hls.js/LICENSE third_party/htmx/LICENSE
+          tar --create --gzip --file kinosail-subtitles-install.tar.gz scripts/install.sh scripts/uninstall.sh scripts/setup-remote-access.sh scripts/disable-remote-access.sh compose.release.yaml compose.config.yaml compose.gpu.yaml compose.rkmpp.yaml compose.remote-https.yaml kinosail.example.yaml .env.example README.md LICENSE LICENSING.md THIRD_PARTY_NOTICES.md SECURITY.md CONTRIBUTING.md CLA.md CCLA.md TRADEMARKS.md third_party/hls.js/LICENSE third_party/htmx/LICENSE
           sha256sum kinosail-subtitles-install.tar.gz > kinosail-subtitles-install.tar.gz.sha256
           cosign sign-blob --yes --bundle kinosail-subtitles-install.tar.gz.sigstore.json kinosail-subtitles-install.tar.gz
           ./scripts/package-native-release.sh "$APP_VERSION" native-release

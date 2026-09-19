@@ -58,7 +58,7 @@ var configurationValidators = map[string]func(string) error{
 	"tls.hosts":                            validateTLSHosts,
 	"tls.duckdns":                          func(raw string) error { _, err := trustedhttps.Parse(raw); return err },
 	"playback.mode":                        allowed("", "automatic", "direct", "compatible"),
-	"remote.mode":                          allowed("off", "wireguard", "https"),
+	"remote.mode":                          allowed("off", "https"),
 	"remote.duckdns_domain":                optionalValid(validDNSLabel, "must be one DNS label"),
 	"remote.duckdns_token":                 optionalValid(validRemoteToken, "must contain 32 to 128 safe characters"),
 	"integrations.scim.token":              optionalValid(validSCIMToken, "must contain 32 to 256 non-whitespace characters"),

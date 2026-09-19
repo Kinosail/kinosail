@@ -3,7 +3,7 @@
 source "$(dirname "${BASH_SOURCE[0]}")/../../../scripts/tooling/gates-pause.sh"
 set -euo pipefail
 
-for file in compose.yaml compose.release.yaml compose.test.yaml compose.remote-https.yaml compose.remote-wireguard.yaml; do
+for file in compose.yaml compose.release.yaml compose.test.yaml compose.remote-https.yaml; do
   services="$(awk '
     $0 == "services:" { inside = 1; next }
     inside && /^[^ ]/ { inside = 0 }

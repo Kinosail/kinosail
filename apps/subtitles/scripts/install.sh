@@ -68,8 +68,8 @@ elif [[ "$gpu_backend" == "device" ]]; then
   exit 2
 fi
 case "${remote_mode:-off}" in
-  off | https | wireguard) ;;
-  *) echo "KINOSAIL_REMOTE_MODE must be off, wireguard, or https" >&2; exit 2 ;;
+  off | https) ;;
+  *) echo "KINOSAIL_REMOTE_MODE must be off or https" >&2; exit 2 ;;
 esac
 version="${version:-latest}"
 if [[ ! "$version" =~ ^[A-Za-z0-9._-]+$ ]] || ((${#version} > 64)); then
@@ -145,7 +145,6 @@ esac
 case "${remote_mode:-off}" in
   off) ;;
   https) project+=(--file compose.remote-https.yaml) ;;
-  wireguard) project+=(--file compose.remote-wireguard.yaml) ;;
 esac
 mkdir -p secrets
 if [[ ! -s secrets/backup_key ]]; then

@@ -10,7 +10,7 @@ func TestPrivateNetworkNeverTrustsClientHeaders(t *testing.T) {
 	for _, test := range []struct {
 		address string
 		public  bool
-	}{{"127.0.0.1:5000", false}, {"192.168.1.8:5000", false}, {"[fd00::2]:5000", false}, {"[fe80::2%en0]:5000", false}, {"10.91.0.2:5000", true}, {"198.51.100.2:5000", true}, {"[2001:db8::2]:5000", true}} {
+	}{{"127.0.0.1:5000", false}, {"192.168.1.8:5000", false}, {"[fd00::2]:5000", false}, {"[fe80::2%en0]:5000", false}, {"10.92.0.2:5000", false}, {"198.51.100.2:5000", true}, {"[2001:db8::2]:5000", true}} {
 		t.Run(test.address, func(t *testing.T) {
 			r := httptest.NewRequest("GET", "https://server.example/settings", nil)
 			r.RemoteAddr = test.address

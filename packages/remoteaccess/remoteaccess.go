@@ -140,15 +140,11 @@ func validUpdateEndpoint(endpoint *url.URL) bool {
 
 func newManager(config Config, dependency Dependencies, endpoint *url.URL) *Manager {
 	hostname := config.Domain + ".duckdns.org"
-	mode := "wireguard"
-	if config.PublicHTTPS {
-		mode = "https"
+	status := Status{State: "starting", Mode: "https", Hostname: hostname, Policy: "public-v1"}
+	if !config.PublicHTTPS {
+		status.Mode, status.Policy = "dns-only", ""
 	}
-	policy := "wireguard-peer-v1"
-	if config.PublicHTTPS {
-		policy = "public-v1"
-	}
-	return &Manager{config: config, client: dependency.Client, updateURL: endpoint.String(), certificate: dependency.Certificate, hostname: hostname, status: Status{State: "starting", Mode: mode, Hostname: hostname, Policy: policy}, connections: make(map[net.Conn]string), sources: make(map[string]int), operations: defaultTransportOperations()}
+	return &Manager{config: config, client: dependency.Client, updateURL: endpoint.String(), certificate: dependency.Certificate, hostname: hostname, status: status, connections: make(map[net.Conn]string), sources: make(map[string]int), operations: defaultTransportOperations()}
 }
 
 func (manager *Manager) readKillSwitch() (bool, error) {

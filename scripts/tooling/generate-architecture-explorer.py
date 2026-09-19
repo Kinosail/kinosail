@@ -48,7 +48,7 @@ RESPONSIBILITIES = {
     "packages/trustedhttps": "Shared certificate issuance, renewal, and trust state",
     "packages/updatecontrol": "Shared release selection, update plans, and recovery state",
     "packages/watchrooms": "Shared expiring synchronized playback rooms",
-    "packages/wireguard": "Shared owner-paired verified direct connections",
+    "packages/owneraccess": "Shared owner-paired private management connections",
 }
 
 FUNC_RE = re.compile(r"^func\s+(?:\([^)]*\)\s*)?([A-Za-z_]\w*)\s*\(")

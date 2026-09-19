@@ -9,7 +9,7 @@ make_case() {
   local target="$1"
   mkdir -p "$target/scripts"
   cp "$source_root/scripts/setup-remote-access.sh" "$source_root/scripts/disable-remote-access.sh" "$target/scripts/"
-  cp "$source_root"/compose{,.config,.release,.remote-https,.remote-wireguard}.yaml "$target/"
+  cp "$source_root"/compose{,.config,.release,.remote-https}.yaml "$target/"
   printf '%s\n' 'KINOSAIL_REMOTE_MODE=off' 'KINOSAIL_IMAGE=ghcr.io/mikeo7/kinosail-player@sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa' >"$target/.env"
 }
 
@@ -39,7 +39,7 @@ make_case "$valid"
 printf 'KINOSAIL_AUTH_URL=https://192.168.1.20:38127\n' >>"$valid/.env"
 printf 'version: 1\n' >"$valid/kinosail.yaml"
 token=aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
-printf '\n\n\nfamily-media\n%s\ny\n' "$token" | PATH="$fixture/bin:$PATH" "$valid/scripts/setup-remote-access.sh" >"$fixture/valid.out"
+printf '\n\nfamily-media\n%s\ny\n' "$token" | PATH="$fixture/bin:$PATH" "$valid/scripts/setup-remote-access.sh" >"$fixture/valid.out"
 grep -Fq 'Protocol:                TCP only' "$fixture/valid.out"
 grep -Fq 'External / public port:  443' "$fixture/valid.out"
 grep -Fq 'Internal / private port: 443' "$fixture/valid.out"
@@ -57,12 +57,8 @@ grep -Fqx 'KINOSAIL_REMOTE_LISTEN=:8443' "$valid/.env"
 grep -Fq 'podman compose --file compose.release.yaml --file compose.config.yaml --file compose.remote-https.yaml up --detach --force-recreate' "$fixture/commands.log"
 grep -Fq 'podman compose --file compose.release.yaml --file compose.config.yaml --file compose.remote-https.yaml exec -T kinosail kinosail healthcheck' "$fixture/commands.log"
 # Re-running setup must preserve the original LAN address.
-printf '\n\n\n\ny\ny\n' | PATH="$fixture/bin:$PATH" "$valid/scripts/setup-remote-access.sh" >/dev/null
+printf '\n\n\ny\ny\n' | PATH="$fixture/bin:$PATH" "$valid/scripts/setup-remote-access.sh" >/dev/null
 grep -Fqx 'KINOSAIL_LOCAL_AUTH_URL=https://192.168.1.20:38127' "$valid/.env"
-# Switching to WireGuard also restores local authentication.
-printf '\nwireguard\n\ny\ny\n' | PATH="$fixture/bin:$PATH" "$valid/scripts/setup-remote-access.sh" >/dev/null
-grep -Fqx 'KINOSAIL_AUTH_URL=https://192.168.1.20:38127' "$valid/.env"
-grep -Fqx 'KINOSAIL_REMOTE_MODE=wireguard' "$valid/.env"
 PATH="$fixture/bin:$PATH" "$valid/scripts/disable-remote-access.sh" >/dev/null
 grep -Fqx 'KINOSAIL_AUTH_URL=https://192.168.1.20:38127' "$valid/.env"
 grep -Fqx 'KINOSAIL_REMOTE_MODE=off' "$valid/.env"
@@ -72,7 +68,7 @@ grep -Fq 'podman compose --file compose.release.yaml --file compose.config.yaml 
 source_case="$fixture/source"
 make_case "$source_case"
 printf '%s\n' 'KINOSAIL_REMOTE_MODE=off' 'KINOSAIL_IMAGE=localhost/kinosail:dev' >"$source_case/.env"
-printf '\n\n\nsource-media\n%s\ny\n' "$token" | PATH="$fixture/bin:$PATH" "$source_case/scripts/setup-remote-access.sh" >/dev/null
+printf '\n\nsource-media\n%s\ny\n' "$token" | PATH="$fixture/bin:$PATH" "$source_case/scripts/setup-remote-access.sh" >/dev/null
 grep -Fq 'podman compose --file compose.yaml --file compose.remote-https.yaml up --detach --force-recreate' "$fixture/commands.log"
 grep -Fq 'podman compose --file compose.yaml --file compose.remote-https.yaml build kinosail' "$fixture/commands.log"
 grep -Fq 'up --detach --force-recreate --remove-orphans' "$fixture/commands.log"
@@ -91,13 +87,12 @@ fi
 awk '/ stop --timeout 0 kinosail$/ { stopped=1 } / up --detach/ { if (!stopped) exit 1; seen=1 } END { if (!seen) exit 1 }' "$fixture/commands.log"
 if grep -Fq 'Secure remote access is off.' "$fixture/failed-stop.out"; then exit 1; fi
 
-for rejected in mode domain token; do
+for rejected in domain token; do
   target="$fixture/$rejected"
   make_case "$target"
   case "$rejected" in
-    mode) input=$'\nrelay\n' ;;
-    domain) input=$'\n\n\nBAD DOMAIN\n' ;;
-    token) input=$'\n\n\nfamily-media\nshort\n' ;;
+    domain) input=$'\n\nBAD DOMAIN\n' ;;
+    token) input=$'\n\nfamily-media\nshort\n' ;;
   esac
   if printf '%s' "$input" | PATH="$fixture/bin:$PATH" "$target/scripts/setup-remote-access.sh" >/dev/null 2>&1; then
     echo "invalid $rejected input must fail" >&2

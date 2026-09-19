@@ -74,7 +74,7 @@ NIST recognizes WebAuthn as phishing-resistant because the credential is bound t
 For the highly secure direct mode:
 
 - require a passkey with user verification for browser and versioned-API login;
-- permit Quick Connect only as a short, one-use bootstrap approved by a recently phishing-resistant local or WireGuard Viewer session; keep every approval page/API route unavailable on the public listener;
+- permit Quick Connect only as a short, one-use bootstrap approved by a recently phishing-resistant local or explicitly paired private-management session; keep every approval page/API route unavailable on the public listener;
 - never let public Quick Connect inherit an Owner or local-only profile;
 - keep passkey registration, recovery, TOTP enrollment, and remote-permission changes local or WireGuard only;
 - disable password-plus-TOTP login on the public listener by default. It can exist as an explicit compatibility downgrade, visibly labeled as not phishing-resistant.

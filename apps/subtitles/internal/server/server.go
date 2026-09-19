@@ -15,7 +15,6 @@ import (
 	sharedmetadata "github.com/MikeO7/kinosail/packages/metadata"
 	"github.com/MikeO7/kinosail/packages/remoteaccess"
 	"github.com/MikeO7/kinosail/packages/trustedhttps"
-	"github.com/MikeO7/kinosail/packages/wireguard"
 	"github.com/MikeO7/kinosail/packages/workload"
 )
 
@@ -68,8 +67,6 @@ type Config struct {
 	FPCalc              string
 	RequireAuth         bool
 	AuthURL             string
-	WireGuardDir        string
-	WireGuardEndpoint   string
 	ScanInterval        time.Duration
 	Subtitles           SubtitleConfig
 	Metadata            MetadataConfig
@@ -169,7 +166,6 @@ func newApplication(config Config) http.Handler { //nolint:funlen,cyclop,gocogni
 	})
 	auth.audit.SetSnapshot(settings.auditSnapshot)
 	management := newOwnerAccess(config, auth)
-	verifiedDirect := wireguard.OpenOptional(config.WireGuardDir, config.WireGuardEndpoint)
 	hls := newHLS(config.Lifecycle, config.CacheDir, config.FFmpeg, index, probe, settings, workloads)
 	frames := newTrickplay(config.CacheDir, config.FFmpeg, index)
 	subtitles := newSubtitleProvider(config.Subtitles, config.CacheDir, config.DataDir, index, settings, config.FFmpeg)
@@ -215,7 +211,7 @@ func newApplication(config Config) http.Handler { //nolint:funlen,cyclop,gocogni
 	mux.HandleFunc("GET /favicon.ico", serveAsset(icon, "image/svg+xml"))
 	registerMediaShares(mux, shares, auth)
 	quickConnect := registerIdentity(mux, auth, config.QuickConnectTTL, config.OIDC, config.SAML, config.SCIM)
-	registerSettings(mux, settings, updates, index, progress, auth, verifiedDirect, config.InternetAccess, config.TrustedHTTPS, quickConnect, shares, hls, subtitles, metadata, markers, backups, maintenance, viewingImports, homeAssistant, events, rooms, config.AuthURL, config.SubtitleApp)
+	registerSettings(mux, settings, updates, index, progress, auth, config.InternetAccess, config.TrustedHTTPS, quickConnect, shares, hls, subtitles, metadata, markers, backups, maintenance, viewingImports, homeAssistant, events, rooms, config.AuthURL, config.SubtitleApp)
 	registerOwnerAccess(mux, auth, management, config.AuthURL)
 	registerSupporter(mux, auth, supporter)
 	registerAgentConnections(mux, auth, agentConnections, config.DataDir)
@@ -233,7 +229,7 @@ func newApplication(config Config) http.Handler { //nolint:funlen,cyclop,gocogni
 	if managedLifecycle {
 		sharedmetadata.Schedule(config.Lifecycle, metadata.available(), index.AddAnalyzer, func(ctx context.Context) error { return metadata.refreshMissing(ctx, index) })
 	}
-	registerAPI(mux, apiServices{index, progress, lists, auth, settings, hls, probe, metadata, subtitles, rooms, backups, downloads, verifiedDirect, maintenance, viewingImports, agentConnections, config.InternetAccess, config.TrustedHTTPS, shares, quickConnect, supporter, updates, homeAssistant, config.AuthURL, events})
+	registerAPI(mux, apiServices{index, progress, lists, auth, settings, hls, probe, metadata, subtitles, rooms, backups, downloads, maintenance, viewingImports, agentConnections, config.InternetAccess, config.TrustedHTTPS, shares, quickConnect, supporter, updates, homeAssistant, config.AuthURL, events})
 	mcpAdapter := registerMCPWithConnections(mux, config.MCP, auth, apiRouting(mux), agentConnections)
 	startApplicationMCPHost(config, managedLifecycle, mcpAdapter, auth.profiles)
 	registerJellyfin(mux, settings, index, progress, lists, auth, quickConnect, probe, hls, downloads)

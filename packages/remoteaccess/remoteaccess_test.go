@@ -88,41 +88,6 @@ func TestSecureInternetAccessUpdatesDuckDNSThenServesOnlyTLS(t *testing.T) { //n
 	assertKillClosesPublicAccess(t, manager, client, address, activeStarted, activeCanceled)
 }
 
-func TestWireGuardModeUpdatesDuckDNSWithoutOpeningPublicHTTPS(t *testing.T) {
-	t.Parallel()
-	updated := make(chan struct{}, 1)
-	duck := httptest.NewTLSServer(http.HandlerFunc(func(writer http.ResponseWriter, _ *http.Request) {
-		updated <- struct{}{}
-		_, _ = writer.Write([]byte("OK"))
-	}))
-	defer duck.Close()
-	manager, err := remoteaccess.New(remoteaccess.Config{Enabled: true, Domain: "private-family", Token: strings.Repeat("b", 32)}, remoteaccess.Dependencies{Client: duck.Client(), UpdateURL: duck.URL})
-	if err != nil {
-		t.Fatal(err)
-	}
-	ctx, cancel := context.WithCancel(t.Context())
-	done := make(chan error, 1)
-	go func() { done <- manager.Serve(ctx, http.NotFoundHandler()) }()
-	select {
-	case <-updated:
-	case <-time.After(2 * time.Second):
-		t.Fatal("DuckDNS was not updated")
-	}
-	for range 100 {
-		if manager.Status().State == "ready" {
-			break
-		}
-		time.Sleep(time.Millisecond)
-	}
-	if manager.Status().State != "ready" || manager.Status().Mode != "wireguard" {
-		t.Fatalf("status = %#v", manager.Status())
-	}
-	cancel()
-	if err := <-done; err != nil {
-		t.Fatal(err)
-	}
-}
-
 func TestDisabledInternetAccessReportsOffMode(t *testing.T) {
 	t.Parallel()
 	manager, err := remoteaccess.New(remoteaccess.Config{})

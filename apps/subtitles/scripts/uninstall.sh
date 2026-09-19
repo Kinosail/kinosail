@@ -16,7 +16,6 @@ project=("${compose[@]}" --file compose.release.yaml)
 remote_mode="$(sed -n 's/^KINOSAIL_REMOTE_MODE=//p' .env 2>/dev/null | tail -1)"
 case "${remote_mode:-off}" in
   https) project+=(--file compose.remote-https.yaml) ;;
-  wireguard) project+=(--file compose.remote-wireguard.yaml) ;;
 esac
 "${project[@]}" down --remove-orphans
 echo "Kinosail is stopped. Configuration volumes, backups, .env, and Library Content were preserved."

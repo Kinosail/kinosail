@@ -37,7 +37,6 @@ func AssertMCPAPIRoutePolicy(t *testing.T, allows func(string, mcpgateway.Access
 		{"POST /api/v1/tasks/{task}", true, true}:                   true,
 		{"PUT /api/v1/profiles/{id}/password", true, true}:          false,
 		{"POST /api/v1/passkeys/login/begin", true, false}:          false,
-		{"DELETE /api/v1/remote-access/wireguard", true, true}:      false,
 	}
 	for input, allowed := range additional {
 		cases[input] = allowed

@@ -54,7 +54,7 @@ Run the guided setup only after the local Server is installed and the first Owne
 ./scripts/setup-remote-access.sh
 ```
 
-Choose WireGuard for the smallest application exposure. Choose public HTTPS for ordinary Viewers and Jellyfin apps. The guided setup defaults to public HTTPS. It configures DuckDNS, protects its token, and can restart a standard Compose installation. The Owner must configure the TCP 443 router forward and test the address from an external network.
+Use private Owner management through WireGuard for administration and paired managed devices. Use public HTTPS for ordinary Viewers and Jellyfin apps. The guided setup configures public HTTPS, protects its token, and can restart a standard Compose installation. The Owner must configure the TCP 443 router forward and test the address from an external network.
 
 Jellyfin compatibility is off by default and stays behind its integration flag. Enable it in Owner settings or set `KINOSAIL_JELLYFIN_ENABLED=true`. Disabling it hides Jellyfin-compatible routes without disabling the Kinosail web app or `/api/v1`. Enter the displayed HTTPS address manually in the client. Configure trusted HTTPS through DuckDNS or deSEC so clients need no certificate install. DuckDNS is easiest. deSEC supports narrower tokens for more privacy. Use Quick Connect for limited-input devices. Swiftfin supports this flow on Apple TV.
 
@@ -62,7 +62,7 @@ Follow [Connect phones, TVs, and Jellyfin apps](docs/getting-started/connect-dev
 
 Home Assistant support is off by default. Enable it in the setup wizard or Owner settings. Then create a ten-minute pairing code and add the [Kinosail Home Assistant integration](https://github.com/MikeO7/kinosail-home-assistant). The connection can browse Library Content and control active Kinosail browser players. Media streams directly from this Server. Turning the setting off hides every Home Assistant route and revokes every paired connection. Operators can manage the same setting with `KINOSAIL_HOME_ASSISTANT_ENABLED`.
 
-Turn either remote mode off without changing local access:
+Turn public remote viewing off without changing local access:
 
 ```sh
 ./scripts/disable-remote-access.sh

@@ -18,7 +18,6 @@ import (
 	"github.com/MikeO7/kinosail/packages/remoteaccess"
 	"github.com/MikeO7/kinosail/packages/serverdiscovery"
 	"github.com/MikeO7/kinosail/packages/trustedhttps"
-	"github.com/MikeO7/kinosail/packages/wireguard"
 	"github.com/MikeO7/kinosail/packages/workload"
 )
 
@@ -81,8 +80,6 @@ type Config struct {
 	FPCalc              string
 	RequireAuth         bool
 	AuthURL             string
-	WireGuardDir        string
-	WireGuardEndpoint   string
 	ScanInterval        time.Duration
 	Metadata            MetadataConfig
 	TMDBToken           string
@@ -181,7 +178,6 @@ func newApplication(config Config) http.Handler { //nolint:funlen,cyclop,gocogni
 	})
 	auth.audit.SetSnapshot(settings.auditSnapshot)
 	management := newOwnerAccess(config, auth)
-	verifiedDirect := wireguard.OpenOptional(config.WireGuardDir, config.WireGuardEndpoint)
 	hls := newHLS(config.Lifecycle, config.CacheDir, config.FFmpeg, index, probe, settings, workloads)
 	frames := newTrickplay(config.CacheDir, config.FFmpeg, index)
 	backups := newBackupManager(lifecycle, config.DataDir, config.BackupDir, config.BackupKey, config.BackupInterval, config.BackupRetention, workloads)
@@ -228,7 +224,7 @@ func newApplication(config Config) http.Handler { //nolint:funlen,cyclop,gocogni
 	mux.HandleFunc("GET /favicon.ico", serveAsset(icon, "image/svg+xml"))
 	registerMediaShares(mux, shares, auth)
 	quickConnect := registerIdentity(mux, auth, config.QuickConnectTTL, config.OIDC, config.SAML, config.SCIM)
-	registerSettings(mux, settings, updates, index, progress, auth, verifiedDirect, config.InternetAccess, config.TrustedHTTPS, quickConnect, shares, hls, metadata, markers, backups, maintenance, viewingImports, homeAssistant, events, rooms, config.AuthURL)
+	registerSettings(mux, settings, updates, index, progress, auth, config.InternetAccess, config.TrustedHTTPS, quickConnect, shares, hls, metadata, markers, backups, maintenance, viewingImports, homeAssistant, events, rooms, config.AuthURL)
 	registerOwnerAccess(mux, auth, management, config.AuthURL)
 	registerSupporter(mux, auth, supporter)
 	registerAgentConnections(mux, auth, agentConnections, config.DataDir)
@@ -244,7 +240,7 @@ func newApplication(config Config) http.Handler { //nolint:funlen,cyclop,gocogni
 	if managedLifecycle {
 		sharedmetadata.Schedule(config.Lifecycle, metadata.available(), index.AddAnalyzer, func(ctx context.Context) error { return metadata.refreshMissing(ctx, index) })
 	}
-	registerAPI(mux, apiServices{index, progress, lists, auth, settings, hls, probe, metadata, rooms, backups, downloads, verifiedDirect, maintenance, viewingImports, agentConnections, config.InternetAccess, config.TrustedHTTPS, shares, quickConnect, supporter, updates, homeAssistant, config.AuthURL, events})
+	registerAPI(mux, apiServices{index, progress, lists, auth, settings, hls, probe, metadata, rooms, backups, downloads, maintenance, viewingImports, agentConnections, config.InternetAccess, config.TrustedHTTPS, shares, quickConnect, supporter, updates, homeAssistant, config.AuthURL, events})
 	registerMediaExperience(mux, experience, index, progress)
 	registerCasting(mux, auth, index, probe, hls, settings, config.AuthURL)
 	mcpAdapter := registerMCPWithConnections(mux, config.MCP, auth, apiRouting(mux), agentConnections)

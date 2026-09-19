@@ -7,17 +7,12 @@ import (
 	"github.com/MikeO7/kinosail/packages/apihttp"
 	sharedoperations "github.com/MikeO7/kinosail/packages/operations"
 	settingsops "github.com/MikeO7/kinosail/packages/settings"
-	"github.com/MikeO7/kinosail/packages/wireguard"
 )
 
 type apiProfileInput struct {
 	Name, Password, Rating, AccessStart, AccessEnd string
 	Libraries                                      []string
 	Owner, Downloads, Transcode, Remote            bool
-}
-
-func wireGuardHTTP(manager *wireguard.Manager, profiles *profileStore) wireguard.HTTPConfig {
-	return wireguard.NewHTTP(manager, profiles, readJSON, writeJSON, apiError, apiNotFound, localizedError)
 }
 
 func (input apiProfileInput) policy() profilePolicy {
@@ -121,8 +116,6 @@ func registerAdminAPI(mux *http.ServeMux, api apiServices) { //nolint:funlen // 
 		writeJSON(writer, api.backups.Status(), http.StatusOK)
 	}))
 	owner("POST /api/v1/backups/verify", apiBackupVerify(api.backups))
-	owner("POST /api/v1/remote-access/wireguard", wireGuardHTTP(api.verified, api.auth.profiles).CreateAPI())
-	owner("DELETE /api/v1/remote-access/wireguard", wireGuardHTTP(api.verified, nil).RevokeAPI())
 	owner("POST /api/v1/media-shares", http.HandlerFunc(api.shares.CreateHTTP))
 	owner("GET /api/v1/media-shares", http.HandlerFunc(api.shares.ListHTTP))
 	owner("DELETE /api/v1/media-shares/{id}", http.HandlerFunc(api.shares.RevokeHTTP))

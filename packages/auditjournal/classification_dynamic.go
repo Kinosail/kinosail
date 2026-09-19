@@ -37,8 +37,6 @@ func identityAuditAction(request *http.Request) string { //nolint:cyclop // The 
 			return "backup.verified"
 		}
 		return "backup.created"
-	case strings.Contains(path, "/remote-access/wireguard"):
-		return map[string]string{http.MethodPost: "wireguard-peer.created", http.MethodDelete: "wireguard-peer.revoked"}[request.Method]
 	default:
 		return map[string]string{
 			http.MethodPost + " /api/v1/remote-access/kill":   "remote-access.killed",

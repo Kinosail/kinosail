@@ -5,7 +5,6 @@ import (
 	"errors"
 	"net"
 	"net/url"
-	"path/filepath"
 )
 
 // ValidateRemoteAccess validates coupled remote-access settings.
@@ -22,24 +21,11 @@ func ValidateRemoteAccess(value func(string) string) error {
 	switch value("remote.mode") {
 	case "off":
 		return nil
-	case "wireguard":
-		return validateWireGuard(value)
 	case "https":
 		return validatePublicHTTPS(value)
 	default:
-		return errors.New("remote.mode must be off, wireguard, or https")
+		return errors.New("remote.mode must be off or https")
 	}
-}
-
-func validateWireGuard(value func(string) string) error {
-	if _, err := validateRemoteCredentials(value); err != nil {
-		return err
-	}
-	directory := value("remote.wireguard_dir")
-	if !filepath.IsAbs(directory) || filepath.Clean(directory) != directory {
-		return errors.New("WireGuard directory must be an absolute clean path")
-	}
-	return nil
 }
 
 func validatePublicHTTPS(value func(string) string) error {

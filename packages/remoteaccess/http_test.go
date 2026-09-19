@@ -6,8 +6,6 @@ import (
 	"net/http/httptest"
 	"strings"
 	"testing"
-
-	"github.com/MikeO7/kinosail/packages/wireguard"
 )
 
 func TestKillHTTPResultPaths(t *testing.T) {
@@ -21,8 +19,8 @@ func TestKillHTTPResultPaths(t *testing.T) {
 	}{
 		{"missing", func(*testing.T) *Manager { return nil }, func() error { return nil }, http.StatusConflict},
 		{"kill failure", func(*testing.T) *Manager { manager, _ := New(Config{}); return manager }, func() error { return nil }, http.StatusConflict},
-		{"revoke failure", func(t *testing.T) *Manager { return activeManager(t, true) }, func() error { return errors.New("revoke failed") }, http.StatusInternalServerError},
-		{"success", func(t *testing.T) *Manager { return activeManager(t, true) }, func() error { return nil }, http.StatusSeeOther},
+		{"revoke failure", func(t *testing.T) *Manager { return activeManager(t) }, func() error { return errors.New("revoke failed") }, http.StatusInternalServerError},
+		{"success", func(t *testing.T) *Manager { return activeManager(t) }, func() error { return nil }, http.StatusSeeOther},
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
@@ -39,7 +37,7 @@ func TestResetKillHTTPResultPaths(t *testing.T) {
 	t.Parallel()
 	request := httptest.NewRequestWithContext(t.Context(), http.MethodPost, "/settings/remote/enable", nil)
 	disabled, _ := New(Config{})
-	active := activeManager(t, true)
+	active := activeManager(t)
 	if err := active.Kill(); err != nil {
 		t.Fatal(err)
 	}
@@ -69,20 +67,13 @@ func TestStatusAndMutationAPIs(t *testing.T) { //nolint:cyclop,funlen // The pai
 		writer.WriteHeader(status)
 	}
 	response := httptest.NewRecorder()
-	StatusAPI(nil, nil, func(status Status) string { return status.State }, write)(response, request)
-	if response.Code != http.StatusOK || payload["securePublic"] != "disabled" || payload["verifiedDirect"].(map[string]any)["enabled"] != false {
+	StatusAPI(nil, func(status Status) string { return status.State }, write)(response, request)
+	if response.Code != http.StatusOK || payload["securePublic"] != "disabled" {
 		t.Fatalf("disabled status = %d %#v", response.Code, payload)
 	}
-	verified, err := wireguard.Open(t.TempDir(), "media.example.com:51820")
-	if err != nil {
-		t.Fatal(err)
-	}
-	if _, err = verified.Pair("Phone", "viewer"); err != nil {
-		t.Fatal(err)
-	}
 	response = httptest.NewRecorder()
-	StatusAPI(verified, activeManager(t, true), func(status Status) string { return status.State }, write)(response, request)
-	if payload["verifiedDirect"].(map[string]any)["enabled"] != true || len(payload["verifiedDirect"].(map[string]any)["peers"].([]wireguard.Viewer)) != 1 {
+	StatusAPI(activeManager(t), func(status Status) string { return status.State }, write)(response, request)
+	if payload["securePublic"] == "disabled" {
 		t.Fatalf("active status = %#v", payload)
 	}
 
@@ -94,12 +85,12 @@ func TestStatusAndMutationAPIs(t *testing.T) { //nolint:cyclop,funlen // The pai
 		t.Fatalf("kill conflict = %d %q", response.Code, response.Body.String())
 	}
 	response = httptest.NewRecorder()
-	KillAPI(activeManager(t, true), func() error { return errors.New("revoke") }, contract, writeAPIError)(response, request)
+	KillAPI(activeManager(t), func() error { return errors.New("revoke") }, contract, writeAPIError)(response, request)
 	if response.Code != http.StatusInternalServerError || strings.Contains(response.Body.String(), "contract:") {
 		t.Fatalf("kill revoke = %d %q", response.Code, response.Body.String())
 	}
 	response = httptest.NewRecorder()
-	KillAPI(activeManager(t, true), func() error { return nil }, contract, writeAPIError)(response, request)
+	KillAPI(activeManager(t), func() error { return nil }, contract, writeAPIError)(response, request)
 	if response.Code != http.StatusNoContent {
 		t.Fatalf("kill success = %d", response.Code)
 	}
@@ -108,7 +99,7 @@ func TestStatusAndMutationAPIs(t *testing.T) { //nolint:cyclop,funlen // The pai
 	if response.Code != http.StatusConflict || !strings.Contains(response.Body.String(), "contract:") {
 		t.Fatalf("reset conflict = %d %q", response.Code, response.Body.String())
 	}
-	manager := activeManager(t, true)
+	manager := activeManager(t)
 	if manager.Kill() != nil {
 		t.Fatal("could not prepare reset")
 	}

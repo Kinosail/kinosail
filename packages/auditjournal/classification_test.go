@@ -67,8 +67,6 @@ func TestDynamicAuditActionsCoverEveryRouteFamily(t *testing.T) { //nolint:cyclo
 		{http.MethodPost, "/api/v1/tasks/scan", "task.scan", "administration"},
 		{http.MethodPost, "/api/v1/backups", "backup.created", "administration"},
 		{http.MethodPost, "/api/v1/backups/id/verify", "backup.verified", "administration"},
-		{http.MethodPost, "/api/v1/remote-access/wireguard", "wireguard-peer.created", "administration"},
-		{http.MethodDelete, "/api/v1/remote-access/wireguard/id", "wireguard-peer.revoked", "administration"},
 		{http.MethodPost, "/api/v1/remote-access/kill", "remote-access.killed", "administration"},
 		{http.MethodDelete, "/api/v1/remote-access/kill", "remote-access.reset", "administration"},
 		{http.MethodPost, "/api/v1/media-shares", "media-share.created", "activity"},

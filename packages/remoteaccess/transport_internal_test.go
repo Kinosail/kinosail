@@ -19,7 +19,7 @@ func TestServeHandlesInactiveAndKilledManagers(t *testing.T) {
 	if err != nil || disabled.Serve(t.Context(), http.NotFoundHandler()) != nil {
 		t.Fatalf("disabled serve = %#v, %v", disabled, err)
 	}
-	manager := activeManager(t, true)
+	manager := activeManager(t)
 	manager.killed = true
 	if err = manager.Serve(t.Context(), http.NotFoundHandler()); err != nil {
 		t.Fatalf("killed serve = %v", err)
@@ -27,7 +27,7 @@ func TestServeHandlesInactiveAndKilledManagers(t *testing.T) {
 }
 
 func TestServeRetriesUpdatesAndStopsWithContext(t *testing.T) {
-	manager := activeManager(t, false)
+	manager := activeManager(t)
 	ctx, cancel := context.WithTimeout(t.Context(), 2*time.Second)
 	defer cancel()
 	calls := 0
@@ -46,7 +46,7 @@ func TestServeRetriesUpdatesAndStopsWithContext(t *testing.T) {
 		t.Fatalf("retry serve = %v, calls=%d", err, calls)
 	}
 
-	manager = activeManager(t, false)
+	manager = activeManager(t)
 	manager.client = &http.Client{Transport: transportFunc(func(*http.Request) (*http.Response, error) { return nil, errors.New("offline") })}
 	canceled, stop := context.WithCancel(t.Context())
 	stop()
@@ -57,21 +57,21 @@ func TestServeRetriesUpdatesAndStopsWithContext(t *testing.T) {
 
 func TestServeReportsConfigurationListenAndAcceptFailures(t *testing.T) {
 	want := errors.New("configure failed")
-	manager := activeManager(t, true)
+	manager := activeManager(t)
 	manager.operations.configureServer = func(*http.Server, *http2.Server) error { return want }
 	if err := manager.Serve(t.Context(), http.NotFoundHandler()); !errors.Is(err, want) || manager.Status().State != "error" {
 		t.Fatalf("configure failure = %v, %#v", err, manager.Status())
 	}
 
 	want = errors.New("listen failed")
-	manager = activeManager(t, true)
+	manager = activeManager(t)
 	manager.operations.listen = func(context.Context, string, string) (net.Listener, error) { return nil, want }
 	if err := manager.Serve(t.Context(), http.NotFoundHandler()); !errors.Is(err, want) || manager.Status().State != "error" {
 		t.Fatalf("listen failure = %v, %#v", err, manager.Status())
 	}
 
 	listener := &failureListener{acceptErr: errors.New("accept failed")}
-	manager = activeManager(t, true)
+	manager = activeManager(t)
 	manager.operations.listen = func(context.Context, string, string) (net.Listener, error) { return listener, nil }
 	ctx, cancel := context.WithCancel(t.Context())
 	defer cancel()
@@ -84,7 +84,7 @@ func TestServeReportsConfigurationListenAndAcceptFailures(t *testing.T) {
 }
 
 func TestServeClosesListenerIfKilledDuringStartup(t *testing.T) {
-	manager := activeManager(t, true)
+	manager := activeManager(t)
 	listener := &failureListener{}
 	manager.operations.listen = func(context.Context, string, string) (net.Listener, error) {
 		manager.mu.Lock()
@@ -100,7 +100,7 @@ func TestServeClosesListenerIfKilledDuringStartup(t *testing.T) {
 func TestRefreshRecordsFailureAndSuccess(t *testing.T) {
 	for name, result := range map[string]error{"failure": errors.New("offline"), "success": nil} {
 		t.Run(name, func(t *testing.T) {
-			manager := activeManager(t, false)
+			manager := activeManager(t)
 			ctx, cancel := context.WithTimeout(t.Context(), 2*time.Second)
 			defer cancel()
 			manager.client = &http.Client{Transport: transportFunc(func(*http.Request) (*http.Response, error) {
@@ -127,12 +127,12 @@ func TestRefreshRecordsFailureAndSuccess(t *testing.T) {
 }
 
 func TestUpdateRejectsRequestNetworkAndResponseFailures(t *testing.T) {
-	manager := activeManager(t, false)
+	manager := activeManager(t)
 	manager.updateURL = "%"
 	if err := manager.update(t.Context()); err == nil {
 		t.Fatal("invalid request URL accepted")
 	}
-	manager = activeManager(t, false)
+	manager = activeManager(t)
 	if err := manager.update(t.Context()); err != nil || manager.Status().LastDDNSUpdate == "" {
 		t.Fatalf("valid update = %v, %#v", err, manager.Status())
 	}
@@ -154,7 +154,7 @@ func TestUpdateRejectsRequestNetworkAndResponseFailures(t *testing.T) {
 		})},
 	} {
 		t.Run(name, func(t *testing.T) {
-			manager := activeManager(t, false)
+			manager := activeManager(t)
 			manager.client = client
 			if err := manager.update(t.Context()); err == nil {
 				t.Fatal("failed DuckDNS response accepted")
@@ -164,7 +164,7 @@ func TestUpdateRejectsRequestNetworkAndResponseFailures(t *testing.T) {
 }
 
 func TestTrackConnectionEnforcesSourceAndGlobalBudgets(t *testing.T) {
-	manager := activeManager(t, false)
+	manager := activeManager(t)
 	connection := &stubConn{remote: stubAddress("192.0.2.1:4000")}
 	manager.trackConnection(connection, http.StateNew)
 	manager.trackConnection(connection, http.StateActive)
@@ -183,7 +183,7 @@ func TestTrackConnectionEnforcesSourceAndGlobalBudgets(t *testing.T) {
 		t.Fatal("source connection budget was not enforced")
 	}
 
-	manager = activeManager(t, false)
+	manager = activeManager(t)
 	for index := range 256 {
 		existing := &stubConn{remote: stubAddress("198.51.100.1:4000")}
 		manager.connections[existing] = string(rune(index + 1))
@@ -194,7 +194,7 @@ func TestTrackConnectionEnforcesSourceAndGlobalBudgets(t *testing.T) {
 		t.Fatal("global connection budget was not enforced")
 	}
 
-	manager = activeManager(t, false)
+	manager = activeManager(t)
 	manager.killed = true
 	rejected = &stubConn{remote: stubAddress("not-a-host-port")}
 	manager.trackConnection(rejected, http.StateNew)
@@ -204,12 +204,9 @@ func TestTrackConnectionEnforcesSourceAndGlobalBudgets(t *testing.T) {
 	}
 }
 
-func activeManager(t *testing.T, public bool) *Manager {
+func activeManager(t *testing.T) *Manager {
 	t.Helper()
-	config := Config{Enabled: true, PublicHTTPS: public, Domain: "family", Token: strings.Repeat("a", 32)}
-	if public {
-		config.Listen, config.DataDir = "127.0.0.1:8443", t.TempDir()
-	}
+	config := Config{Enabled: true, PublicHTTPS: true, Domain: "family", Token: strings.Repeat("a", 32), Listen: "127.0.0.1:8443", DataDir: t.TempDir()}
 	manager, err := New(config, Dependencies{Client: &http.Client{Transport: transportFunc(func(*http.Request) (*http.Response, error) { return okResponse(), nil })}, Certificate: func(*tls.ClientHelloInfo) (*tls.Certificate, error) {
 		return validLeaf("family.duckdns.org", time.Now().Add(-time.Minute), time.Now().Add(time.Hour)), nil
 	}})

@@ -97,7 +97,7 @@ func TestKillAndResetRejectUnavailableOrUnremovableMarkers(t *testing.T) {
 	if err != nil || disabled.Kill() == nil {
 		t.Fatalf("disabled kill = %#v, %v", disabled, err)
 	}
-	manager := activeManager(t, true)
+	manager := activeManager(t)
 	if err = os.MkdirAll(manager.killPath, 0o700); err != nil {
 		t.Fatal(err)
 	}

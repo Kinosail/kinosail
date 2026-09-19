@@ -61,7 +61,7 @@ var configurationLabels = map[string]string{ //nolint:gosec // These are display
 	"integrations.tmdb.image_url":        "TMDB image address", "integrations.tmdb.token": "TMDB access token", "integrations.tmdb.url": "TMDB address", "integrations.webhook.token": "Webhook token", "integrations.webhook.url": "Webhook address",
 	"listen": "Server listening address", "logging.audit_retention": "Audit log retention", "logging.level": "Log detail level", "logging.playback_retention": "Playback history retention",
 	"paths.cache": "Cache folder", "paths.media": "Media folder", "remote.proxy_token": "Trusted proxy token",
-	"remote.mode": "Secure remote access mode", "remote.duckdns_domain": "DuckDNS subdomain", "remote.duckdns_token": "DuckDNS token", "remote.listen": "Public HTTPS listening address", "remote.wireguard_dir": "WireGuard configuration folder",
+	"remote.mode": "Secure remote access mode", "remote.duckdns_domain": "DuckDNS subdomain", "remote.duckdns_token": "DuckDNS token", "remote.listen": "Public HTTPS listening address",
 	"scanning.interval": "Library scan frequency", "supporter.activation_url": "Supporter activation address", "supporter.url": "Support Kinosail", "tls.enabled": "HTTPS enabled", "tls.hosts": "Accepted HTTPS names",
 	"tls.duckdns": "Trusted HTTPS",
 }

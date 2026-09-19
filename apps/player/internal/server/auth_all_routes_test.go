@@ -7,7 +7,7 @@ import (
 	"github.com/MikeO7/kinosail/packages/servertest"
 )
 
-const reviewedRouteInventorySHA256 = "b660293cb9846e6f2a2da09742090bfbf02d77e33514c0f1642539d932f2a47f"
+const reviewedRouteInventorySHA256 = "fa85c4a7ade1f9ab040cb1bc3f045c8241e08114d7b3206e800f7b91c4d59f1a"
 
 var explicitlyAnonymousRoutes = routeSet(
 	"GET /static/public-login.js", "POST /auth/quick-connect", "POST /auth/quick-connect/token", "POST /auth/quick-connect/cancel",
@@ -52,7 +52,7 @@ var ownerOnlyRoutes = routeSet(
 	"POST /settings/management/enable", "POST /settings/management/disable", "POST /settings/management/devices", "POST /settings/management/devices/revoke",
 	"DELETE /api/v1/agent-connections/{id}", "DELETE /api/v1/api-keys/{id}", "DELETE /api/v1/collections/{name}", "DELETE /api/v1/configuration/{key}", "DELETE /api/v1/devices/{id}",
 	"DELETE /api/v1/items/{id}/markers/{type}", "DELETE /api/v1/libraries", "DELETE /api/v1/profiles/{id}",
-	"DELETE /api/v1/remote-access/wireguard", "DELETE /api/v1/settings/trusted-https", "DELETE /api/v1/sessions", "DELETE /api/v1/viewing-syncs/{id}",
+	"DELETE /api/v1/settings/trusted-https", "DELETE /api/v1/sessions", "DELETE /api/v1/viewing-syncs/{id}",
 	"DELETE /api/v1/remote-access/kill",
 	"DELETE /api/v1/media-shares/{id}",
 	"GET /api/v1/activity", "GET /api/v1/activity/export", "GET /api/v1/agent-connections", "GET /api/v1/agent-connections/certificate", "GET /api/v1/api-keys", "GET /api/v1/backup", "GET /api/v1/backups", "GET /api/v1/configuration", "GET /api/v1/devices",
@@ -66,7 +66,7 @@ var ownerOnlyRoutes = routeSet(
 	"GET /home-assistant/authorize", "GET /onboarding", "GET /onboarding/connection", "GET /onboarding/finish", "GET /onboarding/household", "GET /onboarding/migrate", "GET /settings", "GET /settings/agent-connections", "GET /settings/backup", "GET /settings/backups", "GET /settings/configuration", "GET /settings/diagnostics.json", "GET /settings/metrics", "GET /settings/system",
 	"POST /api/v1/api-keys", "POST /api/v1/backups", "POST /api/v1/backups/verify", "POST /api/v1/collections", "POST /api/v1/metadata/bulk",
 	"POST /api/v1/items/{id}/metadata/refresh", "POST /api/v1/libraries",
-	"POST /api/v1/marker-analysis", "POST /api/v1/profiles", "POST /api/v1/remote-access/wireguard", "POST /api/v1/tasks/{task}",
+	"POST /api/v1/marker-analysis", "POST /api/v1/profiles", "POST /api/v1/tasks/{task}",
 	"POST /api/v1/media-shares",
 	"POST /api/v1/home-assistant/pairings", "POST /api/v1/home-assistant/playback/{id}", "POST /api/v1/home-assistant/players/{id}/commands",
 	"POST /api/v1/remote-access/kill",
@@ -85,7 +85,6 @@ var ownerOnlyRoutes = routeSet(
 	"POST /settings/session-timeouts",
 	"POST /settings/media-shares", "POST /settings/media-shares/{id}/revoke", "POST /settings/onboarding",
 	"POST /settings/profiles", "POST /settings/profiles/password", "POST /settings/profiles/permissions", "POST /settings/profiles/remove",
-	"POST /settings/remote/wireguard", "POST /settings/remote/wireguard/revoke",
 	"POST /settings/remote/enable", "POST /settings/remote/kill",
 	"POST /settings/trusted-https", "POST /settings/trusted-https/disable",
 	"POST /settings/navigation", "POST /settings/scans", "POST /settings/server", "POST /settings/sessions/device", "POST /settings/sessions/revoke", "POST /settings/subtitles",
@@ -135,7 +134,7 @@ var sessionOnlyAPIRoutes = routeSet(
 )
 
 func TestEveryRegisteredRouteHasReviewedAnonymousAccess(t *testing.T) {
-	authRoutesContract().ReviewedAnonymousAccess(t, 467, reviewedRouteInventorySHA256, func(t *testing.T, data string) http.Handler {
+	authRoutesContract().ReviewedAnonymousAccess(t, 463, reviewedRouteInventorySHA256, func(t *testing.T, data string) http.Handler {
 		return New(Config{DataDir: data, RequireAuth: true, Configuration: jellyfinRouteConfiguration(t, data)})
 	})
 }

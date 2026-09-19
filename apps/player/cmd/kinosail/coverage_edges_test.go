@@ -8,10 +8,7 @@ import (
 )
 
 func TestCommandConfigurationEdges(t *testing.T) {
-	commandtest.ConfigurationEdges(t, configuration.Load, configuredAuthURL, func(snapshot configuration.Snapshot) (string, string) {
-		config := configuredServerConfig(t.Context(), snapshot, nil, nil)
-		return config.WireGuardDir, config.WireGuardEndpoint
-	}, "38127")
+	commandtest.ConfigurationEdges(t, configuration.Load, configuredAuthURL, "38127")
 }
 
 func TestLoadConfigurationFindsDefaultFile(t *testing.T) {

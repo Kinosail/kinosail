@@ -49,7 +49,7 @@ func TestVersionedAPICoversBrowserOnlyCapabilities(t *testing.T) {
 	item := apiCall(t, handler, token, http.MethodGet, "/api/v1/library?sort=added", nil)
 	assertAPIBody(t, item, http.StatusOK, `"tagline":"First contact"`, `"director":"Denis Villeneuve"`, `"studio":"Paramount"`, `"container":"MP4"`, `"size":5`, `"added":`)
 	openapi := apiCall(t, handler, token, http.MethodGet, "/api/v1/openapi.json", nil)
-	paths := []string{`/api/v1/passkeys/register/begin`, `/api/v1/session/oidc`, `/api/v1/watch-rooms/{id}/events`, `/api/v1/items/{id}/markers`, `/api/v1/items/{id}/playback-events`, `/api/v1/metadata/bulk`, `/api/v1/configuration/{key}`, `/api/v1/remote-access/wireguard`, `/api/v1/backups/verify`, `/api/v1/viewing-imports/preview`, `/api/v1/viewing-syncs/{id}/run`, `/api/v1/supporter/activate`, `/api/v1/supporter/certificates/{family}`}
+	paths := []string{`/api/v1/passkeys/register/begin`, `/api/v1/session/oidc`, `/api/v1/watch-rooms/{id}/events`, `/api/v1/items/{id}/markers`, `/api/v1/items/{id}/playback-events`, `/api/v1/metadata/bulk`, `/api/v1/configuration/{key}`, `/api/v1/backups/verify`, `/api/v1/viewing-imports/preview`, `/api/v1/viewing-syncs/{id}/run`, `/api/v1/supporter/activate`, `/api/v1/supporter/certificates/{family}`}
 	assertAPIBody(t, openapi, http.StatusOK, paths...)
 	for _, path := range paths {
 		if count := bytes.Count(openapi.Body.Bytes(), []byte(`"`+path+`"`)); count != 1 {

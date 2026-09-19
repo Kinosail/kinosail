@@ -47,7 +47,6 @@ internal/server/playback_plan.go:135:6: unreachable func: includes
 internal/server/playback_plan.go:145:6: unreachable func: lower
 internal/server/playback_plan.go:147:6: unreachable func: minimumPositive
 internal/server/playback_plan.go:157:6: unreachable func: playbackReason
-packages/wireguard/wireguard.go:108:25: unreachable func: Manager.Config
 ```
 
 Treat this as an audit result, not an instruction to delete all 18 immediately: the checkout contains extensive uncommitted work, and exported functions may be intentional future or library API. Repeating the module analysis with `-test` reported no unreachable functions, which shows that tests currently reach them but does not make them reachable from the shipped server.

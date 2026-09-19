@@ -6,10 +6,9 @@ import (
 	"github.com/MikeO7/kinosail/packages/remoteaccess"
 	settingsops "github.com/MikeO7/kinosail/packages/settings"
 	"github.com/MikeO7/kinosail/packages/trustedhttps"
-	"github.com/MikeO7/kinosail/packages/wireguard"
 )
 
-func registerSettings(mux *http.ServeMux, settings *settingsStore, updates *updateChecker, index *libraryIndex, progress *progressStore, auth *authentication, verifiedDirect *wireguard.Manager, internet *remoteaccess.Manager, trusted *trustedhttps.Manager, quick *quickConnectBroker, shares *mediaShareStore, hls *hlsManager, subtitles *subtitleProvider, metadata *metadataStore, markers *markerAnalyzer, backups *backupManager, maintenance *maintenanceManager, imports *viewingImportManager, homeAssistant *homeAssistantIntegration, events *liveEventHub, rooms *watchRoomAdapter, authURL string, subtitleApp bool) { //nolint:funlen // Keep settings routes together for review.
+func registerSettings(mux *http.ServeMux, settings *settingsStore, updates *updateChecker, index *libraryIndex, progress *progressStore, auth *authentication, internet *remoteaccess.Manager, trusted *trustedhttps.Manager, quick *quickConnectBroker, shares *mediaShareStore, hls *hlsManager, subtitles *subtitleProvider, metadata *metadataStore, markers *markerAnalyzer, backups *backupManager, maintenance *maintenanceManager, imports *viewingImportManager, homeAssistant *homeAssistantIntegration, events *liveEventHub, rooms *watchRoomAdapter, authURL string, subtitleApp bool) { //nolint:funlen // Keep settings routes together for review.
 	registerOperations(mux, auth, settings, index, hls, metadata, maintenance, imports, events, rooms)
 	mux.Handle("GET /onboarding/finish", auth.owner(finishOnboarding(settings)))
 	registerSubtitleOnboardingActions(mux, auth, settings, index)
@@ -26,7 +25,7 @@ func registerSettings(mux *http.ServeMux, settings *settingsStore, updates *upda
 		mux.Handle("POST /onboarding/updates", auth.owner(saveUpdatePreference(updates, "/onboarding/connection#updates")))
 		mux.Handle("POST /onboarding/updates/check", auth.owner(checkForUpdate(updates, "/onboarding/connection#updates")))
 	}
-	settingsPage := showSettings(settings, updates, auth.profiles, verifiedDirect, internet, trusted, auth.audit, index, hls, subtitles, metadata, markers, maintenance, imports, auth.notify.status, authURL)
+	settingsPage := showSettings(settings, updates, auth.profiles, internet, trusted, auth.audit, index, hls, subtitles, metadata, markers, maintenance, imports, auth.notify.status, authURL)
 	if subtitleApp {
 		settingsPage = showSubtitleSettings(settings, subtitles, trusted)
 	}
@@ -64,8 +63,6 @@ func registerSettings(mux *http.ServeMux, settings *settingsStore, updates *upda
 	mux.Handle("POST /settings/profiles/permissions", auth.owner(setViewerPermissions(auth.profiles)))
 	mux.Handle("POST /settings/remote/kill", auth.owner(remoteaccess.KillHTTP(internet, func() error { return revokePublicAuthorization(auth.profiles, auth.passkeys, quick, shares) }, localizedError))) //nolint:contextcheck // Once the kill switch begins, revocation must finish despite request cancellation.
 	mux.Handle("POST /settings/remote/enable", auth.owner(remoteaccess.ResetKillHTTP(internet, localizedError)))
-	mux.Handle("POST /settings/remote/wireguard", auth.owner(wireGuardHTTP(verifiedDirect, auth.profiles).CreateWeb()))
-	mux.Handle("POST /settings/remote/wireguard/revoke", auth.owner(wireGuardHTTP(verifiedDirect, nil).RevokeWeb()))
 	mux.Handle("GET /settings/backup", auth.freshOwner(downloadBackup(settings)))
 	mux.Handle("POST /settings/encrypted-backup", auth.owner(http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
 		if err := backups.WriteNow(); err != nil {

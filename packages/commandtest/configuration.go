@@ -55,8 +55,8 @@ func LoadSnapshot[Snapshot any](t *testing.T, load func(string, string, func(str
 	return configured
 }
 
-// ConfigurationEdges verifies defaults, explicit origins, and remote configuration.
-func ConfigurationEdges[Snapshot any](t *testing.T, load func(string, string, func(string) (string, bool)) (Snapshot, error), authURL func(Snapshot) string, wireGuard func(Snapshot) (string, string), port string) {
+// ConfigurationEdges verifies defaults, explicit origins, and public HTTPS configuration.
+func ConfigurationEdges[Snapshot ConfigurationSnapshot](t *testing.T, load func(string, string, func(string) (string, bool)) (Snapshot, error), authURL func(Snapshot) string, port string) {
 	var zero Snapshot
 	if got := authURL(zero); got != "http://localhost:"+port {
 		t.Fatalf("zero auth URL = %q", got)
@@ -66,12 +66,11 @@ func ConfigurationEdges[Snapshot any](t *testing.T, load func(string, string, fu
 		t.Fatalf("explicit auth URL = %q", got)
 	}
 	configured := LoadSnapshot(t, load, map[string]string{
-		"KINOSAIL_REMOTE_MODE": "wireguard", "KINOSAIL_DUCKDNS_DOMAIN": "family-media",
-		"KINOSAIL_DUCKDNS_TOKEN": strings.Repeat("a", 32), "KINOSAIL_WIREGUARD_DIR": "/wireguard",
+		"KINOSAIL_REMOTE_MODE": "https", "KINOSAIL_DUCKDNS_DOMAIN": "family-media",
+		"KINOSAIL_DUCKDNS_TOKEN": strings.Repeat("a", 32), "KINOSAIL_AUTH_URL": "https://family-media.duckdns.org",
 	})
-	directory, endpoint := wireGuard(configured)
-	if directory != "/wireguard" || endpoint != "family-media.duckdns.org:51820" {
-		t.Fatalf("WireGuard directory=%q endpoint=%q", directory, endpoint)
+	if configured.String("remote.mode") != "https" || authURL(configured) != "https://family-media.duckdns.org" {
+		t.Fatalf("remote configuration = %q, %q", configured.String("remote.mode"), authURL(configured))
 	}
 }
 

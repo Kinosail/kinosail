@@ -19,23 +19,22 @@ type ServerSettings interface {
 
 // ServerValues contains the shared part of each application's server wiring.
 type ServerValues struct {
-	MediaDir, DataDir, CacheDir     string
-	BackupDir, BackupKey            string
-	BackupInterval                  time.Duration
-	BackupRetention                 int
-	FFmpeg, FFprobe, FPCalc         string
-	AuthURL, ProxyToken             string
-	ScanInterval                    time.Duration
-	DLNAURL                         string
-	WireGuardDir, WireGuardEndpoint string
-	Metadata                        metadata.Config
-	OIDC                            federation.OIDCConfig
-	SAML                            federation.SAMLConfig
-	SCIM                            scim.Config
-	MCP                             mcpgateway.OAuthConfig
-	Notifications                   auditjournal.NotificationConfig
-	SupporterActivationURL          string
-	SupportURL                      string
+	MediaDir, DataDir, CacheDir string
+	BackupDir, BackupKey        string
+	BackupInterval              time.Duration
+	BackupRetention             int
+	FFmpeg, FFprobe, FPCalc     string
+	AuthURL, ProxyToken         string
+	ScanInterval                time.Duration
+	DLNAURL                     string
+	Metadata                    metadata.Config
+	OIDC                        federation.OIDCConfig
+	SAML                        federation.SAMLConfig
+	SCIM                        scim.Config
+	MCP                         mcpgateway.OAuthConfig
+	Notifications               auditjournal.NotificationConfig
+	SupporterActivationURL      string
+	SupportURL                  string
 }
 
 // BuildServerValues translates the shared configuration surface once.
@@ -64,10 +63,6 @@ func BuildServerValues(config ServerSettings, authURL string) ServerValues {
 		Notifications:          auditjournal.NotificationConfig{URL: config.String("integrations.webhook.url"), Token: config.String("integrations.webhook.token")},
 		SupporterActivationURL: config.String("supporter.activation_url"),
 		SupportURL:             config.String("supporter.url"),
-	}
-	if config.String("remote.mode") == "wireguard" {
-		values.WireGuardDir = config.String("remote.wireguard_dir")
-		values.WireGuardEndpoint = config.String("remote.duckdns_domain") + ".duckdns.org:51820"
 	}
 	return values
 }

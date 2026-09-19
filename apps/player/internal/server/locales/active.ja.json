@@ -508,10 +508,6 @@
     "other": "安全な診断をダウンロード"
   },
   {
-    "id": "Download WireGuard profile",
-    "other": "WireGuard プロファイルをダウンロード"
-  },
-  {
     "id": "Downloads",
     "other": "ダウンロード"
   },
@@ -1776,14 +1772,6 @@
     "other": "VA-API (AMD/インテル)"
   },
   {
-    "id": "Verified Direct Connection",
-    "other": "直接接続を確認しました"
-  },
-  {
-    "id": "Verified Direct Connection is not configured",
-    "other": "直接接続が構成されていないことを確認しました"
-  },
-  {
     "id": "Verify latest backup",
     "other": "最新のバックアップを確認"
   },
@@ -1798,10 +1786,6 @@
   {
     "id": "Viewer access is not available",
     "other": "閲覧者アクセスは利用できません"
-  },
-  {
-    "id": "Viewer device",
-    "other": "ビューアデバイス"
   },
   {
     "id": "Viewer name",
@@ -1838,10 +1822,6 @@
   {
     "id": "when ready.",
     "other": "準備ができたら。"
-  },
-  {
-    "id": "WireGuard Viewer not found",
-    "other": "WireGuard ビューアが見つかりません"
   },
   {
     "id": "XMLTV guide",

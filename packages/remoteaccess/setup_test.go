@@ -13,7 +13,6 @@ func TestSetupNeverClaimsOutsideReachability(t *testing.T) {
 	now := time.Now()
 	for _, status := range []Status{
 		{},
-		{Mode: "wireguard", State: "ready"},
 		{Mode: "https", State: "ready", Policy: "public-v1", CertificateExpires: now.Add(48 * time.Hour).Format(time.RFC3339)},
 	} {
 		result := SecurePublicReadiness(status, []identitycore.Profile{{Remote: true, Passkeys: []webauthn.Credential{{}}}}, nil, now)
@@ -77,7 +76,7 @@ func TestSetupPublicAddressRejectsUntrustedHostnames(t *testing.T) {
 			t.Errorf("untrusted hostname %q became a setup link: %q", hostname, result.PublicURL)
 		}
 	}
-	for _, mode := range []string{"off", "wireguard", "https"} {
+	for _, mode := range []string{"off", "https"} {
 		result := SecurePublicReadiness(Status{Mode: mode, Hostname: "family.duckdns.org"}, nil, nil, time.Now())
 		if mode == "https" && result.PublicURL != "https://family.duckdns.org" || mode != "https" && result.PublicURL != "" {
 			t.Errorf("%s setup public URL = %q", mode, result.PublicURL)

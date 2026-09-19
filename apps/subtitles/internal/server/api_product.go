@@ -80,7 +80,7 @@ func registerProductAPI(mux *http.ServeMux, api apiServices) {
 	owner("PUT /api/v1/items/{id}/metadata", productapi.EditMetadata(metadata, metadata))
 	owner("POST /api/v1/items/{id}/metadata/refresh", productapi.RefreshMetadata(metadata, metadata))
 	owner("POST /api/v1/items/{id}/subtitles", apiFetchSubtitles(api))
-	owner("GET /api/v1/remote-access", remoteaccess.StatusAPI(api.verified, api.internet, func(status remoteaccess.Status) remoteReadiness {
+	owner("GET /api/v1/remote-access", remoteaccess.StatusAPI(api.internet, func(status remoteaccess.Status) remoteReadiness {
 		return securePublicReadiness(status, api.auth.profiles.list(), api.auth.profiles.err, time.Now())
 	}, writeJSON))
 	contractError := func(message string) error { return apiContractError(message) }

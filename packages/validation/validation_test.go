@@ -8,7 +8,7 @@ import (
 
 func TestValidateRemoteAccess(t *testing.T) {
 	t.Parallel()
-	valid := map[string]string{"remote.mode": "https", "remote.listen": ":8443", "remote.duckdns_domain": "family", "remote.duckdns_token": strings.Repeat("a", 32), "remote.wireguard_dir": "/data/wireguard", "auth.url": "https://family.duckdns.org"}
+	valid := map[string]string{"remote.mode": "https", "remote.listen": ":8443", "remote.duckdns_domain": "family", "remote.duckdns_token": strings.Repeat("a", 32), "auth.url": "https://family.duckdns.org"}
 	value := func(values map[string]string) func(string) string {
 		return func(key string) string { return values[key] }
 	}
@@ -19,11 +19,9 @@ func TestValidateRemoteAccess(t *testing.T) {
 		t.Fatal("ValidateRemoteAccess(nil) succeeded")
 	}
 	for name, mutate := range map[string]func(map[string]string){
-		"listen":      func(values map[string]string) { values["remote.listen"] = "bad" },
-		"credentials": func(values map[string]string) { values["remote.duckdns_token"] = "" },
-		"wireguard path": func(values map[string]string) {
-			values["remote.mode"], values["remote.wireguard_dir"] = "wireguard", "relative"
-		},
+		"listen":        func(values map[string]string) { values["remote.listen"] = "bad" },
+		"credentials":   func(values map[string]string) { values["remote.duckdns_token"] = "" },
+		"unknown mode":  func(values map[string]string) { values["remote.mode"] = "invalid" },
 		"origin":        func(values map[string]string) { values["auth.url"] = "https://other.example" },
 		"origin scheme": func(values map[string]string) { values["auth.url"] = "http://family.duckdns.org" },
 	} {
@@ -39,15 +37,6 @@ func TestValidateRemoteAccess(t *testing.T) {
 	off["remote.mode"] = "off"
 	if err := ValidateRemoteAccess(value(off)); err != nil {
 		t.Fatalf("ValidateRemoteAccess(off) = %v", err)
-	}
-	wireguard := clone(valid)
-	wireguard["remote.mode"] = "wireguard"
-	if err := ValidateRemoteAccess(value(wireguard)); err != nil {
-		t.Fatalf("ValidateRemoteAccess(wireguard) = %v", err)
-	}
-	wireguard["remote.duckdns_token"] = ""
-	if err := ValidateRemoteAccess(value(wireguard)); err == nil {
-		t.Fatal("ValidateRemoteAccess(wireguard without token) succeeded")
 	}
 }
 
@@ -135,7 +124,7 @@ func clone(source map[string]string) map[string]string {
 
 func TestPublicGatewayRequiresExplicitHTTPSMode(t *testing.T) {
 	for _, input := range []struct{ mode, gateway string }{
-		{"off", "true"}, {"wireguard", "true"}, {"https", "TRUE"}, {"https", "1"}, {"unknown", "false"},
+		{"off", "true"}, {"https", "TRUE"}, {"https", "1"}, {"unknown", "false"},
 	} {
 		values := map[string]string{"remote.mode": input.mode, "remote.gateway": input.gateway, "remote.listen": ":8443", "remote.duckdns_domain": "family", "remote.duckdns_token": "token", "auth.url": "https://family.duckdns.org"}
 		if ValidateRemoteAccess(func(key string) string { return values[key] }) == nil {
