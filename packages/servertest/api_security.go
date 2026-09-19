@@ -25,14 +25,20 @@ func APISecurityContract(t *testing.T, server func(*testing.T) (http.Handler, st
 			if response.Code != http.StatusUnauthorized || !strings.Contains(response.Body.String(), "authentication required") {
 				t.Fatalf("protected API route = %d %q", response.Code, response.Body.String())
 			}
-		})
-	}
 
-	response = APICall(t, handler, "", http.MethodPost, "/api/v1/profiles", map[string]any{
-		"name": "Unauthenticated", "password": "not-created", "rating": "all", "libraries": []string{"all"},
-	})
-	if response.Code != http.StatusUnauthorized {
-		t.Fatalf("anonymous API mutation = %d %q", response.Code, response.Body.String())
+			profileName := "Rejected-" + strings.ReplaceAll(name, " ", "-")
+			response = APICall(t, handler, credential, http.MethodPost, "/api/v1/profiles", map[string]any{
+				"name": profileName, "password": "not-created", "rating": "all", "libraries": []string{"all"},
+			})
+			if response.Code != http.StatusUnauthorized {
+				t.Fatalf("protected API mutation = %d %q", response.Code, response.Body.String())
+			}
+
+			response = APICall(t, handler, token, http.MethodGet, "/api/v1/profiles", nil)
+			if response.Code != http.StatusOK || strings.Contains(response.Body.String(), profileName) {
+				t.Fatalf("rejected API mutation changed profiles = %d %q", response.Code, response.Body.String())
+			}
+		})
 	}
 
 	response = APICall(t, handler, "", http.MethodGet, "/api/v1/not-registered", nil)
