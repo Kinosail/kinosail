@@ -76,7 +76,7 @@ The user selected Electric option 1 and authorized replacing the previous coral 
 
 **Key Characteristics:**
 
-- Untinted, contained artwork on a flat adaptive canvas.
+- Untinted, contained artwork; Apple TV adds an immersive backdrop behind browsing content.
 - Electric actions with SF Pro text and rounded feature titles.
 - Personal destinations and platform-owned navigation, touch and remote focus.
 
@@ -102,7 +102,7 @@ The hero's rounded title has a 36pt iOS base and a 56pt tvOS base, scaled relati
 
 Home is a vertical scroll view with 32pt section spacing and theme content padding. iOS uses 20pt content padding; tvOS uses 64pt. Safe areas, back navigation, tab/sidebar adaptation and dismissal remain native.
 
-The reusable hero fills the available width. Regular iOS size classes and tvOS place contained artwork beside information with a 32pt gap. Compact and accessibility sizes put 16:9 artwork above information with a 12pt gap. Artwork never sits behind text or fades into the canvas. Missing backdrops use 2:3 poster artwork (square for audio) capped at 240pt. Information grows with content; actions try horizontal placement and fall back to vertical through `ViewThatFits`.
+The reusable hero fills the available width. Regular iOS size classes and tvOS place contained artwork beside information with a 32pt gap. Compact and accessibility sizes put 16:9 artwork above information with a 12pt gap. Foreground artwork stays contained and untinted. Apple TV additionally uses a subdued full-screen copy of the backdrop behind browsing content. Missing backdrops use 2:3 poster artwork (square for audio) capped at 240pt. Information grows with content; actions try horizontal placement and fall back to vertical through `ViewThatFits`.
 
 Home displays For you and My List above the feature, then up to four compact Continue watching rows. Each row combines a landscape thumbnail, title, metadata, true progress and play affordance; See all opens History. `ResumeRows` adapts from 420pt minimum columns on iOS and 640pt on tvOS. At accessibility text sizes, rows use one column, omit decorative thumbnails and let titles wrap without a line limit.
 
@@ -110,9 +110,9 @@ Media grids adapt from 144pt posters or 280pt landscape cards on iOS, and 230pt 
 
 ## Elevation & Depth
 
-Actual artwork and tonal surfaces provide depth. Artwork keeps its own color inside its rounded boundary; the surrounding canvas is flat. No custom blur or decorative backdrop overlay is used. Forms, sheets and navigation retain platform materials, with iOS scroll backgrounds using the shared canvas.
+Apple TV Home, library, title details and episode browsing use real title backdrops to establish cinematic depth, as selected by the user from the immersive background mockup. The backdrop stays fixed behind the scroll viewport and extends into safe areas. A dark vertical fade protects text and settles into the shared canvas beneath the feature. Foreground artwork remains contained and untinted; forms, playback and iOS retain their existing surfaces. The shared Artwork loader owns authentication, caching, cancellation and reduced-motion crossfades. Empty or failed artwork uses the neutral canvas; Increased Contrast and Reduce Transparency omit the decorative image entirely. Backgrounds do not receive focus, input or accessibility traversal.
 
-Apple TV library headers combine compact navigation controls with a contained landscape thumbnail and the focused title above the grid. After focus settles for 300ms, the thumbnail changes through a 450ms crossfade; Reduce Motion removes that animation. The previous image stays visible only while its replacement loads within the same session; missing or failed artwork resolves to the neutral canvas. Native card focus has vertical breathing room and unclipped shelf edges.
+Apple TV library headers combine compact navigation controls with a contained landscape thumbnail and the focused title above the grid. The same title supplies the immersive background. After focus settles for 300ms, the artwork changes through a 450ms crossfade; Reduce Motion removes that animation. The previous image stays visible only while its replacement loads within the same session; missing or failed artwork resolves to the neutral canvas. Native card focus has vertical breathing room and unclipped shelf edges.
 
 **The Native State Rule.** Let native controls own focus and interaction feedback. iOS media links use plain style; tvOS media links retain card style and focus sections. Preserve tvOS focus movement and platform Reduce Motion behavior rather than imposing the web no-lift rule.
 
@@ -172,6 +172,6 @@ Approved Player sail geometry is authored SVG under `assets/source/`, recolored 
 
 ### Don't:
 
-- Don't place information over artwork or shade the image to make text readable.
+- Don't tint foreground artwork. Apple TV background imagery alone receives the readability fade.
 - Don't impose web geometry or the web no-lift rule on Apple system controls.
 - Don't treat simulator captures or successful compilation as physical-device or accessibility certification.

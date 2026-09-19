@@ -47,6 +47,7 @@ struct HomeScreen: View {
                         LibraryQuickLinks()
                     }
                 }
+                .cinemaBackdrop(path: (home.continueWatching.first ?? home.recent.first)?.backdrop ?? "")
             }
             .padding([.horizontal, .bottom], KinoTheme.contentPadding)
             .padding(.top, 12)
@@ -55,7 +56,7 @@ struct HomeScreen: View {
             await session.client?.invalidateCatalog()
             session.contentRevision = UUID()
         }
-        .background(KinoTheme.background)
+        .cinemaBackground()
         #if os(tvOS)
         .navigationTitle("")
         #else

@@ -21,6 +21,9 @@ struct LibraryScreen: View {
     @State private var draftQuery = ""
     @State private var focusedItem: MediaItem?
     @State private var backdropItem: MediaItem?
+    private var featuredItem: MediaItem? {
+        items.first(where: { $0.id == backdropItem?.id }) ?? items.first
+    }
     #endif
     @State private var loadedRevision: UUID?
 
@@ -55,7 +58,7 @@ struct LibraryScreen: View {
                                               message: query.isEmpty ? "Try another part of your library." : "Try a different title, artist or show.") }
                 } else {
                     #if os(tvOS)
-                    if let featured = backdropItem ?? items.first {
+                    if let featured = featuredItem {
                         HStack(spacing: 24) {
                             if !featured.backdrop.isEmpty {
                                 Artwork(path: featured.backdrop, ratio: 16 / 9, isBackdrop: true)
@@ -84,7 +87,8 @@ struct LibraryScreen: View {
         }
         #if os(tvOS)
         .scrollClipDisabled()
-        .background(KinoTheme.background)
+        .cinemaBackdrop(path: featuredItem?.backdrop ?? "")
+        .cinemaBackground()
         .task(id: focusedItem?.id) {
             guard let focusedItem else { return }
             do { try await Task.sleep(for: .milliseconds(300)) }
