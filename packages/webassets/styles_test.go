@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"crypto/sha256"
 	"fmt"
+	"strings"
 	"testing"
 )
 
@@ -30,6 +31,23 @@ func TestForegroundArtworkPreservesItsSourceRatio(t *testing.T) {
 	if !bytes.Contains(LastLightCSS, []byte("body :is(img.poster,.poster img,.card img,.hero-poster){height:auto;object-fit:contain}")) ||
 		!bytes.Contains(LastLightCSS, []byte("body :is(.curation-poster>img,.collection-poster>img){object-fit:contain}")) {
 		t.Fatal("shared light stylesheet does not preserve foreground artwork")
+	}
+}
+
+func TestMediaFocusRingStaysInsideArtwork(t *testing.T) {
+	t.Parallel()
+
+	css := string(LastLightCSS)
+	for _, fragment := range []string{
+		"body :is(.card,.curation-card,.collection-card):has(.poster,.curation-poster,.collection-poster):focus-visible{outline:0}",
+		"box-shadow:inset 0 0 0 3px var(--signal)",
+	} {
+		if !bytes.Contains(LastLightCSS, []byte(fragment)) {
+			t.Fatalf("shared stylesheet is missing media focus treatment %q", fragment)
+		}
+	}
+	if strings.Contains(css, ".card:focus-visible .poster){transform:none;outline:2px solid var(--text)") {
+		t.Fatal("media focus still uses the clipped text-color outline")
 	}
 }
 
