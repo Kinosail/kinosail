@@ -7,6 +7,7 @@ import (
 	"github.com/MikeO7/kinosail/packages/apihttp"
 	"github.com/MikeO7/kinosail/packages/catalog"
 	"github.com/MikeO7/kinosail/packages/catalogapi"
+	"github.com/MikeO7/kinosail/packages/homeassistant"
 	"github.com/MikeO7/kinosail/packages/identitycore"
 	"github.com/MikeO7/kinosail/packages/library"
 	"github.com/MikeO7/kinosail/packages/remoteaccess"
@@ -134,7 +135,9 @@ func (api apiServices) RegisterSupporterAPI(mux *http.ServeMux) {
 
 func (api apiServices) RegisterProductAPI(mux *http.ServeMux) {
 	registerProductAPI(mux, api)
-	registerHomeAssistant(mux, api.homeAssistant, api.auth)
+	api.homeAssistant.Register(mux, api.auth.owner, func(writer http.ResponseWriter, request *http.Request, view homeassistant.Approval) error {
+		return executeCSRFTemplate(homeAssistantApprovalView, writer, request, view)
+	})
 }
 
 func apiStoreStatus(err error) int {

@@ -86,7 +86,7 @@ func registerAdminAPI(mux *http.ServeMux, api apiServices) { //nolint:funlen // 
 	}))
 	owner("PUT /api/v1/settings/dlna", apiSetting(func(input apiSettingInput) error { return api.settings.setDLNA(input.Enabled) }))
 	owner("PUT /api/v1/settings/jellyfin", apiSetting(func(input apiSettingInput) error { return api.settings.setJellyfinCompatibility(input.Enabled) }))
-	owner("PUT /api/v1/settings/home-assistant", apiHomeAssistantSetting(api.homeAssistant))
+	owner("PUT /api/v1/settings/home-assistant", api.homeAssistant.SettingHandler())
 	owner("PUT /api/v1/settings/trusted-https", apiTrustedHTTPS(api.settings))
 	owner("DELETE /api/v1/settings/trusted-https", apiDisableTrustedHTTPS(api.settings))
 	owner("POST /api/v1/libraries", apiLibrarySetting(api.settings, api.index, api.settings.add))

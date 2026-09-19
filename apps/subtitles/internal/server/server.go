@@ -10,6 +10,7 @@ import (
 	"github.com/MikeO7/kinosail-subtitles/internal/configuration"
 	"github.com/MikeO7/kinosail-subtitles/internal/database"
 	"github.com/MikeO7/kinosail/packages/catalog"
+	"github.com/MikeO7/kinosail/packages/homeassistant"
 	"github.com/MikeO7/kinosail/packages/library"
 	markerlogic "github.com/MikeO7/kinosail/packages/markers"
 	sharedmetadata "github.com/MikeO7/kinosail/packages/metadata"
@@ -260,7 +261,7 @@ func withDLNA(app http.Handler, appMux *http.ServeMux, auth *authentication, con
 		}
 		return matched
 	}
-	return trustedProxy(config.ProxyToken, allowedHost(config.AuthURL, config.Configuration.Strings("tls.hosts"), observeRequests(auth.audit, pattern, tripwirePublic(auth.audit, publicRequestLimits(security(localized(jellyfinCompatibility(settings, homeAssistantGate(settings, auth.protect(withApplicationShell(settings, updates, pattern, root), pattern))))))))))
+	return trustedProxy(config.ProxyToken, allowedHost(config.AuthURL, config.Configuration.Strings("tls.hosts"), observeRequests(auth.audit, pattern, tripwirePublic(auth.audit, publicRequestLimits(security(localized(jellyfinCompatibility(settings, homeassistant.Gate(settings.homeAssistant, auth.protect(withApplicationShell(settings, updates, pattern, root), pattern))))))))))
 }
 
 func registerBrowsers(mux *http.ServeMux, index *libraryIndex, progress *progressStore, lists *listStore) {
