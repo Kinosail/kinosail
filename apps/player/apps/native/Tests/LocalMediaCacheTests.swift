@@ -22,6 +22,23 @@ struct LocalMediaCacheTests {
         #expect(!saved.fresh)
     }
 
+    @Test func keepsSavedArtworkUsableWhileMarkingItStale() async throws {
+        let directory = temporary()
+        defer { try? FileManager.default.removeItem(at: directory) }
+        let cache = try LocalMediaCache(scope: scope, directory: directory)
+        try await cache.write(Data("image".utf8), key: "/art/movie", kind: .artwork)
+        await cache.close(purge: false)
+        let file = try #require(files(directory).first)
+        var bytes = try Data(contentsOf: file)
+        var timestamp = Date().addingTimeInterval(-(LocalMediaCache.artworkFreshLifetime + 1)).timeIntervalSince1970.bitPattern.bigEndian
+        withUnsafeBytes(of: &timestamp) { bytes.replaceSubrange(40..<48, with: $0) }
+        try bytes.write(to: file)
+        let restarted = try LocalMediaCache(scope: scope, directory: directory)
+        let saved = try #require(await restarted.read("/art/movie", kind: .artwork))
+        #expect(saved.data == Data("image".utf8))
+        #expect(!saved.fresh)
+    }
+
     @Test func discardsLateWritesAfterInvalidationAndClose() async throws {
         let directory = temporary()
         defer { try? FileManager.default.removeItem(at: directory) }

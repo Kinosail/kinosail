@@ -41,6 +41,27 @@ struct ArtworkLoaderTests {
         await other.close()
     }
 
+    @Test func servesStaleDiskArtworkAndRefreshesItInTheBackground() async throws {
+        let directory = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+        defer { try? FileManager.default.removeItem(at: directory) }
+        let viewer = try Viewer(.object(["server": .string("Test"), "serverId": .string("test-server"),
+            "viewer": .object(["id": .string("viewer"), "name": .string("Viewer"), "owner": .bool(true), "downloads": .bool(true), "transcode": .bool(true), "remote": .bool(false)])]))
+        let fixture = try HTTPFixture(body: "{}", viewer: viewer, cacheDirectory: directory)
+        defer { fixture.remove() }
+        installImage(fixture, path: "/art/movie", width: 800, height: 400)
+        _ = try await ArtworkLoader().image(path: "/art/movie", client: fixture.client, dimension: 800)
+        await fixture.client.close()
+        try ageArtwork(in: directory)
+        installImage(fixture, path: "/art/movie", width: 600, height: 300)
+        let reopened = try ServerClient(server: await fixture.client.server, viewer: viewer,
+                                        protocolClasses: [FixtureURLProtocol.self], cacheDirectory: directory)
+        defer { Task { await reopened.close() } }
+        let cached = try await ArtworkLoader().image(path: "/art/movie", client: reopened, dimension: 800)
+        #expect(cached.width == 800)
+        for _ in 0..<200 where fixture.requests.count < 2 { try await Task.sleep(for: .milliseconds(5)) }
+        #expect(fixture.requests.count == 2)
+    }
+
     @Test func evictsLeastRecentlyUsedPixelsByDecodedMemoryCost() async throws {
         let fixture = try HTTPFixture(body: "{}")
         defer { fixture.remove() }
@@ -176,5 +197,14 @@ struct ArtworkLoaderTests {
         CGImageDestinationAddImage(destination, image, [kCGImagePropertyOrientation: orientation] as CFDictionary)
         #expect(CGImageDestinationFinalize(destination))
         return output as Data
+    }
+
+    private func ageArtwork(in directory: URL) throws {
+        guard let file = FileManager.default.enumerator(at: directory, includingPropertiesForKeys: nil)?
+            .compactMap({ $0 as? URL }).first(where: { $0.pathExtension == "cache" }) else { throw ClientError.invalidResponse }
+        var bytes = try Data(contentsOf: file)
+        var timestamp = Date().addingTimeInterval(-(LocalMediaCache.artworkFreshLifetime + 1)).timeIntervalSince1970.bitPattern.bigEndian
+        withUnsafeBytes(of: &timestamp) { bytes.replaceSubrange(40..<48, with: $0) }
+        try bytes.write(to: file)
     }
 }

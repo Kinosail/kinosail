@@ -4,6 +4,8 @@ import CryptoKit
 /// Disposable, profile-scoped data. Only validated catalog JSON and artwork enter
 /// this store; credentials, playback URLs with capabilities, and media files do not.
 actor LocalMediaCache {
+    static let artworkFreshLifetime: TimeInterval = 24 * 60 * 60
+
     enum Kind: String, Sendable {
         case catalog, artwork
         var maximum: Int { self == .catalog ? 2 * 1024 * 1024 : 32 * 1024 * 1024 }
@@ -94,6 +96,9 @@ actor LocalMediaCache {
     private func entryWithFreshness(_ entry: Entry, kind: Kind) -> Entry? {
         let age = Date().timeIntervalSince(entry.saved)
         guard age >= -60, age <= 30 * 86_400 else { return nil }
+        if kind == .artwork {
+            return Entry(data: entry.data, saved: entry.saved, fresh: age < Self.artworkFreshLifetime)
+        }
         if freshAfter == nil {
             let file = root.appendingPathComponent("catalog-invalidation")
             if let data = try? boundedData(file, maximum: 8), data.count == 8 {
@@ -101,7 +106,7 @@ actor LocalMediaCache {
                 freshAfter = seconds.isFinite && seconds >= 0 && seconds <= Date().timeIntervalSince1970 + 60 ? Date(timeIntervalSince1970: seconds) : Date()
             } else { freshAfter = manager.fileExists(atPath: file.path) ? Date() : .distantPast }
         }
-        return Entry(data: entry.data, saved: entry.saved, fresh: kind == .artwork || age < 300 && entry.saved >= freshAfter!)
+        return Entry(data: entry.data, saved: entry.saved, fresh: age < 300 && entry.saved >= freshAfter!)
     }
 
     private func header(_ key: String, kind: Kind) -> Data {

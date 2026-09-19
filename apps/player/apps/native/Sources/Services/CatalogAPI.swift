@@ -41,7 +41,9 @@ extension ServerClient {
         }
     }
 
-    func item(id: String) async throws -> MediaItem { try await details(id: id).item }
+    func item(id: String, policy: CatalogPolicy = .reload) async throws -> MediaItem {
+        try await details(id: id, policy: policy).item
+    }
 
     func setListed(itemID: String, listed: Bool) async throws -> Bool {
         let value = try await request("/api/v1/items/\(Input.id(itemID))/list", method: .put,

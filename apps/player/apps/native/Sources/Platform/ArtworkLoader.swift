@@ -4,9 +4,12 @@ import UniformTypeIdentifiers
 
 actor ArtworkLoader {
     private struct Key: Hashable { let session: UUID; let path: String; let dimension: Int }
-    private struct Cached { let image: CGImage; var used: Date }
+    private struct Cached { let image: CGImage; var used: Date; let saved: Date }
+    private struct Loaded { let image: CGImage; let stale: Bool }
     private var cache: [Key: Cached] = [:]
-    private var pending: [Key: Task<CGImage, Error>] = [:]
+    private var pending: [Key: Task<Loaded, Error>] = [:]
+    private var refreshing: [Key: UUID] = [:]
+    private var refreshTasks: [Key: Task<Void, Never>] = [:]
     private var bytes = 0
     private var generation = UUID()
     private var active = 0
@@ -20,13 +23,20 @@ actor ArtworkLoader {
             throw ClientError.invalidResponse
         }
         let key = Key(session: client.identity, path: url.absoluteString, dimension: dimension)
-        if var found = cache[key] { found.used = Date(); cache[key] = found; return found.image }
+        if var found = cache[key] {
+            found.used = Date(); cache[key] = found
+            if Date().timeIntervalSince(found.saved) >= LocalMediaCache.artworkFreshLifetime {
+                scheduleRefresh(key: key, url: url, client: client, dimension: dimension)
+            }
+            return found.image
+        }
         let attempt = generation
         if let request = pending[key] {
-            let image = try await request.value
+            let loaded = try await request.value
             try Task.checkCancellation()
             guard generation == attempt else { throw CancellationError() }
-            return image
+            if loaded.stale { scheduleRefresh(key: key, url: url, client: client, dimension: dimension) }
+            return loaded.image
         }
         guard pending.count < 64 else { throw ClientError.unavailable }
         let request = Task {
@@ -37,36 +47,27 @@ actor ArtworkLoader {
             let persist = URLComponents(url: url, resolvingAgainstBaseURL: false).map(ServerClient.cacheableMediaURL) == true
             let store = persist ? try await client.cacheStore() : nil
             let saved = await store?.read(url.absoluteString, kind: .artwork)
-            let image: CGImage
-            if let saved, let decoded = try? Self.decodedThumbnail(saved.data, dimension: dimension) { image = decoded }
-            else {
-                if saved != nil { await store?.remove(url.absoluteString, kind: .artwork) }
-                let (data, type) = try await client.resource(url.absoluteString, maximum: 32 * 1024 * 1024)
-                guard type.hasPrefix("image/") else { throw ClientError.invalidResponse }
-                image = try Self.decodedThumbnail(data, dimension: dimension)
-                try Task.checkCancellation()
-                try? await store?.write(data, key: url.absoluteString, kind: .artwork)
+            if let saved, let image = try? Self.decodedThumbnail(saved.data, dimension: dimension) {
+                return Loaded(image: image, stale: !saved.fresh)
             }
+            if saved != nil { await store?.remove(url.absoluteString, kind: .artwork) }
+            let (data, type) = try await client.resource(url.absoluteString, maximum: 32 * 1024 * 1024)
+            guard type.hasPrefix("image/") else { throw ClientError.invalidResponse }
+            let image = try Self.decodedThumbnail(data, dimension: dimension)
+            try Task.checkCancellation()
+            let savedAt = Date()
+            try? await store?.write(data, key: url.absoluteString, kind: .artwork)
             try Task.checkCancellation()
             guard generation == attempt else { throw CancellationError() }
-            // Account for decoded pixels, not the much smaller compressed file.
-            let cost = image.bytesPerRow * image.height
-            if cost <= 32 * 1024 * 1024 {
-                while bytes + cost > 32 * 1024 * 1024 || cache.count >= 96 {
-                    guard let oldest = cache.min(by: { $0.value.used < $1.value.used }) else { break }
-                    bytes -= oldest.value.image.bytesPerRow * oldest.value.image.height
-                    cache[oldest.key] = nil
-                }
-                cache[key] = Cached(image: image, used: Date())
-                bytes += cost
-            }
-            return image
+            remember(image, key: key, saved: savedAt)
+            return Loaded(image: image, stale: false)
         }
         pending[key] = request
-        let image = try await request.value
+        let loaded = try await request.value
         try Task.checkCancellation()
         guard generation == attempt else { throw CancellationError() }
-        return image
+        if loaded.stale { scheduleRefresh(key: key, url: url, client: client, dimension: dimension) }
+        return loaded.image
     }
 
     static func decodedThumbnail(_ data: Data, dimension: Int) throws -> CGImage {
@@ -102,9 +103,62 @@ actor ArtworkLoader {
     func clear() {
         generation = UUID()
         for task in pending.values { task.cancel() }
+        for task in refreshTasks.values { task.cancel() }
         pending = [:]
+        refreshing = [:]
+        refreshTasks = [:]
         cache = [:]
         bytes = 0
+    }
+
+    private func scheduleRefresh(key: Key, url: URL, client: ServerClient, dimension: Int) {
+        guard refreshing[key] == nil else { return }
+        let attempt = generation
+        refreshing[key] = attempt
+        refreshTasks[key] = Task { [weak self] in
+            guard let self else { return }
+            await self.refresh(key: key, url: url, client: client, dimension: dimension, attempt: attempt)
+        }
+    }
+
+    private func refresh(key: Key, url: URL, client: ServerClient, dimension: Int, attempt: UUID) async {
+        defer {
+            if refreshing[key] == attempt {
+                refreshing[key] = nil
+                refreshTasks[key] = nil
+            }
+        }
+        guard generation == attempt else { return }
+        do {
+            try await acquire()
+            defer { release() }
+            try Task.checkCancellation()
+            let (data, type) = try await client.resource(url.absoluteString, maximum: 32 * 1024 * 1024)
+            guard type.hasPrefix("image/") else { throw ClientError.invalidResponse }
+            let image = try Self.decodedThumbnail(data, dimension: dimension)
+            try Task.checkCancellation()
+            guard generation == attempt else { return }
+            let savedAt = Date()
+            let store = try await client.cacheStore()
+            try? await store?.write(data, key: url.absoluteString, kind: .artwork)
+            remember(image, key: key, saved: savedAt)
+        } catch is CancellationError {} catch {}
+    }
+
+    private func remember(_ image: CGImage, key: Key, saved: Date) {
+        // Account for decoded pixels, not the much smaller compressed file.
+        let cost = image.bytesPerRow * image.height
+        guard cost <= 32 * 1024 * 1024 else { return }
+        if let previous = cache.removeValue(forKey: key) {
+            bytes -= previous.image.bytesPerRow * previous.image.height
+        }
+        while bytes + cost > 32 * 1024 * 1024 || cache.count >= 96 {
+            guard let oldest = cache.min(by: { $0.value.used < $1.value.used }) else { break }
+            bytes -= oldest.value.image.bytesPerRow * oldest.value.image.height
+            cache[oldest.key] = nil
+        }
+        cache[key] = Cached(image: image, used: Date(), saved: saved)
+        bytes += cost
     }
 
     private func acquire() async throws {

@@ -51,11 +51,22 @@ struct PhotoScreen: View {
             image = nil; failure = nil
             guard let client = session.client else { return }
             do {
-                let item = try await client.item(id: itemID)
-                guard item.kind == .photo, !item.stream.isEmpty else { throw ClientError.invalidResponse }
-                let decoded = try await session.artwork.image(path: item.stream, client: client, dimension: 4096)
-                try Task.checkCancellation()
-                title = item.title; image = UIImage(cgImage: decoded)
+                var displayedCache = false
+                if let saved = try? await client.item(id: itemID, policy: .cached), saved.kind == .photo, !saved.stream.isEmpty,
+                   let decoded = try? await session.artwork.image(path: saved.stream, client: client, dimension: 4096) {
+                    try Task.checkCancellation()
+                    title = saved.title; image = UIImage(cgImage: decoded); displayedCache = true
+                }
+                do {
+                    let item = try await client.item(id: itemID, policy: .automatic)
+                    guard item.kind == .photo, !item.stream.isEmpty else { throw ClientError.invalidResponse }
+                    let decoded = try await session.artwork.image(path: item.stream, client: client, dimension: 4096)
+                    try Task.checkCancellation()
+                    title = item.title; image = UIImage(cgImage: decoded)
+                } catch {
+                    if error is CancellationError { throw error }
+                    if !displayedCache { throw error }
+                }
             } catch is CancellationError {} catch { failure = AppSession.message(error) }
         }
     }
