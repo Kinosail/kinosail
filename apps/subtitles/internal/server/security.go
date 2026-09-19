@@ -7,6 +7,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/MikeO7/kinosail/packages/httpguard"
 	"github.com/MikeO7/kinosail/packages/identitycore"
 	"github.com/MikeO7/kinosail/packages/trustedhttps"
 )
@@ -51,7 +52,7 @@ func allowedHost(rawURL string, aliases []string, next http.Handler) http.Handle
 }
 
 func security(next http.Handler) http.Handler {
-	return trustedhttps.LimitSettingsForms(identitycore.Security(next, identitycore.SecurityConfig{MaxBody: maxRequestBody, Secure: secureRequest, UnsafeCrossOrigin: unsafeCrossOrigin, SessionCSRFRequired: sessionCSRFRequired, ValidCSRF: validCSRF, Reject: localizedError}))
+	return trustedhttps.LimitSettingsForms(identitycore.Security(next, identitycore.SecurityConfig{MaxBody: maxRequestBody, Secure: secureRequest, UnsafeCrossOrigin: unsafeCrossOrigin, SessionCSRFRequired: sessionCSRFRequired, ValidCSRF: httpguard.ValidCSRF, Reject: localizedError}))
 }
 
 func sessionCSRFRequired(request *http.Request) bool {

@@ -10,6 +10,7 @@ import (
 	"sort"
 	"strings"
 
+	"github.com/MikeO7/kinosail/packages/httpguard"
 	"github.com/MikeO7/kinosail/packages/localization"
 	"github.com/nicksnyder/go-i18n/v2/i18n"
 	"golang.org/x/text/language"
@@ -43,7 +44,7 @@ var (
 	localeCatalog                      = localization.NewCatalog(localizationBundle, supportedLanguages, sourceMessages)
 	localeTemplateRuntime              = localization.TemplateRuntime{
 		PreferredLanguage: preferredLanguage, LanguagePreference: languagePreference, MatchLanguage: matchSupportedLanguage,
-		SetLanguageHeaders: setLanguageHeaders, CSRFForRequest: csrfForRequest, CSRFTemplateFuncs: csrfTemplateFuncs,
+		SetLanguageHeaders: setLanguageHeaders, CSRFForRequest: httpguard.CSRFForRequest, CSRFTemplateFuncs: httpguard.CSRFTemplateFuncs,
 	}
 )
 
@@ -79,7 +80,7 @@ type localizedTemplate = *localization.TemplateSet
 
 func newLocalizedTemplate(name, source string) *localization.TemplateSet {
 	source = strings.ReplaceAll(source, `/static/main.kinosail.bundle.js?v=7`, `/static/main.kinosail.bundle.js?v=11`)
-	return localization.NewTemplateSet(name, source, "11", localeCatalog, supportedLanguages, csrfTemplateSource, csrfParseFuncs(), localeTemplateRuntime)
+	return localization.NewTemplateSet(name, source, "11", localeCatalog, supportedLanguages, httpguard.CSRFTemplateSource, httpguard.CSRFParseFuncs(uiIcon), localeTemplateRuntime)
 }
 
 func localized(next http.Handler) http.Handler {

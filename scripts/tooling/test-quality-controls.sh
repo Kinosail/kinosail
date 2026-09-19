@@ -70,3 +70,4 @@ done
 
 require_text scripts/quality/check-static.sh 'pnpm --dir "$repo/scripts/quality" install --frozen-lockfile'
 require_text scripts/quality/check-script-duplicates.sh '--threshold 0'
+require_text scripts/quality/check-duplicates.sh 'filter-duplicates.py'

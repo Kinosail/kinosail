@@ -21,6 +21,7 @@ tooling-check:
 	@./scripts/tooling/test-source-tools.sh
 	@./scripts/tooling/test-scan-deployment-image.sh
 	@python3 scripts/quality/test_dependency_integrity.py
+	@python3 scripts/quality/test_check_duplicates.py
 	@GOWORK=off go -C scripts/quality/metrics test ./...
 	@shellcheck -x scripts/tooling/*.sh
 	@./scripts/tooling/worktree_guard.py audit
