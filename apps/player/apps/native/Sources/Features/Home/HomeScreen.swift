@@ -5,21 +5,20 @@ struct HomeScreen: View {
     @Environment(AppSession.self) private var session
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: 8) {
-                Text("Your evening.").font(.largeTitle.bold()).fontDesign(.rounded).accessibilityAddTraits(.isHeader)
-                HStack(spacing: 28) {
-                    Text("For you").font(.callout.weight(.semibold)).frame(minHeight: 44)
-                        .overlay(alignment: .bottom) { Rectangle().fill(KinoTheme.signal).frame(height: 2) }
-                        .accessibilityAddTraits(.isSelected)
-                    NavigationLink("My List", value: ScreenDestination.library(.list))
-                        .font(.callout).frame(minHeight: 44)
-                        #if os(tvOS)
-                        .buttonStyle(.bordered).tint(KinoTheme.raised).foregroundStyle(KinoTheme.text)
-                        #else
-                        .foregroundStyle(KinoTheme.muted)
-                        #endif
-                }
-            }.frame(maxWidth: .infinity, alignment: .leading).padding(.horizontal, KinoTheme.contentPadding)
+            HStack(spacing: 28) {
+                Text("For you").font(.callout.weight(.semibold)).frame(minHeight: 44)
+                    .overlay(alignment: .bottom) { Rectangle().fill(KinoTheme.signal).frame(height: 2) }
+                    .accessibilityAddTraits(.isSelected)
+                NavigationLink("My List", value: ScreenDestination.library(.list))
+                    .font(.callout).frame(minHeight: 44)
+                    #if os(tvOS)
+                    .buttonStyle(.bordered).tint(KinoTheme.raised).foregroundStyle(KinoTheme.text)
+                    #else
+                    .foregroundStyle(KinoTheme.muted)
+                    #endif
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(.horizontal, KinoTheme.contentPadding)
 
             // Refresh belongs to a vertical scroll container, not the nested media shelf.
             ResourceView(identity: session.contentRevision.uuidString, loadingLayout: .home, allowsPullToRefresh: false, load: { policy in
