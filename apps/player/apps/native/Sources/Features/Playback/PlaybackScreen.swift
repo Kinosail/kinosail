@@ -102,7 +102,9 @@ struct PlaybackToolsScreen: View {
                     if let progress = session.player.progressMessage { Text(progress) }
                     NavigationLink("This title’s preferences") { PlaybackPreferencesScreen(itemID: item.id) }
                     NavigationLink("Bookmarks", value: ScreenDestination.bookmarks(item.id))
+                    #if os(iOS)
                     NavigationLink("Play on TV", value: ScreenDestination.playOnTV(item.id))
+                    #endif
                     NavigationLink("Playback speed") { PlaybackSpeedScreen() }
                 }
                 if let message { Text(message).foregroundStyle(.secondary) }

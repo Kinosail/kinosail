@@ -20,7 +20,7 @@ struct Artwork: View {
             .overlay {
                 if let image {
                     Image(uiImage: image).resizable()
-                        .aspectRatio(contentMode: Self.contentMode(isBackdrop: isBackdrop, fillsFrame: fillsFrame))
+                        .aspectRatio(contentMode: Self.contentMode(fillsFrame: fillsFrame))
                         .id(imageIdentity).transition(.opacity)
                 }
                 else if !isBackdrop { Rectangle().fill(KinoTheme.surface).overlay { if !loading { Image(systemName: symbol).font(.largeTitle).foregroundStyle(KinoTheme.muted) } } }
@@ -53,8 +53,8 @@ struct Artwork: View {
         else { Color.clear.aspectRatio(ratio, contentMode: .fit) }
     }
 
-    static func contentMode(isBackdrop: Bool, fillsFrame: Bool) -> ContentMode {
-        isBackdrop || fillsFrame ? .fill : .fit
+    static func contentMode(fillsFrame: Bool) -> ContentMode {
+        fillsFrame ? .fill : .fit
     }
 }
 

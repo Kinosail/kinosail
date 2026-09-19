@@ -3,10 +3,9 @@ import Testing
 @testable import KinosailPlayer
 
 struct MediaParityTests {
-    @Test func posterArtworkFitsWhileBackdropsFill() {
-        #expect(Artwork.contentMode(isBackdrop: false, fillsFrame: false) == .fit)
-        #expect(Artwork.contentMode(isBackdrop: true, fillsFrame: false) == .fill)
-        #expect(Artwork.contentMode(isBackdrop: false, fillsFrame: true) == .fill)
+    @Test func foregroundArtworkStaysContainedUnlessExplicitlyFilled() {
+        #expect(Artwork.contentMode(fillsFrame: false) == .fit)
+        #expect(Artwork.contentMode(fillsFrame: true) == .fill)
     }
 
     @Test func serverDatesAcceptBoundedRFC3339Offsets() throws {
