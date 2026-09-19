@@ -28,7 +28,7 @@ func registerOperations(mux *http.ServeMux, auth *authentication, settings *sett
 
 func operationTasks(index *libraryIndex, hls *hlsManager, metadata *metadataStore, maintenance *maintenanceManager) sharedoperations.Tasks {
 	return sharedoperations.NewBinding(sharedoperations.BindingConfig{
-		Index: index.Index, Cache: hls.cacheOps, Maintenance: maintenance.Manager,
+		Index: index.Index, Cache: hls.cacheOps, Maintenance: maintenance,
 		Metadata: func() sharedoperations.MetadataRefresh { return metadataRefresh(metadata, index) },
 	}).Tasks()
 }

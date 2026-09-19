@@ -3,6 +3,7 @@ package maintenance
 import (
 	"bytes"
 	"context"
+	"encoding/json"
 	"errors"
 	"log/slog"
 	"net/http"
@@ -57,6 +58,19 @@ func TestManagerDefaultsAreBounded(t *testing.T) {
 	}
 	if initialDelay(time.Millisecond) != time.Millisecond || initialDelay(time.Second) != 250*time.Millisecond {
 		t.Fatal("startup delay did not preserve the shorter bound")
+	}
+}
+
+func TestNewBoundConnectsIdleWait(t *testing.T) {
+	var wait func(context.Context) error
+	manager := NewBound(canceledContext(t), time.Hour, 1, (&fixture{}).dependencies(), func(candidate func(context.Context) error) {
+		wait = candidate
+	})
+	if wait == nil {
+		t.Fatal("idle wait hook was not connected")
+	}
+	if err := wait(t.Context()); err != nil || manager.Busy() {
+		t.Fatalf("idle wait = %v, busy=%t", err, manager.Busy())
 	}
 }
 
@@ -203,5 +217,21 @@ func TestManagerStatusReportsEveryMaintenanceMode(t *testing.T) {
 	want.Backups = BackupStatus{State: "error", Enabled: true, Encrypted: true, LastError: "backup failed"}
 	if got := manager.Status(); !reflect.DeepEqual(got, want) {
 		t.Fatalf("error status = %#v, want %#v", got, want)
+	}
+}
+
+func TestStatusHandlerWritesPrivateJSON(t *testing.T) {
+	manager := New(canceledContext(t), time.Hour, 9, (&fixture{metadata: true}).dependencies())
+	response := httptest.NewRecorder()
+	manager.StatusHandler().ServeHTTP(response, httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/api/v1/maintenance", nil))
+	if response.Code != http.StatusOK || response.Header().Get("Content-Type") != "application/json" || response.Header().Get("Cache-Control") != "no-store" {
+		t.Fatalf("status response = %d, content type %q, cache control %q", response.Code, response.Header().Get("Content-Type"), response.Header().Get("Cache-Control"))
+	}
+	var got Status
+	if err := json.NewDecoder(response.Body).Decode(&got); err != nil {
+		t.Fatal(err)
+	}
+	if got.Mode != "automatic" || got.Metadata.Mode != "automatic" || got.Cache.Limit != 9 {
+		t.Fatalf("status body = %#v", got)
 	}
 }

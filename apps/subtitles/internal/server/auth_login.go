@@ -3,44 +3,18 @@ package server
 import (
 	"errors"
 	"net/http"
-	"net/url"
 	"strings"
 
 	"github.com/MikeO7/kinosail/packages/httpguard"
+	"github.com/MikeO7/kinosail/packages/identitycore"
 	"github.com/MikeO7/kinosail/packages/updatecontrol"
 )
 
-func stepUpLoginPath(request *http.Request) string {
-	next := "/"
-	switch {
-	case strings.HasPrefix(request.URL.Path, "/settings/management"):
-		next = "/settings/management"
-	case request.URL.Path == "/settings/backup":
-		next = "/settings/backups"
-	case request.URL.Path == "/settings/encrypted-backup", strings.HasPrefix(request.URL.Path, "/settings/backups/"):
-		next = "/settings/backups"
-	case strings.HasPrefix(request.URL.Path, "/settings/"):
-		next = "/settings"
-	case strings.HasPrefix(request.URL.Path, "/account/"):
-		next = "/account"
-	}
-	return "/login?stepup=1&next=" + url.QueryEscape(next)
-}
-
-func safeLoginReturn(raw string) string {
-	if raw == "" || len(raw) > 2048 || strings.HasPrefix(raw, "//") {
-		return "/"
-	}
-	target, err := url.ParseRequestURI(raw)
-	if err != nil || target.IsAbs() || target.Host != "" || !strings.HasPrefix(target.Path, "/") || strings.Contains(target.Path, `\`) {
-		return "/"
-	}
-	return target.RequestURI()
-}
-
-func passkeyOfferPath(next string) string {
-	return "/account?passkey=offer&next=" + url.QueryEscape(next)
-}
+var (
+	stepUpLoginPath  = identitycore.StepUpLoginPath
+	safeLoginReturn  = identitycore.SafeLoginReturn
+	passkeyOfferPath = identitycore.PasskeyOfferPath
+)
 
 func (auth *authentication) onboardingLoginNext(profile viewerProfile, request *http.Request, next string) string {
 	if profile.Owner && auth.settings.onboardingPending() && request.URL.Query().Get("stepup") != "1" && request.URL.Query().Get("next") == "" {

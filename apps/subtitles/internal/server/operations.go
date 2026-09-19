@@ -74,7 +74,7 @@ func (store *metadataStore) refreshMissing(ctx context.Context, index *libraryIn
 
 func operationTasks(index *libraryIndex, hls *hlsManager, metadata *metadataStore, maintenance *maintenanceManager) sharedoperations.Tasks {
 	return sharedoperations.NewBinding(sharedoperations.BindingConfig{
-		Maintenance: maintenance.Manager, Cache: hls.cacheOps, Index: index.Index,
+		Maintenance: maintenance, Cache: hls.cacheOps, Index: index.Index,
 		Metadata: func() sharedoperations.MetadataRefresh { return metadataRefresh(metadata, index) },
 	}).Tasks()
 }

@@ -257,7 +257,7 @@ func newApplication(config Config) http.Handler { //nolint:funlen,cyclop,gocogni
 	downloads.registerWeb(mux, index)
 	mux.Handle("POST /scan", auth.owner(catalog.RescanHandler(index.Index, localizedError)))
 	mux.HandleFunc("GET /{$}", showHome(index, progress, lists, settings, updates, legacyMetadata.Active() || metadata.configured()))
-	handler := withDLNA(maintenance.track(apiRouting(mux)), mux, auth, config, settings, updates, index)
+	handler := withDLNA(maintenance.Track(apiRouting(mux)), mux, auth, config, settings, updates, index)
 	if management != nil && managedLifecycle {
 		management.Attach(config.Lifecycle, handler)
 	}

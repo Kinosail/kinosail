@@ -9,6 +9,10 @@ import (
 	"strings"
 	"sync/atomic"
 	"time"
+
+	sharedbackup "github.com/MikeO7/kinosail/packages/backup"
+	"github.com/MikeO7/kinosail/packages/markers"
+	"github.com/MikeO7/kinosail/packages/playback"
 )
 
 const (
@@ -49,6 +53,28 @@ func New(ctx context.Context, interval time.Duration, limit int64, dependencies 
 		go manager.schedule(ctx)
 	}
 	return manager
+}
+
+// NewBound constructs a manager and connects its idle wait hook to app-owned work.
+func NewBound(ctx context.Context, interval time.Duration, limit int64, dependencies Dependencies, setWait func(func(context.Context) error)) *Manager {
+	manager := New(ctx, interval, limit, dependencies)
+	if setWait != nil {
+		setWait(manager.WaitIdle)
+	}
+	return manager
+}
+
+// NewApplication binds the shared subsystem types used by the Player applications.
+func NewApplication(ctx context.Context, interval time.Duration, limit int64, cache playback.HLSCacheControl, backups *sharedbackup.Manager, pruneMetadata func() error, metadataConfigured func() bool, analysis *markers.Analyzer) *Manager {
+	return NewBound(ctx, interval, limit, Dependencies{
+		PruneCache: cache.Prune, PruneMetadata: pruneMetadata, CacheStats: cache.Stats,
+		BackupStatus: func() BackupStatus {
+			status := backups.Status()
+			return BackupStatus{Enabled: status.Enabled, Encrypted: status.Encrypted, LastError: status.LastError}
+		},
+		MetadataConfigured: metadataConfigured,
+		AnalysisStatus:     func() string { state, _, _ := analysis.Status(); return state },
+	}, analysis.SetWait)
 }
 
 func (manager *Manager) schedule(ctx context.Context) {

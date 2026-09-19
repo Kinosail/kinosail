@@ -121,7 +121,7 @@ func registerAdminAPI(mux *http.ServeMux, api apiServices) { //nolint:funlen // 
 	owner("DELETE /api/v1/media-shares/{id}", http.HandlerFunc(api.shares.RevokeHTTP))
 	owner("GET /api/v1/diagnostics", diagnostics(api.settings, api.index, api.auth.profiles, api.hls, api.auth.audit))
 	owner("GET /api/v1/metrics", metrics(api.index, api.auth.profiles, api.hls, api.auth.audit, api.imports, api.events, api.rooms))
-	owner("GET /api/v1/maintenance", http.HandlerFunc(api.maintenance.serveStatus))
+	owner("GET /api/v1/maintenance", api.maintenance.StatusHandler())
 }
 
 func apiBackupVerify(backups *backupManager) http.HandlerFunc {
