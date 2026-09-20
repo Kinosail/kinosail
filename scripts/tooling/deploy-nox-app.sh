@@ -40,7 +40,9 @@ log="${TMPDIR:-/tmp}/kinosail-$app-nox-build-${sha:0:12}.log"
 
 cleanup() {
   [[ -z "$tmp" ]] || rm -rf -- "$tmp"
-  podman image exists "$image" 2>/dev/null && podman image rm "$image" >/dev/null 2>&1 || true
+  if podman image exists "$image" 2>/dev/null; then
+    podman image rm "$image" >/dev/null 2>&1 || true
+  fi
 }
 trap cleanup EXIT
 

@@ -64,8 +64,8 @@ require_text .github/workflows/quality.yml './scripts/quality/check-mutation.sh 
 
 for app in player subtitles dashboard; do
   workflow=".github/workflows/$app-release.yml"
-  require_text "$workflow" 'uses: ./.github/workflows/quality.yml'
-  require_text "$workflow" 'needs: quality'
+  require_text "$workflow" 'for workflow in quality.yml'
+  require_text "$workflow" 'needs: [quality, images]'
 done
 
 require_text scripts/quality/check-static.sh 'pnpm --dir "$repo/scripts/quality" install --frozen-lockfile'

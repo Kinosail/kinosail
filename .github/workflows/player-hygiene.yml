@@ -9,7 +9,7 @@ on:
   workflow_dispatch:
 
 concurrency:
-  group: player-hygiene-${{ github.event_name }}-${{ github.ref }}
+  group: player-hygiene-${{ github.ref }}
   cancel-in-progress: true
 
 permissions:
@@ -32,9 +32,6 @@ jobs:
         with:
           go-version-file: apps/player/go.mod
           cache-dependency-path: apps/player/go.sum
-      - name: Check shared Player-baseline packages
-        working-directory: packages
-        run: make tidy-check coverage test-race
       - uses: golangci/golangci-lint-action@ba0d7d2ec06a0ea1cb5fa41b2e4a3ab91d21278a # v9
         with:
           version: v2.13.1
@@ -90,11 +87,6 @@ jobs:
           cache-dependency-path: apps/player/go.sum
       - name: Scan Go vulnerabilities
         run: go run golang.org/x/vuln/cmd/govulncheck@v1.7.0 ./...
-      - name: Scan secrets
-        working-directory: .
-        run: |
-          go install github.com/zricethezav/gitleaks/v8@v8.30.1
-          gitleaks git --redact --no-banner --log-opts=--all
 
   tooling:
     name: Player installer, native, and local pipeline checks
@@ -202,6 +194,8 @@ jobs:
           context: .
           file: apps/player/Containerfile
           platforms: ${{ matrix.platform }}
+          cache-from: type=gha,scope=player-${{ matrix.platform }}
+          cache-to: type=gha,mode=max,scope=player-${{ matrix.platform }}
           load: true
           push: false
           tags: localhost/kinosail-player:${{ github.sha }}

@@ -19,6 +19,24 @@ class WorkflowSecurityTests(unittest.TestCase):
                 self.assertIn('    if: always()', source)
                 self.assertIn('all(.[]; .result == "success")', source)
 
+    def test_invalid_quality_scope_has_no_side_effects(self):
+        import os
+        import subprocess
+        import tempfile
+        for script in ('check-coverage.sh', 'check-crap.sh'):
+            for args in ([''], ['unknown'], ['../packages'], ['player', 'packages'], ['x' * 10000]):
+                with self.subTest(script=script, args=args[:1]), tempfile.TemporaryDirectory() as directory:
+                    marker = Path(directory) / 'side-effect'
+                    binary = Path(directory) / 'go'
+                    binary.write_text('#!/bin/sh\ntouch "' + str(marker) + '"\n')
+                    binary.chmod(0o755)
+                    result = subprocess.run(['bash', str(ROOT / 'scripts/quality' / script), *args],
+                                            cwd=directory, env=os.environ | {'PATH': directory + ':' + os.environ['PATH']},
+                                            capture_output=True)
+                    self.assertEqual(result.returncode, 2)
+                    self.assertFalse(marker.exists())
+                    self.assertFalse((Path(directory) / '.verification').exists())
+
     def test_actions_are_immutable_and_untrusted_prs_cannot_write(self):
         for path in WORKFLOWS.glob('*.yml'):
             with self.subTest(workflow=path.name):
@@ -39,7 +57,11 @@ class WorkflowSecurityTests(unittest.TestCase):
                 self.assertIn('needs: quality', source)
                 self.assertIn('test ! -e ../../.gates-disabled', source)
                 self.assertIn('git merge-base --is-ancestor "$commit" origin/main', source)
-                self.assertIn('--workflow security.yml', source)
+                self.assertIn('security.yml; do', source)
+                self.assertIn('needs: [quality, images]', source)
+                self.assertIn('runner: ubuntu-24.04-arm', source)
+                self.assertNotIn('setup-qemu-action', source)
+                self.assertIn('sort == ["amd64", "arm64"]', source)
                 self.assertNotIn("if: hashFiles('.gates-disabled')", source)
                 candidate = source.index(f'tags: ghcr.io/kinosail/kinosail-{app}:candidate-')
                 scan = source.index('name: Scan candidate')

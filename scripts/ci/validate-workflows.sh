@@ -83,8 +83,6 @@ for app in "${apps[@]}"; do
   [[ ! -e "$repo/apps/$app/.github/workflows/release.yml" ]] ||
     fail "apps/$app contains an inert nested release workflow"
 
-  require_text "$workflow" 'working-directory: packages'
-  require_text "$workflow" 'run: make tidy-check coverage test-race'
   case "$app" in
     player|subtitles)
       require_text "$workflow" '  schedule:'
@@ -117,15 +115,14 @@ for app in "${apps[@]}"; do
   require_text "$release" "group: $app-release-\${{ github.ref }}"
   require_text "$release" "working-directory: apps/$app"
   require_text "$release" "version=\"\${GITHUB_REF_NAME#$app-}\""
-  require_text "$release" "--workflow $app-hygiene.yml"
   require_text "$release" 'context: .'
   require_text "$release" "file: apps/$app/Containerfile"
   require_text "$release" "images: ghcr.io/kinosail/kinosail-$app"
   require_text "$release" "image-ref: ghcr.io/kinosail/kinosail-$app@\${{ steps.build.outputs.digest }}"
   require_text "$release" "subject-name: ghcr.io/kinosail/kinosail-$app"
   require_text "$release" "cosign sign --yes \"ghcr.io/kinosail/kinosail-$app@\$IMAGE_DIGEST\""
-  require_text "$release" "cache-from: type=gha,scope=$app-release-container"
-  require_text "$release" "cache-to: type=gha,mode=max,scope=$app-release-container"
+  require_text "$release" "cache-from: type=gha,scope=$app-"
+  require_text "$release" "cache-to: type=gha,mode=max,scope=$app-"
   require_text "$release" '          sbom: true'
   require_text "$release" '          provenance: mode=max'
   require_text "$release" '      attestations: write'

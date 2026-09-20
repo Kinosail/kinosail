@@ -3,10 +3,23 @@
 source "$(dirname "${BASH_SOURCE[0]}")/../tooling/gates-pause.sh"
 set -euo pipefail
 
+if (( $# > 1 )); then
+  echo 'expected at most one scope: player, subtitles, dashboard, packages' >&2
+  exit 2
+fi
+if (( $# == 1 )); then
+  case "$1" in player|subtitles|dashboard|packages) ;; *) echo 'invalid quality scope' >&2; exit 2 ;; esac
+fi
+
 repo="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 status=0
 
-for app in player subtitles dashboard; do
+apps=(player subtitles dashboard)
+if (( $# == 1 )); then
+  apps=("$1")
+  [[ "$1" != packages ]] || apps=()
+fi
+for app in "${apps[@]}"; do
 	directory="$repo/apps/$app"
 	mkdir -p "$directory/.verification"
 	if [[ -x "$directory/scripts/with-go-module.sh" ]]; then
@@ -37,6 +50,8 @@ for app in player subtitles dashboard; do
 		status=1
 	fi
 done
+
+if (( $# == 1 )) && [[ "$1" != packages ]]; then exit "$status"; fi
 
 mkdir -p "$repo/packages/.verification"
 package_targets=()

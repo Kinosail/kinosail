@@ -22,9 +22,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates
     && sed -n '/This software is available/,$p' /whisper/examples/stb_vorbis.c > /whisper/stb_vorbis-LICENSE
 
 FROM docker.io/library/debian:trixie-slim@sha256:d7e12182ce18b85b93007c1dedf31f2d29e01ccf3182cc4017c709b6259bc132
-ARG VERSION=dev
-ARG REVISION=unknown
-LABEL org.opencontainers.image.version=$VERSION org.opencontainers.image.revision=$REVISION
 ARG JELLYFIN_FFMPEG_VERSION=8.1.2-5
 RUN apt-get update \
     && apt-get install -y --no-install-recommends ca-certificates libaom3 libarchive-tools libchromaprint-tools mesa-va-drivers mesa-vulkan-drivers socat tzdata wget libstdc++6 tesseract-ocr tesseract-ocr-eng \
@@ -47,6 +44,9 @@ RUN apt-get update \
 	&& chown -R kinosail:kinosail /config /cache /backups /public-transport \
     && rm -f /tmp/jellyfin-ffmpeg.deb \
     && rm -rf /var/lib/apt/lists/*
+ARG VERSION=dev
+ARG REVISION=unknown
+LABEL org.opencontainers.image.version=$VERSION org.opencontainers.image.revision=$REVISION
 COPY --from=build /kinosail /usr/local/bin/kinosail
 COPY --from=whisper /whisper/build/bin/whisper-cli /usr/local/bin/whisper-cli
 COPY --from=whisper /whisper/LICENSE /licenses/third_party/whisper.cpp/LICENSE

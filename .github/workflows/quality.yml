@@ -26,7 +26,8 @@ jobs:
       - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7
         with:
           go-version: "1.27"
-          cache: false
+          cache: true
+          cache-dependency-path: "**/go.sum"
       - uses: pnpm/action-setup@0977fd99725f1db4007ccb2928dbb4e90d06cc86 # v6
         with:
           version: 11.22.0
@@ -36,6 +37,8 @@ jobs:
           package-manager-cache: false
       - name: Require enabled gates
         run: test ! -e .gates-disabled
+      - name: Download reviewed Go dependencies
+        run: go -C apps/subtitles mod download
       - name: Install Go lint tool
         run: go install github.com/golangci/golangci-lint/v2/cmd/golangci-lint@v2.13.1
       - run: ./scripts/quality/check-static.sh
@@ -43,8 +46,12 @@ jobs:
           KINOSAIL_LINT_BASE: ${{ github.event.pull_request.base.sha || github.event.before }}
 
   coverage:
-    name: Coverage and CRAP policy
+    name: Coverage and CRAP policy (${{ matrix.app }})
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        app: [player, subtitles, dashboard, packages]
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
@@ -52,14 +59,15 @@ jobs:
       - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7
         with:
           go-version: "1.27"
-          cache: false
+          cache: true
+          cache-dependency-path: "**/go.sum"
       - name: Install archive test dependency
         run: |
           sudo apt-get update
           sudo apt-get install -y libarchive-tools
-      - run: ./scripts/quality/check-coverage.sh
+      - run: ./scripts/quality/check-coverage.sh "${{ matrix.app }}"
       - if: always()
-        run: ./scripts/quality/check-crap.sh
+        run: ./scripts/quality/check-crap.sh "${{ matrix.app }}"
 
   mutation:
     name: Mutation policy (${{ matrix.app }})
@@ -76,7 +84,8 @@ jobs:
       - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7
         with:
           go-version: "1.27"
-          cache: false
+          cache: true
+          cache-dependency-path: "**/go.sum"
       - name: Install archive test dependency
         run: |
           sudo apt-get update
@@ -94,7 +103,8 @@ jobs:
       - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e
         with:
           go-version-file: go.work
-          cache: false
+          cache: true
+          cache-dependency-path: "**/go.sum"
       - uses: pnpm/action-setup@0977fd99725f1db4007ccb2928dbb4e90d06cc86
         with:
           version: 11.22.0
@@ -105,10 +115,23 @@ jobs:
       - run: make tooling-check
       - run: ./scripts/ci/check-source-tools.sh
 
+  packages:
+    name: Shared package race and module checks
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e
+        with:
+          go-version-file: packages/go.mod
+          cache-dependency-path: packages/go.sum
+      - run: make -C packages tidy-check test-race consumer-test
+
   required:
     name: Repository checks
     if: always()
-    needs: [static, coverage, mutation, tooling]
+    needs: [static, coverage, mutation, tooling, packages]
     runs-on: ubuntu-latest
     steps:
       - env:
