@@ -94,10 +94,7 @@ func verifyAPISessionFactor(writer http.ResponseWriter, input apiSessionInput, p
 }
 
 func createAPISessionToken(config APISessionConfig, profile Profile, device string) (string, error) {
-	if profile.TOTPSecret != "" {
-		return config.CreateStrongSession(profile.ID, device, false)
-	}
-	return config.CreateSession(profile.ID, device)
+	return config.CreateStrongSession(profile.ID, device, false)
 }
 
 func validAPISessionConfig(config APISessionConfig) bool { //nolint:cyclop // All adapters must exist before credential or session side effects.

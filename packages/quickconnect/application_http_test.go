@@ -68,11 +68,10 @@ func newApplicationFixture(t *testing.T) *applicationFixture {
 				profile.Rating, profile.Libraries = "all", []string{"all"}
 				return profile
 			},
-			Create: func(id, name string) (string, error) { return sessions.CreateLocal(id, name, false, false) },
+			CreateLocal: sessions.CreateLocalGrant,
 			CreatePublic: func(id, name string, revision uint64) (string, error) {
 				return sessions.CreatePublicGrant(id, name, false, revision)
 			},
-			CreateCompat: sessions.CreateCompatibility,
 		},
 		Current: func(*http.Request) identitycore.Profile { fixture.currentCalls++; return fixture.current },
 		RecentlyAuthenticated: func(*http.Request, time.Duration) bool {

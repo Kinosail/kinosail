@@ -78,7 +78,7 @@ func TestProfileStoreSCIMCreateFailuresAndRehydrate(t *testing.T) { //nolint:cyc
 	deleted := Profile{
 		ID: "deleted", Name: "Old", Credential: "credential", OIDCIssuer: "issuer", OIDCSubject: "subject",
 		SAMLIssuer: "issuer", SAMLSubject: "subject", TOTPSecret: "totp", Recovery: []string{"code"},
-		SCIMManaged: true, SCIMDeleted: true, Disabled: true, SCIMUserName: "viewer@example.com", Revision: 4,
+		SCIMManaged: true, SCIMDeleted: true, Disabled: true, SCIMUserName: "viewer@example.com", SCIMExternalID: "directory-id", Revision: 4,
 	}
 	fixture, store := newProfileStoreFixture(Profile{ID: "owner", Name: "Owner", Owner: true}, deleted)
 	store = configureSCIMStore(store, "new")
@@ -114,7 +114,7 @@ func TestProfileStoreSCIMCreateFailuresAndRehydrate(t *testing.T) { //nolint:cyc
 func TestProfileStoreSCIMUpdate(t *testing.T) { //nolint:cyclop,gocognit // The update matrix remains below the repository ceiling of 22.
 	fixture, store := newProfileStoreFixture(
 		Profile{ID: "owner", Name: "Owner", Owner: true},
-		Profile{ID: "target", Name: "Target", SCIMManaged: true, SCIMUserName: "target@example.com", Revision: 2},
+		Profile{ID: "target", Name: "Target", SCIMManaged: true, SCIMUserName: "target@example.com", SCIMExternalID: "directory-id", Revision: 2},
 		Profile{ID: "other", Name: "Other", SCIMManaged: true, SCIMUserName: "other@example.com"},
 		Profile{ID: "deleted", Name: "Deleted", SCIMManaged: true, SCIMDeleted: true},
 		Profile{ID: "local", Name: "Local"},

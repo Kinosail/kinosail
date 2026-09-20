@@ -25,7 +25,7 @@ func mcpProfileState(store *profileStore) mcpgateway.ProfileState {
 func mcpPrincipals(store *profileStore) mcpgateway.PrincipalRepository {
 	return mcpgateway.NewProfilePrincipals(mcpgateway.ProfilePrincipalConfig{
 		State: mcpProfileState(store), CurrentProfile: currentViewer, RecentlyAuthenticated: store.recentlyAuthenticated,
-		AttributeProfile: setAuditViewer, PublicRequest: publicInternetRequest,
+		AttributeProfile: setAuditViewer, PublicRequest: publicInternetRequest, MFARequired: store.requireMFA,
 	})
 }
 

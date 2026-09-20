@@ -54,27 +54,29 @@ type mcpOAuthClient struct {
 }
 
 type mcpOAuthGrant struct {
-	ID             string   `json:"id"`
-	ClientID       string   `json:"clientId"`
-	ClientName     string   `json:"clientName"`
-	ProfileID      string   `json:"profileId"`
-	Scopes         []string `json:"scopes"`
-	CreatedAt      int64    `json:"createdAt"`
-	LastUsed       int64    `json:"lastUsed,omitempty"`
-	AccessHash     string   `json:"accessHash"`
-	AccessExpires  int64    `json:"accessExpires"`
-	RefreshHash    string   `json:"refreshHash"`
-	RefreshExpires int64    `json:"refreshExpires"`
+	ProfileRevision uint64   `json:"profileRevision"`
+	ID              string   `json:"id"`
+	ClientID        string   `json:"clientId"`
+	ClientName      string   `json:"clientName"`
+	ProfileID       string   `json:"profileId"`
+	Scopes          []string `json:"scopes"`
+	CreatedAt       int64    `json:"createdAt"`
+	LastUsed        int64    `json:"lastUsed,omitempty"`
+	AccessHash      string   `json:"accessHash"`
+	AccessExpires   int64    `json:"accessExpires"`
+	RefreshHash     string   `json:"refreshHash"`
+	RefreshExpires  int64    `json:"refreshExpires"`
 }
 
 type mcpOAuthRequest struct {
-	Client      mcpOAuthClient
-	RedirectURI string
-	State       string
-	Challenge   string
-	Scopes      []string
-	ProfileID   string
-	Expires     int64
+	ProfileRevision uint64
+	Client          mcpOAuthClient
+	RedirectURI     string
+	State           string
+	Challenge       string
+	Scopes          []string
+	ProfileID       string
+	Expires         int64
 }
 
 type mcpOAuthCode struct {

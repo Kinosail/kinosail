@@ -17,6 +17,7 @@ const (
 
 // Principal is the identity data required by the MCP gateway.
 type Principal struct {
+	Revision uint64
 	ID, Name string
 	Owner    bool
 }

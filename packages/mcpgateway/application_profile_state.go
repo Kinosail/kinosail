@@ -22,11 +22,12 @@ type ProfilePrincipalConfig struct {
 	RecentlyAuthenticated func(*http.Request, time.Duration) bool
 	AttributeProfile      func(*http.Request, identitycore.Profile)
 	PublicRequest         func(*http.Request) bool
+	MFARequired           func() bool
 }
 
 // NewProfilePrincipals binds canonical Player profiles to MCP authorization.
 func NewProfilePrincipals(config ProfilePrincipalConfig) PrincipalRepository {
-	if config.State.Mutex == nil || config.State.Profiles == nil || config.State.Error == nil || config.CurrentProfile == nil || config.RecentlyAuthenticated == nil || config.AttributeProfile == nil || config.PublicRequest == nil {
+	if config.State.Mutex == nil || config.State.Profiles == nil || config.State.Error == nil || config.CurrentProfile == nil || config.RecentlyAuthenticated == nil || config.AttributeProfile == nil || config.PublicRequest == nil || config.MFARequired == nil {
 		return nil
 	}
 	profiles := identitycore.NewProfileStore(identitycore.ProfileStoreConfig{
@@ -35,7 +36,7 @@ func NewProfilePrincipals(config ProfilePrincipalConfig) PrincipalRepository {
 	return NewPrincipalAdapter(PrincipalAdapterConfig[identitycore.Profile]{
 		CurrentProfile: config.CurrentProfile, FindProfile: profiles.ByID, FederatedProfiles: profiles.FederatedProfiles,
 		AllowProfile: func(profile identitycore.Profile, request *http.Request, now time.Time) bool {
-			return profile.Allowed(config.PublicRequest(request), now)
+			return (!(profile.Owner || config.MFARequired()) || profile.Secured()) && profile.Allowed(config.PublicRequest(request), now)
 		},
 		RecentAuthentication: config.RecentlyAuthenticated, Profiles: profiles.List,
 		StateError: func() error {
@@ -48,5 +49,5 @@ func NewProfilePrincipals(config ProfilePrincipalConfig) PrincipalRepository {
 }
 
 func profilePrincipal(profile identitycore.Profile) Principal {
-	return Principal{ID: profile.ID, Name: profile.Name, Owner: profile.Owner}
+	return Principal{ID: profile.ID, Name: profile.Name, Owner: profile.Owner, Revision: profile.Revision}
 }

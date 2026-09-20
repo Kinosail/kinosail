@@ -128,6 +128,15 @@ func (sessions *Sessions) CreatePublicGrant(profileID, name string, browser bool
 	return sessions.create(profileID, name, browser, true, "public", &revision, "")
 }
 
+// CreateLocalGrant preserves approval's revision and session authority during issuance.
+func (sessions *Sessions) CreateLocalGrant(profileID, name string, revision uint64, compatibility bool) (string, error) {
+	channel := ""
+	if compatibility {
+		channel = "compatibility"
+	}
+	return sessions.create(profileID, name, false, false, channel, &revision, "")
+}
+
 func (sessions *Sessions) create(profileID, name string, browser, strong bool, channel string, revision *uint64, deviceKey string) (string, error) { //nolint:cyclop // One lock protects profile policy, limits, approval revision, and persistence.
 	if !sessions.valid() {
 		return "", ErrProfileNotFound

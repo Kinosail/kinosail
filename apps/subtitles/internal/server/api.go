@@ -89,7 +89,7 @@ func (auth *authentication) createAPISetup(writer http.ResponseWriter, request *
 		apiError(writer, err, ownerSetupStatus(err))
 		return
 	}
-	token, err := auth.profiles.createSession(profile.ID, input.Device)
+	token, err := auth.profiles.createStrongSession(profile.ID, input.Device, false)
 	if err != nil {
 		apiError(writer, errors.New("could not create session"), http.StatusInternalServerError)
 		return

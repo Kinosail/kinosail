@@ -69,7 +69,7 @@ func (connections *Connections) authorizationRequest(request *http.Request, prof
 	if err != nil {
 		return mcpOAuthRequest{}, errors.New("invalid scope")
 	}
-	return mcpOAuthRequest{Client: client, RedirectURI: redirectURI, State: state, Challenge: challenge, Scopes: scopes, ProfileID: profile.ID, Expires: connections.now().Add(mcpRequestLifetime).Unix()}, nil
+	return mcpOAuthRequest{Client: client, RedirectURI: redirectURI, State: state, Challenge: challenge, Scopes: scopes, ProfileID: profile.ID, ProfileRevision: profile.Revision, Expires: connections.now().Add(mcpRequestLifetime).Unix()}, nil
 }
 
 func oneValue(values url.Values, key string, limit int) (string, bool) {
@@ -141,7 +141,7 @@ func (connections *Connections) metadataClient(ctx context.Context, id string) (
 		return mcpOAuthClient{}, errors.New("client metadata unavailable")
 	}
 	var metadata mcpClientMetadataDocument
-	if httpguard.DecodeJSON(response.Body, 64<<10, &metadata, true) != nil || metadata.ClientID != id || validateMCPClientMetadata(&metadata.ClientRegistrationMetadata) != nil {
+	if httpguard.DecodeUniqueJSON(response.Body, 64<<10, &metadata) != nil || metadata.ClientID != id || validateMCPClientMetadata(&metadata.ClientRegistrationMetadata) != nil {
 		return mcpOAuthClient{}, errors.New("invalid client metadata")
 	}
 	return mcpOAuthClient{ID: id, Name: metadata.ClientName, RedirectURIs: metadata.RedirectURIs, MetadataURL: id}, nil
@@ -224,7 +224,7 @@ func (connections *Connections) takePending(requestID string) (mcpOAuthRequest, 
 }
 
 func validApproval(decision string, pending mcpOAuthRequest, found bool, profile Principal, now time.Time) bool {
-	return found && now.Unix() <= pending.Expires && profile.ID != "" && profile.ID == pending.ProfileID && (decision == "allow" || decision == "deny")
+	return found && now.Unix() <= pending.Expires && profile.ID != "" && profile.ID == pending.ProfileID && profile.Revision == pending.ProfileRevision && (decision == "allow" || decision == "deny")
 }
 
 func (connections *Connections) approvedScopes(request *http.Request, pending mcpOAuthRequest, profile Principal, scopesInput []string) ([]string, bool) {

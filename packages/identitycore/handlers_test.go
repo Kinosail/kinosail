@@ -249,17 +249,18 @@ func TestLoginRenderingAndInvalidConfiguration(t *testing.T) {
 func TestMFAHandlersStopAfterUnreadableInput(t *testing.T) {
 	t.Parallel()
 	config := MFAHTTPConfig{
-		ReadJSON:          func(http.ResponseWriter, *http.Request, any) bool { return false },
-		Setup:             func(*http.Request) (Enrollment, error) { t.Fatal("setup called"); return Enrollment{}, nil },
-		Confirm:           func(*http.Request, string) error { t.Fatal("confirm called"); return nil },
-		MarkStrong:        func(*http.Request) error { t.Fatal("mark strong called"); return nil },
-		Verify:            func(*http.Request, string) bool { t.Fatal("verify called"); return false },
-		Disable:           func(*http.Request) error { t.Fatal("disable called"); return nil },
-		Error:             func(http.ResponseWriter, error, int) { t.Fatal("error called") },
-		JSON:              func(http.ResponseWriter, any, int) { t.Fatal("JSON called") },
-		WebError:          func(http.ResponseWriter, *http.Request, error, int) { t.Fatal("web error called") },
-		WebConfirmSuccess: func(http.ResponseWriter, *http.Request) { t.Fatal("web confirm success called") },
-		WebDisableSuccess: func(http.ResponseWriter, *http.Request) { t.Fatal("web disable success called") },
+		RecentlyAuthenticated: func(*http.Request, time.Duration) bool { return true },
+		ReadJSON:              func(http.ResponseWriter, *http.Request, any) bool { return false },
+		Setup:                 func(*http.Request) (Enrollment, error) { t.Fatal("setup called"); return Enrollment{}, nil },
+		Confirm:               func(*http.Request, string) error { t.Fatal("confirm called"); return nil },
+		MarkStrong:            func(*http.Request) error { t.Fatal("mark strong called"); return nil },
+		Verify:                func(*http.Request, string) bool { t.Fatal("verify called"); return false },
+		Disable:               func(*http.Request) error { t.Fatal("disable called"); return nil },
+		Error:                 func(http.ResponseWriter, error, int) { t.Fatal("error called") },
+		JSON:                  func(http.ResponseWriter, any, int) { t.Fatal("JSON called") },
+		WebError:              func(http.ResponseWriter, *http.Request, error, int) { t.Fatal("web error called") },
+		WebConfirmSuccess:     func(http.ResponseWriter, *http.Request) { t.Fatal("web confirm success called") },
+		WebDisableSuccess:     func(http.ResponseWriter, *http.Request) { t.Fatal("web disable success called") },
 	}
 	handlers, err := NewMFAHandlers(config)
 	if err != nil {

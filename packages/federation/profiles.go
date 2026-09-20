@@ -26,6 +26,8 @@ type Profiles[T any] struct {
 	Commit       func([]T)
 	Inspect      func(T) Profile
 	Apply        func(*T, Protocol, Identity)
+	// SessionActive is called while the profile lock is held.
+	SessionActive func(string, string) bool
 }
 
 // Find returns the enabled profile linked to one verified identity.
@@ -38,7 +40,7 @@ func (profiles Profiles[T]) Find(protocol Protocol, identity Identity) (T, bool)
 	defer profiles.Unlock()
 	for _, candidate := range profiles.Clone() {
 		fields := profiles.Inspect(candidate)
-		if !fields.Disabled && !fields.SCIMDeleted && profileIdentity(fields, protocol) == identity {
+		if !fields.Disabled && !fields.SCIMDeleted && (!fields.SCIMManaged || fields.SCIMExternalID == identity.Subject) && profileIdentity(fields, protocol) == identity {
 			return candidate, true
 		}
 	}
@@ -99,11 +101,23 @@ func uniqueSCIMMatch[T any](profiles []T, subject string, inspect func(T) Profil
 
 // Link validates ownership and uniqueness before it persists one identity atomically.
 func (profiles Profiles[T]) Link(protocol Protocol, id string, identity Identity) error {
+	return profiles.link(protocol, id, identity, "", false)
+}
+
+// LinkForSession rechecks the initiating session atomically with the profile write.
+func (profiles Profiles[T]) LinkForSession(protocol Protocol, id string, identity Identity, session string) error {
+	return profiles.link(protocol, id, identity, session, true)
+}
+
+func (profiles Profiles[T]) link(protocol Protocol, id string, identity Identity, session string, requireSession bool) error {
 	if err := validateIdentity(protocol, identity); err != nil {
 		return err
 	}
 	profiles.Lock()
 	defer profiles.Unlock()
+	if requireSession && (session == "" || profiles.SessionActive == nil || !profiles.SessionActive(session, id)) {
+		return errors.New("linking session is invalid or expired")
+	}
 	values := profiles.Clone()
 	target := -1
 	for index, candidate := range values {
@@ -112,6 +126,9 @@ func (profiles Profiles[T]) Link(protocol Protocol, id string, identity Identity
 			return errors.New(string(protocol) + " identity is already linked")
 		}
 		if fields.ID == id {
+			if fields.Disabled || fields.SCIMDeleted {
+				return errors.New("viewer profile is disabled")
+			}
 			target = index
 			if fields.SCIMManaged {
 				return errors.New("SCIM-managed profiles are controlled by SCIM provisioning")

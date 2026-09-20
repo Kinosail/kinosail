@@ -165,7 +165,7 @@ func TestOIDCFlowValidatesBeforeEffectsAndCompletesOnce(t *testing.T) { //nolint
 
 func mustBeginOIDC(t *testing.T, flow *OIDC) (string, string) {
 	t.Helper()
-	location, state, err := flow.Begin(t.Context(), "viewer")
+	location, state, err := flow.Begin(t.Context(), "viewer", "session")
 	authorization, parseErr := url.Parse(location)
 	if err != nil || parseErr != nil {
 		t.Fatalf("OIDC begin = %q %q %v %v", location, state, err, parseErr)
@@ -222,7 +222,7 @@ func newOIDCTestFlow(t *testing.T) (*OIDC, *atomic.Int32, func(string)) {
 
 func TestOIDCFlowRejectsProviderAndCallbackFailures(t *testing.T) { //nolint:funlen // Table cases preserve each public error mode.
 	t.Parallel()
-	if _, _, err := NewOIDC(OIDCConfig{}).Begin(t.Context(), ""); !errors.Is(err, ErrNotConfigured) {
+	if _, _, err := NewOIDC(OIDCConfig{}).Begin(t.Context(), "", ""); !errors.Is(err, ErrNotConfigured) {
 		t.Fatalf("unconfigured begin = %v", err)
 	}
 	issuer := ""
@@ -232,7 +232,7 @@ func TestOIDCFlowRejectsProviderAndCallbackFailures(t *testing.T) { //nolint:fun
 	t.Cleanup(provider.Close)
 	issuer = provider.URL
 	untrusted := NewOIDC(OIDCConfig{Issuer: issuer, ClientID: "client", ClientSecret: "secret", RedirectURL: "http://localhost/callback"})
-	if _, _, err := untrusted.Begin(t.Context(), ""); !errors.Is(err, ErrProviderUnavailable) {
+	if _, _, err := untrusted.Begin(t.Context(), "", ""); !errors.Is(err, ErrProviderUnavailable) {
 		t.Fatalf("untrusted provider = %v", err)
 	}
 	flow, state := oidcFlowWithPending("https://identity.example")

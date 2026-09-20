@@ -48,7 +48,7 @@ func (login *SAMLHTTP[T]) callback(writer http.ResponseWriter, request *http.Req
 
 func (login *SAMLHTTP[T]) acceptCallback(writer http.ResponseWriter, request *http.Request, result SAMLCallback) {
 	if result.ProfileID != "" {
-		if err := login.profiles.Link(SAMLProtocol, result.ProfileID, result.Identity); err != nil {
+		if err := login.profiles.LinkForSession(SAMLProtocol, result.ProfileID, result.Identity, result.LinkSession); err != nil {
 			login.hooks.Error(writer, request, err.Error(), http.StatusConflict)
 			return
 		}
@@ -126,7 +126,7 @@ func (login *SAMLHTTP[T]) startLink(writer http.ResponseWriter, request *http.Re
 }
 
 func (login *SAMLHTTP[T]) startFor(writer http.ResponseWriter, request *http.Request, profileID string) {
-	start, err := login.flow.Begin(request.Context(), profileID)
+	start, err := login.flow.Begin(request.Context(), profileID, login.hooks.linkSession(request, profileID))
 	if err != nil {
 		if errors.Is(err, ErrTooManyPending) {
 			login.hooks.Error(writer, request, "too many SSO requests are pending", http.StatusTooManyRequests)

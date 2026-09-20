@@ -10,6 +10,8 @@ import (
 	"slices"
 	"strings"
 	"time"
+
+	"github.com/MikeO7/kinosail/packages/identitycore"
 )
 
 // Views returns the safe active-grant projection.
@@ -102,6 +104,7 @@ func oauthError(writer http.ResponseWriter, code string, status int) {
 func publicMetadataHTTPClient(timeout time.Duration) *http.Client { //nolint:cyclop // DNS resolution and every prohibited network range fail closed in one dial boundary.
 	dialer := &net.Dialer{Timeout: timeout, KeepAlive: 30 * time.Second}
 	transport := http.DefaultTransport.(*http.Transport).Clone()
+	transport.Proxy = nil
 	transport.DialContext = func(ctx context.Context, network, address string) (net.Conn, error) {
 		host, port, err := net.SplitHostPort(address)
 		if err != nil {
@@ -112,7 +115,7 @@ func publicMetadataHTTPClient(timeout time.Duration) *http.Client { //nolint:cyc
 			return nil, errors.New("outbound host could not be resolved")
 		}
 		for _, resolved := range addresses {
-			if resolved != nil && !resolved.IsUnspecified() && !resolved.IsMulticast() && !resolved.IsLoopback() && !resolved.IsPrivate() && !resolved.IsLinkLocalUnicast() && !resolved.IsLinkLocalMulticast() {
+			if identitycore.AllowedOutboundIP(resolved) {
 				return dialer.DialContext(ctx, network, net.JoinHostPort(resolved.String(), port))
 			}
 		}

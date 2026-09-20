@@ -106,17 +106,18 @@ func TestPasswordLoginConfigurationRequiresEveryDependency(t *testing.T) {
 func TestMFAHTTPConfigurationRequiresEveryDependency(t *testing.T) {
 	t.Parallel()
 	valid := MFAHTTPConfig{
-		ReadJSON:          func(http.ResponseWriter, *http.Request, any) bool { return true },
-		Setup:             func(*http.Request) (Enrollment, error) { return Enrollment{}, nil },
-		Confirm:           func(*http.Request, string) error { return nil },
-		MarkStrong:        func(*http.Request) error { return nil },
-		Verify:            func(*http.Request, string) bool { return true },
-		Disable:           func(*http.Request) error { return nil },
-		Error:             func(http.ResponseWriter, error, int) {},
-		JSON:              func(http.ResponseWriter, any, int) {},
-		WebError:          func(http.ResponseWriter, *http.Request, error, int) {},
-		WebConfirmSuccess: func(http.ResponseWriter, *http.Request) {},
-		WebDisableSuccess: func(http.ResponseWriter, *http.Request) {},
+		RecentlyAuthenticated: func(*http.Request, time.Duration) bool { return true },
+		ReadJSON:              func(http.ResponseWriter, *http.Request, any) bool { return true },
+		Setup:                 func(*http.Request) (Enrollment, error) { return Enrollment{}, nil },
+		Confirm:               func(*http.Request, string) error { return nil },
+		MarkStrong:            func(*http.Request) error { return nil },
+		Verify:                func(*http.Request, string) bool { return true },
+		Disable:               func(*http.Request) error { return nil },
+		Error:                 func(http.ResponseWriter, error, int) {},
+		JSON:                  func(http.ResponseWriter, any, int) {},
+		WebError:              func(http.ResponseWriter, *http.Request, error, int) {},
+		WebConfirmSuccess:     func(http.ResponseWriter, *http.Request) {},
+		WebDisableSuccess:     func(http.ResponseWriter, *http.Request) {},
 	}
 	mutations := []func(*MFAHTTPConfig){
 		func(config *MFAHTTPConfig) { config.ReadJSON = nil },

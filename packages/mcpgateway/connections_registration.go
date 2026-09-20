@@ -2,9 +2,7 @@ package mcpgateway
 
 import (
 	"crypto/rand"
-	"encoding/json"
 	"errors"
-	"io"
 	"mime"
 	"net/http"
 	"net/url"
@@ -31,10 +29,8 @@ func (connections *Connections) registerClient(writer http.ResponseWriter, reque
 		return
 	}
 	request.Body = http.MaxBytesReader(writer, request.Body, 64<<10)
-	decoder := json.NewDecoder(request.Body)
-	decoder.DisallowUnknownFields()
 	var metadata oauthex.ClientRegistrationMetadata
-	if decoder.Decode(&metadata) != nil || decoder.Decode(&struct{}{}) != io.EOF || validateMCPClientMetadata(&metadata) != nil {
+	if httpguard.DecodeUniqueJSON(request.Body, 64<<10, &metadata) != nil || validateMCPClientMetadata(&metadata) != nil {
 		oauthError(writer, "invalid_client_metadata", http.StatusBadRequest)
 		return
 	}

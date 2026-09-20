@@ -57,6 +57,7 @@ type Grant struct {
 	ProfileID, Device string
 	ProfileRevision   uint64
 	Remote            bool
+	Owner             bool
 }
 
 // Broker owns pending Quick Connect state.
@@ -75,6 +76,7 @@ type pendingConnection struct {
 	profileID       string
 	profileRevision uint64
 	remote          bool
+	owner           bool
 }
 
 // New returns an empty Broker.
@@ -150,7 +152,7 @@ func (broker *Broker) Approve(value string, viewer Viewer) error {
 	if err := approvalAllowed(pending, viewer); err != nil {
 		return err
 	}
-	pending.profileID, pending.profileRevision = viewer.ID, viewer.Revision
+	pending.profileID, pending.profileRevision, pending.owner = viewer.ID, viewer.Revision, viewer.Owner
 	broker.pending[key] = pending
 	return nil
 }
@@ -189,7 +191,7 @@ func (broker *Broker) Consume(secret string) (Grant, error) {
 		return Grant{}, ErrPending
 	}
 	broker.remove(key, pending.connection.Code)
-	return Grant{pending.profileID, pending.connection.Device, pending.profileRevision, pending.remote}, nil
+	return Grant{ProfileID: pending.profileID, Device: pending.connection.Device, ProfileRevision: pending.profileRevision, Remote: pending.remote, Owner: pending.owner}, nil
 }
 
 // RevokeRemote removes every public authorization request.

@@ -68,10 +68,10 @@ func apiSessionRequest(t *testing.T, contentType string, values url.Values) *htt
 
 func TestCreateAPISessionAcceptsFormJSONAndMFA(t *testing.T) {
 	for _, test := range []apiSessionSuccessCase{
-		{"form", "application/x-www-form-urlencoded", Profile{ID: "viewer", Name: "Viewer"}, "", "normal-token", 0, false, false},
+		{"form", "application/x-www-form-urlencoded", Profile{ID: "viewer", Name: "Viewer"}, "", "strong-token", 1, false, false},
 		{"JSON MFA", "application/json; charset=utf-8", Profile{ID: "owner", Name: "Owner", Owner: true, TOTPSecret: "secret"}, "123456", "strong-token", 1, false, false},
-		{"owner enrollment", "application/x-www-form-urlencoded", Profile{ID: "owner", Name: "Owner", Owner: true}, "", "normal-token", 0, true, false},
-		{"passkey", "application/x-www-form-urlencoded", Profile{ID: "viewer", Name: "Viewer", Passkeys: []webauthn.Credential{{}}}, "", "normal-token", 0, false, true},
+		{"owner enrollment", "application/x-www-form-urlencoded", Profile{ID: "owner", Name: "Owner", Owner: true}, "", "strong-token", 1, true, false},
+		{"passkey", "application/x-www-form-urlencoded", Profile{ID: "viewer", Name: "Viewer", Passkeys: []webauthn.Credential{{}}}, "", "strong-token", 1, false, true},
 	} {
 		t.Run(test.name, func(t *testing.T) {
 			fixture := &apiSessionFixture{profile: test.profile, allowed: true, validFactor: true}

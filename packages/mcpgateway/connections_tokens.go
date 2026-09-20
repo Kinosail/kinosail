@@ -61,11 +61,11 @@ func (connections *Connections) exchangeCode(writer http.ResponseWriter, request
 		return
 	}
 	profile, found := connections.principals.ByID(transaction.ProfileID)
-	if !found || !connections.principals.Allowed(profile, request, connections.now()) {
+	if !found || profile.Revision != transaction.ProfileRevision || !connections.principals.Allowed(profile, request, connections.now()) {
 		oauthError(writer, "invalid_grant", http.StatusBadRequest)
 		return
 	}
-	connections.issue(writer, transaction.Client, transaction.ProfileID, transaction.Scopes)
+	connections.issue(writer, transaction.Client, profile, transaction.Scopes)
 }
 
 func (connections *Connections) refresh(writer http.ResponseWriter, request *http.Request, clientID string) { //nolint:cyclop // Refresh lookup, profile authorization, and rotation are one atomic operation.
@@ -90,7 +90,7 @@ func (connections *Connections) refresh(writer http.ResponseWriter, request *htt
 		return
 	}
 	profile, found := connections.principals.ByID(grant.ProfileID)
-	if !found || !connections.principals.Allowed(profile, request, connections.now()) {
+	if !found || profile.Revision != grant.ProfileRevision || !connections.principals.Allowed(profile, request, connections.now()) {
 		oauthError(writer, "invalid_grant", http.StatusBadRequest)
 		return
 	}
@@ -116,10 +116,10 @@ func onlyFormKeys(form url.Values, keys ...string) bool {
 	return true
 }
 
-func (connections *Connections) issue(writer http.ResponseWriter, client mcpOAuthClient, profileID string, scopes []string) {
+func (connections *Connections) issue(writer http.ResponseWriter, client mcpOAuthClient, profile Principal, scopes []string) {
 	access, refresh := rand.Text(), rand.Text()
 	now := connections.now()
-	grant := mcpOAuthGrant{ID: rand.Text(), ClientID: client.ID, ClientName: client.Name, ProfileID: profileID, Scopes: append([]string(nil), scopes...), CreatedAt: now.Unix(), AccessHash: secretHash(access), AccessExpires: now.Add(mcpAccessLifetime).Unix(), RefreshHash: secretHash(refresh), RefreshExpires: now.Add(mcpRefreshLifetime).Unix()}
+	grant := mcpOAuthGrant{ID: rand.Text(), ClientID: client.ID, ClientName: client.Name, ProfileID: profile.ID, ProfileRevision: profile.Revision, Scopes: append([]string(nil), scopes...), CreatedAt: now.Unix(), AccessHash: secretHash(access), AccessExpires: now.Add(mcpAccessLifetime).Unix(), RefreshHash: secretHash(refresh), RefreshExpires: now.Add(mcpRefreshLifetime).Unix()}
 	connections.mu.Lock()
 	defer connections.mu.Unlock()
 	if len(connections.grants) >= mcpConnectionLimit {
@@ -150,7 +150,7 @@ func (connections *Connections) VerifyToken(_ context.Context, token string, req
 			continue
 		}
 		profile, found := connections.principals.ByID(grant.ProfileID)
-		if !found || !connections.principals.Allowed(profile, request, now) {
+		if !found || profile.Revision != grant.ProfileRevision || !connections.principals.Allowed(profile, request, now) {
 			return nil, mcpauth.ErrInvalidToken
 		}
 		grant.LastUsed = now.Unix()

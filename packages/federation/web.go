@@ -5,6 +5,7 @@ import "net/http"
 // WebHooks keeps product sessions, local MFA verification, audit context, and error rendering app-owned.
 type WebHooks[T any] struct {
 	CurrentProfileID   func(*http.Request) string
+	LinkSession        func(*http.Request) string
 	SecureRequest      func(*http.Request) bool
 	ProfileID          func(T) string
 	RequiresMFA        func(T) bool
@@ -13,6 +14,13 @@ type WebHooks[T any] struct {
 	Audit              func(*http.Request, T)
 	Error              func(http.ResponseWriter, *http.Request, string, int)
 	APIError           func(http.ResponseWriter, error, int)
+}
+
+func (hooks WebHooks[T]) linkSession(request *http.Request, profileID string) string {
+	if profileID == "" || hooks.LinkSession == nil {
+		return ""
+	}
+	return hooks.LinkSession(request)
 }
 
 func (hooks WebHooks[T]) signIn(writer http.ResponseWriter, request *http.Request, profile T) bool {

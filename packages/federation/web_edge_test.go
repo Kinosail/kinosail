@@ -72,7 +72,7 @@ func TestOIDCHTTPRejectsCapacityPersistenceAndMFAEdges(t *testing.T) { //nolint:
 		t.Fatalf("OIDC capacity response = %d", response.Code)
 	}
 	flow.pending = make(map[string]oidcTransaction)
-	login.acceptCallback(httptest.NewRecorder(), httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/", nil), OIDCCallback{ProfileID: "viewer", Identity: Identity{Issuer: "issuer", Subject: "subject"}})
+	login.acceptCallback(httptest.NewRecorder(), httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/", nil), OIDCCallback{ProfileID: "viewer", LinkSession: "session", Identity: Identity{Issuer: "issuer", Subject: "subject"}})
 
 	for index := range maxPendingStates {
 		flow.mfa[string(rune(index+1))] = mfaChallenge{expires: time.Now().Add(time.Minute)}
@@ -175,7 +175,7 @@ func TestSAMLHTTPRejectsCapacityProfileAndStorageEdges(t *testing.T) { //nolint:
 	login.signInIdentity(httptest.NewRecorder(), httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/", nil), Identity{Issuer: "issuer", Subject: "directory"})
 	login.signInIdentity(httptest.NewRecorder(), httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/", nil), Identity{Issuer: "issuer", Subject: "missing"})
 	login.signInProfile(httptest.NewRecorder(), httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/", nil), values[0])
-	login.acceptCallback(httptest.NewRecorder(), httptest.NewRequestWithContext(t.Context(), http.MethodPost, "/", nil), SAMLCallback{ProfileID: "viewer", Identity: Identity{Issuer: "issuer", Subject: "linked"}})
+	login.acceptCallback(httptest.NewRecorder(), httptest.NewRequestWithContext(t.Context(), http.MethodPost, "/", nil), SAMLCallback{ProfileID: "viewer", LinkSession: "session", Identity: Identity{Issuer: "issuer", Subject: "linked"}})
 	assertHTTPStatus(t, http.HandlerFunc(login.unlinkAPI), http.MethodDelete, "/api/v1/me/saml", "", http.StatusBadRequest)
 	assertHTTPStatus(t, http.HandlerFunc(login.unlinkWeb), http.MethodPost, "/account/saml/unlink", "", http.StatusBadRequest)
 	values[0].Managed, values[0].MFA = false, false
@@ -193,7 +193,7 @@ func TestSAMLHTTPRejectsCapacityProfileAndStorageEdges(t *testing.T) { //nolint:
 	success := NewSAMLHTTP(config, webProfiles(&successValues), webHooks(&webEffects{}))
 	want := Identity{Issuer: "issuer", Subject: "linked"}
 	response = httptest.NewRecorder()
-	success.acceptCallback(response, httptest.NewRequestWithContext(t.Context(), http.MethodPost, "/", nil), SAMLCallback{ProfileID: "viewer", Identity: want})
+	success.acceptCallback(response, httptest.NewRequestWithContext(t.Context(), http.MethodPost, "/", nil), SAMLCallback{ProfileID: "viewer", LinkSession: "session", Identity: want})
 	if response.Code != http.StatusSeeOther || successValues[0].SAML != want {
 		t.Fatalf("SAML link callback = %d %#v", response.Code, successValues[0].SAML)
 	}

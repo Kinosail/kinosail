@@ -2,6 +2,7 @@ package server
 
 import (
 	"net/http"
+	"time"
 
 	"github.com/MikeO7/kinosail/packages/identitycore"
 )
@@ -35,7 +36,8 @@ func (auth *mfaAuth) confirm(profile viewerProfile, code string) error {
 
 func (auth *mfaAuth) register(mux *http.ServeMux) {
 	handlers, err := identitycore.NewMFAHandlers(identitycore.MFAHTTPConfig{
-		ReadJSON: readJSON, Setup: auth.setupRequest, Confirm: auth.confirmRequest, MarkStrong: auth.profiles.markStrong,
+		RecentlyAuthenticated: auth.profiles.recentlyAuthenticated,
+		ReadJSON:              readJSON, Setup: auth.setupRequest, Confirm: auth.confirmRequest, MarkStrong: auth.profiles.markStrong,
 		Verify: auth.verifyRequest, Disable: auth.disableRequest, Error: apiError, JSON: writeJSON,
 		WebError: func(writer http.ResponseWriter, request *http.Request, err error, status int) {
 			localizedError(writer, request, err.Error(), status)
@@ -88,6 +90,10 @@ type mfaSetupPage struct {
 }
 
 func (auth *mfaAuth) webSetup(writer http.ResponseWriter, request *http.Request) {
+	if !auth.profiles.recentlyAuthenticated(request, 10*time.Minute) {
+		http.Redirect(writer, request, stepUpLoginPath(request), http.StatusSeeOther)
+		return
+	}
 	enrollment, err := auth.setup(currentViewer(request))
 	if err != nil {
 		localizedError(writer, request, "could not create MFA enrollment", http.StatusInternalServerError)

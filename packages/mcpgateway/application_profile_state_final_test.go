@@ -17,7 +17,8 @@ type profilePrincipalContextKey struct{}
 
 func profilePrincipalTestConfig(mutex *sync.RWMutex, profiles *[]identitycore.Profile, stateErr *error) ProfilePrincipalConfig {
 	return ProfilePrincipalConfig{
-		State: ProfileState{Mutex: mutex, Profiles: profiles, Error: stateErr},
+		MFARequired: func() bool { return false },
+		State:       ProfileState{Mutex: mutex, Profiles: profiles, Error: stateErr},
 		CurrentProfile: func(request *http.Request) identitycore.Profile {
 			profile, _ := request.Context().Value(profilePrincipalContextKey{}).(identitycore.Profile)
 			return profile
@@ -31,7 +32,7 @@ func profilePrincipalTestConfig(mutex *sync.RWMutex, profiles *[]identitycore.Pr
 func TestProfilePrincipalsOwnCanonicalIdentityPolicy(t *testing.T) { //nolint:cyclop // One flow covers the shared identity contract.
 	var mutex sync.RWMutex
 	profiles := []identitycore.Profile{
-		{ID: "owner", Name: "Owner", Owner: true, OIDCIssuer: "https://identity.test", OIDCSubject: "subject"},
+		{ID: "owner", Name: "Owner", Owner: true, TOTPSecret: "secret", OIDCIssuer: "https://identity.test", OIDCSubject: "subject"},
 		{ID: "viewer", Name: "Viewer", Remote: false},
 	}
 	var stateErr error

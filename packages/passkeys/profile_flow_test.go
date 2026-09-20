@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
+	"time"
 
 	"github.com/go-webauthn/webauthn/webauthn"
 )
@@ -36,8 +37,9 @@ func newFlowFixture(t *testing.T) (*flowFixture, *ProfileFlow[flowProfile]) {
 	t.Helper()
 	fixture := &flowFixture{engine: testEngine(t), profile: flowProfile{ID: "profile", Name: "Viewer"}}
 	flow, err := NewProfileFlow(ProfileFlowConfig[flowProfile]{
-		Engine:  fixture.engine,
-		Current: func(*http.Request) flowProfile { return fixture.profile },
+		RecentlyAuthenticated: func(*http.Request, time.Duration) bool { return true },
+		Engine:                fixture.engine,
+		Current:               func(*http.Request) flowProfile { return fixture.profile },
 		Identity: func(profile flowProfile) (string, string, []webauthn.Credential) {
 			return profile.ID, profile.Name, profile.Credentials
 		},

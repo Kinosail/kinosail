@@ -38,11 +38,10 @@ func (broker *quickConnectBroker) application(profiles *profileStore) *quickconn
 	adapter := quickconnect.Adapter{Current: currentViewer, CleanDevice: cleanDeviceName, Render: quickConnectView.Execute, Error: localizedError}
 	if profiles != nil {
 		adapter.Profiles = quickconnect.Profiles{
-			Find: profiles.byID, Compatibility: compatibilityProfile, Create: profiles.createSession,
+			Find: profiles.byID, Compatibility: compatibilityProfile, CreateLocal: profiles.sessionModule().CreateLocalGrant,
 			CreatePublic: func(id, name string, revision uint64) (string, error) {
 				return profiles.sessionModule().CreatePublicGrant(id, name, false, revision)
 			},
-			CreateCompat: profiles.createCompatibilitySession,
 		}
 		adapter.RecentlyAuthenticated = profiles.recentlyAuthenticated
 		adapter.SignInPublic = profiles.sessionModule().SignInPublicGrant

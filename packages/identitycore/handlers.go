@@ -144,17 +144,18 @@ func PasswordLoginRequest[T any](writer http.ResponseWriter, request *http.Reque
 
 // MFAHTTPConfig connects shared MFA endpoints to app identity and persistence.
 type MFAHTTPConfig struct {
-	ReadJSON          func(http.ResponseWriter, *http.Request, any) bool
-	Setup             func(*http.Request) (Enrollment, error)
-	Confirm           func(*http.Request, string) error
-	MarkStrong        func(*http.Request) error
-	Verify            func(*http.Request, string) bool
-	Disable           func(*http.Request) error
-	Error             func(http.ResponseWriter, error, int)
-	JSON              func(http.ResponseWriter, any, int)
-	WebError          func(http.ResponseWriter, *http.Request, error, int)
-	WebConfirmSuccess func(http.ResponseWriter, *http.Request)
-	WebDisableSuccess func(http.ResponseWriter, *http.Request)
+	RecentlyAuthenticated func(*http.Request, time.Duration) bool
+	ReadJSON              func(http.ResponseWriter, *http.Request, any) bool
+	Setup                 func(*http.Request) (Enrollment, error)
+	Confirm               func(*http.Request, string) error
+	MarkStrong            func(*http.Request) error
+	Verify                func(*http.Request, string) bool
+	Disable               func(*http.Request) error
+	Error                 func(http.ResponseWriter, error, int)
+	JSON                  func(http.ResponseWriter, any, int)
+	WebError              func(http.ResponseWriter, *http.Request, error, int)
+	WebConfirmSuccess     func(http.ResponseWriter, *http.Request)
+	WebDisableSuccess     func(http.ResponseWriter, *http.Request)
 }
 
 // MFAHandlers contains shared MFA HTTP behavior for app-owned routes.
@@ -171,13 +172,17 @@ func NewMFAHandlers(config MFAHTTPConfig) (MFAHandlers, error) {
 }
 
 func validMFAHTTPConfig(config MFAHTTPConfig) bool { //nolint:cyclop // Every required adapter must be present before any MFA side effect.
-	return config.ReadJSON != nil && config.Setup != nil && config.Confirm != nil && config.MarkStrong != nil && config.Verify != nil && config.Disable != nil && config.Error != nil && config.JSON != nil && config.WebError != nil && config.WebConfirmSuccess != nil && config.WebDisableSuccess != nil
+	return config.RecentlyAuthenticated != nil && config.ReadJSON != nil && config.Setup != nil && config.Confirm != nil && config.MarkStrong != nil && config.Verify != nil && config.Disable != nil && config.Error != nil && config.JSON != nil && config.WebError != nil && config.WebConfirmSuccess != nil && config.WebDisableSuccess != nil
 }
 
 func mfaSetupHandler(config MFAHTTPConfig) http.HandlerFunc {
 	return func(writer http.ResponseWriter, request *http.Request) {
 		var input struct{}
 		if !config.ReadJSON(writer, request, &input) {
+			return
+		}
+		if !config.RecentlyAuthenticated(request, 10*time.Minute) {
+			config.JSON(writer, map[string]any{"error": "recent authentication required", "stepUpRequired": true}, http.StatusForbidden)
 			return
 		}
 		enrollment, err := config.Setup(request)
@@ -216,6 +221,9 @@ func mfaWebConfirmHandler(config MFAHTTPConfig) http.HandlerFunc {
 }
 
 func applyMFAConfirm(config MFAHTTPConfig, request *http.Request, code string) (int, error) {
+	if !config.RecentlyAuthenticated(request, 10*time.Minute) {
+		return http.StatusForbidden, errors.New("recent authentication required")
+	}
 	if err := config.Confirm(request, code); err != nil {
 		return http.StatusBadRequest, err
 	}

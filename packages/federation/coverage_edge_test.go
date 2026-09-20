@@ -154,7 +154,7 @@ func TestSAMLMetadataValidationEdges(t *testing.T) {
 
 func TestOIDCProviderScopeAndStateCapacity(t *testing.T) {
 	flow, _, _ := newOIDCTestFlow(t)
-	if _, _, err := flow.Begin(t.Context(), "viewer"); err != nil {
+	if _, _, err := flow.Begin(t.Context(), "viewer", "session"); err != nil {
 		t.Fatal(err)
 	}
 	flow.config.IdentityClaim = "email"
@@ -165,7 +165,7 @@ func TestOIDCProviderScopeAndStateCapacity(t *testing.T) {
 	for index := range maxPendingStates {
 		flow.pending[string(rune(index+1))] = oidcTransaction{expires: farFuture()}
 	}
-	if _, _, err := flow.Begin(t.Context(), "viewer"); !errors.Is(err, ErrTooManyPending) {
+	if _, _, err := flow.Begin(t.Context(), "viewer", "session"); !errors.Is(err, ErrTooManyPending) {
 		t.Fatalf("OIDC pending limit = %v", err)
 	}
 }
@@ -194,7 +194,7 @@ func TestOIDCCompletionMapsUnavailableExchangeAndTokenFailures(t *testing.T) { /
 
 	flow, _, setNonce = newOIDCTestFlow(t)
 	flow.config.IdentityClaim = "email"
-	location, state, err := flow.Begin(t.Context(), "viewer")
+	location, state, err := flow.Begin(t.Context(), "viewer", "session")
 	authorization, parseErr := url.Parse(location)
 	if err != nil || parseErr != nil {
 		t.Fatalf("custom-claim OIDC begin = %v %v", err, parseErr)

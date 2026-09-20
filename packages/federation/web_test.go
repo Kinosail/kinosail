@@ -41,7 +41,7 @@ func TestOIDCHTTPRoutesMFAAndProfileEffects(t *testing.T) { //nolint:funlen // O
 	assertHTTPStatus(t, mux, http.MethodGet, "/api/v1/session/oidc", "", http.StatusServiceUnavailable)
 	assertHTTPStatus(t, mux, http.MethodGet, "/login/oidc/callback?code=x&state=y", "", http.StatusBadRequest)
 	identity := Identity{Issuer: "issuer", Subject: "subject"}
-	login.acceptCallback(httptest.NewRecorder(), httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/", nil), OIDCCallback{ProfileID: "viewer", Identity: identity})
+	login.acceptCallback(httptest.NewRecorder(), httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/", nil), OIDCCallback{ProfileID: "viewer", LinkSession: "session", Identity: identity})
 	if values[0].OIDC != identity {
 		t.Fatal("OIDC link callback did not persist identity")
 	}
@@ -116,7 +116,8 @@ func TestSAMLHTTPRoutesProfilesAndFailures(t *testing.T) { //nolint:funlen // On
 func webProfiles(values *[]webProfile) Profiles[webProfile] {
 	var mutex sync.Mutex
 	return Profiles[webProfile]{
-		Lock: mutex.Lock, Unlock: mutex.Unlock,
+		SessionActive: func(key, id string) bool { return key == "session" && id == "viewer" },
+		Lock:          mutex.Lock, Unlock: mutex.Unlock,
 		Clone:   func() []webProfile { return append([]webProfile(nil), (*values)...) },
 		Persist: func([]webProfile) error { return nil },
 		Commit:  func(updated []webProfile) { *values = updated },
@@ -135,6 +136,7 @@ func webProfiles(values *[]webProfile) Profiles[webProfile] {
 
 func webHooks(effects *webEffects) WebHooks[webProfile] {
 	return WebHooks[webProfile]{
+		LinkSession:      func(*http.Request) string { return "session" },
 		CurrentProfileID: func(*http.Request) string { return "viewer" }, SecureRequest: func(*http.Request) bool { return false },
 		ProfileID: func(profile webProfile) string { return profile.ID }, RequiresMFA: func(profile webProfile) bool { return profile.MFA },
 		VerifySecondFactor: func(_, code string) bool { return code == "valid" },

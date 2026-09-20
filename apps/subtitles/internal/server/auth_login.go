@@ -62,11 +62,7 @@ func (auth *authentication) login(writer http.ResponseWriter, request *http.Requ
 		return
 	}
 	auth.credentialLoginSucceeded(request.FormValue("name"))
-	signIn := auth.profiles.signIn
-	if profile.TOTPSecret != "" {
-		signIn = auth.profiles.signInStrong
-	}
-	if err := signIn(writer, request, profile.ID); err != nil {
+	if err := auth.profiles.signInStrong(writer, request, profile.ID); err != nil {
 		localizedError(writer, request, "could not create session", http.StatusInternalServerError)
 		return
 	}
@@ -120,7 +116,7 @@ func (auth *authentication) setup(writer http.ResponseWriter, request *http.Requ
 		localizedError(writer, request, err.Error(), ownerSetupStatus(err))
 		return
 	}
-	if err := auth.profiles.signIn(writer, request, profile.ID); err != nil {
+	if err := auth.profiles.signInStrong(writer, request, profile.ID); err != nil {
 		localizedError(writer, request, "could not create session", http.StatusInternalServerError)
 		return
 	}

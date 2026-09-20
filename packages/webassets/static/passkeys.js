@@ -1,7 +1,12 @@
 const status = document.querySelector("[data-passkey-status]");
 const messages = document.body.dataset;
 const storageKey = messages.passkeyStorage || "kinosail-passkey";
-const loginNext = document.querySelector("[data-login-next]")?.dataset.loginNext || messages.loginNext || new URLSearchParams(location.search).get("next") || "/";
+const safeLoginNext = (value) => {
+  if (typeof value !== "string" || value.length > 2048 || !value.startsWith("/") || value.startsWith("//") || /[\\\x00-\x20\x7f]/.test(value)) return "/";
+  const parsed = new URL(value, location.origin);
+  return parsed.origin === location.origin ? parsed.pathname + parsed.search + parsed.hash : "/";
+};
+const loginNext = safeLoginNext(document.querySelector("[data-login-next]")?.dataset.loginNext || messages.loginNext || new URLSearchParams(location.search).get("next") || "/");
 let conditionalLogin;
 let loginPending;
 let manualLogin = false;
@@ -31,6 +36,7 @@ async function ceremony(kind, {conditional = false, signal} = {}) {
     if (conditional) return;
     return location.replace(begin.headers.get("location"));
   }
+  if (kind === "register" && begin.status === 403) return location.assign("/login?stepup=1&next=%2Faccount");
   if (!begin.ok) throw new Error(await begin.text() || "Could not start the passkey request. Try again.");
   const options = await begin.json();
   const publicKey = kind === "register"
@@ -47,14 +53,15 @@ async function ceremony(kind, {conditional = false, signal} = {}) {
     body: JSON.stringify(credential),
     signal,
   });
+  if (kind === "register" && finish.status === 403) return location.assign("/login?stepup=1&next=%2Faccount");
   if (!finish.ok) throw new Error(await finish.text() || "Could not verify your passkey. Try again.");
   if (kind === "login" && status) status.textContent = message("passkeySignedIn", "Signed in. Opening your library…");
   try { localStorage.setItem(storageKey, "1"); } catch { /* Passkey use must not depend on browser storage. */ }
+  if (kind === "login") return location.replace(safeLoginNext(finish.headers.get("X-Kinosail-Login-Next") || loginNext));
   const query = new URLSearchParams(location.search);
   if (query.get("setup") === "1") return location.replace("/onboarding/connection");
   if (query.get("mfa") === "required") return location.replace("/");
   if (query.get("passkey") === "offer") return location.replace(loginNext);
-  if (kind === "login") return location.replace(finish.headers.get("X-Kinosail-Login-Next") || loginNext);
   if (status) status.textContent = message("passkeyAdded", "Passkey added.");
 }
 

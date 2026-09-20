@@ -40,8 +40,8 @@ type Identity struct{ Issuer, Subject string }
 type OIDCConfig struct{ Issuer, ClientID, ClientSecret, RedirectURL, IdentityClaim string }
 
 type oidcTransaction struct {
-	nonce, verifier, profileID string
-	expires                    time.Time
+	nonce, verifier, profileID, linkSession string
+	expires                                 time.Time
 }
 
 type mfaChallenge struct {
@@ -63,6 +63,7 @@ type OIDC struct {
 type OIDCCallback struct {
 	Identity    Identity
 	ProfileID   string
+	LinkSession string
 	ClearCookie bool
 }
 
@@ -89,7 +90,7 @@ func validOIDCClient(config OIDCConfig) bool {
 }
 
 // Begin creates one bounded authorization transaction and returns its redirect URL and cookie state.
-func (flow *OIDC) Begin(ctx context.Context, profileID string) (string, string, error) {
+func (flow *OIDC) Begin(ctx context.Context, profileID, linkSession string) (string, string, error) {
 	provider, err := flow.getProvider(ctx)
 	if err != nil {
 		return "", "", err
@@ -102,7 +103,7 @@ func (flow *OIDC) Begin(ctx context.Context, profileID string) (string, string, 
 		flow.mu.Unlock()
 		return "", "", ErrTooManyPending
 	}
-	flow.pending[tokenKey(state)] = oidcTransaction{nonce: nonce, verifier: verifier, profileID: profileID, expires: now.Add(transactionTTL)}
+	flow.pending[tokenKey(state)] = oidcTransaction{nonce: nonce, verifier: verifier, profileID: profileID, linkSession: linkSession, expires: now.Add(transactionTTL)}
 	flow.mu.Unlock()
 	config := flow.oauthConfig(provider)
 	location := config.AuthCodeURL(state, oidc.Nonce(nonce), oauth2.S256ChallengeOption(verifier))
@@ -116,7 +117,7 @@ func (flow *OIDC) Complete(ctx context.Context, rawQuery, cookieState string, co
 		return OIDCCallback{}, ErrInvalidCallback
 	}
 	transaction, validState := flow.takeTransaction(parseState(rawQuery), cookieState, cookiePresent)
-	result := OIDCCallback{ProfileID: transaction.profileID, ClearCookie: cookiePresent}
+	result := OIDCCallback{ProfileID: transaction.profileID, LinkSession: transaction.linkSession, ClearCookie: cookiePresent}
 	if !validState {
 		return result, ErrInvalidState
 	}

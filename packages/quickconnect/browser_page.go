@@ -10,7 +10,7 @@ type BrowserPage struct {
 const BrowserHTML = `<!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Sign in away from home · {{.Product}}</title><link rel="icon" href="/static/icon.svg"><script src="/static/theme.js?v=electric-1"></script><link rel="stylesheet" href="/static/app.css?v=electric-1">
-<script defer src="/static/passkeys.js?v=13"></script><script defer src="/static/public-login.js?v=1"></script></head>
+<script defer src="/static/passkeys.js?v=14"></script><script defer src="/static/public-login.js?v=1"></script></head>
 <body class="auth" data-login-next="{{.Next}}"><a class="skip" href="#main">Skip to content</a><main id="main" class="grant-card">
 <img class="brand-mark" src="/static/icon.svg" alt=""><h1>Sign in away from home</h1><p>{{.Product}} gives you access to your Viewer's allowed Libraries.</p>
 <section aria-labelledby="connect-heading"><h2 id="connect-heading">Connect this browser</h2><p>Ask someone signed in as your Viewer at home to approve a code. They must use an authenticator or passkey to confirm it's them.</p>

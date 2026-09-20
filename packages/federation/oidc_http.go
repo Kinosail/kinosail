@@ -43,7 +43,7 @@ func (login *OIDCHTTP[T]) startLink(writer http.ResponseWriter, request *http.Re
 }
 
 func (login *OIDCHTTP[T]) startFor(writer http.ResponseWriter, request *http.Request, profileID string) {
-	location, state, err := login.flow.Begin(request.Context(), profileID)
+	location, state, err := login.flow.Begin(request.Context(), profileID, login.hooks.linkSession(request, profileID))
 	if err != nil {
 		if errors.Is(err, ErrTooManyPending) {
 			login.hooks.Error(writer, request, "too many SSO requests are pending", http.StatusTooManyRequests)
@@ -75,7 +75,7 @@ func (login *OIDCHTTP[T]) callback(writer http.ResponseWriter, request *http.Req
 
 func (login *OIDCHTTP[T]) acceptCallback(writer http.ResponseWriter, request *http.Request, result OIDCCallback) {
 	if result.ProfileID != "" {
-		if err := login.profiles.Link(OIDCProtocol, result.ProfileID, result.Identity); err != nil {
+		if err := login.profiles.LinkForSession(OIDCProtocol, result.ProfileID, result.Identity, result.LinkSession); err != nil {
 			login.hooks.Error(writer, request, err.Error(), http.StatusConflict)
 			return
 		}

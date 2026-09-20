@@ -24,6 +24,7 @@ type profileStore struct {
 	err                        error
 	persist                    func(string, any) error
 	database                   *database.Store
+	requireMFA                 func() bool
 	sessionTimeouts            func() (time.Duration, time.Duration)
 }
 
@@ -38,6 +39,7 @@ func newProfileStore(dataDir string, databases ...*database.Store) *profileStore
 		file: state.ProfileFile, sessionFile: state.SessionFile, apiFile: state.APIFile,
 		profiles: state.Profiles, sessions: state.Sessions, apiKeys: state.APIKeys, err: state.Err,
 		persist: statePersistence(stateDB), database: stateDB,
+		requireMFA:      func() bool { return false },
 		sessionTimeouts: func() (time.Duration, time.Duration) { return defaultSessionInactive, defaultSessionAbsolute },
 	}
 }

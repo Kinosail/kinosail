@@ -57,7 +57,7 @@ func TestSAMLRejectsInvalidExternalMetadataBeforeKeyCreation(t *testing.T) {
 	t.Cleanup(metadataServer.Close)
 	directory := t.TempDir()
 	flow := NewSAML(SAMLConfig{MetadataURL: metadataServer.URL, RootURL: "http://localhost", DataDir: directory})
-	if _, err := flow.Begin(t.Context(), "viewer"); err == nil {
+	if _, err := flow.Begin(t.Context(), "viewer", "session"); err == nil {
 		t.Fatal("invalid external metadata was accepted")
 	}
 	if _, err := os.Stat(filepath.Join(directory, "saml_sp.pem")); !errors.Is(err, os.ErrNotExist) {
@@ -91,7 +91,7 @@ func assertSAMLConfiguration(t *testing.T, config SAMLConfig, want bool) {
 	if want {
 		return
 	}
-	if _, err := flow.Begin(t.Context(), ""); !errors.Is(err, ErrNotConfigured) {
+	if _, err := flow.Begin(t.Context(), "", ""); !errors.Is(err, ErrNotConfigured) {
 		t.Fatalf("invalid begin = %v", err)
 	}
 	if _, err := os.Stat(filepath.Join(directory, "saml_sp.pem")); !errors.Is(err, os.ErrNotExist) {
@@ -180,7 +180,7 @@ func TestSAMLFlowStartsAndCompletesSignedResponse(t *testing.T) { //nolint:cyclo
 		t.Fatal(err)
 	}
 	flow.sp.HTTPClient = idpServer.Client()
-	start, err := flow.Begin(t.Context(), "viewer")
+	start, err := flow.Begin(t.Context(), "viewer", "session")
 	if err != nil || start.RedirectURL == "" {
 		t.Fatalf("SAML begin = %#v %v", start, err)
 	}
@@ -200,6 +200,14 @@ func TestSAMLFlowStartsAndCompletesSignedResponse(t *testing.T) { //nolint:cyclo
 		t.Fatalf("identity provider response = %q", body)
 	}
 	form := url.Values{"SAMLResponse": {html.UnescapeString(string(response[1]))}, "RelayState": {html.UnescapeString(string(relay[1]))}}
+	wrongRelay := url.Values{"SAMLResponse": form["SAMLResponse"], "RelayState": {"different"}}
+	invalidRelay := samlRequest(t, "/login/saml/acs", wrongRelay.Encode())
+	if _, err := flow.Complete(httptest.NewRecorder(), invalidRelay); !errors.Is(err, ErrInvalidState) {
+		t.Fatalf("mismatched relay: %v", err)
+	}
+	if len(flow.pending) != 1 {
+		t.Fatal("rejected relay consumed a valid transaction")
+	}
 	flow.config.IdentityAttribute = "missing"
 	invalidIdentity := httptest.NewRequestWithContext(t.Context(), http.MethodPost, "/login/saml/acs", strings.NewReader(form.Encode()))
 	invalidIdentity.Header.Set("Content-Type", "application/x-www-form-urlencoded")

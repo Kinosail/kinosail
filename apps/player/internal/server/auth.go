@@ -41,6 +41,7 @@ func newAuthentication(ctx context.Context, dataDir string, required bool, authU
 	notify := newNotification(notifications)
 	profiles := newProfileStore(dataDir, stateDB) //nolint:contextcheck // Startup state loading must finish independently of lifecycle cancellation.
 	profiles.sessionTimeouts = settings.sessionTimeouts
+	profiles.requireMFA = settings.requireMFA
 	auth := &authentication{profiles: profiles, passkeys: newPasskeyAuth(authURL, profiles), mfa: newMFA(profiles), settings: settings, required: required, audit: newAuditStore(ctx, dataDir, func(event auditEvent) { notify.send(ctx, event) }, retentions...), notify: notify}
 	auth.passkeys.settings = settings
 	auth.passkeys.audit = auth.audit

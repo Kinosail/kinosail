@@ -120,14 +120,14 @@ func TestTokenIssueLimitsAndPersistenceFailureCreateNoGrant(t *testing.T) {
 		connections.grants[string(rune(index))] = mcpOAuthGrant{}
 	}
 	response := httptest.NewRecorder()
-	connections.issue(response, mcpOAuthClient{ID: "agent"}, "viewer", []string{ReadScope})
+	connections.issue(response, mcpOAuthClient{ID: "agent"}, Principal{ID: "viewer"}, []string{ReadScope})
 	if response.Code != http.StatusTooManyRequests || len(connections.grants) != mcpConnectionLimit {
 		t.Fatalf("grant limit = %d grants=%d", response.Code, len(connections.grants))
 	}
 	failed := testConnections("https://kino.test", &testPrincipals{values: map[string]Principal{}}, &memoryState{})
 	failed.store = &saveErrorStore{err: errTestSave}
 	response = httptest.NewRecorder()
-	failed.issue(response, mcpOAuthClient{ID: "agent"}, "viewer", []string{ReadScope})
+	failed.issue(response, mcpOAuthClient{ID: "agent"}, Principal{ID: "viewer"}, []string{ReadScope})
 	if response.Code != http.StatusServiceUnavailable || len(failed.grants) != 0 {
 		t.Fatalf("failed grant issue = %d grants=%d", response.Code, len(failed.grants))
 	}

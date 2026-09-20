@@ -10,6 +10,7 @@ import (
 	"reflect"
 	"strings"
 	"testing"
+	"time"
 )
 
 type mfaDisableProbe struct {
@@ -25,6 +26,7 @@ func (probe *mfaDisableProbe) record(event string) {
 
 func (probe *mfaDisableProbe) config() MFAHTTPConfig {
 	return MFAHTTPConfig{
+		RecentlyAuthenticated: func(*http.Request, time.Duration) bool { return true },
 		ReadJSON: func(writer http.ResponseWriter, request *http.Request, target any) bool {
 			probe.record("read")
 			if json.NewDecoder(request.Body).Decode(target) != nil {

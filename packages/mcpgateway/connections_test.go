@@ -84,6 +84,8 @@ func TestBuiltInOAuthRejectsMalformedUnknownAndOversizedInputWithoutAuthority(t 
 	mux := http.NewServeMux()
 	connections.RegisterOAuth(mux)
 	for name, body := range map[string]string{
+		"duplicate":       `{"client_name":"Old","client_name":"Agent","redirect_uris":["http://127.0.0.1/callback"]}`,
+		"duplicate alias": `{"CLIENT_NAME":"Old","client_name":"Agent","redirect_uris":["http://127.0.0.1/callback"]}`,
 		"unknown":         `{"client_name":"Agent","redirect_uris":["http://127.0.0.1/callback"],"unknown":true}`,
 		"remote redirect": `{"client_name":"Agent","redirect_uris":["http://example.com/callback"]}`,
 		"oversized":       `{"client_name":"` + strings.Repeat("x", 65<<10) + `","redirect_uris":["http://127.0.0.1/callback"]}`,

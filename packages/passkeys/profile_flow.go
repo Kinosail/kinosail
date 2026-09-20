@@ -3,27 +3,29 @@ package passkeys
 import (
 	"errors"
 	"net/http"
+	"time"
 
 	"github.com/go-webauthn/webauthn/webauthn"
 )
 
 // ProfileFlowConfig connects Player-style account behavior to the shared protocol engine.
 type ProfileFlowConfig[T any] struct {
-	Engine           *Engine
-	Current          func(*http.Request) T
-	Identity         func(T) (string, string, []webauthn.Credential)
-	Owner            func(T) bool
-	Remote           func(T) bool
-	PublicRequest    func(*http.Request) bool
-	SecureRequest    func(*http.Request) bool
-	AddCredential    func(string, *webauthn.Credential) error
-	MarkStrong       func(*http.Request) error
-	Discover         webauthn.DiscoverableUserHandler
-	UpdateCredential func(string, *webauthn.Credential) error
-	SignIn           func(http.ResponseWriter, *http.Request, string, bool) error
-	AfterLogin       func(*http.Request, T, *webauthn.Credential)
-	OnboardingNext   func(T) bool
-	WriteError       func(http.ResponseWriter, error, int)
+	RecentlyAuthenticated func(*http.Request, time.Duration) bool
+	Engine                *Engine
+	Current               func(*http.Request) T
+	Identity              func(T) (string, string, []webauthn.Credential)
+	Owner                 func(T) bool
+	Remote                func(T) bool
+	PublicRequest         func(*http.Request) bool
+	SecureRequest         func(*http.Request) bool
+	AddCredential         func(string, *webauthn.Credential) error
+	MarkStrong            func(*http.Request) error
+	Discover              webauthn.DiscoverableUserHandler
+	UpdateCredential      func(string, *webauthn.Credential) error
+	SignIn                func(http.ResponseWriter, *http.Request, string, bool) error
+	AfterLogin            func(*http.Request, T, *webauthn.Credential)
+	OnboardingNext        func(T) bool
+	WriteError            func(http.ResponseWriter, error, int)
 }
 
 // ProfileFlow owns Player-style registration and login orchestration.
@@ -50,12 +52,12 @@ func validProfileFlowIdentity[T any](config ProfileFlowConfig[T]) bool {
 }
 
 func validProfileFlowEffects[T any](config ProfileFlowConfig[T]) bool {
-	return config.AddCredential != nil && config.MarkStrong != nil && config.UpdateCredential != nil && config.SignIn != nil && config.AfterLogin != nil && config.OnboardingNext != nil && config.WriteError != nil
+	return config.RecentlyAuthenticated != nil && config.AddCredential != nil && config.MarkStrong != nil && config.UpdateCredential != nil && config.SignIn != nil && config.AfterLogin != nil && config.OnboardingNext != nil && config.WriteError != nil
 }
 
 // BeginRegistration starts one authenticated registration ceremony.
 func (flow *ProfileFlow[T]) BeginRegistration(writer http.ResponseWriter, request *http.Request) {
-	if flow == nil || !flow.requireOrigin(writer, request, "/account") {
+	if flow == nil || !flow.requireOrigin(writer, request, "/account") || !flow.requireEnrollmentAuthentication(writer, request) {
 		return
 	}
 	profile := flow.config.Current(request)
@@ -71,6 +73,9 @@ func (flow *ProfileFlow[T]) BeginRegistration(writer http.ResponseWriter, reques
 
 // FinishRegistration verifies and commits one credential.
 func (flow *ProfileFlow[T]) FinishRegistration(writer http.ResponseWriter, request *http.Request) {
+	if !flow.requireEnrollmentAuthentication(writer, request) {
+		return
+	}
 	profile := flow.config.Current(request)
 	id, name, credentials := flow.config.Identity(profile)
 	credential, err := flow.finishRegistration(NewUser(profile, id, name, credentials), id, request)
@@ -131,6 +136,14 @@ func (flow *ProfileFlow[T]) FinishLogin(writer http.ResponseWriter, request *htt
 
 func (flow *ProfileFlow[T]) publicLoginDenied(profile T, public bool) bool {
 	return public && (flow.config.Owner(profile) || !flow.config.Remote(profile))
+}
+
+func (flow *ProfileFlow[T]) requireEnrollmentAuthentication(writer http.ResponseWriter, request *http.Request) bool {
+	if flow.config.RecentlyAuthenticated(request, 10*time.Minute) {
+		return true
+	}
+	flow.config.WriteError(writer, errors.New("recent authentication required"), http.StatusForbidden)
+	return false
 }
 
 func (flow *ProfileFlow[T]) requireOrigin(writer http.ResponseWriter, request *http.Request, path string) bool {

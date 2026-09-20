@@ -23,6 +23,7 @@ func (store *profileStore) resetPassword(id, password string) error {
 				return err
 			}
 			profiles[index].Credential = credential
+			profiles[index].Revision++
 			sessions := withoutProfile(store.sessions, id)
 			if err := store.saveRelated(profiles, sessions, store.apiKeys); err != nil {
 				return err

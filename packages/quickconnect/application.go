@@ -21,9 +21,8 @@ type Limiters struct {
 type Profiles struct {
 	Find          func(string) (identitycore.Profile, bool)
 	Compatibility func(identitycore.Profile) identitycore.Profile
-	Create        func(string, string) (string, error)
+	CreateLocal   func(string, string, uint64, bool) (string, error)
 	CreatePublic  func(string, string, uint64) (string, error)
-	CreateCompat  func(string, string) (string, error)
 }
 
 // Adapter supplies the true product-specific Quick Connect behavior.
@@ -71,19 +70,18 @@ func (application *Application) consumeSession(secret string, compatibility bool
 		return "", identitycore.Profile{}, err
 	}
 	profile, found := application.adapter.Profiles.Find(grant.ProfileID)
-	if !found || grant.Remote && grant.ProfileRevision != profile.Revision {
+	if !found || grant.ProfileRevision != profile.Revision {
 		return "", identitycore.Profile{}, errors.New("viewer profile was not found")
 	}
-	createSession := application.adapter.Profiles.Create
 	if grant.Remote {
 		token, err := application.adapter.Profiles.CreatePublic(profile.ID, grant.Device, grant.ProfileRevision)
 		return token, profile, err
 	}
-	if compatibility && !grant.Remote {
+	compatibility = compatibility || profile.Owner && !grant.Owner
+	if compatibility {
 		profile = application.adapter.Profiles.Compatibility(profile)
-		createSession = application.adapter.Profiles.CreateCompat
 	}
-	token, err := createSession(profile.ID, grant.Device)
+	token, err := application.adapter.Profiles.CreateLocal(profile.ID, grant.Device, grant.ProfileRevision, compatibility)
 	return token, profile, err
 }
 

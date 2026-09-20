@@ -24,7 +24,7 @@ func TestPasskeyCeremoniesAreLocalAndServerSide(t *testing.T) {
 	request.Host = "localhost:8080"
 	request.AddCookie(owner)
 	handler.ServeHTTP(account, request)
-	if account.Code != http.StatusOK || !strings.Contains(account.Body.String(), "Add a passkey") || !strings.Contains(account.Body.String(), "Add one directly on another device") || !strings.Contains(account.Body.String(), "/static/app.css?v=electric-22") || !strings.Contains(account.Body.String(), "/static/passkeys.js?v=13") {
+	if account.Code != http.StatusOK || !strings.Contains(account.Body.String(), "Add a passkey") || !strings.Contains(account.Body.String(), "Add one directly on another device") || !strings.Contains(account.Body.String(), "/static/app.css?v=electric-22") || !strings.Contains(account.Body.String(), "/static/passkeys.js?v=14") {
 		t.Fatalf("account = %d %q", account.Code, account.Body.String())
 	}
 	prompt := httptest.NewRecorder()
@@ -90,7 +90,7 @@ func TestPasskeyBeginRedirectsToConfiguredOrigin(t *testing.T) {
 
 func TestPasskeyLoginIsAvailableFromSignInPage(t *testing.T) {
 	t.Parallel()
-	servertest.PasskeyLoginIsAvailableFromSignInPage(t, New(Config{DataDir: t.TempDir(), RequireAuth: true}), "/static/passkeys.js?v=13")
+	servertest.PasskeyLoginIsAvailableFromSignInPage(t, New(Config{DataDir: t.TempDir(), RequireAuth: true}), "/static/passkeys.js?v=14")
 }
 
 func TestPasswordLoginOffersPasskeyWithConfiguredStateAndSafeReturn(t *testing.T) { //nolint:cyclop,funlen,gocognit // One login boundary covers both inventory states and invalid offer input.

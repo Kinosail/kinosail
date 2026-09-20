@@ -53,7 +53,7 @@ func (store ProfileStore) CreateSCIMProfile(input scim.ProfileInput) (Profile, e
 	rehydrate := -1
 	for index, existing := range profiles {
 		if existing.SCIMManaged && existing.SCIMDeleted && scim.SameUserName(existing.SCIMUserName, input.UserName) {
-			if rehydrate >= 0 {
+			if rehydrate >= 0 || input.ExternalID == "" || existing.SCIMExternalID != input.ExternalID {
 				return Profile{}, scim.ErrConflict
 			}
 			rehydrate = index
@@ -121,18 +121,31 @@ func (store ProfileStore) UpdateSCIMProfile(id string, input scim.ProfileInput, 
 			return Profile{}, scim.ErrConflict
 		}
 		wasDisabled := existing.Disabled
+		identityChanged := existing.SCIMExternalID != input.ExternalID
+		if identityChanged {
+			existing.Credential, existing.TOTPSecret, existing.Recovery, existing.Passkeys, existing.PasskeyUsage = "", "", nil, nil, nil
+			existing.OIDCIssuer, existing.OIDCSubject, existing.SAMLIssuer, existing.SAMLSubject = "", "", "", ""
+		}
 		existing.Name, existing.SCIMUserName, existing.SCIMExternalID = input.Name, input.UserName, input.ExternalID
 		existing.SCIMName, existing.SCIMEmails, existing.SCIMEnterprise = scim.Name{Formatted: input.Formatted, GivenName: input.GivenName, FamilyName: input.FamilyName}, append([]scim.Email(nil), input.Emails...), input.Enterprise
 		existing.Disabled, existing.Revision, existing.SCIMUpdatedAt = !input.Active, existing.Revision+1, now
 		profiles[index] = existing
 		sessions := CloneSessions(*store.config.Sessions)
-		if wasDisabled || !input.Active {
+		if wasDisabled || !input.Active || identityChanged {
 			sessions = WithoutProfile(sessions, id, false)
 		}
-		if err := store.config.Persistence.SaveRelated(profiles, sessions, *store.config.APIKeys); err != nil {
+		keys := CloneAPIKeys(*store.config.APIKeys)
+		if identityChanged {
+			for key, value := range keys {
+				if value.ProfileID == id {
+					delete(keys, key)
+				}
+			}
+		}
+		if err := store.config.Persistence.SaveRelated(profiles, sessions, keys); err != nil {
 			return Profile{}, err
 		}
-		*store.config.Profiles, *store.config.Sessions = profiles, sessions
+		*store.config.Profiles, *store.config.Sessions, *store.config.APIKeys = profiles, sessions, keys
 		return existing, nil
 	}
 	return Profile{}, scim.ErrProfileNotFound

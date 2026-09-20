@@ -55,7 +55,7 @@ func TestSAMLPendingStoreIsBounded(t *testing.T) {
 	for index := range maxPendingStates {
 		flow.pending[fmt.Sprintf("request-%d", index)] = samlTransaction{expires: time.Now().Add(time.Minute)}
 	}
-	if _, err := flow.Begin(t.Context(), "viewer"); !errors.Is(err, ErrTooManyPending) {
+	if _, err := flow.Begin(t.Context(), "viewer", "session"); !errors.Is(err, ErrTooManyPending) {
 		t.Fatalf("SAML pending limit = %v", err)
 	}
 }

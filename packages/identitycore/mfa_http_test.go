@@ -7,6 +7,7 @@ import (
 	"net/http/httptest"
 	"strings"
 	"testing"
+	"time"
 )
 
 type mfaHTTPState struct {
@@ -26,6 +27,7 @@ type webMFATest struct {
 
 func (state *mfaHTTPState) config() MFAHTTPConfig {
 	return MFAHTTPConfig{
+		RecentlyAuthenticated: func(*http.Request, time.Duration) bool { return true },
 		ReadJSON: func(writer http.ResponseWriter, request *http.Request, target any) bool {
 			state.read = true
 			if strings.Contains(request.URL.RawQuery, "read=false") {

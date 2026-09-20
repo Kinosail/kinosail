@@ -27,7 +27,7 @@ func TestSAMLCoreRejectsProviderCallbackRootAndKeyEdges(t *testing.T) { //nolint
 	metadataXML := samlMetadataDocument("https://identity.example", "/sso", certificate)
 	flow := NewSAML(SAMLConfig{MetadataXML: metadataXML, RootURL: "http://localhost", DataDir: t.TempDir()})
 	flow.sp = &saml.ServiceProvider{IDPMetadata: &saml.EntityDescriptor{}}
-	if _, err := flow.Begin(t.Context(), "viewer"); !errors.Is(err, ErrProviderUnavailable) {
+	if _, err := flow.Begin(t.Context(), "viewer", "session"); !errors.Is(err, ErrProviderUnavailable) {
 		t.Fatalf("invalid provider endpoint = %v", err)
 	}
 
@@ -36,7 +36,7 @@ func TestSAMLCoreRejectsProviderCallbackRootAndKeyEdges(t *testing.T) { //nolint
 		t.Fatalf("unavailable callback provider = %v", err)
 	}
 	flow = NewSAML(SAMLConfig{MetadataXML: metadataXML, RootURL: "http://localhost", DataDir: t.TempDir()})
-	flow.pending["request"] = samlTransaction{expires: time.Now().Add(time.Minute)}
+	flow.pending["request"] = samlTransaction{relayState: "relay", expires: time.Now().Add(time.Minute)}
 	request = samlRequest(t, "/login/saml/acs", "SAMLResponse=value&RelayState=relay")
 	if _, err := flow.Complete(httptest.NewRecorder(), request); !errors.Is(err, ErrTokenInvalid) {
 		t.Fatalf("invalid signed response = %v", err)
@@ -146,7 +146,7 @@ func TestSAMLBeginMapsAuthenticationAndRedirectErrors(t *testing.T) {
 			}
 			flow := NewSAML(SAMLConfig{MetadataXML: metadataXML, RootURL: "http://localhost", DataDir: t.TempDir()})
 			flow.sp = &saml.ServiceProvider{IDPMetadata: metadata, Key: key, Certificate: &x509.Certificate{}, SignatureMethod: "invalid"}
-			if _, err := flow.Begin(t.Context(), "viewer"); !errors.Is(err, ErrProviderUnavailable) {
+			if _, err := flow.Begin(t.Context(), "viewer", "session"); !errors.Is(err, ErrProviderUnavailable) {
 				t.Fatalf("%s authentication error = %v", name, err)
 			}
 		})

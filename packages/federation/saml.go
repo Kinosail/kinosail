@@ -26,8 +26,10 @@ const (
 type SAMLConfig struct{ MetadataURL, MetadataXML, IdentityAttribute, RootURL, DataDir string }
 
 type samlTransaction struct {
-	profileID string
-	expires   time.Time
+	relayState  string
+	profileID   string
+	linkSession string
+	expires     time.Time
 }
 
 // SAML owns service-provider keys, provider metadata, request state, and assertion validation.
@@ -47,8 +49,9 @@ type SAMLStart struct {
 
 // SAMLCallback is the verified result of one assertion response.
 type SAMLCallback struct {
-	Identity  Identity
-	ProfileID string
+	Identity    Identity
+	ProfileID   string
+	LinkSession string
 }
 
 // NewSAML creates an isolated SAML flow.
@@ -71,7 +74,7 @@ func (flow *SAML) Configured() bool {
 }
 
 // Begin creates one bounded request after it validates provider metadata and its destination.
-func (flow *SAML) Begin(ctx context.Context, profileID string) (SAMLStart, error) {
+func (flow *SAML) Begin(ctx context.Context, profileID, linkSession string) (SAMLStart, error) {
 	sp, err := flow.serviceProvider(ctx, true, true)
 	if err != nil {
 		return SAMLStart{}, err
@@ -91,10 +94,10 @@ func (flow *SAML) Begin(ctx context.Context, profileID string) (SAMLStart, error
 		flow.mu.Unlock()
 		return SAMLStart{}, ErrTooManyPending
 	}
-	flow.pending[authentication.ID] = samlTransaction{profileID: profileID, expires: now.Add(transactionTTL)}
+	relayState := rand.Text()
+	flow.pending[authentication.ID] = samlTransaction{relayState: relayState, profileID: profileID, linkSession: linkSession, expires: now.Add(transactionTTL)}
 	flow.mu.Unlock()
 	start := SAMLStart{IDPURL: idpURL}
-	relayState := rand.Text()
 	if binding == saml.HTTPPostBinding {
 		start.PostHTML = authentication.Post(relayState)
 		return start, nil
@@ -121,8 +124,10 @@ func (flow *SAML) Complete(writer http.ResponseWriter, request *http.Request) (S
 	now := time.Now()
 	prune(flow.pending, now, func(transaction samlTransaction) time.Time { return transaction.expires })
 	requestIDs := make([]string, 0, len(flow.pending))
-	for id := range flow.pending {
-		requestIDs = append(requestIDs, id)
+	for id, pending := range flow.pending {
+		if pending.relayState != "" && pending.relayState == request.PostForm.Get("RelayState") {
+			requestIDs = append(requestIDs, id)
+		}
 	}
 	flow.mu.Unlock()
 	if len(requestIDs) == 0 {
@@ -144,7 +149,7 @@ func samlCallbackResult(assertion *saml.Assertion, subject string, transaction s
 	if !found {
 		return SAMLCallback{}, ErrInvalidState
 	}
-	return SAMLCallback{Identity: Identity{Issuer: assertion.Issuer.Value, Subject: subject}, ProfileID: transaction.profileID}, nil
+	return SAMLCallback{Identity: Identity{Issuer: assertion.Issuer.Value, Subject: subject}, ProfileID: transaction.profileID, LinkSession: transaction.linkSession}, nil
 }
 
 func (flow *SAML) takeTransaction(requestID string) (samlTransaction, bool) {
@@ -244,8 +249,7 @@ func (flow *SAML) loadMetadata(ctx context.Context) (*saml.EntityDescriptor, err
 	if flow.config.MetadataXML != "" {
 		metadata, err = samlsp.ParseMetadata([]byte(flow.config.MetadataXML))
 	} else {
-		metadataURL, _ := url.Parse(flow.config.MetadataURL)
-		metadata, err = samlsp.FetchMetadata(ctx, samlHTTPClient(), *metadataURL)
+		metadata, err = fetchSAMLMetadata(ctx, flow.config.MetadataURL)
 	}
 	if err == nil {
 		_, _, err = samlProviderEndpoint(metadata)
