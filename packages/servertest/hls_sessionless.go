@@ -49,6 +49,9 @@ func assertSessionlessHLSTimeline(t *testing.T, serve func(http.ResponseWriter, 
 	if response.Code != http.StatusOK || response.Body.String() != want {
 		t.Fatalf("playlist status/body = %d %q; want %q", response.Code, response.Body.String(), want)
 	}
+	if response.Header().Get("Content-Type") != "application/vnd.apple.mpegurl" || response.Header().Get("X-Content-Type-Options") != "nosniff" {
+		t.Fatal("playlist lacks a non-HTML content contract")
+	}
 	assertHLSSessionTimelineParity(t, serve, path, duration, want)
 	original, err := os.ReadFile(path)
 	if err != nil || string(original) != manifest {

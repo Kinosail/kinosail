@@ -9,7 +9,7 @@ import unittest
 
 ROOT = Path(__file__).resolve().parents[2]
 CHECKER = 'scripts/tooling/check-file-loc.py'
-LEGACY = 'packages/webassets/static/downloads.js'
+LEGACY = 'apps/dashboard/internal/server/web/static/dashboard.css'
 
 
 class FileCapTests(unittest.TestCase):
@@ -53,10 +53,10 @@ class FileCapTests(unittest.TestCase):
                     (self.repo / name).unlink()
 
     def test_legacy_files_cannot_grow_and_strict_lists_debt(self):
-        self.write(LEGACY, 335)
+        self.write(LEGACY, 316)
         self.assertIn('1 existing oversized', self.run_cap().stdout)
         self.run_cap('--strict', expected=1)
-        self.write(LEGACY, 336)
+        self.write(LEGACY, 317)
         self.run_cap(expected=1)
         self.write(LEGACY, 300)
         self.assertNotIn('oversized', self.run_cap('--strict').stdout)

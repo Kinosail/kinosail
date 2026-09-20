@@ -144,6 +144,14 @@ func (manager *subtitleManager) inspectSubtitle(request *http.Request, id, langu
 }
 
 func subtitleReviewSource(item library.Item, language string) (string, []byte, error) {
+	if !filepath.IsLocal(language) || filepath.Base(language) != language {
+		return "", nil, errors.New("subtitle language is invalid")
+	}
+	canonical, err := validateSubtitleLanguages([]string{language})
+	if err != nil {
+		return "", nil, err
+	}
+	language = canonical[0]
 	target := subtitleSidecarPath(item, language)
 	if _, err := os.Lstat(target); err == nil {
 		data, readErr := readUpgradeSidecar(target)

@@ -43,6 +43,8 @@ func serveHLSPlaylistWithSession(writer http.ResponseWriter, request *http.Reque
 		localizedError(writer, request, "playlist contains an invalid media reference", http.StatusServiceUnavailable)
 		return
 	}
+	writer.Header().Set("Content-Type", "application/vnd.apple.mpegurl")
+	writer.Header().Set("X-Content-Type-Options", "nosniff")
 	//nolint:gosec // G705: every URI is a fixed relative HLS filename and the optional session is URL-escaped.
 	_, _ = writer.Write(rewritten)
 }

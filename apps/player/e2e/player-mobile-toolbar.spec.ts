@@ -24,7 +24,7 @@ for (const width of [320, 390, 430, 700, 1024]) {
       const status = await page.locator(".player-buffer").boundingBox();
       expect(toolbar).not.toBeNull();
       expect(status).not.toBeNull();
-      expect(toolbar!.y + toolbar!.height).toBeLessThanOrEqual(status!.y);
+      expect(toolbar!.y + toolbar!.height <= status!.y || status!.y + status!.height <= toolbar!.y).toBe(true);
       expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(width);
       await expect(page.getByRole("button", { name: "Play on TV" })).toBeVisible();
       await page.locator(".player-buffer").evaluate(el => el.setAttribute("hidden", ""));

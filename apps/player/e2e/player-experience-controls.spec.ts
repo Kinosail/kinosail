@@ -117,13 +117,15 @@ test("device playback stays available in the player toolbar on compact screens",
 
 test("AirPlay playback follows native receiver availability", async ({ page }) => {
   const cast = page.locator("[data-cast]");
-  await expect(cast).toBeHidden();
+  await expect(cast).toBeVisible();
+  await expect(cast).toBeDisabled();
   await page.evaluate(() => {
     const event = new Event("webkitplaybacktargetavailabilitychanged");
     Object.defineProperty(event, "availability", {value: "available"});
     document.querySelector("video")?.dispatchEvent(event);
   });
   await expect(cast).toBeVisible();
+  await expect(cast).toBeEnabled();
   await cast.click();
   await expect.poll(() => page.evaluate(() => (window as Window & {airplayPickerCalls: number}).airplayPickerCalls)).toBe(1);
   await page.evaluate(() => {
@@ -131,16 +133,18 @@ test("AirPlay playback follows native receiver availability", async ({ page }) =
     Object.defineProperty(event, "availability", {value: "not-available"});
     document.querySelector("video")?.dispatchEvent(event);
   });
-  await expect(cast).toBeHidden();
+  await expect(cast).toBeVisible();
+  await expect(cast).toBeDisabled();
 });
 
-test("AirPlay stays hidden without the availability constructor until a receiver appears", async ({ page }) => {
+test("AirPlay stays disabled without the availability constructor until a receiver appears", async ({ page }) => {
   const cast = page.locator("[data-cast]");
   expect(await page.locator("video").evaluate((video) => ({
     remote: (video as HTMLVideoElement & {remote?: EventTarget}).remote ?? null,
     availabilityConstructor: typeof (window as Window & {WebKitPlaybackTargetAvailabilityEvent?: typeof Event}).WebKitPlaybackTargetAvailabilityEvent,
   }))).toEqual({remote: null, availabilityConstructor: "undefined"});
-  await expect(cast).toBeHidden();
+  await expect(cast).toBeVisible();
+  await expect(cast).toBeDisabled();
   await page.evaluate(() => {
     const event = new Event("webkitplaybacktargetavailabilitychanged");
     Object.defineProperty(event, "availability", {value: "available"});
@@ -151,9 +155,11 @@ test("AirPlay stays hidden without the availability constructor until a receiver
 
 test("remote playback follows device availability and connection state", async ({ page }) => {
   const cast = page.locator("[data-cast]");
-  await expect(cast).toBeHidden();
+  await expect(cast).toBeVisible();
+  await expect(cast).toBeDisabled();
   await page.evaluate(() => (window as Window & {setRemoteAvailability: (available: boolean) => void}).setRemoteAvailability(true));
   await expect(cast).toBeVisible();
+  await expect(cast).toBeEnabled();
   await cast.click();
   await expect(page.locator("[data-cast-state]")).toContainText("Playing on device");
   await page.evaluate(() => {

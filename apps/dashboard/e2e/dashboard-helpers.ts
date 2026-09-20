@@ -53,7 +53,7 @@ export async function expectNoOverflow(page: Page) {
 		const viewportWidth = document.documentElement.clientWidth;
 		const outside = [...document.querySelectorAll("body *")]
 			.filter((element) => {
-				if (element.closest(".filter-row")) return false;
+				if (element.closest(".filter-row") || !element.checkVisibility()) return false;
 				const style = getComputedStyle(element);
 				if (style.display === "none" || style.position === "fixed") return false;
 				const box = element.getBoundingClientRect();

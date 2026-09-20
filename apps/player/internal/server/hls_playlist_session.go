@@ -147,6 +147,8 @@ func serveHLSPlaylistWithSession(writer http.ResponseWriter, request *http.Reque
 	if ticket, ok := request.Context().Value(castTicketKey{}).(string); ok {
 		manifest = hlsPlaylistWithQuery(manifest, url.Values{"ticket": {ticket}})
 	}
+	writer.Header().Set("Content-Type", "application/vnd.apple.mpegurl")
+	writer.Header().Set("X-Content-Type-Options", "nosniff")
 	//nolint:gosec // G705: the response is HLS, and all inserted query values are validated scalars.
 	_, _ = writer.Write(manifest)
 	return true

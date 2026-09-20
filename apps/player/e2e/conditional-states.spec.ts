@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { fixtureDocument } from "../../../scripts/testing/fixture-document";
 import { uiElementAttachment, uiElementInventory } from "../../../scripts/testing/ui-element-inventory";
 import AxeBuilder from "@axe-core/playwright";
 import { readFile } from "node:fs/promises";
@@ -19,10 +20,8 @@ for (const viewport of viewports) {
 		await page.setViewportSize(viewport);
 		for (const state of states) {
 			const source = await readFile(join(directory!, `${state}.html`), "utf8");
-			const html = (state === "supporter-certificate" ? `<!doctype html><html lang="en"><head><title>Supporter certificate</title></head><body><main><h1 style="position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)">Supporter certificate</h1>${source}</main></body></html>` : source)
-				.replace("<html", '<html data-theme="dark"')
-				.replace(/<link[^>]+app\.css[^>]*>/, `<style>${css}</style>`)
-				.replace(/<script[^>]*src=[^>]*><\/script>/g, "");
+			const rendered = (state === "supporter-certificate" ? `<!doctype html><html lang="en"><head><title>Supporter certificate</title></head><body><main><h1 style="position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)">Supporter certificate</h1>${source}</main></body></html>` : source);
+			const html = await page.evaluate(fixtureDocument, { source: rendered, css, dark: true });
 			await page.setContent(html, { waitUntil: "domcontentloaded" });
 			await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
 			await expect(page.locator("main")).toBeVisible();

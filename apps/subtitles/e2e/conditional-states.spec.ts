@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { fixtureDocument } from "../../../scripts/testing/fixture-document";
 import { uiElementAttachment, uiElementInventory } from "../../../scripts/testing/ui-element-inventory";
 import AxeBuilder from "@axe-core/playwright";
 import { readFile } from "node:fs/promises";
@@ -25,7 +26,7 @@ for (const viewport of viewports) {
 		await page.setViewportSize(viewport);
 		for (const state of states) {
 			const source = await readFile(join(directory!, `${state}.html`), "utf8");
-			const html = source.replace(/<link[^>]+app\.css[^>]*>/, `<style>${css}</style>`).replace(/<script[^>]*src=[^>]*><\/script>/g, "");
+			const html = await page.evaluate(fixtureDocument, { source, css });
 			await page.setContent(html, { waitUntil: "domcontentloaded" });
 			await expect(page.locator("main")).toBeVisible();
 			const accessibility = (await new AxeBuilder({ page }).analyze()).violations.map(({ id }) => id);

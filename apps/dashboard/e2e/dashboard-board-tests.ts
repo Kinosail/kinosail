@@ -252,11 +252,14 @@ export function registerDashboardBoardTests() {
 		const target = page.locator(".app-tile").nth(targetIndex);
 		await handle.evaluate(element => element.scrollIntoView({ block: "center" }));
 		const handleBox = await handle.boundingBox();
-		const targetBox = await target.boundingBox();
+		let targetBox = await target.boundingBox();
 		if (!handleBox || !targetBox) throw new Error("Drag controls were not rendered");
 		await page.mouse.move(handleBox.x + handleBox.width / 2, handleBox.y + handleBox.height / 2);
 		await page.mouse.down();
 		await expect(handle.locator("xpath=ancestor::article")).toHaveAttribute("data-dragging", "true");
+		await target.scrollIntoViewIfNeeded();
+		targetBox = await target.boundingBox();
+		if (!targetBox) throw new Error("Drag destination was not rendered");
 		await page.mouse.move(targetBox.x + targetBox.width / 2, targetBox.y + targetBox.height / 2 + 20);
 		await expect.poll(async () => (await page.locator(".app-name").allTextContents()).indexOf(movedName)).toBe(targetIndex);
 		await page.mouse.up();
