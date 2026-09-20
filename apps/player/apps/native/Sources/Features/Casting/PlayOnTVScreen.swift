@@ -65,6 +65,7 @@ struct PlayOnTVScreen: View {
             }
             if let message { Section { Text(message).foregroundStyle(.secondary) } }
         }
+        .tvOSConfigurationLayout(title: "Play on TV", symbol: "tv")
         .navigationTitle("Play on TV")
         #if os(tvOS)
         .focusScope(castFocus)

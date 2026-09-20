@@ -42,6 +42,7 @@ struct ApprovalScreen: View {
             }
             if let error { Section { Text(error).foregroundStyle(.red) } }
         }
+        .tvOSConfigurationLayout(title: "Connect a TV", symbol: "tv")
         .navigationTitle("Connect a TV")
         .onChange(of: session.client?.identity) { _, _ in
             approval = nil

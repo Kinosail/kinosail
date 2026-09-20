@@ -46,7 +46,9 @@ private struct TabPreferencesEditor: View {
         #if os(iOS)
         .scrollContentBackground(.hidden)
         #endif
-        .background(KinoTheme.background).navigationTitle("Customize tabs")
+        .background(KinoTheme.background)
+        .navigationTitle("Customize tabs")
+        .tvOSConfigurationLayout(title: "Customize tabs", symbol: "rectangle.3.group")
     }
     private func save(_ items: [PlayerTab]) {
         do {

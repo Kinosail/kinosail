@@ -4,6 +4,7 @@ struct PlaybackTracksScreen: View {
     @Environment(\.dismiss) private var dismiss
     var body: some View {
         List { PlaybackTrackSections() }
+            .tvOSConfigurationLayout(title: "Audio & subtitles", symbol: "captions.bubble")
             .navigationTitle("Audio & subtitles")
             .toolbar { ToolbarItem(placement: .confirmationAction) { Button("Done") { dismiss() } } }
     }
@@ -98,6 +99,7 @@ struct PlaybackSpeedScreen: View {
             }
             if changing { ProgressView("Changing speed…") }
         }
+        .tvOSConfigurationLayout(title: "Playback speed", symbol: "speedometer")
         .navigationTitle("Playback speed")
         .toolbar { ToolbarItem(placement: .confirmationAction) { Button("Done") { dismiss() } } }
     }

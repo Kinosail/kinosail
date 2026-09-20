@@ -62,6 +62,7 @@ struct SetupScreen: View {
                     }
                 }
             }
+            .tvOSConfigurationLayout(title: "Connect to your library", symbol: "server.rack")
             #if os(tvOS)
             .navigationTitle("")
             .toolbar {

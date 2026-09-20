@@ -46,13 +46,11 @@ struct SettingsScreen: View {
                 }.disabled(signingOut)
             }
         }
-        #if os(tvOS)
-        .frame(maxWidth: 900)
-        #endif
         #if os(iOS)
         .scrollContentBackground(.hidden)
         #endif
         .background(KinoTheme.background)
         .navigationTitle("Settings")
+        .tvOSConfigurationLayout(title: "Settings", symbol: "gearshape")
     }
 }

@@ -35,6 +35,7 @@ struct BookmarksScreen: View {
                 }
             }
         }
+        .tvOSConfigurationLayout(title: "Bookmarks", symbol: "bookmark")
         .navigationTitle("Bookmarks")
         .navigationDestination(item: $destination) { DestinationScreen(destination: $0) }
         .task(id: "\(session.profileKey ?? ""):\(itemID):\(revision)") {
@@ -110,6 +111,7 @@ struct ProgressSyncScreen: View {
             }
             if !entries.isEmpty { Button("Sync now") { Task { await synchronize() } }.disabled(busy) }
         }
+        .tvOSConfigurationLayout(title: "Progress sync", symbol: "arrow.triangle.2.circlepath")
         .navigationTitle("Progress sync")
         .task { await synchronize() }
     }

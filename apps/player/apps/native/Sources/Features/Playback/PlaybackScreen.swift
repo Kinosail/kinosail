@@ -133,6 +133,7 @@ struct PlaybackToolsScreen: View {
                 }
             }
         }
+        .tvOSConfigurationLayout(title: "Playback options", symbol: "play.circle")
         .navigationTitle("Playback options")
         #if os(tvOS)
         .focusScope(playbackToolsFocus)
