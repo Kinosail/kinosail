@@ -17,9 +17,9 @@ status=0
 apps=(player subtitles dashboard)
 if (( $# == 1 )); then
   apps=("$1")
-  [[ "$1" != packages ]] || apps=()
 fi
 for app in "${apps[@]}"; do
+	[[ "$app" != packages ]] || continue
 	directory="$repo/apps/$app"
 	mkdir -p "$directory/.verification"
 	if [[ -x "$directory/scripts/with-go-module.sh" ]]; then

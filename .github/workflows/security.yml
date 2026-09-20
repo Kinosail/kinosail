@@ -30,11 +30,19 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
           persist-credentials: false
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e
+        if: matrix.language == 'go'
+        with:
+          go-version-file: go.work
+          cache-dependency-path: "**/go.sum"
       - uses: github/codeql-action/init@d8073367669608af8fbcc5f63dd0a0d52bb90cff
         with:
           languages: ${{ matrix.language }}
-          build-mode: none
+          build-mode: ${{ matrix.language == 'go' && 'manual' || 'none' }}
           queries: security-extended
+      - name: Build all Go modules for CodeQL
+        if: matrix.language == 'go'
+        run: go build ./apps/player/... ./apps/subtitles/... ./apps/dashboard/... ./packages/...
       - uses: github/codeql-action/analyze@d8073367669608af8fbcc5f63dd0a0d52bb90cff
 
   supply-chain:

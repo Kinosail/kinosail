@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
+# Compose must use the verified image pin from the installation.
+unset KINOSAIL_IMAGE
 
 root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 if command -v podman >/dev/null && podman compose version >/dev/null 2>&1; then

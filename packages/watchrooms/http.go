@@ -172,8 +172,13 @@ func (handler *HTTP) join(writer http.ResponseWriter, request *http.Request) (jo
 
 func (handler *HTTP) writeEvents(request *http.Request, connection *websocket.Conn, subscription *Subscription) {
 	for event := range subscription.Events() {
-		fresh, _, authorized := handler.config.Reauthorize(request, roomEventsRoute)
-		if !authorized || !handler.mediaVisible(fresh, event.Media) || wsjson.Write(request.Context(), connection, event) != nil {
+		fresh, viewer, authorized := handler.config.Reauthorize(request, roomEventsRoute)
+		media := event.Media
+		if event.Action == "denied" {
+			current, _ := handler.config.Rooms.Snapshot(subscription.roomID, viewer)
+			media = current.Media
+		}
+		if !authorized || !handler.mediaVisible(fresh, media) || wsjson.Write(request.Context(), connection, event) != nil {
 			subscription.Close()
 			break
 		}

@@ -126,3 +126,26 @@ func TestEventDeliveryReauthorizesBeforeSendingHiddenMedia(t *testing.T) {
 	assertHTTPConnectionClosed(t, client)
 	<-done
 }
+
+func TestDeniedEventStillRequiresRoomVisibility(t *testing.T) {
+	harness := newHTTPHarness(t)
+	client, server := httpWebSocketPair(t)
+	roomID, _ := harness.rooms.Create("leader", "movie", 0)
+	_, leader, _ := harness.rooms.Join(roomID, "leader")
+	defer leader.Close()
+	_, restricted, _ := harness.rooms.Join(roomID, "restricted")
+	defer restricted.Close()
+	if !harness.rooms.Update(leader, Event{Action: "media", Media: "hidden"}, true) {
+		t.Fatal("leader update rejected")
+	}
+	<-restricted.Events()
+	if !harness.rooms.Update(restricted, Event{Action: "play", Media: "movie"}, true) {
+		t.Fatal("viewer denial was not queued")
+	}
+	request := httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/", nil)
+	request.Header.Set("X-Viewer", "restricted")
+	done := make(chan struct{})
+	go func() { defer close(done); harness.handler.writeEvents(request, server, restricted) }()
+	assertHTTPConnectionClosed(t, client)
+	<-done
+}
