@@ -17,6 +17,9 @@ func TestStaticAndHealthResponsesHaveSecurityHeaders(t *testing.T) {
 		{path: "/healthz", cacheControl: "no-store"},
 		{path: "/static/app.js", cacheControl: "no-cache"},
 		{path: "/static/dashboard.css", cacheControl: "no-cache"},
+		{path: "/static/manrope.woff2", cacheControl: "no-cache"},
+		{path: "/static/last-light.css", cacheControl: "no-cache"},
+		{path: "/static/appearance.js", cacheControl: "no-cache"},
 		{path: "/service-worker.js", cacheControl: "no-cache"},
 	}
 	for _, test := range tests {

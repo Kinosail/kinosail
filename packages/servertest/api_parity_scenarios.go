@@ -67,7 +67,7 @@ func viewerMediaStateAndCurationAreAvailableThroughAPI(t *testing.T, fixture API
 	listed := APICall(t, handler, token, http.MethodGet, "/api/v1/library?view=list", nil)
 	AssertAPIBody(t, listed, http.StatusOK, `"view":"list"`, `"total":1`, `"title":"Arrival"`)
 	listedPage := APICall(t, handler, token, http.MethodGet, "/?view=list", nil)
-	AssertAPIBody(t, listedPage, http.StatusOK, `aria-current="page" href="/?view=list">My List`, "Arrival", "The things you want to come back to.")
+	AssertAPIBody(t, listedPage, http.StatusOK, `aria-current="page" href="/?view=list">My List`, "Arrival", "Titles you have saved for later.")
 }
 
 func ownerCanManagePlaybackMarkersThroughAPI(t *testing.T, fixture APIParityFixture) {

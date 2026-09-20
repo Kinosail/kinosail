@@ -48,6 +48,7 @@ export function registerDashboardBoardTests() {
 		await login(page);
 		await resetBoard(page);
 		await page.getByRole("button", { name: "Open board settings" }).click();
+		await page.locator("#settings-dialog summary").filter({ hasText: /^Backup$/ }).click();
 		await page.locator("#external-import-file").setInputFiles({
 			name: "broken.yml",
 			mimeType: "text/yaml",
@@ -60,7 +61,7 @@ export function registerDashboardBoardTests() {
 			buffer: Buffer.from("pageInfo:\n  title: Family\nsections:\n  - name: Media\n    items:\n      - title: Jellyfin\n        url: http://127.0.0.1:8096\n"),
 		});
 		await expect(page.locator("#settings-error")).toBeHidden();
-		await expect(page.getByText("1 applications ready from dashy")).toBeVisible();
+		await expect(page.getByText("Applications ready to import from dashy: 1")).toBeVisible();
 		await expect(page.getByText("Jellyfin · http://127.0.0.1:8096")).toBeVisible();
 		await page.getByRole("button", { name: "Add these applications" }).click();
 		await expect(page.locator("#app-grid").getByText("Jellyfin", { exact: true })).toBeVisible();
@@ -81,13 +82,13 @@ export function registerDashboardBoardTests() {
 		await page.getByRole("button", { name: "Add application" }).click();
 		await expect(page.getByRole("heading", { name: "Add application" })).toBeVisible();
 		expect((await new AxeBuilder({ page }).include("#app-dialog").analyze()).violations).toEqual([]);
-		await page.getByLabel("Search the app dictionary").fill("subtitle");
+		await page.getByLabel("Search known applications").fill("subtitle");
 		await expect(page.getByRole("button", { name: "Kinosail Subtitles" })).toBeVisible();
-		await page.getByLabel("Search the app dictionary").fill("");
+		await page.getByLabel("Search known applications").fill("");
 		await page.getByRole("button", { name: "Jellyfin" }).click();
 		await page.getByLabel("Application address").fill("http://127.0.0.1:8096");
 		await expect(page.locator("#app-dialog")).not.toContainText("30 seconds");
-		await page.getByLabel("Check reachability automatically").uncheck();
+		await page.getByLabel("Check availability automatically").uncheck();
 		await page.locator("#app-dialog").getByRole("button", { name: "Add application", exact: true }).click();
 		await expect(page.locator("#app-grid").getByText("Jellyfin", { exact: true })).toBeVisible();
 
@@ -159,6 +160,7 @@ export function registerDashboardBoardTests() {
 		await page.getByRole("button", { name: "Confirm removal" }).click();
 		await expect(page.locator(".app-tile", { hasText: "Jellyfin" })).toHaveCount(0);
 		await page.getByRole("button", { name: "Open board settings" }).click();
+		await page.locator("#settings-dialog summary").filter({ hasText: /^Recently removed$/ }).click();
 		const removed = page.locator(".removed-row", { hasText: "Jellyfin" });
 		await removed.getByRole("button", { name: "Restore" }).click();
 		await expect(page.locator(".app-tile", { hasText: "Jellyfin" })).toBeVisible();

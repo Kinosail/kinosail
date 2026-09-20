@@ -58,3 +58,50 @@ func TestProbeDialRejectsUnboundedAddressesBeforeDial(t *testing.T) {
 		}
 	}
 }
+
+func TestProbeDialExhaustsFailuresAndClosesFailedConnections(t *testing.T) {
+	for _, dialError := range []error{nil, errors.New("refused")} {
+		first, peer := net.Pipe()
+		calls := 0
+		addresses := []net.IPAddr{{IP: net.ParseIP("10.0.0.1")}, {IP: net.ParseIP("10.0.0.2")}}
+		connection, err := dialProbeAddresses(t.Context(), "tcp", "443", addresses, func(context.Context, string, string) (net.Conn, error) {
+			calls++
+			if calls == 1 {
+				return first, errors.New("partial connection")
+			}
+			return nil, dialError
+		})
+		if connection != nil || err == nil || calls != 2 {
+			t.Fatalf("dial = %v, %v; calls %d", connection, err, calls)
+		}
+		if dialError != nil && !errors.Is(err, dialError) {
+			t.Fatalf("last error lost: %v", err)
+		}
+		if dialError == nil && err.Error() != "probe could not connect" {
+			t.Fatalf("empty result: %v", err)
+		}
+		assertProbeConnectionClosed(t, peer)
+		_ = peer.Close()
+	}
+}
+
+func TestProbeResolutionRejectsEmptyAndExcessiveAddresses(t *testing.T) {
+	for _, addresses := range [][]net.IPAddr{nil, make([]net.IPAddr, 65)} {
+		if err := validateResolvedProbeAddresses("server.local", addresses, nil); err == nil {
+			t.Fatal("invalid address count accepted")
+		}
+	}
+}
+
+func assertProbeConnectionClosed(t *testing.T, peer net.Conn) {
+	t.Helper()
+	_ = peer.SetReadDeadline(time.Now().Add(time.Second))
+	_, err := peer.Read(make([]byte, 1))
+	if err == nil {
+		t.Fatal("failed connection remained open")
+	}
+	var timeout net.Error
+	if errors.As(err, &timeout) && timeout.Timeout() {
+		t.Fatal("failed connection leaked")
+	}
+}

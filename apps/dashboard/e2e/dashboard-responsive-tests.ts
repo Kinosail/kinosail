@@ -4,11 +4,11 @@ import { expectNoOverflow, login, screenshot } from "./dashboard-helpers";
 
 export function registerDashboardResponsiveTests() {
   for (const viewport of [
-    { width: 1440, height: 900, columns: 4 },
-    { width: 1024, height: 768, columns: 3 },
+    { width: 1440, height: 900, columns: 2 },
+    { width: 1024, height: 768, columns: 2 },
     { width: 720, height: 450, columns: 2 },
-    { width: 390, height: 844, columns: 2 },
-    { width: 320, height: 700, columns: 2 },
+    { width: 390, height: 844, columns: 1 },
+    { width: 320, height: 700, columns: 1 },
   ]) {
     test(`keeps one populated board usable at ${viewport.width}px`, async ({ page }, testInfo) => {
       await page.setViewportSize(viewport);
@@ -16,11 +16,12 @@ export function registerDashboardResponsiveTests() {
       await expect(page.locator(".app-tile")).toHaveCount(7);
       await expectNoOverflow(page);
       const columns = await page.locator("#app-grid").evaluate(element => getComputedStyle(element).gridTemplateColumns.split(" ").length);
-      expect(columns).toBeGreaterThanOrEqual(viewport.columns);
+      expect(columns).toBe(viewport.columns);
       const firstRowTops = await page.locator(".app-tile").evaluateAll((tiles, count) => tiles.slice(0, count).map(tile => Math.round(tile.getBoundingClientRect().top)), viewport.columns);
       expect(new Set(firstRowTops).size).toBe(1);
       const headingSize = await page.locator("#board-title").evaluate(element => Number.parseFloat(getComputedStyle(element).fontSize));
-      expect(headingSize).toBeLessThanOrEqual(38);
+      const rem = await page.evaluate(() => Number.parseFloat(getComputedStyle(document.documentElement).fontSize));
+      expect(headingSize).toBeCloseTo(viewport.width <= 760 ? 2.75 * rem : Math.min(4.5 * rem, Math.max(2.5 * rem, viewport.width * 0.045)), 0);
       if (viewport.width <= 390) {
         const filterHeight = await page.locator("#category-filters").evaluate(element => ({ client: element.clientHeight, scroll: element.scrollHeight }));
         expect(filterHeight.scroll).toBeLessThanOrEqual(filterHeight.client + 1);

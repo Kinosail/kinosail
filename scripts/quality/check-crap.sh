@@ -24,7 +24,7 @@ for app in "${apps[@]}"; do
 		targets=()
 		while IFS= read -r package; do
 			case "$package" in
-			*/archivetest|*/commandtest|*/configurationtest|*/servertest) ;;
+			*/archivetest|*/archivetest/*|*/commandtest|*/commandtest/*|*/configurationtest|*/configurationtest/*|*/servertest|*/servertest/*) ;;
 			*) targets+=("$package") ;;
 			esac
 		done < <(go list ./...)
@@ -34,9 +34,9 @@ for app in "${apps[@]}"; do
 	mkdir -p .verification
 	if [[ ! -f .verification/coverage.out ]]; then
 		if [[ -x scripts/with-go-module.sh ]]; then
-			./scripts/with-go-module.sh go test -count=1 -coverprofile=.verification/coverage.out ./...
+			./scripts/with-go-module.sh go test -count=1 -coverprofile=.verification/coverage.out "${targets[@]}"
 		else
-			go test -count=1 -coverprofile=.verification/coverage.out ./...
+			go test -count=1 -coverprofile=.verification/coverage.out "${targets[@]}"
 		fi
 	fi
 	"$tools/metrics" crap .verification/coverage.out "${targets[@]}"

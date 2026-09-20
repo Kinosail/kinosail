@@ -126,6 +126,10 @@ jobs:
         with:
           go-version-file: packages/go.mod
           cache-dependency-path: packages/go.sum
+      - name: Install archive test dependency
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libarchive-tools
       - run: make -C packages tidy-check test-race consumer-test
 
   required:

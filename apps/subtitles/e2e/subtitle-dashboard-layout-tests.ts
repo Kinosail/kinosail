@@ -50,9 +50,11 @@ test("Overview search finds covered titles and offers a clear recovery", async (
   await expect(page).toHaveURL("/?view=library");
   await expect(search).toHaveValue("");
   await page.getByRole("link", { name: "Wanted", exact: true }).click();
+  await expect(page).toHaveURL("/?view=wanted");
+  await expect(search).toHaveValue("");
   await search.fill("No matching fixture title");
   await search.press("Enter");
-  await expect(page).toHaveURL(/view=wanted/);
+  await expect(page).toHaveURL(url => url.searchParams.get("view") === "wanted" && url.searchParams.get("q") === "No matching fixture title");
   await expect(page.getByRole("heading", { name: "No files match." })).toBeVisible();
   await page.getByRole("link", { name: "Clear filters", exact: true }).click();
   await expect(page).toHaveURL("/?view=wanted");
@@ -82,11 +84,13 @@ test("Dashboard stays readable and accessible at every supported width", async (
     if (viewport.width <= 390) {
       const alignment = await page.locator(".subtitle-coverage-stat").evaluate((element) => {
         const parent = element.getBoundingClientRect();
-        const meter = element.querySelector("meter")!.getBoundingClientRect();
-        return meter.left >= parent.left && meter.right <= parent.right;
+        const visible = [...element.querySelectorAll("p, .subtitle-text-link")].map((child) => child.getBoundingClientRect());
+        return visible.length > 0 && visible.every((box) => box.width > 0 && box.left >= parent.left && box.right <= parent.right);
       });
       expect(alignment).toBe(true);
-      expect(await occludedTargets(page, [".subtitle-background-note"], [".app-header nav"])).toEqual([]);
+      await expect(page.locator(".subtitle-coverage-stat > p")).toContainText(/\d+ of \d+ files ready/);
+      await expect(page.locator(".subtitle-coverage-stat meter")).toBeHidden();
+      expect(await occludedTargets(page, [".subtitle-coverage-stat > p", ".subtitle-overview-actions .button"], [".app-header nav"])).toEqual([]);
     }
     const accessibility = await new AxeBuilder({ page }).include("main").analyze();
     expect(accessibility.violations).toEqual([]);
@@ -106,7 +110,8 @@ test("Dashboard preserves keyboard and high-contrast operation", async ({ page }
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.screenshot({ path: testInfo.outputPath("subtitle-dashboard-reduced-motion.png") });
   await page.emulateMedia({ forcedColors: "active" });
-  await expect(page.getByRole("meter", { name: "Subtitle coverage" })).toBeVisible();
+  await expect(page.locator(".subtitle-coverage-stat > p")).toBeVisible();
+  await expect(page.locator(".subtitle-coverage-stat > p")).toContainText(/\d+ of \d+ files ready/);
   await page.screenshot({ path: testInfo.outputPath("subtitle-dashboard-forced-colors.png") });
 });
 
@@ -116,9 +121,9 @@ test("Compact navigation does not cover the current subtitle task", async ({ pag
     await page.setViewportSize(viewport);
     await page.goto("/");
     if (viewport.height <= 600) {
-      failures.push(...(await initiallyOccludedTargets(page, [".subtitle-overview-copy h2", ".subtitle-coverage-stat meter", ".subtitle-overview-actions .button"], [".app-header nav"])).map((failure) => `${viewport.width}px dashboard: ${failure}`));
+      failures.push(...(await initiallyOccludedTargets(page, [".subtitle-overview-copy h2", ".subtitle-coverage-stat > p", ".subtitle-overview-actions .button"], [".app-header nav"])).map((failure) => `${viewport.width}px dashboard: ${failure}`));
     }
-    failures.push(...(await occludedTargets(page, [".subtitle-coverage-stat meter", ".subtitle-overview-copy h2", ".subtitle-overview-actions .button", ".subtitle-background-note", ".subtitle-system-correction"], [".app-header nav"])).map((failure) => `${viewport.width}px dashboard: ${failure}`));
+    failures.push(...(await occludedTargets(page, [".subtitle-coverage-stat > p", ".subtitle-overview-copy h2", ".subtitle-overview-actions .button", ".subtitle-system-correction"], [".app-header nav"])).map((failure) => `${viewport.width}px dashboard: ${failure}`));
 
     await page.goto("/settings#provider");
     failures.push(...(await occludedTargets(page, ["#provider h2", "#provider input[name=apiKey]", "#provider form[action='/settings/subtitles/subsource'] button"], [".app-header nav", ".search", ".settings-nav"])).map((failure) => `${viewport.width}px provider settings: ${failure}`));
@@ -135,7 +140,7 @@ test("Dashboard preserves its task at 200 percent reflow", async ({ page }) => {
   await page.setViewportSize({ width: 360, height: 450 });
   await page.goto("/");
   expect(await page.locator("html").evaluate((element) => element.scrollWidth <= element.clientWidth)).toBe(true);
-  expect(await occludedTargets(page, [".subtitle-coverage-stat meter", ".subtitle-overview-copy h2", ".subtitle-overview-actions .button", ".subtitle-background-note", ".subtitle-system-correction"], [".app-header nav"])).toEqual([]);
+  expect(await occludedTargets(page, [".subtitle-coverage-stat > p", ".subtitle-overview-copy h2", ".subtitle-overview-actions .button", ".subtitle-system-correction"], [".app-header nav"])).toEqual([]);
 });
 
 test("Readiness, quota, and history remain usable on compact screens", async ({ page }, testInfo) => {

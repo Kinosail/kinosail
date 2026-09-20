@@ -108,3 +108,7 @@ func canonicalOriginHost(host, scheme string) string {
 	}
 	return strings.ToLower(net.JoinHostPort(strings.TrimSuffix(name, "."), port))
 }
+
+func protectApplicationTransport(auth *authentication, config Config, pattern func(*http.Request) string, handler http.Handler) http.Handler {
+	return trustedProxy(config.ProxyToken, allowedHost(config.AuthURL, config.Configuration.Strings("tls.hosts"), observeRequests(auth.audit, pattern, tripwirePublic(auth.audit, publicRequestLimits(handler)))))
+}

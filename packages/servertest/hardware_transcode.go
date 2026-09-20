@@ -8,7 +8,6 @@ import (
 	"net/http/httptest"
 	"os"
 	"path/filepath"
-	"reflect"
 	"regexp"
 	"strconv"
 	"strings"
@@ -206,17 +205,5 @@ func (fixture HardwareTranscodeFixture[S]) Run(t *testing.T) {
 // HardwareTranscodeServer maps the fixture's explicit fields to either app Config.
 // Missing or incompatible fields fail immediately instead of silently omitting setup.
 func HardwareTranscodeServer[C, S any](newHandler func(C) http.Handler) func(HardwareTranscodeConfig[S]) http.Handler {
-	return func(config HardwareTranscodeConfig[S]) http.Handler {
-		var target C
-		destination, source := reflect.ValueOf(&target).Elem(), reflect.ValueOf(config)
-		for index := range source.NumField() {
-			name := source.Type().Field(index).Name
-			field := destination.FieldByName(name)
-			if !field.IsValid() || !field.CanSet() || field.Type() != source.Field(index).Type() {
-				panic("incompatible hardware fixture configuration field: " + name)
-			}
-			field.Set(source.Field(index))
-		}
-		return newHandler(target)
-	}
+	return ServerConfigAdapter[C, HardwareTranscodeConfig[S]](newHandler)
 }

@@ -177,7 +177,7 @@ func localizedError(writer http.ResponseWriter, request *http.Request, message s
 	tag := preferredLanguage(request)
 	setLanguageHeaders(writer, tag)
 	if tag != "en" {
-		if message != "invalid credentials" || !localeCatalog.Knows(message) {
+		if !localeCatalog.Knows(message) {
 			message = "Request could not be completed."
 		}
 	}

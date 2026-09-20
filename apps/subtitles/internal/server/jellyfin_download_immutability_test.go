@@ -2,58 +2,20 @@ package server_test
 
 import (
 	"net/http"
-	"net/http/httptest"
-	"os"
-	"path/filepath"
-	"strings"
 	"testing"
 
 	"github.com/MikeO7/kinosail-subtitles/internal/server"
+	"github.com/MikeO7/kinosail/packages/servertest"
 )
 
-func TestJellyfinDownloadRemainsImmutableAcrossReplacementAndRestart(t *testing.T) { //nolint:cyclop // One compatibility test preserves the complete immutable-download lifecycle.
-	t.Parallel()
-	media, data, cache := t.TempDir(), t.TempDir(), t.TempDir()
-	path := filepath.Join(media, "Film.mp4")
-	if err := os.WriteFile(path, []byte("0123456789"), 0o600); err != nil {
-		t.Fatal(err)
-	}
-	config := server.Config{MediaDir: media, DataDir: data, CacheDir: cache, RequireAuth: true}
-	handler := newJellyfinServer(t, config)
-	owner := signInTestProfile(t, handler, "/setup", "name=Owner&password=owner-password")
-	token, _ := jellyfinLogin(t, handler, owner)
-	items := jellyfinCall(t, handler, http.MethodGet, "/Items", "", token)
-	var catalog jellyfinItems
-	decodeJellyfin(t, items, &catalog)
-	downloadURL := "/Items/" + catalog.Items[0].ID + "/Download"
-	original := jellyfinCall(t, handler, http.MethodGet, downloadURL, "", token)
-	if original.Code != http.StatusOK || original.Body.String() != "0123456789" || !strings.HasPrefix(original.Header().Get("ETag"), `"`) || !strings.HasPrefix(original.Header().Get("Repr-Digest"), "sha-256=:") {
-		t.Fatalf("original = %d %q %v", original.Code, original.Body.String(), original.Header())
-	}
-	if err := os.WriteFile(path, []byte("abcdefghij"), 0o600); err != nil {
-		t.Fatal(err)
-	}
-	resumed := jellyfinRange(t, handler, downloadURL, token, "bytes=5-")
-	if resumed.Code != http.StatusPartialContent || resumed.Body.String() != "56789" || resumed.Header().Get("ETag") != original.Header().Get("ETag") {
-		t.Fatalf("resume after replacement = %d %q %v", resumed.Code, resumed.Body.String(), resumed.Header())
-	}
-	handler = server.New(trustedJellyfinConfig(t, config))
-	resumed = jellyfinRange(t, handler, downloadURL, token, "bytes=5-")
-	if resumed.Code != http.StatusPartialContent || resumed.Body.String() != "56789" || resumed.Header().Get("ETag") != original.Header().Get("ETag") {
-		t.Fatalf("resume after restart = %d %q %v", resumed.Code, resumed.Body.String(), resumed.Header())
-	}
-	complete := jellyfinRange(t, handler, downloadURL, token, "bytes=10-")
-	if complete.Code != http.StatusRequestedRangeNotSatisfiable || complete.Body.Len() != 0 || complete.Header().Get("Content-Range") != "bytes */10" {
-		t.Fatalf("complete range = %d %q %v", complete.Code, complete.Body.String(), complete.Header())
-	}
-}
-
-func jellyfinRange(t *testing.T, handler http.Handler, path, token, value string) *httptest.ResponseRecorder {
-	t.Helper()
-	request := httptest.NewRequestWithContext(t.Context(), http.MethodGet, path, nil)
-	request.Header.Set("Authorization", `MediaBrowser Client="Jellyfin Android", Device="Phone", DeviceId="phone-1", Version="3", Token="`+token+`"`)
-	request.Header.Set("Range", value)
-	response := httptest.NewRecorder()
-	handler.ServeHTTP(response, request)
-	return response
+func TestJellyfinDownloadResumesConditionallyAcrossReplacementAndRestart(t *testing.T) {
+	fixture := servertest.JellyfinDownloadFixture{SignIn: signInTestProfile, Login: jellyfinLogin, Call: jellyfinCall, New: func(t *testing.T, media, data, cache string, restart bool) http.Handler {
+		t.Helper()
+		config := server.Config{MediaDir: media, DataDir: data, CacheDir: cache, RequireAuth: true}
+		if restart {
+			return server.New(trustedJellyfinConfig(t, config))
+		}
+		return newJellyfinServer(t, config)
+	}}
+	fixture.ResumesConditionallyAcrossReplacementAndRestart(t)
 }

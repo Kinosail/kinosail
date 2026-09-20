@@ -89,7 +89,7 @@ func JellyfinOnboardingRequiresDuckDNSBeforeEnable(t *testing.T, fixture Jellyfi
 
 	handler, token := fixture.APIServer(t)
 	page := fixture.APICall(t, handler, token, http.MethodGet, "/onboarding/connection", nil)
-	assertJellyfinSettingsResponse(t, page, http.StatusOK, "Trusted HTTPS (Required for Jellyfin apps)", "Many Jellyfin apps reject private certificates", "Jellyfin routes stay unavailable", `action="/onboarding/jellyfin"`)
+	assertJellyfinSettingsResponse(t, page, http.StatusOK, "Trusted HTTPS", "Required for Jellyfin apps", "Many Jellyfin apps reject private certificates", "Jellyfin routes stay unavailable", `action="/onboarding/jellyfin"`)
 	assertContains(t, "onboarding", page.Body.String(), fixture.OnboardingFragments...)
 	if strings.Contains(page.Body.String(), `name="enabled" value="true" checked`) {
 		t.Fatalf("onboarding enabled Jellyfin by default: %q", page.Body.String())

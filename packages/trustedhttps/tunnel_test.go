@@ -47,3 +47,10 @@ func TestTunnelCertificateRejectsInvalidConfigurationBeforeFiles(t *testing.T) {
 		}
 	}
 }
+
+func TestTunnelCertificateRequiresPersistentDirectory(t *testing.T) {
+	manager, err := NewTunnelCertificate("family", testToken, "10.92.0.1", "")
+	if err == nil || manager != nil {
+		t.Fatal("tunnel certificate accepted missing persistent storage")
+	}
+}

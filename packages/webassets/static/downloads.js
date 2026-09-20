@@ -3,7 +3,7 @@ const chunkSize = 8 * 1024 * 1024;
 const offlineIntegrityVersion = 2;
 const hasOfflineStorage = "indexedDB" in window && "crypto" in window && Boolean(window.crypto.subtle);
 let offlineChannel;
-const offlineWorkerPath = "/service-worker.js?v=47";
+const offlineWorkerPath = "/service-worker.js?v=50";
 const offlineWorkerURL = new URL(offlineWorkerPath, location.href).href;
 const isExactOfflineWorker = (worker) => worker?.scriptURL === offlineWorkerURL && worker.state === "activated";
 const currentOfflineServiceWorker = async () => {

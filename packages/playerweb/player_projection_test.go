@@ -71,3 +71,10 @@ func TestPlayerTemplateEnhancesSharedControls(t *testing.T) {
 		t.Fatal("obsolete cast control remains")
 	}
 }
+
+func TestPlayerBehaviorSettingsRemainNextToNativeControls(t *testing.T) {
+	source := PlayerTemplate(`<section><header><strong>Playback settings</strong><button class="quiet" type="button" aria-label="Close playback settings" data-player-settings-close>Close</button></header></section><aside><p>Apple’s native controls remain available.</p></aside>`)
+	if strings.Count(source, `<details class="player-behavior">`) != 1 || !strings.Contains(source, `<aside><details class="player-behavior">`) || !strings.Contains(source, `</details><p>Apple’s native controls`) {
+		t.Fatal("playback behavior was lost, duplicated, or separated from native controls")
+	}
+}

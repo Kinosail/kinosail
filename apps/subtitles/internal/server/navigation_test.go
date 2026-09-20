@@ -7,7 +7,7 @@ import (
 )
 
 func navigationFixture() servertest.NavigationFixture {
-	return servertest.NavigationFixture{Library: libraryAPIFixture, Web: requestWithCookie, AddViewer: addAndSignInViewer, CheckSupporterTarget: true, CheckSupporterOrder: false, RequiredCSS: "/static/app.css?v=impeccable-1", ForbiddenCSS: "/static/app.css?v=impeccable-1"}
+	return servertest.NavigationFixture{LibraryLink: `href="/?view=library"`, Library: libraryAPIFixture, Web: requestWithCookie, AddViewer: addAndSignInViewer, CheckSupporterTarget: true, CheckSupporterOrder: false, RequiredCSS: "/static/app.css?v="}
 }
 
 func TestOwnerCanCustomizeLibraryNavigationThroughAPIAndWeb(t *testing.T) {

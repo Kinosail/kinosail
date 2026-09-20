@@ -33,6 +33,8 @@ export function registerDashboardAccountTests() {
     await login(page);
     await page.getByRole("button", { name: "Open board settings" }).click();
     const settings = page.locator("#settings-dialog");
+    await settings.locator("summary").filter({ hasText: /^Recent changes$/ }).click();
+    await settings.locator("summary").filter({ hasText: /^MCP access$/ }).click();
     const audit = settings.getByLabel("Recent changes history");
     await audit.focus();
     await expect(audit).toBeFocused();
@@ -51,6 +53,7 @@ export function registerDashboardAccountTests() {
     await page.getByRole("button", { name: "Open board settings" }).click();
     const settings = page.locator("#settings-dialog");
     expect((await new AxeBuilder({ page }).include("#settings-dialog").analyze()).violations).toEqual([]);
+    await settings.locator("summary").filter({ hasText: /^Owner password$/ }).click();
     await settings.getByLabel("Current password").fill(password);
     await settings.getByLabel("New password", { exact: true }).fill(rotatedPassword);
     await settings.getByLabel("Confirm new password").fill(rotatedPassword);
@@ -62,6 +65,7 @@ export function registerDashboardAccountTests() {
     await expect(page).toHaveURL(/\/login$/);
     await login(page, rotatedPassword);
     await page.getByRole("button", { name: "Open board settings" }).click();
+    await settings.locator("summary").filter({ hasText: /^Owner password$/ }).click();
     await settings.getByLabel("Current password").fill(rotatedPassword);
     await settings.getByLabel("New password", { exact: true }).fill(password);
     await settings.getByLabel("Confirm new password").fill(password);

@@ -8,12 +8,12 @@ test("Owner sees real coverage, wanted files, and a focused setup path", async (
   await expect(page.getByRole("region", { name: "Subtitle coverage" })).toContainText(/\d+%/);
   await expect(page.getByRole("meter", { name: "Subtitle coverage" })).toHaveAttribute("aria-valuetext", /\d+ of \d+ files ready/);
   await expect(page.getByRole("link", { name: /Connect a subtitle source/ })).toBeVisible();
-  await expect(page.getByText("Needs one correction", { exact: true })).toBeVisible();
+  await expect(page.locator(".subtitle-system-state")).toContainText("Needs one correction");
   await expect(page.getByRole("heading", { name: "Server readiness" })).toBeVisible();
   await expect(page.getByText("Media library readable", { exact: true })).toBeVisible();
   await expect(page.getByText("Last successful subtitle write", { exact: true })).toBeVisible();
   await expect(page.getByRole("region", { name: "Subtitle sources" })).toBeVisible();
-  await expect(page.getByText(/Add a subtitle source/)).toBeVisible();
+  await expect(page.getByRole("region", { name: "Subtitle sources" }).getByRole("link", { name: /Manage providers/ })).toHaveAttribute("href", "/settings#provider");
   await page.getByRole("link", { name: "Wanted", exact: true }).click();
   await expect(page).toHaveURL(/view=wanted/);
   await expect(page.getByRole("heading", { name: "Wanted", exact: true })).toBeVisible();

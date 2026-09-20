@@ -12,7 +12,7 @@ func TestSettingsRegression(t *testing.T) { servertest.RunSettings(t, settingsRe
 func settingsRegression() servertest.SettingsRegression {
 	return servertest.SettingsRegression{
 		New: func(f servertest.SettingsFixture) http.Handler {
-			return server.New(server.Config{MediaDir: f.MediaDir, DataDir: f.DataDir, CacheDir: f.CacheDir, FFmpeg: f.FFmpeg})
+			return server.New(server.Config{MediaDir: f.MediaDir, DataDir: f.DataDir, CacheDir: f.CacheDir, FFmpeg: f.FFmpeg, FFprobe: f.FFprobe})
 		},
 		PlayableHLS: fakePlayableHLS, APICall: apiCall, AssertBody: assertAPIBody,
 		ProtectionText: "Protected automatically",

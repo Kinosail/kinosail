@@ -13,7 +13,7 @@ func TestPWAHandlesServiceWorkerRegistrationFailure(t *testing.T) {
 	response := httptest.NewRecorder()
 	server.New(server.Config{}).ServeHTTP(response, httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/static/pwa.js", nil))
 	script := response.Body.String()
-	if !strings.Contains(script, `serviceWorker.register("/service-worker.js?v=47").then`) || !strings.Contains(script, `.catch(() => {});`) {
+	if !strings.Contains(script, `serviceWorker.register("/service-worker.js?v=50").then`) || !strings.Contains(script, `.catch(() => {});`) {
 		t.Fatalf("service worker registration failure is unhandled: %q", script)
 	}
 }
@@ -24,7 +24,7 @@ func TestOfflineDownloadClientAndWorkerExposeLocalPlaybackContract(t *testing.T)
 	handler.ServeHTTP(client, httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/static/downloads.js", nil))
 	worker := httptest.NewRecorder()
 	handler.ServeHTTP(worker, httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/service-worker.js", nil))
-	if !strings.Contains(worker.Body.String(), `const cacheName = "kinosail-shell-v47"`) || !strings.Contains(worker.Body.String(), `fetch(event.request).catch(() => caches.open(cacheName).then((cache) => cache.match("/offline")))`) {
+	if !strings.Contains(worker.Body.String(), `const cacheName = "kinosail-shell-v50"`) || !strings.Contains(worker.Body.String(), `fetch(event.request).catch(() => caches.open(cacheName).then((cache) => cache.match("/offline")))`) {
 		t.Fatalf("service worker does not refresh versioned assets before shell cache fallback: %q", worker.Body.String())
 	}
 	for _, value := range []string{"const chunkSize = 8 * 1024 * 1024", "indexedDB", "crypto.subtle.digest", "Range", "Content-Digest", "sha256", "offline-media", "storage?.estimate", "storage.getDirectory", "navigator.locks", "BroadcastChannel", "EventSource"} {

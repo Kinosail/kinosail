@@ -25,7 +25,7 @@ if [[ "$scope" == packages ]]; then
 	targets=()
 	while IFS= read -r package; do
 		case "$package" in
-		*/commandtest|*/configurationtest|*/servertest) ;;
+		*/archivetest|*/archivetest/*|*/commandtest|*/commandtest/*|*/configurationtest|*/configurationtest/*|*/servertest|*/servertest/*) ;;
 		*) targets+=("$package") ;;
 		esac
 	done < <(go list ./...)

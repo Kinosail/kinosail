@@ -19,7 +19,7 @@ test("Twenty long language choices remain usable at the preference limit", async
     await expect(list).toContainText("No configured provider");
     await expect(section.getByLabel("Add a language")).toBeDisabled();
     await expect(section.getByRole("button", { name: "Add language" })).toBeDisabled();
-    await expect(section.getByText("The 20-language limit is reached. Remove one language before you add another.", { exact: true })).toBeVisible();
+    await expect(section.getByText("You have selected 20 languages. Remove one before adding another.", { exact: true })).toBeVisible();
 
     const movePortuguese = list.getByRole("button", { name: "Move Portuguese (Mozambique) earlier" });
     await movePortuguese.focus();
@@ -90,8 +90,10 @@ test("Local-only languages do not advertise unavailable item actions", async ({ 
     removedEnglish = true;
 
     await page.goto("/?view=wanted");
+    const file = page.locator(".subtitle-file").first();
+    await file.locator(":scope > summary").click();
     await expect(page.getByRole("button", { name: "Find aa" })).toHaveCount(0);
-    await expect(page.getByText("Add a local text track").first()).toBeVisible();
+    await expect(file.getByRole("link", { name: "Add a local subtitle" })).toBeVisible();
     expect((await new AxeBuilder({ page }).include("main").analyze()).violations).toEqual([]);
     await page.screenshot({ path: testInfo.outputPath("320-local-only-language.png"), fullPage: true });
   } finally {
