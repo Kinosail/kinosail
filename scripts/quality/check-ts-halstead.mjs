@@ -38,6 +38,7 @@ const structure = new Set([
   ts.SyntaxKind.EndOfFileToken,
 ]);
 const productionFile = (file) =>
+  !file.includes('/third_party/') &&
   !file.endsWith('.d.ts') &&
   !file.match(/\.(test|spec)\.[^.]+$/) &&
   !file.match(/\/(hls|htmx)\.min\.js$/) &&

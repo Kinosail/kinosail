@@ -17,6 +17,13 @@ func main() {
 }
 
 func run(args []string, output io.Writer) error {
+	if len(args) >= 2 && len(args) <= 10001 && args[0] == "halstead-package" {
+		reports, err := halsteadPackage(args[1:])
+		if err != nil {
+			return err
+		}
+		return json.NewEncoder(output).Encode(reports)
+	}
 	if len(args) == 2 && args[0] == "halstead" {
 		report, err := halsteadFile(args[1])
 		if err != nil {

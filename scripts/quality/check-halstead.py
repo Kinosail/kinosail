@@ -36,13 +36,14 @@ def source_files(repo: Path) -> list[str]:
     ]
 
 
-def report(tool: str, repo: Path, path: str) -> dict:
+def report(tool: str, repo: Path, paths: list[str]) -> dict:
+    path = paths[0]
     environment = os.environ.copy()
     target = target_for(path)
     if target:
         environment.update({"CGO_ENABLED": "0", "GOARCH": "amd64", "GOOS": target})
     result = subprocess.run(
-        [tool, "halstead", path],
+        [tool, "halstead-package", *paths],
         cwd=repo,
         env=environment,
         capture_output=True,
@@ -63,25 +64,32 @@ def main() -> int:
     repo = Path(root).resolve()
     paths = source_files(repo)
 
-    def analyze(path: str) -> list[str]:
+    def analyze(group: list[str]) -> list[str]:
         try:
-            analysis = report(tool, repo, path)
+            analyses = report(tool, repo, group)
         except (RuntimeError, json.JSONDecodeError) as error:
             return [str(error)]
         failures = []
-        for function in analysis.get("functions") or []:
-            difficulty = function["metrics"]["difficulty"]
-            if difficulty >= LIMIT:
-                line = function["start"]["line"]
-                failures.append(
-                    f"{path}:{line}: {function['name']} has Halstead difficulty "
-                    f"{difficulty:.2f}; maximum is less than {LIMIT:.0f}"
-                )
+        for path in group:
+            analysis = analyses[path]
+            for function in analysis.get("functions") or []:
+                difficulty = function["metrics"]["difficulty"]
+                if difficulty >= LIMIT:
+                    line = function["start"]["line"]
+                    failures.append(
+                        f"{path}:{line}: {function['name']} has Halstead difficulty "
+                        f"{difficulty:.2f}; maximum is less than {LIMIT:.0f}"
+                    )
         return failures
 
-    worker_count = min(8, len(paths))
+    groups = {}
+    for path in paths:
+        groups.setdefault((str(Path(path).parent), target_for(path)), []).append(path)
+    if not groups:
+        return 0
+    worker_count = min(4, len(groups))
     with ThreadPoolExecutor(max_workers=worker_count) as executor:
-        failures = [failure for result in executor.map(analyze, paths) for failure in result]
+        failures = [failure for result in executor.map(analyze, groups.values()) for failure in result]
     if failures:
         print("\n".join(failures), file=sys.stderr)
         return 1
