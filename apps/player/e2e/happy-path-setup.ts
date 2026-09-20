@@ -82,7 +82,8 @@ export async function startHappyPath(page: Page, testInfo: TestInfo): Promise<Ha
   }
 
   await expect(page.getByRole("heading", { name: "Kinosail" })).toBeVisible();
-  await expect(page.getByRole("heading", { name: "Your library" })).toBeVisible();
+  await expect(page.getByRole("main")).toBeVisible();
+  await expect(page.locator("#library .card").first()).toBeVisible();
 	const infiniteRequests: string[] = [];
 	const captureInfinite = (request: Request) => {
 		if (request.headers()["x-kinosail-library-page"] === "1") infiniteRequests.push(new URL(request.url()).searchParams.get("offset") ?? "");

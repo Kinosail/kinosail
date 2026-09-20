@@ -107,6 +107,15 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y libarchive-tools
+      - uses: pnpm/action-setup@0977fd99725f1db4007ccb2928dbb4e90d06cc86 # v6
+        with:
+          version: 11.22.0
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with:
+          node-version: 26
+          cache: pnpm
+          cache-dependency-path: apps/player/e2e/pnpm-lock.yaml
+      - run: pnpm --dir e2e install --frozen-lockfile
       - run: make installer-test native-build local-pipeline-test
 
   client:

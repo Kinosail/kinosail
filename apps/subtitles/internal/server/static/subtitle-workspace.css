@@ -101,3 +101,6 @@
   .subtitle-coverage-stat>.subtitle-text-link{display:flex;margin-top:.25rem}
   .subtitle-filters{top:56px}
 }
+
+/* Keep native selector overflow inside its label while preserving the focus ring. */
+.subtitle-language-add label{overflow:clip;overflow-clip-margin:.25rem}

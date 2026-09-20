@@ -163,21 +163,22 @@ test("Subtitle setup guide keeps readiness and recovery visible", async ({ page 
   for (const viewport of supportedViewports) {
     await page.setViewportSize(viewport);
     await page.goto("/onboarding/connection");
-    await expect(page.getByRole("heading", { name: "Define what ready means." })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Connect a provider. Let Kinosail handle the rest." })).toBeVisible();
     await expect(page.getByRole("navigation", { name: "Setup progress" }).getByText("Subtitle plan")).toHaveAttribute("aria-current", "step");
+    await page.getByText("Review language, media scope, and schedule", { exact: true }).click();
     const primaryLanguage = page.getByLabel("Primary language");
     await expect(primaryLanguage).toHaveValue("en");
     expect(await primaryLanguage.locator("option").count()).toBeGreaterThan(187);
     await expect(primaryLanguage.locator("option:checked")).toContainText("English (en)");
     await expect(page.getByRole("group", { name: "Preferred subtitle role" }).locator('input[value="standard"]')).toBeChecked();
-    await expect(page.getByLabel("Configured media folders")).toContainText(/Movies|Entire media mount/);
+    await expect(page.locator("#libraries")).toContainText(/Movies|Entire media mount/);
     await expect(page.getByRole("button", { name: /^Remove/ })).toHaveCount(0);
     const providers = page.locator("#providers");
     await expect(providers).toContainText("Connect a subtitle provider");
     await expect(providers.getByRole("link", { name: "Provider account" }).nth(0)).toHaveAttribute("href", "https://subdl.com/panel");
     await expect(providers.getByRole("link", { name: "Provider account" }).nth(1)).toHaveAttribute("href", "https://dl.opensubtitles.com/en/users/sign_in");
     await expect(providers.getByRole("link", { name: "Provider account" }).nth(2)).toHaveAttribute("href", "https://subsource.net/");
-    await expect(page.getByLabel("Your first scan has a clear contract.").getByText("Not configured", { exact: true })).toBeVisible();
+    await expect(page.getByRole("complementary", { name: "Your subtitle plan" }).getByText("Not configured", { exact: true })).toBeVisible();
     await expect(page.getByRole("link", { name: "Finish and open overview" })).toBeVisible();
     await expectNoHorizontalOverflow(page);
     expect((await new AxeBuilder({ page }).include("main").analyze()).violations).toEqual([]);
@@ -187,10 +188,22 @@ test("Subtitle setup guide keeps readiness and recovery visible", async ({ page 
 
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/onboarding/connection");
+  await page.getByText("Review language, media scope, and schedule", { exact: true }).click();
   await page.getByLabel("Primary language").focus();
   await expect(page.getByLabel("Primary language")).toBeFocused();
   await page.emulateMedia({ reducedMotion: "reduce", forcedColors: "active" });
   await expect(page.getByRole("link", { name: "Finish and open overview" })).toBeVisible();
   await page.screenshot({ path: testInfo.outputPath("subtitle-setup-forced-colors.png"), fullPage: true });
 });
+
+test("Subtitle setup respects saved light and dark themes", async ({ page }) => {
+  for (const theme of ["light", "dark"]) {
+    await page.evaluate(value => localStorage.setItem("kinosail-theme", value), theme);
+    await page.goto("/onboarding/connection");
+    await expect(page.locator("html")).toHaveAttribute("data-theme", theme);
+    await expect(page.locator("html")).toHaveCSS("--bg", theme === "dark" ? "#0b0d0b" : "#f4f8ef");
+    expect((await new AxeBuilder({ page }).include("main").analyze()).violations).toEqual([]);
+  }
+});
+
 }
