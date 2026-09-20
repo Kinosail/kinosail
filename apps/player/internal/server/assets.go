@@ -27,6 +27,8 @@ var (
 	supporterPlansJS []byte
 	//go:embed static/supporter.css
 	supporterCSS []byte
+	//go:embed static/settings.css
+	settingsCSS []byte
 	//go:embed static/home.css
 	homeCSS []byte
 	//go:embed static/connect.js
@@ -122,6 +124,7 @@ func serveStyle(writer http.ResponseWriter, request *http.Request) {
 	_, _ = writer.Write(webassets.LastLightCSS)
 	_, _ = writer.Write(supporterCSS)
 	_, _ = writer.Write(homeCSS)
+	_, _ = writer.Write(settingsCSS)
 }
 
 func serveSupporterStyle(writer http.ResponseWriter, request *http.Request) {

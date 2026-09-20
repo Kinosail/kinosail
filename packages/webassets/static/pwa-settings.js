@@ -13,7 +13,9 @@ if (settingsNav && settingsFlow) {
   const categoryOf = (section) => organized ? section?.dataset.settingsCategory || section?.dataset.settingsGroup : section?.dataset.settingsGroup;
   const aliases = new Map([
     ["mfa require extra sign in protection for every viewer profile", "mfa two factor authenticator security login passkey protected automatically"],
-    ["automatic sign-out", "session timeout sessions"],
+    ["sign in protection", "mfa two factor authenticator security login passkey"],
+    ["watch away from home", "remote access internet vpn wireguard"],
+    ["automatic sign out", "session timeout sessions"],
     ["playback", "direct original compatible transcode autoplay intro recap credits"],
     ["subtitles", "captions closed caption language"],
     ["metadata provider", "tmdb artwork"],
@@ -36,14 +38,21 @@ if (settingsNav && settingsFlow) {
   const groupLabel = (group) => links.find((link) => link.dataset.settingsGroup === group)?.textContent.trim() || group;
   const searchableText = (section) => {
     const heading = normalize(section.querySelector("h2,h3")?.textContent || "");
-    return normalize([section.textContent, groupLabel(categoryOf(section)), aliases.get(heading)].join(" "));
+    return normalize([section.textContent, groupLabel(categoryOf(section)), [...aliases].filter(([key]) => normalize(key) === heading).map(([, value]) => value).join(" ")].join(" "));
   };
   const groupForHash = () => {
     const target = document.getElementById(location.hash.slice(1));
     return categoryOf(target?.closest("[data-settings-category], [data-settings-group]")) || links.find((link) => link.hash === location.hash)?.dataset.settingsGroup || links[0]?.dataset.settingsGroup || "general";
   };
   const selectSettingsGroup = (group) => {
-    const level = links.find((link) => link.dataset.settingsGroup === group)?.dataset.settingsLevel;
+    const selected = links.find((link) => link.dataset.settingsGroup === group) || links[0];
+    group = selected?.dataset.settingsGroup;
+    const level = selected?.dataset.settingsLevel;
+    const description = settingsFlow.querySelector("[data-settings-description]");
+    if (description) {
+      description.textContent = selected?.dataset.settingsDescription || "";
+      description.hidden = !description.textContent;
+    }
     for (const link of levelLinks) {
       if (link.dataset.settingsLevel === level) link.setAttribute("aria-current", "page");
       else link.removeAttribute("aria-current");
@@ -60,7 +69,7 @@ if (settingsNav && settingsFlow) {
     }
   };
   const searchSettings = () => {
-    const query = normalize(settingsSearchInput?.value || "");
+    const query = normalize((settingsSearchInput?.value || "").slice(0, 160));
     const terms = query ? query.split(/\s+/) : [];
     if (!terms.length) {
       if (settingsSearchResults) {
@@ -77,7 +86,8 @@ if (settingsNav && settingsFlow) {
     }).sort((first, second) => {
       const firstHeading = normalize(first.querySelector("h2,h3")?.textContent || "");
       const secondHeading = normalize(second.querySelector("h2,h3")?.textContent || "");
-      return Number(terms.every((term) => secondHeading.includes(term))) - Number(terms.every((term) => firstHeading.includes(term)));
+      const rank = (heading) => Number(terms.every((term) => heading.includes(term))) * 2 + Number(terms.every((term) => normalize([...aliases].filter(([key]) => normalize(key) === heading).map(([, value]) => value).join(" ")).includes(term)));
+      return rank(secondHeading) - rank(firstHeading);
     });
     settingsSearchResults?.replaceChildren();
     for (const section of matches) {
@@ -94,14 +104,25 @@ if (settingsNav && settingsFlow) {
       settingsSearchResults?.append(result);
     }
     if (settingsSearchResults) settingsSearchResults.hidden = !matches.length;
-    if (settingsSearchStatus) settingsSearchStatus.textContent = matches.length ? `${matches.length} matching settings.` : "No settings match that search.";
+    if (settingsSearchStatus) settingsSearchStatus.textContent = matches.length ? `${matches.length} matching settings.` : "No settings found. Try a broader term, such as playback, profiles, or network.";
   };
+  if (organized) settingsFlow.addEventListener("submit", (event) => {
+    const form = event.target;
+    const section = form.closest("section[id]");
+    if (!section || form.method.toLowerCase() !== "post") return;
+    const action = new URL(form.action, location.href);
+    if (action.origin !== location.origin || !action.pathname.startsWith("/settings/") || action.hash) return;
+    // Redirects back to Settings inherit this bookmark; the HTTP operation is unchanged.
+    action.hash = section.id;
+    form.action = action.href;
+  });
   selectSettingsGroup(groupForHash());
   const revealHash = () => {
     selectSettingsGroup(groupForHash());
     if (!organized) return;
     const target = document.getElementById(location.hash.slice(1));
     if (!target) return;
+    if (settingsSearchInput?.value) { settingsSearchInput.value = ""; searchSettings(); }
     for (let parent = target.parentElement; parent; parent = parent.parentElement) {
       if (parent.tagName === "DETAILS") parent.open = true;
     }
@@ -120,11 +141,18 @@ if (settingsNav && settingsFlow) {
     target.setAttribute("tabindex", "-1");
     target.focus({ preventScroll: true });
   });
-  settingsNav.addEventListener("click", (event) => {
-    const link = event.target.closest("[data-settings-group]");
-    if (!link) return;
-    selectSettingsGroup(link.dataset.settingsGroup);
-  });
+  const navigateSettings = (event) => {
+    const link = event.target.closest("a");
+    if (!link || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
+    if (!organized) { selectSettingsGroup(link.dataset.settingsGroup); return; }
+    event.preventDefault();
+    if (location.hash !== link.hash) history.pushState(null, "", link.hash);
+    if (settingsSearchInput) settingsSearchInput.value = "";
+    searchSettings();
+    selectSettingsGroup(groupForHash());
+  };
+  settingsNav.addEventListener("click", navigateSettings);
+  document.querySelector("[data-settings-levels]")?.addEventListener("click", navigateSettings);
   settingsSearchInput?.addEventListener("input", searchSettings);
   settingsSearchInput?.addEventListener("search", searchSettings);
   settingsSearchInput?.addEventListener("keydown", (event) => {
@@ -169,7 +197,7 @@ window.addEventListener("keydown", (event) => {
     event.preventDefault();
     openCommands();
   } else if (event.key === "/") {
-    const search = document.querySelector("#library-search, #settings-search-input");
+    const search = document.querySelector("#settings-search-input") || document.querySelector("#library-search");
     if (!search) return;
     event.preventDefault();
     search?.focus();

@@ -6,8 +6,8 @@ import (
 )
 
 func orderSettingsPage(page string) string {
-	page = strings.Replace(page, `<h2>Protected automatically</h2>`, `<h2>MFA - Require extra sign-in protection for every Viewer Profile</h2>`, 1)
-	page = categorizeSettingsPage(page)
+	page = strings.Replace(page, `<h2>Protected automatically</h2>`, `<h2>Sign-in protection</h2>`, 1)
+	page = simplifySettingsPlayback(categorizeSettingsPage(page))
 	flowStart := strings.Index(page, `<div class="settings-flow" data-settings-flow>`)
 	flowEnd := strings.LastIndex(page, `</div></main>`)
 	if flowStart < 0 || flowEnd <= flowStart {

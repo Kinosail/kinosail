@@ -137,10 +137,10 @@ func applicationShellCSSVersion(page []byte) []byte {
 	if start := bytes.Index(page, []byte(`/static/app.css?v=`)); start >= 0 {
 		version := start + len(`/static/app.css?v=`)
 		if end := bytes.IndexByte(page[version:], '"'); end >= 0 {
-			if bytes.Equal(page[version:version+end], []byte("electric-22")) {
+			if bytes.Equal(page[version:version+end], []byte("electric-23")) {
 				return page
 			}
-			page = append(append(append([]byte(nil), page[:version]...), []byte("electric-22")...), page[version+end:]...)
+			page = append(append(append([]byte(nil), page[:version]...), []byte("electric-23")...), page[version+end:]...)
 		}
 	}
 	return page

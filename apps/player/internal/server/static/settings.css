@@ -1,0 +1,41 @@
+/* Owner settings: a compact task menu beside one readable working column. */
+.settings-page main.settings-shell:has([data-settings-organized]){display:grid;grid-template-columns:14rem minmax(0,1fr);gap:0 2.5rem;max-width:72rem;align-items:start;padding:0 0 3rem}
+.settings-shell:has([data-settings-organized])>.back{grid-column:1/-1;margin-bottom:1rem}
+.settings-shell:has([data-settings-organized])>.settings-intro{grid-column:1;grid-row:2;margin:0;padding:0 0 1.25rem;border:0}
+.settings-shell:has([data-settings-organized]) .settings-intro h1{font-size:1.75rem;letter-spacing:-.03em}
+.settings-shell:has([data-settings-organized]) .settings-intro p{font-size:.875rem;line-height:1.6;margin:.5rem 0 0}
+.settings-shell:has([data-settings-organized])>.settings-search{grid-column:2;grid-row:2;width:100%;align-self:start;gap:.3rem;margin:0 0 1.25rem}
+.settings-shell:has([data-settings-organized]) .settings-search label{font-size:.875rem;margin:0;color:var(--text)}
+.settings-shell:has([data-settings-organized]) .settings-search p{margin:.25rem 0 0;font-size:.8rem;line-height:1.5}
+.settings-shell:has([data-settings-organized]) .settings-search output:empty{display:none}
+.settings-shell:has([data-settings-organized])>.settings-levels{grid-column:1/-1;margin:0 0 1.5rem;gap:1.5rem}
+.settings-shell:has([data-settings-organized]) .settings-levels>a{margin:0;min-width:4rem;justify-content:center;font-size:.95rem}
+.settings-shell>.settings-nav[data-settings-organized]{grid-column:1;display:flex;flex-direction:column;align-items:stretch;gap:.25rem;margin:0;position:sticky;top:9rem}
+.settings-shell>.settings-nav[data-settings-organized]>a{border:0;border-radius:8px;padding:.75rem 1rem;white-space:normal;line-height:1.4;font-size:.9rem}
+.settings-shell>.settings-nav[data-settings-organized]>a[aria-current=page]{background:var(--surface-2);color:var(--signal);box-shadow:none}
+.settings-shell:has([data-settings-organized])>.settings-flow{grid-column:2;grid-row:4;max-width:none}
+.settings-shell:has([data-settings-organized]) .settings-category-description{margin:0 0 1.5rem;max-width:65ch;color:var(--muted);font-size:.95rem;line-height:1.6}
+.settings-shell:has([data-settings-organized]) .settings-flow>section{padding:1.5rem 0;margin:0}
+.settings-shell:has([data-settings-organized]) .settings-flow>section h2{margin:0 0 .75rem;font-size:1.25rem;letter-spacing:-.02em}
+.settings-shell:has([data-settings-organized]) .settings-flow>section>p{max-width:65ch;font-size:.9rem;line-height:1.6}
+.settings-shell:has([data-settings-organized]) .settings-flow label{font-size:.9rem;line-height:1.5;color:var(--text)}
+.settings-shell:has([data-settings-organized]) .settings-flow form{max-width:44rem}
+.settings-shell:has([data-settings-organized]) .settings-flow button{justify-self:start;min-height:44px;padding:.65rem 1rem}
+.settings-shell:has([data-settings-organized]) .settings-search-results a{grid-template-columns:1fr;gap:.2rem;padding:.75rem;font-size:.9rem}
+.settings-shell:has([data-settings-organized]) .settings-search-result-group{font-size:.8rem;white-space:normal}
+@media(max-width:900px){
+.settings-page main.settings-shell:has([data-settings-organized]){grid-template-columns:minmax(0,1fr);gap:0;width:calc(100% - 2rem)}
+.settings-shell:has([data-settings-organized])>.settings-intro{grid-column:1;grid-row:auto;padding:0 0 1rem}
+.settings-shell:has([data-settings-organized]) .settings-intro p,.settings-shell:has([data-settings-organized]) .settings-search>p{display:none}
+.settings-shell:has([data-settings-organized])>.settings-search{grid-column:1;grid-row:auto;margin-bottom:1rem}
+.settings-shell:has([data-settings-organized])>.settings-levels{margin-bottom:.75rem}
+.settings-shell>.settings-nav[data-settings-organized]{grid-column:1;position:static;flex-direction:row;flex-wrap:nowrap;overflow-x:auto;margin:0 0 1.25rem;padding-bottom:.35rem}
+.settings-shell>.settings-nav[data-settings-organized]>a{white-space:nowrap;padding:.6rem .8rem}
+.settings-shell:has([data-settings-organized])>.settings-flow{grid-column:1;grid-row:auto}
+.settings-shell:has([data-settings-organized]) .settings-category-description{font-size:.875rem;margin-bottom:1rem}
+}
+
+.settings-shell .settings-compatibility{padding:0;border:0;background:transparent;box-shadow:none}
+.settings-shell .settings-compatibility summary{min-height:44px;padding:.65rem 0;color:var(--text);font-size:.9rem;font-weight:650;cursor:pointer}
+.settings-shell .settings-compatibility>p{font-size:.875rem;line-height:1.6;color:var(--muted);max-width:65ch}
+.settings-shell .settings-flow label:has(>input[type=checkbox]){display:flex;align-items:center;gap:.75rem;min-height:44px}

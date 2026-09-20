@@ -148,12 +148,14 @@ test("Owner settings separates everyday preferences from advanced tools", async 
 		await page.goto("/settings", { waitUntil: "domcontentloaded" });
 		const nav = page.locator("[data-settings-nav]");
 		const levels = page.locator("[data-settings-levels]");
-		await expect(nav.locator('[aria-current="page"]')).toHaveText("Overview");
-		await expect(levels.locator('[aria-current="page"]')).toHaveText("General");
-		await expect(page.locator("#general")).toBeVisible();
+		await expect(nav.locator('[aria-current="page"]')).toHaveText("Playback & subtitles");
+		await expect(levels.locator('[aria-current="page"]')).toHaveText("Basic");
+		await expect(page.locator("#playback")).toBeVisible();
+		await nav.getByRole("link", { name: "General", exact: true }).click();
 		await page.getByRole("textbox", { name: "Server name", exact: true }).fill("Unsaved household name");
 		await levels.getByRole("link", { name: "Advanced", exact: true }).click();
-		await levels.getByRole("link", { name: "General", exact: true }).click();
+		await levels.getByRole("link", { name: "Basic", exact: true }).click();
+		await nav.getByRole("link", { name: "General", exact: true }).click();
 		await expect(page.getByRole("textbox", { name: "Server name", exact: true })).toHaveValue("Unsaved household name");
 		await expect(page.locator("#transcoder")).toBeHidden();
 		await expect(page.locator("#security")).toBeHidden();
@@ -164,7 +166,7 @@ test("Owner settings separates everyday preferences from advanced tools", async 
 			});
 			expect(geometry).toEqual({ rows: 1, minHeight: 44, overflow: false });
 		}
-		for (const [level, category, anchor] of [["General", "playback", "playback"], ["General", "household", "profiles"], ["General", "library", "library"], ["General", "appearance", "appearance"], ["Advanced", "network", "access"], ["Advanced", "security", "security"], ["Advanced", "integrations", "settings-integrations"], ["Advanced", "system", "transcoder"], ["Advanced", "migration", "viewing-imports"]]) {
+		for (const [level, category, anchor] of [["Basic", "playback", "playback"], ["Basic", "household", "profiles"], ["Basic", "library", "library"], ["Basic", "appearance", "appearance"], ["Advanced", "network", "access"], ["Advanced", "security", "security"], ["Advanced", "integrations", "settings-integrations"], ["Advanced", "system", "transcoder"], ["Advanced", "migration", "viewing-imports"]]) {
 			await levels.getByRole("link", { name: level, exact: true }).click();
 			await nav.locator(`[data-settings-group="${category}"]`).click();
 			await expect(page.locator(`#${anchor}`)).toBeVisible();
@@ -174,10 +176,10 @@ test("Owner settings separates everyday preferences from advanced tools", async 
 		}
 		await page.goto("/settings#transcoder");
 		await expect(levels.locator('[aria-current="page"]')).toHaveText("Advanced");
-		await levels.getByRole("link", { name: "General", exact: true }).click();
+		await levels.getByRole("link", { name: "Basic", exact: true }).click();
 		await page.goBack();
 		await expect(page.locator("#transcoder")).toBeVisible();
 		await page.goto("/settings#unknown-%broken");
-		await expect(page.locator("#general")).toBeVisible();
+		await expect(page.locator("#playback")).toBeVisible();
 	}
 });

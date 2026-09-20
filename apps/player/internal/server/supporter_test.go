@@ -37,7 +37,7 @@ func TestSupporterStoresIndependentFirstClassBadges(t *testing.T) {
 	assertAPIBody(t, patron, http.StatusOK, `"family":"patron-order"`, `"tier":"admiral"`, `"rank":8`, `"livingStandard"`, `"patronOrder"`, `"subscriptionActive":true`, `"masterworkName":"Full Sail"`, `"masterworkLevel":8`, `"masterworkEarned":true`, `"masterworkActive":true`)
 
 	page := apiCall(t, handler, token, http.MethodGet, "/supporter", nil)
-	assertAPIBody(t, page, http.StatusOK, "/static/app.css?v=electric-22", "Monthly support · Living Standard", "Living Standards", "Patron Orders", "Friend", "Legacy", "Navigator", "North Star", "Kinosail Player Living Standard, level 10", "Kinosail Player Patron Order, level 8", "Admiral Full Sail", "Living aura active", "Collected", "Complete Fleet · Living · 2 apps", "Living editions include future configured apps", "Dated Patron editions stay fixed", "Public certificate name", "levels 7–10", "Your one-time badge is permanent.")
+	assertAPIBody(t, page, http.StatusOK, "/static/app.css?v=electric-23", "Monthly support · Living Standard", "Living Standards", "Patron Orders", "Friend", "Legacy", "Navigator", "North Star", "Kinosail Player Living Standard, level 10", "Kinosail Player Patron Order, level 8", "Admiral Full Sail", "Living aura active", "Collected", "Complete Fleet · Living · 2 apps", "Living editions include future configured apps", "Dated Patron editions stay fixed", "Public certificate name", "levels 7–10", "Your one-time badge is permanent.")
 	if strings.Index(page.Body.String(), "Living Standards") > strings.Index(page.Body.String(), "Patron Orders") {
 		t.Fatal("monthly Living Standards did not appear first")
 	}

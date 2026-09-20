@@ -23,7 +23,7 @@ func TestSettingsBookmarksFollowTheRenderedSectionOrder(t *testing.T) {
 		t.Fatalf("settings status = %d", response.Code)
 	}
 	markup := response.Body.String()
-	for _, expected := range []string{`href="#general">Overview`, `href="#playback">Playback`, `href="#profiles">Profiles`, `href="#library">Library`, `href="#appearance">Appearance`, `href="#access">Connections`, `href="#security">Security`, `href="#settings-integrations">Integrations`, `href="#transcoder">Server`, `href="#viewing-imports">Migration`} {
+	for _, expected := range []string{`href="#playback">Playback &amp; subtitles`, `href="#appearance">Appearance &amp; language`, `href="#library">Library`, `href="#profiles">Viewer Profiles`, `href="#general">General`, `href="#access">Connections`, `href="#security">Security &amp; sharing`, `href="#settings-integrations">Integrations`, `href="#transcoder">Server tools`, `href="#viewing-imports">Import viewing history`} {
 		position := strings.Index(markup, expected)
 		if position < 0 {
 			t.Fatalf("missing or out-of-order category %q", expected)
@@ -31,7 +31,7 @@ func TestSettingsBookmarksFollowTheRenderedSectionOrder(t *testing.T) {
 		markup = markup[position+len(expected):]
 	}
 	sections := regexp.MustCompile(`<section[^>]*><h2>[^<]+</h2>`).FindAllString(response.Body.String(), -1)
-	expected := map[string]string{"Server name": "general", "Software updates": "general", "Setup guide": "general", "Playback": "playback", "Subtitles": "playback", "Profiles": "household", "Library folders": "library", "Appearance": "appearance", "Video conversion": "system", "API keys": "integrations", "Automatic sign-out": "security", "Trusted HTTPS (Required for Jellyfin apps)": "network", "Move viewing activity": "migration"}
+	expected := map[string]string{"Server name": "general", "Software updates": "general", "Setup guide": "general", "Playback": "playback", "Subtitles": "playback", "Profiles": "household", "Library folders": "library", "Appearance": "appearance", "Video conversion": "system", "API keys": "integrations", "Automatic sign-out": "security", "Trusted HTTPS (Required for Jellyfin apps)": "network", "Move viewing activity": "migration", "Sign-in protection": "security", "Watch away from home": "network", "Library discovery": "library"}
 	ids := map[string]bool{}
 	idPattern := regexp.MustCompile(` id="([^"]+)"`)
 	for _, section := range sections {

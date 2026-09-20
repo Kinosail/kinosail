@@ -15,6 +15,6 @@ func settingsRegression() servertest.SettingsRegression {
 			return server.New(server.Config{MediaDir: f.MediaDir, DataDir: f.DataDir, CacheDir: f.CacheDir, FFmpeg: f.FFmpeg, FFprobe: f.FFprobe})
 		},
 		PlayableHLS: fakePlayableHLS, APICall: apiCall, AssertBody: assertAPIBody,
-		ProtectionText: "MFA - Require extra sign-in protection for every Viewer Profile",
+		ProtectionText: "Sign-in protection",
 	}
 }

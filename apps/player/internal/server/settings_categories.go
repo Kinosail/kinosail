@@ -1,6 +1,7 @@
 package server
 
 import (
+	"html"
 	"regexp"
 	"slices"
 	"strings"
@@ -11,16 +12,16 @@ var settingsCategories = []struct {
 	id, label, level, anchor string
 	headings                 []string
 }{
-	{"general", "Overview", "general", "general", []string{"Server name", "Software updates", "Supporter passport", "Setup guide"}},
-	{"playback", "Playback", "general", "playback", []string{"Playback", "Subtitles"}},
-	{"household", "Profiles", "general", "profiles", []string{"Profiles"}},
-	{"library", "Library", "general", "library", []string{"Library folders", "Movie artwork and details"}},
-	{"appearance", "Appearance", "general", "appearance", []string{"Appearance", "Navigation", "Language"}},
-	{"network", "Connections", "advanced", "access", []string{"Secure local access", "Jellyfin apps", "Trusted HTTPS on this network", "Trusted HTTPS (Required for Jellyfin apps)", "Remote access", "DLNA"}},
-	{"security", "Security", "advanced", "security", []string{"MFA - Require extra sign-in protection for every Viewer Profile", "Automatic sign-out", "Secure sharing"}},
+	{"playback", "Playback & subtitles", "general", "playback", []string{"Playback", "Subtitles"}},
+	{"appearance", "Appearance & language", "general", "appearance", []string{"Appearance", "Navigation", "Language"}},
+	{"library", "Library", "general", "library", []string{"Library folders", "Movie artwork and details", "Library discovery"}},
+	{"household", "Viewer Profiles", "general", "profiles", []string{"Profiles"}},
+	{"general", "General", "general", "general", []string{"Server name", "Software updates", "Supporter passport", "Setup guide"}},
+	{"network", "Connections", "advanced", "access", []string{"Secure local access", "Jellyfin apps", "Trusted HTTPS on this network", "Trusted HTTPS (Required for Jellyfin apps)", "Watch away from home", "Remote access", "DLNA"}},
+	{"security", "Security & sharing", "advanced", "security", []string{"Sign-in protection", "Automatic sign-out", "Secure sharing"}},
 	{"integrations", "Integrations", "advanced", "settings-integrations", []string{"Integrations", "API keys"}},
-	{"system", "Server", "advanced", "transcoder", []string{"Transcoder", "Video conversion", "Diagnostics", "Externally managed", "Library discovery", "Playback segment analysis", "Automatic maintenance"}},
-	{"migration", "Migration", "advanced", "viewing-imports", []string{"Move viewing activity"}},
+	{"system", "Server tools", "advanced", "transcoder", []string{"Transcoder", "Video conversion", "Diagnostics", "Externally managed", "Playback segment analysis", "Automatic maintenance"}},
+	{"migration", "Import viewing history", "advanced", "viewing-imports", []string{"Move viewing activity"}},
 }
 
 func categorizeSettingsPage(page string) string {
@@ -32,6 +33,12 @@ func categorizeSettingsPage(page string) string {
 			return markup
 		}
 		category := settingsCategoryFor(parts[2])
+		for id, stableCategory := range settingsSectionCategories {
+			if strings.Contains(parts[1], ` id="`+id+`"`) {
+				category = stableCategory
+				break
+			}
+		}
 		attributes := parts[1] + ` data-settings-category="` + category + `"`
 		if !strings.Contains(attributes, ` id="`) {
 			slug := slugPattern.ReplaceAllString(strings.ToLower(parts[2]), "-")
@@ -50,9 +57,9 @@ func categorizeSettingsPage(page string) string {
 		}
 	}
 	var nav strings.Builder
-	nav.WriteString(`<nav class="settings-levels" data-settings-levels aria-label="Settings level"><a href="#general" data-settings-level="general">General</a><a href="#access" data-settings-level="advanced">Advanced</a></nav><nav class="settings-nav" data-settings-nav data-settings-organized aria-label="Settings categories">`)
+	nav.WriteString(`<nav class="settings-levels" data-settings-levels aria-label="Settings level"><a href="#playback" data-settings-level="general">Basic</a><a href="#access" data-settings-level="advanced">Advanced</a></nav><nav class="settings-nav" data-settings-nav data-settings-organized aria-label="Settings categories">`)
 	for _, entry := range settingsCategories {
-		nav.WriteString(`<a data-settings-group="` + entry.id + `" data-settings-level="` + entry.level + `" href="#` + entry.anchor + `">` + entry.label + `</a>`)
+		nav.WriteString(`<a data-settings-group="` + entry.id + `" data-settings-level="` + entry.level + `" data-settings-description="` + settingsCategoryDescriptions[entry.id] + `" href="#` + entry.anchor + `">` + html.EscapeString(entry.label) + `</a>`)
 	}
 	nav.WriteString(`</nav>`)
 	start := strings.Index(page, `<nav class="settings-nav"`)
@@ -63,7 +70,10 @@ func categorizeSettingsPage(page string) string {
 	if end < 0 {
 		return page
 	}
-	return page[:start] + nav.String() + page[start+end+len(`</nav>`):]
+	page = page[:start] + nav.String() + page[start+end+len(`</nav>`):]
+	page = strings.Replace(page, `/static/main.kinosail.bundle.js?v=12`, `/static/main.kinosail.bundle.js?v=settings-2`, 1)
+	page = strings.Replace(page, "Everyday preferences in General. Server tools and configuration in Advanced.", "Make Kinosail feel right for your household.", 1)
+	return strings.Replace(page, `<div class="settings-flow" data-settings-flow>`, `<div class="settings-flow" data-settings-flow><p class="settings-category-description" data-settings-description hidden></p>`, 1)
 }
 
 func settingsCategoryFor(heading string) string {
@@ -73,4 +83,26 @@ func settingsCategoryFor(heading string) string {
 		}
 	}
 	return "system"
+}
+
+// Stable bookmarks take precedence over presentation copy.
+var settingsSectionCategories = map[string]string{
+	"general": "general", "updates": "general", "onboarding": "general",
+	"playback": "playback", "appearance": "appearance", "navigation": "appearance",
+	"profiles": "household", "library": "library", "system": "library",
+	"security": "security", "session-timeouts": "security", "transcoder": "system",
+	"access": "network", "jellyfin": "network", "trusted-https": "network", "viewing-imports": "migration",
+}
+
+var settingsCategoryDescriptions = map[string]string{
+	"playback":     "Household playback defaults. Save each section to apply your changes.",
+	"appearance":   "Choose your theme, language, and library navigation. Appearance is saved in this browser.",
+	"library":      "Choose your media folders, keep them in sync, and add artwork and details.",
+	"household":    "Give each person their own watch history, preferences, and library access.",
+	"general":      "Name your Server, choose how it updates, or revisit setup.",
+	"network":      "Connect other devices and choose how to reach your Server away from home.",
+	"security":     "Manage sign-in protection, session limits, and shared media links.",
+	"integrations": "Connect other services and manage API access to your Server.",
+	"system":       "Tune video conversion, manage maintenance, and investigate Server issues.",
+	"migration":    "Bring watched status and playback progress from another media server.",
 }
