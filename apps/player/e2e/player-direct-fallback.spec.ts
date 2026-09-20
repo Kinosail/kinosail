@@ -61,6 +61,13 @@ test("Direct First starts known audio compatibility before silent direct playbac
   await expect(page.locator("[data-playback-mode-status]")).toHaveText("Transcoding audio");
 });
 
+test("Direct First keeps a pre-planned audio-compatible HLS source", async ({ page }) => {
+  await startDirectPlayer(page, { initialHls: true, compatibleMode: "audio-transcode", compatibleLabel: "Transcoding audio" });
+
+  await expect.poll(() => page.evaluate(() => (window as Window & { FakeHls: { instances: number } }).FakeHls.instances)).toBe(1);
+  await expect(page.locator("[data-playback-mode-status]")).toHaveText("Transcoding audio");
+});
+
 test("legacy Direct Play preference does not start unsupported media before Direct First", async ({ page }) => {
   let directRequests = 0;
   await page.route("https://direct.test/movie.mp4", (route) => {

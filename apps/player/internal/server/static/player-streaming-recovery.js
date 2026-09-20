@@ -189,8 +189,13 @@ const directType = player.dataset.directType;
 const directSupport = directType ? player.canPlayType(directType) : "unknown";
 playbackTrace("capability", directSupport || "none", `${navigator.vendor || "unknown"}:${directType || "unknown"}`);
 const directTypeUnsupported = directType && navigator.vendor.includes("Apple") && /^video\/(x-)?matroska(?:;|$)/i.test(directType);
+const knownAudioIncompatibility = playbackPolicy === "direct-first" && player.dataset.compatibilityMode === "audio-transcode";
 if (player.dataset.hls) {
-  if (playbackPolicy !== "compatible" && direct) {
+  if (knownAudioIncompatibility) {
+    // A pre-planned compatible playlist is already available when the server knows the
+    // original audio will be dropped by the browser; do not switch back to the silent source.
+    startAdaptive(false);
+  } else if (playbackPolicy !== "compatible" && direct) {
     if (player.getAttribute("src") !== direct) useOriginal();
     else showPlaybackMode(false, true);
   }
@@ -203,7 +208,7 @@ if (player.dataset.hls) {
   } else if (playbackPolicy === "direct-first" && directTypeUnsupported) {
     if (player.dataset.compatibilityMode === "transcode") recoverDirectFailure(MediaError.MEDIA_ERR_SRC_NOT_SUPPORTED, false);
     else startAdaptive(false);
-  } else if (playbackPolicy === "direct-first" && player.dataset.compatibilityMode === "audio-transcode") {
+  } else if (knownAudioIncompatibility) {
     // Browsers can render a video stream while silently dropping an unsupported audio codec.
     // The server has already confirmed that the audio needs conversion, so do not wait for a
     // media error that may never arrive before starting the audio-only compatible rendition.
