@@ -7,7 +7,7 @@ require (
 	github.com/coder/websocket v1.8.15
 	github.com/crewjam/saml v0.5.1
 	github.com/go-webauthn/webauthn v0.18.0
-	github.com/modelcontextprotocol/go-sdk v1.7.0
+	github.com/modelcontextprotocol/go-sdk v1.8.0
 	github.com/nicksnyder/go-i18n/v2 v2.6.1
 	github.com/zserge/govad v0.0.0-20260330155402-74750eabf3a4
 	golang.org/x/crypto v0.57.0
