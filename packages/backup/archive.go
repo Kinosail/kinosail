@@ -125,14 +125,27 @@ func writeArchiveManifest(writer *tar.Writer, version string, written []string) 
 }
 
 func readStateFile(path string, maximum int) ([]byte, error) {
-	info, err := os.Lstat(path)
+	return readStateFileWith(path, maximum, os.Lstat, os.Open)
+}
+
+func readStateFileWith(path string, maximum int, lstat func(string) (os.FileInfo, error), open func(string) (*os.File, error)) ([]byte, error) {
+	info, err := lstat(path)
 	if err != nil {
 		return nil, err
 	}
 	if !info.Mode().IsRegular() || info.Size() > int64(maximum) {
 		return nil, errors.New("invalid state file")
 	}
-	data, err := os.ReadFile(path) //nolint:gosec // The allowlisted installation-owned path passed an Lstat regular-file check.
+	file, err := open(path)
+	if err != nil {
+		return nil, err
+	}
+	defer file.Close()
+	opened, err := file.Stat()
+	if err != nil || !os.SameFile(info, opened) || !opened.Mode().IsRegular() || opened.Size() > int64(maximum) {
+		return nil, errors.New("invalid state file")
+	}
+	data, err := io.ReadAll(io.LimitReader(file, int64(maximum)+1))
 	if err != nil || len(data) > maximum {
 		return nil, errors.New("invalid state file")
 	}

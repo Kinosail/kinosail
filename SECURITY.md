@@ -33,6 +33,10 @@ Security maintenance targets current `main` and the latest published app release
 
 Read the app's setup and security guides for details. Host firewall rules, certificate trust, DNS account security, disk encryption, physical access, and off-host backup custody remain operator responsibilities.
 
+## Repository instructions are not a trust boundary
+
+`AGENTS.md`, `.codex/skills/`, and other developer-assistance files are guidance for a human or separately controlled development agent. They are not executable authorization, deployment configuration, or a source of secrets. Automated jobs must not execute instructions from untrusted pull requests with privileged credentials; review and isolate those files before using them in any privileged workflow.
+
 ## API authorization matrix
 
 This matrix is the authorization contract for Player and Subtitles. The route inventory is exact; a new route is protected until it is explicitly classified and added to the corresponding policy and test matrix. “Session” means a valid Kinosail browser or bearer session. API keys never inherit session-only permissions.

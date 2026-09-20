@@ -52,7 +52,7 @@ func TestPublicURLIsOneBoundedOrigin(t *testing.T) {
 	if got, err := parsePublicURL("", "127.0.0.1:38400"); err != nil || got != "http://localhost:38400" {
 		t.Fatalf("loopback public URL = %q, %v", got, err)
 	}
-	for _, value := range []string{"ftp://dashboard.example", "https://user@example.test", "https://example.test/path", "https://example.test?query=1", "https://example.test#fragment", "https://" + strings.Repeat("a", 2049)} {
+	for _, value := range []string{"ftp://dashboard.example", "http://dashboard.example", "https://user@example.test", "https://example.test/path", "https://example.test?query=1", "https://example.test#fragment", "https://" + strings.Repeat("a", 2049)} {
 		if _, err := parsePublicURL(value, ":38400"); err == nil {
 			t.Fatalf("public URL %q should be rejected", value)
 		}

@@ -32,6 +32,9 @@ type Config struct {
 
 // New registers public, protected, API, and static routes.
 func New(config Config, board *dashboard.Service, authentication *auth.Manager, prober *dashboard.Prober, programs ...*supporter.Service) http.Handler {
+	// An HTTPS public origin must never issue a cookie that can be replayed over
+	// a plaintext deployment, even when an embedding caller built Config by hand.
+	config.SecureCookies = config.SecureCookies || strings.HasPrefix(strings.ToLower(strings.TrimSpace(config.PublicURL)), "https://")
 	program, _ := supporter.New(context.Background(), nil, supporter.Config{})
 	if len(programs) == 1 && programs[0] != nil {
 		program = programs[0]

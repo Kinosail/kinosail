@@ -274,3 +274,27 @@ func TestSubtitleAcquireAndUpgradeFailureBranches(t *testing.T) { //nolint:cyclo
 		t.Fatal("missing subtitle track was reported as present")
 	}
 }
+
+func TestReadUpgradeSidecarRejectsReplacementAfterPathCheck(t *testing.T) {
+	directory := t.TempDir()
+	path := filepath.Join(directory, "movie.en.srt")
+	replacement := filepath.Join(directory, "replacement.txt")
+	original := filepath.Join(directory, "original.srt")
+	if err := os.WriteFile(path, []byte("subtitle"), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(replacement, []byte("private"), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := readUpgradeSidecarWith(path, os.Lstat, func(name string) (*os.File, error) {
+		if err := os.Rename(name, original); err != nil {
+			return nil, err
+		}
+		if err := os.Symlink(replacement, name); err != nil {
+			return nil, err
+		}
+		return os.Open(name)
+	}); err == nil {
+		t.Fatal("sidecar replacement race was accepted")
+	}
+}

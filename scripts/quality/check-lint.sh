@@ -12,7 +12,7 @@ if [[ -z "$base" ]]; then
 		base=HEAD^
 	fi
 fi
-if [[ "$base" =~ ^0+$ ]] || ! git -C "$repo" rev-parse --verify "$base^{commit}" >/dev/null 2>&1; then
+if [[ "$base" =~ ^0+$ ]] || ! base="$(git -C "$repo" rev-parse --verify --end-of-options "$base^{commit}" 2>/dev/null)"; then
 	base="$(git -C "$repo" rev-list --max-parents=0 HEAD | tail -1)"
 fi
 

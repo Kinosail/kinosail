@@ -27,6 +27,9 @@ func assertGatewayProtocol(t *testing.T, mux *http.ServeMux) { //nolint:cyclop /
 	if response := mcpRequest(t, mux, "tools/list", nil); response.Code != http.StatusOK || !strings.Contains(response.Body.String(), `"name":"read_api"`) || strings.Contains(response.Body.String(), `"name":"write_api"`) {
 		t.Fatalf("read tools = %d %q", response.Code, response.Body.String())
 	}
+	if response := mcpRequest(t, mux, "tools/list", nil); !strings.Contains(response.Body.String(), "untrusted application or media data") {
+		t.Fatalf("MCP trust-boundary instructions missing: %d %q", response.Code, response.Body.String())
+	}
 }
 
 func assertReadTools(t *testing.T, mux *http.ServeMux, api *testAPI) int {

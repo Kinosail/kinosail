@@ -11,7 +11,7 @@ import (
 )
 
 func (api *jellyfinAPI) registerPlayback(mux *http.ServeMux) {
-	err := api.playbackModule().Register(mux, playback.JellyfinPlaybackHandlers{Stream: api.stream, Subtitle: api.subtitle, Progress: api.playbackProgress, UserData: api.userData, Played: api.played, Favorite: api.favorite})
+	err := api.playbackModule().Register(mux, playback.JellyfinPlaybackHandlers{Stream: api.stream, Subtitle: api.subtitle, Progress: api.playbackProgress, UserData: api.userData, Played: ownJellyfinUser(api.played), Favorite: api.favorite})
 	if err != nil {
 		panic(err)
 	}

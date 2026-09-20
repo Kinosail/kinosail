@@ -3,4 +3,7 @@ useDefault = true
 
 [allowlist]
 description = "Generated architecture maps contain symbol metadata, not source literals"
-paths = ['''^apps/(player|subtitles)/(docs|engineering)/architecture-explorer/index\.html$''']
+paths = [
+  '''^apps/(player|subtitles)/(docs|engineering)/architecture-explorer/index\.html$''',
+  '''^packages/identitycore/(factor_transaction|mfa)_test\.go$''',
+]

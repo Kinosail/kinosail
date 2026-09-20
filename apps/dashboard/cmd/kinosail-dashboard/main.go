@@ -216,7 +216,18 @@ func defaultPublicURL(listen string) (string, error) {
 }
 
 func validPublicURL(parsed *url.URL) bool {
-	return (parsed.Scheme == "http" || parsed.Scheme == "https") && parsed.Hostname() != "" && parsed.User == nil && parsed.RawQuery == "" && parsed.Fragment == "" && (parsed.Path == "" || parsed.Path == "/")
+	if (parsed.Scheme != "http" && parsed.Scheme != "https") || parsed.Hostname() == "" || parsed.User != nil || parsed.RawQuery != "" || parsed.Fragment != "" || parsed.Path != "" && parsed.Path != "/" {
+		return false
+	}
+	return parsed.Scheme == "https" || localPublicHostname(parsed.Hostname())
+}
+
+func localPublicHostname(host string) bool {
+	if strings.EqualFold(host, "localhost") {
+		return true
+	}
+	address := net.ParseIP(host)
+	return address != nil && address.IsLoopback()
 }
 
 func parseTrustedHosts(value string) ([]string, error) {

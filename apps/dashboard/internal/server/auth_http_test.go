@@ -46,6 +46,18 @@ func TestHTTPAuthenticationAndCSRF(t *testing.T) {
 	assertLogoutRequiresCSRFAndRevokesSession(t, app, session)
 }
 
+func TestHTTPSPublicOriginForcesSecureSessionCookies(t *testing.T) {
+	app := newTestApplication(t, Config{PublicURL: "https://dashboard.example:38400"})
+	response := app.request(t, http.MethodPost, "/api/v1/setup", `{"name":"Owner","password":"long-password-123","device":"test browser"}`, nil)
+	if response.Code != http.StatusCreated {
+		t.Fatalf("setup status = %d, body = %s", response.Code, response.Body.String())
+	}
+	cookies := response.Result().Cookies()
+	if len(cookies) != 1 || !cookies[0].Secure || !cookies[0].HttpOnly || cookies[0].SameSite != http.SameSiteStrictMode {
+		t.Fatalf("HTTPS public origin issued unsafe cookie: %#v", cookies)
+	}
+}
+
 func assertLogoutRequiresCSRFAndRevokesSession(t *testing.T, app testApplication, session testSession) {
 	t.Helper()
 	withoutLogoutCSRF := app.request(t, http.MethodDelete, "/api/v1/session", `{}`, &testSession{cookie: session.cookie})

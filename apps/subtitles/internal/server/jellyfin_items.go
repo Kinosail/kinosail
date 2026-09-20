@@ -9,9 +9,19 @@ import (
 
 func (api *jellyfinAPI) registerItems(mux *http.ServeMux) {
 	sharedjellyfin.RegisterItems(mux, sharedjellyfin.ItemHandlers{
-		Views: api.views, Items: api.items, Latest: api.latest, Persons: api.persons, Item: api.item,
+		Views: ownJellyfinUser(api.views), Items: ownJellyfinUser(api.items), Latest: ownJellyfinUser(api.latest), Persons: api.persons, Item: ownJellyfinUser(api.item),
 		Seasons: api.seasons, Episodes: api.episodes, NextUp: api.nextUp, Resume: api.resume,
 	})
+}
+
+func ownJellyfinUser(next http.HandlerFunc) http.HandlerFunc {
+	return func(writer http.ResponseWriter, request *http.Request) {
+		if user := request.PathValue("user"); user != "" && user != currentViewer(request).ID {
+			http.NotFound(writer, request)
+			return
+		}
+		next(writer, request)
+	}
 }
 
 func (api *jellyfinAPI) views(writer http.ResponseWriter, request *http.Request) {

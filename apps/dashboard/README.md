@@ -76,7 +76,7 @@ Set these deployment variables in an uncommitted `.env` beside `compose.yaml`, t
 | --- | --- |
 | `KINOSAIL_DASHBOARD_BIND` | Host web-port binding; defaults to `127.0.0.1`. |
 | `KINOSAIL_DASHBOARD_PORT` | Host port; defaults to `38400`. |
-| `KINOSAIL_DASHBOARD_PUBLIC_URL` | Exact browser origin, including scheme and nonstandard port. Defaults to `http://localhost:38400` in Compose. No path, query, fragment, or credentials. |
+| `KINOSAIL_DASHBOARD_PUBLIC_URL` | Exact browser origin, including scheme and nonstandard port. Defaults to `http://localhost:38400` in Compose. Plain HTTP is accepted only for localhost or a loopback IP; use trusted HTTPS for any other hostname. No path, query, fragment, or credentials. |
 | `KINOSAIL_DASHBOARD_SECURE_COOKIES` | `false` for local HTTP; must be `true` when the public URL uses HTTPS. |
 | `KINOSAIL_DASHBOARD_TRUSTED_HOSTS` | Comma-separated exact trusted DNS names or IP addresses; no wildcards. Add the hostname used by your browser/proxy. |
 | `KINOSAIL_DASHBOARD_PUBLIC_PROBE_HOSTS` | Comma-separated exact public hostnames that health checks may contact. Empty by default; private and loopback destinations are allowed. |

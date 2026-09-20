@@ -3,6 +3,7 @@ package server
 import (
 	"context"
 	"errors"
+	"io"
 	"os"
 	"time"
 
@@ -99,11 +100,24 @@ func (provider *subtitleProvider) upgradeSidecar(ctx context.Context, item libra
 }
 
 func readUpgradeSidecar(path string) ([]byte, error) {
-	info, err := os.Lstat(path)
+	return readUpgradeSidecarWith(path, os.Lstat, os.Open)
+}
+
+func readUpgradeSidecarWith(path string, lstat func(string) (os.FileInfo, error), open func(string) (*os.File, error)) ([]byte, error) {
+	info, err := lstat(path)
 	if err != nil || !info.Mode().IsRegular() || info.Size() <= 0 || info.Size() > 4<<20 {
 		return nil, errors.New("subtitle sidecar cannot be upgraded")
 	}
-	data, err := os.ReadFile(path) //nolint:gosec // The path is a scanned media sidecar.
+	file, err := open(path)
+	if err != nil {
+		return nil, errors.New("subtitle sidecar cannot be upgraded")
+	}
+	defer file.Close()
+	opened, err := file.Stat()
+	if err != nil || !os.SameFile(info, opened) || !opened.Mode().IsRegular() || opened.Size() <= 0 || opened.Size() > 4<<20 {
+		return nil, errors.New("subtitle sidecar cannot be upgraded")
+	}
+	data, err := io.ReadAll(io.LimitReader(file, 4<<20+1))
 	if err != nil || len(data) == 0 || len(data) > 4<<20 {
 		return nil, errors.New("subtitle sidecar cannot be upgraded")
 	}

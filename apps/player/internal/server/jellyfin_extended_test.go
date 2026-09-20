@@ -39,7 +39,18 @@ func TestJellyfinClientCanUseExtendedBrowseAndPlaybackContracts(t *testing.T) { 
 	if response := jellyfinCall(t, handler, http.MethodPost, "/Users/AuthenticateByName", `{`, ""); response.Code != http.StatusBadRequest {
 		t.Fatalf("malformed authentication = %d %q", response.Code, response.Body.String())
 	}
-	token, _ := jellyfinLogin(t, handler, owner)
+	token, userID := jellyfinLogin(t, handler, owner)
+	for _, path := range []string{"/Users/not-the-owner/Views", "/Users/not-the-owner/Items", "/Users/not-the-owner/Items/Latest"} {
+		if response := jellyfinCall(t, handler, http.MethodGet, path, "", token); response.Code != http.StatusNotFound {
+			t.Fatalf("mismatched Jellyfin user %s = %d %q", path, response.Code, response.Body.String())
+		}
+	}
+	if response := jellyfinCall(t, handler, http.MethodPost, "/Users/not-the-owner/PlayedItems/missing", "", token); response.Code != http.StatusNotFound {
+		t.Fatalf("mismatched Jellyfin mutation = %d %q", response.Code, response.Body.String())
+	}
+	if response := jellyfinCall(t, handler, http.MethodGet, "/Users/"+userID+"/Items", "", token); response.Code != http.StatusOK {
+		t.Fatalf("owned Jellyfin user route = %d %q", response.Code, response.Body.String())
+	}
 
 	root := jellyfinCall(t, handler, http.MethodGet, "/Items?IncludeItemTypes=Movie,Series,Audio,Photo&SearchTerm=o", "", token)
 	var result struct {
