@@ -6,7 +6,11 @@ struct PlayerTabs: View {
     @State private var paths: [PlayerTab: NavigationPath] = [:]
     init(profileKey: String) {
         let legacy = UserDefaults.standard.string(forKey: "kinosail.tabs.\(profileKey)")
-        _stored = AppStorage(wrappedValue: PlayerTab.legacyDefault(legacy), "kinosail.tabs.v2.\(profileKey)")
+        let storageKey = "kinosail.tabs.v2.\(profileKey)"
+        let raw = UserDefaults.standard.string(forKey: storageKey) ?? PlayerTab.legacyDefault(legacy)
+        let initial = (try? PlayerTab.parse(raw)) ?? PlayerTab.defaults
+        _selection = State(initialValue: initial.first ?? .home)
+        _stored = AppStorage(wrappedValue: PlayerTab.legacyDefault(legacy), storageKey)
     }
     private var pinned: [PlayerTab] { (try? PlayerTab.parse(stored)) ?? PlayerTab.defaults }
     var body: some View {

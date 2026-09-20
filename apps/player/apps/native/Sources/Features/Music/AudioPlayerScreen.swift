@@ -41,7 +41,7 @@ struct AudioPlayerScreen: View {
                         Button(session.player.isPlaying ? "Pause" : "Play", systemImage: session.player.isPlaying ? "pause.fill" : "play.fill") { session.player.togglePlayback() }
                             .labelStyle(.iconOnly).font(.largeTitle).buttonStyle(.borderedProminent).buttonBorderShape(.capsule).tint(KinoTheme.signal).foregroundStyle(KinoTheme.signalInk)
                             #if os(tvOS)
-                            .tvOSDefaultPlayFocus(in: audioFocus, enabled: !session.player.isPlaying && session.player.player != nil)
+                            .tvOSDefaultPlayFocus(in: audioFocus, id: "audio.play.\(item.id)", enabled: session.player.player != nil)
                             #endif
                         Button("Forward 30 seconds", systemImage: "goforward.30") { perform { try await session.player.seek(to: min(session.player.duration, session.player.seconds + 30)) } }.labelStyle(.iconOnly).buttonStyle(.bordered).buttonBorderShape(.capsule).tint(KinoTheme.secondaryControlTint).foregroundStyle(KinoTheme.text).controlSize(.large)
                     }.font(.title2).disabled(session.player.player == nil)

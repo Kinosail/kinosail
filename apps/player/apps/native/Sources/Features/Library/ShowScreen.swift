@@ -27,7 +27,7 @@ struct ShowScreen: View {
                                     Label("\(next.playLabel) · S\(next.season) E\(next.episode)", systemImage: "play.fill")
                                 }.buttonStyle(.borderedProminent).buttonBorderShape(.capsule).tint(KinoTheme.signal).foregroundStyle(KinoTheme.signalInk)
                                 #if os(tvOS)
-                                .tvOSDefaultPlayFocus(in: showFocus)
+                                .tvOSDefaultPlayFocus(in: showFocus, id: "show.next-play.\(next.id)")
                                 #endif
                             }
                         }

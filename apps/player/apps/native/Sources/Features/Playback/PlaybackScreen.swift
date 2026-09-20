@@ -126,7 +126,7 @@ struct PlaybackToolsScreen: View {
                             dismiss()
                         } }
                         #if os(tvOS)
-                        .tvOSDefaultPlayFocus(in: playbackToolsFocus)
+                        .tvOSDefaultPlayFocus(in: playbackToolsFocus, id: "playback.next.\(next)")
                         #endif
                         }
                     }

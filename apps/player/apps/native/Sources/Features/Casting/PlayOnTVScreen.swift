@@ -34,7 +34,7 @@ struct PlayOnTVScreen: View {
                         HStack {
                             Button("Play", systemImage: "play.fill") { perform { try await session.casting.command(.play) } }
                                 #if os(tvOS)
-                                .tvOSDefaultPlayFocus(in: castFocus)
+                                .tvOSDefaultPlayFocus(in: castFocus, id: "cast.play.\(cast.id)")
                                 #endif
                             Button("Pause", systemImage: "pause.fill") { perform { try await session.casting.command(.pause) } }
                             Button("Stop", systemImage: "stop.fill") { perform { try await session.casting.command(.stop) } }

@@ -60,7 +60,7 @@ struct AlbumScreen: View {
                             }.padding(.vertical, 12).contentShape(.rect)
                         }.buttonStyle(.plain).disabled(starting)
                         #if os(tvOS)
-                        .tvOSDefaultPlayFocus(in: albumFocus, enabled: index == 0)
+                        .tvOSDefaultPlayFocus(in: albumFocus, id: "album.first-track.\(albumID).\(item.id)", enabled: index == 0)
                         #endif
                         Divider()
                     }

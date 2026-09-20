@@ -81,7 +81,7 @@ private struct DetailContent: View {
         }
         .buttonStyle(.borderedProminent).buttonBorderShape(.capsule).tint(KinoTheme.signal).foregroundStyle(KinoTheme.signalInk)
         #if os(tvOS)
-        .tvOSDefaultPlayFocus(in: detailFocus, enabled: item.kind == .video || item.isAudio)
+        .tvOSDefaultPlayFocus(in: detailFocus, id: "detail.play.\(item.id)", enabled: item.kind == .video || item.isAudio)
         #endif
         Button {
             change { client in listed = try await client.setListed(itemID: item.id, listed: !(listed ?? detail.listed)) }
