@@ -15,14 +15,17 @@ DOCS = ROOT / 'engineering/documentation'
 
 
 def settings(argv=None):
-    parser = argparse.ArgumentParser(description=__doc__)
+    parser = argparse.ArgumentParser(description=__doc__, allow_abbrev=False)
     parser.add_argument('--output', required=True)
     parser.add_argument('--baseurl', default='/kinosail')
     parser.add_argument('--url', default='https://kinosail.github.io')
     args = parser.parse_args(argv)
     if len(args.baseurl) > 200 or not re.fullmatch(r'(?:/[A-Za-z0-9_-]+)*', args.baseurl):
         parser.error('baseurl must be empty or slash-separated URL segments without a trailing slash')
-    origin = urlparse(args.url)
+    try:
+        origin = urlparse(args.url)
+    except ValueError:
+        parser.error('url must be a valid HTTPS origin')
     if len(args.url) > 253 or origin.scheme != 'https' or args.url != f'https://{origin.hostname}' or not origin.hostname or origin.netloc != origin.hostname or origin.path or origin.query or origin.fragment or not re.fullmatch(r'[a-z0-9]+(?:[.-][a-z0-9]+)*', origin.hostname):
         parser.error('url must be a lowercase HTTPS origin without credentials, port, or path')
     if len(args.output) > 4096 or not args.output.strip():

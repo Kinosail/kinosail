@@ -2,6 +2,7 @@
 """Check rendered docs: local links, anchors, assets, headings, and search."""
 from html.parser import HTMLParser
 import json
+import re
 from pathlib import Path
 import sys
 from urllib.parse import unquote, urljoin, urlsplit
@@ -47,6 +48,12 @@ def check(root, base):
                 errors.append(f'{path.relative_to(root)}: missing {link}')
             elif parsed.fragment and target in pages and unquote(parsed.fragment) not in pages[target].ids:
                 errors.append(f'{path.relative_to(root)}: missing anchor {link}')
+    for stylesheet in root.rglob('*.css'):
+        for asset in re.findall(r'url\([\"\']?([^\"\')]+)', stylesheet.read_text()):
+            if not urlsplit(asset).scheme and not (stylesheet.parent / asset).resolve().is_file():
+                errors.append(f'{stylesheet.relative_to(root)}: missing CSS asset {asset}')
+    if not (root / 'assets/fonts/OFL-Manrope.txt').is_file():
+        errors.append('bundled font license missing')
     entries = json.loads((root / 'search.json').read_text())
     for entry in entries:
         if not all(isinstance(entry.get(key), str) for key in ('title', 'description', 'url', 'content', 'product')):
