@@ -22,7 +22,7 @@ struct TVOSConfigurationLayout<Content: View>: View {
             let spacing = min(48, max(28, proxy.size.width * 0.03))
 
             HStack(alignment: .top, spacing: spacing) {
-                TVOSConfigurationBrand(title: title, symbol: symbol)
+                TVOSConfigurationBrand(title: title, symbol: symbol, width: brandWidth)
                     .frame(width: brandWidth)
                 content()
                     .focusSection()
@@ -57,48 +57,57 @@ extension View {
 private struct TVOSConfigurationBrand: View {
     let title: String
     let symbol: String
+    let width: CGFloat
 
     var body: some View {
         VStack(alignment: .leading, spacing: 24) {
-            ZStack(alignment: .bottomLeading) {
+            ZStack {
                 Image("CinemaSail")
                     .resizable()
                     .scaledToFill()
-                    .frame(maxWidth: .infinity)
-                    .frame(height: 220)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
                     .clipped()
                 LinearGradient(
-                    colors: [.clear, KinoTheme.background.opacity(0.94)],
+                    colors: [KinoTheme.background.opacity(0.18), KinoTheme.background.opacity(0.94)],
                     startPoint: .top,
                     endPoint: .bottom
                 )
-                VStack(alignment: .leading, spacing: 8) {
-                    Image(systemName: "sailboat.fill")
-                        .font(.system(size: 44, weight: .semibold))
-                        .foregroundStyle(KinoTheme.signal)
-                    Text("KINOSAIL")
-                        .font(.system(size: 26, weight: .bold, design: .rounded))
-                        .tracking(2.5)
-                        .foregroundStyle(KinoTheme.text)
+                LinearGradient(
+                    colors: [KinoTheme.background.opacity(0.9), .clear],
+                    startPoint: .leading,
+                    endPoint: .trailing
+                )
+                VStack(alignment: .leading, spacing: 24) {
+                    VStack(alignment: .leading, spacing: 8) {
+                        Image(systemName: "sailboat.fill")
+                            .font(.system(size: 44, weight: .semibold))
+                            .foregroundStyle(KinoTheme.signal)
+                        Text("KINOSAIL")
+                            .font(.system(size: 26, weight: .bold, design: .rounded))
+                            .tracking(2.5)
+                            .foregroundStyle(KinoTheme.text)
+                    }
+                    VStack(alignment: .leading, spacing: 8) {
+                        Image(systemName: symbol)
+                            .font(.title2.bold())
+                            .foregroundStyle(KinoTheme.signal)
+                        Text(title)
+                            .font(.title2.bold())
+                            .foregroundStyle(KinoTheme.text)
+                            .frame(width: max(180, width - 32), alignment: .leading)
+                            .lineLimit(3)
+                            .minimumScaleFactor(0.72)
+                            .allowsTightening(true)
+                        Text("Move with the remote. Select with one press.")
+                            .font(.body)
+                            .foregroundStyle(KinoTheme.muted)
+                            .frame(width: max(180, width - 32), alignment: .leading)
+                    }
                 }
-                .padding(24)
-            }
-            .clipShape(.rect(cornerRadius: 24))
-
-            VStack(alignment: .leading, spacing: 8) {
-                Image(systemName: symbol)
-                    .font(.title2.bold())
-                    .foregroundStyle(KinoTheme.signal)
-                Text(title)
-                    .font(.title2.bold())
-                    .foregroundStyle(KinoTheme.text)
-                    .fixedSize(horizontal: false, vertical: true)
-                Text("Move with the remote. Select with one press.")
-                    .font(.body)
-                    .foregroundStyle(KinoTheme.muted)
+                .padding(32)
             }
         }
-        .frame(maxWidth: .infinity, alignment: .leading)
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
         .accessibilityElement(children: .combine)
         .accessibilityLabel("\(title). Kinosail settings.")
     }
