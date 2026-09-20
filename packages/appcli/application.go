@@ -23,7 +23,7 @@ type Application[Configuration Settings] struct {
 }
 
 // Execute runs Player's command and server-mode dispatch without terminating the process.
-func Execute[Configuration Settings](args []string, input io.Reader, output io.Writer, getenv func(string) string, signals []os.Signal, application Application[Configuration]) int { //nolint:cyclop,gocognit // The process boundary must preserve command precedence and failure messages.
+func Execute[Configuration Settings](args []string, input io.Reader, output io.Writer, getenv func(string) string, signals []os.Signal, application Application[Configuration]) int {
 	// Dispatch before loading application settings or opening private state.
 	if len(args) > 0 && args[0] == "public-gateway" {
 		if len(args) != 1 || getenv == nil {
@@ -50,21 +50,7 @@ func Execute[Configuration Settings](args []string, input io.Reader, output io.W
 		return commandResult("private management recovery failed", owneraccess.Recover(configured.String("paths.data")))
 	}
 	if len(args) >= 1 && len(args) <= 2 && args[0] == "mcp-stdio" {
-		if configErr != nil {
-			slog.Error("configuration failed", "error", configErr)
-			return 1
-		}
-		ctx, stop := signal.NotifyContext(context.Background(), signals...)
-		defer stop()
-		profileID := ""
-		if len(args) == 2 {
-			profileID = args[1]
-		}
-		if err := application.MCP(ctx, configured, profileID); err != nil && !errors.Is(err, context.Canceled) {
-			slog.Error("command failed", "error", err)
-			return 1
-		}
-		return 0
+		return executeMCP(args, signals, application, configured, configErr)
 	}
 	handled, err := application.Command(args, input, output, configured.String("paths.data"), configured.String("backup.key"), configured.String("listen"), configured.Bool("tls.enabled"), application.AuthURL(configured))
 	if handled {
@@ -93,4 +79,22 @@ func commandResult(message string, err error) int {
 // SecureProxyConfiguration validates the proxy capability at the process boundary.
 func SecureProxyConfiguration(token, remote string) bool {
 	return remote == "" && token == "" || len(token) >= 32
+}
+
+func executeMCP[Configuration Settings](args []string, signals []os.Signal, application Application[Configuration], configured Configuration, configErr error) int {
+	if configErr != nil {
+		slog.Error("configuration failed", "error", configErr)
+		return 1
+	}
+	ctx, stop := signal.NotifyContext(context.Background(), signals...)
+	defer stop()
+	profileID := ""
+	if len(args) == 2 {
+		profileID = args[1]
+	}
+	if err := application.MCP(ctx, configured, profileID); err != nil && !errors.Is(err, context.Canceled) {
+		slog.Error("command failed", "error", err)
+		return 1
+	}
+	return 0
 }

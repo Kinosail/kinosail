@@ -42,38 +42,9 @@ func (h HTTP) Change(operation string, api bool) http.HandlerFunc {
 		var value string
 		var err error
 		if api {
-			switch operation {
-			case "enable":
-				var input struct {
-					Endpoint string `json:"endpoint"`
-				}
-				if !h.readJSON(w, r, &input) {
-					return
-				}
-				value = input.Endpoint
-			case "pair":
-				var input struct {
-					Label string `json:"label"`
-				}
-				if !h.readJSON(w, r, &input) {
-					return
-				}
-				value = input.Label
-			case "revoke":
-				var input struct {
-					PublicKey string `json:"publicKey"`
-				}
-				if !h.readJSON(w, r, &input) {
-					return
-				}
-				value = input.PublicKey
-			case "disable":
-				var input struct{}
-				if !h.readJSON(w, r, &input) {
-					return
-				}
-			default:
-				h.Error(w, r, "invalid management operation", http.StatusBadRequest)
+			var ok bool
+			value, ok = h.operationJSON(w, r, operation)
+			if !ok {
 				return
 			}
 		} else {
@@ -83,37 +54,13 @@ func (h HTTP) Change(operation string, api bool) http.HandlerFunc {
 				return
 			}
 		}
-		var profile string
-		switch operation {
-		case "enable":
-			err = h.Manager.Enable(value)
-		case "disable":
-			err = h.Manager.Disable()
-		case "pair":
-			profile, err = h.Manager.Pair(value, h.OwnerID(r))
-		case "revoke":
-			err = h.Manager.Revoke(value)
-		default:
-			err = errors.New("invalid management operation")
-		}
+		// Management runs under the manager lifecycle, beyond this HTTP request.
+		profile, err := h.apply(operation, value, func() string { return h.OwnerID(r) }) //nolint:contextcheck
 		if err != nil {
 			h.Error(w, r, err.Error(), http.StatusBadRequest)
 			return
 		}
-		if api {
-			if profile != "" {
-				h.JSON(w, map[string]string{"profile": profile}, http.StatusCreated)
-			} else {
-				h.JSON(w, h.Manager.Status(), http.StatusOK)
-			}
-		} else if profile != "" {
-			w.Header().Set("Content-Type", "application/x-wireguard-profile")
-			w.Header().Set("Content-Disposition", `attachment; filename="kinosail-owner.conf"`)
-			w.WriteHeader(http.StatusCreated)
-			_, _ = w.Write([]byte(profile))
-		} else {
-			http.Redirect(w, r, "/settings/management", http.StatusSeeOther)
-		}
+		h.changeResponse(w, r, api, profile)
 	}
 }
 
@@ -144,4 +91,66 @@ func (h HTTP) readJSON(w http.ResponseWriter, r *http.Request, target any) bool 
 		return false
 	}
 	return true
+}
+
+func (h HTTP) operationJSON(w http.ResponseWriter, r *http.Request, operation string) (string, bool) {
+	switch operation {
+	case "enable":
+		var input struct {
+			Endpoint string `json:"endpoint"`
+		}
+		ok := h.readJSON(w, r, &input)
+		return input.Endpoint, ok
+	case "pair":
+		var input struct {
+			Label string `json:"label"`
+		}
+		ok := h.readJSON(w, r, &input)
+		return input.Label, ok
+	case "revoke":
+		var input struct {
+			PublicKey string `json:"publicKey"`
+		}
+		ok := h.readJSON(w, r, &input)
+		return input.PublicKey, ok
+	case "disable":
+		var input struct{}
+		return "", h.readJSON(w, r, &input)
+	default:
+		h.Error(w, r, "invalid management operation", http.StatusBadRequest)
+		return "", false
+	}
+}
+
+func (h HTTP) apply(operation, value string, ownerID func() string) (string, error) {
+	switch operation {
+	case "enable":
+		return "", h.Manager.Enable(value)
+	case "disable":
+		return "", h.Manager.Disable()
+	case "pair":
+		return h.Manager.Pair(value, ownerID())
+	case "revoke":
+		return "", h.Manager.Revoke(value)
+	default:
+		return "", errors.New("invalid management operation")
+	}
+}
+
+func (h HTTP) changeResponse(w http.ResponseWriter, r *http.Request, api bool, profile string) {
+	switch {
+	case api:
+		if profile != "" {
+			h.JSON(w, map[string]string{"profile": profile}, http.StatusCreated)
+		} else {
+			h.JSON(w, h.Manager.Status(), http.StatusOK)
+		}
+	case profile != "":
+		w.Header().Set("Content-Type", "application/x-wireguard-profile")
+		w.Header().Set("Content-Disposition", `attachment; filename="kinosail-owner.conf"`)
+		w.WriteHeader(http.StatusCreated)
+		_, _ = w.Write([]byte(profile)) // #nosec G705 -- attachment is a WireGuard configuration, never HTML.
+	default:
+		http.Redirect(w, r, "/settings/management", http.StatusSeeOther)
+	}
 }
