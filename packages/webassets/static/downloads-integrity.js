@@ -1,3 +1,12 @@
+function resolveOfflineWorkerRequest(pending, data) {
+  const request = pending.get(data.id);
+  if (!request) return;
+  if (request.timer !== undefined) clearTimeout(request.timer);
+  pending.delete(data.id);
+  if (data.error) request.reject(new Error(data.error));
+  else request.resolve(data.value);
+}
+
 
 async function offlineDigest(data) {
   const digest = new Uint8Array(await crypto.subtle.digest("SHA-256", data));
@@ -107,11 +116,7 @@ function streamingOfflineDigest() {
   worker.onerror = (event) => { revoke(); fail(new Error(event.message || "SHA-256 failed")); };
   worker.onmessage = ({data}) => {
     revoke();
-    const request = pending.get(data.id);
-    if (!request) return;
-    pending.delete(data.id);
-    if (data.error) request.reject(new Error(data.error));
-    else request.resolve(data.value);
+    resolveOfflineWorkerRequest(pending, data);
   };
   const request = (type, value) => new Promise((resolve, reject) => {
     const id = nextID++;

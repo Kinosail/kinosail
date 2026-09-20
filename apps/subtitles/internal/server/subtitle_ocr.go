@@ -94,14 +94,7 @@ func readSubtitleOCRFrames(ctx context.Context, output io.Reader, times <-chan f
 	cues, words := []subtitleCue{}, []subtitleDraftWord{}
 	previous, previousWords, start, last := "", []subtitleDraftWord{}, 0.0, -1.0
 	closeCue := func(end float64) {
-		if previous == "" || end <= start {
-			return
-		}
-		cues = append(cues, subtitleCue{Start: time.Duration(start * float64(time.Second)), End: time.Duration(end * float64(time.Second)), Text: previous})
-		for _, word := range previousWords {
-			word.Start, word.End = start, end
-			words = append(words, word)
-		}
+		cues, words = appendSubtitleOCRCue(cues, words, previousWords, previous, start, end)
 	}
 	for count := 0; ; count++ {
 		_, err := io.ReadFull(output, pixels)
@@ -111,37 +104,17 @@ func readSubtitleOCRFrames(ctx context.Context, output io.Reader, times <-chan f
 		if err != nil || count >= 40000 {
 			return nil, nil, errors.New("bitmap subtitle frame limit exceeded")
 		}
-		var at float64
-		select {
-		case value, ok := <-times:
-			if !ok {
-				return nil, nil, errors.New("bitmap subtitle timing is unavailable")
-			}
-			at = value
-		case <-ctx.Done():
-			return nil, nil, ctx.Err()
+		at, err := nextSubtitleFrameTime(ctx, times)
+		if err != nil {
+			return nil, nil, err
 		}
 		if at < last {
 			return nil, nil, errors.New("bitmap subtitle times are out of order")
 		}
 		last = at
-		image := subtitleOCRImage(pixels, 1920, 1080)
-		text, recognized := "", []subtitleDraftWord{}
-		if len(image) != 0 {
-			command := exec.CommandContext(ctx, executable, "stdin", "stdout", "-l", language, "--psm", "6", "tsv")
-			command.Stdin = bytes.NewReader(image)
-			buffer := &subtitleLimitedOutput{limit: 1 << 20}
-			command.Stdout = buffer
-			if err = command.Run(); err != nil {
-				return nil, nil, err
-			}
-			text, recognized, err = parseSubtitleOCR(buffer.Bytes())
-			if err != nil {
-				return nil, nil, err
-			}
-			if text == "" {
-				return nil, nil, errors.New("visible bitmap text could not be recognized")
-			}
+		text, recognized, err := recognizeSubtitleFrame(ctx, executable, language, pixels)
+		if err != nil {
+			return nil, nil, err
 		}
 		if text != previous {
 			closeCue(at)
@@ -210,30 +183,24 @@ func parseSubtitleOCR(data []byte) (string, []subtitleDraftWord, error) {
 		if len(fields) != 12 {
 			return "", nil, invalid
 		}
-		for index, field := range fields[:10] {
-			number, parseErr := strconv.Atoi(field)
-			if parseErr != nil || number < 0 || number > 1000000 || index == 0 && (number < 1 || number > 5) {
-				return "", nil, invalid
-			}
+		if !validSubtitleOCRCoordinates(fields[:10]) {
+			return "", nil, invalid
 		}
 		if fields[0] != "5" {
 			continue
 		}
-		confidence, err := strconv.ParseFloat(fields[10], 64)
-		word := strings.TrimSpace(fields[11])
-		if err != nil || math.IsNaN(confidence) || math.IsInf(confidence, 0) || confidence < 0 || confidence > 100 || !validSubtitleDraftText(word) {
+		word, confidence, ok := subtitleOCRWord(fields)
+		if !ok {
 			return "", nil, invalid
 		}
 		if word == "" {
 			continue
 		}
 		line := strings.Join(fields[1:5], ":")
-		if text.Len() > 0 {
-			if line == previous {
-				text.WriteByte(' ')
-			} else {
-				text.WriteByte('\n')
-			}
+		if text.Len() > 0 && line == previous {
+			text.WriteByte(' ')
+		} else if text.Len() > 0 {
+			text.WriteByte('\n')
 		}
 		text.WriteString(word)
 		previous = line
@@ -243,4 +210,28 @@ func parseSubtitleOCR(data []byte) (string, []subtitleDraftWord, error) {
 		words = append(words, subtitleDraftWord{Text: word, Confidence: confidence / 100})
 	}
 	return text.String(), words, nil
+}
+
+func appendSubtitleOCRCue(cues []subtitleCue, words, recognized []subtitleDraftWord, text string, start, end float64) ([]subtitleCue, []subtitleDraftWord) {
+	if text == "" || end <= start {
+		return cues, words
+	}
+	cues = append(cues, subtitleCue{Start: time.Duration(start * float64(time.Second)), End: time.Duration(end * float64(time.Second)), Text: text})
+	for _, word := range recognized {
+		word.Start, word.End = start, end
+		words = append(words, word)
+	}
+	return cues, words
+}
+
+func nextSubtitleFrameTime(ctx context.Context, times <-chan float64) (float64, error) {
+	select {
+	case value, ok := <-times:
+		if !ok {
+			return 0, errors.New("bitmap subtitle timing is unavailable")
+		}
+		return value, nil
+	case <-ctx.Done():
+		return 0, ctx.Err()
+	}
 }

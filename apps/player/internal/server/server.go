@@ -161,11 +161,7 @@ func newApplication(config Config) http.Handler { //nolint:funlen,cyclop,gocogni
 	if !auth.audit.Healthy() {
 		return unavailableApplication(config, "activity journal is unavailable")
 	}
-	if auth.profiles.err != nil {
-		if config.InternetAccess != nil {
-			_ = config.InternetAccess.Kill()
-		}
-	}
+	disableInternetForBrokenProfiles(config, auth)
 	viewingImports := newViewingImportManager(lifecycle, config.DataDir, index, progress, lists, auth.profiles)
 	homeAssistant, err := newHomeAssistant(settings, auth.profiles, index, progress, lists, lifecycle, config.AuthURL, rand.Reader)
 	if err != nil {

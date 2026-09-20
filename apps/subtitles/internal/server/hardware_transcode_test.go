@@ -32,7 +32,11 @@ func TestOwnerCanSelectHardwareTranscodingAndToneMapping(t *testing.T) {
 		t.Fatal(err)
 	}
 	t.Cleanup(func() { assertProcessStopsBeforeCleanup(t, pidFile) })
-	handler := server.New(server.Config{Lifecycle: t.Context(), MediaDir: mediaDir, CacheDir: cacheDir, FFmpeg: ffmpeg, HardwareOS: "linux", HardwareArch: "amd64"})
+	probe := filepath.Join(toolsDir, "ffprobe")
+	writeExecutable(t, probe, `#!/bin/sh
+printf '%s' '{"streams":[{"codec_type":"video","codec_name":"hevc","width":1920,"height":1080,"color_transfer":"smpte2084"},{"codec_type":"audio","codec_name":"aac"}]}'
+`)
+	handler := server.New(server.Config{FFprobe: probe, Lifecycle: t.Context(), MediaDir: mediaDir, CacheDir: cacheDir, FFmpeg: ffmpeg, HardwareOS: "linux", HardwareArch: "amd64"})
 	request := httptest.NewRequestWithContext(t.Context(), http.MethodPost, "/settings/transcoder", strings.NewReader("quality=automatic&accelerator=vaapi&toneMap=true"))
 	request.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 	response := httptest.NewRecorder()
@@ -53,7 +57,7 @@ func TestOwnerCanSelectHardwareTranscodingAndToneMapping(t *testing.T) {
 			t.Fatalf("settings lacks %q: %q", expected, settings.Body.String())
 		}
 	}
-	for _, expected := range []string{"-hwaccel vaapi", "-c:v h264_vaapi", "tonemap_vaapi"} {
+	for _, expected := range []string{"-c:v h264_vaapi", "zscale=t=linear", "tonemap=hable", "hwupload"} {
 		if !strings.Contains(string(used), expected) {
 			t.Fatalf("arguments lack %q: %q", expected, used)
 		}

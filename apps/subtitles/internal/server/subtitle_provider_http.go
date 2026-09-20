@@ -113,12 +113,13 @@ func readArchivedSubtitle(ctx context.Context, archive *zip.Reader) ([]byte, err
 		if remaining < 0 {
 			return nil, errors.New("subtitle archive exceeds its decompression budget")
 		}
-		if readErr == nil && len(data) <= 4<<20 && validSubtitlePayload(data) {
-			if subtitle != nil {
-				return nil, errors.New("subtitle archive is ambiguous")
-			}
-			subtitle = data
+		if readErr != nil || len(data) > 4<<20 || !validSubtitlePayload(data) {
+			continue
 		}
+		if subtitle != nil {
+			return nil, errors.New("subtitle archive is ambiguous")
+		}
+		subtitle = data
 	}
 	if subtitle != nil {
 		return subtitle, nil

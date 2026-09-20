@@ -135,56 +135,69 @@ func readSubtitleEdit(writer http.ResponseWriter, request *http.Request, target 
 // Validate all nested objects before decoding: duplicate fields and null values
 // must not silently overwrite a language, anchor, or concurrency precondition.
 func validSubtitleEditJSON(data []byte) bool {
-	decoder := json.NewDecoder(bytes.NewReader(data))
-	count := 0
-	var value func(int) bool
-	value = func(depth int) bool {
-		count++
-		if depth > 4 || count > 128 {
-			return false
-		}
-		token, err := decoder.Token()
-		if err != nil || token == nil {
-			return false
-		}
-		delimiter, structured := token.(json.Delim)
-		if !structured {
-			return depth > 0
-		}
-		switch delimiter {
-		case '{':
-			seen := map[string]bool{}
-			for decoder.More() {
-				key, err := decoder.Token()
-				name, ok := key.(string)
-				name = strings.ToLower(name)
-				if err != nil || !ok || seen[name] {
-					return false
-				}
-				seen[name] = true
-				if !value(depth + 1) {
-					return false
-				}
-			}
-			end, err := decoder.Token()
-			return err == nil && end == json.Delim('}')
-		case '[':
-			if depth == 0 {
-				return false
-			}
-			for decoder.More() {
-				if !value(depth + 1) {
-					return false
-				}
-			}
-			end, err := decoder.Token()
-			return err == nil && end == json.Delim(']')
-		}
+	validator := subtitleEditJSONValidator{decoder: json.NewDecoder(bytes.NewReader(data))}
+	if !validator.value(0) {
 		return false
 	}
-	if !value(0) {
-		return false
-	}
-	_, err := decoder.Token()
+	_, err := validator.decoder.Token()
 	return errors.Is(err, io.EOF)
+}
+
+type subtitleEditJSONValidator struct {
+	decoder *json.Decoder
+	count   int
+}
+
+func (validator *subtitleEditJSONValidator) value(depth int) bool {
+	validator.count++
+	if depth > 4 || validator.count > 128 {
+		return false
+	}
+	token, err := validator.decoder.Token()
+	if err != nil || token == nil {
+		return false
+	}
+	delimiter, structured := token.(json.Delim)
+	if !structured {
+		return depth > 0
+	}
+	switch delimiter {
+	case '{':
+		return validator.object(depth)
+	case '[':
+		return validator.array(depth)
+	default:
+		return false
+	}
+}
+
+func (validator *subtitleEditJSONValidator) object(depth int) bool {
+	seen := map[string]bool{}
+	for validator.decoder.More() {
+		key, err := validator.decoder.Token()
+		name, ok := key.(string)
+		name = strings.ToLower(name)
+		if err != nil || !ok || seen[name] {
+			return false
+		}
+		seen[name] = true
+		if !validator.value(depth + 1) {
+			return false
+		}
+	}
+	end, err := validator.decoder.Token()
+	return err == nil && end == json.Delim('}')
+}
+
+func (validator *subtitleEditJSONValidator) array(depth int) bool {
+	if depth == 0 {
+		return false
+	}
+	for validator.decoder.More() {
+		if !validator.value(depth + 1) {
+			return false
+		}
+	}
+	end, err := validator.decoder.Token()
+	return err == nil && end == json.Delim(']')
 }

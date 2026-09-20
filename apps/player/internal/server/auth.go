@@ -243,10 +243,7 @@ func (auth *authentication) register(mux *http.ServeMux) {
 }
 
 func registerIdentity(mux *http.ServeMux, auth *authentication, quickTTL time.Duration, oidcConfig OIDCConfig, samlConfig SAMLConfig, scimConfig SCIMConfig) *quickConnectBroker {
-	sso := newOIDC(oidcConfig, auth.profiles)
-	saml := newSAML(samlConfig, auth.profiles, sso)
-	auth.oidc, auth.saml = sso.Configured(), saml.Configured()
-	auth.sso = auth.oidc || auth.saml
+	sso, saml := auth.configureFederation(oidcConfig, samlConfig)
 	auth.register(mux)
 	quickConnect := newQuickConnect(quickTTL)
 	quickConnect.register(mux, auth.profiles)

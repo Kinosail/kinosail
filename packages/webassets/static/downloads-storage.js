@@ -50,12 +50,7 @@ async function openOfflineWriter(jobID, size) {
   };
   worker.onerror = () => stop(new Error("Offline storage worker failed"));
   worker.onmessage = ({data}) => {
-    const request = pending.get(data.id);
-    if (!request) return;
-    clearTimeout(request.timer);
-    pending.delete(data.id);
-    if (data.error) request.reject(new Error(data.error));
-    else request.resolve(data.value);
+    resolveOfflineWorkerRequest(pending, data);
   };
   const request = (type, value) => new Promise((resolve, reject) => {
     if (failed) { reject(failed); return; }

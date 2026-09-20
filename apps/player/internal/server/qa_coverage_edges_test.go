@@ -26,7 +26,7 @@ func TestTMDBCastValidationBoundsProviderData(t *testing.T) {
 }
 
 func TestPlayerFormattingUsesStableHumanReadableBoundaries(t *testing.T) {
-	servertest.AssertPlayerFormattingUsesStableHumanReadableBoundaries(t, byteSize, oneOf)
+	servertest.AssertByteSizeBoundaries(t, byteSize)
 }
 
 func TestAvailableUpdateAddsOwnerOnlyLibraryIndicator(t *testing.T) {

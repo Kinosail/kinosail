@@ -136,11 +136,7 @@ func (store ProfileStore) UpdateSCIMProfile(id string, input scim.ProfileInput, 
 		}
 		keys := CloneAPIKeys(*store.config.APIKeys)
 		if identityChanged {
-			for key, value := range keys {
-				if value.ProfileID == id {
-					delete(keys, key)
-				}
-			}
+			removeSCIMProfileKeys(keys, id)
 		}
 		if err := store.config.Persistence.SaveRelated(profiles, sessions, keys); err != nil {
 			return Profile{}, err
@@ -149,6 +145,14 @@ func (store ProfileStore) UpdateSCIMProfile(id string, input scim.ProfileInput, 
 		return existing, nil
 	}
 	return Profile{}, scim.ErrProfileNotFound
+}
+
+func removeSCIMProfileKeys(keys map[string]APIKey, id string) {
+	for key, value := range keys {
+		if value.ProfileID == id {
+			delete(keys, key)
+		}
+	}
 }
 
 func conflictingSCIMProfile(profiles []Profile, id string, input scim.ProfileInput) bool {

@@ -9,6 +9,9 @@ import (
 
 func TestEncodingCostIsReservedAtomically(t *testing.T) {
 	governor := New(3)
+	if governor.EncodingCapacity() != 3 {
+		t.Fatal("advertised encoding capacity differs from reservation budget")
+	}
 	release, err := governor.AcquireEncoding(t.Context(), Playback, 2, "")
 	if err != nil {
 		t.Fatal(err)
@@ -26,7 +29,7 @@ func TestEncodingCostIsReservedAtomically(t *testing.T) {
 	last()
 	release()
 	release()
-	all, err := governor.AcquireEncoding(t.Context(), Playback, 3, "")
+	all, err := governor.AcquireEncoding(t.Context(), Playback, governor.EncodingCapacity(), "")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -61,4 +64,17 @@ func TestHardwareSessionBudgetAndInvalidCosts(t *testing.T) { //nolint:cyclop //
 	if metrics := governor.Metrics(); metrics.ActivePlayback != 0 || metrics.ActiveBackground != 0 || metrics.WaitingPlayback != 0 || metrics.WaitingBackground != 0 {
 		t.Fatalf("reservation leaked: %#v", metrics)
 	}
+}
+
+func TestNilGovernorAdvertisesUsableSingleEncoder(t *testing.T) {
+	var governor *Governor
+	if governor.EncodingCapacity() != 1 {
+		t.Fatal("nil governor must advertise one encoder")
+	}
+	release, err := governor.AcquireEncoding(t.Context(), Playback, governor.EncodingCapacity(), "")
+	if err != nil || release == nil {
+		t.Fatalf("advertised capacity unavailable: %v", err)
+	}
+	release()
+	release()
 }

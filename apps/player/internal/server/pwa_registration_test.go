@@ -58,7 +58,7 @@ func assertOfflineAssetVersions(t *testing.T, pwa, client, worker *httptest.Resp
 
 func assertOfflineShell(t *testing.T, worker *httptest.ResponseRecorder) {
 	t.Helper()
-	if !strings.Contains(worker.Body.String(), `const cacheName = "kinosail-shell-v49"`) || !strings.Contains(worker.Body.String(), `event.respondWith(navigation.catch(() => caches.open(cacheName).then((cache) => cache.match("/offline"))))`) || !strings.Contains(worker.Body.String(), `response.ok ? refreshOffline()`) {
+	if !strings.Contains(worker.Body.String(), `const cacheName = "kinosail-shell-v50"`) || !strings.Contains(worker.Body.String(), `event.respondWith(navigation.catch(() => caches.open(cacheName).then((cache) => cache.match("/offline"))))`) || !strings.Contains(worker.Body.String(), `response.ok ? refreshOffline()`) {
 		t.Fatalf("service worker does not refresh versioned assets before shell cache fallback: %q", worker.Body.String())
 	}
 	for _, value := range []string{`"/static/main.kinosail.bundle.js": "text/javascript"`, `credentials: path === "/offline" ? "same-origin" : "omit"`, `cache: "reload"`, `response.status !== 200`, `response.redirected`, `responseURL.origin !== self.location.origin`, `responseURL.pathname !== path`, `responseType !== expectedType`, `else if (url.pathname in shell)`, `caches.open(cacheName).then((cache) => cache.match("/offline"))`, `imageCachePrefix`, `event.data?.type === "profile"`, `privateImagePath`, `cache.put(request, response.clone())`} {

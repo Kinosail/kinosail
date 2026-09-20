@@ -4,11 +4,14 @@ import {downloadsSource} from './static-sources';
 async function setup(page: Page) {
   await page.route('https://offline.test/', route => route.fulfill({contentType: 'text/html', body: '<body data-viewer-profile="viewer"></body>'}));
   await page.goto('https://offline.test/');
-  await page.evaluate(() => {
-    const active = {state: 'activated', scriptURL: new URL('/service-worker.js?v=43', location.href).href};
-    Object.defineProperty(navigator, 'serviceWorker', {configurable: true, value: {controller: active, getRegistration: async () => ({active})}});
-  });
+  await page.evaluate((path) => {
+    const active = {state: 'activated', scriptURL: new URL(path, location.href).href};
+    Object.defineProperty(navigator, 'serviceWorker', {configurable: true, value: Object.assign(new EventTarget(), {controller: active, getRegistration: async () => ({active})})});
+  }, downloadsSource.match(/const offlineWorkerPath = "([^"]+)"/)![1]);
+  const errors: string[] = [];
+  page.on('pageerror', error => errors.push(error.message));
   await page.addScriptTag({content: downloadsSource});
+  expect(errors).toEqual([]);
 }
 
 test('admission retains concurrent progress and keeps the cached connection usable', async ({page}) => {

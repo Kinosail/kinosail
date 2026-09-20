@@ -180,5 +180,5 @@ test("offline downloads reject zero-byte manifests before storage or file reques
 			transaction.onerror = () => reject(transaction.error);
 		};
 		request.onerror = () => reject(request.error);
-	}))).toEqual({ chunks: [], jobs: [], version: 3 });
+	}))).toEqual({ chunks: [], jobs: [], version: 4 });
 });

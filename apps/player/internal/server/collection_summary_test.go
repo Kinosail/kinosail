@@ -3,6 +3,7 @@ package server
 import (
 	"bytes"
 	"encoding/json"
+	"github.com/MikeO7/kinosail/packages/httpguard"
 	"html/template"
 	"net/url"
 	"strings"
@@ -21,7 +22,7 @@ func TestCollectionCardEscapesMetadataNameAsOneRouteSegment(t *testing.T) {
 		t.Fatal("collection card template is missing")
 	}
 	end := strings.Index(homeHTML[start:], `</a>`) + start + len(`</a>`)
-	view := template.Must(template.New("card").Funcs(csrfParseFuncs()).Parse(homeHTML[start:end]))
+	view := template.Must(template.New("card").Funcs(httpguard.CSRFParseFuncs(uiIcon)).Parse(homeHTML[start:end]))
 	var output bytes.Buffer
 	if err := view.Execute(&output, catalog.CollectionSummary{Name: name}); err != nil {
 		t.Fatal(err)

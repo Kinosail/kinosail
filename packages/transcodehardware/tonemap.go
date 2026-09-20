@@ -10,30 +10,38 @@ import (
 func (state *verification) verifyToneMapping(ctx context.Context, options ProbeOptions, backend *Backend, baseline Operation, settings transcodepolicy.Settings, check func(context.Context, string, transcodepolicy.Settings, string) transcodepolicy.CheckResult) {
 	for _, hdr := range []string{"hdr10", "hlg"} {
 		for _, cpuFrames := range []bool{false, true} {
-			for _, method := range transcodepolicy.ToneMapMethods(backend.ID, baseline.Device) {
-				if hdr == "hlg" && (method == "qsv" || method == "vaapi") {
-					continue
-				}
-				if ctx.Err() != nil {
-					return
-				}
-				settings.ToneMap, settings.ToneMapInput, settings.HardwareToneMap = true, hdr, method
-				settings.HardwareDecode = false
-				settings.SoftwareFilters, settings.Deinterlace = cpuFrames, cpuFrames
-				if !cpuFrames && transcodepolicy.ToneMapSoftwareFrames(settings) {
-					continue
-				}
-				probeCtx, stop := context.WithTimeout(ctx, 5*time.Second)
-				result := check(probeCtx, options.FFmpeg, settings, backend.Name)
-				stop()
-				if result.Status != "passed" || result.HardwareToneMap != method || result.ToneMapInput != hdr {
-					continue
-				}
-				state.operations[backend.ID] = append(state.operations[backend.ID], Operation{identity: operationIdentity(options.FFmpeg, baseline.Device), Codec: baseline.Codec, Device: baseline.Device, HardwareToneMap: method, ToneMapInput: hdr, ToneMapSoftwareFrames: cpuFrames, Status: "passed"})
-				break
-			}
+			state.verifyToneMapInput(ctx, options, backend, baseline, settings, hdr, cpuFrames, check)
 		}
 	}
+}
+
+func (state *verification) verifyToneMapInput(ctx context.Context, options ProbeOptions, backend *Backend, baseline Operation, settings transcodepolicy.Settings, hdr string, cpuFrames bool, check func(context.Context, string, transcodepolicy.Settings, string) transcodepolicy.CheckResult) {
+	for _, method := range transcodepolicy.ToneMapMethods(backend.ID, baseline.Device) {
+		if hdr == "hlg" && (method == "qsv" || method == "vaapi") {
+			continue
+		}
+		if ctx.Err() != nil {
+			return
+		}
+		settings.ToneMap, settings.ToneMapInput, settings.HardwareToneMap = true, hdr, method
+		settings.HardwareDecode = false
+		settings.SoftwareFilters, settings.Deinterlace = cpuFrames, cpuFrames
+		if !cpuFrames && transcodepolicy.ToneMapSoftwareFrames(settings) {
+			continue
+		}
+		probeCtx, stop := context.WithTimeout(ctx, 5*time.Second)
+		result := check(probeCtx, options.FFmpeg, settings, backend.Name)
+		stop()
+		if !verifiedToneMapResult(result, method, hdr) {
+			continue
+		}
+		state.operations[backend.ID] = append(state.operations[backend.ID], Operation{identity: operationIdentity(options.FFmpeg, baseline.Device), Codec: baseline.Codec, Device: baseline.Device, HardwareToneMap: method, ToneMapInput: hdr, ToneMapSoftwareFrames: cpuFrames, Status: "passed"})
+		break
+	}
+}
+
+func verifiedToneMapResult(result transcodepolicy.CheckResult, method, hdr string) bool {
+	return result.Status == "passed" && result.HardwareToneMap == method && result.ToneMapInput == hdr
 }
 
 func (capabilities Capabilities) toneMapSettings(options transcodepolicy.Settings) transcodepolicy.Settings {

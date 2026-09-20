@@ -40,17 +40,7 @@ func (manager *subtitleManager) projection(request *http.Request, options subtit
 			continue
 		}
 		row := manager.subtitleDashboardCoverage(item, languages)
-		data.Total++
-		switch row.State {
-		case "checking":
-			data.Pending++
-		case "unavailable":
-			data.Unavailable++
-		case "ready":
-			data.Ready++
-		default:
-			data.Wanted++
-		}
+		data.countCoverage(row.State)
 		if !options.includes(item, row) {
 			continue
 		}
@@ -61,22 +51,7 @@ func (manager *subtitleManager) projection(request *http.Request, options subtit
 		data.Coverage = data.Ready * 100 / data.Total
 	}
 	sort.Slice(candidates, func(left, right int) bool {
-		a, b := candidates[left], candidates[right]
-		if options.Sort == "modified" && !a.source.Added.Equal(b.source.Added) {
-			return a.source.Added.After(b.source.Added)
-		}
-		if a.sortTitle != b.sortTitle {
-			return a.sortTitle < b.sortTitle
-		}
-		if a.row.MediaKind == "episode" && b.row.MediaKind == "episode" {
-			if a.source.Season != b.source.Season {
-				return a.source.Season < b.source.Season
-			}
-			if a.source.Episode != b.source.Episode {
-				return a.source.Episode < b.source.Episode
-			}
-		}
-		return a.source.ID < b.source.ID
+		return candidates[left].less(candidates[right], options.Sort)
 	})
 	data.Matched = len(candidates)
 	data.Pages = max(1, (data.Matched+data.PageSize-1)/data.PageSize)
@@ -100,6 +75,38 @@ func (manager *subtitleManager) projection(request *http.Request, options subtit
 	}
 	data.FilterURL = data.pageURL(1)
 	return data, nil
+}
+
+func (data *subtitleDashboardData) countCoverage(state string) {
+	data.Total++
+	switch state {
+	case "checking":
+		data.Pending++
+	case "unavailable":
+		data.Unavailable++
+	case "ready":
+		data.Ready++
+	default:
+		data.Wanted++
+	}
+}
+
+func (a subtitleDashboardCandidate) less(b subtitleDashboardCandidate, order string) bool {
+	if order == "modified" && !a.source.Added.Equal(b.source.Added) {
+		return a.source.Added.After(b.source.Added)
+	}
+	if a.sortTitle != b.sortTitle {
+		return a.sortTitle < b.sortTitle
+	}
+	if a.row.MediaKind == "episode" && b.row.MediaKind == "episode" {
+		if a.source.Season != b.source.Season {
+			return a.source.Season < b.source.Season
+		}
+		if a.source.Episode != b.source.Episode {
+			return a.source.Episode < b.source.Episode
+		}
+	}
+	return a.source.ID < b.source.ID
 }
 
 func (options subtitleDashboardOptions) includes(item library.Item, row subtitleDashboardItem) bool {

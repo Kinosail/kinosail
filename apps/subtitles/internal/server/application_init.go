@@ -61,3 +61,9 @@ func startApplicationMCPHost(config Config, managed bool, adapter *mcpAdapter, p
 		slog.Error("MCP STDIO unavailable", "error", err)
 	}
 }
+
+func disableInternetForBrokenProfiles(config Config, auth *authentication) {
+	if auth.profiles.err != nil && config.InternetAccess != nil {
+		_ = config.InternetAccess.Kill()
+	}
+}
