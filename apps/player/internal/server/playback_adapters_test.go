@@ -71,7 +71,7 @@ printf '%s' '{"streams":[{"index":0,"codec_type":"video","codec_name":"hevc","pr
 		t.Fatalf("transcode variant = %d %q", variant.Code, variant.Body.String())
 	}
 	segment := jellyfinCall(t, handler, http.MethodGet, strings.Replace(variantURL, "/index.m3u8", "/segment-00000.m4s", 1), "", "")
-	if segment.Code != http.StatusOK || segment.Header().Get("Content-Type") != "video/iso.segment" || segment.Body.String() != "segment" {
+	if segment.Code != http.StatusOK || segment.Header().Get("Content-Type") != "video/mp4" || segment.Body.String() != "segment" {
 		t.Fatalf("transcode segment = %d %q", segment.Code, segment.Body.String())
 	}
 	assertRejectedJellyfinTranscodeChildren(t, handler, id, token, cache)

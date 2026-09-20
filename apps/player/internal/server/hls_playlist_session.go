@@ -50,7 +50,7 @@ func (manager *hlsManager) serveRecipe(writer http.ResponseWriter, request *http
 			localizedNotFound(writer, request)
 			return
 		}
-		writer.Header().Set("Content-Type", "video/iso.segment")
+		writer.Header().Set("Content-Type", "video/mp4")
 	}
 	//nolint:gosec // G703: filepath.Localize and hlsFile reject non-local and unknown paths above.
 	http.ServeFile(writer, request, path)

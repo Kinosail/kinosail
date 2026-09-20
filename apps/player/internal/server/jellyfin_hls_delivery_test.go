@@ -37,7 +37,7 @@ func assertRestartedJellyfinHLSChain(t *testing.T, config server.Config, masterP
 		t.Fatal(err)
 	}
 	segment := jellyfinCall(t, restarted, http.MethodGet, childURL.ResolveReference(segmentReference).String(), "", "")
-	if segment.Code != http.StatusOK || segment.Header().Get("Content-Type") != "video/iso.segment" {
+	if segment.Code != http.StatusOK || segment.Header().Get("Content-Type") != "video/mp4" {
 		t.Fatalf("transcode segment after restart = %d %q", segment.Code, segment.Body.String())
 	}
 }
@@ -73,7 +73,7 @@ func assertJellyfinHLSChain(t *testing.T, handler http.Handler, masterURL, child
 
 func assertJellyfinHLSAssets(t *testing.T, handler http.Handler, childBase, quality, playID string) {
 	t.Helper()
-	for asset, contentType := range map[string]string{"init.mp4": "video/mp4", "segment-00000.m4s": "video/iso.segment"} {
+	for asset, contentType := range map[string]string{"init.mp4": "video/mp4", "segment-00000.m4s": "video/mp4"} {
 		response := jellyfinCall(t, handler, http.MethodGet, childBase+quality+"/"+asset+"?playSessionId="+playID, "", "")
 		if response.Code != http.StatusOK || response.Header().Get("Content-Type") != contentType || response.Body.Len() == 0 {
 			t.Fatalf("session-plan HLS asset %s = %d %q %q", asset, response.Code, response.Header().Get("Content-Type"), response.Body.String())
