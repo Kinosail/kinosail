@@ -54,6 +54,13 @@ test("Direct First does not trust Safari claiming Matroska support", async ({ pa
   await expect(page.locator("[data-playback-mode-status]")).toHaveText("Transcoding audio");
 });
 
+test("Direct First starts known audio compatibility before silent direct playback", async ({ page }) => {
+  await startDirectPlayer(page, { compatibleMode: "audio-transcode", compatibleLabel: "Transcoding audio" });
+
+  await expect.poll(() => page.evaluate(() => (window as Window & { FakeHls: { instances: number } }).FakeHls.instances)).toBe(1);
+  await expect(page.locator("[data-playback-mode-status]")).toHaveText("Transcoding audio");
+});
+
 test("legacy Direct Play preference does not start unsupported media before Direct First", async ({ page }) => {
   let directRequests = 0;
   await page.route("https://direct.test/movie.mp4", (route) => {
@@ -205,8 +212,10 @@ for (const compatibleMode of ["remux", "audio-transcode"]) {
       negotiations++;
       return route.abort();
     });
-    await startDirectPlayer(page, { compatibleMode });
-    await page.evaluate(() => {
+    // Audio incompatibility is selected before direct startup; keep this case on the
+    // original source until the explicit Compatibility action below.
+    await startDirectPlayer(page, { compatibleMode: compatibleMode === "audio-transcode" ? "remux" : compatibleMode });
+    await page.evaluate((mode) => {
       document.querySelector("video")!.dataset.playbackApi = "/api/v1/items/movie/playback";
       Object.assign(window, { capabilityChecks: 0 });
       Object.defineProperty(navigator, "mediaCapabilities", { configurable: true, value: { decodingInfo: () => {
@@ -214,7 +223,8 @@ for (const compatibleMode of ["remux", "audio-transcode"]) {
         state.capabilityChecks++;
         return new Promise(() => {});
       } } });
-    });
+      if (mode === "audio-transcode") document.querySelector("video")!.dataset.compatibilityMode = mode;
+    }, compatibleMode);
     await page.getByLabel("Compatibility", { exact: true }).check();
     await expect.poll(() => page.evaluate(() => (window as Window & { FakeHls: { instances: number } }).FakeHls.instances)).toBe(1);
     expect(await page.evaluate(() => (window as Window & { capabilityChecks: number }).capabilityChecks)).toBe(0);

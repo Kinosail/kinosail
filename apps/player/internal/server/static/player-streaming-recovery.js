@@ -203,6 +203,11 @@ if (player.dataset.hls) {
   } else if (playbackPolicy === "direct-first" && directTypeUnsupported) {
     if (player.dataset.compatibilityMode === "transcode") recoverDirectFailure(MediaError.MEDIA_ERR_SRC_NOT_SUPPORTED, false);
     else startAdaptive(false);
+  } else if (playbackPolicy === "direct-first" && player.dataset.compatibilityMode === "audio-transcode") {
+    // Browsers can render a video stream while silently dropping an unsupported audio codec.
+    // The server has already confirmed that the audio needs conversion, so do not wait for a
+    // media error that may never arrive before starting the audio-only compatible rendition.
+    startAdaptive(false);
   } else if (direct && !player.getAttribute("src")) player.src = player.dataset.direct;
 }
 if (player.readyState >= HTMLMediaElement.HAVE_CURRENT_DATA) showPlaybackMode(adaptiveActive, false);
