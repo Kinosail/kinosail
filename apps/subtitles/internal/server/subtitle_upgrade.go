@@ -44,8 +44,15 @@ func (provider *subtitleProvider) upgradeSidecar(ctx context.Context, item libra
 	if !provider.configured() || item.Kind != "video" || !validLanguage(language) {
 		return false, errors.New("subtitle upgrade is unavailable")
 	}
-	target := subtitleSidecarPath(item, language)
-	current, err := readUpgradeSidecar(target)
+	if err := ctx.Err(); err != nil {
+		return false, err
+	}
+	target, err := provider.openSidecar(item, language)
+	if err != nil {
+		return false, err
+	}
+	defer target.close()
+	current, err := target.read("")
 	if err != nil {
 		return false, err
 	}
@@ -68,7 +75,7 @@ func (provider *subtitleProvider) upgradeSidecar(ctx context.Context, item libra
 			observed = previous
 		}
 		observed.CheckedAt = time.Now().Unix()
-		observed = completeSubtitleRecord(target, current, observed)
+		observed = target.record(current, observed)
 		_ = provider.ledger.store(key, observed)
 		return false, err
 	}
@@ -80,20 +87,20 @@ func (provider *subtitleProvider) upgradeSidecar(ctx context.Context, item libra
 		if found && previous.Fingerprint == fingerprint {
 			next.Backup, next.BackupOriginalFingerprint, next.BackupFingerprint, next.BackupRole = previous.Backup, previous.BackupOriginalFingerprint, previous.BackupFingerprint, previous.BackupRole
 		}
-		return false, provider.ledger.store(key, completeSubtitleRecord(target, current, next))
+		return false, provider.ledger.store(key, target.record(current, next))
 	}
 	if err = provider.retainSubtitleRecoveryOriginal(current, previous, &next); err != nil {
 		return false, err
 	}
-	if backupErr := saveSubtitle(target+".kinosail.bak", current); backupErr != nil {
+	if backupErr := target.write(".kinosail.bak", current, false); backupErr != nil {
 		return false, backupErr
 	}
-	if err = saveSubtitle(target, cleaned.Data); err != nil {
+	if err = target.write("", cleaned.Data, false); err != nil {
 		return false, err
 	}
 	next.Backup = true
-	if err = provider.ledger.store(key, completeSubtitleRecord(target, cleaned.Data, next)); err != nil {
-		_ = saveSubtitle(target, current)
+	if err = provider.ledger.store(key, target.record(cleaned.Data, next)); err != nil {
+		_ = target.write("", current, false)
 		return false, err
 	}
 	return true, nil

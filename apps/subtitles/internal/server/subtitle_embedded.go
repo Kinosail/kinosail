@@ -13,14 +13,18 @@ func (manager *subtitleManager) embeddedReady() bool {
 }
 
 func (manager *subtitleManager) fetchSidecar(ctx context.Context, item library.Item, language string) error { //nolint:gocognit // Embedded extraction and durable ledger rollback form one atomic operation.
+	target, err := manager.provider.openSidecar(item, language)
+	if err != nil {
+		return err
+	}
+	defer target.close()
 	if manager.embeddedReady() {
 		if data, found := manager.embeddedSubtitle(ctx, item, language); found {
 			cleaned, err := cleanSubtitle(data)
 			if err == nil {
-				target := subtitleSidecarPath(item, language)
-				if err = saveSubtitleExclusive(target, cleaned.Data); err == nil {
+				if err = target.write("", cleaned.Data, true); err == nil {
 					now := time.Now().Unix()
-					record := completeSubtitleRecord(target, cleaned.Data, subtitleRecord{Source: "embedded", Score: 100, ReleaseMatch: 1, CheckedAt: now, InstalledAt: now, Cleanup: cleaned.Cleanup, Synchronization: "none", TimingEvidence: "embedded", Managed: true})
+					record := target.record(cleaned.Data, subtitleRecord{Source: "embedded", Score: 100, ReleaseMatch: 1, CheckedAt: now, InstalledAt: now, Cleanup: cleaned.Cleanup, Synchronization: "none", TimingEvidence: "embedded", Managed: true})
 					if track, found := manager.embeddedSubtitleTrack(ctx, item, language); found {
 						record.Role = track.Role
 					}
@@ -29,7 +33,7 @@ func (manager *subtitleManager) fetchSidecar(ctx context.Context, item library.I
 						err = manager.provider.ledger.store(subtitleRecordKey(item.ID, language), record)
 					}
 					if err != nil {
-						_ = os.Remove(target)
+						_ = target.remove()
 					} else {
 						manager.provider.ledger.noteSearch(subtitleSearchKey(item.ID, language, manager.settings.subtitlePreference()), "installed", "", time.Now())
 					}

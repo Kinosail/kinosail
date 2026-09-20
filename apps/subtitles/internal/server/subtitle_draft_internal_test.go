@@ -214,6 +214,7 @@ func TestSubtitleRecoveryKeepsBothFormatOriginals(t *testing.T) {
 	directory := t.TempDir()
 	provider := &subtitleProvider{ledger: newSubtitleLedger(t.TempDir())}
 	item := library.Item{ID: "0123456789abcdef", Kind: "video", Path: filepath.Join(directory, "Film.mp4")}
+	provider.index = sidecarTestIndex(item)
 	first, _ := cleanSubtitle([]byte("[Script Info]\n[Events]\nFormat: Start, End, Text\nDialogue: 0:00:01.00,0:00:02.00,First\n"))
 	second, _ := cleanSubtitle([]byte("WEBVTT\n\n00:00:01.000 --> 00:00:02.000\nSecond\n"))
 	target := subtitleSidecarPath(item, "en")

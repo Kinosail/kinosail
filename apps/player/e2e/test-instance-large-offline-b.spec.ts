@@ -9,7 +9,7 @@ test.describe("large offline transfers", () => {
   test("offline resume does not count an orphaned OPFS write twice against quota", async ({ page }) => {
     await page.route((url) => url.pathname === "/static/downloads.js", (route) => route.fulfill({ contentType: "text/javascript", body: downloadsSource.replace("const chunkSize = 8 * 1024 * 1024;", "const chunkSize = 16;") }));
     await page.addInitScript(() => {
-      const worker = { scriptURL: new URL("/service-worker.js?v=17", location.href).href, state: "activated" };
+      const worker = { scriptURL: new URL("/service-worker.js?v=47", location.href).href, state: "activated" };
       Object.defineProperties(navigator.serviceWorker, {
         controller: { configurable: true, get: () => worker },
         getRegistration: { configurable: true, value: async () => ({ active: worker }) },
@@ -78,7 +78,7 @@ test.describe("large offline transfers", () => {
       });
     });
     await page.evaluate(({ id, itemID, profileID, quality, sha256, size, title }) => new Promise<void>((resolve, reject) => {
-      const request = indexedDB.open("kinosail-offline-v1", 3);
+      const request = indexedDB.open("kinosail-offline-v1", 4);
       request.onsuccess = () => {
         const database = request.result;
         const transaction = database.transaction("jobs", "readwrite");
@@ -98,7 +98,7 @@ test.describe("large offline transfers", () => {
   test("offline resume accounts for replaced IndexedDB chunks near quota", async ({ page }) => {
     await page.route((url) => url.pathname === "/static/downloads.js", (route) => route.fulfill({ contentType: "text/javascript", body: downloadsSource.replace("const chunkSize = 8 * 1024 * 1024;", "const chunkSize = 16;") }));
     await page.addInitScript(() => {
-      const worker = { scriptURL: new URL("/service-worker.js?v=17", location.href).href, state: "activated" };
+      const worker = { scriptURL: new URL("/service-worker.js?v=47", location.href).href, state: "activated" };
       Object.defineProperties(navigator.serviceWorker, {
         controller: { configurable: true, get: () => worker },
         getRegistration: { configurable: true, value: async () => ({ active: worker }) },
@@ -143,7 +143,7 @@ test.describe("large offline transfers", () => {
       });
     });
     await page.evaluate(({ id, itemID, profileID, quality, sha256, size, title }) => new Promise<void>((resolve, reject) => {
-      const request = indexedDB.open("kinosail-offline-v1", 3);
+      const request = indexedDB.open("kinosail-offline-v1", 4);
       request.onsuccess = () => {
         const database = request.result;
         const transaction = database.transaction(["jobs", "chunks"], "readwrite");

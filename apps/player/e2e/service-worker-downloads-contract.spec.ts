@@ -109,7 +109,7 @@ test("offline removal blocks server submission and shows localized status when l
 
 test("offline downloads use an exact active worker when registration fetches fail", async ({ page }) => {
 	await page.addInitScript(() => {
-		const worker = Object.assign(new EventTarget(), { scriptURL: "https://kinosail.test/service-worker.js?v=43", state: "activated" });
+		const worker = Object.assign(new EventTarget(), { scriptURL: "https://kinosail.test/service-worker.js?v=47", state: "activated" });
 		const registration = Object.assign(new EventTarget(), { active: worker, installing: null, waiting: null });
 		const serviceWorker = Object.assign(new EventTarget(), {
 			controller: worker,
@@ -122,7 +122,7 @@ test("offline downloads use an exact active worker when registration fetches fai
 	await page.route("https://kinosail.test/", (route) => route.fulfill({ contentType: "text/html", body: '<body data-viewer-profile="profile"></body>' }));
 	await page.goto("https://kinosail.test/");
 	await page.evaluate(() => new Promise<void>((resolve, reject) => {
-		const request = indexedDB.open("kinosail-offline-v1", 3);
+		const request = indexedDB.open("kinosail-offline-v1", 4);
 		request.onupgradeneeded = () => {
 			const jobs = request.result.createObjectStore("jobs", { keyPath: "id" });
 			const chunks = request.result.createObjectStore("chunks", { keyPath: "id" });
@@ -140,7 +140,7 @@ test("offline downloads use an exact active worker when registration fetches fai
 
 test("offline downloads reject zero-byte manifests before storage or file requests", async ({ page }) => {
 	await page.addInitScript(() => {
-		const worker = Object.assign(new EventTarget(), { scriptURL: "https://kinosail.test/service-worker.js?v=43", state: "activated" });
+		const worker = Object.assign(new EventTarget(), { scriptURL: "https://kinosail.test/service-worker.js?v=47", state: "activated" });
 		const registration = Object.assign(new EventTarget(), { active: worker, installing: null, waiting: null });
 		const serviceWorker = Object.assign(new EventTarget(), { controller: worker, getRegistration: async () => registration, register: async () => registration });
 		Object.defineProperty(navigator, "serviceWorker", { configurable: true, value: serviceWorker });
@@ -152,7 +152,7 @@ test("offline downloads reject zero-byte manifests before storage or file reques
 	await page.route("https://kinosail.test/api/v1/downloads/aaaaaaaaaaaaaaaa/file", (route) => { fileRequests++; return route.abort(); });
 	await page.goto("https://kinosail.test/");
 	await page.evaluate(() => new Promise<void>((resolve, reject) => {
-		const request = indexedDB.open("kinosail-offline-v1", 3);
+		const request = indexedDB.open("kinosail-offline-v1", 4);
 		request.onupgradeneeded = () => {
 			request.result.createObjectStore("jobs", { keyPath: "id" });
 			const chunks = request.result.createObjectStore("chunks", { keyPath: "id" });

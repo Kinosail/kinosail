@@ -5,6 +5,7 @@ export async function readStaticSource(paths: string[], base = import.meta.url):
 }
 
 export const downloadsSource = await readStaticSource([
+	"../../../packages/webassets/static/offline-identity.js",
 	"../../../packages/webassets/static/offline-runtime.js",
 	"../../../packages/webassets/static/downloads.js",
 	"../../../packages/webassets/static/downloads-integrity.js",

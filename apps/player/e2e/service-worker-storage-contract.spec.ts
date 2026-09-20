@@ -2,7 +2,7 @@ import { expect, test } from "@playwright/test";
 import { downloadsSource, serviceWorkerSource } from "./static-sources";
 
 test("service worker selects offline chunks through the target job index", async () => {
-	expect(serviceWorkerSource).toContain('indexedDB.open(offlineDatabase, 3)');
+	expect(serviceWorkerSource).toContain('indexedDB.open(offlineDatabase, 4)');
 	expect(serviceWorkerSource).toContain('chunks.createIndex("jobRange", ["jobID", "offset"])');
 	expect(serviceWorkerSource).toContain('request = index.get([jobID, offset])');
 	expect(serviceWorkerSource).not.toContain('store.getAll())).filter((chunk) => chunk.jobID === job.id)');
@@ -23,8 +23,9 @@ test("service worker streams verified IndexedDB chunks with backpressure", async
 		const sha256 = async (data: Uint8Array) => [...new Uint8Array(await crypto.subtle.digest("SHA-256", data))].map((byte) => byte.toString(16).padStart(2, "0")).join("");
 		const hashes = await Promise.all(chunks.map(sha256));
 		await new Promise<void>((resolve, reject) => {
-			const request = indexedDB.open("kinosail-offline-v1", 3);
+			const request = indexedDB.open("kinosail-offline-v1", 4);
 			request.onupgradeneeded = () => {
+				request.result.createObjectStore("identity");
 				request.result.createObjectStore("jobs", { keyPath: "id" });
 				const store = request.result.createObjectStore("chunks", { keyPath: "id" });
 				store.createIndex("jobID", "jobID");
@@ -33,7 +34,8 @@ test("service worker streams verified IndexedDB chunks with backpressure", async
 			request.onerror = () => reject(request.error);
 			request.onsuccess = () => {
 				const database = request.result;
-				const transaction = database.transaction(["jobs", "chunks"], "readwrite");
+				const transaction = database.transaction(["jobs", "chunks", "identity"], "readwrite");
+				transaction.objectStore("identity").put({profile: "profile", revision: 1}, "active-profile");
 				transaction.objectStore("jobs").put({ id: "aaaaaaaaaaaaaaaa", integrityVersion: 2, profileID: "profile", state: "ready", readyOffline: true, size: content.byteLength, storage: "indexeddb", sha256: "a".repeat(64), extension: ".mp4" });
 				chunks.forEach((data, index) => transaction.objectStore("chunks").put({ id: `aaaaaaaaaaaaaaaa:${index * 2}`, jobID: "aaaaaaaaaaaaaaaa", offset: index * 2, length: data.byteLength, sha256: hashes[index], data: data.buffer.slice(data.byteOffset, data.byteOffset + data.byteLength) }));
 				transaction.oncomplete = () => { database.close(); resolve(); };
@@ -62,7 +64,7 @@ test("service worker streams verified IndexedDB chunks with backpressure", async
 				return responsePromise;
 			};
 			const changeMiddleChunk = async (change: "corrupt" | "delete") => new Promise<void>((resolve, reject) => {
-				const request = indexedDB.open("kinosail-offline-v1", 3);
+				const request = indexedDB.open("kinosail-offline-v1", 4);
 				request.onerror = () => reject(request.error);
 				request.onsuccess = () => {
 					const database = request.result;
@@ -133,8 +135,9 @@ test("service worker streams verified OPFS chunks before later verification", as
 		const sha256 = async (data: Uint8Array) => [...new Uint8Array(await crypto.subtle.digest("SHA-256", data))].map((byte) => byte.toString(16).padStart(2, "0")).join("");
 		const hashes = await Promise.all(chunks.map(sha256));
 		await new Promise<void>((resolve, reject) => {
-			const request = indexedDB.open("kinosail-offline-v1", 3);
+			const request = indexedDB.open("kinosail-offline-v1", 4);
 			request.onupgradeneeded = () => {
+				request.result.createObjectStore("identity");
 				request.result.createObjectStore("jobs", { keyPath: "id" });
 				const store = request.result.createObjectStore("chunks", { keyPath: "id" });
 				store.createIndex("jobID", "jobID");
@@ -143,7 +146,8 @@ test("service worker streams verified OPFS chunks before later verification", as
 			request.onerror = () => reject(request.error);
 			request.onsuccess = () => {
 				const database = request.result;
-				const transaction = database.transaction(["jobs", "chunks"], "readwrite");
+				const transaction = database.transaction(["jobs", "chunks", "identity"], "readwrite");
+				transaction.objectStore("identity").put({profile: "profile", revision: 1}, "active-profile");
 				transaction.objectStore("jobs").put({ id: "bbbbbbbbbbbbbbbb", integrityVersion: 2, profileID: "profile", state: "ready", readyOffline: true, size: content.byteLength, storage: "opfs", sha256: "a".repeat(64), extension: ".mp4" });
 				chunks.forEach((data, index) => transaction.objectStore("chunks").put({ id: `bbbbbbbbbbbbbbbb:${index * 2}`, jobID: "bbbbbbbbbbbbbbbb", offset: index * 2, length: data.byteLength, sha256: hashes[index] }));
 				transaction.oncomplete = () => { database.close(); resolve(); };
@@ -192,7 +196,7 @@ test("service worker streams verified OPFS chunks before later verification", as
 
 for (const mode of ["registration failure", "no controller"] as const) test(`offline downloads reject ${mode} before storage changes`, async ({ page }) => {
 	await page.addInitScript((failureMode) => {
-		const worker = Object.assign(new EventTarget(), { scriptURL: "https://kinosail.test/service-worker.js?v=43", state: "activated" });
+		const worker = Object.assign(new EventTarget(), { scriptURL: "https://kinosail.test/service-worker.js?v=47", state: "activated" });
 		const registration = Object.assign(new EventTarget(), { active: worker, installing: null, waiting: null });
 		const serviceWorker = Object.assign(new EventTarget(), {
 			controller: null,
@@ -218,7 +222,8 @@ for (const mode of ["registration failure", "no controller"] as const) test(`off
 	expect(await page.evaluate(() => (window as Window & { KinosailOfflineMedia: { source: (id: string) => Promise<string> } }).KinosailOfflineMedia.source("item"))).toBe("");
 	expect(await page.evaluate(() => new Promise<number>((resolve, reject) => {
 		const request = indexedDB.open("kinosail-offline-v1", 1);
-		request.onupgradeneeded = () => { request.result.createObjectStore("jobs", { keyPath: "id" }); request.result.createObjectStore("chunks", { keyPath: "id" }); };
+		request.onupgradeneeded = () => { request.result.createObjectStore("identity");
+				request.result.createObjectStore("jobs", { keyPath: "id" }); request.result.createObjectStore("chunks", { keyPath: "id" }); };
 		request.onsuccess = () => { const version = request.result.version; request.result.close(); resolve(version); };
 		request.onerror = () => reject(request.error);
 	}))).toBe(1);

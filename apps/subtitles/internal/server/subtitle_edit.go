@@ -185,11 +185,15 @@ func (manager *subtitleManager) applySubtitleEdit(request *http.Request, id stri
 		return review, status, err
 	}
 	item, _, _ := manager.subtitleItem(request, id)
-	target := subtitleSidecarPath(item, review.Language)
-	current, readErr := readUpgradeSidecar(target)
+	target, err := manager.provider.openSidecar(item, review.Language)
+	if err != nil {
+		return review, http.StatusConflict, err
+	}
+	defer target.close()
+	current, readErr := target.read("")
 	exists := readErr == nil
 	if !exists {
-		if _, statErr := os.Lstat(target); !errors.Is(statErr, os.ErrNotExist) {
+		if _, statErr := target.root.Lstat(target.name); !errors.Is(statErr, os.ErrNotExist) {
 			return review, http.StatusConflict, errors.New("subtitle destination is unavailable")
 		}
 	}
@@ -222,20 +226,20 @@ func (manager *subtitleManager) applySubtitleEdit(request *http.Request, id stri
 		if err = manager.provider.retainSubtitleRecoveryOriginal(current, previous, &record); err != nil {
 			return review, http.StatusInternalServerError, errors.New("subtitle recovery original could not be retained")
 		}
-		if err = saveSubtitle(target+".kinosail.bak", current); err == nil {
-			err = saveSubtitle(target, document.Data)
+		if err = target.write(".kinosail.bak", current, false); err == nil {
+			err = target.write("", document.Data, false)
 		}
 	} else {
-		err = saveSubtitleExclusive(target, document.Data)
+		err = target.write("", document.Data, true)
 	}
 	if err != nil {
 		return review, http.StatusConflict, errors.New("subtitle could not be saved")
 	}
-	if err = manager.provider.ledger.store(subtitleRecordKey(id, review.Language), completeSubtitleRecord(target, document.Data, record)); err != nil {
+	if err = manager.provider.ledger.store(subtitleRecordKey(id, review.Language), target.record(document.Data, record)); err != nil {
 		if exists {
-			_ = saveSubtitle(target, current)
+			_ = target.write("", current, false)
 		} else {
-			_ = os.Remove(target)
+			_ = target.remove()
 		}
 		return review, http.StatusInternalServerError, errors.New("subtitle history could not be saved")
 	}

@@ -1,10 +1,54 @@
+let selectedOfflineIdentity;
+let offlineIdentityReady = true;
+let offlineIdentityWrites = Promise.resolve();
+const selectedProfile = async () => {
+  if (!offlineIdentityReady) return "";
+  const stored = selectedOfflineIdentity ?? await offlineProfileState();
+  return offlineIdentityReady ? (selectedOfflineIdentity ?? stored)?.profile || "" : "";
+};
 const offlineRequestURL = (event) => {
   if (event.request.method !== "GET") return;
   const url = new URL(event.request.url);
   return url.origin === self.location.origin ? url : undefined;
 };
 
-const registerOfflineLifecycle = (cacheName, retiredCache, populate) => {
+const registerOfflineLifecycle = (cacheName, retiredCache, populate, changed = () => {}) => {
+  const identify = (profile, revision) => {
+    const implicitLogout = profile === "" && revision === undefined;
+    revision ??= Math.max(Date.now(), (selectedOfflineIdentity?.revision || 0) + 1);
+    if (!Number.isSafeInteger(revision) || revision < 0 || revision > Date.now() + 60000 || revision < (selectedOfflineIdentity?.revision || 0)) return Promise.resolve();
+    const previous = selectedOfflineIdentity;
+    selectedOfflineIdentity = {profile, revision};
+    offlineIdentityReady = profile === "";
+    const broadcast = async (identity) => {
+      const clients = await self.clients.matchAll({type: "window", includeUncontrolled: true});
+      if (selectedOfflineIdentity.revision === identity.revision) for (const client of clients) client.postMessage({type: "offline-profile", ...identity});
+    };
+    const cleared = Promise.all([...(previous?.profile === profile ? [] : [changed("")]), ...(profile === "" ? [broadcast(selectedOfflineIdentity)] : [])]);
+    offlineIdentityWrites = offlineIdentityWrites.catch(() => {}).then(async () => {
+      const stored = await offlineProfileState();
+      if (implicitLogout && Number.isSafeInteger(stored?.revision)) revision = Math.max(revision, stored.revision + 1);
+      const next = stored && /^[A-Za-z0-9_-]{0,128}$/.test(stored.profile) && Number.isSafeInteger(stored.revision) && stored.revision > revision && stored.revision <= Date.now() + 60000 ? stored : {profile, revision};
+      if (next !== stored) await offlineProfileState(next);
+      if (selectedOfflineIdentity.revision <= next.revision) {
+        selectedOfflineIdentity = next;
+        offlineIdentityReady = true;
+        await changed(next.profile);
+        await broadcast(next);
+      }
+    });
+    return Promise.all([cleared, offlineIdentityWrites]);
+  };
+  self.addEventListener("message", (event) => {
+    if (event.data?.type === "profile" && /^[A-Za-z0-9_-]{1,128}$/.test(event.data.profile || "")) event.waitUntil(identify(event.data.profile, event.data.revision));
+    if (event.data?.type === "logout") event.waitUntil(identify("", event.data.revision));
+  });
+  self.addEventListener("fetch", (event) => {
+    const url = new URL(event.request.url);
+    if (url.origin !== self.location.origin || !(event.request.method === "POST" && url.pathname === "/logout" || event.request.method === "DELETE" && url.pathname === "/api/v1/session")) return;
+    event.waitUntil(identify("").catch(() => {}));
+    event.respondWith(fetch(event.request));
+  });
   self.addEventListener("install", (event) => event.waitUntil(caches.open(cacheName).then(populate).then(() => self.skipWaiting())));
   self.addEventListener("activate", (event) => event.waitUntil(caches.keys().then((names) => Promise.all(names.filter((name) => name === retiredCache || name.startsWith("kinosail-shell-") && name !== cacheName).map((name) => caches.delete(name)))).then(() => self.clients.claim())));
 };
@@ -59,10 +103,12 @@ const verifiedOfflineBody = async (job, start, end) => {
   return new ReadableStream({
     async pull(controller) {
       try {
+		if (await selectedProfile() !== job.profileID) throw new Error("Offline profile changed");
         const chunkOffset = offset;
         const data = next || await verifiedOfflineChunk(job, file, chunkOffset);
         next = undefined;
         if (cancelled) return;
+        if (await selectedProfile() !== job.profileID) throw new Error("Offline profile changed");
         const from = Math.max(0, start - chunkOffset);
         const to = Math.min(data.byteLength, end + 1 - chunkOffset);
         offset += data.byteLength;
@@ -75,6 +121,7 @@ const verifiedOfflineBody = async (job, start, end) => {
 };
 const offlineResponse = async (request, profileID, jobID) => {
   if (!/^[A-Za-z0-9_-]{1,256}$/.test(profileID || "") || !/^[0-9a-f]{16}$/.test(jobID || "")) return;
+  if (await selectedProfile() !== profileID) return;
   const job = await readStore("jobs", (store) => store.get(jobID));
   if (!job || job.id !== jobID || job.integrityVersion !== 2 || job.profileID !== profileID || job.state !== "ready" || !job.readyOffline || !["indexeddb", "opfs"].includes(job.storage) || !Number.isSafeInteger(job.size) || job.size <= 0 || job.size > chunkSize * 16384 || !/^[0-9a-f]{64}$/i.test(job.sha256)) return;
   const types = {".flac": "audio/flac", ".m4a": "audio/mp4", ".mp3": "audio/mpeg", ".ogg": "audio/ogg", ".opus": "audio/ogg", ".wav": "audio/wav", ".mkv": "video/x-matroska", ".webm": "video/webm"};

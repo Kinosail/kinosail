@@ -23,13 +23,15 @@ test("service worker validates a fresh shell before replacing the active cache",
 		await new Promise<void>((resolve, reject) => {
 			const request = indexedDB.open("kinosail-offline-v1", 1);
 			request.onupgradeneeded = () => {
+				request.result.createObjectStore("identity");
 				request.result.createObjectStore("jobs", { keyPath: "id" });
 				request.result.createObjectStore("chunks", { keyPath: "id" });
 			};
 			request.onerror = () => reject(request.error);
 			request.onsuccess = () => {
 				const database = request.result;
-				const transaction = database.transaction(["jobs", "chunks"], "readwrite");
+				const transaction = database.transaction(["jobs", "chunks", "identity"], "readwrite");
+				transaction.objectStore("identity").put({profile: "profile", revision: 1}, "active-profile");
 				const jobs = transaction.objectStore("jobs");
 				const chunks = transaction.objectStore("chunks");
 				jobs.put({ id: "aaaaaaaaaaaaaaaa", integrityVersion: 2, profileID: "profile", state: "ready", readyOffline: true, size: targetData.byteLength, storage: "indexeddb", sha256: targetHash, extension: ".mp4" });

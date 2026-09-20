@@ -35,6 +35,12 @@ func (store *profileStore) createPersistentAPIKey(profile viewerProfile, name st
 func (store *profileStore) commitAPIKey(secret string, key apiKey) error {
 	store.mu.Lock()
 	defer store.mu.Unlock()
+	if contains(key.Scopes, "home-assistant") {
+		profile, found := identitycore.FindProfile(store.profiles, key.ProfileID)
+		if !found || !profile.Owner || profile.Disabled || profile.SCIMDeleted {
+			return errors.New("Home Assistant pairing requires a current Owner")
+		}
+	}
 	keys := cloneAPIKeys(store.apiKeys)
 	keys[sessionKey(secret)] = key
 	if err := store.persist(store.apiFile, keys); err != nil {

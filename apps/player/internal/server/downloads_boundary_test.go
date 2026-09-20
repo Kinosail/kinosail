@@ -16,7 +16,7 @@ var downloadFixture = servertest.DownloadFixture{
 	NewTranscodeHandler: func(media, data, cache, ffmpeg string) http.Handler {
 		return server.New(server.Config{MediaDir: media, DataDir: data, CacheDir: cache, FFmpeg: ffmpeg, FFprobe: filepath.Join(filepath.Dir(ffmpeg), "ffprobe"), RequireAuth: true})
 	},
-	DownloadsScript: `/static/downloads.js?v=24`,
+	DownloadsScript: `/static/downloads.js?v=25`,
 	APIServer:       apiServer, FirstItemID: firstAPIItemID, SignIn: signInTestProfile,
 	APICall: apiCall, CookieRequest: requestWithCookie,
 }

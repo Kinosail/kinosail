@@ -183,7 +183,7 @@ func TestSubtitleUpgradeEligibilityAndRecoveryRollback(t *testing.T) { //nolint:
 	if err := os.WriteFile(target, current, 0o600); err != nil {
 		t.Fatal(err)
 	}
-	provider := newSubtitleProvider(SubtitleConfig{URL: "https://example.com/api/v1", APIKey: "key"}, t.TempDir(), "", nil, nil, "")
+	provider := newSubtitleProvider(SubtitleConfig{URL: "https://example.com/api/v1", APIKey: "key"}, t.TempDir(), "", sidecarTestIndex(item), nil, "")
 	now := time.Now()
 	record := completeSubtitleRecord(target, current, subtitleRecord{Fingerprint: subtitleFingerprint(current), Source: "external", CheckedAt: now.Unix(), InstalledAt: now.Unix(), Synchronization: "none", Frozen: true})
 	if err := provider.ledger.store(subtitleRecordKey(item.ID, "en"), record); err != nil {

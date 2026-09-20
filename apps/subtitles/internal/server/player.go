@@ -37,8 +37,8 @@ func audioQueue(request *http.Request, index *libraryIndex, id string) ([]librar
 }
 
 func playerTemplate(template string) string {
-	template = strings.Replace(template, `/static/downloads.js?v=3`, `/static/downloads.js?v=8`, 1)
-	template = strings.Replace(template, `/static/player.js?v=34`, `/static/player.js?v=49`, 1)
+	template = strings.Replace(template, `/static/downloads.js?v=3`, `/static/downloads.js?v=9`, 1)
+	template = strings.Replace(template, `/static/player.js?v=34`, `/static/player.js?v=50`, 1)
 	template = sharedplayback.PlayerTemplate(template)
 	template = strings.ReplaceAll(template, `data-player-fallback>Try again</button>`, `data-player-fallback></button>`)
 	return strings.ReplaceAll(template, `data-player-fallback hidden>Try again</button>`, `data-player-fallback hidden></button>`)

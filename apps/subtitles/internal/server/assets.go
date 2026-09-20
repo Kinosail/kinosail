@@ -83,9 +83,9 @@ var (
 	themeJS             = joinScripts(webassets.Theme, webassets.ArtworkPalette, webassets.WatchProgress)
 	supporterJS         = joinScripts(webassets.Supporter, supporterAppJS)
 	playerJS            = joinScripts(playerCoreJS, playerStreamingStartJS, playerStreamingEndJS, playerControlsJS, playerDevicesJS, playerProgressJS)
-	downloadsJS         = joinScripts(webassets.OfflineRuntime, downloadsCoreJS, webassets.DownloadsStorage, downloadsTransferJS, webassets.DownloadsProgress, downloadsUIJS)
+	downloadsJS         = joinScripts(webassets.OfflineIdentity, webassets.OfflineRuntime, downloadsCoreJS, webassets.DownloadsStorage, downloadsTransferJS, webassets.DownloadsProgress, downloadsUIJS)
 	serviceWorker       = joinScripts(webassets.OfflineRuntime, webassets.OfflineMedia, serviceWorkerApp)
-	pwaJS               = joinScripts(pwaCoreJS, pwaNavigationJS, pwaSettingsJS)
+	pwaJS               = joinScripts(webassets.OfflineIdentity, pwaCoreJS, pwaNavigationJS, pwaSettingsJS)
 	mainBundle          = joinScripts(pwaJS, shortcutsJS)
 )
 

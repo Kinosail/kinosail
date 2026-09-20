@@ -71,6 +71,9 @@ func (integration *Integration[P]) updatePlayer(id string, state Player, profile
 	defer integration.mu.Unlock()
 	integration.prunePlayersLocked(now)
 	record := integration.players[id]
+	if record.ID != "" && record.Profile != profile {
+		return nil, errors.New("Home Assistant player belongs to another Viewer Profile")
+	}
 	if record.ID == "" && len(integration.players) >= maxPlayers {
 		return nil, errPlayerLimit
 	}

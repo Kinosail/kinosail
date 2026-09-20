@@ -69,7 +69,7 @@ func (handler api) list(writer http.ResponseWriter, request *http.Request) {
 		writeError(writer, errors.New("download access required"), http.StatusForbidden)
 		return
 	}
-	writeJSON(writer, map[string]any{"downloads": handler.manager.List(profileID)}, http.StatusOK)
+	writeJSON(writer, map[string]any{"downloads": visibleJobs(handler.access, request, profileID, handler.manager.List(profileID))}, http.StatusOK)
 }
 
 func (handler api) get(writer http.ResponseWriter, request *http.Request) {
@@ -79,7 +79,7 @@ func (handler api) get(writer http.ResponseWriter, request *http.Request) {
 		return
 	}
 	job, found := handler.manager.Get(profileID, request.PathValue("id"))
-	if !found {
+	if !found || !visibleJob(handler.access, request, profileID, job) {
 		writeError(writer, errors.New("not found"), http.StatusNotFound)
 		return
 	}
@@ -89,7 +89,7 @@ func (handler api) get(writer http.ResponseWriter, request *http.Request) {
 func (handler api) file(writer http.ResponseWriter, request *http.Request) {
 	profileID, allowed := handler.access.Profile(request)
 	job, found := handler.manager.Get(profileID, request.PathValue("id"))
-	if !allowed || !found || job.State != "ready" || Serve(writer, request, job) != nil {
+	if !allowed || !found || !visibleJob(handler.access, request, profileID, job) || job.State != "ready" || Serve(writer, request, job) != nil {
 		writeError(writer, errors.New("not found"), http.StatusNotFound)
 	}
 }
@@ -145,7 +145,12 @@ func (handler api) manifest(writer http.ResponseWriter, request *http.Request) {
 		writeError(writer, errors.New("not found"), http.StatusNotFound)
 		return
 	}
-	if job, found := handler.manager.Get(profile, request.PathValue("id")); found && job.State == "preparing" {
+	job, found := handler.manager.Get(profile, request.PathValue("id"))
+	if !found || !visibleJob(handler.access, request, profile, job) {
+		writeError(writer, errors.New("not found"), http.StatusNotFound)
+		return
+	}
+	if job.State == "preparing" {
 		writer.Header().Set("Retry-After", "15")
 		writeError(writer, errors.New("download is preparing"), http.StatusServiceUnavailable)
 		return

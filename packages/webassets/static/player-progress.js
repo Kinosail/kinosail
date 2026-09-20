@@ -61,7 +61,7 @@ setInterval(() => { if (!player.paused) save(); }, 10000);
 setInterval(() => { if (!player.paused || player.readyState < HTMLMediaElement.HAVE_FUTURE_DATA) playbackTrace("heartbeat", "periodic"); flushPlaybackTrace(); }, 5000);
 
 if (player.dataset.homeAssistant === "true") {
-  const storageKey = "kinosail-home-assistant-player";
+  const storageKey = `kinosail-home-assistant-player:${document.body.dataset.viewerProfile || document.querySelector("[data-nav-profile]")?.dataset.navProfile || ""}`;
   let playerID = playerStorage.get(storageKey);
   if (!playerID) {
     playerID = crypto.randomUUID();

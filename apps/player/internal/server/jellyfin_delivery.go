@@ -51,7 +51,7 @@ func (api *jellyfinAPI) deliveryModule() sharedjellyfin.DeliveryHTTP {
 			return found && canView(profile, item)
 		},
 		Public:      publicInternetRequest,
-		LoadSession: func(id string) (any, bool) { return api.plays.Load(id) }, ActiveRevision: api.activePlaybackProfile,
+		LoadSession: func(id string) (any, bool) { return playback.LoadJellyfinPlaySession(&api.plays, id, time.Now()) }, ActiveRevision: api.activePlaybackProfile,
 		Rejected: func(ctx context.Context, value sharedjellyfin.PlaybackRejection) {
 			slog.WarnContext(ctx, "Jellyfin playback context rejected", "diagnostic", "[JELLYFIN-MAPPING]", "item_id", value.ItemID, "item_found", value.ItemFound, "session_found", value.SessionFound, "session_valid", value.SessionValid, "profile_active", value.ProfileActive, "profile_revision_match", value.ProfileRevisionMatch, "session_item_match", value.SessionItemMatch, "public_match", value.PublicMatch, "expired", value.Expired, "viewer_allowed", value.ViewerAllowed, "item_visible", value.ItemVisible)
 		},

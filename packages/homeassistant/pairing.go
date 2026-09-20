@@ -53,7 +53,11 @@ func (integration *Integration[P]) pair(code, name string) (string, error) {
 		return "", errors.New("Home Assistant pairing code is invalid or expired") //nolint:staticcheck // Preserve the integration error.
 	}
 	delete(integration.pairs, code)
-	return integration.config.CreateKey(offer.Profile.Source, name)
+	profile, found := integration.config.FindProfile(offer.Profile.ID)
+	if !found || !profile.Owner {
+		return "", errors.New("Home Assistant pairing requires a current Owner")
+	}
+	return integration.config.CreateKey(profile.Source, name)
 }
 
 func allDigits(value string) bool {

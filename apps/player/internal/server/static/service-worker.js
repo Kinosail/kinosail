@@ -1,9 +1,8 @@
-const cacheName = "kinosail-shell-v48";
+const cacheName = "kinosail-shell-v49";
 const offlineDatabase = "kinosail-offline-v1";
 const chunkSize = 8 * 1024 * 1024;
 const retiredOfflinePages = "kinosail-offline-pages-v1";
 const imageCachePrefix = "kinosail-private-images-v1-";
-const profilePattern = /^[A-Za-z0-9_-]{1,128}$/;
 const imageCacheLimit = 512;
 let viewerProfile = "";
 const shell = {"/offline": "text/html", "/static/app.css": "text/css", "/static/manrope.woff2": "font/woff2", "/static/main.kinosail.bundle.js": "text/javascript", "/static/theme.js": "text/javascript", "/static/pwa.js": "text/javascript", "/static/player.js": "text/javascript", "/static/downloads.js": "text/javascript", "/static/icon.svg": "image/svg+xml", "/static/icon-192.png": "image/png", "/static/icon-512.png": "image/png", "/static/icon-maskable-512.png": "image/png", "/static/apple-touch-icon.png": "image/png", "/static/cinema-backdrop.jpg": "image/jpeg"};
@@ -53,13 +52,10 @@ const clearPrivateImageCaches = async (keep) => {
   const names = await caches.keys();
   await Promise.all(names.filter((name) => name.startsWith(imageCachePrefix) && name !== keep).map((name) => caches.delete(name)));
 };
-registerOfflineLifecycle(cacheName, retiredOfflinePages, populateShell);
-self.addEventListener("message", (event) => {
-  if (event.data?.type !== "profile") return;
-  const next = typeof event.data.profile === "string" && profilePattern.test(event.data.profile) ? event.data.profile : "";
-  if (next === viewerProfile) return;
-  viewerProfile = next;
-  event.waitUntil(clearPrivateImageCaches(privateImageCache()));
+registerOfflineLifecycle(cacheName, retiredOfflinePages, populateShell, (profile) => {
+  if (profile === viewerProfile) return;
+  viewerProfile = profile;
+  return clearPrivateImageCaches(privateImageCache());
 });
 self.addEventListener("fetch", (event) => {
   const url = offlineRequestURL(event);

@@ -3,7 +3,7 @@ const chunkSize = 8 * 1024 * 1024;
 const offlineIntegrityVersion = 2;
 const hasOfflineStorage = "indexedDB" in window && "crypto" in window && Boolean(window.crypto.subtle);
 let offlineChannel;
-const offlineWorkerPath = "/service-worker.js?v=46";
+const offlineWorkerPath = "/service-worker.js?v=47";
 const offlineWorkerURL = new URL(offlineWorkerPath, location.href).href;
 const isExactOfflineWorker = (worker) => worker?.scriptURL === offlineWorkerURL && worker.state === "activated";
 const currentOfflineServiceWorker = async () => {
@@ -51,11 +51,11 @@ const requireOfflineServiceWorker = async () => {
   if (!registration || !isExactOfflineWorker(navigator.serviceWorker.controller)) throw new Error(offlineWorkerError());
   return registration;
 };
-const currentOfflineProfile = () => document.body.dataset.viewerProfile || document.querySelector("#downloads")?.dataset.viewerProfile || "";
+const currentOfflineProfile = () => document.body.dataset.viewerProfile || document.querySelector("#downloads")?.dataset.viewerProfile || document.querySelector("[data-nav-profile]")?.dataset.navProfile || "";
 const playerStorageValue = (key, value) => {
   try { if (value !== undefined) localStorage.setItem(key, value); return localStorage.getItem(key) || ""; } catch (_) { return ""; }
 };
-const activeOfflineProfile = () => currentOfflineProfile() || playerStorageValue("kinosail.offline-profile");
+const activeOfflineProfile = () => window.kinosailOfflineIdentity?.current() ?? playerStorageValue("kinosail.offline-profile");
 const offlineJobLockName = (id) => `kinosail-offline:${id}`;
 const offlineTransferID = /^[0-9a-f]{32}$/;
 const offlineTransferIDOf = (job) => offlineTransferID.test(job?.transferID || "") ? job.transferID : "";
@@ -211,3 +211,11 @@ async function removeOfflineJobSafely(id, explicit = false, afterRemove) {
     });
   } finally { offlineSourceTransfers.delete(id); }
 }
+
+window.addEventListener("kinosail:offline-profile", () => {
+  for (const transfer of offlineTransfers.values()) transfer.controller.abort();
+  for (const media of document.querySelectorAll('[data-offline-library] video, [data-offline-library] audio')) {
+    media.pause(); media.removeAttribute("src"); media.load();
+  }
+  renderOfflineLibrary().catch(() => {});
+});

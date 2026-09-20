@@ -217,6 +217,9 @@ func ListDocuments(state ListState, mask uint8) map[string]any {
 
 // CommitListState persists all selected documents as one database transaction or ordered file writes.
 func CommitListState(ctx context.Context, database *documentdb.Store, paths ListPaths, persist func(string, any) error, state ListState, mask uint8) error {
+	if err := ValidateListState(state); err != nil {
+		return err
+	}
 	if database != nil {
 		return database.SaveJSONBatchContext(ctx, ListDocuments(state, mask))
 	}

@@ -122,7 +122,7 @@ func TestSubtitleRecoveryRestoresPreviousFileAndFreezesReplacement(t *testing.T)
 	if err := os.WriteFile(target+".kinosail.bak", previous, 0o600); err != nil {
 		t.Fatal(err)
 	}
-	provider := newSubtitleProvider(SubtitleConfig{URL: "https://example.com", APIKey: "key"}, t.TempDir(), data, nil, nil, "")
+	provider := newSubtitleProvider(SubtitleConfig{URL: "https://example.com", APIKey: "key"}, t.TempDir(), data, sidecarTestIndex(item), nil, "")
 	if err := provider.restorePrevious(item, "en"); err != nil {
 		t.Fatal(err)
 	}

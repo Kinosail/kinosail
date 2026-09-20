@@ -33,6 +33,8 @@ var (
 
 	//go:embed static/offline-runtime.js
 	OfflineRuntime []byte
+	//go:embed static/offline-identity.js
+	OfflineIdentity []byte
 	//go:embed static/passkeys.js
 	Passkeys []byte
 	//go:embed static/public-login.js

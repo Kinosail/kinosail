@@ -1,7 +1,6 @@
 package watchrooms
 
 import (
-	"context"
 	"errors"
 	"math"
 	"net/http"
@@ -116,7 +115,7 @@ func (handler *HTTP) connect(writer http.ResponseWriter, request *http.Request) 
 	}
 	defer joined.connection.Close(websocket.StatusNormalClosure, "room left")
 	defer joined.subscription.Close()
-	go writeEvents(request.Context(), joined.connection, joined.subscription)
+	go handler.writeEvents(request, joined.connection, joined.subscription)
 	stop := make(chan struct{})
 	go handler.monitorAccess(stop, joined.connection, request, joined.id, joined.subscription)
 	defer close(stop)
@@ -171,9 +170,10 @@ func (handler *HTTP) join(writer http.ResponseWriter, request *http.Request) (jo
 	return joined, true
 }
 
-func writeEvents(ctx context.Context, connection *websocket.Conn, subscription *Subscription) {
+func (handler *HTTP) writeEvents(request *http.Request, connection *websocket.Conn, subscription *Subscription) {
 	for event := range subscription.Events() {
-		if wsjson.Write(ctx, connection, event) != nil {
+		fresh, _, authorized := handler.config.Reauthorize(request, roomEventsRoute)
+		if !authorized || !handler.mediaVisible(fresh, event.Media) || wsjson.Write(request.Context(), connection, event) != nil {
 			subscription.Close()
 			break
 		}

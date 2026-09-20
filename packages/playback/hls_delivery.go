@@ -4,7 +4,6 @@ import (
 	"errors"
 	"net/http"
 	"strconv"
-	"sync"
 	"time"
 
 	"github.com/MikeO7/kinosail/packages/library"
@@ -121,28 +120,6 @@ type JellyfinSession interface {
 	JellyfinProfile() (string, uint64)
 	JellyfinExpires() time.Time
 	JellyfinPublic() bool
-}
-
-func StoreJellyfinPlaySession(store *sync.Map, now time.Time, newID func() (string, error), session JellyfinSession) (string, error) { //nolint:cyclop // Validation, pruning, and insertion form one bounded operation.
-	if store == nil || newID == nil || session == nil || now.IsZero() || !session.JellyfinExpires().After(now) {
-		return "", errors.New("jellyfin play session input is invalid")
-	}
-	store.Range(func(key, value any) bool {
-		stored, valid := value.(JellyfinSession)
-		if !valid || !stored.JellyfinExpires().After(now) {
-			store.Delete(key)
-		}
-		return true
-	})
-	id, err := newID()
-	if err != nil || id == "" || len(id) > 256 {
-		if err == nil {
-			err = errors.New("jellyfin play session ID is invalid")
-		}
-		return "", err
-	}
-	store.Store(id, session)
-	return id, nil
 }
 
 type JellyfinSessionAuthorization struct {

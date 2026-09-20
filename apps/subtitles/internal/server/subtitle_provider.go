@@ -141,8 +141,12 @@ func (provider *subtitleProvider) fetchSidecar(ctx context.Context, item library
 		return errors.New("subtitle request is invalid")
 	}
 	language = canonical[0]
-	target := subtitleSidecarPath(item, language)
-	if _, err := os.Lstat(target); err == nil {
+	target, err := provider.openSidecar(item, language)
+	if err != nil {
+		return err
+	}
+	defer target.close()
+	if _, err := target.root.Lstat(target.name); err == nil {
 		return os.ErrExist
 	} else if !errors.Is(err, os.ErrNotExist) {
 		return err
@@ -159,12 +163,12 @@ func (provider *subtitleProvider) fetchSidecar(ctx context.Context, item library
 	if err = provider.retainSubtitleOriginal(cleaned.Original, &record); err != nil {
 		return err
 	}
-	if err = saveSubtitleExclusive(target, cleaned.Data); err != nil {
+	if err = target.write("", cleaned.Data, true); err != nil {
 		return err
 	}
-	record = completeSubtitleRecord(target, cleaned.Data, record)
+	record = target.record(cleaned.Data, record)
 	if err = provider.ledger.store(subtitleRecordKey(item.ID, language), record); err != nil {
-		_ = os.Remove(target)
+		_ = target.remove()
 		return err
 	}
 	provider.ledger.noteSearch(subtitleSearchKey(item.ID, language, provider.preference()), "installed", "", time.Now())

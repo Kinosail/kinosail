@@ -43,7 +43,7 @@ func TestSubtitleProviderUpgradesManagedSidecarByMinimumScoreGain(t *testing.T) 
 	if err := os.WriteFile(item.Path, []byte("video"), 0o600); err != nil {
 		t.Fatal(err)
 	}
-	provider := newSubtitleProvider(SubtitleConfig{URL: remote.URL, APIKey: "key"}, t.TempDir(), data, nil, nil, "")
+	provider := newSubtitleProvider(SubtitleConfig{URL: remote.URL, APIKey: "key"}, t.TempDir(), data, sidecarTestIndex(item), nil, "")
 	if err := provider.fetchSidecar(t.Context(), item, "en"); err != nil {
 		t.Fatal(err)
 	}
@@ -97,7 +97,7 @@ func TestSubtitleMaintenanceAddsEveryPreferredLanguage(t *testing.T) {
 	if err := os.WriteFile(item.Path, []byte("video"), 0o600); err != nil {
 		t.Fatal(err)
 	}
-	provider := newSubtitleProvider(SubtitleConfig{URL: remote.URL, APIKey: "key"}, t.TempDir(), t.TempDir(), nil, nil, "")
+	provider := newSubtitleProvider(SubtitleConfig{URL: remote.URL, APIKey: "key"}, t.TempDir(), t.TempDir(), sidecarTestIndex(item), nil, "")
 	result := (&subtitleManager{provider: provider}).maintainLanguageItems(t.Context(), []library.Item{item}, []string{"eng", "spa"}, 2, 0)
 	if result.Attempted != 2 || result.Added != 2 || result.Failed != 0 {
 		t.Fatalf("maintenance = %#v", result)
@@ -135,7 +135,7 @@ func TestSubtitleAutomationCursorContinuesAfterFailedLanguage(t *testing.T) { //
 	if err := os.WriteFile(item.Path, []byte("video"), 0o600); err != nil {
 		t.Fatal(err)
 	}
-	index := memoryLibraryIndex([]library.Item{item}, true)
+	index := sidecarTestIndex(item)
 	settings := newSettingsStore(media, t.TempDir(), "", nil)
 	settings.value.SubtitleLanguage, settings.value.SubtitleLanguages = "en", []string{"en", "es"}
 	provider := newSubtitleProvider(SubtitleConfig{URL: remote.URL, APIKey: "key"}, t.TempDir(), t.TempDir(), index, settings, "")
@@ -191,7 +191,7 @@ func TestSubtitleProviderOnlyReplacesUnknownSidecarWithExactHashMatch(t *testing
 		t.Fatal(err)
 	}
 	config := SubtitleConfig{OpenSubtitles: OpenSubtitlesConfig{URL: remote.URL, APIKey: "key", Username: "user", Password: "password"}}
-	provider := newSubtitleProvider(config, t.TempDir(), t.TempDir(), nil, nil, "")
+	provider := newSubtitleProvider(config, t.TempDir(), t.TempDir(), sidecarTestIndex(item), nil, "")
 	upgraded, err := provider.upgradeSidecar(t.Context(), item, "en")
 	current, currentErr := os.ReadFile(target)
 	backup, backupErr := os.ReadFile(target + ".kinosail.bak")

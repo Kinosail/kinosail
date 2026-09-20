@@ -77,9 +77,9 @@ var (
 	themeJS             = joinScripts(webassets.Theme, webassets.ArtworkPalette, webassets.WatchProgress)
 	supporterJS         = joinScripts(webassets.Supporter, supporterAppJS, supporterPlansJS)
 	playerJS            = joinScripts(playerSharedJS, playerSubtitlesJS, playerCoreJS, playerStreamingAdaptiveJS, playerStreamingRecoveryJS, playerStreamingOfflineJS, playerControlsJS, playerDevicesJS, webassets.PlayerTV, playerProgressJS)
-	downloadsJS         = joinScripts(webassets.OfflineRuntime, downloadsCoreJS, webassets.DownloadsStorage, downloadsTransferJS, webassets.DownloadsProgress, downloadsUIJS)
+	downloadsJS         = joinScripts(webassets.OfflineIdentity, webassets.OfflineRuntime, downloadsCoreJS, webassets.DownloadsStorage, downloadsTransferJS, webassets.DownloadsProgress, downloadsUIJS)
 	serviceWorker       = joinScripts(webassets.OfflineRuntime, webassets.OfflineMedia, serviceWorkerApp)
-	pwaJS               = joinScripts(pwaCoreJS, pwaNavigationJS, pwaSettingsJS, webassets.MobileTabs)
+	pwaJS               = joinScripts(webassets.OfflineIdentity, pwaCoreJS, pwaNavigationJS, pwaSettingsJS, webassets.MobileTabs)
 )
 
 func joinScripts(parts ...[]byte) []byte {

@@ -62,7 +62,7 @@ func TestWriteEventsClosesSubscriptionAfterWriteFailure(t *testing.T) {
 		t.Fatal("event was not queued")
 	}
 	events := subscription.Events()
-	writeEvents(t.Context(), server, subscription)
+	newHTTPHarness(t).handler.writeEvents(httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/", nil), server, subscription)
 	if _, open := <-events; open {
 		t.Fatal("subscription remained open after write failure")
 	}
@@ -107,4 +107,22 @@ func assertHTTPConnectionClosed(t *testing.T, connection *websocket.Conn) {
 		t.Fatal("connection remained open")
 	}
 	_ = connection.CloseNow()
+}
+
+func TestEventDeliveryReauthorizesBeforeSendingHiddenMedia(t *testing.T) {
+	harness := newHTTPHarness(t)
+	client, server := httpWebSocketPair(t)
+	roomID, _ := harness.rooms.Create("leader", "movie", 0)
+	_, leader, _ := harness.rooms.Join(roomID, "leader")
+	defer leader.Close()
+	_, restricted, _ := harness.rooms.Join(roomID, "restricted")
+	request := httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/", nil)
+	request.Header.Set("X-Viewer", "restricted")
+	if !harness.rooms.Update(leader, Event{Action: "media", Media: "hidden"}, true) {
+		t.Fatal("leader update rejected")
+	}
+	done := make(chan struct{})
+	go func() { defer close(done); harness.handler.writeEvents(request, server, restricted) }()
+	assertHTTPConnectionClosed(t, client)
+	<-done
 }

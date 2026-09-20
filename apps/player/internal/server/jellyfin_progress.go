@@ -8,6 +8,7 @@ import (
 
 	sharedjellyfin "github.com/MikeO7/kinosail/packages/jellyfincompat"
 	"github.com/MikeO7/kinosail/packages/library"
+	"github.com/MikeO7/kinosail/packages/playback"
 )
 
 type jellyfinPlaybackState = sharedjellyfin.PlaybackState
@@ -50,7 +51,7 @@ func (api *jellyfinAPI) userData(writer http.ResponseWriter, request *http.Reque
 }
 
 func (api *jellyfinAPI) sourcePositionTicks(playSessionID, itemID string, ticks int64) int64 {
-	value, found := api.plays.Load(playSessionID)
+	value, found := playback.LoadJellyfinPlaySession(&api.plays, playSessionID, time.Now())
 	session, valid := value.(jellyfinPlaySession)
 	if !found || !valid || session.itemID != itemID || session.plan.MarkerMode != "server" || time.Now().After(session.expires) {
 		return ticks

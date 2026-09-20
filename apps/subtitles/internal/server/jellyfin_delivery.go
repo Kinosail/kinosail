@@ -45,7 +45,7 @@ func (api *jellyfinAPI) deliveryModule() sharedjellyfin.DeliveryHTTP {
 			return found && canView(profile, item)
 		},
 		Public:      publicInternetRequest,
-		LoadSession: func(id string) (any, bool) { return api.plays.Load(id) }, ActiveRevision: api.activePlaybackProfile,
+		LoadSession: func(id string) (any, bool) { return playback.LoadJellyfinPlaySession(&api.plays, id, time.Now()) }, ActiveRevision: api.activePlaybackProfile,
 		ServeHLS:    api.hls.serveSharedHLSRecipe,
 		CanDownload: canDownload, DownloadsConfigured: api.downloads.Configured,
 		StartDownload: func(profile string, item library.Item) (downloads.Job, error) {

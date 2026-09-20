@@ -49,7 +49,7 @@ func (handler web) list(writer http.ResponseWriter, request *http.Request) {
 		handler.writeError(writer, request, "downloads are not enabled for this Viewer Profile", http.StatusForbidden)
 		return
 	}
-	jobs := handler.manager.List(profileID)
+	jobs := visibleJobs(handler.access, request, profileID, handler.manager.List(profileID))
 	pending := false
 	for _, job := range jobs {
 		pending = pending || !job.ReadyOffline && job.Error == ""

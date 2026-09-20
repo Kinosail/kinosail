@@ -51,7 +51,7 @@ func TestSubtitleAcquireSkipsRejectedAndInvalidCandidates(t *testing.T) { //noli
 	t.Cleanup(remote.Close)
 	item := library.Item{Kind: "video", ID: "0123456789abcdef", Title: "Movie", Year: "2026", Path: filepath.Join(t.TempDir(), "Movie.2026.BluRay-GROUP.mp4")}
 	newProvider := func() *subtitleProvider {
-		return newSubtitleProvider(SubtitleConfig{URL: remote.URL + "/api/v1", APIKey: "key"}, t.TempDir(), t.TempDir(), nil, nil, "")
+		return newSubtitleProvider(SubtitleConfig{URL: remote.URL + "/api/v1", APIKey: "key"}, t.TempDir(), t.TempDir(), sidecarTestIndex(item), nil, "")
 	}
 	cleaned, record, err := newProvider().acquire(t.Context(), item, "en", nil)
 	if err != nil || record.Source != "subdl" || record.Synchronization != "none" || len(cleaned.Data) == 0 {
@@ -83,7 +83,7 @@ func TestSubtitleAcquireSkipsRejectedAndInvalidCandidates(t *testing.T) { //noli
 func TestSubtitleSidecarRejectsInvalidExistingAndUnavailableRequests(t *testing.T) {
 	t.Parallel()
 	item := library.Item{Kind: "video", ID: "0123456789abcdef", Title: "Movie", Path: filepath.Join(t.TempDir(), "Movie.mp4")}
-	provider := newSubtitleProvider(SubtitleConfig{}, t.TempDir(), t.TempDir(), nil, nil, "")
+	provider := newSubtitleProvider(SubtitleConfig{}, t.TempDir(), t.TempDir(), sidecarTestIndex(item), nil, "")
 	if provider.fetchSidecar(t.Context(), library.Item{Kind: "audio"}, "en") == nil || provider.fetchSidecar(t.Context(), item, "english") == nil {
 		t.Fatal("invalid sidecar request was accepted")
 	}

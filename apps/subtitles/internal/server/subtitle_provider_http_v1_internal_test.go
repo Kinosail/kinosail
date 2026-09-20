@@ -88,7 +88,7 @@ func TestSubtitleProviderArchiveAndResponseFailureBranches(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if _, err = readArchivedSubtitle(reader); err == nil {
+	if _, err = readArchivedSubtitle(t.Context(), reader); err == nil {
 		t.Fatal("ambiguous subtitle archive was accepted")
 	}
 }

@@ -8,7 +8,7 @@ test.describe("large offline transfers", () => {
 
   test("offline playback cleanup removes an unchanged copy with a missing later chunk", async ({ page }) => {
     await page.addInitScript(() => {
-      const worker = { scriptURL: new URL("/service-worker.js?v=17", location.href).href, state: "activated" };
+      const worker = { scriptURL: new URL("/service-worker.js?v=47", location.href).href, state: "activated" };
       Object.defineProperties(navigator.serviceWorker, {
         controller: { configurable: true, get: () => worker },
         getRegistration: { configurable: true, value: async () => ({ active: worker }) },
@@ -24,7 +24,7 @@ test.describe("large offline transfers", () => {
     await page.waitForTimeout(200);
     const firstChunk = Buffer.alloc(16, 1);
     await page.evaluate(({ chunk, chunkHash }) => new Promise<void>((resolve, reject) => {
-      const request = indexedDB.open("kinosail-offline-v1", 3);
+      const request = indexedDB.open("kinosail-offline-v1", 4);
       request.onsuccess = () => {
         const database = request.result;
         const transaction = database.transaction(["jobs", "chunks"], "readwrite");
@@ -54,7 +54,7 @@ test.describe("large offline transfers", () => {
 
   test("offline removal waits for a transfer lock across tabs", async ({ context, page }) => {
     await context.addInitScript(() => {
-      const worker = { scriptURL: new URL("/service-worker.js?v=17", location.href).href, state: "activated" };
+      const worker = { scriptURL: new URL("/service-worker.js?v=47", location.href).href, state: "activated" };
       Object.defineProperties(navigator.serviceWorker, {
         controller: { configurable: true, get: () => worker },
         getRegistration: { configurable: true, value: async () => ({ active: worker }) },
@@ -113,7 +113,7 @@ test.describe("large offline transfers", () => {
 
     await page.goto("/__offline-transfer-lock-test");
     await page.evaluate(({ chunks, id, itemID, profileID, sha256 }) => new Promise<void>((resolve, reject) => {
-      const request = indexedDB.open("kinosail-offline-v1", 3);
+      const request = indexedDB.open("kinosail-offline-v1", 4);
       request.onsuccess = () => {
         const database = request.result;
         const transaction = database.transaction(["jobs", "chunks"], "readwrite");

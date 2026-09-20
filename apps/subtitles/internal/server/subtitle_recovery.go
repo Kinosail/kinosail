@@ -14,8 +14,12 @@ func (provider *subtitleProvider) setReplacement(item library.Item, language str
 	if item.Kind != "video" || !validLanguage(language) {
 		return errors.New("subtitle replacement policy is invalid")
 	}
-	target := subtitleSidecarPath(item, language)
-	data, err := readUpgradeSidecar(target)
+	target, err := provider.openSidecar(item, language)
+	if err != nil {
+		return err
+	}
+	defer target.close()
+	data, err := target.read("")
 	if err != nil {
 		return err
 	}
@@ -29,7 +33,7 @@ func (provider *subtitleProvider) setReplacement(item library.Item, language str
 		record = subtitleRecord{Source: "external", CheckedAt: now, InstalledAt: now, Synchronization: "none"}
 	}
 	record.Frozen = !replaceable
-	record = completeSubtitleRecord(target, data, record)
+	record = target.record(data, record)
 	return provider.ledger.store(key, record)
 }
 
@@ -39,12 +43,16 @@ func (provider *subtitleProvider) restorePrevious(item library.Item, language st
 	if item.Kind != "video" || !validLanguage(language) {
 		return errors.New("subtitle restore request is invalid")
 	}
-	target := subtitleSidecarPath(item, language)
-	current, err := readUpgradeSidecar(target)
+	target, err := provider.openSidecar(item, language)
 	if err != nil {
 		return err
 	}
-	previous, err := readUpgradeSidecar(target + ".kinosail.bak")
+	defer target.close()
+	current, err := target.read("")
+	if err != nil {
+		return err
+	}
+	previous, err := target.read(".kinosail.bak")
 	if err != nil {
 		return errors.New("previous subtitle is unavailable")
 	}
@@ -74,17 +82,17 @@ func (provider *subtitleProvider) restorePrevious(item library.Item, language st
 	if err = provider.retainSubtitleOriginal(original, &record); err != nil {
 		return err
 	}
-	if err = saveSubtitle(target, previous); err != nil {
+	if err = target.write("", previous, false); err != nil {
 		return err
 	}
-	if err = saveSubtitle(target+".kinosail.bak", current); err != nil {
-		_ = saveSubtitle(target, current)
+	if err = target.write(".kinosail.bak", current, false); err != nil {
+		_ = target.write("", current, false)
 		return err
 	}
-	record = completeSubtitleRecord(target, previous, record)
+	record = target.record(previous, record)
 	if err = provider.ledger.store(subtitleRecordKey(item.ID, language), record); err != nil {
-		_ = saveSubtitle(target, current)
-		_ = saveSubtitle(target+".kinosail.bak", previous)
+		_ = target.write("", current, false)
+		_ = target.write(".kinosail.bak", previous, false)
 		return err
 	}
 	return nil

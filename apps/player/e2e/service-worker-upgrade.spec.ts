@@ -4,8 +4,9 @@ import type { AddressInfo } from "node:net";
 import { readStaticSource } from "./static-sources";
 
 const currentDownloads = await readStaticSource(["../../../packages/webassets/static/downloads.js", "../../../packages/webassets/static/downloads-integrity.js"]);
-const currentPWA = await readStaticSource(["../../../packages/webassets/static/pwa.js"]);
+const currentPWA = await readStaticSource(["../../../packages/webassets/static/offline-identity.js", "../../../packages/webassets/static/pwa.js"]);
 const currentWorker = currentDownloads.match(/const offlineWorkerPath = "([^"]+)"/)![1];
+const identityProbe = "self.addEventListener('message', e => { if(e.data.type === 'profile') e.source.postMessage({type:'identified',profile:e.data.profile,worker:self.location.href}); });";
 const oldWorker = "/service-worker.js?v=38";
 const oldDownloads = currentDownloads.replaceAll(currentWorker, oldWorker);
 const oldPWA = currentPWA.replaceAll(currentWorker, oldWorker);
@@ -30,7 +31,7 @@ for (const app of [
       const path = request.url!;
       if (path.startsWith("/service-worker.js")) {
         response.writeHead(200, { "Content-Type": "text/javascript", "Cache-Control": "no-cache" });
-        response.end("self.addEventListener('install', e => e.waitUntil(self.skipWaiting())); self.addEventListener('activate', e => e.waitUntil(self.clients.claim()));");
+        response.end(identityProbe + "self.addEventListener('install', e => e.waitUntil(self.skipWaiting())); self.addEventListener('activate', e => e.waitUntil(self.clients.claim()));");
       } else if (path.startsWith("/static/")) {
         const download = path.startsWith("/static/downloads.js");
         const old = path === (download ? oldDownloadsPath : oldNavigationPath);
@@ -41,7 +42,7 @@ for (const app of [
       } else {
         const old = path === "/old";
         response.writeHead(200, { "Content-Type": "text/html", "Cache-Control": "no-store" });
-        response.end(`<!doctype html><script defer src="${old ? oldDownloadsPath : downloadsPath}"></script><script defer src="${old ? oldNavigationPath : navigationPath}"></script><body></body>`);
+        response.end(`<!doctype html><script defer src="${old ? oldDownloadsPath : downloadsPath}"></script><script defer src="${old ? oldNavigationPath : navigationPath}"></script><body data-viewer-profile="viewer"></body>`);
       }
     });
     await new Promise<void>((resolve) => server.listen(0, "127.0.0.1", resolve));
@@ -49,9 +50,15 @@ for (const app of [
     try {
       await page.goto(`${origin}/old`);
       await expect.poll(() => page.evaluate(() => (window as any).checkWorker())).toBe("ready");
+      await page.addInitScript(() => {
+        navigator.serviceWorker.addEventListener("message", event => {
+          if (event.data?.type === "identified") (window as any).identifiedProfile = event.data;
+        });
+      });
       await page.goto(`${origin}/upgrade`);
       await page.waitForFunction((worker) => navigator.serviceWorker.controller?.scriptURL === new URL(worker, location.href).href, currentWorker);
       await expect.poll(() => page.evaluate(() => (window as any).checkWorker())).toBe("ready");
+      await expect.poll(() => page.evaluate(() => (window as any).identifiedProfile)).toEqual({type:"identified", profile:"viewer", worker:origin+currentWorker});
       expect(downloadsPath).not.toBe(oldDownloadsPath);
       expect(navigationPath).not.toBe(oldNavigationPath);
       for (const path of [oldDownloadsPath, oldNavigationPath, downloadsPath, navigationPath]) expect(hits.get(path)).toBe(1);

@@ -33,3 +33,18 @@ func (access requestAccess) Item(request *http.Request, id string) (string, libr
 	item, found := access.item(request, id)
 	return profile.ID, item, found && profile.Permits("download", profile.Owner || profile.Downloads)
 }
+
+func visibleJob(access Access, request *http.Request, profile string, job Job) bool {
+	current, _, allowed := access.Item(request, job.ItemID)
+	return allowed && current == profile && job.Profile == profile
+}
+
+func visibleJobs(access Access, request *http.Request, profile string, jobs []Job) []Job {
+	visible := make([]Job, 0, len(jobs))
+	for _, job := range jobs {
+		if visibleJob(access, request, profile, job) {
+			visible = append(visible, job)
+		}
+	}
+	return visible
+}

@@ -9,13 +9,14 @@ let installPrompt;
 let installComplete = standalone;
 
 if ("serviceWorker" in navigator && window.isSecureContext) {
-  const profile = document.body.dataset.viewerProfile || document.querySelector("[data-nav-profile]")?.dataset.navProfile || "";
   const identify = (registration) => {
     const worker = registration.active || registration.waiting || registration.installing;
-    worker?.postMessage({type: "profile", profile});
+    const identity = window.kinosailOfflineIdentity?.state();
+    if (identity) worker?.postMessage({type: identity.profile ? "profile" : "logout", ...identity});
     return registration;
   };
-  navigator.serviceWorker.register("/service-worker.js?v=46").then(identify).then(() => navigator.serviceWorker.ready).then(identify).catch(() => {});
+  navigator.serviceWorker.addEventListener("controllerchange", () => identify({active: navigator.serviceWorker.controller}));
+  navigator.serviceWorker.register("/service-worker.js?v=47").then(identify).then(() => navigator.serviceWorker.ready).then(identify).catch(() => {});
 }
 if (appleMobile && !standalone && installs.length) {
   for (const install of installs) {
