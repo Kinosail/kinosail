@@ -1,12 +1,12 @@
 ---
-title: Install Kinosail
+title: Docker installation details
 description: Install one Kinosail Server container and open it safely for first setup.
 section: Start here
 ---
 
-# Install Kinosail
+# Docker installation details
 
-As of September 15, 2026, this monorepo has no published GitHub releases. Use [source installation]({{ '/getting-started/' | relative_url }}) for the current checkout. The steps below apply when a signed Player release is available.
+As of September 15, 2026, this monorepo has no published GitHub releases. Start with [Install with Docker]({{ '/quickstart/' | relative_url }}) for the complete release path, or use [source installation]({{ '/source-install/' | relative_url }}) for early evaluation. The steps below apply when a signed Player release is available.
 
 Download the matching Player installer from [Releases](https://github.com/Kinosail/kinosail/releases), verify the supplied checksum and signature, extract it, and run commands from that bundle directory. Run the release installer from the Kinosail release bundle. It verifies the image, creates protected recovery material, starts one Server container, and binds it to localhost until you create the first Owner.
 
@@ -51,10 +51,10 @@ Your browser may warn about the local certificate. Accept the warning only for t
 If the installer reports that the Server is not healthy, inspect the last lines of the service log:
 
 ```sh
-podman compose --file compose.release.yaml logs --tail 50 kinosail
+docker compose --file compose.release.yaml logs --tail 50 kinosail
 ```
 
-Use `docker compose` in place of `podman compose` when Docker runs the service. Do not delete the `config`, `cache`, or backup locations while investigating.
+Use `podman compose` in place of `docker compose` if the installer selected Podman. Do not delete the `config`, `cache`, or backup locations while investigating.
 
 ## Expose the initialized Server on the LAN
 
@@ -75,8 +75,8 @@ Run the installer again with the same media path and port. If the service is run
 Check the resulting state:
 
 ```sh
-podman compose --file compose.release.yaml ps
-podman compose --file compose.release.yaml exec -T kinosail kinosail healthcheck
+docker compose --file compose.release.yaml ps
+docker compose --file compose.release.yaml exec -T kinosail kinosail healthcheck
 ```
 
 Read [Back up and update]({{ '/owner-guide/backups-and-updates/' | relative_url }}) before a planned host or storage change.
@@ -84,12 +84,12 @@ Read [Back up and update]({{ '/owner-guide/backups-and-updates/' | relative_url 
 ## Stop or restart the Server
 
 ```sh
-podman compose --file compose.release.yaml logs --follow kinosail
-podman compose --file compose.release.yaml down
-podman compose --file compose.release.yaml up --detach
+docker compose --file compose.release.yaml logs --follow kinosail
+docker compose --file compose.release.yaml stop
+docker compose --file compose.release.yaml start
 ```
 
-`down` stops the container. It does not remove named volumes. Do not add `--volumes` unless you intend to remove the stored Kinosail state.
+`stop` and `start` preserve the existing container configuration, including installer-selected overlays. Use the installer for updates. `down` removes containers but does not remove named volumes. Do not add `--volumes` unless you intend to remove the stored Kinosail state.
 
 ## Source of truth
 

@@ -2,7 +2,7 @@
 
 Kinosail is a family of private, self-hosted applications for your media and home network. Run the apps you need on your own hardware. Each app includes its web interface, API, and embedded database in one independently deployed container.
 
-**[Get started](#getting-started)** · **[Documentation](#documentation)** · **[Contribute](CONTRIBUTING.md)** · **[Get help](SUPPORT.md)** · **[Security](SECURITY.md)**
+**[Get started](https://kinosail.github.io/kinosail/quickstart/)** · **[Documentation](https://kinosail.github.io/kinosail/)** · **[Contribute](CONTRIBUTING.md)** · **[Get help](SUPPORT.md)** · **[Security](SECURITY.md)**
 
 ## Choose your app
 
@@ -110,11 +110,13 @@ Use [Player device setup](apps/player/docs/getting-started/connect-devices.md) f
 
 ### Release installation
 
-As of September 15, 2026, this monorepo has no published GitHub releases. The signed-image installer and release workflows are retained, but GitHub Actions is disabled. A development image or a successful source build does not establish release readiness.
+As of September 15, 2026, this monorepo has no published GitHub releases. The signed-image installer and release workflows are retained; publication is governed by the GitHub Actions release gates. A development image or a successful source build does not establish release readiness.
 
 When signed releases are available, use the matching app bundle from [Releases](https://github.com/Kinosail/kinosail/releases), verify its supplied checksum and signature, and follow [Player installation](apps/player/docs/getting-started/install.md) or the app's instructions. The installer requires `cosign` and verifies the image identity before pinning its digest. Do not bypass that check to install a development image.
 
 ## Documentation
+
+Visit **[Kinosail Docs](https://kinosail.github.io/kinosail/)** for searchable web Player guides, starting with Docker installation.
 
 | Task | Start here |
 | --- | --- |

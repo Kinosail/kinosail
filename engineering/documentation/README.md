@@ -1,21 +1,38 @@
-# Documentation renderer
+# Kinosail documentation site
 
-Player and Subtitles use the same pinned Jekyll bundle. Install Ruby 3.2 or newer and Bundler. From the monorepo root:
+The web Player documentation site is published to <https://kinosail.github.io/kinosail/> by `.github/workflows/documentation.yml`. Pull requests build and check the artifact; only `main` can deploy to the `github-pages` environment.
+
+## Edit the source
+
+- User guides: `apps/player/docs/`.
+- Layout, search, and assets: `apps/player/docs/_layouts/` and `apps/player/docs/assets/`.
+- Scope: web Player only, Docker first; other apps and native clients are not promoted here.
+
+The build copies only documentation inputs into a temporary staging directory. It excludes research folders, preserves guide URLs, bundles the local font, and builds full-text search. The app documentation remains usable in its standalone renderer. Nothing changes application binaries or deployment.
+
+## Build and preview
+
+Install Ruby 3.2 or newer, Bundler, Python 3.9 or newer, and Node.js 26. From the repository root:
 
 ```sh
 export BUNDLE_GEMFILE="$PWD/engineering/documentation/Gemfile"
 bundle install
-bundle exec jekyll serve --source apps/player/docs --destination /tmp/kinosail-player-docs --host 127.0.0.1 --port 4100
+npm ci --prefix engineering/documentation --ignore-scripts
+npm test --prefix engineering/documentation
+python3 -m unittest discover -s engineering/documentation -p 'test_*.py'
+python3 engineering/documentation/build.py --output /tmp/kinosail-preview/kinosail
+python3 engineering/documentation/check.py /tmp/kinosail-preview/kinosail
+python3 -m http.server 4180 --bind 127.0.0.1 --directory /tmp/kinosail-preview
 ```
 
-Open `http://127.0.0.1:4100`. For Subtitles, change the source to `apps/subtitles/docs`, output to `/tmp/kinosail-subtitles-docs`, and port to `4101`. Stop the preview with Ctrl-C. The bundle does not change application runtimes.
+Open <http://127.0.0.1:4180/kinosail/>. Stop with Ctrl-C. The output directory must be new and outside the checkout; choose a new output name for each build rather than deleting unrelated files. `--baseurl` and `--url` allow another HTTPS origin and path. Pass the same base path as the second argument to `check.py`.
 
-Use `bundle exec jekyll build` with the same source/destination options to prepare a static artifact. To render below a hosting prefix, add `--baseurl /chosen-prefix` and supply the real `url` in deployment configuration. The app `_config.yml` files intentionally do not claim a live hosting origin.
+Keep generated output and local Bundler caches outside tracked source. Update `Gemfile` and `Gemfile.lock` together when changing dependencies.
 
-Keep generated output and local Bundler caches outside tracked source. Update `Gemfile` and `Gemfile.lock` together when changing the renderer. GitHub Pages is not enabled by these files; uploading a public site remains a separate publication step.
+## Verify and publish
 
-## Review a documentation change
+The checker verifies every local link, fragment, asset, page heading, and the aggregate search index. Build input tests reject malformed origins, path prefixes, and unsafe output destinations before side effects. Inspect desktop and mobile layouts, light/dark themes, keyboard navigation, copy buttons, search results/empty/error states, and narrow tables before publishing interface changes.
 
-Inspect representative rendered pages and GitHub READMEs. Check links, heading order, code examples, table reflow, search, keyboard navigation, and light/dark themes. Use the actual hosting prefix for publication review. While the root `.gates-disabled` marker exists, disabled quality suites remain off; record manual evidence separately.
+GitHub Pages must use **GitHub Actions** as its build source. No custom domain is required. Deployment uses a static artifact with only Pages and OIDC write permissions; pull-request jobs have read-only repository access and cannot deploy. A failed build or link check blocks publication.
 
-See [Player docs](../../apps/player/docs/README.md), [Subtitles docs](../../apps/subtitles/docs/README.md), and the [documentation preparation record](../research/documentation-production-readiness-2026-09-15.md).
+After the protected pull request merges, verify the Documentation workflow, public HTTPS home page, a nested guide, and search JSON. Source merge and live publication are separate facts.

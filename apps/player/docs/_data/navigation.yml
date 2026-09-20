@@ -1,13 +1,15 @@
 - title: Start here
   url: /getting-started/
   pages:
-    - title: Choose an install path
+    - title: Install with Docker
+      url: /quickstart/
+    - title: Installation overview
       url: /getting-started/
-    - title: Install Kinosail
+    - title: Docker installation details
       url: /getting-started/install/
     - title: Complete first setup
       url: /getting-started/first-setup/
-    - title: Connect phones, TVs, and apps
+    - title: Connect another browser
       url: /getting-started/connect-devices/
     - title: Add your media
       url: /getting-started/add-media/
@@ -91,5 +93,9 @@
   pages:
     - title: Frequently asked questions
       url: /faq/
+    - title: Build from source
+      url: /source-install/
+    - title: About these docs
+      url: /about/
     - title: Documentation guide
       url: /contributing/documentation/

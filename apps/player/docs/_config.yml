@@ -18,5 +18,6 @@ defaults:
       path: ""
     values:
       layout: default
-      last_reviewed: 2026-08-28
       review_owner: Kinosail maintainers
+
+product: Player

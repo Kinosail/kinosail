@@ -1,77 +1,33 @@
 ---
-title: Choose an install path
-description: Select the supported Kinosail installation path for your host and operating goal.
+title: Installation overview
+description: Start with Docker, then set up your web Player and media library.
 section: Start here
 ---
+# Installation overview
 
-# Choose an install path
+**[Install with Docker]({{ '/quickstart/' | relative_url }})** is the recommended path for running the web Player. Use the prebuilt image with the matching signed release bundle. You do not need Git, Go, or a local image build.
 
-Choose one path before you begin. As of September 15, 2026, this monorepo has no published GitHub releases. Source installation is available now; the signed-release installer applies once the matching release is published. A source build does not establish production acceptance.
+Check [Releases](https://github.com/Kinosail/kinosail/releases) for a published Player bundle before starting. No releases were published when checked on September 20, 2026. Source builds remain a separate path for contributors and early evaluation.
 
-## Choose the release installer
+## Your first successful setup
 
-Use the release installer when you want a stable, one-container Server for your own media. It supports 64-bit Intel/AMD and Arm Linux. Docker Compose and Podman Compose can run the Linux container on macOS for local use.
+1. [Install with Docker]({{ '/quickstart/' | relative_url }}).
+2. [Create and secure your Owner]({{ '/getting-started/first-setup/' | relative_url }}).
+3. [Add your media]({{ '/getting-started/add-media/' | relative_url }}).
+4. [Play an item in your browser]({{ '/user-guide/playback/' | relative_url }}).
+5. [Connect another browser]({{ '/getting-started/connect-devices/' | relative_url }}) on your home network.
 
-The installer:
-
-- checks that the media path is absolute and exists;
-- creates a protected backup key;
-- verifies the signed release image and records its digest;
-- starts Kinosail on `127.0.0.1` first; and
-- checks the Server health before it reports success.
-
-Continue with [Install Kinosail]({{ '/getting-started/install/' | relative_url }}).
-
-## Choose a source install
-
-Use a source install for the current checkout. Clone the complete monorepo and run these commands from `apps/player/`. You need the repository, Podman Compose or Docker Compose, and the tools required by the project. Source Compose does not mount the release installer backup key.
-
-```sh
-cp .env.example .env
-chmod 600 .env
-# Set KINOSAIL_MEDIA_PATH to an existing absolute path in .env.
-# Also clear KINOSAIL_BACKUP_KEY_FILE= in .env for the source quickstart.
-podman compose up --build --detach
-```
-
-Use `docker compose` instead when Docker is your runtime. Hardware acceleration needs the additional `compose.gpu.yaml` file and a supported host device.
-
-Open the local Server address. Create the first Owner directly from the setup page.
-
-## Choose the synthetic test Server
-
-Run the fixture only when repository quality gates are enabled. While `.gates-disabled` exists, do not run disabled verification suites.
-
-Use the test fixture when you want to explore Kinosail without downloading third-party creative media. It creates original synthetic movies, Shows, music, an audiobook, a book, photos, and a local TMDB-compatible catalogue.
-
-```sh
-./scripts/test-instance.sh up
-./scripts/test-instance.sh verify
-```
-
-Open `https://localhost:38127`. Sign in as `Owner` with `test-instance-password`. Get the rotating test code with `./scripts/test-instance.sh totp` when the fixture asks for one.
-
-Stop the fixture and remove its volumes when you finish:
-
-```sh
-./scripts/test-instance.sh down --volumes
-```
-
-## Decide where media and state live
-
-Kinosail reads Library Content from the media mount. The container mounts this path read-only. Kinosail stores application state in embedded SQLite under its data volume. It stores transcode cache data separately and does not include either media or cache data in a portable backup.
-
-Keep the following locations separate:
+## Keep media and state separate
 
 | Location | Purpose | Backup treatment |
 | --- | --- | --- |
-| Media path | Movies, Shows, music, books, photos, and other Library Content | Back up separately |
+| Media path | Original movies, shows, music, books, and photos | Back up separately; Player mounts it read-only |
 | `/config` | Profiles, settings, credentials, sessions, and viewing state | Included in state backups |
-| `/cache` | Reproducible transcode data | Not included |
+| `/cache` | Reproducible playback conversion data | Not included |
 | Backup directory | Encrypted recovery archives | Protect with the backup key |
 
-When you are ready, follow [Install Kinosail]({{ '/getting-started/install/' | relative_url }}), then [Complete first setup]({{ '/getting-started/first-setup/' | relative_url }}). Use [Connect phones, TVs, and Jellyfin apps]({{ '/getting-started/connect-devices/' | relative_url }}) when you add household devices.
+Follow [backups and updates]({{ '/owner-guide/backups-and-updates/' | relative_url }}) before relying on your Server for important state.
 
-## Source of truth
+## Development and evaluation
 
-Sources: `README.md`, `scripts/install.sh`, `compose.release.yaml`, and `docs/research/documentation-information-architecture.md`.
+Use [build from source]({{ '/source-install/' | relative_url }}) if you are contributing or need to evaluate a checkout before a signed release exists. This is separate from the normal Docker release installation.

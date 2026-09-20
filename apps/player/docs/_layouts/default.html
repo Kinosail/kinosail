@@ -20,11 +20,12 @@
   <body>
     <a class="skip-link" href="#main-content">Skip to content</a>
     <header class="site-header">
-      <a class="brand" href="{{ '/' | relative_url }}" aria-label="Kinosail documentation home">
+      <a class="brand" href="{{ site.docs_root }}/" aria-label="Kinosail documentation home">
         <img src="{{ '/assets/images/kinosail-mark.svg' | relative_url }}" alt="">
-        <span>Kinosail <b>Docs</b></span>
+        <span>Kinosail <b>Player Docs</b></span>
       </a>
       <div class="header-actions">
+        <a href="{{ site.docs_root }}/quickstart/">Get started</a>
         <a href="{{ site.github_url }}">GitHub</a>
         <button class="quiet-button" type="button" data-theme-toggle aria-label="Use light theme">Theme</button>
         <button class="menu-button" type="button" data-menu-toggle aria-controls="docs-navigation" aria-expanded="false">Menu</button>
@@ -32,10 +33,10 @@
     </header>
     <div class="docs-shell">
       <aside class="sidebar" id="docs-navigation" data-sidebar>
-        <form class="docs-search" role="search" data-search-form data-index-url="{{ '/search.json' | relative_url }}">
+        <form class="docs-search" role="search" data-search-form data-index-url="{{ site.docs_root }}/search.json">
           <label for="docs-search">Search documentation</label>
-          <input id="docs-search" type="search" placeholder="Search the docs" autocomplete="off" data-search-input>
-          <div class="search-results" data-search-results aria-live="polite" hidden></div>
+          <input id="docs-search" type="search" placeholder="Search the docs" autocomplete="off" maxlength="200" aria-controls="search-results" data-search-input>
+          <div id="search-results" class="search-results" data-search-results aria-live="polite" hidden></div>
         </form>
         <nav aria-label="Documentation">
           {% for group in site.data.navigation %}
@@ -62,7 +63,6 @@
             <li aria-current="page">{{ page.title }}</li>
           </ol>
         </nav>
-        <p class="eyebrow">{{ page.section | default: "Kinosail documentation" }}</p>
         {% endunless %}
         <article class="prose">
           {{ content }}
@@ -85,12 +85,13 @@
         {% endif %}
         {% unless page.hide_contribute %}
         <footer class="page-footer">
-          <p>Last reviewed {{ page.last_reviewed | date: "%B %-d, %Y" }} by {{ page.review_owner }}.</p>
+          <p>{% if page.last_reviewed %}Last reviewed {{ page.last_reviewed | date: "%B %-d, %Y" }}.{% endif %} Maintained with the source on GitHub.</p>
           <a href="{{ site.github_url }}/issues/new">Open an issue</a>
-          <a href="{{ site.github_url }}/edit/main/{{ site.source_path }}/{{ page.path }}">Edit this page</a>
+          <a href="{{ site.github_url }}/edit/main/{% if page.source_file %}{{ page.source_file }}{% else %}{{ site.source_path }}/{{ page.path }}{% endif %}">Edit this page</a>
         </footer>
         {% endunless %}
       </main>
+      <aside class="page-toc" aria-label="On this page" data-toc hidden><strong>On this page</strong><nav></nav></aside>
     </div>
   </body>
 </html>
