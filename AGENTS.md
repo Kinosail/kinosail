@@ -43,7 +43,7 @@
 
 ## Delivery
 
-- Unless the user requests read-only work or says not to publish, complete implementation by committing and pushing to `origin/main` without force.
+- Unless the user requests read-only work or says not to publish, complete implementation through a pull request into protected `origin/main`. Required GitHub checks must pass; never bypass protection or force-push main.
 - Fetch and reconcile current `origin/main`, rerun checks affected by reconciliation, and retry ordinary push races.
 - Prove the task commit is included in remote main with a fetched ancestry check. `git ls-remote` alone proves only the ref value.
 - GitHub Actions is the CI and release authority. Keep the existing local deployment watcher separate from public artifact releases.

@@ -4,35 +4,71 @@ updates:
     directory: /packages
     schedule:
       interval: weekly
+    open-pull-requests-limit: 1
+    groups:
+      dependencies:
+        patterns: ["*"]
   - package-ecosystem: gomod
     directory: /apps/player
     schedule:
       interval: weekly
+    open-pull-requests-limit: 1
+    groups:
+      dependencies:
+        patterns: ["*"]
   - package-ecosystem: gomod
     directory: /apps/subtitles
     schedule:
       interval: weekly
+    open-pull-requests-limit: 1
+    groups:
+      dependencies:
+        patterns: ["*"]
   - package-ecosystem: gomod
     directory: /apps/dashboard
     schedule:
       interval: weekly
+    open-pull-requests-limit: 1
+    groups:
+      dependencies:
+        patterns: ["*"]
   - package-ecosystem: github-actions
     directory: /
     schedule:
       interval: weekly
+    open-pull-requests-limit: 1
+    groups:
+      dependencies:
+        patterns: ["*"]
   - package-ecosystem: npm
     directory: /apps/player/e2e
     schedule:
       interval: weekly
+    open-pull-requests-limit: 1
+    groups:
+      dependencies:
+        patterns: ["*"]
   - package-ecosystem: npm
     directory: /scripts/quality
     schedule:
       interval: weekly
+    open-pull-requests-limit: 1
+    groups:
+      dependencies:
+        patterns: ["*"]
   - package-ecosystem: npm
     directory: /apps/subtitles/e2e
     schedule:
       interval: weekly
+    open-pull-requests-limit: 1
+    groups:
+      dependencies:
+        patterns: ["*"]
   - package-ecosystem: npm
     directory: /apps/dashboard/e2e
     schedule:
       interval: weekly
+    open-pull-requests-limit: 1
+    groups:
+      dependencies:
+        patterns: ["*"]

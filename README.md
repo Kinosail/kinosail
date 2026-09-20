@@ -160,3 +160,11 @@ Kinosail Supporter and the Home Assistant integration live in separate repositor
 ## License and contributions
 
 Kinosail is **source-available**, under the [PolyForm Perimeter License 1.0.1](LICENSE). Read [LICENSING.md](LICENSING.md) for repository, third-party, and contribution boundaries. Contributions require the applicable contributor agreement; see [CONTRIBUTING.md](CONTRIBUTING.md). Report vulnerabilities privately using [SECURITY.md](SECURITY.md).
+
+## Continuous integration and releases
+
+GitHub-hosted runners enforce repository quality, app tests, race checks, browser tests, native client builds, dependency scanning, secret scanning, and CodeQL. Required checks protect `main`; failed checks block merging and releases.
+
+Player, Subtitles, and Dashboard containers build on native Linux AMD64 and ARM64 runners in parallel. Versioned tags (`player-vMAJOR.MINOR.PATCH`, `subtitles-vMAJOR.MINOR.PATCH`, and `dashboard-vMAJOR.MINOR.PATCH`) publish to `ghcr.io/kinosail/kinosail-player`, `ghcr.io/kinosail/kinosail-subtitles`, and `ghcr.io/kinosail/kinosail-dashboard`. A release requires successful CI for its exact commit on `main`. Each architecture is scanned before the combined manifest is signed, attested, and promoted to version and `latest` tags. Builds include SBOMs and provenance.
+
+Release publication does not configure a production deployment target. The existing local deployment watcher remains separate.
