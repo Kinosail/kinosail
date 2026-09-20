@@ -1,12 +1,12 @@
 package updatecontrol
 
 import (
-	"bytes"
 	"encoding/hex"
-	"encoding/json"
 	"errors"
 	"io"
 	"slices"
+
+	"github.com/MikeO7/kinosail/packages/httpguard"
 )
 
 const (
@@ -45,14 +45,8 @@ type Artifact struct {
 }
 
 func ParseManifest(input io.Reader) (Manifest, error) {
-	data, err := io.ReadAll(io.LimitReader(input, manifestLimit+1))
-	if err != nil || len(data) > manifestLimit {
-		return Manifest{}, errors.New("invalid release manifest")
-	}
-	decoder := json.NewDecoder(bytes.NewReader(data))
-	decoder.DisallowUnknownFields()
 	var manifest Manifest
-	if decoder.Decode(&manifest) != nil || decoder.Decode(&struct{}{}) != io.EOF || validateManifest(manifest) != nil {
+	if httpguard.DecodeUniqueJSON(input, manifestLimit, &manifest) != nil || validateManifest(manifest) != nil {
 		return Manifest{}, errors.New("invalid release manifest")
 	}
 	return manifest, nil

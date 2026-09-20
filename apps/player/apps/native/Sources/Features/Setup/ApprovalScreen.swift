@@ -6,6 +6,7 @@ struct ApprovalScreen: View {
     @Environment(\.dismiss) private var dismiss
     @State private var code = ""
     @State private var approval: DeviceApproval?
+    @State private var approvalIdentity: UUID?
     @State private var busy = false
     @State private var error: String?
     @State private var approved = false
@@ -42,6 +43,11 @@ struct ApprovalScreen: View {
             if let error { Section { Text(error).foregroundStyle(.red) } }
         }
         .navigationTitle("Connect a TV")
+        .onChange(of: session.client?.identity) { _, _ in
+            approval = nil
+            approvalIdentity = nil
+            approved = false
+        }
         .task {
             if !initialCode.isEmpty, code.isEmpty { code = initialCode; await review() }
         }
@@ -52,18 +58,25 @@ struct ApprovalScreen: View {
         busy = true
         error = nil
         defer { busy = false }
-        do { approval = try await client.previewApproval(code: code) }
+        do {
+            let pending = try await client.previewApproval(code: code)
+            guard session.client?.identity == client.identity else { return }
+            approvalIdentity = client.identity
+            approval = pending
+        }
         catch { self.error = AppSession.message(error) }
     }
 
     private func approve(_ pending: DeviceApproval) {
-        guard !busy, pending.expires > Date(), let client = session.client else { return }
+        guard !busy, pending.expires > Date(), let client = session.client, approvalIdentity == client.identity else { return }
         busy = true
         error = nil
         Task {
             defer { busy = false }
             do {
+                guard session.client?.identity == client.identity, approvalIdentity == client.identity else { return }
                 try await client.approveDevice(code: pending.code)
+                guard session.client?.identity == client.identity else { return }
                 approved = true
             } catch { self.error = AppSession.message(error) }
         }

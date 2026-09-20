@@ -8,7 +8,7 @@ enum TopShelfPreferences {
 
     static func migrateToDefaultOn(in defaults: UserDefaults = .standard) {
         guard !defaults.bool(forKey: defaultOnMigrationKey) else { return }
-        defaults.set(true, forKey: enabledKey)
+        if defaults.object(forKey: enabledKey) == nil { defaults.set(true, forKey: enabledKey) }
         defaults.set(true, forKey: defaultOnMigrationKey)
     }
 }

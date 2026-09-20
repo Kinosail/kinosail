@@ -50,6 +50,10 @@ func PreviewExternal(input ExternalImport) (ImportPreview, error) {
 	if title := stringValue(mapValue(value, "pageInfo"), "title"); title != "" {
 		preview.Title = title
 	}
+	preview.Title, err = boundedText("title", preview.Title, 1, 60)
+	if err != nil {
+		return ImportPreview{}, err
+	}
 	if len(preview.Apps) == 0 {
 		return ImportPreview{}, errors.New("no direct application links were found")
 	}

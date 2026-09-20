@@ -42,6 +42,9 @@ func TestManifestRejectsAnIncompatibleInstalledSchema(t *testing.T) {
 
 func TestManifestRejectsUnknownMissingDuplicateAndOversizedInput(t *testing.T) {
 	for name, input := range map[string]string{
+		"duplicate version":    strings.Replace(validManifest, `"version":"v1.2.3"`, `"version":"v0.0.1","version":"v1.2.3"`, 1),
+		"case alias":           strings.Replace(validManifest, `"version":"v1.2.3"`, `"Version":"v1.2.3","version":"v1.2.3"`, 1),
+		"duplicate nested":     strings.Replace(validManifest, `"size":100`, `"size":1,"size":100`, 1),
 		"unknown":              strings.Replace(validManifest, `"schemaVersion":2`, `"schemaVersion":2,"channel":"stable"`, 1),
 		"old manifest schema":  strings.Replace(validManifest, `"schemaVersion":2`, `"schemaVersion":1`, 1),
 		"bad version":          strings.Replace(validManifest, `"version":"v1.2.3"`, `"version":"v1.2.3-beta"`, 1),

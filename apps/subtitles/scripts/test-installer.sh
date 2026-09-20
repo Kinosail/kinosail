@@ -21,12 +21,14 @@ grep -Fq '/tmp:rw,noexec,nosuid,nodev,size=256m' "$fixture/app/compose.release.y
 grep -Fq 'timeout: 15s' "$fixture/app/compose.release.yaml"
 grep -Fq 'KINOSAIL_GPU_GROUP:-10001' "$fixture/app/compose.gpu.yaml"
 grep -Fq 'KINOSAIL_GPU_GROUP_1:-10001' "$fixture/app/compose.rkmpp.yaml"
+export KINOSAIL_IMAGE=unverified-image
 export KINOSAIL_INSTALL_TEST_LOG="$fixture/compose.log" KINOSAIL_INSTALL_TEST_STATE="$fixture/running" KINOSAIL_INSTALL_TEST_DATA="$fixture/private-state"
 printf initial >"$fixture/private-state"
 cat >"$fixture/bin/podman" <<'FAKE'
 #!/usr/bin/env bash
 set -euo pipefail
 printf 'gpu=%s groups=%s,%s %s\n' "${KINOSAIL_GPU_DEVICE:-}" "${KINOSAIL_GPU_GROUP_1:-}" "${KINOSAIL_GPU_GROUP_2:-}" "$*" >>"$KINOSAIL_INSTALL_TEST_LOG"
+[[ "${KINOSAIL_IMAGE:-}" != "unverified-image" ]] || { echo 'unverified inherited image reached Compose' >&2; exit 91; }
 case "$*" in
   *"compose version"*) echo "test compose" ;;
   *"config --images"*) echo "ghcr.io/mikeo7/kinosail-subtitles:latest" ;;
@@ -123,6 +125,16 @@ for key in KINOSAIL_REMOTE_MODE KINOSAIL_VERSION KINOSAIL_PORT; do
   cp "$fixture/app/.env" "$fixture/before.env"
   if PATH="$fixture/bin:$PATH" "$fixture/app/scripts/install.sh" "$fixture/media" 9080 >/dev/null 2>&1; then
     echo "duplicate $key configuration must fail" >&2
+    exit 1
+  fi
+  cmp "$fixture/before.env" "$fixture/app/.env"
+  [[ ! -s "$fixture/compose.log" && ! -e "$fixture/app/secrets" ]]
+done
+for version in edge 01.2.3 v1.2.3 1.2 1.2.3-beta '1.2.3/other'; do
+  printf "KINOSAIL_MEDIA_PATH='%s'\nKINOSAIL_VERSION=%s\n" "$fixture/media" "$version" >"$fixture/app/.env"
+  cp "$fixture/app/.env" "$fixture/before.env"
+  if PATH="$fixture/bin:$PATH" "$fixture/app/scripts/install.sh" "$fixture/media" 9080 >/dev/null 2>&1; then
+    echo "invalid release selector must fail: $version" >&2
     exit 1
   fi
   cmp "$fixture/before.env" "$fixture/app/.env"
@@ -225,6 +237,14 @@ grep -q 'gpu=nvidia.com/gpu=all .*--file compose.release.yaml.*--file compose.gp
 grep -q 'groups=105,44 .*--file compose.release.yaml.*--file compose.rkmpp.yaml' "$fixture/compose.log"
 compgen -G "$fixture/app/backups/kinosail-before-update-*.kinosail-backup" >/dev/null
 [[ -d "$fixture/media" && ! -e "$fixture/running" ]]
+
+sed -i.bak '/^KINOSAIL_VERSION=/d' "$fixture/app/.env"
+rm "$fixture/app/.env.bak"
+printf 'KINOSAIL_VERSION=1.2.3\n' >>"$fixture/app/.env"
+PATH="$fixture/bin:$PATH" "$fixture/app/scripts/install.sh" "$fixture/media" 9080 >/dev/null
+grep -Fq 'cosign verify --certificate-identity https://github.com/MikeO7/kinosail/.github/workflows/subtitles-release.yml@refs/tags/subtitles-v1.2.3 --certificate-oidc-issuer https://token.actions.githubusercontent.com' "$fixture/compose.log"
+sed -i.bak '/^KINOSAIL_VERSION=/d' "$fixture/app/.env"
+rm "$fixture/app/.env.bak"
 
 touch "$fixture/running"
 printf original >"$fixture/private-state"

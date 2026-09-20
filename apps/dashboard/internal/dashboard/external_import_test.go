@@ -65,3 +65,17 @@ func TestImportExternalValidatesBeforeReplacingBoard(t *testing.T) {
 		t.Fatalf("stale import error = %v, want conflict", err)
 	}
 }
+
+func TestExternalImportRejectsUnreloadableTitleBeforeEffects(t *testing.T) {
+	for _, title := range []string{strings.Repeat("x", 61), "\x00bad"} {
+		service, store := serviceForTest(t, testBoard())
+		before := service.Snapshot()
+		input := ExternalImport{Source: "dashy", Content: "pageInfo:\n  title: " + title + "\nsections:\n  - items:\n      - title: Media\n        url: https://media.example\n"}
+		if _, err := service.ImportExternal(context.Background(), input, before.Version, "Owner"); err == nil {
+			t.Fatal("invalid title accepted")
+		}
+		if store.saveCount != 0 || service.Snapshot().Version != before.Version || len(service.Snapshot().Apps) != 0 {
+			t.Fatal("invalid import had effects")
+		}
+	}
+}

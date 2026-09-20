@@ -27,7 +27,7 @@ The Xcode synchronized groups include new Swift files automatically. `Kinosail-i
 | Photos | Bounded authenticated loading, pinch/double-tap zoom and pan on iOS; zoom and directional movement with the TV remote. |
 | Receivers | Explicit DLNA discovery, start/status/play/pause/seek/stop and ticket revocation. iOS exposes Apple's audio route picker and directions for Control Center screen mirroring. |
 | Siri and Shortcuts, iOS | Authenticated foreground actions for library search, exact-title playback and the first playable Continue watching title. Ambiguous or truncated exact-title matches are rejected. Actions use the active app session and existing media screens. |
-| Apple TV Home | Default-on Top Shelf extension for Continue watching, My List and recently added videos; up to six posters per section. A one-time migration enables legacy saved-off defaults, while Settings still allows opting out. Expired snapshots (24 hours), invalid input and failed refreshes expose no dynamic content. |
+| Apple TV Home | Default-on Top Shelf extension for Continue watching, My List and recently added videos; up to six posters per section. A one-time migration enables Top Shelf only when no preference exists and preserves saved opt-outs. Expired snapshots (24 hours), invalid input and failed refreshes expose no dynamic content. |
 | Apple TV users | One connected Viewer Profile is shared by everyone using the TV. Apple TV user switching does not change the Kinosail profile. Tokens remain in the app Keychain; Top Shelf receives only the credential-free snapshot. |
 
 ## Security and persistence boundaries

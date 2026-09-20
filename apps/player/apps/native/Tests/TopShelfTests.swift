@@ -9,18 +9,26 @@ struct TopShelfTests {
         .init(id: "movie", title: "Sample movie", section: "Continue watching", image: Data([0xff, 0xd8, 0xff, 0xd9]))
     }
 
-    @Test func migratesTopShelfToDefaultOnOnlyOnce() {
+    @Test func preservesTopShelfOptOutDuringMigration() {
         let suite = "TopShelfTests.\(UUID().uuidString)"
         let defaults = UserDefaults(suiteName: suite)!
         defer { defaults.removePersistentDomain(forName: suite) }
         defaults.set(false, forKey: TopShelfPreferences.enabledKey)
 
         TopShelfPreferences.migrateToDefaultOn(in: defaults)
-        #expect(defaults.bool(forKey: TopShelfPreferences.enabledKey))
+        #expect(!defaults.bool(forKey: TopShelfPreferences.enabledKey))
 
         defaults.set(false, forKey: TopShelfPreferences.enabledKey)
         TopShelfPreferences.migrateToDefaultOn(in: defaults)
         #expect(!defaults.bool(forKey: TopShelfPreferences.enabledKey))
+    }
+
+    @Test func enablesTopShelfWhenNoPreferenceExists() {
+        let suite = "TopShelfTests.\(UUID().uuidString)"
+        let defaults = UserDefaults(suiteName: suite)!
+        defer { defaults.removePersistentDomain(forName: suite) }
+        TopShelfPreferences.migrateToDefaultOn(in: defaults)
+        #expect(defaults.bool(forKey: TopShelfPreferences.enabledKey))
     }
 
     @Test func roundTripAndCredentialFreeLinks() throws {

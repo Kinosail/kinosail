@@ -1,5 +1,11 @@
 let csrf = "";
 
+export function clearPrivateCache() {
+  for (const key of ["board", "catalog", "recents", "usage"]) {
+    try { localStorage.removeItem(`kinosail-dashboard-${key}-v1`); } catch {}
+  }
+}
+
 export function setCSRF(value) { csrf = value || ""; }
 
 export async function api(path, options = {}) {
@@ -9,8 +15,13 @@ export async function api(path, options = {}) {
     request.body = JSON.stringify(request.body);
   }
   if (request.method && request.method !== "GET" && request.method !== "HEAD" && csrf) request.headers["X-Kinosail-CSRF"] = csrf;
-  const response = await fetch(path, request);
+  let response;
+  try { response = await fetch(path, request); }
+  catch { throw Object.assign(new Error("Could not reach the Server."), {offline: true}); }
+  if (path === "/api/v1/session" && request.method === "DELETE" && response.ok) clearPrivateCache();
   if (response.status === 401) {
+    clearPrivateCache();
+    window.dispatchEvent(new Event("kinosail:session-ended"));
     location.assign("/login");
     throw new Error("Your session ended. Sign in again.");
   }

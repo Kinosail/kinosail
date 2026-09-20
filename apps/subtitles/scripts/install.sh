@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
+# The verified pin in this install directory controls every start and rollback.
+unset KINOSAIL_IMAGE
 
 root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 media="${1:-}"
@@ -72,8 +74,8 @@ case "${remote_mode:-off}" in
   *) echo "KINOSAIL_REMOTE_MODE must be off or https" >&2; exit 2 ;;
 esac
 version="${version:-latest}"
-if [[ ! "$version" =~ ^[A-Za-z0-9._-]+$ ]] || ((${#version} > 64)); then
-  echo "KINOSAIL_VERSION contains invalid characters" >&2
+if [[ "$version" != latest && ! "$version" =~ ^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$ ]] || ((${#version} > 64)); then
+  echo "KINOSAIL_VERSION must be latest or a release version such as 1.2.3" >&2
   exit 1
 fi
 if command -v podman >/dev/null && podman compose version >/dev/null 2>&1; then
@@ -205,7 +207,11 @@ if [[ ! "$digest" =~ ^ghcr\.io/mikeo7/kinosail-subtitles@sha256:[a-f0-9]{64}$ ]]
   echo "pulled image did not resolve to an expected Kinosail digest" >&2
   exit 1
 fi
-cosign verify --certificate-identity-regexp '^https://github\.com/MikeO7/kinosail/\.github/workflows/subtitles-release\.yml@refs/tags/subtitles-v(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$' --certificate-oidc-issuer https://token.actions.githubusercontent.com "$digest" >/dev/null
+if [[ "$version" == latest ]]; then
+  cosign verify --certificate-identity-regexp '^https://github\.com/MikeO7/kinosail/\.github/workflows/subtitles-release\.yml@refs/tags/subtitles-v(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$' --certificate-oidc-issuer https://token.actions.githubusercontent.com "$digest" >/dev/null
+else
+  cosign verify --certificate-identity "https://github.com/MikeO7/kinosail/.github/workflows/subtitles-release.yml@refs/tags/subtitles-v$version" --certificate-oidc-issuer https://token.actions.githubusercontent.com "$digest" >/dev/null
+fi
 if [[ -f kinosail.yaml ]]; then
   KINOSAIL_IMAGE="$digest" "${project[@]}" run --rm --no-deps kinosail config validate
 fi
@@ -218,7 +224,7 @@ awk -v image="$digest" '
 ' .env >"$temporary"
 chmod 600 "$temporary"
 mv "$temporary" .env
-"${project[@]}" up --detach
+KINOSAIL_IMAGE="$digest" "${project[@]}" up --detach
 healthy=""
 for _ in {1..40}; do
   if "${project[@]}" exec -T kinosail kinosail healthcheck; then

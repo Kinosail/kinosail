@@ -26,6 +26,13 @@ function writeLocal(key, value) {
   try { localStorage.setItem(key, JSON.stringify(value)); } catch { /* Private browsing may disable local storage. */ }
 }
 
+window.addEventListener("kinosail:session-ended", () => {
+  state.board = null;
+  state.catalog = [];
+  field("board").replaceChildren();
+  for (const dialog of document.querySelectorAll("dialog[open]")) dialog.close();
+});
+
 async function start() {
   try {
     const [me, catalog, board] = await Promise.all([get("/api/v1/me"), get("/api/v1/catalog"), get("/api/v1/board")]);
@@ -45,7 +52,7 @@ async function start() {
     window.setInterval(() => { if (!state.editing && !document.querySelector("dialog[open]")) refresh(true); }, 15000);
   } catch (error) {
     const cachedBoard = readLocal("kinosail-dashboard-board-v1", null);
-    if (cachedBoard?.title && cachedBoard?.apps) {
+    if (error.offline === true && cachedBoard?.title && cachedBoard?.apps) {
       updateBoard(cachedBoard);
       state.catalog = readLocal("kinosail-dashboard-catalog-v1", []);
       state.offline = true;
