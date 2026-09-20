@@ -21,7 +21,7 @@ func SettingsExposeSmartSearch(t *testing.T, newHandler func(string) http.Handle
 			t.Fatalf("settings missing %q", expected)
 		}
 	}
-	for _, expected := range []string{`searchableText`, `settings-search-result-group`, `No settings match that search.`, `document.createElement("a")`, `#library-search, #settings-search-input`} {
+	for _, expected := range []string{`searchableText`, `settings-search-result-group`, `No settings found. Try a broader term, such as playback, profiles, or network.`, `document.createElement("a")`, `document.querySelector("#settings-search-input")`} {
 		if !strings.Contains(script.Body.String(), expected) {
 			t.Fatalf("settings script missing %q", expected)
 		}

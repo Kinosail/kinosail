@@ -91,7 +91,7 @@ test("Owner settings search finds a setting across task families", async ({ page
 		await expect(page.locator('[data-settings-levels] [aria-current="page"]')).toHaveText("Advanced");
 		await expect(page.locator("#trusted-https")).toBeFocused();
 		await search.fill("not a real setting");
-		await expect(page.locator("[data-settings-search-status]")).toHaveText("No settings match that search.");
+		await expect(page.locator("[data-settings-search-status]")).toHaveText("No settings found. Try a broader term, such as playback, profiles, or network.");
 		await expect(page.locator("[data-settings-search-results] a")).toHaveCount(0);
 		await search.fill("setup");
 		await expect(page.locator("[data-settings-search-status]")).toHaveText(/\d+ matching settings\./);
