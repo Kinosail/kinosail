@@ -12,7 +12,7 @@ require (
 	github.com/go-jose/go-jose/v4 v4.1.5
 	github.com/go-webauthn/webauthn v0.18.0
 	github.com/libp2p/zeroconf/v2 v2.2.0
-	github.com/modelcontextprotocol/go-sdk v1.7.0
+	github.com/modelcontextprotocol/go-sdk v1.8.0
 	github.com/ncruces/go-sqlite3 v0.35.4
 	github.com/nicksnyder/go-i18n/v2 v2.6.1
 	github.com/russellhaering/goxmldsig v1.6.1
