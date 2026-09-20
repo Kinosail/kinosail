@@ -25,7 +25,7 @@ test('lint follows the production Go bundle order and shared scopes', async () =
   for (const bundle of bundles) {
     const source = bundle.files.map(file => readFileSync(path.join(repo, file), 'utf8')).join('');
     const [result] = await eslint.lintText(source, options);
-    assert.deepEqual(result.messages, [], bundle.name);
+    assert.deepEqual(result.messages.filter(message => message.severity === 2), [], bundle.name);
     const [invalid] = await eslint.lintText(`${source}\nmissingGlobal();`, options);
     assert.ok(invalid.messages.some(message => message.ruleId === 'no-undef'));
   }

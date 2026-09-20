@@ -3,6 +3,8 @@ import { createServer } from "node:http";
 import type { AddressInfo } from "node:net";
 import { readStaticSource } from "./static-sources";
 
+type WorkerWindow = Window & { checkWorker: () => Promise<string>; identifiedProfile?: { type: string; profile: string; worker: string } };
+
 const currentDownloads = await readStaticSource(["../../../packages/webassets/static/downloads.js", "../../../packages/webassets/static/downloads-integrity.js"]);
 const currentPWA = await readStaticSource(["../../../packages/webassets/static/offline-identity.js", "../../../packages/webassets/static/pwa.js"]);
 const currentWorker = currentDownloads.match(/const offlineWorkerPath = "([^"]+)"/)![1];
@@ -49,21 +51,21 @@ for (const app of [
     const origin = `http://127.0.0.1:${(server.address() as AddressInfo).port}`;
     try {
       await page.goto(`${origin}/old`);
-      await expect.poll(() => page.evaluate(() => (window as any).checkWorker())).toBe("ready");
+      await expect.poll(() => page.evaluate(() => (window as WorkerWindow).checkWorker())).toBe("ready");
       await page.addInitScript(() => {
         navigator.serviceWorker.addEventListener("message", event => {
-          if (event.data?.type === "identified") (window as any).identifiedProfile = event.data;
+          if (event.data?.type === "identified") (window as WorkerWindow).identifiedProfile = event.data;
         });
       });
       await page.goto(`${origin}/upgrade`);
       await page.waitForFunction((worker) => navigator.serviceWorker.controller?.scriptURL === new URL(worker, location.href).href, currentWorker);
-      await expect.poll(() => page.evaluate(() => (window as any).checkWorker())).toBe("ready");
-      await expect.poll(() => page.evaluate(() => (window as any).identifiedProfile)).toEqual({type:"identified", profile:"viewer", worker:origin+currentWorker});
+      await expect.poll(() => page.evaluate(() => (window as WorkerWindow).checkWorker())).toBe("ready");
+      await expect.poll(() => page.evaluate(() => (window as WorkerWindow).identifiedProfile)).toEqual({type:"identified", profile:"viewer", worker:origin+currentWorker});
       expect(downloadsPath).not.toBe(oldDownloadsPath);
       expect(navigationPath).not.toBe(oldNavigationPath);
       for (const path of [oldDownloadsPath, oldNavigationPath, downloadsPath, navigationPath]) expect(hits.get(path)).toBe(1);
       await page.reload();
-      await expect.poll(() => page.evaluate(() => (window as any).checkWorker())).toBe("ready");
+      await expect.poll(() => page.evaluate(() => (window as WorkerWindow).checkWorker())).toBe("ready");
       for (const count of hits.values()) expect(count).toBe(1);
     } finally {
       await page.goto("about:blank");

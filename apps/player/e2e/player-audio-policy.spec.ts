@@ -50,7 +50,7 @@ for (const policy of ["compatible", "direct-first", "direct-only", "", "unknown"
 
 test("Home Assistant state uses the session CSRF token and consumes a command", async ({ page }) => {
   await openAudio(page, "", true);
-  const reports: { csrf?: string; body: Record<string, unknown> }[] = [];
+  const reports: { csrf?: string; body: { itemId: string; position: number; duration: number } }[] = [];
   await page.route("https://audio.test/api/v1/home-assistant/players/*", async (route) => {
     reports.push({ csrf: route.request().headers()["x-kinosail-csrf"], body: route.request().postDataJSON() });
     await route.fulfill({ json: { command: "seek", position: 35 } });

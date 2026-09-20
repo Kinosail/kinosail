@@ -1,6 +1,8 @@
 import { expect, test, type Page } from '@playwright/test';
 import { configureLayoutAudit, login } from './layout-audit-helpers';
 
+type QRWindow = Window & { qrTest: { stopped: number; requests: number; release: () => void } };
+
 configureLayoutAudit();
 test.beforeEach(async ({ page }) => {
   test.skip(process.env.KINOSAIL_TEST_INSTANCE !== '1', 'requires the populated test instance');
@@ -46,7 +48,7 @@ for (const raw of ['', '12345', '1234567', '12a456', '１２３４５６', 'x'.r
     await expect(page).toHaveURL(/\/quick-connect$/);
     expect(posts).toEqual([]);
     await page.getByRole('button', { name: 'Stop scanning' }).click();
-    expect(await page.evaluate(() => (window as any).qrTest.stopped)).toBe(1);
+    expect(await page.evaluate(() => (window as QRWindow).qrTest.stopped)).toBe(1);
   });
 }
 
@@ -57,7 +59,7 @@ for (const raw of ['123456', 'SAME/connect?code=123456', 'SAME/quick-connect?cod
     let posted = false;
     page.on('request', request => { if (request.method() === 'POST') posted = true; });
     await page.route('**/quick-connect?code=123456', async route => {
-      expect(await page.evaluate(() => (window as any).qrTest.stopped)).toBe(1);
+      expect(await page.evaluate(() => (window as QRWindow).qrTest.stopped)).toBe(1);
       await route.fulfill({ body: 'Confirmation requested' });
     });
     await page.getByRole('button', { name: 'Scan QR code', exact: true }).click();
@@ -78,9 +80,9 @@ test('permission denial leaves manual code entry available', async ({ page }) =>
 test('stopping while permission is pending closes a late camera stream', async ({ page }) => {
   await camera(page, '', { denied: false, pending: true });
   await page.getByRole('button', { name: 'Scan QR code', exact: true }).click();
-  await expect.poll(() => page.evaluate(() => (window as any).qrTest.requests)).toBe(1);
+  await expect.poll(() => page.evaluate(() => (window as QRWindow).qrTest.requests)).toBe(1);
   await page.getByRole('button', { name: 'Stop scanning' }).click();
-  await page.evaluate(() => (window as any).qrTest.release());
-  await expect.poll(() => page.evaluate(() => (window as any).qrTest.stopped)).toBe(1);
+  await page.evaluate(() => (window as QRWindow).qrTest.release());
+  await expect.poll(() => page.evaluate(() => (window as QRWindow).qrTest.stopped)).toBe(1);
   await expect(page.locator('[data-qr-camera]')).toBeHidden();
 });
