@@ -36,9 +36,14 @@ func TestSafeLoginReturnRejectsExternalAndAmbiguousTargets(t *testing.T) {
 			t.Errorf("SafeLoginReturn(%q) = %q", raw, got)
 		}
 	}
-	for raw, want := range map[string]string{"/settings/backups?from=status": "/settings/backups?from=status", "/account#passkeys": "/account", "/account%23passkeys": "/account%23passkeys", "/account?next=home#passkeys": "/account?next=home"} {
-		if got := SafeLoginReturn(raw); got != want {
-			t.Errorf("SafeLoginReturn(%q) = %q, want %q", raw, got, want)
+	for _, test := range []struct{ raw, want string }{
+		{"/settings/backups?from=status", "/settings/backups?from=status"},
+		{"/account#passkeys", "/account"},
+		{"/account%23passkeys", "/account%23passkeys"},
+		{"/account?next=home#passkeys", "/account?next=home"},
+	} {
+		if got := SafeLoginReturn(test.raw); got != test.want {
+			t.Errorf("SafeLoginReturn(%q) = %q, want %q", test.raw, got, test.want)
 		}
 	}
 }

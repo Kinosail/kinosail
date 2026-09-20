@@ -226,8 +226,8 @@ code="$(printf '%06d' "$(((16#$chunk & 0x7fffffff) % 1000000))")"
 expect_status 303 --cookie "$media_dir/cookies" --header "Origin: $url" --header "X-Kinosail-CSRF: $csrf" --data "code=$code" "$url/account/mfa/enable"
 mkfifo "$mcp_dir/input"
 exec 9<>"$mcp_dir/input"
-for _ in {1..12}; do
-  "$engine" exec --interactive "$container" kinosail mcp-stdio <"$mcp_dir/input" >/dev/null 2>&1 &
+for index in {1..12}; do
+  "$engine" exec --interactive "$container" kinosail mcp-stdio <"$mcp_dir/input" >/dev/null 2>"$mcp_dir/relay-$index.log" &
   mcp_jobs+=("$!")
 done
 mcp_relays=0
@@ -236,7 +236,11 @@ for _ in {1..50}; do
   [[ "$mcp_relays" == 12 ]] && break
   sleep 0.1
 done
-[[ "$mcp_relays" == 12 ]]
+if [[ "$mcp_relays" != 12 ]]; then
+  printf 'expected 12 MCP relays, found %s\n' "$mcp_relays" >&2
+  cat "$mcp_dir"/relay-*.log >&2
+  exit 1
+fi
 "$engine" exec "$container" sh -c "for status in \$(grep -l '^Name:[[:space:]]*socat$' /proc/[0-9]*/status); do grep -q '^Threads:[[:space:]]*1$' \"\$status\" || exit 1; done"
 exec 9>&-
 kill "${mcp_jobs[@]}" >/dev/null 2>&1 || true
