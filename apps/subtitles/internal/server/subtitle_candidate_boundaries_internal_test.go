@@ -48,11 +48,11 @@ func TestOpenSubtitlesCandidateBoundariesAndOrdering(t *testing.T) {
 	}
 	equalHigh, equalLow := valid, valid
 	equalHigh.AITranslated, equalHigh.HearingImpaired = true, true
-	equalLow.AITranslated, equalLow.FromTrusted, equalLow.Release = true, true, "Arrival"
+	equalLow.AITranslated, equalLow.Release = true, "Arrival"
 	equalHigh.Files = []openSubtitlesSubtitleFile{{FileID: 10, Name: "Arrival.en.srt"}}
 	equalLow.Files = []openSubtitlesSubtitleFile{{FileID: 11, Name: "Arrival.en.srt"}}
 	equal := rankOpenSubtitlesCandidates(item, "en", openSubtitlesResponse{TotalCount: 2, Data: []openSubtitlesSearchItem{{Type: "subtitle", Attributes: equalLow}, {Type: "subtitle", Attributes: equalHigh}}})
-	if len(equal) != 2 || equal[0].FileID != 10 {
+	if len(equal) != 2 || equal[0].Score != equal[1].Score || equal[0].FileID != 10 {
 		t.Fatalf("equal-score OpenSubtitles candidates = %#v", equal)
 	}
 }
@@ -148,11 +148,11 @@ func TestSubSourceMovieAndSubtitleBoundaryBranches(t *testing.T) { //nolint:funl
 	multi.Rating.Good, multi.Rating.Total = 2, 2
 	second := multi
 	second.SubtitleID = 3
-	second.ReleaseInfo = []string{"Example S01E02"}
+	second.ReleaseInfo = []string{"Example.S01E02"}
 	response := subSourceSubtitleResponse{Success: true, Data: []subSourceSubtitle{invalid, longRelease, multi, second}}
 	response.Pagination.Page, response.Pagination.Limit, response.Pagination.Total, response.Pagination.Pages = 1, 50, 4, 1
 	candidates := rankSubSourceCandidates(show, selected, "en", response)
-	if len(candidates) != 2 || candidates[0].ID != 3 || candidates[1].ReleaseMatch < 0.8 {
+	if len(candidates) != 2 || candidates[0].ID != 2 || candidates[1].ID != 3 || candidates[0].Score != candidates[1].Score || candidates[1].ReleaseMatch < 0.8 {
 		t.Fatalf("SubSource candidates = %#v", candidates)
 	}
 }

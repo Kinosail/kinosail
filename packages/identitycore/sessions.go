@@ -151,14 +151,8 @@ func (sessions *Sessions) create(profileID, name string, browser, strong bool, c
 	if !found || profile.Disabled || profile.Deleted {
 		return "", ErrProfileNotFound
 	}
-	if deviceKey != "" && (!validManagementKey(deviceKey) || !profile.Owner || !profile.Secured || channel != "") {
-		return "", ErrSessionKind
-	}
-	if revision != nil && profile.Revision != *revision {
-		return "", ErrPublicProfile
-	}
-	if channel == "public" && (profile.Owner || !profile.Remote || !profile.Secured) {
-		return "", ErrPublicProfile
+	if err := validateSessionAuthority(profile, channel, revision, deviceKey); err != nil {
+		return "", err
 	}
 	if channel == "public" && activePublic(*sessions.config.Values, profileID, now.Unix()) >= publicSessionLimit {
 		return "", ErrPublicLimit
@@ -268,4 +262,21 @@ func (sessions *Sessions) RevokeOthers(token string) error {
 		values[key] = current
 		return nil
 	})
+}
+
+func validateSessionAuthority(profile SessionProfile, channel string, revision *uint64, deviceKey string) error {
+	if deviceKey != "" && !validManagementSession(profile, channel, deviceKey) {
+		return ErrSessionKind
+	}
+	if revision != nil && profile.Revision != *revision {
+		return ErrPublicProfile
+	}
+	if channel == "public" && (profile.Owner || !profile.Remote || !profile.Secured) {
+		return ErrPublicProfile
+	}
+	return nil
+}
+
+func validManagementSession(profile SessionProfile, channel, deviceKey string) bool {
+	return validManagementKey(deviceKey) && profile.Owner && profile.Secured && channel == ""
 }

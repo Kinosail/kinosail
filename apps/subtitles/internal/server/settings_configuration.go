@@ -48,6 +48,9 @@ func configurationControl(configured configuration.Snapshot, keys ...string) set
 }
 
 var configurationLabels = map[string]string{ //nolint:gosec // These are display labels for secret settings, not credentials.
+	"binaries.tesseract": "Tesseract OCR command", "binaries.whisper": "Whisper transcription command",
+	"integrations.subsource.api_key": "SubSource API key", "integrations.subsource.personal_use": "SubSource personal-use access", "integrations.subsource.url": "SubSource address",
+	"subtitles.transcription_architecture": "Transcription model architecture", "subtitles.transcription_model": "Transcription model file",
 	"auth.url": "Sign-in address", "backup.directory": "Backup folder", "backup.interval": "Backup frequency", "backup.key": "Backup encryption key", "backup.retention": "Backups to keep",
 	"binaries.ffmpeg": "FFmpeg command", "binaries.ffprobe": "FFprobe command", "binaries.fpcalc": "Chromaprint command", "dlna.url": "DLNA address",
 	"integrations.mcp.authorization_server": "MCP authorization server", "integrations.mcp.client_id": "MCP client ID", "integrations.mcp.client_secret": "MCP client secret", "integrations.mcp.introspection_url": "MCP token check address", "integrations.mcp.resource_url": "MCP resource address",
@@ -64,7 +67,7 @@ var configurationLabels = map[string]string{ //nolint:gosec // These are display
 	"integrations.tmdb.image_url":         "TMDB image address", "integrations.tmdb.token": "TMDB access token", "integrations.tmdb.url": "TMDB address", "integrations.webhook.token": "Webhook token", "integrations.webhook.url": "Webhook address",
 	"listen": "Server listening address", "logging.audit_retention": "Audit log retention", "logging.level": "Log detail level", "logging.playback_retention": "Playback history retention",
 	"paths.cache": "Cache folder", "paths.media": "Media folder", "remote.proxy_token": "Trusted proxy token",
-	"remote.mode": "Secure remote access mode", "remote.duckdns_domain": "DuckDNS subdomain", "remote.duckdns_token": "DuckDNS token", "remote.listen": "Public HTTPS listening address",
+	"remote.gateway": "Restricted public gateway", "remote.mode": "Secure remote access mode", "remote.duckdns_domain": "DuckDNS subdomain", "remote.duckdns_token": "DuckDNS token", "remote.listen": "Public HTTPS listening address",
 	"scanning.interval": "Library scan frequency", "supporter.activation_url": "Supporter activation address", "supporter.url": "Support Kinosail", "tls.enabled": "HTTPS enabled", "tls.hosts": "Accepted HTTPS names",
 	"tls.duckdns": "Trusted HTTPS",
 }

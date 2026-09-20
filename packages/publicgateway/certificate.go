@@ -51,20 +51,8 @@ func CertificateHandler(hostname string, get func(*tls.ClientHelloInfo) (*tls.Ce
 			http.Error(w, "public certificate is unavailable", http.StatusServiceUnavailable)
 			return
 		}
-		key, err := x509.MarshalPKCS8PrivateKey(certificate.PrivateKey)
+		body, err := certificatePEM(certificate)
 		if err != nil {
-			http.Error(w, "public certificate is unavailable", http.StatusServiceUnavailable)
-			return
-		}
-		body := pem.EncodeToMemory(&pem.Block{Type: "PRIVATE KEY", Bytes: key})
-		for _, der := range certificate.Certificate {
-			if len(der) > 64<<10 {
-				http.Error(w, "public certificate is unavailable", http.StatusServiceUnavailable)
-				return
-			}
-			body = append(body, pem.EncodeToMemory(&pem.Block{Type: "CERTIFICATE", Bytes: der})...)
-		}
-		if len(body) > 256<<10 {
 			http.Error(w, "public certificate is unavailable", http.StatusServiceUnavailable)
 			return
 		}
@@ -120,4 +108,22 @@ func ecdsaCapable(hello *tls.ClientHelloInfo) bool {
 		return true
 	}
 	return slices.Contains(hello.CipherSuites, tls.TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256) || slices.Contains(hello.CipherSuites, tls.TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384) || slices.Contains(hello.CipherSuites, tls.TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256)
+}
+
+func certificatePEM(certificate *tls.Certificate) ([]byte, error) {
+	key, err := x509.MarshalPKCS8PrivateKey(certificate.PrivateKey)
+	if err != nil {
+		return nil, errors.New("public certificate is unavailable")
+	}
+	body := pem.EncodeToMemory(&pem.Block{Type: "PRIVATE KEY", Bytes: key})
+	for _, der := range certificate.Certificate {
+		if len(der) > 64<<10 {
+			return nil, errors.New("public certificate is unavailable")
+		}
+		body = append(body, pem.EncodeToMemory(&pem.Block{Type: "CERTIFICATE", Bytes: der})...)
+	}
+	if len(body) > 256<<10 {
+		return nil, errors.New("public certificate is unavailable")
+	}
+	return body, nil
 }

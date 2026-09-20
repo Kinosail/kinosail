@@ -111,8 +111,12 @@ func TestSubtitleInspectorRejectsMalformedEditsWithoutSideEffects(t *testing.T) 
 		`{"language":"en","data":"` + base64.StdEncoding.EncodeToString(make([]byte, (4<<20)+1)) + `"}`,
 	} {
 		result := requestJSON(t, handler, http.MethodPost, base+"/preview", input)
-		if result.Code != http.StatusBadRequest {
-			t.Errorf("invalid edit status = %d for %.100s", result.Code, input)
+		want := http.StatusBadRequest
+		if len(input) > 1<<20 {
+			want = http.StatusRequestEntityTooLarge
+		}
+		if result.Code != want {
+			t.Errorf("invalid edit status = %d, want %d for %.100s", result.Code, want, input)
 		}
 		data, _ := os.ReadFile(target)
 		if string(data) != initial {

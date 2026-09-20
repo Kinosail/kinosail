@@ -83,11 +83,7 @@ func (auth *authentication) protect(next http.Handler, pattern func(*http.Reques
 			localizedError(writer, request, "authentication required", http.StatusUnauthorized)
 			return
 		}
-		signIn := auth.signInPath()
-		if signIn == "/login" && request.Method == http.MethodGet && (request.URL.Path == "/oauth/authorize" || request.URL.Path == "/home-assistant/authorize" || request.URL.Path == "/quick-connect") && len(request.URL.RequestURI()) <= 4096 {
-			signIn += "?next=" + url.QueryEscape(request.URL.RequestURI())
-		}
-		http.Redirect(writer, request, signIn, http.StatusSeeOther)
+		auth.redirectToSignIn(writer, request)
 	})
 }
 
@@ -291,4 +287,12 @@ func managedOwnerRequest(request *http.Request) bool {
 func currentViewer(request *http.Request) viewerProfile {
 	profile, _ := request.Context().Value(viewerContextKey{}).(viewerProfile)
 	return profile
+}
+
+func (auth *authentication) redirectToSignIn(writer http.ResponseWriter, request *http.Request) {
+	signIn := auth.signInPath()
+	if signIn == "/login" && request.Method == http.MethodGet && (request.URL.Path == "/oauth/authorize" || request.URL.Path == "/home-assistant/authorize" || request.URL.Path == "/quick-connect") && len(request.URL.RequestURI()) <= 4096 {
+		signIn += "?next=" + url.QueryEscape(request.URL.RequestURI())
+	}
+	http.Redirect(writer, request, signIn, http.StatusSeeOther)
 }

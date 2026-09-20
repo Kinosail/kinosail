@@ -60,6 +60,9 @@ func remotePublicRouteDenied(pattern string) bool {
 		return true
 	}
 	switch pattern {
+	case "POST /settings/management/enable", "POST /settings/management/disable", "POST /settings/management/devices", "POST /settings/management/devices/revoke",
+		"GET /settings/management", "GET /api/v1/management-access", "POST /api/v1/management-access", "DELETE /api/v1/management-access", "POST /api/v1/management-access/devices", "DELETE /api/v1/management-access/devices":
+		return true
 	case "GET /healthz", "GET /setup", "POST /setup", "POST /api/v1/setup", "POST /mcp", "GET /mcp", "DELETE /mcp",
 		"GET /api/v1/home-assistant", "POST /api/v1/home-assistant/pair", "POST /api/v1/home-assistant/token", "GET /home-assistant/authorize", "POST /home-assistant/authorize", "GET /home-assistant/media/{id}",
 		"GET /.well-known/oauth-protected-resource/mcp", "GET /.well-known/oauth-authorization-server", "POST /oauth/register", "POST /oauth/token", "POST /oauth/revoke",

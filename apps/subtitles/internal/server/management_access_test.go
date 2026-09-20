@@ -23,7 +23,7 @@ func TestManagementPageIsPrivateAndDefaultsOff(t *testing.T) {
 	}
 	createRouteProfile(t, handler, owner, map[string]any{"name": "Viewer", "password": "viewer-password"})
 	viewer := loginRouteProfile(t, handler, "Viewer", "viewer-password")
-	for _, route := range []string{"GET /settings/management", "GET /api/v1/management-access", "POST /api/v1/management-access", "DELETE /api/v1/management-access", "POST /api/v1/management-access/devices", "DELETE /api/v1/management-access/devices"} {
+	for _, route := range []string{"POST /settings/management/enable", "POST /settings/management/disable", "POST /settings/management/devices", "POST /settings/management/devices/revoke", "GET /settings/management", "GET /api/v1/management-access", "POST /api/v1/management-access", "DELETE /api/v1/management-access", "POST /api/v1/management-access/devices", "DELETE /api/v1/management-access/devices"} {
 		denied := exerciseRoute(t, handler, route, viewer, false)
 		if !routeAuthorizationDenied(route, denied) {
 			t.Fatalf("Viewer reached %s: %d", route, denied.Code)

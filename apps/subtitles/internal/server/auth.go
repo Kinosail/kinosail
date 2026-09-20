@@ -67,23 +67,7 @@ func (auth *authentication) protect(next http.Handler, pattern func(*http.Reques
 			auth.audit.Track(next, writer, request)
 			return
 		}
-		if profile, found := auth.identity(request); found {
-			if bound := owneraccess.ProfileID(request); bound != "" && (profile.ID != bound || !profile.Owner || profile.APIKey || !profile.Secured() || auth.profiles.publicSession(request) || !auth.profiles.recentlyAuthenticated(request, 8*time.Hour)) {
-				if authenticationErrorRequest(request) {
-					localizedError(writer, request, "sign in as the Owner paired to this device using two-step sign-in", http.StatusForbidden)
-				} else {
-					http.Redirect(writer, request, stepUpLoginPath(request), http.StatusSeeOther)
-				}
-				return
-			}
-			setAuditViewer(request, profile)
-			access := auth.viewerAccess(profile, request, matched)
-			if access != identitycore.Allowed {
-				auth.denyViewerAccess(writer, request, access)
-				return
-			}
-			request = request.WithContext(context.WithValue(request.Context(), viewerContextKey{}, profile))
-			auth.audit.Track(next, writer, request)
+		if auth.serveIdentity(next, writer, request, matched) {
 			return
 		}
 		if authenticationErrorRequest(request) {
@@ -241,4 +225,32 @@ func managedOwnerRequest(request *http.Request) bool {
 func currentViewer(request *http.Request) viewerProfile {
 	profile, _ := request.Context().Value(viewerContextKey{}).(viewerProfile)
 	return profile
+}
+
+func (auth *authentication) serveIdentity(next http.Handler, writer http.ResponseWriter, request *http.Request, matched string) bool {
+	profile, found := auth.identity(request)
+	if !found {
+		return false
+	}
+	if bound := owneraccess.ProfileID(request); bound != "" && !auth.managementIdentityAllowed(profile, request, bound) {
+		if authenticationErrorRequest(request) {
+			localizedError(writer, request, "sign in as the Owner paired to this device using two-step sign-in", http.StatusForbidden)
+		} else {
+			http.Redirect(writer, request, stepUpLoginPath(request), http.StatusSeeOther)
+		}
+		return true
+	}
+	setAuditViewer(request, profile)
+	access := auth.viewerAccess(profile, request, matched)
+	if access != identitycore.Allowed {
+		auth.denyViewerAccess(writer, request, access)
+		return true
+	}
+	request = request.WithContext(context.WithValue(request.Context(), viewerContextKey{}, profile))
+	auth.audit.Track(next, writer, request)
+	return true
+}
+
+func (auth *authentication) managementIdentityAllowed(profile viewerProfile, request *http.Request, bound string) bool {
+	return profile.ID == bound && profile.Owner && !profile.APIKey && profile.Secured() && !auth.profiles.publicSession(request) && auth.profiles.recentlyAuthenticated(request, 8*time.Hour)
 }

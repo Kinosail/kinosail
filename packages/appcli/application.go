@@ -23,19 +23,14 @@ type Application[Configuration Settings] struct {
 }
 
 // Execute runs Player's command and server-mode dispatch without terminating the process.
-func Execute[Configuration Settings](args []string, input io.Reader, output io.Writer, getenv func(string) string, signals []os.Signal, application Application[Configuration]) int {
+func Execute[Configuration Settings](args []string, input io.Reader, output io.Writer, getenv func(string) string, signals []os.Signal, application Application[Configuration]) int { //nolint:cyclop // Keep command precedence explicit; the repository complexity gate still applies.
 	// Dispatch before loading application settings or opening private state.
 	if len(args) > 0 && args[0] == "public-gateway" {
-		if len(args) != 1 || getenv == nil {
-			return 1
-		}
-		ctx, stop := signal.NotifyContext(context.Background(), signals...)
-		defer stop()
-		return commandResult("public gateway stopped", publicgateway.Run(ctx, getenv("KINOSAIL_PUBLIC_HOSTNAME")))
+		return executePublicGateway(args, getenv, signals)
 	}
 	ConfigureMCPRuntime(args)
 	slog.SetDefault(slog.New(slog.NewJSONHandler(os.Stderr, nil)))
-	if application.Configuration == nil || application.Load == nil || application.MCP == nil || application.Command == nil || application.AuthURL == nil || application.Run == nil || getenv == nil {
+	if !application.valid() || getenv == nil {
 		slog.Error("application is not configured")
 		return 1
 	}
@@ -97,4 +92,17 @@ func executeMCP[Configuration Settings](args []string, signals []os.Signal, appl
 		return 1
 	}
 	return 0
+}
+
+func (a Application[Configuration]) valid() bool {
+	return a.Configuration != nil && a.Load != nil && a.MCP != nil && a.Command != nil && a.AuthURL != nil && a.Run != nil
+}
+
+func executePublicGateway(args []string, getenv func(string) string, signals []os.Signal) int {
+	if len(args) != 1 || getenv == nil {
+		return 1
+	}
+	ctx, stop := signal.NotifyContext(context.Background(), signals...)
+	defer stop()
+	return commandResult("public gateway stopped", publicgateway.Run(ctx, getenv("KINOSAIL_PUBLIC_HOSTNAME")))
 }

@@ -64,7 +64,7 @@ func TestSubtitleOverviewShowsCoveredLibraryWithoutEmptyWarning(t *testing.T) {
 	t.Parallel()
 	handler := subtitleOverviewServer(t, 1, true)
 	body := requestApp(t, handler, http.MethodGet, "/", "").Body.String()
-	for _, text := range []string{"Your subtitles are ready.", "Your subtitles are up to date.", `value="100"`, `aria-valuetext="1 of 1 files ready"`} {
+	for _, text := range []string{"Every checked file has your preferred subtitles.", "Your subtitles are up to date.", `value="100"`, `aria-valuetext="1 of 1 files ready"`} {
 		if !strings.Contains(body, text) {
 			t.Errorf("covered library lacks %q", text)
 		}

@@ -1,6 +1,7 @@
 package server_test
 
 import (
+	"encoding/json"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -219,7 +220,24 @@ func TestOwnerCanDisableDefaultTLSSettingThroughAPIAndWeb(t *testing.T) { //noli
 	saved := apiCall(t, handler, session.Token, http.MethodPut, "/api/v1/configuration/tls.enabled", map[string]string{"value": "false"})
 	reloaded, loadErr := configuration.Load(directory, "", func(string) (string, bool) { return "", false })
 	page := web.Body.String()
-	if api.Code != http.StatusOK || !strings.Contains(api.Body.String(), `"key":"tls.enabled","env":"KINOSAIL_TLS_ENABLED","value":"true"`) || web.Code != http.StatusOK || !strings.Contains(page, `<h2>HTTPS enabled</h2>`) || !strings.Contains(page, `aria-label="HTTPS enabled"`) || !strings.Contains(page, "Using the Kinosail default.") || !strings.Contains(page, "Configuration key: <code>tls.enabled</code>") || strings.Contains(page, `<h2><code>tls.enabled</code></h2>`) || strings.Contains(page, `<h2></h2>`) || saved.Code != http.StatusAccepted || loadErr != nil || reloaded.Bool("tls.enabled") || reloaded.Source("tls.enabled") != configuration.GUI {
-		t.Fatalf("api=%d %q web=%d saved=%d TLS=%v source=%q err=%v", api.Code, api.Body.String(), web.Code, saved.Code, reloaded.Bool("tls.enabled"), reloaded.Source("tls.enabled"), loadErr)
+	var listed struct {
+		Settings []struct{ Key, Env, Value string }
+	}
+	if err := json.Unmarshal(api.Body.Bytes(), &listed); err != nil {
+		t.Fatal(err)
+	}
+	tlsDefault := false
+	for _, setting := range listed.Settings {
+		if setting.Key == "tls.enabled" {
+			tlsDefault = setting.Env == "KINOSAIL_TLS_ENABLED" && setting.Value == "true"
+		}
+	}
+	for _, fragment := range []string{`<h2>HTTPS enabled</h2>`, `aria-label="HTTPS enabled"`, "Using the Kinosail default.", "Configuration key: <code>tls.enabled</code>"} {
+		if !strings.Contains(page, fragment) {
+			t.Errorf("configuration page missing %q", fragment)
+		}
+	}
+	if api.Code != http.StatusOK || !tlsDefault || web.Code != http.StatusOK || !strings.Contains(page, `<h2>HTTPS enabled</h2>`) || !strings.Contains(page, `aria-label="HTTPS enabled"`) || !strings.Contains(page, "Using the Kinosail default.") || !strings.Contains(page, "Configuration key: <code>tls.enabled</code>") || strings.Contains(page, `<h2><code>tls.enabled</code></h2>`) || strings.Contains(page, `<h2></h2>`) || saved.Code != http.StatusAccepted || loadErr != nil || reloaded.Bool("tls.enabled") || reloaded.Source("tls.enabled") != configuration.GUI {
+		t.Fatalf("api=%d default=%v web=%d rawHeading=%v emptyHeading=%v saved=%d TLS=%v source=%q err=%v", api.Code, tlsDefault, web.Code, strings.Contains(page, `<h2><code>tls.enabled</code></h2>`), strings.Contains(page, `<h2></h2>`), saved.Code, reloaded.Bool("tls.enabled"), reloaded.Source("tls.enabled"), loadErr)
 	}
 }

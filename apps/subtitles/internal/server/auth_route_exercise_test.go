@@ -2,6 +2,7 @@ package server
 
 import (
 	"context"
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"strings"
@@ -43,7 +44,11 @@ func exerciseRouteAsMethod(t *testing.T, handler http.Handler, pattern, requestM
 	}
 	ctx, cancel := context.WithCancel(t.Context())
 	defer cancel()
-	request := httptest.NewRequestWithContext(ctx, method, path, strings.NewReader("{}"))
+	var body io.Reader = strings.NewReader("{}")
+	if method == http.MethodGet || method == http.MethodHead {
+		body = nil
+	}
+	request := httptest.NewRequestWithContext(ctx, method, path, body)
 	request.Header.Set("Content-Type", "application/json")
 	if token != "" {
 		request.Header.Set("Authorization", "Bearer "+token)

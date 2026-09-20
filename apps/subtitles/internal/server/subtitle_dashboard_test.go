@@ -167,7 +167,7 @@ func TestSubtitleSettingsAPIRendersEverySavedLanguageAtTheLimit(t *testing.T) {
 	if start >= 0 && end > start {
 		rows = strings.Count(page.Body.String()[start:end], "<li>")
 	}
-	if api.Code != http.StatusOK || !strings.Contains(api.Body.String(), `"subtitleLanguages":["es-419","pt-MZ","zh-Hant"`) || page.Code != http.StatusOK || rows != len(languages) || !strings.Contains(page.Body.String(), "The 20-language limit is reached") {
+	if api.Code != http.StatusOK || !strings.Contains(api.Body.String(), `"subtitleLanguages":["es-419","pt-MZ","zh-Hant"`) || page.Code != http.StatusOK || rows != len(languages) || !strings.Contains(page.Body.String(), "20-language limit reached") {
 		t.Fatalf("api = %d %q, page = %d rows=%d", api.Code, api.Body.String(), page.Code, rows)
 	}
 }
@@ -181,7 +181,7 @@ func TestSubtitleAppUsesKinosailSisterSetupAndFocusedSettings(t *testing.T) { //
 	start := requestApp(t, handler, http.MethodGet, "/onboarding", "")
 	onboarding := requestApp(t, handler, http.MethodGet, "/onboarding/connection", "")
 	setupBody := setup.Body.String()
-	if setup.Code != http.StatusOK || !strings.Contains(setupBody, "Kinosail Subtitles") || !strings.Contains(setupBody, "your subtitle settings") || !strings.Contains(setupBody, "saved subtitle files") || !strings.Contains(setupBody, `/static/app.css?v=electric-1`) || !strings.Contains(setupBody, `class="language-picker"`) || strings.Index(setupBody, `class="language-picker"`) > strings.Index(setupBody, `class="wizard-stage"`) {
+	if setup.Code != http.StatusOK || !strings.Contains(setupBody, "Kinosail Subtitles") || !strings.Contains(setupBody, "choose subtitle settings") || !strings.Contains(setupBody, "Create the Owner account first.") || !strings.Contains(setupBody, `/static/app.css?v=electric-1`) || !strings.Contains(setupBody, `class="language-picker"`) || strings.Index(setupBody, `class="language-picker"`) > strings.Index(setupBody, `class="wizard-stage"`) {
 		t.Fatalf("setup = %d %q", setup.Code, setup.Body.String())
 	}
 	if settings.Code != http.StatusOK {

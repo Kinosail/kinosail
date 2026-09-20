@@ -13,31 +13,13 @@ func dialProbeAddresses(ctx context.Context, network, port string, addresses []n
 	if len(addresses) == 0 || len(addresses) > 64 {
 		return nil, errors.New("probe address count is invalid")
 	}
-	ordered := append([]net.IPAddr(nil), addresses...)
-	for index := 1; index < len(ordered); index++ {
-		if (ordered[index].IP.To4() == nil) != (ordered[0].IP.To4() == nil) {
-			ordered[1], ordered[index] = ordered[index], ordered[1]
-			break
-		}
-	}
+	ordered := alternateProbeFamily(addresses)
 	ctx, cancel := context.WithCancel(ctx)
 	defer cancel()
-	type result struct {
-		connection net.Conn
-		err        error
-	}
-	results := make(chan result)
+
+	results := make(chan probeDialResult)
 	launch := func(index int) {
-		go func() {
-			connection, err := dial(ctx, network, net.JoinHostPort(ordered[index].IP.String(), port))
-			select {
-			case results <- result{connection, err}:
-			case <-ctx.Done():
-				if connection != nil {
-					_ = connection.Close()
-				}
-			}
-		}()
+		go runProbeDial(ctx, network, net.JoinHostPort(ordered[index].IP.String(), port), dial, results)
 	}
 	launch(0)
 	next, active := 1, 1
@@ -74,4 +56,31 @@ func dialProbeAddresses(ctx context.Context, network, port string, addresses []n
 		last = errors.New("probe could not connect")
 	}
 	return nil, last
+}
+
+type probeDialResult struct {
+	connection net.Conn
+	err        error
+}
+
+func runProbeDial(ctx context.Context, network, address string, dial func(context.Context, string, string) (net.Conn, error), results chan<- probeDialResult) {
+	connection, err := dial(ctx, network, address)
+	select {
+	case results <- probeDialResult{connection, err}:
+	case <-ctx.Done():
+		if connection != nil {
+			_ = connection.Close()
+		}
+	}
+}
+
+func alternateProbeFamily(addresses []net.IPAddr) []net.IPAddr {
+	ordered := append([]net.IPAddr(nil), addresses...)
+	for index := 1; index < len(ordered); index++ {
+		if (ordered[index].IP.To4() == nil) != (ordered[0].IP.To4() == nil) {
+			ordered[1], ordered[index] = ordered[index], ordered[1]
+			break
+		}
+	}
+	return ordered
 }
