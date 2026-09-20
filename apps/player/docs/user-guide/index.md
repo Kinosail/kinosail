@@ -8,6 +8,8 @@ section: Use Kinosail
 
 Use this guide to browse, play, organize, and share Library Content in Kinosail.
 
+Explore [all Player features]({{ "/features/" | relative_url }}) for the complete task map, including offline playback, reading, and web-app installation.
+
 ## Choose a task
 
 - [Browse and search]({{ '/user-guide/browse-and-search/' | relative_url }}) to find a title, album, book, photo, or episode.

@@ -20,6 +20,8 @@ Run Kinosail Player on your own hardware. Bring your movies, shows, music, books
 
 ## Already watching?
 
+Explore the [complete Player feature guide]({{ "/features/" | relative_url }}) for viewing, reading, offline use, Server management, API, and MCP workflows.
+
 - **Use another browser.** [Connect on your home network]({{ '/getting-started/connect-devices/' | relative_url }}).
 - **Share your Server with the household.** [Set up Viewer Profiles]({{ '/user-guide/profiles/' | relative_url }}).
 - **Look after your library.** [Plan backups and updates]({{ '/owner-guide/backups-and-updates/' | relative_url }}).

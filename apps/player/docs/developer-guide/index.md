@@ -15,7 +15,6 @@ Build against the Kinosail Server that a household operates. The versioned HTTP 
 - [API workflows]({{ '/developer-guide/api-workflows/' | relative_url }}) maps common integration tasks to safe request sequences.
 - [Connect an MCP client]({{ '/developer-guide/mcp/' | relative_url }}) connects an assistant through the Model Context Protocol.
 - [API reference]({{ '/reference/api/' | relative_url }}) explains authentication, scopes, media boundaries, and the live contract.
-- [Home Assistant integration]({{ '/owner-guide/integrations/#configure-home-assistant' | relative_url }}) covers the supported household integration.
 
 ## Use the right documentation layer
 

@@ -35,9 +35,9 @@ Direct uses the source representation. Automatic starts Direct and can fall back
 
 The source container, codec, resolution, bitrate, HDR format, subtitle mode, client capabilities, or policy may require remuxing or transcoding. Check `GET /api/v1/items/{id}/playback` for the selected mode and reason.
 
-## Can I use Jellyfin clients?
+## Which apps do these docs cover?
 
-Kinosail includes an optional Jellyfin-compatible surface for tested common flows. Compatibility is not universal physical-device certification. The setup wizard requires trusted HTTPS through DuckDNS or deSEC before it enables Jellyfin apps. This avoids manual certificate installs and unsafe certificate bypasses. Follow [Connect phones, TVs, and Jellyfin apps]({{ '/getting-started/connect-devices/' | relative_url }}) for the complete steps.
+These docs cover the web Player, including browser playback, Server administration, the HTTP API, and MCP. Native clients and other Kinosail applications are outside this release. Use [Connect another browser]({{ "/getting-started/connect-devices/" | relative_url }}) to watch on a second device.
 
 ## Can I access Kinosail from the internet?
 

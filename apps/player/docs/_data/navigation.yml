@@ -16,12 +16,20 @@
 - title: Use Kinosail
   url: /user-guide/
   pages:
+    - title: All Player features
+      url: /features/
     - title: User guide
       url: /user-guide/
     - title: Browse and search
       url: /user-guide/browse-and-search/
     - title: Play media
       url: /user-guide/playback/
+    - title: Download and play offline
+      url: /user-guide/offline/
+    - title: Music, books, and photos
+      url: /user-guide/media-types/
+    - title: Make the web Player yours
+      url: /user-guide/web-app/
     - title: Profiles and household access
       url: /user-guide/profiles/
     - title: Lists and collections
@@ -35,6 +43,10 @@
       url: /owner-guide/
     - title: Manage libraries
       url: /owner-guide/libraries/
+    - title: Edit metadata and skip markers
+      url: /owner-guide/metadata/
+    - title: Import and sync history
+      url: /owner-guide/migration/
     - title: Configure playback
       url: /owner-guide/playback/
     - title: Secure accounts

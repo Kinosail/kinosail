@@ -7,7 +7,7 @@ last_reviewed: 2026-09-15
 
 # Back up and update
 
-Back up before changing versions, storage, or configuration. Keep app-state archives, external deployment files, media, and backup keys separately. For Subtitles, sidecars and `.kinosail.bak` originals belong to the media backup, not the app-state archive.
+Back up before changing versions, storage, or configuration. Keep app-state archives, external deployment files, media, and backup keys separately.
 
 ## Configure encryption
 
@@ -27,14 +27,14 @@ The CLI `backup` command uses encryption when a key is configured. Without one, 
 
 ## Create and verify an archive
 
-Run from `apps/player/` for source Compose. Use the exact Compose files/project that own your installation. Release installations must add `--file compose.release.yaml` and their applicable overrides to every command below. Replace Docker with Podman if appropriate.
+Run from your Docker release installation directory. The examples below use `compose.release.yaml`; include the same additional `--file` overlays used by your installation (for example TLS or hardware acceleration) in every command. For source Compose, run from `apps/player/` and omit `--file compose.release.yaml`. Replace Docker with Podman if appropriate.
 
 Choose a new private output filename so redirection cannot overwrite your only backup:
 
 ```sh
 umask 077
-docker compose run --rm --no-deps -T kinosail backup > before-update.kinosail-backup
-docker compose run --rm --no-deps -T kinosail backup verify < before-update.kinosail-backup
+docker compose --file compose.release.yaml run --rm --no-deps -T kinosail backup > before-update.kinosail-backup
+docker compose --file compose.release.yaml run --rm --no-deps -T kinosail backup verify < before-update.kinosail-backup
 ```
 
 Proceed only if both commands succeed. Retain the key, source/image revision, configuration, and archive together in your recovery records, with the key stored separately.
@@ -44,10 +44,10 @@ Proceed only if both commands succeed. Retain the key, source/image revision, co
 Restore replaces stored application state. Confirm the target Compose project/volume, retain a copy of its current state, and verify the archive first. Use a known-compatible app revision and the correct backup key. Stop the running service before restoration:
 
 ```sh
-docker compose stop kinosail
-docker compose run --rm --no-deps -T kinosail restore < before-update.kinosail-backup
-docker compose up --detach
-docker compose exec -T kinosail kinosail healthcheck
+docker compose --file compose.release.yaml stop kinosail
+docker compose --file compose.release.yaml run --rm --no-deps -T kinosail restore < before-update.kinosail-backup
+docker compose --file compose.release.yaml up --detach
+docker compose --file compose.release.yaml exec -T kinosail kinosail healthcheck
 ```
 
 If restore fails, keep the service stopped while investigating the error and preserve the original state/backup. Restore validates the archive before writing, including unknown paths, duplicates, malformed state, and size limits.
