@@ -4,18 +4,32 @@ on:
   pull_request:
   push:
     branches: [main]
+  merge_group:
   workflow_dispatch:
+  workflow_call:
+    inputs:
+      full:
+        type: boolean
+        default: false
 
 concurrency:
-  group: dashboard-hygiene-${{ github.ref }}
-  cancel-in-progress: true
+  group: dashboard-hygiene-${{ github.event_name }}-${{ github.event_name == 'pull_request' && github.ref || github.sha }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 permissions:
   contents: read
   pull-requests: read # Gitleaks reads pull-request metadata.
 
 jobs:
+  changes:
+    uses: ./.github/workflows/changes.yml
+    with:
+      full: ${{ inputs.full || false }}
+
   static:
+    needs: changes
+    if: fromJSON(needs.changes.outputs.plan).dashboard
+    timeout-minutes: 20
     name: Dashboard static checks
     runs-on: ubuntu-latest
     defaults:
@@ -29,22 +43,19 @@ jobs:
       - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7
         with:
           go-version-file: apps/dashboard/go.mod
-          cache-dependency-path: apps/dashboard/go.sum
+          cache-dependency-path: "**/go.sum"
       - uses: golangci/golangci-lint-action@ba0d7d2ec06a0ea1cb5fa41b2e4a3ab91d21278a # v9
         with:
           version: v2.13.1
           working-directory: apps/dashboard
           args: --timeout=5m --new-from-rev=${{ github.event_name == 'pull_request' && format('origin/{0}', github.base_ref) || github.event.before || 'HEAD~1' }}
-      - name: Check module, coverage, size, and container boundary
-        run: make max-loc single-container tidy-check coverage
-      - name: Check shell scripts and workflows with verified tools
-        working-directory: .
-        run: ./scripts/ci/check-source-tools.sh
-      - name: Check monorepo workflow boundaries
-        working-directory: .
-        run: ./scripts/ci/validate-workflows.sh
+      - name: Check module and container boundary
+        run: make single-container tidy-check
 
   race:
+    needs: changes
+    if: fromJSON(needs.changes.outputs.plan).dashboard
+    timeout-minutes: 20
     name: Dashboard race tests
     runs-on: ubuntu-latest
     defaults:
@@ -57,10 +68,13 @@ jobs:
       - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7
         with:
           go-version-file: apps/dashboard/go.mod
-          cache-dependency-path: apps/dashboard/go.sum
-      - run: go test -race ./...
+          cache-dependency-path: "**/go.sum"
+      - run: ../../scripts/ci/test-go.sh dashboard
 
   security:
+    needs: changes
+    if: fromJSON(needs.changes.outputs.plan).dashboard
+    timeout-minutes: 20
     name: Dashboard security checks
     runs-on: ubuntu-latest
     defaults:
@@ -74,40 +88,14 @@ jobs:
       - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7
         with:
           go-version-file: apps/dashboard/go.mod
-          cache-dependency-path: apps/dashboard/go.sum
+          cache-dependency-path: "**/go.sum"
       - name: Scan Go vulnerabilities
         run: go run golang.org/x/vuln/cmd/govulncheck@v1.7.0 ./...
 
-  container:
-    name: Build Dashboard container (${{ matrix.platform }})
-    runs-on: ${{ matrix.runner }}
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - platform: linux/amd64
-            runner: ubuntu-latest
-          - platform: linux/arm64
-            runner: ubuntu-24.04-arm
-    steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
-        with:
-          persist-credentials: false
-      - uses: docker/setup-buildx-action@37fe631027851001ddb9b187196cc803df7f5f0e # v4
-      - uses: docker/build-push-action@53b7df96c91f9c12dcc8a07bcb9ccacbed38856a # v7
-        with:
-          context: .
-          file: apps/dashboard/Containerfile
-          platforms: ${{ matrix.platform }}
-          cache-from: type=gha,scope=dashboard-${{ matrix.platform }}
-          cache-to: type=gha,mode=max,scope=dashboard-${{ matrix.platform }}
-          push: false
-          tags: localhost/kinosail-dashboard:${{ github.sha }}
-          build-args: |
-            VERSION=ci
-            REVISION=${{ github.sha }}
-
   system:
+    needs: changes
+    if: fromJSON(needs.changes.outputs.plan).dashboard
+    timeout-minutes: 20
     name: Dashboard runtime and browser checks
     runs-on: ubuntu-latest
     steps:
@@ -117,7 +105,7 @@ jobs:
       - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e
         with:
           go-version-file: apps/dashboard/go.mod
-          cache-dependency-path: apps/dashboard/go.sum
+          cache-dependency-path: "**/go.sum"
       - uses: pnpm/action-setup@0977fd99725f1db4007ccb2928dbb4e90d06cc86
         with:
           version: 11.22.0
@@ -126,17 +114,36 @@ jobs:
           node-version: 26
           package-manager-cache: false
       - run: pnpm --dir apps/dashboard/e2e install --frozen-lockfile
-      - run: pnpm --dir apps/dashboard/e2e exec playwright install --with-deps chromium firefox webkit
-      - run: make -C apps/dashboard container-test browser-test
+      - run: |
+          read -ra browsers <<< "$BROWSERS"
+          pnpm --dir apps/dashboard/e2e exec playwright install --with-deps "${browsers[@]}"
+        env:
+          BROWSERS: ${{ fromJSON(needs.changes.outputs.plan).dashboard_browsers && 'chromium firefox webkit' || 'chromium' }}
+      - run: make -C apps/dashboard container-test
+        env:
+          CONTAINER_ENGINE: docker
+      - run: |
+          args=()
+          [[ "$PROJECT" == full ]] || args+=(--project=chromium)
+          pnpm --dir apps/dashboard/e2e test "${args[@]}"
+        env:
+          CI: "1"
+          PROJECT: ${{ fromJSON(needs.changes.outputs.plan).dashboard_browsers && 'full' || 'chromium' }}
+      - name: Build ARM64 when build inputs change
+        if: fromJSON(needs.changes.outputs.plan).dashboard_arm
+        run: docker build --platform linux/arm64 -f apps/dashboard/Containerfile .
         env:
           CONTAINER_ENGINE: docker
 
   required:
     name: Dashboard checks
     if: always()
-    needs: [static, race, security, container, system]
+    needs: [changes, static, race, security, system]
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
       - env:
           RESULTS: ${{ toJSON(needs) }}
-        run: jq -e 'all(.[]; .result == "success")' <<<"$RESULTS"
+        run: python3 scripts/ci/required.py dashboard

@@ -1,0 +1,34 @@
+name: Select affected checks
+
+on:
+  workflow_call:
+    inputs:
+      full:
+        type: boolean
+        default: false
+    outputs:
+      languages:
+        value: ${{ jobs.changes.outputs.languages }}
+      plan:
+        value: ${{ jobs.changes.outputs.plan }}
+
+permissions:
+  contents: read
+
+jobs:
+  changes:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    outputs:
+      plan: ${{ steps.select.outputs.plan }}
+      languages: ${{ steps.select.outputs.languages }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - run: test ! -e .gates-disabled
+      - id: select
+        env:
+          CI_FULL: ${{ inputs.full }}
+        run: python3 scripts/ci/affected.py
