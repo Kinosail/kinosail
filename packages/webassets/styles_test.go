@@ -40,11 +40,14 @@ func TestMediaFocusRingStaysInsideArtwork(t *testing.T) {
 	css := string(LastLightCSS)
 	for _, fragment := range []string{
 		"body :is(.card,.curation-card,.collection-card):has(.poster,.curation-poster,.collection-poster):focus-visible{outline:0}",
-		"box-shadow:inset 0 0 0 3px var(--signal)",
+		"outline:3px solid var(--signal);outline-offset:-3px",
 	} {
 		if !bytes.Contains(LastLightCSS, []byte(fragment)) {
 			t.Fatalf("shared stylesheet is missing media focus treatment %q", fragment)
 		}
+	}
+	if strings.Contains(css, "box-shadow:inset 0 0 0 3px var(--signal)") {
+		t.Fatal("media highlight still relies on an inset shadow that image posters can hide")
 	}
 	if strings.Contains(css, ".card:focus-visible .poster){transform:none;outline:2px solid var(--text)") {
 		t.Fatal("media focus still uses the clipped text-color outline")
