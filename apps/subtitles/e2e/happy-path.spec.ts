@@ -34,13 +34,13 @@ test("Owner can set up, create a passkey, find, play, resume, curate, install, a
 		if (testInfo.project.name === "chromium") {
 			await page.getByRole("button", { name: "Create passkey" }).click();
 			await expect(page).toHaveURL("/onboarding/connection");
-			await expect(page.getByRole("heading", { name: "Choose how devices connect." })).toBeVisible();
+			await expect(page.getByRole("heading", { name: "Connect the devices you already own." })).toBeVisible();
 			await expectAccessible(page, capture);
-			await expect(page.getByText("Each choice is optional.", { exact: false })).toBeVisible();
+			await expect(page.getByText("Local access is ready now.", { exact: false })).toBeVisible();
 			await expect(page.getByRole("heading", { name: "Secure local access" })).toBeVisible();
 			await expect(page.getByRole("heading", { name: "Jellyfin apps" })).toBeVisible();
 			await expect(page.getByLabel("Allow compatible Jellyfin apps to connect")).not.toBeChecked();
-			await expect(page.getByRole("heading", { name: "Trusted HTTPS (Required for Jellyfin apps)" })).toBeVisible();
+			await expect(page.getByRole("heading", { name: "Trusted HTTPS for phones, TVs, and Jellyfin apps" })).toBeVisible();
 			await expect(page.getByRole("heading", { name: "Remote access comes later" })).toBeVisible();
 			await expect(page.getByRole("group", { name: "DNS provider" }).locator('input[value="duckdns"]')).toBeChecked();
 			await expect(page.getByLabel("Trusted hostname")).toBeVisible();
@@ -49,7 +49,7 @@ test("Owner can set up, create a passkey, find, play, resume, curate, install, a
 			await expect(page.getByLabel(/Allow DNS validation/)).toBeVisible();
 			await page.getByRole("link", { name: "Continue to household setup" }).click();
 			await expect(page.getByRole("heading", { name: "Set up Viewer Profiles." })).toBeVisible();
-			await page.getByRole("link", { name: "Continue to viewing history" }).click();
+			await page.getByRole("link", { name: "Continue to optional viewing history" }).click();
 			await expect(page.getByRole("heading", { name: "Import your viewing history." })).toBeVisible();
 			await page.getByRole("link", { name: "Finish and open Library" }).click();
 			passkeyCreated = true;
@@ -60,7 +60,7 @@ test("Owner can set up, create a passkey, find, play, resume, curate, install, a
 			await page.getByRole("button", { name: "Turn on extra sign-in protection" }).click();
 			await expect(page).toHaveURL("/onboarding/connection");
 			await page.getByRole("link", { name: "Continue to household setup" }).click();
-			await page.getByRole("link", { name: "Continue to viewing history" }).click();
+			await page.getByRole("link", { name: "Continue to optional viewing history" }).click();
 			await page.getByRole("link", { name: "Finish and open Library" }).click();
 		}
   } else {

@@ -24,7 +24,7 @@ export async function startHappyPath(page: Page, testInfo: TestInfo): Promise<Ha
 	};
 
   await page.goto("/setup");
-  if (await page.getByRole("heading", { name: "Make this server yours." }).isVisible()) {
+  if (await page.getByRole("heading", { name: "Set up your Server." }).isVisible()) {
     await expectAccessible(page, capture);
     await expect(page.getByLabel("Setup code")).toHaveCount(0);
     await page.getByLabel("Name").fill("Owner");
@@ -36,13 +36,13 @@ export async function startHappyPath(page: Page, testInfo: TestInfo): Promise<Ha
 		if (testInfo.project.name === "chromium") {
 			await page.getByRole("button", { name: "Create passkey" }).click();
 			await expect(page).toHaveURL("/onboarding/connection");
-			await expect(page.getByRole("heading", { name: "Choose how devices connect." })).toBeVisible();
+			await expect(page.getByRole("heading", { name: "Connect the devices you already own." })).toBeVisible();
 			await expectAccessible(page, capture);
-			await expect(page.getByText("Secure local access stays on by default. Jellyfin apps require trusted HTTPS because many clients reject private certificates.", { exact: true })).toBeVisible();
+			await expect(page.getByText("Local access is ready now. Add trusted HTTPS only if a phone, TV, or app needs it; you can change these choices later in Settings.", { exact: true })).toBeVisible();
 			await expect(page.getByRole("heading", { name: "Secure local access" })).toBeVisible();
 			await expect(page.getByRole("heading", { name: "Jellyfin apps", exact: true })).toBeVisible();
 			await expect(page.getByLabel("Allow compatible Jellyfin apps to connect")).not.toBeChecked();
-			await expect(page.getByRole("heading", { name: "Trusted HTTPS (Required for Jellyfin apps)" })).toBeVisible();
+			await expect(page.getByRole("heading", { name: "Trusted HTTPS for phones, TVs, and Jellyfin apps" })).toBeVisible();
 			await expect(page.getByRole("heading", { name: "Remote access comes later" })).toBeVisible();
 			const trustedDisclosure = page.locator("#trusted-https-configuration");
 			await expect(trustedDisclosure.locator(":scope > summary")).toHaveText(/Set up trusted HTTPS/);
@@ -57,9 +57,9 @@ export async function startHappyPath(page: Page, testInfo: TestInfo): Promise<Ha
 			await expect(page.getByLabel("Kinosail LAN address")).toBeVisible();
 			await expect(page.getByLabel(/Allow DNS validation/)).toBeVisible();
 			await page.getByRole("link", { name: "Continue to household setup" }).click();
-			await expect(page.getByRole("heading", { name: "Give everyone their own space." })).toBeVisible();
-			await page.getByRole("link", { name: "Continue to arrival" }).click();
-			await expect(page.getByRole("heading", { name: "Bring your history home." })).toBeVisible();
+			await expect(page.getByRole("heading", { name: "Set up Viewer Profiles." })).toBeVisible();
+			await page.getByRole("link", { name: "Continue to optional viewing history" }).click();
+			await expect(page.getByRole("heading", { name: "Import your viewing history." })).toBeVisible();
 			await page.getByRole("link", { name: "Finish and open Library" }).click();
 			passkeyCreated = true;
 		} else {
@@ -69,7 +69,7 @@ export async function startHappyPath(page: Page, testInfo: TestInfo): Promise<Ha
 			await page.getByRole("button", { name: "Turn on extra sign-in protection" }).click();
 			await expect(page).toHaveURL("/onboarding/connection");
 			await page.getByRole("link", { name: "Continue to household setup" }).click();
-			await page.getByRole("link", { name: "Continue to arrival" }).click();
+			await page.getByRole("link", { name: "Continue to optional viewing history" }).click();
 			await page.getByRole("link", { name: "Finish and open Library" }).click();
 		}
   } else {

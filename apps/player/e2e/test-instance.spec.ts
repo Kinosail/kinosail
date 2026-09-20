@@ -12,12 +12,12 @@ test("Connection choices stay optional and secure by default", async ({ page }, 
 		await page.getByRole("link", { name: "Connections", exact: true }).click();
 		const headings = await page.locator("section:visible h2").allTextContents();
 		const firstChoice = headings.indexOf("Secure local access");
-		expect(headings.slice(firstChoice, firstChoice + 3)).toEqual(["Secure local access", "Jellyfin apps", "Trusted HTTPS (Required for Jellyfin apps)"]);
+		expect(headings.slice(firstChoice, firstChoice + 3)).toEqual(["Secure local access", "Jellyfin apps", "Trusted HTTPS for phones, TVs, and Jellyfin apps"]);
 		await expect(page.getByText("On by default.", { exact: true })).toBeVisible();
 		await expect(page.getByLabel("Allow compatible Jellyfin apps to connect")).not.toBeChecked();
 		await expect(page.locator("#jellyfin")).toContainText("Trusted HTTPS is required.");
 		await expect(page.locator("#jellyfin")).toContainText("Set up Trusted HTTPS first.");
-		await expect(page.getByRole("heading", { name: "Trusted HTTPS (Required for Jellyfin apps)" })).toBeVisible();
+		await expect(page.getByRole("heading", { name: "Trusted HTTPS for phones, TVs, and Jellyfin apps" })).toBeVisible();
 		await expect(page.locator("#trusted-https p").first()).toContainText("Required for Jellyfin apps. Recommended for phones and TVs.");
 		expect(await page.locator("main").evaluate((element) => element.scrollWidth <= element.clientWidth)).toBe(true);
 		const accessibility = await new AxeBuilder({ page }).include("main").analyze();

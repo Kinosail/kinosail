@@ -22,7 +22,10 @@ type OnboardingFixture struct {
 func (fixture OnboardingFixture) OwnerSetupContinuesToConnectionOnboarding(t *testing.T) {
 	handler := fixture.Library.NewHandler("", t.TempDir(), true)
 	setupPage := APICall(t, handler, "", http.MethodGet, "/setup", nil)
-	AssertAPIBody(t, setupPage, http.StatusOK, "Make this server yours.", fixture.Introduction, "Your Owner account", fixture.PlanLabel, "Nothing leaves home.", `autocomplete="new-password"`)
+	AssertAPIBody(t, setupPage, http.StatusOK, "Set up your Server.", "Your Owner account", `aria-current="step"`, `autocomplete="new-password"`)
+	if strings.Count(setupPage.Body.String(), `class="language-picker"`) != 1 || strings.Contains(setupPage.Body.String(), `</aside></p>`) {
+		t.Fatalf("setup page has malformed language-picker markup: %q", setupPage.Body.String())
+	}
 	setupForm := url.Values{"name": {"Owner"}, "password": {"owner-password"}, "totp": {"true"}}
 	setupRequest := httptest.NewRequestWithContext(t.Context(), http.MethodPost, "/setup", strings.NewReader(setupForm.Encode()))
 	setupRequest.Header.Set("Content-Type", "application/x-www-form-urlencoded")

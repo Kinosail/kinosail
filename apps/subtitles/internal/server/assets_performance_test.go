@@ -28,7 +28,11 @@ func TestVersionedApplicationStylesheetIncludesSupporterStyles(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	want := append(append(append([]byte(nil), webassets.SubtitlesCSS...), supporter...), dashboard...)
+	workspace, err := os.ReadFile("static/subtitle-workspace.css")
+	if err != nil {
+		t.Fatal(err)
+	}
+	want := append(append(append(append([]byte(nil), webassets.SubtitlesCSS...), webassets.LastLightCSS...), supporter...), append(dashboard, workspace...)...)
 	response := httptest.NewRecorder()
 	assetContracts.NewHandler("", "", false).ServeHTTP(response, httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/static/app.css?v=impeccable-1", nil))
 	if response.Code != http.StatusOK || response.Header().Get("Cache-Control") != "public, max-age=31536000, immutable" || !bytes.Equal(response.Body.Bytes(), want) {

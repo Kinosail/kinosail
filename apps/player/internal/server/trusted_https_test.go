@@ -137,7 +137,7 @@ func TestOwnerCanConfigureTrustedHTTPSDuringOnboarding(t *testing.T) { //nolint:
 	handler := server.New(server.Config{DataDir: directory, RequireAuth: true, Configuration: configured})
 	owner := signInTestProfile(t, handler, "/setup", "name=Owner&password=owner-password")
 	page := requestWithCookie(t, handler, http.MethodGet, "/onboarding/connection", "", owner)
-	assertAPIBody(t, page, http.StatusOK, "Secure local access", "On by default.", "Jellyfin apps", "Trusted HTTPS is required.", "Trusted HTTPS (Required for Jellyfin apps)", "Required for Jellyfin apps. Recommended for phones and TVs.", "does not open a router port", "protected secrets file", "add your passkeys again", `id="trusted-https-configuration" open`, "Set up trusted HTTPS", `action="/onboarding/trusted-https"`)
+	assertAPIBody(t, page, http.StatusOK, "Secure local access", "On by default.", "Jellyfin apps", "Trusted HTTPS is required.", "Trusted HTTPS for phones, TVs, and Jellyfin apps", "Required for Jellyfin apps. Recommended for phones and TVs.", "does not open a router port", "protected secrets file", "add your passkeys again", `id="trusted-https-configuration" open`, "Set up trusted HTTPS", `action="/onboarding/trusted-https"`)
 	arabicRequest := requestWithCookieRequest(t, http.MethodGet, "/onboarding/connection", "", owner)
 	arabicRequest.Header.Set("Accept-Language", "ar")
 	arabic := httptest.NewRecorder()

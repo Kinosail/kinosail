@@ -50,9 +50,12 @@ func TestOwnerCanStartViewingMigrationFromOnboarding(t *testing.T) { //nolint:cy
 
 	handler, token := apiServer(t)
 	connection := apiCall(t, handler, token, http.MethodGet, "/onboarding/connection", nil)
-	assertAPIBody(t, connection, http.StatusOK, "Choose how devices connect.", "Secure local access", "On by default.", "Jellyfin apps", "Trusted HTTPS is required.", "Trusted HTTPS (Required for Jellyfin apps)", "Jellyfin routes stay unavailable.", "Remote access comes later", `action="/onboarding/jellyfin"`, `action="/onboarding/trusted-https"`, `href="/onboarding/household"`)
+	assertAPIBody(t, connection, http.StatusOK, "Connect the devices you already own.", "Ready on this Server", "Secure local access", "On by default.", "Jellyfin apps", "Trusted HTTPS for phones, TVs, and Jellyfin apps", "Required for Jellyfin apps. Recommended for phones and TVs.", "Jellyfin routes stay unavailable.", "Remote access comes later", `aria-current="step"`, `aria-label="Account complete"`, `action="/onboarding/jellyfin"`, `action="/onboarding/trusted-https"`, `href="/onboarding/household"`)
+	if strings.Contains(connection.Body.String(), `href="/setup"`) {
+		t.Fatalf("completed account remained actionable in onboarding progress: %q", connection.Body.String())
+	}
 	household := apiCall(t, handler, token, http.MethodGet, "/onboarding/household", nil)
-	assertAPIBody(t, household, http.StatusOK, "Set up Viewer Profiles.", "Parent or guardian", "Child or teen", `action="/onboarding/household"`, `name="kind" value="parent"`, `name="kind" value="child"`)
+	assertAPIBody(t, household, http.StatusOK, "Set up Viewer Profiles.", "Add the people who watch", "Parent or guardian", "Child or teen", "Continue to optional viewing history", "Finish and open Library", `action="/onboarding/household"`, `name="kind" value="parent"`, `name="kind" value="child"`)
 	parent := webFormCall(t, handler, token, "/onboarding/household", url.Values{"kind": {"parent"}, "owner": {"false"}, "rating": {"all"}, "libraries": {"all"}, "name": {"Parent"}, "password": {"parent-password"}})
 	if parent.Code != http.StatusSeeOther || parent.Header().Get("Location") != "/onboarding/household" {
 		t.Fatalf("add parent = %d, location = %q", parent.Code, parent.Header().Get("Location"))
@@ -71,7 +74,7 @@ func TestOwnerCanStartViewingMigrationFromOnboarding(t *testing.T) { //nolint:cy
 		t.Fatalf("invalid parent = %d, profiles before=%q", rejected.Code, profilesBeforeReject)
 	}
 	page := apiCall(t, handler, token, http.MethodGet, "/onboarding/migrate", nil)
-	assertAPIBody(t, page, http.StatusOK, "Import your viewing history.", "Plex", "Jellyfin", "watched state", "resume positions", "favorites", "become My List entries", "video playlists", "one Viewer Profile at a time", "not Universal Watchlist entries", "Prepare the source credential", "Open Plex token instructions", "Open Jellyfin administrator docs", `name="overwriteExisting"`, `action="/onboarding/viewing-imports/preview"`, `href="/onboarding/finish"`)
+	assertAPIBody(t, page, http.StatusOK, "Import your viewing history.", "Optional.", "Skip this if you are starting fresh", "Plex", "Jellyfin", "watched state", "resume positions", "favorites", "become My List entries", "video playlists", "one Viewer Profile at a time", "not Universal Watchlist entries", "Prepare the source credential", "Open Plex token instructions", "Open Jellyfin administrator docs", `class="onboarding-actions"`, `name="overwriteExisting"`, `action="/onboarding/viewing-imports/preview"`, `href="/onboarding/finish"`)
 	if strings.Contains(page.Body.String(), "source token") {
 		t.Fatalf("onboarding page contains a source credential: %q", page.Body.String())
 	}

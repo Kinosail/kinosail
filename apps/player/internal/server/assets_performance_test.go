@@ -28,7 +28,11 @@ func TestVersionedApplicationStylesheetIncludesSupporterStyles(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	want := append(append(append(append([]byte(nil), webassets.PlayerCSS...), webassets.LastLightCSS...), supporter...), home...)
+	settings, err := os.ReadFile("static/settings.css")
+	if err != nil {
+		t.Fatal(err)
+	}
+	want := append(append(append(append(append([]byte(nil), webassets.PlayerCSS...), webassets.LastLightCSS...), supporter...), home...), settings...)
 	response := httptest.NewRecorder()
 	assetContracts.NewHandler("", "", false).ServeHTTP(response, httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/static/app.css?v=electric-23", nil))
 	if response.Code != http.StatusOK || response.Header().Get("Cache-Control") != "public, max-age=31536000, immutable" || !bytes.Equal(response.Body.Bytes(), want) {

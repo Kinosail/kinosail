@@ -81,7 +81,7 @@ func TestSetupUpdatePreferenceDefaultsOnAndAcceptsExplicitAutomatic(t *testing.T
 func TestSetupRejectsUnknownUpdateModeBeforeOwnerCreation(t *testing.T) {
 	handler := server.New(server.Config{DataDir: t.TempDir(), RequireAuth: true})
 	page := apiCall(t, handler, "", http.MethodGet, "/setup", nil)
-	assertAPIBody(t, page, http.StatusOK, `name="updateMode" value="automatic" checked`, "Turn this off if you want to approve each signed update from Settings.", `name="updateMode" value="manual"`)
+	assertAPIBody(t, page, http.StatusOK, `name="updateMode" value="automatic" checked`, "Review signed updates yourself from Settings.", "Check automatically", `name="updateMode" value="manual"`)
 	request := httptest.NewRequestWithContext(t.Context(), http.MethodPost, "/setup", strings.NewReader("name=Owner&password=owner-password&updateMode=preview"))
 	request.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 	response := httptest.NewRecorder()
