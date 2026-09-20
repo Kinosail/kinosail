@@ -26,7 +26,7 @@ class BuildInputsTest(unittest.TestCase):
             ] + [
                 ['--url', value] for value in ('', 'http://example.org', 'https://x@y.org', 'https://example.org/', 'https://example.org:443', 'https://example.org?a', 'https://example.org#x', 'https://[', 'https://EXAMPLE.org', ' https://example.org', 'https://example.org\n', 'https://' + 'a' * 254)
             ] + [
-                ['--output', value] for value in ('', ' ', directory, str(ROOT / 'new-output'), str(ROOT / '../kinosail-documentation/new-output'), 'a' * 4097)
+                ['--output', value] for value in ('', ' ', directory, str(ROOT / 'new-output'), str(ROOT / '..' / ROOT.name / 'new-output'), 'a' * 4097)
             ] + [['--unknown', 'value'], ['--out', 'value']]
             for case in cases:
                 with self.subTest(case=case), patch('build.subprocess.run') as run, contextlib.redirect_stderr(io.StringIO()):
