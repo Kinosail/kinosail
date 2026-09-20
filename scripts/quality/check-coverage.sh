@@ -57,7 +57,7 @@ mkdir -p "$repo/packages/.verification"
 package_targets=()
 while IFS= read -r package; do
 	case "$package" in
-	*/archivetest|*/commandtest|*/configurationtest|*/servertest) ;;
+	*/archivetest|*/archivetest/*|*/commandtest|*/commandtest/*|*/configurationtest|*/configurationtest/*|*/servertest|*/servertest/*) ;;
 	*) package_targets+=("$package") ;;
 	esac
 done < <(cd "$repo/packages" && go list ./...)
