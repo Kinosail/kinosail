@@ -10,7 +10,7 @@ make_case() {
   mkdir -p "$target/scripts"
   cp "$source_root/scripts/setup-remote-access.sh" "$source_root/scripts/disable-remote-access.sh" "$target/scripts/"
   cp "$source_root"/compose{,.config,.release,.remote-https}.yaml "$target/"
-  printf '%s\n' 'KINOSAIL_REMOTE_MODE=off' 'KINOSAIL_IMAGE=ghcr.io/mikeo7/kinosail-subtitles@sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa' >"$target/.env"
+  printf '%s\n' 'KINOSAIL_REMOTE_MODE=off' 'KINOSAIL_IMAGE=ghcr.io/kinosail/kinosail-subtitles@sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa' >"$target/.env"
 }
 
 mkdir -p "$fixture/bin"

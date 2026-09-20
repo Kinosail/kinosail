@@ -11,7 +11,7 @@ import (
 func releasePolicy(app string, stateSchema, configurationSchema int) Policy {
 	return Policy{
 		tagPrefix:           app,
-		signatureIdentity:   fmt.Sprintf(`^https://github\.com/MikeO7/kinosail/\.github/workflows/%s-release\.yml@refs/tags/%s-v(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$`, app, app),
+		signatureIdentity:   fmt.Sprintf(`^https://github\.com/Kinosail/kinosail/\.github/workflows/%s-release\.yml@refs/tags/%s-v(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$`, app, app),
 		stateSchema:         stateSchema,
 		configurationSchema: configurationSchema,
 	}
@@ -47,7 +47,7 @@ func releaseManifestURLs(version string, policy Policy) (string, string) {
 	if !ValidReleaseVersion(version) {
 		return "", ""
 	}
-	base := fmt.Sprintf("https://github.com/MikeO7/kinosail/releases/download/%s-%s/kinosail-release.json", policy.tagPrefix, version)
+	base := fmt.Sprintf("https://github.com/Kinosail/kinosail/releases/download/%s-%s/kinosail-release.json", policy.tagPrefix, version)
 	return base, base + ".sigstore.json"
 }
 

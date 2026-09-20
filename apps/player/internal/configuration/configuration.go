@@ -28,7 +28,7 @@ type Spec struct {
 	Secret, Restart   bool
 }
 
-var specs = applicationSpecs(configurationcore.CommonApplicationFields("127.0.0.1:38127", "https://github.com/MikeO7/kinosail/tree/main/apps/player"))
+var specs = applicationSpecs(configurationcore.CommonApplicationFields("127.0.0.1:38127", "https://github.com/Kinosail/kinosail/tree/main/apps/player"))
 
 func applicationSpecs(fields []configurationcore.ApplicationField) []Spec {
 	result := make([]Spec, len(fields))

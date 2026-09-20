@@ -22,20 +22,4 @@ if [[ -f "$repo/.gates-disabled" || -f "$common/../.gates-disabled" ]]; then
 fi
 "$repo/scripts/tooling/worktree_guard.py" heartbeat --if-present
 
-lint_base=HEAD
-while read -r _ _ remote_ref remote_sha; do
-  [[ "$remote_ref" == refs/heads/main ]] || continue
-  if [[ "$remote_sha" =~ ^0+$ ]] || ! git cat-file -e "$remote_sha^{commit}" 2>/dev/null; then
-    remote_sha=origin/main
-  fi
-  lint_base="$remote_sha"
-done <"$payload"
-
-export KINOSAIL_MUTATION_DIFF="$lint_base"
-make -C "$repo" tooling-check
-make -C "$repo/packages" check
-KINOSAIL_LINT_BASE="$lint_base" "$repo/scripts/quality/check-full.sh"
-
-for app in player subtitles dashboard; do
-  "$repo/apps/$app/scripts/pre-push-main.sh" "$@" <"$payload"
-done
+printf 'Full quality suites run in GitHub Actions.\n'

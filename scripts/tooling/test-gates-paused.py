@@ -12,6 +12,34 @@ ROOT = pathlib.Path(__file__).resolve().parents[2]
 
 
 class GatePauseTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        global ROOT
+        cls.original_root = ROOT
+        cls.fixture = tempfile.TemporaryDirectory()
+        target = pathlib.Path(cls.fixture.name)
+        import io
+        import tarfile
+        archive = subprocess.check_output(['git', 'archive', 'HEAD'], cwd=ROOT)
+        with tarfile.open(fileobj=io.BytesIO(archive)) as files:
+            files.extractall(target, filter='data')
+        # Overlay tracked working changes, including deletions.
+        for name in subprocess.check_output(['git', 'ls-files'], cwd=ROOT, text=True).splitlines():
+            source, destination = ROOT / name, target / name
+            if source.is_file():
+                destination.parent.mkdir(parents=True, exist_ok=True)
+                shutil.copy2(source, destination)
+            else:
+                destination.unlink(missing_ok=True)
+        (target / '.gates-disabled').touch()
+        ROOT = target
+
+    @classmethod
+    def tearDownClass(cls):
+        global ROOT
+        ROOT = cls.original_root
+        cls.fixture.cleanup()
+
     def test_gate_shell_resumes_only_when_marker_removed(self):
         with tempfile.TemporaryDirectory() as directory:
             root = pathlib.Path(directory)

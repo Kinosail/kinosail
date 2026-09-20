@@ -52,8 +52,8 @@ func TestApplicationPoliciesKeepIndependentReleaseIdentities(t *testing.T) {
 		name, wantURL, wantIdentity string
 		policy                      Policy
 	}{
-		{name: "player", policy: PlayerPolicy(2, 3), wantURL: "https://github.com/MikeO7/kinosail/releases/download/player-v1.2.3/kinosail-release.json", wantIdentity: `^https://github\.com/MikeO7/kinosail/\.github/workflows/player-release\.yml@refs/tags/player-v(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$`},
-		{name: "subtitles", policy: SubtitlesPolicy(4, 5), wantURL: "https://github.com/MikeO7/kinosail/releases/download/subtitles-v1.2.3/kinosail-release.json", wantIdentity: `^https://github\.com/MikeO7/kinosail/\.github/workflows/subtitles-release\.yml@refs/tags/subtitles-v(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$`},
+		{name: "player", policy: PlayerPolicy(2, 3), wantURL: "https://github.com/Kinosail/kinosail/releases/download/player-v1.2.3/kinosail-release.json", wantIdentity: `^https://github\.com/Kinosail/kinosail/\.github/workflows/player-release\.yml@refs/tags/player-v(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$`},
+		{name: "subtitles", policy: SubtitlesPolicy(4, 5), wantURL: "https://github.com/Kinosail/kinosail/releases/download/subtitles-v1.2.3/kinosail-release.json", wantIdentity: `^https://github\.com/Kinosail/kinosail/\.github/workflows/subtitles-release\.yml@refs/tags/subtitles-v(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$`},
 	} {
 		t.Run(test.name, func(t *testing.T) {
 			manifest, signature := releaseManifestURLs("v1.2.3", test.policy)

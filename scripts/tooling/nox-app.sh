@@ -14,7 +14,7 @@ load_nox_app() {
       archive_shared=1
       deploy_success='Deployed and verified Nox at'
       watch_root="${KINOSAIL_DEPLOY_ROOT:-$HOME/Library/Caches/KinosailDeploy}"
-      watch_repo_url="${KINOSAIL_DEPLOY_REPO_URL:-https://github.com/MikeO7/kinosail.git}"
+      watch_repo_url="${KINOSAIL_DEPLOY_REPO_URL:-https://github.com/Kinosail/kinosail.git}"
       repo_variable=KINOSAIL_DEPLOY_REPO_URL
       watch_interval="${KINOSAIL_DEPLOY_INTERVAL:-10}"
       git_dir_name=KINOSAIL_DEPLOY_GIT_DIR
@@ -34,7 +34,7 @@ load_nox_app() {
       archive_shared=1
       deploy_success='Deployed and verified Kinosail Subtitles on Nox at'
       watch_root="${KINOSAIL_SUBTITLES_DEPLOY_ROOT:-$HOME/Library/Caches/KinosailSubtitlesDeploy}"
-      watch_repo_url="${KINOSAIL_SUBTITLES_DEPLOY_REPO_URL:-https://github.com/MikeO7/kinosail.git}"
+      watch_repo_url="${KINOSAIL_SUBTITLES_DEPLOY_REPO_URL:-https://github.com/Kinosail/kinosail.git}"
       repo_variable=KINOSAIL_SUBTITLES_DEPLOY_REPO_URL
       watch_interval="${KINOSAIL_SUBTITLES_DEPLOY_INTERVAL:-10}"
       git_dir_name=KINOSAIL_SUBTITLES_DEPLOY_GIT_DIR
@@ -54,7 +54,7 @@ load_nox_app() {
       archive_shared=1
       deploy_success='Deployed and verified Kinosail Dashboard on Nox at'
       watch_root="${KINOSAIL_DASHBOARD_DEPLOY_ROOT:-$HOME/Library/Caches/KinosailDashboardDeploy}"
-      watch_repo_url="${KINOSAIL_DASHBOARD_DEPLOY_REPO_URL:-https://github.com/MikeO7/kinosail.git}"
+      watch_repo_url="${KINOSAIL_DASHBOARD_DEPLOY_REPO_URL:-https://github.com/Kinosail/kinosail.git}"
       repo_variable=KINOSAIL_DASHBOARD_DEPLOY_REPO_URL
       watch_interval="${KINOSAIL_DASHBOARD_DEPLOY_INTERVAL:-10}"
       git_dir_name=KINOSAIL_DASHBOARD_DEPLOY_GIT_DIR

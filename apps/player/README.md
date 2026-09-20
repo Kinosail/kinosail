@@ -60,7 +60,7 @@ Jellyfin compatibility is off by default and stays behind its integration flag. 
 
 Follow [Connect phones, TVs, and Jellyfin apps](docs/getting-started/connect-devices.md) for the complete Server URL, trusted HTTPS provider, and troubleshooting steps.
 
-Home Assistant support is off by default. Enable it in the setup wizard or Owner settings. Then create a ten-minute pairing code and add the [Kinosail Home Assistant integration](https://github.com/MikeO7/kinosail-home-assistant). The connection can browse Library Content and control active Kinosail browser players. Media streams directly from this Server. Turning the setting off hides every Home Assistant route and revokes every paired connection. Operators can manage the same setting with `KINOSAIL_HOME_ASSISTANT_ENABLED`.
+Home Assistant support is off by default. Enable it in the setup wizard or Owner settings. Then create a ten-minute pairing code and add the [Kinosail Home Assistant integration](https://github.com/Kinosail/kinosail-home-assistant). The connection can browse Library Content and control active Kinosail browser players. Media streams directly from this Server. Turning the setting off hides every Home Assistant route and revokes every paired connection. Operators can manage the same setting with `KINOSAIL_HOME_ASSISTANT_ENABLED`.
 
 Turn public remote viewing off without changing local access:
 
@@ -85,7 +85,7 @@ Kinosail cannot stop a volumetric attack before traffic reaches the home connect
 
 ## Install a release
 
-Download the matching Player installer bundle from [Releases](https://github.com/MikeO7/kinosail/releases) when one is published. Verify its supplied checksum and signature, extract it into a stable directory, and run the following commands there. Do not substitute a source archive or unsigned development image for the signed release bundle. The installer requires `cosign` and Docker Compose or Podman Compose.
+Download the matching Player installer bundle from [Releases](https://github.com/Kinosail/kinosail/releases) when one is published. Verify its supplied checksum and signature, extract it into a stable directory, and run the following commands there. Do not substitute a source archive or unsigned development image for the signed release bundle. The installer requires `cosign` and Docker Compose or Podman Compose.
 
 Kinosail supports 64-bit Intel/AMD and Arm Linux. Docker Compose and Podman Compose can run the same container on macOS for local use. Release bundles include a checksummed installer; the installer verifies the published image's keyless signature, pins its digest, generates the automatic-backup key, and initially binds Kinosail to localhost so another device cannot claim the first Owner Profile.
 

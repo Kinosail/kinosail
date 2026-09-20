@@ -13,4 +13,4 @@ Keep administration local or behind the configured private management access. Su
 
 Store provider credentials in protected Owner settings or mounted secret files. Deployment-managed values remain read-only in the UI. Back up external configuration and keys separately from application state and media.
 
-Report vulnerabilities through the [repository security policy](https://github.com/MikeO7/kinosail/blob/main/SECURITY.md). Never include credentials, private media, or backup archives in public reports. See [privacy]({{ '/reference/architecture-and-privacy/' | relative_url }}) and [recovery]({{ '/owner-guide/backups-and-updates/' | relative_url }}).
+Report vulnerabilities through the [repository security policy](https://github.com/Kinosail/kinosail/blob/main/SECURITY.md). Never include credentials, private media, or backup archives in public reports. See [privacy]({{ '/reference/architecture-and-privacy/' | relative_url }}) and [recovery]({{ '/owner-guide/backups-and-updates/' | relative_url }}).

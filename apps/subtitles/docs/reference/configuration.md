@@ -19,7 +19,7 @@ The precedence order is:
 environment > YAML > Owner settings (GUI) > built-in default
 ```
 
-Kinosail reads the file named by `KINOSAIL_CONFIG_FILE`. If that variable is empty, the Server can use `kinosail.yaml` below its data directory. The example file is [`kinosail.example.yaml`](https://github.com/MikeO7/kinosail/blob/main/apps/subtitles/kinosail.example.yaml). Copy it to `kinosail.yaml` and set only the values that you own.
+Kinosail reads the file named by `KINOSAIL_CONFIG_FILE`. If that variable is empty, the Server can use `kinosail.yaml` below its data directory. The example file is [`kinosail.example.yaml`](https://github.com/Kinosail/kinosail/blob/main/apps/subtitles/kinosail.example.yaml). Copy it to `kinosail.yaml` and set only the values that you own.
 
 If YAML or an environment variable supplies a value, the Owner interface shows that value as managed and read-only. Resetting a managed value cannot change it. An omitted YAML value does not lock the corresponding Owner setting.
 

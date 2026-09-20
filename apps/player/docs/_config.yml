@@ -2,8 +2,8 @@ title: Kinosail Player Docs
 description: Install, use, and operate your private Kinosail Player Server.
 url: ""
 baseurl: ""
-repository: MikeO7/kinosail
-github_url: https://github.com/MikeO7/kinosail
+repository: Kinosail/kinosail
+github_url: https://github.com/Kinosail/kinosail
 source_path: apps/player/docs
 markdown: kramdown
 permalink: pretty

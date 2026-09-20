@@ -2,8 +2,8 @@ title: Kinosail Subtitles Docs
 description: Find, validate, and maintain subtitles for your movies and episodes.
 url: ""
 baseurl: ""
-repository: MikeO7/kinosail
-github_url: https://github.com/MikeO7/kinosail
+repository: Kinosail/kinosail
+github_url: https://github.com/Kinosail/kinosail
 source_path: apps/subtitles/docs
 markdown: kramdown
 permalink: pretty

@@ -2,30 +2,8 @@ name: Player Hygiene
 
 on:
   pull_request:
-    paths:
-      - "apps/player/**"
-      - "packages/**"
-      - "go.work"
-      - "go.work.sum"
-      - ".github/workflows/player-hygiene.yml"
-      - ".github/workflows/player-release.yml"
-      - "scripts/ci/**"
-      - "scripts/tooling/**"
-      - ".containerignore"
-      - ".dockerignore"
   push:
     branches: [main]
-    paths:
-      - "apps/player/**"
-      - "packages/**"
-      - "go.work"
-      - "go.work.sum"
-      - ".github/workflows/player-hygiene.yml"
-      - ".github/workflows/player-release.yml"
-      - "scripts/ci/**"
-      - "scripts/tooling/**"
-      - ".containerignore"
-      - ".dockerignore"
   schedule:
     - cron: "17 7 * * 1"
   workflow_dispatch:
@@ -39,26 +17,7 @@ permissions:
   pull-requests: read # Gitleaks reads pull-request metadata.
 
 jobs:
-  gates:
-    name: Check temporary gate pause
-    runs-on: ubuntu-latest
-    outputs:
-      enabled: ${{ steps.state.outputs.enabled }}
-    steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
-        with:
-          persist-credentials: false
-      - id: state
-        run: |
-          if [ -f .gates-disabled ]; then
-            echo "enabled=false" >> "$GITHUB_OUTPUT"
-          else
-            echo "enabled=true" >> "$GITHUB_OUTPUT"
-          fi
-
   static:
-    needs: gates
-    if: needs.gates.outputs.enabled == 'true'
     name: Player static checks
     runs-on: ubuntu-latest
     defaults:
@@ -95,8 +54,6 @@ jobs:
         run: ./scripts/ci/validate-workflows.sh
 
   race:
-    needs: gates
-    if: needs.gates.outputs.enabled == 'true'
     name: Player race tests
     runs-on: ubuntu-latest
     defaults:
@@ -117,8 +74,6 @@ jobs:
       - run: go test -race ./...
 
   security:
-    needs: gates
-    if: needs.gates.outputs.enabled == 'true'
     name: Player security checks
     runs-on: ubuntu-latest
     defaults:
@@ -136,13 +91,12 @@ jobs:
       - name: Scan Go vulnerabilities
         run: go run golang.org/x/vuln/cmd/govulncheck@v1.7.0 ./...
       - name: Scan secrets
-        uses: gitleaks/gitleaks-action@e0c47f4f8be36e29cdc102c57e68cb5cbf0e8d1e # v3
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        working-directory: .
+        run: |
+          go install github.com/zricethezav/gitleaks/v8@v8.30.1
+          gitleaks git --redact --no-banner --log-opts=--all
 
   tooling:
-    needs: gates
-    if: needs.gates.outputs.enabled == 'true'
     name: Player installer, native, and local pipeline checks
     runs-on: ubuntu-latest
     defaults:
@@ -164,8 +118,6 @@ jobs:
       - run: make installer-test native-build local-pipeline-test
 
   client:
-    needs: gates
-    if: needs.gates.outputs.enabled == 'true'
     name: Player Swift client compilation
     runs-on: macos-latest
     defaults:
@@ -178,9 +130,8 @@ jobs:
       - run: make client-check
 
   scheduled:
-    needs: gates
     name: Player scheduled ${{ matrix.check }}
-    if: ${{ needs.gates.outputs.enabled == 'true' && (github.event_name == 'schedule') }}
+    if: ${{ (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') }}
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -210,8 +161,6 @@ jobs:
         run: make deadcode
 
   system:
-    needs: gates
-    if: needs.gates.outputs.enabled == 'true'
     name: Player system (${{ matrix.platform }})
     runs-on: ${{ matrix.runner }}
     defaults:
@@ -286,30 +235,13 @@ jobs:
           wait "$browser_pid" || status=$?
           exit "$status"
 
-  auto-revert:
-    name: Revert failing Player change on current main
-    if: ${{ needs.gates.outputs.enabled == 'true' && (always() && github.event_name == 'push' && contains(needs.*.result, 'failure')) }}
-    needs: [gates, static, race, security, tooling, client, system]
+
+  required:
+    name: Player checks
+    if: always()
+    needs: [static, race, security, tooling, client, system]
     runs-on: ubuntu-latest
-    permissions:
-      actions: read # The job checks the parent Player Hygiene result.
-      contents: write # The job can revert only the failing main commit.
     steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
-        with:
-          fetch-depth: 0
-          persist-credentials: false
-      - name: Require a green Player parent before automatic rollback
-        id: parent
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          parent="$(git rev-parse "$GITHUB_SHA^")"
-          conclusion="$(gh run list --repo "$GITHUB_REPOSITORY" --workflow player-hygiene.yml --commit "$parent" --event push --limit 1 --json conclusion --jq '.[0].conclusion')"
-          [[ "$conclusion" == success ]] && echo eligible=true >>"$GITHUB_OUTPUT" || echo "SKIP auto-revert: parent Player Hygiene result is ${conclusion:-missing}"
-      - if: steps.parent.outputs.eligible == 'true'
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          gh auth setup-git
-          ./apps/player/scripts/auto-revert-main.sh origin main "$GITHUB_SHA"
+      - env:
+          RESULTS: ${{ toJSON(needs) }}
+        run: jq -e 'all(.[]; .result == "success")' <<<"$RESULTS"

@@ -11,7 +11,7 @@ Read the [Individual Contributor License Agreement](apps/player/CLA.md) and acce
 Clone the complete monorepo, including `packages/`; copying an app directory alone does not provide its shared Go dependencies or container build context.
 
 ```sh
-git clone https://github.com/MikeO7/kinosail.git
+git clone https://github.com/Kinosail/kinosail.git
 cd kinosail
 make hooks
 ```

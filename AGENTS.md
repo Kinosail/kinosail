@@ -1,10 +1,9 @@
 # Kinosail monorepo agent policy
 
-## Gate disable override
+## GitHub Actions verification
 
-- While `.gates-disabled` exists, quality gates are disabled except the explicitly enabled 300-line source-file cap (`make max-loc`, including commit and push hooks). Existing oversized files have frozen allowances in `scripts/tooling/check-file-loc.py`; remove each allowance as its refactor lands. Use `scripts/quality/check-loc.sh --strict` to list remaining debt. This overrides verification requirements below and in app guidance.
-- Do not run the disabled suites or remove the marker unless the user explicitly enables gates. There is no expiry. Preserve their implementations and thresholds.
-
+- All quality and security gates are enabled on GitHub-hosted runners. Do not add `.gates-disabled` or weaken thresholds to obtain a passing run.
+- Local hooks enforce the source-file cap and worktree ownership; GitHub Actions runs the full suites. Run focused checks locally when changing their implementation.
 
 ## Scope and ownership
 
@@ -47,7 +46,7 @@
 - Unless the user requests read-only work or says not to publish, complete implementation by committing and pushing to `origin/main` without force.
 - Fetch and reconcile current `origin/main`, rerun checks affected by reconciliation, and retry ordinary push races.
 - Prove the task commit is included in remote main with a fetched ancestry check. `git ls-remote` alone proves only the ref value.
-- GitHub Actions is disabled. Use the configured local Podman checks and deployment watcher.
+- GitHub Actions is the CI and release authority. Keep the existing local deployment watcher separate from public artifact releases.
 - Treat source tests, browser checks, remote publication, deployed revision, container health, TLS, and physical-device proof as separate facts.
 - End implementation delivery reports with `MAIN: YES — <remote main SHA>` after proof, or `MAIN: NO — <specific blocker>`.
 

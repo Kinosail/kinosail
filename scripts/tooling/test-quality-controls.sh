@@ -32,7 +32,7 @@ for hook in check-staged-quality.sh pre-commit.sh pre-push-main.sh worktree_guar
 done
 
 require_text .pre-commit-config.yaml 'entry: ./scripts/tooling/pre-commit.sh'
-require_text scripts/tooling/pre-commit.sh 'exec "$repo/scripts/tooling/check-staged-quality.sh"'
+require_text scripts/tooling/pre-commit.sh 'Full quality suites run in GitHub Actions.'
 require_text scripts/tooling/pre-commit.sh 'worktree_guard.py" heartbeat --if-present'
 require_text scripts/tooling/pre-commit.sh 'worktree_guard.py" audit'
 require_text scripts/tooling/check-staged-quality.sh 'commit-tree "$tree" -p "$parent"'

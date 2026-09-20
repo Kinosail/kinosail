@@ -10,7 +10,7 @@ cp "$source_root/compose.release.yaml" "$source_root/compose.config.yaml" "$sour
 grep -Fq "\${KINOSAIL_BIND:-127.0.0.1}" "$fixture/app/compose.release.yaml"
 grep -Fq "name: \"\${KINOSAIL_PROJECT_NAME:-kinosail}\"" "$fixture/app/compose.release.yaml"
 # shellcheck disable=SC2016 # The literal Compose interpolation is the assertion target.
-grep -Fq 'image: "${KINOSAIL_IMAGE:-ghcr.io/mikeo7/kinosail-player:latest}"' "$fixture/app/compose.release.yaml"
+grep -Fq 'image: "${KINOSAIL_IMAGE:-ghcr.io/kinosail/kinosail-player:latest}"' "$fixture/app/compose.release.yaml"
 grep -Fq "KINOSAIL_AUTH_URL: \"\${KINOSAIL_AUTH_URL:-}\"" "$fixture/app/compose.release.yaml"
 grep -Fq "KINOSAIL_TLS_ENABLED: \"\${KINOSAIL_TLS_ENABLED:-}\"" "$fixture/app/compose.release.yaml"
 grep -Fq "KINOSAIL_TLS_HOSTS: \"\${KINOSAIL_TLS_HOSTS:-}\"" "$fixture/app/compose.release.yaml"
@@ -30,8 +30,8 @@ printf 'gpu=%s groups=%s,%s %s\n' "${KINOSAIL_GPU_DEVICE:-}" "${KINOSAIL_GPU_GRO
 [[ "${KINOSAIL_IMAGE:-}" != "unverified-image" ]] || { echo 'unverified inherited image reached Compose' >&2; exit 91; }
 case "$*" in
   *"compose version"*) echo "test compose" ;;
-  *"config --images"*) echo "ghcr.io/mikeo7/kinosail-player:latest" ;;
-  *"image inspect"*) echo "ghcr.io/mikeo7/kinosail-player@sha256:${KINOSAIL_INSTALL_TEST_DIGEST:-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa}" ;;
+  *"config --images"*) echo "ghcr.io/kinosail/kinosail-player:latest" ;;
+  *"image inspect"*) echo "ghcr.io/kinosail/kinosail-player@sha256:${KINOSAIL_INSTALL_TEST_DIGEST:-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa}" ;;
   *"ps --status running --quiet kinosail"*) [[ -f "$KINOSAIL_INSTALL_TEST_STATE" ]] && echo container || true ;;
   *"run --rm --no-deps -T kinosail backup verify"*)
     [[ -z "${KINOSAIL_INSTALL_TEST_FAIL_VERIFY:-}" ]] || exit 1
@@ -226,7 +226,7 @@ PATH="$fixture/bin:$PATH" "$fixture/app/scripts/uninstall.sh" >/dev/null
 grep -q '^KINOSAIL_BIND=0.0.0.0$' "$fixture/app/.env"
 grep -Fq 'KINOSAIL_TLS_HOSTS=["192.0.2.55"]' "$fixture/app/.env"
 grep -q '^KINOSAIL_AUTH_URL=https://192.0.2.55:9080$' "$fixture/app/.env"
-grep -q '^KINOSAIL_IMAGE=ghcr.io/mikeo7/kinosail-player@sha256:a\{64\}$' "$fixture/app/.env"
+grep -q '^KINOSAIL_IMAGE=ghcr.io/kinosail/kinosail-player@sha256:a\{64\}$' "$fixture/app/.env"
 grep -Fq 'cosign verify --certificate-identity-regexp ^https://github\.com/MikeO7/kinosail/\.github/workflows/player-release\.yml@refs/tags/player-v(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$ --certificate-oidc-issuer https://token.actions.githubusercontent.com' "$fixture/compose.log"
 grep -q 'exec -T kinosail kinosail healthcheck' "$fixture/compose.log"
 grep -q 'run --rm --no-deps kinosail backup' "$fixture/compose.log"
@@ -245,7 +245,7 @@ sed -i.bak '/^KINOSAIL_VERSION=/d' "$fixture/app/.env"
 rm "$fixture/app/.env.bak"
 printf 'KINOSAIL_VERSION=1.2.3\n' >>"$fixture/app/.env"
 PATH="$fixture/bin:$PATH" "$fixture/app/scripts/install.sh" "$fixture/media" 9080 >/dev/null
-grep -Fq 'cosign verify --certificate-identity https://github.com/MikeO7/kinosail/.github/workflows/player-release.yml@refs/tags/player-v1.2.3 --certificate-oidc-issuer https://token.actions.githubusercontent.com' "$fixture/compose.log"
+grep -Fq 'cosign verify --certificate-identity https://github.com/Kinosail/kinosail/.github/workflows/player-release.yml@refs/tags/player-v1.2.3 --certificate-oidc-issuer https://token.actions.githubusercontent.com' "$fixture/compose.log"
 sed -i.bak '/^KINOSAIL_VERSION=/d' "$fixture/app/.env"
 rm "$fixture/app/.env.bak"
 
@@ -257,7 +257,7 @@ if PATH="$fixture/bin:$PATH" "$fixture/app/scripts/install.sh" "$fixture/media" 
 	echo "unhealthy update must fail after rollback" >&2
 	exit 1
 fi
-grep -q '^KINOSAIL_IMAGE=ghcr.io/mikeo7/kinosail-player@sha256:a\{64\}$' "$fixture/app/.env"
+grep -q '^KINOSAIL_IMAGE=ghcr.io/kinosail/kinosail-player@sha256:a\{64\}$' "$fixture/app/.env"
 [[ -e "$fixture/running" ]]
 [[ "$(cat "$fixture/private-state")" == original ]]
 grep -q 'stop kinosail' "$fixture/compose.log"

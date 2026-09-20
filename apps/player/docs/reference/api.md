@@ -18,7 +18,7 @@ GET /api/v1
 GET /api/v1/openapi.json
 ```
 
-`/api/v1` reports the API name, version, and OpenAPI URL. `/api/v1/openapi.json` returns an OpenAPI 3.1 document with the title `Kinosail Server API`, document version `1.0.0`, and the versioned `/api/v1` paths. Treat the live document as the contract for request and response details. The checked-in source copy is [`internal/server/api_openapi.json`](https://github.com/MikeO7/kinosail/blob/main/apps/player/internal/server/api_openapi.json).
+`/api/v1` reports the API name, version, and OpenAPI URL. `/api/v1/openapi.json` returns an OpenAPI 3.1 document with the title `Kinosail Server API`, document version `1.0.0`, and the versioned `/api/v1` paths. Treat the live document as the contract for request and response details. The checked-in source copy is [`internal/server/api_openapi.json`](https://github.com/Kinosail/kinosail/blob/main/apps/player/internal/server/api_openapi.json).
 
 The Server checks that every registered versioned route appears in the OpenAPI document. This keeps the document and the implementation aligned.
 

@@ -10,7 +10,7 @@ last_reviewed: 2026-09-15
 Install Git and a working Docker Compose or Podman Compose engine. Start its Linux VM on macOS. Clone the complete monorepo; the image needs shared `packages/` outside this app directory.
 
 ```sh
-git clone https://github.com/MikeO7/kinosail.git
+git clone https://github.com/Kinosail/kinosail.git
 cd kinosail/apps/subtitles
 cp .env.example .env
 chmod 600 .env

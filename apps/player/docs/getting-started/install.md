@@ -8,7 +8,7 @@ section: Start here
 
 As of September 15, 2026, this monorepo has no published GitHub releases. Use [source installation]({{ '/getting-started/' | relative_url }}) for the current checkout. The steps below apply when a signed Player release is available.
 
-Download the matching Player installer from [Releases](https://github.com/MikeO7/kinosail/releases), verify the supplied checksum and signature, extract it, and run commands from that bundle directory. Run the release installer from the Kinosail release bundle. It verifies the image, creates protected recovery material, starts one Server container, and binds it to localhost until you create the first Owner.
+Download the matching Player installer from [Releases](https://github.com/Kinosail/kinosail/releases), verify the supplied checksum and signature, extract it, and run commands from that bundle directory. Run the release installer from the Kinosail release bundle. It verifies the image, creates protected recovery material, starts one Server container, and binds it to localhost until you create the first Owner.
 
 ## Prerequisites
 
@@ -35,7 +35,7 @@ The second argument is optional. The default port is `38127`. The path must be a
 
 The installer selects `podman compose` when available. It falls back to `docker compose`. It creates `secrets/backup_key` with mode `600` when the key does not exist. Keep this key with your encrypted backups.
 
-The installer pulls `ghcr.io/mikeo7/kinosail-player:<version>`, verifies its keyless signature, pins the resolved SHA-256 digest in `.env`, and starts the service. It waits for the `kinosail healthcheck` command to pass.
+The installer pulls `ghcr.io/kinosail/kinosail-player:<version>`, verifies its keyless signature, pins the resolved SHA-256 digest in `.env`, and starts the service. It waits for the `kinosail healthcheck` command to pass.
 
 
 ## Open the Server

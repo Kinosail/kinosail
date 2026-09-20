@@ -20,5 +20,5 @@
 
 ## Contributor agreement
 
-- [ ] I have read and agree to the [Kinosail Individual Contributor License Agreement](https://github.com/MikeO7/kinosail/blob/main/apps/player/CLA.md).
-- [ ] I am entitled to submit this contribution, including any required employer authorization or [Corporate CLA](https://github.com/MikeO7/kinosail/blob/main/apps/player/CCLA.md).
+- [ ] I have read and agree to the [Kinosail Individual Contributor License Agreement](https://github.com/Kinosail/kinosail/blob/main/apps/player/CLA.md).
+- [ ] I am entitled to submit this contribution, including any required employer authorization or [Corporate CLA](https://github.com/Kinosail/kinosail/blob/main/apps/player/CCLA.md).

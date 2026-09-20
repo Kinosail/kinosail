@@ -18,6 +18,7 @@ packages-check:
 	@$(MAKE) -C packages check
 
 tooling-check:
+	@python3 scripts/ci/test_workflows.py
 	@./scripts/tooling/test-source-tools.sh
 	@./scripts/tooling/test-scan-deployment-image.sh
 	@python3 scripts/quality/test_dependency_integrity.py

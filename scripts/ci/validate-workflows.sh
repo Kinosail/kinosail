@@ -61,17 +61,8 @@ for app in "${apps[@]}"; do
   workflow="$workflows/$app-hygiene.yml"
   [[ -f "$workflow" ]] || fail "missing $app-hygiene.yml"
 
-  require_twice "$workflow" "      - \"apps/$app/**\""
-  require_twice "$workflow" '      - "scripts/ci/**"'
-  require_twice "$workflow" '      - "scripts/tooling/**"'
-  require_twice "$workflow" "      - \".github/workflows/$app-release.yml\""
   require_text "$workflow" "working-directory: apps/$app"
   require_text "$workflow" "go-version-file: apps/$app/go.mod"
-  require_twice "$workflow" '      - "packages/**"'
-  require_twice "$workflow" '      - "go.work"'
-  require_twice "$workflow" '      - "go.work.sum"'
-  require_twice "$workflow" '      - ".containerignore"'
-  require_twice "$workflow" '      - ".dockerignore"'
   require_text "$workflow" 'context: .'
   require_text "$workflow" "file: apps/$app/Containerfile"
   require_text "$workflow" "tags: localhost/kinosail-$app:\${{ github.sha }}"
@@ -107,8 +98,6 @@ for app in "${apps[@]}"; do
       require_text "$workflow" "          KINOSAIL_TEST_IMAGE: localhost/kinosail-$app:\${{ github.sha }}"
       require_text "$workflow" '      - run: make installer-test native-build local-pipeline-test'
       require_at_least "$workflow" 3 'sudo apt-get install -y libarchive-tools'
-      require_text "$workflow" "--workflow $app-hygiene.yml"
-      require_text "$workflow" "./apps/$app/scripts/auto-revert-main.sh origin main \"\$GITHUB_SHA\""
       [[ ! -e "$repo/apps/$app/.github/dependabot.yml" ]] ||
         fail "apps/$app contains an inert nested Dependabot configuration"
       [[ ! -e "$repo/apps/$app/.github/pull_request_template.md" ]] ||
@@ -116,10 +105,8 @@ for app in "${apps[@]}"; do
       if [[ "$app" == player ]]; then
         require_text "$workflow" '  client:'
         require_text "$workflow" '      - run: make client-check'
-        require_text "$workflow" '    needs: [static, race, security, tooling, client, system]'
         title=Player
       else
-        require_text "$workflow" '    needs: [static, race, security, tooling, system]'
         title=Subtitles
       fi
       ;;
@@ -133,10 +120,10 @@ for app in "${apps[@]}"; do
   require_text "$release" "--workflow $app-hygiene.yml"
   require_text "$release" 'context: .'
   require_text "$release" "file: apps/$app/Containerfile"
-  require_text "$release" "images: ghcr.io/mikeo7/kinosail-$app"
-  require_text "$release" "image-ref: ghcr.io/mikeo7/kinosail-$app@\${{ steps.build.outputs.digest }}"
-  require_text "$release" "subject-name: ghcr.io/mikeo7/kinosail-$app"
-  require_text "$release" "cosign sign --yes \"ghcr.io/mikeo7/kinosail-$app@\$IMAGE_DIGEST\""
+  require_text "$release" "images: ghcr.io/kinosail/kinosail-$app"
+  require_text "$release" "image-ref: ghcr.io/kinosail/kinosail-$app@\${{ steps.build.outputs.digest }}"
+  require_text "$release" "subject-name: ghcr.io/kinosail/kinosail-$app"
+  require_text "$release" "cosign sign --yes \"ghcr.io/kinosail/kinosail-$app@\$IMAGE_DIGEST\""
   require_text "$release" "cache-from: type=gha,scope=$app-release-container"
   require_text "$release" "cache-to: type=gha,mode=max,scope=$app-release-container"
   require_text "$release" '          sbom: true'
@@ -149,11 +136,11 @@ for app in "${apps[@]}"; do
   if grep -Fq 'tags: ["v*"]' "$release"; then
     fail "$app-release.yml accepts an unscoped release tag"
   fi
-  if grep -Eq 'ghcr\.io/mikeo7/kinosail([:@[:space:]]|$)' "$release"; then
+  if grep -Eq 'ghcr\.io/kinosail/kinosail([:@[:space:]]|$)' "$release"; then
     fail "$app-release.yml uses the ambiguous legacy Player image"
   fi
 
-  image="ghcr.io/mikeo7/kinosail-$app"
+  image="ghcr.io/kinosail/kinosail-$app"
   for existing in "${release_images[@]:-}"; do
     [[ "$image" != "$existing" ]] || fail "$app-release.yml reuses image $image"
   done

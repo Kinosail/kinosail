@@ -13,7 +13,7 @@ import (
 
 const (
 	defaultSupporterActivationURL = "https://kinosail-cloud.workers.dev/v1/supporters/activate"
-	defaultSupportURL             = "https://github.com/MikeO7/kinosail/tree/main/apps/subtitles"
+	defaultSupportURL             = "https://github.com/Kinosail/kinosail/tree/main/apps/subtitles"
 	supporterAppID                = "kino-subtitles"
 	supporterAppName              = "Kinosail Subtitles"
 	supporterAudience             = "com.kinosail.subtitles"

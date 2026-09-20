@@ -57,11 +57,11 @@ Use `kinosail.yaml` for deployment-owned values and environment variables for co
 
 ## Is Kinosail open source?
 
-Kinosail Server is source-available under the PolyForm Perimeter License 1.0.1. It is not an Open Source Initiative-approved open-source license. Read the repository's [licensing terms](https://github.com/MikeO7/kinosail/blob/main/apps/player/LICENSING.md) before redistributing, rebranding, reselling, hosting, or providing a competing product.
+Kinosail Server is source-available under the PolyForm Perimeter License 1.0.1. It is not an Open Source Initiative-approved open-source license. Read the repository's [licensing terms](https://github.com/Kinosail/kinosail/blob/main/apps/player/LICENSING.md) before redistributing, rebranding, reselling, hosting, or providing a competing product.
 
 ## How do I report a security problem?
 
-Do not publish exploit details, credentials, tokens, private paths, or media information in an issue. Use GitHub's private **Security → Advisories → Report a vulnerability** flow when available. See the [security policy](https://github.com/MikeO7/kinosail/blob/main/apps/player/SECURITY.md).
+Do not publish exploit details, credentials, tokens, private paths, or media information in an issue. Use GitHub's private **Security → Advisories → Report a vulnerability** flow when available. See the [security policy](https://github.com/Kinosail/kinosail/blob/main/apps/player/SECURITY.md).
 
 ## Where is the API contract?
 

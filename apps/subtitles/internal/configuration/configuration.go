@@ -28,7 +28,7 @@ type Spec struct {
 	Secret, Restart   bool
 }
 
-var specs = append(applicationSpecs(configurationcore.CommonApplicationFields("127.0.0.1:38128", "https://github.com/MikeO7/kinosail/tree/main/apps/subtitles")), []Spec{
+var specs = append(applicationSpecs(configurationcore.CommonApplicationFields("127.0.0.1:38128", "https://github.com/Kinosail/kinosail/tree/main/apps/subtitles")), []Spec{
 	{"binaries.tesseract", "KINOSAIL_TESSERACT", "tesseract", text, false, true},
 	{"binaries.whisper", "KINOSAIL_WHISPER", "whisper-cli", text, false, true},
 	{"subtitles.transcription_model", "KINOSAIL_TRANSCRIPTION_MODEL", "", text, false, true},

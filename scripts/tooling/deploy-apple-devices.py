@@ -14,7 +14,7 @@ import tempfile
 
 NATIVE = 'apps/player/apps/native'
 BUNDLE = 'com.kinosail.player'
-REPOSITORY = 'https://github.com/MikeO7/kinosail.git'
+REPOSITORY = 'https://github.com/Kinosail/kinosail.git'
 
 
 def identifier(value):

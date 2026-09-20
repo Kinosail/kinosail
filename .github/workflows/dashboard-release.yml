@@ -4,7 +4,8 @@ on:
   push:
     tags: ["dashboard-v*"]
 
-permissions: {}
+permissions:
+  contents: read
 
 concurrency:
   group: dashboard-release-${{ github.ref }}
@@ -32,6 +33,8 @@ jobs:
         with:
           fetch-depth: 0
           persist-credentials: false
+      - name: Require enabled gates
+        run: test ! -e ../../.gates-disabled
       - id: version
         name: Validate and split Dashboard release tag
         run: |
@@ -51,7 +54,6 @@ jobs:
           printf 'version=%s\ncontainer_version=%s\nmajor_minor=%s.%s\n' \
             "$version" "$container_version" "$major" "$minor" >>"$GITHUB_OUTPUT"
       - name: Require successful Dashboard Hygiene run
-        if: hashFiles('.gates-disabled') == ''
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
@@ -61,6 +63,14 @@ jobs:
             printf 'tagged commit %s does not have a successful Dashboard Hygiene run\n' "$commit" >&2
             exit 1
           fi
+      - name: Require successful security checks on main
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          commit="$(git rev-parse "$GITHUB_SHA^{commit}")"
+          git merge-base --is-ancestor "$commit" origin/main
+          conclusion="$(gh run list --repo "$GITHUB_REPOSITORY" --workflow security.yml --commit "$commit" --event push --limit 1 --json conclusion --jq '.[0].conclusion')"
+          [[ "$conclusion" == success ]]
       - uses: docker/setup-qemu-action@1f40c72289eff860ee54a304f1438e3cff362e0a # v4
         with:
           image: docker.io/tonistiigi/binfmt@sha256:400a4873b838d1b89194d982c45e5fb3cda4593fbfd7e08a02e76b03b21166f0
@@ -73,7 +83,7 @@ jobs:
       - id: metadata
         uses: docker/metadata-action@dc802804100637a589fabce1cb79ff13a1411302 # v6
         with:
-          images: ghcr.io/mikeo7/kinosail-dashboard
+          images: ghcr.io/kinosail/kinosail-dashboard
           tags: |
             type=raw,value=${{ steps.version.outputs.container_version }}
             type=raw,value=${{ steps.version.outputs.major_minor }}
@@ -85,7 +95,7 @@ jobs:
           file: apps/dashboard/Containerfile
           platforms: linux/amd64,linux/arm64
           push: true
-          tags: ${{ steps.metadata.outputs.tags }}
+          tags: ghcr.io/kinosail/kinosail-dashboard:candidate-${{ github.sha }}
           labels: ${{ steps.metadata.outputs.labels }}
           build-args: |
             VERSION=${{ steps.version.outputs.version }}
@@ -94,11 +104,10 @@ jobs:
           cache-to: type=gha,mode=max,scope=dashboard-release-container
           sbom: true
           provenance: mode=max
-      - name: Scan published Dashboard image
-        if: hashFiles('.gates-disabled') == ''
+      - name: Scan candidate Dashboard image
         uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
         with:
-          image-ref: ghcr.io/mikeo7/kinosail-dashboard@${{ steps.build.outputs.digest }}
+          image-ref: ghcr.io/kinosail/kinosail-dashboard@${{ steps.build.outputs.digest }}
           severity: CRITICAL,HIGH
           ignore-unfixed: true
           exit-code: "1"
@@ -107,14 +116,24 @@ jobs:
       - name: Sign Dashboard image digest
         env:
           IMAGE_DIGEST: ${{ steps.build.outputs.digest }}
-        run: cosign sign --yes "ghcr.io/mikeo7/kinosail-dashboard@$IMAGE_DIGEST"
+        run: cosign sign --yes "ghcr.io/kinosail/kinosail-dashboard@$IMAGE_DIGEST"
       - name: Attest Dashboard image provenance
         if: ${{ !github.event.repository.private }}
         uses: actions/attest@1e69f48acb82d1966a394da916b4c1698aa569d6 # v4
         with:
-          subject-name: ghcr.io/mikeo7/kinosail-dashboard
+          subject-name: ghcr.io/kinosail/kinosail-dashboard
           subject-digest: ${{ steps.build.outputs.digest }}
           push-to-registry: true
+      - name: Promote verified image to release tags
+        env:
+          IMAGE_DIGEST: ${{ steps.build.outputs.digest }}
+          IMAGE_TAGS: ${{ steps.metadata.outputs.tags }}
+        run: |
+          args=()
+          while IFS= read -r tag; do
+            [[ -z "$tag" ]] || args+=(--tag "$tag")
+          done <<<"$IMAGE_TAGS"
+          docker buildx imagetools create "${args[@]}" "ghcr.io/kinosail/kinosail-dashboard@$IMAGE_DIGEST"
       - name: Publish Dashboard release
         env:
           APP_VERSION: ${{ steps.version.outputs.version }}

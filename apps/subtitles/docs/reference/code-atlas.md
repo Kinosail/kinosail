@@ -13,6 +13,6 @@ The Code Atlas is a standalone documentation tool for maintainers and contributo
 
 Use the Map view to see first-party package dependencies. Use Table to compare package size and test coverage. Use Journey to follow guided questions through package boundaries, files, and source symbols.
 
-The atlas is generated from the repository's Go package graph and production source files. Its source links point to the snapshot revision used to build the page. Refresh instructions and the reusable generation prompt live in the repository's [`engineering/architecture-explorer/`](https://github.com/MikeO7/kinosail/tree/main/apps/subtitles/engineering/architecture-explorer) directory.
+The atlas is generated from the repository's Go package graph and production source files. Its source links point to the snapshot revision used to build the page. Refresh instructions and the reusable generation prompt live in the repository's [`engineering/architecture-explorer/`](https://github.com/Kinosail/kinosail/tree/main/apps/subtitles/engineering/architecture-explorer) directory.
 
 This page provides orientation and context. The atlas itself is a static HTML document so its graph interactions remain independent from the documentation site's Jekyll layout.

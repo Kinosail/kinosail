@@ -9,7 +9,7 @@ Start with the guide for the app you are using:
 
 ## Report a bug
 
-Search [existing issues](https://github.com/MikeO7/kinosail/issues) before opening a report. Include the app, version or commit, host platform, installation method, browser/client version, expected behavior, observed behavior, and minimal reproduction steps.
+Search [existing issues](https://github.com/Kinosail/kinosail/issues) before opening a report. Include the app, version or commit, host platform, installation method, browser/client version, expected behavior, observed behavior, and minimal reproduction steps.
 
 From the app directory, `docker compose ps` and `docker compose logs --tail 100` can help identify a startup problem. Use `podman compose` if that runs your installation. Inspect and redact the output before sharing it. Never attach `.env`, secret files, account databases, backup archives, private device pairing files, or media URLs containing credentials.
 

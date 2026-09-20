@@ -32,7 +32,7 @@ These commands use Docker Compose. Replace `docker compose` with `podman compose
 ### 1. Get the source
 
 ```sh
-git clone https://github.com/MikeO7/kinosail.git
+git clone https://github.com/Kinosail/kinosail.git
 cd kinosail
 ```
 
@@ -112,7 +112,7 @@ Use [Player device setup](apps/player/docs/getting-started/connect-devices.md) f
 
 As of September 15, 2026, this monorepo has no published GitHub releases. The signed-image installer and release workflows are retained, but GitHub Actions is disabled. A development image or a successful source build does not establish release readiness.
 
-When signed releases are available, use the matching app bundle from [Releases](https://github.com/MikeO7/kinosail/releases), verify its supplied checksum and signature, and follow [Player installation](apps/player/docs/getting-started/install.md) or the app's instructions. The installer requires `cosign` and verifies the image identity before pinning its digest. Do not bypass that check to install a development image.
+When signed releases are available, use the matching app bundle from [Releases](https://github.com/Kinosail/kinosail/releases), verify its supplied checksum and signature, and follow [Player installation](apps/player/docs/getting-started/install.md) or the app's instructions. The installer requires `cosign` and verifies the image identity before pinning its digest. Do not bypass that check to install a development image.
 
 ## Documentation
 

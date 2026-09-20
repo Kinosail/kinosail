@@ -49,7 +49,7 @@ func TestConcurrentChecksSerializeReleaseAccessAndKeepSnapshotsValid(t *testing.
 
 func assertPlayerPlan(t *testing.T, got Plan, err error, requestID string) {
 	t.Helper()
-	manifest := "https://github.com/MikeO7/kinosail/releases/download/player-v1.2.4/kinosail-release.json"
+	manifest := "https://github.com/Kinosail/kinosail/releases/download/player-v1.2.4/kinosail-release.json"
 	want := Plan{
 		SchemaVersion: PlanSchemaVersion, StateSchema: 1, ConfigurationSchema: 1,
 		CurrentVersion: "v1.2.3", Automatic: true, RequestID: requestID,

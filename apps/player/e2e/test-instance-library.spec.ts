@@ -42,7 +42,7 @@ test("public test instance exercises every media section and local TMDB metadata
 	const subtitles = page.locator('form[action="/settings/subtitles"]').locator("..");
 	await expect(subtitles).toContainText("Stored here. Streamed directly.");
 	await expect(subtitles).toContainText("Find local subtitle files with");
-	await expect(subtitles.getByRole("link", { name: "Kino Subtitles on GitHub" })).toHaveAttribute("href", "https://github.com/MikeO7/kinosail/tree/main/apps/subtitles");
+	await expect(subtitles.getByRole("link", { name: "Kino Subtitles on GitHub" })).toHaveAttribute("href", "https://github.com/Kinosail/kinosail/tree/main/apps/subtitles");
 	await expect(subtitles).not.toContainText("SubDL");
 	await expect(subtitles.getByLabel("Preferred language")).toHaveValue("en");
 

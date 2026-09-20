@@ -12,8 +12,8 @@ import (
 )
 
 const (
-	githubReleasesAPIURL = "https://api.github.com/repos/MikeO7/kinosail/releases?per_page=100"
-	GitHubReleasesURL    = "https://github.com/MikeO7/kinosail/releases"
+	githubReleasesAPIURL = "https://api.github.com/repos/Kinosail/kinosail/releases?per_page=100"
+	GitHubReleasesURL    = "https://github.com/Kinosail/kinosail/releases"
 	githubAPIVersion     = "2026-03-10"
 	maxReleaseResponse   = 1 << 20
 	maxReleaseCount      = 100

@@ -1,3 +1,0 @@
-Repository quality gates are disabled except the explicitly enabled 300-line source-file cap.
-No expiry and no automatic re-enable. Remove this file only on explicit user request.
-Gate implementations and thresholds are preserved.

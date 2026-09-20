@@ -30,7 +30,7 @@ Follow [Connect phones, TVs, and Jellyfin apps]({{ '/getting-started/connect-dev
 
 ## Configure Home Assistant
 
-Home Assistant support is off by default. Enable it in the setup wizard or Owner settings. Create a ten-minute pairing code, then add the [Kinosail Home Assistant integration](https://github.com/MikeO7/kinosail-home-assistant). The integration can browse Library Content and control active Kinosail browser players. Streams travel directly from this Server.
+Home Assistant support is off by default. Enable it in the setup wizard or Owner settings. Create a ten-minute pairing code, then add the [Kinosail Home Assistant integration](https://github.com/Kinosail/kinosail-home-assistant). The integration can browse Library Content and control active Kinosail browser players. Streams travel directly from this Server.
 
 Turning the setting off hides every Home Assistant route and revokes paired connections. Deployment-managed installations can set `KINOSAIL_HOME_ASSISTANT_ENABLED`.
 

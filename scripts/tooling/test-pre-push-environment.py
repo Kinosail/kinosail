@@ -54,6 +54,7 @@ class PrePushEnvironmentTest(unittest.TestCase):
             hook = worktree / "scripts/tooling/pre-push-main.sh"
             hook.parent.mkdir(parents=True)
             shutil.copyfile(TOOLS / "pre-push-main.sh", hook)
+            shutil.copyfile(TOOLS / "check-file-loc.py", hook.with_name("check-file-loc.py"))
             hook.chmod(0o755)
             executable(hook.with_name("worktree_guard.py"), "#!/bin/sh\nexit 0\n")
             executable(worktree / "scripts/quality/check-full.sh", "#!/bin/sh\nexit 0\n")

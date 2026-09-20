@@ -2,7 +2,7 @@ name: "${KINOSAIL_PROJECT_NAME:-kinosail}"
 
 services:
   kinosail:
-    image: "${KINOSAIL_IMAGE:-ghcr.io/mikeo7/kinosail-player:latest}"
+    image: "${KINOSAIL_IMAGE:-ghcr.io/kinosail/kinosail-player:latest}"
     restart: unless-stopped
     init: true
     user: "10001:10001"

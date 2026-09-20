@@ -1,6 +1,6 @@
 # Contributing to Kinosail Subtitles
 
-Development, Git workflow, verification, and documentation rules are maintained in the [monorepo contribution guide](../../CONTRIBUTING.md). In a release bundle without the monorepo, read the [online contribution guide](https://github.com/MikeO7/kinosail/blob/main/CONTRIBUTING.md).
+Development, Git workflow, verification, and documentation rules are maintained in the [monorepo contribution guide](../../CONTRIBUTING.md). In a release bundle without the monorepo, read the [online contribution guide](https://github.com/Kinosail/kinosail/blob/main/CONTRIBUTING.md).
 
 ## Contributor agreement
 

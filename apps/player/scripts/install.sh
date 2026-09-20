@@ -200,17 +200,17 @@ if "${project[@]}" ps --status running --quiet kinosail 2>/dev/null | grep -q .;
   backup_temporary=""
   echo "Recovery backup: $root/$backup"
 fi
-image="ghcr.io/mikeo7/kinosail-player:$version"
+image="ghcr.io/kinosail/kinosail-player:$version"
 KINOSAIL_IMAGE="$image" "${project[@]}" pull
 digest="$("${compose[0]}" image inspect --format '{{index .RepoDigests 0}}' "$image")"
-if [[ ! "$digest" =~ ^ghcr\.io/mikeo7/kinosail-player@sha256:[a-f0-9]{64}$ ]]; then
+if [[ ! "$digest" =~ ^ghcr\.io/kinosail/kinosail-player@sha256:[a-f0-9]{64}$ ]]; then
   echo "pulled image did not resolve to an expected Kinosail digest" >&2
   exit 1
 fi
 if [[ "$version" == latest ]]; then
-  cosign verify --certificate-identity-regexp '^https://github\.com/MikeO7/kinosail/\.github/workflows/player-release\.yml@refs/tags/player-v(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$' --certificate-oidc-issuer https://token.actions.githubusercontent.com "$digest" >/dev/null
+  cosign verify --certificate-identity-regexp '^https://github\.com/Kinosail/kinosail/\.github/workflows/player-release\.yml@refs/tags/player-v(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$' --certificate-oidc-issuer https://token.actions.githubusercontent.com "$digest" >/dev/null
 else
-  cosign verify --certificate-identity "https://github.com/MikeO7/kinosail/.github/workflows/player-release.yml@refs/tags/player-v$version" --certificate-oidc-issuer https://token.actions.githubusercontent.com "$digest" >/dev/null
+  cosign verify --certificate-identity "https://github.com/Kinosail/kinosail/.github/workflows/player-release.yml@refs/tags/player-v$version" --certificate-oidc-issuer https://token.actions.githubusercontent.com "$digest" >/dev/null
 fi
 if [[ -f kinosail.yaml ]]; then
   KINOSAIL_IMAGE="$digest" "${project[@]}" run --rm --no-deps kinosail config validate

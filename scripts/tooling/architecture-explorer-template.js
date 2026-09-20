@@ -228,7 +228,7 @@
       }
 
       function sourceLink(path, line = 1) {
-        return `https://github.com/MikeO7/kinosail/blob/main/${path}#L${line}`;
+        return `https://github.com/Kinosail/kinosail/blob/main/${path}#L${line}`;
       }
 
       function renderSymbols(items, label, filePath) {
