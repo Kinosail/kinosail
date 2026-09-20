@@ -6,6 +6,7 @@ import (
 	"net/http/httptest"
 	"os"
 	"path/filepath"
+	"regexp"
 	"strings"
 	"testing"
 )
@@ -16,7 +17,7 @@ func (fixture LibraryAPIFixture) LibraryPaginationIsSharedByAPIAndWeb(t *testing
 	assertLibraryAPIPage(t, api)
 	web := httptest.NewRecorder()
 	handler.ServeHTTP(web, httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/?view=movies&limit=1&offset=1", nil))
-	if web.Code != http.StatusOK || strings.Count(web.Body.String(), `/item/`) != 1 || !strings.Contains(web.Body.String(), `offset=0`) || !strings.Contains(web.Body.String(), `offset=2`) || !strings.Contains(web.Body.String(), `data-library-group="movies"`) || !strings.Contains(web.Body.String(), `data-library-next`) {
+	if web.Code != http.StatusOK || len(regexp.MustCompile(`href="/(?:item|watch)/[a-f0-9]+"`).FindAllString(web.Body.String(), -1)) != 1 || !strings.Contains(web.Body.String(), `offset=0`) || !strings.Contains(web.Body.String(), `offset=2`) || !strings.Contains(web.Body.String(), `data-library-group="movies"`) || !strings.Contains(web.Body.String(), `data-library-next`) {
 		t.Fatalf("web page = %d %q", web.Code, web.Body.String())
 	}
 }
@@ -49,7 +50,7 @@ func (fixture LibraryAPIFixture) InfiniteLibraryPageReturnsOnlyTheBoundedFragmen
 	request.Header.Set("X-Kinosail-Library-Page", "1")
 	fragment := httptest.NewRecorder()
 	handler.ServeHTTP(fragment, request)
-	if fragment.Code != http.StatusOK || strings.Count(fragment.Body.String(), `/item/`) != 1 || !strings.Contains(fragment.Body.String(), `data-library-group="movies"`) || !strings.Contains(fragment.Body.String(), `data-library-next`) || strings.Contains(fragment.Body.String(), "<!doctype html>") || strings.Contains(fragment.Body.String(), "Library organization") {
+	if fragment.Code != http.StatusOK || len(regexp.MustCompile(`href="/(?:item|watch)/[a-f0-9]+"`).FindAllString(fragment.Body.String(), -1)) != 1 || !strings.Contains(fragment.Body.String(), `data-library-group="movies"`) || !strings.Contains(fragment.Body.String(), `data-library-next`) || strings.Contains(fragment.Body.String(), "<!doctype html>") || strings.Contains(fragment.Body.String(), "Library organization") {
 		t.Fatalf("infinite Library fragment = %d %q", fragment.Code, fragment.Body.String())
 	}
 	for _, value := range []string{"true", "1, 1", strings.Repeat("1", 1024)} {

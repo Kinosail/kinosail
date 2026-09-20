@@ -10,7 +10,7 @@ import (
 	"github.com/MikeO7/kinosail-subtitles/internal/configuration"
 	"github.com/MikeO7/kinosail-subtitles/internal/database"
 	"github.com/MikeO7/kinosail/packages/catalog"
-	"github.com/MikeO7/kinosail/packages/homeassistant"
+	"github.com/MikeO7/kinosail/packages/httpguard"
 	"github.com/MikeO7/kinosail/packages/library"
 	markerlogic "github.com/MikeO7/kinosail/packages/markers"
 	sharedmetadata "github.com/MikeO7/kinosail/packages/metadata"
@@ -250,14 +250,8 @@ func withDLNA(app http.Handler, appMux *http.ServeMux, auth *authentication, con
 	root := http.NewServeMux()
 	registerDLNA(root, config.Lifecycle, config.DLNAURL, settings, index)
 	root.Handle("/", app)
-	pattern := func(request *http.Request) string {
-		_, matched := root.Handler(request)
-		if matched == "/" {
-			_, matched = appMux.Handler(request)
-		}
-		return matched
-	}
-	return trustedProxy(config.ProxyToken, allowedHost(config.AuthURL, config.Configuration.Strings("tls.hosts"), observeRequests(auth.audit, pattern, tripwirePublic(auth.audit, publicRequestLimits(security(localized(jellyfinCompatibility(settings, homeassistant.Gate(settings.homeAssistant, auth.protect(withApplicationShell(settings, updates, pattern, root), pattern))))))))))
+	pattern := httpguard.NestedRoutePattern(root, appMux)
+	return protectApplicationTransport(auth, config, pattern, applicationRequests(auth, settings, updates, pattern, root))
 }
 
 func registerBrowsers(mux *http.ServeMux, index *libraryIndex, progress *progressStore, lists *listStore) {

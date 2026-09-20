@@ -2,10 +2,12 @@ package server_test
 
 import (
 	"fmt"
+	"io/fs"
 	"net/http"
 	"net/http/httptest"
 	"os"
 	"path/filepath"
+	"reflect"
 	"regexp"
 	"strings"
 	"testing"
@@ -49,6 +51,7 @@ func TestCompatiblePlaybackRejectsInvalidSeekOffsetsWithoutEncoding(t *testing.T
 	called, ffmpeg := filepath.Join(tools, "called"), filepath.Join(tools, "ffmpeg")
 	writeExecutable(t, ffmpeg, "#!/bin/sh\ntouch '"+called+"'\n"+fakePlayableHLS())
 	handler, id := firstWebItem(t, server.Config{MediaDir: media, CacheDir: cache, FFprobe: ffprobe, FFmpeg: ffmpeg})
+	before := snapshotHLSCache(t, cache)
 	for _, token := range []string{"o", "oabc", "x30000", "o1", "o30001", "o30000-o60000", "o120000", "o604800001"} {
 		response := httptest.NewRecorder()
 		path := "/hls/" + id + "/p/t-a0-s0-none-t0-b0-" + token + "/index.m3u8"
@@ -60,8 +63,32 @@ func TestCompatiblePlaybackRejectsInvalidSeekOffsetsWithoutEncoding(t *testing.T
 	if _, err := os.Stat(called); !os.IsNotExist(err) {
 		t.Fatalf("invalid seek started FFmpeg: %v", err)
 	}
-	entries, err := os.ReadDir(cache)
-	if err != nil || len(entries) != 0 {
-		t.Fatalf("invalid seek changed cache: %v, %v", entries, err)
+	if !reflect.DeepEqual(before, snapshotHLSCache(t, cache)) {
+		t.Fatal("invalid seek changed HLS cache")
 	}
+}
+
+func snapshotHLSCache(t *testing.T, root string) map[string]string {
+	t.Helper()
+	files := make(map[string]string)
+	err := filepath.WalkDir(root, func(path string, entry fs.DirEntry, err error) error {
+		if err != nil {
+			return err
+		}
+		if entry.IsDir() {
+			// Probe metadata is independent of HLS output and may be cached during validation.
+			if path == filepath.Join(root, "probes") {
+				return filepath.SkipDir
+			}
+			files[path] = "directory"
+			return nil
+		}
+		data, err := os.ReadFile(path) //nolint:gosec // G122: this walk reads only the isolated, test-owned TempDir cache.
+		files[path] = string(data)
+		return err
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	return files
 }

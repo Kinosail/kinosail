@@ -3,6 +3,7 @@ package servertest
 import (
 	"encoding/json"
 	"net/http"
+	"net/http/httptest"
 	"os"
 	"path/filepath"
 	"strings"
@@ -66,9 +67,7 @@ func (fixture ConfigurationHTTP[Source, S]) ExternalConfigurationOverridesAndLoc
 	settingsPage := APICall(t, handler, session.Token, http.MethodGet, "/settings", nil)
 	configurationResponse := APICall(t, handler, session.Token, http.MethodGet, "/api/v1/configuration", nil)
 	configurationPage := APICall(t, handler, session.Token, http.MethodGet, "/settings/configuration", nil)
-	if !strings.Contains(settings.Body.String(), `"name":"Environment Home"`) || !strings.Contains(settings.Body.String(), `"requireMfa":false`) || !strings.Contains(settings.Body.String(), `"jellyfinCompatibility":false`) || locked.Code != http.StatusConflict || lockedMFA.Code != http.StatusConflict || lockedJellyfin.Code != http.StatusConflict || lockedSCIM.Code != http.StatusConflict || afterRejectedChanges.Code != http.StatusOK || !strings.Contains(afterRejectedChanges.Body.String(), `"requireMfa":false`) || !strings.Contains(afterRejectedChanges.Body.String(), `"jellyfinCompatibility":false`) {
-		t.Fatalf("settings=%d %q locked=%d %q MFA=%d Jellyfin=%d SCIM=%d after=%d %q", settings.Code, settings.Body.String(), locked.Code, locked.Body.String(), lockedMFA.Code, lockedJellyfin.Code, lockedSCIM.Code, afterRejectedChanges.Code, afterRejectedChanges.Body.String())
-	}
+	assertExternalSettingsLocked(t, settings, locked, lockedMFA, lockedJellyfin, lockedSCIM, afterRejectedChanges)
 	page := settingsPage.Body.String()
 	for _, expected := range []string{
 		`Configured via Docker: <code>KINOSAIL_REQUIRE_MFA</code>.`, `Configured via Docker: <code>KINOSAIL_SERVER_NAME</code>.`,
@@ -152,23 +151,38 @@ func (fixture ConfigurationHTTP[Source, S]) OwnerCanConfigureOIDCSetThroughAPIAn
 	if strings.Contains(body, secret) || strings.Contains(body, `id="integrations.oidc.issuer"`) {
 		t.Fatalf("OIDC configuration leaked a secret or rendered individual fields: %q", body)
 	}
+	fixture.assertOIDCWebChanges(t, handler, owner, directory, issuer, clientID, secret, redirectURL)
+}
+
+func (fixture ConfigurationHTTP[Source, S]) assertOIDCWebChanges(t *testing.T, handler http.Handler, owner *http.Cookie, directory, issuer, clientID, secret, redirectURL string) {
+	t.Helper()
 	newIssuer, newClientID := "https://login.example/application/o/kinosail", "kinosail-web"
 	web := WebFormCall(t, handler, owner.Value, "/settings/configuration", map[string][]string{"key": {"integrations.oidc"}, "issuer": {newIssuer}, "clientId": {newClientID}, "clientSecret": {""}, "redirectUrl": {redirectURL}, "identityClaim": {"sub"}})
-	loaded, loadErr = fixture.Load(directory, "", func(string) (string, bool) { return "", false })
+	loaded, loadErr := fixture.Load(directory, "", func(string) (string, bool) { return "", false })
 	if web.Code != http.StatusSeeOther || loadErr != nil || loaded.String("integrations.oidc.issuer") != newIssuer || loaded.String("integrations.oidc.client_id") != newClientID || loaded.String("integrations.oidc.client_secret") != secret || loaded.String("integrations.oidc.identity_claim") != "sub" {
 		t.Fatalf("web=%d issuer=%q client=%q secret=%q err=%v", web.Code, loaded.String("integrations.oidc.issuer"), loaded.String("integrations.oidc.client_id"), loaded.String("integrations.oidc.client_secret"), loadErr)
 	}
+	fixture.assertOIDCInvalidChanges(t, handler, owner, directory, issuer, clientID, secret, redirectURL, newIssuer)
+	fixture.assertOIDCRemoved(t, handler, owner, directory)
+}
+
+func (fixture ConfigurationHTTP[Source, S]) assertOIDCInvalidChanges(t *testing.T, handler http.Handler, owner *http.Cookie, directory, issuer, clientID, secret, redirectURL, newIssuer string) {
+	t.Helper()
 	insecure := WebFormCall(t, handler, owner.Value, "/settings/configuration", map[string][]string{"key": {"integrations.oidc"}, "issuer": {"http://identity.example"}, "clientId": {clientID}, "clientSecret": {secret}, "redirectUrl": {redirectURL}, "identityClaim": {"sub"}})
 	unknown := WebFormCall(t, handler, owner.Value, "/settings/configuration", map[string][]string{"key": {"integrations.oidc"}, "issuer": {issuer}, "clientId": {clientID}, "clientSecret": {secret}, "redirectUrl": {redirectURL}, "identityClaim": {"sub"}, "unknown": {"true"}})
 	invalidClaim := APICall(t, handler, owner.Value, http.MethodPut, "/api/v1/configuration/integrations.oidc", map[string]string{"issuer": issuer, "clientId": clientID, "clientSecret": secret, "redirectUrl": redirectURL, "identityClaim": "object id"})
 	oversizedClaim := WebFormCall(t, handler, owner.Value, "/settings/configuration", map[string][]string{"key": {"integrations.oidc"}, "issuer": {issuer}, "clientId": {clientID}, "clientSecret": {secret}, "redirectUrl": {redirectURL}, "identityClaim": {strings.Repeat("x", 257)}})
 	individual := APICall(t, handler, owner.Value, http.MethodPut, "/api/v1/configuration/integrations.oidc.issuer", map[string]string{"value": issuer})
-	loaded, loadErr = fixture.Load(directory, "", func(string) (string, bool) { return "", false })
+	loaded, loadErr := fixture.Load(directory, "", func(string) (string, bool) { return "", false })
 	if insecure.Code != http.StatusConflict || unknown.Code != http.StatusBadRequest || invalidClaim.Code != http.StatusConflict || oversizedClaim.Code != http.StatusBadRequest || individual.Code != http.StatusConflict || loadErr != nil || loaded.String("integrations.oidc.issuer") != newIssuer || loaded.String("integrations.oidc.client_secret") != secret || loaded.String("integrations.oidc.identity_claim") != "sub" {
 		t.Fatalf("invalid OIDC inputs insecure=%d unknown=%d claim=%d oversized=%d individual=%d issuer=%q secret=%q err=%v", insecure.Code, unknown.Code, invalidClaim.Code, oversizedClaim.Code, individual.Code, loaded.String("integrations.oidc.issuer"), loaded.String("integrations.oidc.client_secret"), loadErr)
 	}
+}
+
+func (fixture ConfigurationHTTP[Source, S]) assertOIDCRemoved(t *testing.T, handler http.Handler, owner *http.Cookie, directory string) {
+	t.Helper()
 	removed := APICall(t, handler, owner.Value, http.MethodDelete, "/api/v1/configuration/integrations.oidc", nil)
-	loaded, loadErr = fixture.Load(directory, "", func(string) (string, bool) { return "", false })
+	loaded, loadErr := fixture.Load(directory, "", func(string) (string, bool) { return "", false })
 	if removed.Code != http.StatusAccepted || loadErr != nil || loaded.String("integrations.oidc.issuer") != "" || loaded.String("integrations.oidc.client_secret") != "" {
 		t.Fatalf("removed=%d issuer=%q secret=%q err=%v", removed.Code, loaded.String("integrations.oidc.issuer"), loaded.String("integrations.oidc.client_secret"), loadErr)
 	}
@@ -258,7 +272,16 @@ func (fixture ConfigurationHTTP[Source, S]) OwnerCanDisableDefaultTLSSettingThro
 			t.Errorf("configuration page missing %q", fragment)
 		}
 	}
-	if api.Code != http.StatusOK || !tlsDefault || web.Code != http.StatusOK || !strings.Contains(page, `<h2>HTTPS enabled</h2>`) || !strings.Contains(page, `aria-label="HTTPS enabled"`) || !strings.Contains(page, "Using the Kinosail default.") || !strings.Contains(page, "Configuration key: <code>tls.enabled</code>") || strings.Contains(page, `<h2><code>tls.enabled</code></h2>`) || strings.Contains(page, `<h2></h2>`) || saved.Code != http.StatusAccepted || loadErr != nil || reloaded.Bool("tls.enabled") || reloaded.Source("tls.enabled") != fixture.GUI {
+	if api.Code != http.StatusOK || !tlsDefault || web.Code != http.StatusOK || strings.Contains(page, `<h2><code>tls.enabled</code></h2>`) || strings.Contains(page, `<h2></h2>`) || saved.Code != http.StatusAccepted || loadErr != nil || reloaded.Bool("tls.enabled") || reloaded.Source("tls.enabled") != fixture.GUI {
 		t.Fatalf("api=%d default=%v web=%d rawHeading=%v emptyHeading=%v saved=%d TLS=%v source=%q err=%v", api.Code, tlsDefault, web.Code, strings.Contains(page, `<h2><code>tls.enabled</code></h2>`), strings.Contains(page, `<h2></h2>`), saved.Code, reloaded.Bool("tls.enabled"), reloaded.Source("tls.enabled"), loadErr)
 	}
+}
+
+func assertExternalSettingsLocked(t *testing.T, settings, locked, lockedMFA, lockedJellyfin, lockedSCIM, afterRejectedChanges *httptest.ResponseRecorder) {
+	t.Helper()
+	AssertAPIBody(t, settings, http.StatusOK, `"name":"Environment Home"`, `"requireMfa":false`, `"jellyfinCompatibility":false`)
+	for _, response := range []*httptest.ResponseRecorder{locked, lockedMFA, lockedJellyfin, lockedSCIM} {
+		AssertAPIBody(t, response, http.StatusConflict)
+	}
+	AssertAPIBody(t, afterRejectedChanges, http.StatusOK, `"requireMfa":false`, `"jellyfinCompatibility":false`)
 }

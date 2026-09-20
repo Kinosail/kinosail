@@ -186,7 +186,7 @@ func TestSubDLCandidateBoundaryBranches(t *testing.T) { //nolint:cyclop,funlen /
 	}
 	response.Results = []subDLResult{result}
 	candidates := rankSubDLCandidates(item, "en", response)
-	if len(candidates) != maximumDownloadTries || candidates[0].URL != "/one.srt" {
+	if len(candidates) != 2 || candidates[0].URL != "/one.srt" || candidates[1].URL != "/four.srt" {
 		t.Fatalf("ranked SubDL candidates = %#v", candidates)
 	}
 

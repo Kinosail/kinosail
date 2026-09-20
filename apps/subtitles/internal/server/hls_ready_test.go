@@ -94,7 +94,7 @@ func readyHLSFixture(t *testing.T) (*hlsManager, library.Item, hlsRecipe, string
 		t.Fatal(err)
 	}
 	probe := filepath.Join(t.TempDir(), "ffprobe")
-	servertest.WriteExecutable(t, probe, "#!/bin/sh\nprintf '%s' '{\"format\":{\"duration\":\"8\"}}'\n")
+	servertest.WriteExecutable(t, probe, "#!/bin/sh\nprintf '%s' '{\"streams\":[{\"codec_type\":\"video\",\"codec_name\":\"h264\"},{\"codec_type\":\"audio\",\"codec_name\":\"aac\"}],\"format\":{\"duration\":\"8\"}}'\n")
 	item, recipe := library.Item{ID: "0123456789abcdef", Path: source}, hlsRecipe{mode: "remux"}
 	key := hlsRecipeKey(item.ID, recipe)
 	directory := filepath.Join(cache, key, "360p")

@@ -8,18 +8,21 @@ import (
 func TestEveryHardwareBackendHasAnFFmpegRecipe(t *testing.T) {
 	t.Parallel()
 	tests := map[string][]string{
-		"qsv":          {"-hwaccel qsv", "scale_qsv", "-c:v h264_qsv"},
-		"cuda":         {"-hwaccel cuda", "scale_cuda", "-c:v h264_nvenc"},
-		"vaapi":        {"-hwaccel vaapi", "scale_vaapi", "-c:v h264_vaapi"},
-		"rkmpp":        {"-init_hw_device rkmpp=rk", "-hwaccel rkmpp", "-hwaccel_output_format drm_prime", "scale_rkrga", "-c:v h264_rkmpp", "-rc_mode CQP", "-qp_init 22"},
+		"qsv":          {"-init_hw_device qsv=kino", "hwupload", "-c:v h264_qsv"},
+		"cuda":         {"scale=w=", "-c:v h264_nvenc"},
+		"vaapi":        {"-init_hw_device vaapi=kino:", "hwupload", "-c:v h264_vaapi"},
+		"rkmpp":        {"scale=w=", "-c:v h264_rkmpp", "-rc_mode CQP", "-qp_init 22"},
 		"v4l2m2m":      {"scale=w=", "-c:v h264_v4l2m2m"},
-		"videotoolbox": {"-hwaccel videotoolbox", "-c:v h264_videotoolbox"},
-		"amf":          {"-hwaccel d3d11va", "-hwaccel_output_format d3d11", "scale_d3d11", "-c:v h264_amf"},
-		"mf":           {"-hwaccel d3d11va", "-hwaccel_output_format d3d11", "scale_d3d11", "-c:v h264_mf", "-hw_encoding 1"},
+		"videotoolbox": {"scale=w=", "-c:v h264_videotoolbox"},
+		"amf":          {"scale=w=", "-c:v h264_amf"},
+		"mf":           {"scale=w=", "-c:v h264_mf", "-hw_encoding 1"},
 	}
 	for accelerator, expected := range tests {
 		input, output := videoArguments(transcodeSettings{Accelerator: accelerator, CRF: "22", Preset: "veryfast"}, "1280")
 		arguments := strings.Join(append(input, output...), " ")
+		if strings.Contains(arguments, "-hwaccel ") {
+			t.Errorf("%s enabled unrequested hardware decoding", accelerator)
+		}
 		for _, value := range expected {
 			if !strings.Contains(arguments, value) {
 				t.Errorf("%s arguments %q lack %q", accelerator, arguments, value)

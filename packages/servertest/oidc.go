@@ -61,6 +61,12 @@ func AssertOIDCLinksProfile(t *testing.T, fixture OIDCFixture) {
 	if enabled.Code != http.StatusOK || !strings.Contains(enabled.Body.String(), `"enabled":true`) {
 		t.Fatalf("MFA setup = %d %q", enabled.Code, enabled.Body.String())
 	}
+	// Linking requires a recently authenticated session, not the enrollment session.
+	confirmedLogin := APICall(t, handler, "", http.MethodPost, "/api/v1/session", map[string]any{"name": "Owner", "password": "owner-password", "code": fixture.TOTP(t, result.TOTP.Secret, time.Now())})
+	AssertAPIBody(t, confirmedLogin, http.StatusCreated, `"mfaEnrollmentRequired":false`)
+	var authenticated struct{ Token string }
+	MustJSON(t, confirmedLogin, &authenticated)
+	result.Token = authenticated.Token
 	owner := &http.Cookie{Name: "__Host-kinosail_session", Value: result.Token, HttpOnly: true, Secure: true, SameSite: http.SameSiteStrictMode}
 	login := httptest.NewRecorder()
 	handler.ServeHTTP(login, httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/login", nil))

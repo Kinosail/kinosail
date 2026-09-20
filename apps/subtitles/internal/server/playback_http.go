@@ -66,3 +66,29 @@ func selectDefaultTextSubtitle(tracks []subtitleTrack, enabled bool) {
 		tracks[index].Default = index == selected
 	}
 }
+
+func requestedPlaybackCapabilities(request *http.Request, settings *settingsStore) (ClientCapabilities, error) {
+	hdrFormats, audioChannels, err := playback.RequestedDisplayCapabilities(request)
+	if err != nil {
+		return ClientCapabilities{}, err
+	}
+	videoCodecs, err := requestedVideoCodecs(request)
+	if err != nil {
+		return ClientCapabilities{}, err
+	}
+	audioCodecs, err := playback.RequestedAudioCodecs(request)
+	if err != nil {
+		return ClientCapabilities{}, err
+	}
+	client := browserPlaybackCapabilities(settings, videoCodecs)
+	if audioCodecs != nil {
+		client.AudioCodecs = audioCodecs
+	}
+	if hdrFormats != nil {
+		client.HDRFormats = hdrFormats
+	}
+	if audioChannels > 0 {
+		client.MaxAudioChannels = audioChannels
+	}
+	return client, nil
+}

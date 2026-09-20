@@ -1,11 +1,12 @@
 package server_test
 
 import (
+	"net/http"
+	"testing"
+
 	"github.com/MikeO7/kinosail-subtitles/internal/configuration"
 	"github.com/MikeO7/kinosail-subtitles/internal/server"
 	"github.com/MikeO7/kinosail/packages/servertest"
-	"net/http"
-	"testing"
 )
 
 func TestConfigurationHTTPContract(t *testing.T) {

@@ -72,12 +72,13 @@ func TestHLSDeliveryProjectionRejectsUnreadyAndUnsafeManifests(t *testing.T) {
 func projectionHLSFixture(t *testing.T, manifest string) (*hlsManager, library.Item, hlsRecipe, string) {
 	t.Helper()
 	manager, item, recipe, directory := readyHLSFixture(t)
+	manager.probe.inspect(t.Context(), item)
 	manager.settings = newSettingsStore(filepath.Dir(item.Path), "", "", nil)
 	options, err := manager.settings.transcodingFor(recipe.codec)
 	if err != nil {
 		t.Fatal(err)
 	}
-	identity := options.Cache + ":" + sourceVersion(item.Path) + ":" + recipe.token() + ":hls=6"
+	identity := options.Cache + ":" + sourceVersion(item.Path) + ":" + recipe.token() + ":hls=7"
 	master := "#EXTM3U\n#KINOSAIL-TRANSCODER:" + identity + "\n#EXT-X-STREAM-INF:BANDWIDTH=1\n360p/index.m3u8\n"
 	if err := writeAtomicFile(filepath.Join(filepath.Dir(directory), "index.m3u8"), []byte(master)); err != nil {
 		t.Fatal(err)

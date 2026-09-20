@@ -107,12 +107,7 @@ func serveOpenAPI(writer http.ResponseWriter, _ *http.Request) {
 
 func apiPlaybackInfo(api apiServices) http.HandlerFunc {
 	return func(writer http.ResponseWriter, request *http.Request) {
-		videoCodecs, err := requestedVideoCodecs(request)
-		if err != nil {
-			apiError(writer, err, http.StatusBadRequest)
-			return
-		}
-		audioCodecs, err := sharedplayback.RequestedAudioCodecs(request)
+		client, err := requestedPlaybackCapabilities(request, api.settings)
 		if err != nil {
 			apiError(writer, err, http.StatusBadRequest)
 			return
@@ -127,10 +122,6 @@ func apiPlaybackInfo(api apiServices) http.HandlerFunc {
 		facts := mediaFactsFor(item, media)
 		intent, policy := playbackModeIntent(api.settings), viewerPlaybackPolicy(viewer)
 		policy.AllowTranscode = policy.AllowTranscode && !intent.ForceDirect
-		client := browserPlaybackCapabilities(api.settings, videoCodecs)
-		if audioCodecs != nil {
-			client.AudioCodecs = audioCodecs
-		}
 		plan := playbackWithAutomaticSkip(facts, client, policy, intent, media.Markers, api.settings.autoSkip())
 		result := apiPlayback{Plan: plan, Summary: media.Summary, Duration: media.Duration, Start: api.progress.Get(request, item.ID).Seconds, Audio: apiAudioSources(item.ID, media.Audio, canTranscode), Chapters: media.Chapters, Markers: media.Markers, AutoSkip: automaticSkipSelection(media.Markers, api.settings.autoSkip()), Next: autoNext(request, api.settings, api.index, item), ReplayGain: apiReplayGainFor(media.ReplayGain)}
 		sharedplayback.ApplyAPIPlaybackTimeline(&result, plan, result.Start, media.Duration, media.Chapters, media.Markers, api.settings.autoSkip(), result.AutoSkip, func() string { return recipeFor(plan).token() })
