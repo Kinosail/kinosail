@@ -1,606 +1,865 @@
 // !$*UTF8*$!
 {
-	"archiveVersion" = 1;
-	"classes" = {
+	archiveVersion = 1;
+	classes = {
 	};
-	"objectVersion" = 77;
-	"objects" = {
-		A27000000000000000000001 = { isa = PBXFileSystemSynchronizedRootGroup; path = TopShelf; sourceTree = "<group>"; };
-		A27000000000000000000002 = { isa = PBXFileSystemSynchronizedRootGroup; path = TopShelfShared; sourceTree = "<group>"; };
-		A27000000000000000000003 = { isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; path = KinosailTopShelf.appex; sourceTree = BUILT_PRODUCTS_DIR; };
-		A27000000000000000000004 = { isa = PBXSourcesBuildPhase; buildActionMask = 2147483647; files = (A27000000000000000000017, A27000000000000000000018); runOnlyForDeploymentPostprocessing = 0; };
-		A27000000000000000000015 = { isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/Core/Contract.swift; sourceTree = "<group>"; };
-		A27000000000000000000016 = { isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/Core/StrictJSON.swift; sourceTree = "<group>"; };
-		A27000000000000000000017 = { isa = PBXBuildFile; fileRef = A27000000000000000000015; };
-		A27000000000000000000018 = { isa = PBXBuildFile; fileRef = A27000000000000000000016; };
-		A27000000000000000000005 = { isa = PBXFrameworksBuildPhase; buildActionMask = 2147483647; files = (); runOnlyForDeploymentPostprocessing = 0; };
-		A27000000000000000000006 = { isa = PBXResourcesBuildPhase; buildActionMask = 2147483647; files = (); runOnlyForDeploymentPostprocessing = 0; };
-		A27000000000000000000007 = { isa = XCBuildConfiguration; name = Debug; buildSettings = {
-			PRODUCT_NAME = KinosailTopShelf; PRODUCT_BUNDLE_IDENTIFIER = com.kinosail.player.topshelf;
-			SDKROOT = appletvos; SUPPORTED_PLATFORMS = "appletvos appletvsimulator"; TARGETED_DEVICE_FAMILY = 3;
-			TVOS_DEPLOYMENT_TARGET = 26.0; APPLICATION_EXTENSION_API_ONLY = YES; SKIP_INSTALL = YES;
-			CODE_SIGN_STYLE = Automatic; CODE_SIGN_ENTITLEMENTS = Configuration/tvOS.entitlements;
-			INFOPLIST_FILE = "Configuration/TopShelf-Info.plist"; GENERATE_INFOPLIST_FILE = NO;
-			MARKETING_VERSION = 0.2.0; CURRENT_PROJECT_VERSION = 1;
-			LD_RUNPATH_SEARCH_PATHS = ("$(inherited)", "@executable_path/Frameworks", "@executable_path/../../Frameworks");
-		}; };
-		A27000000000000000000008 = { isa = XCBuildConfiguration; name = Release; buildSettings = {
-			PRODUCT_NAME = KinosailTopShelf; PRODUCT_BUNDLE_IDENTIFIER = com.kinosail.player.topshelf;
-			SDKROOT = appletvos; SUPPORTED_PLATFORMS = "appletvos appletvsimulator"; TARGETED_DEVICE_FAMILY = 3;
-			TVOS_DEPLOYMENT_TARGET = 26.0; APPLICATION_EXTENSION_API_ONLY = YES; SKIP_INSTALL = YES;
-			CODE_SIGN_STYLE = Automatic; CODE_SIGN_ENTITLEMENTS = Configuration/tvOS.entitlements;
-			INFOPLIST_FILE = "Configuration/TopShelf-Info.plist"; GENERATE_INFOPLIST_FILE = NO;
-			MARKETING_VERSION = 0.2.0; CURRENT_PROJECT_VERSION = 1;
-			LD_RUNPATH_SEARCH_PATHS = ("$(inherited)", "@executable_path/Frameworks", "@executable_path/../../Frameworks");
-		}; };
-		A27000000000000000000009 = { isa = XCConfigurationList; buildConfigurations = (A27000000000000000000007, A27000000000000000000008); defaultConfigurationIsVisible = 0; defaultConfigurationName = Release; };
-		A27000000000000000000010 = { isa = PBXNativeTarget; name = KinosailTopShelf; productName = KinosailTopShelf;
-			buildConfigurationList = A27000000000000000000009; buildPhases = (A27000000000000000000004, A27000000000000000000005, A27000000000000000000006);
-			buildRules = (); dependencies = (); fileSystemSynchronizedGroups = (A27000000000000000000001, A27000000000000000000002);
-			productReference = A27000000000000000000003; productType = "com.apple.product-type.app-extension";
+	objectVersion = 71;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		850D08C0C1CA8421C2E9CFE1 /* Resources/PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = CD0ACFFF9F93025CCF567118 /* Resources/PrivacyInfo.xcprivacy */; };
+		896B626A1D3F111BAC1EDA37 /* Resources/PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = CD0ACFFF9F93025CCF567118 /* Resources/PrivacyInfo.xcprivacy */; };
+		A27000000000000000000011 /* KinosailTopShelf.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = A27000000000000000000003 /* KinosailTopShelf.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		A27000000000000000000017 /* Sources/Core/Contract.swift in Sources */ = {isa = PBXBuildFile; fileRef = A27000000000000000000015 /* Sources/Core/Contract.swift */; };
+		A27000000000000000000018 /* Sources/Core/StrictJSON.swift in Sources */ = {isa = PBXBuildFile; fileRef = A27000000000000000000016 /* Sources/Core/StrictJSON.swift */; };
+		A94CDB0D79D4D1B14CFAEA50 /* Resources/iOS.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4F62CA20BF0D6C65D69896FC /* Resources/iOS.xcassets */; };
+		C4A9DB84B2E3CEBEAE964D4D /* Resources/tvOS.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 99A64CCF75F24274F0027F7E /* Resources/tvOS.xcassets */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		0A377EB060DC08A0514F82EE /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = BD78DBAA6F46B4C8AAFFC3B5 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 7A7BC14A88F12E941988D9EC;
+			remoteInfo = "Kinosail-iOS";
 		};
-		A27000000000000000000011 = { isa = PBXBuildFile; fileRef = A27000000000000000000003; settings = { ATTRIBUTES = (RemoveHeadersOnCopy); }; };
-		A27000000000000000000012 = { isa = PBXCopyFilesBuildPhase; buildActionMask = 2147483647; dstPath = ""; dstSubfolderSpec = 13; files = (A27000000000000000000011); name = "Embed App Extensions"; runOnlyForDeploymentPostprocessing = 0; };
-		A27000000000000000000013 = { isa = PBXContainerItemProxy; containerPortal = BD78DBAA6F46B4C8AAFFC3B5; proxyType = 1; remoteGlobalIDString = A27000000000000000000010; remoteInfo = KinosailTopShelf; };
-		A27000000000000000000014 = { isa = PBXTargetDependency; target = A27000000000000000000010; targetProxy = A27000000000000000000013; };
-		4A419C504A5B6CAD4F610ED7 = {
-			"isa" = "PBXFileSystemSynchronizedRootGroup";
-			"path" = "Sources";
-			"sourceTree" = "<group>";
+		A27000000000000000000013 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = BD78DBAA6F46B4C8AAFFC3B5 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = A27000000000000000000010;
+			remoteInfo = KinosailTopShelf;
 		};
-		3EC6D11BEEF7253C16E09FDF = {
-			"isa" = "PBXFileSystemSynchronizedRootGroup";
-			"path" = "Tests";
-			"sourceTree" = "<group>";
+		E432B122341CE669D5D300AD /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = BD78DBAA6F46B4C8AAFFC3B5 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = BA7E0317BF05ADD1A09AC29C;
+			remoteInfo = "Kinosail-tvOS";
 		};
-		CD0ACFFF9F93025CCF567118 = {
-			"isa" = "PBXFileReference";
-			"lastKnownFileType" = "text.xml";
-			"path" = "Resources/PrivacyInfo.xcprivacy";
-			"sourceTree" = "<group>";
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		A27000000000000000000012 /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				A27000000000000000000011 /* KinosailTopShelf.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
 		};
-		4F62CA20BF0D6C65D69896FC = {
-			"isa" = "PBXFileReference";
-			"lastKnownFileType" = "folder.assetcatalog";
-			"path" = "Resources/iOS.xcassets";
-			"sourceTree" = "<group>";
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		1523F6D69D5D948BDA2EF1FC /* KinosailPlayerTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = KinosailPlayerTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		1594338D089D65A2F5D19212 /* KinosailPlayerTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = KinosailPlayerTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		4F62CA20BF0D6C65D69896FC /* Resources/iOS.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Resources/iOS.xcassets; sourceTree = "<group>"; };
+		99A64CCF75F24274F0027F7E /* Resources/tvOS.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Resources/tvOS.xcassets; sourceTree = "<group>"; };
+		A27000000000000000000003 /* KinosailTopShelf.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; path = KinosailTopShelf.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		A27000000000000000000015 /* Sources/Core/Contract.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/Core/Contract.swift; sourceTree = "<group>"; };
+		A27000000000000000000016 /* Sources/Core/StrictJSON.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/Core/StrictJSON.swift; sourceTree = "<group>"; };
+		AC29D74436D094327D2CC417 /* Configuration/tvOS-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Configuration/tvOS-Info.plist"; sourceTree = "<group>"; };
+		B833FD8937156128B3514625 /* KinosailPlayer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = KinosailPlayer.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		C87BA4C13320E285D0730317 /* KinosailPlayer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = KinosailPlayer.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		CD0ACFFF9F93025CCF567118 /* Resources/PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = Resources/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		FA2C79B22DC2E156D3845D23 /* Configuration/iOS-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Configuration/iOS-Info.plist"; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		3EC6D11BEEF7253C16E09FDF /* Tests */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = Tests; sourceTree = "<group>"; };
+		4A419C504A5B6CAD4F610ED7 /* Sources */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = Sources; sourceTree = "<group>"; };
+		A27000000000000000000001 /* TopShelf */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = TopShelf; sourceTree = "<group>"; };
+		A27000000000000000000002 /* TopShelfShared */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = TopShelfShared; sourceTree = "<group>"; };
+/* End PBXFileSystemSynchronizedRootGroup section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		2E6E904E1EA00DF06AD1402D /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
 		};
-		FA2C79B22DC2E156D3845D23 = {
-			"isa" = "PBXFileReference";
-			"lastKnownFileType" = "text.plist.xml";
-			"path" = "Configuration/iOS-Info.plist";
-			"sourceTree" = "<group>";
+		3DB127EBAD1FAD5C44765452 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
 		};
-		99A64CCF75F24274F0027F7E = {
-			"isa" = "PBXFileReference";
-			"lastKnownFileType" = "folder.assetcatalog";
-			"path" = "Resources/tvOS.xcassets";
-			"sourceTree" = "<group>";
+		A27000000000000000000005 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
 		};
-		AC29D74436D094327D2CC417 = {
-			"isa" = "PBXFileReference";
-			"lastKnownFileType" = "text.plist.xml";
-			"path" = "Configuration/tvOS-Info.plist";
-			"sourceTree" = "<group>";
+		B1FD9DD22DEF852BDCEDC817 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
 		};
-		AB71AAF0440FAE0E5062446F = {
-			"isa" = "PBXGroup";
-			"children" = (A27000000000000000000003, C87BA4C13320E285D0730317, 1523F6D69D5D948BDA2EF1FC, B833FD8937156128B3514625, 1594338D089D65A2F5D19212);
-			"name" = "Products";
-			"sourceTree" = "<group>";
+		D2C59A65FC8C0133CDE02975 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		AB71AAF0440FAE0E5062446F /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				A27000000000000000000003 /* KinosailTopShelf.appex */,
+				C87BA4C13320E285D0730317 /* KinosailPlayer.app */,
+				1523F6D69D5D948BDA2EF1FC /* KinosailPlayerTests.xctest */,
+				B833FD8937156128B3514625 /* KinosailPlayer.app */,
+				1594338D089D65A2F5D19212 /* KinosailPlayerTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
 		};
 		C45E4BB25E55B2F6328A5DD4 = {
-			"isa" = "PBXGroup";
-			"children" = (A27000000000000000000001, A27000000000000000000002, 4A419C504A5B6CAD4F610ED7, 3EC6D11BEEF7253C16E09FDF, 4F62CA20BF0D6C65D69896FC, 99A64CCF75F24274F0027F7E, CD0ACFFF9F93025CCF567118, FA2C79B22DC2E156D3845D23, AC29D74436D094327D2CC417, AB71AAF0440FAE0E5062446F);
-			"sourceTree" = "<group>";
+			isa = PBXGroup;
+			children = (
+				A27000000000000000000001 /* TopShelf */,
+				A27000000000000000000002 /* TopShelfShared */,
+				4A419C504A5B6CAD4F610ED7 /* Sources */,
+				3EC6D11BEEF7253C16E09FDF /* Tests */,
+				4F62CA20BF0D6C65D69896FC /* Resources/iOS.xcassets */,
+				99A64CCF75F24274F0027F7E /* Resources/tvOS.xcassets */,
+				CD0ACFFF9F93025CCF567118 /* Resources/PrivacyInfo.xcprivacy */,
+				FA2C79B22DC2E156D3845D23 /* Configuration/iOS-Info.plist */,
+				AC29D74436D094327D2CC417 /* Configuration/tvOS-Info.plist */,
+				AB71AAF0440FAE0E5062446F /* Products */,
+				C7E0C3E2305F25D80002CB16 /* Recovered References */,
+			);
+			sourceTree = "<group>";
 		};
-		7E5873D6031943950F185742 = {
-			"isa" = "XCBuildConfiguration";
-			"name" = "Debug";
-			"buildSettings" = {
-				"ALWAYS_SEARCH_USER_PATHS" = "NO";
-				"CLANG_ENABLE_MODULES" = "YES";
-				"CLANG_ENABLE_OBJC_ARC" = "YES";
-				"SWIFT_VERSION" = "6.0";
-				"SWIFT_STRICT_CONCURRENCY" = "complete";
-				"SWIFT_APPROACHABLE_CONCURRENCY" = "YES";
-				"ENABLE_USER_SCRIPT_SANDBOXING" = "YES";
-				"COPY_PHASE_STRIP" = "NO";
-				"DEBUG_INFORMATION_FORMAT" = "dwarf";
-				"SWIFT_OPTIMIZATION_LEVEL" = "-Onone";
-				"SWIFT_COMPILATION_MODE" = "singlefile";
-				"ENABLE_TESTABILITY" = "YES";
-				"SWIFT_ACTIVE_COMPILATION_CONDITIONS" = "$(inherited) DEBUG";
-			};
+		C7E0C3E2305F25D80002CB16 /* Recovered References */ = {
+			isa = PBXGroup;
+			children = (
+				A27000000000000000000015 /* Sources/Core/Contract.swift */,
+				A27000000000000000000016 /* Sources/Core/StrictJSON.swift */,
+			);
+			name = "Recovered References";
+			sourceTree = "<group>";
 		};
-		72D0AB4E21FA60F772735C18 = {
-			"isa" = "XCBuildConfiguration";
-			"name" = "Release";
-			"buildSettings" = {
-				"ALWAYS_SEARCH_USER_PATHS" = "NO";
-				"CLANG_ENABLE_MODULES" = "YES";
-				"CLANG_ENABLE_OBJC_ARC" = "YES";
-				"SWIFT_VERSION" = "6.0";
-				"SWIFT_STRICT_CONCURRENCY" = "complete";
-				"SWIFT_APPROACHABLE_CONCURRENCY" = "YES";
-				"ENABLE_USER_SCRIPT_SANDBOXING" = "YES";
-				"COPY_PHASE_STRIP" = "NO";
-				"DEBUG_INFORMATION_FORMAT" = "dwarf-with-dsym";
-				"SWIFT_OPTIMIZATION_LEVEL" = "-O";
-				"SWIFT_COMPILATION_MODE" = "wholemodule";
-				"ENABLE_TESTABILITY" = "NO";
-				"SWIFT_ACTIVE_COMPILATION_CONDITIONS" = "$(inherited)";
-			};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		7A7BC14A88F12E941988D9EC /* Kinosail-iOS */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = BC556F5651A5A3B645BC9FF8 /* Build configuration list for PBXNativeTarget "Kinosail-iOS" */;
+			buildPhases = (
+				0F18A4264E2CB26C8DF1A32D /* Sources */,
+				3DB127EBAD1FAD5C44765452 /* Frameworks */,
+				09C06150177587BCE5327187 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				4A419C504A5B6CAD4F610ED7 /* Sources */,
+			);
+			name = "Kinosail-iOS";
+			packageProductDependencies = (
+			);
+			productName = KinosailPlayer;
+			productReference = C87BA4C13320E285D0730317 /* KinosailPlayer.app */;
+			productType = "com.apple.product-type.application";
 		};
-		259CECEF5201BDDFA515B114 = {
-			"isa" = "XCConfigurationList";
-			"buildConfigurations" = (7E5873D6031943950F185742, 72D0AB4E21FA60F772735C18);
-			"defaultConfigurationIsVisible" = 0;
-			"defaultConfigurationName" = "Release";
+		A27000000000000000000010 /* KinosailTopShelf */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A27000000000000000000009 /* Build configuration list for PBXNativeTarget "KinosailTopShelf" */;
+			buildPhases = (
+				A27000000000000000000004 /* Sources */,
+				A27000000000000000000005 /* Frameworks */,
+				A27000000000000000000006 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				A27000000000000000000001 /* TopShelf */,
+				A27000000000000000000002 /* TopShelfShared */,
+			);
+			name = KinosailTopShelf;
+			productName = KinosailTopShelf;
+			productReference = A27000000000000000000003 /* KinosailTopShelf.appex */;
+			productType = "com.apple.product-type.app-extension";
 		};
-		C87BA4C13320E285D0730317 = {
-			"isa" = "PBXFileReference";
-			"explicitFileType" = "wrapper.application";
-			"includeInIndex" = 0;
-			"path" = "KinosailPlayer.app";
-			"sourceTree" = "BUILT_PRODUCTS_DIR";
+		BA7E0317BF05ADD1A09AC29C /* Kinosail-tvOS */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 87E2F81D1BCF141D6B5AA38A /* Build configuration list for PBXNativeTarget "Kinosail-tvOS" */;
+			buildPhases = (
+				A10815134DFF25D1763A6BDB /* Sources */,
+				D2C59A65FC8C0133CDE02975 /* Frameworks */,
+				F1C9DCF6904074962C248AF6 /* Resources */,
+				A27000000000000000000012 /* Embed Foundation Extensions */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				A27000000000000000000014 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				4A419C504A5B6CAD4F610ED7 /* Sources */,
+				A27000000000000000000002 /* TopShelfShared */,
+			);
+			name = "Kinosail-tvOS";
+			packageProductDependencies = (
+			);
+			productName = KinosailPlayer;
+			productReference = B833FD8937156128B3514625 /* KinosailPlayer.app */;
+			productType = "com.apple.product-type.application";
 		};
-		0F18A4264E2CB26C8DF1A32D = {
-			"isa" = "PBXSourcesBuildPhase";
-			"buildActionMask" = 2147483647;
-			"files" = ();
-			"runOnlyForDeploymentPostprocessing" = 0;
+		E027A92FD049716B2B6E30FC /* Kinosail-iOSTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 8239A415A144A3D259813A0D /* Build configuration list for PBXNativeTarget "Kinosail-iOSTests" */;
+			buildPhases = (
+				B999AC38BC47FA172E8A0CD3 /* Sources */,
+				2E6E904E1EA00DF06AD1402D /* Frameworks */,
+				014AC4DAF12CBCE918B6DCBF /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				099B2EC262C839648C8E307D /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				3EC6D11BEEF7253C16E09FDF /* Tests */,
+			);
+			name = "Kinosail-iOSTests";
+			packageProductDependencies = (
+			);
+			productName = KinosailPlayerTests;
+			productReference = 1523F6D69D5D948BDA2EF1FC /* KinosailPlayerTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
 		};
-		3DB127EBAD1FAD5C44765452 = {
-			"isa" = "PBXFrameworksBuildPhase";
-			"buildActionMask" = 2147483647;
-			"files" = ();
-			"runOnlyForDeploymentPostprocessing" = 0;
+		E443E9C03FD7ACF1982CC7B1 /* Kinosail-tvOSTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 8DF595F1DF6A92A9AB687786 /* Build configuration list for PBXNativeTarget "Kinosail-tvOSTests" */;
+			buildPhases = (
+				0B8BB435639E0F9ECB7813EC /* Sources */,
+				B1FD9DD22DEF852BDCEDC817 /* Frameworks */,
+				D4DFD354C4581965640CF84A /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				A7D98A3F64B4FCFFE63C7BCA /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				3EC6D11BEEF7253C16E09FDF /* Tests */,
+			);
+			name = "Kinosail-tvOSTests";
+			packageProductDependencies = (
+			);
+			productName = KinosailPlayerTests;
+			productReference = 1594338D089D65A2F5D19212 /* KinosailPlayerTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
 		};
-		A94CDB0D79D4D1B14CFAEA50 = {
-			"isa" = "PBXBuildFile";
-			"fileRef" = 4F62CA20BF0D6C65D69896FC;
-		};
-		896B626A1D3F111BAC1EDA37 = {
-			"isa" = "PBXBuildFile";
-			"fileRef" = CD0ACFFF9F93025CCF567118;
-		};
-		09C06150177587BCE5327187 = {
-			"isa" = "PBXResourcesBuildPhase";
-			"buildActionMask" = 2147483647;
-			"files" = (A94CDB0D79D4D1B14CFAEA50, 896B626A1D3F111BAC1EDA37);
-			"runOnlyForDeploymentPostprocessing" = 0;
-		};
-		65B1DF8A51A8719E1DE8192C = {
-			"isa" = "XCBuildConfiguration";
-			"name" = "Debug";
-			"buildSettings" = {
-				"PRODUCT_NAME" = "KinosailPlayer";
-				"PRODUCT_MODULE_NAME" = "KinosailPlayer";
-				"PRODUCT_BUNDLE_IDENTIFIER" = "com.kinosail.player";
-				"SDKROOT" = "iphoneos";
-				"SUPPORTED_PLATFORMS" = "iphoneos iphonesimulator";
-				"TARGETED_DEVICE_FAMILY" = "1,2";
-				"IPHONEOS_DEPLOYMENT_TARGET" = "26.0";
-				"TVOS_DEPLOYMENT_TARGET" = "26.0";
-				"SUPPORTS_MACCATALYST" = "NO";
-				"SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD" = "NO";
-				"SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD" = "NO";
-				"CODE_SIGN_STYLE" = "Automatic";
-				"MARKETING_VERSION" = "0.2.0";
-				"CURRENT_PROJECT_VERSION" = "1";
-				"KINOSAIL_SOURCE_REVISION" = "development";
-				"LD_RUNPATH_SEARCH_PATHS" = ("$(inherited)", "@executable_path/Frameworks");
-				"SWIFT_EMIT_LOC_STRINGS" = "YES";
-				"GENERATE_INFOPLIST_FILE" = "NO";
-				"INFOPLIST_FILE" = "Configuration/iOS-Info.plist";
-				"ASSETCATALOG_COMPILER_APPICON_NAME" = "AppIcon";
-				"ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS" = "YES";
-			};
-		};
-		F2B0EA9D549E4C2969E6754E = {
-			"isa" = "XCBuildConfiguration";
-			"name" = "Release";
-			"buildSettings" = {
-				"PRODUCT_NAME" = "KinosailPlayer";
-				"PRODUCT_MODULE_NAME" = "KinosailPlayer";
-				"PRODUCT_BUNDLE_IDENTIFIER" = "com.kinosail.player";
-				"SDKROOT" = "iphoneos";
-				"SUPPORTED_PLATFORMS" = "iphoneos iphonesimulator";
-				"TARGETED_DEVICE_FAMILY" = "1,2";
-				"IPHONEOS_DEPLOYMENT_TARGET" = "26.0";
-				"TVOS_DEPLOYMENT_TARGET" = "26.0";
-				"SUPPORTS_MACCATALYST" = "NO";
-				"SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD" = "NO";
-				"SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD" = "NO";
-				"CODE_SIGN_STYLE" = "Automatic";
-				"MARKETING_VERSION" = "0.2.0";
-				"CURRENT_PROJECT_VERSION" = "1";
-				"KINOSAIL_SOURCE_REVISION" = "development";
-				"LD_RUNPATH_SEARCH_PATHS" = ("$(inherited)", "@executable_path/Frameworks");
-				"SWIFT_EMIT_LOC_STRINGS" = "YES";
-				"GENERATE_INFOPLIST_FILE" = "NO";
-				"INFOPLIST_FILE" = "Configuration/iOS-Info.plist";
-				"ASSETCATALOG_COMPILER_APPICON_NAME" = "AppIcon";
-				"ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS" = "YES";
-			};
-		};
-		BC556F5651A5A3B645BC9FF8 = {
-			"isa" = "XCConfigurationList";
-			"buildConfigurations" = (65B1DF8A51A8719E1DE8192C, F2B0EA9D549E4C2969E6754E);
-			"defaultConfigurationIsVisible" = 0;
-			"defaultConfigurationName" = "Release";
-		};
-		7A7BC14A88F12E941988D9EC = {
-			"isa" = "PBXNativeTarget";
-			"buildConfigurationList" = BC556F5651A5A3B645BC9FF8;
-			"buildPhases" = (0F18A4264E2CB26C8DF1A32D, 3DB127EBAD1FAD5C44765452, 09C06150177587BCE5327187);
-			"buildRules" = ();
-			"dependencies" = ();
-			"fileSystemSynchronizedGroups" = (4A419C504A5B6CAD4F610ED7);
-			"name" = "Kinosail-iOS";
-			"packageProductDependencies" = ();
-			"productName" = "KinosailPlayer";
-			"productReference" = C87BA4C13320E285D0730317;
-			"productType" = "com.apple.product-type.application";
-		};
-		1523F6D69D5D948BDA2EF1FC = {
-			"isa" = "PBXFileReference";
-			"explicitFileType" = "wrapper.cfbundle";
-			"includeInIndex" = 0;
-			"path" = "KinosailPlayerTests.xctest";
-			"sourceTree" = "BUILT_PRODUCTS_DIR";
-		};
-		B999AC38BC47FA172E8A0CD3 = {
-			"isa" = "PBXSourcesBuildPhase";
-			"buildActionMask" = 2147483647;
-			"files" = ();
-			"runOnlyForDeploymentPostprocessing" = 0;
-		};
-		2E6E904E1EA00DF06AD1402D = {
-			"isa" = "PBXFrameworksBuildPhase";
-			"buildActionMask" = 2147483647;
-			"files" = ();
-			"runOnlyForDeploymentPostprocessing" = 0;
-		};
-		014AC4DAF12CBCE918B6DCBF = {
-			"isa" = "PBXResourcesBuildPhase";
-			"buildActionMask" = 2147483647;
-			"files" = ();
-			"runOnlyForDeploymentPostprocessing" = 0;
-		};
-		3D58BFF0BAF6155D8772806C = {
-			"isa" = "XCBuildConfiguration";
-			"name" = "Debug";
-			"buildSettings" = {
-				"PRODUCT_NAME" = "KinosailPlayerTests";
-				"PRODUCT_MODULE_NAME" = "KinosailPlayerTests";
-				"PRODUCT_BUNDLE_IDENTIFIER" = "com.kinosail.player.tests";
-				"SDKROOT" = "iphoneos";
-				"SUPPORTED_PLATFORMS" = "iphoneos iphonesimulator";
-				"TARGETED_DEVICE_FAMILY" = "1,2";
-				"IPHONEOS_DEPLOYMENT_TARGET" = "26.0";
-				"TVOS_DEPLOYMENT_TARGET" = "26.0";
-				"SUPPORTS_MACCATALYST" = "NO";
-				"SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD" = "NO";
-				"SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD" = "NO";
-				"CODE_SIGN_STYLE" = "Automatic";
-				"MARKETING_VERSION" = "0.2.0";
-				"CURRENT_PROJECT_VERSION" = "1";
-				"KINOSAIL_SOURCE_REVISION" = "development";
-				"LD_RUNPATH_SEARCH_PATHS" = ("$(inherited)", "@executable_path/Frameworks");
-				"SWIFT_EMIT_LOC_STRINGS" = "YES";
-				"GENERATE_INFOPLIST_FILE" = "YES";
-				"TEST_HOST" = "$(BUILT_PRODUCTS_DIR)/KinosailPlayer.app/KinosailPlayer";
-				"BUNDLE_LOADER" = "$(TEST_HOST)";
-			};
-		};
-		0C27A56780D62B7229CB823A = {
-			"isa" = "XCBuildConfiguration";
-			"name" = "Release";
-			"buildSettings" = {
-				"PRODUCT_NAME" = "KinosailPlayerTests";
-				"PRODUCT_MODULE_NAME" = "KinosailPlayerTests";
-				"PRODUCT_BUNDLE_IDENTIFIER" = "com.kinosail.player.tests";
-				"SDKROOT" = "iphoneos";
-				"SUPPORTED_PLATFORMS" = "iphoneos iphonesimulator";
-				"TARGETED_DEVICE_FAMILY" = "1,2";
-				"IPHONEOS_DEPLOYMENT_TARGET" = "26.0";
-				"TVOS_DEPLOYMENT_TARGET" = "26.0";
-				"SUPPORTS_MACCATALYST" = "NO";
-				"SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD" = "NO";
-				"SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD" = "NO";
-				"CODE_SIGN_STYLE" = "Automatic";
-				"MARKETING_VERSION" = "0.2.0";
-				"CURRENT_PROJECT_VERSION" = "1";
-				"KINOSAIL_SOURCE_REVISION" = "development";
-				"LD_RUNPATH_SEARCH_PATHS" = ("$(inherited)", "@executable_path/Frameworks");
-				"SWIFT_EMIT_LOC_STRINGS" = "YES";
-				"GENERATE_INFOPLIST_FILE" = "YES";
-				"TEST_HOST" = "$(BUILT_PRODUCTS_DIR)/KinosailPlayer.app/KinosailPlayer";
-				"BUNDLE_LOADER" = "$(TEST_HOST)";
-			};
-		};
-		8239A415A144A3D259813A0D = {
-			"isa" = "XCConfigurationList";
-			"buildConfigurations" = (3D58BFF0BAF6155D8772806C, 0C27A56780D62B7229CB823A);
-			"defaultConfigurationIsVisible" = 0;
-			"defaultConfigurationName" = "Release";
-		};
-		0A377EB060DC08A0514F82EE = {
-			"isa" = "PBXContainerItemProxy";
-			"containerPortal" = BD78DBAA6F46B4C8AAFFC3B5;
-			"proxyType" = 1;
-			"remoteGlobalIDString" = 7A7BC14A88F12E941988D9EC;
-			"remoteInfo" = "Kinosail-iOS";
-		};
-		099B2EC262C839648C8E307D = {
-			"isa" = "PBXTargetDependency";
-			"target" = 7A7BC14A88F12E941988D9EC;
-			"targetProxy" = 0A377EB060DC08A0514F82EE;
-		};
-		E027A92FD049716B2B6E30FC = {
-			"isa" = "PBXNativeTarget";
-			"buildConfigurationList" = 8239A415A144A3D259813A0D;
-			"buildPhases" = (B999AC38BC47FA172E8A0CD3, 2E6E904E1EA00DF06AD1402D, 014AC4DAF12CBCE918B6DCBF);
-			"buildRules" = ();
-			"dependencies" = (099B2EC262C839648C8E307D);
-			"fileSystemSynchronizedGroups" = (3EC6D11BEEF7253C16E09FDF);
-			"name" = "Kinosail-iOSTests";
-			"packageProductDependencies" = ();
-			"productName" = "KinosailPlayerTests";
-			"productReference" = 1523F6D69D5D948BDA2EF1FC;
-			"productType" = "com.apple.product-type.bundle.unit-test";
-		};
-		B833FD8937156128B3514625 = {
-			"isa" = "PBXFileReference";
-			"explicitFileType" = "wrapper.application";
-			"includeInIndex" = 0;
-			"path" = "KinosailPlayer.app";
-			"sourceTree" = "BUILT_PRODUCTS_DIR";
-		};
-		A10815134DFF25D1763A6BDB = {
-			"isa" = "PBXSourcesBuildPhase";
-			"buildActionMask" = 2147483647;
-			"files" = ();
-			"runOnlyForDeploymentPostprocessing" = 0;
-		};
-		D2C59A65FC8C0133CDE02975 = {
-			"isa" = "PBXFrameworksBuildPhase";
-			"buildActionMask" = 2147483647;
-			"files" = ();
-			"runOnlyForDeploymentPostprocessing" = 0;
-		};
-		C4A9DB84B2E3CEBEAE964D4D = {
-			"isa" = "PBXBuildFile";
-			"fileRef" = 99A64CCF75F24274F0027F7E;
-		};
-		850D08C0C1CA8421C2E9CFE1 = {
-			"isa" = "PBXBuildFile";
-			"fileRef" = CD0ACFFF9F93025CCF567118;
-		};
-		F1C9DCF6904074962C248AF6 = {
-			"isa" = "PBXResourcesBuildPhase";
-			"buildActionMask" = 2147483647;
-			"files" = (C4A9DB84B2E3CEBEAE964D4D, 850D08C0C1CA8421C2E9CFE1);
-			"runOnlyForDeploymentPostprocessing" = 0;
-		};
-		4151805F181185000BB7BE15 = {
-			"isa" = "XCBuildConfiguration";
-			"name" = "Debug";
-			"buildSettings" = {
-				"PRODUCT_NAME" = "KinosailPlayer";
-				"PRODUCT_MODULE_NAME" = "KinosailPlayer";
-				"PRODUCT_BUNDLE_IDENTIFIER" = "com.kinosail.player";
-				"SDKROOT" = "appletvos";
-				"SUPPORTED_PLATFORMS" = "appletvos appletvsimulator";
-				"TARGETED_DEVICE_FAMILY" = "3";
-				"IPHONEOS_DEPLOYMENT_TARGET" = "26.0";
-				"TVOS_DEPLOYMENT_TARGET" = "26.0";
-				"SUPPORTS_MACCATALYST" = "NO";
-				"SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD" = "NO";
-				"SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD" = "NO";
-				"CODE_SIGN_STYLE" = "Automatic";
-				"MARKETING_VERSION" = "0.2.0";
-				"CURRENT_PROJECT_VERSION" = "1";
-				"KINOSAIL_SOURCE_REVISION" = "development";
-				"LD_RUNPATH_SEARCH_PATHS" = ("$(inherited)", "@executable_path/Frameworks");
-				"SWIFT_EMIT_LOC_STRINGS" = "YES";
-				"GENERATE_INFOPLIST_FILE" = "NO";
-				"INFOPLIST_FILE" = "Configuration/tvOS-Info.plist";
-				"CODE_SIGN_ENTITLEMENTS" = "Configuration/tvOS.entitlements";
-				"ASSETCATALOG_COMPILER_APPICON_NAME" = "AppIcon";
-				"ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS" = "YES";
-			};
-		};
-		F6FAACA876B9A14FB1CC16D2 = {
-			"isa" = "XCBuildConfiguration";
-			"name" = "Release";
-			"buildSettings" = {
-				"PRODUCT_NAME" = "KinosailPlayer";
-				"PRODUCT_MODULE_NAME" = "KinosailPlayer";
-				"PRODUCT_BUNDLE_IDENTIFIER" = "com.kinosail.player";
-				"SDKROOT" = "appletvos";
-				"SUPPORTED_PLATFORMS" = "appletvos appletvsimulator";
-				"TARGETED_DEVICE_FAMILY" = "3";
-				"IPHONEOS_DEPLOYMENT_TARGET" = "26.0";
-				"TVOS_DEPLOYMENT_TARGET" = "26.0";
-				"SUPPORTS_MACCATALYST" = "NO";
-				"SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD" = "NO";
-				"SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD" = "NO";
-				"CODE_SIGN_STYLE" = "Automatic";
-				"MARKETING_VERSION" = "0.2.0";
-				"CURRENT_PROJECT_VERSION" = "1";
-				"KINOSAIL_SOURCE_REVISION" = "development";
-				"LD_RUNPATH_SEARCH_PATHS" = ("$(inherited)", "@executable_path/Frameworks");
-				"SWIFT_EMIT_LOC_STRINGS" = "YES";
-				"GENERATE_INFOPLIST_FILE" = "NO";
-				"INFOPLIST_FILE" = "Configuration/tvOS-Info.plist";
-				"CODE_SIGN_ENTITLEMENTS" = "Configuration/tvOS.entitlements";
-				"ASSETCATALOG_COMPILER_APPICON_NAME" = "AppIcon";
-				"ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS" = "YES";
-			};
-		};
-		87E2F81D1BCF141D6B5AA38A = {
-			"isa" = "XCConfigurationList";
-			"buildConfigurations" = (4151805F181185000BB7BE15, F6FAACA876B9A14FB1CC16D2);
-			"defaultConfigurationIsVisible" = 0;
-			"defaultConfigurationName" = "Release";
-		};
-		BA7E0317BF05ADD1A09AC29C = {
-			"isa" = "PBXNativeTarget";
-			"buildConfigurationList" = 87E2F81D1BCF141D6B5AA38A;
-			"buildPhases" = (A10815134DFF25D1763A6BDB, D2C59A65FC8C0133CDE02975, F1C9DCF6904074962C248AF6, A27000000000000000000012);
-			"buildRules" = ();
-			"dependencies" = (A27000000000000000000014);
-			"fileSystemSynchronizedGroups" = (4A419C504A5B6CAD4F610ED7, A27000000000000000000002);
-			"name" = "Kinosail-tvOS";
-			"packageProductDependencies" = ();
-			"productName" = "KinosailPlayer";
-			"productReference" = B833FD8937156128B3514625;
-			"productType" = "com.apple.product-type.application";
-		};
-		1594338D089D65A2F5D19212 = {
-			"isa" = "PBXFileReference";
-			"explicitFileType" = "wrapper.cfbundle";
-			"includeInIndex" = 0;
-			"path" = "KinosailPlayerTests.xctest";
-			"sourceTree" = "BUILT_PRODUCTS_DIR";
-		};
-		0B8BB435639E0F9ECB7813EC = {
-			"isa" = "PBXSourcesBuildPhase";
-			"buildActionMask" = 2147483647;
-			"files" = ();
-			"runOnlyForDeploymentPostprocessing" = 0;
-		};
-		B1FD9DD22DEF852BDCEDC817 = {
-			"isa" = "PBXFrameworksBuildPhase";
-			"buildActionMask" = 2147483647;
-			"files" = ();
-			"runOnlyForDeploymentPostprocessing" = 0;
-		};
-		D4DFD354C4581965640CF84A = {
-			"isa" = "PBXResourcesBuildPhase";
-			"buildActionMask" = 2147483647;
-			"files" = ();
-			"runOnlyForDeploymentPostprocessing" = 0;
-		};
-		03F9ABB12766E1825F05B5F9 = {
-			"isa" = "XCBuildConfiguration";
-			"name" = "Debug";
-			"buildSettings" = {
-				"PRODUCT_NAME" = "KinosailPlayerTests";
-				"PRODUCT_MODULE_NAME" = "KinosailPlayerTests";
-				"PRODUCT_BUNDLE_IDENTIFIER" = "com.kinosail.player.tests";
-				"SDKROOT" = "appletvos";
-				"SUPPORTED_PLATFORMS" = "appletvos appletvsimulator";
-				"TARGETED_DEVICE_FAMILY" = "3";
-				"IPHONEOS_DEPLOYMENT_TARGET" = "26.0";
-				"TVOS_DEPLOYMENT_TARGET" = "26.0";
-				"SUPPORTS_MACCATALYST" = "NO";
-				"SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD" = "NO";
-				"SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD" = "NO";
-				"CODE_SIGN_STYLE" = "Automatic";
-				"MARKETING_VERSION" = "0.2.0";
-				"CURRENT_PROJECT_VERSION" = "1";
-				"KINOSAIL_SOURCE_REVISION" = "development";
-				"LD_RUNPATH_SEARCH_PATHS" = ("$(inherited)", "@executable_path/Frameworks");
-				"SWIFT_EMIT_LOC_STRINGS" = "YES";
-				"GENERATE_INFOPLIST_FILE" = "YES";
-				"TEST_HOST" = "$(BUILT_PRODUCTS_DIR)/KinosailPlayer.app/KinosailPlayer";
-				"BUNDLE_LOADER" = "$(TEST_HOST)";
-			};
-		};
-		65C8BA305CCFF3B7960C13C8 = {
-			"isa" = "XCBuildConfiguration";
-			"name" = "Release";
-			"buildSettings" = {
-				"PRODUCT_NAME" = "KinosailPlayerTests";
-				"PRODUCT_MODULE_NAME" = "KinosailPlayerTests";
-				"PRODUCT_BUNDLE_IDENTIFIER" = "com.kinosail.player.tests";
-				"SDKROOT" = "appletvos";
-				"SUPPORTED_PLATFORMS" = "appletvos appletvsimulator";
-				"TARGETED_DEVICE_FAMILY" = "3";
-				"IPHONEOS_DEPLOYMENT_TARGET" = "26.0";
-				"TVOS_DEPLOYMENT_TARGET" = "26.0";
-				"SUPPORTS_MACCATALYST" = "NO";
-				"SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD" = "NO";
-				"SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD" = "NO";
-				"CODE_SIGN_STYLE" = "Automatic";
-				"MARKETING_VERSION" = "0.2.0";
-				"CURRENT_PROJECT_VERSION" = "1";
-				"KINOSAIL_SOURCE_REVISION" = "development";
-				"LD_RUNPATH_SEARCH_PATHS" = ("$(inherited)", "@executable_path/Frameworks");
-				"SWIFT_EMIT_LOC_STRINGS" = "YES";
-				"GENERATE_INFOPLIST_FILE" = "YES";
-				"TEST_HOST" = "$(BUILT_PRODUCTS_DIR)/KinosailPlayer.app/KinosailPlayer";
-				"BUNDLE_LOADER" = "$(TEST_HOST)";
-			};
-		};
-		8DF595F1DF6A92A9AB687786 = {
-			"isa" = "XCConfigurationList";
-			"buildConfigurations" = (03F9ABB12766E1825F05B5F9, 65C8BA305CCFF3B7960C13C8);
-			"defaultConfigurationIsVisible" = 0;
-			"defaultConfigurationName" = "Release";
-		};
-		E432B122341CE669D5D300AD = {
-			"isa" = "PBXContainerItemProxy";
-			"containerPortal" = BD78DBAA6F46B4C8AAFFC3B5;
-			"proxyType" = 1;
-			"remoteGlobalIDString" = BA7E0317BF05ADD1A09AC29C;
-			"remoteInfo" = "Kinosail-tvOS";
-		};
-		A7D98A3F64B4FCFFE63C7BCA = {
-			"isa" = "PBXTargetDependency";
-			"target" = BA7E0317BF05ADD1A09AC29C;
-			"targetProxy" = E432B122341CE669D5D300AD;
-		};
-		E443E9C03FD7ACF1982CC7B1 = {
-			"isa" = "PBXNativeTarget";
-			"buildConfigurationList" = 8DF595F1DF6A92A9AB687786;
-			"buildPhases" = (0B8BB435639E0F9ECB7813EC, B1FD9DD22DEF852BDCEDC817, D4DFD354C4581965640CF84A);
-			"buildRules" = ();
-			"dependencies" = (A7D98A3F64B4FCFFE63C7BCA);
-			"fileSystemSynchronizedGroups" = (3EC6D11BEEF7253C16E09FDF);
-			"name" = "Kinosail-tvOSTests";
-			"packageProductDependencies" = ();
-			"productName" = "KinosailPlayerTests";
-			"productReference" = 1594338D089D65A2F5D19212;
-			"productType" = "com.apple.product-type.bundle.unit-test";
-		};
-		BD78DBAA6F46B4C8AAFFC3B5 = {
-			"isa" = "PBXProject";
-			"attributes" = {
-				"BuildIndependentTargetsInParallel" = "YES";
-				"LastSwiftUpdateCheck" = "2660";
-				"LastUpgradeCheck" = "2660";
-				"TargetAttributes" = {
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		BD78DBAA6F46B4C8AAFFC3B5 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastSwiftUpdateCheck = 2660;
+				LastUpgradeCheck = 2700;
+				TargetAttributes = {
 					7A7BC14A88F12E941988D9EC = {
-						"CreatedOnToolsVersion" = "26.6";
+						CreatedOnToolsVersion = 26.6;
 					};
 					BA7E0317BF05ADD1A09AC29C = {
-						"CreatedOnToolsVersion" = "26.6";
+						CreatedOnToolsVersion = 26.6;
 					};
 					E027A92FD049716B2B6E30FC = {
-						"CreatedOnToolsVersion" = "26.6";
+						CreatedOnToolsVersion = 26.6;
 					};
 					E443E9C03FD7ACF1982CC7B1 = {
-						"CreatedOnToolsVersion" = "26.6";
+						CreatedOnToolsVersion = 26.6;
 					};
 				};
 			};
-			"buildConfigurationList" = 259CECEF5201BDDFA515B114;
-			"compatibilityVersion" = "Xcode 16.0";
-			"developmentRegion" = "en";
-			"hasScannedForEncodings" = 0;
-			"knownRegions" = ("en", "Base");
-			"mainGroup" = C45E4BB25E55B2F6328A5DD4;
-			"preferredProjectObjectVersion" = 77;
-			"productRefGroup" = AB71AAF0440FAE0E5062446F;
-			"projectDirPath" = "";
-			"projectRoot" = "";
-			"targets" = (7A7BC14A88F12E941988D9EC, BA7E0317BF05ADD1A09AC29C, A27000000000000000000010, E027A92FD049716B2B6E30FC, E443E9C03FD7ACF1982CC7B1);
+			buildConfigurationList = 259CECEF5201BDDFA515B114 /* Build configuration list for PBXProject "Kinosail" */;
+			compatibilityVersion = "Xcode 16.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = C45E4BB25E55B2F6328A5DD4;
+			productRefGroup = AB71AAF0440FAE0E5062446F /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				7A7BC14A88F12E941988D9EC /* Kinosail-iOS */,
+				BA7E0317BF05ADD1A09AC29C /* Kinosail-tvOS */,
+				A27000000000000000000010 /* KinosailTopShelf */,
+				E027A92FD049716B2B6E30FC /* Kinosail-iOSTests */,
+				E443E9C03FD7ACF1982CC7B1 /* Kinosail-tvOSTests */,
+			);
 		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		014AC4DAF12CBCE918B6DCBF /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		09C06150177587BCE5327187 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A94CDB0D79D4D1B14CFAEA50 /* Resources/iOS.xcassets in Resources */,
+				896B626A1D3F111BAC1EDA37 /* Resources/PrivacyInfo.xcprivacy in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A27000000000000000000006 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D4DFD354C4581965640CF84A /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F1C9DCF6904074962C248AF6 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C4A9DB84B2E3CEBEAE964D4D /* Resources/tvOS.xcassets in Resources */,
+				850D08C0C1CA8421C2E9CFE1 /* Resources/PrivacyInfo.xcprivacy in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		0B8BB435639E0F9ECB7813EC /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		0F18A4264E2CB26C8DF1A32D /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A10815134DFF25D1763A6BDB /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A27000000000000000000004 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A27000000000000000000017 /* Sources/Core/Contract.swift in Sources */,
+				A27000000000000000000018 /* Sources/Core/StrictJSON.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B999AC38BC47FA172E8A0CD3 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		099B2EC262C839648C8E307D /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 7A7BC14A88F12E941988D9EC /* Kinosail-iOS */;
+			targetProxy = 0A377EB060DC08A0514F82EE /* PBXContainerItemProxy */;
+		};
+		A27000000000000000000014 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = A27000000000000000000010 /* KinosailTopShelf */;
+			targetProxy = A27000000000000000000013 /* PBXContainerItemProxy */;
+		};
+		A7D98A3F64B4FCFFE63C7BCA /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = BA7E0317BF05ADD1A09AC29C /* Kinosail-tvOS */;
+			targetProxy = E432B122341CE669D5D300AD /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		03F9ABB12766E1825F05B5F9 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+				KINOSAIL_SOURCE_REVISION = development;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 0.2.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.kinosail.player.tests;
+				PRODUCT_MODULE_NAME = KinosailPlayerTests;
+				PRODUCT_NAME = KinosailPlayerTests;
+				SDKROOT = appletvos;
+				SUPPORTED_PLATFORMS = "appletvos appletvsimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				TARGETED_DEVICE_FAMILY = 3;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/KinosailPlayer.app/KinosailPlayer";
+				TVOS_DEPLOYMENT_TARGET = 26.0;
+			};
+			name = Debug;
+		};
+		0C27A56780D62B7229CB823A /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+				KINOSAIL_SOURCE_REVISION = development;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 0.2.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.kinosail.player.tests;
+				PRODUCT_MODULE_NAME = KinosailPlayerTests;
+				PRODUCT_NAME = KinosailPlayerTests;
+				SDKROOT = iphoneos;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/KinosailPlayer.app/KinosailPlayer";
+				TVOS_DEPLOYMENT_TARGET = 26.0;
+			};
+			name = Release;
+		};
+		3D58BFF0BAF6155D8772806C /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+				KINOSAIL_SOURCE_REVISION = development;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 0.2.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.kinosail.player.tests;
+				PRODUCT_MODULE_NAME = KinosailPlayerTests;
+				PRODUCT_NAME = KinosailPlayerTests;
+				SDKROOT = iphoneos;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/KinosailPlayer.app/KinosailPlayer";
+				TVOS_DEPLOYMENT_TARGET = 26.0;
+			};
+			name = Debug;
+		};
+		4151805F181185000BB7BE15 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CODE_SIGN_ENTITLEMENTS = Configuration/tvOS.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = "Configuration/tvOS-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+				KINOSAIL_SOURCE_REVISION = development;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 0.2.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.kinosail.player;
+				PRODUCT_MODULE_NAME = KinosailPlayer;
+				PRODUCT_NAME = KinosailPlayer;
+				SDKROOT = appletvos;
+				SUPPORTED_PLATFORMS = "appletvos appletvsimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				TARGETED_DEVICE_FAMILY = 3;
+				TVOS_DEPLOYMENT_TARGET = 26.0;
+			};
+			name = Debug;
+		};
+		65B1DF8A51A8719E1DE8192C /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = "Configuration/iOS-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+				KINOSAIL_SOURCE_REVISION = development;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 0.2.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.kinosail.player;
+				PRODUCT_MODULE_NAME = KinosailPlayer;
+				PRODUCT_NAME = KinosailPlayer;
+				SDKROOT = iphoneos;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TVOS_DEPLOYMENT_TARGET = 26.0;
+			};
+			name = Debug;
+		};
+		65C8BA305CCFF3B7960C13C8 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+				KINOSAIL_SOURCE_REVISION = development;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 0.2.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.kinosail.player.tests;
+				PRODUCT_MODULE_NAME = KinosailPlayerTests;
+				PRODUCT_NAME = KinosailPlayerTests;
+				SDKROOT = appletvos;
+				SUPPORTED_PLATFORMS = "appletvos appletvsimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				TARGETED_DEVICE_FAMILY = 3;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/KinosailPlayer.app/KinosailPlayer";
+				TVOS_DEPLOYMENT_TARGET = 26.0;
+			};
+			name = Release;
+		};
+		72D0AB4E21FA60F772735C18 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEAD_CODE_STRIPPING = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = NO;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited)";
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_STRICT_CONCURRENCY = complete;
+				SWIFT_VERSION = 6.0;
+			};
+			name = Release;
+		};
+		7E5873D6031943950F185742 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEAD_CODE_STRIPPING = YES;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) DEBUG";
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_COMPILATION_MODE = singlefile;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_STRICT_CONCURRENCY = complete;
+				SWIFT_VERSION = 6.0;
+			};
+			name = Debug;
+		};
+		A27000000000000000000007 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
+				CODE_SIGN_ENTITLEMENTS = Configuration/tvOS.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = "Configuration/TopShelf-Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 0.2.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.kinosail.player.topshelf;
+				PRODUCT_NAME = KinosailTopShelf;
+				SDKROOT = appletvos;
+				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "appletvos appletvsimulator";
+				TARGETED_DEVICE_FAMILY = 3;
+				TVOS_DEPLOYMENT_TARGET = 26.0;
+			};
+			name = Debug;
+		};
+		A27000000000000000000008 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
+				CODE_SIGN_ENTITLEMENTS = Configuration/tvOS.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = "Configuration/TopShelf-Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 0.2.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.kinosail.player.topshelf;
+				PRODUCT_NAME = KinosailTopShelf;
+				SDKROOT = appletvos;
+				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "appletvos appletvsimulator";
+				TARGETED_DEVICE_FAMILY = 3;
+				TVOS_DEPLOYMENT_TARGET = 26.0;
+			};
+			name = Release;
+		};
+		F2B0EA9D549E4C2969E6754E /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = "Configuration/iOS-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+				KINOSAIL_SOURCE_REVISION = development;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 0.2.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.kinosail.player;
+				PRODUCT_MODULE_NAME = KinosailPlayer;
+				PRODUCT_NAME = KinosailPlayer;
+				SDKROOT = iphoneos;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TVOS_DEPLOYMENT_TARGET = 26.0;
+			};
+			name = Release;
+		};
+		F6FAACA876B9A14FB1CC16D2 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CODE_SIGN_ENTITLEMENTS = Configuration/tvOS.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = "Configuration/tvOS-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+				KINOSAIL_SOURCE_REVISION = development;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 0.2.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.kinosail.player;
+				PRODUCT_MODULE_NAME = KinosailPlayer;
+				PRODUCT_NAME = KinosailPlayer;
+				SDKROOT = appletvos;
+				SUPPORTED_PLATFORMS = "appletvos appletvsimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				TARGETED_DEVICE_FAMILY = 3;
+				TVOS_DEPLOYMENT_TARGET = 26.0;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		259CECEF5201BDDFA515B114 /* Build configuration list for PBXProject "Kinosail" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				7E5873D6031943950F185742 /* Debug */,
+				72D0AB4E21FA60F772735C18 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		8239A415A144A3D259813A0D /* Build configuration list for PBXNativeTarget "Kinosail-iOSTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				3D58BFF0BAF6155D8772806C /* Debug */,
+				0C27A56780D62B7229CB823A /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		87E2F81D1BCF141D6B5AA38A /* Build configuration list for PBXNativeTarget "Kinosail-tvOS" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				4151805F181185000BB7BE15 /* Debug */,
+				F6FAACA876B9A14FB1CC16D2 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		8DF595F1DF6A92A9AB687786 /* Build configuration list for PBXNativeTarget "Kinosail-tvOSTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				03F9ABB12766E1825F05B5F9 /* Debug */,
+				65C8BA305CCFF3B7960C13C8 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		A27000000000000000000009 /* Build configuration list for PBXNativeTarget "KinosailTopShelf" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A27000000000000000000007 /* Debug */,
+				A27000000000000000000008 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		BC556F5651A5A3B645BC9FF8 /* Build configuration list for PBXNativeTarget "Kinosail-iOS" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				65B1DF8A51A8719E1DE8192C /* Debug */,
+				F2B0EA9D549E4C2969E6754E /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
 	};
-	"rootObject" = BD78DBAA6F46B4C8AAFFC3B5;
+	rootObject = BD78DBAA6F46B4C8AAFFC3B5 /* Project object */;
 }
