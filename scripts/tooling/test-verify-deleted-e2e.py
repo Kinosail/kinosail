@@ -42,7 +42,13 @@ class DeletedBrowserSpecTests(unittest.TestCase):
                     retained.write_text('// updated browser client\n')
                 git('add', '-u')
                 git('-c', 'commit.gpgsign=false', 'commit', '-qm', 'remove retired client')
+                commands = root / 'bin'
+                commands.mkdir()
+                hasher = commands / 'shasum'
+                hasher.write_text('#!/bin/sh\necho planning must not hash inputs >&2\nexit 99\n')
+                hasher.chmod(0o755)
                 env = dict(os.environ, KINOSAIL_VERIFY_PLAN='1', KINOSAIL_VERIFY_WORKTREE='',
+                           PATH=str(commands) + os.pathsep + os.environ['PATH'],
                            KINOSAIL_E2E_URL='http://127.0.0.1:1')
                 result = subprocess.run(
                     ['bash', str(tooling / 'verify-changed.sh'), 'apps/player', base],
