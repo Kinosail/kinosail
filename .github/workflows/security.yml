@@ -82,6 +82,19 @@ jobs:
             'COMPILATION_CACHE_ENABLE_CACHING = NO' 'SWIFT_ENABLE_COMPILE_CACHE = NO' \
             'SWIFT_USE_INTEGRATED_DRIVER = NO' 'CODE_SIGNING_ALLOWED = NO' \
             'CODE_SIGNING_REQUIRED = NO' > "$RUNNER_TEMP/codeql.xcconfig"
+          # Keep bounded resource evidence for slow compiler/extractor runs.
+          python3 -u -c '
+          import datetime, subprocess, time
+          while True:
+              print(datetime.datetime.now(datetime.timezone.utc).isoformat())
+              rows = subprocess.check_output(["ps", "-axo", "pid=,ppid=,pcpu=,rss=,comm="], text=True).splitlines()
+              print("PID PPID CPU% RSS_KiB COMMAND")
+              print("\n".join(sorted(rows, key=lambda row: int(row.split(None, 4)[3]), reverse=True)[:12]))
+              subprocess.run(["sysctl", "vm.swapusage"], check=True)
+              time.sleep(60)
+          ' &
+          monitor=$!
+          trap 'kill "$monitor" 2>/dev/null || true' EXIT
           XCODE_XCCONFIG_FILE="$RUNNER_TEMP/codeql.xcconfig" make -C apps/player client-check
       - uses: github/codeql-action/analyze@1c5b675653bb5c22dbe9b12b556ec555138e09fd
 

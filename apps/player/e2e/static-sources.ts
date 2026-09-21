@@ -30,6 +30,7 @@ export const playerSource = await readStaticSource([
 
 export const serviceWorkerSource = await readStaticSource([
 	"../../../packages/webassets/static/offline-runtime.js",
+	"../../../packages/webassets/static/offline-profile.js",
 	"../../../packages/webassets/static/offline-media.js",
 	"../internal/server/static/service-worker.js",
 ]);
