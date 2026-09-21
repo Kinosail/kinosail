@@ -41,6 +41,7 @@ class SelectionTests(unittest.TestCase):
     def test_native_only_does_not_build_server_containers(self):
         plan = affected(["apps/player/apps/native/Sources/App.swift"])
         self.assertTrue(plan["client"])
+        self.assertTrue(plan["swift"])
         self.assertFalse(any(plan[app] for app in APPS))
         self.assertTrue(affected(["apps/player/Makefile"])["client"])
 

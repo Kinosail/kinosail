@@ -45,7 +45,8 @@ def main():
             or os.environ["GITHUB_EVENT_NAME"] != "push" or os.environ["GITHUB_REF"] != "refs/heads/main"):
         raise ValueError("delivery requires a protected main push")
     subprocess.run(["git", "merge-base", "--is-ancestor", commit, "origin/main"], check=True)
-    deadline = time.monotonic() + 1200
+    # The cold Swift scan has a 30-minute ceiling; allow setup/queue headroom.
+    deadline = time.monotonic() + 35 * 60
     pending = set(WORKFLOWS)
     while pending and time.monotonic() < deadline:
         for workflow in sorted(pending):

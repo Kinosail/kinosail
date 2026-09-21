@@ -71,6 +71,27 @@ class DeliveryTests(unittest.TestCase):
                     deliver()
             self.assertFalse(output.exists())
 
+    def test_delivery_waits_for_cold_swift_but_remains_bounded(self):
+        for status, clock, succeeds in (("completed", [0, 1500], True),
+                                         ("in_progress", [0, 1500, 2101], False)):
+            with self.subTest(status=status), tempfile.TemporaryDirectory() as directory:
+                output = Path(directory) / "output"
+                plan = json.dumps(dict.fromkeys((*FLAGS, "deep"), True))
+                payload = {"workflow_runs": [workflow(status=status, conclusion="success" if succeeds else None)]}
+                response = subprocess.CompletedProcess([], 0, json.dumps(payload).encode())
+                with patch.dict(os.environ, ENV | {"CI_PLAN": plan, "GITHUB_OUTPUT": str(output)}), \
+                        patch("delivery.subprocess.run", return_value=response), \
+                        patch("delivery.time.monotonic", side_effect=clock), patch("delivery.time.sleep"):
+                    if succeeds:
+                        deliver()
+                    else:
+                        with self.assertRaisesRegex(ValueError, "timed out"):
+                            deliver()
+                self.assertEqual(output.exists(), succeeds)
+                if succeeds:
+                    self.assertEqual(json.loads(output.read_text().removeprefix("apps=")),
+                                     ["player", "subtitles", "dashboard"])
+
     def test_promotion_allows_docs_and_unrelated_apps_but_never_rolls_back_affected_app(self):
         for paths, expected in ((b"README.md\0", True), (b"apps/subtitles/main.go\0", True),
                                 (b"apps/player/main.go\0", False), (b"packages/catalog.go\0", False),
