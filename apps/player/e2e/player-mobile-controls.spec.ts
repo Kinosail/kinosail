@@ -79,13 +79,23 @@ test("transport keys stay scoped and preserve focused seek behavior", async ({pa
 test("theater contains keyboard focus and restores the entering control", async ({page}) => {
  await page.getByRole('button',{name:'Theater',exact:true}).click();
  await expect(page.getByRole('dialog',{name:'Video player'})).toBeVisible();
- for(let i=0;i<25;i++) {
-  await page.keyboard.press('Tab');
-  expect(await page.evaluate(()=>!!document.activeElement?.closest('.media-stage'))).toBe(true);
+ for (const key of ['Tab', 'Shift+Tab']) {
+  for(let i=0;i<25;i++) {
+   await page.keyboard.press(key);
+   expect(await page.evaluate(()=>!!document.activeElement?.closest('.media-stage'))).toBe(true);
+  }
  }
  await page.keyboard.press('Escape');
  await expect(page.getByRole('button',{name:'Theater',exact:true})).toBeFocused();
  expect(await page.locator('.chapters').evaluate(node=>node.inert)).toBe(false);
+});
+test("theater keyboard entry restores focus to the player stage", async ({page}) => {
+ const stage = page.locator('.media-stage');
+ await stage.focus();
+ await page.keyboard.press('t');
+ await expect(page.getByRole('dialog',{name:'Video player'})).toBeVisible();
+ await page.keyboard.press('Escape');
+ await expect(stage).toBeFocused();
 });
 test("no subtitle tracks disables CC with an explanation", async ({page}) => {
  await page.locator('[data-subtitles]').evaluate(select=>{ select.innerHTML='<option value="off">Off</option>'; });
