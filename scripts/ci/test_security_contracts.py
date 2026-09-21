@@ -18,6 +18,8 @@ class SecurityContracts(unittest.TestCase):
         self.assertIn("matrix.language == 'swift') && 'manual'", workflow)
         self.assertIn("make -C apps/player client-check", workflow)
         self.assertIn("ARCHS = arm64", workflow)
+        for setting in ("COMPILATION_CACHE_ENABLE_CACHING", "SWIFT_ENABLE_COMPILE_CACHE", "SWIFT_USE_INTEGRATED_DRIVER"):
+            self.assertIn(f"{setting} = NO", workflow)
         self.assertIn('XCODE_XCCONFIG_FILE="$RUNNER_TEMP/codeql.xcconfig"', workflow)
         self.assertIn("matrix.language == 'swift' && 30 || 15", workflow)
         self.assertIn("queries: security-extended", workflow)

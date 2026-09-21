@@ -19,6 +19,8 @@ Restore Actions and Swift in the maintained change-aware language selection. Swi
 
 The first maintained Swift attempt ([job 106213221287](https://github.com/Kinosail/kinosail/actions/runs/35560725398/job/106213221287)) exhausted 15 minutes while building the iOS simulator target, before tvOS or analysis. Its log shows both ARM64 and x86_64 SDK module generation. Follow GitHub's recommendation to scan one CPU architecture: a temporary Xcode configuration limits only the instrumented scan to ARM64 while retaining both iOS and tvOS builds. The ordinary client compilation gate retains its normal architecture settings. Allow 30 minutes for cold Swift extraction; other language ceilings remain 15. Record the successful replacement timing before claiming a speedup.
 
+The ARM64-only attempt still spent over 20 minutes in iOS SDK/module extraction. Investigation found a supported-configuration gap: CodeQL 2.27's own autobuilder disables `COMPILATION_CACHE_ENABLE_CACHING`, `SWIFT_ENABLE_COMPILE_CACHE`, and `SWIFT_USE_INTEGRATED_DRIVER`. Upstream explains that caches can omit compiler invocations and the integrated driver introduces Xcode modules incompatible with the extractor. Apply those same settings to the manual scan, plus the autobuilder's unsigned-build settings. These overrides are confined to CodeQL; the ordinary native build remains unchanged. This is a correctness requirement for extraction, not a query suppression.
+
 ## Regression evidence
 
 - `node --test packages/webassets/offline-identity.test.mjs`: 31 passing cases; malformed, foreign, missing, oversized, and conflicting messages cause no identity storage access, writes, or broadcasts.
@@ -35,3 +37,5 @@ The first maintained Swift attempt ([job 106213221287](https://github.com/Kinosa
 - [GitHub stale-configuration guidance](https://docs.github.com/en/code-security/how-tos/manage-security-alerts/manage-code-scanning-alerts/resolve-alerts#removing-stale-configurations-and-alerts-from-a-branch) distinguishes retiring old configurations from fixing or dismissing code findings.
 
 - [GitHub Swift build guidance](https://docs.github.com/en/code-security/reference/code-scanning/codeql/build-options-for-compiled-languages#customizing-swift-compilation-in-a-codeql-analysis-workflow) recommends one architecture for analysis. The local `xcodebuild(1)` manual documents `XCODE_XCCONFIG_FILE` as an override applied to every built target.
+
+- [CodeQL 2.27 Swift autobuilder](https://github.com/github/codeql/blob/codeql-cli/v2.27.0/swift/swift-autobuilder/BuildRunner.cpp#L80-L84) and [upstream rationale](https://github.com/github/codeql/commit/662c7b08e8abafda2d3b4d2f75a407ebb481701b) define the compatible compiler settings.

@@ -69,7 +69,11 @@ jobs:
       - name: Build both Apple clients for CodeQL
         if: matrix.language == 'swift'
         run: |
-          printf 'ARCHS = arm64\nONLY_ACTIVE_ARCH = YES\n' > "$RUNNER_TEMP/codeql.xcconfig"
+          # Match the Swift extractor's supported compiler settings.
+          printf '%s\n' 'ARCHS = arm64' 'ONLY_ACTIVE_ARCH = YES' \
+            'COMPILATION_CACHE_ENABLE_CACHING = NO' 'SWIFT_ENABLE_COMPILE_CACHE = NO' \
+            'SWIFT_USE_INTEGRATED_DRIVER = NO' 'CODE_SIGNING_ALLOWED = NO' \
+            'CODE_SIGNING_REQUIRED = NO' > "$RUNNER_TEMP/codeql.xcconfig"
           XCODE_XCCONFIG_FILE="$RUNNER_TEMP/codeql.xcconfig" make -C apps/player client-check
       - uses: github/codeql-action/analyze@1c5b675653bb5c22dbe9b12b556ec555138e09fd
 
