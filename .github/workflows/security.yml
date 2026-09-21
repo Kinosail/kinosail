@@ -38,10 +38,10 @@ jobs:
 
   codeql:
     needs: changes
-    if: fromJSON(needs.changes.outputs.plan).go || fromJSON(needs.changes.outputs.plan)['javascript-typescript'] || fromJSON(needs.changes.outputs.plan).python
-    timeout-minutes: 15
+    if: needs.changes.outputs.languages != '[]'
+    timeout-minutes: ${{ matrix.language == 'swift' && 30 || 15 }}
     name: CodeQL (${{ matrix.language }})
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.language == 'swift' && 'macos-latest' || 'ubuntu-latest' }}
     permissions:
       contents: read
       security-events: write
@@ -58,14 +58,31 @@ jobs:
         with:
           go-version-file: go.work
           cache-dependency-path: "**/go.sum"
+      - name: Assemble complete browser source for CodeQL
+        if: matrix.language == 'javascript-typescript'
+        run: |
+          node scripts/ci/prepare-codeql-js.mjs
+          # Generated bundles are untracked, so analyze their complete contents.
+          echo 'CODEQL_ACTION_DIFF_INFORMED_QUERIES=false' >> "$GITHUB_ENV"
+          echo 'CODEQL_OVERLAY_DATABASE_MODE=none' >> "$GITHUB_ENV"
       - uses: github/codeql-action/init@1c5b675653bb5c22dbe9b12b556ec555138e09fd
         with:
           languages: ${{ matrix.language }}
-          build-mode: ${{ matrix.language == 'go' && 'manual' || 'none' }}
+          config-file: .github/codeql-config.yml
+          build-mode: ${{ (matrix.language == 'go' || matrix.language == 'swift') && 'manual' || 'none' }}
           queries: security-extended
       - name: Build Go modules for CodeQL
         if: matrix.language == 'go'
         run: go build ./apps/player/... ./apps/subtitles/... ./apps/dashboard/... ./packages/...
+      - name: Build both Apple clients for CodeQL
+        if: matrix.language == 'swift'
+        run: |
+          # Match the Swift extractor's supported compiler settings.
+          printf '%s\n' 'ARCHS = arm64' 'ONLY_ACTIVE_ARCH = YES' \
+            'COMPILATION_CACHE_ENABLE_CACHING = NO' 'SWIFT_ENABLE_COMPILE_CACHE = NO' \
+            'SWIFT_USE_INTEGRATED_DRIVER = NO' 'CODE_SIGNING_ALLOWED = NO' \
+            'CODE_SIGNING_REQUIRED = NO' > "$RUNNER_TEMP/codeql.xcconfig"
+          XCODE_XCCONFIG_FILE="$RUNNER_TEMP/codeql.xcconfig" make -C apps/player client-check
       - uses: github/codeql-action/analyze@1c5b675653bb5c22dbe9b12b556ec555138e09fd
 
   supply-chain:
@@ -94,19 +111,19 @@ jobs:
   findings:
     name: CodeQL findings policy
     needs: [changes, codeql]
-    if: fromJSON(needs.changes.outputs.plan).go || fromJSON(needs.changes.outputs.plan)['javascript-typescript'] || fromJSON(needs.changes.outputs.plan).python
+    if: needs.changes.outputs.languages != '[]'
     runs-on: ubuntu-latest
     permissions:
       contents: read
       security-events: read
     steps:
-      - name: Reject high and critical code scanning alerts
+      - name: Reject open code scanning security alerts
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           gh api --method GET --paginate --slurp "repos/$GITHUB_REPOSITORY/code-scanning/alerts" \
             -f state=open -f ref="$GITHUB_REF" -f tool_name=CodeQL -f per_page=100 > alerts.json
-          jq -e '[.[][] | select(.rule.security_severity_level == "high" or .rule.security_severity_level == "critical")] | length == 0' alerts.json
+          jq -e '[.[][] | select(.rule.security_severity_level != null)] | length == 0' alerts.json
 
   required:
     name: Security checks

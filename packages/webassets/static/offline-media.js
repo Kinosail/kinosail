@@ -50,8 +50,13 @@ const registerOfflineLifecycle = (cacheName, retiredCache, populate, changed = (
     return Promise.all([cleared, offlineIdentityWrites]);
   };
   self.addEventListener("message", (event) => {
-    if (event.data?.type === "profile" && /^[A-Za-z0-9_-]{1,128}$/.test(event.data.profile || "")) event.waitUntil(identify(event.data.profile, event.data.revision));
-    if (event.data?.type === "logout") event.waitUntil(identify("", event.data.revision));
+    if (event.origin !== self.location.origin || event.source?.type !== "window") return;
+    try { if (new URL(event.source.url).origin !== self.location.origin) return; } catch { return; }
+    const message = event.data;
+    if (!message || typeof message !== "object" || Array.isArray(message) || Object.keys(message).some((key) => !["type", "profile", "revision"].includes(key))) return;
+    if ("revision" in message && !Number.isSafeInteger(message.revision)) return;
+    if (message.type === "profile" && typeof message.profile === "string" && /^[A-Za-z0-9_-]{1,128}$/.test(message.profile)) event.waitUntil(identify(message.profile, message.revision));
+    if (message.type === "logout" && (message.profile === undefined || message.profile === "")) event.waitUntil(identify("", message.revision));
   });
   self.addEventListener("fetch", (event) => {
     const url = new URL(event.request.url);

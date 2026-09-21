@@ -54,7 +54,7 @@ for(const mode of ['rejected','blocked']) test(`logout reaches the Server when o
 test('worker rejects delayed profile selections after a newer transition',async()=>{
   const persisted=[]; let saved; const f=worker(async value=>{if(value!==undefined){persisted.push(value);saved=value;}return saved;});
   let pending;
-  const send=data=>{f.handlers.get('message')({data,waitUntil:value=>{pending=value;}});return pending;};
+  const send=data=>{f.handlers.get('message')({origin:'https://kino.test',source:{type:'window',url:'https://kino.test/'},data,waitUntil:value=>{pending=value;}});return pending;};
   const revision=Date.now()-10;
   await send({type:'profile',profile:'B',revision:revision+1});
   await send({type:'profile',profile:'A',revision});
@@ -78,7 +78,7 @@ test('a restarted worker preserves a newer durable logout',async()=>{
   let saved={profile:'',revision:revision+1}, writes=0;
   const f=worker(async value=>{if(value!==undefined){saved=value;writes++;}return saved;});
   let pending;
-  f.handlers.get('message')({data:{type:'profile',profile:'A',revision},waitUntil:value=>{pending=value;}});
+  f.handlers.get('message')({origin:'https://kino.test',source:{type:'window',url:'https://kino.test/'},data:{type:'profile',profile:'A',revision},waitUntil:value=>{pending=value;}});
   assert.equal(await f.context.current(),'');
   await pending;
   assert.equal(await f.context.current(),'');
@@ -93,4 +93,31 @@ test('server logout supersedes a durable revision ahead of the clock',async()=>{
   await response; await pending;
   assert.equal(saved.profile,'');
   assert.equal(await f.context.current(),'');
+});
+
+for (const [name, overrides] of Object.entries({
+  'missing origin': {origin:undefined}, 'foreign origin': {origin:'https://evil.test'},
+  'origin prefix': {origin:'https://kino.test.evil.test'}, 'opaque origin': {origin:'null'},
+  'missing source': {source:null}, 'non-window source': {source:{type:'worker',url:'https://kino.test/'}},
+  'foreign source': {source:{type:'window',url:'https://evil.test/'}},
+  'malformed source': {source:{type:'window',url:'invalid'}},
+  'missing data': {data:null}, 'array data': {data:[]}, 'unknown operation': {data:{type:'erase'}},
+  'unknown field': {data:{type:'logout',unexpected:true}},
+  'conflicting logout': {data:{type:'logout',profile:'A'}},
+  'missing profile': {data:{type:'profile'}}, 'coerced profile': {data:{type:'profile',profile:['A']}},
+  'oversized profile': {data:{type:'profile',profile:'A'.repeat(129)}},
+  'malformed profile': {data:{type:'profile',profile:'../A'}},
+  'null revision': {data:{type:'logout',revision:null}},
+  'undefined revision': {data:{type:'logout',revision:undefined}},
+  'negative revision': {data:{type:'logout',revision:-1}},
+  'noninteger revision': {data:{type:'logout',revision:1.5}},
+  'string revision': {data:{type:'logout',revision:'1'}},
+  'future revision': {data:{type:'logout',revision:Date.now()+120000}},
+})) test(`worker rejects ${name} before identity side effects`, async()=>{
+  let accesses=0, writes=0; const pending=[];
+  const f=worker(async value=>{accesses++;if(value!==undefined)writes++;return {profile:'A',revision:1};});
+  f.handlers.get('message')({origin:'https://kino.test',source:{type:'window',url:'https://kino.test/downloads'},
+    data:{type:'logout',revision:2},waitUntil:value=>pending.push(value),...overrides});
+  await Promise.all(pending);
+  assert.equal(accesses,0); assert.equal(writes,0); assert.deepEqual(f.broadcast,[]);
 });

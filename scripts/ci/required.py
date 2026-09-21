@@ -5,7 +5,7 @@ import json
 import os
 import sys
 
-from affected import APPS, FLAGS
+from affected import APPS, FLAGS, LANGUAGES
 
 
 def verify(scope, needs):
@@ -27,7 +27,7 @@ def verify(scope, needs):
         expected = {"static": True, "tooling": plan["tooling"], "packages": plan["packages"],
                     "web": plan["web"]}
     else:
-        codeql = any(plan[language] for language in ("go", "javascript-typescript", "python"))
+        codeql = any(plan[language] for language in LANGUAGES)
         expected = {"secrets": True, "supply-chain": plan["supply"], "codeql": codeql, "findings": codeql}
     if set(needs) != {"changes", *expected}:
         raise ValueError("required job inventory does not match workflow")
