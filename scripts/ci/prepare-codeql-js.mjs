@@ -1,4 +1,4 @@
-import { mkdirSync, readFileSync, realpathSync, statSync, writeFileSync } from 'node:fs';
+import { closeSync, constants, fstatSync, mkdirSync, openSync, readSync, realpathSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { Script } from 'node:vm';
@@ -12,12 +12,23 @@ export function prepareCodeQLJavaScript(repo, destination) {
   const root = realpathSync(repo);
   function read(relative) {
     const file = realpathSync(path.resolve(root, relative));
-    if (!file.startsWith(root + path.sep) || !statSync(file).isFile() || statSync(file).size > 1024 * 1024) {
-      throw new Error('Invalid or oversized browser source');
+    if (!file.startsWith(root + path.sep)) throw new Error('Source is outside repository');
+    const descriptor = openSync(file, constants.O_RDONLY | constants.O_NOFOLLOW);
+    try {
+      const info = fstatSync(descriptor);
+      if (!info.isFile() || info.size > 1024 * 1024) throw new Error('Invalid or oversized browser source');
+      const bytes = Buffer.alloc(1024 * 1024 + 1);
+      let length = 0;
+      while (length < bytes.length) {
+        const count = readSync(descriptor, bytes, length, bytes.length - length, null);
+        if (!count) break;
+        length += count;
+      }
+      if (length > 1024 * 1024) throw new Error('Oversized browser source');
+      return new TextDecoder('utf-8', { fatal: true, ignoreBOM: true }).decode(bytes.subarray(0, length));
+    } finally {
+      closeSync(descriptor);
     }
-    const bytes = readFileSync(file);
-    if (bytes.length > 1024 * 1024) throw new Error('Oversized browser source');
-    return new TextDecoder('utf-8', { fatal: true, ignoreBOM: true }).decode(bytes);
   }
   manifests.forEach(read);
   const bundle = browserScriptBundles(root).find(item => item.name === 'subtitles.playerJS');

@@ -40,6 +40,10 @@ test('CodeQL receives the exact complete script served by the Go bundle', t => {
 
 for (const [name, mutate] of [
   ['missing source', ({ root }) => rmSync(path.join(root, start))],
+  ['directory instead of source', ({ root }) => {
+    rmSync(path.join(root, start));
+    mkdirSync(path.join(root, start));
+  }],
   ['oversized source', ({ root }) => writeFileSync(path.join(root, start), 'x'.repeat(1024 * 1024 + 1))],
   ['invalid UTF-8', ({ root }) => writeFileSync(path.join(root, start), Buffer.from([255]))],
   ['invalid combined syntax', ({ root }) => writeFileSync(path.join(root, start), 'const = ;')],
