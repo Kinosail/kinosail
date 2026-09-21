@@ -21,6 +21,10 @@ The first maintained Swift attempt ([job 106213221287](https://github.com/Kinosa
 
 The ARM64-only attempt still spent over 20 minutes in iOS SDK/module extraction. Investigation found a supported-configuration gap: CodeQL 2.27's own autobuilder disables `COMPILATION_CACHE_ENABLE_CACHING`, `SWIFT_ENABLE_COMPILE_CACHE`, and `SWIFT_USE_INTEGRATED_DRIVER`. Upstream explains that caches can omit compiler invocations and the integrated driver introduces Xcode modules incompatible with the extractor. Apply those same settings to the manual scan, plus the autobuilder's unsigned-build settings. These overrides are confined to CodeQL; the ordinary native build remains unchanged. This is a correctness requirement for extraction, not a query suppression.
 
+The supported settings completed [hosted Swift job 106220574103](https://github.com/Kinosail/kinosail/actions/runs/35563388011/job/106220574103) in 23m58s: both instrumented builds took 21m38s and analysis/upload took 1m24s. All 28 reported rules completed with zero findings, scan warnings, or unresolved AST nodes. This confirms extraction with the supported settings; it is not a controlled speedup measurement because earlier attempts never completed.
+
+Container delivery previously stopped waiting for sibling CI after 20 minutes, shorter than the restored Swift scan's 30-minute ceiling. Allow 35 minutes for successful sibling CI and 40 for the encompassing job; publication still fails closed on failures or timeout. A fake-clock regression reproduces the premature rejection at 25 minutes and proves both eventual-success deployment-target emission and bounded timeout without deployment targets. This changes the maximum wait, not the time to publish once checks pass.
+
 ## Regression evidence
 
 - `node --test packages/webassets/offline-identity.test.mjs`: 31 passing cases; malformed, foreign, missing, oversized, and conflicting messages cause no identity storage access, writes, or broadcasts.
