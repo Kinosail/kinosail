@@ -5,9 +5,9 @@ section: Start here
 ---
 # Installation overview
 
-**[Install with Docker]({{ '/quickstart/' | relative_url }})** is the recommended path for running the web Player. Use the prebuilt image with the matching signed release bundle. You do not need Git, Go, or a local image build.
+**[Install with Docker]({{ '/quickstart/' | relative_url }})** is the recommended path for running the web Player. Use the prebuilt `ghcr.io/kinosail/kinosail-player:latest` container with the current deployment files. Git downloads those files; Go and a local image build are not required.
 
-Check [Releases](https://github.com/Kinosail/kinosail/releases) for a published Player bundle before starting. No releases were published when checked on September 20, 2026. Source builds remain a separate path for contributors and early evaluation.
+The Docker guide installs the continuous container channel. You do not need a numbered GitHub release or an installer archive. Source builds remain a separate path for contributors and development.
 
 ## Your first successful setup
 
@@ -30,4 +30,4 @@ Follow [backups and updates]({{ '/owner-guide/backups-and-updates/' | relative_u
 
 ## Development and evaluation
 
-Use [build from source]({{ '/source-install/' | relative_url }}) if you are contributing or need to evaluate a checkout before a signed release exists. This is separate from the normal Docker release installation.
+Use [build from source]({{ '/source-install/' | relative_url }}) if you are contributing or need to evaluate unpublished code. This is separate from installing the prebuilt container.

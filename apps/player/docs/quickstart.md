@@ -7,7 +7,15 @@ section: Start here
 
 Docker Compose is the recommended way to run Kinosail. Green changes on `main` publish signed Player containers for Intel/AMD and Arm hosts. You do not need to wait for a numbered release or build the application locally.
 
-The installer uses the latest verified container and pins its immutable image digest. If no successful container publication exists yet, installation stops; a source merge alone does not establish that an image is available.
+The installer uses `ghcr.io/kinosail/kinosail-player:latest`, verifies its signature, and pins its immutable image digest. A numbered GitHub release or installer archive is not required.
+
+## Container image
+
+```sh
+docker pull ghcr.io/kinosail/kinosail-player:latest
+```
+
+This downloads the image only. Follow the installer steps below to verify the signature and configure persistent storage, read-only media, HTTPS, and backup secrets. The `latest` tag advances after successful publication; an installed Server stays on its pinned digest until you update it.
 
 ## Before you start
 
