@@ -33,7 +33,7 @@ jobs:
     if: fromJSON(needs.changes.outputs.plan).subtitles
     timeout-minutes: 20
     name: Subtitles static checks
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     defaults:
       run:
         working-directory: apps/subtitles
@@ -63,7 +63,7 @@ jobs:
     if: fromJSON(needs.changes.outputs.plan).subtitles
     timeout-minutes: 20
     name: Subtitles race tests
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     defaults:
       run:
         working-directory: apps/subtitles
@@ -86,7 +86,7 @@ jobs:
     if: fromJSON(needs.changes.outputs.plan).subtitles
     timeout-minutes: 20
     name: Subtitles security checks
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     defaults:
       run:
         working-directory: apps/subtitles
@@ -107,7 +107,7 @@ jobs:
     if: fromJSON(needs.changes.outputs.plan).subtitles_tools
     timeout-minutes: 20
     name: Subtitles installer, native, and local pipeline checks
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     defaults:
       run:
         working-directory: apps/subtitles
@@ -140,7 +140,7 @@ jobs:
     needs: changes
     if: fromJSON(needs.changes.outputs.plan).deep
     timeout-minutes: 20
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     defaults:
       run:
         working-directory: apps/subtitles
@@ -180,7 +180,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        include: ${{ fromJSON(fromJSON(needs.changes.outputs.plan).subtitles_arm && '[{"platform":"linux/amd64","runner":"ubuntu-latest"},{"platform":"linux/arm64","runner":"ubuntu-24.04-arm"}]' || '[{"platform":"linux/amd64","runner":"ubuntu-latest"}]') }}
+        include: ${{ fromJSON(fromJSON(needs.changes.outputs.plan).subtitles_arm && '[{"platform":"linux/amd64","runner":"ubuntu-24.04"},{"platform":"linux/arm64","runner":"ubuntu-24.04-arm"}]' || '[{"platform":"linux/amd64","runner":"ubuntu-24.04"}]') }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
@@ -269,7 +269,7 @@ jobs:
     name: Subtitles checks
     if: always()
     needs: [changes, static, race, security, system, tooling, scheduled]
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:

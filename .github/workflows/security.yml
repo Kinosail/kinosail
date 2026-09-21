@@ -22,7 +22,7 @@ jobs:
 
   secrets:
     name: Changed-commit secret scan
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
@@ -39,9 +39,9 @@ jobs:
   codeql:
     needs: changes
     if: needs.changes.outputs.languages != '[]'
-    timeout-minutes: ${{ matrix.language == 'swift' && 30 || 15 }}
+    timeout-minutes: ${{ matrix.language == 'swift' && 60 || 15 }}
     name: CodeQL (${{ matrix.language }})
-    runs-on: ${{ matrix.language == 'swift' && 'macos-latest' || 'ubuntu-latest' }}
+    runs-on: ${{ matrix.language == 'swift' && 'macos-latest' || 'ubuntu-24.04' }}
     permissions:
       contents: read
       security-events: write
@@ -90,7 +90,7 @@ jobs:
     if: fromJSON(needs.changes.outputs.plan).supply
     timeout-minutes: 15
     name: Supply chain security
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
@@ -112,7 +112,7 @@ jobs:
     name: CodeQL findings policy
     needs: [changes, codeql]
     if: needs.changes.outputs.languages != '[]'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     permissions:
       contents: read
       security-events: read
@@ -129,7 +129,7 @@ jobs:
     name: Security checks
     if: always()
     needs: [changes, secrets, codeql, supply-chain, findings]
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:

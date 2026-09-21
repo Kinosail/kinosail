@@ -21,7 +21,7 @@ jobs:
 
   static:
     name: Repository policy and CI contracts
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 5
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
@@ -38,7 +38,7 @@ jobs:
     name: Browser script checks
     needs: changes
     if: fromJSON(needs.changes.outputs.plan).web
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
@@ -58,7 +58,7 @@ jobs:
     name: Repository tooling checks
     needs: changes
     if: fromJSON(needs.changes.outputs.plan).tooling
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
@@ -82,7 +82,7 @@ jobs:
     name: Shared package tests, lint, and dependencies
     needs: changes
     if: fromJSON(needs.changes.outputs.plan).packages
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
@@ -108,7 +108,7 @@ jobs:
     name: Repository checks
     if: always()
     needs: [changes, static, tooling, packages, web]
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:

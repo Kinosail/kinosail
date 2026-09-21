@@ -31,6 +31,20 @@ The pinned Action's incremental modes require tracked sources: PR diff-informed 
 
 ## Regression evidence
 
+### Cold main-branch Swift budget follow-up
+
+After PR #45 merged, [main attempt 3, job 106247653815](https://github.com/Kinosail/kinosail/actions/runs/35567730797/job/106247653815), timed out at exactly 30 minutes. Runner diagnostics record its first cancellation at 07:53:36 UTC. Unlike the two earlier interrupted attempts, this run completed cleanup and uploaded its partial database. That database contains 10,746 non-directory TRAP files (493,661,692 uncompressed bytes), with SDK declaration writes in every minute from 07:33 through 07:53. Extraction was continuing; neither a deadlock nor memory exhaustion is established. The runner image, source, compiler flags, and CodeQL version match the successful PR scans.
+
+Raise only Swift's bounded allowance to 60 minutes, delivery polling to 65, and its enclosing verifier to 70. Keep both platform builds, all queries, and compiler settings unchanged for this controlled follow-up. The longer ceiling does not delay successful runs or permit publication after failure. Fake-clock tests cover success after 61 minutes and rejection after 65 minutes without emitting deployment targets. Hosted completion within the new budget must be verified before declaring the pipeline healthy.
+
+Do not treat CodeQL's thread setting as a proven cap on these compiler processes: [Swift tracing launches extraction after individual compiler invocations](https://github.com/github/codeql/blob/codeql-cli/v2.27.0/swift/tools/tracing-config.lua#L114-L145). Three distinct batches/module invocations are present, without a restart loop. If this remains too slow, capture compiler/extractor CPU, RSS, and swap measurements before changing Xcode concurrency. Preserve extraction coverage when evaluating any optimization.
+
+### Focused regression results
+
+The follow-up annotation inventory inspected 47 latest check runs on main `98f8fdbd`. Besides the Swift timeout and dependent gate failures, two documentation jobs reported Node 20 deprecation: the Pages uploader invoked upload-artifact v4, and deployment used deploy-pages v4. Upgrade to SHA-pinned [upload-pages-artifact v5.0.0](https://github.com/actions/upload-pages-artifact/releases/tag/v5.0.0) (upload-artifact v7) and [deploy-pages v5.0.1](https://github.com/actions/deploy-pages/releases/tag/v5.0.1) (Node 24), preserving their existing inputs and permissions. Verify the real Pages deployment on main.
+
+Pin Linux x64 jobs to `ubuntu-24.04`, the image already used by the successful checks; keep ARM64 on `ubuntu-24.04-arm`. This removes the announced `ubuntu-latest` migration notices and makes the future OS upgrade an explicit tested change. [GitHub's migration notice](https://github.com/actions/runner-images/issues/14748) schedules the Ubuntu 26 transition for October–November 2026. Informational test-count notices are test evidence, not suppressed warnings. Retain historical failed runs; verify the latest commit's annotations and delivery instead of deleting history.
+
 - `node --test packages/webassets/offline-identity.test.mjs`: 31 passing cases; malformed, foreign, missing, oversized, and conflicting messages cause no identity storage access, writes, or broadcasts.
 - Player Playwright `worker-message-security.spec.ts` and the four existing service-worker contract/upgrade specs: 42 passes across Chromium, Firefox, and WebKit with retries disabled. Real service workers accept valid profile and logout messages after sender checks.
 - Dedicated-worker security tests use real Blob Workers and cross-origin frames, with an in-memory filesystem to isolate channel security from browser OPFS availability. Actual OPFS checks also passed locally in Chromium/Firefox; local WebKit OPFS returned a transient filesystem error and is not claimed as verified by this test.
