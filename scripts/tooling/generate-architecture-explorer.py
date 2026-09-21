@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import json
+import os
 import re
 import subprocess
 import sys
@@ -61,6 +62,8 @@ def run_go_list() -> list[dict]:
         result = subprocess.run(
             ["go", "list", "-json", "./..."],
             cwd=directory,
+            # Match the canonical container target on every developer and CI host.
+            env=os.environ | {"GOOS": "linux", "GOARCH": "amd64", "CGO_ENABLED": "0"},
             check=True,
             capture_output=True,
             text=True,
