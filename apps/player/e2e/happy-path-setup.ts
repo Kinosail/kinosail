@@ -63,7 +63,7 @@ export async function startHappyPath(page: Page, testInfo: TestInfo): Promise<Ha
 			await page.getByRole("link", { name: "Finish and open Library" }).click();
 			passkeyCreated = true;
 		} else {
-			await page.getByRole("button", { name: "Use an authenticator instead" }).click();
+			await page.getByRole("button", { name: "Use an authenticator app instead" }).click();
 			authenticatorSecret = (await page.locator("code").first().textContent())!;
 			await page.getByLabel("Authentication code").fill(totp(authenticatorSecret));
 			await page.getByRole("button", { name: "Turn on extra sign-in protection" }).click();

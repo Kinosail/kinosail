@@ -3,7 +3,7 @@
 <html lang="en"><head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#0b0d0b">
 <title>{{if eq .View "wanted"}}Wanted{{else if eq .View "library"}}Library{{else}}Overview{{end}} · {{.ServerName}}</title>
-<script src="/static/theme.js?v=electric-1"></script><link rel="stylesheet" href="/static/app.css?v=electric-1"><script defer src="/static/subtitle-status.js?v=4"></script>
+<script src="/static/theme.js?v=electric-1"></script><link rel="stylesheet" href="/static/app.css?v=electric-1"><script defer src="/static/subtitle-status.js?v=5"></script>
 </head><body class="library-page subtitle-app subtitle-dashboard"><a class="skip" href="#main">Skip to content</a>
 {{template "subtitle-navigation" .}}
 <main id="main" class="subtitle-main last-light" tabindex="-1" data-view="{{.View}}" data-loading-label="Loading library…" data-error-label="Could not load the library. Your current view is still here." data-action-label="Working on subtitles…" data-action-done="Subtitle action completed." data-action-error="Could not confirm this action. Refresh the library before trying again." data-retry-label="Reload view" data-checked-label="checked" data-added-label="added" data-improved-label="improved" data-failed-label="failed">

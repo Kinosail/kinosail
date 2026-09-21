@@ -6,6 +6,10 @@
   const number = new Intl.NumberFormat(document.documentElement.lang || navigator.language);
   const main = () => document.getElementById("main");
   const label = name => main()?.dataset[name] || "";
+  document.querySelector('.skip[href="#main"]')?.addEventListener("click", event => {
+    event.preventDefault();
+    main()?.focus();
+  });
 
   function formatContent() {
     document.querySelectorAll("[data-number]").forEach(element => {
