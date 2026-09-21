@@ -8,8 +8,9 @@ import re
 import subprocess
 
 APPS = ("player", "subtitles", "dashboard")
+LANGUAGES = ("go", "javascript-typescript", "python", "actions", "swift")
 FLAGS = (*APPS, "packages", "tooling", "web", "client", "supply",
-         "go", "javascript-typescript", "python",
+         *LANGUAGES,
          *(f"{app}_{kind}" for app in APPS for kind in ("tools", "browsers", "arm")))
 
 
@@ -33,7 +34,7 @@ def affected(paths):
                 or (len(parts) > 3 and parts[0] == "apps" and parts[2] == "docs" and path.endswith(".md"))):
             continue
         if path.startswith("apps/player/apps/native/"):
-            selected["client"] = True
+            selected["client"] = selected["swift"] = True
             selected["supply"] = True
             continue
         if path.startswith("apps/") and len(parts) > 2 and parts[1] in APPS:
@@ -50,7 +51,7 @@ def affected(paths):
                 selected[f"{app}_tools"] = selected[f"{app}_arm"] = True
                 selected["supply"] = True
             if app == "player" and relative == "Makefile":
-                selected["client"] = True
+                selected["client"] = selected["swift"] = True
             if relative.endswith((".js", ".mjs", ".ts", ".tsx", ".html", ".css")):
                 selected[f"{app}_browsers"] = selected["web"] = True
                 selected["javascript-typescript"] = True
@@ -117,7 +118,7 @@ def main():
     encoded = json.dumps(plan, separators=(",", ":"))
     with open(os.environ["GITHUB_OUTPUT"], "a") as output:
         output.write("plan=" + encoded + "\n")
-        output.write("languages=" + json.dumps([name for name in ("go", "javascript-typescript", "python") if plan[name]]) + "\n")
+        output.write("languages=" + json.dumps([name for name in LANGUAGES if plan[name]]) + "\n")
     print("Selected checks: " + ", ".join(key for key, value in plan.items() if value))
     if os.environ.get("GITHUB_STEP_SUMMARY"):
         with open(os.environ["GITHUB_STEP_SUMMARY"], "a") as summary:

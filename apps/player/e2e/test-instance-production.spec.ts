@@ -9,7 +9,7 @@ test("fresh installation controls the populated app and serves its complete shel
   await login(page);
   await page.goto("/");
   await expect.poll(() => page.evaluate(() => navigator.serviceWorker.controller?.state)).toBe("activated");
-  expect(await page.evaluate(() => navigator.serviceWorker.controller?.scriptURL)).toContain("/service-worker.js?v=51");
+  expect(await page.evaluate(() => navigator.serviceWorker.controller?.scriptURL)).toContain("/service-worker.js?v=52");
   await connection.disconnect();
   try {
     await page.goto("/offline");

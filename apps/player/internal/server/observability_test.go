@@ -21,3 +21,7 @@ func TestJellyfinStreamShapeDistinguishesSafeHLSPaths(t *testing.T) {
 func TestJellyfinSourceHLSFileRejectsUnsafeChildren(t *testing.T) {
 	servertest.JellyfinSourceHLSFileRejectsUnsafeChildren(t, jellyfinSourceHLSFile)
 }
+
+func TestRequestLoggingCannotForgeRecords(t *testing.T) {
+	servertest.RequestLoggingCannotForgeRecords(t, observedAuditHandler)
+}

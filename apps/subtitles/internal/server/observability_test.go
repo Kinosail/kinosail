@@ -13,3 +13,7 @@ func TestRequestLoggingRecoversPanicsAndRedactsURLs(t *testing.T) {
 func TestUnknownJellyfinRouteLoggingKeepsOnlySafeRouteSegments(t *testing.T) {
 	servertest.UnknownJellyfinRouteLoggingKeepsOnlySafeRouteSegments(t, observedAuditHandler)
 }
+
+func TestRequestLoggingCannotForgeRecords(t *testing.T) {
+	servertest.RequestLoggingCannotForgeRecords(t, observedAuditHandler)
+}

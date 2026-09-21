@@ -2,6 +2,7 @@ package servertest
 
 import (
 	"bytes"
+	"encoding/json"
 	"log/slog"
 	"net/http"
 	"net/http/httptest"
@@ -91,5 +92,45 @@ func JellyfinSourceHLSFileRejectsUnsafeChildren(t *testing.T, sourceFile func(st
 		if file, valid := sourceFile(path); valid {
 			t.Errorf("jellyfinSourceHLSFile(%q) = %q, true", path, file)
 		}
+	}
+}
+
+// RequestLoggingCannotForgeRecords exercises the same JSON handler installed by appcli.Execute.
+func RequestLoggingCannotForgeRecords(t *testing.T, observe ObservedAuditHandler) {
+	t.Helper()
+	const attack = "untrusted\r\n{\"level\":\"ERROR\",\"msg\":\"forged\"}\x1b[2J<script>alert(1)</script>"
+	var output bytes.Buffer
+	previous := slog.Default()
+	slog.SetDefault(slog.New(slog.NewJSONHandler(&output, &slog.HandlerOptions{Level: slog.LevelDebug})))
+	t.Cleanup(func() { slog.SetDefault(previous) })
+	handler := observe(t, "GET /media/{id}", http.HandlerFunc(func(http.ResponseWriter, *http.Request) { panic(attack) }))
+	request := httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/media/item?api_key=secret", nil)
+	request.Method = attack
+	request.Header.Set("X-Request-ID", attack)
+	response := httptest.NewRecorder()
+	handler.ServeHTTP(response, request)
+	lines := bytes.Split(bytes.TrimSpace(output.Bytes()), []byte{'\n'})
+	if response.Code != http.StatusInternalServerError || len(lines) != 2 {
+		t.Fatalf("response=%d records=%d log=%q", response.Code, len(lines), output.String())
+	}
+	for index, line := range lines {
+		assertJSONRequestRecord(t, line, []string{"request panic", "request"}[index], attack)
+	}
+}
+
+func assertJSONRequestRecord(t *testing.T, line []byte, message, attack string) {
+	t.Helper()
+	var record map[string]any
+	if err := json.Unmarshal(line, &record); err != nil {
+		t.Fatal(err)
+	}
+	if record["msg"] != message || record["method"] != attack {
+		t.Fatalf("record changed shape: %#v", record)
+	}
+	if message == "request panic" && record["panic"] != attack {
+		t.Fatalf("panic detail lost: %#v", record)
+	}
+	if record["request_id"] == attack || strings.Contains(string(line), "api_key") || bytes.ContainsAny(line, "\r\x1b") {
+		t.Fatalf("unescaped or private data in log: %q", line)
 	}
 }

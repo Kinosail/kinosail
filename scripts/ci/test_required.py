@@ -58,6 +58,21 @@ class RequiredTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             verify("unknown", {})
 
+    def test_swift_and_actions_scans_cannot_be_skipped(self):
+        for language in ("swift", "actions"):
+            needs = results("security", False)
+            plan = json.loads(needs["changes"]["outputs"]["plan"])
+            plan[language] = True
+            needs["changes"]["outputs"]["plan"] = json.dumps(plan)
+            for job in ("codeql", "findings"):
+                needs[job]["result"] = "success"
+            verify("security", needs)
+            for job in ("codeql", "findings"):
+                broken = copy.deepcopy(needs)
+                broken[job]["result"] = "skipped"
+                with self.assertRaises(ValueError):
+                    verify("security", broken)
+
     def test_native_only_requires_client_and_skips_server(self):
         needs = results("player", False)
         plan = json.loads(needs["changes"]["outputs"]["plan"])
