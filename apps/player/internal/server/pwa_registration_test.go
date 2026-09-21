@@ -121,7 +121,7 @@ func TestOfflinePagesUseTheCurrentNavigationBundle(t *testing.T) {
 		response := httptest.NewRecorder()
 		handler.ServeHTTP(response, httptest.NewRequestWithContext(t.Context(), http.MethodGet, path, nil))
 		body := response.Body.String()
-		if !strings.Contains(body, `downloads.js?v=27`) || strings.Contains(body, `main.kinosail.bundle.js?v=12`) || strings.Contains(body, `main.kinosail.bundle.js?v=16`) {
+		if !strings.Contains(body, `downloads.js?v=28`) || strings.Contains(body, `main.kinosail.bundle.js?v=12`) || strings.Contains(body, `main.kinosail.bundle.js?v=16`) {
 			t.Fatalf("%s can register an obsolete offline worker: %s", path, body)
 		}
 		if path == "/offline-downloads" && !strings.Contains(body, `main.kinosail.bundle.js?v=29`) {

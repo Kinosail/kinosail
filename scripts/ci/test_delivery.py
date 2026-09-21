@@ -72,8 +72,8 @@ class DeliveryTests(unittest.TestCase):
             self.assertFalse(output.exists())
 
     def test_delivery_waits_for_cold_swift_but_remains_bounded(self):
-        for status, clock, succeeds in (("completed", [0, 1500], True),
-                                         ("in_progress", [0, 1500, 2101], False)):
+        for status, clock, succeeds in (("completed", [0, 3660], True),
+                                         ("in_progress", [0, 3660, 3901], False)):
             with self.subTest(status=status), tempfile.TemporaryDirectory() as directory:
                 output = Path(directory) / "output"
                 plan = json.dumps(dict.fromkeys((*FLAGS, "deep"), True))

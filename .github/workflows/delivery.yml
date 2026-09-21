@@ -13,8 +13,8 @@ permissions:
 jobs:
   verified:
     name: Require all CI for this main commit
-    runs-on: ubuntu-latest
-    timeout-minutes: 40
+    runs-on: ubuntu-24.04
+    timeout-minutes: 70
     permissions:
       contents: read
       actions: read
@@ -45,7 +45,7 @@ jobs:
         app: ${{ fromJSON(needs.verified.outputs.apps) }}
         include:
           - arch: amd64
-            runner: ubuntu-latest
+            runner: ubuntu-24.04
           - arch: arm64
             runner: ubuntu-24.04-arm
         # Explicit architecture axis makes one independent build per app/platform.
@@ -105,7 +105,7 @@ jobs:
   manifest:
     name: Publish ${{ matrix.app }} container
     needs: [verified, images]
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 10
     permissions:
       contents: read
@@ -177,7 +177,7 @@ jobs:
   production:
     name: Advance ${{ matrix.app }} production tags
     needs: [verified, manifest]
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 5
     concurrency:
       group: container-promotion-${{ matrix.app }}

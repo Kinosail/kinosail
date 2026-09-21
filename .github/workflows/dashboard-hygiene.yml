@@ -31,7 +31,7 @@ jobs:
     if: fromJSON(needs.changes.outputs.plan).dashboard
     timeout-minutes: 20
     name: Dashboard static checks
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     defaults:
       run:
         working-directory: apps/dashboard
@@ -57,7 +57,7 @@ jobs:
     if: fromJSON(needs.changes.outputs.plan).dashboard
     timeout-minutes: 20
     name: Dashboard race tests
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     defaults:
       run:
         working-directory: apps/dashboard
@@ -76,7 +76,7 @@ jobs:
     if: fromJSON(needs.changes.outputs.plan).dashboard
     timeout-minutes: 20
     name: Dashboard security checks
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     defaults:
       run:
         working-directory: apps/dashboard
@@ -97,7 +97,7 @@ jobs:
     if: fromJSON(needs.changes.outputs.plan).dashboard
     timeout-minutes: 20
     name: Dashboard runtime and browser checks
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
@@ -139,7 +139,7 @@ jobs:
     name: Dashboard checks
     if: always()
     needs: [changes, static, race, security, system]
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
