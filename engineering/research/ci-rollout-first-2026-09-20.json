@@ -1,0 +1,417 @@
+{
+  "capturedAt": "2026-09-21T00:09:33.093296+00:00",
+  "note": "First rollout iteration, not final implementation or successful speed benchmark. Required failures prevented merge and publication.",
+  "runs": [
+    {
+      "conclusion": "failure",
+      "createdAt": "2026-09-20T23:55:22Z",
+      "databaseId": 35546041328,
+      "headSha": "146c55d473c58af76bd8531a5a6c8490a4283f10",
+      "jobs": [
+        {
+          "completedAt": "2026-09-20T23:55:35Z",
+          "conclusion": "success",
+          "databaseId": 106172005181,
+          "name": "Repository policy and CI contracts",
+          "startedAt": "2026-09-20T23:55:24Z",
+          "status": "completed",
+          "url": "https://github.com/Kinosail/kinosail/actions/runs/35546041328/job/106172005181"
+        },
+        {
+          "completedAt": "2026-09-20T23:55:28Z",
+          "conclusion": "success",
+          "databaseId": 106172005309,
+          "name": "changes / changes",
+          "startedAt": "2026-09-20T23:55:24Z",
+          "status": "completed",
+          "url": "https://github.com/Kinosail/kinosail/actions/runs/35546041328/job/106172005309"
+        },
+        {
+          "completedAt": "2026-09-20T23:58:46Z",
+          "conclusion": "failure",
+          "databaseId": 106172017099,
+          "name": "Shared package tests, lint, and dependencies",
+          "startedAt": "2026-09-20T23:55:30Z",
+          "status": "completed",
+          "url": "https://github.com/Kinosail/kinosail/actions/runs/35546041328/job/106172017099"
+        },
+        {
+          "completedAt": "2026-09-20T23:56:14Z",
+          "conclusion": "failure",
+          "databaseId": 106172017106,
+          "name": "Repository tooling checks",
+          "startedAt": "2026-09-20T23:55:30Z",
+          "status": "completed",
+          "url": "https://github.com/Kinosail/kinosail/actions/runs/35546041328/job/106172017106"
+        },
+        {
+          "completedAt": "2026-09-20T23:55:48Z",
+          "conclusion": "failure",
+          "databaseId": 106172017129,
+          "name": "Browser script checks",
+          "startedAt": "2026-09-20T23:55:30Z",
+          "status": "completed",
+          "url": "https://github.com/Kinosail/kinosail/actions/runs/35546041328/job/106172017129"
+        },
+        {
+          "completedAt": "2026-09-20T23:58:53Z",
+          "conclusion": "failure",
+          "databaseId": 106172418825,
+          "name": "Repository checks",
+          "startedAt": "2026-09-20T23:58:48Z",
+          "status": "completed",
+          "url": "https://github.com/Kinosail/kinosail/actions/runs/35546041328/job/106172418825"
+        },
+        {
+          "completedAt": "2026-09-20T23:58:53Z",
+          "conclusion": "skipped",
+          "databaseId": 106172435221,
+          "name": "Ship verified containers",
+          "startedAt": "2026-09-20T23:58:53Z",
+          "status": "completed",
+          "url": "https://github.com/Kinosail/kinosail/actions/runs/35546041328/job/106172435221"
+        }
+      ],
+      "status": "completed",
+      "updatedAt": "2026-09-20T23:58:53Z",
+      "url": "https://github.com/Kinosail/kinosail/actions/runs/35546041328",
+      "workflowName": "Repository Quality"
+    },
+    {
+      "conclusion": "failure",
+      "createdAt": "2026-09-20T23:55:22Z",
+      "databaseId": 35546041326,
+      "headSha": "146c55d473c58af76bd8531a5a6c8490a4283f10",
+      "jobs": [
+        {
+          "completedAt": "2026-09-20T23:55:28Z",
+          "conclusion": "success",
+          "databaseId": 106172005264,
+          "name": "changes / changes",
+          "startedAt": "2026-09-20T23:55:24Z",
+          "status": "completed",
+          "url": "https://github.com/Kinosail/kinosail/actions/runs/35546041326/job/106172005264"
+        },
+        {
+          "completedAt": "2026-09-20T23:56:18Z",
+          "conclusion": "success",
+          "databaseId": 106172017216,
+          "name": "Dashboard static checks",
+          "startedAt": "2026-09-20T23:55:30Z",
+          "status": "completed",
+          "url": "https://github.com/Kinosail/kinosail/actions/runs/35546041326/job/106172017216"
+        },
+        {
+          "completedAt": "2026-09-20T23:59:18Z",
+          "conclusion": "failure",
+          "databaseId": 106172017229,
+          "name": "Dashboard race tests",
+          "startedAt": "2026-09-20T23:55:30Z",
+          "status": "completed",
+          "url": "https://github.com/Kinosail/kinosail/actions/runs/35546041326/job/106172017229"
+        },
+        {
+          "completedAt": "2026-09-20T23:57:59Z",
+          "conclusion": "failure",
+          "databaseId": 106172017258,
+          "name": "Dashboard runtime and browser checks",
+          "startedAt": "2026-09-20T23:55:30Z",
+          "status": "completed",
+          "url": "https://github.com/Kinosail/kinosail/actions/runs/35546041326/job/106172017258"
+        },
+        {
+          "completedAt": "2026-09-20T23:56:04Z",
+          "conclusion": "success",
+          "databaseId": 106172017260,
+          "name": "Dashboard security checks",
+          "startedAt": "2026-09-20T23:55:32Z",
+          "status": "completed",
+          "url": "https://github.com/Kinosail/kinosail/actions/runs/35546041326/job/106172017260"
+        },
+        {
+          "completedAt": "2026-09-20T23:59:27Z",
+          "conclusion": "failure",
+          "databaseId": 106172483382,
+          "name": "Dashboard checks",
+          "startedAt": "2026-09-20T23:59:20Z",
+          "status": "completed",
+          "url": "https://github.com/Kinosail/kinosail/actions/runs/35546041326/job/106172483382"
+        }
+      ],
+      "status": "completed",
+      "updatedAt": "2026-09-20T23:59:27Z",
+      "url": "https://github.com/Kinosail/kinosail/actions/runs/35546041326",
+      "workflowName": "Dashboard Hygiene"
+    },
+    {
+      "conclusion": "failure",
+      "createdAt": "2026-09-20T23:55:22Z",
+      "databaseId": 35546041335,
+      "headSha": "146c55d473c58af76bd8531a5a6c8490a4283f10",
+      "jobs": [
+        {
+          "completedAt": "2026-09-20T23:55:31Z",
+          "conclusion": "success",
+          "databaseId": 106172005345,
+          "name": "changes / changes",
+          "startedAt": "2026-09-20T23:55:24Z",
+          "status": "completed",
+          "url": "https://github.com/Kinosail/kinosail/actions/runs/35546041335/job/106172005345"
+        },
+        {
+          "completedAt": "2026-09-20T23:58:00Z",
+          "conclusion": "failure",
+          "databaseId": 106172022679,
+          "name": "Player installer, native, and local pipeline checks",
+          "startedAt": "2026-09-20T23:57:31Z",
+          "status": "completed",
+          "url": "https://github.com/Kinosail/kinosail/actions/runs/35546041335/job/106172022679"
+        },
+        {
+          "completedAt": "2026-09-20T23:58:12Z",
+          "conclusion": "failure",
+          "databaseId": 106172022691,
+          "name": "Player static checks",
+          "startedAt": "2026-09-20T23:57:08Z",
+          "status": "completed",
+          "url": "https://github.com/Kinosail/kinosail/actions/runs/35546041335/job/106172022691"
+        },
+        {
+          "completedAt": "2026-09-20T23:58:53Z",
+          "conclusion": "success",
+          "databaseId": 106172022694,
+          "name": "Player Swift client compilation",
+          "startedAt": "2026-09-20T23:56:36Z",
+          "status": "completed",
+          "url": "https://github.com/Kinosail/kinosail/actions/runs/35546041335/job/106172022694"
+        },
+        {
+          "completedAt": "2026-09-20T23:57:29Z",
+          "conclusion": "failure",
+          "databaseId": 106172022701,
+          "name": "Player system (linux/arm64)",
+          "startedAt": "2026-09-20T23:56:31Z",
+          "status": "completed",
+          "url": "https://github.com/Kinosail/kinosail/actions/runs/35546041335/job/106172022701"
+        },
+        {
+          "completedAt": "2026-09-21T00:04:28Z",
+          "conclusion": "failure",
+          "databaseId": 106172022703,
+          "name": "Player race tests",
+          "startedAt": "2026-09-20T23:57:20Z",
+          "status": "completed",
+          "url": "https://github.com/Kinosail/kinosail/actions/runs/35546041335/job/106172022703"
+        },
+        {
+          "completedAt": "2026-09-21T00:02:58Z",
+          "conclusion": "failure",
+          "databaseId": 106172022704,
+          "name": "Player system (linux/amd64)",
+          "startedAt": "2026-09-20T23:56:56Z",
+          "status": "completed",
+          "url": "https://github.com/Kinosail/kinosail/actions/runs/35546041335/job/106172022704"
+        },
+        {
+          "completedAt": "2026-09-20T23:58:31Z",
+          "conclusion": "success",
+          "databaseId": 106172022768,
+          "name": "Player security checks",
+          "startedAt": "2026-09-20T23:58:01Z",
+          "status": "completed",
+          "url": "https://github.com/Kinosail/kinosail/actions/runs/35546041335/job/106172022768"
+        },
+        {
+          "completedAt": "2026-09-20T23:55:31Z",
+          "conclusion": "skipped",
+          "databaseId": 106172023383,
+          "name": "Player scheduled ${{ matrix.check }}",
+          "startedAt": "2026-09-20T23:55:32Z",
+          "status": "completed",
+          "url": "https://github.com/Kinosail/kinosail/actions/runs/35546041335/job/106172023383"
+        },
+        {
+          "completedAt": "2026-09-21T00:04:34Z",
+          "conclusion": "failure",
+          "databaseId": 106173213341,
+          "name": "Player checks",
+          "startedAt": "2026-09-21T00:04:30Z",
+          "status": "completed",
+          "url": "https://github.com/Kinosail/kinosail/actions/runs/35546041335/job/106173213341"
+        }
+      ],
+      "status": "completed",
+      "updatedAt": "2026-09-21T00:04:35Z",
+      "url": "https://github.com/Kinosail/kinosail/actions/runs/35546041335",
+      "workflowName": "Player Hygiene"
+    },
+    {
+      "conclusion": "",
+      "createdAt": "2026-09-20T23:55:22Z",
+      "databaseId": 35546041327,
+      "headSha": "146c55d473c58af76bd8531a5a6c8490a4283f10",
+      "jobs": [
+        {
+          "completedAt": "2026-09-20T23:55:31Z",
+          "conclusion": "success",
+          "databaseId": 106172005333,
+          "name": "changes / changes",
+          "startedAt": "2026-09-20T23:55:24Z",
+          "status": "completed",
+          "url": "https://github.com/Kinosail/kinosail/actions/runs/35546041327/job/106172005333"
+        },
+        {
+          "completedAt": "2026-09-20T23:57:06Z",
+          "conclusion": "failure",
+          "databaseId": 106172022401,
+          "name": "Subtitles static checks",
+          "startedAt": "2026-09-20T23:55:50Z",
+          "status": "completed",
+          "url": "https://github.com/Kinosail/kinosail/actions/runs/35546041327/job/106172022401"
+        },
+        {
+          "completedAt": "2026-09-20T23:56:43Z",
+          "conclusion": "failure",
+          "databaseId": 106172022410,
+          "name": "Subtitles system (linux/arm64)",
+          "startedAt": "2026-09-20T23:55:40Z",
+          "status": "completed",
+          "url": "https://github.com/Kinosail/kinosail/actions/runs/35546041327/job/106172022410"
+        },
+        {
+          "completedAt": "2026-09-21T00:03:59Z",
+          "conclusion": "failure",
+          "databaseId": 106172022442,
+          "name": "Subtitles race tests",
+          "startedAt": "2026-09-20T23:55:44Z",
+          "status": "completed",
+          "url": "https://github.com/Kinosail/kinosail/actions/runs/35546041327/job/106172022442"
+        },
+        {
+          "completedAt": "2026-09-20T23:56:45Z",
+          "conclusion": "failure",
+          "databaseId": 106172022461,
+          "name": "Subtitles installer, native, and local pipeline checks",
+          "startedAt": "2026-09-20T23:56:06Z",
+          "status": "completed",
+          "url": "https://github.com/Kinosail/kinosail/actions/runs/35546041327/job/106172022461"
+        },
+        {
+          "completedAt": "0001-01-01T00:00:00Z",
+          "conclusion": "",
+          "databaseId": 106172022465,
+          "name": "Subtitles system (linux/amd64)",
+          "startedAt": "2026-09-20T23:56:45Z",
+          "status": "in_progress",
+          "url": "https://github.com/Kinosail/kinosail/actions/runs/35546041327/job/106172022465"
+        },
+        {
+          "completedAt": "2026-09-20T23:57:18Z",
+          "conclusion": "success",
+          "databaseId": 106172022501,
+          "name": "Subtitles security checks",
+          "startedAt": "2026-09-20T23:56:47Z",
+          "status": "completed",
+          "url": "https://github.com/Kinosail/kinosail/actions/runs/35546041327/job/106172022501"
+        },
+        {
+          "completedAt": "2026-09-20T23:55:31Z",
+          "conclusion": "skipped",
+          "databaseId": 106172023022,
+          "name": "Subtitles scheduled ${{ matrix.check }}",
+          "startedAt": "2026-09-20T23:55:31Z",
+          "status": "completed",
+          "url": "https://github.com/Kinosail/kinosail/actions/runs/35546041327/job/106172023022"
+        }
+      ],
+      "status": "in_progress",
+      "updatedAt": "2026-09-20T23:56:48Z",
+      "url": "https://github.com/Kinosail/kinosail/actions/runs/35546041327",
+      "workflowName": "Subtitles Hygiene"
+    },
+    {
+      "conclusion": "success",
+      "createdAt": "2026-09-20T23:55:22Z",
+      "databaseId": 35546041347,
+      "headSha": "146c55d473c58af76bd8531a5a6c8490a4283f10",
+      "jobs": [
+        {
+          "completedAt": "2026-09-20T23:55:42Z",
+          "conclusion": "success",
+          "databaseId": 106172005368,
+          "name": "Changed-commit secret scan",
+          "startedAt": "2026-09-20T23:55:24Z",
+          "status": "completed",
+          "url": "https://github.com/Kinosail/kinosail/actions/runs/35546041347/job/106172005368"
+        },
+        {
+          "completedAt": "2026-09-20T23:55:30Z",
+          "conclusion": "success",
+          "databaseId": 106172005444,
+          "name": "changes / changes",
+          "startedAt": "2026-09-20T23:55:24Z",
+          "status": "completed",
+          "url": "https://github.com/Kinosail/kinosail/actions/runs/35546041347/job/106172005444"
+        },
+        {
+          "completedAt": "2026-09-21T00:00:28Z",
+          "conclusion": "success",
+          "databaseId": 106172020820,
+          "name": "CodeQL (go)",
+          "startedAt": "2026-09-20T23:56:21Z",
+          "status": "completed",
+          "url": "https://github.com/Kinosail/kinosail/actions/runs/35546041347/job/106172020820"
+        },
+        {
+          "completedAt": "2026-09-20T23:56:30Z",
+          "conclusion": "success",
+          "databaseId": 106172020835,
+          "name": "CodeQL (python)",
+          "startedAt": "2026-09-20T23:55:34Z",
+          "status": "completed",
+          "url": "https://github.com/Kinosail/kinosail/actions/runs/35546041347/job/106172020835"
+        },
+        {
+          "completedAt": "2026-09-20T23:56:28Z",
+          "conclusion": "success",
+          "databaseId": 106172020849,
+          "name": "Supply chain security",
+          "startedAt": "2026-09-20T23:56:15Z",
+          "status": "completed",
+          "url": "https://github.com/Kinosail/kinosail/actions/runs/35546041347/job/106172020849"
+        },
+        {
+          "completedAt": "2026-09-20T23:56:53Z",
+          "conclusion": "success",
+          "databaseId": 106172020860,
+          "name": "CodeQL (javascript-typescript)",
+          "startedAt": "2026-09-20T23:55:32Z",
+          "status": "completed",
+          "url": "https://github.com/Kinosail/kinosail/actions/runs/35546041347/job/106172020860"
+        },
+        {
+          "completedAt": "2026-09-21T00:00:33Z",
+          "conclusion": "success",
+          "databaseId": 106172641847,
+          "name": "CodeQL findings policy",
+          "startedAt": "2026-09-21T00:00:31Z",
+          "status": "completed",
+          "url": "https://github.com/Kinosail/kinosail/actions/runs/35546041347/job/106172641847"
+        },
+        {
+          "completedAt": "2026-09-21T00:00:41Z",
+          "conclusion": "success",
+          "databaseId": 106172654824,
+          "name": "Security checks",
+          "startedAt": "2026-09-21T00:00:35Z",
+          "status": "completed",
+          "url": "https://github.com/Kinosail/kinosail/actions/runs/35546041347/job/106172654824"
+        }
+      ],
+      "status": "completed",
+      "updatedAt": "2026-09-21T00:00:42Z",
+      "url": "https://github.com/Kinosail/kinosail/actions/runs/35546041347",
+      "workflowName": "Security"
+    }
+  ]
+}

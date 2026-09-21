@@ -17,7 +17,9 @@ class WorkflowSecurityTests(unittest.TestCase):
                 self.assertNotIn('continue-on-error:', source)
                 self.assertNotIn('enabled=false', source)
                 self.assertIn('    if: always()', source)
-                self.assertIn('all(.[]; .result == "success")', source)
+                self.assertIn('python3 scripts/ci/required.py ', source)
+                self.assertIn('uses: ./.github/workflows/changes.yml', source)
+                self.assertIn('needs: [changes,', source)
 
     def test_invalid_quality_scope_has_no_side_effects(self):
         import os
@@ -48,7 +50,13 @@ class WorkflowSecurityTests(unittest.TestCase):
                         self.assertRegex(action, r'@[0-9a-f]{40}$')
                 if not path.name.endswith('-release.yml'):
                     self.assertNotIn('contents: write', source)
-                    self.assertNotIn('packages: write', source)
+                    if path.name not in ('quality.yml', 'delivery.yml'):
+                        self.assertNotIn('packages: write', source)
+                    if path.name == 'quality.yml':
+                        delivery = source.split('  delivery:\n')[1]
+                        self.assertIn("github.event_name == 'push' && github.ref == 'refs/heads/main'", delivery)
+                        self.assertIn('needs: [changes, required]', delivery)
+                        self.assertNotIn('packages: write', source.split('  delivery:\n')[0])
 
     def test_release_requires_main_quality_and_security_before_promotion(self):
         for app in ('player', 'subtitles', 'dashboard'):

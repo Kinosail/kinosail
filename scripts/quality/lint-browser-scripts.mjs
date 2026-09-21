@@ -11,7 +11,7 @@ const bundles = browserScriptBundles(repo);
 const bundled = new Set(bundles.flatMap(bundle => bundle.files));
 const files = execFileSync('git', ['ls-files', '--cached', '--others', '--exclude-standard', '-z', '*.js', '*.ts', '*.tsx'], { cwd: repo, encoding: 'utf8' }).split('\0').filter(file =>
   /^(apps\/[^/]+\/internal\/|packages\/webassets\/static\/)/.test(file) &&
-  !/(?:\/hls\.min\.js|\/htmx\.min\.js|\.d\.ts|\.test\.|\.spec\.)/.test(file) && !bundled.has(file) && existsSync(path.join(repo, file)));
+  !/(?:\/third_party\/|\/hls\.min\.js|\/htmx\.min\.js|\.d\.ts|\.test\.|\.spec\.)/.test(file) && !bundled.has(file) && existsSync(path.join(repo, file)));
 let errors = 0;
 let warnings = 0;
 for (const bundle of [...bundles, ...files.map(file => ({ name: file, files: [file] }))]) {

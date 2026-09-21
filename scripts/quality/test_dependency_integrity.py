@@ -44,6 +44,20 @@ class IntegrityTest(unittest.TestCase):
                     INTEGRITY.verify(Path("."), module)
                 check.assert_not_called()
 
+    def test_browser_only_does_not_download_go_modules(self):
+        with mock.patch.object(sys, "argv", ["check", "--browser-only"]), mock.patch.object(INTEGRITY, "check_file") as check, mock.patch.object(INTEGRITY.subprocess, "run") as run:
+            INTEGRITY.main()
+            self.assertEqual(check.call_count, 4)
+            run.assert_not_called()
+
+    def test_unknown_cli_arguments_fail_before_file_or_process_access(self):
+        for args in (["unknown"], [""], ["--browser-only", "extra"], ["x" * 10000]):
+            with mock.patch.object(sys, "argv", ["check", *args]), mock.patch.object(INTEGRITY, "check_file") as check, mock.patch.object(INTEGRITY.subprocess, "run") as run:
+                with self.assertRaises(ValueError):
+                    INTEGRITY.main()
+                check.assert_not_called()
+                run.assert_not_called()
+
 
 if __name__ == "__main__":
     unittest.main()

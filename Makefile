@@ -18,7 +18,7 @@ packages-check:
 	@$(MAKE) -C packages check
 
 tooling-check:
-	@python3 scripts/ci/test_workflows.py
+	@python3 -m unittest discover -s scripts/ci -p 'test_*.py'
 	@./scripts/tooling/test-source-tools.sh
 	@./scripts/tooling/test-scan-deployment-image.sh
 	@python3 scripts/quality/test_dependency_integrity.py

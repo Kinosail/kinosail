@@ -109,7 +109,7 @@ fi
 shell_files="$(grep -E '\.sh$' <<<"$changed" || true)"
 shell_args=()
 while IFS= read -r file; do [[ -z "$file" || ! -f "$file" ]] || shell_args+=("$file"); done <<<"$shell_files"
-((${#shell_args[@]} == 0)) || run_stage shellcheck "$shell_files" shellcheck "${shell_args[@]}"
+((${#shell_args[@]} == 0)) || run_stage shellcheck "$shell_files" shellcheck -x -P "$repo" -P SCRIPTDIR "${shell_args[@]}"
 
 remote_setup_files="$(grep -E '^scripts/(setup-remote-access|test-remote-setup)\.sh$' <<<"$changed" || true)"
 [[ -z "$remote_setup_files" ]] || run_stage remote-setup "$(git ls-files scripts/setup-remote-access.sh scripts/test-remote-setup.sh 'compose*.yaml')" ./scripts/test-remote-setup.sh

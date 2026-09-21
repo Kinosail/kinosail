@@ -7,6 +7,8 @@ app="$(cd "$(dirname "$0")/.." && pwd)"
 repo="$(git -C "$app" rev-parse --show-toplevel)"
 image="${KINOSAIL_DASHBOARD_TEST_IMAGE:-localhost/kinosail-dashboard:test}"
 engine="${CONTAINER_ENGINE:-}"
+ready="${KINOSAIL_TEST_IMAGE_READY:-0}"
+[[ "$ready" == 0 || "$ready" == 1 ]] || { echo 'invalid image readiness flag' >&2; exit 2; }
 container=""
 suffix="$$-$RANDOM"
 config_volume="kinosail-dashboard-test-$suffix"
@@ -36,9 +38,12 @@ build=(build --file "$repo/apps/dashboard/Containerfile" --tag "$image" --build-
 if [[ "$(basename "$engine")" == "podman" ]]; then
   build+=(--format docker)
 fi
-"$engine" "${build[@]}" "$repo"
-
-[[ "$("$engine" image inspect --format '{{index .Config.Labels "org.opencontainers.image.revision"}}' "$image")" == "$revision" ]]
+if [[ "$ready" == 1 ]]; then
+  "$engine" image inspect "$image" >/dev/null
+else
+  "$engine" "${build[@]}" "$repo"
+  [[ "$("$engine" image inspect --format '{{index .Config.Labels "org.opencontainers.image.revision"}}' "$image")" == "$revision" ]]
+fi
 [[ "$("$engine" image inspect --format '{{.Config.User}}' "$image")" == "10001:10001" ]]
 "$engine" volume create "$config_volume" >/dev/null
 container="$("$engine" run --detach --read-only --cap-drop ALL --security-opt no-new-privileges \
@@ -57,6 +62,9 @@ curl --fail --silent --max-time 2 "$url/healthz" | grep --quiet '"status":"ok"'
 curl --fail --silent --max-time 2 "$url/setup" | grep --quiet 'Kinosail Dashboard'
 
 "$engine" restart "$container" >/dev/null
+# Docker may assign a new ephemeral host port on restart.
+port="$($engine port "$container" 38400/tcp)"
+url="http://127.0.0.1:${port##*:}"
 for _ in {1..120}; do
   curl --fail --silent --max-time 2 "$url/healthz" >/dev/null 2>&1 && break
   sleep 0.25

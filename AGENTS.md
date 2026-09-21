@@ -2,8 +2,8 @@
 
 ## GitHub Actions verification
 
-- All quality and security gates are enabled on GitHub-hosted runners. Do not add `.gates-disabled` or weaken thresholds to obtain a passing run.
-- Local hooks enforce the source-file cap and worktree ownership; GitHub Actions runs the full suites. Run focused checks locally when changing their implementation.
+- Required quality and security gates run on GitHub-hosted runners. Select complete affected app suites using `scripts/ci/affected.py`; unknown inputs select every consumer. Do not add `.gates-disabled` or weaken required checks to obtain a passing run.
+- Local hooks enforce the source-file cap and worktree ownership; GitHub Actions runs complete selected suites. Run focused checks locally when changing their implementation.
 
 ## Scope and ownership
 
@@ -46,7 +46,8 @@
 - Unless the user requests read-only work or says not to publish, complete implementation through a pull request into protected `origin/main`. Required GitHub checks must pass; never bypass protection or force-push main.
 - Fetch and reconcile current `origin/main`, rerun checks affected by reconciliation, and retry ordinary push races.
 - Prove the task commit is included in remote main with a fetched ancestry check. `git ls-remote` alone proves only the ref value.
-- GitHub Actions is the CI and release authority. Keep the existing local deployment watcher separate from public artifact releases.
+- GitHub Actions is the CI and container-publication authority. Green main pushes publish affected app containers automatically; version tags and major releases are not required. Keep the local deployment watcher separate from artifact publication.
+- CI/CD decisions, evidence, and criteria for future changes live in `engineering/research/ci-cd-decisions-2026-09-20.md`.
 - Treat source tests, browser checks, remote publication, deployed revision, container health, TLS, and physical-device proof as separate facts.
 - End implementation delivery reports with `MAIN: YES — <remote main SHA>` after proof, or `MAIN: NO — <specific blocker>`.
 

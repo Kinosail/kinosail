@@ -150,6 +150,8 @@ func StatusText(status Status) string {
 	switch status.State {
 	case "available":
 		return status.LatestVersion + " is available"
+	case "container-managed":
+		return "Update this installation by deploying a newer Kinosail container."
 	case "current":
 		return "Kinosail is current"
 	case "unavailable":

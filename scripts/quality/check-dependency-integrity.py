@@ -8,6 +8,7 @@ if __name__ == "__main__" and (Path(__file__).resolve().parents[2] / ".gates-dis
     print("Quality gates are disabled until explicitly enabled (.gates-disabled).")
     raise SystemExit(0)
 import subprocess
+import sys
 
 GOVAD_VERSION = "v0.0.0-20260330155402-74750eabf3a4"
 BROWSER_HASHES = {
@@ -35,6 +36,9 @@ def verify(repo: Path, module: dict) -> None:
     directory = Path(module["Dir"])
     for name, digest in MODEL_HASHES.items():
         check_file(directory / name, digest)
+
+
+def verify_browser(repo: Path) -> None:
     for app in ("player", "subtitles"):
         for name, digest in BROWSER_HASHES.items():
             check_file(repo / "apps" / app / "internal/server/static" / name, digest)
@@ -42,6 +46,11 @@ def verify(repo: Path, module: dict) -> None:
 
 def main() -> None:
     repo = Path(__file__).resolve().parents[2]
+    if sys.argv[1:] not in ([], ["--browser-only"]):
+        raise ValueError("expected no arguments or --browser-only")
+    verify_browser(repo)
+    if sys.argv[1:]:
+        return
     result = subprocess.run(
         ["go", "list", "-m", "-json", "github.com/zserge/govad"],
         cwd=repo / "apps/subtitles", capture_output=True, text=True, check=True,

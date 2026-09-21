@@ -222,12 +222,12 @@ PATH="$fixture/bin:$PATH" "$fixture/app/scripts/install.sh" "$fixture/media" 908
 export KINOSAIL_INSTALL_TEST_GPU=rkmpp
 PATH="$fixture/bin:$PATH" "$fixture/app/scripts/install.sh" "$fixture/media" 9080 >/dev/null
 unset KINOSAIL_INSTALL_TEST_GPU
-PATH="$fixture/bin:$PATH" "$fixture/app/scripts/uninstall.sh" >/dev/null
+KINOSAIL_IMAGE="" PATH="$fixture/bin:$PATH" "$fixture/app/scripts/uninstall.sh" >/dev/null
 grep -q '^KINOSAIL_BIND=0.0.0.0$' "$fixture/app/.env"
 grep -Fq 'KINOSAIL_TLS_HOSTS=["192.0.2.55"]' "$fixture/app/.env"
 grep -q '^KINOSAIL_AUTH_URL=https://192.0.2.55:9080$' "$fixture/app/.env"
 grep -q '^KINOSAIL_IMAGE=ghcr.io/kinosail/kinosail-player@sha256:a\{64\}$' "$fixture/app/.env"
-grep -Fq 'cosign verify --certificate-identity-regexp ^https://github\.com/MikeO7/kinosail/\.github/workflows/player-release\.yml@refs/tags/player-v(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$ --certificate-oidc-issuer https://token.actions.githubusercontent.com' "$fixture/compose.log"
+grep -Fq 'cosign verify --certificate-identity https://github.com/Kinosail/kinosail/.github/workflows/delivery.yml@refs/heads/main --certificate-oidc-issuer https://token.actions.githubusercontent.com' "$fixture/compose.log"
 grep -q 'exec -T kinosail kinosail healthcheck' "$fixture/compose.log"
 grep -q 'run --rm --no-deps kinosail backup' "$fixture/compose.log"
 grep -q 'run --rm --no-deps -T kinosail backup verify' "$fixture/compose.log"

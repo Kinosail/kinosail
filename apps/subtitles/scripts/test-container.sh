@@ -199,17 +199,22 @@ if [[ "${KINOSAIL_BROWSER_TEST:-}" == "1" ]]; then
 fi
 mkfifo "$mcp_dir/input"
 exec 9<>"$mcp_dir/input"
-for _ in {1..12}; do
-  "$engine" exec --interactive "$container" kinosail mcp-stdio <&9 >/dev/null 2>&1 &
-  mcp_jobs+=("$!")
-done
+# One exec starts all relays concurrently; retain stderr for startup failures.
+# shellcheck disable=SC2016 # Expansion belongs to the container shell.
+"$engine" exec --interactive "$container" sh -c 'exec 3<&0; for index in $(seq 1 12); do kinosail mcp-stdio <&3 & done; wait' <"$mcp_dir/input" >/dev/null 2>"$mcp_dir/relay.log" &
+mcp_jobs+=("$!")
 mcp_relays=0
-for _ in {1..50}; do
+mcp_deadline=$((SECONDS + 60))
+while ((SECONDS < mcp_deadline)); do
   mcp_relays="$("$engine" exec "$container" sh -c "grep -l '^Name:[[:space:]]*socat$' /proc/[0-9]*/status 2>/dev/null | wc -l" || true)"
   [[ "$mcp_relays" == 12 ]] && break
   sleep 0.1
 done
-[[ "$mcp_relays" == 12 ]]
+if [[ "$mcp_relays" != 12 ]]; then
+  printf 'expected 12 MCP relays, found %s\n' "$mcp_relays" >&2
+  cat "$mcp_dir/relay.log" >&2
+  exit 1
+fi
 "$engine" exec "$container" sh -c "for status in \$(grep -l '^Name:[[:space:]]*socat$' /proc/[0-9]*/status); do grep -q '^Threads:[[:space:]]*1$' \"\$status\" || exit 1; done"
 kill "${mcp_jobs[@]}" >/dev/null 2>&1 || true
 wait "${mcp_jobs[@]}" >/dev/null 2>&1 || true
