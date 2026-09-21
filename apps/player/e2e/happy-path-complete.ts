@@ -9,7 +9,7 @@ export async function completeHappyPath(page: Page, testInfo: TestInfo, { captur
 	await expect(page.getByRole("heading", { name: "Server settings" })).toBeVisible();
 	await expectAccessible(page, capture);
 	if (testInfo.project.name === "chromium") {
-		await page.getByRole("link", { name: "Access", exact: true }).click();
+		await page.getByRole("link", { name: "Viewer Profiles", exact: true }).click();
 		if (await page.locator("#profiles").getByText("Partner", { exact: true }).count() === 0) {
 			const profile = page.locator('form[action="/settings/profiles"]');
 			await profile.getByLabel("New profile name").fill("Partner");
@@ -18,6 +18,7 @@ export async function completeHappyPath(page: Page, testInfo: TestInfo, { captur
 			await profile.getByRole("button", { name: "Add Profile" }).click();
 		}
 		await page.goto("/");
+		await page.evaluate(() => localStorage.removeItem("kinosail-passkey"));
 		await signOut(page);
 		await page.getByLabel("Name").fill("Partner");
 		await page.getByLabel("Password", { exact: true }).fill("partner-password");
@@ -40,12 +41,15 @@ export async function completeHappyPath(page: Page, testInfo: TestInfo, { captur
 		if (await page.getByRole("link", { name: "Not now" }).isVisible()) await page.getByRole("link", { name: "Not now" }).click();
 		await openSettings(page);
 	}
-	await page.getByRole("link", { name: "System", exact: true }).click();
+	await page.getByRole("link", { name: "Advanced", exact: true }).click();
+	await page.getByRole("link", { name: "Server tools", exact: true }).click();
 	await page.getByRole("link", { name: "Backup and recovery" }).click();
 	await expect(page.getByRole("heading", { name: "Automatic backups" })).toBeVisible();
 	if (testInfo.project.name === "chromium") {
 		await page.getByRole("button", { name: "Back up now" }).click();
-		await expect(page).toHaveURL("/login?stepup=1&next=%2Fsettings%2Fbackups");
+		await expect(page).toHaveURL("/settings/backups");
+		// Fresh password authentication permits the backup; also exercise passkey reauthentication.
+		await page.goto("/login?stepup=1&next=%2Fsettings%2Fbackups");
 		await page.getByRole("button", { name: "Sign in with passkey" }).click();
 		await expect(page).toHaveURL("/settings/backups");
 		await page.getByRole("button", { name: "Back up now" }).click();
@@ -69,7 +73,8 @@ export async function completeHappyPath(page: Page, testInfo: TestInfo, { captur
   await expect(page.getByRole("heading", { name: "Arrival" })).toHaveCount(0);
 	await page.goto("/?q=Arrival");
   await expect(page.getByRole("heading", { name: "Arrival" }).first()).toBeVisible();
-  await page.locator('a.card[href^="/watch/"]').first().click();
+  await page.locator('a.card[href^="/item/"]').first().click();
+  await page.getByRole("link", { name: /^(Play|Resume|Play again)$/ }).click();
 
   await expect(page.getByRole("heading", { name: "Arrival" })).toBeVisible();
 	await expectAccessible(page, capture);
@@ -77,6 +82,7 @@ export async function completeHappyPath(page: Page, testInfo: TestInfo, { captur
   if (await removeFromList.isVisible()) await removeFromList.click();
   const video = page.locator("video");
   await expect(video).toBeVisible();
+  await page.getByRole("button", { name: "Start video transcode", exact: true }).click();
   await video.evaluate(async (element: HTMLVideoElement) => {
     if (element.readyState < HTMLMediaElement.HAVE_METADATA) {
       await new Promise<void>((resolve, reject) => {
@@ -100,7 +106,7 @@ export async function completeHappyPath(page: Page, testInfo: TestInfo, { captur
     await signOut(page);
     await expect(page.getByRole("heading", { name: "My List" })).toBeVisible();
   }
-  await page.locator('a.card[href^="/watch/"]').first().click();
+  await page.locator('a[href^="/watch/"]').first().click();
   const markUnwatched = page.getByRole("button", { name: "Mark unwatched" });
   if (await markUnwatched.isVisible()) await markUnwatched.click();
   await page.getByRole("button", { name: "Mark watched" }).click();
@@ -129,7 +135,9 @@ export async function completeHappyPath(page: Page, testInfo: TestInfo, { captur
 	}), { message: "latest service worker controls the page" }).toBeTruthy();
 	const missingShell = await page.evaluate(async () => {
 		const shell = ["/offline", "/static/app.css", "/static/main.kinosail.bundle.js", "/static/theme.js", "/static/pwa.js", "/static/player.js", "/static/downloads.js", "/static/icon.svg", "/static/icon-192.png", "/static/icon-512.png", "/static/icon-maskable-512.png", "/static/apple-touch-icon.png", "/static/cinema-backdrop.jpg"];
-		const cache = await caches.open("kinosail-shell-v17");
+		const names = (await caches.keys()).filter((name) => name.startsWith("kinosail-shell-"));
+		if (names.length !== 1) return ["Expected one active shell cache"];
+		const cache = await caches.open(names[0]);
 		return (await Promise.all(shell.map(async (path) => ({ path, response: await cache.match(path) })))).filter(({ response }) => !response?.ok).map(({ path }) => path);
 	});
 	expect(missingShell).toEqual([]);
@@ -142,9 +150,9 @@ export async function completeHappyPath(page: Page, testInfo: TestInfo, { captur
 		try {
 			await page.goto("/?offline-check=1");
 			await expect(page.getByRole("heading", { name: "Offline downloads" })).toBeVisible();
-			await expect(page.getByRole("link", { name: "Try Server again" })).toBeVisible();
-			await expect(page.locator('link[rel="stylesheet"]')).toHaveAttribute("href", "/static/app.css?v=81");
-			await expect(page.locator("body")).toHaveCSS("color", "rgb(246, 248, 239)");
+			await expect(page.getByRole("link", { name: "Open Server downloads" })).toBeVisible();
+			await expect(page.locator('link[rel="stylesheet"]')).toHaveAttribute("href", /\/static\/app\.css\?v=[a-z0-9-]+$/);
+			await expect(page.locator("body")).toHaveCSS("color", "rgb(246, 248, 242)");
 		} finally {
 			await page.context().setOffline(false);
 		}

@@ -93,18 +93,9 @@ test("Owner manages an ordered preferred-language list at every supported width"
     for (const viewport of supportedViewports) {
       await page.setViewportSize(viewport);
       await languageSection.scrollIntoViewIfNeeded();
-      await languageSection.evaluate((section) => {
-        const navigationBox = document.querySelector<HTMLElement>(".app-header nav")?.getBoundingClientRect();
-        const addButtonBox = section.querySelector<HTMLElement>(".subtitle-language-add button")?.getBoundingClientRect();
-        if (navigationBox && addButtonBox && addButtonBox.bottom > navigationBox.top - 8) {
-          window.scrollTo({ top: window.scrollY + addButtonBox.bottom - navigationBox.top + 8, behavior: "instant" as ScrollBehavior });
-        }
-      });
       const geometry = await languageSection.evaluate((section) => {
         const sectionBox = section.getBoundingClientRect();
         const rows = [...section.querySelectorAll<HTMLElement>(".subtitle-language-list li")];
-        const navigationBox = document.querySelector<HTMLElement>(".app-header nav")?.getBoundingClientRect();
-        const overlaps = (left: DOMRect, right: DOMRect) => left.bottom > right.top && left.top < right.bottom && left.right > right.left && left.left < right.right;
         return {
           pageOverflow: document.documentElement.scrollWidth - document.documentElement.clientWidth,
           rowOverflow: rows.some((row) => row.scrollWidth > row.clientWidth + 1),
@@ -123,10 +114,11 @@ test("Owner manages an ordered preferred-language list at every supported width"
             const controlBox = control.getBoundingClientRect();
             return controlBox.width < 44 || controlBox.height < 44;
           }),
-          navigationControlOverlap: navigationBox ? [...section.querySelectorAll<HTMLElement>("button, select")].some((control) => overlaps(control.getBoundingClientRect(), navigationBox)) : false,
         };
       });
-      expect(geometry).toEqual({ pageOverflow: 0, rowOverflow: false, controlsOutside: false, outsideSection: false, smallTouchTarget: false, navigationControlOverlap: false });
+      expect(geometry).toEqual({ pageOverflow: 0, rowOverflow: false, controlsOutside: false, outsideSection: false, smallTouchTarget: false });
+      // Short landscape screens must make each control reachable by scrolling.
+      expect(await occludedTargets(page, ["#language button", "#language select"], [".app-header", ".app-header nav"])).toEqual([]);
       expect((await new AxeBuilder({ page }).include("#language").analyze()).violations).toEqual([]);
       await page.screenshot({ path: testInfo.outputPath(`${viewport.width}-subtitle-languages.png`), fullPage: true });
     }

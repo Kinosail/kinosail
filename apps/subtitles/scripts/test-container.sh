@@ -124,6 +124,9 @@ grep --quiet hevc_v4l2m2m <<<"$encoders"
 "$engine" "${run[@]}" --rm --entrypoint ffmpeg "$image" -hide_banner -loglevel error -f lavfi -i testsrc2=size=320x180:rate=24:duration=2 -c:v mpeg2video -f mpegts - >"$media_dir/Transport.ts"
 ln "$media_dir/Arrival.mkv" "$media_dir/Beta.mkv"
 ln "$media_dir/Arrival.mkv" "$media_dir/Gamma.mkv"
+if [[ "${KINOSAIL_BROWSER_TEST:-}" == "1" ]]; then
+  printf '1\n00:00:01,000 --> 00:00:02,000\nContainer sidecar\n' >"$media_dir/Arrival.en.srt"
+fi
 chmod a+rwx "$media_dir"
 chmod a+r "$media_dir"/*.mkv "$media_dir"/*.ts
 

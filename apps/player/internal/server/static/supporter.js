@@ -66,6 +66,7 @@ function showSupporterRecognition(main, status, display) {
 }
 
 async function bindSupporterRecognition() {
+  if (document.body.classList.contains("auth")) return;
   const main = document.querySelector(".library-shell");
   ensureSupporterSignature(main);
   try {
