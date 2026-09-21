@@ -58,9 +58,17 @@ jobs:
         with:
           go-version-file: go.work
           cache-dependency-path: "**/go.sum"
+      - name: Assemble complete browser source for CodeQL
+        if: matrix.language == 'javascript-typescript'
+        run: |
+          node scripts/ci/prepare-codeql-js.mjs
+          # Generated bundles are untracked, so analyze their complete contents.
+          echo 'CODEQL_ACTION_DIFF_INFORMED_QUERIES=false' >> "$GITHUB_ENV"
+          echo 'CODEQL_OVERLAY_DATABASE_MODE=none' >> "$GITHUB_ENV"
       - uses: github/codeql-action/init@1c5b675653bb5c22dbe9b12b556ec555138e09fd
         with:
           languages: ${{ matrix.language }}
+          config-file: .github/codeql-config.yml
           build-mode: ${{ (matrix.language == 'go' || matrix.language == 'swift') && 'manual' || 'none' }}
           queries: security-extended
       - name: Build Go modules for CodeQL

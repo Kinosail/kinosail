@@ -37,6 +37,7 @@ tooling-check:
 	@pnpm --dir scripts/quality install --frozen-lockfile
 	@node scripts/tooling/test-script-lint.mjs
 	@node --test scripts/quality/browser-script-bundles.test.mjs
+	@node --test scripts/ci/prepare-codeql-js.test.mjs
 	@python3 scripts/tooling/test-verify-deleted-e2e.py
 	@./scripts/tooling/test-architecture-explorer.py
 	@./scripts/tooling/generate-architecture-explorer.py player --check

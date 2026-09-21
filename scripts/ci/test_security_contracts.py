@@ -23,6 +23,13 @@ class SecurityContracts(unittest.TestCase):
         self.assertIn('XCODE_XCCONFIG_FILE="$RUNNER_TEMP/codeql.xcconfig"', workflow)
         self.assertIn("matrix.language == 'swift' && 30 || 15", workflow)
         self.assertIn("queries: security-extended", workflow)
+        self.assertIn("config-file: .github/codeql-config.yml", workflow)
+        self.assertLess(workflow.index("node scripts/ci/prepare-codeql-js.mjs"),
+                        workflow.index("uses: github/codeql-action/init@"))
+        browser_step = workflow.split("- name: Assemble complete browser source for CodeQL", 1)[1].split("- uses:", 1)[0]
+        self.assertIn("if: matrix.language == 'javascript-typescript'", browser_step)
+        for setting in ("CODEQL_ACTION_DIFF_INFORMED_QUERIES=false", "CODEQL_OVERLAY_DATABASE_MODE=none"):
+            self.assertIn(setting, browser_step)
 
     def test_open_medium_and_low_security_findings_also_block_merge(self):
         workflow = (ROOT / ".github/workflows/security.yml").read_text()

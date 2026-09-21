@@ -1,0 +1,7 @@
+name: Complete browser scopes
+
+# These fragments are included verbatim in codeql-generated/subtitles-player.js
+# using the server's Go asset declarations before CodeQL initialization.
+paths-ignore:
+  - apps/subtitles/internal/server/static/player_streaming_start.js
+  - apps/subtitles/internal/server/static/player_streaming_end.js
