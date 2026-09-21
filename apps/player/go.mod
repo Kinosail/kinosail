@@ -6,8 +6,8 @@ require (
 	github.com/MikeO7/kinosail/packages v0.0.0
 	github.com/coder/websocket v1.8.15
 	github.com/crewjam/saml v0.5.1
-	github.com/go-webauthn/webauthn v0.18.0
-	github.com/modelcontextprotocol/go-sdk v1.7.0
+	github.com/go-webauthn/webauthn v0.18.1
+	github.com/modelcontextprotocol/go-sdk v1.8.0
 	github.com/nicksnyder/go-i18n/v2 v2.6.1
 	golang.org/x/text v0.42.0
 )
@@ -21,7 +21,7 @@ require (
 	github.com/fxamacker/cbor/v2 v2.9.3 // indirect
 	github.com/go-jose/go-jose/v4 v4.1.5 // indirect
 	github.com/go-viper/mapstructure/v2 v2.5.0 // indirect
-	github.com/go-webauthn/x v0.3.0 // indirect
+	github.com/go-webauthn/x v0.3.1 // indirect
 	github.com/golang-jwt/jwt/v4 v4.5.2 // indirect
 	github.com/golang-jwt/jwt/v5 v5.3.1 // indirect
 	github.com/google/btree v1.1.2 // indirect
