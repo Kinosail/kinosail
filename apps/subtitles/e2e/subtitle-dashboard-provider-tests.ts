@@ -161,7 +161,7 @@ test("Provider setup stays compact and accessible at every supported width", asy
     }
     expect((await new AxeBuilder({ page }).include("#provider").analyze()).violations).toEqual([]);
     await expectSkipLinkOffscreen(page);
-    await page.screenshot({ path: testInfo.outputPath(`${viewport.width}-subtitle-providers.png`), fullPage: true });
+    await providers.screenshot({ path: testInfo.outputPath(`${viewport.width}-subtitle-providers.png`) });
 
     await providers.getByRole("link", { name: "Configure OpenSubtitles" }).click();
     const openSubtitles = page.locator("#integrations\\.opensubtitles");
@@ -172,7 +172,7 @@ test("Provider setup stays compact and accessible at every supported width", asy
     await expect(openSubtitles).toContainText("Save all three values together.");
     await expectNoHorizontalOverflow(page);
     expect((await new AxeBuilder({ page }).include("#integrations\\.opensubtitles").analyze()).violations).toEqual([]);
-    await page.screenshot({ path: testInfo.outputPath(`${viewport.width}-opensubtitles-configuration.png`), fullPage: true });
+    await openSubtitles.screenshot({ path: testInfo.outputPath(`${viewport.width}-opensubtitles-configuration.png`) });
   }
 });
 }

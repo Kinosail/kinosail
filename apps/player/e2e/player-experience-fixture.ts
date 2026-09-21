@@ -4,6 +4,7 @@ import { playerSource } from "./static-sources";
 
 export function installPlayerExperienceFixture() {
 test.beforeEach(async ({ page }, testInfo) => {
+  if (testInfo.title === "theater control gets out of the way during playback") await page.clock.install();
   const markup = `
     <meta charset="utf-8"><body class="player-page"><main class="player-shell"><div class="media-stage">
       <video id="player-media" data-title="Arrival" data-duration="100" data-start="20" data-progress="/progress/movie" data-playback-session="trace-session" data-playback-trace="https://127.0.0.1:38127/api/v1/items/movie/playback-events"${testInfo.title.includes("retries requested autoplay") ? " autoplay" : ""}${testInfo.title.includes("resumed autoplay") ? " data-autoplay" : ""}></video>

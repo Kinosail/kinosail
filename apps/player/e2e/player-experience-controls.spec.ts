@@ -247,16 +247,19 @@ test("theater control gets out of the way during playback", async ({ page }) => 
 
   await page.evaluate(() => Object.defineProperty(document.querySelector("video"), "paused", { value: false, configurable: true }));
   await page.locator("video").dispatchEvent("playing");
-  await expect(page.locator("[data-player-controls]")).toHaveCSS("opacity", "0", { timeout: 3000 });
+  await page.clock.fastForward(2400);
+  await expect(page.locator("[data-player-controls]")).toHaveCSS("opacity", "0");
   await stage.dispatchEvent("pointermove");
   await expect(theater).toBeVisible();
-  await expect(page.locator("[data-player-controls]")).toHaveCSS("opacity", "0", { timeout: 3000 });
+  await page.clock.fastForward(2400);
+  await expect(page.locator("[data-player-controls]")).toHaveCSS("opacity", "0");
   await stage.dispatchEvent("pointerdown");
   await theater.focus();
-  await page.waitForTimeout(2000);
+  await page.clock.fastForward(3000);
   await expect(theater).toBeVisible();
   await theater.blur();
-  await expect(page.locator("[data-player-controls]")).toHaveCSS("opacity", "0", { timeout: 3000 });
+  await page.clock.fastForward(2400);
+  await expect(page.locator("[data-player-controls]")).toHaveCSS("opacity", "0");
 
   await page.evaluate(() => Object.defineProperty(document.querySelector("video"), "paused", { value: true, configurable: true }));
   await page.locator("video").dispatchEvent("pause");
