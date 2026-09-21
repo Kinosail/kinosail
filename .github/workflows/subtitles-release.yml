@@ -14,7 +14,7 @@ concurrency:
 jobs:
   quality:
     name: Verify release prerequisites
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     permissions:
       contents: read
       actions: read
@@ -74,7 +74,7 @@ jobs:
         include:
           - arch: amd64
             platform: linux/amd64
-            runner: ubuntu-latest
+            runner: ubuntu-24.04
           - arch: arm64
             platform: linux/arm64
             runner: ubuntu-24.04-arm
@@ -127,7 +127,7 @@ jobs:
   release:
     needs: [quality, images]
     name: Publish signed Subtitles multi-architecture release
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     permissions:
       contents: write
       packages: write

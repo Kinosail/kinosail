@@ -33,7 +33,7 @@ jobs:
     if: fromJSON(needs.changes.outputs.plan).player
     timeout-minutes: 20
     name: Player static checks
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     defaults:
       run:
         working-directory: apps/player
@@ -63,7 +63,7 @@ jobs:
     if: fromJSON(needs.changes.outputs.plan).player
     timeout-minutes: 20
     name: Player race tests
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     defaults:
       run:
         working-directory: apps/player
@@ -86,7 +86,7 @@ jobs:
     if: fromJSON(needs.changes.outputs.plan).player
     timeout-minutes: 20
     name: Player security checks
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     defaults:
       run:
         working-directory: apps/player
@@ -107,7 +107,7 @@ jobs:
     if: fromJSON(needs.changes.outputs.plan).player_tools
     timeout-minutes: 20
     name: Player installer, native, and local pipeline checks
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     defaults:
       run:
         working-directory: apps/player
@@ -124,9 +124,11 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y libarchive-tools
-      - uses: pnpm/action-setup@ea17c68df8912ef543352723c149a84f56e3d413 # v6
+      - uses: pnpm/setup@fbda4c85fc2e1e08721cd8763afea8f48d60f024 # v3.0.0
         with:
           version: 11.22.0
+          install: false
+          node-version-file: false
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
         with:
           node-version: 26
@@ -155,7 +157,7 @@ jobs:
     needs: changes
     if: fromJSON(needs.changes.outputs.plan).deep
     timeout-minutes: 20
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     defaults:
       run:
         working-directory: apps/player
@@ -195,15 +197,17 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        include: ${{ fromJSON(fromJSON(needs.changes.outputs.plan).player_arm && '[{"platform":"linux/amd64","runner":"ubuntu-latest"},{"platform":"linux/arm64","runner":"ubuntu-24.04-arm"}]' || '[{"platform":"linux/amd64","runner":"ubuntu-latest"}]') }}
+        include: ${{ fromJSON(fromJSON(needs.changes.outputs.plan).player_arm && '[{"platform":"linux/amd64","runner":"ubuntu-24.04"},{"platform":"linux/arm64","runner":"ubuntu-24.04-arm"}]' || '[{"platform":"linux/amd64","runner":"ubuntu-24.04"}]') }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
           persist-credentials: false
-      - uses: pnpm/action-setup@ea17c68df8912ef543352723c149a84f56e3d413 # v6
+      - uses: pnpm/setup@fbda4c85fc2e1e08721cd8763afea8f48d60f024 # v3.0.0
         if: matrix.platform == 'linux/amd64'
         with:
           version: 11.22.0
+          install: false
+          node-version-file: false
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
         if: matrix.platform == 'linux/amd64'
         with:
@@ -283,7 +287,7 @@ jobs:
     name: Player checks
     if: always()
     needs: [changes, static, race, security, system, tooling, scheduled, client]
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:

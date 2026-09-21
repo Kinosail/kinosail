@@ -31,4 +31,4 @@ for (const bundle of [...bundles, ...files.map(file => ({ name: file, files: [fi
   }
 }
 process.stdout.write(`Browser scripts: ${errors} errors, ${warnings} warnings\n`);
-process.exitCode = errors ? 1 : 0;
+process.exitCode = errors || warnings ? 1 : 0;

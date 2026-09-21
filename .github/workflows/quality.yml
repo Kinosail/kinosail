@@ -21,7 +21,7 @@ jobs:
 
   static:
     name: Repository policy and CI contracts
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 5
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
@@ -38,15 +38,17 @@ jobs:
     name: Browser script checks
     needs: changes
     if: fromJSON(needs.changes.outputs.plan).web
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
           persist-credentials: false
-      - uses: pnpm/action-setup@ea17c68df8912ef543352723c149a84f56e3d413
+      - uses: pnpm/setup@fbda4c85fc2e1e08721cd8763afea8f48d60f024 # v3.0.0
         with:
           version: 11.22.0
+          install: false
+          node-version-file: false
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020
         with:
           node-version: 26
@@ -58,7 +60,7 @@ jobs:
     name: Repository tooling checks
     needs: changes
     if: fromJSON(needs.changes.outputs.plan).tooling
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
@@ -69,9 +71,11 @@ jobs:
         with:
           go-version-file: go.work
           cache-dependency-path: "**/go.sum"
-      - uses: pnpm/action-setup@ea17c68df8912ef543352723c149a84f56e3d413
+      - uses: pnpm/setup@fbda4c85fc2e1e08721cd8763afea8f48d60f024 # v3.0.0
         with:
           version: 11.22.0
+          install: false
+          node-version-file: false
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020
         with:
           node-version: 26
@@ -82,7 +86,7 @@ jobs:
     name: Shared package tests, lint, and dependencies
     needs: changes
     if: fromJSON(needs.changes.outputs.plan).packages
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
@@ -108,7 +112,7 @@ jobs:
     name: Repository checks
     if: always()
     needs: [changes, static, tooling, packages, web]
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
