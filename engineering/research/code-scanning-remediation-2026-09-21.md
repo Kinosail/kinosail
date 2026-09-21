@@ -17,6 +17,8 @@ The maintained workflow successfully analyzed Go, JavaScript/TypeScript, and Pyt
 
 Restore Actions and Swift in the maintained change-aware language selection. Swift requires a macOS runner and explicit builds of both iOS and tvOS targets. A native-only change must require Swift analysis and findings validation without selecting server containers. Only after successful replacement scans should the retired default configurations be removed, preserving their metadata and SARIF evidence. Do not delete active analyses or dismiss an execution failure as a code false positive.
 
+The first maintained Swift attempt ([job 106213221287](https://github.com/Kinosail/kinosail/actions/runs/35560725398/job/106213221287)) exhausted 15 minutes while building the iOS simulator target, before tvOS or analysis. Its log shows both ARM64 and x86_64 SDK module generation. Follow GitHub's recommendation to scan one CPU architecture: a temporary Xcode configuration limits only the instrumented scan to ARM64 while retaining both iOS and tvOS builds. The ordinary client compilation gate retains its normal architecture settings. Allow 30 minutes for cold Swift extraction; other language ceilings remain 15. Record the successful replacement timing before claiming a speedup.
+
 ## Regression evidence
 
 - `node --test packages/webassets/offline-identity.test.mjs`: 31 passing cases; malformed, foreign, missing, oversized, and conflicting messages cause no identity storage access, writes, or broadcasts.
@@ -31,3 +33,5 @@ Restore Actions and Swift in the maintained change-aware language selection. Swi
 - [CodeQL slog model](https://github.com/github/codeql/blob/main/go/ql/lib/ext/log.slog.model.yml) and [log-injection customizations](https://github.com/github/codeql/blob/main/go/ql/lib/semmle/go/security/LogInjectionCustomizations.qll) model generic logging sinks without conditioning on the installed JSON handler.
 - [HTML dedicated-worker communication](https://html.spec.whatwg.org/multipage/workers.html#communicating-with-a-dedicated-worker) describes the creator/worker implicit channel.
 - [GitHub stale-configuration guidance](https://docs.github.com/en/code-security/how-tos/manage-security-alerts/manage-code-scanning-alerts/resolve-alerts#removing-stale-configurations-and-alerts-from-a-branch) distinguishes retiring old configurations from fixing or dismissing code findings.
+
+- [GitHub Swift build guidance](https://docs.github.com/en/code-security/reference/code-scanning/codeql/build-options-for-compiled-languages#customizing-swift-compilation-in-a-codeql-analysis-workflow) recommends one architecture for analysis. The local `xcodebuild(1)` manual documents `XCODE_XCCONFIG_FILE` as an override applied to every built target.

@@ -16,7 +16,10 @@ class SecurityContracts(unittest.TestCase):
         workflow = (ROOT / ".github/workflows/security.yml").read_text()
         self.assertIn("matrix.language == 'swift' && 'macos-latest'", workflow)
         self.assertIn("matrix.language == 'swift') && 'manual'", workflow)
-        self.assertIn("run: make -C apps/player client-check", workflow)
+        self.assertIn("make -C apps/player client-check", workflow)
+        self.assertIn("ARCHS = arm64", workflow)
+        self.assertIn('XCODE_XCCONFIG_FILE="$RUNNER_TEMP/codeql.xcconfig"', workflow)
+        self.assertIn("matrix.language == 'swift' && 30 || 15", workflow)
         self.assertIn("queries: security-extended", workflow)
 
     def test_open_medium_and_low_security_findings_also_block_merge(self):
