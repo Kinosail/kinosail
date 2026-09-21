@@ -197,7 +197,7 @@ chunk="${digest:$((offset * 2)):8}"
 code="$(printf '%06d' "$(((16#$chunk & 0x7fffffff) % 1000000))")"
 expect_status 303 --cookie "$media_dir/cookies" --header "Origin: $url" --header "X-Kinosail-CSRF: $csrf" --data "code=$code" "$url/account/mfa/enable"
 if [[ "${KINOSAIL_BROWSER_TEST:-}" == "1" ]]; then
-  KINOSAIL_TEST_INSTANCE=1 KINOSAIL_TEST_TOTP_SECRET="$secret" KINOSAIL_E2E_URL="$url" KINOSAIL_E2E_OUTPUT_DIR="$media_dir/playwright-results" pnpm --dir e2e test subtitle-dashboard.spec.ts
+  KINOSAIL_TEST_INSTANCE=1 KINOSAIL_TEST_TOTP_SECRET="$secret" KINOSAIL_E2E_URL="$url" KINOSAIL_E2E_OUTPUT_DIR="${KINOSAIL_E2E_OUTPUT_DIR:-$media_dir/playwright-results}" pnpm --dir e2e test subtitle-dashboard.spec.ts
   exit
 fi
 mkfifo "$mcp_dir/input"

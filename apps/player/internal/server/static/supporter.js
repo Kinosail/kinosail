@@ -69,14 +69,18 @@ async function bindSupporterRecognition() {
   if (document.body.classList.contains("auth")) return;
   const main = document.querySelector(".library-shell");
   ensureSupporterSignature(main);
+  const request = new AbortController();
+  const leave = () => request.abort();
+  window.addEventListener("pagehide", leave, {once: true});
   try {
-    const response = await fetch("/api/v1/supporter", { headers: { accept: "application/json" } });
+    const response = await fetch("/api/v1/supporter", { signal: request.signal, headers: { accept: "application/json" } });
     if (!response.ok) return;
     const status = await response.json();
-    const preference = await fetch("/api/v1/supporter/display", { headers: { accept: "application/json" } });
+    if (request.signal.aborted) return;
+    const preference = await fetch("/api/v1/supporter/display", { signal: request.signal, headers: { accept: "application/json" } });
     if (!preference.ok) return;
     const { display } = await preference.json();
-    if (!["automatic", "hidden", "patron-order", "living-standard"].includes(display)) return;
+    if (request.signal.aborted || !["automatic", "hidden", "patron-order", "living-standard"].includes(display)) return;
     const badge = primarySupporterBadge(status, display);
 	resetSupporterRecognition(main, Boolean(status.livingStandard?.expired));
     const signature = main?.querySelector(".supporter-signature");
@@ -102,6 +106,7 @@ async function bindSupporterRecognition() {
       return;
     }
   } catch (_) {} finally {
+    window.removeEventListener("pagehide", leave);
     revealSupporterSignature(main);
   }
 }
@@ -162,3 +167,5 @@ function bindSupporterShare() {
 bindSupporterRecognition();
 bindSupporterShare();
 document.addEventListener("htmx:afterSwap", bindSupporterRecognition);
+
+window.addEventListener("pageshow", (event) => { if (event.persisted) bindSupporterRecognition(); });

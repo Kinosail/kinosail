@@ -71,9 +71,9 @@ func TestApplicationShellRefreshesCachedStylesheetVersions(t *testing.T) {
 }
 
 func TestApplicationShellLoadsRecognitionOnce(t *testing.T) {
-	for _, existing := range []string{"", `<script defer src="/static/supporter.js?v=14"></script>`} {
+	for _, existing := range []string{"", `<script defer src="/static/supporter.js?v=15"></script>`} {
 		page := injectApplicationShell([]byte(`<html><body><main>Account</main>`+existing+`</body></html>`), nil)
-		if bytes.Count(page, []byte(`/static/supporter.js?v=14`)) != 1 {
+		if bytes.Count(page, []byte(`/static/supporter.js?v=15`)) != 1 {
 			t.Fatalf("recognition script missing or duplicated: %s", page)
 		}
 	}

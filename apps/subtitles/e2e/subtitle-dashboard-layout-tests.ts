@@ -153,9 +153,11 @@ test("Readiness, quota, and history remain usable on compact screens", async ({ 
     await expectNoHorizontalOverflow(page);
     expect((await new AxeBuilder({ page }).include("main").analyze()).violations).toEqual([]);
     await page.getByRole("link", { name: "Library", exact: true }).click();
-    const firstHistory = page.locator(".subtitle-file > summary").first();
-    await firstHistory.click();
-    await expect(page.getByText("Coverage", { exact: true }).first()).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Library", exact: true })).toBeVisible();
+    const firstHistory = page.locator(".subtitle-file").first();
+    await firstHistory.locator(":scope > summary").click();
+    await expect(firstHistory).toHaveAttribute("open", "");
+    await expect(firstHistory.getByText("Coverage", { exact: true })).toBeVisible();
     await page.screenshot({ path: testInfo.outputPath(`${viewport.width}-subtitle-readiness-history.png`), fullPage: true });
   }
 });

@@ -20,7 +20,7 @@ test("Owner sees real coverage, wanted files, and a focused setup path", async (
   await expect(page).toHaveURL(/view=wanted/);
   await expect(page.getByRole("heading", { name: "Wanted", exact: true })).toBeVisible();
   await expect(page.locator(".subtitle-file-list").getByText("Wanted", { exact: true }).first()).toBeVisible();
-  await page.getByRole("link", { name: "Settings", exact: true }).click();
+  await page.getByRole("banner").getByRole("link", { name: "Settings", exact: true }).click();
   await expect(page.getByRole("heading", { name: "Subtitle settings" })).toBeVisible();
   await expect(page.getByRole("heading", { name: "Preferred languages" })).toBeVisible();
   await expect(page.getByRole("group", { name: "Preferred subtitle role" }).locator('input[value="standard"]')).toBeChecked();
