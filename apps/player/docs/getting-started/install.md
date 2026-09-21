@@ -6,9 +6,9 @@ section: Start here
 
 # Docker installation details
 
-As of September 15, 2026, this monorepo has no published GitHub releases. Start with [Install with Docker]({{ '/quickstart/' | relative_url }}) for the complete release path, or use [source installation]({{ '/source-install/' | relative_url }}) for early evaluation. The steps below apply when a signed Player release is available.
+Start with [Install with Docker]({{ '/quickstart/' | relative_url }}) to get the current deployment files and install the prebuilt Player container. Successful changes on `main` publish signed images; numbered releases are optional.
 
-Download the matching Player installer from [Releases](https://github.com/Kinosail/kinosail/releases), verify the supplied checksum and signature, extract it, and run commands from that bundle directory. Run the release installer from the Kinosail release bundle. It verifies the image, creates protected recovery material, starts one Server container, and binds it to localhost until you create the first Owner.
+Run the installer from `apps/player` in that checkout. It verifies the image, creates protected recovery material, starts one Server container, and binds it to localhost until you create the first Owner.
 
 ## Prerequisites
 
@@ -16,16 +16,16 @@ You need:
 
 - a 64-bit Intel/AMD or Arm Linux host, or Docker/Podman on macOS for local use;
 - Podman Compose or Docker Compose;
-- `cosign` to verify the signed release image;
+- `cosign` to verify the signed container image;
 - `curl` when you later enable LAN mode;
 - an absolute path to an existing folder that contains media you control; and
 - a free TCP port, such as `38127`.
 
-The release bundle must include `scripts/install.sh` and `compose.release.yaml`. Do not place credentials or private hostnames in documentation, shell history, or a public repository.
+The Player directory must include `scripts/install.sh` and `compose.release.yaml`. Do not place credentials or private hostnames in documentation, shell history, or a public repository.
 
 ## Install on localhost
 
-From the bundle root, run:
+From `apps/player`, run:
 
 ```sh
 ./scripts/install.sh /absolute/path/to/media 38127
@@ -35,7 +35,7 @@ The second argument is optional. The default port is `38127`. The path must be a
 
 The installer selects `podman compose` when available. It falls back to `docker compose`. It creates `secrets/backup_key` with mode `600` when the key does not exist. Keep this key with your encrypted backups.
 
-The installer pulls `ghcr.io/kinosail/kinosail-player:<version>`, verifies its keyless signature, pins the resolved SHA-256 digest in `.env`, and starts the service. It waits for the `kinosail healthcheck` command to pass.
+The installer pulls `ghcr.io/kinosail/kinosail-player:latest`, verifies its keyless signature against `delivery.yml@refs/heads/main`, pins the resolved SHA-256 digest in `.env`, and starts the service. It waits for the `kinosail healthcheck` command to pass.
 
 
 ## Open the Server
@@ -68,9 +68,9 @@ The installer checks that `/setup` redirects, changes `KINOSAIL_BIND` to `0.0.0.
 
 Open the reported LAN address from another device. Use the exact HTTPS name in the address when you add passkeys. If your host has more than one network interface, verify the detected address before sharing it.
 
-## Update an existing release
+## Update an existing installation
 
-Run the installer again with the same media path and port. If the service is running, the installer writes a recovery archive under `backups/kinosail-before-update-<timestamp>.kinosail-backup` before it pulls the new image. It keeps the existing `.env` values.
+Run `git pull --ff-only` to refresh the deployment files, then run the installer again with the same media path and port. Keep the same checkout and Compose project name. If the service is running, the installer writes a recovery archive under `backups/kinosail-before-update-<timestamp>.kinosail-backup` before it pulls the new image. It keeps the existing `.env` values.
 
 Check the resulting state:
 

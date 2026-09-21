@@ -5,9 +5,9 @@ section: Start here
 ---
 # Install with Docker
 
-Docker Compose is the recommended way to run Kinosail. Use the prebuilt Player image and the matching installer bundle: no Git checkout, Go toolchain, or local image build is needed.
+Docker Compose is the recommended way to run Kinosail. Green changes on `main` publish signed Player containers for Intel/AMD and Arm hosts. You do not need to wait for a numbered release or build the application locally.
 
-> **Release availability:** no app releases were published in this repository when checked on September 20, 2026. The Docker release path below requires a published, signed bundle and image. Check [Releases](https://github.com/Kinosail/kinosail/releases) before starting. If none is available, the separate [source-build guide]({{ '/source-install/' | relative_url }}) is for contributors and early evaluation.
+The installer uses the latest verified container and pins its immutable image digest. If no successful container publication exists yet, installation stops; a source merge alone does not establish that an image is available.
 
 ## Before you start
 
@@ -16,39 +16,20 @@ You need:
 - Docker Engine with the Compose plugin on a 64-bit Intel/AMD or Arm Linux host, or Docker Desktop on macOS with its Linux VM running.
 - An existing media folder with an absolute path and permissions allowing the container account to read it.
 - Local port **38127** available, plus space for application state, artwork, and playback cache.
-- `cosign` to verify the release bundle and container image. Use its [official installation instructions](https://docs.sigstore.dev/cosign/system_config/installation/).
+- Git to obtain the deployment files and `cosign` to verify the container image. Use its [official installation instructions](https://docs.sigstore.dev/cosign/system_config/installation/).
 
 Podman with a Compose provider is also supported. The installer chooses Podman if both engines are available; otherwise it uses Docker. The commands below assume Docker is the selected engine.
 
-## 1. Download the Player release
+## 1. Get the deployment files
 
-Open [Kinosail Releases](https://github.com/Kinosail/kinosail/releases) and choose a **Player** release tagged `player-vMAJOR.MINOR.PATCH`. Download these three files from that same release into a new installation directory:
-
-- `kinosail-player-install.tar.gz`
-- `kinosail-player-install.tar.gz.sha256`
-- `kinosail-player-install.tar.gz.sigstore.json`
-
-From that directory, verify the checksum (on macOS, use `shasum -a 256 -c` instead of `sha256sum -c`):
+Clone the repository and enter the Player directory. These files configure the prebuilt container; this step does not build the application:
 
 ```sh
-sha256sum -c kinosail-player-install.tar.gz.sha256
+git clone --depth 1 https://github.com/Kinosail/kinosail.git
+cd kinosail/apps/player
 ```
 
-Verify the signature against Kinosail's Player release workflow before extracting:
-
-```sh
-cosign verify-blob \
-  --bundle kinosail-player-install.tar.gz.sigstore.json \
-  --certificate-identity-regexp '^https://github\.com/Kinosail/kinosail/\.github/workflows/player-release\.yml@refs/tags/player-v(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$' \
-  --certificate-oidc-issuer https://token.actions.githubusercontent.com \
-  kinosail-player-install.tar.gz
-```
-
-If either check fails, stop and download the matching files again. Do not skip verification.
-
-```sh
-tar -xzf kinosail-player-install.tar.gz
-```
+Keep this directory for updates. The installer verifies the downloaded image against `delivery.yml` on the protected `main` branch before starting it.
 
 ## 2. Start the Docker container
 

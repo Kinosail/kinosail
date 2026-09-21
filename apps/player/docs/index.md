@@ -12,7 +12,7 @@ Run Kinosail Player on your own hardware. Bring your movies, shows, music, books
 ## From Server to first play
 
 <div class="app-directory">
-<a href="{{ '/quickstart/' | relative_url }}"><strong>Install Player</strong><span>Start the prebuilt Docker container using the verified release installer. Keep your media on your own hardware.</span></a>
+<a href="{{ '/quickstart/' | relative_url }}"><strong>Install Player</strong><span>Start the prebuilt Docker container using the installer that verifies its signed image. Keep your media on your own hardware.</span></a>
 <a href="{{ '/getting-started/first-setup/' | relative_url }}"><strong>Make it yours</strong><span>Create your Owner, secure access, and choose the settings for your household.</span></a>
 <a href="{{ '/getting-started/add-media/' | relative_url }}"><strong>Add your library</strong><span>Point Player at your media, let it scan, and find your first film or album.</span></a>
 <a href="{{ '/user-guide/playback/' | relative_url }}"><strong>Press play</strong><span>Watch and listen in your browser. Pick audio tracks, turn on subtitles, and continue where you left off.</span></a>

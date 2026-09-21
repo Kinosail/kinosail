@@ -11,7 +11,7 @@ Back up before changing versions, storage, or configuration. Keep app-state arch
 
 ## Configure encryption
 
-Automatic backups require a key and fail closed without one. The signed-release installer creates `secrets/backup_key`; a source Compose installation does not mount that file automatically.
+Automatic backups require a key and fail closed without one. The container installer creates `secrets/backup_key`; a source Compose installation does not mount that file automatically.
 
 For source Compose, use a strong random backup key stored privately in your password manager. Put it in `KINOSAIL_BACKUP_KEY` in the app's uncommitted `.env` and leave `KINOSAIL_BACKUP_KEY_FILE=` empty. Protect `.env` with `chmod 600 .env`. Alternatively, configure a mounted secret file and set only its `_FILE` variable; the container must be able to read it. Do not set both forms.
 
@@ -58,7 +58,9 @@ After restart, verify sign-in, configuration, and a library item and playback pr
 
 For source installs, back up, fetch/review the desired revision, and run `docker compose up --build --detach` from the same app directory. Keep the same project name and volumes. Check health, sign-in, and the primary workflow after the update.
 
-When signed releases are available, use the matching release installer. It verifies the image and, for a running installation, creates and verifies an encrypted `backups/kinosail-before-update-<timestamp>.kinosail-backup` before the update. Check the app release notes and installer output; do not bypass signature checks.
+For prebuilt containers, refresh the deployment files with `git pull --ff-only`, then run the installer with the same media path, port, directory, and Compose project. It verifies the latest signed image and, for a running installation, creates and verifies an encrypted `backups/kinosail-before-update-<timestamp>.kinosail-backup` before the update. Keep the previous image digest for recovery.
+
+Continuous containers identify their version by source commit (`sha-…`). The Server reports these as container-managed; update through the deployment files and installer. Numbered releases and the Server's release updater are not required for this path.
 
 For rollback, retain the previous image/source and its matching state backup. Restore that pair deliberately; do not assume an older binary can read newly migrated state. Never use `down --volumes` as a troubleshooting step.
 
