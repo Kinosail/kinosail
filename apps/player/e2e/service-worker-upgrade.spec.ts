@@ -1,11 +1,11 @@
 import { expect, test } from "@playwright/test";
 import { createServer } from "node:http";
 import type { AddressInfo } from "node:net";
-import { readStaticSource } from "./static-sources";
+import { downloadsSource, readStaticSource } from "./static-sources";
 
 type WorkerWindow = Window & { checkWorker: () => Promise<string>; identifiedProfile?: { type: string; profile: string; worker: string } };
 
-const currentDownloads = await readStaticSource(["../../../packages/webassets/static/downloads.js", "../../../packages/webassets/static/downloads-integrity.js"]);
+const currentDownloads = downloadsSource;
 const currentPWA = await readStaticSource(["../../../packages/webassets/static/offline-identity.js", "../../../packages/webassets/static/pwa.js"]);
 const currentWorker = currentDownloads.match(/const offlineWorkerPath = "([^"]+)"/)![1];
 const identityProbe = "self.addEventListener('message', e => { if(e.data.type === 'profile') e.source.postMessage({type:'identified',profile:e.data.profile,worker:self.location.href}); });";
@@ -27,13 +27,15 @@ for (const app of [
     const navigationPath = [...locale.matchAll(/\/static\/main\.kinosail\.bundle\.js\?v=[\w-]+/g)].at(-1)![0];
     const oldDownloadsPath = `/static/downloads.js?v=${app.downloads}`;
     const oldNavigationPath = `/static/main.kinosail.bundle.js?v=${app.navigation}`;
+    const errors: string[] = [];
+    page.on("pageerror", (error) => errors.push(error.message));
     const hits = new Map<string, number>();
     // No request interception: the browser's actual immutable HTTP cache must run.
     const server = createServer((request, response) => {
       const path = request.url!;
       if (path.startsWith("/service-worker.js")) {
         response.writeHead(200, { "Content-Type": "text/javascript", "Cache-Control": "no-cache" });
-        response.end(identityProbe + "self.addEventListener('install', e => e.waitUntil(self.skipWaiting())); self.addEventListener('activate', e => e.waitUntil(self.clients.claim()));");
+        response.end(`// ${path}\n` + identityProbe + "self.addEventListener('install', e => e.waitUntil(self.skipWaiting())); self.addEventListener('activate', e => e.waitUntil(self.clients.claim()));");
       } else if (path.startsWith("/static/")) {
         const download = path.startsWith("/static/downloads.js");
         const old = path === (download ? oldDownloadsPath : oldNavigationPath);
@@ -67,8 +69,9 @@ for (const app of [
       await page.reload();
       await expect.poll(() => page.evaluate(() => (window as WorkerWindow).checkWorker())).toBe("ready");
       for (const count of hits.values()) expect(count).toBe(1);
+      expect(errors).toEqual([]);
     } finally {
-      await page.goto("about:blank");
+      await page.close();
       server.closeAllConnections();
       await new Promise<void>((resolve, reject) => server.close((error) => error ? reject(error) : resolve()));
     }

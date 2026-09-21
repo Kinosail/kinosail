@@ -234,7 +234,8 @@ jobs:
         env:
           CONTAINER_ENGINE: docker
           KINOSAIL_BROWSER_MATRIX: ${{ fromJSON(needs.changes.outputs.plan).subtitles_browsers && 'full' || '' }}
-          KINOSAIL_BROWSER_WORKERS: "3"
+          # Browser projects mutate settings on the same Server fixture.
+          KINOSAIL_BROWSER_WORKERS: "1"
           KINOSAIL_PLATFORM: ${{ matrix.platform }}
           KINOSAIL_TEST_IMAGE: localhost/kinosail-subtitles:${{ github.sha }}
           KINOSAIL_TEST_IMAGE_READY: "1"

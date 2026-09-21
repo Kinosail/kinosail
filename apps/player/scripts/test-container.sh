@@ -211,7 +211,7 @@ grep -qi '^x-content-type-options: nosniff' <<<"$headers"
 if [[ "${KINOSAIL_BROWSER_TEST:-}" == "1" ]]; then
   while IFS= read -r project; do
     start_fresh_server "$port"
-    KINOSAIL_BROWSER_PROJECT="$project" KINOSAIL_E2E_URL="$url" KINOSAIL_E2E_OUTPUT_DIR="$media_dir/playwright-results-$project" pnpm --dir e2e test
+    KINOSAIL_BROWSER_PROJECT="$project" KINOSAIL_E2E_URL="$url" KINOSAIL_E2E_OUTPUT_DIR="${KINOSAIL_E2E_OUTPUT_DIR:-$media_dir/playwright-results}-$project" pnpm --dir e2e test
   done <<< "$browser_projects"
   exit
 fi

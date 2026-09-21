@@ -79,8 +79,8 @@ func loadLocalization() (*i18n.Bundle, []catalogMessage) {
 type localizedTemplate = *localization.TemplateSet
 
 func newLocalizedTemplate(name, source string) *localization.TemplateSet {
-	source = strings.ReplaceAll(source, `/static/main.kinosail.bundle.js?v=7`, `/static/main.kinosail.bundle.js?v=12`)
-	return localization.NewTemplateSet(name, source, "12", localeCatalog, supportedLanguages, httpguard.CSRFTemplateSource, httpguard.CSRFParseFuncs(uiIcon), localeTemplateRuntime)
+	source = strings.ReplaceAll(source, `/static/main.kinosail.bundle.js?v=7`, `/static/main.kinosail.bundle.js?v=13`)
+	return localization.NewTemplateSet(name, source, "13", localeCatalog, supportedLanguages, httpguard.CSRFTemplateSource, httpguard.CSRFParseFuncs(uiIcon), localeTemplateRuntime)
 }
 
 func localized(next http.Handler) http.Handler {

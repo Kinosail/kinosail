@@ -10,7 +10,7 @@ import (
 )
 
 var downloadFixture = servertest.DownloadFixture{
-	DownloadsScript: `/static/downloads.js?v=9`,
+	DownloadsScript: `/static/downloads.js?v=10`,
 	APIServer:       apiServer,
 	FirstItemID:     firstAPIItemID,
 	SignIn:          signInTestProfile,
