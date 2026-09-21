@@ -118,7 +118,7 @@ The script sets `KINOSAIL_REMOTE_MODE=off`, restores the saved local authenticat
 
 **Trusted HTTPS** is the smoothest secure path for phones, TVs, and apps. It is different from public remote access and remains optional. It obtains a Let's Encrypt certificate through DuckDNS or deSEC while Kinosail remains on the LAN. DuckDNS is easiest. deSEC supports narrower tokens for more privacy. Trusted HTTPS publishes the private LAN address in public DNS and the hostname in certificate-transparency logs. It does not open a router port.
 
-Follow [Connect phones, TVs, and Jellyfin apps]({{ '/getting-started/connect-devices/' | relative_url }}) for trusted HTTPS setup and device certificate choices.
+Follow [Connect another browser]({{ '/getting-started/connect-devices/' | relative_url }}) for trusted HTTPS setup and device certificate choices.
 
 ## Source of truth
 

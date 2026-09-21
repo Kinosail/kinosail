@@ -29,12 +29,11 @@ Kinosail keeps HTTPS on and stays on your network unless you enable remote acces
 Choose any options your household needs:
 
 - Keep **Secure local access**, which is on by default. Devices can trust the Kinosail local CA certificate at `/api/v1/agent-connections/certificate`.
-- Enable **Jellyfin apps** only when the household uses a compatible Jellyfin client. This option does not disable HTTPS.
-- Configure **Trusted HTTPS** for phones, TVs, and Jellyfin apps. Jellyfin apps require this step because many clients reject private certificates. Choose DuckDNS for the easiest setup. Choose deSEC for a narrow token and more privacy. Enter the hostname, provider token, and Kinosail LAN address. Accept the Let's Encrypt subscriber agreement, then select **Save trusted HTTPS**.
+- Configure **Trusted HTTPS** for browsers on your household devices. Choose DuckDNS for the easiest setup. Choose deSEC for a narrow token and more privacy. Enter the hostname, provider token, and Kinosail LAN address. Accept the Let's Encrypt subscriber agreement, then select **Save trusted HTTPS**.
 
 Trusted HTTPS publishes the private LAN address in public DNS and puts the hostname in certificate-transparency logs. It does not open a router port and does not relay media. Restart Kinosail when the page says **Restart required**. Sign in again at the trusted hostname and add your passkeys again because the authentication origin changed.
 
-Follow [Connect phones, TVs, and Jellyfin apps]({{ '/getting-started/connect-devices/' | relative_url }}) for the complete device, Jellyfin, and DNS-provider procedures.
+Follow [Connect another browser]({{ '/getting-started/connect-devices/' | relative_url }}) for LAN access and certificate choices.
 
 Select **Continue to household setup** or **Skip optional setup**.
 

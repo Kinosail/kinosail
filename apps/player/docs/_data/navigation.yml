@@ -1,25 +1,35 @@
 - title: Start here
   url: /getting-started/
   pages:
-    - title: Choose an install path
+    - title: Install with Docker
+      url: /quickstart/
+    - title: Installation overview
       url: /getting-started/
-    - title: Install Kinosail
+    - title: Docker installation details
       url: /getting-started/install/
     - title: Complete first setup
       url: /getting-started/first-setup/
-    - title: Connect phones, TVs, and apps
+    - title: Connect another browser
       url: /getting-started/connect-devices/
     - title: Add your media
       url: /getting-started/add-media/
 - title: Use Kinosail
   url: /user-guide/
   pages:
+    - title: All Player features
+      url: /features/
     - title: User guide
       url: /user-guide/
     - title: Browse and search
       url: /user-guide/browse-and-search/
     - title: Play media
       url: /user-guide/playback/
+    - title: Download and play offline
+      url: /user-guide/offline/
+    - title: Music, books, and photos
+      url: /user-guide/media-types/
+    - title: Make the web Player yours
+      url: /user-guide/web-app/
     - title: Profiles and household access
       url: /user-guide/profiles/
     - title: Lists and collections
@@ -33,6 +43,10 @@
       url: /owner-guide/
     - title: Manage libraries
       url: /owner-guide/libraries/
+    - title: Edit metadata and skip markers
+      url: /owner-guide/metadata/
+    - title: Import and sync history
+      url: /owner-guide/migration/
     - title: Configure playback
       url: /owner-guide/playback/
     - title: Secure accounts
@@ -91,5 +105,9 @@
   pages:
     - title: Frequently asked questions
       url: /faq/
+    - title: Build from source
+      url: /source-install/
+    - title: About these docs
+      url: /about/
     - title: Documentation guide
       url: /contributing/documentation/
