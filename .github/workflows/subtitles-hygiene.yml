@@ -221,6 +221,13 @@ jobs:
           build-args: |
             VERSION=ci
             REVISION=${{ github.sha }}
+      - name: Scan the production image before merge
+        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25
+        with:
+          image-ref: localhost/kinosail-subtitles:${{ github.sha }}
+          severity: CRITICAL,HIGH
+          ignore-unfixed: true
+          exit-code: "1"
       - name: Test ARM64 production container and restart persistence
         if: matrix.platform == 'linux/arm64'
         env:
