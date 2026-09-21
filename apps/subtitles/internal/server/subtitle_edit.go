@@ -53,20 +53,33 @@ func validateSubtitleEdit(input subtitleEdit, apply bool) error {
 	if input.DraftID != "" && (!validSubtitleFingerprint(input.DraftID) || len(input.Data) != 0) {
 		return errors.New("subtitle draft is invalid")
 	}
-	if _, err := validateSubtitleLanguages([]string{input.Language}); err != nil || (len(input.Data) > 4<<20 || len(input.Text) > 4<<20) || input.Offset < -120000 || input.Offset > 120000 || len(input.Anchors) > 8 || input.Encoding != "" && !oneOf(input.Encoding, subtitleEncodings...) {
+	if !validSubtitleEditBounds(input) {
 		return errors.New("subtitle edit is invalid")
 	}
 	if input.Fingerprint != "missing" && input.Fingerprint != "" && !validSubtitleFingerprint(input.Fingerprint) || apply && input.Fingerprint == "" {
 		return errors.New("preview the current subtitle before saving")
 	}
+	return validateSubtitleEditTiming(input)
+}
+
+func validSubtitleEditBounds(input subtitleEdit) bool {
+	_, err := validateSubtitleLanguages([]string{input.Language})
+	return err == nil && len(input.Data) <= 4<<20 && len(input.Text) <= 4<<20 && input.Offset >= -120000 && input.Offset <= 120000 && len(input.Anchors) <= 8 && (input.Encoding == "" || oneOf(input.Encoding, subtitleEncodings...))
+}
+
+func validateSubtitleEditTiming(input subtitleEdit) error {
 	if len(input.Anchors) > 0 && input.Offset != 0 || input.AutomaticSync && (len(input.Anchors) > 0 || input.Offset != 0) {
 		return errors.New("choose automatic synchronization, an offset, or timing anchors")
 	}
-	for i, anchor := range input.Anchors {
+	return validateSubtitleEditAnchors(input.Anchors)
+}
+
+func validateSubtitleEditAnchors(anchors []subtitleEditAnchor) error {
+	for i, anchor := range anchors {
 		if anchor.At < 0 || anchor.At > int64(36*time.Hour/time.Millisecond) || anchor.Offset < -120000 || anchor.Offset > 120000 {
 			return errors.New("subtitle anchor is out of range")
 		}
-		if i > 0 && (anchor.At <= input.Anchors[i-1].At || anchor.At+anchor.Offset <= input.Anchors[i-1].At+input.Anchors[i-1].Offset) {
+		if i > 0 && (anchor.At <= anchors[i-1].At || anchor.At+anchor.Offset <= anchors[i-1].At+anchors[i-1].Offset) {
 			return errors.New("subtitle anchors must preserve time order")
 		}
 	}
@@ -210,41 +223,57 @@ func (manager *subtitleManager) applySubtitleEdit(request *http.Request, id stri
 	}
 	previous, found, _ := manager.provider.ledger.record(subtitleRecordKey(id, review.Language))
 	record.Role = firstNonempty(input.Role, "translation")
-	if input.Role == "" && input.DraftID == "" && len(input.Data) == 0 && found && previous.Fingerprint == review.Fingerprint {
+	reusesPrevious := input.DraftID == "" && len(input.Data) == 0 && found && previous.Fingerprint == review.Fingerprint
+	if input.Role == "" && reusesPrevious {
 		record.Role = previous.Role
 	}
-	if len(input.Data) == 0 && input.DraftID == "" && found && previous.Fingerprint == review.Fingerprint && previous.OriginalFingerprint != "" {
-		original, originalErr := readUpgradeSidecar(manager.provider.originalPath(previous.OriginalFingerprint))
-		if originalErr != nil || subtitleFingerprint(original) != previous.OriginalFingerprint {
-			return review, http.StatusConflict, errors.New("retained original is unavailable; restore it before editing")
-		}
-		record.OriginalFingerprint = previous.OriginalFingerprint
-	} else if err = manager.provider.retainSubtitleOriginal(document.Original, &record); err != nil {
-		return review, http.StatusInternalServerError, errors.New("subtitle original could not be retained")
+	if status, err := manager.provider.retainEditedSubtitleOriginal(document.Original, previous, &record, reusesPrevious); err != nil {
+		return review, status, err
 	}
-	if exists {
-		if err = manager.provider.retainSubtitleRecoveryOriginal(current, previous, &record); err != nil {
-			return review, http.StatusInternalServerError, errors.New("subtitle recovery original could not be retained")
-		}
-		if err = target.write(".kinosail.bak", current, false); err == nil {
-			err = target.write("", document.Data, false)
-		}
-	} else {
-		err = target.write("", document.Data, true)
-	}
-	if err != nil {
-		return review, http.StatusConflict, errors.New("subtitle could not be saved")
-	}
-	if err = manager.provider.ledger.store(subtitleRecordKey(id, review.Language), target.record(document.Data, record)); err != nil {
-		if exists {
-			_ = target.write("", current, false)
-		} else {
-			_ = target.remove()
-		}
-		return review, http.StatusInternalServerError, errors.New("subtitle history could not be saved")
+	if status, err := manager.provider.saveSubtitleEdit(target, subtitleRecordKey(id, review.Language), current, document.Data, previous, record, exists); err != nil {
+		return review, status, err
 	}
 	if err = manager.index.Refresh(request.Context()); err != nil {
 		return review, http.StatusInternalServerError, errors.New("subtitle was saved but the library could not be refreshed")
 	}
 	return manager.inspectSubtitle(request, id, review.Language)
+}
+
+func (provider *subtitleProvider) saveSubtitleEdit(target *subtitleSidecar, key string, current, data []byte, previous, record subtitleRecord, exists bool) (int, error) {
+	var err error
+	if exists {
+		if err = provider.retainSubtitleRecoveryOriginal(current, previous, &record); err != nil {
+			return http.StatusInternalServerError, errors.New("subtitle recovery original could not be retained")
+		}
+		if err = target.write(".kinosail.bak", current, false); err == nil {
+			err = target.write("", data, false)
+		}
+	} else {
+		err = target.write("", data, true)
+	}
+	if err != nil {
+		return http.StatusConflict, errors.New("subtitle could not be saved")
+	}
+	if err = provider.ledger.store(key, target.record(data, record)); err != nil {
+		if exists {
+			_ = target.write("", current, false)
+		} else {
+			_ = target.remove()
+		}
+		return http.StatusInternalServerError, errors.New("subtitle history could not be saved")
+	}
+	return http.StatusOK, nil
+}
+
+func (provider *subtitleProvider) retainEditedSubtitleOriginal(originalData []byte, previous subtitleRecord, record *subtitleRecord, reusesPrevious bool) (int, error) {
+	if reusesPrevious && previous.OriginalFingerprint != "" {
+		original, originalErr := readUpgradeSidecar(provider.originalPath(previous.OriginalFingerprint))
+		if originalErr != nil || subtitleFingerprint(original) != previous.OriginalFingerprint {
+			return http.StatusConflict, errors.New("retained original is unavailable; restore it before editing")
+		}
+		record.OriginalFingerprint = previous.OriginalFingerprint
+	} else if err := provider.retainSubtitleOriginal(originalData, record); err != nil {
+		return http.StatusInternalServerError, errors.New("subtitle original could not be retained")
+	}
+	return http.StatusOK, nil
 }

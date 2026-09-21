@@ -63,7 +63,7 @@ export async function startHappyPath(page: Page, testInfo: TestInfo): Promise<Ha
 			await page.getByRole("link", { name: "Finish and open Library" }).click();
 			passkeyCreated = true;
 		} else {
-			await page.getByRole("button", { name: "Use an authenticator instead" }).click();
+			await page.getByRole("button", { name: "Use an authenticator app instead" }).click();
 			authenticatorSecret = (await page.locator("code").first().textContent())!;
 			await page.getByLabel("Authentication code").fill(totp(authenticatorSecret));
 			await page.getByRole("button", { name: "Turn on extra sign-in protection" }).click();
@@ -82,7 +82,8 @@ export async function startHappyPath(page: Page, testInfo: TestInfo): Promise<Ha
   }
 
   await expect(page.getByRole("heading", { name: "Kinosail" })).toBeVisible();
-  await expect(page.getByRole("heading", { name: "Your library" })).toBeVisible();
+  await expect(page.getByRole("main")).toBeVisible();
+  await expect(page.locator("#main .recent-card").first()).toBeVisible();
 	const infiniteRequests: string[] = [];
 	const captureInfinite = (request: Request) => {
 		if (request.headers()["x-kinosail-library-page"] === "1") infiniteRequests.push(new URL(request.url()).searchParams.get("offset") ?? "");
@@ -97,14 +98,14 @@ export async function startHappyPath(page: Page, testInfo: TestInfo): Promise<Ha
 		requests: [...infiniteRequests],
 		status: await page.locator("[data-library-status]").textContent(),
 		};
-	}, { timeout: 30_000 }).toMatchObject({ next: 0, status: "Everything is loaded." });
+	}, { timeout: 30_000 }).toMatchObject({ next: 0, status: "All titles are loaded." });
 	const loadedLibrary = await page.evaluate(() => ({
 		cards: document.querySelectorAll("#library .card").length,
 		next: document.querySelectorAll("[data-library-next]").length,
 		status: document.querySelector("[data-library-status]")?.textContent,
 	}));
 	expect(loadedLibrary.next).toBe(0);
-	expect(loadedLibrary.status).toBe("Everything is loaded.");
+	expect(loadedLibrary.status).toBe("All titles are loaded.");
 	expect(loadedLibrary.cards).toBe(infiniteRequests.length + 1);
 	expect(infiniteRequests).toEqual(Array.from({ length: infiniteRequests.length }, (_, index) => String(index + 1)));
 	page.off("request", captureInfinite);
@@ -112,7 +113,7 @@ export async function startHappyPath(page: Page, testInfo: TestInfo): Promise<Ha
 	const libraryLoad = await holdNextLibraryPage(page, "1");
 	await page.goto("/?view=movies&limit=1");
 	await libraryLoad.waitUntilStarted();
-	await page.getByRole("searchbox", { name: "Search library" }).fill("Arrival");
+	await page.getByRole("searchbox", { name: "Search all libraries" }).fill("Arrival");
 	await expect(page).toHaveURL(/q=Arrival/);
 	await libraryLoad.release();
 	await page.waitForTimeout(300);
@@ -155,7 +156,7 @@ export async function startHappyPath(page: Page, testInfo: TestInfo): Promise<Ha
 	await jumpButton.click();
 	await page.getByRole("dialog", { name: "Jump to title" }).getByRole("link", { name: "B, 1 title" }).click();
 	await jumpLoad.waitUntilStarted();
-	await page.getByRole("searchbox", { name: "Search library" }).fill("Gamma");
+	await page.getByRole("searchbox", { name: "Search all libraries" }).fill("Gamma");
 	await expect(page).toHaveURL(/q=Gamma/);
 	await jumpLoad.release();
 	await page.waitForTimeout(300);

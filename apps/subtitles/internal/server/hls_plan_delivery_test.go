@@ -11,6 +11,7 @@ import (
 	"testing"
 
 	"github.com/MikeO7/kinosail-subtitles/internal/server"
+	"github.com/MikeO7/kinosail/packages/servertest"
 )
 
 func TestPlannedHLSDeliversTheTransformationChosenByPlaybackPlanning(t *testing.T) { //nolint:cyclop,funlen,gocognit // Three sources prove the minimum-transform ladder and explicit color/subtitle branch.
@@ -34,7 +35,11 @@ func TestPlannedHLSDeliversTheTransformationChosenByPlaybackPlanning(t *testing.
 			ffprobe := filepath.Join(tools, "ffprobe")
 			writeExecutable(t, ffprobe, "#!/bin/sh\nprintf '%s' '"+test.probe+"'\n")
 			arguments, ffmpeg := filepath.Join(tools, "arguments"), filepath.Join(tools, "ffmpeg")
-			writeExecutable(t, ffmpeg, fmt.Sprintf("#!/bin/sh\nprintf '%%s\\n' \"$*\" >> '%s'\n", arguments)+fakePlayableHLS())
+			output := fakePlayableHLS()
+			if test.name == "remux" {
+				output = servertest.PlayableHLSWithMedia(1920, 804, "aac")
+			}
+			writeExecutable(t, ffmpeg, fmt.Sprintf("#!/bin/sh\nprintf '%%s\\n' \"$*\" >> '%s'\n", arguments)+output)
 			handler, id := firstWebItem(t, server.Config{MediaDir: media, CacheDir: cache, FFprobe: ffprobe, FFmpeg: ffmpeg})
 			page := httptest.NewRecorder()
 			handler.ServeHTTP(page, httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/watch/"+id+test.query, nil))
@@ -48,7 +53,7 @@ func TestPlannedHLSDeliversTheTransformationChosenByPlaybackPlanning(t *testing.
 			if playlist.Code != http.StatusOK || err != nil {
 				t.Fatalf("planned HLS = %d arguments=%q err=%v", playlist.Code, used, err)
 			}
-			if !strings.Contains(playlist.Body.String(), ":hls=6") {
+			if !strings.Contains(playlist.Body.String(), ":hls=7") {
 				t.Fatalf("planned HLS cache version is stale: %q", playlist.Body.String())
 			}
 			for _, value := range test.want {

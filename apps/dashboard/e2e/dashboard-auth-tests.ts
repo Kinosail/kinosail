@@ -9,7 +9,7 @@ export function registerDashboardAuthTests() {
       await login(page);
       await resetBoard(page);
     } else {
-      await expect(page.getByRole("heading", { name: "Make this dashboard yours." })).toBeVisible();
+      await expect(page.getByRole("heading", { name: "Set up your Dashboard." })).toBeVisible();
       await expect(page.getByLabel("Setup progress")).toContainText("Your Owner account");
       for (const viewport of [
         { width: 1440, height: 900 }, { width: 1024, height: 768 }, { width: 720, height: 450 },
@@ -77,7 +77,7 @@ export function registerDashboardAuthTests() {
       await expect(settings.getByRole("button", { name: "Add a passkey" })).toBeFocused();
       await expect(settings.getByRole("button", { name: "Not now" })).toBeVisible();
       await expect(settings.getByLabel("Board name")).toBeHidden();
-      await expect(settings.getByRole("heading", { name: "Owner password" })).toBeHidden();
+      await expect(settings.locator("summary").filter({ hasText: /^Owner password$/ })).toBeHidden();
       await expect(settings.getByRole("button", { name: "Save board" })).toBeHidden();
       expect(await settings.evaluate(dialog => dialog.scrollHeight <= dialog.clientHeight + 1)).toBe(true);
       await expectNoOverflow(page);
@@ -88,7 +88,7 @@ export function registerDashboardAuthTests() {
     await expect(page).toHaveURL(/\/$/);
     await page.getByRole("button", { name: "Open board settings" }).click();
     await expect(page.getByLabel("Board name")).toBeVisible();
-    await expect(page.getByRole("heading", { name: "Owner password" })).toBeVisible();
+    await expect(page.locator("summary").filter({ hasText: /^Owner password$/ })).toBeVisible();
     await expect(page.getByRole("button", { name: "Not now" })).toBeHidden();
   });
 

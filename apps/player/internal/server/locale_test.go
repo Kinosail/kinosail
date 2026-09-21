@@ -11,7 +11,7 @@ import (
 )
 
 func TestWebSurfacesCanUseSpanish(t *testing.T) {
-	localeWebFixture.WebSurfacesCanUseSpanish(t, signInTestProfile, requestWithCookie, "Almacenado aquí. Transmitido directamente.")
+	localeWebFixture.WebSurfacesCanUseSpanish(t, signInTestProfile, requestWithCookie, "Almacenado aquí. Transmitido directamente.", "Protección de inicio de sesión")
 }
 
 func TestLocalizationDoesNotTranslateLibraryContent(t *testing.T) {

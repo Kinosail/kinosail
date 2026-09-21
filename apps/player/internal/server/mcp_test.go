@@ -139,8 +139,10 @@ func TestMCPModernOAuthAndAPIDrivenTools(t *testing.T) { //nolint:cyclop,funlen,
 
 	t.Run("monitoring metrics", func(t *testing.T) {
 		profiles.profiles[0].Owner = true
+		profiles.profiles[0].TOTPSecret = "fixture-owner-factor"
 		response := mcpRequest(t, mux, "tools/call", "access-token", map[string]any{"name": "read_api", "arguments": map[string]string{"path": "/api/v1/metrics"}})
 		profiles.profiles[0].Owner = false
+		profiles.profiles[0].TOTPSecret = ""
 		if response.Code != http.StatusOK || !strings.Contains(response.Body.String(), "API operation is not available through MCP") {
 			t.Fatalf("read scope reached Owner metrics = %d %q", response.Code, response.Body.String())
 		}
@@ -183,6 +185,7 @@ func TestMCPModernOAuthAndAPIDrivenTools(t *testing.T) { //nolint:cyclop,funlen,
 			t.Fatalf("Viewer management tools = %d %q", response.Code, response.Body.String())
 		}
 		profiles.profiles[0].Owner = true
+		profiles.profiles[0].TOTPSecret = "fixture-owner-factor"
 		response = mcpRequest(t, mux, "tools/list", "access-token", nil)
 		if response.Code != http.StatusOK || !strings.Contains(response.Body.String(), `"name":"manage_api"`) || strings.Contains(response.Body.String(), `"name":"create_playlist"`) {
 			t.Fatalf("Owner management tools = %d %q", response.Code, response.Body.String())
@@ -228,6 +231,7 @@ func TestMCPModernOAuthAndAPIDrivenTools(t *testing.T) { //nolint:cyclop,funlen,
 	t.Run("bounded adapter input and output", func(t *testing.T) {
 		scope = mcpReadScope + " " + mcpWriteScope
 		profiles.profiles[0].Owner = false
+		profiles.profiles[0].TOTPSecret = ""
 		beforeReads := libraryCalls
 		response := mcpRequest(t, mux, "tools/call", "access-token", map[string]any{"name": "write_api", "arguments": map[string]any{"method": "GET", "path": "/api/v1/library"}})
 		if response.Code != http.StatusOK || !strings.Contains(response.Body.String(), "method is not available") || libraryCalls != beforeReads {

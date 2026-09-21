@@ -49,7 +49,7 @@ func (fixture AutomaticSkipFixture) BundledPlayerKeepsDirectTimelineAndClientSki
 
 func assertAutomaticSkipSubtitle(t *testing.T, handler http.Handler, token, body string) {
 	t.Helper()
-	subtitlePath := regexp.MustCompile(`data-subtitle-source="(/subtitle/[^"]+)"`).FindStringSubmatch(body)
+	subtitlePath := regexp.MustCompile(`<track[^>]+(?:data-subtitle-source|src)="(/subtitle/[^"]+)"`).FindStringSubmatch(body)
 	if len(subtitlePath) != 2 {
 		t.Fatalf("chopped player subtitle URL = %q", body)
 	}

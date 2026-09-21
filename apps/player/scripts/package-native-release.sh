@@ -50,7 +50,7 @@ for target in linux/amd64 linux/arm64 darwin/amd64 darwin/arm64 windows/amd64 wi
 	row="{\"os\":\"$platform\",\"arch\":\"$arch\",\"file\":\"$file\",\"format\":\"$format\",\"sha256\":\"$digest\",\"size\":$size}"
 	rows="${rows}${rows:+,}${row}"
 done
-printf '{"schemaVersion":2,"version":"%s","updateSchema":2,"stateSchema":1,"minimumStateSchema":1,"configurationSchema":1,"minimumConfigurationSchema":1,"runtimeCommands":["ffmpeg","ffprobe","fpcalc"],"installation":{"schemaVersion":%s,"file":"kinosail-native-installation.json","sha256":"%s","size":%s},"artifacts":[%s]}\n' "$version" "$contract_schema" "$contract_digest" "$contract_size" "$rows" >"$release/kinosail-release.json"
+printf '{"schemaVersion":2,"version":"%s","updateSchema":2,"stateSchema":2,"minimumStateSchema":1,"configurationSchema":1,"minimumConfigurationSchema":1,"runtimeCommands":["ffmpeg","ffprobe","fpcalc"],"installation":{"schemaVersion":%s,"file":"kinosail-native-installation.json","sha256":"%s","size":%s},"artifacts":[%s]}\n' "$version" "$contract_schema" "$contract_digest" "$contract_size" "$rows" >"$release/kinosail-release.json"
 for file in "${files[@]}"; do
 	mv "$release/$file" "$destination/$file"
 done

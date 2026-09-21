@@ -196,7 +196,7 @@ test("service worker streams verified OPFS chunks before later verification", as
 
 for (const mode of ["registration failure", "no controller"] as const) test(`offline downloads reject ${mode} before storage changes`, async ({ page }) => {
 	await page.addInitScript((failureMode) => {
-		const worker = Object.assign(new EventTarget(), { scriptURL: "https://kinosail.test/service-worker.js?v=47", state: "activated" });
+		const worker = Object.assign(new EventTarget(), { scriptURL: "https://kinosail.test/service-worker.js?v=51", state: "activated" });
 		const registration = Object.assign(new EventTarget(), { active: worker, installing: null, waiting: null });
 		const serviceWorker = Object.assign(new EventTarget(), {
 			controller: null,

@@ -200,7 +200,7 @@ func (service *Service) read(reader io.Reader, includeSecrets bool) (map[string]
 func (service *Service) stage(archive *tar.Reader, header *tar.Header, staged map[string][]byte, includeSecrets bool) error { //nolint:cyclop // Entry safety checks deliberately stay at the archive boundary.
 	allowed := slices.Contains(files, header.Name) || includeSecrets && slices.Contains(secretFiles, header.Name) || header.Name == manifestName
 	maximum := maxStateFileSize(header.Name)
-	if header.Typeflag != tar.TypeReg || !allowed || header.Size < 0 || header.Size > int64(maximum) {
+	if header.Typeflag != tar.TypeReg || !filepath.IsLocal(header.Name) || filepath.Base(header.Name) != header.Name || !allowed || header.Size < 0 || header.Size > int64(maximum) {
 		return fmt.Errorf("backup contains invalid entry %q", header.Name)
 	}
 	if _, exists := staged[header.Name]; exists {

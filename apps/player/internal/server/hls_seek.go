@@ -140,17 +140,9 @@ func (manager *hlsManager) prepareSegment(ctx context.Context, item library.Item
 	seekRecipe := recipe
 	seekRecipe.offset += offset
 	seekRecipe.outputTime = offset
-	options, err := manager.settings.transcodingFor(recipe.codec)
+	options, err := manager.seekSettings(item, recipe, directory)
 	if err != nil {
 		return err
-	}
-	if recipe.subtitlePath != "" {
-		options.Cache += ":subtitle=" + sourceVersion(recipe.subtitlePath)
-	}
-	options.Cache += ":" + sourceVersion(item.Path) + ":" + recipe.token() + ":hls=11"
-	master, readErr := os.ReadFile(filepath.Join(directory, "index.m3u8"))
-	if readErr != nil || !strings.Contains(string(master), "#KINOSAIL-TRANSCODER:"+options.Cache+"\n") {
-		return errors.New("playback settings changed; start a new compatible stream")
 	}
 	for {
 		manager.mu.Lock()
@@ -166,10 +158,8 @@ func (manager *hlsManager) prepareSegment(ctx context.Context, item library.Item
 		if job != nil {
 			job.cancel(errHLSSeekRestart)
 			manager.mu.Unlock()
-			select {
-			case <-ctx.Done():
-				return ctx.Err()
-			case <-job.done:
+			if err := waitForReplacedHLSJob(ctx, job); err != nil {
+				return err
 			}
 			continue
 		}
@@ -183,6 +173,31 @@ func (manager *hlsManager) prepareSegment(ctx context.Context, item library.Item
 		manager.mu.Unlock()
 		//nolint:contextcheck // Encoding uses the Server lifecycle so a disconnected segment request does not destroy shared output.
 		go manager.encode(jobContext, item, job, key, options, seekRecipe, segment, true)
+		return nil
+	}
+}
+
+func (manager *hlsManager) seekSettings(item library.Item, recipe hlsRecipe, directory string) (transcodeSettings, error) {
+	options, err := manager.settings.transcodingFor(recipe.codec)
+	if err != nil {
+		return transcodeSettings{}, err
+	}
+	if recipe.subtitlePath != "" {
+		options.Cache += ":subtitle=" + sourceVersion(recipe.subtitlePath)
+	}
+	options.Cache += ":" + sourceVersion(item.Path) + ":" + recipe.token() + ":hls=11"
+	master, readErr := os.ReadFile(filepath.Join(directory, "index.m3u8"))
+	if readErr != nil || !strings.Contains(string(master), "#KINOSAIL-TRANSCODER:"+options.Cache+"\n") {
+		return transcodeSettings{}, errors.New("playback settings changed; start a new compatible stream")
+	}
+	return options, nil
+}
+
+func waitForReplacedHLSJob(ctx context.Context, job *hlsJob) error {
+	select {
+	case <-ctx.Done():
+		return ctx.Err()
+	case <-job.done:
 		return nil
 	}
 }

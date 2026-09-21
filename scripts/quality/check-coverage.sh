@@ -17,9 +17,9 @@ status=0
 apps=(player subtitles dashboard)
 if (( $# == 1 )); then
   apps=("$1")
-  [[ "$1" != packages ]] || apps=()
 fi
 for app in "${apps[@]}"; do
+	[[ "$app" != packages ]] || continue
 	directory="$repo/apps/$app"
 	mkdir -p "$directory/.verification"
 	if [[ -x "$directory/scripts/with-go-module.sh" ]]; then
@@ -57,7 +57,7 @@ mkdir -p "$repo/packages/.verification"
 package_targets=()
 while IFS= read -r package; do
 	case "$package" in
-	*/archivetest|*/commandtest|*/configurationtest|*/servertest) ;;
+	*/archivetest|*/archivetest/*|*/commandtest|*/commandtest/*|*/configurationtest|*/configurationtest/*|*/servertest|*/servertest/*) ;;
 	*) package_targets+=("$package") ;;
 	esac
 done < <(cd "$repo/packages" && go list ./...)

@@ -57,12 +57,7 @@ func subtitleDashboardQuery(request *http.Request) (subtitleDashboardOptions, er
 			return options, invalid
 		}
 	}
-	if !oneOf(options.View, "summary", "wanted", "library") || len(options.Query) > 128 || !utf8.ValidString(options.Query) ||
-		!oneOf(options.Status, "all", "ready", "wanted", "checking", "unavailable") || !oneOf(options.Kind, "all", "movie", "episode") || !oneOf(options.Sort, "title", "modified") {
-		return options, invalid
-	}
-	// Overview is a six-file preview; Wanted has an unambiguous status.
-	if options.View == "summary" && (options.Page != 1 || options.Status != "all") || options.View == "wanted" && !oneOf(options.Status, "all", "wanted") {
+	if !options.valid() {
 		return options, invalid
 	}
 	return options, nil
@@ -86,4 +81,20 @@ func (options subtitleDashboardOptions) pageURL(page int) string {
 		values.Set("page", strconv.Itoa(page))
 	}
 	return "/?" + values.Encode()
+}
+
+func (options subtitleDashboardOptions) valid() bool {
+	if !options.validSearch() ||
+		!oneOf(options.Status, "all", "ready", "wanted", "checking", "unavailable") || !oneOf(options.Kind, "all", "movie", "episode") || !oneOf(options.Sort, "title", "modified") {
+		return false
+	}
+	// Overview is a six-file preview; Wanted has an unambiguous status.
+	if options.View == "summary" && (options.Page != 1 || options.Status != "all") || options.View == "wanted" && !oneOf(options.Status, "all", "wanted") {
+		return false
+	}
+	return true
+}
+
+func (options subtitleDashboardOptions) validSearch() bool {
+	return oneOf(options.View, "summary", "wanted", "library") && len(options.Query) <= 128 && utf8.ValidString(options.Query)
 }

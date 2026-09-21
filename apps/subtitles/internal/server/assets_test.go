@@ -109,5 +109,5 @@ func assertAssetContains(t *testing.T, name, body string, fragments ...string) {
 
 func TestBrandUsesPairedCaptionsLogo(t *testing.T) {
 	t.Parallel()
-	servertest.AssertBrandLogo(t, server.New(server.Config{DataDir: t.TempDir(), RequireAuth: true}), []string{`<img class="brand-mark" src="/static/icon.svg?v=11"`}, []string{`d="M128 144h256v96H184l-56 48Z"`, `d="M128 272h256v112l-56-32H128Z"`}, []string{`.brand-icon{content:url("/static/icon.svg?v=11")}`}, []string{`d="m224 150 96 76-96 76z"`})
+	servertest.AssertBrandLogo(t, server.New(server.Config{DataDir: t.TempDir(), RequireAuth: true}), []string{`<img class="brand-mark" src="/static/icon.svg?v=11"`}, []string{`d="M128 144h256v96H184l-56 48Z"`, `d="M128 272h256v112l-56-32H128Z"`}, []string{`.brand-icon,.brand-mark{width:38px;height:38px;border-radius:11px}`}, []string{`d="m224 150 96 76-96 76z"`})
 }

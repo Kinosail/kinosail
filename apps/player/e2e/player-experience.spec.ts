@@ -178,7 +178,7 @@ test("offline source swap restarts server-skip adaptive playback after a pending
   await page.evaluate(() => (window as Window & { releaseHlsLoader: () => Promise<void> }).releaseHlsLoader());
   await expect(video).toHaveJSProperty("src", "blob:stream");
   await expect.poll(() => page.evaluate(() => (window as Window & { hlsSources: string[] }).hlsSources)).toEqual(["/hls/movie-o20000/index.m3u8"]);
-  await expect(page.locator("[data-playback-mode-status]")).toHaveText("Starting Remux");
+  await expect(page.locator("[data-playback-mode-status]")).toHaveText("Remux");
   await video.dispatchEvent("loadedmetadata");
   await video.dispatchEvent("canplay");
   await expect(page.locator("[data-playback-mode-status]")).toHaveText("Remux");
@@ -216,12 +216,12 @@ test("offline source swap keeps the local source after a delayed direct probe re
 
 test("offline source swap rapid playback mode change keeps time and play intent", async ({ page }) => {
   const video = page.locator("video");
-  await page.evaluate(() => {
+  await page.evaluate(async () => {
     const context = window as Window & { setPaused: (value: boolean) => void; setReadyState: (value: number) => void };
     const player = document.querySelector("video")!;
     context.setReadyState(4);
     player.currentTime = 50;
-    context.setPaused(false);
+    await player.play();
   });
   await page.locator('[data-playback-mode] input[value="compatible"]').check();
   await expect(video).toHaveJSProperty("src", "blob:stream");
@@ -232,12 +232,12 @@ test("offline source swap rapid playback mode change keeps time and play intent"
 
 test("offline source swap rapid playback mode keeps pending intent through local failure", async ({ page }) => {
   const video = page.locator("video");
-  await page.evaluate(() => {
+  await page.evaluate(async () => {
     const context = window as Window & { setPaused: (value: boolean) => void; setReadyState: (value: number) => void };
     const player = document.querySelector("video")!;
     context.setReadyState(4);
     player.currentTime = 50;
-    context.setPaused(false);
+    await player.play();
   });
   await page.locator('[data-playback-mode] input[value="compatible"]').check();
   await expect(video).toHaveJSProperty("src", "blob:stream");

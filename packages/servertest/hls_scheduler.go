@@ -14,9 +14,9 @@ import (
 )
 
 type HLSSchedulerConfig struct {
-	MediaDir, DataDir, CacheDir, FFmpeg, HardwareOS, HardwareArch string
-	ProbeHardware                                                 bool
-	HardwareDevices                                               []string
+	MediaDir, DataDir, CacheDir, FFmpeg, FFprobe, HardwareOS, HardwareArch string
+	ProbeHardware                                                          bool
+	HardwareDevices                                                        []string
 }
 
 type HLSSchedulerFixture struct {
@@ -27,7 +27,10 @@ type HLSSchedulerFixture struct {
 // HLSScheduler checks scheduling, complete publication, and hardware recovery through the app handler.
 func HLSScheduler(t *testing.T, newHandler func(HLSSchedulerConfig) http.Handler, playableHLS string) {
 	t.Helper()
-	fixture := HLSSchedulerFixture{New: newHandler, PlayableHLS: playableHLS}
+	fixture := HLSSchedulerFixture{New: func(config HLSSchedulerConfig) http.Handler {
+		config.FFprobe = HLSSchedulerProbe(t)
+		return newHandler(config)
+	}, PlayableHLS: playableHLS}
 	t.Run("LimitsConcurrentFFmpegWork", fixture.LimitsConcurrentFFmpegWork)
 	t.Run("PublishesOneCompleteStableMaster", fixture.PublishesOneCompleteStableMaster)
 	t.Run("FallsBackToSoftwareAfterHardwareFailure", fixture.FallsBackToSoftwareAfterHardwareFailure)
@@ -190,4 +193,13 @@ func scheduledWatchIDs(t *testing.T, handler http.Handler) []string {
 		t.Fatalf("scanned media items = %d, want 2", len(ids))
 	}
 	return ids
+}
+
+func HLSSchedulerProbe(t *testing.T) string {
+	t.Helper()
+	probe := filepath.Join(t.TempDir(), "ffprobe")
+	WriteExecutable(t, probe, `#!/bin/sh
+printf '%s' '{"streams":[{"codec_type":"video","codec_name":"hevc","width":1920,"height":1080},{"codec_type":"audio","codec_name":"aac","index":1}],"format":{"duration":"120"}}'
+`)
+	return probe
 }

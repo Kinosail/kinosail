@@ -19,12 +19,12 @@ trap cleanup EXIT
 ./scripts/test-instance.sh browser
 
 for path in \
-  Movies/CC0\ Provider\ Candidate.mp4 \
-  Shows/Signal\ Garden/Season\ 01/Signal\ Garden\ S01E01\ First\ Light.mp4 \
-  Music/Signal\ Lab/Synthetic\ Pulse.m4a \
-  Audiobooks/The\ Geometry\ of\ Sound.m4b \
-  Books/The\ Test\ Voyage.pdf \
-  Photos/Geometry/Color\ Study.jpg \
+  Movies/Example\ Movie.mp4 \
+  Shows/Example\ Show/Season\ 01/Example\ Show\ S01E01\ Example\ Episode\ One.mp4 \
+  Music/Example\ Album/Example\ Track\ One.m4a \
+  Audiobooks/Example\ Audiobook.m4b \
+  Books/Example\ PDF\ Book.pdf \
+  Photos/Geometry/Example\ Photo\ One.jpg \
   TMDB/api/search/movie \
   CC0-1.0.txt; do
   [[ -s "$test_root/media/$path" ]]

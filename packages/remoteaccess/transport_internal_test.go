@@ -10,8 +10,6 @@ import (
 	"strings"
 	"testing"
 	"time"
-
-	"golang.org/x/net/http2"
 )
 
 func TestServeHandlesInactiveAndKilledManagers(t *testing.T) {
@@ -55,16 +53,9 @@ func TestServeRetriesUpdatesAndStopsWithContext(t *testing.T) {
 	}
 }
 
-func TestServeReportsConfigurationListenAndAcceptFailures(t *testing.T) {
-	want := errors.New("configure failed")
+func TestServeReportsListenAndAcceptFailures(t *testing.T) {
+	want := errors.New("listen failed")
 	manager := activeManager(t)
-	manager.operations.configureServer = func(*http.Server, *http2.Server) error { return want }
-	if err := manager.Serve(t.Context(), http.NotFoundHandler()); !errors.Is(err, want) || manager.Status().State != "error" {
-		t.Fatalf("configure failure = %v, %#v", err, manager.Status())
-	}
-
-	want = errors.New("listen failed")
-	manager = activeManager(t)
 	manager.operations.listen = func(context.Context, string, string) (net.Listener, error) { return nil, want }
 	if err := manager.Serve(t.Context(), http.NotFoundHandler()); !errors.Is(err, want) || manager.Status().State != "error" {
 		t.Fatalf("listen failure = %v, %#v", err, manager.Status())

@@ -124,8 +124,8 @@ func validSubtitleLedgerState(state subtitleLedgerState) bool { //nolint:cyclop 
 	return state.SubDLDay == "" && state.SubDLDownloads == 0 || validSubtitleDay(state.SubDLDay)
 }
 
-func validSubtitleRecord(record subtitleRecord) bool { //nolint:cyclop // Persisted record validation keeps every field bound explicit.
-	if !oneOf(record.BackupRole, "", "translation", "captions") || !oneOf(record.Role, "", "translation", "captions") || !oneOf(record.TimingEvidence, "", "unverified", "audio", "file-hash", "embedded", "manual") || len(record.Fingerprint) != 64 || record.Score < 0 || record.Score > 100 || record.ReleaseMatch < 0 || record.ReleaseMatch > 1 || record.CheckedAt < 0 || record.CheckedAt > time.Now().Add(24*time.Hour).Unix() || record.InstalledAt < 0 || record.InstalledAt > time.Now().Add(24*time.Hour).Unix() || record.Size < 0 || record.Size > 4<<20 || record.Modified < 0 || len(record.Cleanup) > 8 || len(strings.Join(record.Cleanup, "")) > 512 || !oneOf(record.Synchronization, "", "none", "global", "linear", "piecewise", "manual") || !oneOf(record.Source, "embedded", "subdl", "opensubtitles", "subsource", "external", "ocr", "transcription") {
+func validSubtitleRecord(record subtitleRecord) bool {
+	if !validSubtitleRecordKinds(record) || !validSubtitleRecordBounds(record) || !validSubtitleRecordTimes(record) {
 		return false
 	}
 	for _, fingerprint := range []string{record.OriginalFingerprint, record.BackupOriginalFingerprint, record.BackupFingerprint} {
@@ -135,6 +135,18 @@ func validSubtitleRecord(record subtitleRecord) bool { //nolint:cyclop // Persis
 	}
 	decoded, err := hex.DecodeString(record.Fingerprint)
 	return err == nil && len(decoded) == sha256.Size && strings.ToLower(record.Fingerprint) == record.Fingerprint
+}
+
+func validSubtitleRecordKinds(record subtitleRecord) bool {
+	return oneOf(record.BackupRole, "", "translation", "captions") && oneOf(record.Role, "", "translation", "captions") && oneOf(record.TimingEvidence, "", "unverified", "audio", "file-hash", "embedded", "manual") && oneOf(record.Synchronization, "", "none", "global", "linear", "piecewise", "manual") && oneOf(record.Source, "embedded", "subdl", "opensubtitles", "subsource", "external", "ocr", "transcription")
+}
+
+func validSubtitleRecordBounds(record subtitleRecord) bool {
+	return len(record.Fingerprint) == 64 && !(record.Score < 0 || record.Score > 100 || record.ReleaseMatch < 0 || record.ReleaseMatch > 1) && record.Size >= 0 && record.Size <= 4<<20 && len(record.Cleanup) <= 8 && len(strings.Join(record.Cleanup, "")) <= 512
+}
+
+func validSubtitleRecordTimes(record subtitleRecord) bool {
+	return record.CheckedAt >= 0 && record.CheckedAt <= time.Now().Add(24*time.Hour).Unix() && record.InstalledAt >= 0 && record.InstalledAt <= time.Now().Add(24*time.Hour).Unix() && record.Modified >= 0
 }
 
 func validSubtitleSearchRecord(record subtitleSearchRecord) bool {
@@ -155,14 +167,6 @@ func subtitleSearchKey(itemID, language, role string) string {
 func subtitleFingerprint(data []byte) string {
 	digest := sha256.Sum256(data)
 	return hex.EncodeToString(digest[:])
-}
-
-func completeSubtitleRecord(path string, data []byte, record subtitleRecord) subtitleRecord {
-	record.Fingerprint = subtitleFingerprint(data)
-	if info, err := os.Stat(path); err == nil {
-		record.Size, record.Modified = info.Size(), info.ModTime().UnixNano()
-	}
-	return record
 }
 
 func (ledger *subtitleLedger) record(key string) (subtitleRecord, bool, error) {

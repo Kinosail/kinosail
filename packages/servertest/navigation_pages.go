@@ -22,7 +22,7 @@ func AssertSignedInApplicationPagesRetainTheMainBar(t *testing.T, fixture Naviga
 	handler := fixture.Library.NewHandler("", t.TempDir(), false)
 	for _, path := range []string{"/account", "/metadata/bulk", "/offline-downloads", "/quick-connect", "/settings", "/settings/agent-connections", "/settings/backups", "/settings/configuration", "/settings/media-shares", "/settings/remote-readiness", "/settings/system", "/supporter"} {
 		page := APICall(t, handler, "", http.MethodGet, path, nil)
-		if page.Code != http.StatusOK || MainNavigationMarkup(page.Body.String()) == "" || !strings.Contains(page.Body.String(), `class="library-page`) || !strings.Contains(page.Body.String(), `>Browse library</a>`) || !strings.Contains(page.Body.String(), fixture.RequiredCSS) || (fixture.ForbiddenCSS != "" && strings.Contains(page.Body.String(), fixture.ForbiddenCSS)) || strings.Contains(page.Body.String(), `data-command-open`) {
+		if page.Code != http.StatusOK || MainNavigationMarkup(page.Body.String()) == "" || !strings.Contains(page.Body.String(), `class="library-page`) || !strings.Contains(page.Body.String(), fixture.LibraryLink) || !strings.Contains(page.Body.String(), fixture.RequiredCSS) || (fixture.ForbiddenCSS != "" && strings.Contains(page.Body.String(), fixture.ForbiddenCSS)) || strings.Contains(page.Body.String(), `data-command-open`) {
 			t.Errorf("application page %q = %d, navigation %q", path, page.Code, MainNavigationMarkup(page.Body.String()))
 		}
 	}

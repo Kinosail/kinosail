@@ -107,7 +107,7 @@ func parseSource(set *token.FileSet, path string) (*ast.File, error) {
 	return parser.ParseFile(set, path, data, parser.AllErrors)
 }
 
-func typedFile(path string) (*token.FileSet, *ast.File, *types.Info, error) {
+func typedPackage(path string) (*token.FileSet, []*ast.File, *types.Info, error) {
 	path, err := filepath.Abs(path)
 	if err != nil {
 		return nil, nil, nil, err
@@ -154,5 +154,18 @@ func typedFile(path string) (*token.FileSet, *ast.File, *types.Info, error) {
 	if _, err := config.Check(target.ImportPath, set, files, info); err != nil {
 		return nil, nil, nil, err
 	}
-	return set, wanted, info, nil
+	return set, files, info, nil
+}
+
+func typedFile(path string) (*token.FileSet, *ast.File, *types.Info, error) {
+	set, files, info, err := typedPackage(path)
+	if err != nil {
+		return nil, nil, nil, err
+	}
+	for _, file := range files {
+		if filepath.Base(set.Position(file.Pos()).Filename) == filepath.Base(path) {
+			return set, file, info, nil
+		}
+	}
+	return nil, nil, nil, errors.New("source is not in the selected package")
 }

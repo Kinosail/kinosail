@@ -136,7 +136,11 @@ func (journal *Journal) Record(event Event) {
 func (journal *Journal) Query(category string, limit int) []Event {
 	journal.mu.Lock()
 	defer journal.mu.Unlock()
-	limit = min(max(limit, 1), 1000)
+	if limit < 1 {
+		limit = 1
+	} else if limit > 1000 {
+		limit = 1000
+	}
 	result := make([]Event, 0, min(limit, len(journal.events)))
 	for index := len(journal.events) - 1; index >= 0 && len(result) < limit; index-- {
 		if category == "" || journal.events[index].Category == category {

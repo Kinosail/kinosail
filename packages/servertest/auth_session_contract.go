@@ -33,7 +33,7 @@ func AssertNewInstallationCreatesOwnerProfile(t *testing.T, fixture LibraryAPIFi
 	response = httptest.NewRecorder()
 	handler.ServeHTTP(response, request)
 	profiles := fixture.StoredState(t, dataDir, "profiles.json")
-	if response.Code != http.StatusUnauthorized || !strings.Contains(response.Body.String(), "authentication code") || strings.Contains(string(profiles), "correct horse") {
+	if response.Code != http.StatusUnauthorized || !strings.Contains(response.Body.String(), "authenticator app") || strings.Contains(string(profiles), "correct horse") {
 		t.Fatalf("login = %d %q, profiles = %q", response.Code, response.Body.String(), profiles)
 	}
 }

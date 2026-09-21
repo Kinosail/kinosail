@@ -12,7 +12,6 @@ import (
 	"time"
 
 	"golang.org/x/crypto/acme"
-	"golang.org/x/net/http2"
 )
 
 // Serve updates DuckDNS before opening a TLS-only listener and closes with ctx.
@@ -58,20 +57,19 @@ func (manager *Manager) Serve(ctx context.Context, handler http.Handler) error {
 		ReadHeaderTimeout: 5 * time.Second, ReadTimeout: 15 * time.Second, IdleTimeout: 2 * time.Minute, MaxHeaderBytes: 64 << 10, MaxHeaderValueCount: 64,
 		ConnState: manager.trackConnection,
 	}
-	if err := manager.operations.configureServer(server, &http2.Server{
-		MaxConcurrentStreams:         32,
-		MaxDecoderHeaderTableSize:    4096,
-		MaxEncoderHeaderTableSize:    4096,
-		MaxReadFrameSize:             16 << 10,
-		IdleTimeout:                  2 * time.Minute,
-		ReadIdleTimeout:              30 * time.Second,
-		PingTimeout:                  10 * time.Second,
-		WriteByteTimeout:             30 * time.Second,
-		MaxUploadBufferPerConnection: 1 << 20,
-		MaxUploadBufferPerStream:     256 << 10,
-	}); err != nil {
-		manager.setStatus("error", err)
-		return err
+	server.Protocols = new(http.Protocols)
+	server.Protocols.SetHTTP1(true)
+	server.Protocols.SetHTTP2(true)
+	server.HTTP2 = &http.HTTP2Config{
+		MaxConcurrentStreams:          32,
+		MaxDecoderHeaderTableSize:     4096,
+		MaxEncoderHeaderTableSize:     4096,
+		MaxReadFrameSize:              16 << 10,
+		SendPingTimeout:               30 * time.Second,
+		PingTimeout:                   10 * time.Second,
+		WriteByteTimeout:              30 * time.Second,
+		MaxReceiveBufferPerConnection: 1 << 20,
+		MaxReceiveBufferPerStream:     256 << 10,
 	}
 	listener, err := manager.operations.listen(ctx, "tcp", manager.config.Listen)
 	if err != nil {

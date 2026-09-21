@@ -184,6 +184,9 @@ func (catalog *Catalog) translateTemplateText(source, tag string) string {
 }
 
 func replaceLocalizedPhrase(source, phrase, translated string) string {
+	if phrase == "" || !strings.Contains(source, phrase) {
+		return source
+	}
 	var result strings.Builder
 	for phrase != "" {
 		index := strings.Index(source, phrase)

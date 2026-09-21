@@ -19,7 +19,7 @@ test("Twenty long language choices remain usable at the preference limit", async
     await expect(list).toContainText("No configured provider");
     await expect(section.getByLabel("Add a language")).toBeDisabled();
     await expect(section.getByRole("button", { name: "Add language" })).toBeDisabled();
-    await expect(section.getByText("The 20-language limit is reached. Remove one language before you add another.", { exact: true })).toBeVisible();
+    await expect(section.getByText("You have selected 20 languages. Remove one before adding another.", { exact: true })).toBeVisible();
 
     const movePortuguese = list.getByRole("button", { name: "Move Portuguese (Mozambique) earlier" });
     await movePortuguese.focus();
@@ -90,8 +90,10 @@ test("Local-only languages do not advertise unavailable item actions", async ({ 
     removedEnglish = true;
 
     await page.goto("/?view=wanted");
+    const file = page.locator(".subtitle-file").first();
+    await file.locator(":scope > summary").click();
     await expect(page.getByRole("button", { name: "Find aa" })).toHaveCount(0);
-    await expect(page.getByText("Add a local text track").first()).toBeVisible();
+    await expect(file.getByRole("link", { name: "Add a local subtitle" })).toBeVisible();
     expect((await new AxeBuilder({ page }).include("main").analyze()).violations).toEqual([]);
     await page.screenshot({ path: testInfo.outputPath("320-local-only-language.png"), fullPage: true });
   } finally {
@@ -159,7 +161,7 @@ test("Provider setup stays compact and accessible at every supported width", asy
     }
     expect((await new AxeBuilder({ page }).include("#provider").analyze()).violations).toEqual([]);
     await expectSkipLinkOffscreen(page);
-    await page.screenshot({ path: testInfo.outputPath(`${viewport.width}-subtitle-providers.png`), fullPage: true });
+    await providers.screenshot({ path: testInfo.outputPath(`${viewport.width}-subtitle-providers.png`) });
 
     await providers.getByRole("link", { name: "Configure OpenSubtitles" }).click();
     const openSubtitles = page.locator("#integrations\\.opensubtitles");
@@ -170,7 +172,7 @@ test("Provider setup stays compact and accessible at every supported width", asy
     await expect(openSubtitles).toContainText("Save all three values together.");
     await expectNoHorizontalOverflow(page);
     expect((await new AxeBuilder({ page }).include("#integrations\\.opensubtitles").analyze()).violations).toEqual([]);
-    await page.screenshot({ path: testInfo.outputPath(`${viewport.width}-opensubtitles-configuration.png`), fullPage: true });
+    await openSubtitles.screenshot({ path: testInfo.outputPath(`${viewport.width}-opensubtitles-configuration.png`) });
   }
 });
 }

@@ -18,31 +18,35 @@ func (manager *subtitleManager) fetchSidecar(ctx context.Context, item library.I
 		return err
 	}
 	defer target.close()
-	if manager.embeddedReady() {
-		if data, found := manager.embeddedSubtitle(ctx, item, language); found {
-			cleaned, err := cleanSubtitle(data)
-			if err == nil {
-				if err = target.write("", cleaned.Data, true); err == nil {
-					now := time.Now().Unix()
-					record := target.record(cleaned.Data, subtitleRecord{Source: "embedded", Score: 100, ReleaseMatch: 1, CheckedAt: now, InstalledAt: now, Cleanup: cleaned.Cleanup, Synchronization: "none", TimingEvidence: "embedded", Managed: true})
-					if track, found := manager.embeddedSubtitleTrack(ctx, item, language); found {
-						record.Role = track.Role
-					}
-					err = manager.provider.retainSubtitleOriginal(cleaned.Original, &record)
-					if err == nil {
-						err = manager.provider.ledger.store(subtitleRecordKey(item.ID, language), record)
-					}
-					if err != nil {
-						_ = target.remove()
-					} else {
-						manager.provider.ledger.noteSearch(subtitleSearchKey(item.ID, language, manager.settings.subtitlePreference()), "installed", "", time.Now())
-					}
-				}
-				return err
-			}
-		}
+	if !manager.embeddedReady() {
+		return manager.provider.fetchSidecar(ctx, item, language)
 	}
-	return manager.provider.fetchSidecar(ctx, item, language)
+	data, found := manager.embeddedSubtitle(ctx, item, language)
+	if !found {
+		return manager.provider.fetchSidecar(ctx, item, language)
+	}
+	cleaned, err := cleanSubtitle(data)
+	if err != nil {
+		return manager.provider.fetchSidecar(ctx, item, language)
+	}
+	if err = target.write("", cleaned.Data, true); err != nil {
+		return err
+	}
+	now := time.Now().Unix()
+	record := target.record(cleaned.Data, subtitleRecord{Source: "embedded", Score: 100, ReleaseMatch: 1, CheckedAt: now, InstalledAt: now, Cleanup: cleaned.Cleanup, Synchronization: "none", TimingEvidence: "embedded", Managed: true})
+	if track, found := manager.embeddedSubtitleTrack(ctx, item, language); found {
+		record.Role = track.Role
+	}
+	err = manager.provider.retainSubtitleOriginal(cleaned.Original, &record)
+	if err == nil {
+		err = manager.provider.ledger.store(subtitleRecordKey(item.ID, language), record)
+	}
+	if err != nil {
+		_ = target.remove()
+	} else {
+		manager.provider.ledger.noteSearch(subtitleSearchKey(item.ID, language, manager.settings.subtitlePreference()), "installed", "", time.Now())
+	}
+	return err
 }
 
 func (manager *subtitleManager) embeddedSubtitle(ctx context.Context, item library.Item, language string) ([]byte, bool) { //nolint:cyclop // Track selection and probe-cache extraction are one embedded subtitle operation.

@@ -24,6 +24,7 @@ for (const width of [320, 390, 393, 430, 700, 768, 1440]) {
     for (const busy of [true, false]) {
       await page.locator(".media-stage").evaluate((stage, busy) => stage.classList.toggle("is-busy", busy), busy);
       expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(width);
+      await rail.scrollIntoViewIfNeeded();
       await rail.evaluate(element => element.scrollTo({ left: element.scrollWidth, behavior: "instant" }));
       expect(await rail.evaluate(element => element.scrollLeft)).toBeGreaterThan(0);
       await expect(rail.getByRole("link").last()).toBeInViewport();

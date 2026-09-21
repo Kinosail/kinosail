@@ -42,10 +42,10 @@ document.addEventListener("keydown", (event) => {
   const targets = [...stage.querySelectorAll('button,a[href],input,select,textarea,[tabindex]')].filter((node) =>
     !node.disabled && node.tabIndex >= 0 && !node.closest('[hidden],[inert]') && node.getClientRects().length && getComputedStyle(node).visibility !== "hidden");
   const index = targets.indexOf(document.activeElement);
-  if (!targets.length || index < 0 || (event.shiftKey ? index === 0 : index === targets.length - 1)) {
-    event.preventDefault();
-    (targets[event.shiftKey ? targets.length - 1 : 0] || stage).focus();
-  }
+  event.preventDefault();
+  const next = index < 0 ? (event.shiftKey ? targets.length - 1 : 0)
+    : (index + (event.shiftKey ? -1 : 1) + targets.length) % targets.length;
+  (targets[next] || stage).focus();
 });
 const setSettings = (open) => {
   if (!settingsPanel || !settingsButton) return;
@@ -90,7 +90,7 @@ if (theaterButton) {
   mediaStage.addEventListener("focusin", revealTheater);
   theaterButton.addEventListener("focus", () => { clearTimeout(theaterIdle); theaterToolbar.hidden = false; });
   theaterButton.addEventListener("blur", revealTheater);
-  theaterButton.addEventListener("click", () => setTheater(!document.body.classList.contains("player-theater")));
+  theaterButton.addEventListener("click", () => { theaterButton.focus(); setTheater(!document.body.classList.contains("player-theater")); });
   document.addEventListener("keydown", (event) => {
     if (event.defaultPrevented || document.querySelector("dialog[open]")) return;
     const editing = event.target.closest?.("input,select,textarea,[contenteditable]:not([contenteditable=false])");

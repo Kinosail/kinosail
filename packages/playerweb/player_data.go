@@ -84,3 +84,8 @@ type SubtitleTrack struct {
 	Forced   bool   `json:"forced,omitempty"`
 	Embedded bool   `json:"embedded,omitempty"`
 }
+
+// NewPlayerData initializes the direct-play source and compatible-playback action.
+func NewPlayerData(item library.Item, viewerProfile, playbackSession string) PlayerData {
+	return PlayerData{Item: item, ViewerProfile: viewerProfile, PlaybackSession: playbackSession, Source: "/media/" + item.ID, ModeURL: "?compatible=1", ModeLabel: "Compatibility stream"}
+}

@@ -16,3 +16,11 @@ func TestRemoteSAMLMetadataRejectsOversizedResponse(t *testing.T) {
 		t.Fatal("oversized metadata accepted")
 	}
 }
+
+func TestRemoteSAMLMetadataRejectsMalformedAddressAndTransportFailure(t *testing.T) {
+	for _, address := range []string{"https://%zz", "unsupported://identity/metadata"} {
+		if metadata, err := fetchSAMLMetadata(t.Context(), address); err == nil || metadata != nil {
+			t.Fatalf("unavailable metadata accepted for %q", address)
+		}
+	}
+}

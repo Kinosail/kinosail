@@ -161,11 +161,7 @@ func TestCreateAPISessionReportsPersistenceFailure(t *testing.T) {
 		response := httptest.NewRecorder()
 		values := url.Values{"name": {"Viewer"}, "password": {"password"}, "code": {"123456"}}
 		CreateAPISession(response, apiSessionRequest(t, "application/x-www-form-urlencoded", values), fixture.config())
-		wantStrong := 0
-		if profile.TOTPSecret != "" {
-			wantStrong = 1
-		}
-		if response.Code != http.StatusInternalServerError || fixture.credentialSuccess != 1 || fixture.normalSessions != 1-wantStrong || fixture.strong != wantStrong || fixture.audits != 0 {
+		if response.Code != http.StatusInternalServerError || fixture.credentialSuccess != 1 || fixture.normalSessions != 0 || fixture.strong != 1 || fixture.audits != 0 {
 			t.Fatalf("response/effects = %d %s %#v", response.Code, response.Body.String(), fixture)
 		}
 	}

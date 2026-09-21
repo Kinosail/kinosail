@@ -2,7 +2,7 @@
 title: Connect an MCP client
 description: Connect an assistant to Kinosail through the Model Context Protocol.
 section: Build with Kinosail
-last_reviewed: 2026-08-29
+last_reviewed: 2026-09-20
 ---
 
 # Connect an MCP client
@@ -24,19 +24,23 @@ Open **Settings → AI agent connections** on the Kinosail Server. The page show
 
 ## Use host STDIO
 
-Host STDIO keeps the MCP transport on the Server host. With Codex, run this on the host:
+Host STDIO keeps the MCP transport on the Server host. For a Docker release installation, use the Compose service name so the command does not depend on a generated container name. Replace `/absolute/path/to/player` with your installation directory. Include the same Compose overlays used at install time. With Codex, run:
 
 ```sh
-codex mcp add kinosail -- docker exec -i kinosail kinosail mcp-stdio
+codex mcp add kinosail -- docker compose \
+  --file /absolute/path/to/player/compose.release.yaml \
+  exec -T kinosail kinosail mcp-stdio
 ```
 
 If the client runs on another device with an SSH host alias, use:
 
 ```sh
-codex mcp add kinosail -- ssh -T SERVER docker exec -i kinosail kinosail mcp-stdio
+codex mcp add kinosail -- ssh -T SERVER docker compose \
+  --file /absolute/path/to/player/compose.release.yaml \
+  exec -T kinosail kinosail mcp-stdio
 ```
 
-Replace `SERVER` with the SSH alias. Use the equivalent Podman command when that is how the Server runs. If the Server has more than one Owner, select the Owner Profile ID shown in **AI agent connections**.
+Replace `SERVER` with the SSH alias. Use the equivalent Podman command when that is how the Server runs. For source Compose, point `--file` at `apps/player/compose.yaml`. The service must already be running. If the Server has more than one Owner, append the Owner Profile ID shown in **AI agent connections** after `mcp-stdio`, for example `mcp-stdio OWNER_PROFILE_ID`. Do not substitute a display name. Keep STDIO free of shell banners or extra command output.
 
 Host STDIO has full Owner access. It is recorded as **Host MCP** in activity. Remove the MCP client entry or revoke the underlying Docker, Podman, or SSH access when the client no longer needs it.
 
@@ -57,7 +61,9 @@ codex mcp add kinosail-http --url https://kinosail.example.test/mcp
 codex mcp login kinosail-http
 ```
 
-Use the exact resource URL shown by the Server. A locally generated certificate may require the client to trust the Kinosail local certificate. A publicly trusted HTTPS certificate avoids that step.
+The client needs access to the Server’s management boundary over the local network or WireGuard. The restricted public media gateway does not expose MCP. Use the exact resource URL shown by the Server. A locally generated certificate may require the client to trust the Kinosail local certificate. A publicly trusted HTTPS certificate avoids that step.
+
+When deployment-managed OAuth is configured, follow the identity provider registration shown by the Server instead of assuming built-in authorization.
 
 The Owner can revoke an HTTPS connection from **AI agent connections**. Access tokens expire, and refresh access is stored by the Server for the approved connection.
 
@@ -66,8 +72,8 @@ The Owner can revoke an HTTPS connection from **AI agent connections**. Access t
 MCP grants are separate from HTTP API-key scopes:
 
 - `kinosail.read` allows library and viewing-context tools;
-- `kinosail.write` adds personal state, playlists, collections, and language changes; and
-- `kinosail.manage` adds approved Owner operations when the selected Profile is an Owner.
+- `kinosail.write` adds personal state, playlists, Watch Rooms, and language changes; and
+- `kinosail.manage` adds collection management and approved Owner operations when the selected Profile is an Owner.
 
 Read access is the default. Write access is optional. Management access requires both an Owner Profile and the management grant.
 
@@ -85,6 +91,59 @@ The MCP server provides these tools according to the grant:
 - `manage_api` performs approved Owner operations.
 
 The MCP adapter accepts relative `/api/v1` paths only. It rejects absolute URLs and operations outside the approved route set. Responses are JSON and are bounded before they return to the client.
+
+## Try a read-only task first
+
+After adding the connection, run `codex mcp list`, open a new client session, and inspect its MCP tool list. Ask: “Find five unwatched science-fiction films in my Kinosail library. Do not change anything.” The client should use `search_media` or `recommendation_context` and return only media visible to the selected Profile.
+
+Example `search_media` arguments:
+
+```json
+{"query":"science fiction","view":"unwatched","sort":"year","limit":5}
+```
+
+`view` accepts `all`, `list`, `unwatched`, `history`, `movies`, `shows`, `music`, `audiobooks`, `books`, or `photos`. `sort` accepts `title`, `added`, or `year`. A query is limited to 512 bytes; `limit` is 1–200, with a default of 50. `recommendation_context` combines history and candidates and defaults to unwatched candidates.
+
+To inspect the authenticated identity, call `read_api` with:
+
+```json
+{"path":"/api/v1/me"}
+```
+
+Once write access is approved, ask the assistant to show a proposed playlist before creating it. `create_playlist` takes `name` (1–64 characters) and an ordered `ids` array containing real IDs returned by search. Collection changes require `manage_api`, an Owner Profile, and management access. They are not part of the Viewer write grant.
+
+For a management connection, a read-only diagnostic request is:
+
+```json
+{"method":"GET","path":"/api/v1/diagnostics"}
+```
+
+Send this through `manage_api`, without a body. For mutation bodies, consult the running Server’s [OpenAPI contract]({{ '/reference/api/' | relative_url }}) and request only an approved route. A documented HTTP API operation is not automatically exposed through MCP.
+
+## Connect another MCP client
+
+Choose **STDIO** with executable `docker` and arguments equivalent to the Compose command above, or **Streamable HTTP** with the Server's `/mcp` URL and OAuth. Client configuration formats vary. Use an argument array when supported rather than putting the whole command into an executable field.
+
+The client must support the protocol version below. For Codex configuration details, see the [official MCP documentation](https://developers.openai.com/codex/mcp).
+
+## Revoke access
+
+In **Settings → AI agent connections**, review each HTTPS connection's client, Profile, grants, expiry, and last use. Select **Revoke** for an unwanted connection. Remove the client-side MCP entry too; removing it alone does not revoke the Server-side grant.
+
+Host STDIO does not use a revocable OAuth connection. Remove the configured command and withdraw the client's Docker/Podman or SSH access when retiring it. That host access is powerful independently of MCP.
+
+## Troubleshoot a connection
+
+| Symptom | Check |
+| --- | --- |
+| STDIO exits immediately | Confirm the Compose file path, running service, container access, and Owner ID if multiple Owners exist. Avoid interactive TTY allocation. |
+| HTTPS certificate error | Trust the Server's local certificate through the client/OS trust mechanism or use trusted HTTPS. Do not disable certificate verification. |
+| Endpoint unreachable or denied remotely | Connect through the local network or approved WireGuard management access; the public media gateway is not an MCP endpoint. |
+| Sign-in expired or connection revoked | Start OAuth login again and have the Owner approve the intended Profile and grants. |
+| Write or management tool absent | Inspect the approved grants. Read-only connections intentionally expose fewer tools. Management also needs an Owner Profile. |
+| API operation rejected | Use a relative `/api/v1` path in the proper tool; the MCP route allowlist is narrower than the HTTP API. |
+| No results | Check the selected Profile, library visibility, query, and completed media scan. |
+| Protocol negotiation fails | Check the client's supported MCP versions against the version below. |
 
 ## Know what MCP cannot do
 

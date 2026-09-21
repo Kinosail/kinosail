@@ -38,7 +38,10 @@ func assertSpanishFailure(t *testing.T, response *httptest.ResponseRecorder, sta
 
 func assertSpanishFailureMessage(t *testing.T, response *httptest.ResponseRecorder, status int, message string) {
 	t.Helper()
-	if response.Code != status || !strings.Contains(response.Body.String(), `lang="es"`) || !strings.Contains(response.Body.String(), message) {
+	if strings.HasPrefix(response.Header().Get("Content-Type"), "text/html") && !strings.Contains(response.Body.String(), `lang="es"`) {
+		t.Fatal("Spanish HTML failure omitted its document language")
+	}
+	if response.Code != status || response.Header().Get("Content-Language") != "es" || !strings.Contains(response.Body.String(), message) {
 		t.Fatalf("Spanish failure = %d %q", response.Code, response.Body.String())
 	}
 }

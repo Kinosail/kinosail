@@ -4,6 +4,7 @@ import { playerSource } from "./static-sources";
 
 export function installPlayerExperienceFixture() {
 test.beforeEach(async ({ page }, testInfo) => {
+  if (testInfo.title === "theater control gets out of the way during playback") await page.clock.install();
   const markup = `
     <meta charset="utf-8"><body class="player-page"><main class="player-shell"><div class="media-stage">
       <video id="player-media" data-title="Arrival" data-duration="100" data-start="20" data-progress="/progress/movie" data-playback-session="trace-session" data-playback-trace="https://127.0.0.1:38127/api/v1/items/movie/playback-events"${testInfo.title.includes("retries requested autoplay") ? " autoplay" : ""}${testInfo.title.includes("resumed autoplay") ? " data-autoplay" : ""}></video>
@@ -121,7 +122,7 @@ test.beforeEach(async ({ page }, testInfo) => {
   }, testInfo.title.includes("WebKit Picture-in-Picture"));
   if (testInfo.title.includes("offline source swap")) await page.evaluate(({ activePlayback, activeHLSBlob, delayedDirectProbe, delayedNegotiation, hlsFallback, immediateOffline, nativeHLS, pendingHLS, rapidMode, serverSkip }) => {
     const context = window as Window & {
-      KinosailOfflineMedia: { source: () => Promise<string>; remove: (id: string) => Promise<void>; bindProgress: (media: HTMLMediaElement) => Promise<() => void> };
+      KinosailOfflineMedia: { saveProgress: () => Promise<void>; source: () => Promise<string>; remove: (id: string) => Promise<void>; bindProgress: (media: HTMLMediaElement) => Promise<() => void> };
       resolveOfflineSource: () => void;
       setOfflineProbeStatus: (status: number) => void;
       setPaused: (value: boolean) => void;
@@ -166,6 +167,8 @@ test.beforeEach(async ({ page }, testInfo) => {
       Object.defineProperty(video, "canPlayType", { configurable: true, value: (type: string) => type === "application/vnd.apple.mpegurl" ? "probably" : "" });
       Object.defineProperty(video, "currentSrc", { configurable: true, get: () => source });
     }
+    const readAttribute = video.getAttribute.bind(video);
+    video.getAttribute = (name: string) => name.toLowerCase() === "src" ? source : readAttribute(name);
     Object.defineProperty(video, "src", { configurable: true, get: () => source, set: (value) => {
       source = value;
       video.currentTime = 0;
@@ -182,7 +185,7 @@ test.beforeEach(async ({ page }, testInfo) => {
       if (delayedDirectProbe && url.endsWith("/media/direct")) return directProbe;
       return url.includes("/offline-media/") ? Promise.resolve(new Response(offlineProbeStatus === 206 ? "x" : null, { status: offlineProbeStatus, headers: offlineProbeStatus === 206 ? { "Content-Range": "bytes 0-0/1" } : {} })) : networkFetch(input, init);
     };
-    context.KinosailOfflineMedia = { bindProgress: async (media) => {
+    context.KinosailOfflineMedia = { saveProgress: async () => {}, bindProgress: async (media) => {
       const position = media.currentTime || Number(media.dataset.start) || 0;
       const loaded = () => { media.currentTime = position; };
       media.addEventListener("loadedmetadata", loaded, {once: true});

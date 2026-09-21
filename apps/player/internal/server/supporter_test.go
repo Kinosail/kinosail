@@ -65,7 +65,7 @@ func TestSupporterScriptUsesOneImmutableVersionAcrossPages(t *testing.T) {
 	handler, token := supporterServer(t, t.TempDir(), signer, upstream)
 	for _, path := range []string{"/", "/settings", "/supporter"} {
 		page := apiCall(t, handler, token, http.MethodGet, path, nil)
-		assertAPIBody(t, page, http.StatusOK, `/static/supporter.js?v=13`)
+		assertAPIBody(t, page, http.StatusOK, `/static/supporter.js?v=15`)
 		if strings.Count(page.Body.String(), `/static/supporter.js?v=`) != 1 {
 			t.Errorf("page %q supporter script count = %d", path, strings.Count(page.Body.String(), `/static/supporter.js?v=`))
 		}

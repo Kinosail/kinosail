@@ -83,11 +83,7 @@ func (auth *authentication) protect(next http.Handler, pattern func(*http.Reques
 			localizedError(writer, request, "authentication required", http.StatusUnauthorized)
 			return
 		}
-		signIn := auth.signInPath()
-		if signIn == "/login" && request.Method == http.MethodGet && (request.URL.Path == "/oauth/authorize" || request.URL.Path == "/home-assistant/authorize" || request.URL.Path == "/quick-connect") && len(request.URL.RequestURI()) <= 4096 {
-			signIn += "?next=" + url.QueryEscape(request.URL.RequestURI())
-		}
-		http.Redirect(writer, request, signIn, http.StatusSeeOther)
+		auth.redirectToSignIn(writer, request)
 	})
 }
 
@@ -247,10 +243,7 @@ func (auth *authentication) register(mux *http.ServeMux) {
 }
 
 func registerIdentity(mux *http.ServeMux, auth *authentication, quickTTL time.Duration, oidcConfig OIDCConfig, samlConfig SAMLConfig, scimConfig SCIMConfig) *quickConnectBroker {
-	sso := newOIDC(oidcConfig, auth.profiles)
-	saml := newSAML(samlConfig, auth.profiles, sso)
-	auth.oidc, auth.saml = sso.Configured(), saml.Configured()
-	auth.sso = auth.oidc || auth.saml
+	sso, saml := auth.configureFederation(oidcConfig, samlConfig)
 	auth.register(mux)
 	quickConnect := newQuickConnect(quickTTL)
 	quickConnect.register(mux, auth.profiles)
@@ -291,4 +284,12 @@ func managedOwnerRequest(request *http.Request) bool {
 func currentViewer(request *http.Request) viewerProfile {
 	profile, _ := request.Context().Value(viewerContextKey{}).(viewerProfile)
 	return profile
+}
+
+func (auth *authentication) redirectToSignIn(writer http.ResponseWriter, request *http.Request) {
+	signIn := auth.signInPath()
+	if signIn == "/login" && request.Method == http.MethodGet && (request.URL.Path == "/oauth/authorize" || request.URL.Path == "/home-assistant/authorize" || request.URL.Path == "/quick-connect") && len(request.URL.RequestURI()) <= 4096 {
+		signIn += "?next=" + url.QueryEscape(request.URL.RequestURI())
+	}
+	http.Redirect(writer, request, signIn, http.StatusSeeOther)
 }

@@ -1,14 +1,14 @@
 ---
-title: Install Kinosail
+title: Docker installation details
 description: Install one Kinosail Server container and open it safely for first setup.
 section: Start here
 ---
 
-# Install Kinosail
+# Docker installation details
 
-As of September 15, 2026, this monorepo has no published GitHub releases. Use [source installation]({{ '/getting-started/' | relative_url }}) for the current checkout. The steps below apply when a signed Player release is available.
+Start with [Install with Docker]({{ '/quickstart/' | relative_url }}) to get the current deployment files and install the prebuilt Player container. Successful changes on `main` publish signed images; numbered releases are optional.
 
-Download the matching Player installer from [Releases](https://github.com/Kinosail/kinosail/releases), verify the supplied checksum and signature, extract it, and run commands from that bundle directory. Run the release installer from the Kinosail release bundle. It verifies the image, creates protected recovery material, starts one Server container, and binds it to localhost until you create the first Owner.
+Run the installer from `apps/player` in that checkout. It verifies the image, creates protected recovery material, starts one Server container, and binds it to localhost until you create the first Owner.
 
 ## Prerequisites
 
@@ -16,16 +16,16 @@ You need:
 
 - a 64-bit Intel/AMD or Arm Linux host, or Docker/Podman on macOS for local use;
 - Podman Compose or Docker Compose;
-- `cosign` to verify the signed release image;
+- `cosign` to verify the signed container image;
 - `curl` when you later enable LAN mode;
 - an absolute path to an existing folder that contains media you control; and
 - a free TCP port, such as `38127`.
 
-The release bundle must include `scripts/install.sh` and `compose.release.yaml`. Do not place credentials or private hostnames in documentation, shell history, or a public repository.
+The Player directory must include `scripts/install.sh` and `compose.release.yaml`. Do not place credentials or private hostnames in documentation, shell history, or a public repository.
 
 ## Install on localhost
 
-From the bundle root, run:
+From `apps/player`, run:
 
 ```sh
 ./scripts/install.sh /absolute/path/to/media 38127
@@ -35,7 +35,7 @@ The second argument is optional. The default port is `38127`. The path must be a
 
 The installer selects `podman compose` when available. It falls back to `docker compose`. It creates `secrets/backup_key` with mode `600` when the key does not exist. Keep this key with your encrypted backups.
 
-The installer pulls `ghcr.io/kinosail/kinosail-player:<version>`, verifies its keyless signature, pins the resolved SHA-256 digest in `.env`, and starts the service. It waits for the `kinosail healthcheck` command to pass.
+The installer pulls `ghcr.io/kinosail/kinosail-player:latest`, verifies its keyless signature against `delivery.yml@refs/heads/main`, pins the resolved SHA-256 digest in `.env`, and starts the service. It waits for the `kinosail healthcheck` command to pass.
 
 
 ## Open the Server
@@ -51,10 +51,10 @@ Your browser may warn about the local certificate. Accept the warning only for t
 If the installer reports that the Server is not healthy, inspect the last lines of the service log:
 
 ```sh
-podman compose --file compose.release.yaml logs --tail 50 kinosail
+docker compose --file compose.release.yaml logs --tail 50 kinosail
 ```
 
-Use `docker compose` in place of `podman compose` when Docker runs the service. Do not delete the `config`, `cache`, or backup locations while investigating.
+Use `podman compose` in place of `docker compose` if the installer selected Podman. Do not delete the `config`, `cache`, or backup locations while investigating.
 
 ## Expose the initialized Server on the LAN
 
@@ -68,15 +68,15 @@ The installer checks that `/setup` redirects, changes `KINOSAIL_BIND` to `0.0.0.
 
 Open the reported LAN address from another device. Use the exact HTTPS name in the address when you add passkeys. If your host has more than one network interface, verify the detected address before sharing it.
 
-## Update an existing release
+## Update an existing installation
 
-Run the installer again with the same media path and port. If the service is running, the installer writes a recovery archive under `backups/kinosail-before-update-<timestamp>.kinosail-backup` before it pulls the new image. It keeps the existing `.env` values.
+Run `git pull --ff-only` to refresh the deployment files, then run the installer again with the same media path and port. Keep the same checkout and Compose project name. If the service is running, the installer writes a recovery archive under `backups/kinosail-before-update-<timestamp>.kinosail-backup` before it pulls the new image. It keeps the existing `.env` values.
 
 Check the resulting state:
 
 ```sh
-podman compose --file compose.release.yaml ps
-podman compose --file compose.release.yaml exec -T kinosail kinosail healthcheck
+docker compose --file compose.release.yaml ps
+docker compose --file compose.release.yaml exec -T kinosail kinosail healthcheck
 ```
 
 Read [Back up and update]({{ '/owner-guide/backups-and-updates/' | relative_url }}) before a planned host or storage change.
@@ -84,12 +84,12 @@ Read [Back up and update]({{ '/owner-guide/backups-and-updates/' | relative_url 
 ## Stop or restart the Server
 
 ```sh
-podman compose --file compose.release.yaml logs --follow kinosail
-podman compose --file compose.release.yaml down
-podman compose --file compose.release.yaml up --detach
+docker compose --file compose.release.yaml logs --follow kinosail
+docker compose --file compose.release.yaml stop
+docker compose --file compose.release.yaml start
 ```
 
-`down` stops the container. It does not remove named volumes. Do not add `--volumes` unless you intend to remove the stored Kinosail state.
+`stop` and `start` preserve the existing container configuration, including installer-selected overlays. Use the installer for updates. `down` removes containers but does not remove named volumes. Do not add `--volumes` unless you intend to remove the stored Kinosail state.
 
 ## Source of truth
 

@@ -2,6 +2,7 @@ package server_test
 
 import (
 	"net/http"
+	"path/filepath"
 	"testing"
 
 	"github.com/MikeO7/kinosail-subtitles/internal/server"
@@ -9,7 +10,7 @@ import (
 )
 
 var downloadFixture = servertest.DownloadFixture{
-	DownloadsScript: `/static/downloads.js?v=9`,
+	DownloadsScript: `/static/downloads.js?v=10`,
 	APIServer:       apiServer,
 	FirstItemID:     firstAPIItemID,
 	SignIn:          signInTestProfile,
@@ -19,7 +20,7 @@ var downloadFixture = servertest.DownloadFixture{
 		return server.New(server.Config{MediaDir: media, DataDir: data, CacheDir: cache, RequireAuth: true})
 	},
 	NewTranscodeHandler: func(media, data, cache, ffmpeg string) http.Handler {
-		return server.New(server.Config{MediaDir: media, DataDir: data, CacheDir: cache, FFmpeg: ffmpeg, RequireAuth: true})
+		return server.New(server.Config{MediaDir: media, DataDir: data, CacheDir: cache, FFmpeg: ffmpeg, FFprobe: filepath.Join(filepath.Dir(ffmpeg), "ffprobe"), RequireAuth: true})
 	},
 }
 

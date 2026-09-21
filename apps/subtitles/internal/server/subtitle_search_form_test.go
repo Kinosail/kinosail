@@ -44,7 +44,7 @@ func TestSubtitleSearchSubmitsRenderedFormWithoutCSRFQuery(t *testing.T) {
 			result := httptest.NewRecorder()
 			handler.ServeHTTP(result, searchRequest)
 			body := result.Body.String()
-			if result.Code != http.StatusOK || !strings.Contains(body, `>Clear search</a>`) {
+			if result.Code != http.StatusOK || !strings.Contains(body, `>Clear filters</a>`) {
 				t.Fatalf("search failed: %d %s", result.Code, body)
 			}
 			found := strings.Contains(body, `>Covered Film</strong>`)

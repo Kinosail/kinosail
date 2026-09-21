@@ -50,6 +50,8 @@
 @media (max-width: 700px) {
   .setup-shell { display: block; width: min(calc(100% - 20px), 672px); padding: 20px 0 32px; }
   .setup-brand { margin-bottom: 16px; }
+  body.auth-page .setup-steps { flex-wrap: wrap; }
+  body.auth-page .setup-steps li { flex: 1 1 8rem; min-width: 0; grid-template-columns: 32px minmax(0, 1fr); }
   .setup-rail h2, .setup-steps { display: none; }
   .privacy-note { margin: 0 0 24px; }
 }

@@ -69,28 +69,35 @@ func dnsReply(ctx context.Context, packet []byte, hostname string, lookup func(c
 		if err != nil {
 			response.RCode = dnsmessage.RCodeServerFailure
 		}
-		for i, ip := range ips {
-			if i >= 8 {
-				break
-			}
-			resource := dnsmessage.Resource{Header: dnsmessage.ResourceHeader{Name: q.Name, Type: q.Type, Class: q.Class, TTL: 5}}
-			if q.Type == dnsmessage.TypeA && ip.To4() != nil {
-				var a [4]byte
-				copy(a[:], ip.To4())
-				resource.Body = &dnsmessage.AResource{A: a}
-			} else if q.Type == dnsmessage.TypeAAAA && ip.To16() != nil && ip.To4() == nil {
-				var a [16]byte
-				copy(a[:], ip.To16())
-				resource.Body = &dnsmessage.AAAAResource{AAAA: a}
-			} else {
-				continue
-			}
-			response.Answers = append(response.Answers, resource)
-		}
+		response.Answers = dnsAnswers(q, ips)
 	}
 	reply, err := response.Pack()
 	if err != nil || len(reply) > 1232 {
 		return nil
 	}
 	return reply
+}
+
+func dnsAnswers(q dnsmessage.Question, ips []net.IP) []dnsmessage.Resource {
+	var answers []dnsmessage.Resource
+	for i, ip := range ips {
+		if i >= 8 {
+			break
+		}
+		resource := dnsmessage.Resource{Header: dnsmessage.ResourceHeader{Name: q.Name, Type: q.Type, Class: q.Class, TTL: 5}}
+		switch {
+		case q.Type == dnsmessage.TypeA && ip.To4() != nil:
+			var a [4]byte
+			copy(a[:], ip.To4())
+			resource.Body = &dnsmessage.AResource{A: a}
+		case q.Type == dnsmessage.TypeAAAA && ip.To16() != nil && ip.To4() == nil:
+			var a [16]byte
+			copy(a[:], ip.To16())
+			resource.Body = &dnsmessage.AAAAResource{AAAA: a}
+		default:
+			continue
+		}
+		answers = append(answers, resource)
+	}
+	return answers
 }

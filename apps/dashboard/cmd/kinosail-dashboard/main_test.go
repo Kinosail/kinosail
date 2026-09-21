@@ -82,3 +82,12 @@ func TestRuntimeConfigRequiresSecureCookiesForHTTPSPublicURL(t *testing.T) {
 		t.Fatalf("runtime config = %#v, %v", configured, err)
 	}
 }
+
+func TestPublicURLAllowsExplicitLocalhostHTTP(t *testing.T) {
+	for _, host := range []string{"localhost", "LOCALHOST"} {
+		origin := "http://" + host + ":38400"
+		if got, err := parsePublicURL(origin, ":38400"); err != nil || got != origin {
+			t.Fatalf("local origin = %q, %v", got, err)
+		}
+	}
+}

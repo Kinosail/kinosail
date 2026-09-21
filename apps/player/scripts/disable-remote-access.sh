@@ -15,7 +15,7 @@ fi
 temporary="$(mktemp "$root/.env.XXXXXX")"
 image="$(sed -n 's/^KINOSAIL_IMAGE=//p' .env | tail -1)"
 compose_file=compose.yaml
-[[ "$image" =~ ^ghcr\.io/mikeo7/kinosail-player@sha256:[a-f0-9]{64}$ ]] && compose_file=compose.release.yaml
+[[ "$image" =~ ^ghcr\.io/kinosail/kinosail-player@sha256:[a-f0-9]{64}$ ]] && compose_file=compose.release.yaml
 local_auth="$(sed -n 's/^KINOSAIL_LOCAL_AUTH_URL=//p' .env | tail -1)"
 if ! grep -q '^KINOSAIL_LOCAL_AUTH_URL=' .env && ! grep -q '^KINOSAIL_REMOTE_MODE=https$' .env; then
   local_auth="$(sed -n 's/^KINOSAIL_AUTH_URL=//p' .env | tail -1)"

@@ -31,6 +31,7 @@ func SafeLoginReturn(raw string) string {
 	if raw == "" || len(raw) > 2048 || strings.HasPrefix(raw, "//") {
 		return "/"
 	}
+	raw, _, _ = strings.Cut(raw, "#")
 	target, err := url.ParseRequestURI(raw)
 	if err != nil || target.IsAbs() || target.Host != "" || !strings.HasPrefix(target.Path, "/") || strings.Contains(target.Path, `\`) {
 		return "/"

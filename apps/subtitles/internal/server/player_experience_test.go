@@ -9,6 +9,8 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/MikeO7/kinosail/packages/servertest"
+
 	"github.com/MikeO7/kinosail-subtitles/internal/server"
 )
 
@@ -27,7 +29,7 @@ func TestVideoPlayerPresentsPlaybackStateAndTheaterControls(t *testing.T) {
 	player := httptest.NewRecorder()
 	handler.ServeHTTP(player, httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/watch/"+id, nil))
 
-	for _, expected := range []string{`controls playsinline autoplay`, `poster="/art/` + id + `"`, `data-playback-api="/api/v1/items/` + id + `/playback"`, `data-playback-policy="automatic"`, `data-compatibility-mode="transcode"`, `data-player-controls`, `data-player-toggle`, `data-player-seek`, `data-player-fullscreen`, `data-player-status`, `data-player-fallback`, `data-player-settings`, `data-playback-mode-status`, `<legend>Playback policy</legend>`, `value="direct-first"`, `value="direct-only"`, `value="compatible"`, `data-playback-reason`, `data-subtitles`, `data-theater`, `aria-keyshortcuts="T"`, `class="player-stage-actions"`, `button hidden class="quiet" type="button" aria-label="Play on device" data-cast`, `class="primary-action-row"`, `<summary>Playback &amp; downloads</summary>`, `<span>Playback</span><strong>`} {
+	for _, expected := range []string{`controls playsinline autoplay`, `poster="/art/` + id + `"`, `data-playback-api="/api/v1/items/` + id + `/playback"`, `data-playback-policy="automatic"`, `data-compatibility-mode="transcode"`, `data-player-controls`, `data-player-toggle`, `data-player-seek`, `data-player-fullscreen`, `data-player-status`, `data-player-fallback`, `data-player-settings`, `data-playback-mode-status`, `<legend>Playback policy</legend>`, `value="direct-first"`, `value="direct-only"`, `value="compatible"`, `data-playback-reason`, `data-subtitles`, `data-theater`, `aria-keyshortcuts="T"`, `class="player-stage-actions"`, `button class="quiet" type="button" aria-label="Play on device" data-cast`, `class="primary-action-row"`, `<summary>Playback &amp; downloads</summary>`, `<span>Playback</span><strong>`} {
 		if player.Code != http.StatusOK || !strings.Contains(player.Body.String(), expected) {
 			t.Fatalf("player lacks %q: %d %q", expected, player.Code, player.Body.String())
 		}
@@ -35,20 +37,9 @@ func TestVideoPlayerPresentsPlaybackStateAndTheaterControls(t *testing.T) {
 }
 
 func TestVideoPlayerPresentsPictureInPictureControl(t *testing.T) {
-	t.Parallel()
-	mediaDir := t.TempDir()
-	if err := os.WriteFile(filepath.Join(mediaDir, "Picture-in-Picture.mp4"), []byte("video"), 0o600); err != nil {
-		t.Fatal(err)
-	}
-	handler := server.New(server.Config{MediaDir: mediaDir})
-	home := httptest.NewRecorder()
-	handler.ServeHTTP(home, httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/", nil))
-	id := regexp.MustCompile(`/watch/([a-f0-9]+)`).FindStringSubmatch(home.Body.String())[1]
-	page := httptest.NewRecorder()
-	handler.ServeHTTP(page, httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/watch/"+id, nil))
-	if !strings.Contains(page.Body.String(), `data-player-pip`) || !strings.Contains(page.Body.String(), `class=i-pip`) {
-		t.Fatalf("player lacks Picture-in-Picture control: %q", page.Body.String())
-	}
+	servertest.AssertPictureInPictureControl(t, func(media string) http.Handler {
+		return server.New(server.Config{MediaDir: media})
+	})
 }
 
 func TestDirectPlayerDoesNotRestartTheSourceSelectedByHTML(t *testing.T) {

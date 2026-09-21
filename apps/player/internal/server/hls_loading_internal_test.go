@@ -148,3 +148,36 @@ func assertInvalidHLSLoading(t *testing.T, operation string, invalid hlsRecipe) 
 	}
 	assertNoHLSLoadingEnrichment(t, calls, arguments)
 }
+
+func TestHardwareHLSRecoveryPreservesPublishedOutput(t *testing.T) {
+	for _, preserve := range []bool{false, true} {
+		t.Run(map[bool]string{false: "manifest", true: "published segments"}[preserve], func(t *testing.T) { assertPublishedHLSRetained(t, preserve) })
+	}
+}
+
+func assertPublishedHLSRetained(t *testing.T, preserve bool) {
+	t.Helper()
+	manager, item, _, _ := hlsLoadingFixture(t)
+	directory := t.TempDir()
+	path := filepath.Join(directory, "index.m3u8")
+	if !preserve {
+		writeHLSLoadingFile(t, path, "published")
+	}
+	options, err := manager.settings.transcodingFor("")
+	if err != nil {
+		t.Fatal(err)
+	}
+	options.Accelerator = "cuda"
+	options.HardwareDecode = true
+	original := errors.New("device setup failed")
+	job := &hlsJob{err: original}
+	if manager.retrySoftwareHLSEncode(t.Context(), item, job, directory, options, hlsRecipe{mode: "transcode"}, 0, preserve) || !errors.Is(job.err, original) {
+		t.Fatal("published job was retried")
+	}
+	if !preserve {
+		data, err := os.ReadFile(path)
+		if err != nil || string(data) != "published" {
+			t.Fatalf("published manifest changed: %q %v", data, err)
+		}
+	}
+}

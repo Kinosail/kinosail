@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import os
 import re
 import subprocess
 import sys
@@ -36,6 +37,11 @@ if before != {path: digest(path) for path in OUTPUTS}:
     raise SystemExit("invalid generator input changed an architecture snapshot")
 
 for app in APPS:
+    subprocess.run(
+        [sys.executable, str(REPO / "scripts/tooling/generate-architecture-explorer.py"), app, "--check"],
+        cwd=REPO, check=True,
+        env=os.environ | {"GOOS": "windows", "GOARCH": "386", "CGO_ENABLED": "1"},
+    )
     engineering = REPO / f"apps/{app}/engineering/architecture-explorer/index.html"
     published = REPO / f"apps/{app}/docs/architecture-explorer/index.html"
     if engineering.exists():

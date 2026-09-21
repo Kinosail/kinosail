@@ -220,7 +220,7 @@ step "Run ./scripts/install.sh using the same media path and port as the current
 
 image="$(_existing KINOSAIL_IMAGE || true)"
 compose_file=compose.yaml
-[[ "$image" =~ ^ghcr\.io/mikeo7/kinosail-subtitles@sha256:[a-f0-9]{64}$ ]] && compose_file=compose.release.yaml
+[[ "$image" =~ ^ghcr\.io/kinosail/kinosail-subtitles@sha256:[a-f0-9]{64}$ ]] && compose_file=compose.release.yaml
 if [[ "$compose_file" == compose.yaml ]]; then
   export KINOSAIL_IMAGE=localhost/kinosail-subtitles:dev
   write_env KINOSAIL_IMAGE "$KINOSAIL_IMAGE"

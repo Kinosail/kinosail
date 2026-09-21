@@ -122,7 +122,8 @@ func TestAutomaticMaintenanceBoundsOnlyTheTranscodeCache(t *testing.T) { //nolin
 func TestAutomaticMaintenanceStatusIsAvailableThroughAPIAndWeb(t *testing.T) {
 	t.Parallel()
 
-	handler := server.New(server.Config{Lifecycle: t.Context(), DataDir: t.TempDir(), CacheDir: t.TempDir(), BackupDir: t.TempDir(), BackupKey: strings.Repeat("a", 64), BackupInterval: time.Hour, RequireAuth: true})
+	// Status and explicit maintenance calls do not need background schedules.
+	handler := server.New(server.Config{DataDir: t.TempDir(), CacheDir: t.TempDir(), BackupDir: t.TempDir(), BackupKey: strings.Repeat("a", 64), BackupInterval: time.Hour, RequireAuth: true})
 	owner := signInTestProfile(t, handler, "/setup", "name=Owner&password=owner-password")
 	var session struct {
 		Token string `json:"token"`

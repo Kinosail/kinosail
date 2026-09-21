@@ -124,6 +124,9 @@ grep --quiet hevc_v4l2m2m <<<"$encoders"
 "$engine" "${run[@]}" --rm --entrypoint ffmpeg "$image" -hide_banner -loglevel error -f lavfi -i testsrc2=size=320x180:rate=24:duration=2 -c:v mpeg2video -f mpegts - >"$media_dir/Transport.ts"
 ln "$media_dir/Arrival.mkv" "$media_dir/Beta.mkv"
 ln "$media_dir/Arrival.mkv" "$media_dir/Gamma.mkv"
+if [[ "${KINOSAIL_BROWSER_TEST:-}" == "1" ]]; then
+  printf '1\n00:00:01,000 --> 00:00:02,000\nContainer sidecar\n' >"$media_dir/Arrival.en.srt"
+fi
 chmod a+rwx "$media_dir"
 chmod a+r "$media_dir"/*.mkv "$media_dir"/*.ts
 
@@ -194,7 +197,7 @@ chunk="${digest:$((offset * 2)):8}"
 code="$(printf '%06d' "$(((16#$chunk & 0x7fffffff) % 1000000))")"
 expect_status 303 --cookie "$media_dir/cookies" --header "Origin: $url" --header "X-Kinosail-CSRF: $csrf" --data "code=$code" "$url/account/mfa/enable"
 if [[ "${KINOSAIL_BROWSER_TEST:-}" == "1" ]]; then
-  KINOSAIL_TEST_INSTANCE=1 KINOSAIL_TEST_TOTP_SECRET="$secret" KINOSAIL_E2E_URL="$url" KINOSAIL_E2E_OUTPUT_DIR="$media_dir/playwright-results" pnpm --dir e2e test subtitle-dashboard.spec.ts
+  KINOSAIL_TEST_INSTANCE=1 KINOSAIL_TEST_TOTP_SECRET="$secret" KINOSAIL_E2E_URL="$url" KINOSAIL_E2E_OUTPUT_DIR="${KINOSAIL_E2E_OUTPUT_DIR:-$media_dir/playwright-results}" pnpm --dir e2e test subtitle-dashboard.spec.ts
   exit
 fi
 mkfifo "$mcp_dir/input"

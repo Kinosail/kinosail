@@ -33,7 +33,7 @@ func updateTestContract() commandtest.UpdateContract {
 		Run:         updateCommand,
 		StateSchema: database.SchemaVersion,
 		Open:        func(directory string) (updatecontrol.CommandDatabase, error) { return database.Open(directory, false) },
-		Policy:      updateReleasePolicy(), Product: "subtitles", SignatureIdentity: `^https://github\.com/MikeO7/kinosail/\.github/workflows/subtitles-release\.yml@refs/tags/subtitles-v(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$`,
+		Policy:      updateReleasePolicy(), Product: "subtitles", SignatureIdentity: `^https://github\.com/Kinosail/kinosail/\.github/workflows/subtitles-release\.yml@refs/tags/subtitles-v(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$`,
 	}
 }
 

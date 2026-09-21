@@ -57,3 +57,21 @@ func TestActorQueryRejectsMalformedAndAmbiguousInput(t *testing.T) {
 		}
 	}
 }
+
+func TestActorLibrarySortsMoviesAndScopesShowPortraits(t *testing.T) {
+	cast := []library.Person{{Name: "Actor", Role: "Lead", Image: "/private/show-face.jpg"}}
+	page, err := ActorLibrary([]library.Item{
+		{ID: "episode", Kind: "video", Show: "Series", Season: 1, Episode: 1, ShowCast: cast},
+		{ID: "z", Kind: "video", Title: "Film", Cast: cast},
+		{ID: "a", Kind: "video", Title: "Film", Cast: cast},
+		{ID: "first", Kind: "video", Title: "A Film", Cast: cast},
+	}, "Actor")
+	if err != nil || page.Image != "/person/episode/0?scope=show" || len(page.Movies) != 3 {
+		t.Fatalf("actor projection = %#v, %v", page, err)
+	}
+	for i, id := range []string{"first", "a", "z"} {
+		if page.Movies[i].ID != id || page.Movies[i].Artwork != "" {
+			t.Fatalf("movie %d = %#v", i, page.Movies[i])
+		}
+	}
+}

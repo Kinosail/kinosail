@@ -7,18 +7,20 @@ test("Owner sees real coverage, wanted files, and a focused setup path", async (
   await expect(page.getByRole("heading", { name: "Overview", exact: true })).toBeVisible();
   await expect(page.getByRole("region", { name: "Subtitle coverage" })).toContainText(/\d+%/);
   await expect(page.getByRole("meter", { name: "Subtitle coverage" })).toHaveAttribute("aria-valuetext", /\d+ of \d+ files ready/);
-  await expect(page.getByRole("link", { name: /Connect a subtitle source/ })).toBeVisible();
-  await expect(page.getByText("Needs one correction", { exact: true })).toBeVisible();
+  await expect(page.getByRole("button", { name: /Find and improve subtitles/ })).toBeVisible();
+  await expect(page.locator(".subtitle-system-state")).toContainText("Ready");
+  await page.locator(".subtitle-system > summary").click();
+  await expect(page.getByText("Local embedded text extraction is available", { exact: true })).toBeVisible();
   await expect(page.getByRole("heading", { name: "Server readiness" })).toBeVisible();
   await expect(page.getByText("Media library readable", { exact: true })).toBeVisible();
   await expect(page.getByText("Last successful subtitle write", { exact: true })).toBeVisible();
   await expect(page.getByRole("region", { name: "Subtitle sources" })).toBeVisible();
-  await expect(page.getByText(/Add a subtitle source/)).toBeVisible();
+  await expect(page.getByRole("region", { name: "Subtitle sources" }).getByRole("link", { name: /Manage providers/ })).toHaveAttribute("href", "/settings#provider");
   await page.getByRole("link", { name: "Wanted", exact: true }).click();
   await expect(page).toHaveURL(/view=wanted/);
   await expect(page.getByRole("heading", { name: "Wanted", exact: true })).toBeVisible();
   await expect(page.locator(".subtitle-file-list").getByText("Wanted", { exact: true }).first()).toBeVisible();
-  await page.getByRole("link", { name: "Settings", exact: true }).click();
+  await page.getByRole("banner").getByRole("link", { name: "Settings", exact: true }).click();
   await expect(page.getByRole("heading", { name: "Subtitle settings" })).toBeVisible();
   await expect(page.getByRole("heading", { name: "Preferred languages" })).toBeVisible();
   await expect(page.getByRole("group", { name: "Preferred subtitle role" }).locator('input[value="standard"]')).toBeChecked();
@@ -91,18 +93,9 @@ test("Owner manages an ordered preferred-language list at every supported width"
     for (const viewport of supportedViewports) {
       await page.setViewportSize(viewport);
       await languageSection.scrollIntoViewIfNeeded();
-      await languageSection.evaluate((section) => {
-        const navigationBox = document.querySelector<HTMLElement>(".app-header nav")?.getBoundingClientRect();
-        const addButtonBox = section.querySelector<HTMLElement>(".subtitle-language-add button")?.getBoundingClientRect();
-        if (navigationBox && addButtonBox && addButtonBox.bottom > navigationBox.top - 8) {
-          window.scrollTo({ top: window.scrollY + addButtonBox.bottom - navigationBox.top + 8, behavior: "instant" as ScrollBehavior });
-        }
-      });
       const geometry = await languageSection.evaluate((section) => {
         const sectionBox = section.getBoundingClientRect();
         const rows = [...section.querySelectorAll<HTMLElement>(".subtitle-language-list li")];
-        const navigationBox = document.querySelector<HTMLElement>(".app-header nav")?.getBoundingClientRect();
-        const overlaps = (left: DOMRect, right: DOMRect) => left.bottom > right.top && left.top < right.bottom && left.right > right.left && left.left < right.right;
         return {
           pageOverflow: document.documentElement.scrollWidth - document.documentElement.clientWidth,
           rowOverflow: rows.some((row) => row.scrollWidth > row.clientWidth + 1),
@@ -121,10 +114,11 @@ test("Owner manages an ordered preferred-language list at every supported width"
             const controlBox = control.getBoundingClientRect();
             return controlBox.width < 44 || controlBox.height < 44;
           }),
-          navigationControlOverlap: navigationBox ? [...section.querySelectorAll<HTMLElement>("button, select")].some((control) => overlaps(control.getBoundingClientRect(), navigationBox)) : false,
         };
       });
-      expect(geometry).toEqual({ pageOverflow: 0, rowOverflow: false, controlsOutside: false, outsideSection: false, smallTouchTarget: false, navigationControlOverlap: false });
+      expect(geometry).toEqual({ pageOverflow: 0, rowOverflow: false, controlsOutside: false, outsideSection: false, smallTouchTarget: false });
+      // Short landscape screens must make each control reachable by scrolling.
+      expect(await occludedTargets(page, ["#language button", "#language select"], [".app-header", ".app-header nav"])).toEqual([]);
       expect((await new AxeBuilder({ page }).include("#language").analyze()).violations).toEqual([]);
       await page.screenshot({ path: testInfo.outputPath(`${viewport.width}-subtitle-languages.png`), fullPage: true });
     }

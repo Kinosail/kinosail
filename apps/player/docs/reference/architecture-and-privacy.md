@@ -36,7 +36,7 @@ For direct playback, the Viewer connects to the owner-hosted Server and receives
 - WireGuard provides a verified direct path for Owner administration and paired managed devices.
 - Public HTTPS exposes a separate, restricted Viewer boundary when the Owner enables it.
 
-See [Connect phones, TVs, and Jellyfin apps]({{ '/getting-started/connect-devices/' | relative_url }}) for the device setup choices.
+See [Connect another browser]({{ '/getting-started/connect-devices/' | relative_url }}) for the device setup choices.
 
 Remote access is off by default. Public HTTPS requires public TCP 443 reachability and a matching TLS name. Carrier-grade NAT, router policy, DNS, firewall rules, and physical network security remain Owner responsibilities. Kinosail cannot remove a network reachability limit without a relay.
 

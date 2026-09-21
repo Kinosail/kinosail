@@ -87,15 +87,7 @@ func (manager *subtitleManager) localSubtitleDraft(request *http.Request, id str
 		return subtitleDraft{}, http.StatusServiceUnavailable, errors.New("server is stopping")
 	}
 	if input.Action == "cancel" {
-		if current.ID != input.DraftID || current.Item != id || current.Language != input.Language || current.Method != input.Method {
-			return subtitleDraft{}, http.StatusConflict, errors.New("local draft is no longer current")
-		}
-		if current.cancel != nil {
-			current.cancel()
-			current.State = "canceling"
-			current.Message = "Stopping local generation…"
-		}
-		return *current, http.StatusOK, nil
+		return current.cancelRequest(id, input)
 	}
 	if current.cancel != nil {
 		return subtitleDraft{}, http.StatusConflict, errors.New("another local draft is running; wait or cancel it first")
@@ -107,42 +99,12 @@ func (manager *subtitleManager) localSubtitleDraft(request *http.Request, id str
 	if math.IsNaN(facts.Duration) || math.IsInf(facts.Duration, 0) || facts.Duration <= 0 || facts.Duration > subtitleAudioLimit.Seconds() {
 		return subtitleDraft{}, http.StatusConflict, errors.New("local drafts require a video with a known duration up to eight hours")
 	}
-	config := manager.settings.configuration()
-	executable, model, architecture := config.String("binaries.tesseract"), "", ""
-	stream, language := -1, ""
-	if input.Method == "ocr" {
-		executable = firstNonempty(executable, "tesseract")
-		language = subtitleOCRLanguage(input.Language)
-		for _, track := range facts.SubtitleFacts {
-			if !track.Text && !track.External && !track.Forced && track.SourceIndex >= 0 && subtitleLanguageMatches(input.Language, track.Language) && oneOf(track.Codec, "hdmv_pgs_subtitle", "dvd_subtitle") {
-				stream = track.SourceIndex
-				break
-			}
-		}
-		if language == "" || stream < 0 {
-			return subtitleDraft{}, http.StatusConflict, errors.New("no supported PGS or VobSub track matches this language")
-		}
-	} else {
-		executable = firstNonempty(config.String("binaries.whisper"), "whisper-cli")
-		model, architecture = config.String("subtitles.transcription_model"), firstNonempty(config.String("subtitles.transcription_architecture"), "small")
-		info, modelErr := os.Stat(model)
-		if modelErr != nil || !info.Mode().IsRegular() || info.Size() < 1 || info.Size() > 8<<30 {
-			return subtitleDraft{}, http.StatusConflict, errors.New("configure a local Whisper model before generating a transcript")
-		}
-		// Transcription is not translation: never label a different spoken language as the requested language.
-		for _, track := range facts.AudioFacts {
-			if track.Role == "main" && track.SourceIndex >= 0 && subtitleLanguageMatches(input.Language, track.Language) {
-				stream = track.SourceIndex
-				if track.Default {
-					break
-				}
-			}
-		}
-		language = strings.Split(input.Language, "-")[0]
-		if stream < 0 || strings.HasSuffix(architecture, ".en") && language != "en" {
-			return subtitleDraft{}, http.StatusConflict, errors.New("transcription needs a matching main audio track and language-compatible model")
-		}
+	selection, err := selectSubtitleDraftTool(manager.settings.configuration(), facts, input)
+	if err != nil {
+		return subtitleDraft{}, http.StatusConflict, err
 	}
+	executable, model, architecture := selection.executable, selection.model, selection.architecture
+	stream, language := selection.stream, selection.language
 	if _, err = exec.LookPath(executable); err != nil {
 		return subtitleDraft{}, http.StatusConflict, errors.New("the local recognition tool is unavailable; check configuration")
 	}

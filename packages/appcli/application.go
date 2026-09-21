@@ -23,19 +23,14 @@ type Application[Configuration Settings] struct {
 }
 
 // Execute runs Player's command and server-mode dispatch without terminating the process.
-func Execute[Configuration Settings](args []string, input io.Reader, output io.Writer, getenv func(string) string, signals []os.Signal, application Application[Configuration]) int { //nolint:cyclop,gocognit // The process boundary must preserve command precedence and failure messages.
+func Execute[Configuration Settings](args []string, input io.Reader, output io.Writer, getenv func(string) string, signals []os.Signal, application Application[Configuration]) int { //nolint:cyclop // Keep command precedence explicit; the repository complexity gate still applies.
 	// Dispatch before loading application settings or opening private state.
 	if len(args) > 0 && args[0] == "public-gateway" {
-		if len(args) != 1 || getenv == nil {
-			return 1
-		}
-		ctx, stop := signal.NotifyContext(context.Background(), signals...)
-		defer stop()
-		return commandResult("public gateway stopped", publicgateway.Run(ctx, getenv("KINOSAIL_PUBLIC_HOSTNAME")))
+		return executePublicGateway(args, getenv, signals)
 	}
 	ConfigureMCPRuntime(args)
 	slog.SetDefault(slog.New(slog.NewJSONHandler(os.Stderr, nil)))
-	if application.Configuration == nil || application.Load == nil || application.MCP == nil || application.Command == nil || application.AuthURL == nil || application.Run == nil || getenv == nil {
+	if !application.valid() || getenv == nil {
 		slog.Error("application is not configured")
 		return 1
 	}
@@ -50,21 +45,7 @@ func Execute[Configuration Settings](args []string, input io.Reader, output io.W
 		return commandResult("private management recovery failed", owneraccess.Recover(configured.String("paths.data")))
 	}
 	if len(args) >= 1 && len(args) <= 2 && args[0] == "mcp-stdio" {
-		if configErr != nil {
-			slog.Error("configuration failed", "error", configErr)
-			return 1
-		}
-		ctx, stop := signal.NotifyContext(context.Background(), signals...)
-		defer stop()
-		profileID := ""
-		if len(args) == 2 {
-			profileID = args[1]
-		}
-		if err := application.MCP(ctx, configured, profileID); err != nil && !errors.Is(err, context.Canceled) {
-			slog.Error("command failed", "error", err)
-			return 1
-		}
-		return 0
+		return executeMCP(args, signals, application, configured, configErr)
 	}
 	handled, err := application.Command(args, input, output, configured.String("paths.data"), configured.String("backup.key"), configured.String("listen"), configured.Bool("tls.enabled"), application.AuthURL(configured))
 	if handled {
@@ -93,4 +74,35 @@ func commandResult(message string, err error) int {
 // SecureProxyConfiguration validates the proxy capability at the process boundary.
 func SecureProxyConfiguration(token, remote string) bool {
 	return remote == "" && token == "" || len(token) >= 32
+}
+
+func executeMCP[Configuration Settings](args []string, signals []os.Signal, application Application[Configuration], configured Configuration, configErr error) int {
+	if configErr != nil {
+		slog.Error("configuration failed", "error", configErr)
+		return 1
+	}
+	ctx, stop := signal.NotifyContext(context.Background(), signals...)
+	defer stop()
+	profileID := ""
+	if len(args) == 2 {
+		profileID = args[1]
+	}
+	if err := application.MCP(ctx, configured, profileID); err != nil && !errors.Is(err, context.Canceled) {
+		slog.Error("command failed", "error", err)
+		return 1
+	}
+	return 0
+}
+
+func (a Application[Configuration]) valid() bool {
+	return a.Configuration != nil && a.Load != nil && a.MCP != nil && a.Command != nil && a.AuthURL != nil && a.Run != nil
+}
+
+func executePublicGateway(args []string, getenv func(string) string, signals []os.Signal) int {
+	if len(args) != 1 || getenv == nil {
+		return 1
+	}
+	ctx, stop := signal.NotifyContext(context.Background(), signals...)
+	defer stop()
+	return commandResult("public gateway stopped", publicgateway.Run(ctx, getenv("KINOSAIL_PUBLIC_HOSTNAME")))
 }

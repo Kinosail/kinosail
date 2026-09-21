@@ -7,7 +7,7 @@ import (
 )
 
 func TestWebSurfacesCanUseSpanish(t *testing.T) {
-	localeWebFixture.WebSurfacesCanUseSpanish(t, signInTestProfile, requestWithCookie, "SubDL")
+	localeWebFixture.WebSurfacesCanUseSpanish(t, signInTestProfile, requestWithCookie, "SubDL", "Protección automática")
 }
 
 func TestLocalizationDoesNotTranslateLibraryContent(t *testing.T) {

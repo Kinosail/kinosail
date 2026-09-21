@@ -137,3 +137,15 @@ func linkedProfiles(values *[]linkedProfile, persistErr error) (Profiles[linkedP
 		},
 	}, persisted
 }
+
+func TestLinkRejectsDisabledAndDeletedProfilesWithoutPersistence(t *testing.T) {
+	for _, profile := range []linkedProfile{{ID: "viewer", Disabled: true}, {ID: "viewer", Deleted: true}} {
+		for _, protocol := range []Protocol{OIDCProtocol, SAMLProtocol} {
+			values := []linkedProfile{profile}
+			profiles, persisted := linkedProfiles(&values, nil)
+			if err := profiles.Link(protocol, "viewer", Identity{Issuer: "issuer", Subject: "subject"}); err == nil || *persisted != 0 || values[0].OIDC != (Identity{}) || values[0].SAML != (Identity{}) {
+				t.Fatal("disabled or deleted profile gained a linked identity")
+			}
+		}
+	}
+}

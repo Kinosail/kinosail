@@ -37,8 +37,8 @@ func audioQueue(request *http.Request, index *libraryIndex, id string) ([]librar
 }
 
 func playerTemplate(template string) string {
-	template = strings.Replace(template, `/static/downloads.js?v=3`, `/static/downloads.js?v=9`, 1)
-	template = strings.Replace(template, `/static/player.js?v=34`, `/static/player.js?v=50`, 1)
+	template = strings.Replace(template, `/static/downloads.js?v=3`, `/static/downloads.js?v=10`, 1)
+	template = strings.Replace(template, `/static/player.js?v=34`, `/static/player.js?v=51`, 1)
 	template = sharedplayback.PlayerTemplate(template)
 	template = strings.ReplaceAll(template, `data-player-fallback>Try again</button>`, `data-player-fallback></button>`)
 	return strings.ReplaceAll(template, `data-player-fallback hidden>Try again</button>`, `data-player-fallback hidden></button>`)
@@ -88,7 +88,17 @@ func watch(index *libraryIndex, progress *progressStore, settings *settingsStore
 
 func buildPlayerData(request *http.Request, item library.Item, index *libraryIndex, progress *progressStore, settings *settingsStore, lists *listStore, probe *mediaProbe, subtitles *subtitleProvider, metadata *metadataStore) playerData { //nolint:cyclop,gocognit // The player projection assembles each supported playback capability once.
 	state, viewer := progress.Get(request, item.ID), currentViewer(request)
-	data := playerData{Item: item, ViewerProfile: viewer.ID, Start: state.Seconds, Source: "/media/" + item.ID, ModeURL: "?compatible=1", ModeLabel: "Compatibility stream", PlaybackSession: randID(), Watched: state.Watched, Listed: lists.Has(request, item.ID), CanDownload: viewer.Owner || viewer.Downloads, CanTranscode: viewerPlaybackPolicy(viewer).AllowTranscode, Next: autoNext(request, settings, index, item), AutoSkip: strings.Join(settings.autoSkip(), ","), FileSize: byteSize(item.Size), DefaultSubtitles: settings.subtitlesDefault(), HomeAssistant: settings.homeAssistant()}
+	data := sharedplayback.NewPlayerData(item, viewer.ID, randID())
+	data.Start = state.Seconds
+	data.Watched = state.Watched
+	data.Listed = lists.Has(request, item.ID)
+	data.CanDownload = viewer.Owner || viewer.Downloads
+	data.CanTranscode = viewerPlaybackPolicy(viewer).AllowTranscode
+	data.Next = autoNext(request, settings, index, item)
+	data.AutoSkip = strings.Join(settings.autoSkip(), ",")
+	data.FileSize = byteSize(item.Size)
+	data.DefaultSubtitles = settings.subtitlesDefault()
+	data.HomeAssistant = settings.homeAssistant()
 	data.Audiobook = item.Kind == "audiobook"
 	if supportsOffline(item) {
 		data.OfflineQuality = optimizedDownloadLabel(item)

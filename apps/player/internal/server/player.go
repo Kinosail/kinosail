@@ -37,10 +37,10 @@ func audioQueue(request *http.Request, index *libraryIndex, id string) ([]librar
 }
 
 func playerTemplate(template string) string {
-	template = strings.Replace(template, `/static/downloads.js?v=3`, `/static/downloads.js?v=25`, 1)
+	template = strings.Replace(template, `/static/downloads.js?v=3`, `/static/downloads.js?v=26`, 1)
 	template = strings.Replace(template, `preload="{{if .HLS}}auto{{else}}metadata{{end}}"`, `preload="auto"`, 1)
 	template = strings.Replace(template, `data-sleep-ended="{{t "Sleep timer ended"}}"`, `data-sleep-ended="{{t "Sleep timer ended"}}" data-offline-copy="{{t "Offline copy"}}" data-offline-description="{{t "Verified file stored on this device."}}" data-offline-ready="{{t "Ready offline on this device"}}" data-offline-unavailable="{{t "Offline copy is unavailable."}}" data-offline-audio="{{t "Audio is fixed in this downloaded copy."}}" data-playback-method="{{t "Playback method"}}" data-open-playback-settings="{{t "Open playback settings."}}"`, 1)
-template = strings.Replace(template, `/static/player.js?v=34`, `/static/player.js?v=76`, 1)
+	template = strings.Replace(template, `/static/player.js?v=34`, `/static/player.js?v=77`, 1)
 	return tvPlayerTemplate(sharedplayback.PlayerTemplate(template))
 }
 
@@ -92,7 +92,17 @@ func watch(index *libraryIndex, progress *progressStore, settings *settingsStore
 
 func buildPlayerData(request *http.Request, item library.Item, index *libraryIndex, progress *progressStore, settings *settingsStore, lists *listStore, probe *mediaProbe, metadata *metadataStore) playerData { //nolint:cyclop,gocognit // The player projection assembles each supported playback capability once.
 	state, viewer := progress.Get(request, item.ID), currentViewer(request)
-	data := playerData{Item: item, ViewerProfile: viewer.ID, Start: state.Seconds, Source: "/media/" + item.ID, ModeURL: "?compatible=1", ModeLabel: "Compatibility stream", PlaybackSession: randID(), Watched: state.Watched, Listed: lists.Has(request, item.ID), CanDownload: viewer.Owner || viewer.Downloads, CanTranscode: viewerPlaybackPolicy(viewer).AllowTranscode, Next: autoNext(request, settings, index, item), AutoSkip: strings.Join(settings.autoSkip(), ","), FileSize: byteSize(item.Size), DefaultSubtitles: settings.subtitlesDefault(), HomeAssistant: settings.homeAssistant()}
+	data := sharedplayback.NewPlayerData(item, viewer.ID, randID())
+	data.Start = state.Seconds
+	data.Watched = state.Watched
+	data.Listed = lists.Has(request, item.ID)
+	data.CanDownload = viewer.Owner || viewer.Downloads
+	data.CanTranscode = viewerPlaybackPolicy(viewer).AllowTranscode
+	data.Next = autoNext(request, settings, index, item)
+	data.AutoSkip = strings.Join(settings.autoSkip(), ",")
+	data.FileSize = byteSize(item.Size)
+	data.DefaultSubtitles = settings.subtitlesDefault()
+	data.HomeAssistant = settings.homeAssistant()
 	data.Audiobook = item.Kind == "audiobook"
 	if supportsOffline(item) {
 		data.OfflineQuality = optimizedDownloadLabel(item)
@@ -123,15 +133,6 @@ func subtitleLabel(media, subtitle string) string {
 		return "Subtitles"
 	}
 	return strings.ToUpper(strings.ReplaceAll(label, ".", " · "))
-}
-
-func oneOf(value string, allowed ...string) bool {
-	for _, candidate := range allowed {
-		if value == candidate {
-			return true
-		}
-	}
-	return false
 }
 
 func byteSize(size int64) string {

@@ -89,7 +89,7 @@ func TestPublicInternetListenerAllowsOnlyRemoteEnabledViewers(t *testing.T) {
 	}
 	remote := signInTestProfile(t, handler, "/login", "name=Remote&password=remote-password")
 	local := signInTestProfile(t, handler, "/login", "name=Local&password=local-password")
-	if response := serveRequest(server.Remote(handler), requestWithCookieRequest(t, http.MethodGet, "/", "", remote)); response.Code != http.StatusForbidden || !strings.Contains(response.Body.String(), "strong authentication") {
+	if response := serveRequest(server.Remote(handler), requestWithCookieRequest(t, http.MethodGet, "/", "", remote)); response.Code != http.StatusForbidden || !strings.Contains(response.Body.String(), "public sign-in") {
 		t.Fatalf("password-only public Viewer = %d %q", response.Code, response.Body.String())
 	}
 	enrollment := requestWithCookie(t, handler, http.MethodPost, "/account/mfa/setup", "", remote)

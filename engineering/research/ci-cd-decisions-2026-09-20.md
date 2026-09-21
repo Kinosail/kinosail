@@ -135,3 +135,39 @@ Independent review caught four missing safety details and two delivery/consumer 
 - An independent read-only review verified the six safety/compatibility fixes, reran CI/integrity tests and actionlint, and found no further concrete blocker in those deltas. This does not substitute for successful app suites or hosted delivery.
 
 PR: [#41](https://github.com/Kinosail/kinosail/pull/41). Keep branch protection and publication prerequisites enabled. Do not merge or claim production delivery while any required check fails. Retain the task branch/worktree if these unrelated repair blockers prevent safe integration; the primary working tree contains separate unfinished work and must not be overwritten.
+
+
+### Dependency integration evidence and browser corrections
+
+[Integration PR #42](https://github.com/Kinosail/kinosail/pull/42) preserves all eight pending PR heads (#33–#40) and records the final required-check, merge, and container-publication evidence. The following is a **failed integration sample**, not an accepted performance benchmark: head `8ea3e321173715440f22455e193f0301367a081f`, captured September 21 UTC. Timings include scheduling/setup and use the final job completion; summed job time is not billed cost.
+
+| Workflow | Result | End-to-end | Sum of job elapsed time |
+| --- | --- | ---: | ---: |
+| [Repository Quality](https://github.com/Kinosail/kinosail/actions/runs/35552004730) | Passed | 5m28s | 6m03s |
+| [Security](https://github.com/Kinosail/kinosail/actions/runs/35552004742) | Passed | 4m16s | 6m54s |
+| [Dashboard](https://github.com/Kinosail/kinosail/actions/runs/35552004731) | Passed | 7m26s | 13m20s |
+| [Player](https://github.com/Kinosail/kinosail/actions/runs/35552004744) | Passed with one browser retry | 12m08s | 30m30s |
+| [Subtitles](https://github.com/Kinosail/kinosail/actions/runs/35552004729) | Failed | 10m51s | 26m13s |
+| [Documentation](https://github.com/Kinosail/kinosail/actions/runs/35552004636) | Passed | 28s | 25s |
+
+Subtitles completed 37 browser cases before Linux WebKit rejected a full-page screenshot above its 32,767-pixel limit; serial-suite behavior left ten subsequent cases unrun. The provider test now captures the two relevant sections while retaining its interaction, page-overflow, responsive geometry, and accessibility assertions. This avoids spending rendering time on unrelated settings and preserves useful visual evidence.
+
+An earlier run exposed simultaneous preferred-language edits by three browser projects against one Subtitles Server. One worker now serializes its 48 scenarios. Restore parallelism only with independent Server state per project; retries cannot repair shared mutable fixtures. Player already resets its Server between engines and retains three workers within each engine.
+
+The offline upgrade fixture now uses the complete downloads bundle, version-distinct worker bytes, and an explicit no-script-errors assertion. Eighteen repeated cases passed using CI's browser channel across Chromium, Firefox, and WebKit. Local installed-Chrome stress testing still recorded one activation stall in 30 cases, so that sample is not clean and does not establish a production lifecycle defect. Failed Player hosted browser jobs now retain traces/screenshots for seven days; successful jobs do not upload them. Diagnose future intermittent failures from those traces rather than silently accepting retries.
+
+The stable gates, full affected-module race/coverage suites, vulnerability checks, and 300-line source cap remained enabled throughout this integration. The final accepted run and published image digests belong to the PR's delivery record; this table must remain labelled failed rather than being rewritten as a successful speedup.
+
+Player's accepted job in this failed sample included one WebKit retry: a 2.2-second idle timer plus a 180 ms CSS transition exceeded the test's 3-second wall-clock assertion under hosted load. The test now advances Playwright's [controlled clock](https://playwright.dev/docs/clock) past the idle deadline, then checks the real computed opacity; keyboard focus must keep controls visible beyond that deadline. This retains the behavior assertion while removing several seconds of waiting per browser. The sample's retry must remain visible in any reliability comparison.
+
+The next measured optimization target is Player browser execution: Chromium, Firefox, and WebKit took approximately 1.9, 2.7, and 3.2 minutes in this sample. Independent per-engine Server fixtures could shorten that critical path, but compare added image-transfer/startup cost and retry rate before splitting jobs. Subtitles screenshot work is another measured source of wasted execution; retain behavior assertions while bounding captured evidence.
+
+The next [Player run](https://github.com/Kinosail/kinosail/actions/runs/35552926805) demonstrated the value of retaining failure traces: all 47 recorded supporter requests returned 200, but an outgoing document started its second request during navigation and WebKit reported an access-control error before that request reached the network. Supporter recognition now aborts on `pagehide`, checks cancellation after both JSON reads, and starts a fresh operation after back-forward cache restoration. Twelve lifecycle contracts passed across three engines, and the complete WebKit Owner journey passed against the rebuilt container. Authentication, CORS, and browser-error assertions remain unchanged.
+
+The corresponding [Subtitles run](https://github.com/Kinosail/kinosail/actions/runs/35552926804) exposed a duplicate Settings link and an assertion racing Library navigation. Tests now select the header link and expand a specific Library row after the destination heading appears. All 48 cases passed locally across three engines in 3m30s. Subtitles now retains failed browser evidence for seven days too. These local repairs await a clean hosted integration run; neither failed sample establishes the final merge latency.
+
+Head `7fd37c42` passed the hosted Subtitles browser matrix, but its [race suite](https://github.com/Kinosail/kinosail/actions/runs/35554293171) failed temporary-directory cleanup in a status-only maintenance test. Both apps now use the existing unscheduled Server mode for that test; status/manual-action assertions and separate automatic scheduling tests remain. Cancellation alone does not join background writes, and the backup scheduler starts after 250 ms even with a one-hour interval, overlapping the failing 0.38-second test. The cleanup log does not identify the exact writer.
+
+The same head's [Player trace](https://github.com/Kinosail/kinosail/actions/runs/35554293231) reached its final offline navigation, then exhausted the entire 60-second journey budget after only 76 ms in that navigation. One accessibility scan alone took 10.3 seconds. Only this onboarding/playback/accessibility/offline journey receives a 90-second total budget; individual assertions retain their existing limits. It now has zero automatic retries because Owner/MFA state persists and replaying setup against that state is not an equivalent attempt. This avoids the observed invalid retry without hiding a failure or adding waiting to successful runs.
+
+Head `3ee5cdcf` passed four required gates and all 203 Chromium cases. Its [Firefox trace](https://github.com/Kinosail/kinosail/actions/runs/35555006010) showed the test starting a new navigation 8.4 ms after Cancel reached Home, interrupting the outgoing theme and navigation scripts with `NS_BINDING_ABORTED`; both assets returned 200 on the replacement page. The journey now waits for Home's load and checks its heading before continuing. This verifies the Cancel destination and avoids test-induced cancellation; the service-worker strategy and strict browser-error assertion stay unchanged.

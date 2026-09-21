@@ -58,7 +58,7 @@ func assertRejectedPasswordSetup(t *testing.T, handler http.Handler, name, passw
 	if webResponse.Code != http.StatusBadRequest {
 		t.Fatalf("%s-password web setup = %d %q", name, webResponse.Code, webResponse.Body.String())
 	}
-	if body := webResponse.Body.String(); !strings.Contains(body, "Check your setup details.") || !strings.Contains(body, "Try again") || !strings.Contains(body, "Nothing was saved") {
+	if body := webResponse.Body.String(); !strings.Contains(body, "Check your setup details.") || !strings.Contains(body, "Try again") || !strings.Contains(body, "Your Owner account was not created.") {
 		t.Fatalf("%s-password web setup error is not recoverable: %q", name, body)
 	}
 }

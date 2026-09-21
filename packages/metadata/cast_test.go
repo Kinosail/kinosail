@@ -57,3 +57,33 @@ func TestStoredCastBoundsAndCopy(t *testing.T) {
 		t.Fatal("clone shares cast storage")
 	}
 }
+
+func TestOptionalCastFailurePreservesTitleAndDoesNotRequestArtwork(t *testing.T) {
+	initial := Result{Record: Record{Title: "Known title"}}
+	result, err := enrichTMDBCast(t.Context(), "https://example.com", "movie", 1, func(context.Context, string, any) error { return context.Canceled }, func(string) string { t.Fatal("artwork requested after credits failure"); return "" }, initial)
+	if err != nil || result.Record.Title != initial.Record.Title || result.Record.CastFetched || len(result.Images) != 0 {
+		t.Fatalf("optional credits failure damaged title: %#v %v", result, err)
+	}
+}
+
+func TestCastSkipsBlankNamesAndCapsCredits(t *testing.T) {
+	body := `{"cast":[{"name":" "},` + strings.Repeat(`{"name":"Actor"},`, 15) + `{"name":"Excluded"}]}`
+	result, err := enrichTMDBCast(t.Context(), "https://example.com", "movie", 1, func(_ context.Context, _ string, target any) error { return json.Unmarshal([]byte(body), target) }, func(string) string { t.Fatal("no portraits supplied"); return "" }, Result{Record: Record{Title: "Movie"}})
+	if err != nil || len(result.Record.Cast) != 15 || result.Record.Cast[14].Name != "Actor" || !result.Record.CastFetched {
+		t.Fatalf("bounded credits = %#v %v", result, err)
+	}
+}
+
+func TestCastRejectsInvalidArtworkAndRecord(t *testing.T) {
+	for _, scenario := range []struct{ body, title string }{
+		{`{"cast":[{"name":"Actor","profile_path":"/face.jpg"}]}`, "Movie"},
+		{`{"cast":[{"name":"Actor"}]}`, strings.Repeat("x", 10000)},
+	} {
+		result, err := enrichTMDBCast(t.Context(), "https://example.com", "movie", 1, func(_ context.Context, _ string, target any) error {
+			return json.Unmarshal([]byte(scenario.body), target)
+		}, func(string) string { return "" }, Result{Record: Record{Title: scenario.title}})
+		if err == nil || len(result.Images) != 0 || len(result.Record.Cast) != 0 {
+			t.Fatalf("invalid enrichment escaped: %#v %v", result, err)
+		}
+	}
+}

@@ -1,6 +1,6 @@
 ---
 title: Connect integrations
-description: Configure metadata, compatible clients, Home Assistant, identity, webhooks, DLNA, and MCP.
+description: Configure metadata, identity, webhooks, DLNA, and MCP.
 section: Own the Server
 ---
 
@@ -11,28 +11,6 @@ Enable only the integrations you need. Open **Settings → Access** and use **Se
 ## Configure metadata
 
 TMDB enrichment is optional. Set its access token and addresses in deployment configuration, then select **Refresh missing metadata** from **Settings → Library discovery**. Kinosail uses local NFO files, embedded tags, and folder artwork without TMDB. TMDB attribution and licensing terms still apply.
-
-## Enable compatible clients
-
-Jellyfin support is off by default. Open the setup wizard and go to **Devices**. Configure trusted HTTPS through DuckDNS or deSEC before you select **Allow compatible Jellyfin apps to connect**.
-
-This requirement prevents certificate failures in clients that reject private certificates or cannot install a local certificate. Kinosail does not offer HTTP or an ignore-certificate fallback.
-
-Save trusted HTTPS, enable Jellyfin apps, then restart Kinosail once. Settings shows the trusted HTTPS Server URL to enter in a compatible client. This enables tested flows for Android, Android TV, iOS, and Swiftfin. It does not certify every physical device.
-
-Prefer Quick Connect. Approval requires a recently verified local or WireGuard session. Every Jellyfin sign-in session is media-only, including Owner approval.
-
-Local password fallback is blocked for Profiles with TOTP and when the Server requires MFA. Public password login is always blocked.
-
-Some clients omit credentials on artwork requests. Kinosail permits only local anonymous item artwork. Anonymous browsing and media access remain blocked.
-
-Follow [Connect phones, TVs, and Jellyfin apps]({{ '/getting-started/connect-devices/' | relative_url }}) for the complete wizard and connection procedure.
-
-## Configure Home Assistant
-
-Home Assistant support is off by default. Enable it in the setup wizard or Owner settings. Create a ten-minute pairing code, then add the [Kinosail Home Assistant integration](https://github.com/Kinosail/kinosail-home-assistant). The integration can browse Library Content and control active Kinosail browser players. Streams travel directly from this Server.
-
-Turning the setting off hides every Home Assistant route and revokes paired connections. Deployment-managed installations can set `KINOSAIL_HOME_ASSISTANT_ENABLED`.
 
 ## Configure identity and provisioning
 

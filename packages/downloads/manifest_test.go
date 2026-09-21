@@ -108,6 +108,9 @@ func TestManifestAuthorizationAndSourceReplacement(t *testing.T) { //nolint:cycl
 	if err != nil || second.ID == first.ID {
 		t.Fatalf("revision reused: %v", err)
 	}
+	if replacement, err := manager.Wait(ctx, "viewer", second.ID); err != nil || replacement.SHA256 == ready.SHA256 {
+		t.Fatalf("replacement did not finish with distinct bytes: %#v %v", replacement, err)
+	}
 	manifest, err := manager.Manifest("viewer", first.ID)
 	if err != nil || manifest.SHA256 != ready.SHA256 {
 		t.Fatalf("old revision changed: %v", err)

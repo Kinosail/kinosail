@@ -51,14 +51,14 @@ digest() {
 run_stage() {
   local name="$1" inputs="$2" key log started elapsed
   shift 2
+  if [[ -n "$plan" ]]; then
+    printf 'PLAN %s: %s\n' "$name" "$*"
+    return
+  fi
   key="$( { printf '%s\0%s\0' "$name" "$*"; digest "$inputs"; } | shasum -a 256 | awk '{print $1}')"
   log="$logs/$key.log"
   if [[ -z "$working" && -f "$cache/$key" ]]; then
     printf 'CACHED %s\n' "$name"
-    return
-  fi
-  if [[ -n "$plan" ]]; then
-    printf 'PLAN %s: %s\n' "$name" "$*"
     return
   fi
   started="$(date +%s)"

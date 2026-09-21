@@ -35,7 +35,7 @@ func (suite SettingsRegression) SettingsShowLibraryDiagnostics(t *testing.T) {
 	response := httptest.NewRecorder()
 	suite.New(SettingsFixture{MediaDir: mediaDir, DataDir: t.TempDir()}).ServeHTTP(response, httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/settings/system", nil))
 
-	if !strings.Contains(response.Body.String(), "Diagnostics") || !strings.Contains(response.Body.String(), "2 Library items") || !strings.Contains(response.Body.String(), "Library monitoring") {
+	if !strings.Contains(response.Body.String(), "Diagnostics") || !strings.Contains(response.Body.String(), "Library items: 2") || !strings.Contains(response.Body.String(), "Library monitoring") {
 		t.Fatalf("settings = %q", response.Body.String())
 	}
 }

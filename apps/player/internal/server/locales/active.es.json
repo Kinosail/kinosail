@@ -2010,5 +2010,9 @@
   {
     "id": "Audio is fixed in this downloaded copy.",
     "other": "El audio está fijado en esta copia descargada."
+  },
+  {
+    "id": "Sign-in protection",
+    "other": "Protección de inicio de sesión"
   }
 ]

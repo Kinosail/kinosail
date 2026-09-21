@@ -111,6 +111,8 @@ func TestProviderRejectsInvalidShowGroupBeforeArtworkSideEffects(t *testing.T) {
 		switch request.URL.Path {
 		case "/search/tv":
 			_, _ = writer.Write([]byte(`{"results":[{"id":95396,"name":"Severance","poster_path":"/poster.jpg"}]}`))
+		case "/tv/95396/credits":
+			_, _ = writer.Write([]byte(`{"cast":[]}`))
 		case "/tv/95396/season/1/episode/1":
 			_, _ = writer.Write([]byte(`{"id":1,"name":"Good News About Hell"}`))
 		case "/tv/95396/season/1/episode/2":

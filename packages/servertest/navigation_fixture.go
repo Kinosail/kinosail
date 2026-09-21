@@ -12,7 +12,7 @@ type NavigationFixture struct {
 	Web                                       AuthCookieRequest
 	AddViewer                                 func(*testing.T, http.Handler, *http.Cookie, string, string) *http.Cookie
 	CheckSupporterTarget, CheckSupporterOrder bool
-	RequiredCSS, ForbiddenCSS                 string
+	LibraryLink, RequiredCSS, ForbiddenCSS    string
 }
 
 // MainNavigationMarkup isolates the original main-bar fragment.

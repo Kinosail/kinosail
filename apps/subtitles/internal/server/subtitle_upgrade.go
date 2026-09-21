@@ -15,8 +15,12 @@ const (
 	subtitleUpgradeGain     = 10
 )
 
+func (provider *subtitleProvider) upgradeAvailable(item library.Item, language string) bool {
+	return provider.configured() && item.Kind == "video" && validLanguage(language)
+}
+
 func (provider *subtitleProvider) upgradeEligible(item library.Item, language string, now time.Time) bool { //nolint:cyclop // Eligibility rejects every unsafe managed-file and schedule state.
-	if !provider.configured() || item.Kind != "video" || !validLanguage(language) {
+	if !provider.upgradeAvailable(item, language) {
 		return false
 	}
 	target := subtitleSidecarPath(item, language)
@@ -41,7 +45,7 @@ func (provider *subtitleProvider) upgradeEligible(item library.Item, language st
 func (provider *subtitleProvider) upgradeSidecar(ctx context.Context, item library.Item, language string) (bool, error) { //nolint:cyclop,gocognit // Upgrade validation, backup, write, and rollback form one atomic operation.
 	provider.sidecar.Lock()
 	defer provider.sidecar.Unlock()
-	if !provider.configured() || item.Kind != "video" || !validLanguage(language) {
+	if !provider.upgradeAvailable(item, language) {
 		return false, errors.New("subtitle upgrade is unavailable")
 	}
 	if err := ctx.Err(); err != nil {
@@ -63,10 +67,7 @@ func (provider *subtitleProvider) upgradeSidecar(ctx context.Context, item libra
 		return false, ledgerErr
 	}
 	accept := func(candidate subtitleDownloadCandidate) bool {
-		if managed {
-			return candidate.Score >= previous.Score+subtitleUpgradeGain
-		}
-		return candidate.ExactHash && candidate.Score == 100 && candidate.ReleaseMatch >= 1
+		return subtitleUpgradeImproves(candidate, previous, managed)
 	}
 	cleaned, next, err := provider.acquire(ctx, item, language, accept)
 	if err != nil {
@@ -89,17 +90,28 @@ func (provider *subtitleProvider) upgradeSidecar(ctx context.Context, item libra
 		}
 		return false, provider.ledger.store(key, target.record(current, next))
 	}
-	if err = provider.retainSubtitleRecoveryOriginal(current, previous, &next); err != nil {
+	return provider.installSubtitleUpgrade(target, key, current, cleaned.Data, previous, next)
+}
+
+func subtitleUpgradeImproves(candidate subtitleDownloadCandidate, previous subtitleRecord, managed bool) bool {
+	if managed {
+		return candidate.Score >= previous.Score+subtitleUpgradeGain
+	}
+	return candidate.ExactHash && candidate.Score == 100 && candidate.ReleaseMatch >= 1
+}
+
+func (provider *subtitleProvider) installSubtitleUpgrade(target *subtitleSidecar, key string, current, data []byte, previous, next subtitleRecord) (bool, error) {
+	if err := provider.retainSubtitleRecoveryOriginal(current, previous, &next); err != nil {
 		return false, err
 	}
 	if backupErr := target.write(".kinosail.bak", current, false); backupErr != nil {
 		return false, backupErr
 	}
-	if err = target.write("", cleaned.Data, false); err != nil {
+	if err := target.write("", data, false); err != nil {
 		return false, err
 	}
 	next.Backup = true
-	if err = provider.ledger.store(key, target.record(cleaned.Data, next)); err != nil {
+	if err := provider.ledger.store(key, target.record(data, next)); err != nil {
 		_ = target.write("", current, false)
 		return false, err
 	}

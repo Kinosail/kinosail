@@ -40,7 +40,7 @@ test("Overview preview keeps the complete wanted inventory accessible", async ({
 test("Overview search finds covered titles and offers a clear recovery", async ({ page }) => {
   await page.goto("/");
   const search = page.getByRole("searchbox", { name: "Search subtitle library" });
-  await search.fill("Example Movie");
+  await search.fill("Arrival");
   await search.press("Enter");
   await expect(page).toHaveURL(/view=library/);
   expect([...new URL(page.url()).searchParams.keys()].sort()).toEqual(["q", "view"]);
@@ -50,9 +50,11 @@ test("Overview search finds covered titles and offers a clear recovery", async (
   await expect(page).toHaveURL("/?view=library");
   await expect(search).toHaveValue("");
   await page.getByRole("link", { name: "Wanted", exact: true }).click();
+  await expect(page).toHaveURL("/?view=wanted");
+  await expect(search).toHaveValue("");
   await search.fill("No matching fixture title");
   await search.press("Enter");
-  await expect(page).toHaveURL(/view=wanted/);
+  await expect(page).toHaveURL(url => url.searchParams.get("view") === "wanted" && url.searchParams.get("q") === "No matching fixture title");
   await expect(page.getByRole("heading", { name: "No files match." })).toBeVisible();
   await page.getByRole("link", { name: "Clear filters", exact: true }).click();
   await expect(page).toHaveURL("/?view=wanted");
@@ -82,11 +84,13 @@ test("Dashboard stays readable and accessible at every supported width", async (
     if (viewport.width <= 390) {
       const alignment = await page.locator(".subtitle-coverage-stat").evaluate((element) => {
         const parent = element.getBoundingClientRect();
-        const meter = element.querySelector("meter")!.getBoundingClientRect();
-        return meter.left >= parent.left && meter.right <= parent.right;
+        const visible = [...element.querySelectorAll("p, .subtitle-text-link")].map((child) => child.getBoundingClientRect());
+        return visible.length > 0 && visible.every((box) => box.width > 0 && box.left >= parent.left && box.right <= parent.right);
       });
       expect(alignment).toBe(true);
-      expect(await occludedTargets(page, [".subtitle-background-note"], [".app-header nav"])).toEqual([]);
+      await expect(page.locator(".subtitle-coverage-stat > p")).toContainText(/\d+ of \d+ files ready/);
+      await expect(page.locator(".subtitle-coverage-stat meter")).toBeHidden();
+      expect(await occludedTargets(page, [".subtitle-coverage-stat > p", ".subtitle-overview-actions button"], [".app-header nav"])).toEqual([]);
     }
     const accessibility = await new AxeBuilder({ page }).include("main").analyze();
     expect(accessibility.violations).toEqual([]);
@@ -106,7 +110,8 @@ test("Dashboard preserves keyboard and high-contrast operation", async ({ page }
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.screenshot({ path: testInfo.outputPath("subtitle-dashboard-reduced-motion.png") });
   await page.emulateMedia({ forcedColors: "active" });
-  await expect(page.getByRole("meter", { name: "Subtitle coverage" })).toBeVisible();
+  await expect(page.locator(".subtitle-coverage-stat > p")).toBeVisible();
+  await expect(page.locator(".subtitle-coverage-stat > p")).toContainText(/\d+ of \d+ files ready/);
   await page.screenshot({ path: testInfo.outputPath("subtitle-dashboard-forced-colors.png") });
 });
 
@@ -116,9 +121,9 @@ test("Compact navigation does not cover the current subtitle task", async ({ pag
     await page.setViewportSize(viewport);
     await page.goto("/");
     if (viewport.height <= 600) {
-      failures.push(...(await initiallyOccludedTargets(page, [".subtitle-overview-copy h2", ".subtitle-coverage-stat meter", ".subtitle-overview-actions .button"], [".app-header nav"])).map((failure) => `${viewport.width}px dashboard: ${failure}`));
+      failures.push(...(await initiallyOccludedTargets(page, [".subtitle-overview-copy h2", ".subtitle-coverage-stat > p", ".subtitle-overview-actions button"], [".app-header nav"])).map((failure) => `${viewport.width}px dashboard: ${failure}`));
     }
-    failures.push(...(await occludedTargets(page, [".subtitle-coverage-stat meter", ".subtitle-overview-copy h2", ".subtitle-overview-actions .button", ".subtitle-background-note", ".subtitle-system-correction"], [".app-header nav"])).map((failure) => `${viewport.width}px dashboard: ${failure}`));
+    failures.push(...(await occludedTargets(page, [".subtitle-coverage-stat > p", ".subtitle-overview-copy h2", ".subtitle-overview-actions button", ".subtitle-system > summary"], [".app-header nav"])).map((failure) => `${viewport.width}px dashboard: ${failure}`));
 
     await page.goto("/settings#provider");
     failures.push(...(await occludedTargets(page, ["#provider h2", "#provider input[name=apiKey]", "#provider form[action='/settings/subtitles/subsource'] button"], [".app-header nav", ".search", ".settings-nav"])).map((failure) => `${viewport.width}px provider settings: ${failure}`));
@@ -135,21 +140,24 @@ test("Dashboard preserves its task at 200 percent reflow", async ({ page }) => {
   await page.setViewportSize({ width: 360, height: 450 });
   await page.goto("/");
   expect(await page.locator("html").evaluate((element) => element.scrollWidth <= element.clientWidth)).toBe(true);
-  expect(await occludedTargets(page, [".subtitle-coverage-stat meter", ".subtitle-overview-copy h2", ".subtitle-overview-actions .button", ".subtitle-background-note", ".subtitle-system-correction"], [".app-header nav"])).toEqual([]);
+  expect(await occludedTargets(page, [".subtitle-coverage-stat > p", ".subtitle-overview-copy h2", ".subtitle-overview-actions button", ".subtitle-system > summary"], [".app-header nav"])).toEqual([]);
 });
 
 test("Readiness, quota, and history remain usable on compact screens", async ({ page }, testInfo) => {
   for (const viewport of [{ width: 1024, height: 768 }, { width: 390, height: 844 }, { width: 320, height: 800 }]) {
     await page.setViewportSize(viewport);
     await page.goto("/");
+    await page.locator(".subtitle-system > summary").click();
     await expect(page.getByRole("heading", { name: "Server readiness" })).toBeVisible();
     await expect(page.getByRole("heading", { name: "Subtitle sources" })).toBeVisible();
     await expectNoHorizontalOverflow(page);
     expect((await new AxeBuilder({ page }).include("main").analyze()).violations).toEqual([]);
     await page.getByRole("link", { name: "Library", exact: true }).click();
-    const firstHistory = page.locator(".subtitle-file > summary").first();
-    await firstHistory.click();
-    await expect(page.getByText("Coverage", { exact: true }).first()).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Library", exact: true })).toBeVisible();
+    const firstHistory = page.locator(".subtitle-file").first();
+    await firstHistory.locator(":scope > summary").click();
+    await expect(firstHistory).toHaveAttribute("open", "");
+    await expect(firstHistory.getByText("Coverage", { exact: true })).toBeVisible();
     await page.screenshot({ path: testInfo.outputPath(`${viewport.width}-subtitle-readiness-history.png`), fullPage: true });
   }
 });
@@ -158,21 +166,22 @@ test("Subtitle setup guide keeps readiness and recovery visible", async ({ page 
   for (const viewport of supportedViewports) {
     await page.setViewportSize(viewport);
     await page.goto("/onboarding/connection");
-    await expect(page.getByRole("heading", { name: "Define what ready means." })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Connect a provider. Let Kinosail handle the rest." })).toBeVisible();
     await expect(page.getByRole("navigation", { name: "Setup progress" }).getByText("Subtitle plan")).toHaveAttribute("aria-current", "step");
+    await page.getByText("Review language, media scope, and schedule", { exact: true }).click();
     const primaryLanguage = page.getByLabel("Primary language");
     await expect(primaryLanguage).toHaveValue("en");
     expect(await primaryLanguage.locator("option").count()).toBeGreaterThan(187);
     await expect(primaryLanguage.locator("option:checked")).toContainText("English (en)");
     await expect(page.getByRole("group", { name: "Preferred subtitle role" }).locator('input[value="standard"]')).toBeChecked();
-    await expect(page.getByLabel("Configured media folders")).toContainText(/Movies|Entire media mount/);
+    await expect(page.locator("#libraries")).toContainText(/Movies|Entire media mount/);
     await expect(page.getByRole("button", { name: /^Remove/ })).toHaveCount(0);
     const providers = page.locator("#providers");
     await expect(providers).toContainText("Connect a subtitle provider");
     await expect(providers.getByRole("link", { name: "Provider account" }).nth(0)).toHaveAttribute("href", "https://subdl.com/panel");
     await expect(providers.getByRole("link", { name: "Provider account" }).nth(1)).toHaveAttribute("href", "https://dl.opensubtitles.com/en/users/sign_in");
     await expect(providers.getByRole("link", { name: "Provider account" }).nth(2)).toHaveAttribute("href", "https://subsource.net/");
-    await expect(page.getByLabel("Your first scan has a clear contract.").getByText("Not configured", { exact: true })).toBeVisible();
+    await expect(page.getByRole("complementary", { name: "Your subtitle plan" }).getByText("Not configured", { exact: true })).toBeVisible();
     await expect(page.getByRole("link", { name: "Finish and open overview" })).toBeVisible();
     await expectNoHorizontalOverflow(page);
     expect((await new AxeBuilder({ page }).include("main").analyze()).violations).toEqual([]);
@@ -182,10 +191,22 @@ test("Subtitle setup guide keeps readiness and recovery visible", async ({ page 
 
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/onboarding/connection");
+  await page.getByText("Review language, media scope, and schedule", { exact: true }).click();
   await page.getByLabel("Primary language").focus();
   await expect(page.getByLabel("Primary language")).toBeFocused();
   await page.emulateMedia({ reducedMotion: "reduce", forcedColors: "active" });
   await expect(page.getByRole("link", { name: "Finish and open overview" })).toBeVisible();
   await page.screenshot({ path: testInfo.outputPath("subtitle-setup-forced-colors.png"), fullPage: true });
 });
+
+test("Subtitle setup respects saved light and dark themes", async ({ page }) => {
+  for (const theme of ["light", "dark"]) {
+    await page.evaluate(value => localStorage.setItem("kinosail-theme", value), theme);
+    await page.goto("/onboarding/connection");
+    await expect(page.locator("html")).toHaveAttribute("data-theme", theme);
+    await expect(page.locator("html")).toHaveCSS("--bg", theme === "dark" ? "#0b0d0b" : "#f4f8ef");
+    expect((await new AxeBuilder({ page }).include("main").analyze()).violations).toEqual([]);
+  }
+});
+
 }

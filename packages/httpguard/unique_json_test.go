@@ -20,3 +20,20 @@ func TestUniqueJSONRejectsAmbiguousAndUnboundedObjects(t *testing.T) {
 		t.Fatalf("valid request = %+v %v", result, err)
 	}
 }
+
+func TestUniqueJSONNestedArraysAndDepthLimits(t *testing.T) {
+	var target map[string]any
+	for _, raw := range []string{`{"values":[1,{"name":"a"},null]}`, `{"values":[]}`} {
+		if err := DecodeUniqueJSON(strings.NewReader(raw), 4096, &target); err != nil {
+			t.Fatalf("valid nested arrays rejected: %v", err)
+		}
+	}
+	for _, raw := range []string{`{"values":[{"name":"a","NAME":"b"}]}`, `{"values":[`, `{"value":` + strings.Repeat(`[`, 34) + `0` + strings.Repeat(`]`, 34) + `}`} {
+		if DecodeUniqueJSON(strings.NewReader(raw), 4096, &target) == nil {
+			t.Fatalf("invalid nested object accepted: %q", raw)
+		}
+	}
+	if DecodeUniqueJSON(nil, 1, &target) == nil || DecodeUniqueJSON(strings.NewReader(`{}`), 0, &target) == nil {
+		t.Fatal("invalid JSON reader bounds accepted")
+	}
+}

@@ -8,7 +8,7 @@ import (
 )
 
 // WebSurfacesCanUseSpanish preserves localized chrome, account controls and cookie-selected settings.
-func (fixture LocaleWebFixture) WebSurfacesCanUseSpanish(t *testing.T, signIn func(*testing.T, http.Handler, string, string) *http.Cookie, web AuthCookieRequest, settingsMarker string) {
+func (fixture LocaleWebFixture) WebSurfacesCanUseSpanish(t *testing.T, signIn func(*testing.T, http.Handler, string, string) *http.Cookie, web AuthCookieRequest, settingsMarker, protectionMarker string) {
 	t.Parallel()
 	handler := fixture.NewHandler(t, false)
 	home := httptest.NewRecorder()
@@ -30,7 +30,7 @@ func (fixture LocaleWebFixture) WebSurfacesCanUseSpanish(t *testing.T, signIn fu
 	if settings.Code != http.StatusOK || strings.Contains(settings.Body.String(), "OpenSubtítulos") || strings.Contains(settings.Body.String(), "Protected automatically") || strings.Contains(settings.Body.String(), "Browse library") {
 		t.Fatalf("Spanish settings = %d %q", settings.Code, settings.Body.String())
 	}
-	MustContainAll(t, settings.Body.String(), "Configuración del servidor", settingsMarker, "Automática (Recomendado)", "Guardar programación", "Protección automática", "almacenamiento cifrado")
+	MustContainAll(t, settings.Body.String(), "Configuración del servidor", settingsMarker, "Automática (Recomendado)", "Guardar programación", protectionMarker, "almacenamiento cifrado")
 	for path, expected := range map[string][]string{
 		"/settings/backups": {"Copias de seguridad automáticas", "Estado", "Destino", "Acciones", "Recuperación ante desastres"},
 	} {

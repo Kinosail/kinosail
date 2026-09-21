@@ -29,3 +29,16 @@ func TestReadStateFileRejectsReplacementAfterPathCheck(t *testing.T) {
 		t.Fatal("state-file replacement race was accepted")
 	}
 }
+
+func TestReadStateFileRejectsUnreadableOpenedFile(t *testing.T) {
+	path := filepath.Join(t.TempDir(), "settings.json")
+	if err := os.WriteFile(path, []byte(`{"name":"Kinosail"}`), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	data, err := readStateFileWith(path, maxFileSize, os.Lstat, func(name string) (*os.File, error) {
+		return os.OpenFile(name, os.O_WRONLY, 0)
+	})
+	if err == nil || data != nil {
+		t.Fatal("unreadable file entered the backup")
+	}
+}

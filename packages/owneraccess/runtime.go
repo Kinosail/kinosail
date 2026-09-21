@@ -66,14 +66,8 @@ func (m *Manager) startLocked() error {
 	if err = r.dev.IpcSet(fmt.Sprintf("private_key=%s\nlisten_port=%d\n", hex.EncodeToString(decodeKey(m.state.PrivateKey)), Port)); err != nil {
 		return errors.New("could not configure private management")
 	}
-	for _, peer := range m.state.Devices {
-		r.used[peer.Address] = true
-		p, ok := m.config.Profile(peer.ProfileID)
-		if ok && eligible(p) && p.Revision == peer.Revision {
-			if err = r.add(peer); err != nil {
-				return errors.New("could not restore paired devices")
-			}
-		}
+	if err = m.restorePeers(r); err != nil {
+		return err
 	}
 	port := 443
 	if u.Port() != "" {
@@ -290,4 +284,17 @@ func (r *runtime) track(c net.Conn, state http.ConnState) {
 	case http.StateClosed, http.StateHijacked:
 		delete(r.connections, c)
 	}
+}
+
+func (m *Manager) restorePeers(r *runtime) error {
+	for _, peer := range m.state.Devices {
+		r.used[peer.Address] = true
+		p, ok := m.config.Profile(peer.ProfileID)
+		if ok && eligible(p) && p.Revision == peer.Revision {
+			if err := r.add(peer); err != nil {
+				return errors.New("could not restore paired devices")
+			}
+		}
+	}
+	return nil
 }
