@@ -33,7 +33,7 @@ test('rejects unresolved dependencies', t => {
 
 test('rejects mixed CSS and JavaScript', t => {
   const root = fixture(t, '//go:embed static/app.css\nstyle []byte\nscript = joinScripts(style, webassets.Shared)');
-  assert.throws(() => browserScriptBundles(root), /Mixed script composition/);
+  assert.throws(() => browserScriptBundles(root), /Mixed script\/resource composition/);
 });
 
 test('rejects circular composition even without a root bundle', t => {
