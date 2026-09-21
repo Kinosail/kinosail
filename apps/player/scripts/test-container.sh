@@ -2,16 +2,21 @@
 # shellcheck source=scripts/tooling/gates-pause.sh
 source "$(dirname "${BASH_SOURCE[0]}")/../../../scripts/tooling/gates-pause.sh"
 set -euo pipefail
-trap 'if [[ -s "$media_dir/compatible.m3u8" ]]; then sed -n "1,40p" "$media_dir/compatible.m3u8" >&2; fi; if [[ -n "${container:-}" ]]; then "$engine" logs "$container" >&2; fi; echo "container test failed at line $LINENO" >&2' ERR
 
 app="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 repo="$(git -C "$app" rev-parse --show-toplevel)"
 cd "$app"
+browser_projects=""
+if [[ "${KINOSAIL_BROWSER_TEST:-}" == 1 ]]; then
+  browser_projects="$(./scripts/browser-projects.sh)"
+  [[ -n "$browser_projects" ]] || { echo 'no browser projects selected' >&2; exit 2; }
+fi
 image="${KINOSAIL_TEST_IMAGE:-localhost/kinosail:test}"
 container=""
 mcp_jobs=()
 media_dir="$(mktemp -d)"
 mcp_dir="$(mktemp -d)"
+trap 'if [[ -s "$media_dir/compatible.m3u8" ]]; then sed -n "1,40p" "$media_dir/compatible.m3u8" >&2; fi; if [[ -n "${container:-}" ]]; then "$engine" logs "$container" >&2; fi; echo "container test failed at line $LINENO" >&2' ERR
 engine="${CONTAINER_ENGINE:-}"
 suffix="$$-$RANDOM"
 config_volume="kinosail-test-config-$suffix"
@@ -207,7 +212,7 @@ if [[ "${KINOSAIL_BROWSER_TEST:-}" == "1" ]]; then
   while IFS= read -r project; do
     start_fresh_server "$port"
     KINOSAIL_BROWSER_PROJECT="$project" KINOSAIL_E2E_URL="$url" KINOSAIL_E2E_OUTPUT_DIR="$media_dir/playwright-results-$project" pnpm --dir e2e test
-  done < <(./scripts/browser-projects.sh)
+  done <<< "$browser_projects"
   exit
 fi
 curl --fail --silent --insecure --cookie-jar "$media_dir/cookies" --data 'name=Owner&password=test-password&totp=true' "$url/setup" --output "$media_dir/setup"
@@ -226,12 +231,11 @@ code="$(printf '%06d' "$(((16#$chunk & 0x7fffffff) % 1000000))")"
 expect_status 303 --cookie "$media_dir/cookies" --header "Origin: $url" --header "X-Kinosail-CSRF: $csrf" --data "code=$code" "$url/account/mfa/enable"
 mkfifo "$mcp_dir/input"
 exec 9<>"$mcp_dir/input"
-# Keep all twelve relay processes concurrent without twelve remote-engine SSH handshakes.
+# One exec starts all relays concurrently; retain stderr for startup failures.
 # shellcheck disable=SC2016 # Expansion belongs to the container shell.
 "$engine" exec --interactive "$container" sh -c 'exec 3<&0; for index in $(seq 1 12); do kinosail mcp-stdio <&3 & done; wait' <"$mcp_dir/input" >/dev/null 2>"$mcp_dir/relay.log" &
 mcp_jobs+=("$!")
 mcp_relays=0
-# Cold starts initialize localized templates before the command can hand off.
 mcp_deadline=$((SECONDS + 60))
 while ((SECONDS < mcp_deadline)); do
   mcp_relays="$("$engine" exec "$container" sh -c "grep -l '^Name:[[:space:]]*socat$' /proc/[0-9]*/status 2>/dev/null | wc -l" || true)"
@@ -241,8 +245,6 @@ done
 if [[ "$mcp_relays" != 12 ]]; then
   printf 'expected 12 MCP relays, found %s\n' "$mcp_relays" >&2
   cat "$mcp_dir/relay.log" >&2
-  # shellcheck disable=SC2016 # Expansion belongs to the container shell.
-  "$engine" exec "$container" sh -c 'for status in /proc/[0-9]*/status; do head -7 "$status"; done' >&2
   exit 1
 fi
 "$engine" exec "$container" sh -c "for status in \$(grep -l '^Name:[[:space:]]*socat$' /proc/[0-9]*/status); do grep -q '^Threads:[[:space:]]*1$' \"\$status\" || exit 1; done"

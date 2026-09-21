@@ -68,3 +68,31 @@ for (const [name, source, rule] of [
     assert.ok(result.messages.some(message => message.ruleId === rule && message.severity === 2));
   });
 }
+
+
+test('only complete JavaScript scopes are linted and CSS is not JavaScript', () => {
+  const fixture = mkdtempSync(path.join(tmpdir(), 'kinosail-bundle-kinds-'));
+  try {
+    for (const file of ['packages/webassets/webassets.go', 'apps/player/internal/server/assets.go', 'apps/subtitles/internal/server/assets.go']) {
+      mkdirSync(path.dirname(path.join(fixture, file)), { recursive: true });
+      writeFileSync(path.join(fixture, file), `//go:embed static/a.js
+first []byte
+//go:embed static/b.js
+second []byte
+//go:embed static/a.css
+styleA []byte
+//go:embed static/b.css
+styleB []byte
+fragment = joinScripts(first, second)
+complete = joinScripts(fragment, first)
+styles = append(append([]byte(nil), styleA...), styleB...)
+`);
+    }
+    const bundles = browserScriptBundles(fixture);
+    assert.equal(bundles.length, 3);
+    assert.ok(bundles.every(bundle => bundle.name.endsWith('.complete') && bundle.files.length === 3));
+    const file = path.join(fixture, 'apps/player/internal/server/assets.go');
+    writeFileSync(file, readFileSync(file, 'utf8').replace('joinScripts(fragment, first)', 'joinScripts(fragment, styleA)'));
+    assert.throws(() => browserScriptBundles(fixture), /Mixed script/);
+  } finally { rmSync(fixture, { recursive: true, force: true }); }
+});

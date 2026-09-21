@@ -1,0 +1,394 @@
+{
+  "captured_at": "2026-09-20T23:48:26.405301+00:00",
+  "note": "Observational pre-redesign sample; branch contains independent fixes. In-progress jobs are censored, not successful. Elapsed time is not billed cost.",
+  "runs": [
+    {
+      "conclusion": "failure",
+      "createdAt": "2026-09-20T23:06:17Z",
+      "databaseId": 35543646116,
+      "headSha": "375ce3b1e97e37ea9c88cbad262f2644eb4b4582",
+      "status": "completed",
+      "updatedAt": "2026-09-20T23:14:18Z",
+      "workflowName": "Player Hygiene",
+      "jobs": [
+        {
+          "name": "Player Swift client compilation",
+          "conclusion": "success",
+          "startedAt": "2026-09-20T23:06:25Z",
+          "completedAt": "2026-09-20T23:09:21Z",
+          "elapsed_seconds": 176,
+          "elapsed_is_lower_bound": false
+        },
+        {
+          "name": "Player static checks",
+          "conclusion": "success",
+          "startedAt": "2026-09-20T23:06:20Z",
+          "completedAt": "2026-09-20T23:09:30Z",
+          "elapsed_seconds": 190,
+          "elapsed_is_lower_bound": false
+        },
+        {
+          "name": "Player installer, native, and local pipeline checks",
+          "conclusion": "failure",
+          "startedAt": "2026-09-20T23:06:19Z",
+          "completedAt": "2026-09-20T23:10:47Z",
+          "elapsed_seconds": 268,
+          "elapsed_is_lower_bound": false
+        },
+        {
+          "name": "Player security checks",
+          "conclusion": "success",
+          "startedAt": "2026-09-20T23:06:19Z",
+          "completedAt": "2026-09-20T23:06:54Z",
+          "elapsed_seconds": 35,
+          "elapsed_is_lower_bound": false
+        },
+        {
+          "name": "Player race tests",
+          "conclusion": "success",
+          "startedAt": "2026-09-20T23:06:19Z",
+          "completedAt": "2026-09-20T23:11:41Z",
+          "elapsed_seconds": 322,
+          "elapsed_is_lower_bound": false
+        },
+        {
+          "name": "Player system (linux/arm64)",
+          "conclusion": "success",
+          "startedAt": "2026-09-20T23:06:21Z",
+          "completedAt": "2026-09-20T23:08:26Z",
+          "elapsed_seconds": 125,
+          "elapsed_is_lower_bound": false
+        },
+        {
+          "name": "Player system (linux/amd64)",
+          "conclusion": "failure",
+          "startedAt": "2026-09-20T23:07:25Z",
+          "completedAt": "2026-09-20T23:12:28Z",
+          "elapsed_seconds": 303,
+          "elapsed_is_lower_bound": false
+        },
+        {
+          "name": "Player scheduled ${{ matrix.check }}",
+          "conclusion": "skipped",
+          "startedAt": "2026-09-20T23:06:17Z",
+          "completedAt": "2026-09-20T23:06:17Z",
+          "elapsed_seconds": 0,
+          "elapsed_is_lower_bound": false
+        },
+        {
+          "name": "Player checks",
+          "conclusion": "failure",
+          "startedAt": "2026-09-20T23:14:15Z",
+          "completedAt": "2026-09-20T23:14:17Z",
+          "elapsed_seconds": 2,
+          "elapsed_is_lower_bound": false
+        }
+      ],
+      "url": "https://github.com/Kinosail/kinosail/actions/runs/35543646116"
+    },
+    {
+      "conclusion": "failure",
+      "createdAt": "2026-09-20T23:06:17Z",
+      "databaseId": 35543646117,
+      "headSha": "375ce3b1e97e37ea9c88cbad262f2644eb4b4582",
+      "status": "completed",
+      "updatedAt": "2026-09-20T23:15:45Z",
+      "workflowName": "Subtitles Hygiene",
+      "jobs": [
+        {
+          "name": "Subtitles static checks",
+          "conclusion": "success",
+          "startedAt": "2026-09-20T23:06:55Z",
+          "completedAt": "2026-09-20T23:10:23Z",
+          "elapsed_seconds": 208,
+          "elapsed_is_lower_bound": false
+        },
+        {
+          "name": "Subtitles installer, native, and local pipeline checks",
+          "conclusion": "failure",
+          "startedAt": "2026-09-20T23:07:26Z",
+          "completedAt": "2026-09-20T23:12:18Z",
+          "elapsed_seconds": 292,
+          "elapsed_is_lower_bound": false
+        },
+        {
+          "name": "Subtitles system (linux/arm64)",
+          "conclusion": "success",
+          "startedAt": "2026-09-20T23:06:21Z",
+          "completedAt": "2026-09-20T23:08:36Z",
+          "elapsed_seconds": 135,
+          "elapsed_is_lower_bound": false
+        },
+        {
+          "name": "Subtitles race tests",
+          "conclusion": "success",
+          "startedAt": "2026-09-20T23:08:27Z",
+          "completedAt": "2026-09-20T23:15:41Z",
+          "elapsed_seconds": 434,
+          "elapsed_is_lower_bound": false
+        },
+        {
+          "name": "Subtitles system (linux/amd64)",
+          "conclusion": "failure",
+          "startedAt": "2026-09-20T23:07:40Z",
+          "completedAt": "2026-09-20T23:14:01Z",
+          "elapsed_seconds": 381,
+          "elapsed_is_lower_bound": false
+        },
+        {
+          "name": "Subtitles security checks",
+          "conclusion": "success",
+          "startedAt": "2026-09-20T23:09:23Z",
+          "completedAt": "2026-09-20T23:09:50Z",
+          "elapsed_seconds": 27,
+          "elapsed_is_lower_bound": false
+        },
+        {
+          "name": "Subtitles scheduled ${{ matrix.check }}",
+          "conclusion": "skipped",
+          "startedAt": "2026-09-20T23:06:18Z",
+          "completedAt": "2026-09-20T23:06:17Z",
+          "elapsed_seconds": -1,
+          "elapsed_is_lower_bound": false
+        },
+        {
+          "name": "Subtitles checks",
+          "conclusion": "failure",
+          "startedAt": "2026-09-20T23:15:42Z",
+          "completedAt": "2026-09-20T23:15:44Z",
+          "elapsed_seconds": 2,
+          "elapsed_is_lower_bound": false
+        }
+      ],
+      "url": "https://github.com/Kinosail/kinosail/actions/runs/35543646117"
+    },
+    {
+      "conclusion": "success",
+      "createdAt": "2026-09-20T23:06:17Z",
+      "databaseId": 35543646278,
+      "headSha": "375ce3b1e97e37ea9c88cbad262f2644eb4b4582",
+      "status": "completed",
+      "updatedAt": "2026-09-20T23:15:36Z",
+      "workflowName": "Dashboard Hygiene",
+      "jobs": [
+        {
+          "name": "Dashboard runtime and browser checks",
+          "conclusion": "success",
+          "startedAt": "2026-09-20T23:09:32Z",
+          "completedAt": "2026-09-20T23:15:31Z",
+          "elapsed_seconds": 359,
+          "elapsed_is_lower_bound": false
+        },
+        {
+          "name": "Dashboard security checks",
+          "conclusion": "success",
+          "startedAt": "2026-09-20T23:09:46Z",
+          "completedAt": "2026-09-20T23:10:07Z",
+          "elapsed_seconds": 21,
+          "elapsed_is_lower_bound": false
+        },
+        {
+          "name": "Dashboard race tests",
+          "conclusion": "success",
+          "startedAt": "2026-09-20T23:10:22Z",
+          "completedAt": "2026-09-20T23:14:07Z",
+          "elapsed_seconds": 225,
+          "elapsed_is_lower_bound": false
+        },
+        {
+          "name": "Build Dashboard container (linux/arm64)",
+          "conclusion": "success",
+          "startedAt": "2026-09-20T23:08:39Z",
+          "completedAt": "2026-09-20T23:09:44Z",
+          "elapsed_seconds": 65,
+          "elapsed_is_lower_bound": false
+        },
+        {
+          "name": "Dashboard static checks",
+          "conclusion": "success",
+          "startedAt": "2026-09-20T23:09:55Z",
+          "completedAt": "2026-09-20T23:10:31Z",
+          "elapsed_seconds": 36,
+          "elapsed_is_lower_bound": false
+        },
+        {
+          "name": "Build Dashboard container (linux/amd64)",
+          "conclusion": "success",
+          "startedAt": "2026-09-20T23:10:25Z",
+          "completedAt": "2026-09-20T23:11:50Z",
+          "elapsed_seconds": 85,
+          "elapsed_is_lower_bound": false
+        },
+        {
+          "name": "Dashboard checks",
+          "conclusion": "success",
+          "startedAt": "2026-09-20T23:15:33Z",
+          "completedAt": "2026-09-20T23:15:35Z",
+          "elapsed_seconds": 2,
+          "elapsed_is_lower_bound": false
+        }
+      ],
+      "url": "https://github.com/Kinosail/kinosail/actions/runs/35543646278"
+    },
+    {
+      "conclusion": "",
+      "createdAt": "2026-09-20T23:06:17Z",
+      "databaseId": 35543646155,
+      "headSha": "375ce3b1e97e37ea9c88cbad262f2644eb4b4582",
+      "status": "in_progress",
+      "updatedAt": "2026-09-20T23:14:03Z",
+      "workflowName": "Repository Quality",
+      "jobs": [
+        {
+          "name": "Coverage and CRAP policy (player)",
+          "conclusion": "success",
+          "startedAt": "2026-09-20T23:10:50Z",
+          "completedAt": "2026-09-20T23:13:46Z",
+          "elapsed_seconds": 176,
+          "elapsed_is_lower_bound": false
+        },
+        {
+          "name": "Static quality policy",
+          "conclusion": "success",
+          "startedAt": "2026-09-20T23:13:24Z",
+          "completedAt": "2026-09-20T23:18:29Z",
+          "elapsed_seconds": 305,
+          "elapsed_is_lower_bound": false
+        },
+        {
+          "name": "Mutation policy (packages)",
+          "conclusion": "",
+          "startedAt": "2026-09-20T23:10:09Z",
+          "completedAt": "0001-01-01T00:00:00Z",
+          "elapsed_seconds": 2297,
+          "elapsed_is_lower_bound": true
+        },
+        {
+          "name": "Mutation policy (player)",
+          "conclusion": "failure",
+          "startedAt": "2026-09-20T23:10:33Z",
+          "completedAt": "2026-09-20T23:17:34Z",
+          "elapsed_seconds": 421,
+          "elapsed_is_lower_bound": false
+        },
+        {
+          "name": "Mutation policy (subtitles)",
+          "conclusion": "failure",
+          "startedAt": "2026-09-20T23:11:44Z",
+          "completedAt": "2026-09-20T23:27:57Z",
+          "elapsed_seconds": 973,
+          "elapsed_is_lower_bound": false
+        },
+        {
+          "name": "Coverage and CRAP policy (packages)",
+          "conclusion": "failure",
+          "startedAt": "2026-09-20T23:11:52Z",
+          "completedAt": "2026-09-20T23:13:32Z",
+          "elapsed_seconds": 100,
+          "elapsed_is_lower_bound": false
+        },
+        {
+          "name": "Repository tooling checks",
+          "conclusion": "failure",
+          "startedAt": "2026-09-20T23:12:30Z",
+          "completedAt": "2026-09-20T23:13:22Z",
+          "elapsed_seconds": 52,
+          "elapsed_is_lower_bound": false
+        },
+        {
+          "name": "Coverage and CRAP policy (subtitles)",
+          "conclusion": "success",
+          "startedAt": "2026-09-20T23:12:24Z",
+          "completedAt": "2026-09-20T23:15:42Z",
+          "elapsed_seconds": 198,
+          "elapsed_is_lower_bound": false
+        },
+        {
+          "name": "Mutation policy (dashboard)",
+          "conclusion": "",
+          "startedAt": "2026-09-20T23:13:33Z",
+          "completedAt": "0001-01-01T00:00:00Z",
+          "elapsed_seconds": 2093,
+          "elapsed_is_lower_bound": true
+        },
+        {
+          "name": "Coverage and CRAP policy (dashboard)",
+          "conclusion": "success",
+          "startedAt": "2026-09-20T23:14:03Z",
+          "completedAt": "2026-09-20T23:15:25Z",
+          "elapsed_seconds": 82,
+          "elapsed_is_lower_bound": false
+        },
+        {
+          "name": "Shared package race and module checks",
+          "conclusion": "success",
+          "startedAt": "2026-09-20T23:13:47Z",
+          "completedAt": "2026-09-20T23:15:53Z",
+          "elapsed_seconds": 126,
+          "elapsed_is_lower_bound": false
+        }
+      ],
+      "url": "https://github.com/Kinosail/kinosail/actions/runs/35543646155"
+    },
+    {
+      "conclusion": "success",
+      "createdAt": "2026-09-20T23:06:17Z",
+      "databaseId": 35543646125,
+      "headSha": "375ce3b1e97e37ea9c88cbad262f2644eb4b4582",
+      "status": "completed",
+      "updatedAt": "2026-09-20T23:14:14Z",
+      "workflowName": "Security",
+      "jobs": [
+        {
+          "name": "CodeQL (go)",
+          "conclusion": "success",
+          "startedAt": "2026-09-20T23:06:19Z",
+          "completedAt": "2026-09-20T23:10:21Z",
+          "elapsed_seconds": 242,
+          "elapsed_is_lower_bound": false
+        },
+        {
+          "name": "CodeQL (javascript-typescript)",
+          "conclusion": "success",
+          "startedAt": "2026-09-20T23:06:19Z",
+          "completedAt": "2026-09-20T23:07:38Z",
+          "elapsed_seconds": 79,
+          "elapsed_is_lower_bound": false
+        },
+        {
+          "name": "CodeQL (python)",
+          "conclusion": "success",
+          "startedAt": "2026-09-20T23:06:34Z",
+          "completedAt": "2026-09-20T23:07:23Z",
+          "elapsed_seconds": 49,
+          "elapsed_is_lower_bound": false
+        },
+        {
+          "name": "Supply chain security",
+          "conclusion": "success",
+          "startedAt": "2026-09-20T23:06:33Z",
+          "completedAt": "2026-09-20T23:07:25Z",
+          "elapsed_seconds": 52,
+          "elapsed_is_lower_bound": false
+        },
+        {
+          "name": "CodeQL findings policy",
+          "conclusion": "success",
+          "startedAt": "2026-09-20T23:12:20Z",
+          "completedAt": "2026-09-20T23:12:22Z",
+          "elapsed_seconds": 2,
+          "elapsed_is_lower_bound": false
+        },
+        {
+          "name": "Security checks",
+          "conclusion": "success",
+          "startedAt": "2026-09-20T23:14:10Z",
+          "completedAt": "2026-09-20T23:14:13Z",
+          "elapsed_seconds": 3,
+          "elapsed_is_lower_bound": false
+        }
+      ],
+      "url": "https://github.com/Kinosail/kinosail/actions/runs/35543646125"
+    }
+  ]
+}

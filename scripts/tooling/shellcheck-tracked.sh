@@ -8,4 +8,4 @@ while IFS= read -r -d '' file; do
   [[ -f "$file" ]] && files+=("$file")
 done < <(git ls-files -z -- '*.sh')
 
-((${#files[@]} == 0)) || shellcheck "${files[@]}"
+((${#files[@]} == 0)) || shellcheck -x -P "$(git rev-parse --show-toplevel)" -P SCRIPTDIR "${files[@]}"

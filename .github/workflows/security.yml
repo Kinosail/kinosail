@@ -6,17 +6,40 @@ on:
   pull_request:
   schedule:
     - cron: "43 8 * * 1"
+  merge_group:
   workflow_dispatch:
 
 permissions:
   contents: read
 
 concurrency:
-  group: security-${{ github.ref }}
-  cancel-in-progress: true
+  group: security-${{ github.event_name }}-${{ github.event_name == 'pull_request' && github.ref || github.sha }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
+  changes:
+    uses: ./.github/workflows/changes.yml
+
+  secrets:
+    name: Changed-commit secret scan
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e
+        with:
+          go-version-file: go.work
+          cache-dependency-path: "**/go.sum"
+      - run: go install github.com/zricethezav/gitleaks/v8@v8.30.1
+      - run: python3 scripts/ci/secrets.py
+
   codeql:
+    needs: changes
+    if: fromJSON(needs.changes.outputs.plan).go || fromJSON(needs.changes.outputs.plan)['javascript-typescript'] || fromJSON(needs.changes.outputs.plan).python
+    timeout-minutes: 15
     name: CodeQL (${{ matrix.language }})
     runs-on: ubuntu-latest
     permissions:
@@ -25,7 +48,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        language: [go, javascript-typescript, python]
+        language: ${{ fromJSON(needs.changes.outputs.languages) }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
@@ -40,12 +63,15 @@ jobs:
           languages: ${{ matrix.language }}
           build-mode: ${{ matrix.language == 'go' && 'manual' || 'none' }}
           queries: security-extended
-      - name: Build all Go modules for CodeQL
+      - name: Build Go modules for CodeQL
         if: matrix.language == 'go'
         run: go build ./apps/player/... ./apps/subtitles/... ./apps/dashboard/... ./packages/...
       - uses: github/codeql-action/analyze@d8073367669608af8fbcc5f63dd0a0d52bb90cff
 
   supply-chain:
+    needs: changes
+    if: fromJSON(needs.changes.outputs.plan).supply
+    timeout-minutes: 15
     name: Supply chain security
     runs-on: ubuntu-latest
     steps:
@@ -53,18 +79,6 @@ jobs:
         with:
           fetch-depth: 0
           persist-credentials: false
-      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e
-        with:
-          go-version-file: go.work
-          cache: true
-          cache-dependency-path: "**/go.sum"
-      - name: Scan repository history for secrets
-        run: |
-          go install github.com/zricethezav/gitleaks/v8@v8.30.1
-          gitleaks git --redact --no-banner --log-opts=--all
-      - name: Scan shared Go dependencies
-        working-directory: packages
-        run: go run golang.org/x/vuln/cmd/govulncheck@v1.7.0 ./...
       - name: Scan dependencies and configuration
         uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25
         with:
@@ -79,7 +93,8 @@ jobs:
 
   findings:
     name: CodeQL findings policy
-    needs: codeql
+    needs: [changes, codeql]
+    if: fromJSON(needs.changes.outputs.plan).go || fromJSON(needs.changes.outputs.plan)['javascript-typescript'] || fromJSON(needs.changes.outputs.plan).python
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -96,9 +111,12 @@ jobs:
   required:
     name: Security checks
     if: always()
-    needs: [codeql, supply-chain, findings]
+    needs: [changes, secrets, codeql, supply-chain, findings]
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
       - env:
           RESULTS: ${{ toJSON(needs) }}
-        run: jq -e 'all(.[]; .result == "success")' <<<"$RESULTS"
+        run: python3 scripts/ci/required.py security

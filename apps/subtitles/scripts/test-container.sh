@@ -199,12 +199,11 @@ if [[ "${KINOSAIL_BROWSER_TEST:-}" == "1" ]]; then
 fi
 mkfifo "$mcp_dir/input"
 exec 9<>"$mcp_dir/input"
-# Keep all twelve relay processes concurrent without twelve remote-engine SSH handshakes.
+# One exec starts all relays concurrently; retain stderr for startup failures.
 # shellcheck disable=SC2016 # Expansion belongs to the container shell.
 "$engine" exec --interactive "$container" sh -c 'exec 3<&0; for index in $(seq 1 12); do kinosail mcp-stdio <&3 & done; wait' <"$mcp_dir/input" >/dev/null 2>"$mcp_dir/relay.log" &
 mcp_jobs+=("$!")
 mcp_relays=0
-# Cold starts initialize localized templates before the command can hand off.
 mcp_deadline=$((SECONDS + 60))
 while ((SECONDS < mcp_deadline)); do
   mcp_relays="$("$engine" exec "$container" sh -c "grep -l '^Name:[[:space:]]*socat$' /proc/[0-9]*/status 2>/dev/null | wc -l" || true)"
@@ -214,15 +213,13 @@ done
 if [[ "$mcp_relays" != 12 ]]; then
   printf 'expected 12 MCP relays, found %s\n' "$mcp_relays" >&2
   cat "$mcp_dir/relay.log" >&2
-  # shellcheck disable=SC2016 # Expansion belongs to the container shell.
-  "$engine" exec "$container" sh -c 'for status in /proc/[0-9]*/status; do head -7 "$status"; done' >&2
   exit 1
 fi
 "$engine" exec "$container" sh -c "for status in \$(grep -l '^Name:[[:space:]]*socat$' /proc/[0-9]*/status); do grep -q '^Threads:[[:space:]]*1$' \"\$status\" || exit 1; done"
-exec 9>&-
 kill "${mcp_jobs[@]}" >/dev/null 2>&1 || true
 wait "${mcp_jobs[@]}" >/dev/null 2>&1 || true
 mcp_jobs=()
+exec 9>&-
 expect_status 401 --cookie "$media_dir/cookies" --header 'Authorization: Bearer invalid' "$url/api/v1/settings"
 expect_status 403 --cookie "$media_dir/cookies" --request POST --header 'Origin: https://attacker.example' "$url/api/v1/backups"
 expect_status 404 --request POST --header 'Content-Type: application/json' --data '{}' "$url/Sessions/Logout?api_key=$session"

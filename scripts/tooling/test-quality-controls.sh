@@ -57,10 +57,10 @@ done
 require_text .github/workflows/quality.yml 'pull_request:'
 require_text .github/workflows/quality.yml 'branches: [main]'
 require_text .github/workflows/quality.yml 'workflow_call:'
-require_text .github/workflows/quality.yml './scripts/quality/check-static.sh'
-require_text .github/workflows/quality.yml './scripts/quality/check-coverage.sh'
-require_text .github/workflows/quality.yml './scripts/quality/check-crap.sh'
-require_text .github/workflows/quality.yml './scripts/quality/check-mutation.sh "${{ matrix.app }}"'
+require_text .github/workflows/diagnostics.yml './scripts/quality/check-static.sh'
+require_text .github/workflows/quality.yml './scripts/ci/test-go.sh packages'
+require_text .github/workflows/quality.yml 'python3 scripts/ci/required.py repository'
+require_text .github/workflows/diagnostics.yml './scripts/quality/check-mutation.sh "${{ matrix.app }}"'
 
 for app in player subtitles dashboard; do
   workflow=".github/workflows/$app-release.yml"

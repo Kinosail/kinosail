@@ -63,9 +63,9 @@ for app in "${apps[@]}"; do
 
   require_text "$workflow" "working-directory: apps/$app"
   require_text "$workflow" "go-version-file: apps/$app/go.mod"
-  require_text "$workflow" 'context: .'
-  require_text "$workflow" "file: apps/$app/Containerfile"
-  require_text "$workflow" "tags: localhost/kinosail-$app:\${{ github.sha }}"
+  [[ "$app" == dashboard ]] || require_text "$workflow" 'context: .'
+  [[ "$app" == dashboard ]] || require_text "$workflow" "file: apps/$app/Containerfile"
+  [[ "$app" == dashboard ]] || require_text "$workflow" "tags: localhost/kinosail-$app:\${{ github.sha }}"
   require_text "$workflow" "pull-requests: read"
   # shellcheck disable=SC2016 # GitHub expression must remain literal.
   require_text "$workflow" '--new-from-rev=${{'
@@ -91,11 +91,11 @@ for app in "${apps[@]}"; do
       require_text "$workflow" "name: $([[ "$app" == player ]] && printf Player || printf Subtitles) scheduled \${{ matrix.check }}"
       require_text "$workflow" "working-directory: apps/$app/e2e"
       require_text "$workflow" '        check: [performance, fuzz, deadcode]'
-      require_text "$workflow" '            runner: ubuntu-24.04-arm'
-      require_text "$workflow" '          KINOSAIL_BROWSER_MATRIX: full'
+      require_text "$workflow" 'ubuntu-24.04-arm'
+      require_text "$workflow" "fromJSON(needs.changes.outputs.plan).${app}_browsers"
       require_text "$workflow" "          KINOSAIL_TEST_IMAGE: localhost/kinosail-$app:\${{ github.sha }}"
       require_text "$workflow" '      - run: make installer-test native-build local-pipeline-test'
-      require_at_least "$workflow" 3 'sudo apt-get install -y libarchive-tools'
+      require_at_least "$workflow" 2 'sudo apt-get install -y libarchive-tools'
       [[ ! -e "$repo/apps/$app/.github/dependabot.yml" ]] ||
         fail "apps/$app contains an inert nested Dependabot configuration"
       [[ ! -e "$repo/apps/$app/.github/pull_request_template.md" ]] ||
