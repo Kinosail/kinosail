@@ -84,3 +84,6 @@ h1{font-size:clamp(42px,9vw,68px);letter-spacing:-.055em}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
 
 .questions{padding-top:80px;max-width:1000px}.questions details{border-bottom:1px solid var(--line);padding-block:22px}.questions summary{cursor:pointer;font-size:20px;font-weight:650}.questions p{max-width:760px;color:#bac0b6;margin:20px 0 0}.questions code{overflow-wrap:anywhere}.questions summary:focus-visible{outline:3px solid var(--lime);outline-offset:5px}
+/* The family sail gives the opening room a little depth; guides stay plain. */
+body{background:linear-gradient(180deg,rgba(11,13,11,.48),var(--bg) 1000px),url('../images/cinema-sail.webp') right top/auto 1100px no-repeat,var(--bg)}
+@media(prefers-contrast:more),(prefers-reduced-transparency:reduce),(forced-colors:active){body{background:var(--bg)}}
