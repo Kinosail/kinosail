@@ -29,6 +29,7 @@ jobs:
           persist-credentials: false
       - run: test ! -e .gates-disabled
       - run: make max-loc
+      - run: python3 scripts/quality/check-dependency-integrity.py --browser-only
       - run: python3 -m unittest discover -s scripts/ci -p 'test_*.py'
       - run: ./scripts/ci/validate-workflows.sh
       - run: ./scripts/ci/check-source-tools.sh

@@ -69,7 +69,7 @@ type Checker struct {
 
 // NewChecker validates its adapters before creating a checker.
 func NewChecker(config CheckerConfig) (*Checker, error) {
-	if config.Source == nil || config.Automatic == nil || config.SaveAutomatic == nil || config.CurrentVersion == "" || len(config.CurrentVersion) > 64 || strings.ContainsAny(config.CurrentVersion, "\r\n") {
+	if config.Source == nil || config.Automatic == nil || config.SaveAutomatic == nil || config.CurrentVersion == "" || len(config.CurrentVersion) > 64 || strings.HasPrefix(config.CurrentVersion, "sha-") && !commitVersion(config.CurrentVersion) || strings.ContainsAny(config.CurrentVersion, "\r\n") {
 		return nil, errors.New("invalid update checker configuration")
 	}
 	return &Checker{
@@ -86,6 +86,10 @@ func (checker *Checker) View() Status {
 	status := checker.status
 	checker.mu.RUnlock()
 	status.Automatic = checker.automatic()
+	if commitVersion(checker.current) {
+		status.State = "container-managed"
+		status.Automatic = false
+	}
 	if checker.manager != nil {
 		status.Manager, _ = checker.manager.View(checker.current)
 	}
@@ -111,6 +115,9 @@ func (checker *Checker) SetAutomatic(enabled bool) error {
 
 // Check refreshes the public release state.
 func (checker *Checker) Check(ctx context.Context) Status {
+	if commitVersion(checker.current) {
+		return checker.View()
+	}
 	checker.checkMu.Lock()
 	defer checker.checkMu.Unlock()
 	checker.mu.RLock()
@@ -225,4 +232,9 @@ func releaseVersion(value string) ([3]uint64, bool) {
 		result[index] = parsed
 	}
 	return result, true
+}
+
+// Commit images are updated by the container deployment, never by tag releases.
+func commitVersion(value string) bool {
+	return len(value) == 44 && strings.HasPrefix(value, "sha-") && strings.Trim(value[4:], "0123456789abcdef") == ""
 }

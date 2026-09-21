@@ -239,7 +239,7 @@ jobs:
         if: matrix.platform == 'linux/amd64'
         env:
           CONTAINER_ENGINE: docker
-          KINOSAIL_BROWSER_MATRIX: ${{ fromJSON(needs.changes.outputs.plan).player_browsers && 'full' || 'chromium' }}
+          KINOSAIL_BROWSER_MATRIX: ${{ fromJSON(needs.changes.outputs.plan).player_browsers && 'full' || '' }}
           KINOSAIL_BROWSER_WORKERS: "3"
           KINOSAIL_PLATFORM: ${{ matrix.platform }}
           KINOSAIL_TEST_IMAGE: localhost/kinosail-player:${{ github.sha }}

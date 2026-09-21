@@ -62,6 +62,9 @@ curl --fail --silent --max-time 2 "$url/healthz" | grep --quiet '"status":"ok"'
 curl --fail --silent --max-time 2 "$url/setup" | grep --quiet 'Kinosail Dashboard'
 
 "$engine" restart "$container" >/dev/null
+# Docker may assign a new ephemeral host port on restart.
+port="$($engine port "$container" 38400/tcp)"
+url="http://127.0.0.1:${port##*:}"
 for _ in {1..120}; do
   curl --fail --silent --max-time 2 "$url/healthz" >/dev/null 2>&1 && break
   sleep 0.25

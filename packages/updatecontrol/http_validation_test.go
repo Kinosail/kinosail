@@ -34,7 +34,8 @@ func TestUpdateStatusTextCoversEveryState(t *testing.T) {
 	t.Parallel()
 	for state, expected := range map[string]string{
 		"available": "v1.2.3 is available", "current": "Kinosail is current", "unavailable": "The last check could not reach GitHub",
-		"no-release": "No public Kinosail release is available yet", "not-checked": "No update check has run",
+		"container-managed": "Update this installation by deploying a newer Kinosail container.",
+		"no-release":        "No public Kinosail release is available yet", "not-checked": "No update check has run",
 	} {
 		if actual := StatusText(Status{State: state, LatestVersion: "v1.2.3"}); actual != expected {
 			t.Fatalf("state %q text = %q, want %q", state, actual, expected)

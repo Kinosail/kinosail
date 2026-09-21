@@ -72,7 +72,7 @@ Reconsider a bounded, changed-line mutation PR lane after measuring useful findi
 
 ### 5. Keep distinct security checks, avoid repeated scope
 
-Every change gets a redacted secret scan over all introduced commits, including deleted secrets; scheduled runs audit history. CodeQL runs only affected languages, with manual Go extraction using the repository's Go version. Dependency/configuration changes get Trivy and PR dependency review. Selected Go modules get `govulncheck`; lint and SAST detect different classes of problems.
+Every change verifies the reviewed browser dependency hashes without installing Go modules, and gets a redacted secret scan over all introduced commits, including deleted secrets; scheduled runs audit history. CodeQL runs only affected languages, with manual Go extraction using the repository's Go version. Dependency/configuration changes get Trivy and PR dependency review. Selected Go modules get `govulncheck`; lint and SAST detect different classes of problems.
 
 Immutable action pins, read-only PR jobs, enabled-gate assertions, and exact-main publication validation remain. Changing the workflow policy cannot silently disable its own required aggregator.
 
@@ -82,11 +82,21 @@ Repository Quality hands its validated plan to reusable delivery only for a prot
 
 Each selected app builds on native AMD64/ARM64 runners with shared BuildKit caches. The production candidate is tested and scanned by digest, then the two architectures are assembled, signed, and attested. Promotion reuses the assembled digest; it does not rebuild the artifact. Every completed publication gets `sha-<full-commit>`; digests are the immutable deployment/rollback identity. `main` and `latest` are moving production tags.
 
-Production-tag changes are serialized per app. Before advancing them, compare intervening main changes: an older run cannot supersede newer relevant code, while later documentation or another independent app's changes do not strand this app. Commit-image publication happens before this serialized step, so replacing an obsolete pending promotion does not discard its deployable artifact. GitHub's default concurrency queue retains only one pending job; its newer `queue: max` feature is currently rejected by the latest released actionlint (1.7.12), so the implementation uses this compatible separation rather than suppressing workflow validation.
+Production-tag changes are serialized per app with `queue: max` and `cancel-in-progress: false`. Before advancing them, compare intervening main changes: an older run cannot supersede newer relevant code, while later documentation or another independent app's changes do not strand this app. Commit-image publication happens before the serialized step. [GitHub documents](https://docs.github.com/en/actions/how-tos/write-workflows/choose-when-workflows-run/control-workflow-concurrency) that the default single pending slot is replaced by arrival order, not commit order; a slower old build can otherwise cancel a newer promotion. `queue: max` retains up to 100 pending jobs; overflow remains an explicit failed/cancelled delivery boundary.
 
-No version tag or GitHub release is required. Existing optional tagged installer/native-release workflows remain available to avoid breaking consumers, but they are not the normal container delivery path. The local Nox watcher remains separate; publishing a container does not prove the live host deployed it or passed TLS/device checks.
+Released actionlint 1.7.12 does not yet recognize `queue`; [upstream support PR #654](https://github.com/rhysd/actionlint/pull/654) was still unmerged at inspection. `.github/actionlint.yaml` allows only that exact unknown-property diagnostic in `delivery.yml`; the always-required runtime contract test independently asserts the exact supported concurrency block, including `queue: max` and cancellation disabled. Other actionlint errors still fail. Remove this narrow schema compatibility exception when upstream support ships.
+
+No version tag or GitHub release is required. Existing optional tagged installer/native-release workflows remain available to avoid breaking consumers, but they publish version tags only and cannot overwrite `main` or `latest`. The local Nox watcher remains separate; publishing a container does not prove the live host deployed it or passed TLS/device checks.
 
 Evidence: [DORA continuous delivery](https://dora.dev/capabilities/continuous-delivery/) supports small, automated, continuously deployable changes; its research identifies delivery speed and reliability together, rather than treating release frequency alone as success. [Docker's multi-platform guidance](https://docs.docker.com/build/ci/github-actions/multi-platform/) supports distributing architectures across native runners. [SLSA 1.2](https://slsa.dev/spec/v1.2/) and [GitHub attestations](https://docs.github.com/en/actions/concepts/security/artifact-attestations) support verifying artifact provenance. This implementation does not claim a formally audited SLSA level.
+
+### 7. Preserve the consumer trust contract
+
+Continuous-image installers verify exactly `https://github.com/Kinosail/kinosail/.github/workflows/delivery.yml@refs/heads/main`, with the GitHub OIDC issuer. [Fulcio's OIDC specification](https://github.com/sigstore/fulcio/blob/main/docs/oidc.md) binds reusable workflow identities to `job_workflow_ref`. Delivery verifies that same identity immediately after signing, before publishing commit or production tags. Explicit version installs retain their scoped version-workflow identity.
+
+Migration: already downloaded installer scripts/archives must be refreshed before updating to the continuous `latest` channel; source changes cannot update existing copies. Commit tags and digests can be deployed directly through the container engine; the installer version selector still accepts `latest` or semantic versions, not commit tags. No new tagged installer release is claimed here.
+
+Continuous images embed `sha-<40 lowercase hex>` and report `container-managed` through the update API. They do not query or install versioned GitHub releases, and do not falsely claim to be current. Deploy the next signed image to update them. Native release checking remains version-based. Native-only changes currently compile the client; distributing signed Apple applications still requires the native distribution process.
 
 ## Evaluation and future changes
 
@@ -101,3 +111,27 @@ Revisit selection when app imports/build inputs change or a scheduled run catche
 - Focused selection/aggregation/publication tests cover malformed and oversized inputs, missing objects, renames/deletions, more than 300 changed files, unusual filenames, merge-base behavior, missing/cancelled/skipped jobs, exact-commit authorization, and stale promotion.
 - Local workflow validation and actionlint are required before publication. All new source and test files remain below 300 lines.
 - Hosted CI results, observed timing, merge ancestry, published digests, and any unresolved deployment boundary will be recorded after the PR run. No speedup or live production deployment is claimed from local tests alone.
+
+
+### First hosted rollout (before the follow-up fixes)
+
+[Raw rollout evidence](ci-rollout-first-2026-09-20.json) records the head SHA, run/job IDs, URLs, timestamps, and conclusions. This sample is **failed**, not an accepted performance result. The source was main `ae618325cb4d16351cbf01890106ed2dbdb42894` plus the CI change at `146c55d4`.
+
+- [Security](https://github.com/Kinosail/kinosail/actions/runs/35546041347) passed, including Go/JavaScript/Python CodeQL, findings policy, secret scanning, and supply-chain checks. Repository policy/CI contracts and Swift compilation also passed.
+- [Player](https://github.com/Kinosail/kinosail/actions/runs/35546041335) had 16 failing top-level Go tests; [Subtitles](https://github.com/Kinosail/kinosail/actions/runs/35546041327) had 49. These application source/tests were unchanged from the base, including update-adapter, authentication, API, playback, and presentation contracts. The combined race jobs took 7m08s and 8m15s respectively, including setup; these are failed-run timings.
+- [Dashboard](https://github.com/Kinosail/kinosail/actions/runs/35546041326) passed its Go tests but failed the unchanged 100% coverage requirement at 99.2%. Coverage floors were not lowered to hide this result.
+- [Shared packages](https://github.com/Kinosail/kinosail/actions/runs/35546041328/job/106172017099) failed existing identity/session, safe-return, and WebSocket tests. Their failure paths remain on the merge gate.
+- The first run also exposed stale or incorrect harness contracts: CSS parsed as JavaScript, partial JavaScript scopes, gateway service count, installer signing expectations, Docker restart port reuse, and a five-second MCP startup assumption. The follow-up repairs these contracts while retaining their observable assertions. MCP startup is now bounded at 60 seconds and captures relay stderr; success still requires twelve single-thread relay processes.
+- Local full tooling validation remains blocked by stale generated architecture-explorer links (`apps/player/internal/server/home_assistant_http.go` no longer exists). The separate remote-setup fixture also fails locally. These are recorded rather than silently skipped.
+
+Independent review caught four missing safety details and two delivery/consumer edge cases: invalid Chromium-only configuration could skip all browsers; Dashboard swallowed project arguments; old version workflows could overwrite latest; app-local vendor edits could miss integrity validation; pending promotions could be cancelled in arrival order; and commit versions could falsely report current. Each now has a focused regression or workflow contract check. Hosted publication, OCI signatures, promotion queue behavior, live deployment, and physical devices remain unverified until protected main can pass.
+
+
+### Follow-up local verification
+
+- Passed: 33 CI selection/aggregation/delivery/runtime-contract tests; 5 dependency-integrity tests; 12 browser-lint harness tests; browser lint (zero errors, two pre-existing unused-variable warnings); full `updatecontrol` race suite; changed `updatecontrol` lint; repository shellcheck; actionlint with the documented queue compatibility assertion; workflow boundary validation; `make max-loc`; and `git diff --check`.
+- Player and Subtitles single-container boundary checks and direct `test-installer.sh` tests passed. The enclosing `make installer-test` still fails in the unchanged `test-remote-setup.sh` fixture.
+- The required Player/Subtitles `make verify-changed` commands were attempted with working-tree changes included. Shell/installer checks passed; full shared-package lint blocked them with 116 existing findings. The changed update checker itself reports zero lint issues. Dashboard's initial local `verify-changed` ran its Go tests and exposed the shared shell-source lookup issue, now repaired; the hosted 100% coverage gate remains red.
+- An independent read-only review verified the six safety/compatibility fixes, reran CI/integrity tests and actionlint, and found no further concrete blocker in those deltas. This does not substitute for successful app suites or hosted delivery.
+
+PR: [#41](https://github.com/Kinosail/kinosail/pull/41). Keep branch protection and publication prerequisites enabled. Do not merge or claim production delivery while any required check fails. Retain the task branch/worktree if these unrelated repair blockers prevent safe integration; the primary working tree contains separate unfinished work and must not be overwritten.

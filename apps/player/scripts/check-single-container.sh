@@ -9,8 +9,11 @@ for file in compose.yaml compose.release.yaml compose.test.yaml compose.remote-h
     inside && /^[^ ]/ { inside = 0 }
     inside && /^  [A-Za-z0-9_-]+:$/ { sub(/^  /, ""); sub(/:$/, ""); print }
   ' "$file")"
-  if [[ "$services" != "kinosail" ]]; then
-    printf '%s must define exactly one service named kinosail; found: %s\n' "$file" "${services:-none}" >&2
+  expected="kinosail"
+  # HTTPS has one stateless gateway alongside the application.
+  if [[ "$file" == compose.remote-https.yaml ]]; then expected=$'kinosail\npublic-gateway'; fi
+  if [[ "$services" != "$expected" ]]; then
+    printf '%s has unexpected services; found: %s\n' "$file" "${services:-none}" >&2
     exit 1
   fi
 done

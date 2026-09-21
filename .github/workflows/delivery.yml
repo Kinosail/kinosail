@@ -155,7 +155,9 @@ jobs:
       - name: Sign tested image digest
         env:
           DIGEST: ${{ steps.manifest.outputs.digest }}
-        run: cosign sign --yes "$IMAGE@$DIGEST"
+        run: |
+          cosign sign --yes "$IMAGE@$DIGEST"
+          cosign verify --certificate-identity https://github.com/Kinosail/kinosail/.github/workflows/delivery.yml@refs/heads/main --certificate-oidc-issuer https://token.actions.githubusercontent.com "$IMAGE@$DIGEST"
       - name: Attest image provenance
         uses: actions/attest@1e69f48acb82d1966a394da916b4c1698aa569d6
         with:
@@ -180,6 +182,7 @@ jobs:
     concurrency:
       group: container-promotion-${{ matrix.app }}
       cancel-in-progress: false
+      queue: max
     permissions:
       contents: read
       packages: write

@@ -5,14 +5,17 @@ import path from 'node:path';
 export function browserScriptBundles(repo) {
   const declarations = new Map();
   const bundles = [];
+  const resources = new Set();
   for (const [namespace, file] of [
     ['webassets', 'packages/webassets/webassets.go'],
     ['player', 'apps/player/internal/server/assets.go'],
     ['subtitles', 'apps/subtitles/internal/server/assets.go'],
   ]) {
     const source = readFileSync(path.join(repo, file), 'utf8');
-    for (const [, asset, name] of source.matchAll(/\/\/go:embed (\S+\.js)\s+(\w+) \[\]byte/g)) {
-      declarations.set(`${namespace}.${name}`, [path.join(path.dirname(file), asset)]);
+    for (const [, asset, name] of source.matchAll(/\/\/go:embed (\S+)\s+(\w+) \[\]byte/g)) {
+      const resource = path.join(path.dirname(file), asset);
+      resources.add(resource);
+      declarations.set(`${namespace}.${name}`, [resource]);
     }
     for (const [, name, expression] of source.matchAll(/^\s*(?:var )?(\w+)\s*=\s*(.+)$/gm)) {
       let dependencies;
@@ -29,11 +32,17 @@ export function browserScriptBundles(repo) {
     }
   }
   function resolve(key, visiting = new Set()) {
-    if (key.endsWith('.js')) return [key];
+    if (resources.has(key)) return [key];
     if (visiting.has(key)) throw new Error(`Circular script composition: ${key}`);
     const values = declarations.get(key);
     if (!values) throw new Error(`Unknown script composition: ${key}`);
     return values.flatMap(value => resolve(value, new Set([...visiting, key])));
   }
-  return bundles.map(name => ({ name, files: resolve(name) }));
+  const referenced = new Set([...declarations.values()].flat());
+  return bundles.flatMap(name => {
+    const files = resolve(name);
+    if (files.every(file => !file.endsWith('.js'))) return [];
+    if (files.some(file => !file.endsWith('.js'))) throw new Error(`Mixed script/resource composition: ${name}`);
+    return referenced.has(name) ? [] : [{ name, files }];
+  });
 }

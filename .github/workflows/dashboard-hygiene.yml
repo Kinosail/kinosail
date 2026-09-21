@@ -125,7 +125,7 @@ jobs:
       - run: |
           args=()
           [[ "$PROJECT" == full ]] || args+=(--project=chromium)
-          pnpm --dir apps/dashboard/e2e test "${args[@]}"
+          pnpm --dir apps/dashboard/e2e exec playwright test "${args[@]}"
         env:
           CI: "1"
           PROJECT: ${{ fromJSON(needs.changes.outputs.plan).dashboard_browsers && 'full' || 'chromium' }}
