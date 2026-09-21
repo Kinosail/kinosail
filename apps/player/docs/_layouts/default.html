@@ -16,11 +16,12 @@
     <script defer src="{{ '/assets/js/docs.js' | relative_url }}"></script>
     <script>addEventListener('DOMContentLoaded',()=>document.querySelector('.skip-link')?.addEventListener('click',()=>requestAnimationFrame(()=>document.querySelector('#main-content')?.focus())))</script>
     <title>{{ page.title }} · {{ site.title }}</title>
-  </head>
+  {% include seo.html %}
+</head>
   <body>
     <a class="skip-link" href="#main-content">Skip to content</a>
     <header class="site-header">
-      <a class="brand" href="{{ site.docs_root }}/" aria-label="Kinosail documentation home">
+      <a class="brand" href="{{ site.docs_root }}/docs/" aria-label="Kinosail documentation home">
         <img src="{{ '/assets/images/kinosail-mark.svg' | relative_url }}" alt="">
         <span>Kinosail <b>Player Docs</b></span>
       </a>
@@ -56,7 +57,7 @@
         {% unless page.url == '/' %}
         <nav class="breadcrumbs" aria-label="Breadcrumb">
           <ol>
-            <li><a href="{{ '/' | relative_url }}">Docs</a></li>
+            <li><a href="{{ '/docs/' | relative_url }}">Docs</a></li>
             {% for group in site.data.navigation %}{% if group.title == page.section %}
             <li><a href="{{ group.url | relative_url }}">{{ group.title }}</a></li>
             {% endif %}{% endfor %}
