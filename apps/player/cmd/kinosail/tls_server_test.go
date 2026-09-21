@@ -13,7 +13,8 @@ import (
 	"time"
 )
 
-const testServerStartTimeout = 30 * time.Second
+// Race-instrumented template initialization competes with package tests on hosted runners.
+const testServerStartTimeout = 90 * time.Second
 
 func TestCommandLineServesCompatibleHTTPSByDefault(t *testing.T) { //nolint:cyclop,funlen,gocognit // One process-level scenario verifies the complete externally visible TLS policy.
 	address := unusedAddress(t)
