@@ -94,6 +94,23 @@ class SelectionTests(unittest.TestCase):
             with self.assertRaises(subprocess.CalledProcessError):
                 changed_paths("push", {"before": "a" * 40}, "b" * 40)
 
+    def test_selection_emits_swift_separately_from_linux_language_matrix(self):
+        for paths, expected in ((["apps/player/apps/native/Sources/App.swift"], []),
+                                (["scripts/quality/pnpm-lock.yaml"], ["javascript-typescript"]),
+                                (None, ["go", "javascript-typescript", "python", "actions"])):
+            with self.subTest(paths=paths), tempfile.TemporaryDirectory() as directory:
+                event = Path(directory) / "event.json"
+                output = Path(directory) / "output"
+                event.write_text("{}")
+                env = {"GITHUB_EVENT_PATH": str(event), "GITHUB_OUTPUT": str(output),
+                       "GITHUB_STEP_SUMMARY": "", "GITHUB_EVENT_NAME": "pull_request",
+                       "GITHUB_SHA": "a" * 40, "CI_FULL": "false"}
+                with patch.dict(os.environ, env), patch("affected.changed_paths", return_value=paths):
+                    main()
+                values = dict(line.split("=", 1) for line in output.read_text().splitlines())
+                self.assertEqual(json.loads(values["languages"]), expected)
+                self.assertEqual(json.loads(values["plan"])["swift"], paths is None or "native" in paths[0])
+
     def test_rejected_cli_event_has_no_output_side_effects(self):
         with tempfile.TemporaryDirectory() as directory:
             event = Path(directory) / "event.json"
