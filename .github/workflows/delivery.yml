@@ -6,6 +6,9 @@ on:
       plan:
         required: true
         type: string
+      results:
+        required: true
+        type: string
 
 permissions:
   contents: read
@@ -14,10 +17,9 @@ jobs:
   verified:
     name: Require all CI for this main commit
     runs-on: ubuntu-24.04
-    timeout-minutes: 70
+    timeout-minutes: 3
     permissions:
       contents: read
-      actions: read
     outputs:
       apps: ${{ steps.verify.outputs.apps }}
     steps:
@@ -29,7 +31,7 @@ jobs:
         run: python3 scripts/ci/delivery.py
         env:
           CI_PLAN: ${{ inputs.plan }}
-          GH_TOKEN: ${{ github.token }}
+          RESULTS: ${{ inputs.results }}
 
   images:
     name: Build, test, and scan ${{ matrix.app }} (${{ matrix.arch }})
@@ -167,7 +169,7 @@ jobs:
       - name: Publish deployable commit tag
         env:
           DIGEST: ${{ steps.manifest.outputs.digest }}
-          GH_TOKEN: ${{ github.token }}
+          RESULTS: ${{ inputs.results }}
           APP: ${{ matrix.app }}
         run: |
           docker buildx imagetools create --tag "$IMAGE:sha-$GITHUB_SHA" "$IMAGE@$DIGEST"

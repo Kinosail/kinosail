@@ -18,8 +18,32 @@ class WorkflowSecurityTests(unittest.TestCase):
                 self.assertNotIn('enabled=false', source)
                 self.assertIn('    if: always()', source)
                 self.assertIn('python3 scripts/ci/required.py ', source)
-                self.assertIn('uses: ./.github/workflows/changes.yml', source)
-                self.assertIn('needs: [changes,', source)
+                if name == 'quality':
+                    self.assertIn('uses: ./.github/workflows/changes.yml', source)
+                    self.assertIn('needs: [changes,', source)
+                else:
+                    self.assertNotIn('uses: ./.github/workflows/changes.yml', source)
+                    self.assertIn('CI_PLAN: ${{ inputs.plan }}', source)
+                    self.assertIn('  workflow_call:', source)
+                    for trigger in ('  push:', '  pull_request:', '  schedule:', '  workflow_dispatch:'):
+                        self.assertNotIn("\n" + trigger, source)
+
+    def test_one_graph_keeps_protected_names_and_all_publication_dependencies(self):
+        source = (WORKFLOWS / 'quality.yml').read_text()
+        for scope in ('player', 'subtitles', 'dashboard', 'security'):
+            block = re.split(r'\n  [a-z][a-z-]*:\n', source.split(f'  {scope}-required:\n', 1)[1])[0]
+            self.assertIn(f'name: {scope.title()} checks', block)
+            self.assertIn('if: always()', block)
+            self.assertIn(f'needs: [changes, {scope}]', block)
+            self.assertIn(f'RESULT: ${{{{ needs.{scope}.result }}}}', block)
+            self.assertIn('test "$SELECTION" = success && test "$RESULT" = success', block)
+        self.assertEqual(source.count('uses: ./.github/workflows/changes.yml'), 1)
+        self.assertIn('results: ${{ toJSON(needs) }}', source)
+        self.assertIn('  schedule:', source)
+        delivery = (WORKFLOWS / 'delivery.yml').read_text()
+        self.assertIn('RESULTS: ${{ inputs.results }}', delivery)
+        self.assertIn('timeout-minutes: 3', delivery)
+        self.assertNotIn('GH_TOKEN:', delivery)
 
     def test_invalid_quality_scope_has_no_side_effects(self):
         import os
@@ -55,7 +79,7 @@ class WorkflowSecurityTests(unittest.TestCase):
                     if path.name == 'quality.yml':
                         delivery = source.split('  delivery:\n')[1]
                         self.assertIn("github.event_name == 'push' && github.ref == 'refs/heads/main'", delivery)
-                        self.assertIn('needs: [changes, required]', delivery)
+                        self.assertIn('needs: [changes, required, player-required, subtitles-required, dashboard-required, security-required]', delivery)
                         self.assertNotIn('packages: write', source.split('  delivery:\n')[0])
 
     def test_release_requires_main_quality_and_security_before_promotion(self):
@@ -65,7 +89,7 @@ class WorkflowSecurityTests(unittest.TestCase):
                 self.assertIn('needs: quality', source)
                 self.assertIn('test ! -e ../../.gates-disabled', source)
                 self.assertIn('git merge-base --is-ancestor "$commit" origin/main', source)
-                self.assertIn('security.yml; do', source)
+                self.assertIn('for workflow in quality.yml; do', source)
                 self.assertIn('needs: [quality, images]', source)
                 self.assertIn('runner: ubuntu-24.04-arm', source)
                 self.assertNotIn('setup-qemu-action', source)

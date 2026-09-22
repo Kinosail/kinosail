@@ -1,6 +1,6 @@
 # Kinosail CI/CD decisions — 2026-09-20
 
-Status: implementation under validation. Hosted results and publication evidence must be appended before calling this delivered.
+Status: September 21 orchestration revision under validation. Earlier observations below are historical; the final section describes the current graph and records fresh evidence.
 
 ## Objective and invariants
 
@@ -173,3 +173,20 @@ The same head's [Player trace](https://github.com/Kinosail/kinosail/actions/runs
 Head `3ee5cdcf` passed four required gates and all 203 Chromium cases. Its [Firefox trace](https://github.com/Kinosail/kinosail/actions/runs/35555006010) showed the test starting a new navigation 8.4 ms after Cancel reached Home, interrupting the outgoing theme and navigation scripts with `NS_BINDING_ABORTED`; both assets returned 200 on the replacement page. The journey now waits for Home's load and checks its heading before continuing. This verifies the Cancel destination and avoids test-induced cancellation; the service-worker strategy and strict browser-error assertion stay unchanged.
 
 The accepted PR run completed all five gates in 8m17s; exact timings and merge proof are recorded in [PR #42](https://github.com/Kinosail/kinosail/pull/42). Main `8aa9720b` also passed its app suites, but [release image scanning](https://github.com/Kinosail/kinosail/actions/runs/35556084496/job/106201997737) found 13 fixable OS vulnerabilities (10 high, three critical) in Subtitles. Player and Dashboard passed on both architectures. Subtitles omitted the Debian base-package upgrade already present in Player. Apply that upgrade in its final runtime image, and scan both apps' already-built native images before their integration tests with the same pinned Trivy action and release policy. The failing scan engine took 5.2 seconds, and its complete action took about 12 seconds including cache restoration: catching these findings before merge is worth that measured cost and requires no extra image build. Keep the post-build release scan because the published digest is the delivery authority. No source-test coverage or severity floor is reduced.
+
+
+## September 21: one graph, explicit publication dependencies
+
+The next observed main push (`12d813f87a109b402c53789344e0a00c303459ca`) again showed why separate workflows were the wrong orchestration boundary. [Repository CI](https://github.com/Kinosail/kinosail/actions/runs/35660487392) passed its required repository job at 22:06:02 UTC, but a delivery runner then polled sibling workflows until 23:07:28. [Security](https://github.com/Kinosail/kinosail/actions/runs/35660487407) was cancelled during the combined Swift build. The previous successful Swift scan had occupied one runner for 39m30s. These are observations, not a controlled speedup benchmark or a diagnosis of the compiler stall.
+
+`quality.yml` now owns PR, main-push, merge-group, manual, and weekly execution. It computes one plan, calls the three app suites and Security with that plan, and publishes five root jobs with the existing protected names. The reusable suites retain their exact job-inventory validation. Root gates reject unsuccessful selection or reusable execution. Branch protection remains unchanged.
+
+Delivery is a direct dependent of all five gates. It checks the complete successful dependency inventory, the exact shared plan, the main-push context, and fetched-main ancestry before emitting app targets. It no longer invokes the Actions API or keeps a runner alive waiting for other workflows. This follows GitHub's [job dependency semantics](https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-syntax#jobsjob_idneeds) and [same-commit reusable workflow contract](https://docs.github.com/en/actions/how-tos/reuse-automations/reuse-workflows). Read-only checks remain separate from main-only publication permissions.
+
+Swift analysis is split into iOS and tvOS jobs with separate analysis categories. Each performs a clean, single-architecture build with one compiler job and disabled compile caches, retaining both platform-specific code paths. Build and resource logs are retained on failure. The 45-minute per-platform bound replaces one serial 60-minute scan. Splitting the work and bounding concurrency is a response to the observed stall; hosted runs must establish whether it resolves it. GitHub recommends [single-architecture standard Xcode builds for Swift analysis](https://docs.github.com/en/code-security/reference/code-scanning/codeql/build-options-for-compiled-languages#customizing-swift-compilation-in-a-codeql-analysis-workflow).
+
+The two explicit shared JavaScript lint dependency files select tooling, browser lint, supply-chain review, and JavaScript analysis. They cannot change product runtime dependencies or native sources. Unknown quality-tool inputs still select every consumer. Whole-app Go suites, races, coverage floors, container checks, and selected browser matrices remain intact; flaky tests still fail.
+
+Optional version-tag releases now require the successful unified main run and publish only version aliases. Only serialized continuous delivery may advance `main`/`latest`; an older version tag cannot replace a newer production image. Signed image digests, both container architectures, and deployment-watcher separation are retained.
+
+Validation in progress: 42 focused CI tests, actionlint, changed-shell ShellCheck, workflow boundary validation, and the 300-line cap passed locally. Player/Subtitles `verify-changed` found no app-source changes. Hosted CI, signed image publication, and production promotion still need verification on this revision. Live deployment and physical devices are separate evidence boundaries.

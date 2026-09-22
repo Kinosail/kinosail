@@ -14,14 +14,17 @@ class SecurityContracts(unittest.TestCase):
         self.assertTrue(affected(["apps/player/apps/native/Sources/App.swift"])["swift"])
         self.assertTrue(affected([".github/workflows/security.yml"])["actions"])
         workflow = (ROOT / ".github/workflows/security.yml").read_text()
-        self.assertIn("matrix.language == 'swift' && 'macos-latest'", workflow)
-        self.assertIn("matrix.language == 'swift') && 'manual'", workflow)
-        self.assertIn("make -C apps/player client-check", workflow)
-        self.assertIn("ARCHS = arm64", workflow)
-        for setting in ("COMPILATION_CACHE_ENABLE_CACHING", "SWIFT_ENABLE_COMPILE_CACHE", "SWIFT_USE_INTEGRATED_DRIVER"):
-            self.assertIn(f"{setting} = NO", workflow)
-        self.assertIn('XCODE_XCCONFIG_FILE="$RUNNER_TEMP/codeql.xcconfig"', workflow)
-        self.assertIn("matrix.language == 'swift' && 60 || 15", workflow)
+        swift = workflow.split("  swift:\n", 1)[1].split("  supply-chain:", 1)[0]
+        self.assertIn("platform: [iOS, tvOS]", swift)
+        self.assertIn("build-mode: manual", swift)
+        self.assertIn("category: /language:swift/platform:${{ matrix.platform }}", swift)
+        self.assertIn("timeout-minutes: 45", swift)
+        build = (ROOT / "scripts/ci/build-codeql-swift.sh").read_text()
+        for option in ("-jobs 1", "ARCHS=arm64", "COMPILATION_CACHE_ENABLE_CACHING=NO",
+                       "SWIFT_ENABLE_COMPILE_CACHE=NO", "SWIFT_USE_INTEGRATED_DRIVER=NO"):
+            self.assertIn(option, build)
+        self.assertIn("needs: [codeql, swift]", workflow)
+        self.assertIn("always() && (inputs.languages != '[]' || fromJSON(inputs.plan).swift)", workflow)
         self.assertIn("queries: security-extended", workflow)
         self.assertIn("config-file: .github/codeql-config.yml", workflow)
         self.assertLess(workflow.index("node scripts/ci/prepare-codeql-js.mjs"),
@@ -30,6 +33,22 @@ class SecurityContracts(unittest.TestCase):
         self.assertIn("if: matrix.language == 'javascript-typescript'", browser_step)
         for setting in ("CODEQL_ACTION_DIFF_INFORMED_QUERIES=false", "CODEQL_OVERLAY_DATABASE_MODE=none"):
             self.assertIn(setting, browser_step)
+
+    def test_invalid_swift_target_cannot_run_build_or_monitor(self):
+        import os
+        import tempfile
+        with tempfile.TemporaryDirectory() as directory:
+            marker = Path(directory) / "ran"
+            for tool in ("xcodebuild", "python3", "tee"):
+                binary = Path(directory) / tool
+                binary.write_text(f'#!/bin/sh\ntouch "{marker}"\n')
+                binary.chmod(0o755)
+            env = os.environ | {"PATH": directory + ":" + os.environ["PATH"]}
+            for args in ([], [""], ["watchOS"], ["iOS", "tvOS"], ["x" * 10000]):
+                result = subprocess.run(["bash", str(ROOT / "scripts/ci/build-codeql-swift.sh"), *args],
+                                        capture_output=True, env=env)
+                self.assertEqual(result.returncode, 2)
+                self.assertFalse(marker.exists())
 
     def test_open_medium_and_low_security_findings_also_block_merge(self):
         workflow = (ROOT / ".github/workflows/security.yml").read_text()

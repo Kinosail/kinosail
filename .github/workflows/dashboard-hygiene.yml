@@ -1,34 +1,19 @@
 name: Dashboard Hygiene
 
 on:
-  pull_request:
-  push:
-    branches: [main]
-  merge_group:
-  workflow_dispatch:
   workflow_call:
     inputs:
-      full:
-        type: boolean
-        default: false
-
-concurrency:
-  group: dashboard-hygiene-${{ github.event_name }}-${{ github.event_name == 'pull_request' && github.ref || github.sha }}
-  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+      plan:
+        required: true
+        type: string
 
 permissions:
   contents: read
   pull-requests: read # Gitleaks reads pull-request metadata.
 
 jobs:
-  changes:
-    uses: ./.github/workflows/changes.yml
-    with:
-      full: ${{ inputs.full || false }}
-
   static:
-    needs: changes
-    if: fromJSON(needs.changes.outputs.plan).dashboard
+    if: fromJSON(inputs.plan).dashboard
     timeout-minutes: 20
     name: Dashboard static checks
     runs-on: ubuntu-24.04
@@ -53,8 +38,7 @@ jobs:
         run: make single-container tidy-check
 
   race:
-    needs: changes
-    if: fromJSON(needs.changes.outputs.plan).dashboard
+    if: fromJSON(inputs.plan).dashboard
     timeout-minutes: 20
     name: Dashboard race tests
     runs-on: ubuntu-24.04
@@ -72,8 +56,7 @@ jobs:
       - run: ../../scripts/ci/test-go.sh dashboard
 
   security:
-    needs: changes
-    if: fromJSON(needs.changes.outputs.plan).dashboard
+    if: fromJSON(inputs.plan).dashboard
     timeout-minutes: 20
     name: Dashboard security checks
     runs-on: ubuntu-24.04
@@ -93,8 +76,7 @@ jobs:
         run: go run golang.org/x/vuln/cmd/govulncheck@v1.7.0 ./...
 
   system:
-    needs: changes
-    if: fromJSON(needs.changes.outputs.plan).dashboard
+    if: fromJSON(inputs.plan).dashboard
     timeout-minutes: 20
     name: Dashboard runtime and browser checks
     runs-on: ubuntu-24.04
@@ -120,7 +102,7 @@ jobs:
           read -ra browsers <<< "$BROWSERS"
           pnpm --dir apps/dashboard/e2e exec playwright install --with-deps "${browsers[@]}"
         env:
-          BROWSERS: ${{ fromJSON(needs.changes.outputs.plan).dashboard_browsers && 'chromium firefox webkit' || 'chromium' }}
+          BROWSERS: ${{ fromJSON(inputs.plan).dashboard_browsers && 'chromium firefox webkit' || 'chromium' }}
       - run: make -C apps/dashboard container-test
         env:
           CONTAINER_ENGINE: docker
@@ -130,9 +112,9 @@ jobs:
           pnpm --dir apps/dashboard/e2e exec playwright test "${args[@]}"
         env:
           CI: "1"
-          PROJECT: ${{ fromJSON(needs.changes.outputs.plan).dashboard_browsers && 'full' || 'chromium' }}
+          PROJECT: ${{ fromJSON(inputs.plan).dashboard_browsers && 'full' || 'chromium' }}
       - name: Build ARM64 when build inputs change
-        if: fromJSON(needs.changes.outputs.plan).dashboard_arm
+        if: fromJSON(inputs.plan).dashboard_arm
         run: docker build --platform linux/arm64 -f apps/dashboard/Containerfile .
         env:
           CONTAINER_ENGINE: docker
@@ -140,7 +122,7 @@ jobs:
   required:
     name: Dashboard checks
     if: always()
-    needs: [changes, static, race, security, system]
+    needs: [static, race, security, system]
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
@@ -148,4 +130,5 @@ jobs:
           persist-credentials: false
       - env:
           RESULTS: ${{ toJSON(needs) }}
+          CI_PLAN: ${{ inputs.plan }}
         run: python3 scripts/ci/required.py dashboard

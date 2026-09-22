@@ -1,36 +1,19 @@
 name: Player Hygiene
 
 on:
-  pull_request:
-  push:
-    branches: [main]
-  schedule:
-    - cron: "17 7 * * 1"
-  merge_group:
-  workflow_dispatch:
   workflow_call:
     inputs:
-      full:
-        type: boolean
-        default: false
-
-concurrency:
-  group: player-hygiene-${{ github.event_name }}-${{ github.event_name == 'pull_request' && github.ref || github.sha }}
-  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+      plan:
+        required: true
+        type: string
 
 permissions:
   contents: read
   pull-requests: read # Gitleaks reads pull-request metadata.
 
 jobs:
-  changes:
-    uses: ./.github/workflows/changes.yml
-    with:
-      full: ${{ inputs.full || false }}
-
   static:
-    needs: changes
-    if: fromJSON(needs.changes.outputs.plan).player
+    if: fromJSON(inputs.plan).player
     timeout-minutes: 20
     name: Player static checks
     runs-on: ubuntu-24.04
@@ -59,8 +42,7 @@ jobs:
         run: make single-container tidy-check
 
   race:
-    needs: changes
-    if: fromJSON(needs.changes.outputs.plan).player
+    if: fromJSON(inputs.plan).player
     timeout-minutes: 20
     name: Player race tests
     runs-on: ubuntu-24.04
@@ -82,8 +64,7 @@ jobs:
       - run: ../../scripts/ci/test-go.sh player
 
   security:
-    needs: changes
-    if: fromJSON(needs.changes.outputs.plan).player
+    if: fromJSON(inputs.plan).player
     timeout-minutes: 20
     name: Player security checks
     runs-on: ubuntu-24.04
@@ -103,8 +84,7 @@ jobs:
         run: go run golang.org/x/vuln/cmd/govulncheck@v1.7.0 ./...
 
   tooling:
-    needs: changes
-    if: fromJSON(needs.changes.outputs.plan).player_tools
+    if: fromJSON(inputs.plan).player_tools
     timeout-minutes: 20
     name: Player installer, native, and local pipeline checks
     runs-on: ubuntu-24.04
@@ -138,8 +118,7 @@ jobs:
       - run: make installer-test native-build local-pipeline-test
 
   client:
-    needs: changes
-    if: fromJSON(needs.changes.outputs.plan).client
+    if: fromJSON(inputs.plan).client
     timeout-minutes: 20
     name: Player Swift client compilation
     runs-on: macos-latest
@@ -154,8 +133,7 @@ jobs:
 
   scheduled:
     name: Player scheduled ${{ matrix.check }}
-    needs: changes
-    if: fromJSON(needs.changes.outputs.plan).deep
+    if: fromJSON(inputs.plan).deep
     timeout-minutes: 20
     runs-on: ubuntu-24.04
     defaults:
@@ -186,8 +164,7 @@ jobs:
         run: make deadcode
 
   system:
-    needs: changes
-    if: fromJSON(needs.changes.outputs.plan).player
+    if: fromJSON(inputs.plan).player
     timeout-minutes: 20
     name: Player system (${{ matrix.platform }})
     runs-on: ${{ matrix.runner }}
@@ -197,7 +174,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        include: ${{ fromJSON(fromJSON(needs.changes.outputs.plan).player_arm && '[{"platform":"linux/amd64","runner":"ubuntu-24.04"},{"platform":"linux/arm64","runner":"ubuntu-24.04-arm"}]' || '[{"platform":"linux/amd64","runner":"ubuntu-24.04"}]') }}
+        include: ${{ fromJSON(fromJSON(inputs.plan).player_arm && '[{"platform":"linux/amd64","runner":"ubuntu-24.04"},{"platform":"linux/arm64","runner":"ubuntu-24.04-arm"}]' || '[{"platform":"linux/amd64","runner":"ubuntu-24.04"}]') }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
@@ -224,7 +201,7 @@ jobs:
           read -ra browsers <<< "$BROWSERS"
           pnpm exec playwright install --with-deps "${browsers[@]}"
         env:
-          BROWSERS: ${{ fromJSON(needs.changes.outputs.plan).player_browsers && 'chromium firefox webkit' || 'chromium' }}
+          BROWSERS: ${{ fromJSON(inputs.plan).player_browsers && 'chromium firefox webkit' || 'chromium' }}
       - uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4
       - name: Build Player test image
         uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7
@@ -259,7 +236,7 @@ jobs:
         if: matrix.platform == 'linux/amd64'
         env:
           CONTAINER_ENGINE: docker
-          KINOSAIL_BROWSER_MATRIX: ${{ fromJSON(needs.changes.outputs.plan).player_browsers && 'full' || '' }}
+          KINOSAIL_BROWSER_MATRIX: ${{ fromJSON(inputs.plan).player_browsers && 'full' || '' }}
           KINOSAIL_BROWSER_WORKERS: "3"
           KINOSAIL_E2E_OUTPUT_DIR: ${{ runner.temp }}/player-browser-results
           KINOSAIL_PLATFORM: ${{ matrix.platform }}
@@ -286,7 +263,7 @@ jobs:
   required:
     name: Player checks
     if: always()
-    needs: [changes, static, race, security, system, tooling, scheduled, client]
+    needs: [static, race, security, system, tooling, scheduled, client]
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
@@ -294,4 +271,5 @@ jobs:
           persist-credentials: false
       - env:
           RESULTS: ${{ toJSON(needs) }}
+          CI_PLAN: ${{ inputs.plan }}
         run: python3 scripts/ci/required.py player

@@ -26,7 +26,8 @@ class RuntimeContracts(unittest.TestCase):
         self.assertIn('sort == ["amd64", "arm64"]', source)
         for app in ('player', 'subtitles', 'dashboard'):
             release = (WORKFLOWS / f'{app}-release.yml').read_text()
-            self.assertIn('type=raw,value=latest', release)
+            self.assertNotIn('type=raw,value=latest', release)
+            self.assertNotIn('type=raw,value=main', release)
         for app in ('player', 'subtitles'):
             installer = (ROOT / f'apps/{app}/scripts/install.sh').read_text()
             self.assertIn('cosign verify --certificate-identity ' + IDENTITY, installer)

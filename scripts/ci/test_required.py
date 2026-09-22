@@ -11,7 +11,7 @@ SCOPES = {
     "subtitles": ("static", "race", "security", "system", "tooling", "scheduled"),
     "dashboard": ("static", "race", "security", "system"),
     "repository": ("static", "tooling", "packages", "web"),
-    "security": ("secrets", "supply-chain", "codeql", "findings"),
+    "security": ("secrets", "supply-chain", "codeql", "swift", "findings"),
 }
 
 
@@ -31,6 +31,21 @@ class RequiredTests(unittest.TestCase):
         for scope in SCOPES:
             for selected in (True, False):
                 verify(scope, results(scope, selected))
+
+    def test_reusable_workflows_validate_the_shared_plan_and_exact_job_inventory(self):
+        for scope in SCOPES:
+            for selected in (True, False):
+                needs = results(scope, selected)
+                plan = needs.pop("changes")["outputs"]["plan"]
+                verify(scope, needs, plan)
+                for job in SCOPES[scope]:
+                    broken = copy.deepcopy(needs)
+                    broken[job]["result"] = "cancelled"
+                    with self.assertRaises(ValueError):
+                        verify(scope, broken, plan)
+                for invalid in ("", "[]", "{}", "x" * 16385, json.dumps(dict.fromkeys((*FLAGS, "deep"), 1))):
+                    with self.assertRaises(ValueError):
+                        verify(scope, needs, invalid)
 
     def test_selected_failure_cancellation_skip_and_missing_job_fail(self):
         for scope, jobs in SCOPES.items():
@@ -64,10 +79,10 @@ class RequiredTests(unittest.TestCase):
             plan = json.loads(needs["changes"]["outputs"]["plan"])
             plan[language] = True
             needs["changes"]["outputs"]["plan"] = json.dumps(plan)
-            for job in ("codeql", "findings"):
+            for job in (("swift" if language == "swift" else "codeql"), "findings"):
                 needs[job]["result"] = "success"
             verify("security", needs)
-            for job in ("codeql", "findings"):
+            for job in (("swift" if language == "swift" else "codeql"), "findings"):
                 broken = copy.deepcopy(needs)
                 broken[job]["result"] = "skipped"
                 with self.assertRaises(ValueError):

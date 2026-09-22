@@ -85,14 +85,14 @@ for app in "${apps[@]}"; do
 
   case "$app" in
     player|subtitles)
-      require_text "$workflow" '  schedule:'
-      require_text "$workflow" '    - cron: "'
+      require_text "$workflows/quality.yml" '  schedule:'
+      require_text "$workflows/quality.yml" '    - cron: "'
       require_text "$workflow" '  scheduled:'
       require_text "$workflow" "name: $([[ "$app" == player ]] && printf Player || printf Subtitles) scheduled \${{ matrix.check }}"
       require_text "$workflow" "working-directory: apps/$app/e2e"
       require_text "$workflow" '        check: [performance, fuzz, deadcode]'
       require_text "$workflow" 'ubuntu-24.04-arm'
-      require_text "$workflow" "fromJSON(needs.changes.outputs.plan).${app}_browsers"
+      require_text "$workflow" "fromJSON(inputs.plan).${app}_browsers"
       require_text "$workflow" "          KINOSAIL_TEST_IMAGE: localhost/kinosail-$app:\${{ github.sha }}"
       require_text "$workflow" '      - run: make installer-test native-build local-pipeline-test'
       require_at_least "$workflow" 2 'sudo apt-get install -y libarchive-tools'

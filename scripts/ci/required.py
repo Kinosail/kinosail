@@ -8,13 +8,19 @@ import sys
 from affected import APPS, FLAGS, LANGUAGES
 
 
-def verify(scope, needs):
+def verify(scope, needs, raw_plan=None):
     if scope not in (*APPS, "repository", "security") or not isinstance(needs, dict):
         raise ValueError("invalid required-check scope or results")
-    if needs.get("changes", {}).get("result") != "success":
-        raise ValueError("change detection did not succeed")
-    plan = json.loads(needs["changes"]["outputs"]["plan"])
-    if set(plan) != {*FLAGS, "deep"} or any(type(value) is not bool for value in plan.values()):
+    selection = {"changes"} if raw_plan is None else set()
+    if raw_plan is None:
+        if needs.get("changes", {}).get("result") != "success":
+            raise ValueError("change detection did not succeed")
+        raw_plan = needs["changes"]["outputs"]["plan"]
+    if not isinstance(raw_plan, str) or len(raw_plan) > 16384:
+        raise ValueError("invalid selection plan")
+    plan = json.loads(raw_plan)
+    if (not isinstance(plan, dict) or set(plan) != {*FLAGS, "deep"}
+            or any(type(value) is not bool for value in plan.values())):
         raise ValueError("invalid selection plan")
     if scope in APPS:
         expected = dict.fromkeys(("static", "race", "security", "system"), plan[scope])
@@ -27,9 +33,9 @@ def verify(scope, needs):
         expected = {"static": True, "tooling": plan["tooling"], "packages": plan["packages"],
                     "web": plan["web"]}
     else:
-        codeql = any(plan[language] for language in LANGUAGES)
-        expected = {"secrets": True, "supply-chain": plan["supply"], "codeql": codeql, "findings": codeql}
-    if set(needs) != {"changes", *expected}:
+        codeql = any(plan[language] for language in LANGUAGES if language != "swift")
+        expected = {"secrets": True, "supply-chain": plan["supply"], "codeql": codeql, "swift": plan["swift"], "findings": codeql or plan["swift"]}
+    if set(needs) != {*selection, *expected}:
         raise ValueError("required job inventory does not match workflow")
     for job, selected in expected.items():
         result = needs[job].get("result")
@@ -43,7 +49,7 @@ def main():
     raw = os.environ["RESULTS"]
     if len(raw) > 65536:
         raise ValueError("job results too large")
-    verify(sys.argv[1], json.loads(raw))
+    verify(sys.argv[1], json.loads(raw), os.environ.get("CI_PLAN"))
     print("Every selected check passed; all skips match the selection plan.")
 
 

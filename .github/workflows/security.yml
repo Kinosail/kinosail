@@ -1,24 +1,19 @@
 name: Security
 
 on:
-  push:
-    branches: [main]
-  pull_request:
-  schedule:
-    - cron: "43 8 * * 1"
-  merge_group:
-  workflow_dispatch:
+  workflow_call:
+    inputs:
+      plan:
+        required: true
+        type: string
+      languages:
+        required: true
+        type: string
 
 permissions:
   contents: read
 
-concurrency:
-  group: security-${{ github.event_name }}-${{ github.event_name == 'pull_request' && github.ref || github.sha }}
-  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
-
 jobs:
-  changes:
-    uses: ./.github/workflows/changes.yml
 
   secrets:
     name: Changed-commit secret scan
@@ -37,18 +32,17 @@ jobs:
       - run: python3 scripts/ci/secrets.py
 
   codeql:
-    needs: changes
-    if: needs.changes.outputs.languages != '[]'
-    timeout-minutes: ${{ matrix.language == 'swift' && 60 || 15 }}
+    if: inputs.languages != '[]'
+    timeout-minutes: 15
     name: CodeQL (${{ matrix.language }})
-    runs-on: ${{ matrix.language == 'swift' && 'macos-latest' || 'ubuntu-24.04' }}
+    runs-on: ubuntu-24.04
     permissions:
       contents: read
       security-events: write
     strategy:
       fail-fast: false
       matrix:
-        language: ${{ fromJSON(needs.changes.outputs.languages) }}
+        language: ${{ fromJSON(inputs.languages) }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
@@ -69,38 +63,52 @@ jobs:
         with:
           languages: ${{ matrix.language }}
           config-file: .github/codeql-config.yml
-          build-mode: ${{ (matrix.language == 'go' || matrix.language == 'swift') && 'manual' || 'none' }}
+          build-mode: ${{ matrix.language == 'go' && 'manual' || 'none' }}
           queries: security-extended
       - name: Build Go modules for CodeQL
         if: matrix.language == 'go'
         run: go build ./apps/player/... ./apps/subtitles/... ./apps/dashboard/... ./packages/...
-      - name: Build both Apple clients for CodeQL
-        if: matrix.language == 'swift'
-        run: |
-          # Match the Swift extractor's supported compiler settings.
-          printf '%s\n' 'ARCHS = arm64' 'ONLY_ACTIVE_ARCH = YES' \
-            'COMPILATION_CACHE_ENABLE_CACHING = NO' 'SWIFT_ENABLE_COMPILE_CACHE = NO' \
-            'SWIFT_USE_INTEGRATED_DRIVER = NO' 'CODE_SIGNING_ALLOWED = NO' \
-            'CODE_SIGNING_REQUIRED = NO' > "$RUNNER_TEMP/codeql.xcconfig"
-          # Keep bounded resource evidence for slow compiler/extractor runs.
-          python3 -u -c '
-          import datetime, subprocess, time
-          while True:
-              print(datetime.datetime.now(datetime.timezone.utc).isoformat())
-              rows = subprocess.check_output(["ps", "-axo", "pid=,ppid=,pcpu=,rss=,comm="], text=True).splitlines()
-              print("PID PPID CPU% RSS_KiB COMMAND")
-              print("\n".join(sorted(rows, key=lambda row: int(row.split(None, 4)[3]), reverse=True)[:12]))
-              subprocess.run(["sysctl", "vm.swapusage"], check=True)
-              time.sleep(60)
-          ' &
-          monitor=$!
-          trap 'kill "$monitor" 2>/dev/null || true' EXIT
-          XCODE_XCCONFIG_FILE="$RUNNER_TEMP/codeql.xcconfig" make -C apps/player client-check
       - uses: github/codeql-action/analyze@1c5b675653bb5c22dbe9b12b556ec555138e09fd
 
+  swift:
+    name: CodeQL Swift (${{ matrix.platform }})
+    if: fromJSON(inputs.plan).swift
+    runs-on: macos-latest
+    timeout-minutes: 45
+    permissions:
+      contents: read
+      security-events: write
+    strategy:
+      fail-fast: false
+      matrix:
+        platform: [iOS, tvOS]
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - uses: github/codeql-action/init@1c5b675653bb5c22dbe9b12b556ec555138e09fd
+        with:
+          languages: swift
+          build-mode: manual
+          config-file: .github/codeql-config.yml
+          queries: security-extended
+      - name: Build one Apple target with bounded compiler concurrency
+        env:
+          PLATFORM: ${{ matrix.platform }}
+        run: ./scripts/ci/build-codeql-swift.sh "$PLATFORM"
+      - uses: github/codeql-action/analyze@1c5b675653bb5c22dbe9b12b556ec555138e09fd
+        with:
+          category: /language:swift/platform:${{ matrix.platform }}
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        if: failure()
+        with:
+          name: codeql-swift-${{ matrix.platform }}
+          path: ${{ runner.temp }}/codeql-swift-*.log
+          if-no-files-found: ignore
+          retention-days: 7
+
   supply-chain:
-    needs: changes
-    if: fromJSON(needs.changes.outputs.plan).supply
+    if: fromJSON(inputs.plan).supply
     timeout-minutes: 15
     name: Supply chain security
     runs-on: ubuntu-24.04
@@ -123,8 +131,8 @@ jobs:
 
   findings:
     name: CodeQL findings policy
-    needs: [changes, codeql]
-    if: needs.changes.outputs.languages != '[]'
+    needs: [codeql, swift]
+    if: always() && (inputs.languages != '[]' || fromJSON(inputs.plan).swift) && (needs.codeql.result == 'success' || needs.codeql.result == 'skipped') && (needs.swift.result == 'success' || needs.swift.result == 'skipped')
     runs-on: ubuntu-24.04
     permissions:
       contents: read
@@ -141,7 +149,7 @@ jobs:
   required:
     name: Security checks
     if: always()
-    needs: [changes, secrets, codeql, supply-chain, findings]
+    needs: [secrets, codeql, swift, supply-chain, findings]
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
@@ -149,4 +157,5 @@ jobs:
           persist-credentials: false
       - env:
           RESULTS: ${{ toJSON(needs) }}
+          CI_PLAN: ${{ inputs.plan }}
         run: python3 scripts/ci/required.py security

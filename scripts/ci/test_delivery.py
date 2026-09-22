@@ -8,7 +8,7 @@ import unittest
 from unittest.mock import patch
 
 from affected import FLAGS
-from delivery import conclusion, main as deliver, targets
+from delivery import GATES, main as deliver, targets, verify_results
 from promote import main as promote
 from secrets import log_range
 
@@ -20,28 +20,43 @@ ENV = {"APP": "player", "IMAGE": "ghcr.io/kinosail/kinosail-player", "DIGEST": D
        "GITHUB_REPOSITORY": "Kinosail/kinosail"}
 
 
-def workflow(**overrides):
-    return {"id": 1, "head_sha": SHA, "event": "push", "head_branch": "main",
-            "status": "completed", "conclusion": "success"} | overrides
+def delivery_results(plan):
+    results = {name: {"result": "success"} for name in GATES}
+    results["changes"]["outputs"] = {"plan": plan}
+    return results
 
 
 class DeliveryTests(unittest.TestCase):
-    def test_exact_commit_success_is_required(self):
-        self.assertTrue(conclusion({"workflow_runs": [workflow()]}, SHA))
-        self.assertFalse(conclusion({"workflow_runs": []}, SHA))
-        self.assertFalse(conclusion({"workflow_runs": [workflow(status="in_progress", conclusion=None)]}, SHA))
-        invalid = ({"head_sha": "c" * 40}, {"event": "pull_request"}, {"head_branch": "feature"},
-                   {"status": "unknown"}, {"conclusion": "failure"}, {"conclusion": "cancelled"},
-                   {"conclusion": "skipped"}, {"conclusion": "neutral"}, {"id": "1"})
-        for values in invalid:
-            with self.subTest(values=values), self.assertRaises(ValueError):
-                conclusion({"workflow_runs": [workflow(**values)]}, SHA)
-        # A newer failed rerun must not reuse an older successful run.
-        with self.assertRaises(ValueError):
-            conclusion({"workflow_runs": [workflow(), workflow(id=2, conclusion="failure")]}, SHA)
-        for payload in ({}, [], {"workflow_runs": None}, {"workflow_runs": [workflow()] * 6}):
-            with self.assertRaises(ValueError):
-                conclusion(payload, SHA)
+    def test_every_gate_must_succeed_before_delivery(self):
+        plan = json.dumps(dict.fromkeys((*FLAGS, "deep"), True))
+        verify_results(json.dumps(delivery_results(plan)), plan)
+        for gate in GATES:
+            for state in ("failure", "cancelled", "skipped", "neutral", "", "missing", None):
+                with self.subTest(gate=gate, state=state), tempfile.TemporaryDirectory() as directory:
+                    results = delivery_results(plan)
+                    if state == "missing":
+                        del results[gate]
+                    else:
+                        results[gate]["result"] = state
+                    output = Path(directory) / "output"
+                    env = ENV | {"CI_PLAN": plan, "RESULTS": json.dumps(results), "GITHUB_OUTPUT": str(output)}
+                    with patch.dict(os.environ, env), patch("delivery.subprocess.run") as run:
+                        with self.assertRaises(ValueError):
+                            deliver()
+                        run.assert_not_called()
+                    self.assertFalse(output.exists())
+
+    def test_malformed_results_and_conflicting_plan_fail_without_side_effects(self):
+        plan = json.dumps(dict.fromkeys((*FLAGS, "deep"), True))
+        results = delivery_results(plan)
+        for raw in ("", "[]", "{}", "x" * 65537, json.dumps(results | {"unknown": {"result": "success"}}),
+                    json.dumps(results | {"required": None}),
+                    json.dumps(results | {"changes": {"result": "success", "outputs": {"plan": "{}"}}})):
+            with self.subTest(raw=raw[:40]), patch.dict(os.environ, ENV | {"CI_PLAN": plan, "RESULTS": raw}), \
+                    patch("delivery.subprocess.run") as run:
+                with self.assertRaises(ValueError):
+                    deliver()
+                run.assert_not_called()
 
     def test_delivery_plan_rejects_unknown_missing_and_non_boolean_values(self):
         plan = dict.fromkeys((*FLAGS, "deep"), False)
@@ -56,41 +71,34 @@ class DeliveryTests(unittest.TestCase):
         plan = json.dumps(dict.fromkeys((*FLAGS, "deep"), True))
         for replacement in ({"GITHUB_SHA": "--help"}, {"GITHUB_REPOSITORY": "other/repo"},
                             {"GITHUB_EVENT_NAME": "pull_request"}, {"GITHUB_REF": "refs/tags/v1"}):
-            with patch.dict(os.environ, ENV | {"CI_PLAN": plan} | replacement), patch("delivery.subprocess.run") as run:
+            env = ENV | {"CI_PLAN": plan, "RESULTS": json.dumps(delivery_results(plan))} | replacement
+            with patch.dict(os.environ, env), patch("delivery.subprocess.run") as run:
                 with self.assertRaises(ValueError):
                     deliver()
                 run.assert_not_called()
 
-    def test_failed_ci_cannot_emit_deployment_matrix(self):
+    def test_success_emits_only_selected_apps_without_polling(self):
+        plan = dict.fromkeys((*FLAGS, "deep"), False) | {"player": True, "dashboard": True}
+        encoded = json.dumps(plan)
         with tempfile.TemporaryDirectory() as directory:
             output = Path(directory) / "output"
-            plan = json.dumps(dict.fromkeys((*FLAGS, "deep"), True))
-            response = subprocess.CompletedProcess([], 0, json.dumps({"workflow_runs": [workflow(conclusion="failure")]}).encode())
-            with patch.dict(os.environ, ENV | {"CI_PLAN": plan, "GITHUB_OUTPUT": str(output)}), patch("delivery.subprocess.run", return_value=response):
-                with self.assertRaises(ValueError):
-                    deliver()
-            self.assertFalse(output.exists())
+            env = ENV | {"CI_PLAN": encoded, "RESULTS": json.dumps(delivery_results(encoded)), "GITHUB_OUTPUT": str(output)}
+            with patch.dict(os.environ, env), patch("delivery.subprocess.run") as run:
+                deliver()
+                run.assert_called_once_with(["git", "merge-base", "--is-ancestor", SHA, "origin/main"], check=True, timeout=60)
+            self.assertEqual(json.loads(output.read_text().removeprefix("apps=")), ["player", "dashboard"])
 
-    def test_delivery_waits_for_cold_swift_but_remains_bounded(self):
-        for status, clock, succeeds in (("completed", [0, 3660], True),
-                                         ("in_progress", [0, 3660, 3901], False)):
-            with self.subTest(status=status), tempfile.TemporaryDirectory() as directory:
+    def test_non_ancestor_and_empty_plan_cannot_emit_matrix(self):
+        for selected in (True, False):
+            plan = json.dumps(dict.fromkeys((*FLAGS, "deep"), selected))
+            with tempfile.TemporaryDirectory() as directory:
                 output = Path(directory) / "output"
-                plan = json.dumps(dict.fromkeys((*FLAGS, "deep"), True))
-                payload = {"workflow_runs": [workflow(status=status, conclusion="success" if succeeds else None)]}
-                response = subprocess.CompletedProcess([], 0, json.dumps(payload).encode())
-                with patch.dict(os.environ, ENV | {"CI_PLAN": plan, "GITHUB_OUTPUT": str(output)}), \
-                        patch("delivery.subprocess.run", return_value=response), \
-                        patch("delivery.time.monotonic", side_effect=clock), patch("delivery.time.sleep"):
-                    if succeeds:
+                env = ENV | {"CI_PLAN": plan, "RESULTS": json.dumps(delivery_results(plan)), "GITHUB_OUTPUT": str(output)}
+                with patch.dict(os.environ, env), patch("delivery.subprocess.run", side_effect=subprocess.CalledProcessError(1, "git")) as run:
+                    with self.assertRaises((ValueError, subprocess.CalledProcessError)):
                         deliver()
-                    else:
-                        with self.assertRaisesRegex(ValueError, "timed out"):
-                            deliver()
-                self.assertEqual(output.exists(), succeeds)
-                if succeeds:
-                    self.assertEqual(json.loads(output.read_text().removeprefix("apps=")),
-                                     ["player", "subtitles", "dashboard"])
+                    self.assertEqual(run.call_count, int(selected))
+                self.assertFalse(output.exists())
 
     def test_promotion_allows_docs_and_unrelated_apps_but_never_rolls_back_affected_app(self):
         for paths, expected in ((b"README.md\0", True), (b"apps/subtitles/main.go\0", True),

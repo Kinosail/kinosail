@@ -33,6 +33,10 @@ def affected(paths):
                 or (len(parts) == 3 and parts[0] == "apps" and parts[-1] in ("README.md", "AGENTS.md", "DESIGN.md", "CONTEXT.md"))
                 or (len(parts) > 3 and parts[0] == "apps" and parts[2] == "docs" and path.endswith(".md"))):
             continue
+        if path in ("scripts/quality/package.json", "scripts/quality/pnpm-lock.yaml"):
+            for flag in ("tooling", "web", "supply", "javascript-typescript"):
+                selected[flag] = True
+            continue
         if path.startswith("apps/player/apps/native/"):
             selected["client"] = selected["swift"] = True
             selected["supply"] = True
@@ -118,7 +122,7 @@ def main():
     encoded = json.dumps(plan, separators=(",", ":"))
     with open(os.environ["GITHUB_OUTPUT"], "a") as output:
         output.write("plan=" + encoded + "\n")
-        output.write("languages=" + json.dumps([name for name in LANGUAGES if plan[name]]) + "\n")
+        output.write("languages=" + json.dumps([name for name in LANGUAGES if name != "swift" and plan[name]]) + "\n")
     print("Selected checks: " + ", ".join(key for key, value in plan.items() if value))
     if os.environ.get("GITHUB_STEP_SUMMARY"):
         with open(os.environ["GITHUB_STEP_SUMMARY"], "a") as summary:

@@ -22,6 +22,13 @@ class SelectionTests(unittest.TestCase):
                 self.assertFalse(plan["packages"])
                 self.assertFalse(plan[f"{app}_browsers"])
 
+    def test_linter_dependencies_select_tooling_security_and_web_without_building_products(self):
+        for path in ("scripts/quality/package.json", "scripts/quality/pnpm-lock.yaml"):
+            plan = affected([path])
+            self.assertEqual({key for key, value in plan.items() if value},
+                             {"tooling", "web", "supply", "javascript-typescript"})
+        self.assertTrue(affected(["scripts/quality/new-build-input"])["swift"])
+
     def test_shared_changes_select_every_consumer(self):
         for path in ("packages/catalog/item.go", "go.work", "go.work.sum", "apps/player/go.mod"):
             with self.subTest(path=path):

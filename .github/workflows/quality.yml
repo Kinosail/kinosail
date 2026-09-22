@@ -1,9 +1,11 @@
-name: Repository Quality
+name: CI
 
 on:
   pull_request:
   push:
     branches: [main]
+  schedule:
+    - cron: "17 7 * * 1"
   merge_group:
   workflow_dispatch:
   workflow_call:
@@ -121,16 +123,101 @@ jobs:
           RESULTS: ${{ toJSON(needs) }}
         run: python3 scripts/ci/required.py repository
 
+  player:
+    needs: changes
+    uses: ./.github/workflows/player-hygiene.yml
+    permissions:
+      contents: read
+      pull-requests: read
+    with:
+      plan: ${{ needs.changes.outputs.plan }}
+
+  player-required:
+    name: Player checks
+    if: always()
+    needs: [changes, player]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 2
+    steps:
+      - env:
+          SELECTION: ${{ needs.changes.result }}
+          RESULT: ${{ needs.player.result }}
+        run: test "$SELECTION" = success && test "$RESULT" = success
+
+  subtitles:
+    needs: changes
+    uses: ./.github/workflows/subtitles-hygiene.yml
+    permissions:
+      contents: read
+      pull-requests: read
+    with:
+      plan: ${{ needs.changes.outputs.plan }}
+
+  subtitles-required:
+    name: Subtitles checks
+    if: always()
+    needs: [changes, subtitles]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 2
+    steps:
+      - env:
+          SELECTION: ${{ needs.changes.result }}
+          RESULT: ${{ needs.subtitles.result }}
+        run: test "$SELECTION" = success && test "$RESULT" = success
+
+  dashboard:
+    needs: changes
+    uses: ./.github/workflows/dashboard-hygiene.yml
+    permissions:
+      contents: read
+      pull-requests: read
+    with:
+      plan: ${{ needs.changes.outputs.plan }}
+
+  dashboard-required:
+    name: Dashboard checks
+    if: always()
+    needs: [changes, dashboard]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 2
+    steps:
+      - env:
+          SELECTION: ${{ needs.changes.result }}
+          RESULT: ${{ needs.dashboard.result }}
+        run: test "$SELECTION" = success && test "$RESULT" = success
+
+  security:
+    needs: changes
+    uses: ./.github/workflows/security.yml
+    permissions:
+      contents: read
+      security-events: write
+    with:
+      plan: ${{ needs.changes.outputs.plan }}
+      languages: ${{ needs.changes.outputs.languages }}
+
+  security-required:
+    name: Security checks
+    if: always()
+    needs: [changes, security]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 2
+    steps:
+      - env:
+          SELECTION: ${{ needs.changes.result }}
+          RESULT: ${{ needs.security.result }}
+        run: test "$SELECTION" = success && test "$RESULT" = success
+
   delivery:
     name: Ship verified containers
-    needs: [changes, required]
+    needs: [changes, required, player-required, subtitles-required, dashboard-required, security-required]
     if: github.event_name == 'push' && github.ref == 'refs/heads/main' && (fromJSON(needs.changes.outputs.plan).player || fromJSON(needs.changes.outputs.plan).subtitles || fromJSON(needs.changes.outputs.plan).dashboard)
     uses: ./.github/workflows/delivery.yml
     permissions:
       contents: read
-      actions: read
       packages: write
       id-token: write
       attestations: write
     with:
       plan: ${{ needs.changes.outputs.plan }}
+      results: ${{ toJSON(needs) }}
