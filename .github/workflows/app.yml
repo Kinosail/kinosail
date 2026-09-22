@@ -51,6 +51,8 @@ jobs:
         with:
           go-version-file: apps/${{ inputs.app }}/go.mod
           cache-dependency-path: "**/go.sum"
+      - if: inputs.app != 'dashboard'
+        run: sudo apt-get update && sudo apt-get install -y libarchive-tools
       - env:
           APP: ${{ inputs.app }}
         run: ./scripts/ci/test-go.sh "$APP"
