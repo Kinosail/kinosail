@@ -17,7 +17,7 @@ def case(scope, selected=True, app="player"):
     elif scope == "security":
         jobs = ("secrets", "codeql", "supply-chain", "findings")
     else:
-        jobs = ("static", "race", "security", "system", "tooling", "client")
+        jobs = ("static", "race", "security", "system", "browser", "tooling", "client")
     needs.update({job: {"result": "success" if selected else "skipped"} for job in jobs})
     if scope == "repository":
         needs["static"]["result"] = "success"
@@ -71,7 +71,7 @@ class RequiredTests(unittest.TestCase):
         plan = dict.fromkeys((*FLAGS, "deep"), False)
         plan["client"] = True
         raw = json.dumps(plan)
-        needs = {**{job: {"result": "skipped"} for job in ("static", "race", "security", "system", "tooling")},
+        needs = {**{job: {"result": "skipped"} for job in ("static", "race", "security", "system", "browser", "tooling")},
                  "client": {"result": "success"}}
         verify("app", needs, raw, "player")
         needs["client"]["result"] = "skipped"
