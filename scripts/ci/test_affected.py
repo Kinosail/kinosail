@@ -44,6 +44,7 @@ class SelectionTests(unittest.TestCase):
         self.assertFalse(plan["go"])
         self.assertFalse(any(plan[app] for app in APPS))
         self.assertTrue(affected(["apps/player/Makefile"])["client"])
+        self.assertFalse(any(affected(["apps/player/apps/native/AGENTS.md"]).values()))
 
     def test_prose_exemptions_do_not_include_shipped_licenses_or_embedded_markdown(self):
         paths = ["README.md", "AGENTS.md", "engineering/research/ci.md"]

@@ -44,6 +44,8 @@ def affected(paths):
                 or (len(parts) == 3 and parts[0] == "apps" and parts[-1] in ("README.md", "AGENTS.md", "DESIGN.md", "CONTEXT.md"))
                 or (len(parts) > 3 and parts[0] == "apps" and parts[2] == "docs" and path.endswith(".md"))):
             continue
+        if path == "apps/player/apps/native/AGENTS.md":
+            continue
         if path.startswith("apps/player/apps/native/"):
             selected["client"] = True
             selected["supply"] = True
