@@ -27,8 +27,7 @@ ci-status:
 	@./scripts/ci-mode.sh status
 
 client-check:
-	@./apps/native/scripts/build-apple.sh ios
-	@./apps/native/scripts/build-apple.sh tvos
+	@$(MAKE) -j2 client-build-ios client-build-tvos
 
 client-build-ios:
 	@./apps/native/scripts/build-apple.sh ios

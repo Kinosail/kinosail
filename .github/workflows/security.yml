@@ -95,9 +95,7 @@ jobs:
           ' &
           monitor=$!
           trap 'kill "$monitor" 2>/dev/null || true' EXIT
-          # The iOS and tvOS targets use separate derived-data paths; build them
-          # concurrently so the required Swift scan stays within its CI budget.
-          XCODE_XCCONFIG_FILE="$RUNNER_TEMP/codeql.xcconfig" make -C apps/player -j2 client-build-ios client-build-tvos
+          XCODE_XCCONFIG_FILE="$RUNNER_TEMP/codeql.xcconfig" make -C apps/player client-check
       - uses: github/codeql-action/analyze@1c5b675653bb5c22dbe9b12b556ec555138e09fd
 
   supply-chain:
