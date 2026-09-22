@@ -13,7 +13,7 @@
 - Keep at most one worktree for each active task. Do not let multiple agents change the same checkout.
 - Checkpoint coherent work with regular commits. Integrate through a pull request before updating local `main`.
 - After the remote merge, fast-forward local `main` and remove the task worktree when both checkouts are clean and the task commit is in remote main. Preserve and report unrelated dirty work that prevents local cleanup.
-- Never leave dirty or unique work in an inactive worktree. Report blockers that prevent safe integration.
+- Never leave dirty or unique task-owned work in an inactive worktree. Report unrelated inactive checkouts without changing their files or leases.
 - Start secondary worktrees with `make worktree-lease TASK=<thread-or-task-id>`; commit and pre-push hooks renew the current lease. Run `make worktree-audit` separately to find inactive checkouts; their state must not block another task's commit.
 - Use `make worktree-cleanup` only for expired clean merged checkouts. It must preserve dirty or unique work for explicit recovery.
 - When local `main` is clean and current with remote main, use `make agent-finish TASK=<thread-or-task-id>` to lock, verify, fast-forward local `main`, and remove the task checkout and branch. Report a blocker if its preconditions are unmet.
