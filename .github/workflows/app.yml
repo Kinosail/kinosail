@@ -184,17 +184,9 @@ jobs:
           KINOSAIL_TEST_IMAGE: localhost/kinosail-${{ inputs.app }}:${{ github.sha }}
           KINOSAIL_TEST_IMAGE_READY: "1"
         run: |
-          if [[ "$KINOSAIL_PLATFORM" == linux/arm64 ]]; then
-            ./scripts/test-container.sh
-          else
-            status=0
-            ./scripts/test-container.sh &
-            production_pid=$!
-            KINOSAIL_BROWSER_TEST=1 ./scripts/test-container.sh &
-            browser_pid=$!
-            wait "$production_pid" || status=$?
-            wait "$browser_pid" || status=$?
-            exit "$status"
+          ./scripts/test-container.sh
+          if [[ "$KINOSAIL_PLATFORM" == linux/amd64 ]]; then
+            KINOSAIL_BROWSER_TEST=1 ./scripts/test-container.sh
           fi
       - name: Test Dashboard production image
         if: inputs.app == 'dashboard' && matrix.platform == 'linux/amd64'
@@ -218,7 +210,7 @@ jobs:
         with:
           name: ${{ inputs.app }}-browser-failures
           path: |
-            ${{ runner.temp }}/${{ inputs.app }}-browser-results-*
+            ${{ runner.temp }}/${{ inputs.app }}-browser-results
             apps/dashboard/e2e/test-results
           retention-days: 7
           if-no-files-found: ignore
