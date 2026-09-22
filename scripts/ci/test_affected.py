@@ -41,12 +41,12 @@ class SelectionTests(unittest.TestCase):
     def test_native_only_does_not_build_server_containers(self):
         plan = affected(["apps/player/apps/native/Sources/App.swift"])
         self.assertTrue(plan["client"])
-        self.assertTrue(plan["swift"])
+        self.assertFalse(plan["go"])
         self.assertFalse(any(plan[app] for app in APPS))
         self.assertTrue(affected(["apps/player/Makefile"])["client"])
 
     def test_prose_exemptions_do_not_include_shipped_licenses_or_embedded_markdown(self):
-        paths = ["README.md", "AGENTS.md", "engineering/research/ci.md", "apps/player/docs/install.md"]
+        paths = ["README.md", "AGENTS.md", "engineering/research/ci.md"]
         self.assertFalse(any(affected(paths).values()))
         for path in ("apps/player/LICENSING.md", "apps/player/THIRD_PARTY_NOTICES.md",
                      "apps/player/internal/server/static/help.md"):
@@ -54,13 +54,27 @@ class SelectionTests(unittest.TestCase):
                 self.assertTrue(affected([path])["player"])
 
     def test_build_inputs_and_unknown_paths_are_conservative(self):
-        for path in (".github/workflows/quality.yml", "scripts/ci/affected.py", "new-service/main.go", ".dockerignore"):
+        for path in (".github/workflows/ci.yml", "scripts/ci/affected.py", "new-service/main.go", ".dockerignore"):
             self.assertTrue(all(affected([path]).values()))
         for path in ("apps/subtitles/Containerfile", "apps/subtitles/scripts/install.sh"):
             plan = affected([path])
             self.assertTrue(plan["subtitles_arm"])
             self.assertTrue(plan["subtitles_tools"])
             self.assertTrue(plan["supply"])
+
+    def test_documentation_selects_its_build_without_server_suites(self):
+        for path in ("engineering/documentation/index.md", "engineering/documentation/site.js",
+                     "apps/player/docs/architecture-explorer/index.html"):
+            with self.subTest(path=path):
+                plan = affected([path])
+                self.assertTrue(plan["docs"])
+                self.assertFalse(any(plan[app] for app in APPS))
+        font = affected(["packages/webassets/static/fonts/font.woff2"])
+        self.assertTrue(font["docs"])
+        self.assertTrue(all(font[app] for app in APPS))
+        self.assertTrue(affected(["engineering/documentation/site.js"])["javascript-typescript"])
+        self.assertTrue(affected(["engineering/documentation/build.py"])["python"])
+        self.assertTrue(affected(["engineering/documentation/package-lock.json"])["supply"])
 
     def test_invalid_paths_are_rejected_even_after_unknown_paths(self):
         for paths in ("foo", [""], [None], ["/etc/passwd"], ["a/../b"], ["a//b"], ["a/./b"],

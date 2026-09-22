@@ -1,68 +1,50 @@
 #!/usr/bin/env python3
-"""Wait for exact-commit sibling CI; emit only validated deployment targets."""
+"""Authorize container publication from this main run's required results."""
+
 import json
 import os
 import re
 import subprocess
-import time
 
 from affected import APPS, FLAGS
 
-WORKFLOWS = ("player-hygiene.yml", "subtitles-hygiene.yml", "dashboard-hygiene.yml", "security.yml")
+REQUIRED = ("repository-required", "player-required", "subtitles-required",
+            "dashboard-required", "security-required")
 
 
 def targets(raw):
-    if len(raw) > 16384:
-        raise ValueError("delivery plan too large")
+    if not isinstance(raw, str) or len(raw) > 16384:
+        raise ValueError("invalid delivery plan")
     plan = json.loads(raw)
     if not isinstance(plan, dict) or set(plan) != {*FLAGS, "deep"} or any(type(v) is not bool for v in plan.values()):
         raise ValueError("invalid delivery plan")
     return [app for app in APPS if plan[app]]
 
 
-def conclusion(payload, commit):
-    if not isinstance(payload, dict) or not isinstance(payload.get("workflow_runs"), list):
-        raise ValueError("invalid workflow response")
-    runs = payload["workflow_runs"]
-    if not runs:
-        return False
-    if len(runs) > 5 or any(type(run.get("id")) is not int for run in runs):
-        raise ValueError("invalid workflow inventory")
-    run = max(runs, key=lambda item: item["id"])
-    if run.get("head_sha") != commit or run.get("event") != "push" or run.get("head_branch") != "main":
-        raise ValueError("workflow is not for this main commit")
-    if run.get("status") in ("queued", "in_progress", "waiting", "pending", "requested"):
-        return False
-    if run.get("status") != "completed" or run.get("conclusion") != "success":
-        raise ValueError("required workflow did not succeed")
-    return True
+def verify_results(raw, plan):
+    if not isinstance(raw, str) or len(raw) > 65536:
+        raise ValueError("invalid CI results")
+    needs = json.loads(raw)
+    if not isinstance(needs, dict) or set(needs) != {"plan", *REQUIRED}:
+        raise ValueError("incomplete CI results")
+    if any(not isinstance(needs[job], dict) or needs[job].get("result") != "success" for job in needs):
+        raise ValueError("required CI did not succeed")
+    outputs = needs["plan"].get("outputs")
+    if not isinstance(outputs, dict) or outputs.get("plan") != plan:
+        raise ValueError("delivery plan differs from verified selection")
 
 
 def main():
-    apps = targets(os.environ["CI_PLAN"])
+    plan = os.environ["CI_PLAN"]
+    apps = targets(plan)
+    if not apps:
+        raise ValueError("delivery has no selected app")
+    verify_results(os.environ["CI_RESULTS"], plan)
     commit, repo = os.environ["GITHUB_SHA"], os.environ["GITHUB_REPOSITORY"]
     if (not re.fullmatch(r"[0-9a-f]{40}", commit) or repo != "Kinosail/kinosail"
             or os.environ["GITHUB_EVENT_NAME"] != "push" or os.environ["GITHUB_REF"] != "refs/heads/main"):
         raise ValueError("delivery requires a protected main push")
     subprocess.run(["git", "merge-base", "--is-ancestor", commit, "origin/main"], check=True)
-    # The cold Swift scan has a 60-minute ceiling; allow setup/queue headroom.
-    deadline = time.monotonic() + 65 * 60
-    pending = set(WORKFLOWS)
-    while pending and time.monotonic() < deadline:
-        for workflow in sorted(pending):
-            response = subprocess.run([
-                "gh", "api", "--method", "GET", f"repos/{repo}/actions/workflows/{workflow}/runs",
-                "-f", "head_sha=" + commit, "-f", "event=push", "-f", "branch=main", "-f", "per_page=5",
-            ], capture_output=True, check=True, timeout=60)
-            if len(response.stdout) > 4 * 1024 * 1024:
-                raise ValueError("workflow response too large")
-            if conclusion(json.loads(response.stdout), commit):
-                pending.remove(workflow)
-        if pending:
-            print("Waiting for " + ", ".join(sorted(pending)), flush=True)
-            time.sleep(15)
-    if pending:
-        raise ValueError("timed out waiting for required CI")
     with open(os.environ["GITHUB_OUTPUT"], "a") as output:
         output.write("apps=" + json.dumps(apps) + "\n")
 

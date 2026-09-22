@@ -208,9 +208,9 @@ if [[ ! "$digest" =~ ^ghcr\.io/kinosail/kinosail-subtitles@sha256:[a-f0-9]{64}$ 
   exit 1
 fi
 if [[ "$version" == latest ]]; then
-  cosign verify --certificate-identity https://github.com/Kinosail/kinosail/.github/workflows/delivery.yml@refs/heads/main --certificate-oidc-issuer https://token.actions.githubusercontent.com "$digest" >/dev/null
+  cosign verify --certificate-identity https://github.com/Kinosail/kinosail/.github/workflows/publish.yml@refs/heads/main --certificate-oidc-issuer https://token.actions.githubusercontent.com "$digest" >/dev/null
 else
-  cosign verify --certificate-identity "https://github.com/Kinosail/kinosail/.github/workflows/subtitles-release.yml@refs/tags/subtitles-v$version" --certificate-oidc-issuer https://token.actions.githubusercontent.com "$digest" >/dev/null
+  cosign verify --certificate-identity "https://github.com/Kinosail/kinosail/.github/workflows/release.yml@refs/tags/subtitles-v$version" --certificate-oidc-issuer https://token.actions.githubusercontent.com "$digest" >/dev/null
 fi
 if [[ -f kinosail.yaml ]]; then
   KINOSAIL_IMAGE="$digest" "${project[@]}" run --rm --no-deps kinosail config validate

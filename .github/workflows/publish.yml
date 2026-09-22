@@ -1,9 +1,12 @@
-name: Continuous container delivery
+name: Publish containers
 
 on:
   workflow_call:
     inputs:
       plan:
+        required: true
+        type: string
+      results:
         required: true
         type: string
 
@@ -12,12 +15,11 @@ permissions:
 
 jobs:
   verified:
-    name: Require all CI for this main commit
+    name: Require this run's completed checks
     runs-on: ubuntu-24.04
-    timeout-minutes: 70
+    timeout-minutes: 3
     permissions:
       contents: read
-      actions: read
     outputs:
       apps: ${{ steps.verify.outputs.apps }}
     steps:
@@ -29,7 +31,7 @@ jobs:
         run: python3 scripts/ci/delivery.py
         env:
           CI_PLAN: ${{ inputs.plan }}
-          GH_TOKEN: ${{ github.token }}
+          CI_RESULTS: ${{ inputs.results }}
 
   images:
     name: Build, test, and scan ${{ matrix.app }} (${{ matrix.arch }})
@@ -157,7 +159,7 @@ jobs:
           DIGEST: ${{ steps.manifest.outputs.digest }}
         run: |
           cosign sign --yes "$IMAGE@$DIGEST"
-          cosign verify --certificate-identity https://github.com/Kinosail/kinosail/.github/workflows/delivery.yml@refs/heads/main --certificate-oidc-issuer https://token.actions.githubusercontent.com "$IMAGE@$DIGEST"
+          cosign verify --certificate-identity https://github.com/Kinosail/kinosail/.github/workflows/publish.yml@refs/heads/main --certificate-oidc-issuer https://token.actions.githubusercontent.com "$IMAGE@$DIGEST"
       - name: Attest image provenance
         uses: actions/attest@1e69f48acb82d1966a394da916b4c1698aa569d6
         with:

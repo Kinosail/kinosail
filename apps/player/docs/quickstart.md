@@ -29,7 +29,7 @@ git clone --depth 1 https://github.com/Kinosail/kinosail.git
 cd kinosail/apps/player
 ```
 
-Keep this directory for updates. The installer verifies the downloaded image against `delivery.yml` on the protected `main` branch before starting it.
+Keep this directory for updates. The installer verifies the downloaded image against `publish.yml` on the protected `main` branch before starting it.
 
 ## 2. Start the Docker container
 
