@@ -39,7 +39,7 @@ class RuntimeContracts(unittest.TestCase):
         source = (ROOT / 'apps/player/scripts/test-container.sh').read_text()
         self.assertNotIn('done < <(./scripts/browser-projects.sh)', source)
         dashboard = (WORKFLOWS / 'dashboard-hygiene.yml').read_text()
-        self.assertIn('pnpm --dir apps/dashboard/e2e exec playwright test "${args[@]}"', dashboard)
+        self.assertIn('pnpm --dir apps/dashboard/e2e exec playwright test --project="$PROJECT"', dashboard)
         with tempfile.TemporaryDirectory() as directory:
             marker = Path(directory) / 'effects'
             for tool in ('docker', 'podman', 'mktemp'):
@@ -56,6 +56,25 @@ class RuntimeContracts(unittest.TestCase):
                 result = subprocess.run(['bash', str(ROOT / 'apps/player/scripts/browser-projects.sh')],
                     env=env | {'KINOSAIL_BROWSER_MATRIX': matrix, 'KINOSAIL_BROWSER_PROJECT': ''}, capture_output=True, text=True, check=True)
                 self.assertEqual(result.stdout, expected)
+
+    def test_browser_jobs_share_one_scanned_image_but_never_mutable_server_state(self):
+        for app in ("player", "subtitles"):
+            source = (WORKFLOWS / f'{app}-hygiene.yml').read_text()
+            images = source.split('  images:\n', 1)[1].split('  system:\n', 1)[0]
+            system = source.split('  system:\n', 1)[1].split('  required:\n', 1)[0]
+            self.assertEqual(source.count('uses: docker/build-push-action@'), 1)
+            self.assertIn('name: Scan the production image before merge', images)
+            self.assertIn('docker save "$IMAGE"', images)
+            self.assertIn('needs: images', system)
+            self.assertIn('docker load --input "$RUNNER_TEMP/image.tar.gz"', system)
+            self.assertIn('KINOSAIL_BROWSER_PROJECT: ${{ matrix.browser }}', system)
+            self.assertIn('["chromium","firefox","webkit"]', system)
+            self.assertIn('browser-failures-${{ matrix.browser }}', system)
+            self.assertIn('platform: linux/arm64\n            browser: firefox', system)
+            self.assertIn('platform: linux/arm64\n            browser: webkit', system)
+        dashboard = (WORKFLOWS / 'dashboard-hygiene.yml').read_text()
+        self.assertIn('["chromium","firefox","mobile-webkit"]', dashboard)
+        self.assertIn('PROJECT: ${{ matrix.browser }}', dashboard)
 
     def test_browser_integrity_runs_even_without_go_jobs(self):
         source = (WORKFLOWS / 'quality.yml').read_text().split('  web:')[0]

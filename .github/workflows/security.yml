@@ -73,8 +73,9 @@ jobs:
   swift:
     name: CodeQL Swift (${{ matrix.platform }})
     if: fromJSON(inputs.plan).swift
-    runs-on: macos-latest
-    timeout-minutes: 45
+    # Swift extraction needs memory; standard Intel runners provide 14 GB.
+    runs-on: macos-26-intel
+    timeout-minutes: 30
     permissions:
       contents: read
       security-events: write

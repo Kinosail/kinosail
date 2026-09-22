@@ -78,7 +78,11 @@ jobs:
   system:
     if: fromJSON(inputs.plan).dashboard
     timeout-minutes: 20
-    name: Dashboard runtime and browser checks
+    name: Dashboard runtime and browser checks (${{ matrix.browser }})
+    strategy:
+      fail-fast: false
+      matrix:
+        browser: ${{ fromJSON(fromJSON(inputs.plan).dashboard_browsers && '["chromium","firefox","mobile-webkit"]' || '["chromium"]') }}
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
@@ -102,19 +106,18 @@ jobs:
           read -ra browsers <<< "$BROWSERS"
           pnpm --dir apps/dashboard/e2e exec playwright install --with-deps "${browsers[@]}"
         env:
-          BROWSERS: ${{ fromJSON(inputs.plan).dashboard_browsers && 'chromium firefox webkit' || 'chromium' }}
+          BROWSERS: ${{ matrix.browser == 'mobile-webkit' && 'webkit' || matrix.browser }}
       - run: make -C apps/dashboard container-test
+        if: matrix.browser == 'chromium'
         env:
           CONTAINER_ENGINE: docker
       - run: |
-          args=()
-          [[ "$PROJECT" == full ]] || args+=(--project=chromium)
-          pnpm --dir apps/dashboard/e2e exec playwright test "${args[@]}"
+          pnpm --dir apps/dashboard/e2e exec playwright test --project="$PROJECT"
         env:
           CI: "1"
-          PROJECT: ${{ fromJSON(inputs.plan).dashboard_browsers && 'full' || 'chromium' }}
+          PROJECT: ${{ matrix.browser }}
       - name: Build ARM64 when build inputs change
-        if: fromJSON(inputs.plan).dashboard_arm
+        if: fromJSON(inputs.plan).dashboard_arm && matrix.browser == 'chromium'
         run: docker build --platform linux/arm64 -f apps/dashboard/Containerfile .
         env:
           CONTAINER_ENGINE: docker

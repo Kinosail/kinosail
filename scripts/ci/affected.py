@@ -33,6 +33,12 @@ def affected(paths):
                 or (len(parts) == 3 and parts[0] == "apps" and parts[-1] in ("README.md", "AGENTS.md", "DESIGN.md", "CONTEXT.md"))
                 or (len(parts) > 3 and parts[0] == "apps" and parts[2] == "docs" and path.endswith(".md"))):
             continue
+        if path.startswith("scripts/ci/test_") and path.endswith(".py"):
+            selected["tooling"] = selected["python"] = True
+            continue
+        if path == "scripts/ci/build-codeql-swift.sh":
+            selected["tooling"] = selected["client"] = selected["swift"] = True
+            continue
         if path in ("scripts/quality/package.json", "scripts/quality/pnpm-lock.yaml"):
             for flag in ("tooling", "web", "supply", "javascript-typescript"):
                 selected[flag] = True

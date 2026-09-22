@@ -7,8 +7,8 @@ from affected import FLAGS
 from required import verify
 
 SCOPES = {
-    "player": ("static", "race", "security", "system", "tooling", "scheduled", "client"),
-    "subtitles": ("static", "race", "security", "system", "tooling", "scheduled"),
+    "player": ("static", "race", "security", "system", "images", "tooling", "scheduled", "client"),
+    "subtitles": ("static", "race", "security", "system", "images", "tooling", "scheduled"),
     "dashboard": ("static", "race", "security", "system"),
     "repository": ("static", "tooling", "packages", "web"),
     "security": ("secrets", "supply-chain", "codeql", "swift", "findings"),

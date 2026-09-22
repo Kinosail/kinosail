@@ -25,6 +25,7 @@ def verify(scope, needs, raw_plan=None):
     if scope in APPS:
         expected = dict.fromkeys(("static", "race", "security", "system"), plan[scope])
         if scope != "dashboard":
+            expected["images"] = plan[scope]
             expected["tooling"] = plan[f"{scope}_tools"]
             expected["scheduled"] = plan["deep"]
         if scope == "player":

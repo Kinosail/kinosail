@@ -29,6 +29,14 @@ class SelectionTests(unittest.TestCase):
                              {"tooling", "web", "supply", "javascript-typescript"})
         self.assertTrue(affected(["scripts/quality/new-build-input"])["swift"])
 
+    def test_ci_test_and_swift_build_changes_select_their_actual_consumers(self):
+        self.assertEqual({key for key, value in affected(["scripts/ci/test_delivery.py"]).items() if value},
+                         {"tooling", "python"})
+        self.assertEqual({key for key, value in affected(["scripts/ci/build-codeql-swift.sh"]).items() if value},
+                         {"tooling", "client", "swift"})
+        self.assertTrue(all(affected(["scripts/ci/new-build.sh"]).values()))
+        self.assertTrue(all(affected(["scripts/ci/test_affected.py", "scripts/ci/affected.py"]).values()))
+
     def test_shared_changes_select_every_consumer(self):
         for path in ("packages/catalog/item.go", "go.work", "go.work.sum", "apps/player/go.mod"):
             with self.subTest(path=path):

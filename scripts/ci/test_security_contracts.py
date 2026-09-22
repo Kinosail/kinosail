@@ -18,12 +18,14 @@ class SecurityContracts(unittest.TestCase):
         self.assertIn("platform: [iOS, tvOS]", swift)
         self.assertIn("build-mode: manual", swift)
         self.assertIn("category: /language:swift/platform:${{ matrix.platform }}", swift)
-        self.assertIn("timeout-minutes: 45", swift)
+        self.assertIn("timeout-minutes: 30", swift)
+        self.assertIn("runs-on: macos-26-intel", swift)
         build = (ROOT / "scripts/ci/build-codeql-swift.sh").read_text()
         for option in ("-jobs 1", "ARCHS=arm64", "COMPILATION_CACHE_ENABLE_CACHING=NO",
                        "SWIFT_ENABLE_COMPILE_CACHE=NO", "SWIFT_USE_INTEGRATED_DRIVER=NO",
                        "SWIFT_COMPILATION_MODE=wholemodule", "SWIFT_USE_PARALLEL_WHOLE_MODULE_OPTIMIZATION=NO",
-                       "SWIFT_USE_PARALLEL_WMO_TARGETS=NO"):
+                       "SWIFT_USE_PARALLEL_WMO_TARGETS=NO", "COMPILER_INDEX_STORE_ENABLE=NO",
+                       "OTHER_SWIFT_FLAGS=$(inherited) -num-threads 1"):
             self.assertIn(option, build)
         self.assertIn("needs: [codeql, swift]", workflow)
         self.assertIn("always() && (inputs.languages != '[]' || fromJSON(inputs.plan).swift)", workflow)
@@ -51,6 +53,32 @@ class SecurityContracts(unittest.TestCase):
                                         capture_output=True, env=env)
                 self.assertEqual(result.returncode, 2)
                 self.assertFalse(marker.exists())
+
+    def test_swift_build_preserves_driver_flags_and_compiler_failure(self):
+        import os
+        import sys
+        import tempfile
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            compiler = root / "xcodebuild"
+            compiler.write_text(f'#!{sys.executable}\nimport json, os, sys\n'
+                                'print(json.dumps(sys.argv[1:]))\n'
+                                'sys.exit(int(os.environ["BUILD_RESULT"]))\n')
+            compiler.chmod(0o755)
+            monitor = root / "python3"
+            monitor.write_text('#!/bin/sh\nexit 0\n')
+            monitor.chmod(0o755)
+            env = os.environ | {"PATH": directory + ":" + os.environ["PATH"],
+                                "RUNNER_TEMP": directory, "GITHUB_SHA": "a" * 40}
+            for platform, status in (("iOS", 0), ("tvOS", 17)):
+                result = subprocess.run(["bash", str(ROOT / "scripts/ci/build-codeql-swift.sh"), platform],
+                                        env=env | {"BUILD_RESULT": str(status)}, capture_output=True, text=True)
+                self.assertEqual(result.returncode, status)
+                args = json.loads(result.stdout)
+                self.assertEqual(args[args.index("-scheme") + 1], "Kinosail-" + platform)
+                self.assertIn("OTHER_SWIFT_FLAGS=$(inherited) -num-threads 1", args)
+                self.assertIn("COMPILER_INDEX_STORE_ENABLE=NO", args)
+                self.assertEqual((root / "codeql-swift-build.log").read_text(), result.stdout)
 
     def test_open_medium_and_low_security_findings_also_block_merge(self):
         workflow = (ROOT / ".github/workflows/security.yml").read_text()

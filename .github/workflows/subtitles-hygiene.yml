@@ -149,10 +149,10 @@ jobs:
         if: matrix.check == 'deadcode'
         run: make deadcode
 
-  system:
+  images:
     if: fromJSON(inputs.plan).subtitles
     timeout-minutes: 20
-    name: Subtitles system (${{ matrix.platform }})
+    name: Subtitles image (${{ matrix.platform }})
     runs-on: ${{ matrix.runner }}
     defaults:
       run:
@@ -161,6 +161,64 @@ jobs:
       fail-fast: false
       matrix:
         include: ${{ fromJSON(fromJSON(inputs.plan).subtitles_arm && '[{"platform":"linux/amd64","runner":"ubuntu-24.04"},{"platform":"linux/arm64","runner":"ubuntu-24.04-arm"}]' || '[{"platform":"linux/amd64","runner":"ubuntu-24.04"}]') }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4
+      - name: Build Subtitles test image
+        uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7
+        with:
+          context: .
+          file: apps/subtitles/Containerfile
+          platforms: ${{ matrix.platform }}
+          cache-from: type=gha,scope=subtitles-${{ matrix.platform }}
+          cache-to: type=gha,mode=max,scope=subtitles-${{ matrix.platform }}
+          load: true
+          push: false
+          tags: localhost/kinosail-subtitles:${{ github.sha }}
+          build-args: |
+            VERSION=ci
+            REVISION=${{ github.sha }}
+      - name: Scan the production image before merge
+        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25
+        with:
+          image-ref: localhost/kinosail-subtitles:${{ github.sha }}
+          severity: CRITICAL,HIGH
+          ignore-unfixed: true
+          exit-code: "1"
+      - name: Export the scanned image for isolated browser runners
+        env:
+          IMAGE: localhost/kinosail-subtitles:${{ github.sha }}
+        run: docker save "$IMAGE" | gzip -1 > "$RUNNER_TEMP/image.tar.gz"
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: subtitles-image-${{ matrix.runner }}
+          path: ${{ runner.temp }}/image.tar.gz
+          compression-level: 0
+          overwrite: true
+          retention-days: 1
+          if-no-files-found: error
+
+  system:
+    needs: images
+    if: fromJSON(inputs.plan).subtitles
+    timeout-minutes: 20
+    name: Subtitles system (${{ matrix.platform }}, ${{ matrix.browser }})
+    runs-on: ${{ matrix.platform == 'linux/arm64' && 'ubuntu-24.04-arm' || 'ubuntu-24.04' }}
+    defaults:
+      run:
+        working-directory: apps/subtitles
+    strategy:
+      fail-fast: false
+      matrix:
+        platform: ${{ fromJSON(fromJSON(inputs.plan).subtitles_arm && '["linux/amd64","linux/arm64"]' || '["linux/amd64"]') }}
+        browser: ${{ fromJSON(fromJSON(inputs.plan).subtitles_browsers && '["chromium","firefox","webkit"]' || '["chromium"]') }}
+        exclude:
+          - platform: linux/arm64
+            browser: firefox
+          - platform: linux/arm64
+            browser: webkit
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
@@ -187,29 +245,12 @@ jobs:
           read -ra browsers <<< "$BROWSERS"
           pnpm exec playwright install --with-deps "${browsers[@]}"
         env:
-          BROWSERS: ${{ fromJSON(inputs.plan).subtitles_browsers && 'chromium firefox webkit' || 'chromium' }}
-      - uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4
-      - name: Build Subtitles test image
-        uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7
+          BROWSERS: ${{ matrix.browser }}
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
         with:
-          context: .
-          file: apps/subtitles/Containerfile
-          platforms: ${{ matrix.platform }}
-          cache-from: type=gha,scope=subtitles-${{ matrix.platform }}
-          cache-to: type=gha,mode=max,scope=subtitles-${{ matrix.platform }}
-          load: true
-          push: false
-          tags: localhost/kinosail-subtitles:${{ github.sha }}
-          build-args: |
-            VERSION=ci
-            REVISION=${{ github.sha }}
-      - name: Scan the production image before merge
-        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25
-        with:
-          image-ref: localhost/kinosail-subtitles:${{ github.sha }}
-          severity: CRITICAL,HIGH
-          ignore-unfixed: true
-          exit-code: "1"
+          name: subtitles-image-${{ matrix.platform == 'linux/arm64' && 'ubuntu-24.04-arm' || 'ubuntu-24.04' }}
+          path: ${{ runner.temp }}
+      - run: docker load --input "$RUNNER_TEMP/image.tar.gz"
       - name: Test ARM64 production container and restart persistence
         if: matrix.platform == 'linux/arm64'
         env:
@@ -222,6 +263,7 @@ jobs:
         if: matrix.platform == 'linux/amd64'
         env:
           CONTAINER_ENGINE: docker
+          KINOSAIL_BROWSER_PROJECT: ${{ matrix.browser }}
           KINOSAIL_BROWSER_MATRIX: ${{ fromJSON(inputs.plan).subtitles_browsers && 'full' || '' }}
           # Browser projects mutate settings on the same Server fixture.
           KINOSAIL_BROWSER_WORKERS: "1"
@@ -231,18 +273,21 @@ jobs:
           KINOSAIL_TEST_IMAGE_READY: "1"
         run: |
           status=0
-          ./scripts/test-container.sh &
-          production_pid=$!
+          production_pid=""
+          if [[ "$KINOSAIL_BROWSER_PROJECT" == chromium ]]; then
+            ./scripts/test-container.sh &
+            production_pid=$!
+          fi
           KINOSAIL_BROWSER_TEST=1 ./scripts/test-container.sh &
           browser_pid=$!
-          wait "$production_pid" || status=$?
+          if [[ -n "$production_pid" ]]; then wait "$production_pid" || status=$?; fi
           wait "$browser_pid" || status=$?
           exit "$status"
       - name: Retain browser failure evidence
         if: failure() && matrix.platform == 'linux/amd64'
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
         with:
-          name: subtitles-browser-failures
+          name: subtitles-browser-failures-${{ matrix.browser }}
           path: ${{ runner.temp }}/subtitles-browser-results
           retention-days: 7
           if-no-files-found: ignore
@@ -250,7 +295,7 @@ jobs:
   required:
     name: Subtitles checks
     if: always()
-    needs: [static, race, security, system, tooling, scheduled]
+    needs: [static, race, security, images, system, tooling, scheduled]
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
