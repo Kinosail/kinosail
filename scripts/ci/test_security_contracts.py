@@ -21,7 +21,9 @@ class SecurityContracts(unittest.TestCase):
         self.assertIn("timeout-minutes: 45", swift)
         build = (ROOT / "scripts/ci/build-codeql-swift.sh").read_text()
         for option in ("-jobs 1", "ARCHS=arm64", "COMPILATION_CACHE_ENABLE_CACHING=NO",
-                       "SWIFT_ENABLE_COMPILE_CACHE=NO", "SWIFT_USE_INTEGRATED_DRIVER=NO"):
+                       "SWIFT_ENABLE_COMPILE_CACHE=NO", "SWIFT_USE_INTEGRATED_DRIVER=NO",
+                       "SWIFT_COMPILATION_MODE=wholemodule", "SWIFT_USE_PARALLEL_WHOLE_MODULE_OPTIMIZATION=NO",
+                       "SWIFT_USE_PARALLEL_WMO_TARGETS=NO"):
             self.assertIn(option, build)
         self.assertIn("needs: [codeql, swift]", workflow)
         self.assertIn("always() && (inputs.languages != '[]' || fromJSON(inputs.plan).swift)", workflow)

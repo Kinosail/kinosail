@@ -5,6 +5,8 @@ set -euo pipefail
 case "$1" in iOS|tvOS) ;; *) echo 'invalid Apple platform' >&2; exit 2 ;; esac
 repo="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 : "${RUNNER_TEMP:?runner temporary directory is required}"
+# Xcode -jobs does not limit the legacy Swift driver, which uses CPU count.
+# A clean whole-module build avoids parallel copies of the same module AST.
 # Record enough evidence to distinguish compiler work from memory contention.
 python3 -u -c '
 import datetime, subprocess, time
@@ -22,5 +24,7 @@ xcodebuild -project "$repo/apps/player/apps/native/Kinosail.xcodeproj" \
   -derivedDataPath "$RUNNER_TEMP/codeql-swift-$1" -jobs 1 \
   ARCHS=arm64 ONLY_ACTIVE_ARCH=YES CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO \
   COMPILATION_CACHE_ENABLE_CACHING=NO SWIFT_ENABLE_COMPILE_CACHE=NO \
-  SWIFT_USE_INTEGRATED_DRIVER=NO "KINOSAIL_SOURCE_REVISION=$GITHUB_SHA" build \
+  SWIFT_USE_INTEGRATED_DRIVER=NO SWIFT_COMPILATION_MODE=wholemodule \
+  SWIFT_USE_PARALLEL_WHOLE_MODULE_OPTIMIZATION=NO SWIFT_USE_PARALLEL_WMO_TARGETS=NO \
+  "KINOSAIL_SOURCE_REVISION=$GITHUB_SHA" build \
   2>&1 | tee "$RUNNER_TEMP/codeql-swift-build.log"
