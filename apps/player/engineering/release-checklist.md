@@ -7,7 +7,7 @@ While the root `.gates-disabled` marker exists, do not run the candidate gates b
 ## Local preparation
 
 - [ ] Record the candidate commit and prepare the unsigned installer with `make -C apps/player package-installer OUTPUT=/absolute/path/to/new-directory`. The parent directory must exist; existing output is refused. This packages only the explicit release files and checksum, without tests, image builds, signing, uploads, tags, or visibility changes.
-- [ ] Retain the existing image verification policy: the installer requires a signature issued to `.github/workflows/player-release.yml` on a `player-vMAJOR.MINOR.PATCH` tag. Locally built Nox images do not meet that identity requirement. A local checksum does not establish release authenticity.
+- [ ] Retain the existing image verification policy: the installer requires a signature issued to `.github/workflows/release.yml` on a `player-vMAJOR.MINOR.PATCH` tag. Locally built Nox images do not meet that identity requirement. A local checksum does not establish release authenticity.
 - [ ] Resolve the signed-release publishing path before tagging. The retained GitHub workflow cannot run while Actions is disabled. Do not substitute unsigned images or broaden the installer's trusted identity to work around this.
 
 ## Candidate gates (currently disabled)

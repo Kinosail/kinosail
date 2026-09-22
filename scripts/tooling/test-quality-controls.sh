@@ -34,7 +34,10 @@ done
 require_text .pre-commit-config.yaml 'entry: ./scripts/tooling/pre-commit.sh'
 require_text scripts/tooling/pre-commit.sh 'Full quality suites run in GitHub Actions.'
 require_text scripts/tooling/pre-commit.sh 'worktree_guard.py" heartbeat --if-present'
-require_text scripts/tooling/pre-commit.sh 'worktree_guard.py" audit'
+if grep -Fq 'worktree_guard.py" audit' "$repo/scripts/tooling/pre-commit.sh"; then
+  printf 'pre-commit must not block on unrelated worktrees\n' >&2
+  exit 1
+fi
 require_text scripts/tooling/check-staged-quality.sh 'commit-tree "$tree" -p "$parent"'
 require_text scripts/tooling/check-staged-quality.sh 'worktree add --detach --quiet "$snapshot" "$commit"'
 require_text scripts/tooling/check-staged-quality.sh 'lease --task "$lease_task" --ttl 7200 --worktree "$snapshot"'
@@ -48,25 +51,21 @@ require_text scripts/quality/check-crap.sh '*/archivetest|*/archivetest/*|*/comm
 require_text scripts/quality/check-mutation.sh '(^|/)(archivetest|commandtest|configurationtest|servertest)/'
 require_text scripts/quality/check-deadcode.sh '(archivetest|commandtest|configurationtest|servertest)'
 require_text Makefile 'install -m 755 scripts/tooling/pre-commit.sh "$$hooks/pre-commit"'
-require_text Makefile './scripts/tooling/worktree_guard.py audit'
+require_text Makefile './scripts/tooling/worktree_guard.py heartbeat --if-present'
+require_text Makefile 'worktree-audit:'
 require_text Makefile './scripts/tooling/test-worktree-guard.py'
 for app in player subtitles dashboard; do
   require_text "apps/$app/Makefile" '@$(MAKE) -C ../.. hooks'
 done
 
-require_text .github/workflows/quality.yml 'pull_request:'
-require_text .github/workflows/quality.yml 'branches: [main]'
-require_text .github/workflows/quality.yml 'workflow_call:'
-require_text .github/workflows/diagnostics.yml './scripts/quality/check-static.sh'
-require_text .github/workflows/quality.yml './scripts/ci/test-go.sh packages'
-require_text .github/workflows/quality.yml 'python3 scripts/ci/required.py repository'
-require_text .github/workflows/diagnostics.yml './scripts/quality/check-mutation.sh "${{ matrix.app }}"'
-
-for app in player subtitles dashboard; do
-  workflow=".github/workflows/$app-release.yml"
-  require_text "$workflow" 'for workflow in quality.yml'
-  require_text "$workflow" 'needs: [quality, images]'
-done
+require_text .github/workflows/ci.yml 'pull_request:'
+require_text .github/workflows/ci.yml 'branches: [main]'
+require_text .github/workflows/ci.yml './scripts/quality/check-static.sh'
+require_text .github/workflows/ci.yml './scripts/ci/test-go.sh packages'
+require_text .github/workflows/ci.yml 'python3 scripts/ci/required.py repository'
+require_text .github/workflows/app.yml 'python3 scripts/ci/required.py app'
+require_text .github/workflows/release.yml '--workflow ci.yml --commit "$commit" --event push'
+require_text .github/workflows/release.yml 'needs: [preflight, images]'
 
 require_text scripts/quality/check-static.sh 'pnpm --dir "$repo/scripts/quality" install --frozen-lockfile'
 require_text scripts/quality/check-script-duplicates.sh '--threshold 0'

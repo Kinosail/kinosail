@@ -9,5 +9,4 @@ if [[ -f "$repo/.gates-disabled" || -f "$common/../.gates-disabled" ]]; then
   exit 0
 fi
 "$repo/scripts/tooling/worktree_guard.py" heartbeat --if-present
-"$repo/scripts/tooling/worktree_guard.py" audit
 printf 'Full quality suites run in GitHub Actions.\n'

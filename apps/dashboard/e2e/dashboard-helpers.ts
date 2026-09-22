@@ -6,8 +6,15 @@ export const owner = "Dashboard Owner",
 
 export async function login(page: Page, passwordValue = password, dismissOffer = true) {
 	await page.goto("/login");
-	await page.getByLabel("Name", { exact: true }).fill(owner);
-	await page.getByLabel("Password", { exact: true }).fill(passwordValue);
+	const name = page.getByLabel("Name", { exact: true });
+	const secret = page.getByLabel("Password", { exact: true });
+	for (let attempt = 0; attempt < 2; attempt++) {
+		await name.fill(owner);
+		await secret.fill(passwordValue);
+		if (await name.inputValue() === owner && await secret.inputValue() === passwordValue) break;
+	}
+	await expect(name).toHaveValue(owner);
+	await expect(secret).toHaveValue(passwordValue);
 	await page.getByRole("button", { name: "Sign in", exact: true }).click();
 	await expect(page).toHaveURL(/\?passkey=offer$/);
 	await expect(page.getByRole("dialog", { name: "Make the next sign-in easier" })).toBeVisible();

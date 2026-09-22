@@ -81,6 +81,18 @@ class WorktreeGuardTest(unittest.TestCase):
         self.assertEqual(self.run_guard("audit").returncode, 0)
         self.assertTrue(before)
 
+    def test_current_lease_can_be_renewed_when_other_worktree_is_inactive(self) -> None:
+        current = self.add_worktree("current")
+        other = self.add_worktree("other")
+        self.run_guard("lease", "--task", "current", cwd=current, check=True)
+        self.run_guard("lease", "--task", "other", cwd=other, check=True)
+        self.expire(other)
+        (other / "untracked").write_text("preserve\n", encoding="utf-8")
+
+        self.assertEqual(self.run_guard("heartbeat", "--if-present", cwd=current).returncode, 0)
+        self.assertNotEqual(self.run_guard("audit", cwd=current).returncode, 0)
+        self.assertTrue((other / "untracked").exists())
+
     def test_unknown_oversized_and_conflicting_input_has_no_side_effects(self) -> None:
         path = self.add_worktree()
         self.run_guard("lease", "--task", "owner", cwd=path, check=True)
@@ -148,6 +160,31 @@ class WorktreeGuardTest(unittest.TestCase):
         self.assertFalse(path.exists())
         self.assertEqual((self.repo / "tracked").read_text(encoding="utf-8"), "finished\n")
         self.assertNotIn("task", self.git("branch", "--format=%(refname:short)").stdout.splitlines())
+
+    def test_finish_after_remote_merge_fast_forwards_local_main(self) -> None:
+        remote = self.temp / "remote.git"
+        subprocess.run(["git", "init", "--bare", "-q", str(remote)], check=True)
+        self.git("remote", "add", "origin", str(remote))
+        self.git("push", "-q", "origin", "main")
+        path = self.add_worktree()
+        (path / "tracked").write_text("merged remotely\n", encoding="utf-8")
+        self.git("add", "tracked", cwd=path)
+        self.commit("task change", cwd=path)
+        self.git("push", "-q", "origin", "HEAD:main", cwd=path)
+        self.run_guard("lease", "--task", "finish", cwd=path, check=True)
+
+        fake_bin = self.temp / "bin"
+        fake_bin.mkdir()
+        fake_make = fake_bin / "make"
+        fake_make.write_text("#!/bin/sh\nexit 0\n", encoding="utf-8")
+        fake_make.chmod(0o755)
+        env = os.environ.copy()
+        env["PATH"] = f"{fake_bin}{os.pathsep}{env['PATH']}"
+        result = self.run_guard("finish", "--task", "finish", cwd=path, env=env)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertFalse(path.exists())
+        self.assertEqual(self.git("rev-parse", "HEAD").stdout,
+                         self.git("rev-parse", "origin/main").stdout)
 
 
 if __name__ == "__main__":

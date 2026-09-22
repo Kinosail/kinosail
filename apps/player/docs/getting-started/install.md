@@ -35,7 +35,7 @@ The second argument is optional. The default port is `38127`. The path must be a
 
 The installer selects `podman compose` when available. It falls back to `docker compose`. It creates `secrets/backup_key` with mode `600` when the key does not exist. Keep this key with your encrypted backups.
 
-The installer pulls `ghcr.io/kinosail/kinosail-player:latest`, verifies its keyless signature against `delivery.yml@refs/heads/main`, pins the resolved SHA-256 digest in `.env`, and starts the service. It waits for the `kinosail healthcheck` command to pass.
+The installer pulls `ghcr.io/kinosail/kinosail-player:latest`, verifies its keyless signature against `publish.yml@refs/heads/main`, pins the resolved SHA-256 digest in `.env`, and starts the service. It waits for the `kinosail healthcheck` command to pass.
 
 
 ## Open the Server

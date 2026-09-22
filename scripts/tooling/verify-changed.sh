@@ -175,7 +175,7 @@ while IFS= read -r file; do
   [[ -z "$file" ]] || run_stage "ui-lint:$file" "$file" python3 "$repo/.codex/skills/anti-ai-slop-ui/scripts/ui_lint.py" "$file"
 done <<<"$css_files"
 
-native_files="$(grep -E '^apps/native/' <<<"$changed" || true)"
+native_files="$(grep -E '^apps/native/' <<<"$changed" | grep -Ev '^apps/native/AGENTS\.md$' || true)"
 if [[ "$app_path" == apps/player && -n "$native_files" ]]; then
   native_inputs="$(printf '%s\n%s\n' "$(git ls-files apps/native)" "$native_files" | LC_ALL=C sort -u)"
   run_stage native-client "$native_inputs" make client-check

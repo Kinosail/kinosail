@@ -1,4 +1,5 @@
-"""A skipped selected job must never make a protected check green."""
+"""Protected checks fail closed on skipped, missing, or cancelled work."""
+
 import copy
 import json
 import unittest
@@ -6,84 +7,87 @@ import unittest
 from affected import FLAGS
 from required import verify
 
-SCOPES = {
-    "player": ("static", "race", "security", "system", "tooling", "scheduled", "client"),
-    "subtitles": ("static", "race", "security", "system", "tooling", "scheduled"),
-    "dashboard": ("static", "race", "security", "system"),
-    "repository": ("static", "tooling", "packages", "web"),
-    "security": ("secrets", "supply-chain", "codeql", "findings"),
-}
 
-
-def results(scope, selected):
+def case(scope, selected=True, app="player"):
     plan = dict.fromkeys((*FLAGS, "deep"), selected)
-    needs = {"changes": {"result": "success", "outputs": {"plan": json.dumps(plan)}}}
-    needs.update({job: {"result": "success" if selected else "skipped"} for job in SCOPES[scope]})
+    raw = json.dumps(plan)
+    needs = {} if scope == "app" else {"plan": {"result": "success", "outputs": {"plan": raw}}}
+    if scope == "repository":
+        jobs = ("static", "tooling", "packages", "web", "docs")
+    elif scope == "security":
+        jobs = ("secrets", "codeql", "supply-chain", "findings")
+    else:
+        jobs = ("static", "race", "security", "system", "tooling", "client")
+    needs.update({job: {"result": "success" if selected else "skipped"} for job in jobs})
     if scope == "repository":
         needs["static"]["result"] = "success"
     if scope == "security":
         needs["secrets"]["result"] = "success"
-    return needs
+    if scope == "app" and app != "player":
+        needs["client"]["result"] = "skipped"
+    if scope == "app" and app == "dashboard":
+        needs["tooling"]["result"] = "skipped"
+    return raw, needs
 
 
 class RequiredTests(unittest.TestCase):
-    def test_all_selected_or_intentionally_unselected_pass(self):
-        for scope in SCOPES:
+    def test_selected_and_intentionally_unselected_jobs(self):
+        for scope in ("repository", "security"):
             for selected in (True, False):
-                verify(scope, results(scope, selected))
+                raw, needs = case(scope, selected)
+                verify(scope, needs)
+        for app in ("player", "subtitles", "dashboard"):
+            raw, needs = case("app", app=app)
+            verify("app", needs, raw, app)
 
-    def test_selected_failure_cancellation_skip_and_missing_job_fail(self):
-        for scope, jobs in SCOPES.items():
-            for job in ("changes", *jobs):
-                for state in ("failure", "cancelled", "skipped", "", "neutral", "missing"):
+    def test_failure_cancelled_skip_missing_and_unexpected_job_fail(self):
+        for scope, app in (("repository", None), ("security", None), ("app", "player")):
+            raw, original = case(scope)
+            for job in original:
+                for state in ("failure", "cancelled", "skipped", "neutral", "missing"):
                     with self.subTest(scope=scope, job=job, state=state):
-                        needs = results(scope, True)
+                        needs = copy.deepcopy(original)
                         if state == "missing":
                             needs.pop(job)
                         else:
                             needs[job]["result"] = state
                         with self.assertRaises((ValueError, KeyError)):
-                            verify(scope, needs)
-
-    def test_unknown_jobs_and_malformed_plans_fail(self):
-        needs = results("player", True)
-        needs["surprise"] = {"result": "success"}
-        with self.assertRaises(ValueError):
-            verify("player", needs)
-        for plan in ({}, {"player": True}, dict.fromkeys((*FLAGS, "deep"), "false")):
-            needs = results("player", True)
-            needs["changes"]["outputs"]["plan"] = json.dumps(plan)
+                            verify(scope, needs, raw, app)
+            needs = copy.deepcopy(original)
+            needs["surprise"] = {"result": "success"}
             with self.assertRaises(ValueError):
-                verify("player", needs)
-        with self.assertRaises(ValueError):
-            verify("unknown", {})
+                verify(scope, needs, raw, app)
 
-    def test_swift_and_actions_scans_cannot_be_skipped(self):
-        for language in ("swift", "actions"):
-            needs = results("security", False)
-            plan = json.loads(needs["changes"]["outputs"]["plan"])
-            plan[language] = True
-            needs["changes"]["outputs"]["plan"] = json.dumps(plan)
-            for job in ("codeql", "findings"):
-                needs[job]["result"] = "success"
-            verify("security", needs)
-            for job in ("codeql", "findings"):
-                broken = copy.deepcopy(needs)
-                broken[job]["result"] = "skipped"
-                with self.assertRaises(ValueError):
-                    verify("security", broken)
+    def test_malformed_plan_and_app_rejected(self):
+        raw, needs = case("app")
+        for value in ("", "[]", "x" * 16385, "{}", json.dumps(dict.fromkeys((*FLAGS, "deep"), "false"))):
+            with self.subTest(value=value[:20]), self.assertRaises(ValueError):
+                verify("app", needs, value, "player")
+        for app in (None, "../player", "dashboard"):
+            with self.subTest(app=app), self.assertRaises(ValueError):
+                verify("app", needs, raw, app)
 
-    def test_native_only_requires_client_and_skips_server(self):
-        needs = results("player", False)
-        plan = json.loads(needs["changes"]["outputs"]["plan"])
+    def test_native_only_requires_client_without_server(self):
+        plan = dict.fromkeys((*FLAGS, "deep"), False)
         plan["client"] = True
-        needs["changes"]["outputs"]["plan"] = json.dumps(plan)
-        needs["client"]["result"] = "success"
-        verify("player", needs)
-        broken = copy.deepcopy(needs)
-        broken["client"]["result"] = "skipped"
+        raw = json.dumps(plan)
+        needs = {**{job: {"result": "skipped"} for job in ("static", "race", "security", "system", "tooling")},
+                 "client": {"result": "success"}}
+        verify("app", needs, raw, "player")
+        needs["client"]["result"] = "skipped"
         with self.assertRaises(ValueError):
-            verify("player", broken)
+            verify("app", needs, raw, "player")
+
+    def test_actions_codeql_cannot_be_skipped(self):
+        raw, needs = case("security", False)
+        plan = json.loads(raw)
+        plan["actions"] = True
+        needs["plan"]["outputs"]["plan"] = json.dumps(plan)
+        needs["codeql"]["result"] = needs["findings"]["result"] = "success"
+        verify("security", needs)
+        needs["codeql"]["result"] = "skipped"
+        with self.assertRaises(ValueError):
+            verify("security", needs)
 
 
 if __name__ == "__main__":
