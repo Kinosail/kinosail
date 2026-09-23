@@ -118,7 +118,7 @@ jobs:
       - run: make -C apps/player client-check
 
   system:
-    name: ${{ inputs.app }} container and browser (${{ matrix.platform }})
+    name: ${{ inputs.app }} production container (${{ matrix.platform }})
     if: fromJSON(inputs.plan)[inputs.app]
     runs-on: ${{ matrix.runner }}
     timeout-minutes: 25
@@ -130,28 +130,6 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
           persist-credentials: false
-      - uses: pnpm/setup@fbda4c85fc2e1e08721cd8763afea8f48d60f024
-        if: matrix.platform == 'linux/amd64'
-        with:
-          version: 11.22.0
-          install: false
-          node-version-file: false
-      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020
-        if: matrix.platform == 'linux/amd64'
-        with:
-          node-version: 26
-          package-manager-cache: false
-      - if: matrix.platform == 'linux/amd64'
-        env:
-          APP: ${{ inputs.app }}
-        run: pnpm --dir "apps/$APP/e2e" install --frozen-lockfile
-      - if: matrix.platform == 'linux/amd64'
-        env:
-          APP: ${{ inputs.app }}
-          BROWSERS: ${{ fromJSON(inputs.plan)[format('{0}_browsers', inputs.app)] && 'chromium firefox webkit' || 'chromium' }}
-        run: |
-          read -ra browsers <<< "$BROWSERS"
-          pnpm --dir "apps/$APP/e2e" exec playwright install --with-deps "${browsers[@]}"
       - uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069
       - uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc
         with:
@@ -177,17 +155,9 @@ jobs:
         working-directory: apps/${{ inputs.app }}
         env:
           CONTAINER_ENGINE: docker
-          KINOSAIL_BROWSER_MATRIX: ${{ fromJSON(inputs.plan)[format('{0}_browsers', inputs.app)] && 'full' || '' }}
-          KINOSAIL_BROWSER_WORKERS: ${{ inputs.app == 'player' && '3' || '1' }}
-          KINOSAIL_E2E_OUTPUT_DIR: ${{ runner.temp }}/${{ inputs.app }}-browser-results
-          KINOSAIL_PLATFORM: ${{ matrix.platform }}
           KINOSAIL_TEST_IMAGE: localhost/kinosail-${{ inputs.app }}:${{ github.sha }}
           KINOSAIL_TEST_IMAGE_READY: "1"
-        run: |
-          ./scripts/test-container.sh
-          if [[ "$KINOSAIL_PLATFORM" == linux/amd64 ]]; then
-            KINOSAIL_BROWSER_TEST=1 ./scripts/test-container.sh
-          fi
+        run: ./scripts/test-container.sh
       - name: Test Dashboard production image
         if: inputs.app == 'dashboard' && matrix.platform == 'linux/amd64'
         env:
@@ -195,8 +165,62 @@ jobs:
           KINOSAIL_DASHBOARD_TEST_IMAGE: localhost/kinosail-dashboard:${{ github.sha }}
           KINOSAIL_TEST_IMAGE_READY: "1"
         run: make -C apps/dashboard container-test
+  browser:
+    name: ${{ inputs.app }} populated browser
+    if: fromJSON(inputs.plan)[inputs.app]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - uses: pnpm/setup@fbda4c85fc2e1e08721cd8763afea8f48d60f024
+        with:
+          version: 11.22.0
+          install: false
+          node-version-file: false
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020
+        with:
+          node-version: 26
+          package-manager-cache: false
+      - env:
+          APP: ${{ inputs.app }}
+        run: pnpm --dir "apps/$APP/e2e" install --frozen-lockfile
+      - env:
+          APP: ${{ inputs.app }}
+          BROWSERS: ${{ fromJSON(inputs.plan)[format('{0}_browsers', inputs.app)] && 'chromium firefox webkit' || 'chromium' }}
+        run: |
+          read -ra browsers <<< "$BROWSERS"
+          pnpm --dir "apps/$APP/e2e" exec playwright install --with-deps "${browsers[@]}"
+      - uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069
+        if: inputs.app != 'dashboard'
+      - uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc
+        if: inputs.app != 'dashboard'
+        with:
+          context: .
+          file: apps/${{ inputs.app }}/Containerfile
+          platforms: linux/amd64
+          cache-from: type=gha,scope=${{ inputs.app }}-linux/amd64
+          load: true
+          push: false
+          tags: localhost/kinosail-${{ inputs.app }}:${{ github.sha }}
+          build-args: |
+            VERSION=ci
+            REVISION=${{ github.sha }}
+      - name: Test Player and Subtitles browsers
+        if: inputs.app != 'dashboard'
+        working-directory: apps/${{ inputs.app }}
+        env:
+          CONTAINER_ENGINE: docker
+          KINOSAIL_BROWSER_TEST: "1"
+          KINOSAIL_BROWSER_MATRIX: ${{ fromJSON(inputs.plan)[format('{0}_browsers', inputs.app)] && 'full' || '' }}
+          KINOSAIL_BROWSER_WORKERS: ${{ inputs.app == 'player' && '3' || '1' }}
+          KINOSAIL_E2E_OUTPUT_DIR: ${{ runner.temp }}/${{ inputs.app }}-browser-results
+          KINOSAIL_TEST_IMAGE: localhost/kinosail-${{ inputs.app }}:${{ github.sha }}
+          KINOSAIL_TEST_IMAGE_READY: "1"
+        run: ./scripts/test-container.sh
       - name: Test Dashboard browsers
-        if: inputs.app == 'dashboard' && matrix.platform == 'linux/amd64'
+        if: inputs.app == 'dashboard'
         env:
           CI: "1"
           PROJECT: ${{ fromJSON(inputs.plan)[format('{0}_browsers', inputs.app)] && 'full' || 'chromium' }}
@@ -205,7 +229,7 @@ jobs:
           [[ "$PROJECT" == full ]] || args+=(--project=chromium)
           pnpm --dir apps/dashboard/e2e exec playwright test "${args[@]}"
       - name: Keep browser failure evidence
-        if: failure() && matrix.platform == 'linux/amd64'
+        if: failure()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
         with:
           name: ${{ inputs.app }}-browser-failures
@@ -218,7 +242,7 @@ jobs:
   required:
     name: ${{ inputs.app }} suite complete
     if: always()
-    needs: [static, race, security, tooling, client, system]
+    needs: [static, race, security, tooling, client, system, browser]
     runs-on: ubuntu-24.04
     timeout-minutes: 2
     steps:
