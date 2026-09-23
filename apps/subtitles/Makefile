@@ -1,4 +1,4 @@
-.PHONY: bootstrap deploy-nox hooks install-nox-autodeploy browser-test check check-fast ci-local ci-status container-test coverage deadcode installer-test native-build format lint local-pipeline local-pipeline-test performance-test playback-test publish-main test test-instance-check test-race tidy-check verify-changed verify-watch vuln secrets max-loc single-container shellcheck actionlint
+.PHONY: bootstrap deploy-nox hooks install-nox-autodeploy browser-test check check-fast container-test coverage deadcode installer-test native-build format lint local-pipeline local-pipeline-test performance-test playback-test test test-instance-check test-race tidy-check verify-changed verify-watch vuln secrets max-loc single-container shellcheck actionlint
 
 bootstrap:
 	brew bundle
@@ -16,12 +16,6 @@ install-nox-autodeploy:
 browser-test:
 	@pnpm --dir e2e install --frozen-lockfile
 	@CI=1 KINOSAIL_BROWSER_TEST=1 ./scripts/test-container.sh
-
-ci-local:
-	@./scripts/ci-mode.sh local
-
-ci-status:
-	@./scripts/ci-mode.sh status
 
 check: check-fast test-race vuln
 
@@ -48,9 +42,7 @@ local-pipeline:
 
 local-pipeline-test:
 	@./scripts/test-deploy-nox.sh
-	@./scripts/test-publish-main.sh
 	@./scripts/test-verify-changed.sh
-	@./scripts/test-auto-revert-main.sh
 
 format:
 	@../../scripts/tooling/with-go-module.sh golangci-lint fmt
@@ -64,9 +56,6 @@ performance-test:
 
 playback-test:
 	@./scripts/test-playback.sh
-
-publish-main:
-	@./scripts/publish-main.sh
 
 test:
 	@../../scripts/tooling/with-go-module.sh go test ./...
@@ -105,4 +94,4 @@ actionlint:
 	actionlint
 
 # The file cap is enabled; preserve the pause for all other gates.
-browser-test ci-local check check-fast container-test coverage deadcode installer-test native-build local-pipeline local-pipeline-test lint performance-test playback-test test test-instance-check test-race verify-changed verify-watch tidy-check vuln secrets single-container shellcheck actionlint: SHELL := $(abspath ../../scripts/tooling/gate-shell.sh)
+browser-test check check-fast container-test coverage deadcode installer-test native-build local-pipeline local-pipeline-test lint performance-test playback-test test test-instance-check test-race verify-changed verify-watch tidy-check vuln secrets single-container shellcheck actionlint: SHELL := $(abspath ../../scripts/tooling/gate-shell.sh)

@@ -30,12 +30,16 @@ printf '%s\n' '#!/usr/bin/env bash' \
   'printf "%s\n" "$*" >>"$KINOSAIL_TEST_PODMAN_LOG"' \
   '[[ "${1:-} ${2:-}" == "image exists" ]] && exit 1' \
   'exit 42' >"$tmp/bin/podman"
+printf '%s\n' '#!/usr/bin/env bash' \
+  'if [[ " $* " == *" run list "* ]]; then printf "[{\"databaseId\":123,\"headSha\":\"%s\",\"status\":\"completed\",\"conclusion\":\"success\"}]\n" "$KINOSAIL_TEST_SHA"; exit; fi' \
+  'if [[ " $* " == *" run view "* ]]; then printf "{\"jobs\":[{\"name\":\"Publish verified containers / Advance %s production tags\",\"conclusion\":\"success\"}]}\n" "$KINOSAIL_TEST_APP"; exit; fi' \
+  'exit 99' >"$tmp/bin/gh"
 chmod +x "$tmp/bin/"*
 
 deploy() {
   PATH="$tmp/bin:$PATH" KINOSAIL_TEST_ARCHIVE="$tmp/empty.tar" \
     KINOSAIL_TEST_NOX_STATE="$1" KINOSAIL_TEST_PODMAN_LOG="$tmp/podman.log" \
-    KINOSAIL_TEST_SHA="$sha" env "$git_dir_name=$tmp/repo.git" "$app_root/scripts/deploy-nox.sh" "$sha"
+    KINOSAIL_TEST_SHA="$sha" KINOSAIL_TEST_APP="$app" env "$git_dir_name=$tmp/repo.git" "$app_root/scripts/deploy-nox.sh" "$sha"
 }
 
 output="$(deploy "$sha|running|healthy")"
@@ -56,6 +60,7 @@ mkdir -p "$watch_test_root/repo.git"
 set +e
 PATH="$tmp/bin:$PATH" KINOSAIL_TEST_ARCHIVE="$tmp/empty.tar" KINOSAIL_TEST_NOX_STATE="" \
   KINOSAIL_TEST_PODMAN_LOG="$tmp/podman.log" KINOSAIL_TEST_SHA="$sha" \
+  KINOSAIL_TEST_APP="$app" \
   env "$root_variable=$watch_test_root" "$repo_variable=https://kinosail.test/$app.git" \
   "$app_root/scripts/watch-nox-main.sh" --once >/dev/null 2>&1
 watch_status=$?
