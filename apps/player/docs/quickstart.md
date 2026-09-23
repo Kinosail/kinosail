@@ -6,7 +6,7 @@ section: Start here
 
 # Get Kinosail running
 
-Kinosail Server is free to run on your own hardware, and the web Player is included. Kinosail mobile apps may have a separate purchase price. You can also connect compatible Jellyfin mobile apps after setting up trusted HTTPS and enabling the optional integration in Owner Settings.
+Kinosail Server is free to run on your own hardware, and the web Player is included. You can also connect compatible Jellyfin mobile apps after setting up trusted HTTPS and enabling the optional integration in Owner Settings.
 
 The examples below keep your media read-only, persist the Server's state, and bind the first setup page to this computer. For Jellyfin app setup, see [connect your devices]({{ '/getting-started/connect-devices/' | relative_url }}).
 

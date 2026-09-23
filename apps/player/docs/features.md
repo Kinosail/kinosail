@@ -7,7 +7,7 @@ last_reviewed: 2026-09-20
 
 # All Player features
 
-This guide covers the **web Player** and the Server features that support it. Start with [Docker installation]({{ "/quickstart/" | relative_url }}) if you are new. For compatible Jellyfin clients, see [Connect browsers and Jellyfin apps]({{ '/getting-started/connect-devices/' | relative_url }}). Separate Kinosail mobile apps have their own scope and may be sold separately.
+This guide covers the **web Player** and the Server features that support it. Start with [Docker installation]({{ "/quickstart/" | relative_url }}) if you are new. For compatible Jellyfin clients, see [Connect browsers and Jellyfin apps]({{ '/getting-started/connect-devices/' | relative_url }}).
 
 Availability depends on your installed version, media type, browser, Profile permissions, and enabled Server settings. The guides describe those boundaries rather than treating every feature as available everywhere.
 

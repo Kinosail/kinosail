@@ -5,7 +5,7 @@ hide_contribute: true
 ---
 # Your media. At home in your browser.
 
-Kinosail Server is free to run on your own hardware, and the web Player is included. Kinosail mobile apps may have a separate purchase price. You can also connect compatible Jellyfin mobile apps after enabling the optional integration over trusted HTTPS.
+Kinosail Server is free to run on your own hardware, and the web Player is included. You can also connect compatible Jellyfin mobile apps after enabling the optional integration over trusted HTTPS.
 
 Bring your movies, shows, music, books, and photos together, then enjoy them in a browser or a compatible Jellyfin mobile app.
 

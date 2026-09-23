@@ -7,7 +7,7 @@ section: Start here
 
 Start by confirming playback in the browser on your Server host. Then make Kinosail reachable from another computer, phone, or tablet on your home network.
 
-The Kinosail Server is free to run. It includes the web Player and can connect to compatible Jellyfin mobile apps for iOS and Android. Kinosail mobile apps may have a separate purchase price. Jellyfin compatibility is optional, off by default, and requires trusted HTTPS.
+The Kinosail Server is free to run. It includes the web Player and can connect to compatible Jellyfin mobile apps for iOS and Android. Jellyfin compatibility is optional, off by default, and requires trusted HTTPS.
 
 ## Finish setup first
 
