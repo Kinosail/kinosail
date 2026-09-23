@@ -1,7 +1,7 @@
 ---
 layout: marketing
 title: Self-hosted media server and web player
-description: A free, self-hosted media server for your browser, with compatible Jellyfin mobile apps. Install Kinosail with Docker.
+description: A free, self-hosted media Server with a web Player and compatible Jellyfin support. Get started with Docker.
 ---
 <section class="hero wrap">
 <h1>Your collection.<br>Your kind of evening.</h1>
