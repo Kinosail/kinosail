@@ -8,13 +8,14 @@ import (
 	"sync"
 	"time"
 
+	"github.com/MikeO7/kinosail-player/internal/configuration"
 	supporterengine "github.com/MikeO7/kinosail/packages/supporter"
 )
 
 const (
-	defaultSupporterActivationURL = "https://kinosail-supporter-prod.pvw-7m4q2x9.workers.dev/v1/supporters/activate"
+	defaultSupporterActivationURL = configuration.DefaultSupporterActivationURL
 	productionSupporterPublicKey  = "j-Zo0nvjgd13yuQyZ0bfGpObhf-AQYtdKlFxyFZOL6I"
-	defaultSupportURL             = "https://buy.polar.sh/polar_cl_qnIK97BxBRJpKtqw0na3QocqgA3IyY0KlM6wZ36YiP8"
+	defaultSupportURL             = configuration.DefaultSupportURL
 	yearlySupportURL              = "https://buy.polar.sh/polar_cl_WwzGYfc354pJm13xvL90r1qbP0bfSJo0FEDpI3xKiRn"
 	oneTimeSupportURL             = "https://buy.polar.sh/polar_cl_U5woq81CkwRbf0B8P9vpyo2mZkxgPD2qIkFsJ2685XU"
 	supporterAppID                = "kino-player"
@@ -51,6 +52,8 @@ func newSupporterProgram(settings *settingsStore, config SupporterConfig) *suppo
 	trustedPublicKey := ""
 	if config.ActivationURL == "" {
 		config.ActivationURL = defaultSupporterActivationURL
+	}
+	if config.ActivationURL == defaultSupporterActivationURL {
 		trustedPublicKey = productionSupporterPublicKey
 	}
 	if config.SupportURL == "" {

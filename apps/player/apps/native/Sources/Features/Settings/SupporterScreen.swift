@@ -5,6 +5,7 @@ struct SupporterScreen: View {
     @State private var collection: SupporterCollection?
     @State private var error: String?
     @State private var saving = false
+    @State private var showingBadges = false
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 28) {
@@ -26,8 +27,11 @@ struct SupporterScreen: View {
                         Text("Earlier support · \(badge.name)\(badge.archived ? " · Past support" : "")")
                     }
                     if session.viewer?.owner == true {
-                        Toggle("Show supporter badges around the app", isOn: Binding(get: { collection.visible }, set: save))
+                        Toggle("Show supporter badges around the app", isOn: $showingBadges)
                             .disabled(saving)
+                            .onChange(of: showingBadges) { _, visible in
+                                if collection.visible != visible { save(visible) }
+                            }
                         Text("Applies across this Server. Your collection always stays here.").font(.footnote).foregroundStyle(.secondary)
                     }
                 }
@@ -38,14 +42,18 @@ struct SupporterScreen: View {
             .task(id: session.supporterRevision) { await load() }
     }
     private func load() async {
-        do { collection = try await session.client?.supporterCollection(); error = nil }
+        do {
+            collection = try await session.client?.supporterCollection()
+            showingBadges = collection?.visible ?? false
+            error = nil
+        }
         catch { self.error = error.localizedDescription }
     }
     private func save(_ visible: Bool) {
         saving = true
         Task {
             do { try await session.client?.setSupporterVisibility(visible); session.supporterRevision = UUID(); await load() }
-            catch { self.error = error.localizedDescription }
+            catch { self.error = error.localizedDescription; showingBadges = collection?.visible ?? false }
             saving = false
         }
     }

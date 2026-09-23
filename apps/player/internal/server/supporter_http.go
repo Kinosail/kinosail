@@ -34,7 +34,7 @@ type supporterOwnedBadgeView struct {
 type supporterPageData struct {
 	Editions                                                []supporterEditionView
 	Status                                                  supporterStatus
-	CheckoutMonthly, CheckoutAnnual, CheckoutOnce             string
+	CheckoutMonthly, CheckoutAnnual, CheckoutOnce           string
 	Living, Patron, Monthly, Yearly                         *supporterOwnedBadgeView
 	LivingLevels, PatronLevels, MonthlyLevels, YearlyLevels []supporterLevelView
 	Masterwork                                              *supporterBadgeArt

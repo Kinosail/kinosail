@@ -68,9 +68,9 @@ func assertSupporterChooser(t *testing.T, page supporterPageData, message string
 	if strings.Contains(body, `supporter-all-levels`) || strings.Contains(body, `Show all 10 levels`) {
 		t.Fatal("all levels must be visible without an expansion control")
 	}
-		if !strings.Contains(body, `data-supporter-family="one-time" hidden`) || !strings.Contains(body, "Continue to support") || !strings.Contains(body, "<noscript>") {
-			t.Fatal("default recurring family or support-site fallback missing")
-		}
+	if !strings.Contains(body, `data-supporter-family="one-time" hidden`) || !strings.Contains(body, "Continue to support") || !strings.Contains(body, "<noscript>") {
+		t.Fatal("default recurring family or support-site fallback missing")
+	}
 	if strings.Contains(body, `class="supporter-activation-disclosure" open`) != (message != "") {
 		t.Fatal("activation form must reopen after an error and start collapsed otherwise")
 	}
