@@ -125,6 +125,9 @@ struct PairingCodeScreen: View {
             .padding(KinoTheme.contentPadding)
             .frame(maxWidth: .infinity)
         }
+        #if os(tvOS)
+        .onExitCommand { Task { await session.cancelPairing() } }
+        #endif
     }
 }
 
