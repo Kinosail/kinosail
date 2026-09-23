@@ -5,37 +5,37 @@ section: Start here
 ---
 # Connect browsers and Jellyfin apps
 
-Start by confirming playback in the browser on your Server host. Then make Kinosail reachable from another computer, phone, or tablet on your home network.
+First, confirm that playback works in a browser on the Server host. Then connect another device on your home network.
 
-The Kinosail Server is free to run. It includes the web Player and can connect to compatible Jellyfin mobile apps for iOS and Android. Jellyfin compatibility is optional, off by default, and requires trusted HTTPS.
+Kinosail Server is free to run. The web Player is included. You can also connect compatible Jellyfin mobile apps for iOS and Android. This option is off by default and needs trusted HTTPS.
 
 ## Finish setup first
 
-Create your Owner and enroll a passkey or TOTP authenticator before enabling LAN access. The default installation binds the web port to `127.0.0.1` so only the host can reach it.
+Create the Owner first. Add a passkey or TOTP authenticator before you enable home-network access. By default, the web port uses `127.0.0.1`. Only the host can reach it.
 
 On another device, `localhost` means that device—not the Server. Use the Server's reachable address instead.
 
 ## Enable LAN access
 
-For a signed prebuilt Docker installation, run the installer again from the same installation directory, using the same media path and port, with `--lan`:
+For a signed Docker installation, run the installer again from the same folder. Use the same media path and port. Add `--lan`:
 
 ```sh
 ./scripts/install.sh /absolute/path/to/media 38127 --lan
 ```
 
-The installer checks that setup has completed, changes the bind address, and reports the LAN address. If the host has several network interfaces, verify the reported address. Allow only the intended home network through the host firewall.
+The installer checks that setup is complete, changes the bind address, and shows the home-network address. If the host has several network connections, check that this address is correct. In the host firewall, allow only your home network.
 
 This does not configure internet access. Do not forward the administration web port on your router.
 
 ## Choose the HTTPS address
 
-Kinosail keeps HTTPS on. Use the exact address covered by the Server certificate. Passkeys belong to an origin, so changing the address can require enrolling them again.
+Kinosail always uses HTTPS. Use the exact address in the Server certificate. Passkeys are tied to this address. If you change it, you may need to add your passkeys again.
 
-For trusted HTTPS, open the setup wizard's **Devices** step or **Settings → Access**. The local certificate flow supports DuckDNS and deSEC hostnames. Supply your hostname, provider token, and private LAN address, complete the certificate setup, and restart when prompted. Enabling a compatible third-party client is not required to use the web Player.
+To set up trusted HTTPS, open the wizard's **Devices** step or go to **Settings → Access**. The certificate setup supports DuckDNS and deSEC hostnames. Enter your hostname, provider token, and private home-network address. Finish setup and restart when prompted. You do not need to enable Jellyfin support to use the web Player.
 
-The provider publishes the private LAN address in public DNS and the hostname appears in public certificate-transparency logs. This local certificate setup does not open a router port or relay your media.
+The provider publishes your private home-network address in public DNS. Your hostname also appears in public certificate records. This does not open a router port or relay media.
 
-Keep provider tokens private. Use the narrowest token policy available and only trust certificates belonging to your own installation.
+Keep provider tokens private. Use the most limited token you can. Trust only certificates for your own Server.
 
 ## Connect a Jellyfin mobile app
 
@@ -44,7 +44,7 @@ Keep provider tokens private. Use the narrowest token policy available and only 
 3. In a compatible Jellyfin app, add a Server and enter Kinosail's complete **Connect address** from Settings.
 4. Sign in with the intended Viewer Profile. Use **Quick Connect** when the app offers it; approve the matching request from a trusted Kinosail session.
 
-Compatibility covers tested client flows, not every Jellyfin app feature or device. For sign-in failures, see [Jellyfin app troubleshooting]({{ '/troubleshooting/sign-in-and-access/' | relative_url }}).
+Kinosail tests common client tasks. It does not support every Jellyfin feature or device. For sign-in help, see [Jellyfin app troubleshooting]({{ '/troubleshooting/sign-in-and-access/' | relative_url }}).
 
 ## Sign in and play
 

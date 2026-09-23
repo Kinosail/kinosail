@@ -60,3 +60,13 @@
 - Continue authorized local work without routine approval stops. Ask only when missing input materially changes scope, permissions, or behavior.
 - The current user request takes precedence over these defaults. Keep working until the requested outcome is verified or a specific blocker requires user action.
 - Use concise updates and plain language. Preserve exact product terms, commands, paths, and quotations.
+
+## Documentation language
+
+- Write the root README and user-facing docs in clear, plain English. Use the principles of [ASD-STE100 Simplified Technical English](https://www.asd-ste100.org/) as inspiration, but do not claim formal ASD-STE100 compliance.
+- Prefer common words, active voice, and direct instructions. Keep one main idea in each sentence and paragraph. Aim for 20 words or less in instructions and 25 words or less in explanations.
+- Use one name for each feature or action. Define a technical term the first time a general reader needs it.
+- Preserve exact product names, setting keys, API names, commands, code, license terms, and security limits. Add a short explanation when a term is necessary but unfamiliar.
+- Use numbered steps for tasks that need an order. State what the reader needs, what to do, what should happen, and what to do when it does not.
+- Prefer US English. Avoid idioms, unexplained abbreviations, vague references, and marketing claims that change the technical meaning.
+- Treat sentence-length targets as editing guides. Keep a longer sentence when splitting it would hide a condition, limit, or security rule.
