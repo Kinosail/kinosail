@@ -166,10 +166,14 @@ jobs:
           KINOSAIL_TEST_IMAGE_READY: "1"
         run: make -C apps/dashboard container-test
   browser:
-    name: ${{ inputs.app }} populated browser
+    name: ${{ inputs.app }} populated browser (${{ matrix.engine }})
     if: fromJSON(inputs.plan)[inputs.app]
     runs-on: ubuntu-24.04
     timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        engine: ${{ fromJSON(fromJSON(inputs.plan)[format('{0}_browsers', inputs.app)] && '["chromium","firefox","webkit"]' || '["chromium"]') }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
@@ -188,10 +192,8 @@ jobs:
         run: pnpm --dir "apps/$APP/e2e" install --frozen-lockfile
       - env:
           APP: ${{ inputs.app }}
-          BROWSERS: ${{ fromJSON(inputs.plan)[format('{0}_browsers', inputs.app)] && 'chromium firefox webkit' || 'chromium' }}
-        run: |
-          read -ra browsers <<< "$BROWSERS"
-          pnpm --dir "apps/$APP/e2e" exec playwright install --with-deps "${browsers[@]}"
+          BROWSER: ${{ matrix.engine }}
+        run: pnpm --dir "apps/$APP/e2e" exec playwright install --with-deps "$BROWSER"
       - uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069
         if: inputs.app != 'dashboard'
       - uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc
@@ -214,8 +216,9 @@ jobs:
           CONTAINER_ENGINE: docker
           KINOSAIL_BROWSER_TEST: "1"
           KINOSAIL_BROWSER_MATRIX: ${{ fromJSON(inputs.plan)[format('{0}_browsers', inputs.app)] && 'full' || '' }}
+          KINOSAIL_BROWSER_PROJECT: ${{ matrix.engine }}
           KINOSAIL_BROWSER_WORKERS: ${{ inputs.app == 'player' && '3' || '1' }}
-          KINOSAIL_E2E_OUTPUT_DIR: ${{ runner.temp }}/${{ inputs.app }}-browser-results
+          KINOSAIL_E2E_OUTPUT_DIR: ${{ runner.temp }}/${{ inputs.app }}-${{ matrix.engine }}-browser-results
           KINOSAIL_TEST_IMAGE: localhost/kinosail-${{ inputs.app }}:${{ github.sha }}
           KINOSAIL_TEST_IMAGE_READY: "1"
         run: ./scripts/test-container.sh
@@ -223,18 +226,15 @@ jobs:
         if: inputs.app == 'dashboard'
         env:
           CI: "1"
-          PROJECT: ${{ fromJSON(inputs.plan)[format('{0}_browsers', inputs.app)] && 'full' || 'chromium' }}
-        run: |
-          args=()
-          [[ "$PROJECT" == full ]] || args+=(--project=chromium)
-          pnpm --dir apps/dashboard/e2e exec playwright test "${args[@]}"
+          PROJECT: ${{ matrix.engine == 'webkit' && 'mobile-webkit' || matrix.engine }}
+        run: pnpm --dir apps/dashboard/e2e exec playwright test --project="$PROJECT"
       - name: Keep browser failure evidence
         if: failure()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
         with:
-          name: ${{ inputs.app }}-browser-failures
+          name: ${{ inputs.app }}-${{ matrix.engine }}-browser-failures
           path: |
-            ${{ runner.temp }}/${{ inputs.app }}-browser-results
+            ${{ runner.temp }}/${{ inputs.app }}-${{ matrix.engine }}-browser-results
             apps/dashboard/e2e/test-results
           retention-days: 7
           if-no-files-found: ignore
