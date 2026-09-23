@@ -28,7 +28,7 @@ h1{font-size:clamp(48px,6.8vw,94px);line-height:1.02;letter-spacing:-.03em;font-
 .hero .fine{margin:20px 0 48px;font-size:14px}
 figure{margin:0}
 .hero-screen,.screen{border:1px solid var(--line);border-radius:12px;overflow:hidden;background:#10140e}
-.hero-screen img,.screen img{width:100%}
+.hero-screen img,.screen img{width:100%;aspect-ratio:16/9}
 figcaption{padding:14px 20px;border-top:1px solid var(--line);text-align:left;line-height:1.5}
 .intro{padding-top:128px;padding-bottom:56px;display:grid;grid-template-columns:1.15fr 1fr;gap:24px 80px}
 .section-label{font-size:13px;font-weight:700;color:var(--muted);letter-spacing:.02em}
