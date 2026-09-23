@@ -27,7 +27,7 @@ The CLI `backup` command uses encryption when a key is configured. Without one, 
 
 ## Create and verify an archive
 
-Run from your Docker release installation directory. The examples below use `compose.release.yaml`; include the same additional `--file` overlays used by your installation (for example TLS or hardware acceleration) in every command. For source Compose, run from `apps/player/` and omit `--file compose.release.yaml`. Replace Docker with Podman if appropriate.
+Run from your prebuilt Docker installation directory. The examples below use `compose.release.yaml`; include the same additional `--file` overlays used by your installation (for example TLS or hardware acceleration) in every command. For source Compose, run from `apps/player/` and omit `--file compose.release.yaml`. Replace Docker with Podman if appropriate.
 
 Choose a new private output filename so redirection cannot overwrite your only backup:
 

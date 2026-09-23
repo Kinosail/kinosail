@@ -1,6 +1,6 @@
 # Kinosail web Player documentation
 
-Read **[Kinosail Player Docs](https://kinosail.github.io/kinosail/)**, starting with **[Install with Docker](https://kinosail.github.io/kinosail/quickstart/)**. Source builds are a secondary path for contributors and early evaluation. Other apps and native clients are outside this site's current scope.
+Read **[Kinosail Player Docs](https://kinosail.github.io/kinosail/docs/)**, starting with **[Install with Docker](https://kinosail.github.io/kinosail/quickstart/)**. Source builds are a secondary path for contributors and early evaluation. Other apps and native clients are outside this site's current scope.
 
 ## Read the guides
 
@@ -18,4 +18,4 @@ The pages use Jekyll, local layouts/assets, Liquid links, and `_data/navigation.
 
 Use the [documentation build and preview instructions](../../../engineering/documentation/README.md). The builder bundles the local font, applies the production base path, and excludes research material. Keep generated files outside the checkout.
 
-The Documentation workflow builds and checks pull requests. Changes merged to `main` deploy through GitHub Pages. Check rendered links, asset paths, search, keyboard navigation, and narrow layouts before publishing interface changes. Follow the [documentation contribution guide](contributing/documentation.md).
+The CI documentation job builds and checks pull requests. Changes merged to `main` deploy through GitHub Pages. Check rendered links, asset paths, search, keyboard navigation, and narrow layouts before publishing interface changes. Follow the [documentation contribution guide](contributing/documentation.md).

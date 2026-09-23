@@ -11,7 +11,7 @@ Write each page for one reader task. Separate tutorials, operational procedures,
 
 ## Accuracy
 
-Check ports, configuration names/defaults, file permissions, mount behavior, API routes, and flags against the installed source version. Distinguish source setup from a published signed release. Explain expected output, likely failures, recovery, and the next step. Keep app-specific workflows in their own app's guides.
+Check ports, configuration names/defaults, file permissions, mount behavior, API routes, and flags against the installed source version. Distinguish source setup from a published signed container. Explain expected output, likely failures, recovery, and the next step. Keep app-specific workflows in their own app's guides.
 
 Use reserved example domains and synthetic media. Never include credentials, private addresses, account data, personal library titles, or unlicensed artwork.
 

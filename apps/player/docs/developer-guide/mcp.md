@@ -24,7 +24,7 @@ Open **Settings → AI agent connections** on the Kinosail Server. The page show
 
 ## Use host STDIO
 
-Host STDIO keeps the MCP transport on the Server host. For a Docker release installation, use the Compose service name so the command does not depend on a generated container name. Replace `/absolute/path/to/player` with your installation directory. Include the same Compose overlays used at install time. With Codex, run:
+Host STDIO keeps the MCP transport on the Server host. For a prebuilt Docker installation, use the Compose service name so the command does not depend on a generated container name. Replace `/absolute/path/to/player` with your installation directory. Include the same Compose overlays used at install time. With Codex, run:
 
 ```sh
 codex mcp add kinosail -- docker compose \
