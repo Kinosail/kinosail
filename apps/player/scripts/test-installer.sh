@@ -56,7 +56,9 @@ chmod +x "$fixture/bin/podman"
 cat >"$fixture/bin/cosign" <<'FAKE'
 #!/usr/bin/env bash
 set -euo pipefail
-printf 'cosign %s\n' "$*" >>"$KINOSAIL_INSTALL_TEST_LOG"
+printf 'cosign %s repository=%s\n' "$*" "${COSIGN_REPOSITORY:-default}" >>"$KINOSAIL_INSTALL_TEST_LOG"
+[[ -z "${KINOSAIL_INSTALL_TEST_FAIL_SIGNATURES:-}" ]] || exit 1
+[[ -z "${KINOSAIL_INSTALL_TEST_LEGACY_SIGNATURE:-}" || -z "${COSIGN_REPOSITORY:-}" ]] || exit 1
 FAKE
 chmod +x "$fixture/bin/cosign"
 cat >"$fixture/bin/curl" <<'FAKE'
@@ -228,6 +230,7 @@ grep -Fq 'KINOSAIL_TLS_HOSTS=["192.0.2.55"]' "$fixture/app/.env"
 grep -q '^KINOSAIL_AUTH_URL=https://192.0.2.55:9080$' "$fixture/app/.env"
 grep -q '^KINOSAIL_IMAGE=ghcr.io/kinosail/kinosail-player@sha256:a\{64\}$' "$fixture/app/.env"
 grep -Fq 'cosign verify --certificate-identity https://github.com/Kinosail/kinosail/.github/workflows/publish.yml@refs/heads/main --certificate-oidc-issuer https://token.actions.githubusercontent.com' "$fixture/compose.log"
+grep -Fq 'repository=ghcr.io/kinosail/kinosail-signatures' "$fixture/compose.log"
 grep -q 'exec -T kinosail kinosail healthcheck' "$fixture/compose.log"
 grep -q 'run --rm --no-deps kinosail backup' "$fixture/compose.log"
 grep -q 'run --rm --no-deps -T kinosail backup verify' "$fixture/compose.log"
@@ -246,8 +249,8 @@ rm "$fixture/app/.env.bak"
 printf 'KINOSAIL_VERSION=1.2.3\n' >>"$fixture/app/.env"
 PATH="$fixture/bin:$PATH" "$fixture/app/scripts/install.sh" "$fixture/media" 9080 >/dev/null
 grep -Fq 'cosign verify --certificate-identity https://github.com/Kinosail/kinosail/.github/workflows/release.yml@refs/tags/player-v1.2.3 --certificate-oidc-issuer https://token.actions.githubusercontent.com' "$fixture/compose.log"
-sed -i.bak '/^KINOSAIL_VERSION=/d' "$fixture/app/.env"
-rm "$fixture/app/.env.bak"
+# shellcheck source=scripts/tooling/test-installer-signature-routing.sh
+source "$source_root/../../scripts/tooling/test-installer-signature-routing.sh"
 
 touch "$fixture/running"
 printf original >"$fixture/private-state"
