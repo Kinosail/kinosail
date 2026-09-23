@@ -33,15 +33,16 @@ struct ShowScreen: View {
                         }
                         CastShelf(people: show.cast)
                         let seasons = Array(Set(episodes.map(\.season))).sorted()
-                        Picker("Season", selection: Binding(get: { selectedSeason ?? seasons.first ?? 0 }, set: { selectedSeason = $0 })) {
+                        let season = ShowSeasonSelection.resolve(selectedSeason, among: seasons) ?? 0
+                        Picker("Season", selection: Binding(get: { season }, set: { selectedSeason = $0 })) {
                             ForEach(seasons, id: \.self) { Text($0 == 0 ? "Specials" : "Season \($0)").tag($0) }
-                        }.frame(maxWidth: 420)
+                        }.frame(maxWidth: 420).accessibilityIdentifier("show.season-picker")
                         #if os(iOS)
                         if session.viewer?.downloads == true {
                             Button(downloading ? "Adding episodes…" : "Download season", systemImage: "arrow.down.circle") {
                                 guard let client = session.client, !downloading else { return }
                                 downloading = true
-                                let chosen = episodes.filter { $0.season == (selectedSeason ?? seasons.first ?? 0) }
+                                let chosen = episodes.filter { $0.season == season }
                                 Task {
                                     defer { downloading = false }
                                     do { try await session.downloads.enqueueEpisodes(chosen, quality: .compatible, client: client); message = "Episodes added to Downloads." }
@@ -52,7 +53,7 @@ struct ShowScreen: View {
                             if let message { Text(message).font(.callout).foregroundStyle(.secondary) }
                         }
                         #endif
-                        MediaGrid(landscape: true, items: episodes.filter { $0.season == (selectedSeason ?? seasons.first ?? 0) })
+                        MediaGrid(landscape: true, items: episodes.filter { $0.season == season })
                     } else { ContentUnavailableView("No episodes", systemImage: "tv", description: Text("This show has no available episodes.")) }
                 }
             }
@@ -63,5 +64,12 @@ struct ShowScreen: View {
         .focusScope(showFocus)
         #endif
         .navigationTitle("Seasons & episodes")
+        .onChange(of: showID) { _, _ in selectedSeason = nil }
+    }
+}
+
+enum ShowSeasonSelection {
+    static func resolve(_ selected: Int?, among seasons: [Int]) -> Int? {
+        selected.flatMap { seasons.contains($0) ? $0 : nil } ?? seasons.first
     }
 }
