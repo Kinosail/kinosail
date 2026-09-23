@@ -1,6 +1,6 @@
 # Kinosail documentation site
 
-The web Player documentation site is published to <https://kinosail.github.io/kinosail/> by `.github/workflows/ci.yml`. Pull requests build and check the artifact; only `main` can deploy to the `github-pages` environment.
+The web Player documentation site is published to <https://kinosail.com/> by `.github/workflows/ci.yml`. Pull requests build and check the artifact; only `main` can deploy to the `github-pages` environment.
 
 ## Edit the source
 
@@ -20,12 +20,12 @@ bundle install
 npm ci --prefix engineering/documentation --ignore-scripts
 npm test --prefix engineering/documentation
 python3 -m unittest discover -s engineering/documentation -p 'test_*.py'
-python3 engineering/documentation/build.py --output /tmp/kinosail-preview/kinosail
-python3 engineering/documentation/check.py /tmp/kinosail-preview/kinosail
-python3 -m http.server 4180 --bind 127.0.0.1 --directory /tmp/kinosail-preview
+python3 engineering/documentation/build.py --output /tmp/kinosail-preview-root
+python3 engineering/documentation/check.py /tmp/kinosail-preview-root
+python3 -m http.server 4180 --bind 127.0.0.1 --directory /tmp/kinosail-preview-root
 ```
 
-Open <http://127.0.0.1:4180/kinosail/>. Stop with Ctrl-C. The output directory must be new and outside the checkout; choose a new output name for each build rather than deleting unrelated files. `--baseurl` and `--url` allow another HTTPS origin and path. Pass the same base path as the second argument to `check.py`.
+Open <http://127.0.0.1:4180/>. Stop with Ctrl-C. The output directory must be new and outside the checkout; choose a new output name for each build rather than deleting unrelated files. The default build targets the root of <https://kinosail.com/> with no base path; set `--baseurl` only when publishing under a subpath, and pass that same base path as the second argument to `check.py`.
 
 Keep generated output and local Bundler caches outside tracked source. Update `Gemfile` and `Gemfile.lock` together when changing dependencies.
 

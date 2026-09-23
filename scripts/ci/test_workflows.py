@@ -61,10 +61,22 @@ class WorkflowSecurityTests(unittest.TestCase):
                         self.assertNotIn('packages: write', source)
                     if path.name == 'ci.yml':
                         publish = source.split('  publish:\n')[1]
-                        self.assertIn("github.event_name == 'push' && github.ref == 'refs/heads/main'", publish)
+                        self.assertIn("github.event_name == 'push'", publish)
+                        self.assertIn("github.ref == 'refs/heads/main'", publish)
                         self.assertIn('needs: [plan, repository-required, player-required, subtitles-required, dashboard-required, security-required]', publish)
                         self.assertIn('results: ${{ toJSON(needs) }}', publish)
                         self.assertNotIn('packages: write', source.split('  publish:\n')[0])
+
+    def test_publication_gates_ignore_skipped_unselected_jobs(self):
+        source = (WORKFLOWS / 'ci.yml').read_text()
+        publish = source.split('  publish:\n')[1].split('  publish-docs:\n')[0]
+        publish_docs = source.split('  publish-docs:\n')[1].split('  diagnostics:\n')[0]
+        for job in (publish, publish_docs):
+            self.assertIn('always() &&', job)
+            for required in ('plan', 'repository-required', 'player-required',
+                             'subtitles-required', 'dashboard-required', 'security-required'):
+                self.assertIn(f"needs.{required}.result == 'success'", job)
+        self.assertIn("needs.docs.result == 'success'", publish_docs)
 
     def test_release_requires_main_quality_and_security_before_promotion(self):
         source = (WORKFLOWS / 'release.yml').read_text()
