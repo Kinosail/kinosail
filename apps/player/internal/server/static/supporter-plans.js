@@ -1,17 +1,19 @@
 function bindSupporterPlans() {
   const controls = document.querySelector(".supporter-billing");
   if (!controls) return;
+  const checkout = document.querySelector("[data-supporter-checkout]");
   const plans = {
-    monthly: { amounts: [3, 5, 8, 12, 18, 25, 35, 45, 60, 75], period: "/month", note: "Monthly support · Living Standard badge, active while your support is current." },
-    annual: { amounts: [12, 40, 64, 96, 144, 200, 280, 360, 480, 600], period: "/year", note: "Annual support · One payment per year, with a Living Standard badge." },
-    once: { amounts: [5, 15, 30, 60, 100, 150, 250, 400, 550, 750], period: " once", note: "One-time support · Patron Order badge, yours permanently. No subscription." },
+    monthly: { amounts: [3, 5, 8, 12, 18, 25, 35, 45, 60, 75], period: "/month", note: "Monthly support · Gold radiant crest. Collect it alongside your other editions." },
+    annual: { amounts: [12, 40, 64, 96, 144, 200, 280, 360, 480, 600], period: "/year", note: "Yearly support · Blue orbital medallion. One payment per year." },
+    once: { amounts: [5, 15, 30, 60, 100, 150, 250, 400, 550, 750], period: " once", note: "One-time support · Mint shield, yours permanently. No subscription." },
   };
   function render() {
     const frequency = controls.querySelector("input:checked")?.value;
     if (!Object.hasOwn(plans, frequency)) return;
     const plan = plans[frequency];
+    if (checkout) checkout.href = checkout.dataset[frequency === "annual" ? "supporterCheckoutAnnual" : frequency === "once" ? "supporterCheckoutOnce" : "supporterCheckoutMonthly"];
     document.querySelector("[data-supporter-billing-note]").textContent = plan.note;
-    const family = frequency === "once" ? "patron-order" : "living-standard";
+    const family = frequency === "once" ? "one-time" : frequency === "annual" ? "yearly" : "monthly";
     document.querySelectorAll("[data-supporter-family]").forEach((panel) => {
       panel.hidden = panel.dataset.supporterFamily !== family;
       if (panel.hidden) return;

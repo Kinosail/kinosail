@@ -10,6 +10,9 @@ import (
 const (
 	FamilyPatron    = "patron-order"
 	FamilyLiving    = "living-standard"
+	EditionOnce     = "one-time"
+	EditionMonthly  = "monthly"
+	EditionYearly   = "yearly"
 	MaximumLevel    = 10
 	activationSlots = 4
 	completeFleetID = "complete-fleet"
@@ -42,11 +45,12 @@ type App struct {
 
 // Config supplies one app identity and the explicit remote activation adapter.
 type Config struct {
-	App           App
-	ActivationURL string
-	SupportURL    string
-	HTTPClient    *http.Client
-	Now           func() time.Time
+	App              App
+	ActivationURL    string
+	SupportURL       string
+	TrustedPublicKey string
+	HTTPClient       *http.Client
+	Now              func() time.Time
 }
 
 // Grant is one signed, app-bound supporter certificate.
@@ -68,6 +72,10 @@ type Activation struct {
 type State struct {
 	InstallationKey string                      `json:"installationKey,omitempty"`
 	PublicKey       string                      `json:"publicKey,omitempty"`
+	Monthly         *Grant                      `json:"monthly,omitempty"`
+	Yearly          *Grant                      `json:"yearly,omitempty"`
+	MonthlyLevel    int                         `json:"monthlyLevel,omitempty"`
+	YearlyLevel     int                         `json:"yearlyLevel,omitempty"`
 	PatronOrder     *Grant                      `json:"patronOrder,omitempty"`
 	LivingStandard  *Grant                      `json:"livingStandard,omitempty"`
 	PatronLevel     int                         `json:"patronLevel,omitempty"`
@@ -89,6 +97,7 @@ type Collection struct {
 
 // Certificate is the verified signed record used by local presentation adapters.
 type Certificate struct {
+	Edition          string      `json:"edition,omitempty"`
 	Version          int         `json:"version"`
 	Audience         string      `json:"audience"`
 	AppID            string      `json:"appId"`
@@ -109,6 +118,7 @@ type Certificate struct {
 
 // Badge is one verified local presentation of a grant.
 type Badge struct {
+	Edition          string      `json:"edition,omitempty"`
 	Family           string      `json:"family"`
 	Title            string      `json:"-"`
 	Tier             string      `json:"tier"`
@@ -131,6 +141,8 @@ type Badge struct {
 
 // BadgeCase summarizes historical progress across both badge families.
 type BadgeCase struct {
+	MonthlyLevel     int    `json:"monthlyLevel,omitempty"`
+	YearlyLevel      int    `json:"yearlyLevel,omitempty"`
 	LivingLevel      int    `json:"livingLevel"`
 	PatronLevel      int    `json:"patronLevel"`
 	MasterworkLevel  int    `json:"masterworkLevel"`
@@ -149,6 +161,8 @@ type AppStatus struct {
 
 // Status is the shared supporter projection returned by all application adapters.
 type Status struct {
+	Monthly             *Badge     `json:"monthly,omitempty"`
+	Yearly              *Badge     `json:"yearly,omitempty"`
 	AppID               string     `json:"appId"`
 	Tier                string     `json:"tier"`
 	Name                string     `json:"name"`
@@ -175,6 +189,7 @@ type Status struct {
 
 // ViewerBadge is the privacy-safe subset exposed outside the owner interface.
 type ViewerBadge struct {
+	Edition  string `json:"edition,omitempty"`
 	Family   string `json:"family"`
 	Tier     string `json:"tier"`
 	Name     string `json:"name"`

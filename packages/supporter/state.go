@@ -18,7 +18,7 @@ func (service *Service) matchingActivation(state State, keyHash string) (string,
 			matched = activation.ActivationID
 		}
 	}
-	for _, grant := range []*Grant{state.PatronOrder, state.LivingStandard, legacyGrant(state)} {
+	for _, grant := range []*Grant{state.PatronOrder, state.LivingStandard, state.Monthly, state.Yearly, legacyGrant(state)} {
 		if grant != nil && subtle.ConstantTimeCompare([]byte(grant.KeyHash), []byte(keyHash)) == 1 {
 			if !activationIDPattern.MatchString(grant.ActivationID) || matched != "" && matched != grant.ActivationID {
 				return "", false
@@ -43,6 +43,12 @@ func rememberActivation(activations [activationSlots]Activation, grant Grant) [a
 }
 
 func (service *Service) raiseLevels(state *State) {
+	if decoded := service.decodeGrant(*state, state.Monthly, EditionMonthly, true); decoded.valid {
+		state.MonthlyLevel = max(state.MonthlyLevel, Rank(decoded.certificate.Tier))
+	}
+	if decoded := service.decodeGrant(*state, state.Yearly, EditionYearly, true); decoded.valid {
+		state.YearlyLevel = max(state.YearlyLevel, Rank(decoded.certificate.Tier))
+	}
 	if decoded := service.decodeGrant(*state, state.PatronOrder, FamilyPatron, true); decoded.valid {
 		state.PatronLevel = max(state.PatronLevel, Rank(decoded.certificate.Tier))
 	}
@@ -58,7 +64,7 @@ func (service *Service) Recover(state State) (State, bool) {
 	for _, item := range []struct {
 		grant  **Grant
 		family string
-	}{{&next.PatronOrder, FamilyPatron}, {&next.LivingStandard, FamilyLiving}} {
+	}{{&next.PatronOrder, FamilyPatron}, {&next.LivingStandard, FamilyLiving}, {&next.Monthly, EditionMonthly}, {&next.Yearly, EditionYearly}} {
 		if *item.grant != nil && !service.decodeGrant(next, *item.grant, item.family, true).valid {
 			if validActivationReference(**item.grant) {
 				next.Activations = rememberActivation(next.Activations, **item.grant)
@@ -80,12 +86,13 @@ func (service *Service) RotatePublicKey(state State, input RotationInput) (State
 	if _, ok := decodeValue(input.PublicKey, ed25519.PublicKeySize, 64); !ok || subtle.ConstantTimeCompare([]byte(input.PublicKey), []byte(state.PublicKey)) == 1 {
 		return state, ErrInvalid
 	}
-	for _, grant := range []*Grant{state.PatronOrder, state.LivingStandard} {
+	for _, grant := range []*Grant{state.PatronOrder, state.LivingStandard, state.Monthly, state.Yearly} {
 		if grant != nil && validActivationReference(*grant) {
 			state.Activations = rememberActivation(state.Activations, *grant)
 		}
 	}
 	state.PublicKey, state.PatronOrder, state.LivingStandard = input.PublicKey, nil, nil
+	state.Monthly, state.Yearly = nil, nil
 	return state, nil
 }
 
@@ -104,13 +111,10 @@ func validActivationReference(grant Grant) bool {
 	return hashOK && activationIDPattern.MatchString(grant.ActivationID)
 }
 
-func emptyState(state State) bool {
-	return state.InstallationKey == "" && state.PublicKey == "" && state.PatronOrder == nil && state.LivingStandard == nil &&
-		state.PatronLevel == 0 && state.LivingLevel == 0 && state.Activations == ([activationSlots]Activation{}) && legacyGrant(state) == nil
-}
+func emptyState(state State) bool { return state == (State{}) }
 
 func validLevels(state State) bool {
-	return state.PatronLevel >= 0 && state.PatronLevel <= MaximumLevel && state.LivingLevel >= 0 && state.LivingLevel <= MaximumLevel
+	return state.PatronLevel >= 0 && state.PatronLevel <= MaximumLevel && state.LivingLevel >= 0 && state.LivingLevel <= MaximumLevel && state.MonthlyLevel >= 0 && state.MonthlyLevel <= MaximumLevel && state.YearlyLevel >= 0 && state.YearlyLevel <= MaximumLevel
 }
 
 // ValidateState rejects malformed persisted state before network or storage side effects.
@@ -129,14 +133,14 @@ func (service *Service) ValidateState(state State) error {
 			return ErrInvalid
 		}
 	}
-	if !validStateGrants(state) || !validStateActivations(state.Activations) {
+	if !validStateGrants(state) || !validStateActivations(state.Activations) || !service.validEditionGrants(state) {
 		return ErrInvalid
 	}
 	return nil
 }
 
 func validStateGrants(state State) bool {
-	for _, grant := range []*Grant{state.PatronOrder, state.LivingStandard} {
+	for _, grant := range []*Grant{state.PatronOrder, state.LivingStandard, state.Monthly, state.Yearly} {
 		if grant == nil {
 			continue
 		}
@@ -177,5 +181,6 @@ func validEncodedGrant(grant Grant) bool {
 
 func cloneState(state State) State {
 	state.PatronOrder, state.LivingStandard = cloneGrant(state.PatronOrder), cloneGrant(state.LivingStandard)
+	state.Monthly, state.Yearly = cloneGrant(state.Monthly), cloneGrant(state.Yearly)
 	return state
 }

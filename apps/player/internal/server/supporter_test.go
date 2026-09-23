@@ -22,7 +22,10 @@ func TestSupporterStoresIndependentFirstClassBadges(t *testing.T) {
 	if !strings.HasPrefix(freePage.Header().Get("Content-Type"), "text/html") {
 		t.Fatalf("supporter page media type = %q", freePage.Header().Get("Content-Type"))
 	}
-	assertAPIBody(t, freePage, http.StatusOK, "One Complete Fleet key covers every included app", "Each app keeps its own emblem and certificate", "Living editions include future configured apps while active", "Dated Patron editions stay fixed")
+	assertAPIBody(t, freePage, http.StatusOK, "New supporter keys are available for Kinosail Player only.")
+	if strings.Contains(freePage.Body.String(), "One Complete Fleet key covers") {
+		t.Fatal("Player-only support page advertised unavailable Complete Fleet keys")
+	}
 	assertAPIBody(t, apiCall(t, handler, token, http.MethodGet, "/static/supporter.js", nil), http.StatusOK, "FileReader", "image/svg+xml", "262144", "image/png", "navigator.share")
 	assertAPIBody(t, apiCall(t, handler, "", http.MethodGet, "/static/supporter/badges/supporter-rank-10.svg", nil), http.StatusOK, "<svg", "<path", "Sovereign Full Sail")
 	assertAPIBody(t, apiCall(t, handler, "", http.MethodGet, "/static/supporter/badges/supporter-rank-10.png", nil), http.StatusNotFound, "404 page not found")
@@ -37,7 +40,7 @@ func TestSupporterStoresIndependentFirstClassBadges(t *testing.T) {
 	assertAPIBody(t, patron, http.StatusOK, `"family":"patron-order"`, `"tier":"admiral"`, `"rank":8`, `"livingStandard"`, `"patronOrder"`, `"subscriptionActive":true`, `"masterworkName":"Full Sail"`, `"masterworkLevel":8`, `"masterworkEarned":true`, `"masterworkActive":true`)
 
 	page := apiCall(t, handler, token, http.MethodGet, "/supporter", nil)
-	assertAPIBody(t, page, http.StatusOK, "/static/app.css?v=electric-24", "Monthly support · Living Standard", "Living Standards", "Patron Orders", "Friend", "Legacy", "Navigator", "North Star", "Kinosail Player Living Standard, level 10", "Kinosail Player Patron Order, level 8", "Admiral Full Sail", "Living aura active", "Collected", "Complete Fleet · Living · 2 apps", "Living editions include future configured apps", "Dated Patron editions stay fixed", "Public certificate name", "levels 7–10", "Your one-time badge is permanent.")
+	assertAPIBody(t, page, http.StatusOK, "/static/app.css?v=electric-26", "Monthly support · Gold radiant crest", "Monthly", "Yearly", "One-time", "Friend", "Legacy", "Navigator", "North Star", "Kinosail Player Living Standard, level 10", "Kinosail Player One-time, level 8", "Admiral Full Sail", "Living aura active", "Collected", "Complete Fleet · Living · 2 apps", "New supporter keys are available for Kinosail Player only.", "Public certificate name", "levels 7–10", "Your one-time badge is permanent.")
 	if strings.Index(page.Body.String(), "Living Standards") > strings.Index(page.Body.String(), "Patron Orders") {
 		t.Fatal("monthly Living Standards did not appear first")
 	}
@@ -65,7 +68,7 @@ func TestSupporterScriptUsesOneImmutableVersionAcrossPages(t *testing.T) {
 	handler, token := supporterServer(t, t.TempDir(), signer, upstream)
 	for _, path := range []string{"/", "/settings", "/supporter"} {
 		page := apiCall(t, handler, token, http.MethodGet, path, nil)
-		assertAPIBody(t, page, http.StatusOK, `/static/supporter.js?v=15`)
+		assertAPIBody(t, page, http.StatusOK, `/static/supporter.js?v=17`)
 		if strings.Count(page.Body.String(), `/static/supporter.js?v=`) != 1 {
 			t.Errorf("page %q supporter script count = %d", path, strings.Count(page.Body.String(), `/static/supporter.js?v=`))
 		}
@@ -95,7 +98,7 @@ func TestSupporterArchivesExpiredLivingStandardWithoutReplacingPatronOrder(t *te
 		t.Fatalf("flat supporter projection combined badge families: %#v", projection)
 	}
 	page := apiCall(t, handler, token, http.MethodGet, "/supporter", nil)
-	assertAPIBody(t, page, http.StatusOK, "Archived after", "is-archived", "Patron Order · Level 7")
+	assertAPIBody(t, page, http.StatusOK, "Archived after", "is-archived", "One-time · Level 7")
 	assertAPIBody(t, apiCall(t, handler, token, http.MethodGet, "/api/v1/supporter/certificates/living-standard.svg", nil), http.StatusOK, "Archived · Supported through")
 	assertAPIBody(t, apiCall(t, handler, token, http.MethodGet, "/api/v1/supporter/certificate.svg", nil), http.StatusOK, "Commodore Order")
 }
@@ -239,7 +242,7 @@ func TestSupporterInputValidationAndStatusPrivacy(t *testing.T) {
 func assertSupporterScriptRecognition(t *testing.T, handler http.Handler) {
 	t.Helper()
 	script := apiCall(t, handler, "", http.MethodGet, "/static/supporter.js", nil)
-	assertAPIBody(t, script, http.StatusOK, "Community edition · Free and supporter-funded.", "supporter-signature", "supporter-level-logo", "/static/supporter/badges/", "htmx:afterSwap", "supporter-edition-mark", "supporterShareFile", "navigator.share", "image/png")
+	assertAPIBody(t, script, http.StatusOK, "Support Kinosail", "supporter-signature", "supporter-trio", "/static/supporter/badges/", "htmx:afterSwap", "supporter-edition-mark", "supporterShareFile", "navigator.share", "image/png")
 	for _, dismissal := range []string{"localStorage", "Dismiss", "/supporter/reminder"} {
 		if strings.Contains(script.Body.String(), dismissal) {
 			t.Fatalf("supporter script contains dismissal path %q", dismissal)

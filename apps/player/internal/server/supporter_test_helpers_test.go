@@ -31,6 +31,7 @@ type supporterSigner struct {
 	supportedSince  time.Time
 	collection      any
 	activationID    string
+	edition         string
 	version         int
 	omitField       string
 	extraField      bool
@@ -73,9 +74,12 @@ func (signer *supporterSigner) certificate() map[string]any {
 		"version": signer.version, "audience": signer.audience, "appId": signer.appID, "tier": signer.tier, "supporterId": "A1B2C3D4E5", "supportedSince": signer.supportedSince.Format(time.RFC3339Nano),
 		"issuedAt": signer.now.Format(time.RFC3339Nano), "expiresAt": signer.expiresAt, "sustaining": signer.sustaining, "founding": true, "installationKey": signer.last["installationKey"],
 	}
-	if signer.version == 4 {
+	if signer.version >= 4 {
 		certificate["family"] = map[bool]string{false: "patron-order", true: "living-standard"}[signer.sustaining]
 		certificate["level"] = map[string]int{"friend": 1, "crew": 2, "navigator": 3, "patron": 4, "steward": 5, "lighthouse": 6, "commodore": 7, "admiral": 8, "northstar": 9, "legacy": 10}[signer.tier]
+	}
+	if signer.version == 5 {
+		certificate["edition"] = signer.edition
 	}
 	if name != "" {
 		certificate["recognitionName"] = name

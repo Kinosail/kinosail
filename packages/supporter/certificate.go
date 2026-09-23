@@ -25,6 +25,14 @@ func (service *Service) decodeGrant(state State, grant *Grant, expectedFamily st
 	if !ok || certificate.InstallationKey != state.InstallationKey {
 		return decodedGrant{}
 	}
+	if expectedFamily == EditionMonthly || expectedFamily == EditionYearly {
+		if certificate.Edition != expectedFamily {
+			return decodedGrant{}
+		}
+		expectedFamily = FamilyLiving
+	} else if expectedFamily == FamilyLiving && certificate.Edition != "" {
+		return decodedGrant{}
+	}
 	return service.classifyCertificate(certificate, version, expectedFamily)
 }
 
@@ -55,7 +63,7 @@ func (service *Service) decodeCertificate(record []byte, allowLegacy bool) (Cert
 	var certificate Certificate
 	var valid bool
 	switch version.Version {
-	case 3, 4:
+	case 3, 4, 5:
 		valid = service.decodeCurrentCertificate(record, &certificate)
 	case 2:
 		valid = allowLegacy && service.app.Legacy != LegacyNone && service.decodeV2Certificate(record, &certificate)
@@ -99,11 +107,14 @@ func parseCurrentCertificate(record []byte, certificate *Certificate) (map[strin
 	object, err := jsonObject(record)
 	required := []string{"version", "audience", "appId", "tier", "supporterId", "supportedSince", "issuedAt", "expiresAt", "sustaining", "founding", "installationKey"}
 	var version int
-	if json.Unmarshal(object["version"], &version) != nil || version < 3 || version > 4 {
+	if json.Unmarshal(object["version"], &version) != nil || version < 3 || version > 5 {
 		return nil, 0, false
 	}
-	if version == 4 {
+	if version >= 4 {
 		required = append(required, "family", "level")
+	}
+	if version == 5 {
+		required = append(required, "edition")
 	}
 	sustaining, sustainingOK := jsonBool(object["sustaining"])
 	founding, foundingOK := jsonBool(object["founding"])
@@ -114,7 +125,10 @@ func parseCurrentCertificate(record []byte, certificate *Certificate) (map[strin
 	if raw, found := object["collection"]; found && string(raw) == "null" {
 		return nil, 0, false
 	}
-	if version == 4 && (certificate.Level != Rank(certificate.Tier) || certificate.Family != map[bool]string{false: FamilyPatron, true: FamilyLiving}[certificate.Sustaining]) {
+	if version >= 4 && (certificate.Level != Rank(certificate.Tier) || certificate.Family != map[bool]string{false: FamilyPatron, true: FamilyLiving}[certificate.Sustaining]) {
+		return nil, 0, false
+	}
+	if version == 5 && (!validEdition(certificate.Edition) || (certificate.Edition != EditionOnce) != certificate.Sustaining) {
 		return nil, 0, false
 	}
 	return object, version, true
@@ -168,7 +182,7 @@ func validCollection(collection *Collection, raw json.RawMessage, sustaining boo
 	return found
 }
 
-func validCertificateTimes(certificate Certificate, now time.Time, boundExpiry bool) bool {
+func validCertificateTimes(certificate Certificate, now time.Time, boundExpiry bool) bool { //nolint:cyclop // Each term and timestamp condition is part of one certificate validity decision.
 	supportedSince, sinceOK := strictTime(certificate.SupportedSince)
 	issuedAt, issuedOK := strictTime(certificate.IssuedAt)
 	if !sinceOK || !issuedOK || supportedSince.After(issuedAt) || issuedAt.After(now.Add(5*time.Minute)) {
@@ -178,5 +192,9 @@ func validCertificateTimes(certificate Certificate, now time.Time, boundExpiry b
 		return !certificate.Sustaining
 	}
 	expiresAt, expiryOK := strictTime(certificate.ExpiresAt)
-	return expiryOK && certificate.Sustaining && expiresAt.After(issuedAt) && (!boundExpiry || !expiresAt.After(issuedAt.Add(45*24*time.Hour)))
+	maximum := 45 * 24 * time.Hour
+	if certificate.Version == 5 && certificate.Edition == EditionYearly {
+		maximum = 370 * 24 * time.Hour
+	}
+	return expiryOK && certificate.Sustaining && expiresAt.After(issuedAt) && (!boundExpiry || !expiresAt.After(issuedAt.Add(maximum)))
 }
