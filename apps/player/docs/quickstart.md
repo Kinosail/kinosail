@@ -6,15 +6,15 @@ section: Start here
 
 # Get Kinosail running
 
-Kinosail Server is free to run on your own hardware, and the web Player is included. You can also connect compatible Jellyfin mobile apps after setting up trusted HTTPS and enabling the optional integration in Owner Settings.
+Kinosail Server is free to run on your own hardware. The web Player is included. You can also connect supported Jellyfin mobile apps. To do this, set up trusted HTTPS and turn on Jellyfin support in Owner Settings.
 
-The examples below keep your media read-only, persist the Server's state, and bind the first setup page to this computer. For Jellyfin app setup, see [connect your devices]({{ '/getting-started/connect-devices/' | relative_url }}).
+The examples keep your media read-only and save the Server's data. They also limit first setup to this computer. For Jellyfin setup, see [Connect your devices]({{ '/getting-started/connect-devices/' | relative_url }}).
 
 ## Recommended: verified install
 
-The installer verifies Kinosail's signed image, pins the image digest, creates the backup key, and starts the Server on localhost.
+The installer checks Kinosail's signed image and pins its digest. It also creates a backup key and starts the Server on this computer.
 
-You need Docker Engine with the Compose plugin, Git, and `cosign`. Kinosail supports 64-bit Linux (`amd64` or `arm64`); Docker Desktop also works for local use on macOS. Then run:
+You need Docker Engine with the Compose plugin, Git, and `cosign`. Kinosail supports 64-bit Linux (`amd64` or `arm64`). Docker Desktop works for local use on macOS. Run these commands:
 
 ```sh
 git clone --depth 1 https://github.com/Kinosail/kinosail.git
@@ -22,11 +22,11 @@ cd kinosail/apps/player
 ./scripts/install.sh /absolute/path/to/your/media
 ```
 
-Replace `/absolute/path/to/your/media` with an existing absolute path on the Docker host. The default web port is `38127`; pass another port as the second argument if that port is already in use.
+Replace `/absolute/path/to/your/media` with the full path to an existing folder on the Docker host. The default web port is `38127`. If another service uses this port, give the installer a different port as its second argument.
 
 ## Docker CLI
 
-These direct examples use the published `latest` tag. For signature verification and a pinned image digest, use the installer above. You need Docker Engine and an existing media folder on the Docker host. Change the path in the first line, then paste the block:
+These commands use the published `latest` tag. The installer above checks the image signature and pins its digest. You need Docker Engine and an existing media folder on the Docker host. First, change the path in this line:
 
 ```sh
 export KINOSAIL_MEDIA_PATH="/absolute/path/to/your/media"
@@ -54,7 +54,7 @@ docker run --detach \
 
 ## Docker Compose
 
-Create a folder for the Compose file and its settings. Change the media path to an existing folder on the Docker host:
+Create a folder for the Compose file and settings. Set the media path to an existing folder on the Docker host:
 
 ```sh
 mkdir -p ~/kinosail
@@ -66,7 +66,7 @@ KINOSAIL_PORT=38127
 EOF
 ```
 
-The media path must already exist on the Docker host. These direct examples leave automatic encrypted backups unconfigured; set up a backup key before relying on backups, or use the installer, which creates one for you.
+The media folder must already exist on the Docker host. These Compose commands do not set up automatic encrypted backups. Add a backup key before you rely on backups. The installer creates a key for you.
 
 Save this as `compose.yaml` in that folder:
 
@@ -105,14 +105,14 @@ volumes:
   backups:
 ```
 
-Start Player and watch its first-start logs:
+Start Player and watch the startup log:
 
 ```sh
 docker compose up -d
 docker compose logs --follow kinosail
 ```
 
-Open <https://localhost:38127> on the same computer. Your browser will warn about the locally generated certificate. Accept it only for your own Server, then create the first Owner with a unique password of at least 12 characters and enroll a passkey or TOTP authenticator.
+On the same computer, open <https://localhost:38127>. Your browser will warn you about the local certificate. Trust it only for your own Server. Create the first Owner with a unique password that has at least 12 characters. Then add a passkey or TOTP authenticator.
 
 ## Settings most installs need
 
@@ -120,12 +120,12 @@ Open <https://localhost:38127> on the same computer. Your browser will warn abou
 | --- | --- | --- |
 | Media folder | `/absolute/path/to/your/media` on the host, mounted as `/media:ro` | Your collection is stored somewhere else. Keep the mount read-only. |
 | Web port | `38127` | Another service already uses that host port. In Compose, change `KINOSAIL_PORT`. |
-| First-run access | `127.0.0.1` | Keep setup on this computer until the Owner is created. Then follow [connect devices]({{ '/getting-started/connect-devices/' | relative_url }}) to enable trusted LAN access. |
+| First-run access | `127.0.0.1` | Keep setup on this computer until you create the Owner. Then follow [Connect your devices]({{ '/getting-started/connect-devices/' | relative_url }}) to enable trusted home-network access. |
 | Jellyfin mobile apps | Off by default | Configure trusted HTTPS, enable **Allow compatible Jellyfin apps to connect** in Owner Settings, and restart Kinosail. |
 | Persistent state | Named `config` and `cache` volumes | Keep the same volume names when recreating the container. |
 | Container user | `10001:10001` | This is fixed by the image; `PUID` and `PGID` are not needed. |
 
-Choose household preferences, scan behavior, and playback options in Player's Owner settings. The Docker environment is for paths and container deployment. Before relying on encrypted automatic backups, configure the backup key using [backups and updates]({{ '/owner-guide/backups-and-updates/' | relative_url }}). The verified installer creates that key for you.
+Set household preferences, scan behavior, and playback options in Owner Settings. Use Docker environment values for paths and container setup. Before you rely on encrypted backups, set up a backup key. Follow [Backups and updates]({{ '/owner-guide/backups-and-updates/' | relative_url }}). The installer creates a key for you.
 
 ## Add your library and play
 
@@ -133,6 +133,6 @@ Choose household preferences, scan behavior, and playback options in Player's Ow
 2. Add a library folder under `/media`, such as `/media/Movies` or `/media/Shows`.
 3. Let the scan finish, open an item, and play it in your browser.
 
-For a phone, TV, or another computer, follow [connect devices]({{ '/getting-started/connect-devices/' | relative_url }}). Keep the Server private until its LAN address and HTTPS identity are configured. For remote access, use the [remote access guide]({{ '/owner-guide/remote-access/' | relative_url }}); do not forward the setup port directly to the internet.
+To connect another computer or device, follow [Connect your devices]({{ '/getting-started/connect-devices/' | relative_url }}). Keep the Server private until its home-network address and HTTPS identity are set up. For access away from home, use the [Remote access guide]({{ '/owner-guide/remote-access/' | relative_url }}). Do not forward the setup port to the internet.
 
-For the maintained signed-image install, health checks, and update flow, use the [verified installer](#recommended-verified-install). For startup help, see [install troubleshooting]({{ '/troubleshooting/install-and-startup/' | relative_url }}).
+For signed images, health checks, and updates, use the [verified installer](#recommended-verified-install). For startup help, see [Install troubleshooting]({{ '/troubleshooting/install-and-startup/' | relative_url }}).

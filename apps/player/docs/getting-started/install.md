@@ -33,9 +33,9 @@ From `apps/player`, run:
 
 The second argument is optional. The default port is `38127`. The path must be absolute, must exist, and must not contain a newline or a single quote.
 
-The installer selects `podman compose` when available. It falls back to `docker compose`. It creates `secrets/backup_key` with mode `600` when the key does not exist. Keep this key with your encrypted backups.
+The installer uses `podman compose` when it is available. Otherwise, it uses `docker compose`. If needed, it creates `secrets/backup_key` with file mode `600`. Keep this key with your encrypted backups.
 
-The installer pulls `ghcr.io/kinosail/kinosail-player:latest`, verifies its keyless signature against `publish.yml@refs/heads/main`, pins the resolved SHA-256 digest in `.env`, and starts the service. It waits for the `kinosail healthcheck` command to pass.
+The installer pulls `ghcr.io/kinosail/kinosail-player:latest`. It checks the image signature against `publish.yml@refs/heads/main`. It pins the SHA-256 digest in `.env` and starts the Server. It waits for `kinosail healthcheck` to pass.
 
 
 ## Open the Server
@@ -64,13 +64,13 @@ Create the first Owner at the local address. Then run the same command with `--l
 ./scripts/install.sh /absolute/path/to/media 38127 --lan
 ```
 
-The installer checks that `/setup` redirects, changes `KINOSAIL_BIND` to `0.0.0.0`, and records a detected LAN address in `KINOSAIL_TLS_HOSTS` and `KINOSAIL_AUTH_URL` when those values are empty. It does not enable public internet access.
+The installer checks that `/setup` redirects. It changes `KINOSAIL_BIND` to `0.0.0.0`. If `KINOSAIL_TLS_HOSTS` or `KINOSAIL_AUTH_URL` is empty, it adds the detected home-network address. This does not enable public internet access.
 
 Open the reported LAN address from another device. Use the exact HTTPS name in the address when you add passkeys. If your host has more than one network interface, verify the detected address before sharing it.
 
 ## Update an existing installation
 
-Run `git pull --ff-only` to refresh the deployment files, then run the installer again with the same media path and port. Keep the same checkout and Compose project name. If the service is running, the installer writes a recovery archive under `backups/kinosail-before-update-<timestamp>.kinosail-backup` before it pulls the new image. It keeps the existing `.env` values.
+Run `git pull --ff-only` to update the deployment files. Then run the installer with the same media path and port. Keep the same checkout and Compose project name. If the Server is running, the installer saves a recovery archive in `backups/` before it pulls the new image. It keeps your existing `.env` values.
 
 Check the resulting state:
 
@@ -89,7 +89,7 @@ docker compose --file compose.release.yaml stop
 docker compose --file compose.release.yaml start
 ```
 
-`stop` and `start` preserve the existing container configuration, including installer-selected overlays. Use the installer for updates. `down` removes containers but does not remove named volumes. Do not add `--volumes` unless you intend to remove the stored Kinosail state.
+`stop` and `start` keep the container configuration, including installer settings. Use the installer to update Kinosail. `down` removes containers but keeps named volumes. Do not add `--volumes` unless you want to delete the saved Kinosail data.
 
 ## Source of truth
 
