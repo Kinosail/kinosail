@@ -48,6 +48,7 @@
 - Fetch and reconcile current `origin/main`, rerun checks affected by reconciliation, and retry ordinary push races.
 - Prove the task commit is included in remote main with a fetched ancestry check. `git ls-remote` alone proves only the ref value.
 - GitHub Actions is the CI and container-publication authority. Green main pushes publish affected app containers automatically; version tags and major releases are not required. Keep the local deployment watcher separate from artifact publication.
+- Nox deployment requires successful CI and the selected app's production-image promotion for the exact current main commit. Its locally rebuilt ARM image must pass its own scan and remote health check; report that image separately from the published GHCR digest.
 - Current CI/CD decisions and evidence live in `engineering/research/ci-cd-reset-2026-09-22.md`; the 2026-09-20 note is historical.
 - Treat source tests, browser checks, remote publication, deployed revision, container health, TLS, and physical-device proof as separate facts.
 - End implementation delivery reports with `MAIN: YES — <remote main SHA>` after proof, or `MAIN: NO — <specific blocker>`.
