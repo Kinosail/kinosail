@@ -57,6 +57,17 @@
       url: /owner-guide/integrations/
     - title: Back up and update
       url: /owner-guide/backups-and-updates/
+- title: Security
+  url: /security/
+  pages:
+    - title: Security overview
+      url: /security/
+    - title: Secure accounts
+      url: /owner-guide/security/
+    - title: Configure remote access
+      url: /owner-guide/remote-access/
+    - title: Architecture and privacy
+      url: /reference/architecture-and-privacy/
 - title: Build with Kinosail
   url: /developer-guide/
   pages:

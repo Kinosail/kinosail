@@ -36,6 +36,8 @@ Local use does not need a Kinosail account. Your Server sends media straight to 
 
 Read [Architecture and privacy]({{ '/reference/architecture-and-privacy/' | relative_url }}) to learn where the Server stores data and what optional services can access. Kinosail is source-available under the [PolyForm Perimeter license](https://github.com/Kinosail/kinosail/blob/main/LICENSING.md).
 
+Read the [Security overview]({{ '/security/' | relative_url }}) for account, API, network, and data protections. It also explains what you must protect on your host and how to [report a vulnerability privately](https://github.com/Kinosail/kinosail/security/advisories/new).
+
 ## Building on Player?
 
 The [Developer guide]({{ '/developer-guide/' | relative_url }}) covers the versioned API and MCP. [Build from source]({{ '/source-install/' | relative_url }}) to contribute or try code that is not released yet.
