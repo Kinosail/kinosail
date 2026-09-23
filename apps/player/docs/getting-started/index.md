@@ -15,7 +15,7 @@ The Docker guide installs the continuous container channel. You do not need a nu
 2. [Create and secure your Owner]({{ '/getting-started/first-setup/' | relative_url }}).
 3. [Add your media]({{ '/getting-started/add-media/' | relative_url }}).
 4. [Play an item in your browser]({{ '/user-guide/playback/' | relative_url }}).
-5. [Connect another browser]({{ '/getting-started/connect-devices/' | relative_url }}) on your home network.
+5. [Connect browsers and Jellyfin apps]({{ '/getting-started/connect-devices/' | relative_url }}) on your home network.
 
 ## Keep media and state separate
 

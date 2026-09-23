@@ -7,7 +7,7 @@ last_reviewed: 2026-09-20
 
 # All Player features
 
-This guide covers the **web Player** and the Server features that support it. Start with [Docker installation]({{ "/quickstart/" | relative_url }}) if you are new. Native clients and the other Kinosail applications are outside this documentation release.
+This guide covers the **web Player** and the Server features that support it. Start with [Docker installation]({{ "/quickstart/" | relative_url }}) if you are new. For compatible Jellyfin clients, see [Connect browsers and Jellyfin apps]({{ '/getting-started/connect-devices/' | relative_url }}).
 
 Availability depends on your installed version, media type, browser, Profile permissions, and enabled Server settings. The guides describe those boundaries rather than treating every feature as available everywhere.
 
@@ -30,7 +30,7 @@ Availability depends on your installed version, media type, browser, Profile per
 | --- | --- |
 | Docker installation and first start | [Install with Docker]({{ '/quickstart/' | relative_url }}) |
 | Owner setup and first library | [Complete first setup]({{ '/getting-started/first-setup/' | relative_url }}) |
-| Connect browsers on your home network | [Connect another browser]({{ '/getting-started/connect-devices/' | relative_url }}) |
+| Connect browsers and Jellyfin apps | [Connect browsers and Jellyfin apps]({{ '/getting-started/connect-devices/' | relative_url }}) |
 | Libraries, scan schedules, local metadata, and automatic analysis | [Manage libraries]({{ '/owner-guide/libraries/' | relative_url }}) |
 | Per-item metadata and manual skip markers | [Edit metadata and skip markers]({{ '/owner-guide/metadata/' | relative_url }}) |
 | Plex/Jellyfin history imports and recurring sync | [Import and sync viewing history]({{ '/owner-guide/migration/' | relative_url }}) |
