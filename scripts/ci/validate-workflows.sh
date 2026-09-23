@@ -1,161 +1,68 @@
 #!/usr/bin/env bash
 # shellcheck source=scripts/tooling/gates-pause.sh
+# shellcheck disable=SC2016 # Assertions intentionally match literal Actions and shell expressions.
 source "$(dirname "${BASH_SOURCE[0]}")/../tooling/gates-pause.sh"
 set -euo pipefail
 
 repo="$(cd "$(dirname "$0")/../.." && pwd)"
-readonly repo
-readonly workflows="$repo/.github/workflows"
-readonly dependabot="$repo/.github/dependabot.yml"
-readonly pull_request_template="$repo/.github/pull_request_template.md"
-readonly apps=(player subtitles dashboard)
-release_images=()
+workflows="$repo/.github/workflows"
+fail() { printf 'workflow validation failed: %s\n' "$*" >&2; exit 1; }
+require() { grep -Fq -- "$2" "$1" || fail "$(basename "$1") must contain $2"; }
 
-fail() {
-  printf 'workflow validation failed: %s\n' "$*" >&2
-  exit 1
-}
-
-require_text() {
-  local file="$1"
-  local text="$2"
-  grep -Fq -- "$text" "$file" || fail "$(basename "$file") must contain $text"
-}
-
-require_twice() {
-  local file="$1"
-  local text="$2"
-  [[ "$(grep -Fxc -- "$text" "$file")" -eq 2 ]] ||
-    fail "$(basename "$file") needs push and pull request entries for $text"
-}
-
-require_once() {
-  local file="$1"
-  local text="$2"
-  [[ "$(grep -Fxc -- "$text" "$file")" -eq 1 ]] ||
-    fail "$(basename "$file") must contain exactly one $text"
-}
-
-require_at_least() {
-  local file="$1"
-  local count="$2"
-  local text="$3"
-  [[ "$(grep -Fc -- "$text" "$file")" -ge "$count" ]] ||
-    fail "$(basename "$file") must contain at least $count occurrences of $text"
-}
-
-[[ -f "$dependabot" ]] || fail "missing root .github/dependabot.yml"
-require_once "$dependabot" 'version: 2'
-require_once "$dependabot" '    directory: /packages'
-require_once "$dependabot" '    directory: /apps/player'
-require_once "$dependabot" '    directory: /apps/subtitles'
-require_once "$dependabot" '    directory: /apps/dashboard'
-require_once "$dependabot" '    directory: /apps/player/e2e'
-require_once "$dependabot" '    directory: /scripts/quality'
-require_once "$dependabot" '    directory: /apps/subtitles/e2e'
-require_once "$dependabot" '  - package-ecosystem: github-actions'
-[[ -f "$pull_request_template" ]] || fail "missing root pull request template"
-require_text "$pull_request_template" '## Verification'
-
-for app in "${apps[@]}"; do
-  workflow="$workflows/$app-hygiene.yml"
-  [[ -f "$workflow" ]] || fail "missing $app-hygiene.yml"
-
-  require_text "$workflow" "working-directory: apps/$app"
-  require_text "$workflow" "go-version-file: apps/$app/go.mod"
-  [[ "$app" == dashboard ]] || require_text "$workflow" 'context: .'
-  [[ "$app" == dashboard ]] || require_text "$workflow" "file: apps/$app/Containerfile"
-  [[ "$app" == dashboard ]] || require_text "$workflow" "tags: localhost/kinosail-$app:\${{ github.sha }}"
-  require_text "$workflow" "pull-requests: read"
-  # shellcheck disable=SC2016 # GitHub expression must remain literal.
-  require_text "$workflow" '--new-from-rev=${{'
-
-  if grep -Eq '(^|[[:space:]])push:[[:space:]]+true([[:space:]]|$)' "$workflow"; then
-    fail "$app-hygiene.yml must not publish containers"
-  fi
-
-  if grep -Fq 'localhost/kinosail:' "$workflow" || grep -Fq 'ghcr.io/' "$workflow"; then
-    fail "$app-hygiene.yml uses an ambiguous or published container tag"
-  fi
-
-  release="$workflows/$app-release.yml"
-  [[ -f "$release" ]] || fail "missing $app-release.yml"
-  [[ ! -e "$repo/apps/$app/.github/workflows/release.yml" ]] ||
-    fail "apps/$app contains an inert nested release workflow"
-
-  case "$app" in
-    player|subtitles)
-      require_text "$workflow" '  schedule:'
-      require_text "$workflow" '    - cron: "'
-      require_text "$workflow" '  scheduled:'
-      require_text "$workflow" "name: $([[ "$app" == player ]] && printf Player || printf Subtitles) scheduled \${{ matrix.check }}"
-      require_text "$workflow" "working-directory: apps/$app/e2e"
-      require_text "$workflow" '        check: [performance, fuzz, deadcode]'
-      require_text "$workflow" 'ubuntu-24.04-arm'
-      require_text "$workflow" "fromJSON(needs.changes.outputs.plan).${app}_browsers"
-      require_text "$workflow" "          KINOSAIL_TEST_IMAGE: localhost/kinosail-$app:\${{ github.sha }}"
-      require_text "$workflow" '      - run: make installer-test native-build local-pipeline-test'
-      require_at_least "$workflow" 2 'sudo apt-get install -y libarchive-tools'
-      [[ ! -e "$repo/apps/$app/.github/dependabot.yml" ]] ||
-        fail "apps/$app contains an inert nested Dependabot configuration"
-      [[ ! -e "$repo/apps/$app/.github/pull_request_template.md" ]] ||
-        fail "apps/$app contains an inert nested pull request template"
-      if [[ "$app" == player ]]; then
-        require_text "$workflow" '  client:'
-        require_text "$workflow" '      - run: make client-check'
-        title=Player
-      else
-        title=Subtitles
-      fi
-      ;;
-    dashboard) title=Dashboard ;;
-  esac
-  require_text "$release" "name: $title Release"
-  require_text "$release" "tags: [\"$app-v*\"]"
-  require_text "$release" "group: $app-release-\${{ github.ref }}"
-  require_text "$release" "working-directory: apps/$app"
-  require_text "$release" "version=\"\${GITHUB_REF_NAME#$app-}\""
-  require_text "$release" 'context: .'
-  require_text "$release" "file: apps/$app/Containerfile"
-  require_text "$release" "images: ghcr.io/kinosail/kinosail-$app"
-  require_text "$release" "image-ref: ghcr.io/kinosail/kinosail-$app@\${{ steps.build.outputs.digest }}"
-  require_text "$release" "subject-name: ghcr.io/kinosail/kinosail-$app"
-  require_text "$release" "cosign sign --yes \"ghcr.io/kinosail/kinosail-$app@\$IMAGE_DIGEST\""
-  require_text "$release" "cache-from: type=gha,scope=$app-"
-  require_text "$release" "cache-to: type=gha,mode=max,scope=$app-"
-  require_text "$release" '          sbom: true'
-  require_text "$release" '          provenance: mode=max'
-  require_text "$release" '      attestations: write'
-  require_text "$release" '      id-token: write'
-  require_text "$release" '      packages: write'
-  require_text "$release" "gh release create \"\$RELEASE_TAG\""
-
-  if grep -Fq 'tags: ["v*"]' "$release"; then
-    fail "$app-release.yml accepts an unscoped release tag"
-  fi
-  if grep -Eq 'ghcr\.io/kinosail/kinosail([:@[:space:]]|$)' "$release"; then
-    fail "$app-release.yml uses the ambiguous legacy Player image"
-  fi
-
-  image="ghcr.io/kinosail/kinosail-$app"
-  for existing in "${release_images[@]:-}"; do
-    [[ "$image" != "$existing" ]] || fail "$app-release.yml reuses image $image"
-  done
-  release_images+=("$image")
-
-  case "$app" in
-    player|subtitles)
-      require_text "$release" "kinosail-$app-install.tar.gz"
-      require_text "$release" "./scripts/package-native-release.sh \"\$APP_VERSION\" native-release"
-      require_text "$release" 'native-release/kinosail-release.json.sigstore.json'
-      require_text "$release" "subject-path: apps/$app/kinosail-$app-install.tar.gz"
-      ;;
-    dashboard)
-      if grep -Fq 'package-native-release.sh' "$release" || grep -Fq 'install.tar.gz' "$release"; then
-        fail "$app-release.yml references packaging the app does not provide"
-      fi
-      ;;
-  esac
+for name in ci app publish release; do
+  [[ -f "$workflows/$name.yml" ]] || fail "missing $name.yml"
 done
+[[ "$(find "$workflows" -maxdepth 1 -name '*.yml' -type f | wc -l | tr -d ' ')" == 4 ]] ||
+  fail 'unexpected workflow file'
+[[ -f "$repo/.github/dependabot.yml" ]] || fail 'missing Dependabot configuration'
+[[ -f "$repo/.github/pull_request_template.md" ]] || fail 'missing pull request template'
 
-printf 'validated %s app hygiene and release workflow boundaries\n' "${#apps[@]}"
+ci="$workflows/ci.yml"
+app="$workflows/app.yml"
+publish="$workflows/publish.yml"
+release="$workflows/release.yml"
+require "$ci" '  pull_request:'
+require "$ci" '    branches: [main]'
+require "$ci" '  merge_group:'
+require "$ci" 'run: python3 scripts/ci/affected.py'
+require "$ci" 'run: python3 scripts/ci/required.py repository'
+require "$ci" 'run: python3 scripts/ci/required.py security'
+require "$ci" 'results: ${{ toJSON(needs) }}'
+require "$ci" 'uses: ./.github/workflows/app.yml'
+require "$ci" 'uses: ./.github/workflows/publish.yml'
+require "$ci" 'python3 scripts/quality/check-dependency-integrity.py --browser-only'
+require "$ci" './scripts/ci/test-go.sh packages'
+require "$ci" 'actions/deploy-pages@'
+
+require "$app" '  workflow_call:'
+require "$app" 'if: fromJSON(inputs.plan)[inputs.app]'
+require "$app" 'run: ./scripts/ci/test-go.sh "$APP"'
+require "$app" 'run: go run golang.org/x/vuln/cmd/govulncheck@v1.7.0 ./...'
+require "$app" 'run: make installer-test native-build local-pipeline-test'
+require "$app" 'run: make -C apps/player client-check'
+require "$app" 'run: python3 scripts/ci/required.py app'
+require "$app" '"runner":"ubuntu-24.04-arm"'
+require "$app" 'playwright test "${args[@]}"'
+require "$app" 'KINOSAIL_BROWSER_SMOKE:'
+require "$app" '--grep=@smoke'
+
+require "$publish" '  workflow_call:'
+require "$publish" 'run: python3 scripts/ci/delivery.py'
+require "$publish" 'CI_RESULTS: ${{ inputs.results }}'
+require "$publish" 'run: ./scripts/ci/test-image.sh "$APP" "$IMAGE"'
+require "$publish" 'queue: max'
+require "$publish" 'cosign sign --yes'
+require "$publish" 'COSIGN_REPOSITORY: ghcr.io/kinosail/kinosail-signatures'
+require "$publish" 'push-to-registry: false'
+require "$publish" 'python3 scripts/ci/promote.py'
+
+require "$release" 'tags: ["player-v*", "subtitles-v*", "dashboard-v*"]'
+require "$release" 'run: python3 scripts/ci/release_tag.py'
+require "$release" '--workflow ci.yml --commit "$commit" --event push'
+require "$release" 'run: ./scripts/ci/package-release.sh "$APP" "$APP_VERSION"'
+require "$release" 'cosign sign --yes "$IMAGE@$DIGEST"'
+require "$release" 'COSIGN_REPOSITORY: ghcr.io/kinosail/kinosail-signatures'
+require "$release" 'push-to-registry: false'
+require "$release" 'gh release create "$RELEASE_TAG"'
+
+printf 'validated four CI, app, publication, and version-release workflows\n'

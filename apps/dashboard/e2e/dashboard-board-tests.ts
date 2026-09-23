@@ -76,7 +76,7 @@ export function registerDashboardBoardTests() {
 		await resetBoard(page);
 	});
 
-	test("adds, edits, searches, reorders, removes, and restores applications", async ({ page }, testInfo) => {
+	test("adds, edits, searches, reorders, removes, and restores applications", { tag: "@smoke" }, async ({ page }, testInfo) => {
 		await login(page);
 		await resetBoard(page);
 		await page.getByRole("button", { name: "Add application" }).click();

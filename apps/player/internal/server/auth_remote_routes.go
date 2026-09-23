@@ -91,7 +91,7 @@ func publicViewerRouteAllowed(pattern string) bool {
 		return true
 	}
 	switch pattern {
-	case "GET /api/v1/me", "PUT /api/v1/me/language", "DELETE /api/v1/session", "POST /logout",
+	case "GET /api/v1/supporter/collection", "GET /supporter/collection", "GET /api/v1/me", "PUT /api/v1/me/language", "DELETE /api/v1/session", "POST /logout",
 		"GET /{$}", "GET /actor", "GET /album/{id}", "GET /book/{id}", "GET /collection/{name}",
 		"GET /item/{id}", "POST /item/{id}/list", "GET /offline-downloads", "GET /playlist/{name}", "GET /read/{id}", "GET /room/{id}", "GET /show/{id}", "GET /watch-together/{id}", "GET /watch/{id}",
 		"POST /continue-watching/{id}/remove", "POST /list/{id}", "POST /offline-downloads/{id}/remove", "POST /offline/{id}",

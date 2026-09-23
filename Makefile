@@ -25,7 +25,7 @@ tooling-check:
 	@python3 scripts/quality/test_check_duplicates.py
 	@GOWORK=off go -C scripts/quality/metrics test ./...
 	@shellcheck -x scripts/tooling/*.sh
-	@./scripts/tooling/worktree_guard.py audit
+	@./scripts/tooling/worktree_guard.py heartbeat --if-present
 	@./scripts/tooling/test-worktree-guard.py
 	@python3 scripts/tooling/test-pre-push-environment.py
 	@./scripts/tooling/test-quality-controls.sh

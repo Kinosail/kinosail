@@ -5,28 +5,28 @@ section: Build & contribute
 ---
 # About these docs
 
-These docs cover the Kinosail web Player: installing its Server with Docker, watching in your browser, and keeping household access and state secure. Start with [Docker installation]({{ '/quickstart/' | relative_url }}) or select the app you already run.
+These docs explain how to install Kinosail Player with Docker, watch in a browser, and keep household access and data safe. Start with [Docker installation]({{ '/quickstart/' | relative_url }}) or choose the task you need.
 
 ## Find the right kind of guide
 
-- **Getting started** takes you through a first successful setup.
+- **Getting started** guides you through the first setup.
 - **User guides** explain everyday tasks.
 - **Owner guides** cover configuration, security, backups, and updates.
 - **Reference** provides exact settings, formats, and API details.
 - **Troubleshooting** starts with the symptom you can see.
 
-Search covers the Player guides and reference together. On wide screens, use **On this page** to jump within a long guide; on smaller screens, use **Menu** to open navigation and search. Press **Ctrl K** or **Command K** to focus search.
+Search checks the Player guides and reference. On a wide screen, use **On this page** to jump to a section. On a small screen, open **Menu** to see the links and search. Press **Ctrl K** or **Command K** to move to search.
 
 ## Maintained with the source
 
-Guides live in `apps/player/docs`, beside the Player implementation. The reading interface lives alongside the guides; publishing tools live in `engineering/documentation`. Source installation is a secondary path for contributors and early evaluation. Other Kinosail applications and native clients are outside this site’s current scope.
+Guides live in `apps/player/docs`, beside the Player code. The reading interface is in the same folder. Publishing tools live in `engineering/documentation`. Source installation is for contributors and people who want to test unreleased code. These docs do not cover other Kinosail apps.
 
-GitHub Pages hosts static files. Search runs in your browser; this site does not ask for Server credentials or connect to your installation. No analytics or external font service is required.
+GitHub Pages hosts these static files. Search runs in your browser. This site does not ask for Server credentials or connect to your installation. It does not use analytics or an external font service.
 
 ## Design references
 
-The organization follows the clear separation of installation, administration, and clients in [Jellyfin's documentation](https://jellyfin.org/docs/) and the first-success setup path in [Immich's documentation](https://docs.immich.app/). Kinosail keeps its own typography, colors, and product language.
+The guide structure follows [Jellyfin's documentation](https://jellyfin.org/docs/) and the first setup path in [Immich's documentation](https://docs.immich.app/). Kinosail uses its own type, colors, and product terms.
 
 ## Report a correction
 
-Use **Edit this page** or **Open an issue** below. For application failures, include your app and revision and follow the [support guide](https://github.com/Kinosail/kinosail/blob/main/SUPPORT.md). Never paste credentials or unredacted private logs into a public issue.
+Select **Edit this page** or **Open an issue** below to report a correction. For an app failure, include the app name and revision. Follow the [support guide](https://github.com/Kinosail/kinosail/blob/main/SUPPORT.md). Do not post credentials or private logs in a public issue.

@@ -16,7 +16,7 @@ function totp(): string {
 }
 
 export async function login(page: import("@playwright/test").Page) {
-  await page.goto("/login?next=/");
+  await page.goto("/login?next=/", { waitUntil: "domcontentloaded" });
   await page.getByLabel("Name").fill("Owner");
   await page.getByLabel("Password", { exact: true }).fill("test-instance-password");
   await page.getByLabel("6-digit code").fill(totp());

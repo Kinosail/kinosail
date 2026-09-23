@@ -11,6 +11,12 @@ from check import Page
 
 
 class BuildInputsTest(unittest.TestCase):
+    def test_defaults_target_the_root_custom_domain(self):
+        with tempfile.TemporaryDirectory() as directory:
+            args = settings(['--output', directory + '/new'])
+        self.assertEqual(args.baseurl, '')
+        self.assertEqual(args.url, 'https://kinosail.com')
+
     def test_valid_origins_and_prefixes(self):
         with tempfile.TemporaryDirectory() as directory:
             for prefix in ('', '/kinosail', '/preview/docs-v2'):

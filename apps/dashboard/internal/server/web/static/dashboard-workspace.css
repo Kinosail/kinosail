@@ -86,3 +86,9 @@
   .loading-grid span::after{top:43px;left:68px;width:50%;height:14px;box-shadow:0 27px var(--surface-2),0 54px var(--surface-2)}
   .directory-head h2{font-size:1.5rem}
 }
+
+/* Shared CinemaSail family background, with accessibility fallbacks. */
+:root:not([data-theme=light]) body.dashboard-page{background:linear-gradient(180deg,rgba(11,13,11,.6),rgba(11,13,11,.8) 58%,var(--bg)),url('/static/cinema-backdrop.jpg?v=2') center top/cover fixed no-repeat,var(--bg)}
+@media(prefers-contrast:more),(prefers-reduced-transparency:reduce),(forced-colors:active){
+  :root:not([data-theme=light]) body.dashboard-page{background:var(--bg)}
+}

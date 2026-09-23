@@ -32,13 +32,15 @@ type supporterOwnedBadgeView struct {
 }
 
 type supporterPageData struct {
-	Status                     supporterStatus
-	Living, Patron             *supporterOwnedBadgeView
-	LivingLevels, PatronLevels []supporterLevelView
-	Masterwork                 *supporterBadgeArt
-	HasBadges                  bool
-	Display                    string
-	Error                      string
+	Editions                                                []supporterEditionView
+	Status                                                  supporterStatus
+	CheckoutMonthly, CheckoutAnnual, CheckoutOnce           string
+	Living, Patron, Monthly, Yearly                         *supporterOwnedBadgeView
+	LivingLevels, PatronLevels, MonthlyLevels, YearlyLevels []supporterLevelView
+	Masterwork                                              *supporterBadgeArt
+	HasBadges                                               bool
+	Display                                                 string
+	Error                                                   string
 }
 
 func supporterDate(value string) string {
@@ -57,10 +59,17 @@ func supporterOwnedBadge(status *supporterBadgeStatus) *supporterOwnedBadgeView 
 	if status.Family == livingStandardFamily {
 		familyName, certificateURL, title = "Living Standard", "/api/v1/supporter/certificates/living-standard.svg", livingBadgeTitles[status.Rank-1]
 	}
+	if status.Edition != "" {
+		familyName = editionName(status.Edition)
+		certificateURL = "/api/v1/supporter/certificates/" + status.Edition + ".svg"
+	}
 	view := &supporterOwnedBadgeView{
 		supporterBadgeArt: supporterBadgeArt{Family: status.Family, FamilyName: familyName, Tier: status.Tier, Name: status.Name, Title: title, Rank: status.Rank, ServiceCount: len(status.ServiceMarks), Active: status.Active, Expired: status.Expired},
 		RecognitionName:   status.RecognitionName, Since: supporterDate(status.SupportedSince), Until: supporterDate(status.ExpiresAt), CertificateURL: certificateURL,
 		Founding: status.Founding, CompleteFleet: status.Collection != nil && status.Collection.ID == "complete-fleet", ServiceMarks: status.ServiceMarks,
+	}
+	if status.Edition != "" {
+		view.Family = status.Edition
 	}
 	if status.Collection != nil {
 		view.FleetEdition, view.FleetAppCount = status.Collection.Edition, len(status.Collection.AppIDs)
@@ -81,6 +90,9 @@ func supporterLevels(family string, owned *supporterBadgeStatus, collectedLevel 
 	if family == livingStandardFamily {
 		titles, details, familyName = livingBadgeTitles, livingBadgeDetails, "Living Standard"
 	}
+	if editionName(family) != "" {
+		familyName = editionName(family)
+	}
 	levels := make([]supporterLevelView, len(supporterTiers))
 	for index, tier := range supporterTiers {
 		state := "Available"
@@ -98,25 +110,34 @@ func supporterLevels(family string, owned *supporterBadgeStatus, collectedLevel 
 				state = "Your badge"
 			}
 		}
-		levels[index] = supporterLevelView{supporterBadgeArt: supporterBadgeArt{Family: family, FamilyName: familyName, Tier: tier, Name: supporterName(tier), Title: titles[index], Rank: index + 1, ServiceCount: serviceCount, Active: active, Expired: expired}, Detail: details[index], State: state}
+		detail := details[index]
+		if editionName(family) != "" {
+			detail = "Collect this level and every earlier badge in this edition."
+		}
+		levels[index] = supporterLevelView{supporterBadgeArt: supporterBadgeArt{Family: family, FamilyName: familyName, Tier: tier, Name: supporterName(tier), Title: titles[index], Rank: index + 1, ServiceCount: serviceCount, Active: active, Expired: expired}, Detail: detail, State: state}
 	}
 	return levels
 }
 
 func (program *supporterProgram) pageData(message string) supporterPageData {
 	status := program.status()
+	checkoutAnnual, checkoutOnce := status.SupportURL, status.SupportURL
+	if status.SupportURL == defaultSupportURL {
+		checkoutAnnual, checkoutOnce = yearlySupportURL, oneTimeSupportURL
+	}
 	var masterwork *supporterBadgeArt
 	if status.BadgeCase.MasterworkEarned {
 		level := status.BadgeCase.MasterworkLevel
 		masterwork = &supporterBadgeArt{Family: "masterwork", FamilyName: "Full Sail", Tier: supporterTiers[level-1], Name: supporterName(supporterTiers[level-1]), Title: masterworkTitles[level-1], Rank: level, Active: status.BadgeCase.MasterworkActive, Expired: !status.BadgeCase.MasterworkActive}
 	}
-	return supporterPageData{Status: status, Living: supporterOwnedBadge(status.LivingStandard), Patron: supporterOwnedBadge(status.PatronOrder), Masterwork: masterwork, LivingLevels: supporterLevels(livingStandardFamily, status.LivingStandard, status.BadgeCase.LivingLevel), PatronLevels: supporterLevels(patronOrderFamily, status.PatronOrder, status.BadgeCase.PatronLevel), HasBadges: status.PatronOrder != nil || status.LivingStandard != nil, Display: program.settings.supporterDisplay(), Error: message}
+	return supporterPageData{Editions: supporterEditionViews(status), Status: status, CheckoutMonthly: status.SupportURL, CheckoutAnnual: checkoutAnnual, CheckoutOnce: checkoutOnce, Monthly: supporterOwnedBadge(status.Monthly), Yearly: supporterOwnedBadge(status.Yearly), MonthlyLevels: supporterLevels("monthly", status.Monthly, status.BadgeCase.MonthlyLevel), YearlyLevels: supporterLevels("yearly", status.Yearly, status.BadgeCase.YearlyLevel), Living: supporterOwnedBadge(status.LivingStandard), Patron: supporterOwnedBadge(status.PatronOrder), Masterwork: masterwork, LivingLevels: supporterLevels(livingStandardFamily, status.LivingStandard, status.BadgeCase.LivingLevel), PatronLevels: supporterLevels("one-time", status.PatronOrder, status.BadgeCase.PatronLevel), HasBadges: status.PatronOrder != nil || status.LivingStandard != nil || status.Monthly != nil || status.Yearly != nil, Display: program.settings.supporterDisplay(), Error: message}
 }
 
 var supporterView = newLocalizedTemplate("supporter", supporterHTML)
 
 func registerSupporter(mux *http.ServeMux, auth *authentication, program *supporterProgram) {
 	registerSupporterDisplay(mux, auth, program)
+	registerSupporterCollection(mux, program)
 	mux.Handle("GET /supporter", auth.owner(http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
 		_ = supporterView.Execute(writer, request, program.pageData(""))
 	})))
@@ -161,6 +182,10 @@ func registerSupporterAPI(mux *http.ServeMux, auth *authentication, program *sup
 			program.writeCertificate(writer, family)
 		}))
 	}
+	mux.Handle("GET /api/v1/supporter/certificates/one-time.svg", certificate("one-time"))
+	mux.Handle("GET /api/v1/supporter/certificates/monthly.svg", certificate("monthly"))
+	mux.Handle("GET /api/v1/supporter/certificates/yearly.svg", certificate("yearly"))
+
 	mux.Handle("GET /api/v1/supporter/certificates/patron-order.svg", certificate(patronOrderFamily))
 	mux.Handle("GET /api/v1/supporter/certificates/living-standard.svg", certificate(livingStandardFamily))
 	mux.Handle("POST /api/v1/supporter/activate", auth.owner(http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {

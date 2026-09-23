@@ -136,6 +136,8 @@ Continue watching uses two columns of open rows on wide screens and one below 90
 
 Detail backdrops also remain in flow, beside copy at a 1.2:1 ratio with a 3rem gap; below 700px they stack. Detail titles use `clamp(2.5rem,5vw,5rem)` and 1.05 line height. Setup retains a 16rem progress column and a form capped at 36rem, collapsing below 700px. Base body type becomes 14px below 700px; text-entry sizing remains separately protected.
 
+Dark library and detail views use the green CinemaSail background from tvOS, dimmed beneath content. Light appearance, increased contrast, reduced transparency, and forced colors use the plain canvas. Administration retains its undecorated background. The web JPEG is a format conversion of `apps/native/Resources/tvOS.xcassets/CinemaSail.imageset/CinemaSail-1920x1080.png`.
+
 ## Elevation & Depth
 
 Tonal surfaces, fine dividers and real content provide depth. Ordinary panels and resting content have no shadow or backdrop blur. Bounded menus and dialogs use the shared overlay shadow; its dark and light values live in the sidecar extensions.

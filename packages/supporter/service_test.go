@@ -23,9 +23,11 @@ type signingFixture struct {
 	public       string
 	now          time.Time
 	tier         string
+	edition      string
 	family       string
 	activationID string
 	collection   bool
+	expiresIn    time.Duration
 	calls        atomic.Int32
 	last         activationRequest
 }
@@ -54,12 +56,19 @@ func (fixture *signingFixture) handler(writer http.ResponseWriter, request *http
 	sustaining := fixture.family == FamilyLiving
 	var expiresAt any
 	if sustaining {
-		expiresAt = fixture.now.Add(30 * 24 * time.Hour).Format(time.RFC3339Nano)
+		term := fixture.expiresIn
+		if term == 0 {
+			term = 30 * 24 * time.Hour
+		}
+		expiresAt = fixture.now.Add(term).Format(time.RFC3339Nano)
 	}
 	value := map[string]any{
 		"version": 4, "audience": "com.kinosail.player", "appId": "kino-player", "family": fixture.family, "level": Rank(fixture.tier), "tier": fixture.tier,
 		"supporterId": "A1B2C3D4E5", "supportedSince": fixture.now.AddDate(-1, 0, 0).Format(time.RFC3339Nano), "issuedAt": fixture.now.Format(time.RFC3339Nano),
 		"expiresAt": expiresAt, "sustaining": sustaining, "founding": true, "installationKey": fixture.last.InstallationKey,
+	}
+	if fixture.edition != "" {
+		value["version"], value["edition"] = 5, fixture.edition
 	}
 	if fixture.last.RecognitionName != nil {
 		value["recognitionName"] = *fixture.last.RecognitionName
@@ -78,13 +87,17 @@ func (fixture *signingFixture) handler(writer http.ResponseWriter, request *http
 	})
 }
 
-func fixtureService(t *testing.T, fixture *signingFixture) (*Service, *httptest.Server) {
+func fixtureService(t *testing.T, fixture *signingFixture, trusted ...string) (*Service, *httptest.Server) {
 	t.Helper()
 	server := httptest.NewServer(http.HandlerFunc(fixture.handler))
 	t.Cleanup(server.Close)
+	trustedPublicKey := ""
+	if len(trusted) > 0 {
+		trustedPublicKey = trusted[0]
+	}
 	service, err := New(Config{
 		App:           App{ID: "kino-player", Name: "Kinosail Player", Audience: "com.kinosail.player", MasterworkName: "Full Sail", TrackActivations: true, RejectPatronDowngrade: true, GrantPublicKey: true, Legacy: LegacyPlayer},
-		ActivationURL: server.URL, SupportURL: "https://support.example/player", HTTPClient: server.Client(), Now: func() time.Time { return fixture.now },
+		ActivationURL: server.URL, SupportURL: "https://support.example/player", TrustedPublicKey: trustedPublicKey, HTTPClient: server.Client(), Now: func() time.Time { return fixture.now },
 	})
 	if err != nil {
 		t.Fatal(err)

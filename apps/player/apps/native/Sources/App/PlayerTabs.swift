@@ -66,6 +66,7 @@ struct PlayerTabs: View {
         NavigationStack(path: Binding(get: { paths[tab] ?? NavigationPath() }, set: { paths[tab] = $0 })) {
             content()
                 .navigationDestination(for: PlayerTab.self) { PlayerTabScreen(tab: $0, showsSearch: !pinned.contains(.search)) }
+                .modifier(SupporterToolbar())
                 .navigationDestination(for: ScreenDestination.self) { DestinationScreen(destination: $0) }
         }
         #if os(tvOS)

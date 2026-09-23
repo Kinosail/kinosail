@@ -179,5 +179,5 @@ The active app mark is authored SVG geometry, recolored to the approved Electric
 ### Don't:
 
 - Don't recolor the shell from individual artwork.
-- Don't add decorative background imagery to administration or lift web browsing content on hover.
+- Use only the shared green CinemaSail artwork on the main workspace, dimmed below content. Keep forms, light mode, increased contrast, reduced transparency and forced colors on plain surfaces. Do not lift content on hover.
 - Don't turn leftover kicker, glyph-icon or legacy style declarations into new shared patterns.

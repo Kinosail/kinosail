@@ -95,7 +95,7 @@ func applicationShellView(pattern string) string {
 func injectApplicationShell(page, navigation []byte) []byte {
 	page = applicationShellCSSVersion(page)
 	if !bytes.Contains(page, []byte(`/static/supporter.js?v=`)) {
-		page = bytes.Replace(page, []byte("</body>"), []byte(`<script defer src="/static/supporter.js?v=15"></script></body>`), 1)
+		page = bytes.Replace(page, []byte("</body>"), []byte(`<script defer src="/static/supporter.js?v=17"></script></body>`), 1)
 	}
 	bodyStart := bytes.Index(page, []byte("<body"))
 	if bodyStart < 0 {
@@ -137,10 +137,10 @@ func applicationShellCSSVersion(page []byte) []byte {
 	if start := bytes.Index(page, []byte(`/static/app.css?v=`)); start >= 0 {
 		version := start + len(`/static/app.css?v=`)
 		if end := bytes.IndexByte(page[version:], '"'); end >= 0 {
-			if bytes.Equal(page[version:version+end], []byte("electric-23")) {
+			if bytes.Equal(page[version:version+end], []byte("electric-26")) {
 				return page
 			}
-			page = append(append(append([]byte(nil), page[:version]...), []byte("electric-23")...), page[version+end:]...)
+			page = append(append(append([]byte(nil), page[:version]...), []byte("electric-26")...), page[version+end:]...)
 		}
 	}
 	return page

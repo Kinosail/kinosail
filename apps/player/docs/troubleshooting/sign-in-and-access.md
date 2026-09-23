@@ -52,7 +52,7 @@ If the app reports an invalid certificate, use the displayed trusted address. Co
 
 If playback closes immediately, retry after the Server update completes. Kinosail binds each HLS child request to the short-lived playback session. It does not require anonymous media access.
 
-Follow [Connect another browser]({{ '/getting-started/connect-devices/' | relative_url }}) for web Player LAN access and certificate choices.
+Follow [Connect browsers and Jellyfin apps]({{ '/getting-started/connect-devices/' | relative_url }}) for web Player LAN access, certificate choices, and optional compatible-client setup.
 
 ## Quick Connect does not complete
 

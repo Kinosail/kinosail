@@ -1,0 +1,92 @@
+@font-face{font-family:Manrope;src:url('../fonts/manrope.woff2') format('woff2');font-weight:200 800;font-display:swap}
+:root{color-scheme:dark;--bg:#0b0d0b;--text:#f6f8f2;--muted:#a0a79c;--line:#30382c;--lime:#c4ff47}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:24px}body{margin:0;background:var(--bg);color:var(--text);font-family:Manrope,system-ui,sans-serif;line-height:1.6}
+a{color:inherit;text-underline-offset:5px}
+a:hover{color:var(--lime)}
+a:focus-visible{outline:3px solid var(--lime);outline-offset:6px}
+img{display:block;max-width:100%;height:auto}
+.wrap{max-width:1280px;margin-inline:auto;padding-inline:48px}
+.skip{position:absolute;left:20px;top:-100px;z-index:9;background:var(--lime);color:var(--bg);padding:12px}
+.skip:focus{top:12px}
+.masthead{display:flex;align-items:center;justify-content:space-between;min-height:104px;gap:24px}
+.brand{display:inline-flex;align-items:center;gap:12px;font-weight:800;font-size:23px;text-decoration:none;letter-spacing:-.7px}
+.masthead nav,.footer nav{display:flex;gap:24px;flex-wrap:wrap}
+.masthead nav a{font-size:14px;font-weight:650;text-decoration:none}
+.masthead nav .docs-primary{background:var(--lime);color:#101509;padding:10px 18px;border-radius:999px}
+.masthead nav .docs-primary:hover{background:#d6ff89;color:#101509}
+.hero{padding-top:76px;text-align:center}
+h1,h2,h3,p{margin-top:0}
+h1{font-size:clamp(48px,6.8vw,94px);line-height:1.02;letter-spacing:-.03em;font-weight:750;margin-bottom:30px}
+.lede{font-size:clamp(18px,2vw,23px);color:#bac0b6;line-height:1.65}
+.actions{display:flex;align-items:center;gap:30px;flex-wrap:wrap}
+.hero .actions{justify-content:center;margin-top:34px}
+.button{display:inline-flex;gap:32px;align-items:center;justify-content:center;border-radius:999px;background:var(--lime);color:#101509;min-height:54px;padding:14px 24px;text-decoration:none;font-size:15px;font-weight:800}
+.button:hover{background:#d6ff89;color:#101509}
+.text-link{font-size:15px;font-weight:700}
+.fine,figcaption{font-size:12px;color:var(--muted)}
+.hero .fine{margin:20px 0 48px;font-size:14px}
+figure{margin:0}
+.hero-screen,.screen{border:1px solid var(--line);border-radius:12px;overflow:hidden;background:#10140e}
+.hero-screen img,.screen img{width:100%}
+figcaption{padding:14px 20px;border-top:1px solid var(--line);text-align:left;line-height:1.5}
+.intro{padding-top:128px;padding-bottom:56px;display:grid;grid-template-columns:1.15fr 1fr;gap:24px 80px}
+.section-label{font-size:13px;font-weight:700;color:var(--muted);letter-spacing:.02em}
+.intro>.section-label{grid-column:1/-1}
+h2{font-size:clamp(34px,4vw,54px);letter-spacing:-.03em;line-height:1.12;font-weight:650}
+h2 span{color:var(--muted)}
+.intro-copy{padding-top:3px;color:#bac0b6;font-size:18px}
+.intro-copy p{margin-bottom:24px}
+.intro-copy a{color:var(--text)}
+.feature-lines{padding-top:72px;padding-bottom:112px;display:grid;grid-template-columns:repeat(3,1fr);gap:44px}
+.feature-lines>div{border-top:1px solid var(--line);padding-top:28px}
+h3{font-size:23px;line-height:1.25;letter-spacing:-.6px}
+.feature-lines p{color:var(--muted);font-size:15px}
+.feature-lines a{font-size:14px}
+.story-band{background:#151b11;border-block:1px solid var(--line)}
+.story-inner{padding-block:86px;max-width:900px}
+.story-inner>p:not(.section-label){font-size:20px;max-width:660px;color:#bac0b6}
+.start{padding-block:112px;display:grid;grid-template-columns:1fr 1fr;gap:80px}
+.start>div{max-width:440px}
+.start p{font-size:18px;color:var(--muted)}
+.start .fine{font-size:14px;margin-top:24px}
+.footer{border-top:1px solid var(--line);padding-block:42px 36px;display:grid;grid-template-columns:1fr 1.5fr;gap:14px 32px}
+.footer p{color:var(--muted);margin:0;font-size:14px;text-align:right}
+.footer nav{font-size:13px;gap:24px;grid-column:1/-1}
+.footer small{color:var(--muted);font-size:12px;grid-column:1/-1}
+.essay{padding-top:84px;padding-bottom:112px}
+.essay h1{max-width:900px}
+.essay-copy{max-width:720px;margin-top:64px}
+.essay-copy p,.essay-copy li{font-size:18px;color:#bac0b6}
+.essay-copy h2{font-size:32px;margin:48px 0 20px}
+.essay-copy li{margin-bottom:12px}
+.essay-copy .actions{margin-top:40px}
+@media(max-width:760px){.wrap{padding-inline:24px}
+.masthead{min-height:88px;gap:18px;flex-wrap:wrap;padding-block:20px}
+.masthead nav{gap:18px}
+.masthead nav a{font-size:13px}
+.masthead nav .docs-primary{padding:9px 15px}
+.hero{padding-top:44px}
+h1{font-size:clamp(42px,9vw,68px);letter-spacing:-.03em}
+.hero .actions{gap:24px}
+.desktop-break{display:none}
+.intro{padding-top:76px;grid-template-columns:1fr;gap:14px}
+.intro h2{margin-bottom:18px}
+.intro-copy{font-size:17px}
+.feature-lines{grid-template-columns:1fr;gap:32px;padding-block:48px 72px}
+.feature-lines p{max-width:520px}
+.story-inner{padding-block:60px}
+.story-inner>p:not(.section-label){font-size:18px}
+.start{grid-template-columns:1fr;gap:12px;padding-block:72px}
+.footer{grid-template-columns:1fr}
+.footer p{text-align:left}
+.footer nav{gap:16px 24px}
+.essay{padding-top:48px}
+.essay-copy{margin-top:44px}
+.essay-copy p,.essay-copy li{font-size:17px}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+
+.questions{padding-top:80px;max-width:1000px}.questions details{border-bottom:1px solid var(--line);padding-block:22px}.questions summary{cursor:pointer;font-size:20px;font-weight:650}.questions p{max-width:760px;color:#bac0b6;margin:20px 0 0}.questions code{overflow-wrap:anywhere}.questions summary:focus-visible{outline:3px solid var(--lime);outline-offset:5px}
+/* The family sail gives the opening room a little depth; guides stay plain. */
+body{background:linear-gradient(180deg,rgba(11,13,11,.48),var(--bg) 1000px),url('../images/cinema-sail.webp') right top/auto 1100px no-repeat,var(--bg)}
+@media(prefers-contrast:more),(prefers-reduced-transparency:reduce),(forced-colors:active){body{background:var(--bg)}}
