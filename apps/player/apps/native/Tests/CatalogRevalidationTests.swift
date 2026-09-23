@@ -1,5 +1,4 @@
 import Foundation
-import Synchronization
 import Testing
 @testable import KinosailPlayer
 
@@ -93,8 +92,17 @@ struct CatalogRevalidationTests {
     }
 }
 
+private final class PendingRequests: @unchecked Sendable {
+    private let lock = NSLock()
+    private var storage: [String: [RevalidationProtocol]] = [:]
+
+    func withLock<Result>(_ body: (inout [String: [RevalidationProtocol]]) throws -> Result) rethrows -> Result {
+        try lock.withLock { try body(&storage) }
+    }
+}
+
 private final class RevalidationProtocol: URLProtocol, @unchecked Sendable {
-    static let pending = Mutex<[String: [RevalidationProtocol]]>([:])
+    static let pending = PendingRequests()
     var query: [String: String] {
         Dictionary(uniqueKeysWithValues: (URLComponents(url: request.url!, resolvingAgainstBaseURL: false)?.queryItems ?? [])
             .map { ($0.name, $0.value ?? "") })
