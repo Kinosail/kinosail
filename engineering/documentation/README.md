@@ -1,6 +1,6 @@
 # Kinosail documentation site
 
-The web Player documentation site is published to <https://kinosail.github.io/kinosail/> by `.github/workflows/documentation.yml`. Pull requests build and check the artifact; only `main` can deploy to the `github-pages` environment.
+The web Player documentation site is published to <https://kinosail.github.io/kinosail/> by `.github/workflows/ci.yml`. Pull requests build and check the artifact; only `main` can deploy to the `github-pages` environment.
 
 ## Edit the source
 
@@ -35,4 +35,4 @@ The checker verifies every local link, fragment, asset, page heading, and the ag
 
 GitHub Pages must use **GitHub Actions** as its build source. No custom domain is required. Deployment uses a static artifact with only Pages and OIDC write permissions; pull-request jobs have read-only repository access and cannot deploy. A failed build or link check blocks publication.
 
-After the protected pull request merges, verify the Documentation workflow, public HTTPS home page, a nested guide, and search JSON. Source merge and live publication are separate facts.
+After the protected pull request merges, verify the CI documentation job and Pages deployment, public HTTPS home page, a nested guide, and search JSON. Source merge and live publication are separate facts.
