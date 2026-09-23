@@ -5,8 +5,8 @@ description: A self-hosted media library for your browser. Install Kinosail Play
 ---
 <section class="hero wrap">
 <h1>Your collection.<br>Your kind of evening.</h1>
-<p class="lede">Your self-hosted media server, made for the browser.<br class="desktop-break"> Bring your films, music, and more home with Kinosail Player.</p>
-<div class="actions"><a class="button" href="{{ '/quickstart/' | relative_url }}">Install with Docker <span aria-hidden="true">↗</span></a><a class="text-link" href="#inside">Take a look <span aria-hidden="true">↓</span></a></div>
+<p class="lede">A self-hosted media library for your browser.<br class="desktop-break"> Bring your films, music, books, and more home with Kinosail Player.</p>
+<div class="actions"><a class="button" href="{{ '/docs/' | relative_url }}">Read the docs</a><a class="text-link" href="{{ '/quickstart/' | relative_url }}">Get started with Docker</a><a class="text-link" href="#inside">See the Player</a></div>
 <p class="fine">Self-hosted. In your browser. On your hardware.</p>
 <figure class="hero-screen"><a href="{{ '/assets/images/player-detail.webp' | relative_url }}" aria-label="View full-size Player film screenshot"><img src="{{ '/assets/images/player-detail.webp' | relative_url }}" width="1280" height="720" alt="Kinosail Player displaying the fictional film The Last Observatory, with artwork, film details, Play and My List controls" fetchpriority="high"></a><figcaption>Real Player screenshots. Fictional library and original demo artwork. No personal media or account information.</figcaption></figure>
 </section>
@@ -32,4 +32,4 @@ description: A self-hosted media library for your browser. Install Kinosail Play
 <details><summary>Do I need a cloud account?</summary><p>Local use does not require a Kinosail-hosted account. You create an Owner on your own Server. Optional external services have separate privacy implications. <a href="{{ '/reference/architecture-and-privacy/' | relative_url }}">Read about architecture and privacy.</a></p></details>
 <details><summary>Can I connect an AI assistant through MCP?</summary><p>Yes. Player provides an MCP interface for supported library and media operations, with authenticated access. <a href="{{ '/developer-guide/mcp/' | relative_url }}">The MCP guide</a> covers connection, tools, permissions, and limitations.</p></details>
 </section>
-<section class="start wrap"><h2>Make yourself<br>at home.</h2><div><p>Start with the public Player container. The Docker guide takes you from installation to your first play.</p><a class="button" href="{{ '/quickstart/' | relative_url }}">Install with Docker <span aria-hidden="true">↗</span></a><p class="fine"><a href="{{ '/docs/' | relative_url }}">Read the docs</a> · <a href="https://github.com/Kinosail/kinosail">Explore the source</a></p></div></section>
+<section class="start wrap"><h2>Make yourself<br>at home.</h2><div><p>Find the answer you need, from a first Docker run to the details of running your own Server.</p><a class="button" href="{{ '/docs/' | relative_url }}">Explore the docs</a><p class="fine"><a href="{{ '/quickstart/' | relative_url }}">Start with Docker</a> · <a href="https://github.com/Kinosail/kinosail">Explore the source</a></p></div></section>

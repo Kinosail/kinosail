@@ -11,8 +11,10 @@ img{display:block;max-width:100%;height:auto}
 .skip:focus{top:12px}
 .masthead{display:flex;align-items:center;justify-content:space-between;min-height:104px;gap:24px}
 .brand{display:inline-flex;align-items:center;gap:12px;font-weight:800;font-size:23px;text-decoration:none;letter-spacing:-.7px}
-.masthead nav,.footer nav{display:flex;gap:32px;flex-wrap:wrap}
+.masthead nav,.footer nav{display:flex;gap:24px;flex-wrap:wrap}
 .masthead nav a{font-size:14px;font-weight:650;text-decoration:none}
+.masthead nav .docs-primary{background:var(--lime);color:#101509;padding:10px 18px;border-radius:999px}
+.masthead nav .docs-primary:hover{background:#d6ff89;color:#101509}
 .hero{padding-top:76px;text-align:center}
 h1,h2,h3,p{margin-top:0}
 h1{font-size:clamp(48px,6.8vw,94px);line-height:1.02;letter-spacing:-.065em;font-weight:750;margin-bottom:30px}
@@ -61,8 +63,9 @@ h3{font-size:23px;line-height:1.25;letter-spacing:-.6px}
 .essay-copy .actions{margin-top:40px}
 @media(max-width:760px){.wrap{padding-inline:24px}
 .masthead{min-height:88px;gap:18px;flex-wrap:wrap;padding-block:20px}
-.masthead nav{gap:22px}
+.masthead nav{gap:18px}
 .masthead nav a{font-size:13px}
+.masthead nav .docs-primary{padding:9px 15px}
 .hero{padding-top:44px}
 h1{font-size:clamp(42px,9vw,68px);letter-spacing:-.055em}
 .hero .actions{gap:24px}
