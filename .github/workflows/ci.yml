@@ -342,7 +342,17 @@ jobs:
   publish:
     name: Publish verified containers
     needs: [plan, repository-required, player-required, subtitles-required, dashboard-required, security-required]
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main' && (fromJSON(needs.plan.outputs.plan).player || fromJSON(needs.plan.outputs.plan).subtitles || fromJSON(needs.plan.outputs.plan).dashboard)
+    if: >-
+      always() &&
+      github.event_name == 'push' &&
+      github.ref == 'refs/heads/main' &&
+      needs.plan.result == 'success' &&
+      needs.repository-required.result == 'success' &&
+      needs.player-required.result == 'success' &&
+      needs.subtitles-required.result == 'success' &&
+      needs.dashboard-required.result == 'success' &&
+      needs.security-required.result == 'success' &&
+      (fromJSON(needs.plan.outputs.plan).player || fromJSON(needs.plan.outputs.plan).subtitles || fromJSON(needs.plan.outputs.plan).dashboard)
     uses: ./.github/workflows/publish.yml
     permissions:
       contents: read
@@ -356,7 +366,18 @@ jobs:
   publish-docs:
     name: Publish verified documentation
     needs: [plan, docs, repository-required, player-required, subtitles-required, dashboard-required, security-required]
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main' && fromJSON(needs.plan.outputs.plan).docs
+    if: >-
+      always() &&
+      github.event_name == 'push' &&
+      github.ref == 'refs/heads/main' &&
+      needs.plan.result == 'success' &&
+      needs.docs.result == 'success' &&
+      needs.repository-required.result == 'success' &&
+      needs.player-required.result == 'success' &&
+      needs.subtitles-required.result == 'success' &&
+      needs.dashboard-required.result == 'success' &&
+      needs.security-required.result == 'success' &&
+      fromJSON(needs.plan.outputs.plan).docs
     runs-on: ubuntu-24.04
     permissions:
       pages: write
