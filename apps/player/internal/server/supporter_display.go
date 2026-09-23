@@ -33,6 +33,12 @@ func (store *settingsStore) setSupporterDisplay(value string) error {
 }
 
 func (page supporterPageData) Featured() *supporterOwnedBadgeView {
+	if page.Monthly != nil {
+		return page.Monthly
+	}
+	if page.Yearly != nil {
+		return page.Yearly
+	}
 	if page.Display == patronOrderFamily && page.Patron != nil {
 		return page.Patron
 	}

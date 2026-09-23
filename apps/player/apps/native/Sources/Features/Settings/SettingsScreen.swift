@@ -21,6 +21,7 @@ struct SettingsScreen: View {
                 #endif
                 NavigationLink("Connect a TV", value: ScreenDestination.approval)
             }
+            Section("Supporter") { NavigationLink("Supporter collection and display") { SupporterScreen() } }
             Section("Appearance") {
                 NavigationLink("Customize tabs", value: ScreenDestination.tabPreferences)
                 #if os(tvOS)

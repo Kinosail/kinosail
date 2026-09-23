@@ -109,7 +109,7 @@ case "$action" in
   browser)
     fixture_dir="$KINOSAIL_TEST_ROOT/ui-fixtures"
     KINOSAIL_UI_FIXTURE_DIR="$fixture_dir" go test ./internal/server -run TestWriteUIStateFixtures -count=1
-    KINOSAIL_TEST_INSTANCE=1 KINOSAIL_UI_FIXTURE_DIR="$fixture_dir" KINOSAIL_TEST_TOTP_SECRET="$(<"$KINOSAIL_TEST_ROOT/totp-secret")" KINOSAIL_E2E_URL="$(url)" KINOSAIL_E2E_OUTPUT_DIR="$KINOSAIL_TEST_ROOT/playwright-results" pnpm --dir e2e test test-instance.spec.ts test-instance-production.spec.ts ui-happy-paths.spec.ts shortcuts.spec.ts jellyfin-setup.spec.ts playback-bandwidth.spec.ts playback-pause-repro.spec.ts playback-startup.spec.ts layout-audit.spec.ts masthead-spacing.spec.ts conditional-states.spec.ts password-reveal.spec.ts loading-review.spec.ts session-timeouts.spec.ts --workers="${KINOSAIL_E2E_WORKERS:-1}"
+    KINOSAIL_TEST_INSTANCE=1 KINOSAIL_UI_FIXTURE_DIR="$fixture_dir" KINOSAIL_TEST_TOTP_SECRET="$(<"$KINOSAIL_TEST_ROOT/totp-secret")" KINOSAIL_E2E_URL="$(url)" KINOSAIL_E2E_OUTPUT_DIR="$KINOSAIL_TEST_ROOT/playwright-results" pnpm --dir e2e test test-instance.spec.ts test-instance-production.spec.ts ui-happy-paths.spec.ts supporter-checkout.spec.ts shortcuts.spec.ts jellyfin-setup.spec.ts playback-bandwidth.spec.ts playback-pause-repro.spec.ts playback-startup.spec.ts layout-audit.spec.ts masthead-spacing.spec.ts conditional-states.spec.ts password-reveal.spec.ts loading-review.spec.ts session-timeouts.spec.ts --workers="${KINOSAIL_E2E_WORKERS:-1}"
     ;;
   playback)
     fixture_dir="$KINOSAIL_TEST_ROOT/ui-fixtures"

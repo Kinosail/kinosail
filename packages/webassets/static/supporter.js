@@ -1,28 +1,3 @@
-function createSupporterSignature(main, {append = false, hide = false, refreshExisting = false} = {}) {
-  if (!main) return;
-  const existing = main.querySelector(".supporter-signature");
-  if (existing) {
-    if (refreshExisting) existing.dataset.supporterPending = "true";
-    return;
-  }
-  const signature = document.createElement("aside");
-  signature.className = "supporter-signature";
-  signature.dataset.supporterPending = "true";
-  if (hide) signature.style.visibility = "hidden";
-  signature.setAttribute("aria-label", "Kinosail supporter status");
-  const copy = document.createElement("p");
-  copy.textContent = "Community edition · Free and supporter-funded.";
-  const support = document.createElement("a");
-  support.href = "/supporter";
-  support.textContent = "Support Kinosail";
-  signature.append(copy, support);
-  const masthead = main.querySelector(".library-masthead");
-  if (masthead) {
-    masthead.classList.add("has-supporter-signature");
-    masthead.append(signature);
-  } else main[append ? "append" : "prepend"](signature);
-}
-
 async function renderSupporterPNG(certificate, errorMessage) {
   const source = await new Promise((resolve, reject) => {
     const reader = new FileReader();

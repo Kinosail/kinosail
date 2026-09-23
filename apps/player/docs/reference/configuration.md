@@ -60,8 +60,8 @@ The following table describes typed application settings. Use the running config
 | `binaries.ffprobe` | `KINOSAIL_FFPROBE` | text | `ffprobe` | yes |
 | `binaries.fpcalc` | `KINOSAIL_FPCALC` | text | `fpcalc` | yes |
 | `server.name` | `KINOSAIL_SERVER_NAME` | text | blank | no |
-| `supporter.activation_url` | `KINOSAIL_SUPPORTER_ACTIVATION_URL` | URL | Kinosail supporter endpoint | yes |
-| `supporter.url` | `KINOSAIL_SUPPORT_URL` | URL | Kinosail repository | yes |
+| `supporter.activation_url` | `KINOSAIL_SUPPORTER_ACTIVATION_URL` | URL | Player Supporter Worker | yes |
+| `supporter.url` | `KINOSAIL_SUPPORT_URL` | URL | Player monthly Polar checkout | yes |
 | `security.require_mfa` | `KINOSAIL_REQUIRE_MFA` | boolean | `true` | no |
 | `auth.url` | `KINOSAIL_AUTH_URL` | URL | blank | yes |
 | `libraries` | `KINOSAIL_LIBRARIES` | JSON list | blank | no |

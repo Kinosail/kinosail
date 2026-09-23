@@ -29,15 +29,20 @@ func (service *Service) Status(state State) Status { //nolint:cyclop,gocognit //
 			status.LivingStandard = service.emptyBadge(FamilyLiving)
 		}
 	}
+	status.Monthly = service.badge(service.decodeGrant(state, state.Monthly, EditionMonthly, true))
+	status.Yearly = service.badge(service.decodeGrant(state, state.Yearly, EditionYearly, true))
 	status.BadgeCase = service.badgeCase(state, patron, living)
-	status.CompleteFleetActive = completeFleetActive(patron, living)
-	primary := living
-	if primary == nil || !primary.Active {
-		primary = patron
+	status.BadgeCase.MonthlyLevel = earnedEditionLevel(state.MonthlyLevel, status.Monthly)
+	status.BadgeCase.YearlyLevel = earnedEditionLevel(state.YearlyLevel, status.Yearly)
+	if service.app.ID == "kino-player" {
+		status.BadgeCase.Total = 30
+		if status.BadgeCase.LivingLevel > 0 {
+			status.BadgeCase.Total += 10
+		}
+		status.BadgeCase.Unlocked = status.BadgeCase.PatronLevel + status.BadgeCase.MonthlyLevel + status.BadgeCase.YearlyLevel + status.BadgeCase.LivingLevel
 	}
-	if primary == nil {
-		primary = living
-	}
+	status.CompleteFleetActive = completeFleetActive(patron, living, status.Monthly, status.Yearly)
+	primary := preferredBadge(status.Monthly, status.Yearly, living, patron)
 	if primary == nil {
 		return status
 	}
@@ -49,6 +54,7 @@ func (service *Service) Status(state State) Status { //nolint:cyclop,gocognit //
 		status.SubscriptionTier, status.SubscriptionName = living.SubscriptionTier, living.SubscriptionName
 		status.SubscriptionActive = living.Active
 	}
+	status.SubscriptionActive = living != nil && living.Active || status.Monthly != nil && status.Monthly.Active || status.Yearly != nil && status.Yearly.Active
 	return status
 }
 
@@ -58,11 +64,14 @@ func (service *Service) badge(decoded decodedGrant) *Badge {
 	}
 	certificate := decoded.certificate
 	badge := &Badge{
-		Family: service.outputFamily(decoded.family), Title: familyTitle(decoded.family), Tier: certificate.Tier, Name: Name(certificate.Tier),
+		Edition: certificate.Edition, Family: service.outputFamily(decoded.family), Title: familyTitle(decoded.family), Tier: certificate.Tier, Name: Name(certificate.Tier),
 		SupporterID: certificate.SupporterID, SupportedSince: certificate.SupportedSince, ExpiresAt: certificate.ExpiresAt,
 		RecognitionName: certificate.RecognitionName, SubscriptionTier: certificate.SubscriptionTier, SubscriptionName: subscriptionName(certificate.SubscriptionTier),
 		Rank: Rank(certificate.Tier), Active: !decoded.expired, Expired: decoded.expired, Archived: decoded.expired, Founding: certificate.Founding,
 		Collection: cloneCollection(certificate.Collection),
+	}
+	if decoded.family == FamilyPatron {
+		badge.Edition = EditionOnce
 	}
 	if decoded.family == FamilyLiving {
 		badge.ServiceMonths, badge.ServiceMarks = serviceMonths(certificate, service.now().UTC())
@@ -120,13 +129,22 @@ func serviceMonths(certificate Certificate, now time.Time) (int, []int) {
 
 // CertificateForFamily returns verified certificate data for local rendering.
 func (service *Service) CertificateForFamily(state State, family string) (Certificate, *Badge, bool) {
-	if family != FamilyPatron && family != FamilyLiving {
+	if family != FamilyPatron && family != FamilyLiving && !validEdition(family) {
 		return Certificate{}, nil, false
 	}
 	state = service.migrateLegacy(cloneState(state))
 	grant := state.PatronOrder
 	if family == FamilyLiving {
 		grant = state.LivingStandard
+	}
+	if family == EditionMonthly {
+		grant = state.Monthly
+	}
+	if family == EditionYearly {
+		grant = state.Yearly
+	}
+	if family == EditionOnce {
+		family = FamilyPatron
 	}
 	decoded := service.decodeGrant(state, grant, family, true)
 	badge := service.badge(decoded)
@@ -137,9 +155,9 @@ func (service *Service) CertificateForFamily(state State, family string) (Certif
 func (service *Service) ViewerStatus(state State) []ViewerBadge {
 	status := service.Status(state)
 	result := make([]ViewerBadge, 0, 2)
-	for _, badge := range []*Badge{status.PatronOrder, status.LivingStandard} {
+	for _, badge := range []*Badge{status.PatronOrder, status.Monthly, status.Yearly, status.LivingStandard} {
 		if badge != nil && badge.Rank > 0 {
-			result = append(result, ViewerBadge{Family: badge.Family, Tier: badge.Tier, Name: badge.Name, Rank: badge.Rank, Active: badge.Active, Archived: badge.Expired})
+			result = append(result, ViewerBadge{Edition: badge.Edition, Family: badge.Family, Tier: badge.Tier, Name: badge.Name, Rank: badge.Rank, Active: badge.Active, Archived: badge.Expired})
 		}
 	}
 	return result

@@ -18,6 +18,7 @@ final class AppSession {
     var reading = false
     var pendingMediaLink: MediaLink?
     var contentRevision = UUID()
+    var supporterRevision = UUID()
     let player = PlaybackCoordinator()
     let casting = CastCoordinator()
     let artwork = ArtworkLoader()
