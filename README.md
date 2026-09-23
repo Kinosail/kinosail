@@ -2,7 +2,7 @@
 
 Kinosail is a family of private, self-hosted applications for your media and home network. Run the apps you need on your own hardware. Each app includes its web interface, API, and embedded database in one independently deployed container.
 
-**[Get started](https://kinosail.github.io/kinosail/quickstart/)** · **[Documentation](https://kinosail.github.io/kinosail/)** · **[Contribute](CONTRIBUTING.md)** · **[Get help](SUPPORT.md)** · **[Security](SECURITY.md)**
+**[Get started](https://kinosail.github.io/kinosail/quickstart/)** · **[Documentation](https://kinosail.github.io/kinosail/docs/)** · **[Contribute](CONTRIBUTING.md)** · **[Get help](SUPPORT.md)** · **[Security](SECURITY.md)**
 
 ## Choose your app
 
@@ -18,6 +18,8 @@ Player mounts media read-only. Subtitles needs write access to create sidecars. 
 The native targets are iOS/iPadOS and tvOS. Other devices can use the web app or Player's optional Jellyfin-compatible interface; compatibility depends on the client, codec, and device. See [connecting devices](apps/player/docs/getting-started/connect-devices.md).
 
 ## Getting started
+
+For a normal web Player installation, follow [Install with Docker](https://kinosail.github.io/kinosail/quickstart/). The installer verifies and pins the published Player container. The examples below build each app from the checked-out source for development or evaluation.
 
 ### Requirements
 
@@ -36,7 +38,7 @@ git clone https://github.com/Kinosail/kinosail.git
 cd kinosail
 ```
 
-The examples below build the checked-out source. They are also the available starting point while signed releases are being prepared. See [release installation](#release-installation) before planning a production deployment.
+These examples build the checked-out source. Follow the [published Player installation](#published-player-installation) for a prebuilt container.
 
 ### 2. Start an app
 
@@ -108,15 +110,15 @@ The web ports bind to localhost by default. Finish Owner setup before changing a
 
 Use [Player device setup](apps/player/docs/getting-started/connect-devices.md) for LAN HTTPS and clients, [Player remote access](apps/player/docs/owner-guide/remote-access.md) for away-from-home viewing, and the app-specific guides for administration. Public Player viewing uses a separate restricted HTTPS gateway. Do not forward the administration web port to the internet.
 
-### Release installation
+### Published Player installation
 
-As of September 15, 2026, this monorepo has no published GitHub releases. The signed-image installer and release workflows are retained; publication is governed by the GitHub Actions release gates. A development image or a successful source build does not establish release readiness.
+Passing `main` builds publish signed `latest` containers for affected apps. Player's [Docker quickstart](https://kinosail.github.io/kinosail/quickstart/) uses the published image, verifies its signature, and pins its digest. A numbered GitHub release or installer archive is not required for this path. A successful source build does not establish that a published image is available.
 
-When signed releases are available, use the matching app bundle from [Releases](https://github.com/Kinosail/kinosail/releases), verify its supplied checksum and signature, and follow [Player installation](apps/player/docs/getting-started/install.md) or the app's instructions. The installer requires `cosign` and verifies the image identity before pinning its digest. Do not bypass that check to install a development image.
+For a numbered release, use the matching app bundle from [Releases](https://github.com/Kinosail/kinosail/releases) and verify its supplied checksum and signature. The Player installer requires `cosign` and verifies the image identity before pinning its digest. Do not bypass that check to install a development image.
 
 ## Documentation
 
-Visit **[Kinosail Docs](https://kinosail.github.io/kinosail/)** for searchable web Player guides, starting with Docker installation.
+Visit **[Kinosail Player Docs](https://kinosail.github.io/kinosail/docs/)** for searchable web Player guides, starting with Docker installation.
 
 | Task | Start here |
 | --- | --- |
@@ -167,6 +169,6 @@ Kinosail is **source-available**, under the [PolyForm Perimeter License 1.0.1](L
 
 GitHub-hosted runners enforce repository quality, app tests, race checks, browser tests, native client builds, dependency scanning, secret scanning, and CodeQL. Required checks protect `main`; failed checks block merging and releases.
 
-Player, Subtitles, and Dashboard containers build on native Linux AMD64 and ARM64 runners in parallel. Versioned tags (`player-vMAJOR.MINOR.PATCH`, `subtitles-vMAJOR.MINOR.PATCH`, and `dashboard-vMAJOR.MINOR.PATCH`) publish to `ghcr.io/kinosail/kinosail-player`, `ghcr.io/kinosail/kinosail-subtitles`, and `ghcr.io/kinosail/kinosail-dashboard`. A release requires successful CI for its exact commit on `main`. Each architecture is scanned before the combined manifest is signed, attested, and promoted to version and `latest` tags. Builds include SBOMs and provenance.
+Affected Player, Subtitles, and Dashboard containers build on native Linux AMD64 and ARM64 runners in parallel. Passing `main` builds publish signed `latest` images to `ghcr.io/kinosail/kinosail-player`, `ghcr.io/kinosail/kinosail-subtitles`, and `ghcr.io/kinosail/kinosail-dashboard`. Numbered releases use the `player-vMAJOR.MINOR.PATCH`, `subtitles-vMAJOR.MINOR.PATCH`, and `dashboard-vMAJOR.MINOR.PATCH` tags and require successful CI for the exact commit on `main`. Each architecture is scanned before its combined manifest is signed and attested. Builds include SBOMs and provenance.
 
 Release publication does not configure a production deployment target. The existing local deployment watcher remains separate.

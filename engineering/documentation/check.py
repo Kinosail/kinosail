@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Check rendered docs: local links, anchors, assets, headings, and search."""
 from html.parser import HTMLParser
+from seo_check import validate
 import json
 import re
 from pathlib import Path
@@ -60,6 +61,15 @@ def check(root, base):
             errors.append('invalid search schema')
         if not entry['url'].startswith(base + '/'):
             errors.append('search URL escapes base')
+    for entry in entries:
+        relative = entry['url'][len(base) + 1:]
+        document = root / relative / 'index.html' if entry['url'].endswith('/') else root / relative
+        if document.is_file():
+            # The canonical origin is supplied by the build, including preview builds.
+            source = document.read_text()
+            canonical = re.search(r'<link rel="canonical" href="(https://[^/]+)', source)
+            origin = canonical.group(1) if canonical else ''
+            errors.extend(f'{relative}: {error}' for error in validate(source, origin + entry['url']))
     if len({entry['url'] for entry in entries}) != len(entries):
         errors.append('duplicate search URLs')
     if {'Player'} != {entry['product'] for entry in entries}:

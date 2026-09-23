@@ -17,7 +17,7 @@ On another device, `localhost` means that device—not the Server. Use the Serve
 
 ## Enable LAN access
 
-For a signed Docker release installation, run the installer again from the same installation directory, using the same media path and port, with `--lan`:
+For a signed prebuilt Docker installation, run the installer again from the same installation directory, using the same media path and port, with `--lan`:
 
 ```sh
 ./scripts/install.sh /absolute/path/to/media 38127 --lan

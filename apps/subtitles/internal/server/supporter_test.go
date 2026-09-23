@@ -172,7 +172,7 @@ func TestSupporterStoresPatronOrderAndLivingStandardIndependently(t *testing.T) 
 	living := apiCall(t, handler, token, http.MethodPost, "/api/v1/supporter/activate", map[string]any{"key": "MONTHLY_SUPPORTER_KEY"})
 	assertAPIBody(t, living, http.StatusOK, `"tier":"admiral"`, `"sustaining":true`, `"livingStandard":{"family":"living-standard"`, `"rank":8`, `"active":true`, `"serviceMarks":[3,6,12]`, `"patronOrder":{"family":"patron-order"`, `"tier":"lighthouse"`, `"livingLevel":8`, `"patronLevel":6`, `"masterworkLevel":6`, `"unlocked":14`, `"masterworkName":"Perfect Sync"`, `"masterworkEarned":true`, `"masterworkActive":true`)
 	page := apiCall(t, handler, token, http.MethodGet, "/supporter", nil)
-	assertAPIBody(t, page, http.StatusOK, "Monthly support · Recommended", "Living Standards", "Patron Orders", "Polyglot Array", "Linguist Crest", "Kinosail Subtitles", "caption emblem", "Download SVG certificate", "Share PNG certificate", "Perfect Sync · Level 6", "Caption Concord", "Living cadence active", "Collected", "/static/app.css?v=impeccable-1")
+	assertAPIBody(t, page, http.StatusOK, "Monthly support · Recommended", "Living Standards", "Patron Orders", "Polyglot Array", "Linguist Crest", "Kinosail Subtitles", "caption emblem", "Download SVG certificate", "Share PNG certificate", "Perfect Sync · Level 6", "Caption Concord", "Living cadence active", "Collected", "/static/app.css?v=cinema-2")
 	if strings.Contains(page.Body.String(), "/static/app.css?v=electric-1") {
 		t.Fatal("supporter page retained the previous combined stylesheet key")
 	}

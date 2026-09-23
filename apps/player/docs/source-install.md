@@ -5,7 +5,7 @@ section: Build & contribute
 ---
 # Build from source
 
-Most users should use the [Docker release installation]({{ '/quickstart/' | relative_url }}). This alternative builds a local image from a source checkout for contributors and early evaluation. It does not establish signed-release readiness.
+Most users should use the [published Docker installation]({{ '/quickstart/' | relative_url }}). This alternative builds a local image from a source checkout for contributors and early evaluation. It does not establish that the image was published or signed.
 
 ## Prerequisites
 
