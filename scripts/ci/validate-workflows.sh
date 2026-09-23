@@ -42,7 +42,7 @@ require "$app" 'run: make installer-test native-build local-pipeline-test'
 require "$app" 'run: make -C apps/player client-check'
 require "$app" 'run: python3 scripts/ci/required.py app'
 require "$app" '"runner":"ubuntu-24.04-arm"'
-require "$app" 'playwright test --project="$PROJECT"'
+require "$app" 'playwright test "${args[@]}"'
 
 require "$publish" '  workflow_call:'
 require "$publish" 'run: python3 scripts/ci/delivery.py'
