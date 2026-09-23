@@ -58,8 +58,6 @@ class PrePushEnvironmentTest(unittest.TestCase):
             hook.chmod(0o755)
             executable(hook.with_name("worktree_guard.py"), "#!/bin/sh\nexit 0\n")
             executable(worktree / "scripts/quality/check-full.sh", "#!/bin/sh\nexit 0\n")
-            for app in ("player", "subtitles", "dashboard"):
-                executable(worktree / f"apps/{app}/scripts/pre-push-main.sh", "#!/bin/sh\ncat >/dev/null\n")
             binary = root / "bin"
             executable(binary / "make", "#!/bin/sh\ncase \"$*\" in\n"
                        "  *tooling-check*) exec " + shlex.quote(sys.executable) + " "
