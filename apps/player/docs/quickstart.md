@@ -6,7 +6,9 @@ section: Start here
 
 # Get Kinosail running
 
-Kinosail Player runs as a container on your own hardware. The examples below keep your media read-only, persist the Server's state, and bind the first setup page to this computer.
+Kinosail Server is free to run on your own hardware, and the web Player is included. Kinosail mobile apps may have a separate purchase price. You can also connect compatible Jellyfin mobile apps after setting up trusted HTTPS and enabling the optional integration in Owner Settings.
+
+The examples below keep your media read-only, persist the Server's state, and bind the first setup page to this computer. For Jellyfin app setup, see [connect your devices]({{ '/getting-started/connect-devices/' | relative_url }}).
 
 ## Recommended: verified install
 
@@ -119,6 +121,7 @@ Open <https://localhost:38127> on the same computer. Your browser will warn abou
 | Media folder | `/absolute/path/to/your/media` on the host, mounted as `/media:ro` | Your collection is stored somewhere else. Keep the mount read-only. |
 | Web port | `38127` | Another service already uses that host port. In Compose, change `KINOSAIL_PORT`. |
 | First-run access | `127.0.0.1` | Keep setup on this computer until the Owner is created. Then follow [connect devices]({{ '/getting-started/connect-devices/' | relative_url }}) to enable trusted LAN access. |
+| Jellyfin mobile apps | Off by default | Configure trusted HTTPS, enable **Allow compatible Jellyfin apps to connect** in Owner Settings, and restart Kinosail. |
 | Persistent state | Named `config` and `cache` volumes | Keep the same volume names when recreating the container. |
 | Container user | `10001:10001` | This is fixed by the image; `PUID` and `PGID` are not needed. |
 

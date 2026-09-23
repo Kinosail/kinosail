@@ -22,6 +22,7 @@ The native Player workspace has its own PRODUCT.md and platform guidance. Suppor
 
 ## Capabilities and Constraints
 
+- Kinosail Server is free to run on household hardware and includes the web Player; Kinosail mobile apps may have a separate purchase price. Compatible Jellyfin mobile apps for iOS and Android are an optional integration, disabled by default and requiring trusted HTTPS.
 - Preserve privacy and Direct First playback; buffering alone does not authorize transcoding.
 - Web and versioned HTTP API adapters call shared validated application operations.
 - Validate untrusted inputs before side effects and preserve application-specific authorization.

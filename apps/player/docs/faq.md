@@ -37,7 +37,7 @@ The source container, codec, resolution, bitrate, HDR format, subtitle mode, cli
 
 ## Which apps do these docs cover?
 
-These docs cover the web Player, including browser playback, Server administration, the HTTP API, and MCP. Native clients and other Kinosail applications are outside this release. Use [Connect another browser]({{ "/getting-started/connect-devices/" | relative_url }}) to watch on a second device.
+These docs cover the web Player, Server administration, the HTTP API, MCP, and supported Jellyfin-compatible app flows. Kinosail mobile apps are separate and may be sold separately. See [Connect browsers and Jellyfin apps]({{ "/getting-started/connect-devices/" | relative_url }}) for setup and compatibility limits.
 
 ## Can I access Kinosail from the internet?
 

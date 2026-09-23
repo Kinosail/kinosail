@@ -33,7 +33,7 @@ Choose any options your household needs:
 
 Trusted HTTPS publishes the private LAN address in public DNS and puts the hostname in certificate-transparency logs. It does not open a router port and does not relay media. Restart Kinosail when the page says **Restart required**. Sign in again at the trusted hostname and add your passkeys again because the authentication origin changed.
 
-Follow [Connect another browser]({{ '/getting-started/connect-devices/' | relative_url }}) for LAN access and certificate choices.
+Follow [Connect browsers and Jellyfin apps]({{ '/getting-started/connect-devices/' | relative_url }}) for LAN access, certificate choices, and optional compatible-client setup.
 
 Select **Continue to household setup** or **Skip optional setup**.
 

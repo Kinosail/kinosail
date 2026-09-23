@@ -1,13 +1,13 @@
 ---
-title: Connect another browser
-description: Open the web Player from another household device using a reachable HTTPS address.
+title: Connect browsers and Jellyfin apps
+description: Open Kinosail from another device in a browser or a compatible Jellyfin mobile app.
 section: Start here
 ---
-# Connect another browser
+# Connect browsers and Jellyfin apps
 
-Start by confirming playback in the browser on your Server host. Then make the web Player reachable from another computer, phone, or tablet on your home network.
+Start by confirming playback in the browser on your Server host. Then make Kinosail reachable from another computer, phone, or tablet on your home network.
 
-These instructions cover the web Player. Native apps and other Kinosail applications are outside this documentation's current scope.
+The Kinosail Server is free to run. It includes the web Player and can connect to compatible Jellyfin mobile apps for iOS and Android. Kinosail mobile apps may have a separate purchase price. Jellyfin compatibility is optional, off by default, and requires trusted HTTPS.
 
 ## Finish setup first
 
@@ -36,6 +36,15 @@ For trusted HTTPS, open the setup wizard's **Devices** step or **Settings → Ac
 The provider publishes the private LAN address in public DNS and the hostname appears in public certificate-transparency logs. This local certificate setup does not open a router port or relay your media.
 
 Keep provider tokens private. Use the narrowest token policy available and only trust certificates belonging to your own installation.
+
+## Connect a Jellyfin mobile app
+
+1. As the Owner, open **Settings → Access** and wait until **Trusted HTTPS** reports ready.
+2. Turn on **Allow compatible Jellyfin apps to connect**, save the choice, and restart Kinosail when prompted.
+3. In a compatible Jellyfin app, add a Server and enter Kinosail's complete **Connect address** from Settings.
+4. Sign in with the intended Viewer Profile. Use **Quick Connect** when the app offers it; approve the matching request from a trusted Kinosail session.
+
+Compatibility covers tested client flows, not every Jellyfin app feature or device. For sign-in failures, see [Jellyfin app troubleshooting]({{ '/troubleshooting/sign-in-and-access/' | relative_url }}).
 
 ## Sign in and play
 
