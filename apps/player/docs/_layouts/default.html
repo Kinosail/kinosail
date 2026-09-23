@@ -54,7 +54,7 @@
         </nav>
       </aside>
       <main class="content" id="main-content" tabindex="-1">
-        {% unless page.url == '/' %}
+        {% unless page.url == '/' or page.url == '/docs/' %}
         <nav class="breadcrumbs" aria-label="Breadcrumb">
           <ol>
             <li><a href="{{ '/docs/' | relative_url }}">Docs</a></li>
