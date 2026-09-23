@@ -83,4 +83,4 @@ def check(root, base):
 
 
 if __name__ == '__main__':
-    check(Path(sys.argv[1]).resolve(), sys.argv[2] if len(sys.argv) > 2 else '/kinosail')
+    check(Path(sys.argv[1]).resolve(), sys.argv[2] if len(sys.argv) > 2 else '')
