@@ -64,7 +64,9 @@ printf '%s\n' '#!/usr/bin/env bash' \
 printf '%s\n' '#!/usr/bin/env bash' 'exit "${KINOSAIL_TEST_SCAN_FAIL:-0}"' >"$tmp/positive-bin/trivy"
 printf '%s\n' '#!/usr/bin/env bash' 'exit 0' >"$tmp/positive-bin/syft"
 printf '%s\n' '#!/usr/bin/env bash' \
+  'if [[ " $* " == *" run list "* && ${KINOSAIL_TEST_RUNS_JSON+x} ]]; then printf "%s\n" "$KINOSAIL_TEST_RUNS_JSON"; exit; fi' \
   'if [[ " $* " == *" run list "* ]]; then printf "[{\"databaseId\":123,\"headSha\":\"%s\",\"status\":\"completed\",\"conclusion\":\"%s\"}]\n" "$KINOSAIL_TEST_SHA" "${KINOSAIL_TEST_CI_CONCLUSION:-success}"; exit; fi' \
+  'if [[ " $* " == *" run view "* && ${KINOSAIL_TEST_JOBS_JSON+x} ]]; then printf "%s\n" "$KINOSAIL_TEST_JOBS_JSON"; exit; fi' \
   'if [[ " $* " == *" run view "* ]]; then if [[ "${KINOSAIL_TEST_PUBLISHED:-1}" == 1 ]]; then printf "{\"jobs\":[{\"name\":\"Publish verified containers / Advance %s production tags\",\"conclusion\":\"success\"}]}\n" "$KINOSAIL_TEST_APP"; else printf "{\"jobs\":[]}\n"; fi; exit; fi' \
   'exit 99' >"$tmp/positive-bin/gh"
 chmod +x "$tmp/positive-bin/"*
@@ -109,11 +111,16 @@ if grep -Fq 'docker load' "$tmp/ssh.log"; then
   echo 'paused revision reached deployment' >&2; exit 1
 fi
 
-for condition in failed-ci unpublished stale; do
+for condition in failed-ci pending-ci missing-ci wrong-sha malformed-ci unpublished duplicate-publication stale; do
   : >"$tmp/ssh.log"; : >"$tmp/podman.log"
   case "$condition" in
     failed-ci) KINOSAIL_TEST_CI_CONCLUSION=failure positive player KINOSAIL_DEPLOY_GIT_DIR 1 && exit 1 || status=$? ;;
+    pending-ci) KINOSAIL_TEST_RUNS_JSON="[{\"databaseId\":123,\"headSha\":\"$sha\",\"status\":\"in_progress\",\"conclusion\":null}]" positive player KINOSAIL_DEPLOY_GIT_DIR 1 && exit 1 || status=$? ;;
+    missing-ci) KINOSAIL_TEST_RUNS_JSON='[]' positive player KINOSAIL_DEPLOY_GIT_DIR 1 && exit 1 || status=$? ;;
+    wrong-sha) KINOSAIL_TEST_RUNS_JSON='[{"databaseId":123,"headSha":"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa","status":"completed","conclusion":"success"}]' positive player KINOSAIL_DEPLOY_GIT_DIR 1 && exit 1 || status=$? ;;
+    malformed-ci) KINOSAIL_TEST_RUNS_JSON='{' positive player KINOSAIL_DEPLOY_GIT_DIR 1 && exit 1 || status=$? ;;
     unpublished) KINOSAIL_TEST_PUBLISHED=0 positive player KINOSAIL_DEPLOY_GIT_DIR 1 && exit 1 || status=$? ;;
+    duplicate-publication) KINOSAIL_TEST_JOBS_JSON='{"jobs":[{"name":"Publish verified containers / Advance player production tags","conclusion":"success"},{"name":"Publish verified containers / Advance player production tags","conclusion":"success"}]}' positive player KINOSAIL_DEPLOY_GIT_DIR 1 && exit 1 || status=$? ;;
     stale) KINOSAIL_TEST_REMOTE_SHA=aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa positive player KINOSAIL_DEPLOY_GIT_DIR 1 && exit 1 || status=$? ;;
   esac
   [[ "$status" == "$(if [[ "$condition" == unpublished ]]; then printf 10; else printf 75; fi)" ]]
