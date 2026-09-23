@@ -17,8 +17,8 @@ DOCS = ROOT / 'engineering/documentation'
 def settings(argv=None):
     parser = argparse.ArgumentParser(description=__doc__, allow_abbrev=False)
     parser.add_argument('--output', required=True)
-    parser.add_argument('--baseurl', default='/kinosail')
-    parser.add_argument('--url', default='https://kinosail.github.io')
+    parser.add_argument('--baseurl', default='')
+    parser.add_argument('--url', default='https://kinosail.com')
     args = parser.parse_args(argv)
     if len(args.baseurl) > 200 or not re.fullmatch(r'(?:/[A-Za-z0-9_-]+)*', args.baseurl):
         parser.error('baseurl must be empty or slash-separated URL segments without a trailing slash')

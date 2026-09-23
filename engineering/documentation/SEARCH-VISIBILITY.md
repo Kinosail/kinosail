@@ -18,7 +18,7 @@ not duplicate keyword pages or invented reviews and ratings.
 ## Measurement after deployment
 
 Verify site ownership in Google Search Console and Bing Webmaster Tools, then
-submit https://kinosail.github.io/kinosail/sitemap.xml. These account steps are
+submit https://kinosail.com/sitemap.xml. These account steps are
 not completed by a repository deployment. Inspect indexing for the homepage,
 Docker guide, features, and MCP guide. Review search impressions, queries,
 click-through rates, and relevant Bing AI citations before choosing new content.
@@ -26,9 +26,8 @@ Start with branded searches and specific intents such as self-hosted media
 server Docker, browser media player, and media server MCP. Do not claim ranking
 improvements without a baseline and subsequent measurements.
 
-GitHub project Pages lives under /kinosail/. A robots.txt there does not control
-host-level crawlers: robots rules belong at the origin root. Do not create a
-misleading nested robots file. The sitemap can be submitted directly.
+The custom domain serves Pages at the origin root, so the sitemap and robots.txt
+belong at that root. The sitemap can be submitted directly.
 
 No ranking, indexing, or AI citation position is guaranteed. Neither fabricated
 engagement nor mass-produced comparison pages are part of this strategy.

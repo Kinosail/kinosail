@@ -1,6 +1,6 @@
 # Kinosail web Player documentation
 
-Read **[Kinosail Player Docs](https://kinosail.github.io/kinosail/docs/)**, starting with **[Install with Docker](https://kinosail.github.io/kinosail/quickstart/)**. Source builds are a secondary path for contributors and early evaluation. Other apps and native clients are outside this site's current scope.
+Read **[Kinosail Player Docs](https://kinosail.com/docs/)**, starting with **[Install with Docker](https://kinosail.com/quickstart/)**. Source builds are a secondary path for contributors and early evaluation. Other apps and native clients are outside this site's current scope.
 
 ## Read the guides
 

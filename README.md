@@ -2,7 +2,7 @@
 
 Kinosail is a family of private, self-hosted applications for your media and home network. Run the apps you need on your own hardware. Each app includes its web interface, API, and embedded database in one independently deployed container.
 
-**[Get started](https://kinosail.github.io/kinosail/quickstart/)** · **[Documentation](https://kinosail.github.io/kinosail/docs/)** · **[Contribute](CONTRIBUTING.md)** · **[Get help](SUPPORT.md)** · **[Security](SECURITY.md)**
+**[Get started](https://kinosail.com/quickstart/)** · **[Documentation](https://kinosail.com/docs/)** · **[Contribute](CONTRIBUTING.md)** · **[Get help](SUPPORT.md)** · **[Security](SECURITY.md)**
 
 ## Choose your app
 
@@ -19,7 +19,7 @@ The native targets are iOS/iPadOS and tvOS. Other devices can use the web app or
 
 ## Getting started
 
-For a normal web Player installation, follow [Install with Docker](https://kinosail.github.io/kinosail/quickstart/). The installer verifies and pins the published Player container. The examples below build each app from the checked-out source for development or evaluation.
+For a normal web Player installation, follow [Install with Docker](https://kinosail.com/quickstart/). The installer verifies and pins the published Player container. The examples below build each app from the checked-out source for development or evaluation.
 
 ### Requirements
 
@@ -112,13 +112,13 @@ Use [Player device setup](apps/player/docs/getting-started/connect-devices.md) f
 
 ### Published Player installation
 
-Passing `main` builds publish signed `latest` containers for affected apps. Player's [Docker quickstart](https://kinosail.github.io/kinosail/quickstart/) uses the published image, verifies its signature, and pins its digest. A numbered GitHub release or installer archive is not required for this path. A successful source build does not establish that a published image is available.
+Passing `main` builds publish signed `latest` containers for affected apps. Player's [Docker quickstart](https://kinosail.com/quickstart/) uses the published image, verifies its signature, and pins its digest. A numbered GitHub release or installer archive is not required for this path. A successful source build does not establish that a published image is available.
 
 For a numbered release, use the matching app bundle from [Releases](https://github.com/Kinosail/kinosail/releases) and verify its supplied checksum and signature. The Player installer requires `cosign` and verifies the image identity before pinning its digest. Do not bypass that check to install a development image.
 
 ## Documentation
 
-Visit **[Kinosail Player Docs](https://kinosail.github.io/kinosail/docs/)** for searchable web Player guides, starting with Docker installation.
+Visit **[Kinosail Player Docs](https://kinosail.com/docs/)** for searchable web Player guides, starting with Docker installation.
 
 | Task | Start here |
 | --- | --- |
