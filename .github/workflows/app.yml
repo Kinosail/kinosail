@@ -173,7 +173,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        engine: ${{ fromJSON(fromJSON(inputs.plan)[format('{0}_browsers', inputs.app)] && (inputs.app == 'dashboard' && '["full"]' || '["chromium","firefox","webkit"]') || '["chromium"]') }}
+        engine: ${{ fromJSON(fromJSON(inputs.plan).deep && (inputs.app == 'dashboard' && '["full"]' || '["chromium","firefox","webkit"]') || '["chromium"]') }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
@@ -217,8 +217,9 @@ jobs:
         env:
           CONTAINER_ENGINE: docker
           KINOSAIL_BROWSER_TEST: "1"
-          KINOSAIL_BROWSER_MATRIX: ${{ fromJSON(inputs.plan)[format('{0}_browsers', inputs.app)] && 'full' || '' }}
+          KINOSAIL_BROWSER_MATRIX: ${{ fromJSON(inputs.plan).deep && 'full' || '' }}
           KINOSAIL_BROWSER_PROJECT: ${{ matrix.engine }}
+          KINOSAIL_BROWSER_SMOKE: ${{ !fromJSON(inputs.plan).deep && '1' || '' }}
           KINOSAIL_BROWSER_WORKERS: ${{ inputs.app == 'player' && '3' || '1' }}
           KINOSAIL_E2E_OUTPUT_DIR: ${{ runner.temp }}/${{ inputs.app }}-${{ matrix.engine }}-browser-results
           KINOSAIL_TEST_IMAGE: localhost/kinosail-${{ inputs.app }}:${{ github.sha }}
@@ -231,7 +232,7 @@ jobs:
           PROJECT: ${{ matrix.engine }}
         run: |
           args=()
-          [[ "$PROJECT" == full ]] || args+=(--project=chromium)
+          [[ "$PROJECT" == full ]] || args+=(--project=chromium --grep=@smoke)
           pnpm --dir apps/dashboard/e2e exec playwright test "${args[@]}"
       - name: Keep browser failure evidence
         if: failure()

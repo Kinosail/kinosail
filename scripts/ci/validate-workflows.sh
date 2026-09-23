@@ -43,6 +43,8 @@ require "$app" 'run: make -C apps/player client-check'
 require "$app" 'run: python3 scripts/ci/required.py app'
 require "$app" '"runner":"ubuntu-24.04-arm"'
 require "$app" 'playwright test "${args[@]}"'
+require "$app" 'KINOSAIL_BROWSER_SMOKE:'
+require "$app" '--grep=@smoke'
 
 require "$publish" '  workflow_call:'
 require "$publish" 'run: python3 scripts/ci/delivery.py'

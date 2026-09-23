@@ -33,13 +33,16 @@ class RuntimeContracts(unittest.TestCase):
 
     def test_browser_selection_cannot_succeed_without_running_a_project(self):
         workflow = (WORKFLOWS / 'app.yml').read_text()
-        self.assertIn("fromJSON(inputs.plan)[format('{0}_browsers', inputs.app)] && 'full' || ''", workflow)
-        self.assertIn("engine: ${{ fromJSON(fromJSON(inputs.plan)[format('{0}_browsers', inputs.app)] && (inputs.app == 'dashboard' && '[\"full\"]' || '[\"chromium\",\"firefox\",\"webkit\"]') || '[\"chromium\"]') }}", workflow)
+        self.assertIn("fromJSON(inputs.plan).deep && 'full' || ''", workflow)
+        self.assertIn("engine: ${{ fromJSON(fromJSON(inputs.plan).deep && (inputs.app == 'dashboard' && '[\"full\"]' || '[\"chromium\",\"firefox\",\"webkit\"]') || '[\"chromium\"]') }}", workflow)
         self.assertIn('KINOSAIL_BROWSER_PROJECT: ${{ matrix.engine }}', workflow)
+        self.assertIn("KINOSAIL_BROWSER_SMOKE: ${{ !fromJSON(inputs.plan).deep && '1' || '' }}", workflow)
         source = (ROOT / 'apps/player/scripts/test-container.sh').read_text()
         self.assertNotIn('done < <(./scripts/browser-projects.sh)', source)
-        self.assertIn('[[ "$PROJECT" == full ]] || args+=(--project=chromium)', workflow)
+        self.assertIn('[[ "$PROJECT" == full ]] || args+=(--project=chromium --grep=@smoke)', workflow)
         self.assertIn('pnpm --dir apps/dashboard/e2e exec playwright test "${args[@]}"', workflow)
+        for app in ('player', 'subtitles'):
+            self.assertIn('browser_args+=(--grep=@smoke)', (ROOT / f'apps/{app}/scripts/test-container.sh').read_text())
         with tempfile.TemporaryDirectory() as directory:
             marker = Path(directory) / 'effects'
             for tool in ('docker', 'podman', 'mktemp'):
@@ -50,6 +53,12 @@ class RuntimeContracts(unittest.TestCase):
             for invalid in ('chromium', 'unknown', 'x' * 10000):
                 result = subprocess.run(['bash', str(ROOT / 'apps/player/scripts/test-container.sh')],
                     env=env | {'KINOSAIL_BROWSER_MATRIX': invalid}, capture_output=True)
+                self.assertEqual(result.returncode, 2)
+                self.assertFalse(marker.exists())
+            for app in ('player', 'subtitles'):
+                result = subprocess.run(['bash', str(ROOT / f'apps/{app}/scripts/test-container.sh')],
+                    env=env | {'KINOSAIL_BROWSER_MATRIX': '', 'KINOSAIL_BROWSER_SMOKE': 'unknown'},
+                    capture_output=True)
                 self.assertEqual(result.returncode, 2)
                 self.assertFalse(marker.exists())
             for matrix, expected in (('', 'chromium\n'), ('full', 'chromium\nfirefox\nwebkit\n')):

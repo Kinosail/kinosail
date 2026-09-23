@@ -6,6 +6,10 @@ set -euo pipefail
 app="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 repo="$(git -C "$app" rev-parse --show-toplevel)"
 cd "$app"
+case "${KINOSAIL_BROWSER_SMOKE:-}" in
+  ""|1) ;;
+  *) echo 'unsupported browser smoke mode' >&2; exit 2 ;;
+esac
 browser_projects=""
 if [[ "${KINOSAIL_BROWSER_TEST:-}" == 1 ]]; then
   browser_projects="$(./scripts/browser-projects.sh)"
@@ -209,9 +213,11 @@ grep -qi "^content-security-policy: default-src 'self'" <<<"$headers"
 grep -qi '^x-content-type-options: nosniff' <<<"$headers"
 
 if [[ "${KINOSAIL_BROWSER_TEST:-}" == "1" ]]; then
+  browser_args=()
+  if [[ "${KINOSAIL_BROWSER_SMOKE:-}" == "1" ]]; then browser_args+=(--grep=@smoke); fi
   while IFS= read -r project; do
     start_fresh_server "$port"
-    KINOSAIL_BROWSER_PROJECT="$project" KINOSAIL_E2E_URL="$url" KINOSAIL_E2E_OUTPUT_DIR="${KINOSAIL_E2E_OUTPUT_DIR:-$media_dir/playwright-results}-$project" pnpm --dir e2e test
+    KINOSAIL_BROWSER_PROJECT="$project" KINOSAIL_E2E_URL="$url" KINOSAIL_E2E_OUTPUT_DIR="${KINOSAIL_E2E_OUTPUT_DIR:-$media_dir/playwright-results}-$project" pnpm --dir e2e test "${browser_args[@]}"
   done <<< "$browser_projects"
   exit
 fi

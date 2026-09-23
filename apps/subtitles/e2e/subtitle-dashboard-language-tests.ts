@@ -3,7 +3,7 @@ import { expect, test } from "@playwright/test";
 import { compactViewports, expectNoHorizontalOverflow, expectSkipLinkOffscreen, initiallyOccludedTargets, occludedTargets, setSubtitleLanguages, supportedViewports } from "./subtitle-dashboard-helpers";
 
 export function registerSubtitleLanguageTests() {
-test("Owner sees real coverage, wanted files, and a focused setup path", async ({ page }) => {
+test("Owner sees real coverage, wanted files, and a focused setup path", { tag: "@smoke" }, async ({ page }) => {
   await expect(page.getByRole("heading", { name: "Overview", exact: true })).toBeVisible();
   await expect(page.getByRole("region", { name: "Subtitle coverage" })).toContainText(/\d+%/);
   await expect(page.getByRole("meter", { name: "Subtitle coverage" })).toHaveAttribute("aria-valuetext", /\d+ of \d+ files ready/);
