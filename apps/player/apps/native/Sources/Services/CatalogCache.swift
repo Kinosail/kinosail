@@ -14,7 +14,10 @@ extension ServerClient {
                                  decode: @escaping (JSONValue) throws -> Value) async throws -> Value {
         try Task.checkCancellation()
         let url = try authorizedRequest(path).url!
-        let parts = url.path.split(separator: "/")
+        guard let encodedPath = URLComponents(url: url, resolvingAgainstBaseURL: false)?.percentEncodedPath else {
+            throw ClientError.invalidInput("The catalog request is invalid.")
+        }
+        let parts = encodedPath.split(separator: "/")
         guard parts.count >= 3, parts[0] == "api", parts[1] == "v1",
               parts.count == 3 && ["library", "actor", "collections", "albums"].contains(parts[2]) ||
               parts.count == 4 && ["items", "shows", "collections", "albums"].contains(parts[2]),
