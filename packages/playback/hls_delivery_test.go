@@ -35,6 +35,13 @@ func TestHLSDeliveryValidatesBeforeCallbacks(t *testing.T) { //nolint:cyclop,goc
 	if _, err := HLSCodecArguments(HLSCodecInput{}); err == nil {
 		t.Fatal("accepted invalid codec input")
 	}
+	effected, err := HLSCodecArguments(HLSCodecInput{Arguments: []string{"ffmpeg"}, Video: []string{"-c:v", "copy"}, VideoRate: "2000k", AudioRate: "128k", CopyInput: "0", Recipe: HLSRecipe{Mode: "audio-transcode", DialogueBoost: true, NormalizeLoudness: true}, Policy: policy})
+	if err != nil || !strings.Contains(strings.Join(effected, " "), "-af equalizer=f=1600") || !strings.Contains(strings.Join(effected, " "), "dynaudnorm=") {
+		t.Fatalf("audio enhancement arguments = %#v, %v", effected, err)
+	}
+	if _, err := HLSCodecArguments(HLSCodecInput{AudioRate: "128k", CopyInput: "0", Recipe: HLSRecipe{Mode: "remux", DialogueBoost: true}, Policy: policy}); err == nil {
+		t.Fatal("remux accepted an audio effect")
+	}
 
 	item := library.Item{ID: "0123456789abcdef", Kind: "video"}
 	served, notFound, forbidden, invalidSeek := 0, 0, 0, 0

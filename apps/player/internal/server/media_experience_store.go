@@ -16,6 +16,7 @@ import (
 
 	"github.com/MikeO7/kinosail-player/internal/database"
 	"github.com/MikeO7/kinosail/packages/httpguard"
+	"github.com/MikeO7/kinosail/packages/library"
 )
 
 const (
@@ -173,6 +174,15 @@ func (store *mediaExperienceStore) defaults(viewer string) mediaPreferences {
 		return value
 	}
 	return defaultMediaPreferences()
+}
+
+func (store *mediaExperienceStore) playback(viewer string, item library.Item) playbackPreferences {
+	store.mu.Lock()
+	defer store.mu.Unlock()
+	if value, found := store.value.Overrides[experienceKey(viewer, mediaPreferenceScope(item))]; found {
+		return value
+	}
+	return store.defaults(viewer).Playback
 }
 
 func (store *mediaExperienceStore) bookmarks(key string) []mediaBookmark {

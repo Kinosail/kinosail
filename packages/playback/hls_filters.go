@@ -42,10 +42,36 @@ func ApplyBurnIn(video []string, itemPath string, recipe HLSRecipe, policy HLSRe
 }
 
 func AutomaticSkipAudioArguments(recipe HLSRecipe, policy HLSRecipePolicy) []string {
-	if len(recipe.Omitted) == 0 {
+	filter := automaticSkipAudioFilter(recipe, policy)
+	if filter == "" {
 		return nil
 	}
-	return []string{"-af", "aselect=" + keepExpression(recipe.Omitted) + ",asetpts=" + shiftedPTS(recipe.Omitted, policy.StartPresentationAtZero)}
+	return []string{"-af", filter}
+}
+
+// AudioFilterArguments keeps timeline and opt-in listening effects in one
+// filter graph so later arguments cannot silently replace an earlier effect.
+func AudioFilterArguments(recipe HLSRecipe, policy HLSRecipePolicy) []string {
+	filters := []string{automaticSkipAudioFilter(recipe, policy)}
+	if recipe.DialogueBoost {
+		filters = append(filters, "equalizer=f=1600:t=q:w=0.9:g=4", "equalizer=f=3200:t=q:w=1.1:g=3")
+	}
+	if recipe.NormalizeLoudness {
+		filters = append(filters, "dynaudnorm=f=150:g=15:p=0.9:m=10:r=0.25")
+	} else if recipe.DialogueBoost {
+		filters = append(filters, "alimiter=limit=0.95:level=false")
+	}
+	if filter := joinFilters(filters...); filter != "" {
+		return []string{"-af", filter}
+	}
+	return nil
+}
+
+func automaticSkipAudioFilter(recipe HLSRecipe, policy HLSRecipePolicy) string {
+	if len(recipe.Omitted) == 0 {
+		return ""
+	}
+	return "aselect=" + keepExpression(recipe.Omitted) + ",asetpts=" + shiftedPTS(recipe.Omitted, policy.StartPresentationAtZero)
 }
 
 func automaticSkipVideoFilter(ranges []Range, startAtZero bool) string {

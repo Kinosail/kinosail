@@ -43,6 +43,17 @@ struct MediaOperationTests {
         #expect(fixture.requests.isEmpty)
     }
 
+    @Test func audioEnhancementPreferencesRoundTripThroughTheExistingContract() throws {
+        var preferences = PlaybackPreferences()
+        preferences.dialogueBoost = true
+        preferences.nightMode = true
+        let restored = try PlaybackPreferences(preferences.json)
+        #expect(restored.dialogueBoost)
+        #expect(restored.nightMode)
+        #expect(restored.audioEnhancementsEnabled)
+        #expect(restored.volumeBoost == 1)
+    }
+
     @Test(arguments: [
         "{\"id\":\"ID\",\"title\":\"Scene\",\"seconds\":1,\"page\":1}",
         "{\"id\":\"ID\",\"title\":\"Scene\",\"seconds\":1,\"offset\":0}",

@@ -33,8 +33,9 @@ extension PlaybackEngine {
         let task = Task { @MainActor in
             async let source = client.playback(itemID: item.id)
             async let preferences = client.playbackPreferences(itemID: item.id)
-            return PlaybackPreparation(itemID: item.id, clientID: clientID, saved: Date(),
-                                       source: try await source, preferences: try await preferences.playback)
+            let prepared = PlaybackPreparation(itemID: item.id, clientID: clientID, saved: Date(),
+                                               source: try await source, preferences: try await preferences.playback)
+            return try prepared.validated()
         }
         playbackPreparationTask = task
         playbackPreparationItemID = item.id
@@ -58,7 +59,17 @@ extension PlaybackEngine {
     func fetchPlaybackPreparation(for item: MediaItem, client: ServerClient) async throws -> PlaybackPreparation {
         async let source = client.playback(itemID: item.id)
         async let preferences = client.playbackPreferences(itemID: item.id)
-        return PlaybackPreparation(itemID: item.id, clientID: client.identity, saved: Date(),
-                                   source: try await source, preferences: try await preferences.playback)
+        let prepared = PlaybackPreparation(itemID: item.id, clientID: client.identity, saved: Date(),
+                                           source: try await source, preferences: try await preferences.playback)
+        return try prepared.validated()
+    }
+}
+
+private extension PlaybackPreparation {
+    func validated() throws -> Self {
+        if preferences.audioEnhancementsEnabled, source.direct != nil || source.compatible == nil {
+            throw ClientError.invalidInput("Update Kinosail Server to use audio enhancements.")
+        }
+        return self
     }
 }

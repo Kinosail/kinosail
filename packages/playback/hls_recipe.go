@@ -17,6 +17,8 @@ type HLSRecipe struct {
 	Mode, Burn, Codec      string
 	Audio, Subtitle        int
 	ToneMap, SingleQuality bool
+	DialogueBoost          bool
+	NormalizeLoudness      bool
 	MaxBitrate             int64
 	Omitted                []Range
 	Offset                 float64
@@ -78,6 +80,9 @@ func (recipe HLSRecipe) Token() string {
 	if recipe.Offset > 0 {
 		token += "-o" + strconv.FormatInt(int64(math.Round(recipe.Offset*1000)), 10)
 	}
+	if effects := boolInt(recipe.DialogueBoost) + 2*boolInt(recipe.NormalizeLoudness); effects != 0 {
+		token += "-e" + strconv.Itoa(effects)
+	}
 	return token
 }
 
@@ -89,7 +94,11 @@ func ParseHLSRecipe(value string, policy HLSRecipePolicy) (HLSRecipe, error) { /
 		return HLSRecipe{}, errors.New("playback recipe is too large")
 	}
 	parts := strings.Split(value, "-")
-	if len(parts) < 6 || len(parts) > 10 || len(value) > 8192 {
+	if len(parts) < 6 || len(parts) > 11 || len(value) > 8192 {
+		return HLSRecipe{}, errors.New("playback recipe is invalid")
+	}
+	parts, dialogueBoost, normalizeLoudness, err := parseRecipeAudioEffects(parts)
+	if err != nil {
 		return HLSRecipe{}, errors.New("playback recipe is invalid")
 	}
 	parts, offset, err := parseRecipeOffset(parts, policy.OffsetStepMilliseconds)
@@ -114,8 +123,12 @@ func ParseHLSRecipe(value string, policy HLSRecipePolicy) (HLSRecipe, error) { /
 	}
 	recipe.Omitted, recipe.Offset = omitted, float64(offset)/1000
 	recipe.Width, recipe.Height = width, height
+	recipe.DialogueBoost, recipe.NormalizeLoudness = dialogueBoost, normalizeLoudness
 	if recipe.Mode != "transcode" && (recipe.Burn != "" || recipe.ToneMap || width != 0) {
 		return HLSRecipe{}, errors.New("conversion fields require video conversion")
+	}
+	if (dialogueBoost || normalizeLoudness) && recipe.Mode == "remux" {
+		return HLSRecipe{}, errors.New("audio effects require audio conversion")
 	}
 	return recipe, nil
 }
@@ -228,7 +241,7 @@ func HLSRecipeKey(id string, recipe HLSRecipe) string { //nolint:cyclop // Every
 	if recipe.SingleQuality {
 		return id + "-plan-" + recipe.Token() + "-single"
 	}
-	if recipe.Mode == "transcode" && transcodepolicy.NormalizeCodec(recipe.Codec) == "h264" && recipe.Burn == "" && !recipe.ToneMap && recipe.MaxBitrate == 0 && recipe.Width == 0 && recipe.Height == 0 && len(recipe.Omitted) == 0 && recipe.Offset == 0 {
+	if recipe.Mode == "transcode" && transcodepolicy.NormalizeCodec(recipe.Codec) == "h264" && recipe.Burn == "" && !recipe.ToneMap && !recipe.DialogueBoost && !recipe.NormalizeLoudness && recipe.MaxBitrate == 0 && recipe.Width == 0 && recipe.Height == 0 && len(recipe.Omitted) == 0 && recipe.Offset == 0 {
 		return HLSCacheKey(id, recipe.Audio)
 	}
 	return id + "-plan-" + recipe.Token()
