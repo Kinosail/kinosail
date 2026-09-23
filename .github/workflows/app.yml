@@ -39,7 +39,7 @@ jobs:
       - run: make single-container tidy-check
 
   race:
-    name: ${{ inputs.app }} race and coverage
+    name: ${{ inputs.app }} Go tests
     if: fromJSON(inputs.plan)[inputs.app]
     runs-on: ubuntu-24.04
     timeout-minutes: 20
@@ -55,6 +55,7 @@ jobs:
         run: sudo apt-get update && sudo apt-get install -y libarchive-tools
       - env:
           APP: ${{ inputs.app }}
+          KINOSAIL_GO_TEST_MODE: ${{ fromJSON(inputs.plan).deep && 'deep' || 'quick' }}
         run: ./scripts/ci/test-go.sh "$APP"
 
   security:

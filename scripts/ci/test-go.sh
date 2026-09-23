@@ -8,8 +8,14 @@ case "$1" in
   packages) directory=packages; minimum=85 ;;
   *) echo 'invalid Go module' >&2; exit 2 ;;
 esac
+mode="${KINOSAIL_GO_TEST_MODE:-deep}"
+case "$mode" in quick|deep) ;; *) echo 'invalid Go test mode' >&2; exit 2 ;; esac
 repo="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 cd "$repo/$directory"
+if [[ "$mode" == quick ]]; then
+  go test -count=1 ./...
+  exit
+fi
 mkdir -p .verification
 profile=.verification/coverage.out
 rm -f "$profile"

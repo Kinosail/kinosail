@@ -94,7 +94,9 @@ jobs:
           working-directory: packages
           args: --timeout=5m --new-from-rev=${{ github.event.pull_request.base.sha || github.event.before || 'HEAD~1' }}
       - run: make -C packages tidy-check
-      - run: ./scripts/ci/test-go.sh packages
+      - env:
+          KINOSAIL_GO_TEST_MODE: ${{ fromJSON(needs.plan.outputs.plan).deep && 'deep' || 'quick' }}
+        run: ./scripts/ci/test-go.sh packages
       - run: go -C packages run golang.org/x/vuln/cmd/govulncheck@v1.7.0 ./...
       - run: go -C apps/subtitles mod download && python3 scripts/quality/check-dependency-integrity.py
 

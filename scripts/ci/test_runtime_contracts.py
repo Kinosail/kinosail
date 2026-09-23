@@ -16,6 +16,28 @@ QUEUE = '''    concurrency:
 
 
 class RuntimeContracts(unittest.TestCase):
+    def test_quick_go_checks_reject_unknown_modes_before_side_effects(self):
+        app = (WORKFLOWS / 'app.yml').read_text()
+        ci = (WORKFLOWS / 'ci.yml').read_text()
+        self.assertIn("KINOSAIL_GO_TEST_MODE: ${{ fromJSON(inputs.plan).deep && 'deep' || 'quick' }}", app)
+        self.assertIn("KINOSAIL_GO_TEST_MODE: ${{ fromJSON(needs.plan.outputs.plan).deep && 'deep' || 'quick' }}", ci)
+        with tempfile.TemporaryDirectory() as directory:
+            log = Path(directory) / 'go-called'
+            binary = Path(directory) / 'go'
+            binary.write_text('#!/bin/sh\nprintf "%s\\n" "$*" > "$GO_CALL_LOG"\n')
+            binary.chmod(0o755)
+            env = os.environ | {'PATH': directory + ':' + os.environ['PATH'], 'GO_CALL_LOG': str(log)}
+            script = ROOT / 'scripts/ci/test-go.sh'
+            for invalid in ('unknown', 'QUICK', 'x' * 10000):
+                result = subprocess.run(['bash', str(script), 'player'],
+                    env=env | {'KINOSAIL_GO_TEST_MODE': invalid}, capture_output=True)
+                self.assertEqual(result.returncode, 2)
+                self.assertFalse(log.exists())
+            result = subprocess.run(['bash', str(script), 'player'],
+                env=env | {'KINOSAIL_GO_TEST_MODE': 'quick'}, capture_output=True)
+            self.assertEqual(result.returncode, 0)
+            self.assertEqual(log.read_text(), 'test -count=1 ./...\n')
+
     def test_promotion_preserves_pending_jobs_and_verifies_consumer_identity(self):
         source = (WORKFLOWS / 'publish.yml').read_text()
         self.assertIn(QUEUE, source)
