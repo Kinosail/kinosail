@@ -157,14 +157,23 @@ jobs:
       - name: Sign the version image
         env:
           DIGEST: ${{ steps.manifest.outputs.digest }}
-        run: cosign sign --yes "$IMAGE@$DIGEST"
+          COSIGN_REPOSITORY: ghcr.io/kinosail/kinosail-signatures
+        run: |
+          cosign sign --yes "$IMAGE@$DIGEST"
+          DOCKER_CONFIG="$(mktemp -d)" cosign verify --certificate-identity "https://github.com/Kinosail/kinosail/.github/workflows/release.yml@refs/tags/$GITHUB_REF_NAME" --certificate-oidc-issuer https://token.actions.githubusercontent.com "$IMAGE@$DIGEST"
       - name: Attest image provenance
         if: ${{ !github.event.repository.private }}
         uses: actions/attest@1e69f48acb82d1966a394da916b4c1698aa569d6
         with:
           subject-name: ${{ env.IMAGE }}
           subject-digest: ${{ steps.manifest.outputs.digest }}
-          push-to-registry: true
+          push-to-registry: false
+      - name: Verify GitHub provenance
+        if: ${{ !github.event.repository.private }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+          DIGEST: ${{ steps.manifest.outputs.digest }}
+        run: gh attestation verify "oci://$IMAGE@$DIGEST" --repo Kinosail/kinosail --signer-workflow Kinosail/kinosail/.github/workflows/release.yml --source-ref "$GITHUB_REF" >/dev/null
       - name: Package signed installers
         if: needs.preflight.outputs.app != 'dashboard'
         run: ./scripts/ci/package-release.sh "$APP" "$APP_VERSION"

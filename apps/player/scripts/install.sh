@@ -208,9 +208,13 @@ if [[ ! "$digest" =~ ^ghcr\.io/kinosail/kinosail-player@sha256:[a-f0-9]{64}$ ]];
   exit 1
 fi
 if [[ "$version" == latest ]]; then
-  cosign verify --certificate-identity https://github.com/Kinosail/kinosail/.github/workflows/publish.yml@refs/heads/main --certificate-oidc-issuer https://token.actions.githubusercontent.com "$digest" >/dev/null
+  signer=https://github.com/Kinosail/kinosail/.github/workflows/publish.yml@refs/heads/main
 else
-  cosign verify --certificate-identity "https://github.com/Kinosail/kinosail/.github/workflows/release.yml@refs/tags/player-v$version" --certificate-oidc-issuer https://token.actions.githubusercontent.com "$digest" >/dev/null
+  signer="https://github.com/Kinosail/kinosail/.github/workflows/release.yml@refs/tags/player-v$version"
+fi
+verify_args=(--certificate-identity "$signer" --certificate-oidc-issuer https://token.actions.githubusercontent.com "$digest")
+if ! COSIGN_REPOSITORY=ghcr.io/kinosail/kinosail-signatures cosign verify "${verify_args[@]}" >/dev/null 2>&1; then
+  (unset COSIGN_REPOSITORY; cosign verify "${verify_args[@]}" >/dev/null)
 fi
 if [[ -f kinosail.yaml ]]; then
   KINOSAIL_IMAGE="$digest" "${project[@]}" run --rm --no-deps kinosail config validate
