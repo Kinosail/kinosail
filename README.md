@@ -16,11 +16,81 @@ Kinosail Player Server is free to run on hardware you control. The web Player is
 
 Player reads your media and does not change the source files. Subtitles needs write access to save subtitle files beside your media. Dashboard opens your apps in a browser. Kinosail does not relay media. You do not need a Kinosail account for local use.
 
-Player includes a web app. You can also connect a compatible Jellyfin client after you enable Jellyfin support over trusted HTTPS. See [connecting devices](apps/player/docs/getting-started/connect-devices.md).
+## Get started with Kinosail Player
 
-## Getting started
+Use the published Player container from GitHub Container Registry. Docker pulls it from `ghcr.io`; you do not need to build from source. These examples keep setup on this computer and mount your media read-only. Replace `/path/to/your/media` with the full path to an existing media folder on the Docker host.
 
-For a standard Player installation, follow [Install with Docker](https://kinosail.com/quickstart/). The installer checks and pins the published Player container. The examples below build each app from source.
+Install Docker Engine. The Compose example also needs the Compose plugin. Kinosail supports 64-bit Linux (`amd64` or `arm64`). Docker Desktop works for local use on macOS.
+
+### Docker (one line)
+
+```sh
+docker run --detach --name kinosail --restart unless-stopped --init --user 10001:10001 --read-only --cap-drop ALL --security-opt no-new-privileges:true --publish 127.0.0.1:38127:38127 --mount type=volume,source=kinosail-config,target=/config --mount type=volume,source=kinosail-cache,target=/cache --mount type=volume,source=kinosail-backups,target=/backups --mount "type=bind,source=/path/to/your/media,target=/media,readonly" --tmpfs /tmp:rw,noexec,nosuid,nodev,size=256m --tmpfs /run:rw,noexec,nosuid,nodev,size=16m --env KINOSAIL_DATA_DIR=/config --env KINOSAIL_CACHE_DIR=/cache --env KINOSAIL_MEDIA_DIR=/media ghcr.io/kinosail/kinosail-player:latest
+```
+
+### Docker Compose
+
+Create a folder for `compose.yaml` and `.env`. Set `KINOSAIL_MEDIA_PATH` to the full path of an existing media folder on the Docker host:
+
+```dotenv
+KINOSAIL_MEDIA_PATH=/path/to/your/media
+KINOSAIL_BIND=127.0.0.1
+KINOSAIL_PORT=38127
+```
+
+Save this as `compose.yaml` in the same folder:
+
+```yaml
+name: kinosail
+
+services:
+  kinosail:
+    image: ghcr.io/kinosail/kinosail-player:latest
+    container_name: kinosail
+    restart: unless-stopped
+    init: true
+    user: "10001:10001"
+    read_only: true
+    cap_drop: [ALL]
+    security_opt:
+      - no-new-privileges:true
+    ports:
+      - "${KINOSAIL_BIND:-127.0.0.1}:${KINOSAIL_PORT:-38127}:38127"
+    environment:
+      KINOSAIL_DATA_DIR: /config
+      KINOSAIL_CACHE_DIR: /cache
+      KINOSAIL_MEDIA_DIR: /media
+    volumes:
+      - config:/config
+      - cache:/cache
+      - backups:/backups
+      - "${KINOSAIL_MEDIA_PATH}:/media:ro"
+    tmpfs:
+      - /tmp:rw,noexec,nosuid,nodev,size=256m
+      - /run:rw,noexec,nosuid,nodev,size=16m
+
+volumes:
+  config:
+  cache:
+  backups:
+```
+
+Pull and start the container from the folder with `compose.yaml`:
+
+```sh
+docker compose pull
+docker compose up -d
+```
+
+On this computer, open **<https://localhost:38127>**. Your browser will warn you about the local certificate. Trust only the certificate from your own Server. Create the first Owner with a unique password that has at least 12 characters, then add a passkey or TOTP authenticator.
+
+The Compose example saves backup data in a volume, but it does not create an encryption key. Set up a backup key before you rely on encrypted backups. See [Backups and updates](apps/player/docs/owner-guide/backups-and-updates.md).
+
+For signature verification and a pinned image digest, use the [verified Docker quickstart](https://kinosail.com/quickstart/).
+
+## Build the apps from source
+
+Use these steps only if you want to build app images from the source checkout. For a standard Player setup, use the published-container examples above.
 
 ### Requirements
 
@@ -31,7 +101,7 @@ For a standard Player installation, follow [Install with Docker](https://kinosai
 - Leave the local ports in the table above free. Allow space for app data, artwork, backups, and playback cache.
 - Container builds include the media tools. You do not need Go or FFmpeg on the host.
 
-These commands use Docker Compose. If you use Podman, replace `docker compose` with `podman compose`. Follow only the section for the app you want.
+These source-build commands use Docker Compose. If you use Podman, replace `docker compose` with `podman compose`. Follow only the section for the app you want.
 
 ### 1. Get the source
 
@@ -40,7 +110,7 @@ git clone https://github.com/Kinosail/kinosail.git
 cd kinosail
 ```
 
-These examples build the source that you checked out. For a prebuilt Player container, follow [Published Player installation](#published-player-installation).
+These examples build the source that you checked out. For a prebuilt Player container, use the examples in [Get started with Kinosail Player](#get-started-with-kinosail-player).
 
 ### 2. Start an app
 
