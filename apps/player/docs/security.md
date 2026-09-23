@@ -14,7 +14,16 @@ This page describes Kinosail Player. It explains the main protections, their tec
 
 [Report a vulnerability privately on GitHub](https://github.com/Kinosail/kinosail/security/advisories/new). Do not post exploit details in a public issue, discussion, or support request.
 
-Include the affected app and version or source commit, your host OS and container engine, the affected feature, a minimal reproduction, the impact, and the access needed to reproduce it. Do not include passwords, tokens, backup files, private URLs, media paths, media titles, or viewing activity. Redact logs and screenshots.
+Include these details in your report:
+
+- The app and version, or the source commit.
+- The host OS, architecture, and container engine.
+- The affected feature or endpoint.
+- The fewest steps that reproduce the issue.
+- The expected and observed behavior.
+- The impact and access needed, such as Owner, Viewer, local network, or public listener.
+
+Do not include passwords, tokens, backup files, private URLs, media paths, media titles, or viewing activity. Redact logs and screenshots.
 
 If private reporting is unavailable to you, follow the fallback steps in the [repository security policy](https://github.com/Kinosail/kinosail/blob/main/SECURITY.md). There is no published response-time promise. The maintainer coordinates validation and disclosure privately.
 
