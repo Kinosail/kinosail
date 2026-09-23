@@ -34,9 +34,12 @@ class RuntimeContracts(unittest.TestCase):
     def test_browser_selection_cannot_succeed_without_running_a_project(self):
         workflow = (WORKFLOWS / 'app.yml').read_text()
         self.assertIn("fromJSON(inputs.plan)[format('{0}_browsers', inputs.app)] && 'full' || ''", workflow)
+        self.assertIn("engine: ${{ fromJSON(fromJSON(inputs.plan)[format('{0}_browsers', inputs.app)] && '[\"chromium\",\"firefox\",\"webkit\"]' || '[\"chromium\"]') }}", workflow)
+        self.assertIn('KINOSAIL_BROWSER_PROJECT: ${{ matrix.engine }}', workflow)
         source = (ROOT / 'apps/player/scripts/test-container.sh').read_text()
         self.assertNotIn('done < <(./scripts/browser-projects.sh)', source)
-        self.assertIn('pnpm --dir apps/dashboard/e2e exec playwright test "${args[@]}"', workflow)
+        self.assertIn("PROJECT: ${{ matrix.engine == 'webkit' && 'mobile-webkit' || matrix.engine }}", workflow)
+        self.assertIn('pnpm --dir apps/dashboard/e2e exec playwright test --project="$PROJECT"', workflow)
         with tempfile.TemporaryDirectory() as directory:
             marker = Path(directory) / 'effects'
             for tool in ('docker', 'podman', 'mktemp'):
@@ -53,6 +56,11 @@ class RuntimeContracts(unittest.TestCase):
                 result = subprocess.run(['bash', str(ROOT / 'apps/player/scripts/browser-projects.sh')],
                     env=env | {'KINOSAIL_BROWSER_MATRIX': matrix, 'KINOSAIL_BROWSER_PROJECT': ''}, capture_output=True, text=True, check=True)
                 self.assertEqual(result.stdout, expected)
+            for project in ('chromium', 'firefox', 'webkit'):
+                result = subprocess.run(['bash', str(ROOT / 'apps/player/scripts/browser-projects.sh')],
+                    env=env | {'KINOSAIL_BROWSER_MATRIX': 'full', 'KINOSAIL_BROWSER_PROJECT': project},
+                    capture_output=True, text=True, check=True)
+                self.assertEqual(result.stdout, project + '\n')
 
     def test_browser_integrity_runs_even_without_go_jobs(self):
         source = (WORKFLOWS / 'ci.yml').read_text().split('  web:')[0]
