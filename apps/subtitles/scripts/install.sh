@@ -214,7 +214,10 @@ else
 fi
 verify_args=(--certificate-identity "$signer" --certificate-oidc-issuer https://token.actions.githubusercontent.com "$digest")
 if ! COSIGN_REPOSITORY=ghcr.io/kinosail/kinosail-signatures cosign verify "${verify_args[@]}" >/dev/null 2>&1; then
-  (unset COSIGN_REPOSITORY; cosign verify "${verify_args[@]}" >/dev/null)
+  if ! (unset COSIGN_REPOSITORY; cosign verify "${verify_args[@]}" >/dev/null); then
+    echo "Image signature verification failed. Cosign 3.0.6 cannot read current signatures; use Cosign 3.1.3 or newer." >&2
+    exit 1
+  fi
 fi
 if [[ -f kinosail.yaml ]]; then
   KINOSAIL_IMAGE="$digest" "${project[@]}" run --rm --no-deps kinosail config validate

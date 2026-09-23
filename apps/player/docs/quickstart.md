@@ -14,7 +14,7 @@ The examples keep your media read-only and save the Server's data. They also lim
 
 The installer checks Kinosail's signed image and pins its digest. It also creates a backup key and starts the Server on this computer.
 
-You need Docker Engine with the Compose plugin, Git, and `cosign`. Kinosail supports 64-bit Linux (`amd64` or `arm64`). Docker Desktop works for local use on macOS. Run these commands:
+You need Docker Engine with the Compose plugin, Git, and Cosign 3.1.3 or newer. Kinosail supports 64-bit Linux (`amd64` or `arm64`). Docker Desktop works for local use on macOS. Run these commands:
 
 ```sh
 git clone --depth 1 https://github.com/Kinosail/kinosail.git

@@ -8,8 +8,9 @@ sed -i.bak '/^KINOSAIL_VERSION=/d' "$fixture/app/.env"
 rm "$fixture/app/.env.bak"
 
 before="$(grep -c 'up --detach' "$fixture/compose.log")"
-if KINOSAIL_INSTALL_TEST_FAIL_SIGNATURES=1 PATH="$fixture/bin:$PATH" "$fixture/app/scripts/install.sh" "$fixture/media" 9080 >/dev/null 2>&1; then
+if KINOSAIL_INSTALL_TEST_FAIL_SIGNATURES=1 PATH="$fixture/bin:$PATH" "$fixture/app/scripts/install.sh" "$fixture/media" 9080 >/dev/null 2>"$fixture/verify-error"; then
 	echo "unverified image must not be installed" >&2
 	exit 1
 fi
+grep -Fq 'use Cosign 3.1.3 or newer' "$fixture/verify-error"
 [[ "$(grep -c 'up --detach' "$fixture/compose.log")" == "$before" ]]
