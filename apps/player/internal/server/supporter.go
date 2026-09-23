@@ -12,8 +12,11 @@ import (
 )
 
 const (
-	defaultSupporterActivationURL = "https://kinosail-cloud.workers.dev/v1/supporters/activate"
-	defaultSupportURL             = "https://github.com/Kinosail/kinosail/tree/main/apps/player"
+	defaultSupporterActivationURL = "https://kinosail-supporter-prod.pvw-7m4q2x9.workers.dev/v1/supporters/activate"
+	productionSupporterPublicKey  = "j-Zo0nvjgd13yuQyZ0bfGpObhf-AQYtdKlFxyFZOL6I"
+	defaultSupportURL             = "https://buy.polar.sh/polar_cl_qnIK97BxBRJpKtqw0na3QocqgA3IyY0KlM6wZ36YiP8"
+	yearlySupportURL              = "https://buy.polar.sh/polar_cl_WwzGYfc354pJm13xvL90r1qbP0bfSJo0FEDpI3xKiRn"
+	oneTimeSupportURL             = "https://buy.polar.sh/polar_cl_U5woq81CkwRbf0B8P9vpyo2mZkxgPD2qIkFsJ2685XU"
 	supporterAppID                = "kino-player"
 	supporterAudience             = "com.kinosail.player"
 	patronOrderFamily             = supporterengine.FamilyPatron
@@ -45,14 +48,16 @@ type (
 var supporterTiers = supporterengine.Tiers()
 
 func newSupporterProgram(settings *settingsStore, config SupporterConfig) *supporterProgram {
+	trustedPublicKey := ""
 	if config.ActivationURL == "" {
 		config.ActivationURL = defaultSupporterActivationURL
+		trustedPublicKey = productionSupporterPublicKey
 	}
 	if config.SupportURL == "" {
 		config.SupportURL = defaultSupportURL
 	}
 	app := supporterengine.App{ID: supporterAppID, Name: "Kinosail Player", Audience: supporterAudience, MasterworkName: "Full Sail", GrantPublicKey: true, Legacy: supporterengine.LegacyPlayer}
-	service, err := supporterengine.New(supporterengine.Config{App: app, ActivationURL: config.ActivationURL, SupportURL: config.SupportURL, HTTPClient: config.HTTPClient, Now: config.Now})
+	service, err := supporterengine.New(supporterengine.Config{App: app, ActivationURL: config.ActivationURL, SupportURL: config.SupportURL, TrustedPublicKey: trustedPublicKey, HTTPClient: config.HTTPClient, Now: config.Now})
 	if err != nil {
 		service, _ = supporterengine.New(supporterengine.Config{App: app})
 	}

@@ -18,12 +18,13 @@ var audiencePattern = regexp.MustCompile(`^[a-z][A-Za-z0-9.-]{2,127}$`)
 
 // Service applies Player's supporter policy to caller-owned state.
 type Service struct {
-	mu         sync.Mutex
-	app        App
-	endpoint   string
-	supportURL string
-	client     *http.Client
-	now        func() time.Time
+	mu               sync.Mutex
+	app              App
+	endpoint         string
+	supportURL       string
+	trustedPublicKey string
+	client           *http.Client
+	now              func() time.Time
 }
 
 // New validates all external configuration before it can cause network work.
@@ -31,7 +32,8 @@ func New(config Config) (*Service, error) { //nolint:cyclop // Construction vali
 	app := config.App
 	if !appIDPattern.MatchString(app.ID) || app.Name == "" || !audiencePattern.MatchString(app.Audience) || app.MasterworkName == "" ||
 		app.Legacy > LegacySubtitles ||
-		config.ActivationURL != "" && !ValidEndpoint(config.ActivationURL, true) || config.SupportURL != "" && !ValidEndpoint(config.SupportURL, false) {
+		config.ActivationURL != "" && !ValidEndpoint(config.ActivationURL, true) || config.SupportURL != "" && !ValidEndpoint(config.SupportURL, false) ||
+		config.TrustedPublicKey != "" && !validTrustedPublicKey(config.TrustedPublicKey) {
 		return nil, ErrInvalid
 	}
 	if app.FamilyPatron == "" {
@@ -51,7 +53,12 @@ func New(config Config) (*Service, error) { //nolint:cyclop // Construction vali
 	if config.Now == nil {
 		config.Now = time.Now
 	}
-	return &Service{app: app, endpoint: config.ActivationURL, supportURL: config.SupportURL, client: client, now: config.Now}, nil
+	return &Service{app: app, endpoint: config.ActivationURL, supportURL: config.SupportURL, trustedPublicKey: config.TrustedPublicKey, client: client, now: config.Now}, nil
+}
+
+func validTrustedPublicKey(value string) bool {
+	_, ok := decodeValue(value, 32, 64)
+	return ok
 }
 
 // ActivationAvailable reports whether the user configured the remote adapter.
@@ -125,8 +132,9 @@ func (service *Service) prepareActivation(state State, key string) (State, strin
 	return state, activationID, keyHash, valid
 }
 
-func (service *Service) validateActivationOutput(original, state State, output activationResponse, activationID, keyHash string, recognitionName *string) (State, *Grant, decodedGrant, error) {
-	if !activationIDPattern.MatchString(output.ActivationID) || activationID != "" && output.ActivationID != activationID || !acceptsPublicKey(state, output.PublicKey) {
+func (service *Service) validateActivationOutput(original, state State, output activationResponse, activationID, keyHash string, recognitionName *string) (State, *Grant, decodedGrant, error) { //nolint:cyclop // One atomic response check must reject every invalid grant before state changes.
+	if !activationIDPattern.MatchString(output.ActivationID) || activationID != "" && output.ActivationID != activationID || !acceptsPublicKey(state, output.PublicKey) ||
+		service.trustedPublicKey != "" && subtle.ConstantTimeCompare([]byte(service.trustedPublicKey), []byte(output.PublicKey)) != 1 {
 		return state, nil, decodedGrant{}, invalid("supporter activation returned an invalid response")
 	}
 	state.PublicKey = output.PublicKey
@@ -158,8 +166,9 @@ func (service *Service) applyActivation(original, state State, grant *Grant, dec
 		}
 		state.PatronOrder, state.PatronLevel = grant, max(state.PatronLevel, rank)
 	} else {
-		state.LivingStandard, state.LivingLevel = grant, max(state.LivingLevel, rank)
+		applyRecurring(&state, grant, decoded.certificate)
 	}
+
 	if service.app.TrackActivations {
 		state.Activations = rememberActivation(state.Activations, *grant)
 	}
@@ -186,7 +195,7 @@ func matchesRecognition(certificate Certificate, submitted *string) bool {
 }
 
 func acceptsPublicKey(state State, publicKey string) bool {
-	for _, saved := range []string{state.PublicKey, grantKey(state.PatronOrder), grantKey(state.LivingStandard)} {
+	for _, saved := range []string{state.PublicKey, grantKey(state.PatronOrder), grantKey(state.LivingStandard), grantKey(state.Monthly), grantKey(state.Yearly)} {
 		if saved != "" && subtle.ConstantTimeCompare([]byte(saved), []byte(publicKey)) != 1 {
 			return false
 		}
