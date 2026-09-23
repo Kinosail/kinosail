@@ -8,8 +8,8 @@ import re
 import subprocess
 
 APPS = ("player", "subtitles", "dashboard")
-LANGUAGES = ("go", "javascript-typescript", "python", "actions", "swift")
-FLAGS = (*APPS, "packages", "tooling", "web", "client", "supply",
+LANGUAGES = ("go", "javascript-typescript", "python", "actions")
+FLAGS = (*APPS, "packages", "tooling", "web", "docs", "client", "supply",
          *LANGUAGES,
          *(f"{app}_{kind}" for app in APPS for kind in ("tools", "browsers", "arm")))
 
@@ -27,14 +27,27 @@ def affected(paths):
             raise ValueError("invalid repository path")
     for path in paths:
         parts = PurePosixPath(path).parts
+        if path.startswith(("engineering/documentation/", "apps/player/docs/")):
+            selected["docs"] = True
+            if path.endswith((".js", ".cjs", ".mjs", ".ts", ".tsx", ".html")):
+                selected["javascript-typescript"] = True
+            if path.endswith(".py"):
+                selected["python"] = True
+            if parts[-1] in ("package.json", "package-lock.json", "Gemfile", "Gemfile.lock"):
+                selected["supply"] = True
+            continue
+        if path.startswith("packages/webassets/static/fonts/"):
+            selected["docs"] = True
         # Only prose is exempt. Embedded assets and unfamiliar build inputs run CI.
         if (path in ("README.md", "AGENTS.md")
                 or (path.endswith(".md") and path.startswith(("engineering/", "docs/")))
                 or (len(parts) == 3 and parts[0] == "apps" and parts[-1] in ("README.md", "AGENTS.md", "DESIGN.md", "CONTEXT.md"))
                 or (len(parts) > 3 and parts[0] == "apps" and parts[2] == "docs" and path.endswith(".md"))):
             continue
+        if path == "apps/player/apps/native/AGENTS.md":
+            continue
         if path.startswith("apps/player/apps/native/"):
-            selected["client"] = selected["swift"] = True
+            selected["client"] = True
             selected["supply"] = True
             continue
         if path.startswith("apps/") and len(parts) > 2 and parts[1] in APPS:
@@ -51,7 +64,7 @@ def affected(paths):
                 selected[f"{app}_tools"] = selected[f"{app}_arm"] = True
                 selected["supply"] = True
             if app == "player" and relative == "Makefile":
-                selected["client"] = selected["swift"] = True
+                selected["client"] = True
             if relative.endswith((".js", ".mjs", ".ts", ".tsx", ".html", ".css")):
                 selected[f"{app}_browsers"] = selected["web"] = True
                 selected["javascript-typescript"] = True

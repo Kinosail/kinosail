@@ -216,14 +216,20 @@ def finish_command(args: argparse.Namespace) -> None:
             git(main_path, "fetch", "--quiet", "origin", "main")
         main_head = git(main_path, "rev-parse", "HEAD").stdout.strip()
         remote = git(main_path, "rev-parse", "--verify", "origin/main", check=False)
-        if remote.returncode == 0 and not is_merged(repo, remote.stdout.strip(), main_head):
-            raise GuardError("local main is behind origin/main; reconcile it first")
         task_head = git(path, "rev-parse", "HEAD").stdout.strip()
-        if not is_merged(repo, main_head, task_head):
-            raise GuardError("task branch is not based on current main; rebase it and retry")
+        if remote.returncode == 0 and is_merged(repo, task_head, remote.stdout.strip()):
+            if not is_merged(repo, main_head, remote.stdout.strip()):
+                raise GuardError("local main has unique commits; reconcile it first")
+            target = "origin/main"
+        else:
+            if remote.returncode == 0 and not is_merged(repo, remote.stdout.strip(), main_head):
+                raise GuardError("local main is behind origin/main; reconcile it first")
+            if not is_merged(repo, main_head, task_head):
+                raise GuardError("task branch is not based on current main; rebase it and retry")
+            target = branch
         if not (path / ".gates-disabled").is_file():
             subprocess.run(["make", "-C", str(path), "tooling-check"], check=True)
-        git(main_path, "merge", "--ff-only", branch)
+        git(main_path, "merge", "--ff-only", target)
         os.chdir(main_path)
         git(main_path, "worktree", "remove", str(path))
         lease_path(main_path, path).unlink(missing_ok=True)

@@ -1,5 +1,7 @@
 # Kinosail CI/CD decisions — 2026-09-20
 
+Historical design. The four-workflow reset is in `ci-cd-reset-2026-09-22.md`.
+
 Status: implementation under validation. Hosted results and publication evidence must be appended before calling this delivered.
 
 ## Objective and invariants

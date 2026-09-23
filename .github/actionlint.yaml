@@ -2,6 +2,6 @@
 # Remove this exception when upstream PR #654 ships. test_workflows.py separately
 # requires the exact production concurrency block and rejects other queue keys.
 paths:
-  .github/workflows/delivery.yml:
+  .github/workflows/publish.yml:
     ignore:
       - '^unexpected key "queue" for "concurrency" section\. expected one of "cancel-in-progress", "group"$'

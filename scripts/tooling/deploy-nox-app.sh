@@ -33,6 +33,22 @@ if [[ -z "$sha" ]]; then
 fi
 [[ "$sha" =~ ^[0-9a-f]{40}$ ]] || { printf 'invalid deployment revision: %s\n' "$sha" >&2; exit 2; }
 
+latest="$(git_cmd ls-remote origin refs/heads/main | awk '{print $1}')"
+[[ "$latest" == "$sha" ]] || { printf 'Nox deployment %s is no longer main (%s)\n' "$sha" "$latest" >&2; exit 75; }
+ci_runs="$(gh run list --repo Kinosail/kinosail --workflow ci.yml --commit "$sha" --event push --limit 1 --json databaseId,headSha,status,conclusion)"
+ci_run="$(jq -er --arg sha "$sha" 'if length == 1 and .[0].headSha == $sha and .[0].status == "completed" and .[0].conclusion == "success" then .[0].databaseId else empty end' <<<"$ci_runs")" || {
+  printf 'Waiting for successful main CI at %s\n' "$sha" >&2
+  exit 75
+}
+[[ "$ci_run" =~ ^[1-9][0-9]{0,18}$ ]] || { printf 'invalid main CI run ID\n' >&2; exit 75; }
+ci_jobs="$(gh run view "$ci_run" --repo Kinosail/kinosail --json jobs)"
+publication="$(jq -er --arg name "Publish verified containers / Advance $app production tags" '[.jobs[] | select(.name == $name) | .conclusion] | if length == 0 then "unselected" elif length == 1 and .[0] == "success" then "success" else "invalid" end' <<<"$ci_jobs")" || exit 75
+case "$publication" in
+  success) ;;
+  unselected) printf 'No %s container was published for %s\n' "$app" "$sha"; exit 10 ;;
+  *) printf 'No verified %s production image for %s\n' "$app" "$sha" >&2; exit 75 ;;
+esac
+
 image="$image_repo:nox-${sha:0:12}"
 stable_image="$image_repo:nox-dev"
 tmp=""
@@ -88,11 +104,7 @@ fi
 podman save --format docker-archive "$image" >"$tmp/image.tar"
 # Persistent local evidence belongs to this immutable source revision. Scanner
 # failure or a fixable high/critical finding stops before the remote image load.
-if git_cmd cat-file -e "$sha:.gates-disabled" 2>/dev/null; then
-  printf "Deployment scan gate is paused (.gates-disabled).\n"
-else
-  "$script_dir/scan-deployment-image.sh" "$tmp/image.tar" "$repo/.verification/supply-chain/$app-$sha"
-fi
+"$script_dir/scan-deployment-image.sh" "$tmp/image.tar" "$repo/.verification/supply-chain/$app-$sha"
 ssh -o BatchMode=yes "$host" docker load <"$tmp/image.tar" >/dev/null
 ssh -o BatchMode=yes "$host" bash -s -- "$sha" "$image" "$stable_image" "$service" "$container" "$image_repo" <"$script_dir/deploy-nox-remote.sh"
 

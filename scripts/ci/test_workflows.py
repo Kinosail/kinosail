@@ -10,16 +10,23 @@ WORKFLOWS = ROOT / '.github/workflows'
 class WorkflowSecurityTests(unittest.TestCase):
     def test_ci_cannot_silently_bypass_checks(self):
         self.assertFalse((ROOT / '.gates-disabled').exists())
-        for name in ('quality', 'security', 'player-hygiene', 'subtitles-hygiene', 'dashboard-hygiene'):
-            with self.subTest(workflow=name):
-                source = (WORKFLOWS / f'{name}.yml').read_text()
-                self.assertNotIn('    paths:', source)
-                self.assertNotIn('continue-on-error:', source)
-                self.assertNotIn('enabled=false', source)
-                self.assertIn('    if: always()', source)
-                self.assertIn('python3 scripts/ci/required.py ', source)
-                self.assertIn('uses: ./.github/workflows/changes.yml', source)
-                self.assertIn('needs: [changes,', source)
+        self.assertEqual({path.name for path in WORKFLOWS.glob('*.yml')},
+                         {'ci.yml', 'app.yml', 'publish.yml', 'release.yml'})
+        ci = (WORKFLOWS / 'ci.yml').read_text()
+        app = (WORKFLOWS / 'app.yml').read_text()
+        self.assertEqual(ci.count('run: python3 scripts/ci/affected.py'), 1)
+        for scope in ('Repository', 'Player', 'Subtitles', 'Dashboard', 'Security'):
+            self.assertIn(f'name: {scope} checks', ci)
+        for source in (ci, app):
+            self.assertNotIn('continue-on-error:', source)
+            self.assertNotIn('enabled=false', source)
+            self.assertIn('    if: always()', source)
+            self.assertIn('python3 scripts/ci/required.py ', source)
+        self.assertNotIn('    paths:', ci)
+        self.assertIn('needs: [plan, static, tooling, packages, web, docs]', ci)
+        self.assertIn('needs: [plan, secrets, codeql, supply-chain, findings]', ci)
+        self.assertIn('needs: [static, race, security, tooling, client, system, browser]', app)
+        self.assertNotIn('  validate:', app)
 
     def test_invalid_quality_scope_has_no_side_effects(self):
         import os
@@ -48,38 +55,30 @@ class WorkflowSecurityTests(unittest.TestCase):
                 for action in re.findall(r'uses: (\S+)', source):
                     if not action.startswith('./'):
                         self.assertRegex(action, r'@[0-9a-f]{40}$')
-                if not path.name.endswith('-release.yml'):
+                if path.name != 'release.yml':
                     self.assertNotIn('contents: write', source)
-                    if path.name not in ('quality.yml', 'delivery.yml'):
+                    if path.name not in ('ci.yml', 'publish.yml'):
                         self.assertNotIn('packages: write', source)
-                    if path.name == 'quality.yml':
-                        delivery = source.split('  delivery:\n')[1]
-                        self.assertIn("github.event_name == 'push' && github.ref == 'refs/heads/main'", delivery)
-                        self.assertIn('needs: [changes, required]', delivery)
-                        self.assertNotIn('packages: write', source.split('  delivery:\n')[0])
+                    if path.name == 'ci.yml':
+                        publish = source.split('  publish:\n')[1]
+                        self.assertIn("github.event_name == 'push' && github.ref == 'refs/heads/main'", publish)
+                        self.assertIn('needs: [plan, repository-required, player-required, subtitles-required, dashboard-required, security-required]', publish)
+                        self.assertIn('results: ${{ toJSON(needs) }}', publish)
+                        self.assertNotIn('packages: write', source.split('  publish:\n')[0])
 
     def test_release_requires_main_quality_and_security_before_promotion(self):
-        for app in ('player', 'subtitles', 'dashboard'):
-            with self.subTest(app=app):
-                source = (WORKFLOWS / f'{app}-release.yml').read_text()
-                self.assertIn('needs: quality', source)
-                self.assertIn('test ! -e ../../.gates-disabled', source)
-                self.assertIn('git merge-base --is-ancestor "$commit" origin/main', source)
-                self.assertIn('security.yml; do', source)
-                self.assertIn('needs: [quality, images]', source)
-                self.assertIn('runner: ubuntu-24.04-arm', source)
-                self.assertNotIn('setup-qemu-action', source)
-                self.assertIn('sort == ["amd64", "arm64"]', source)
-                self.assertNotIn("if: hashFiles('.gates-disabled')", source)
-                candidate = source.index(f'tags: ghcr.io/kinosail/kinosail-{app}:candidate-')
-                scan = source.index('name: Scan candidate')
-                sign = source.index('run: cosign sign --yes')
-                promote = source.index('name: Promote verified image')
-                release = source.index('name: Publish ' + app.title() + ' release')
-                self.assertLess(candidate, scan)
-                self.assertLess(scan, sign)
-                self.assertLess(sign, promote)
-                self.assertLess(promote, release)
+        source = (WORKFLOWS / 'release.yml').read_text()
+        self.assertIn('tags: ["player-v*", "subtitles-v*", "dashboard-v*"]', source)
+        self.assertIn('git merge-base --is-ancestor "$commit" origin/main', source)
+        self.assertIn('--workflow ci.yml --commit "$commit" --event push', source)
+        self.assertIn('needs: [preflight, images]', source)
+        self.assertIn('runner: ubuntu-24.04-arm', source)
+        self.assertNotIn('setup-qemu-action', source)
+        self.assertIn('sort == ["amd64", "arm64"]', source)
+        self.assertNotIn("if: hashFiles('.gates-disabled')", source)
+        self.assertLess(source.index('name: Test production image by digest'), source.index('name: Export verified digest'))
+        self.assertLess(source.index('name: Sign the version image'), source.index('name: Promote exact version tag'))
+        self.assertLess(source.index('name: Promote exact version tag'), source.index('name: Create GitHub release'))
 
 
 if __name__ == '__main__':

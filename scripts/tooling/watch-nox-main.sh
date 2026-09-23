@@ -39,6 +39,10 @@ while true; do
       printf '%s' "$sha" >"$state"
     else
       deploy_status=$?
+      if (( deploy_status == 10 )); then
+        printf '%s' "$sha" >"$state"
+        deploy_status=0
+      fi
     fi
   fi
   [[ "${2:-}" == --once ]] && exit "$deploy_status"

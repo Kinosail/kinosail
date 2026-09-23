@@ -1,0 +1,420 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  merge_group:
+  schedule:
+    - cron: "17 7 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.event_name == 'pull_request' && github.ref || github.run_id }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  plan:
+    name: Select affected components
+    runs-on: ubuntu-24.04
+    timeout-minutes: 3
+    outputs:
+      plan: ${{ steps.select.outputs.plan }}
+      languages: ${{ steps.select.outputs.languages }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - run: test ! -e .gates-disabled
+      - id: select
+        run: python3 scripts/ci/affected.py
+
+  static:
+    name: Repository policy
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - run: test ! -e .gates-disabled
+      - run: make max-loc
+      - run: python3 scripts/quality/check-dependency-integrity.py --browser-only
+      - run: python3 -m unittest discover -s scripts/ci -p 'test_*.py'
+      - run: ./scripts/ci/validate-workflows.sh
+      - run: ./scripts/ci/check-source-tools.sh
+
+  tooling:
+    needs: plan
+    if: fromJSON(needs.plan.outputs.plan).tooling
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e
+        with:
+          go-version-file: go.work
+          cache-dependency-path: "**/go.sum"
+      - uses: pnpm/setup@fbda4c85fc2e1e08721cd8763afea8f48d60f024
+        with:
+          version: 11.22.0
+          install: false
+          node-version-file: false
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020
+        with:
+          node-version: 26
+          package-manager-cache: false
+      - run: make tooling-check
+
+  packages:
+    needs: plan
+    if: fromJSON(needs.plan.outputs.plan).packages
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e
+        with:
+          go-version-file: packages/go.mod
+          cache-dependency-path: "**/go.sum"
+      - run: sudo apt-get update && sudo apt-get install -y libarchive-tools
+      - uses: golangci/golangci-lint-action@ba0d7d2ec06a0ea1cb5fa41b2e4a3ab91d21278a
+        with:
+          version: v2.13.1
+          working-directory: packages
+          args: --timeout=5m --new-from-rev=${{ github.event.pull_request.base.sha || github.event.before || 'HEAD~1' }}
+      - run: make -C packages tidy-check
+      - run: ./scripts/ci/test-go.sh packages
+      - run: go -C packages run golang.org/x/vuln/cmd/govulncheck@v1.7.0 ./...
+      - run: go -C apps/subtitles mod download && python3 scripts/quality/check-dependency-integrity.py
+
+  web:
+    needs: plan
+    if: fromJSON(needs.plan.outputs.plan).web
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - uses: pnpm/setup@fbda4c85fc2e1e08721cd8763afea8f48d60f024
+        with:
+          version: 11.22.0
+          install: false
+          node-version-file: false
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020
+        with:
+          node-version: 26
+          package-manager-cache: false
+      - run: pnpm --dir scripts/quality install --frozen-lockfile
+      - run: ./scripts/quality/check-script-lint.sh
+
+  docs:
+    needs: plan
+    if: fromJSON(needs.plan.outputs.plan).docs
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - uses: ruby/setup-ruby@a0102e0972be65f351c307e2d64b9314a57c8073
+        with:
+          ruby-version: '3.4'
+          bundler-cache: true
+          working-directory: engineering/documentation
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020
+        with:
+          node-version: 26
+          package-manager-cache: false
+      - run: npm ci --prefix engineering/documentation --ignore-scripts
+      - run: npm test --prefix engineering/documentation
+      - run: python3 -m unittest discover -s engineering/documentation -p 'test_*.py'
+      - run: python3 engineering/documentation/build.py --output "$RUNNER_TEMP/kinosail-docs"
+      - run: python3 engineering/documentation/check.py "$RUNNER_TEMP/kinosail-docs"
+      - if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9
+        with:
+          path: ${{ runner.temp }}/kinosail-docs
+
+  repository-required:
+    name: Repository checks
+    if: always()
+    needs: [plan, static, tooling, packages, web, docs]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 2
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - env:
+          RESULTS: ${{ toJSON(needs) }}
+        run: python3 scripts/ci/required.py repository
+
+  player:
+    needs: plan
+    if: fromJSON(needs.plan.outputs.plan).player || fromJSON(needs.plan.outputs.plan).client
+    uses: ./.github/workflows/app.yml
+    permissions:
+      contents: read
+      pull-requests: read
+    with:
+      app: player
+      plan: ${{ needs.plan.outputs.plan }}
+
+  player-required:
+    name: Player checks
+    if: always()
+    needs: [plan, player]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 2
+    steps:
+      - env:
+          SELECTION: ${{ needs.plan.result }}
+          SELECTED: ${{ fromJSON(needs.plan.outputs.plan).player || fromJSON(needs.plan.outputs.plan).client }}
+          RESULT: ${{ needs.player.result }}
+        run: test "$SELECTION" = success && { if test "$SELECTED" = true; then test "$RESULT" = success; else test "$RESULT" = skipped; fi; }
+
+  subtitles:
+    needs: plan
+    if: fromJSON(needs.plan.outputs.plan).subtitles
+    uses: ./.github/workflows/app.yml
+    permissions:
+      contents: read
+      pull-requests: read
+    with:
+      app: subtitles
+      plan: ${{ needs.plan.outputs.plan }}
+
+  subtitles-required:
+    name: Subtitles checks
+    if: always()
+    needs: [plan, subtitles]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 2
+    steps:
+      - env:
+          SELECTION: ${{ needs.plan.result }}
+          SELECTED: ${{ fromJSON(needs.plan.outputs.plan).subtitles }}
+          RESULT: ${{ needs.subtitles.result }}
+        run: test "$SELECTION" = success && { if test "$SELECTED" = true; then test "$RESULT" = success; else test "$RESULT" = skipped; fi; }
+
+  dashboard:
+    needs: plan
+    if: fromJSON(needs.plan.outputs.plan).dashboard
+    uses: ./.github/workflows/app.yml
+    permissions:
+      contents: read
+      pull-requests: read
+    with:
+      app: dashboard
+      plan: ${{ needs.plan.outputs.plan }}
+
+  dashboard-required:
+    name: Dashboard checks
+    if: always()
+    needs: [plan, dashboard]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 2
+    steps:
+      - env:
+          SELECTION: ${{ needs.plan.result }}
+          SELECTED: ${{ fromJSON(needs.plan.outputs.plan).dashboard }}
+          RESULT: ${{ needs.dashboard.result }}
+        run: test "$SELECTION" = success && { if test "$SELECTED" = true; then test "$RESULT" = success; else test "$RESULT" = skipped; fi; }
+
+  secrets:
+    name: Changed-commit secret scan
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e
+        with:
+          go-version-file: go.work
+          cache-dependency-path: "**/go.sum"
+      - run: go install github.com/zricethezav/gitleaks/v8@v8.30.1
+      - run: python3 scripts/ci/secrets.py
+
+  codeql:
+    needs: plan
+    if: needs.plan.outputs.languages != '[]'
+    name: CodeQL (${{ matrix.language }})
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    permissions:
+      contents: read
+      security-events: write
+    strategy:
+      fail-fast: false
+      matrix:
+        language: ${{ fromJSON(needs.plan.outputs.languages) }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e
+        if: matrix.language == 'go'
+        with:
+          go-version-file: go.work
+          cache-dependency-path: "**/go.sum"
+      - if: matrix.language == 'javascript-typescript'
+        run: |
+          node scripts/ci/prepare-codeql-js.mjs
+          echo 'CODEQL_ACTION_DIFF_INFORMED_QUERIES=false' >> "$GITHUB_ENV"
+          echo 'CODEQL_OVERLAY_DATABASE_MODE=none' >> "$GITHUB_ENV"
+      - uses: github/codeql-action/init@1c5b675653bb5c22dbe9b12b556ec555138e09fd
+        with:
+          languages: ${{ matrix.language }}
+          config-file: .github/codeql-config.yml
+          build-mode: ${{ matrix.language == 'go' && 'manual' || 'none' }}
+          queries: security-extended
+      - if: matrix.language == 'go'
+        run: go build ./apps/player/... ./apps/subtitles/... ./apps/dashboard/... ./packages/...
+      - uses: github/codeql-action/analyze@1c5b675653bb5c22dbe9b12b556ec555138e09fd
+
+  supply-chain:
+    needs: plan
+    if: fromJSON(needs.plan.outputs.plan).supply
+    name: Supply chain security
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25
+        with:
+          scan-type: fs
+          scanners: vuln,misconfig
+          severity: HIGH,CRITICAL
+          exit-code: "1"
+          ignore-unfixed: true
+      - if: github.event_name == 'pull_request'
+        uses: actions/dependency-review-action@a1d282b36b6f3519aa1f3fc636f609c47dddb294
+
+  findings:
+    needs: [plan, codeql]
+    if: needs.plan.outputs.languages != '[]'
+    name: CodeQL findings policy
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+      security-events: read
+    steps:
+      - env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh api --method GET --paginate --slurp "repos/$GITHUB_REPOSITORY/code-scanning/alerts" \
+            -f state=open -f ref="$GITHUB_REF" -f tool_name=CodeQL -f per_page=100 > alerts.json
+          jq -e '[.[][] | select(.rule.security_severity_level != null)] | length == 0' alerts.json
+
+  security-required:
+    name: Security checks
+    if: always()
+    needs: [plan, secrets, codeql, supply-chain, findings]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 2
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - env:
+          RESULTS: ${{ toJSON(needs) }}
+        run: python3 scripts/ci/required.py security
+
+  publish:
+    name: Publish verified containers
+    needs: [plan, repository-required, player-required, subtitles-required, dashboard-required, security-required]
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main' && (fromJSON(needs.plan.outputs.plan).player || fromJSON(needs.plan.outputs.plan).subtitles || fromJSON(needs.plan.outputs.plan).dashboard)
+    uses: ./.github/workflows/publish.yml
+    permissions:
+      contents: read
+      packages: write
+      id-token: write
+      attestations: write
+    with:
+      plan: ${{ needs.plan.outputs.plan }}
+      results: ${{ toJSON(needs) }}
+
+  publish-docs:
+    name: Publish verified documentation
+    needs: [plan, docs, repository-required, player-required, subtitles-required, dashboard-required, security-required]
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main' && fromJSON(needs.plan.outputs.plan).docs
+    runs-on: ubuntu-24.04
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@368f82528645a54fb793d4d04e342629a3f51346
+
+  diagnostics:
+    if: github.event_name == 'schedule'
+    name: Deep quality metrics
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e
+        with:
+          go-version-file: go.work
+          cache-dependency-path: "**/go.sum"
+      - uses: pnpm/setup@fbda4c85fc2e1e08721cd8763afea8f48d60f024
+        with:
+          version: 11.22.0
+          install: false
+          node-version-file: false
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020
+        with:
+          node-version: 26
+          package-manager-cache: false
+      - run: go -C apps/subtitles mod download
+      - run: go install github.com/golangci/golangci-lint/v2/cmd/golangci-lint@v2.13.1
+      - run: ./scripts/quality/check-static.sh
+
+  swift-analysis:
+    if: github.event_name == 'schedule'
+    name: Swift code scanning
+    runs-on: macos-latest
+    timeout-minutes: 90
+    permissions:
+      contents: read
+      security-events: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - uses: github/codeql-action/init@1c5b675653bb5c22dbe9b12b556ec555138e09fd
+        with:
+          languages: swift
+          config-file: .github/codeql-config.yml
+          build-mode: manual
+          queries: security-extended
+      - run: |
+          printf '%s\n' 'ARCHS = arm64' 'ONLY_ACTIVE_ARCH = YES' \
+            'COMPILATION_CACHE_ENABLE_CACHING = NO' 'SWIFT_ENABLE_COMPILE_CACHE = NO' \
+            'SWIFT_USE_INTEGRATED_DRIVER = NO' 'CODE_SIGNING_ALLOWED = NO' \
+            'CODE_SIGNING_REQUIRED = NO' > "$RUNNER_TEMP/codeql.xcconfig"
+          XCODE_XCCONFIG_FILE="$RUNNER_TEMP/codeql.xcconfig" make -C apps/player client-check
+      - uses: github/codeql-action/analyze@1c5b675653bb5c22dbe9b12b556ec555138e09fd

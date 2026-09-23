@@ -7,7 +7,7 @@ import unittest
 
 ROOT = Path(__file__).resolve().parents[2]
 WORKFLOWS = ROOT / '.github/workflows'
-IDENTITY = 'https://github.com/Kinosail/kinosail/.github/workflows/delivery.yml@refs/heads/main'
+IDENTITY = 'https://github.com/Kinosail/kinosail/.github/workflows/publish.yml@refs/heads/main'
 QUEUE = '''    concurrency:
       group: container-promotion-${{ matrix.app }}
       cancel-in-progress: false
@@ -17,28 +17,26 @@ QUEUE = '''    concurrency:
 
 class RuntimeContracts(unittest.TestCase):
     def test_promotion_preserves_pending_jobs_and_verifies_consumer_identity(self):
-        source = (WORKFLOWS / 'delivery.yml').read_text()
+        source = (WORKFLOWS / 'publish.yml').read_text()
         self.assertIn(QUEUE, source)
         self.assertEqual([line for line in source.splitlines() if line.strip().startswith('queue:')], ['      queue: max'])
         verify = source.index('cosign verify --certificate-identity ' + IDENTITY)
         self.assertLess(source.index('cosign sign --yes'), verify)
         self.assertLess(verify, source.index('name: Publish deployable commit tag'))
         self.assertIn('sort == ["amd64", "arm64"]', source)
-        for app in ('player', 'subtitles', 'dashboard'):
-            release = (WORKFLOWS / f'{app}-release.yml').read_text()
-            self.assertIn('type=raw,value=latest', release)
+        release = (WORKFLOWS / 'release.yml').read_text()
+        self.assertNotIn('type=raw,value=latest', release)
         for app in ('player', 'subtitles'):
             installer = (ROOT / f'apps/{app}/scripts/install.sh').read_text()
             self.assertIn('cosign verify --certificate-identity ' + IDENTITY, installer)
-            self.assertIn(f'/{app}-release.yml@refs/tags/{app}-v$version', installer)
+            self.assertIn(f'/release.yml@refs/tags/{app}-v$version', installer)
 
     def test_browser_selection_cannot_succeed_without_running_a_project(self):
-        workflow = (WORKFLOWS / 'player-hygiene.yml').read_text()
-        self.assertIn(".player_browsers && 'full' || ''", workflow)
+        workflow = (WORKFLOWS / 'app.yml').read_text()
+        self.assertIn("fromJSON(inputs.plan)[format('{0}_browsers', inputs.app)] && 'full' || ''", workflow)
         source = (ROOT / 'apps/player/scripts/test-container.sh').read_text()
         self.assertNotIn('done < <(./scripts/browser-projects.sh)', source)
-        dashboard = (WORKFLOWS / 'dashboard-hygiene.yml').read_text()
-        self.assertIn('pnpm --dir apps/dashboard/e2e exec playwright test "${args[@]}"', dashboard)
+        self.assertIn('pnpm --dir apps/dashboard/e2e exec playwright test "${args[@]}"', workflow)
         with tempfile.TemporaryDirectory() as directory:
             marker = Path(directory) / 'effects'
             for tool in ('docker', 'podman', 'mktemp'):
@@ -57,7 +55,7 @@ class RuntimeContracts(unittest.TestCase):
                 self.assertEqual(result.stdout, expected)
 
     def test_browser_integrity_runs_even_without_go_jobs(self):
-        source = (WORKFLOWS / 'quality.yml').read_text().split('  web:')[0]
+        source = (WORKFLOWS / 'ci.yml').read_text().split('  web:')[0]
         self.assertIn('python3 scripts/quality/check-dependency-integrity.py --browser-only', source)
 
 

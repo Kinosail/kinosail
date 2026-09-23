@@ -14,6 +14,10 @@ printf '%s\n' '#!/usr/bin/env bash' \
   'exit 0' >"$tmp/bin/git"
 printf '%s\n' '#!/usr/bin/env bash' 'printf "%s|running|healthy\n" "$KINOSAIL_TEST_SHA"' >"$tmp/bin/ssh"
 printf '%s\n' '#!/usr/bin/env bash' 'printf "%s\n" "$*" >>"$KINOSAIL_TEST_PODMAN_LOG"' 'exit 99' >"$tmp/bin/podman"
+printf '%s\n' '#!/usr/bin/env bash' \
+  'if [[ " $* " == *" run list "* ]]; then printf "[{\"databaseId\":123,\"headSha\":\"%s\",\"status\":\"completed\",\"conclusion\":\"%s\"}]\n" "$KINOSAIL_TEST_SHA" "${KINOSAIL_TEST_CI_CONCLUSION:-success}"; exit; fi' \
+  'if [[ " $* " == *" run view "* ]]; then if [[ "${KINOSAIL_TEST_PUBLISHED:-1}" == 1 ]]; then printf "{\"jobs\":[{\"name\":\"Publish verified containers / Advance player production tags\",\"conclusion\":\"success\"},{\"name\":\"Publish verified containers / Advance subtitles production tags\",\"conclusion\":\"success\"},{\"name\":\"Publish verified containers / Advance dashboard production tags\",\"conclusion\":\"success\"}]}\n"; else printf "{\"jobs\":[]}\n"; fi; exit; fi' \
+  'exit 99' >"$tmp/bin/gh"
 chmod +x "$tmp/bin/"*
 
 reject() {
@@ -67,6 +71,18 @@ for app in player subtitles dashboard; do
     "$install_root/watch-nox-main.sh" "$app" --once >/dev/null
   [[ "$(cat "$cache/deployed")" == "$sha" ]]
   grep -Fxq "machine start" "$tmp/podman-$app.log"
+
+  rm "$cache/deployed"
+  HOME="$home" PATH="$tmp/bin:$PATH" KINOSAIL_TEST_SHA="$sha" KINOSAIL_TEST_PUBLISHED=0 \
+    KINOSAIL_TEST_PODMAN_LOG="$tmp/podman-$app.log" "$install_root/watch-nox-main.sh" "$app" --once >/dev/null
+  [[ "$(cat "$cache/deployed")" == "$sha" ]]
+
+  rm "$cache/deployed"
+  if HOME="$home" PATH="$tmp/bin:$PATH" KINOSAIL_TEST_SHA="$sha" KINOSAIL_TEST_CI_CONCLUSION=failure \
+      KINOSAIL_TEST_PODMAN_LOG="$tmp/podman-$app.log" "$install_root/watch-nox-main.sh" "$app" --once >/dev/null 2>&1; then
+    echo 'watcher accepted failed CI' >&2; exit 1
+  fi
+  [[ ! -e "$cache/deployed" ]]
 done
 
 printf 'Nox auto-deploy install tests passed\n'

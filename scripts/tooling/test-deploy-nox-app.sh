@@ -46,8 +46,7 @@ mkdir "$tmp/positive-bin"
 tar -cf "$tmp/empty.tar" --files-from /dev/null
 printf '%s\n' '#!/usr/bin/env bash' \
   'printf "%s\n" "$*" >>"$KINOSAIL_TEST_GIT_LOG"' \
-  'if [[ " $* " == *" ls-remote "* ]]; then printf "%s refs/heads/main\n" "$KINOSAIL_TEST_SHA"; exit; fi' \
-  'if [[ " $* " == *" cat-file "* && "$*" == *":.gates-disabled" ]]; then [[ "${KINOSAIL_TEST_PAUSED:-0}" == 1 ]]; exit; fi' \
+  'if [[ " $* " == *" ls-remote "* ]]; then printf "%s refs/heads/main\n" "${KINOSAIL_TEST_REMOTE_SHA:-$KINOSAIL_TEST_SHA}"; exit; fi' \
   'if [[ " $* " == *" cat-file "* ]]; then [[ "$KINOSAIL_TEST_SHARED" == 1 ]]; exit; fi' \
   'if [[ " $* " == *" archive "* ]]; then exec /bin/cat "$KINOSAIL_TEST_ARCHIVE"; fi' \
   'exit 0' >"$tmp/positive-bin/git"
@@ -64,13 +63,19 @@ printf '%s\n' '#!/usr/bin/env bash' \
   'exit 0' >"$tmp/positive-bin/podman"
 printf '%s\n' '#!/usr/bin/env bash' 'exit "${KINOSAIL_TEST_SCAN_FAIL:-0}"' >"$tmp/positive-bin/trivy"
 printf '%s\n' '#!/usr/bin/env bash' 'exit 0' >"$tmp/positive-bin/syft"
+printf '%s\n' '#!/usr/bin/env bash' \
+  'if [[ " $* " == *" run list "* && ${KINOSAIL_TEST_RUNS_JSON+x} ]]; then printf "%s\n" "$KINOSAIL_TEST_RUNS_JSON"; exit; fi' \
+  'if [[ " $* " == *" run list "* ]]; then printf "[{\"databaseId\":123,\"headSha\":\"%s\",\"status\":\"completed\",\"conclusion\":\"%s\"}]\n" "$KINOSAIL_TEST_SHA" "${KINOSAIL_TEST_CI_CONCLUSION:-success}"; exit; fi' \
+  'if [[ " $* " == *" run view "* && ${KINOSAIL_TEST_JOBS_JSON+x} ]]; then printf "%s\n" "$KINOSAIL_TEST_JOBS_JSON"; exit; fi' \
+  'if [[ " $* " == *" run view "* ]]; then if [[ "${KINOSAIL_TEST_PUBLISHED:-1}" == 1 ]]; then printf "{\"jobs\":[{\"name\":\"Publish verified containers / Advance %s production tags\",\"conclusion\":\"success\"}]}\n" "$KINOSAIL_TEST_APP"; else printf "{\"jobs\":[]}\n"; fi; exit; fi' \
+  'exit 99' >"$tmp/positive-bin/gh"
 chmod +x "$tmp/positive-bin/"*
 
 positive() {
   local app="$1" git_variable="$2" shared="$3"
   PATH="$tmp/positive-bin:$PATH" KINOSAIL_TEST_ARCHIVE="$tmp/empty.tar" \
     KINOSAIL_TEST_GIT_LOG="$tmp/git.log" KINOSAIL_TEST_PODMAN_LOG="$tmp/podman.log" \
-    KINOSAIL_TEST_SHARED="$shared" KINOSAIL_TEST_SHA="$sha" KINOSAIL_TEST_SSH_LOG="$tmp/ssh.log" \
+    KINOSAIL_TEST_SHARED="$shared" KINOSAIL_TEST_SHA="$sha" KINOSAIL_TEST_APP="$app" KINOSAIL_TEST_SSH_LOG="$tmp/ssh.log" \
     env "$git_variable=$tmp/repo.git" "$tool" "$app" "$sha" >/dev/null
 }
 
@@ -97,10 +102,30 @@ fi
 if grep -Eq 'docker load|bash -s --' "$tmp/ssh.log"; then
   echo 'scanner rejection reached deployment' >&2; exit 1
 fi
-# A paused revision bypasses even a rejecting scanner and reaches deployment.
+# A paused marker cannot bypass the deployment scanner.
 : >"$tmp/ssh.log"
-KINOSAIL_TEST_PAUSED=1 KINOSAIL_TEST_SCAN_FAIL=1 positive player KINOSAIL_DEPLOY_GIT_DIR 1
-grep -Fq 'docker load' "$tmp/ssh.log"
+if KINOSAIL_TEST_PAUSED=1 KINOSAIL_TEST_SCAN_FAIL=1 positive player KINOSAIL_DEPLOY_GIT_DIR 1; then
+  echo 'paused revision bypassed deployment scanner' >&2; exit 1
+fi
+if grep -Fq 'docker load' "$tmp/ssh.log"; then
+  echo 'paused revision reached deployment' >&2; exit 1
+fi
+
+for condition in failed-ci pending-ci missing-ci wrong-sha malformed-ci unpublished duplicate-publication stale; do
+  : >"$tmp/ssh.log"; : >"$tmp/podman.log"
+  case "$condition" in
+    failed-ci) KINOSAIL_TEST_CI_CONCLUSION=failure positive player KINOSAIL_DEPLOY_GIT_DIR 1 && exit 1 || status=$? ;;
+    pending-ci) KINOSAIL_TEST_RUNS_JSON="[{\"databaseId\":123,\"headSha\":\"$sha\",\"status\":\"in_progress\",\"conclusion\":null}]" positive player KINOSAIL_DEPLOY_GIT_DIR 1 && exit 1 || status=$? ;;
+    missing-ci) KINOSAIL_TEST_RUNS_JSON='[]' positive player KINOSAIL_DEPLOY_GIT_DIR 1 && exit 1 || status=$? ;;
+    wrong-sha) KINOSAIL_TEST_RUNS_JSON='[{"databaseId":123,"headSha":"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa","status":"completed","conclusion":"success"}]' positive player KINOSAIL_DEPLOY_GIT_DIR 1 && exit 1 || status=$? ;;
+    malformed-ci) KINOSAIL_TEST_RUNS_JSON='{' positive player KINOSAIL_DEPLOY_GIT_DIR 1 && exit 1 || status=$? ;;
+    unpublished) KINOSAIL_TEST_PUBLISHED=0 positive player KINOSAIL_DEPLOY_GIT_DIR 1 && exit 1 || status=$? ;;
+    duplicate-publication) KINOSAIL_TEST_JOBS_JSON='{"jobs":[{"name":"Publish verified containers / Advance player production tags","conclusion":"success"},{"name":"Publish verified containers / Advance player production tags","conclusion":"success"}]}' positive player KINOSAIL_DEPLOY_GIT_DIR 1 && exit 1 || status=$? ;;
+    stale) KINOSAIL_TEST_REMOTE_SHA=aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa positive player KINOSAIL_DEPLOY_GIT_DIR 1 && exit 1 || status=$? ;;
+  esac
+  [[ "$status" == "$(if [[ "$condition" == unpublished ]]; then printf 10; else printf 75; fi)" ]]
+  [[ ! -s "$tmp/podman.log" && ! -s "$tmp/ssh.log" ]] || { echo "$condition caused a deployment side effect" >&2; exit 1; }
+done
 printf 'Nox deployment input and scan-gate tests passed\n'
 
 # Only a missing cached layer triggers a cache-free rebuild.
