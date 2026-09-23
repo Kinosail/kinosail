@@ -18,7 +18,7 @@ The Xcode synchronized groups include new Swift files automatically. `Kinosail-i
 | --- | --- |
 | Session | Manual Server address, bounded Bonjour discovery, local QR generation, six-digit Quick Connect, cancellation/expiry, device approval, Keychain restoration and sign-out. Cached viewer identity permits access to existing downloads when the Server is unreachable. |
 | Library | Home, Continue watching, recent media, search, filters, sorting, paging, letter jumps, details, My List, collections, shows/seasons, albums and music queues. |
-| Playback | Native AVKit controls, capability hints from Apple APIs, direct playback first, Server-compatible HLS after supported format failures, canonical timeline seeking, chapters, markers, next episode, speed and track selection. |
+| Playback | Native AVKit controls, capability hints from Apple APIs, direct playback first, Server-compatible HLS after supported format failures, opt-in dialog boost and loudness normalization through effect-specific compatible streams, canonical timeline seeking, chapters, markers, next episode, speed and track selection. |
 | Audio | Album/track queues, shuffle/repeat, sleep timer, mini player, background audio, Now Playing, remote commands, interruption and route-change handling. |
 | Subtitles | Embedded native tracks plus bounded external WebVTT captions rendered as plain text. Language and title preferences are applied. External captions appear in the open app, not system Picture in Picture. |
 | Progress | Viewer-scoped protected journal, local-first writes, Server compare-and-set synchronization and explicit conflict resolution. Bookmarks support playback and reading positions. |
@@ -51,7 +51,7 @@ Reading resources are restricted to the active book. Each chapter has request, c
 - Google Cast has no native sender SDK in these targets and is not offered in the UI. Its existing Server wire protocol remains represented by the validated casting contract.
 - Downloads and book reading are iPhone/iPad features. Apple TV uses Server streaming.
 - Original media support is determined by AVFoundation and actual device capabilities. Unsupported originals need a compatible Server stream/download. Codec hints and simulator playback do not certify every codec, HDR profile, audio layout or receiver.
-- Legacy night-mode, dialogue-boost and volume-boost preferences are preserved by the Server contract; the new apps do not expose or claim to apply those effects.
+- Boost Dialog and Normalize Loudness are profile or title preferences backed by effect-specific Server streams. Enabling either intentionally converts audio and therefore requires transcoding permission and a Server connection; downloaded files retain their existing audio. The legacy volume-boost value remains preserved but is not exposed or applied.
 - Observed smart-download completion events are persisted per Viewer Profile. Watched episodes remain until requested replacements are ready; events never observed by the app cannot be reconstructed.
 - External captions do not appear in system Picture in Picture. Reader resources and artwork are not downloaded for offline use.
 

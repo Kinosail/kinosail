@@ -89,6 +89,9 @@ func validHLSRecipeBounds(recipe HLSRecipe, sidecarCount int) bool { //nolint:cy
 	if !oneOf(recipe.Mode, "remux", "audio-transcode", "transcode") {
 		return false
 	}
+	if (recipe.DialogueBoost || recipe.NormalizeLoudness) && recipe.Mode == "remux" {
+		return false
+	}
 
 	return true
 }

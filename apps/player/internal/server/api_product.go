@@ -3,6 +3,7 @@ package server
 import (
 	"context"
 	_ "embed"
+	"errors"
 	"net/http"
 	"net/url"
 	"strconv"
@@ -125,6 +126,15 @@ func apiPlaybackInfo(api apiServices) http.HandlerFunc {
 		media, viewer := api.probe.inspect(request.Context(), item), currentViewer(request)
 		canStream, canTranscode := viewer.Permits("stream", true), (item.Kind == "video" || item.Kind == "audio" || item.Kind == "audiobook") && viewer.Permits("stream", viewer.Owner || viewer.Transcode)
 		facts := mediaFactsFor(item, media)
+		preferences := defaultMediaPreferences().Playback
+		if api.experience != nil {
+			preferences = api.experience.playback(viewer.ID, item)
+		}
+		effects := (preferences.DialogueBoost || preferences.NightMode) && len(facts.Audio) > 0
+		if effects && !canTranscode {
+			apiError(writer, errors.New("audio enhancements require transcoding permission"), http.StatusForbidden)
+			return
+		}
 		intent, policy := playbackModeIntent(api.settings), viewerPlaybackPolicy(viewer)
 		policy.AllowTranscode = policy.AllowTranscode && !intent.ForceDirect
 
@@ -132,7 +142,7 @@ func apiPlaybackInfo(api apiServices) http.HandlerFunc {
 		result := apiPlayback{Plan: plan, Summary: media.Summary, Duration: media.Duration, Start: api.progress.Get(request, item.ID).Seconds, Audio: apiAudioSources(item.ID, media.Audio, canTranscode), Chapters: media.Chapters, Markers: media.Markers, AutoSkip: automaticSkipSelection(media.Markers, api.settings.autoSkip()), Next: autoNext(request, api.settings, api.index, item), ReplayGain: apiReplayGainFor(media.ReplayGain)}
 		result.Media = facts
 		sharedplayback.ApplyAPIPlaybackTimeline(&result, plan, result.Start, media.Duration, media.Chapters, media.Markers, api.settings.autoSkip(), result.AutoSkip, func() string { return recipeFor(plan).token() })
-		api.applyPlaybackSources(&result, item, media, viewer, facts, client, plan, canStream, canTranscode)
+		api.applyPlaybackSources(&result, item, media, viewer, facts, client, plan, preferences, canStream, canTranscode)
 		if result.Download != "" {
 			result.DownloadNext = nextEpisode(request, api.index, item)
 		}
@@ -140,8 +150,9 @@ func apiPlaybackInfo(api apiServices) http.HandlerFunc {
 	}
 }
 
-func (api apiServices) applyPlaybackSources(result *apiPlayback, item library.Item, media probeResult, viewer viewerProfile, facts MediaFacts, client ClientCapabilities, plan PlaybackPlan, canStream, canTranscode bool) { //nolint:cyclop // Independent source capabilities remain below the repository complexity ceiling.
-	if canStream && plan.MarkerMode != "server" {
+func (api apiServices) applyPlaybackSources(result *apiPlayback, item library.Item, media probeResult, viewer viewerProfile, facts MediaFacts, client ClientCapabilities, plan PlaybackPlan, preferences playbackPreferences, canStream, canTranscode bool) { //nolint:cyclop // Independent source capabilities remain below the repository complexity ceiling.
+	effects := (preferences.DialogueBoost || preferences.NightMode) && len(facts.Audio) > 0
+	if canStream && plan.MarkerMode != "server" && !effects {
 		result.DirectAllowed = true
 		result.Direct = "/media/" + item.ID
 		result.DirectType = directMediaType(item.Path, facts)
@@ -154,7 +165,7 @@ func (api apiServices) applyPlaybackSources(result *apiPlayback, item library.It
 		}
 	}
 	if canTranscode {
-		api.applyCompatiblePlaybackSource(result, item.ID, media, viewer, facts, client, plan)
+		api.applyCompatiblePlaybackSource(result, item.ID, media, viewer, facts, client, plan, preferences)
 	}
 	if viewer.Permits("download", viewer.Owner || viewer.Downloads) {
 		result.Download = "/download/" + item.ID
@@ -228,20 +239,23 @@ func (service productMetadata) Fetch(ctx context.Context, item library.Item) err
 	return service.store.fetch(ctx, item)
 }
 
-func (api apiServices) applyCompatiblePlaybackSource(result *apiPlayback, itemID string, media probeResult, viewer viewerProfile, facts MediaFacts, client ClientCapabilities, plan PlaybackPlan) {
+func (api apiServices) applyCompatiblePlaybackSource(result *apiPlayback, itemID string, media probeResult, viewer viewerProfile, facts MediaFacts, client ClientCapabilities, plan PlaybackPlan, preferences playbackPreferences) {
 	compatible := playbackWithAutomaticSkip(facts, client, viewerPlaybackPolicy(viewer), NetworkIntent{PreferCompatibility: true}, media.Markers, api.settings.autoSkip())
 	if plan.MarkerMode == "server" && plan.Mode != "transcode" {
 		compatible = plan
 	}
+	compatible, effects := audioEnhancedPlan(compatible, preferences, len(facts.Audio) > 0)
 	if compatible.Allowed && compatible.Mode != "direct" {
+		recipe := audioEnhancedRecipe(compatible, preferences, effects)
 		result.CompatibleDuration = media.Duration
 		if compatible.MarkerMode == "server" {
 			result.CompatibleDuration = compatible.Timeline.Duration
-			result.CompatibleProgressToken = recipeFor(compatible).token()
+			result.CompatibleProgressToken = recipe.token()
 		}
-		result.Compatible = hlsPlanURL(itemID, compatible)
+		result.Compatible = "/hls/" + itemID + "/p/" + recipe.token() + "/index.m3u8"
 		result.CompatiblePlan = &compatible
 		result.CompatibleLabel, result.CompatibleDescription = playbackPresentation(compatible)
+		applyAudioEnhancementPresentation(result, compatible, preferences, effects)
 		result.Qualities = compatible.Qualities
 	}
 }

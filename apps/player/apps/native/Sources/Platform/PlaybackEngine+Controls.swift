@@ -55,8 +55,30 @@ extension PlaybackEngine {
 
     func applyPreferences(_ preferences: PlaybackPreferences) async throws {
         let valid = try PlaybackPreferences(preferences.json)
+        let effectsChanged = valid.nightMode != self.preferences.nightMode || valid.dialogueBoost != self.preferences.dialogueBoost
+        if effectsChanged, source != nil, player != nil, let client, let currentItem {
+            let attempt = generation
+            let details = try await client.playback(itemID: currentItem.id)
+            try check(attempt)
+            if valid.audioEnhancementsEnabled, details.direct != nil || details.compatible == nil {
+                throw ClientError.invalidInput("Update Kinosail Server to use audio enhancements.")
+            }
+            let position = seconds
+            let shouldResume = nativeIntent.playing.withLock { $0 } ?? wantsPlayback
+            self.preferences = valid
+            source = details
+            playbackPreparation = nil
+            playbackPreparationTask?.cancel(); playbackPreparationTask = nil
+            try await install(details: details, compatible: valid.audioEnhancementsEnabled || details.direct == nil, at: position, attempt: attempt)
+            beginMonitoring(attempt: attempt)
+            if shouldResume { player?.playImmediately(atRate: Float(valid.rate)) }
+            return
+        }
         subtitleGeneration = UUID(); subtitleDocument = nil; externalCaptions = false; presentation.showCaptions("")
         self.preferences = valid
+        if effectsChanged, source == nil, valid.audioEnhancementsEnabled {
+            progressMessage = "Audio enhancements need a Server stream and aren’t applied to this download."
+        }
         playbackRate = valid.rate
         selectedExternalSubtitleID = nil
         player?.defaultRate = Float(valid.rate)

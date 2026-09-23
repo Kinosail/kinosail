@@ -90,28 +90,39 @@ func HLSCodecArguments(input HLSCodecInput) ([]string, error) {
 	}
 	switch input.Recipe.Mode {
 	case "remux":
-		arguments = append(arguments, "-map", input.CopyInput+":v:0", "-map", input.CopyInput+":a:"+strconv.Itoa(input.Recipe.Audio)+"?", "-sn", "-c:v", "copy", "-c:a", "copy")
+		return remuxCodecArguments(input, arguments)
 	case "audio-transcode":
 		arguments = append(arguments, "-map", input.CopyInput+":v:0", "-map", "0:a:"+strconv.Itoa(input.Recipe.Audio)+"?", "-sn")
-		arguments = append(arguments, AutomaticSkipAudioArguments(input.Recipe, input.Policy)...)
+		arguments = append(arguments, AudioFilterArguments(input.Recipe, input.Policy)...)
 		arguments = append(arguments, "-c:v", "copy", "-c:a", "aac", "-ac", "2", "-b:a", input.AudioRate)
 	case "transcode":
-		mapping, encoded := ApplyBurnIn(input.Video, input.ItemPath, input.Recipe, input.Policy)
-		arguments = append(arguments, mapping...)
-		arguments = append(arguments, "-map", "0:a:"+strconv.Itoa(input.Recipe.Audio)+"?", "-sn")
-		arguments = append(arguments, AutomaticSkipAudioArguments(input.Recipe, input.Policy)...)
-		arguments = append(arguments, encoded...)
-		videoRate := CappedVideoRate(input.VideoRate, input.AudioRate, input.Recipe.MaxBitrate)
-		if videoRate == "" {
-			return nil, errors.New("HLS video rate is missing")
-		}
-		arguments = append(arguments, "-maxrate", videoRate, "-bufsize", videoRate, "-c:a", "aac", "-ac", "2", "-b:a", input.AudioRate)
-		arguments = append(arguments, input.Compatibility...)
-		arguments = append(arguments, "-force_key_frames", "expr:gte(t,n_forced*4)")
+		return transcodeCodecArguments(input, arguments)
 	default:
 		return nil, errors.New("HLS playback mode is invalid")
 	}
 	return arguments, nil
+}
+
+func remuxCodecArguments(input HLSCodecInput, arguments []string) ([]string, error) {
+	if input.Recipe.DialogueBoost || input.Recipe.NormalizeLoudness {
+		return nil, errors.New("audio effects require audio conversion")
+	}
+	return append(arguments, "-map", input.CopyInput+":v:0", "-map", input.CopyInput+":a:"+strconv.Itoa(input.Recipe.Audio)+"?", "-sn", "-c:v", "copy", "-c:a", "copy"), nil
+}
+
+func transcodeCodecArguments(input HLSCodecInput, arguments []string) ([]string, error) {
+	mapping, encoded := ApplyBurnIn(input.Video, input.ItemPath, input.Recipe, input.Policy)
+	arguments = append(arguments, mapping...)
+	arguments = append(arguments, "-map", "0:a:"+strconv.Itoa(input.Recipe.Audio)+"?", "-sn")
+	arguments = append(arguments, AudioFilterArguments(input.Recipe, input.Policy)...)
+	arguments = append(arguments, encoded...)
+	videoRate := CappedVideoRate(input.VideoRate, input.AudioRate, input.Recipe.MaxBitrate)
+	if videoRate == "" {
+		return nil, errors.New("HLS video rate is missing")
+	}
+	arguments = append(arguments, "-maxrate", videoRate, "-bufsize", videoRate, "-c:a", "aac", "-ac", "2", "-b:a", input.AudioRate)
+	arguments = append(arguments, input.Compatibility...)
+	return append(arguments, "-force_key_frames", "expr:gte(t,n_forced*4)"), nil
 }
 
 // StoreJellyfinPlaySession prunes expired entries and atomically publishes one session.
@@ -144,5 +155,7 @@ func audioCodecArguments(input HLSCodecInput, arguments []string) ([]string, err
 	if !audioOnlyRecipe(input.Recipe) || input.CopyInput != "0" {
 		return nil, errors.New("HLS audio recipe is invalid")
 	}
-	return append(arguments, "-map", "0:a:"+strconv.Itoa(input.Recipe.Audio), "-vn", "-sn", "-dn", "-c:a", "aac", "-ac", "2", "-b:a", input.AudioRate), nil
+	arguments = append(arguments, "-map", "0:a:"+strconv.Itoa(input.Recipe.Audio), "-vn", "-sn", "-dn")
+	arguments = append(arguments, AudioFilterArguments(input.Recipe, input.Policy)...)
+	return append(arguments, "-c:a", "aac", "-ac", "2", "-b:a", input.AudioRate), nil
 }

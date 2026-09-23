@@ -20,6 +20,26 @@ struct PlaybackPreferencesScreen: View {
                     LanguagePicker(title: "Audio language", selection: $preferences.audioLanguage)
                     LanguagePicker(title: "Subtitles", selection: $preferences.subtitleLanguage, allowsOff: true)
                 }
+                Section {
+                    Toggle(isOn: $preferences.dialogueBoost) {
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text("Boost Dialog")
+                            Text("Brings speech frequencies forward, so quiet conversations are easier to follow without turning everything else up.")
+                                .font(.footnote).foregroundStyle(KinoTheme.muted)
+                        }
+                    }
+                    Toggle(isOn: $preferences.nightMode) {
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text("Normalize Loudness")
+                            Text("Keeps audio at a comfortable, consistent level and takes the edge off very loud scenes.")
+                                .font(.footnote).foregroundStyle(KinoTheme.muted)
+                        }
+                    }
+                } header: {
+                    Text("Audio enhancements")
+                } footer: {
+                    Text("Uses a compatible Server stream. Downloads keep the audio already in the file.")
+                }
                 if itemID != nil {
                     Section {
                         Text(overridden ? "This title has its own playback preferences." : "This title follows your Viewer Profile’s defaults.").foregroundStyle(KinoTheme.muted)
@@ -60,11 +80,17 @@ struct PlaybackPreferencesScreen: View {
                     if edited.rate != baseline.rate { value.playback.rate = edited.rate }
                     if edited.audioLanguage != baseline.audioLanguage { value.playback.audioLanguage = edited.audioLanguage; value.playback.audioTrack = "" }
                     if edited.subtitleLanguage != baseline.subtitleLanguage { value.playback.subtitleLanguage = edited.subtitleLanguage; value.playback.subtitleTrack = "" }
+                    if edited.dialogueBoost != baseline.dialogueBoost { value.playback.dialogueBoost = edited.dialogueBoost }
+                    if edited.nightMode != baseline.nightMode { value.playback.nightMode = edited.nightMode }
                     let saved = try await client.saveMediaPreferences(value)
                     preferences = saved.playback
                     #if os(iOS)
                     try await session.downloads.updatePreferences(saved)
                     #endif
+                    if let item = session.player.currentItem {
+                        let current = try await client.playbackPreferences(itemID: item.id)
+                        if !current.overridden { try await session.player.applyPreferences(current.playback) }
+                    }
                 }
                 original = preferences; message = "Preferences saved."
             } catch { message = AppSession.message(error) }

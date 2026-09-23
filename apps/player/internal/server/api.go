@@ -40,6 +40,7 @@ type apiServices struct {
 	homeAssistant *homeAssistantIntegration
 	authURL       string
 	events        *liveEventHub
+	experience    *mediaExperienceStore
 }
 
 func (auth *authentication) createAPISession(writer http.ResponseWriter, request *http.Request) {

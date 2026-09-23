@@ -185,6 +185,9 @@ final class PlaybackEngine {
         stop()
         let attempt = generation
         currentItem = item; self.client = client; self.store = store; self.preferences = preferences; loading = true; wantsPlayback = true
+        if preferences.audioEnhancementsEnabled {
+            progressMessage = "Audio enhancements need a Server stream and aren’t applied to this download."
+        }
         defer { if generation == attempt { loading = false } }
         do {
             writer = try ProgressWriter(itemID: item.id, expected: item.progress, client: client, store: store)
