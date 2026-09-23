@@ -25,7 +25,7 @@ python3 engineering/documentation/check.py /tmp/kinosail-preview-root
 python3 -m http.server 4180 --bind 127.0.0.1 --directory /tmp/kinosail-preview-root
 ```
 
-Open <http://127.0.0.1:4180/>. Stop with Ctrl-C. The output directory must be new and outside the checkout; choose a new output name for each build rather than deleting unrelated files. `--baseurl` and `--url` allow another HTTPS origin and path. Pass the same base path as the second argument to `check.py`.
+Open <http://127.0.0.1:4180/>. Stop with Ctrl-C. The output directory must be new and outside the checkout; choose a new output name for each build rather than deleting unrelated files. The default build targets the root of <https://kinosail.com/> with no base path; set `--baseurl` only when publishing under a subpath, and pass that same base path as the second argument to `check.py`.
 
 Keep generated output and local Bundler caches outside tracked source. Update `Gemfile` and `Gemfile.lock` together when changing dependencies.
 
