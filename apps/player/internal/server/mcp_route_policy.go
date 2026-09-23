@@ -45,6 +45,7 @@ var mcpBlockedRoutes = routeSet(
 	"GET /api/v1/cast/sessions/{id}", "GET /api/v1/devices", "GET /api/v1/downloads", "GET /api/v1/downloads/{id}", "GET /api/v1/downloads/{id}/file", "GET /api/v1/downloads/{id}/manifest", "GET /api/v1/downloads/identity", "GET /api/v1/events", "GET /api/v1/items/{id}/bookmarks", "GET /api/v1/items/{id}/download-tracks", "GET /api/v1/items/{id}/playback-preferences", "GET /api/v1/items/{id}/watch-progress", "GET /api/v1/me/media-preferences", "GET /api/v1/media-shares", "GET /api/v1/passkeys",
 	"GET /api/v1/me/oidc/link", "GET /api/v1/me/saml/link", "GET /api/v1/profiles",
 	"GET /api/v1/session/oidc", "GET /api/v1/session/saml", "GET /api/v1/supporter", "GET /api/v1/supporter/certificate.svg",
+	"GET /api/v1/supporter/collection", "GET /api/v1/supporter/certificates/one-time.svg", "GET /api/v1/supporter/certificates/monthly.svg", "GET /api/v1/supporter/certificates/yearly.svg",
 	"GET /api/v1/supporter/display", "PUT /api/v1/supporter/display",
 	"GET /api/v1/supporter/certificates/patron-order.svg", "GET /api/v1/supporter/certificates/living-standard.svg", "GET /api/v1/watch-rooms/{id}/events",
 	"GET /api/v1/home-assistant", "GET /api/v1/home-assistant/library", "GET /api/v1/home-assistant/players",

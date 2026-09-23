@@ -28,12 +28,20 @@ type Spec struct {
 	Secret, Restart   bool
 }
 
-var specs = applicationSpecs(configurationcore.CommonApplicationFields("127.0.0.1:38127", "https://github.com/Kinosail/kinosail/tree/main/apps/player"))
+const (
+	DefaultSupporterActivationURL = "https://kinosail-supporter-prod.pvw-7m4q2x9.workers.dev/v1/supporters/activate"
+	DefaultSupportURL             = "https://buy.polar.sh/polar_cl_qnIK97BxBRJpKtqw0na3QocqgA3IyY0KlM6wZ36YiP8"
+)
+
+var specs = applicationSpecs(configurationcore.CommonApplicationFields("127.0.0.1:38127", DefaultSupportURL))
 
 func applicationSpecs(fields []configurationcore.ApplicationField) []Spec {
 	result := make([]Spec, len(fields))
 	for index, field := range fields {
 		result[index] = Spec{field.Key, field.Env, field.Default, kind(field.Kind), field.Secret, field.Restart}
+		if field.Key == "supporter.activation_url" {
+			result[index].Default = DefaultSupporterActivationURL
+		}
 	}
 	return result
 }

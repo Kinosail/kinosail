@@ -201,3 +201,19 @@ func assertSafeBadgeElement(t *testing.T, token xml.Token, name string) {
 		}
 	}
 }
+
+func TestCurrentCertificatePrefersActiveEdition(t *testing.T) {
+	status := supporterStatus{Monthly: &supporterBadgeStatus{Expired: true}, Yearly: &supporterBadgeStatus{Active: true}}
+	if currentSupporterCertificate(status) != "yearly" {
+		t.Fatal("expired monthly displaced active yearly")
+	}
+	status.Monthly.Active = true
+	if currentSupporterCertificate(status) != "monthly" {
+		t.Fatal("monthly should lead when active")
+	}
+	status.Monthly.Active = false
+	status.Yearly.Active = false
+	if currentSupporterCertificate(status) != "monthly" {
+		t.Fatal("past support certificate disappeared")
+	}
+}

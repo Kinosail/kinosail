@@ -1,118 +1,54 @@
-const supporterFundingMessage = "Help fund development.";
-
-function ensureSupporterSignature(main) {
-  createSupporterSignature(main, {hide: true});
-  const copy = main?.querySelector(".supporter-signature:not(.is-active) p");
-  if (copy) copy.textContent = supporterFundingMessage;
-}
-
-function revealSupporterSignature(main) {
-  const signature = main?.querySelector(".supporter-signature");
-  signature?.removeAttribute("data-supporter-pending");
-  signature?.style.removeProperty("visibility");
-}
-
-function supporterLevelLogo(badge) {
-  const logo = document.createElement("span");
-  logo.className = "supporter-level-logo";
-  logo.dataset.rank = String(badge.rank);
-  logo.dataset.family = badge.family;
-  logo.setAttribute("aria-hidden", "true");
-  const image = document.createElement("img");
-  image.src = `/static/supporter/badges/${badge.family}-${badge.rank}-small.svg?v=4`;
-  image.alt = "";
-  image.decoding = "async";
-  image.setAttribute("aria-hidden", "true");
-  logo.append(image);
-  return logo;
-}
-
-function primarySupporterBadge(status, display = "automatic") {
-  if (display === "hidden") return null;
-  const preferred = display === "patron-order" ? status?.patronOrder : display === "living-standard" ? status?.livingStandard : null;
-	const badge = preferred || (status?.livingStandard?.active ? status.livingStandard : status?.patronOrder);
-	return badge && badge.name && Number.isInteger(badge.rank) && badge.rank >= 1 && badge.rank <= 10 && ["living-standard", "patron-order"].includes(badge.family) ? badge : null;
-}
-
-function resetSupporterRecognition(main, archived = false) {
-  delete document.body.dataset.supporterRank;
-  document.querySelectorAll(".supporter-edition-mark").forEach((mark) => mark.remove());
-  const signature = main?.querySelector(".supporter-signature");
-  if (!signature) return;
-  signature.classList.remove("is-active");
-  const copy = document.createElement("p");
-  copy.textContent = archived ? "Community edition · Living Standard archived." : supporterFundingMessage;
-  const link = document.createElement("a");
-  link.href = "/supporter";
-  link.textContent = archived ? "View supporter archive" : "Support Kinosail";
-  signature.replaceChildren(copy, link);
-}
-
-function showSupporterRecognition(main, status, display) {
-  const signature = main?.querySelector(".supporter-signature");
-  const badge = primarySupporterBadge(status, display);
-	if (!signature || !badge) return;
-  signature.classList.add("is-active");
-  const copy = document.createElement("p");
-  const title = document.createElement("strong");
-  title.textContent = badge.name;
-  const family = badge.family === "living-standard" ? " Living Standard" : " Patron Order";
-  copy.append(title, document.createTextNode(family));
-  const link = document.createElement("a");
-  link.href = "/supporter";
-  link.textContent = "View passport";
-  link.setAttribute("aria-label", `${badge.name}${family} supporter passport`);
-  signature.replaceChildren(supporterLevelLogo(badge), copy, link);
-}
-
 async function bindSupporterRecognition() {
   if (document.body.classList.contains("auth")) return;
-  const main = document.querySelector(".library-shell");
-  ensureSupporterSignature(main);
-  const request = new AbortController();
-  const leave = () => request.abort();
-  window.addEventListener("pagehide", leave, {once: true});
   try {
-    const response = await fetch("/api/v1/supporter", { signal: request.signal, headers: { accept: "application/json" } });
+    const response = await fetch("/api/v1/supporter/collection", {headers: {accept: "application/json"}});
     if (!response.ok) return;
-    const status = await response.json();
-    if (request.signal.aborted) return;
-    const preference = await fetch("/api/v1/supporter/display", { signal: request.signal, headers: { accept: "application/json" } });
-    if (!preference.ok) return;
-    const { display } = await preference.json();
-    if (request.signal.aborted || !["automatic", "hidden", "patron-order", "living-standard"].includes(display)) return;
-    const badge = primarySupporterBadge(status, display);
-	resetSupporterRecognition(main, Boolean(status.livingStandard?.expired));
-    const signature = main?.querySelector(".supporter-signature");
-    if (signature) signature.hidden = display === "hidden";
-    document.querySelectorAll(".nav-main-supporter, .nav-supporter").forEach((link) => { link.textContent = "Supporter"; link.removeAttribute("aria-label"); });
-    if (badge) {
-      document.body.dataset.supporterRank = String(badge.rank);
-      showSupporterRecognition(main, status, display);
-      document.querySelectorAll(".nav-main-supporter, .nav-supporter").forEach((navigation) => {
-        navigation.replaceChildren(supporterLevelLogo(badge), document.createTextNode(badge.name));
-        navigation.setAttribute("aria-label", `${badge.name} · ${badge.family === "living-standard" ? "Living Standard" : "Patron Order"} · Supporter`);
+    const collection = await response.json();
+    if (!Array.isArray(collection.badges) || collection.badges.length > 4) return;
+    const badges = collection.badges.filter(badge => Number.isInteger(badge.rank) && badge.rank >= 1 && badge.rank <= 10 &&
+      ["one-time", "monthly", "yearly", undefined].includes(badge.edition) && ["patron-order", "living-standard"].includes(badge.family));
+    const hidden = collection.display === "hidden";
+    document.querySelectorAll(".supporter-signature, .supporter-edition-mark").forEach(mark => mark.remove());
+    document.querySelectorAll(".header-supporter").forEach(link => {
+      link.hidden = hidden;
+      link.replaceChildren();
+      if (!badges.length) { link.textContent = "Support Kinosail"; link.removeAttribute("aria-label"); return; }
+      link.classList.add("supporter-trio");
+      link.setAttribute("aria-label", "Your supporter collection");
+      badges.forEach(badge => {
+        const image = document.createElement("img");
+        image.src = `/static/supporter/badges/${badge.edition || badge.family}-small.svg`;
+        if (!badge.edition) image.src = `/static/supporter/badges/${badge.family}-${badge.rank}-small.svg?v=4`;
+        image.alt = `${badge.name} · ${badge.edition || "Legacy recurring"}${badge.archived ? " · past support" : ""}`;
+        image.width = 24; image.height = 24;
+        link.append(image);
       });
-      const anchor = main ? null : document.querySelector(".settings-intro");
-      if (!anchor || anchor.querySelector(".supporter-edition-mark")) return;
-      const mark = document.createElement("a");
-      mark.className = "supporter-edition-mark";
-      mark.href = "/supporter";
-      mark.append(supporterLevelLogo(badge));
-      const label = document.createElement("span");
-      label.textContent = `${badge.name} ${badge.family === "living-standard" ? "Living Standard" : "Patron Order"}`;
-      mark.append(label);
-      anchor.append(mark);
-      return;
+    });
+    const setting = document.querySelector("[data-supporter-visibility]");
+    if (setting) {
+      setting.checked = !hidden;
+      setting.disabled = false;
+      if (!setting.dataset.bound) {
+        setting.dataset.bound = "true";
+        setting.addEventListener("change", async () => {
+          setting.disabled = true;
+          const output = document.querySelector("[data-supporter-visibility-status]");
+          try {
+            const csrf = document.querySelector('meta[name="kinosail-csrf"]')?.content;
+            const saved = await fetch("/api/v1/supporter/display", {method: "PUT", headers: {"Content-Type": "application/json", ...(csrf ? {"X-Kinosail-CSRF": csrf} : {})}, body: JSON.stringify({display: setting.checked ? "automatic" : "hidden"})});
+            if (!saved.ok) throw new Error();
+            output.textContent = "Saved. Your collection stays visible on Supporter.";
+            await bindSupporterRecognition();
+          } catch { setting.checked = !setting.checked; output.textContent = "Could not save. Please try again."; }
+          finally { setting.disabled = false; }
+        });
+      }
     }
-  } catch (_) {} finally {
-    window.removeEventListener("pagehide", leave);
-    revealSupporterSignature(main);
-  }
+  } catch (_) {}
 }
 
 async function supporterShareFile(family) {
-  if (!["living-standard", "patron-order"].includes(family)) throw new Error("certificate unavailable");
+  if (!["living-standard", "patron-order", "one-time", "monthly", "yearly"].includes(family)) throw new Error("certificate unavailable");
   const response = await fetch(`/api/v1/supporter/certificates/${family}.svg`, { headers: { accept: "image/svg+xml" } });
   if (!response.ok) throw new Error("certificate unavailable");
   const certificate = await response.blob();
