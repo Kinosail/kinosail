@@ -45,12 +45,19 @@ class RuntimeContracts(unittest.TestCase):
         verify = source.index('cosign verify --certificate-identity ' + IDENTITY)
         self.assertLess(source.index('cosign sign --yes'), verify)
         self.assertLess(verify, source.index('name: Publish deployable commit tag'))
+        self.assertIn('COSIGN_REPOSITORY: ghcr.io/kinosail/kinosail-signatures', source)
+        self.assertIn('DOCKER_CONFIG="$(mktemp -d)" cosign verify', source)
+        self.assertIn('push-to-registry: false', source)
         self.assertIn('sort == ["amd64", "arm64"]', source)
         release = (WORKFLOWS / 'release.yml').read_text()
         self.assertNotIn('type=raw,value=latest', release)
+        self.assertIn('COSIGN_REPOSITORY: ghcr.io/kinosail/kinosail-signatures', release)
+        self.assertIn('push-to-registry: false', release)
         for app in ('player', 'subtitles'):
             installer = (ROOT / f'apps/{app}/scripts/install.sh').read_text()
-            self.assertIn('cosign verify --certificate-identity ' + IDENTITY, installer)
+            self.assertIn('signer=' + IDENTITY, installer)
+            self.assertIn('COSIGN_REPOSITORY=ghcr.io/kinosail/kinosail-signatures cosign verify', installer)
+            self.assertIn('(unset COSIGN_REPOSITORY; cosign verify', installer)
             self.assertIn(f'/release.yml@refs/tags/{app}-v$version', installer)
 
     def test_browser_selection_cannot_succeed_without_running_a_project(self):

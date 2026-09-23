@@ -157,15 +157,21 @@ jobs:
       - name: Sign tested image digest
         env:
           DIGEST: ${{ steps.manifest.outputs.digest }}
+          COSIGN_REPOSITORY: ghcr.io/kinosail/kinosail-signatures
         run: |
           cosign sign --yes "$IMAGE@$DIGEST"
-          cosign verify --certificate-identity https://github.com/Kinosail/kinosail/.github/workflows/publish.yml@refs/heads/main --certificate-oidc-issuer https://token.actions.githubusercontent.com "$IMAGE@$DIGEST"
+          DOCKER_CONFIG="$(mktemp -d)" cosign verify --certificate-identity https://github.com/Kinosail/kinosail/.github/workflows/publish.yml@refs/heads/main --certificate-oidc-issuer https://token.actions.githubusercontent.com "$IMAGE@$DIGEST"
       - name: Attest image provenance
         uses: actions/attest@1e69f48acb82d1966a394da916b4c1698aa569d6
         with:
           subject-name: ${{ env.IMAGE }}
           subject-digest: ${{ steps.manifest.outputs.digest }}
-          push-to-registry: true
+          push-to-registry: false
+      - name: Verify GitHub provenance
+        env:
+          GH_TOKEN: ${{ github.token }}
+          DIGEST: ${{ steps.manifest.outputs.digest }}
+        run: gh attestation verify "oci://$IMAGE@$DIGEST" --repo Kinosail/kinosail --signer-workflow Kinosail/kinosail/.github/workflows/publish.yml --source-ref refs/heads/main >/dev/null
       - name: Publish deployable commit tag
         env:
           DIGEST: ${{ steps.manifest.outputs.digest }}
