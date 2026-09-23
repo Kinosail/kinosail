@@ -2,7 +2,7 @@
 
 ## GitHub Actions verification
 
-- Required quality and security gates run on GitHub-hosted runners. Select complete affected app suites using `scripts/ci/affected.py`; unknown inputs select every consumer. Do not add `.gates-disabled` or weaken required checks to obtain a passing run.
+- Required quality and security gates run on GitHub-hosted runners. Select affected apps using `scripts/ci/affected.py`; unknown inputs select every consumer. PRs and main pushes require quick Go tests and populated Chromium smoke journeys. Weekly and manual deep runs add race/coverage and complete cross-browser suites. Do not add `.gates-disabled` or bypass required checks to obtain a passing run.
 - Local hooks enforce the source-file cap and the current worktree lease; GitHub Actions runs complete selected suites. Run focused checks locally when changing their implementation.
 
 ## Scope and ownership

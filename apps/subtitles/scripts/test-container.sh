@@ -7,6 +7,10 @@ trap 'if [[ -s "$media_dir/compatible.m3u8" ]]; then sed -n "1,40p" "$media_dir/
 app="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 repo="$(git -C "$app" rev-parse --show-toplevel)"
 cd "$app"
+case "${KINOSAIL_BROWSER_SMOKE:-}" in
+  ""|1) ;;
+  *) echo 'unsupported browser smoke mode' >&2; exit 2 ;;
+esac
 image="${KINOSAIL_TEST_IMAGE:-localhost/kinosail-subtitles:test}"
 container=""
 mcp_jobs=()
@@ -197,7 +201,9 @@ chunk="${digest:$((offset * 2)):8}"
 code="$(printf '%06d' "$(((16#$chunk & 0x7fffffff) % 1000000))")"
 expect_status 303 --cookie "$media_dir/cookies" --header "Origin: $url" --header "X-Kinosail-CSRF: $csrf" --data "code=$code" "$url/account/mfa/enable"
 if [[ "${KINOSAIL_BROWSER_TEST:-}" == "1" ]]; then
-  KINOSAIL_TEST_INSTANCE=1 KINOSAIL_TEST_TOTP_SECRET="$secret" KINOSAIL_E2E_URL="$url" KINOSAIL_E2E_OUTPUT_DIR="${KINOSAIL_E2E_OUTPUT_DIR:-$media_dir/playwright-results}" pnpm --dir e2e test subtitle-dashboard.spec.ts
+  browser_args=(subtitle-dashboard.spec.ts)
+  if [[ "${KINOSAIL_BROWSER_SMOKE:-}" == "1" ]]; then browser_args+=(--grep=@smoke); fi
+  KINOSAIL_TEST_INSTANCE=1 KINOSAIL_TEST_TOTP_SECRET="$secret" KINOSAIL_E2E_URL="$url" KINOSAIL_E2E_OUTPUT_DIR="${KINOSAIL_E2E_OUTPUT_DIR:-$media_dir/playwright-results}" pnpm --dir e2e test "${browser_args[@]}"
   exit
 fi
 mkfifo "$mcp_dir/input"

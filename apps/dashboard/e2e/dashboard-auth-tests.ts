@@ -3,7 +3,7 @@ import { expect, test } from "@playwright/test";
 import { expectNoOverflow, login, owner, password, resetBoard, screenshot } from "./dashboard-helpers";
 
 export function registerDashboardAuthTests() {
-  test("sets up the first Owner with clear validation", async ({ page }, testInfo) => {
+  test("sets up the first Owner with clear validation", { tag: "@smoke" }, async ({ page }, testInfo) => {
     await page.goto("/");
     if (!page.url().endsWith("/setup")) {
       await login(page);
