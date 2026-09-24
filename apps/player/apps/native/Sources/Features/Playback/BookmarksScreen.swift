@@ -22,9 +22,11 @@ struct BookmarksScreen: View {
                     Button("Add bookmark", systemImage: "bookmark.badge.plus") { add() }.disabled(busy || name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
                 }
             }
-            if let message { Section { Text(message).foregroundStyle(.secondary); Button("Try again") { revision += 1 } } }
-            if !loaded { Text("Loading bookmarks…").foregroundStyle(.secondary) }
-            else if bookmarks.isEmpty { ContentUnavailableView("No bookmarks yet", systemImage: "bookmark", description: Text("Save a position while playing or reading a title.")) }
+            if let message { Section { Text(message).foregroundStyle(.secondary); Button("Reload bookmarks") { self.message = nil; revision += 1 } } }
+            if !loaded && message == nil { ProgressView("Loading bookmarks…") }
+            else if loaded && bookmarks.isEmpty && message == nil {
+                ContentUnavailableView("No bookmarks yet", systemImage: "bookmark", description: Text("Save a position while playing or reading a title."))
+            }
             ForEach(bookmarks) { bookmark in
                 HStack {
                     Button { select(bookmark) } label: {
@@ -94,9 +96,15 @@ struct ProgressSyncScreen: View {
 
     var body: some View {
         List {
-            if let message { Text(message).foregroundStyle(.secondary) }
-            if loaded, entries.isEmpty { ContentUnavailableView("Progress is up to date", systemImage: "checkmark.circle", description: Text("All saved playback positions have synced.")) }
-            else if !loaded { Text("Loading saved progress…").foregroundStyle(.secondary) }
+            if let message {
+                Text(message).foregroundStyle(.secondary)
+                Button("Try again") { Task { await synchronize() } }.disabled(busy)
+            }
+            if !loaded && message == nil { ProgressView("Loading saved progress…") }
+            else if busy { ProgressView("Syncing saved progress…") }
+            else if loaded && entries.isEmpty && message == nil {
+                ContentUnavailableView("Progress is up to date", systemImage: "checkmark.circle", description: Text("All saved playback positions have synced."))
+            }
             ForEach(entries) { entry in
                 Section {
                     NavigationLink("Open title", value: ScreenDestination.detail(entry.itemID))
@@ -118,8 +126,9 @@ struct ProgressSyncScreen: View {
     private func synchronize() async {
         guard let store = session.progress, let client = session.client, !busy else { return }
         busy = true
+        message = nil
         defer { busy = false }
-        do { entries = try await store.pending(); loaded = true; _ = try await store.synchronize(client: client); entries = try await store.pending(); message = nil }
+        do { entries = try await store.pending(); _ = try await store.synchronize(client: client); entries = try await store.pending(); loaded = true }
         catch { message = AppSession.message(error) }
     }
     private func resolve(_ entry: PendingProgress, useDevice: Bool) {
