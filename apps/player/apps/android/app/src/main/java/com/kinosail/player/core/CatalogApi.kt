@@ -31,19 +31,20 @@ class CatalogApi(
     private val api = ServerApi(server, open)
 
     fun list(token: String, viewerId: String, rawQuery: String = "", offset: Int = 0,
-             view: String = "all"): CatalogPage {
+             view: String = "all", sort: String = "title"): CatalogPage {
         val query = rawQuery.trim()
         require(query.toByteArray(Charsets.UTF_8).size <= 512 && query.none(Char::isISOControl) &&
-            offset in 0..1_000_000 && view in setOf("all", "shows")) { "Invalid library request." }
+            offset in 0..1_000_000 && view in setOf("all", "shows", "history") &&
+            sort in setOf("title", "added")) { "Invalid library request." }
         val encoded = URLEncoder.encode(query, Charsets.UTF_8.name())
-        val result = api.catalog("/api/v1/library?q=$encoded&view=$view&sort=title&offset=$offset&limit=$PAGE_SIZE",
+        val result = api.catalog("/api/v1/library?q=$encoded&view=$view&sort=$sort&offset=$offset&limit=$PAGE_SIZE",
             token, viewerId).fields(PAGE_KEYS, setOf("items", "total", "offset", "limit"))
         val total = result.number("total", 0..10_000_000)
         val returnedOffset = result.number("offset", 0..1_000_000)
         val limit = result.number("limit", 1..200)
         require(returnedOffset == offset && limit == PAGE_SIZE) { INVALID_RESPONSE }
         result["view"]?.let { require(result.text("view", 32) == view) { INVALID_RESPONSE } }
-        result["sort"]?.let { require(result.text("sort", 32) == "title") { INVALID_RESPONSE } }
+        result["sort"]?.let { require(result.text("sort", 32) == sort) { INVALID_RESPONSE } }
         result["query"]?.let { require(result.text("query", 512, empty = true) == query) { INVALID_RESPONSE } }
         val rawItems = result["items"] as? JsonArray
         require(rawItems != null && rawItems.size <= PAGE_SIZE && rawItems.size <= maxOf(0, total - offset) &&

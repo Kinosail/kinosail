@@ -100,6 +100,8 @@ class CatalogModel(application: Application) : AndroidViewModel(application) {
         if (state.items.any { it.id == item.id }) state = state.copy(selected = item)
     }
 
+    fun selectHomeItem(item: CatalogItem) { state = state.copy(selected = item) }
+
     fun closeDetail() { state = state.copy(selected = null) }
 
     fun reset() {

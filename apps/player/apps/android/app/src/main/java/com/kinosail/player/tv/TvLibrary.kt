@@ -55,6 +55,7 @@ import androidx.tv.material3.Text
 import com.kinosail.player.core.CatalogItem
 import com.kinosail.player.core.CatalogModel
 import com.kinosail.player.core.ConnectionModel
+import com.kinosail.player.core.HomeScreen
 import com.kinosail.player.core.PlaybackScreen
 import com.kinosail.player.core.ShowScreen
 import com.kinosail.player.core.Viewer
@@ -65,6 +66,7 @@ import com.kinosail.player.design.SailBackdrop
 internal fun TvLibrary(connection: ConnectionModel, viewer: Viewer) {
     val catalog: CatalogModel = viewModel()
     val state = catalog.state
+    var home by remember { mutableStateOf(true) }
     var playingItem by remember { mutableStateOf<CatalogItem?>(null) }
     var searchEditing by remember { mutableStateOf(false) }
     val keyboard = LocalSoftwareKeyboardController.current
@@ -86,6 +88,7 @@ internal fun TvLibrary(connection: ConnectionModel, viewer: Viewer) {
     LaunchedEffect(viewer.serverId, viewer.id) { catalog.open(viewer) }
     DisposableEffect(Unit) { onDispose { catalog.reset() } }
     BackHandler(state.selected != null && playingItem == null) { catalog.closeDetail() }
+    BackHandler(!home && state.selected == null && playingItem == null) { home = true }
     BackHandler(searchEditing) { searchEditing = false; keyboard?.hide() }
     LaunchedEffect(searchEditing) {
         if (searchEditing) {
@@ -94,8 +97,8 @@ internal fun TvLibrary(connection: ConnectionModel, viewer: Viewer) {
             keyboard?.show()
         }
     }
-    LaunchedEffect(state.items.isNotEmpty(), state.selected, playingItem, state.view) {
-        if (playingItem != null || state.selected?.showId?.isNotEmpty() == true) return@LaunchedEffect
+    LaunchedEffect(state.items.isNotEmpty(), state.selected, playingItem, state.view, home) {
+        if (home || playingItem != null || state.selected?.showId?.isNotEmpty() == true) return@LaunchedEffect
         if (state.selected != null) detailFocus.requestFocus()
         else if (state.items.isNotEmpty()) cardFocus.requestFocus()
         else searchFocus.requestFocus()
@@ -115,6 +118,11 @@ internal fun TvLibrary(connection: ConnectionModel, viewer: Viewer) {
         ShowScreen(state.selected.showId, viewer, catalog, tv = true, catalog::closeDetail) {
             playingItem = it
         }
+        return
+    }
+    if (home && state.selected == null) {
+        HomeScreen(viewer, catalog, tv = true, browse = { home = false },
+            open = catalog::selectHomeItem, play = { playingItem = it })
         return
     }
     Box(Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)) {
@@ -139,6 +147,7 @@ internal fun TvLibrary(connection: ConnectionModel, viewer: Viewer) {
                             color = MaterialTheme.colorScheme.onSurfaceVariant)
                     }
                     Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+                        Button(onClick = { home = true }) { Text("For you") }
                         Button(onClick = { catalog.changeView("all") }) {
                             Text(if (state.view == "all") "All media · Selected" else "All media")
                         }
