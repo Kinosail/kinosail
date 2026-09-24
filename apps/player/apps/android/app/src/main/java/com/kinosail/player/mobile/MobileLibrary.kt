@@ -63,6 +63,7 @@ import com.kinosail.player.core.LIBRARY_VIEWS
 import com.kinosail.player.core.PlaybackScreen
 import com.kinosail.player.core.PhotoScreen
 import com.kinosail.player.core.VideoPipHost
+import com.kinosail.player.core.PdfReaderScreen
 import com.kinosail.player.core.ShowScreen
 import com.kinosail.player.core.Viewer
 import com.kinosail.player.design.SailBackdrop
@@ -77,6 +78,7 @@ internal fun MobileLibrary(connection: ConnectionModel, viewer: Viewer) {
     var home by remember { mutableStateOf(true) }
     var playingItem by remember { mutableStateOf<CatalogItem?>(null) }
     var photoItem by remember { mutableStateOf<CatalogItem?>(null) }
+    var bookItem by remember { mutableStateOf<CatalogItem?>(null) }
     val keyboard = LocalSoftwareKeyboardController.current
     val submitSearch = {
         catalog.search()
@@ -85,8 +87,8 @@ internal fun MobileLibrary(connection: ConnectionModel, viewer: Viewer) {
     }
     LaunchedEffect(viewer.serverId, viewer.id) { catalog.open(viewer) }
     DisposableEffect(Unit) { onDispose { catalog.reset() } }
-    BackHandler(state.selected != null && playingItem == null && photoItem == null) { catalog.closeDetail() }
-    BackHandler(!home && state.selected == null && playingItem == null && photoItem == null) { home = true }
+    BackHandler(state.selected != null && playingItem == null && photoItem == null && bookItem == null) { catalog.closeDetail() }
+    BackHandler(!home && state.selected == null && playingItem == null && photoItem == null && bookItem == null) { home = true }
     if (playingItem != null) {
         PlaybackScreen(requireNotNull(playingItem), viewer, tv = false, close = { playingItem = null },
             onNext = { playingItem = it }, pipHost = pipHost)
@@ -94,6 +96,10 @@ internal fun MobileLibrary(connection: ConnectionModel, viewer: Viewer) {
     }
     if (photoItem != null) {
         PhotoScreen(requireNotNull(photoItem), catalog, tv = false, close = { photoItem = null })
+        return
+    }
+    if (bookItem != null) {
+        PdfReaderScreen(requireNotNull(bookItem), viewer, close = { bookItem = null })
         return
     }
     if (state.selected?.showId?.isNotEmpty() == true) {
@@ -121,7 +127,7 @@ internal fun MobileLibrary(connection: ConnectionModel, viewer: Viewer) {
                 modifier = Modifier.fillMaxWidth()) { Text("Now playing · ${nowPlaying.title}") }
             if (state.selected != null) {
                 MobileDetail(state.selected, catalog, play = { playingItem = state.selected },
-                    viewPhoto = { photoItem = state.selected })
+                    viewPhoto = { photoItem = state.selected }, readBook = { bookItem = state.selected })
             } else {
                 Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically) {
@@ -188,7 +194,7 @@ private fun findVideoPipHost(context: Context): VideoPipHost? {
 
 @Composable
 private fun MobileDetail(item: CatalogItem, catalog: CatalogModel, play: () -> Unit,
-                         viewPhoto: () -> Unit) {
+                         viewPhoto: () -> Unit, readBook: () -> Unit) {
     Column(Modifier.fillMaxWidth().verticalScroll(rememberScrollState()),
         verticalArrangement = Arrangement.spacedBy(16.dp)) {
         TextButton(onClick = catalog::closeDetail) { Text("Back") }
@@ -202,6 +208,9 @@ private fun MobileDetail(item: CatalogItem, catalog: CatalogModel, play: () -> U
         if (item.kind == "photo" && item.stream.isEmpty()) Text(
             "Photo viewing is unavailable for this Viewer.",
             color = MaterialTheme.colorScheme.onSurfaceVariant)
+        if (item.kind == "book") Button(onClick = readBook, modifier = Modifier.fillMaxWidth()) {
+            Text("Read book")
+        }
         catalog.state.listed?.let { listed ->
             TextButton(onClick = { catalog.setListed(!listed) }, enabled = !catalog.state.listBusy) {
                 Text(if (listed) "Remove from My List" else "Add to My List")
