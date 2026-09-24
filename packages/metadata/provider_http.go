@@ -44,5 +44,8 @@ func DownloadProviderImage(ctx context.Context, client *http.Client, baseURL, pa
 	if err != nil || len(data) > 8<<20 || response.StatusCode != http.StatusOK || !strings.HasPrefix(response.Header.Get("Content-Type"), "image/") {
 		return errors.New("metadata artwork is invalid")
 	}
+	if err := ctx.Err(); err != nil {
+		return err
+	}
 	return privatefile.WriteCache(target, data)
 }

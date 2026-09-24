@@ -16,6 +16,17 @@ type providerBody struct {
 	closed bool
 }
 
+type cancelOnRead struct {
+	io.Reader
+	cancel context.CancelFunc
+}
+
+func (reader cancelOnRead) Read(data []byte) (int, error) {
+	count, err := reader.Reader.Read(data)
+	reader.cancel()
+	return count, err
+}
+
 type providerJSONCase struct {
 	name, body string
 	status     int
@@ -88,6 +99,20 @@ func TestDownloadProviderImage(t *testing.T) {
 			assertProviderImageCase(t, test)
 		})
 	}
+}
+
+func TestDownloadProviderImageCanceledAfterReadDoesNotWriteCache(t *testing.T) {
+	t.Parallel()
+	ctx, cancel := context.WithCancel(t.Context())
+	defer cancel()
+	target := filepath.Join(t.TempDir(), "poster.jpg")
+	client := &http.Client{Transport: roundTripFunc(func(*http.Request) (*http.Response, error) {
+		return &http.Response{StatusCode: http.StatusOK, Header: http.Header{"Content-Type": {"image/jpeg"}}, Body: io.NopCloser(cancelOnRead{Reader: strings.NewReader("image"), cancel: cancel})}, nil
+	})}
+	if err := DownloadProviderImage(ctx, client, "https://provider.example", "poster.jpg", target); !errors.Is(err, context.Canceled) {
+		t.Fatalf("canceled download error = %v", err)
+	}
+	assertMissingProviderCache(t, target)
 }
 
 func assertProviderImageCase(t *testing.T, test providerImageCase) {
