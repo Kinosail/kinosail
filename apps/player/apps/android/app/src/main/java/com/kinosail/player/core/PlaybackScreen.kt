@@ -49,6 +49,7 @@ internal fun PlaybackScreen(item: CatalogItem, viewer: Viewer, tv: Boolean, clos
     val player = playback.player
     var speedPicker by remember { mutableStateOf(false) }
     val speedFocus = remember { FocusRequester() }
+    val retryFocus = remember { FocusRequester() }
     val context = LocalContext.current
     val playerView = remember(player, context) { player?.let { engine -> PlayerView(context).apply {
         this.player = engine
@@ -58,6 +59,7 @@ internal fun PlaybackScreen(item: CatalogItem, viewer: Viewer, tv: Boolean, clos
     BackHandler { if (speedPicker) speedPicker = false else close() }
     LaunchedEffect(item.id, viewer.id) { playback.start(item, viewer) }
     LaunchedEffect(speedPicker, tv) { if (speedPicker && tv) speedFocus.requestFocus() }
+    LaunchedEffect(playback.retryable, tv) { if (playback.retryable && tv) retryFocus.requestFocus() }
     DisposableEffect(Unit) { onDispose { playback.stop() } }
     Box(Modifier.fillMaxSize().background(Color.Black)) {
         if (playerView != null) AndroidView(
@@ -126,6 +128,14 @@ internal fun PlaybackScreen(item: CatalogItem, viewer: Viewer, tv: Boolean, clos
                 if (playback.loading) CircularProgressIndicator(color = KinoColor.signal)
                 if (playback.usingCompatible) Text("Compatible playback", color = Color.White)
                 playback.message?.let { Text(it, color = Color.White) }
+                if (playback.retryable) {
+                    if (tv) androidx.tv.material3.Button(onClick = { playback.start(item, viewer) },
+                        modifier = Modifier.focusRequester(retryFocus)) {
+                        androidx.tv.material3.Text("Try again")
+                    } else TextButton(onClick = { playback.start(item, viewer) }) {
+                        Text("Try again", color = KinoColor.signal)
+                    }
+                }
                 playback.progressNotice?.let { Text(it, color = Color.White,
                     modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite }) }
                 playback.preferenceNotice?.let { Text(it, color = Color.White,
