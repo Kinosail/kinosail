@@ -32,9 +32,15 @@ if [[ -z "$sha" ]]; then
   sha="$(git_cmd ls-remote origin refs/heads/main | awk '{print $1}')"
 fi
 [[ "$sha" =~ ^[0-9a-f]{40}$ ]] || { printf 'invalid deployment revision: %s\n' "$sha" >&2; exit 2; }
+expected_main="${KINOSAIL_DEPLOY_EXPECT_MAIN-$sha}"
+[[ "$expected_main" =~ ^[0-9a-f]{40}$ ]] || { printf 'invalid expected main revision\n' >&2; exit 2; }
 
 latest="$(git_cmd ls-remote origin refs/heads/main | awk '{print $1}')"
-[[ "$latest" == "$sha" ]] || { printf 'Nox deployment %s is no longer main (%s)\n' "$sha" "$latest" >&2; exit 75; }
+[[ "$latest" == "$expected_main" ]] || { printf 'Nox deployment %s is no longer current main (%s)\n' "$expected_main" "$latest" >&2; exit 75; }
+if [[ "$sha" != "$expected_main" ]] && ! git_cmd merge-base --is-ancestor "$sha" "$expected_main"; then
+  printf 'Nox deployment %s is not an ancestor of main %s\n' "$sha" "$expected_main" >&2
+  exit 75
+fi
 ci_runs="$(gh run list --repo Kinosail/kinosail --workflow ci.yml --commit "$sha" --event push --limit 1 --json databaseId,headSha,status,conclusion)"
 ci_run="$(jq -er --arg sha "$sha" 'if length == 1 and .[0].headSha == $sha and .[0].status == "completed" and .[0].conclusion == "success" then .[0].databaseId else empty end' <<<"$ci_runs")" || {
   printf 'Waiting for successful main CI at %s\n' "$sha" >&2
@@ -96,8 +102,8 @@ rm -f "$log"
 printf 'Built Nox image %s (%ss)\n' "$sha" "$(($(date +%s) - started))"
 
 latest="$(git_cmd ls-remote origin refs/heads/main | awk '{print $1}')"
-if [[ "$latest" != "$sha" ]]; then
-  printf 'Nox build %s superseded by %s; retry latest\n' "$sha" "$latest" >&2
+if [[ "$latest" != "$expected_main" ]]; then
+  printf 'Nox build for main %s superseded by %s; retry latest\n' "$expected_main" "$latest" >&2
   exit 75
 fi
 
