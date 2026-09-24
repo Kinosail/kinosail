@@ -45,7 +45,21 @@ import com.kinosail.player.design.KinoColor
 @Composable
 internal fun PlaybackScreen(item: CatalogItem, viewer: Viewer, tv: Boolean, close: () -> Unit,
                             onNext: (CatalogItem) -> Unit) {
-    val playback: PlaybackModel = viewModel()
+    val audio = item.kind == "music" || item.kind == "audiobook"
+    val audioConnection = rememberAudioPlaybackConnection(audio, tv)
+    val playback = if (audio) audioConnection.model else viewModel<PlaybackModel>()
+    if (playback == null) {
+        BackHandler(onBack = close)
+        Column(Modifier.fillMaxSize().background(Color.Black).safeDrawingPadding().padding(24.dp),
+            verticalArrangement = Arrangement.spacedBy(20.dp)) {
+            Text(if (audioConnection.error) "Could not start audio. Return to the library and try again."
+                else "Starting audio…", color = Color.White)
+            if (tv) androidx.tv.material3.Button(onClick = close) {
+                androidx.tv.material3.Text("Done")
+            } else TextButton(onClick = close) { Text("Done", color = KinoColor.signal) }
+        }
+        return
+    }
     val player = playback.player
     var speedPicker by remember { mutableStateOf(false) }
     var trackPicker by remember { mutableStateOf(false) }
@@ -61,11 +75,13 @@ internal fun PlaybackScreen(item: CatalogItem, viewer: Viewer, tv: Boolean, clos
         controllerShowTimeoutMs = if (tv) 5_000 else 3_000
     } } }
     BackHandler { if (speedPicker) speedPicker = false else if (trackPicker) closeTracks() else close() }
-    LaunchedEffect(item.id, viewer.id) { playback.start(item, viewer) }
+    LaunchedEffect(item.id, viewer.id, playback) {
+        if (playback.activeItemId != item.id) playback.start(item, viewer)
+    }
     LaunchedEffect(speedPicker, tv) { if (speedPicker && tv) speedFocus.requestFocus() }
     LaunchedEffect(playback.retryable, tv) { if (playback.retryable && tv) retryFocus.requestFocus() }
     LaunchedEffect(trackPicker, tv) { if (trackPicker && tv) trackFocus.requestFocus() }
-    DisposableEffect(Unit) { onDispose { playback.stop() } }
+    DisposableEffect(playback, audio) { onDispose { if (!audio) playback.stop() } }
     Box(Modifier.fillMaxSize().background(Color.Black)) {
         if (playerView != null) AndroidView(
             factory = { playerView.apply { if (tv) post { requestFocus() } } },

@@ -37,6 +37,7 @@ class ConnectionModel(application: Application) : AndroidViewModel(application) 
         viewModelScope.launch {
             val saved = try { withContext(Dispatchers.IO) { sessions.load() } }
                 catch (_: Exception) {
+                    AudioPlaybackService.stopIfRunning(getApplication())
                     withContext(Dispatchers.IO) { runCatching { sessions.clear() } }
                     notice = "Saved connection could not be restored. Connect again."
                     null
@@ -50,6 +51,7 @@ class ConnectionModel(application: Application) : AndroidViewModel(application) 
                     return@launch
                 } catch (error: ServerHttpException) {
                     if (error.status == 401 || error.status == 403) {
+                        AudioPlaybackService.stopIfRunning(getApplication())
                         withContext(Dispatchers.IO) { runCatching { sessions.clear() } }
                         notice = "This connection expired. Connect again."
                     } else notice = "Could not reach your Server. Try connecting again."
@@ -151,6 +153,7 @@ class ConnectionModel(application: Application) : AndroidViewModel(application) 
         notice = null
         viewModelScope.launch {
             try {
+                AudioPlaybackService.stopIfRunning(getApplication())
                 withContext(Dispatchers.IO) { sessions.clear() }
                 current = null
                 phase = ConnectionPhase.Setup
