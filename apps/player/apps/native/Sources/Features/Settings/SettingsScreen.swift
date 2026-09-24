@@ -3,6 +3,7 @@ import SwiftUI
 struct SettingsScreen: View {
     @Environment(AppSession.self) private var session
     @State private var signingOut = false
+    @State private var confirmsSignOut = false
     #if os(tvOS)
     @AppStorage(TopShelfPreferences.enabledKey) private var topShelf = true
     #endif
@@ -42,8 +43,7 @@ struct SettingsScreen: View {
                 Text("Kinosail plays directly from your Server. Your session is stored securely on this device.")
                     .font(.footnote).foregroundStyle(.secondary)
                 Button(signingOut ? "Signing out…" : "Sign out", role: .destructive) {
-                    signingOut = true
-                    Task { await session.disconnect(); signingOut = false }
+                    confirmsSignOut = true
                 }.disabled(signingOut)
             }
         }
@@ -53,5 +53,12 @@ struct SettingsScreen: View {
         .background(KinoTheme.background)
         .navigationTitle("Settings")
         .tvOSConfigurationLayout(title: "Settings", symbol: "gearshape")
+        .alert("Sign out of this device?", isPresented: $confirmsSignOut) {
+            Button("Sign out", role: .destructive) {
+                signingOut = true
+                Task { await session.disconnect(); signingOut = false }
+            }
+            Button("Cancel", role: .cancel) {}
+        } message: { Text("You’ll need to connect this device to your Server again.") }
     }
 }

@@ -4,13 +4,15 @@ struct SupporterScreen: View {
     @Environment(AppSession.self) private var session
     @State private var collection: SupporterCollection?
     @State private var error: String?
+    @State private var loading = true
     @State private var saving = false
     @State private var showingBadges = false
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 28) {
-                Text("A place in the story.").font(.largeTitle.bold())
+                Text("A place in the story.").font(.largeTitle.bold()).accessibilityAddTraits(.isHeader)
                 Text("Collect one-time, monthly and yearly badges. Kinosail stays complete and free for everyone.")
+                if loading && collection == nil { ProgressView("Loading collection…") }
                 if let collection {
                     ForEach(["one-time", "monthly", "yearly"], id: \.self) { edition in
                         let badge = collection.badges.first { $0.edition == edition }
@@ -42,18 +44,21 @@ struct SupporterScreen: View {
             .task(id: session.supporterRevision) { await load() }
     }
     private func load() async {
+        loading = true
+        error = nil
+        defer { loading = false }
         do {
-            collection = try await session.client?.supporterCollection()
+            guard let client = session.client else { throw ClientError.unavailable }
+            collection = try await client.supporterCollection()
             showingBadges = collection?.visible ?? false
-            error = nil
         }
-        catch { self.error = error.localizedDescription }
+        catch { self.error = AppSession.message(error) }
     }
     private func save(_ visible: Bool) {
         saving = true
         Task {
             do { try await session.client?.setSupporterVisibility(visible); session.supporterRevision = UUID(); await load() }
-            catch { self.error = error.localizedDescription; showingBadges = collection?.visible ?? false }
+            catch { self.error = AppSession.message(error); showingBadges = collection?.visible ?? false }
             saving = false
         }
     }
