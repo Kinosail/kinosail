@@ -19,6 +19,9 @@ data class CatalogState(
     val notice: String? = null,
     val selected: CatalogItem? = null,
     val view: String = "all",
+    val listed: Boolean? = null,
+    val listBusy: Boolean = false,
+    val detailNotice: String? = null,
 )
 
 class CatalogModel(application: Application) : AndroidViewModel(application) {
@@ -31,6 +34,7 @@ class CatalogModel(application: Application) : AndroidViewModel(application) {
     private var generation = 0
     private var activeQuery = ""
     private var activeView = "all"
+    private var refreshAfterDetail = false
 
     var searchInput by mutableStateOf("")
     var state by mutableStateOf(CatalogState())
@@ -38,6 +42,7 @@ class CatalogModel(application: Application) : AndroidViewModel(application) {
 
     fun open(viewer: Viewer) {
         val attempt = ++generation
+        viewerId = viewer.id
         artworkCache.evictAll()
         state = CatalogState(loading = true)
         searchInput = ""
@@ -72,7 +77,7 @@ class CatalogModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun changeView(view: String) {
-        require(view in setOf("all", "shows")) { "Invalid library view." }
+        require(view in setOf("all", "shows", "list")) { "Invalid library view." }
         if (view == activeView || session == null) return
         activeView = view
         activeQuery = ""
@@ -97,18 +102,77 @@ class CatalogModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun select(item: CatalogItem) {
-        if (state.items.any { it.id == item.id }) state = state.copy(selected = item)
+        if (state.items.any { it.id == item.id }) selectDetail(item)
     }
 
-    fun selectHomeItem(item: CatalogItem) { state = state.copy(selected = item) }
+    fun selectHomeItem(item: CatalogItem) { selectDetail(item) }
 
-    fun closeDetail() { state = state.copy(selected = null) }
+    private fun selectDetail(item: CatalogItem) {
+        state = state.copy(selected = item, listed = null, listBusy = item.showId.isEmpty(), detailNotice = null)
+        if (item.showId.isEmpty()) loadDetail(item.id)
+    }
+
+    fun retryDetail() { state.selected?.id?.let(::loadDetail) }
+
+    private fun loadDetail(id: String) {
+        val viewer = viewerId ?: return
+        val attempt = generation
+        state = state.copy(listBusy = true, detailNotice = null)
+        viewModelScope.launch {
+            try {
+                val saved = session ?: withContext(Dispatchers.IO) { sessions.load() }
+                    ?: throw IllegalStateException("No saved connection")
+                val detail = withContext(Dispatchers.IO) { CatalogApi(saved.server).details(id, saved.token, viewer) }
+                if (attempt == generation && state.selected?.id == id) {
+                    session = saved
+                    state = state.copy(selected = detail.item, listed = detail.listed, listBusy = false)
+                }
+            } catch (_: Exception) {
+                if (attempt == generation && state.selected?.id == id) state = state.copy(
+                    listBusy = false, detailNotice = "Could not load My List status. Try again.")
+            }
+        }
+    }
+
+    fun setListed(listed: Boolean) {
+        val item = state.selected ?: return
+        val saved = session ?: return
+        val viewer = viewerId ?: return
+        if (state.listed == null || state.listBusy || state.listed == listed) return
+        val attempt = generation
+        state = state.copy(listBusy = true, detailNotice = null)
+        viewModelScope.launch {
+            try {
+                withContext(Dispatchers.IO) { CatalogApi(saved.server).setListed(item.id, saved.token, viewer, listed) }
+                if (attempt == generation) {
+                    if (state.selected?.id == item.id) {
+                        refreshAfterDetail = true
+                        state = state.copy(listed = listed, listBusy = false)
+                    } else fetch(attempt, 0)
+                }
+            } catch (_: Exception) {
+                if (attempt == generation && state.selected?.id == item.id) state = state.copy(
+                    listBusy = false, detailNotice = "Could not update My List. Try again.")
+            }
+        }
+    }
+
+    fun closeDetail() {
+        state = state.copy(selected = null, listed = null, listBusy = false, detailNotice = null)
+        if (refreshAfterDetail) {
+            refreshAfterDetail = false
+            val attempt = ++generation
+            state = CatalogState(loading = true, view = activeView)
+            viewModelScope.launch { fetch(attempt, 0) }
+        }
+    }
 
     fun reset() {
         generation++
         session = null
         viewerId = null
         activeView = "all"
+        refreshAfterDetail = false
         artworkCache.evictAll()
         state = CatalogState()
     }

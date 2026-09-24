@@ -24,6 +24,7 @@ data class CatalogItem(
 )
 
 data class CatalogPage(val items: List<CatalogItem>, val total: Int, val offset: Int, val limit: Int)
+data class CatalogDetail(val item: CatalogItem, val listed: Boolean)
 
 class CatalogApi(
     server: ServerAddress,
@@ -35,7 +36,7 @@ class CatalogApi(
              view: String = "all", sort: String = "title"): CatalogPage {
         val query = rawQuery.trim()
         require(query.toByteArray(Charsets.UTF_8).size <= 512 && query.none(Char::isISOControl) &&
-            offset in 0..1_000_000 && view in setOf("all", "shows", "history") &&
+            offset in 0..1_000_000 && view in setOf("all", "shows", "history", "list") &&
             sort in setOf("title", "added")) { "Invalid library request." }
         val encoded = URLEncoder.encode(query, Charsets.UTF_8.name())
         val result = api.catalog("/api/v1/library?q=$encoded&view=$view&sort=$sort&offset=$offset&limit=$PAGE_SIZE",
@@ -57,15 +58,29 @@ class CatalogApi(
         return CatalogPage(items, total, returnedOffset, limit)
     }
 
-    fun item(itemId: String, token: String, viewerId: String): CatalogItem {
+    fun item(itemId: String, token: String, viewerId: String): CatalogItem =
+        details(itemId, token, viewerId).item
+
+    fun details(itemId: String, token: String, viewerId: String): CatalogDetail {
         require(itemId.matches(ID)) { "Invalid item request." }
         val result = api.item(itemId, token, viewerId)
             .fields(setOf("item", "listed", "profileId"), setOf("item", "listed", "profileId"))
-        require((result["listed"] as? JsonPrimitive)?.let { !it.isString && it.booleanOrNull != null } == true &&
+        val listed = (result["listed"] as? JsonPrimitive)?.takeIf { !it.isString }?.booleanOrNull
+        require(listed != null &&
             result.text("profileId", 128) == viewerId) { INVALID_RESPONSE }
         val item = parseItem(result.getValue("item"))
         require(item.id == itemId) { INVALID_RESPONSE }
-        return item
+        return CatalogDetail(item, listed)
+    }
+
+    fun setListed(itemId: String, token: String, viewerId: String, listed: Boolean): Boolean {
+        require(itemId.matches(ID)) { "Invalid My List request." }
+        val result = api.setListed(itemId, token, viewerId, listed)
+            .fields(setOf("listed"), setOf("listed"))
+        require((result["listed"] as? JsonPrimitive)?.let { !it.isString && it.booleanOrNull == listed } == true) {
+            INVALID_RESPONSE
+        }
+        return listed
     }
 
     companion object {

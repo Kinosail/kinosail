@@ -1,6 +1,7 @@
 package com.kinosail.player.core
 
 import java.io.ByteArrayInputStream
+import java.io.ByteArrayOutputStream
 import java.net.HttpURLConnection
 import java.net.URL
 import org.junit.Assert.assertEquals
@@ -104,12 +105,44 @@ class CatalogApiTest {
         }
     }
 
+    @Test fun browsesMyListAndSavesViewerScopedMembership() {
+        val page = CatalogResponse(200, page().replace("\"view\":\"all\"", "\"view\":\"list\""))
+        val items = CatalogApi(server) { url -> page.also { it.requestedURL = url } }
+            .list("token", "alex", view = "list")
+        assertEquals(1, items.total)
+        assertTrue(page.requestedURL!!.query.contains("view=list"))
+        val saved = CatalogResponse(200, """{"listed":true}""")
+        assertTrue(CatalogApi(server) { url -> saved.also { it.requestedURL = url } }
+            .setListed("film-1", "token", "alex", true))
+        assertEquals("/api/v1/items/film-1/list", saved.requestedURL?.path)
+        assertEquals("PUT", saved.requestMethod)
+        assertEquals("""{"listed":true}""", saved.sent.toString(Charsets.UTF_8))
+        assertEquals("alex", saved.getRequestProperty("X-Kinosail-Viewer-Profile"))
+        assertTrue(saved.closed)
+        var opens = 0
+        val api = CatalogApi(server) { opens++; saved }
+        assertThrows(IllegalArgumentException::class.java) { api.setListed("../other", "token", "alex", true) }
+        assertThrows(IllegalArgumentException::class.java) { api.setListed("film-1", "bad token", "alex", true) }
+        assertThrows(IllegalArgumentException::class.java) { api.setListed("film-1", "token", "bad viewer", true) }
+        assertEquals(0, opens)
+        listOf("{}", """{"listed":false}""", """{"listed":"true"}""",
+            """{"listed":true,"extra":1}""").forEach { invalid ->
+            assertThrows(Exception::class.java) {
+                CatalogApi(server) { CatalogResponse(200, invalid) }
+                    .setListed("film-1", "token", "alex", true)
+            }
+        }
+    }
+
     @Test fun loadsTheValidatedNextItemForTheSameViewer() {
         val body = """{"item":$item,"listed":true,"profileId":"alex"}"""
         val response = CatalogResponse(200, body)
         val loaded = CatalogApi(server) { url -> response.also { it.requestedURL = url } }
             .item("film-1", "token", "alex")
         assertEquals("film-1", loaded.id)
+        assertEquals(false, CatalogApi(server) { CatalogResponse(200,
+            body.replace("\"listed\":true", "\"listed\":false")) }
+            .details("film-1", "token", "alex").listed)
         assertEquals("/api/v1/items/film-1", response.requestedURL?.path)
         assertEquals("alex", response.getRequestProperty("X-Kinosail-Viewer-Profile"))
         assertEquals("film-1", CatalogApi(server) { CatalogResponse(200,
@@ -162,6 +195,7 @@ private class CatalogResponse(private val status: Int, private val body: String,
     HttpURLConnection(URL("https://example.com/api/v1/library")) {
     var requestedURL: URL? = null
     var closed = false
+    val sent = ByteArrayOutputStream()
     override fun connect() = Unit
     override fun disconnect() { closed = true }
     override fun usingProxy() = false
@@ -169,4 +203,5 @@ private class CatalogResponse(private val status: Int, private val body: String,
     override fun getContentType() = type
     override fun getContentLengthLong() = body.toByteArray().size.toLong()
     override fun getInputStream() = ByteArrayInputStream(body.toByteArray())
+    override fun getOutputStream() = sent
 }
