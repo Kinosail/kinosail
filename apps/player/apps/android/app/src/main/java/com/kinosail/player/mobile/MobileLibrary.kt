@@ -31,6 +31,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.MaterialTheme
@@ -164,7 +165,8 @@ internal fun MobileLibrary(connection: ConnectionModel, viewer: Viewer) {
                     verticalArrangement = Arrangement.spacedBy(16.dp),
                     contentPadding = PaddingValues(bottom = 24.dp)) {
                     items(state.items, key = CatalogItem::id) { item ->
-                        Card(onClick = { catalog.select(item) }, modifier = Modifier.fillMaxWidth()) {
+                        Card(onClick = { catalog.select(item) }, modifier = Modifier.fillMaxWidth(),
+                            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)) {
                             Column {
                                 CatalogPoster(item, catalog, Modifier.fillMaxWidth())
                                 Text(item.title, modifier = Modifier.padding(10.dp),

@@ -19,6 +19,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -99,7 +100,7 @@ internal fun HomeScreen(viewer: Viewer, catalog: CatalogModel, tv: Boolean, nowP
                 if (featured != null) item {
                     Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(if (tv) 32.dp else 16.dp),
                         verticalAlignment = Alignment.CenterVertically) {
-                        HomeArtwork(featured, catalog, heroWidth)
+                        HomeArtwork(featured, catalog, heroWidth, tv)
                         Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
                             Text(featured.title, style = if (tv || wideTouch) MaterialTheme.typography.headlineLarge
                                 else MaterialTheme.typography.titleLarge,
@@ -146,13 +147,14 @@ private fun HomeShelf(title: String, items: List<CatalogItem>, catalog: CatalogM
             items(items, key = CatalogItem::id) { item ->
                 if (tv) androidx.tv.material3.Card(onClick = { open(item) }, modifier = Modifier.width(200.dp)) {
                     Column {
-                        HomeArtwork(item, catalog, 200)
+                        HomeArtwork(item, catalog, 200, tv = true)
                         androidx.tv.material3.Text(item.title, maxLines = 2, modifier = Modifier.padding(8.dp))
                     }
                 } else androidx.compose.material3.Card(onClick = { open(item) },
-                    modifier = Modifier.width(if (wideTouch) 190.dp else 144.dp)) {
+                    modifier = Modifier.width(if (wideTouch) 190.dp else 144.dp),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)) {
                     Column {
-                        HomeArtwork(item, catalog, if (wideTouch) 190 else 144)
+                        HomeArtwork(item, catalog, if (wideTouch) 190 else 144, tv = false)
                         Text(item.title, maxLines = 2, modifier = Modifier.padding(8.dp))
                     }
                 }
@@ -162,13 +164,16 @@ private fun HomeShelf(title: String, items: List<CatalogItem>, catalog: CatalogM
 }
 
 @Composable
-private fun HomeArtwork(item: CatalogItem, catalog: CatalogModel, width: Int) {
+private fun HomeArtwork(item: CatalogItem, catalog: CatalogModel, width: Int, tv: Boolean) {
     val bitmap by produceState<android.graphics.Bitmap?>(null, item.artwork, catalog, width) {
         value = catalog.artwork(item.artwork, 400)
     }
-    Box(Modifier.width(width.dp).aspectRatio(2f / 3f).background(KinoColor.raised),
+    val dark = tv || isSystemInDarkTheme()
+    Box(Modifier.width(width.dp).aspectRatio(2f / 3f)
+        .background(if (dark) KinoColor.raised else KinoColor.lightRaised),
         contentAlignment = Alignment.Center) {
-        Text(item.title.firstOrNull()?.uppercase() ?: "K", color = KinoColor.signal,
+        Text(item.title.firstOrNull()?.uppercase() ?: "K",
+            color = if (dark) KinoColor.signal else KinoColor.lightSignal,
             style = MaterialTheme.typography.displayMedium, modifier = Modifier.clearAndSetSemantics { })
         bitmap?.let { Image(it.asImageBitmap(), contentDescription = null,
             contentScale = ContentScale.Crop, modifier = Modifier.fillMaxSize()) }

@@ -19,6 +19,7 @@ object KinoColor {
     val signalInk = Color(0xFF142000)
     val lightBackground = Color(0xFFF4F8EF)
     val lightSurface = Color.White
+    val lightRaised = Color(0xFFE9EFE2)
     val lightText = Color(0xFF162011)
     val lightMuted = Color(0xFF5B6852)
     val lightSignal = Color(0xFF3C6100)
@@ -30,22 +31,33 @@ fun KinoTheme(content: @Composable () -> Unit) {
         darkColorScheme(
             primary = KinoColor.signal,
             onPrimary = KinoColor.signalInk,
+            secondaryContainer = KinoColor.raised,
+            onSecondaryContainer = KinoColor.text,
             background = KinoColor.background,
             onBackground = KinoColor.text,
             surface = KinoColor.surface,
+            surfaceContainerLow = KinoColor.surface,
             onSurface = KinoColor.text,
             surfaceVariant = KinoColor.raised,
             onSurfaceVariant = KinoColor.muted,
+            outline = KinoColor.muted,
+            outlineVariant = KinoColor.raised,
         )
     } else {
         lightColorScheme(
             primary = KinoColor.lightSignal,
             onPrimary = Color.White,
+            secondaryContainer = KinoColor.lightRaised,
+            onSecondaryContainer = KinoColor.lightText,
             background = KinoColor.lightBackground,
             onBackground = KinoColor.lightText,
             surface = KinoColor.lightSurface,
+            surfaceContainerLow = KinoColor.lightSurface,
             onSurface = KinoColor.lightText,
+            surfaceVariant = KinoColor.lightRaised,
             onSurfaceVariant = KinoColor.lightMuted,
+            outline = KinoColor.lightMuted,
+            outlineVariant = KinoColor.lightRaised,
         )
     }
     MaterialTheme(colorScheme = colors, content = content)
