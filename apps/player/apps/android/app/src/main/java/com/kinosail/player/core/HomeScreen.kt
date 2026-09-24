@@ -41,7 +41,7 @@ import com.kinosail.player.design.KinoColor
 import com.kinosail.player.design.SailBackdrop
 
 @Composable
-internal fun HomeScreen(viewer: Viewer, catalog: CatalogModel, tv: Boolean, browse: () -> Unit,
+internal fun HomeScreen(viewer: Viewer, catalog: CatalogModel, tv: Boolean, nowPlaying: CatalogItem?, browse: () -> Unit,
                         open: (CatalogItem) -> Unit, play: (CatalogItem) -> Unit) {
     val model: HomeModel = viewModel()
     val state = model.state
@@ -74,6 +74,13 @@ internal fun HomeScreen(viewer: Viewer, catalog: CatalogModel, tv: Boolean, brow
                 if (tv) androidx.tv.material3.Button(onClick = browse) {
                     androidx.tv.material3.Text("Browse Library")
                 } else TextButton(onClick = browse) { Text("Library") }
+            }
+            if (nowPlaying != null) {
+                val label = "Now playing · ${nowPlaying.title}"
+                if (tv) androidx.tv.material3.Button(onClick = { play(nowPlaying) }) {
+                    androidx.tv.material3.Text(label)
+                } else androidx.compose.material3.Button(onClick = { play(nowPlaying) },
+                    modifier = Modifier.fillMaxWidth()) { Text(label) }
             }
             LazyColumn(Modifier.weight(1f), contentPadding = PaddingValues(bottom = 24.dp),
                 verticalArrangement = Arrangement.spacedBy(if (tv) 24.dp else 16.dp)) {

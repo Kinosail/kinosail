@@ -56,6 +56,7 @@ import androidx.tv.material3.MaterialTheme
 import androidx.tv.material3.Text
 import com.kinosail.player.core.CatalogItem
 import com.kinosail.player.core.CatalogModel
+import com.kinosail.player.core.AudioPlaybackService
 import com.kinosail.player.core.ConnectionModel
 import com.kinosail.player.core.HomeScreen
 import com.kinosail.player.core.LIBRARY_VIEWS
@@ -69,6 +70,7 @@ import com.kinosail.player.design.SailBackdrop
 internal fun TvLibrary(connection: ConnectionModel, viewer: Viewer) {
     val catalog: CatalogModel = viewModel()
     val state = catalog.state
+    val nowPlaying = AudioPlaybackService.nowPlayingFor(viewer)
     var home by remember { mutableStateOf(true) }
     var playingItem by remember { mutableStateOf<CatalogItem?>(null) }
     var searchEditing by remember { mutableStateOf(false) }
@@ -126,7 +128,7 @@ internal fun TvLibrary(connection: ConnectionModel, viewer: Viewer) {
         return
     }
     if (home && state.selected == null) {
-        HomeScreen(viewer, catalog, tv = true, browse = { home = false },
+        HomeScreen(viewer, catalog, tv = true, nowPlaying = nowPlaying, browse = { home = false },
             open = catalog::selectHomeItem, play = { playingItem = it })
         return
     }
@@ -139,6 +141,9 @@ internal fun TvLibrary(connection: ConnectionModel, viewer: Viewer) {
                 Text("Kinosail", style = MaterialTheme.typography.headlineLarge,
                     color = MaterialTheme.colorScheme.onBackground)
                 Button(onClick = connection::signOut, enabled = !connection.busy) { Text("Disconnect") }
+            }
+            if (nowPlaying != null) Button(onClick = { playingItem = nowPlaying }) {
+                Text("Now playing · ${nowPlaying.title}")
             }
             if (state.selected != null) {
                 TvDetail(state.selected, catalog, Modifier.focusRequester(detailFocus)) { playingItem = state.selected }

@@ -80,6 +80,11 @@ class PlaybackModel(application: Application) : AndroidViewModel(application) {
         private set
     internal var onPlayerChanged: ((ExoPlayer?) -> Unit)? = null
     internal val activeItemId get() = source?.itemId
+    private var activeAudioItem by mutableStateOf<CatalogItem?>(null)
+
+    internal fun nowPlayingFor(viewer: Viewer): CatalogItem? = activeAudioItem?.takeIf {
+        activeViewer?.id == viewer.id && activeViewer?.serverId == viewer.serverId && player != null
+    }
 
     fun start(item: CatalogItem, viewer: Viewer) {
         stop()
@@ -186,6 +191,7 @@ class PlaybackModel(application: Application) : AndroidViewModel(application) {
                 install(engine, path, if (plan.direct == null) MimeTypes.APPLICATION_M3U8 else plan.directType,
                     ((if (plan.direct == null) plan.compatibleTimeline.presentationTime(start) else start) * 1000).toLong(),
                     plan.direct == null)
+                activeAudioItem = item.takeIf { it.kind == "music" || it.kind == "audiobook" }
                 progressJob = viewModelScope.launch {
                     while (attempt == generation) { delay(15_000); checkpoint() }
                 }
@@ -381,6 +387,7 @@ class PlaybackModel(application: Application) : AndroidViewModel(application) {
         player?.release()
         player = null
         source = null
+        activeAudioItem = null
         activeTitle = ""
         server = null
         policy = null

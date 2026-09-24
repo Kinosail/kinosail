@@ -53,6 +53,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.kinosail.player.core.CatalogItem
 import com.kinosail.player.core.CatalogModel
+import com.kinosail.player.core.AudioPlaybackService
 import com.kinosail.player.core.ConnectionModel
 import com.kinosail.player.core.HomeScreen
 import com.kinosail.player.core.LIBRARY_VIEWS
@@ -65,6 +66,7 @@ import com.kinosail.player.design.SailBackdrop
 internal fun MobileLibrary(connection: ConnectionModel, viewer: Viewer) {
     val catalog: CatalogModel = viewModel()
     val state = catalog.state
+    val nowPlaying = AudioPlaybackService.nowPlayingFor(viewer)
     var home by remember { mutableStateOf(true) }
     var playingItem by remember { mutableStateOf<CatalogItem?>(null) }
     val keyboard = LocalSoftwareKeyboardController.current
@@ -89,7 +91,7 @@ internal fun MobileLibrary(connection: ConnectionModel, viewer: Viewer) {
         return
     }
     if (home && state.selected == null) {
-        HomeScreen(viewer, catalog, tv = false, browse = { home = false },
+        HomeScreen(viewer, catalog, tv = false, nowPlaying = nowPlaying, browse = { home = false },
             open = catalog::selectHomeItem, play = { playingItem = it })
         return
     }
@@ -103,6 +105,8 @@ internal fun MobileLibrary(connection: ConnectionModel, viewer: Viewer) {
                     color = MaterialTheme.colorScheme.onBackground)
                 TextButton(onClick = connection::signOut, enabled = !connection.busy) { Text("Disconnect") }
             }
+            if (nowPlaying != null) Button(onClick = { playingItem = nowPlaying },
+                modifier = Modifier.fillMaxWidth()) { Text("Now playing · ${nowPlaying.title}") }
             if (state.selected != null) {
                 MobileDetail(state.selected, catalog) { playingItem = state.selected }
             } else {
