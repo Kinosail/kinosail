@@ -278,8 +278,10 @@ jobs:
         with:
           distribution: temurin
           java-version: '17'
-      - if: matrix.language == 'java-kotlin'
-        run: sdkmanager --install 'platforms;android-37.0'
+      - uses: android-actions/setup-android@be39fa834029ff78f1a44aa3bb0819b8fc2bd8fd
+        if: matrix.language == 'java-kotlin'
+        with:
+          packages: 'platform-tools platforms;android-37.0'
       - if: matrix.language == 'javascript-typescript'
         run: |
           node scripts/ci/prepare-codeql-js.mjs
