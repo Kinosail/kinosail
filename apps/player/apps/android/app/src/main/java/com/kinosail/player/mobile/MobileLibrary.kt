@@ -105,7 +105,8 @@ internal fun MobileLibrary(connection: ConnectionModel, viewer: Viewer) {
             } else {
                 Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically) {
-                    Text(if (state.view == "shows") "TV Shows" else "Library", style = MaterialTheme.typography.headlineLarge,
+                    Text(when (state.view) { "shows" -> "TV Shows"; "list" -> "My List"; else -> "Library" },
+                        style = MaterialTheme.typography.headlineLarge,
                         color = MaterialTheme.colorScheme.onBackground)
                     TextButton(onClick = { home = true }) { Text("For you") }
                 }
@@ -115,6 +116,8 @@ internal fun MobileLibrary(connection: ConnectionModel, viewer: Viewer) {
                         label = { Text("All media") })
                     FilterChip(selected = state.view == "shows", onClick = { catalog.changeView("shows") },
                         label = { Text("TV Shows") })
+                    FilterChip(selected = state.view == "list", onClick = { catalog.changeView("list") },
+                        label = { Text("My List") })
                 }
                 OutlinedTextField(value = catalog.searchInput,
                     onValueChange = { if (it.length <= 512) catalog.searchInput = it },
@@ -127,7 +130,8 @@ internal fun MobileLibrary(connection: ConnectionModel, viewer: Viewer) {
                 if (state.notice != null) TextButton(onClick = catalog::retry) { Text("Retry") }
                 if (state.loading && state.items.isEmpty()) CircularProgressIndicator()
                 else if (state.items.isEmpty() && state.notice == null) {
-                    Text("Nothing in your library yet.", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    Text(if (state.view == "list") "Save a title to keep it in My List."
+                        else "Nothing in your library yet.", color = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
                 LazyVerticalGrid(columns = GridCells.Adaptive(144.dp), modifier = Modifier.weight(1f),
                     horizontalArrangement = Arrangement.spacedBy(12.dp),
@@ -159,11 +163,21 @@ internal fun MobileLibrary(connection: ConnectionModel, viewer: Viewer) {
 private fun MobileDetail(item: CatalogItem, catalog: CatalogModel, play: () -> Unit) {
     Column(Modifier.fillMaxWidth().verticalScroll(rememberScrollState()),
         verticalArrangement = Arrangement.spacedBy(16.dp)) {
-        TextButton(onClick = catalog::closeDetail) { Text("Back to Library") }
+        TextButton(onClick = catalog::closeDetail) { Text("Back") }
         if (item.kind in setOf("video", "music", "audiobook")) {
             Button(onClick = play, modifier = Modifier.fillMaxWidth()) {
                 Text(if (item.progress.seconds > 0 && !item.progress.watched) "Resume" else "Play")
             }
+        }
+        catalog.state.listed?.let { listed ->
+            TextButton(onClick = { catalog.setListed(!listed) }, enabled = !catalog.state.listBusy) {
+                Text(if (listed) "Remove from My List" else "Add to My List")
+            }
+        }
+        if (catalog.state.listBusy && catalog.state.listed == null) CircularProgressIndicator()
+        catalog.state.detailNotice?.let { notice ->
+            Text(notice, color = MaterialTheme.colorScheme.error)
+            if (catalog.state.listed == null) TextButton(onClick = catalog::retryDetail) { Text("Retry") }
         }
         CatalogPoster(item, catalog, Modifier.width(176.dp), dimension = 800)
         Text(item.title, style = MaterialTheme.typography.headlineLarge,
