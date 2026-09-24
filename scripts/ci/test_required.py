@@ -17,7 +17,7 @@ def case(scope, selected=True, app="player"):
     elif scope == "security":
         jobs = ("secrets", "codeql", "supply-chain", "findings")
     else:
-        jobs = ("static", "race", "security", "system", "browser", "tooling", "client")
+        jobs = ("static", "race", "security", "system", "browser", "tooling", "client", "android")
     needs.update({job: {"result": "success" if selected else "skipped"} for job in jobs})
     if scope == "repository":
         needs["static"]["result"] = "success"
@@ -25,6 +25,7 @@ def case(scope, selected=True, app="player"):
         needs["secrets"]["result"] = "success"
     if scope == "app" and app != "player":
         needs["client"]["result"] = "skipped"
+        needs["android"]["result"] = "skipped"
     if scope == "app" and app == "dashboard":
         needs["tooling"]["result"] = "skipped"
     return raw, needs
@@ -72,9 +73,21 @@ class RequiredTests(unittest.TestCase):
         plan["client"] = True
         raw = json.dumps(plan)
         needs = {**{job: {"result": "skipped"} for job in ("static", "race", "security", "system", "browser", "tooling")},
-                 "client": {"result": "success"}}
+                 "client": {"result": "success"}, "android": {"result": "skipped"}}
         verify("app", needs, raw, "player")
         needs["client"]["result"] = "skipped"
+        with self.assertRaises(ValueError):
+            verify("app", needs, raw, "player")
+
+    def test_android_only_requires_android_build(self):
+        plan = dict.fromkeys((*FLAGS, "deep"), False)
+        plan["android"] = True
+        raw = json.dumps(plan)
+        needs = {job: {"result": "skipped"} for job in
+                 ("static", "race", "security", "system", "browser", "tooling", "client", "android")}
+        needs["android"]["result"] = "success"
+        verify("app", needs, raw, "player")
+        needs["android"]["result"] = "skipped"
         with self.assertRaises(ValueError):
             verify("app", needs, raw, "player")
 

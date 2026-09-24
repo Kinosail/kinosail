@@ -119,8 +119,13 @@ struct DownloadOptionsScreen: View {
                     }
                 }
             }
-            if !loaded { Text("Loading download options…").foregroundStyle(.secondary) }
-            if let failure { Text(failure).foregroundStyle(.secondary) }
+            if !loaded { ProgressView("Loading download options…") }
+            if let failure {
+                Text(failure).foregroundStyle(.secondary)
+                if item.kind == .video && options == nil {
+                    Button("Try loading tracks again") { Task { await loadTracks() } }.disabled(!loaded)
+                }
+            }
             Section {
                 Button(busy ? "Adding download…" : "Add to Downloads") { enqueue() }.disabled(busy || !loaded || quality != .original && item.kind == .video && options == nil)
                 Text("Downloads use your saved network and storage preferences.").font(.caption).foregroundStyle(.secondary)
@@ -130,12 +135,9 @@ struct DownloadOptionsScreen: View {
         .toolbar { ToolbarItem(placement: .cancellationAction) { Button("Cancel") { dismiss() }.disabled(busy) } }
         .task(id: item.id) {
             quality = item.isAudio ? .audio : .compatible
-            guard let client = session.client else { return }
-            if item.kind == .video {
-                do { let tracks = try await client.downloadTracks(itemID: item.id); try Task.checkCancellation(); options = tracks; audio = Set(tracks.audio.map(\.index)) }
-                catch is CancellationError { return } catch { failure = AppSession.message(error) }
-            }
-            loaded = true
+            options = nil; audio = []; subtitles = []; failure = nil; loaded = false
+            if item.kind == .video { await loadTracks() }
+            else { loaded = true }
         }
         #else
         ContentUnavailableView("Download on iPhone or iPad", systemImage: "iphone")
@@ -146,6 +148,19 @@ struct DownloadOptionsScreen: View {
         Binding(get: { values.wrappedValue.contains(index) }, set: { if $0 { values.wrappedValue.insert(index) } else { values.wrappedValue.remove(index) } })
     }
     #if os(iOS)
+    private func loadTracks() async {
+        loaded = false
+        failure = nil
+        guard let client = session.client else { failure = AppSession.message(ClientError.unavailable); loaded = true; return }
+        do {
+            let tracks = try await client.downloadTracks(itemID: item.id)
+            try Task.checkCancellation()
+            options = tracks; audio = Set(tracks.audio.map(\.index))
+        } catch is CancellationError { return }
+        catch { failure = AppSession.message(error) }
+        loaded = true
+    }
+
     private func enqueue() {
         guard let client = session.client, !busy else { return }
         busy = true

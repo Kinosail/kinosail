@@ -20,40 +20,42 @@ struct ShowScreen: View {
             }) { show in
                 let episodes = show.episodes
                 VStack(alignment: .leading, spacing: 28) {
-                    if let first = episodes.first {
+                    if let next = ShowSeasonSelection.featuredEpisode(in: episodes) {
                         let seasons = Array(Set(episodes.map(\.season))).sorted()
-                        let season = ShowSeasonSelection.resolve(selectedSeason, among: seasons) ?? 0
-                        if let next = episodes.first(where: { !$0.progress.watched }) ?? episodes.first {
-                            #if os(tvOS)
-                            VStack(alignment: .leading, spacing: 16) {
-                                Text(first.show.isEmpty ? "Episodes" : first.show)
-                                    .font(.system(.largeTitle, design: .rounded).weight(.bold))
-                                    .fixedSize(horizontal: false, vertical: true)
-                                    .accessibilityAddTraits(.isHeader)
-                                HStack(spacing: 16) {
-                                    NavigationLink(value: ScreenDestination.playback(next.id)) {
-                                        Label("\(next.playLabel) · S\(next.season) E\(next.episode)", systemImage: "play.fill")
-                                    }
-                                    .buttonStyle(.borderedProminent).buttonBorderShape(.capsule).tint(KinoTheme.signal).foregroundStyle(KinoTheme.signalInk)
-                                    .tvOSDefaultPlayFocus(in: showFocus, id: "show.next-play.\(next.id)")
-                                    Picker("Season", selection: Binding(get: { season }, set: { selectedSeason = $0 })) {
-                                        ForEach(seasons, id: \.self) { Text($0 == 0 ? "Specials" : "Season \($0)").tag($0) }
-                                    }
-                                    .pickerStyle(.menu)
-                                    .accessibilityIdentifier("show.season-picker")
-                                }
-                                .controlSize(.large)
+                        let season = ShowSeasonSelection.resolve(selectedSeason, among: seasons, defaultingTo: next.season) ?? 0
+                        #if os(tvOS)
+                        VStack(alignment: .leading, spacing: 16) {
+                            Text(next.show.isEmpty ? "Episodes" : next.show)
+                                .font(.system(.largeTitle, design: .rounded).weight(.bold))
+                                .fixedSize(horizontal: false, vertical: true)
+                                .accessibilityAddTraits(.isHeader)
+                            if !next.title.isEmpty {
+                                Text(next.title).font(.title3).foregroundStyle(.secondary)
                             }
-                            .foregroundStyle(KinoTheme.text)
-                            .focusSection()
-                            #else
-                            CinemaHero(item: first, title: first.show.isEmpty ? "Episodes" : first.show, showsPlot: false) {
+                            HStack(spacing: 16) {
                                 NavigationLink(value: ScreenDestination.playback(next.id)) {
                                     Label("\(next.playLabel) · S\(next.season) E\(next.episode)", systemImage: "play.fill")
-                                }.buttonStyle(.borderedProminent).buttonBorderShape(.capsule).tint(KinoTheme.signal).foregroundStyle(KinoTheme.signalInk)
+                                }
+                                .buttonStyle(.borderedProminent).buttonBorderShape(.capsule).tint(KinoTheme.signal).foregroundStyle(KinoTheme.signalInk)
+                                .tvOSDefaultPlayFocus(in: showFocus, id: "show.next-play.\(next.id)")
+                                Picker("Season", selection: Binding(get: { season }, set: { selectedSeason = $0 })) {
+                                    ForEach(seasons, id: \.self) { Text($0 == 0 ? "Specials" : "Season \($0)").tag($0) }
+                                }
+                                .pickerStyle(.menu)
+                                .accessibilityIdentifier("show.season-picker")
                             }
-                            #endif
+                            .controlSize(.large)
                         }
+                        .foregroundStyle(KinoTheme.text)
+                        .focusSection()
+                        #else
+                        CinemaHero(item: next, title: next.show.isEmpty ? "Episodes" : next.show,
+                                   subtitle: next.title, showsPlot: false) {
+                            NavigationLink(value: ScreenDestination.playback(next.id)) {
+                                Label("\(next.playLabel) · S\(next.season) E\(next.episode)", systemImage: "play.fill")
+                            }.buttonStyle(.borderedProminent).buttonBorderShape(.capsule).tint(KinoTheme.signal).foregroundStyle(KinoTheme.signalInk)
+                        }
+                        #endif
                         #if os(iOS)
                         Picker("Season", selection: Binding(get: { season }, set: { selectedSeason = $0 })) {
                             ForEach(seasons, id: \.self) { Text($0 == 0 ? "Specials" : "Season \($0)").tag($0) }
@@ -99,7 +101,13 @@ struct ShowScreen: View {
 }
 
 enum ShowSeasonSelection {
-    static func resolve(_ selected: Int?, among seasons: [Int]) -> Int? {
-        selected.flatMap { seasons.contains($0) ? $0 : nil } ?? seasons.first
+    static func featuredEpisode(in episodes: [MediaItem]) -> MediaItem? {
+        episodes.first(where: { !$0.progress.watched }) ?? episodes.first
+    }
+
+    static func resolve(_ selected: Int?, among seasons: [Int], defaultingTo featured: Int? = nil) -> Int? {
+        selected.flatMap { seasons.contains($0) ? $0 : nil }
+            ?? featured.flatMap { seasons.contains($0) ? $0 : nil }
+            ?? seasons.first
     }
 }
