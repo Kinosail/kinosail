@@ -102,6 +102,8 @@ See [Architecture and privacy]({{ '/reference/architecture-and-privacy/' | relat
 
 ## Software and release checks
 
+The official public website is [kinosail.com](https://kinosail.com/), and the source repository is [Kinosail/kinosail on GitHub](https://github.com/Kinosail/kinosail). The published Player image is `ghcr.io/kinosail/kinosail-player:latest`.
+
 The recommended installer verifies the container image's keyless signature and pins its digest. A checksum can detect a changed file, but it does not prove who published it. Use the signed check described in [Install with Docker]({{ '/quickstart/' | relative_url }}).
 
 Security maintenance targets current `main` and the latest published app release, when one exists. Check the [repository security policy](https://github.com/Kinosail/kinosail/blob/main/SECURITY.md) for the current supported revisions and disclosure process. Older releases do not have a long-term-support promise.

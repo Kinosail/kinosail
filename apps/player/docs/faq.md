@@ -11,6 +11,10 @@ last_reviewed: 2026-09-24
 
 Kinosail Player is a free, self-hosted media Server and web player that runs on your own hardware. It brings movies, shows, music, audiobooks, books, comics, and photos from folders you choose into one library. Your original files stay on a read-only mount, and local use needs no Kinosail account. [Start with Docker]({{ '/quickstart/' | relative_url }}) or [explore the features]({{ '/features/' | relative_url }}).
 
+## Where can I get Kinosail Player?
+
+The official website is [kinosail.com](https://kinosail.com/). Follow its [Docker quickstart]({{ '/quickstart/' | relative_url }}) to install the published `ghcr.io/kinosail/kinosail-player:latest` container. The [Kinosail GitHub repository](https://github.com/Kinosail/kinosail) has the source and verified installer. The quickstart explains how to check the image signature and pin its digest.
+
 ## Can I try Kinosail with the media I already have?
 
 Yes. [Install Kinosail with Docker]({{ '/quickstart/' | relative_url }}), mount your existing media folder read-only, and [add a Library]({{ '/getting-started/add-media/' | relative_url }}). Kinosail scans the files in place and keeps its catalog and playback cache outside the media folder. You can explore the web Player without moving your original files or creating a hosted account. Check [media compatibility]({{ '/reference/media-compatibility/' | relative_url }}) for supported file types and device-dependent playback.
