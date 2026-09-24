@@ -106,6 +106,19 @@ class CatalogApiTest {
         assertEquals(0, opens)
     }
 
+    @Test fun acceptsOnlyTheItemsOwnBoundedMediaPath() {
+        val photo = """{"id":"photo-1","kind":"photo","title":"Harbor","stream":"/media/photo-1"}"""
+        val result = CatalogApi(server) { CatalogResponse(200, page(photo)) }.list("token", "alex")
+        assertEquals("/media/photo-1", result.items.single().stream)
+        for (path in listOf("https://other.example/media/photo-1", "//other.example/media/photo-1",
+            "/media/other", "/media/photo-1?token=secret", "/media/" + "x".repeat(257))) {
+            val invalid = photo.replace("/media/photo-1", path)
+            assertThrows(Exception::class.java) {
+                CatalogApi(server) { CatalogResponse(200, page(invalid)) }.list("token", "alex")
+            }
+        }
+    }
+
     @Test fun loadsHomeShelvesWithValidatedViewAndSort() {
         val history = CatalogResponse(200, page().replace("\"view\":\"all\"", "\"view\":\"history\""))
         val recent = CatalogResponse(200, page().replace("\"sort\":\"title\"", "\"sort\":\"added\""))

@@ -61,6 +61,7 @@ import com.kinosail.player.core.ConnectionModel
 import com.kinosail.player.core.HomeScreen
 import com.kinosail.player.core.LIBRARY_VIEWS
 import com.kinosail.player.core.PlaybackScreen
+import com.kinosail.player.core.PhotoScreen
 import com.kinosail.player.core.ShowScreen
 import com.kinosail.player.core.Viewer
 import com.kinosail.player.design.KinoColor
@@ -73,6 +74,7 @@ internal fun TvLibrary(connection: ConnectionModel, viewer: Viewer) {
     val nowPlaying = AudioPlaybackService.nowPlayingFor(viewer)
     var home by remember { mutableStateOf(true) }
     var playingItem by remember { mutableStateOf<CatalogItem?>(null) }
+    var photoItem by remember { mutableStateOf<CatalogItem?>(null) }
     var searchEditing by remember { mutableStateOf(false) }
     val keyboard = LocalSoftwareKeyboardController.current
     var nextFocus by remember { mutableIntStateOf(-1) }
@@ -92,8 +94,8 @@ internal fun TvLibrary(connection: ConnectionModel, viewer: Viewer) {
     val gridState = rememberLazyGridState()
     LaunchedEffect(viewer.serverId, viewer.id) { catalog.open(viewer) }
     DisposableEffect(Unit) { onDispose { catalog.reset() } }
-    BackHandler(state.selected != null && playingItem == null) { catalog.closeDetail() }
-    BackHandler(!home && state.selected == null && playingItem == null) { home = true }
+    BackHandler(state.selected != null && playingItem == null && photoItem == null) { catalog.closeDetail() }
+    BackHandler(!home && state.selected == null && playingItem == null && photoItem == null) { home = true }
     BackHandler(searchEditing) { searchEditing = false; keyboard?.hide() }
     LaunchedEffect(searchEditing) {
         if (searchEditing) {
@@ -121,6 +123,10 @@ internal fun TvLibrary(connection: ConnectionModel, viewer: Viewer) {
             onNext = { playingItem = it })
         return
     }
+    if (photoItem != null) {
+        PhotoScreen(requireNotNull(photoItem), catalog, tv = true, close = { photoItem = null })
+        return
+    }
     if (state.selected?.showId?.isNotEmpty() == true) {
         ShowScreen(state.selected.showId, viewer, catalog, tv = true, catalog::closeDetail) {
             playingItem = it
@@ -146,7 +152,8 @@ internal fun TvLibrary(connection: ConnectionModel, viewer: Viewer) {
                 Text("Now playing · ${nowPlaying.title}")
             }
             if (state.selected != null) {
-                TvDetail(state.selected, catalog, Modifier.focusRequester(detailFocus)) { playingItem = state.selected }
+                TvDetail(state.selected, catalog, Modifier.focusRequester(detailFocus),
+                    play = { playingItem = state.selected }, viewPhoto = { photoItem = state.selected })
             } else {
                 Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.Bottom) {
@@ -226,7 +233,8 @@ internal fun TvLibrary(connection: ConnectionModel, viewer: Viewer) {
 }
 
 @Composable
-private fun TvDetail(item: CatalogItem, catalog: CatalogModel, firstModifier: Modifier, play: () -> Unit) {
+private fun TvDetail(item: CatalogItem, catalog: CatalogModel, firstModifier: Modifier,
+                     play: () -> Unit, viewPhoto: () -> Unit) {
     Column(Modifier.fillMaxWidth().verticalScroll(rememberScrollState()),
         verticalArrangement = Arrangement.spacedBy(24.dp)) {
         if (item.kind in setOf("video", "music", "audiobook")) {
@@ -234,7 +242,17 @@ private fun TvDetail(item: CatalogItem, catalog: CatalogModel, firstModifier: Mo
                 Text(if (item.progress.seconds > 0 && !item.progress.watched) "Resume" else "Play")
             }
             Button(onClick = catalog::closeDetail) { Text("Back") }
+        } else if (item.kind == "photo") {
+            Button(onClick = viewPhoto, enabled = item.stream.isNotEmpty(),
+                modifier = if (item.stream.isNotEmpty()) firstModifier else Modifier) {
+                Text("View photo")
+            }
+            Button(onClick = catalog::closeDetail,
+                modifier = if (item.stream.isEmpty()) firstModifier else Modifier) { Text("Back") }
         } else Button(onClick = catalog::closeDetail, modifier = firstModifier) { Text("Back") }
+        if (item.kind == "photo" && item.stream.isEmpty()) Text(
+            "Photo viewing is unavailable for this Viewer.",
+            color = MaterialTheme.colorScheme.onSurfaceVariant)
         catalog.state.listed?.let { listed ->
             Button(onClick = { catalog.setListed(!listed) }, enabled = !catalog.state.listBusy) {
                 Text(if (listed) "Remove from My List" else "Add to My List")

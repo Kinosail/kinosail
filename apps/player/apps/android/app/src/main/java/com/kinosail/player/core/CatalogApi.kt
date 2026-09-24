@@ -21,6 +21,7 @@ data class CatalogItem(
     val showId: String = "",
     val season: Int = 0,
     val episode: Int = 0,
+    val stream: String = "",
 )
 
 data class CatalogPage(val items: List<CatalogItem>, val total: Int, val offset: Int, val limit: Int)
@@ -105,12 +106,14 @@ class CatalogApi(
             require(kind in KINDS) { INVALID_RESPONSE }
             val artwork = item.text("artwork", 16_384, empty = true)
             require(artwork.isEmpty() || artwork.matches(ARTWORK)) { INVALID_RESPONSE }
+            val stream = item.text("stream", 256, empty = true)
+            require(stream.isEmpty() || stream == "/media/$id") { INVALID_RESPONSE }
             val showId = item.text("showId", 16, empty = true)
             require(showId.isEmpty() || showId.matches(Regex("[a-f0-9]{16}"))) { INVALID_RESPONSE }
             return CatalogItem(id, kind, item.text("title", 512), item.text("year", 16, empty = true),
                 item.text("plot", 10_000, empty = true).replace("\u200B", ""), artwork,
                 item["progress"]?.let(WatchProgress::parse) ?: WatchProgress(), showId,
-                item.optionalNumber("season", 0..100_000), item.optionalNumber("episode", 0..100_000))
+                item.optionalNumber("season", 0..100_000), item.optionalNumber("episode", 0..100_000), stream)
         }
 
         private fun JsonObject.optionalNumber(key: String, range: IntRange): Int =

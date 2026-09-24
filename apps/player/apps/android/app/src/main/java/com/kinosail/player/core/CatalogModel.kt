@@ -192,6 +192,18 @@ class CatalogModel(application: Application) : AndroidViewModel(application) {
         } catch (_: Exception) { null }
     }
 
+    suspend fun photo(item: CatalogItem): Bitmap? {
+        val saved = session ?: return null
+        val viewer = viewerId ?: return null
+        val attempt = generation
+        return try {
+            val image = withContext(Dispatchers.IO) {
+                ArtworkClient(saved.server).photo(item, saved.token, viewer)
+            }
+            image.takeIf { attempt == generation }
+        } catch (_: Exception) { null }
+    }
+
     private suspend fun fetch(attempt: Int, offset: Int) {
         val saved = session ?: return
         val viewer = viewerId ?: return
