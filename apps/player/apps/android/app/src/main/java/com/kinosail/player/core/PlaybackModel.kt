@@ -159,7 +159,10 @@ class PlaybackModel(application: Application) : AndroidViewModel(application) {
                     override fun onTracksChanged(tracks: Tracks) { trackChoices.update(tracks) }
                     override fun onPlaybackStateChanged(state: Int) {
                         loading = state == Player.STATE_BUFFERING || state == Player.STATE_IDLE && message == null
-                        if (state == Player.STATE_ENDED) checkpoint()
+                        if (state == Player.STATE_ENDED) {
+                            checkpoint()
+                            activeAudioItem = null
+                        }
                     }
 
                     override fun onIsPlayingChanged(isPlaying: Boolean) {
