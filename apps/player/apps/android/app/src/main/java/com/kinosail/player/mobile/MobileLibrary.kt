@@ -52,6 +52,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.kinosail.player.core.CatalogItem
 import com.kinosail.player.core.CatalogModel
 import com.kinosail.player.core.ConnectionModel
+import com.kinosail.player.core.HomeScreen
 import com.kinosail.player.core.PlaybackScreen
 import com.kinosail.player.core.ShowScreen
 import com.kinosail.player.core.Viewer
@@ -61,6 +62,7 @@ import com.kinosail.player.design.SailBackdrop
 internal fun MobileLibrary(connection: ConnectionModel, viewer: Viewer) {
     val catalog: CatalogModel = viewModel()
     val state = catalog.state
+    var home by remember { mutableStateOf(true) }
     var playingItem by remember { mutableStateOf<CatalogItem?>(null) }
     val keyboard = LocalSoftwareKeyboardController.current
     val submitSearch = {
@@ -71,6 +73,7 @@ internal fun MobileLibrary(connection: ConnectionModel, viewer: Viewer) {
     LaunchedEffect(viewer.serverId, viewer.id) { catalog.open(viewer) }
     DisposableEffect(Unit) { onDispose { catalog.reset() } }
     BackHandler(state.selected != null && playingItem == null) { catalog.closeDetail() }
+    BackHandler(!home && state.selected == null && playingItem == null) { home = true }
     if (playingItem != null) {
         PlaybackScreen(requireNotNull(playingItem), viewer, tv = false) { playingItem = null }
         return
@@ -79,6 +82,11 @@ internal fun MobileLibrary(connection: ConnectionModel, viewer: Viewer) {
         ShowScreen(state.selected.showId, viewer, catalog, tv = false, catalog::closeDetail) {
             playingItem = it
         }
+        return
+    }
+    if (home && state.selected == null) {
+        HomeScreen(viewer, catalog, tv = false, browse = { home = false },
+            open = catalog::selectHomeItem, play = { playingItem = it })
         return
     }
     Box(Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)) {
@@ -94,8 +102,12 @@ internal fun MobileLibrary(connection: ConnectionModel, viewer: Viewer) {
             if (state.selected != null) {
                 MobileDetail(state.selected, catalog) { playingItem = state.selected }
             } else {
-                Text(if (state.view == "shows") "TV Shows" else "Library", style = MaterialTheme.typography.headlineLarge,
-                    color = MaterialTheme.colorScheme.onBackground)
+                Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically) {
+                    Text(if (state.view == "shows") "TV Shows" else "Library", style = MaterialTheme.typography.headlineLarge,
+                        color = MaterialTheme.colorScheme.onBackground)
+                    TextButton(onClick = { home = true }) { Text("For you") }
+                }
                 Text("${viewer.name} · ${viewer.server}", color = MaterialTheme.colorScheme.onSurfaceVariant)
                 Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                     FilterChip(selected = state.view == "all", onClick = { catalog.changeView("all") },

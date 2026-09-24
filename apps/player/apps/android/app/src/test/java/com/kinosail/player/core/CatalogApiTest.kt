@@ -85,6 +85,25 @@ class CatalogApiTest {
         }
     }
 
+    @Test fun loadsHomeShelvesWithValidatedViewAndSort() {
+        val history = CatalogResponse(200, page().replace("\"view\":\"all\"", "\"view\":\"history\""))
+        val recent = CatalogResponse(200, page().replace("\"sort\":\"title\"", "\"sort\":\"added\""))
+        CatalogApi(server) { url -> history.also { it.requestedURL = url } }
+            .list("token", "alex", view = "history")
+        CatalogApi(server) { url -> recent.also { it.requestedURL = url } }
+            .list("token", "alex", sort = "added")
+        assertTrue(history.requestedURL!!.query.contains("view=history"))
+        assertTrue(recent.requestedURL!!.query.contains("sort=added"))
+        var opens = 0
+        assertThrows(IllegalArgumentException::class.java) {
+            CatalogApi(server) { opens++; recent }.list("token", "alex", sort = "unknown")
+        }
+        assertEquals(0, opens)
+        assertThrows(IllegalArgumentException::class.java) {
+            CatalogApi(server) { recent }.list("token", "alex", sort = "added", view = "history")
+        }
+    }
+
     @Test fun rejectsMalformedUnknownAndConflictingPages() {
         val invalid = listOf(
             "{}", page().replace("\"limit\":24", "\"limit\":25"),

@@ -61,7 +61,7 @@ internal fun PlaybackScreen(item: CatalogItem, viewer: Viewer, tv: Boolean, clos
                 verticalAlignment = Alignment.CenterVertically) {
                 Text(item.title, color = Color.White)
                 if (tv) androidx.tv.material3.Button(onClick = close) {
-                    androidx.tv.material3.Text("Back to Library")
+                    androidx.tv.material3.Text("Done")
                 } else TextButton(onClick = close) { Text("Done", color = KinoColor.signal) }
             }
             Column(Modifier.fillMaxWidth().then(if (playback.loading || playback.usingCompatible ||
