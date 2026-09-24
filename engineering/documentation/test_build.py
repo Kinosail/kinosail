@@ -49,6 +49,9 @@ class BuildInputsTest(unittest.TestCase):
                     self.assertEqual(homepage.count(
                         '<meta name="google-site-verification" content="CyK7nEwl7e61vmJVjO4nsO4JpjaeKGUMffYcSNcUhFg">'), 1)
                     graph = json.loads(SearchMetadata(homepage).blocks[0])['@graph']
+                    organization = next(item for item in graph if item['@type'] == 'Organization')
+                    self.assertEqual(organization['logo'], f'{origin}{prefix}/assets/images/kinosail-mark.svg')
+                    self.assertIn('viewBox="0 0 512 512"', (args.output / 'assets/images/kinosail-mark.svg').read_text())
                     app = next(item for item in graph if item['@type'] == 'SoftwareApplication')
                     self.assertEqual(app['offers'], {'@type': 'Offer', 'price': 0})
                     check(args.output, prefix)
