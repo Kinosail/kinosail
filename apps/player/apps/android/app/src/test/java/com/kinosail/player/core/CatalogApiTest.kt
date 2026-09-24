@@ -86,6 +86,26 @@ class CatalogApiTest {
         }
     }
 
+    @Test fun browsesEachMediaCategoryAndRejectsUnknownViewsBeforeNetwork() {
+        for (view in listOf("movies", "music", "audiobooks", "books", "photos", "list")) {
+            val response = CatalogResponse(200, page().replace("\"view\":\"all\"", "\"view\":\"$view\""))
+            val result = CatalogApi(server) { url -> response.also { it.requestedURL = url } }
+                .list("token", "alex", view = view)
+            assertEquals("Arrival", result.items.single().title)
+            assertTrue(response.requestedURL!!.query.contains("view=$view"))
+            assertEquals("alex", response.getRequestProperty("X-Kinosail-Viewer-Profile"))
+            assertThrows(Exception::class.java) {
+                CatalogApi(server) { CatalogResponse(200, page()) }.list("token", "alex", view = view)
+            }
+        }
+        var opens = 0
+        val api = CatalogApi(server) { opens++; CatalogResponse(200, page()) }
+        for (view in listOf("unknown", "movies&sort=added", "", "MOVIES")) {
+            assertThrows(IllegalArgumentException::class.java) { api.list("token", "alex", view = view) }
+        }
+        assertEquals(0, opens)
+    }
+
     @Test fun loadsHomeShelvesWithValidatedViewAndSort() {
         val history = CatalogResponse(200, page().replace("\"view\":\"all\"", "\"view\":\"history\""))
         val recent = CatalogResponse(200, page().replace("\"sort\":\"title\"", "\"sort\":\"added\""))

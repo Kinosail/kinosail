@@ -25,6 +25,9 @@ data class CatalogItem(
 
 data class CatalogPage(val items: List<CatalogItem>, val total: Int, val offset: Int, val limit: Int)
 data class CatalogDetail(val item: CatalogItem, val listed: Boolean)
+internal val LIBRARY_VIEWS = listOf("all" to "All media", "movies" to "Movies", "shows" to "TV Shows",
+    "music" to "Music", "audiobooks" to "Audiobooks", "books" to "Books", "photos" to "Photos",
+    "list" to "My List")
 
 class CatalogApi(
     server: ServerAddress,
@@ -36,7 +39,7 @@ class CatalogApi(
              view: String = "all", sort: String = "title"): CatalogPage {
         val query = rawQuery.trim()
         require(query.toByteArray(Charsets.UTF_8).size <= 512 && query.none(Char::isISOControl) &&
-            offset in 0..1_000_000 && view in setOf("all", "shows", "history", "list") &&
+            offset in 0..1_000_000 && (view == "history" || LIBRARY_VIEWS.any { it.first == view }) &&
             sort in setOf("title", "added")) { "Invalid library request." }
         val encoded = URLEncoder.encode(query, Charsets.UTF_8.name())
         val result = api.catalog("/api/v1/library?q=$encoded&view=$view&sort=$sort&offset=$offset&limit=$PAGE_SIZE",

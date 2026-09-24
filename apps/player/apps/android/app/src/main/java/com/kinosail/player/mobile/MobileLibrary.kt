@@ -19,6 +19,8 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -53,6 +55,7 @@ import com.kinosail.player.core.CatalogItem
 import com.kinosail.player.core.CatalogModel
 import com.kinosail.player.core.ConnectionModel
 import com.kinosail.player.core.HomeScreen
+import com.kinosail.player.core.LIBRARY_VIEWS
 import com.kinosail.player.core.PlaybackScreen
 import com.kinosail.player.core.ShowScreen
 import com.kinosail.player.core.Viewer
@@ -105,19 +108,17 @@ internal fun MobileLibrary(connection: ConnectionModel, viewer: Viewer) {
             } else {
                 Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically) {
-                    Text(when (state.view) { "shows" -> "TV Shows"; "list" -> "My List"; else -> "Library" },
+                    Text(if (state.view == "all") "Library" else LIBRARY_VIEWS.first { it.first == state.view }.second,
                         style = MaterialTheme.typography.headlineLarge,
                         color = MaterialTheme.colorScheme.onBackground)
                     TextButton(onClick = { home = true }) { Text("For you") }
                 }
                 Text("${viewer.name} · ${viewer.server}", color = MaterialTheme.colorScheme.onSurfaceVariant)
-                Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                    FilterChip(selected = state.view == "all", onClick = { catalog.changeView("all") },
-                        label = { Text("All media") })
-                    FilterChip(selected = state.view == "shows", onClick = { catalog.changeView("shows") },
-                        label = { Text("TV Shows") })
-                    FilterChip(selected = state.view == "list", onClick = { catalog.changeView("list") },
-                        label = { Text("My List") })
+                LazyRow(horizontalArrangement = Arrangement.spacedBy(12.dp), modifier = Modifier.fillMaxWidth()) {
+                    items(LIBRARY_VIEWS, key = { it.first }) { (view, label) ->
+                        FilterChip(selected = state.view == view, onClick = { catalog.changeView(view) },
+                            label = { Text(label) })
+                    }
                 }
                 OutlinedTextField(value = catalog.searchInput,
                     onValueChange = { if (it.length <= 512) catalog.searchInput = it },
