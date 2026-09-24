@@ -23,6 +23,7 @@ tar -cf "$tmp/empty.tar" --files-from /dev/null
 printf '%s\n' '#!/usr/bin/env bash' 'printf "%s\n" "$KINOSAIL_TEST_NOX_STATE"' >"$tmp/bin/ssh"
 printf '%s\n' '#!/usr/bin/env bash' \
   'if [[ " $* " == *" ls-remote "* ]]; then printf "%s refs/heads/main\n" "$KINOSAIL_TEST_SHA"; exit; fi' \
+  'if [[ " $* " == *" rev-list "* ]]; then printf "%s\n" "$KINOSAIL_TEST_SHA"; exit; fi' \
   'if [[ " $* " == *" fetch "* || " $* " == *" remote set-url "* ]]; then exit; fi' \
   'if [[ " $* " == *" archive "* ]]; then exec /bin/cat "$KINOSAIL_TEST_ARCHIVE"; fi' \
   'exit 64' >"$tmp/bin/git"
