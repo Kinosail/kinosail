@@ -43,6 +43,7 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.focus.focusProperties
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -55,6 +56,7 @@ import com.kinosail.player.core.CatalogItem
 import com.kinosail.player.core.CatalogModel
 import com.kinosail.player.core.ConnectionModel
 import com.kinosail.player.core.PlaybackScreen
+import com.kinosail.player.core.ShowScreen
 import com.kinosail.player.core.Viewer
 import com.kinosail.player.design.KinoColor
 import com.kinosail.player.design.SailBackdrop
@@ -63,10 +65,12 @@ import com.kinosail.player.design.SailBackdrop
 internal fun TvLibrary(connection: ConnectionModel, viewer: Viewer) {
     val catalog: CatalogModel = viewModel()
     val state = catalog.state
-    var playing by remember { mutableStateOf(false) }
+    var playingItem by remember { mutableStateOf<CatalogItem?>(null) }
+    var searchEditing by remember { mutableStateOf(false) }
     val keyboard = LocalSoftwareKeyboardController.current
     var nextFocus by remember { mutableIntStateOf(-1) }
     val submitSearch = {
+        searchEditing = false
         nextFocus = -1
         catalog.search()
         keyboard?.hide()
@@ -75,13 +79,23 @@ internal fun TvLibrary(connection: ConnectionModel, viewer: Viewer) {
     val cardFocus = remember { FocusRequester() }
     val pageFocus = remember { FocusRequester() }
     val searchFocus = remember { FocusRequester() }
+    val searchEditFocus = remember { FocusRequester() }
+    val showsFocus = remember { FocusRequester() }
     val detailFocus = remember { FocusRequester() }
     val gridState = rememberLazyGridState()
     LaunchedEffect(viewer.serverId, viewer.id) { catalog.open(viewer) }
     DisposableEffect(Unit) { onDispose { catalog.reset() } }
-    BackHandler(state.selected != null && !playing) { catalog.closeDetail() }
-    LaunchedEffect(state.items.isNotEmpty(), state.selected, playing) {
-        if (playing) return@LaunchedEffect
+    BackHandler(state.selected != null && playingItem == null) { catalog.closeDetail() }
+    BackHandler(searchEditing) { searchEditing = false; keyboard?.hide() }
+    LaunchedEffect(searchEditing) {
+        if (searchEditing) {
+            withFrameNanos { }
+            searchEditFocus.requestFocus()
+            keyboard?.show()
+        }
+    }
+    LaunchedEffect(state.items.isNotEmpty(), state.selected, playingItem, state.view) {
+        if (playingItem != null || state.selected?.showId?.isNotEmpty() == true) return@LaunchedEffect
         if (state.selected != null) detailFocus.requestFocus()
         else if (state.items.isNotEmpty()) cardFocus.requestFocus()
         else searchFocus.requestFocus()
@@ -93,8 +107,14 @@ internal fun TvLibrary(connection: ConnectionModel, viewer: Viewer) {
             pageFocus.requestFocus()
         }
     }
-    if (playing && state.selected != null) {
-        PlaybackScreen(state.selected, viewer, tv = true) { playing = false }
+    if (playingItem != null) {
+        PlaybackScreen(requireNotNull(playingItem), viewer, tv = true) { playingItem = null }
+        return
+    }
+    if (state.selected?.showId?.isNotEmpty() == true) {
+        ShowScreen(state.selected.showId, viewer, catalog, tv = true, catalog::closeDetail) {
+            playingItem = it
+        }
         return
     }
     Box(Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)) {
@@ -108,25 +128,43 @@ internal fun TvLibrary(connection: ConnectionModel, viewer: Viewer) {
                 Button(onClick = connection::signOut, enabled = !connection.busy) { Text("Disconnect") }
             }
             if (state.selected != null) {
-                TvDetail(state.selected, catalog, Modifier.focusRequester(detailFocus)) { playing = true }
+                TvDetail(state.selected, catalog, Modifier.focusRequester(detailFocus)) { playingItem = state.selected }
             } else {
-                Text("Library", style = MaterialTheme.typography.displayMedium,
-                    color = MaterialTheme.colorScheme.onBackground)
-                Text("${viewer.name} · ${viewer.server}", style = MaterialTheme.typography.titleLarge,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant)
+                Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.Bottom) {
+                    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                        Text(if (state.view == "shows") "TV Shows" else "Library", style = MaterialTheme.typography.displayMedium,
+                            color = MaterialTheme.colorScheme.onBackground)
+                        Text("${viewer.name} · ${viewer.server}", style = MaterialTheme.typography.titleLarge,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    }
+                    Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+                        Button(onClick = { catalog.changeView("all") }) {
+                            Text(if (state.view == "all") "All media · Selected" else "All media")
+                        }
+                        Button(onClick = { catalog.changeView("shows") },
+                            modifier = Modifier.focusRequester(showsFocus)) {
+                            Text(if (state.view == "shows") "TV Shows · Selected" else "TV Shows")
+                        }
+                    }
+                }
                 Row(horizontalArrangement = Arrangement.spacedBy(16.dp), verticalAlignment = Alignment.CenterVertically) {
-                    OutlinedTextField(value = catalog.searchInput,
-                        onValueChange = { if (it.length <= 512) catalog.searchInput = it },
-                        label = { androidx.compose.material3.Text("Search your library") },
-                        singleLine = true, keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
-                        keyboardActions = KeyboardActions(onSearch = { submitSearch() }),
-                        colors = OutlinedTextFieldDefaults.colors(
-                            focusedTextColor = KinoColor.text, unfocusedTextColor = KinoColor.text,
-                            focusedLabelColor = KinoColor.signal, unfocusedLabelColor = KinoColor.muted,
-                            focusedBorderColor = KinoColor.signal, unfocusedBorderColor = KinoColor.muted),
-                        modifier = Modifier.width(650.dp))
-                    Button(onClick = submitSearch,
-                        modifier = Modifier.focusRequester(searchFocus)) { Text("Search") }
+                    if (searchEditing) {
+                        OutlinedTextField(value = catalog.searchInput,
+                            onValueChange = { if (it.length <= 512) catalog.searchInput = it },
+                            label = { androidx.compose.material3.Text("Search your library") },
+                            singleLine = true, keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
+                            keyboardActions = KeyboardActions(onSearch = { submitSearch() }),
+                            colors = OutlinedTextFieldDefaults.colors(
+                                focusedTextColor = KinoColor.text, unfocusedTextColor = KinoColor.text,
+                                focusedLabelColor = KinoColor.signal, unfocusedLabelColor = KinoColor.muted,
+                                focusedBorderColor = KinoColor.signal, unfocusedBorderColor = KinoColor.muted),
+                            modifier = Modifier.width(650.dp).focusRequester(searchEditFocus))
+                        Button(onClick = submitSearch) { Text("Search") }
+                    } else Button(onClick = { searchEditing = true },
+                        modifier = Modifier.focusRequester(searchFocus).focusProperties { up = showsFocus }) {
+                        Text(if (catalog.searchInput.isEmpty()) "Search library" else "Search: ${catalog.searchInput}")
+                    }
                 }
                 state.notice?.let { Text(it, color = MaterialTheme.colorScheme.error) }
                 if (state.notice != null) Button(onClick = catalog::retry) { Text("Retry") }

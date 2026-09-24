@@ -26,6 +26,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.FilterChip
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -52,6 +53,7 @@ import com.kinosail.player.core.CatalogItem
 import com.kinosail.player.core.CatalogModel
 import com.kinosail.player.core.ConnectionModel
 import com.kinosail.player.core.PlaybackScreen
+import com.kinosail.player.core.ShowScreen
 import com.kinosail.player.core.Viewer
 import com.kinosail.player.design.SailBackdrop
 
@@ -59,7 +61,7 @@ import com.kinosail.player.design.SailBackdrop
 internal fun MobileLibrary(connection: ConnectionModel, viewer: Viewer) {
     val catalog: CatalogModel = viewModel()
     val state = catalog.state
-    var playing by remember { mutableStateOf(false) }
+    var playingItem by remember { mutableStateOf<CatalogItem?>(null) }
     val keyboard = LocalSoftwareKeyboardController.current
     val submitSearch = {
         catalog.search()
@@ -68,9 +70,15 @@ internal fun MobileLibrary(connection: ConnectionModel, viewer: Viewer) {
     }
     LaunchedEffect(viewer.serverId, viewer.id) { catalog.open(viewer) }
     DisposableEffect(Unit) { onDispose { catalog.reset() } }
-    BackHandler(state.selected != null && !playing) { catalog.closeDetail() }
-    if (playing && state.selected != null) {
-        PlaybackScreen(state.selected, viewer, tv = false) { playing = false }
+    BackHandler(state.selected != null && playingItem == null) { catalog.closeDetail() }
+    if (playingItem != null) {
+        PlaybackScreen(requireNotNull(playingItem), viewer, tv = false) { playingItem = null }
+        return
+    }
+    if (state.selected?.showId?.isNotEmpty() == true) {
+        ShowScreen(state.selected.showId, viewer, catalog, tv = false, catalog::closeDetail) {
+            playingItem = it
+        }
         return
     }
     Box(Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)) {
@@ -84,11 +92,17 @@ internal fun MobileLibrary(connection: ConnectionModel, viewer: Viewer) {
                 TextButton(onClick = connection::signOut, enabled = !connection.busy) { Text("Disconnect") }
             }
             if (state.selected != null) {
-                MobileDetail(state.selected, catalog) { playing = true }
+                MobileDetail(state.selected, catalog) { playingItem = state.selected }
             } else {
-                Text("Library", style = MaterialTheme.typography.headlineLarge,
+                Text(if (state.view == "shows") "TV Shows" else "Library", style = MaterialTheme.typography.headlineLarge,
                     color = MaterialTheme.colorScheme.onBackground)
                 Text("${viewer.name} · ${viewer.server}", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                    FilterChip(selected = state.view == "all", onClick = { catalog.changeView("all") },
+                        label = { Text("All media") })
+                    FilterChip(selected = state.view == "shows", onClick = { catalog.changeView("shows") },
+                        label = { Text("TV Shows") })
+                }
                 OutlinedTextField(value = catalog.searchInput,
                     onValueChange = { if (it.length <= 512) catalog.searchInput = it },
                     label = { Text("Search your library") }, singleLine = true,

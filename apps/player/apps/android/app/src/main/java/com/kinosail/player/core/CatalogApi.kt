@@ -17,6 +17,9 @@ data class CatalogItem(
     val plot: String,
     val artwork: String,
     val progress: WatchProgress = WatchProgress(),
+    val showId: String = "",
+    val season: Int = 0,
+    val episode: Int = 0,
 )
 
 data class CatalogPage(val items: List<CatalogItem>, val total: Int, val offset: Int, val limit: Int)
@@ -27,18 +30,19 @@ class CatalogApi(
 ) {
     private val api = ServerApi(server, open)
 
-    fun list(token: String, viewerId: String, rawQuery: String = "", offset: Int = 0): CatalogPage {
+    fun list(token: String, viewerId: String, rawQuery: String = "", offset: Int = 0,
+             view: String = "all"): CatalogPage {
         val query = rawQuery.trim()
         require(query.toByteArray(Charsets.UTF_8).size <= 512 && query.none(Char::isISOControl) &&
-            offset in 0..1_000_000) { "Invalid library request." }
+            offset in 0..1_000_000 && view in setOf("all", "shows")) { "Invalid library request." }
         val encoded = URLEncoder.encode(query, Charsets.UTF_8.name())
-        val result = api.catalog("/api/v1/library?q=$encoded&view=all&sort=title&offset=$offset&limit=$PAGE_SIZE",
+        val result = api.catalog("/api/v1/library?q=$encoded&view=$view&sort=title&offset=$offset&limit=$PAGE_SIZE",
             token, viewerId).fields(PAGE_KEYS, setOf("items", "total", "offset", "limit"))
         val total = result.number("total", 0..10_000_000)
         val returnedOffset = result.number("offset", 0..1_000_000)
         val limit = result.number("limit", 1..200)
         require(returnedOffset == offset && limit == PAGE_SIZE) { INVALID_RESPONSE }
-        result["view"]?.let { require(result.text("view", 32) == "all") { INVALID_RESPONSE } }
+        result["view"]?.let { require(result.text("view", 32) == view) { INVALID_RESPONSE } }
         result["sort"]?.let { require(result.text("sort", 32) == "title") { INVALID_RESPONSE } }
         result["query"]?.let { require(result.text("query", 512, empty = true) == query) { INVALID_RESPONSE } }
         val rawItems = result["items"] as? JsonArray
@@ -46,18 +50,7 @@ class CatalogApi(
             (offset >= total || rawItems.isNotEmpty())) {
             INVALID_RESPONSE
         }
-        val items = rawItems.map { raw ->
-            val item = raw.fields(ITEM_KEYS, setOf("id", "kind", "title"))
-            val id = item.text("id", 128)
-            require(id.matches(ID)) { INVALID_RESPONSE }
-            val kind = item.text("kind", 32).let { if (it == "audio") "music" else it }
-            require(kind in KINDS) { INVALID_RESPONSE }
-            val artwork = item.text("artwork", 16_384, empty = true)
-            require(artwork.isEmpty() || artwork.matches(ARTWORK)) { INVALID_RESPONSE }
-            CatalogItem(id, kind, item.text("title", 512), item.text("year", 16, empty = true),
-                item.text("plot", 10_000, empty = true).replace("\u200B", ""), artwork,
-                item["progress"]?.let(WatchProgress::parse) ?: WatchProgress())
-        }
+        val items = rawItems.map(::parseItem)
         require(items.map(CatalogItem::id).toSet().size == items.size) { INVALID_RESPONSE }
         return CatalogPage(items, total, returnedOffset, limit)
     }
@@ -73,6 +66,25 @@ class CatalogApi(
             "genres", "director", "studio", "artist", "album", "track", "show", "showId", "size", "season",
             "episode", "stream", "download", "subtitles", "added", "cast", "artwork", "backdrop", "container", "progress")
 
+        internal fun parseItem(raw: JsonElement): CatalogItem {
+            val item = raw.fields(ITEM_KEYS, setOf("id", "kind", "title"))
+            val id = item.text("id", 128)
+            require(id.matches(ID)) { INVALID_RESPONSE }
+            val kind = item.text("kind", 32).let { if (it == "audio") "music" else it }
+            require(kind in KINDS) { INVALID_RESPONSE }
+            val artwork = item.text("artwork", 16_384, empty = true)
+            require(artwork.isEmpty() || artwork.matches(ARTWORK)) { INVALID_RESPONSE }
+            val showId = item.text("showId", 16, empty = true)
+            require(showId.isEmpty() || showId.matches(Regex("[a-f0-9]{16}"))) { INVALID_RESPONSE }
+            return CatalogItem(id, kind, item.text("title", 512), item.text("year", 16, empty = true),
+                item.text("plot", 10_000, empty = true).replace("\u200B", ""), artwork,
+                item["progress"]?.let(WatchProgress::parse) ?: WatchProgress(), showId,
+                item.optionalNumber("season", 0..100_000), item.optionalNumber("episode", 0..100_000))
+        }
+
+        private fun JsonObject.optionalNumber(key: String, range: IntRange): Int =
+            if (containsKey(key)) number(key, range) else 0
+
         private fun JsonElement.fields(allowed: Set<String>, required: Set<String>): JsonObject {
             val fields = this as? JsonObject
             require(fields != null && fields.keys.all(allowed::contains) && fields.keys.containsAll(required)) {
@@ -82,7 +94,7 @@ class CatalogApi(
         }
 
         private fun JsonObject.number(key: String, range: IntRange): Int {
-            val value = (this[key] as? JsonPrimitive)?.intOrNull
+            val value = (this[key] as? JsonPrimitive)?.let { if (it.isString) null else it.intOrNull }
             require(value != null && value in range) { INVALID_RESPONSE }
             return value
         }

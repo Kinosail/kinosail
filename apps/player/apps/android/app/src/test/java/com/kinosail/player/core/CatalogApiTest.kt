@@ -61,6 +61,30 @@ class CatalogApiTest {
             } }
     }
 
+    @Test fun browsesShowsAndRejectsInvalidViewOrShowMetadata() {
+        val episode = item.replace("\"artwork\":\"/art/film-1\"",
+            "\"artwork\":\"/art/film-1?variant=episode\",\"showId\":\"0123456789abcdef\",\"season\":2,\"episode\":3")
+        val body = page(episode).replace("\"view\":\"all\"", "\"view\":\"shows\"")
+        val response = CatalogResponse(200, body)
+        val result = CatalogApi(server) { url -> response.also { it.requestedURL = url } }
+            .list("token", "alex", view = "shows")
+        assertEquals("0123456789abcdef", result.items.single().showId)
+        assertEquals(2, result.items.single().season)
+        assertTrue(response.requestedURL!!.query.contains("view=shows"))
+        var opens = 0
+        val api = CatalogApi(server) { opens++; CatalogResponse(200, body) }
+        assertThrows(IllegalArgumentException::class.java) { api.list("token", "alex", view = "unknown") }
+        assertEquals(0, opens)
+        listOf(body.replace("\"view\":\"shows\"", "\"view\":\"all\""),
+            body.replace("0123456789abcdef", "bad"),
+            body.replace("\"season\":2", "\"season\":-1"),
+            body.replace("\"episode\":3", "\"episode\":\"3\"")).forEach { invalid ->
+            assertThrows(Exception::class.java) {
+                CatalogApi(server) { CatalogResponse(200, invalid) }.list("token", "alex", view = "shows")
+            }
+        }
+    }
+
     @Test fun rejectsMalformedUnknownAndConflictingPages() {
         val invalid = listOf(
             "{}", page().replace("\"limit\":24", "\"limit\":25"),
