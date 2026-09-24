@@ -12,9 +12,10 @@ import (
 
 var (
 	stepUpLoginPath  = identitycore.StepUpLoginPath
-	safeLoginReturn  = identitycore.SafeLoginReturn
 	passkeyOfferPath = identitycore.PasskeyOfferPath
 )
+
+func safeLoginReturn(raw string) string { return identitycore.SafeLoginReturn(raw) }
 
 func (auth *authentication) onboardingLoginNext(profile viewerProfile, request *http.Request, next string) string {
 	if profile.Owner && auth.settings.onboardingPending() && request.URL.Query().Get("stepup") != "1" && request.URL.Query().Get("next") == "" {

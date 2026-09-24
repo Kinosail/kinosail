@@ -160,6 +160,14 @@ func TestPasswordLoginOffersPasskeyWithConfiguredStateAndSafeReturn(t *testing.T
 			if stepUp.Code != http.StatusSeeOther || stepUp.Header().Get("Location") != "/settings/backups" {
 				t.Fatalf("step-up = %d, location = %q", stepUp.Code, stepUp.Header().Get("Location"))
 			}
+			unsafeReturn := httptest.NewRecorder()
+			unsafeRequest := httptest.NewRequestWithContext(t.Context(), http.MethodPost, "/login?stepup=1&next=%2F%252Foutside.example", strings.NewReader(form.Encode()))
+			unsafeRequest.Host = "localhost:8080"
+			unsafeRequest.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+			handler.ServeHTTP(unsafeReturn, unsafeRequest)
+			if unsafeReturn.Code != http.StatusSeeOther || unsafeReturn.Header().Get("Location") != "/" {
+				t.Fatalf("unsafe return = %d, location = %q", unsafeReturn.Code, unsafeReturn.Header().Get("Location"))
+			}
 		})
 	}
 }
