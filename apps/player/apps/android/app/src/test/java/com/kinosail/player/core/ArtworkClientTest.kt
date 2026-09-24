@@ -77,6 +77,7 @@ private class ArtworkResponse(private val status: Int, private val body: ByteArr
     override fun usingProxy() = false
     override fun getResponseCode() = status
     override fun getContentType() = type
-    override fun getContentLengthLong() = body.size.toLong()
+    override fun getHeaderField(name: String?): String? =
+        if (name.equals("Content-Length", ignoreCase = true)) body.size.toString() else null
     override fun getInputStream() = ByteArrayInputStream(body)
 }

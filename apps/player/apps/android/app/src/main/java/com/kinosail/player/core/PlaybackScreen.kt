@@ -39,11 +39,13 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.media3.common.Player
+import androidx.media3.common.util.UnstableApi
 import androidx.media3.session.MediaSession
 import androidx.media3.ui.PlayerView
 import androidx.compose.ui.viewinterop.AndroidView
 import com.kinosail.player.design.KinoColor
 
+@androidx.annotation.OptIn(markerClass = [UnstableApi::class])
 @Composable
 internal fun PlaybackScreen(item: CatalogItem, viewer: Viewer, tv: Boolean, close: () -> Unit,
                             onNext: (CatalogItem) -> Unit, pipHost: VideoPipHost? = null) {

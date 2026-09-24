@@ -145,7 +145,10 @@ class ReaderApiTest {
             file.delete()
             listOf(Reply(302, "%PDF-hello", "application/pdf"),
                 Reply(200, "%PDF-hello", "text/html"), Reply(200, "not-a-pdf", "application/pdf"),
-                Reply(200, "%PDF-hello", "application/pdf", 129L * 1024 * 1024)).forEach { response ->
+                Reply(200, "%PDF-hello", "application/pdf", (129L * 1024 * 1024).toString()),
+                Reply(200, "%PDF-hello", "application/pdf", "2147483648"),
+                Reply(200, "%PDF-hello", "application/pdf", "1, 2"),
+                Reply(200, "%PDF-hello", "application/pdf", "-1")).forEach { response ->
                 assertThrows(Exception::class.java) {
                     ReaderApi(server) { response }.download(
                         ReaderBook("book-1", "Book", "/read/book-1/file"), "token", "viewer", dir)
@@ -163,7 +166,7 @@ private class Reply(
     private val status: Int,
     private val body: String,
     private val type: String = "application/json",
-    private val declaredLength: Long = body.toByteArray().size.toLong(),
+    private val declaredLength: String? = body.toByteArray().size.toString(),
 ) : HttpURLConnection(URL("https://example.com")) {
     var closed = false
     val output = ByteArrayOutputStream()
@@ -172,7 +175,8 @@ private class Reply(
     override fun usingProxy() = false
     override fun getResponseCode() = status
     override fun getContentType() = type
-    override fun getContentLengthLong() = declaredLength
+    override fun getHeaderField(name: String?): String? =
+        if (name.equals("Content-Length", ignoreCase = true)) declaredLength else null
     override fun getInputStream() = ByteArrayInputStream(body.toByteArray())
     override fun getOutputStream() = output
 }

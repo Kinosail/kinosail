@@ -105,7 +105,7 @@ class ReaderApi(
             connection.setRequestProperty("X-Kinosail-Viewer-Profile", viewerId)
             require(connection.responseCode == 200 &&
                 connection.contentType?.substringBefore(';')?.trim()?.lowercase() == "application/pdf" &&
-                connection.contentLengthLong <= MAX_PDF_BYTES) { INVALID_RESPONSE }
+                boundedContentLength(connection, MAX_PDF_BYTES)) { INVALID_RESPONSE }
             val temporary = File.createTempFile("kinosail-reader-", ".pdf", cacheDir)
             file = temporary
             connection.inputStream.use { input ->

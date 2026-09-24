@@ -17,6 +17,12 @@ data class ConnectChallenge(val code: String, val secret: String)
 data class Viewer(val server: String, val serverId: String, val id: String, val name: String)
 class ServerHttpException(val status: Int) : IOException("Server request failed ($status).")
 
+internal fun boundedContentLength(connection: HttpURLConnection, maximum: Long): Boolean {
+    val value = connection.getHeaderField("Content-Length") ?: return true
+    return value.isNotEmpty() && value.length <= 20 && value.all { it in '0'..'9' } &&
+        (value.toLongOrNull()?.let { it <= maximum } == true)
+}
+
 class ServerApi(
     private val server: ServerAddress,
     private val open: (URL) -> HttpURLConnection = { it.openConnection() as HttpURLConnection },
@@ -179,7 +185,7 @@ class ServerApi(
             if (status !in expected) throw ServerHttpException(status)
             if (status == 204 || status == 404) return status to kotlinx.serialization.json.JsonNull
             require(connection.contentType?.substringBefore(';')?.trim()?.lowercase() == "application/json" &&
-                connection.contentLengthLong <= maximum) { INVALID_RESPONSE }
+                boundedContentLength(connection, maximum.toLong())) { INVALID_RESPONSE }
             val response = (if (status >= 400) connection.errorStream
                 ?: throw IOException(INVALID_RESPONSE) else connection.inputStream).use { stream ->
                 val buffer = ByteArray(maximum + 1)
