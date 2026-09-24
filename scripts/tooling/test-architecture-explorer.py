@@ -47,6 +47,22 @@ for app in APPS:
     if engineering.exists():
         raise SystemExit(f"{app} contains a redundant engineering snapshot")
     html = published.read_text(encoding="utf-8")
+    if app == "player":
+        from importlib.util import module_from_spec, spec_from_file_location
+
+        spec = spec_from_file_location("seo_check", REPO / "engineering/documentation/seo_check.py")
+        seo_check = module_from_spec(spec)
+        spec.loader.exec_module(seo_check)
+        page = seo_check.SearchMetadata(html)
+        expected = "https://kinosail.com/architecture-explorer/"
+        image = "https://kinosail.com/assets/images/kinosail-docs-share.png"
+        if page.canonicals != [expected] or len(page.descriptions) != 1 or not page.descriptions[0].strip():
+            raise SystemExit("Player Code Atlas canonical or description missing")
+        for key in seo_check.SOCIAL_KEYS:
+            if len(page.social.get(key, [])) != 1 or not page.social[key][0]:
+                raise SystemExit(f"Player Code Atlas {key} missing")
+        if page.social["og:image"] != [image] or page.social["twitter:image"] != [image]:
+            raise SystemExit("Player Code Atlas social image mismatch")
     match = re.search(r"const snapshot = (\{.*\});\n", html)
     if not match:
         raise SystemExit(f"{app} architecture snapshot data is missing")

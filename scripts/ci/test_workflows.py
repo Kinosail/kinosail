@@ -25,7 +25,7 @@ class WorkflowSecurityTests(unittest.TestCase):
         self.assertNotIn('    paths:', ci)
         self.assertIn('needs: [plan, static, tooling, packages, web, docs]', ci)
         self.assertIn('needs: [plan, secrets, codeql, supply-chain, findings]', ci)
-        self.assertIn('needs: [static, race, security, tooling, client, system, browser]', app)
+        self.assertIn('needs: [static, race, security, tooling, client, android, system, browser]', app)
         self.assertNotIn('  validate:', app)
 
     def test_invalid_quality_scope_has_no_side_effects(self):

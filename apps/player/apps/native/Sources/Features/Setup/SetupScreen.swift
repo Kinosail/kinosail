@@ -60,21 +60,17 @@ struct SetupScreen: View {
                         catch is CancellationError {}
                         catch { scanError = AppSession.message(error) }
                     }
+                    #if os(iOS)
+                    .frame(maxWidth: 600)
+                    .frame(maxWidth: .infinity)
+                    #endif
                 }
             }
             .tvOSConfigurationLayout(title: "Connect to your library", symbol: "server.rack")
             #if os(tvOS)
             .navigationTitle("")
-            .toolbar {
-                ToolbarItem(placement: .principal) {
-                    Text("Connect to your library")
-                        .font(.title2.bold())
-                        .foregroundStyle(KinoTheme.text)
-                        .accessibilityAddTraits(.isHeader)
-                }
-            }
             #else
-            .navigationTitle("Connect to your library")
+            .navigationTitle("Connect")
             #endif
             .toolbar {
                 if session.client != nil {

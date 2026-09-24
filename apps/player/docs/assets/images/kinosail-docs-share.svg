@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" role="img" aria-labelledby="title">
+  <title id="title">Kinosail Player Docs — Install, use, and connect</title>
+  <rect width="1200" height="630" fill="#090a08"/>
+  <g transform="translate(-145 -54) scale(1.5)">
+    <path fill="#c8f169" d="M160 112 384 256 160 304Z"/>
+    <path fill="#f6f8ef" d="m160 336 128-28-128 92Z"/>
+  </g>
+  <g font-family="Manrope, Helvetica Neue, Arial, sans-serif">
+    <text x="510" y="264" fill="#f6f8ef" font-size="105" font-weight="800" letter-spacing="-4">Kinosail</text>
+    <text x="515" y="364" fill="#f6f8ef" font-size="70" font-weight="700" letter-spacing="-2">Player Docs</text>
+    <text x="515" y="466" fill="#c8f169" font-size="43" font-weight="650" letter-spacing="-.5">Install. Use. Connect.</text>
+  </g>
+</svg>

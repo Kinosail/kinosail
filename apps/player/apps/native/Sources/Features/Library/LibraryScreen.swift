@@ -43,8 +43,10 @@ struct LibraryScreen: View {
                 if items.isEmpty {
                     if page == nil && (loading || loadedKey == nil && failure == nil) { LoadingState(layout: .grid) }
                     else if let failure { RetryState(message: failure) { Task { await load(reset: true) } } }
-                    else { FeaturePlaceholder(title: query.isEmpty ? "Nothing here yet" : "No matches", symbol: "magnifyingglass",
-                                              message: query.isEmpty ? "Try another part of your library." : "Try a different title, artist or show.") }
+                    else {
+                        let empty = LibraryEmptyState(view: selection, hasQuery: !query.isEmpty)
+                        FeaturePlaceholder(title: empty.title, symbol: empty.symbol, message: empty.message)
+                    }
                 } else {
                     #if os(tvOS)
                     MediaGrid(items: items)
@@ -183,6 +185,24 @@ struct LibraryScreen: View {
             if generation == attempt {
                 if (error as? ClientError)?.discardsCachedContent == true { items = []; page = nil }
                 failure = AppSession.message(error)
+            }
+        }
+    }
+}
+
+struct LibraryEmptyState {
+    let title: String
+    let symbol: String
+    let message: String
+
+    init(view: LibraryView, hasQuery: Bool) {
+        if hasQuery {
+            (title, symbol, message) = ("No matches", "magnifyingglass", "Try a different title, artist or show.")
+        } else {
+            switch view {
+            case .list: (title, symbol, message) = ("My List is empty", "bookmark", "Save a title with My List to keep it here.")
+            case .history: (title, symbol, message) = ("Nothing to continue", "clock.arrow.circlepath", "Play or read something to pick up where you left off.")
+            default: (title, symbol, message) = ("Nothing here yet", "play.rectangle", "Try another part of your library.")
             }
         }
     }
