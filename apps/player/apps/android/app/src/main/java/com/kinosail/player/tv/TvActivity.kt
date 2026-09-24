@@ -55,6 +55,10 @@ class TvActivity : ComponentActivity() {
 private fun TvStart() {
     val connection: ConnectionModel = viewModel()
     val phase = connection.phase
+    if (phase is ConnectionPhase.Connected) {
+        TvLibrary(connection, phase.viewer)
+        return
+    }
     val firstFocus = remember { FocusRequester() }
     val editing = WindowInsets.isImeVisible
     BackHandler(phase is ConnectionPhase.Pairing) { connection.cancelPairing() }
@@ -114,14 +118,7 @@ private fun TvStart() {
                             Text("Cancel")
                         }
                     }
-                    is ConnectionPhase.Connected -> {
-                        Text("Welcome, ${phase.viewer.name}", style = MaterialTheme.typography.displayMedium,
-                            color = MaterialTheme.colorScheme.onBackground)
-                        Text("Connected to ${phase.viewer.server}.", style = MaterialTheme.typography.titleLarge,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant)
-                        Button(onClick = connection::signOut, enabled = !connection.busy,
-                            modifier = Modifier.focusRequester(firstFocus)) { Text("Disconnect") }
-                    }
+                    is ConnectionPhase.Connected -> Unit
                 }
                 if (!editing) connection.notice?.let { Text(it, color = MaterialTheme.colorScheme.error) }
             }

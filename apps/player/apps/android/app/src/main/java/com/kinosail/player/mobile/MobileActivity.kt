@@ -51,6 +51,10 @@ private fun MobileStart() {
     val connection: ConnectionModel = viewModel()
     val phase = connection.phase
     val context = LocalContext.current
+    if (phase is ConnectionPhase.Connected) {
+        MobileLibrary(connection, phase.viewer)
+        return
+    }
     BackHandler(phase is ConnectionPhase.Pairing) { connection.cancelPairing() }
     Box(Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)) {
         if (isSystemInDarkTheme()) SailBackdrop()
@@ -98,14 +102,7 @@ private fun MobileStart() {
                             Text("Cancel")
                         }
                     }
-                    is ConnectionPhase.Connected -> {
-                        Text("Welcome, ${phase.viewer.name}", style = MaterialTheme.typography.displaySmall,
-                            color = MaterialTheme.colorScheme.onBackground)
-                        Text("Connected to ${phase.viewer.server}.", style = MaterialTheme.typography.bodyLarge,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant)
-                        TextButton(onClick = connection::signOut, enabled = !connection.busy,
-                            modifier = Modifier.fillMaxWidth()) { Text("Disconnect") }
-                    }
+                    is ConnectionPhase.Connected -> Unit
                 }
                 connection.notice?.let { Text(it, color = MaterialTheme.colorScheme.error) }
             }
