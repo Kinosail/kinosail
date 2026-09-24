@@ -19,8 +19,6 @@ success="$deploy_success"
 [[ ${#host} -le 255 && "$host" =~ ^[[:alnum:]][[:alnum:]@._-]*$ ]] || { printf 'invalid Nox host: %s\n' "$host" >&2; exit 2; }
 sha="${2:-}"
 [[ -z "$sha" || "$sha" =~ ^[0-9a-f]{40}$ ]] || { printf 'invalid deployment revision: %s\n' "$sha" >&2; exit 2; }
-expected_main="${KINOSAIL_DEPLOY_EXPECT_MAIN-$sha}"
-[[ "$expected_main" =~ ^[0-9a-f]{40}$ ]] || { printf 'invalid expected main revision\n' >&2; exit 2; }
 
 git_cmd() {
   if [[ -n "$git_dir" ]]; then
@@ -34,6 +32,8 @@ if [[ -z "$sha" ]]; then
   sha="$(git_cmd ls-remote origin refs/heads/main | awk '{print $1}')"
 fi
 [[ "$sha" =~ ^[0-9a-f]{40}$ ]] || { printf 'invalid deployment revision: %s\n' "$sha" >&2; exit 2; }
+expected_main="${KINOSAIL_DEPLOY_EXPECT_MAIN-$sha}"
+[[ "$expected_main" =~ ^[0-9a-f]{40}$ ]] || { printf 'invalid expected main revision\n' >&2; exit 2; }
 
 latest="$(git_cmd ls-remote origin refs/heads/main | awk '{print $1}')"
 [[ "$latest" == "$expected_main" ]] || { printf 'Nox deployment %s is no longer current main (%s)\n' "$expected_main" "$latest" >&2; exit 75; }

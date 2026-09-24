@@ -93,6 +93,14 @@ for entry in \
   grep -Fq "archive $sha -- apps/$app packages" "$tmp/git.log"
 done
 
+# A manual deployment without a revision resolves the current main before validation.
+: >"$tmp/git.log"; : >"$tmp/podman.log"; : >"$tmp/ssh.log"
+PATH="$tmp/positive-bin:$PATH" KINOSAIL_TEST_ARCHIVE="$tmp/empty.tar" \
+  KINOSAIL_TEST_GIT_LOG="$tmp/git.log" KINOSAIL_TEST_PODMAN_LOG="$tmp/podman.log" \
+  KINOSAIL_TEST_SHARED=1 KINOSAIL_TEST_SHA="$sha" KINOSAIL_TEST_APP=player KINOSAIL_TEST_SSH_LOG="$tmp/ssh.log" \
+  KINOSAIL_DEPLOY_GIT_DIR="$tmp/repo.git" "$tool" player >/dev/null
+grep -Fq "archive $sha -- apps/player packages" "$tmp/git.log"
+
 : >"$tmp/git.log"; : >"$tmp/podman.log"; : >"$tmp/ssh.log"
 positive player KINOSAIL_DEPLOY_GIT_DIR 0
 grep -Fq "archive $sha:apps/player" "$tmp/git.log"
