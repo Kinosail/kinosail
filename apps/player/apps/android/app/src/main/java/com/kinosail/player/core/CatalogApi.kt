@@ -16,6 +16,7 @@ data class CatalogItem(
     val year: String,
     val plot: String,
     val artwork: String,
+    val progress: WatchProgress = WatchProgress(),
 )
 
 data class CatalogPage(val items: List<CatalogItem>, val total: Int, val offset: Int, val limit: Int)
@@ -54,7 +55,8 @@ class CatalogApi(
             val artwork = item.text("artwork", 16_384, empty = true)
             require(artwork.isEmpty() || artwork.matches(ARTWORK)) { INVALID_RESPONSE }
             CatalogItem(id, kind, item.text("title", 512), item.text("year", 16, empty = true),
-                item.text("plot", 10_000, empty = true).replace("\u200B", ""), artwork)
+                item.text("plot", 10_000, empty = true).replace("\u200B", ""), artwork,
+                item["progress"]?.let(WatchProgress::parse) ?: WatchProgress())
         }
         require(items.map(CatalogItem::id).toSet().size == items.size) { INVALID_RESPONSE }
         return CatalogPage(items, total, returnedOffset, limit)

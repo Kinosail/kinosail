@@ -48,6 +48,19 @@ class CatalogApiTest {
         assertEquals(1, result.items.size)
     }
 
+    @Test fun parsesResumePositionAndRejectsInvalidProgress() {
+        val withProgress = item.replace("\"artwork\":\"/art/film-1\"",
+            "\"artwork\":\"/art/film-1\",\"progress\":{\"seconds\":45,\"session\":\"previous\",\"revision\":2}")
+        val result = CatalogApi(server) { CatalogResponse(200, page(withProgress)) }.list("token", "alex")
+        assertEquals(45.0, result.items.single().progress.seconds, 0.0)
+        listOf(withProgress.replace("\"seconds\":45", "\"seconds\":-1"),
+            withProgress.replace("\"revision\":2", "\"revision\":\"2\""),
+            withProgress.replace("\"session\":\"previous\"", "\"session\":\"bad\\n\""))
+            .forEach { invalid -> assertThrows(Exception::class.java) {
+                CatalogApi(server) { CatalogResponse(200, page(invalid)) }.list("token", "alex")
+            } }
+    }
+
     @Test fun rejectsMalformedUnknownAndConflictingPages() {
         val invalid = listOf(
             "{}", page().replace("\"limit\":24", "\"limit\":25"),

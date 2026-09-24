@@ -88,6 +88,21 @@ class ServerApi(
             viewerId = viewerId, expected = setOf(200), maximum = 2 * 1024 * 1024).second
     }
 
+    internal fun syncProgress(itemId: String, token: String, viewerId: String, body: JsonObject):
+        Pair<Int, kotlinx.serialization.json.JsonElement> {
+        require(itemId.matches(Regex("[A-Za-z0-9_-]{1,128}")) &&
+            viewerId.matches(Regex("[A-Za-z0-9_-]{1,128}"))) { "Invalid progress request." }
+        return requestWithStatus("/api/v1/items/$itemId/progress/sync", "PUT", body,
+            token = checkedCredential(token, 512), viewerId = viewerId, expected = setOf(200, 409))
+    }
+
+    internal fun item(itemId: String, token: String, viewerId: String): kotlinx.serialization.json.JsonElement {
+        require(itemId.matches(Regex("[A-Za-z0-9_-]{1,128}")) &&
+            viewerId.matches(Regex("[A-Za-z0-9_-]{1,128}"))) { "Invalid item request." }
+        return requestWithStatus("/api/v1/items/$itemId", "GET", token = checkedCredential(token, 512),
+            viewerId = viewerId, expected = setOf(200), maximum = 2 * 1024 * 1024).second
+    }
+
     private fun request(path: String, method: String, body: JsonObject? = null, token: String? = null,
                         expected: Int = 200): kotlinx.serialization.json.JsonElement =
         requestWithStatus(path, method, body, token, expected = setOf(expected)).second
@@ -117,7 +132,8 @@ class ServerApi(
             if (status == 204 || status == 404) return status to kotlinx.serialization.json.JsonNull
             require(connection.contentType?.substringBefore(';')?.trim()?.lowercase() == "application/json" &&
                 connection.contentLengthLong <= maximum) { INVALID_RESPONSE }
-            val response = connection.inputStream.use { stream ->
+            val response = (if (status >= 400) connection.errorStream
+                ?: throw IOException(INVALID_RESPONSE) else connection.inputStream).use { stream ->
                 val buffer = ByteArray(maximum + 1)
                 var count = 0
                 while (count < buffer.size) {

@@ -17,7 +17,11 @@ data class PlaybackSource(
     val start: Double,
     val compatibleStart: Double,
     val progressToken: String,
-)
+    val compatibleTimeline: MediaTimeline,
+) {
+    fun sourceTime(position: Double, compatible: Boolean): Double =
+        if (compatible) compatibleTimeline.sourceTime(position) else position
+}
 
 class PlaybackApi(
     server: ServerAddress,
@@ -38,7 +42,7 @@ class PlaybackApi(
         require(directAllowed == directPath.isNotEmpty() &&
             (!directAllowed || directPath == "/media/$itemId")) { INVALID_RESPONSE }
         val compatiblePath = value.text("compatible", 16_384)
-        var serverTimeline = false
+        var timeline: MediaTimeline? = null
         if (compatiblePath.isNotEmpty()) {
             require(compatiblePath.matches(Regex("/hls/${Regex.escape(itemId)}/p/[A-Za-z0-9_.-]{1,8192}/index\\.m3u8"))) {
                 INVALID_RESPONSE
@@ -47,7 +51,12 @@ class PlaybackApi(
             require(fallback.flag("allowed") && fallback.text("mode", 32) in MODES - "direct" - "denied" &&
                 fallback.text("reason", 128).isNotEmpty() &&
                 fallback.text("markerMode", 32) in MARKER_MODES) { INVALID_RESPONSE }
-            serverTimeline = fallback.text("markerMode", 32) == "server"
+            if (fallback.text("markerMode", 32) == "server") {
+                timeline = MediaTimeline.parse(fallback.getValue("timeline"))
+                val compatibleDuration = value.number("compatibleDuration", 0.0..31_536_000.0)
+                require(kotlin.math.abs(timeline.duration - compatibleDuration) < 0.01 &&
+                    value.text("compatibleProgressToken", 8192).isNotEmpty()) { INVALID_RESPONSE }
+            }
         } else require(value["compatiblePlan"] == null) { INVALID_RESPONSE }
         require(directAllowed || compatiblePath.isNotEmpty()) { INVALID_RESPONSE }
         val duration = value.number("duration", 0.0..1_000_000_000.0)
@@ -56,8 +65,10 @@ class PlaybackApi(
         require(directAllowed == type.isNotEmpty()) { INVALID_RESPONSE }
         val progressToken = value.text("progressToken", 8192)
         val safeStart = if (start < duration) start else 0.0
+        val compatibleTimeline = timeline ?: MediaTimeline(duration, duration)
         return PlaybackSource(itemId, directPath.ifEmpty { null }, compatiblePath.ifEmpty { null },
-            type, duration, safeStart, if (serverTimeline) 0.0 else safeStart, progressToken)
+            type, compatibleTimeline.sourceDuration, safeStart, compatibleTimeline.presentationTime(safeStart),
+            progressToken, compatibleTimeline)
     }
 
     companion object {

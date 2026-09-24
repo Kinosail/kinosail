@@ -134,7 +134,9 @@ private fun MobileDetail(item: CatalogItem, catalog: CatalogModel, play: () -> U
         verticalArrangement = Arrangement.spacedBy(16.dp)) {
         TextButton(onClick = catalog::closeDetail) { Text("Back to Library") }
         if (item.kind in setOf("video", "music", "audiobook")) {
-            Button(onClick = play, modifier = Modifier.fillMaxWidth()) { Text("Play") }
+            Button(onClick = play, modifier = Modifier.fillMaxWidth()) {
+                Text(if (item.progress.seconds > 0 && !item.progress.watched) "Resume" else "Play")
+            }
         }
         CatalogPoster(item, catalog, Modifier.width(176.dp), dimension = 800)
         Text(item.title, style = MaterialTheme.typography.headlineLarge,
