@@ -5,7 +5,7 @@ description: Kinosail Player is a free media server for your own hardware. It in
 ---
 <section class="hero wrap">
 <h1>Your collection.<br>Your kind of evening.</h1>
-<p class="lede">A free media Server that runs at home.<br class="desktop-break"> Watch in the web Player or connect a compatible Jellyfin mobile app.</p>
+<p class="lede">Kinosail Player is a free media Server that runs at home.<br class="desktop-break"> Watch in the web Player or connect a compatible Jellyfin mobile app.</p>
 <div class="actions"><a class="button" href="{{ '/docs/' | relative_url }}">Read the docs</a><a class="text-link" href="{{ '/quickstart/' | relative_url }}">Get started with Docker</a><a class="text-link" href="#inside">See the Player</a></div>
 <p class="fine">Run the Server for free. Keep your media on your own hardware.</p>
 <figure class="hero-screen"><a href="{{ '/assets/images/player-detail-3200.webp' | relative_url }}" aria-label="View full-size Player film screenshot"><img src="{{ '/assets/images/player-detail.webp' | relative_url }}" srcset="{{ '/assets/images/player-detail-688.webp' | relative_url }} 688w, {{ '/assets/images/player-detail-1024.webp' | relative_url }} 1024w, {{ '/assets/images/player-detail.webp' | relative_url }} 1280w, {{ '/assets/images/player-detail-3200.webp' | relative_url }} 3200w" sizes="(max-width: 760px) calc(100vw - 50px), (max-width: 1280px) calc(100vw - 98px), 1182px" width="1280" height="720" alt="Kinosail Player displaying the fictional film The Last Observatory, with artwork, film details, Play and My List controls" fetchpriority="high"></a><figcaption>Real Player screenshots. Fictional library and original demo artwork. No personal media or account information.</figcaption></figure>
