@@ -58,6 +58,7 @@ import com.kinosail.player.core.ConnectionModel
 import com.kinosail.player.core.HomeScreen
 import com.kinosail.player.core.LIBRARY_VIEWS
 import com.kinosail.player.core.PlaybackScreen
+import com.kinosail.player.core.PhotoScreen
 import com.kinosail.player.core.ShowScreen
 import com.kinosail.player.core.Viewer
 import com.kinosail.player.design.SailBackdrop
@@ -69,6 +70,7 @@ internal fun MobileLibrary(connection: ConnectionModel, viewer: Viewer) {
     val nowPlaying = AudioPlaybackService.nowPlayingFor(viewer)
     var home by remember { mutableStateOf(true) }
     var playingItem by remember { mutableStateOf<CatalogItem?>(null) }
+    var photoItem by remember { mutableStateOf<CatalogItem?>(null) }
     val keyboard = LocalSoftwareKeyboardController.current
     val submitSearch = {
         catalog.search()
@@ -77,11 +79,15 @@ internal fun MobileLibrary(connection: ConnectionModel, viewer: Viewer) {
     }
     LaunchedEffect(viewer.serverId, viewer.id) { catalog.open(viewer) }
     DisposableEffect(Unit) { onDispose { catalog.reset() } }
-    BackHandler(state.selected != null && playingItem == null) { catalog.closeDetail() }
-    BackHandler(!home && state.selected == null && playingItem == null) { home = true }
+    BackHandler(state.selected != null && playingItem == null && photoItem == null) { catalog.closeDetail() }
+    BackHandler(!home && state.selected == null && playingItem == null && photoItem == null) { home = true }
     if (playingItem != null) {
         PlaybackScreen(requireNotNull(playingItem), viewer, tv = false, close = { playingItem = null },
             onNext = { playingItem = it })
+        return
+    }
+    if (photoItem != null) {
+        PhotoScreen(requireNotNull(photoItem), catalog, tv = false, close = { photoItem = null })
         return
     }
     if (state.selected?.showId?.isNotEmpty() == true) {
@@ -108,7 +114,8 @@ internal fun MobileLibrary(connection: ConnectionModel, viewer: Viewer) {
             if (nowPlaying != null) Button(onClick = { playingItem = nowPlaying },
                 modifier = Modifier.fillMaxWidth()) { Text("Now playing · ${nowPlaying.title}") }
             if (state.selected != null) {
-                MobileDetail(state.selected, catalog) { playingItem = state.selected }
+                MobileDetail(state.selected, catalog, play = { playingItem = state.selected },
+                    viewPhoto = { photoItem = state.selected })
             } else {
                 Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically) {
@@ -165,7 +172,8 @@ internal fun MobileLibrary(connection: ConnectionModel, viewer: Viewer) {
 }
 
 @Composable
-private fun MobileDetail(item: CatalogItem, catalog: CatalogModel, play: () -> Unit) {
+private fun MobileDetail(item: CatalogItem, catalog: CatalogModel, play: () -> Unit,
+                         viewPhoto: () -> Unit) {
     Column(Modifier.fillMaxWidth().verticalScroll(rememberScrollState()),
         verticalArrangement = Arrangement.spacedBy(16.dp)) {
         TextButton(onClick = catalog::closeDetail) { Text("Back") }
@@ -174,6 +182,11 @@ private fun MobileDetail(item: CatalogItem, catalog: CatalogModel, play: () -> U
                 Text(if (item.progress.seconds > 0 && !item.progress.watched) "Resume" else "Play")
             }
         }
+        if (item.kind == "photo") Button(onClick = viewPhoto, enabled = item.stream.isNotEmpty(),
+            modifier = Modifier.fillMaxWidth()) { Text("View photo") }
+        if (item.kind == "photo" && item.stream.isEmpty()) Text(
+            "Photo viewing is unavailable for this Viewer.",
+            color = MaterialTheme.colorScheme.onSurfaceVariant)
         catalog.state.listed?.let { listed ->
             TextButton(onClick = { catalog.setListed(!listed) }, enabled = !catalog.state.listBusy) {
                 Text(if (listed) "Remove from My List" else "Add to My List")
