@@ -43,6 +43,8 @@ import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.semantics.clearAndSetSemantics
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.focusProperties
@@ -209,7 +211,7 @@ internal fun TvLibrary(connection: ConnectionModel, viewer: Viewer) {
                                 0 -> Modifier.focusRequester(cardFocus)
                                 nextFocus -> Modifier.focusRequester(pageFocus)
                                 else -> Modifier
-                            }.fillMaxWidth()) {
+                            }.fillMaxWidth().semantics { contentDescription = item.title }) {
                             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                                 TvPoster(item, catalog, Modifier.fillMaxWidth())
                                 Text(item.title, maxLines = 2, overflow = TextOverflow.Ellipsis,
