@@ -14,6 +14,7 @@ import org.junit.Test
 class ReaderApiTest {
     private val server = ServerAddress("https://example.com")
     private val metadata = """{"id":"book-1","title":"The Book","type":"pdf","pages":[{"number":1,"title":"Document","url":"/read/book-1/file"}]}"""
+    private val comic = """{"id":"comic-1","title":"Panels","type":"comic","pages":[{"number":1,"title":"One","url":"/read/comic-1/asset/Page%201.jpg"},{"number":2,"title":"Two","url":"/read/comic-1/asset/Page%202.jpg"}]}"""
 
     @Test fun validatesTheReaderRouteAndViewerBeforeOpeningAConnection() {
         var opens = 0
@@ -36,8 +37,8 @@ class ReaderApiTest {
         val api = ReaderApi(server) { responses.removeFirst() }
         assertEquals(ReaderBook("book-1", "The Book", "/read/book-1/file"),
             api.book("book-1", "token", "viewer"))
-        assertEquals(ReaderPosition(0.5), api.position("book-1", "token", "viewer"))
-        assertEquals(ReaderPosition(0.75), api.save("book-1", "token", "viewer", 0.75))
+        assertEquals(ReaderPosition(1, 1, 0.5), api.position("book-1", "token", "viewer"))
+        assertEquals(ReaderPosition(1, 1, 0.75), api.save("book-1", "token", "viewer", 0.75))
         assertTrue(responses.isEmpty())
     }
 
@@ -70,6 +71,65 @@ class ReaderApiTest {
             ReaderApi(server) { Reply(200, """{"page":1,"total":1,"offset":0.2}""") }
                 .save("book-1", "token", "viewer", 0.5)
         }
+    }
+
+    @Test fun readsComicPagesAndSavesTheServerPageNumber() {
+        val saved = Reply(200, """{"page":2,"total":2,"offset":0.0}""")
+        val responses = ArrayDeque(listOf(Reply(200, comic),
+            Reply(200, """{"page":2,"total":2,"offset":0.0}"""), saved))
+        val api = ReaderApi(server) { responses.removeFirst() }
+        assertEquals(ComicBook("comic-1", "Panels", listOf("/read/comic-1/asset/Page%201.jpg",
+            "/read/comic-1/asset/Page%202.jpg")), api.comic("comic-1", "token", "viewer"))
+        assertEquals(ReaderPosition(2, 2, 0.0), api.position("comic-1", "token", "viewer", 2))
+        assertEquals(ReaderPosition(2, 2, 0.0), api.save("comic-1", "token", "viewer", 0.0, 2, 2))
+        assertEquals("PUT", saved.requestMethod)
+        assertTrue(saved.output.toString().contains("\"page\":2"))
+        assertTrue(responses.isEmpty())
+    }
+
+    @Test fun formatSelectionRequiresARecognizedBookAndBoundedPageList() {
+        assertEquals("pdf", ReaderApi(server) { Reply(200, metadata) }.format("book-1", "token", "viewer"))
+        assertEquals("comic", ReaderApi(server) { Reply(200, comic) }.format("comic-1", "token", "viewer"))
+        listOf(comic.replace("\"type\":\"comic\"", "\"type\":\"other\""),
+            """{"id":"comic-1","title":"Panels","type":"comic","pages":[]}""",
+            comic.replace("\"id\":\"comic-1\"", "\"id\":\"other\"")).forEach { body ->
+            assertThrows(body, Exception::class.java) {
+                ReaderApi(server) { Reply(200, body) }.format("comic-1", "token", "viewer")
+            }
+        }
+    }
+
+    @Test fun rejectsUnsafeComicPathsAndMalformedPagesBeforeFetchingAssets() {
+        assertTrue(ReaderApi.validComicPath("/read/comic-1/asset/Chapter%201/Page%2001.jpg", "comic-1"))
+        val invalid = listOf("https://outside.test/read/comic-1/asset/a.jpg",
+            "//outside.test/read/comic-1/asset/a.jpg", "/read/comic-2/asset/a.jpg",
+            "/read/comic-1/asset/../a.jpg", "/read/comic-1/asset/%2E%2E/a.jpg",
+            "/read/comic-1/asset/a%2Fb.jpg", "/read/comic-1/asset/a%5Cb.jpg",
+            "/read/comic-1/asset/a.jpg?x=1", "/read/comic-1/asset/a.jpg#part",
+            "/read/comic-1/asset/a%GG.jpg", "/read/comic-1/asset/")
+        invalid.forEach { assertFalse(ReaderApi.validComicPath(it, "comic-1")) }
+        var opens = 0
+        val api = ReaderApi(server) { opens++; Reply(200, comic) }
+        assertThrows(IllegalArgumentException::class.java) { api.comic("bad/id", "token", "viewer") }
+        assertThrows(IllegalArgumentException::class.java) { api.save("comic-1", "token", "viewer", 0.0, 3, 2) }
+        assertEquals(0, opens)
+        listOf(comic.replace("Page%202.jpg", "Page%201.jpg"),
+            comic.replace("\"number\":2", "\"number\":3"),
+            comic.replace("Page%202.jpg", "../Page%202.jpg"),
+            comic.replace("\"type\":\"comic\"", "\"type\":\"epub\"")).forEach { body ->
+            assertThrows(body, Exception::class.java) {
+                ReaderApi(server) { Reply(200, body) }.comic("comic-1", "token", "viewer")
+            }
+        }
+    }
+
+    @Test fun acceptsAComicPageListLargerThanTheDefaultJsonResponseLimit() {
+        val pages = (1..900).joinToString(",") { number ->
+            """{"number":$number,"title":"Page $number","url":"/read/comic-1/asset/Page%20$number.png"}"""
+        }
+        val body = """{"id":"comic-1","title":"Panels","type":"comic","pages":[$pages]}"""
+        assertTrue(body.length > 65_536)
+        assertEquals(900, ReaderApi(server) { Reply(200, body) }.comic("comic-1", "token", "viewer").pages.size)
     }
 
     @Test fun downloadsOnlyBoundedPdfBytesAndDeletesRejectedFiles() {
@@ -106,7 +166,7 @@ private class Reply(
     private val declaredLength: Long = body.toByteArray().size.toLong(),
 ) : HttpURLConnection(URL("https://example.com")) {
     var closed = false
-    private val output = ByteArrayOutputStream()
+    val output = ByteArrayOutputStream()
     override fun connect() = Unit
     override fun disconnect() { closed = true }
     override fun usingProxy() = false
