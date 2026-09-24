@@ -33,6 +33,8 @@ class BuildInputsTest(unittest.TestCase):
                     build(args)
                     self.assertIn(f'Sitemap: {origin}{prefix}/sitemap.xml',
                                   (args.output / 'robots.txt').read_text().splitlines())
+                    self.assertEqual((args.output / 'index.html').read_text().count(
+                        '<meta name="google-site-verification" content="CyK7nEwl7e61vmJVjO4nsO4JpjaeKGUMffYcSNcUhFg">'), 1)
                     check(args.output, prefix)
 
     def test_invalid_inputs_have_no_side_effects(self):
