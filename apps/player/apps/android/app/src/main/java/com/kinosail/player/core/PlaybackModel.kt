@@ -64,6 +64,8 @@ class PlaybackModel(application: Application) : AndroidViewModel(application) {
         private set
     var captionsEnabled by mutableStateOf(false)
         private set
+    var playbackSpeed by mutableStateOf(1f)
+        private set
 
     fun start(item: CatalogItem, viewer: Viewer) {
         stop()
@@ -304,6 +306,13 @@ class PlaybackModel(application: Application) : AndroidViewModel(application) {
             .setSelectTextByDefault(captionsEnabled).build()
     }
 
+    fun changeSpeed(rate: Float) {
+        val selected = checkedSpeed(rate)
+        val engine = player ?: return
+        engine.setPlaybackSpeed(selected)
+        playbackSpeed = selected
+    }
+
     fun stop() {
         checkpoint()
         generation++
@@ -330,11 +339,17 @@ class PlaybackModel(application: Application) : AndroidViewModel(application) {
         nextBusy = false
         captionsAvailable = false
         captionsEnabled = false
+        playbackSpeed = 1f
     }
 
     override fun onCleared() { stop(); super.onCleared() }
 
     companion object {
+        internal val SPEEDS = listOf(0.5f, 0.75f, 1f, 1.25f, 1.5f, 1.75f, 2f, 2.5f, 3f)
+        internal fun checkedSpeed(rate: Float): Float {
+            require(rate in SPEEDS) { "Choose a supported playback speed." }
+            return rate
+        }
         private val MEDIA_CLIENT = OkHttpClient.Builder().followRedirects(false).followSslRedirects(false).build()
         internal fun isFormatFailure(error: PlaybackException): Boolean = error.errorCode in setOf(
             PlaybackException.ERROR_CODE_PARSING_CONTAINER_UNSUPPORTED,
