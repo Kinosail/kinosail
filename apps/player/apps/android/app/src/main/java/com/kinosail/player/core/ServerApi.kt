@@ -103,6 +103,16 @@ class ServerApi(
             viewerId = viewerId, expected = setOf(200), maximum = 2 * 1024 * 1024).second
     }
 
+    internal fun setListed(itemId: String, token: String, viewerId: String, listed: Boolean):
+        kotlinx.serialization.json.JsonElement {
+        require(itemId.matches(Regex("[A-Za-z0-9_-]{1,128}")) &&
+            viewerId.matches(Regex("[A-Za-z0-9_-]{1,128}"))) { "Invalid My List request." }
+        val credential = checkedCredential(token, 512)
+        return requestWithStatus("/api/v1/items/$itemId/list", "PUT",
+            buildJsonObject { put("listed", listed) }, token = credential,
+            viewerId = viewerId, expected = setOf(200)).second
+    }
+
     internal fun show(showId: String, token: String, viewerId: String): kotlinx.serialization.json.JsonElement {
         require(showId.matches(Regex("[a-f0-9]{16}")) &&
             viewerId.matches(Regex("[A-Za-z0-9_-]{1,128}"))) { "Invalid show request." }

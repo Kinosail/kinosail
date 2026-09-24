@@ -98,7 +98,8 @@ internal fun TvLibrary(connection: ConnectionModel, viewer: Viewer) {
         }
     }
     LaunchedEffect(state.items.isNotEmpty(), state.selected, playingItem, state.view, home) {
-        if (home || playingItem != null || state.selected?.showId?.isNotEmpty() == true) return@LaunchedEffect
+        if (home && state.selected == null || playingItem != null ||
+            state.selected?.showId?.isNotEmpty() == true) return@LaunchedEffect
         if (state.selected != null) detailFocus.requestFocus()
         else if (state.items.isNotEmpty()) cardFocus.requestFocus()
         else searchFocus.requestFocus()
@@ -142,7 +143,8 @@ internal fun TvLibrary(connection: ConnectionModel, viewer: Viewer) {
                 Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.Bottom) {
                     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                        Text(if (state.view == "shows") "TV Shows" else "Library", style = MaterialTheme.typography.displayMedium,
+                        Text(when (state.view) { "shows" -> "TV Shows"; "list" -> "My List"; else -> "Library" },
+                            style = MaterialTheme.typography.displayMedium,
                             color = MaterialTheme.colorScheme.onBackground)
                         Text("${viewer.name} · ${viewer.server}", style = MaterialTheme.typography.titleLarge,
                             color = MaterialTheme.colorScheme.onSurfaceVariant)
@@ -155,6 +157,9 @@ internal fun TvLibrary(connection: ConnectionModel, viewer: Viewer) {
                         Button(onClick = { catalog.changeView("shows") },
                             modifier = Modifier.focusRequester(showsFocus)) {
                             Text(if (state.view == "shows") "TV Shows · Selected" else "TV Shows")
+                        }
+                        Button(onClick = { catalog.changeView("list") }) {
+                            Text(if (state.view == "list") "My List · Selected" else "My List")
                         }
                     }
                 }
@@ -179,7 +184,8 @@ internal fun TvLibrary(connection: ConnectionModel, viewer: Viewer) {
                 state.notice?.let { Text(it, color = MaterialTheme.colorScheme.error) }
                 if (state.notice != null) Button(onClick = catalog::retry) { Text("Retry") }
                 if (state.items.isEmpty() && !state.loading && state.notice == null) {
-                    Text("Nothing in your library yet.", style = MaterialTheme.typography.titleLarge,
+                    Text(if (state.view == "list") "Save a title to keep it in My List."
+                        else "Nothing in your library yet.", style = MaterialTheme.typography.titleLarge,
                         color = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
                 LazyVerticalGrid(columns = GridCells.Fixed(5), modifier = Modifier.weight(1f), state = gridState,
@@ -222,8 +228,18 @@ private fun TvDetail(item: CatalogItem, catalog: CatalogModel, firstModifier: Mo
             Button(onClick = play, modifier = firstModifier) {
                 Text(if (item.progress.seconds > 0 && !item.progress.watched) "Resume" else "Play")
             }
-            Button(onClick = catalog::closeDetail) { Text("Back to Library") }
-        } else Button(onClick = catalog::closeDetail, modifier = firstModifier) { Text("Back to Library") }
+            Button(onClick = catalog::closeDetail) { Text("Back") }
+        } else Button(onClick = catalog::closeDetail, modifier = firstModifier) { Text("Back") }
+        catalog.state.listed?.let { listed ->
+            Button(onClick = { catalog.setListed(!listed) }, enabled = !catalog.state.listBusy) {
+                Text(if (listed) "Remove from My List" else "Add to My List")
+            }
+        }
+        if (catalog.state.listBusy && catalog.state.listed == null) Text("Loading My List status…")
+        catalog.state.detailNotice?.let { notice ->
+            Text(notice, color = MaterialTheme.colorScheme.error)
+            if (catalog.state.listed == null) Button(onClick = catalog::retryDetail) { Text("Retry") }
+        }
         Row(horizontalArrangement = Arrangement.spacedBy(32.dp)) {
             TvPoster(item, catalog, Modifier.width(260.dp), ratio = 2f / 3f, dimension = 800)
             Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(16.dp)) {
