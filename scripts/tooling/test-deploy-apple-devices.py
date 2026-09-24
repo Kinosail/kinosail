@@ -15,6 +15,16 @@ spec.loader.exec_module(updater)
 
 
 class AppleDeployTests(unittest.TestCase):
+    def test_identifier_accepts_coredevice_uuid_and_physical_apple_identifier(self):
+        self.assertEqual(
+            updater.identifier('12345678-1234-1234-1234-1234567890AB'),
+            '12345678-1234-1234-1234-1234567890AB',
+        )
+        self.assertEqual(
+            updater.identifier('00000000-1111222233334444'),
+            '00000000-1111222233334444',
+        )
+
     def test_build_number_advances_past_installed_and_built_receipts(self):
         for count, installed, built, expected in [
             ('58', {}, {}, '1058'),
@@ -69,9 +79,9 @@ class AppleDeployTests(unittest.TestCase):
             self.assertEqual(list(root.iterdir()), [])
 
     def test_invalid_arguments_have_no_side_effects(self):
-        valid = ['deploy', '--team', 'ABCDEFGHIJ', '--iphone', '89251873-20F4-574A-80B7-1CAEAE25ABA6', '--tv', '72A5068C-97F3-54A3-B5AF-E2A725E7E344']
+        valid = ['deploy', '--team', 'ABCDEFGHIJ', '--iphone', '12345678-1234-1234-1234-1234567890AB', '--tv', 'ABCDEF12-3456-7890-ABCD-EF1234567890']
         cases = [[], ['--unexpected'], ['--team', ''], ['--team', 'x' * 10000],
-                 ['--team', 'abcdefghij'], ['--iphone', '../device'], ['--tv', '89251873-20F4-574A-80B7-1CAEAE25ABA6']]
+                 ['--team', 'abcdefghij'], ['--iphone', '../device'], ['--tv', '12345678-1234-1234-1234-1234567890AB']]
         for extra in cases:
             argv = ['deploy'] if not extra else valid + extra
             with self.subTest(extra=extra), patch('sys.argv', argv), patch.object(updater.Path, 'mkdir') as mkdir, patch.object(updater.subprocess, 'run') as run:

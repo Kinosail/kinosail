@@ -15,11 +15,17 @@ import tempfile
 NATIVE = 'apps/player/apps/native'
 BUNDLE = 'com.kinosail.player'
 REPOSITORY = 'https://github.com/Kinosail/kinosail.git'
+DEVICE_IDENTIFIER = re.compile(
+    r'(?:[0-9A-Fa-f]{8}(?:-[0-9A-Fa-f]{4}){3}-[0-9A-Fa-f]{12}|'
+    r'[0-9A-Fa-f]{8}-[0-9A-Fa-f]{16})'
+)
 
 
 def identifier(value):
-    if not re.fullmatch(r'[0-9A-Fa-f]{8}(?:-[0-9A-Fa-f]{4}){3}-[0-9A-Fa-f]{12}', value):
-        raise argparse.ArgumentTypeError('expected a paired CoreDevice UUID')
+    if not DEVICE_IDENTIFIER.fullmatch(value):
+        raise argparse.ArgumentTypeError(
+            'expected a paired CoreDevice UUID or Apple device identifier'
+        )
     return value.upper()
 
 
