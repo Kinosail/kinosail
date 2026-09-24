@@ -72,9 +72,10 @@ struct MediaCard: View {
             VStack(alignment: .leading, spacing: 10) {
                 let usesBackdrop = landscape && !item.backdrop.isEmpty
                 Artwork(path: usesBackdrop ? item.backdrop : item.poster,
-                        symbol: item.kind.symbol, ratio: usesBackdrop ? 16 / 9 : item.isAudio ? 1 : 2 / 3,
+                        symbol: item.kind.symbol, ratio: landscape ? 16 / 9 : item.isAudio ? 1 : 2 / 3,
                         dimension: landscape || dynamicTypeSize.isAccessibilitySize ? 1600 : 800,
                         isBackdrop: usesBackdrop)
+                    .background(landscape && !usesBackdrop ? KinoTheme.surface : .clear)
                     .clipShape(.rect(cornerRadius: 12))
                 VStack(alignment: .leading, spacing: 8) {
                     Text(item.title).font(.headline).foregroundStyle(KinoTheme.text)

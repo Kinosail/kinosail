@@ -3,6 +3,7 @@ import Foundation
 struct WatchProgress: Codable, Hashable, Sendable {
     var seconds: Double = 0
     var watched = false
+    var dismissed = false
     var session = ""
     var revision: Int = 0
 
@@ -14,7 +15,7 @@ struct WatchProgress: Codable, Hashable, Sendable {
         watched = try value.flag("watched", fallback: false)
         session = try value.text("session", max: 128)
         revision = Int(try value.number("revision", max: 9_007_199_254_740_991, integer: true))
-        _ = try value.flag("dismissed", fallback: false)
+        dismissed = try value.flag("dismissed", fallback: false)
         let page = try value.number("readerPage", max: 10_000_000, integer: true)
         let offset = try value.number("readerOffset", max: 1)
         guard page > 0 || offset == 0 else { throw ClientError.invalidResponse }
@@ -22,7 +23,8 @@ struct WatchProgress: Codable, Hashable, Sendable {
     }
 
     var json: JSONValue {
-        .object(["seconds": .number(seconds), "watched": .bool(watched), "session": .string(session), "revision": .number(Double(revision))])
+        .object(["seconds": .number(seconds), "watched": .bool(watched), "dismissed": .bool(dismissed),
+                 "session": .string(session), "revision": .number(Double(revision))])
     }
 }
 

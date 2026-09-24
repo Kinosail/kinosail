@@ -17,7 +17,9 @@ extension ServerClient {
         else { profile = try await viewer() }
         async let history = library(view: .history, limit: 24, policy: policy)
         async let recent = library(sort: .added, limit: 36, policy: policy)
-        return try await HomeSnapshot(viewer: profile, continueWatching: history.items, recent: recent.items)
+        let (historyPage, recentPage) = try await (history, recent)
+        let continueWatching = historyPage.items.filter { $0.progress.seconds > 0 && !$0.progress.watched && !$0.progress.dismissed }
+        return HomeSnapshot(viewer: profile, continueWatching: continueWatching, recent: recentPage.items)
     }
 
     func library(query: String = "", view: LibraryView = .all, sort: LibrarySort = .title,

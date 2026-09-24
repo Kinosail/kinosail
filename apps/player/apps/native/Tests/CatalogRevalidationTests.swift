@@ -45,6 +45,29 @@ struct CatalogRevalidationTests {
         await fixture.client.close()
     }
 
+    @Test func homeShowsOnlyActiveContinueWatchingFromPlaybackHistory() async throws {
+        let fixture = try Fixture()
+        defer { fixture.remove() }
+        let request = Task { try await fixture.client.home() }
+        try await fixture.waitForRequests(2)
+        fixture.respond(view: "history", version: 1, items: [
+            Self.item("active", progress: ["seconds": 120]),
+            Self.item("dismissed", progress: ["seconds": 240, "dismissed": true]),
+            Self.item("watched", progress: ["seconds": 360, "watched": true]),
+            Self.item("no-progress", progress: [:])
+        ])
+        fixture.respond(view: "all", version: 1)
+
+        let home = try await request.value
+        #expect(home.continueWatching.map(\.id) == ["active"])
+        #expect(home.recent.count == 1)
+        await fixture.client.close()
+    }
+
+    private static func item(_ id: String, progress: [String: Any]) -> [String: Any] {
+        ["id": id, "kind": "video", "title": id, "stream": "/media/\(id)", "progress": progress]
+    }
+
     @Test func invalidResponseNeverWarmsTheCache() async throws {
         let fixture = try Fixture()
         defer { fixture.remove() }
@@ -76,13 +99,13 @@ struct CatalogRevalidationTests {
             try #require(pending.count == count)
         }
 
-        func respond(view: String, version: Int, invalid: Bool = false) {
+        func respond(view: String, version: Int, invalid: Bool = false, items: [[String: Any]]? = nil) {
             let request = RevalidationProtocol.pending.withLock { requests -> RevalidationProtocol? in
                 guard let index = requests[host]?.firstIndex(where: { $0.query["view"] == view }) else { return nil }
                 return requests[host]?.remove(at: index)
             }
             #expect(request != nil)
-            request?.respond(version: version, invalid: invalid)
+            request?.respond(version: version, invalid: invalid, items: items)
         }
 
         func remove() {
@@ -115,11 +138,12 @@ private final class RevalidationProtocol: URLProtocol, @unchecked Sendable {
     override func stopLoading() {
         Self.pending.withLock { $0[request.url!.host!]?.removeAll { $0 === self } }
     }
-    func respond(version: Int, invalid: Bool) {
+    func respond(version: Int, invalid: Bool, items: [[String: Any]]? = nil) {
         let query = query
-        let item: [String: Any] = ["id": "movie", "kind": "video", "title": "Movie \(version)", "stream": "/media/movie", "progress": [:]]
-        let body: [String: Any] = ["items": [item], "view": invalid ? "wrong" : query["view"]!,
-            "sort": query["sort"]!, "query": query["q"]!, "total": 1,
+        let item: [String: Any] = ["id": "movie", "kind": "video", "title": "Movie \(version)", "stream": "/media/movie", "progress": ["seconds": 120]]
+        let responseItems = items ?? [item]
+        let body: [String: Any] = ["items": responseItems, "view": invalid ? "wrong" : query["view"]!,
+            "sort": query["sort"]!, "query": query["q"]!, "total": responseItems.count,
             "offset": Int(query["offset"]!)!, "limit": Int(query["limit"]!)!, "letters": []]
         let data = try! JSONSerialization.data(withJSONObject: body)
         let response = HTTPURLResponse(url: request.url!, statusCode: 200, httpVersion: nil,
