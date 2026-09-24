@@ -98,6 +98,40 @@ class PlaybackApiTest {
                     .source("film-1", "token", "alex", capabilities)
             } }
     }
+
+    @Test fun validatesViewerScopedWebVttTracksBeforePlayback() {
+        val tracks = """"subtitles":[{"source":"/subtitle/film-1/0","label":"English","language":"en","default":true},{"source":"/subtitle/film-1/embedded/2","label":"French","language":"fr","default":false,"forced":true,"embedded":true,"role":"captions","kind":"captions"}],"""
+        val plan = response.replace("\"progressToken\":", tracks + "\"progressToken\":")
+        val parsed = PlaybackApi(server) { PlaybackResponse(200, plan) }
+            .source("film-1", "token", "alex", capabilities)
+        assertEquals(2, parsed.subtitles.size)
+        assertEquals("/subtitle/film-1/0", parsed.subtitles[0].path)
+        assertTrue(parsed.subtitles[0].isDefault)
+        assertTrue(parsed.subtitles[1].forced)
+        val invalid = listOf(
+            plan.replace("/subtitle/film-1/0", "https://evil.example/subtitle/film-1/0"),
+            plan.replace("/subtitle/film-1/0", "/subtitle/film-2/0"),
+            plan.replace("/subtitle/film-1/0", "/subtitle/film-1/../other"),
+            plan.replace("\"label\":\"English\"", "\"label\":\"\""),
+            plan.replace("\"language\":\"en\"", "\"language\":\"bad language\""),
+            plan.replace("\"default\":true", "\"default\":\"true\""),
+            plan.replace("\"default\":false", "\"default\":true"),
+            plan.replace("/subtitle/film-1/embedded/2", "/subtitle/film-1/0"),
+            plan.replace("\"forced\":true", "\"unknown\":true"),
+            plan.replace("\"embedded\":true", "\"embedded\":false"),
+            plan.replace("\"role\":\"captions\"", "\"role\":\"unknown\""),
+            plan.replace("\"kind\":\"captions\"", "\"kind\":\"unknown\""),
+            plan.replace("\"label\":\"English\"", "\"label\":\"${"x".repeat(513)}\""),
+            response.replace("\"progressToken\":", "\"subtitles\":[${(0..256).joinToString { "{}" }}],\"progressToken\":"),
+            response.replace("\"directAllowed\":true,\"direct\":\"/media/film-1\"",
+                "\"directAllowed\":false,\"direct\":\"\"")
+                .replace("\"progressToken\":", tracks + "\"progressToken\":"),
+        )
+        invalid.forEach { body -> assertThrows(Exception::class.java) {
+            PlaybackApi(server) { PlaybackResponse(200, body) }
+                .source("film-1", "token", "alex", capabilities)
+        } }
+    }
 }
 
 private class PlaybackResponse(private val status: Int, private val body: String,

@@ -64,6 +64,14 @@ internal fun PlaybackScreen(item: CatalogItem, viewer: Viewer, tv: Boolean, clos
                 Text(item.title, color = Color.White, modifier = Modifier.weight(1f), maxLines = 1,
                     overflow = TextOverflow.Ellipsis)
                 Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                    if (playback.captionsAvailable) {
+                        val label = if (playback.captionsEnabled) "Captions on" else "Captions off"
+                        if (tv) androidx.tv.material3.Button(onClick = playback::toggleCaptions) {
+                            androidx.tv.material3.Text(label)
+                        } else TextButton(onClick = playback::toggleCaptions) {
+                            Text(label, color = KinoColor.signal)
+                        }
+                    }
                     if (playback.nextItemId != null) {
                         if (tv) androidx.tv.material3.Button(onClick = { playback.playNext(onNext) },
                             enabled = !playback.nextBusy) { androidx.tv.material3.Text("Next episode") }
