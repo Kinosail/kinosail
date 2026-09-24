@@ -15,7 +15,9 @@ assert_projects() {
 
 assert_projects chromium
 assert_projects $'chromium\nfirefox\nwebkit' env KINOSAIL_BROWSER_MATRIX=full
-assert_projects firefox env KINOSAIL_BROWSER_MATRIX=full KINOSAIL_BROWSER_PROJECT=firefox
+for project in chromium firefox webkit; do
+  assert_projects "$project" env KINOSAIL_BROWSER_MATRIX=full KINOSAIL_BROWSER_PROJECT="$project"
+done
 if env KINOSAIL_BROWSER_PROJECT=opera "$script" >/dev/null 2>&1; then
   printf 'unsupported browser project was accepted\n' >&2
   exit 1
