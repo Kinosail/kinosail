@@ -79,6 +79,10 @@ internal fun PlaybackScreen(item: CatalogItem, viewer: Viewer, tv: Boolean, clos
         useController = true
         controllerShowTimeoutMs = if (tv) 5_000 else 3_000
     } } }
+    DisposableEffect(playerView, videoPipHost) {
+        videoPipHost?.setVideoPipView(playerView)
+        onDispose { videoPipHost?.setVideoPipView(null) }
+    }
     val inPip = videoPipHost?.inPictureInPicture == true
     BackHandler { if (speedPicker) speedPicker = false else if (trackPicker) closeTracks() else close() }
     LaunchedEffect(item.id, viewer.id, playback) {
