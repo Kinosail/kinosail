@@ -7,9 +7,9 @@ last_reviewed: 2026-09-24
 
 # Frequently asked questions
 
-## What is Kinosail?
+## What is Kinosail Player?
 
-Kinosail is a private, self-hosted media Server for the Library Content that you control. It combines the API, web app, background work, embedded SQLite, scanner, and FFmpeg playback work in one container.
+Kinosail Player is a free, self-hosted media Server and web player that runs on your own hardware. It brings movies, shows, music, audiobooks, books, comics, and photos from folders you choose into one library. Your original files stay on a read-only mount, and local use needs no Kinosail account. [Start with Docker]({{ '/quickstart/' | relative_url }}) or [explore the features]({{ '/features/' | relative_url }}).
 
 ## Can I try Kinosail with the media I already have?
 
