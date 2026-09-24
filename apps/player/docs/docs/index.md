@@ -26,6 +26,7 @@ Read the [Player feature guide]({{ "/features/" | relative_url }}) for details a
 
 - **Use another browser.** [Connect it to your home network]({{ '/getting-started/connect-devices/' | relative_url }}).
 - **Use a Jellyfin mobile app.** [Turn on compatibility and connect]({{ '/getting-started/connect-devices/' | relative_url }}). Trusted HTTPS is required.
+- **Moving from Plex or Jellyfin?** [Reuse your media folders and preview a viewing-history import]({{ '/owner-guide/migration/' | relative_url }}).
 - **Share your Server with the household.** [Set up Viewer Profiles]({{ '/user-guide/profiles/' | relative_url }}).
 - **Look after your library.** [Plan backups and updates]({{ '/owner-guide/backups-and-updates/' | relative_url }}).
 - **Something isn't working?** [Start with the symptom]({{ '/troubleshooting/' | relative_url }}).

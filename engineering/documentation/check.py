@@ -55,6 +55,12 @@ def check(root, base):
                 errors.append(f'{stylesheet.relative_to(root)}: missing CSS asset {asset}')
     if not (root / 'assets/fonts/OFL-Manrope.txt').is_file():
         errors.append('bundled font license missing')
+    robots = root / 'robots.txt'
+    homepage = (root / 'index.html').read_text()
+    canonical = re.search(r'<link rel="canonical" href="(https://[^/]+)', homepage)
+    expected_sitemap = f'Sitemap: {canonical.group(1)}{base}/sitemap.xml' if canonical else ''
+    if not canonical or not robots.is_file() or expected_sitemap not in robots.read_text().splitlines():
+        errors.append('robots.txt must name this build\'s sitemap')
     entries = json.loads((root / 'search.json').read_text())
     for entry in entries:
         if not all(isinstance(entry.get(key), str) for key in ('title', 'description', 'url', 'content', 'product')):

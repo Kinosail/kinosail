@@ -17,6 +17,7 @@
     <meta name="twitter:image" content="{{ '/assets/images/kinosail-docs-share.png' | absolute_url }}">
     <link rel="canonical" href="{{ page.url | absolute_url }}">
     <link rel="icon" href="{{ '/assets/images/kinosail-mark.svg' | relative_url }}">
+    <link rel="preload" href="{{ '/assets/fonts/manrope.woff2' | relative_url }}" as="font" type="font/woff2" crossorigin>
     <link rel="stylesheet" href="{{ '/assets/css/docs.css' | relative_url }}">
     <script>document.documentElement.classList.add('js');try{const t=localStorage.getItem('kinosail-docs-theme');if(t==='light'||t==='dark')document.documentElement.dataset.theme=t}catch{}</script>
     <script defer src="{{ '/assets/js/docs.js' | relative_url }}"></script>
@@ -27,7 +28,7 @@
   <body>
     <a class="skip-link" href="#main-content">Skip to content</a>
     <header class="site-header">
-      <a class="brand" href="{{ site.docs_root }}/docs/" aria-label="Kinosail documentation home">
+      <a class="brand" href="{{ site.docs_root }}/docs/" aria-label="Kinosail Player Docs home">
         <img src="{{ '/assets/images/kinosail-mark.svg' | relative_url }}" alt="">
         <span>Kinosail <b>Player Docs</b></span>
       </a>
@@ -64,7 +65,7 @@
         <nav class="breadcrumbs" aria-label="Breadcrumb">
           <ol>
             <li><a href="{{ '/docs/' | relative_url }}">Docs</a></li>
-            {% for group in site.data.navigation %}{% if group.title == page.section %}
+            {% for group in site.data.navigation %}{% if group.title == page.section and group.url != page.url %}
             <li><a href="{{ group.url | relative_url }}">{{ group.title }}</a></li>
             {% endif %}{% endfor %}
             <li aria-current="page">{{ page.title }}</li>

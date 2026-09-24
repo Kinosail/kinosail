@@ -6,8 +6,8 @@ import tempfile
 import unittest
 from unittest.mock import patch
 
-from build import ROOT, settings
-from check import Page
+from build import ROOT, build, settings
+from check import Page, check
 
 
 class BuildInputsTest(unittest.TestCase):
@@ -23,6 +23,17 @@ class BuildInputsTest(unittest.TestCase):
                 args = settings(['--output', directory + '/new', '--baseurl', prefix])
                 self.assertEqual(args.baseurl, prefix)
                 self.assertFalse(args.output.exists())
+
+    def test_robots_names_the_generated_sitemap_for_each_origin(self):
+        with tempfile.TemporaryDirectory() as directory:
+            for name, origin, prefix in (('production', 'https://kinosail.com', ''),
+                                         ('preview', 'https://example.org', '/preview')):
+                with self.subTest(name=name):
+                    args = settings(['--output', directory + '/' + name, '--url', origin, '--baseurl', prefix])
+                    build(args)
+                    self.assertIn(f'Sitemap: {origin}{prefix}/sitemap.xml',
+                                  (args.output / 'robots.txt').read_text().splitlines())
+                    check(args.output, prefix)
 
     def test_invalid_inputs_have_no_side_effects(self):
         with tempfile.TemporaryDirectory() as directory:

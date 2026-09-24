@@ -15,10 +15,13 @@ class SearchMetadata(HTMLParser):
         self.social = {}
         self.blocks = []
         self.current = None
+        self.breadcrumbs_visible = False
         self.feed(source)
 
     def handle_starttag(self, tag, attributes):
         attrs = dict(attributes)
+        if tag == 'nav' and 'breadcrumbs' in attrs.get('class', '').split():
+            self.breadcrumbs_visible = True
         if tag == 'link' and attrs.get('rel') == 'canonical':
             self.canonicals.append(attrs.get('href', ''))
         if tag == 'meta' and attrs.get('name') == 'description':
@@ -69,6 +72,7 @@ def validate(source, expected):
             errors.append(f'{key} must be a positive image dimension')
     if not page.blocks:
         errors.append('structured data missing')
+    breadcrumbs = []
     for block in page.blocks:
         try:
             data = json.loads(block)
@@ -78,6 +82,20 @@ def validate(source, expected):
                 for node in graph
             ):
                 errors.append('structured data must identify this WebPage')
+            breadcrumbs.extend(node for node in graph if node.get('@type') == 'BreadcrumbList')
         except (ValueError, TypeError, KeyError, AttributeError):
             errors.append('invalid structured data')
+    if page.breadcrumbs_visible:
+        if len(breadcrumbs) != 1:
+            errors.append('visible breadcrumbs require one BreadcrumbList')
+        else:
+            items = breadcrumbs[0].get('itemListElement')
+            if (not isinstance(items, list) or len(items) < 2 or
+                any(not isinstance(item, dict) or item.get('@type') != 'ListItem' or
+                    item.get('position') != position or not item.get('name') or
+                    not isinstance(item.get('item'), str) or
+                    not item['item'].startswith(urlsplit(expected).scheme + '://' + urlsplit(expected).netloc + '/')
+                    for position, item in enumerate(items, 1)) or
+                items[-1].get('item') != expected):
+                errors.append('BreadcrumbList must follow the visible page hierarchy')
     return errors

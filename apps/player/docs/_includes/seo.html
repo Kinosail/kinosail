@@ -2,6 +2,7 @@
 <meta property="og:site_name" content="Kinosail">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="sitemap" type="application/xml" href="{{ '/sitemap.xml' | relative_url }}">
+{% assign breadcrumb_group = nil %}{% for group in site.data.navigation %}{% if group.title == page.section %}{% assign breadcrumb_group = group %}{% endif %}{% endfor %}
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -9,6 +10,15 @@
     {"@type":"Organization","@id":{{ '/#organization' | absolute_url | jsonify }},"name":"Kinosail","url":{{ '/' | absolute_url | jsonify }},"sameAs":["https://github.com/Kinosail"]},
     {"@type":"WebSite","@id":{{ '/#website' | absolute_url | jsonify }},"name":"Kinosail","url":{{ '/' | absolute_url | jsonify }},"publisher":{"@id":{{ '/#organization' | absolute_url | jsonify }}}},
     {"@type":"WebPage","@id":{{ page.url | absolute_url | jsonify }},"url":{{ page.url | absolute_url | jsonify }},"name":{{ page.title | jsonify }},"description":{{ page.description | default: site.description | jsonify }},"isPartOf":{"@id":{{ '/#website' | absolute_url | jsonify }}},"inLanguage":"en"}
+    {% if page.section %},
+    {"@type":"BreadcrumbList","itemListElement":[
+      {"@type":"ListItem","position":1,"name":"Docs","item":{{ '/docs/' | absolute_url | jsonify }}}
+      {% if breadcrumb_group and breadcrumb_group.url != page.url %},
+      {"@type":"ListItem","position":2,"name":{{ breadcrumb_group.title | jsonify }},"item":{{ breadcrumb_group.url | absolute_url | jsonify }}}
+      {% endif %},
+      {"@type":"ListItem","position":{% if breadcrumb_group and breadcrumb_group.url != page.url %}3{% else %}2{% endif %},"name":{{ page.title | jsonify }},"item":{{ page.url | absolute_url | jsonify }}}
+    ]}
+    {% endif %}
     {% if page.url == '/' %},
     {"@type":"SoftwareApplication","@id":{{ '/#player' | absolute_url | jsonify }},"name":"Kinosail Player","applicationCategory":"MultimediaApplication","operatingSystem":"Linux server; web browser client","url":{{ '/' | absolute_url | jsonify }},"description":"A free media server for your own hardware with a web player. It reads your existing media folders and installs with Docker.","license":"https://github.com/Kinosail/kinosail/blob/main/LICENSING.md","downloadUrl":{{ '/quickstart/' | absolute_url | jsonify }},"screenshot":{{ '/assets/images/player-detail.webp' | absolute_url | jsonify }},"publisher":{"@id":{{ '/#organization' | absolute_url | jsonify }}}}
     {% endif %}
