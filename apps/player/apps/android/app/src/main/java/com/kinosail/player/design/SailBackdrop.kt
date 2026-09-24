@@ -18,4 +18,3 @@ fun SailBackdrop() {
         contentScale = ContentScale.Crop,
     )
 }
-
