@@ -4,6 +4,7 @@ import android.view.KeyEvent
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.focusable
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -12,6 +13,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -19,9 +23,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.semantics.LiveRegionMode
@@ -39,14 +47,17 @@ internal fun PlaybackScreen(item: CatalogItem, viewer: Viewer, tv: Boolean, clos
                             onNext: (CatalogItem) -> Unit) {
     val playback: PlaybackModel = viewModel()
     val player = playback.player
+    var speedPicker by remember { mutableStateOf(false) }
+    val speedFocus = remember { FocusRequester() }
     val context = LocalContext.current
     val playerView = remember(player, context) { player?.let { engine -> PlayerView(context).apply {
         this.player = engine
         useController = true
         controllerShowTimeoutMs = if (tv) 5_000 else 3_000
     } } }
-    BackHandler { close() }
+    BackHandler { if (speedPicker) speedPicker = false else close() }
     LaunchedEffect(item.id, viewer.id) { playback.start(item, viewer) }
+    LaunchedEffect(speedPicker, tv) { if (speedPicker && tv) speedFocus.requestFocus() }
     DisposableEffect(Unit) { onDispose { playback.stop() } }
     Box(Modifier.fillMaxSize().background(Color.Black)) {
         if (playerView != null) AndroidView(
@@ -59,11 +70,19 @@ internal fun PlaybackScreen(item: CatalogItem, viewer: Viewer, tv: Boolean, clos
         )
         Column(Modifier.fillMaxSize().safeDrawingPadding().padding(if (tv) 40.dp else 16.dp),
             verticalArrangement = Arrangement.SpaceBetween) {
-            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically) {
-                Text(item.title, color = Color.White, modifier = Modifier.weight(1f), maxLines = 1,
+            Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                Text(item.title, color = Color.White, modifier = Modifier.fillMaxWidth(), maxLines = 1,
                     overflow = TextOverflow.Ellipsis)
-                Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                Row(Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                    if (player != null) {
+                        val label = "Speed ${speedText(playback.playbackSpeed)}"
+                        if (tv) androidx.tv.material3.Button(onClick = { speedPicker = !speedPicker }) {
+                            androidx.tv.material3.Text(label)
+                        } else TextButton(onClick = { speedPicker = !speedPicker }) {
+                            Text(label, color = KinoColor.signal)
+                        }
+                    }
                     if (playback.captionsAvailable) {
                         val label = if (playback.captionsEnabled) "Captions on" else "Captions off"
                         if (tv) androidx.tv.material3.Button(onClick = playback::toggleCaptions) {
@@ -82,6 +101,22 @@ internal fun PlaybackScreen(item: CatalogItem, viewer: Viewer, tv: Boolean, clos
                     if (tv) androidx.tv.material3.Button(onClick = close) {
                         androidx.tv.material3.Text("Done")
                     } else TextButton(onClick = close) { Text("Done", color = KinoColor.signal) }
+                }
+                if (speedPicker) Column(Modifier.fillMaxWidth().background(Color.Black.copy(alpha = 0.82f))
+                    .padding(12.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                    Text("Playback speed", color = Color.White)
+                    LazyRow(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                        items(PlaybackModel.SPEEDS) { rate ->
+                            val label = if (rate == 1f) "Normal" else speedText(rate)
+                            val chosen = if (playback.playbackSpeed == rate) "$label · Selected" else label
+                            val select = { playback.changeSpeed(rate); speedPicker = false }
+                            if (tv) androidx.tv.material3.Button(onClick = select,
+                                modifier = if (rate == PlaybackModel.SPEEDS.first())
+                                    Modifier.focusRequester(speedFocus) else Modifier) {
+                                androidx.tv.material3.Text(chosen)
+                            } else TextButton(onClick = select) { Text(chosen, color = KinoColor.signal) }
+                        }
+                    }
                 }
             }
             Column(Modifier.fillMaxWidth().then(if (playback.loading || playback.usingCompatible ||
@@ -110,3 +145,5 @@ internal fun PlaybackScreen(item: CatalogItem, viewer: Viewer, tv: Boolean, clos
         }
     }
 }
+
+private fun speedText(rate: Float): String = if (rate % 1f == 0f) "${rate.toInt()}×" else "$rate×"
