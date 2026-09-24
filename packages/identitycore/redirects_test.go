@@ -31,7 +31,7 @@ func TestStepUpLoginPathReturnsToKnownOwnerPage(t *testing.T) {
 }
 
 func TestSafeLoginReturnRejectsExternalAndAmbiguousTargets(t *testing.T) {
-	for _, raw := range []string{"", "https://attacker.example", "//attacker.example", `/\\attacker.example`, "%2F%2Fattacker.example", strings.Repeat("a", 2049), "/account#" + strings.Repeat("a", 2049), "//attacker.example#local"} {
+	for _, raw := range []string{"", "https://attacker.example", "//attacker.example", `/\\attacker.example`, "%2F%2Fattacker.example", "/%2Fattacker.example", "/%5Cattacker.example", strings.Repeat("a", 2049), "/account#" + strings.Repeat("a", 2049), "//attacker.example#local"} {
 		if got := SafeLoginReturn(raw); got != "/" {
 			t.Errorf("SafeLoginReturn(%q) = %q", raw, got)
 		}
