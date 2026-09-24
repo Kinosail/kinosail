@@ -36,5 +36,7 @@ dependencies {
     implementation("androidx.compose.material3:material3")
     implementation("androidx.tv:tv-material:1.1.0")
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.11.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.11.0")
+    implementation("com.fasterxml.jackson.core:jackson-core:2.22.3")
     testImplementation("junit:junit:4.13.2")
 }
