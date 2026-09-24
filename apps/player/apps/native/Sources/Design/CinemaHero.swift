@@ -4,6 +4,7 @@ import SwiftUI
 struct CinemaHero<Actions: View>: View {
     let item: MediaItem
     var title: String?
+    var subtitle: String?
     var showsPlot = true
     @ViewBuilder let actions: () -> Actions
     @Environment(\.dynamicTypeSize) private var dynamicType
@@ -29,7 +30,8 @@ struct CinemaHero<Actions: View>: View {
                         .font(.system(size: titleSize, weight: .bold, design: .rounded))
                         .fixedSize(horizontal: false, vertical: true)
                         .accessibilityAddTraits(.isHeader)
-                    if !item.subtitle.isEmpty { Text(item.subtitle).font(.subheadline).foregroundStyle(KinoTheme.muted) }
+                    let summary = subtitle ?? item.subtitle
+                    if !summary.isEmpty { Text(summary).font(.subheadline).foregroundStyle(KinoTheme.muted) }
                 }
                 if showsPlot && !item.plot.isEmpty {
                     Text(item.plot).font(.body).lineLimit(dynamicType.isAccessibilitySize ? nil : 3)
