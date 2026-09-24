@@ -13,6 +13,7 @@ import androidx.media3.common.MediaItem
 import androidx.media3.common.MimeTypes
 import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
+import androidx.media3.common.Tracks
 import androidx.media3.datasource.ResolvingDataSource
 import androidx.media3.datasource.okhttp.OkHttpDataSource
 import androidx.media3.exoplayer.ExoPlayer
@@ -47,6 +48,7 @@ class PlaybackModel(application: Application) : AndroidViewModel(application) {
     private var rateSave: Job? = null
     private var rateChoice = 0
     private var preferences: PlaybackPreferences? = null
+    private val trackChoices = PlaybackTracks()
     private var lastRecorded: Pair<Double, Boolean>? = null
     var player by mutableStateOf<ExoPlayer?>(null)
         private set
@@ -66,10 +68,10 @@ class PlaybackModel(application: Application) : AndroidViewModel(application) {
         private set
     var nextBusy by mutableStateOf(false)
         private set
-    var captionsAvailable by mutableStateOf(false)
-        private set
-    var captionsEnabled by mutableStateOf(false)
-        private set
+    val captionsAvailable get() = trackChoices.text.isNotEmpty()
+    val captionsEnabled get() = trackChoices.captionsEnabled
+    internal val audioTracks get() = trackChoices.audio
+    internal val textTracks get() = trackChoices.text
     var playbackSpeed by mutableStateOf(1f)
         private set
     var preferenceNotice by mutableStateOf<String?>(null)
@@ -144,6 +146,7 @@ class PlaybackModel(application: Application) : AndroidViewModel(application) {
                     .build(), true)
                 engine.setPlaybackSpeed(playbackSpeed)
                 engine.addListener(object : Player.Listener {
+                    override fun onTracksChanged(tracks: Tracks) { trackChoices.update(tracks) }
                     override fun onPlaybackStateChanged(state: Int) {
                         loading = state == Player.STATE_BUFFERING || state == Player.STATE_IDLE && message == null
                         if (state == Player.STATE_ENDED) checkpoint()
@@ -202,11 +205,7 @@ class PlaybackModel(application: Application) : AndroidViewModel(application) {
                 .setSelectionFlags((if (track.isDefault) C.SELECTION_FLAG_DEFAULT else 0) or
                     (if (track.forced) C.SELECTION_FLAG_FORCED else 0)).build()
         }
-        captionsAvailable = tracks.isNotEmpty()
-        captionsEnabled = source?.subtitles?.any(PlaybackSubtitle::isDefault) == true && captionsAvailable
-        if (captionsAvailable) engine.trackSelectionParameters = engine.trackSelectionParameters.buildUpon()
-            .setTrackTypeDisabled(C.TRACK_TYPE_TEXT, !captionsEnabled)
-            .setSelectTextByDefault(captionsEnabled).build()
+        trackChoices.prepare(engine, source?.subtitles?.any(PlaybackSubtitle::isDefault) == true)
         engine.setMediaItem(MediaItem.Builder().setUri(URL(target.url, path).toString()).setMimeType(type)
             .setSubtitleConfigurations(tracks).build())
         engine.prepare()
@@ -325,11 +324,11 @@ class PlaybackModel(application: Application) : AndroidViewModel(application) {
     fun toggleCaptions() {
         val engine = player ?: return
         if (!captionsAvailable) return
-        captionsEnabled = !captionsEnabled
-        engine.trackSelectionParameters = engine.trackSelectionParameters.buildUpon()
-            .setTrackTypeDisabled(C.TRACK_TYPE_TEXT, !captionsEnabled)
-            .setSelectTextByDefault(captionsEnabled).build()
+        trackChoices.toggleCaptions(engine)
     }
+
+    internal fun selectAudio(choice: PlaybackTrack) { player?.let { trackChoices.selectAudio(it, choice) } }
+    internal fun selectText(choice: PlaybackTrack?) { player?.let { trackChoices.selectText(it, choice) } }
 
     fun changeSpeed(rate: Float) {
         val selected = checkedSpeed(rate)
@@ -389,8 +388,7 @@ class PlaybackModel(application: Application) : AndroidViewModel(application) {
         progressConflict = false
         nextItemId = null
         nextBusy = false
-        captionsAvailable = false
-        captionsEnabled = false
+        trackChoices.clear()
         playbackSpeed = 1f
         preferences = null
         preferenceNotice = null
