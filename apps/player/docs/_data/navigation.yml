@@ -45,7 +45,7 @@
       url: /owner-guide/libraries/
     - title: Edit metadata and skip markers
       url: /owner-guide/metadata/
-    - title: Import and sync history
+    - title: Move from Plex or Jellyfin
       url: /owner-guide/migration/
     - title: Configure playback
       url: /owner-guide/playback/

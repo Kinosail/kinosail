@@ -1,13 +1,28 @@
 ---
-title: Import and sync viewing history
-description: Preview Plex or Jellyfin history and optionally keep importing it on a schedule.
+title: Move from Plex or Jellyfin to Kinosail
+description: Reuse your media folders and import watched state and resume positions from Plex or Jellyfin, with a preview before anything changes.
 section: Own the Server
-last_reviewed: 2026-09-20
+last_reviewed: 2026-09-24
 ---
 
-# Import and sync viewing history
+# Move from Plex or Jellyfin to Kinosail
 
-Move watched state and resume positions from Plex or Jellyfin into one Kinosail Viewer Profile at a time. Jellyfin favorites become **My List** entries; supported video playlists can also be imported. Plex Universal Watchlist is not available through the local Server interface and is not imported.
+You can try Kinosail with the media files you already use. [Install Kinosail]({{ '/quickstart/' | relative_url }}), point it at your existing media folder, and [scan the library]({{ '/getting-started/add-media/' | relative_url }}). Kinosail reads the original files through a read-only mount; it does not move or rewrite them.
+
+After the scan, import watched state and resume positions from Plex or Jellyfin into one Kinosail Viewer Profile at a time. Preview the matches before applying them. Your source Server remains separate, so you can check playback in Kinosail before relying on it.
+
+## What can move?
+
+| From Plex or Jellyfin | In Kinosail |
+| --- | --- |
+| Existing media files | Scan the same folder; no media-file transfer is required. |
+| Watched state and resume positions | Import for matched items into the selected Viewer Profile. |
+| Jellyfin favorites | Import as **My List** entries. |
+| Supported video playlists | Import during the initial move. |
+| Source accounts, passwords, PINs, and permissions | Create and secure Kinosail Profiles separately; these do not transfer. |
+| Plex Universal Watchlist | Not imported; the local Plex Server interface does not provide it. |
+
+The import matches activity to media that Kinosail has already scanned. An unmatched title cannot receive its viewing activity. [Media compatibility]({{ '/reference/media-compatibility/' | relative_url }}) explains why scanning a file does not guarantee direct playback on every device.
 
 ## Preview before importing
 
@@ -18,7 +33,7 @@ Move watched state and resume positions from Plex or Jellyfin into one Kinosail 
 5. Select **Preview import**. Review matched, unchanged, conflicting, ambiguous, and unmatched items before applying anything.
 6. Choose **Import once** for a one-time move.
 
-Preview does not change your library. Resolve ambiguous metadata matches before trying again; unmatched titles cannot receive activity. An expired preview must be generated again. Source passwords, PINs, permissions, and account identities do not transfer.
+Preview does not change your library. Resolve ambiguous metadata matches before trying again. An expired preview must be generated again.
 
 ## Keep importing automatically
 
@@ -33,5 +48,7 @@ Return to Migration to inspect the connection and its latest result. Use **Sync 
 Choose **Remove** for the connection when you no longer need it. This removes the recurring connection and its retained source credentials; it does not undo activity already imported. Revoke the source token at Plex or Jellyfin as well if it is no longer needed elsewhere.
 
 Repeat the workflow separately for each person. See [Profiles]({{ '/user-guide/profiles/' | relative_url }}) and [backups]({{ '/owner-guide/backups-and-updates/' | relative_url }}) before replacing a household's existing state.
+
+Before retiring the old Server, compare a few matched titles, resume positions, and playlists, then play media on the devices your household uses. Client playback depends on the device, codec, and [playback policy]({{ '/owner-guide/playback/' | relative_url }}).
 
 Source of truth: `internal/server/viewing_import_http.go`, the viewing-sync manager, and `internal/server/settings_http.go`.

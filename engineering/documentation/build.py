@@ -55,6 +55,7 @@ def build(args):
         (artifact / '.nojekyll').touch()
         urls = sorted({args.url + page['url'] for page in index})
         (artifact / 'sitemap.xml').write_text('<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' + ''.join(f'<url><loc>{url}</loc></url>' for url in urls) + '</urlset>')
+        (artifact / 'robots.txt').write_text(f'User-agent: *\nAllow: /\n\nSitemap: {args.url}{args.baseurl}/sitemap.xml\n')
         shutil.copytree(artifact, args.output)
     print(f'Built {len(index)} searchable Player pages at {args.output}')
 

@@ -4,8 +4,11 @@ from seo_check import validate
 
 
 class SearchMetadataTest(unittest.TestCase):
-    def fixture(self, url='https://example.org/kinosail/'):
-        data = {'@context': 'https://schema.org', '@graph': [{'@type': 'WebPage', 'url': url}]}
+    def fixture(self, url='https://example.org/kinosail/', breadcrumbs=None):
+        graph = [{'@type': 'WebPage', 'url': url}]
+        if breadcrumbs is not None:
+            graph.append({'@type': 'BreadcrumbList', 'itemListElement': breadcrumbs})
+        data = {'@context': 'https://schema.org', '@graph': graph}
         image = 'https://example.org/assets/share.png'
         return (f'<link rel="canonical" href="{url}"><meta name="description" content="Media library">'
                 f'<meta property="og:image" content="{image}"><meta property="og:image:type" content="image/png">'
@@ -35,3 +38,18 @@ class SearchMetadataTest(unittest.TestCase):
                        valid.replace('<meta name="twitter:image" content="https://example.org/assets/share.png">', '')):
             with self.subTest(source=source):
                 self.assertTrue(validate(source, 'https://example.org/kinosail/'))
+
+    def test_visible_breadcrumbs_require_ordered_page_matching_data(self):
+        url = 'https://example.org/kinosail/'
+        trail = [{'@type': 'ListItem', 'position': 1, 'name': 'Docs', 'item': 'https://example.org/docs/'},
+                 {'@type': 'ListItem', 'position': 2, 'name': 'Kinosail', 'item': url}]
+        visible = '<nav class="breadcrumbs">Docs / Kinosail</nav>'
+        self.assertIn('visible breadcrumbs require one BreadcrumbList', validate(self.fixture(url) + visible, url))
+        self.assertEqual(validate(self.fixture(url, trail) + visible, url), [])
+        for bad in (trail[:1],
+                    [trail[0], {**trail[1], 'position': 3}],
+                    [{**trail[0], 'item': 'https://other.example/docs/'}, trail[1]],
+                    [trail[0], {**trail[1], 'item': 'https://example.org/other/'}]):
+            with self.subTest(items=bad):
+                self.assertIn('BreadcrumbList must follow the visible page hierarchy',
+                              validate(self.fixture(url, bad) + visible, url))
