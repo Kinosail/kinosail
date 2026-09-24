@@ -9,7 +9,8 @@ class MediaUriPolicyTest {
 
     @Test fun permitsOnlyThisItemsDirectAndHlsResourcesOnTheServerOrigin() {
         for (path in listOf("/media/film-1", "/hls/film-1/p/r-a0-s0-none-t0-b0/index.m3u8",
-            "/hls/film-1/p/r-a0-s0-none-t0-b0/1080p/segment-00001.m4s")) {
+            "/hls/film-1/p/r-a0-s0-none-t0-b0/1080p/segment-00001.m4s",
+            "/subtitle/film-1/0", "/subtitle/film-1/embedded/2")) {
             val address = "https://example.com:8443$path"
             assertEquals(address, policy.requireAllowed(address))
         }
@@ -24,6 +25,10 @@ class MediaUriPolicyTest {
             "https://example.com:8443/hls/film-1//index.m3u8",
             "https://example.com:8443/media/film-1?api_key=leak",
             "https://example.com:8443/media/film-1#fragment", "file:///media/film-1",
+            "https://example.com:8443/subtitle/film-2/0",
+            "https://example.com:8443/subtitle/film-1/../film-2/0",
+            "https://example.com:8443/subtitle/film-1/0?token=leak",
+            "https://example.com:8443/subtitle/film-1/embedded/0/other",
             "https://example.com:8443/other/film-1").forEach { address ->
             assertThrows(address, IllegalArgumentException::class.java) { policy.requireAllowed(address) }
         }

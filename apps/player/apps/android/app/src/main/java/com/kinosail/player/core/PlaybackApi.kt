@@ -3,6 +3,7 @@ package com.kinosail.player.core
 import java.net.HttpURLConnection
 import java.net.URL
 import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.booleanOrNull
@@ -19,10 +20,14 @@ data class PlaybackSource(
     val progressToken: String,
     val compatibleTimeline: MediaTimeline,
     val nextItemId: String?,
+    val subtitles: List<PlaybackSubtitle>,
 ) {
     fun sourceTime(position: Double, compatible: Boolean): Double =
         if (compatible) compatibleTimeline.sourceTime(position) else position
 }
+
+data class PlaybackSubtitle(val path: String, val label: String, val language: String,
+                            val isDefault: Boolean, val forced: Boolean)
 
 class PlaybackApi(
     server: ServerAddress,
@@ -67,11 +72,31 @@ class PlaybackApi(
         val progressToken = value.text("progressToken", 8192)
         val next = value.text("next", 128)
         require(next.isEmpty() || next.matches(ID) && next != itemId) { INVALID_RESPONSE }
+        val subtitleRows = value["subtitles"]?.let { it as? JsonArray ?: throw IllegalArgumentException(INVALID_RESPONSE) }
+            ?: JsonArray(emptyList())
+        require(subtitleRows.size <= 256 && (directAllowed || subtitleRows.isEmpty())) { INVALID_RESPONSE }
+        val subtitles = subtitleRows.map { raw ->
+            val track = raw.fields(SUBTITLE_KEYS, setOf("source", "label", "default"))
+            val path = track.text("source", 2048)
+            val label = track.text("label", 512)
+            val language = track.text("language", 32)
+            require(path.matches(Regex("/subtitle/${Regex.escape(itemId)}/(?:[0-9]{1,6}|embedded/[0-9]{1,6})")) &&
+                label.isNotEmpty() && language.matches(Regex("[A-Za-z0-9_-]{0,32}"))) { INVALID_RESPONSE }
+            require(track.text("role", 32) in setOf("", "captions", "commentary", "translation") &&
+                track.text("kind", 32) in setOf("", "subtitles", "captions") &&
+                (track["embedded"] == null || track.strictFlag("embedded") == path.contains("/embedded/"))) {
+                INVALID_RESPONSE
+            }
+            val forced = track["forced"]?.let { track.strictFlag("forced") } ?: false
+            PlaybackSubtitle(path, label, language, track.strictFlag("default"), forced)
+        }
+        require(subtitles.map(PlaybackSubtitle::path).toSet().size == subtitles.size &&
+            subtitles.count(PlaybackSubtitle::isDefault) <= 1) { INVALID_RESPONSE }
         val safeStart = if (start < duration) start else 0.0
         val compatibleTimeline = timeline ?: MediaTimeline(duration, duration)
         return PlaybackSource(itemId, directPath.ifEmpty { null }, compatiblePath.ifEmpty { null },
             type, compatibleTimeline.sourceDuration, safeStart, compatibleTimeline.presentationTime(safeStart),
-            progressToken, compatibleTimeline, next.ifEmpty { null })
+            progressToken, compatibleTimeline, next.ifEmpty { null }, subtitles)
     }
 
     companion object {
@@ -86,6 +111,7 @@ class PlaybackApi(
         private val PLAN_KEYS = setOf("allowed", "mode", "reason", "container", "videoCodec", "audioCodec", "subtitleMode",
             "colorMode", "audioIndex", "subtitleIndex", "subtitleSourceIndex", "subtitleText", "subtitleExternal",
             "subtitleExternalIndex", "maxBitrate", "width", "height", "adaptive", "qualities", "markerMode", "timeline")
+        private val SUBTITLE_KEYS = setOf("label", "source", "default", "language", "role", "kind", "forced", "embedded")
 
         private fun JsonElement.fields(allowed: Set<String>, required: Set<String>): JsonObject {
             val value = this as? JsonObject
@@ -107,6 +133,12 @@ class PlaybackApi(
             val value = (this[key] as? JsonPrimitive)?.booleanOrNull
             require(value != null) { INVALID_RESPONSE }
             return value
+        }
+
+        private fun JsonObject.strictFlag(key: String): Boolean {
+            val value = this[key] as? JsonPrimitive
+            require(value != null && !value.isString && value.booleanOrNull != null) { INVALID_RESPONSE }
+            return value.booleanOrNull!!
         }
 
         private fun JsonObject.number(key: String, range: ClosedFloatingPointRange<Double>): Double {

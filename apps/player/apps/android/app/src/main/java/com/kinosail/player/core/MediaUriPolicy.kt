@@ -15,7 +15,10 @@ class MediaUriPolicy(private val server: ServerAddress, private val itemId: Stri
             uri.host?.equals(origin.host, true) == true && port == serverPort &&
             uri.userInfo == null && uri.rawQuery == null && uri.rawFragment == null) { INVALID_MEDIA }
         val path = uri.rawPath ?: throw IllegalArgumentException(INVALID_MEDIA)
-        require(path == "/media/$itemId" || path.startsWith("/hls/$itemId/") && validHls(path)) { INVALID_MEDIA }
+        require(path == "/media/$itemId" || path.startsWith("/hls/$itemId/") && validHls(path) ||
+            path.matches(Regex("/subtitle/${Regex.escape(itemId)}/(?:[0-9]{1,6}|embedded/[0-9]{1,6})"))) {
+            INVALID_MEDIA
+        }
         return uri.toString()
     }
 

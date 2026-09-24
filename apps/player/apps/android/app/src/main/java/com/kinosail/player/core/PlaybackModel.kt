@@ -1,6 +1,7 @@
 package com.kinosail.player.core
 
 import android.app.Application
+import android.net.Uri
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -59,6 +60,10 @@ class PlaybackModel(application: Application) : AndroidViewModel(application) {
         private set
     var nextBusy by mutableStateOf(false)
         private set
+    var captionsAvailable by mutableStateOf(false)
+        private set
+    var captionsEnabled by mutableStateOf(false)
+        private set
 
     fun start(item: CatalogItem, viewer: Viewer) {
         stop()
@@ -90,6 +95,7 @@ class PlaybackModel(application: Application) : AndroidViewModel(application) {
                 val allowed = MediaUriPolicy(saved.server, item.id)
                 plan.direct?.let { allowed.requireAllowed(URL(saved.server.url, it).toString()) }
                 plan.compatible?.let { allowed.requireAllowed(URL(saved.server.url, it).toString()) }
+                plan.subtitles.forEach { allowed.requireAllowed(URL(saved.server.url, it.path).toString()) }
                 server = saved.server
                 policy = allowed
                 source = plan
@@ -165,7 +171,21 @@ class PlaybackModel(application: Application) : AndroidViewModel(application) {
         requireNotNull(policy).requireAllowed(URL(target.url, path).toString())
         usingCompatible = compatible
         message = null
-        engine.setMediaItem(MediaItem.Builder().setUri(URL(target.url, path).toString()).setMimeType(type).build())
+        val tracks = source?.subtitles.orEmpty().takeIf {
+            !compatible || source?.compatibleTimeline?.omitted?.isEmpty() == true
+        }.orEmpty().map { track ->
+            MediaItem.SubtitleConfiguration.Builder(Uri.parse(URL(target.url, track.path).toString()))
+                .setMimeType(MimeTypes.TEXT_VTT).setLabel(track.label).setLanguage(track.language)
+                .setSelectionFlags((if (track.isDefault) C.SELECTION_FLAG_DEFAULT else 0) or
+                    (if (track.forced) C.SELECTION_FLAG_FORCED else 0)).build()
+        }
+        captionsAvailable = tracks.isNotEmpty()
+        captionsEnabled = source?.subtitles?.any(PlaybackSubtitle::isDefault) == true && captionsAvailable
+        if (captionsAvailable) engine.trackSelectionParameters = engine.trackSelectionParameters.buildUpon()
+            .setTrackTypeDisabled(C.TRACK_TYPE_TEXT, !captionsEnabled)
+            .setSelectTextByDefault(captionsEnabled).build()
+        engine.setMediaItem(MediaItem.Builder().setUri(URL(target.url, path).toString()).setMimeType(type)
+            .setSubtitleConfigurations(tracks).build())
         engine.prepare()
         if (at > 0) engine.seekTo(at)
         engine.playWhenReady = true
@@ -275,6 +295,15 @@ class PlaybackModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
+    fun toggleCaptions() {
+        val engine = player ?: return
+        if (!captionsAvailable) return
+        captionsEnabled = !captionsEnabled
+        engine.trackSelectionParameters = engine.trackSelectionParameters.buildUpon()
+            .setTrackTypeDisabled(C.TRACK_TYPE_TEXT, !captionsEnabled)
+            .setSelectTextByDefault(captionsEnabled).build()
+    }
+
     fun stop() {
         checkpoint()
         generation++
@@ -299,6 +328,8 @@ class PlaybackModel(application: Application) : AndroidViewModel(application) {
         progressConflict = false
         nextItemId = null
         nextBusy = false
+        captionsAvailable = false
+        captionsEnabled = false
     }
 
     override fun onCleared() { stop(); super.onCleared() }
