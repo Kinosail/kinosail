@@ -42,6 +42,29 @@ class ArtworkClientTest {
             assertTrue(response.closed)
         }
     }
+
+    @Test fun comicAssetsRejectInvalidInputsAndResponsesBeforeDecoding() {
+        var opens = 0
+        val client = ArtworkClient(server) { opens++; ArtworkResponse(200, byteArrayOf(1)) }
+        listOf("/read/comic-2/asset/page.png", "/read/comic-1/asset/../page.png",
+            "/read/comic-1/asset/page.png?token=leak").forEach { path ->
+            assertThrows(IllegalArgumentException::class.java) {
+                client.comic(path, "comic-1", "token", "alex")
+            }
+        }
+        assertThrows(IllegalArgumentException::class.java) {
+            client.comic("/read/comic-1/asset/page.png", "comic-1", "bad token", "alex")
+        }
+        assertEquals(0, opens)
+        listOf(ArtworkResponse(302, byteArrayOf(1)),
+            ArtworkResponse(200, byteArrayOf(1), "text/html")).forEach { response ->
+            assertThrows(Exception::class.java) {
+                ArtworkClient(server) { response }.comic("/read/comic-1/asset/page.png",
+                    "comic-1", "token", "alex")
+            }
+            assertTrue(response.closed)
+        }
+    }
 }
 
 private class ArtworkResponse(private val status: Int, private val body: ByteArray,

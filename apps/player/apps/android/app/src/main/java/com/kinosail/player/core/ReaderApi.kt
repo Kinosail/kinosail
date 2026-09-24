@@ -7,6 +7,7 @@ import android.os.ParcelFileDescriptor
 import java.io.DataInputStream
 import java.io.File
 import java.net.HttpURLConnection
+import java.net.URI
 import java.net.URL
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonElement
@@ -16,13 +17,26 @@ import kotlinx.serialization.json.doubleOrNull
 import kotlinx.serialization.json.intOrNull
 
 data class ReaderBook(val id: String, val title: String, val filePath: String)
-data class ReaderPosition(val offset: Double)
+data class ComicBook(val id: String, val title: String, val pages: List<String>)
+data class ReaderPosition(val page: Int, val total: Int, val offset: Double)
 
 class ReaderApi(
     private val server: ServerAddress,
     private val open: (URL) -> HttpURLConnection = { it.openConnection() as HttpURLConnection },
 ) {
     private val api = ServerApi(server, open)
+
+    fun format(itemId: String, token: String, viewerId: String): String {
+        checkInputs(itemId, token, viewerId)
+        val fields = api.reader(itemId, token, viewerId).fields(setOf("id", "title", "type", "pages"))
+        require(fields.string("id", 128) == itemId) { INVALID_RESPONSE }
+        fields.string("title", 512)
+        val type = fields.string("type", 16)
+        require(type in setOf("pdf", "epub", "comic")) { INVALID_RESPONSE }
+        val pages = fields["pages"] as? JsonArray
+        require(pages != null && pages.size in 1..10_000) { INVALID_RESPONSE }
+        return type
+    }
 
     fun book(itemId: String, token: String, viewerId: String): ReaderBook {
         checkInputs(itemId, token, viewerId)
@@ -40,16 +54,38 @@ class ReaderApi(
         return ReaderBook(itemId, fields.string("title", 512), path)
     }
 
-    fun position(itemId: String, token: String, viewerId: String): ReaderPosition {
+    fun comic(itemId: String, token: String, viewerId: String): ComicBook {
         checkInputs(itemId, token, viewerId)
-        return parsePosition(api.readerPosition(itemId, token, viewerId))
+        val fields = api.reader(itemId, token, viewerId).fields(setOf("id", "title", "type", "pages"))
+        require(fields.string("id", 128) == itemId && fields.string("type", 16) == "comic") {
+            INVALID_RESPONSE
+        }
+        val pages = fields["pages"] as? JsonArray
+        require(pages != null && pages.size in 1..10_000) { INVALID_RESPONSE }
+        val paths = pages.mapIndexed { index, raw ->
+            val page = raw.fields(setOf("number", "title", "url"))
+            page.string("title", 512, empty = true)
+            val path = page.string("url", 2048)
+            require(page.integer("number") == index + 1 && validComicPath(path, itemId)) { INVALID_RESPONSE }
+            path
+        }
+        require(paths.toSet().size == paths.size) { INVALID_RESPONSE }
+        return ComicBook(itemId, fields.string("title", 512), paths)
     }
 
-    fun save(itemId: String, token: String, viewerId: String, offset: Double): ReaderPosition {
+    fun position(itemId: String, token: String, viewerId: String, expectedTotal: Int = 1): ReaderPosition {
         checkInputs(itemId, token, viewerId)
-        require(offset.isFinite() && offset in 0.0..1.0) { "Invalid reading position." }
-        val result = parsePosition(api.reader(itemId, token, viewerId, offset))
-        require(result.offset == offset) { INVALID_RESPONSE }
+        require(expectedTotal in 1..10_000) { "Invalid reader request." }
+        return parsePosition(api.readerPosition(itemId, token, viewerId), expectedTotal)
+    }
+
+    fun save(itemId: String, token: String, viewerId: String, offset: Double,
+             page: Int = 1, expectedTotal: Int = 1): ReaderPosition {
+        checkInputs(itemId, token, viewerId)
+        require(offset.isFinite() && offset in 0.0..1.0 && expectedTotal in 1..10_000 &&
+            page in 1..expectedTotal) { "Invalid reading position." }
+        val result = parsePosition(api.reader(itemId, token, viewerId, offset, page), expectedTotal)
+        require(result.page == page && result.offset == offset) { INVALID_RESPONSE }
         return result
     }
 
@@ -102,12 +138,13 @@ class ReaderApi(
         }
     }
 
-    private fun parsePosition(raw: JsonElement): ReaderPosition {
+    private fun parsePosition(raw: JsonElement, expectedTotal: Int): ReaderPosition {
         val fields = raw.fields(setOf("page", "total", "offset"))
+        val page = fields.integer("page")
         val value = (fields["offset"] as? JsonPrimitive)?.takeUnless { it.isString }?.doubleOrNull
-        require(fields.integer("page") == 1 && fields.integer("total") == 1 &&
+        require(page != null && page in 1..expectedTotal && fields.integer("total") == expectedTotal &&
             value != null && value.isFinite() && value in 0.0..1.0) { INVALID_RESPONSE }
-        return ReaderPosition(value)
+        return ReaderPosition(page, expectedTotal, value)
     }
 
     private fun checkInputs(itemId: String, token: String, viewerId: String) {
@@ -119,6 +156,20 @@ class ReaderApi(
         private const val INVALID_RESPONSE = "The Server returned an invalid reader response."
         private const val MAX_PDF_BYTES = 128L * 1024 * 1024
         private val ID = Regex("[A-Za-z0-9_-]{1,128}")
+
+        internal fun validComicPath(path: String, itemId: String): Boolean {
+            if (!itemId.matches(ID) || path.toByteArray(Charsets.UTF_8).size > 2048 ||
+                !path.startsWith("/read/$itemId/asset/") || path.endsWith('/') ||
+                path.any { it.isWhitespace() || it.isISOControl() }) return false
+            val uri = runCatching { URI(path) }.getOrNull() ?: return false
+            if (uri.scheme != null || uri.rawAuthority != null || uri.rawQuery != null || uri.rawFragment != null ||
+                uri.rawPath != path) return false
+            val prefix = "/read/$itemId/asset/"
+            val raw = path.removePrefix(prefix).split('/')
+            val decoded = uri.path.removePrefix(prefix).split('/')
+            return raw.size == decoded.size && decoded.all { it.isNotEmpty() && it != "." && it != ".." &&
+                '\\' !in it && it.none(Char::isISOControl) }
+        }
 
         private fun JsonElement.fields(keys: Set<String>): JsonObject {
             val value = this as? JsonObject

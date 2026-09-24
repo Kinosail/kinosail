@@ -129,16 +129,18 @@ class ServerApi(
             viewerId = viewerId, expected = setOf(200), maximum = 2 * 1024 * 1024).second
     }
 
-    internal fun reader(itemId: String, token: String, viewerId: String, offset: Double? = null):
+    internal fun reader(itemId: String, token: String, viewerId: String, offset: Double? = null, page: Int = 1):
         kotlinx.serialization.json.JsonElement {
         require(itemId.matches(Regex("[A-Za-z0-9_-]{1,128}")) &&
             viewerId.matches(Regex("[A-Za-z0-9_-]{1,128}")) &&
-            (offset == null || offset.isFinite() && offset in 0.0..1.0)) { "Invalid reader request." }
+            page in 1..10_000 && (offset == null || offset.isFinite() && offset in 0.0..1.0) &&
+            (offset != null || page == 1)) { "Invalid reader request." }
         val progress = offset != null
         return requestWithStatus(if (progress) "/api/v1/books/$itemId/reader/progress?includeOffset=true"
             else "/api/v1/books/$itemId/reader", if (progress) "PUT" else "GET",
-            offset?.let { buildJsonObject { put("page", 1); put("offset", it) } },
-            token = checkedCredential(token, 512), viewerId = viewerId, expected = setOf(200)).second
+            offset?.let { buildJsonObject { put("page", page); put("offset", it) } },
+            token = checkedCredential(token, 512), viewerId = viewerId, expected = setOf(200),
+            maximum = if (progress) 65_536 else 2 * 1024 * 1024).second
     }
 
     internal fun readerPosition(itemId: String, token: String, viewerId: String):

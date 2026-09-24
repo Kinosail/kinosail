@@ -63,7 +63,7 @@ import com.kinosail.player.core.LIBRARY_VIEWS
 import com.kinosail.player.core.PlaybackScreen
 import com.kinosail.player.core.PhotoScreen
 import com.kinosail.player.core.VideoPipHost
-import com.kinosail.player.core.PdfReaderScreen
+import com.kinosail.player.core.BookReaderScreen
 import com.kinosail.player.core.ShowScreen
 import com.kinosail.player.core.Viewer
 import com.kinosail.player.design.SailBackdrop
@@ -99,7 +99,7 @@ internal fun MobileLibrary(connection: ConnectionModel, viewer: Viewer) {
         return
     }
     if (bookItem != null) {
-        PdfReaderScreen(requireNotNull(bookItem), viewer, close = { bookItem = null })
+        BookReaderScreen(requireNotNull(bookItem), viewer, close = { bookItem = null })
         return
     }
     if (state.selected?.showId?.isNotEmpty() == true) {

@@ -34,6 +34,12 @@ class ArtworkClient(
         return Bitmap.createBitmap(decoded, 0, 0, decoded.width, decoded.height, matrix, true)
     }
 
+    fun comic(path: String, itemId: String, token: String, viewerId: String): Bitmap {
+        require(ReaderApi.validComicPath(path, itemId) &&
+            viewerId.matches(Regex("[A-Za-z0-9_-]{1,128}"))) { "Invalid comic page request." }
+        return decode(read(path, token, viewerId, MAX_PHOTO_BYTES), 4096, 250_000_000, 1)
+    }
+
     private fun read(path: String, token: String, viewerId: String, maximum: Int): ByteArray {
         ServerApi.checkedCredential(token, 512)
         val connection = open(URL(server.url, path))
