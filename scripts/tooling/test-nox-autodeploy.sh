@@ -7,16 +7,20 @@ tmp="$(mktemp -d "${TMPDIR:-/tmp}/kinosail-autodeploy-test.XXXXXX")"
 trap 'rm -rf -- "$tmp"' EXIT
 mkdir "$tmp/bin"
 sha=0123456789abcdef0123456789abcdef01234567
+previous=fedcba9876543210fedcba9876543210fedcba98
 
 printf '%s\n' '#!/usr/bin/env bash' 'exit 0' >"$tmp/bin/launchctl"
 printf '%s\n' '#!/usr/bin/env bash' \
   'if [[ " $* " == *" ls-remote "* ]]; then printf "%s refs/heads/main\n" "$KINOSAIL_TEST_SHA"; fi' \
+  'if [[ " $* " == *" rev-list "* ]]; then printf "%s\n" "$KINOSAIL_TEST_SHA"; [[ -z "${KINOSAIL_TEST_PREV_SHA:-}" ]] || printf "%s\n" "$KINOSAIL_TEST_PREV_SHA"; fi' \
   'exit 0' >"$tmp/bin/git"
 printf '%s\n' '#!/usr/bin/env bash' 'printf "%s|running|healthy\n" "$KINOSAIL_TEST_SHA"' >"$tmp/bin/ssh"
 printf '%s\n' '#!/usr/bin/env bash' 'printf "%s\n" "$*" >>"$KINOSAIL_TEST_PODMAN_LOG"' 'exit 99' >"$tmp/bin/podman"
 printf '%s\n' '#!/usr/bin/env bash' \
-  'if [[ " $* " == *" run list "* ]]; then printf "[{\"databaseId\":123,\"headSha\":\"%s\",\"status\":\"completed\",\"conclusion\":\"%s\"}]\n" "$KINOSAIL_TEST_SHA" "${KINOSAIL_TEST_CI_CONCLUSION:-success}"; exit; fi' \
-  'if [[ " $* " == *" run view "* ]]; then if [[ "${KINOSAIL_TEST_PUBLISHED:-1}" == 1 ]]; then printf "{\"jobs\":[{\"name\":\"Publish verified containers / Advance player production tags\",\"conclusion\":\"success\"},{\"name\":\"Publish verified containers / Advance subtitles production tags\",\"conclusion\":\"success\"},{\"name\":\"Publish verified containers / Advance dashboard production tags\",\"conclusion\":\"success\"}]}\n"; else printf "{\"jobs\":[]}\n"; fi; exit; fi' \
+  'if [[ " $* " == *" run list "* && ${KINOSAIL_TEST_RUNS_JSON+x} ]]; then printf "%s\n" "$KINOSAIL_TEST_RUNS_JSON"; exit; fi' \
+  'if [[ " $* " == *" run list "* ]]; then for ((i=1;i<=$#;i++)); do if [[ "${!i}" == --commit ]]; then j=$((i+1)); commit="${!j}"; fi; done; run=123; [[ "$commit" != "${KINOSAIL_TEST_PREV_SHA:-}" ]] || run=124; printf "[{\"databaseId\":%s,\"headSha\":\"%s\",\"status\":\"completed\",\"conclusion\":\"%s\"}]\n" "$run" "$commit" "${KINOSAIL_TEST_CI_CONCLUSION:-success}"; exit; fi' \
+  'if [[ " $* " == *" run view "* && ${KINOSAIL_TEST_JOBS_JSON+x} ]]; then printf "%s\n" "$KINOSAIL_TEST_JOBS_JSON"; exit; fi' \
+  'if [[ " $* " == *" run view "* ]]; then if [[ "${KINOSAIL_TEST_PUBLISHED:-1}" == 1 || " $* " == *" run view 124 "* ]]; then printf "{\"jobs\":[{\"name\":\"Publish verified containers / Advance player production tags\",\"conclusion\":\"success\"},{\"name\":\"Publish verified containers / Advance subtitles production tags\",\"conclusion\":\"success\"},{\"name\":\"Publish verified containers / Advance dashboard production tags\",\"conclusion\":\"success\"}]}\n"; else printf "{\"jobs\":[]}\n"; fi; exit; fi' \
   'exit 99' >"$tmp/bin/gh"
 chmod +x "$tmp/bin/"*
 
@@ -73,16 +77,45 @@ for app in player subtitles dashboard; do
   grep -Fxq "machine start" "$tmp/podman-$app.log"
 
   rm "$cache/deployed"
-  HOME="$home" PATH="$tmp/bin:$PATH" KINOSAIL_TEST_SHA="$sha" KINOSAIL_TEST_PUBLISHED=0 \
+  printf '%s\n' '#!/usr/bin/env bash' \
+    '[[ "$KINOSAIL_DEPLOY_EXPECT_MAIN" == "$KINOSAIL_TEST_SHA" && "$2" == "$KINOSAIL_TEST_PREV_SHA" ]]' >"$install_root/deploy-nox-app.sh"
+  chmod +x "$install_root/deploy-nox-app.sh"
+  HOME="$home" PATH="$tmp/bin:$PATH" KINOSAIL_TEST_SHA="$sha" KINOSAIL_TEST_PREV_SHA="$previous" KINOSAIL_TEST_PUBLISHED=0 \
     KINOSAIL_TEST_PODMAN_LOG="$tmp/podman-$app.log" "$install_root/watch-nox-main.sh" "$app" --once >/dev/null
   [[ "$(cat "$cache/deployed")" == "$sha" ]]
 
   rm "$cache/deployed"
+  if HOME="$home" PATH="$tmp/bin:$PATH" KINOSAIL_TEST_SHA="$sha" KINOSAIL_TEST_PUBLISHED=0 \
+      KINOSAIL_TEST_PODMAN_LOG="$tmp/podman-$app.log" "$install_root/watch-nox-main.sh" "$app" --once >/dev/null 2>&1; then
+    echo 'watcher accepted missing published image' >&2; exit 1
+  fi
+  [[ ! -e "$cache/deployed" ]]
+
+  for bad in '{' '[]' "$(printf '%8193s' x)"; do
+    : >"$tmp/podman-$app.log"
+    if HOME="$home" PATH="$tmp/bin:$PATH" KINOSAIL_TEST_SHA="$sha" KINOSAIL_TEST_RUNS_JSON="$bad" \
+        KINOSAIL_TEST_PODMAN_LOG="$tmp/podman-$app.log" "$install_root/watch-nox-main.sh" "$app" --once >/dev/null 2>&1; then
+      echo 'watcher accepted invalid CI response' >&2; exit 1
+    fi
+    [[ ! -e "$cache/deployed" && ! -s "$tmp/podman-$app.log" ]] || { echo 'invalid CI response caused a deployment side effect' >&2; exit 1; }
+  done
+
+  : >"$tmp/podman-$app.log"
+  if HOME="$home" PATH="$tmp/bin:$PATH" KINOSAIL_TEST_SHA="$sha" KINOSAIL_TEST_JOBS_JSON='{"jobs":[{"name":"Publish verified containers / Advance player production tags","conclusion":"failure"}]}' \
+      KINOSAIL_TEST_PODMAN_LOG="$tmp/podman-$app.log" "$install_root/watch-nox-main.sh" "$app" --once >/dev/null 2>&1; then
+    echo 'watcher accepted failed publication' >&2; exit 1
+  fi
+  [[ ! -e "$cache/deployed" && ! -s "$tmp/podman-$app.log" ]] || { echo 'failed publication caused a deployment side effect' >&2; exit 1; }
+
   if HOME="$home" PATH="$tmp/bin:$PATH" KINOSAIL_TEST_SHA="$sha" KINOSAIL_TEST_CI_CONCLUSION=failure \
       KINOSAIL_TEST_PODMAN_LOG="$tmp/podman-$app.log" "$install_root/watch-nox-main.sh" "$app" --once >/dev/null 2>&1; then
     echo 'watcher accepted failed CI' >&2; exit 1
   fi
   [[ ! -e "$cache/deployed" ]]
+
+  printf '%s' "$sha" >"$cache/deployed"
+  HOME="$home" PATH="$tmp/bin:$PATH" "$script_dir/install-nox-autodeploy.sh" "$app" >/dev/null
+  [[ ! -e "$cache/deployed" ]] || { echo 'installer retained stale deployment selection' >&2; exit 1; }
 done
 
 printf 'Nox auto-deploy install tests passed\n'

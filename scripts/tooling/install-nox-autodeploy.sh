@@ -45,5 +45,7 @@ sed -e "s|@ROOT@|$root|g" -e "s|@CACHE@|$cache|g" -e "s|@APP@|$app|g" \
 PLIST
 
 launchctl bootout "gui/$(id -u)/$label" >/dev/null 2>&1 || true
+# Re-evaluate main after an installer refresh; the selection policy may have changed.
+rm -f "$cache/deployed"
 launchctl bootstrap "gui/$(id -u)" "$plist"
 printf '%s\n' "$success"

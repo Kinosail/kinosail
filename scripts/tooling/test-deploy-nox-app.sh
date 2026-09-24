@@ -28,6 +28,8 @@ reject player 0123456789abcdef0123456789abcdef01234567 extra
 for app in player subtitles dashboard; do
   reject "$app" 0123456789abcdef0123456789abcdef0123456Z
 done
+KINOSAIL_DEPLOY_EXPECT_MAIN=invalid reject player "$sha"
+KINOSAIL_DEPLOY_EXPECT_MAIN='' reject player "$sha"
 
 for entry in \
   'player KINOSAIL_NOX_HOST' \
@@ -47,6 +49,7 @@ tar -cf "$tmp/empty.tar" --files-from /dev/null
 printf '%s\n' '#!/usr/bin/env bash' \
   'printf "%s\n" "$*" >>"$KINOSAIL_TEST_GIT_LOG"' \
   'if [[ " $* " == *" ls-remote "* ]]; then printf "%s refs/heads/main\n" "${KINOSAIL_TEST_REMOTE_SHA:-$KINOSAIL_TEST_SHA}"; exit; fi' \
+  'if [[ " $* " == *" merge-base "* ]]; then [[ "${KINOSAIL_TEST_ANCESTOR:-1}" == 1 ]]; exit; fi' \
   'if [[ " $* " == *" cat-file "* ]]; then [[ "$KINOSAIL_TEST_SHARED" == 1 ]]; exit; fi' \
   'if [[ " $* " == *" archive "* ]]; then exec /bin/cat "$KINOSAIL_TEST_ARCHIVE"; fi' \
   'exit 0' >"$tmp/positive-bin/git"
@@ -93,6 +96,19 @@ done
 : >"$tmp/git.log"; : >"$tmp/podman.log"; : >"$tmp/ssh.log"
 positive player KINOSAIL_DEPLOY_GIT_DIR 0
 grep -Fq "archive $sha:apps/player" "$tmp/git.log"
+
+# A newer main with only unrelated changes may deploy the latest published ancestor.
+new_main=aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+: >"$tmp/git.log"; : >"$tmp/ssh.log"
+KINOSAIL_DEPLOY_EXPECT_MAIN="$new_main" KINOSAIL_TEST_REMOTE_SHA="$new_main" positive player KINOSAIL_DEPLOY_GIT_DIR 1
+grep -Fq "merge-base --is-ancestor $sha $new_main" "$tmp/git.log"
+grep -Fq "archive $sha -- apps/player packages" "$tmp/git.log"
+
+: >"$tmp/ssh.log"; : >"$tmp/podman.log"
+if KINOSAIL_DEPLOY_EXPECT_MAIN="$new_main" KINOSAIL_TEST_REMOTE_SHA="$new_main" KINOSAIL_TEST_ANCESTOR=0 positive player KINOSAIL_DEPLOY_GIT_DIR 1; then
+  echo 'non-ancestor deployment was accepted' >&2; exit 1
+fi
+[[ ! -s "$tmp/ssh.log" && ! -s "$tmp/podman.log" ]] || { echo 'non-ancestor deployment caused a side effect' >&2; exit 1; }
 
 # A scanner rejection must stop before loading or switching the remote image.
 : >"$tmp/ssh.log"
