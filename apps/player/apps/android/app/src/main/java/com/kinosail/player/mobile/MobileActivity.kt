@@ -1,8 +1,13 @@
 package com.kinosail.player.mobile
 
+import android.app.PictureInPictureParams
+import android.content.pm.PackageManager
 import android.content.Intent
+import android.content.res.Configuration
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
+import android.util.Rational
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
@@ -24,6 +29,9 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontFamily
@@ -35,14 +43,44 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.kinosail.player.R
 import com.kinosail.player.core.ConnectionModel
 import com.kinosail.player.core.ConnectionPhase
+import com.kinosail.player.core.VideoPipHost
 import com.kinosail.player.design.KinoTheme
 import com.kinosail.player.design.SailBackdrop
 
-class MobileActivity : ComponentActivity() {
+class MobileActivity : ComponentActivity(), VideoPipHost {
+    override var inPictureInPicture by mutableStateOf(false)
+        private set
+    private var videoPipReady = false
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent { KinoTheme { MobileStart() } }
+    }
+
+    override fun setVideoPipReady(ready: Boolean) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O ||
+            !packageManager.hasSystemFeature(PackageManager.FEATURE_PICTURE_IN_PICTURE)) {
+            videoPipReady = false
+            return
+        }
+        videoPipReady = ready
+        val params = PictureInPictureParams.Builder().setAspectRatio(Rational(16, 9))
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S)
+            params.setAutoEnterEnabled(ready)
+        setPictureInPictureParams(params.build())
+    }
+
+    override fun onUserLeaveHint() {
+        super.onUserLeaveHint()
+        if (videoPipReady && Build.VERSION.SDK_INT in Build.VERSION_CODES.O until Build.VERSION_CODES.S)
+            enterPictureInPictureMode(PictureInPictureParams.Builder()
+                .setAspectRatio(Rational(16, 9)).build())
+    }
+
+    override fun onPictureInPictureModeChanged(isInPictureInPictureMode: Boolean, newConfig: Configuration) {
+        super.onPictureInPictureModeChanged(isInPictureInPictureMode, newConfig)
+        inPictureInPicture = isInPictureInPictureMode
     }
 }
 

@@ -12,7 +12,10 @@
         android:banner="@drawable/tv_banner"
         android:label="@string/app_name"
         android:theme="@style/Theme.Kinosail">
-        <activity android:name=".mobile.MobileActivity" android:exported="true">
+        <activity android:name=".mobile.MobileActivity" android:exported="true"
+            android:supportsPictureInPicture="true"
+            android:launchMode="singleTask"
+            android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
