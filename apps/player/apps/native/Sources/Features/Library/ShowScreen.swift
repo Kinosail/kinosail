@@ -20,16 +20,14 @@ struct ShowScreen: View {
             }) { show in
                 let episodes = show.episodes
                 VStack(alignment: .leading, spacing: 28) {
-                    if let first = episodes.first {
-                        if let next = episodes.first(where: { !$0.progress.watched }) ?? episodes.first {
-                            CinemaHero(item: first, title: first.show.isEmpty ? "Episodes" : first.show, showsPlot: false) {
-                                NavigationLink(value: ScreenDestination.playback(next.id)) {
-                                    Label("\(next.playLabel) · S\(next.season) E\(next.episode)", systemImage: "play.fill")
-                                }.buttonStyle(.borderedProminent).buttonBorderShape(.capsule).tint(KinoTheme.signal).foregroundStyle(KinoTheme.signalInk)
-                                #if os(tvOS)
-                                .tvOSDefaultPlayFocus(in: showFocus, id: "show.next-play.\(next.id)")
-                                #endif
-                            }
+                    if let next = ShowSeasonSelection.featuredEpisode(in: episodes) {
+                        CinemaHero(item: next, title: next.show.isEmpty ? "Episodes" : next.show, showsPlot: false) {
+                            NavigationLink(value: ScreenDestination.playback(next.id)) {
+                                Label("\(next.playLabel) · S\(next.season) E\(next.episode)", systemImage: "play.fill")
+                            }.buttonStyle(.borderedProminent).buttonBorderShape(.capsule).tint(KinoTheme.signal).foregroundStyle(KinoTheme.signalInk)
+                            #if os(tvOS)
+                            .tvOSDefaultPlayFocus(in: showFocus, id: "show.next-play.\(next.id)")
+                            #endif
                         }
                         CastShelf(people: show.cast)
                         let seasons = Array(Set(episodes.map(\.season))).sorted()
@@ -69,6 +67,10 @@ struct ShowScreen: View {
 }
 
 enum ShowSeasonSelection {
+    static func featuredEpisode(in episodes: [MediaItem]) -> MediaItem? {
+        episodes.first(where: { !$0.progress.watched }) ?? episodes.first
+    }
+
     static func resolve(_ selected: Int?, among seasons: [Int]) -> Int? {
         selected.flatMap { seasons.contains($0) ? $0 : nil } ?? seasons.first
     }
