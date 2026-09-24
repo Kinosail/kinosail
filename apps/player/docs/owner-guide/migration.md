@@ -1,11 +1,11 @@
 ---
-title: Move from Plex or Jellyfin to Kinosail
-description: Reuse your media folders and import watched state and resume positions from Plex or Jellyfin, with a preview before anything changes.
+title: Use your existing media with Kinosail
+description: Keep your media files in place, then preview and import watched state and resume positions into Kinosail.
 section: Own the Server
 last_reviewed: 2026-09-24
 ---
 
-# Move from Plex or Jellyfin to Kinosail
+# Use your existing media with Kinosail
 
 You can try Kinosail with the media files you already use. [Install Kinosail]({{ '/quickstart/' | relative_url }}), point it at your existing media folder, and [scan the library]({{ '/getting-started/add-media/' | relative_url }}). Kinosail reads the original files through a read-only mount; it does not move or rewrite them.
 
@@ -13,7 +13,7 @@ After the scan, import watched state and resume positions from Plex or Jellyfin 
 
 ## What can move?
 
-| From Plex or Jellyfin | In Kinosail |
+| What you already have | How Kinosail uses it |
 | --- | --- |
 | Existing media files | Scan the same folder; no media-file transfer is required. |
 | Watched state and resume positions | Import for matched items into the selected Viewer Profile. |
@@ -49,6 +49,6 @@ Choose **Remove** for the connection when you no longer need it. This removes th
 
 Repeat the workflow separately for each person. See [Profiles]({{ '/user-guide/profiles/' | relative_url }}) and [backups]({{ '/owner-guide/backups-and-updates/' | relative_url }}) before replacing a household's existing state.
 
-Before retiring the old Server, compare a few matched titles, resume positions, and playlists, then play media on the devices your household uses. Client playback depends on the device, codec, and [playback policy]({{ '/owner-guide/playback/' | relative_url }}).
+Before changing your usual setup, check a few matched titles, resume positions, and playlists, then play media on the devices your household uses. Client playback depends on the device, codec, and [playback policy]({{ '/owner-guide/playback/' | relative_url }}).
 
 Source of truth: `internal/server/viewing_import_http.go`, the viewing-sync manager, and `internal/server/settings_http.go`.
