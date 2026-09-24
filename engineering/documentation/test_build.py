@@ -1,6 +1,7 @@
 """Reject invalid deployment inputs before invoking tools or writing output."""
 import contextlib
 import io
+import json
 from pathlib import Path
 import tempfile
 import unittest
@@ -8,6 +9,7 @@ from unittest.mock import patch
 
 from build import ROOT, build, settings
 from check import Page, check
+from seo_check import SearchMetadata
 
 
 class BuildInputsTest(unittest.TestCase):
@@ -35,8 +37,12 @@ class BuildInputsTest(unittest.TestCase):
                                   (args.output / 'robots.txt').read_text().splitlines())
                     self.assertEqual('<loc>https://kinosail.com/architecture-explorer/</loc>'
                                      in (args.output / 'sitemap.xml').read_text(), name == 'production')
-                    self.assertEqual((args.output / 'index.html').read_text().count(
+                    homepage = (args.output / 'index.html').read_text()
+                    self.assertEqual(homepage.count(
                         '<meta name="google-site-verification" content="CyK7nEwl7e61vmJVjO4nsO4JpjaeKGUMffYcSNcUhFg">'), 1)
+                    graph = json.loads(SearchMetadata(homepage).blocks[0])['@graph']
+                    app = next(item for item in graph if item['@type'] == 'SoftwareApplication')
+                    self.assertEqual(app['offers'], {'@type': 'Offer', 'price': 0})
                     check(args.output, prefix)
 
     def test_invalid_inputs_have_no_side_effects(self):
