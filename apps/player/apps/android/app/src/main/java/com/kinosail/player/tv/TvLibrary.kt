@@ -171,7 +171,9 @@ private fun TvDetail(item: CatalogItem, catalog: CatalogModel, firstModifier: Mo
     Column(Modifier.fillMaxWidth().verticalScroll(rememberScrollState()),
         verticalArrangement = Arrangement.spacedBy(24.dp)) {
         if (item.kind in setOf("video", "music", "audiobook")) {
-            Button(onClick = play, modifier = firstModifier) { Text("Play") }
+            Button(onClick = play, modifier = firstModifier) {
+                Text(if (item.progress.seconds > 0 && !item.progress.watched) "Resume" else "Play")
+            }
             Button(onClick = catalog::closeDetail) { Text("Back to Library") }
         } else Button(onClick = catalog::closeDetail, modifier = firstModifier) { Text("Back to Library") }
         Row(horizontalArrangement = Arrangement.spacedBy(32.dp)) {

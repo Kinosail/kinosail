@@ -75,6 +75,24 @@ class PlaybackApiTest {
             assertTrue(connection.closed)
         }
     }
+
+    @Test fun mapsCompatibleOmissionsToCanonicalProgress() {
+        val plan = response.replace("\"mode\":\"remux\",\"reason\":\"compatibility\"",
+            "\"mode\":\"remux\",\"reason\":\"compatibility\",\"markerMode\":\"server\",\"timeline\":{\"sourceDuration\":120,\"duration\":100,\"omitted\":[{\"start\":20,\"end\":40}]}")
+            .replace("\"progressToken\":\"abc\"", "\"compatibleDuration\":100,\"compatibleProgressToken\":\"signed\",\"progressToken\":\"abc\"")
+        val source = PlaybackApi(server) { PlaybackResponse(200, plan) }
+            .source("film-1", "token", "alex", capabilities)
+        assertEquals(20.0, source.compatibleStart, 0.0)
+        assertEquals(40.0, source.sourceTime(20.0, true), 0.0)
+        assertEquals(20.0, source.sourceTime(20.0, false), 0.0)
+        listOf(plan.replace("\"compatibleProgressToken\":\"signed\"", "\"compatibleProgressToken\":\"\""),
+            plan.replace("\"compatibleDuration\":100", "\"compatibleDuration\":99"),
+            plan.replace("\"start\":20,\"end\":40", "\"start\":40,\"end\":20"))
+            .forEach { invalid -> assertThrows(Exception::class.java) {
+                PlaybackApi(server) { PlaybackResponse(200, invalid) }
+                    .source("film-1", "token", "alex", capabilities)
+            } }
+    }
 }
 
 private class PlaybackResponse(private val status: Int, private val body: String,

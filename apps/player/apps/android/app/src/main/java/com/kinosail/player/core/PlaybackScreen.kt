@@ -24,6 +24,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.semantics.LiveRegionMode
+import androidx.compose.ui.semantics.liveRegion
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.media3.ui.PlayerView
@@ -61,10 +64,28 @@ internal fun PlaybackScreen(item: CatalogItem, viewer: Viewer, tv: Boolean, clos
                     androidx.tv.material3.Text("Back to Library")
                 } else TextButton(onClick = close) { Text("Done", color = KinoColor.signal) }
             }
-            Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+            Column(Modifier.fillMaxWidth().then(if (playback.loading || playback.usingCompatible ||
+                    playback.message != null || playback.progressNotice != null)
+                    Modifier.background(Color.Black.copy(alpha = 0.82f)).padding(12.dp) else Modifier),
+                verticalArrangement = Arrangement.spacedBy(12.dp)) {
                 if (playback.loading) CircularProgressIndicator(color = KinoColor.signal)
                 if (playback.usingCompatible) Text("Compatible playback", color = Color.White)
                 playback.message?.let { Text(it, color = Color.White) }
+                playback.progressNotice?.let { Text(it, color = Color.White,
+                    modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite }) }
+                if (playback.progressConflict) Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                    if (tv) {
+                        androidx.tv.material3.Button(onClick = { playback.resolveProgress(true) }) {
+                            androidx.tv.material3.Text("Use this device")
+                        }
+                        androidx.tv.material3.Button(onClick = { playback.resolveProgress(false) }) {
+                            androidx.tv.material3.Text("Keep other device")
+                        }
+                    } else {
+                        TextButton(onClick = { playback.resolveProgress(true) }) { Text("Use this device") }
+                        TextButton(onClick = { playback.resolveProgress(false) }) { Text("Keep other device") }
+                    }
+                }
             }
         }
     }
