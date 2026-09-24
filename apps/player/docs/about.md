@@ -21,7 +21,7 @@ Search checks the Player guides and reference. On a wide screen, use **On this p
 
 Guides live in `apps/player/docs`, beside the Player code. The reading interface is in the same folder. Publishing tools live in `engineering/documentation`. Source installation is for contributors and people who want to test unreleased code. These docs do not cover other Kinosail apps.
 
-GitHub Pages hosts these static files. Search runs in your browser. This site does not ask for Server credentials or connect to your installation. It does not use analytics or an external font service.
+GitHub Pages hosts these static files. Search runs in your browser. This site does not ask for Server credentials or connect to your installation. Cloudflare Web Analytics measures visits and page performance through a browser beacon. Fonts are served from this site.
 
 ## Design references
 
