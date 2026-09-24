@@ -3,7 +3,7 @@
 Each skill's frontmatter provides its current trigger. Load only the skill and references relevant to the task.
 
 - **Build:** `implement`, `tdd`, `prototype`
-- **Investigate:** `diagnosing-bugs`, `research`, `triage`, `code-review`
+- **Investigate:** `diagnosing-bugs`, `research`, `triage`, `code-review`, `test-audit`
 - **Design:** `domain-modeling`, `codebase-design`, `improve-codebase-architecture`, `impeccable`
 - **Plan:** `grill-with-docs`, `wayfinder`, `to-spec`, `to-tickets`
 - **Operate:** `resolving-merge-conflicts`, `wizard`, `setup-matt-pocock-skills`
