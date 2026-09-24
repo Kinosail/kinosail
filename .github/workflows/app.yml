@@ -118,6 +118,25 @@ jobs:
           persist-credentials: false
       - run: make -C apps/player client-check
 
+  android:
+    name: Player Android compilation
+    if: inputs.app == 'player' && fromJSON(inputs.plan).android
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-java@cf277c60eb25467037889841efdb72551f06f6c3
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: android-actions/setup-android@be39fa834029ff78f1a44aa3bb0819b8fc2bd8fd
+        with:
+          packages: 'platform-tools platforms;android-37.0'
+      - run: ./gradlew :app:assembleDebug
+        working-directory: apps/player/apps/android
+
   system:
     name: ${{ inputs.app }} production container (${{ matrix.platform }})
     if: fromJSON(inputs.plan)[inputs.app]
@@ -249,7 +268,7 @@ jobs:
   required:
     name: ${{ inputs.app }} suite complete
     if: always()
-    needs: [static, race, security, tooling, client, system, browser]
+    needs: [static, race, security, tooling, client, android, system, browser]
     runs-on: ubuntu-24.04
     timeout-minutes: 2
     steps:

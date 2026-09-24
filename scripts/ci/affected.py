@@ -8,8 +8,8 @@ import re
 import subprocess
 
 APPS = ("player", "subtitles", "dashboard")
-LANGUAGES = ("go", "javascript-typescript", "python", "actions")
-FLAGS = (*APPS, "packages", "tooling", "web", "docs", "client", "supply",
+LANGUAGES = ("go", "java-kotlin", "javascript-typescript", "python", "actions")
+FLAGS = (*APPS, "packages", "tooling", "web", "docs", "client", "android", "supply",
          *LANGUAGES,
          *(f"{app}_{kind}" for app in APPS for kind in ("tools", "browsers", "arm")))
 
@@ -49,6 +49,9 @@ def affected(paths):
         if path.startswith("apps/player/apps/native/"):
             selected["client"] = True
             selected["supply"] = True
+            continue
+        if path.startswith("apps/player/apps/android/"):
+            selected["android"] = selected["java-kotlin"] = selected["supply"] = True
             continue
         if path.startswith("apps/") and len(parts) > 2 and parts[1] in APPS:
             app = parts[1]
