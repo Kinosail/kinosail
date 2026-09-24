@@ -56,6 +56,8 @@ class PlaybackModel(application: Application) : AndroidViewModel(application) {
         private set
     var message by mutableStateOf<String?>(null)
         private set
+    var retryable by mutableStateOf(false)
+        private set
     var progressNotice by mutableStateOf<String?>(null)
         private set
     var progressConflict by mutableStateOf(false)
@@ -143,7 +145,7 @@ class PlaybackModel(application: Application) : AndroidViewModel(application) {
                 engine.setPlaybackSpeed(playbackSpeed)
                 engine.addListener(object : Player.Listener {
                     override fun onPlaybackStateChanged(state: Int) {
-                        loading = state == Player.STATE_BUFFERING || state == Player.STATE_IDLE
+                        loading = state == Player.STATE_BUFFERING || state == Player.STATE_IDLE && message == null
                         if (state == Player.STATE_ENDED) checkpoint()
                     }
 
@@ -162,6 +164,7 @@ class PlaybackModel(application: Application) : AndroidViewModel(application) {
                         } else {
                             loading = false
                             message = "Playback stopped. Check this title and your Server connection."
+                            retryable = true
                         }
                     }
                 })
@@ -179,7 +182,7 @@ class PlaybackModel(application: Application) : AndroidViewModel(application) {
             } catch (error: ServerHttpException) {
                 if (attempt == generation) fail(if (error.status == 401 || error.status == 403)
                     "This connection cannot play this title. Reconnect or check the Viewer permissions."
-                else "Could not load this title from the Server.")
+                else "Could not load this title from the Server.", error.status != 401 && error.status != 403)
             } catch (_: Exception) {
                 if (attempt == generation) fail("Could not start playback. Try again.")
             }
@@ -211,7 +214,11 @@ class PlaybackModel(application: Application) : AndroidViewModel(application) {
         engine.playWhenReady = true
     }
 
-    private fun fail(text: String) { loading = false; message = text }
+    private fun fail(text: String, canRetry: Boolean = true) {
+        loading = false
+        message = text
+        retryable = canRetry
+    }
 
     private fun checkpoint() {
         val engine = player ?: return
@@ -377,6 +384,7 @@ class PlaybackModel(application: Application) : AndroidViewModel(application) {
         loading = false
         usingCompatible = false
         message = null
+        retryable = false
         progressNotice = null
         progressConflict = false
         nextItemId = null
