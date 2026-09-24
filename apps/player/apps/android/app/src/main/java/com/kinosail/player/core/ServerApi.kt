@@ -74,12 +74,20 @@ class ServerApi(
         requestWithStatus("/api/v1/session", "DELETE", token = checkedCredential(token, 512), expected = setOf(204))
     }
 
+    internal fun catalog(path: String, token: String, viewerId: String): kotlinx.serialization.json.JsonElement {
+        require(path.startsWith("/api/v1/library?") && path.length <= 2048 &&
+            viewerId.matches(Regex("[A-Za-z0-9_-]{1,128}"))) { "Invalid catalog request." }
+        return requestWithStatus(path, "GET", token = checkedCredential(token, 512),
+            viewerId = viewerId, expected = setOf(200), maximum = 2 * 1024 * 1024).second
+    }
+
     private fun request(path: String, method: String, body: JsonObject? = null, token: String? = null,
                         expected: Int = 200): kotlinx.serialization.json.JsonElement =
-        requestWithStatus(path, method, body, token, setOf(expected)).second
+        requestWithStatus(path, method, body, token, expected = setOf(expected)).second
 
     private fun requestWithStatus(path: String, method: String, body: JsonObject? = null, token: String? = null,
-                                  expected: Set<Int>): Pair<Int, kotlinx.serialization.json.JsonElement> {
+                                  viewerId: String? = null, expected: Set<Int>, maximum: Int = 65_536
+    ): Pair<Int, kotlinx.serialization.json.JsonElement> {
         val bytes = body?.toString()?.toByteArray(Charsets.UTF_8)
         require(bytes == null || bytes.size <= 4096) { "Request is too large." }
         val connection = open(URL(server.url, path))
@@ -91,6 +99,7 @@ class ServerApi(
             connection.useCaches = false
             connection.setRequestProperty("Accept", "application/json")
             if (token != null) connection.setRequestProperty("Authorization", "Bearer $token")
+            if (viewerId != null) connection.setRequestProperty("X-Kinosail-Viewer-Profile", viewerId)
             if (bytes != null) {
                 connection.doOutput = true
                 connection.setRequestProperty("Content-Type", "application/json")
@@ -100,16 +109,16 @@ class ServerApi(
             if (status !in expected) throw ServerHttpException(status)
             if (status == 204 || status == 404) return status to kotlinx.serialization.json.JsonNull
             require(connection.contentType?.substringBefore(';')?.trim()?.lowercase() == "application/json" &&
-                connection.contentLengthLong <= 65_536) { INVALID_RESPONSE }
+                connection.contentLengthLong <= maximum) { INVALID_RESPONSE }
             val response = connection.inputStream.use { stream ->
-                val buffer = ByteArray(65_537)
+                val buffer = ByteArray(maximum + 1)
                 var count = 0
                 while (count < buffer.size) {
                     val read = stream.read(buffer, count, buffer.size - count)
                     if (read < 0) break
                     count += read
                 }
-                require(count <= 65_536) { INVALID_RESPONSE }
+                require(count <= maximum) { INVALID_RESPONSE }
                 buffer.copyOf(count)
             }
             val decoded = Charsets.UTF_8.newDecoder().onMalformedInput(CodingErrorAction.REPORT)

@@ -14,7 +14,7 @@ object StrictJson {
         .build()
 
     fun parse(text: String): JsonElement {
-        factory.createParser(text).use { parser -> while (parser.nextToken() != null) Unit }
+        factory.createParser(text).use { parser -> while (parser.nextToken() != null) { } }
         return Json.parseToJsonElement(text)
     }
 }
