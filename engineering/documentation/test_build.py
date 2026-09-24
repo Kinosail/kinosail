@@ -3,6 +3,7 @@ import contextlib
 import io
 import json
 from pathlib import Path
+import struct
 import tempfile
 import unittest
 from unittest.mock import patch
@@ -26,7 +27,7 @@ class BuildInputsTest(unittest.TestCase):
                 self.assertEqual(args.baseurl, prefix)
                 self.assertFalse(args.output.exists())
 
-    def test_robots_names_the_generated_sitemap_for_each_origin(self):
+    def test_public_discovery_files_for_each_origin(self):
         with tempfile.TemporaryDirectory() as directory:
             for name, origin, prefix in (('production', 'https://kinosail.com', ''),
                                          ('preview', 'https://example.org', '/preview')):
@@ -38,6 +39,13 @@ class BuildInputsTest(unittest.TestCase):
                     self.assertEqual('<loc>https://kinosail.com/architecture-explorer/</loc>'
                                      in (args.output / 'sitemap.xml').read_text(), name == 'production')
                     homepage = (args.output / 'index.html').read_text()
+                    favicon = (args.output / 'assets/images/kinosail-mark.png').read_bytes()
+                    self.assertEqual(favicon[:8], b'\x89PNG\r\n\x1a\n')
+                    self.assertEqual(struct.unpack('>II', favicon[16:24]), (96, 96))
+                    icon_link = (f'<link rel="icon" type="image/png" sizes="96x96" '
+                                 f'href="{prefix}/assets/images/kinosail-mark.png">')
+                    self.assertIn(icon_link, homepage)
+                    self.assertIn(icon_link, (args.output / 'docs/index.html').read_text())
                     self.assertEqual(homepage.count(
                         '<meta name="google-site-verification" content="CyK7nEwl7e61vmJVjO4nsO4JpjaeKGUMffYcSNcUhFg">'), 1)
                     graph = json.loads(SearchMetadata(homepage).blocks[0])['@graph']
