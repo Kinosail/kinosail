@@ -2,7 +2,7 @@
 title: Frequently asked questions
 description: Get concise answers about Kinosail requirements, privacy, clients, playback, remote access, and licensing.
 section: Project
-last_reviewed: 2026-08-29
+last_reviewed: 2026-09-24
 ---
 
 # Frequently asked questions
@@ -10,6 +10,10 @@ last_reviewed: 2026-08-29
 ## What is Kinosail?
 
 Kinosail is a private, self-hosted media Server for the Library Content that you control. It combines the API, web app, background work, embedded SQLite, scanner, and FFmpeg playback work in one container.
+
+## Can I try Kinosail with the media I already have?
+
+Yes. [Install Kinosail with Docker]({{ '/quickstart/' | relative_url }}), mount your existing media folder read-only, and [add a Library]({{ '/getting-started/add-media/' | relative_url }}). Kinosail scans the files in place and keeps its catalog and playback cache outside the media folder. You can explore the web Player without moving your original files or creating a hosted account. Check [media compatibility]({{ '/reference/media-compatibility/' | relative_url }}) for supported file types and device-dependent playback.
 
 ## Does Kinosail require a hosted account or subscription?
 
