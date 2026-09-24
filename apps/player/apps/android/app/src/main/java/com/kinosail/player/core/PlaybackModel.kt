@@ -20,6 +20,7 @@ import androidx.media3.exoplayer.source.DefaultMediaSourceFactory
 import java.io.IOException
 import java.net.URL
 import java.util.UUID
+import java.util.concurrent.CancellationException
 import kotlin.math.abs
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -43,6 +44,9 @@ class PlaybackModel(application: Application) : AndroidViewModel(application) {
     private var progressSession = ""
     private var progressRevision = 0L
     private var progressJob: Job? = null
+    private var rateSave: Job? = null
+    private var rateChoice = 0
+    private var preferences: PlaybackPreferences? = null
     private var lastRecorded: Pair<Double, Boolean>? = null
     var player by mutableStateOf<ExoPlayer?>(null)
         private set
@@ -65,6 +69,8 @@ class PlaybackModel(application: Application) : AndroidViewModel(application) {
     var captionsEnabled by mutableStateOf(false)
         private set
     var playbackSpeed by mutableStateOf(1f)
+        private set
+    var preferenceNotice by mutableStateOf<String?>(null)
         private set
 
     fun start(item: CatalogItem, viewer: Viewer) {
@@ -93,6 +99,13 @@ class PlaybackModel(application: Application) : AndroidViewModel(application) {
                 val plan = withContext(Dispatchers.IO) {
                     PlaybackApi(saved.server).source(item.id, saved.token, viewer.id, capabilities)
                 }
+                rateSave?.join()
+                val loadedPreferences = try {
+                    withContext(Dispatchers.IO) {
+                        PlaybackPreferencesApi(saved.server).load(item.id, saved.token, viewer.id)
+                    }
+                } catch (error: CancellationException) { throw error }
+                catch (_: Exception) { null }
                 if (attempt != generation) return@launch
                 val allowed = MediaUriPolicy(saved.server, item.id)
                 plan.direct?.let { allowed.requireAllowed(URL(saved.server.url, it).toString()) }
@@ -101,6 +114,10 @@ class PlaybackModel(application: Application) : AndroidViewModel(application) {
                 server = saved.server
                 policy = allowed
                 source = plan
+                preferences = loadedPreferences
+                playbackSpeed = loadedPreferences?.rate?.toFloat() ?: 1f
+                preferenceNotice = if (loadedPreferences == null)
+                    "Playback speed is available on this device; Server preference could not be loaded." else null
                 nextItemId = plan.nextItemId
                 journal = savedJournal
                 activeSession = saved
@@ -123,6 +140,7 @@ class PlaybackModel(application: Application) : AndroidViewModel(application) {
                 engine.setAudioAttributes(AudioAttributes.Builder().setUsage(C.USAGE_MEDIA)
                     .setContentType(if (item.kind == "video") C.AUDIO_CONTENT_TYPE_MOVIE else C.AUDIO_CONTENT_TYPE_MUSIC)
                     .build(), true)
+                engine.setPlaybackSpeed(playbackSpeed)
                 engine.addListener(object : Player.Listener {
                     override fun onPlaybackStateChanged(state: Int) {
                         loading = state == Player.STATE_BUFFERING || state == Player.STATE_IDLE
@@ -311,6 +329,32 @@ class PlaybackModel(application: Application) : AndroidViewModel(application) {
         val engine = player ?: return
         engine.setPlaybackSpeed(selected)
         playbackSpeed = selected
+        val current = preferences ?: run {
+            preferenceNotice = "Speed changed on this device; Server preference could not be saved."
+            return
+        }
+        val saved = activeSession ?: return
+        val viewer = activeViewer ?: return
+        val itemId = source?.itemId ?: return
+        val next = current.copy(rate = selected.toDouble())
+        preferences = next
+        val previous = rateSave
+        val choice = ++rateChoice
+        val attempt = generation
+        rateSave = viewModelScope.launch {
+            previous?.join()
+            if (choice != rateChoice) return@launch
+            try {
+                withContext(Dispatchers.IO) {
+                    PlaybackPreferencesApi(saved.server).save(itemId, saved.token, viewer.id, next)
+                }
+                if (attempt == generation && playbackSpeed == selected) preferenceNotice = null
+            } catch (error: CancellationException) { throw error }
+            catch (_: Exception) {
+                if (attempt == generation && playbackSpeed == selected)
+                    preferenceNotice = "Speed changed on this device; Server preference could not be saved."
+            }
+        }
     }
 
     fun stop() {
@@ -340,6 +384,8 @@ class PlaybackModel(application: Application) : AndroidViewModel(application) {
         captionsAvailable = false
         captionsEnabled = false
         playbackSpeed = 1f
+        preferences = null
+        preferenceNotice = null
     }
 
     override fun onCleared() { stop(); super.onCleared() }
