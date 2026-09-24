@@ -26,7 +26,16 @@ struct LibraryScreen: View {
     }
     private var requestKey: String { "\(selection.rawValue):\(sort.rawValue):\(query)" }
 
-    var body: some View {
+    @ViewBuilder var body: some View {
+        #if os(tvOS)
+        if searchMode { libraryContent.searchable(text: $query, prompt: "Search your library") }
+        else { libraryContent }
+        #else
+        libraryContent
+        #endif
+    }
+
+    private var libraryContent: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 24) {
                 #if os(tvOS)
@@ -75,8 +84,6 @@ struct LibraryScreen: View {
                 Task { await load(reset: true, start: letter.offset) }
             }
         }
-        #else
-        .searchable(text: $query, prompt: "Search your library")
         #endif
         #if os(tvOS)
         .navigationTitle("")
