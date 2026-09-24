@@ -92,6 +92,16 @@ class WorkflowSecurityTests(unittest.TestCase):
         self.assertLess(source.index('name: Sign the version image'), source.index('name: Promote exact version tag'))
         self.assertLess(source.index('name: Promote exact version tag'), source.index('name: Create GitHub release'))
 
+    def test_player_package_description_is_published_on_both_image_indexes(self):
+        description = ('index:org.opencontainers.image.description=Kinosail Player is a free media server '
+                       'that runs at home and streams your own movies and shows. Official website: https://kinosail.com/')
+        for workflow in ('publish.yml', 'release.yml'):
+            with self.subTest(workflow=workflow):
+                manifest = (WORKFLOWS / workflow).read_text().split('      - id: manifest\n')[1].split('      - uses: sigstore/')[0]
+                self.assertIn('if [[ "$APP" == player ]]; then', manifest)
+                self.assertIn('--annotation "' + description + '"', manifest)
+                self.assertIn('docker buildx imagetools create --tag "$candidate" "${annotations[@]}" "${sources[@]}"', manifest)
+
 
 if __name__ == '__main__':
     unittest.main()
