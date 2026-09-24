@@ -33,7 +33,7 @@ Availability depends on your installed version, media type, browser, Profile per
 | Connect browsers and Jellyfin apps | [Connect browsers and Jellyfin apps]({{ '/getting-started/connect-devices/' | relative_url }}) |
 | Libraries, scan schedules, local metadata, and automatic analysis | [Manage libraries]({{ '/owner-guide/libraries/' | relative_url }}) |
 | Per-item metadata and manual skip markers | [Edit metadata and skip markers]({{ '/owner-guide/metadata/' | relative_url }}) |
-| Plex/Jellyfin history imports and recurring sync | [Import and sync viewing history]({{ '/owner-guide/migration/' | relative_url }}) |
+| Viewing-history imports and recurring sync | [Import and sync viewing history]({{ '/owner-guide/migration/' | relative_url }}) |
 | Playback policy, transcoding, hardware acceleration, subtitles | [Configure playback]({{ '/owner-guide/playback/' | relative_url }}) |
 | MFA, passkeys, session security, API keys, identity | [Secure accounts]({{ '/owner-guide/security/' | relative_url }}) |
 | Trusted HTTPS, public media access, and private management | [Configure remote access]({{ '/owner-guide/remote-access/' | relative_url }}) |
