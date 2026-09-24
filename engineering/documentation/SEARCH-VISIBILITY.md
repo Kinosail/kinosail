@@ -34,8 +34,10 @@ belong at that root. The sitemap can be submitted directly.
 
 The public IndexNow ownership file is
 `apps/player/docs/188c30dcfde0cb99c9697f2a115d4230.txt`. After a docs
-deployment, notify Bing of canonical URLs whose content changed. The key file
-proves domain control to IndexNow; a successful submission is not indexing proof.
+deployment, the post-deploy CI job notifies IndexNow of changed public page URLs.
+Shared layout, navigation, or SEO template changes notify all public pages.
+The key file proves domain control to IndexNow; a successful submission is not
+indexing proof.
 
 No ranking, indexing, or AI citation position is guaranteed. Neither fabricated
 engagement nor mass-produced comparison pages are part of this strategy.
