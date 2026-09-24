@@ -100,9 +100,25 @@ struct PairingCodeScreen: View {
     @Environment(AppSession.self) private var session
     @ScaledMetric(relativeTo: .largeTitle) private var codeSize = 44.0
 
+    private var contentSpacing: CGFloat {
+        #if os(tvOS)
+        16
+        #else
+        24
+        #endif
+    }
+
+    private var verticalPadding: CGFloat {
+        #if os(tvOS)
+        28
+        #else
+        KinoTheme.contentPadding
+        #endif
+    }
+
     var body: some View {
         ScrollView {
-            VStack(spacing: 24) {
+            VStack(spacing: contentSpacing) {
                 Text("Approve this device").font(.title.bold()).accessibilityAddTraits(.isHeader)
                 if let url = try? ApprovalLink.url(server: server, code: code) {
                     QRCodeView(value: url.absoluteString)
@@ -122,7 +138,8 @@ struct PairingCodeScreen: View {
                 Text("Waiting for approval…").font(.callout).foregroundStyle(.secondary)
                 Button("Cancel") { Task { await session.cancelPairing() } }
             }
-            .padding(KinoTheme.contentPadding)
+            .padding(.horizontal, KinoTheme.contentPadding)
+            .padding(.vertical, verticalPadding)
             .frame(maxWidth: .infinity)
         }
         #if os(tvOS)
