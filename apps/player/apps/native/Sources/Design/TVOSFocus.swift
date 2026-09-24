@@ -5,7 +5,7 @@ private struct TVOSDefaultPlayFocus: ViewModifier {
     let layoutID: String
     let enabled: Bool
     #if os(tvOS)
-    @Environment(\.resetFocus) private var resetFocus
+    @FocusState private var playFocused: Bool
     #endif
 
     func body(content: Content) -> some View {
@@ -13,6 +13,7 @@ private struct TVOSDefaultPlayFocus: ViewModifier {
         content
             .id(layoutID)
             .accessibilityIdentifier(layoutID)
+            .focused($playFocused)
             .prefersDefaultFocus(enabled, in: namespace)
             .onAppear { requestFocusIfNeeded() }
             .onChange(of: enabled) { _, isEnabled in
@@ -29,8 +30,9 @@ private struct TVOSDefaultPlayFocus: ViewModifier {
         Task { @MainActor in
             // Wait for the async screen content and its focus geometry to settle.
             await Task.yield()
+            try? await Task.sleep(for: .milliseconds(150))
             guard !Task.isCancelled else { return }
-            resetFocus(in: namespace)
+            playFocused = true
         }
     }
     #endif

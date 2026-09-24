@@ -62,17 +62,21 @@ private struct DetailContent: View {
             if let message { Text(message).font(.callout).foregroundStyle(.secondary) }
             if !item.plot.isEmpty { Text(item.plot).font(.body).fixedSize(horizontal: false, vertical: true) }
             if !item.genres.isEmpty { Text(item.genres).font(.callout).foregroundStyle(.secondary) }
+            #if os(iOS)
             if !item.showID.isEmpty { NavigationLink("All episodes", value: ScreenDestination.show(item.showID)) }
+            #endif
             if item.kind == .video || item.isAudio {
                 NavigationLink(value: ScreenDestination.bookmarks(item.id)) { Label("Bookmarks", systemImage: "bookmark") }
                 #if os(iOS)
                 NavigationLink(value: ScreenDestination.playOnTV(item.id)) { Label("Play on TV", systemImage: "tv") }
                 #endif
             }
+            #if os(iOS)
             if item.progress.seconds > 0 || item.progress.watched {
                 Button("Remove from Continue watching") { change { client in try await client.dismissContinueWatching(itemID: item.id) } }
                     .disabled(busy)
             }
+            #endif
         }
     }
     @ViewBuilder private var actions: some View {
@@ -87,6 +91,15 @@ private struct DetailContent: View {
             change { client in listed = try await client.setListed(itemID: item.id, listed: !(listed ?? detail.listed)) }
         } label: { Label((listed ?? detail.listed) ? "In My List" : "My List", systemImage: (listed ?? detail.listed) ? "checkmark" : "plus") }
             .buttonStyle(.bordered).buttonBorderShape(.capsule).tint(KinoTheme.secondaryControlTint).foregroundStyle(KinoTheme.text).disabled(busy)
+        #if os(tvOS)
+        if !item.showID.isEmpty {
+            NavigationLink("All episodes", value: ScreenDestination.show(item.showID))
+        }
+        if item.progress.seconds > 0 || item.progress.watched {
+            Button("Remove from Continue watching") { change { client in try await client.dismissContinueWatching(itemID: item.id) } }
+                .disabled(busy)
+        }
+        #endif
         #if os(iOS)
         if session.viewer?.downloads == true && (item.kind == .video || item.isAudio) {
             Button { showsDownloads = true } label: { Label("Download", systemImage: "arrow.down") }.buttonStyle(.bordered).buttonBorderShape(.capsule).tint(KinoTheme.secondaryControlTint).foregroundStyle(KinoTheme.text)

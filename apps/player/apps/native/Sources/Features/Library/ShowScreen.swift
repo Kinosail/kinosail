@@ -21,23 +21,43 @@ struct ShowScreen: View {
                 let episodes = show.episodes
                 VStack(alignment: .leading, spacing: 28) {
                     if let first = episodes.first {
+                        let seasons = Array(Set(episodes.map(\.season))).sorted()
+                        let season = ShowSeasonSelection.resolve(selectedSeason, among: seasons) ?? 0
                         if let next = episodes.first(where: { !$0.progress.watched }) ?? episodes.first {
+                            #if os(tvOS)
+                            VStack(alignment: .leading, spacing: 16) {
+                                Text(first.show.isEmpty ? "Episodes" : first.show)
+                                    .font(.system(.largeTitle, design: .rounded).weight(.bold))
+                                    .fixedSize(horizontal: false, vertical: true)
+                                    .accessibilityAddTraits(.isHeader)
+                                HStack(spacing: 16) {
+                                    NavigationLink(value: ScreenDestination.playback(next.id)) {
+                                        Label("\(next.playLabel) · S\(next.season) E\(next.episode)", systemImage: "play.fill")
+                                    }
+                                    .buttonStyle(.borderedProminent).buttonBorderShape(.capsule).tint(KinoTheme.signal).foregroundStyle(KinoTheme.signalInk)
+                                    .tvOSDefaultPlayFocus(in: showFocus, id: "show.next-play.\(next.id)")
+                                    Picker("Season", selection: Binding(get: { season }, set: { selectedSeason = $0 })) {
+                                        ForEach(seasons, id: \.self) { Text($0 == 0 ? "Specials" : "Season \($0)").tag($0) }
+                                    }
+                                    .pickerStyle(.menu)
+                                    .accessibilityIdentifier("show.season-picker")
+                                }
+                                .controlSize(.large)
+                            }
+                            .foregroundStyle(KinoTheme.text)
+                            .focusSection()
+                            #else
                             CinemaHero(item: first, title: first.show.isEmpty ? "Episodes" : first.show, showsPlot: false) {
                                 NavigationLink(value: ScreenDestination.playback(next.id)) {
                                     Label("\(next.playLabel) · S\(next.season) E\(next.episode)", systemImage: "play.fill")
                                 }.buttonStyle(.borderedProminent).buttonBorderShape(.capsule).tint(KinoTheme.signal).foregroundStyle(KinoTheme.signalInk)
-                                #if os(tvOS)
-                                .tvOSDefaultPlayFocus(in: showFocus, id: "show.next-play.\(next.id)")
-                                #endif
                             }
+                            #endif
                         }
-                        CastShelf(people: show.cast)
-                        let seasons = Array(Set(episodes.map(\.season))).sorted()
-                        let season = ShowSeasonSelection.resolve(selectedSeason, among: seasons) ?? 0
+                        #if os(iOS)
                         Picker("Season", selection: Binding(get: { season }, set: { selectedSeason = $0 })) {
                             ForEach(seasons, id: \.self) { Text($0 == 0 ? "Specials" : "Season \($0)").tag($0) }
                         }.frame(maxWidth: 420).accessibilityIdentifier("show.season-picker")
-                        #if os(iOS)
                         if session.viewer?.downloads == true {
                             Button(downloading ? "Adding episodes…" : "Download season", systemImage: "arrow.down.circle") {
                                 guard let client = session.client, !downloading else { return }
@@ -53,7 +73,13 @@ struct ShowScreen: View {
                             if let message { Text(message).font(.callout).foregroundStyle(.secondary) }
                         }
                         #endif
+                        #if os(tvOS)
                         MediaGrid(landscape: true, items: episodes.filter { $0.season == season })
+                        CastShelf(people: show.cast)
+                        #else
+                        CastShelf(people: show.cast)
+                        MediaGrid(landscape: true, items: episodes.filter { $0.season == season })
+                        #endif
                     } else { ContentUnavailableView("No episodes", systemImage: "tv", description: Text("This show has no available episodes.")) }
                 }
             }
@@ -63,7 +89,11 @@ struct ShowScreen: View {
         #if os(tvOS)
         .focusScope(showFocus)
         #endif
+        #if os(tvOS)
+        .navigationTitle("")
+        #else
         .navigationTitle("Seasons & episodes")
+        #endif
         .onChange(of: showID) { _, _ in selectedSeason = nil }
     }
 }
