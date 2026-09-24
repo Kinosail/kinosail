@@ -48,18 +48,23 @@ internal fun PlaybackScreen(item: CatalogItem, viewer: Viewer, tv: Boolean, clos
     val playback: PlaybackModel = viewModel()
     val player = playback.player
     var speedPicker by remember { mutableStateOf(false) }
+    var trackPicker by remember { mutableStateOf(false) }
     val speedFocus = remember { FocusRequester() }
     val retryFocus = remember { FocusRequester() }
+    val trackFocus = remember { FocusRequester() }
+    val trackButtonFocus = remember { FocusRequester() }
     val context = LocalContext.current
+    val closeTracks = { trackPicker = false; if (tv) trackButtonFocus.requestFocus() }
     val playerView = remember(player, context) { player?.let { engine -> PlayerView(context).apply {
         this.player = engine
         useController = true
         controllerShowTimeoutMs = if (tv) 5_000 else 3_000
     } } }
-    BackHandler { if (speedPicker) speedPicker = false else close() }
+    BackHandler { if (speedPicker) speedPicker = false else if (trackPicker) closeTracks() else close() }
     LaunchedEffect(item.id, viewer.id) { playback.start(item, viewer) }
     LaunchedEffect(speedPicker, tv) { if (speedPicker && tv) speedFocus.requestFocus() }
     LaunchedEffect(playback.retryable, tv) { if (playback.retryable && tv) retryFocus.requestFocus() }
+    LaunchedEffect(trackPicker, tv) { if (trackPicker && tv) trackFocus.requestFocus() }
     DisposableEffect(Unit) { onDispose { playback.stop() } }
     Box(Modifier.fillMaxSize().background(Color.Black)) {
         if (playerView != null) AndroidView(
@@ -93,6 +98,16 @@ internal fun PlaybackScreen(item: CatalogItem, viewer: Viewer, tv: Boolean, clos
                             Text(label, color = KinoColor.signal)
                         }
                     }
+                    if (playback.audioTracks.size > 1 || playback.textTracks.size > 1) {
+                        if (tv) androidx.tv.material3.Button(onClick = {
+                            speedPicker = false; trackPicker = !trackPicker
+                        }, modifier = Modifier.focusRequester(trackButtonFocus)) {
+                            androidx.tv.material3.Text("Audio & captions")
+                        }
+                        else TextButton(onClick = { speedPicker = false; trackPicker = !trackPicker }) {
+                            Text("Audio & captions", color = KinoColor.signal)
+                        }
+                    }
                     if (playback.nextItemId != null) {
                         if (tv) androidx.tv.material3.Button(onClick = { playback.playNext(onNext) },
                             enabled = !playback.nextBusy) { androidx.tv.material3.Text("Next episode") }
@@ -117,6 +132,44 @@ internal fun PlaybackScreen(item: CatalogItem, viewer: Viewer, tv: Boolean, clos
                                     Modifier.focusRequester(speedFocus) else Modifier) {
                                 androidx.tv.material3.Text(chosen)
                             } else TextButton(onClick = select) { Text(chosen, color = KinoColor.signal) }
+                        }
+                    }
+                }
+                if (trackPicker) Column(Modifier.fillMaxWidth().background(Color.Black.copy(alpha = 0.82f))
+                    .padding(12.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                    if (playback.audioTracks.size > 1) {
+                        Text("Audio", color = Color.White)
+                        LazyRow(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                            items(playback.audioTracks) { choice ->
+                                val label = choice.label + if (choice.selected) " · Selected" else ""
+                                val select = { playback.selectAudio(choice); closeTracks() }
+                                if (tv) androidx.tv.material3.Button(onClick = select,
+                                    modifier = if (choice == playback.audioTracks.first())
+                                        Modifier.focusRequester(trackFocus) else Modifier) {
+                                    androidx.tv.material3.Text(label)
+                                } else TextButton(onClick = select) { Text(label, color = KinoColor.signal) }
+                            }
+                        }
+                    }
+                    if (playback.textTracks.size > 1) {
+                        Text("Captions", color = Color.White)
+                        LazyRow(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                            item {
+                                val label = if (playback.captionsEnabled) "Off" else "Off · Selected"
+                                val select = { playback.selectText(null); closeTracks() }
+                                if (tv) androidx.tv.material3.Button(onClick = select,
+                                    modifier = if (playback.audioTracks.size <= 1)
+                                        Modifier.focusRequester(trackFocus) else Modifier) {
+                                    androidx.tv.material3.Text(label)
+                                } else TextButton(onClick = select) { Text(label, color = KinoColor.signal) }
+                            }
+                            items(playback.textTracks) { choice ->
+                                val label = choice.label + if (choice.selected) " · Selected" else ""
+                                val select = { playback.selectText(choice); closeTracks() }
+                                if (tv) androidx.tv.material3.Button(onClick = select) {
+                                    androidx.tv.material3.Text(label)
+                                } else TextButton(onClick = select) { Text(label, color = KinoColor.signal) }
+                            }
                         }
                     }
                 }
