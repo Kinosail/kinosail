@@ -50,6 +50,7 @@ class BuildInputsTest(unittest.TestCase):
                         '<meta name="google-site-verification" content="CyK7nEwl7e61vmJVjO4nsO4JpjaeKGUMffYcSNcUhFg">'), 1)
                     graph = json.loads(SearchMetadata(homepage).blocks[0])['@graph']
                     organization = next(item for item in graph if item['@type'] == 'Organization')
+                    self.assertIn('Kinosail Player, a free, source-available media server', organization['description'])
                     self.assertEqual(organization['logo'], f'{origin}{prefix}/assets/images/kinosail-mark.svg')
                     self.assertIn('viewBox="0 0 512 512"', (args.output / 'assets/images/kinosail-mark.svg').read_text())
                     app = next(item for item in graph if item['@type'] == 'SoftwareApplication')
