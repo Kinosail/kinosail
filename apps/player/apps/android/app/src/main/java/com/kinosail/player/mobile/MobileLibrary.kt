@@ -53,6 +53,8 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.semantics.clearAndSetSemantics
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
@@ -165,7 +167,8 @@ internal fun MobileLibrary(connection: ConnectionModel, viewer: Viewer) {
                     verticalArrangement = Arrangement.spacedBy(16.dp),
                     contentPadding = PaddingValues(bottom = 24.dp)) {
                     items(state.items, key = CatalogItem::id) { item ->
-                        Card(onClick = { catalog.select(item) }, modifier = Modifier.fillMaxWidth(),
+                        Card(onClick = { catalog.select(item) },
+                            modifier = Modifier.fillMaxWidth().semantics { contentDescription = item.title },
                             colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)) {
                             Column {
                                 CatalogPoster(item, catalog, Modifier.fillMaxWidth())

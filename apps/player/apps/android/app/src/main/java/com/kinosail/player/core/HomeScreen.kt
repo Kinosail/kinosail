@@ -37,6 +37,8 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.semantics.clearAndSetSemantics
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.kinosail.player.design.KinoColor
@@ -145,13 +147,15 @@ private fun HomeShelf(title: String, items: List<CatalogItem>, catalog: CatalogM
             color = if (tv || isSystemInDarkTheme()) KinoColor.text else MaterialTheme.colorScheme.onBackground)
         LazyRow(horizontalArrangement = Arrangement.spacedBy(if (tv) 20.dp else if (wideTouch) 16.dp else 12.dp)) {
             items(items, key = CatalogItem::id) { item ->
-                if (tv) androidx.tv.material3.Card(onClick = { open(item) }, modifier = Modifier.width(200.dp)) {
+                if (tv) androidx.tv.material3.Card(onClick = { open(item) },
+                    modifier = Modifier.width(200.dp).semantics { contentDescription = item.title }) {
                     Column {
                         HomeArtwork(item, catalog, 200, tv = true)
                         androidx.tv.material3.Text(item.title, maxLines = 2, modifier = Modifier.padding(8.dp))
                     }
                 } else androidx.compose.material3.Card(onClick = { open(item) },
-                    modifier = Modifier.width(if (wideTouch) 190.dp else 144.dp),
+                    modifier = Modifier.width(if (wideTouch) 190.dp else 144.dp)
+                        .semantics { contentDescription = item.title },
                     colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)) {
                     Column {
                         HomeArtwork(item, catalog, if (wideTouch) 190 else 144, tv = false)
