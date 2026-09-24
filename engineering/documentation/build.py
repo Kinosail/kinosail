@@ -53,7 +53,10 @@ def build(args):
         subprocess.run(['bundle', 'exec', 'jekyll', 'build', '--source', str(source), '--destination', str(artifact), '--config', f'{source / "_config.yml"},{config}', '--strict_front_matter'], env=env, check=True)
         index = json.loads((artifact / 'search.json').read_text())
         (artifact / '.nojekyll').touch()
-        urls = sorted({args.url + page['url'] for page in index})
+        urls = {args.url + page['url'] for page in index}
+        if args.url == 'https://kinosail.com' and not args.baseurl:
+            urls.add('https://kinosail.com/architecture-explorer/')
+        urls = sorted(urls)
         (artifact / 'sitemap.xml').write_text('<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' + ''.join(f'<url><loc>{url}</loc></url>' for url in urls) + '</urlset>')
         (artifact / 'robots.txt').write_text(f'User-agent: *\nAllow: /\n\nSitemap: {args.url}{args.baseurl}/sitemap.xml\n')
         shutil.copytree(artifact, args.output)

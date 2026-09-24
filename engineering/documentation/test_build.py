@@ -33,6 +33,8 @@ class BuildInputsTest(unittest.TestCase):
                     build(args)
                     self.assertIn(f'Sitemap: {origin}{prefix}/sitemap.xml',
                                   (args.output / 'robots.txt').read_text().splitlines())
+                    self.assertEqual('<loc>https://kinosail.com/architecture-explorer/</loc>'
+                                     in (args.output / 'sitemap.xml').read_text(), name == 'production')
                     self.assertEqual((args.output / 'index.html').read_text().count(
                         '<meta name="google-site-verification" content="CyK7nEwl7e61vmJVjO4nsO4JpjaeKGUMffYcSNcUhFg">'), 1)
                     check(args.output, prefix)
