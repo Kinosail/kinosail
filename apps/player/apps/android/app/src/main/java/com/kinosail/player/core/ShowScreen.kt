@@ -18,6 +18,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -117,7 +118,8 @@ internal fun ShowScreen(showId: String, viewer: Viewer, catalog: CatalogModel, t
                         modifier = Modifier.fillMaxWidth()) {
                         EpisodeRow(episode, catalog, tv = true)
                     } else androidx.compose.material3.Card(onClick = { play(episode) },
-                        modifier = Modifier.fillMaxWidth()) {
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)) {
                         EpisodeRow(episode, catalog, tv = false)
                     }
                 }
