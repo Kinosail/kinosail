@@ -18,6 +18,7 @@ data class CatalogState(
     val loading: Boolean = false,
     val notice: String? = null,
     val selected: CatalogItem? = null,
+    val view: String = "all",
 )
 
 class CatalogModel(application: Application) : AndroidViewModel(application) {
@@ -29,6 +30,7 @@ class CatalogModel(application: Application) : AndroidViewModel(application) {
     private var viewerId: String? = null
     private var generation = 0
     private var activeQuery = ""
+    private var activeView = "all"
 
     var searchInput by mutableStateOf("")
     var state by mutableStateOf(CatalogState())
@@ -40,6 +42,7 @@ class CatalogModel(application: Application) : AndroidViewModel(application) {
         state = CatalogState(loading = true)
         searchInput = ""
         activeQuery = ""
+        activeView = "all"
         viewModelScope.launch {
             try {
                 val saved = withContext(Dispatchers.IO) { sessions.load() }
@@ -64,7 +67,18 @@ class CatalogModel(application: Application) : AndroidViewModel(application) {
         }
         activeQuery = query
         val attempt = ++generation
-        state = CatalogState(loading = true)
+        state = CatalogState(loading = true, view = activeView)
+        viewModelScope.launch { fetch(attempt, 0) }
+    }
+
+    fun changeView(view: String) {
+        require(view in setOf("all", "shows")) { "Invalid library view." }
+        if (view == activeView || session == null) return
+        activeView = view
+        activeQuery = ""
+        searchInput = ""
+        val attempt = ++generation
+        state = CatalogState(loading = true, view = view)
         viewModelScope.launch { fetch(attempt, 0) }
     }
 
@@ -92,6 +106,7 @@ class CatalogModel(application: Application) : AndroidViewModel(application) {
         generation++
         session = null
         viewerId = null
+        activeView = "all"
         artworkCache.evictAll()
         state = CatalogState()
     }
@@ -116,7 +131,7 @@ class CatalogModel(application: Application) : AndroidViewModel(application) {
         val viewer = viewerId ?: return
         try {
             val page = withContext(Dispatchers.IO) {
-                CatalogApi(saved.server).list(saved.token, viewer, activeQuery, offset)
+                CatalogApi(saved.server).list(saved.token, viewer, activeQuery, offset, activeView)
             }
             if (attempt != generation) return
             require(offset == 0 || page.items.none { candidate -> state.items.any { it.id == candidate.id } }) {
