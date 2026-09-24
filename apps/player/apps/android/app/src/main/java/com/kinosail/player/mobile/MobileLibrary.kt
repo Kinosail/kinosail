@@ -75,7 +75,8 @@ internal fun MobileLibrary(connection: ConnectionModel, viewer: Viewer) {
     BackHandler(state.selected != null && playingItem == null) { catalog.closeDetail() }
     BackHandler(!home && state.selected == null && playingItem == null) { home = true }
     if (playingItem != null) {
-        PlaybackScreen(requireNotNull(playingItem), viewer, tv = false) { playingItem = null }
+        PlaybackScreen(requireNotNull(playingItem), viewer, tv = false, close = { playingItem = null },
+            onNext = { playingItem = it })
         return
     }
     if (state.selected?.showId?.isNotEmpty() == true) {

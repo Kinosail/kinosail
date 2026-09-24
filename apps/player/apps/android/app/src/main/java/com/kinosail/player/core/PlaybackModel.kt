@@ -55,6 +55,10 @@ class PlaybackModel(application: Application) : AndroidViewModel(application) {
         private set
     var progressConflict by mutableStateOf(false)
         private set
+    var nextItemId by mutableStateOf<String?>(null)
+        private set
+    var nextBusy by mutableStateOf(false)
+        private set
 
     fun start(item: CatalogItem, viewer: Viewer) {
         stop()
@@ -89,6 +93,7 @@ class PlaybackModel(application: Application) : AndroidViewModel(application) {
                 server = saved.server
                 policy = allowed
                 source = plan
+                nextItemId = plan.nextItemId
                 journal = savedJournal
                 activeSession = saved
                 activeViewer = viewer
@@ -246,6 +251,30 @@ class PlaybackModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
+    fun playNext(open: (CatalogItem) -> Unit) {
+        val id = nextItemId ?: return
+        val saved = activeSession ?: return
+        val viewer = activeViewer ?: return
+        if (nextBusy) return
+        nextBusy = true
+        val attempt = generation
+        viewModelScope.launch {
+            try {
+                val item = withContext(Dispatchers.IO) {
+                    CatalogApi(saved.server).item(id, saved.token, viewer.id)
+                }
+                if (attempt == generation) {
+                    require(item.kind in setOf("video", "music", "audiobook")) { "Invalid next title." }
+                    open(item)
+                }
+            } catch (_: Exception) {
+                if (attempt == generation) message = "Could not load the next episode. Try again."
+            } finally {
+                if (attempt == generation) nextBusy = false
+            }
+        }
+    }
+
     fun stop() {
         checkpoint()
         generation++
@@ -268,6 +297,8 @@ class PlaybackModel(application: Application) : AndroidViewModel(application) {
         message = null
         progressNotice = null
         progressConflict = false
+        nextItemId = null
+        nextBusy = false
     }
 
     override fun onCleared() { stop(); super.onCleared() }

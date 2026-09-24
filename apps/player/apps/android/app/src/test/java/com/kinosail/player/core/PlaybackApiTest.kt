@@ -15,12 +15,14 @@ class PlaybackApiTest {
     private val response = """{"plan":{"allowed":true,"mode":"direct","reason":"direct-preferred"},"directAllowed":true,"direct":"/media/film-1","directType":"video/mp4","duration":120,"start":30,"compatible":"/hls/film-1/p/r-a0-s0-none-t0-b0/index.m3u8","compatiblePlan":{"allowed":true,"mode":"remux","reason":"compatibility"},"progressToken":"abc"}"""
 
     @Test fun fetchesViewerScopedPlanAndSources() {
-        val connection = PlaybackResponse(200, response)
+        val connection = PlaybackResponse(200, response.replace("\"progressToken\":\"abc\"",
+            "\"progressToken\":\"abc\",\"next\":\"episode-2\""))
         val source = PlaybackApi(server) { url -> connection.also { it.requestedURL = url } }
             .source("film-1", "token", "alex", capabilities)
         assertEquals("/media/film-1", source.direct)
         assertEquals("/hls/film-1/p/r-a0-s0-none-t0-b0/index.m3u8", source.compatible)
         assertEquals(30.0, source.start, 0.0)
+        assertEquals("episode-2", source.nextItemId)
         assertEquals("Bearer token", connection.getRequestProperty("Authorization"))
         assertEquals("alex", connection.getRequestProperty("X-Kinosail-Viewer-Profile"))
         assertTrue(connection.requestedURL.toString().contains(capabilities.query))
@@ -55,6 +57,9 @@ class PlaybackApiTest {
             response.replace("\"mode\":\"remux\"", "\"mode\":\"remux\",\"markerMode\":\"unknown\""),
             response.replace("\"duration\":120", "\"duration\":\"120\""),
             response.replace("\"directType\":\"video/mp4\"", "\"directType\":\"\""),
+            response.replace("\"progressToken\":\"abc\"", "\"progressToken\":\"abc\",\"next\":\"../other\""),
+            response.replace("\"progressToken\":\"abc\"", "\"progressToken\":\"abc\",\"next\":\"${"x".repeat(129)}\""),
+            response.replace("\"progressToken\":\"abc\"", "\"progressToken\":\"abc\",\"next\":\"film-1\""),
             response.replace("\"directType\":\"video/mp4\"", "\"unknown\":1"),
             response.replace("\"duration\":120", "\"duration\":120,\"duration\":121"))
         invalid.forEach { body ->

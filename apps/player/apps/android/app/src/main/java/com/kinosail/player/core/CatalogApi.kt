@@ -7,6 +7,7 @@ import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
+import kotlinx.serialization.json.booleanOrNull
 import kotlinx.serialization.json.intOrNull
 
 data class CatalogItem(
@@ -54,6 +55,17 @@ class CatalogApi(
         val items = rawItems.map(::parseItem)
         require(items.map(CatalogItem::id).toSet().size == items.size) { INVALID_RESPONSE }
         return CatalogPage(items, total, returnedOffset, limit)
+    }
+
+    fun item(itemId: String, token: String, viewerId: String): CatalogItem {
+        require(itemId.matches(ID)) { "Invalid item request." }
+        val result = api.item(itemId, token, viewerId)
+            .fields(setOf("item", "listed", "profileId"), setOf("item", "listed", "profileId"))
+        require((result["listed"] as? JsonPrimitive)?.let { !it.isString && it.booleanOrNull != null } == true &&
+            result.text("profileId", 128) == viewerId) { INVALID_RESPONSE }
+        val item = parseItem(result.getValue("item"))
+        require(item.id == itemId) { INVALID_RESPONSE }
+        return item
     }
 
     companion object {

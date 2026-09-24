@@ -27,6 +27,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.media3.ui.PlayerView
@@ -34,7 +35,8 @@ import androidx.compose.ui.viewinterop.AndroidView
 import com.kinosail.player.design.KinoColor
 
 @Composable
-internal fun PlaybackScreen(item: CatalogItem, viewer: Viewer, tv: Boolean, close: () -> Unit) {
+internal fun PlaybackScreen(item: CatalogItem, viewer: Viewer, tv: Boolean, close: () -> Unit,
+                            onNext: (CatalogItem) -> Unit) {
     val playback: PlaybackModel = viewModel()
     val player = playback.player
     val context = LocalContext.current
@@ -59,10 +61,20 @@ internal fun PlaybackScreen(item: CatalogItem, viewer: Viewer, tv: Boolean, clos
             verticalArrangement = Arrangement.SpaceBetween) {
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically) {
-                Text(item.title, color = Color.White)
-                if (tv) androidx.tv.material3.Button(onClick = close) {
-                    androidx.tv.material3.Text("Done")
-                } else TextButton(onClick = close) { Text("Done", color = KinoColor.signal) }
+                Text(item.title, color = Color.White, modifier = Modifier.weight(1f), maxLines = 1,
+                    overflow = TextOverflow.Ellipsis)
+                Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                    if (playback.nextItemId != null) {
+                        if (tv) androidx.tv.material3.Button(onClick = { playback.playNext(onNext) },
+                            enabled = !playback.nextBusy) { androidx.tv.material3.Text("Next episode") }
+                        else TextButton(onClick = { playback.playNext(onNext) }, enabled = !playback.nextBusy) {
+                            Text("Next episode", color = KinoColor.signal)
+                        }
+                    }
+                    if (tv) androidx.tv.material3.Button(onClick = close) {
+                        androidx.tv.material3.Text("Done")
+                    } else TextButton(onClick = close) { Text("Done", color = KinoColor.signal) }
+                }
             }
             Column(Modifier.fillMaxWidth().then(if (playback.loading || playback.usingCompatible ||
                     playback.message != null || playback.progressNotice != null)
