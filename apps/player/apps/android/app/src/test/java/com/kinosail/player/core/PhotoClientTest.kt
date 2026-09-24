@@ -87,6 +87,7 @@ private class PhotoResponse(private val status: Int, private val body: ByteArray
     override fun usingProxy() = false
     override fun getResponseCode() = status
     override fun getContentType() = type
-    override fun getContentLengthLong() = length
+    override fun getHeaderField(name: String?): String? =
+        if (name.equals("Content-Length", ignoreCase = true)) length.toString() else null
     override fun getInputStream() = ByteArrayInputStream(body)
 }

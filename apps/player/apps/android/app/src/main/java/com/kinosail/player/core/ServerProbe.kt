@@ -15,7 +15,7 @@ class ServerProbe(private val open: (URL) -> HttpURLConnection = { it.openConnec
             connection.setRequestProperty("Accept", "application/json")
             require(connection.responseCode == 200 &&
                 connection.contentType?.substringBefore(';')?.trim()?.lowercase() == "application/json" &&
-                connection.contentLengthLong <= 4096) { "This Server did not return a valid health response." }
+                boundedContentLength(connection, 4096)) { "This Server did not return a valid health response." }
             val bytes = connection.inputStream.use { stream ->
                 val buffer = ByteArray(4097)
                 var count = 0

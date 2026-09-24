@@ -7,6 +7,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.media3.common.util.UnstableApi
 import androidx.media3.common.AudioAttributes
 import androidx.media3.common.C
 import androidx.media3.common.MediaItem
@@ -86,6 +87,7 @@ class PlaybackModel(application: Application) : AndroidViewModel(application) {
         activeViewer?.id == viewer.id && activeViewer?.serverId == viewer.serverId && player != null
     }
 
+    @androidx.annotation.OptIn(markerClass = [UnstableApi::class])
     fun start(item: CatalogItem, viewer: Viewer) {
         stop()
         if (item.kind !in setOf("video", "music", "audiobook")) {

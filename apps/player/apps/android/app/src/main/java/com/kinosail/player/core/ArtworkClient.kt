@@ -54,7 +54,7 @@ class ArtworkClient(
             connection.setRequestProperty("X-Kinosail-Viewer-Profile", viewerId)
             require(connection.responseCode == 200 &&
                 connection.contentType?.substringBefore(';')?.trim()?.lowercase()?.startsWith("image/") == true &&
-                connection.contentLengthLong <= maximum) { "The Server returned invalid artwork." }
+                boundedContentLength(connection, maximum.toLong())) { "The Server returned invalid artwork." }
             return connection.inputStream.use { stream ->
                 val output = ByteArrayOutputStream()
                 val buffer = ByteArray(8192)
