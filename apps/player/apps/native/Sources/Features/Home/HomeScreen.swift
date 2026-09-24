@@ -9,9 +9,8 @@ struct HomeScreen: View {
     var body: some View {
         ScrollView {
             HStack(spacing: 28) {
-                Text("For you").font(.callout.weight(.semibold)).frame(minHeight: 44)
-                    .overlay(alignment: .bottom) { Rectangle().fill(KinoTheme.signal).frame(height: 2) }
-                    .accessibilityAddTraits(.isSelected)
+                Text("For you").font(.title2.bold()).frame(minHeight: 44)
+                    .accessibilityAddTraits(.isHeader)
                 NavigationLink("My List", value: ScreenDestination.library(.list))
                     .font(.callout).frame(minHeight: 44)
                     #if os(tvOS)
@@ -28,6 +27,7 @@ struct HomeScreen: View {
                 guard let client = session.client else { throw ClientError.http(401) }
                 return try await client.home(policy: policy)
             }) { home in
+                let remaining = Array(home.continueWatching.dropFirst().prefix(4))
                 VStack(alignment: .leading, spacing: 32) {
                     if let featured = home.continueWatching.first ?? home.recent.first {
                         CinemaHero(item: featured, showsPlot: false) {
@@ -40,9 +40,7 @@ struct HomeScreen: View {
                             NavigationLink("Details", value: featured.destination).buttonStyle(.bordered).buttonBorderShape(.capsule).tint(KinoTheme.secondaryControlTint).foregroundStyle(KinoTheme.text)
                         }
                     }
-                    if !home.continueWatching.isEmpty {
-                        ResumeRows(items: Array(home.continueWatching.prefix(4)))
-                    }
+                    if !remaining.isEmpty { ResumeRows(items: remaining) }
                     if !home.recent.isEmpty { MediaShelf(title: "Recently added", items: home.recent) }
                     if home.continueWatching.isEmpty && home.recent.isEmpty {
                         FeaturePlaceholder(title: "Your library is ready", symbol: "play.rectangle",
