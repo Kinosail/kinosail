@@ -20,7 +20,7 @@
     ]}
     {% endif %}
     {% if page.url == '/' %},
-    {"@type":"SoftwareApplication","@id":{{ '/#player' | absolute_url | jsonify }},"name":"Kinosail Player","applicationCategory":"MultimediaApplication","operatingSystem":"Linux server; web browser client","url":{{ '/' | absolute_url | jsonify }},"description":"A free media server for your own hardware with a web player. It reads your existing media folders and installs with Docker.","license":"https://github.com/Kinosail/kinosail/blob/main/LICENSING.md","downloadUrl":{{ '/quickstart/' | absolute_url | jsonify }},"screenshot":{{ '/assets/images/player-detail.webp' | absolute_url | jsonify }},"publisher":{"@id":{{ '/#organization' | absolute_url | jsonify }}}}
+    {"@type":"SoftwareApplication","@id":{{ '/#player' | absolute_url | jsonify }},"name":"Kinosail Player","applicationCategory":"MultimediaApplication","operatingSystem":"Linux server; web browser client","url":{{ '/' | absolute_url | jsonify }},"description":"A free media server for your own hardware with a web player. It reads your existing media folders and installs with Docker.","offers":{"@type":"Offer","price":0},"license":"https://github.com/Kinosail/kinosail/blob/main/LICENSING.md","downloadUrl":{{ '/quickstart/' | absolute_url | jsonify }},"screenshot":{{ '/assets/images/player-detail.webp' | absolute_url | jsonify }},"publisher":{"@id":{{ '/#organization' | absolute_url | jsonify }}}}
     {% endif %}
   ]
 }
