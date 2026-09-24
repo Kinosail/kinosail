@@ -32,6 +32,11 @@ improvements without a baseline and subsequent measurements.
 The custom domain serves Pages at the origin root, so the sitemap and robots.txt
 belong at that root. The sitemap can be submitted directly.
 
+The public IndexNow ownership file is
+`apps/player/docs/188c30dcfde0cb99c9697f2a115d4230.txt`. After a docs
+deployment, notify Bing of canonical URLs whose content changed. The key file
+proves domain control to IndexNow; a successful submission is not indexing proof.
+
 No ranking, indexing, or AI citation position is guaranteed. Neither fabricated
 engagement nor mass-produced comparison pages are part of this strategy.
 
@@ -43,6 +48,7 @@ engagement nor mass-produced comparison pages are part of this strategy.
 - https://www.bing.com/webmasters/help/ai-performance-9f8e7d6c
 - https://developers.google.com/search/docs/fundamentals/ai-optimization-guide
 - https://developers.cloudflare.com/bots/additional-configurations/managed-robots-txt/
+- https://www.bing.com/indexnow/getstarted
 
 Google applies its foundational SEO requirements to AI search experiences and
 requires structured data to match visible content. Bing likewise does not
