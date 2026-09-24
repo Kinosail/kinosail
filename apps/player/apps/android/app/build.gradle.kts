@@ -35,4 +35,6 @@ dependencies {
     implementation("androidx.activity:activity-compose:1.13.0")
     implementation("androidx.compose.material3:material3")
     implementation("androidx.tv:tv-material:1.1.0")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.11.0")
+    testImplementation("junit:junit:4.13.2")
 }
