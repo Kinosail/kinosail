@@ -1,9 +1,9 @@
 ---
-title: Your media. At home in your browser.
-description: Install the free Kinosail Server with Docker and start watching in your browser.
+title: Your media. In a browser or on mobile.
+description: Install the free Kinosail Server with Docker. Watch in a browser or a compatible Jellyfin mobile app.
 hide_contribute: true
 ---
-# Your media. At home in your browser.
+# Your media. In a browser or on mobile.
 
 Kinosail Server is free to run on your own hardware. The web Player is included. You can also connect compatible Jellyfin mobile apps after you set up trusted HTTPS and enable Jellyfin support.
 
@@ -32,9 +32,11 @@ Read the [Player feature guide]({{ "/features/" | relative_url }}) for details a
 
 ## Built around your privacy
 
-Local use does not need a Kinosail account. Your Server sends media straight to your browser. It mounts your original media as read-only. Owners control each Viewer Profile's library and playback access.
+Local use does not need a Kinosail account. Your Server sends media directly to the web Player or a compatible Jellyfin mobile app. It mounts your original media as read-only. Owners control each Viewer Profile's library and playback access.
 
 Read [Architecture and privacy]({{ '/reference/architecture-and-privacy/' | relative_url }}) to learn where the Server stores data and what optional services can access. Kinosail is source-available under the [PolyForm Perimeter license](https://github.com/Kinosail/kinosail/blob/main/LICENSING.md).
+
+Read the [Security overview]({{ '/security/' | relative_url }}) for account, API, network, and data protections. It also explains what you must protect on your host and how to [report a vulnerability privately](https://github.com/Kinosail/kinosail/security/advisories/new).
 
 ## Building on Player?
 

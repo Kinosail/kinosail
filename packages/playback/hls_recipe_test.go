@@ -12,6 +12,7 @@ func TestHLSRecipeRoundTripAndRoutes(t *testing.T) {
 	policy := HLSRecipePolicy{MaxBitrate: 100_000_000, OffsetStepMilliseconds: 100}
 	plan := PlaybackPlan{Mode: "transcode", VideoCodec: "hevc", AudioIndex: 2, SubtitleSourceIndex: 7, SubtitleMode: "burn-in", SubtitleText: true, ColorMode: "tone-map-sdr", MaxBitrate: 4_000_000, Timeline: Timeline{Omitted: []Range{{Start: 10, End: 20}}}}
 	recipe := RecipeFor(plan)
+	recipe.DialogueBoost, recipe.NormalizeLoudness = true, true
 	recipe.Offset = 30.1
 	token := recipe.Token()
 	parsed, err := ParseHLSRecipe(token, policy)
@@ -37,7 +38,7 @@ func TestParseHLSRecipeRejectsEveryInvalidBoundary(t *testing.T) {
 	tests := []string{
 		"", "x-a0-s0-none-t0-b0", "t-x0-s0-none-t0-b0", "t-a32-s0-none-t0-b0", "t-a0-s256-none-t0-b0",
 		"t-a0-s0-unknown-t0-b0", "t-a0-s0-none-t2-b0", "t-a0-s0-none-t0-b100000001", "r-a0-s0-none-t0-b0-chevc",
-		valid + "-cauto", valid + "-cunknown", valid + "-k", valid + "-k1_1", valid + "-k2_3.1_2",
+		valid + "-cauto", valid + "-cunknown", valid + "-e0", valid + "-e4", valid + "-eno", "r-a0-s0-none-t0-b0-e1", valid + "-k", valid + "-k1_1", valid + "-k2_3.1_2",
 		valid + "-k1_zzzzzzzzzz", valid + "-o99", valid + "-o604800100", valid + "-extra-extra-extra-extra",
 	}
 	for _, value := range tests {
@@ -71,6 +72,9 @@ func TestHLSRecipeCacheAndTimelineHelpers(t *testing.T) { //nolint:cyclop // Rel
 	recipe = HLSRecipe{Mode: "transcode", Codec: "hevc", Audio: 1, Offset: 30, Omitted: []Range{{Start: 10, End: 20}, {Start: 40, End: 50}}}
 	if got := HLSRecipeKey("0123456789abcdef", recipe); !strings.Contains(got, "-plan-") {
 		t.Fatalf("planned key = %q", got)
+	}
+	if plain, effected := HLSRecipeKey("0123456789abcdef", HLSRecipe{Mode: "transcode", Codec: "h264"}), HLSRecipeKey("0123456789abcdef", HLSRecipe{Mode: "transcode", Codec: "h264", DialogueBoost: true}); plain == effected || !strings.Contains(effected, "-e1") {
+		t.Fatalf("audio effect cache identity = %q, %q", plain, effected)
 	}
 	start, window := HLSWindowRecipe(recipe, 100)
 	if start != 50 || window.Offset != 0 || len(window.Omitted) != 0 {
@@ -122,6 +126,14 @@ func TestHLSFilterAndBitrateArguments(t *testing.T) { //nolint:cyclop // Related
 	}
 	if AutomaticSkipAudioArguments(HLSRecipe{}, policy) != nil {
 		t.Fatal("empty audio filter was not nil")
+	}
+	effects := AudioFilterArguments(HLSRecipe{DialogueBoost: true, NormalizeLoudness: true}, policy)
+	if len(effects) != 2 || !strings.Contains(effects[1], "equalizer=f=1600") || !strings.Contains(effects[1], "dynaudnorm=") || strings.Contains(effects[1], "alimiter=") {
+		t.Fatalf("combined audio effects = %#v", effects)
+	}
+	dialogue := AudioFilterArguments(HLSRecipe{DialogueBoost: true}, policy)
+	if len(dialogue) != 2 || !strings.Contains(dialogue[1], "alimiter=") {
+		t.Fatalf("dialogue limiter = %#v", dialogue)
 	}
 	zeroPolicy := policy
 	zeroPolicy.StartPresentationAtZero = true

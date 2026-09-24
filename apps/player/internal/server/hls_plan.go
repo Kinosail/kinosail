@@ -10,6 +10,8 @@ type hlsRecipe struct {
 	subtitleTime                   float64
 	audio, subtitle                int
 	toneMap                        bool
+	dialogueBoost                  bool
+	normalizeLoudness              bool
 	singleQuality                  bool
 	maxBitrate                     int64
 	omitted                        []PlaybackRange
@@ -21,11 +23,11 @@ func hlsPolicy() playback.HLSRecipePolicy {
 }
 
 func sharedHLSRecipe(recipe hlsRecipe) playback.HLSRecipe {
-	return playback.HLSRecipe{OutputTime: recipe.outputTime, Width: recipe.width, Height: recipe.height, SubtitleOrdinal: recipe.subtitleOrdinal, SubtitlePath: recipe.subtitlePath, SubtitleTime: recipe.subtitleTime, Mode: recipe.mode, Burn: recipe.burn, Codec: recipe.codec, Audio: recipe.audio, Subtitle: recipe.subtitle, ToneMap: recipe.toneMap, SingleQuality: recipe.singleQuality, MaxBitrate: recipe.maxBitrate, Omitted: recipe.omitted, Offset: recipe.offset}
+	return playback.HLSRecipe{OutputTime: recipe.outputTime, Width: recipe.width, Height: recipe.height, SubtitleOrdinal: recipe.subtitleOrdinal, SubtitlePath: recipe.subtitlePath, SubtitleTime: recipe.subtitleTime, Mode: recipe.mode, Burn: recipe.burn, Codec: recipe.codec, Audio: recipe.audio, Subtitle: recipe.subtitle, ToneMap: recipe.toneMap, DialogueBoost: recipe.dialogueBoost, NormalizeLoudness: recipe.normalizeLoudness, SingleQuality: recipe.singleQuality, MaxBitrate: recipe.maxBitrate, Omitted: recipe.omitted, Offset: recipe.offset}
 }
 
 func localHLSRecipe(recipe playback.HLSRecipe) hlsRecipe {
-	return hlsRecipe{outputTime: recipe.OutputTime, width: recipe.Width, height: recipe.Height, subtitleOrdinal: recipe.SubtitleOrdinal, subtitlePath: recipe.SubtitlePath, subtitleTime: recipe.SubtitleTime, mode: recipe.Mode, burn: recipe.Burn, codec: recipe.Codec, audio: recipe.Audio, subtitle: recipe.Subtitle, toneMap: recipe.ToneMap, singleQuality: recipe.SingleQuality, maxBitrate: recipe.MaxBitrate, omitted: recipe.Omitted, offset: recipe.Offset}
+	return hlsRecipe{outputTime: recipe.OutputTime, width: recipe.Width, height: recipe.Height, subtitleOrdinal: recipe.SubtitleOrdinal, subtitlePath: recipe.SubtitlePath, subtitleTime: recipe.SubtitleTime, mode: recipe.Mode, burn: recipe.Burn, codec: recipe.Codec, audio: recipe.Audio, subtitle: recipe.Subtitle, toneMap: recipe.ToneMap, dialogueBoost: recipe.DialogueBoost, normalizeLoudness: recipe.NormalizeLoudness, singleQuality: recipe.SingleQuality, maxBitrate: recipe.MaxBitrate, omitted: recipe.Omitted, offset: recipe.Offset}
 }
 
 func recipeFor(plan PlaybackPlan) hlsRecipe { return localHLSRecipe(playback.RecipeFor(plan)) }

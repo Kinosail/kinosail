@@ -6,10 +6,16 @@
 <meta name="theme-color" content="#0b0d0b">
 <title>{{ page.title }} · Kinosail</title>
 <meta name="description" content="{{ page.description | escape }}">
-<meta property="og:title" content="{{ page.title | escape }} · Kinosail">
+<meta property="og:title" content="{% if page.url == '/' %}Kinosail Player · Your media, on your own server{% else %}{{ page.title | escape }} · Kinosail{% endif %}">
 <meta property="og:description" content="{{ page.description | escape }}">
-<meta property="og:image" content="{{ '/assets/images/player-detail.webp' | absolute_url }}">
+<meta property="og:image" content="{{ '/assets/images/kinosail-share.png' | absolute_url }}">
+<meta property="og:image:type" content="image/png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Kinosail Player sail mark and the words Your media, on your own server">
 <meta property="og:type" content="website">
+<meta property="og:url" content="{{ page.url | absolute_url }}">
+<meta name="twitter:image" content="{{ '/assets/images/kinosail-share.png' | absolute_url }}">
 <link rel="canonical" href="{{ page.url | absolute_url }}">
 <link rel="icon" href="{{ '/assets/images/kinosail-mark.svg' | relative_url }}">
 <link rel="stylesheet" href="{{ '/assets/css/marketing.css' | relative_url }}">
@@ -22,15 +28,16 @@
 <nav aria-label="Main navigation">
 <a href="{{ '/why/' | relative_url }}">Why Kinosail</a>
 <a href="https://github.com/Kinosail/kinosail">GitHub <span aria-hidden="true">↗</span></a>
+<a href="https://kinosail-shop.fourthwall.com/">Player merch</a>
 <a class="docs-primary" href="{{ '/docs/' | relative_url }}">Docs</a>
 </nav>
 </header>
 <main id="main-content" tabindex="-1">{{ content }}</main>
 <footer class="wrap footer">
 <a class="brand" href="{{ '/' | relative_url }}">Kinosail</a>
-<p>Your media. Your Server. Your evening.</p>
+<p>Your media, on your own server.</p>
 <nav aria-label="Footer"><a href="{{ '/quickstart/' | relative_url }}">Install</a><a href="{{ '/docs/' | relative_url }}">Documentation</a><a href="https://github.com/Kinosail/kinosail/issues">Report a bug</a><a href="https://github.com/Kinosail/kinosail/blob/main/LICENSING.md">License</a></nav>
-<small>Source-available. AI-engineered, with human direction. <a href="{{ '/why/' | relative_url }}">Read the story.</a></small>
+<small>Source-available. <a href="{{ '/why/' | relative_url }}">Read the project story.</a></small>
 </footer>
 </body>
 </html>

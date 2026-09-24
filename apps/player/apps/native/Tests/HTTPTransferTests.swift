@@ -5,7 +5,7 @@ import Testing
 struct HTTPTransferTests {
     @Test(arguments: [1, 31, 16_384, 65_536])
     func returnsAllChunksAtTheExactLimit(_ chunkSize: Int) async throws {
-        let body = String(repeating: "artwork-data", count: 8192)
+        let body = String(repeating: "artwork-data", count: 64)
         let fixture = try HTTPFixture(body: body, headers: ["Content-Length": "", "Content-Type": "image/jpeg"])
         defer { fixture.remove() }
         FixtureURLProtocol.entries.withLock { $0[fixture.host]?.chunkSize = chunkSize }

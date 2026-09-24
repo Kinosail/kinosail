@@ -119,8 +119,7 @@ actor ArtworkLoader {
         guard refreshing[key] == nil else { return }
         let attempt = generation
         refreshing[key] = attempt
-        refreshTasks[key] = Task { [weak self] in
-            guard let self else { return }
+        refreshTasks[key] = Task {
             await self.refresh(key: key, url: url, client: client, dimension: dimension, attempt: attempt)
         }
     }

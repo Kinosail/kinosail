@@ -16,7 +16,7 @@ You need:
 
 - a 64-bit Intel/AMD or Arm Linux host, or Docker/Podman on macOS for local use;
 - Podman Compose or Docker Compose;
-- `cosign` to verify the signed container image;
+- Cosign 3.1.3 or newer to verify the signed container image;
 - `curl` when you later enable LAN mode;
 - an absolute path to an existing folder that contains media you control; and
 - a free TCP port, such as `38127`.

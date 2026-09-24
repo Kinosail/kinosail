@@ -148,6 +148,8 @@ Media cards combine artwork, title, optional metadata and true Resume or Watched
 
 Settings, setup, preparation and download screens retain native fields, lists and forms. Labels, disabled states, destructive roles and operation feedback stay attached to their controls. Fixed web input sizes and focus rings are not native tokens.
 
+Playback preferences group Boost Dialog and Normalize Loudness as native toggles with plain-language descriptions. The section states that processing uses a compatible Server stream and that existing downloads keep their encoded audio; the interface must not imply the effects work offline or without transcoding permission.
+
 ### Hero and watch position
 
 Home selects the first Continue watching item, otherwise the first Recently added item. Details and episode browsing reuse the in-flow hero. `WatchPosition` renders a progress bar only when a valid duration produces a fraction; unavailable duration or a failed request retains the known saved position. Images stay still without an autoplay carousel.

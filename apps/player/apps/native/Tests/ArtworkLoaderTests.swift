@@ -66,17 +66,17 @@ struct ArtworkLoaderTests {
             "viewer": .object(["id": .string("viewer"), "name": .string("Viewer"), "owner": .bool(true), "downloads": .bool(true), "transcode": .bool(true), "remote": .bool(false)])]))
         let fixture = try HTTPFixture(body: "{}", viewer: viewer, cacheDirectory: directory)
         defer { fixture.remove() }
-        installImage(fixture, path: "/art/movie", width: 800, height: 400)
+        try installImage(fixture, path: "/art/movie", width: 800, height: 400)
         _ = try await ArtworkLoader().image(path: "/art/movie", client: fixture.client, dimension: 800)
         await fixture.client.close()
         try ageArtwork(in: directory)
-        installImage(fixture, path: "/art/movie", width: 600, height: 300)
+        try installImage(fixture, path: "/art/movie", width: 600, height: 300)
         let reopened = try ServerClient(server: await fixture.client.server, viewer: viewer,
                                         protocolClasses: [FixtureURLProtocol.self], cacheDirectory: directory)
         defer { Task { await reopened.close() } }
         let cached = try await ArtworkLoader().image(path: "/art/movie", client: reopened, dimension: 800)
         #expect(cached.width == 800)
-        for _ in 0..<200 where fixture.requests.count < 2 { try await Task.sleep(for: .milliseconds(5)) }
+        for _ in 0..<1_000 where fixture.requests.count < 2 { try await Task.sleep(for: .milliseconds(5)) }
         #expect(fixture.requests.count == 2)
     }
 

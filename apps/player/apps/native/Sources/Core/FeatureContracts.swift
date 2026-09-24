@@ -111,6 +111,8 @@ struct PlaybackPreferences: Sendable, Equatable {
     var nightMode = false
     var dialogueBoost = false
     var volumeBoost: Double = 1
+
+    var audioEnhancementsEnabled: Bool { nightMode || dialogueBoost }
 }
 
 struct ItemPlaybackPreferences: Sendable {

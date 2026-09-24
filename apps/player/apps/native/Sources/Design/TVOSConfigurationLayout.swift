@@ -79,9 +79,10 @@ private struct TVOSConfigurationBrand: View {
                 )
                 VStack(alignment: .leading, spacing: 24) {
                     VStack(alignment: .leading, spacing: 8) {
-                        Image(systemName: "sailboat.fill")
-                            .font(.system(size: 44, weight: .semibold))
-                            .foregroundStyle(KinoTheme.signal)
+                        Image("KinosailMark")
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 44, height: 56)
                         Text("KINOSAIL")
                             .font(.system(size: 26, weight: .bold, design: .rounded))
                             .tracking(2.5)
