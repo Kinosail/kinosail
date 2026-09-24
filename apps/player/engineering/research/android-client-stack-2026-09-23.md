@@ -1,6 +1,14 @@
 # Android client stack and launch plan
 
-**Research snapshot:** September 23, 2026. **Status:** proposed; no Android client is implemented by this note. Recheck library versions and Play requirements when the project is created.
+**Research snapshot:** September 23, 2026. **Implementation update:** September 24, 2026. The choices below are the original research snapshot; the current app and remaining gates are recorded here.
+
+## Implementation update
+
+The first Android app is in `apps/player/apps/android`. One application ID builds an App Bundle with phone/tablet and Android TV/Google TV launchers. It uses Kotlin, Compose, Compose for TV, Media3, a shared bounded Server client, and the native Electric palette. The implementation deliberately has not added the proposed Room, Coil, or Navigation 3 dependencies without a demonstrated need.
+
+Viewer-scoped Quick Connect, library/search, For you, My List, shows/seasons, direct/HLS playback, watch progress, track and WebVTT selection, speed, background audio, phone Picture-in-Picture, original photos, PDFs, and comic archives have landed in separate verified chunks. A populated API 36 phone, tablet, and TV emulator fixture exercised touch layouts, TV D-pad focus, media, and readers. The Android JVM suite has 72 passing tests; debug assembly, Android lint, and release App Bundle build pass. These are source and emulator results, not live Server or physical-device results.
+
+Before a public release, verify pairing and populated playback against a live Server; test codecs, remote navigation, TalkBack, large text, and performance on physical phone and TV hardware; add the remaining EPUB and offline download behavior; then complete Play signing, listing assets, TV opt-in, and store review. Recheck Play target API and device compatibility rules at release time.
 
 ## Decision for the first build
 
