@@ -10,6 +10,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.media3.common.AudioAttributes
 import androidx.media3.common.C
 import androidx.media3.common.MediaItem
+import androidx.media3.common.MediaMetadata
 import androidx.media3.common.MimeTypes
 import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
@@ -36,6 +37,7 @@ class PlaybackModel(application: Application) : AndroidViewModel(application) {
     private val sessions = SessionStore(application)
     private var generation = 0
     private var source: PlaybackSource? = null
+    private var activeTitle = ""
     private var server: ServerAddress? = null
     private var policy: MediaUriPolicy? = null
     private val syncLock = Mutex()
@@ -76,6 +78,8 @@ class PlaybackModel(application: Application) : AndroidViewModel(application) {
         private set
     var preferenceNotice by mutableStateOf<String?>(null)
         private set
+    internal var onPlayerChanged: ((ExoPlayer?) -> Unit)? = null
+    internal val activeItemId get() = source?.itemId
 
     fun start(item: CatalogItem, viewer: Viewer) {
         stop()
@@ -118,6 +122,7 @@ class PlaybackModel(application: Application) : AndroidViewModel(application) {
                 server = saved.server
                 policy = allowed
                 source = plan
+                activeTitle = item.title
                 preferences = loadedPreferences
                 playbackSpeed = loadedPreferences?.rate?.toFloat() ?: 1f
                 preferenceNotice = if (loadedPreferences == null)
@@ -172,6 +177,8 @@ class PlaybackModel(application: Application) : AndroidViewModel(application) {
                     }
                 })
                 player = engine
+                try { onPlayerChanged?.invoke(engine) }
+                catch (error: Exception) { player = null; engine.release(); throw error }
                 val path = plan.direct ?: requireNotNull(plan.compatible)
                 val resume = pending?.progress?.takeIf { !it.watched }?.seconds
                     ?: current.seconds.takeIf { !current.watched }
@@ -207,6 +214,8 @@ class PlaybackModel(application: Application) : AndroidViewModel(application) {
         }
         trackChoices.prepare(engine, source?.subtitles?.any(PlaybackSubtitle::isDefault) == true)
         engine.setMediaItem(MediaItem.Builder().setUri(URL(target.url, path).toString()).setMimeType(type)
+            .setMediaId(requireNotNull(source).itemId)
+            .setMediaMetadata(MediaMetadata.Builder().setTitle(activeTitle).build())
             .setSubtitleConfigurations(tracks).build())
         engine.prepare()
         if (at > 0) engine.seekTo(at)
@@ -368,9 +377,11 @@ class PlaybackModel(application: Application) : AndroidViewModel(application) {
         generation++
         progressJob?.cancel()
         progressJob = null
+        runCatching { onPlayerChanged?.invoke(null) }
         player?.release()
         player = null
         source = null
+        activeTitle = ""
         server = null
         policy = null
         journal = null
