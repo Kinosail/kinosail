@@ -208,8 +208,28 @@ def build_snapshot() -> dict:
 def main() -> None:
     template = TEMPLATE.read_text(encoding="utf-8")
     data = json.dumps(build_snapshot(), separators=(",", ":"))
+    social = ""
+    if APP == "player":
+        url = "https://kinosail.com/architecture-explorer/"
+        image = "https://kinosail.com/assets/images/kinosail-docs-share.png"
+        description = "Explore Kinosail Player package dependencies, files, source symbols, and guided architecture journeys."
+        social = f"""
+  <meta name="description" content="{description}">
+  <link rel="canonical" href="{url}">
+  <meta property="og:title" content="Kinosail Code Atlas · Kinosail Player Docs">
+  <meta property="og:description" content="{description}">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="{url}">
+  <meta property="og:image" content="{image}">
+  <meta property="og:image:type" content="image/png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Kinosail Player Docs sail mark and the words Install. Use. Connect.">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="{image}">"""
     output = (
         template.replace("__KINOSAIL_ARCHITECTURE_STYLES__", TEMPLATE_STYLES.read_text(encoding="utf-8").rstrip("\n"))
+        .replace("__KINOSAIL_ARCHITECTURE_SOCIAL__", social)
         .replace("__KINOSAIL_ARCHITECTURE_DATA__", data)
         .replace("__KINOSAIL_ARCHITECTURE_SCRIPT__", TEMPLATE_SCRIPT.read_text(encoding="utf-8").rstrip("\n"))
     )
