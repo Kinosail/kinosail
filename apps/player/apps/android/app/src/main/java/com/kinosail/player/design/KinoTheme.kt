@@ -31,6 +31,8 @@ fun KinoTheme(content: @Composable () -> Unit) {
         darkColorScheme(
             primary = KinoColor.signal,
             onPrimary = KinoColor.signalInk,
+            secondaryContainer = KinoColor.raised,
+            onSecondaryContainer = KinoColor.text,
             background = KinoColor.background,
             onBackground = KinoColor.text,
             surface = KinoColor.surface,
@@ -38,11 +40,15 @@ fun KinoTheme(content: @Composable () -> Unit) {
             onSurface = KinoColor.text,
             surfaceVariant = KinoColor.raised,
             onSurfaceVariant = KinoColor.muted,
+            outline = KinoColor.muted,
+            outlineVariant = KinoColor.raised,
         )
     } else {
         lightColorScheme(
             primary = KinoColor.lightSignal,
             onPrimary = Color.White,
+            secondaryContainer = KinoColor.lightRaised,
+            onSecondaryContainer = KinoColor.lightText,
             background = KinoColor.lightBackground,
             onBackground = KinoColor.lightText,
             surface = KinoColor.lightSurface,
@@ -50,6 +56,8 @@ fun KinoTheme(content: @Composable () -> Unit) {
             onSurface = KinoColor.lightText,
             surfaceVariant = KinoColor.lightRaised,
             onSurfaceVariant = KinoColor.lightMuted,
+            outline = KinoColor.lightMuted,
+            outlineVariant = KinoColor.lightRaised,
         )
     }
     MaterialTheme(colorScheme = colors, content = content)
