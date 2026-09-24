@@ -1,17 +1,17 @@
 ---
 layout: marketing
 title: Why Kinosail exists
-description: A personal media project with two goals—build a viable source-available alternative and learn through AI engineering.
+description: "Why Kinosail Player exists: a free, source-available media Server built for personal libraries and hands-on AI engineering."
 ---
 <div class="essay wrap">
 <p class="section-label">The story behind Kinosail</p>
 <h1>More control.<br>More to learn.</h1>
 <p class="lede">A note from the creator.</p>
 <div class="essay-copy">
-<p>I started Kinosail Player after changes to the media software I was using pushed me to try building something of my own.</p>
+<p>I started Kinosail Player because I wanted more control over my personal media library and a chance to build something of my own.</p>
 <p>I’ve been into technology pretty much my whole life and have worked in a range of roles, including development. Kinosail gives me a chance to put that experience to work while learning something new.</p>
 <h2>Two goals, one real project.</h2>
-<ul><li>Build a viable, source-available alternative for managing and enjoying your own media.</li><li>Improve my AI engineering skills by building something I actually use.</li></ul>
+<ul><li>Build a useful, source-available media Server for managing and enjoying your own library.</li><li>Improve my AI engineering skills by building something I actually use.</li></ul>
 <h2>Yes, it’s AI-engineered.</h2>
 <p>AI is a central part of how Kinosail is developed. I direct the work and make the decisions. This is an ongoing engineering project, with all the testing, feedback, and iteration that involves.</p>
 <p>The aim is a useful product: a Server that’s straightforward to run, a web interface for everyday use, and control over the media you already have. Player is built with Go and HTMX, keeping most application logic in one place.</p>
