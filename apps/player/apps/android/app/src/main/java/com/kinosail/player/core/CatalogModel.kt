@@ -77,7 +77,7 @@ class CatalogModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun changeView(view: String) {
-        require(view in setOf("all", "shows", "list")) { "Invalid library view." }
+        require(LIBRARY_VIEWS.any { it.first == view }) { "Invalid library view." }
         if (view == activeView || session == null) return
         activeView = view
         activeQuery = ""

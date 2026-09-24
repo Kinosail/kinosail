@@ -15,6 +15,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.itemsIndexed
@@ -56,6 +58,7 @@ import com.kinosail.player.core.CatalogItem
 import com.kinosail.player.core.CatalogModel
 import com.kinosail.player.core.ConnectionModel
 import com.kinosail.player.core.HomeScreen
+import com.kinosail.player.core.LIBRARY_VIEWS
 import com.kinosail.player.core.PlaybackScreen
 import com.kinosail.player.core.ShowScreen
 import com.kinosail.player.core.Viewer
@@ -130,7 +133,7 @@ internal fun TvLibrary(connection: ConnectionModel, viewer: Viewer) {
     Box(Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)) {
         SailBackdrop()
         Column(Modifier.fillMaxSize().safeDrawingPadding().padding(56.dp),
-            verticalArrangement = Arrangement.spacedBy(20.dp)) {
+            verticalArrangement = Arrangement.spacedBy(16.dp)) {
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically) {
                 Text("Kinosail", style = MaterialTheme.typography.headlineLarge,
@@ -143,23 +146,20 @@ internal fun TvLibrary(connection: ConnectionModel, viewer: Viewer) {
                 Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.Bottom) {
                     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                        Text(when (state.view) { "shows" -> "TV Shows"; "list" -> "My List"; else -> "Library" },
+                        Text(if (state.view == "all") "Library" else LIBRARY_VIEWS.first { it.first == state.view }.second,
                             style = MaterialTheme.typography.displayMedium,
                             color = MaterialTheme.colorScheme.onBackground)
                         Text("${viewer.name} · ${viewer.server}", style = MaterialTheme.typography.titleLarge,
                             color = MaterialTheme.colorScheme.onSurfaceVariant)
                     }
-                    Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-                        Button(onClick = { home = true }) { Text("For you") }
-                        Button(onClick = { catalog.changeView("all") }) {
-                            Text(if (state.view == "all") "All media · Selected" else "All media")
-                        }
-                        Button(onClick = { catalog.changeView("shows") },
-                            modifier = Modifier.focusRequester(showsFocus)) {
-                            Text(if (state.view == "shows") "TV Shows · Selected" else "TV Shows")
-                        }
-                        Button(onClick = { catalog.changeView("list") }) {
-                            Text(if (state.view == "list") "My List · Selected" else "My List")
+                    Button(onClick = { home = true }) { Text("For you") }
+                }
+                LazyRow(horizontalArrangement = Arrangement.spacedBy(16.dp),
+                    modifier = Modifier.fillMaxWidth()) {
+                    items(LIBRARY_VIEWS, key = { it.first }) { (view, label) ->
+                        Button(onClick = { catalog.changeView(view) },
+                            modifier = if (view == "shows") Modifier.focusRequester(showsFocus) else Modifier) {
+                            Text(if (state.view == view) "$label · Selected" else label)
                         }
                     }
                 }
@@ -257,7 +257,7 @@ private fun TvDetail(item: CatalogItem, catalog: CatalogModel, firstModifier: Mo
 
 @Composable
 private fun TvPoster(item: CatalogItem, catalog: CatalogModel, modifier: Modifier = Modifier,
-                     ratio: Float = 16f / 10f, dimension: Int = 400) {
+                     ratio: Float = 16f / 9f, dimension: Int = 400) {
     val image = produceState<android.graphics.Bitmap?>(null, item.artwork, catalog, dimension) {
         value = catalog.artwork(item.artwork, dimension)
     }.value
