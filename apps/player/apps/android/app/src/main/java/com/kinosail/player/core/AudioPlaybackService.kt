@@ -59,6 +59,7 @@ internal class AudioPlaybackService : MediaSessionService() {
         private var running: AudioPlaybackService? = null
 
         fun intent(context: Context) = Intent(context, AudioPlaybackService::class.java)
+        fun nowPlayingFor(viewer: Viewer): CatalogItem? = running?.playback?.nowPlayingFor(viewer)
         fun stopIfRunning(context: Context) {
             running?.playback?.stop()
             context.stopService(intent(context))
