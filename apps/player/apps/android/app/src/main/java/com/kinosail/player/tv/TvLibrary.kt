@@ -253,6 +253,8 @@ private fun TvDetail(item: CatalogItem, catalog: CatalogModel, firstModifier: Mo
         if (item.kind == "photo" && item.stream.isEmpty()) Text(
             "Photo viewing is unavailable for this Viewer.",
             color = MaterialTheme.colorScheme.onSurfaceVariant)
+        if (item.kind == "book") Text("Read this book on an Android phone or tablet.",
+            color = MaterialTheme.colorScheme.onSurfaceVariant)
         catalog.state.listed?.let { listed ->
             Button(onClick = { catalog.setListed(!listed) }, enabled = !catalog.state.listBusy) {
                 Text(if (listed) "Remove from My List" else "Add to My List")
