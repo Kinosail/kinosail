@@ -38,6 +38,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.media3.common.Player
 import androidx.media3.ui.PlayerView
 import androidx.compose.ui.viewinterop.AndroidView
 import com.kinosail.player.design.KinoColor
@@ -76,7 +77,8 @@ internal fun PlaybackScreen(item: CatalogItem, viewer: Viewer, tv: Boolean, clos
     } } }
     BackHandler { if (speedPicker) speedPicker = false else if (trackPicker) closeTracks() else close() }
     LaunchedEffect(item.id, viewer.id, playback) {
-        if (playback.activeItemId != item.id) playback.start(item, viewer)
+        if (playback.activeItemId != item.id || playback.player?.playbackState == Player.STATE_ENDED)
+            playback.start(item, viewer)
     }
     LaunchedEffect(speedPicker, tv) { if (speedPicker && tv) speedFocus.requestFocus() }
     LaunchedEffect(playback.retryable, tv) { if (playback.retryable && tv) retryFocus.requestFocus() }
