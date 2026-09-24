@@ -18,6 +18,7 @@ data class PlaybackSource(
     val compatibleStart: Double,
     val progressToken: String,
     val compatibleTimeline: MediaTimeline,
+    val nextItemId: String?,
 ) {
     fun sourceTime(position: Double, compatible: Boolean): Double =
         if (compatible) compatibleTimeline.sourceTime(position) else position
@@ -64,11 +65,13 @@ class PlaybackApi(
         val type = value.text("directType", 128)
         require(directAllowed == type.isNotEmpty()) { INVALID_RESPONSE }
         val progressToken = value.text("progressToken", 8192)
+        val next = value.text("next", 128)
+        require(next.isEmpty() || next.matches(ID) && next != itemId) { INVALID_RESPONSE }
         val safeStart = if (start < duration) start else 0.0
         val compatibleTimeline = timeline ?: MediaTimeline(duration, duration)
         return PlaybackSource(itemId, directPath.ifEmpty { null }, compatiblePath.ifEmpty { null },
             type, compatibleTimeline.sourceDuration, safeStart, compatibleTimeline.presentationTime(safeStart),
-            progressToken, compatibleTimeline)
+            progressToken, compatibleTimeline, next.ifEmpty { null })
     }
 
     companion object {

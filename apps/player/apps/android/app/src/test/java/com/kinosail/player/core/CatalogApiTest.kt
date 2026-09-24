@@ -104,6 +104,31 @@ class CatalogApiTest {
         }
     }
 
+    @Test fun loadsTheValidatedNextItemForTheSameViewer() {
+        val body = """{"item":$item,"listed":true,"profileId":"alex"}"""
+        val response = CatalogResponse(200, body)
+        val loaded = CatalogApi(server) { url -> response.also { it.requestedURL = url } }
+            .item("film-1", "token", "alex")
+        assertEquals("film-1", loaded.id)
+        assertEquals("/api/v1/items/film-1", response.requestedURL?.path)
+        assertEquals("alex", response.getRequestProperty("X-Kinosail-Viewer-Profile"))
+        assertEquals("film-1", CatalogApi(server) { CatalogResponse(200,
+            body.replace("\"listed\":true", "\"listed\":false")) }.item("film-1", "token", "alex").id)
+        var opens = 0
+        assertThrows(IllegalArgumentException::class.java) {
+            CatalogApi(server) { opens++; response }.item("../other", "token", "alex")
+        }
+        assertEquals(0, opens)
+        listOf(body.replace("\"film-1\"", "\"film-2\""),
+            body.replace("\"listed\":true", "\"listed\":\"true\""),
+            body.replace(",\"profileId\":\"alex\"", ""),
+            body.replace("\"alex\"", "\"other\""),
+            body.replace("\"item\":", "\"extra\":1,\"item\":"))
+            .forEach { invalid -> assertThrows(Exception::class.java) {
+                CatalogApi(server) { CatalogResponse(200, invalid) }.item("film-1", "token", "alex")
+            } }
+    }
+
     @Test fun rejectsMalformedUnknownAndConflictingPages() {
         val invalid = listOf(
             "{}", page().replace("\"limit\":24", "\"limit\":25"),

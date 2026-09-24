@@ -111,7 +111,8 @@ internal fun TvLibrary(connection: ConnectionModel, viewer: Viewer) {
         }
     }
     if (playingItem != null) {
-        PlaybackScreen(requireNotNull(playingItem), viewer, tv = true) { playingItem = null }
+        PlaybackScreen(requireNotNull(playingItem), viewer, tv = true, close = { playingItem = null },
+            onNext = { playingItem = it })
         return
     }
     if (state.selected?.showId?.isNotEmpty() == true) {
