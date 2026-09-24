@@ -33,7 +33,11 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.produceState
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.asImageBitmap
@@ -47,6 +51,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.kinosail.player.core.CatalogItem
 import com.kinosail.player.core.CatalogModel
 import com.kinosail.player.core.ConnectionModel
+import com.kinosail.player.core.PlaybackScreen
 import com.kinosail.player.core.Viewer
 import com.kinosail.player.design.SailBackdrop
 
@@ -54,6 +59,7 @@ import com.kinosail.player.design.SailBackdrop
 internal fun MobileLibrary(connection: ConnectionModel, viewer: Viewer) {
     val catalog: CatalogModel = viewModel()
     val state = catalog.state
+    var playing by remember { mutableStateOf(false) }
     val keyboard = LocalSoftwareKeyboardController.current
     val submitSearch = {
         catalog.search()
@@ -62,7 +68,11 @@ internal fun MobileLibrary(connection: ConnectionModel, viewer: Viewer) {
     }
     LaunchedEffect(viewer.serverId, viewer.id) { catalog.open(viewer) }
     DisposableEffect(Unit) { onDispose { catalog.reset() } }
-    BackHandler(state.selected != null) { catalog.closeDetail() }
+    BackHandler(state.selected != null && !playing) { catalog.closeDetail() }
+    if (playing && state.selected != null) {
+        PlaybackScreen(state.selected, viewer, tv = false) { playing = false }
+        return
+    }
     Box(Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)) {
         if (isSystemInDarkTheme()) SailBackdrop()
         Column(Modifier.fillMaxSize().safeDrawingPadding().padding(20.dp),
@@ -74,7 +84,7 @@ internal fun MobileLibrary(connection: ConnectionModel, viewer: Viewer) {
                 TextButton(onClick = connection::signOut, enabled = !connection.busy) { Text("Disconnect") }
             }
             if (state.selected != null) {
-                MobileDetail(state.selected, catalog)
+                MobileDetail(state.selected, catalog) { playing = true }
             } else {
                 Text("Library", style = MaterialTheme.typography.headlineLarge,
                     color = MaterialTheme.colorScheme.onBackground)
@@ -119,10 +129,13 @@ internal fun MobileLibrary(connection: ConnectionModel, viewer: Viewer) {
 }
 
 @Composable
-private fun MobileDetail(item: CatalogItem, catalog: CatalogModel) {
+private fun MobileDetail(item: CatalogItem, catalog: CatalogModel, play: () -> Unit) {
     Column(Modifier.fillMaxWidth().verticalScroll(rememberScrollState()),
         verticalArrangement = Arrangement.spacedBy(16.dp)) {
         TextButton(onClick = catalog::closeDetail) { Text("Back to Library") }
+        if (item.kind in setOf("video", "music", "audiobook")) {
+            Button(onClick = play, modifier = Modifier.fillMaxWidth()) { Text("Play") }
+        }
         CatalogPoster(item, catalog, Modifier.width(176.dp), dimension = 800)
         Text(item.title, style = MaterialTheme.typography.headlineLarge,
             color = MaterialTheme.colorScheme.onBackground)

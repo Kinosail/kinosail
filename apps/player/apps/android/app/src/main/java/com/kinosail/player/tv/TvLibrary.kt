@@ -31,6 +31,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.produceState
 import androidx.compose.runtime.withFrameNanos
@@ -53,6 +54,7 @@ import androidx.tv.material3.Text
 import com.kinosail.player.core.CatalogItem
 import com.kinosail.player.core.CatalogModel
 import com.kinosail.player.core.ConnectionModel
+import com.kinosail.player.core.PlaybackScreen
 import com.kinosail.player.core.Viewer
 import com.kinosail.player.design.KinoColor
 import com.kinosail.player.design.SailBackdrop
@@ -61,6 +63,7 @@ import com.kinosail.player.design.SailBackdrop
 internal fun TvLibrary(connection: ConnectionModel, viewer: Viewer) {
     val catalog: CatalogModel = viewModel()
     val state = catalog.state
+    var playing by remember { mutableStateOf(false) }
     val keyboard = LocalSoftwareKeyboardController.current
     var nextFocus by remember { mutableIntStateOf(-1) }
     val submitSearch = {
@@ -76,8 +79,9 @@ internal fun TvLibrary(connection: ConnectionModel, viewer: Viewer) {
     val gridState = rememberLazyGridState()
     LaunchedEffect(viewer.serverId, viewer.id) { catalog.open(viewer) }
     DisposableEffect(Unit) { onDispose { catalog.reset() } }
-    BackHandler(state.selected != null) { catalog.closeDetail() }
-    LaunchedEffect(state.items.isNotEmpty(), state.selected) {
+    BackHandler(state.selected != null && !playing) { catalog.closeDetail() }
+    LaunchedEffect(state.items.isNotEmpty(), state.selected, playing) {
+        if (playing) return@LaunchedEffect
         if (state.selected != null) detailFocus.requestFocus()
         else if (state.items.isNotEmpty()) cardFocus.requestFocus()
         else searchFocus.requestFocus()
@@ -88,6 +92,10 @@ internal fun TvLibrary(connection: ConnectionModel, viewer: Viewer) {
             withFrameNanos { }
             pageFocus.requestFocus()
         }
+    }
+    if (playing && state.selected != null) {
+        PlaybackScreen(state.selected, viewer, tv = true) { playing = false }
+        return
     }
     Box(Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)) {
         SailBackdrop()
@@ -100,7 +108,7 @@ internal fun TvLibrary(connection: ConnectionModel, viewer: Viewer) {
                 Button(onClick = connection::signOut, enabled = !connection.busy) { Text("Disconnect") }
             }
             if (state.selected != null) {
-                TvDetail(state.selected, catalog, Modifier.focusRequester(detailFocus))
+                TvDetail(state.selected, catalog, Modifier.focusRequester(detailFocus)) { playing = true }
             } else {
                 Text("Library", style = MaterialTheme.typography.displayMedium,
                     color = MaterialTheme.colorScheme.onBackground)
@@ -159,10 +167,13 @@ internal fun TvLibrary(connection: ConnectionModel, viewer: Viewer) {
 }
 
 @Composable
-private fun TvDetail(item: CatalogItem, catalog: CatalogModel, backModifier: Modifier) {
+private fun TvDetail(item: CatalogItem, catalog: CatalogModel, firstModifier: Modifier, play: () -> Unit) {
     Column(Modifier.fillMaxWidth().verticalScroll(rememberScrollState()),
         verticalArrangement = Arrangement.spacedBy(24.dp)) {
-        Button(onClick = catalog::closeDetail, modifier = backModifier) { Text("Back to Library") }
+        if (item.kind in setOf("video", "music", "audiobook")) {
+            Button(onClick = play, modifier = firstModifier) { Text("Play") }
+            Button(onClick = catalog::closeDetail) { Text("Back to Library") }
+        } else Button(onClick = catalog::closeDetail, modifier = firstModifier) { Text("Back to Library") }
         Row(horizontalArrangement = Arrangement.spacedBy(32.dp)) {
             TvPoster(item, catalog, Modifier.width(260.dp), ratio = 2f / 3f, dimension = 800)
             Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(16.dp)) {
