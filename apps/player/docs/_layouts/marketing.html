@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#0b0d0b">
-<title>{{ page.title }} · Kinosail</title>
+<title>{{ page.title }}{% unless page.url == '/' %} · Kinosail{% endunless %}</title>
 <meta name="description" content="{{ page.description | escape }}">
 {% if page.url == '/' %}<meta name="google-site-verification" content="CyK7nEwl7e61vmJVjO4nsO4JpjaeKGUMffYcSNcUhFg">{% endif %}
 <meta property="og:title" content="{% if page.url == '/' %}Kinosail Player · Your media, on your own server{% else %}{{ page.title | escape }} · Kinosail{% endif %}">

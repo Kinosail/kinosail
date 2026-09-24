@@ -1,6 +1,6 @@
 ---
 layout: marketing
-title: Free self-hosted media server and web player
+title: "Kinosail Player: Free self-hosted media server and web player"
 description: Kinosail Player is a free media server for your own hardware. It includes a web player, reads your existing media folders, and installs with Docker.
 ---
 <section class="hero wrap">
