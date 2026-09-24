@@ -1,5 +1,7 @@
 package com.kinosail.player.mobile
 
+import android.content.Context
+import android.content.ContextWrapper
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.Image
@@ -45,6 +47,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.text.style.TextOverflow
@@ -59,6 +62,7 @@ import com.kinosail.player.core.HomeScreen
 import com.kinosail.player.core.LIBRARY_VIEWS
 import com.kinosail.player.core.PlaybackScreen
 import com.kinosail.player.core.PhotoScreen
+import com.kinosail.player.core.VideoPipHost
 import com.kinosail.player.core.ShowScreen
 import com.kinosail.player.core.Viewer
 import com.kinosail.player.design.SailBackdrop
@@ -68,6 +72,8 @@ internal fun MobileLibrary(connection: ConnectionModel, viewer: Viewer) {
     val catalog: CatalogModel = viewModel()
     val state = catalog.state
     val nowPlaying = AudioPlaybackService.nowPlayingFor(viewer)
+    val context = LocalContext.current
+    val pipHost = remember(context) { findVideoPipHost(context) }
     var home by remember { mutableStateOf(true) }
     var playingItem by remember { mutableStateOf<CatalogItem?>(null) }
     var photoItem by remember { mutableStateOf<CatalogItem?>(null) }
@@ -83,7 +89,7 @@ internal fun MobileLibrary(connection: ConnectionModel, viewer: Viewer) {
     BackHandler(!home && state.selected == null && playingItem == null && photoItem == null) { home = true }
     if (playingItem != null) {
         PlaybackScreen(requireNotNull(playingItem), viewer, tv = false, close = { playingItem = null },
-            onNext = { playingItem = it })
+            onNext = { playingItem = it }, pipHost = pipHost)
         return
     }
     if (photoItem != null) {
@@ -169,6 +175,15 @@ internal fun MobileLibrary(connection: ConnectionModel, viewer: Viewer) {
             }
         }
     }
+}
+
+private fun findVideoPipHost(context: Context): VideoPipHost? {
+    var current: Context = context
+    while (current is ContextWrapper) {
+        if (current is VideoPipHost) return current
+        current = current.baseContext
+    }
+    return current as? VideoPipHost
 }
 
 @Composable

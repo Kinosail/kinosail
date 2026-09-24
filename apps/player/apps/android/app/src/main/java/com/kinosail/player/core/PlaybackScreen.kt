@@ -39,14 +39,16 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.media3.common.Player
+import androidx.media3.session.MediaSession
 import androidx.media3.ui.PlayerView
 import androidx.compose.ui.viewinterop.AndroidView
 import com.kinosail.player.design.KinoColor
 
 @Composable
 internal fun PlaybackScreen(item: CatalogItem, viewer: Viewer, tv: Boolean, close: () -> Unit,
-                            onNext: (CatalogItem) -> Unit) {
+                            onNext: (CatalogItem) -> Unit, pipHost: VideoPipHost? = null) {
     val audio = item.kind == "music" || item.kind == "audiobook"
+    val videoPipHost = if (audio) null else pipHost
     val audioConnection = rememberAudioPlaybackConnection(audio, tv)
     val playback = if (audio) audioConnection.model else viewModel<PlaybackModel>()
     if (playback == null) {
@@ -75,6 +77,7 @@ internal fun PlaybackScreen(item: CatalogItem, viewer: Viewer, tv: Boolean, clos
         useController = true
         controllerShowTimeoutMs = if (tv) 5_000 else 3_000
     } } }
+    val inPip = videoPipHost?.inPictureInPicture == true
     BackHandler { if (speedPicker) speedPicker = false else if (trackPicker) closeTracks() else close() }
     LaunchedEffect(item.id, viewer.id, playback) {
         if (playback.activeItemId != item.id || playback.player?.playbackState == Player.STATE_ENDED)
@@ -84,16 +87,32 @@ internal fun PlaybackScreen(item: CatalogItem, viewer: Viewer, tv: Boolean, clos
     LaunchedEffect(playback.retryable, tv) { if (playback.retryable && tv) retryFocus.requestFocus() }
     LaunchedEffect(trackPicker, tv) { if (trackPicker && tv) trackFocus.requestFocus() }
     DisposableEffect(playback, audio) { onDispose { if (!audio) playback.stop() } }
+    DisposableEffect(player, videoPipHost) {
+        val session = if (player != null && videoPipHost != null)
+            MediaSession.Builder(context, player).build() else null
+        val listener = object : Player.Listener {
+            override fun onIsPlayingChanged(isPlaying: Boolean) {
+                videoPipHost?.setVideoPipReady(isPlaying)
+            }
+        }
+        player?.addListener(listener)
+        videoPipHost?.setVideoPipReady(player?.isPlaying == true)
+        onDispose {
+            player?.removeListener(listener)
+            videoPipHost?.setVideoPipReady(false)
+            session?.release()
+        }
+    }
     Box(Modifier.fillMaxSize().background(Color.Black)) {
         if (playerView != null) AndroidView(
             factory = { playerView.apply { if (tv) post { requestFocus() } } },
-            update = { it.player = player },
+            update = { it.player = player; it.useController = !inPip },
             modifier = Modifier.fillMaxSize().then(if (tv) Modifier.focusable().onKeyEvent {
                 it.nativeKeyEvent.keyCode != KeyEvent.KEYCODE_BACK &&
                     playerView.dispatchKeyEvent(it.nativeKeyEvent)
             } else Modifier),
         )
-        Column(Modifier.fillMaxSize().safeDrawingPadding().padding(if (tv) 40.dp else 16.dp),
+        if (!inPip) Column(Modifier.fillMaxSize().safeDrawingPadding().padding(if (tv) 40.dp else 16.dp),
             verticalArrangement = Arrangement.SpaceBetween) {
             Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
                 Text(item.title, color = Color.White, modifier = Modifier.fillMaxWidth(), maxLines = 1,
