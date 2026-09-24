@@ -12,11 +12,15 @@ class AppPlanTests(unittest.TestCase):
         plan = dict.fromkeys((*FLAGS, "deep"), False)
         plan["dashboard"] = plan["dashboard_browsers"] = True
         self.assertEqual(select("dashboard", json.dumps(plan)),
-                         {"selected": True, "tools": False, "browsers": True, "arm": False, "client": False})
+                         {"selected": True, "tools": False, "browsers": True, "arm": False,
+                          "client": False, "android": False})
         plan["dashboard"] = plan["dashboard_browsers"] = False
         plan["client"] = True
         self.assertEqual(select("player", json.dumps(plan))["client"], True)
         self.assertFalse(select("player", json.dumps(plan))["selected"])
+        plan["client"] = False
+        plan["android"] = True
+        self.assertEqual(select("player", json.dumps(plan))["android"], True)
 
     def test_invalid_input_is_rejected(self):
         plan = dict.fromkeys((*FLAGS, "deep"), False)

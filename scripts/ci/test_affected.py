@@ -18,6 +18,7 @@ class SelectionTests(unittest.TestCase):
                 self.assertEqual([name for name in APPS if plan[name]], [app])
                 self.assertTrue(plan["go"])
                 self.assertFalse(plan["client"])
+                self.assertFalse(plan["android"])
                 self.assertFalse(plan["tooling"])
                 self.assertFalse(plan["packages"])
                 self.assertFalse(plan[f"{app}_browsers"])
@@ -41,10 +42,19 @@ class SelectionTests(unittest.TestCase):
     def test_native_only_does_not_build_server_containers(self):
         plan = affected(["apps/player/apps/native/Sources/App.swift"])
         self.assertTrue(plan["client"])
+        self.assertFalse(plan["android"])
         self.assertFalse(plan["go"])
         self.assertFalse(any(plan[app] for app in APPS))
         self.assertTrue(affected(["apps/player/Makefile"])["client"])
         self.assertFalse(any(affected(["apps/player/apps/native/AGENTS.md"]).values()))
+
+    def test_android_only_selects_android_build_and_codeql(self):
+        plan = affected(["apps/player/apps/android/app/src/main/java/com/kinosail/player/Mobile.kt"])
+        self.assertTrue(plan["android"])
+        self.assertTrue(plan["java-kotlin"])
+        self.assertTrue(plan["supply"])
+        self.assertFalse(plan["client"])
+        self.assertFalse(any(plan[app] for app in APPS))
 
     def test_prose_exemptions_do_not_include_shipped_licenses_or_embedded_markdown(self):
         paths = ["README.md", "AGENTS.md", "engineering/research/ci.md"]

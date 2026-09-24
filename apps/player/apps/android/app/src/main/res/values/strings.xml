@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">Kinosail</string>
+    <string name="mobile_start_title">Your library starts here</string>
+    <string name="mobile_start_body">Connect to your Kinosail Server to browse and play your media.</string>
+    <string name="tv_start_title">Your library, on the big screen</string>
+    <string name="tv_start_body">Connect this TV to your Kinosail Server to start watching.</string>
+</resources>

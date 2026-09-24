@@ -10,8 +10,9 @@ ROOT = Path(__file__).resolve().parents[2]
 
 class SecurityContracts(unittest.TestCase):
     def test_all_supported_sources_have_a_maintained_scan(self):
-        self.assertEqual(set(LANGUAGES), {"go", "javascript-typescript", "python", "actions"})
+        self.assertEqual(set(LANGUAGES), {"go", "java-kotlin", "javascript-typescript", "python", "actions"})
         self.assertTrue(affected(["apps/player/apps/native/Sources/App.swift"])["client"])
+        self.assertTrue(affected(["apps/player/apps/android/app/src/main/java/App.kt"])["java-kotlin"])
         self.assertTrue(affected([".github/workflows/ci.yml"])["actions"])
         workflow = (ROOT / ".github/workflows/ci.yml").read_text()
         self.assertIn("  swift-analysis:\n    if: github.event_name == 'schedule'", workflow)
