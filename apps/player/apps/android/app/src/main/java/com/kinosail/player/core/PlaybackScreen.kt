@@ -120,13 +120,15 @@ internal fun PlaybackScreen(item: CatalogItem, viewer: Viewer, tv: Boolean, clos
                 }
             }
             Column(Modifier.fillMaxWidth().then(if (playback.loading || playback.usingCompatible ||
-                    playback.message != null || playback.progressNotice != null)
+                    playback.message != null || playback.progressNotice != null || playback.preferenceNotice != null)
                     Modifier.background(Color.Black.copy(alpha = 0.82f)).padding(12.dp) else Modifier),
                 verticalArrangement = Arrangement.spacedBy(12.dp)) {
                 if (playback.loading) CircularProgressIndicator(color = KinoColor.signal)
                 if (playback.usingCompatible) Text("Compatible playback", color = Color.White)
                 playback.message?.let { Text(it, color = Color.White) }
                 playback.progressNotice?.let { Text(it, color = Color.White,
+                    modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite }) }
+                playback.preferenceNotice?.let { Text(it, color = Color.White,
                     modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite }) }
                 if (playback.progressConflict) Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                     if (tv) {

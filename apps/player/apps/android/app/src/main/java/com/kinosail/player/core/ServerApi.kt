@@ -88,6 +88,15 @@ class ServerApi(
             viewerId = viewerId, expected = setOf(200), maximum = 2 * 1024 * 1024).second
     }
 
+    internal fun playbackPreferences(itemId: String, token: String, viewerId: String, body: JsonObject? = null):
+        kotlinx.serialization.json.JsonElement {
+        require(itemId.matches(Regex("[A-Za-z0-9_-]{1,128}")) &&
+            viewerId.matches(Regex("[A-Za-z0-9_-]{1,128}"))) { "Invalid playback preference request." }
+        return requestWithStatus("/api/v1/items/$itemId/playback-preferences",
+            if (body == null) "GET" else "PUT", body, token = checkedCredential(token, 512),
+            viewerId = viewerId, expected = setOf(200)).second
+    }
+
     internal fun syncProgress(itemId: String, token: String, viewerId: String, body: JsonObject):
         Pair<Int, kotlinx.serialization.json.JsonElement> {
         require(itemId.matches(Regex("[A-Za-z0-9_-]{1,128}")) &&
