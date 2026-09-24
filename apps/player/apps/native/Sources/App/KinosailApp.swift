@@ -22,8 +22,7 @@ struct KinosailApp: App {
         // properties compile; setting standardAppearance raises at runtime.
         let bar = UINavigationBar.appearance()
         bar.titleTextAttributes = [.foregroundColor: UIColor(KinoTheme.text).resolvedColor(with: UITraitCollection(userInterfaceStyle: .dark))]
-        bar.barTintColor = UIColor(KinoTheme.background).resolvedColor(with: UITraitCollection(userInterfaceStyle: .dark))
-        bar.isTranslucent = false
+        bar.isTranslucent = true
         bar.tintColor = UIColor(KinoTheme.signal).resolvedColor(with: UITraitCollection(userInterfaceStyle: .dark))
         UITabBar.appearance().tintColor = UIColor(KinoTheme.signalInk).resolvedColor(with: UITraitCollection(userInterfaceStyle: .dark))
         #endif
