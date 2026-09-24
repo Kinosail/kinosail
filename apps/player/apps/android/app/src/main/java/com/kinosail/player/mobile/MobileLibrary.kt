@@ -8,6 +8,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -17,6 +18,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -195,33 +197,50 @@ private fun findVideoPipHost(context: Context): VideoPipHost? {
 @Composable
 private fun MobileDetail(item: CatalogItem, catalog: CatalogModel, play: () -> Unit,
                          viewPhoto: () -> Unit, readBook: () -> Unit) {
-    Column(Modifier.fillMaxWidth().verticalScroll(rememberScrollState()),
-        verticalArrangement = Arrangement.spacedBy(16.dp)) {
-        TextButton(onClick = catalog::closeDetail) { Text("Back") }
-        if (item.kind in setOf("video", "music", "audiobook")) {
-            Button(onClick = play, modifier = Modifier.fillMaxWidth()) {
-                Text(if (item.progress.seconds > 0 && !item.progress.watched) "Resume" else "Play")
+    BoxWithConstraints(Modifier.fillMaxWidth()) {
+        val tablet = maxWidth >= 600.dp
+        val action = if (tablet) Modifier.widthIn(max = 360.dp).fillMaxWidth() else Modifier.fillMaxWidth()
+        Column(Modifier.fillMaxWidth().verticalScroll(rememberScrollState()),
+            verticalArrangement = Arrangement.spacedBy(16.dp)) {
+            TextButton(onClick = catalog::closeDetail) { Text("Back") }
+            if (item.kind in setOf("video", "music", "audiobook")) {
+                Button(onClick = play, modifier = action) {
+                    Text(if (item.progress.seconds > 0 && !item.progress.watched) "Resume" else "Play")
+                }
+            }
+            if (item.kind == "photo") Button(onClick = viewPhoto, enabled = item.stream.isNotEmpty(),
+                modifier = action) { Text("View photo") }
+            if (item.kind == "photo" && item.stream.isEmpty()) Text(
+                "Photo viewing is unavailable for this Viewer.",
+                color = MaterialTheme.colorScheme.onSurfaceVariant)
+            if (item.kind == "book") Button(onClick = readBook, modifier = action) {
+                Text("Read book")
+            }
+            catalog.state.listed?.let { listed ->
+                TextButton(onClick = { catalog.setListed(!listed) }, enabled = !catalog.state.listBusy) {
+                    Text(if (listed) "Remove from My List" else "Add to My List")
+                }
+            }
+            if (catalog.state.listBusy && catalog.state.listed == null) CircularProgressIndicator()
+            catalog.state.detailNotice?.let { notice ->
+                Text(notice, color = MaterialTheme.colorScheme.error)
+                if (catalog.state.listed == null) TextButton(onClick = catalog::retryDetail) { Text("Retry") }
+            }
+            if (tablet) Row(horizontalArrangement = Arrangement.spacedBy(28.dp),
+                verticalAlignment = Alignment.Top) {
+                CatalogPoster(item, catalog, Modifier.width(240.dp), dimension = 800)
+                MobileItemDescription(item, Modifier.weight(1f), tablet = true)
+            } else {
+                CatalogPoster(item, catalog, Modifier.width(176.dp), dimension = 800)
+                MobileItemDescription(item)
             }
         }
-        if (item.kind == "photo") Button(onClick = viewPhoto, enabled = item.stream.isNotEmpty(),
-            modifier = Modifier.fillMaxWidth()) { Text("View photo") }
-        if (item.kind == "photo" && item.stream.isEmpty()) Text(
-            "Photo viewing is unavailable for this Viewer.",
-            color = MaterialTheme.colorScheme.onSurfaceVariant)
-        if (item.kind == "book") Button(onClick = readBook, modifier = Modifier.fillMaxWidth()) {
-            Text("Read book")
-        }
-        catalog.state.listed?.let { listed ->
-            TextButton(onClick = { catalog.setListed(!listed) }, enabled = !catalog.state.listBusy) {
-                Text(if (listed) "Remove from My List" else "Add to My List")
-            }
-        }
-        if (catalog.state.listBusy && catalog.state.listed == null) CircularProgressIndicator()
-        catalog.state.detailNotice?.let { notice ->
-            Text(notice, color = MaterialTheme.colorScheme.error)
-            if (catalog.state.listed == null) TextButton(onClick = catalog::retryDetail) { Text("Retry") }
-        }
-        CatalogPoster(item, catalog, Modifier.width(176.dp), dimension = 800)
+    }
+}
+
+@Composable
+private fun MobileItemDescription(item: CatalogItem, modifier: Modifier = Modifier, tablet: Boolean = false) {
+    Column(modifier, verticalArrangement = Arrangement.spacedBy(if (tablet) 12.dp else 16.dp)) {
         Text(item.title, style = MaterialTheme.typography.headlineLarge,
             color = MaterialTheme.colorScheme.onBackground)
         Text(listOf(item.kind.replaceFirstChar(Char::uppercaseChar), item.year).filter(String::isNotEmpty)
