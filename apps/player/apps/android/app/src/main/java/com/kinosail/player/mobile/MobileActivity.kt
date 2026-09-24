@@ -4,10 +4,12 @@ import android.app.PictureInPictureParams
 import android.content.pm.PackageManager
 import android.content.Intent
 import android.content.res.Configuration
+import android.graphics.Rect
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.util.Rational
+import android.view.View
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
@@ -51,6 +53,8 @@ class MobileActivity : ComponentActivity(), VideoPipHost {
     override var inPictureInPicture by mutableStateOf(false)
         private set
     private var videoPipReady = false
+    private var videoPipView: View? = null
+    private val pipLayoutListener = View.OnLayoutChangeListener { _, _, _, _, _, _, _, _, _ -> updatePipParams() }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -65,17 +69,39 @@ class MobileActivity : ComponentActivity(), VideoPipHost {
             return
         }
         videoPipReady = ready
+        updatePipParams()
+    }
+
+    override fun setVideoPipView(view: View?) {
+        if (videoPipView === view) return
+        videoPipView?.removeOnLayoutChangeListener(pipLayoutListener)
+        videoPipView = view
+        view?.addOnLayoutChangeListener(pipLayoutListener)
+        updatePipParams()
+    }
+
+    private fun updatePipParams() {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O ||
+            !packageManager.hasSystemFeature(PackageManager.FEATURE_PICTURE_IN_PICTURE)) return
+        setPictureInPictureParams(pipParams())
+    }
+
+    @androidx.annotation.RequiresApi(Build.VERSION_CODES.O)
+    private fun pipParams(): PictureInPictureParams {
         val params = PictureInPictureParams.Builder().setAspectRatio(Rational(16, 9))
+        videoPipView?.let { view ->
+            val bounds = Rect()
+            if (view.getGlobalVisibleRect(bounds) && !bounds.isEmpty) params.setSourceRectHint(bounds)
+        }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S)
-            params.setAutoEnterEnabled(ready)
-        setPictureInPictureParams(params.build())
+            params.setAutoEnterEnabled(videoPipReady)
+        return params.build()
     }
 
     override fun onUserLeaveHint() {
         super.onUserLeaveHint()
         if (videoPipReady && Build.VERSION.SDK_INT in Build.VERSION_CODES.O until Build.VERSION_CODES.S)
-            enterPictureInPictureMode(PictureInPictureParams.Builder()
-                .setAspectRatio(Rational(16, 9)).build())
+            enterPictureInPictureMode(pipParams())
     }
 
     override fun onPictureInPictureModeChanged(isInPictureInPictureMode: Boolean, newConfig: Configuration) {
