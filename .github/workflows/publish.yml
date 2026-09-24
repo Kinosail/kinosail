@@ -119,6 +119,7 @@ jobs:
       matrix:
         app: ${{ fromJSON(needs.verified.outputs.apps) }}
     env:
+      APP: ${{ matrix.app }}
       IMAGE: ghcr.io/kinosail/kinosail-${{ matrix.app }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
@@ -147,7 +148,11 @@ jobs:
           done
           [[ ${#sources[@]} -eq 2 ]]
           candidate="$IMAGE:candidate-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT"
-          docker buildx imagetools create --tag "$candidate" "${sources[@]}"
+          annotations=()
+          if [[ "$APP" == player ]]; then
+            annotations+=(--annotation "index:org.opencontainers.image.description=Kinosail Player is a free media server that runs at home and streams your own movies and shows. Official website: https://kinosail.com/")
+          fi
+          docker buildx imagetools create --tag "$candidate" "${annotations[@]}" "${sources[@]}"
           docker buildx imagetools inspect "$candidate" --format '{{json .Manifest}}' > manifest.json
           jq -e '[.manifests[].platform | select(.os == "linux") | .architecture] | sort == ["amd64", "arm64"]' manifest.json
           digest="$(jq -r .digest manifest.json)"
