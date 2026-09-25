@@ -50,11 +50,12 @@ final class WatchRemoteSession: NSObject, WCSessionDelegate {
             }
             let reply = try WatchRemoteReply.parse(response)
             players = reply.players
-            if !players.contains(where: { $0.id == selectedID }) {
-                selectedID = players.first(where: \.active)?.id ?? players.first?.id
-            }
-            message = reply.message ?? (reply.accepted ? nil : "The command could not be sent.")
+            selectedID = players.selectedID(after: selectedID)
+            let unavailable = selectedID != nil && selected == nil
+            message = reply.message ?? (unavailable ? "Selected player unavailable. Choose another player."
+                                       : reply.accepted ? nil : "The command could not be sent.")
         } catch {
+            players = []
             message = "Connect the paired iPhone to control playback."
         }
     }
