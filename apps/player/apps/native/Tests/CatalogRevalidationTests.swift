@@ -85,7 +85,8 @@ struct CatalogRevalidationTests {
     @Test func modeWarmupMakesBothHomesAvailableWithoutNetwork() async throws {
         let fixture = try Fixture()
         defer { fixture.remove() }
-        let warmup = Task { await fixture.client.warmCatalog(mode: .watch) }
+        let reported = WarmedHomes()
+        let warmup = Task { await fixture.client.warmCatalog(mode: .watch) { mode, _, refreshed in await reported.record(mode, refreshed: refreshed) } }
         try await fixture.waitForRequests(3)
         fixture.respond(view: "history", version: 1)
         fixture.respond(view: "music", version: 1)
@@ -100,8 +101,23 @@ struct CatalogRevalidationTests {
         await warmup.value
         _ = try await fixture.client.home(mode: .watch, policy: .cached)
         _ = try await fixture.client.home(mode: .listen, policy: .cached)
+        let firstModes = await reported.modes
+        #expect(firstModes == [.listen])
+        let firstFreshness = await reported.freshness
+        #expect(firstFreshness == [true])
+        await fixture.client.warmCatalog(mode: .watch) { mode, _, refreshed in await reported.record(mode, refreshed: refreshed) }
+        let repeatedModes = await reported.modes
+        let repeatedFreshness = await reported.freshness
+        #expect(repeatedModes == [.listen, .listen, .listen])
+        #expect(repeatedFreshness == [true, false, true])
         #expect(fixture.pending.isEmpty)
         await fixture.client.close()
+    }
+
+    private actor WarmedHomes {
+        var modes: [PlayerMode] = []
+        var freshness: [Bool] = []
+        func record(_ mode: PlayerMode, refreshed: Bool) { modes.append(mode); freshness.append(refreshed) }
     }
 
     @Test func modeWarmupAlsoCachesCustomLandingTab() async throws {

@@ -1,5 +1,11 @@
 import SwiftUI
 
+private struct LibrarySnapshot {
+    let items: [MediaItem]
+    let page: LibraryPage
+    let revision: UUID?
+}
+
 struct LibraryScreen: View {
     @Environment(AppSession.self) private var session
     @Environment(\.scenePhase) private var scenePhase
@@ -34,8 +40,15 @@ struct LibraryScreen: View {
         self.mode = mode
     }
     private var requestKey: String { "\(selection.rawValue):\(sort.rawValue):\(query)" }
+    private var snapshotKey: String { "library:\(requestKey)" }
+    private var savedSnapshot: LibrarySnapshot? {
+        guard let clientID = session.client?.identity else { return nil }
+        return session.resourceSnapshots.value(for: snapshotKey, clientID: clientID)
+    }
+    private var visibleItems: [MediaItem] { loadedKey == requestKey ? items : savedSnapshot?.items ?? [] }
+    private var visiblePage: LibraryPage? { loadedKey == requestKey ? page : savedSnapshot?.page }
     private var jumpLetters: [LibraryPage.Letter] {
-        guard let page, page.total > page.limit, page.letters.count > 1,
+        guard let page = visiblePage, page.total > page.limit, page.letters.count > 1,
               sort == .title, query.isEmpty, !searchMode else { return [] }
         return page.letters
     }
@@ -56,7 +69,7 @@ struct LibraryScreen: View {
                 HStack(alignment: .firstTextBaseline) {
                     Text(searchMode ? "Search" : selection.title).font(.title2.bold()).accessibilityAddTraits(.isHeader)
                     Spacer()
-                    if let page {
+                    if let page = visiblePage {
                         Text("\(page.total.formatted()) \(page.total == 1 ? "title" : "titles")")
                             .font(.callout).foregroundStyle(KinoTheme.muted)
                     }
@@ -90,8 +103,8 @@ struct LibraryScreen: View {
                     }
                 }
                 #endif
-                if items.isEmpty {
-                    if page == nil && (loading || loadedKey == nil && failure == nil) { LoadingState(layout: selection == .music || selection == .audiobooks ? .squareGrid : .grid) }
+                if visibleItems.isEmpty {
+                    if visiblePage == nil && (loading || loadedKey == nil && failure == nil) { LoadingState(layout: selection == .music || selection == .audiobooks ? .squareGrid : .grid) }
                     else if let failure { RetryState(message: failure) { Task { await load(reset: true) } } }
                     else {
                         let empty = LibraryEmptyState(view: selection, hasQuery: !query.isEmpty)
@@ -99,23 +112,23 @@ struct LibraryScreen: View {
                     }
                 } else {
                     #if os(tvOS)
-                    MediaGrid(landscape: selection == .photos, items: items, onFocus: { item in
+                    MediaGrid(landscape: selection == .photos, items: visibleItems, onFocus: { item in
                         needsFirstCardFocus = false
-                        if failure == nil && LibraryFocusPaging.shouldLoadNextPage(focusedID: item.id, items: items, page: page) {
+                        if failure == nil && LibraryFocusPaging.shouldLoadNextPage(focusedID: item.id, items: visibleItems, page: visiblePage) {
                             Task { await load(reset: false) }
                         }
                     }, onQuickPlay: { quickPlay = $0 },
                     requestFirstCardFocus: !searchMode && needsFirstCardFocus,
                     opensShows: selection == .shows)
                     #else
-                    if let page {
+                    if let page = visiblePage {
                         Text("\(page.total.formatted()) \(page.total == 1 ? "title" : "titles")")
                             .font(.callout).foregroundStyle(KinoTheme.muted)
                     }
-                    MediaGrid(items: items, opensShows: selection == .shows)
+                    MediaGrid(items: visibleItems, opensShows: selection == .shows)
                     #endif
                     if let failure { Text(failure).foregroundStyle(KinoTheme.muted) }
-                    if let page, page.offset + page.items.count < page.total {
+                    if let page = visiblePage, page.offset + page.items.count < page.total {
                         Button(loading ? "Loading more…" : "Load more") { Task { await load(reset: false) } }
                             .buttonStyle(.bordered).buttonBorderShape(.capsule).tint(KinoTheme.secondaryControlTint).foregroundStyle(KinoTheme.secondaryControlInk).disabled(loading)
                     }
@@ -133,7 +146,7 @@ struct LibraryScreen: View {
                     prompt: mode == .watch ? "Search movies and shows" : mode == .listen ? "Search music and audiobooks" : "Search your library")
         #endif
         .sheet(isPresented: $showsLetterJump) {
-            LetterJumpSheet(letters: page?.letters ?? []) { letter in
+            LetterJumpSheet(letters: visiblePage?.letters ?? []) { letter in
                 Task { await load(reset: true, start: letter.offset) }
             }
         }
@@ -148,6 +161,12 @@ struct LibraryScreen: View {
         #endif
         .task(id: "\(requestKey):\(session.contentRevision):\(scenePhase)") {
             guard scenePhase == .active else { return }
+            if loadedKey != requestKey, let saved = savedSnapshot {
+                items = saved.items; page = saved.page; loadedKey = requestKey; loadedRevision = saved.revision
+            }
+            if let clientID = session.client?.identity,
+               session.resourceSnapshots.isFresh(for: snapshotKey, clientID: clientID,
+                                                 as: LibrarySnapshot.self, refreshID: session.contentRevision.uuidString) { return }
             // Preserve an expanded or letter-jump result when returning to it.
             if loadedKey == requestKey, loadedRevision == session.contentRevision, let page, page.offset > 0 { return }
             do { if !query.isEmpty { try await Task.sleep(for: .milliseconds(250)) } }
@@ -196,7 +215,7 @@ struct LibraryScreen: View {
         sortPicker
         #endif
         #if os(iOS)
-        if let page, !page.letters.isEmpty, sort == .title {
+        if let page = visiblePage, !page.letters.isEmpty, sort == .title {
             Button { showsLetterJump = true } label: {
                 Label("A–Z", systemImage: "textformat.abc")
             }
@@ -216,6 +235,7 @@ struct LibraryScreen: View {
 
     private func load(reset: Bool, start: Int = 0, force: Bool = false) async {
         guard let client = session.client, reset || !loading else { return }
+        let clientID = client.identity
         let offset = reset ? start : (page.map { $0.offset + $0.items.count } ?? 0)
         let key = requestKey
         let revision = session.contentRevision
@@ -223,7 +243,9 @@ struct LibraryScreen: View {
             generation = UUID()
             // Keep the focused A–Z rail mounted while its new page loads.
             if loadedKey != key {
-                items = []; page = nil; loadedKey = nil
+                if let saved = savedSnapshot {
+                    items = saved.items; page = saved.page; loadedKey = key; loadedRevision = saved.revision
+                } else { items = []; page = nil; loadedKey = nil; loadedRevision = nil }
             }
         }
         let attempt = generation
@@ -233,45 +255,37 @@ struct LibraryScreen: View {
         do {
             let base = reset ? [] : items
             var policy: CatalogPolicy = force ? .reload : .automatic
-            if let saved = try? await client.library(query: query, view: selection, sort: sort, offset: offset, policy: .cached) {
+            if (!reset || page == nil), let saved = try? await client.library(query: query, view: selection, sort: sort, offset: offset, policy: .cached) {
                 try Task.checkCancellation()
-                guard attempt == generation, requestKey == key else { return }
+                guard attempt == generation, requestKey == key, session.client?.identity == clientID,
+                      session.contentRevision == revision else { return }
                 if let combined = try? Input.unique(base + saved.items) {
                     items = combined
                     page = saved; loadedKey = key
+                    session.resourceSnapshots.store(LibrarySnapshot(items: combined, page: saved, revision: loadedRevision),
+                                                    for: snapshotKey, clientID: clientID)
                 } else { policy = .reload }
             }
             let result = try await client.library(query: query, view: selection, sort: sort, offset: offset, policy: policy)
             try Task.checkCancellation()
-            guard attempt == generation, requestKey == key else { return }
+            guard attempt == generation, requestKey == key, session.client?.identity == clientID,
+                  session.contentRevision == revision else { return }
             let combined = base + result.items
             items = try Input.unique(combined)
             page = result
             loadedKey = key
             loadedRevision = revision
+            session.resourceSnapshots.store(LibrarySnapshot(items: items, page: result, revision: revision),
+                                            for: snapshotKey, clientID: clientID, refreshID: revision.uuidString)
         } catch is CancellationError {}
         catch {
-            if generation == attempt {
-                if (error as? ClientError)?.discardsCachedContent == true { items = []; page = nil }
+            if generation == attempt, session.client?.identity == clientID, session.contentRevision == revision {
+                if (error as? ClientError)?.discardsCachedContent == true {
+                    items = []; page = nil
+                    session.resourceSnapshots.remove(for: snapshotKey, clientID: clientID, as: LibrarySnapshot.self)
+                    if error as? ClientError == .http(401) || error as? ClientError == .http(403) { session.resourceSnapshots.clear() }
+                }
                 failure = AppSession.message(error)
-            }
-        }
-    }
-}
-
-struct LibraryEmptyState {
-    let title: String
-    let symbol: String
-    let message: String
-
-    init(view: LibraryView, hasQuery: Bool) {
-        if hasQuery {
-            (title, symbol, message) = ("No matches", "magnifyingglass", "Try another search or change the category.")
-        } else {
-            switch view {
-            case .list: (title, symbol, message) = ("My List is empty", "bookmark", "Save a title with My List to keep it here.")
-            case .history: (title, symbol, message) = ("Nothing to continue", "clock.arrow.circlepath", "Play or read something to pick up where you left off.")
-            default: (title, symbol, message) = ("Nothing here yet", "play.rectangle", "Try another part of your library.")
             }
         }
     }
