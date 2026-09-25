@@ -108,6 +108,11 @@ struct MediaItem: Codable, Identifiable, Hashable, Sendable {
         return [artist, year, rating].filter { !$0.isEmpty }.joined(separator: " · ")
     }
 
+    var subtitleWithoutYear: String {
+        if !show.isEmpty { return "" }
+        return [artist, rating].filter { !$0.isEmpty }.joined(separator: " · ")
+    }
+
     var poster: String { show.isEmpty ? artwork : "/art/\(id)" }
     var isAudio: Bool { kind == .music || kind == .audiobook }
     var playLabel: String {

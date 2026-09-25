@@ -14,6 +14,7 @@ struct MediaLabelTests {
                 ]), server: server)
                 #expect(item.title == "Age of Attraction")
                 #expect(item.subtitle.isEmpty)
+                #expect(item.subtitleWithoutYear.isEmpty)
                 #expect(item.showID == "0123456789abcdef")
                 #expect(item.progress.seconds == 44)
                 #expect(item.playLabel == "Resume")
@@ -33,16 +34,18 @@ struct MediaLabelTests {
         ]), server: server)
         #expect(episode.title == "S01E01 · Pilot")
         #expect(episode.subtitle.isEmpty)
-        for (kind, title, artist, expected) in [
-            ("video", "1917", "", "2019 · PG-13"),
-            ("audio", "Track", "Artist", "Artist · 2019 · PG-13")
+        for (kind, title, artist, rating, expected, withoutYear) in [
+            ("video", "1917", "", "PG-13", "2019 · PG-13", "PG-13"),
+            ("audio", "Track", "Artist", "PG-13", "Artist · 2019 · PG-13", "Artist · PG-13"),
+            ("video", "Movie", "", "", "2019", "")
         ] {
             let item = try MediaItem(.object([
                 "id": .string("sample"), "kind": .string(kind), "title": .string(title),
-                "artist": .string(artist), "year": .string("2019"), "rating": .string("PG-13")
+                "artist": .string(artist), "year": .string("2019"), "rating": .string(rating)
             ]), server: server)
             #expect(item.title == title)
             #expect(item.subtitle == expected)
+            #expect(item.subtitleWithoutYear == withoutYear)
         }
     }
 }

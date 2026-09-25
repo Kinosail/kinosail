@@ -72,7 +72,12 @@ private struct ResumeRow: View {
                 VStack(alignment: .leading, spacing: 4) {
                     Text(item.title).font(.headline).foregroundStyle(KinoTheme.text)
                         .lineLimit(dynamicType.isAccessibilitySize ? nil : 2)
-                    if !item.subtitle.isEmpty { Text(item.subtitle).font(.caption).foregroundStyle(KinoTheme.muted) }
+                    #if os(tvOS)
+                    let subtitle = item.subtitleWithoutYear
+                    #else
+                    let subtitle = item.subtitle
+                    #endif
+                    if !subtitle.isEmpty { Text(subtitle).font(.caption).foregroundStyle(KinoTheme.muted) }
                     #if os(tvOS)
                     if !dynamicType.isAccessibilitySize { Spacer(minLength: 8) }
                     #endif
