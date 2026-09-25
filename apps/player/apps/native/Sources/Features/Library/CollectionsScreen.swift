@@ -66,7 +66,8 @@ struct CollectionScreen: View {
                     #if os(tvOS)
                     Text(name).font(.system(.largeTitle, design: .rounded).bold())
                         .accessibilityAddTraits(.isHeader)
-                    MediaGrid(items: items, onQuickPlay: { quickPlay = $0 })
+                    MediaGrid(landscape: items.allSatisfy { $0.kind == .photo }, items: items,
+                              onQuickPlay: { quickPlay = $0 })
                     #else
                     MediaGrid(items: items)
                     #endif
