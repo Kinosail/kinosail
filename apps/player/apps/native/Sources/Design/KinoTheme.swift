@@ -22,6 +22,14 @@ enum KinoTheme {
         #endif
     }
 
+    static var secondaryControlInk: Color {
+        #if os(tvOS)
+        adaptive(dark: 0x142000, light: 0x142000)
+        #else
+        text
+        #endif
+    }
+
     static var contentPadding: CGFloat {
         #if os(tvOS)
         64

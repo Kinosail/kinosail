@@ -67,6 +67,9 @@ private struct DetailContent: View {
             #endif
             if item.kind == .video || item.isAudio {
                 NavigationLink(value: ScreenDestination.bookmarks(item.id)) { Label("Bookmarks", systemImage: "bookmark") }
+                #if os(tvOS)
+                .foregroundStyle(KinoTheme.secondaryControlInk)
+                #endif
                 #if os(iOS)
                 NavigationLink(value: ScreenDestination.playOnTV(item.id)) { Label("Play on TV", systemImage: "tv") }
                 #endif
@@ -93,10 +96,12 @@ private struct DetailContent: View {
         Button {
             change { client in listed = try await client.setListed(itemID: item.id, listed: !(listed ?? detail.listed)) }
         } label: { Label((listed ?? detail.listed) ? "In My List" : "My List", systemImage: (listed ?? detail.listed) ? "checkmark" : "plus") }
-            .buttonStyle(.bordered).buttonBorderShape(.capsule).tint(KinoTheme.secondaryControlTint).foregroundStyle(KinoTheme.text).disabled(busy)
+            .buttonStyle(.bordered).buttonBorderShape(.capsule).tint(KinoTheme.secondaryControlTint).foregroundStyle(KinoTheme.secondaryControlInk).disabled(busy)
         #if os(tvOS)
         if !item.showID.isEmpty {
             NavigationLink("All episodes", value: ScreenDestination.show(item.showID))
+                .buttonStyle(.bordered).buttonBorderShape(.capsule)
+                .tint(KinoTheme.secondaryControlTint).foregroundStyle(KinoTheme.secondaryControlInk)
         }
         if item.progress.seconds > 0 || item.progress.watched {
             Button("Remove from Continue watching") { change { client in try await client.dismissContinueWatching(itemID: item.id) } }
@@ -105,7 +110,7 @@ private struct DetailContent: View {
         #endif
         #if os(iOS)
         if session.viewer?.downloads == true && (item.kind == .video || item.isAudio) {
-            Button { showsDownloads = true } label: { Label("Download", systemImage: "arrow.down") }.buttonStyle(.bordered).buttonBorderShape(.capsule).tint(KinoTheme.secondaryControlTint).foregroundStyle(KinoTheme.text)
+            Button { showsDownloads = true } label: { Label("Download", systemImage: "arrow.down") }.buttonStyle(.bordered).buttonBorderShape(.capsule).tint(KinoTheme.secondaryControlTint).foregroundStyle(KinoTheme.secondaryControlInk)
         }
         #endif
     }

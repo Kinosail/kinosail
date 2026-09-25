@@ -49,7 +49,7 @@ struct ConnectionBanner: View {
         } label: {
             Text(session.connection.checking ? "Checking…" : "Try again").frame(minHeight: 44)
         }
-        .buttonStyle(.bordered).buttonBorderShape(.capsule).tint(KinoTheme.secondaryControlTint).foregroundStyle(KinoTheme.text)
+        .buttonStyle(.bordered).buttonBorderShape(.capsule).tint(KinoTheme.secondaryControlTint).foregroundStyle(KinoTheme.secondaryControlInk)
         .disabled(session.connection.checking)
     }
 }

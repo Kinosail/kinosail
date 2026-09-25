@@ -171,7 +171,7 @@ struct MediaShelf: View {
                 if let moreTitle, let moreDestination {
                     NavigationLink(moreTitle, value: moreDestination).font(.callout).frame(minHeight: 44)
                         #if os(tvOS)
-                        .buttonStyle(.bordered).tint(KinoTheme.secondaryControlTint).foregroundStyle(KinoTheme.text)
+                        .buttonStyle(.bordered).tint(KinoTheme.secondaryControlTint).foregroundStyle(KinoTheme.secondaryControlInk)
                         #endif
                 }
             }
