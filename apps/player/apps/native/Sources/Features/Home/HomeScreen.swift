@@ -48,7 +48,7 @@ struct HomeScreen: View {
                 #endif
                 VStack(alignment: .leading, spacing: 32) {
                     if let featured = selection.featured {
-                        CinemaHero(item: featured, showsPlot: false) {
+                        CinemaHero(item: featured, subtitle: homeSubtitle(for: featured), showsPlot: false) {
                             NavigationLink(value: featured.playingDestination) {
                                 Label(featured.playLabel, systemImage: featured.kind == .book ? "book.fill" : "play.fill")
                                     #if os(tvOS)
@@ -128,6 +128,14 @@ struct HomeScreen: View {
                 }
             }
         }
+    }
+
+    private func homeSubtitle(for item: MediaItem) -> String {
+        #if os(tvOS)
+        item.subtitleWithoutYear
+        #else
+        item.subtitle
+        #endif
     }
 }
 
