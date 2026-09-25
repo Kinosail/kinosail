@@ -44,6 +44,15 @@ struct TVOSConfigurationLayout<Content: View>: View {
 
 extension View {
     @ViewBuilder
+    func configurationNavigationTitle(_ title: String) -> some View {
+        #if os(tvOS)
+        self.navigationTitle("")
+        #else
+        self.navigationTitle(title)
+        #endif
+    }
+
+    @ViewBuilder
     func tvOSConfigurationLayout(title: String, symbol: String, id: String? = nil) -> some View {
         #if os(tvOS)
         TVOSConfigurationLayout(title: title, symbol: symbol, id: id) { self }

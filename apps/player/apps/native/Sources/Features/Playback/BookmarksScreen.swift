@@ -52,7 +52,7 @@ struct BookmarksScreen: View {
         .focusScope(bookmarksFocus)
         #endif
         .tvOSConfigurationLayout(title: "Bookmarks", symbol: "bookmark")
-        .navigationTitle("Bookmarks")
+        .configurationNavigationTitle("Bookmarks")
         .navigationDestination(item: $destination) { DestinationScreen(destination: $0) }
         .task(id: "\(session.profileKey ?? ""):\(itemID):\(revision)") {
             guard let client = session.client else { return }
@@ -143,7 +143,7 @@ struct ProgressSyncScreen: View {
             if !entries.isEmpty { Button("Sync now") { Task { await synchronize() } }.disabled(busy) }
         }
         .tvOSConfigurationLayout(title: "Progress sync", symbol: "arrow.triangle.2.circlepath")
-        .navigationTitle("Progress sync")
+        .configurationNavigationTitle("Progress sync")
         .task { await synchronize() }
     }
     private func synchronize() async {

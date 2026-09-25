@@ -31,7 +31,7 @@ struct ReaderPreferencesScreen: View {
             }
         }
         .disabled(busy)
-        .navigationTitle("Reader preferences")
+        .configurationNavigationTitle("Reader preferences")
         .tvOSConfigurationLayout(title: "Reader preferences", symbol: "book")
         .task { await load() }
     }

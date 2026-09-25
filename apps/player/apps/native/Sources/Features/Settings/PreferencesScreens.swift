@@ -65,7 +65,7 @@ struct PlaybackPreferencesScreen: View {
         #if os(tvOS)
         .disabled(busy)
         #endif
-        .navigationTitle(itemID == nil ? "Playback preferences" : "This title’s preferences")
+        .configurationNavigationTitle(itemID == nil ? "Playback preferences" : "This title’s preferences")
         .tvOSConfigurationLayout(title: itemID == nil ? "Playback preferences" : "This title’s preferences", symbol: "play.circle")
         .task(id: "\(session.profileKey ?? ""):\(itemID ?? "defaults")") { await load() }
         #if os(iOS)
@@ -203,7 +203,7 @@ struct OfflinePreferencesScreen: View {
             }
         }
         .disabled(busy)
-        .navigationTitle("Download preferences")
+        .configurationNavigationTitle("Download preferences")
         .tvOSConfigurationLayout(title: "Download preferences", symbol: "arrow.down.circle")
         .task { await load() }
         .alert("Remove this profile’s downloads?", isPresented: $clears) {
