@@ -4,7 +4,7 @@ struct CollectionsScreen: View {
     @Environment(AppSession.self) private var session
     var body: some View {
         ScrollView {
-            ResourceView(identity: session.profileKey ?? "", load: { policy in
+            ResourceView(identity: session.profileKey ?? "", loadingLayout: .list, load: { policy in
                 guard let client = session.client else { throw ClientError.http(401) }
                 return try await client.collections(policy: policy)
             }) { names in
@@ -35,7 +35,7 @@ struct CollectionScreen: View {
     #endif
     var body: some View {
         ScrollView {
-            ResourceView(identity: name, load: { policy in
+            ResourceView(identity: name, loadingLayout: .grid, load: { policy in
                 guard let client = session.client else { throw ClientError.http(401) }
                 return try await client.collection(name: name, policy: policy)
             }) { items in

@@ -82,12 +82,18 @@ body .destination-group h3{font-size:.9rem;font-weight:600;text-transform:none;l
 body .supporter-signature{margin:2rem 0 0;padding:1rem 0;border:0;background:none;color:var(--muted);font-size:.8rem}
 /* Existing layout boxes become placeholders only during a pending request. */
 body .library-shell.request-skeleton::after{display:none}
-body .library-shell.request-skeleton :is(.card,.home-feature){background:var(--surface);border-color:transparent;box-shadow:none}
-body .library-shell.request-skeleton :is(.card,.home-feature)>*{visibility:hidden}
-body .library-shell.request-skeleton .home-feature::before{display:none}
-body .library-shell.request-skeleton .card{position:relative}
-body .library-shell.request-skeleton .card::after{content:"";position:absolute;bottom:.75rem;left:.75rem;height:.85rem;width:65%;border-radius:4px;background:var(--surface-3)}
-body .library-shell.request-skeleton .library-masthead p{visibility:hidden}
+body .library-shell.request-skeleton .home-feature>img,body .library-shell.request-skeleton .card .poster{visibility:hidden}
+body .library-shell.request-skeleton .home-feature::before{content:"";grid-column:1;grid-row:1;width:100%;aspect-ratio:2/3;border-radius:12px;background:var(--surface-2)}
+body .library-shell.request-skeleton .home-feature[data-artwork=backdrop]::before{aspect-ratio:16/9}
+body .library-shell.request-skeleton .home-feature>img{grid-column:1;grid-row:1}
+body .library-shell.request-skeleton :is(.home-feature h2,.home-feature p,.card h2,.card h3,.card small,.library-masthead p){width:fit-content;max-width:100%;border-radius:4px;background:var(--surface-2);color:transparent}
+body .library-shell.request-skeleton .home-feature :is(.button,button){background:var(--surface-2)!important;color:transparent!important;box-shadow:none;text-shadow:none}
+body .library-shell.request-skeleton .home-feature :is(svg,i){visibility:hidden}
+body .library-shell.request-skeleton .card{position:relative;box-shadow:none}
+body .library-shell.request-skeleton .card:not(.resume-card)::before{content:"";position:absolute;top:0;left:0;width:100%;aspect-ratio:2/3;border-radius:14px;background:var(--surface-2)}
+body .library-shell.request-skeleton .resume-link::before{content:"";grid-column:1;grid-row:1/5;align-self:center;width:4rem;aspect-ratio:2/3;border-radius:7px;background:var(--surface-2)}
+body .library-shell.request-skeleton .resume-link .poster{grid-column:1;grid-row:1/5}
+body .library-shell.request-skeleton .resume-card :is(.resume-action,.watch-progress,form){visibility:hidden}
 body .library-shell.request-skeleton::before{content:"";position:absolute;z-index:9;top:0;inset-inline:0;height:3px;background:var(--signal)}
 @media(max-width:900px){
   body .library-shell{padding-top:1rem}

@@ -65,7 +65,7 @@ struct AudioPlayerScreen: View {
                         }.frame(maxWidth: .infinity, alignment: .leading)
                     }
                 }.frame(maxWidth: 700).frame(maxWidth: .infinity).padding(KinoTheme.contentPadding)
-            } else { LoadingState(title: "Opening audio…").padding(KinoTheme.contentPadding) }
+            } else { AudioLoadingState().padding(KinoTheme.contentPadding) }
         }
         .navigationTitle("Now playing")
         #if os(tvOS)
@@ -118,6 +118,34 @@ struct AudioPlayerScreen: View {
     }
     private func perform(_ action: @escaping @MainActor () async throws -> Void) {
         Task { do { try await action() } catch { failure = AppSession.message(error) } }
+    }
+}
+
+struct AudioLoadingState: View {
+    var title = "Opening audio…"
+    var body: some View {
+        VStack(spacing: 28) {
+            RoundedRectangle(cornerRadius: 24).fill(KinoTheme.surface).aspectRatio(1, contentMode: .fit).frame(maxWidth: 440)
+            VStack(spacing: 8) {
+                RoundedRectangle(cornerRadius: 5).fill(KinoTheme.raised).frame(width: 260, height: 36)
+                RoundedRectangle(cornerRadius: 5).fill(KinoTheme.raised).frame(width: 160, height: 16)
+            }
+            Capsule().fill(KinoTheme.raised).frame(height: 5)
+            HStack(spacing: 12) {
+                ForEach(0..<3) { _ in Circle().fill(KinoTheme.surface).frame(width: 52, height: 52) }
+            }
+            ViewThatFits(in: .horizontal) {
+                HStack(spacing: 12) {
+                    ForEach(0..<3) { _ in Capsule().fill(KinoTheme.surface).frame(width: 94, height: 44) }
+                }
+                VStack(spacing: 12) {
+                    ForEach(0..<3) { _ in Capsule().fill(KinoTheme.surface).frame(width: 94, height: 44) }
+                }
+            }
+        }
+        .frame(maxWidth: 700).frame(maxWidth: .infinity)
+        .accessibilityHidden(true)
+        .overlay(alignment: .topTrailing) { ProgressView(title).labelsHidden().accessibilityLabel(title) }
     }
 }
 

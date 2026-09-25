@@ -5,7 +5,7 @@ struct MusicScreen: View {
     @Environment(AppSession.self) private var session
     var body: some View {
         ScrollView {
-            ResourceView(identity: session.profileKey ?? "", load: { policy in
+            ResourceView(identity: session.profileKey ?? "", loadingLayout: .musicGrid, load: { policy in
                 guard let client = session.client else { throw ClientError.unavailable }
                 return try await client.albums(policy: policy)
             }) { albums in
@@ -51,7 +51,7 @@ struct AlbumScreen: View {
 
     var body: some View {
         ScrollView {
-            ResourceView(identity: "\(session.profileKey ?? ""):\(albumID)", load: { policy in
+            ResourceView(identity: "\(session.profileKey ?? ""):\(albumID)", loadingLayout: .album, load: { policy in
                 guard let client = session.client else { throw ClientError.unavailable }
                 return try await client.album(id: albumID, policy: policy)
             }) { album in

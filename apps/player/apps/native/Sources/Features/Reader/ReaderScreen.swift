@@ -3,6 +3,33 @@ import SwiftUI
 import UIKit
 #endif
 
+private struct ReaderLoadingState: View {
+    var body: some View {
+        VStack(alignment: .leading, spacing: 18) {
+            ForEach(0..<7) { index in
+                RoundedRectangle(cornerRadius: 4).fill(KinoTheme.surface)
+                    .frame(maxWidth: index == 6 ? 220 : .infinity).frame(height: 18)
+            }
+            Spacer()
+            HStack {
+                Circle().fill(KinoTheme.raised).frame(width: 44, height: 44)
+                Spacer()
+                Capsule().fill(KinoTheme.raised).frame(width: 120, height: 44)
+                Spacer()
+                Circle().fill(KinoTheme.raised).frame(width: 44, height: 44)
+            }
+        }
+        .padding(KinoTheme.contentPadding)
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+        .background(KinoTheme.background)
+        .accessibilityHidden(true)
+        .overlay(alignment: .topTrailing) {
+            ProgressView("Opening your book…").labelsHidden().accessibilityLabel("Opening your book…")
+                .padding(KinoTheme.contentPadding)
+        }
+    }
+}
+
 struct ReaderScreen: View {
     let itemID: String
     @Environment(AppSession.self) private var session
@@ -57,7 +84,7 @@ struct ReaderScreen: View {
                         }
                     }.padding(16).background(.regularMaterial)
                 }
-            } else { LoadingState(title: "Opening your book…").padding(KinoTheme.contentPadding) }
+            } else { ReaderLoadingState() }
         }
         .navigationTitle(book?.title ?? "Reader")
         .navigationBarTitleDisplayMode(.inline)

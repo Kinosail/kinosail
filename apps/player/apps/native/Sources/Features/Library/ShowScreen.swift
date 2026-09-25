@@ -15,7 +15,7 @@ struct ShowScreen: View {
 
     var body: some View {
         ScrollView {
-            ResourceView(identity: "\(session.profileKey ?? ""):\(showID)", refreshID: session.contentRevision.uuidString, load: { policy in
+            ResourceView(identity: "\(session.profileKey ?? ""):\(showID)", refreshID: session.contentRevision.uuidString, loadingLayout: .show, load: { policy in
                 guard let client = session.client else { throw ClientError.unavailable }
                 return try await client.show(id: showID, policy: policy)
             }) { show in

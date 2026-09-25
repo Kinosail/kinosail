@@ -27,13 +27,14 @@ struct ResumeRows: View {
         .focusSection()
         #endif
     }
-    private var columns: [GridItem] {
+    private var columns: [GridItem] { Self.columns(accessibility: dynamicType.isAccessibilitySize) }
+    static func columns(accessibility: Bool) -> [GridItem] {
         #if os(tvOS)
         let minimum: CGFloat = 640
         #else
         let minimum: CGFloat = 420
         #endif
-        return [dynamicType.isAccessibilitySize ? GridItem(.flexible(), alignment: .top)
+        return [accessibility ? GridItem(.flexible(), alignment: .top)
                 : GridItem(.adaptive(minimum: minimum), spacing: 24, alignment: .top)]
     }
 }
