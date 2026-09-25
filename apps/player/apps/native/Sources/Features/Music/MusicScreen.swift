@@ -3,14 +3,28 @@ import SwiftUI
 struct MusicScreen: View {
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     @Environment(AppSession.self) private var session
+    #if os(tvOS)
+    @Namespace private var albumsFocus
+    #endif
     var body: some View {
         ScrollView {
             ResourceView(identity: session.profileKey ?? "", load: { policy in
                 guard let client = session.client else { throw ClientError.unavailable }
                 return try await client.albums(policy: policy)
             }) { albums in
+                #if os(tvOS)
+                HStack {
+                    Text("Albums").font(.system(.largeTitle, design: .rounded).bold())
+                        .accessibilityAddTraits(.isHeader)
+                    Spacer()
+                    NavigationLink("All music tracks", value: ScreenDestination.library(.music))
+                        .buttonStyle(.bordered).tint(KinoTheme.secondaryControlTint).foregroundStyle(KinoTheme.text)
+                }
+                .focusSection()
+                #else
                 NavigationLink("All music tracks", value: ScreenDestination.library(.music))
                     .frame(minHeight: 44)
+                #endif
                 if albums.isEmpty { ContentUnavailableView("No albums yet", systemImage: "music.note", description: Text("Tracks without album information are available in All music tracks.")) }
                 LazyVGrid(columns: MediaGrid.columns(landscape: false, accessibility: dynamicTypeSize.isAccessibilitySize), spacing: 28) {
                     ForEach(albums) { album in
@@ -25,6 +39,7 @@ struct MusicScreen: View {
                         .buttonStyle(.plain)
                         #else
                         .buttonStyle(.card)
+                        .tvOSDefaultPlayFocus(in: albumsFocus, id: "albums.first.\(album.id)", enabled: albums.first?.id == album.id)
                         #endif
                     }
                 }
@@ -35,7 +50,12 @@ struct MusicScreen: View {
             }.padding(KinoTheme.contentPadding)
         }
         .cinemaBackground()
+        #if os(tvOS)
+        .focusScope(albumsFocus)
+        .navigationTitle("")
+        #else
         .navigationTitle("Albums")
+        #endif
     }
 }
 
@@ -56,11 +76,30 @@ struct AlbumScreen: View {
                 return try await client.album(id: albumID, policy: policy)
             }) { album in
                 VStack(alignment: .leading, spacing: 24) {
+                    #if os(tvOS)
+                    HStack(alignment: .bottom, spacing: 32) {
+                        if let first = album.tracks.first {
+                            Artwork(path: first.artwork, symbol: "music.note", ratio: 1)
+                                .frame(width: 260).clipShape(.rect(cornerRadius: 16))
+                        }
+                        VStack(alignment: .leading, spacing: 8) {
+                            Text(album.title).font(.system(.largeTitle, design: .rounded).bold())
+                                .accessibilityAddTraits(.isHeader)
+                            Text(album.artist).font(.title3).foregroundStyle(KinoTheme.muted)
+                            Text("\(album.tracks.count) \(album.tracks.count == 1 ? "track" : "tracks")")
+                                .font(.callout).foregroundStyle(KinoTheme.muted)
+                        }
+                    }
+                    #else
                     if let first = album.tracks.first { Artwork(path: first.artwork, symbol: "music.note", ratio: 1).frame(maxWidth: 360).clipShape(.rect(cornerRadius: 16)) }
                     Text(album.title).font(.largeTitle.bold())
                     Text(album.artist).font(.headline).foregroundStyle(.secondary)
+                    #endif
                     if let message { Text(message).foregroundStyle(.secondary) }
                     if album.tracks.isEmpty { ContentUnavailableView("No tracks", systemImage: "music.note") }
+                    #if os(tvOS)
+                    if !album.tracks.isEmpty { Text("Tracks").font(.title2.bold()).accessibilityAddTraits(.isHeader) }
+                    #endif
                     ForEach(Array(album.tracks.enumerated()), id: \.element.id) { index, item in
                         Button { play(album.tracks, at: index) } label: {
                             HStack(spacing: 20) {
@@ -85,7 +124,11 @@ struct AlbumScreen: View {
             }.padding(KinoTheme.contentPadding)
         }
         .cinemaBackground()
+        #if os(tvOS)
+        .navigationTitle("")
+        #else
         .navigationTitle("Album")
+        #endif
         #if os(tvOS)
         .focusScope(albumFocus)
         #endif
