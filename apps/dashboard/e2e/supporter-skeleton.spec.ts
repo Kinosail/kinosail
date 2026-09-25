@@ -19,6 +19,7 @@ for (const width of [320, 390, 1440]) {
     const pendingMasterwork = await page.locator(".loading-masterwork").boundingBox();
     const pendingBadge = await page.locator(".loading-badges span").first().boundingBox();
     const pendingActivation = await page.locator(".loading-activation").boundingBox();
+    await expect(page.locator(".loading-masterwork p:not(.eyebrow)")).toHaveCSS("color", "rgba(0, 0, 0, 0)");
     await page.screenshot({ path: testInfo.outputPath(`${width}-pending.png`), fullPage: true });
     await page.locator("#supporter-content").evaluate(content => {
       for (const id of ["living-badges", "patron-badges"]) {
@@ -28,11 +29,11 @@ for (const width of [320, 390, 1440]) {
       content.removeAttribute("hidden");
       document.getElementById("supporter-loading")!.hidden = true;
     });
-    const loadedMasterwork = await page.locator(".masterwork").boundingBox();
+    const loadedMasterwork = await page.locator("#masterwork").boundingBox();
     const loadedBadge = await page.locator(".case-badge").first().boundingBox();
     const loadedActivation = await page.locator(".activation").boundingBox();
     expect(pendingMasterwork?.width).toBeCloseTo(loadedMasterwork!.width, 0);
-    expect(Math.abs(pendingMasterwork!.height - loadedMasterwork!.height)).toBeLessThan(32);
+    expect(pendingMasterwork!.height).toBeCloseTo(loadedMasterwork!.height, 0);
     expect(pendingBadge?.width).toBeCloseTo(loadedBadge!.width, 0);
     expect(pendingBadge?.height).toBeCloseTo(loadedBadge!.height, 0);
     expect(Math.abs(pendingBadge!.y - loadedBadge!.y)).toBeLessThan(48);
