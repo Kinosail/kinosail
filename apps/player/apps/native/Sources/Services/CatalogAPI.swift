@@ -1,9 +1,26 @@
 import Foundation
 
 extension ServerClient {
-    func warmCatalog() async {
+    func warmCatalog(mode: PlayerMode? = nil, landingTab: PlayerTab = .home) async {
         guard !Task.isCancelled else { return }
-        _ = try? await home(policy: .automatic)
+        if let mode {
+            _ = try? await home(mode: mode.other, policy: .automatic)
+            guard !Task.isCancelled else { return }
+            switch landingTab {
+            case .movies: _ = try? await library(view: .movies, policy: .automatic)
+            case .shows: _ = try? await library(view: .shows, policy: .automatic)
+            case .search: _ = try? await library(view: mode.other.searchViews[0], policy: .automatic)
+            case .list: _ = try? await library(view: .list, policy: .automatic)
+            case .music: _ = try? await albums(policy: .automatic)
+            case .audiobooks: _ = try? await library(view: .audiobooks, policy: .automatic)
+            case .books: _ = try? await library(view: .books, policy: .automatic)
+            case .photos: _ = try? await library(view: .photos, policy: .automatic)
+            case .collections: _ = try? await collections(policy: .automatic)
+            case .home, .library, .downloads, .settings, .more: break
+            }
+            guard !Task.isCancelled else { return }
+            _ = try? await home(mode: mode, policy: .automatic)
+        } else { _ = try? await home(policy: .automatic) }
         for view in [LibraryView.movies, .shows] {
             guard !Task.isCancelled else { return }
             _ = try? await library(view: view, policy: .automatic)
