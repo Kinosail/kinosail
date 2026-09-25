@@ -27,14 +27,6 @@ enum KinoTheme {
         #endif
     }
 
-    static var secondaryControlInk: Color {
-        #if os(tvOS)
-        adaptive(dark: 0x142000, light: 0x142000)
-        #else
-        text
-        #endif
-    }
-
     static var contentPadding: CGFloat {
         #if os(tvOS)
         64
@@ -51,5 +43,27 @@ enum KinoTheme {
                            green: CGFloat((value >> 8) & 255) / 255,
                            blue: CGFloat(value & 255) / 255, alpha: 1)
         })
+    }
+}
+
+private struct SecondaryControlForeground: ViewModifier {
+    #if os(tvOS)
+    @FocusState private var focused: Bool
+    #endif
+
+    func body(content: Content) -> some View {
+        #if os(tvOS)
+        content
+            .foregroundStyle(focused ? KinoTheme.tvOSPrimaryInk : KinoTheme.text)
+            .focused($focused)
+        #else
+        content.foregroundStyle(KinoTheme.text)
+        #endif
+    }
+}
+
+extension View {
+    func secondaryControlForeground() -> some View {
+        modifier(SecondaryControlForeground())
     }
 }

@@ -103,7 +103,7 @@ struct LibraryQuickLinks: View {
                 }
                 if mode == nil { LibraryDestinationLink("All media", "square.grid.2x2", .library(.all)) }
             }
-            .buttonStyle(.bordered).buttonBorderShape(.capsule).tint(KinoTheme.secondaryControlTint).foregroundStyle(KinoTheme.secondaryControlInk)
+            .buttonStyle(.bordered).buttonBorderShape(.capsule).tint(KinoTheme.secondaryControlTint).secondaryControlForeground()
             .padding(.vertical, 8)
         }
         .scrollIndicators(.hidden)

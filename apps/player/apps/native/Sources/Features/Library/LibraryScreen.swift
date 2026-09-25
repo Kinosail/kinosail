@@ -85,7 +85,7 @@ struct LibraryScreen: View {
                                     }
                                     .buttonStyle(.bordered)
                                     .tint(KinoTheme.secondaryControlTint)
-                                    .foregroundStyle(KinoTheme.secondaryControlInk)
+                                    .secondaryControlForeground()
                                     .accessibilityLabel("\(letter.label), \(letter.count) \(letter.count == 1 ? "title" : "titles")")
                                 }
                             }
@@ -124,7 +124,7 @@ struct LibraryScreen: View {
                     if let failure { Text(failure).foregroundStyle(KinoTheme.muted) }
                     if let page = visiblePage, page.offset + page.items.count < page.total {
                         Button(loading ? "Loading more…" : "Load more") { Task { await load(reset: false) } }
-                            .buttonStyle(.bordered).buttonBorderShape(.capsule).tint(KinoTheme.secondaryControlTint).foregroundStyle(KinoTheme.secondaryControlInk).disabled(loading)
+                            .buttonStyle(.bordered).buttonBorderShape(.capsule).tint(KinoTheme.secondaryControlTint).secondaryControlForeground().disabled(loading)
                     }
                 }
             }
@@ -194,17 +194,17 @@ struct LibraryScreen: View {
         if searchMode, let searchViews {
             Picker("Search in", selection: $selection) {
                 ForEach(searchViews) { Text($0.title).tag($0) }
-            }.pickerStyle(.menu).tint(KinoTheme.secondaryControlTint).foregroundStyle(KinoTheme.secondaryControlInk)
+            }.pickerStyle(.menu).tint(KinoTheme.secondaryControlTint).secondaryControlForeground()
         } else {
             NavigationLink { LibraryHubScreen(mode: mode) } label: { Label("Browse library", systemImage: "square.grid.2x2") }
-                .buttonStyle(.bordered).tint(KinoTheme.secondaryControlTint).foregroundStyle(KinoTheme.secondaryControlInk)
+                .buttonStyle(.bordered).tint(KinoTheme.secondaryControlTint).secondaryControlForeground()
         }
         #endif
         #if os(tvOS)
         Menu {
             sortPicker
         } label: { Label("Sort: \(sort.title)", systemImage: "arrow.up.arrow.down") }
-            .tint(KinoTheme.secondaryControlTint).foregroundStyle(KinoTheme.secondaryControlInk)
+            .tint(KinoTheme.secondaryControlTint).secondaryControlForeground()
         #else
         sortPicker
         #endif
@@ -216,7 +216,7 @@ struct LibraryScreen: View {
             .buttonStyle(.bordered)
             .buttonBorderShape(.capsule)
             .tint(KinoTheme.secondaryControlTint)
-            .foregroundStyle(KinoTheme.secondaryControlInk)
+            .secondaryControlForeground()
         }
         #endif
     }

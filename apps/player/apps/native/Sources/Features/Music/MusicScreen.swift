@@ -18,7 +18,7 @@ struct MusicScreen: View {
                         .accessibilityAddTraits(.isHeader)
                     Spacer()
                     NavigationLink("All music tracks", value: ScreenDestination.library(.music))
-                        .buttonStyle(.bordered).tint(KinoTheme.secondaryControlTint).foregroundStyle(KinoTheme.secondaryControlInk)
+                        .buttonStyle(.bordered).tint(KinoTheme.secondaryControlTint).secondaryControlForeground()
                 }
                 .focusSection()
                 #else

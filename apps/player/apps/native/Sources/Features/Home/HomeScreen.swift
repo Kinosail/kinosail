@@ -17,7 +17,7 @@ struct HomeScreen: View {
                 NavigationLink("My List", value: ScreenDestination.library(.list))
                     .font(.callout).frame(minHeight: 44)
                     #if os(tvOS)
-                    .buttonStyle(.bordered).tint(KinoTheme.secondaryControlTint).foregroundStyle(KinoTheme.secondaryControlInk)
+                    .buttonStyle(.bordered).tint(KinoTheme.secondaryControlTint).secondaryControlForeground()
                     #else
                     .foregroundStyle(KinoTheme.muted)
                     #endif
@@ -27,7 +27,7 @@ struct HomeScreen: View {
                     Button { changeMode(mode.other) } label: {
                         Label(mode.other.title, systemImage: mode.other == .listen ? "headphones" : "tv")
                     }
-                    .buttonStyle(.bordered).tint(KinoTheme.secondaryControlTint).foregroundStyle(KinoTheme.secondaryControlInk)
+                    .buttonStyle(.bordered).tint(KinoTheme.secondaryControlTint).secondaryControlForeground()
                     .accessibilityLabel("Switch to \(mode.other.title) mode")
                 }
                 #endif
@@ -65,7 +65,7 @@ struct HomeScreen: View {
                             #else
                             .buttonStyle(.borderedProminent).buttonBorderShape(.capsule).tint(KinoTheme.signal).foregroundStyle(KinoTheme.signalInk)
                             #endif
-                            NavigationLink("Details", value: featured.destination).buttonStyle(.bordered).buttonBorderShape(.capsule).tint(KinoTheme.secondaryControlTint).foregroundStyle(KinoTheme.secondaryControlInk)
+                            NavigationLink("Details", value: featured.destination).buttonStyle(.bordered).buttonBorderShape(.capsule).tint(KinoTheme.secondaryControlTint).secondaryControlForeground()
                         }
                     }
                     if !selection.continuation.isEmpty {

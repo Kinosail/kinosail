@@ -14,13 +14,13 @@ struct ResumeRows: View {
                     NavigationLink("See all", value: ScreenDestination.library(.history))
                         .font(.callout).frame(minHeight: 44)
                         #if os(tvOS)
-                        .buttonStyle(.bordered).tint(KinoTheme.secondaryControlTint).foregroundStyle(KinoTheme.secondaryControlInk)
+                        .buttonStyle(.bordered).tint(KinoTheme.secondaryControlTint).secondaryControlForeground()
                         #else
                         .foregroundStyle(KinoTheme.signal)
                         #endif
                 }
             }
-            LazyVGrid(columns: columns, alignment: .leading, spacing: 16) {
+            LazyVGrid(columns: columns, alignment: .leading, spacing: rowSpacing) {
                 ForEach(items) { item in ResumeRow(item: item) }
             }
             #if os(tvOS)
@@ -32,6 +32,13 @@ struct ResumeRows: View {
         #endif
     }
     private var columns: [GridItem] { Self.columns(accessibility: dynamicType.isAccessibilitySize) }
+    private var rowSpacing: CGFloat {
+        #if os(tvOS)
+        28
+        #else
+        16
+        #endif
+    }
     static func columns(accessibility: Bool) -> [GridItem] {
         #if os(tvOS)
         let minimum: CGFloat = 640
@@ -46,20 +53,31 @@ struct ResumeRows: View {
 private struct ResumeRow: View {
     let item: MediaItem
     @Environment(\.dynamicTypeSize) private var dynamicType
+    #if os(tvOS)
+    @ScaledMetric(relativeTo: .headline) private var rowHeight: CGFloat = 176
+    #endif
     var body: some View {
         NavigationLink(value: item.playingDestination) {
-            HStack(spacing: 12) {
+            HStack(spacing: rowSpacing) {
                 if !dynamicType.isAccessibilitySize {
                     let usesBackdrop = !item.backdrop.isEmpty
                     Artwork(path: usesBackdrop ? item.backdrop : item.poster, symbol: item.kind.symbol,
                             ratio: usesBackdrop ? 16 / 9 : item.isAudio ? 1 : 2 / 3,
                             dimension: 800, isBackdrop: usesBackdrop)
-                        .frame(width: artworkWidth).clipShape(.rect(cornerRadius: 8))
+                        #if os(tvOS)
+                        .frame(width: 128, height: rowHeight - 8)
+                        #else
+                        .frame(width: 112)
+                        #endif
+                        .clipShape(.rect(cornerRadius: 8))
                 }
                 VStack(alignment: .leading, spacing: 4) {
                     Text(item.title).font(.headline).foregroundStyle(KinoTheme.text)
                         .lineLimit(dynamicType.isAccessibilitySize ? nil : 2)
                     if !item.subtitle.isEmpty { Text(item.subtitle).font(.caption).foregroundStyle(KinoTheme.muted) }
+                    #if os(tvOS)
+                    if !dynamicType.isAccessibilitySize { Spacer(minLength: 8) }
+                    #endif
                     WatchPosition(item: item, compact: true)
                 }.frame(maxWidth: .infinity, alignment: .leading)
                 Image(systemName: "play.fill").foregroundStyle(KinoTheme.text).accessibilityHidden(true)
@@ -67,7 +85,8 @@ private struct ResumeRow: View {
             .frame(maxWidth: .infinity, minHeight: 80, alignment: .leading)
             .contentShape(.rect)
             #if os(tvOS)
-            .padding(12)
+            .frame(minHeight: dynamicType.isAccessibilitySize ? nil : rowHeight)
+            .padding(16)
             #endif
         }
         #if os(iOS)
@@ -77,11 +96,11 @@ private struct ResumeRow: View {
         #endif
         .accessibilityElement(children: .combine)
     }
-    private var artworkWidth: CGFloat {
+    private var rowSpacing: CGFloat {
         #if os(tvOS)
-        196
+        20
         #else
-        112
+        12
         #endif
     }
 }
