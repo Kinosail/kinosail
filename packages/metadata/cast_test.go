@@ -32,6 +32,7 @@ func TestCastEnrichmentAndRecordProjection(t *testing.T) {
 func TestCastRejectsInvalidProviderBeforeArtwork(t *testing.T) {
 	for _, body := range []string{
 		`{"cast":[{"name":"Actor","profile_path":"/../secret"}]}`,
+		`{"cast":[{"name":"Actor","profile_path":"https://images.example/actor.jpg"}]}`,
 		`{"cast":[{"name":"Actor\u0000"}]}`,
 		`{"cast":[{"name":"` + strings.Repeat("x", 201) + `"}]}`,
 		`{"cast":[` + strings.Repeat(`{"name":"A"},`, 1000) + `{"name":"A"}]}`,
