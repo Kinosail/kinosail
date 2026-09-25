@@ -71,9 +71,16 @@ func (store *metadataStore) downloadMetadataImages(ctx context.Context, result m
 			continue
 		}
 		failed = true
-		if image.Show {
+		switch {
+		case image.Backdrop && image.Show:
+			result.Record.ShowBackdrop = ""
+			result.Record.BackdropChecked = false
+		case image.Backdrop:
+			result.Record.Backdrop = ""
+			result.Record.BackdropChecked = false
+		case image.Show:
 			result.Record.ShowArtwork = ""
-		} else {
+		default:
 			result.Record.Artwork = ""
 		}
 	}

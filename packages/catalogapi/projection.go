@@ -68,7 +68,7 @@ func ProjectItem(item library.Item, progress catalog.PlaybackState, access ItemA
 	if item.Artwork != "" {
 		result.Artwork = ArtworkURLForItem(item)
 	}
-	if item.ShowBackdrop != "" || item.Backdrop != "" || item.ShowArtwork != "" || item.Artwork != "" {
+	if item.ShowBackdrop != "" || item.Backdrop != "" {
 		result.Backdrop = "/backdrop/" + item.ID
 	}
 	if access.Download {

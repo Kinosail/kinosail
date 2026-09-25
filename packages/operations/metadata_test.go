@@ -29,7 +29,7 @@ func TestRefreshMetadataGroupsEpisodesAndReusesValidRecords(t *testing.T) { //no
 	config.Resolve = func(_ context.Context, item library.Item) (metadata.Result, error) {
 		resolveCalls.Add(1)
 		if item.ID == "episode-1" {
-			return metadata.Result{Record: metadata.Record{Title: "First", ShowTitle: "Example", ShowYear: "2026", ShowPlot: "Show plot", ShowArtwork: "provider-show", ShowProviderIDs: map[string]string{"tmdb": "7"}}}, nil
+			return metadata.Result{Record: metadata.Record{Title: "First", ShowTitle: "Example", ShowYear: "2026", ShowPlot: "Show plot", ShowArtwork: "provider-show", ShowBackdrop: "provider-backdrop", BackdropChecked: true, ShowProviderIDs: map[string]string{"tmdb": "7"}}}, nil
 		}
 		return metadata.Result{Record: metadata.Record{Title: "Movie"}}, nil
 	}
@@ -56,10 +56,10 @@ func TestRefreshMetadataGroupsEpisodesAndReusesValidRecords(t *testing.T) { //no
 		t.Fatalf("calls resolve=%d episode=%d download=%d refresh=%d stored=%d", resolveCalls.Load(), episodeCalls.Load(), downloads.Load(), refreshes.Load(), len(stored))
 	}
 	second := stored["episode-2"]
-	if second.Title != "Saved second" || second.Plot != "Saved plot" || second.ShowTitle != "Example" || second.ShowYear != "2026" || second.ShowPlot != "Show plot" || second.ShowArtwork != "cached-show" || second.ShowProviderIDs["tmdb"] != "7" {
+	if second.Title != "Saved second" || second.Plot != "Saved plot" || second.ShowTitle != "Example" || second.ShowYear != "2026" || second.ShowPlot != "Show plot" || second.ShowArtwork != "cached-show" || second.ShowBackdrop != "provider-backdrop" || !second.BackdropChecked || second.ShowProviderIDs["tmdb"] != "7" {
 		t.Fatalf("reused episode = %#v", second)
 	}
-	if stored["episode-1"].ShowArtwork != "cached-show" || stored["episode-3"].Title != "Third" || stored["episode-3"].ShowArtwork != "cached-show" {
+	if stored["episode-1"].ShowArtwork != "cached-show" || stored["episode-3"].Title != "Third" || stored["episode-3"].ShowArtwork != "cached-show" || stored["episode-3"].ShowBackdrop != "provider-backdrop" {
 		t.Fatalf("group artwork and resolution = %#v", stored)
 	}
 }
@@ -255,10 +255,41 @@ func TestMissingMetadataBackfillsCastOnceAndPreservesOwner(t *testing.T) {
 		t.Fatal(err)
 	}
 	items := []library.Item{{ID: "old", Kind: "video", Artwork: path}, {ID: "complete", Kind: "video", Artwork: path}, {ID: "owner", Kind: "video", Artwork: path}}
-	config := metadataFixture(items, map[string]metadata.Record{"old": {Title: "Old"}, "complete": {Title: "Complete", CastFetched: true}, "owner": {Title: "Owner", Owner: true}})
+	config := metadataFixture(items, map[string]metadata.Record{"old": {Title: "Old", CastFetched: true}, "complete": {Title: "Complete", CastFetched: true, BackdropChecked: true}, "owner": {Title: "Owner", Owner: true}})
 	config.Configured = true
 	missing := missingMetadata(config)
 	if len(missing) != 1 || missing[0].ID != "old" {
-		t.Fatalf("cast backfill = %#v", missing)
+		t.Fatalf("backdrop backfill = %#v", missing)
+	}
+}
+
+func TestMissingBackdropFileIsRetried(t *testing.T) {
+	item := library.Item{ID: "movie", Kind: "video"}
+	config := metadataFixture([]library.Item{item}, map[string]metadata.Record{"movie": {Title: "Movie", CastFetched: true, BackdropChecked: true, Backdrop: filepath.Join(t.TempDir(), "missing.jpg")}})
+	if missing := missingMetadata(config); len(missing) != 1 || missing[0].ID != item.ID {
+		t.Fatalf("missing backdrop was not retried: %#v", missing)
+	}
+}
+
+func TestShowBackdropDownloadFailureKeepsEveryEpisodeRetryable(t *testing.T) {
+	items := []library.Item{{ID: "first", Kind: "video", Library: "TV", Show: "Series"}, {ID: "second", Kind: "video", Library: "TV", Show: "Series"}}
+	config := metadataFixture(items, nil)
+	config.Resolve = func(context.Context, library.Item) (metadata.Result, error) {
+		return metadata.Result{Record: metadata.Record{Title: "First", ShowTitle: "Series", ShowBackdrop: "pending.jpg", BackdropChecked: true}}, nil
+	}
+	config.ResolveEpisode = func(context.Context, library.Item, metadata.Record) (metadata.Result, error) {
+		return metadata.Result{Record: metadata.Record{Title: "Second", ShowTitle: "Series", ShowBackdrop: "pending.jpg", BackdropChecked: true}}, nil
+	}
+	config.Download = func(_ context.Context, result metadata.Result) (metadata.Record, error) {
+		if result.Record.Title == "First" {
+			result.Record.ShowBackdrop, result.Record.BackdropChecked = "", false
+			return result.Record, errors.New("backdrop unavailable")
+		}
+		return result.Record, nil
+	}
+	var stored map[string]metadata.Record
+	config.Store = func(updates map[string]metadata.Record) error { stored = updates; return nil }
+	if err := RefreshMetadata(t.Context(), config); err == nil || len(stored) != 2 || stored["first"].BackdropChecked || stored["second"].BackdropChecked || stored["second"].ShowBackdrop != "" {
+		t.Fatalf("failed shared backdrop = %#v, error = %v", stored, err)
 	}
 }

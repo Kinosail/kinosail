@@ -28,10 +28,12 @@ func TestRecordValidationBoundsEveryPersistedField(t *testing.T) {
 		{Genres: strings.Repeat("x", 501)},
 		{Collection: strings.Repeat("x", 201)},
 		{Artwork: strings.Repeat("x", 4097)},
+		{Backdrop: strings.Repeat("x", 4097)},
 		{ShowTitle: strings.Repeat("x", 201)},
 		{ShowYear: "123"},
 		{ShowPlot: strings.Repeat("x", 5001)},
 		{ShowArtwork: strings.Repeat("x", 4097)},
+		{ShowBackdrop: strings.Repeat("x", 4097)},
 		{Title: "hidden\x00text"},
 		{Title: "two\nlines"},
 		{Plot: "hidden\x00text"},
@@ -112,9 +114,9 @@ func TestMergeRecordsClonesAndOverrides(t *testing.T) {
 func TestApplyMissingAndResolveTMDBEpisode(t *testing.T) { //nolint:cyclop,staticcheck // The assertions cover one shared episode resolution contract, including an intentional nil context.
 	t.Parallel()
 	item := library.Item{ID: "episode", Season: 1, Episode: 2, ProviderIDs: map[string]string{"tvdb": "123"}, Year: "local"}
-	record := Record{Year: "2020", Plot: "Plot", Artwork: "poster", ShowTitle: "Show", ShowYear: "2019", ShowPlot: "Show plot", ShowArtwork: "show-poster", ShowProviderIDs: map[string]string{"tmdb": "42"}}
+	record := Record{Year: "2020", Plot: "Plot", Artwork: "poster", Backdrop: "landscape", ShowTitle: "Show", ShowYear: "2019", ShowPlot: "Show plot", ShowArtwork: "show-poster", ShowBackdrop: "show-landscape", BackdropChecked: true, ShowProviderIDs: map[string]string{"tmdb": "42"}}
 	ApplyMissing(&item, record)
-	if item.Year != "local" || item.Plot != "Plot" || item.ShowTitle != "Show" || item.ShowProviderIDs["tmdb"] != "42" {
+	if item.Year != "local" || item.Plot != "Plot" || item.Backdrop != "landscape" || item.ShowBackdrop != "show-landscape" || item.ShowTitle != "Show" || item.ShowProviderIDs["tmdb"] != "42" {
 		t.Fatalf("missing metadata = %#v", item)
 	}
 	item.ShowProviderIDs["tmdb"] = "changed"
@@ -127,7 +129,7 @@ func TestApplyMissingAndResolveTMDBEpisode(t *testing.T) { //nolint:cyclop,stati
 		}
 		output.Title, output.Year, *poster = "Episode", "2020", "/still.jpg"
 	}, func(id string) string { return "/cache/" + id + ".jpg" })
-	if err != nil || resolved.Record.Title != "Episode" || resolved.Record.ProviderIDs["tvdb"] != "123" || len(resolved.Images) != 1 || resolved.Images[0].Target != "/cache/episode.jpg" {
+	if err != nil || resolved.Record.Title != "Episode" || resolved.Record.ShowBackdrop != "show-landscape" || !resolved.Record.BackdropChecked || resolved.Record.ProviderIDs["tvdb"] != "123" || len(resolved.Images) != 1 || resolved.Images[0].Target != "/cache/episode.jpg" {
 		t.Fatalf("episode result = %#v, %v", resolved, err)
 	}
 	for name, call := range map[string]func() error{

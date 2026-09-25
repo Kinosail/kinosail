@@ -15,13 +15,14 @@ import (
 func TestProviderRejectsInvalidIMDbMatchesWithoutSideEffects(t *testing.T) { //nolint:cyclop,gocognit // One table proves every untrusted provider-response boundary without persistence.
 	t.Parallel()
 	for name, response := range map[string]string{
-		"missing":      `{}`,
-		"malformed":    `{`,
-		"trailing":     `{"movie_results":[{"id":1,"title":"Wrong","poster_path":"/wrong.jpg"}]}{}`,
-		"out-of-range": `{"movie_results":[{"id":0,"title":"Wrong"}]}`,
-		"conflicting":  `{"movie_results":[{"id":1,"title":"Wrong one"},{"id":2,"title":"Wrong two"}]}`,
-		"oversized":    `{"movie_results":[{"id":1,"title":"` + strings.Repeat("x", 201) + `","poster_path":"/wrong.jpg"}]}`,
-		"invalid-path": `{"movie_results":[{"id":1,"title":"Wrong","poster_path":"https://images.example/wrong.jpg"}]}`,
+		"missing":               `{}`,
+		"malformed":             `{`,
+		"trailing":              `{"movie_results":[{"id":1,"title":"Wrong","poster_path":"/wrong.jpg"}]}{}`,
+		"out-of-range":          `{"movie_results":[{"id":0,"title":"Wrong"}]}`,
+		"conflicting":           `{"movie_results":[{"id":1,"title":"Wrong one"},{"id":2,"title":"Wrong two"}]}`,
+		"oversized":             `{"movie_results":[{"id":1,"title":"` + strings.Repeat("x", 201) + `","poster_path":"/wrong.jpg"}]}`,
+		"invalid-path":          `{"movie_results":[{"id":1,"title":"Wrong","poster_path":"https://images.example/wrong.jpg"}]}`,
+		"invalid-backdrop-path": `{"movie_results":[{"id":1,"title":"Wrong","backdrop_path":"https://images.example/wrong.jpg"}]}`,
 	} {
 		t.Run(name, func(t *testing.T) {
 			imageRequests := 0

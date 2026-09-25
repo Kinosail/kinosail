@@ -25,15 +25,15 @@ func ResolveTMDBRecord(ctx context.Context, item library.Item, baseURL string, f
 }
 
 func resolveTMDBMovie(ctx context.Context, item library.Item, baseURL string, fetch func(context.Context, string, any) error, collection func(context.Context, int) string, artwork func(string) string) (Result, error) {
+	if !validMetadataID(item.ID) {
+		return Result{}, errors.New("metadata identity is invalid")
+	}
 	candidate, err := FindTMDBCandidate(ctx, baseURL, "movie", library.Item{Title: item.Title, Year: item.Year}, item.ProviderIDs, fetch)
 	if err != nil {
 		return Result{}, err
 	}
-	record := Record{Title: candidate.Title, Plot: candidate.Overview, Year: Year(candidate.ReleaseDate), Collection: collection(ctx, candidate.ID), ProviderIDs: map[string]string{"tmdb": strconv.Itoa(candidate.ID)}}
+	record := Record{Title: candidate.Title, Plot: candidate.Overview, Year: Year(candidate.ReleaseDate), Collection: collection(ctx, candidate.ID), ProviderIDs: map[string]string{"tmdb": strconv.Itoa(candidate.ID)}, BackdropChecked: true}
 	if candidate.PosterPath != "" {
-		if !validMetadataID(item.ID) {
-			return Result{}, errors.New("metadata identity is invalid")
-		}
 		record.Artwork = artwork(item.ID)
 	}
 	if !Valid(record) || candidate.PosterPath != "" && record.Artwork == "" {
@@ -43,10 +43,16 @@ func resolveTMDBMovie(ctx context.Context, item library.Item, baseURL string, fe
 	if candidate.PosterPath != "" {
 		result.Images = []Image{{Source: candidate.PosterPath, Target: record.Artwork}}
 	}
+	if err := addTMDBBackdrop(&result, candidate.BackdropPath, item.ID, false, artwork); err != nil {
+		return Result{}, err
+	}
 	return enrichTMDBCast(ctx, baseURL, "movie", candidate.ID, fetch, artwork, result)
 }
 
 func resolveTMDBShow(ctx context.Context, item library.Item, baseURL string, fetch func(context.Context, string, any) error, details func(context.Context, library.Item, int, string, string, *Record, *string), artwork func(string) string) (Result, error) { //nolint:cyclop // Show identity, details, and two independent artwork targets form one result contract.
+	if !validMetadataID(item.ID) {
+		return Result{}, errors.New("metadata identity is invalid")
+	}
 	showTitle := item.ShowTitle
 	if showTitle == "" {
 		showTitle = item.Show
@@ -55,7 +61,7 @@ func resolveTMDBShow(ctx context.Context, item library.Item, baseURL string, fet
 	if err != nil {
 		return Result{}, err
 	}
-	record := Record{Title: show.Name, Year: Year(show.FirstAirDate), ShowTitle: show.Name, ShowYear: Year(show.FirstAirDate), ShowPlot: show.Overview, ShowProviderIDs: map[string]string{"tmdb": strconv.Itoa(show.ID)}, ProviderIDs: TVDBProviderID(item)}
+	record := Record{Title: show.Name, Year: Year(show.FirstAirDate), ShowTitle: show.Name, ShowYear: Year(show.FirstAirDate), ShowPlot: show.Overview, ShowProviderIDs: map[string]string{"tmdb": strconv.Itoa(show.ID)}, ProviderIDs: TVDBProviderID(item), BackdropChecked: true}
 	poster := ""
 	details(ctx, item, show.ID, show.Name, show.FirstAirDate, &record, &poster)
 	if !ValidTMDBPath(poster) || !Valid(record) {
@@ -69,10 +75,10 @@ func resolveTMDBShow(ctx context.Context, item library.Item, baseURL string, fet
 		}
 		result.Images = append(result.Images, Image{Source: show.PosterPath, Target: result.Record.ShowArtwork, Show: true})
 	}
+	if err := addTMDBBackdrop(&result, show.BackdropPath, "tv-"+strconv.Itoa(show.ID), true, artwork); err != nil {
+		return Result{}, err
+	}
 	if poster != "" {
-		if !validMetadataID(item.ID) {
-			return Result{}, errors.New("metadata identity is invalid")
-		}
 		result.Record.Artwork = artwork(item.ID)
 		if result.Record.Artwork == "" || !Bounded(result.Record) {
 			return Result{}, errors.New("metadata artwork path is invalid")
@@ -80,6 +86,23 @@ func resolveTMDBShow(ctx context.Context, item library.Item, baseURL string, fet
 		result.Images = append(result.Images, Image{Source: poster, Target: result.Record.Artwork})
 	}
 	return enrichTMDBCast(ctx, baseURL, "tv", show.ID, fetch, artwork, result)
+}
+
+func addTMDBBackdrop(result *Result, source, id string, show bool, artwork func(string) string) error {
+	if source == "" {
+		return nil
+	}
+	target := artwork(id + "-backdrop")
+	if show {
+		result.Record.ShowBackdrop = target
+	} else {
+		result.Record.Backdrop = target
+	}
+	if target == "" || !Bounded(result.Record) {
+		return errors.New("metadata backdrop path is invalid")
+	}
+	result.Images = append(result.Images, Image{Source: source, Target: target, Show: show, Backdrop: true})
+	return nil
 }
 
 // FindTMDBCandidate applies Player's ID-first and conservative title matching policy.
@@ -153,7 +176,7 @@ func searchTMDBTVFallback(ctx context.Context, baseURL, kind, query, searchYear 
 }
 
 func validTMDBCandidate(candidates TMDBCandidates) (TMDBCandidate, error) {
-	if len(candidates.Results) == 0 || len(candidates.Results) > 100 || candidates.Results[0].ID <= 0 || !ValidTMDBPath(candidates.Results[0].PosterPath) {
+	if len(candidates.Results) == 0 || len(candidates.Results) > 100 || candidates.Results[0].ID <= 0 || !ValidTMDBPath(candidates.Results[0].PosterPath) || !ValidTMDBPath(candidates.Results[0].BackdropPath) {
 		return TMDBCandidate{}, errors.New("metadata was not found")
 	}
 	return candidates.Results[0], nil

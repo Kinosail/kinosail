@@ -48,6 +48,42 @@ func TestFindTMDBCandidateUsesIDAndTitleFallbacks(t *testing.T) { //nolint:cyclo
 	}
 }
 
+func TestResolveTMDBMovieSelectsLandscapeArtwork(t *testing.T) {
+	t.Parallel()
+	artwork := func(id string) string { return "/cache/" + id + ".jpg" }
+	movie, err := ResolveTMDBRecord(t.Context(), library.Item{ID: "movie", Title: "Movie"}, "https://example.com", resolutionCandidate(TMDBCandidate{ID: 7, Title: "Movie", PosterPath: "/poster.jpg", BackdropPath: "/backdrop.jpg"}), func(context.Context, int) string { return "" }, func(context.Context, library.Item, int, string, string, *Record, *string) {}, artwork)
+	if err != nil || !movie.Record.BackdropChecked || movie.Record.Backdrop != "/cache/movie-backdrop.jpg" || len(movie.Images) != 2 || !movie.Images[1].Backdrop || movie.Images[1].Target != movie.Record.Backdrop {
+		t.Fatalf("movie landscape artwork = %#v, %v", movie, err)
+	}
+}
+
+func TestResolveTMDBShowSelectsLandscapeArtwork(t *testing.T) {
+	t.Parallel()
+	artwork := func(id string) string { return "/cache/" + id + ".jpg" }
+	show, err := ResolveTMDBRecord(t.Context(), library.Item{ID: "episode", Show: "Series"}, "https://example.com", resolutionCandidate(TMDBCandidate{ID: 9, Name: "Series", BackdropPath: "/series.jpg"}), func(context.Context, int) string { return "" }, func(context.Context, library.Item, int, string, string, *Record, *string) {}, artwork)
+	if err != nil || !show.Record.BackdropChecked || show.Record.ShowBackdrop != "/cache/tv-9-backdrop.jpg" || len(show.Images) != 1 || !show.Images[0].Backdrop || !show.Images[0].Show {
+		t.Fatalf("show landscape artwork = %#v, %v", show, err)
+	}
+}
+
+func TestResolveTMDBMissingLandscapeIsChecked(t *testing.T) {
+	t.Parallel()
+	artwork := func(id string) string { return "/cache/" + id + ".jpg" }
+	missing, err := ResolveTMDBRecord(t.Context(), library.Item{ID: "none", Title: "Movie"}, "https://example.com", resolutionCandidate(TMDBCandidate{ID: 7, Title: "Movie"}), func(context.Context, int) string { return "" }, func(context.Context, library.Item, int, string, string, *Record, *string) {}, artwork)
+	if err != nil || !missing.Record.BackdropChecked || missing.Record.Backdrop != "" || len(missing.Images) != 0 {
+		t.Fatalf("missing landscape artwork = %#v, %v", missing, err)
+	}
+}
+
+func resolutionCandidate(candidate TMDBCandidate) func(context.Context, string, any) error {
+	return func(_ context.Context, _ string, target any) error {
+		if candidates, ok := target.(*TMDBCandidates); ok {
+			candidates.Results = []TMDBCandidate{candidate}
+		}
+		return nil
+	}
+}
+
 func TestFindTMDBCandidateRejectsInvalidBoundaries(t *testing.T) { //nolint:cyclop,funlen,staticcheck // Invalid local and provider inputs share one fail-closed contract, including an intentional nil context.
 	t.Parallel()
 	calls := 0
@@ -101,10 +137,11 @@ func TestFindTMDBCandidateRejectsInvalidBoundaries(t *testing.T) { //nolint:cycl
 		t.Fatalf("invalid local input reached provider %d times", calls)
 	}
 	for name, candidates := range map[string]TMDBCandidates{
-		"empty":        {},
-		"invalid id":   {Results: []TMDBCandidate{{ID: 0}}},
-		"invalid path": {Results: []TMDBCandidate{{ID: 1, PosterPath: "/../poster"}}},
-		"too many":     {Results: make([]TMDBCandidate, 101)},
+		"empty":                 {},
+		"invalid id":            {Results: []TMDBCandidate{{ID: 0}}},
+		"invalid path":          {Results: []TMDBCandidate{{ID: 1, PosterPath: "/../poster"}}},
+		"invalid backdrop path": {Results: []TMDBCandidate{{ID: 1, BackdropPath: "/../backdrop"}}},
+		"too many":              {Results: make([]TMDBCandidate, 101)},
 	} {
 		t.Run(name, func(t *testing.T) {
 			provider := func(_ context.Context, _ string, target any) error {
