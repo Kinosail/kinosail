@@ -75,7 +75,9 @@ import Testing
     #if os(tvOS)
     @Test func televisionWaitsForVideoAndClearsPresentation() throws {
         let presentation = PlayerPresentation()
-        let options = try #require(presentation.controller.transportBarCustomMenuItems.first as? UIAction)
+        let actions = presentation.controller.transportBarCustomMenuItems.compactMap { $0 as? UIAction }
+        let options = try #require(actions.first { $0.title == "Playback options" })
+        let seekPreview = try #require(actions.first { $0.title == "Seek with preview" })
         #expect(!presentation.readyForDisplay)
         presentation.controller.player = AVPlayer()
         var opened = 0
@@ -87,15 +89,24 @@ import Testing
         presentation.showOptions = { opened += 10 }
         control.sendActions(for: .primaryActionTriggered)
         #expect(opened == 11)
+        var previewOpened = 0
+        let previewControl = UIButton(type: .system)
+        previewControl.addAction(seekPreview, for: .primaryActionTriggered)
+        presentation.showSeekPreview = { previewOpened += 1 }
+        previewControl.sendActions(for: .primaryActionTriggered)
+        #expect(previewOpened == 1)
         presentation.showCaptions("A caption")
         #expect(presentation.controller.showsPlaybackControls)
-        #expect(presentation.controller.transportBarCustomMenuItems.count == 1)
-        #expect(presentation.controller.transportBarCustomMenuItems.first === options)
+        #expect(presentation.controller.transportBarCustomMenuItems.count == 2)
+        #expect(presentation.controller.transportBarCustomMenuItems.contains { $0 === options })
+        #expect(presentation.controller.transportBarCustomMenuItems.contains { $0 === seekPreview })
         #expect(!presentation.readyForDisplay)
         presentation.clear()
         #expect(presentation.controller.player == nil)
-        #expect(presentation.controller.transportBarCustomMenuItems.first === options)
+        #expect(presentation.controller.transportBarCustomMenuItems.contains { $0 === options })
+        #expect(presentation.controller.transportBarCustomMenuItems.contains { $0 === seekPreview })
         #expect(presentation.showOptions == nil)
+        #expect(presentation.showSeekPreview == nil)
         #expect(presentation.captionText.isEmpty)
         #expect(!presentation.readyForDisplay)
     }
