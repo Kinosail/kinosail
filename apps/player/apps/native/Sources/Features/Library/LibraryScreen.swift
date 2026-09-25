@@ -82,7 +82,7 @@ struct LibraryScreen: View {
                 }
                 #endif
                 if items.isEmpty {
-                    if page == nil && (loading || loadedKey == nil && failure == nil) { LoadingState(layout: .grid) }
+                    if page == nil && (loading || loadedKey == nil && failure == nil) { LoadingState(layout: selection == .music || selection == .audiobooks ? .squareGrid : .grid) }
                     else if let failure { RetryState(message: failure) { Task { await load(reset: true) } } }
                     else {
                         let empty = LibraryEmptyState(view: selection, hasQuery: !query.isEmpty)

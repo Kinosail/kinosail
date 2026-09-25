@@ -14,7 +14,7 @@ struct RetryState: View {
     }
 }
 
-enum LoadingLayout { case shelf, home, detail, grid, musicGrid, album, show, list, playback, actor, collectionGrid }
+enum LoadingLayout { case shelf, home, homeAudio, detail, grid, squareGrid, musicGrid, album, show, list, playback, actor, collectionGrid }
 
 struct LoadingState: View {
     var title = "Loading your library…"
@@ -23,14 +23,16 @@ struct LoadingState: View {
     @ScaledMetric(relativeTo: .headline) private var posterWidth = 164.0
     var body: some View {
         VStack(alignment: .leading, spacing: 20) {
-            if layout == .home || layout == .detail {
+            if layout == .home || layout == .homeAudio || layout == .detail {
                 CinemaHeroLayout {
-                    RoundedRectangle(cornerRadius: 12).fill(KinoTheme.surface).aspectRatio(16 / 9, contentMode: .fit)
+                    RoundedRectangle(cornerRadius: 12).fill(KinoTheme.surface)
+                        .aspectRatio(layout == .homeAudio ? 1 : 16 / 9, contentMode: .fit)
+                        .frame(maxWidth: layout == .homeAudio ? 240 : .infinity)
                 } information: {
                     featureInformation.frame(maxWidth: .infinity, alignment: .leading)
                 }.accessibilityHidden(true)
             }
-            if layout == .home {
+            if layout == .home || layout == .homeAudio {
                 VStack(alignment: .leading, spacing: 12) {
                     line(width: 200, height: 28)
                     LazyVGrid(columns: ResumeRows.columns(accessibility: dynamicType.isAccessibilitySize), alignment: .leading, spacing: 16) {
@@ -112,7 +114,7 @@ struct LoadingState: View {
             if layout == .playback {
                 ProgressView("Opening media…").frame(maxWidth: .infinity, minHeight: 220)
             }
-            if layout == .grid || layout == .musicGrid || layout == .show || layout == .actor || layout == .collectionGrid {
+            if layout == .grid || layout == .squareGrid || layout == .musicGrid || layout == .show || layout == .actor || layout == .collectionGrid {
                 if layout == .musicGrid {
                     #if os(tvOS)
                     HStack { line(width: 180, height: 42); Spacer(); Capsule().fill(KinoTheme.raised).frame(width: 200, height: 48) }.accessibilityHidden(true)
@@ -136,18 +138,18 @@ struct LoadingState: View {
                 if layout == .collectionGrid { line(width: 260, height: 42).accessibilityHidden(true) }
                 #endif
                 LazyVGrid(columns: MediaGrid.columns(landscape: layout == .show, accessibility: dynamicType.isAccessibilitySize), alignment: .leading, spacing: 28) {
-                    ForEach(0..<8) { _ in card(ratio: layout == .musicGrid ? 1 : layout == .show ? 16 / 9 : 2 / 3) }
+                    ForEach(0..<8) { _ in card(ratio: gridRatio) }
                 }
                 #if os(tvOS)
                 .padding(.vertical, 24)
                 #endif
                 .accessibilityHidden(true)
             }
-            if layout == .shelf || layout == .home {
+            if layout == .shelf || layout == .home || layout == .homeAudio {
                 line(width: 180, height: 28).accessibilityHidden(true)
                 ScrollView(.horizontal) {
                     HStack(alignment: .top, spacing: 18) {
-                        ForEach(0..<4) { _ in card().frame(width: shelfWidth) }
+                        ForEach(0..<4) { _ in card(ratio: layout == .homeAudio ? 1 : 2 / 3).frame(width: shelfWidth) }
                     }
                     #if os(tvOS)
                     .padding(.horizontal, 24)
@@ -177,7 +179,7 @@ struct LoadingState: View {
         HStack(spacing: 12) {
             if !dynamicType.isAccessibilitySize {
                 RoundedRectangle(cornerRadius: 8).fill(KinoTheme.surface)
-                    .aspectRatio(16 / 9, contentMode: .fit).frame(width: resumeArtworkWidth)
+                    .aspectRatio(layout == .homeAudio ? 1 : 16 / 9, contentMode: .fit).frame(width: resumeArtworkWidth)
             }
             VStack(alignment: .leading, spacing: 4) {
                 line(width: 180, height: 20)
@@ -205,6 +207,10 @@ struct LoadingState: View {
         #else
         min(posterWidth, 260)
         #endif
+    }
+    private var gridRatio: CGFloat {
+        if layout == .musicGrid || layout == .squareGrid { return 1 }
+        return layout == .show ? 16 / 9 : 2 / 3
     }
     private var resumeArtworkWidth: CGFloat {
         #if os(tvOS)
