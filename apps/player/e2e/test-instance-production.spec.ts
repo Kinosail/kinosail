@@ -128,12 +128,15 @@ test("video and music open the receiver picker and restore focus", async ({ page
       await expect(dialog).toBeVisible();
       if (kind === "audio") {
         await expect(dialog.getByText("HomePod, AirPlay speakers and TVs, or devices offered by your browser.")).toBeVisible();
+        await expect(dialog.getByText("Audio-only Cast speakers require a registered receiver app ID in Server configuration.")).toBeVisible();
         await expect(dialog.getByRole("heading", { name: "Screen mirroring / Miracast" })).toHaveCount(0);
       } else {
         await expect(dialog.getByText("Apple TV and AirPlay-enabled TVs, or devices offered by your browser.")).toBeVisible();
         await expect(dialog.getByRole("heading", { name: "Screen mirroring / Miracast" })).toBeVisible();
       }
       await expect(dialog.getByRole("button", { name: "Find DLNA receivers", exact: true })).toBeVisible();
+      await expect(dialog.getByRole("button", { name: "Enable Google Cast", exact: true })).toBeVisible();
+      await expect(dialog.getByRole("heading", { name: "Samsung and LG TVs", exact: true })).toBeVisible();
       expect((await new AxeBuilder({ page }).include(".tv-picker").analyze()).violations).toEqual([]);
       await page.screenshot({ path: testInfo.outputPath(`${width}-${kind}-receiver-picker.png`) });
       await dialog.getByRole("button", { name: "Close", exact: true }).click();
