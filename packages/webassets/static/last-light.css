@@ -135,6 +135,14 @@ body :is(.subtitle-inline-count,.subtitle-page-position,.health-line){font-varia
   .watch-progress progress{border:1px solid CanvasText}
 }
 
+/* Keep watch-page controls readable over bright title artwork during scroll. */
+body.player-page.has-media-backdrop::before{
+  background:linear-gradient(180deg,color-mix(in srgb,var(--bg) 88%,transparent),color-mix(in srgb,var(--bg) 94%,transparent) 48rem,var(--bg));
+}
+:root[data-theme=light] body.player-page.has-media-backdrop::before{
+  background:linear-gradient(180deg,color-mix(in srgb,var(--bg) 96%,transparent),var(--bg) 48rem);
+}
+
 /* Electric action hierarchy: capsules act; quiet controls recede. */
 body :is(button[type=submit]:not(.quiet),.button:not(.quiet),.primary-button){border-radius:999px}
 body :is(.button.quiet,.quiet-button){border-radius:12px}
