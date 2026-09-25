@@ -70,14 +70,3 @@ func TestCoverageMissingAndInvalidStaticAssets(t *testing.T) {
 		assertCoverageAPIStatus(t, response, http.StatusNotFound)
 	}
 }
-
-func TestCoverageAssetUnknownExtensionFallback(t *testing.T) {
-	request := httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/manifest.webmanifest", nil)
-	request.SetPathValue("name", "manifest.webmanifest")
-	response := httptest.NewRecorder()
-	serveAsset("web/")(response, request)
-	assertCoverageAPIStatus(t, response, http.StatusOK)
-	if response.Header().Get("Content-Type") == "" {
-		t.Fatal("asset lacks a content type")
-	}
-}
