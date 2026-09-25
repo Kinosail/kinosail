@@ -238,7 +238,7 @@ func newApplication(config Config) http.Handler { //nolint:funlen,cyclop,gocogni
 	if managedLifecycle {
 		sharedmetadata.Schedule(config.Lifecycle, metadata.available(), index.AddAnalyzer, func(ctx context.Context) error { return metadata.refreshMissing(ctx, index) })
 	}
-	registerAPI(mux, apiServices{index, progress, lists, auth, settings, hls, probe, metadata, rooms, backups, downloads, maintenance, viewingImports, agentConnections, config.InternetAccess, config.TrustedHTTPS, shares, quickConnect, supporter, updates, homeAssistant, config.AuthURL, events, experience})
+	registerAPI(mux, apiServices{index, progress, lists, auth, settings, hls, probe, metadata, rooms, backups, downloads, maintenance, viewingImports, agentConnections, config.InternetAccess, config.TrustedHTTPS, shares, quickConnect, supporter, updates, homeAssistant, newRemotePlayers(), config.AuthURL, events, experience})
 	registerMediaExperience(mux, experience, index, progress)
 	registerCasting(mux, auth, index, probe, hls, settings, config.AuthURL)
 	mcpAdapter := registerMCPWithConnections(mux, config.MCP, auth, apiRouting(mux), agentConnections)

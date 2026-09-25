@@ -74,6 +74,9 @@ struct AppShell: View {
                 }
             }
             .task(id: scenePhase) { if scenePhase == .active { await session.casting.monitor() } }
+            #if os(tvOS)
+            .task(id: scenePhase) { if scenePhase == .active { await session.remotePlayer.monitor(session: session) } }
+            #endif
             #if os(iOS)
             .task(id: scenePhase) { if scenePhase == .active { await session.downloads.monitor() } }
             .onChange(of: session.player.isPlaying || session.player.loading || session.player.buffering) { _, active in session.downloads.setPlaybackActive(active) }

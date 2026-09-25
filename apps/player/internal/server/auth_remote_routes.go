@@ -81,6 +81,9 @@ func remotePublicRouteDenied(pattern string) bool {
 }
 
 func publicViewerRouteAllowed(pattern string) bool {
+	if pattern == "GET /api/v1/remote-players" || pattern == "PUT /api/v1/remote-players/{id}" || pattern == "POST /api/v1/remote-players/{id}/commands" {
+		return true
+	}
 	if pattern == "GET /api/v1" || pattern == "GET /api/v1/openapi.json" {
 		return false
 	}

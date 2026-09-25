@@ -12,6 +12,10 @@
 		A27000000000000000000011 /* KinosailTopShelf.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = A27000000000000000000003 /* KinosailTopShelf.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		A27000000000000000000017 /* Sources/Core/Contract.swift in Sources */ = {isa = PBXBuildFile; fileRef = A27000000000000000000015 /* Sources/Core/Contract.swift */; };
 		A27000000000000000000018 /* Sources/Core/StrictJSON.swift in Sources */ = {isa = PBXBuildFile; fileRef = A27000000000000000000016 /* Sources/Core/StrictJSON.swift */; };
+		B2800000000000000000000B /* Resources/watchOS.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B2800000000000000000000A /* Resources/watchOS.xcassets */; };
+		B2800000000000000000000F /* KinosailWatch.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = B28000000000000000000002 /* KinosailWatch.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		B28000000000000000000013 /* Sources/Core/WatchRemoteProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = B28000000000000000000012 /* Sources/Core/WatchRemoteProtocol.swift */; };
+		B28000000000000000000015 /* Sources/Core/HeartTimeline.swift in Sources */ = {isa = PBXBuildFile; fileRef = B28000000000000000000014 /* Sources/Core/HeartTimeline.swift */; };
 		A94CDB0D79D4D1B14CFAEA50 /* Resources/iOS.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4F62CA20BF0D6C65D69896FC /* Resources/iOS.xcassets */; };
 		C4A9DB84B2E3CEBEAE964D4D /* Resources/tvOS.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 99A64CCF75F24274F0027F7E /* Resources/tvOS.xcassets */; };
 /* End PBXBuildFile section */
@@ -30,6 +34,13 @@
 			proxyType = 1;
 			remoteGlobalIDString = A27000000000000000000010;
 			remoteInfo = KinosailTopShelf;
+		};
+		B28000000000000000000010 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = BD78DBAA6F46B4C8AAFFC3B5 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = B28000000000000000000001;
+			remoteInfo = KinosailWatch;
 		};
 		E432B122341CE669D5D300AD /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -52,6 +63,17 @@
 			name = "Embed Foundation Extensions";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		B2800000000000000000000E /* Embed Watch Content */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 16;
+			files = (
+				B2800000000000000000000F /* KinosailWatch.app in Embed Watch Content */,
+			);
+			name = "Embed Watch Content";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
@@ -62,6 +84,10 @@
 		A27000000000000000000003 /* KinosailTopShelf.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; path = KinosailTopShelf.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		A27000000000000000000015 /* Sources/Core/Contract.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/Core/Contract.swift; sourceTree = "<group>"; };
 		A27000000000000000000016 /* Sources/Core/StrictJSON.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/Core/StrictJSON.swift; sourceTree = "<group>"; };
+		B28000000000000000000002 /* KinosailWatch.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = KinosailWatch.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		B2800000000000000000000A /* Resources/watchOS.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Resources/watchOS.xcassets; sourceTree = "<group>"; };
+		B28000000000000000000012 /* Sources/Core/WatchRemoteProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/Core/WatchRemoteProtocol.swift; sourceTree = "<group>"; };
+		B28000000000000000000014 /* Sources/Core/HeartTimeline.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/Core/HeartTimeline.swift; sourceTree = "<group>"; };
 		AC29D74436D094327D2CC417 /* Configuration/tvOS-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Configuration/tvOS-Info.plist"; sourceTree = "<group>"; };
 		B833FD8937156128B3514625 /* KinosailPlayer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = KinosailPlayer.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C87BA4C13320E285D0730317 /* KinosailPlayer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = KinosailPlayer.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -74,6 +100,7 @@
 		4A419C504A5B6CAD4F610ED7 /* Sources */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = Sources; sourceTree = "<group>"; };
 		A27000000000000000000001 /* TopShelf */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = TopShelf; sourceTree = "<group>"; };
 		A27000000000000000000002 /* TopShelfShared */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = TopShelfShared; sourceTree = "<group>"; };
+		B28000000000000000000003 /* Watch */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = Watch; sourceTree = "<group>"; };
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -92,6 +119,13 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		A27000000000000000000005 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B28000000000000000000005 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -119,6 +153,7 @@
 			isa = PBXGroup;
 			children = (
 				A27000000000000000000003 /* KinosailTopShelf.appex */,
+				B28000000000000000000002 /* KinosailWatch.app */,
 				C87BA4C13320E285D0730317 /* KinosailPlayer.app */,
 				1523F6D69D5D948BDA2EF1FC /* KinosailPlayerTests.xctest */,
 				B833FD8937156128B3514625 /* KinosailPlayer.app */,
@@ -132,10 +167,12 @@
 			children = (
 				A27000000000000000000001 /* TopShelf */,
 				A27000000000000000000002 /* TopShelfShared */,
+				B28000000000000000000003 /* Watch */,
 				4A419C504A5B6CAD4F610ED7 /* Sources */,
 				3EC6D11BEEF7253C16E09FDF /* Tests */,
 				4F62CA20BF0D6C65D69896FC /* Resources/iOS.xcassets */,
 				99A64CCF75F24274F0027F7E /* Resources/tvOS.xcassets */,
+				B2800000000000000000000A /* Resources/watchOS.xcassets */,
 				CD0ACFFF9F93025CCF567118 /* Resources/PrivacyInfo.xcprivacy */,
 				FA2C79B22DC2E156D3845D23 /* Configuration/iOS-Info.plist */,
 				AC29D74436D094327D2CC417 /* Configuration/tvOS-Info.plist */,
@@ -149,6 +186,8 @@
 			children = (
 				A27000000000000000000015 /* Sources/Core/Contract.swift */,
 				A27000000000000000000016 /* Sources/Core/StrictJSON.swift */,
+				B28000000000000000000012 /* Sources/Core/WatchRemoteProtocol.swift */,
+				B28000000000000000000014 /* Sources/Core/HeartTimeline.swift */,
 			);
 			name = "Recovered References";
 			sourceTree = "<group>";
@@ -163,10 +202,12 @@
 				0F18A4264E2CB26C8DF1A32D /* Sources */,
 				3DB127EBAD1FAD5C44765452 /* Frameworks */,
 				09C06150177587BCE5327187 /* Resources */,
+				B2800000000000000000000E /* Embed Watch Content */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				B28000000000000000000011 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
 				4A419C504A5B6CAD4F610ED7 /* Sources */,
@@ -198,6 +239,28 @@
 			productName = KinosailTopShelf;
 			productReference = A27000000000000000000003 /* KinosailTopShelf.appex */;
 			productType = "com.apple.product-type.app-extension";
+		};
+		B28000000000000000000001 /* KinosailWatch */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = B28000000000000000000009 /* Build configuration list for PBXNativeTarget "KinosailWatch" */;
+			buildPhases = (
+				B28000000000000000000004 /* Sources */,
+				B28000000000000000000005 /* Frameworks */,
+				B28000000000000000000006 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				B28000000000000000000003 /* Watch */,
+			);
+			name = KinosailWatch;
+			packageProductDependencies = (
+			);
+			productName = KinosailWatch;
+			productReference = B28000000000000000000002 /* KinosailWatch.app */;
+			productType = "com.apple.product-type.application";
 		};
 		BA7E0317BF05ADD1A09AC29C /* Kinosail-tvOS */ = {
 			isa = PBXNativeTarget;
@@ -283,6 +346,9 @@
 					7A7BC14A88F12E941988D9EC = {
 						CreatedOnToolsVersion = 26.6;
 					};
+					B28000000000000000000001 = {
+						CreatedOnToolsVersion = 27.0;
+					};
 					BA7E0317BF05ADD1A09AC29C = {
 						CreatedOnToolsVersion = 26.6;
 					};
@@ -310,6 +376,7 @@
 				7A7BC14A88F12E941988D9EC /* Kinosail-iOS */,
 				BA7E0317BF05ADD1A09AC29C /* Kinosail-tvOS */,
 				A27000000000000000000010 /* KinosailTopShelf */,
+				B28000000000000000000001 /* KinosailWatch */,
 				E027A92FD049716B2B6E30FC /* Kinosail-iOSTests */,
 				E443E9C03FD7ACF1982CC7B1 /* Kinosail-tvOSTests */,
 			);
@@ -337,6 +404,14 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B28000000000000000000006 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B2800000000000000000000B /* Resources/watchOS.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -389,6 +464,15 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		B28000000000000000000004 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B28000000000000000000013 /* Sources/Core/WatchRemoteProtocol.swift in Sources */,
+				B28000000000000000000015 /* Sources/Core/HeartTimeline.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		B999AC38BC47FA172E8A0CD3 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -409,6 +493,11 @@
 			target = A27000000000000000000010 /* KinosailTopShelf */;
 			targetProxy = A27000000000000000000013 /* PBXContainerItemProxy */;
 		};
+		B28000000000000000000011 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = B28000000000000000000001 /* KinosailWatch */;
+			targetProxy = B28000000000000000000010 /* PBXContainerItemProxy */;
+		};
 		A7D98A3F64B4FCFFE63C7BCA /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = BA7E0317BF05ADD1A09AC29C /* Kinosail-tvOS */;
@@ -417,6 +506,48 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
+		B28000000000000000000007 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = Configuration/watchOS.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = "Configuration/watchOS-Info.plist";
+				MARKETING_VERSION = 0.2.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.kinosail.player.watchkitapp;
+				PRODUCT_NAME = KinosailWatch;
+				SDKROOT = watchos;
+				SUPPORTED_PLATFORMS = "watchos watchsimulator";
+				SWIFT_STRICT_CONCURRENCY = complete;
+				SWIFT_VERSION = 6.0;
+				TARGETED_DEVICE_FAMILY = 4;
+				WATCHOS_DEPLOYMENT_TARGET = 26.0;
+			};
+			name = Debug;
+		};
+		B28000000000000000000008 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = Configuration/watchOS.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = "Configuration/watchOS-Info.plist";
+				MARKETING_VERSION = 0.2.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.kinosail.player.watchkitapp;
+				PRODUCT_NAME = KinosailWatch;
+				SDKROOT = watchos;
+				SUPPORTED_PLATFORMS = "watchos watchsimulator";
+				SWIFT_STRICT_CONCURRENCY = complete;
+				SWIFT_VERSION = 6.0;
+				TARGETED_DEVICE_FAMILY = 4;
+				WATCHOS_DEPLOYMENT_TARGET = 26.0;
+			};
+			name = Release;
+		};
 		03F9ABB12766E1825F05B5F9 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -809,6 +940,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		B28000000000000000000009 /* Build configuration list for PBXNativeTarget "KinosailWatch" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				B28000000000000000000007 /* Debug */,
+				B28000000000000000000008 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		259CECEF5201BDDFA515B114 /* Build configuration list for PBXProject "Kinosail" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (

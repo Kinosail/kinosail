@@ -23,39 +23,40 @@ final class AppSession {
     var contentRevision = UUID()
     var supporterRevision = UUID()
     let player = PlaybackCoordinator()
+    #if os(tvOS)
+    let remotePlayer = RemotePlayerMonitor()
+    #endif
     let casting = CastCoordinator()
     let artwork = ArtworkLoader()
     let resourceSnapshots = ResourceSnapshotCache()
     private(set) var progress: ProgressSyncStore?
     #if os(iOS)
     let downloads = OfflineDownloadManager()
+    let watchRemote = WatchRemoteBridge()
     #endif
-
     private let keychain = SessionKeychain()
     private var restoreTask: Task<Void, Never>?
     private var generation = UUID()
     private var pairingTask: Task<Void, Never>?
     private var pairingClient: ServerClient?
     private var challenge: ConnectChallenge?
-
     init() {
         #if os(tvOS)
         TopShelfPreferences.migrateToDefaultOn()
         #endif
         #if os(iOS)
+        watchRemote.attach(self)
         player.onCompleted = { [weak self] item, nextID in
             guard let self, let client = self.client else { return }
             Task { await self.downloads.completed(item, nextID: nextID, client: client) }
         }
         #endif
     }
-
     var profileKey: String? {
         guard let client, let viewer else { return nil }
         let raw = "\(client.server.url.absoluteString)\n\(viewer.serverID)\n\(viewer.id)"
         return SHA256.hash(data: Data(raw.utf8)).map { String(format: "%02x", $0) }.joined()
     }
-
     func restore() async {
         if restoreTask == nil { restoreTask = Task { await restoreSession() } }
         await restoreTask?.value
@@ -289,7 +290,6 @@ final class AppSession {
     static func message(_ error: any Error) -> String {
         (error as? ClientError)?.localizedDescription ?? "The operation could not finish. Please try again."
     }
-
     private static var deviceName: String {
         #if os(tvOS)
         "Kinosail Apple TV"
