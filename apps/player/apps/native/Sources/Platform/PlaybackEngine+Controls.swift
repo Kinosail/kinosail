@@ -88,41 +88,64 @@ extension PlaybackEngine {
         if valid.subtitleLanguage == "off", let subtitleGroup { item.select(nil, in: subtitleGroup) }
         else { selectPreferred(in: subtitleGroup, options: subtitleOptions, language: valid.subtitleLanguage, label: valid.subtitleTrack, item: item) }
         let external = source?.subtitles ?? []
+        let rememberedOn = devicePreferencesScope.flatMap { DevicePlaybackChoices.load(scope: $0).subtitleLanguage }.map { $0 != "off" } ?? false
+        let preferredExternal = external.firstIndex(where: { !valid.subtitleTrack.isEmpty && $0.label == valid.subtitleTrack })
+            ?? external.firstIndex(where: { valid.subtitleLanguage == "auto" ? $0.isDefault : $0.language.lowercased() == valid.subtitleLanguage.lowercased() })
+            ?? (rememberedOn && selectedSubtitleTrackID == nil && subtitleOptions.isEmpty ? external.indices.first : nil)
         if valid.subtitleLanguage == "off" { subtitleDocument = nil; externalCaptions = false; presentation.showCaptions("") }
-        else if let index = external.firstIndex(where: {
-            !valid.subtitleTrack.isEmpty ? $0.label == valid.subtitleTrack : valid.subtitleLanguage == "auto" ? $0.isDefault : $0.language.lowercased() == valid.subtitleLanguage.lowercased()
-        }) {
-            do { try await selectSubtitleTrack(id: "external:\(index)") }
+        else if let index = preferredExternal {
+            do { try await selectSubtitleTrack(id: "external:\(index)", remember: false) }
             catch is CancellationError { throw CancellationError() }
             catch { progressMessage = "The selected subtitles could not be loaded. Choose a track in Playback options." }
         }
+        if rememberedOn, selectedSubtitleTrackID == nil, let subtitleGroup, let first = subtitleOptions.first { item.select(first, in: subtitleGroup) }
+        observedAudioTrackID = selectedAudioTrackID
+        observedSubtitleTrackID = selectedSubtitleTrackID
     }
 
     func changeRate(_ rate: Double) async throws {
         guard rate.isFinite, (0.5...3).contains(rate) else { throw ClientError.invalidInput("Choose a playback speed between 0.5× and 3×.") }
-        guard let client, let item = currentItem, let player else { throw ClientError.unavailable }
-        var next = preferences
-        next.rate = rate
-        let attempt = generation
-        // Session controls work offline and preserve the selected audio/captions.
-        preferences = next
+        guard currentItem != nil, let player, devicePreferencesScope != nil else { throw ClientError.unavailable }
+        preferences.rate = rate
         playbackRate = rate
         player.defaultRate = Float(rate)
         if isPlaying { player.rate = Float(rate) }
-        // Serialize writes so an older response cannot overwrite a newer choice.
-        let previous = savingRate
-        savingRate = Task { [weak self] in
-            await previous?.value
-            guard let self, !Task.isCancelled, self.generation == attempt, self.preferences.rate == rate else { return }
-            do {
-                let saved = try await client.savePlaybackPreferences(itemID: item.id, preferences: next)
-                try self.check(attempt)
-                guard saved.playback.rate == rate else { throw ClientError.invalidResponse }
-            } catch is CancellationError {} catch {
-                if self.generation == attempt, self.preferences.rate == rate {
-                    self.progressMessage = "Speed changed on this device. Your Server preference couldn’t be saved."
-                }
+        rememberChoices { $0.rate = rate }
+    }
+
+    func rememberChoices(_ change: (inout DevicePlaybackChoices) -> Void) {
+        guard let scope = devicePreferencesScope else { return }
+        var choices = DevicePlaybackChoices.load(scope: scope)
+        change(&choices)
+        choices.save(scope: scope)
+    }
+
+    func rememberAudioSelection(id: String) {
+        guard let index = Int(id), audioOptions.indices.contains(index) else { return }
+        observedAudioTrackID = id
+        let option = audioOptions[index]
+        rememberChoices {
+            $0.audioLanguage = (try? PlaybackPreferences.language((option.extendedLanguageTag ?? option.locale?.identifier ?? "auto").lowercased(), subtitle: false)) ?? "auto"
+            $0.audioTrack = (try? Input.text(option.displayName, max: 256, label: "audio track", empty: true)) ?? ""
+        }
+    }
+
+    func rememberSubtitleSelection(id: String?) {
+        observedSubtitleTrackID = id
+        if let id, id.hasPrefix("external:"), let index = Int(id.dropFirst(9)), let tracks = source?.subtitles, tracks.indices.contains(index) {
+            let track = tracks[index]
+            rememberChoices {
+                $0.subtitleLanguage = (try? PlaybackPreferences.language(track.language.lowercased(), subtitle: true)) ?? "auto"
+                $0.subtitleTrack = (try? Input.text(track.label, max: 256, label: "subtitle track", empty: true)) ?? ""
             }
+        } else if let id, let index = Int(id), subtitleOptions.indices.contains(index) {
+            let option = subtitleOptions[index]
+            rememberChoices {
+                $0.subtitleLanguage = (try? PlaybackPreferences.language((option.extendedLanguageTag ?? option.locale?.identifier ?? "auto").lowercased(), subtitle: true)) ?? "auto"
+                $0.subtitleTrack = (try? Input.text(option.displayName, max: 256, label: "subtitle track", empty: true)) ?? ""
+            }
+        } else if id == nil {
+            rememberChoices { $0.subtitleLanguage = "off"; $0.subtitleTrack = "" }
         }
     }
 
@@ -157,9 +180,10 @@ extension PlaybackEngine {
     func selectAudioTrack(id: String) throws {
         guard let group = audioGroup, let index = Int(id), String(index) == id, audioOptions.indices.contains(index) else { throw ClientError.invalidInput("The audio track is unavailable.") }
         player?.currentItem?.select(audioOptions[index], in: group)
+        rememberAudioSelection(id: id)
     }
 
-    func selectSubtitleTrack(id: String?) async throws {
+    func selectSubtitleTrack(id: String?, remember: Bool = true) async throws {
         let selection = UUID(); subtitleGeneration = selection
         if let id, id.hasPrefix("external:") {
             guard let index = Int(id.dropFirst(9)), id == "external:\(index)", let subtitles = source?.subtitles, subtitles.indices.contains(index), let client else { throw ClientError.invalidInput("The subtitle track is unavailable.") }
@@ -173,12 +197,14 @@ extension PlaybackEngine {
             subtitleDocument = document; externalCaptions = true
             selectedExternalSubtitleID = id
             presentation.showCaptions(document.text(at: seconds))
+            if remember { rememberSubtitleSelection(id: id) }
             return
         }
         if id == nil {
             if let group = subtitleGroup { player?.currentItem?.select(nil, in: group) }
             subtitleDocument = nil; externalCaptions = false; presentation.showCaptions("")
             selectedExternalSubtitleID = nil
+            if remember { rememberSubtitleSelection(id: nil) }
             return
         }
         guard let group = subtitleGroup else { throw ClientError.invalidInput("This stream has no selectable subtitles.") }
@@ -187,6 +213,7 @@ extension PlaybackEngine {
             player?.currentItem?.select(subtitleOptions[index], in: group)
             subtitleDocument = nil; externalCaptions = false; presentation.showCaptions("")
             selectedExternalSubtitleID = nil
+            if remember { rememberSubtitleSelection(id: id) }
         }
     }
 
