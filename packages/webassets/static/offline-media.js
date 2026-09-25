@@ -12,7 +12,11 @@ let selectedOfflineIdentity;
 let offlineIdentityReady = true;
 let offlineIdentityWrites = Promise.resolve();
 const selectedProfile = async () => {
-  if (!offlineIdentityReady) return "";
+  while (!offlineIdentityReady) {
+    const pending = offlineIdentityWrites;
+    try { await pending; } catch { return ""; }
+    if (pending === offlineIdentityWrites && !offlineIdentityReady) return "";
+  }
   const stored = selectedOfflineIdentity ?? await offlineProfileState();
   return offlineIdentityReady ? (selectedOfflineIdentity ?? stored)?.profile || "" : "";
 };

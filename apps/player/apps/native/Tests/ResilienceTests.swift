@@ -55,6 +55,62 @@ struct ResilienceTests {
     }
 
     #if os(iOS)
+    @Test func downloadsAndVerifiesPlayableAudioBeforePublishing() async throws {
+        let root = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+        defer { try? FileManager.default.removeItem(at: root) }
+        let fixture = try HTTPFixture(body: "{}")
+        defer { fixture.remove() }
+        let id = "aaaaaaaaaaaaaaaa", key = String(repeating: "b", count: 64)
+        var wave = Data("RIFF".utf8)
+        func append16(_ value: Int) { wave.append(contentsOf: [UInt8(value & 255), UInt8((value >> 8) & 255)]) }
+        func append32(_ value: Int) { for shift in [0, 8, 16, 24] { wave.append(UInt8((value >> shift) & 255)) } }
+        append32(16_036); wave.append(contentsOf: Data("WAVEfmt ".utf8))
+        append32(16); append16(1); append16(1); append32(8_000); append32(16_000); append16(2); append16(16)
+        wave.append(contentsOf: Data("data".utf8)); append32(16_000); wave.append(Data(repeating: 0, count: 16_000))
+        let digest = VerifiedDownload.hash(wave)
+        let manifest = JSONValue.object(["version": .number(1), "id": .string(id), "size": .number(Double(wave.count)),
+            "sha256": .string(digest), "chunkSize": .number(8 * 1024 * 1024), "chunks": .array([.string(digest)])])
+        let manifestData = try JSONEncoder().encode(manifest)
+        let path = "/api/v1/downloads/" + id
+        FixtureURLProtocol.entries.withLock {
+            $0[fixture.host]?.routes[path + "/manifest"] = .init(data: manifestData, status: 200, headers: [:])
+            $0[fixture.host]?.routes[path + "/file"] = .init(data: wave, status: 206, headers: [
+                "ETag": "\"\(digest)\"", "Content-Range": "bytes 0-\(wave.count - 1)/\(wave.count)"])
+        }
+        let configuration = URLSessionConfiguration.ephemeral; configuration.protocolClasses = [FixtureURLProtocol.self]
+        let engine = VerifiedDownloads(directory: root, configuration: configuration)
+        let access = try DownloadAuthorization(server: ServerAddress("https://" + fixture.host), serverID: "server", profileID: "viewer", token: "fixture-token")
+        try await engine.authorize(access)
+        try await engine.enqueuePreparation(scope: access.scope, key: key, uri: "https://" + fixture.host + path + "/file", kind: "audio", wifiOnly: false, quota: 0)
+        let deadline = Date().addingTimeInterval(10)
+        var snapshot = try await engine.snapshot(access.scope).first { $0.key == key }
+        while snapshot?.status != "complete" && snapshot?.status != "paused" && Date() < deadline {
+            try await Task.sleep(for: .milliseconds(50))
+            snapshot = try await engine.snapshot(access.scope).first { $0.key == key }
+        }
+        #expect(snapshot?.status == "complete")
+        #expect(fixture.requests.map { $0.url?.path } == [path + "/manifest", path + "/file"])
+        #expect(fixture.requests.last?.value(forHTTPHeaderField: "Range") == "bytes=0-\(wave.count - 1)")
+        let file = try await engine.file(access.scope, key: key)
+        #expect(try Data(contentsOf: file) == wave)
+        await engine.close()
+        FixtureURLProtocol.entries.withLock { $0[fixture.host]?.hold = true }
+        let reopened = VerifiedDownloads(directory: root, configuration: configuration)
+        try await reopened.authorize(access)
+        try await reopened.check(access.scope, key: key)
+        let reopenedDeadline = Date().addingTimeInterval(10)
+        var reopenedStatus = try await reopened.snapshot(access.scope).first?.status
+        while reopenedStatus != "complete" && reopenedStatus != "paused" && Date() < reopenedDeadline {
+            try await Task.sleep(for: .milliseconds(50))
+            reopenedStatus = try await reopened.snapshot(access.scope).first?.status
+        }
+        #expect(reopenedStatus == "complete")
+        let reopenedFile = try await reopened.file(access.scope, key: key)
+        #expect(try Data(contentsOf: reopenedFile) == wave)
+        #expect(fixture.requests.count == 2)
+        await reopened.close()
+    }
+
     @Test func pausedExtentsLeaveRoomForAnotherPreparation() async throws {
         let root = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
         defer { try? FileManager.default.removeItem(at: root) }
