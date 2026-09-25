@@ -62,6 +62,8 @@
   pages:
     - title: Security overview
       url: /security/
+    - title: Privacy policy
+      url: /privacy/
     - title: Secure accounts
       url: /owner-guide/security/
     - title: Configure remote access
