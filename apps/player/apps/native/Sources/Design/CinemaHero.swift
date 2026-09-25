@@ -39,7 +39,7 @@ struct CinemaHero<Actions: View>: View {
                 }
                 if item.progress.seconds > 0 && !item.progress.watched { WatchPosition(item: item) }
                 ViewThatFits(in: .horizontal) {
-                    HStack(spacing: 12) { actions().fixedSize(horizontal: false, vertical: true) }
+                    HStack(spacing: actionSpacing) { actions().fixedSize(horizontal: false, vertical: true) }
                     VStack(alignment: .leading, spacing: 12) { actions().fixedSize(horizontal: false, vertical: true) }
                 }
                 .controlSize(.large)
@@ -49,6 +49,14 @@ struct CinemaHero<Actions: View>: View {
         .foregroundStyle(KinoTheme.text)
         #if os(tvOS)
         .focusSection()
+        #endif
+    }
+
+    private var actionSpacing: CGFloat {
+        #if os(tvOS)
+        40
+        #else
+        12
         #endif
     }
 }
