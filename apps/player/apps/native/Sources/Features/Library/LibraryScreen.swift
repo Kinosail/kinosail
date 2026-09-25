@@ -9,6 +9,9 @@ struct LibraryScreen: View {
     @State private var showsSearch = false
     @State private var showsLetterJump = false
     #endif
+    #if os(tvOS)
+    @State private var quickPlay: ScreenDestination?
+    #endif
     @State private var selection: LibraryView
     @State private var sort = LibrarySort.title
     @State private var items: [MediaItem] = []
@@ -49,6 +52,30 @@ struct LibraryScreen: View {
                     HStack(spacing: 16) { filters }
                     VStack(alignment: .leading, spacing: 16) { filters }
                 }
+                #if os(tvOS)
+                if let page, page.letters.count > 1, sort == .title, query.isEmpty, !searchMode {
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text("Jump to title").font(.callout).foregroundStyle(KinoTheme.muted)
+                        ScrollView(.horizontal) {
+                            LazyHStack(spacing: 8) {
+                                ForEach(page.letters) { letter in
+                                    Button(letter.label) {
+                                        Task { await load(reset: true, start: letter.offset) }
+                                    }
+                                    .buttonStyle(.bordered)
+                                    .tint(KinoTheme.secondaryControlTint)
+                                    .foregroundStyle(KinoTheme.text)
+                                    .accessibilityLabel("\(letter.label), \(letter.count) \(letter.count == 1 ? "title" : "titles")")
+                                }
+                            }
+                            .padding(.vertical, 16)
+                        }
+                        .scrollIndicators(.hidden)
+                        .scrollClipDisabled()
+                        .focusSection()
+                    }
+                }
+                #endif
                 if items.isEmpty {
                     if page == nil && (loading || loadedKey == nil && failure == nil) { LoadingState(layout: .grid) }
                     else if let failure { RetryState(message: failure) { Task { await load(reset: true) } } }
@@ -58,7 +85,11 @@ struct LibraryScreen: View {
                     }
                 } else {
                     #if os(tvOS)
-                    MediaGrid(items: items)
+                    MediaGrid(items: items, onFocus: { item in
+                        if failure == nil && LibraryFocusPaging.shouldLoadNextPage(focusedID: item.id, items: items, page: page) {
+                            Task { await load(reset: false) }
+                        }
+                    }, onQuickPlay: { quickPlay = $0 })
                     #else
                     if let page { Text("\(page.total.formatted()) titles").font(.callout).foregroundStyle(KinoTheme.muted) }
                     MediaGrid(items: items)
@@ -87,6 +118,7 @@ struct LibraryScreen: View {
         #endif
         #if os(tvOS)
         .navigationTitle("")
+        .navigationDestination(item: $quickPlay) { DestinationScreen(destination: $0) }
         #else
         .navigationTitle(searchMode ? "Search" : selection.title)
         #endif
@@ -128,8 +160,8 @@ struct LibraryScreen: View {
         #else
         sortPicker
         #endif
+        #if os(iOS)
         if let page, !page.letters.isEmpty, sort == .title {
-            #if os(iOS)
             Button { showsLetterJump = true } label: {
                 Label("A–Z", systemImage: "textformat.abc")
             }
@@ -137,14 +169,8 @@ struct LibraryScreen: View {
             .buttonBorderShape(.capsule)
             .tint(KinoTheme.secondaryControlTint)
             .foregroundStyle(KinoTheme.text)
-            #else
-            Menu("Jump to letter", systemImage: "textformat.abc") {
-                ForEach(page.letters) { letter in
-                    Button("\(letter.label) · \(letter.count)") { Task { await load(reset: true, start: letter.offset) } }
-                }
-            }.tint(KinoTheme.secondaryControlTint).foregroundStyle(KinoTheme.text)
-            #endif
         }
+        #endif
     }
 
     private var sortPicker: some View {

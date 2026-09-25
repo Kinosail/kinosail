@@ -67,6 +67,13 @@ struct MediaCard: View {
     var landscape = false
     var resumesPlayback = false
     var onFocus: ((MediaItem) -> Void)?
+    var onQuickPlay: ((ScreenDestination) -> Void)?
+    #if os(tvOS)
+    private var quickPlayAction: (() -> Void)? {
+        guard let onQuickPlay, let destination = TVOSQuickPlay.destination(for: item) else { return nil }
+        return { if focused { onQuickPlay(destination) } }
+    }
+    #endif
     var body: some View {
         NavigationLink(value: resumesPlayback ? item.playingDestination : item.destination) {
             VStack(alignment: .leading, spacing: 10) {
@@ -106,6 +113,9 @@ struct MediaCard: View {
         .buttonStyle(.card)
         .focused($focused)
         .onChange(of: focused) { _, value in if value { onFocus?(item) } }
+        .onPlayPauseCommand(perform: quickPlayAction)
+        .accessibilityHint(onQuickPlay != nil && TVOSQuickPlay.destination(for: item) != nil
+                           ? "Select for details, or press Play/Pause to play." : "Select for details.")
         #endif
         .accessibilityElement(children: .combine)
     }
@@ -116,9 +126,10 @@ struct MediaGrid: View {
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     let items: [MediaItem]
     var onFocus: ((MediaItem) -> Void)?
+    var onQuickPlay: ((ScreenDestination) -> Void)?
     var body: some View {
         LazyVGrid(columns: Self.columns(landscape: landscape, accessibility: dynamicTypeSize.isAccessibilitySize), alignment: .leading, spacing: 28) {
-            ForEach(items) { MediaCard(item: $0, landscape: landscape, onFocus: onFocus) }
+            ForEach(items) { MediaCard(item: $0, landscape: landscape, onFocus: onFocus, onQuickPlay: onQuickPlay) }
         }
         #if os(tvOS)
         .padding(.vertical, 24)
@@ -133,6 +144,12 @@ struct MediaGrid: View {
         let minimum: CGFloat = landscape ? 280 : 144
         #endif
         return [GridItem(.adaptive(minimum: minimum), spacing: 20, alignment: .top)]
+    }
+}
+
+enum TVOSQuickPlay {
+    static func destination(for item: MediaItem) -> ScreenDestination? {
+        item.kind == .video || item.isAudio ? item.playingDestination : nil
     }
 }
 
