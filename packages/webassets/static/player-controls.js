@@ -31,6 +31,36 @@ if (controls && player.tagName === "VIDEO") {
     feedbackTimer = setTimeout(() => { feedback.hidden = true; }, 8000);
   };
   const seek = controls.querySelector("[data-player-seek]");
+  const seekPreview = controls.querySelector("[data-seek-preview]");
+  const previewFrame = seekPreview?.querySelector("[data-seek-frame]");
+  const previewImage = previewFrame ? new Image() : null;
+  if (previewImage) { previewImage.alt = ""; previewImage.hidden = true; previewFrame.append(previewImage); }
+  const previewTime = seekPreview?.querySelector("[data-preview-time]");
+  let previewTimer;
+  let previewSecond = -1;
+  const hideSeekPreview = () => {
+    clearTimeout(previewTimer);
+    previewSecond = -1;
+    if (seekPreview) seekPreview.hidden = true;
+  };
+  const showSeekPreview = (position) => {
+    const duration = Number(seek.max);
+    if (!seekPreview || !Number.isFinite(position) || !(duration > 0)) return;
+    const target = Math.max(0, Math.min(position, duration));
+    seekPreview.hidden = false;
+    previewTime.textContent = formatTime(target);
+    seekPreview.style.setProperty("--preview-progress", `${target / duration * 100}%`);
+    if (target > 43200) { previewImage.hidden = true; previewSecond = -1; clearTimeout(previewTimer); return; }
+    const second = Math.floor(target / 10) * 10;
+    if (second === previewSecond || !seek.dataset.trickplay) return;
+    previewSecond = second;
+    previewImage.hidden = true;
+    previewImage.removeAttribute("src");
+    clearTimeout(previewTimer);
+    previewTimer = setTimeout(() => { previewImage.src = seek.dataset.trickplay.replace("{second}", String(second)); }, 120);
+  };
+  previewImage?.addEventListener("load", () => { previewImage.hidden = false; });
+  previewImage?.addEventListener("error", () => { previewImage.hidden = true; });
   const volume = controls.querySelector("[data-player-volume]");
   const time = controls.querySelector("[data-player-time]");
   const mute = controls.querySelector("[data-player-mute]");
@@ -74,14 +104,21 @@ if (controls && player.tagName === "VIDEO") {
   controls.querySelectorAll("[data-player-toggle]").forEach((button) => button.addEventListener("click", () => player.paused ? requestPlay("control").catch(() => {}) : requestPause()));
   controls.querySelectorAll("[data-player-back]").forEach((button) => button.addEventListener("click", () => { player.currentTime = Math.max(0, player.currentTime - 10); }));
   controls.querySelectorAll("[data-player-forward]").forEach((button) => button.addEventListener("click", () => { player.currentTime = Math.min(player.duration || Infinity, player.currentTime + 10); }));
-  seek.addEventListener("input", () => { scrubPosition = Number(seek.value); syncControls(); });
+  seek.addEventListener("input", () => { scrubPosition = Number(seek.value); syncControls(); showSeekPreview(scrubPosition); });
+  seek.addEventListener("pointermove", (event) => {
+    const bounds = seek.getBoundingClientRect();
+    if (bounds.width > 0) showSeekPreview(Number(seek.max) * (event.clientX - bounds.left) / bounds.width);
+  });
+  seek.addEventListener("pointerleave", () => { if (scrubPosition === undefined) hideSeekPreview(); });
+  seek.addEventListener("focus", () => showSeekPreview(Number(seek.value)));
   seek.addEventListener("change", () => {
     const position = Number(seek.value);
     scrubPosition = undefined;
     if (Number.isFinite(position) && position >= 0 && position <= Number(seek.max)) player.currentTime = position;
     syncControls();
+    hideSeekPreview();
   });
-  for (const event of ["pointercancel", "blur"]) seek.addEventListener(event, () => { scrubPosition = undefined; syncControls(); });
+  for (const event of ["pointercancel", "blur"]) seek.addEventListener(event, () => { scrubPosition = undefined; syncControls(); hideSeekPreview(); });
   volume.addEventListener("input", () => { player.muted = false; player.volume = Number(volume.value); syncControls(); });
   mute.addEventListener("click", () => { player.muted = !player.muted; syncControls(); });
   const subtitleSelect = document.querySelector("[data-subtitles]");
