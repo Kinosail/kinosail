@@ -16,4 +16,16 @@ struct MediaDestinationTests {
         #expect(episode.destination(inShows: false) == .detail("episode"))
         #expect(movie.destination(inShows: true) == .detail("movie"))
     }
+
+    @Test func photoCardOpensTheViewerDirectlyOnTV() throws {
+        let photo = try MediaItem(.object([
+            "id": .string("photo"), "kind": .string("photo"), "title": .string("Coast")
+        ]), server: ServerAddress("https://media.example"))
+
+        #if os(tvOS)
+        #expect(photo.destination(inShows: false) == .photos("photo"))
+        #else
+        #expect(photo.destination(inShows: false) == .detail("photo"))
+        #endif
+    }
 }

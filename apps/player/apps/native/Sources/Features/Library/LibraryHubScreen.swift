@@ -2,7 +2,35 @@ import SwiftUI
 
 struct LibraryHubScreen: View {
     var mode: PlayerMode?
+    #if os(tvOS)
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+    #endif
     var body: some View {
+        #if os(tvOS)
+        ScrollView {
+            VStack(alignment: .leading, spacing: 36) {
+                Text("Library").font(.largeTitle.bold()).accessibilityAddTraits(.isHeader)
+                if mode != .listen { hubSection("Watch", [
+                    ("Movies", "film", .library(.movies)), ("Shows", "tv", .library(.shows))
+                ]) }
+                if mode != .watch { hubSection("Listen", [
+                    ("Music", "music.note", .library(.music)), ("Audiobooks", "headphones", .library(.audiobooks))
+                ]) }
+                if mode == nil { hubSection("Explore", [
+                    ("Photos", "photo.on.rectangle", .library(.photos)), ("All media", "square.grid.2x2", .library(.all))
+                ]) }
+                hubSection("Your library", [
+                    ("My List", "star", .library(.list)), ("Collections", "rectangle.stack", .collections),
+                    ("History", "clock", .library(.history))
+                ])
+            }
+            .padding(.horizontal, KinoTheme.contentPadding)
+            .padding(.vertical, 32)
+        }
+        .scrollClipDisabled()
+        .cinemaBackground()
+        .navigationTitle("")
+        #else
         List {
             if mode != .listen { Section("Watch") {
                 LibraryDestinationLink("Movies", "film", .library(.movies))
@@ -30,7 +58,34 @@ struct LibraryHubScreen: View {
         #endif
         .background(KinoTheme.background)
         .navigationTitle("Library")
+        #endif
     }
+
+    #if os(tvOS)
+    private func hubSection(_ title: String, _ links: [(String, String, ScreenDestination)]) -> some View {
+        VStack(alignment: .leading, spacing: 18) {
+            Text(title).font(.title2.bold()).accessibilityAddTraits(.isHeader)
+            LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 24),
+                                     count: dynamicTypeSize.isAccessibilitySize ? 1 : 3), spacing: 24) {
+                ForEach(links.indices, id: \.self) { index in
+                    NavigationLink(value: links[index].2) {
+                        HStack(spacing: 24) {
+                            Image(systemName: links[index].1).font(.title).frame(width: 72)
+                                .foregroundStyle(KinoTheme.signal)
+                            Text(links[index].0).font(.title3.weight(.semibold))
+                            Spacer(minLength: 0)
+                        }
+                        .padding(28)
+                        .frame(maxWidth: .infinity, minHeight: 112, alignment: .leading)
+                        .background(KinoTheme.surface, in: RoundedRectangle(cornerRadius: 18))
+                    }
+                    .buttonStyle(.card)
+                }
+            }
+            .focusSection()
+        }
+    }
+    #endif
 }
 
 struct LibraryQuickLinks: View {
