@@ -9,7 +9,7 @@ import (
 	"github.com/MikeO7/kinosail-player/internal/configuration"
 )
 
-func TestGoogleCastAppIDValidationBeforePersistence(t *testing.T) {
+func TestGoogleCastAppIDRejectsInvalidValuesBeforePersistence(t *testing.T) {
 	t.Parallel()
 	directory := t.TempDir()
 	key := "integrations.google_cast.app_id"
@@ -26,6 +26,12 @@ func TestGoogleCastAppIDValidationBeforePersistence(t *testing.T) {
 	}); err == nil {
 		t.Fatal("invalid deployment Cast app ID was accepted")
 	}
+}
+
+func TestGoogleCastAppIDPreservesValidValueAfterInvalidReplacement(t *testing.T) {
+	t.Parallel()
+	directory := t.TempDir()
+	key := "integrations.google_cast.app_id"
 	if err := configuration.Set(directory, key, "deadbeef"); err != nil {
 		t.Fatal(err)
 	}

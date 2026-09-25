@@ -33,6 +33,7 @@ class AndroidCastModel(application: Application) : AndroidViewModel(application)
     private var localPosition: () -> Double = { 0.0 }
     private var pauseLocal: () -> Unit = {}
     private var generation = 0
+    private var playGeneration = 0
     private var progressJob: Job? = null
 
     var ready by mutableStateOf(false)
@@ -52,9 +53,9 @@ class AndroidCastModel(application: Application) : AndroidViewModel(application)
             playSelected()
         }
         override fun onSessionResumed(session: CastSession, wasSuspended: Boolean) { connected = true }
-        override fun onSessionEnded(session: CastSession, error: Int) { connected = false; revoke() }
+        override fun onSessionEnded(session: CastSession, error: Int) { connected = false; ++playGeneration; revoke() }
         override fun onSessionStartFailed(session: CastSession, error: Int) { notice = "Could not connect to that Cast device." }
-        override fun onSessionResumeFailed(session: CastSession, error: Int) { connected = false; revoke() }
+        override fun onSessionResumeFailed(session: CastSession, error: Int) { connected = false; ++playGeneration; revoke() }
         override fun onSessionStarting(session: CastSession) {}
         override fun onSessionEnding(session: CastSession) {}
         override fun onSessionResuming(session: CastSession, sessionId: String) {}
@@ -62,6 +63,7 @@ class AndroidCastModel(application: Application) : AndroidViewModel(application)
     }
 
     fun configure(item: CatalogItem, viewer: Viewer, position: () -> Double, pause: () -> Unit) {
+        if (this.viewer != null && (this.viewer?.id != viewer.id || this.viewer?.serverId != viewer.serverId)) stop()
         selected = item
         localPosition = position
         pauseLocal = pause
@@ -105,6 +107,7 @@ class AndroidCastModel(application: Application) : AndroidViewModel(application)
         }
         val position = localPosition().takeIf { it.isFinite() && it in 0.0..31_536_000.0 }
             ?: item.progress.seconds.coerceIn(0.0, 31_536_000.0)
+        val playAttempt = ++playGeneration
         busy = true
         viewModelScope.launch {
             var issued: CastMedia? = null
@@ -114,6 +117,7 @@ class AndroidCastModel(application: Application) : AndroidViewModel(application)
                     CastApi(session.server).start(item.id, position, session.token, identity.id)
                 }
                 issued = media
+                if (playAttempt != playGeneration) throw IllegalStateException("Cast session ended.")
                 val remote = cast.remoteMediaClient ?: throw IllegalStateException("Cast receiver is unavailable.")
                 if (context?.sessionManager?.currentCastSession !== cast) throw IllegalStateException("Cast receiver changed.")
                 val metadata = MediaMetadata(when (item.kind) {
@@ -144,7 +148,13 @@ class AndroidCastModel(application: Application) : AndroidViewModel(application)
                     .setActiveTrackIds(media.tracks.filter(CastTrack::isDefault).map(CastTrack::id).toLongArray())
                     .build()
                 remote.load(load).setResultCallback { result ->
-                    if (result.status.isSuccess) {
+                    if (playAttempt != playGeneration || this.viewer != identity ||
+                        context?.sessionManager?.currentCastSession !== cast) {
+                        if (remote.mediaInfo?.contentId == media.url) remote.stop()
+                        viewModelScope.launch(Dispatchers.IO) {
+                            runCatching { CastApi(session.server).end(media.id, session.token, identity.id) }
+                        }
+                    } else if (result.status.isSuccess) {
                         active = media
                         pauseLocal()
                         notice = "Playing on ${cast.castDevice?.friendlyName ?: "Cast device"}."
@@ -155,14 +165,16 @@ class AndroidCastModel(application: Application) : AndroidViewModel(application)
                             runCatching { CastApi(session.server).end(media.id, session.token, identity.id) }
                         }
                     }
-                    busy = false
+                    if (playAttempt == playGeneration) busy = false
                 }
             } catch (_: Exception) {
                 issued?.let { media -> viewModelScope.launch(Dispatchers.IO) {
                     runCatching { CastApi(session.server).end(media.id, session.token, identity.id) }
                 } }
-                busy = false
-                notice = "Could not start playback on that Cast device."
+                if (playAttempt == playGeneration) {
+                    busy = false
+                    notice = "Could not start playback on that Cast device."
+                }
             }
         }
     }
@@ -185,6 +197,8 @@ class AndroidCastModel(application: Application) : AndroidViewModel(application)
     }
 
     fun stop() {
+        ++playGeneration
+        busy = false
         context?.sessionManager?.currentCastSession?.remoteMediaClient?.stop()
         context?.sessionManager?.endCurrentSession(true)
         revoke()
