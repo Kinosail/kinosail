@@ -122,7 +122,8 @@ struct MediaCard: View {
         }
         .onChange(of: focused) { _, value in if value { onFocus?(item) } }
         .onPlayPauseCommand(perform: quickPlayAction)
-        .accessibilityHint(onQuickPlay != nil && TVOSQuickPlay.destination(for: item) != nil
+        .accessibilityHint(item.kind == .photo ? "Select to view photo."
+                           : onQuickPlay != nil && TVOSQuickPlay.destination(for: item) != nil
                            ? "Select for details, or press Play/Pause to play." : "Select for details.")
         #endif
         .accessibilityElement(children: .combine)
@@ -224,7 +225,10 @@ struct MediaShelf: View {
 
 extension MediaItem {
     func destination(inShows: Bool) -> ScreenDestination {
-        inShows && !showID.isEmpty ? .show(showID) : destination
+        #if os(tvOS)
+        if kind == .photo { return .photos(id) }
+        #endif
+        return inShows && !showID.isEmpty ? .show(showID) : destination
     }
     var destination: ScreenDestination {
         kind == .show ? .show(showID.isEmpty ? id : showID) : .detail(id)
