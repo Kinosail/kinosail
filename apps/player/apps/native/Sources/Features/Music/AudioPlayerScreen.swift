@@ -117,6 +117,9 @@ struct AudioPlayerScreen: View {
                 }.frame(maxWidth: AudioNowPlayingGeometry.width(accessibility: dynamicTypeSize.isAccessibilitySize)).frame(maxWidth: .infinity).padding(KinoTheme.contentPadding)
             } else { AudioLoadingState().padding(KinoTheme.contentPadding) }
         }
+        #if os(tvOS)
+        .cinemaBackground()
+        #endif
         .navigationTitle("Now playing")
         #if os(tvOS)
         .focusScope(audioFocus)
@@ -246,7 +249,11 @@ struct MiniPlayer: View {
                 Button("Stop", systemImage: "xmark") { session.player.stop(); session.contentRevision = UUID() }.labelStyle(.iconOnly).buttonStyle(.bordered).buttonBorderShape(.capsule).tint(KinoTheme.secondaryControlTint).foregroundStyle(KinoTheme.secondaryControlInk).controlSize(controlSize)
             }
             .padding(.horizontal, horizontalPadding).padding(.vertical, verticalPadding).background(.regularMaterial)
+            #if os(tvOS)
+            .fullScreenCover(isPresented: $expanded) { NavigationStack { AudioPlayerScreen(itemID: item.id, hidesMiniPlayer: false) } }
+            #else
             .sheet(isPresented: $expanded) { NavigationStack { AudioPlayerScreen(itemID: item.id, hidesMiniPlayer: false) }.presentationSizing(.page) }
+            #endif
         }
     }
 }

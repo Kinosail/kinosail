@@ -137,7 +137,13 @@ struct AlbumScreen: View {
         #if os(tvOS)
         .focusScope(albumFocus)
         #endif
+        #if os(tvOS)
+        .fullScreenCover(isPresented: $showsPlayer) {
+            if let item = session.player.currentItem { NavigationStack { AudioPlayerScreen(itemID: item.id) } }
+        }
+        #else
         .sheet(isPresented: $showsPlayer) { if let item = session.player.currentItem { NavigationStack { AudioPlayerScreen(itemID: item.id) }.presentationSizing(.page) } }
+        #endif
     }
 
     private func play(_ items: [MediaItem], at index: Int) {
