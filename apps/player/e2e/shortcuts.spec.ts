@@ -71,7 +71,7 @@ test("closed command inputs and active editable fields handle go chords safely",
 	await expect(page).toHaveURL(/\/?view=movies$/);
 
 	await page.goto("/");
-	const librarySearch = page.getByRole("searchbox", { name: "Search library" });
+	const librarySearch = page.getByRole("searchbox", { name: "Search all libraries" });
 	await librarySearch.focus();
 	await page.keyboard.type("gm");
 	await expect(librarySearch).toHaveValue("gm");

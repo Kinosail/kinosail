@@ -12,8 +12,8 @@ async function bindSupporterRecognition() {
     document.querySelectorAll(".header-supporter").forEach(link => {
       link.hidden = hidden;
       link.replaceChildren();
+      link.classList.toggle("supporter-trio", badges.length > 0);
       if (!badges.length) { link.textContent = "Support Kinosail"; link.removeAttribute("aria-label"); return; }
-      link.classList.add("supporter-trio");
       link.setAttribute("aria-label", "Your supporter collection");
       badges.forEach(badge => {
         const image = document.createElement("img");

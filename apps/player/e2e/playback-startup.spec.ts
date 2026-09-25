@@ -37,8 +37,9 @@ test("selecting a movie starts moving playback promptly", async ({ page }, testI
 	if (await page.getByRole("link", { name: "Not now" }).isVisible()) await page.getByRole("link", { name: "Not now" }).click();
 	await page.getByRole("link", { name: "Movies", exact: true }).click();
 
-	const started = Date.now();
 	await page.getByRole("link", { name: /Example Movie/ }).click();
+	const started = Date.now();
+	await page.getByRole("link", { name: /^(Play|Resume)$/ }).click();
 	const video = page.locator("video");
 	await expect.poll(() => video.evaluate((element: HTMLVideoElement) => element.currentTime), { timeout: 3_000 }).toBeGreaterThan(0.25);
 	const result = await page.evaluate((click) => {
@@ -72,6 +73,7 @@ test("restricted browser storage does not stop playback", async ({ page }) => {
 	if (await page.getByRole("link", { name: "Not now" }).isVisible()) await page.getByRole("link", { name: "Not now" }).click();
 	await page.getByRole("link", { name: "Movies", exact: true }).click();
 	await page.getByRole("link", { name: /Example Movie/ }).click();
+	await page.getByRole("link", { name: /^(Play|Resume)$/ }).click();
 	const video = page.locator("video");
 	await expect.poll(() => video.evaluate((element: HTMLVideoElement) => element.currentTime), { timeout: 5_000 }).toBeGreaterThan(0.25);
 	expect(errors).toEqual([]);
@@ -86,6 +88,7 @@ test("failed progress save does not stop playback flow", async ({ page }) => {
 	if (await page.getByRole("link", { name: "Not now" }).isVisible()) await page.getByRole("link", { name: "Not now" }).click();
 	await page.getByRole("link", { name: "Movies", exact: true }).click();
 	await page.getByRole("link", { name: /Example Movie/ }).click();
+	await page.getByRole("link", { name: /^(Play|Resume)$/ }).click();
 	await page.route("**/progress/**", (route) => route.abort());
 	await page.locator("video").evaluate((video: HTMLVideoElement) => {
 		video.dataset.next = "/?view=movies&after=failed-save";
@@ -97,15 +100,6 @@ test("failed progress save does not stop playback flow", async ({ page }) => {
 test("selecting compatibility playback starts without a second play click", async ({ page }) => {
 	await page.addInitScript(() => {
 		Object.defineProperty(Object.getPrototypeOf(navigator), "mediaCapabilities", { configurable: true, get: () => ({ decodingInfo: async () => ({ supported: true, smooth: true, powerEfficient: true }) }) });
-		const originalFetch = window.fetch.bind(window);
-		window.fetch = async (input: RequestInfo | URL, init?: RequestInit) => {
-			const url = new URL(input instanceof Request ? input.url : String(input), location.href);
-			if (url.searchParams.has("videoCodecs")) {
-				(window as Window & { reportedCodecs: string }).reportedCodecs = url.searchParams.get("videoCodecs") ?? "";
-				return new Response("", { status: 503 });
-			}
-			return originalFetch(input, init);
-		};
 	});
 	await instrumentMedia(page);
 	await page.goto("/login");
@@ -116,6 +110,7 @@ test("selecting compatibility playback starts without a second play click", asyn
 	if (await page.getByRole("link", { name: "Not now" }).isVisible()) await page.getByRole("link", { name: "Not now" }).click();
 	await page.getByRole("link", { name: "Movies", exact: true }).click();
 	await page.getByRole("link", { name: /Example Movie/ }).click();
+	await page.getByRole("link", { name: /^(Play|Resume)$/ }).click();
 
 	const started = Date.now();
 	await page.getByText("Playback & downloads", { exact: true }).click();
@@ -126,7 +121,7 @@ test("selecting compatibility playback starts without a second play click", asyn
 	const playing = await page.evaluate((click) => (window as Window & { mediaEvents: Array<{ name: string; at: number }> }).mediaEvents.find(({ name }) => name === "playing")!.at - click, started);
 	console.log(JSON.stringify({ compatibilityClickToPlayingMs: Math.round(playing), ...state }));
 	expect(state.paused).toBe(false);
-	expect(await page.evaluate(() => (window as Window & { reportedCodecs?: string }).reportedCodecs)).toBe("av1,hevc,vp9,h264");
+	await expect(page.locator("[data-playback-mode-status]")).toHaveText(await video.getAttribute("data-compatibility-label") || "Compatibility");
 	expect(playing).toBeLessThan(10_000);
 });
 

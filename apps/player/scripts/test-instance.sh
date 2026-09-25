@@ -109,7 +109,7 @@ case "$action" in
   browser)
     fixture_dir="$KINOSAIL_TEST_ROOT/ui-fixtures"
     KINOSAIL_UI_FIXTURE_DIR="$fixture_dir" go test ./internal/server -run TestWriteUIStateFixtures -count=1
-    KINOSAIL_TEST_INSTANCE=1 KINOSAIL_UI_FIXTURE_DIR="$fixture_dir" KINOSAIL_TEST_TOTP_SECRET="$(<"$KINOSAIL_TEST_ROOT/totp-secret")" KINOSAIL_E2E_URL="$(url)" KINOSAIL_E2E_OUTPUT_DIR="$KINOSAIL_TEST_ROOT/playwright-results" pnpm --dir e2e test test-instance.spec.ts test-instance-production.spec.ts ui-happy-paths.spec.ts supporter-checkout.spec.ts shortcuts.spec.ts jellyfin-setup.spec.ts playback-bandwidth.spec.ts playback-pause-repro.spec.ts playback-startup.spec.ts layout-audit.spec.ts masthead-spacing.spec.ts conditional-states.spec.ts password-reveal.spec.ts loading-review.spec.ts session-timeouts.spec.ts --workers="${KINOSAIL_E2E_WORKERS:-1}"
+    KINOSAIL_TEST_INSTANCE=1 KINOSAIL_UI_FIXTURE_DIR="$fixture_dir" KINOSAIL_TEST_TOTP_SECRET="$(<"$KINOSAIL_TEST_ROOT/totp-secret")" KINOSAIL_E2E_URL="$(url)" KINOSAIL_E2E_OUTPUT_DIR="$KINOSAIL_TEST_ROOT/playwright-results" pnpm --dir e2e test test-instance.spec.ts test-instance-production.spec.ts ui-happy-paths.spec.ts supporter-checkout.spec.ts shortcuts.spec.ts jellyfin-setup.spec.ts playback-bandwidth.spec.ts playback-pause-repro.spec.ts playback-startup.spec.ts layout-audit-player.spec.ts masthead-spacing.spec.ts conditional-states.spec.ts password-reveal.spec.ts loading-review.spec.ts session-timeouts.spec.ts --workers="${KINOSAIL_E2E_WORKERS:-1}"
     ;;
   playback)
     fixture_dir="$KINOSAIL_TEST_ROOT/ui-fixtures"
@@ -118,7 +118,7 @@ case "$action" in
     playwright=(env KINOSAIL_TEST_INSTANCE=1 KINOSAIL_UI_FIXTURE_DIR="$fixture_dir" KINOSAIL_TEST_TOTP_SECRET="$(<"$KINOSAIL_TEST_ROOT/totp-secret")" KINOSAIL_E2E_URL="$(url)" KINOSAIL_BROWSER_MATRIX=full pnpm --dir e2e exec playwright test)
     "${playwright[@]}" player-experience.spec.ts player-direct-fallback.spec.ts player-seeking.spec.ts player-quality.spec.ts player-duration.spec.ts playback-pause-repro.spec.ts playback-startup.spec.ts instant-playback.spec.ts instant-show-play.spec.ts loading-review.spec.ts --workers=1 --reporter=line --output="$results/player-matrix"
     "${playwright[@]}" playback-bandwidth.spec.ts --project=chromium --workers=1 --repeat-each=3 --reporter=line --output="$results/bandwidth"
-    "${playwright[@]}" layout-audit.spec.ts --grep 'player shows and switches|player stays accessible|artwork-backed media' --workers=1 --reporter=line --output="$results/accessibility"
+    "${playwright[@]}" layout-audit-player.spec.ts --grep 'player shows and switches|player stays accessible|artwork-backed media' --workers=1 --reporter=line --output="$results/accessibility"
     ;;
   totp)
     totp_code

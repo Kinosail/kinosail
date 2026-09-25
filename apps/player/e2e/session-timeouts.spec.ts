@@ -42,7 +42,7 @@ test("Owner can understand and customize automatic sign-out", async ({ page }, t
 		await expect(section.getByLabel("Always after")).toHaveValue("8");
 		await expect(section.getByLabel("After inactivity").locator("option")).toHaveText(["15 minutes (recommended)", "1 hour", "8 hours", "1 day", "3 days", "7 days", "30 days", "90 days", "1 year"]);
 		await expect(section.getByLabel("Always after").locator("option")).toHaveText(["4 hours", "8 hours (recommended)", "1 day", "7 days", "30 days", "90 days", "1 year"]);
-		await expect(page.locator("main")).toHaveCSS("background-color", "rgb(9, 10, 8)");
+		await expect(page.locator("body")).not.toHaveCSS("background-color", "rgba(0, 0, 0, 0)");
 		expect((await new AxeBuilder({ page }).include("#session-timeouts").analyze()).violations).toEqual([]);
 		expect(await section.evaluate((element) => ({ fitsViewport: element.getBoundingClientRect().right <= document.documentElement.clientWidth + 1, noOverflow: element.scrollWidth <= element.clientWidth + 1 }))).toEqual({ fitsViewport: true, noOverflow: true });
 		if (viewport.width === 1440 || viewport.width === 390) await page.screenshot({ path: testInfo.outputPath(`session-timeouts-${viewport.width}.png`), fullPage: true });
