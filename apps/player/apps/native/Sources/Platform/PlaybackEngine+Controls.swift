@@ -39,7 +39,7 @@ extension PlaybackEngine {
             // A native AVKit scrub can supersede the restoring seek.
             if recoveringNetwork || loading {
                 let current = player.currentTime().seconds
-                if current.isFinite, current >= 0 { nativeRecoveryPosition = timeline?.sourceTime(current) ?? current; return }
+                if (try? Input.position(current)) != nil { nativeRecoveryPosition = timeline?.sourceTime(current) ?? current; return }
             }
             throw ClientError.invalidInput("Could not skip to that position. Try again.")
         }

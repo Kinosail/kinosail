@@ -60,6 +60,18 @@ import Testing
         #expect(playback.selectedSubtitleTrackID == nil)
     }
 
+    @Test func invalidNativePlayerTimesCannotChangeProgress() {
+        let engine = PlaybackEngine()
+        engine.seconds = 7
+        engine.lastNowPlayingSecond = 7
+        for time in [CMTime.indefinite, CMTime(value: -1, timescale: 1),
+                     CMTime(seconds: 31_536_001, preferredTimescale: 600), CMTime(value: Int64.max, timescale: 1)] {
+            engine.tick(time: time, attempt: engine.generation)
+            #expect(engine.seconds == 7)
+            #expect(engine.lastNowPlayingSecond == 7)
+        }
+    }
+
     #if os(tvOS)
     @Test func televisionWaitsForVideoAndClearsPresentation() throws {
         let presentation = PlayerPresentation()

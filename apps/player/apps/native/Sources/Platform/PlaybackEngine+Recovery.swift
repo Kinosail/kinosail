@@ -82,7 +82,7 @@ extension PlaybackEngine {
             Task { @MainActor in
                 guard let self, let next, self.generation == attempt, self.player === next, self.loading || self.recoveringNetwork else { return }
                 let time = next.currentTime().seconds
-                guard time.isFinite, time >= 0 else { return }
+                guard (try? Input.position(time)) != nil else { return }
                 self.nativeRecoveryPosition = self.timeline?.sourceTime(time) ?? time
             }
         }
@@ -99,8 +99,9 @@ extension PlaybackEngine {
         }
         let actual = nextItem.duration.seconds
         if duration == 0, actual.isFinite, actual > 0 {
+            let validated = try MediaTimeline(sourceDuration: actual, duration: actual)
             duration = actual
-            timeline = try MediaTimeline(sourceDuration: actual, duration: actual)
+            timeline = validated
         }
         try await loadTracks(nextItem, attempt: attempt)
         try await applyPreferences(preferences)
@@ -153,7 +154,7 @@ extension PlaybackEngine {
     }
 
     func tick(time: CMTime, attempt: UUID) {
-        guard generation == attempt, time.seconds.isFinite else { return }
+        guard generation == attempt, (try? Input.position(time.seconds)) != nil else { return }
         seconds = timeline?.sourceTime(time.seconds) ?? max(0, time.seconds)
         if !loading, !recoveringNetwork, player?.currentItem?.status == .readyToPlay {
             wantsPlayback = player?.timeControlStatus != .paused
