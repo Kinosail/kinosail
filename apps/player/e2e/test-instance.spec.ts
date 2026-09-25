@@ -97,6 +97,10 @@ test("Community edition keeps Support Kinosail reachable", async ({ page }, test
     await page.setViewportSize(viewport);
     await page.goto("/");
     const support = page.locator(".header-supporter:visible");
+    const beta = page.locator(".app-header .web-beta-badge");
+    await expect(beta).toBeVisible();
+    await expect(beta).toHaveText("Beta");
+    await expect(beta).toBeInViewport();
     await expect(support).toHaveCount(1);
     await expect(support).toHaveText("Support Kinosail");
     await expect(support).toHaveAttribute("href", "/supporter");
@@ -104,6 +108,13 @@ test("Community edition keeps Support Kinosail reachable", async ({ page }, test
     await expect(support).not.toHaveClass(/supporter-trio/);
     await support.focus();
     await expect(support).toBeFocused();
+    if (viewport.width <= 900) {
+      const betaBox = await beta.boundingBox();
+      const searchBox = await page.locator('.app-header .search input[type="search"]').boundingBox();
+      const supportBox = await support.boundingBox();
+      expect(betaBox && supportBox && betaBox.x + betaBox.width <= supportBox.x).toBe(true);
+      expect(searchBox && supportBox && searchBox.x + searchBox.width <= supportBox.x).toBe(true);
+    }
     await page.screenshot({ path: testInfo.outputPath(`community-header-${viewport.width}.png`) });
   }
 });

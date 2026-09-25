@@ -1,4 +1,4 @@
-# Kinosail
+# Kinosail ![Web Player · Beta](.github/assets/web-player-beta.svg)
 
 Kinosail is a set of self-hosted apps for your media and home network. Run the apps you need on your own hardware. Each app runs in its own container and includes a web interface, API, and database.
 

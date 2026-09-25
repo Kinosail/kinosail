@@ -36,3 +36,15 @@ func TestPlayerBrandingIsUsedByTheWebAppShell(t *testing.T) {
 		}
 	}
 }
+
+func TestWebBetaBadgeAppearsInSharedBrowserHeader(t *testing.T) {
+	t.Parallel()
+	handler := server.New(server.Config{})
+	for _, path := range []string{"/", "/settings"} {
+		response := httptest.NewRecorder()
+		handler.ServeHTTP(response, httptest.NewRequestWithContext(t.Context(), http.MethodGet, path, nil))
+		if response.Code != http.StatusOK || strings.Count(response.Body.String(), `class="web-beta-badge">Beta</span>`) != 1 {
+			t.Errorf("%s: expected one web beta badge in the browser header, got status %d", path, response.Code)
+		}
+	}
+}

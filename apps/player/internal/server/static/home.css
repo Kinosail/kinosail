@@ -211,6 +211,17 @@ body.player-page.has-media-backdrop::before{
 :root[data-theme=light] body.player-page.has-media-backdrop::before{
   background:linear-gradient(180deg,color-mix(in srgb,var(--bg) 96%,transparent),var(--bg) 48rem);
 }
+body .app-header .brand-lockup{min-width:0}
+body .app-header .brand-lockup h1{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+body .app-header .web-beta-badge{display:inline-flex;flex:none;align-items:center;padding:.25rem .4rem;border:1px solid color-mix(in srgb,var(--signal) 55%,var(--line));border-radius:4px;color:var(--signal);font-size:.62rem;font-weight:800;line-height:1;letter-spacing:.08em;text-transform:uppercase;white-space:nowrap}
+@media(max-width:900px){
+  body .app-header .brand-lockup{position:static;width:auto;height:auto;max-width:min(calc(100vw - 14rem),24rem);overflow:visible;clip:auto;gap:.35rem}
+  body .app-header .brand-icon{width:32px;height:32px;flex:none}
+  body .app-header .brand-lockup h1{position:static;display:block;width:auto;height:auto;clip:auto;font-size:1rem}
+  body .app-header .search:not(:focus-within) input[type=search]::placeholder{color:transparent}
+}
+@media(max-width:360px){body .app-header .brand-lockup h1{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}}
+@media(forced-colors:active){body .app-header .web-beta-badge{border-color:CanvasText;color:CanvasText}}
 
 [data-qr-video]{display:block;width:100%;max-height:45dvh;object-fit:contain;background:var(--surface-2);border-radius:var(--radius,12px);margin-bottom:.75rem}
 
