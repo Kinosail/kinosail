@@ -2,17 +2,21 @@ import SwiftUI
 
 struct HeartGraphView: View {
     @Environment(MovieHeartTracker.self) private var heart
+    let isVisible: Bool
     private let signal = Color(red: 0.77, green: 1, blue: 0.28)
 
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: 12) {
+            VStack(alignment: .leading, spacing: 10) {
                 if let timeline = heart.timeline {
+                    Text("Heart graph").font(.caption.weight(.semibold)).foregroundStyle(signal)
                     Text(timeline.title).font(.headline).lineLimit(2)
                     if heart.loading { ProgressView("Reading Health…") }
                     else if heart.points.isEmpty {
-                        ContentUnavailableView("No readings yet", systemImage: "heart",
-                                               description: Text("Heart rate samples appear here when they match a known movie position."))
+                        Label("No readings yet", systemImage: "heart")
+                            .font(.caption.weight(.semibold))
+                        Text("Readings appear at their movie time as you watch.")
+                            .font(.caption2).foregroundStyle(.secondary)
                     } else {
                         HeartPlot(points: heart.points, duration: timeline.duration, color: signal)
                             .frame(height: 104)
@@ -23,8 +27,11 @@ struct HeartGraphView: View {
                         Text("\(heart.points.count) readings · \(Int(heart.points.map(\.bpm).min() ?? 0))–\(Int(heart.points.map(\.bpm).max() ?? 0)) bpm")
                             .font(.caption.weight(.semibold))
                     }
-                    Text("Mapped to movie time. Gaps show where a heart reading or playback position was unavailable.")
+                    Text("Gaps mean no reading or movie position was available.")
                         .font(.caption2).foregroundStyle(.secondary)
+                    if let message = heart.message {
+                        Text(message).font(.caption2).foregroundStyle(.secondary)
+                    }
                     if heart.isTracking {
                         Button("Stop tracking") { Task { await heart.stop() } }.buttonStyle(.bordered)
                     }
@@ -32,8 +39,14 @@ struct HeartGraphView: View {
             }
             .padding(.horizontal, 8)
         }
-        .navigationTitle("Heart graph")
-        .task { await heart.loadSamples() }
+        .task(id: isVisible) {
+            guard isVisible else { return }
+            while !Task.isCancelled {
+                await heart.loadSamples()
+                guard heart.isTracking else { return }
+                try? await Task.sleep(for: .seconds(20))
+            }
+        }
     }
 }
 
