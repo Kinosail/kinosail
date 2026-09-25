@@ -12,11 +12,27 @@ struct ActorScreen: View {
                 return try await client.actor(name: name, policy: policy)
             }) { actor in
                 VStack(alignment: .leading, spacing: 28) {
+                    #if os(tvOS)
+                    HStack(alignment: .bottom, spacing: 32) {
+                        if !actor.image.isEmpty {
+                            Artwork(path: actor.image, symbol: "person.fill", dimension: 800)
+                                .frame(width: 200).clipShape(.rect(cornerRadius: 12))
+                        }
+                        VStack(alignment: .leading, spacing: 8) {
+                            Text(name).font(.system(.largeTitle, design: .rounded).bold())
+                                .accessibilityAddTraits(.isHeader)
+                            let count = actor.movies.count + actor.shows.count
+                            Text("\(count) \(count == 1 ? "title" : "titles") in your library")
+                                .foregroundStyle(KinoTheme.muted)
+                        }
+                    }
+                    #else
                     if !actor.image.isEmpty {
                         Artwork(path: actor.image, symbol: "person.fill", dimension: 800)
                             .frame(maxWidth: 200).clipShape(.rect(cornerRadius: 12))
                     }
                     Text("In your library").font(.title2.bold()).accessibilityAddTraits(.isHeader)
+                    #endif
                     credits("Movies", items: actor.movies, shows: false)
                     credits("TV Shows", items: actor.shows, shows: true)
                     if actor.movies.isEmpty && actor.shows.isEmpty {
@@ -27,9 +43,12 @@ struct ActorScreen: View {
             }
             .padding(KinoTheme.contentPadding)
         }
+        #if os(tvOS)
+        .cinemaBackground()
+        .navigationTitle("")
+        #else
         .background(KinoTheme.background)
         .navigationTitle(name)
-        #if os(iOS)
         .navigationBarTitleDisplayMode(.inline)
         #endif
     }
@@ -45,8 +64,10 @@ struct ActorScreen: View {
                                 Artwork(path: item.artwork, symbol: shows ? "tv" : "film", dimension: 800)
                                     .clipShape(.rect(cornerRadius: 12))
                                 Text(item.title).font(.headline).foregroundStyle(KinoTheme.text)
+                                    .lineLimit(dynamicTypeSize.isAccessibilitySize ? nil : 2)
                                 if !item.year.isEmpty { Text(item.year).font(.caption).foregroundStyle(KinoTheme.muted) }
-                                if !item.role.isEmpty { Text(item.role).font(.caption).foregroundStyle(KinoTheme.muted) }
+                                if !item.role.isEmpty { Text(item.role).font(.caption).foregroundStyle(KinoTheme.muted)
+                                    .lineLimit(dynamicTypeSize.isAccessibilitySize ? nil : 2) }
                             }
                             .fixedSize(horizontal: false, vertical: true)
                             .frame(maxWidth: .infinity, alignment: .leading)
