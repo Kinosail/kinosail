@@ -108,13 +108,13 @@ struct CatalogRevalidationTests {
         let fixture = try Fixture()
         defer { fixture.remove() }
         let warmup = Task { await fixture.client.warmCatalog(mode: .watch, landingTab: .search) }
+        try await fixture.waitForRequests(1)
+        #expect(fixture.pending.first?.query["sort"] == "title")
+        fixture.respond(view: "music", version: 1)
         try await fixture.waitForRequests(3)
         fixture.respond(view: "history", version: 1)
         fixture.respond(view: "music", version: 1)
         fixture.respond(view: "audiobooks", version: 1)
-        try await fixture.waitForRequests(1)
-        #expect(fixture.pending.first?.query["sort"] == "title")
-        fixture.respond(view: "music", version: 1)
         try await fixture.waitForRequests(2)
         fixture.respond(view: "movies", version: 1)
         fixture.respond(view: "shows", version: 1)
