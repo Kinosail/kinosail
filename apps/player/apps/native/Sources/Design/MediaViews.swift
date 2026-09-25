@@ -162,6 +162,7 @@ struct MediaShelf: View {
     var resumesPlayback = false
     var moreTitle: String?
     var moreDestination: ScreenDestination?
+    var onQuickPlay: ((ScreenDestination) -> Void)?
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
             HStack(alignment: .firstTextBaseline) {
@@ -176,7 +177,7 @@ struct MediaShelf: View {
             }
             ScrollView(.horizontal) {
                 LazyHStack(alignment: .top, spacing: 18) {
-                    ForEach(items) { item in MediaCard(item: item, landscape: landscape, resumesPlayback: resumesPlayback).frame(width: width) }
+                    ForEach(items) { item in MediaCard(item: item, landscape: landscape, resumesPlayback: resumesPlayback, onQuickPlay: onQuickPlay).frame(width: width) }
                 }
                 #if os(tvOS)
                 .padding(.horizontal, 24)

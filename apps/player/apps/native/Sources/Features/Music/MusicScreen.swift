@@ -12,7 +12,7 @@ struct MusicScreen: View {
                 NavigationLink("All music tracks", value: ScreenDestination.library(.music))
                     .frame(minHeight: 44)
                 if albums.isEmpty { ContentUnavailableView("No albums yet", systemImage: "music.note", description: Text("Tracks without album information are available in All music tracks.")) }
-                LazyVGrid(columns: dynamicTypeSize.isAccessibilitySize ? [GridItem(.flexible())] : [GridItem(.adaptive(minimum: 160), spacing: 24)], spacing: 28) {
+                LazyVGrid(columns: MediaGrid.columns(landscape: false, accessibility: dynamicTypeSize.isAccessibilitySize), spacing: 28) {
                     ForEach(albums) { album in
                         NavigationLink(value: ScreenDestination.album(album.id)) {
                             VStack(alignment: .leading, spacing: 10) {
@@ -20,11 +20,22 @@ struct MusicScreen: View {
                                 Text(album.title).font(.headline).lineLimit(dynamicTypeSize.isAccessibilitySize ? nil : 2)
                                 Text(album.artist).font(.caption).foregroundStyle(.secondary).lineLimit(dynamicTypeSize.isAccessibilitySize ? nil : 1)
                             }
-                        }.buttonStyle(.plain)
+                        }
+                        #if os(iOS)
+                        .buttonStyle(.plain)
+                        #else
+                        .buttonStyle(.card)
+                        #endif
                     }
                 }
+                #if os(tvOS)
+                .padding(.vertical, 24)
+                .focusSection()
+                #endif
             }.padding(KinoTheme.contentPadding)
-        }.navigationTitle("Albums")
+        }
+        .cinemaBackground()
+        .navigationTitle("Albums")
     }
 }
 
@@ -58,7 +69,13 @@ struct AlbumScreen: View {
                                 Spacer()
                                 Image(systemName: session.player.currentItem?.id == item.id && session.player.isPlaying ? "waveform" : "play.fill")
                             }.padding(.vertical, 12).contentShape(.rect)
-                        }.buttonStyle(.plain).disabled(starting)
+                        }
+                        #if os(iOS)
+                        .buttonStyle(.plain)
+                        #else
+                        .buttonStyle(.card)
+                        #endif
+                        .disabled(starting)
                         #if os(tvOS)
                         .tvOSDefaultPlayFocus(in: albumFocus, id: "album.first-track.\(albumID).\(item.id)", enabled: index == 0)
                         #endif
@@ -67,6 +84,7 @@ struct AlbumScreen: View {
                 }.frame(maxWidth: 1100, alignment: .leading).frame(maxWidth: .infinity)
             }.padding(KinoTheme.contentPadding)
         }
+        .cinemaBackground()
         .navigationTitle("Album")
         #if os(tvOS)
         .focusScope(albumFocus)
