@@ -1,9 +1,7 @@
 import { readFile } from "node:fs/promises";
 import { expect, test } from "@playwright/test";
 
-const markup = (await readFile(new URL("../internal/server/web/supporter.html", import.meta.url), "utf8"))
-  .replace(/<script\b[^>]*><\/script>/g, "")
-  .replace(/<link\b[^>]*rel="stylesheet"[^>]*>/g, "");
+const markup = await readFile(new URL("../internal/server/web/supporter.html", import.meta.url), "utf8");
 const styles = await Promise.all([
   "../internal/server/web/static/base.css",
   "../../../packages/webassets/static/last-light.css",
@@ -13,6 +11,7 @@ const styles = await Promise.all([
 for (const width of [320, 390, 1440]) {
   test(`Dashboard Badge Case skeleton follows loaded columns at ${width}px`, { tag: "@smoke" }, async ({ page }, testInfo) => {
     await page.setViewportSize({ width, height: 900 });
+    await page.route("**/*", route => route.abort());
     await page.setContent(markup);
     for (const content of styles) await page.addStyleTag({ content });
     expect(await page.locator(".loading-badges").count()).toBe(2);
