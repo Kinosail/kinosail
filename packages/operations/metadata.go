@@ -128,7 +128,8 @@ func fetchMetadataGroup(ctx context.Context, config MetadataRefresh, group []lib
 	for position := 1; position < len(group); position++ {
 		record, found := config.Record(group[position].ID)
 		if found && metadata.Valid(record) {
-			record.ShowTitle, record.ShowYear, record.ShowPlot, record.ShowArtwork = first.Record.ShowTitle, first.Record.ShowYear, first.Record.ShowPlot, first.Record.ShowArtwork
+			record.ShowTitle, record.ShowYear, record.ShowPlot, record.ShowArtwork, record.ShowBackdrop = first.Record.ShowTitle, first.Record.ShowYear, first.Record.ShowPlot, first.Record.ShowArtwork, first.Record.ShowBackdrop
+			record.BackdropChecked = first.Record.BackdropChecked
 			record.ShowProviderIDs = maps.Clone(first.Record.ShowProviderIDs)
 			record.ShowCast = append([]library.Person(nil), first.Record.ShowCast...)
 			record.CastFetched = first.Record.CastFetched
@@ -141,7 +142,7 @@ func fetchMetadataGroup(ctx context.Context, config MetadataRefresh, group []lib
 		}
 	}
 	updates := make(map[string]metadata.Record, len(group))
-	showArtwork := ""
+	showArtwork, showBackdrop, backdropChecked := "", "", false
 	var downloadErr error
 	for position, item := range group {
 		record, err := config.Download(ctx, results[position])
@@ -150,8 +151,12 @@ func fetchMetadataGroup(ctx context.Context, config MetadataRefresh, group []lib
 		}
 		if position == 0 {
 			showArtwork = record.ShowArtwork
+			showBackdrop = record.ShowBackdrop
+			backdropChecked = record.BackdropChecked
 		} else if item.Show != "" {
 			record.ShowArtwork = showArtwork
+			record.ShowBackdrop = showBackdrop
+			record.BackdropChecked = backdropChecked
 		}
 		updates[item.ID] = record
 	}
@@ -159,12 +164,29 @@ func fetchMetadataGroup(ctx context.Context, config MetadataRefresh, group []lib
 }
 
 func needsMetadata(item library.Item, record metadata.Record, found, configured bool) bool {
+	if item.Kind != "video" {
+		return false
+	}
+	if record.Owner {
+		return false
+	}
+	if !configured && !metadata.TVMazeEligible(item) {
+		return false
+	}
+	if !found {
+		return true
+	}
 	artwork := item.Artwork
 	if item.Show != "" {
 		artwork = item.ShowArtwork
 	}
-	if item.Kind == "video" && (!found || !record.Owner && (!metadata.RegularFile(artwork) || configured && !record.CastFetched)) && (configured || metadata.TVMazeEligible(item)) {
-		return true
+	return !metadata.RegularFile(artwork) || configured && (!record.CastFetched || needsBackdrop(item, record))
+}
+
+func needsBackdrop(item library.Item, record metadata.Record) bool {
+	backdrop := record.Backdrop
+	if item.Show != "" {
+		backdrop = record.ShowBackdrop
 	}
-	return false
+	return !record.BackdropChecked || backdrop != "" && !metadata.RegularFile(backdrop)
 }

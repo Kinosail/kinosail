@@ -17,12 +17,12 @@ import (
 
 // Record contains persisted metadata for one library item.
 type Record struct {
-	Title, Year, Plot, Rating, Tagline, Genres, Artwork, Collection string
-	ShowTitle, ShowYear, ShowPlot, ShowArtwork                      string
-	Cast, ShowCast                                                  []library.Person
-	Owner, CastFetched                                              bool
-	ProviderIDs                                                     map[string]string `json:"providerIds,omitempty"`
-	ShowProviderIDs                                                 map[string]string `json:"showProviderIds,omitempty"`
+	Title, Year, Plot, Rating, Tagline, Genres, Artwork, Backdrop, Collection string
+	ShowTitle, ShowYear, ShowPlot, ShowArtwork, ShowBackdrop                  string
+	Cast, ShowCast                                                            []library.Person
+	Owner, CastFetched, BackdropChecked                                       bool
+	ProviderIDs                                                               map[string]string `json:"providerIds,omitempty"`
+	ShowProviderIDs                                                           map[string]string `json:"showProviderIds,omitempty"`
 }
 
 // Image describes one provider asset that must be cached with a resolved record.
@@ -30,6 +30,7 @@ type Image struct {
 	Source, Target string
 	Show           bool
 	Person         bool
+	Backdrop       bool
 }
 
 // Result contains one resolved provider record and its pending provider assets.
@@ -64,10 +65,12 @@ func Bounded(record Record) bool {
 		{record.Genres, 500, false},
 		{record.Collection, 200, false},
 		{record.Artwork, 4096, false},
+		{record.Backdrop, 4096, false},
 		{record.ShowTitle, 200, false},
 		{record.ShowYear, 4, false},
 		{record.ShowPlot, 5000, true},
 		{record.ShowArtwork, 4096, false},
+		{record.ShowBackdrop, 4096, false},
 	}
 	for _, field := range fields {
 		if len(field.value) > field.limit || hasInvalidRecordText(field.value, field.multiline) {
@@ -89,10 +92,12 @@ func ApplyMissing(item *library.Item, record Record) {
 	fillString(&item.Year, record.Year)
 	fillString(&item.Plot, record.Plot)
 	fillString(&item.Artwork, record.Artwork)
+	fillString(&item.Backdrop, record.Backdrop)
 	fillString(&item.ShowTitle, record.ShowTitle)
 	fillString(&item.ShowYear, record.ShowYear)
 	fillString(&item.ShowPlot, record.ShowPlot)
 	fillString(&item.ShowArtwork, record.ShowArtwork)
+	fillString(&item.ShowBackdrop, record.ShowBackdrop)
 	if len(item.ShowProviderIDs) == 0 && len(record.ShowProviderIDs) > 0 {
 		item.ShowProviderIDs = maps.Clone(record.ShowProviderIDs)
 	}
@@ -108,6 +113,7 @@ func Apply(item *library.Item, record Record) {
 	setString(&item.Tagline, record.Tagline)
 	setString(&item.Genres, record.Genres)
 	setString(&item.Artwork, record.Artwork)
+	setString(&item.Backdrop, record.Backdrop)
 	item.Collection = record.Collection
 	if len(record.ProviderIDs) > 0 {
 		item.ProviderIDs = record.ProviderIDs
@@ -116,6 +122,7 @@ func Apply(item *library.Item, record Record) {
 	setString(&item.ShowYear, record.ShowYear)
 	setString(&item.ShowPlot, record.ShowPlot)
 	setString(&item.ShowArtwork, record.ShowArtwork)
+	setString(&item.ShowBackdrop, record.ShowBackdrop)
 	if len(record.ShowProviderIDs) > 0 {
 		item.ShowProviderIDs = record.ShowProviderIDs
 	}
@@ -142,7 +149,9 @@ func ApplyRecords(items []library.Item, records map[string]Record, currentArtwor
 		}
 		record = Clone(record)
 		record.Artwork = currentArtwork(record.Artwork)
+		record.Backdrop = currentArtwork(record.Backdrop)
 		record.ShowArtwork = currentArtwork(record.ShowArtwork)
+		record.ShowBackdrop = currentArtwork(record.ShowBackdrop)
 		for _, cast := range [][]library.Person{record.Cast, record.ShowCast} {
 			for index := range cast {
 				cast[index].Image = currentArtwork(cast[index].Image)
@@ -200,7 +209,7 @@ func ResolveTMDBEpisode(ctx context.Context, item library.Item, show Record, enr
 	if ctx == nil || enrich == nil || artwork == nil || err != nil || id <= 0 || !validMetadataID(item.ID) || item.Season < 0 || item.Season > 100000 || item.Episode < 0 || item.Episode > 100000 || show.ShowTitle == "" || !Bounded(show) {
 		return Result{}, errors.New("show metadata is invalid")
 	}
-	record := Record{CastFetched: show.CastFetched, ShowCast: append([]library.Person(nil), show.ShowCast...), ShowTitle: show.ShowTitle, ShowYear: show.ShowYear, ShowPlot: show.ShowPlot, ShowArtwork: show.ShowArtwork, ShowProviderIDs: maps.Clone(show.ShowProviderIDs), ProviderIDs: TVDBProviderID(item)}
+	record := Record{CastFetched: show.CastFetched, BackdropChecked: show.BackdropChecked, ShowCast: append([]library.Person(nil), show.ShowCast...), ShowTitle: show.ShowTitle, ShowYear: show.ShowYear, ShowPlot: show.ShowPlot, ShowArtwork: show.ShowArtwork, ShowBackdrop: show.ShowBackdrop, ShowProviderIDs: maps.Clone(show.ShowProviderIDs), ProviderIDs: TVDBProviderID(item)}
 	poster := ""
 	enrich(ctx, item, id, show.ShowTitle, show.ShowYear, &record, &poster)
 	if !ValidTMDBPath(poster) || !Valid(record) {

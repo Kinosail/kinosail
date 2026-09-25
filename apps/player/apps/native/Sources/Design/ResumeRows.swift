@@ -63,7 +63,7 @@ private struct ResumeRow: View {
                     let usesBackdrop = !item.backdrop.isEmpty
                     Artwork(path: usesBackdrop ? item.backdrop : item.poster, symbol: item.kind.symbol,
                             ratio: usesBackdrop ? 16 / 9 : item.isAudio ? 1 : 2 / 3,
-                            dimension: 800, isBackdrop: usesBackdrop, canvasSize: thumbnailCanvasSize)
+                            dimension: 800, isBackdrop: usesBackdrop, canvasSize: thumbnailCanvasSize(landscape: usesBackdrop))
                         #if os(iOS)
                         .frame(width: 112)
                         #endif
@@ -106,9 +106,9 @@ private struct ResumeRow: View {
         12
         #endif
     }
-    private var thumbnailCanvasSize: CGSize? {
+    private func thumbnailCanvasSize(landscape: Bool) -> CGSize? {
         #if os(tvOS)
-        CGSize(width: 128, height: rowHeight - 8)
+        landscape ? CGSize(width: 240, height: 135) : CGSize(width: 128, height: rowHeight - 8)
         #else
         nil
         #endif

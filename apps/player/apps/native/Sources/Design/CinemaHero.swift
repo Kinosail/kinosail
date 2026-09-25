@@ -18,6 +18,9 @@ struct CinemaHero<Actions: View>: View {
         CinemaHeroLayout {
             if !item.backdrop.isEmpty {
                 Artwork(path: item.backdrop, ratio: 16 / 9, isBackdrop: true)
+                    #if os(tvOS)
+                    .frame(maxWidth: 720)
+                    #endif
                     .clipShape(.rect(cornerRadius: 12))
             } else if !item.poster.isEmpty {
                 Artwork(path: item.poster, symbol: item.kind.symbol, ratio: item.isAudio ? 1 : 2 / 3)

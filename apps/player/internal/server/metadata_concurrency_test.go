@@ -60,7 +60,7 @@ func TestMetadataSearchCleansReleaseFilename(t *testing.T) {
 	}))
 	t.Cleanup(provider.Close)
 	store := newMetadataStore(MetadataConfig{URL: provider.URL, Token: "test"}, t.TempDir(), t.TempDir())
-	_, err := store.fetchRecord(t.Context(), library.Item{Kind: "video", Title: "1917 (2019) {imdb tt8579674} [Bluray 1080p][TrueHD Atmos 7 1][x264] FuzerHD"})
+	_, err := store.fetchRecord(t.Context(), library.Item{ID: "movie", Kind: "video", Title: "1917 (2019) {imdb tt8579674} [Bluray 1080p][TrueHD Atmos 7 1][x264] FuzerHD"})
 	if err != nil || query != "1917" || year != "2019" {
 		t.Fatalf("query = %q, year = %q, err = %v", query, year, err)
 	}

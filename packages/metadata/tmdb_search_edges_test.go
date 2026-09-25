@@ -12,6 +12,11 @@ import (
 
 func TestResolveTMDBMovieRejectsSearchAndArtworkIdentityFailures(t *testing.T) {
 	t.Parallel()
+	providerCalls := 0
+	invalid := func(context.Context, string, any) error { providerCalls++; return nil }
+	if _, err := resolveTMDBMovie(t.Context(), library.Item{ID: "../movie", Title: "Movie"}, "https://example.com", invalid, func(context.Context, int) string { providerCalls++; return "" }, func(string) string { providerCalls++; return "" }); err == nil || providerCalls != 0 {
+		t.Fatalf("invalid movie identity reached provider or artwork: %d calls, %v", providerCalls, err)
+	}
 	failing := func(context.Context, string, any) error { return errors.New("offline") }
 	if _, err := resolveTMDBMovie(t.Context(), library.Item{Title: "Movie"}, "https://example.com", failing, func(context.Context, int) string { return "" }, func(string) string { return "" }); err == nil {
 		t.Fatal("movie search failure was ignored")
@@ -24,6 +29,10 @@ func TestResolveTMDBMovieRejectsSearchAndArtworkIdentityFailures(t *testing.T) {
 
 func TestResolveTMDBShowRejectsProviderAndArtworkFailures(t *testing.T) { //nolint:cyclop // Show lookup, details, and both artwork targets fail independently.
 	t.Parallel()
+	providerCalls := 0
+	if _, err := resolveTMDBShow(t.Context(), library.Item{ID: "../episode", Show: "Show"}, "https://example.com", func(context.Context, string, any) error { providerCalls++; return nil }, func(context.Context, library.Item, int, string, string, *Record, *string) { providerCalls++ }, func(string) string { providerCalls++; return "" }); err == nil || providerCalls != 0 {
+		t.Fatalf("invalid show identity reached provider or artwork: %d calls, %v", providerCalls, err)
+	}
 	noopDetails := func(context.Context, library.Item, int, string, string, *Record, *string) {}
 	if _, err := resolveTMDBShow(t.Context(), library.Item{Show: "Show"}, "https://example.com", func(context.Context, string, any) error { return errors.New("offline") }, noopDetails, func(string) string { return "art" }); err == nil {
 		t.Fatal("show search failure was ignored")

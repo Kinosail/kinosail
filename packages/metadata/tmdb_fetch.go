@@ -26,6 +26,7 @@ type TMDBCandidate struct {
 	ReleaseDate  string `json:"release_date"`
 	FirstAirDate string `json:"first_air_date"`
 	PosterPath   string `json:"poster_path"`
+	BackdropPath string `json:"backdrop_path"`
 }
 
 type TMDBCandidates struct {

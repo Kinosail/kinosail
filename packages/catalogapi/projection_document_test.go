@@ -31,6 +31,10 @@ func TestProjectItemUsesPlayerCanonicalPublicPaths(t *testing.T) { //nolint:cycl
 	if plain.Stream != "" || plain.Download != "" || plain.Artwork != "" || plain.Backdrop != "" || ArtworkURLForItem(library.Item{ID: "movie"}) != "/art/movie" {
 		t.Fatalf("plain projection = %#v", plain)
 	}
+	posterOnly := ProjectItem(library.Item{ID: "poster", Kind: "video", Artwork: "poster.jpg"}, catalog.PlaybackState{}, ItemAccess{})
+	if posterOnly.Artwork != "/art/poster" || posterOnly.Backdrop != "" {
+		t.Fatalf("portrait poster advertised as landscape: %#v", posterOnly)
+	}
 }
 
 func TestBrowseProjectionHelpersCoverAvailableAndMissingMedia(t *testing.T) { //nolint:cyclop // One projection matrix remains below the repository complexity ceiling.
