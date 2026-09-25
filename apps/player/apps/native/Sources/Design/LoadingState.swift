@@ -207,4 +207,3 @@ struct LoadingState: View {
         RoundedRectangle(cornerRadius: 5).fill(KinoTheme.raised).frame(maxWidth: width).frame(height: height)
     }
 }
-
