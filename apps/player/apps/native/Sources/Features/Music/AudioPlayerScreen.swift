@@ -186,8 +186,7 @@ struct AudioLoadingState: View {
             }
         }
         .frame(maxWidth: AudioNowPlayingGeometry.width(accessibility: dynamicTypeSize.isAccessibilitySize)).frame(maxWidth: .infinity)
-        .accessibilityHidden(true)
-        .overlay(alignment: .topTrailing) { ProgressView(title).labelsHidden().accessibilityLabel(title) }
+        .skeletonLoading(title)
     }
 }
 

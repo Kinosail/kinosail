@@ -21,12 +21,8 @@ private struct ReaderLoadingState: View {
         }
         .padding(KinoTheme.contentPadding)
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+        .skeletonLoading("Opening your book…")
         .background(KinoTheme.background)
-        .accessibilityHidden(true)
-        .overlay(alignment: .topTrailing) {
-            ProgressView("Opening your book…").labelsHidden().accessibilityLabel("Opening your book…")
-                .padding(KinoTheme.contentPadding)
-        }
     }
 }
 

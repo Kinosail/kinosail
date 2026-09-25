@@ -23,7 +23,7 @@ struct TVSeekPreviewScreen: View {
                 ZStack {
                     Color.black
                     if let message { Text(message).font(.body).foregroundStyle(.white) }
-                    else { ProgressView() }
+                    else { Rectangle().fill(KinoTheme.raised).skeletonShimmer().accessibilityLabel("Loading preview…") }
                 }
                 .frame(width: 480, height: 270)
                 .clipShape(RoundedRectangle(cornerRadius: 12))

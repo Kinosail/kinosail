@@ -72,7 +72,7 @@ struct TouchPlaybackView: View {
                     }
                 } else {
                     VStack(spacing: 20) {
-                        if let pending { ProgressView(pending).tint(.white).font(.subheadline) }
+                        if let pending { Text(pending).font(.subheadline).foregroundStyle(.white) }
                         if !compactControls { transport }
                     }
                 }
@@ -170,7 +170,8 @@ struct TouchPlaybackView: View {
                     } else if previewUnavailable {
                         Text("Preview unavailable").font(.caption).frame(width: 160, height: 90)
                     } else {
-                        ProgressView().frame(width: 160, height: 90)
+                        RoundedRectangle(cornerRadius: 8).fill(.white.opacity(0.12))
+                            .frame(width: 160, height: 90).skeletonShimmer()
                     }
                     Text(scrubPosition.clock).font(.caption.monospacedDigit())
                 }

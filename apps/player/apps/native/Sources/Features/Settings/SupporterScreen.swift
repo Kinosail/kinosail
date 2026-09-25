@@ -53,8 +53,7 @@ struct SupporterScreen: View {
                             }.frame(maxWidth: .infinity, alignment: .leading)
                         }
                     }
-                    .accessibilityHidden(true)
-                    .overlay(alignment: .topTrailing) { ProgressView("Loading collection…").labelsHidden().accessibilityLabel("Loading collection…") }
+                    .skeletonLoading("Loading collection…")
                 }
                 if let collection {
                     ForEach(collection.badges.filter { $0.edition != "legacy" }) { badge in

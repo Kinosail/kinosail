@@ -172,7 +172,7 @@ Posters retain real media artwork, the artwork radius and media-specific proport
 
 Home and detail progress use a 4px green track when valid duration is available and tabular saved-position text. Unknown duration keeps the saved position without inventing a percentage.
 
-During an actual pending navigation request, the existing feature and card boxes become neutral placeholders and retain their layout. A 3px action line marks the pending state. Empty, settled and failed responses must not stay in a skeleton. Keep recovery and permission feedback attached to the real operation.
+During an actual pending navigation request, the existing feature and card boxes become neutral placeholders and retain their layout. The placeholder shapes shimmer unless the user prefers reduced motion; a 3px action line marks the pending state. Empty, settled and failed responses must not stay in a skeleton. Keep recovery and permission feedback attached to the real operation.
 
 ### Asset provenance
 

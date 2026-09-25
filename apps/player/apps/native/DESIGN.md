@@ -156,9 +156,9 @@ Home selects the first Continue watching item, otherwise the first Recently adde
 
 ### Loading and recovery
 
-`LoadingState` has shelf, home, detail and grid variants. Home/detail reuse the hero's wide/stacked layout, artwork ratio and gap. Home includes compact continuation row placeholders, then a poster shelf. Grids reuse `MediaGrid.columns` and eight poster placeholders; shelves use four posters with the loaded spacing and width policy. These policies align the known layout, while real content, missing artwork and Dynamic Type can change its final geometry.
+`LoadingState` uses destination-specific shelf, home, detail, grid, music, show, album and list layouts. Home/detail reuse the hero's wide/stacked layout, artwork ratio and gap. Home includes compact continuation row placeholders, then a poster shelf. Grids reuse `MediaGrid.columns` and eight artwork placeholders; shelves use four cards with the loaded spacing and width policy. These policies align the known layout, while real content, missing artwork and Dynamic Type can change its final geometry.
 
-`ResourceView` displays loading feedback only while initial content is pending. A labeled `ProgressView` supplies accessible status while decorative placeholders are hidden. Initial failure shows Try again; failed refresh retains loaded content with truthful feedback. A new resource identity clears stale content. Empty, failed and settled content must not remain a skeleton.
+`ResourceView` displays loading feedback only while initial content is pending. Native skeletons shimmer within their existing shapes and expose one accessible loading label; Reduce Motion keeps the placeholders still. Initial failure shows Try again; failed refresh retains loaded content with truthful feedback. A new resource identity clears stale content. Empty, failed and settled content must not remain a skeleton. Determinate playback and download progress remains visible; actions without a replacement layout use plain status text.
 
 ### Asset provenance
 
