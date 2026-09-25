@@ -38,7 +38,7 @@ type apiServices struct {
 	supporter     *supporterProgram
 	updates       *updateChecker
 	homeAssistant *homeAssistantIntegration
-	remotePlayers  *remotePlayers
+	remotePlayers *remotePlayers
 	authURL       string
 	events        *liveEventHub
 	experience    *mediaExperienceStore

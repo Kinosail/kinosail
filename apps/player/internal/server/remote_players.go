@@ -17,8 +17,10 @@ import (
 
 const remotePlayerTTL = 30 * time.Second
 
-var remotePlayerID = regexp.MustCompile(`^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$`)
-var remoteItemID = regexp.MustCompile(`^[A-Za-z0-9_-]{1,128}$`)
+var (
+	remotePlayerID = regexp.MustCompile(`^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$`)
+	remoteItemID   = regexp.MustCompile(`^[A-Za-z0-9_-]{1,128}$`)
+)
 
 type remotePlayerState struct {
 	ID       string  `json:"id"`
@@ -75,11 +77,13 @@ func (service *remotePlayers) prune() {
 }
 
 func validRemoteState(state remotePlayerState) bool {
-	if !validRemoteText(state.Name, 80, true) || !validRemoteText(state.Title, 256, false) || !validRemoteText(state.Artist, 128, false) ||
-		math.IsNaN(state.Position) || math.IsInf(state.Position, 0) || math.IsNaN(state.Duration) || math.IsInf(state.Duration, 0) ||
-		state.Position < 0 || state.Duration < 0 || state.Duration > 1e9 || state.Position > state.Duration {
+	if !validRemoteLabels(state) || !validRemoteTimes(state.Position, state.Duration) {
 		return false
 	}
+	return validRemoteActivity(state)
+}
+
+func validRemoteActivity(state remotePlayerState) bool {
 	switch state.State {
 	case "idle":
 		return state.Title == "" && state.Artist == "" && state.ItemID == "" && state.Position == 0 && state.Duration == 0 && !state.Audio
@@ -88,6 +92,16 @@ func validRemoteState(state remotePlayerState) bool {
 	default:
 		return false
 	}
+}
+
+func validRemoteLabels(state remotePlayerState) bool {
+	return validRemoteText(state.Name, 80, true) && validRemoteText(state.Title, 256, false) &&
+		validRemoteText(state.Artist, 128, false)
+}
+
+func validRemoteTimes(position, duration float64) bool {
+	return !math.IsNaN(position) && !math.IsInf(position, 0) && !math.IsNaN(duration) && !math.IsInf(duration, 0) &&
+		position >= 0 && duration >= 0 && duration <= 1e9 && position <= duration
 }
 
 func validRemoteText(value string, maximum int, required bool) bool {
@@ -112,10 +126,19 @@ func validRemoteCommand(command remotePlayerCommand, state remotePlayerState) bo
 	case "previous", "next":
 		return command.Position == nil && state.Audio
 	case "seek":
-		return command.Position != nil && !math.IsNaN(*command.Position) && !math.IsInf(*command.Position, 0) && *command.Position >= 0 && *command.Position <= state.Duration
+		return validRemoteSeek(command.Position, state.Duration)
 	default:
 		return false
 	}
+}
+
+func validRemoteSeek(position *float64, duration float64) bool {
+	return position != nil && !math.IsNaN(*position) && !math.IsInf(*position, 0) && *position >= 0 && *position <= duration
+}
+
+func remotePlayerPathID(request *http.Request) (string, bool) {
+	id := request.PathValue("id")
+	return id, remotePlayerID.MatchString(id) && request.URL.RawQuery == ""
 }
 
 func (service *remotePlayers) register(mux *http.ServeMux) {
@@ -151,8 +174,8 @@ func (service *remotePlayers) listHTTP(writer http.ResponseWriter, request *http
 }
 
 func (service *remotePlayers) updateHTTP(writer http.ResponseWriter, request *http.Request) {
-	id := request.PathValue("id")
-	if !remotePlayerID.MatchString(id) || request.URL.RawQuery != "" {
+	id, valid := remotePlayerPathID(request)
+	if !valid {
 		apiError(writer, errors.New("invalid player ID"), http.StatusBadRequest)
 		return
 	}
@@ -178,7 +201,7 @@ func (service *remotePlayers) updateHTTP(writer http.ResponseWriter, request *ht
 		apiError(writer, errors.New("too many players"), http.StatusTooManyRequests)
 		return
 	}
-	if found && record.ItemID != state.ItemID {
+	if record.ItemID != state.ItemID {
 		record.queue = nil
 	}
 	record.remotePlayerState, record.profile, record.seen = state, currentViewer(request).ID, service.now()
@@ -194,8 +217,8 @@ func (service *remotePlayers) updateHTTP(writer http.ResponseWriter, request *ht
 }
 
 func (service *remotePlayers) commandHTTP(writer http.ResponseWriter, request *http.Request) {
-	id := request.PathValue("id")
-	if !remotePlayerID.MatchString(id) || request.URL.RawQuery != "" {
+	id, valid := remotePlayerPathID(request)
+	if !valid {
 		apiError(writer, errors.New("invalid player ID"), http.StatusBadRequest)
 		return
 	}
