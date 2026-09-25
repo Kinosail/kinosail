@@ -110,13 +110,15 @@ jobs:
   client:
     name: Player Swift compilation
     if: inputs.app == 'player' && fromJSON(inputs.plan).client
-    runs-on: macos-latest
+    runs-on: xcode-27
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
           persist-credentials: false
       - run: make -C apps/player client-check
+        env:
+          DEVELOPER_DIR: /Applications/Xcode_27.1_beta.app/Contents/Developer
 
   android:
     name: Player Android compilation

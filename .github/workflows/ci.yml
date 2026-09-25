@@ -448,7 +448,7 @@ jobs:
   swift-analysis:
     if: github.event_name == 'schedule'
     name: Swift code scanning
-    runs-on: macos-latest
+    runs-on: xcode-27
     timeout-minutes: 90
     permissions:
       contents: read
@@ -468,5 +468,6 @@ jobs:
             'COMPILATION_CACHE_ENABLE_CACHING = NO' 'SWIFT_ENABLE_COMPILE_CACHE = NO' \
             'SWIFT_USE_INTEGRATED_DRIVER = NO' 'CODE_SIGNING_ALLOWED = NO' \
             'CODE_SIGNING_REQUIRED = NO' > "$RUNNER_TEMP/codeql.xcconfig"
-          XCODE_XCCONFIG_FILE="$RUNNER_TEMP/codeql.xcconfig" make -C apps/player client-check
+          DEVELOPER_DIR=/Applications/Xcode_27.1_beta.app/Contents/Developer \
+            XCODE_XCCONFIG_FILE="$RUNNER_TEMP/codeql.xcconfig" make -C apps/player client-check
       - uses: github/codeql-action/analyze@1c5b675653bb5c22dbe9b12b556ec555138e09fd

@@ -34,11 +34,33 @@ final class TouchVideoSurface: UIView {
     override func layoutSubviews() {
         super.layoutSubviews()
         let picture = playerLayer.videoRect.isEmpty ? bounds : playerLayer.videoRect
+        let division: CGRect?
+        if #available(iOS 27.1, *) { division = reservedRegions(kind: .division).first?.frame }
+        else { division = nil }
+        captions.frame = Self.captionFrame(in: bounds, safeAreaInsets: safeAreaInsets, picture: picture,
+                                          division: division, controlsVisible: controlsVisible, controlsInset: controlsInset) { size in
+            captions.sizeThatFits(size)
+        }
+    }
+
+    static func captionFrame(in bounds: CGRect, safeAreaInsets: UIEdgeInsets, picture: CGRect,
+                             division: CGRect? = nil, controlsVisible: Bool, controlsInset: CGFloat,
+                             fitting: (CGSize) -> CGSize) -> CGRect {
         let safe = bounds.inset(by: safeAreaInsets)
-        let width = min(safe.width - 32, picture.width * 0.85)
-        let size = captions.sizeThatFits(CGSize(width: max(0, width), height: bounds.height / 2))
-        let bottom = min(picture.maxY - 20, safe.maxY - (controlsVisible ? controlsInset : 24))
-        captions.frame = CGRect(x: (bounds.width - width) / 2, y: max(safe.minY, bottom - size.height), width: max(0, width), height: size.height)
+        var visible = picture.intersection(safe)
+        guard !visible.isNull, !visible.isEmpty else { return .zero }
+        if let division, division.height > division.width, division.intersects(visible) {
+            let left = CGRect(x: visible.minX, y: visible.minY,
+                              width: max(0, min(visible.maxX, division.minX) - visible.minX), height: visible.height)
+            let right = CGRect(x: max(visible.minX, division.maxX), y: visible.minY,
+                               width: max(0, visible.maxX - max(visible.minX, division.maxX)), height: visible.height)
+            visible = left.width >= right.width ? left : right
+        }
+        guard !visible.isEmpty else { return .zero }
+        let width = max(0, min(visible.width - 32, picture.width * 0.85))
+        let size = fitting(CGSize(width: width, height: bounds.height / 2))
+        let bottom = min(visible.maxY - 20, safe.maxY - (controlsVisible ? controlsInset : 24))
+        return CGRect(x: visible.midX - width / 2, y: max(visible.minY, bottom - size.height), width: width, height: size.height)
     }
 }
 
