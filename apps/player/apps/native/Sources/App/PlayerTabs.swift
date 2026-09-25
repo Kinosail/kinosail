@@ -69,9 +69,21 @@ struct PlayerTabs: View {
         .onChange(of: pinned) { _, _ in
             if !pinned.contains(selection) && selection != .more { selection = pinned[0] }
         }
-        .onChange(of: mode) { _, _ in selection = pinned[0]; paths = [:] }
+        .onChange(of: mode) { _, _ in
+            if selection != pinned[0] { selection = pinned[0] }
+            if !paths.isEmpty { paths = [:] }
+        }
     }
-    private func changeMode(_ next: PlayerMode) { modeStored = next.rawValue }
+    private func changeMode(_ next: PlayerMode) {
+        guard next != mode else { return }
+        var transaction = Transaction(animation: nil)
+        transaction.disablesAnimations = true
+        withTransaction(transaction) {
+            selection = (try? PlayerTab.parse(next == .watch ? watchStored : listenStored))?.first ?? next.defaultTabs[0]
+            paths = [:]
+            modeStored = next.rawValue
+        }
+    }
     private func stack<Content: View>(tab: PlayerTab, @ViewBuilder content: () -> Content) -> some View {
         NavigationStack(path: Binding(get: { paths[tab] ?? NavigationPath() }, set: { paths[tab] = $0 })) {
             content()
