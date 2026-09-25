@@ -130,7 +130,7 @@ final class PlaybackEngine {
     @ObservationIgnored var playbackPreparationItemID: String?
     @ObservationIgnored var playbackPreparationClientID: UUID?
 
-    fileprivate init() {
+    init() {
         presentation.closedPictureInPicture = { [weak self] in self?.stop() }
     }
 
