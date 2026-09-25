@@ -84,7 +84,7 @@ struct HomeScreen: View {
         .navigationTitle("")
         .navigationDestination(item: $quickPlay) { DestinationScreen(destination: $0) }
         #else
-        .navigationTitle(mode == nil ? "Kinosail" : "")
+        .navigationTitle("Kinosail")
         #endif
         #if os(iOS)
         .navigationBarTitleDisplayMode(.inline)
@@ -92,13 +92,9 @@ struct HomeScreen: View {
         .toolbar {
             #if os(iOS)
             if let mode, let changeMode {
-                ToolbarItem(placement: .principal) {
-                    Picker("App mode", selection: Binding(get: { mode }, set: changeMode)) {
-                        ForEach(PlayerMode.allCases) { Text($0.title).tag($0) }
-                    }
-                    .pickerStyle(.segmented)
-                    .frame(width: 200)
-                    .accessibilityLabel("App mode")
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button(mode.other.title) { changeMode(mode.other) }
+                        .accessibilityLabel("Switch to \(mode.other.title) mode")
                 }
             }
             #endif

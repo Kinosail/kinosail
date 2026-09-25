@@ -62,7 +62,6 @@ struct PlayerTabs: View {
                 }
             }
         }
-        .id(mode)
         #if os(iOS)
         .tabViewStyle(.sidebarAdaptable)
         #endif
@@ -123,7 +122,7 @@ private struct PlayerTabScreen: View {
         case .movies: LibraryScreen(initialView: .movies)
         case .shows: LibraryScreen(initialView: .shows)
         case .home: HomeScreen(showsSearch: showsSearch, mode: mode, changeMode: mode == nil ? nil : changeMode)
-        case .search: LibraryScreen(initialView: mode?.searchViews.first ?? .all, searchMode: true, mode: mode)
+        case .search: LibraryScreen(initialView: mode?.searchViews.first ?? .all, searchMode: true, mode: mode).id(mode)
         case .list: LibraryScreen(initialView: .list)
         case .library: LibraryHubScreen(mode: mode)
         case .music: MusicScreen()
