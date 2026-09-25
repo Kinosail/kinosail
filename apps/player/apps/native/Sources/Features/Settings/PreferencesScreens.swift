@@ -35,10 +35,15 @@ struct PlaybackPreferencesScreen: View {
                                 .font(.footnote).foregroundStyle(KinoTheme.muted)
                         }
                     }
+                    if busy { ProgressView("Saving preferences…") }
                 } header: {
                     Text("Audio enhancements")
                 } footer: {
+                    #if os(iOS)
+                    Text("Changes save automatically and use a compatible Server stream. Downloads keep the audio already in the file.")
+                    #else
                     Text("Uses a compatible Server stream. Downloads keep the audio already in the file.")
+                    #endif
                 }
                 if itemID != nil {
                     Section {
@@ -50,10 +55,16 @@ struct PlaybackPreferencesScreen: View {
             } else if message == nil { ProgressView("Loading preferences…") }
             if let message { Section { Text(message).foregroundStyle(KinoTheme.muted); if !loaded { Button("Try again") { Task { await load() } } } } }
         }
+        #if os(tvOS)
         .disabled(busy)
+        #endif
         .navigationTitle(itemID == nil ? "Playback preferences" : "This title’s preferences")
         .tvOSConfigurationLayout(title: itemID == nil ? "Playback preferences" : "This title’s preferences", symbol: "play.circle")
         .task(id: "\(session.profileKey ?? ""):\(itemID ?? "defaults")") { await load() }
+        #if os(iOS)
+        .onChange(of: preferences.dialogueBoost) { _, _ in if loaded && preferences.dialogueBoost != original.dialogueBoost { save() } }
+        .onChange(of: preferences.nightMode) { _, _ in if loaded && preferences.nightMode != original.nightMode { save() } }
+        #endif
     }
     private func load() async {
         guard let client = session.client else { return }
@@ -68,13 +79,25 @@ struct PlaybackPreferencesScreen: View {
         guard let client = session.client, !busy else { return }
         busy = true
         let edited = preferences, baseline = original
+        var withoutEffects = edited
+        withoutEffects.dialogueBoost = baseline.dialogueBoost; withoutEffects.nightMode = baseline.nightMode
+        let effectsOnly = withoutEffects == baseline
         Task {
-            defer { busy = false }
+            defer {
+                busy = false
+                if preferences.dialogueBoost != edited.dialogueBoost || preferences.nightMode != edited.nightMode { save() }
+            }
             do {
                 if let itemID {
                     let saved = try await client.savePlaybackPreferences(itemID: itemID, preferences: edited)
-                    preferences = saved.playback; overridden = saved.overridden
-                    if session.player.currentItem?.id == itemID { try await session.player.applyPreferences(saved.playback) }
+                    original = saved.playback; overridden = saved.overridden
+                    if preferences == edited { preferences = saved.playback }
+                    message = "Preferences saved."
+                    if preferences.dialogueBoost == edited.dialogueBoost,
+                       preferences.nightMode == edited.nightMode, session.player.currentItem?.id == itemID {
+                        do { try await session.player.applyPreferences(saved.playback, preserveDeviceChoices: effectsOnly) }
+                        catch { message = "Preferences saved on your Server, but current playback could not update. \(AppSession.message(error))" }
+                    }
                 } else {
                     var value = try await client.mediaPreferences()
                     if edited.rate != baseline.rate { value.playback.rate = edited.rate }
@@ -83,16 +106,21 @@ struct PlaybackPreferencesScreen: View {
                     if edited.dialogueBoost != baseline.dialogueBoost { value.playback.dialogueBoost = edited.dialogueBoost }
                     if edited.nightMode != baseline.nightMode { value.playback.nightMode = edited.nightMode }
                     let saved = try await client.saveMediaPreferences(value)
-                    preferences = saved.playback
+                    original = saved.playback
+                    if preferences == edited { preferences = saved.playback }
+                    message = "Preferences saved."
                     #if os(iOS)
-                    try await session.downloads.updatePreferences(saved)
+                    do { try await session.downloads.updatePreferences(saved) }
+                    catch { message = "Preferences saved on your Server, but downloads could not update. \(AppSession.message(error))" }
                     #endif
-                    if let item = session.player.currentItem {
-                        let current = try await client.playbackPreferences(itemID: item.id)
-                        if !current.overridden { try await session.player.applyPreferences(current.playback) }
+                    if preferences.dialogueBoost == edited.dialogueBoost,
+                       preferences.nightMode == edited.nightMode, let item = session.player.currentItem {
+                        do {
+                            let current = try await client.playbackPreferences(itemID: item.id)
+                            if !current.overridden { try await session.player.applyPreferences(current.playback, preserveDeviceChoices: effectsOnly) }
+                        } catch { message = "Preferences saved on your Server, but current playback could not update. \(AppSession.message(error))" }
                     }
                 }
-                original = preferences; message = "Preferences saved."
             } catch { message = AppSession.message(error) }
         }
     }

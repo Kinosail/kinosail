@@ -56,8 +56,12 @@ final class PlaybackCoordinator {
     func pause() { engine.pause() }
     func resume() { engine.resume() }
     func checkpoint() { engine.checkpoint() }
-    func applyPreferences(_ preferences: PlaybackPreferences) async throws {
-        try await engine.applyPreferences(preferences)
+    func applyPreferences(_ preferences: PlaybackPreferences, preserveDeviceChoices: Bool = false) async throws {
+        let effective: PlaybackPreferences
+        if preserveDeviceChoices, let scope = engine.devicePreferencesScope { effective = DevicePlaybackChoices.load(scope: scope).apply(to: preferences) }
+        else { effective = preferences }
+        try await engine.applyPreferences(effective)
+        if preserveDeviceChoices { return }
         engine.rememberChoices {
             $0.rate = preferences.rate
             $0.audioLanguage = preferences.audioLanguage; $0.audioTrack = preferences.audioTrack
