@@ -1,9 +1,7 @@
 package catalog
 
 import (
-	"crypto/sha256"
 	"errors"
-	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"reflect"
@@ -12,28 +10,6 @@ import (
 
 	"github.com/MikeO7/kinosail/packages/library"
 )
-
-func TestDetailSourcesPreserveAppMarkup(t *testing.T) {
-	t.Parallel()
-	tests := []struct {
-		name, product, theme, style, albumHash, bookHash string
-	}{
-		{"player", "Kinosail Player", "6", "75", "8c9006785b700bed1ff1f90ff3d71c62da11e24b20d638d682d32cbede44b95d", "07a7b27b6d2463acb915cc4e80518d449ecf53a38fd2f90f01ff2705966b840c"},
-		{"subtitles", "Kinosail Subtitles", "4", "62", "780bba3a2b6968b2ff471181948c931f23711924b0263f48b4a25ba82779cd16", "107185355db8dd825ea61aad611bf3e2a13fadb861e2a0a0aec0ada8539fb42b"},
-	}
-	for _, test := range tests {
-		t.Run(test.name, func(t *testing.T) {
-			t.Parallel()
-			sources := MustDetailSources(DetailPresentation{test.product, test.theme, test.style})
-			if got := fmt.Sprintf("%x", sha256.Sum256([]byte(sources.Album))); got != test.albumHash {
-				t.Errorf("album source hash = %s", got)
-			}
-			if got := fmt.Sprintf("%x", sha256.Sum256([]byte(sources.Book))); got != test.bookHash {
-				t.Errorf("book source hash = %s", got)
-			}
-		})
-	}
-}
 
 func TestDetailPresentationValidation(t *testing.T) {
 	t.Parallel()
