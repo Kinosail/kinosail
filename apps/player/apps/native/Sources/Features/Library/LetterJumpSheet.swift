@@ -1,10 +1,16 @@
 import SwiftUI
 
-#if os(iOS)
 struct LetterJumpSheet: View {
     let letters: [LibraryPage.Letter]
     let onSelect: (LibraryPage.Letter) -> Void
     @Environment(\.dismiss) private var dismiss
+    private var buttonWidth: CGFloat {
+        #if os(tvOS)
+        140
+        #else
+        76
+        #endif
+    }
 
     var body: some View {
         NavigationStack {
@@ -14,7 +20,7 @@ struct LetterJumpSheet: View {
                         .font(.subheadline)
                         .foregroundStyle(KinoTheme.muted)
 
-                    LazyVGrid(columns: [GridItem(.adaptive(minimum: 76), spacing: 12)], spacing: 12) {
+                    LazyVGrid(columns: [GridItem(.adaptive(minimum: buttonWidth), spacing: 12)], spacing: 12) {
                         ForEach(letters) { letter in
                             Button {
                                 onSelect(letter)
@@ -29,10 +35,14 @@ struct LetterJumpSheet: View {
                                 }
                                 .frame(maxWidth: .infinity, minHeight: 72)
                             }
+                            #if os(tvOS)
+                            .buttonStyle(.card)
+                            #else
                             .buttonStyle(.bordered)
                             .buttonBorderShape(.roundedRectangle(radius: 14))
                             .tint(KinoTheme.secondaryControlTint)
                             .foregroundStyle(KinoTheme.text)
+                            #endif
                         }
                     }
                 }
@@ -46,8 +56,9 @@ struct LetterJumpSheet: View {
                 }
             }
         }
+        #if os(iOS)
         .presentationDetents([.medium, .large])
         .presentationDragIndicator(.visible)
+        #endif
     }
 }
-#endif

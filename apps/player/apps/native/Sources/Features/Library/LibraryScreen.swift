@@ -7,9 +7,9 @@ struct LibraryScreen: View {
     private let searchViews: [LibraryView]?
     private let mode: PlayerMode?
     @State private var query = ""
+    @State private var showsLetterJump = false
     #if os(iOS)
     @State private var showsSearch = false
-    @State private var showsLetterJump = false
     #endif
     #if os(tvOS)
     @State private var quickPlay: ScreenDestination?
@@ -33,6 +33,11 @@ struct LibraryScreen: View {
         self.mode = mode
     }
     private var requestKey: String { "\(selection.rawValue):\(sort.rawValue):\(query)" }
+    private var jumpLetters: [LibraryPage.Letter] {
+        guard let page, page.total > page.limit, page.letters.count > 1,
+              sort == .title, query.isEmpty, !searchMode else { return [] }
+        return page.letters
+    }
 
     @ViewBuilder var body: some View {
         #if os(tvOS)
@@ -58,12 +63,12 @@ struct LibraryScreen: View {
                     VStack(alignment: .leading, spacing: 16) { filters }
                 }
                 #if os(tvOS)
-                if let page, page.total > page.limit, page.letters.count > 1, sort == .title, query.isEmpty, !searchMode {
+                if !jumpLetters.isEmpty {
                     VStack(alignment: .leading, spacing: 8) {
                         Text("Jump to title").font(.callout).foregroundStyle(KinoTheme.muted)
                         ScrollView(.horizontal) {
                             LazyHStack(spacing: 8) {
-                                ForEach(page.letters) { letter in
+                                ForEach(jumpLetters) { letter in
                                     Button(letter.label) {
                                         Task { await load(reset: true, start: letter.offset) }
                                     }
@@ -116,12 +121,12 @@ struct LibraryScreen: View {
         #if os(iOS)
         .searchable(text: $query, isPresented: $showsSearch,
                     prompt: mode == .watch ? "Search movies and shows" : mode == .listen ? "Search music and audiobooks" : "Search your library")
+        #endif
         .sheet(isPresented: $showsLetterJump) {
             LetterJumpSheet(letters: page?.letters ?? []) { letter in
                 Task { await load(reset: true, start: letter.offset) }
             }
         }
-        #endif
         #if os(tvOS)
         .navigationTitle("")
         .navigationDestination(item: $quickPlay) { DestinationScreen(destination: $0) }
@@ -141,6 +146,14 @@ struct LibraryScreen: View {
         }
         .refreshable { await load(reset: true, force: true) }
         .toolbar {
+            #if os(tvOS)
+            if !jumpLetters.isEmpty {
+                ToolbarItem(placement: .primaryAction) {
+                    Button("A–Z", systemImage: "textformat.abc") { showsLetterJump = true }
+                        .accessibilityLabel("Jump to title")
+                }
+            }
+            #endif
             if selection == .music {
                 ToolbarItem(placement: .primaryAction) {
                     NavigationLink("Albums", value: ScreenDestination.music)
@@ -198,8 +211,8 @@ struct LibraryScreen: View {
         let revision = session.contentRevision
         if reset {
             generation = UUID()
-            if loadedKey != key {
-                items = []; page = nil
+            if loadedKey != key || start != page?.offset {
+                items = []; page = nil; loadedKey = nil
             }
         }
         let attempt = generation
