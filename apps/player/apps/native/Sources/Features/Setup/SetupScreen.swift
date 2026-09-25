@@ -53,6 +53,7 @@ struct SetupScreen: View {
                                 .disabled(discovery.scanning)
                             if let scanError { Text(scanError).foregroundStyle(.secondary) }
                         }
+                        Section { PrivacyPolicyLink() }
                     }
                     .task(id: scanRevision) {
                         scanError = nil
@@ -144,7 +145,7 @@ struct PairingCodeScreen: View {
     }
 }
 
-private struct QRCodeView: View {
+struct QRCodeView: View {
     let value: String
     var body: some View {
         Group {
@@ -152,7 +153,7 @@ private struct QRCodeView: View {
                 Image(uiImage: image).interpolation(.none).resizable().scaledToFit()
             } else {
                 Image(systemName: "qrcode").resizable().scaledToFit().padding(32)
-                    .accessibilityLabel("Use the six-digit code below")
+                    .accessibilityLabel("QR code unavailable")
             }
         }
         .padding(16).background(.white).clipShape(.rect(cornerRadius: 12))

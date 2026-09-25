@@ -39,6 +39,7 @@ struct SettingsScreen: View {
                 #endif
                 NavigationLink("Progress sync", value: ScreenDestination.progressSync)
             }
+            Section("About") { PrivacyPolicyLink() }
             Section {
                 Text("Kinosail plays directly from your Server. Your session is stored securely on this device.")
                     .font(.footnote).foregroundStyle(.secondary)
