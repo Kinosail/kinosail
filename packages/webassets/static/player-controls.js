@@ -65,6 +65,30 @@ if (controls && player.tagName === "VIDEO") {
   const time = controls.querySelector("[data-player-time]");
   const mute = controls.querySelector("[data-player-mute]");
   const captions = controls.querySelector("[data-player-captions]");
+  if (settingsPanel) {
+    const label = document.createElement("label");
+    const title = document.createElement("span"); title.textContent = "Playback speed";
+    const rate = document.createElement("select"); rate.setAttribute("aria-label", "Playback speed");
+    const rates = [0.5, 0.75, 1, 1.25, 1.5, 1.75, 2, 2.5, 3];
+    for (const value of rates) {
+      const option = document.createElement("option");
+      option.value = String(value);
+      option.textContent = value === 1 ? "Normal" : `${value}×`;
+      rate.append(option);
+    }
+    rate.value = rates.includes(player.playbackRate) ? String(player.playbackRate) : "1";
+    rate.addEventListener("change", () => {
+      const value = Number(rate.value);
+      if (rates.includes(value)) player.playbackRate = value;
+    });
+    player.addEventListener("ratechange", () => {
+      if (rates.includes(player.playbackRate)) rate.value = String(player.playbackRate);
+    });
+    label.append(title, rate);
+    const footer = settingsPanel.querySelector("p");
+    if (footer) footer.before(label);
+    else settingsPanel.append(label);
+  }
   const pictureInPicture = controls.querySelector("[data-player-pip]");
   const standardPictureInPicture = document.pictureInPictureEnabled === true && typeof player.requestPictureInPicture === "function";
   const webkitPictureInPicture = typeof player.webkitSetPresentationMode === "function" && typeof player.webkitSupportsPresentationMode === "function" && player.webkitSupportsPresentationMode("picture-in-picture");

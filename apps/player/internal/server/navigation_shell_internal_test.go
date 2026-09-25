@@ -51,11 +51,11 @@ func TestApplicationShellRouteBoundary(t *testing.T) {
 
 func TestApplicationShellUsesCurrentCombinedStylesheet(t *testing.T) {
 	page := applicationShellCSSVersion([]byte(`<link rel="stylesheet" href="/static/app.css?v=impeccable-1">`))
-	if !bytes.Contains(page, []byte(`/static/app.css?v=electric-26`)) || bytes.Contains(page, []byte(`/static/app.css?v=impeccable-1`)) {
+	if !bytes.Contains(page, []byte(`/static/app.css?v=electric-27`)) || bytes.Contains(page, []byte(`/static/app.css?v=impeccable-1`)) {
 		t.Fatalf("application shell stylesheet = %q", page)
 	}
-	current := applicationShellCSSVersion([]byte(`<link rel="stylesheet" href="/static/app.css?v=electric-26">`))
-	if !bytes.Contains(current, []byte(`/static/app.css?v=electric-26`)) {
+	current := applicationShellCSSVersion([]byte(`<link rel="stylesheet" href="/static/app.css?v=electric-27">`))
+	if !bytes.Contains(current, []byte(`/static/app.css?v=electric-27`)) {
 		t.Fatalf("current application shell stylesheet = %q", current)
 	}
 }
@@ -63,7 +63,7 @@ func TestApplicationShellUsesCurrentCombinedStylesheet(t *testing.T) {
 func TestApplicationShellRefreshesCachedStylesheetVersions(t *testing.T) {
 	for _, version := range []string{"72", "80", "81", "82", "83", "84", "85", "91", "93", "94", "impeccable-1", "electric-1", "electric-4", "electric-18"} {
 		page := []byte(`<link rel="stylesheet" href="/static/app.css?v=` + version + `">`)
-		want := []byte(`<link rel="stylesheet" href="/static/app.css?v=electric-26">`)
+		want := []byte(`<link rel="stylesheet" href="/static/app.css?v=electric-27">`)
 		if actual := applicationShellCSSVersion(page); !bytes.Equal(actual, want) {
 			t.Fatalf("stylesheet %s was not refreshed: %s", version, actual)
 		}

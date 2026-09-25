@@ -53,6 +53,23 @@ test("custom controls expose familiar transport, timeline, volume, and captions"
   await expect(page.getByRole("button", { name: "Subtitles" })).toHaveAttribute("aria-pressed", "true");
 });
 
+test("video playback speed is selectable and rejects unknown values", async ({ page }) => {
+  const rate = page.getByRole("combobox", { name: "Playback speed" });
+  const video = page.locator("video");
+  await page.setViewportSize({width: 390, height: 844});
+  await page.getByRole("button", { name: "Settings" }).click();
+  await rate.selectOption("1.5");
+  expect(await video.evaluate((element: HTMLVideoElement) => element.playbackRate)).toBe(1.5);
+  await rate.evaluate((select: HTMLSelectElement) => {
+    select.add(new Option("Unknown", "50"));
+    select.value = "50";
+    select.dispatchEvent(new Event("change"));
+  });
+  expect(await video.evaluate((element: HTMLVideoElement) => element.playbackRate)).toBe(1.5);
+  await video.evaluate((element: HTMLVideoElement) => { element.playbackRate = 2; });
+  await expect(rate).toHaveValue("2");
+});
+
 test("Picture-in-Picture keeps playback alive when the player page hides", async ({ page }, testInfo) => {
   const pip = page.locator("[data-player-pip]");
   await expect(pip).toBeVisible();

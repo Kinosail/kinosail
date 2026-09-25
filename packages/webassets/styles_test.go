@@ -16,8 +16,8 @@ func TestApplicationStylesPreserveFrozenBytes(t *testing.T) {
 		length  int
 		digest  string
 	}{
-		"player":    {PlayerCSS, 153_312, "6b77a2e9358dec4f936d5a53db0d3b0388e2c66ff49a4e34e3d4419f5ea88184"},
-		"subtitles": {SubtitlesCSS, 163_511, "3cbd48eb05011a75362c196916e830e8696a53a55835af12bf6f492fbf065e0b"},
+		"player":    {PlayerCSS, 153_324, "9a796aaa81b49480e576f96df1aefb3392778fe51709f0c2b10fc92cad8b08c4"},
+		"subtitles": {SubtitlesCSS, 163_523, "e3b4307c93f723435c18ef5bcaea3eb6639df1a8b8c8ffefeae6cb74c655d7eb"},
 	} {
 		if digest := fmt.Sprintf("%x", sha256.Sum256(fixture.content)); len(fixture.content) != fixture.length || digest != fixture.digest {
 			t.Fatalf("%s stylesheet = %d bytes, %s", name, len(fixture.content), digest)
