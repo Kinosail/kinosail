@@ -18,4 +18,20 @@ struct PlayerTabTests {
     func rejectsInvalidPreferences(_ raw: String) {
         #expect(throws: ClientError.self) { try PlayerTab.parse(raw) }
     }
+
+    @Test func keepsModeTabsIndependent() throws {
+        #expect(PlayerMode.watch.defaultTabs == PlayerTab.defaults)
+        #expect(PlayerMode.listen.defaultTabs == [.home, .music, .audiobooks, .search])
+        #expect(try PlayerTab.parse(PlayerMode.listen.defaultTabs.map(\.rawValue).joined(separator: ",")) == PlayerMode.listen.defaultTabs)
+        #expect(PlayerMode.watch.tabsKey("viewer") == "kinosail.tabs.v2.viewer")
+        #expect(PlayerMode.listen.tabsKey("viewer") != PlayerMode.watch.tabsKey("viewer"))
+        #expect(PlayerMode.watch.searchViews == [.movies, .shows])
+        #expect(PlayerMode.listen.searchViews == [.music, .audiobooks])
+    }
+
+    @Test(arguments: [nil, "", "WATCH", "music", String(repeating: "x", count: 129)] as [String?])
+    func invalidStoredModeFallsBackWithoutChangingWatchTabs(_ raw: String?) {
+        #expect(PlayerMode.stored(raw) == .watch)
+        #expect(PlayerMode.watch.tabsKey("viewer") == "kinosail.tabs.v2.viewer")
+    }
 }
