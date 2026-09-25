@@ -108,8 +108,8 @@ struct CatalogRevalidationTests {
         await fixture.client.warmCatalog(mode: .watch) { mode, _, refreshed in await reported.record(mode, refreshed: refreshed) }
         let repeatedModes = await reported.modes
         let repeatedFreshness = await reported.freshness
-        #expect(repeatedModes == [.listen, .listen, .listen])
-        #expect(repeatedFreshness == [true, false, true])
+        #expect(repeatedModes == [.listen, .listen, .watch, .listen])
+        #expect(repeatedFreshness == [true, false, false, true])
         #expect(fixture.pending.isEmpty)
         await fixture.client.close()
     }
@@ -117,7 +117,55 @@ struct CatalogRevalidationTests {
     private actor WarmedHomes {
         var modes: [PlayerMode] = []
         var freshness: [Bool] = []
+        var finished = false
         func record(_ mode: PlayerMode, refreshed: Bool) { modes.append(mode); freshness.append(refreshed) }
+        func finish() { finished = true }
+    }
+
+    @Test func reopenedHomeIsPublishedBeforeTheOtherLandingTabWaitsForNetwork() async throws {
+        let fixture = try Fixture()
+        defer { fixture.remove() }
+        let first = Task { try await fixture.client.home(mode: .listen, policy: .reload) }
+        try await fixture.waitForRequests(3)
+        for view in ["history", "music", "audiobooks"] { fixture.respond(view: view, version: 1) }
+        _ = try await first.value
+        let server = await fixture.client.server
+        let viewer = try #require(await fixture.client.associatedViewer)
+        await fixture.client.close()
+
+        let reopened = try ServerClient(server: server, viewer: viewer,
+                                        protocolClasses: [RevalidationProtocol.self], cacheDirectory: fixture.directory)
+        let clientID = await reopened.identity
+        let defaults = try #require(UserDefaults(suiteName: "launch-cache-\(UUID().uuidString)"))
+        let profileKey = "viewer-profile"
+        defaults.set(PlayerMode.listen.rawValue, forKey: PlayerMode.storageKey(profileKey))
+        let snapshots = await ResourceSnapshotCache()
+        await AppLaunchCache.hydrate(client: reopened, profileKey: profileKey, snapshots: snapshots, defaults: defaults)
+        #expect(await snapshots.value(for: "\(profileKey):listen", clientID: clientID, as: HomeSnapshot.self) != nil)
+        #expect(fixture.pending.isEmpty)
+        let reported = WarmedHomes()
+        let warmup = Task {
+            await reopened.warmCatalog(mode: .watch, landingTab: .movies) { mode, _, refreshed in
+                await reported.record(mode, refreshed: refreshed)
+            }
+            await reported.finish()
+        }
+        for _ in 0..<100 {
+            if await reported.modes == [.listen] { break }
+            try await Task.sleep(for: .milliseconds(5))
+        }
+        #expect(await reported.modes == [.listen])
+        #expect(await reported.freshness == [false])
+        for _ in 0..<200 {
+            for view in fixture.pending.compactMap({ $0.query["view"] }) { fixture.respond(view: view, version: 1) }
+            if await reported.finished { break }
+            try await Task.sleep(for: .milliseconds(5))
+        }
+        let finished = await reported.finished
+        #expect(finished)
+        if finished { await warmup.value } else { warmup.cancel() }
+        #expect(fixture.pending.isEmpty)
+        await reopened.close()
     }
 
     @Test func modeWarmupAlsoCachesCustomLandingTab() async throws {

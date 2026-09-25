@@ -1,11 +1,5 @@
 import SwiftUI
 
-private struct LibrarySnapshot {
-    let items: [MediaItem]
-    let page: LibraryPage
-    let revision: UUID?
-}
-
 struct LibraryScreen: View {
     @Environment(AppSession.self) private var session
     @Environment(\.scenePhase) private var scenePhase
@@ -40,7 +34,7 @@ struct LibraryScreen: View {
         self.mode = mode
     }
     private var requestKey: String { "\(selection.rawValue):\(sort.rawValue):\(query)" }
-    private var snapshotKey: String { "library:\(requestKey)" }
+    private var snapshotKey: String { LibrarySnapshot.key(view: selection, sort: sort, query: query) }
     private var savedSnapshot: LibrarySnapshot? {
         guard let clientID = session.client?.identity else { return nil }
         return session.resourceSnapshots.value(for: snapshotKey, clientID: clientID)

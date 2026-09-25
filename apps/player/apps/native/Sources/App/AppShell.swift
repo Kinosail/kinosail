@@ -66,7 +66,9 @@ struct AppShell: View {
                 await client.warmCatalog(mode: mode, landingTab: landingTab) { warmedMode, home, refreshed in
                     await MainActor.run {
                         guard currentSession.client?.identity == clientID, let profile = currentSession.profileKey else { return }
-                        currentSession.resourceSnapshots.store(home, for: "\(profile):\(warmedMode.rawValue)", clientID: clientID,
+                        let key = "\(profile):\(warmedMode.rawValue)"
+                        if !refreshed, currentSession.resourceSnapshots.value(for: key, clientID: clientID, as: HomeSnapshot.self) != nil { return }
+                        currentSession.resourceSnapshots.store(home, for: key, clientID: clientID,
                                                                refreshID: refreshed && currentSession.contentRevision == contentRevision ? contentRevision.uuidString : nil)
                     }
                 }
