@@ -16,21 +16,9 @@ private struct TabPreferencesEditor: View {
         _listenStored = AppStorage(wrappedValue: PlayerMode.listen.defaultTabs.map(\.rawValue).joined(separator: ","), PlayerMode.listen.tabsKey(profileKey))
         _modeStored = AppStorage(wrappedValue: PlayerMode.watch.rawValue, PlayerMode.storageKey(profileKey))
     }
-    private var mode: PlayerMode {
-        #if os(iOS)
-        PlayerMode.stored(modeStored)
-        #else
-        .watch
-        #endif
-    }
+    private var mode: PlayerMode { PlayerMode.stored(modeStored) }
     private var pinned: [PlayerTab] { (try? PlayerTab.parse(mode == .watch ? watchStored : listenStored)) ?? mode.defaultTabs }
-    private var intro: String {
-        #if os(iOS)
-        "Choose up to four \(mode.title) tabs for this Viewer Profile on this device. Find the remaining sections in More."
-        #else
-        "Choose up to four tabs for this Viewer Profile on this device. Find the remaining sections in More."
-        #endif
-    }
+    private var intro: String { "Choose up to four \(mode.title) tabs for this Viewer Profile on this device. Find the remaining sections in More." }
     var body: some View {
         List {
             Section {
