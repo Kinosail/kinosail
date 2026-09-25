@@ -23,7 +23,8 @@ func TestPlaybackAudioEnhancementsUseAnEffectSpecificCompatibleStream(t *testing
 	writeExecutable(t, ffprobe, `#!/bin/sh
 printf '%s' '{"streams":[{"index":0,"codec_type":"audio","codec_name":"aac","channels":2,"disposition":{"default":1}}],"format":{"duration":"30","format_name":"mov,mp4,m4a,3gp,3g2,mj2"}}'
 `)
-	handler, id := formatTestItem(t, server.Config{MediaDir: media, DataDir: t.TempDir(), CacheDir: t.TempDir(), FFprobe: ffprobe, FFmpeg: "/bin/false"})
+	config := server.Config{MediaDir: media, DataDir: t.TempDir(), CacheDir: t.TempDir(), FFprobe: ffprobe, FFmpeg: "/bin/false"}
+	handler, id := formatTestItem(t, config)
 	var preferences map[string]any
 	mustJSON(t, apiCall(t, handler, "", http.MethodGet, "/api/v1/me/media-preferences", nil), &preferences)
 	defaults := preferences["playback"].(map[string]any)
@@ -52,6 +53,33 @@ printf '%s' '{"streams":[{"index":0,"codec_type":"audio","codec_name":"aac","cha
 	mustJSON(t, response, &result)
 	if result.Direct != "" || result.CompatibleLabel != "Boosting dialog" || !strings.Contains(result.Compatible, "-e1/") {
 		t.Fatalf("title enhancement override = %d %s", response.Code, response.Body.String())
+	}
+	restarted, restoredID := formatTestItem(t, config)
+	if restoredID != id {
+		t.Fatalf("item changed after restart: %q to %q", id, restoredID)
+	}
+	var restored struct {
+		Playback   struct{ DialogueBoost, NightMode bool }
+		Overridden bool
+	}
+	mustJSON(t, apiCall(t, restarted, "", http.MethodGet, "/api/v1/items/"+id+"/playback-preferences", nil), &restored)
+	if !restored.Overridden || !restored.Playback.DialogueBoost || restored.Playback.NightMode {
+		t.Fatalf("saved title enhancement lost after restart: %+v", restored)
+	}
+	var profile struct{ Playback struct{ DialogueBoost, NightMode bool } }
+	mustJSON(t, apiCall(t, restarted, "", http.MethodGet, "/api/v1/me/media-preferences", nil), &profile)
+	if !profile.Playback.DialogueBoost || !profile.Playback.NightMode {
+		t.Fatalf("saved profile enhancements lost after restart: %+v", profile)
+	}
+	response = apiCall(t, restarted, "", http.MethodGet, "/api/v1/items/"+id+"/playback?audioCodecs=aac", nil)
+	result = struct {
+		Direct, Compatible string
+		CompatiblePlan     playback.PlaybackPlan
+		CompatibleLabel    string
+	}{}
+	mustJSON(t, response, &result)
+	if response.Code != http.StatusOK || result.CompatibleLabel != "Boosting dialog" || !strings.Contains(result.Compatible, "-e1/") {
+		t.Fatalf("restored enhancement stream = %d %s", response.Code, response.Body.String())
 	}
 }
 
