@@ -40,7 +40,9 @@ private struct DetailContent: View {
                 #if os(tvOS)
                 .buttonStyle(.bordered).tint(KinoTheme.secondaryControlTint).foregroundStyle(KinoTheme.text)
                 #endif
+            #if os(tvOS)
             CastShelf(people: item.cast ?? [])
+            #endif
         }
         .frame(maxWidth: .infinity, alignment: .center)
         #if os(tvOS)
