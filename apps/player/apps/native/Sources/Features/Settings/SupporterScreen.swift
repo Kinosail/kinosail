@@ -11,24 +11,24 @@ struct SupporterScreen: View {
         ScrollView {
             VStack(alignment: .leading, spacing: 28) {
                 Text("A place in the story.").font(.largeTitle.bold()).accessibilityAddTraits(.isHeader)
-                Text("Collect one-time, monthly and yearly badges. Kinosail stays complete and free for everyone.")
+                Text("Your Server's existing badges appear here. Kinosail stays complete and free for everyone.")
                 if loading && collection == nil { ProgressView("Loading collection…") }
                 if let collection {
-                    ForEach(["one-time", "monthly", "yearly"], id: \.self) { edition in
-                        let badge = collection.badges.first { $0.edition == edition }
+                    ForEach(collection.badges.filter { $0.edition != "legacy" }) { badge in
                         HStack(spacing: 24) {
-                            Image(badge?.artwork ?? "supporter-\(edition)-1").resizable().scaledToFit().frame(width: 112, height: 112)
+                            Image(badge.artwork).resizable().scaledToFit().frame(width: 112, height: 112)
                             VStack(alignment: .leading) {
-                                Text(badge?.title ?? ["one-time": "One-time", "monthly": "Monthly", "yearly": "Yearly"][edition]!).font(.headline)
-                                Text(badge?.name ?? "Not yet collected")
-                                if let badge { Text(badge.archived ? "Past support · Yours to keep" : "Collected").font(.caption) }
+                                Text(badge.title).font(.headline)
+                                Text(badge.name)
+                                Text(badge.archived ? "Past support · Yours to keep" : "Collected").font(.caption)
                             }
                         }
                     }
                     ForEach(collection.badges.filter { $0.edition == "legacy" }) { badge in
                         Text("Earlier support · \(badge.name)\(badge.archived ? " · Past support" : "")")
                     }
-                    if session.viewer?.owner == true {
+                    if collection.badges.isEmpty { Text("No badges are recorded on this Server.").foregroundStyle(.secondary) }
+                    if session.viewer?.owner == true && !collection.badges.isEmpty {
                         Toggle("Show supporter badges around the app", isOn: $showingBadges)
                             .disabled(saving)
                             .onChange(of: showingBadges) { _, visible in
@@ -38,7 +38,6 @@ struct SupporterScreen: View {
                     }
                 }
                 if let error { Text(error).foregroundStyle(.secondary); Button("Try again") { Task { await load() } } }
-                Text("Activate or refresh a supporter key from Supporter on your Server’s web app.").font(.footnote)
             }.padding(32)
         }.background(KinoTheme.background).navigationTitle("Supporter")
             .task(id: session.supporterRevision) { await load() }
@@ -71,19 +70,16 @@ struct SupporterToolbar: ViewModifier {
     @State private var showing = false
     func body(content: Content) -> some View {
         content.toolbar {
-            if let collection, collection.visible {
+            if let collection, collection.visible, !collection.badges.isEmpty {
                 ToolbarItem(placement: .automatic) {
                     Button { showing = true } label: {
-                        if collection.badges.isEmpty { Text("Support Kinosail").font(.caption) }
-                        else {
-                            HStack(spacing: 5) {
-                                ForEach(collection.badges.filter { $0.edition != "legacy" }) { badge in
-                                    Image("supporter-\(badge.edition)-small").resizable().scaledToFit().frame(width: 24, height: 24)
-                                }
-                                if collection.badges.allSatisfy({ $0.edition == "legacy" }) { Image(systemName: "sailboat") }
+                        HStack(spacing: 5) {
+                            ForEach(collection.badges.filter { $0.edition != "legacy" }) { badge in
+                                Image("supporter-\(badge.edition)-small").resizable().scaledToFit().frame(width: 24, height: 24)
                             }
+                            if collection.badges.allSatisfy({ $0.edition == "legacy" }) { Image(systemName: "sailboat") }
                         }
-                    }.accessibilityLabel(collection.badges.isEmpty ? "Support Kinosail" : "Your supporter collection")
+                    }.accessibilityLabel("Your supporter collection")
                 }
             }
         }
