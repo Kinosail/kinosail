@@ -40,6 +40,7 @@ struct CollectionsScreen: View {
             }.padding(KinoTheme.contentPadding)
         }
         #if os(tvOS)
+        .frame(maxWidth: .infinity)
         .cinemaBackground()
         .navigationTitle("")
         #else
