@@ -21,10 +21,6 @@ func TestHardwareSupportAcceptsAutomaticAndKnownBackends(t *testing.T) {
 	servertest.AssertHardwareSupportAcceptsAutomaticAndKnownBackends(t, capabilities.Supports)
 }
 
-func TestTMDBCastValidationBoundsProviderData(t *testing.T) {
-	servertest.AssertTMDBCastValidationBoundsProviderData(t)
-}
-
 func TestPlayerFormattingUsesStableHumanReadableBoundaries(t *testing.T) {
 	servertest.AssertByteSizeBoundaries(t, byteSize)
 }

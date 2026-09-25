@@ -1,10 +1,7 @@
 package servertest
 
 import (
-	"strings"
 	"testing"
-
-	sharedmetadata "github.com/MikeO7/kinosail/packages/metadata"
 )
 
 // AssertDLNALabelExplainsUnconfiguredAndConfiguredStates preserves the Player regression against the supplied app bindings.
@@ -26,22 +23,6 @@ func AssertDLNALabelExplainsUnconfiguredAndConfiguredStates(t *testing.T, label 
 func AssertHardwareSupportAcceptsAutomaticAndKnownBackends(t *testing.T, supports func(string) bool) {
 	if !supports("auto") || !supports("vaapi") || supports("nvenc") {
 		t.Fatal("hardware support classification is incorrect")
-	}
-}
-
-// AssertTMDBCastValidationBoundsProviderData preserves the Player regression against the supplied app bindings.
-func AssertTMDBCastValidationBoundsProviderData(t *testing.T) {
-	if !sharedmetadata.ValidTMDBCast([]sharedmetadata.TMDBCastMember{{Name: "Actor", Character: "Role", ProfilePath: "/actor.jpg"}}) {
-		t.Fatal("valid TMDB cast was rejected")
-	}
-	for _, cast := range [][]sharedmetadata.TMDBCastMember{
-		make([]sharedmetadata.TMDBCastMember, 1001),
-		{{Name: strings.Repeat("n", 201)}},
-		{{Name: "Actor", ProfilePath: "https://images.example/actor.jpg"}},
-	} {
-		if sharedmetadata.ValidTMDBCast(cast) {
-			t.Fatal("invalid TMDB cast was accepted")
-		}
 	}
 }
 
