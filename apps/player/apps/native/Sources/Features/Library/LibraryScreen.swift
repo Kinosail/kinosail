@@ -53,7 +53,7 @@ struct LibraryScreen: View {
                     VStack(alignment: .leading, spacing: 16) { filters }
                 }
                 #if os(tvOS)
-                if let page, page.letters.count > 1, sort == .title, query.isEmpty, !searchMode {
+                if let page, page.total > page.limit, page.letters.count > 1, sort == .title, query.isEmpty, !searchMode {
                     VStack(alignment: .leading, spacing: 8) {
                         Text("Jump to title").font(.callout).foregroundStyle(KinoTheme.muted)
                         ScrollView(.horizontal) {
