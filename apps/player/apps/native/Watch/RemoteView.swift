@@ -5,85 +5,115 @@ private let electric = Color(red: 0.77, green: 1, blue: 0.28)
 struct RemoteView: View {
     @Environment(WatchRemoteSession.self) private var remote
     @Environment(MovieHeartTracker.self) private var heart
+    @State private var page = 0
 
     var body: some View {
-        NavigationStack {
-            ScrollView {
-                VStack(alignment: .leading, spacing: 14) {
-                    if remote.players.count > 1 {
-                        NavigationLink { DevicePickerView() } label: {
-                            Label(remote.selected?.device ?? "Choose player", systemImage: "hifispeaker.and.homepod")
-                                .font(.caption.weight(.semibold))
-                        }
-                    } else {
-                        Text(remote.selected?.device ?? "Kinosail")
-                            .font(.caption.weight(.semibold)).foregroundStyle(electric)
-                    }
+        TabView(selection: $page) {
+            NavigationStack { remotePage }
+                .tag(0)
+            if heart.timeline != nil {
+                NavigationStack { HeartGraphView(isVisible: page == 1) }
+                    .tag(1)
+            }
+        }
+        .tabViewStyle(.verticalPage)
+        .task {
+            while !Task.isCancelled {
+                await remote.refresh()
+                if let id = heart.timeline?.targetID, let player = remote.players.first(where: { $0.id == id }) { heart.note(player) }
+                try? await Task.sleep(for: .seconds(5))
+            }
+        }
+    }
 
-                    if let player = remote.selected, player.active {
-                        VStack(alignment: .leading, spacing: 4) {
-                            Text(player.title).font(.title3.bold()).lineLimit(2)
-                            if !player.subtitle.isEmpty { Text(player.subtitle).font(.caption).foregroundStyle(.secondary).lineLimit(1) }
-                        }
-                        if player.duration > 0 {
-                            ProgressView(value: player.position, total: player.duration).tint(electric)
-                                .accessibilityLabel("Playback position")
-                            HStack {
-                                Text(clock(player.position))
-                                Spacer()
-                                Text(clock(player.duration))
-                            }.font(.caption2.monospacedDigit()).foregroundStyle(.secondary)
-                        }
-                        HStack(spacing: 10) {
-                            Button(player.audio ? "Previous" : "Back 15 seconds", systemImage: player.audio ? "backward.end.fill" : "gobackward.15") {
-                                Task { await remote.command(player.audio ? "previous" : "backward") }
-                            }
-                            .buttonStyle(.bordered).accessibilityLabel(player.audio ? "Previous track" : "Back 15 seconds")
-                            Button(player.playing ? "Pause" : "Play", systemImage: player.playing ? "pause.fill" : "play.fill") {
-                                Task { await remote.command(player.playing ? "pause" : "play") }
-                            }
-                            .buttonStyle(.borderedProminent).tint(electric).foregroundStyle(.black)
-                            .accessibilityLabel(player.playing ? "Pause \(player.title)" : "Play \(player.title)")
-                            Button(player.audio ? "Next" : "Forward 30 seconds", systemImage: player.audio ? "forward.end.fill" : "goforward.30") {
-                                Task { await remote.command(player.audio ? "next" : "forward") }
-                            }
-                            .buttonStyle(.bordered).accessibilityLabel(player.audio ? "Next track" : "Forward 30 seconds")
-                        }
-                        .labelStyle(.iconOnly).font(.title3)
-                        .disabled(remote.busy)
-                        if player.duration > 0 {
-                            NavigationLink { ScrubView() } label: { Label("Go to time", systemImage: "timeline.selection") }
-                                .font(.caption).buttonStyle(.bordered)
-                        }
-                        if heart.isTracking && heart.matches(player) {
-                            Button("Stop heart graph", systemImage: "stop.circle") { Task { await heart.stop() } }
-                                .font(.caption).buttonStyle(.plain).foregroundStyle(.secondary)
-                        } else if player.duration > 0 && !player.audio && !heart.isTracking {
-                            Button("Start heart graph", systemImage: "heart") { Task { await heart.start(for: player) } }
-                                .font(.caption).buttonStyle(.bordered)
-                        }
-                    } else {
-                        ContentUnavailableView("Nothing playing", systemImage: "play.rectangle", description: Text("Start a title on your iPhone or Apple TV."))
+    private var remotePage: some View {
+        ScrollView {
+            VStack(alignment: .leading, spacing: 10) {
+                if !remote.players.isEmpty && (remote.players.count > 1 || remote.selected == nil) {
+                    NavigationLink { DevicePickerView() } label: {
+                        Label(remote.selected?.device ?? "Choose player", systemImage: "hifispeaker.and.homepod")
+                            .font(.caption.weight(.semibold))
                     }
-                    if heart.timeline != nil {
-                        NavigationLink { HeartGraphView() } label: { Label(heart.isTracking ? "Heart graph" : "Last heart graph", systemImage: "heart.text.square") }
+                } else {
+                    Text(remote.selected?.device ?? "Kinosail")
+                        .font(.caption.weight(.semibold)).foregroundStyle(electric)
+                }
+
+                if let player = remote.selected, player.active {
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text(player.title).font(.title3.bold()).lineLimit(2)
+                        if !player.subtitle.isEmpty { Text(player.subtitle).font(.caption).foregroundStyle(.secondary).lineLimit(1) }
+                    }
+                    if player.duration > 0 {
+                        ProgressView(value: player.position, total: player.duration).tint(electric)
+                            .accessibilityLabel("Playback position")
+                        HStack {
+                            Text(clock(player.position))
+                            Spacer()
+                            Text(clock(player.duration))
+                        }.font(.caption2.monospacedDigit()).foregroundStyle(.secondary)
+                    }
+                    HStack(spacing: 8) {
+                        Button {
+                            Task { await remote.command(player.audio ? "previous" : "backward") }
+                        } label: { Image(systemName: player.audio ? "backward.end.fill" : "gobackward.15")
+                            .frame(maxWidth: .infinity, minHeight: 44) }
+                        .buttonStyle(.bordered).accessibilityLabel(player.audio ? "Previous track" : "Back 15 seconds")
+                        Button {
+                            Task { await remote.command(player.playing ? "pause" : "play") }
+                        } label: { Image(systemName: player.playing ? "pause.fill" : "play.fill")
+                            .frame(maxWidth: .infinity, minHeight: 44) }
+                        .buttonStyle(.borderedProminent).tint(electric).foregroundStyle(.black)
+                        .accessibilityLabel(player.playing ? "Pause \(player.title)" : "Play \(player.title)")
+                        Button {
+                            Task { await remote.command(player.audio ? "next" : "forward") }
+                        } label: { Image(systemName: player.audio ? "forward.end.fill" : "goforward.30")
+                            .frame(maxWidth: .infinity, minHeight: 44) }
+                        .buttonStyle(.bordered).accessibilityLabel(player.audio ? "Next track" : "Forward 30 seconds")
+                    }
+                    .font(.title3)
+                    .disabled(remote.busy)
+                    if player.duration > 0 {
+                        NavigationLink { ScrubView() } label: { Label("Go to time", systemImage: "timeline.selection") }
                             .font(.caption).buttonStyle(.bordered)
                     }
-                    if let message = remote.message ?? heart.message {
-                        Text(message).font(.caption2).foregroundStyle(.secondary)
+                    if !heart.isTracking && player.duration > 0 && !player.audio {
+                        Button("Start heart graph", systemImage: "heart") {
+                            Task {
+                                await heart.start(for: player)
+                                if heart.isTracking && heart.matches(player) { page = 1 }
+                            }
+                        }
+                        .font(.caption).buttonStyle(.bordered)
                     }
+                } else if remote.selected == nil && remote.selectedID != nil {
+                    Label("Selected player unavailable", systemImage: "tv.slash")
+                        .font(.caption).foregroundStyle(.secondary)
+                } else {
+                    Label("Nothing playing", systemImage: "play.rectangle")
+                        .font(.headline)
+                    Text("Start a title on your iPhone or Apple TV.")
+                        .font(.caption).foregroundStyle(.secondary)
                 }
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .padding(.horizontal, 8)
-            }
-            .navigationTitle("Now playing")
-            .task {
-                while !Task.isCancelled {
-                    await remote.refresh()
-                    if let id = heart.timeline?.targetID, let player = remote.players.first(where: { $0.id == id }) { heart.note(player) }
-                    try? await Task.sleep(for: .seconds(5))
+                if heart.timeline != nil {
+                    Button { page = 1 } label: {
+                        HStack {
+                            Label(heart.isTracking ? "Heart graph" : "Last heart graph", systemImage: "heart.text.square")
+                            Spacer()
+                            Image(systemName: "chevron.up")
+                        }
+                        .font(.caption.weight(.semibold)).foregroundStyle(electric)
+                        .padding(.vertical, 6)
+                    }
+                    .buttonStyle(.plain)
+                    .accessibilityHint("Swipe up to open the Heart page")
+                }
+                if let message = heart.message ?? remote.message {
+                    Text(message).font(.caption2).foregroundStyle(.secondary)
                 }
             }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(.horizontal, 8)
         }
     }
 }
