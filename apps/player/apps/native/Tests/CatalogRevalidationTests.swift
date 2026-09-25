@@ -82,6 +82,52 @@ struct CatalogRevalidationTests {
         await fixture.client.close()
     }
 
+    @Test func modeWarmupMakesBothHomesAvailableWithoutNetwork() async throws {
+        let fixture = try Fixture()
+        defer { fixture.remove() }
+        let warmup = Task { await fixture.client.warmCatalog(mode: .watch) }
+        try await fixture.waitForRequests(3)
+        fixture.respond(view: "history", version: 1)
+        fixture.respond(view: "music", version: 1)
+        fixture.respond(view: "audiobooks", version: 1)
+        try await fixture.waitForRequests(2)
+        fixture.respond(view: "movies", version: 1)
+        fixture.respond(view: "shows", version: 1)
+        try await fixture.waitForRequests(1)
+        fixture.respond(view: "movies", version: 1)
+        try await fixture.waitForRequests(1)
+        fixture.respond(view: "shows", version: 1)
+        await warmup.value
+        _ = try await fixture.client.home(mode: .watch, policy: .cached)
+        _ = try await fixture.client.home(mode: .listen, policy: .cached)
+        #expect(fixture.pending.isEmpty)
+        await fixture.client.close()
+    }
+
+    @Test func modeWarmupAlsoCachesCustomLandingTab() async throws {
+        let fixture = try Fixture()
+        defer { fixture.remove() }
+        let warmup = Task { await fixture.client.warmCatalog(mode: .watch, landingTab: .search) }
+        try await fixture.waitForRequests(3)
+        fixture.respond(view: "history", version: 1)
+        fixture.respond(view: "music", version: 1)
+        fixture.respond(view: "audiobooks", version: 1)
+        try await fixture.waitForRequests(1)
+        #expect(fixture.pending.first?.query["sort"] == "title")
+        fixture.respond(view: "music", version: 1)
+        try await fixture.waitForRequests(2)
+        fixture.respond(view: "movies", version: 1)
+        fixture.respond(view: "shows", version: 1)
+        try await fixture.waitForRequests(1)
+        fixture.respond(view: "movies", version: 1)
+        try await fixture.waitForRequests(1)
+        fixture.respond(view: "shows", version: 1)
+        await warmup.value
+        _ = try await fixture.client.library(view: .music, policy: .cached)
+        #expect(fixture.pending.isEmpty)
+        await fixture.client.close()
+    }
+
     private static func item(_ id: String, progress: [String: Any]) -> [String: Any] {
         ["id": id, "kind": "video", "title": id, "stream": "/media/\(id)", "progress": progress]
     }

@@ -54,10 +54,17 @@ struct AppShell: View {
             .modifier(ConnectionMonitoring())
             .task(id: "\(session.client?.identity.uuidString ?? ""):\(session.restoring):\(scenePhase)") {
                 guard scenePhase == .active, !session.restoring, let client = session.client else { return }
-                // Visible requests take priority; warm only the three main landing pages.
+                // Visible requests take priority over background catalog warmup.
                 do { try await Task.sleep(for: .seconds(1)) }
                 catch { return }
+                #if os(iOS)
+                let mode = PlayerMode.stored(UserDefaults.standard.string(forKey: PlayerMode.storageKey(session.profileKey ?? "")))
+                let savedTabs = UserDefaults.standard.string(forKey: mode.other.tabsKey(session.profileKey ?? ""))
+                let landingTab = savedTabs.flatMap { try? PlayerTab.parse($0).first } ?? .home
+                await client.warmCatalog(mode: mode, landingTab: landingTab)
+                #else
                 await client.warmCatalog()
+                #endif
             }
             .task(id: scenePhase) { if scenePhase == .active { await session.casting.monitor() } }
             #if os(iOS)
