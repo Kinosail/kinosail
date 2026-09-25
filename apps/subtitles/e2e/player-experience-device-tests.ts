@@ -51,6 +51,26 @@ test("custom controls expose familiar transport, timeline, volume, and captions"
   await expect(page.getByRole("button", { name: "Subtitles" })).toHaveAttribute("aria-pressed", "true");
 });
 
+test("video playback speed is selectable and rejects unknown values", async ({ page }, testInfo) => {
+  const rate = page.getByRole("combobox", { name: "Playback speed" });
+  const video = page.locator("video");
+  await page.setViewportSize({width: 390, height: 844});
+  await page.getByRole("button", { name: "Settings" }).click();
+  await page.screenshot({path: testInfo.outputPath("mobile-playback-speed.png")});
+  await rate.selectOption("1.5");
+  await page.setViewportSize({width: 1440, height: 900});
+  await page.screenshot({path: testInfo.outputPath("desktop-playback-speed.png")});
+  expect(await video.evaluate((element: HTMLVideoElement) => element.playbackRate)).toBe(1.5);
+  await rate.evaluate((select: HTMLSelectElement) => {
+    select.add(new Option("Unknown", "50"));
+    select.value = "50";
+    select.dispatchEvent(new Event("change"));
+  });
+  expect(await video.evaluate((element: HTMLVideoElement) => element.playbackRate)).toBe(1.5);
+  await video.evaluate((element: HTMLVideoElement) => { element.playbackRate = 2; });
+  await expect(rate).toHaveValue("2");
+});
+
 test("scrubbing previews the frame before seeking", async ({ page }) => {
   await page.route("**/trickplay/movie/*", route => route.fulfill({
     contentType: "image/svg+xml", body: '<svg xmlns="http://www.w3.org/2000/svg" width="320" height="180"/>',

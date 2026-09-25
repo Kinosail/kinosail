@@ -1,6 +1,5 @@
 #if os(iOS)
 import AVKit
-import MediaPlayer
 import SwiftUI
 
 struct TouchPlaybackView: View {
@@ -47,12 +46,17 @@ struct TouchPlaybackView: View {
             TouchVideoView(player: playback.player, presentation: presentation, controlsVisible: controlsVisible, controlsInset: timelineHeight + 16,
                            restore: { session.showsVideoPlayer = true })
                 .ignoresSafeArea()
-            Color.clear.contentShape(Rectangle())
-                .onTapGesture { reveal(toggle: true) }
-                .accessibilityLabel("Show playback controls")
-                .accessibilityAddTraits(.isButton)
-                .accessibilityAction { reveal() }
-                .accessibilityHidden(controlsVisible)
+            GeometryReader { geometry in
+                Color.clear.contentShape(Rectangle())
+                    .gesture(SpatialTapGesture(count: 2).onEnded { tap in
+                        guard playback.player != nil, playback.duration > 0, !presentation.pictureInPicture else { return }
+                        seek(displayedPosition + (tap.location.x < geometry.size.width / 2 ? -10 : 10))
+                    }.exclusively(before: TapGesture().onEnded { reveal(toggle: true) }))
+                    .accessibilityLabel("Show playback controls")
+                    .accessibilityAddTraits(.isButton)
+                    .accessibilityAction { reveal() }
+                    .accessibilityHidden(controlsVisible)
+            }
             if presentation.pictureInPicture {
                 ContentUnavailableView("Playing in Picture in Picture", systemImage: "pip", description: Text("Use the floating player to return here."))
             }
@@ -289,10 +293,4 @@ private enum PlaybackSheet: String, Identifiable {
     var id: String { rawValue }
 }
 
-private struct SystemPlaybackVolume: UIViewRepresentable {
-    func makeUIView(context: Context) -> MPVolumeView {
-        MPVolumeView()
-    }
-    func updateUIView(_ view: MPVolumeView, context: Context) {}
-}
 #endif
