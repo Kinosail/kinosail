@@ -14,7 +14,7 @@ final class CastCoordinator {
     private var lastSaved = Date.distantPast
 
     func start(item: MediaItem, device: CastDevice, position: Double, client: ServerClient, store: ProgressSyncStore) async throws {
-        guard !busy, session == nil, item.kind == .video || item.isAudio, device.receiverProtocol == .dlna else { throw ClientError.invalidInput("Stop the active TV session before starting another.") }
+        guard !busy, session == nil, item.kind == .video || item.isAudio, device.receiverProtocol == .dlna else { throw ClientError.invalidInput("Stop playback on the current receiver before starting another.") }
         try Input.position(position)
         let writer = try ProgressWriter(itemID: item.id, expected: item.progress, client: client, store: store)
         busy = true

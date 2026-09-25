@@ -32,7 +32,7 @@ printf '%s' '{"streams":[{"codec_type":"audio","codec_name":"aac"}],"chapters":[
 	}
 	id := regexp.MustCompile(`/(?:watch|item)/([a-f0-9]+)`).FindStringSubmatch(home.Body.String())[1]
 	player := apiCall(t, handler, "", http.MethodGet, "/watch/"+id, nil)
-	assertAPIBody(t, player, http.StatusOK, "An Unexpected Party", "Roast Mutton", "Playback speed", "Sleep timer", `data-progress="/progress/`+id+`"`)
+	assertAPIBody(t, player, http.StatusOK, "An Unexpected Party", "Roast Mutton", "Playback speed", "Sleep timer", `data-progress="/progress/`+id+`"`, `data-kind="audiobook"`)
 	script := apiCall(t, handler, "", http.MethodGet, "/static/player.js", nil)
 	assertAPIBody(t, script, http.StatusOK, "[data-playback-rate]", "player.playbackRate", "[data-sleep-timer]", "player.pause()")
 }

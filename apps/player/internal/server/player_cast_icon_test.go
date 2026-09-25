@@ -26,7 +26,7 @@ func TestPlayerUsesCastIconForDevicePlayback(t *testing.T) {
 	handler.ServeHTTP(player, httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/watch/"+id, nil))
 
 	body := player.Body.String()
-	if !strings.Contains(body, `data-tv-open aria-haspopup="dialog"><i class=i-cast aria-hidden=true></i> Play on TV`) {
+	if !strings.Contains(body, `data-tv-open aria-haspopup="dialog"><i class=i-cast aria-hidden=true></i> Play on another device`) {
 		t.Fatalf("player is missing the cast icon control: %q", body)
 	}
 	if strings.Contains(body, `data-cast>Play on device</button>`) {

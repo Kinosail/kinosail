@@ -42,7 +42,7 @@ func TestTVPickerExposesProtocolsAndLargerEntryForVideoAndAudio(t *testing.T) {
 	if strings.Count(result, `data-tv-open`) != 2 || strings.Count(result, `data-cast-api=`) != 2 {
 		t.Fatal("video or audio lacks TV entry point")
 	}
-	for _, label := range []string{"Play on TV", "AirPlay", "Google Cast / Chromecast", "DLNA / UPnP", "Screen mirroring / Miracast", "Stop casting"} {
+	for _, label := range []string{"Play on another device", "HomePod", "Google Cast / Chromecast", "Cast speakers", "DLNA / UPnP receivers", "Find DLNA receivers", "Screen mirroring / Miracast", "Stop casting"} {
 		if !strings.Contains(result, label) {
 			t.Errorf("missing protocol or control %q", label)
 		}

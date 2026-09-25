@@ -15,10 +15,10 @@
   const validPosition = (value) => Number.isFinite(value) && value >= 0 && value <= 31536000;
   const request = async (path, method = 'GET', body) => {
     const response = await fetch(path, { method, headers: { 'Content-Type': 'application/json', ...(csrf ? { 'X-Kinosail-CSRF': csrf } : {}) }, ...(body === undefined ? {} : { body: JSON.stringify(body) }) });
-    if (!response.ok) throw new Error('Kinosail could not complete TV playback. Check the connection and this title’s compatibility.');
+    if (!response.ok) throw new Error('Kinosail could not start playback on that device. Check its connection and this title’s compatibility.');
     if (response.status === 204) return;
     const text = await response.text();
-    if (text.length > 65536) throw new Error('TV response is too large.');
+    if (text.length > 65536) throw new Error('Receiver response is too large.');
     return JSON.parse(text);
   };
   const run = async (action) => {
@@ -26,21 +26,21 @@
     busy = true;
     dialog.setAttribute('aria-busy', 'true');
     try { await action(); }
-    catch (error) { message(error instanceof Error ? error.message : 'TV playback is unavailable.'); }
+    catch (error) { message(error instanceof Error ? error.message : 'Device playback is unavailable.'); }
     finally { busy = false; dialog.removeAttribute('aria-busy'); }
   };
   const revoke = async (id) => {
     const response = await fetch(`/api/v1/cast/sessions/${id}`, { method: 'DELETE', headers: csrf ? { 'X-Kinosail-CSRF': csrf } : {}, keepalive: true });
-    if (!response.ok && response.status !== 404) throw new Error('Could not revoke TV access. Reconnect to the Server and try again.');
+    if (!response.ok && response.status !== 404) throw new Error('Could not revoke receiver access. Reconnect to the Server and try again.');
   };
   const parseSession = (value) => {
-    if (!value || !validID(value.id) || !validPosition(value.position) || !validPosition(value.duration) || typeof value.url !== 'string' || value.url.length > 4096 || typeof value.title !== 'string' || value.title.length > 1024) throw new Error('Invalid TV session.');
+    if (!value || !validID(value.id) || !validPosition(value.position) || !validPosition(value.duration) || typeof value.url !== 'string' || value.url.length > 4096 || typeof value.title !== 'string' || value.title.length > 1024) throw new Error('Invalid receiver session.');
     const url = new URL(value.url);
-    if (url.origin !== location.origin || url.username || url.password || url.hash || ![`/cast/${value.id}/media`, `/cast/${value.id}/hls/index.m3u8`].includes(url.pathname) || [...url.searchParams.keys()].length !== 1 || !/^[a-f0-9]{64}$/.test(url.searchParams.get('ticket') || '') || !/^(audio\/|video\/|application\/vnd\.apple\.mpegurl$)/.test(value.contentType)) throw new Error('Invalid TV media address.');
-    if (!Array.isArray(value.tracks) || value.tracks.length > 64) throw new Error('Invalid TV subtitles.');
+    if (url.origin !== location.origin || url.username || url.password || url.hash || ![`/cast/${value.id}/media`, `/cast/${value.id}/hls/index.m3u8`].includes(url.pathname) || [...url.searchParams.keys()].length !== 1 || !/^[a-f0-9]{64}$/.test(url.searchParams.get('ticket') || '') || !/^(audio\/|video\/|application\/vnd\.apple\.mpegurl$)/.test(value.contentType)) throw new Error('Invalid receiver media address.');
+    if (!Array.isArray(value.tracks) || value.tracks.length > 64) throw new Error('Invalid receiver subtitles.');
     value.tracks.forEach((track, index) => {
       const source = new URL(track.url);
-      if (track.id !== index + 1 || source.origin !== url.origin || source.pathname !== `/cast/${value.id}/subtitles/${track.id}` || source.search !== url.search || source.hash || source.username || source.password || typeof track.label !== 'string' || track.label.length > 512 || typeof track.language !== 'string' || track.language.length > 32) throw new Error('Invalid TV subtitles.');
+      if (track.id !== index + 1 || source.origin !== url.origin || source.pathname !== `/cast/${value.id}/subtitles/${track.id}` || source.search !== url.search || source.hash || source.username || source.password || typeof track.label !== 'string' || track.label.length > 512 || typeof track.language !== 'string' || track.language.length > 32) throw new Error('Invalid receiver subtitles.');
     });
     return value;
   };
@@ -55,12 +55,12 @@
       const observed = session;
       const state = await controller.status();
       if (session !== observed || closing) return;
-      if (!state || !validPosition(state.position) || !['playing', 'paused', 'buffering', 'stopped'].includes(state.state) || session.duration > 0 && state.position > session.duration + 2) throw new Error('Invalid TV state.');
+      if (!state || !validPosition(state.position) || !['playing', 'paused', 'buffering', 'stopped'].includes(state.state) || session.duration > 0 && state.position > session.duration + 2) throw new Error('Invalid receiver state.');
       position = state.position;
       button('[data-tv-position]').textContent = `${Math.floor(position / 60)}:${String(Math.floor(position % 60)).padStart(2, '0')} · ${state.state}`;
       if (state.state === 'playing' || state.state === 'paused') await saveTV();
       else if (state.state === 'stopped' && session.duration > 0 && position >= session.duration - 2) await saveTV(true);
-    } catch { message('The TV is not responding. Check its connection or stop casting.'); }
+    } catch { message('The receiver is not responding. Check its connection or stop casting.'); }
     finally { if (session && !closing) timer = setTimeout(poll, 3000); }
   };
   const adopt = async (media, remoteController, name) => {
@@ -70,19 +70,19 @@
     player.dataset.castActive = 'true'; document.body.dataset.tvActive = 'true';
     button('[data-tv-controls]').hidden = false;
     button('[data-tv-target]').textContent = `Playing on ${name}`;
-    message('Connected. Use these controls for the TV.');
+    message('Connected. Use these controls for the receiver.');
     void poll();
   };
   player.addEventListener('play', () => { if (session) { player.pause(); dialog.showModal(); } });
   const begin = async (protocol, deviceId) => {
-    if (session) throw new Error('Stop the current TV session before choosing another.');
+    if (session) throw new Error('Stop playback on the current device before choosing another.');
     return parseSession(await request(endpoint(), 'POST', { protocol, ...(deviceId ? { deviceId } : {}), position: Number.isFinite(player.currentTime) ? player.currentTime : 0, playbackToken: player.dataset.playbackToken || '' }));
   };
   button('[data-tv-scan]').addEventListener('click', () => run(async () => {
     const result = await request('/api/v1/cast/devices/scan', 'POST', {});
-    if (!Array.isArray(result.devices) || result.devices.length > 64) throw new Error('Invalid TV discovery response.');
+    if (!Array.isArray(result.devices) || result.devices.length > 64) throw new Error('Invalid receiver discovery response.');
     const seen = new Set();
-    result.devices.forEach((device) => { if (!validID(device.id) || seen.has(device.id) || device.protocol !== 'dlna' || typeof device.name !== 'string' || !device.name.trim() || device.name.length > 128 || /[\x00-\x1f\x7f]/.test(device.name)) throw new Error('Invalid TV discovery response.'); seen.add(device.id); });
+    result.devices.forEach((device) => { if (!validID(device.id) || seen.has(device.id) || device.protocol !== 'dlna' || typeof device.name !== 'string' || !device.name.trim() || device.name.length > 128 || /[\x00-\x1f\x7f]/.test(device.name)) throw new Error('Invalid receiver discovery response.'); seen.add(device.id); });
     const list = button('[data-tv-devices]'); list.replaceChildren();
     result.devices.forEach((device) => {
       const choice = document.createElement('button'); choice.type = 'button'; choice.className = 'quiet'; choice.textContent = `Play on ${device.name} · DLNA`;
@@ -91,9 +91,16 @@
         try { await adopt(media, { status: () => request(`/api/v1/cast/sessions/${media.id}`), command: (command) => request(`/api/v1/cast/sessions/${media.id}/commands`, 'POST', command) }, device.name); } catch (error) { await request(`/api/v1/cast/sessions/${media.id}/commands`, 'POST', { action: 'stop' }).catch(() => {}); await revoke(media.id); throw error; }
       })); list.append(choice);
     });
-    message(result.devices.length ? 'Choose a TV.' : 'No DLNA TVs found. Enable media renderer mode on your TV and search again.');
+    message(result.devices.length ? 'Choose a receiver.' : 'No DLNA receivers found. Enable media renderer mode on the speaker or TV and search again.');
   }));
   button('[data-tv-google]').addEventListener('click', () => run(async () => {
+    const isAudio = player.tagName === 'AUDIO';
+    const kind = isAudio ? player.dataset.kind : 'video';
+    const artist = player.dataset.artist ?? '', album = player.dataset.album ?? '';
+    if ((isAudio && !['audio', 'audiobook'].includes(kind)) ||
+        (kind === 'audio' && [artist, album].some((value) => typeof value !== 'string' || value.length > 512 || /[\x00-\x1f\x7f]/.test(value)))) {
+      throw new Error('This title has invalid music details and cannot be cast.');
+    }
     if (!castContext) {
       if (!window.isSecureContext) throw new Error('Open Kinosail over HTTPS to use Google Cast in the browser.');
       await new Promise((resolve, reject) => {
@@ -103,25 +110,34 @@
       });
       castContext = cast.framework.CastContext.getInstance();
       castContext.setOptions({ receiverApplicationId: chrome.cast.media.DEFAULT_MEDIA_RECEIVER_APP_ID, autoJoinPolicy: chrome.cast.AutoJoinPolicy.ORIGIN_SCOPED });
-      button('[data-tv-google]').textContent = 'Choose Google Cast TV';
-      message('Google Cast is ready. Choose your TV to start this title.');
+      button('[data-tv-google]').textContent = 'Choose Cast device';
+      message('Google Cast is ready. Choose a speaker or TV to play this title.');
       return;
     }
-    if (session) throw new Error('Stop the current TV session before choosing another.');
+    if (session) throw new Error('Stop playback on the current device before choosing another.');
     await castContext.requestSession();
     const selected = castContext.getCurrentSession();
     if (!selected) return;
+    const capabilities = selected.getCastDevice()?.capabilities;
+    const knownCapabilities = Object.values(chrome.cast.Capability);
+    if (!Array.isArray(capabilities) || capabilities.length < 1 || capabilities.length > 16 ||
+        new Set(capabilities).size !== capabilities.length || capabilities.some((value) => !knownCapabilities.includes(value)) ||
+        !capabilities.includes(isAudio ? chrome.cast.Capability.AUDIO_OUT : chrome.cast.Capability.VIDEO_OUT)) {
+      throw new Error(isAudio ? 'This device cannot play audio.' : 'This device cannot play video. Choose a TV or display.');
+    }
     const media = await begin('google-cast');
     try {
       const info = new chrome.cast.media.MediaInfo(media.url, media.contentType);
-      info.metadata = new chrome.cast.media.GenericMediaMetadata(); info.metadata.title = media.title;
+      info.metadata = kind === 'audio' ? new chrome.cast.media.MusicTrackMediaMetadata() : new chrome.cast.media.GenericMediaMetadata();
+      info.metadata.title = media.title;
+      if (kind === 'audio') { info.metadata.artist = artist; info.metadata.albumName = album; }
       info.duration = media.duration;
       info.tracks = media.tracks.map((track) => { const value = new chrome.cast.media.Track(track.id, chrome.cast.media.TrackType.TEXT); value.trackContentId = track.url; value.trackContentType = 'text/vtt'; value.name = track.label; value.language = track.language || 'und'; value.subtype = chrome.cast.media.TextTrackType.SUBTITLES; return value; });
       if (media.contentType === 'application/vnd.apple.mpegurl') { info.hlsSegmentFormat = chrome.cast.media.HlsSegmentFormat.FMP4; info.hlsVideoSegmentFormat = chrome.cast.media.HlsVideoSegmentFormat.FMP4; }
       const load = new chrome.cast.media.LoadRequest(info); load.currentTime = media.position; load.autoplay = true; load.activeTrackIds = media.tracks.filter((track) => track.default).map((track) => track.id);
       await selected.loadMedia(load);
-      const get = () => { const current = selected.getMediaSession(); if (castContext.getCurrentSession() !== selected || !current || current.media.contentId !== media.url) throw new Error('The TV is playing a different title.'); return current; };
-      await adopt(media, { status: async () => { const current = get(); if (current.idleReason === chrome.cast.media.IdleReason.ERROR) throw new Error('The TV could not play this title.'); return { state: current.playerState === 'IDLE' ? 'stopped' : current.playerState === 'BUFFERING' ? 'buffering' : current.playerState.toLowerCase(), position: current.getEstimatedTime() }; }, command: (command) => new Promise((resolve, reject) => { const current = get(); if (command.action === 'seek') { const seek = new chrome.cast.media.SeekRequest(); seek.currentTime = command.position; current.seek(seek, resolve, reject); } else current[command.action](null, resolve, reject); }) }, selected.getCastDevice().friendlyName || 'Google Cast TV');
+      const get = () => { const current = selected.getMediaSession(); if (castContext.getCurrentSession() !== selected || !current || current.media.contentId !== media.url) throw new Error('The receiver is playing a different title.'); return current; };
+      await adopt(media, { status: async () => { const current = get(); if (current.idleReason === chrome.cast.media.IdleReason.ERROR) throw new Error('The receiver could not play this title.'); return { state: current.playerState === 'IDLE' ? 'stopped' : current.playerState === 'BUFFERING' ? 'buffering' : current.playerState.toLowerCase(), position: current.getEstimatedTime() }; }, command: (command) => new Promise((resolve, reject) => { const current = get(); if (command.action === 'seek') { const seek = new chrome.cast.media.SeekRequest(); seek.currentTime = command.position; current.seek(seek, resolve, reject); } else current[command.action](null, resolve, reject); }) }, selected.getCastDevice().friendlyName || 'Google Cast device');
     } catch (error) { const loaded = selected.getMediaSession(); if (loaded?.media?.contentId === media.url) await new Promise((resolve) => loaded.stop(null, resolve, resolve)); await revoke(media.id); throw error; }
   }));
   dialog.querySelectorAll('[data-tv-command]').forEach((control) => control.addEventListener('click', () => run(async () => {
@@ -137,7 +153,7 @@
     catch (error) { closing = false; void poll(); throw error; }
     session = undefined; controller = undefined; closing = false;
     delete player.dataset.castActive; delete document.body.dataset.tvActive;
-    button('[data-tv-controls]').hidden = true; message('Casting stopped. Reload the player to resume here from the saved TV position.');
+    button('[data-tv-controls]').hidden = true; message('Casting stopped. Reload the player to resume here from the saved position.');
     const resume = document.createElement('button'); resume.type = 'button'; resume.className = 'quiet'; resume.textContent = 'Resume on this device'; resume.addEventListener('click', () => location.reload()); button('[data-tv-status]').append(resume);
   }));
   addEventListener('pagehide', () => { closing = true; clearTimeout(timer); if (session) void revoke(session.id).catch(() => {}); }, { once: true });
