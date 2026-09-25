@@ -55,3 +55,9 @@ Use a populated, authorized test library and physical Siri Remote. Record screen
 The next pass gave actor credits, collections, albums and the Supporter page in-flow headings and the same TV artwork and background rhythm as core browsing. Actor card text now has a bounded ordinary layout while accessibility sizes retain full text. Now Playing places artwork beside the transport on TV, exposes live progress and chapters when present, and responds to the remote Play/Pause command. The shared TV configuration panel no longer repeats generic remote instructions.
 
 The current build was installed and visually checked on the Apple TV simulator's Setup screen; the form and revised configuration panel remained readable. Earlier populated screenshots were used only as incumbent visual references. This follow-up still needs current populated captures and remote traversal for the changed actor, collection, album, audio and Supporter screens. The setup capture contains a discovered Server address and stays outside the repository.
+
+## Watch and Listen navigation follow-up
+
+Apple TV now uses the iOS Watch and Listen modes with a direct toolbar switch, separate remembered tab layouts, and mode-specific Home and Search results. Search exposes a scope picker so Watch can search both Movies and Shows and Listen can search both Music and Audiobooks. The tab editor names the active mode, and the catalog warms the other mode for a quicker switch. The old watch-only tab bar and mixed Home made audio discovery depend on More or Library.
+
+Both native simulator builds and the tvOS unit suite passed. The connected physical Apple TV reported its display off, and screenshot capture returned a zero-sized-display error. The mode switch, tab focus, and populated Listen Home therefore still need remote traversal and a visual capture before this path is considered device-verified.

@@ -90,14 +90,12 @@ struct HomeScreen: View {
         .navigationBarTitleDisplayMode(.inline)
         #endif
         .toolbar {
-            #if os(iOS)
             if let mode, let changeMode {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button(mode.other.title) { changeMode(mode.other) }
                         .accessibilityLabel("Switch to \(mode.other.title) mode")
                 }
             }
-            #endif
             if showsSearch {
                 ToolbarItem {
                     if mode == nil {
