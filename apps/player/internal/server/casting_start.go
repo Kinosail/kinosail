@@ -80,7 +80,7 @@ func (service *castService) planCast(facts MediaFacts, viewer viewerProfile, kin
 	// Use the original timeline on receivers; automatic skip remains a sender feature.
 	plan := playback.Decide(facts, capabilities, policy, intent, playback.DecisionPolicy{PreferCompatibleAudio: true})
 	if !plan.Allowed {
-		return PlaybackPlan{}, errors.New("This title is not compatible with the TV and this profile's playback permissions") //nolint:staticcheck // This complete sentence is displayed directly in the device picker.
+		return PlaybackPlan{}, errors.New("This title is not compatible with the receiver and this profile's playback permissions") //nolint:staticcheck // This complete sentence is displayed directly in the device picker.
 	}
 	if protocol == "dlna" && plan.Mode != "direct" {
 		return PlaybackPlan{}, errors.New("This receiver needs a directly playable file; use AirPlay or Google Cast for this title") //nolint:staticcheck // This complete sentence is displayed directly in the device picker.
@@ -124,7 +124,7 @@ func (service *castService) rememberCast(session castSession) error {
 		for _, existing := range service.sessions {
 			if existing.DeviceID == session.DeviceID {
 				service.mu.Unlock()
-				return errors.New("This TV already has an active Kinosail session") //nolint:staticcheck // This complete sentence is displayed directly in the device picker.
+				return errors.New("This receiver already has an active Kinosail session") //nolint:staticcheck // This complete sentence is displayed directly in the device picker.
 			}
 		}
 	}

@@ -88,7 +88,7 @@ const castStatus = (state) => {
 const setCastAvailability = (available) => castButtons.forEach((button) => {
   button.hidden = false;
   button.disabled = !available;
-  if (!available && castState) castState.textContent = messages.castUnavailable || "No playback device is available. Check the TV connection and use a browser that supports AirPlay or remote playback.";
+  if (!available && castState) castState.textContent = messages.castUnavailable || "No playback device is available. Check the receiver connection and use a browser that supports AirPlay or remote playback.";
 });
 const remote = player.remote;
 if (castButtons.length && typeof remote?.prompt === "function") {

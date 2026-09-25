@@ -27,7 +27,7 @@ final class CastCoordinator {
     }
 
     func command(_ command: CastCommand) async throws {
-        guard !busy, let session, let client else { throw ClientError.invalidInput("Connect to a TV first.") }
+        guard !busy, let session, let client else { throw ClientError.invalidInput("Connect to a receiver first.") }
         if case .seek(let seconds) = command { guard session.duration > 0, seconds <= session.duration else { throw ClientError.invalidInput("Choose a position within this title.") } }
         busy = true
         let attempt = generation
@@ -50,7 +50,7 @@ final class CastCoordinator {
                     if Date().timeIntervalSince(lastSaved) >= 15, let writer {
                         lastSaved = Date()
                         let synced = try await writer.update(seconds: next.position, watched: next.state == .stopped && next.duration > 0 && next.position >= next.duration - 2)
-                        if generation == attempt, !synced { message = "Your TV position is saved on this device. Open Progress sync to finish syncing." }
+                        if generation == attempt, !synced { message = "Your playback position is saved on this device. Open Progress sync to finish syncing." }
                     }
                 } catch is CancellationError { return }
                 catch { if generation == attempt { message = AppSession.message(error) } }
