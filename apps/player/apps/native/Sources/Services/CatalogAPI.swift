@@ -5,6 +5,14 @@ extension ServerClient {
                      onHome: (@Sendable (PlayerMode, HomeSnapshot, Bool) async -> Void)? = nil) async {
         guard !Task.isCancelled else { return }
         if let mode {
+            if let onHome {
+                for cachedMode in [mode.other, mode] {
+                    guard !Task.isCancelled else { return }
+                    if let saved = try? await home(mode: cachedMode, policy: .cached) {
+                        await onHome(cachedMode, saved, false)
+                    }
+                }
+            }
             switch landingTab {
             case .movies: _ = try? await library(view: .movies, policy: .automatic)
             case .shows: _ = try? await library(view: .shows, policy: .automatic)
@@ -18,9 +26,6 @@ extension ServerClient {
             case .home, .library, .downloads, .settings, .more: break
             }
             guard !Task.isCancelled else { return }
-            if let onHome, let saved = try? await home(mode: mode.other, policy: .cached) {
-                await onHome(mode.other, saved, false)
-            }
             if let warmed = try? await home(mode: mode.other, policy: .automatic) {
                 await onHome?(mode.other, warmed, true)
             }

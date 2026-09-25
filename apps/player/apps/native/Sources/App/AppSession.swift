@@ -69,12 +69,14 @@ final class AppSession {
             guard let saved = try await keychain.restore() else { return }
             let candidate = try ServerClient(server: saved.server, token: saved.token, viewer: saved.viewer)
             guard generation == attempt else { await candidate.close(); return }
-            // Keychain identifies the local cache immediately. Server permissions
-            // are revalidated while saved browsing content is already available.
+            // Show saved browsing content before revalidating Server permissions.
             client = candidate
             restoredClient = candidate.identity
             viewer = saved.viewer
             configureProgress()
+            if let profileKey { await AppLaunchCache.hydrate(client: candidate, profileKey: profileKey, snapshots: resourceSnapshots,
+                                                             ifCurrent: { generation == attempt && client?.identity == candidate.identity }) }
+            guard generation == attempt, client?.identity == candidate.identity else { await candidate.close(); return }
             restoring = false
             #if os(iOS)
             // Restore local media before waiting for a possibly unreachable Server.
