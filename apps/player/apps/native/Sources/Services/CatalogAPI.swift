@@ -4,8 +4,6 @@ extension ServerClient {
     func warmCatalog(mode: PlayerMode? = nil, landingTab: PlayerTab = .home) async {
         guard !Task.isCancelled else { return }
         if let mode {
-            _ = try? await home(mode: mode.other, policy: .automatic)
-            guard !Task.isCancelled else { return }
             switch landingTab {
             case .movies: _ = try? await library(view: .movies, policy: .automatic)
             case .shows: _ = try? await library(view: .shows, policy: .automatic)
@@ -18,6 +16,8 @@ extension ServerClient {
             case .collections: _ = try? await collections(policy: .automatic)
             case .home, .library, .downloads, .settings, .more: break
             }
+            guard !Task.isCancelled else { return }
+            _ = try? await home(mode: mode.other, policy: .automatic)
             guard !Task.isCancelled else { return }
             _ = try? await home(mode: mode, policy: .automatic)
         } else { _ = try? await home(policy: .automatic) }
