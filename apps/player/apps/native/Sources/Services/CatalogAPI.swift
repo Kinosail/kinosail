@@ -10,12 +10,19 @@ extension ServerClient {
         }
     }
 
-    func home(policy: CatalogPolicy = .reload) async throws -> HomeSnapshot {
+    func home(mode: PlayerMode? = nil, policy: CatalogPolicy = .reload) async throws -> HomeSnapshot {
         let profile: Viewer
         if let associatedViewer { profile = associatedViewer }
         else if policy == .cached { throw CatalogCacheMiss.missing }
         else { profile = try await viewer() }
-        async let history = library(view: .history, limit: 24, policy: policy)
+        async let history = library(view: .history, limit: mode == nil ? 24 : 200, policy: policy)
+        if let mode {
+            async let first = library(view: mode.searchViews[0], sort: .added, limit: 36, policy: policy)
+            async let second = library(view: mode.searchViews[1], sort: .added, limit: 36, policy: policy)
+            let (historyPage, firstPage, secondPage) = try await (history, first, second)
+            let continuing = historyPage.items.filter { $0.progress.seconds > 0 && !$0.progress.watched && !$0.progress.dismissed && mode.includes($0) }
+            return HomeSnapshot(viewer: profile, continueWatching: continuing, recent: firstPage.items + secondPage.items)
+        }
         async let recent = library(sort: .added, limit: 36, policy: policy)
         let (historyPage, recentPage) = try await (history, recent)
         let continueWatching = historyPage.items.filter { $0.progress.seconds > 0 && !$0.progress.watched && !$0.progress.dismissed }

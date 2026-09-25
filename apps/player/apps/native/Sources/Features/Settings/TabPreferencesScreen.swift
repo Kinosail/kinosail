@@ -6,17 +6,35 @@ struct TabPreferencesScreen: View {
 }
 
 private struct TabPreferencesEditor: View {
-    @AppStorage private var stored: String
+    @AppStorage private var watchStored: String
+    @AppStorage private var listenStored: String
+    @AppStorage private var modeStored: String
     @State private var message: String?
     init(profileKey: String) {
         let legacy = UserDefaults.standard.string(forKey: "kinosail.tabs.\(profileKey)")
-        _stored = AppStorage(wrappedValue: PlayerTab.legacyDefault(legacy), "kinosail.tabs.v2.\(profileKey)")
+        _watchStored = AppStorage(wrappedValue: PlayerTab.legacyDefault(legacy), PlayerMode.watch.tabsKey(profileKey))
+        _listenStored = AppStorage(wrappedValue: PlayerMode.listen.defaultTabs.map(\.rawValue).joined(separator: ","), PlayerMode.listen.tabsKey(profileKey))
+        _modeStored = AppStorage(wrappedValue: PlayerMode.watch.rawValue, PlayerMode.storageKey(profileKey))
     }
-    private var pinned: [PlayerTab] { (try? PlayerTab.parse(stored)) ?? PlayerTab.defaults }
+    private var mode: PlayerMode {
+        #if os(iOS)
+        PlayerMode.stored(modeStored)
+        #else
+        .watch
+        #endif
+    }
+    private var pinned: [PlayerTab] { (try? PlayerTab.parse(mode == .watch ? watchStored : listenStored)) ?? mode.defaultTabs }
+    private var intro: String {
+        #if os(iOS)
+        "Choose up to four \(mode.title) tabs for this Viewer Profile on this device. Find the remaining sections in More."
+        #else
+        "Choose up to four tabs for this Viewer Profile on this device. Find the remaining sections in More."
+        #endif
+    }
     var body: some View {
         List {
             Section {
-                Text("Choose up to four tabs for this Viewer Profile on this device. Find the remaining sections in More.")
+                Text(intro)
                     .foregroundStyle(KinoTheme.muted)
                 if let message { Text(message).foregroundStyle(KinoTheme.text) }
             }
@@ -41,20 +59,21 @@ private struct TabPreferencesEditor: View {
                         .disabled(pinned.count == 4)
                 }
             }
-            Section { Button("Reset to default tabs") { save(PlayerTab.defaults) } }
+            Section { Button("Reset to default tabs") { save(mode.defaultTabs) } }
         }
         #if os(iOS)
         .scrollContentBackground(.hidden)
         #endif
         .background(KinoTheme.background)
-        .navigationTitle("Customize tabs")
+        .navigationTitle(mode == .listen ? "Customize Listen tabs" : "Customize tabs")
         .tvOSConfigurationLayout(title: "Customize tabs", symbol: "rectangle.3.group")
+        .onChange(of: mode) { _, _ in message = nil }
     }
     private func save(_ items: [PlayerTab]) {
         do {
             let raw = items.map(\.rawValue).joined(separator: ",")
             _ = try PlayerTab.parse(raw)
-            stored = raw
+            if mode == .watch { watchStored = raw } else { listenStored = raw }
             message = nil
         } catch { message = AppSession.message(error) }
     }

@@ -38,7 +38,20 @@ struct HomeSelectionTests {
         #expect(selection.recent.isEmpty)
     }
 
-    private func item(_ id: String, server: ServerAddress) throws -> MediaItem {
-        try MediaItem(.object(["id": .string(id), "kind": .string("video"), "title": .string(id)]), server: server)
+    @Test func eachModeKeepsOnlyItsMedia() throws {
+        let server = try ServerAddress("https://media.example")
+        let movie = try item("movie", kind: "video", server: server)
+        let album = try item("album", kind: "music", server: server)
+        let book = try item("book", kind: "audiobook", server: server)
+        let watch = HomeSelection(continueWatching: [album, movie], recent: [book, movie], mode: .watch)
+        let listen = HomeSelection(continueWatching: [album, movie], recent: [book, movie], mode: .listen)
+        #expect(watch.featured?.id == movie.id)
+        #expect(watch.recent.isEmpty)
+        #expect(listen.featured?.id == album.id)
+        #expect(listen.recent.map(\.id) == [book.id])
+    }
+
+    private func item(_ id: String, kind: String = "video", server: ServerAddress) throws -> MediaItem {
+        try MediaItem(.object(["id": .string(id), "kind": .string(kind), "title": .string(id)]), server: server)
     }
 }
