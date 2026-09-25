@@ -72,7 +72,7 @@ class CastApi(private val server: ServerAddress, open: (URL) -> java.net.HttpURL
         val base = server.url.toURI()
         require(uri.isAbsolute && uri.scheme == base.scheme && uri.host == base.host &&
             uri.port == base.port && uri.userInfo == null && uri.rawFragment == null &&
-            uri.path in paths && uri.rawQuery?.matches(Regex("ticket=[a-f0-9]{64}")) == true) {
+            uri.rawPath in paths && uri.rawQuery?.matches(Regex("ticket=[a-f0-9]{64}")) == true) {
             INVALID_RESPONSE
         }
         return uri.toString()

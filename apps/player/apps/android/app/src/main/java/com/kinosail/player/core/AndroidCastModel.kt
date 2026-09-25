@@ -148,7 +148,7 @@ class AndroidCastModel(application: Application) : AndroidViewModel(application)
                     .setActiveTrackIds(media.tracks.filter(CastTrack::isDefault).map(CastTrack::id).toLongArray())
                     .build()
                 remote.load(load).setResultCallback { result ->
-                    if (playAttempt != playGeneration || this.viewer != identity ||
+                    if (playAttempt != playGeneration || this@AndroidCastModel.viewer != identity ||
                         context?.sessionManager?.currentCastSession !== cast) {
                         if (remote.mediaInfo?.contentId == media.url) remote.stop()
                         viewModelScope.launch(Dispatchers.IO) {

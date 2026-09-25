@@ -48,6 +48,8 @@ class CastApiTest {
     @Test fun rejectsMalformedOrExternalReceiverResponses() {
         val invalid = listOf("{}", response.replace(mediaURL, "https://other.example/cast/$id/media?ticket=$ticket"),
             response.replace("ticket=$ticket", "ticket=short"),
+            response.replace("/cast/$id/media", "/cast/$id/%6dedia"),
+            response.replace("ticket=$ticket", "ticket=$ticket&extra=1"),
             response.replace("/subtitles/1", "/subtitles/2"),
             response.replace("\"default\":true", "\"default\":\"true\""),
             response.replace("\"protocol\":\"google-cast\"", "\"protocol\":\"dlna\""),
