@@ -56,7 +56,10 @@ struct LibraryScreen: View {
                 HStack(alignment: .firstTextBaseline) {
                     Text(searchMode ? "Search" : selection.title).font(.title2.bold()).accessibilityAddTraits(.isHeader)
                     Spacer()
-                    if let page { Text("\(page.total.formatted()) titles").font(.callout).foregroundStyle(KinoTheme.muted) }
+                    if let page {
+                        Text("\(page.total.formatted()) \(page.total == 1 ? "title" : "titles")")
+                            .font(.callout).foregroundStyle(KinoTheme.muted)
+                    }
                 }
                 #endif
                 ViewThatFits(in: .horizontal) {
@@ -105,7 +108,10 @@ struct LibraryScreen: View {
                     requestFirstCardFocus: !searchMode && needsFirstCardFocus,
                     opensShows: selection == .shows)
                     #else
-                    if let page { Text("\(page.total.formatted()) titles").font(.callout).foregroundStyle(KinoTheme.muted) }
+                    if let page {
+                        Text("\(page.total.formatted()) \(page.total == 1 ? "title" : "titles")")
+                            .font(.callout).foregroundStyle(KinoTheme.muted)
+                    }
                     MediaGrid(items: items, opensShows: selection == .shows)
                     #endif
                     if let failure { Text(failure).foregroundStyle(KinoTheme.muted) }
@@ -260,7 +266,7 @@ struct LibraryEmptyState {
 
     init(view: LibraryView, hasQuery: Bool) {
         if hasQuery {
-            (title, symbol, message) = ("No matches", "magnifyingglass", "Try a different title, artist or show.")
+            (title, symbol, message) = ("No matches", "magnifyingglass", "Try another search or change the category.")
         } else {
             switch view {
             case .list: (title, symbol, message) = ("My List is empty", "bookmark", "Save a title with My List to keep it here.")
