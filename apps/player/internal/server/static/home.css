@@ -2,7 +2,7 @@
 @media(min-width:901px){
   body:is(.library-page,.settings-page,.detail-page,.player-page){padding-left:0}
   body:is(.library-page,.settings-page,.detail-page,.player-page)>.app-header{
-    position:sticky;inset:0 0 auto;display:grid;grid-template:"brand nav search actions" auto/auto minmax(0,1fr) minmax(11rem,22rem) auto;
+    position:sticky;inset:0 0 auto;display:grid;grid-template:"brand search actions" auto "nav nav nav" auto/auto minmax(0,1fr) auto;
     width:100%;min-height:0;height:auto;align-items:center;gap:.35rem 1.25rem;padding:.45rem clamp(1.5rem,4vw,4rem);border:0;border-bottom:1px solid var(--line);overflow:visible;
   }
   body .app-header .brand-lockup{grid-area:brand;padding:0;max-width:24rem}
@@ -133,8 +133,10 @@ body.show-detail .season-heading{position:sticky;top:4.5rem;z-index:10;padding:.
 body.show-detail .episode-preview{top:9rem}
 /* Show details keep the season artwork in the first viewport and offer a direct section jump. */
 @media(min-width:901px){
-  html:has(body.show-detail){scroll-padding-top:4.5rem}
-  body.show-detail>.app-header{grid-template:"brand nav search actions" auto/auto minmax(0,1fr) minmax(11rem,22rem) auto;align-items:center;gap:.35rem 1.25rem;padding:.45rem clamp(1.5rem,4vw,4rem)}
+  html:has(body.show-detail){scroll-padding-top:7.5rem}
+  body.show-detail .season-heading{top:7.5rem}
+  body.show-detail .episode-preview{top:12rem}
+  body.show-detail>.app-header{grid-template:"brand search actions" auto "nav nav nav" auto/auto minmax(0,1fr) auto;align-items:center;gap:.35rem 1.25rem;padding:.45rem clamp(1.5rem,4vw,4rem)}
   body.show-detail>.app-header nav{min-width:0;gap:.15rem}
   body.show-detail>.app-header nav>a,body.show-detail>.app-header nav>.nav-more>summary{min-height:40px;padding:.4rem .85rem;font-size:.82rem}
   body.show-detail>.app-header .search input{min-height:40px}

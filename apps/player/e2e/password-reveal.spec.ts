@@ -92,7 +92,7 @@ test("the password reveal control stays aligned across responsive settings", asy
 	}
 	await page.setViewportSize({ width: 390, height: 844 });
 	await page.goto("/settings");
-	await page.getByRole("link", { name: "Appearance", exact: true }).click();
+	await page.getByRole("link", { name: "Appearance & language", exact: true }).click();
 	await page.getByRole("group", { name: "Theme" }).locator('input[value="dark"]').check();
 	await page.getByRole("link", { name: "Advanced", exact: true }).click();
 	await page.getByRole("link", { name: "Connections", exact: true }).click();

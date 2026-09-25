@@ -1,5 +1,6 @@
 import { expect, test } from "@playwright/test";
 import { createHmac } from "node:crypto";
+import { firstPlayable } from "./test-instance-helpers";
 
 test.skip(!process.env.KINOSAIL_TEST_INSTANCE, "requires the populated test instance");
 test.beforeEach(async ({ page }) => page.addInitScript(() => Object.defineProperty(PublicKeyCredential, "isConditionalMediationAvailable", { value: async () => false })));
@@ -23,7 +24,7 @@ for (const compatible of [false, true]) test(`one play request does not immediat
   await page.getByRole("button", { name: "Sign in", exact: true }).click();
   if (await page.getByRole("link", { name: "Not now" }).isVisible()) await page.getByRole("link", { name: "Not now" }).click();
   await page.getByRole("link", { name: "Movies", exact: true }).click();
-  const watch = await page.locator('a.card[href^="/watch/"]').first().getAttribute("href");
+  const watch = await firstPlayable(page);
   await page.goto(`${watch}${compatible ? "?compatible=1" : ""}`);
   const video = page.locator("video");
   const result = await video.evaluate(async (element: HTMLVideoElement) => {

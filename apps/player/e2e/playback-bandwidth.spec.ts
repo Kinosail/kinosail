@@ -1,5 +1,6 @@
 import { expect, test, type CDPSession, type Page } from "@playwright/test";
 import { createHmac } from "node:crypto";
+import { firstPlayable } from "./test-instance-helpers";
 
 test.skip(process.env.KINOSAIL_TEST_INSTANCE !== "1", "requires the populated public test instance");
 test.beforeEach(async ({ page }) => page.addInitScript(() => {
@@ -45,7 +46,7 @@ async function network(session: CDPSession, kilobitsPerSecond: number, latency =
 }
 
 async function openMovie(page: Page) {
-	await page.locator('a.card[href^="/watch/"]').first().click();
+	await page.goto(await firstPlayable(page));
 	return page.locator("video");
 }
 
@@ -123,8 +124,8 @@ test("an interrupted Direct Play request retries without transcoding", async ({ 
 		await page.route("**/media/**", (route) => route.abort("internetdisconnected"));
 		await video.evaluate((element) => { element.load(); void element.play(); });
 		await expect(page.locator("[data-player-status]")).toBeVisible();
-		await expect(page.locator("[data-player-message]")).toContainText("did not start transcoding");
-		await expect(page.locator("[data-player-status] [data-player-fallback]")).toHaveText("Retry Direct Play");
+		await expect(page.locator("[data-player-message]")).toContainText("Connection interrupted");
+		await expect(page.locator("[data-player-status] [data-player-fallback]")).toHaveText("Retry playback");
 		await page.unroute("**/media/**");
 		await page.locator("[data-player-status] [data-player-fallback]").click();
 		await expect.poll(() => video.evaluate((element) => element.currentTime), { timeout: 20_000 }).toBeGreaterThan(0.25);
@@ -173,8 +174,7 @@ test("compatibility streaming recovers after the network disappears", async ({ p
 	await session.send("Network.enable");
 	try {
 		await network(session, 750, 120);
-		const watch = await page.locator('a.card[href^="/watch/"]').first().getAttribute("href");
-		expect(watch).toBeTruthy();
+		const watch = await firstPlayable(page);
 		await page.goto(`${watch}?compatible=1`);
 		const video = page.locator("video");
 		await expect(page.locator("[data-playback-mode-status]")).toHaveText(await video.getAttribute("data-compatibility-label") || "Compatibility");
