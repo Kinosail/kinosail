@@ -62,11 +62,12 @@ struct AppShell: View {
                 let landingTab = savedTabs.flatMap { try? PlayerTab.parse($0).first } ?? .home
                 let clientID = client.identity
                 let currentSession = session
+                let contentRevision = session.contentRevision
                 await client.warmCatalog(mode: mode, landingTab: landingTab) { warmedMode, home, refreshed in
                     await MainActor.run {
                         guard currentSession.client?.identity == clientID, let profile = currentSession.profileKey else { return }
                         currentSession.resourceSnapshots.store(home, for: "\(profile):\(warmedMode.rawValue)", clientID: clientID,
-                                                               refreshID: refreshed ? currentSession.contentRevision.uuidString : nil)
+                                                               refreshID: refreshed && currentSession.contentRevision == contentRevision ? contentRevision.uuidString : nil)
                     }
                 }
             }

@@ -29,6 +29,7 @@ struct ResourceView<Value: Sendable, Content: View>: View {
     @State private var revision = 0
     @State private var generation = UUID()
     @State private var loadedIdentity: String?
+    private var cacheRevision: String { refreshID.isEmpty ? session.contentRevision.uuidString : refreshID }
 
     private var savedValue: Value? {
         guard revalidates, let clientID = session.client?.identity else { return nil }
@@ -43,7 +44,7 @@ struct ResourceView<Value: Sendable, Content: View>: View {
                 resourceContent
             }
         }
-        .task(id: "\(identity):\(refreshID):\(revision):\(revalidates ? String(describing: scenePhase) : "once")") {
+        .task(id: "\(identity):\(revalidates ? cacheRevision : "once"):\(revision):\(revalidates ? String(describing: scenePhase) : "once")") {
             guard !revalidates || scenePhase == .active else { return }
             await refresh(force: revision > 0)
             while revalidates && !Task.isCancelled {
@@ -71,27 +72,31 @@ struct ResourceView<Value: Sendable, Content: View>: View {
 
     private func refresh(force: Bool) async {
         let clientID = session.client?.identity
+        let expectedRevision = cacheRevision
         if loadedIdentity != identity { value = savedValue; failure = nil; loadedIdentity = identity }
         if revalidates, !force, let clientID,
-           session.resourceSnapshots.isFresh(for: identity, clientID: clientID, as: Value.self, refreshID: refreshID) { return }
+           session.resourceSnapshots.isFresh(for: identity, clientID: clientID, as: Value.self, refreshID: expectedRevision) { return }
         let attempt = UUID()
         generation = attempt
         do {
             if value == nil, let saved = try? await load(.cached) {
                 try Task.checkCancellation()
-                guard generation == attempt, session.client?.identity == clientID else { return }
+                guard generation == attempt, session.client?.identity == clientID,
+                      (!revalidates || cacheRevision == expectedRevision) else { return }
                 value = saved
                 if revalidates, let clientID { session.resourceSnapshots.store(saved, for: identity, clientID: clientID) }
             }
             let next = try await load(force ? .reload : .automatic)
             try Task.checkCancellation()
-            guard generation == attempt, session.client?.identity == clientID else { return }
+            guard generation == attempt, session.client?.identity == clientID,
+                  (!revalidates || cacheRevision == expectedRevision) else { return }
             value = next
-            if revalidates, let clientID { session.resourceSnapshots.store(next, for: identity, clientID: clientID, refreshID: refreshID) }
+            if revalidates, let clientID { session.resourceSnapshots.store(next, for: identity, clientID: clientID, refreshID: expectedRevision) }
             failure = nil
         } catch is CancellationError {}
         catch {
-            if generation == attempt, session.client?.identity == clientID {
+            if generation == attempt, session.client?.identity == clientID,
+               (!revalidates || cacheRevision == expectedRevision) {
                 if (error as? ClientError)?.discardsCachedContent == true {
                     value = nil
                     if let clientID { session.resourceSnapshots.remove(for: identity, clientID: clientID, as: Value.self) }

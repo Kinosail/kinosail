@@ -257,7 +257,8 @@ struct LibraryScreen: View {
             var policy: CatalogPolicy = force ? .reload : .automatic
             if (!reset || page == nil), let saved = try? await client.library(query: query, view: selection, sort: sort, offset: offset, policy: .cached) {
                 try Task.checkCancellation()
-                guard attempt == generation, requestKey == key, session.client?.identity == clientID else { return }
+                guard attempt == generation, requestKey == key, session.client?.identity == clientID,
+                      session.contentRevision == revision else { return }
                 if let combined = try? Input.unique(base + saved.items) {
                     items = combined
                     page = saved; loadedKey = key
@@ -267,7 +268,8 @@ struct LibraryScreen: View {
             }
             let result = try await client.library(query: query, view: selection, sort: sort, offset: offset, policy: policy)
             try Task.checkCancellation()
-            guard attempt == generation, requestKey == key, session.client?.identity == clientID else { return }
+            guard attempt == generation, requestKey == key, session.client?.identity == clientID,
+                  session.contentRevision == revision else { return }
             let combined = base + result.items
             items = try Input.unique(combined)
             page = result
@@ -277,7 +279,7 @@ struct LibraryScreen: View {
                                             for: snapshotKey, clientID: clientID, refreshID: revision.uuidString)
         } catch is CancellationError {}
         catch {
-            if generation == attempt, session.client?.identity == clientID {
+            if generation == attempt, session.client?.identity == clientID, session.contentRevision == revision {
                 if (error as? ClientError)?.discardsCachedContent == true {
                     items = []; page = nil
                     session.resourceSnapshots.remove(for: snapshotKey, clientID: clientID, as: LibrarySnapshot.self)
