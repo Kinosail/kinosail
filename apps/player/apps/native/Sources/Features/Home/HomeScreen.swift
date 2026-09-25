@@ -21,6 +21,16 @@ struct HomeScreen: View {
                     #else
                     .foregroundStyle(KinoTheme.muted)
                     #endif
+                #if os(tvOS)
+                Spacer()
+                if let mode, let changeMode {
+                    Button { changeMode(mode.other) } label: {
+                        Label(mode.other.title, systemImage: mode.other == .listen ? "headphones" : "tv")
+                    }
+                    .buttonStyle(.bordered).tint(KinoTheme.secondaryControlTint).foregroundStyle(KinoTheme.text)
+                    .accessibilityLabel("Switch to \(mode.other.title) mode")
+                }
+                #endif
             }
             .frame(maxWidth: .infinity, alignment: .leading)
             .padding(.horizontal, KinoTheme.contentPadding)
@@ -90,12 +100,14 @@ struct HomeScreen: View {
         .navigationBarTitleDisplayMode(.inline)
         #endif
         .toolbar {
+            #if os(iOS)
             if let mode, let changeMode {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button(mode.other.title) { changeMode(mode.other) }
                         .accessibilityLabel("Switch to \(mode.other.title) mode")
                 }
             }
+            #endif
             if showsSearch {
                 ToolbarItem {
                     if mode == nil {
