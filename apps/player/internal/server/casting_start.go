@@ -15,20 +15,20 @@ import (
 func (service *castService) authorizeCast(request *http.Request, itemID string, input casting.Start) (library.Item, viewerProfile, string, error) {
 	viewer := currentViewer(request)
 	if !viewer.Permits("stream", true) || viewer.ID == "" {
-		return library.Item{}, viewerProfile{}, "", errors.New("TV playback is not allowed") //nolint:staticcheck // This complete sentence is displayed directly in the TV picker.
+		return library.Item{}, viewerProfile{}, "", errors.New("Playback on another device is not allowed") //nolint:staticcheck // This complete sentence is displayed directly in the device picker.
 	}
 	item, found := visibleItem(request, service.index, itemID)
 	if !found || !slices.Contains([]string{"video", "music", "audio", "audiobook"}, item.Kind) {
-		return library.Item{}, viewerProfile{}, "", errors.New("This title cannot play on a TV") //nolint:staticcheck // This complete sentence is displayed directly in the TV picker.
+		return library.Item{}, viewerProfile{}, "", errors.New("This title cannot be cast") //nolint:staticcheck // This complete sentence is displayed directly in the device picker.
 	}
 	if !validCastBase(service.base) {
-		return library.Item{}, viewerProfile{}, "", errors.New("A reachable Kinosail Server address is required for TV playback") //nolint:staticcheck // This complete sentence is displayed directly in the TV picker.
+		return library.Item{}, viewerProfile{}, "", errors.New("A reachable Kinosail Server address is required for receiver playback") //nolint:staticcheck // This complete sentence is displayed directly in the device picker.
 	}
 	deviceName := ""
 	if input.Protocol == "dlna" {
 		device, ok := service.renderers.Device(input.DeviceID)
 		if !ok {
-			return library.Item{}, viewerProfile{}, "", errors.New("TV is no longer available; search for devices again") //nolint:staticcheck // This complete sentence is displayed directly in the TV picker.
+			return library.Item{}, viewerProfile{}, "", errors.New("Receiver is no longer available; search for devices again") //nolint:staticcheck // This complete sentence is displayed directly in the device picker.
 		}
 		deviceName = device.Name
 	}
@@ -80,10 +80,10 @@ func (service *castService) planCast(facts MediaFacts, viewer viewerProfile, kin
 	// Use the original timeline on receivers; automatic skip remains a sender feature.
 	plan := playback.Decide(facts, capabilities, policy, intent, playback.DecisionPolicy{PreferCompatibleAudio: true})
 	if !plan.Allowed {
-		return PlaybackPlan{}, errors.New("This title is not compatible with the TV and this profile's playback permissions") //nolint:staticcheck // This complete sentence is displayed directly in the TV picker.
+		return PlaybackPlan{}, errors.New("This title is not compatible with the receiver and this profile's playback permissions") //nolint:staticcheck // This complete sentence is displayed directly in the device picker.
 	}
 	if protocol == "dlna" && plan.Mode != "direct" {
-		return PlaybackPlan{}, errors.New("This TV needs a directly playable file; use AirPlay or Google Cast for this title") //nolint:staticcheck // This complete sentence is displayed directly in the TV picker.
+		return PlaybackPlan{}, errors.New("This receiver needs a directly playable file; use AirPlay or Google Cast for this title") //nolint:staticcheck // This complete sentence is displayed directly in the device picker.
 	}
 	return plan, nil
 }
@@ -112,7 +112,7 @@ func (service *castService) rememberCast(session castSession) error {
 	}
 	if count >= 4 || len(service.sessions) >= 128 {
 		service.mu.Unlock()
-		return errors.New("Stop an existing TV session before starting another") //nolint:staticcheck // This complete sentence is displayed directly in the TV picker.
+		return errors.New("Stop playback on the current receiver before starting another") //nolint:staticcheck // This complete sentence is displayed directly in the device picker.
 	}
 	stored := session
 	stored.Tracks = append([]castTrack(nil), session.Tracks...)
@@ -124,7 +124,7 @@ func (service *castService) rememberCast(session castSession) error {
 		for _, existing := range service.sessions {
 			if existing.DeviceID == session.DeviceID {
 				service.mu.Unlock()
-				return errors.New("This TV already has an active Kinosail session") //nolint:staticcheck // This complete sentence is displayed directly in the TV picker.
+				return errors.New("This receiver already has an active Kinosail session") //nolint:staticcheck // This complete sentence is displayed directly in the device picker.
 			}
 		}
 	}

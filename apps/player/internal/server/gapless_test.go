@@ -21,7 +21,7 @@ func TestAlbumPlaybackExposesGaplessQueueThroughAPIAndWeb(t *testing.T) {
 		if err := os.WriteFile(base+".m4a", []byte(title), 0o600); err != nil {
 			t.Fatal(err)
 		}
-		nfo := `<song><title>` + title + `</title><artist>Artist</artist><album>Album</album><track>` + string(rune('1'+index)) + `</track></song>`
+		nfo := `<song><title>` + title + `</title><artist>Artist &amp; Band</artist><album>Album &quot;Demo&quot;</album><track>` + string(rune('1'+index)) + `</track></song>`
 		if err := os.WriteFile(base+".nfo", []byte(nfo), 0o600); err != nil {
 			t.Fatal(err)
 		}
@@ -41,7 +41,7 @@ func TestAlbumPlaybackExposesGaplessQueueThroughAPIAndWeb(t *testing.T) {
 	queue := apiCall(t, handler, "", http.MethodGet, "/api/v1/audio/"+firstID+"/queue", nil)
 	assertAPIBody(t, queue, http.StatusOK, "First", "Second", "/media/")
 	player := apiCall(t, handler, "", http.MethodGet, "/watch/"+firstID, nil)
-	assertAPIBody(t, player, http.StatusOK, `data-queue="/api/v1/audio/`+firstID+`/queue"`)
+	assertAPIBody(t, player, http.StatusOK, `data-queue="/api/v1/audio/`+firstID+`/queue"`, `data-kind="audio"`, `data-artist="Artist &amp; Band"`, `data-album="Album &#34;Demo&#34;"`)
 	script := apiCall(t, handler, "", http.MethodGet, "/static/player.js", nil)
 	if !strings.Contains(script.Body.String(), "advanceQueue") {
 		t.Fatalf("player script does not advance a preloaded audio queue: %q", script.Body.String())

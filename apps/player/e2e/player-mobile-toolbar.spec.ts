@@ -12,7 +12,7 @@ for (const width of [320, 390, 430, 700, 1024]) {
           <video style="aspect-ratio:16/9" aria-label="1917"></video>
           <div class="player-stage-toolbar"><strong>1917 — a long movie title</strong>
             <button class="player-mode-status">Starting Transcoding audio</button>
-            <div class="player-stage-actions"><button class="quiet play-on-tv" data-tv-open>Play on TV</button></div>
+            <div class="player-stage-actions"><button class="quiet play-on-tv" data-tv-open>Play on another device</button></div>
           </div>
           <div class="player-buffer ${recovery ? "is-recovery" : ""}" role="status">
             <span class="buffer-skeleton"></span><span>${recovery ? "Playback stopped. Try again to continue watching." : "Buffering…"}</span>
@@ -26,7 +26,7 @@ for (const width of [320, 390, 430, 700, 1024]) {
       expect(status).not.toBeNull();
       expect(toolbar!.y + toolbar!.height <= status!.y || status!.y + status!.height <= toolbar!.y).toBe(true);
       expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(width);
-      await expect(page.getByRole("button", { name: "Play on TV" })).toBeVisible();
+      await expect(page.getByRole("button", { name: "Play on another device" })).toBeVisible();
       await page.locator(".player-buffer").evaluate(el => el.setAttribute("hidden", ""));
       await expect(page.locator(".player-buffer")).toBeHidden();
       await page.locator("body").evaluate(el => el.classList.add("player-theater"));

@@ -41,23 +41,23 @@ struct PlayOnTVScreen: View {
                         }.disabled(session.casting.busy)
                         if cast.duration > 0 {
                             #if os(iOS)
-                            Slider(value: $seekPosition, in: 0...cast.duration).accessibilityLabel("TV playback position")
+                            Slider(value: $seekPosition, in: 0...cast.duration).accessibilityLabel("Receiver playback position")
                             Button("Seek to \(seekPosition.clock)") { perform { try await session.casting.command(.seek(seekPosition)) } }.disabled(session.casting.busy)
                             #else
                             Button("Back 30 seconds") { perform { try await session.casting.command(.seek(max(0, status.position - 30))) } }
                             Button("Forward 30 seconds") { perform { try await session.casting.command(.seek(min(cast.duration, status.position + 30))) } }
                             #endif
                         }
-                    } else { Text("Checking the TV…").foregroundStyle(.secondary) }
+                    } else { Text("Checking the receiver…").foregroundStyle(.secondary) }
                     if let message = session.casting.message { Text(message).foregroundStyle(.secondary) }
-                    Button("Disconnect TV", role: .destructive) { perform { try await session.casting.disconnect() } }.disabled(session.casting.busy)
-                    Text("Disconnecting removes the TV’s access. Choose Stop first to end playback on the TV.").font(.footnote).foregroundStyle(.secondary)
+                    Button("Disconnect receiver", role: .destructive) { perform { try await session.casting.disconnect() } }.disabled(session.casting.busy)
+                    Text("Disconnecting removes the receiver’s access. Choose Stop first to end playback there.").font(.footnote).foregroundStyle(.secondary)
                 }
             } else {
                 Section("DLNA receivers") {
                     Button(scanning ? "Searching…" : "Find receivers") { scan() }.disabled(scanning || session.casting.busy)
-                    Text("Your Server finds compatible TVs on its local network.").font(.footnote).foregroundStyle(.secondary)
-                    if scanned && devices.isEmpty { Text("No receivers found. Make sure the TV is on and connected to the Server’s network.") }
+                    Text("Your Server finds compatible speakers and TVs on its local network.").font(.footnote).foregroundStyle(.secondary)
+                    if scanned && devices.isEmpty { Text("No receivers found. Make sure the speaker or TV is on and connected to the Server’s network.") }
                     ForEach(devices) { device in
                         Button { start(device) } label: { Label("\(device.name) · DLNA", systemImage: "tv") }.disabled(session.casting.busy)
                     }
@@ -65,8 +65,8 @@ struct PlayOnTVScreen: View {
             }
             if let message { Section { Text(message).foregroundStyle(.secondary) } }
         }
-        .tvOSConfigurationLayout(title: "Play on TV", symbol: "tv")
-        .configurationNavigationTitle("Play on TV")
+        .tvOSConfigurationLayout(title: "Play on another device", symbol: "tv")
+        .configurationNavigationTitle("Play on another device")
         #if os(tvOS)
         .focusScope(castFocus)
         #endif

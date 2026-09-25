@@ -68,7 +68,7 @@ private struct DetailContent: View {
             if !item.showID.isEmpty { NavigationLink("All episodes", value: ScreenDestination.show(item.showID)) }
             if item.kind == .video || item.isAudio {
                 NavigationLink(value: ScreenDestination.bookmarks(item.id)) { Label("Bookmarks", systemImage: "bookmark") }
-                NavigationLink(value: ScreenDestination.playOnTV(item.id)) { Label("Play on TV", systemImage: "tv") }
+                NavigationLink(value: ScreenDestination.playOnTV(item.id)) { Label("Play on another device", systemImage: "tv") }
             }
             if item.progress.seconds > 0 || item.progress.watched {
                 Button("Remove from Continue watching") { change { client in try await client.dismissContinueWatching(itemID: item.id) } }

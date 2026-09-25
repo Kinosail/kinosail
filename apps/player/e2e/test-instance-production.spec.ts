@@ -111,29 +111,39 @@ test("a real offline download plays and seeks after the network disconnects", as
   } finally { await connection.disconnect(); }
 });
 
-test("the video toolbar opens the TV picker and restores focus", async ({ page }, testInfo) => {
+test("video and music open the receiver picker and restore focus", async ({ page }, testInfo) => {
   await login(page);
   const library = await (await page.context().request.get("/api/v1/library")).json();
-  const item = library.items.find((candidate: { title: string }) => candidate.title === "Example Movie");
-  expect(item).toBeTruthy();
-  for (const width of [1440, 390]) {
-    await page.setViewportSize({ width, height: 900 });
-    await page.goto(`/watch/${item.id}`);
-    const button = page.getByRole("button", { name: "Play on TV", exact: true });
-    await page.locator("video").evaluate((video: HTMLVideoElement) => video.pause());
-    await button.click();
-    const dialog = page.getByRole("dialog", { name: "Play on TV", exact: true });
-    await expect(dialog).toBeVisible();
-    await expect(dialog.getByRole("button", { name: "Find DLNA TVs", exact: true })).toBeVisible();
-    expect((await new AxeBuilder({ page }).include(".tv-picker").analyze()).violations).toEqual([]);
-    await page.screenshot({ path: testInfo.outputPath(`${width}-tv-picker.png`) });
-    await dialog.getByRole("button", { name: "Close", exact: true }).click();
-    await expect(dialog).toBeHidden();
-    await expect(button).toBeFocused();
-    await button.press("Enter");
-    await expect(dialog).toBeVisible();
-    await page.keyboard.press("Escape");
-    await expect(dialog).toBeHidden();
-    await expect(button).toBeFocused();
+  const video = library.items.find((candidate: { title: string }) => candidate.title === "Example Movie");
+  const audio = library.items.find((candidate: { kind: string; title: string }) => candidate.kind === "audio" && candidate.title.startsWith("Example"));
+  for (const [kind, item] of [["video", video], ["audio", audio]] as const) {
+    expect(item).toBeTruthy();
+    for (const width of [1440, 390]) {
+      await page.setViewportSize({ width, height: 900 });
+      await page.goto(`/watch/${item.id}`);
+      const button = page.getByRole("button", { name: "Play on another device", exact: true });
+      await page.locator(kind).evaluate((media: HTMLMediaElement) => media.pause());
+      await button.click();
+      const dialog = page.getByRole("dialog", { name: "Play on another device", exact: true });
+      await expect(dialog).toBeVisible();
+      if (kind === "audio") {
+        await expect(dialog.getByText("HomePod, AirPlay speakers and TVs, or devices offered by your browser.")).toBeVisible();
+        await expect(dialog.getByRole("heading", { name: "Screen mirroring / Miracast" })).toHaveCount(0);
+      } else {
+        await expect(dialog.getByText("Apple TV and AirPlay-enabled TVs, or devices offered by your browser.")).toBeVisible();
+        await expect(dialog.getByRole("heading", { name: "Screen mirroring / Miracast" })).toBeVisible();
+      }
+      await expect(dialog.getByRole("button", { name: "Find DLNA receivers", exact: true })).toBeVisible();
+      expect((await new AxeBuilder({ page }).include(".tv-picker").analyze()).violations).toEqual([]);
+      await page.screenshot({ path: testInfo.outputPath(`${width}-${kind}-receiver-picker.png`) });
+      await dialog.getByRole("button", { name: "Close", exact: true }).click();
+      await expect(dialog).toBeHidden();
+      await expect(button).toBeFocused();
+      await button.press("Enter");
+      await expect(dialog).toBeVisible();
+      await page.keyboard.press("Escape");
+      await expect(dialog).toBeHidden();
+      await expect(button).toBeFocused();
+    }
   }
 });
