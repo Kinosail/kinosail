@@ -72,11 +72,11 @@ struct ReaderScreen: View {
                             }.font(.callout)
                         }
                         HStack {
-                            Button("Previous", systemImage: "chevron.left") { turn(to: position.page - 1) }.labelStyle(.iconOnly).buttonStyle(.bordered).buttonBorderShape(.capsule).tint(KinoTheme.secondaryControlTint).foregroundStyle(KinoTheme.secondaryControlInk).controlSize(.large).disabled(position.page <= 1)
+                            Button("Previous", systemImage: "chevron.left") { turn(to: position.page - 1) }.labelStyle(.iconOnly).buttonStyle(.bordered).buttonBorderShape(.capsule).tint(KinoTheme.secondaryControlTint).secondaryControlForeground().controlSize(.large).disabled(position.page <= 1)
                             Spacer()
                             Button(book.kind == .pdf ? "Document" : "\(book.kind == .epub ? "Chapter" : "Page") \(position.page) of \(position.total)") { showsContents = true }.frame(minHeight: 44)
                             Spacer()
-                            Button("Next", systemImage: "chevron.right") { turn(to: position.page + 1) }.labelStyle(.iconOnly).buttonStyle(.bordered).buttonBorderShape(.capsule).tint(KinoTheme.secondaryControlTint).foregroundStyle(KinoTheme.secondaryControlInk).controlSize(.large).disabled(position.page >= position.total)
+                            Button("Next", systemImage: "chevron.right") { turn(to: position.page + 1) }.labelStyle(.iconOnly).buttonStyle(.bordered).buttonBorderShape(.capsule).tint(KinoTheme.secondaryControlTint).secondaryControlForeground().controlSize(.large).disabled(position.page >= position.total)
                         }
                     }.padding(16).background(.regularMaterial)
                 }

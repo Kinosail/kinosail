@@ -8,7 +8,7 @@ struct RetryState: View {
         VStack(spacing: 16) {
             Label(title, systemImage: "exclamationmark.circle").font(.headline)
             Text(message).foregroundStyle(KinoTheme.muted).multilineTextAlignment(.center)
-            Button("Try again", action: retry).buttonStyle(.bordered).buttonBorderShape(.capsule).tint(KinoTheme.secondaryControlTint).foregroundStyle(KinoTheme.secondaryControlInk)
+            Button("Try again", action: retry).buttonStyle(.bordered).buttonBorderShape(.capsule).tint(KinoTheme.secondaryControlTint).secondaryControlForeground()
         }
         .padding(32).frame(maxWidth: .infinity, minHeight: 220)
     }

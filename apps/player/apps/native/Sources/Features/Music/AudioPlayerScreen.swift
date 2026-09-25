@@ -70,7 +70,7 @@ struct AudioPlayerScreen: View {
                             HStack { Text(session.player.seconds.clock); Spacer(); Text(session.player.duration.clock) }.font(.caption.monospacedDigit()).foregroundStyle(.secondary)
                         }
                         HStack(spacing: transportSpacing) {
-                            Button("Back 15 seconds", systemImage: "gobackward.15") { perform { try await session.player.seek(to: max(0, session.player.seconds - 15)) } }.labelStyle(.iconOnly).buttonStyle(.bordered).buttonBorderShape(.capsule).tint(KinoTheme.secondaryControlTint).foregroundStyle(KinoTheme.secondaryControlInk).controlSize(.large)
+                            Button("Back 15 seconds", systemImage: "gobackward.15") { perform { try await session.player.seek(to: max(0, session.player.seconds - 15)) } }.labelStyle(.iconOnly).buttonStyle(.bordered).buttonBorderShape(.capsule).tint(KinoTheme.secondaryControlTint).secondaryControlForeground().controlSize(.large)
                             Button { session.player.togglePlayback() } label: {
                                 Label(session.player.isPlaying ? "Pause" : "Play", systemImage: session.player.isPlaying ? "pause.fill" : "play.fill")
                                     .labelStyle(.iconOnly)
@@ -89,20 +89,20 @@ struct AudioPlayerScreen: View {
                                 #if os(tvOS)
                                 .tvOSDefaultPlayFocus(in: audioFocus, id: "audio.play.\(item.id)", enabled: session.player.player != nil)
                                 #endif
-                            Button("Forward 30 seconds", systemImage: "goforward.30") { perform { try await session.player.seek(to: min(session.player.duration, session.player.seconds + 30)) } }.labelStyle(.iconOnly).buttonStyle(.bordered).buttonBorderShape(.capsule).tint(KinoTheme.secondaryControlTint).foregroundStyle(KinoTheme.secondaryControlInk).controlSize(.large)
+                            Button("Forward 30 seconds", systemImage: "goforward.30") { perform { try await session.player.seek(to: min(session.player.duration, session.player.seconds + 30)) } }.labelStyle(.iconOnly).buttonStyle(.bordered).buttonBorderShape(.capsule).tint(KinoTheme.secondaryControlTint).secondaryControlForeground().controlSize(.large)
                         }.font(.title2).disabled(session.player.player == nil)
                         if item.kind == .music {
                             HStack(spacing: 24) {
                                 Button("Previous", systemImage: "backward.end.fill") { perform { try await session.player.previousTrack() } }
                                 Button("Next", systemImage: "forward.end.fill") { perform { try await session.player.nextTrack() } }
-                            }.labelStyle(.iconOnly).font(.title2).buttonStyle(.bordered).buttonBorderShape(.capsule).tint(KinoTheme.secondaryControlTint).foregroundStyle(KinoTheme.secondaryControlInk).controlSize(.large).disabled(session.player.player == nil)
+                            }.labelStyle(.iconOnly).font(.title2).buttonStyle(.bordered).buttonBorderShape(.capsule).tint(KinoTheme.secondaryControlTint).secondaryControlForeground().controlSize(.large).disabled(session.player.player == nil)
                         }
                         ViewThatFits(in: .horizontal) {
                             HStack(spacing: 12) { audioOptions(item) }
                             VStack(spacing: 12) { audioOptions(item) }
                         }.font(.callout)
                             #if os(tvOS)
-                            .tint(KinoTheme.secondaryControlTint).foregroundStyle(KinoTheme.secondaryControlInk)
+                            .tint(KinoTheme.secondaryControlTint).secondaryControlForeground()
                             #endif
                         if let deadline = session.player.sleepDeadline { Text("Pauses at \(deadline.formatted(date: .omitted, time: .shortened))").font(.caption).foregroundStyle(.secondary) }
                         if !upcoming.isEmpty {
@@ -245,8 +245,8 @@ struct MiniPlayer: View {
                         VStack(alignment: .leading) { Text(item.title).font(.headline).lineLimit(1); Text(item.artist).font(.caption).foregroundStyle(.secondary).lineLimit(1) }
                     }.frame(maxWidth: .infinity, alignment: .leading)
                 }.buttonStyle(.plain).accessibilityLabel("Now playing: \(item.title)")
-                Button(session.player.isPlaying ? "Pause" : "Play", systemImage: session.player.isPlaying ? "pause.fill" : "play.fill") { session.player.togglePlayback() }.labelStyle(.iconOnly).buttonStyle(.bordered).buttonBorderShape(.capsule).tint(KinoTheme.secondaryControlTint).foregroundStyle(KinoTheme.secondaryControlInk).controlSize(controlSize)
-                Button("Stop", systemImage: "xmark") { session.player.stop(); session.contentRevision = UUID() }.labelStyle(.iconOnly).buttonStyle(.bordered).buttonBorderShape(.capsule).tint(KinoTheme.secondaryControlTint).foregroundStyle(KinoTheme.secondaryControlInk).controlSize(controlSize)
+                Button(session.player.isPlaying ? "Pause" : "Play", systemImage: session.player.isPlaying ? "pause.fill" : "play.fill") { session.player.togglePlayback() }.labelStyle(.iconOnly).buttonStyle(.bordered).buttonBorderShape(.capsule).tint(KinoTheme.secondaryControlTint).secondaryControlForeground().controlSize(controlSize)
+                Button("Stop", systemImage: "xmark") { session.player.stop(); session.contentRevision = UUID() }.labelStyle(.iconOnly).buttonStyle(.bordered).buttonBorderShape(.capsule).tint(KinoTheme.secondaryControlTint).secondaryControlForeground().controlSize(controlSize)
             }
             .padding(.horizontal, horizontalPadding).padding(.vertical, verticalPadding).background(.regularMaterial)
             #if os(tvOS)

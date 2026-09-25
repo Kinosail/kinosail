@@ -53,7 +53,7 @@ struct ShowScreen: View {
                                 }
                                 .pickerStyle(.menu)
                                 .tint(KinoTheme.secondaryControlTint)
-                                .foregroundStyle(KinoTheme.secondaryControlInk)
+                                .secondaryControlForeground()
                                 .accessibilityIdentifier("show.season-picker")
                             }
                             .controlSize(.large)
