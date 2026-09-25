@@ -64,3 +64,20 @@ enum PlayerTab: String, CaseIterable, Identifiable, Sendable {
         }
     }
 }
+
+enum PlayerMode: String, CaseIterable, Identifiable, Sendable {
+    case watch, listen
+    var id: String { rawValue }
+    var title: String { rawValue.capitalized }
+    var other: Self { self == .watch ? .listen : .watch }
+    var defaultTabs: [PlayerTab] { self == .watch ? PlayerTab.defaults : [.home, .music, .audiobooks, .search] }
+    var searchViews: [LibraryView] { self == .watch ? [.movies, .shows] : [.music, .audiobooks] }
+    func includes(_ item: MediaItem) -> Bool {
+        self == .watch ? item.kind == .video || item.kind == .show : item.isAudio
+    }
+    static func stored(_ raw: String?) -> Self { raw.flatMap(Self.init(rawValue:)) ?? .watch }
+    static func storageKey(_ profileKey: String) -> String { "kinosail.mode.v1.\(profileKey)" }
+    func tabsKey(_ profileKey: String) -> String {
+        self == .watch ? "kinosail.tabs.v2.\(profileKey)" : "kinosail.tabs.listen.v1.\(profileKey)"
+    }
+}

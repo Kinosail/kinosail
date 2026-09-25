@@ -64,6 +64,24 @@ struct CatalogRevalidationTests {
         await fixture.client.close()
     }
 
+    @Test func listenHomeRequestsAudioCategoriesAndKeepsVideoOut() async throws {
+        let fixture = try Fixture()
+        defer { fixture.remove() }
+        let request = Task { try await fixture.client.home(mode: .listen) }
+        try await fixture.waitForRequests(3)
+        #expect(Set(fixture.pending.compactMap { $0.query["view"] }) == ["history", "music", "audiobooks"])
+        fixture.respond(view: "history", version: 1, items: [
+            Self.item("movie", progress: ["seconds": 120]),
+            ["id": "track", "kind": "music", "title": "Track", "progress": ["seconds": 60]]
+        ])
+        fixture.respond(view: "music", version: 1, items: [["id": "track", "kind": "music", "title": "Track"]])
+        fixture.respond(view: "audiobooks", version: 1, items: [["id": "book", "kind": "audiobook", "title": "Book"]])
+        let home = try await request.value
+        #expect(home.continueWatching.map(\.id) == ["track"])
+        #expect(home.recent.map(\.id) == ["track", "book"])
+        await fixture.client.close()
+    }
+
     private static func item(_ id: String, progress: [String: Any]) -> [String: Any] {
         ["id": id, "kind": "video", "title": id, "stream": "/media/\(id)", "progress": progress]
     }

@@ -1,23 +1,24 @@
 import SwiftUI
 
 struct LibraryHubScreen: View {
+    var mode: PlayerMode?
     var body: some View {
         List {
-            Section("Watch") {
+            if mode != .listen { Section("Watch") {
                 LibraryDestinationLink("Movies", "film", .library(.movies))
                 LibraryDestinationLink("Shows", "tv", .library(.shows))
-            }
-            Section("Listen") {
+            } }
+            if mode != .watch { Section("Listen") {
                 LibraryDestinationLink("Music", "music.note", .library(.music))
                 LibraryDestinationLink("Audiobooks", "headphones", .library(.audiobooks))
-            }
-            Section("Explore") {
+            } }
+            if mode == nil { Section("Explore") {
                 #if os(iOS)
                 LibraryDestinationLink("Ebooks & comics", "books.vertical", .library(.books))
                 #endif
                 LibraryDestinationLink("Photos", "photo.on.rectangle", .library(.photos))
                 LibraryDestinationLink("All media", "square.grid.2x2", .library(.all))
-            }
+            } }
             Section("Your library") {
                 LibraryDestinationLink("My List", "star", .library(.list))
                 LibraryDestinationLink("Collections", "rectangle.stack", .collections)
@@ -33,13 +34,19 @@ struct LibraryHubScreen: View {
 }
 
 struct LibraryQuickLinks: View {
+    var mode: PlayerMode?
     var body: some View {
         ScrollView(.horizontal) {
             HStack(spacing: 12) {
-                LibraryDestinationLink("Movies", "film", .library(.movies))
-                LibraryDestinationLink("Shows", "tv", .library(.shows))
-                LibraryDestinationLink("Music", "music.note", .library(.music))
-                LibraryDestinationLink("All media", "square.grid.2x2", .library(.all))
+                if mode != .listen {
+                    LibraryDestinationLink("Movies", "film", .library(.movies))
+                    LibraryDestinationLink("Shows", "tv", .library(.shows))
+                }
+                if mode != .watch {
+                    LibraryDestinationLink("Music", "music.note", .library(.music))
+                    if mode == .listen { LibraryDestinationLink("Audiobooks", "headphones", .library(.audiobooks)) }
+                }
+                if mode == nil { LibraryDestinationLink("All media", "square.grid.2x2", .library(.all)) }
             }
             .buttonStyle(.bordered).buttonBorderShape(.capsule).tint(KinoTheme.secondaryControlTint).foregroundStyle(KinoTheme.text)
             .padding(.vertical, 8)
