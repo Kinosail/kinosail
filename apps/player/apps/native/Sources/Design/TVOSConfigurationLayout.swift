@@ -58,6 +58,7 @@ private struct TVOSConfigurationBrand: View {
     let title: String
     let symbol: String
     let width: CGFloat
+    @ScaledMetric(relativeTo: .title2) private var titleSize = 30.0
 
     var body: some View {
         VStack(alignment: .leading, spacing: 24) {
@@ -93,9 +94,9 @@ private struct TVOSConfigurationBrand: View {
                             .font(.title2.bold())
                             .foregroundStyle(KinoTheme.signal)
                         Text(title)
-                            .font(.title2.bold())
+                            .font(.system(size: titleSize, weight: .bold, design: .rounded))
                             .foregroundStyle(KinoTheme.text)
-                            .frame(width: max(180, width - 32), alignment: .leading)
+                            .frame(width: width - 64, alignment: .leading)
                             .lineLimit(3)
                             .minimumScaleFactor(0.72)
                             .allowsTightening(true)
