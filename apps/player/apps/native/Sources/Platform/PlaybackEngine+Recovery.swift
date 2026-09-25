@@ -168,8 +168,14 @@ extension PlaybackEngine {
         buffering = player?.timeControlStatus == .waitingToPlayAtSpecifiedRate
         if let rate = player?.defaultRate, rate.isFinite, (0.5...3).contains(rate) {
             playbackRate = Double(rate)
-            preferences.rate = Double(rate)
+            if preferences.rate != Double(rate) {
+                preferences.rate = Double(rate)
+                rememberChoices { $0.rate = Double(rate) }
+            }
         }
+        if let audioID = selectedAudioTrackID, audioID != observedAudioTrackID { rememberAudioSelection(id: audioID) }
+        let subtitleID = selectedSubtitleTrackID
+        if subtitleID != observedSubtitleTrackID { rememberSubtitleSelection(id: subtitleID) }
         if wasPlaying, player?.timeControlStatus == .paused { saveProgress(watched: false) }
         presentation.showCaptions(subtitleDocument?.text(at: seconds) ?? "")
         if Int(seconds) != lastNowPlayingSecond {

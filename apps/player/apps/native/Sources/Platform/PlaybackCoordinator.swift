@@ -56,7 +56,14 @@ final class PlaybackCoordinator {
     func pause() { engine.pause() }
     func resume() { engine.resume() }
     func checkpoint() { engine.checkpoint() }
-    func applyPreferences(_ preferences: PlaybackPreferences) async throws { try await engine.applyPreferences(preferences) }
+    func applyPreferences(_ preferences: PlaybackPreferences) async throws {
+        try await engine.applyPreferences(preferences)
+        engine.rememberChoices {
+            $0.rate = preferences.rate
+            $0.audioLanguage = preferences.audioLanguage; $0.audioTrack = preferences.audioTrack
+            $0.subtitleLanguage = preferences.subtitleLanguage; $0.subtitleTrack = preferences.subtitleTrack
+        }
+    }
     func changeRate(_ rate: Double) async throws { try await engine.changeRate(rate) }
     func selectAudioTrack(id: String) throws { try engine.selectAudioTrack(id: id) }
     func selectSubtitleTrack(id: String?) async throws { try await engine.selectSubtitleTrack(id: id) }
@@ -101,12 +108,14 @@ final class PlaybackEngine {
     @ObservationIgnored var writer: ProgressWriter?
     @ObservationIgnored var timeline: MediaTimeline?
     @ObservationIgnored var preferences = PlaybackPreferences()
+    @ObservationIgnored var devicePreferencesScope: String?
+    @ObservationIgnored var observedAudioTrackID: String?
+    @ObservationIgnored var observedSubtitleTrackID: String?
     @ObservationIgnored var timeObserver: Any?
     @ObservationIgnored var rateObservation: NSKeyValueObservation?
     @ObservationIgnored var jumpObserver: NSObjectProtocol?
     @ObservationIgnored var monitoring: Task<Void, Never>?
     @ObservationIgnored var writing: Task<Void, Never>?
-    @ObservationIgnored var savingRate: Task<Void, Never>?
     @ObservationIgnored var notifications: [NSObjectProtocol] = []
     @ObservationIgnored var nowPlaying = NowPlayingController()
     @ObservationIgnored var lastSaved: Double = -30
@@ -136,8 +145,10 @@ final class PlaybackEngine {
 
     func play(_ item: MediaItem, client: ServerClient, store: ProgressSyncStore) async throws {
         guard [.video, .music, .audiobook].contains(item.kind) else { throw ClientError.invalidInput("This title does not contain playable audio or video.") }
+        let scope = try await client.profileScope()
         stop(clearQueue: item.kind != .music)
         let attempt = generation
+        devicePreferencesScope = scope
         self.client = client; self.store = store; currentItem = item; loading = true; wantsPlayback = true
         defer { if generation == attempt { loading = false } }
         do {
@@ -148,7 +159,7 @@ final class PlaybackEngine {
             let details = prepared.source
             try check(attempt)
             source = details
-            preferences = prepared.preferences
+            preferences = DevicePlaybackChoices.load(scope: scope).apply(to: prepared.preferences)
             duration = details.duration
             writer = try ProgressWriter(itemID: item.id, expected: item.progress, client: client, store: store)
             let pending = try await store.pending().first { $0.itemID == item.id }
@@ -181,9 +192,10 @@ final class PlaybackEngine {
         let root = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0].resolvingSymlinksInPath().appendingPathComponent("kinosail-swift-offline")
         let expected = root.appendingPathComponent(scope).appendingPathComponent(downloadID + ".media")
         guard file == expected, file.isFileURL, file.resolvingSymlinksInPath().standardizedFileURL == expected.standardizedFileURL else { throw ClientError.invalidResponse }
-        let preferences = try PlaybackPreferences(preferences.json)
+        let preferences = DevicePlaybackChoices.load(scope: scope).apply(to: try PlaybackPreferences(preferences.json))
         stop()
         let attempt = generation
+        devicePreferencesScope = scope
         currentItem = item; self.client = client; self.store = store; self.preferences = preferences; loading = true; wantsPlayback = true
         if preferences.audioEnhancementsEnabled {
             progressMessage = "Audio enhancements need a Server stream and aren’t applied to this download."
@@ -211,7 +223,6 @@ final class PlaybackEngine {
         generation = UUID()
         wantsPlayback = false; recoveringNetwork = false; networkRecoveries = 0; networkStableSince = nil; recoveryPosition = nil
         monitoring?.cancel(); monitoring = nil
-        savingRate?.cancel(); savingRate = nil
         player?.pause()
         removeTimeObserver()
         nativeIntent = NativePlaybackIntent(); nativeRecoveryPosition = nil
@@ -225,6 +236,7 @@ final class PlaybackEngine {
         audioGroup = nil; subtitleGroup = nil
         subtitleDocument = nil; subtitleGeneration = UUID(); externalCaptions = false; lastNowPlayingSecond = -1
         selectedExternalSubtitleID = nil; playbackRate = 1
+        devicePreferencesScope = nil; observedAudioTrackID = nil; observedSubtitleTrackID = nil
         loading = false; isPlaying = false; buffering = false; message = nil; progressMessage = nil
         seconds = 0; duration = 0; lastSaved = -30; sleepDeadline = nil; completed = false; timeline = nil; usingCompatibility = false
         if clearQueue { queue.clear() }
