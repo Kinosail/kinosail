@@ -99,10 +99,6 @@ private struct TVOSConfigurationBrand: View {
                             .lineLimit(3)
                             .minimumScaleFactor(0.72)
                             .allowsTightening(true)
-                        Text("Move with the remote. Select with one press.")
-                            .font(.body)
-                            .foregroundStyle(KinoTheme.muted)
-                            .frame(width: max(180, width - 32), alignment: .leading)
                     }
                 }
                 .padding(32)

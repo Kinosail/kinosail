@@ -11,19 +11,40 @@ struct CollectionsScreen: View {
                 if names.isEmpty {
                     FeaturePlaceholder(title: "No collections yet", symbol: "rectangle.stack", message: "Collections from your Server will appear here.")
                 } else {
+                    #if os(tvOS)
+                    Text("Collections").font(.system(.largeTitle, design: .rounded).bold())
+                        .accessibilityAddTraits(.isHeader)
+                    #endif
                     LazyVStack(alignment: .leading, spacing: 20) {
                         ForEach(names, id: \.self) { name in
                             NavigationLink(value: ScreenDestination.collection(name)) {
                                 Label(name, systemImage: "rectangle.stack").font(.title3)
                                     .frame(maxWidth: .infinity, minHeight: 48, alignment: .leading)
+                                    #if os(tvOS)
+                                    .padding(12)
+                                    #endif
                             }
+                            #if os(tvOS)
+                            .buttonStyle(.card)
+                            #endif
+                            #if os(iOS)
                             Divider()
+                            #endif
                         }
                     }
+                    #if os(tvOS)
+                    .frame(maxWidth: 1100, alignment: .leading)
+                    .focusSection()
+                    #endif
                 }
             }.padding(KinoTheme.contentPadding)
         }
+        #if os(tvOS)
+        .cinemaBackground()
+        .navigationTitle("")
+        #else
         .navigationTitle("Collections")
+        #endif
     }
 }
 
@@ -42,6 +63,8 @@ struct CollectionScreen: View {
                 if items.isEmpty { FeaturePlaceholder(title: "No titles yet", symbol: "rectangle.stack", message: "This collection is empty.") }
                 else {
                     #if os(tvOS)
+                    Text(name).font(.system(.largeTitle, design: .rounded).bold())
+                        .accessibilityAddTraits(.isHeader)
                     MediaGrid(items: items, onQuickPlay: { quickPlay = $0 })
                     #else
                     MediaGrid(items: items)
@@ -49,7 +72,12 @@ struct CollectionScreen: View {
                 }
             }.padding(KinoTheme.contentPadding)
         }
+        #if os(tvOS)
+        .cinemaBackground()
+        .navigationTitle("")
+        #else
         .navigationTitle(name)
+        #endif
         #if os(tvOS)
         .navigationDestination(item: $quickPlay) { DestinationScreen(destination: $0) }
         #endif
