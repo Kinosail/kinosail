@@ -9,7 +9,7 @@ test("fresh installation controls the populated app and serves its complete shel
   await login(page);
   await page.goto("/");
   await expect.poll(() => page.evaluate(() => navigator.serviceWorker.controller?.state)).toBe("activated");
-  expect(await page.evaluate(() => navigator.serviceWorker.controller?.scriptURL)).toContain("/service-worker.js?v=52");
+  expect(await page.evaluate(() => navigator.serviceWorker.controller?.scriptURL)).toContain("/service-worker.js?v=53");
   await connection.disconnect();
   try {
     await page.goto("/offline");
@@ -92,6 +92,12 @@ test("a real offline download plays and seeks after the network disconnects", as
   await job.getByRole("button", { name: "Download to this device", exact: true }).click();
   await expect(job.locator("[data-download-device-status]")).toHaveText("Saved and verified. Play to check compatibility.", { timeout: 30_000 });
   const id = await job.getAttribute("data-download-job");
+  const offlineProbe = await page.evaluate(async (id) => {
+    const profile = document.querySelector<HTMLElement>("#downloads")?.dataset.viewerProfile;
+    const response = await fetch(`/offline-media/${profile}/${id}`, { headers: { Range: "bytes=0-1" } });
+    return { status: response.status, length: (await response.arrayBuffer()).byteLength };
+  }, id);
+  expect(offlineProbe).toEqual({ status: 206, length: 2 });
   await connection.disconnect();
   try {
     await page.goto(`/offline?job=${id}`);

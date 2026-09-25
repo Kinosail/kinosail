@@ -56,8 +56,8 @@ test("service worker streams verified IndexedDB chunks with backpressure", async
 		};
 		try {
 			const handlers = new Map<string, (event: WorkerEvent) => void>();
-			const scope = { addEventListener: (name: string, handler: (event: WorkerEvent) => void) => handlers.set(name, handler), location: { origin: "https://kinosail.test" } };
-			new Function("self", "caches", "fetch", "indexedDB", source.replace("const chunkSize = 8 * 1024 * 1024;", "const chunkSize = 2;"))(scope, {}, async () => { throw new TypeError("offline"); }, indexedDB);
+			const scope = { addEventListener: (name: string, handler: (event: WorkerEvent) => void) => handlers.set(name, handler), clients: { matchAll: async () => [] }, location: { origin: "https://kinosail.test" } };
+			new Function("self", "caches", "fetch", "indexedDB", source.replace("const chunkSize = 8 * 1024 * 1024;", "const chunkSize = 2;"))(scope, { keys: async () => [] }, async () => { throw new TypeError("offline"); }, indexedDB);
 			const requestMedia = async () => {
 				let responsePromise: Promise<Response | undefined> | undefined;
 				handlers.get("fetch")?.({ request: new Request("https://kinosail.test/offline-media/profile/aaaaaaaaaaaaaaaa"), respondWith: (value) => { responsePromise = value; } });
@@ -76,7 +76,12 @@ test("service worker streams verified IndexedDB chunks with backpressure", async
 					transaction.onerror = () => reject(transaction.error);
 				};
 			});
-			const response = await requestMedia();
+			// Registration and readiness can identify the same page while its first media request waits.
+			const revision = Date.now();
+			handlers.get("message")?.({ origin: "https://kinosail.test", source: { type: "window", url: "https://kinosail.test/offline" }, data: { type: "profile", profile: "profile", revision }, waitUntil: () => {} } as unknown as WorkerEvent);
+			const firstMedia = requestMedia();
+			handlers.get("message")?.({ origin: "https://kinosail.test", source: { type: "window", url: "https://kinosail.test/offline" }, data: { type: "profile", profile: "profile", revision: revision + 1 }, waitUntil: () => {} } as unknown as WorkerEvent);
+			const response = await firstMedia;
 			await new Promise((resolve) => setTimeout(resolve, 25));
 			const readsBeforeConsumption = [...reads];
 			const reader = response?.body?.getReader();
@@ -104,20 +109,24 @@ test("service worker streams verified IndexedDB chunks with backpressure", async
 			const cancelled = await requestMedia();
 			await cancelled?.body?.cancel();
 			const cancelReads = [...reads];
+			reads.length = 0;
+			handlers.get("message")?.({ origin: "https://kinosail.test", source: { type: "window", url: "https://kinosail.test/offline" }, data: { type: "profile", profile: "other", revision: Date.now() + 1 }, waitUntil: () => {} } as unknown as WorkerEvent);
+			const wrongProfile = await requestMedia();
+			const wrongProfileReads = [...reads];
 			const databaseClosed = await new Promise<boolean>((resolve, reject) => {
 				const request = indexedDB.deleteDatabase("kinosail-offline-v1");
 				request.onblocked = () => resolve(false);
 				request.onerror = () => reject(request.error);
 				request.onsuccess = () => resolve(true);
 			});
-			return { body: new TextDecoder().decode(body), cancelReads, contentLength: response?.headers.get("Content-Length"), corruptReads, corruptionRejected, databaseClosed, gapReads, gapRejected, reads: successfulReads, readsBeforeConsumption, status: response?.status };
+			return { body: new TextDecoder().decode(body), cancelReads, contentLength: response?.headers.get("Content-Length"), corruptReads, corruptionRejected, databaseClosed, gapReads, gapRejected, reads: successfulReads, readsBeforeConsumption, status: response?.status, wrongProfileReads, wrongProfileStatus: wrongProfile?.status };
 		} finally {
 			IDBIndex.prototype.get = originalGet;
 			IDBIndex.prototype.getAll = originalGetAll;
 		}
 	}, serviceWorkerSource);
 
-	expect(contract).toEqual({ body: "target", cancelReads: [0], contentLength: "6", corruptReads: [0, 2], corruptionRejected: true, databaseClosed: true, gapReads: [0, 2], gapRejected: true, reads: [0, 2, 4], readsBeforeConsumption: [0], status: 200 });
+	expect(contract).toEqual({ body: "target", cancelReads: [0], contentLength: "6", corruptReads: [0, 2], corruptionRejected: true, databaseClosed: true, gapReads: [0, 2], gapRejected: true, reads: [0, 2, 4], readsBeforeConsumption: [0], status: 200, wrongProfileReads: [], wrongProfileStatus: 404 });
 });
 
 test("service worker streams verified OPFS chunks before later verification", async ({ page }) => {
@@ -196,7 +205,7 @@ test("service worker streams verified OPFS chunks before later verification", as
 
 for (const mode of ["registration failure", "no controller"] as const) test(`offline downloads reject ${mode} before storage changes`, async ({ page }) => {
 	await page.addInitScript((failureMode) => {
-		const worker = Object.assign(new EventTarget(), { scriptURL: "https://kinosail.test/service-worker.js?v=52", state: "activated" });
+		const worker = Object.assign(new EventTarget(), { scriptURL: "https://kinosail.test/service-worker.js?v=53", state: "activated" });
 		const registration = Object.assign(new EventTarget(), { active: worker, installing: null, waiting: null });
 		const serviceWorker = Object.assign(new EventTarget(), {
 			controller: null,
