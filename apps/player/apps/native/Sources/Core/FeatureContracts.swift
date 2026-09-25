@@ -40,6 +40,7 @@ struct PlaybackSource: Sendable {
     let duration: Double
     let start: Double
     let progressToken: String
+    let trickplay: String?
     let compatible: CompatibilitySource?
     let chapters: [Chapter]
     let nextItemID: String?

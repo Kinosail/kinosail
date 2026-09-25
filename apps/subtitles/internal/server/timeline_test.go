@@ -33,7 +33,7 @@ func TestDirectPlayerShowsSourceChaptersAndClientSkipMarkers(t *testing.T) { //n
 	script := httptest.NewRecorder()
 	handler.ServeHTTP(script, httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/static/player.js", nil))
 
-	for _, expected := range []string{"First contact", `data-auto-skip="intro,credits"`, `data-playback-token="`, `data-chapter data-start="90" data-end="600" data-seek="90"`, `<time>1:30</time>`, `<summary><span>Chapters</span><small>3</small></summary>`, `data-marker="intro"`, `data-marker="credits"`, `controls playsinline`, `data-player-controls`, `data-player-fullscreen`} {
+	for _, expected := range []string{"First contact", `data-auto-skip="intro,credits"`, `data-playback-token="`, `data-chapter data-start="90" data-end="600" data-seek="90"`, `<time>1:30</time>`, `<summary><span>Chapters</span><small>3</small></summary>`, `data-marker="intro"`, `data-marker="credits"`, `controls playsinline`, `data-player-controls`, `data-player-fullscreen`, `data-seek-preview hidden`, `data-trickplay="/trickplay/` + id + `/{second}`, `/static/player.js?v=52`, `/static/app.css?v=electric-2`} {
 		if !strings.Contains(player.Body.String(), expected) {
 			t.Fatalf("player lacks %q: %q", expected, player.Body.String())
 		}
@@ -41,13 +41,15 @@ func TestDirectPlayerShowsSourceChaptersAndClientSkipMarkers(t *testing.T) { //n
 	if actions, chapters := strings.Index(player.Body.String(), `class="primary-player-actions"`), strings.Index(player.Body.String(), `class="chapters"`); actions < 0 || chapters < 0 || actions > chapters {
 		t.Fatalf("primary actions must precede chapters: actions=%d chapters=%d", actions, chapters)
 	}
-	assertAbsent(t, player.Body.String(), `class="preview-seek"`, "Preview seek", `data-trickplay="`)
+	assertAbsent(t, player.Body.String(), `class="preview-seek"`, "Preview seek")
 	for _, expected := range []string{"dataset.seek", "autoSkip.has(marker.dataset.marker)", `marker.dataset.skipped = "true"`, `button.setAttribute("aria-current", "true")`} {
 		if !strings.Contains(script.Body.String(), expected) {
 			t.Fatalf("script lacks %q: %q", expected, script.Body.String())
 		}
 	}
-	assertAbsent(t, script.Body.String(), "dataset.trickplay")
+	if !strings.Contains(script.Body.String(), "seek.dataset.trickplay") {
+		t.Fatal("seek preview is not wired to trickplay frames")
+	}
 }
 
 func TestChaptersDBFallbackSharesChapterDataWithWebAndAPI(t *testing.T) {
