@@ -128,7 +128,7 @@ The frontmatter records reused roles from the current cascade. Apple clients hav
 
 ## Layout
 
-The library shell retains its 96rem base width cap and 100rem maximum-width ceiling, centered margins and horizontal padding `clamp(1.25rem,4vw,4rem)`. Above 900px, the sticky header places brand, search and utilities over horizontal navigation. At 900px and below, personal bottom navigation respects the safe area.
+The library shell retains its 96rem base width cap and 100rem maximum-width ceiling, centered margins and horizontal padding `clamp(1.25rem,4vw,4rem)`. Above 1100px, a 15rem grouped sidebar sits below the sticky utility header, which keeps brand, search, Support Kinosail and Actions visible. The sidebar scrolls independently on short windows. From 901px to 1100px, the existing horizontal navigation and More menu remain. At 900px and below, personal bottom navigation respects the safe area.
 
 Home presents a 1.25:1 artwork/copy column ratio with a fluid 1.5–4rem gap. Artwork occupies an in-flow 16:9 box; there is no forced hero height or image overlay. The title is bounded by its column and wraps. At 900px and below the composition stacks with a 0.75rem gap after the tabs and between artwork and copy; the feature title becomes `clamp(2rem,9vw,3rem)` with a 0.375rem gap before metadata. The progress label sits beside its track, and unknown duration retains the position on its own line. Missing artwork collapses the unused image column. Home sections use 2–2.5rem separation.
 
@@ -160,7 +160,7 @@ Fields keep visible labels, native form behavior and a minimum 44px control heig
 
 ### Navigation and personal tabs
 
-Desktop destinations use a green selected rule and existing utility/More menus. Mobile web defaults to Home, TV Shows, Movies and Search plus persistent More. Customize tabs permits adding, removing and reordering one to four destinations; unpinned destinations remain reachable through More. Choices are scoped to the Viewer Profile in this browser. This presentation preference does not alter library access or the desktop navigation.
+Wide desktop destinations are grouped as Library, Your library and Library views. The Owner chooses visibility and order; the sidebar retains saved order within each group. Its current link uses a green leading rule and a quiet selected surface. Intermediate widths retain the horizontal navigation and More menu. Mobile web defaults to Home, TV Shows, Movies and Search plus persistent More. Customize tabs permits adding, removing and reordering one to four destinations; unpinned destinations remain reachable through More. Choices are scoped to the Viewer Profile in this browser. This presentation preference does not alter library access or the desktop navigation.
 
 The tab editor is a native HTML dialog capped at 34rem wide and 85dvh high. Its action rows have 44px minimum controls, action-specific accessible labels and focus restoration. Reorder icons reuse the authored back icon, rotated for earlier/later. Reset restores Home, TV Shows, Movies and Search. Keep the skip link and visible keyboard focus.
 

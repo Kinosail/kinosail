@@ -13,12 +13,12 @@ const maximumFormBytes = 16 << 10
 
 var errInvalidForm = errors.New("navigation form is invalid")
 
-type destination struct{ id, name, href, view string }
+type destination struct{ id, name, href, view, group string }
 
 // Link is one visible Library destination.
 type Link struct {
-	Name, Href string
-	Active     bool
+	Name, Href, Group string
+	Active            bool
 }
 
 // Preference is one destination in the Owner navigation editor.
@@ -37,18 +37,18 @@ type Controller struct {
 }
 
 var destinations = []destination{
-	{"home", "Home", "/?view=all", "all"},
-	{"list", "My List", "/?view=list", "list"},
-	{"movies", "Movies", "/?view=movies", "movies"},
-	{"shows", "Shows", "/?view=shows", "shows"},
-	{"music", "Music", "/?view=music", "music"},
-	{"audiobooks", "Audiobooks", "/?view=audiobooks", "audiobooks"},
-	{"books", "Books", "/?view=books", "books"},
-	{"photos", "Photos", "/?view=photos", "photos"},
-	{"collections", "Collections", "/?view=collections", "collections"},
-	{"playlists", "Playlists", "/?view=playlists", "playlists"},
-	{"unwatched", "Unwatched", "/?view=unwatched", "unwatched"},
-	{"history", "History", "/?view=history", "history"},
+	{"home", "Home", "/?view=all", "all", "library"},
+	{"list", "My List", "/?view=list", "list", "personal"},
+	{"movies", "Movies", "/?view=movies", "movies", "library"},
+	{"shows", "Shows", "/?view=shows", "shows", "library"},
+	{"music", "Music", "/?view=music", "music", "library"},
+	{"audiobooks", "Audiobooks", "/?view=audiobooks", "audiobooks", "library"},
+	{"books", "Books", "/?view=books", "books", "library"},
+	{"photos", "Photos", "/?view=photos", "photos", "library"},
+	{"collections", "Collections", "/?view=collections", "collections", "personal"},
+	{"playlists", "Playlists", "/?view=playlists", "playlists", "personal"},
+	{"unwatched", "Unwatched", "/?view=unwatched", "unwatched", "viewing"},
+	{"history", "History", "/?view=history", "history", "viewing"},
 }
 
 // NewController binds app-owned persistence and localization adapters.
@@ -84,7 +84,7 @@ func Validate(items []string) error {
 func Links(items []string, view string, localize func(string) string) (primary, more []Link) {
 	for _, id := range items {
 		item := destinationByID(id)
-		link := Link{localize(item.name), item.href, item.view == view || item.id == view}
+		link := Link{localize(item.name), item.href, item.group, item.view == view || item.id == view}
 		if len(primary) < 4 {
 			primary = append(primary, link)
 		} else {

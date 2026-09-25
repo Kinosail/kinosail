@@ -23,7 +23,7 @@ func TestLargeLibraryWebResponseIsBounded(t *testing.T) {
 	index := memoryLibraryIndex(items, true)
 	response := httptest.NewRecorder()
 	showHome(index, newProgressStore(""), newListStore(""), newSettingsStore("", "", "", nil), nil, false)(response, ownerRequest("/?view=movies"))
-	if cards := strings.Count(response.Body.String(), `/item/`); response.Code != 200 || cards != catalog.DefaultPageSize || response.Body.Len() > 26_000 || !strings.Contains(response.Body.String(), `offset=100`) {
+	if cards := strings.Count(response.Body.String(), `/item/`); response.Code != 200 || cards != catalog.DefaultPageSize || response.Body.Len() > 27_000 || !strings.Contains(response.Body.String(), `offset=100`) {
 		t.Fatalf("large Library page = status %d, cards %d, bytes %d", response.Code, cards, response.Body.Len())
 	}
 }
