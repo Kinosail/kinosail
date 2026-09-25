@@ -39,10 +39,10 @@ func TestCastHLSKeepsScopedTicketOnAllChildResources(t *testing.T) {
 func TestTVPickerExposesProtocolsAndLargerEntryForVideoAndAudio(t *testing.T) {
 	input := `<video data-title="{{.Title}}"></video><button class="quiet" type="button" aria-label="Play on device" data-cast>{{icon "cast"}}</button><audio data-title="{{.Title}}"></audio></main>`
 	result := tvPlayerTemplate(input)
-	if strings.Count(result, `data-tv-open`) != 2 || strings.Count(result, `data-cast-api=`) != 2 {
+	if strings.Count(result, `data-tv-open`) != 2 || strings.Count(result, `data-cast-api=`) != 2 || strings.Count(result, `data-cast-app-id="{{.CastAppID}}"`) != 2 {
 		t.Fatal("video or audio lacks TV entry point")
 	}
-	for _, label := range []string{"Play on another device", "HomePod", "Google Cast / Chromecast", "Cast speakers", "DLNA / UPnP receivers", "Find DLNA receivers", "Screen mirroring / Miracast", "Stop casting"} {
+	for _, label := range []string{"Play on another device", "HomePod", "Google Cast / Chromecast", "Cast speakers", "DLNA / UPnP receivers", "Find DLNA receivers", "Samsung and LG TVs", "Screen mirroring / Miracast", "Stop casting"} {
 		if !strings.Contains(result, label) {
 			t.Errorf("missing protocol or control %q", label)
 		}

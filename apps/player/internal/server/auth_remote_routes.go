@@ -68,7 +68,7 @@ func remotePublicRouteDenied(pattern string) bool {
 		"GET /settings/management", "GET /api/v1/management-access", "POST /api/v1/management-access", "DELETE /api/v1/management-access", "POST /api/v1/management-access/devices", "DELETE /api/v1/management-access/devices":
 		return true
 	case "GET /cast/{id}/subtitles/{track}", "OPTIONS /cast/{id}/subtitles/{track}", "GET /cast/{id}/media", "GET /cast/{id}/hls/{file...}", "OPTIONS /cast/{id}/media", "OPTIONS /cast/{id}/hls/{file...}",
-		"POST /api/v1/items/{id}/cast", "POST /api/v1/cast/devices/scan", "GET /api/v1/cast/sessions/{id}", "POST /api/v1/cast/sessions/{id}/commands", "DELETE /api/v1/cast/sessions/{id}":
+		"POST /api/v1/items/{id}/cast", "POST /api/v1/cast/devices/scan", "GET /api/v1/cast/config", "GET /api/v1/cast/sessions/{id}", "POST /api/v1/cast/sessions/{id}/commands", "DELETE /api/v1/cast/sessions/{id}":
 		return true
 	case "GET /healthz", "GET /setup", "POST /setup", "POST /api/v1/setup", "POST /mcp", "GET /mcp", "DELETE /mcp",
 		"GET /api/v1/home-assistant", "POST /api/v1/home-assistant/pair", "POST /api/v1/home-assistant/token", "GET /home-assistant/authorize", "POST /home-assistant/authorize", "GET /home-assistant/media/{id}",

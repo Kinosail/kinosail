@@ -9,16 +9,21 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/MikeO7/kinosail-player/internal/configuration"
 	"github.com/MikeO7/kinosail-player/internal/server"
 )
 
-func castFixture(t *testing.T) (http.Handler, string) {
+func castFixture(t *testing.T, configured ...configuration.Snapshot) (http.Handler, string) {
 	t.Helper()
 	directory := t.TempDir()
 	if err := os.WriteFile(filepath.Join(directory, "Song.mp3"), []byte("receiver media"), 0o600); err != nil {
 		t.Fatal(err)
 	}
-	handler := server.New(server.Config{MediaDir: directory, AuthURL: "http://192.168.1.10:8080"})
+	config := server.Config{MediaDir: directory, AuthURL: "http://192.168.1.10:8080"}
+	if len(configured) > 0 {
+		config.Configuration = configured[0]
+	}
+	handler := server.New(config)
 	response := castRequest(t, handler, http.MethodGet, "/api/v1/library", "")
 	var library struct {
 		Items []struct {
@@ -67,6 +72,41 @@ func TestCastGrantScopesDeliveryAndRevocation(t *testing.T) {
 	}
 	if response := castRequest(t, handler, http.MethodGet, session.URL, ""); response.Code != 404 {
 		t.Fatalf("revoked delivery=%d", response.Code)
+	}
+}
+
+func TestCastConfigurationIsBoundedToLocalAuthorizedSender(t *testing.T) {
+	handler, _ := castFixture(t)
+	response := castRequest(t, handler, http.MethodGet, "/api/v1/cast/config", "")
+	if response.Code != 200 || response.Body.String() != "{\"appId\":\"\"}\n" || response.Header().Get("Cache-Control") != "no-store" {
+		t.Fatalf("cast configuration status=%d body=%q", response.Code, response.Body.String())
+	}
+	if query := castRequest(t, handler, http.MethodGet, "/api/v1/cast/config?unknown=1", ""); query.Code != 400 {
+		t.Fatalf("cast configuration accepted unknown query: %d", query.Code)
+	}
+	if body := castRequest(t, handler, http.MethodGet, "/api/v1/cast/config", "{}"); body.Code != 400 {
+		t.Fatalf("cast configuration accepted body: %d", body.Code)
+	}
+	if remote := castRequest(t, server.Remote(handler), http.MethodGet, "/api/v1/cast/config", ""); remote.Code != 404 {
+		t.Fatalf("cast configuration available remotely: %d", remote.Code)
+	}
+}
+
+func TestRegisteredCastAppIDReachesBrowserAndNativeSender(t *testing.T) {
+	configured, err := configuration.Load(t.TempDir(), "", func(key string) (string, bool) {
+		return "deadbeef", key == "KINOSAIL_GOOGLE_CAST_APP_ID"
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	handler, id := castFixture(t, configured)
+	response := castRequest(t, handler, http.MethodGet, "/api/v1/cast/config", "")
+	if response.Code != 200 || response.Body.String() != "{\"appId\":\"deadbeef\"}\n" {
+		t.Fatalf("native sender config = %d %q", response.Code, response.Body.String())
+	}
+	page := castRequest(t, handler, http.MethodGet, "/watch/"+id, "")
+	if page.Code != 200 || !strings.Contains(page.Body.String(), `data-cast-app-id="DEADBEEF"`) {
+		t.Fatalf("browser sender config = %d", page.Code)
 	}
 }
 

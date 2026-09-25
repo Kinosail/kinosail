@@ -33,6 +33,7 @@ android {
 dependencies {
     implementation(platform("androidx.compose:compose-bom:2026.09.00"))
     implementation("androidx.activity:activity-compose:1.13.0")
+    implementation("androidx.fragment:fragment:1.9.1")
     implementation("androidx.compose.material3:material3")
     implementation("androidx.tv:tv-material:1.1.0")
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.11.0")
@@ -44,6 +45,8 @@ dependencies {
     implementation("androidx.media3:media3-session:1.11.1")
     implementation("androidx.media3:media3-datasource-okhttp:1.11.1")
     implementation("androidx.exifinterface:exifinterface:1.4.2")
+    implementation("androidx.mediarouter:mediarouter:1.8.1")
+    implementation("com.google.android.gms:play-services-cast-framework:22.3.1")
     testImplementation("junit:junit:4.13.2")
     testImplementation("org.robolectric:robolectric:4.16.1")
 }

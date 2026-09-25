@@ -78,6 +78,7 @@ The following table describes typed application settings. Use the running config
 | `scanning.frequency` | `KINOSAIL_SCAN_FREQUENCY` | enum | blank | no |
 | `dlna.url` | `KINOSAIL_DLNA_URL` | URL | blank | yes |
 | `dlna.enabled` | `KINOSAIL_DLNA_ENABLED` | boolean | blank | no |
+| `integrations.google_cast.app_id` | `KINOSAIL_GOOGLE_CAST_APP_ID` | 8 hexadecimal characters | blank | yes |
 | `backup.directory` | `KINOSAIL_BACKUP_DIR` | path | `/backups` | yes |
 | `backup.key` | `KINOSAIL_BACKUP_KEY` | secret text | blank | yes |
 | `backup.interval` | `KINOSAIL_BACKUP_INTERVAL` | duration | `24h` | yes |

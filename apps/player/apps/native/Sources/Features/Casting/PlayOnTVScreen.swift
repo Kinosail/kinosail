@@ -9,6 +9,7 @@ struct PlayOnTVScreen: View {
     @State private var scanned = false
     @State private var message: String?
     @State private var seekPosition = 0.0
+    @State private var isAudio = false
     #if os(tvOS)
     @Namespace private var castFocus
     #endif
@@ -18,11 +19,11 @@ struct PlayOnTVScreen: View {
             #if os(iOS)
             Section("AirPlay") {
                 HStack {
-                    Text("Choose an audio output")
+                    Text("Choose an AirPlay \(isAudio ? "speaker" : "TV")")
                     Spacer()
-                    AudioRoutePicker().frame(width: 48, height: 48).accessibilityLabel("Choose AirPlay audio output")
+                    AudioRoutePicker(video: !isAudio).frame(width: 48, height: 48).accessibilityLabel("Choose AirPlay output")
                 }
-                Text("For video, open Screen Mirroring in Control Center, choose your TV, then play this title here.").foregroundStyle(.secondary)
+                Text("Choose a receiver, then play this title here. Screen Mirroring in Control Center also works with compatible TVs.").foregroundStyle(.secondary)
                 NavigationLink("Play on this device", value: ScreenDestination.playback(itemID))
             }
             #endif
@@ -71,6 +72,7 @@ struct PlayOnTVScreen: View {
         .focusScope(castFocus)
         #endif
         .onChange(of: session.casting.session?.id) { _, _ in seekPosition = session.casting.session?.position ?? 0 }
+        .task(id: itemID) { if let client = session.client, let item = try? await client.item(id: itemID) { isAudio = item.isAudio } }
     }
 
     private func scan() {
@@ -98,11 +100,12 @@ struct PlayOnTVScreen: View {
 
 #if os(iOS)
 struct AudioRoutePicker: UIViewRepresentable {
+    let video: Bool
     func makeUIView(context: Context) -> AVRoutePickerView {
         let view = AVRoutePickerView()
-        view.prioritizesVideoDevices = false
+        view.prioritizesVideoDevices = video
         return view
     }
-    func updateUIView(_ view: AVRoutePickerView, context: Context) {}
+    func updateUIView(_ view: AVRoutePickerView, context: Context) { view.prioritizesVideoDevices = video }
 }
 #endif

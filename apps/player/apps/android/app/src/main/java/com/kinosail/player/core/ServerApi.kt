@@ -118,6 +118,31 @@ class ServerApi(
             viewerId = viewerId, expected = setOf(200), maximum = 2 * 1024 * 1024).second
     }
 
+    internal fun castConfig(token: String, viewerId: String): kotlinx.serialization.json.JsonElement {
+        require(viewerId.matches(Regex("[A-Za-z0-9_-]{1,128}"))) { "Invalid Cast request." }
+        return requestWithStatus("/api/v1/cast/config", "GET", token = checkedCredential(token, 512),
+            viewerId = viewerId, expected = setOf(200)).second
+    }
+
+    internal fun startCast(itemId: String, position: Double, token: String, viewerId: String):
+        kotlinx.serialization.json.JsonElement {
+        require(itemId.matches(Regex("[A-Za-z0-9_-]{1,128}")) && position.isFinite() &&
+            position in 0.0..31_536_000.0 && viewerId.matches(Regex("[A-Za-z0-9_-]{1,128}"))) {
+            "Invalid Cast request."
+        }
+        return requestWithStatus("/api/v1/items/$itemId/cast", "POST", buildJsonObject {
+            put("protocol", "google-cast"); put("position", position)
+        }, token = checkedCredential(token, 512), viewerId = viewerId, expected = setOf(201)).second
+    }
+
+    internal fun endCast(id: String, token: String, viewerId: String) {
+        require(id.matches(Regex("[a-f0-9]{32}")) && viewerId.matches(Regex("[A-Za-z0-9_-]{1,128}"))) {
+            "Invalid Cast request."
+        }
+        requestWithStatus("/api/v1/cast/sessions/$id", "DELETE", token = checkedCredential(token, 512),
+            viewerId = viewerId, expected = setOf(204))
+    }
+
     internal fun setListed(itemId: String, token: String, viewerId: String, listed: Boolean):
         kotlinx.serialization.json.JsonElement {
         require(itemId.matches(Regex("[A-Za-z0-9_-]{1,128}")) &&

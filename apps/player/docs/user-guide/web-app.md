@@ -37,8 +37,8 @@ Owners can adjust the Server's navigation in Settings. If a destination is missi
 
 ## Play on another device
 
-During playback, open **Watch together → Play on device**. Player asks the browser to select a compatible device using available Remote Playback or AirPlay support. Availability depends on the browser, device discovery, and the receiving device's ability to reach your Server and play the media.
+During playback, choose **Play on another device**. Use your browser's AirPlay or Remote Playback picker, enable Google Cast in a supported browser, or search for a DLNA receiver on the Server's network. Music and audiobooks can play on compatible AirPlay or DLNA speakers; audio-only Google Cast speakers need the Owner to [configure a registered receiver]({{ '/owner-guide/integrations/' | relative_url }}). Samsung and LG TVs may offer AirPlay, built-in Google Cast, or a DLNA media renderer. Screen mirroring uses your phone or computer's own controls.
 
-If no device is offered, check that both devices are on the appropriate network and try a browser with the required playback support. This is separate from [Watch Rooms]({{ '/user-guide/sharing/' | relative_url }}), where people watch through their own connected browsers.
+If no device is offered, check that the receiver is on the appropriate network and can reach the Server's media URL. Browser and TV support varies by model. This is separate from [Watch Rooms]({{ '/user-guide/sharing/' | relative_url }}), where people watch through their own connected browsers.
 
-Source of truth: `packages/webassets/static/pwa.js`, `shortcuts.js`, `player-devices.js`, and the Player web templates.
+Source of truth: `packages/webassets/static/pwa.js`, `shortcuts.js`, `player-devices.js`, `player-tv.js`, and the Player web templates.

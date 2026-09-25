@@ -51,6 +51,20 @@ func (service *castService) scanHTTP(writer http.ResponseWriter, request *http.R
 	writeJSON(writer, map[string]any{"devices": devices}, http.StatusOK)
 }
 
+func (service *castService) configHTTP(writer http.ResponseWriter, request *http.Request) {
+	if publicInternetRequest(request) || !currentViewer(request).Permits("stream", true) {
+		apiNotFound(writer)
+		return
+	}
+	body, err := io.ReadAll(io.LimitReader(request.Body, 1))
+	if err != nil || len(body) != 0 || request.URL.RawQuery != "" {
+		apiError(writer, casting.ErrInvalid, http.StatusBadRequest)
+		return
+	}
+	writer.Header().Set("Cache-Control", "no-store")
+	writeJSON(writer, map[string]string{"appId": service.settings.config.String("integrations.google_cast.app_id")}, http.StatusOK)
+}
+
 func (service *castService) statusHTTP(writer http.ResponseWriter, request *http.Request) {
 	session, ok := service.owned(request)
 	if !ok || session.Protocol != "dlna" {
