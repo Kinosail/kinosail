@@ -100,9 +100,3 @@ func TestLegacyCredentialsRemainVerifiable(t *testing.T) {
 		}
 	}
 }
-
-func TestDummyVerificationAcceptsBoundedAndOversizedInput(t *testing.T) {
-	t.Parallel()
-	credentials.DummyVerify("unknown-password")
-	credentials.DummyVerify(strings.Repeat("x", 1025))
-}

@@ -31,6 +31,12 @@
 - Add focused negative tests for changed inputs and prove rejection causes no side effects.
 - Test observable behavior at public interfaces. Test code is outside production line-count limits.
 
+## Test design
+
+- Never write unit tests after writing the code they cover. Write any needed tests first.
+- Highly prefer E2E tests as the sole testing mechanism. Use them to verify complex features work. Every E2E run must finish with a verifiable, repeatable artifact that records the revision, command, test data, environment, and result.
+- If a system must be tested in isolation, first write down all the ways it could fail, then write the code.
+
 ## Verification
 
 - Run focused regression tests and affected package checks while editing.
