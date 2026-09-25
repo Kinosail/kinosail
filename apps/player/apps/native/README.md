@@ -1,8 +1,8 @@
-# Kinosail for iPhone, iPad and Apple TV
+# Kinosail for iPhone, iPad, Apple TV and Apple Watch
 
 The active clients are SwiftUI applications for iOS and tvOS, sharing validated Server contracts and native platform services. The apps include Quick Connect and nearby discovery, library browsing and search, collections, movies and episodes, music and audiobooks, AVKit playback, subtitles, bookmarks, progress synchronization, photos and DLNA receiver controls. iPhone and iPad also support verified offline downloads and PDF, EPUB and comic reading.
 
-Only iOS and tvOS application targets remain. iPad belongs to the iOS target. Android, Android TV and Fire TV were removed; no other native platform targets were added. Server and web products are outside this migration.
+The iOS, tvOS and companion watchOS application targets are in this project. iPad belongs to the iOS target. Android, Android TV and Fire TV were removed.
 
 ## Connect to a Server
 
@@ -12,16 +12,18 @@ These instructions build the source clients. They do not imply an App Store rele
 
 ## Open and build
 
-From `apps/player/apps/native/`, open `Kinosail.xcodeproj` and select `Kinosail-iOS` or `Kinosail-tvOS`.
+From `apps/player/apps/native/`, open `Kinosail.xcodeproj` and select `Kinosail-iOS`, `Kinosail-tvOS` or `KinosailWatch`.
 
 ```sh
 # Simulator apps use local ad-hoc signing so Keychain works. No certificate needed.
 ./scripts/build-apple.sh ios
 ./scripts/build-apple.sh tvos
+./scripts/build-apple.sh watchos
 
 # Device binaries remain unsigned. These commands do not install anything.
 ./scripts/build-apple.sh ios device
 ./scripts/build-apple.sh tvos device
+./scripts/build-apple.sh watchos device
 ```
 
 Output is `.build/<platform>-<simulator|device>/Build/Products/`. Repository aliases are `make -C apps/player client-build-ios` and `make -C apps/player client-build-tvos`.
@@ -36,7 +38,7 @@ Siri/Shortcuts on iPhone and iPad offers Search library, Play title and Continue
 
 The retired Expo/React Native client, bridges, patches and browser fixtures have been removed. Swift source and tests live in `Sources/` and `Tests/`. Shared web quality tools live in the repository’s `scripts/quality` package.
 
-Root `.gates-disabled` keeps test and quality suites disabled. Test sources are supplied but must not be run until the user enables gates. Compilation and manual simulator observations are distinct from physical-device and receiver verification.
+The Apple Watch app controls playback on its paired iPhone and on active Apple TV players connected to the same Server and Viewer Profile. Play/pause, seeking and skip controls follow the selected player. Apple TV commands pass through the authenticated iPhone and Server; an offline iPhone cannot relay them. Movie heart graphs are off by default. Starting one requests read-only Health access on the Watch, maps available heart rate samples to known movie positions, and keeps the graph on the Watch. Gaps remain where samples or playback positions were unavailable; no workout is created.
 
 The Info plists declare `KinosailImplementationState=implemented`. The configured signed-device deployment helper may install these apps when authorized and configured with signing credentials. That marker is not physical-device acceptance or App Store distribution evidence. See [VERIFICATION.md](VERIFICATION.md) for the recorded evidence and remaining boundaries.
 

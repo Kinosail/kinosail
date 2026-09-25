@@ -38,6 +38,7 @@ type apiServices struct {
 	supporter     *supporterProgram
 	updates       *updateChecker
 	homeAssistant *homeAssistantIntegration
+	remotePlayers  *remotePlayers
 	authURL       string
 	events        *liveEventHub
 	experience    *mediaExperienceStore
@@ -136,6 +137,7 @@ func (api apiServices) RegisterSupporterAPI(mux *http.ServeMux) {
 
 func (api apiServices) RegisterProductAPI(mux *http.ServeMux) {
 	registerProductAPI(mux, api)
+	api.remotePlayers.register(mux)
 	api.homeAssistant.Register(mux, api.auth.owner, func(writer http.ResponseWriter, request *http.Request, view homeassistant.Approval) error {
 		return executeCSRFTemplate(homeAssistantApprovalView, writer, request, view)
 	})
