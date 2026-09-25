@@ -11,24 +11,14 @@ struct PlayerTabs: View {
         let watch = UserDefaults.standard.string(forKey: PlayerMode.watch.tabsKey(profileKey)) ?? PlayerTab.legacyDefault(legacy)
         let listen = UserDefaults.standard.string(forKey: PlayerMode.listen.tabsKey(profileKey))
             ?? PlayerMode.listen.defaultTabs.map(\.rawValue).joined(separator: ",")
-        #if os(iOS)
         let initialMode = PlayerMode.stored(UserDefaults.standard.string(forKey: PlayerMode.storageKey(profileKey)))
-        #else
-        let initialMode = PlayerMode.watch
-        #endif
         let initial = (try? PlayerTab.parse(initialMode == .watch ? watch : listen)) ?? initialMode.defaultTabs
         _selection = State(initialValue: initial.first ?? .home)
         _watchStored = AppStorage(wrappedValue: PlayerTab.legacyDefault(legacy), PlayerMode.watch.tabsKey(profileKey))
         _listenStored = AppStorage(wrappedValue: PlayerMode.listen.defaultTabs.map(\.rawValue).joined(separator: ","), PlayerMode.listen.tabsKey(profileKey))
         _modeStored = AppStorage(wrappedValue: PlayerMode.watch.rawValue, PlayerMode.storageKey(profileKey))
     }
-    private var mode: PlayerMode {
-        #if os(iOS)
-        PlayerMode.stored(modeStored)
-        #else
-        .watch
-        #endif
-    }
+    private var mode: PlayerMode { PlayerMode.stored(modeStored) }
     private var pinned: [PlayerTab] { (try? PlayerTab.parse(mode == .watch ? watchStored : listenStored)) ?? mode.defaultTabs }
     var body: some View {
         TabView(selection: $selection) {
@@ -38,7 +28,7 @@ struct PlayerTabs: View {
                 #else
                 let role: TabRole? = nil
                 #endif
-                Tab(value: tab, role: role) { stack(tab: tab) { PlayerTabScreen(tab: tab, mode: activeMode, showsSearch: !pinned.contains(.search), changeMode: changeMode) } } label: {
+                Tab(value: tab, role: role) { stack(tab: tab) { PlayerTabScreen(tab: tab, mode: mode, showsSearch: !pinned.contains(.search), changeMode: changeMode) } } label: {
                     Label(tab.title, systemImage: tab.symbol)
                     #if os(tvOS)
                         .foregroundStyle(selection == tab ? KinoTheme.signalInk : KinoTheme.text)
@@ -81,20 +71,14 @@ struct PlayerTabs: View {
         }
         .onChange(of: mode) { _, _ in selection = pinned[0]; paths = [:] }
     }
-    private var activeMode: PlayerMode? {
-        #if os(iOS)
-        mode
-        #else
-        nil
-        #endif
-    }
     private func changeMode(_ next: PlayerMode) { modeStored = next.rawValue }
     private func stack<Content: View>(tab: PlayerTab, @ViewBuilder content: () -> Content) -> some View {
         NavigationStack(path: Binding(get: { paths[tab] ?? NavigationPath() }, set: { paths[tab] = $0 })) {
             content()
-                .navigationDestination(for: PlayerTab.self) { PlayerTabScreen(tab: $0, mode: activeMode, showsSearch: !pinned.contains(.search), changeMode: changeMode) }
+                .navigationDestination(for: PlayerTab.self) { PlayerTabScreen(tab: $0, mode: mode, showsSearch: !pinned.contains(.search), changeMode: changeMode) }
                 #if os(iOS)
                 .modifier(SupporterToolbar())
+                #endif
                 .toolbar {
                     if tab != .home {
                         ToolbarItem(placement: .topBarTrailing) {
@@ -103,7 +87,6 @@ struct PlayerTabs: View {
                         }
                     }
                 }
-                #endif
                 .navigationDestination(for: ScreenDestination.self) { DestinationScreen(destination: $0) }
         }
         #if os(tvOS)
