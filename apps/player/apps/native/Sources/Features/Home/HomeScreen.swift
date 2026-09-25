@@ -5,6 +5,7 @@ struct HomeScreen: View {
     @Environment(AppSession.self) private var session
     #if os(tvOS)
     @Namespace private var homeFocus
+    @State private var quickPlay: ScreenDestination?
     #endif
     var body: some View {
         ScrollView {
@@ -27,7 +28,12 @@ struct HomeScreen: View {
                 guard let client = session.client else { throw ClientError.http(401) }
                 return try await client.home(policy: policy)
             }) { home in
+                #if os(tvOS)
+                let selection = HomeSelection(continueWatching: home.continueWatching.filter { $0.kind != .book },
+                                              recent: home.recent.filter { $0.kind != .book })
+                #else
                 let selection = HomeSelection(continueWatching: home.continueWatching, recent: home.recent)
+                #endif
                 VStack(alignment: .leading, spacing: 32) {
                     if let featured = selection.featured {
                         CinemaHero(item: featured, showsPlot: false) {
@@ -41,7 +47,13 @@ struct HomeScreen: View {
                         }
                     }
                     if !selection.continuation.isEmpty { ResumeRows(items: selection.continuation) }
-                    if !selection.recent.isEmpty { MediaShelf(title: "Recently added", items: selection.recent) }
+                    if !selection.recent.isEmpty {
+                        #if os(tvOS)
+                        MediaShelf(title: "Recently added", items: selection.recent, onQuickPlay: { quickPlay = $0 })
+                        #else
+                        MediaShelf(title: "Recently added", items: selection.recent)
+                        #endif
+                    }
                     if selection.featured == nil {
                         FeaturePlaceholder(title: "Your library is ready", symbol: "play.rectangle",
                                            message: "Media added to your Server will appear here.")
@@ -63,6 +75,7 @@ struct HomeScreen: View {
         #if os(tvOS)
         .focusScope(homeFocus)
         .navigationTitle("")
+        .navigationDestination(item: $quickPlay) { DestinationScreen(destination: $0) }
         #else
         .navigationTitle("Kinosail")
         #endif

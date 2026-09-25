@@ -6,6 +6,7 @@ struct ShowScreen: View {
     @State private var selectedSeason: Int?
     #if os(tvOS)
     @Namespace private var showFocus
+    @State private var quickPlay: ScreenDestination?
     #endif
     #if os(iOS)
     @State private var downloading = false
@@ -76,7 +77,7 @@ struct ShowScreen: View {
                         }
                         #endif
                         #if os(tvOS)
-                        MediaGrid(landscape: true, items: episodes.filter { $0.season == season })
+                        MediaGrid(landscape: true, items: episodes.filter { $0.season == season }, onQuickPlay: { quickPlay = $0 })
                         CastShelf(people: show.cast)
                         #else
                         CastShelf(people: show.cast)
@@ -90,6 +91,7 @@ struct ShowScreen: View {
         .cinemaBackground()
         #if os(tvOS)
         .focusScope(showFocus)
+        .navigationDestination(item: $quickPlay) { DestinationScreen(destination: $0) }
         #endif
         #if os(tvOS)
         .navigationTitle("")

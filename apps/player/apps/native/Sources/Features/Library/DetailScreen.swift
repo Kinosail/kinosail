@@ -80,12 +80,15 @@ private struct DetailContent: View {
         }
     }
     @ViewBuilder private var actions: some View {
-        NavigationLink(value: item.playingDestination) {
-            Label(item.kind == .photo ? "View photo" : item.playLabel, systemImage: item.kind == .book ? "book.fill" : item.kind == .photo ? "photo" : "play.fill")
-        }
-        .buttonStyle(.borderedProminent).buttonBorderShape(.capsule).tint(KinoTheme.signal).foregroundStyle(KinoTheme.signalInk)
         #if os(tvOS)
-        .tvOSDefaultPlayFocus(in: detailFocus, id: "detail.play.\(item.id)", enabled: item.kind == .video || item.isAudio)
+        if item.kind == .book {
+            Label("Read on iPhone or iPad", systemImage: "iphone")
+                .foregroundStyle(KinoTheme.muted)
+        } else {
+            playAction
+        }
+        #else
+        playAction
         #endif
         Button {
             change { client in listed = try await client.setListed(itemID: item.id, listed: !(listed ?? detail.listed)) }
@@ -104,6 +107,16 @@ private struct DetailContent: View {
         if session.viewer?.downloads == true && (item.kind == .video || item.isAudio) {
             Button { showsDownloads = true } label: { Label("Download", systemImage: "arrow.down") }.buttonStyle(.bordered).buttonBorderShape(.capsule).tint(KinoTheme.secondaryControlTint).foregroundStyle(KinoTheme.text)
         }
+        #endif
+    }
+
+    private var playAction: some View {
+        NavigationLink(value: item.playingDestination) {
+            Label(item.kind == .photo ? "View photo" : item.playLabel, systemImage: item.kind == .book ? "book.fill" : item.kind == .photo ? "photo" : "play.fill")
+        }
+        .buttonStyle(.borderedProminent).buttonBorderShape(.capsule).tint(KinoTheme.signal).foregroundStyle(KinoTheme.signalInk)
+        #if os(tvOS)
+        .tvOSDefaultPlayFocus(in: detailFocus, id: "detail.play.\(item.id)", enabled: item.kind == .video || item.isAudio)
         #endif
     }
     private func change(_ operation: @escaping @MainActor (ServerClient) async throws -> Void) {

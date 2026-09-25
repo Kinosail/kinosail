@@ -12,7 +12,9 @@ struct LibraryHubScreen: View {
                 LibraryDestinationLink("Audiobooks", "headphones", .library(.audiobooks))
             }
             Section("Explore") {
+                #if os(iOS)
                 LibraryDestinationLink("Ebooks & comics", "books.vertical", .library(.books))
+                #endif
                 LibraryDestinationLink("Photos", "photo.on.rectangle", .library(.photos))
                 LibraryDestinationLink("All media", "square.grid.2x2", .library(.all))
             }
