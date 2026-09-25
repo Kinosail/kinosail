@@ -95,11 +95,14 @@ struct HTTPFixture: Sendable {
     private let ownedCacheDirectory: URL?
     var requests: [URLRequest] { FixtureURLProtocol.entries.withLock { $0[host]?.requests ?? [] } }
     init(body: String, status: Int = 200, headers: [String: String] = [:], viewer: Viewer? = nil, cacheDirectory: URL? = nil) throws {
+        try self.init(data: Data(body.utf8), status: status, headers: headers, viewer: viewer, cacheDirectory: cacheDirectory)
+    }
+    init(data: Data, status: Int = 200, headers: [String: String] = [:], viewer: Viewer? = nil, cacheDirectory: URL? = nil) throws {
         let host = UUID().uuidString.lowercased() + ".example.invalid"
         self.host = host
         ownedCacheDirectory = cacheDirectory == nil ? FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString) : nil
         FixtureURLProtocol.entries.withLock {
-            $0[host] = .init(data: Data(body.utf8), status: status, headers: headers)
+            $0[host] = .init(data: data, status: status, headers: headers)
         }
         client = try ServerClient(server: ServerAddress("https://\(host)"), token: "fixture-token", viewer: viewer,
                                   protocolClasses: [FixtureURLProtocol.self], cacheDirectory: cacheDirectory ?? ownedCacheDirectory)

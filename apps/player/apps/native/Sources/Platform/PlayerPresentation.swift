@@ -18,6 +18,7 @@ final class PlayerPresentation: NSObject, AVPlayerViewControllerDelegate {
     @ObservationIgnored private let captions = UILabel()
     @ObservationIgnored let controller = AVPlayerViewController()
     @ObservationIgnored var showOptions: (() -> Void)?
+    @ObservationIgnored var showSeekPreview: (() -> Void)?
     #endif
     @ObservationIgnored var visible = false
     @ObservationIgnored var showingOptions = false
@@ -44,9 +45,10 @@ final class PlayerPresentation: NSObject, AVPlayerViewControllerDelegate {
         }
         controller.loadViewIfNeeded()
         // Keep AVKit's transport controls stable while the remote is scrubbing.
-        controller.transportBarCustomMenuItems = [UIAction(title: "Playback options", image: UIImage(systemName: "ellipsis.circle")) { [weak self] _ in
-            self?.showOptions?()
-        }]
+        controller.transportBarCustomMenuItems = [
+            UIAction(title: "Seek with preview", image: UIImage(systemName: "film")) { [weak self] _ in self?.showSeekPreview?() },
+            UIAction(title: "Playback options", image: UIImage(systemName: "ellipsis.circle")) { [weak self] _ in self?.showOptions?() },
+        ]
         if let overlay = controller.contentOverlayView {
             captions.translatesAutoresizingMaskIntoConstraints = false
             captions.textColor = .white; captions.backgroundColor = UIColor.black.withAlphaComponent(0.72)
@@ -84,6 +86,7 @@ final class PlayerPresentation: NSObject, AVPlayerViewControllerDelegate {
         #else
         controller.player = nil
         showOptions = nil
+        showSeekPreview = nil
         #endif
         readyForDisplay = false
         pictureInPicture = false

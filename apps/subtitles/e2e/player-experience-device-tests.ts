@@ -51,6 +51,26 @@ test("custom controls expose familiar transport, timeline, volume, and captions"
   await expect(page.getByRole("button", { name: "Subtitles" })).toHaveAttribute("aria-pressed", "true");
 });
 
+test("scrubbing previews the frame before seeking", async ({ page }) => {
+  await page.route("**/trickplay/movie/*", route => route.fulfill({
+    contentType: "image/svg+xml", body: '<svg xmlns="http://www.w3.org/2000/svg" width="320" height="180"/>',
+  }));
+  const seek = page.locator("[data-player-seek]");
+  await seek.evaluate((input: HTMLInputElement) => {
+    input.dataset.trickplay = "https://127.0.0.1:38128/trickplay/movie/{second}";
+    input.value = "55";
+    input.dispatchEvent(new Event("input"));
+  });
+  const preview = page.locator("[data-seek-preview]");
+  await expect(preview).toBeVisible();
+  await expect(preview.locator("[data-preview-time]")).toHaveText("0:55");
+  await expect(preview.locator("img")).toBeVisible();
+  expect(await page.locator("video").evaluate((media: HTMLVideoElement) => media.currentTime)).toBe(20);
+  await seek.dispatchEvent("change");
+  await expect(preview).toBeHidden();
+  expect(await page.locator("video").evaluate((media: HTMLVideoElement) => media.currentTime)).toBe(55);
+});
+
 test("Picture-in-Picture keeps playback alive when the player page hides", async ({ page }, testInfo) => {
   const pip = page.locator("[data-player-pip]");
   await expect(pip).toBeVisible();
