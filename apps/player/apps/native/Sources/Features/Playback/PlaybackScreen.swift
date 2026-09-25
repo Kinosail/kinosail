@@ -67,19 +67,15 @@ struct NativePlayerView: UIViewControllerRepresentable {
 
     func makeUIViewController(context: Context) -> AVPlayerViewController {
         presentation.restore = restore
+        presentation.showOptions = options
         presentation.controller.player = player
-        #if os(tvOS)
-        presentation.controller.transportBarCustomMenuItems = [UIAction(title: "Playback options", image: UIImage(systemName: "ellipsis.circle")) { _ in options() }]
-        #endif
         presentation.appeared()
         return presentation.controller
     }
     func updateUIViewController(_ controller: AVPlayerViewController, context: Context) {
         presentation.restore = restore
+        presentation.showOptions = options
         if controller.player !== player { controller.player = player }
-        #if os(tvOS)
-        controller.transportBarCustomMenuItems = [UIAction(title: "Playback options", image: UIImage(systemName: "ellipsis.circle")) { _ in options() }]
-        #endif
     }
     func makeCoordinator() -> PlayerPresentation { presentation }
     static func dismantleUIViewController(_ controller: AVPlayerViewController, coordinator: PlayerPresentation) {
