@@ -2,19 +2,23 @@ import SwiftUI
 
 struct ResumeRows: View {
     let items: [MediaItem]
+    var title = "Continue watching"
+    var showsAll = true
     @Environment(\.dynamicTypeSize) private var dynamicType
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack(alignment: .firstTextBaseline) {
-                Text("Continue watching").font(.title2.bold()).accessibilityAddTraits(.isHeader)
+                Text(title).font(.title2.bold()).accessibilityAddTraits(.isHeader)
                 Spacer()
-                NavigationLink("See all", value: ScreenDestination.library(.history))
-                    .font(.callout).frame(minHeight: 44)
-                    #if os(tvOS)
-                    .buttonStyle(.bordered).tint(KinoTheme.secondaryControlTint).foregroundStyle(KinoTheme.text)
-                    #else
-                    .foregroundStyle(KinoTheme.signal)
-                    #endif
+                if showsAll {
+                    NavigationLink("See all", value: ScreenDestination.library(.history))
+                        .font(.callout).frame(minHeight: 44)
+                        #if os(tvOS)
+                        .buttonStyle(.bordered).tint(KinoTheme.secondaryControlTint).foregroundStyle(KinoTheme.text)
+                        #else
+                        .foregroundStyle(KinoTheme.signal)
+                        #endif
+                }
             }
             LazyVGrid(columns: columns, alignment: .leading, spacing: 16) {
                 ForEach(items) { item in ResumeRow(item: item) }
