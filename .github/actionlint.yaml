@@ -2,6 +2,10 @@
 # Remove this exception when upstream PR #654 ships. test_workflows.py separately
 # requires the exact production concurrency block and rejects other queue keys.
 paths:
+  # GitHub's Xcode 27 public-preview runner predates actionlint's label list.
+  .github/workflows/{app,ci}.yml:
+    ignore:
+      - '^label "xcode-27" is unknown\.'
   .github/workflows/publish.yml:
     ignore:
       - '^unexpected key "queue" for "concurrency" section\. expected one of "cancel-in-progress", "group"$'

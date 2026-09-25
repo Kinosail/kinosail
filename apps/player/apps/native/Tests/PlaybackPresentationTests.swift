@@ -113,6 +113,48 @@ import Testing
     #endif
 
     #if os(iOS)
+    @Test func playbackControlsAvoidActiveFold() {
+        let size = CGSize(width: 800, height: 600)
+        #expect(TouchPlaybackLayout.controlArea(size: size, division: nil) == CGRect(origin: .zero, size: size))
+        #expect(TouchPlaybackLayout.controlArea(size: size, division: .zero) == CGRect(origin: .zero, size: size))
+        #expect(TouchPlaybackLayout.controlArea(size: size, division: CGRect(x: 390, y: 0, width: 20, height: 600))
+                == CGRect(x: 0, y: 0, width: 390, height: 600))
+        #expect(TouchPlaybackLayout.controlArea(size: size, division: CGRect(x: 0, y: 290, width: 800, height: 20))
+                == CGRect(x: 0, y: 310, width: 800, height: 290))
+        #expect(TouchPlaybackLayout.controlArea(size: size, division: CGRect(x: 200, y: 0, width: 20, height: 600))
+                == CGRect(x: 220, y: 0, width: 580, height: 600))
+        #expect(TouchPlaybackLayout.controlArea(size: size, division: CGRect(x: 900, y: 0, width: 20, height: 600))
+                == CGRect(origin: .zero, size: size))
+    }
+
+    @Test func captionsStayInsideAsymmetricSafeVideoArea() {
+        let bounds = CGRect(x: 0, y: 0, width: 800, height: 500)
+        let fit: (CGSize) -> CGSize = { _ in CGSize(width: 100, height: 40) }
+        let right = TouchVideoSurface.captionFrame(in: bounds,
+            safeAreaInsets: UIEdgeInsets(top: 20, left: 0, bottom: 30, right: 100), picture: bounds,
+            controlsVisible: true, controlsInset: 100, fitting: fit)
+        let left = TouchVideoSurface.captionFrame(in: bounds,
+            safeAreaInsets: UIEdgeInsets(top: 20, left: 100, bottom: 30, right: 0), picture: bounds,
+            controlsVisible: true, controlsInset: 100, fitting: fit)
+        #expect(right == CGRect(x: 16, y: 330, width: 668, height: 40))
+        #expect(left == CGRect(x: 116, y: 330, width: 668, height: 40))
+
+        let folded = TouchVideoSurface.captionFrame(in: bounds, safeAreaInsets: .zero, picture: bounds,
+            division: CGRect(x: 390, y: 0, width: 20, height: 500), controlsVisible: false,
+            controlsInset: 0, fitting: fit)
+        #expect(folded == CGRect(x: 16, y: 436, width: 358, height: 40))
+        let rightPane = TouchVideoSurface.captionFrame(in: bounds, safeAreaInsets: .zero, picture: bounds,
+            division: CGRect(x: 200, y: 0, width: 20, height: 500), controlsVisible: false,
+            controlsInset: 0, fitting: fit)
+        #expect(rightPane == CGRect(x: 236, y: 436, width: 548, height: 40))
+
+        let outside = TouchVideoSurface.captionFrame(in: bounds,
+            safeAreaInsets: UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 100),
+            picture: CGRect(x: 710, y: 100, width: 80, height: 100),
+            controlsVisible: false, controlsInset: 0, fitting: fit)
+        #expect(outside == .zero)
+    }
+
     @Test func clearingReleasesVideoAndCaptionStateWithoutCropping() {
         let presentation = PlayerPresentation()
         presentation.attach(AVPlayer())

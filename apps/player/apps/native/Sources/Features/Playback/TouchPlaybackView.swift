@@ -60,27 +60,30 @@ struct TouchPlaybackView: View {
             if presentation.pictureInPicture {
                 ContentUnavailableView("Playing in Picture in Picture", systemImage: "pip", description: Text("Use the floating player to return here."))
             }
-            VStack(spacing: 0) {
-                header
-                Spacer(minLength: 12)
-                if let error {
-                    ContentUnavailableView {
-                        Label("Playback interrupted", systemImage: "exclamationmark.triangle")
-                    } description: { Text(error) } actions: {
-                        Button("Try again") { actionMessage = nil; retry(); reveal() }
-                            .buttonStyle(.borderedProminent).foregroundStyle(.black)
+            GeometryReader { geometry in
+                let area = TouchPlaybackLayout.controlArea(size: geometry.size, division: geometry.playbackDivision)
+                VStack(spacing: 0) {
+                    header
+                    Spacer(minLength: 12)
+                    if let error {
+                        ContentUnavailableView {
+                            Label("Playback interrupted", systemImage: "exclamationmark.triangle")
+                        } description: { Text(error) } actions: {
+                            Button("Try again") { actionMessage = nil; retry(); reveal() }
+                                .buttonStyle(.borderedProminent).foregroundStyle(.black)
+                        }
+                    } else {
+                        VStack(spacing: 20) {
+                            if let pending { Text(pending).font(.subheadline).foregroundStyle(.white) }
+                            if !compactControls { transport }
+                        }
                     }
-                } else {
-                    VStack(spacing: 20) {
-                        if let pending { Text(pending).font(.subheadline).foregroundStyle(.white) }
-                        if !compactControls { transport }
-                    }
+                    Spacer(minLength: 12)
+                    if error == nil { timeline }
                 }
-                Spacer(minLength: 12)
-                if error == nil { timeline }
+                .frame(width: area.width, height: area.height).position(x: area.midX, y: area.midY)
             }
-            .opacity(controlsVisible || error != nil ? 1 : 0)
-            .allowsHitTesting(controlsVisible || error != nil)
+            .opacity(controlsVisible || error != nil ? 1 : 0).allowsHitTesting(controlsVisible || error != nil)
             .accessibilityHidden(!controlsVisible && error == nil)
         }
         .background(.black)
