@@ -13,6 +13,7 @@ struct LibraryScreen: View {
     #endif
     #if os(tvOS)
     @State private var quickPlay: ScreenDestination?
+    @State private var needsFirstCardFocus = true
     #endif
     @State private var selection: LibraryView
     @State private var sort = LibrarySort.title
@@ -96,13 +97,16 @@ struct LibraryScreen: View {
                 } else {
                     #if os(tvOS)
                     MediaGrid(items: items, onFocus: { item in
+                        needsFirstCardFocus = false
                         if failure == nil && LibraryFocusPaging.shouldLoadNextPage(focusedID: item.id, items: items, page: page) {
                             Task { await load(reset: false) }
                         }
-                    }, onQuickPlay: { quickPlay = $0 })
+                    }, onQuickPlay: { quickPlay = $0 },
+                    requestFirstCardFocus: !searchMode && needsFirstCardFocus,
+                    opensShows: selection == .shows)
                     #else
                     if let page { Text("\(page.total.formatted()) titles").font(.callout).foregroundStyle(KinoTheme.muted) }
-                    MediaGrid(items: items)
+                    MediaGrid(items: items, opensShows: selection == .shows)
                     #endif
                     if let failure { Text(failure).foregroundStyle(KinoTheme.muted) }
                     if let page, page.offset + page.items.count < page.total {
