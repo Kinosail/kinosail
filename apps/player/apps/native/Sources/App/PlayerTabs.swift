@@ -20,6 +20,14 @@ struct PlayerTabs: View {
     }
     private var mode: PlayerMode { PlayerMode.stored(modeStored) }
     private var pinned: [PlayerTab] { (try? PlayerTab.parse(mode == .watch ? watchStored : listenStored)) ?? mode.defaultTabs }
+    private var moreTabs: [PlayerTab] {
+        let available = PlayerTab.available.filter { !pinned.contains($0) }
+        #if os(tvOS)
+        return available.contains(.settings) ? [.settings] + available.filter { $0 != .settings } : available
+        #else
+        return available
+        #endif
+    }
     var body: some View {
         TabView(selection: $selection) {
             ForEach(pinned) { tab in
@@ -39,8 +47,8 @@ struct PlayerTabs: View {
                 stack(tab: .more) {
                     List {
                         Section {
-                            ForEach(PlayerTab.available.filter { !pinned.contains($0) }) { tab in
-                                NavigationLink(value: tab) { Label(tab.title, systemImage: tab.symbol) }
+                            ForEach(moreTabs) { tab in
+                                moreLink(tab)
                             }
                         }
                         Section { NavigationLink("Customize tabs", value: ScreenDestination.tabPreferences) }
@@ -82,6 +90,18 @@ struct PlayerTabs: View {
             selection = (try? PlayerTab.parse(next == .watch ? watchStored : listenStored))?.first ?? next.defaultTabs[0]
             paths = [:]
             modeStored = next.rawValue
+        }
+    }
+    private func moreLink(_ tab: PlayerTab) -> some View {
+        NavigationLink(value: tab) {
+            #if os(tvOS)
+            HStack(spacing: 16) {
+                Image(systemName: tab.symbol).frame(width: 36)
+                Text(tab.title)
+            }
+            #else
+            Label(tab.title, systemImage: tab.symbol)
+            #endif
         }
     }
     private func stack<Content: View>(tab: PlayerTab, @ViewBuilder content: () -> Content) -> some View {

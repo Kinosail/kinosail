@@ -5,7 +5,7 @@ struct PlaybackTracksScreen: View {
     var body: some View {
         List { PlaybackTrackSections() }
             .tvOSConfigurationLayout(title: "Audio & subtitles", symbol: "captions.bubble")
-            .navigationTitle("Audio & subtitles")
+            .configurationNavigationTitle("Audio & subtitles")
             .toolbar { ToolbarItem(placement: .confirmationAction) { Button("Done") { dismiss() } } }
     }
 }
@@ -100,7 +100,7 @@ struct PlaybackSpeedScreen: View {
             if changing { Text("Changing speed…").foregroundStyle(KinoTheme.muted) }
         }
         .tvOSConfigurationLayout(title: "Playback speed", symbol: "speedometer")
-        .navigationTitle("Playback speed")
+        .configurationNavigationTitle("Playback speed")
         .toolbar { ToolbarItem(placement: .confirmationAction) { Button("Done") { dismiss() } } }
     }
 }

@@ -52,7 +52,7 @@ struct SettingsScreen: View {
         .scrollContentBackground(.hidden)
         #endif
         .background(KinoTheme.background)
-        .navigationTitle("Settings")
+        .configurationNavigationTitle("Settings")
         .tvOSConfigurationLayout(title: "Settings", symbol: "gearshape")
         .alert("Sign out of this device?", isPresented: $confirmsSignOut) {
             Button("Sign out", role: .destructive) {

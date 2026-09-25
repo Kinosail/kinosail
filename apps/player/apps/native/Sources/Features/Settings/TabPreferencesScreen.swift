@@ -10,6 +10,9 @@ private struct TabPreferencesEditor: View {
     @AppStorage private var listenStored: String
     @AppStorage private var modeStored: String
     @State private var message: String?
+    #if os(tvOS)
+    @FocusState private var focusedMoveLater: PlayerTab?
+    #endif
     init(profileKey: String) {
         let legacy = UserDefaults.standard.string(forKey: "kinosail.tabs.\(profileKey)")
         _watchStored = AppStorage(wrappedValue: PlayerTab.legacyDefault(legacy), PlayerMode.watch.tabsKey(profileKey))
@@ -28,23 +31,34 @@ private struct TabPreferencesEditor: View {
             }
             Section("Your tabs") {
                 ForEach(pinned) { tab in
+                    #if os(tvOS)
+                    HStack(spacing: 20) {
+                        HStack(spacing: 16) {
+                            Image(systemName: tab.symbol)
+                                .frame(width: 36)
+                            Text(tab.title)
+                        }
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        controls(for: tab).buttonStyle(.card)
+                    }
+                    .padding(.horizontal, 16).padding(.vertical, 8)
+                    .background(KinoTheme.raised, in: .rect(cornerRadius: 12))
+                    .listRowBackground(Color.clear)
+                    #else
                     VStack(alignment: .leading, spacing: 8) {
                         Label(tab.title, systemImage: tab.symbol).fixedSize(horizontal: false, vertical: true)
-                        HStack(spacing: 8) {
-                            Button { move(tab, by: -1) } label: { Image(systemName: "arrow.up").frame(minWidth: 44, minHeight: 44).contentShape(Rectangle()) }
-                                .accessibilityLabel("Move \(tab.title) earlier").disabled(pinned.first == tab)
-                            Button { move(tab, by: 1) } label: { Image(systemName: "arrow.down").frame(minWidth: 44, minHeight: 44).contentShape(Rectangle()) }
-                                .accessibilityLabel("Move \(tab.title) later").disabled(pinned.last == tab)
-                            Button { save(pinned.filter { $0 != tab }) } label: { Image(systemName: "minus.circle").frame(minWidth: 44, minHeight: 44).contentShape(Rectangle()) }
-                                .accessibilityLabel("Remove \(tab.title) from tabs").disabled(pinned.count == 1)
-                        }
+                        controls(for: tab)
                     }.buttonStyle(.borderless)
+                    #endif
                 }
             }
             Section("Add a tab") {
-                ForEach(PlayerTab.available.filter { !pinned.contains($0) }) { tab in
-                    Button { save(pinned + [tab]) } label: { Label(tab.title, systemImage: tab.symbol) }
-                        .disabled(pinned.count == 4)
+                if pinned.count == 4 {
+                    Text("Remove a tab to add another.").foregroundStyle(KinoTheme.muted)
+                } else {
+                    ForEach(PlayerTab.available.filter { !pinned.contains($0) }) { tab in
+                        Button { save(pinned + [tab]) } label: { Label(tab.title, systemImage: tab.symbol) }
+                    }
                 }
             }
             Section { Button("Reset to default tabs") { save(mode.defaultTabs) } }
@@ -53,9 +67,31 @@ private struct TabPreferencesEditor: View {
         .scrollContentBackground(.hidden)
         #endif
         .background(KinoTheme.background)
-        .navigationTitle(mode == .listen ? "Customize Listen tabs" : "Customize tabs")
+        .configurationNavigationTitle(mode == .listen ? "Customize Listen tabs" : "Customize tabs")
         .tvOSConfigurationLayout(title: "Customize tabs", symbol: "rectangle.3.group")
         .onChange(of: mode) { _, _ in message = nil }
+        #if os(tvOS)
+        .onAppear {
+            Task { @MainActor in
+                await Task.yield()
+                try? await Task.sleep(for: .milliseconds(150))
+                if pinned.count > 1 { focusedMoveLater = pinned.first }
+            }
+        }
+        #endif
+    }
+    private func controls(for tab: PlayerTab) -> some View {
+        HStack(spacing: 8) {
+            Button { move(tab, by: -1) } label: { Image(systemName: "arrow.up").frame(minWidth: 44, minHeight: 44).contentShape(Rectangle()) }
+                .accessibilityLabel("Move \(tab.title) earlier").disabled(pinned.first == tab)
+            Button { move(tab, by: 1) } label: { Image(systemName: "arrow.down").frame(minWidth: 44, minHeight: 44).contentShape(Rectangle()) }
+                .accessibilityLabel("Move \(tab.title) later").disabled(pinned.last == tab)
+                #if os(tvOS)
+                .focused($focusedMoveLater, equals: tab)
+                #endif
+            Button { save(pinned.filter { $0 != tab }) } label: { Image(systemName: "minus.circle").frame(minWidth: 44, minHeight: 44).contentShape(Rectangle()) }
+                .accessibilityLabel("Remove \(tab.title) from tabs").disabled(pinned.count == 1)
+        }
     }
     private func save(_ items: [PlayerTab]) {
         do {
