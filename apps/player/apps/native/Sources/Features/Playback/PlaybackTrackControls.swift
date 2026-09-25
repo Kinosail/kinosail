@@ -43,7 +43,7 @@ struct PlaybackTrackSections: View {
                     }
                 }
             }
-            if changing { Section { ProgressView("Changing track…") } }
+            if changing { Section { Text("Changing track…").foregroundStyle(KinoTheme.muted) } }
         }
     }
 
@@ -97,7 +97,7 @@ struct PlaybackSpeedScreen: View {
                 .accessibilityAddTraits(session.player.playbackRate == rate ? .isSelected : [])
                 .disabled(changing)
             }
-            if changing { ProgressView("Changing speed…") }
+            if changing { Text("Changing speed…").foregroundStyle(KinoTheme.muted) }
         }
         .tvOSConfigurationLayout(title: "Playback speed", symbol: "speedometer")
         .navigationTitle("Playback speed")

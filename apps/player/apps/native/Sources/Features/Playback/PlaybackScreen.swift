@@ -31,8 +31,7 @@ struct PlaybackScreen: View {
             } else {
                 ZStack {
                     Color.black.ignoresSafeArea()
-                    ProgressView("Opening video…")
-                        .tint(.white).foregroundStyle(.white)
+                    Text("Opening video…").foregroundStyle(.white)
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
             }

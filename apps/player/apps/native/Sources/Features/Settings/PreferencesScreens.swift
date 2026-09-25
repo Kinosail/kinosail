@@ -35,7 +35,7 @@ struct PlaybackPreferencesScreen: View {
                                 .font(.footnote).foregroundStyle(KinoTheme.muted)
                         }
                     }
-                    if busy { ProgressView("Saving preferences…") }
+                    if busy { Text("Saving preferences…").foregroundStyle(KinoTheme.muted) }
                 } header: {
                     Text("Audio enhancements")
                 } footer: {
@@ -52,7 +52,14 @@ struct PlaybackPreferencesScreen: View {
                     }
                 }
                 Section { Button(busy ? "Saving…" : "Save preferences") { save() }.disabled(busy || preferences == original) }
-            } else if message == nil { ProgressView("Loading preferences…") }
+            } else if message == nil {
+                Section("Playback") {
+                    ForEach(0..<3) { index in SkeletonRow(kind: .form, status: index == 0 ? "Loading preferences…" : nil) }
+                }
+                Section("Audio enhancements") {
+                    ForEach(0..<2) { _ in SkeletonRow(kind: .form) }
+                }
+            }
             if let message { Section { Text(message).foregroundStyle(KinoTheme.muted); if !loaded { Button("Try again") { Task { await load() } } } } }
         }
         #if os(tvOS)
@@ -180,7 +187,14 @@ struct OfflinePreferencesScreen: View {
                     Button("Remove this profile’s downloads", role: .destructive) { clears = true }.disabled(busy || session.downloads.downloads.isEmpty)
                     #endif
                 }
-            } else if message == nil { ProgressView("Loading preferences…") }
+            } else if message == nil {
+                Section("Connection & storage") {
+                    ForEach(0..<2) { index in SkeletonRow(kind: .form, status: index == 0 ? "Loading preferences…" : nil) }
+                }
+                Section("Episodes") {
+                    ForEach(0..<2) { _ in SkeletonRow(kind: .form) }
+                }
+            }
             if let message {
                 Section {
                     Text(message).foregroundStyle(KinoTheme.muted)
@@ -221,61 +235,6 @@ struct OfflinePreferencesScreen: View {
                 try await session.downloads.updatePreferences(saved)
                 #endif
                 message = "Preferences saved. New transfers use these settings."
-            } catch { message = AppSession.message(error) }
-        }
-    }
-}
-
-struct ReaderPreferencesScreen: View {
-    @Environment(AppSession.self) private var session
-    @State private var preferences = MediaPreferences()
-    @State private var original = MediaPreferences()
-    @State private var loaded = false
-    @State private var busy = false
-    @State private var message: String?
-    var body: some View {
-        Form {
-            if loaded {
-                Section("Reading") {
-                    Picker("Text size", selection: $preferences.readerFontSize) { ForEach(16...32, id: \.self) { Text("\($0) pt").tag($0) } }
-                    Picker("Appearance", selection: $preferences.readerTheme) { ForEach(ReaderTheme.allCases, id: \.self) { Text($0.rawValue == "auto" ? "System" : $0.rawValue.capitalized).tag($0) } }
-                    Text("Text size changes apply to EPUB books with adjustable layouts. PDF and comic pages keep their original layout.").foregroundStyle(KinoTheme.muted)
-                }
-                Button(busy ? "Saving…" : "Save preferences") { save() }.disabled(busy || preferences == original)
-            } else if message == nil { ProgressView("Loading preferences…") }
-            if let message {
-                Section {
-                    Text(message).foregroundStyle(KinoTheme.muted)
-                    if !loaded { Button("Try again") { Task { await load() } } }
-                }
-            }
-        }
-        .disabled(busy)
-        .navigationTitle("Reader preferences")
-        .tvOSConfigurationLayout(title: "Reader preferences", symbol: "book")
-        .task { await load() }
-    }
-    private func load() async {
-        guard let client = session.client else { return }
-        message = nil
-        do {
-            let saved = try await client.mediaPreferences()
-            try Task.checkCancellation()
-            preferences = saved; original = saved; loaded = true
-        } catch is CancellationError {} catch { message = AppSession.message(error) }
-    }
-    private func save() {
-        guard let client = session.client, !busy else { return }
-        busy = true
-        let edited = preferences
-        Task {
-            defer { busy = false }
-            do {
-                var value = try await client.mediaPreferences()
-                value.readerFontSize = edited.readerFontSize; value.readerTheme = edited.readerTheme
-                let saved = try await client.saveMediaPreferences(value)
-                preferences = saved; original = saved; message = "Preferences saved."
-                session.contentRevision = UUID()
             } catch { message = AppSession.message(error) }
         }
     }

@@ -23,8 +23,10 @@ struct DownloadsScreen: View {
                     if session.downloads.message != nil { Button("Reset downloads on this device", role: .destructive) { reset = true } }
                 }
             }
-            if session.downloads.restoring {
-                ProgressView("Opening your downloads…")
+            if session.downloads.restoring && session.downloads.downloads.isEmpty {
+                ForEach(0..<3) { index in SkeletonRow(kind: .media, status: index == 0 ? "Opening your downloads…" : nil) }
+            } else if session.downloads.restoring {
+                Text("Refreshing downloads…").foregroundStyle(KinoTheme.muted)
             } else if session.viewer?.downloads != true {
                 ContentUnavailableView("Downloads aren’t available", systemImage: "arrow.down.circle", description: Text("Downloads must be enabled for your Viewer Profile on the Server."))
             } else if session.downloads.downloads.isEmpty {
@@ -119,7 +121,12 @@ struct DownloadOptionsScreen: View {
                     }
                 }
             }
-            if !loaded { ProgressView("Loading download options…") }
+            if !loaded && quality != .original {
+                Section("Audio") {
+                    ForEach(0..<2) { index in SkeletonRow(kind: .form, status: index == 0 ? "Loading download options…" : nil) }
+                }
+            }
+            if !loaded && quality == .original { Text("Checking download options…").foregroundStyle(KinoTheme.muted) }
             if let failure {
                 Text(failure).foregroundStyle(.secondary)
                 if item.kind == .video && options == nil {

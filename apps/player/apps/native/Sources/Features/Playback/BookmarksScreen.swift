@@ -23,7 +23,9 @@ struct BookmarksScreen: View {
                 }
             }
             if let message { Section { Text(message).foregroundStyle(.secondary); Button("Reload bookmarks") { self.message = nil; revision += 1 } } }
-            if !loaded && message == nil { ProgressView("Loading bookmarks…") }
+            if !loaded && message == nil {
+                ForEach(0..<3) { index in SkeletonRow(status: index == 0 ? "Loading bookmarks…" : nil) }
+            }
             else if loaded && bookmarks.isEmpty && message == nil {
                 ContentUnavailableView("No bookmarks yet", systemImage: "bookmark", description: Text("Save a position while playing or reading a title."))
             }
@@ -100,8 +102,10 @@ struct ProgressSyncScreen: View {
                 Text(message).foregroundStyle(.secondary)
                 Button("Try again") { Task { await synchronize() } }.disabled(busy)
             }
-            if !loaded && message == nil { ProgressView("Loading saved progress…") }
-            else if busy { ProgressView("Syncing saved progress…") }
+            if !loaded && message == nil {
+                ForEach(0..<2) { index in SkeletonRow(kind: .text, status: index == 0 ? "Loading saved progress…" : nil) }
+            }
+            else if busy { Text("Syncing saved progress…").foregroundStyle(KinoTheme.muted) }
             else if loaded && entries.isEmpty && message == nil {
                 ContentUnavailableView("Progress is up to date", systemImage: "checkmark.circle", description: Text("All saved playback positions have synced."))
             }

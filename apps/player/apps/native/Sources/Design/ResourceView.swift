@@ -112,7 +112,7 @@ struct LoadingState: View {
                 }
             }
             if layout == .playback {
-                ProgressView("Opening media…").frame(maxWidth: .infinity, minHeight: 220)
+                Text("Opening media…").foregroundStyle(KinoTheme.muted).frame(maxWidth: .infinity, minHeight: 220)
             }
             if layout == .grid || layout == .squareGrid || layout == .musicGrid || layout == .show || layout == .actor || layout == .collectionGrid {
                 if layout == .musicGrid {
@@ -159,9 +159,7 @@ struct LoadingState: View {
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
-        .overlay(alignment: .topTrailing) {
-            if layout != .playback { ProgressView(title).labelsHidden().accessibilityLabel(title) }
-        }
+        .skeletonLoading(layout == .playback ? "Opening media…" : title, shimmers: layout != .playback)
     }
     private func card(ratio: CGFloat = 2 / 3) -> some View {
         VStack(alignment: .leading, spacing: 10) {
