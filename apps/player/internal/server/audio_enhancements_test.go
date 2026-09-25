@@ -66,7 +66,9 @@ printf '%s' '{"streams":[{"index":0,"codec_type":"audio","codec_name":"aac","cha
 	if !restored.Overridden || !restored.Playback.DialogueBoost || restored.Playback.NightMode {
 		t.Fatalf("saved title enhancement lost after restart: %+v", restored)
 	}
-	var profile struct{ Playback struct{ DialogueBoost, NightMode bool } }
+	var profile struct {
+		Playback struct{ DialogueBoost, NightMode bool }
+	}
 	mustJSON(t, apiCall(t, restarted, "", http.MethodGet, "/api/v1/me/media-preferences", nil), &profile)
 	if !profile.Playback.DialogueBoost || !profile.Playback.NightMode {
 		t.Fatalf("saved profile enhancements lost after restart: %+v", profile)
