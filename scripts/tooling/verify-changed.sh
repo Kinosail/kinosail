@@ -172,7 +172,7 @@ fi
 
 css_files="$(grep -E '^internal/server/static/.*\.css$' <<<"$changed" || true)"
 while IFS= read -r file; do
-  [[ -z "$file" ]] || run_stage "ui-lint:$file" "$file" python3 "$repo/.codex/skills/anti-ai-slop-ui/scripts/ui_lint.py" "$file"
+  [[ -z "$file" ]] || run_stage "ui-lint:$file" "$file" "$repo/.codex/skills/impeccable/scripts/impeccable" detect --no-advisory "$file"
 done <<<"$css_files"
 
 native_files="$(grep -E '^apps/native/' <<<"$changed" | grep -Ev '^apps/native/AGENTS\.md$' || true)"

@@ -36,7 +36,7 @@ struct HomeScreen: View {
             .padding(.horizontal, KinoTheme.contentPadding)
 
             // Refresh belongs to a vertical scroll container, not the nested media shelf.
-            ResourceView(identity: "\(session.profileKey ?? ""):\(mode?.rawValue ?? "all")", refreshID: session.contentRevision.uuidString, loadingLayout: .home, allowsPullToRefresh: false, load: { policy in
+            ResourceView(identity: "\(session.profileKey ?? ""):\(mode?.rawValue ?? "all")", refreshID: session.contentRevision.uuidString, loadingLayout: mode == .listen ? .homeAudio : .home, allowsPullToRefresh: false, load: { policy in
                 guard let client = session.client else { throw ClientError.http(401) }
                 return try await client.home(mode: mode, policy: policy)
             }) { home in

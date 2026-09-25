@@ -1,5 +1,23 @@
 import SwiftUI
 
+private enum AudioNowPlayingGeometry {
+    static func width(accessibility: Bool) -> CGFloat {
+        #if os(tvOS)
+        accessibility ? 900 : 1400
+        #else
+        700
+        #endif
+    }
+    static func layout(accessibility: Bool) -> AnyLayout {
+        #if os(tvOS)
+        accessibility ? AnyLayout(VStackLayout(spacing: 28))
+                      : AnyLayout(HStackLayout(alignment: .top, spacing: 64))
+        #else
+        AnyLayout(VStackLayout(spacing: 28))
+        #endif
+    }
+}
+
 struct AudioPlayerScreen: View {
     let itemID: String
     @Environment(AppSession.self) private var session
@@ -14,22 +32,7 @@ struct AudioPlayerScreen: View {
     @Namespace private var audioFocus
     #endif
     private var upcoming: [MediaItem] { Array(session.player.queue.items.dropFirst((session.player.queue.currentIndex ?? 0) + 1).prefix(20)) }
-    private var contentWidth: CGFloat {
-        #if os(tvOS)
-        dynamicTypeSize.isAccessibilitySize ? 900 : 1400
-        #else
-        700
-        #endif
-    }
-    private var nowPlayingLayout: AnyLayout {
-        #if os(tvOS)
-        dynamicTypeSize.isAccessibilitySize ? AnyLayout(VStackLayout(spacing: 28))
-                                            : AnyLayout(HStackLayout(alignment: .top, spacing: 64))
-        #else
-        AnyLayout(VStackLayout(spacing: 28))
-        #endif
-    }
-
+    private var nowPlayingLayout: AnyLayout { AudioNowPlayingGeometry.layout(accessibility: dynamicTypeSize.isAccessibilitySize) }
     var body: some View {
         ScrollView {
             if let failure { RetryState(message: failure) { revision += 1 } }
@@ -87,8 +90,8 @@ struct AudioPlayerScreen: View {
                             }.frame(maxWidth: .infinity, alignment: .leading)
                         }
                     }
-                }.frame(maxWidth: contentWidth).frame(maxWidth: .infinity).padding(KinoTheme.contentPadding)
-            } else { LoadingState(title: "Opening audio…").padding(KinoTheme.contentPadding) }
+                }.frame(maxWidth: AudioNowPlayingGeometry.width(accessibility: dynamicTypeSize.isAccessibilitySize)).frame(maxWidth: .infinity).padding(KinoTheme.contentPadding)
+            } else { AudioLoadingState().padding(KinoTheme.contentPadding) }
         }
         .navigationTitle("Now playing")
         #if os(tvOS)
@@ -153,6 +156,38 @@ struct AudioPlayerScreen: View {
     }
     private func perform(_ action: @escaping @MainActor () async throws -> Void) {
         Task { do { try await action() } catch { failure = AppSession.message(error) } }
+    }
+}
+
+struct AudioLoadingState: View {
+    var title = "Opening audio…"
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+    private var nowPlayingLayout: AnyLayout { AudioNowPlayingGeometry.layout(accessibility: dynamicTypeSize.isAccessibilitySize) }
+    var body: some View {
+        nowPlayingLayout {
+            RoundedRectangle(cornerRadius: 24).fill(KinoTheme.surface).aspectRatio(1, contentMode: .fit).frame(maxWidth: 440)
+            VStack(spacing: 28) {
+                VStack(spacing: 8) {
+                    RoundedRectangle(cornerRadius: 5).fill(KinoTheme.raised).frame(width: 260, height: 36)
+                    RoundedRectangle(cornerRadius: 5).fill(KinoTheme.raised).frame(width: 160, height: 16)
+                }
+                Capsule().fill(KinoTheme.raised).frame(height: 5)
+                HStack(spacing: 12) {
+                    ForEach(0..<3) { _ in Circle().fill(KinoTheme.surface).frame(width: 52, height: 52) }
+                }
+                ViewThatFits(in: .horizontal) {
+                    HStack(spacing: 12) {
+                        ForEach(0..<3) { _ in Capsule().fill(KinoTheme.surface).frame(width: 94, height: 44) }
+                    }
+                    VStack(spacing: 12) {
+                        ForEach(0..<3) { _ in Capsule().fill(KinoTheme.surface).frame(width: 94, height: 44) }
+                    }
+                }
+            }
+        }
+        .frame(maxWidth: AudioNowPlayingGeometry.width(accessibility: dynamicTypeSize.isAccessibilitySize)).frame(maxWidth: .infinity)
+        .accessibilityHidden(true)
+        .overlay(alignment: .topTrailing) { ProgressView(title).labelsHidden().accessibilityLabel(title) }
     }
 }
 

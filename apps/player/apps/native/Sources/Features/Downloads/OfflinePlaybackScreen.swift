@@ -16,7 +16,14 @@ struct OfflinePlaybackScreen: View {
             else if ready, let item = session.player.currentItem {
                 if item.isAudio { AudioPlayerScreen(itemID: item.id) }
                 else { PlaybackScreen(itemID: item.id) }
-            } else { LoadingState(title: "Verifying your download…").padding(KinoTheme.contentPadding) }
+            } else if session.downloads.downloads.first(where: { $0.id == downloadID })?.item.isAudio == true {
+                ScrollView { AudioLoadingState(title: "Verifying your download…").padding(KinoTheme.contentPadding) }
+            } else {
+                ZStack {
+                    Color.black.ignoresSafeArea()
+                    Text("Verifying your download…").font(.callout).foregroundStyle(.white)
+                }.frame(maxWidth: .infinity, maxHeight: .infinity)
+            }
         }
         .navigationTitle("Offline playback")
         .onChange(of: session.player.currentItem?.id) { _, current in

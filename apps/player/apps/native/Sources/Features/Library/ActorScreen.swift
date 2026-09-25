@@ -7,7 +7,7 @@ struct ActorScreen: View {
 
     var body: some View {
         ScrollView {
-            ResourceView(identity: "\(session.profileKey ?? ""):\(name)", refreshID: session.contentRevision.uuidString, load: { policy in
+            ResourceView(identity: "\(session.profileKey ?? ""):\(name)", refreshID: session.contentRevision.uuidString, loadingLayout: .actor, load: { policy in
                 guard let client = session.client else { throw ClientError.unavailable }
                 return try await client.actor(name: name, policy: policy)
             }) { actor in

@@ -74,10 +74,10 @@
     document.getElementById("previous-cues").disabled = page === 0; document.getElementById("next-cues").disabled = page === pages - 1;
   }
   async function load() {
-    const ticket = ++revision; status.classList.add("request-skeleton"); status.setAttribute("aria-busy", "true"); apply.disabled = true; prepared = undefined;
+    const ticket = ++revision; status.textContent = "Loading subtitle details…"; status.setAttribute("aria-busy", "true"); apply.disabled = true; prepared = undefined;
     let result;
     try { result = await request(`/inspect?language=${encodeURIComponent(form.elements.language.value)}`); }
-    finally { if (ticket === revision) { status.classList.remove("request-skeleton"); status.removeAttribute("aria-busy"); } }
+    finally { if (ticket === revision) status.removeAttribute("aria-busy"); }
     if (ticket !== revision) return;
     review = result; form.elements.role.value = review.role === "captions" ? "captions" : "translation"; page = 0; render(); status.textContent = review.current ? "Current subtitle loaded. Preview a change before saving." : "Choose a subtitle file to begin.";
   }
