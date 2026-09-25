@@ -33,11 +33,14 @@ struct ShowScreen: View {
                             if !next.title.isEmpty {
                                 Text(next.title).font(.title3).foregroundStyle(.secondary)
                             }
-                            HStack(spacing: 16) {
+                            HStack(spacing: 36) {
                                 NavigationLink(value: ScreenDestination.playback(next.id)) {
                                     Label("\(next.playLabel) · S\(next.season) E\(next.episode)", systemImage: "play.fill")
+                                        .frame(minWidth: 240).padding(.vertical, 12)
+                                        .foregroundStyle(KinoTheme.tvOSPrimaryInk)
+                                        .background(KinoTheme.tvOSPrimaryFill, in: Capsule())
                                 }
-                                .buttonStyle(.borderedProminent).buttonBorderShape(.capsule).tint(KinoTheme.signal).foregroundStyle(KinoTheme.signalInk)
+                                .buttonStyle(.card)
                                 .tvOSDefaultPlayFocus(in: showFocus, id: "show.next-play.\(next.id)")
                                 Picker("Season", selection: Binding(get: { season }, set: { selectedSeason = $0 })) {
                                     ForEach(seasons, id: \.self) { Text($0 == 0 ? "Specials" : "Season \($0)").tag($0) }

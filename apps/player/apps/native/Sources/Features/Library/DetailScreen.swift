@@ -118,8 +118,17 @@ private struct DetailContent: View {
     private var playAction: some View {
         NavigationLink(value: item.playingDestination) {
             Label(item.kind == .photo ? "View photo" : item.playLabel, systemImage: item.kind == .book ? "book.fill" : item.kind == .photo ? "photo" : "play.fill")
+                #if os(tvOS)
+                .frame(minWidth: 240).padding(.vertical, 12)
+                .foregroundStyle(KinoTheme.tvOSPrimaryInk)
+                .background(KinoTheme.tvOSPrimaryFill, in: Capsule())
+                #endif
         }
+        #if os(tvOS)
+        .buttonStyle(.card)
+        #else
         .buttonStyle(.borderedProminent).buttonBorderShape(.capsule).tint(KinoTheme.signal).foregroundStyle(KinoTheme.signalInk)
+        #endif
         #if os(tvOS)
         .tvOSDefaultPlayFocus(in: detailFocus, id: "detail.play.\(item.id)", enabled: item.kind == .video || item.isAudio)
         #endif

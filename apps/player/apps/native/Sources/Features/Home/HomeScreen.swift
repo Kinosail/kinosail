@@ -50,10 +50,20 @@ struct HomeScreen: View {
                     if let featured = selection.featured {
                         CinemaHero(item: featured, showsPlot: false) {
                             NavigationLink(value: featured.playingDestination) {
-                                Label(featured.playLabel, systemImage: featured.kind == .book ? "book.fill" : "play.fill").frame(maxWidth: .infinity)
-                            }.buttonStyle(.borderedProminent).buttonBorderShape(.capsule).tint(KinoTheme.signal).foregroundStyle(KinoTheme.signalInk)
+                                Label(featured.playLabel, systemImage: featured.kind == .book ? "book.fill" : "play.fill")
+                                    #if os(tvOS)
+                                    .frame(minWidth: 280).padding(.vertical, 12)
+                                    .foregroundStyle(KinoTheme.tvOSPrimaryInk)
+                                    .background(KinoTheme.tvOSPrimaryFill, in: Capsule())
+                                    #else
+                                    .frame(maxWidth: .infinity)
+                                    #endif
+                            }
                             #if os(tvOS)
+                            .buttonStyle(.card)
                             .tvOSDefaultPlayFocus(in: homeFocus, id: "home.play.\(featured.id)", enabled: featured.kind == .video || featured.isAudio)
+                            #else
+                            .buttonStyle(.borderedProminent).buttonBorderShape(.capsule).tint(KinoTheme.signal).foregroundStyle(KinoTheme.signalInk)
                             #endif
                             NavigationLink("Details", value: featured.destination).buttonStyle(.bordered).buttonBorderShape(.capsule).tint(KinoTheme.secondaryControlTint).foregroundStyle(KinoTheme.secondaryControlInk)
                         }
