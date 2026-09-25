@@ -4,7 +4,13 @@ import {installPlayerExperienceFixture} from "./player-experience-fixture";
 installPlayerExperienceFixture();
 
 test("scrubbing previews without repeatedly seeking and commits on release", async ({page}) => {
+  const requests: string[] = [];
+  await page.route("**/trickplay/movie/*", route => {
+    requests.push(new URL(route.request().url()).pathname);
+    return route.fulfill({contentType: "image/svg+xml", body: '<svg xmlns="http://www.w3.org/2000/svg" width="320" height="180"><rect width="320" height="180" fill="green"/></svg>'});
+  });
   const seek = page.locator("[data-player-seek]");
+  await seek.evaluate((element: HTMLInputElement) => { element.dataset.trickplay = "https://127.0.0.1:38127/trickplay/movie/{second}"; });
   await seek.evaluate((element: HTMLInputElement) => {
     for (const value of [30, 40, 55]) {
       element.value = String(value);
@@ -13,8 +19,14 @@ test("scrubbing previews without repeatedly seeking and commits on release", asy
     document.querySelector("video")!.dispatchEvent(new Event("timeupdate"));
   });
   await expect(seek).toHaveAttribute("aria-valuetext", "0:55 of 1:40");
+  const preview = page.locator("[data-seek-preview]");
+  await expect(preview).toBeVisible();
+  await expect(preview.locator("[data-preview-time]")).toHaveText("0:55");
+  await expect(preview.locator("img")).toBeVisible();
+  expect(requests).toEqual(["/trickplay/movie/50"]);
   expect(await page.locator("video").evaluate(v => v.currentTime)).toBe(20);
   await seek.dispatchEvent("change");
+  await expect(preview).toBeHidden();
   expect(await page.locator("video").evaluate(v => v.currentTime)).toBe(55);
   await seek.press("ArrowRight");
   expect(await page.locator("video").evaluate(v => v.currentTime)).toBe(56);
@@ -28,6 +40,7 @@ test("canceled mobile scrub returns to the actual playback position", async ({pa
     element.dispatchEvent(new Event("pointercancel"));
   });
   await expect(seek).toHaveValue("20");
+  await expect(page.locator("[data-seek-preview]")).toBeHidden();
   expect(await page.locator("video").evaluate(v => v.currentTime)).toBe(20);
 });
 

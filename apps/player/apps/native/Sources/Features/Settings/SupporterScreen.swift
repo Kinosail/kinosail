@@ -7,16 +7,44 @@ struct SupporterScreen: View {
     @State private var loading = true
     @State private var saving = false
     @State private var showingBadges = false
+    private var badgeSize: CGFloat {
+        #if os(tvOS)
+        160
+        #else
+        112
+        #endif
+    }
+    private var headingFont: Font {
+        #if os(tvOS)
+        .system(.largeTitle, design: .rounded).bold()
+        #else
+        .largeTitle.bold()
+        #endif
+    }
+    private var pageWidth: CGFloat? {
+        #if os(tvOS)
+        1100
+        #else
+        nil
+        #endif
+    }
+    private var pagePadding: CGFloat {
+        #if os(tvOS)
+        KinoTheme.contentPadding
+        #else
+        32
+        #endif
+    }
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 28) {
-                Text("A place in the story.").font(.largeTitle.bold()).accessibilityAddTraits(.isHeader)
+                Text("A place in the story.").font(headingFont).accessibilityAddTraits(.isHeader)
                 Text("Your Server's existing badges appear here. Kinosail stays complete and free for everyone.")
                 if loading && collection == nil {
                     VStack(spacing: 24) {
                         ForEach(0..<3) { _ in
                             HStack(spacing: 24) {
-                                RoundedRectangle(cornerRadius: 12).fill(KinoTheme.surface).frame(width: 112, height: 112)
+                                RoundedRectangle(cornerRadius: 12).fill(KinoTheme.surface).frame(width: badgeSize, height: badgeSize)
                                 VStack(alignment: .leading, spacing: 12) {
                                     RoundedRectangle(cornerRadius: 4).fill(KinoTheme.raised).frame(width: 190, height: 20)
                                     RoundedRectangle(cornerRadius: 4).fill(KinoTheme.raised).frame(width: 130, height: 16)
@@ -31,7 +59,7 @@ struct SupporterScreen: View {
                 if let collection {
                     ForEach(collection.badges.filter { $0.edition != "legacy" }) { badge in
                         HStack(spacing: 24) {
-                            Image(badge.artwork).resizable().scaledToFit().frame(width: 112, height: 112)
+                            Image(badge.artwork).resizable().scaledToFit().frame(width: badgeSize, height: badgeSize)
                             VStack(alignment: .leading) {
                                 Text(badge.title).font(.headline)
                                 Text(badge.name)
@@ -53,9 +81,19 @@ struct SupporterScreen: View {
                     }
                 }
                 if let error { Text(error).foregroundStyle(.secondary); Button("Try again") { Task { await load() } } }
-            }.padding(32)
-        }.background(KinoTheme.background).navigationTitle("Supporter")
-            .task(id: session.supporterRevision) { await load() }
+            }
+            .frame(maxWidth: pageWidth, alignment: .leading)
+            .frame(maxWidth: .infinity)
+            .padding(pagePadding)
+        }
+        #if os(tvOS)
+        .cinemaBackground()
+        .navigationTitle("")
+        #else
+        .background(KinoTheme.background)
+        .navigationTitle("Supporter")
+        #endif
+        .task(id: session.supporterRevision) { await load() }
     }
     private func load() async {
         loading = true

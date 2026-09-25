@@ -2,6 +2,8 @@ import SwiftUI
 
 struct HomeScreen: View {
     var showsSearch = true
+    var mode: PlayerMode?
+    var changeMode: ((PlayerMode) -> Void)?
     @Environment(AppSession.self) private var session
     #if os(tvOS)
     @Namespace private var homeFocus
@@ -24,15 +26,15 @@ struct HomeScreen: View {
             .padding(.horizontal, KinoTheme.contentPadding)
 
             // Refresh belongs to a vertical scroll container, not the nested media shelf.
-            ResourceView(identity: session.profileKey ?? "", refreshID: session.contentRevision.uuidString, loadingLayout: .home, allowsPullToRefresh: false, load: { policy in
+            ResourceView(identity: "\(session.profileKey ?? ""):\(mode?.rawValue ?? "all")", refreshID: session.contentRevision.uuidString, loadingLayout: .home, allowsPullToRefresh: false, load: { policy in
                 guard let client = session.client else { throw ClientError.http(401) }
-                return try await client.home(policy: policy)
+                return try await client.home(mode: mode, policy: policy)
             }) { home in
                 #if os(tvOS)
                 let selection = HomeSelection(continueWatching: home.continueWatching.filter { $0.kind != .book },
                                               recent: home.recent.filter { $0.kind != .book })
                 #else
-                let selection = HomeSelection(continueWatching: home.continueWatching, recent: home.recent)
+                let selection = HomeSelection(continueWatching: home.continueWatching, recent: home.recent, mode: mode)
                 #endif
                 VStack(alignment: .leading, spacing: 32) {
                     if let featured = selection.featured {
@@ -46,21 +48,26 @@ struct HomeScreen: View {
                             NavigationLink("Details", value: featured.destination).buttonStyle(.bordered).buttonBorderShape(.capsule).tint(KinoTheme.secondaryControlTint).foregroundStyle(KinoTheme.text)
                         }
                     }
-                    if !selection.continuation.isEmpty { ResumeRows(items: selection.continuation) }
+                    if !selection.continuation.isEmpty {
+                        ResumeRows(items: selection.continuation, title: mode == .listen ? "Continue listening" : "Continue watching",
+                                   showsAll: mode != .listen)
+                    }
                     if !selection.recent.isEmpty {
                         #if os(tvOS)
                         MediaShelf(title: "Recently added", items: selection.recent, onQuickPlay: { quickPlay = $0 })
                         #else
-                        MediaShelf(title: "Recently added", items: selection.recent)
+                        MediaShelf(title: mode == .listen ? "Music & audiobooks" : mode == .watch ? "Movies & shows" : "Recently added",
+                                   items: selection.recent)
                         #endif
                     }
                     if selection.featured == nil {
-                        FeaturePlaceholder(title: "Your library is ready", symbol: "play.rectangle",
-                                           message: "Media added to your Server will appear here.")
+                        FeaturePlaceholder(title: mode == .listen ? "Nothing to listen to yet" : "Your library is ready",
+                                           symbol: mode == .listen ? "headphones" : "play.rectangle",
+                                           message: mode == .listen ? "Add music or audiobooks to your Server to see them here." : "Media added to your Server will appear here.")
                     }
                     VStack(alignment: .leading, spacing: 12) {
                         Text("Browse library").font(.title2.bold()).accessibilityAddTraits(.isHeader)
-                        LibraryQuickLinks()
+                        LibraryQuickLinks(mode: mode)
                     }
                 }
             }
@@ -83,8 +90,22 @@ struct HomeScreen: View {
         .navigationBarTitleDisplayMode(.inline)
         #endif
         .toolbar {
+            #if os(iOS)
+            if let mode, let changeMode {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button(mode.other.title) { changeMode(mode.other) }
+                        .accessibilityLabel("Switch to \(mode.other.title) mode")
+                }
+            }
+            #endif
             if showsSearch {
-                ToolbarItem { NavigationLink(value: ScreenDestination.search) { Image(systemName: "magnifyingglass").accessibilityLabel("Search library") } }
+                ToolbarItem {
+                    if mode == nil {
+                        NavigationLink(value: ScreenDestination.search) { Image(systemName: "magnifyingglass").accessibilityLabel("Search library") }
+                    } else if let mode {
+                        NavigationLink(value: PlayerTab.search) { Image(systemName: "magnifyingglass").accessibilityLabel("Search \(mode.title) mode") }
+                    }
+                }
             }
         }
     }
@@ -95,10 +116,12 @@ struct HomeSelection {
     let continuation: [MediaItem]
     let recent: [MediaItem]
 
-    init(continueWatching: [MediaItem], recent: [MediaItem]) {
-        featured = continueWatching.first ?? recent.first
-        continuation = Array(continueWatching.dropFirst().prefix(4))
+    init(continueWatching: [MediaItem], recent: [MediaItem], mode: PlayerMode? = nil) {
+        let watching = continueWatching.filter { mode?.includes($0) ?? true }
+        let added = recent.filter { mode?.includes($0) ?? true }
+        featured = watching.first ?? added.first
+        continuation = Array(watching.dropFirst().prefix(4))
         let visibleIDs = Set(([featured].compactMap { $0 } + continuation).map(\.id))
-        self.recent = recent.filter { !visibleIDs.contains($0.id) }
+        self.recent = added.filter { !visibleIDs.contains($0.id) }
     }
 }

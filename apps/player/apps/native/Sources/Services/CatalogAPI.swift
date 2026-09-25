@@ -1,21 +1,45 @@
 import Foundation
 
 extension ServerClient {
-    func warmCatalog() async {
+    func warmCatalog(mode: PlayerMode? = nil, landingTab: PlayerTab = .home) async {
         guard !Task.isCancelled else { return }
-        _ = try? await home(policy: .automatic)
+        if let mode {
+            _ = try? await home(mode: mode.other, policy: .automatic)
+            guard !Task.isCancelled else { return }
+            switch landingTab {
+            case .movies: _ = try? await library(view: .movies, policy: .automatic)
+            case .shows: _ = try? await library(view: .shows, policy: .automatic)
+            case .search: _ = try? await library(view: mode.other.searchViews[0], policy: .automatic)
+            case .list: _ = try? await library(view: .list, policy: .automatic)
+            case .music: _ = try? await albums(policy: .automatic)
+            case .audiobooks: _ = try? await library(view: .audiobooks, policy: .automatic)
+            case .books: _ = try? await library(view: .books, policy: .automatic)
+            case .photos: _ = try? await library(view: .photos, policy: .automatic)
+            case .collections: _ = try? await collections(policy: .automatic)
+            case .home, .library, .downloads, .settings, .more: break
+            }
+            guard !Task.isCancelled else { return }
+            _ = try? await home(mode: mode, policy: .automatic)
+        } else { _ = try? await home(policy: .automatic) }
         for view in [LibraryView.movies, .shows] {
             guard !Task.isCancelled else { return }
             _ = try? await library(view: view, policy: .automatic)
         }
     }
 
-    func home(policy: CatalogPolicy = .reload) async throws -> HomeSnapshot {
+    func home(mode: PlayerMode? = nil, policy: CatalogPolicy = .reload) async throws -> HomeSnapshot {
         let profile: Viewer
         if let associatedViewer { profile = associatedViewer }
         else if policy == .cached { throw CatalogCacheMiss.missing }
         else { profile = try await viewer() }
-        async let history = library(view: .history, limit: 24, policy: policy)
+        async let history = library(view: .history, limit: mode == nil ? 24 : 200, policy: policy)
+        if let mode {
+            async let first = library(view: mode.searchViews[0], sort: .added, limit: 36, policy: policy)
+            async let second = library(view: mode.searchViews[1], sort: .added, limit: 36, policy: policy)
+            let (historyPage, firstPage, secondPage) = try await (history, first, second)
+            let continuing = historyPage.items.filter { $0.progress.seconds > 0 && !$0.progress.watched && !$0.progress.dismissed && mode.includes($0) }
+            return HomeSnapshot(viewer: profile, continueWatching: continuing, recent: firstPage.items + secondPage.items)
+        }
         async let recent = library(sort: .added, limit: 36, policy: policy)
         let (historyPage, recentPage) = try await (history, recent)
         let continueWatching = historyPage.items.filter { $0.progress.seconds > 0 && !$0.progress.watched && !$0.progress.dismissed }

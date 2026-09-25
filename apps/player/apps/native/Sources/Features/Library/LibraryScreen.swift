@@ -4,6 +4,8 @@ struct LibraryScreen: View {
     @Environment(AppSession.self) private var session
     @Environment(\.scenePhase) private var scenePhase
     private let searchMode: Bool
+    private let searchViews: [LibraryView]?
+    private let mode: PlayerMode?
     @State private var query = ""
     #if os(iOS)
     @State private var showsSearch = false
@@ -22,10 +24,13 @@ struct LibraryScreen: View {
     @State private var loadedKey: String?
     @State private var loadedRevision: UUID?
 
-    init(initialView: LibraryView = .all, searchMode: Bool = false, initialQuery: String = "") {
-        _selection = State(initialValue: initialView)
+    init(initialView: LibraryView = .all, searchMode: Bool = false, initialQuery: String = "", mode: PlayerMode? = nil) {
+        let views = searchMode ? mode?.searchViews : nil
+        _selection = State(initialValue: views?.contains(initialView) == true ? initialView : views?.first ?? initialView)
         _query = State(initialValue: initialQuery)
         self.searchMode = searchMode
+        searchViews = views
+        self.mode = mode
     }
     private var requestKey: String { "\(selection.rawValue):\(sort.rawValue):\(query)" }
 
@@ -109,7 +114,8 @@ struct LibraryScreen: View {
         #endif
         .cinemaBackground()
         #if os(iOS)
-        .searchable(text: $query, isPresented: $showsSearch, prompt: "Search your library")
+        .searchable(text: $query, isPresented: $showsSearch,
+                    prompt: mode == .watch ? "Search movies and shows" : mode == .listen ? "Search music and audiobooks" : "Search your library")
         .sheet(isPresented: $showsLetterJump) {
             LetterJumpSheet(letters: page?.letters ?? []) { letter in
                 Task { await load(reset: true, start: letter.offset) }
@@ -146,7 +152,7 @@ struct LibraryScreen: View {
     @ViewBuilder private var filters: some View {
         #if os(iOS)
         Picker("Library", selection: $selection) {
-            ForEach(LibraryView.allCases) { Text($0.title).tag($0) }
+            ForEach(searchViews ?? LibraryView.allCases) { Text($0.title).tag($0) }
         }
         #else
         NavigationLink { LibraryHubScreen() } label: { Label("Browse library", systemImage: "square.grid.2x2") }

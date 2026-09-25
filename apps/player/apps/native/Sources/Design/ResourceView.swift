@@ -14,7 +14,7 @@ struct RetryState: View {
     }
 }
 
-enum LoadingLayout { case shelf, home, detail, grid, musicGrid, album, show, list, playback }
+enum LoadingLayout { case shelf, home, detail, grid, musicGrid, album, show, list, playback, actor, collectionGrid }
 
 struct LoadingState: View {
     var title = "Loading your library…"
@@ -58,10 +58,23 @@ struct LoadingState: View {
                 line(width: 240, height: 48).accessibilityHidden(true)
             }
             if layout == .album {
+                #if os(tvOS)
+                HStack(alignment: .bottom, spacing: 32) {
+                    RoundedRectangle(cornerRadius: 16).fill(KinoTheme.surface)
+                        .aspectRatio(1, contentMode: .fit).frame(width: 260)
+                    VStack(alignment: .leading, spacing: 8) {
+                        line(width: 300, height: 42)
+                        line(width: 180, height: 24)
+                        line(width: 90, height: 18)
+                    }
+                }.accessibilityHidden(true)
+                line(width: 100, height: 28).accessibilityHidden(true)
+                #else
                 RoundedRectangle(cornerRadius: 16).fill(KinoTheme.surface)
                     .aspectRatio(1, contentMode: .fit).frame(maxWidth: 360).accessibilityHidden(true)
                 line(width: 300, height: 42).accessibilityHidden(true)
                 line(width: 180, height: 20).accessibilityHidden(true)
+                #endif
                 ForEach(0..<4) { _ in
                     HStack(spacing: 20) {
                         line(width: 30, height: 20)
@@ -76,19 +89,52 @@ struct LoadingState: View {
                 }
             }
             if layout == .list {
+                #if os(tvOS)
+                line(width: 260, height: 42).accessibilityHidden(true)
+                #endif
                 ForEach(0..<6) { _ in
                     HStack(spacing: 12) {
                         line(width: 24, height: 24)
                         line(width: 220, height: 24)
-                    }.frame(minHeight: 48).accessibilityHidden(true)
+                    }.frame(minHeight: 48)
+                    #if os(tvOS)
+                    .padding(12)
+                    .frame(maxWidth: 1100, alignment: .leading)
+                    #else
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    #endif
+                    .accessibilityHidden(true)
+                    #if os(iOS)
                     Divider().accessibilityHidden(true)
+                    #endif
                 }
             }
             if layout == .playback {
                 ProgressView("Opening media…").frame(maxWidth: .infinity, minHeight: 220)
             }
-            if layout == .grid || layout == .musicGrid || layout == .show {
-                if layout == .musicGrid { line(width: 160, height: 44).accessibilityHidden(true) }
+            if layout == .grid || layout == .musicGrid || layout == .show || layout == .actor || layout == .collectionGrid {
+                if layout == .musicGrid {
+                    #if os(tvOS)
+                    HStack { line(width: 180, height: 42); Spacer(); Capsule().fill(KinoTheme.raised).frame(width: 200, height: 48) }.accessibilityHidden(true)
+                    #else
+                    line(width: 160, height: 44).accessibilityHidden(true)
+                    #endif
+                }
+                if layout == .actor {
+                    #if os(tvOS)
+                    HStack(alignment: .bottom, spacing: 32) {
+                        RoundedRectangle(cornerRadius: 12).fill(KinoTheme.surface).aspectRatio(2 / 3, contentMode: .fit).frame(width: 200)
+                        VStack(alignment: .leading, spacing: 8) { line(width: 260, height: 42); line(width: 160, height: 20) }
+                    }.accessibilityHidden(true)
+                    #else
+                    RoundedRectangle(cornerRadius: 12).fill(KinoTheme.surface).aspectRatio(2 / 3, contentMode: .fit).frame(width: 200).accessibilityHidden(true)
+                    line(width: 180, height: 28).accessibilityHidden(true)
+                    #endif
+                    line(width: 120, height: 24).accessibilityHidden(true)
+                }
+                #if os(tvOS)
+                if layout == .collectionGrid { line(width: 260, height: 42).accessibilityHidden(true) }
+                #endif
                 LazyVGrid(columns: MediaGrid.columns(landscape: layout == .show, accessibility: dynamicType.isAccessibilitySize), alignment: .leading, spacing: 28) {
                     ForEach(0..<8) { _ in card(ratio: layout == .musicGrid ? 1 : layout == .show ? 16 / 9 : 2 / 3) }
                 }

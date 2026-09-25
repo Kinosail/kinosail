@@ -16,6 +16,8 @@ struct TouchPlaybackView: View {
     @State private var interaction = 0
     @State private var scrubbing = false
     @State private var scrubPosition = 0.0
+    @State private var previewImage: UIImage?
+    @State private var previewUnavailable = false
     @State private var actionMessage: String?
     @State private var sheet: PlaybackSheet?
     @State private var switchControl = UIAccessibility.isSwitchControlRunning
@@ -102,7 +104,7 @@ struct TouchPlaybackView: View {
         .onChange(of: canHide) { _, _ in reveal() }
         .onChange(of: sheet) { _, selection in presentation.showingOptions = selection != nil }
         .onChange(of: playback.currentItem?.id) { _, _ in
-            actionMessage = nil; scrubbing = false; pendingSeek = nil; seekRevision += 1; reveal()
+            actionMessage = nil; scrubbing = false; pendingSeek = nil; previewImage = nil; seekRevision += 1; reveal()
         }
         .onReceive(NotificationCenter.default.publisher(for: UIAccessibility.switchControlStatusDidChangeNotification)) { _ in
             switchControl = UIAccessibility.isSwitchControlRunning
@@ -154,6 +156,26 @@ struct TouchPlaybackView: View {
         VStack(spacing: 2) {
             if let message = actionMessage ?? presentation.presentationMessage {
                 Text(message).font(.footnote).multilineTextAlignment(.center).padding(.bottom, 8)
+            }
+            if scrubbing {
+                VStack(spacing: 4) {
+                    if let previewImage {
+                        Image(uiImage: previewImage).resizable().aspectRatio(contentMode: .fit)
+                            .frame(width: 160, height: 90).background(.black)
+                            .clipShape(RoundedRectangle(cornerRadius: 8))
+                    } else if previewUnavailable {
+                        Text("Preview unavailable").font(.caption).frame(width: 160, height: 90)
+                    } else {
+                        ProgressView().frame(width: 160, height: 90)
+                    }
+                    Text(scrubPosition.clock).font(.caption.monospacedDigit())
+                }
+                .frame(maxWidth: .infinity)
+                .accessibilityElement(children: .ignore)
+                .accessibilityLabel("Preview at \(scrubPosition.clock)")
+                .task(id: "\(playback.currentItem?.id ?? ""):\(Int(min(43210, max(0, scrubPosition)) / 10))") {
+                    await loadPreview()
+                }
             }
             Slider(value: Binding(get: { min(max(1, playback.duration), max(0, displayedPosition)) }, set: {
                 if scrubbing { scrubPosition = $0 } else { seek($0) }
@@ -246,6 +268,19 @@ struct TouchPlaybackView: View {
             scrubbing = false
             reveal()
         }
+    }
+
+    private func loadPreview() async {
+        previewImage = nil
+        previewUnavailable = false
+        let second = Int(min(43210, max(0, scrubPosition)) / 10) * 10
+        do {
+            let image = try await PlaybackFramePreview.load(template: playback.source?.trickplay,
+                                                            client: session.client, asset: playback.player?.currentItem?.asset,
+                                                            second: second)
+            try Task.checkCancellation()
+            previewImage = image
+        } catch is CancellationError {} catch { if !Task.isCancelled { previewUnavailable = true } }
     }
 }
 

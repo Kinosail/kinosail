@@ -49,3 +49,9 @@ Reader, Downloads, offline playback, Play on TV, and reader/download preferences
 ## Next acceptance pass
 
 Use a populated, authorized test library and physical Siri Remote. Record screen captures and click counts for the routes above, then fix observed focus, readability or timing problems. A design-award goal requires that complete visual and interaction pass, comparison across large and sparse libraries, and feedback from people using the app on a couch; a successful build or source audit cannot establish it.
+
+## Visual polish follow-up
+
+The next pass gave actor credits, collections, albums and the Supporter page in-flow headings and the same TV artwork and background rhythm as core browsing. Actor card text now has a bounded ordinary layout while accessibility sizes retain full text. Now Playing places artwork beside the transport on TV, exposes live progress and chapters when present, and responds to the remote Play/Pause command. The shared TV configuration panel no longer repeats generic remote instructions.
+
+The current build was installed and visually checked on the Apple TV simulator's Setup screen; the form and revised configuration panel remained readable. Earlier populated screenshots were used only as incumbent visual references. This follow-up still needs current populated captures and remote traversal for the changed actor, collection, album, audio and Supporter screens. The setup capture contains a discovered Server address and stays outside the repository.
