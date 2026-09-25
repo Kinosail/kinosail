@@ -204,13 +204,6 @@ body .destination-card>span:nth-child(2){min-width:0;overflow-wrap:anywhere}
 .player-control-row output{min-width:0;white-space:normal}
 @media(max-width:520px){.player-control-row output{flex:1}.player-control-row :is(.player-control-spacer,[data-player-toggle],[data-player-back],[data-player-forward],[data-player-mute]){display:none}}
 
-/* Keep watch-page controls legible over bright title artwork at every scroll position. */
-body.player-page.has-media-backdrop::before{
-  background:linear-gradient(180deg,color-mix(in srgb,var(--bg) 88%,transparent),color-mix(in srgb,var(--bg) 94%,transparent) 48rem,var(--bg));
-}
-:root[data-theme=light] body.player-page.has-media-backdrop::before{
-  background:linear-gradient(180deg,color-mix(in srgb,var(--bg) 96%,transparent),var(--bg) 48rem);
-}
 body .app-header .brand-lockup{min-width:0}
 body .app-header .brand-lockup h1{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 body .app-header .web-beta-badge{display:inline-flex;flex:none;align-items:center;padding:5px 6px;border:1px solid #758d3e;border-radius:4px;color:#c4ff47;font-size:10px;font-weight:800;line-height:1;letter-spacing:.08em;text-transform:uppercase;white-space:nowrap}
