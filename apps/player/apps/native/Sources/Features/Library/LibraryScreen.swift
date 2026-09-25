@@ -211,7 +211,8 @@ struct LibraryScreen: View {
         let revision = session.contentRevision
         if reset {
             generation = UUID()
-            if loadedKey != key || start != page?.offset {
+            // Keep the focused A–Z rail mounted while its new page loads.
+            if loadedKey != key {
                 items = []; page = nil; loadedKey = nil
             }
         }
