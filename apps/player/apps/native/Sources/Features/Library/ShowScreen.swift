@@ -105,7 +105,7 @@ enum ShowSeasonSelection {
         episodes.first(where: { !$0.progress.watched }) ?? episodes.first
     }
 
-    static func resolve(_ selected: Int?, among seasons: [Int], defaultingTo featured: Int? = nil) -> Int? {
+    static func resolve(_ selected: Int?, among seasons: [Int], defaultingTo featured: Int?) -> Int? {
         selected.flatMap { seasons.contains($0) ? $0 : nil }
             ?? featured.flatMap { seasons.contains($0) ? $0 : nil }
             ?? seasons.first
