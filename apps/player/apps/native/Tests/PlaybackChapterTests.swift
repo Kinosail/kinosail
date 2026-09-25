@@ -1,11 +1,14 @@
 import Foundation
 import Testing
+#if os(iOS) || os(tvOS)
+import UIKit
+#endif
 @testable import KinosailPlayer
 
 struct PlaybackChapterTests {
-    private func source(_ chapters: String, start: String = "0") throws -> PlaybackSource {
+    private func source(_ chapters: String, start: String = "0", preview: String = "", token: String = "") throws -> PlaybackSource {
         let body = """
-        {"media":{"duration":60},"plan":{"allowed":true,"mode":"direct","reason":"direct-preferred"},"duration":60,"start":\(start),"directAllowed":true,"direct":"/media/movie","directType":"video/mp4","chapters":\(chapters)}
+        {"media":{"duration":60},"plan":{"allowed":true,"mode":"direct","reason":"direct-preferred"},"duration":60,"start":\(start),"directAllowed":true,"direct":"/media/movie","directType":"video/mp4","chapters":\(chapters),"trickplay":"\(preview)","progressToken":"\(token)"}
         """
         return try PlaybackSource(StrictJSON.decode(Data(body.utf8)), itemID: "movie", server: ServerAddress("https://example.com"))
     }
@@ -48,6 +51,20 @@ struct PlaybackChapterTests {
         #expect(try sourceWithDirectType("").shouldPreferCompatibleOnAppleTV == unsupportedOriginal)
     }
 
+    @Test func validatesTrickplayTemplateBeforeUse() throws {
+        #expect(try source("[]", preview: "/trickplay/movie/{second}").trickplay == "/trickplay/movie/{second}")
+        #expect(try source("[]", preview: "/trickplay/movie/{second}?playbackToken=valid", token: "valid").trickplay != nil)
+        for invalid in ["/trickplay/other/{second}", "/trickplay/movie/20", "/trickplay/movie/{second}?unknown=1",
+                        "https://other.example/trickplay/movie/{second}", "/trickplay/movie/{second}#fragment"] {
+            #expect(throws: ClientError.self) { try source("[]", preview: invalid) }
+        }
+        for invalid in ["/trickplay/movie/{second}?playbackToken=wrong", "/trickplay/movie/{second}?playbackToken=valid&playbackToken=valid",
+                        "/trickplay/movie/{second}?playbackToken=valid#fragment"] {
+            #expect(throws: ClientError.self) { try source("[]", preview: invalid, token: "valid") }
+        }
+        #expect(throws: ClientError.self) { try source("[]", preview: String(repeating: "x", count: 16_385)) }
+    }
+
     @Test(arguments: ["-1", "1", "1024", "0.5", "true", "null", "\"0\""])
     func rejectsInvalidChapterIndexes(_ index: String) {
         #expect(throws: ClientError.self) { try source("[{\"index\":\(index),\"title\":\"Opening\",\"start\":0,\"end\":60}]") }
@@ -68,3 +85,42 @@ struct PlaybackChapterTests {
         #expect(fixture.requests.count == 1)
     }
 }
+
+#if os(iOS) || os(tvOS)
+struct PlaybackFramePreviewTests {
+    @Test func loadsAuthenticatedFrame() async throws {
+        let format = UIGraphicsImageRendererFormat()
+        format.scale = 1
+        let data = UIGraphicsImageRenderer(size: CGSize(width: 4, height: 4), format: format).jpegData(withCompressionQuality: 0.8) { context in
+            context.cgContext.setFillColor(UIColor.red.cgColor)
+            context.cgContext.fill(CGRect(x: 0, y: 0, width: 4, height: 4))
+        }
+        let fixture = try HTTPFixture(data: data, headers: ["Content-Type": "image/jpeg"])
+        defer { fixture.remove() }
+        let image = try await PlaybackFramePreview.load(template: "/trickplay/movie/{second}", client: fixture.client, asset: nil, second: 20)
+        #expect(image.size == CGSize(width: 4, height: 4))
+        #expect(fixture.requests.map { $0.url?.path } == ["/trickplay/movie/20"])
+        #expect(fixture.requests.first?.value(forHTTPHeaderField: "Authorization") == "Bearer fixture-token")
+    }
+
+    @Test func rejectsInvalidFrameTimesWithoutRequest() async throws {
+        let fixture = try HTTPFixture(body: "not an image", headers: ["Content-Type": "image/jpeg"])
+        defer { fixture.remove() }
+        for second in [-10, 1, 43210] {
+            await #expect(throws: ClientError.self) {
+                try await PlaybackFramePreview.load(template: "/trickplay/movie/{second}", client: fixture.client, asset: nil, second: second)
+            }
+        }
+        #expect(fixture.requests.isEmpty)
+    }
+
+    @Test func rejectsInvalidFrameData() async throws {
+        let fixture = try HTTPFixture(body: "not an image", headers: ["Content-Type": "image/jpeg"])
+        defer { fixture.remove() }
+        await #expect(throws: ClientError.self) {
+            try await PlaybackFramePreview.load(template: "/trickplay/movie/{second}", client: fixture.client, asset: nil, second: 20)
+        }
+        #expect(fixture.requests.map { $0.url?.path } == ["/trickplay/movie/20"])
+    }
+}
+#endif

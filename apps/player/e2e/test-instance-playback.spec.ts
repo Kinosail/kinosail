@@ -1,7 +1,27 @@
 import { expect, test } from "@playwright/test";
-import { configureTestInstance, login } from "./test-instance-helpers";
+import { configureTestInstance, firstPlayable, login } from "./test-instance-helpers";
 
 configureTestInstance();
+
+test("scrubbing a populated title shows its frame before seeking", async ({ page }, testInfo) => {
+  await login(page);
+  await page.goto(await firstPlayable(page));
+  const video = page.locator("video");
+  await expect.poll(() => video.evaluate((media: HTMLVideoElement) => media.duration > 11)).toBeTruthy();
+  await video.evaluate((media: HTMLVideoElement) => media.pause());
+  const start = await video.evaluate((media: HTMLVideoElement) => media.currentTime);
+  const seek = page.locator("[data-player-seek]");
+  await seek.evaluate((input: HTMLInputElement) => { input.value = "11"; input.dispatchEvent(new Event("input")); });
+  await expect(page.locator("[data-seek-preview]")).toBeVisible();
+  await expect.poll(() => page.locator("[data-seek-preview] img").evaluate((image: HTMLImageElement) => image.naturalWidth)).toBeGreaterThan(0);
+  for (const viewport of [{ width: 390, height: 844 }, { width: 1440, height: 900 }]) {
+    await page.setViewportSize(viewport);
+    await page.locator(".media-stage").screenshot({ path: testInfo.outputPath(`seek-preview-${viewport.width}.png`) });
+  }
+  expect(await video.evaluate((media: HTMLVideoElement) => media.currentTime)).toBeCloseTo(start, 0);
+  await seek.dispatchEvent("change");
+  await expect.poll(() => video.evaluate((media: HTMLVideoElement) => media.currentTime)).toBeGreaterThan(10);
+});
 
 test("adaptive playback starts on Auto and keeps semantic quality choices", async ({ page }) => {
   await login(page);

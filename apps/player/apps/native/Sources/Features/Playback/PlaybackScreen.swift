@@ -9,6 +9,7 @@ struct PlaybackScreen: View {
     @State private var failure: String?
     @State private var revision = 0
     @State private var showsTools = false
+    @State private var showsSeekPreview = false
 
     var body: some View {
         Group {
@@ -18,8 +19,9 @@ struct PlaybackScreen: View {
             if let failure { RetryState(message: failure) { revision += 1 } }
             else if let message = session.player.message, !session.player.recoveringNetwork { RetryState(message: message) { revision += 1 } }
             else if let player = session.player.player {
-                    NativePlayerView(player: player, presentation: session.player.presentation,
-                                     options: { showsTools = true }, restore: { session.showsVideoPlayer = true })
+                NativePlayerView(player: player, presentation: session.player.presentation,
+                                 options: { showsTools = true }, seekPreview: { showsSeekPreview = true },
+                                 restore: { session.showsVideoPlayer = true })
                     .background(.black)
                     #if os(tvOS)
                     .ignoresSafeArea()
@@ -39,6 +41,9 @@ struct PlaybackScreen: View {
         .navigationTitle(session.player.currentItem?.title ?? "Playback")
         .toolbar(.hidden, for: .navigationBar, .tabBar)
         .sheet(isPresented: $showsTools) { NavigationStack { PlaybackToolsScreen() } }
+        #if os(tvOS)
+        .sheet(isPresented: $showsSeekPreview) { TVSeekPreviewScreen() }
+        #endif
         .task(id: "\(itemID):\(revision)") {
             failure = nil
             guard let client = session.client, let store = session.progress else { failure = "Connect to your Server to play this title."; return }
@@ -52,7 +57,7 @@ struct PlaybackScreen: View {
             } catch is CancellationError {} catch { failure = AppSession.message(error) }
         }
         .onDisappear {
-            if !session.player.presentation.pictureInPicture, !showsTools, !session.player.presentation.showingOptions,
+            if !session.player.presentation.pictureInPicture, !showsTools, !showsSeekPreview, !session.player.presentation.showingOptions,
                session.player.currentItem?.kind == .video { session.player.stop(); session.contentRevision = UUID() }
         }
     }
@@ -63,11 +68,13 @@ struct NativePlayerView: UIViewControllerRepresentable {
     let player: AVPlayer
     let presentation: PlayerPresentation
     let options: () -> Void
+    let seekPreview: () -> Void
     let restore: () -> Void
 
     func makeUIViewController(context: Context) -> AVPlayerViewController {
         presentation.restore = restore
         presentation.showOptions = options
+        presentation.showSeekPreview = seekPreview
         presentation.controller.player = player
         presentation.appeared()
         return presentation.controller
@@ -75,6 +82,7 @@ struct NativePlayerView: UIViewControllerRepresentable {
     func updateUIViewController(_ controller: AVPlayerViewController, context: Context) {
         presentation.restore = restore
         presentation.showOptions = options
+        presentation.showSeekPreview = seekPreview
         if controller.player !== player { controller.player = player }
     }
     func makeCoordinator() -> PlayerPresentation { presentation }

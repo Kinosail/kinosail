@@ -20,6 +20,19 @@ extension PlaybackSource {
         // Saved progress can outlive a replaced or shortened media file.
         start = primary.sourceTime(requestedStart < primary.duration ? requestedStart : 0)
         progressToken = try value.text("progressToken", max: 8192)
+        let preview = try value.text("trickplay", max: 16_384)
+        if preview.isEmpty { trickplay = nil }
+        else {
+            let prefix = "/trickplay/\(itemID)/{second}"
+            guard preview.hasPrefix(prefix),
+                  let url = try? server.mediaURL(preview.replacingOccurrences(of: "{second}", with: "0")),
+                  url.path == "/trickplay/\(itemID)/0" else { throw ClientError.invalidResponse }
+            let query = URLComponents(url: url, resolvingAgainstBaseURL: false)?.queryItems
+            guard preview == prefix && query == nil ||
+                  query?.count == 1 && query?[0].name == "playbackToken" && query?[0].value == progressToken && !progressToken.isEmpty
+            else { throw ClientError.invalidResponse }
+            trickplay = preview
+        }
         let path = try value.text("direct", max: 16_384)
         let allowed = try value.flag("directAllowed")
         if allowed {
