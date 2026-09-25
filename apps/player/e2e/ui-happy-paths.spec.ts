@@ -63,7 +63,7 @@ test("Owner can use keyboard utilities and persist the chosen theme", async ({ p
 	await theme.locator('input[value="dark"]').check();
 	await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
 	await theme.locator('input[value="system"]').check();
-	await expect(page.locator("html")).not.toHaveAttribute("data-theme", /.+/);
+	await expect(page.locator("html")).toHaveAttribute("data-theme", "light");
 });
 
 test("Dark is the default and every theme choice persists", async ({ page }, testInfo) => {
@@ -93,7 +93,7 @@ test("Dark is the default and every theme choice persists", async ({ page }, tes
 		await theme.locator(`input[value="${choice}"]`).check();
 		await expect.poll(() => page.evaluate(() => localStorage.getItem("kinosail-theme"))).toBe(choice);
 	}
-	await expect(page.locator("html")).not.toHaveAttribute("data-theme", /.+/);
+	await expect(page.locator("html")).toHaveAttribute("data-theme", "light");
 });
 
 test("Owner can create, fill, empty, and delete a playlist and Collection", async ({ page }, testInfo) => {
@@ -133,6 +133,7 @@ test("Owner can create, fill, empty, and delete a playlist and Collection", asyn
 
 	await page.goto("/?view=movies");
 	await page.getByRole("link", { name: /Example Movie/ }).click();
+	await page.getByRole("link", { name: /^(Play|Resume)$/ }).click();
 	await page.getByText("Add to playlist or collection", { exact: true }).click();
 	await expect(page.getByRole("heading", { name: "Playlists", exact: true })).toBeVisible();
 	await expect(page.getByRole("heading", { name: "Collections", exact: true })).toBeVisible();
