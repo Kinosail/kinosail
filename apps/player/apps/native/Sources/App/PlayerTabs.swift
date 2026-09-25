@@ -54,6 +54,7 @@ struct PlayerTabs: View {
         }
         #if os(iOS)
         .tabViewStyle(.sidebarAdaptable)
+        .modifier(MiniPlayerTabAccessory())
         #endif
         .safeAreaInset(edge: .top, spacing: 0) {
             ConnectionBanner {
@@ -94,6 +95,20 @@ struct PlayerTabs: View {
         #endif
     }
 }
+
+#if os(iOS)
+private struct MiniPlayerTabAccessory: ViewModifier {
+    @Environment(AppSession.self) private var session
+
+    @ViewBuilder func body(content: Content) -> some View {
+        if #available(iOS 26.1, *) {
+            content.tabViewBottomAccessory(isEnabled: session.player.currentItem?.isAudio == true) { MiniPlayer() }
+        } else {
+            content.tabViewBottomAccessory { MiniPlayer() }
+        }
+    }
+}
+#endif
 
 private struct PlayerTabScreen: View {
     let tab: PlayerTab
