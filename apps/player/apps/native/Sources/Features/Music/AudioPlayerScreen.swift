@@ -20,6 +20,7 @@ private enum AudioNowPlayingGeometry {
 
 struct AudioPlayerScreen: View {
     let itemID: String
+    var hidesMiniPlayer = true
     @Environment(AppSession.self) private var session
     @Environment(\.dismiss) private var dismiss
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
@@ -33,6 +34,13 @@ struct AudioPlayerScreen: View {
     #endif
     private var upcoming: [MediaItem] { Array(session.player.queue.items.dropFirst((session.player.queue.currentIndex ?? 0) + 1).prefix(20)) }
     private var nowPlayingLayout: AnyLayout { AudioNowPlayingGeometry.layout(accessibility: dynamicTypeSize.isAccessibilitySize) }
+    private var transportSpacing: CGFloat {
+        #if os(tvOS)
+        28
+        #else
+        12
+        #endif
+    }
     var body: some View {
         ScrollView {
             if let failure { RetryState(message: failure) { revision += 1 } }
@@ -61,10 +69,23 @@ struct AudioPlayerScreen: View {
                             #endif
                             HStack { Text(session.player.seconds.clock); Spacer(); Text(session.player.duration.clock) }.font(.caption.monospacedDigit()).foregroundStyle(.secondary)
                         }
-                        HStack(spacing: 12) {
+                        HStack(spacing: transportSpacing) {
                             Button("Back 15 seconds", systemImage: "gobackward.15") { perform { try await session.player.seek(to: max(0, session.player.seconds - 15)) } }.labelStyle(.iconOnly).buttonStyle(.bordered).buttonBorderShape(.capsule).tint(KinoTheme.secondaryControlTint).foregroundStyle(KinoTheme.secondaryControlInk).controlSize(.large)
-                            Button(session.player.isPlaying ? "Pause" : "Play", systemImage: session.player.isPlaying ? "pause.fill" : "play.fill") { session.player.togglePlayback() }
-                                .labelStyle(.iconOnly).font(.largeTitle).buttonStyle(.borderedProminent).buttonBorderShape(.capsule).tint(KinoTheme.signal).foregroundStyle(KinoTheme.signalInk)
+                            Button { session.player.togglePlayback() } label: {
+                                Label(session.player.isPlaying ? "Pause" : "Play", systemImage: session.player.isPlaying ? "pause.fill" : "play.fill")
+                                    .labelStyle(.iconOnly)
+                                    #if os(tvOS)
+                                    .frame(width: 68, height: 68)
+                                    .foregroundStyle(KinoTheme.tvOSPrimaryInk)
+                                    .background(KinoTheme.tvOSPrimaryFill, in: Circle())
+                                    #endif
+                            }
+                                .font(.largeTitle)
+                                #if os(tvOS)
+                                .buttonStyle(.card)
+                                #else
+                                .buttonStyle(.borderedProminent).buttonBorderShape(.capsule).tint(KinoTheme.signal).foregroundStyle(KinoTheme.signalInk)
+                                #endif
                                 #if os(tvOS)
                                 .tvOSDefaultPlayFocus(in: audioFocus, id: "audio.play.\(item.id)", enabled: session.player.player != nil)
                                 #endif
@@ -80,6 +101,9 @@ struct AudioPlayerScreen: View {
                             HStack(spacing: 12) { audioOptions(item) }
                             VStack(spacing: 12) { audioOptions(item) }
                         }.font(.callout)
+                            #if os(tvOS)
+                            .tint(KinoTheme.secondaryControlTint).foregroundStyle(KinoTheme.secondaryControlInk)
+                            #endif
                         if let deadline = session.player.sleepDeadline { Text("Pauses at \(deadline.formatted(date: .omitted, time: .shortened))").font(.caption).foregroundStyle(.secondary) }
                         if !upcoming.isEmpty {
                             VStack(alignment: .leading, spacing: 14) {
@@ -97,10 +121,15 @@ struct AudioPlayerScreen: View {
         #if os(tvOS)
         .focusScope(audioFocus)
         .onPlayPauseCommand { if session.player.player != nil { session.player.togglePlayback() } }
+        .onAppear { if hidesMiniPlayer { session.showsAudioPlayer = true } }
+        .onDisappear { if hidesMiniPlayer { session.showsAudioPlayer = false } }
         #endif
         .toolbar { ToolbarItem(placement: .primaryAction) {
             #if os(tvOS)
-            Button("Playback options", systemImage: "ellipsis.circle") { showsTools = true }
+            Button { showsTools = true } label: {
+                Image(systemName: "ellipsis.circle.fill").font(.title2).foregroundStyle(KinoTheme.text)
+            }
+                .accessibilityLabel("Playback options")
             #else
             NavigationLink { PlaybackToolsScreen() } label: { Label("Playback options", systemImage: "ellipsis.circle") }
             #endif
@@ -217,7 +246,7 @@ struct MiniPlayer: View {
                 Button("Stop", systemImage: "xmark") { session.player.stop(); session.contentRevision = UUID() }.labelStyle(.iconOnly).buttonStyle(.bordered).buttonBorderShape(.capsule).tint(KinoTheme.secondaryControlTint).foregroundStyle(KinoTheme.secondaryControlInk).controlSize(controlSize)
             }
             .padding(.horizontal, horizontalPadding).padding(.vertical, verticalPadding).background(.regularMaterial)
-            .sheet(isPresented: $expanded) { NavigationStack { AudioPlayerScreen(itemID: item.id) }.presentationSizing(.page) }
+            .sheet(isPresented: $expanded) { NavigationStack { AudioPlayerScreen(itemID: item.id, hidesMiniPlayer: false) }.presentationSizing(.page) }
         }
     }
 }

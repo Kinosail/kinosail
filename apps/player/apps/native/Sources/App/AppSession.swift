@@ -13,6 +13,9 @@ final class AppSession {
     private(set) var pairingAddress: ServerAddress?
     var showsSetup = false
     var showsVideoPlayer = false
+    #if os(tvOS)
+    var showsAudioPlayer = false
+    #endif
     var notice: String?
     private(set) var pendingApprovalCode: String?
     var reading = false

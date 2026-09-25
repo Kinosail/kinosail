@@ -75,7 +75,7 @@ struct AppShell: View {
         PlayerTabs(profileKey: session.profileKey ?? "")
         #else
         PlayerTabs(profileKey: session.profileKey ?? "")
-            .safeAreaInset(edge: .bottom, spacing: 0) { MiniPlayer() }
+            .safeAreaInset(edge: .bottom, spacing: 0) { if !session.showsAudioPlayer { MiniPlayer() } }
         #endif
     }
 
