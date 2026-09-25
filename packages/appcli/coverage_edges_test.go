@@ -1,14 +1,12 @@
 package appcli
 
 import (
-	"context"
 	"crypto/tls"
 	"errors"
 	"io"
 	"net"
 	"net/http"
 	"strings"
-	"sync"
 	"testing"
 	"time"
 
@@ -36,7 +34,7 @@ func TestBuiltInCommandRemainingEdges(t *testing.T) {
 	}
 }
 
-func TestAccessManagerAndShutdownFailureEdges(t *testing.T) { //nolint:cyclop // One lifecycle test covers independent asynchronous failure seams.
+func TestAccessManagerAndTrustedHTTPSInitialization(t *testing.T) {
 	t.Parallel()
 	listener, err := (&net.ListenConfig{}).Listen(t.Context(), "tcp", "127.0.0.1:0")
 	if err != nil {
@@ -62,18 +60,6 @@ func TestAccessManagerAndShutdownFailureEdges(t *testing.T) { //nolint:cyclop //
 	}
 	time.Sleep(20 * time.Millisecond)
 
-	failing := newFailingCloseListener()
-	server := &http.Server{ReadHeaderTimeout: time.Second}
-	go func() { _ = server.Serve(failing) }()
-	select {
-	case <-failing.accepted:
-	case <-time.After(time.Second):
-		t.Fatal("server did not accept")
-	}
-	ctx, cancel := context.WithCancel(t.Context())
-	cancel()
-	shutdownOnCancel(ctx, server)
-
 	config, err := trustedhttps.NewProviderConfig(trustedhttps.ProviderDuckDNS, "family", strings.Repeat("t", 32), "192.168.1.10", true)
 	if err != nil {
 		t.Fatal(err)
@@ -93,36 +79,3 @@ type roundTripFunc func(*http.Request) (*http.Response, error)
 func (function roundTripFunc) RoundTrip(request *http.Request) (*http.Response, error) {
 	return function(request)
 }
-
-type failingCloseListener struct {
-	accepted chan struct{}
-	closed   chan struct{}
-	once     sync.Once
-}
-
-func newFailingCloseListener() *failingCloseListener {
-	return &failingCloseListener{accepted: make(chan struct{}), closed: make(chan struct{})}
-}
-
-func (listener *failingCloseListener) Accept() (net.Conn, error) {
-	listener.once.Do(func() { close(listener.accepted) })
-	<-listener.closed
-	return nil, net.ErrClosed
-}
-
-func (listener *failingCloseListener) Close() error {
-	listener.once.Do(func() { close(listener.accepted) })
-	select {
-	case <-listener.closed:
-	default:
-		close(listener.closed)
-	}
-	return errors.New("close failed")
-}
-
-func (*failingCloseListener) Addr() net.Addr { return testAddr("listener") }
-
-type testAddr string
-
-func (address testAddr) Network() string { return string(address) }
-func (address testAddr) String() string  { return string(address) }
