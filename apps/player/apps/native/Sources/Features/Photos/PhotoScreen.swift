@@ -23,8 +23,9 @@ struct PhotoScreen: View {
                         .frame(width: geometry.size.width, height: geometry.size.height)
                         .scaleEffect(zoomed ? 2 : 1).offset(offset).clipped()
                         .accessibilityLabel(title)
-                        .accessibilityHint(zoomed ? "Press Play/Pause to fit. Use the remote to pan." : "Press Play/Pause to zoom.")
+                        .accessibilityHint(zoomed ? "Press Select to fit. Use the remote to pan." : "Press Select to zoom.")
                         .focusable().onPlayPauseCommand { zoomed.toggle(); offset = .zero }
+                        .onTapGesture { zoomed.toggle(); offset = .zero }
                         .onMoveCommand(perform: zoomed ? { direction in
                             switch direction {
                             case .left: offset.width = min(geometry.size.width / 2, offset.width + 100)
@@ -35,7 +36,6 @@ struct PhotoScreen: View {
                             }
                         } : nil)
                 }
-                .toolbar { Button(zoomed ? "Fit photo" : "Zoom in") { zoomed.toggle(); offset = .zero } }
                 #endif
             } else if let failure { RetryState(message: failure) { revision += 1 } }
             else { Text("Opening photo…").foregroundStyle(.secondary) }
@@ -43,6 +43,20 @@ struct PhotoScreen: View {
         .frame(maxWidth: .infinity, maxHeight: .infinity).background(.black)
         .preferredColorScheme(.dark)
         .navigationTitle(title)
+        #if os(tvOS)
+        .toolbar(.hidden, for: .navigationBar)
+        .toolbar(.hidden, for: .tabBar)
+        .overlay(alignment: .bottom) {
+            if image != nil {
+                Text(zoomed ? "Select to fit · Move to pan" : "Select to zoom")
+                    .font(.callout).foregroundStyle(.white)
+                    .padding(.horizontal, 20).padding(.vertical, 10)
+                    .background(.black.opacity(0.72), in: Capsule())
+                    .padding(.bottom, 36)
+                    .allowsHitTesting(false)
+            }
+        }
+        #endif
         #if os(iOS)
         .navigationBarTitleDisplayMode(.inline)
         .toolbar(.hidden, for: .tabBar)
