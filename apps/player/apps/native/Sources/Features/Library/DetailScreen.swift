@@ -64,17 +64,10 @@ private struct DetailContent: View {
             if !item.genres.isEmpty { Text(item.genres).font(.callout).foregroundStyle(.secondary) }
             #if os(iOS)
             if !item.showID.isEmpty { NavigationLink("All episodes", value: ScreenDestination.show(item.showID)) }
-            #endif
             if item.kind == .video || item.isAudio {
                 NavigationLink(value: ScreenDestination.bookmarks(item.id)) { Label("Bookmarks", systemImage: "bookmark") }
-                #if os(tvOS)
-                .foregroundStyle(KinoTheme.secondaryControlInk)
-                #endif
-                #if os(iOS)
                 NavigationLink(value: ScreenDestination.playOnTV(item.id)) { Label("Play on TV", systemImage: "tv") }
-                #endif
             }
-            #if os(iOS)
             if item.progress.seconds > 0 || item.progress.watched {
                 Button("Remove from Continue watching") { change { client in try await client.dismissContinueWatching(itemID: item.id) } }
                     .disabled(busy)
@@ -98,6 +91,11 @@ private struct DetailContent: View {
         } label: { Label((listed ?? detail.listed) ? "In My List" : "My List", systemImage: (listed ?? detail.listed) ? "checkmark" : "plus") }
             .buttonStyle(.bordered).buttonBorderShape(.capsule).tint(KinoTheme.secondaryControlTint).foregroundStyle(KinoTheme.secondaryControlInk).disabled(busy)
         #if os(tvOS)
+        if item.kind == .video || item.isAudio {
+            NavigationLink(value: ScreenDestination.bookmarks(item.id)) { Label("Bookmarks", systemImage: "bookmark") }
+                .buttonStyle(.bordered).buttonBorderShape(.capsule)
+                .tint(KinoTheme.secondaryControlTint).foregroundStyle(KinoTheme.secondaryControlInk)
+        }
         if !item.showID.isEmpty {
             NavigationLink("All episodes", value: ScreenDestination.show(item.showID))
                 .buttonStyle(.bordered).buttonBorderShape(.capsule)
