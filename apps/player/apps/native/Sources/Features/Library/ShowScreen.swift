@@ -85,7 +85,6 @@ struct ShowScreen: View {
                         MediaGrid(landscape: true, items: episodes.filter { $0.season == season }, onQuickPlay: { quickPlay = $0 })
                         CastShelf(people: show.cast)
                         #else
-                        CastShelf(people: show.cast)
                         MediaGrid(landscape: true, items: episodes.filter { $0.season == season })
                         #endif
                     } else { ContentUnavailableView("No episodes", systemImage: "tv", description: Text("This show has no available episodes.")) }
