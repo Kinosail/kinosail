@@ -61,15 +61,29 @@ import Testing
     }
 
     #if os(tvOS)
-    @Test func televisionWaitsForVideoAndClearsPresentation() {
+    @Test func televisionWaitsForVideoAndClearsPresentation() throws {
         let presentation = PlayerPresentation()
+        let options = try #require(presentation.controller.transportBarCustomMenuItems.first as? UIAction)
         #expect(!presentation.readyForDisplay)
         presentation.controller.player = AVPlayer()
+        var opened = 0
+        let control = UIButton(type: .system)
+        control.addAction(options, for: .primaryActionTriggered)
+        presentation.showOptions = { opened += 1 }
+        control.sendActions(for: .primaryActionTriggered)
+        #expect(opened == 1)
+        presentation.showOptions = { opened += 10 }
+        control.sendActions(for: .primaryActionTriggered)
+        #expect(opened == 11)
         presentation.showCaptions("A caption")
         #expect(presentation.controller.showsPlaybackControls)
+        #expect(presentation.controller.transportBarCustomMenuItems.count == 1)
+        #expect(presentation.controller.transportBarCustomMenuItems.first === options)
         #expect(!presentation.readyForDisplay)
         presentation.clear()
         #expect(presentation.controller.player == nil)
+        #expect(presentation.controller.transportBarCustomMenuItems.first === options)
+        #expect(presentation.showOptions == nil)
         #expect(presentation.captionText.isEmpty)
         #expect(!presentation.readyForDisplay)
     }
