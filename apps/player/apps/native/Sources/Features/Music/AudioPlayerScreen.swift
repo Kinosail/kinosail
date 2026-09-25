@@ -159,19 +159,30 @@ struct AudioPlayerScreen: View {
 struct MiniPlayer: View {
     @Environment(AppSession.self) private var session
     @State private var expanded = false
+    #if os(iOS)
+    private let controlSize: ControlSize = .extraLarge
+    private let contentSpacing: CGFloat = 12
+    private let horizontalPadding: CGFloat = 20
+    private let verticalPadding: CGFloat = 16
+    #else
+    private let controlSize: ControlSize = .large
+    private let contentSpacing: CGFloat = 16
+    private let horizontalPadding: CGFloat = 24
+    private let verticalPadding: CGFloat = 10
+    #endif
     var body: some View {
         if let item = session.player.currentItem, item.isAudio {
-            HStack(spacing: 16) {
+            HStack(spacing: contentSpacing) {
                 Button { expanded = true } label: {
                     HStack(spacing: 12) {
                         Artwork(path: item.artwork, symbol: "music.note", ratio: 1, dimension: 800).frame(width: 48).clipShape(.rect(cornerRadius: 8))
                         VStack(alignment: .leading) { Text(item.title).font(.headline).lineLimit(1); Text(item.artist).font(.caption).foregroundStyle(.secondary).lineLimit(1) }
                     }.frame(maxWidth: .infinity, alignment: .leading)
                 }.buttonStyle(.plain).accessibilityLabel("Now playing: \(item.title)")
-                Button(session.player.isPlaying ? "Pause" : "Play", systemImage: session.player.isPlaying ? "pause.fill" : "play.fill") { session.player.togglePlayback() }.labelStyle(.iconOnly).buttonStyle(.bordered).buttonBorderShape(.capsule).tint(KinoTheme.secondaryControlTint).foregroundStyle(KinoTheme.text).controlSize(.large)
-                Button("Stop", systemImage: "xmark") { session.player.stop(); session.contentRevision = UUID() }.labelStyle(.iconOnly).buttonStyle(.bordered).buttonBorderShape(.capsule).tint(KinoTheme.secondaryControlTint).foregroundStyle(KinoTheme.text).controlSize(.large)
+                Button(session.player.isPlaying ? "Pause" : "Play", systemImage: session.player.isPlaying ? "pause.fill" : "play.fill") { session.player.togglePlayback() }.labelStyle(.iconOnly).buttonStyle(.bordered).buttonBorderShape(.capsule).tint(KinoTheme.secondaryControlTint).foregroundStyle(KinoTheme.text).controlSize(controlSize)
+                Button("Stop", systemImage: "xmark") { session.player.stop(); session.contentRevision = UUID() }.labelStyle(.iconOnly).buttonStyle(.bordered).buttonBorderShape(.capsule).tint(KinoTheme.secondaryControlTint).foregroundStyle(KinoTheme.text).controlSize(controlSize)
             }
-            .padding(.horizontal, 24).padding(.vertical, 10).background(.regularMaterial)
+            .padding(.horizontal, horizontalPadding).padding(.vertical, verticalPadding).background(.regularMaterial)
             .sheet(isPresented: $expanded) { NavigationStack { AudioPlayerScreen(itemID: item.id) }.presentationSizing(.page) }
         }
     }
