@@ -41,7 +41,7 @@ struct LetterJumpSheet: View {
                             .buttonStyle(.bordered)
                             .buttonBorderShape(.roundedRectangle(radius: 14))
                             .tint(KinoTheme.secondaryControlTint)
-                            .foregroundStyle(KinoTheme.text)
+                            .foregroundStyle(KinoTheme.secondaryControlInk)
                             #endif
                         }
                     }

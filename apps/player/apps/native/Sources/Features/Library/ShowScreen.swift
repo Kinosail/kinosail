@@ -43,6 +43,8 @@ struct ShowScreen: View {
                                     ForEach(seasons, id: \.self) { Text($0 == 0 ? "Specials" : "Season \($0)").tag($0) }
                                 }
                                 .pickerStyle(.menu)
+                                .tint(KinoTheme.secondaryControlTint)
+                                .foregroundStyle(KinoTheme.secondaryControlInk)
                                 .accessibilityIdentifier("show.season-picker")
                             }
                             .controlSize(.large)
