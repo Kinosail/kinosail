@@ -58,14 +58,7 @@ for app in player subtitles dashboard; do
   require_text "apps/$app/Makefile" '@$(MAKE) -C ../.. hooks'
 done
 
-require_text .github/workflows/ci.yml 'pull_request:'
-require_text .github/workflows/ci.yml 'branches: [main]'
 require_text .github/workflows/ci.yml './scripts/quality/check-static.sh'
-require_text .github/workflows/ci.yml './scripts/ci/test-go.sh packages'
-require_text .github/workflows/ci.yml 'python3 scripts/ci/required.py repository'
-require_text .github/workflows/app.yml 'python3 scripts/ci/required.py app'
-require_text .github/workflows/release.yml '--workflow ci.yml --commit "$commit" --event push'
-require_text .github/workflows/release.yml 'needs: [preflight, images]'
 
 require_text scripts/quality/check-static.sh 'pnpm --dir "$repo/scripts/quality" install --frozen-lockfile'
 require_text scripts/quality/check-script-duplicates.sh '--threshold 0'

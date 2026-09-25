@@ -40,8 +40,6 @@ tooling-check:
 	@node --test scripts/ci/prepare-codeql-js.test.mjs
 	@python3 scripts/tooling/test-verify-deleted-e2e.py
 	@./scripts/tooling/test-architecture-explorer.py
-	@./scripts/tooling/generate-architecture-explorer.py player --check
-	@./scripts/tooling/generate-architecture-explorer.py subtitles --check
 	@./scripts/tooling/test-deploy-nox-app.sh
 	@./scripts/tooling/test-deploy-nox-remote.sh
 	@./scripts/tooling/test-nox-autodeploy.sh

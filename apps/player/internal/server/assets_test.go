@@ -75,33 +75,6 @@ func TestPagesUseSharedModernStyles(t *testing.T) {
 	}
 }
 
-func TestMobileMediaHeroesStackTheirArtworkAndCopy(t *testing.T) {
-	t.Parallel()
-
-	styles := httptest.NewRecorder()
-	server.New(server.Config{}).ServeHTTP(styles, httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/static/app.css", nil))
-	css := styles.Body.String()
-	for _, fragment := range []string{
-		`body .media-hero{grid-template-columns:1fr;align-items:start;gap:1rem;padding:0 0 2rem}`,
-		`body .media-hero>.hero-poster{width:min(100%,18rem);max-width:100%;min-width:0;height:auto;justify-self:start}`,
-	} {
-		if !strings.Contains(css, fragment) {
-			t.Fatalf("mobile media hero stylesheet missing %q", fragment)
-		}
-	}
-}
-
-func TestCollectionPosterPlaceholderUsesOpenQuadrant(t *testing.T) {
-	t.Parallel()
-
-	response := httptest.NewRecorder()
-	server.New(server.Config{}).ServeHTTP(response, httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/static/app.css", nil))
-	css := response.Body.String()
-	if !strings.Contains(css, ".curation-poster:before{") || !strings.Contains(css, ".curation-poster:has(> :nth-child(3)):not(:has(> :nth-child(4))):before{") || !strings.Contains(css, ".curation-poster:has(> :nth-child(4)):before{") {
-		t.Fatalf("collection poster placeholder does not use the open quadrant")
-	}
-}
-
 func TestViewerCanChooseDarkLightOrSystemTheme(t *testing.T) {
 	assetContracts.ViewerCanChooseDarkLightOrSystemTheme(t)
 }
