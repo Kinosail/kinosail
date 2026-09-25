@@ -23,9 +23,9 @@ struct PhotoScreen: View {
                         .frame(width: geometry.size.width, height: geometry.size.height)
                         .scaleEffect(zoomed ? 2 : 1).offset(offset).clipped()
                         .accessibilityLabel(title)
+                        .accessibilityHint(zoomed ? "Press Play/Pause to fit. Use the remote to pan." : "Press Play/Pause to zoom.")
                         .focusable().onPlayPauseCommand { zoomed.toggle(); offset = .zero }
-                        .onMoveCommand { direction in
-                            guard zoomed else { return }
+                        .onMoveCommand(perform: zoomed ? { direction in
                             switch direction {
                             case .left: offset.width = min(geometry.size.width / 2, offset.width + 100)
                             case .right: offset.width = max(-geometry.size.width / 2, offset.width - 100)
@@ -33,7 +33,7 @@ struct PhotoScreen: View {
                             case .down: offset.height = max(-geometry.size.height / 2, offset.height - 100)
                             @unknown default: break
                             }
-                        }
+                        } : nil)
                 }
                 .toolbar { Button(zoomed ? "Fit photo" : "Zoom in") { zoomed.toggle(); offset = .zero } }
                 #endif

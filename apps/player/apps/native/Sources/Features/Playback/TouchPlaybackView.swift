@@ -162,6 +162,7 @@ struct TouchPlaybackView: View {
                 if editing { scrubPosition = displayedPosition; scrubbing = true; reveal() }
                 else { seek(scrubPosition) }
             }
+            .tint(KinoTheme.signal)
             .disabled(playback.duration <= 0 || playback.player == nil)
             .accessibilityLabel("Playback position")
             .accessibilityValue("\(displayedPosition.clock) of \(playback.duration > 0 ? playback.duration.clock : "unknown duration")")

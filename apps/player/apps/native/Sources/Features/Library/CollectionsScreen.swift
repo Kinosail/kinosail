@@ -30,6 +30,9 @@ struct CollectionsScreen: View {
 struct CollectionScreen: View {
     let name: String
     @Environment(AppSession.self) private var session
+    #if os(tvOS)
+    @State private var quickPlay: ScreenDestination?
+    #endif
     var body: some View {
         ScrollView {
             ResourceView(identity: name, load: { policy in
@@ -37,9 +40,18 @@ struct CollectionScreen: View {
                 return try await client.collection(name: name, policy: policy)
             }) { items in
                 if items.isEmpty { FeaturePlaceholder(title: "No titles yet", symbol: "rectangle.stack", message: "This collection is empty.") }
-                else { MediaGrid(items: items) }
+                else {
+                    #if os(tvOS)
+                    MediaGrid(items: items, onQuickPlay: { quickPlay = $0 })
+                    #else
+                    MediaGrid(items: items)
+                    #endif
+                }
             }.padding(KinoTheme.contentPadding)
         }
         .navigationTitle(name)
+        #if os(tvOS)
+        .navigationDestination(item: $quickPlay) { DestinationScreen(destination: $0) }
+        #endif
     }
 }
