@@ -14,7 +14,7 @@ func TestLanguagePickerShowsEverySupportedLocale(t *testing.T) {
 
 func TestLanguagePickerTemplatesUseCurrentStylesheet(t *testing.T) {
 	t.Parallel()
-	const stylesheet = `/static/app.css?v=skeleton-2`
+	const stylesheet = `/static/app.css?v=skeleton-3`
 	for name, source := range map[string]string{
 		"account":        accountHTML,
 		"home":           homeTemplateSource(),
@@ -26,10 +26,10 @@ func TestLanguagePickerTemplatesUseCurrentStylesheet(t *testing.T) {
 	} {
 		currentStylesheet := stylesheet
 		if name == "home" {
-			currentStylesheet = `/static/app.css?v=skeleton-2`
+			currentStylesheet = `/static/app.css?v=skeleton-3`
 		}
 		if name == "settings" {
-			currentStylesheet = `/static/app.css?v=skeleton-2`
+			currentStylesheet = `/static/app.css?v=skeleton-3`
 		}
 		if !strings.Contains(source, "languagePicker") {
 			t.Fatalf("%s does not contain a language picker", name)
