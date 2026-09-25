@@ -20,6 +20,7 @@ struct PlayerTabTests {
     }
 
     @Test func keepsModeTabsIndependent() throws {
+        #expect(PlayerMode.stored("listen") == .listen)
         #expect(PlayerMode.watch.defaultTabs == PlayerTab.defaults)
         #expect(PlayerMode.listen.defaultTabs == [.home, .music, .audiobooks, .search])
         #expect(try PlayerTab.parse(PlayerMode.listen.defaultTabs.map(\.rawValue).joined(separator: ",")) == PlayerMode.listen.defaultTabs)
