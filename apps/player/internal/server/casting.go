@@ -64,6 +64,7 @@ func registerCasting(mux *http.ServeMux, auth *authentication, index *libraryInd
 	mux.HandleFunc("POST /api/v1/items/{id}/cast", service.startHTTP)
 	mux.HandleFunc("DELETE /api/v1/cast/sessions/{id}", service.endHTTP)
 	mux.HandleFunc("POST /api/v1/cast/devices/scan", service.scanHTTP)
+	mux.HandleFunc("GET /api/v1/cast/config", service.configHTTP)
 	mux.HandleFunc("GET /api/v1/cast/sessions/{id}", service.statusHTTP)
 	mux.HandleFunc("POST /api/v1/cast/sessions/{id}/commands", service.commandHTTP)
 	mux.HandleFunc("GET /cast/{id}/media", service.mediaHTTP)

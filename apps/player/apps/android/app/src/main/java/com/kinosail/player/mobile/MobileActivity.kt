@@ -10,7 +10,7 @@ import android.os.Build
 import android.os.Bundle
 import android.util.Rational
 import android.view.View
-import androidx.activity.ComponentActivity
+import androidx.fragment.app.FragmentActivity
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -31,6 +31,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -45,11 +46,12 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.kinosail.player.R
 import com.kinosail.player.core.ConnectionModel
 import com.kinosail.player.core.ConnectionPhase
+import com.kinosail.player.core.AndroidCastModel
 import com.kinosail.player.core.VideoPipHost
 import com.kinosail.player.design.KinoTheme
 import com.kinosail.player.design.SailBackdrop
 
-class MobileActivity : ComponentActivity(), VideoPipHost {
+class MobileActivity : FragmentActivity(), VideoPipHost {
     override var inPictureInPicture by mutableStateOf(false)
         private set
     private var videoPipReady = false
@@ -113,7 +115,9 @@ class MobileActivity : ComponentActivity(), VideoPipHost {
 @Composable
 private fun MobileStart() {
     val connection: ConnectionModel = viewModel()
+    val casting: AndroidCastModel = viewModel()
     val phase = connection.phase
+    LaunchedEffect(phase) { if (phase is ConnectionPhase.Setup) casting.signOut() }
     val context = LocalContext.current
     if (phase is ConnectionPhase.Connected) {
         MobileLibrary(connection, phase.viewer)

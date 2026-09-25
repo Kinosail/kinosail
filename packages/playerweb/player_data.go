@@ -59,6 +59,7 @@ type PlayerData struct { //nolint:recvcheck // Templates need a value receiver f
 	PlaybackSession          string
 	Plan                     playback.PlaybackPlan
 	HomeAssistant            bool
+	CastAppID                string
 	MediaBitrate             int64
 	MediaWidth               int
 	MediaHeight              int

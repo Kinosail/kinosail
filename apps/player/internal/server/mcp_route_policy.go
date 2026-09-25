@@ -43,7 +43,7 @@ var mcpBlockedRoutes = routeSet(
 	"DELETE /api/v1/me/mfa", "DELETE /api/v1/me/oidc", "DELETE /api/v1/me/saml", "DELETE /api/v1/profiles/{id}",
 	"DELETE /api/v1/remote-access/kill", "DELETE /api/v1/session", "DELETE /api/v1/sessions",
 	"GET /api/v1/activity/export", "GET /api/v1/agent-connections/certificate", "GET /api/v1/api-keys", "GET /api/v1/backup",
-	"GET /api/v1/cast/sessions/{id}", "GET /api/v1/devices", "GET /api/v1/downloads", "GET /api/v1/downloads/{id}", "GET /api/v1/downloads/{id}/file", "GET /api/v1/downloads/{id}/manifest", "GET /api/v1/downloads/identity", "GET /api/v1/events", "GET /api/v1/items/{id}/bookmarks", "GET /api/v1/items/{id}/download-tracks", "GET /api/v1/items/{id}/playback-preferences", "GET /api/v1/items/{id}/watch-progress", "GET /api/v1/me/media-preferences", "GET /api/v1/media-shares", "GET /api/v1/passkeys",
+	"GET /api/v1/cast/config", "GET /api/v1/cast/sessions/{id}", "GET /api/v1/devices", "GET /api/v1/downloads", "GET /api/v1/downloads/{id}", "GET /api/v1/downloads/{id}/file", "GET /api/v1/downloads/{id}/manifest", "GET /api/v1/downloads/identity", "GET /api/v1/events", "GET /api/v1/items/{id}/bookmarks", "GET /api/v1/items/{id}/download-tracks", "GET /api/v1/items/{id}/playback-preferences", "GET /api/v1/items/{id}/watch-progress", "GET /api/v1/me/media-preferences", "GET /api/v1/media-shares", "GET /api/v1/passkeys",
 	"GET /api/v1/me/oidc/link", "GET /api/v1/me/saml/link", "GET /api/v1/profiles",
 	"GET /api/v1/session/oidc", "GET /api/v1/session/saml", "GET /api/v1/supporter", "GET /api/v1/supporter/certificate.svg",
 	"GET /api/v1/supporter/collection", "GET /api/v1/supporter/certificates/one-time.svg", "GET /api/v1/supporter/certificates/monthly.svg", "GET /api/v1/supporter/certificates/yearly.svg",

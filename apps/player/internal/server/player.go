@@ -40,7 +40,7 @@ func playerTemplate(template string) string {
 	template = strings.Replace(template, `/static/downloads.js?v=3`, `/static/downloads.js?v=29`, 1)
 	template = strings.Replace(template, `preload="{{if .HLS}}auto{{else}}metadata{{end}}"`, `preload="auto"`, 1)
 	template = strings.Replace(template, `data-sleep-ended="{{t "Sleep timer ended"}}"`, `data-sleep-ended="{{t "Sleep timer ended"}}" data-offline-copy="{{t "Offline copy"}}" data-offline-description="{{t "Verified file stored on this device."}}" data-offline-ready="{{t "Ready offline on this device"}}" data-offline-unavailable="{{t "Offline copy is unavailable."}}" data-offline-audio="{{t "Audio is fixed in this downloaded copy."}}" data-playback-method="{{t "Playback method"}}" data-open-playback-settings="{{t "Open playback settings."}}"`, 1)
-	template = strings.Replace(template, `/static/player.js?v=34`, `/static/player.js?v=80`, 1)
+	template = strings.Replace(template, `/static/player.js?v=34`, `/static/player.js?v=81`, 1)
 	return tvPlayerTemplate(sharedplayback.PlayerTemplate(template))
 }
 
@@ -103,6 +103,7 @@ func buildPlayerData(request *http.Request, item library.Item, index *libraryInd
 	data.FileSize = byteSize(item.Size)
 	data.DefaultSubtitles = settings.subtitlesDefault()
 	data.HomeAssistant = settings.homeAssistant()
+	data.CastAppID = strings.ToUpper(settings.config.String("integrations.google_cast.app_id"))
 	data.Audiobook = item.Kind == "audiobook"
 	if supportsOffline(item) {
 		data.OfflineQuality = optimizedDownloadLabel(item)

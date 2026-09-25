@@ -33,7 +33,8 @@ const (
 	DefaultSupportURL             = "https://buy.polar.sh/polar_cl_qnIK97BxBRJpKtqw0na3QocqgA3IyY0KlM6wZ36YiP8"
 )
 
-var specs = applicationSpecs(configurationcore.CommonApplicationFields("127.0.0.1:38127", DefaultSupportURL))
+var specs = append(applicationSpecs(configurationcore.CommonApplicationFields("127.0.0.1:38127", DefaultSupportURL)),
+	Spec{"integrations.google_cast.app_id", "KINOSAIL_GOOGLE_CAST_APP_ID", "", text, false, true})
 
 func applicationSpecs(fields []configurationcore.ApplicationField) []Spec {
 	result := make([]Spec, len(fields))

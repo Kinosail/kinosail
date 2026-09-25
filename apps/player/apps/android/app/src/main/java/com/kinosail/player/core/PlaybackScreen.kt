@@ -43,6 +43,8 @@ import androidx.media3.common.util.UnstableApi
 import androidx.media3.session.MediaSession
 import androidx.media3.ui.PlayerView
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.mediarouter.app.MediaRouteButton
+import com.google.android.gms.cast.framework.CastButtonFactory
 import com.kinosail.player.design.KinoColor
 
 @androidx.annotation.OptIn(markerClass = [UnstableApi::class])
@@ -66,6 +68,12 @@ internal fun PlaybackScreen(item: CatalogItem, viewer: Viewer, tv: Boolean, clos
         return
     }
     val player = playback.player
+    val casting = if (tv) null else viewModel<AndroidCastModel>()
+    LaunchedEffect(item.id, viewer.id, playback) {
+        casting?.configure(item, viewer,
+            position = { playback.player?.currentPosition?.div(1000.0) ?: item.progress.seconds },
+            pause = { playback.player?.pause() })
+    }
     var speedPicker by remember { mutableStateOf(false) }
     var trackPicker by remember { mutableStateOf(false) }
     val speedFocus = remember { FocusRequester() }
@@ -125,6 +133,14 @@ internal fun PlaybackScreen(item: CatalogItem, viewer: Viewer, tv: Boolean, clos
                     overflow = TextOverflow.Ellipsis)
                 Row(Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()),
                     horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                    if (casting?.ready == true) AndroidView(factory = { routeContext ->
+                        MediaRouteButton(routeContext).apply {
+                            contentDescription = "Choose Google Cast device"
+                            CastButtonFactory.setUpMediaRouteButton(routeContext.applicationContext, this)
+                        }
+                    })
+                    if (casting?.connected == true) TextButton(onClick = casting::playSelected,
+                        enabled = !casting.busy) { Text("Play on Cast", color = KinoColor.signal) }
                     if (player != null) {
                         val label = "Speed ${speedText(playback.playbackSpeed)}"
                         if (tv) androidx.tv.material3.Button(onClick = { speedPicker = !speedPicker }) {
@@ -162,6 +178,14 @@ internal fun PlaybackScreen(item: CatalogItem, viewer: Viewer, tv: Boolean, clos
                         androidx.tv.material3.Text("Done")
                     } else TextButton(onClick = close) { Text("Done", color = KinoColor.signal) }
                 }
+                if (casting?.active != null) Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                    TextButton(onClick = { casting.skip(-30.0) }) { Text("Back 30", color = KinoColor.signal) }
+                    TextButton(onClick = casting::playPause) { Text("Play / pause", color = KinoColor.signal) }
+                    TextButton(onClick = { casting.skip(30.0) }) { Text("Forward 30", color = KinoColor.signal) }
+                    TextButton(onClick = casting::stop) { Text("Stop Cast", color = KinoColor.signal) }
+                }
+                casting?.notice?.let { Text(it, color = Color.White,
+                    modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite }) }
                 if (speedPicker) Column(Modifier.fillMaxWidth().background(Color.Black.copy(alpha = 0.82f))
                     .padding(12.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
                     Text("Playback speed", color = Color.White)

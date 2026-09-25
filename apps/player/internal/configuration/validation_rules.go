@@ -62,6 +62,7 @@ var configurationValidators = map[string]func(string) error{
 	"remote.duckdns_domain":                optionalValid(validDNSLabel, "must be one DNS label"),
 	"remote.duckdns_token":                 optionalValid(validRemoteToken, "must contain 32 to 128 safe characters"),
 	"integrations.scim.token":              optionalValid(validSCIMToken, "must contain 32 to 256 non-whitespace characters"),
+	"integrations.google_cast.app_id":      optionalValid(validCastAppID, "must be eight hexadecimal characters"),
 	"integrations.scim.token_expires_at":   validateSCIMExpiration,
 	"integrations.oidc.issuer":             validateIdentityURL,
 	"integrations.oidc.redirect_url":       validateIdentityURL,
@@ -80,6 +81,22 @@ var configurationValidators = map[string]func(string) error{
 	"subtitles.language":                   validateSubtitleLanguage,
 	"logging.audit_retention":              validatePositiveDuration,
 	"logging.playback_retention":           validatePositiveDuration,
+}
+
+func validCastAppID(raw string) bool {
+	if len(raw) != 8 {
+		return false
+	}
+	for _, char := range raw {
+		if char < '0' || char > '9' {
+			if char < 'A' || char > 'F' {
+				if char < 'a' || char > 'f' {
+					return false
+				}
+			}
+		}
+	}
+	return true
 }
 
 func allowed(values ...string) func(string) error {

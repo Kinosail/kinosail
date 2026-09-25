@@ -22,6 +22,8 @@ data class CatalogItem(
     val season: Int = 0,
     val episode: Int = 0,
     val stream: String = "",
+    val artist: String = "",
+    val album: String = "",
 )
 
 data class CatalogPage(val items: List<CatalogItem>, val total: Int, val offset: Int, val limit: Int)
@@ -113,7 +115,8 @@ class CatalogApi(
             return CatalogItem(id, kind, item.text("title", 512), item.text("year", 16, empty = true),
                 item.text("plot", 10_000, empty = true).replace("\u200B", ""), artwork,
                 item["progress"]?.let(WatchProgress::parse) ?: WatchProgress(), showId,
-                item.optionalNumber("season", 0..100_000), item.optionalNumber("episode", 0..100_000), stream)
+                item.optionalNumber("season", 0..100_000), item.optionalNumber("episode", 0..100_000), stream,
+                item.text("artist", 512, empty = true), item.text("album", 512, empty = true))
         }
 
         private fun JsonObject.optionalNumber(key: String, range: IntRange): Int =

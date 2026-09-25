@@ -11,7 +11,7 @@ import (
 func transcodeFixture() servertest.TranscodeFixture {
 	return servertest.TranscodeFixture{New: func(config servertest.TranscodeConfig) http.Handler {
 		return server.New(server.Config{MediaDir: config.MediaDir, CacheDir: config.CacheDir, FFmpeg: config.FFmpeg, FFprobe: config.FFprobe})
-	}, WriteExecutable: writeExecutable, AssertSafari: assertSafariDefersMatroska, PlayableHLS: fakePlayableHLS(), PlayerScript: "/static/player.js?v=80"}
+	}, WriteExecutable: writeExecutable, AssertSafari: assertSafariDefersMatroska, PlayableHLS: fakePlayableHLS(), PlayerScript: "/static/player.js?v=81"}
 }
 
 func TestUnsupportedContainerDefaultsToDirectPlaybackWithCompatibleFallback(t *testing.T) {

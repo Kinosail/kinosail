@@ -109,9 +109,9 @@
         const script = document.createElement('script'); script.src = 'https://www.gstatic.com/cv/js/sender/v1/cast_sender.js?loadCastFramework=1'; script.onerror = () => { clearTimeout(timeout); reject(new Error('Google Cast could not load.')); }; document.head.append(script);
       });
       castContext = cast.framework.CastContext.getInstance();
-      castContext.setOptions({ receiverApplicationId: chrome.cast.media.DEFAULT_MEDIA_RECEIVER_APP_ID, autoJoinPolicy: chrome.cast.AutoJoinPolicy.ORIGIN_SCOPED });
+      castContext.setOptions({ receiverApplicationId: /^[A-F0-9]{8}$/.test(player.dataset.castAppId || '') ? player.dataset.castAppId : chrome.cast.media.DEFAULT_MEDIA_RECEIVER_APP_ID, autoJoinPolicy: chrome.cast.AutoJoinPolicy.ORIGIN_SCOPED });
       button('[data-tv-google]').textContent = 'Choose Cast device';
-      message(isAudio ? 'Google Cast is ready. Choose a speaker or TV to play this title.' : 'Google Cast is ready. Choose a TV to play this title.');
+      message(isAudio ? (player.dataset.castAppId ? 'Google Cast is ready. Choose a speaker or TV to play this title.' : 'Google Cast is ready. Choose a TV. Audio-only Cast speakers require a registered receiver app ID.') : 'Google Cast is ready. Choose a TV to play this title.');
       return;
     }
     if (session) throw new Error('Stop playback on the current device before choosing another.');
