@@ -75,8 +75,12 @@ struct AppShell: View {
     }
 
     private var tabs: some View {
+        #if os(iOS)
+        PlayerTabs(profileKey: session.profileKey ?? "")
+        #else
         PlayerTabs(profileKey: session.profileKey ?? "")
             .safeAreaInset(edge: .bottom, spacing: 0) { MiniPlayer() }
+        #endif
     }
 
 }
