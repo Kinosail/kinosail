@@ -26,6 +26,10 @@ struct HeartGraphView: View {
                             .font(.caption2.monospacedDigit()).foregroundStyle(.secondary)
                         Text("\(heart.points.count) readings · \(Int(heart.points.map(\.bpm).min() ?? 0))–\(Int(heart.points.map(\.bpm).max() ?? 0)) bpm")
                             .font(.caption.weight(.semibold))
+                        if let peak = heart.points.max(by: { $0.bpm < $1.bpm }) {
+                            Label("Peak \(Int(peak.bpm)) bpm at \(clock(peak.position))", systemImage: "heart.fill")
+                                .font(.caption.weight(.semibold)).foregroundStyle(signal)
+                        }
                     }
                     Text("Gaps mean no reading or movie position was available.")
                         .font(.caption2).foregroundStyle(.secondary)
@@ -68,6 +72,10 @@ private struct HeartPlot: View {
                    point.position >= previous.position, point.position - previous.position <= 30 {
                     path.addLine(to: location)
                 } else { path.move(to: location) }
+                if point.bpm == high {
+                    context.stroke(Path(ellipseIn: CGRect(x: location.x - 5, y: location.y - 5, width: 10, height: 10)),
+                                   with: .color(color), lineWidth: 2)
+                }
                 context.fill(Path(ellipseIn: CGRect(x: location.x - 2, y: location.y - 2, width: 4, height: 4)), with: .color(color))
                 previous = point
             }
