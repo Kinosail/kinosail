@@ -29,6 +29,16 @@ struct WatchRemoteTests {
         }
     }
 
+    @Test func keepsSelectedPlayerWhenItTemporarilyDisappears() {
+        let phone = WatchPlayerState(id: "iphone", device: "This iPhone", title: "", subtitle: "", itemID: "",
+                                     position: 0, duration: 0, playing: false, audio: false)
+        let tv = WatchPlayerState(id: "a7d345e0-12ab-4cde-8123-123456789abc", device: "Apple TV", title: "Film", subtitle: "",
+                                  itemID: "movie-1", position: 10, duration: 100, playing: true, audio: false)
+        #expect([phone, tv].selectedID(after: nil) == tv.id)
+        #expect([phone].selectedID(after: tv.id) == tv.id)
+        #expect([phone].selectedID(after: nil) == phone.id)
+    }
+
     @Test func mapsReadingsToMovieTimeButLeavesGaps() throws {
         let start = Date(timeIntervalSince1970: 1_000)
         let player = WatchPlayerState(id: "iphone", device: "This iPhone", title: "Film", subtitle: "", itemID: "movie-1",

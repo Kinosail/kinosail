@@ -22,6 +22,12 @@ struct WatchPlayerState: Codable, Sendable, Identifiable {
     }
 }
 
+extension Array where Element == WatchPlayerState {
+    func selectedID(after previous: String?) -> String? {
+        previous ?? first(where: \.active)?.id ?? first?.id
+    }
+}
+
 struct WatchRemoteReply: Codable, Sendable {
     let players: [WatchPlayerState]
     let accepted: Bool
