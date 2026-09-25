@@ -1,7 +1,8 @@
 import Foundation
 
 extension ServerClient {
-    func warmCatalog(mode: PlayerMode? = nil, landingTab: PlayerTab = .home) async {
+    func warmCatalog(mode: PlayerMode? = nil, landingTab: PlayerTab = .home,
+                     onHome: (@Sendable (PlayerMode, HomeSnapshot, Bool) async -> Void)? = nil) async {
         guard !Task.isCancelled else { return }
         if let mode {
             switch landingTab {
@@ -17,7 +18,12 @@ extension ServerClient {
             case .home, .library, .downloads, .settings, .more: break
             }
             guard !Task.isCancelled else { return }
-            _ = try? await home(mode: mode.other, policy: .automatic)
+            if let onHome, let saved = try? await home(mode: mode.other, policy: .cached) {
+                await onHome(mode.other, saved, false)
+            }
+            if let warmed = try? await home(mode: mode.other, policy: .automatic) {
+                await onHome?(mode.other, warmed, true)
+            }
             guard !Task.isCancelled else { return }
             _ = try? await home(mode: mode, policy: .automatic)
         } else { _ = try? await home(policy: .automatic) }

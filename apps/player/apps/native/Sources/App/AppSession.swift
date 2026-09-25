@@ -25,6 +25,7 @@ final class AppSession {
     let player = PlaybackCoordinator()
     let casting = CastCoordinator()
     let artwork = ArtworkLoader()
+    let resourceSnapshots = ResourceSnapshotCache()
     private(set) var progress: ProgressSyncStore?
     #if os(iOS)
     let downloads = OfflineDownloadManager()
@@ -91,6 +92,7 @@ final class AppSession {
                 if client?.identity == candidate.identity {
                     player.stop()
                     clearSystemContent()
+                    resourceSnapshots.clear()
                     client = nil; viewer = nil; progress = nil
                     #if os(iOS)
                     await downloads.lock()
@@ -156,6 +158,7 @@ final class AppSession {
                         player.stop()
                         await casting.clear()
                         await artwork.clear()
+                        resourceSnapshots.clear()
                         guard generation == attempt, !Task.isCancelled else { try await keychain.discard(saved); throw CancellationError() }
                         let previous = client
                         clearSystemContent()
@@ -228,6 +231,7 @@ final class AppSession {
         catch { notice = Self.message(error); return }
         guard generation == attempt else { return }
         await artwork.clear()
+        resourceSnapshots.clear()
         guard generation == attempt else { return }
         let previous = client
         client = nil
