@@ -6,6 +6,9 @@ struct BookmarksScreen: View {
     var onReadingSelection: ((ReaderPosition) -> Void)? = nil
     @Environment(AppSession.self) private var session
     @Environment(\.dismiss) private var dismiss
+    #if os(tvOS)
+    @Namespace private var bookmarksFocus
+    #endif
     @State private var bookmarks: [Bookmark] = []
     @State private var loaded = false
     @State private var busy = false
@@ -16,6 +19,12 @@ struct BookmarksScreen: View {
 
     var body: some View {
         List {
+            #if os(tvOS)
+            Section {
+                Button("Back", systemImage: "chevron.left") { dismiss() }
+                    .tvOSDefaultPlayFocus(in: bookmarksFocus, id: "bookmarks.back")
+            }
+            #endif
             if canAdd {
                 Section("Save this position") {
                     TextField("Bookmark name", text: $name)
@@ -27,7 +36,7 @@ struct BookmarksScreen: View {
                 ForEach(0..<3) { index in SkeletonRow(status: index == 0 ? "Loading bookmarks…" : nil) }
             }
             else if loaded && bookmarks.isEmpty && message == nil {
-                ContentUnavailableView("No bookmarks yet", systemImage: "bookmark", description: Text("Save a position while playing or reading a title."))
+                ContentUnavailableView("No bookmarks yet", systemImage: "bookmark", description: Text(emptyMessage))
             }
             ForEach(bookmarks) { bookmark in
                 HStack {
@@ -39,6 +48,9 @@ struct BookmarksScreen: View {
                 }
             }
         }
+        #if os(tvOS)
+        .focusScope(bookmarksFocus)
+        #endif
         .tvOSConfigurationLayout(title: "Bookmarks", symbol: "bookmark")
         .navigationTitle("Bookmarks")
         .navigationDestination(item: $destination) { DestinationScreen(destination: $0) }
@@ -47,6 +59,13 @@ struct BookmarksScreen: View {
             do { let next = try await client.bookmarks(itemID: itemID); try Task.checkCancellation(); bookmarks = next; loaded = true; message = nil }
             catch is CancellationError {} catch { message = AppSession.message(error) }
         }
+    }
+    private var emptyMessage: String {
+        #if os(tvOS)
+        "Save a position while playing a title."
+        #else
+        "Save a position while playing or reading a title."
+        #endif
     }
     private var canAdd: Bool { readingPosition != nil || session.player.currentItem?.id == itemID }
     private func positionLabel(_ position: BookmarkPosition) -> String {
