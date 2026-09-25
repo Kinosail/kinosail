@@ -47,10 +47,27 @@ test("Mobile More menu prioritizes personal tabs", async ({ page }, testInfo) =>
 
 test("Owner can edit Main navigation from desktop and compact layouts", async ({ page }, testInfo) => {
   await login(page);
-  for (const viewport of [{ width: 1440, height: 900 }, { width: 1024, height: 768 }, { width: 720, height: 450 }, { width: 390, height: 844 }, { width: 320, height: 800 }]) {
+  for (const viewport of [{ width: 1440, height: 900 }, { width: 1101, height: 768 }, { width: 1024, height: 768 }, { width: 720, height: 450 }, { width: 390, height: 844 }, { width: 320, height: 800 }]) {
     await page.setViewportSize(viewport);
     await page.goto("/");
     const navigation = page.getByRole("navigation", { name: "Main navigation" });
+    if (viewport.width > 1100) {
+      await expect(page.locator(".desktop-sidebar")).toBeVisible();
+      await expect(navigation.getByRole("heading")).toHaveText(["Library", "Your library", "Library views"]);
+      await expect(navigation.getByRole("link", { name: "Home" })).toHaveAttribute("aria-current", "page");
+      await expect(page.locator(".app-header .header-actions > .header-supporter")).toBeVisible();
+      expect(await page.evaluate(() => document.documentElement.scrollWidth), `horizontal overflow at ${viewport.width}px`).toBeLessThanOrEqual(viewport.width);
+      const edit = navigation.getByRole("link", { name: "Edit navigation" });
+      await expect(edit).toBeVisible();
+      await page.screenshot({ path: testInfo.outputPath(`${viewport.width}-main-navigation.png`) });
+      await edit.click();
+      await expect(page).toHaveURL(/\/settings#navigation$/);
+      await expect(page.getByRole("heading", { name: "Navigation", exact: true })).toBeVisible();
+      await expect(page.getByLabel("Show Movies", { exact: true })).toBeChecked();
+      await expect(page.getByRole("button", { name: "Move Movies down", exact: true })).toBeVisible();
+      await page.screenshot({ path: testInfo.outputPath(`${viewport.width}-navigation-editor.png`), fullPage: true });
+      continue;
+    }
     await navigation.getByText("More", { exact: true }).click();
     if (viewport.width < 901) {
       await expect(page.locator(".title-jump-scrubbable .letter-jump")).toBeHidden();

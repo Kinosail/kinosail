@@ -469,7 +469,11 @@
     ],
     "breakpoints": [
       {
-        "name": "desktop-navigation",
+        "name": "wide-desktop-sidebar",
+        "value": "1101px"
+      },
+      {
+        "name": "intermediate-top-navigation",
         "value": "901px"
       },
       {

@@ -57,20 +57,20 @@ func TestLinksProjectPlayerNavigation(t *testing.T) {
 	localize := func(value string) string { return "localized " + value }
 	primary, more := Links([]string{"home", "movies", "shows", "music", "books"}, "movies", localize)
 	wantPrimary := []Link{
-		{"localized Home", "/?view=all", false},
-		{"localized Movies", "/?view=movies", true},
-		{"localized Shows", "/?view=shows", false},
-		{"localized Music", "/?view=music", false},
+		{"localized Home", "/?view=all", "library", false},
+		{"localized Movies", "/?view=movies", "library", true},
+		{"localized Shows", "/?view=shows", "library", false},
+		{"localized Music", "/?view=music", "library", false},
 	}
-	if !slices.Equal(primary, wantPrimary) || !slices.Equal(more, []Link{{"localized Books", "/?view=books", false}}) {
+	if !slices.Equal(primary, wantPrimary) || !slices.Equal(more, []Link{{"localized Books", "/?view=books", "library", false}}) {
 		t.Fatalf("Links() = %#v, %#v", primary, more)
 	}
 	primary, more = Links([]string{"home"}, "home", localize)
-	if !slices.Equal(primary, []Link{{"localized Home", "/?view=all", true}}) || more != nil {
+	if !slices.Equal(primary, []Link{{"localized Home", "/?view=all", "library", true}}) || more != nil {
 		t.Fatalf("Links(home) = %#v, %#v", primary, more)
 	}
 	primary, more = Links([]string{"unknown"}, "", localize)
-	if !slices.Equal(primary, []Link{{"localized ", "", true}}) || more != nil {
+	if !slices.Equal(primary, []Link{{"localized ", "", "", true}}) || more != nil {
 		t.Fatalf("Links(unknown) = %#v, %#v", primary, more)
 	}
 }
@@ -111,7 +111,7 @@ func TestControllerProjectsAppStateAndLocalization(t *testing.T) {
 		func(language, name string) string { return language + " " + name },
 	)
 	primary, more := controller.Links("all", "fr")
-	if len(primary) != 4 || primary[0] != (Link{"fr Home", "/?view=all", true}) || len(more) != 1 || more[0].Name != "fr History" {
+	if len(primary) != 4 || primary[0] != (Link{"fr Home", "/?view=all", "library", true}) || len(more) != 1 || more[0].Name != "fr History" || more[0].Group != "viewing" {
 		t.Fatalf("Controller.Links() = %#v, %#v", primary, more)
 	}
 	preferences := controller.Preferences("es")

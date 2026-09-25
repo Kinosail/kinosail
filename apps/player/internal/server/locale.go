@@ -77,7 +77,9 @@ type localizedTemplate = *localization.TemplateSet
 func newLocalizedTemplate(name, source string) *localization.TemplateSet {
 	source = strings.ReplaceAll(source, `/static/main.kinosail.bundle.js?v=12`, `/static/main.kinosail.bundle.js?v=30`)
 	source = strings.Replace(source, `<html lang="en">`, `<html lang="en" data-theme="dark">`, 1)
-	return localization.NewTemplateSet(name, string(applicationShellCSSVersion([]byte(source))), "30", localeCatalog, supportedLanguages, httpguard.CSRFTemplateSource, httpguard.CSRFParseFuncs(uiIcon), localeTemplateRuntime)
+	funcs := httpguard.CSRFParseFuncs(uiIcon)
+	funcs["sidebarGroups"] = sidebarGroups
+	return localization.NewTemplateSet(name, string(applicationShellCSSVersion([]byte(source))), "30", localeCatalog, supportedLanguages, httpguard.CSRFTemplateSource, funcs, localeTemplateRuntime)
 }
 
 func localized(next http.Handler) http.Handler {
