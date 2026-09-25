@@ -91,7 +91,7 @@
         try { await adopt(media, { status: () => request(`/api/v1/cast/sessions/${media.id}`), command: (command) => request(`/api/v1/cast/sessions/${media.id}/commands`, 'POST', command) }, device.name); } catch (error) { await request(`/api/v1/cast/sessions/${media.id}/commands`, 'POST', { action: 'stop' }).catch(() => {}); await revoke(media.id); throw error; }
       })); list.append(choice);
     });
-    message(result.devices.length ? 'Choose a receiver.' : 'No DLNA receivers found. Enable media renderer mode on the speaker or TV and search again.');
+    message(result.devices.length ? 'Choose a receiver.' : `No DLNA receivers found. Enable media renderer mode on the ${player.tagName === 'AUDIO' ? 'speaker or TV' : 'TV'} and search again.`);
   }));
   button('[data-tv-google]').addEventListener('click', () => run(async () => {
     const isAudio = player.tagName === 'AUDIO';
@@ -111,7 +111,7 @@
       castContext = cast.framework.CastContext.getInstance();
       castContext.setOptions({ receiverApplicationId: chrome.cast.media.DEFAULT_MEDIA_RECEIVER_APP_ID, autoJoinPolicy: chrome.cast.AutoJoinPolicy.ORIGIN_SCOPED });
       button('[data-tv-google]').textContent = 'Choose Cast device';
-      message('Google Cast is ready. Choose a speaker or TV to play this title.');
+      message(isAudio ? 'Google Cast is ready. Choose a speaker or TV to play this title.' : 'Google Cast is ready. Choose a TV to play this title.');
       return;
     }
     if (session) throw new Error('Stop playback on the current device before choosing another.');

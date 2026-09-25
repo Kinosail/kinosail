@@ -44,6 +44,7 @@ function fixture(kind, capabilities, metadata = {}) {
     },
   });
   return {
+    async enable() { await control('[data-tv-google]').click(); },
     async choose() { await control('[data-tv-google]').click(); await control('[data-tv-google]').click(); },
     get status() { return control('[data-tv-status]').textContent; },
     get castRequests() { return castRequests; },
@@ -70,6 +71,12 @@ test('a video title is not sent to an audio-only receiver', async () => {
   assert.match(f.status, /cannot play video/);
   assert.equal(f.castRequests, 0);
   assert.equal(f.loads, 0);
+});
+
+test('video Cast setup directs the viewer to a display', async () => {
+  const f = fixture('video', ['video']);
+  await f.enable();
+  assert.equal(f.status, 'Google Cast is ready. Choose a TV to play this title.');
 });
 
 for (const metadata of [{ kind: undefined }, { artist: 'x'.repeat(513) }, { album: 42 }, { artist: 'Bad\nArtist' }]) {
