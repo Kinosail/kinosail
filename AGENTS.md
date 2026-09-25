@@ -45,6 +45,7 @@
 - Run container, populated-browser, cross-browser, performance, race, and release gates only when the changed surface requires them.
 - Run root checks serially because the Go linter uses a shared lock.
 - For visible changes, follow the app's `DESIGN.md` and `impeccable` skill. Inspect populated responsive renders and accessibility evidence.
+- For each UI change in Player, Subtitles, Dashboard, or the native iOS/tvOS clients, compare pending, loaded, empty, and failed states. Check skeleton geometry against loaded content at affected phone, desktop, and TV sizes. Show placeholders only during actual pending work, remove them on success or failure, and add a focused regression check for changed asynchronous surfaces.
 - Report exactly what passed, what was not run, and every remaining device, browser, deployment, or environment boundary.
 
 ## Delivery

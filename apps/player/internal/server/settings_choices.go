@@ -24,5 +24,5 @@ func updateChoicePage(page string) string {
 	page = strings.ReplaceAll(page, `Choose update checks`, `Choose how Kinosail updates`)
 	page = strings.ReplaceAll(page, `The Owner notification only says that an update is available. Kinosail never installs updates or gains access to Docker.`, `The installed Docker or native update adapter performs the update. Kinosail does not gain direct access to Docker or system package tools.`)
 	page = strings.ReplaceAll(page, `Kinosail only shows an Owner notification. Installation stays manual and uses the verified installer.`, `The installed Docker or native update adapter performs the update with the same safety checks.`)
-	return strings.NewReplacer(`/static/theme.js?v=electric-1`, `/static/theme.js?v=electric-1`, `/static/app.css?v=electric-1`, `/static/app.css?v=electric-1`).Replace(page)
+	return strings.NewReplacer(`/static/theme.js?v=electric-1`, `/static/theme.js?v=electric-1`, `/static/app.css?v=skeleton-2`, `/static/app.css?v=skeleton-2`).Replace(page)
 }

@@ -8,7 +8,7 @@
   <title>Supporter · Kinosail Dashboard</title>
   <link rel="icon" href="/favicon.svg?v=5" type="image/svg+xml"><link rel="apple-touch-icon" href="/static/apple-touch-icon.png?v=5">
   <link rel="stylesheet" href="/static/base.css">
-  <link rel="stylesheet" href="/static/supporter.css">
+  <link rel="stylesheet" href="/static/supporter.css?v=3">
 <link rel="stylesheet" href="/static/last-light.css?v=electric-1"></head>
 <body>
   <a class="skip-link" href="#badge-case">Skip to Badge Case</a>
@@ -23,7 +23,12 @@
       <div class="collection-count"><strong id="unlocked-count">0</strong><span>of 20 collected</span></div>
     </header>
 
-    <div id="supporter-loading" class="supporter-loading" role="status">Opening the case…<div class="loading-grid" aria-hidden="true"><span></span><span></span><span></span><span></span></div></div>
+    <div id="supporter-loading" class="supporter-loading" role="status"><span class="loading-label">Opening the case…</span><div aria-hidden="true">
+      <div class="masterwork loading-masterwork"><div class="masterwork-mark"><span class="masterwork-left"></span><span class="masterwork-core"><i></i><i></i><i></i></span><span class="masterwork-right"></span></div><div><p class="eyebrow">Dashboard masterwork</p><h2>Fleet Command awaits</h2><p>Collect a badge from each family to earn Fleet Command. Its level matches the lower of the two.</p><strong>Not yet forged</strong></div></div>
+      <div class="loading-family"><span></span><span></span><span></span><div class="loading-badges"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div></div>
+      <div class="loading-family"><span></span><span></span><span></span><div class="loading-badges"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div></div>
+      <div class="loading-activation"><div><span></span><span></span><span></span></div><div><span></span><span></span><span></span></div></div>
+    </div></div>
     <div id="supporter-content" hidden>
       <section id="masterwork" class="masterwork is-empty" aria-labelledby="masterwork-title">
         <div class="masterwork-mark" aria-hidden="true"><span class="masterwork-left"></span><span class="masterwork-core"><i></i><i></i><i></i></span><span class="masterwork-right"></span></div>

@@ -40,7 +40,22 @@ struct SupporterScreen: View {
             VStack(alignment: .leading, spacing: 28) {
                 Text("A place in the story.").font(headingFont).accessibilityAddTraits(.isHeader)
                 Text("Your Server's existing badges appear here. Kinosail stays complete and free for everyone.")
-                if loading && collection == nil { ProgressView("Loading collection…") }
+                if loading && collection == nil {
+                    VStack(spacing: 24) {
+                        ForEach(0..<3) { _ in
+                            HStack(spacing: 24) {
+                                RoundedRectangle(cornerRadius: 12).fill(KinoTheme.surface).frame(width: badgeSize, height: badgeSize)
+                                VStack(alignment: .leading, spacing: 12) {
+                                    RoundedRectangle(cornerRadius: 4).fill(KinoTheme.raised).frame(width: 190, height: 20)
+                                    RoundedRectangle(cornerRadius: 4).fill(KinoTheme.raised).frame(width: 130, height: 16)
+                                    RoundedRectangle(cornerRadius: 4).fill(KinoTheme.raised).frame(width: 160, height: 14)
+                                }
+                            }.frame(maxWidth: .infinity, alignment: .leading)
+                        }
+                    }
+                    .accessibilityHidden(true)
+                    .overlay(alignment: .topTrailing) { ProgressView("Loading collection…").labelsHidden().accessibilityLabel("Loading collection…") }
+                }
                 if let collection {
                     ForEach(collection.badges.filter { $0.edition != "legacy" }) { badge in
                         HStack(spacing: 24) {
