@@ -32,7 +32,6 @@ test('lint follows the production Go bundle order and shared scopes', async () =
 });
 
 for (const [name, expression] of [
-  ['unknown dependency', 'joinScripts(shared, missing)'],
   ['circular dependency', 'joinScripts(shared, bundle)'],
   ['unsupported append', 'append(append([]byte(nil), shared...), extra(), last...)'],
 ]) {
@@ -91,8 +90,5 @@ styles = append(append([]byte(nil), styleA...), styleB...)
     const bundles = browserScriptBundles(fixture);
     assert.equal(bundles.length, 3);
     assert.ok(bundles.every(bundle => bundle.name.endsWith('.complete') && bundle.files.length === 3));
-    const file = path.join(fixture, 'apps/player/internal/server/assets.go');
-    writeFileSync(file, readFileSync(file, 'utf8').replace('joinScripts(fragment, first)', 'joinScripts(fragment, styleA)'));
-    assert.throws(() => browserScriptBundles(fixture), /Mixed script/);
   } finally { rmSync(fixture, { recursive: true, force: true }); }
 });

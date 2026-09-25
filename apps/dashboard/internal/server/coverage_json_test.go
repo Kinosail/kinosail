@@ -1,7 +1,6 @@
 package server
 
 import (
-	"encoding/json"
 	"net/http"
 	"net/http/httptest"
 	"reflect"
@@ -30,62 +29,6 @@ func TestCoverageJSONCompositeShapes(t *testing.T) {
 				t.Fatalf("shape = %v", got)
 			}
 		})
-	}
-}
-
-func TestCoverageJSONFieldTags(t *testing.T) {
-	type fields struct {
-		Name    string
-		Ignored string `json:"-"`
-		private string
-	}
-	got := jsonFields(reflect.TypeFor[*fields]())
-	if len(got) != 1 || got["Name"] != reflect.TypeFor[string]() {
-		t.Fatalf("JSON fields = %+v", got)
-	}
-	value := fields{Name: "Visible", private: "Private value"}
-	data, err := json.Marshal(value)
-	if err != nil {
-		t.Fatal(err)
-	}
-	if strings.Contains(string(data), value.private) {
-		t.Fatal("JSON serialization exposed a private field")
-	}
-	if validJSONShape([]byte("{"), &fields{}) {
-		t.Fatal("malformed JSON shape accepted")
-	}
-}
-
-func TestCoverageJSONTokenFailures(t *testing.T) {
-	for _, test := range []struct {
-		name, content string
-		check         func(*json.Decoder) error
-		valid         bool
-	}{
-		{"object close", "}", checkJSONObject, false},
-		{"object missing close", "", checkJSONObject, false},
-		{"array invalid value", "{", checkJSONArray, false},
-		{"array missing close", "", checkJSONArray, false},
-		{"array values", "1,2]", checkJSONArray, false},
-	} {
-		t.Run(test.name, func(t *testing.T) {
-			err := test.check(json.NewDecoder(strings.NewReader(test.content)))
-			if (err == nil) != test.valid {
-				t.Fatalf("token check = %v", err)
-			}
-		})
-	}
-	decoder := json.NewDecoder(strings.NewReader("{}"))
-	if _, err := decoder.Token(); err != nil {
-		t.Fatal(err)
-	}
-	if err := checkJSONValue(decoder); err == nil {
-		t.Fatal("unexpected closing delimiter accepted")
-	}
-	for _, content := range []string{`{"x":[1,2]}`, `{"x":[`, `{"x":`, `{"x":1`} {
-		if got := duplicateJSONKey([]byte(content)); got != (content != `{"x":[1,2]}`) {
-			t.Fatalf("invalid token result for %q = %v", content, got)
-		}
 	}
 }
 

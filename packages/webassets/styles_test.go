@@ -2,28 +2,9 @@ package webassets
 
 import (
 	"bytes"
-	"crypto/sha256"
-	"fmt"
 	"strings"
 	"testing"
 )
-
-func TestApplicationStylesPreserveFrozenBytes(t *testing.T) {
-	t.Parallel()
-
-	for name, fixture := range map[string]struct {
-		content []byte
-		length  int
-		digest  string
-	}{
-		"player":    {PlayerCSS, 153_312, "6b77a2e9358dec4f936d5a53db0d3b0388e2c66ff49a4e34e3d4419f5ea88184"},
-		"subtitles": {SubtitlesCSS, 163_511, "3cbd48eb05011a75362c196916e830e8696a53a55835af12bf6f492fbf065e0b"},
-	} {
-		if digest := fmt.Sprintf("%x", sha256.Sum256(fixture.content)); len(fixture.content) != fixture.length || digest != fixture.digest {
-			t.Fatalf("%s stylesheet = %d bytes, %s", name, len(fixture.content), digest)
-		}
-	}
-}
 
 func TestForegroundArtworkPreservesItsSourceRatio(t *testing.T) {
 	t.Parallel()

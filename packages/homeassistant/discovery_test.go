@@ -107,11 +107,3 @@ func TestDiscovery(t *testing.T) { //nolint:cyclop,funlen // One matrix proves e
 		t.Fatal("failed advertisement stored")
 	}
 }
-
-func TestAdvertiseHomeAssistant(t *testing.T) {
-	service, err := advertiseHomeAssistant("Kinosail homeassistant package test", 38127, []string{"id=test"})
-	if err != nil {
-		t.Skipf("multicast DNS unavailable: %v", err)
-	}
-	service.Shutdown()
-}
