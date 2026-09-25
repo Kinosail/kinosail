@@ -120,8 +120,8 @@ test("mobile media detail heroes stack artwork across every detail family", asyn
 	}
 
 	await page.goto(routes[1], { waitUntil: "domcontentloaded" });
-	const actor = await page.locator('a[href^="/actor?name="]').first().getAttribute("href");
-	if (actor) routes.push(actor);
+	const actor = page.locator('a[href^="/actor?name="]').first();
+	if (await actor.count()) routes.push((await actor.getAttribute("href"))!);
 
 	for (const route of routes) {
 		await page.goto(route, { waitUntil: "domcontentloaded" });
