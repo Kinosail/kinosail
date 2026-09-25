@@ -7,6 +7,7 @@ struct Artwork: View {
     var dimension = 1600
     var fillsFrame = false
     var isBackdrop = false
+    var canvasSize: CGSize? = nil
     @Environment(AppSession.self) private var session
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var image: UIImage?
@@ -49,7 +50,11 @@ struct Artwork: View {
             }
     }
     @ViewBuilder private var canvas: some View {
-        Color.clear.aspectRatio(ratio, contentMode: .fit)
+        if let canvasSize {
+            Color.clear.frame(width: canvasSize.width, height: canvasSize.height)
+        } else {
+            Color.clear.aspectRatio(ratio, contentMode: .fit)
+        }
     }
 
     static func contentMode(fillsFrame: Bool) -> ContentMode {
