@@ -49,8 +49,7 @@ struct Artwork: View {
             }
     }
     @ViewBuilder private var canvas: some View {
-        if fillsFrame { Color.clear }
-        else { Color.clear.aspectRatio(ratio, contentMode: .fit) }
+        Color.clear.aspectRatio(ratio, contentMode: .fit)
     }
 
     static func contentMode(fillsFrame: Bool) -> ContentMode {
@@ -84,6 +83,7 @@ struct MediaCard: View {
                 Artwork(path: usesBackdrop ? item.backdrop : item.poster,
                         symbol: item.kind.symbol, ratio: landscape ? 16 / 9 : item.isAudio ? 1 : 2 / 3,
                         dimension: landscape || dynamicTypeSize.isAccessibilitySize ? 1600 : 800,
+                        fillsFrame: landscape && item.kind == .photo,
                         isBackdrop: usesBackdrop)
                     .background(landscape && !usesBackdrop ? KinoTheme.surface : .clear)
                     .clipShape(.rect(cornerRadius: 12))

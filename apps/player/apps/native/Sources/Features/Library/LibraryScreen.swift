@@ -99,7 +99,7 @@ struct LibraryScreen: View {
                     }
                 } else {
                     #if os(tvOS)
-                    MediaGrid(items: items, onFocus: { item in
+                    MediaGrid(landscape: selection == .photos, items: items, onFocus: { item in
                         needsFirstCardFocus = false
                         if failure == nil && LibraryFocusPaging.shouldLoadNextPage(focusedID: item.id, items: items, page: page) {
                             Task { await load(reset: false) }
