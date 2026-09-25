@@ -65,7 +65,7 @@ struct ShowScreen: View {
                         #if os(iOS)
                         Picker("Season", selection: Binding(get: { season }, set: { selectedSeason = $0 })) {
                             ForEach(seasons, id: \.self) { Text($0 == 0 ? "Specials" : "Season \($0)").tag($0) }
-                        }.frame(maxWidth: 420).accessibilityIdentifier("show.season-picker")
+                        }.pickerStyle(.navigationLink).frame(maxWidth: 420).accessibilityIdentifier("show.season-picker")
                         if session.viewer?.downloads == true {
                             Button(downloading ? "Adding episodes…" : "Download season", systemImage: "arrow.down.circle") {
                                 guard let client = session.client, !downloading else { return }
