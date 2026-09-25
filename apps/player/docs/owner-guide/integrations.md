@@ -1,6 +1,6 @@
 ---
 title: Connect integrations
-description: Configure metadata, identity, webhooks, DLNA, and MCP.
+description: Configure metadata, identity, webhooks, device playback, and MCP.
 section: Own the Server
 ---
 
@@ -27,6 +27,10 @@ SCIM provisioning uses the `/scim/v2` base URL. In deployment configuration, sav
 Set the webhook URL and token in deployment configuration. Kinosail sends configured event notifications to that endpoint. Keep the token in a secret file where possible.
 
 DLNA exposes direct media URLs to devices on the local network. Set `KINOSAIL_DLNA_URL`, then select **Enable DLNA** in **Settings → DLNA**. Disabling it uses **Disable and revoke** and revokes discovery capability. DLNA is local-network access; it is not a remote relay.
+
+## Configure Google Cast speakers
+
+Google Cast TVs can use the default receiver. For audio-only Cast speakers, [register a Styled Media Receiver](https://developers.google.com/cast/docs/registration), enable **Supports casting to audio-only devices**, and copy its eight-character application ID. Set **Google Cast receiver app ID** in **Settings → Deployment configuration** or `KINOSAIL_GOOGLE_CAST_APP_ID`, then restart the Server. The receiver must be able to reach the Server's media URL; HTTPS URLs need a certificate the receiver trusts.
 
 ## Configure MCP and API clients
 
