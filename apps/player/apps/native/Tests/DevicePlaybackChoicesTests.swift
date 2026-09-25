@@ -17,7 +17,10 @@ struct DevicePlaybackChoicesTests {
 
         #expect(DevicePlaybackChoices.load(scope: "profile-a", from: defaults) == choices)
         #expect(DevicePlaybackChoices.load(scope: "profile-b", from: defaults) == DevicePlaybackChoices())
-        let applied = DevicePlaybackChoices.load(scope: "profile-a", from: defaults).apply(to: PlaybackPreferences())
+        var baseline = PlaybackPreferences()
+        baseline.dialogueBoost = true; baseline.nightMode = true
+        let applied = DevicePlaybackChoices.load(scope: "profile-a", from: defaults).apply(to: baseline)
+        #expect(applied.dialogueBoost && applied.nightMode)
         #expect(applied.rate == 2)
         #expect(applied.subtitleLanguage == "en" && applied.subtitleTrack == "English")
         #expect(applied.audioLanguage == "es" && applied.audioTrack == "Spanish")

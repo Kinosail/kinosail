@@ -79,6 +79,9 @@ struct PlaybackPreferencesScreen: View {
         guard let client = session.client, !busy else { return }
         busy = true
         let edited = preferences, baseline = original
+        var withoutEffects = edited
+        withoutEffects.dialogueBoost = baseline.dialogueBoost; withoutEffects.nightMode = baseline.nightMode
+        let effectsOnly = withoutEffects == baseline
         Task {
             defer {
                 busy = false
@@ -92,7 +95,7 @@ struct PlaybackPreferencesScreen: View {
                     message = "Preferences saved."
                     if preferences.dialogueBoost == edited.dialogueBoost,
                        preferences.nightMode == edited.nightMode, session.player.currentItem?.id == itemID {
-                        do { try await session.player.applyPreferences(saved.playback) }
+                        do { try await session.player.applyPreferences(saved.playback, preserveDeviceChoices: effectsOnly) }
                         catch { message = "Preferences saved on your Server, but current playback could not update. \(AppSession.message(error))" }
                     }
                 } else {
@@ -114,7 +117,7 @@ struct PlaybackPreferencesScreen: View {
                        preferences.nightMode == edited.nightMode, let item = session.player.currentItem {
                         do {
                             let current = try await client.playbackPreferences(itemID: item.id)
-                            if !current.overridden { try await session.player.applyPreferences(current.playback) }
+                            if !current.overridden { try await session.player.applyPreferences(current.playback, preserveDeviceChoices: effectsOnly) }
                         } catch { message = "Preferences saved on your Server, but current playback could not update. \(AppSession.message(error))" }
                     }
                 }
