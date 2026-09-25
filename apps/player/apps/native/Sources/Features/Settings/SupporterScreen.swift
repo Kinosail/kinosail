@@ -2,6 +2,10 @@ import SwiftUI
 
 struct SupporterScreen: View {
     @Environment(AppSession.self) private var session
+    @Environment(\.dismiss) private var dismiss
+    #if os(tvOS)
+    @Namespace private var supporterFocus
+    #endif
     @State private var collection: SupporterCollection?
     @State private var error: String?
     @State private var loading = true
@@ -38,6 +42,11 @@ struct SupporterScreen: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 28) {
+                #if os(tvOS)
+                Button("Back to Settings", systemImage: "chevron.left") { dismiss() }
+                    .buttonStyle(.bordered)
+                    .tvOSDefaultPlayFocus(in: supporterFocus, id: "supporter.back")
+                #endif
                 Text("A place in the story.").font(headingFont).accessibilityAddTraits(.isHeader)
                 Text("Your Server's existing badges appear here. Kinosail stays complete and free for everyone.")
                 if loading && collection == nil {
@@ -87,6 +96,7 @@ struct SupporterScreen: View {
         }
         #if os(tvOS)
         .cinemaBackground()
+        .focusScope(supporterFocus)
         .navigationTitle("")
         #else
         .background(KinoTheme.background)
