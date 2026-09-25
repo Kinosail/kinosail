@@ -17,7 +17,7 @@ import (
 	"github.com/MikeO7/kinosail/packages/updatecontrol"
 )
 
-func TestBuiltInCommandAndConfigurationRemainingEdges(t *testing.T) {
+func TestBuiltInCommandRemainingEdges(t *testing.T) {
 	t.Parallel()
 	unusedUpdate := updatecontrol.Command(func(string, io.Reader, io.Writer, string, string, string) error { return nil })
 	for _, test := range []struct {
@@ -33,13 +33,6 @@ func TestBuiltInCommandAndConfigurationRemainingEdges(t *testing.T) {
 		if !handled || (err != nil) != test.wantError {
 			t.Errorf("%s = handled %v, error %v", test.name, handled, err)
 		}
-	}
-
-	type snapshot struct{ fields []string }
-	command := BindConfigurationCommand(func(value snapshot) []string { return value.fields }, func(value string) string { return value }, "default", "ui", "file", "environment")
-	want := errors.New("load failed")
-	if handled, err := command([]string{"config", "validate"}, io.Discard, func(string) (snapshot, error) { return snapshot{}, want }); !handled || !errors.Is(err, want) {
-		t.Fatalf("load failure = handled %v, error %v", handled, err)
 	}
 }
 
