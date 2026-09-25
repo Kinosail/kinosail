@@ -37,6 +37,12 @@ for (const width of [390, 1440]) {
       await expect(page.locator(".home-feature > img")).toHaveCSS("visibility", "hidden");
       await expect(page.locator(".resume-link .poster")).toHaveCSS("visibility", "hidden");
       await expect(page.locator(".home-feature .button").first()).toHaveCSS("color", "rgba(0, 0, 0, 0)");
+      await expect(page.locator(".home-feature h2")).toHaveCSS("animation-name", "skeleton-shimmer");
+      await expect(page.locator(".home-feature .button").first()).toHaveCSS("animation-name", "skeleton-shimmer");
+      expect(await page.locator(".home-feature").evaluate(feature => getComputedStyle(feature, "::before").animationName)).toBe("skeleton-shimmer");
+      await page.emulateMedia({ reducedMotion: "reduce" });
+      await expect(page.locator(".home-feature h2")).toHaveCSS("animation-name", "none");
+      expect(await page.locator(".home-feature").evaluate(feature => getComputedStyle(feature, "::before").animationName)).toBe("none");
       await page.locator("#main").evaluate(main => main.classList.remove("request-skeleton"));
       await expect(page.locator(".home-feature > img")).toHaveCSS("visibility", "visible");
       if (artwork === "poster") await page.screenshot({ path: testInfo.outputPath(`${width}-loaded.png`), fullPage: true });
