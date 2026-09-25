@@ -6,10 +6,10 @@ struct AudioPlayerScreen: View {
     @Environment(\.dismiss) private var dismiss
     @State private var failure: String?
     @State private var revision = 0
-    @State private var showsTools = false
     @State private var seekValue: Double = 0
     @State private var seeking = false
     #if os(tvOS)
+    @State private var showsTools = false
     @Namespace private var audioFocus
     #endif
     private var upcoming: [MediaItem] { Array(session.player.queue.items.dropFirst((session.player.queue.currentIndex ?? 0) + 1).prefix(20)) }
@@ -71,8 +71,16 @@ struct AudioPlayerScreen: View {
         #if os(tvOS)
         .focusScope(audioFocus)
         #endif
-        .toolbar { ToolbarItem(placement: .primaryAction) { Button("Playback options", systemImage: "ellipsis.circle") { showsTools = true } } }
+        .toolbar { ToolbarItem(placement: .primaryAction) {
+            #if os(tvOS)
+            Button("Playback options", systemImage: "ellipsis.circle") { showsTools = true }
+            #else
+            NavigationLink { PlaybackToolsScreen() } label: { Label("Playback options", systemImage: "ellipsis.circle") }
+            #endif
+        } }
+        #if os(tvOS)
         .sheet(isPresented: $showsTools) { NavigationStack { PlaybackToolsScreen() } }
+        #endif
         .task(id: "\(itemID):\(revision)") { await load() }
         .onChange(of: session.player.seconds, initial: true) { _, position in if !seeking { seekValue = position } }
         .onChange(of: session.player.currentItem?.id) { previous, current in
