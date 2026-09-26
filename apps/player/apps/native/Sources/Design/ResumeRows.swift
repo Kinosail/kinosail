@@ -9,7 +9,7 @@ struct ResumeRows: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack(alignment: .firstTextBaseline) {
-                Text(title).font(.title2.bold()).accessibilityAddTraits(.isHeader)
+                Text(LocalizedStringKey(title)).font(.title2.bold()).accessibilityAddTraits(.isHeader)
                 Spacer()
                 if showsAll {
                     NavigationLink("See all", value: ScreenDestination.library(.history))

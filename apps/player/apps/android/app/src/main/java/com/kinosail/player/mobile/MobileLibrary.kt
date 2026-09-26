@@ -1,5 +1,6 @@
 package com.kinosail.player.mobile
 
+import com.kinosail.player.core.interfaceText
 import android.content.Context
 import android.content.ContextWrapper
 import androidx.activity.compose.BackHandler
@@ -136,7 +137,7 @@ internal fun MobileLibrary(connection: ConnectionModel, viewer: Viewer) {
                 verticalAlignment = Alignment.CenterVertically) {
                 Text("Kinosail", style = MaterialTheme.typography.headlineMedium,
                     color = MaterialTheme.colorScheme.onBackground)
-                TextButton(onClick = connection::signOut, enabled = !connection.busy) { Text("Disconnect") }
+                TextButton(onClick = connection::signOut, enabled = !connection.busy) { Text(interfaceText("Sign out")) }
             }
             if (nowPlaying != null) Button(onClick = { playingItem = nowPlaying },
                 modifier = Modifier.fillMaxWidth()) { Text("Now playing · ${nowPlaying.title}") }
@@ -146,31 +147,31 @@ internal fun MobileLibrary(connection: ConnectionModel, viewer: Viewer) {
             } else {
                 Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically) {
-                    Text(if (state.view == "all") "Library" else LIBRARY_VIEWS.first { it.first == state.view }.second,
+                    Text(interfaceText(if (state.view == "all") "Library" else LIBRARY_VIEWS.first { it.first == state.view }.second),
                         style = MaterialTheme.typography.headlineLarge,
                         color = MaterialTheme.colorScheme.onBackground)
-                    TextButton(onClick = { home = true }) { Text("For you") }
+                    TextButton(onClick = { home = true }) { Text(interfaceText("Home")) }
                 }
                 Text("${viewer.name} · ${viewer.server}", color = MaterialTheme.colorScheme.onSurfaceVariant)
                 LazyRow(horizontalArrangement = Arrangement.spacedBy(12.dp), modifier = Modifier.fillMaxWidth()) {
                     items(LIBRARY_VIEWS, key = { it.first }) { (view, label) ->
                         FilterChip(selected = state.view == view, onClick = { catalog.changeView(view) },
-                            label = { Text(label) })
+                            label = { Text(interfaceText(label)) })
                     }
                 }
                 OutlinedTextField(value = catalog.searchInput,
                     onValueChange = { if (it.length <= 512) catalog.searchInput = it },
-                    label = { Text("Search your library") }, singleLine = true,
+                    label = { Text(interfaceText("Search library")) }, singleLine = true,
                     keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
                     keyboardActions = KeyboardActions(onSearch = { submitSearch() }),
                     modifier = Modifier.fillMaxWidth())
-                Button(onClick = submitSearch, modifier = Modifier.fillMaxWidth()) { Text("Search") }
+                Button(onClick = submitSearch, modifier = Modifier.fillMaxWidth()) { Text(interfaceText("Search")) }
                 state.notice?.let { Text(it, color = MaterialTheme.colorScheme.error) }
-                if (state.notice != null) TextButton(onClick = catalog::retry) { Text("Retry") }
+                if (state.notice != null) TextButton(onClick = catalog::retry) { Text(interfaceText("Try again")) }
                 if (state.loading && state.items.isEmpty()) CircularProgressIndicator()
                 else if (state.items.isEmpty() && state.notice == null) {
-                    Text(if (state.view == "list") "Save a title to keep it in My List."
-                        else "Nothing in your library yet.", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    Text(interfaceText(if (state.view == "list") "Save a title to keep it in My List."
+                        else "Nothing in your library yet."), color = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
                 LazyVerticalGrid(columns = GridCells.Adaptive(144.dp), modifier = Modifier.weight(1f), state = gridState,
                     horizontalArrangement = Arrangement.spacedBy(12.dp),
@@ -214,29 +215,29 @@ private fun MobileDetail(item: CatalogItem, catalog: CatalogModel, play: () -> U
         val action = if (tablet) Modifier.widthIn(max = 360.dp).fillMaxWidth() else Modifier.fillMaxWidth()
         Column(Modifier.fillMaxWidth().verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.spacedBy(16.dp)) {
-            TextButton(onClick = catalog::closeDetail) { Text("Back") }
+            TextButton(onClick = catalog::closeDetail) { Text(interfaceText("Back")) }
             if (item.kind in setOf("video", "music", "audiobook")) {
                 Button(onClick = play, modifier = action) {
-                    Text(if (item.progress.seconds > 0 && !item.progress.watched) "Resume" else "Play")
+                    Text(interfaceText(if (item.progress.seconds > 0 && !item.progress.watched) "Resume" else "Play"))
                 }
             }
             if (item.kind == "photo") Button(onClick = viewPhoto, enabled = item.stream.isNotEmpty(),
-                modifier = action) { Text("View photo") }
+                modifier = action) { Text(interfaceText("View photo")) }
             if (item.kind == "photo" && item.stream.isEmpty()) Text(
-                "Photo viewing is unavailable for this Viewer.",
+                interfaceText("Photo viewing is unavailable for this Viewer."),
                 color = MaterialTheme.colorScheme.onSurfaceVariant)
             if (item.kind == "book") Button(onClick = readBook, modifier = action) {
-                Text("Read book")
+                Text(interfaceText("Read book"))
             }
             catalog.state.listed?.let { listed ->
                 TextButton(onClick = { catalog.setListed(!listed) }, enabled = !catalog.state.listBusy) {
-                    Text(if (listed) "Remove from My List" else "Add to My List")
+                    Text(interfaceText(if (listed) "Remove from My List" else "Add to My List"))
                 }
             }
             if (catalog.state.listBusy && catalog.state.listed == null) CircularProgressIndicator()
             catalog.state.detailNotice?.let { notice ->
                 Text(notice, color = MaterialTheme.colorScheme.error)
-                if (catalog.state.listed == null) TextButton(onClick = catalog::retryDetail) { Text("Retry") }
+                if (catalog.state.listed == null) TextButton(onClick = catalog::retryDetail) { Text(interfaceText("Try again")) }
             }
             if (tablet) Row(horizontalArrangement = Arrangement.spacedBy(28.dp),
                 verticalAlignment = Alignment.Top) {

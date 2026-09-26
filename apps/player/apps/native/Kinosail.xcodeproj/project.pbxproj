@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		C0B0A1000000000000000001 /* Resources/Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = C0B0A1000000000000000004 /* Resources/Localizable.xcstrings */; };
+		C0B0A1000000000000000002 /* Resources/Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = C0B0A1000000000000000004 /* Resources/Localizable.xcstrings */; };
+		C0B0A1000000000000000003 /* Resources/Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = C0B0A1000000000000000004 /* Resources/Localizable.xcstrings */; };
 		850D08C0C1CA8421C2E9CFE1 /* Resources/PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = CD0ACFFF9F93025CCF567118 /* Resources/PrivacyInfo.xcprivacy */; };
 		896B626A1D3F111BAC1EDA37 /* Resources/PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = CD0ACFFF9F93025CCF567118 /* Resources/PrivacyInfo.xcprivacy */; };
 		A27000000000000000000011 /* KinosailTopShelf.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = A27000000000000000000003 /* KinosailTopShelf.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
@@ -77,6 +80,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		C0B0A1000000000000000004 /* Resources/Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Resources/Localizable.xcstrings; sourceTree = "<group>"; };
 		1523F6D69D5D948BDA2EF1FC /* KinosailPlayerTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = KinosailPlayerTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		1594338D089D65A2F5D19212 /* KinosailPlayerTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = KinosailPlayerTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		4F62CA20BF0D6C65D69896FC /* Resources/iOS.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Resources/iOS.xcassets; sourceTree = "<group>"; };
@@ -174,6 +178,7 @@
 				99A64CCF75F24274F0027F7E /* Resources/tvOS.xcassets */,
 				B2800000000000000000000A /* Resources/watchOS.xcassets */,
 				CD0ACFFF9F93025CCF567118 /* Resources/PrivacyInfo.xcprivacy */,
+				C0B0A1000000000000000004 /* Resources/Localizable.xcstrings */,
 				FA2C79B22DC2E156D3845D23 /* Configuration/iOS-Info.plist */,
 				AC29D74436D094327D2CC417 /* Configuration/tvOS-Info.plist */,
 				AB71AAF0440FAE0E5062446F /* Products */,
@@ -367,6 +372,23 @@
 			knownRegions = (
 				en,
 				Base,
+				ar,
+				de,
+				es,
+				fr,
+				it,
+				ja,
+				ko,
+				nl,
+				pl,
+				"pt-BR",
+				"pt-PT",
+				ru,
+				sv,
+				tr,
+				uk,
+				"zh-Hans",
+				"zh-Hant",
 			);
 			mainGroup = C45E4BB25E55B2F6328A5DD4;
 			productRefGroup = AB71AAF0440FAE0E5062446F /* Products */;
@@ -396,6 +418,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				A94CDB0D79D4D1B14CFAEA50 /* Resources/iOS.xcassets in Resources */,
+				C0B0A1000000000000000001 /* Resources/Localizable.xcstrings in Resources */,
 				896B626A1D3F111BAC1EDA37 /* Resources/PrivacyInfo.xcprivacy in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -412,6 +435,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				B2800000000000000000000B /* Resources/watchOS.xcassets in Resources */,
+				C0B0A1000000000000000003 /* Resources/Localizable.xcstrings in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -427,6 +451,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				C4A9DB84B2E3CEBEAE964D4D /* Resources/tvOS.xcassets in Resources */,
+				C0B0A1000000000000000002 /* Resources/Localizable.xcstrings in Resources */,
 				850D08C0C1CA8421C2E9CFE1 /* Resources/PrivacyInfo.xcprivacy in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

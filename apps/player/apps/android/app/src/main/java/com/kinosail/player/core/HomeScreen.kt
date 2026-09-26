@@ -69,14 +69,14 @@ internal fun HomeScreen(viewer: Viewer, catalog: CatalogModel, tv: Boolean, nowP
                 verticalAlignment = Alignment.CenterVertically) {
                 Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                     Text("Kinosail", style = MaterialTheme.typography.titleLarge, color = KinoColor.text)
-                    Text("For you", style = if (tv) MaterialTheme.typography.displayLarge
+                    Text(interfaceText("For you"), style = if (tv) MaterialTheme.typography.displayLarge
                         else MaterialTheme.typography.headlineLarge,
                         color = KinoColor.text)
                     Text(viewer.name, color = KinoColor.muted)
                 }
                 if (tv) androidx.tv.material3.Button(onClick = browse) {
-                    androidx.tv.material3.Text("Browse Library")
-                } else TextButton(onClick = browse) { Text("Library") }
+                    androidx.tv.material3.Text(interfaceText("Browse library"))
+                } else TextButton(onClick = browse) { Text(interfaceText("Library")) }
             }
             if (nowPlaying != null) {
                 val label = "Now playing · ${nowPlaying.title}"
@@ -92,8 +92,8 @@ internal fun HomeScreen(viewer: Viewer, catalog: CatalogModel, tv: Boolean, nowP
                     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                         Text(notice, color = KinoColor.text)
                         if (tv) androidx.tv.material3.Button(onClick = model::retry) {
-                            androidx.tv.material3.Text("Try again")
-                        } else TextButton(onClick = model::retry) { Text("Try again") }
+                            androidx.tv.material3.Text(interfaceText("Try again"))
+                        } else TextButton(onClick = model::retry) { Text(interfaceText("Try again")) }
                     }
                 } }
                 if (featured != null) item {
@@ -111,24 +111,24 @@ internal fun HomeScreen(viewer: Viewer, catalog: CatalogModel, tv: Boolean, nowP
                                     androidx.tv.material3.Text(label)
                                 }
                                 androidx.tv.material3.Button(onClick = { open(featured) }) {
-                                    androidx.tv.material3.Text("Details")
+                                    androidx.tv.material3.Text(interfaceText("Details"))
                                 }
                             } else {
                                 androidx.compose.material3.Button(onClick = { play(featured) }) { Text(label) }
-                                TextButton(onClick = { open(featured) }) { Text("Details") }
+                                TextButton(onClick = { open(featured) }) { Text(interfaceText("Details")) }
                             }
                         }
                     }
                 }
                 if (state.continueWatching.isNotEmpty()) item {
-                    HomeShelf("Continue Watching", state.continueWatching.take(12), catalog, tv, wideTouch, open)
+                    HomeShelf("Continue watching", state.continueWatching.take(12), catalog, tv, wideTouch, open)
                 }
                 if (state.recent.isNotEmpty()) item {
-                    HomeShelf("Recently Added", state.recent.take(24), catalog, tv, wideTouch, open)
+                    HomeShelf("Recently added", state.recent.take(24), catalog, tv, wideTouch, open)
                 }
                 if (!state.loading && state.notice == null && state.continueWatching.isEmpty() &&
                     state.recent.isEmpty()) item {
-                    Text("Media added to your Server will appear here.", color = KinoColor.muted)
+                    Text(interfaceText("Media added to your Server will appear here."), color = KinoColor.muted)
                 }
             }
         }
@@ -139,7 +139,7 @@ internal fun HomeScreen(viewer: Viewer, catalog: CatalogModel, tv: Boolean, nowP
 private fun HomeShelf(title: String, items: List<CatalogItem>, catalog: CatalogModel, tv: Boolean, wideTouch: Boolean,
                       open: (CatalogItem) -> Unit) {
     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-        Text(title, style = MaterialTheme.typography.titleLarge, color = KinoColor.text)
+        Text(interfaceText(title), style = MaterialTheme.typography.titleLarge, color = KinoColor.text)
         LazyRow(horizontalArrangement = Arrangement.spacedBy(if (tv) 20.dp else if (wideTouch) 16.dp else 12.dp)) {
             items(items, key = CatalogItem::id) { item ->
                 if (tv) androidx.tv.material3.Card(onClick = { open(item) },

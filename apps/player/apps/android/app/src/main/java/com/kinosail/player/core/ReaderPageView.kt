@@ -64,23 +64,23 @@ internal fun ReaderPageView(title: String, bitmap: Bitmap?, page: Int, total: In
                     modifier = Modifier.weight(1f).padding(end = 12.dp))
                 TextButton(onClick = { zoom = if (zoom > 1f) 1f else 2f; pan = Offset.Zero },
                     enabled = bitmap != null) { Text(if (zoom > 1f) "Fit" else "Zoom") }
-                TextButton(onClick = close) { Text("Done") }
+                TextButton(onClick = close) { Text(interfaceText("Done")) }
             }
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 if (total == 0 && notice == null) CircularProgressIndicator()
                 notice?.let {
                     Text(it, color = MaterialTheme.colorScheme.error)
                     if (it != "This book format is not available on Android yet.") {
-                        TextButton(onClick = retry) { Text("Try again") }
+                        TextButton(onClick = retry) { Text(interfaceText("Try again")) }
                     }
                 }
                 savingNotice?.let { Text(it, color = MaterialTheme.colorScheme.error) }
-                if (savingNotice != null) TextButton(onClick = retrySync) { Text("Retry sync") }
+                if (savingNotice != null) TextButton(onClick = retrySync) { Text(interfaceText("Retry sync")) }
                 if (total > 0) Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically) {
-                    Button(onClick = previous, enabled = page > 0) { Text("Previous") }
+                    Button(onClick = previous, enabled = page > 0) { Text(interfaceText("Previous")) }
                     Text("${page + 1} of $total", color = MaterialTheme.colorScheme.onBackground)
-                    Button(onClick = next, enabled = page + 1 < total) { Text("Next") }
+                    Button(onClick = next, enabled = page + 1 < total) { Text(interfaceText("Next")) }
                 }
             }
         }
