@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/MikeO7/kinosail-player/internal/configuration"
+	"github.com/MikeO7/kinosail/packages/appcli"
 	"github.com/MikeO7/kinosail/packages/metadata"
 	settingsops "github.com/MikeO7/kinosail/packages/settings"
 )
@@ -76,7 +77,7 @@ func (store *settingsStore) deploymentFields() []configurationField {
 	result := make([]configurationField, 0)
 	for _, field := range store.config.Fields() {
 		if field.Restart && field.Key != "paths.data" && field.Key != "tls.duckdns" && field.Key != tmdbTokenKey && !strings.HasPrefix(field.Key, oidcConfigurationKey+".") && !strings.HasPrefix(field.Key, samlConfigurationGroupKey+".") && !strings.HasPrefix(field.Key, scimConfigurationKey+".") {
-			view := configurationField{PublicValue: field, Label: configurationLabels[field.Key], Live: liveTMDBSetting(field.Key)}
+			view := configurationField{PublicValue: field, Label: configurationLabels[field.Key], Live: liveTMDBSetting(field.Key) || field.Key == "logging.level"}
 			result = append(result, view)
 		}
 	}
@@ -116,7 +117,15 @@ func (store *settingsStore) changeConfiguration(ctx context.Context, key, value 
 			return nil
 		},
 	}
-	return configured.Change(key, value, reset)
+	if err := configured.Change(key, value, reset); err != nil {
+		return err
+	}
+	if key == "logging.level" {
+		store.mu.Lock()
+		appcli.UpdateLoggingLevel(store.config.String(key))
+		store.mu.Unlock()
+	}
+	return nil
 }
 
 func (store *settingsStore) validateTMDBEndpoint(ctx context.Context, key, value string, reset bool) (string, error) {

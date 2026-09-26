@@ -11,7 +11,7 @@ func apiConfiguration(settings *settingsStore) http.HandlerFunc {
 	return func(writer http.ResponseWriter, _ *http.Request) {
 		fields := settings.configuration().Fields()
 		for index := range fields {
-			if liveTMDBSetting(fields[index].Key) && (fields[index].Source == configuration.GUI || fields[index].Source == configuration.Default) {
+			if (liveTMDBSetting(fields[index].Key) || fields[index].Key == "logging.level") && (fields[index].Source == configuration.GUI || fields[index].Source == configuration.Default) {
 				fields[index].Restart = false
 			}
 		}
@@ -33,7 +33,7 @@ func apiChangeConfiguration(settings *settingsStore, reset bool) http.HandlerFun
 			apiError(writer, err, http.StatusConflict)
 			return
 		}
-		if liveTMDBSetting(key) {
+		if liveTMDBSetting(key) || key == "logging.level" {
 			writeJSON(writer, map[string]any{"status": "active", "restartRequired": false}, http.StatusAccepted)
 			return
 		}
