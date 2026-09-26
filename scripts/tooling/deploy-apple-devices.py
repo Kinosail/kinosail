@@ -112,6 +112,8 @@ def deploy(root, mirror, revision, tree, name, device, team):
             f'KINOSAIL_SOURCE_REVISION={revision}', 'build', cwd=source)
         record = dict(revision=revision, tree=tree, build=build)
         write_record(built, record)
+    if name == 'iphone' and not (artifact / 'Watch/KinosailWatch.app').is_dir():
+        raise RuntimeError('watch companion missing from iPhone bundle')
     run('xcrun', 'devicectl', '--timeout', '120', 'device', 'install', 'app', '--device', device, str(artifact), timeout=180)
     with tempfile.TemporaryDirectory(dir=root) as temporary:
         result = Path(temporary) / 'apps.json'
