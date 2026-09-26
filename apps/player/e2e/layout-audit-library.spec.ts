@@ -4,6 +4,27 @@ import { configureLayoutAudit, login } from "./layout-audit-helpers";
 
 configureLayoutAudit();
 
+test("browse shows artwork before scrolling on desktop and phone", async ({ page }, testInfo) => {
+	test.skip(process.env.KINOSAIL_TEST_INSTANCE !== "1", "requires the populated public test instance");
+	await login(page);
+	for (const viewport of [{ width: 1640, height: 600 }, { width: 1440, height: 900 }, { width: 390, height: 844 }]) {
+		await page.setViewportSize(viewport);
+		for (const view of ["shows", "movies"]) {
+			await page.goto(`/?view=${view}`, { waitUntil: "domcontentloaded" });
+			await expect(page.locator("#library .poster").first()).toBeVisible();
+			const layout = await page.evaluate(() => ({
+				mastheadHeight: document.querySelector(".library-masthead")!.getBoundingClientRect().height,
+				posterTop: document.querySelector("#library .poster")!.getBoundingClientRect().top,
+				pageWidth: document.documentElement.scrollWidth,
+			}));
+			expect(layout.mastheadHeight, `${view} heading at ${viewport.width}px`).toBeLessThan(160);
+			expect(layout.posterTop, `${view} artwork at ${viewport.width}px`).toBeLessThan(viewport.height * .8);
+			expect(layout.pageWidth, `${view} overflow at ${viewport.width}px`).toBeLessThanOrEqual(viewport.width);
+			await page.screenshot({ path: testInfo.outputPath(`${view}-${viewport.width}x${viewport.height}.png`) });
+		}
+	}
+});
+
 test("ordinary browse keeps results in the first useful viewport", async ({ page }) => {
 	test.skip(process.env.KINOSAIL_TEST_INSTANCE !== "1", "requires the populated public test instance");
 	await login(page);
