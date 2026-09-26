@@ -4,7 +4,7 @@ enum CatalogPolicy: Sendable { case cached, automatic, reload }
 enum CatalogCacheMiss: Error { case missing }
 struct CatalogRequest: Sendable {
     let id: UUID
-    let task: Task<JSONValue, Error>
+    let task: Task<any Sendable, Error>
 }
 
 extension ServerClient {
@@ -52,17 +52,19 @@ extension ServerClient {
                     let raw = try await self.request(path).body
                     try Task.checkCancellation()
                     guard catalogGeneration == generation else { throw CancellationError() }
-                    _ = try decode(raw)
+                    let value = try decode(raw)
                     if let previous, previous != raw, parts[2] == "library", offset == "0" {
                         await store?.invalidatePages()
                     }
                     try Task.checkCancellation()
                     guard catalogGeneration == generation else { throw CancellationError() }
                     if Self.cacheableCatalog(raw), let data = try? JSONEncoder().encode(raw) {
-                        try? await store?.write(data, key: path, kind: .catalog, revision: cacheRevision,
-                                               pagesRevision: offset != nil && offset != "0" ? pagesRevision : nil)
+                        if let store {
+                            await store.enqueueWrite(data, key: path, kind: .catalog, revision: cacheRevision,
+                                                     pagesRevision: offset != nil && offset != "0" ? pagesRevision : nil)
+                        }
                     } else { await store?.remove(path, kind: .catalog) }
-                    return raw
+                    return value
                 } catch {
                     if error as? ClientError == .http(401) || error as? ClientError == .http(403) { await discardMediaCache() }
                     else if error as? ClientError == .http(404) { await store?.remove(path, kind: .catalog) }
@@ -71,10 +73,11 @@ extension ServerClient {
             })
             catalogRequests[path] = request
         }
-        let raw = try await request.task.value
+        let result = try await request.task.value
         try Task.checkCancellation()
         guard catalogGeneration == generation else { throw CancellationError() }
-        return try decode(raw)
+        guard let value = result as? Value else { throw ClientError.invalidResponse }
+        return value
     }
 
     func invalidateCatalog() async {

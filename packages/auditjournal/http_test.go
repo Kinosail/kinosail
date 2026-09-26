@@ -3,6 +3,8 @@ package auditjournal
 import (
 	"bytes"
 	"context"
+	"errors"
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"strings"
@@ -59,6 +61,52 @@ func TestResponseWriterTracksStatusBytesAndUnwraps(t *testing.T) { //nolint:cycl
 	implicit := &ResponseWriter{ResponseWriter: httptest.NewRecorder()}
 	if _, err := implicit.Write([]byte("ok")); err != nil || implicit.Status != http.StatusOK || implicit.Bytes != 2 {
 		t.Fatalf("implicit writer = %#v, %v", implicit, err)
+	}
+}
+
+type readFromRecorder struct {
+	*httptest.ResponseRecorder
+	readFromCalls int
+}
+
+type partialReader struct{}
+
+func (partialReader) Read(buffer []byte) (int, error) {
+	return copy(buffer, "abc"), io.ErrUnexpectedEOF
+}
+
+func (recorder *readFromRecorder) ReadFrom(source io.Reader) (int64, error) {
+	recorder.readFromCalls++
+	return io.Copy(recorder.ResponseRecorder, source)
+}
+
+func TestResponseWriterReadFromPreservesFastPathAndCounters(t *testing.T) {
+	t.Parallel()
+	fast := &readFromRecorder{ResponseRecorder: httptest.NewRecorder()}
+	writer := &ResponseWriter{ResponseWriter: fast}
+	writer.WriteHeader(http.StatusPartialContent)
+	written, err := writer.ReadFrom(io.LimitReader(strings.NewReader("range"), 5))
+	if err != nil || written != 5 || writer.Status != http.StatusPartialContent || writer.Bytes != 5 || fast.readFromCalls != 1 || fast.Body.String() != "range" {
+		t.Fatalf("fast range: written=%d err=%v status=%d bytes=%d calls=%d body=%q", written, err, writer.Status, writer.Bytes, fast.readFromCalls, fast.Body.String())
+	}
+}
+
+func TestResponseWriterReadFromFallsBackWithoutReaderFrom(t *testing.T) {
+	t.Parallel()
+	fallback := &ResponseWriter{ResponseWriter: httptest.NewRecorder()}
+	written, err := fallback.ReadFrom(io.LimitReader(strings.NewReader("body"), 4))
+	if err != nil || written != 4 || fallback.Status != http.StatusOK || fallback.Bytes != 4 || fallback.ResponseWriter.(*httptest.ResponseRecorder).Body.String() != "body" {
+		t.Fatalf("fallback range: written=%d err=%v status=%d bytes=%d", written, err, fallback.Status, fallback.Bytes)
+	}
+}
+
+func TestResponseWriterReadFromCountsPartialFailure(t *testing.T) {
+	t.Parallel()
+	underlying := &readFromRecorder{ResponseRecorder: httptest.NewRecorder()}
+	writer := &ResponseWriter{ResponseWriter: underlying}
+	written, err := writer.ReadFrom(partialReader{})
+	if !errors.Is(err, io.ErrUnexpectedEOF) || written != 3 || writer.Status != http.StatusOK || writer.Bytes != 3 || underlying.Body.String() != "abc" {
+		t.Fatalf("partial transfer: written=%d err=%v status=%d bytes=%d body=%q", written, err, writer.Status, writer.Bytes, underlying.Body.String())
 	}
 }
 

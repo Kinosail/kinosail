@@ -16,3 +16,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "KinosailAndroid"
 include(":app")
+include(":watchcore", ":wear")

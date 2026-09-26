@@ -24,7 +24,9 @@ struct SettingsScreen: View {
             }
             Section("Supporter") { NavigationLink("Supporter collection and display") { SupporterScreen() } }
             Section("Appearance") {
+                #if os(iOS)
                 NavigationLink("Customize tabs", value: ScreenDestination.tabPreferences)
+                #endif
                 #if os(tvOS)
                 Toggle("Show titles on Apple TV Home", isOn: $topShelf)
                 Text("Show Continue watching, My List and recent titles when Kinosail is selected in the top row. Titles and artwork are visible to anyone using this Apple TV.")

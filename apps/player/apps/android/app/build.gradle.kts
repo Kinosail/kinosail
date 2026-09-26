@@ -31,6 +31,8 @@ android {
 }
 
 dependencies {
+    implementation(project(":watchcore"))
+    implementation("com.google.android.gms:play-services-wearable:20.0.1")
     implementation(platform("androidx.compose:compose-bom:2026.09.00"))
     implementation("androidx.activity:activity-compose:1.13.0")
     implementation("androidx.fragment:fragment:1.9.1")

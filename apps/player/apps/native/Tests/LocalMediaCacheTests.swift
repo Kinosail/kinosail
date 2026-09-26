@@ -8,6 +8,43 @@ struct LocalMediaCacheTests {
     private let scope = String(repeating: "a", count: 64)
     private let data = Data("{\"items\":[]}".utf8)
 
+    @Test func queuedWritesFinishOnCloseAndAreDiscardedOnPurge() async throws {
+        let directory = temporary()
+        defer { try? FileManager.default.removeItem(at: directory) }
+        let cache = try LocalMediaCache(scope: scope, directory: directory)
+        await cache.enqueueWrite(data, key: "saved", kind: .catalog)
+        await cache.close(purge: false)
+        let reopened = try LocalMediaCache(scope: scope, directory: directory)
+        #expect(await reopened.read("saved", kind: .catalog)?.data == data)
+        await reopened.enqueueWrite(data, key: "purged", kind: .catalog)
+        await reopened.close(purge: true)
+        let afterPurge = try LocalMediaCache(scope: scope, directory: directory)
+        #expect(await afterPurge.read("saved", kind: .catalog) == nil)
+        #expect(await afterPurge.read("purged", kind: .catalog) == nil)
+    }
+
+    @Test func queuedInvalidWritesCreateNoFiles() async throws {
+        let directory = temporary()
+        defer { try? FileManager.default.removeItem(at: directory) }
+        let cache = try LocalMediaCache(scope: scope, directory: directory)
+        await cache.enqueueWrite(data, key: "bad\nkey", kind: .catalog)
+        await cache.enqueueWrite(Data(), key: "empty", kind: .catalog)
+        await cache.enqueueWrite(Data(repeating: 1, count: 2 * 1024 * 1024 + 1), key: "large", kind: .catalog)
+        await cache.close(purge: false)
+        #expect(!FileManager.default.fileExists(atPath: directory.path))
+    }
+
+    @Test func removalCannotBeReversedByAnEarlierQueuedWrite() async throws {
+        let directory = temporary()
+        defer { try? FileManager.default.removeItem(at: directory) }
+        let cache = try LocalMediaCache(scope: scope, directory: directory)
+        await cache.enqueueWrite(data, key: "removed", kind: .catalog)
+        await cache.remove("removed", kind: .catalog)
+        await cache.close(purge: false)
+        let reopened = try LocalMediaCache(scope: scope, directory: directory)
+        #expect(await reopened.read("removed", kind: .catalog) == nil)
+    }
+
     @Test func pageInvalidationPreservesSiblingWritesAndSurvivesRestart() async throws {
         let directory = temporary()
         defer { try? FileManager.default.removeItem(at: directory) }

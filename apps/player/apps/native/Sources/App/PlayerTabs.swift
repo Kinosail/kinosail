@@ -8,18 +8,35 @@ struct PlayerTabs: View {
     @State private var paths: [PlayerTab: NavigationPath] = [:]
     init(profileKey: String) {
         let legacy = UserDefaults.standard.string(forKey: "kinosail.tabs.\(profileKey)")
+        #if os(tvOS)
+        _selection = State(initialValue: .home)
+        #else
         let watch = UserDefaults.standard.string(forKey: PlayerMode.watch.tabsKey(profileKey)) ?? PlayerTab.legacyDefault(legacy)
         let listen = UserDefaults.standard.string(forKey: PlayerMode.listen.tabsKey(profileKey))
             ?? PlayerMode.listen.defaultTabs.map(\.rawValue).joined(separator: ",")
         let initialMode = PlayerMode.stored(UserDefaults.standard.string(forKey: PlayerMode.storageKey(profileKey)))
         let initial = (try? PlayerTab.parse(initialMode == .watch ? watch : listen)) ?? initialMode.defaultTabs
         _selection = State(initialValue: initial.first ?? .home)
+        #endif
         _watchStored = AppStorage(wrappedValue: PlayerTab.legacyDefault(legacy), PlayerMode.watch.tabsKey(profileKey))
         _listenStored = AppStorage(wrappedValue: PlayerMode.listen.defaultTabs.map(\.rawValue).joined(separator: ","), PlayerMode.listen.tabsKey(profileKey))
         _modeStored = AppStorage(wrappedValue: PlayerMode.watch.rawValue, PlayerMode.storageKey(profileKey))
     }
     private var mode: PlayerMode { PlayerMode.stored(modeStored) }
-    private var pinned: [PlayerTab] { (try? PlayerTab.parse(mode == .watch ? watchStored : listenStored)) ?? mode.defaultTabs }
+    private var pinned: [PlayerTab] {
+        #if os(tvOS)
+        PlayerTab.tvPrimary
+        #else
+        (try? PlayerTab.parse(mode == .watch ? watchStored : listenStored)) ?? mode.defaultTabs
+        #endif
+    }
+    private var screenMode: PlayerMode? {
+        #if os(tvOS)
+        nil
+        #else
+        mode
+        #endif
+    }
     private var moreTabs: [PlayerTab] {
         let available = PlayerTab.available.filter { !pinned.contains($0) }
         #if os(tvOS)
@@ -36,13 +53,14 @@ struct PlayerTabs: View {
                 #else
                 let role: TabRole? = nil
                 #endif
-                Tab(value: tab, role: role) { stack(tab: tab) { PlayerTabScreen(tab: tab, mode: mode, showsSearch: !pinned.contains(.search), changeMode: changeMode) } } label: {
+                Tab(value: tab, role: role) { stack(tab: tab) { PlayerTabScreen(tab: tab, mode: screenMode, showsSearch: !pinned.contains(.search), changeMode: changeMode) } } label: {
                     Label(tab.title, systemImage: tab.symbol)
                     #if os(tvOS)
                         .foregroundStyle(selection == tab ? KinoTheme.signalInk : KinoTheme.text)
                     #endif
                 }
             }
+            #if os(iOS)
             Tab("More", systemImage: "ellipsis", value: PlayerTab.more) {
                 stack(tab: .more) {
                     List {
@@ -59,6 +77,7 @@ struct PlayerTabs: View {
                     .background(KinoTheme.background).navigationTitle("More")
                 }
             }
+            #endif
         }
         #if os(iOS)
         .tabViewStyle(.sidebarAdaptable)
@@ -78,8 +97,10 @@ struct PlayerTabs: View {
             if !pinned.contains(selection) && selection != .more { selection = pinned[0] }
         }
         .onChange(of: mode) { _, _ in
+            #if os(iOS)
             if selection != pinned[0] { selection = pinned[0] }
             if !paths.isEmpty { paths = [:] }
+            #endif
         }
     }
     private func changeMode(_ next: PlayerMode) {
@@ -107,17 +128,19 @@ struct PlayerTabs: View {
     private func stack<Content: View>(tab: PlayerTab, @ViewBuilder content: () -> Content) -> some View {
         NavigationStack(path: Binding(get: { paths[tab] ?? NavigationPath() }, set: { paths[tab] = $0 })) {
             content()
-                .navigationDestination(for: PlayerTab.self) { PlayerTabScreen(tab: $0, mode: mode, showsSearch: !pinned.contains(.search), changeMode: changeMode) }
+                .navigationDestination(for: PlayerTab.self) { PlayerTabScreen(tab: $0, mode: screenMode, showsSearch: !pinned.contains(.search), changeMode: changeMode) }
                 #if os(iOS)
                 .modifier(SupporterToolbar())
                 #endif
                 .toolbar {
+                    #if os(iOS)
                     if tab != .home {
                         ToolbarItem(placement: .topBarTrailing) {
                             Button(mode.other.title) { changeMode(mode.other) }
                                 .accessibilityLabel("Switch to \(mode.other.title) mode")
                         }
                     }
+                    #endif
                 }
                 .navigationDestination(for: ScreenDestination.self) { DestinationScreen(destination: $0) }
         }

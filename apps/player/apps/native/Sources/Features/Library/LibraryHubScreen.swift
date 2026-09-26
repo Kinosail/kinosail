@@ -8,22 +8,13 @@ struct LibraryHubScreen: View {
     var body: some View {
         #if os(tvOS)
         ScrollView {
-            VStack(alignment: .leading, spacing: 36) {
-                Text("Library").font(.largeTitle.bold()).accessibilityAddTraits(.isHeader)
-                if mode != .listen { hubSection("Watch", [
-                    ("Movies", "film", .library(.movies)), ("Shows", "tv", .library(.shows))
-                ]) }
-                if mode != .watch { hubSection("Listen", [
-                    ("Music", "music.note", .library(.music)), ("Audiobooks", "headphones", .library(.audiobooks))
-                ]) }
-                if mode == nil { hubSection("Explore", [
-                    ("Photos", "photo.on.rectangle", .library(.photos)), ("All media", "square.grid.2x2", .library(.all))
-                ]) }
-                hubSection("Your library", [
-                    ("My List", "star", .library(.list)), ("Collections", "rectangle.stack", .collections),
-                    ("History", "clock", .library(.history))
-                ])
-            }
+            hubSection("Library", [
+                ("All media", "square.grid.2x2", .library(.all)),
+                ("My List", "star", .library(.list)),
+                ("Unwatched", "play.rectangle", .library(.unwatched)),
+                ("Collections", "rectangle.stack", .collections),
+                ("History", "clock", .library(.history))
+            ])
             .padding(.horizontal, KinoTheme.contentPadding)
             .padding(.vertical, 32)
         }

@@ -22,9 +22,10 @@ func sortReferences(items []*library.Item, order, query, locale string) { //noli
 	}
 	var ranks map[*library.Item]int
 	if query != "" {
+		normalized := searchText(query)
 		ranks = make(map[*library.Item]int, len(items))
 		for _, item := range items {
-			ranks[item] = searchRank(*item, query)
+			ranks[item] = searchRankNormalized(*item, normalized)
 		}
 	}
 	sort.Slice(items, func(left, right int) bool {

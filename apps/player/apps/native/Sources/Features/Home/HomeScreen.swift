@@ -85,10 +85,12 @@ struct HomeScreen: View {
                                            symbol: mode == .listen ? "headphones" : "play.rectangle",
                                            message: mode == .listen ? "Add music or audiobooks to your Server to see them here." : "Media added to your Server will appear here.")
                     }
+                    #if os(iOS)
                     VStack(alignment: .leading, spacing: 12) {
                         Text("Browse library").font(.title2.bold()).accessibilityAddTraits(.isHeader)
                         LibraryQuickLinks(mode: mode)
                     }
+                    #endif
                 }
             }
             .padding([.horizontal, .bottom], KinoTheme.contentPadding)
