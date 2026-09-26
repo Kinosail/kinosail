@@ -144,11 +144,27 @@ class AppleDeployTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory, patch.object(updater, 'run', side_effect=command) as run:
             root = Path(directory)
             (root / 'iphone-build/Build/Products/Release-iphoneos/KinosailPlayer.app').mkdir(parents=True)
+            (root / 'iphone-build/Build/Products/Release-iphoneos/KinosailPlayer.app/Watch/KinosailWatch.app').mkdir(parents=True)
             (root / 'iphone-built.json').write_text(updater.json.dumps(dict(tree='a' * 40, revision='b' * 40, build='1234')))
             with self.assertRaises(OSError):
                 updater.deploy(root, root / 'repo.git', 'rev', 'a' * 40, 'iphone', 'device', 'team')
             self.assertFalse((root / 'iphone.json').exists())
             self.assertTrue(any(call.args[:6] == ('xcrun', 'devicectl', '--timeout', '120', 'device', 'install') for call in run.call_args_list))
+
+    def test_missing_watch_companion_stops_before_iphone_install(self):
+        metadata = updater.plistlib.dumps({'KinosailImplementationState': 'implemented'}).decode()
+        def command(*args, **kwargs):
+            if args[0] == 'git':
+                return metadata
+            raise AssertionError('device effect reached without watch companion')
+        with tempfile.TemporaryDirectory() as directory, patch.object(updater, 'run', side_effect=command) as run:
+            root = Path(directory)
+            (root / 'iphone-build/Build/Products/Release-iphoneos/KinosailPlayer.app').mkdir(parents=True)
+            (root / 'iphone-built.json').write_text(updater.json.dumps(dict(tree='a' * 40, revision='b' * 40, build='1234')))
+            with self.assertRaisesRegex(RuntimeError, 'watch companion'):
+                updater.deploy(root, root / 'repo.git', 'rev', 'a' * 40, 'iphone', 'device', 'team')
+            self.assertEqual([call.args[0] for call in run.call_args_list], ['git'])
+            self.assertFalse((root / 'iphone.json').exists())
 
 
 if __name__ == '__main__':
