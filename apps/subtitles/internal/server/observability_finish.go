@@ -51,6 +51,7 @@ func (observation requestObservation) status() int {
 }
 
 func (observation requestObservation) record(status int, panicked bool) {
+	observation.activity.failures.Record(observation.facts.id, observation.request.Method, observation.request.URL.Path, status, time.Since(observation.started))
 	observation.activity.requests.Add(1)
 	if status >= http.StatusBadRequest {
 		observation.activity.requestErrors.Add(1)

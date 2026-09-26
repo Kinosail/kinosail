@@ -62,6 +62,26 @@ struct HTTPTests {
         #expect(redirect.requests.first?.url?.host == redirect.host)
     }
 
+    @Test func correlatesFailedRequestsWithoutSendingCredentialsInTheID() async throws {
+        let fixture = try HTTPFixture(body: "", status: 503)
+        defer { fixture.remove() }
+        await #expect(throws: ClientError.http(503)) { try await fixture.client.viewer() }
+        let request = try #require(fixture.requests.first)
+        let id = try #require(request.value(forHTTPHeaderField: "X-Request-ID"))
+        #expect(id.count <= 64)
+        #expect(id.allSatisfy { $0.isASCII && ($0.isLetter || $0.isNumber || $0 == "-") })
+        #expect(!id.contains("fixture-token"))
+        #expect(request.value(forHTTPHeaderField: "Authorization") == "Bearer fixture-token")
+    }
+
+    @Test func diagnosticOperationExcludesMediaIDsAndQueries() {
+        #expect(diagnosticOperation("/api/v1/items/private-title/playback?token=secret") == "items-playback")
+        #expect(diagnosticOperation("/api/v1/library?q=private-title") == "library")
+        #expect(diagnosticOperation("/hls/private-title/segment.m4s") == "hls")
+        #expect(diagnosticOperation("/api/v1/private-title?token=secret") == "api-other")
+        #expect(diagnosticOperation(String(repeating: "x", count: 2049)) == "other")
+    }
+
     @Test(arguments: ["{\"status\":\"approved\"}", "{\"status\":true}", "{\"status\":\"pending\",\"extra\":1}"])
     func rejectsMalformedPending(_ body: String) async throws {
         let fixture = try HTTPFixture(body: body, status: 202)
