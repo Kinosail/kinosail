@@ -7,7 +7,7 @@ import (
 	"github.com/MikeO7/kinosail/packages/servertest"
 )
 
-const reviewedRouteInventorySHA256 = "e5f704b0cd570f8670078d321678bd93d5e8e515b60fd1504abd0e2c22dbeaf4"
+const reviewedRouteInventorySHA256 = "bb9949d741fd7dae9b98bd1c4900fa5a3e340b3d30f962d3091c6b9087bc6e2a"
 
 var explicitlyAnonymousRoutes = routeSet(
 	"GET /static/public-login.js", "POST /auth/quick-connect", "POST /auth/quick-connect/token", "POST /auth/quick-connect/cancel",
@@ -102,7 +102,7 @@ var expectedLibraryScopeRoutes = routeSet(
 	"GET /api/v1", "GET /api/v1/openapi.json", "GET /api/v1/library", "GET /api/v1/items/{id}", "GET /api/v1/items/{id}/playback", "GET /api/v1/items/{id}/watch-progress",
 	"GET /api/v1/history", "GET /api/v1/audio/{id}/queue", "GET /api/v1/books/{id}/reader", "GET /api/v1/books/{id}/reader/progress", "GET /api/v1/playlists", "GET /api/v1/playlists/{name}",
 	"GET /api/v1/collections", "GET /api/v1/collections/{name}", "GET /api/v1/actor", "GET /api/v1/shows", "GET /api/v1/shows/{id}", "GET /api/v1/albums", "GET /api/v1/albums/{id}",
-	"GET /api/v1/watch-rooms/{id}", "GET /art/{id}", "GET /backdrop/{id}", "GET /person/{id}/{person}", "GET /System/Info", "GET /Library/MediaFolders", "GET /Users", "GET /Users/Me", "GET /Users/{id}",
+	"GET /api/v1/watch-rooms/{id}", "GET /art/{id}", "GET /episode-art/{id}", "GET /backdrop/{id}", "GET /person/{id}/{person}", "GET /System/Info", "GET /Library/MediaFolders", "GET /Users", "GET /Users/Me", "GET /Users/{id}",
 	"GET /UserViews", "GET /Users/{user}/Views", "GET /Items", "GET /Users/{user}/Items", "GET /Items/Latest", "GET /Users/{user}/Items/Latest", "GET /Persons", "GET /Items/{id}", "GET /Users/{user}/Items/{id}", "GET /Shows/{id}/Seasons", "GET /Shows/{id}/Episodes", "GET /Items/{id}/Images/{type}", "GET /Items/{id}/Images/{type}/{index}",
 )
 
@@ -136,7 +136,7 @@ var sessionOnlyAPIRoutes = routeSet(
 )
 
 func TestEveryRegisteredRouteHasReviewedAnonymousAccess(t *testing.T) {
-	authRoutesContract().ReviewedAnonymousAccess(t, 474, reviewedRouteInventorySHA256, func(t *testing.T, data string) http.Handler {
+	authRoutesContract().ReviewedAnonymousAccess(t, 475, reviewedRouteInventorySHA256, func(t *testing.T, data string) http.Handler {
 		return New(Config{DataDir: data, RequireAuth: true, Configuration: jellyfinRouteConfiguration(t, data)})
 	})
 }

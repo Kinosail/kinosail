@@ -49,8 +49,12 @@ func TestSubtitleMaintenanceWebAddsMissingSidecar(t *testing.T) {
 	t.Parallel()
 	provider := newMultilingualSubDL(t)
 	media := t.TempDir()
+	data := t.TempDir()
 	writeTestFile(t, filepath.Join(media, "Arrival.BluRay-GROUP.mp4"), "video")
-	handler := server.New(server.Config{SubtitleApp: true, MediaDir: media, DataDir: t.TempDir(), CacheDir: t.TempDir(), Subtitles: server.SubtitleConfig{URL: provider.URL, APIKey: "key"}})
+	handler := server.New(server.Config{SubtitleApp: true, MediaDir: media, DataDir: data, CacheDir: t.TempDir(), Subtitles: server.SubtitleConfig{URL: provider.URL}})
+	if saved := requestJSON(t, handler, http.MethodPut, "/api/v1/configuration/integrations.subdl.api_key", `{"value":"key"}`); saved.Code != http.StatusAccepted || !strings.Contains(saved.Body.String(), `"restartRequired":false`) {
+		t.Fatalf("provider save = %d %q", saved.Code, saved.Body.String())
+	}
 	if settings := requestJSON(t, handler, http.MethodPut, "/api/v1/settings/subtitles", `{"languages":["en","es"]}`); settings.Code != http.StatusOK {
 		t.Fatalf("settings = %d %q", settings.Code, settings.Body.String())
 	}
@@ -161,6 +165,10 @@ func newLatinAmericanOpenSubtitles(t *testing.T) (*httptest.Server, *atomic.Int3
 func newMultilingualSubDL(t *testing.T) *httptest.Server {
 	t.Helper()
 	provider := httptest.NewServer(http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
+		if request.URL.Path == "/subtitles" && request.URL.Query().Get("api_key") != "key" {
+			http.Error(writer, "bad key", http.StatusUnauthorized)
+			return
+		}
 		if request.URL.Path != "/subtitles" {
 			_, _ = writer.Write([]byte("1\n00:00:01,000 --> 00:00:02,000\nFound\n"))
 			return

@@ -44,6 +44,7 @@ type subtitleDashboardItem struct {
 
 type subtitleDashboardData struct {
 	subtitleDashboardOptions
+	Owner              bool                     `json:"-"`
 	PageSize           int                      `json:"pageSize"`
 	Pages              int                      `json:"pages"`
 	Matched            int                      `json:"matched"`
@@ -121,7 +122,7 @@ func (manager *subtitleManager) dashboard(writer http.ResponseWriter, request *h
 	// Send usable navigation before library, readiness, and recovery-file checks.
 	writer.Header().Set("Content-Type", "text/html; charset=utf-8")
 	writer.Header().Set("X-Accel-Buffering", "no")
-	shell := subtitleDashboardData{ServerName: manager.settings.serverName(), subtitleDashboardOptions: options}
+	shell := subtitleDashboardData{ServerName: manager.settings.serverName(), Owner: true, subtitleDashboardOptions: options}
 	if err := subtitleDashboardView.ExecuteTemplate(writer, request, "shell", shell); err != nil {
 		return
 	}

@@ -6,6 +6,9 @@ struct PlayerTabs: View {
     @AppStorage private var modeStored: String
     @State private var selection = PlayerTab.home
     @State private var paths: [PlayerTab: NavigationPath] = [:]
+    #if os(tvOS)
+    @FocusState private var topFocus: PlayerTab?
+    #endif
     init(profileKey: String) {
         let legacy = UserDefaults.standard.string(forKey: "kinosail.tabs.\(profileKey)")
         #if os(tvOS)
@@ -40,6 +43,37 @@ struct PlayerTabs: View {
         #endif
     }
     var body: some View {
+        Group {
+            #if os(tvOS)
+            VStack(spacing: 0) {
+                TVTopBar(selection: $selection, focus: $topFocus)
+                tabs
+            }
+            #else
+            tabs
+            #endif
+        }
+        .safeAreaInset(edge: .top, spacing: 0) {
+            ConnectionBanner {
+                let tab: PlayerTab = pinned.contains(.downloads) ? .downloads : .more
+                var path = NavigationPath()
+                if tab == .more { path.append(PlayerTab.downloads) }
+                paths[tab] = path
+                selection = tab
+            }
+        }
+        .onAppear { if !pinned.contains(selection) && selection != .more { selection = pinned[0] } }
+        .onChange(of: pinned) { _, _ in
+            if !pinned.contains(selection) && selection != .more { selection = pinned[0] }
+        }
+        .onChange(of: mode) { _, _ in
+            #if os(iOS)
+            if selection != pinned[0] { selection = pinned[0] }
+            if !paths.isEmpty { paths = [:] }
+            #endif
+        }
+    }
+    private var tabs: some View {
         TabView(selection: $selection) {
             ForEach(pinned) { tab in
                 #if os(iOS)
@@ -47,7 +81,7 @@ struct PlayerTabs: View {
                 #else
                 let role: TabRole? = nil
                 #endif
-                Tab(value: tab, role: role) { stack(tab: tab) { PlayerTabScreen(tab: tab, mode: screenMode, showsSearch: !pinned.contains(.search), changeMode: changeMode) } } label: {
+                Tab(value: tab, role: role) { stack(tab: tab) { PlayerTabScreen(tab: tab, mode: screenMode, showsSearch: !pinned.contains(.search), changeMode: changeMode, selectTab: selectBrowseTab) } } label: {
                     Label(tab.title, systemImage: tab.symbol)
                     #if os(tvOS)
                         .foregroundStyle(selection == tab ? KinoTheme.signalInk : KinoTheme.text)
@@ -77,25 +111,6 @@ struct PlayerTabs: View {
         .tabViewStyle(.sidebarAdaptable)
         .modifier(MiniPlayerTabAccessory())
         #endif
-        .safeAreaInset(edge: .top, spacing: 0) {
-            ConnectionBanner {
-                let tab: PlayerTab = pinned.contains(.downloads) ? .downloads : .more
-                var path = NavigationPath()
-                if tab == .more { path.append(PlayerTab.downloads) }
-                paths[tab] = path
-                selection = tab
-            }
-        }
-        .onAppear { if !pinned.contains(selection) && selection != .more { selection = pinned[0] } }
-        .onChange(of: pinned) { _, _ in
-            if !pinned.contains(selection) && selection != .more { selection = pinned[0] }
-        }
-        .onChange(of: mode) { _, _ in
-            #if os(iOS)
-            if selection != pinned[0] { selection = pinned[0] }
-            if !paths.isEmpty { paths = [:] }
-            #endif
-        }
     }
     private func changeMode(_ next: PlayerMode) {
         guard next != mode else { return }
@@ -105,6 +120,16 @@ struct PlayerTabs: View {
             selection = (try? PlayerTab.parse(next == .watch ? watchStored : listenStored))?.first ?? next.defaultTabs[0]
             paths = [:]
             modeStored = next.rawValue
+        }
+    }
+    private func selectBrowseTab(_ tab: PlayerTab) {
+        if pinned.contains(tab) {
+            selection = tab
+        } else {
+            var path = NavigationPath()
+            path.append(tab)
+            paths[.home] = path
+            selection = .home
         }
     }
     private func moreLink(_ tab: PlayerTab) -> some View {
@@ -122,7 +147,7 @@ struct PlayerTabs: View {
     private func stack<Content: View>(tab: PlayerTab, @ViewBuilder content: () -> Content) -> some View {
         NavigationStack(path: Binding(get: { paths[tab] ?? NavigationPath() }, set: { paths[tab] = $0 })) {
             content()
-                .navigationDestination(for: PlayerTab.self) { PlayerTabScreen(tab: $0, mode: screenMode, showsSearch: !pinned.contains(.search), changeMode: changeMode) }
+                .navigationDestination(for: PlayerTab.self) { PlayerTabScreen(tab: $0, mode: screenMode, showsSearch: !pinned.contains(.search), changeMode: changeMode, selectTab: selectBrowseTab) }
                 #if os(iOS)
                 .modifier(SupporterToolbar())
                 #endif
@@ -139,6 +164,7 @@ struct PlayerTabs: View {
                 .navigationDestination(for: ScreenDestination.self) { DestinationScreen(destination: $0) }
         }
         #if os(tvOS)
+        .toolbar(.hidden, for: .tabBar)
         .toolbarBackground(.hidden, for: .navigationBar, .tabBar)
         .toolbarColorScheme(.dark, for: .navigationBar, .tabBar)
         #endif
@@ -164,11 +190,12 @@ private struct PlayerTabScreen: View {
     let mode: PlayerMode?
     let showsSearch: Bool
     let changeMode: (PlayerMode) -> Void
+    let selectTab: (PlayerTab) -> Void
     var body: some View {
         switch tab {
         case .movies: LibraryScreen(initialView: .movies)
         case .shows: LibraryScreen(initialView: .shows)
-        case .home: HomeScreen(showsSearch: showsSearch, mode: mode, changeMode: mode == nil ? nil : changeMode)
+        case .home: HomeScreen(showsSearch: showsSearch, mode: mode, changeMode: mode == nil ? nil : changeMode, selectTab: selectTab)
         case .search: LibraryScreen(initialView: mode?.searchViews.first ?? .all, searchMode: true, mode: mode).id(mode)
         case .list: LibraryScreen(initialView: .list)
         case .library: LibraryHubScreen(mode: mode)

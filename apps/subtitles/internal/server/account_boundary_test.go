@@ -41,6 +41,20 @@ func TestViewerCanReachAccountSecurityThroughWebAndAPI(t *testing.T) { //nolint:
 	}
 }
 
+func TestViewerHeaderLinksToAccountWithoutOwnerActions(t *testing.T) {
+	handler := server.New(server.Config{SubtitleApp: true, DataDir: t.TempDir(), RequireAuth: true})
+	owner := signInTestProfile(t, handler, "/setup", "name=Owner&password=owner-password")
+	viewer := addAndSignInViewer(t, handler, owner, "Sam", "viewer-password")
+	account := requestWithCookie(t, handler, http.MethodGet, "/account", "", viewer)
+	if account.Code != http.StatusOK {
+		t.Fatalf("viewer account = %d", account.Code)
+	}
+	header := strings.SplitN(account.Body.String(), "</header>", 2)[0]
+	if !strings.Contains(header, `href="/account"`) || strings.Contains(header, `href="/settings"`) || strings.Contains(header, `href="/supporter"`) {
+		t.Fatalf("viewer header has the wrong actions: %q", header)
+	}
+}
+
 func TestAccountSecurityRejectsAnonymousChanges(t *testing.T) {
 	scenario := libraryAPIFixture.AccountSecurityRejectsAnonymousChanges
 	scenario(t)

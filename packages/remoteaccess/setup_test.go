@@ -47,7 +47,7 @@ func TestSetupExplainsFailedChecksAndPortMapping(t *testing.T) {
 
 func TestStoppedSetupDoesNotTellOwnersToReopenRouterPorts(t *testing.T) {
 	result := SecurePublicReadiness(Status{Mode: "https", State: "killed"}, nil, nil, time.Now())
-	if !result.Stopped || result.Ready || len(result.NextSteps) != 1 || !strings.Contains(result.NextSteps[0].Instruction, "Keep the router rule disabled") {
+	if !result.Stopped || result.Ready || len(result.NextSteps) != 1 || !strings.Contains(result.NextSteps[0].Instruction, "Keep the router rule disabled") || !strings.Contains(result.NextSteps[0].Instruction, "Allow public access now") || strings.Contains(result.NextSteps[0].Instruction, "restart") {
 		t.Fatalf("stopped setup = %#v", result)
 	}
 }

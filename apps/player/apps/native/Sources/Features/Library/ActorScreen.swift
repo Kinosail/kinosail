@@ -65,7 +65,6 @@ struct ActorScreen: View {
                                     .clipShape(.rect(cornerRadius: 12))
                                 Text(item.title).font(.headline).foregroundStyle(KinoTheme.text)
                                     .lineLimit(dynamicTypeSize.isAccessibilitySize ? nil : 2)
-                                if !item.year.isEmpty { Text(item.year).font(.caption).foregroundStyle(KinoTheme.muted) }
                                 if !item.role.isEmpty { Text(item.role).font(.caption).foregroundStyle(KinoTheme.muted)
                                     .lineLimit(dynamicTypeSize.isAccessibilitySize ? nil : 2) }
                             }

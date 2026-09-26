@@ -24,7 +24,7 @@ func TestActorRejectsQueryBeforeLibraryAccess(t *testing.T) {
 func TestActorTemplateEscapesCreditsAndLinksTitles(t *testing.T) {
 	request := httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/actor?name=Actor", nil)
 	response := httptest.NewRecorder()
-	page := catalogapi.ActorPage{Name: "Actor <script>", Movies: []catalogapi.ActorTitle{{Title: "Film & friends", URL: "/watch/movie", Role: "Lead"}}, Shows: []catalogapi.ActorTitle{{Title: "Series", URL: "/show/series", Artwork: "/art/episode"}}}
+	page := catalogapi.ActorPage{Name: "Actor <script>", Movies: []catalogapi.ActorTitle{{Title: "Film & friends", Year: "2016", URL: "/watch/movie", Role: "Lead"}}, Shows: []catalogapi.ActorTitle{{Title: "Series", Year: "2024", URL: "/show/series", Artwork: "/art/episode"}}}
 	if err := actorView.Execute(response, request, page); err != nil {
 		t.Fatal(err)
 	}
@@ -32,5 +32,8 @@ func TestActorTemplateEscapesCreditsAndLinksTitles(t *testing.T) {
 		if !strings.Contains(response.Body.String(), expected) {
 			t.Fatalf("missing %q", expected)
 		}
+	}
+	if strings.Contains(response.Body.String(), "2016") || strings.Contains(response.Body.String(), "2024") {
+		t.Fatal("actor credits show release years")
 	}
 }

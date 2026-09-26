@@ -19,7 +19,7 @@ func KillHTTP(manager *Manager, revoke func() error, writeError WriteError) http
 	}
 }
 
-// ResetKillHTTP permits public access after the next restart.
+// ResetKillHTTP resumes public access in the running Server.
 func ResetKillHTTP(manager *Manager, writeError WriteError) http.HandlerFunc {
 	return func(writer http.ResponseWriter, request *http.Request) {
 		if err := resetResult(manager); err != nil {
@@ -55,7 +55,7 @@ func KillAPI(manager *Manager, revoke func() error, contract func(string) error,
 	}
 }
 
-// ResetKillAPI permits public access after restart for versioned clients.
+// ResetKillAPI resumes public access in the running Server for versioned clients.
 func ResetKillAPI(manager *Manager, contract func(string) error, writeError func(http.ResponseWriter, error, int)) http.HandlerFunc {
 	return func(writer http.ResponseWriter, _ *http.Request) {
 		if err := resetResult(manager); err != nil {

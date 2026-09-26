@@ -54,6 +54,9 @@ type settingsStore struct {
 	ffmpeg            string
 	value             installationSettings
 	config            configuration.Snapshot
+	metadata          *metadataStore
+	metadataChanged   func()
+	tmdbCheck         func(context.Context, string, string) error
 	hardware          hardwareCapabilities
 	transcoderCheck   transcodepolicy.CheckResult
 	trustedHTTPSCheck func(context.Context, trustedhttps.Config) error
@@ -71,6 +74,7 @@ func (store *settingsStore) changeInstallationSettings(change func(*installation
 
 func newSettingsStore(mediaRoot, dataDir, dlnaURL string, stateDB *database.Store, configured ...configuration.Snapshot) *settingsStore {
 	store := &settingsStore{mediaRoot: mediaRoot, dlnaURL: dlnaURL, value: installationSettings{Name: "Kinosail", Libraries: []string{"."}, RequireMFA: true, UpdateChecks: true, Navigation: sharednavigation.Default()}, trustedHTTPSCheck: func(ctx context.Context, config trustedhttps.Config) error { return trustedhttps.Check(ctx, config) }, persist: statePersistence(stateDB)}
+	store.tmdbCheck = checkTMDBToken
 	if len(configured) > 0 {
 		store.config = configured[0]
 	}

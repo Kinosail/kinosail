@@ -227,6 +227,16 @@ func TestSubtitleCoverageLetsARegisteredVariantSatisfyItsBase(t *testing.T) {
 	}
 }
 
+func TestForcedSidecarDoesNotSatisfyFullDialogueCoverage(t *testing.T) {
+	for _, path := range []string{"/media/Movie.en.forced.srt", "/media/Movie.forced.en.srt"} {
+		item := library.Item{Path: "/media/Movie.mkv", Subtitles: []string{path}}
+		ready, _, missing := subtitleCoverageAll(item, []string{"en"})
+		if ready || !slices.Equal(missing, []string{"en"}) || subtitleLanguageFromPath(item.Path, path) != "en" || subtitleRoleFromPath(path) != "forced" {
+			t.Errorf("forced-only sidecar covered full dialogue or lost its identity: %q ready=%v missing=%q", path, ready, missing)
+		}
+	}
+}
+
 func TestSubtitleCoverageKeepsProviderAliasesOutOfLocalSidecars(t *testing.T) {
 	aliases := map[string]string{
 		"ea": "es-419", "sp": "es-ES", "at": "ast", "pm": "pt-MZ", "zh_bg": "zh-Hant", "BR_PT": "pt-BR", "Brazillian Portuguese": "pt-BR", "Farsi_persian": "fa",

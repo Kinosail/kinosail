@@ -12,12 +12,13 @@ import (
 
 // EmbeddedSubtitleFixture retains each app's real media and authentication adapters.
 type EmbeddedSubtitleFixture struct {
-	New     func(*testing.T, AutomaticSkipConfig) http.Handler
-	SignIn  func(*testing.T, http.Handler, string, string) *http.Cookie
-	Login   func(*testing.T, http.Handler, *http.Cookie) (string, string)
-	WebCall AuthCookieRequest
-	Call    func(*testing.T, http.Handler, string, string, string, string) *httptest.ResponseRecorder
-	Decode  func(*testing.T, *httptest.ResponseRecorder, any)
+	New             func(*testing.T, AutomaticSkipConfig) http.Handler
+	WebCaptionLabel string
+	SignIn          func(*testing.T, http.Handler, string, string) *http.Cookie
+	Login           func(*testing.T, http.Handler, *http.Cookie) (string, string)
+	WebCall         AuthCookieRequest
+	Call            func(*testing.T, http.Handler, string, string, string, string) *httptest.ResponseRecorder
+	Decode          func(*testing.T, *httptest.ResponseRecorder, any)
 }
 
 // TextCaptionsAcrossAdapters proves semantic captions and real extraction on every adapter.
@@ -62,7 +63,7 @@ func assertEmbeddedCaptionAPI(t *testing.T, handler http.Handler, token, rawID s
 func (fixture EmbeddedSubtitleFixture) assertEmbeddedCaptionWeb(t *testing.T, handler http.Handler, owner *http.Cookie, rawID, arguments string) {
 	t.Helper()
 	page := fixture.WebCall(t, handler, http.MethodGet, "/watch/"+rawID, "", owner)
-	if page.Code != http.StatusOK || !strings.Contains(page.Body.String(), `kind="captions"`) || !strings.Contains(page.Body.String(), `label="ENG · Captions"`) {
+	if page.Code != http.StatusOK || !strings.Contains(page.Body.String(), `kind="captions"`) || !strings.Contains(page.Body.String(), `label="`+fixture.WebCaptionLabel+`"`) {
 		t.Fatalf("web captions = %d %q", page.Code, page.Body.String())
 	}
 	extracted := fixture.WebCall(t, handler, http.MethodGet, "/subtitle/"+rawID+"/embedded/3", "", owner)

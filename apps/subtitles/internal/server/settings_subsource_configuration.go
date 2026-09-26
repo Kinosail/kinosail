@@ -36,6 +36,7 @@ func (store *settingsStore) changeSubSourceConfiguration(apiKey string, reset bo
 		for _, key := range subSourceConfigurationKeys {
 			store.config.UpdateGUI(key, "", true)
 		}
+		store.refreshSubtitleProviderLocked(subSourceConfigurationKey)
 		return nil
 	}
 	if apiKey == "" {
@@ -46,6 +47,7 @@ func (store *settingsStore) changeSubSourceConfiguration(apiKey string, reset bo
 	}
 	store.config.UpdateGUI("integrations.subsource.api_key", apiKey, false)
 	store.config.UpdateGUI("integrations.subsource.personal_use", "true", false)
+	store.refreshSubtitleProviderLocked(subSourceConfigurationKey)
 	return nil
 }
 
@@ -98,5 +100,5 @@ func apiChangeSubSourceConfiguration(writer http.ResponseWriter, request *http.R
 		apiError(writer, err, http.StatusConflict)
 		return
 	}
-	writeJSON(writer, map[string]any{"status": "saved", "restartRequired": true}, http.StatusAccepted)
+	writeJSON(writer, map[string]any{"status": "saved", "restartRequired": false}, http.StatusAccepted)
 }

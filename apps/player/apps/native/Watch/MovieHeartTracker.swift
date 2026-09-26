@@ -61,24 +61,31 @@ final class MovieHeartTracker {
     }
 
     func loadSamples() async {
-        guard let timeline, let heartRate = HKObjectType.quantityType(forIdentifier: .heartRate) else { return }
+        guard let timeline else { return }
         loading = true
         defer { loading = false }
-        let end = min(timeline.ended ?? Date(), timeline.started.addingTimeInterval(8 * 3600))
-        let predicate = HKQuery.predicateForSamples(withStart: timeline.started, end: end, options: .strictStartDate)
         do {
-            let samples: [HKQuantitySample] = try await withCheckedThrowingContinuation { continuation in
-                let query = HKSampleQuery(sampleType: heartRate, predicate: predicate, limit: 6_000,
-                                          sortDescriptors: [NSSortDescriptor(key: HKSampleSortIdentifierEndDate, ascending: true)]) { _, samples, error in
-                    if let error { continuation.resume(throwing: error) }
-                    else { continuation.resume(returning: (samples as? [HKQuantitySample]) ?? []) }
-                }
-                health.execute(query)
-            }
-            let unit = HKUnit.count().unitDivided(by: .minute())
-            points = samples.compactMap { timeline.point(at: $0.endDate, bpm: $0.quantity.doubleValue(for: unit)) }
+            points = try await Self.samples(for: timeline)
             message = points.isEmpty ? "No heart rate samples matched the watched parts of this movie." : nil
         } catch { message = "Heart rate samples could not be loaded from Health." }
+    }
+
+    nonisolated private static func samples(for timeline: MovieHeartTimeline) async throws -> [HeartPoint] {
+        guard let heartRate = HKObjectType.quantityType(forIdentifier: .heartRate) else { return [] }
+        let end = min(timeline.ended ?? Date(), timeline.started.addingTimeInterval(8 * 3600))
+        let predicate = HKQuery.predicateForSamples(withStart: timeline.started, end: end, options: .strictStartDate)
+        let samples: [HKQuantitySample] = try await withCheckedThrowingContinuation { continuation in
+            let store = HKHealthStore()
+            let query = HKSampleQuery(sampleType: heartRate, predicate: predicate, limit: 6_000,
+                                      sortDescriptors: [NSSortDescriptor(key: HKSampleSortIdentifierEndDate, ascending: true)]) { _, samples, error in
+                _ = store
+                if let error { continuation.resume(throwing: error) }
+                else { continuation.resume(returning: (samples as? [HKQuantitySample]) ?? []) }
+            }
+            store.execute(query)
+        }
+        let unit = HKUnit.count().unitDivided(by: .minute())
+        return samples.compactMap { timeline.point(at: $0.endDate, bpm: $0.quantity.doubleValue(for: unit)) }
     }
 
     private func save() {

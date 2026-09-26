@@ -23,9 +23,9 @@ private struct CinemaBackground: View {
                         .clipped()
                         .overlay {
                             LinearGradient(stops: [
-                                .init(color: .black.opacity(0.24), location: 0),
-                                .init(color: .black.opacity(0.50), location: 0.58),
-                                .init(color: KinoTheme.background.opacity(0.96), location: 1)
+                                .init(color: .black.opacity(0.68), location: 0),
+                                .init(color: .black.opacity(0.78), location: 0.58),
+                                .init(color: KinoTheme.background.opacity(0.98), location: 1)
                             ], startPoint: .top, endPoint: .bottom)
                         }
                 }

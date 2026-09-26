@@ -34,7 +34,7 @@ func TestEPUBReaderPersistsChapterProgressThroughAPIAndWeb(t *testing.T) {
 	}
 	endpoint := "/api/v1/books/" + id + "/reader/progress?includeOffset=true"
 	assertAPIBody(t, apiCall(t, handler, "", http.MethodPut, endpoint, map[string]any{"page": 2, "offset": 0.625}), http.StatusOK, `"offset":0.625`)
-	for _, body := range []string{`{"page":2,"offset":null}`, `{"page":2,"offset":"0.5"}`, `{"page":2,"offset":-0.1}`, `{"page":2,"offset":1.1}`, `{"page":2,"offset":1e999}`, `{"page":2,"offset":0.2,"offset":0.9}`, `{"page":2,"offset":0.2,"extra":1}`} {
+	for _, body := range []string{`{"page":2,"offset":null}`, `{"page":2,"offset":"0.5"}`, `{"page":2,"offset":-0.1}`, `{"page":2,"offset":1.1}`, `{"page":2,"offset":1e999}`, `{"page":2,"offset":0.2,"offset":0.9}`, `{"page":1,"Page":2}`, `{"page":2,"offset":0.2,"extra":1}`} {
 		if response := rawAPIRequest(t, handler, "", http.MethodPut, endpoint, body); response.Code != http.StatusBadRequest {
 			t.Fatalf("accepted %s: %d", body, response.Code)
 		}

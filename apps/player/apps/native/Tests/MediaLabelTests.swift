@@ -2,6 +2,12 @@ import Testing
 @testable import KinosailPlayer
 
 struct MediaLabelTests {
+    @Test func embeddedSubtitleNamesSeparateTheVerifiedRole() {
+        #expect(PlayerTrack.embeddedSubtitleTitle("English (US) Transcribed") == "English (US) · Transcribed")
+        #expect(PlayerTrack.embeddedSubtitleTitle("English Forced") == "English · Forced")
+        #expect(PlayerTrack.embeddedSubtitleTitle("English Closed Captions") == "English Closed Captions")
+    }
+
     @Test func showLabelsOmitReleaseNamesIncludingCachedResponses() throws {
         let server = try ServerAddress("https://media.example")
         for kind in ["video", "show"] {
