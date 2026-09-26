@@ -44,12 +44,7 @@ func TestResetRequiresStopAndRestartsCurrentManager(t *testing.T) {
 	if manager.ResetKill() == nil || manager.Status().State != "starting" {
 		t.Fatal("reset accepted a live manager")
 	}
-	if err = manager.Kill(); err != nil {
-		t.Fatal(err)
-	}
-	if err = manager.ResetKill(); err != nil {
-		t.Fatal(err)
-	}
+	killAndResetForRecovery(t, manager)
 	listens := 0
 	manager.operations.listen = func(context.Context, string, string) (net.Listener, error) {
 		listens++
@@ -61,5 +56,15 @@ func TestResetRequiresStopAndRestartsCurrentManager(t *testing.T) {
 	restarted, err := New(config, dependency)
 	if err != nil || restarted.killed || restarted.Status().State != "starting" {
 		t.Fatalf("new process cannot start: %#v %v", restarted, err)
+	}
+}
+
+func killAndResetForRecovery(t *testing.T, manager *Manager) {
+	t.Helper()
+	if err := manager.Kill(); err != nil {
+		t.Fatal(err)
+	}
+	if err := manager.ResetKill(); err != nil {
+		t.Fatal(err)
 	}
 }
