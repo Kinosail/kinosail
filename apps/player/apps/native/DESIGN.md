@@ -70,7 +70,7 @@ components:
 
 **Creative North Star: "Electric"**
 
-Electric makes the media title and next action clear while letting artwork keep its own color. Home places title, truthful progress and a green action beside contained 16:9 artwork on wide screens, followed by compact Continue watching rows. Compact screens keep feature information 12pt below the artwork. Home-first navigation keeps Continue watching immediately available.
+Electric makes the media title and next action clear while letting artwork keep its own color. Home places title, truthful progress and a green action beside contained 16:9 artwork on wide screens, followed by a landscape Up Next shelf. Compact screens keep feature information 12pt below the artwork. Home-first navigation keeps saved playback immediately available.
 
 The user selected Electric option 1 and authorized replacing the previous coral system across iPhone, iPad and Apple TV. `Sources/Design/KinoTheme.swift`, `CinemaHero.swift`, `MediaViews.swift`, `WatchPosition.swift` and `Sources/App/PlayerTabs.swift` are the implementation authority. This workspace's `PRODUCT.md` and `AGENTS.md` preserve privacy, Direct First playback, existing server contracts and native accessibility. The active SwiftUI implementation is `Sources/`; legacy client sources do not define this system.
 
@@ -104,7 +104,7 @@ Home is a vertical scroll view with 32pt section spacing and theme content paddi
 
 The reusable hero fills the available width. Regular iOS size classes and tvOS place contained artwork beside information with a 32pt gap. Compact and accessibility sizes put 16:9 artwork above information with a 12pt gap. Foreground artwork stays contained and untinted. Apple TV additionally uses a subdued full-screen copy of the backdrop behind browsing content. Missing backdrops use 2:3 poster artwork (square for audio) capped at 240pt. Information grows with content; actions try horizontal placement and fall back to vertical through `ViewThatFits`.
 
-Home displays For you and My List above the feature, then up to four compact Continue watching rows. Each row combines a contained landscape backdrop or 2:3 poster fallback, title, metadata, true progress and play affordance; See all opens History. `ResumeRows` adapts from 420pt minimum columns on iOS and 640pt on tvOS. At accessibility text sizes, rows use one column, omit decorative thumbnails and let titles wrap without a line limit.
+Home labels a saved video feature Watching and places it above Up Next on Apple TV and in iOS Watch mode. Up Next shows up to four other saved titles as landscape cards with direct resume, metadata and true progress; See all opens History. When there is no saved title, the recent feature is labeled For you. iOS Listen mode keeps compact Continue listening rows and labels its saved feature Listening. At accessibility text sizes, card titles wrap and the shelf remains horizontally scrollable.
 
 Media grids adapt from 144pt posters or 280pt landscape cards on iOS, and 230pt or 360pt on tvOS, with 20pt column and 28pt row spacing. Accessibility sizes use one flexible column. Shelves retain an 18pt gap and aligned scrolling; iOS poster/landscape widths scale from 164/260pt with 260/300pt caps, while tvOS uses 230/390pt widths.
 
@@ -158,7 +158,7 @@ Home selects the first Continue watching item, otherwise the first Recently adde
 
 ### Loading and recovery
 
-`LoadingState` uses destination-specific shelf, home, detail, grid, music, show, album and list layouts. Home/detail reuse the hero's wide/stacked layout, artwork ratio and gap. Home includes compact continuation row placeholders, then a poster shelf. Grids reuse `MediaGrid.columns` and eight artwork placeholders; shelves use four cards with the loaded spacing and width policy. These policies align the known layout, while real content, missing artwork and Dynamic Type can change its final geometry.
+`LoadingState` uses destination-specific shelf, home, detail, grid, music, show, album and list layouts. Home/detail reuse the hero's wide/stacked layout, artwork ratio and gap. Watch Home includes landscape Up Next placeholders, then a poster shelf; Listen Home retains compact row placeholders. Grids reuse `MediaGrid.columns` and eight artwork placeholders; shelves use four cards with the loaded spacing and width policy. These policies align the known layout, while real content, missing artwork and Dynamic Type can change its final geometry.
 
 `ResourceView` displays loading feedback only while initial content is pending. Native skeletons shimmer within their existing shapes and expose one accessible loading label; Reduce Motion keeps the placeholders still. Initial failure shows Try again; failed refresh retains loaded content with truthful feedback. A new resource identity clears stale content. Empty, failed and settled content must not remain a skeleton. Determinate playback and download progress remains visible; actions without a replacement layout use plain status text.
 

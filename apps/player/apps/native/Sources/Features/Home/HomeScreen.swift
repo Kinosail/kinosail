@@ -11,30 +11,6 @@ struct HomeScreen: View {
     #endif
     var body: some View {
         ScrollView {
-            HStack(spacing: 28) {
-                Text("For you").font(.title2.bold()).frame(minHeight: 44)
-                    .accessibilityAddTraits(.isHeader)
-                NavigationLink("My List", value: ScreenDestination.library(.list))
-                    .font(.callout).frame(minHeight: 44)
-                    #if os(tvOS)
-                    .buttonStyle(.bordered).tint(KinoTheme.secondaryControlTint).secondaryControlForeground()
-                    #else
-                    .foregroundStyle(KinoTheme.muted)
-                    #endif
-                #if os(tvOS)
-                Spacer()
-                if let mode, let changeMode {
-                    Button { changeMode(mode.other) } label: {
-                        Label(mode.other.title, systemImage: mode.other == .listen ? "headphones" : "tv")
-                    }
-                    .buttonStyle(.bordered).tint(KinoTheme.secondaryControlTint).secondaryControlForeground()
-                    .accessibilityLabel("Switch to \(mode.other.title) mode")
-                }
-                #endif
-            }
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .padding(.horizontal, KinoTheme.contentPadding)
-
             // Refresh belongs to a vertical scroll container, not the nested media shelf.
             ResourceView(identity: "\(session.profileKey ?? ""):\(mode?.rawValue ?? "all")", refreshID: session.contentRevision.uuidString, loadingLayout: mode == .listen ? .homeAudio : .home, allowsPullToRefresh: false, load: { policy in
                 guard let client = session.client else { throw ClientError.http(401) }
@@ -47,30 +23,58 @@ struct HomeScreen: View {
                 let selection = HomeSelection(continueWatching: home.continueWatching, recent: home.recent, mode: mode)
                 #endif
                 VStack(alignment: .leading, spacing: 32) {
-                    if let featured = selection.featured {
-                        CinemaHero(item: featured, subtitle: homeSubtitle(for: featured), showsPlot: false) {
-                            NavigationLink(value: featured.playingDestination) {
-                                Label(featured.playLabel, systemImage: featured.kind == .book ? "book.fill" : "play.fill")
-                                    #if os(tvOS)
-                                    .frame(minWidth: 280).padding(.vertical, 12)
-                                    .foregroundStyle(KinoTheme.tvOSPrimaryInk)
-                                    .background(KinoTheme.tvOSPrimaryFill, in: Capsule())
-                                    #else
-                                    .frame(maxWidth: .infinity)
-                                    #endif
-                            }
+                    VStack(alignment: .leading, spacing: 12) {
+                        HStack(spacing: 28) {
+                            Text(selection.featuredIsContinuing ? (mode == .listen ? "Listening" : "Watching") : "For you")
+                                .font(.title2.bold()).frame(minHeight: 44).accessibilityAddTraits(.isHeader)
+                            NavigationLink("My List", value: ScreenDestination.library(.list))
+                                .font(.callout).frame(minHeight: 44)
+                                #if os(tvOS)
+                                .buttonStyle(.bordered).tint(KinoTheme.secondaryControlTint).secondaryControlForeground()
+                                #else
+                                .foregroundStyle(KinoTheme.muted)
+                                #endif
                             #if os(tvOS)
-                            .buttonStyle(.card)
-                            .tvOSDefaultPlayFocus(in: homeFocus, id: "home.play.\(featured.id)", enabled: featured.kind == .video || featured.isAudio)
-                            #else
-                            .buttonStyle(.borderedProminent).buttonBorderShape(.capsule).tint(KinoTheme.signal).foregroundStyle(KinoTheme.signalInk)
+                            Spacer()
+                            if let mode, let changeMode {
+                                Button { changeMode(mode.other) } label: {
+                                    Label(mode.other.title, systemImage: mode.other == .listen ? "headphones" : "tv")
+                                }
+                                .buttonStyle(.bordered).tint(KinoTheme.secondaryControlTint).secondaryControlForeground()
+                                .accessibilityLabel("Switch to \(mode.other.title) mode")
+                            }
                             #endif
-                            NavigationLink("Details", value: featured.destination).buttonStyle(.bordered).buttonBorderShape(.capsule).tint(KinoTheme.secondaryControlTint).secondaryControlForeground()
+                        }
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        if let featured = selection.featured {
+                            CinemaHero(item: featured, subtitle: homeSubtitle(for: featured), showsPlot: false) {
+                                NavigationLink(value: featured.playingDestination) {
+                                    Label(featured.playLabel, systemImage: featured.kind == .book ? "book.fill" : "play.fill")
+                                        #if os(tvOS)
+                                        .frame(minWidth: 280).padding(.vertical, 12)
+                                        .foregroundStyle(KinoTheme.tvOSPrimaryInk)
+                                        .background(KinoTheme.tvOSPrimaryFill, in: Capsule())
+                                        #else
+                                        .frame(maxWidth: .infinity)
+                                        #endif
+                                }
+                                #if os(tvOS)
+                                .buttonStyle(.card)
+                                .tvOSDefaultPlayFocus(in: homeFocus, id: "home.play.\(featured.id)", enabled: featured.kind == .video || featured.isAudio)
+                                #else
+                                .buttonStyle(.borderedProminent).buttonBorderShape(.capsule).tint(KinoTheme.signal).foregroundStyle(KinoTheme.signalInk)
+                                #endif
+                                NavigationLink("Details", value: featured.destination).buttonStyle(.bordered).buttonBorderShape(.capsule).tint(KinoTheme.secondaryControlTint).secondaryControlForeground()
+                            }
                         }
                     }
                     if !selection.continuation.isEmpty {
-                        ResumeRows(items: selection.continuation, title: mode == .listen ? "Continue listening" : "Continue watching",
-                                   showsAll: mode != .listen)
+                        if mode == .listen {
+                            ResumeRows(items: selection.continuation, title: "Continue listening", showsAll: false)
+                        } else {
+                            MediaShelf(title: "Up Next", items: selection.continuation, landscape: true, resumesPlayback: true,
+                                       moreTitle: "See all", moreDestination: .library(.history))
+                        }
                     }
                     if !selection.recent.isEmpty {
                         #if os(tvOS)
@@ -143,6 +147,7 @@ struct HomeScreen: View {
 
 struct HomeSelection {
     let featured: MediaItem?
+    let featuredIsContinuing: Bool
     let continuation: [MediaItem]
     let recent: [MediaItem]
 
@@ -150,6 +155,7 @@ struct HomeSelection {
         let watching = continueWatching.filter { mode?.includes($0) ?? true }
         let added = recent.filter { mode?.includes($0) ?? true }
         featured = watching.first ?? added.first
+        featuredIsContinuing = !watching.isEmpty
         continuation = Array(watching.dropFirst().prefix(4))
         let visibleIDs = Set(([featured].compactMap { $0 } + continuation).map(\.id))
         self.recent = added.filter { !visibleIDs.contains($0.id) }

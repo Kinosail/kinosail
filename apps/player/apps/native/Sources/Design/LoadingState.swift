@@ -7,8 +7,12 @@ struct LoadingState: View {
     var layout = LoadingLayout.shelf
     @Environment(\.dynamicTypeSize) private var dynamicType
     @ScaledMetric(relativeTo: .headline) private var posterWidth = 164.0
+    @ScaledMetric(relativeTo: .headline) private var landscapeWidth = 260.0
     var body: some View {
         VStack(alignment: .leading, spacing: 20) {
+            if layout == .home || layout == .homeAudio {
+                line(width: 180, height: 28).accessibilityHidden(true)
+            }
             if layout == .home || layout == .homeAudio || layout == .detail {
                 CinemaHeroLayout {
                     RoundedRectangle(cornerRadius: 12).fill(KinoTheme.surface)
@@ -18,7 +22,21 @@ struct LoadingState: View {
                     featureInformation.frame(maxWidth: .infinity, alignment: .leading)
                 }.accessibilityHidden(true)
             }
-            if layout == .home || layout == .homeAudio {
+            if layout == .home {
+                VStack(alignment: .leading, spacing: 12) {
+                    line(width: 200, height: 28)
+                    ScrollView(.horizontal) {
+                        HStack(alignment: .top, spacing: 18) {
+                            ForEach(0..<4) { _ in card(ratio: 16 / 9, showsProgress: true).frame(width: continuationWidth) }
+                        }
+                        #if os(tvOS)
+                        .padding(.horizontal, 24)
+                        #endif
+                        .padding(.vertical, 24)
+                    }.scrollIndicators(.hidden).scrollDisabled(true)
+                }.padding(.top, 12).accessibilityHidden(true)
+            }
+            if layout == .homeAudio {
                 VStack(alignment: .leading, spacing: 12) {
                     line(width: 200, height: 28)
                     LazyVGrid(columns: ResumeRows.columns(accessibility: dynamicType.isAccessibilitySize), alignment: .leading, spacing: 16) {
@@ -147,12 +165,13 @@ struct LoadingState: View {
         .frame(maxWidth: .infinity, alignment: .leading)
         .skeletonLoading(layout == .playback ? "Opening media…" : title, shimmers: layout != .playback)
     }
-    private func card(ratio: CGFloat = 2 / 3) -> some View {
+    private func card(ratio: CGFloat = 2 / 3, showsProgress: Bool = false) -> some View {
         VStack(alignment: .leading, spacing: 10) {
             RoundedRectangle(cornerRadius: 12).fill(KinoTheme.surface).aspectRatio(ratio, contentMode: .fit)
             VStack(alignment: .leading, spacing: 8) {
                 line(width: 100, height: 20)
                 line(width: 80, height: 14)
+                if showsProgress { line(width: 140, height: 4) }
             }
             #if os(tvOS)
             .padding([.horizontal, .bottom], 12)
@@ -190,6 +209,13 @@ struct LoadingState: View {
         230
         #else
         min(posterWidth, 260)
+        #endif
+    }
+    private var continuationWidth: CGFloat {
+        #if os(tvOS)
+        390
+        #else
+        min(landscapeWidth, 300)
         #endif
     }
     private var gridRatio: CGFloat {
