@@ -89,7 +89,7 @@ private struct ResumeRow: View {
                     #if os(tvOS)
                     let subtitle = item.subtitleWithoutYear
                     #else
-                    let subtitle = item.subtitle
+                    let subtitle = item.kind == .video || item.kind == .show ? item.subtitleWithoutYear : item.subtitle
                     #endif
                     if !subtitle.isEmpty { Text(subtitle).font(.caption).foregroundStyle(KinoTheme.muted) }
                     #if os(tvOS)

@@ -145,7 +145,7 @@ struct HomeScreen: View {
         #if os(tvOS)
         item.subtitleWithoutYear
         #else
-        item.subtitle
+        item.kind == .video || item.kind == .show ? item.subtitleWithoutYear : item.subtitle
         #endif
     }
 
