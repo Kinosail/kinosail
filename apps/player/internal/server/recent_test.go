@@ -42,7 +42,7 @@ func TestHomeShowsRecentlyAddedInNewestFirstOrder(t *testing.T) {
 	}
 }
 
-func TestHomeShowsMovieGenresFromVisibleMovies(t *testing.T) {
+func TestHomeShowsMovieGenresFromVisibleMovies(t *testing.T) { //nolint:cyclop // One public Home journey covers multi-genre cards and exclusions.
 	t.Parallel()
 	mediaDir := t.TempDir()
 	for name, genres := range map[string]string{
