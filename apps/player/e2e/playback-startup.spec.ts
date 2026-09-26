@@ -39,7 +39,7 @@ test("selecting a movie starts moving playback promptly", async ({ page }, testI
 
 	await page.getByRole("link", { name: /Example Movie/ }).click();
 	const started = Date.now();
-	await page.getByRole("link", { name: /^(Play|Resume)$/ }).click();
+	await page.getByRole("link", { name: /^(Play|Resume|Play again)$/ }).click();
 	const video = page.locator("video");
 	await expect.poll(() => video.evaluate((element: HTMLVideoElement) => element.currentTime), { timeout: 3_000 }).toBeGreaterThan(0.25);
 	const result = await page.evaluate((click) => {
@@ -73,7 +73,7 @@ test("restricted browser storage does not stop playback", async ({ page }) => {
 	if (await page.getByRole("link", { name: "Not now" }).isVisible()) await page.getByRole("link", { name: "Not now" }).click();
 	await page.getByRole("link", { name: "Movies", exact: true }).click();
 	await page.getByRole("link", { name: /Example Movie/ }).click();
-	await page.getByRole("link", { name: /^(Play|Resume)$/ }).click();
+	await page.getByRole("link", { name: /^(Play|Resume|Play again)$/ }).click();
 	const video = page.locator("video");
 	await expect.poll(() => video.evaluate((element: HTMLVideoElement) => element.currentTime), { timeout: 5_000 }).toBeGreaterThan(0.25);
 	expect(errors).toEqual([]);
@@ -88,7 +88,7 @@ test("failed progress save does not stop playback flow", async ({ page }) => {
 	if (await page.getByRole("link", { name: "Not now" }).isVisible()) await page.getByRole("link", { name: "Not now" }).click();
 	await page.getByRole("link", { name: "Movies", exact: true }).click();
 	await page.getByRole("link", { name: /Example Movie/ }).click();
-	await page.getByRole("link", { name: /^(Play|Resume)$/ }).click();
+	await page.getByRole("link", { name: /^(Play|Resume|Play again)$/ }).click();
 	await page.route("**/progress/**", (route) => route.abort());
 	await page.locator("video").evaluate((video: HTMLVideoElement) => {
 		video.dataset.next = "/?view=movies&after=failed-save";
@@ -110,7 +110,7 @@ test("selecting compatibility playback starts without a second play click", asyn
 	if (await page.getByRole("link", { name: "Not now" }).isVisible()) await page.getByRole("link", { name: "Not now" }).click();
 	await page.getByRole("link", { name: "Movies", exact: true }).click();
 	await page.getByRole("link", { name: /Example Movie/ }).click();
-	await page.getByRole("link", { name: /^(Play|Resume)$/ }).click();
+	await page.getByRole("link", { name: /^(Play|Resume|Play again)$/ }).click();
 
 	const started = Date.now();
 	await page.getByText("Playback & downloads", { exact: true }).click();
