@@ -8,7 +8,7 @@ import re
 def parse(tag):
     if not isinstance(tag, str) or len(tag) > 80:
         raise ValueError("invalid release tag")
-    match = re.fullmatch(r"(player|subtitles|dashboard)-v(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)", tag)
+    match = re.fullmatch(r"(player|subtitles)-v(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)", tag)
     if not match:
         raise ValueError("invalid release tag")
     app, major, minor, patch = match.groups()

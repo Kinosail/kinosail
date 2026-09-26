@@ -2,7 +2,7 @@
 version: 1
 slug: "packages-webassets-static-last-light-css"
 primary_target: "packages/webassets/static/last-light.css"
-related_targets: ["apps/player/internal/server/static/home.css","apps/dashboard/internal/server/web/static/dashboard.css","apps/subtitles/internal/server/static/subtitle-dashboard.css","apps/player/apps/native/Sources/Design/KinoTheme.swift"]
+related_targets: ["apps/player/internal/server/static/home.css","apps/subtitles/internal/server/static/subtitle-dashboard.css","apps/player/apps/native/Sources/Design/KinoTheme.swift"]
 ---
 
 # Kinosail Electric

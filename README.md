@@ -12,9 +12,8 @@ Kinosail Player Server is free to run on hardware you control. The web Player is
 | --- | --- | --- |
 | [Kinosail Player](apps/player/README.md) | Browse and play movies, Shows, music, audiobooks, books, and photos. Includes Profiles, playback progress, collections, and compatible playback. | `https://localhost:38127` |
 | [Kinosail Subtitles](apps/subtitles/README.md) | Find, validate, and save subtitle sidecars beside your movies and episodes. | `https://localhost:38128` |
-| [Kinosail Dashboard](apps/dashboard/README.md) | Organize direct links to your applications and check their reachability. | `http://localhost:38400` |
 
-Player reads your media and does not change the source files. Subtitles needs write access to save subtitle files beside your media. Dashboard opens your apps in a browser. Kinosail does not relay media. You do not need a Kinosail account for local use.
+Player reads your media and does not change the source files. Subtitles needs write access to save subtitle files beside your media. Kinosail does not relay media. You do not need a Kinosail account for local use.
 
 ## Get started with Kinosail Player
 
@@ -152,18 +151,6 @@ docker compose logs --tail 50 kinosail
 
 Open **<https://localhost:38128>**. Create and secure the Owner. In Settings, choose a language and a provider. Scan the library and fetch one subtitle before you set up a larger workflow. See the [Subtitles guide](apps/subtitles/docs/README.md) for credentials, matching, automation, and recovery.
 
-#### Dashboard
-
-From the repository root:
-
-```sh
-cd apps/dashboard
-docker compose up --build --detach
-docker compose logs --tail 50 dashboard
-```
-
-Open **<http://localhost:38400>**. Create the Owner and add your first app address. Each device's browser must be able to reach that address. On a phone, `localhost` means the phone itself. See the [Dashboard README](apps/dashboard/README.md) for health checks, HTTPS, backups, and MCP access.
-
 ### 3. Keep your data and connect other devices
 
 Each source Compose project saves state in named volumes. Keep the same project name and directory when you restart or update an app. Compose uses these values to find the saved data.
@@ -196,7 +183,6 @@ Visit **[Kinosail Player Docs](https://kinosail.com/docs/)** for searchable web 
 | --- | --- |
 | Install, use, or troubleshoot Player | [Player documentation](apps/player/docs/README.md) |
 | Configure subtitle providers and automation | [Subtitles documentation](apps/subtitles/docs/README.md) |
-| Operate Dashboard | [Dashboard README](apps/dashboard/README.md) |
 | Configure Player | [Configuration reference](apps/player/docs/reference/configuration.md) |
 | Protect and restore Player state | [Backups and updates](apps/player/docs/owner-guide/backups-and-updates.md) |
 | Integrate with Player's API or MCP | [Developer guide](apps/player/docs/developer-guide/index.md) |
@@ -205,7 +191,7 @@ Visit **[Kinosail Player Docs](https://kinosail.com/docs/)** for searchable web 
 
 ## Development
 
-The Go workspace contains three app modules and [shared packages](packages/README.md). Use Go 1.27 or newer, as declared in [go.work](go.work). The [contribution guide](CONTRIBUTING.md) covers tool installation, Git workflow, app-scoped commands, and verification.
+The Go workspace contains two app modules and [shared packages](packages/README.md). Use Go 1.27 or newer, as declared in [go.work](go.work). The [contribution guide](CONTRIBUTING.md) covers tool installation, Git workflow, app-scoped commands, and verification.
 
 ```sh
 make hooks
@@ -221,7 +207,6 @@ go build ./cmd/kinosail
 ```text
 apps/player/       Player Server, web app, docs, and Apple clients
 apps/subtitles/    Subtitle automation Server, web app, and docs
-apps/dashboard/    Application dashboard Server and web app
 packages/          Shared Go operations and contracts
 engineering/       Cross-app architecture, research, and workflows
 scripts/           Shared build, quality, and deployment tooling
@@ -238,6 +223,6 @@ Kinosail is **source-available**, under the [PolyForm Perimeter License 1.0.1](L
 
 GitHub-hosted runners check code quality, app tests, race conditions, browser journeys, dependencies, secrets, and CodeQL. Required checks protect `main`. A failed check blocks a merge or release.
 
-Changed Player, Subtitles, and Dashboard containers build on Linux AMD64 and ARM64 runners at the same time. Passing builds on `main` publish signed `latest` images to `ghcr.io/kinosail/kinosail-player`, `ghcr.io/kinosail/kinosail-subtitles`, and `ghcr.io/kinosail/kinosail-dashboard`. Numbered releases use tags such as `player-v1.2.3`. CI must pass for the exact commit on `main`. CI scans each architecture before it signs and attests the combined image. Builds include a software bill of materials (SBOM) and provenance.
+Changed Player and Subtitles containers build on Linux AMD64 and ARM64 runners at the same time. Passing builds on `main` publish signed `latest` images to `ghcr.io/kinosail/kinosail-player` and `ghcr.io/kinosail/kinosail-subtitles`. Numbered releases use tags such as `player-v1.2.3`. CI must pass for the exact commit on `main`. CI scans each architecture before it signs and attests the combined image. Builds include a software bill of materials (SBOM) and provenance.
 
 Release publication does not configure a production deployment target. The existing local deployment watcher remains separate.
