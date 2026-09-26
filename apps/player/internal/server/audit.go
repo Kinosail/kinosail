@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/MikeO7/kinosail/packages/auditjournal"
+	"github.com/MikeO7/kinosail/packages/operations"
 	"github.com/go-webauthn/webauthn/webauthn"
 )
 
@@ -20,6 +21,7 @@ type auditStore struct {
 	requests      atomic.Uint64
 	requestErrors atomic.Uint64
 	panics        atomic.Uint64
+	failures      operations.FailureLog
 }
 
 func newAuditStore(ctx context.Context, dataDir string, notify func(auditEvent), retentions ...time.Duration) *auditStore {

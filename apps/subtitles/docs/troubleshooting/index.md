@@ -18,6 +18,8 @@ last_reviewed: 2026-09-15
 
 From `apps/subtitles/`, inspect `docker compose ps` and `docker compose logs --tail 100 kinosail` (or Podman equivalents). Keep credentials, private titles/paths, and backup files out of reports.
 
+Server logs use `debug`, `info`, `warn`, and `error`; the default is `info`. An Owner can temporarily set `logging.level` to `debug` in **Settings → Configuration** without restarting. Repeat the problem, then restore `info`. Match a browser response's `X-Request-ID` to the Server log's `request_id`, status, and route pattern. Remove secrets and private details before sharing a log excerpt.
+
 - [Installation and startup]({{ '/troubleshooting/install-and-startup/' | relative_url }})
 - [Scanning and matching]({{ '/troubleshooting/scanning-and-metadata/' | relative_url }})
 - [Subtitle timing and saves]({{ '/troubleshooting/playback/' | relative_url }})

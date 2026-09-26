@@ -1,5 +1,6 @@
 package com.kinosail.player.core
 
+import android.util.Log
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import java.net.HttpURLConnection
@@ -8,9 +9,37 @@ import org.junit.Assert.assertEquals
 import org.junit.Assert.assertThrows
 import org.junit.Assert.assertTrue
 import org.junit.Test
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
+import org.robolectric.annotation.Config
+import org.robolectric.shadows.ShadowLog
 
+@RunWith(RobolectricTestRunner::class)
+@Config(sdk = [35])
 class ServerApiTest {
     private val server = ServerAddress("https://example.com")
+
+    @Test fun diagnosticOperationExcludesMediaIDsAndQueries() {
+        assertEquals("items-playback", diagnosticOperation("/api/v1/items/private-title/playback?token=secret"))
+        assertEquals("library", diagnosticOperation("/api/v1/library?q=private-title"))
+        assertEquals("api-other", diagnosticOperation("/api/v1/private-title?token=secret"))
+        assertEquals("other", diagnosticOperation("x".repeat(2049)))
+    }
+
+    @Test fun failedRequestLogKeepsCorrelationAndOmitsCredentials() {
+        ShadowLog.clear()
+        val response = FakeResponse(503, "")
+        val failure = assertThrows(ServerHttpException::class.java) {
+            ServerApi(server) { response }.viewer("private-token")
+        }
+        assertEquals(503, failure.status)
+        val log = ShadowLog.getLogs().last { it.tag == "KinosailNetwork" }
+        assertEquals(Log.ERROR, log.type)
+        assertTrue(log.msg.contains("operation=me") && log.msg.contains("status=503") &&
+            log.msg.contains("request_id="))
+        assertTrue(!log.msg.contains("private-token") && !log.msg.contains("https://"))
+        assertTrue(response.closed)
+    }
 
     @Test fun startsAndPollsTheServerContract() {
         val start = FakeResponse(201, """{"code":"123456","secret":"abcDEF123"}""")
@@ -36,6 +65,9 @@ class ServerApiTest {
         val api = ServerApi(server) { url -> responses.removeFirst().also { it.requestedURL = url } }
         assertEquals(Viewer("Living Room", "server-1", "viewer-1", "Alex"), api.viewer("token-123"))
         assertEquals("Bearer token-123", profile.getRequestProperty("Authorization"))
+        val requestId = profile.getRequestProperty("X-Request-ID")
+        assertTrue(requestId != null && requestId.matches(Regex("[A-Za-z0-9-]{1,64}")))
+        assertTrue(!requestId.contains("token-123"))
         api.signOut("token-123")
         assertEquals("/api/v1/session", signOut.requestedURL?.path)
         assertEquals("DELETE", signOut.requestMethod)
