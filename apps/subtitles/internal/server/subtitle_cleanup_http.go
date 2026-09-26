@@ -25,26 +25,9 @@ type subtitleCleanupDoneData struct {
 }
 
 func subtitleCleanupInput(request *http.Request, applying bool) (string, string, string, error) {
-	if applying {
-		request.Body = http.MaxBytesReader(nil, request.Body, 1024)
-		if request.Header.Get("Content-Type") != "application/x-www-form-urlencoded" || request.ParseForm() != nil || request.URL.RawQuery != "" {
-			return "", "", "", errors.New("subtitle cleanup request is invalid")
-		}
-	} else if len(request.URL.RawQuery) > 64 || request.URL.RawQuery == "" {
-		return "", "", "", errors.New("subtitle cleanup request is invalid")
-	}
-	values := request.Form
-	if !applying {
-		var err error
-		values, err = url.ParseQuery(request.URL.RawQuery)
-		if err != nil {
-			return "", "", "", errors.New("subtitle cleanup request is invalid")
-		}
-	} else if csrf, present := values["_csrf"]; present {
-		if len(csrf) != 1 || csrf[0] == "" || len(csrf[0]) > 128 {
-			return "", "", "", errors.New("subtitle cleanup request is invalid")
-		}
-		delete(values, "_csrf")
+	values, err := subtitleCleanupValues(request, applying)
+	if err != nil {
+		return "", "", "", err
 	}
 	want := 2
 	if applying {
@@ -59,6 +42,31 @@ func subtitleCleanupInput(request *http.Request, applying bool) (string, string,
 		return "", "", "", errors.New("subtitle cleanup request is invalid")
 	}
 	return canonical[0], forced, values.Get("digest"), nil
+}
+
+func subtitleCleanupValues(request *http.Request, applying bool) (url.Values, error) { //nolint:cyclop // Keep strict body, query, and CSRF field validation together at the request boundary.
+	if applying {
+		request.Body = http.MaxBytesReader(nil, request.Body, 1024)
+		if request.Header.Get("Content-Type") != "application/x-www-form-urlencoded" || request.ParseForm() != nil || request.URL.RawQuery != "" {
+			return nil, errors.New("subtitle cleanup request is invalid")
+		}
+	} else if len(request.URL.RawQuery) > 64 || request.URL.RawQuery == "" {
+		return nil, errors.New("subtitle cleanup request is invalid")
+	}
+	values := request.Form
+	if !applying {
+		var err error
+		values, err = url.ParseQuery(request.URL.RawQuery)
+		if err != nil {
+			return nil, errors.New("subtitle cleanup request is invalid")
+		}
+	} else if csrf, present := values["_csrf"]; present {
+		if len(csrf) != 1 || csrf[0] == "" || len(csrf[0]) > 128 {
+			return nil, errors.New("subtitle cleanup request is invalid")
+		}
+		delete(values, "_csrf")
+	}
+	return values, nil
 }
 
 func previewSubtitleCleanup(index *libraryIndex, settings *settingsStore) http.HandlerFunc {

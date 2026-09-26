@@ -13,7 +13,7 @@ import (
 	"github.com/MikeO7/kinosail/packages/library"
 )
 
-func TestSubtitleCleanupPreviewsAndRemovesOnlySelectedSidecars(t *testing.T) {
+func TestSubtitleCleanupPreviewsAndRemovesOnlySelectedSidecars(t *testing.T) { //nolint:cyclop,gocognit,funlen // The matrix checks both forced choices and every kept or removed sidecar.
 	dir := t.TempDir()
 	media := filepath.Join(dir, "Film.mkv")
 	if err := os.WriteFile(media, []byte("video"), 0o600); err != nil {
@@ -134,7 +134,7 @@ func TestSubtitleCleanupLeavesSymlinksAndPathsOutsideTheVideoDirectory(t *testin
 	}
 }
 
-func TestSubtitleCleanupWebPreviewAndDelete(t *testing.T) {
+func TestSubtitleCleanupWebPreviewAndDelete(t *testing.T) { //nolint:cyclop,gocognit,funlen // The route journey covers malformed requests and a real deletion.
 	dir := t.TempDir()
 	media, sidecar := filepath.Join(dir, "Film.mkv"), filepath.Join(dir, "Film.es.srt")
 	for _, path := range []string{media, sidecar} {

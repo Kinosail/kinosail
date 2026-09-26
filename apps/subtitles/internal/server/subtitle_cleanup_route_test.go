@@ -13,7 +13,7 @@ import (
 	"github.com/MikeO7/kinosail-subtitles/internal/server"
 )
 
-func TestSubtitleSettingsCleanupJourney(t *testing.T) {
+func TestSubtitleSettingsCleanupJourney(t *testing.T) { //nolint:cyclop // The public journey verifies preview, deletion, preferences, and preserved files together.
 	media := t.TempDir()
 	writeTestFile(t, filepath.Join(media, "Film.mkv"), "video")
 	for _, name := range []string{"Film.en.srt", "Film.en.forced.srt", "Film.es.srt"} {

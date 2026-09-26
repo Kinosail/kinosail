@@ -26,7 +26,7 @@ type subtitleCleanupPlan struct {
 	Digest  string
 }
 
-func planSubtitleCleanup(index *libraryIndex, language, forced string) (subtitleCleanupPlan, error) {
+func planSubtitleCleanup(index *libraryIndex, language, forced string) (subtitleCleanupPlan, error) { //nolint:cyclop,gocognit // Selection, deduplication, and skipped-file accounting belong to one preview plan.
 	canonical, err := validateSubtitleLanguages([]string{language})
 	if err != nil || !oneOf(forced, "keep", "delete") {
 		return subtitleCleanupPlan{}, errors.New("choose a supported language and forced subtitle option")
@@ -44,41 +44,46 @@ func planSubtitleCleanup(index *libraryIndex, language, forced string) (subtitle
 		if item.Kind != "video" {
 			continue
 		}
-		mediaBase := strings.TrimSuffix(item.Path, filepath.Ext(item.Path))
 		for _, path := range item.Subtitles {
 			if seen[path] {
 				continue
 			}
 			seen[path] = true
-			if !cleanupSidecarName(item.Path, path) {
+			file, skipped := cleanupSidecarCandidate(index, item, path, canonical[0], forced)
+			if skipped {
 				plan.Skipped++
-				continue
+			} else if file != nil {
+				plan.Files = append(plan.Files, *file)
 			}
-			_, tagged := subtitleTrackLanguage(path, mediaBase, nil)
-			if tagged == "" {
-				plan.Skipped++
-				continue
-			}
-			if subtitleLanguageMatches(canonical[0], tagged) && (forced == "keep" || subtitleRoleFromPath(path) != "forced") {
-				continue
-			}
-			root, name, err := openCleanupSidecar(index, item, path)
-			if err != nil {
-				plan.Skipped++
-				continue
-			}
-			info, err := root.Lstat(name)
-			_ = root.Close()
-			if err != nil || !info.Mode().IsRegular() {
-				plan.Skipped++
-				continue
-			}
-			plan.Files = append(plan.Files, subtitleCleanupFile{Path: path, Media: item.Path, Size: info.Size(), Modified: info.ModTime().UnixNano()})
 		}
 	}
 	slices.SortFunc(plan.Files, func(a, b subtitleCleanupFile) int { return strings.Compare(a.Path, b.Path) })
 	plan.Digest = subtitleCleanupDigest(canonical[0], forced, plan.Files)
 	return plan, nil
+}
+
+func cleanupSidecarCandidate(index *libraryIndex, item library.Item, path, language, forced string) (*subtitleCleanupFile, bool) {
+	if !cleanupSidecarName(item.Path, path) {
+		return nil, true
+	}
+	mediaBase := strings.TrimSuffix(item.Path, filepath.Ext(item.Path))
+	_, tagged := subtitleTrackLanguage(path, mediaBase, nil)
+	if tagged == "" {
+		return nil, true
+	}
+	if subtitleLanguageMatches(language, tagged) && (forced == "keep" || subtitleRoleFromPath(path) != "forced") {
+		return nil, false
+	}
+	root, name, err := openCleanupSidecar(index, item, path)
+	if err != nil {
+		return nil, true
+	}
+	info, err := root.Lstat(name)
+	_ = root.Close()
+	if err != nil || !info.Mode().IsRegular() {
+		return nil, true
+	}
+	return &subtitleCleanupFile{Path: path, Media: item.Path, Size: info.Size(), Modified: info.ModTime().UnixNano()}, false
 }
 
 func cleanupSidecarName(media, subtitle string) bool {
@@ -146,18 +151,7 @@ func applySubtitleCleanup(index *libraryIndex, settings *settingsStore, language
 	}
 	removed := 0
 	for _, file := range plan.Files {
-		root, name, err := openCleanupSidecar(index, library.Item{Path: file.Media}, file.Path)
-		if err != nil {
-			return removed, err
-		}
-		info, err := root.Lstat(name)
-		if err != nil || !info.Mode().IsRegular() || info.Size() != file.Size || info.ModTime().UnixNano() != file.Modified {
-			_ = root.Close()
-			return removed, errors.New("subtitle files changed; preview again")
-		}
-		err = root.Remove(name)
-		_ = root.Close()
-		if err != nil {
+		if err := removeCleanupSidecar(index, file); err != nil {
 			return removed, err
 		}
 		removed++
@@ -166,4 +160,17 @@ func applySubtitleCleanup(index *libraryIndex, settings *settingsStore, language
 		index.RequestRefresh()
 	}
 	return removed, nil
+}
+
+func removeCleanupSidecar(index *libraryIndex, file subtitleCleanupFile) error {
+	root, name, err := openCleanupSidecar(index, library.Item{Path: file.Media}, file.Path)
+	if err != nil {
+		return err
+	}
+	defer root.Close()
+	info, err := root.Lstat(name)
+	if err != nil || !info.Mode().IsRegular() || info.Size() != file.Size || info.ModTime().UnixNano() != file.Modified {
+		return errors.New("subtitle files changed; preview again")
+	}
+	return root.Remove(name)
 }
