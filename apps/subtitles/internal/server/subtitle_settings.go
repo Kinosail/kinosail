@@ -19,7 +19,7 @@ const subtitleSettingsHTML = `<!doctype html><html lang="en"><head><meta charset
 <section id="account"><h2>Owner and recovery</h2><p>Manage passkeys, authenticators, sessions, encrypted backups, and advanced deployment values.</p><p><a class="mode" href="/account">Owner account</a> <a class="mode" href="/settings/backups">Backups</a> <a class="mode" href="/settings/configuration">Advanced configuration</a></p><form action="/settings/onboarding" method="post"><button class="quiet">Open setup guide</button></form></section>
 </div></main></body></html>`
 
-const subtitleCleanupSettingsHTML = `<section id="cleanup"><h2>Delete subtitle languages</h2><p>Choose one language to keep. Confirming cleanup also makes it your only preferred language. Preview tagged .srt and .vtt files before deletion. Embedded tracks and files with uncertain language stay in place.</p><form action="/settings/subtitles/cleanup" method="get"><label>Keep language<select name="language" required>{{range .AllLanguages}}<option value="{{.Tag}}" {{if .Selected}}selected{{end}}>{{.Name}} ({{.Tag}})</option>{{end}}</select></label><label>Forced subtitles in that language<select name="forced"><option value="keep">Keep</option><option value="delete">Delete</option></select></label><button>Preview files to delete</button></form></section>`
+const subtitleCleanupSettingsHTML = `<section id="cleanup"><h2>Delete subtitle languages</h2><p>Optional. Cleanup is off until you enable it for this preview. Select one or more languages to keep; confirming deletion also makes them your preferred languages. Only tagged .srt and .vtt files are eligible. Embedded tracks and files with uncertain language stay in place.</p><form action="/settings/subtitles/cleanup" method="get"><label><input type="checkbox" name="enabled" value="on" required> Enable subtitle language cleanup</label><label>Languages to keep<select name="language" multiple size="6" required aria-describedby="cleanup-language-help">{{range .AllLanguages}}<option value="{{.Tag}}" {{if .Selected}}selected{{end}}>{{.Name}} ({{.Tag}})</option>{{end}}</select></label><p id="cleanup-language-help">Select at least one language. On a keyboard, hold Command or Ctrl to select several.</p><label>Forced subtitles in kept languages<select name="forced"><option value="keep">Keep</option><option value="delete">Delete</option></select></label><button>Preview files to delete</button></form></section>`
 
 var subtitleSettingsView = newLocalizedTemplate("subtitle-settings", ignoreNonPasswordSecretAutofill(settingControlHTML+providerNeutralTrustedHTTPSPage(updateChoicePage(strings.ReplaceAll(strings.ReplaceAll(subtitleSettingsHTML, `<a href="#provider">Provider</a>`, `<a href="#cleanup">Cleanup</a><a href="#provider">Provider</a>`), `<section id="provider">`, subtitleCleanupSettingsHTML+`<section id="provider">`)))))
 
@@ -114,7 +114,7 @@ func subtitleLanguageViews(selected []string) ([]subtitleLanguageView, []subtitl
 	for _, choice := range subtitlelanguage.Catalog() {
 		support := subtitleLanguageSupport(choice)
 		index := slices.Index(selected, choice.Tag)
-		all = append(all, subtitleLanguageOption{choice.Tag, choice.Name, support, index == 0})
+		all = append(all, subtitleLanguageOption{choice.Tag, choice.Name, support, index >= 0})
 		if index < 0 {
 			if slices.ContainsFunc(selected, func(language string) bool { return subtitleLanguagesOverlap(language, choice.Tag) }) {
 				continue
@@ -126,6 +126,16 @@ func subtitleLanguageViews(selected []string) ([]subtitleLanguageView, []subtitl
 	}
 	slices.SortStableFunc(views, func(left, right subtitleLanguageView) int {
 		return slices.Index(selected, left.Tag) - slices.Index(selected, right.Tag)
+	})
+	slices.SortStableFunc(all, func(left, right subtitleLanguageOption) int {
+		leftIndex, rightIndex := slices.Index(selected, left.Tag), slices.Index(selected, right.Tag)
+		if leftIndex < 0 {
+			leftIndex = len(selected)
+		}
+		if rightIndex < 0 {
+			rightIndex = len(selected)
+		}
+		return leftIndex - rightIndex
 	})
 	if len(selected) == maximumSubtitleLanguages {
 		available = nil
