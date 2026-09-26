@@ -23,6 +23,7 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
@@ -45,6 +46,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -72,6 +74,7 @@ import com.kinosail.player.core.BookReaderScreen
 import com.kinosail.player.core.ShowScreen
 import com.kinosail.player.core.Viewer
 import com.kinosail.player.design.SailBackdrop
+import kotlinx.coroutines.flow.collect
 
 @Composable
 internal fun MobileLibrary(connection: ConnectionModel, viewer: Viewer) {
@@ -80,6 +83,7 @@ internal fun MobileLibrary(connection: ConnectionModel, viewer: Viewer) {
     val nowPlaying = AudioPlaybackService.nowPlayingFor(viewer)
     val context = LocalContext.current
     val pipHost = remember(context) { findVideoPipHost(context) }
+    val gridState = rememberLazyGridState()
     var home by remember { mutableStateOf(true) }
     var playingItem by remember { mutableStateOf<CatalogItem?>(null) }
     var photoItem by remember { mutableStateOf<CatalogItem?>(null) }
@@ -91,6 +95,13 @@ internal fun MobileLibrary(connection: ConnectionModel, viewer: Viewer) {
         Unit
     }
     LaunchedEffect(viewer.serverId, viewer.id) { catalog.open(viewer) }
+    LaunchedEffect(gridState, home, state.selected, state.items.size, state.total, state.loading, state.notice) {
+        if (!home && state.selected == null && !state.loading && state.notice == null && state.items.size < state.total) {
+            snapshotFlow { gridState.layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: -1 }.collect { last ->
+                if (last >= state.items.size - 8) catalog.loadMore()
+            }
+        }
+    }
     DisposableEffect(Unit) { onDispose { catalog.reset() } }
     BackHandler(state.selected != null && playingItem == null && photoItem == null && bookItem == null) { catalog.closeDetail() }
     BackHandler(!home && state.selected == null && playingItem == null && photoItem == null && bookItem == null) { home = true }
@@ -162,7 +173,7 @@ internal fun MobileLibrary(connection: ConnectionModel, viewer: Viewer) {
                     Text(if (state.view == "list") "Save a title to keep it in My List."
                         else "Nothing in your library yet.", color = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
-                LazyVerticalGrid(columns = GridCells.Adaptive(144.dp), modifier = Modifier.weight(1f),
+                LazyVerticalGrid(columns = GridCells.Adaptive(144.dp), modifier = Modifier.weight(1f), state = gridState,
                     horizontalArrangement = Arrangement.spacedBy(12.dp),
                     verticalArrangement = Arrangement.spacedBy(16.dp),
                     contentPadding = PaddingValues(bottom = 24.dp)) {
@@ -178,11 +189,8 @@ internal fun MobileLibrary(connection: ConnectionModel, viewer: Viewer) {
                             }
                         }
                     }
-                    if (state.items.size < state.total) item(span = { GridItemSpan(maxLineSpan) }) {
-                        Button(onClick = catalog::loadMore, enabled = !state.loading,
-                            modifier = Modifier.fillMaxWidth()) {
-                            Text(if (state.loading) "Loading…" else "Load more")
-                        }
+                    if (state.loading && state.items.isNotEmpty()) item(span = { GridItemSpan(maxLineSpan) }) {
+                        Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) { CircularProgressIndicator() }
                     }
                 }
             }

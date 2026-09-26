@@ -1,6 +1,6 @@
 (() => {
   if (!document.querySelector(".subtitle-dashboard")) return;
-  let navigation, pollRequest, pollTimer, searchTimer;
+  let navigation, pollRequest, pollTimer, searchTimer, fileObserver, fileRequest;
   let currentURL = location.href;
   let actionPending = false;
   const number = new Intl.NumberFormat(document.documentElement.lang || navigator.language);
@@ -44,6 +44,74 @@
     }
   }
 
+  function bindInfiniteFiles() {
+    fileObserver?.disconnect();
+    const next = document.querySelector("[data-subtitle-next]"),
+      list = document.querySelector(".subtitle-file-list"), pagination = next?.closest(".subtitle-pagination");
+    if (!next || !list || !pagination || !("IntersectionObserver" in window)) return;
+    const shortcuts = document.querySelector(".subtitle-page-shortcuts"); if (shortcuts) shortcuts.style.display = "none";
+    pagination.querySelector("div").style.display = "none";
+    fileObserver = new IntersectionObserver(entries => {
+      if (entries.some(entry => entry.isIntersecting)) loadMoreFiles();
+    }, {rootMargin: "600px 0px"});
+    fileObserver.observe(pagination);
+  }
+
+  async function loadMoreFiles() {
+    const next = document.querySelector("[data-subtitle-next]");
+    if (!next || fileRequest || navigation) return;
+    const target = new URL(next.href, location.href);
+    const pageNumber = target.searchParams.get("page") || "";
+    if (target.origin !== location.origin || target.pathname !== "/" || !/^[1-9]\d{0,5}$/.test(pageNumber)) return;
+    const pagination = next.closest(".subtitle-pagination"), status = pagination?.querySelector("[data-subtitle-scroll-status]");
+    if (!status) return;
+    const controller = fileRequest = new AbortController();
+    pagination.setAttribute("aria-busy", "true"); feedback(""); status.textContent = "Loading more files…";
+    try {
+      const response = await fetch(target, {headers: {Accept: "text/html"}, signal: controller.signal});
+      if (!response.ok || response.redirected) throw new Error("page unavailable");
+      const html = await response.text(); if (html.length > 4_000_000) throw new Error("oversized page");
+      const incoming = new DOMParser().parseFromString(html, "text/html");
+      if (controller !== fileRequest || controller.signal.aborted) return;
+      const list = document.querySelector(".subtitle-file-list");
+      const incomingList = incoming.querySelector(".subtitle-file-list"), incomingEnd = incoming.querySelector("[data-subtitle-end]"),
+        currentEnd = pagination?.querySelector("[data-subtitle-end]");
+      const incomingItems = [...(incomingList?.querySelectorAll(":scope > .subtitle-file") || [])];
+      const end = incomingEnd?.textContent?.trim() || "";
+      if (!list || !incomingList || !currentEnd || !/^\d{1,7}$/.test(end) ||
+          Number(end) <= Number(currentEnd.dataset.value || currentEnd.textContent.replaceAll(/\D/g, "")) ||
+          incomingItems.length === 0 || incomingItems.length > 40) throw new Error("incomplete page");
+      const incomingNext = incoming.querySelector("[data-subtitle-next]");
+      const following = incomingNext && new URL(incomingNext.getAttribute("href"), location.href);
+      if (following && (following.origin !== location.origin || following.pathname !== "/" ||
+          following.searchParams.get("page") !== String(Number(pageNumber) + 1))) throw new Error("invalid next page");
+      const seen = new Set([...list.querySelectorAll(".subtitle-file")].map(item => item.id));
+      let added = 0;
+      for (const item of incomingItems) {
+        if (!item.id || seen.has(item.id)) continue;
+        list.append(document.importNode(item, true));
+        added++;
+      }
+      if (!added) throw new Error("empty page");
+      currentEnd.textContent = end; currentEnd.dataset.value = end;
+      if (following) next.href = following.href;
+      else next.remove();
+      formatContent();
+      status.textContent = incomingNext ? `${number.format(added)} more files loaded.` : "All files are loaded.";
+      fileRequest = null; bindInfiniteFiles();
+    } catch {
+      if (!controller.signal.aborted) {
+        fileObserver?.disconnect();
+        status.textContent = "Could not load more files. "; const retry = document.createElement("a");
+        retry.href = target.href; retry.dataset.subtitleRetry = ""; retry.textContent = "Try again";
+        status.append(retry);
+      }
+    } finally {
+      pagination?.removeAttribute("aria-busy");
+      if (fileRequest === controller) fileRequest = null;
+    }
+  }
+
   function rememberScroll() {
     history.replaceState({...history.state, subtitleScroll: scrollY}, "", currentURL);
   }
@@ -52,6 +120,9 @@
     const target = new URL(url, location.href);
     if (target.origin !== location.origin || target.pathname !== "/") return;
     navigation?.abort();
+    fileObserver?.disconnect();
+    fileRequest?.abort();
+    fileRequest = null;
     pollRequest?.abort();
     clearTimeout(pollTimer);
     const controller = new AbortController();
@@ -92,6 +163,7 @@
       });
       openFiles.forEach(id => { const item = document.getElementById(id); if (item) item.open = true; });
       formatContent();
+      bindInfiniteFiles();
       if (actionPending) feedback(label("actionLabel"));
       if (focus === "search") {
         const input = document.getElementById("subtitle-search");
@@ -127,11 +199,12 @@
   }
 
   document.addEventListener("click", event => {
-    const link = event.target.closest("a[data-subtitle-nav], a[data-subtitle-page], a[data-subtitle-refresh]");
+    const link = event.target.closest("a[data-subtitle-nav], a[data-subtitle-page], a[data-subtitle-refresh], a[data-subtitle-retry]");
     if (!link || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
     event.preventDefault();
     clearTimeout(searchTimer);
-    if (link.hasAttribute("data-subtitle-refresh")) loadPage(location.href, {mode: "replace", preserve: true});
+    if (link.hasAttribute("data-subtitle-retry")) loadMoreFiles();
+    else if (link.hasAttribute("data-subtitle-refresh")) loadPage(location.href, {mode: "replace", preserve: true});
     else loadPage(link.href, {focus: link.hasAttribute("data-subtitle-page") ? "list" : "page"});
   });
 
@@ -220,7 +293,8 @@
     finally { clearTimeout(timeout); pollRequest = null; schedulePoll(); }
   }
   addEventListener("pageshow", event => { if (event.persisted) schedulePoll(); });
-  addEventListener("pagehide", () => { navigation?.abort(); pollRequest?.abort(); clearTimeout(pollTimer); clearTimeout(searchTimer); });
+  addEventListener("pagehide", () => { navigation?.abort(); fileRequest?.abort(); fileObserver?.disconnect(); pollRequest?.abort(); clearTimeout(pollTimer); clearTimeout(searchTimer); });
   formatContent();
+  bindInfiniteFiles();
   schedulePoll();
 })();

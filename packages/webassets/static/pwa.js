@@ -151,14 +151,15 @@ function bindInfiniteLibrary() {
   libraryAbortController = undefined;
   const next = document.querySelector("[data-library-next]");
   if (!next || !("IntersectionObserver" in window)) return;
+  next.hidden = true; const status = document.querySelector("[data-library-status]");
+  if (!status) return; next.addEventListener("click", event => { event.preventDefault(); bindInfiniteLibrary(); }, { once: true });
   libraryObserver = new IntersectionObserver(async (entries) => {
     if (!entries.some(({ isIntersecting }) => isIntersecting) || next.dataset.loading) return;
     const navigation = next.closest("[data-library-pagination]");
-    const status = document.querySelector("[data-library-status]");
     const controller = new AbortController();
     libraryAbortController = controller;
     next.dataset.loading = "true";
-    navigation?.setAttribute("aria-busy", "true");
+    navigation?.setAttribute("aria-busy", "true"); status.textContent = "Loading more titles…";
     try {
       const response = await fetch(next.href, { headers: { "X-Kinosail-Library-Page": "1" }, signal: controller.signal });
       if (!response.ok) throw new Error(`Library page failed with ${response.status}`);
@@ -198,12 +199,13 @@ function bindInfiniteLibrary() {
       if (error.name === "AbortError") return;
       delete next.dataset.loading;
       navigation?.removeAttribute("aria-busy");
-      if (status) status.textContent = "Could not load more. Use the link to try again.";
+      libraryObserver?.disconnect(); next.hidden = false;
+      next.textContent = "Retry loading"; status.textContent = "Could not load more titles.";
     } finally {
       if (libraryAbortController === controller) libraryAbortController = undefined;
     }
   }, { rootMargin: "600px 0px" });
-  libraryObserver.observe(next);
+  libraryObserver.observe(status);
 }
 bindInfiniteLibrary();
 
