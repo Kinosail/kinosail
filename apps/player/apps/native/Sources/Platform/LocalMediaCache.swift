@@ -22,11 +22,16 @@ actor LocalMediaCache {
         let bytes: Int
         let modified: Date
     }
+    private struct PendingWrite {
+        let key: String
+        let kind: Kind
+        let task: Task<Void, Never>
+    }
     private let root: URL
     private let scope: String
     private var closed = false
     private var closing = false
-    private var pendingWrites: [UUID: Task<Void, Never>] = [:]
+    private var pendingWrites: [UUID: PendingWrite] = [:]
     private var diskEntries: [Kind: [String: DiskEntry]] = [:]
     private(set) var revision = UUID()
     private(set) var pagesRevision = UUID()
@@ -92,18 +97,21 @@ actor LocalMediaCache {
               let file = try? location(key, kind: kind) else { return }
         if kind == .catalog { remember(Entry(data: data, saved: Date(), fresh: true), id: file.lastPathComponent) }
         let id = UUID()
-        pendingWrites[id] = Task(priority: .utility) {
+        let task = Task(priority: .utility) {
             defer { pendingWrites[id] = nil }
+            guard !Task.isCancelled else { return }
             try? write(data, key: key, kind: kind, revision: expectedRevision,
                        pagesRevision: expectedPagesRevision)
         }
+        pendingWrites[id] = PendingWrite(key: key, kind: kind, task: task)
     }
 
     func flushWrites() async {
-        for task in Array(pendingWrites.values) { await task.value }
+        for pending in Array(pendingWrites.values) { await pending.task.value }
     }
 
     func remove(_ key: String, kind: Kind) {
+        for pending in pendingWrites.values where pending.key == key && pending.kind == kind { pending.task.cancel() }
         guard let file = try? location(key, kind: kind) else { return }
         forget(file.lastPathComponent)
         do {

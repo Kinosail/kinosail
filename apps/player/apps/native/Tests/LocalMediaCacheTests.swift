@@ -34,6 +34,17 @@ struct LocalMediaCacheTests {
         #expect(!FileManager.default.fileExists(atPath: directory.path))
     }
 
+    @Test func removalCannotBeReversedByAnEarlierQueuedWrite() async throws {
+        let directory = temporary()
+        defer { try? FileManager.default.removeItem(at: directory) }
+        let cache = try LocalMediaCache(scope: scope, directory: directory)
+        await cache.enqueueWrite(data, key: "removed", kind: .catalog)
+        await cache.remove("removed", kind: .catalog)
+        await cache.close(purge: false)
+        let reopened = try LocalMediaCache(scope: scope, directory: directory)
+        #expect(await reopened.read("removed", kind: .catalog) == nil)
+    }
+
     @Test func pageInvalidationPreservesSiblingWritesAndSurvivesRestart() async throws {
         let directory = temporary()
         defer { try? FileManager.default.removeItem(at: directory) }
