@@ -3,6 +3,27 @@ import { expect, test } from "@playwright/test";
 import { compactViewports, expectNoHorizontalOverflow, expectSkipLinkOffscreen, initiallyOccludedTargets, occludedTargets, setSubtitleLanguages, supportedViewports } from "./subtitle-dashboard-helpers";
 
 export function registerSubtitleLanguageTests() {
+test("Owner previews language cleanup and forced subtitle choice", async ({ page }, testInfo) => {
+  for (const viewport of [{ width: 390, height: 844 }, { width: 1440, height: 900 }]) {
+    await page.setViewportSize(viewport);
+    await page.goto("/settings#cleanup");
+    const cleanup = page.locator("#cleanup");
+    await expect(cleanup.getByRole("heading", { name: "Delete subtitle languages" })).toBeVisible();
+    await expect(cleanup.getByLabel("Keep language")).toHaveValue("en");
+    await cleanup.getByLabel("Forced subtitles in that language").selectOption("delete");
+    await expectNoHorizontalOverflow(page);
+    expect((await new AxeBuilder({ page }).include("#cleanup").analyze()).violations).toEqual([]);
+    await page.screenshot({ path: testInfo.outputPath(`${viewport.width}-subtitle-cleanup-setting.png`), fullPage: true });
+    await cleanup.getByRole("button", { name: "Preview files to delete" }).click();
+    await expect(page.getByRole("heading", { name: "Subtitle cleanup" })).toBeVisible();
+    await expect(page.getByText("Delete forced en subtitles.")).toBeVisible();
+    await expect(page.getByRole("button", { name: "Keep only en" })).toBeVisible();
+    await expectNoHorizontalOverflow(page);
+    expect((await new AxeBuilder({ page }).include("main").analyze()).violations).toEqual([]);
+    await page.screenshot({ path: testInfo.outputPath(`${viewport.width}-subtitle-cleanup-preview.png`), fullPage: true });
+  }
+});
+
 test("Owner sees real coverage, wanted files, and a focused setup path", { tag: "@smoke" }, async ({ page }) => {
   await expect(page.getByRole("heading", { name: "Overview", exact: true })).toBeVisible();
   await expect(page.getByRole("region", { name: "Subtitle coverage" })).toContainText(/\d+%/);
