@@ -4,7 +4,7 @@ source "$(dirname "${BASH_SOURCE[0]}")/gates-pause.sh"
 set -euo pipefail
 
 repo="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
-apps=(player subtitles dashboard)
+apps=(player subtitles)
 
 if (( $# > 0 )); then
   apps=("$@")
@@ -12,7 +12,7 @@ fi
 
 for app in "${apps[@]}"; do
   case "$app" in
-    player|subtitles|dashboard) ;;
+    player|subtitles) ;;
     *)
       printf 'Unknown app: %s\n' "$app" >&2
       exit 2

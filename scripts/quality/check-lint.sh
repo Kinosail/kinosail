@@ -16,7 +16,7 @@ if [[ "$base" =~ ^0+$ ]] || ! base="$(git -C "$repo" rev-parse --verify --end-of
 	base="$(git -C "$repo" rev-list --max-parents=0 HEAD | tail -1)"
 fi
 
-for app in player subtitles dashboard; do
+for app in player subtitles; do
 	(cd "$repo/apps/$app" && golangci-lint run --config "$repo/.golangci.yml" --new-from-rev "$base")
 done
 

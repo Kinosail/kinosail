@@ -59,7 +59,7 @@ class GatePauseTests(unittest.TestCase):
 
     def test_all_make_gate_targets_are_disabled(self):
         for relative in ('Makefile', 'packages/Makefile', 'apps/player/Makefile',
-                         'apps/subtitles/Makefile', 'apps/dashboard/Makefile'):
+                         'apps/subtitles/Makefile'):
             makefile = ROOT / relative
             targets = re.search(r'^(.+): SHELL :=', makefile.read_text(), re.M)[1].split()
             with self.subTest(makefile=relative):

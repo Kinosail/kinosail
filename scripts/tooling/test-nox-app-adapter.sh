@@ -5,7 +5,7 @@ set -euo pipefail
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 repo="$(cd "$script_dir/../.." && pwd)"
 if (( $# != 1 )); then
-  printf 'usage: %s {player|subtitles|dashboard}\n' "$0" >&2
+  printf 'usage: %s {player|subtitles}\n' "$0" >&2
   exit 2
 fi
 app="$1"

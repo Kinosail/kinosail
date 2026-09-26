@@ -1,6 +1,6 @@
 # Security policy
 
-This policy covers Player, Subtitles, Dashboard, the native Apple clients, shared packages, and repository tooling.
+This policy covers Player, Subtitles, the native Apple clients, shared packages, and repository tooling.
 
 ## Report privately
 
@@ -28,7 +28,6 @@ Security maintenance targets current `main` and the latest published app release
 - Player and Subtitles require Owner strong authentication. Their default generated local HTTPS certificate needs explicit trust; public access uses a separately restricted gateway.
 - Player's Jellyfin compatibility is off by default. Enable only the integrations you need.
 - Player mounts media read-only. Subtitles intentionally writes sidecars beside videos; protect originals and recovery copies separately.
-- Dashboard uses localhost HTTP by default. Configure trusted HTTPS, its exact public URL, trusted hosts, and secure cookies before crossing an untrusted network. Dashboard MCP tokens grant Owner access.
 - Back up application state, external configuration, secret material, and media separately. Protect backup keys independently from encrypted archives.
 
 Read the app's setup and security guides for details. Host firewall rules, certificate trust, DNS account security, disk encryption, physical access, and off-host backup custody remain operator responsibilities.

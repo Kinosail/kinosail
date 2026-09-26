@@ -12,7 +12,7 @@ lint:
 	@golangci-lint run
 
 deadcode:
-	@cd .. && go run golang.org/x/tools/cmd/deadcode@v0.49.1-0.20260904150557-664b13f4863b -filter='github.com/MikeO7/kinosail/packages' ./apps/player/... ./apps/subtitles/... ./apps/dashboard/...
+	@cd .. && go run golang.org/x/tools/cmd/deadcode@v0.49.1-0.20260904150557-664b13f4863b -filter='github.com/MikeO7/kinosail/packages' ./apps/player/... ./apps/subtitles/...
 
 coverage:
 	@../scripts/tooling/test-go-coverage.sh packages "$${KINOSAIL_PACKAGES_MIN_COVERAGE:-85.0}"
@@ -29,7 +29,6 @@ vuln:
 consumer-test:
 	@cd ../apps/player && go test -run '^$$' ./...
 	@cd ../apps/subtitles && go test -run '^$$' ./...
-	@cd ../apps/dashboard && go test -run '^$$' ./...
 
 # The file cap is enabled; preserve the pause for all other gates.
 check tidy-check lint deadcode coverage test test-race vuln consumer-test: SHELL := $(abspath ../scripts/tooling/gate-shell.sh)

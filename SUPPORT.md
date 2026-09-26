@@ -4,7 +4,6 @@ Start with the guide for the app you are using:
 
 - [Player: installation, sign-in, scanning, and playback](apps/player/docs/troubleshooting/index.md)
 - [Subtitles: providers, matching, permissions, and sidecars](apps/subtitles/docs/troubleshooting/index.md)
-- [Dashboard: setup, network access, health checks, and recovery](apps/dashboard/README.md#troubleshooting)
 - [Apple clients: build and verification boundaries](apps/player/apps/native/README.md)
 
 ## Report a bug
