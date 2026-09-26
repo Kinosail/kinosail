@@ -41,6 +41,13 @@ struct HomeSelectionTests {
         #expect(selection.continuation.count == 17)
     }
 
+    @Test func tvWatchingRailIncludesFirstSavedTitleAndCapsAtFifteen() throws {
+        let server = try ServerAddress("https://media.example")
+        let watching = try (0..<18).map { try item("item-\($0)", server: server) }
+        let selection = HomeSelection(continueWatching: watching, recent: [])
+        #expect(selection.tvWatchingRail.map(\.id) == (0..<15).map { "item-\($0)" })
+    }
+
     @Test func emptyLibraryKeepsTheEmptyState() {
         let selection = HomeSelection(continueWatching: [], recent: [])
         #expect(selection.featured == nil)

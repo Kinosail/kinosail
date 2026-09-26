@@ -70,7 +70,7 @@ components:
 
 **Creative North Star: "Electric"**
 
-Electric makes the media title and next action clear while letting artwork keep its own color. Home places title, truthful progress and a green action beside contained 16:9 artwork on wide screens, followed by a landscape Up Next shelf. Compact screens keep feature information 12pt below the artwork. Home-first navigation keeps saved playback immediately available.
+Electric makes the media title and next action clear while letting artwork keep its own color. iOS Home places title, truthful progress and a green action beside contained 16:9 artwork on wide screens, followed by a landscape Up Next shelf. Compact screens keep feature information 12pt below the artwork. Apple TV Home starts with a landscape Watching rail and a Browse row of media destinations.
 
 The user selected Electric option 1 and authorized replacing the previous coral system across iPhone, iPad and Apple TV. `Sources/Design/KinoTheme.swift`, `CinemaHero.swift`, `MediaViews.swift`, `WatchPosition.swift` and `Sources/App/PlayerTabs.swift` are the implementation authority. This workspace's `PRODUCT.md` and `AGENTS.md` preserve privacy, Direct First playback, existing server contracts and native accessibility. The active SwiftUI implementation is `Sources/`; legacy client sources do not define this system.
 
@@ -104,7 +104,7 @@ Home is a vertical scroll view with 32pt section spacing and theme content paddi
 
 The reusable hero fills the available width. Regular iOS size classes and tvOS place contained artwork beside information with a 32pt gap. Compact and accessibility sizes put 16:9 artwork above information with a 12pt gap. Foreground artwork stays contained and untinted. Apple TV additionally uses a subdued full-screen copy of the backdrop behind browsing content. Missing backdrops use 2:3 poster artwork (square for audio) capped at 240pt. Information grows with content; actions try horizontal placement and fall back to vertical through `ViewThatFits`.
 
-Home labels a saved Watch feature Watching and places it above Continue watching on Apple TV, iPhone and iPad. Continue watching shows up to 15 landscape cards with direct resume, metadata and true progress. Without a saved title, the recent feature is labeled For you. Listen mode labels its saved feature Listening and keeps compact Continue listening rows with iOS expansion controls. Watch then separates recently added movies and TV shows, adds unwatched shelves and up to four movie genre shelves from the loaded catalog. Listen separates recently added music and audiobooks. Apple TV can switch between these Home modes. At accessibility text sizes, card titles wrap and the shelf remains horizontally scrollable.
+iOS Home labels a saved Watch feature Watching and places it above Continue watching. Continue watching shows up to 15 landscape cards with direct resume, metadata and true progress. Without a saved title, the recent feature is labeled For you. Listen mode labels its saved feature Listening and keeps compact Continue listening rows with iOS expansion controls. Apple TV Home shows up to 15 saved titles in one Watching rail, including the first title, followed by Browse tiles for Movies, TV Shows, Music, Audiobooks, Photos and Collections. The category icons pair recognizable symbols with the Kinosail sail mark. A final tile switches Watch and Listen Home modes. Watch then separates recently added movies and TV shows, adds unwatched shelves and up to four movie genre shelves from the loaded catalog. Listen separates recently added music and audiobooks. At accessibility text sizes, card titles wrap and the shelf remains horizontally scrollable.
 
 Media grids adapt from 96pt posters with 12pt column spacing or 280pt landscape cards with 20pt column spacing on iOS. tvOS uses 230pt posters or 360pt landscape cards with 20pt column spacing. All grids use 28pt row spacing; accessibility sizes use one flexible column. Shelves retain an 18pt gap and aligned scrolling; iOS poster/landscape widths scale from 164/260pt with 260/300pt caps, while tvOS uses 230/390pt widths.
 
@@ -126,7 +126,7 @@ Prominent actions use the system capsule border shape. Existing supporting borde
 
 ### Buttons and navigation
 
-Home's Play or Resume uses `.borderedProminent`, the signal tint and explicit action ink. Details uses `.bordered`, the raised tint and normal text. Both request large controls and capsule border shapes. Routes still follow media kind. Apple TV retains AVKit playback controls; iPhone and iPad use the coordinated touch presentation below.
+iOS Home's Play or Resume uses `.borderedProminent`, the signal tint and explicit action ink. Details uses `.bordered`, the raised tint and normal text. Both request large controls and capsule border shapes. Routes still follow media kind. Apple TV retains AVKit playback controls; iPhone and iPad use the coordinated touch presentation below.
 
 ### Video playback
 
@@ -136,7 +136,7 @@ The Apple Watch opens on a compact Remote page with the current player, title, p
 
 `TouchVideoSurface` uses AVPlayerLayer with aspect-fit rendering and captions inside the picture. AVFoundation owns video rendering and system Picture in Picture. Loading, buffering and reconnection retain the player surface; terminal failures expose readable retry and dismissal. Speed applies immediately to the session, including downloads, while Server preference saving happens separately. External captions remain an in-app capability and do not claim system PiP support.
 
-Tabs default to Home, TV Shows, Movies and Search with persistent More. One to four destinations can be added, removed or reordered for the current Viewer Profile on this device. More always exposes the remaining destinations and Customize tabs. iPhone uses system tabs; iPad retains `.sidebarAdaptable`. Apple TV uses a horizontal browse bar with visible left and right cues and persistent Search and Settings icons; remote focus moves across the bar and down to content. Search opens library search; Home shows a toolbar Search action only when Search is absent from the pinned tabs. Settings remains reachable through More on iPhone and iPad.
+Tabs default to Home, TV Shows, Movies and Search with persistent More. One to four destinations can be added, removed or reordered for the current Viewer Profile on this device. More always exposes the remaining destinations and Customize tabs. iPhone uses system tabs; iPad retains `.sidebarAdaptable`. Apple TV Home uses Search, Library and Settings controls above the content; other Apple TV destinations retain the horizontal browse bar with visible left and right cues. Remote focus moves across the bar and down to content. Search opens library search; Home shows a toolbar Search action only when Search is absent from the pinned tabs. Settings remains reachable through More on iPhone and iPad.
 
 ### Personal tab editor
 
@@ -154,11 +154,11 @@ Playback preferences group Boost Dialog and Normalize Loudness as native toggles
 
 ### Hero and watch position
 
-Home selects the first Continue watching item, otherwise the first Recently added item. Details and episode browsing reuse the in-flow hero. `WatchPosition` renders a progress bar only when a valid duration produces a fraction; unavailable duration or a failed request retains the known saved position. Images stay still without an autoplay carousel.
+iOS Home selects the first Continue watching item, otherwise the first Recently added item. Apple TV Home keeps the saved titles together in Watching. Details and episode browsing reuse the in-flow hero. `WatchPosition` renders a progress bar only when a valid duration produces a fraction; unavailable duration or a failed request retains the known saved position. Images stay still without an autoplay carousel.
 
 ### Loading and recovery
 
-`LoadingState` uses destination-specific shelf, home, detail, grid, music, show, album and list layouts. Home/detail reuse the hero's wide/stacked layout, artwork ratio and gap. Watch Home includes landscape Up Next placeholders; Listen Home retains compact row placeholders. Both include two category shelf placeholders. Grids reuse `MediaGrid.columns` and eight artwork placeholders; shelves use four cards with the loaded spacing and width policy. These policies align the known layout, while real content, missing artwork and Dynamic Type can change its final geometry.
+`LoadingState` uses destination-specific shelf, home, detail, grid, music, show, album and list layouts. iOS Home/detail reuse the hero's wide/stacked layout, artwork ratio and gap. Apple TV Home placeholders follow the Watching or Listening area, Browse tiles and a recent shelf. Grids reuse `MediaGrid.columns` and eight artwork placeholders; shelves use four cards with the loaded spacing and width policy. These policies align the known layout, while real content, missing artwork and Dynamic Type can change its final geometry.
 
 `ResourceView` displays loading feedback only while initial content is pending. Native skeletons shimmer within their existing shapes and expose one accessible loading label; Reduce Motion keeps the placeholders still. Initial failure shows Try again; failed refresh retains loaded content with truthful feedback. A new resource identity clears stale content. Empty, failed and settled content must not remain a skeleton. Determinate playback and download progress remains visible; actions without a replacement layout use plain status text.
 
