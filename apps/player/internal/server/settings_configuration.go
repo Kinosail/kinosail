@@ -14,7 +14,7 @@ import (
 
 const configurationHTML = `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width"><script src="/static/theme.js?v=electric-1"></script><link rel="stylesheet" href="/static/app.css?v=skeleton-3"><title>Configuration · Kinosail Player</title></head><body class="settings-page"><main class="settings-shell"><a class="back" href="/settings">{{icon "back"}} Settings</a><header class="settings-intro"><span class="eyebrow">Owner controls</span><h1>Advanced configuration</h1><p>Change settings normally managed by Docker, environment variables, or YAML. Each setting shows when a saved change takes effect.</p></header>{{range .}}<section id="{{.Key}}"><h2>{{.Label}}</h2>{{if eq .Source "environment"}}<p>Set by your deployment environment.</p>{{else if eq .Source "yaml"}}<p>Set in your YAML configuration file.</p>{{else if eq .Source "gui"}}<p>Using a value saved here.</p>{{else}}<p>Using the Kinosail default.</p>{{end}}{{if .Secret}}<p>{{if .Configured}}A secret is configured. Its value is hidden.{{else}}No secret is configured.{{end}}</p>{{end}}{{if or (eq .Source "environment") (eq .Source "yaml")}}<p>To change this setting, update the external value and restart Kinosail Server.</p>{{else}}<form action="/settings/configuration" method="post"><input type="hidden" name="key" value="{{.Key}}"><label>{{if .Secret}}New secret{{else}}Value{{end}}<input aria-label="{{.Label}}" name="value" {{if .Secret}}type="password" autocomplete="off" placeholder="New secret"{{else}}value="{{.Value}}"{{end}} required></label><button>Save change</button><p>{{if .Live}}Takes effect immediately.{{else}}Applies after a restart.{{end}}</p></form>{{if eq .Source "gui"}}<form action="/settings/configuration/reset" method="post"><button class="quiet" name="key" value="{{.Key}}">Use default</button></form>{{end}}{{end}}<details><summary>Technical details</summary><p>Configuration key: <code>{{.Key}}</code><br>Environment variable: <code>{{.Env}}</code></p></details></section>{{end}}</main></body></html>`
 
-var configurationView = newLocalizedTemplate("configuration", ignoreNonPasswordSecretAutofill(settingControlHTML+strings.NewReplacer("Set by your deployment environment.", `Configured via Docker: <code>{{.Env}}</code>.`, "</header>", "</header>"+tmdbConfigurationHTML+oidcConfigurationHTML+samlConfigurationHTML+scimConfigurationHTML, "{{range .}}", "{{range .Fields}}").Replace(configurationHTML)))
+var configurationView = newLocalizedTemplate("configuration", ignoreNonPasswordSecretAutofill(settingControlHTML+strings.NewReplacer("Set by your deployment environment.", `Configured via Docker: <code>{{.Env}}</code>.`, "</header>", "</header>"+restartNoticeHTML+tmdbConfigurationHTML+oidcConfigurationHTML+samlConfigurationHTML+scimConfigurationHTML, "{{range .}}", "{{range .Fields}}").Replace(configurationHTML)))
 
 type configurationField struct {
 	configuration.PublicValue
@@ -23,11 +23,31 @@ type configurationField struct {
 }
 
 type configurationPage struct {
-	Fields []configurationField
-	TMDB   tmdbConfigurationView
-	OIDC   oidcConfigurationView
-	SAML   samlConfigurationView
-	SCIM   scimConfigurationView
+	Fields         []configurationField
+	RestartPending []string
+	TMDB           tmdbConfigurationView
+	OIDC           oidcConfigurationView
+	SAML           samlConfigurationView
+	SCIM           scimConfigurationView
+}
+
+const restartNoticeHTML = `{{if .RestartPending}}<section class="wide restart-notice" id="restart-required" role="status" aria-labelledby="restart-required-title"><h2 id="restart-required-title">Restart Kinosail Player Server to apply saved changes</h2><p>These settings are saved but not active yet:</p><ul>{{range .RestartPending}}<li>{{.}}</li>{{end}}</ul><details><summary>How to restart</summary><p>Use the tool that runs this Server. For a release Docker Compose install, run <code>docker compose --file compose.release.yaml restart kinosail</code> in its installation directory. Include your usual override files. For another install method, restart its Server service.</p><p>Reopen Settings after the Server starts. This notice clears when the saved settings are active.</p></details></section>{{end}}`
+
+func (store *settingsStore) pendingRestart() []string {
+	store.mu.RLock()
+	defer store.mu.RUnlock()
+	var pending []string
+	for _, field := range store.config.Fields() {
+		if !field.Restart || store.config.Managed(field.Key) || liveTMDBSetting(field.Key) || field.Key == "logging.level" || store.config.String(field.Key) == store.startupConfig.String(field.Key) {
+			continue
+		}
+		label := configurationLabels[field.Key]
+		if label == "" {
+			label = field.Key
+		}
+		pending = append(pending, label)
+	}
+	return pending
 }
 
 type settingControl struct {
@@ -150,7 +170,7 @@ func (store *settingsStore) validateTMDBEndpoint(ctx context.Context, key, value
 func showConfiguration(settings *settingsStore) http.HandlerFunc {
 	return func(writer http.ResponseWriter, request *http.Request) {
 		writer.Header().Set("Content-Type", "text/html; charset=utf-8")
-		if err := configurationView.Execute(writer, request, configurationPage{Fields: settings.deploymentFields(), TMDB: settings.tmdbConfiguration(), OIDC: settings.oidcConfiguration(), SAML: settings.samlConfiguration(request), SCIM: settings.scimConfiguration(request)}); err != nil {
+		if err := configurationView.Execute(writer, request, configurationPage{Fields: settings.deploymentFields(), RestartPending: settings.pendingRestart(), TMDB: settings.tmdbConfiguration(), OIDC: settings.oidcConfiguration(), SAML: settings.samlConfiguration(request), SCIM: settings.scimConfiguration(request)}); err != nil {
 			localizedError(writer, request, err.Error(), http.StatusInternalServerError)
 		}
 	}
