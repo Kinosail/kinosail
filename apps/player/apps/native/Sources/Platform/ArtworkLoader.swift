@@ -3,17 +3,23 @@ import ImageIO
 import UniformTypeIdentifiers
 
 actor ArtworkLoader {
-    private struct Key: Hashable { let session: UUID; let path: String; let dimension: Int }
+    private struct Key: Hashable, Sendable { let session: UUID; let path: String; let dimension: Int }
     private struct Cached { let image: CGImage; var used: Date; let saved: Date }
     private struct Loaded { let image: CGImage; let stale: Bool }
+    private struct Pending {
+        let id: UUID
+        let task: Task<Loaded, Error>
+        var observers: Set<UUID>
+    }
     private var cache: [Key: Cached] = [:]
-    private var pending: [Key: Task<Loaded, Error>] = [:]
+    private var pending: [Key: Pending] = [:]
     private var refreshing: [Key: UUID] = [:]
     private var refreshTasks: [Key: Task<Void, Never>] = [:]
     private var bytes = 0
     private var generation = UUID()
     private var active = 0
-    private var waiters: [(UUID, CheckedContinuation<Void, Error>)] = []
+    private var activeBackground = 0
+    private var waiters: [(id: UUID, background: Bool, continuation: CheckedContinuation<Void, Error>)] = []
 
     func image(path: String, client: ServerClient, dimension: Int = 1600) async throws -> CGImage {
         try Task.checkCancellation()
@@ -31,48 +37,68 @@ actor ArtworkLoader {
             return found.image
         }
         let attempt = generation
-        if let request = pending[key] {
-            let loaded = try await request.value
-            try Task.checkCancellation()
-            guard generation == attempt else { throw CancellationError() }
-            if loaded.stale { scheduleRefresh(key: key, url: url, client: client, dimension: dimension) }
-            return loaded.image
-        }
-        guard pending.count < 64 else { throw ClientError.unavailable }
-        let request = Task {
-            defer { if generation == attempt { pending[key] = nil } }
-            try Task.checkCancellation()
-            let persist = URLComponents(url: url, resolvingAgainstBaseURL: false).map(ServerClient.cacheableMediaURL) == true
-            let store = persist ? try await client.cacheStore() : nil
-            let saved = await store?.read(url.absoluteString, kind: .artwork)
-            if let saved, let image = try? Self.decodedThumbnail(saved.data, dimension: dimension) {
+        let observer = UUID()
+        let request: Pending
+        if var existing = pending[key] {
+            existing.observers.insert(observer)
+            pending[key] = existing
+            request = existing
+        } else {
+            guard pending.count < 64 else { throw ClientError.unavailable }
+            let id = UUID()
+            let task = Task {
+                defer { if pending[key]?.id == id { pending[key] = nil } }
                 try Task.checkCancellation()
+                let persist = URLComponents(url: url, resolvingAgainstBaseURL: false).map(ServerClient.cacheableMediaURL) == true
+                let store = persist ? try await client.cacheStore() : nil
+                let saved = await store?.read(url.absoluteString, kind: .artwork)
+                if let saved {
+                    do {
+                        let image = try await Self.decode(saved.data, dimension: dimension)
+                        try Task.checkCancellation()
+                        guard generation == attempt else { throw CancellationError() }
+                        remember(image, key: key, saved: saved.saved)
+                        return Loaded(image: image, stale: !saved.fresh)
+                    } catch is CancellationError { throw CancellationError() }
+                    catch { await store?.remove(url.absoluteString, kind: .artwork) }
+                }
+                // Local hits must not queue behind slow network artwork requests.
+                try await self.acquire()
+                defer { self.release() }
+                let (data, type) = try await client.resource(url.absoluteString, maximum: 32 * 1024 * 1024)
+                guard type.hasPrefix("image/") else { throw ClientError.invalidResponse }
+                let image = try await Self.decode(data, dimension: dimension)
+                try Task.checkCancellation()
+                let savedAt = Date()
                 guard generation == attempt else { throw CancellationError() }
-                remember(image, key: key, saved: saved.saved)
-                return Loaded(image: image, stale: !saved.fresh)
+                remember(image, key: key, saved: savedAt)
+                if let store {
+                    await store.enqueueWrite(data, key: url.absoluteString, kind: .artwork)
+                }
+                return Loaded(image: image, stale: false)
             }
-            if saved != nil { await store?.remove(url.absoluteString, kind: .artwork) }
-            // Local hits must not queue behind slow network artwork requests.
-            try await self.acquire()
-            defer { self.release() }
-            let (data, type) = try await client.resource(url.absoluteString, maximum: 32 * 1024 * 1024)
-            guard type.hasPrefix("image/") else { throw ClientError.invalidResponse }
-            let image = try Self.decodedThumbnail(data, dimension: dimension)
-            try Task.checkCancellation()
-            let savedAt = Date()
-            guard generation == attempt else { throw CancellationError() }
-            remember(image, key: key, saved: savedAt)
-            if let store {
-                await store.enqueueWrite(data, key: url.absoluteString, kind: .artwork)
-            }
-            return Loaded(image: image, stale: false)
+            request = Pending(id: id, task: task, observers: [observer])
+            pending[key] = request
         }
-        pending[key] = request
-        let loaded = try await request.value
+        let requestID = request.id
+        let loaded = try await withTaskCancellationHandler {
+            try await request.task.value
+        } onCancel: {
+            Task { await self.stopWaiting(key: key, requestID: requestID, observerID: observer) }
+        }
         try Task.checkCancellation()
         guard generation == attempt else { throw CancellationError() }
         if loaded.stale { scheduleRefresh(key: key, url: url, client: client, dimension: dimension) }
         return loaded.image
+    }
+
+    private func stopWaiting(key: Key, requestID: UUID, observerID: UUID) {
+        guard var request = pending[key], request.id == requestID else { return }
+        request.observers.remove(observerID)
+        if request.observers.isEmpty {
+            pending[key] = nil
+            request.task.cancel()
+        } else { pending[key] = request }
     }
 
     static func decodedThumbnail(_ data: Data, dimension: Int) throws -> CGImage {
@@ -92,6 +118,18 @@ actor ArtworkLoader {
         return image
     }
 
+    private static func decode(_ data: Data, dimension: Int) async throws -> CGImage {
+        let work = Task.detached(priority: Task.currentPriority) {
+            try Task.checkCancellation()
+            return try decodedThumbnail(data, dimension: dimension)
+        }
+        return try await withTaskCancellationHandler {
+            try await work.value
+        } onCancel: {
+            work.cancel()
+        }
+    }
+
     // Reader resources need encoded bytes; native artwork keeps decoded pixels.
     static func thumbnail(_ data: Data, dimension: Int) throws -> Data {
         let image = try decodedThumbnail(data, dimension: dimension)
@@ -107,7 +145,7 @@ actor ArtworkLoader {
 
     func clear() {
         generation = UUID()
-        for task in pending.values { task.cancel() }
+        for request in pending.values { request.task.cancel() }
         for task in refreshTasks.values { task.cancel() }
         pending = [:]
         refreshing = [:]
@@ -134,12 +172,12 @@ actor ArtworkLoader {
         }
         guard generation == attempt else { return }
         do {
-            try await acquire()
-            defer { release() }
+            try await acquire(background: true)
+            defer { release(background: true) }
             try Task.checkCancellation()
             let (data, type) = try await client.resource(url.absoluteString, maximum: 32 * 1024 * 1024)
             guard type.hasPrefix("image/") else { throw ClientError.invalidResponse }
-            let image = try Self.decodedThumbnail(data, dimension: dimension)
+            let image = try await Self.decode(data, dimension: dimension)
             try Task.checkCancellation()
             guard generation == attempt else { return }
             let savedAt = Date()
@@ -167,21 +205,34 @@ actor ArtworkLoader {
         bytes += cost
     }
 
-    private func acquire() async throws {
+    private func acquire(background: Bool = false) async throws {
         let id = UUID()
         try await withTaskCancellationHandler {
             try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
                 if Task.isCancelled { continuation.resume(throwing: CancellationError()) }
-                else if active < 4 { active += 1; continuation.resume() }
-                else { waiters.append((id, continuation)) }
+                else if active < 4 && (!background || activeBackground < 2) {
+                    active += 1
+                    if background { activeBackground += 1 }
+                    continuation.resume()
+                } else { waiters.append((id, background, continuation)) }
             }
         } onCancel: { Task { await self.cancel(id) } }
     }
     private func cancel(_ id: UUID) {
-        if let index = waiters.firstIndex(where: { $0.0 == id }) { waiters.remove(at: index).1.resume(throwing: CancellationError()) }
+        if let index = waiters.firstIndex(where: { $0.id == id }) {
+            waiters.remove(at: index).continuation.resume(throwing: CancellationError())
+        }
     }
-    private func release() {
-        if waiters.isEmpty { active -= 1 }
-        else { waiters.removeFirst().1.resume() }
+    private func release(background: Bool = false) {
+        active -= 1
+        if background { activeBackground -= 1 }
+        let next = waiters.firstIndex(where: { !$0.background }) ??
+            (activeBackground < 2 ? waiters.firstIndex(where: { $0.background }) : nil)
+        if let next {
+            let waiter = waiters.remove(at: next)
+            active += 1
+            if waiter.background { activeBackground += 1 }
+            waiter.continuation.resume()
+        }
     }
 }
