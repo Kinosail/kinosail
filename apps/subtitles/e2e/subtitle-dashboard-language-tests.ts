@@ -131,18 +131,16 @@ test("Owner manages an ordered preferred-language list at every supported width"
   await page.evaluate(async () => { await document.fonts.ready; });
   await page.waitForTimeout(250);
   const initialGeometry = await languageSection.evaluate((section) => {
-    const navigationBox = document.querySelector<HTMLElement>(".app-header nav")?.getBoundingClientRect();
     const controls = [...section.querySelectorAll<HTMLElement>("button, select")];
-    const overlaps = (left: DOMRect, right: DOMRect) => left.bottom > right.top && left.top < right.bottom && left.right > right.left && left.left < right.right;
     return {
       smallTouchTarget: controls.some((control) => {
         const box = control.getBoundingClientRect();
         return box.width < 44 || box.height < 44;
       }),
-      navigationControlOverlap: navigationBox ? controls.some((control) => overlaps(control.getBoundingClientRect(), navigationBox)) : false,
     };
   });
-  expect(initialGeometry).toEqual({ smallTouchTarget: false, navigationControlOverlap: false });
+  expect(initialGeometry).toEqual({ smallTouchTarget: false });
+  expect(await occludedTargets(page, ["#language button", "#language select"], [".app-header nav"])).toEqual([]);
 
   await addLanguage.focus();
   await expect(addLanguage).toBeFocused();
