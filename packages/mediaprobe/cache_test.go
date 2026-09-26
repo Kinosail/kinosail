@@ -60,10 +60,14 @@ func TestProbeCoalescesConcurrentRequestsForOneSource(t *testing.T) {
 
 func writeProbeScript(t *testing.T, path, script string) {
 	t.Helper()
-	if err := os.WriteFile(path, []byte(script), 0o600); err != nil {
+	temporary := path + ".tmp"
+	if err := os.WriteFile(temporary, []byte(script), 0o600); err != nil {
 		t.Fatal(err)
 	}
-	if err := os.Chmod(path, 0o700); err != nil { //nolint:gosec // A test-only executable must be runnable.
+	if err := os.Chmod(temporary, 0o700); err != nil { //nolint:gosec // A test-only executable must be runnable.
+		t.Fatal(err)
+	}
+	if err := os.Rename(temporary, path); err != nil {
 		t.Fatal(err)
 	}
 }
