@@ -25,7 +25,7 @@ actor ArtworkLoader {
         try Task.checkCancellation()
         guard [400, 800, 1600, 4096].contains(dimension) else { throw ClientError.invalidInput("The artwork size is invalid.") }
         let url = try client.server.mediaURL(path)
-        guard ["/art/", "/backdrop/", "/person/", "/media/"].contains(where: { url.path.hasPrefix($0) }) else {
+        guard ["/art/", "/episode-art/", "/backdrop/", "/person/", "/media/"].contains(where: { url.path.hasPrefix($0) }) else {
             throw ClientError.invalidResponse
         }
         let key = Key(session: client.identity, path: url.absoluteString, dimension: dimension)

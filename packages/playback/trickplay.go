@@ -71,6 +71,15 @@ func (frames *Trickplay) Serve(writer http.ResponseWriter, request *http.Request
 }
 
 func GenerateTrickplay(ctx context.Context, cache, ffmpeg, source, target string, second int) error {
+	return generateFrame(ctx, cache, ffmpeg, source, target, second, 320)
+}
+
+// GenerateEpisodeStill caches one larger frame for an episode card.
+func GenerateEpisodeStill(ctx context.Context, cache, ffmpeg, source, target string, second int) error {
+	return generateFrame(ctx, cache, ffmpeg, source, target, second, 960)
+}
+
+func generateFrame(ctx context.Context, cache, ffmpeg, source, target string, second, width int) error {
 	if cache == "" || ffmpeg == "" || source == "" || target == "" || second < 0 || second > 43200 {
 		return errors.New("trickplay is not configured")
 	}
@@ -80,7 +89,7 @@ func GenerateTrickplay(ctx context.Context, cache, ffmpeg, source, target string
 	temporary := target + ".tmp.jpg"
 	ctx, cancel := context.WithTimeout(ctx, 15*time.Second)
 	defer cancel()
-	err := exec.CommandContext(ctx, ffmpeg, "-hide_banner", "-loglevel", "error", "-y", "-ss", strconv.Itoa(second), "-i", source, "-frames:v", "1", "-vf", "scale=320:-2", "-q:v", "4", temporary).Run() //nolint:gosec // Executable is installation config and source is scanned content.
+	err := exec.CommandContext(ctx, ffmpeg, "-hide_banner", "-loglevel", "error", "-y", "-ss", strconv.Itoa(second), "-i", source, "-frames:v", "1", "-vf", "scale="+strconv.Itoa(width)+":-2", "-q:v", "4", temporary).Run() //nolint:gosec // Executable is installation config and source is scanned content.
 	if err == nil {
 		err = os.Rename(temporary, target)
 	}
