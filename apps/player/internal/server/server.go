@@ -87,6 +87,7 @@ type Config struct {
 	TMDBToken           string
 	TMDBURL             string
 	TMDBImageURL        string
+	TMDBCheck           func(context.Context, string, string) error
 	DLNAURL             string
 	WatchRoomTTL        time.Duration
 	QuickConnectTTL     time.Duration
@@ -135,6 +136,9 @@ func newApplication(config Config) http.Handler { //nolint:funlen,cyclop,gocogni
 	settings, updates, unavailable := initializeApplicationSettings(config, stateDB, managedLifecycle)
 	if unavailable != "" {
 		return unavailableApplication(config, unavailable)
+	}
+	if config.TMDBCheck != nil {
+		settings.tmdbCheck = config.TMDBCheck
 	}
 	supporter := newSupporterProgram(settings, config.Supporter)
 	workloads := workload.New(workload.HeavyCapacity())
