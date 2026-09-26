@@ -3,6 +3,7 @@ package server
 import "github.com/MikeO7/kinosail-subtitles/internal/subtitlelanguage"
 
 func (provider *subtitleProvider) supports(language string) bool {
+	provider = provider.active()
 	if provider.cache == "" {
 		return false
 	}

@@ -54,6 +54,8 @@ type settingsStore struct {
 	ffmpeg            string
 	value             installationSettings
 	config            configuration.Snapshot
+	metadata          *metadataStore
+	metadataChanged   func()
 	hardware          hardwareCapabilities
 	transcoderCheck   transcodepolicy.CheckResult
 	trustedHTTPSCheck func(context.Context, trustedhttps.Config) error

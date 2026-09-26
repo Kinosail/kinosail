@@ -2,13 +2,14 @@
 import SwiftUI
 
 struct IOSShowEpisodes: View {
+    private enum DownloadTarget: Equatable { case series, season(Int) }
     let episodes: [MediaItem]
     let nextID: String
     let jumpTo: (Int) -> Void
     @Environment(AppSession.self) private var session
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
-    @State private var downloadingSeason: Int?
-    @State private var feedbackSeason: Int?
+    @State private var downloading: DownloadTarget?
+    @State private var feedbackTarget: DownloadTarget?
     @State private var feedback: String?
 
     private var groups: [ShowSeasonSelection.Group] { ShowSeasonSelection.groups(episodes) }
@@ -19,15 +20,33 @@ struct IOSShowEpisodes: View {
                 Text("Episodes").font(.title2.bold()).accessibilityAddTraits(.isHeader)
                 Text("\(episodes.count) available").font(.subheadline).foregroundStyle(KinoTheme.muted)
             }
+            if session.viewer?.downloads == true, groups.count > 1 {
+                Button { download(nil) } label: {
+                    if downloading == .series { Label("Adding series…", systemImage: "arrow.down.circle") }
+                    else { Label("Download series", systemImage: "arrow.down.circle") }
+                }
+                .buttonStyle(.borderedProminent).buttonBorderShape(.capsule)
+                .tint(KinoTheme.signal).foregroundStyle(KinoTheme.signalInk).controlSize(.large)
+                .disabled(downloading != nil || session.downloads.busy || episodes.count > 50)
+                if episodes.count > 50 {
+                    Text("Series downloads support up to 50 episodes. Download one season at a time.")
+                        .font(.caption).foregroundStyle(KinoTheme.muted)
+                }
+                if feedbackTarget == .series, let feedback {
+                    Text(feedback).font(.callout).foregroundStyle(KinoTheme.muted)
+                }
+            }
             if groups.count > 1 {
                 VStack(alignment: .leading, spacing: 8) {
                     Text("Jump to season").font(.subheadline.weight(.semibold))
                     LazyVGrid(columns: [GridItem(.adaptive(minimum: dynamicTypeSize.isAccessibilitySize ? 240 : 132), spacing: 8)], spacing: 8) {
                         ForEach(groups) { group in
-                            Button(group.title) { jumpTo(group.number) }
-                                .buttonStyle(.bordered).buttonBorderShape(.capsule)
-                                .tint(KinoTheme.secondaryControlTint).foregroundStyle(KinoTheme.text)
-                                .frame(maxWidth: .infinity, minHeight: 44)
+                            Button { jumpTo(group.number) } label: {
+                                Text(group.title).frame(maxWidth: .infinity, minHeight: 44)
+                            }
+                            .buttonStyle(.borderedProminent).buttonBorderShape(.capsule)
+                            .tint(KinoTheme.raised).foregroundStyle(KinoTheme.text)
+                            .overlay(Capsule().strokeBorder(KinoTheme.muted, lineWidth: 1))
                         }
                     }
                 }
@@ -47,14 +66,17 @@ struct IOSShowEpisodes: View {
                         }
                         if session.viewer?.downloads == true {
                             Button { download(group) } label: {
-                                if downloadingSeason == group.number { ProgressView() }
+                                if downloading == .season(group.number) { Label("Adding season…", systemImage: "arrow.down.circle") }
                                 else { Label("Download season", systemImage: "arrow.down.circle") }
                             }
-                            .buttonStyle(.bordered).frame(minHeight: 44)
-                            .disabled(downloadingSeason != nil)
-                            .accessibilityLabel("Download \(group.title)")
+                            .buttonStyle(.borderedProminent).buttonBorderShape(.capsule)
+                            .tint(KinoTheme.raised).foregroundStyle(KinoTheme.text).controlSize(.large)
+                            .overlay(Capsule().strokeBorder(KinoTheme.muted, lineWidth: 1))
+                            .frame(minHeight: 44)
+                            .disabled(downloading != nil || session.downloads.busy)
+                            .accessibilityLabel(downloading == .season(group.number) ? "Adding \(group.title) to Downloads" : "Download \(group.title)")
                         }
-                        if feedbackSeason == group.number, let feedback {
+                        if feedbackTarget == .season(group.number), let feedback {
                             Text(feedback).font(.callout).foregroundStyle(KinoTheme.muted)
                         }
                         Divider()
@@ -73,17 +95,19 @@ struct IOSShowEpisodes: View {
         .foregroundStyle(KinoTheme.text)
     }
 
-    private func download(_ group: ShowSeasonSelection.Group) {
-        guard let client = session.client, downloadingSeason == nil else { return }
-        downloadingSeason = group.number
-        feedbackSeason = nil
+    private func download(_ group: ShowSeasonSelection.Group?) {
+        guard let client = session.client, downloading == nil else { return }
+        let target: DownloadTarget = group.map { .season($0.number) } ?? .series
+        downloading = target
+        feedbackTarget = nil
         Task {
-            defer { downloadingSeason = nil }
+            defer { downloading = nil }
             do {
-                try await session.downloads.enqueueEpisodes(group.episodes, quality: .compatible, client: client)
-                feedback = "\(group.title) added to Downloads."
+                if let group { try await session.downloads.enqueueEpisodes(group.episodes, quality: .compatible, client: client) }
+                else { try await session.downloads.enqueueSeries(episodes, quality: .compatible, client: client) }
+                feedback = "\(group?.title ?? "Series") added to Downloads."
             } catch { feedback = AppSession.message(error) }
-            feedbackSeason = group.number
+            feedbackTarget = target
         }
     }
 }
@@ -95,7 +119,6 @@ private struct IOSEpisodeRow: View {
     @Environment(\.horizontalSizeClass) private var sizeClass
 
     private var title: String { ShowSeasonSelection.episodeTitle(item) }
-    private var thumbnailWidth: CGFloat { sizeClass == .regular ? 112 : 76 }
     private var accessibilitySummary: String {
         let state = isNext ? "next" : item.progress.watched ? "watched" :
             item.progress.seconds > 0 ? "resume at \(item.progress.seconds.clock)" : ""
@@ -107,7 +130,8 @@ private struct IOSEpisodeRow: View {
             NavigationLink(value: ScreenDestination.detail(item.id)) {
                 HStack(alignment: .top, spacing: 12) {
                     if !dynamicTypeSize.isAccessibilitySize {
-                        Color.clear.frame(width: thumbnailWidth, height: 0)
+                        Artwork(path: item.landscapeArtwork, symbol: "play.rectangle", ratio: 16 / 9, dimension: 500)
+                            .frame(width: sizeClass == .regular ? 112 : 76).clipShape(.rect(cornerRadius: 8))
                     }
                     VStack(alignment: .leading, spacing: 4) {
                         Text(String(format: "%02d", item.episode))
@@ -127,16 +151,6 @@ private struct IOSEpisodeRow: View {
                     .frame(maxWidth: .infinity, alignment: .leading)
                 }
                 .frame(maxWidth: .infinity, minHeight: 72, alignment: .leading)
-                .background(alignment: .leading) {
-                    if !dynamicTypeSize.isAccessibilitySize {
-                        GeometryReader { geometry in
-                            Artwork(path: item.landscapeArtwork, symbol: "play.rectangle", dimension: 500,
-                                    fillsFrame: true, canvasSize: CGSize(width: thumbnailWidth, height: geometry.size.height))
-                                .clipShape(.rect(cornerRadius: 8))
-                        }
-                        .frame(width: thumbnailWidth)
-                    }
-                }
                 .contentShape(.rect)
             }
             .buttonStyle(.plain)

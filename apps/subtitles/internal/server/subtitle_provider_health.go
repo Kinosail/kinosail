@@ -74,6 +74,13 @@ func (registry *subtitleProviderHealthRegistry) before(name string) error {
 	return nil
 }
 
+func (registry *subtitleProviderHealthRegistry) reset(name string) {
+	registry.mu.Lock()
+	defer registry.mu.Unlock()
+	delete(registry.states, name)
+	registry.saveLocked()
+}
+
 func (registry *subtitleProviderHealthRegistry) observe(name string, response *http.Response, requestErr error) {
 	registry.mu.Lock()
 	defer registry.mu.Unlock()
@@ -252,10 +259,12 @@ func subtitleSafeProviderError(status int) string {
 }
 
 func (provider *subtitleProvider) healthViews() []subtitleProviderHealth {
+	provider = provider.active()
 	return provider.health.views(map[string]bool{"SubDL": provider.subDLConfigured(), "OpenSubtitles": provider.open.configured(), "SubSource": provider.subsource.configured()})
 }
 
 func (provider *subtitleProvider) testCredentials(ctx context.Context) (int, int) {
+	provider = provider.active()
 	attempted, connected := 0, 0
 	if provider.subDLConfigured() {
 		attempted++

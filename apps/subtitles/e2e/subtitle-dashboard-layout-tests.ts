@@ -3,6 +3,23 @@ import { expect, test } from "@playwright/test";
 import { compactViewports, expectNoHorizontalOverflow, expectSkipLinkOffscreen, initiallyOccludedTargets, occludedTargets, setSubtitleLanguages, supportedViewports } from "./subtitle-dashboard-helpers";
 
 export function registerSubtitleLayoutTests() {
+test("Settings header keeps desktop destinations in one compact row", async ({ page }) => {
+  for (const width of [1920, 1280, 1024, 901]) {
+    await page.setViewportSize({ width, height: 900 });
+    await page.goto("/settings#provider");
+    const layout = await page.locator(".app-header").evaluate((header) => {
+      const nav = header.querySelector('nav[aria-label="Main navigation"]');
+      const links = [...nav.querySelectorAll(":scope > a")].map((link) => link.getBoundingClientRect());
+      return { header: header.getBoundingClientRect().toJSON(), nav: nav.getBoundingClientRect().toJSON(), links: links.map((box) => box.toJSON()) };
+    });
+    expect(layout.header.height, `${width}px header height`).toBeLessThanOrEqual(100);
+    expect(layout.links).toHaveLength(3);
+    expect(layout.links.every((link) => Math.abs(link.top - layout.links[0].top) <= 1), `${width}px navigation row`).toBe(true);
+    expect(layout.links.every((link) => link.left >= layout.nav.left && link.right <= layout.nav.right), `${width}px navigation bounds`).toBe(true);
+    await expectNoHorizontalOverflow(page);
+  }
+});
+
 test("Subtitle API reports the rendered inventory and rejects ambiguous input", async ({ page }) => {
   const inventory = await page.evaluate(async () => {
     const response = await fetch("/api/v1/subtitle-library?view=library");
@@ -179,9 +196,17 @@ test("Subtitle setup guide keeps readiness and recovery visible", async ({ page 
     await expect(page.getByRole("button", { name: /^Remove/ })).toHaveCount(0);
     const providers = page.locator("#providers");
     await expect(providers).toContainText("Connect a subtitle provider");
-    await expect(providers.getByRole("link", { name: "Provider account" }).nth(0)).toHaveAttribute("href", "https://subdl.com/panel");
-    await expect(providers.getByRole("link", { name: "Provider account" }).nth(1)).toHaveAttribute("href", "https://dl.opensubtitles.com/en/users/sign_in");
-    await expect(providers.getByRole("link", { name: "Provider account" }).nth(2)).toHaveAttribute("href", "https://subsource.net/");
+    for (const [name, url] of [
+      ["SubDL", "https://subdl.com/panel/register"],
+      ["OpenSubtitles", "https://www.opensubtitles.com/en/users/sign_up"],
+      ["SubSource", "https://subsource.net/"],
+    ]) {
+      const link = providers.getByRole("link", { name: `Create ${name} account` });
+      await expect(link).toHaveAttribute("href", url);
+      await expect(link).toHaveAttribute("target", "_blank");
+      await expect(link).toHaveAttribute("rel", /noopener noreferrer/);
+    }
+    await expect(providers).toContainText("On SubSource, choose Create Account.");
     await expect(page.getByRole("complementary", { name: "Your subtitle plan" }).getByText("Not configured", { exact: true })).toBeVisible();
     await expect(page.getByRole("link", { name: "Finish and open overview" })).toBeVisible();
     await expectNoHorizontalOverflow(page);
