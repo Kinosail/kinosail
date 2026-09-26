@@ -1,6 +1,39 @@
 import { expect, test } from "@playwright/test";
 import { downloadsSource, serviceWorkerSource } from "./static-sources";
 
+test("uncached private artwork is delivered before cache maintenance finishes", async ({ page }) => {
+	await page.route("https://kinosail.test/", route => route.fulfill({contentType: "text/html", body: "<!doctype html><title>Artwork cache timing</title>"}));
+	await page.goto("https://kinosail.test/");
+	const result = await page.evaluate(async source => {
+		type WorkerEvent = {request: Request; respondWith: (value: Promise<Response>) => void; waitUntil: (value: Promise<unknown>) => void};
+		const handlers = new Map<string, (event: WorkerEvent) => void>();
+		let releaseWrite!: () => void;
+		const slowWrite = new Promise<void>(resolve => { releaseWrite = resolve; });
+		let writes = 0;
+		const cache = {
+			match: async () => undefined,
+			put: async () => { writes++; await slowWrite; },
+			keys: async () => [],
+			delete: async () => true,
+		};
+		const scope = {addEventListener: (name: string, handler: (event: WorkerEvent) => void) => handlers.set(name, handler), location: {origin: "https://kinosail.test"}};
+		new Function("self", "caches", "fetch", "indexedDB", source + "\nviewerProfile = 'viewer';")(
+			scope, {open: async () => cache}, async () => new Response("image", {headers: {"Content-Type": "image/png"}}), indexedDB);
+		let response: Promise<Response> | undefined;
+		const maintenance: Promise<unknown>[] = [];
+		handlers.get("fetch")?.({
+			request: new Request("https://kinosail.test/art/movie"),
+			respondWith: (value: Promise<Response>) => { response = value; },
+			waitUntil: (value: Promise<unknown>) => { maintenance.push(value); },
+		});
+		const first = await Promise.race([response!.then(() => "image"), new Promise<string>(resolve => setTimeout(() => resolve("cache"), 1_000))]);
+		releaseWrite();
+		await Promise.all(maintenance);
+		return {first, writes, body: await (await response!).text()};
+	}, serviceWorkerSource);
+	expect(result).toEqual({first: "image", writes: 1, body: "image"});
+});
+
 test("service worker selects offline chunks through the target job index", async () => {
 	expect(serviceWorkerSource).toContain('indexedDB.open(offlineDatabase, 4)');
 	expect(serviceWorkerSource).toContain('chunks.createIndex("jobRange", ["jobID", "offset"])');
@@ -205,7 +238,7 @@ test("service worker streams verified OPFS chunks before later verification", as
 
 for (const mode of ["registration failure", "no controller"] as const) test(`offline downloads reject ${mode} before storage changes`, async ({ page }) => {
 	await page.addInitScript((failureMode) => {
-		const worker = Object.assign(new EventTarget(), { scriptURL: "https://kinosail.test/service-worker.js?v=53", state: "activated" });
+		const worker = Object.assign(new EventTarget(), { scriptURL: "https://kinosail.test/service-worker.js?v=54", state: "activated" });
 		const registration = Object.assign(new EventTarget(), { active: worker, installing: null, waiting: null });
 		const serviceWorker = Object.assign(new EventTarget(), {
 			controller: null,

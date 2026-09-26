@@ -26,8 +26,9 @@ func (browse Browse) Apply(candidates []Candidate) (Result, error) {
 
 func browseCandidates(candidates []Candidate, view, query string) []Candidate {
 	selected := make([]Candidate, 0, len(candidates))
+	normalized := searchText(query)
 	for _, candidate := range candidates {
-		if candidate.Item != nil && viewMatches(candidate, view) && (query == "" || Matches(*candidate.Item, query)) {
+		if candidate.Item != nil && viewMatches(candidate, view) && (query == "" || matchesNormalized(*candidate.Item, normalized)) {
 			selected = append(selected, candidate)
 		}
 	}

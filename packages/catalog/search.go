@@ -4,6 +4,7 @@ import (
 	"sort"
 	"strings"
 	"unicode"
+	"unicode/utf8"
 
 	"github.com/MikeO7/kinosail/packages/library"
 	"golang.org/x/text/unicode/norm"
@@ -14,9 +15,10 @@ func Filter(items []library.Item, query string) []library.Item {
 	if query == "" {
 		return items
 	}
+	normalized := searchText(query)
 	matched := make([]library.Item, 0)
 	for _, item := range items {
-		if Matches(item, query) {
+		if matchesNormalized(item, normalized) {
 			matched = append(matched, item)
 		}
 	}
@@ -25,6 +27,13 @@ func Filter(items []library.Item, query string) []library.Item {
 
 // Matches reports whether searchable item metadata contains the query.
 func Matches(item library.Item, query string) bool {
+	return matchesNormalized(item, searchText(query))
+}
+
+func matchesNormalized(item library.Item, normalized string) bool {
+	if normalized == "" {
+		return false
+	}
 	var credits strings.Builder
 	for _, person := range item.Cast {
 		credits.WriteByte(' ')
@@ -38,8 +47,7 @@ func Matches(item library.Item, query string) bool {
 		credits.WriteByte(' ')
 		credits.WriteString(person.Role)
 	}
-	normalized := searchText(query)
-	return normalized != "" && strings.Contains(searchText(item.Title+" "+item.Show+" "+item.Year+" "+item.Plot+" "+item.Genres+" "+item.Director+" "+item.Studio+" "+item.Artist+" "+item.Album+credits.String()), normalized)
+	return strings.Contains(searchText(item.Title+" "+item.Show+" "+item.Year+" "+item.Plot+" "+item.Genres+" "+item.Director+" "+item.Studio+" "+item.Artist+" "+item.Album+credits.String()), normalized)
 }
 
 // Sort orders Library items by the supported smart-list order.
@@ -63,7 +71,11 @@ func Sort(items []library.Item, order string) []library.Item {
 }
 
 func searchRank(item library.Item, query string) int {
-	title, query := searchText(item.Title), searchText(query)
+	return searchRankNormalized(item, searchText(query))
+}
+
+func searchRankNormalized(item library.Item, query string) int {
+	title := searchText(item.Title)
 	switch {
 	case title == query:
 		return 0
@@ -81,6 +93,9 @@ func searchRank(item library.Item, query string) int {
 }
 
 func searchText(value string) string {
+	if isASCII(value) {
+		return asciiSearchText(value)
+	}
 	var result strings.Builder
 	space := true
 	for _, character := range norm.NFKD.String(strings.ToLower(value)) {
@@ -96,6 +111,35 @@ func searchText(value string) string {
 		}
 	}
 	return strings.TrimSpace(result.String())
+}
+
+func asciiSearchText(value string) string {
+	var result strings.Builder
+	result.Grow(len(value))
+	space := true
+	for index := 0; index < len(value); index++ {
+		character := value[index]
+		if character >= 'A' && character <= 'Z' {
+			character += 'a' - 'A'
+		}
+		if character >= 'a' && character <= 'z' || character >= '0' && character <= '9' {
+			result.WriteByte(character)
+			space = false
+		} else if !space {
+			result.WriteByte(' ')
+			space = true
+		}
+	}
+	return strings.TrimSpace(result.String())
+}
+
+func isASCII(value string) bool {
+	for index := 0; index < len(value); index++ {
+		if value[index] >= utf8.RuneSelf {
+			return false
+		}
+	}
+	return true
 }
 
 // Media selects items of one media kind, preserving their input order.
