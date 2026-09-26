@@ -81,7 +81,7 @@ struct PlayerTabs: View {
                 #else
                 let role: TabRole? = nil
                 #endif
-                Tab(value: tab, role: role) { stack(tab: tab) { PlayerTabScreen(tab: tab, mode: screenMode, showsSearch: !pinned.contains(.search), changeMode: changeMode) } } label: {
+                Tab(value: tab, role: role) { stack(tab: tab) { PlayerTabScreen(tab: tab, mode: screenMode, showsSearch: !pinned.contains(.search), changeMode: changeMode, selectTab: selectBrowseTab) } } label: {
                     Label(tab.title, systemImage: tab.symbol)
                     #if os(tvOS)
                         .foregroundStyle(selection == tab ? KinoTheme.signalInk : KinoTheme.text)
@@ -122,6 +122,16 @@ struct PlayerTabs: View {
             modeStored = next.rawValue
         }
     }
+    private func selectBrowseTab(_ tab: PlayerTab) {
+        if pinned.contains(tab) {
+            selection = tab
+        } else {
+            var path = NavigationPath()
+            path.append(tab)
+            paths[.home] = path
+            selection = .home
+        }
+    }
     private func moreLink(_ tab: PlayerTab) -> some View {
         NavigationLink(value: tab) {
             #if os(tvOS)
@@ -137,7 +147,7 @@ struct PlayerTabs: View {
     private func stack<Content: View>(tab: PlayerTab, @ViewBuilder content: () -> Content) -> some View {
         NavigationStack(path: Binding(get: { paths[tab] ?? NavigationPath() }, set: { paths[tab] = $0 })) {
             content()
-                .navigationDestination(for: PlayerTab.self) { PlayerTabScreen(tab: $0, mode: screenMode, showsSearch: !pinned.contains(.search), changeMode: changeMode) }
+                .navigationDestination(for: PlayerTab.self) { PlayerTabScreen(tab: $0, mode: screenMode, showsSearch: !pinned.contains(.search), changeMode: changeMode, selectTab: selectBrowseTab) }
                 #if os(iOS)
                 .modifier(SupporterToolbar())
                 #endif
@@ -180,11 +190,12 @@ private struct PlayerTabScreen: View {
     let mode: PlayerMode?
     let showsSearch: Bool
     let changeMode: (PlayerMode) -> Void
+    let selectTab: (PlayerTab) -> Void
     var body: some View {
         switch tab {
         case .movies: LibraryScreen(initialView: .movies)
         case .shows: LibraryScreen(initialView: .shows)
-        case .home: HomeScreen(showsSearch: showsSearch, mode: mode, changeMode: mode == nil ? nil : changeMode)
+        case .home: HomeScreen(showsSearch: showsSearch, mode: mode, changeMode: mode == nil ? nil : changeMode, selectTab: selectTab)
         case .search: LibraryScreen(initialView: mode?.searchViews.first ?? .all, searchMode: true, mode: mode).id(mode)
         case .list: LibraryScreen(initialView: .list)
         case .library: LibraryHubScreen(mode: mode)

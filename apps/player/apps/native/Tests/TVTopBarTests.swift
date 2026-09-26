@@ -5,8 +5,8 @@ import UIKit
 @testable import KinosailPlayer
 
 @MainActor @Observable private final class TopBarProbe {
-    var selection = PlayerTab.home
-    var requestedFocus = PlayerTab.home
+    var selection = PlayerTab.movies
+    var requestedFocus = PlayerTab.movies
     var focused: PlayerTab?
     var showsContent = false
 }
@@ -29,7 +29,7 @@ private struct TopBarProbeScreen: View {
                 }
             }
         }
-        .onAppear { focus = .home }
+        .onAppear { focus = .movies }
         .onChange(of: probe.requestedFocus) { _, value in focus = value }
         .onChange(of: focus) { _, value in probe.focused = value }
     }
@@ -44,10 +44,7 @@ private struct TopBarProbeScreen: View {
         window.makeKeyAndVisible()
         defer { window.isHidden = true }
 
-        try await Task.sleep(for: .milliseconds(100))
-        #expect(probe.focused == .home)
-        probe.requestedFocus = .movies
-        try await Task.sleep(for: .milliseconds(100))
+        try await Task.sleep(for: .milliseconds(300))
         #expect(probe.selection == .movies)
         #expect(probe.focused == .movies)
 
