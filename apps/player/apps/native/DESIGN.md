@@ -106,7 +106,7 @@ The reusable hero fills the available width. Regular iOS size classes and tvOS p
 
 Home displays For you and My List above the feature, then up to four compact Continue watching or Continue listening rows. Watch separates recently added movies and TV shows, then offers unwatched rows and up to four movie genre shelves from the loaded catalog. Listen separates recently added music and audiobooks. Apple TV can switch between these Home modes. Each continuation row combines a contained landscape backdrop or 2:3 poster fallback, title, metadata, true progress and play affordance; See all opens History. `ResumeRows` adapts from 420pt minimum columns on iOS and 640pt on tvOS. At accessibility text sizes, rows use one column, omit decorative thumbnails and let titles wrap without a line limit.
 
-Media grids adapt from 144pt posters or 280pt landscape cards on iOS, and 230pt or 360pt on tvOS, with 20pt column and 28pt row spacing. Accessibility sizes use one flexible column. Shelves retain an 18pt gap and aligned scrolling; iOS poster/landscape widths scale from 164/260pt with 260/300pt caps, while tvOS uses 230/390pt widths.
+Media grids adapt from 96pt posters with 12pt column spacing or 280pt landscape cards with 20pt column spacing on iOS. tvOS uses 230pt posters or 360pt landscape cards with 20pt column spacing. All grids use 28pt row spacing; accessibility sizes use one flexible column. Shelves retain an 18pt gap and aligned scrolling; iOS poster/landscape widths scale from 164/260pt with 260/300pt caps, while tvOS uses 230/390pt widths.
 
 ## Elevation & Depth
 
