@@ -43,9 +43,11 @@ func (fixture MetadataFixture) ViewerCanSeeLocalNfoMetadata(t *testing.T) {
 	id := match[1]
 	player := httptest.NewRecorder()
 	handler.ServeHTTP(player, httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/watch/"+id, nil))
+	details := httptest.NewRecorder()
+	handler.ServeHTTP(details, httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/item/"+id, nil))
 
-	if !strings.Contains(home.Body.String(), "Primer") || !strings.Contains(home.Body.String(), "· 2004") || !strings.Contains(player.Body.String(), "Two engineers discover time travel.") {
-		t.Fatalf("home = %q, player = %q", home.Body.String(), player.Body.String())
+	if !strings.Contains(home.Body.String(), "Primer") || strings.Contains(home.Body.String(), "· 2004") || !strings.Contains(details.Body.String(), `class="meta-line">2004`) || !strings.Contains(player.Body.String(), "Two engineers discover time travel.") {
+		t.Fatalf("home = %q, details = %q, player = %q", home.Body.String(), details.Body.String(), player.Body.String())
 	}
 }
 

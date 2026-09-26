@@ -74,7 +74,7 @@ func TestRecentShelfProjection(t *testing.T) { //nolint:cyclop // One fixture ve
 		{ID: "episode-one", Kind: "video", Title: "Pilot", Show: "series", ShowTitle: "Series", Season: 1, Episode: 1, Container: "MKV", Year: "2025", Added: now},
 		{ID: "episode-two", Kind: "video", Title: "Second", Show: "series", ShowTitle: "Series", Season: 1, Episode: 2, Container: "MP4", Added: now.Add(-time.Minute)},
 		{ID: "book", Kind: "book", Title: "Book", Year: "2024", Added: now.Add(-2 * time.Minute)},
-		{ID: "movie", Kind: "video", Title: "Movie", Container: "AVI", Added: now.Add(-3 * time.Minute)},
+		{ID: "movie", Kind: "video", Title: "Movie", Container: "AVI", Year: "2018", Added: now.Add(-3 * time.Minute)},
 	}
 	artwork := map[string]string{"episode-one": "poster", "book": "cover"}
 	titles := map[string]string{"episode-one": "Series"}
@@ -98,7 +98,7 @@ func TestRecentShelfProjection(t *testing.T) { //nolint:cyclop // One fixture ve
 	if added[0].Href != "/book/m" || added[1].Href != "/book/n" || addedItems[0].ID != "a" || addedItems[13].ID != "n" {
 		t.Fatalf("added order=%+v, input first=%q last=%q", added[:2], addedItems[0].ID, addedItems[13].ID)
 	}
-	if item := singleItem(items[0], artwork, titles, "play"); item.Title != "Series · Pilot" || item.Meta != "MKV · 2025" || item.ArtworkID != "poster" || item.Count != 1 {
+	if item := singleItem(items[0], artwork, titles, "play"); item.Title != "Series · Pilot" || item.Meta != "MKV" || item.ArtworkID != "poster" || item.Count != 1 {
 		t.Fatalf("single=%+v", item)
 	}
 	if meta := stackMeta(2, library.Item{}); meta != "2 episodes stacked" {

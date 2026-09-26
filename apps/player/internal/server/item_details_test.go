@@ -54,6 +54,36 @@ func TestMovieDetailsDoNotStartPlaybackAndListActionsReturnToDetails(t *testing.
 	}
 }
 
+func TestMovieReleaseYearAppearsOnDetailsOnly(t *testing.T) {
+	media := t.TempDir()
+	if err := os.WriteFile(filepath.Join(media, "Arrival (2016).mp4"), []byte("media"), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	handler := server.New(server.Config{MediaDir: media, DataDir: t.TempDir()})
+	get := func(path string) string {
+		response := httptest.NewRecorder()
+		handler.ServeHTTP(response, httptest.NewRequestWithContext(t.Context(), http.MethodGet, path, nil))
+		if response.Code != http.StatusOK {
+			t.Fatalf("%s = %d", path, response.Code)
+		}
+		return response.Body.String()
+	}
+	browse := get("/?view=movies")
+	match := regexp.MustCompile(`/item/([a-f0-9]+)`).FindStringSubmatch(browse)
+	if len(match) != 2 {
+		t.Fatal("movie is missing from browse results")
+	}
+	if strings.Contains(browse, ">2016<") || strings.Contains(browse, " · 2016</h2>") {
+		t.Fatal("browse card shows release year")
+	}
+	if strings.Contains(get("/"), ">2016</small>") {
+		t.Fatal("home shelf shows release year")
+	}
+	if !strings.Contains(get("/item/"+match[1]), `class="meta-line">2016`) {
+		t.Fatal("movie details omit release year")
+	}
+}
+
 func TestFeaturedMovieOffersPlayAndKeepsShelfOnDetails(t *testing.T) {
 	media := t.TempDir()
 	folder := filepath.Join(media, "Movie")

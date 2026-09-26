@@ -169,7 +169,7 @@ struct LoadingState: View {
                 if layout == .collectionGrid { line(width: 260, height: 42).accessibilityHidden(true) }
                 #endif
                 LazyVGrid(columns: MediaGrid.columns(landscape: layout == .show, accessibility: dynamicType.isAccessibilitySize), alignment: .leading, spacing: 28) {
-                    ForEach(0..<8) { _ in card(ratio: gridRatio) }
+                    ForEach(0..<8) { _ in card(ratio: gridRatio, showsProgress: layout == .grid, showsSubtitle: layout != .grid && layout != .actor) }
                 }
                 #if os(tvOS)
                 .padding(.vertical, 24)
@@ -195,12 +195,12 @@ struct LoadingState: View {
         .frame(maxWidth: .infinity, alignment: .leading)
         .skeletonLoading(layout == .playback ? "Opening media…" : title, shimmers: layout != .playback)
     }
-    private func card(ratio: CGFloat = 2 / 3, showsProgress: Bool = false) -> some View {
+    private func card(ratio: CGFloat = 2 / 3, showsProgress: Bool = false, showsSubtitle: Bool = true) -> some View {
         VStack(alignment: .leading, spacing: 10) {
             RoundedRectangle(cornerRadius: 12).fill(KinoTheme.surface).aspectRatio(ratio, contentMode: .fit)
             VStack(alignment: .leading, spacing: 8) {
                 line(width: 100, height: 20)
-                line(width: 80, height: 14)
+                if showsSubtitle { line(width: 80, height: 14) }
                 if showsProgress { line(width: 140, height: 4) }
             }
             #if os(tvOS)

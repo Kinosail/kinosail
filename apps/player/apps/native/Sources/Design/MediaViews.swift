@@ -100,8 +100,9 @@ struct MediaCard: View {
                     Text(item.title).font(.headline).foregroundStyle(KinoTheme.text)
                         .mediaLineLimit(2, accessibility: dynamicTypeSize.isAccessibilitySize)
                         .frame(maxWidth: .infinity, alignment: .leading)
-                    if !item.subtitle.isEmpty {
-                        Text(item.subtitle).font(.caption).foregroundStyle(KinoTheme.muted)
+                    let subtitle = item.kind == .video || item.kind == .show ? item.subtitleWithoutYear : item.subtitle
+                    if !subtitle.isEmpty {
+                        Text(subtitle).font(.caption).foregroundStyle(KinoTheme.muted)
                             .mediaLineLimit(1, accessibility: dynamicTypeSize.isAccessibilitySize)
                     }
                     if item.kind == .video || item.kind == .show {
