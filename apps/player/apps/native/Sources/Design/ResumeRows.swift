@@ -5,6 +5,7 @@ struct ResumeRows: View {
     var title = "Continue watching"
     var showsAll = true
     @Environment(\.dynamicTypeSize) private var dynamicType
+    @State private var isExpanded = false
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack(alignment: .firstTextBaseline) {
@@ -21,10 +22,23 @@ struct ResumeRows: View {
                 }
             }
             LazyVGrid(columns: columns, alignment: .leading, spacing: rowSpacing) {
-                ForEach(items) { item in ResumeRow(item: item) }
+                ForEach(items.prefix(isExpanded ? items.count : 4)) { item in ResumeRow(item: item) }
             }
             #if os(tvOS)
             .padding(.vertical, 20)
+            #endif
+            #if os(iOS)
+            if items.count > 4 {
+                Button {
+                    isExpanded.toggle()
+                } label: {
+                    Label(isExpanded ? "Show less" : "Show more", systemImage: isExpanded ? "chevron.up" : "chevron.down")
+                        .frame(minHeight: 44)
+                }
+                .buttonStyle(.bordered).buttonBorderShape(.capsule)
+                .tint(KinoTheme.secondaryControlTint).secondaryControlForeground()
+                .accessibilityLabel("\(isExpanded ? "Show less" : "Show more") \(title.lowercased())")
+            }
             #endif
         }
         #if os(tvOS)
