@@ -1,19 +1,59 @@
 package server_test
 
 import (
+	"context"
 	"encoding/json"
+	"errors"
 	"net/http"
 	"net/http/httptest"
 	"os"
 	"path/filepath"
 	"regexp"
 	"strings"
+	"sync/atomic"
 	"testing"
 	"time"
 
 	"github.com/MikeO7/kinosail-player/internal/configuration"
 	"github.com/MikeO7/kinosail-player/internal/server"
 )
+
+func TestTMDBTokenCheckRejectsCustomAPIAddressBeforeNetworkOrPersistence(t *testing.T) { //nolint:cyclop // One Owner journey verifies both rejected entry points and their side effects.
+	const token = "tmdb-read-access-token-1234567890abcdef" //nolint:gosec // Deterministic fake token for a local HTTP fixture.
+	var requests atomic.Int32
+	provider := httptest.NewServer(http.HandlerFunc(func(writer http.ResponseWriter, _ *http.Request) {
+		requests.Add(1)
+		_, _ = writer.Write([]byte(`{"images":{"secure_base_url":"https://image.tmdb.org/t/p/"}}`))
+	}))
+	defer provider.Close()
+	directory := t.TempDir()
+	if err := configuration.Set(directory, "integrations.tmdb.url", provider.URL); err != nil {
+		t.Fatal(err)
+	}
+	configured, err := configuration.Load(directory, "", func(string) (string, bool) { return "", false })
+	if err != nil {
+		t.Fatal(err)
+	}
+	handler := server.New(server.Config{DataDir: directory, RequireAuth: true, Configuration: configured})
+	owner := signInTestProfile(t, handler, "/setup", "name=Owner&password=owner-password")
+	response := apiCall(t, handler, owner.Value, http.MethodPut, "/api/v1/configuration/integrations.tmdb", map[string]string{"token": token})
+	loaded, err := configuration.Load(directory, "", func(string) (string, bool) { return "", false })
+	if response.Code != http.StatusConflict || requests.Load() != 0 || err != nil || loaded.String("integrations.tmdb.token") != "" {
+		t.Fatalf("custom TMDB token check sent %d requests or persisted a token: status=%d err=%v", requests.Load(), response.Code, err)
+	}
+	fresh := t.TempDir()
+	defaultConfig, err := configuration.Load(fresh, "", func(string) (string, bool) { return "", false })
+	if err != nil {
+		t.Fatal(err)
+	}
+	defaultHandler := server.New(server.Config{DataDir: fresh, RequireAuth: true, Configuration: defaultConfig})
+	defaultOwner := signInTestProfile(t, defaultHandler, "/setup", "name=Owner&password=owner-password")
+	change := apiCall(t, defaultHandler, defaultOwner.Value, http.MethodPut, "/api/v1/configuration/integrations.tmdb.url", map[string]string{"value": provider.URL})
+	unchanged, err := configuration.Load(fresh, "", func(string) (string, bool) { return "", false })
+	if change.Code != http.StatusConflict || requests.Load() != 0 || err != nil || unchanged.String("integrations.tmdb.url") != "" {
+		t.Fatalf("custom TMDB API address was accepted: status=%d requests=%d err=%v", change.Code, requests.Load(), err)
+	}
+}
 
 func TestOwnerCanSetUpAndManageTMDBAccess(t *testing.T) { //nolint:cyclop,gocognit,funlen // One scenario proves provider validation, adapter parity, persistence, and secret handling.
 	t.Parallel()
@@ -47,7 +87,12 @@ func TestOwnerCanSetUpAndManageTMDBAccess(t *testing.T) { //nolint:cyclop,gocogn
 	if err != nil {
 		t.Fatal(err)
 	}
-	handler := server.New(server.Config{Lifecycle: t.Context(), MediaDir: mediaDir, DataDir: directory, CacheDir: cacheDir, RequireAuth: true, Configuration: configured})
+	handler := server.New(server.Config{Lifecycle: t.Context(), MediaDir: mediaDir, DataDir: directory, CacheDir: cacheDir, RequireAuth: true, Configuration: configured, TMDBCheck: func(_ context.Context, baseURL, candidate string) error {
+		if baseURL != provider.URL || candidate != token {
+			return errors.New("TMDB access rejected")
+		}
+		return nil
+	}})
 	owner := signInTestProfile(t, handler, "/setup", "name=Owner&password=owner-password")
 
 	onboarding := requestWithCookie(t, handler, http.MethodGet, "/onboarding/connection", "", owner)
