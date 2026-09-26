@@ -57,6 +57,9 @@ struct AppShell: View {
                 // Visible requests take priority over background catalog warmup.
                 do { try await Task.sleep(for: .milliseconds(100)) }
                 catch { return }
+                #if os(tvOS)
+                await client.warmCatalog()
+                #else
                 let mode = PlayerMode.stored(UserDefaults.standard.string(forKey: PlayerMode.storageKey(session.profileKey ?? "")))
                 let savedTabs = UserDefaults.standard.string(forKey: mode.other.tabsKey(session.profileKey ?? ""))
                 let landingTab = savedTabs.flatMap { try? PlayerTab.parse($0).first } ?? .home
@@ -72,6 +75,7 @@ struct AppShell: View {
                                                                refreshID: refreshed && currentSession.contentRevision == contentRevision ? contentRevision.uuidString : nil)
                     }
                 }
+                #endif
             }
             .task(id: scenePhase) { if scenePhase == .active { await session.casting.monitor() } }
             #if os(tvOS)

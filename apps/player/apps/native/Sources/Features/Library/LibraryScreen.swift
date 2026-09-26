@@ -7,13 +7,14 @@ struct LibraryScreen: View {
     private let searchViews: [LibraryView]?
     private let mode: PlayerMode?
     @State private var query = ""
-    @State private var showsLetterJump = false
     #if os(iOS)
+    @State private var showsLetterJump = false
     @State private var showsSearch = false
     #endif
     #if os(tvOS)
     @State private var quickPlay: ScreenDestination?
     @State private var needsFirstCardFocus = true
+    @State private var focusedLetter: String?
     #endif
     @State private var selection: LibraryView
     @State private var sort = LibrarySort.title
@@ -57,6 +58,7 @@ struct LibraryScreen: View {
     }
 
     private var libraryContent: some View {
+        ScrollViewReader { scroll in
         ScrollView {
             VStack(alignment: .leading, spacing: 24) {
                 #if os(tvOS)
@@ -73,30 +75,6 @@ struct LibraryScreen: View {
                     HStack(spacing: 16) { filters }
                     VStack(alignment: .leading, spacing: 16) { filters }
                 }
-                #if os(tvOS)
-                if !jumpLetters.isEmpty {
-                    VStack(alignment: .leading, spacing: 8) {
-                        Text("Jump to title").font(.callout).foregroundStyle(KinoTheme.muted)
-                        ScrollView(.horizontal) {
-                            LazyHStack(spacing: 8) {
-                                ForEach(jumpLetters) { letter in
-                                    Button(letter.label) {
-                                        Task { await load(reset: true, start: letter.offset) }
-                                    }
-                                    .buttonStyle(.bordered)
-                                    .tint(KinoTheme.secondaryControlTint)
-                                    .secondaryControlForeground()
-                                    .accessibilityLabel("\(letter.label), \(letter.count) \(letter.count == 1 ? "title" : "titles")")
-                                }
-                            }
-                            .padding(.vertical, 16)
-                        }
-                        .scrollIndicators(.hidden)
-                        .scrollClipDisabled()
-                        .focusSection()
-                    }
-                }
-                #endif
                 if visibleItems.isEmpty {
                     if visiblePage == nil && (loading || loadedKey == nil && failure == nil) { LoadingState(layout: selection == .music || selection == .audiobooks ? .squareGrid : .grid) }
                     else if let failure { RetryState(message: failure) { Task { await load(reset: true) } } }
@@ -114,6 +92,7 @@ struct LibraryScreen: View {
                     }, onQuickPlay: { quickPlay = $0 },
                     requestFirstCardFocus: !searchMode && needsFirstCardFocus,
                     opensShows: selection == .shows)
+                    .id("library-results")
                     #else
                     if let page = visiblePage {
                         Text("\(page.total.formatted()) \(page.total == 1 ? "title" : "titles")")
@@ -123,27 +102,58 @@ struct LibraryScreen: View {
                     #endif
                     if let failure { Text(failure).foregroundStyle(KinoTheme.muted) }
                     if let page = visiblePage, page.offset + page.items.count < page.total {
+                        #if os(tvOS)
+                        if failure != nil {
+                            Button("Try again") {
+                                Task {
+                                    if let focusedLetter, let letter = jumpLetters.first(where: { $0.label == focusedLetter }) {
+                                        await load(reset: true, start: letter.offset)
+                                    } else { await load(reset: false) }
+                                }
+                            }
+                            .buttonStyle(.bordered).tint(KinoTheme.secondaryControlTint).secondaryControlForeground()
+                        }
+                        #else
                         Button(loading ? "Loading more…" : "Load more") { Task { await load(reset: false) } }
                             .buttonStyle(.bordered).buttonBorderShape(.capsule).tint(KinoTheme.secondaryControlTint).secondaryControlForeground().disabled(loading)
+                        #endif
                     }
                 }
             }
             .padding(.horizontal, KinoTheme.contentPadding)
             .padding(.vertical, 24)
+            #if os(tvOS)
+            .padding(.trailing, jumpLetters.isEmpty ? 0 : 72)
+            #endif
         }
         #if os(tvOS)
         .scrollClipDisabled()
+        .overlay(alignment: .trailing) {
+            if !jumpLetters.isEmpty {
+                TVLetterIndex(letters: jumpLetters, onFocus: { focusedLetter = $0 }) { letter in
+                    guard letter.offset != page?.offset else { return }
+                    Task { await load(reset: true, start: letter.offset) }
+                }
+                .padding(.trailing, 16)
+            }
+        }
+        .onChange(of: page?.offset) { _, _ in
+            if focusedLetter != nil { scroll.scrollTo("library-results", anchor: .top) }
+        }
         #endif
+        }
         .cinemaBackground()
         #if os(iOS)
         .searchable(text: $query, isPresented: $showsSearch,
                     prompt: mode == .watch ? "Search movies and shows" : mode == .listen ? "Search music and audiobooks" : "Search your library")
         #endif
+        #if os(iOS)
         .sheet(isPresented: $showsLetterJump) {
             LetterJumpSheet(letters: visiblePage?.letters ?? []) { letter in
                 Task { await load(reset: true, start: letter.offset) }
             }
         }
+        #endif
         #if os(tvOS)
         .navigationTitle("")
         .navigationDestination(item: $quickPlay) { DestinationScreen(destination: $0) }
@@ -169,14 +179,6 @@ struct LibraryScreen: View {
         }
         .refreshable { await load(reset: true, force: true) }
         .toolbar {
-            #if os(tvOS)
-            if !jumpLetters.isEmpty {
-                ToolbarItem(placement: .primaryAction) {
-                    Button("A–Z", systemImage: "textformat.abc") { showsLetterJump = true }
-                        .accessibilityLabel("Jump to title")
-                }
-            }
-            #endif
             if selection == .music {
                 ToolbarItem(placement: .primaryAction) {
                     NavigationLink("Albums", value: ScreenDestination.music)
@@ -190,25 +192,7 @@ struct LibraryScreen: View {
         Picker("Library", selection: $selection) {
             ForEach(searchViews ?? LibraryView.allCases) { Text($0.title).tag($0) }
         }
-        #else
-        if searchMode, let searchViews {
-            Picker("Search in", selection: $selection) {
-                ForEach(searchViews) { Text($0.title).tag($0) }
-            }.pickerStyle(.menu).tint(KinoTheme.secondaryControlTint).secondaryControlForeground()
-        } else {
-            NavigationLink { LibraryHubScreen(mode: mode) } label: { Label("Browse library", systemImage: "square.grid.2x2") }
-                .buttonStyle(.bordered).tint(KinoTheme.secondaryControlTint).secondaryControlForeground()
-        }
-        #endif
-        #if os(tvOS)
-        Menu {
-            sortPicker
-        } label: { Label("Sort: \(sort.title)", systemImage: "arrow.up.arrow.down") }
-            .tint(KinoTheme.secondaryControlTint).secondaryControlForeground()
-        #else
         sortPicker
-        #endif
-        #if os(iOS)
         if let page = visiblePage, !page.letters.isEmpty, sort == .title {
             Button { showsLetterJump = true } label: {
                 Label("A–Z", systemImage: "textformat.abc")
@@ -218,6 +202,16 @@ struct LibraryScreen: View {
             .tint(KinoTheme.secondaryControlTint)
             .secondaryControlForeground()
         }
+        #else
+        if searchMode, let searchViews {
+            Picker("Search in", selection: $selection) {
+                ForEach(searchViews) { Text($0.title).tag($0) }
+            }.pickerStyle(.menu).tint(KinoTheme.secondaryControlTint).secondaryControlForeground()
+        }
+        Menu {
+            sortPicker
+        } label: { Label("Sort: \(sort.title)", systemImage: "arrow.up.arrow.down") }
+            .tint(KinoTheme.secondaryControlTint).secondaryControlForeground()
         #endif
     }
 
