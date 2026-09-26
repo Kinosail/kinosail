@@ -115,6 +115,7 @@ struct MediaItem: Codable, Identifiable, Hashable, Sendable {
 
     var poster: String { show.isEmpty ? artwork : "/art/\(id)" }
     var isAudio: Bool { kind == .music || kind == .audiobook }
+    var isUnwatched: Bool { (kind == .video || kind == .show) && !progress.watched }
     var playLabel: String {
         if kind == .photo { return "View photo" }
         if kind == .book { return "Read" }

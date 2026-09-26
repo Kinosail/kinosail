@@ -14,7 +14,6 @@ struct LibraryScreen: View {
     #endif
     #if os(tvOS)
     @State private var quickPlay: ScreenDestination?
-    @State private var needsFirstCardFocus = true
     @State private var focusedLetter: String?
     #endif
     @State private var selection: LibraryView
@@ -86,12 +85,11 @@ struct LibraryScreen: View {
                 } else {
                     #if os(tvOS)
                     MediaGrid(landscape: selection == .photos, items: visibleItems, onFocus: { item in
-                        needsFirstCardFocus = false
                         if failure == nil && LibraryFocusPaging.shouldLoadNextPage(focusedID: item.id, items: visibleItems, page: visiblePage) {
                             Task { await load(reset: false) }
                         }
                     }, onQuickPlay: { quickPlay = $0 },
-                    requestFirstCardFocus: !searchMode && needsFirstCardFocus,
+                    requestFirstCardFocus: !searchMode,
                     opensShows: selection == .shows)
                     .id("library-results")
                     #else
