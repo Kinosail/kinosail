@@ -7,9 +7,9 @@ test("Owner sees real coverage, wanted files, and a focused setup path", { tag: 
   await expect(page.getByRole("heading", { name: "Overview", exact: true })).toBeVisible();
   await expect(page.getByRole("region", { name: "Subtitle coverage" })).toContainText(/\d+%/);
   await expect(page.getByRole("meter", { name: "Subtitle coverage" })).toHaveAttribute("aria-valuetext", /\d+ of \d+ files ready/);
-  await expect(page.getByRole("button", { name: /Find and improve subtitles/ })).toBeVisible();
-  await expect(page.locator(".subtitle-system-state")).toContainText("Ready");
-  await page.locator(".subtitle-system > summary").click();
+  await expect(page.getByRole("link", { name: /Connect a subtitle source/ })).toHaveAttribute("href", "/settings#provider");
+  await expect(page.locator(".subtitle-system-state")).toContainText("Needs one correction");
+  await expect(page.locator(".subtitle-system")).toHaveAttribute("open", "");
   await expect(page.getByText("Local embedded text extraction is available", { exact: true })).toBeVisible();
   await expect(page.getByRole("heading", { name: "Server readiness" })).toBeVisible();
   await expect(page.getByText("Media library readable", { exact: true })).toBeVisible();
