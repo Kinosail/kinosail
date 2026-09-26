@@ -86,7 +86,9 @@ func preferredSubtitleTracks(tracks []subtitleTrack, languages []string, prefere
 			}
 		}
 	}
-	selectDefaultTextSubtitle(selected, enabled)
+	for index := range selected {
+		selected[index].Default = enabled && index == 0
+	}
 	return selected
 }
 

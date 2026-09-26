@@ -25,7 +25,7 @@ func TestSubtitleSettingsCleanupJourney(t *testing.T) { //nolint:cyclop // The p
 		t.Fatalf("set languages: %d %s", response.Code, response.Body.String())
 	}
 	settings := requestApp(t, handler, http.MethodGet, "/settings", "")
-	if settings.Code != http.StatusOK || !strings.Contains(settings.Body.String(), "Delete subtitle languages") || !strings.Contains(settings.Body.String(), `name="forced"`) {
+	if settings.Code != http.StatusOK || !strings.Contains(settings.Body.String(), "Remove unwanted subtitle files") || !strings.Contains(settings.Body.String(), "playback has fewer choices") || !strings.Contains(settings.Body.String(), `name="forced"`) {
 		t.Fatalf("cleanup setting: %d %s", settings.Code, settings.Body.String())
 	}
 	preview := requestApp(t, handler, http.MethodGet, "/settings/subtitles/cleanup?enabled=on&language=en&forced=keep", "")
