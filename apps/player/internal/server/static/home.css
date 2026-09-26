@@ -29,6 +29,11 @@
   body .nav-more-menu :is(a,button):hover{background:var(--surface-2)}
 }
 body .library-shell{padding:1.5rem clamp(1.25rem,4vw,4rem) 4rem}
+body.library-page .library-masthead:not(.browse-masthead){min-height:0;margin-bottom:1rem;padding:1.25rem 0 0}
+body.library-page .library-masthead:not(.browse-masthead) h2{font-size:clamp(2rem,2.5vw,2.5rem)}
+body.library-page .library-masthead:not(.browse-masthead) p{margin-top:.4rem}
+.library-shell>.browse-toolbar{margin:.5rem 0 1rem;padding:.5rem 0}
+.library-shell>.title-jump{margin-bottom:1rem}
 .home-sections{display:flex;gap:2rem;margin:0 0 1.5rem}
 .home-sections a{display:inline-flex;align-items:center;min-height:48px;text-decoration:none;color:var(--muted);font-weight:600;border-bottom:2px solid transparent}
 .home-sections a[aria-current]{color:var(--signal);border-color:var(--signal)}
