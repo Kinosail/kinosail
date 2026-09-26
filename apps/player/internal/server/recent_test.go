@@ -31,11 +31,10 @@ func TestHomeShowsRecentlyAddedInNewestFirstOrder(t *testing.T) {
 	response := httptest.NewRecorder()
 	server.New(server.Config{MediaDir: mediaDir}).ServeHTTP(response, httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/", nil))
 	body := response.Body.String()
-	start, end := strings.Index(body, "Recently added"), strings.Index(body, `<section class="destination-browser"`)
-	if start < 0 || end < 0 {
+	recent := regexp.MustCompile(`(?s)<section class="home-shelf" data-home-shelf="recent-movies".*?</section>`).FindString(body)
+	if recent == "" {
 		t.Fatalf("home has no recent shelf: %q", body)
 	}
-	recent := body[start:end]
 
 	if strings.Index(recent, ">New<") > strings.Index(recent, ">Old<") {
 		t.Fatalf("recent = %q", recent)
@@ -100,11 +99,10 @@ func TestHomePrioritizesVisibleRecentArtwork(t *testing.T) {
 	response := httptest.NewRecorder()
 	server.New(server.Config{MediaDir: mediaDir}).ServeHTTP(response, httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/", nil))
 	body := response.Body.String()
-	start, end := strings.Index(body, "Recently added"), strings.Index(body, `<section class="destination-browser"`)
-	if start < 0 || end < 0 {
+	recent := regexp.MustCompile(`(?s)<section class="home-shelf" data-home-shelf="recent-movies".*?</section>`).FindString(body)
+	if recent == "" {
 		t.Fatalf("home has no recent shelf: %q", body)
 	}
-	recent := body[start:end]
 	if strings.Count(recent, `fetchpriority="high"`) != 2 || strings.Count(recent, `loading="lazy"`) != 1 {
 		t.Fatalf("recent artwork loading = %q", recent)
 	}
