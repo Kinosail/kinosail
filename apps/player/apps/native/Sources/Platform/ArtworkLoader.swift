@@ -23,7 +23,7 @@ actor ArtworkLoader {
 
     func image(path: String, client: ServerClient, dimension: Int = 1600) async throws -> CGImage {
         try Task.checkCancellation()
-        guard [400, 800, 1600, 4096].contains(dimension) else { throw ClientError.invalidInput("The artwork size is invalid.") }
+        guard [400, 500, 800, 1600, 4096].contains(dimension) else { throw ClientError.invalidInput("The artwork size is invalid.") }
         let url = try client.server.mediaURL(path)
         guard ["/art/", "/episode-art/", "/backdrop/", "/person/", "/media/"].contains(where: { url.path.hasPrefix($0) }) else {
             throw ClientError.invalidResponse
@@ -102,7 +102,7 @@ actor ArtworkLoader {
     }
 
     static func decodedThumbnail(_ data: Data, dimension: Int) throws -> CGImage {
-        guard [400, 800, 1600, 4096].contains(dimension), data.count <= 32 * 1024 * 1024 else { throw ClientError.invalidResponse }
+        guard [400, 500, 800, 1600, 4096].contains(dimension), data.count <= 32 * 1024 * 1024 else { throw ClientError.invalidResponse }
         guard let source = CGImageSourceCreateWithData(data as CFData, [kCGImageSourceShouldCache: false] as CFDictionary),
               CGImageSourceGetCount(source) <= 256,
               let properties = CGImageSourceCopyPropertiesAtIndex(source, 0, nil) as? [CFString: Any],
