@@ -211,6 +211,7 @@ func TestOwnerKillSwitchFailsPublicAccessClosedAndPersists(t *testing.T) { //nol
 	if response := serveRequest(handler, requestWithCookieRequest(t, http.MethodGet, "/", "", owner)); response.Code != http.StatusOK {
 		t.Fatalf("local access after kill = %d %q", response.Code, response.Body.String())
 	}
+	assertAPIBody(t, requestWithCookie(t, handler, http.MethodGet, "/settings", "", owner), http.StatusOK, "Allow public access now")
 	reopened, err := remoteaccess.New(config, remoteaccess.Dependencies{Certificate: func(*tls.ClientHelloInfo) (*tls.Certificate, error) { return nil, nil }})
 	if err != nil || reopened.Status().State != "killed" {
 		t.Fatalf("persisted kill switch = %#v, %v", reopened, err)
@@ -219,7 +220,7 @@ func TestOwnerKillSwitchFailsPublicAccessClosedAndPersists(t *testing.T) { //nol
 		t.Fatal(err)
 	}
 	reset := serveRequest(handler, requestWithCookieRequest(t, http.MethodDelete, "/api/v1/remote-access/kill", "", owner))
-	if reset.Code != http.StatusNoContent || manager.Status().State != "restart-required" {
+	if reset.Code != http.StatusNoContent || manager.Status().State != "starting" {
 		t.Fatalf("reset kill switch = %d %q status=%#v", reset.Code, reset.Body.String(), manager.Status())
 	}
 	if _, err := os.Stat(filepath.Join(dataDir, "remote-access.disabled")); !os.IsNotExist(err) {

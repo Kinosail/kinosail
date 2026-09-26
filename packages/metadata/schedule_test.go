@@ -15,12 +15,12 @@ func TestScheduleCoalescesRefreshJobs(t *testing.T) {
 	var observed func([]library.Item)
 	var calls atomic.Int32
 	release := make(chan struct{})
-	Schedule(ctx, true, func(callback func([]library.Item)) { observed = callback }, func(context.Context) error {
+	trigger := Schedule(ctx, true, func(callback func([]library.Item)) { observed = callback }, func(context.Context) error {
 		calls.Add(1)
 		<-release
 		return nil
 	})
-	if observed == nil {
+	if observed == nil || trigger == nil {
 		t.Fatal("scan observer was not registered")
 	}
 	observed(nil)
@@ -33,6 +33,8 @@ func TestScheduleCoalescesRefreshJobs(t *testing.T) {
 	if calls.Load() != 2 {
 		t.Fatalf("refresh calls = %d, want 2", calls.Load())
 	}
+	trigger()
+	waitForRefreshCalls(t, &calls, 3)
 }
 
 func TestScheduleRejectsUnavailableOrMissingAdapters(t *testing.T) {
@@ -40,10 +42,9 @@ func TestScheduleRejectsUnavailableOrMissingAdapters(t *testing.T) {
 	called := false
 	observe := func(func([]library.Item)) { called = true }
 	refresh := func(context.Context) error { called = true; return nil }
-	Schedule(t.Context(), false, observe, refresh)
-	Schedule(nil, true, observe, refresh) //nolint:staticcheck // Explicitly proves nil is rejected.
-	Schedule(t.Context(), true, nil, refresh)
-	Schedule(t.Context(), true, observe, nil)
+	if Schedule(t.Context(), false, observe, refresh) != nil || Schedule(nil, true, observe, refresh) != nil || Schedule(t.Context(), true, nil, refresh) != nil || Schedule(t.Context(), true, observe, nil) != nil { //nolint:staticcheck // Explicitly proves nil is rejected.
+		t.Fatal("invalid schedule returned a trigger")
+	}
 	if called {
 		t.Fatal("invalid schedule registered or ran work")
 	}

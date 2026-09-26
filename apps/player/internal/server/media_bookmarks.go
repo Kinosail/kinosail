@@ -5,6 +5,7 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"errors"
+	"io"
 	"net/http"
 	"slices"
 	"strings"
@@ -37,7 +38,7 @@ func readBookmark(writer http.ResponseWriter, request *http.Request, index *libr
 		return mediaBookmark{}, false
 	}
 	random := make([]byte, 32)
-	if _, err := rand.Read(random); err != nil {
+	if _, err := io.ReadFull(rand.Reader, random); err != nil {
 		apiError(writer, errMediaExperience, http.StatusInternalServerError)
 		return mediaBookmark{}, false
 	}

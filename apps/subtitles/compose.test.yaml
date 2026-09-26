@@ -13,4 +13,4 @@ services:
       KINOSAIL_TMDB_TOKEN: local-synthetic-test-catalogue
       KINOSAIL_BACKUP_KEY: local-test-instance-backup-key
     volumes:
-      - "${KINOSAIL_TEST_ROOT:-./.kinosail-test}/media:/media:ro"
+      - "${KINOSAIL_TEST_ROOT:-./.kinosail-test}/media:/media:rw"

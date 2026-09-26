@@ -1,16 +1,109 @@
 import AxeBuilder from "@axe-core/playwright";
 import { expect, test } from "@playwright/test";
+import { access, unlink, writeFile } from "node:fs/promises";
+import { join } from "node:path";
 import { compactViewports, expectNoHorizontalOverflow, expectSkipLinkOffscreen, initiallyOccludedTargets, occludedTargets, setSubtitleLanguages, supportedViewports } from "./subtitle-dashboard-helpers";
 
 export function registerSubtitleLanguageTests() {
+test("Owner deletes other languages and English forced subtitles from a populated library", async ({ page }, testInfo) => {
+  const root = process.env.KINOSAIL_TEST_ROOT;
+  const containerMedia = process.env.KINOSAIL_E2E_MEDIA_DIR;
+  if (!root && !containerMedia) throw new Error("populated test media root is unavailable");
+  const media = containerMedia ?? join(root!, "media", "Movies");
+  const title = containerMedia ? "Arrival" : "Example Movie";
+  const kept = containerMedia ? `${title}.en.srt` : `${title}.vtt`;
+  const spanish = join(media, `${title}.es.srt`);
+  const forced = join(media, `${title}.en.forced.srt`);
+  const addedEnglish = containerMedia ? undefined : join(media, `${title}.en.srt`);
+  const rescan = () => page.evaluate(async () => {
+    const csrf = document.querySelector<HTMLMetaElement>('meta[name="kinosail-csrf"]')?.content ?? "";
+    return (await fetch("/scan", { method: "POST", headers: { "X-Kinosail-CSRF": csrf } })).status;
+  });
+  await writeFile(spanish, "1\n00:00:01,000 --> 00:00:02,000\nHola\n");
+  await writeFile(forced, "1\n00:00:01,000 --> 00:00:02,000\nSigns\n");
+  if (addedEnglish) await writeFile(addedEnglish, "1\n00:00:01,000 --> 00:00:02,000\nHello\n");
+  try {
+    expect(await rescan()).toBe(200);
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto("/settings#cleanup");
+    await page.getByLabel("Enable subtitle language cleanup").check();
+    await page.getByLabel("Languages to keep").selectOption(["en"]);
+    await page.getByLabel("Forced subtitles in every language").selectOption("delete");
+    await page.getByRole("button", { name: "Preview files to delete" }).click();
+    await expect(page.getByRole("heading", { name: "2 subtitle files to delete" })).toBeVisible();
+    await expect(page.getByText(`${title}.es.srt`)).toBeVisible();
+    await expect(page.getByText(`${title}.en.forced.srt`)).toBeVisible();
+    await expectNoHorizontalOverflow(page);
+    await page.screenshot({ path: testInfo.outputPath("390-populated-subtitle-cleanup-preview.png"), fullPage: true });
+    await page.getByRole("button", { name: "Delete 2 subtitle files" }).click();
+    await expect(page.getByRole("heading", { name: "Subtitle cleanup complete" })).toBeVisible();
+    await expect(page.getByText("en is now your preferred language. Deleted 2 subtitle files.")).toBeVisible();
+    await expect(access(spanish)).rejects.toMatchObject({ code: "ENOENT" });
+    await expect(access(forced)).rejects.toMatchObject({ code: "ENOENT" });
+    await access(join(media, kept));
+    const library = await page.request.get("/api/v1/library?view=movies");
+    expect(library.ok()).toBeTruthy();
+    const items = (await library.json()) as { items?: Array<{ id?: string; title?: string }> };
+    const movie = items.items?.find((item) => item.title === title);
+    expect(movie?.id, `${title} is in the playable library`).toBeTruthy();
+    await page.goto(`/watch/${movie!.id}`);
+    await page.getByRole("button", { name: "Settings", exact: true }).click();
+    await expect(page.locator("[data-subtitles] option")).toHaveCount(2);
+  } finally {
+    await Promise.all([unlink(spanish).catch(() => {}), unlink(forced).catch(() => {})]);
+    if (addedEnglish) await unlink(addedEnglish).catch(() => {});
+    await rescan().catch(() => {});
+  }
+});
+
+test("Owner previews language cleanup and forced subtitle choice", async ({ page }, testInfo) => {
+  for (const viewport of [{ width: 390, height: 844 }, { width: 1440, height: 900 }]) {
+    await page.setViewportSize(viewport);
+    await page.goto("/settings#cleanup");
+    const cleanup = page.locator("#cleanup");
+    await expect(cleanup.getByRole("heading", { name: "Delete subtitle languages" })).toBeVisible();
+    await expect(cleanup.getByLabel("Enable subtitle language cleanup")).not.toBeChecked();
+    await cleanup.getByLabel("Enable subtitle language cleanup").check();
+    await cleanup.getByLabel("Languages to keep").selectOption(["en", "es"]);
+    await cleanup.getByLabel("Forced subtitles in every language").selectOption("keep");
+    await expectNoHorizontalOverflow(page);
+    expect((await new AxeBuilder({ page }).include("#cleanup").analyze()).violations).toEqual([]);
+    await page.screenshot({ path: testInfo.outputPath(`${viewport.width}-subtitle-cleanup-setting.png`), fullPage: true });
+    await cleanup.getByRole("button", { name: "Preview files to delete" }).click();
+    await expect(page.getByRole("heading", { name: "Subtitle cleanup" })).toBeVisible();
+    await expect(page.getByText("Keep forced subtitles in every language.")).toBeVisible();
+    await expect(page.getByText("Keep en, es subtitles and set these as your preferred languages.", { exact: false })).toBeVisible();
+    await expect(page.getByRole("button", { name: "Save selected languages" })).toBeVisible();
+    await expectNoHorizontalOverflow(page);
+    expect((await new AxeBuilder({ page }).include("main").analyze()).violations).toEqual([]);
+    await page.screenshot({ path: testInfo.outputPath(`${viewport.width}-subtitle-cleanup-preview.png`), fullPage: true });
+  }
+  await page.evaluate(() => localStorage.setItem("kinosail-theme", "light"));
+  await page.goto("/settings#cleanup");
+  await expect(page.locator("html")).toHaveAttribute("data-theme", "light");
+  expect((await new AxeBuilder({ page }).include("#cleanup").analyze()).violations).toEqual([]);
+  await page.screenshot({ path: testInfo.outputPath("subtitle-cleanup-light.png"), fullPage: true });
+  await page.emulateMedia({ forcedColors: "active" });
+  expect((await new AxeBuilder({ page }).include("#cleanup").analyze()).violations).toEqual([]);
+});
+
 test("Owner sees real coverage, wanted files, and a focused setup path", { tag: "@smoke" }, async ({ page }) => {
   await expect(page.getByRole("heading", { name: "Overview", exact: true })).toBeVisible();
   await expect(page.getByRole("region", { name: "Subtitle coverage" })).toContainText(/\d+%/);
   await expect(page.getByRole("meter", { name: "Subtitle coverage" })).toHaveAttribute("aria-valuetext", /\d+ of \d+ files ready/);
-  await expect(page.getByRole("button", { name: /Find and improve subtitles/ })).toBeVisible();
-  await expect(page.locator(".subtitle-system-state")).toContainText("Ready");
-  await page.locator(".subtitle-system > summary").click();
-  await expect(page.getByText("Local embedded text extraction is available", { exact: true })).toBeVisible();
+  const inventory = await page.evaluate(async () => (await fetch("/api/v1/subtitle-library?view=summary")).json());
+  if (inventory.providerReady) {
+    await expect(page.getByRole("button", { name: /Find and improve subtitles/ })).toBeVisible();
+  } else {
+    await expect(page.getByRole("link", { name: /Connect a subtitle source/ })).toHaveAttribute("href", "/settings#provider");
+  }
+  await expect(page.locator(".subtitle-system-state")).toContainText(inventory.readiness.state);
+  if (inventory.readiness.correction) {
+    await expect(page.locator(".subtitle-system")).toHaveAttribute("open", "");
+  } else {
+    await page.locator(".subtitle-system > summary").click();
+  }
+  await expect(page.getByText(inventory.readiness.checks.find((check: { name: string }) => check.name === "Subtitle sources configured").detail, { exact: true })).toBeVisible();
   await expect(page.getByRole("heading", { name: "Server readiness" })).toBeVisible();
   await expect(page.getByText("Media library readable", { exact: true })).toBeVisible();
   await expect(page.getByText("Last successful subtitle write", { exact: true })).toBeVisible();
@@ -54,18 +147,16 @@ test("Owner manages an ordered preferred-language list at every supported width"
   await page.evaluate(async () => { await document.fonts.ready; });
   await page.waitForTimeout(250);
   const initialGeometry = await languageSection.evaluate((section) => {
-    const navigationBox = document.querySelector<HTMLElement>(".app-header nav")?.getBoundingClientRect();
     const controls = [...section.querySelectorAll<HTMLElement>("button, select")];
-    const overlaps = (left: DOMRect, right: DOMRect) => left.bottom > right.top && left.top < right.bottom && left.right > right.left && left.left < right.right;
     return {
       smallTouchTarget: controls.some((control) => {
         const box = control.getBoundingClientRect();
         return box.width < 44 || box.height < 44;
       }),
-      navigationControlOverlap: navigationBox ? controls.some((control) => overlaps(control.getBoundingClientRect(), navigationBox)) : false,
     };
   });
-  expect(initialGeometry).toEqual({ smallTouchTarget: false, navigationControlOverlap: false });
+  expect(initialGeometry).toEqual({ smallTouchTarget: false });
+  expect(await occludedTargets(page, ["#language button", "#language select"], [".app-header nav"])).toEqual([]);
 
   await addLanguage.focus();
   await expect(addLanguage).toBeFocused();

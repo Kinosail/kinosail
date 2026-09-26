@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"path/filepath"
 	"sync"
+	"sync/atomic"
 	"time"
 
 	"github.com/MikeO7/kinosail-player/internal/database"
@@ -22,6 +23,7 @@ type metadataStore struct {
 	mu          sync.RWMutex
 	file, cache string
 	config      MetadataConfig
+	active      atomic.Pointer[MetadataConfig]
 	records     map[string]metadataRecord
 	client      *http.Client
 	tvmaze      *sharedmetadata.TVMazeProvider
@@ -33,6 +35,7 @@ func newMetadataStore(config MetadataConfig, dataDir, cache string, databases ..
 	stateDB := configuredDatabase(databases)
 	config = sharedmetadata.NormalizeConfig(config)
 	store := &metadataStore{cache: cache, config: config, records: make(map[string]metadataRecord), client: localIntegrationHTTPClient(15 * time.Second), tvmaze: sharedmetadata.NewTVMazeProvider(config.TVMazeURL, ApplicationVersion), persist: statePersistence(stateDB)}
+	store.active.Store(&config)
 	store.load(dataDir, stateDB)
 	return store
 }
@@ -49,7 +52,27 @@ func (store *metadataStore) load(dataDir string, stateDB *database.Store) {
 }
 
 func (store *metadataStore) configured() bool {
-	return sharedmetadata.Configured(store.cache, store.config.Token, store.config.URL, store.config.ImageURL)
+	config := store.config
+	if current := store.active.Load(); current != nil {
+		config = *current
+	}
+	return sharedmetadata.Configured(store.cache, config.Token, config.URL, config.ImageURL)
+}
+
+// providerSnapshot keeps one provider configuration throughout a metadata request.
+func (store *metadataStore) providerSnapshot() *metadataStore {
+	config := store.config
+	if current := store.active.Load(); current != nil {
+		config = *current
+	}
+	return &metadataStore{cache: store.cache, config: config, client: store.client, tvmaze: store.tvmaze}
+}
+
+func (store *metadataStore) configureTMDB(token, url, imageURL string) {
+	config := *store.active.Load()
+	config.Token, config.URL, config.ImageURL = token, url, imageURL
+	config = sharedmetadata.NormalizeConfig(config)
+	store.active.Store(&config)
 }
 
 func (store *metadataStore) available() bool { return store.configured() || store.tvmaze != nil }
@@ -113,7 +136,7 @@ func (store *metadataStore) refreshHandler(index *libraryIndex) http.HandlerFunc
 }
 
 func (store *metadataStore) fetch(ctx context.Context, item library.Item) error {
-	record, err := store.fetchRecord(ctx, item)
+	record, err := store.providerSnapshot().fetchRecord(ctx, item)
 	if err != nil {
 		return err
 	}
