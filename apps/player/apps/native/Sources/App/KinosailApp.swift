@@ -30,7 +30,7 @@ struct KinosailApp: App {
 
     var body: some Scene {
         WindowGroup {
-            AppShell()
+            LaunchingAppShell()
                 .tint(KinoTheme.signal)
                 #if os(tvOS)
                 .modifier(TopShelfPublishing())
@@ -39,6 +39,42 @@ struct KinosailApp: App {
                 #endif
                 .environment(session)
                 .onOpenURL { url in Task { await session.restore(); session.handleIncomingURL(url) } }
+        }
+    }
+}
+
+private struct LaunchingAppShell: View {
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @State private var showingLaunch = true
+
+    var body: some View {
+        ZStack {
+            AppShell()
+                .accessibilityHidden(showingLaunch)
+            if showingLaunch {
+                ZStack {
+                    Color.black.ignoresSafeArea()
+                    Image("LaunchMark")
+                        .resizable()
+                        .scaledToFit()
+                        #if os(tvOS)
+                        .frame(width: 160, height: 206)
+                        #else
+                        .frame(width: 100, height: 129)
+                        #endif
+                        .accessibilityLabel("Kinosail Player")
+                }
+                .transition(.opacity)
+            }
+        }
+        .task {
+            do { try await Task.sleep(for: .milliseconds(250)) }
+            catch { return }
+            if reduceMotion {
+                showingLaunch = false
+            } else {
+                withAnimation(.easeOut(duration: 0.45)) { showingLaunch = false }
+            }
         }
     }
 }
