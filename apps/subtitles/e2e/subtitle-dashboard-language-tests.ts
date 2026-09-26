@@ -1,8 +1,45 @@
 import AxeBuilder from "@axe-core/playwright";
 import { expect, test } from "@playwright/test";
+import { access, unlink, writeFile } from "node:fs/promises";
+import { join } from "node:path";
 import { compactViewports, expectNoHorizontalOverflow, expectSkipLinkOffscreen, initiallyOccludedTargets, occludedTargets, setSubtitleLanguages, supportedViewports } from "./subtitle-dashboard-helpers";
 
 export function registerSubtitleLanguageTests() {
+test("Owner deletes other languages and English forced subtitles from a populated library", async ({ page }, testInfo) => {
+  const root = process.env.KINOSAIL_TEST_ROOT;
+  if (!root) throw new Error("populated test media root is unavailable");
+  const media = join(root, "media", "Movies");
+  const spanish = join(media, "Example Movie.es.srt");
+  const forced = join(media, "Example Movie.en.forced.srt");
+  const rescan = () => page.evaluate(async () => {
+    const csrf = document.querySelector<HTMLMetaElement>('meta[name="kinosail-csrf"]')?.content ?? "";
+    return (await fetch("/scan", { method: "POST", headers: { "X-Kinosail-CSRF": csrf } })).status;
+  });
+  await writeFile(spanish, "1\n00:00:01,000 --> 00:00:02,000\nHola\n");
+  await writeFile(forced, "1\n00:00:01,000 --> 00:00:02,000\nSigns\n");
+  try {
+    expect(await rescan()).toBe(200);
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto("/settings#cleanup");
+    await page.getByLabel("Forced subtitles in that language").selectOption("delete");
+    await page.getByRole("button", { name: "Preview files to delete" }).click();
+    await expect(page.getByRole("heading", { name: "2 subtitle files to delete" })).toBeVisible();
+    await expect(page.getByText("Example Movie.es.srt")).toBeVisible();
+    await expect(page.getByText("Example Movie.en.forced.srt")).toBeVisible();
+    await expectNoHorizontalOverflow(page);
+    await page.screenshot({ path: testInfo.outputPath("390-populated-subtitle-cleanup-preview.png"), fullPage: true });
+    await page.getByRole("button", { name: "Delete 2 subtitle files" }).click();
+    await expect(page.getByRole("heading", { name: "Subtitle cleanup complete" })).toBeVisible();
+    await expect(page.getByText("en is now your only preferred language. Deleted 2 subtitle files.")).toBeVisible();
+    await expect(access(spanish)).rejects.toMatchObject({ code: "ENOENT" });
+    await expect(access(forced)).rejects.toMatchObject({ code: "ENOENT" });
+    await access(join(media, "Example Movie.vtt"));
+  } finally {
+    await Promise.all([unlink(spanish).catch(() => {}), unlink(forced).catch(() => {})]);
+    await rescan().catch(() => {});
+  }
+});
+
 test("Owner previews language cleanup and forced subtitle choice", async ({ page }, testInfo) => {
   for (const viewport of [{ width: 390, height: 844 }, { width: 1440, height: 900 }]) {
     await page.setViewportSize(viewport);
