@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"net/http"
-	"net/url"
 	"path/filepath"
 	"strings"
 	"time"
@@ -41,18 +40,11 @@ func validTMDBToken(token string) bool {
 }
 
 func checkTMDBToken(ctx context.Context, baseURL, token string) error {
-	if baseURL == "" {
-		baseURL = tmdbDefaultURL
-	}
-	endpoint, err := url.Parse(strings.TrimRight(baseURL, "/") + "/configuration")
-	if err != nil || !validIntegrationEndpoint(endpoint) {
-		return errors.New("TMDB address is invalid")
+	if baseURL != "" && strings.TrimRight(baseURL, "/") != tmdbDefaultURL {
+		return errors.New("TMDB credentials require the official API address")
 	}
 	client := hardenedHTTPClient(15 * time.Second)
-	if baseURL != tmdbDefaultURL {
-		client = localIntegrationHTTPClient(15 * time.Second)
-	}
-	request, err := http.NewRequestWithContext(ctx, http.MethodGet, endpoint.String(), nil)
+	request, err := http.NewRequestWithContext(ctx, http.MethodGet, tmdbDefaultURL+"/configuration", nil)
 	if err != nil {
 		return errors.New("TMDB access could not be checked")
 	}
@@ -88,7 +80,7 @@ func (store *settingsStore) changeTMDBConfiguration(ctx context.Context, token s
 		if !validTMDBToken(token) {
 			return errors.New("enter a valid TMDB API Read Access Token")
 		}
-		if err := checkTMDBToken(ctx, baseURL, token); err != nil {
+		if err := store.tmdbCheck(ctx, baseURL, token); err != nil {
 			return err
 		}
 	}

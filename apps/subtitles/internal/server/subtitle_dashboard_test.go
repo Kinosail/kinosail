@@ -198,6 +198,9 @@ func TestSubtitleAppUsesKinosailSisterSetupAndFocusedSettings(t *testing.T) { //
 		t.Fatalf("onboarding = %d %q", onboarding.Code, onboarding.Body.String())
 	}
 	assertResponseContains(t, "onboarding", onboarding, "Connect a provider. Let Kinosail handle the rest.", "Primary language", `aria-describedby="language-help"`, `value="en" selected`, `value="es-419"`, "needs permission to write", "Connect a subtitle provider", "Create a free account, open its API panel", "Create or sign in to an OpenSubtitles.com account", "open My Profile", `href="/settings/configuration#integrations.subdl.api_key"`, `href="/settings/configuration#integrations.opensubtitles"`, `href="/settings#provider"`, "Not configured", "Finish and open overview")
+	if !strings.Contains(onboarding.Body.String(), "Provider credentials take effect immediately.") || strings.Contains(onboarding.Body.String(), "restart when prompted") {
+		t.Fatal("subtitle provider onboarding still asks for a restart")
+	}
 }
 
 func assertResponseContains(t *testing.T, name string, response *httptest.ResponseRecorder, fragments ...string) {
