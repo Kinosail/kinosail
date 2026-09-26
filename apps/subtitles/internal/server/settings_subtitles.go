@@ -14,6 +14,10 @@ import (
 const maximumSubtitleLanguages = settingsstate.MaximumSubtitleLanguages
 
 func (store *settingsStore) setSubtitleLanguages(languages []string) error {
+	return store.saveSubtitleLanguages(languages, nil)
+}
+
+func (store *settingsStore) saveSubtitleLanguages(languages []string, limited *bool) error {
 	if err := store.editable("subtitles.language"); err != nil {
 		return err
 	}
@@ -26,11 +30,32 @@ func (store *settingsStore) setSubtitleLanguages(languages []string) error {
 	settings := store.value
 	settings.SubtitleLanguage = canonical[0]
 	settings.SubtitleLanguages = canonical
+	if limited != nil {
+		settings.SubtitlePickerLimited = *limited
+	}
 	if err := store.save(settings); err != nil {
 		return err
 	}
 	store.value = settings
 	return nil
+}
+
+func (store *settingsStore) setSubtitlePickerLimited(limited bool) error {
+	store.mu.Lock()
+	defer store.mu.Unlock()
+	settings := store.value
+	settings.SubtitlePickerLimited = limited
+	if err := store.save(settings); err != nil {
+		return err
+	}
+	store.value = settings
+	return nil
+}
+
+func (store *settingsStore) subtitlePickerLimited() bool {
+	store.mu.RLock()
+	defer store.mu.RUnlock()
+	return store.value.SubtitlePickerLimited
 }
 
 func (store *settingsStore) setSubtitlePlan(language, preference string) error {
