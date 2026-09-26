@@ -125,6 +125,8 @@ final class PlayerPresentation: NSObject, AVPlayerViewControllerDelegate {
         presentationMessage = nil
         pip?.startPictureInPicture()
     }
+
+    func stopPictureInPicture() { pip?.stopPictureInPicture() }
     #endif
 
     func playerViewControllerDidStartPictureInPicture(_ playerViewController: AVPlayerViewController) { pictureInPicture = true }
