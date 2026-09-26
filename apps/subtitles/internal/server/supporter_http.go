@@ -51,7 +51,11 @@ func supporterGrantPage(status supporterGrantStatus, collectedLevel int, id, eye
 func (program *supporterProgram) pageData(message string) supporterPageData {
 	status := program.status()
 	living := supporterGrantPage(status.LivingStandard, status.BadgeCase.LivingLevel, livingStandardFamily, "Monthly support · Recommended", "Living Standards are complete badges with signal geometry, service marks, and an honest active-through date.", "Choose monthly support", status.SupportURL)
-	patron := supporterGrantPage(status.PatronOrder, status.BadgeCase.PatronLevel, patronOrderFamily, "One-time support · Permanent", "Patron Orders are permanent enamel badges. Each level has its own complete silhouette and caption emblem.", "Choose one-time support", status.SupportURL)
+	patronURL := status.SupportURL
+	if patronURL == defaultSupportURL {
+		patronURL = defaultOneTimeSupportURL
+	}
+	patron := supporterGrantPage(status.PatronOrder, status.BadgeCase.PatronLevel, patronOrderFamily, "One-time support · Permanent", "Patron Orders are permanent enamel badges. Each level has its own complete silhouette and caption emblem.", "Choose one-time support", patronURL)
 	masterwork := supporterBadge(livingStandardFamily, status.BadgeCase.MasterworkLevel)
 	if status.BadgeCase.MasterworkEarned {
 		masterwork.BadgeName = perfectSyncNames[status.BadgeCase.MasterworkLevel-1]

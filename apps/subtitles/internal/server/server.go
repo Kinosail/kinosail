@@ -205,6 +205,7 @@ func newApplication(config Config) http.Handler { //nolint:funlen,cyclop,gocogni
 	mux.HandleFunc("GET /static/subtitle-inspector.css", serveAsset(subtitleInspectorCSS, "text/css; charset=utf-8"))
 	mux.HandleFunc("GET /static/supporter.js", serveScript(supporterJS))
 	mux.HandleFunc("GET /static/supporter.css", serveSupporterStyle)
+	mux.HandleFunc("GET /static/supporter/badges/{file}", serveSupporterBadge)
 	mux.HandleFunc("GET /static/theme.js", serveScript(themeJS))
 	mux.HandleFunc("GET /static/app.css", serveStyle)
 	mux.HandleFunc("GET /manifest.webmanifest", serveAsset(manifest, "application/manifest+json"))
