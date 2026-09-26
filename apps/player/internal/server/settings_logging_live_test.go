@@ -52,10 +52,10 @@ func TestLoggingLevelChangesWithoutRestart(t *testing.T) { //nolint:gocognit,cyc
 	if !found {
 		t.Fatal("logging level is missing from configuration metadata")
 	}
-	for _, value := range []string{"", "verbose", strings.Repeat("x", 20<<10)} {
-		rejected := apiCall(t, handler, owner.Value, http.MethodPut, "/api/v1/configuration/logging.level", map[string]string{"value": value})
+	for _, input := range []map[string]any{{"value": ""}, {"value": "verbose"}, {"value": strings.Repeat("x", 20<<10)}, {"value": 7}, {"value": "error", "unknown": true}} {
+		rejected := apiCall(t, handler, owner.Value, http.MethodPut, "/api/v1/configuration/logging.level", input)
 		if rejected.Code == http.StatusAccepted || !slog.Default().Enabled(t.Context(), slog.LevelDebug) {
-			t.Fatalf("invalid logging value %q changed active level: %d", value[:min(len(value), 24)], rejected.Code)
+			t.Fatalf("invalid logging input changed active level: %d", rejected.Code)
 		}
 	}
 	loaded, err := configuration.Load(directory, "", func(string) (string, bool) { return "", false })
