@@ -24,19 +24,30 @@ func TestSupporterBadgeArtworkIsAvailableForEveryLevel(t *testing.T) {
 			if !strings.Contains(page.Body.String(), `src="`+asset+`?v=`) {
 				t.Errorf("supporter page does not display %s", asset)
 			}
-			response := apiCall(t, handler, token, http.MethodGet, asset, nil)
-			if response.Code != http.StatusOK || response.Header().Get("Content-Type") != "image/svg+xml" {
-				t.Errorf("badge %s = %d, %q", asset, response.Code, response.Header().Get("Content-Type"))
-				continue
-			}
-			var document struct {
-				Title string `xml:"title"`
-			}
-			if err := xml.Unmarshal(response.Body.Bytes(), &document); err != nil || !strings.Contains(document.Title, "Subtitles") {
-				t.Errorf("badge %s is not titled Subtitles: %q, %v", asset, document.Title, err)
-			}
+			checkSupporterBadgeAsset(t, handler, token, asset)
 		}
 	}
+}
+
+func checkSupporterBadgeAsset(t *testing.T, handler http.Handler, token, asset string) {
+	t.Helper()
+	response := apiCall(t, handler, token, http.MethodGet, asset, nil)
+	if response.Code != http.StatusOK || response.Header().Get("Content-Type") != "image/svg+xml" {
+		t.Fatalf("badge %s = %d, %q", asset, response.Code, response.Header().Get("Content-Type"))
+	}
+	var document struct {
+		Title string `xml:"title"`
+	}
+	if err := xml.Unmarshal(response.Body.Bytes(), &document); err != nil || !strings.Contains(document.Title, "Subtitles") {
+		t.Errorf("badge %s is not titled Subtitles: %q, %v", asset, document.Title, err)
+	}
+}
+
+func TestSupporterBadgeArtworkRejectsInvalidNames(t *testing.T) {
+	signer := newSupporterSigner(t)
+	upstream := httptest.NewServer(http.HandlerFunc(signer.handler))
+	defer upstream.Close()
+	handler, token := supporterServer(t, t.TempDir(), signer, upstream)
 	for _, name := range []string{"living-standard-0.svg", "patron-order-11.svg", "other-1.svg", strings.Repeat("x", 256) + ".svg"} {
 		response := apiCall(t, handler, token, http.MethodGet, "/static/supporter/badges/"+name, nil)
 		if response.Code != http.StatusNotFound {
