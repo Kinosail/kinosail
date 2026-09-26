@@ -106,7 +106,7 @@ The reusable hero fills the available width. Regular iOS size classes and tvOS p
 
 Home labels a saved Watch feature Watching and places it above Up Next on Apple TV, iPhone and iPad. Up Next starts with four landscape cards with direct resume, metadata and true progress. On iOS, Show more reveals the remaining loaded cards and Show less returns to four; Apple TV keeps four. See all opens History. Without a saved title, the recent feature is labeled For you. Listen mode labels its saved feature Listening and keeps compact Continue listening rows, with the same iOS expansion controls. Watch then separates recently added movies and TV shows, adds unwatched shelves and up to four movie genre shelves from the loaded catalog. Listen separates recently added music and audiobooks. Apple TV can switch between these Home modes. At accessibility text sizes, card titles wrap and the shelf remains horizontally scrollable.
 
-Media grids adapt from 144pt posters or 280pt landscape cards on iOS, and 230pt or 360pt on tvOS, with 20pt column and 28pt row spacing. Accessibility sizes use one flexible column. Shelves retain an 18pt gap and aligned scrolling; iOS poster/landscape widths scale from 164/260pt with 260/300pt caps, while tvOS uses 230/390pt widths.
+Media grids adapt from 96pt posters with 12pt column spacing or 280pt landscape cards with 20pt column spacing on iOS. tvOS uses 230pt posters or 360pt landscape cards with 20pt column spacing. All grids use 28pt row spacing; accessibility sizes use one flexible column. Shelves retain an 18pt gap and aligned scrolling; iOS poster/landscape widths scale from 164/260pt with 260/300pt caps, while tvOS uses 230/390pt widths.
 
 ## Elevation & Depth
 
