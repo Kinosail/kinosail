@@ -4,6 +4,7 @@ import (
 	"context"
 	"crypto/sha256"
 	"fmt"
+	"io"
 	"net/http"
 	"strconv"
 	"strings"
@@ -55,6 +56,22 @@ func (writer *ResponseWriter) Write(data []byte) (int, error) {
 	}
 	written, err := writer.ResponseWriter.Write(data)
 	writer.Bytes += int64(written)
+	return written, err
+}
+
+// ReadFrom preserves the underlying writer's file transfer fast path.
+func (writer *ResponseWriter) ReadFrom(source io.Reader) (int64, error) {
+	if writer.Status == 0 {
+		writer.WriteHeader(http.StatusOK)
+	}
+	var written int64
+	var err error
+	if readerFrom, ok := writer.ResponseWriter.(io.ReaderFrom); ok {
+		written, err = readerFrom.ReadFrom(source)
+	} else {
+		written, err = io.Copy(writer.ResponseWriter, source)
+	}
+	writer.Bytes += written
 	return written, err
 }
 

@@ -4,6 +4,7 @@ enum PlayerTab: String, CaseIterable, Identifiable, Sendable {
     case movies, shows, home, search, list, library, music, audiobooks, books, photos, collections, downloads, settings, more
     var id: String { rawValue }
     static let defaults: [Self] = [.home, .shows, .movies, .search]
+    static let tvPrimary: [Self] = [.home, .movies, .shows, .music, .audiobooks, .photos, .library, .search, .settings]
     static func legacyDefault(_ raw: String?) -> String {
         guard let raw, let items = try? parse(raw), items != [.movies, .shows] else {
             return defaults.map(\.rawValue).joined(separator: ",")
