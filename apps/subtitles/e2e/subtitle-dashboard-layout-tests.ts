@@ -3,6 +3,23 @@ import { expect, test } from "@playwright/test";
 import { compactViewports, expectNoHorizontalOverflow, expectSkipLinkOffscreen, initiallyOccludedTargets, occludedTargets, setSubtitleLanguages, supportedViewports } from "./subtitle-dashboard-helpers";
 
 export function registerSubtitleLayoutTests() {
+test("Settings header keeps desktop destinations in one compact row", async ({ page }) => {
+  for (const width of [1920, 1280, 1024, 901]) {
+    await page.setViewportSize({ width, height: 900 });
+    await page.goto("/settings#provider");
+    const layout = await page.locator(".app-header").evaluate((header) => {
+      const nav = header.querySelector('nav[aria-label="Main navigation"]');
+      const links = [...nav.querySelectorAll(":scope > a")].map((link) => link.getBoundingClientRect());
+      return { header: header.getBoundingClientRect().toJSON(), nav: nav.getBoundingClientRect().toJSON(), links: links.map((box) => box.toJSON()) };
+    });
+    expect(layout.header.height, `${width}px header height`).toBeLessThanOrEqual(100);
+    expect(layout.links).toHaveLength(3);
+    expect(layout.links.every((link) => Math.abs(link.top - layout.links[0].top) <= 1), `${width}px navigation row`).toBe(true);
+    expect(layout.links.every((link) => link.left >= layout.nav.left && link.right <= layout.nav.right), `${width}px navigation bounds`).toBe(true);
+    await expectNoHorizontalOverflow(page);
+  }
+});
+
 test("Subtitle API reports the rendered inventory and rejects ambiguous input", async ({ page }) => {
   const inventory = await page.evaluate(async () => {
     const response = await fetch("/api/v1/subtitle-library?view=library");
