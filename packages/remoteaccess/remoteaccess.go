@@ -64,6 +64,7 @@ type Manager struct {
 	sources     map[string]int
 	operations  transportOperations
 	killed      bool
+	resume      chan struct{}
 	killPath    string
 	hostname    string
 }
@@ -144,7 +145,7 @@ func newManager(config Config, dependency Dependencies, endpoint *url.URL) *Mana
 	if !config.PublicHTTPS {
 		status.Mode, status.Policy = "dns-only", ""
 	}
-	return &Manager{config: config, client: dependency.Client, updateURL: endpoint.String(), certificate: dependency.Certificate, hostname: hostname, status: status, connections: make(map[net.Conn]string), sources: make(map[string]int), operations: defaultTransportOperations()}
+	return &Manager{config: config, client: dependency.Client, updateURL: endpoint.String(), certificate: dependency.Certificate, hostname: hostname, status: status, connections: make(map[net.Conn]string), sources: make(map[string]int), operations: defaultTransportOperations(), resume: make(chan struct{}, 1)}
 }
 
 func (manager *Manager) readKillSwitch() (bool, error) {
@@ -248,7 +249,7 @@ func (manager *Manager) Kill() error { //nolint:cyclop // Every resource is clos
 	return nil
 }
 
-// ResetKill allows public HTTPS to start again after the local Server restarts.
+// ResetKill permits the existing Server to resume public HTTPS.
 func (manager *Manager) ResetKill() error {
 	manager.control.Lock()
 	defer manager.control.Unlock()
@@ -265,9 +266,12 @@ func (manager *Manager) ResetKill() error {
 		return errors.New("reset remote access kill switch")
 	}
 	manager.mu.Lock()
-	// An in-flight Serve retry must stay stopped until a new Manager is created.
-	manager.killed, manager.status.State, manager.status.Error = true, "restart-required", ""
+	manager.killed, manager.status.State, manager.status.Error = false, "starting", ""
 	manager.mu.Unlock()
+	select {
+	case manager.resume <- struct{}{}:
+	default:
+	}
 	return nil
 }
 

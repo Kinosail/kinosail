@@ -18,7 +18,7 @@ func TestResetKillIsStrictAndRemovesOnlyTheKillMarker(t *testing.T) {
 	if err != nil || manager.Kill() != nil || manager.ResetKill() != nil {
 		t.Fatalf("kill/reset = manager:%#v error:%v", manager, err)
 	}
-	if manager.Status().State != "restart-required" {
+	if manager.Status().State != "starting" {
 		t.Fatalf("reset status = %#v", manager.Status())
 	}
 	if _, err = os.Stat(filepath.Join(directory, "remote-access.disabled")); !os.IsNotExist(err) {
