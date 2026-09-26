@@ -62,6 +62,13 @@ test("Owner previews language cleanup and forced subtitle choice", async ({ page
     expect((await new AxeBuilder({ page }).include("main").analyze()).violations).toEqual([]);
     await page.screenshot({ path: testInfo.outputPath(`${viewport.width}-subtitle-cleanup-preview.png`), fullPage: true });
   }
+  await page.evaluate(() => localStorage.setItem("kinosail-theme", "light"));
+  await page.goto("/settings#cleanup");
+  await expect(page.locator("html")).toHaveAttribute("data-theme", "light");
+  expect((await new AxeBuilder({ page }).include("#cleanup").analyze()).violations).toEqual([]);
+  await page.screenshot({ path: testInfo.outputPath("subtitle-cleanup-light.png"), fullPage: true });
+  await page.emulateMedia({ forcedColors: "active" });
+  expect((await new AxeBuilder({ page }).include("#cleanup").analyze()).violations).toEqual([]);
 });
 
 test("Owner sees real coverage, wanted files, and a focused setup path", { tag: "@smoke" }, async ({ page }) => {

@@ -90,7 +90,7 @@ test("Dashboard stays readable and accessible at every supported width", async (
       expect(alignment).toBe(true);
       await expect(page.locator(".subtitle-coverage-stat > p")).toContainText(/\d+ of \d+ files ready/);
       await expect(page.locator(".subtitle-coverage-stat meter")).toBeHidden();
-      expect(await occludedTargets(page, [".subtitle-coverage-stat > p", ".subtitle-overview-actions button"], [".app-header nav"])).toEqual([]);
+      expect(await occludedTargets(page, [".subtitle-coverage-stat > p", ".subtitle-overview-actions :is(button, a.button)"], [".app-header nav"])).toEqual([]);
     }
     const accessibility = await new AxeBuilder({ page }).include("main").analyze();
     expect(accessibility.violations).toEqual([]);
@@ -121,9 +121,9 @@ test("Compact navigation does not cover the current subtitle task", async ({ pag
     await page.setViewportSize(viewport);
     await page.goto("/");
     if (viewport.height <= 600) {
-      failures.push(...(await initiallyOccludedTargets(page, [".subtitle-overview-copy h2", ".subtitle-coverage-stat > p", ".subtitle-overview-actions button"], [".app-header nav"])).map((failure) => `${viewport.width}px dashboard: ${failure}`));
+      failures.push(...(await initiallyOccludedTargets(page, [".subtitle-overview-copy h2", ".subtitle-coverage-stat > p", ".subtitle-overview-actions :is(button, a.button)"], [".app-header nav"])).map((failure) => `${viewport.width}px dashboard: ${failure}`));
     }
-    failures.push(...(await occludedTargets(page, [".subtitle-coverage-stat > p", ".subtitle-overview-copy h2", ".subtitle-overview-actions button", ".subtitle-system > summary"], [".app-header nav"])).map((failure) => `${viewport.width}px dashboard: ${failure}`));
+    failures.push(...(await occludedTargets(page, [".subtitle-coverage-stat > p", ".subtitle-overview-copy h2", ".subtitle-overview-actions :is(button, a.button)", ".subtitle-system > summary"], [".app-header nav"])).map((failure) => `${viewport.width}px dashboard: ${failure}`));
 
     await page.goto("/settings#provider");
     failures.push(...(await occludedTargets(page, ["#provider h2", "#provider input[name=apiKey]", "#provider form[action='/settings/subtitles/subsource'] button"], [".app-header nav", ".search", ".settings-nav"])).map((failure) => `${viewport.width}px provider settings: ${failure}`));
@@ -140,16 +140,15 @@ test("Dashboard preserves its task at 200 percent reflow", async ({ page }) => {
   await page.setViewportSize({ width: 360, height: 450 });
   await page.goto("/");
   expect(await page.locator("html").evaluate((element) => element.scrollWidth <= element.clientWidth)).toBe(true);
-  expect(await occludedTargets(page, [".subtitle-coverage-stat > p", ".subtitle-overview-copy h2", ".subtitle-overview-actions button", ".subtitle-system > summary"], [".app-header nav"])).toEqual([]);
+  expect(await occludedTargets(page, [".subtitle-coverage-stat > p", ".subtitle-overview-copy h2", ".subtitle-overview-actions :is(button, a.button)", ".subtitle-system > summary"], [".app-header nav"])).toEqual([]);
 });
 
 test("Readiness, quota, and history remain usable on compact screens", async ({ page }, testInfo) => {
   for (const viewport of [{ width: 1024, height: 768 }, { width: 390, height: 844 }, { width: 320, height: 800 }]) {
     await page.setViewportSize(viewport);
     await page.goto("/");
-    if (await page.locator(".subtitle-system").getAttribute("open") === null) {
-      await page.locator(".subtitle-system > summary").click();
-    }
+    const system = page.locator(".subtitle-system");
+    if (await system.getAttribute("open") === null) await system.locator(":scope > summary").click();
     await expect(page.getByRole("heading", { name: "Server readiness" })).toBeVisible();
     await expect(page.getByRole("heading", { name: "Subtitle sources" })).toBeVisible();
     await expectNoHorizontalOverflow(page);
