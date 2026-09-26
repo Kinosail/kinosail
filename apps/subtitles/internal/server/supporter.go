@@ -8,11 +8,13 @@ import (
 	"sync"
 	"time"
 
+	"github.com/MikeO7/kinosail-subtitles/internal/configuration"
 	supporterengine "github.com/MikeO7/kinosail/packages/supporter"
 )
 
 const (
-	defaultSupporterActivationURL = "https://kinosail-cloud.workers.dev/v1/supporters/activate"
+	defaultSupporterActivationURL = configuration.DefaultSupporterActivationURL
+	productionSupporterPublicKey  = "j-Zo0nvjgd13yuQyZ0bfGpObhf-AQYtdKlFxyFZOL6I"
 	defaultSupportURL             = "https://github.com/Kinosail/kinosail/tree/main/apps/subtitles"
 	supporterAppID                = "kino-subtitles"
 	supporterAppName              = "Kinosail Subtitles"
@@ -89,14 +91,18 @@ type supporterStatus struct {
 }
 
 func newSupporterProgram(settings *settingsStore, config SupporterConfig) *supporterProgram {
+	trustedPublicKey := ""
 	if config.ActivationURL == "" {
 		config.ActivationURL = defaultSupporterActivationURL
+	}
+	if config.ActivationURL == defaultSupporterActivationURL {
+		trustedPublicKey = productionSupporterPublicKey
 	}
 	if config.SupportURL == "" {
 		config.SupportURL = defaultSupportURL
 	}
 	app := supporterengine.App{ID: supporterAppID, Name: supporterAppName, Audience: supporterAudience, MasterworkName: "Perfect Sync", EmptyBadges: true, NestedApp: true, Legacy: supporterengine.LegacySubtitles}
-	service, err := supporterengine.New(supporterengine.Config{App: app, ActivationURL: config.ActivationURL, SupportURL: config.SupportURL, HTTPClient: config.HTTPClient, Now: config.Now})
+	service, err := supporterengine.New(supporterengine.Config{App: app, ActivationURL: config.ActivationURL, SupportURL: config.SupportURL, TrustedPublicKey: trustedPublicKey, HTTPClient: config.HTTPClient, Now: config.Now})
 	if err != nil {
 		service, _ = supporterengine.New(supporterengine.Config{App: app})
 	}

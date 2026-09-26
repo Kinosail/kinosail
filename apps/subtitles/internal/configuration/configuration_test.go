@@ -12,3 +12,14 @@ func TestSharedConfigurationContract(t *testing.T) {
 		configuration.TrustedOrigin, (*configuration.Snapshot).UpdateGUI,
 		configuration.Default, configuration.GUI, configuration.YAML, configuration.Environment, "38128")
 }
+
+func TestSupporterActivationDefaultsToProduction(t *testing.T) {
+	configured, err := configuration.Load(t.TempDir(), "", func(string) (string, bool) { return "", false })
+	if err != nil {
+		t.Fatal(err)
+	}
+	const want = "https://kinosail-supporter-prod.pvw-7m4q2x9.workers.dev/v1/supporters/activate"
+	if got := configured.String("supporter.activation_url"); got != want || configured.Source("supporter.activation_url") != configuration.Default {
+		t.Fatalf("default supporter activation = %q (%s), want %q", got, configured.Source("supporter.activation_url"), want)
+	}
+}
