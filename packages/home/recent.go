@@ -140,9 +140,6 @@ func mediaHref(item library.Item) string {
 }
 
 func mediaMeta(item library.Item) string {
-	if item.Kind == "video" {
-		return item.Container
-	}
 	if item.Container == "" {
 		return item.Year
 	}

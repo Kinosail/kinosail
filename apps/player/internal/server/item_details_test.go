@@ -54,7 +54,7 @@ func TestMovieDetailsDoNotStartPlaybackAndListActionsReturnToDetails(t *testing.
 	}
 }
 
-func TestMovieReleaseYearAppearsOnDetailsOnly(t *testing.T) {
+func TestMovieBrowseCardOmitsYearAndDetailsRetainIt(t *testing.T) {
 	media := t.TempDir()
 	if err := os.WriteFile(filepath.Join(media, "Arrival (2016).mp4"), []byte("media"), 0o600); err != nil {
 		t.Fatal(err)
@@ -75,9 +75,6 @@ func TestMovieReleaseYearAppearsOnDetailsOnly(t *testing.T) {
 	}
 	if strings.Contains(browse, ">2016<") || strings.Contains(browse, " · 2016</h2>") {
 		t.Fatal("browse card shows release year")
-	}
-	if strings.Contains(get("/"), ">2016</small>") {
-		t.Fatal("home shelf shows release year")
 	}
 	if !strings.Contains(get("/item/"+match[1]), `class="meta-line">2016`) {
 		t.Fatal("movie details omit release year")

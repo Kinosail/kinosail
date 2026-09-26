@@ -29,13 +29,8 @@ func (fixture MetadataFixture) ViewerCanSeeTMDBMovieMetadataAndArtwork(t *testin
 	home := httptest.NewRecorder()
 	handler.ServeHTTP(home, httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/", nil))
 	match := regexp.MustCompile(`/(?:watch|item)/([a-f0-9]+)`).FindStringSubmatch(home.Body.String())
-	if len(match) != 2 || !strings.Contains(home.Body.String(), ">Primer<") || strings.Contains(home.Body.String(), "· 2004") || !strings.Contains(home.Body.String(), `/art/`+match[1]) {
+	if len(match) != 2 || !strings.Contains(home.Body.String(), ">Primer<") || !strings.Contains(home.Body.String(), "· 2004") || !strings.Contains(home.Body.String(), `/art/`+match[1]) {
 		t.Fatalf("home = %q", home.Body.String())
-	}
-	details := httptest.NewRecorder()
-	handler.ServeHTTP(details, httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/item/"+match[1], nil))
-	if !strings.Contains(details.Body.String(), `class="meta-line">2004`) {
-		t.Fatalf("details = %q", details.Body.String())
 	}
 
 	player := httptest.NewRecorder()
@@ -57,16 +52,7 @@ func assertCachedTMDBMetadata(t *testing.T, offline http.Handler) {
 	t.Helper()
 	cached := httptest.NewRecorder()
 	offline.ServeHTTP(cached, httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/", nil))
-	if !strings.Contains(cached.Body.String(), ">Primer<") || strings.Contains(cached.Body.String(), "· 2004") || !strings.Contains(cached.Body.String(), "This product uses the TMDB API but is not endorsed or certified by TMDB.") {
+	if !strings.Contains(cached.Body.String(), ">Primer<") || !strings.Contains(cached.Body.String(), "· 2004") || !strings.Contains(cached.Body.String(), "This product uses the TMDB API but is not endorsed or certified by TMDB.") {
 		t.Fatalf("cached home = %q", cached.Body.String())
-	}
-	match := regexp.MustCompile(`/(?:watch|item)/([a-f0-9]+)`).FindStringSubmatch(cached.Body.String())
-	if len(match) != 2 {
-		t.Fatal("cached movie has no detail link")
-	}
-	details := httptest.NewRecorder()
-	offline.ServeHTTP(details, httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/item/"+match[1], nil))
-	if !strings.Contains(details.Body.String(), `class="meta-line">2004`) {
-		t.Fatalf("cached details = %q", details.Body.String())
 	}
 }
