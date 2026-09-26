@@ -22,23 +22,13 @@ func TestServeContinuouslyReopensAfterKillReset(t *testing.T) {
 	defer cancel()
 	done := make(chan error, 1)
 	go func() { done <- manager.ServeContinuously(ctx, http.NotFoundHandler()) }()
-	var first net.Listener
-	select {
-	case first = <-listeners:
-	case <-time.After(2 * time.Second):
-		t.Fatal("public listener did not start")
-	}
+	first := nextPublicListener(t, listeners)
 	waitRemoteState(t, manager, "ready")
 	if err := manager.Kill(); err != nil || manager.ResetKill() != nil {
 		t.Fatalf("kill/reset: %v", err)
 	}
-	select {
-	case second := <-listeners:
-		if second == first {
-			t.Fatal("public listener was reused after kill")
-		}
-	case <-time.After(2 * time.Second):
-		t.Fatal("public listener did not resume")
+	if nextPublicListener(t, listeners) == first {
+		t.Fatal("public listener was reused after kill")
 	}
 	waitRemoteState(t, manager, "ready")
 	cancel()
@@ -49,6 +39,17 @@ func TestServeContinuouslyReopensAfterKillReset(t *testing.T) {
 		}
 	case <-time.After(2 * time.Second):
 		t.Fatal("public listener did not stop with its context")
+	}
+}
+
+func nextPublicListener(t *testing.T, listeners <-chan net.Listener) net.Listener {
+	t.Helper()
+	select {
+	case listener := <-listeners:
+		return listener
+	case <-time.After(2 * time.Second):
+		t.Fatal("public listener did not start")
+		return nil
 	}
 }
 
