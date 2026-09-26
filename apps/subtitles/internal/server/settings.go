@@ -19,11 +19,6 @@ import (
 
 var errManagedSetting = errors.New("setting is externally managed")
 
-type (
-	navigationLink       = sharednavigation.Link
-	navigationPreference = sharednavigation.Preference
-)
-
 type installationSettings struct {
 	Name                  string   `json:"name"`
 	Libraries             []string `json:"libraries"`
@@ -35,29 +30,30 @@ type installationSettings struct {
 	JellyfinID            string   `json:"jellyfinId,omitempty"`
 	settingsops.Playback
 	transcodehardware.Selection
-	SubtitleLanguage   string          `json:"subtitleLanguage,omitempty"`
-	SubtitleLanguages  []string        `json:"subtitleLanguages,omitempty"`
-	SubtitlePreference string          `json:"subtitlePreference,omitempty"`
-	ScanFrequency      string          `json:"scanFrequency,omitempty"`
-	DLNAToken          string          `json:"dlnaToken,omitempty"`
-	Navigation         []string        `json:"navigation"`
-	OnboardingPending  bool            `json:"onboardingPending,omitempty"`
-	UpdateChecks       bool            `json:"updateChecks"`
-	Supporter          *supporterState `json:"supporter,omitempty"`
+	SubtitleLanguage      string          `json:"subtitleLanguage,omitempty"`
+	SubtitleLanguages     []string        `json:"subtitleLanguages,omitempty"`
+	SubtitlePickerLimited bool            `json:"subtitlePickerLimited,omitempty"`
+	SubtitlePreference    string          `json:"subtitlePreference,omitempty"`
+	ScanFrequency         string          `json:"scanFrequency,omitempty"`
+	DLNAToken             string          `json:"dlnaToken,omitempty"`
+	Navigation            []string        `json:"navigation"`
+	OnboardingPending     bool            `json:"onboardingPending,omitempty"`
+	UpdateChecks          bool            `json:"updateChecks"`
+	Supporter             *supporterState `json:"supporter,omitempty"`
 }
 
 type settingsStore struct {
-	mu              sync.RWMutex
-	file            string
-	mediaRoot       string
-	dlnaURL         string
-	ffmpeg          string
-	value           installationSettings
-	config          configuration.Snapshot
-	hardware        hardwareCapabilities
-	transcoderCheck transcodepolicy.CheckResult
-	persist         func(string, any) error
-	err             error
+	mu               sync.RWMutex
+	file, mediaRoot  string
+	dlnaURL          string
+	ffmpeg           string
+	value            installationSettings
+	config           configuration.Snapshot
+	subtitleProvider *subtitleProvider
+	hardware         hardwareCapabilities
+	transcoderCheck  transcodepolicy.CheckResult
+	persist          func(string, any) error
+	err              error
 }
 
 func (store *settingsStore) transcoderState() transcodehardware.SelectionState {

@@ -14,17 +14,21 @@ test("Owner deletes other languages and English forced subtitles from a populate
   const kept = containerMedia ? `${title}.en.srt` : `${title}.vtt`;
   const spanish = join(media, `${title}.es.srt`);
   const forced = join(media, `${title}.en.forced.srt`);
+  const addedEnglish = containerMedia ? undefined : join(media, `${title}.en.srt`);
   const rescan = () => page.evaluate(async () => {
     const csrf = document.querySelector<HTMLMetaElement>('meta[name="kinosail-csrf"]')?.content ?? "";
     return (await fetch("/scan", { method: "POST", headers: { "X-Kinosail-CSRF": csrf } })).status;
   });
   await writeFile(spanish, "1\n00:00:01,000 --> 00:00:02,000\nHola\n");
   await writeFile(forced, "1\n00:00:01,000 --> 00:00:02,000\nSigns\n");
+  if (addedEnglish) await writeFile(addedEnglish, "1\n00:00:01,000 --> 00:00:02,000\nHello\n");
   try {
     expect(await rescan()).toBe(200);
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto("/settings#cleanup");
-    await page.getByLabel("Forced subtitles in that language").selectOption("delete");
+    await page.getByLabel("Enable subtitle language cleanup").check();
+    await page.getByLabel("Languages to keep").selectOption(["en"]);
+    await page.getByLabel("Forced subtitles in kept languages").selectOption("delete");
     await page.getByRole("button", { name: "Preview files to delete" }).click();
     await expect(page.getByRole("heading", { name: "2 subtitle files to delete" })).toBeVisible();
     await expect(page.getByText(`${title}.es.srt`)).toBeVisible();
@@ -33,12 +37,21 @@ test("Owner deletes other languages and English forced subtitles from a populate
     await page.screenshot({ path: testInfo.outputPath("390-populated-subtitle-cleanup-preview.png"), fullPage: true });
     await page.getByRole("button", { name: "Delete 2 subtitle files" }).click();
     await expect(page.getByRole("heading", { name: "Subtitle cleanup complete" })).toBeVisible();
-    await expect(page.getByText("en is now your only preferred language. Deleted 2 subtitle files.")).toBeVisible();
+    await expect(page.getByText("en is now your preferred language. Deleted 2 subtitle files.")).toBeVisible();
     await expect(access(spanish)).rejects.toMatchObject({ code: "ENOENT" });
     await expect(access(forced)).rejects.toMatchObject({ code: "ENOENT" });
     await access(join(media, kept));
+    const library = await page.request.get("/api/v1/library?view=movies");
+    expect(library.ok()).toBeTruthy();
+    const items = (await library.json()) as { items?: Array<{ id?: string; title?: string }> };
+    const movie = items.items?.find((item) => item.title === title);
+    expect(movie?.id, `${title} is in the playable library`).toBeTruthy();
+    await page.goto(`/watch/${movie!.id}`);
+    await page.getByRole("button", { name: "Settings", exact: true }).click();
+    await expect(page.locator("[data-subtitles] option")).toHaveCount(2);
   } finally {
     await Promise.all([unlink(spanish).catch(() => {}), unlink(forced).catch(() => {})]);
+    if (addedEnglish) await unlink(addedEnglish).catch(() => {});
     await rescan().catch(() => {});
   }
 });
@@ -49,15 +62,18 @@ test("Owner previews language cleanup and forced subtitle choice", async ({ page
     await page.goto("/settings#cleanup");
     const cleanup = page.locator("#cleanup");
     await expect(cleanup.getByRole("heading", { name: "Delete subtitle languages" })).toBeVisible();
-    await expect(cleanup.getByLabel("Keep language")).toHaveValue("en");
-    await cleanup.getByLabel("Forced subtitles in that language").selectOption("delete");
+    await expect(cleanup.getByLabel("Enable subtitle language cleanup")).not.toBeChecked();
+    await cleanup.getByLabel("Enable subtitle language cleanup").check();
+    await cleanup.getByLabel("Languages to keep").selectOption(["en", "es"]);
+    await cleanup.getByLabel("Forced subtitles in kept languages").selectOption("delete");
     await expectNoHorizontalOverflow(page);
     expect((await new AxeBuilder({ page }).include("#cleanup").analyze()).violations).toEqual([]);
     await page.screenshot({ path: testInfo.outputPath(`${viewport.width}-subtitle-cleanup-setting.png`), fullPage: true });
     await cleanup.getByRole("button", { name: "Preview files to delete" }).click();
     await expect(page.getByRole("heading", { name: "Subtitle cleanup" })).toBeVisible();
-    await expect(page.getByText("Delete forced en subtitles.")).toBeVisible();
-    await expect(page.getByRole("button", { name: "Keep only en" })).toBeVisible();
+    await expect(page.getByText("Delete forced subtitles in the selected languages.")).toBeVisible();
+    await expect(page.getByText("Keep en, es subtitles and set these as your preferred languages.", { exact: false })).toBeVisible();
+    await expect(page.getByRole("button", { name: "Save selected languages" })).toBeVisible();
     await expectNoHorizontalOverflow(page);
     expect((await new AxeBuilder({ page }).include("main").analyze()).violations).toEqual([]);
     await page.screenshot({ path: testInfo.outputPath(`${viewport.width}-subtitle-cleanup-preview.png`), fullPage: true });
@@ -131,18 +147,16 @@ test("Owner manages an ordered preferred-language list at every supported width"
   await page.evaluate(async () => { await document.fonts.ready; });
   await page.waitForTimeout(250);
   const initialGeometry = await languageSection.evaluate((section) => {
-    const navigationBox = document.querySelector<HTMLElement>(".app-header nav")?.getBoundingClientRect();
     const controls = [...section.querySelectorAll<HTMLElement>("button, select")];
-    const overlaps = (left: DOMRect, right: DOMRect) => left.bottom > right.top && left.top < right.bottom && left.right > right.left && left.left < right.right;
     return {
       smallTouchTarget: controls.some((control) => {
         const box = control.getBoundingClientRect();
         return box.width < 44 || box.height < 44;
       }),
-      navigationControlOverlap: navigationBox ? controls.some((control) => overlaps(control.getBoundingClientRect(), navigationBox)) : false,
     };
   });
-  expect(initialGeometry).toEqual({ smallTouchTarget: false, navigationControlOverlap: false });
+  expect(initialGeometry).toEqual({ smallTouchTarget: false });
+  expect(await occludedTargets(page, ["#language button", "#language select"], [".app-header nav"])).toEqual([]);
 
   await addLanguage.focus();
   await expect(addLanguage).toBeFocused();

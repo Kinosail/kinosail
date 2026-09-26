@@ -58,6 +58,7 @@ func populateLanding[Show, Resume, Playlist, Collection any](request *http.Reque
 	page.Played = RecentlyPlayed(personal.Played, page.HomeArtwork, page.HomeShowTitle)
 	page.Recent = RecentlyAdded(items, page.HomeArtwork, page.HomeShowTitle)
 	page.MovieGenres = MovieGenres(items, page.HomeArtwork)
+	page.HomeShelves = HomeShelves(items, personal.Unwatched, page.HomeArtwork, page.HomeShowTitle, page.MovieGenres)
 	page.Destinations = Destinations(items, len(personal.List), personal.CollectionCount, personal.PlaylistCount)
 }
 

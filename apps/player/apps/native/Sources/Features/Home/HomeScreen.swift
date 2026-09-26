@@ -4,6 +4,7 @@ struct HomeScreen: View {
     var showsSearch = true
     var mode: PlayerMode?
     var changeMode: ((PlayerMode) -> Void)?
+    var selectTab: (PlayerTab) -> Void
     @Environment(AppSession.self) private var session
     #if os(tvOS)
     @Namespace private var homeFocus
@@ -13,53 +14,38 @@ struct HomeScreen: View {
     var body: some View {
         ScrollView {
             // Refresh belongs to a vertical scroll container, not the nested media shelf.
-            ResourceView(identity: "\(session.profileKey ?? ""):\(homeMode.rawValue)", refreshID: session.contentRevision.uuidString, loadingLayout: homeMode == .listen ? .homeAudio : .home, allowsPullToRefresh: false, load: { policy in
+            ResourceView(identity: "\(session.profileKey ?? ""):\(homeMode.rawValue)", refreshID: session.contentRevision.uuidString,
+                         loadingLayout: tvHomeLoadingLayout, allowsPullToRefresh: false, load: { policy in
                 guard let client = session.client else { throw ClientError.http(401) }
                 return try await client.home(mode: homeMode, policy: policy)
             }) { home in
                 let selection = HomeSelection(continueWatching: home.continueWatching, recent: home.recent, mode: homeMode)
                 VStack(alignment: .leading, spacing: 32) {
+                    #if os(tvOS)
+                    if homeMode == .watch, !selection.tvWatchingRail.isEmpty {
+                        MediaShelf(title: "Continue watching", items: selection.tvWatchingRail, landscape: true,
+                                   resumesPlayback: true, onQuickPlay: { quickPlay = $0 })
+                    } else if homeMode == .listen, !selection.featuredAndContinuation.isEmpty {
+                        ResumeRows(items: selection.featuredAndContinuation, title: "Listening", showsAll: false)
+                    }
+                    TVHomeBrowse(mode: homeMode, selectTab: selectTab, changeMode: changeMode)
+                    #else
                     VStack(alignment: .leading, spacing: 12) {
                         HStack(spacing: 28) {
                             Text(selection.featuredIsContinuing ? (homeMode == .listen ? "Listening" : "Watching") : "For you")
                                 .font(.title2.bold()).frame(minHeight: 44).accessibilityAddTraits(.isHeader)
                             NavigationLink("My List", value: ScreenDestination.library(.list))
                                 .font(.callout).frame(minHeight: 44)
-                                #if os(tvOS)
-                                .buttonStyle(.bordered).tint(KinoTheme.secondaryControlTint).secondaryControlForeground()
-                                #else
                                 .foregroundStyle(KinoTheme.muted)
-                                #endif
-                            #if os(tvOS)
-                            Spacer()
-                            if let mode, let changeMode {
-                                Button { changeMode(mode.other) } label: {
-                                    Label(mode.other.title, systemImage: mode.other == .listen ? "headphones" : "tv")
-                                }
-                                .buttonStyle(.bordered).tint(KinoTheme.secondaryControlTint).secondaryControlForeground()
-                                .accessibilityLabel("Switch to \(mode.other.title) mode")
-                            }
-                            #endif
                         }
                         .frame(maxWidth: .infinity, alignment: .leading)
                         if let featured = selection.featured {
                             CinemaHero(item: featured, subtitle: homeSubtitle(for: featured), showsPlot: false) {
                                 NavigationLink(value: featured.playingDestination) {
                                     Label(featured.playLabel, systemImage: featured.kind == .book ? "book.fill" : "play.fill")
-                                        #if os(tvOS)
-                                        .frame(minWidth: 280).padding(.vertical, 12)
-                                        .foregroundStyle(KinoTheme.tvOSPrimaryInk)
-                                        .background(KinoTheme.tvOSPrimaryFill, in: Capsule())
-                                        #else
                                         .frame(maxWidth: .infinity)
-                                        #endif
                                 }
-                                #if os(tvOS)
-                                .buttonStyle(.card)
-                                .tvOSDefaultPlayFocus(in: homeFocus, id: "home.play.\(featured.id)", enabled: featured.kind == .video || featured.isAudio)
-                                #else
                                 .buttonStyle(.borderedProminent).buttonBorderShape(.capsule).tint(KinoTheme.signal).foregroundStyle(KinoTheme.signalInk)
-                                #endif
                                 NavigationLink("Details", value: featured.destination).buttonStyle(.bordered).buttonBorderShape(.capsule).tint(KinoTheme.secondaryControlTint).secondaryControlForeground()
                             }
                         }
@@ -68,11 +54,11 @@ struct HomeScreen: View {
                         if homeMode == .listen {
                             ResumeRows(items: selection.continuation, title: "Continue listening", showsAll: false)
                         } else {
-                            MediaShelf(title: "Up Next", items: Array(selection.continuation.prefix(4)),
-                                       landscape: true, resumesPlayback: true,
-                                       moreTitle: "See all", moreDestination: .library(.history))
+                            MediaShelf(title: "Continue watching", items: selection.watchShelf,
+                                       landscape: true, resumesPlayback: true)
                         }
                     }
+                    #endif
                     if homeMode == .watch {
                         recentShelf("Recently added movies", items: selection.recent(for: .video))
                         recentShelf("Recently added TV shows", items: selection.recent(for: .show), opensShows: true)
@@ -146,7 +132,15 @@ struct HomeScreen: View {
         #if os(tvOS)
         item.subtitleWithoutYear
         #else
-        item.subtitle
+        item.kind == .video || item.kind == .show ? item.subtitleWithoutYear : item.subtitle
+        #endif
+    }
+
+    private var tvHomeLoadingLayout: LoadingLayout {
+        #if os(tvOS)
+        homeMode == .listen ? .tvHomeAudio : .tvHome
+        #else
+        homeMode == .listen ? .homeAudio : .home
         #endif
     }
 
@@ -172,6 +166,9 @@ struct HomeSelection {
     let featuredIsContinuing: Bool
     let continuation: [MediaItem]
     let recent: [MediaItem]
+    var watchShelf: [MediaItem] { Array(continuation.prefix(15)) }
+    var featuredAndContinuation: [MediaItem] { (featuredIsContinuing ? [featured].compactMap { $0 } : []) + continuation }
+    var tvWatchingRail: [MediaItem] { Array(featuredAndContinuation.prefix(15)) }
 
     init(continueWatching: [MediaItem], recent: [MediaItem], mode: PlayerMode? = nil) {
         let watching = continueWatching.filter { mode?.includes($0) ?? true }
@@ -205,3 +202,63 @@ struct HomeSelection {
             .prefix(4))
     }
 }
+
+#if os(tvOS)
+private struct TVHomeBrowse: View {
+    let mode: PlayerMode
+    let selectTab: (PlayerTab) -> Void
+    let changeMode: ((PlayerMode) -> Void)?
+    private let tabs: [PlayerTab] = [.movies, .shows, .music, .audiobooks, .photos, .collections]
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            Text("Browse").font(.title2.bold()).accessibilityAddTraits(.isHeader)
+            ScrollView(.horizontal) {
+                LazyHStack(alignment: .top, spacing: 18) {
+                    ForEach(tabs) { tab in
+                        tile(title: tab.title, icon: icon(for: tab)) { selectTab(tab) }
+                    }
+                    if let changeMode {
+                        tile(title: "\(mode.other.title) Home", icon: "KinosailMark") { changeMode(mode.other) }
+                    }
+                }
+                .padding(.horizontal, 24)
+                .padding(.vertical, 24)
+                .scrollTargetLayout()
+            }
+            .scrollIndicators(.hidden)
+            .scrollTargetBehavior(.viewAligned)
+            .scrollClipDisabled()
+        }
+        .focusSection()
+    }
+
+    private func tile(title: String, icon: String, action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            VStack(spacing: 6) {
+                Image(icon).resizable().scaledToFit().frame(width: 80, height: 80).accessibilityHidden(true)
+                Text(title).font(.headline).foregroundStyle(KinoTheme.text).multilineTextAlignment(.center)
+            }
+            .padding(12)
+            .frame(width: 320)
+            .frame(minHeight: 150)
+            .background(RoundedRectangle(cornerRadius: 14).fill(KinoTheme.raised))
+        }
+        .buttonStyle(.card)
+        .accessibilityLabel(title)
+    }
+
+    private func icon(for tab: PlayerTab) -> String {
+        switch tab {
+        case .movies: "BrowseMovies"
+        case .shows: "BrowseShows"
+        case .music: "BrowseMusic"
+        case .audiobooks: "BrowseAudiobooks"
+        case .photos: "BrowsePhotos"
+        case .collections: "BrowseCollections"
+        default: tab.symbol
+        }
+    }
+
+}
+#endif

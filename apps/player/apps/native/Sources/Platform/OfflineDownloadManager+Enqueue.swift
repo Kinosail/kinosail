@@ -55,9 +55,18 @@ extension OfflineDownloadManager {
     }
 
     func enqueueEpisodes(_ episodes: [MediaItem], quality: DownloadQuality, client: ServerClient) async throws {
+        try await enqueueEpisodes(episodes, quality: quality, client: client, series: false)
+    }
+
+    func enqueueSeries(_ episodes: [MediaItem], quality: DownloadQuality, client: ServerClient) async throws {
+        try await enqueueEpisodes(episodes, quality: quality, client: client, series: true)
+    }
+
+    private func enqueueEpisodes(_ episodes: [MediaItem], quality: DownloadQuality, client: ServerClient, series: Bool) async throws {
         guard !episodes.isEmpty, episodes.count <= 50, Set(episodes.map(\.id)).count == episodes.count,
-              let first = episodes.first, !first.showID.isEmpty, episodes.allSatisfy({ $0.kind == .video && $0.showID == first.showID && $0.season == first.season }),
-              quality != .audio else { throw ClientError.invalidInput("Choose up to 50 episodes from one season, with enough room in Downloads.") }
+              let first = episodes.first, !first.showID.isEmpty,
+              episodes.allSatisfy({ $0.kind == .video && $0.showID == first.showID && (series || $0.season == first.season) }),
+              quality != .audio else { throw ClientError.invalidInput(series ? "Choose up to 50 unique video episodes from one series." : "Choose up to 50 episodes from one season, with enough room in Downloads.") }
         guard !operation, let scope, let storage else { throw ClientError.invalidInput("Wait for the current download operation to finish.") }
         let attempt = generation
         try await performEnqueue {
@@ -77,7 +86,7 @@ extension OfflineDownloadManager {
                 }
             } catch {
                 try check(attempt)
-                throw ClientError.invalidInput("Added \(queued) of \(episodes.count) episodes to Downloads. Add the season again to continue. \(AppSession.message(error))")
+                throw ClientError.invalidInput("Added \(queued) of \(episodes.count) episodes to Downloads. Add the \(series ? "series" : "season") again to continue. \(AppSession.message(error))")
             }
         }
     }

@@ -33,7 +33,7 @@ func TestSubtitleAppShowsCoverageAndWantedFiles(t *testing.T) { //nolint:cyclop 
 	if overview.Code != http.StatusOK || !strings.Contains(overview.Body.String(), "50%") || !strings.Contains(overview.Body.String(), "file needs") || !strings.Contains(overview.Body.String(), "Arrival") || strings.Contains(overview.Body.String(), "soundtrack") {
 		t.Fatalf("overview = %d %q", overview.Code, overview.Body.String())
 	}
-	for _, expected := range []string{`class="library-page subtitle-app subtitle-dashboard"`, `class="app-header"`, `class="brand-lockup"`, `class="web-beta-badge">Beta`, `href="/supporter" aria-label="Support Kinosail"`, `href="/?view=summary"`, `aria-current="page"`, `/static/app.css?v=cinema-5`} {
+	for _, expected := range []string{`class="library-page subtitle-app subtitle-dashboard"`, `class="app-header"`, `class="brand-lockup"`, `class="web-beta-badge">Beta`, `href="/supporter" aria-label="Support Kinosail"`, `href="/?view=summary"`, `aria-current="page"`, `/static/app.css?v=cinema-6`} {
 		if !strings.Contains(overview.Body.String(), expected) {
 			t.Fatalf("overview shell missing %q: %q", expected, overview.Body.String())
 		}
@@ -181,7 +181,7 @@ func TestSubtitleAppUsesKinosailSisterSetupAndFocusedSettings(t *testing.T) { //
 	start := requestApp(t, handler, http.MethodGet, "/onboarding", "")
 	onboarding := requestApp(t, handler, http.MethodGet, "/onboarding/connection", "")
 	setupBody := setup.Body.String()
-	if setup.Code != http.StatusOK || !strings.Contains(setupBody, "Kinosail Subtitles") || !strings.Contains(setupBody, "choose subtitle settings") || !strings.Contains(setupBody, "Create the Owner account first.") || !strings.Contains(setupBody, `/static/app.css?v=cinema-5`) || !strings.Contains(setupBody, `class="language-picker"`) || strings.Index(setupBody, `class="language-picker"`) > strings.Index(setupBody, `class="wizard-stage"`) {
+	if setup.Code != http.StatusOK || !strings.Contains(setupBody, "Kinosail Subtitles") || !strings.Contains(setupBody, "choose subtitle settings") || !strings.Contains(setupBody, "Create the Owner account first.") || !strings.Contains(setupBody, `/static/app.css?v=cinema-6`) || !strings.Contains(setupBody, `class="language-picker"`) || strings.Index(setupBody, `class="language-picker"`) > strings.Index(setupBody, `class="wizard-stage"`) {
 		t.Fatalf("setup = %d %q", setup.Code, setup.Body.String())
 	}
 	if settings.Code != http.StatusOK {
@@ -198,6 +198,9 @@ func TestSubtitleAppUsesKinosailSisterSetupAndFocusedSettings(t *testing.T) { //
 		t.Fatalf("onboarding = %d %q", onboarding.Code, onboarding.Body.String())
 	}
 	assertResponseContains(t, "onboarding", onboarding, "Connect a provider. Let Kinosail handle the rest.", "Primary language", `aria-describedby="language-help"`, `value="en" selected`, `value="es-419"`, "needs permission to write", "Connect a subtitle provider", "Create a free account, open its API panel", "Create or sign in to an OpenSubtitles.com account", "open My Profile", `href="/settings/configuration#integrations.subdl.api_key"`, `href="/settings/configuration#integrations.opensubtitles"`, `href="/settings#provider"`, "Not configured", "Finish and open overview")
+	if !strings.Contains(onboarding.Body.String(), "Provider credentials take effect immediately.") || strings.Contains(onboarding.Body.String(), "restart when prompted") {
+		t.Fatal("subtitle provider onboarding still asks for a restart")
+	}
 }
 
 func assertResponseContains(t *testing.T, name string, response *httptest.ResponseRecorder, fragments ...string) {
