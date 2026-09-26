@@ -249,5 +249,9 @@ done
 grep --quiet '"title":"Dune"' <<<"$library"
 printf '1\n00:00:01,000 --> 00:00:02,000\nContainer sidecar\n' >"$media_dir/Dune.en.srt"
 curl --fail --silent --insecure --cookie "$media_dir/cookies" --request POST --header "Origin: $url" --header "X-Kinosail-CSRF: $csrf" "$url/scan" --output /dev/null
-library="$(curl --fail --silent --insecure --cookie "$media_dir/cookies" "$url/api/v1/subtitle-library?view=library")"
+for _ in {1..240}; do
+  library="$(curl --fail --silent --insecure --cookie "$media_dir/cookies" "$url/api/v1/subtitle-library?view=library")"
+  grep -Eq '"title":"Dune"[^}]*"tracks":"en"[^}]*"ready":true' <<<"$library" && break
+  sleep 0.25
+done
 grep -Eq '"title":"Dune"[^}]*"tracks":"en"[^}]*"ready":true' <<<"$library"

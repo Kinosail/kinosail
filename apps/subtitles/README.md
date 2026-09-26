@@ -75,7 +75,7 @@ KINOSAIL_SUBSOURCE_URL=https://api.subsource.net/api/v1
 KINOSAIL_SUBTITLE_LANGUAGE=en
 ```
 
-The variables above are native-process configuration names. A Compose `.env` value reaches the container only when `compose.yaml` forwards it. The supplied Compose files forward SubDL and OpenSubtitles settings; they currently do not forward SubSource settings. Configure SubSource through Owner Settings, or explicitly add its environment/secret mappings in a local Compose override. Do not assume that adding an unforwarded key to `.env` configures the app.
+The variables above are native-process configuration names. The supplied Compose files forward SubDL, OpenSubtitles, and SubSource settings from `.env`. You can also configure providers through Owner Settings.
 
 Secrets also support `_FILE` variants; the referenced file must be mounted into the container. Deployment-managed values stay visible but read-only in Owner Settings.
 
