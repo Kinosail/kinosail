@@ -11,10 +11,11 @@ import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 
 @RunWith(RobolectricTestRunner::class)
+@Config(sdk = [35], qualifiers = "notnight")
 class KinoThemeTest {
     @get:Rule val compose = createComposeRule()
 
-    @Test @Config(qualifiers = "notnight") fun phoneShellStaysDarkWhenSystemIsLight() {
+    @Test fun phoneShellStaysDarkWhenSystemIsLight() {
         var background: Color? = null
         var primary: Color? = null
         compose.setContent {
