@@ -82,8 +82,8 @@ struct MediaCard: View {
     var body: some View {
         NavigationLink(value: resumesPlayback ? item.playingDestination : item.destination(inShows: opensShow)) {
             VStack(alignment: .leading, spacing: 10) {
-                let usesBackdrop = landscape && !item.backdrop.isEmpty
-                Artwork(path: usesBackdrop ? item.backdrop : item.poster,
+                let usesBackdrop = landscape && item.landscapeArtwork == item.backdrop && !item.backdrop.isEmpty
+                Artwork(path: landscape ? item.landscapeArtwork : item.poster,
                         symbol: item.kind.symbol, ratio: landscape ? 16 / 9 : item.isAudio ? 1 : 2 / 3,
                         dimension: landscape || dynamicTypeSize.isAccessibilitySize ? 1600 : 800,
                         fillsFrame: landscape && item.kind == .photo,
