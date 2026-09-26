@@ -18,8 +18,12 @@ const (
 	tmdbConfigurationKey  = "integrations.tmdb"
 	tmdbTokenKey          = "integrations.tmdb.token"
 	tmdbDefaultURL        = "https://api.themoviedb.org/3"
-	tmdbConfigurationHTML = `{{with .TMDB}}<section class="wide integration-setup" id="integrations.tmdb"><h2>Movie artwork and details</h2><p>Connect your own TMDB account so Kinosail can match movies and download posters, plots, genres, and cast details.</p><ol class="setup-steps"><li><a href="https://www.themoviedb.org/signup" target="_blank" rel="noopener noreferrer">Create a free TMDB account</a>, or <a href="https://www.themoviedb.org/login" target="_blank" rel="noopener noreferrer">sign in</a>.</li><li><a href="https://www.themoviedb.org/settings/api" target="_blank" rel="noopener noreferrer">Request API access</a>. Choose the use type that matches your Server.</li><li>Copy the <strong>API Read Access Token</strong>, then paste it below. Do not paste the shorter API Key.</li></ol><p><a href="https://developer.themoviedb.org/docs/getting-started" target="_blank" rel="noopener noreferrer">Open TMDB's key guide</a></p>{{template "configurationSource" .Control}}{{if .Control.Managed}}<p>TMDB access is configured outside Kinosail. Update the token there, then restart Kinosail Server.</p>{{range .Control.DockerVars}}<p>Configured via Docker: <code>{{.}}</code>.</p>{{end}}{{range .Control.YAMLKeys}}<p>Configured via YAML: <code>{{.}}</code>.</p>{{end}}{{else}}<p role="status">{{if .Configured}}TMDB access is configured.{{else}}TMDB access is not configured. Local artwork remains unchanged.{{end}}</p><form action="/settings/configuration" method="post"><input type="hidden" name="key" value="integrations.tmdb"><label>API Read Access Token<input aria-label="TMDB API Read Access Token" name="token" type="password" maxlength="4096" autocomplete="off" spellcheck="false" placeholder="{{if .Configured}}Leave blank to keep the configured token{{else}}Paste the API Read Access Token{{end}}" {{if not .Configured}}required{{end}}></label><button>Check and save TMDB access</button><p>Kinosail checks the token before saving it. Restart Kinosail Server to start filling missing artwork automatically.</p></form>{{if .Configured}}<form action="/settings/configuration/reset" method="post"><button class="quiet" name="key" value="integrations.tmdb">Remove TMDB access</button></form>{{end}}{{end}}<p>This product uses the TMDB API but is not endorsed or certified by TMDB.</p><details><summary>Technical details</summary><p>The token is hidden and stored in the protected secrets file. Configuration key: <code>integrations.tmdb.token</code>.</p></details></section>{{end}}`
+	tmdbConfigurationHTML = `{{with .TMDB}}<section class="wide integration-setup" id="integrations.tmdb"><h2>Movie artwork and details</h2><p>Connect your own TMDB account so Kinosail can match movies and download posters, plots, genres, and cast details.</p><ol class="setup-steps"><li><a href="https://www.themoviedb.org/signup" target="_blank" rel="noopener noreferrer">Create a free TMDB account</a>, or <a href="https://www.themoviedb.org/login" target="_blank" rel="noopener noreferrer">sign in</a>.</li><li><a href="https://www.themoviedb.org/settings/api" target="_blank" rel="noopener noreferrer">Request API access</a>. Choose the use type that matches your Server.</li><li>Copy the <strong>API Read Access Token</strong>, then paste it below. Do not paste the shorter API Key.</li></ol><p><a href="https://developer.themoviedb.org/docs/getting-started" target="_blank" rel="noopener noreferrer">Open TMDB's key guide</a></p>{{template "configurationSource" .Control}}{{if .Control.Managed}}<p>TMDB access is configured outside Kinosail. Update the token there, then restart Kinosail Server.</p>{{range .Control.DockerVars}}<p>Configured via Docker: <code>{{.}}</code>.</p>{{end}}{{range .Control.YAMLKeys}}<p>Configured via YAML: <code>{{.}}</code>.</p>{{end}}{{else}}<p role="status">{{if .Configured}}TMDB access is configured.{{else}}TMDB access is not configured. Local artwork remains unchanged.{{end}}</p><form action="/settings/configuration" method="post"><input type="hidden" name="key" value="integrations.tmdb"><label>API Read Access Token<input aria-label="TMDB API Read Access Token" name="token" type="password" maxlength="4096" autocomplete="off" spellcheck="false" placeholder="{{if .Configured}}Leave blank to keep the configured token{{else}}Paste the API Read Access Token{{end}}" {{if not .Configured}}required{{end}}></label><button>Check and save TMDB access</button><p>Kinosail checks the token before saving it. Takes effect immediately. Kinosail starts filling missing artwork in the background.</p></form>{{if .Configured}}<form action="/settings/configuration/reset" method="post"><button class="quiet" name="key" value="integrations.tmdb">Remove TMDB access</button></form>{{end}}{{end}}<p>This product uses the TMDB API but is not endorsed or certified by TMDB.</p><details><summary>Technical details</summary><p>The token is hidden and stored in the protected secrets file. Configuration key: <code>integrations.tmdb.token</code>.</p></details></section>{{end}}`
 )
+
+func liveTMDBSetting(key string) bool {
+	return key == tmdbTokenKey || key == "integrations.tmdb.url" || key == "integrations.tmdb.image_url"
+}
 
 type tmdbConfigurationView struct {
 	Configured bool
@@ -98,13 +102,24 @@ func (store *settingsStore) changeTMDBConfiguration(ctx context.Context, token s
 			return err
 		}
 		store.config.UpdateGUI(tmdbTokenKey, "", true)
+		store.refreshMetadataProviderLocked()
 		return nil
 	}
 	if err := configuration.Set(filepath.Dir(file), tmdbTokenKey, token); err != nil {
 		return err
 	}
 	store.config.UpdateGUI(tmdbTokenKey, token, false)
+	store.refreshMetadataProviderLocked()
 	return nil
+}
+
+func (store *settingsStore) refreshMetadataProviderLocked() {
+	if store.metadata != nil {
+		store.metadata.configureTMDB(store.config.String(tmdbTokenKey), store.config.String("integrations.tmdb.url"), store.config.String("integrations.tmdb.image_url"))
+	}
+	if store.config.String(tmdbTokenKey) != "" && store.metadataChanged != nil {
+		store.metadataChanged()
+	}
 }
 
 func saveTMDBConfiguration(writer http.ResponseWriter, request *http.Request, settings *settingsStore, redirect string) {
@@ -147,5 +162,5 @@ func apiChangeTMDBConfiguration(writer http.ResponseWriter, request *http.Reques
 		apiError(writer, err, http.StatusConflict)
 		return
 	}
-	writeJSON(writer, map[string]any{"status": "saved", "restartRequired": true}, http.StatusAccepted)
+	writeJSON(writer, map[string]any{"status": "active", "restartRequired": false}, http.StatusAccepted)
 }

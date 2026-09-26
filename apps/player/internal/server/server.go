@@ -143,6 +143,7 @@ func newApplication(config Config) http.Handler { //nolint:funlen,cyclop,gocogni
 	if metadata.err != nil {
 		return unavailableApplication(config, "application state is unavailable")
 	}
+	settings.metadata = metadata
 	probe := newMediaProbe(config.FFprobe)
 	probe.ffmpeg, probe.cacheDir = config.FFmpeg, config.CacheDir
 	probe.chapters = newChapterProvider(config.Metadata.ChaptersURL)
@@ -248,7 +249,8 @@ func newApplication(config Config) http.Handler { //nolint:funlen,cyclop,gocogni
 	metadata.register(mux, auth, index)
 	registerCollections(mux, index, lists, auth)
 	if managedLifecycle {
-		sharedmetadata.Schedule(config.Lifecycle, metadata.available(), index.AddAnalyzer, func(ctx context.Context) error { return metadata.refreshMissing(ctx, index) })
+		// TMDB may be configured after startup, so keep the refresh worker available.
+		settings.metadataChanged = sharedmetadata.Schedule(config.Lifecycle, true, index.AddAnalyzer, func(ctx context.Context) error { return metadata.refreshMissing(ctx, index) })
 	}
 	registerAPI(mux, apiServices{index, progress, lists, auth, settings, hls, probe, metadata, rooms, backups, downloads, maintenance, viewingImports, agentConnections, config.InternetAccess, config.TrustedHTTPS, shares, quickConnect, supporter, updates, homeAssistant, newRemotePlayers(), config.AuthURL, events, experience})
 	registerMediaExperience(mux, experience, index, progress)
