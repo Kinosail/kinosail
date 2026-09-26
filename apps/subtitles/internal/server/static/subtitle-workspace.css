@@ -114,6 +114,9 @@
 .subtitle-language-add label{overflow:clip;overflow-clip-margin:.25rem}
 /* WebKit does not always resolve inherited theme variables on these labels. */
 .subtitle-settings #cleanup label{color:#a0a79c}
+.subtitle-settings #cleanup input[type=checkbox]{flex:none;width:1.1rem;min-height:1.1rem;margin:0;accent-color:var(--signal)}
+.subtitle-settings #cleanup select[multiple]{height:auto;min-height:12rem;max-height:16rem;padding:.25rem;background-image:none;appearance:auto}
+.subtitle-settings #cleanup select[multiple] option{padding:.4rem .5rem}
 :root[data-theme=light] .subtitle-settings #cleanup label{color:#5b6852}
 @media(prefers-color-scheme:light){:root:not([data-theme]) .subtitle-settings #cleanup label{color:#5b6852}}
 @media(forced-colors:active){.subtitle-settings #cleanup label{color:CanvasText}}
