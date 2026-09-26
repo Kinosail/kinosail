@@ -10,6 +10,7 @@ struct LibraryScreen: View {
     #if os(iOS)
     @State private var showsLetterJump = false
     @State private var showsSearch = false
+    @State private var bottomVisible = false
     #endif
     #if os(tvOS)
     @State private var quickPlay: ScreenDestination?
@@ -114,8 +115,22 @@ struct LibraryScreen: View {
                             .buttonStyle(.bordered).tint(KinoTheme.secondaryControlTint).secondaryControlForeground()
                         }
                         #else
-                        Button(loading ? "Loading more…" : "Load more") { Task { await load(reset: false) } }
-                            .buttonStyle(.bordered).buttonBorderShape(.capsule).tint(KinoTheme.secondaryControlTint).secondaryControlForeground().disabled(loading)
+                        if loading { ProgressView("Loading more…") }
+                        if failure != nil {
+                            Button("Try again") { Task { await load(reset: false) } }
+                                .buttonStyle(.bordered).buttonBorderShape(.capsule)
+                                .tint(KinoTheme.secondaryControlTint).secondaryControlForeground()
+                        } else {
+                            Color.clear.frame(height: 1).accessibilityHidden(true)
+                                .onAppear {
+                                    bottomVisible = true
+                                    if !loading { Task { await load(reset: false) } }
+                                }
+                                .onDisappear { bottomVisible = false }
+                                .onChange(of: loading) { _, pending in
+                                    if !pending && bottomVisible && failure == nil { Task { await load(reset: false) } }
+                                }
+                        }
                         #endif
                     }
                 }

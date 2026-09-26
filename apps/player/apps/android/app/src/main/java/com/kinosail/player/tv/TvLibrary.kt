@@ -31,11 +31,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.produceState
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.runtime.withFrameNanos
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -68,6 +68,7 @@ import com.kinosail.player.core.ShowScreen
 import com.kinosail.player.core.Viewer
 import com.kinosail.player.design.KinoColor
 import com.kinosail.player.design.SailBackdrop
+import kotlinx.coroutines.flow.collect
 
 @Composable
 internal fun TvLibrary(connection: ConnectionModel, viewer: Viewer) {
@@ -79,22 +80,26 @@ internal fun TvLibrary(connection: ConnectionModel, viewer: Viewer) {
     var photoItem by remember { mutableStateOf<CatalogItem?>(null) }
     var searchEditing by remember { mutableStateOf(false) }
     val keyboard = LocalSoftwareKeyboardController.current
-    var nextFocus by remember { mutableIntStateOf(-1) }
     val submitSearch = {
         searchEditing = false
-        nextFocus = -1
         catalog.search()
         keyboard?.hide()
         Unit
     }
     val cardFocus = remember { FocusRequester() }
-    val pageFocus = remember { FocusRequester() }
     val searchFocus = remember { FocusRequester() }
     val searchEditFocus = remember { FocusRequester() }
     val showsFocus = remember { FocusRequester() }
     val detailFocus = remember { FocusRequester() }
     val gridState = rememberLazyGridState()
     LaunchedEffect(viewer.serverId, viewer.id) { catalog.open(viewer) }
+    LaunchedEffect(gridState, home, state.selected, state.items.size, state.total, state.loading, state.notice) {
+        if (!home && state.selected == null && !state.loading && state.notice == null && state.items.size < state.total) {
+            snapshotFlow { gridState.layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: -1 }.collect { last ->
+                if (last >= state.items.size - 10) catalog.loadMore()
+            }
+        }
+    }
     DisposableEffect(Unit) { onDispose { catalog.reset() } }
     BackHandler(state.selected != null && playingItem == null && photoItem == null) { catalog.closeDetail() }
     BackHandler(!home && state.selected == null && playingItem == null && photoItem == null) { home = true }
@@ -112,13 +117,6 @@ internal fun TvLibrary(connection: ConnectionModel, viewer: Viewer) {
         if (state.selected != null) detailFocus.requestFocus()
         else if (state.items.isNotEmpty()) cardFocus.requestFocus()
         else searchFocus.requestFocus()
-    }
-    LaunchedEffect(state.items.size, nextFocus) {
-        if (nextFocus >= 0 && state.items.size > nextFocus) {
-            gridState.scrollToItem(nextFocus)
-            withFrameNanos { }
-            pageFocus.requestFocus()
-        }
     }
     if (playingItem != null) {
         PlaybackScreen(requireNotNull(playingItem), viewer, tv = true, close = { playingItem = null },
@@ -207,11 +205,8 @@ internal fun TvLibrary(connection: ConnectionModel, viewer: Viewer) {
                     verticalArrangement = Arrangement.spacedBy(20.dp),
                     contentPadding = PaddingValues(bottom = 28.dp)) {
                     itemsIndexed(state.items, key = { _, item -> item.id }) { index, item ->
-                        Card(onClick = { catalog.select(item) }, modifier = when (index) {
-                                0 -> Modifier.focusRequester(cardFocus)
-                                nextFocus -> Modifier.focusRequester(pageFocus)
-                                else -> Modifier
-                            }.fillMaxWidth().semantics { contentDescription = item.title }) {
+                        Card(onClick = { catalog.select(item) }, modifier = (if (index == 0) Modifier.focusRequester(cardFocus)
+                            else Modifier).fillMaxWidth().semantics { contentDescription = item.title }) {
                             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                                 TvPoster(item, catalog, Modifier.fillMaxWidth())
                                 Text(item.title, maxLines = 2, overflow = TextOverflow.Ellipsis,
@@ -220,13 +215,8 @@ internal fun TvLibrary(connection: ConnectionModel, viewer: Viewer) {
                             }
                         }
                     }
-                    if (state.items.size < state.total) item(span = { GridItemSpan(maxLineSpan) }) {
-                        Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.CenterStart) {
-                            Button(onClick = { nextFocus = state.items.size; catalog.loadMore() },
-                                enabled = !state.loading) {
-                                Text(if (state.loading) "Loading…" else "Load more")
-                            }
-                        }
+                    if (state.loading && state.items.isNotEmpty()) item(span = { GridItemSpan(maxLineSpan) }) {
+                        Text("Loading more…", color = MaterialTheme.colorScheme.onSurfaceVariant)
                     }
                 }
             }

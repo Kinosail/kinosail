@@ -7,6 +7,10 @@ const escape = (value: string) => value.replaceAll("&", "&amp;").replaceAll('"',
 function fixture(url: URL) {
   return `<!doctype html><html lang="en"><head><title>Library</title><meta name="kinosail-csrf" content="fixture"></head><body class="subtitle-dashboard"><main id="main" data-view="library" data-error-label="Could not load" data-retry-label="Reload view" data-action-error="Could not confirm" data-action-done="Completed"><div id="subtitle-feedback" role="status" hidden></div><div id="subtitle-content" data-total="2" data-ready="0" data-wanted="0" data-pending="2" data-unavailable="0"><div id="subtitle-update" hidden>Library updated <a href="?view=library" data-subtitle-refresh>Refresh</a></div><h1 id="subtitle-list-title" tabindex="-1">Page ${url.searchParams.get("page") === "2" ? "2" : "1"}</h1><form data-subtitle-search><input type="hidden" name="view" value="library"><label>Search<input type="search" id="subtitle-search" name="q" value="${escape(url.searchParams.get("q") || "")}"></label><button>Search</button></form><details class="subtitle-file" id="file-one"><summary>Arrival</summary>File history<form data-subtitle-action data-api="/api/v1/subtitle-library/0000000000000001/fetch"><button>Find subtitles</button></form></details><a href="?view=library&page=2" data-subtitle-page>Next</a></div></main><script src="/static/subtitle-status.js"></script></body></html>`;
 }
+function infiniteFixture(url: URL) {
+  const second = url.searchParams.get("page") === "2";
+  return `<!doctype html><html lang="en"><head><title>Library</title></head><body class="subtitle-dashboard"><main id="main" data-view="library"><div id="subtitle-feedback" role="status" hidden></div><div id="subtitle-content" data-pending="0"><h1 id="subtitle-list-title">Files</h1><div class="subtitle-file-list" aria-label="Subtitle files"><details class="subtitle-file" id="file-${second ? "two" : "one"}"><summary>${second ? "Beta" : "Arrival"}</summary></details></div>${second ? "" : '<div style="height:1200px"></div>'}<nav class="subtitle-pagination"><p>1–<span data-subtitle-end>${second ? "2" : "1"}</span> of 2 files</p><p data-subtitle-scroll-status role="status"></p><div>${second ? "" : '<a href="?view=library&infinite=1&page=2" data-subtitle-next data-subtitle-page>Next</a>'}</div></nav></div></main><script src="/static/subtitle-status.js"></script></body></html>`;
+}
 async function libraryPage(page: Page, pending: number | string | null = 0) {
   const requests = { pages: 0, checks: 0, writes: 0, failPage: false, failWrite: false };
   await page.clock.install();
@@ -61,6 +65,37 @@ test("failed navigation preserves the current view and exposes a retry", async (
   requests.failPage = false;
   await page.getByRole("link", { name: "Reload view" }).click();
   await expect(page.getByRole("heading")).toHaveText("Page 2");
+});
+
+test("scrolling appends subtitle files without showing a next-page control", async ({ page }) => {
+  let pageRequests = 0;
+  let nextFailure: "http" | "malformed" | null = "http";
+  await page.route(`${origin}/**`, route => {
+    const url = new URL(route.request().url());
+    if (url.pathname === "/static/subtitle-status.js") return route.fulfill({ contentType: "text/javascript", body: script });
+    if (url.searchParams.get("page") === "2") {
+      pageRequests++;
+      if (nextFailure === "http") return route.fulfill({ status: 503 });
+      if (nextFailure === "malformed") return route.fulfill({ contentType: "text/html", body: "<main>Incomplete page</main>" });
+    }
+    return route.fulfill({ contentType: "text/html", body: infiniteFixture(url) });
+  });
+  await page.goto(`${origin}/?view=library&infinite=1`);
+  await expect(page.locator("[data-subtitle-next]")).toBeHidden();
+  await page.evaluate(() => scrollTo(0, document.body.scrollHeight));
+  await expect(page.locator("[data-subtitle-scroll-status]")).toContainText("Could not load more files");
+  expect(pageRequests).toBe(1);
+  nextFailure = "malformed";
+  await page.getByRole("link", { name: "Try again" }).click();
+  await expect.poll(() => pageRequests).toBe(2);
+  await expect(page.locator(".subtitle-file")).toHaveCount(1);
+  await expect(page.locator("[data-subtitle-scroll-status]")).toContainText("Could not load more files");
+  nextFailure = null;
+  await page.getByRole("link", { name: "Try again" }).click();
+  await expect(page.locator(".subtitle-file")).toHaveCount(2);
+  await expect(page.locator("[data-subtitle-end]")).toHaveText("2");
+  await expect(page).toHaveURL(/infinite=1$/);
+  expect(pageRequests).toBe(3);
 });
 
 test("actions keep details open and a failed write is never retried automatically", async ({ page }) => {
