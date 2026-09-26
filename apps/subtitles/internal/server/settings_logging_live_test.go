@@ -12,7 +12,7 @@ import (
 	"github.com/MikeO7/kinosail/packages/appcli"
 )
 
-func TestLoggingLevelChangesWithoutRestart(t *testing.T) { //nolint:gocognit // One Owner journey verifies activation, rejection, metadata, persistence, and reset.
+func TestLoggingLevelChangesWithoutRestart(t *testing.T) { //nolint:gocognit,cyclop // One Owner journey verifies activation, rejection, metadata, persistence, and reset.
 	previous := slog.Default()
 	appcli.ConfigureLogging("info")
 	t.Cleanup(func() { slog.SetDefault(previous) })
