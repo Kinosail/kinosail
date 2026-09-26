@@ -79,6 +79,30 @@ func TestDownloadAPIRejectsUnauthorizedMissingAndInvalidRequests(t *testing.T) {
 	}
 }
 
+func TestDownloadAPIRejectsConflictingJSONWithoutCreatingJobs(t *testing.T) {
+	t.Parallel()
+	media := filepath.Join(t.TempDir(), "film.mp4")
+	if err := os.WriteFile(media, []byte("media"), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	cache := t.TempDir()
+	manager := New(Config{Context: t.Context(), Cache: cache, Persist: persistJSON})
+	mux := http.NewServeMux()
+	RegisterAPI(mux, manager, testAccess{library.Item{ID: "item", Kind: "video", Title: "Film", Path: media}})
+	for _, body := range []string{`{"quality":"invalid","quality":"original"}`, `{"quality":"invalid","Quality":"original"}`} {
+		response := requestAPI(t, mux, http.MethodPost, "/api/v1/items/item/downloads", body, true)
+		if response.Code != http.StatusBadRequest {
+			t.Fatalf("conflicting request = %d %q", response.Code, response.Body.String())
+		}
+		if jobs := manager.List("viewer"); len(jobs) != 0 {
+			t.Fatalf("rejected request created %d jobs", len(jobs))
+		}
+		if _, err := os.Stat(filepath.Join(cache, "downloads")); !os.IsNotExist(err) {
+			t.Fatalf("rejected request created download storage: %v", err)
+		}
+	}
+}
+
 func TestDownloadAPIRedactsRemovalFailures(t *testing.T) {
 	t.Parallel()
 	directory := t.TempDir()
