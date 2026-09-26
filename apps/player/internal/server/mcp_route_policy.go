@@ -19,7 +19,7 @@ var mcpWriteRoutes = routeSet(
 )
 
 var mcpManageRoutes = routeSet(
-	"GET /api/v1/activity", "GET /api/v1/agent-connections", "GET /api/v1/backups", "GET /api/v1/configuration",
+	"GET /api/v1/agent-connections", "GET /api/v1/backups", "GET /api/v1/configuration",
 	"GET /api/v1/diagnostics", "GET /api/v1/hardware", "GET /api/v1/maintenance", "GET /api/v1/marker-analysis",
 	"GET /api/v1/metrics", "GET /api/v1/remote-access", "GET /api/v1/settings", "GET /api/v1/updates", "GET /api/v1/viewing-syncs",
 	"DELETE /api/v1/agent-connections/{id}", "DELETE /api/v1/viewing-syncs/{id}",
@@ -36,6 +36,7 @@ var mcpManageRoutes = routeSet(
 )
 
 var mcpBlockedRoutes = routeSet(
+	"GET /api/v1/activity",
 	"GET /api/v1/remote-players", "PUT /api/v1/remote-players/{id}", "POST /api/v1/remote-players/{id}/commands",
 	"DELETE /api/v1/management-access", "DELETE /api/v1/management-access/devices", "GET /api/v1/management-access", "POST /api/v1/management-access", "POST /api/v1/management-access/devices",
 	"DELETE /api/v1/cast/sessions/{id}", "DELETE /api/v1/items/{id}/bookmarks/{bookmark}", "DELETE /api/v1/items/{id}/playback-preferences",

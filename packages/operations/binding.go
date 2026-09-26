@@ -30,6 +30,7 @@ type BindingConfig struct {
 	Sessions         func() int
 	PlaybackSettings func() (string, string, string)
 	HTTPActivity     func() (uint64, uint64, uint64)
+	Failures         func() []FailureEvent
 	Workload         func() WorkloadSnapshot
 }
 
@@ -62,7 +63,11 @@ func (binding Binding) MetricsHandler() http.HandlerFunc { return MetricsHandler
 
 // DiagnosticReport projects current app state with process identity and time.
 func (binding Binding) DiagnosticReport() DiagnosticReport {
-	return projectDiagnosticReport(binding.config.Version, binding.config.Started, binding.config.Now(), binding.diagnosticSnapshot())
+	report := projectDiagnosticReport(binding.config.Version, binding.config.Started, binding.config.Now(), binding.diagnosticSnapshot())
+	if binding.config.Failures != nil {
+		report.RecentFailures = binding.config.Failures()
+	}
+	return report
 }
 
 // DiagnosticsHandler serves the current projected diagnostic report.

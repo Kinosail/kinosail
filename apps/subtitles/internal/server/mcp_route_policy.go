@@ -20,7 +20,7 @@ var mcpWriteRoutes = routeSet(
 
 var mcpManageRoutes = routeSet(
 	"GET /api/v1/subtitle-library/{id}/draft", "POST /api/v1/subtitle-library/{id}/draft", "GET /api/v1/subtitle-library/{id}/inspect", "POST /api/v1/subtitle-library/{id}/preview", "POST /api/v1/subtitle-library/{id}/apply", "POST /api/v1/subtitle-library/{id}/audio",
-	"GET /api/v1/activity", "GET /api/v1/agent-connections", "GET /api/v1/backups", "GET /api/v1/configuration",
+	"GET /api/v1/agent-connections", "GET /api/v1/backups", "GET /api/v1/configuration",
 	"POST /api/v1/subtitle-library/fetch-wanted", "POST /api/v1/subtitle-library/maintain", "POST /api/v1/subtitle-library/{id}/fetch", "POST /api/v1/subtitle-library/{id}/replacement", "POST /api/v1/subtitle-library/{id}/restore", "POST /api/v1/subtitle-providers/test",
 	"GET /api/v1/diagnostics", "GET /api/v1/hardware", "GET /api/v1/maintenance", "GET /api/v1/marker-analysis",
 	"GET /api/v1/metrics", "GET /api/v1/remote-access", "GET /api/v1/settings", "GET /api/v1/updates", "GET /api/v1/viewing-syncs",
@@ -38,6 +38,7 @@ var mcpManageRoutes = routeSet(
 )
 
 var mcpBlockedRoutes = routeSet(
+	"GET /api/v1/activity",
 	"POST /api/v1/subtitles/cleanup", "POST /api/v1/subtitles/cleanup/preview",
 	"DELETE /api/v1/management-access", "DELETE /api/v1/management-access/devices", "GET /api/v1/management-access", "POST /api/v1/management-access", "POST /api/v1/management-access/devices",
 	"GET /api/v1/subtitle-library/{id}/export",

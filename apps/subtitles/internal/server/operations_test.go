@@ -24,6 +24,13 @@ func TestOwnerCanInspectMetricsPlaybackAndRedactedDiagnostics(t *testing.T) {
 	home := getWithCookie(t, handler, "/", owner)
 	id := regexp.MustCompile(`/watch/([a-f0-9]+)`).FindStringSubmatch(home.Body.String())[1]
 	requestWithCookie(t, handler, http.MethodPost, "/progress/"+id, "seconds=90", owner)
+	failedRequest := httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/private-title?token=private-secret", nil)
+	failedRequest.Header.Set("X-Request-ID", "550e8400-e29b-41d4-a716-446655440000")
+	failed := httptest.NewRecorder()
+	handler.ServeHTTP(failed, failedRequest)
+	if failed.Code != http.StatusNotFound {
+		t.Fatalf("failed request = %d", failed.Code)
+	}
 
 	settings := getWithCookie(t, handler, "/settings", owner)
 	system := getWithCookie(t, handler, "/settings/system", owner)
@@ -36,7 +43,7 @@ func TestOwnerCanInspectMetricsPlaybackAndRedactedDiagnostics(t *testing.T) {
 	requireResponse(t, settings, http.StatusOK, `href="/settings/system"`, "Open System")
 	requireResponse(t, system, http.StatusOK, "Recent activity", "Recent playback", "Diagnostics", "Arrival", "Download safe diagnostics", `class="activity-list"`, `class="activity-row"`)
 	requireResponse(t, activityAPI, http.StatusOK, `"playback":`, `"progress":`, `"title":"Arrival"`)
-	requireResponse(t, diagnosticsAPI, http.StatusOK, `"libraryItems":1`, `"activityHealthy":true`)
+	requireResponse(t, diagnosticsAPI, http.StatusOK, `"libraryItems":1`, `"activityHealthy":true`, `"recentFailures":`, `"requestId":"550e8400-e29b-41d4-a716-446655440000"`, `"status":404`)
 	requireResponse(t, metrics, http.StatusOK, "kinosail_library_items 1", "kinosail_http_requests_total", "kinosail_audit_write_failures_total")
 	requireResponse(t, diagnostics, http.StatusOK, `"libraryItems":1`, `"httpRequests":`, `"activityHealthy":true`)
 	requireResponse(t, denied, http.StatusForbidden)
@@ -48,6 +55,11 @@ func TestOwnerCanInspectMetricsPlaybackAndRedactedDiagnostics(t *testing.T) {
 	}
 	if diagnostics.Header().Get("Content-Disposition") == "" || strings.Contains(diagnostics.Body.String(), "owner-password") || strings.Contains(diagnostics.Body.String(), mediaDir) {
 		t.Fatalf("unsafe diagnostics: headers=%v body=%s", diagnostics.Header(), diagnostics.Body.String())
+	}
+	for _, private := range []string{"private-title", "private-secret", "token="} {
+		if strings.Contains(diagnosticsAPI.Body.String(), private) {
+			t.Fatalf("diagnostics exposed %q: %s", private, diagnosticsAPI.Body.String())
+		}
 	}
 }
 
