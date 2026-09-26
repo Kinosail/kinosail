@@ -39,3 +39,24 @@ func TestProjectItemWithoutShowMetadataKeepsExistingLabels(t *testing.T) {
 		}
 	}
 }
+
+func TestEpisodeWithoutSuppliedArtworkExposesItsOwnStill(t *testing.T) {
+	for _, item := range []library.Item{
+		{ID: "special", Kind: "video", Show: "Series", Season: 0, Episode: 0},
+		{ID: "first", Kind: "video", Show: "Series", Season: 1, Episode: 1, ShowBackdrop: "show.jpg"},
+		{ID: "second", Kind: "video", Show: "Series", Season: 1, Episode: 2, ShowBackdrop: "show.jpg"},
+	} {
+		result := ProjectItem(item, catalog.PlaybackState{}, ItemAccess{})
+		if result.Artwork != "/episode-art/"+item.ID {
+			t.Fatalf("episode %s artwork = %q", item.ID, result.Artwork)
+		}
+	}
+	for _, item := range []library.Item{
+		{ID: "movie", Kind: "video"},
+		{ID: "track", Kind: "audio", Show: "Series", Episode: 1},
+	} {
+		if result := ProjectItem(item, catalog.PlaybackState{}, ItemAccess{}); result.Artwork != "" {
+			t.Fatalf("non-episode %s artwork = %q", item.ID, result.Artwork)
+		}
+	}
+}
