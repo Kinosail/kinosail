@@ -53,7 +53,6 @@ private struct DetailContent: View {
         #endif
         .task(id: "\(session.profileKey ?? ""):\(item.id)") {
             guard [.video, .music, .audiobook].contains(item.kind), let client = session.client else { return }
-            try? await Task.sleep(for: .milliseconds(250))
             guard !Task.isCancelled else { return }
             try? await session.player.prepare(item, client: client)
         }
