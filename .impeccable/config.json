@@ -3,7 +3,6 @@
   "projectRoots": [
     "apps/player",
     "apps/subtitles",
-    "apps/dashboard",
     "apps/player/apps/native"
   ]
 }

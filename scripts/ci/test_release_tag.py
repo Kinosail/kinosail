@@ -13,14 +13,14 @@ ROOT = Path(__file__).resolve().parents[2]
 
 
 class ReleaseTagTests(unittest.TestCase):
-    def test_three_independent_app_tags(self):
-        for app in ("player", "subtitles", "dashboard"):
+    def test_two_independent_app_tags(self):
+        for app in ("player", "subtitles"):
             with self.subTest(app=app):
                 self.assertEqual(parse(f"{app}-v1.2.3"),
                                  {"app": app, "version": "v1.2.3", "container_version": "1.2.3"})
 
     def test_invalid_tag_or_context_creates_no_output(self):
-        for tag in ("", "v1.2.3", "player-v01.2.3", "player-v1.2", "player-v1.2.3-extra",
+        for tag in ("", "v1.2.3", "dashboard-v1.2.3", "player-v01.2.3", "player-v1.2", "player-v1.2.3-extra",
                     "player-v1.2.3\nname=other", "other-v1.2.3", "player-v" + "1" * 80):
             with self.subTest(tag=tag[:20]), tempfile.TemporaryDirectory() as directory:
                 output = Path(directory) / "output"

@@ -1,6 +1,6 @@
 # Shared Kinosail packages
 
-This Go module contains operations and contracts reused by Player, Subtitles, and Dashboard. It is part of the root [Go workspace](../go.work), not a separately deployed service.
+This Go module contains operations and contracts reused by Player and Subtitles. It is part of the root [Go workspace](../go.work), not a separately deployed service.
 
 ## Work here
 
