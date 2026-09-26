@@ -225,7 +225,7 @@ func apiReaderProgress(index *libraryIndex, progress *progressStore) http.Handle
 			Page   int             `json:"page"`
 			Offset json.RawMessage `json:"offset"`
 		}
-		if !readMediaJSON(writer, request, &input) {
+		if !readJSON(writer, request, &input) {
 			return
 		}
 		offset, err := parseReaderOffset(input.Offset)

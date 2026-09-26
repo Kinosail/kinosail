@@ -102,7 +102,7 @@ type mediaProgressSynchronization struct {
 
 func readProgressSynchronization(writer http.ResponseWriter, request *http.Request) (mediaProgressSynchronization, bool) {
 	var input mediaProgressSynchronization
-	if !readMediaJSON(writer, request, &input) {
+	if !readJSON(writer, request, &input) {
 		return input, false
 	}
 	if input.Progress == nil || input.Expected == nil || !validSyncSnapshot(*input.Progress, true) || !validSyncSnapshot(*input.Expected, false) {
