@@ -93,16 +93,9 @@ func (store *settingsStore) changeConfiguration(ctx context.Context, key, value 
 		}
 		return store.changeSCIMConfiguration("", "", true)
 	}
-	store.mu.RLock()
-	tmdbToken := store.config.String(tmdbTokenKey)
-	store.mu.RUnlock()
-	if (key == "integrations.tmdb.url" || key == "integrations.tmdb.image_url") && !reset && !metadata.ValidProviderBaseURL(value) {
-		return errors.New("TMDB address is invalid")
-	}
-	if key == "integrations.tmdb.url" && !reset && tmdbToken != "" {
-		if err := checkTMDBToken(ctx, value, tmdbToken); err != nil {
-			return err
-		}
+	tmdbToken, err := store.validateTMDBEndpoint(ctx, key, value, reset)
+	if err != nil {
+		return err
 	}
 	configured := settingsops.ConfigurationStore[configuration.Source]{
 		File: store.file, Lock: &store.mu, Managed: store.config.Managed, Source: store.config.Source,
@@ -124,6 +117,22 @@ func (store *settingsStore) changeConfiguration(ctx context.Context, key, value 
 		},
 	}
 	return configured.Change(key, value, reset)
+}
+
+func (store *settingsStore) validateTMDBEndpoint(ctx context.Context, key, value string, reset bool) (string, error) {
+	store.mu.RLock()
+	token := store.config.String(tmdbTokenKey)
+	store.mu.RUnlock()
+	if reset || key != "integrations.tmdb.url" && key != "integrations.tmdb.image_url" {
+		return token, nil
+	}
+	if !metadata.ValidProviderBaseURL(value) {
+		return "", errors.New("TMDB address is invalid")
+	}
+	if key == "integrations.tmdb.url" && token != "" {
+		return token, checkTMDBToken(ctx, value, token)
+	}
+	return token, nil
 }
 
 func showConfiguration(settings *settingsStore) http.HandlerFunc {
