@@ -173,7 +173,7 @@ struct ArtworkLoaderTests {
         #expect(fixture.requests.count == 2)
     }
 
-    @Test(arguments: ["", "/api/v1/me", "https://elsewhere.example/art/movie", "/art/../api/v1/me"])
+    @Test(arguments: ["", "/api/v1/me", "https://elsewhere.example/art/movie", "/art/../api/v1/me", "/episode-art/../api/v1/me"])
     func rejectsInvalidPathsBeforeNetwork(_ path: String) async throws {
         let fixture = try HTTPFixture(body: "{}")
         defer { fixture.remove() }

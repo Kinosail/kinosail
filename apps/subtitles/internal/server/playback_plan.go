@@ -36,8 +36,8 @@ func viewerPlaybackPolicy(viewer viewerProfile) ViewerPolicy {
 }
 
 func subtitleLanguageFromPath(media, subtitle string) string {
-	label := lower(subtitleLabel(media, subtitle))
-	if language, _, _ := strings.Cut(label, " · "); len(language) >= 2 && len(language) <= 8 {
+	_, language := subtitleTrackLanguage(subtitle, strings.TrimSuffix(media, filepath.Ext(media)), nil)
+	if language != "" {
 		return language
 	}
 	return "und"
@@ -46,6 +46,8 @@ func subtitleLanguageFromPath(media, subtitle string) string {
 func subtitleRoleFromPath(path string) string {
 	name := lower(filepath.Base(path))
 	switch {
+	case strings.Contains(name, ".forced."):
+		return "forced"
 	case strings.Contains(name, ".sdh."), strings.Contains(name, ".cc."), strings.Contains(name, ".hi."):
 		return "captions"
 	case strings.Contains(name, ".commentary."):

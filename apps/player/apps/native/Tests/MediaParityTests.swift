@@ -3,6 +3,20 @@ import Testing
 @testable import KinosailPlayer
 
 struct MediaParityTests {
+    @Test func episodeCardsPreferTheirOwnStillOverTheSharedShowBackdrop() throws {
+        let server = try ServerAddress("https://media.example")
+        let episode = try MediaItem(.object(["id": .string("first"), "kind": .string("video"), "title": .string("First"),
+                                     "show": .string("Series"), "episode": .number(1), "artwork": .string("/episode-art/first"),
+                                     "backdrop": .string("/backdrop/first")]), server: server)
+        let movie = try MediaItem(.object(["id": .string("movie"), "kind": .string("video"), "title": .string("Movie"),
+                                   "artwork": .string("/art/movie"), "backdrop": .string("/backdrop/movie")]), server: server)
+        let olderEpisode = try MediaItem(.object(["id": .string("older"), "kind": .string("video"), "title": .string("Older"),
+                                          "show": .string("Series"), "backdrop": .string("/backdrop/older")]), server: server)
+        #expect(episode.landscapeArtwork == "/episode-art/first")
+        #expect(movie.landscapeArtwork == "/backdrop/movie")
+        #expect(olderEpisode.landscapeArtwork == "/backdrop/older")
+    }
+
     @Test func foregroundArtworkStaysContainedUnlessExplicitlyFilled() {
         #expect(Artwork.contentMode(fillsFrame: false) == .fit)
         #expect(Artwork.contentMode(fillsFrame: true) == .fill)

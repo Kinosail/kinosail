@@ -62,7 +62,7 @@ func subtitleCoverageAll(item library.Item, languages []string) (bool, []string,
 	for _, path := range item.Subtitles {
 		label, language := subtitleTrackLanguage(path, mediaBase, languages)
 		labels = append(labels, label)
-		if language != "" {
+		if language != "" && subtitleRoleFromPath(path) != "forced" {
 			available[language]++
 			reportedLanguages = append(reportedLanguages, language)
 		}
