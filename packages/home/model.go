@@ -37,6 +37,7 @@ type PersonalProjection[Resume any] struct {
 	Continue        []Resume
 	List            []library.Item
 	Played          []library.Item
+	Unwatched       []library.Item
 	CollectionCount int
 	PlaylistCount   int
 }
@@ -73,6 +74,7 @@ type Page[Show, Resume, Playlist, Collection any] struct {
 	List                              []library.Item
 	Recent                            []ShelfItem
 	MovieGenres                       []MovieGenre
+	HomeShelves                       []HomeShelf
 	Played                            []ShelfItem
 	Query                             string
 	View                              string
