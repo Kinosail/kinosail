@@ -38,7 +38,7 @@ struct TouchPlaybackView: View {
         return nil
     }
     private var canHide: Bool {
-        playback.isPlaying && pending == nil && error == nil && !scrubbing && sheet == nil && !showsVolume && !voiceOver && !switchControl
+        playback.isPlaying && pending == nil && error == nil && !presentation.pictureInPicture && !scrubbing && sheet == nil && !showsVolume && !voiceOver && !switchControl
     }
 
     var body: some View {
@@ -55,10 +55,10 @@ struct TouchPlaybackView: View {
                     .accessibilityLabel("Show playback controls")
                     .accessibilityAddTraits(.isButton)
                     .accessibilityAction { reveal() }
-                    .accessibilityHidden(controlsVisible)
+                    .accessibilityHidden(controlsVisible || presentation.pictureInPicture).allowsHitTesting(!presentation.pictureInPicture)
             }
             if presentation.pictureInPicture {
-                ContentUnavailableView("Playing in Picture in Picture", systemImage: "pip", description: Text("Use the floating player to return here."))
+                TouchPictureInPictureView { presentation.stopPictureInPicture() }
             }
             GeometryReader { geometry in
                 let area = TouchPlaybackLayout.controlArea(size: geometry.size, division: geometry.playbackDivision)
@@ -83,8 +83,8 @@ struct TouchPlaybackView: View {
                 }
                 .frame(width: area.width, height: area.height).position(x: area.midX, y: area.midY)
             }
-            .opacity(controlsVisible || error != nil ? 1 : 0).allowsHitTesting(controlsVisible || error != nil)
-            .accessibilityHidden(!controlsVisible && error == nil)
+            .opacity(!presentation.pictureInPicture && (controlsVisible || error != nil) ? 1 : 0).allowsHitTesting(!presentation.pictureInPicture && (controlsVisible || error != nil))
+            .accessibilityHidden(presentation.pictureInPicture || (!controlsVisible && error == nil))
         }
         .background(.black)
         .foregroundStyle(.white)
