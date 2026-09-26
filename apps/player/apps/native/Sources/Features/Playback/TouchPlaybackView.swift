@@ -224,11 +224,11 @@ struct TouchPlaybackView: View {
             Button { sheet = .tracks; reveal() } label: {
                 HStack(spacing: 6) {
                     Image(systemName: playback.selectedSubtitleTrackID != nil ? "captions.bubble.fill" : "captions.bubble")
-                    if showLabel { Text("Audio & subtitles").fixedSize() }
+                    if showLabel { Text(playback.trackControlsTitle).fixedSize() }
                 }
                 .font(.subheadline)
             }
-            .accessibilityLabel("Audio & subtitles")
+            .accessibilityLabel(playback.trackControlsTitle)
             .frame(minWidth: 44, minHeight: 44).disabled(playback.audioTracks.isEmpty && playback.subtitleTracks.isEmpty)
             Spacer(minLength: 0)
             Button("\(playback.playbackRate.formatted())×") { sheet = .speed; reveal() }
