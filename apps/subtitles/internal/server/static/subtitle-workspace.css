@@ -2,14 +2,15 @@
 /* Subtitle workspace: the next file decision leads; coverage gives context. */
 .subtitle-dashboard{padding-left:0}
 .subtitle-dashboard>.app-header{position:sticky;inset:0 0 auto;display:grid;grid-template:"brand nav actions" auto/auto 1fr auto;align-items:center;width:100%;height:auto;min-height:80px;padding:1rem clamp(1.25rem,4vw,4rem);border:0;border-bottom:1px solid var(--line);background:var(--bg)}
-.subtitle-dashboard .brand-lockup{padding:0;gap:.8rem}
+.subtitle-dashboard .brand-lockup{min-width:0;padding:0;gap:.8rem}
 .subtitle-brand-name{font-size:1rem;font-weight:800}
 .subtitle-brand-name small{font-size:.75rem;font-weight:500}
-.subtitle-dashboard .app-header nav{display:flex;flex-direction:row;justify-content:center;align-items:center;gap:.4rem;margin:0;padding:0;background:none}
+.subtitle-dashboard .web-beta-badge{display:inline-flex;flex:none;align-items:center;padding:5px 6px;border:1px solid var(--line-strong);border-radius:4px;color:var(--signal);font-size:10px;font-weight:800;line-height:1;letter-spacing:.08em;text-transform:uppercase}
+.subtitle-dashboard .app-header nav{display:flex;flex-direction:row;justify-content:space-between;justify-self:center;align-items:center;gap:.4rem;width:min(100%,32rem);margin:0;padding:0;background:none}
 .subtitle-dashboard .app-header nav a{min-height:48px;padding:.7rem 1.2rem;border-radius:10px;font-size:.9rem;font-weight:650}
 .subtitle-dashboard .app-header nav a.active{background:none;color:var(--signal);box-shadow:inset 0 -2px var(--signal)}
-.subtitle-dashboard .subtitle-header-settings{grid-area:actions;margin:0;padding:0;border:0}
-.subtitle-dashboard .header-link{min-height:44px;padding:.6rem 1rem;border:1px solid var(--line);border-radius:10px}
+.subtitle-dashboard .subtitle-header-settings{grid-area:actions;display:flex;align-items:center;gap:.4rem;margin:0;padding:0;border:0;white-space:nowrap}
+.subtitle-dashboard .header-link{min-height:44px;padding:.6rem 1rem;border:1px solid var(--line);border-radius:10px;white-space:nowrap}
 .subtitle-dashboard>.subtitle-main{width:min(100%,96rem);padding:2.5rem clamp(1.25rem,4vw,4rem) 5rem}
 .subtitle-page-heading{align-items:center;padding-bottom:1.5rem;border:0}
 .subtitle-page-heading h1{margin:0;font-size:clamp(2rem,3.5vw,3.25rem);font-weight:800;line-height:1.1;letter-spacing:-.035em}
@@ -55,12 +56,19 @@
 .subtitle-background-note{font-size:.9rem}
 @media(max-width:900px){
   .subtitle-dashboard>.app-header{display:flex;justify-content:space-between;min-height:72px;padding:1rem 1.25rem}
-  .subtitle-dashboard .app-header nav{position:fixed;inset:auto 0 0;z-index:60;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));justify-content:stretch;gap:.4rem;padding:.4rem .75rem max(.4rem,env(safe-area-inset-bottom));border-top:1px solid var(--line);background:var(--surface)}
+  .subtitle-dashboard .brand-lockup{flex:1;overflow:hidden}
+  .subtitle-brand-name{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .subtitle-brand-name small,.subtitle-dashboard .supporter-long{display:none}
+  .subtitle-dashboard .app-header nav{position:fixed;inset:auto 0 0;z-index:60;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));justify-content:stretch;gap:.4rem;width:100%;padding:.4rem .75rem max(.4rem,env(safe-area-inset-bottom));border-top:1px solid var(--line);background:var(--surface)}
   .subtitle-dashboard .app-header nav a{justify-content:center;padding:.6rem;font-size:.85rem;min-height:48px}
+  .subtitle-dashboard .subtitle-header-settings{flex:none}
+  .subtitle-dashboard .subtitle-header-settings .header-link{padding:.6rem .5rem}
   .subtitle-dashboard>.subtitle-main{padding-top:1.5rem;padding-bottom:7rem}
   .subtitle-filters{top:72px}.subtitle-overview{gap:1.5rem;padding:1.5rem 0;grid-template-columns:minmax(0,1fr) 13rem}
   .subtitle-coverage-stat{padding-left:1.5rem}
 }
+@media(forced-colors:active){.subtitle-dashboard .web-beta-badge{border-color:CanvasText;color:CanvasText}}
+@media(max-width:360px){.subtitle-dashboard .subtitle-brand-name{display:none}}
 @media(max-width:700px){
   .subtitle-page-heading{gap:.5rem;align-items:center;flex-direction:row;flex-wrap:wrap;padding-bottom:1rem}
   .subtitle-page-heading>.subtitle-text-link{font-size:.8rem}
@@ -104,6 +112,11 @@
 
 /* Keep native selector overflow inside its label while preserving the focus ring. */
 .subtitle-language-add label{overflow:clip;overflow-clip-margin:.25rem}
+/* WebKit does not always resolve inherited theme variables on these labels. */
+.subtitle-settings #cleanup label{color:#a0a79c}
+:root[data-theme=light] .subtitle-settings #cleanup label{color:#5b6852}
+@media(prefers-color-scheme:light){:root:not([data-theme]) .subtitle-settings #cleanup label{color:#5b6852}}
+@media(forced-colors:active){.subtitle-settings #cleanup label{color:CanvasText}}
 
 /* Shared CinemaSail family background, with accessibility fallbacks. */
 :root:not([data-theme=light]) body.subtitle-dashboard{background:linear-gradient(180deg,rgba(11,13,11,.6),rgba(11,13,11,.8) 58%,var(--bg)),url('/static/cinema-backdrop.jpg?v=2') center top/cover fixed no-repeat,var(--bg)}

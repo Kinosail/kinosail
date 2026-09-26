@@ -166,7 +166,7 @@ extension PlaybackEngine {
         audioOptions = audioGroup?.options ?? []
         subtitleOptions = subtitleGroup?.options ?? []
         audioTracks = audioOptions.enumerated().map { PlayerTrack(id: String($0.offset), title: $0.element.displayName) }
-        subtitleTracks = subtitleOptions.enumerated().map { PlayerTrack(id: String($0.offset), title: $0.element.displayName) }
+        subtitleTracks = subtitleOptions.enumerated().map { PlayerTrack(id: String($0.offset), title: PlayerTrack.embeddedSubtitleTitle($0.element.displayName)) }
         subtitleTracks += (source?.subtitles ?? []).enumerated().map { PlayerTrack(id: "external:\($0.offset)", title: $0.element.label) }
     }
 

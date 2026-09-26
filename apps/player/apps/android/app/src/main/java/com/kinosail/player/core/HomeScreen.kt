@@ -2,7 +2,6 @@ package com.kinosail.player.core
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -60,22 +59,20 @@ internal fun HomeScreen(viewer: Viewer, catalog: CatalogModel, tv: Boolean, nowP
     LaunchedEffect(featured?.id, tv) {
         if (tv && featured != null) { withFrameNanos { }; playFocus.requestFocus() }
     }
-    val dark = tv || isSystemInDarkTheme()
-    BoxWithConstraints(Modifier.fillMaxSize().background(if (dark) KinoColor.background else MaterialTheme.colorScheme.background)) {
+    BoxWithConstraints(Modifier.fillMaxSize().background(KinoColor.background)) {
         val wideTouch = !tv && maxWidth >= 600.dp
         val heroWidth = if (tv) 140 else if (wideTouch) (maxWidth.value / 4).toInt().coerceIn(240, 320) else 120
-        if (dark) SailBackdrop()
+        SailBackdrop()
         Column(Modifier.fillMaxSize().safeDrawingPadding().padding(if (tv) 56.dp else 20.dp),
             verticalArrangement = Arrangement.spacedBy(if (tv) 24.dp else 16.dp)) {
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically) {
                 Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    Text("Kinosail", style = MaterialTheme.typography.titleLarge,
-                        color = if (dark) KinoColor.text else MaterialTheme.colorScheme.onBackground)
+                    Text("Kinosail", style = MaterialTheme.typography.titleLarge, color = KinoColor.text)
                     Text("For you", style = if (tv) MaterialTheme.typography.displayLarge
                         else MaterialTheme.typography.headlineLarge,
-                        color = if (dark) KinoColor.text else MaterialTheme.colorScheme.onBackground)
-                    Text(viewer.name, color = if (dark) KinoColor.muted else MaterialTheme.colorScheme.onSurfaceVariant)
+                        color = KinoColor.text)
+                    Text(viewer.name, color = KinoColor.muted)
                 }
                 if (tv) androidx.tv.material3.Button(onClick = browse) {
                     androidx.tv.material3.Text("Browse Library")
@@ -93,7 +90,7 @@ internal fun HomeScreen(viewer: Viewer, catalog: CatalogModel, tv: Boolean, nowP
                 if (state.loading) item { CircularProgressIndicator(color = KinoColor.signal) }
                 state.notice?.let { notice -> item {
                     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                        Text(notice, color = if (dark) KinoColor.text else MaterialTheme.colorScheme.error)
+                        Text(notice, color = KinoColor.text)
                         if (tv) androidx.tv.material3.Button(onClick = model::retry) {
                             androidx.tv.material3.Text("Try again")
                         } else TextButton(onClick = model::retry) { Text("Try again") }
@@ -102,11 +99,11 @@ internal fun HomeScreen(viewer: Viewer, catalog: CatalogModel, tv: Boolean, nowP
                 if (featured != null) item {
                     Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(if (tv) 32.dp else 16.dp),
                         verticalAlignment = Alignment.CenterVertically) {
-                        HomeArtwork(featured, catalog, heroWidth, tv)
+                        HomeArtwork(featured, catalog, heroWidth)
                         Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
                             Text(featured.title, style = if (tv || wideTouch) MaterialTheme.typography.headlineLarge
                                 else MaterialTheme.typography.titleLarge,
-                                color = if (dark) KinoColor.text else MaterialTheme.colorScheme.onBackground)
+                                color = KinoColor.text)
                             val label = if (featured.progress.seconds > 0 && !featured.progress.watched) "Resume" else "Play"
                             if (tv) {
                                 androidx.tv.material3.Button(onClick = { play(featured) },
@@ -131,8 +128,7 @@ internal fun HomeScreen(viewer: Viewer, catalog: CatalogModel, tv: Boolean, nowP
                 }
                 if (!state.loading && state.notice == null && state.continueWatching.isEmpty() &&
                     state.recent.isEmpty()) item {
-                    Text("Media added to your Server will appear here.",
-                        color = if (dark) KinoColor.muted else MaterialTheme.colorScheme.onSurfaceVariant)
+                    Text("Media added to your Server will appear here.", color = KinoColor.muted)
                 }
             }
         }
@@ -143,14 +139,13 @@ internal fun HomeScreen(viewer: Viewer, catalog: CatalogModel, tv: Boolean, nowP
 private fun HomeShelf(title: String, items: List<CatalogItem>, catalog: CatalogModel, tv: Boolean, wideTouch: Boolean,
                       open: (CatalogItem) -> Unit) {
     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-        Text(title, style = MaterialTheme.typography.titleLarge,
-            color = if (tv || isSystemInDarkTheme()) KinoColor.text else MaterialTheme.colorScheme.onBackground)
+        Text(title, style = MaterialTheme.typography.titleLarge, color = KinoColor.text)
         LazyRow(horizontalArrangement = Arrangement.spacedBy(if (tv) 20.dp else if (wideTouch) 16.dp else 12.dp)) {
             items(items, key = CatalogItem::id) { item ->
                 if (tv) androidx.tv.material3.Card(onClick = { open(item) },
                     modifier = Modifier.width(200.dp).semantics { contentDescription = item.title }) {
                     Column {
-                        HomeArtwork(item, catalog, 200, tv = true)
+                        HomeArtwork(item, catalog, 200)
                         androidx.tv.material3.Text(item.title, maxLines = 2, modifier = Modifier.padding(8.dp))
                     }
                 } else androidx.compose.material3.Card(onClick = { open(item) },
@@ -158,7 +153,7 @@ private fun HomeShelf(title: String, items: List<CatalogItem>, catalog: CatalogM
                         .semantics { contentDescription = item.title },
                     colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)) {
                     Column {
-                        HomeArtwork(item, catalog, if (wideTouch) 190 else 144, tv = false)
+                        HomeArtwork(item, catalog, if (wideTouch) 190 else 144)
                         Text(item.title, maxLines = 2, modifier = Modifier.padding(8.dp))
                     }
                 }
@@ -168,16 +163,15 @@ private fun HomeShelf(title: String, items: List<CatalogItem>, catalog: CatalogM
 }
 
 @Composable
-private fun HomeArtwork(item: CatalogItem, catalog: CatalogModel, width: Int, tv: Boolean) {
+private fun HomeArtwork(item: CatalogItem, catalog: CatalogModel, width: Int) {
     val bitmap by produceState<android.graphics.Bitmap?>(null, item.artwork, catalog, width) {
         value = catalog.artwork(item.artwork, 400)
     }
-    val dark = tv || isSystemInDarkTheme()
     Box(Modifier.width(width.dp).aspectRatio(2f / 3f)
-        .background(if (dark) KinoColor.raised else KinoColor.lightRaised),
+        .background(KinoColor.raised),
         contentAlignment = Alignment.Center) {
         Text(item.title.firstOrNull()?.uppercase() ?: "K",
-            color = if (dark) KinoColor.signal else KinoColor.lightSignal,
+            color = KinoColor.signal,
             style = MaterialTheme.typography.displayMedium, modifier = Modifier.clearAndSetSemantics { })
         bitmap?.let { Image(it.asImageBitmap(), contentDescription = null,
             contentScale = ContentScale.Crop, modifier = Modifier.fillMaxSize()) }

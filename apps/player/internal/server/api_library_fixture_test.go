@@ -12,6 +12,7 @@ var libraryAPIFixture = servertest.LibraryAPIFixture{
 		return server.New(server.Config{MediaDir: media, DataDir: data, RequireAuth: requireAuth})
 	},
 	SignIn:          signInTestProfile,
+	SubtitleLabels:  [2]string{"English · Subtitles", "Spanish · Subtitles"},
 	Server:          apiServer,
 	StoredState:     storedState,
 	StoredProfileID: storedProfileID,

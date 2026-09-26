@@ -95,7 +95,7 @@ private struct IOSEpisodeRow: View {
     @Environment(\.horizontalSizeClass) private var sizeClass
 
     private var title: String { ShowSeasonSelection.episodeTitle(item) }
-    private var still: String { item.backdrop.isEmpty ? item.artwork : item.backdrop }
+    private var thumbnailWidth: CGFloat { sizeClass == .regular ? 112 : 76 }
     private var accessibilitySummary: String {
         let state = isNext ? "next" : item.progress.watched ? "watched" :
             item.progress.seconds > 0 ? "resume at \(item.progress.seconds.clock)" : ""
@@ -107,8 +107,7 @@ private struct IOSEpisodeRow: View {
             NavigationLink(value: ScreenDestination.detail(item.id)) {
                 HStack(alignment: .top, spacing: 12) {
                     if !dynamicTypeSize.isAccessibilitySize {
-                        Artwork(path: still, symbol: "play.rectangle", ratio: 16 / 9, dimension: 500)
-                            .frame(width: sizeClass == .regular ? 112 : 76).clipShape(.rect(cornerRadius: 8))
+                        Color.clear.frame(width: thumbnailWidth, height: 0)
                     }
                     VStack(alignment: .leading, spacing: 4) {
                         Text(String(format: "%02d", item.episode))
@@ -128,6 +127,16 @@ private struct IOSEpisodeRow: View {
                     .frame(maxWidth: .infinity, alignment: .leading)
                 }
                 .frame(maxWidth: .infinity, minHeight: 72, alignment: .leading)
+                .background(alignment: .leading) {
+                    if !dynamicTypeSize.isAccessibilitySize {
+                        GeometryReader { geometry in
+                            Artwork(path: item.landscapeArtwork, symbol: "play.rectangle", dimension: 500,
+                                    fillsFrame: true, canvasSize: CGSize(width: thumbnailWidth, height: geometry.size.height))
+                                .clipShape(.rect(cornerRadius: 8))
+                        }
+                        .frame(width: thumbnailWidth)
+                    }
+                }
                 .contentShape(.rect)
             }
             .buttonStyle(.plain)

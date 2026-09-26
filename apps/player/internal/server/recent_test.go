@@ -42,6 +42,49 @@ func TestHomeShowsRecentlyAddedInNewestFirstOrder(t *testing.T) {
 	}
 }
 
+func TestHomeShowsMovieGenresFromVisibleMovies(t *testing.T) { //nolint:cyclop // One public Home journey covers multi-genre cards and exclusions.
+	t.Parallel()
+	mediaDir := t.TempDir()
+	for name, genres := range map[string]string{
+		"Arrival":  "<genre>Drama</genre><genre>Science Fiction</genre>",
+		"Contact":  "<genre>Drama</genre>",
+		"No Genre": "",
+	} {
+		if err := os.WriteFile(filepath.Join(mediaDir, name+".mp4"), nil, 0o600); err != nil {
+			t.Fatal(err)
+		}
+		if err := os.WriteFile(filepath.Join(mediaDir, name+".nfo"), []byte("<movie><title>"+name+"</title>"+genres+"</movie>"), 0o600); err != nil {
+			t.Fatal(err)
+		}
+	}
+	season := filepath.Join(mediaDir, "Series", "Season 01")
+	if err := os.MkdirAll(season, 0o700); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(filepath.Join(season, "Series - S01E01 - Pilot.mkv"), nil, 0o600); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(filepath.Join(mediaDir, "Series", "tvshow.nfo"), []byte("<tvshow><title>Series</title><genre>Drama</genre></tvshow>"), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	handler := server.New(server.Config{MediaDir: mediaDir})
+	response := httptest.NewRecorder()
+	handler.ServeHTTP(response, httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/", nil))
+	section := regexp.MustCompile(`(?s)<section class="movie-genres home-shelf".*?</section>`).FindString(response.Body.String())
+	if response.Code != http.StatusOK || !strings.Contains(section, "Movie genres") ||
+		!strings.Contains(section, ">Drama<") || !strings.Contains(section, ">Science Fiction<") ||
+		strings.Count(section, ">Arrival<") != 2 || strings.Count(section, ">Contact<") != 1 ||
+		strings.Contains(section, ">Pilot<") || strings.Contains(section, ">No Genre<") ||
+		!regexp.MustCompile(`href="/item/[a-f0-9]+"`).MatchString(section) {
+		t.Fatalf("movie genres = %d %q", response.Code, section)
+	}
+	filtered := httptest.NewRecorder()
+	handler.ServeHTTP(filtered, httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/?view=movies", nil))
+	if strings.Contains(filtered.Body.String(), `class="movie-genres home-shelf"`) {
+		t.Fatal("movie genres appeared outside Home")
+	}
+}
+
 func TestHomePrioritizesVisibleRecentArtwork(t *testing.T) {
 	t.Parallel()
 
