@@ -53,11 +53,7 @@ func HomeShelves(items, unwatched []library.Item, artwork, showTitles map[string
 func recentFor(items []library.Item, artwork, showTitles map[string]string, kind string) []ShelfItem {
 	selected := make([]library.Item, 0, len(items))
 	for _, item := range items {
-		matches := kind == "movie" && item.Kind == "video" && item.Show == "" ||
-			kind == "show" && item.Kind == "video" && item.Show != "" ||
-			kind == "other" && item.Kind != "video" && item.Kind != "audio" && item.Kind != "audiobook" ||
-			item.Kind == kind
-		if matches {
+		if homeKind(item, kind) {
 			selected = append(selected, item)
 		}
 	}
@@ -70,6 +66,19 @@ func recentFor(items []library.Item, artwork, showTitles map[string]string, kind
 		}
 	}
 	return cards
+}
+
+func homeKind(item library.Item, kind string) bool {
+	switch kind {
+	case "movie":
+		return item.Kind == "video" && item.Show == ""
+	case "show":
+		return item.Kind == "video" && item.Show != ""
+	case "other":
+		return item.Kind != "video" && item.Kind != "audio" && item.Kind != "audiobook"
+	default:
+		return item.Kind == kind
+	}
 }
 
 // MovieGenres shows the most populated genres from the visible movie catalog.
