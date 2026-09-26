@@ -44,8 +44,10 @@ struct KinosailApp: App {
 }
 
 private struct LaunchingAppShell: View {
+    @Environment(AppSession.self) private var session
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var showingLaunch = true
+    @State private var launchMinimumElapsed = false
 
     var body: some View {
         ZStack {
@@ -71,6 +73,10 @@ private struct LaunchingAppShell: View {
         .task {
             do { try await Task.sleep(for: .milliseconds(250)) }
             catch { return }
+            launchMinimumElapsed = true
+        }
+        .onChange(of: launchMinimumElapsed && !session.restoring) { _, ready in
+            guard ready else { return }
             if reduceMotion {
                 showingLaunch = false
             } else {
