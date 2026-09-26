@@ -39,15 +39,16 @@ func (store *metadataStore) refreshMissing(ctx context.Context, index *libraryIn
 
 func metadataRefresh(store *metadataStore, index *libraryIndex) sharedoperations.MetadataRefresh {
 	items, _ := index.Snapshot()
+	provider := store.providerSnapshot()
 	return sharedoperations.MetadataRefresh{
-		Available: store.available(), Configured: store.configured(), Items: items,
+		Available: provider.available(), Configured: provider.configured(), Items: items,
 		Record: func(id string) (metadata.Record, bool) {
 			store.mu.RLock()
 			defer store.mu.RUnlock()
 			record, found := store.records[id]
 			return record, found
 		},
-		Resolve: store.resolveRecord, ResolveEpisode: store.resolveEpisodeRecord, Download: store.downloadMetadataImages,
+		Resolve: provider.resolveRecord, ResolveEpisode: provider.resolveEpisodeRecord, Download: provider.downloadMetadataImages,
 		Store: store.setAll, RefreshLibrary: index.Refresh,
 	}
 }
