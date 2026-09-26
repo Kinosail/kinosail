@@ -20,8 +20,8 @@ struct EpisodeStillArtworkTests {
         let fixture = try HTTPFixture(data: data as Data, headers: ["Content-Type": "image/png"])
         defer { fixture.remove() }
         let loader = ArtworkLoader()
-        let first = try await loader.image(path: "/episode-art/first", client: fixture.client, dimension: 400)
-        let cached = try await loader.image(path: "/episode-art/first", client: fixture.client, dimension: 400)
+        let first = try await loader.image(path: "/episode-art/first", client: fixture.client, dimension: 500)
+        let cached = try await loader.image(path: "/episode-art/first", client: fixture.client, dimension: 500)
         #expect(first === cached)
         #expect(fixture.requests.count == 1)
         #expect(fixture.requests.first?.url?.path == "/episode-art/first")
