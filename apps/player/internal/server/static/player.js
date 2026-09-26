@@ -87,13 +87,14 @@ const codecTypes = [
   ["h264", 'video/mp4; codecs="avc1.64002a"'],
 ];
 const supportsCodec = async ([codec, contentType]) => {
+  const mediaSourcePlayback = (typeof Hls !== "undefined" && Hls.isSupported()) || !player.canPlayType("application/vnd.apple.mpegurl");
   try {
     if (navigator.mediaCapabilities?.decodingInfo) {
-      const result = await navigator.mediaCapabilities.decodingInfo({type: "media-source", video: mediaVideo(contentType)});
+      const result = await navigator.mediaCapabilities.decodingInfo({type: mediaSourcePlayback ? "media-source" : "file", video: mediaVideo(contentType)});
       return result.supported && result.smooth && (codec === "h264" || result.powerEfficient);
     }
   } catch (_) {}
-  return (typeof MediaSource !== "undefined" && MediaSource.isTypeSupported(contentType)) || player.canPlayType(contentType) !== "";
+  return mediaSourcePlayback ? typeof MediaSource !== "undefined" && MediaSource.isTypeSupported(contentType) : player.canPlayType(contentType) !== "";
 };
 const negotiateStream = async (generation) => {
   if (!stream || !player.dataset.playbackApi) return;
