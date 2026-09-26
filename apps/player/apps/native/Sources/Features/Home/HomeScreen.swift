@@ -68,9 +68,8 @@ struct HomeScreen: View {
                         if homeMode == .listen {
                             ResumeRows(items: selection.continuation, title: "Continue listening", showsAll: false)
                         } else {
-                            MediaShelf(title: "Up Next", items: Array(selection.continuation.prefix(4)),
-                                       landscape: true, resumesPlayback: true,
-                                       moreTitle: "See all", moreDestination: .library(.history))
+                            MediaShelf(title: "Continue watching", items: selection.watchShelf,
+                                       landscape: true, resumesPlayback: true)
                         }
                     }
                     if homeMode == .watch {
@@ -172,6 +171,7 @@ struct HomeSelection {
     let featuredIsContinuing: Bool
     let continuation: [MediaItem]
     let recent: [MediaItem]
+    var watchShelf: [MediaItem] { Array(continuation.prefix(15)) }
 
     init(continueWatching: [MediaItem], recent: [MediaItem], mode: PlayerMode? = nil) {
         let watching = continueWatching.filter { mode?.includes($0) ?? true }
