@@ -8,7 +8,7 @@ import (
 	"time"
 )
 
-func TestFailureLogBoundsAndRedactsUntrustedRequestValues(t *testing.T) {
+func TestFailureLogBoundsAndRedactsUntrustedRequestValues(t *testing.T) { //nolint:cyclop // One privacy matrix covers malformed fields and benign outcomes.
 	t.Parallel()
 	var log FailureLog
 	const requestID = "550e8400-e29b-41d4-a716-446655440000"

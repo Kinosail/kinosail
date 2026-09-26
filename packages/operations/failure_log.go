@@ -24,7 +24,7 @@ type FailureLog struct {
 }
 
 // Record accepts only safe, bounded fields; raw paths and error text are never retained.
-func (log *FailureLog) Record(requestID, method, path string, status int, duration time.Duration) {
+func (log *FailureLog) Record(requestID, method, path string, status int, duration time.Duration) { //nolint:cyclop // The checks bound each field before it enters Owner diagnostics.
 	if log == nil || status < 400 || status > 599 {
 		return
 	}
@@ -62,22 +62,23 @@ func safeFailureRequestID(value string) bool {
 		return false
 	}
 	for index := range value {
-		if len(value) == 36 && (index == 8 || index == 13 || index == 18 || index == 23) {
+		if len(value) == 36 && uuidSeparator(index) {
 			if value[index] != '-' {
 				return false
 			}
 			continue
 		}
-		character := value[index]
-		if character < '0' || character > '9' {
-			if character < 'a' || character > 'f' {
-				if character < 'A' || character > 'F' {
-					return false
-				}
-			}
+		if !hexByte(value[index]) {
+			return false
 		}
 	}
 	return true
+}
+
+func uuidSeparator(index int) bool { return index == 8 || index == 13 || index == 18 || index == 23 }
+
+func hexByte(value byte) bool {
+	return value >= '0' && value <= '9' || value >= 'a' && value <= 'f' || value >= 'A' && value <= 'F'
 }
 
 // Recent returns a copy in newest-first order.
@@ -94,7 +95,7 @@ func (log *FailureLog) Recent() []FailureEvent {
 	return result
 }
 
-func failureOperation(rawPath string) string {
+func failureOperation(rawPath string) string { //nolint:cyclop // Exact operation allowlists keep private path segments out of diagnostics.
 	if len(rawPath) > 2048 {
 		return "other"
 	}
