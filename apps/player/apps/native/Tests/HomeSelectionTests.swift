@@ -10,6 +10,7 @@ struct HomeSelectionTests {
         let selection = HomeSelection(continueWatching: [watching, continuation],
                                       recent: [watching, new, continuation])
         #expect(selection.featured?.id == watching.id)
+        #expect(selection.featuredIsContinuing)
         #expect(selection.continuation.map(\.id) == [continuation.id])
         #expect(selection.recent(for: .video).map(\.id) == [watching.id, new.id, continuation.id])
     }
@@ -19,6 +20,7 @@ struct HomeSelectionTests {
         let new = try item("new", server: server)
         let selection = HomeSelection(continueWatching: [], recent: [new])
         #expect(selection.featured?.id == new.id)
+        #expect(!selection.featuredIsContinuing)
         #expect(selection.continuation.isEmpty)
         #expect(selection.recent(for: .video).map(\.id) == [new.id])
     }
@@ -34,6 +36,7 @@ struct HomeSelectionTests {
     @Test func emptyLibraryKeepsTheEmptyState() {
         let selection = HomeSelection(continueWatching: [], recent: [])
         #expect(selection.featured == nil)
+        #expect(!selection.featuredIsContinuing)
         #expect(selection.continuation.isEmpty)
         #expect(selection.recent.isEmpty)
     }
@@ -46,10 +49,22 @@ struct HomeSelectionTests {
         let watch = HomeSelection(continueWatching: [album, movie], recent: [book, movie], mode: .watch)
         let listen = HomeSelection(continueWatching: [album, movie], recent: [book, movie], mode: .listen)
         #expect(watch.featured?.id == movie.id)
+        #expect(watch.featuredIsContinuing)
         #expect(watch.recent(for: .video).map(\.id) == [movie.id])
         #expect(listen.featured?.id == album.id)
+        #expect(listen.featuredIsContinuing)
         #expect(listen.recent(for: .music).isEmpty)
         #expect(listen.recent(for: .audiobook).map(\.id) == [book.id])
+    }
+
+    @Test func modeWithoutResumeUsesRecentFeature() throws {
+        let server = try ServerAddress("https://media.example")
+        let album = try item("album", kind: "music", server: server)
+        let movie = try item("movie", kind: "video", server: server)
+        let selection = HomeSelection(continueWatching: [album], recent: [movie], mode: .watch)
+        #expect(selection.featured?.id == movie.id)
+        #expect(!selection.featuredIsContinuing)
+        #expect(selection.continuation.isEmpty)
     }
 
     @Test func separatesNewestItemsByWatchAndListenType() throws {
