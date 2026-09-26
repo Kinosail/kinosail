@@ -3,29 +3,58 @@ package markers
 import (
 	"context"
 	"maps"
+	"runtime"
 	"slices"
+	"sync"
 
 	"github.com/MikeO7/kinosail/packages/library"
 )
 
-func (analyzer *Analyzer) analyzeBatch(ctx context.Context, items []library.Item) error {
+func (analyzer *Analyzer) analyzeBatch(ctx context.Context, items []library.Item) error { //nolint:cyclop,gocognit // Bounded group dispatch and ordered failures share one batch boundary.
 	groups := groupMarkerItems(items)
-	var failure error
+	titles := make([][]library.Item, 0, len(groups.seasons)+len(groups.movies))
 	for _, group := range []map[string][]library.Item{groups.seasons, groups.movies} {
-		for _, titles := range group {
-			if err := ctx.Err(); err != nil {
-				return err
-			}
-			if err := analyzer.analyzeGroup(ctx, titles); err != nil && failure == nil {
-				failure = err
-			}
+		for _, items := range group {
+			titles = append(titles, items)
 		}
 	}
-	return failure
+	if len(titles) == 0 {
+		return nil
+	}
+	jobs, failures := make(chan int), make([]error, len(titles))
+	var workers sync.WaitGroup
+	for range min(len(titles), max(1, min(2, runtime.GOMAXPROCS(0)-1))) {
+		workers.Add(1)
+		go func() {
+			defer workers.Done()
+			for position := range jobs {
+				failures[position] = analyzer.analyzeGroup(ctx, titles[position])
+			}
+		}()
+	}
+dispatch:
+	for position := range titles {
+		select {
+		case jobs <- position:
+		case <-ctx.Done():
+			break dispatch
+		}
+	}
+	close(jobs)
+	workers.Wait()
+	if err := ctx.Err(); err != nil {
+		return err
+	}
+	for _, failure := range failures {
+		if failure != nil {
+			return failure
+		}
+	}
+	return nil
 }
 
 // Publish each season or movie library atomically; unrelated groups can still finish.
-func (analyzer *Analyzer) analyzeGroup(ctx context.Context, items []library.Item) error {
+func (analyzer *Analyzer) analyzeGroup(ctx context.Context, items []library.Item) error { //nolint:cyclop // Group staging, Owner edits, and atomic persistence form one publication boundary.
 	analyzer.mu.RLock()
 	before := maps.Clone(analyzer.records)
 	staged := &Analyzer{

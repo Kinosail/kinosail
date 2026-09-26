@@ -9,8 +9,10 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"runtime"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/MikeO7/kinosail/packages/library"
@@ -78,29 +80,61 @@ func NewTMDB(config TMDBConfig) *TMDBClient {
 	return &TMDBClient{config.Token, strings.TrimRight(config.URL, "/"), strings.TrimRight(config.ImageURL, "/"), filepath.Join(config.CacheDir, "tmdb"), client}
 }
 
-func (client *TMDBClient) Enrich(ctx context.Context, items []library.Item) []library.Item {
+func (client *TMDBClient) Enrich(ctx context.Context, items []library.Item) []library.Item { //nolint:cyclop // Cached fallback, duplicate identity, and bounded enrichment share one Library pass.
 	if client == nil {
 		return items
 	}
+	jobs := make([]int, 0)
+	seen := make(map[string]bool)
+	duplicate := false
 	for index := range items {
 		if items[index].Kind != "video" || items[index].Show != "" {
 			continue
 		}
-		cached, fresh := client.Load(items[index].ID)
-		if fresh || client.token == "" {
-			applyTMDB(&items[index], cached)
-			continue
-		}
-		metadata, err := client.fetch(ctx, items[index])
-		if err != nil {
-			applyTMDB(&items[index], cached)
-			slog.Warn("TMDB enrichment failed", "title", items[index].Title, "error", err)
-			continue
-		}
-		_ = saveJSON(client.metadataPath(items[index].ID), metadata)
-		applyTMDB(&items[index], metadata)
+		jobs = append(jobs, index)
+		duplicate = duplicate || seen[items[index].ID]
+		seen[items[index].ID] = true
 	}
+	workerCount := min(len(jobs), max(1, min(3, runtime.GOMAXPROCS(0)-1)))
+	if duplicate || workerCount < 2 {
+		for _, index := range jobs {
+			client.enrichOne(ctx, &items[index])
+		}
+		return items
+	}
+	queue := make(chan int)
+	var workers sync.WaitGroup
+	for range workerCount {
+		workers.Add(1)
+		go func() {
+			defer workers.Done()
+			for index := range queue {
+				client.enrichOne(ctx, &items[index])
+			}
+		}()
+	}
+	for _, index := range jobs {
+		queue <- index
+	}
+	close(queue)
+	workers.Wait()
 	return items
+}
+
+func (client *TMDBClient) enrichOne(ctx context.Context, item *library.Item) {
+	cached, fresh := client.Load(item.ID)
+	if fresh || client.token == "" {
+		applyTMDB(item, cached)
+		return
+	}
+	metadata, err := client.fetch(ctx, *item)
+	if err != nil {
+		applyTMDB(item, cached)
+		slog.Warn("TMDB enrichment failed", "title", item.Title, "error", err)
+		return
+	}
+	_ = saveJSON(client.metadataPath(item.ID), metadata)
+	applyTMDB(item, metadata)
 }
 
 func metadataFor(movie tmdbMovie) TMDBMetadata {
@@ -120,23 +154,6 @@ func metadataFor(movie tmdbMovie) TMDBMetadata {
 		}
 	}
 	return metadata
-}
-
-func (client *TMDBClient) downloadCast(ctx context.Context, cast []TMDBCastMember, directory string) []library.Person {
-	people := make([]library.Person, 0, min(15, len(cast)))
-	for _, actor := range cast {
-		if len(people) == 15 {
-			break
-		}
-		person := library.Person{Name: strings.TrimSpace(actor.Name), Role: strings.TrimSpace(actor.Character)}
-		if actor.ProfilePath != "" {
-			person.Image, _ = client.download(ctx, actor.ProfilePath, filepath.Join(directory, fmt.Sprintf("person-%d", len(people))))
-		}
-		if person.Name != "" {
-			people = append(people, person)
-		}
-	}
-	return people
 }
 
 func (client *TMDBClient) get(ctx context.Context, endpoint string, target any) error {

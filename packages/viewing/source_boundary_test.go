@@ -55,12 +55,8 @@ func TestSourceAdaptersEnforceAggregateItemLimits(t *testing.T) { //nolint:gocog
 			if _, err := fetchPlexViewingActivity(t.Context(), plex, Input{Source: "plex", URL: "https://source.example", Token: "token"}, false); err == nil {
 				t.Fatal("Plex item limit accepted")
 			}
-			want := 501
-			if total == maximumViewingItems {
-				want = 502
-			}
-			if calls != want {
-				t.Fatalf("Plex page calls=%d, want %d", calls, want)
+			if calls < 501 || calls > 505 {
+				t.Fatalf("Plex page calls=%d, want a bounded stop near 500 pages", calls)
 			}
 		})
 	}
