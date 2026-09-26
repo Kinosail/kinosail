@@ -4,7 +4,7 @@ set -euo pipefail
 app="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 repo="$(git -C "$app" rev-parse --show-toplevel)"
 local_file="$app/scripts/.kinosail-subtitles-scope-test.sh"
-sibling_file="$repo/apps/dashboard/scripts/.kinosail-subtitles-sibling-test.sh"
+sibling_file="$repo/apps/player/scripts/.kinosail-subtitles-sibling-test.sh"
 trap 'rm -f "$local_file" "$sibling_file"' EXIT
 printf '#!/usr/bin/env bash\ntrue\n' >"$local_file"
 printf '#!/usr/bin/env bash\ntrue\n' >"$sibling_file"

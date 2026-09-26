@@ -211,30 +211,6 @@ jobs:
           RESULT: ${{ needs.subtitles.result }}
         run: test "$SELECTION" = success && { if test "$SELECTED" = true; then test "$RESULT" = success; else test "$RESULT" = skipped; fi; }
 
-  dashboard:
-    needs: plan
-    if: fromJSON(needs.plan.outputs.plan).dashboard
-    uses: ./.github/workflows/app.yml
-    permissions:
-      contents: read
-      pull-requests: read
-    with:
-      app: dashboard
-      plan: ${{ needs.plan.outputs.plan }}
-
-  dashboard-required:
-    name: Dashboard checks
-    if: always()
-    needs: [plan, dashboard]
-    runs-on: ubuntu-24.04
-    timeout-minutes: 2
-    steps:
-      - env:
-          SELECTION: ${{ needs.plan.result }}
-          SELECTED: ${{ fromJSON(needs.plan.outputs.plan).dashboard }}
-          RESULT: ${{ needs.dashboard.result }}
-        run: test "$SELECTION" = success && { if test "$SELECTED" = true; then test "$RESULT" = success; else test "$RESULT" = skipped; fi; }
-
   secrets:
     name: Changed-commit secret scan
     runs-on: ubuntu-24.04
@@ -294,7 +270,7 @@ jobs:
           build-mode: ${{ (matrix.language == 'go' || matrix.language == 'java-kotlin') && 'manual' || 'none' }}
           queries: security-extended
       - if: matrix.language == 'go'
-        run: go build ./apps/player/... ./apps/subtitles/... ./apps/dashboard/... ./packages/...
+        run: go build ./apps/player/... ./apps/subtitles/... ./packages/...
       - if: matrix.language == 'java-kotlin'
         run: ./gradlew :app:assembleDebug :wear:assembleDebug
         working-directory: apps/player/apps/android
@@ -353,7 +329,7 @@ jobs:
 
   publish:
     name: Publish verified containers
-    needs: [plan, repository-required, player-required, subtitles-required, dashboard-required, security-required]
+    needs: [plan, repository-required, player-required, subtitles-required, security-required]
     if: >-
       always() &&
       github.event_name == 'push' &&
@@ -362,9 +338,8 @@ jobs:
       needs.repository-required.result == 'success' &&
       needs.player-required.result == 'success' &&
       needs.subtitles-required.result == 'success' &&
-      needs.dashboard-required.result == 'success' &&
       needs.security-required.result == 'success' &&
-      (fromJSON(needs.plan.outputs.plan).player || fromJSON(needs.plan.outputs.plan).subtitles || fromJSON(needs.plan.outputs.plan).dashboard)
+      (fromJSON(needs.plan.outputs.plan).player || fromJSON(needs.plan.outputs.plan).subtitles)
     uses: ./.github/workflows/publish.yml
     permissions:
       contents: read
@@ -377,7 +352,7 @@ jobs:
 
   publish-docs:
     name: Publish verified documentation
-    needs: [plan, docs, repository-required, player-required, subtitles-required, dashboard-required, security-required]
+    needs: [plan, docs, repository-required, player-required, subtitles-required, security-required]
     if: >-
       always() &&
       github.event_name == 'push' &&
@@ -387,7 +362,6 @@ jobs:
       needs.repository-required.result == 'success' &&
       needs.player-required.result == 'success' &&
       needs.subtitles-required.result == 'success' &&
-      needs.dashboard-required.result == 'success' &&
       needs.security-required.result == 'success' &&
       fromJSON(needs.plan.outputs.plan).docs
     runs-on: ubuntu-24.04
