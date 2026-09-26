@@ -7,6 +7,8 @@ import (
 	"strings"
 	"testing"
 	"time"
+
+	"github.com/MikeO7/kinosail/packages/operations"
 )
 
 func TestMCPModernOAuthAndAPIDrivenTools(t *testing.T) { //nolint:cyclop,funlen,gocognit // One fixture proves the complete MCP boundary.
@@ -27,6 +29,8 @@ func TestMCPModernOAuthAndAPIDrivenTools(t *testing.T) { //nolint:cyclop,funlen,
 		writeJSON(writer, map[string]any{"active": true, "scope": scope, "exp": time.Now().Add(time.Hour).Unix(), "sub": "subject", "aud": audience}, http.StatusOK)
 	}))
 	defer issuer.Close()
+	var failureLog operations.FailureLog
+	failureLog.Record("550e8400-e29b-41d4-a716-446655440000", "GET", "/api/v1/items/private-title/playback?token=private-secret", 503, time.Second)
 
 	profiles := newProfileStore("")
 	profiles.profiles = []viewerProfile{{ID: "viewer", Name: "Viewer", Libraries: []string{"all"}, Rating: "all", OIDCIssuer: issuer.URL, OIDCSubject: "subject"}}
@@ -50,6 +54,9 @@ func TestMCPModernOAuthAndAPIDrivenTools(t *testing.T) { //nolint:cyclop,funlen,
 		writer.Header().Set("Content-Type", "text/plain")
 		_, _ = writer.Write([]byte("kinosail_health 1\n"))
 	})
+	mux.Handle("GET /api/v1/diagnostics", authentication.owner(http.HandlerFunc(func(writer http.ResponseWriter, _ *http.Request) {
+		writeJSON(writer, map[string]any{"recentFailures": failureLog.Recent()}, http.StatusOK)
+	})))
 	mux.HandleFunc("POST /api/v1/playlists", func(writer http.ResponseWriter, request *http.Request) {
 		playlistCalls++
 		var input map[string]any
@@ -201,6 +208,14 @@ func TestMCPModernOAuthAndAPIDrivenTools(t *testing.T) { //nolint:cyclop,funlen,
 		response = mcpRequest(t, mux, "tools/call", "access-token", map[string]any{"name": "manage_api", "arguments": map[string]any{"method": "GET", "path": "/api/v1/metrics"}})
 		if response.Code != http.StatusOK || !strings.Contains(response.Body.String(), "kinosail_health 1") {
 			t.Fatalf("manage metrics = %d %q", response.Code, response.Body.String())
+		}
+		response = mcpRequest(t, mux, "tools/call", "access-token", map[string]any{"name": "manage_api", "arguments": map[string]any{"method": "GET", "path": "/api/v1/diagnostics"}})
+		if response.Code != http.StatusOK || !strings.Contains(response.Body.String(), `"requestId":"550e8400-e29b-41d4-a716-446655440000"`) || !strings.Contains(response.Body.String(), `"operation":"items-playback"`) || strings.Contains(response.Body.String(), "private-title") || strings.Contains(response.Body.String(), "private-secret") {
+			t.Fatalf("manage diagnostics = %d %q", response.Code, response.Body.String())
+		}
+		response = mcpRequest(t, mux, "tools/call", "access-token", map[string]any{"name": "manage_api", "arguments": map[string]any{"method": "GET", "path": "/api/v1/activity"}})
+		if response.Code != http.StatusOK || !strings.Contains(response.Body.String(), "API operation is not available through MCP") {
+			t.Fatalf("private activity reached MCP = %d %q", response.Code, response.Body.String())
 		}
 		response = mcpRequest(t, mux, "tools/call", "access-token", map[string]any{"name": "manage_api", "arguments": map[string]any{"method": "PUT", "path": "/api/v1/profiles/viewer/password", "body": map[string]string{"password": "unsafe"}}})
 		if response.Code != http.StatusOK || !strings.Contains(response.Body.String(), "API operation is not available through MCP") {

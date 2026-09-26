@@ -120,6 +120,8 @@ For a management connection, a read-only diagnostic request is:
 
 Send this through `manage_api`, without a body. For mutation bodies, consult the running Server’s [OpenAPI contract]({{ '/reference/api/' | relative_url }}) and request only an approved route. A documented HTTP API operation is not automatically exposed through MCP.
 
+The response includes up to 50 recent failed requests with safe operation names, request IDs, status, level, and duration. It does not include raw log lines, URLs, media titles, credentials, or error text. The private activity journal is not available through MCP.
+
 ## Connect another MCP client
 
 Choose **STDIO** with executable `docker` and arguments equivalent to the Compose command above, or **Streamable HTTP** with the Server's `/mcp` URL and OAuth. Client configuration formats vary. Use an argument array when supported rather than putting the whole command into an executable field.

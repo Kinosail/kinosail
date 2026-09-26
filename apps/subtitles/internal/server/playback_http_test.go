@@ -44,3 +44,23 @@ func TestPlaybackSubtitlesChoosesOnePreferredTrackPerLanguage(t *testing.T) {
 		}
 	}
 }
+
+func TestLimitedPickerDefaultsToFirstAvailablePreferredLanguage(t *testing.T) { //nolint:cyclop // One fixture verifies preference order, fallback, forced options, and subtitles off.
+	t.Parallel()
+	item := library.Item{ID: "film", Path: "Film.mkv", Subtitles: []string{"Film.fr.srt", "Film.en.srt", "Film.de.forced.srt"}}
+	provider := &subtitleProvider{cache: t.TempDir()}
+	tracks := playbackSubtitles(item, probeResult{}, provider, []string{"en", "fr"}, "standard", true, true, true)
+	if len(tracks) != 3 || tracks[0].Language != "en" || !tracks[0].Default || tracks[1].Default || tracks[2].Default {
+		t.Fatalf("preferred language was not selected first: %#v", tracks)
+	}
+	tracks = playbackSubtitles(item, probeResult{}, provider, []string{"es", "fr", "en"}, "standard", true, false, true)
+	if len(tracks) != 2 || tracks[0].Language != "fr" || !tracks[0].Default || tracks[1].Default {
+		t.Fatalf("first available language was not selected: %#v", tracks)
+	}
+	tracks = playbackSubtitles(item, probeResult{}, provider, []string{"en", "fr"}, "standard", true, true, false)
+	for _, track := range tracks {
+		if track.Default {
+			t.Fatalf("subtitles off still selected a track: %#v", tracks)
+		}
+	}
+}

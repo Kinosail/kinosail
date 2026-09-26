@@ -8,7 +8,12 @@ import org.junit.Assert.assertEquals
 import org.junit.Assert.assertThrows
 import org.junit.Assert.assertTrue
 import org.junit.Test
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
+import org.robolectric.annotation.Config
 
+@RunWith(RobolectricTestRunner::class)
+@Config(sdk = [35])
 class CatalogApiTest {
     private val server = ServerAddress("https://example.com")
     private val item = """{"id":"film-1","kind":"video","title":"Arrival","year":"2016","plot":"A visitor arrives.","artwork":"/art/film-1"}"""
