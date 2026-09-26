@@ -150,16 +150,19 @@ struct LoadingState: View {
                 .accessibilityHidden(true)
             }
             if layout == .shelf || layout == .home || layout == .homeAudio {
-                line(width: 180, height: 28).accessibilityHidden(true)
-                ScrollView(.horizontal) {
-                    HStack(alignment: .top, spacing: 18) {
-                        ForEach(0..<4) { _ in card(ratio: layout == .homeAudio ? 1 : 2 / 3).frame(width: shelfWidth) }
+                ForEach(0..<(layout == .shelf ? 1 : 2), id: \.self) { _ in
+                    line(width: 180, height: 28).accessibilityHidden(true)
+                    ScrollView(.horizontal) {
+                        HStack(alignment: .top, spacing: 18) {
+                            ForEach(0..<4) { _ in card(ratio: layout == .homeAudio ? 1 : 2 / 3).frame(width: shelfWidth) }
+                        }
+                        #if os(tvOS)
+                        .padding(.horizontal, 24)
+                        #endif
+                        .padding(.vertical, 24)
                     }
-                    #if os(tvOS)
-                    .padding(.horizontal, 24)
-                    #endif
-                    .padding(.vertical, 24)
-                }.scrollIndicators(.hidden).scrollDisabled(true).accessibilityHidden(true)
+                    .scrollIndicators(.hidden).scrollDisabled(true).accessibilityHidden(true)
+                }
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
