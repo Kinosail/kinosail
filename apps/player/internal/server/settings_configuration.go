@@ -6,16 +6,18 @@ import (
 	"strings"
 
 	"github.com/MikeO7/kinosail-player/internal/configuration"
+	"github.com/MikeO7/kinosail/packages/appcli"
 	settingsops "github.com/MikeO7/kinosail/packages/settings"
 )
 
-const configurationHTML = `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width"><script src="/static/theme.js?v=electric-1"></script><link rel="stylesheet" href="/static/app.css?v=skeleton-3"><title>Configuration · Kinosail Player</title></head><body class="settings-page"><main class="settings-shell"><a class="back" href="/settings">{{icon "back"}} Settings</a><header class="settings-intro"><span class="eyebrow">Owner controls</span><h1>Advanced configuration</h1><p>Change settings normally managed by Docker, environment variables, or YAML. Changes saved here apply the next time Kinosail Server starts.</p></header>{{range .}}<section id="{{.Key}}"><h2>{{.Label}}</h2>{{if eq .Source "environment"}}<p>Set by your deployment environment.</p>{{else if eq .Source "yaml"}}<p>Set in your YAML configuration file.</p>{{else if eq .Source "gui"}}<p>Using a value saved here.</p>{{else}}<p>Using the Kinosail default.</p>{{end}}{{if .Secret}}<p>{{if .Configured}}A secret is configured. Its value is hidden.{{else}}No secret is configured.{{end}}</p>{{end}}{{if or (eq .Source "environment") (eq .Source "yaml")}}<p>To change this setting, update the external value and restart Kinosail Server.</p>{{else}}<form action="/settings/configuration" method="post"><input type="hidden" name="key" value="{{.Key}}"><label>{{if .Secret}}New secret{{else}}Value{{end}}<input aria-label="{{.Label}}" name="value" {{if .Secret}}type="password" autocomplete="off" placeholder="New secret"{{else}}value="{{.Value}}"{{end}} required></label><button>Save change</button><p>Applies after a restart.</p></form>{{if eq .Source "gui"}}<form action="/settings/configuration/reset" method="post"><button class="quiet" name="key" value="{{.Key}}">Use default</button></form>{{end}}{{end}}<details><summary>Technical details</summary><p>Configuration key: <code>{{.Key}}</code><br>Environment variable: <code>{{.Env}}</code></p></details></section>{{end}}</main></body></html>`
+const configurationHTML = `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width"><script src="/static/theme.js?v=electric-1"></script><link rel="stylesheet" href="/static/app.css?v=skeleton-3"><title>Configuration · Kinosail Player</title></head><body class="settings-page"><main class="settings-shell"><a class="back" href="/settings">{{icon "back"}} Settings</a><header class="settings-intro"><span class="eyebrow">Owner controls</span><h1>Advanced configuration</h1><p>Change settings normally managed by Docker, environment variables, or YAML. Some changes take effect immediately. Others apply after a restart.</p></header>{{range .}}<section id="{{.Key}}"><h2>{{.Label}}</h2>{{if eq .Source "environment"}}<p>Set by your deployment environment.</p>{{else if eq .Source "yaml"}}<p>Set in your YAML configuration file.</p>{{else if eq .Source "gui"}}<p>Using a value saved here.</p>{{else}}<p>Using the Kinosail default.</p>{{end}}{{if .Secret}}<p>{{if .Configured}}A secret is configured. Its value is hidden.{{else}}No secret is configured.{{end}}</p>{{end}}{{if or (eq .Source "environment") (eq .Source "yaml")}}<p>To change this setting, update the external value and restart Kinosail Server.</p>{{else}}<form action="/settings/configuration" method="post"><input type="hidden" name="key" value="{{.Key}}"><label>{{if .Secret}}New secret{{else}}Value{{end}}<input aria-label="{{.Label}}" name="value" {{if .Secret}}type="password" autocomplete="off" placeholder="New secret"{{else}}value="{{.Value}}"{{end}} required></label><button>Save change</button><p>{{if .Live}}Changes take effect immediately.{{else}}Applies after a restart.{{end}}</p></form>{{if eq .Source "gui"}}<form action="/settings/configuration/reset" method="post"><button class="quiet" name="key" value="{{.Key}}">Use default</button></form>{{end}}{{end}}<details><summary>Technical details</summary><p>Configuration key: <code>{{.Key}}</code><br>Environment variable: <code>{{.Env}}</code></p></details></section>{{end}}</main></body></html>`
 
 var configurationView = newLocalizedTemplate("configuration", ignoreNonPasswordSecretAutofill(settingControlHTML+strings.NewReplacer("Set by your deployment environment.", `Configured via Docker: <code>{{.Env}}</code>.`, "</header>", "</header>"+tmdbConfigurationHTML+oidcConfigurationHTML+samlConfigurationHTML+scimConfigurationHTML, "{{range .}}", "{{range .Fields}}").Replace(configurationHTML)))
 
 type configurationField struct {
 	configuration.PublicValue
 	Label string
+	Live  bool
 }
 
 type configurationPage struct {
@@ -73,7 +75,7 @@ func (store *settingsStore) deploymentFields() []configurationField {
 	result := make([]configurationField, 0)
 	for _, field := range store.config.Fields() {
 		if field.Restart && field.Key != "paths.data" && field.Key != "tls.duckdns" && field.Key != tmdbTokenKey && !strings.HasPrefix(field.Key, oidcConfigurationKey+".") && !strings.HasPrefix(field.Key, samlConfigurationGroupKey+".") && !strings.HasPrefix(field.Key, scimConfigurationKey+".") {
-			view := configurationField{PublicValue: field, Label: configurationLabels[field.Key]}
+			view := configurationField{PublicValue: field, Label: configurationLabels[field.Key], Live: field.Key == "logging.level"}
 			result = append(result, view)
 		}
 	}
@@ -98,7 +100,15 @@ func (store *settingsStore) changeConfiguration(key, value string, reset bool) e
 		},
 		Set: configuration.Set, Delete: configuration.Delete, Update: store.config.UpdateGUI,
 	}
-	return configured.Change(key, value, reset)
+	if err := configured.Change(key, value, reset); err != nil {
+		return err
+	}
+	if key == "logging.level" {
+		store.mu.Lock()
+		appcli.UpdateLoggingLevel(store.config.String(key))
+		store.mu.Unlock()
+	}
+	return nil
 }
 
 func showConfiguration(settings *settingsStore) http.HandlerFunc {

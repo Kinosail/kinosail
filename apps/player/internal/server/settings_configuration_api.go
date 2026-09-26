@@ -4,7 +4,13 @@ import "net/http"
 
 func apiConfiguration(settings *settingsStore) http.HandlerFunc {
 	return func(writer http.ResponseWriter, _ *http.Request) {
-		writeJSON(writer, map[string]any{"settings": settings.configuration().Fields()}, http.StatusOK)
+		fields := settings.configuration().Fields()
+		for index := range fields {
+			if fields[index].Key == "logging.level" && fields[index].Source != "environment" && fields[index].Source != "yaml" {
+				fields[index].Restart = false
+			}
+		}
+		writeJSON(writer, map[string]any{"settings": fields}, http.StatusOK)
 	}
 }
 
@@ -22,7 +28,7 @@ func apiChangeConfiguration(settings *settingsStore, reset bool) http.HandlerFun
 			apiError(writer, err, http.StatusConflict)
 			return
 		}
-		writeConfigurationSaved(writer)
+		writeJSON(writer, map[string]any{"status": "saved", "restartRequired": key != "logging.level"}, http.StatusAccepted)
 	}
 }
 
