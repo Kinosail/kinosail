@@ -6,8 +6,8 @@
 .subtitle-brand-name{font-size:1rem;font-weight:800}
 .subtitle-brand-name small{font-size:.75rem;font-weight:500}
 .subtitle-dashboard .web-beta-badge{display:inline-flex;flex:none;align-items:center;padding:5px 6px;border:1px solid var(--line-strong);border-radius:4px;color:var(--signal);font-size:10px;font-weight:800;line-height:1;letter-spacing:.08em;text-transform:uppercase}
-.subtitle-dashboard .app-header nav{display:flex;flex-direction:row;justify-content:space-between;justify-self:center;align-items:center;gap:.4rem;width:min(100%,32rem);margin:0;padding:0;background:none}
-.subtitle-dashboard .app-header nav a{min-height:48px;padding:.7rem 1.2rem;border-radius:10px;font-size:.9rem;font-weight:650}
+.subtitle-dashboard .app-header nav{display:flex;flex-direction:row;flex-wrap:nowrap;justify-content:space-between;justify-self:center;align-items:center;gap:.4rem;width:min(100%,32rem);margin:0;padding:0;background:none}
+.subtitle-dashboard .app-header nav a{width:auto;min-height:48px;padding:.7rem 1.2rem;border-radius:10px;font-size:.9rem;font-weight:650}
 .subtitle-dashboard .app-header nav a.active{background:none;color:var(--signal);box-shadow:inset 0 -2px var(--signal)}
 .subtitle-dashboard .subtitle-header-settings{grid-area:actions;display:flex;align-items:center;gap:.4rem;margin:0;padding:0;border:0;white-space:nowrap}
 .subtitle-dashboard .header-link{min-height:44px;padding:.6rem 1rem;border:1px solid var(--line);border-radius:10px;white-space:nowrap}
