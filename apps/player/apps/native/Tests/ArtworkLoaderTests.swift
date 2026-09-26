@@ -5,6 +5,31 @@ import UniformTypeIdentifiers
 @testable import KinosailPlayer
 
 struct ArtworkLoaderTests {
+    @Test func abandonedPosterLoadsFreeCapacityForVisibleArtwork() async throws {
+        let fixture = try HTTPFixture(body: "{}")
+        defer { fixture.remove() }
+        let stalled = FixtureURLProtocol.Entry(data: Data(), status: 200, headers: [:], hold: true)
+        FixtureURLProtocol.entries.withLock { entries in
+            for index in 0..<4 { entries[fixture.host]?.routes["/art/old\(index)"] = stalled }
+        }
+        try installImage(fixture, path: "/art/visible")
+        let loader = ArtworkLoader()
+        let old = (0..<4).map { index in Task { try await loader.image(path: "/art/old\(index)", client: fixture.client) } }
+        for _ in 0..<1_000 where fixture.requests.count < 4 { try await Task.sleep(for: .milliseconds(5)) }
+        #expect(fixture.requests.count == 4)
+        old.forEach { $0.cancel() }
+        let visible = Task { try await loader.image(path: "/art/visible", client: fixture.client) }
+        for _ in 0..<1_000 where !fixture.requests.contains(where: { $0.url?.path == "/art/visible" }) {
+            try await Task.sleep(for: .milliseconds(5))
+        }
+        let started = fixture.requests.contains { $0.url?.path == "/art/visible" }
+        #expect(started)
+        if started { #expect(try await visible.value.width == 400) }
+        else { visible.cancel() }
+        await loader.clear()
+        for task in old { await #expect(throws: CancellationError.self) { try await task.value } }
+    }
+
     @Test func diskHitsRetainDecodedPixelsIncludingTopShelfSize() async throws {
         let directory = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
         defer { try? FileManager.default.removeItem(at: directory) }
@@ -79,6 +104,43 @@ struct ArtworkLoaderTests {
         #expect(cached.width == 800)
         for _ in 0..<1_000 where fixture.requests.count < 2 { try await Task.sleep(for: .milliseconds(5)) }
         #expect(fixture.requests.count == 2)
+    }
+
+    @Test func staleRefreshesLeaveFetchSlotsForVisibleArtwork() async throws {
+        let directory = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+        defer { try? FileManager.default.removeItem(at: directory) }
+        let viewer = try Viewer(.object(["server": .string("Test"), "serverId": .string("test-server"),
+            "viewer": .object(["id": .string("viewer"), "name": .string("Viewer"), "owner": .bool(true),
+                               "downloads": .bool(true), "transcode": .bool(true), "remote": .bool(false)])]))
+        let fixture = try HTTPFixture(body: "{}", viewer: viewer, cacheDirectory: directory)
+        defer { fixture.remove() }
+        try installImage(fixture, path: "/art/old", width: 800, height: 400)
+        _ = try await ArtworkLoader().image(path: "/art/old", client: fixture.client, dimension: 800)
+        await fixture.client.close()
+        try ageArtwork(in: directory)
+        let stalled = FixtureURLProtocol.Entry(data: Data(), status: 200, headers: [:], hold: true)
+        FixtureURLProtocol.entries.withLock { $0[fixture.host]?.routes["/art/old"] = stalled }
+        try installImage(fixture, path: "/art/visible")
+        let reopened = try ServerClient(server: await fixture.client.server, viewer: viewer,
+                                        protocolClasses: [FixtureURLProtocol.self], cacheDirectory: directory)
+        let loader = ArtworkLoader()
+        for dimension in [400, 800, 1600, 4096] {
+            _ = try await loader.image(path: "/art/old", client: reopened, dimension: dimension)
+        }
+        for _ in 0..<1_000 where fixture.requests.filter({ $0.url?.path == "/art/old" }).count < 3 {
+            try await Task.sleep(for: .milliseconds(5))
+        }
+        #expect(fixture.requests.filter { $0.url?.path == "/art/old" }.count == 3) // original plus two refreshes
+        let visible = Task { try await loader.image(path: "/art/visible", client: reopened) }
+        for _ in 0..<1_000 where !fixture.requests.contains(where: { $0.url?.path == "/art/visible" }) {
+            try await Task.sleep(for: .milliseconds(5))
+        }
+        let started = fixture.requests.contains { $0.url?.path == "/art/visible" }
+        #expect(started)
+        if started { #expect(try await visible.value.width == 400) }
+        else { visible.cancel() }
+        await loader.clear()
+        await reopened.close()
     }
 
     @Test func evictsLeastRecentlyUsedPixelsByDecodedMemoryCost() async throws {
