@@ -261,7 +261,7 @@ func newApplication(config Config) http.Handler { //nolint:funlen,cyclop,gocogni
 	}
 	registerJellyfin(mux, settings, index, progress, lists, auth, quickConnect, probe, hls, downloads)
 	registerBrowsers(mux, index, progress, lists)
-	registerFiles(mux, index, probe)
+	registerFiles(mux, index, probe, workloads)
 	downloads.registerWeb(mux, index)
 	mux.Handle("POST /scan", auth.owner(catalog.RescanHandler(index.Index, localizedError)))
 	mux.HandleFunc("GET /{$}", showHome(index, progress, lists, settings, updates, legacyMetadata.Active() || metadata.configured()))

@@ -65,9 +65,7 @@ func ProjectItem(item library.Item, progress catalog.PlaybackState, access ItemA
 	if access.Stream {
 		result.Stream = "/media/" + item.ID
 	}
-	if item.Artwork != "" {
-		result.Artwork = ArtworkURLForItem(item)
-	}
+	result.Artwork = projectedArtwork(item)
 	if item.ShowBackdrop != "" || item.Backdrop != "" {
 		result.Backdrop = "/backdrop/" + item.ID
 	}
@@ -75,6 +73,16 @@ func ProjectItem(item library.Item, progress catalog.PlaybackState, access ItemA
 		result.Download = "/download/" + item.ID
 	}
 	return result
+}
+
+func projectedArtwork(item library.Item) string {
+	if item.Artwork != "" {
+		return ArtworkURLForItem(item)
+	}
+	if item.Kind == "video" && item.Show != "" {
+		return "/episode-art/" + item.ID
+	}
+	return ""
 }
 
 func projectCast(item library.Item) []ClientPerson {

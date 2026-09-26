@@ -95,7 +95,6 @@ private struct IOSEpisodeRow: View {
     @Environment(\.horizontalSizeClass) private var sizeClass
 
     private var title: String { ShowSeasonSelection.episodeTitle(item) }
-    private var still: String { item.backdrop.isEmpty ? item.artwork : item.backdrop }
     private var accessibilitySummary: String {
         let state = isNext ? "next" : item.progress.watched ? "watched" :
             item.progress.seconds > 0 ? "resume at \(item.progress.seconds.clock)" : ""
@@ -107,7 +106,7 @@ private struct IOSEpisodeRow: View {
             NavigationLink(value: ScreenDestination.detail(item.id)) {
                 HStack(alignment: .top, spacing: 12) {
                     if !dynamicTypeSize.isAccessibilitySize {
-                        Artwork(path: still, symbol: "play.rectangle", ratio: 16 / 9, dimension: 500)
+                        Artwork(path: item.landscapeArtwork, symbol: "play.rectangle", ratio: 16 / 9, dimension: 500)
                             .frame(width: sizeClass == .regular ? 112 : 76).clipShape(.rect(cornerRadius: 8))
                     }
                     VStack(alignment: .leading, spacing: 4) {
