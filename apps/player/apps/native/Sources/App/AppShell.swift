@@ -58,7 +58,8 @@ struct AppShell: View {
                 do { try await Task.sleep(for: .milliseconds(100)) }
                 catch { return }
                 #if os(tvOS)
-                await client.warmCatalog()
+                let mode = PlayerMode.stored(UserDefaults.standard.string(forKey: PlayerMode.storageKey(session.profileKey ?? "")))
+                await client.warmCatalog(mode: mode)
                 #else
                 let mode = PlayerMode.stored(UserDefaults.standard.string(forKey: PlayerMode.storageKey(session.profileKey ?? "")))
                 let savedTabs = UserDefaults.standard.string(forKey: mode.other.tabsKey(session.profileKey ?? ""))
