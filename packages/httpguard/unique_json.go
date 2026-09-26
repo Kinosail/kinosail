@@ -9,6 +9,8 @@ import (
 	"unicode/utf8"
 )
 
+var errTrailingJSON = errors.New("JSON object has trailing content")
+
 // DecodeUniqueJSON accepts one bounded object with no unknown or repeated fields.
 // Case-folding also rejects duplicate aliases accepted by encoding/json's struct decoder.
 func DecodeUniqueJSON(reader io.Reader, maximum int64, target any) error {
@@ -28,8 +30,8 @@ func DecodeUniqueJSON(reader io.Reader, maximum int64, target any) error {
 	if !uniqueValue(d, 0) {
 		return errors.New("invalid JSON object")
 	}
-	if _, err = d.Token(); err != io.EOF {
-		return errors.New("invalid JSON object")
+	if _, err = d.Token(); !errors.Is(err, io.EOF) {
+		return errTrailingJSON
 	}
 	d = json.NewDecoder(bytes.NewReader(data))
 	d.DisallowUnknownFields()
