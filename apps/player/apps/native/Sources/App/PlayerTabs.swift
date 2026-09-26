@@ -30,13 +30,7 @@ struct PlayerTabs: View {
         (try? PlayerTab.parse(mode == .watch ? watchStored : listenStored)) ?? mode.defaultTabs
         #endif
     }
-    private var screenMode: PlayerMode? {
-        #if os(tvOS)
-        nil
-        #else
-        mode
-        #endif
-    }
+    private var screenMode: PlayerMode? { mode }
     private var moreTabs: [PlayerTab] {
         let available = PlayerTab.available.filter { !pinned.contains($0) }
         #if os(tvOS)

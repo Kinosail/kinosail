@@ -9,6 +9,7 @@ struct HomeScreen: View {
     @Namespace private var homeFocus
     @State private var quickPlay: ScreenDestination?
     #endif
+    private var homeMode: PlayerMode { mode ?? .watch }
     var body: some View {
         ScrollView {
             HStack(spacing: 28) {
@@ -36,16 +37,11 @@ struct HomeScreen: View {
             .padding(.horizontal, KinoTheme.contentPadding)
 
             // Refresh belongs to a vertical scroll container, not the nested media shelf.
-            ResourceView(identity: "\(session.profileKey ?? ""):\(mode?.rawValue ?? "all")", refreshID: session.contentRevision.uuidString, loadingLayout: mode == .listen ? .homeAudio : .home, allowsPullToRefresh: false, load: { policy in
+            ResourceView(identity: "\(session.profileKey ?? ""):\(homeMode.rawValue)", refreshID: session.contentRevision.uuidString, loadingLayout: homeMode == .listen ? .homeAudio : .home, allowsPullToRefresh: false, load: { policy in
                 guard let client = session.client else { throw ClientError.http(401) }
-                return try await client.home(mode: mode, policy: policy)
+                return try await client.home(mode: homeMode, policy: policy)
             }) { home in
-                #if os(tvOS)
-                let selection = HomeSelection(continueWatching: home.continueWatching.filter { $0.kind != .book },
-                                              recent: home.recent.filter { $0.kind != .book })
-                #else
-                let selection = HomeSelection(continueWatching: home.continueWatching, recent: home.recent, mode: mode)
-                #endif
+                let selection = HomeSelection(continueWatching: home.continueWatching, recent: home.recent, mode: homeMode)
                 VStack(alignment: .leading, spacing: 32) {
                     if let featured = selection.featured {
                         CinemaHero(item: featured, subtitle: homeSubtitle(for: featured), showsPlot: false) {
@@ -69,21 +65,30 @@ struct HomeScreen: View {
                         }
                     }
                     if !selection.continuation.isEmpty {
-                        ResumeRows(items: selection.continuation, title: mode == .listen ? "Continue listening" : "Continue watching",
-                                   showsAll: mode != .listen)
+                        ResumeRows(items: selection.continuation, title: homeMode == .listen ? "Continue listening" : "Continue watching",
+                                   showsAll: homeMode != .listen)
                     }
-                    if !selection.recent.isEmpty {
-                        #if os(tvOS)
-                        MediaShelf(title: "Recently added", items: selection.recent, onQuickPlay: { quickPlay = $0 })
-                        #else
-                        MediaShelf(title: mode == .listen ? "Music & audiobooks" : mode == .watch ? "Movies & shows" : "Recently added",
-                                   items: selection.recent)
-                        #endif
+                    if homeMode == .watch {
+                        recentShelf("Recently added movies", items: selection.recent(for: .video))
+                        recentShelf("Recently added TV shows", items: selection.recent(for: .show), opensShows: true)
+                        recentShelf("Unwatched TV shows", items: selection.unwatchedShows, opensShows: true)
+                        recentShelf("Unwatched movies", items: selection.unwatchedMovies)
+                        if !selection.movieGenres.isEmpty {
+                            VStack(alignment: .leading, spacing: 18) {
+                                Text("Movie genres").font(.title2.bold()).accessibilityAddTraits(.isHeader)
+                                ForEach(selection.movieGenres) { genre in
+                                    recentShelf(genre.name, items: genre.items)
+                                }
+                            }
+                        }
+                    } else {
+                        recentShelf("Recently added music", items: selection.recent(for: .music))
+                        recentShelf("Recently added audiobooks", items: selection.recent(for: .audiobook))
                     }
                     if selection.featured == nil {
-                        FeaturePlaceholder(title: mode == .listen ? "Nothing to listen to yet" : "Your library is ready",
-                                           symbol: mode == .listen ? "headphones" : "play.rectangle",
-                                           message: mode == .listen ? "Add music or audiobooks to your Server to see them here." : "Media added to your Server will appear here.")
+                        FeaturePlaceholder(title: homeMode == .listen ? "Nothing to listen to yet" : "Your library is ready",
+                                           symbol: homeMode == .listen ? "headphones" : "play.rectangle",
+                                           message: homeMode == .listen ? "Add music or audiobooks to your Server to see them here." : "Media added to your Server will appear here.")
                     }
                     #if os(iOS)
                     VStack(alignment: .leading, spacing: 12) {
@@ -139,9 +144,25 @@ struct HomeScreen: View {
         item.subtitle
         #endif
     }
+
+    @ViewBuilder private func recentShelf(_ title: String, items: [MediaItem], opensShows: Bool = false) -> some View {
+        if !items.isEmpty {
+            #if os(tvOS)
+            MediaShelf(title: title, items: items, onQuickPlay: { quickPlay = $0 }, opensShows: opensShows)
+            #else
+            MediaShelf(title: title, items: items, opensShows: opensShows)
+            #endif
+        }
+    }
 }
 
 struct HomeSelection {
+    struct MovieGenre: Identifiable {
+        let name: String
+        let items: [MediaItem]
+        var id: String { name }
+    }
+
     let featured: MediaItem?
     let continuation: [MediaItem]
     let recent: [MediaItem]
@@ -151,7 +172,29 @@ struct HomeSelection {
         let added = recent.filter { mode?.includes($0) ?? true }
         featured = watching.first ?? added.first
         continuation = Array(watching.dropFirst().prefix(4))
-        let visibleIDs = Set(([featured].compactMap { $0 } + continuation).map(\.id))
-        self.recent = added.filter { !visibleIDs.contains($0.id) }
+        self.recent = added
+    }
+
+    func recent(for kind: MediaKind) -> [MediaItem] {
+        recent.filter { item in
+            switch kind {
+            case .video: item.kind == .video && item.showID.isEmpty
+            case .show: item.kind == .show || item.kind == .video && !item.showID.isEmpty
+            default: item.kind == kind
+            }
+        }
+    }
+
+    var unwatchedMovies: [MediaItem] { recent(for: .video).filter { !$0.progress.watched } }
+    var unwatchedShows: [MediaItem] { recent(for: .show).filter { !$0.progress.watched } }
+    var movieGenres: [MovieGenre] {
+        var grouped: [String: [MediaItem]] = [:]
+        for movie in recent(for: .video) {
+            let names = Set(movie.genres.components(separatedBy: " · ").map { $0.trimmingCharacters(in: .whitespaces) })
+            for name in names where !name.isEmpty { grouped[name, default: []].append(movie) }
+        }
+        return Array(grouped.map { MovieGenre(name: $0.key, items: $0.value) }
+            .sorted { $0.items.count == $1.items.count ? $0.name < $1.name : $0.items.count > $1.items.count }
+            .prefix(4))
     }
 }

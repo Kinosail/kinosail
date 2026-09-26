@@ -66,14 +66,12 @@ struct MediaCard: View {
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     #if os(tvOS)
     @FocusState private var focused: Bool
-    @State private var didRequestDefaultFocus = false
     #endif
     let item: MediaItem
     var landscape = false
     var resumesPlayback = false
     var onFocus: ((MediaItem) -> Void)?
     var onQuickPlay: ((ScreenDestination) -> Void)?
-    var requestsInitialFocus = false
     var opensShow = false
     #if os(tvOS)
     private var quickPlayAction: (() -> Void)? {
@@ -120,11 +118,6 @@ struct MediaCard: View {
         #else
         .buttonStyle(.card)
         .focused($focused)
-        .onAppear {
-            guard requestsInitialFocus, !didRequestDefaultFocus else { return }
-            didRequestDefaultFocus = true
-            focused = true
-        }
         .onChange(of: focused) { _, value in if value { onFocus?(item) } }
         .onPlayPauseCommand(perform: quickPlayAction)
         .accessibilityHint(item.kind == .photo ? "Select to view photo."
@@ -138,6 +131,9 @@ struct MediaCard: View {
 struct MediaGrid: View {
     var landscape = false
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+    #if os(tvOS)
+    @Namespace private var gridFocus
+    #endif
     let items: [MediaItem]
     var onFocus: ((MediaItem) -> Void)?
     var onQuickPlay: ((ScreenDestination) -> Void)?
@@ -147,13 +143,16 @@ struct MediaGrid: View {
         LazyVGrid(columns: Self.columns(landscape: landscape, accessibility: dynamicTypeSize.isAccessibilitySize), alignment: .leading, spacing: 28) {
             ForEach(items) { item in
                 MediaCard(item: item, landscape: landscape, onFocus: onFocus, onQuickPlay: onQuickPlay,
-                          requestsInitialFocus: requestFirstCardFocus && item.id == items.first?.id,
                           opensShow: opensShows)
+                    #if os(tvOS)
+                    .prefersDefaultFocus(requestFirstCardFocus && item.id == items.first?.id, in: gridFocus)
+                    #endif
             }
         }
         #if os(tvOS)
         .padding(.vertical, 24)
         .focusSection()
+        .focusScope(gridFocus)
         #endif
     }
     static func columns(landscape: Bool, accessibility: Bool) -> [GridItem] {
@@ -183,6 +182,7 @@ struct MediaShelf: View {
     var moreTitle: String?
     var moreDestination: ScreenDestination?
     var onQuickPlay: ((ScreenDestination) -> Void)?
+    var opensShows = false
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
             HStack(alignment: .firstTextBaseline) {
@@ -197,7 +197,8 @@ struct MediaShelf: View {
             }
             ScrollView(.horizontal) {
                 LazyHStack(alignment: .top, spacing: 18) {
-                    ForEach(items) { item in MediaCard(item: item, landscape: landscape, resumesPlayback: resumesPlayback, onQuickPlay: onQuickPlay).frame(width: width) }
+                    ForEach(items) { item in MediaCard(item: item, landscape: landscape, resumesPlayback: resumesPlayback,
+                                                       onQuickPlay: onQuickPlay, opensShow: opensShows).frame(width: width) }
                 }
                 #if os(tvOS)
                 .padding(.horizontal, 24)
