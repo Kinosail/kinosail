@@ -1,0 +1,28 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <uses-feature android:name="android.hardware.type.watch" android:required="true" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_HEALTH" />
+    <uses-permission android:name="android.permission.BODY_SENSORS" android:maxSdkVersion="35" />
+    <uses-permission android:name="android.permission.BODY_SENSORS_BACKGROUND" android:maxSdkVersion="35" />
+    <uses-permission android:name="android.permission.health.READ_HEART_RATE" />
+    <uses-permission android:name="android.permission.health.READ_HEALTH_DATA_IN_BACKGROUND" />
+
+    <application android:allowBackup="false" android:dataExtractionRules="@xml/data_extraction_rules" android:label="Kinosail"
+        android:icon="@drawable/app_icon" android:theme="@android:style/Theme.Material.NoActionBar">
+        <meta-data android:name="com.google.android.wearable.standalone" android:value="false" />
+        <activity android:name=".WearActivity" android:exported="true" android:taskAffinity="com.kinosail.player.wear">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <service android:name=".MovieHeartListener" android:exported="true"
+            android:permission="com.google.android.wearable.healthservices.permission.PASSIVE_DATA_BINDING">
+            <intent-filter>
+                <action android:name="androidx.health.services.client.action.PASSIVE_DATA_BINDING" />
+            </intent-filter>
+        </service>
+        <service android:name=".HeartTrackingService" android:exported="false"
+            android:foregroundServiceType="health" />
+    </application>
+</manifest>
