@@ -179,9 +179,17 @@ test("Subtitle setup guide keeps readiness and recovery visible", async ({ page 
     await expect(page.getByRole("button", { name: /^Remove/ })).toHaveCount(0);
     const providers = page.locator("#providers");
     await expect(providers).toContainText("Connect a subtitle provider");
-    await expect(providers.getByRole("link", { name: "Provider account" }).nth(0)).toHaveAttribute("href", "https://subdl.com/panel");
-    await expect(providers.getByRole("link", { name: "Provider account" }).nth(1)).toHaveAttribute("href", "https://dl.opensubtitles.com/en/users/sign_in");
-    await expect(providers.getByRole("link", { name: "Provider account" }).nth(2)).toHaveAttribute("href", "https://subsource.net/");
+    for (const [name, url] of [
+      ["SubDL", "https://subdl.com/panel/register"],
+      ["OpenSubtitles", "https://www.opensubtitles.com/en/users/sign_up"],
+      ["SubSource", "https://subsource.net/"],
+    ]) {
+      const link = providers.getByRole("link", { name: `Create ${name} account` });
+      await expect(link).toHaveAttribute("href", url);
+      await expect(link).toHaveAttribute("target", "_blank");
+      await expect(link).toHaveAttribute("rel", /noopener noreferrer/);
+    }
+    await expect(providers).toContainText("On SubSource, choose Create Account.");
     await expect(page.getByRole("complementary", { name: "Your subtitle plan" }).getByText("Not configured", { exact: true })).toBeVisible();
     await expect(page.getByRole("link", { name: "Finish and open overview" })).toBeVisible();
     await expectNoHorizontalOverflow(page);

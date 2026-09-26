@@ -151,6 +151,17 @@ test("Provider setup stays compact and accessible at every supported width", asy
     await expect(providers.getByRole("heading", { name: "SubSource" })).toBeVisible();
     await expect(providers.getByLabel("SubSource API key")).toBeVisible();
     await expect(providers.getByLabel(/Use SubSource only for personal household use/)).toBeVisible();
+    for (const [name, url] of [
+      ["SubDL", "https://subdl.com/panel/register"],
+      ["OpenSubtitles", "https://www.opensubtitles.com/en/users/sign_up"],
+      ["SubSource", "https://subsource.net/"],
+    ]) {
+      const link = providers.getByRole("link", { name: `Create ${name} account` });
+      await expect(link).toHaveAttribute("href", url);
+      await expect(link).toHaveAttribute("target", "_blank");
+      await expect(link).toHaveAttribute("rel", /noopener noreferrer/);
+    }
+    await expect(providers).toContainText("On SubSource, choose Create Account.");
     await expectNoHorizontalOverflow(page);
     if (viewport.width <= 900) {
       const navigationBox = await page.locator(".settings-nav").boundingBox();
