@@ -4,6 +4,7 @@ import (
 	"context"
 	"crypto/rand"
 	"encoding/hex"
+	"io"
 	"net"
 	"net/http"
 	"strconv"
@@ -80,7 +81,7 @@ func acceptedRequestID(value string) string { //nolint:cyclop // The inline allo
 
 func randID() string {
 	data := make([]byte, 12)
-	if _, err := rand.Read(data); err != nil {
+	if _, err := io.ReadFull(rand.Reader, data); err != nil {
 		return strconv.FormatInt(time.Now().UnixNano(), 10)
 	}
 	return hex.EncodeToString(data)

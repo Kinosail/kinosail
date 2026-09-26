@@ -6,6 +6,9 @@ struct PlayerTabs: View {
     @AppStorage private var modeStored: String
     @State private var selection = PlayerTab.home
     @State private var paths: [PlayerTab: NavigationPath] = [:]
+    #if os(tvOS)
+    @FocusState private var topFocus: PlayerTab?
+    #endif
     init(profileKey: String) {
         let legacy = UserDefaults.standard.string(forKey: "kinosail.tabs.\(profileKey)")
         #if os(tvOS)
@@ -40,6 +43,37 @@ struct PlayerTabs: View {
         #endif
     }
     var body: some View {
+        Group {
+            #if os(tvOS)
+            VStack(spacing: 0) {
+                TVTopBar(selection: $selection, focus: $topFocus)
+                tabs
+            }
+            #else
+            tabs
+            #endif
+        }
+        .safeAreaInset(edge: .top, spacing: 0) {
+            ConnectionBanner {
+                let tab: PlayerTab = pinned.contains(.downloads) ? .downloads : .more
+                var path = NavigationPath()
+                if tab == .more { path.append(PlayerTab.downloads) }
+                paths[tab] = path
+                selection = tab
+            }
+        }
+        .onAppear { if !pinned.contains(selection) && selection != .more { selection = pinned[0] } }
+        .onChange(of: pinned) { _, _ in
+            if !pinned.contains(selection) && selection != .more { selection = pinned[0] }
+        }
+        .onChange(of: mode) { _, _ in
+            #if os(iOS)
+            if selection != pinned[0] { selection = pinned[0] }
+            if !paths.isEmpty { paths = [:] }
+            #endif
+        }
+    }
+    private var tabs: some View {
         TabView(selection: $selection) {
             ForEach(pinned) { tab in
                 #if os(iOS)
@@ -77,25 +111,6 @@ struct PlayerTabs: View {
         .tabViewStyle(.sidebarAdaptable)
         .modifier(MiniPlayerTabAccessory())
         #endif
-        .safeAreaInset(edge: .top, spacing: 0) {
-            ConnectionBanner {
-                let tab: PlayerTab = pinned.contains(.downloads) ? .downloads : .more
-                var path = NavigationPath()
-                if tab == .more { path.append(PlayerTab.downloads) }
-                paths[tab] = path
-                selection = tab
-            }
-        }
-        .onAppear { if !pinned.contains(selection) && selection != .more { selection = pinned[0] } }
-        .onChange(of: pinned) { _, _ in
-            if !pinned.contains(selection) && selection != .more { selection = pinned[0] }
-        }
-        .onChange(of: mode) { _, _ in
-            #if os(iOS)
-            if selection != pinned[0] { selection = pinned[0] }
-            if !paths.isEmpty { paths = [:] }
-            #endif
-        }
     }
     private func changeMode(_ next: PlayerMode) {
         guard next != mode else { return }
@@ -139,6 +154,7 @@ struct PlayerTabs: View {
                 .navigationDestination(for: ScreenDestination.self) { DestinationScreen(destination: $0) }
         }
         #if os(tvOS)
+        .toolbar(.hidden, for: .tabBar)
         .toolbarBackground(.hidden, for: .navigationBar, .tabBar)
         .toolbarColorScheme(.dark, for: .navigationBar, .tabBar)
         #endif
