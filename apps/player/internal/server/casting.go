@@ -139,7 +139,7 @@ func (service *castService) start(request *http.Request, itemID string, input ca
 	return session, nil
 }
 
-var errCastEntropy = errors.New("Could not create a cast session. Try again.")
+var errCastEntropy = errors.New("could not create a cast session; try again")
 
 func castRandom(size int) (string, error) {
 	value := make([]byte, size)
