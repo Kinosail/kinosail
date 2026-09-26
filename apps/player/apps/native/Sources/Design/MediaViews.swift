@@ -66,14 +66,12 @@ struct MediaCard: View {
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     #if os(tvOS)
     @FocusState private var focused: Bool
-    @State private var didRequestDefaultFocus = false
     #endif
     let item: MediaItem
     var landscape = false
     var resumesPlayback = false
     var onFocus: ((MediaItem) -> Void)?
     var onQuickPlay: ((ScreenDestination) -> Void)?
-    var requestsInitialFocus = false
     var opensShow = false
     #if os(tvOS)
     private var quickPlayAction: (() -> Void)? {
@@ -91,6 +89,12 @@ struct MediaCard: View {
                         fillsFrame: landscape && item.kind == .photo,
                         isBackdrop: usesBackdrop)
                     .background(landscape && !usesBackdrop ? KinoTheme.surface : .clear)
+                    .overlay(alignment: .topTrailing) {
+                        if item.isUnwatched {
+                            UnwatchedCorner().fill(KinoTheme.signal).frame(width: 32, height: 32)
+                                .accessibilityHidden(true)
+                        }
+                    }
                     .clipShape(.rect(cornerRadius: 12))
                 VStack(alignment: .leading, spacing: 8) {
                     Text(item.title).font(.headline).foregroundStyle(KinoTheme.text)
@@ -100,7 +104,11 @@ struct MediaCard: View {
                         Text(item.subtitle).font(.caption).foregroundStyle(KinoTheme.muted)
                             .mediaLineLimit(1, accessibility: dynamicTypeSize.isAccessibilitySize)
                     }
-                    if resumesPlayback { WatchPosition(item: item) }
+                    if item.kind == .video || item.kind == .show {
+                        if item.kind == .video && item.progress.seconds > 0 && !item.progress.watched {
+                            WatchPosition(item: item, barOnly: true)
+                        } else { Color.clear.frame(height: 6).accessibilityHidden(true) }
+                    } else if resumesPlayback { WatchPosition(item: item) }
                     else if item.progress.seconds > 0 && !item.progress.watched {
                         Label("Resume · \(item.progress.seconds.clock)", systemImage: "play.fill")
                             .font(.caption.weight(.medium)).foregroundStyle(KinoTheme.signal).monospacedDigit()
@@ -120,11 +128,6 @@ struct MediaCard: View {
         #else
         .buttonStyle(.card)
         .focused($focused)
-        .onAppear {
-            guard requestsInitialFocus, !didRequestDefaultFocus else { return }
-            didRequestDefaultFocus = true
-            focused = true
-        }
         .onChange(of: focused) { _, value in if value { onFocus?(item) } }
         .onPlayPauseCommand(perform: quickPlayAction)
         .accessibilityHint(item.kind == .photo ? "Select to view photo."
@@ -132,12 +135,28 @@ struct MediaCard: View {
                            ? "Select for details, or press Play/Pause to play." : "Select for details.")
         #endif
         .accessibilityElement(children: .combine)
+        .accessibilityValue(item.isUnwatched ? (item.progress.seconds > 0 ? "Unwatched, continue from \(item.progress.seconds.clock)" : "Unwatched")
+                            : item.progress.watched && (item.kind == .video || item.kind == .show) ? "Watched" : "")
+    }
+}
+
+private struct UnwatchedCorner: Shape {
+    func path(in rect: CGRect) -> Path {
+        Path { path in
+            path.move(to: CGPoint(x: rect.minX, y: rect.minY))
+            path.addLine(to: CGPoint(x: rect.maxX, y: rect.minY))
+            path.addLine(to: CGPoint(x: rect.maxX, y: rect.maxY))
+            path.closeSubpath()
+        }
     }
 }
 
 struct MediaGrid: View {
     var landscape = false
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+    #if os(tvOS)
+    @Namespace private var gridFocus
+    #endif
     let items: [MediaItem]
     var onFocus: ((MediaItem) -> Void)?
     var onQuickPlay: ((ScreenDestination) -> Void)?
@@ -147,13 +166,16 @@ struct MediaGrid: View {
         LazyVGrid(columns: Self.columns(landscape: landscape, accessibility: dynamicTypeSize.isAccessibilitySize), alignment: .leading, spacing: 28) {
             ForEach(items) { item in
                 MediaCard(item: item, landscape: landscape, onFocus: onFocus, onQuickPlay: onQuickPlay,
-                          requestsInitialFocus: requestFirstCardFocus && item.id == items.first?.id,
                           opensShow: opensShows)
+                    #if os(tvOS)
+                    .prefersDefaultFocus(requestFirstCardFocus && item.id == items.first?.id, in: gridFocus)
+                    #endif
             }
         }
         #if os(tvOS)
         .padding(.vertical, 24)
         .focusSection()
+        .focusScope(gridFocus)
         #endif
     }
     static func columns(landscape: Bool, accessibility: Bool) -> [GridItem] {
