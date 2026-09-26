@@ -14,12 +14,14 @@ test("Owner deletes other languages and English forced subtitles from a populate
   const kept = containerMedia ? `${title}.en.srt` : `${title}.vtt`;
   const spanish = join(media, `${title}.es.srt`);
   const forced = join(media, `${title}.en.forced.srt`);
+  const addedEnglish = containerMedia ? undefined : join(media, `${title}.en.srt`);
   const rescan = () => page.evaluate(async () => {
     const csrf = document.querySelector<HTMLMetaElement>('meta[name="kinosail-csrf"]')?.content ?? "";
     return (await fetch("/scan", { method: "POST", headers: { "X-Kinosail-CSRF": csrf } })).status;
   });
   await writeFile(spanish, "1\n00:00:01,000 --> 00:00:02,000\nHola\n");
   await writeFile(forced, "1\n00:00:01,000 --> 00:00:02,000\nSigns\n");
+  if (addedEnglish) await writeFile(addedEnglish, "1\n00:00:01,000 --> 00:00:02,000\nHello\n");
   try {
     expect(await rescan()).toBe(200);
     await page.setViewportSize({ width: 390, height: 844 });
@@ -39,8 +41,17 @@ test("Owner deletes other languages and English forced subtitles from a populate
     await expect(access(spanish)).rejects.toMatchObject({ code: "ENOENT" });
     await expect(access(forced)).rejects.toMatchObject({ code: "ENOENT" });
     await access(join(media, kept));
+    const library = await page.request.get("/api/v1/library?view=movies");
+    expect(library.ok()).toBeTruthy();
+    const items = (await library.json()) as { items?: Array<{ id?: string; title?: string }> };
+    const movie = items.items?.find((item) => item.title === title);
+    expect(movie?.id, `${title} is in the playable library`).toBeTruthy();
+    await page.goto(`/watch/${movie!.id}`);
+    await page.getByRole("button", { name: "Settings", exact: true }).click();
+    await expect(page.locator("[data-subtitles] option")).toHaveCount(2);
   } finally {
     await Promise.all([unlink(spanish).catch(() => {}), unlink(forced).catch(() => {})]);
+    if (addedEnglish) await unlink(addedEnglish).catch(() => {});
     await rescan().catch(() => {});
   }
 });
