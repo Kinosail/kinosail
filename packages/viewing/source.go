@@ -119,9 +119,11 @@ func addJellyfinPlaylist(ctx context.Context, client *http.Client, input Input, 
 	}
 }
 
-func fetchPlexViewingActivity(ctx context.Context, client *http.Client, input Input, lists bool) ([]Activity, error) { //nolint:cyclop,funlen,gocognit // Library discovery and pagination stay together at the adapter boundary.
+type plexViewingSection struct{ Key, Type string }
+
+func fetchPlexViewingActivity(ctx context.Context, client *http.Client, input Input, lists bool) ([]Activity, error) {
 	var sections struct {
-		MediaContainer struct{ Directory []struct{ Key, Type string } }
+		MediaContainer struct{ Directory []plexViewingSection }
 	}
 	if err := viewingSourceJSON(ctx, client, input, "/library/sections", nil, &sections); err != nil {
 		return nil, err
@@ -129,13 +131,9 @@ func fetchPlexViewingActivity(ctx context.Context, client *http.Client, input In
 	if len(sections.MediaContainer.Directory) > 1000 {
 		return nil, errors.New("Plex source returned too many Library sections") //nolint:staticcheck // Plex and Library are proper product names.
 	}
-	result := make([]Activity, 0)
-	for _, section := range sections.MediaContainer.Directory {
-		var err error
-		result, err = fetchPlexSection(ctx, client, input, section.Key, section.Type, result)
-		if err != nil {
-			return nil, err
-		}
+	result, err := fetchPlexSections(ctx, client, input, sections.MediaContainer.Directory)
+	if err != nil {
+		return nil, err
 	}
 	if lists {
 		return addPlexPlaylists(ctx, client, input, result)
@@ -160,13 +158,17 @@ type plexViewingPage struct {
 	}
 }
 
-func fetchPlexSection(ctx context.Context, client *http.Client, input Input, key, kind string, result []Activity) ([]Activity, error) {
+func fetchPlexSection(ctx context.Context, client *http.Client, input Input, key, kind string, result []Activity) ([]Activity, error) { //nolint:unparam // Direct source validation retains the section kind boundary.
+	return fetchPlexSectionReserved(ctx, client, input, key, kind, result, nil)
+}
+
+func fetchPlexSectionReserved(ctx context.Context, client *http.Client, input Input, key, kind string, activities []Activity, reserve func(int) bool) ([]Activity, error) { //nolint:cyclop // Pagination, validation, and aggregate budget share one source operation.
 	typeID, err := plexSectionType(key, kind)
 	if err != nil {
 		return nil, err
 	}
 	if typeID == "" {
-		return result, nil
+		return activities, nil
 	}
 	seen := make(map[string]bool)
 	for start := 0; ; {
@@ -175,13 +177,17 @@ func fetchPlexSection(ctx context.Context, client *http.Client, input Input, key
 			return nil, pageErr
 		}
 		var added bool
-		result, added, pageErr = appendPlexViewingActivities(result, page.MediaContainer.Metadata, seen)
+		before := len(activities)
+		activities, added, pageErr = appendPlexViewingActivities(activities, page.MediaContainer.Metadata, seen)
 		if pageErr != nil {
 			return nil, pageErr
 		}
+		if reserve != nil && !reserve(len(activities)-before) {
+			return nil, errors.New("Plex source returned too many items") //nolint:staticcheck // Plex is a proper product name.
+		}
 		count := len(page.MediaContainer.Metadata)
 		if !added || viewingPageComplete(count, page.MediaContainer.TotalSize, start) {
-			return result, nil
+			return activities, nil
 		}
 		start += count
 		if start >= maximumViewingItems {
