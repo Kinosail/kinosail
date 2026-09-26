@@ -9,6 +9,8 @@ import (
 
 	"github.com/MikeO7/kinosail/packages/library"
 	"github.com/MikeO7/kinosail/packages/playback"
+	"golang.org/x/text/language"
+	"golang.org/x/text/language/display"
 )
 
 func playbackModeIntent(settings *settingsStore) NetworkIntent {
@@ -38,7 +40,23 @@ func requestedVideoCodecs(request *http.Request) ([]string, error) {
 	return playback.RequestedVideoCodecs(request)
 }
 
-func subtitleRoleLabel(role string) string { return playback.SubtitleRoleLabel(role) }
+func subtitleTrackLabel(code, role string, forced bool) string {
+	label := "Subtitles"
+	switch {
+	case forced:
+		label = "Forced"
+	case role == "captions":
+		label = "Captions"
+	case role == "commentary":
+		label = "Commentary"
+	}
+	if tag, err := language.Parse(code); err == nil && tag != language.Und {
+		if name := display.English.Tags().Name(tag); name != "" {
+			return name + " · " + label
+		}
+	}
+	return label
+}
 
 func playbackSubtitles(item library.Item, media probeResult, preferredLanguage string, enabled bool) []subtitleTrack {
 	tracks := make([]subtitleTrack, 0, len(media.SubtitleFacts)+len(item.Subtitles))
@@ -46,14 +64,25 @@ func playbackSubtitles(item library.Item, media probeResult, preferredLanguage s
 		if !track.Text {
 			continue
 		}
+		role := track.Role
+		if role == "translation" {
+			role = ""
+		}
 		kind := "subtitles"
-		if track.Role == "captions" {
+		if role == "captions" {
 			kind = "captions"
 		}
-		tracks = append(tracks, subtitleTrack{Label: strings.ToUpper(track.Language) + " · " + subtitleRoleLabel(track.Role), Source: fmt.Sprintf("/subtitle/%s/embedded/%d", item.ID, track.SourceIndex), Default: track.Default, Language: track.Language, Role: track.Role, Kind: kind, Forced: track.Forced, Embedded: true})
+		tracks = append(tracks, subtitleTrack{Label: subtitleTrackLabel(track.Language, role, track.Forced), Source: fmt.Sprintf("/subtitle/%s/embedded/%d", item.ID, track.SourceIndex), Default: track.Default, Language: track.Language, Role: role, Kind: kind, Forced: track.Forced, Embedded: true})
 	}
 	for index, path := range item.Subtitles {
-		tracks = append(tracks, subtitleTrack{Label: subtitleLabel(item.Path, path), Source: fmt.Sprintf("/subtitle/%s/%d", item.ID, index), Default: index == 0, Language: sidecarSubtitleLanguage(item.Path, path), Forced: strings.Contains(strings.ToLower(filepath.Base(path)), ".forced.")})
+		role := subtitleRoleFromPath(path)
+		forced := strings.Contains(strings.ToLower(filepath.Base(path)), ".forced.")
+		kind := "subtitles"
+		if role == "captions" {
+			kind = "captions"
+		}
+		language := sidecarSubtitleLanguage(item.Path, path)
+		tracks = append(tracks, subtitleTrack{Label: subtitleTrackLabel(language, role, forced), Source: fmt.Sprintf("/subtitle/%s/%d", item.ID, index), Default: index == 0, Language: language, Role: role, Kind: kind, Forced: forced})
 	}
 	selectDefaultTextSubtitle(tracks, preferredLanguage, enabled)
 	return tracks

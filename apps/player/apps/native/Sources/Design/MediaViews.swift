@@ -82,8 +82,8 @@ struct MediaCard: View {
     var body: some View {
         NavigationLink(value: resumesPlayback ? item.playingDestination : item.destination(inShows: opensShow)) {
             VStack(alignment: .leading, spacing: 10) {
-                let usesBackdrop = landscape && !item.backdrop.isEmpty
-                Artwork(path: usesBackdrop ? item.backdrop : item.poster,
+                let usesBackdrop = landscape && item.landscapeArtwork == item.backdrop && !item.backdrop.isEmpty
+                Artwork(path: landscape ? item.landscapeArtwork : item.poster,
                         symbol: item.kind.symbol, ratio: landscape ? 16 / 9 : item.isAudio ? 1 : 2 / 3,
                         dimension: landscape || dynamicTypeSize.isAccessibilitySize ? 1600 : 800,
                         fillsFrame: landscape && item.kind == .photo,
@@ -95,6 +95,12 @@ struct MediaCard: View {
                                 .accessibilityHidden(true)
                         }
                     }
+                    .overlay(alignment: .bottom) {
+                        if item.kind == .video && item.progress.seconds > 0 && !item.progress.watched {
+                            WatchPosition(item: item, barOnly: true)
+                                .padding(.horizontal, 12).padding(.bottom, 8)
+                        }
+                    }
                     .clipShape(.rect(cornerRadius: 12))
                 VStack(alignment: .leading, spacing: 8) {
                     Text(item.title).font(.headline).foregroundStyle(KinoTheme.text)
@@ -104,17 +110,15 @@ struct MediaCard: View {
                         Text(item.subtitle).font(.caption).foregroundStyle(KinoTheme.muted)
                             .mediaLineLimit(1, accessibility: dynamicTypeSize.isAccessibilitySize)
                     }
-                    if item.kind == .video || item.kind == .show {
-                        if item.kind == .video && item.progress.seconds > 0 && !item.progress.watched {
-                            WatchPosition(item: item, barOnly: true)
-                        } else { Color.clear.frame(height: 6).accessibilityHidden(true) }
-                    } else if resumesPlayback { WatchPosition(item: item) }
-                    else if item.progress.seconds > 0 && !item.progress.watched {
-                        Label("Resume · \(item.progress.seconds.clock)", systemImage: "play.fill")
-                            .font(.caption.weight(.medium)).foregroundStyle(KinoTheme.signal).monospacedDigit()
-                    } else if item.progress.watched {
-                        Label("Watched", systemImage: "checkmark").font(.caption).foregroundStyle(KinoTheme.muted)
-                    } else { Text(" ").font(.caption).accessibilityHidden(true) }
+                    if item.kind != .video && item.kind != .show {
+                        if resumesPlayback { WatchPosition(item: item) }
+                        else if item.progress.seconds > 0 && !item.progress.watched {
+                            Label("Resume · \(item.progress.seconds.clock)", systemImage: "play.fill")
+                                .font(.caption.weight(.medium)).foregroundStyle(KinoTheme.signal).monospacedDigit()
+                        } else if item.progress.watched {
+                            Label("Watched", systemImage: "checkmark").font(.caption).foregroundStyle(KinoTheme.muted)
+                        } else { Text(" ").font(.caption).accessibilityHidden(true) }
+                    }
                 }
                 #if os(tvOS)
                 .padding([.horizontal, .bottom], 12)
@@ -182,10 +186,12 @@ struct MediaGrid: View {
         if accessibility { return [GridItem(.flexible(), alignment: .top)] }
         #if os(tvOS)
         let minimum: CGFloat = landscape ? 360 : 230
+        let spacing: CGFloat = 20
         #else
-        let minimum: CGFloat = landscape ? 280 : 144
+        let minimum: CGFloat = landscape ? 280 : 96
+        let spacing: CGFloat = landscape ? 20 : 12
         #endif
-        return [GridItem(.adaptive(minimum: minimum), spacing: 20, alignment: .top)]
+        return [GridItem(.adaptive(minimum: minimum), spacing: spacing, alignment: .top)]
     }
 }
 

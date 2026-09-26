@@ -49,6 +49,8 @@ func TestSubtitleLanguageAPIRejectsMalformedJSONWithoutChangingSettings(t *testi
 	for _, body := range []string{
 		`{"languages":"en"}`,
 		`{"languages":["en",42]}`,
+		`{"language":"en","Language":"fr"}`,
+		strings.Repeat(" ", 4097),
 		`{"languages":["en"]} {"languages":["fr"]}`,
 		`{"languages":["en"]`,
 	} {
