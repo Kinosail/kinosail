@@ -7,10 +7,19 @@ test("Owner sees real coverage, wanted files, and a focused setup path", { tag: 
   await expect(page.getByRole("heading", { name: "Overview", exact: true })).toBeVisible();
   await expect(page.getByRole("region", { name: "Subtitle coverage" })).toContainText(/\d+%/);
   await expect(page.getByRole("meter", { name: "Subtitle coverage" })).toHaveAttribute("aria-valuetext", /\d+ of \d+ files ready/);
-  await expect(page.getByRole("button", { name: /Find and improve subtitles/ })).toBeVisible();
-  await expect(page.locator(".subtitle-system-state")).toContainText("Ready");
-  await page.locator(".subtitle-system > summary").click();
-  await expect(page.getByText("Local embedded text extraction is available", { exact: true })).toBeVisible();
+  const inventory = await page.evaluate(async () => (await fetch("/api/v1/subtitle-library?view=summary")).json());
+  if (inventory.providerReady) {
+    await expect(page.getByRole("button", { name: /Find and improve subtitles/ })).toBeVisible();
+  } else {
+    await expect(page.getByRole("link", { name: /Connect a subtitle source/ })).toHaveAttribute("href", "/settings#provider");
+  }
+  await expect(page.locator(".subtitle-system-state")).toContainText(inventory.readiness.state);
+  if (inventory.readiness.correction) {
+    await expect(page.locator(".subtitle-system")).toHaveAttribute("open", "");
+  } else {
+    await page.locator(".subtitle-system > summary").click();
+  }
+  await expect(page.getByText(inventory.readiness.checks.find((check: { name: string }) => check.name === "Subtitle sources configured").detail, { exact: true })).toBeVisible();
   await expect(page.getByRole("heading", { name: "Server readiness" })).toBeVisible();
   await expect(page.getByText("Media library readable", { exact: true })).toBeVisible();
   await expect(page.getByText("Last successful subtitle write", { exact: true })).toBeVisible();

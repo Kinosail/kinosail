@@ -6,6 +6,7 @@ import (
 	"crypto/subtle"
 	"encoding/base64"
 	"errors"
+	"io"
 	"net/http"
 	"reflect"
 	"regexp"
@@ -84,7 +85,9 @@ func (service *Service) Prepare(state State) (State, error) {
 		return state, ErrInvalid
 	}
 	value := make([]byte, 32)
-	rand.Read(value)
+	if _, err := io.ReadFull(rand.Reader, value); err != nil {
+		return state, unavailable("could not create supporter installation identity")
+	}
 	state.InstallationKey = base64.RawURLEncoding.EncodeToString(value)
 	return state, nil
 }
