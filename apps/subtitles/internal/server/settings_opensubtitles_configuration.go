@@ -10,7 +10,7 @@ import (
 
 const (
 	openSubtitlesConfigurationKey  = "integrations.opensubtitles"
-	openSubtitlesConfigurationHTML = `{{with .OpenSubtitles}}<section class="wide" id="integrations.opensubtitles"><h2>OpenSubtitles</h2>{{if .Control.Managed}}<p>OpenSubtitles is configured outside Kinosail. Update the API key, username, and password together, then restart Kinosail Server.</p>{{range .Control.DockerVars}}<p>Configured via Docker: <code>{{.}}</code>.</p>{{end}}{{range .Control.YAMLKeys}}<p>Configured via YAML: <code>{{.}}</code>.</p>{{end}}{{else}}<p>{{if .Configured}}OpenSubtitles credentials are configured.{{else}}OpenSubtitles is not configured.{{end}}</p><form action="/settings/configuration" method="post"><input type="hidden" name="key" value="integrations.opensubtitles"><div class="oidc-fields"><label>API key<input aria-label="OpenSubtitles API key" name="apiKey" type="password" maxlength="4096" autocomplete="off" placeholder="{{if .Configured}}Leave blank to keep the configured API key{{else}}API key{{end}}" {{if not .Configured}}required{{end}}></label><label>Username<input aria-label="OpenSubtitles username" name="username" maxlength="4096" autocomplete="username" spellcheck="false" placeholder="{{if .Configured}}Leave blank to keep the configured username{{else}}Username{{end}}" {{if not .Configured}}required{{end}}></label><label>Password<input aria-label="OpenSubtitles password" name="password" type="password" maxlength="4096" autocomplete="new-password" placeholder="{{if .Configured}}Leave blank to keep the configured password{{else}}Password{{end}}" {{if not .Configured}}required{{end}}></label></div><p>Save all three values together. They will be hidden after you leave this page.</p><button>Save OpenSubtitles</button><p>Applies after a restart.</p></form>{{if .Configured}}<form action="/settings/configuration/reset" method="post"><button class="quiet" name="key" value="integrations.opensubtitles">Disable OpenSubtitles</button></form>{{end}}{{end}}<details><summary>Technical details</summary><p>Configuration keys: <code>integrations.opensubtitles.api_key</code>, <code>integrations.opensubtitles.username</code>, <code>integrations.opensubtitles.password</code>.</p></details></section>{{end}}`
+	openSubtitlesConfigurationHTML = `{{with .OpenSubtitles}}<section class="wide" id="integrations.opensubtitles"><h2>OpenSubtitles</h2>{{if .Control.Managed}}<p>OpenSubtitles is configured outside Kinosail. Update the API key, username, and password together, then restart Kinosail Server.</p>{{range .Control.DockerVars}}<p>Configured via Docker: <code>{{.}}</code>.</p>{{end}}{{range .Control.YAMLKeys}}<p>Configured via YAML: <code>{{.}}</code>.</p>{{end}}{{else}}<p>{{if .Configured}}OpenSubtitles credentials are configured.{{else}}OpenSubtitles is not configured.{{end}}</p><form action="/settings/configuration" method="post"><input type="hidden" name="key" value="integrations.opensubtitles"><div class="oidc-fields"><label>API key<input aria-label="OpenSubtitles API key" name="apiKey" type="password" maxlength="4096" autocomplete="off" placeholder="{{if .Configured}}Leave blank to keep the configured API key{{else}}API key{{end}}" {{if not .Configured}}required{{end}}></label><label>Username<input aria-label="OpenSubtitles username" name="username" maxlength="4096" autocomplete="username" spellcheck="false" placeholder="{{if .Configured}}Leave blank to keep the configured username{{else}}Username{{end}}" {{if not .Configured}}required{{end}}></label><label>Password<input aria-label="OpenSubtitles password" name="password" type="password" maxlength="4096" autocomplete="new-password" placeholder="{{if .Configured}}Leave blank to keep the configured password{{else}}Password{{end}}" {{if not .Configured}}required{{end}}></label></div><p>Save all three values together. They will be hidden after you leave this page.</p><button>Save OpenSubtitles</button><p>Changes take effect immediately.</p></form>{{if .Configured}}<form action="/settings/configuration/reset" method="post"><button class="quiet" name="key" value="integrations.opensubtitles">Disable OpenSubtitles</button></form>{{end}}{{end}}<details><summary>Technical details</summary><p>Configuration keys: <code>integrations.opensubtitles.api_key</code>, <code>integrations.opensubtitles.username</code>, <code>integrations.opensubtitles.password</code>.</p></details></section>{{end}}`
 )
 
 var openSubtitlesConfigurationKeys = []string{"integrations.opensubtitles.api_key", "integrations.opensubtitles.username", "integrations.opensubtitles.password"}
@@ -45,6 +45,7 @@ func (store *settingsStore) changeOpenSubtitlesConfiguration(apiKey, username, p
 		for _, key := range openSubtitlesConfigurationKeys {
 			store.config.UpdateGUI(key, "", true)
 		}
+		store.refreshSubtitleProviderLocked(openSubtitlesConfigurationKey)
 		return nil
 	}
 	values := map[string]*string{"integrations.opensubtitles.api_key": &apiKey, "integrations.opensubtitles.username": &username, "integrations.opensubtitles.password": &password}
@@ -59,6 +60,7 @@ func (store *settingsStore) changeOpenSubtitlesConfiguration(apiKey, username, p
 	for key, value := range map[string]string{"integrations.opensubtitles.api_key": apiKey, "integrations.opensubtitles.username": username, "integrations.opensubtitles.password": password} {
 		store.config.UpdateGUI(key, value, false)
 	}
+	store.refreshSubtitleProviderLocked(openSubtitlesConfigurationKey)
 	return nil
 }
 
@@ -90,5 +92,5 @@ func apiChangeOpenSubtitlesConfiguration(writer http.ResponseWriter, request *ht
 		apiError(writer, err, http.StatusConflict)
 		return
 	}
-	writeJSON(writer, map[string]any{"status": "saved", "restartRequired": true}, http.StatusAccepted)
+	writeJSON(writer, map[string]any{"status": "saved", "restartRequired": false}, http.StatusAccepted)
 }
