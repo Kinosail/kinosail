@@ -26,7 +26,7 @@ type subtitleCleanupDoneData struct {
 	Removed         int
 }
 
-func subtitleCleanupInput(request *http.Request, applying bool) ([]string, string, string, error) {
+func subtitleCleanupInput(request *http.Request, applying bool) ([]string, string, string, error) { //nolint:cyclop // Reject every missing, repeated, and conflicting cleanup field before planning or deletion.
 	values, err := subtitleCleanupValues(request, applying)
 	if err != nil {
 		return nil, "", "", err

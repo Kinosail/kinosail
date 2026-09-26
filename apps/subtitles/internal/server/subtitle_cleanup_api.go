@@ -13,7 +13,7 @@ type subtitleCleanupAPIInput struct {
 	Digest    string   `json:"digest,omitempty"`
 }
 
-func readSubtitleCleanupAPI(writer http.ResponseWriter, request *http.Request, applying bool) (subtitleCleanupAPIInput, bool) {
+func readSubtitleCleanupAPI(writer http.ResponseWriter, request *http.Request, applying bool) (subtitleCleanupAPIInput, bool) { //nolint:cyclop // Keep strict encoding, opt-in, policy, and digest checks at the API boundary.
 	var input subtitleCleanupAPIInput
 	if request.URL.RawQuery != "" || request.Header.Get("Content-Type") != "application/json" {
 		apiError(writer, errors.New("subtitle cleanup request is invalid"), http.StatusBadRequest)

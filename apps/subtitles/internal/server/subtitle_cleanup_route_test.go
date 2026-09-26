@@ -56,7 +56,7 @@ func TestSubtitleSettingsCleanupJourney(t *testing.T) { //nolint:cyclop // The p
 	}
 }
 
-func TestSubtitleCleanupAPIRequiresOptInAndKeepsSelectedLanguages(t *testing.T) {
+func TestSubtitleCleanupAPIRequiresOptInAndKeepsSelectedLanguages(t *testing.T) { //nolint:cyclop,gocognit,funlen // The public API journey verifies rejection without side effects and successful confirmation together.
 	media := t.TempDir()
 	writeTestFile(t, filepath.Join(media, "Film.mkv"), "video")
 	for _, name := range []string{"Film.en.srt", "Film.es.srt", "Film.fr.srt"} {
@@ -144,7 +144,7 @@ func TestSubtitleCleanupCannotOverrideManagedLanguage(t *testing.T) {
 	}
 }
 
-func TestSubtitleCleanupRequiresOptInAndKeepsSeveralLanguages(t *testing.T) {
+func TestSubtitleCleanupRequiresOptInAndKeepsSeveralLanguages(t *testing.T) { //nolint:cyclop,gocognit,funlen // The browser-route journey covers opt-in, multi-language preservation, and forced-subtitle deletion together.
 	media := t.TempDir()
 	writeTestFile(t, filepath.Join(media, "Film.mkv"), "video")
 	for _, name := range []string{"Film.en.srt", "Film.en.forced.srt", "Film.es.srt", "Film.es.forced.srt", "Film.fr.srt"} {
