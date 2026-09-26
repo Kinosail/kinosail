@@ -32,7 +32,7 @@ func TestListenValidationRejectsBeforeFilesystemOrNetworkSideEffects(t *testing.
 	}
 }
 
-func TestResetRequiresStopAndCannotRestartCurrentManager(t *testing.T) {
+func TestResetRequiresStopAndRestartsCurrentManager(t *testing.T) {
 	t.Parallel()
 	config := Config{Enabled: true, PublicHTTPS: true, Domain: "family", Token: strings.Repeat("a", 32), Listen: "127.0.0.1:8443", DataDir: t.TempDir()}
 	dependency := Dependencies{Certificate: func(*tls.ClientHelloInfo) (*tls.Certificate, error) { return nil, nil }}
@@ -40,28 +40,31 @@ func TestResetRequiresStopAndCannotRestartCurrentManager(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+	manager.client = &http.Client{Transport: transportFunc(func(*http.Request) (*http.Response, error) { return okResponse(), nil })}
 	if manager.ResetKill() == nil || manager.Status().State != "starting" {
 		t.Fatal("reset accepted a live manager")
 	}
-	if err = manager.Kill(); err != nil {
-		t.Fatal(err)
-	}
-	if err = manager.ResetKill(); err != nil {
-		t.Fatal(err)
-	}
+	killAndResetForRecovery(t, manager)
+	listens := 0
 	manager.operations.listen = func(context.Context, string, string) (net.Listener, error) {
-		t.Fatal("reset reopened current process")
-		return nil, nil
+		listens++
+		return &failureListener{acceptErr: net.ErrClosed}, nil
 	}
-	if err = manager.Serve(t.Context(), http.NotFoundHandler()); err != nil {
-		t.Fatal(err)
-	}
-	manager.setStatus("ready", nil)
-	if manager.Status().State != "restart-required" {
-		t.Fatal("asynchronous status revived the listener")
+	if err = manager.Serve(t.Context(), http.NotFoundHandler()); err != nil || listens != 1 || manager.Status().State != "ready" {
+		t.Fatalf("same manager did not resume: error=%v listens=%d status=%#v", err, listens, manager.Status())
 	}
 	restarted, err := New(config, dependency)
 	if err != nil || restarted.killed || restarted.Status().State != "starting" {
 		t.Fatalf("new process cannot start: %#v %v", restarted, err)
+	}
+}
+
+func killAndResetForRecovery(t *testing.T, manager *Manager) {
+	t.Helper()
+	if err := manager.Kill(); err != nil {
+		t.Fatal(err)
+	}
+	if err := manager.ResetKill(); err != nil {
+		t.Fatal(err)
 	}
 }
