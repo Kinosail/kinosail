@@ -5,6 +5,7 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 	"errors"
+	"io"
 	"net/http"
 	"path/filepath"
 	"strings"
@@ -82,7 +83,11 @@ func (service *castService) startHTTP(writer http.ResponseWriter, request *http.
 	}
 	session, err := service.start(request, request.PathValue("id"), input)
 	if err != nil {
-		apiError(writer, err, http.StatusBadRequest)
+		status := http.StatusBadRequest
+		if errors.Is(err, errCastEntropy) {
+			status = http.StatusServiceUnavailable
+		}
+		apiError(writer, err, status)
 		return
 	}
 	writer.Header().Set("Cache-Control", "no-store")
@@ -108,7 +113,14 @@ func (service *castService) start(request *http.Request, itemID string, input ca
 	if err != nil {
 		return castSession{}, err
 	}
-	id, token := castRandom(16), castRandom(32)
+	id, err := castRandom(16)
+	if err != nil {
+		return castSession{}, err
+	}
+	token, err := castRandom(32)
+	if err != nil {
+		return castSession{}, err
+	}
 	lifetime := time.Duration(min(max(media.Duration+3600, 3600), 24*3600)) * time.Second
 	session := castSession{ID: id, Title: item.Title, Position: position, Duration: media.Duration, ExpiresAt: service.now().Add(lifetime), Protocol: input.Protocol, DeviceID: input.DeviceID, DeviceName: deviceName, itemID: item.ID, profileID: viewer.ID, revision: viewer.Revision, apiKey: viewer.APIKey, scopes: append([]string(nil), viewer.Scopes...), proof: sha256.Sum256([]byte(token)), plan: plan, version: facts.FileVersion}
 	if err := service.setCastURL(&session, item.Path, token); err != nil {
@@ -127,12 +139,14 @@ func (service *castService) start(request *http.Request, itemID string, input ca
 	return session, nil
 }
 
-func castRandom(size int) string {
+var errCastEntropy = errors.New("Could not create a cast session. Try again.")
+
+func castRandom(size int) (string, error) {
 	value := make([]byte, size)
-	if _, err := rand.Read(value); err != nil {
-		panic(err)
+	if _, err := io.ReadFull(rand.Reader, value); err != nil {
+		return "", errCastEntropy
 	}
-	return hex.EncodeToString(value)
+	return hex.EncodeToString(value), nil
 }
 
 func (service *castService) remove(id, viewer string) {
