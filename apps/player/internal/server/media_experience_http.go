@@ -31,7 +31,7 @@ func (store *mediaExperienceStore) defaultHandler() http.HandlerFunc {
 	return func(writer http.ResponseWriter, request *http.Request) {
 		var value mediaPreferences
 		if request.Method == http.MethodPut {
-			if !readJSON(writer, request, &value) {
+			if !readMediaJSON(writer, request, &value) {
 				return
 			}
 			if err := value.validate(); err != nil {
@@ -69,7 +69,7 @@ func (store *mediaExperienceStore) itemHTTP(writer http.ResponseWriter, request 
 	}
 	var value playbackPreferences
 	if request.Method == http.MethodPut {
-		if !readJSON(writer, request, &value) {
+		if !readMediaJSON(writer, request, &value) {
 			return
 		}
 		if err := value.validate(); err != nil {
