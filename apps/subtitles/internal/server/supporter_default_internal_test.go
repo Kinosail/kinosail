@@ -41,3 +41,22 @@ func TestDefaultSupporterRejectsAnUnknownSigningKeyWithoutSaving(t *testing.T) {
 		t.Fatalf("unknown signing key contacted provider=%t and saved supporter=%t", called, settings.value.Supporter != nil)
 	}
 }
+
+func TestDefaultSupporterLinksToBothPolarCheckoutFamilies(t *testing.T) {
+	program := newSupporterProgram(&settingsStore{}, SupporterConfig{})
+	page := program.pageData("")
+	if page.LivingStandard.SupportURL != "https://buy.polar.sh/polar_cl_HTsVz4n50S840QL5zKCZ0yTZe6HpVfHqagCtQ1LZ6sN" {
+		t.Errorf("monthly checkout = %q", page.LivingStandard.SupportURL)
+	}
+	if page.PatronOrder.SupportURL != "https://buy.polar.sh/polar_cl_Aec8B5u63m6Wr6l6bfZNMS6dmYRyM4jAMAzxQ28S4b3" {
+		t.Errorf("one-time checkout = %q", page.PatronOrder.SupportURL)
+	}
+}
+
+func TestConfiguredSupporterCheckoutURLStillOverridesBothFamilies(t *testing.T) {
+	program := newSupporterProgram(&settingsStore{}, SupporterConfig{SupportURL: "https://example.com/support"})
+	page := program.pageData("")
+	if page.LivingStandard.SupportURL != "https://example.com/support" || page.PatronOrder.SupportURL != "https://example.com/support" {
+		t.Fatalf("configured checkout links = %q and %q", page.LivingStandard.SupportURL, page.PatronOrder.SupportURL)
+	}
+}

@@ -30,7 +30,7 @@ type Spec struct {
 
 const DefaultSupporterActivationURL = "https://kinosail-supporter-prod.pvw-7m4q2x9.workers.dev/v1/supporters/activate"
 
-var specs = append(applicationSpecs(configurationcore.CommonApplicationFields("127.0.0.1:38128", "https://github.com/Kinosail/kinosail/tree/main/apps/subtitles")), []Spec{
+var specs = append(applicationSpecs(configurationcore.CommonApplicationFields("127.0.0.1:38128", "https://buy.polar.sh/polar_cl_HTsVz4n50S840QL5zKCZ0yTZe6HpVfHqagCtQ1LZ6sN")), []Spec{
 	{"binaries.tesseract", "KINOSAIL_TESSERACT", "tesseract", text, false, true},
 	{"binaries.whisper", "KINOSAIL_WHISPER", "whisper-cli", text, false, true},
 	{"subtitles.transcription_model", "KINOSAIL_TRANSCRIPTION_MODEL", "", text, false, true},

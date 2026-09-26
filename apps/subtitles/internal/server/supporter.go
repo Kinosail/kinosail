@@ -15,7 +15,8 @@ import (
 const (
 	defaultSupporterActivationURL = configuration.DefaultSupporterActivationURL
 	productionSupporterPublicKey  = "j-Zo0nvjgd13yuQyZ0bfGpObhf-AQYtdKlFxyFZOL6I"
-	defaultSupportURL             = "https://github.com/Kinosail/kinosail/tree/main/apps/subtitles"
+	defaultSupportURL             = "https://buy.polar.sh/polar_cl_HTsVz4n50S840QL5zKCZ0yTZe6HpVfHqagCtQ1LZ6sN"
+	defaultOneTimeSupportURL      = "https://buy.polar.sh/polar_cl_Aec8B5u63m6Wr6l6bfZNMS6dmYRyM4jAMAzxQ28S4b3"
 	supporterAppID                = "kino-subtitles"
 	supporterAppName              = "Kinosail Subtitles"
 	supporterAudience             = "com.kinosail.subtitles"

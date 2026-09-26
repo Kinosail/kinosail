@@ -14,6 +14,10 @@ func TestSupporterShareCertificatesUseEveryGallerySilhouette(t *testing.T) { //n
 	}
 	for _, family := range []string{livingStandardFamily, patronOrderFamily} {
 		for _, badge := range supporterBadgeTiers(family, supporterGrantStatus{}, 0) {
+			art, err := supporterBadgeArt(family, badge.Rank)
+			if err != nil {
+				t.Fatal(err)
+			}
 			primary := "#d6b96d"
 			if family == livingStandardFamily {
 				primary = "#c8f169"
@@ -21,13 +25,13 @@ func TestSupporterShareCertificatesUseEveryGallerySilhouette(t *testing.T) { //n
 			data := supporterShareData{
 				Family: strings.ToUpper(family), State: "ACTIVE", BadgeName: badge.BadgeName,
 				LevelName: fmt.Sprintf("%d / %s", badge.Rank, badge.Name), SupportedSince: "Aug 30, 2026",
-				Outline: badge.Outline, Ornament: badge.Ornament, PrimaryColor: primary,
+				BadgeArt: art, PrimaryColor: primary,
 			}
 			var output bytes.Buffer
 			if err := supporterCertificateView.Execute(&output, data); err != nil {
 				t.Fatal(err)
 			}
-			for _, expected := range []string{`d="` + badge.Outline + `"`, `d="` + badge.Ornament + `"`, `stroke="` + primary + `"`, badge.BadgeName} {
+			for _, expected := range []string{"Kinosail Subtitles — " + badge.Name, `x="55" y="80" width="450" height="450"`, badge.BadgeName} {
 				if !strings.Contains(output.String(), expected) {
 					t.Fatalf("%s level %d certificate omitted %q", family, badge.Rank, expected)
 				}
@@ -59,14 +63,17 @@ func TestSupporterShareCertificateFitsMaximumRecognitionName(t *testing.T) {
 
 func BenchmarkSupporterShareCertificate(b *testing.B) {
 	badge := supporterBadgeTiers(livingStandardFamily, supporterGrantStatus{}, 0)[9]
+	art, err := supporterBadgeArt(livingStandardFamily, badge.Rank)
+	if err != nil {
+		b.Fatal(err)
+	}
 	data := supporterShareData{
 		Family:         "LIVING STANDARD",
 		State:          "ACTIVE",
 		BadgeName:      badge.BadgeName,
 		LevelName:      "10 / Rosetta Crown",
 		SupportedSince: "Aug 30, 2026",
-		Outline:        badge.Outline,
-		Ornament:       badge.Ornament,
+		BadgeArt:       art,
 		PrimaryColor:   "#c8f169",
 		ServiceMarks:   "3M · 6M · 12M · 24M · 36M · 60M",
 	}
