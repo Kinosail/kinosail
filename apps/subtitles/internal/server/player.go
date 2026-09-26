@@ -118,7 +118,7 @@ func buildPlayerData(request *http.Request, item library.Item, index *libraryInd
 	data.SubtitleLanguage = settings.subtitleLanguage()
 	data.CanFetchSubtitles = viewer.Owner && subtitles.supports(data.SubtitleLanguage)
 	data.Owner, data.CanRefreshMetadata = viewer.Owner, viewer.Owner && metadata.configured()
-	data.Tracks = playbackSubtitles(item, media, subtitles, settings.subtitleLanguages(), settings.subtitlePreference(), settings.subtitlePickerLimited(), data.DefaultSubtitles)
+	data.Tracks = playbackSubtitles(item, media, subtitles, settings.subtitleLanguages(), settings.subtitlePreference(), settings.subtitlePickerLimited(), settings.subtitlePickerKeepForced(), data.DefaultSubtitles)
 	applyPlayback(request, settings, mediaFactsFor(item, media), &data)
 	setPlaybackSession(request, data.PlaybackSession)
 	data.Finalize(request)

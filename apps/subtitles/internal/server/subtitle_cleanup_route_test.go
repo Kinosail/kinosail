@@ -147,7 +147,7 @@ func TestSubtitleCleanupCannotOverrideManagedLanguage(t *testing.T) {
 func TestSubtitleCleanupRequiresOptInAndKeepsSeveralLanguages(t *testing.T) { //nolint:cyclop,gocognit,funlen // The browser-route journey covers opt-in, multi-language preservation, and forced-subtitle deletion together.
 	media := t.TempDir()
 	writeTestFile(t, filepath.Join(media, "Film.mkv"), "video")
-	for _, name := range []string{"Film.en.srt", "Film.en.forced.srt", "Film.es.srt", "Film.es.forced.srt", "Film.fr.srt"} {
+	for _, name := range []string{"Film.en.srt", "Film.en.forced.srt", "Film.es.srt", "Film.es.forced.srt", "Film.fr.srt", "Film.fr.forced.srt"} {
 		writeTestFile(t, filepath.Join(media, name), name)
 	}
 	handler := server.New(server.Config{SubtitleApp: true, MediaDir: media, DataDir: t.TempDir(), CacheDir: t.TempDir()})
@@ -208,7 +208,7 @@ func TestSubtitleCleanupRequiresOptInAndKeepsSeveralLanguages(t *testing.T) { //
 	if _, err := os.Stat(filepath.Join(media, "Film.fr.srt")); !os.IsNotExist(err) {
 		t.Fatalf("French subtitle remains: %v", err)
 	}
-	for _, name := range []string{"Film.en.srt", "Film.en.forced.srt", "Film.es.srt", "Film.es.forced.srt"} {
+	for _, name := range []string{"Film.en.srt", "Film.en.forced.srt", "Film.es.srt", "Film.es.forced.srt", "Film.fr.forced.srt"} {
 		if _, err := os.Stat(filepath.Join(media, name)); err != nil {
 			t.Fatalf("kept subtitle %s: %v", name, err)
 		}
@@ -217,7 +217,7 @@ func TestSubtitleCleanupRequiresOptInAndKeepsSeveralLanguages(t *testing.T) { //
 		t.Fatalf("kept preferences: %d %s", settings.Code, settings.Body.String())
 	}
 	forcedPreview := requestApp(t, handler, http.MethodGet, "/settings/subtitles/cleanup?enabled=on&language=en&language=es&forced=delete", "")
-	if forcedPreview.Code != http.StatusOK || !strings.Contains(forcedPreview.Body.String(), "2 subtitle files to delete") {
+	if forcedPreview.Code != http.StatusOK || !strings.Contains(forcedPreview.Body.String(), "3 subtitle files to delete") {
 		t.Fatalf("forced preview: %d %s", forcedPreview.Code, forcedPreview.Body.String())
 	}
 	forcedMatch := regexp.MustCompile(`name="digest" value="([0-9a-f]{64})"`).FindStringSubmatch(forcedPreview.Body.String())
@@ -225,10 +225,10 @@ func TestSubtitleCleanupRequiresOptInAndKeepsSeveralLanguages(t *testing.T) { //
 		t.Fatal("forced preview digest missing")
 	}
 	forcedResult := postCleanup("enabled=on&language=en&language=es&forced=delete&digest=" + forcedMatch[1])
-	if forcedResult.Code != http.StatusOK || !strings.Contains(forcedResult.Body.String(), "Deleted 2 subtitle files") {
+	if forcedResult.Code != http.StatusOK || !strings.Contains(forcedResult.Body.String(), "Deleted 3 subtitle files") {
 		t.Fatalf("forced confirmation: %d %s", forcedResult.Code, forcedResult.Body.String())
 	}
-	for _, name := range []string{"Film.en.forced.srt", "Film.es.forced.srt"} {
+	for _, name := range []string{"Film.en.forced.srt", "Film.es.forced.srt", "Film.fr.forced.srt"} {
 		if _, err := os.Stat(filepath.Join(media, name)); !os.IsNotExist(err) {
 			t.Fatalf("forced subtitle remains %s: %v", name, err)
 		}

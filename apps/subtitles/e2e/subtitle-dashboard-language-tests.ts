@@ -28,7 +28,7 @@ test("Owner deletes other languages and English forced subtitles from a populate
     await page.goto("/settings#cleanup");
     await page.getByLabel("Enable subtitle language cleanup").check();
     await page.getByLabel("Languages to keep").selectOption(["en"]);
-    await page.getByLabel("Forced subtitles in kept languages").selectOption("delete");
+    await page.getByLabel("Forced subtitles in every language").selectOption("delete");
     await page.getByRole("button", { name: "Preview files to delete" }).click();
     await expect(page.getByRole("heading", { name: "2 subtitle files to delete" })).toBeVisible();
     await expect(page.getByText(`${title}.es.srt`)).toBeVisible();
@@ -65,13 +65,13 @@ test("Owner previews language cleanup and forced subtitle choice", async ({ page
     await expect(cleanup.getByLabel("Enable subtitle language cleanup")).not.toBeChecked();
     await cleanup.getByLabel("Enable subtitle language cleanup").check();
     await cleanup.getByLabel("Languages to keep").selectOption(["en", "es"]);
-    await cleanup.getByLabel("Forced subtitles in kept languages").selectOption("delete");
+    await cleanup.getByLabel("Forced subtitles in every language").selectOption("keep");
     await expectNoHorizontalOverflow(page);
     expect((await new AxeBuilder({ page }).include("#cleanup").analyze()).violations).toEqual([]);
     await page.screenshot({ path: testInfo.outputPath(`${viewport.width}-subtitle-cleanup-setting.png`), fullPage: true });
     await cleanup.getByRole("button", { name: "Preview files to delete" }).click();
     await expect(page.getByRole("heading", { name: "Subtitle cleanup" })).toBeVisible();
-    await expect(page.getByText("Delete forced subtitles in the selected languages.")).toBeVisible();
+    await expect(page.getByText("Keep forced subtitles in every language.")).toBeVisible();
     await expect(page.getByText("Keep en, es subtitles and set these as your preferred languages.", { exact: false })).toBeVisible();
     await expect(page.getByRole("button", { name: "Save selected languages" })).toBeVisible();
     await expectNoHorizontalOverflow(page);
