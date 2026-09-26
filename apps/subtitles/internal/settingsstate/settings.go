@@ -46,6 +46,7 @@ type document struct {
 	SubtitleLanguage      string     `json:"subtitleLanguage,omitempty"`
 	SubtitleLanguages     []string   `json:"subtitleLanguages,omitempty"`
 	SubtitlePickerLimited bool       `json:"subtitlePickerLimited,omitempty"`
+	PickerKeepForced      bool       `json:"subtitlePickerKeepForced,omitempty"`
 	SubtitlePreference    string     `json:"subtitlePreference,omitempty"`
 	ScanFrequency         string     `json:"scanFrequency,omitempty"`
 	DLNAToken             string     `json:"dlnaToken,omitempty"`
@@ -80,7 +81,7 @@ var allowedFields = map[string]bool{
 	"name": true, "libraries": true, "requiremfa": true, "sessioninactivehours": true, "sessionabsolutehours": true,
 	"jellyfincompatibility": true, "homeassistant": true, "jellyfinid": true, "playbackmode": true, "transcoder": true,
 	"codec": true, "accelerator": true, "tonemap": true, "autoplay": true, "autoskip": true, "subtitles": true,
-	"subtitlelanguage": true, "subtitlelanguages": true, "subtitlepickerlimited": true, "subtitlepreference": true, "scanfrequency": true, "dlnatoken": true, "navigation": true,
+	"subtitlelanguage": true, "subtitlelanguages": true, "subtitlepickerlimited": true, "subtitlepickerkeepforced": true, "subtitlepreference": true, "scanfrequency": true, "dlnatoken": true, "navigation": true,
 	"onboardingpending": true, "updatechecks": true, "supporter": true,
 }
 
@@ -110,6 +111,9 @@ func validateDocument(data []byte) (map[string]json.RawMessage, error) { //nolin
 		}
 	}
 	if value, present := fields["subtitlepickerlimited"]; present && bytes.Equal(bytes.TrimSpace(value), []byte("null")) {
+		return nil, errors.New("invalid installation settings")
+	}
+	if value, present := fields["subtitlepickerkeepforced"]; present && bytes.Equal(bytes.TrimSpace(value), []byte("null")) {
 		return nil, errors.New("invalid installation settings")
 	}
 	decoder := json.NewDecoder(bytes.NewReader(data))
