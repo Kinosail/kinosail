@@ -2,7 +2,6 @@ package com.kinosail.player.core
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -58,9 +57,8 @@ internal fun ShowScreen(showId: String, viewer: Viewer, catalog: CatalogModel, t
     LaunchedEffect(detail?.id, tv) {
         if (tv && featured != null) { withFrameNanos { }; focus.requestFocus() }
     }
-    Box(Modifier.fillMaxSize().background(if (tv || isSystemInDarkTheme()) KinoColor.background
-        else MaterialTheme.colorScheme.background)) {
-        if (tv || isSystemInDarkTheme()) SailBackdrop()
+    Box(Modifier.fillMaxSize().background(KinoColor.background)) {
+        SailBackdrop()
         LazyColumn(Modifier.fillMaxSize().safeDrawingPadding(),
             contentPadding = PaddingValues(if (tv) 56.dp else 20.dp),
             verticalArrangement = Arrangement.spacedBy(if (tv) 24.dp else 16.dp)) {
@@ -69,7 +67,7 @@ internal fun ShowScreen(showId: String, viewer: Viewer, catalog: CatalogModel, t
                     verticalAlignment = Alignment.CenterVertically) {
                     Text(detail?.title ?: "Seasons & episodes",
                         style = if (tv) MaterialTheme.typography.displayMedium else MaterialTheme.typography.headlineLarge,
-                        color = if (tv || isSystemInDarkTheme()) KinoColor.text else MaterialTheme.colorScheme.onBackground,
+                        color = KinoColor.text,
                         modifier = Modifier.weight(1f))
                     if (tv) androidx.tv.material3.Button(onClick = close) {
                         androidx.tv.material3.Text("Back to Library")
@@ -89,7 +87,7 @@ internal fun ShowScreen(showId: String, viewer: Viewer, catalog: CatalogModel, t
                 item {
                     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
                         Text(featured.title, style = MaterialTheme.typography.titleLarge,
-                            color = if (tv || isSystemInDarkTheme()) KinoColor.text else MaterialTheme.colorScheme.onBackground)
+                            color = KinoColor.text)
                         val label = "${if (featured.progress.seconds > 0 && !featured.progress.watched) "Resume" else "Play"} · S${featured.season} E${featured.episode}"
                         if (tv) androidx.tv.material3.Button(onClick = { play(featured) },
                             modifier = Modifier.focusRequester(focus)) { androidx.tv.material3.Text(label) }
@@ -98,7 +96,7 @@ internal fun ShowScreen(showId: String, viewer: Viewer, catalog: CatalogModel, t
                 }
                 item {
                     Text("Seasons", style = MaterialTheme.typography.titleLarge,
-                        color = if (tv || isSystemInDarkTheme()) KinoColor.text else MaterialTheme.colorScheme.onBackground)
+                        color = KinoColor.text)
                 }
                 item {
                     LazyRow(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
