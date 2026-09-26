@@ -1,9 +1,0 @@
-<!doctype html>
-<html lang="en">
-<head>
-  <script src="/static/appearance.js?v=electric-1"></script><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#0b0d0b"><title>Sign in to Kinosail Dashboard</title><link rel="icon" href="/favicon.svg?v=5" type="image/svg+xml"><link rel="apple-touch-icon" href="/static/apple-touch-icon.png?v=5"><link rel="stylesheet" href="/static/base.css"><link rel="stylesheet" href="/static/auth.css"><link rel="stylesheet" href="/static/last-light.css?v=electric-1"></head>
-<body class="auth-page" data-auth-mode="login" data-passkey-storage="kinosail-dashboard-passkey">
-  <main class="login-shell">
-    <form id="auth-form" class="auth-form" method="post" action="/api/v1/session"><img class="brand-mark" src="/static/icon.svg?v=5" width="48" height="48" alt=""><h1>Kinosail Dashboard</h1><p>Sign in to open and manage your household services.</p><button class="quiet-button full" type="button" data-passkey-login>Sign in with passkey</button><output class="passkey-status" data-passkey-status aria-live="polite"></output><label>Name<input name="name" maxlength="60" required autocomplete="username webauthn" autofocus></label><label>Password<input name="password" type="password" maxlength="72" required autocomplete="current-password"></label><p id="auth-error" class="form-error" role="alert" hidden></p><button class="primary-button full" type="submit">Sign in</button></form>
-  </main><script type="module" src="/static/auth.js"></script><script type="module" src="/static/passkeys.js"></script>
-</body></html>

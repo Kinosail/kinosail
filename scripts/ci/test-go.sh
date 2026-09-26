@@ -4,7 +4,6 @@ set -euo pipefail
 [[ $# == 1 ]] || { echo 'expected one Go module' >&2; exit 2; }
 case "$1" in
   player|subtitles) directory="apps/$1"; minimum=89 ;;
-  dashboard) directory=apps/dashboard; minimum=100 ;;
   packages) directory=packages; minimum=85 ;;
   *) echo 'invalid Go module' >&2; exit 2 ;;
 esac

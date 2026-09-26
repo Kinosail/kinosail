@@ -26,8 +26,6 @@ def case(scope, selected=True, app="player"):
     if scope == "app" and app != "player":
         needs["client"]["result"] = "skipped"
         needs["android"]["result"] = "skipped"
-    if scope == "app" and app == "dashboard":
-        needs["tooling"]["result"] = "skipped"
     return raw, needs
 
 
@@ -37,7 +35,7 @@ class RequiredTests(unittest.TestCase):
             for selected in (True, False):
                 raw, needs = case(scope, selected)
                 verify(scope, needs)
-        for app in ("player", "subtitles", "dashboard"):
+        for app in ("player", "subtitles"):
             raw, needs = case("app", app=app)
             verify("app", needs, raw, app)
 

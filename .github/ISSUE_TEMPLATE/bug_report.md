@@ -10,7 +10,7 @@ assignees: ''
 
 ## App and environment
 
-- App (Player, Subtitles, Dashboard, Apple client, or shared tooling):
+- App (Player, Subtitles, Apple client, or shared tooling):
 - Version or commit:
 - Host OS and architecture:
 - Installation method and container engine:

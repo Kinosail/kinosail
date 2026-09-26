@@ -25,7 +25,7 @@ reject
 reject unknown
 reject player invalid
 reject player 0123456789abcdef0123456789abcdef01234567 extra
-for app in player subtitles dashboard; do
+for app in player subtitles; do
   reject "$app" 0123456789abcdef0123456789abcdef0123456Z
 done
 KINOSAIL_DEPLOY_EXPECT_MAIN=invalid reject player "$sha"
@@ -33,8 +33,7 @@ KINOSAIL_DEPLOY_EXPECT_MAIN='' reject player "$sha"
 
 for entry in \
   'player KINOSAIL_NOX_HOST' \
-  'subtitles KINOSAIL_SUBTITLES_NOX_HOST' \
-  'dashboard KINOSAIL_DASHBOARD_NOX_HOST'; do
+  'subtitles KINOSAIL_SUBTITLES_NOX_HOST'; do
   read -r app host_variable <<<"$entry"
   if PATH="$tmp/bin:$PATH" KINOSAIL_TEST_SIDE_EFFECT="$tmp/side-effect" \
     env "$host_variable=-oProxyCommand=invalid" "$tool" "$app" 0123456789abcdef0123456789abcdef01234567 >/dev/null 2>&1; then
@@ -84,8 +83,7 @@ positive() {
 
 for entry in \
   'player KINOSAIL_DEPLOY_GIT_DIR localhost/kinosail kinosail kinosail' \
-  'subtitles KINOSAIL_SUBTITLES_DEPLOY_GIT_DIR localhost/kinosail-subtitles kinosail-subtitles kinosail-subtitles-dev' \
-  'dashboard KINOSAIL_DASHBOARD_DEPLOY_GIT_DIR localhost/kinosail-dashboard kinosail-dashboard kinosail-dashboard'; do
+  'subtitles KINOSAIL_SUBTITLES_DEPLOY_GIT_DIR localhost/kinosail-subtitles kinosail-subtitles kinosail-subtitles-dev'; do
   read -r app git_variable image_repo service container <<<"$entry"
   : >"$tmp/git.log"; : >"$tmp/podman.log"; : >"$tmp/ssh.log"
   positive "$app" "$git_variable" 1
