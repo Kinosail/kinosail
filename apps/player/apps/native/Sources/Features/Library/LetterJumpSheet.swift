@@ -62,3 +62,44 @@ struct LetterJumpSheet: View {
         #endif
     }
 }
+
+#if os(tvOS)
+struct TVLetterIndex: View {
+    let letters: [LibraryPage.Letter]
+    let onFocus: (String?) -> Void
+    let onBrowse: (LibraryPage.Letter) -> Void
+    @FocusState private var focusedLetter: String?
+
+    var body: some View {
+        ScrollView(.vertical) {
+            LazyVStack(spacing: 2) {
+                ForEach(letters) { letter in
+                    Button(letter.label) { onBrowse(letter) }
+                        .buttonStyle(.plain)
+                        .font(.callout.weight(.semibold))
+                        .frame(width: 56, height: 44)
+                        .foregroundStyle(focusedLetter == letter.label ? KinoTheme.signalInk : KinoTheme.text)
+                        .background(focusedLetter == letter.label ? KinoTheme.signal : .clear,
+                                    in: RoundedRectangle(cornerRadius: 10))
+                        .focused($focusedLetter, equals: letter.label)
+                        .accessibilityLabel("\(letter.label), \(letter.count) \(letter.count == 1 ? "title" : "titles")")
+                        .accessibilityHint("Focus to browse this letter")
+                }
+            }
+            .padding(.vertical, 8)
+        }
+        .scrollIndicators(.hidden)
+        .frame(width: 68)
+        .frame(maxHeight: 680)
+        .background(KinoTheme.surface, in: RoundedRectangle(cornerRadius: 14))
+        .focusSection()
+        .onChange(of: focusedLetter) { _, letter in onFocus(letter) }
+        .task(id: focusedLetter) {
+            guard let focusedLetter, let letter = letters.first(where: { $0.label == focusedLetter }) else { return }
+            try? await Task.sleep(for: .milliseconds(150))
+            guard !Task.isCancelled else { return }
+            onBrowse(letter)
+        }
+    }
+}
+#endif
