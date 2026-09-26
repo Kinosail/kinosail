@@ -177,6 +177,7 @@ func newApplication(config Config) http.Handler { //nolint:funlen,cyclop,gocogni
 	hls := newHLS(config.Lifecycle, config.CacheDir, config.FFmpeg, index, probe, settings, workloads)
 	frames := newTrickplay(config.CacheDir, config.FFmpeg, index)
 	subtitles := newSubtitleProvider(config.Subtitles, config.CacheDir, config.DataDir, index, settings, config.FFmpeg)
+	settings.subtitleProvider = subtitles
 	backups := newBackupManager(lifecycle, config.DataDir, config.BackupDir, config.BackupKey, config.BackupInterval, config.BackupRetention, workloads)
 	subtitleManager := newSubtitleManager(index, settings, subtitles, probe, backups)
 	if managedLifecycle && config.SubtitleApp {

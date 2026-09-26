@@ -1,6 +1,6 @@
 import SwiftUI
 
-enum LoadingLayout { case shelf, home, homeAudio, detail, grid, squareGrid, musicGrid, album, show, list, playback, actor, collectionGrid }
+enum LoadingLayout { case shelf, home, homeAudio, tvHome, tvHomeAudio, detail, grid, squareGrid, musicGrid, album, show, list, playback, actor, collectionGrid }
 
 struct LoadingState: View {
     var title = "Loading your library…"
@@ -10,6 +10,40 @@ struct LoadingState: View {
     @ScaledMetric(relativeTo: .headline) private var landscapeWidth = 260.0
     var body: some View {
         VStack(alignment: .leading, spacing: 20) {
+            if layout == .tvHome || layout == .tvHomeAudio {
+                line(width: 180, height: 28).accessibilityHidden(true)
+                if layout == .tvHome {
+                    ScrollView(.horizontal) {
+                        HStack(alignment: .top, spacing: 18) { ForEach(0..<4) { _ in card(ratio: 16 / 9, showsProgress: true).frame(width: 390) } }
+                        .padding(.horizontal, 24).padding(.vertical, 24)
+                    }
+                    .scrollIndicators(.hidden).scrollDisabled(true).accessibilityHidden(true)
+                } else {
+                    LazyVGrid(columns: ResumeRows.columns(accessibility: dynamicType.isAccessibilitySize), alignment: .leading, spacing: 28) {
+                        ForEach(0..<2) { _ in resumeRow }
+                    }
+                    .padding(.vertical, 20).accessibilityHidden(true)
+                }
+                line(width: 130, height: 28).accessibilityHidden(true)
+                ScrollView(.horizontal) {
+                    HStack(spacing: 18) {
+                        ForEach(0..<4) { _ in
+                            VStack(spacing: 10) {
+                                RoundedRectangle(cornerRadius: 14).fill(KinoTheme.surface).frame(width: 320, height: 150)
+                                line(width: 120, height: 20)
+                            }
+                        }
+                    }
+                    .padding(.horizontal, 24).padding(.vertical, 24)
+                }
+                .scrollIndicators(.hidden).scrollDisabled(true).accessibilityHidden(true)
+                line(width: 230, height: 28).accessibilityHidden(true)
+                ScrollView(.horizontal) {
+                    HStack(alignment: .top, spacing: 18) { ForEach(0..<4) { _ in card(ratio: layout == .tvHomeAudio ? 1 : 2 / 3).frame(width: 230) } }
+                    .padding(.horizontal, 24).padding(.vertical, 24)
+                }
+                .scrollIndicators(.hidden).scrollDisabled(true).accessibilityHidden(true)
+            }
             if layout == .home || layout == .homeAudio {
                 line(width: 180, height: 28).accessibilityHidden(true)
             }
@@ -26,12 +60,7 @@ struct LoadingState: View {
                 VStack(alignment: .leading, spacing: 12) {
                     line(width: 200, height: 28)
                     ScrollView(.horizontal) {
-                        HStack(alignment: .top, spacing: 18) {
-                            ForEach(0..<4) { _ in card(ratio: 16 / 9, showsProgress: true).frame(width: continuationWidth) }
-                        }
-                        #if os(tvOS)
-                        .padding(.horizontal, 24)
-                        #endif
+                        HStack(alignment: .top, spacing: 18) { ForEach(0..<4) { _ in card(ratio: 16 / 9, showsProgress: true).frame(width: continuationWidth) } }
                         .padding(.vertical, 24)
                     }.scrollIndicators(.hidden).scrollDisabled(true)
                 }.padding(.top, 12).accessibilityHidden(true)
@@ -169,7 +198,7 @@ struct LoadingState: View {
                 if layout == .collectionGrid { line(width: 260, height: 42).accessibilityHidden(true) }
                 #endif
                 LazyVGrid(columns: MediaGrid.columns(landscape: layout == .show, accessibility: dynamicType.isAccessibilitySize), alignment: .leading, spacing: 28) {
-                    ForEach(0..<8) { _ in card(ratio: gridRatio) }
+                    ForEach(0..<8) { _ in card(ratio: gridRatio, showsSubtitle: layout != .grid && layout != .actor) }
                 }
                 #if os(tvOS)
                 .padding(.vertical, 24)
@@ -180,9 +209,7 @@ struct LoadingState: View {
                 ForEach(0..<(layout == .shelf ? 1 : 2), id: \.self) { _ in
                     line(width: 180, height: 28).accessibilityHidden(true)
                     ScrollView(.horizontal) {
-                        HStack(alignment: .top, spacing: 18) {
-                            ForEach(0..<4) { _ in card(ratio: layout == .homeAudio ? 1 : 2 / 3).frame(width: shelfWidth) }
-                        }
+                        HStack(alignment: .top, spacing: 18) { ForEach(0..<4) { _ in card(ratio: layout == .homeAudio ? 1 : 2 / 3).frame(width: shelfWidth) } }
                         #if os(tvOS)
                         .padding(.horizontal, 24)
                         #endif
@@ -195,12 +222,12 @@ struct LoadingState: View {
         .frame(maxWidth: .infinity, alignment: .leading)
         .skeletonLoading(layout == .playback ? "Opening media…" : title, shimmers: layout != .playback)
     }
-    private func card(ratio: CGFloat = 2 / 3, showsProgress: Bool = false) -> some View {
+    private func card(ratio: CGFloat = 2 / 3, showsProgress: Bool = false, showsSubtitle: Bool = true) -> some View {
         VStack(alignment: .leading, spacing: 10) {
             RoundedRectangle(cornerRadius: 12).fill(KinoTheme.surface).aspectRatio(ratio, contentMode: .fit)
             VStack(alignment: .leading, spacing: 8) {
                 line(width: 100, height: 20)
-                line(width: 80, height: 14)
+                if showsSubtitle { line(width: 80, height: 14) }
                 if showsProgress { line(width: 140, height: 4) }
             }
             #if os(tvOS)
@@ -212,7 +239,7 @@ struct LoadingState: View {
         HStack(spacing: 12) {
             if !dynamicType.isAccessibilitySize {
                 RoundedRectangle(cornerRadius: 8).fill(KinoTheme.surface)
-                    .aspectRatio(layout == .homeAudio ? 1 : 16 / 9, contentMode: .fit).frame(width: resumeArtworkWidth)
+                    .aspectRatio(layout == .homeAudio || layout == .tvHomeAudio ? 1 : 16 / 9, contentMode: .fit).frame(width: resumeArtworkWidth)
             }
             VStack(alignment: .leading, spacing: 4) {
                 line(width: 180, height: 20)

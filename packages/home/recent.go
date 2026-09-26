@@ -3,11 +3,54 @@ package home
 import (
 	"fmt"
 	"sort"
+	"strings"
 
 	"github.com/MikeO7/kinosail/packages/library"
 )
 
 const recentItemLimit = 12
+
+// MovieGenre is one populated movie shelf on Home.
+type MovieGenre struct {
+	Name  string
+	Items []ShelfItem
+}
+
+// MovieGenres shows the most populated genres from the visible movie catalog.
+func MovieGenres(items []library.Item, artwork map[string]string) []MovieGenre {
+	grouped := make(map[string][]library.Item)
+	for _, item := range items {
+		if item.Kind != "video" || item.Show != "" {
+			continue
+		}
+		seen := make(map[string]bool)
+		for _, part := range strings.Split(item.Genres, " · ") {
+			name := strings.TrimSpace(part)
+			if name != "" && !seen[name] {
+				grouped[name] = append(grouped[name], item)
+				seen[name] = true
+			}
+		}
+	}
+	genres := make([]MovieGenre, 0, len(grouped))
+	for name, movies := range grouped {
+		sort.SliceStable(movies, func(i, j int) bool { return movies[i].Added.After(movies[j].Added) })
+		cards := make([]ShelfItem, 0, min(len(movies), recentItemLimit))
+		for _, movie := range movies[:min(len(movies), recentItemLimit)] {
+			card := singleItem(movie, artwork, nil, "play")
+			card.Href = "/item/" + movie.ID
+			cards = append(cards, card)
+		}
+		genres = append(genres, MovieGenre{Name: name, Items: cards})
+	}
+	sort.Slice(genres, func(i, j int) bool {
+		if len(grouped[genres[i].Name]) == len(grouped[genres[j].Name]) {
+			return genres[i].Name < genres[j].Name
+		}
+		return len(grouped[genres[i].Name]) > len(grouped[genres[j].Name])
+	})
+	return genres[:min(len(genres), 4)]
+}
 
 // ShelfItem is one recent-media card on the Player home page.
 type ShelfItem struct {

@@ -2,10 +2,11 @@ import SwiftUI
 
 struct PlaybackTracksScreen: View {
     @Environment(\.dismiss) private var dismiss
+    @Environment(AppSession.self) private var session
     var body: some View {
         List { PlaybackTrackSections() }
-            .tvOSConfigurationLayout(title: "Audio & subtitles", symbol: "captions.bubble")
-            .configurationNavigationTitle("Audio & subtitles")
+            .tvOSConfigurationLayout(title: session.player.trackControlsTitle, symbol: "captions.bubble")
+            .configurationNavigationTitle(session.player.trackControlsTitle)
             .toolbar { ToolbarItem(placement: .confirmationAction) { Button("Done") { dismiss() } } }
     }
 }
@@ -39,7 +40,7 @@ struct PlaybackTrackSections: View {
                     }
                 } header: { Text("Subtitles") } footer: {
                     if session.player.externalCaptions {
-                        Text("External captions appear here. Choose an embedded subtitle track for captions in Picture in Picture.")
+                        Text("External subtitles are unavailable in Picture in Picture. Choose an embedded track to keep subtitles there.")
                     }
                 }
             }
