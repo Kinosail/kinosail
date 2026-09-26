@@ -10,12 +10,12 @@ import android.os.Build
 import android.os.Bundle
 import android.util.Rational
 import android.view.View
-import androidx.fragment.app.FragmentActivity
+import androidx.activity.SystemBarStyle
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.fragment.app.FragmentActivity
 import androidx.compose.foundation.background
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -60,7 +60,10 @@ class MobileActivity : FragmentActivity(), VideoPipHost {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
+        enableEdgeToEdge(
+            statusBarStyle = SystemBarStyle.dark(android.graphics.Color.TRANSPARENT),
+            navigationBarStyle = SystemBarStyle.dark(android.graphics.Color.rgb(11, 13, 11)),
+        )
         setContent { KinoTheme { MobileStart() } }
     }
 
@@ -125,7 +128,7 @@ private fun MobileStart() {
     }
     BackHandler(phase is ConnectionPhase.Pairing) { connection.cancelPairing() }
     Box(Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)) {
-        if (isSystemInDarkTheme()) SailBackdrop()
+        SailBackdrop()
         Column(Modifier.fillMaxSize().safeDrawingPadding().padding(24.dp), verticalArrangement = Arrangement.SpaceBetween) {
             Text("Kinosail", style = MaterialTheme.typography.headlineMedium,
                 color = MaterialTheme.colorScheme.onBackground)
