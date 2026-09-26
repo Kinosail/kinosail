@@ -54,7 +54,7 @@ require_text Makefile 'install -m 755 scripts/tooling/pre-commit.sh "$$hooks/pre
 require_text Makefile './scripts/tooling/worktree_guard.py heartbeat --if-present'
 require_text Makefile 'worktree-audit:'
 require_text Makefile './scripts/tooling/test-worktree-guard.py'
-for app in player subtitles dashboard; do
+for app in player subtitles; do
   require_text "apps/$app/Makefile" '@$(MAKE) -C ../.. hooks'
 done
 

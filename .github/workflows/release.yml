@@ -2,7 +2,7 @@ name: Version release
 
 on:
   push:
-    tags: ["player-v*", "subtitles-v*", "dashboard-v*"]
+    tags: ["player-v*", "subtitles-v*"]
 
 permissions:
   contents: read
@@ -188,10 +188,9 @@ jobs:
           DIGEST: ${{ steps.manifest.outputs.digest }}
         run: gh attestation verify "oci://$IMAGE@$DIGEST" --repo Kinosail/kinosail --signer-workflow Kinosail/kinosail/.github/workflows/release.yml --source-ref "$GITHUB_REF" >/dev/null
       - name: Package signed installers
-        if: needs.preflight.outputs.app != 'dashboard'
         run: ./scripts/ci/package-release.sh "$APP" "$APP_VERSION"
       - name: Attest installer provenance
-        if: needs.preflight.outputs.app != 'dashboard' && !github.event.repository.private
+        if: ${{ !github.event.repository.private }}
         uses: actions/attest@1e69f48acb82d1966a394da916b4c1698aa569d6
         with:
           subject-path: apps/${{ needs.preflight.outputs.app }}/kinosail-${{ needs.preflight.outputs.app }}-install.tar.gz
@@ -206,9 +205,6 @@ jobs:
           RELEASE_TAG: ${{ github.ref_name }}
         run: |
           title="Kinosail ${APP^} $APP_VERSION"
-          assets=()
-          if [[ "$APP" != dashboard ]]; then
-            assets=("apps/$APP/kinosail-$APP-install.tar.gz" "apps/$APP/kinosail-$APP-install.tar.gz.sha256" \
-              "apps/$APP/kinosail-$APP-install.tar.gz.sigstore.json" apps/"$APP"/native-release/*)
-          fi
+          assets=("apps/$APP/kinosail-$APP-install.tar.gz" "apps/$APP/kinosail-$APP-install.tar.gz.sha256" \
+            "apps/$APP/kinosail-$APP-install.tar.gz.sigstore.json" apps/"$APP"/native-release/*)
           gh release create "$RELEASE_TAG" --verify-tag --generate-notes --title "$title" "${assets[@]}"

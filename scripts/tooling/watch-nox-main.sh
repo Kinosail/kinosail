@@ -4,7 +4,7 @@ set -euo pipefail
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 app="${1:-}"
 if (( $# < 1 || $# > 2 )) || { (( $# == 2 )) && [[ "$2" != --once ]]; }; then
-  printf 'usage: %s {player|subtitles|dashboard} [--once]\n' "$0" >&2
+  printf 'usage: %s {player|subtitles} [--once]\n' "$0" >&2
   exit 2
 fi
 

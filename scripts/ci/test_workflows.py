@@ -13,8 +13,9 @@ class WorkflowSecurityTests(unittest.TestCase):
         ci = (WORKFLOWS / 'ci.yml').read_text()
         app = (WORKFLOWS / 'app.yml').read_text()
         self.assertEqual(ci.count('run: python3 scripts/ci/affected.py'), 1)
-        for scope in ('Repository', 'Player', 'Subtitles', 'Dashboard', 'Security'):
+        for scope in ('Repository', 'Player', 'Subtitles', 'Security'):
             self.assertIn(f'name: {scope} checks', ci)
+        self.assertNotIn('dashboard-required', ci)
         for source in (ci, app):
             self.assertNotIn('continue-on-error:', source)
             self.assertNotIn('enabled=false', source)
@@ -61,7 +62,7 @@ class WorkflowSecurityTests(unittest.TestCase):
                         publish = source.split('  publish:\n')[1]
                         self.assertIn("github.event_name == 'push'", publish)
                         self.assertIn("github.ref == 'refs/heads/main'", publish)
-                        self.assertIn('needs: [plan, repository-required, player-required, subtitles-required, dashboard-required, security-required]', publish)
+                        self.assertIn('needs: [plan, repository-required, player-required, subtitles-required, security-required]', publish)
                         self.assertIn('results: ${{ toJSON(needs) }}', publish)
                         self.assertNotIn('packages: write', source.split('  publish:\n')[0])
 
@@ -72,13 +73,13 @@ class WorkflowSecurityTests(unittest.TestCase):
         for job in (publish, publish_docs):
             self.assertIn('always() &&', job)
             for required in ('plan', 'repository-required', 'player-required',
-                             'subtitles-required', 'dashboard-required', 'security-required'):
+                             'subtitles-required', 'security-required'):
                 self.assertIn(f"needs.{required}.result == 'success'", job)
         self.assertIn("needs.docs.result == 'success'", publish_docs)
 
     def test_release_requires_main_quality_and_security_before_promotion(self):
         source = (WORKFLOWS / 'release.yml').read_text()
-        self.assertIn('tags: ["player-v*", "subtitles-v*", "dashboard-v*"]', source)
+        self.assertIn('tags: ["player-v*", "subtitles-v*"]', source)
         self.assertIn('git merge-base --is-ancestor "$commit" origin/main', source)
         self.assertIn('--workflow ci.yml --commit "$commit" --event push', source)
         self.assertIn('needs: [preflight, images]', source)
