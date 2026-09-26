@@ -82,7 +82,7 @@ or types directly.
 
 Keep discovery read-only and report evidence before editing. Inspect the
 relevant owner in `packages/`, `apps/player/`, `apps/subtitles/`,
-`apps/dashboard/`, native clients, or `scripts/`. Follow the repository rule
+native clients, or `scripts/`. Follow the repository rule
 for independent review before delegating work.
 
 Outside campaign mode, prefer a few high-confidence candidates over a large

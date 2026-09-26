@@ -65,7 +65,8 @@ class SelectionTests(unittest.TestCase):
                 self.assertTrue(affected([path])["player"])
 
     def test_build_inputs_and_unknown_paths_are_conservative(self):
-        for path in (".github/workflows/ci.yml", "scripts/ci/affected.py", "new-service/main.go", ".dockerignore"):
+        for path in (".github/workflows/ci.yml", "scripts/ci/affected.py", "new-service/main.go", ".dockerignore",
+                     "apps/dashboard/go.mod"):
             self.assertTrue(all(affected([path]).values()))
         for path in ("apps/subtitles/Containerfile", "apps/subtitles/scripts/install.sh"):
             plan = affected([path])

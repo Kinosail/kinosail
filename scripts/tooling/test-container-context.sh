@@ -24,7 +24,7 @@ trap cleanup EXIT
 
 required=(packages/go.mod packages/webassets/assets/icon.svg)
 excluded=(.git/config packages/.env packages/webassets/.env.local packages/.verification/coverage.json)
-for app in player subtitles dashboard; do
+for app in player subtitles; do
   required+=("apps/$app/go.mod" "apps/$app/cmd/main.go" "apps/$app/internal/server/source.go")
   excluded+=("apps/$app/.env" "apps/$app/apps/native/node_modules/private" "apps/$app/.verification/result")
 done

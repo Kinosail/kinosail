@@ -19,8 +19,7 @@ DIGEST = "sha256:" + "b" * 64
 ENV = {"APP": "player", "IMAGE": "ghcr.io/kinosail/kinosail-player", "DIGEST": DIGEST,
        "GITHUB_SHA": SHA, "GITHUB_EVENT_NAME": "push", "GITHUB_REF": "refs/heads/main",
        "GITHUB_REPOSITORY": "Kinosail/kinosail"}
-REQUIRED = ("repository-required", "player-required", "subtitles-required",
-            "dashboard-required", "security-required")
+REQUIRED = ("repository-required", "player-required", "subtitles-required", "security-required")
 
 
 def results(plan):
@@ -83,7 +82,7 @@ class DeliveryTests(unittest.TestCase):
 
     def test_success_emits_selected_apps_after_ancestry_proof(self):
         plan = dict.fromkeys((*FLAGS, "deep"), False)
-        plan["player"] = plan["dashboard"] = True
+        plan["player"] = plan["subtitles"] = True
         raw = json.dumps(plan)
         with tempfile.TemporaryDirectory() as directory:
             output = Path(directory) / "output"
@@ -91,7 +90,7 @@ class DeliveryTests(unittest.TestCase):
                                              "GITHUB_OUTPUT": str(output)}), patch("delivery.subprocess.run") as run:
                 deliver()
                 run.assert_called_once_with(["git", "merge-base", "--is-ancestor", SHA, "origin/main"], check=True)
-            self.assertEqual(json.loads(output.read_text().removeprefix("apps=")), ["player", "dashboard"])
+            self.assertEqual(json.loads(output.read_text().removeprefix("apps=")), ["player", "subtitles"])
 
     def test_promotion_allows_docs_and_unrelated_apps_but_never_rolls_back_affected_app(self):
         for paths, expected in ((b"README.md\0", True), (b"apps/subtitles/main.go\0", True),
@@ -142,10 +141,6 @@ class DeliveryTests(unittest.TestCase):
                 result = subprocess.run(command, capture_output=True, env=env, cwd=directory)
                 self.assertEqual(result.returncode, 2, result.stderr)
                 self.assertFalse(marker.exists())
-            for flag in ("true", "2", "x" * 10000):
-                result = subprocess.run(["bash", str(ROOT / "apps/dashboard/scripts/test-container.sh")],
-                    capture_output=True, env=env | {"KINOSAIL_TEST_IMAGE_READY": flag}, cwd=ROOT)
-                self.assertEqual(result.returncode, 2, result.stderr)
 
     def test_secret_scan_covers_all_introduced_commits(self):
         base = "b" * 40

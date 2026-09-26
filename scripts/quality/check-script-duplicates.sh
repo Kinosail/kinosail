@@ -14,4 +14,3 @@ pnpm --dir "$repo/scripts/quality" exec jscpd \
 	"$repo/packages/webassets/static" \
 	"$repo/apps/player/internal/server/static" \
 	"$repo/apps/subtitles/internal/server/static" \
-	"$repo/apps/dashboard/internal/server/web/static"

@@ -1,4 +1,4 @@
-APPS := player subtitles dashboard
+APPS := player subtitles
 
 .PHONY: hooks check verify-changed max-loc quality quality-static container-test test-instance-check packages-check tooling-check worktree-lease worktree-heartbeat worktree-audit worktree-cleanup agent-finish
 

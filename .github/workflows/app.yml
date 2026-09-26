@@ -51,8 +51,7 @@ jobs:
         with:
           go-version-file: apps/${{ inputs.app }}/go.mod
           cache-dependency-path: "**/go.sum"
-      - if: inputs.app != 'dashboard'
-        run: sudo apt-get update && sudo apt-get install -y libarchive-tools
+      - run: sudo apt-get update && sudo apt-get install -y libarchive-tools
       - env:
           APP: ${{ inputs.app }}
           KINOSAIL_GO_TEST_MODE: ${{ fromJSON(inputs.plan).deep && 'deep' || 'quick' }}
@@ -78,7 +77,7 @@ jobs:
 
   tooling:
     name: ${{ inputs.app }} installer and local pipeline
-    if: inputs.app != 'dashboard' && fromJSON(inputs.plan)[format('{0}_tools', inputs.app)]
+    if: fromJSON(inputs.plan)[format('{0}_tools', inputs.app)]
     runs-on: ubuntu-24.04
     timeout-minutes: 20
     defaults:
@@ -172,21 +171,13 @@ jobs:
           severity: CRITICAL,HIGH
           ignore-unfixed: true
           exit-code: "1"
-      - name: Test Player and Subtitles production paths
-        if: inputs.app != 'dashboard'
+      - name: Test production paths
         working-directory: apps/${{ inputs.app }}
         env:
           CONTAINER_ENGINE: docker
           KINOSAIL_TEST_IMAGE: localhost/kinosail-${{ inputs.app }}:${{ github.sha }}
           KINOSAIL_TEST_IMAGE_READY: "1"
         run: ./scripts/test-container.sh
-      - name: Test Dashboard production image
-        if: inputs.app == 'dashboard' && matrix.platform == 'linux/amd64'
-        env:
-          CONTAINER_ENGINE: docker
-          KINOSAIL_DASHBOARD_TEST_IMAGE: localhost/kinosail-dashboard:${{ github.sha }}
-          KINOSAIL_TEST_IMAGE_READY: "1"
-        run: make -C apps/dashboard container-test
   browser:
     name: ${{ inputs.app }} populated browser (${{ matrix.engine }})
     if: fromJSON(inputs.plan)[inputs.app]
@@ -195,7 +186,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        engine: ${{ fromJSON(fromJSON(inputs.plan).deep && (inputs.app == 'dashboard' && '["full"]' || '["chromium","firefox","webkit"]') || '["chromium"]') }}
+        engine: ${{ fromJSON(fromJSON(inputs.plan).deep && '["chromium","firefox","webkit"]' || '["chromium"]') }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
@@ -219,9 +210,7 @@ jobs:
           read -ra browsers <<< "$BROWSERS"
           pnpm --dir "apps/$APP/e2e" exec playwright install --with-deps "${browsers[@]}"
       - uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069
-        if: inputs.app != 'dashboard'
       - uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc
-        if: inputs.app != 'dashboard'
         with:
           context: .
           file: apps/${{ inputs.app }}/Containerfile
@@ -233,8 +222,7 @@ jobs:
           build-args: |
             VERSION=ci
             REVISION=${{ github.sha }}
-      - name: Test Player and Subtitles browsers
-        if: inputs.app != 'dashboard'
+      - name: Test populated browsers
         working-directory: apps/${{ inputs.app }}
         env:
           CONTAINER_ENGINE: docker
@@ -247,15 +235,6 @@ jobs:
           KINOSAIL_TEST_IMAGE: localhost/kinosail-${{ inputs.app }}:${{ github.sha }}
           KINOSAIL_TEST_IMAGE_READY: "1"
         run: ./scripts/test-container.sh
-      - name: Test Dashboard browsers
-        if: inputs.app == 'dashboard'
-        env:
-          CI: "1"
-          PROJECT: ${{ matrix.engine }}
-        run: |
-          args=()
-          [[ "$PROJECT" == full ]] || args+=(--project=chromium --grep=@smoke)
-          pnpm --dir apps/dashboard/e2e exec playwright test "${args[@]}"
       - name: Keep browser failure evidence
         if: failure()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
@@ -263,7 +242,6 @@ jobs:
           name: ${{ inputs.app }}-${{ matrix.engine }}-browser-failures
           path: |
             ${{ runner.temp }}/${{ inputs.app }}-${{ matrix.engine }}-browser-results
-            apps/dashboard/e2e/test-results
           retention-days: 7
           if-no-files-found: ignore
 
