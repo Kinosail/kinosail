@@ -23,7 +23,7 @@ struct HomeScreen: View {
                 VStack(alignment: .leading, spacing: 32) {
                     #if os(tvOS)
                     if homeMode == .watch, !selection.tvWatchingRail.isEmpty {
-                        MediaShelf(title: "Watching", items: selection.tvWatchingRail, landscape: true,
+                        MediaShelf(title: "Continue watching", items: selection.tvWatchingRail, landscape: true,
                                    resumesPlayback: true, onQuickPlay: { quickPlay = $0 })
                     } else if homeMode == .listen, !selection.featuredAndContinuation.isEmpty {
                         ResumeRows(items: selection.featuredAndContinuation, title: "Listening", showsAll: false)
@@ -216,11 +216,11 @@ private struct TVHomeBrowse: View {
             ScrollView(.horizontal) {
                 LazyHStack(alignment: .top, spacing: 18) {
                     ForEach(tabs) { tab in
-                        tile(title: tab.title, symbol: tab.symbol, color: fill(for: tab)) { selectTab(tab) }
+                        tile(title: tab.title, icon: icon(for: tab), color: fill(for: tab)) { selectTab(tab) }
                     }
                     if let changeMode {
-                        tile(title: "\(mode.other.title) Home", symbol: mode.other == .listen ? "headphones" : "tv",
-                             color: KinoTheme.raised) { changeMode(mode.other) }
+                        tile(title: "\(mode.other.title) Home", icon: mode.other == .listen ? "headphones" : "tv",
+                             color: KinoTheme.raised, systemIcon: true) { changeMode(mode.other) }
                     }
                 }
                 .padding(.horizontal, 24)
@@ -234,18 +234,16 @@ private struct TVHomeBrowse: View {
         .focusSection()
     }
 
-    private func tile(title: String, symbol: String, color: Color, action: @escaping () -> Void) -> some View {
+    private func tile(title: String, icon: String, color: Color, systemIcon: Bool = false, action: @escaping () -> Void) -> some View {
         VStack(spacing: 10) {
             Button(action: action) {
                 RoundedRectangle(cornerRadius: 14)
                     .fill(color)
                     .overlay {
-                        ZStack(alignment: .topTrailing) {
-                            Image(systemName: symbol).font(.system(size: 66, weight: .light)).foregroundStyle(.white)
-                                .frame(width: 108, height: 92)
-                            Image("KinosailMark").resizable().scaledToFit().frame(width: 24, height: 31)
-                                .padding(5).background(KinoTheme.background.opacity(0.78), in: RoundedRectangle(cornerRadius: 9))
-                                .offset(x: 10, y: -3)
+                        if systemIcon {
+                            Image(systemName: icon).font(.system(size: 66, weight: .light)).foregroundStyle(KinoTheme.text)
+                        } else {
+                            Image(icon).resizable().scaledToFit().frame(width: 92, height: 92)
                         }
                     }
                     .frame(width: 320, height: 150)
@@ -257,14 +255,26 @@ private struct TVHomeBrowse: View {
         .frame(width: 320)
     }
 
+    private func icon(for tab: PlayerTab) -> String {
+        switch tab {
+        case .movies: "BrowseMovies"
+        case .shows: "BrowseShows"
+        case .music: "BrowseMusic"
+        case .audiobooks: "BrowseAudiobooks"
+        case .photos: "BrowsePhotos"
+        case .collections: "BrowseCollections"
+        default: tab.symbol
+        }
+    }
+
     private func fill(for tab: PlayerTab) -> Color {
         switch tab {
         case .library: Color(red: 0.92, green: 0.32, blue: 0.18)
         case .movies: Color(red: 0.07, green: 0.42, blue: 0.90)
         case .shows: Color(red: 0.72, green: 0.16, blue: 0.66)
-        case .music: Color(red: 0.11, green: 0.64, blue: 0.30)
+        case .music: Color(red: 0.08, green: 0.48, blue: 0.27)
         case .audiobooks: Color(red: 0.42, green: 0.28, blue: 0.80)
-        case .photos: Color(red: 0.06, green: 0.55, blue: 0.67)
+        case .photos: Color(red: 0.03, green: 0.43, blue: 0.53)
         default: Color(red: 0.47, green: 0.38, blue: 0.68)
         }
     }
