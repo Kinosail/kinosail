@@ -6,6 +6,7 @@ struct CinemaHero<Actions: View>: View {
     var title: String?
     var subtitle: String?
     var showsPlot = true
+    var prefersEpisodeStill = false
     @ViewBuilder let actions: () -> Actions
     @Environment(\.dynamicTypeSize) private var dynamicType
     @Environment(AppSession.self) private var session
@@ -18,8 +19,8 @@ struct CinemaHero<Actions: View>: View {
 
     var body: some View {
         CinemaHeroLayout {
-            if !item.backdrop.isEmpty {
-                Artwork(path: item.backdrop, ratio: 16 / 9, isBackdrop: true)
+            if !heroLandscape.isEmpty {
+                Artwork(path: heroLandscape, ratio: 16 / 9, isBackdrop: !usesEpisodeStill)
                     #if os(tvOS)
                     .frame(maxWidth: 720)
                     #endif
@@ -88,8 +89,14 @@ struct CinemaHero<Actions: View>: View {
     }
 
     private var hasVideoArtwork: Bool {
-        item.kind == .video && (!item.backdrop.isEmpty || !item.poster.isEmpty)
+        item.kind == .video && (!heroLandscape.isEmpty || !item.poster.isEmpty)
     }
+
+    private var usesEpisodeStill: Bool {
+        prefersEpisodeStill && !item.show.isEmpty && !item.artwork.isEmpty
+    }
+
+    private var heroLandscape: String { usesEpisodeStill ? item.landscapeArtwork : item.backdrop }
 
     private var actionSpacing: CGFloat {
         #if os(tvOS)
