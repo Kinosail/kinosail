@@ -169,7 +169,7 @@ struct LoadingState: View {
                 if layout == .collectionGrid { line(width: 260, height: 42).accessibilityHidden(true) }
                 #endif
                 LazyVGrid(columns: MediaGrid.columns(landscape: layout == .show, accessibility: dynamicType.isAccessibilitySize), alignment: .leading, spacing: 28) {
-                    ForEach(0..<8) { _ in card(ratio: gridRatio, showsProgress: layout == .grid, showsSubtitle: layout != .grid && layout != .actor) }
+                    ForEach(0..<8) { _ in card(ratio: gridRatio, showsSubtitle: layout != .grid && layout != .actor) }
                 }
                 #if os(tvOS)
                 .padding(.vertical, 24)
