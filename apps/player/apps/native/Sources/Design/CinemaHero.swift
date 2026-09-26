@@ -8,6 +8,8 @@ struct CinemaHero<Actions: View>: View {
     var showsPlot = true
     @ViewBuilder let actions: () -> Actions
     @Environment(\.dynamicTypeSize) private var dynamicType
+    @Environment(AppSession.self) private var session
+    @State private var progress: WatchProgressSummary?
     #if os(tvOS)
     @ScaledMetric(relativeTo: .largeTitle) private var titleSize = 56.0
     #else
@@ -21,10 +23,13 @@ struct CinemaHero<Actions: View>: View {
                     #if os(tvOS)
                     .frame(maxWidth: 720)
                     #endif
+                    .overlay(alignment: .bottom) { posterProgress }
                     .clipShape(.rect(cornerRadius: 12))
             } else if !item.poster.isEmpty {
                 Artwork(path: item.poster, symbol: item.kind.symbol, ratio: item.isAudio ? 1 : 2 / 3)
-                    .frame(maxWidth: 240).clipShape(.rect(cornerRadius: 12))
+                    .frame(maxWidth: 240)
+                    .overlay(alignment: .bottom) { posterProgress }
+                    .clipShape(.rect(cornerRadius: 12))
             }
         } information: {
             VStack(alignment: .leading, spacing: 12) {
@@ -40,7 +45,12 @@ struct CinemaHero<Actions: View>: View {
                     Text(item.plot).font(.body).lineLimit(dynamicType.isAccessibilitySize ? nil : 3)
                         .fixedSize(horizontal: false, vertical: true)
                 }
-                if item.progress.seconds > 0 && !item.progress.watched { WatchPosition(item: item) }
+                if item.progress.seconds > 0 && !item.progress.watched {
+                    if hasVideoArtwork {
+                        Text(progress?.remainingLabel ?? "Continue from \(item.progress.seconds.clock)")
+                            .font(.caption).foregroundStyle(KinoTheme.muted).monospacedDigit()
+                    } else { WatchPosition(item: item) }
+                }
                 ViewThatFits(in: .horizontal) {
                     HStack(spacing: actionSpacing) { actions().fixedSize(horizontal: false, vertical: true) }
                     VStack(alignment: .leading, spacing: 12) { actions().fixedSize(horizontal: false, vertical: true) }
@@ -53,6 +63,32 @@ struct CinemaHero<Actions: View>: View {
         #if os(tvOS)
         .focusSection()
         #endif
+        .task(id: "\(session.profileKey ?? ""):\(item.id):\(session.contentRevision)") {
+            progress = nil
+            guard hasVideoArtwork, item.progress.seconds > 0, !item.progress.watched,
+                  let client = session.client else { return }
+            do {
+                let next = try await client.watchProgress(itemID: item.id)
+                try Task.checkCancellation()
+                progress = next
+            } catch { /* The saved position remains available when duration is unknown. */ }
+        }
+    }
+
+    @ViewBuilder private var posterProgress: some View {
+        if hasVideoArtwork, item.progress.seconds > 0, !item.progress.watched,
+           let fraction = progress?.fraction {
+            ProgressView(value: fraction).tint(KinoTheme.signal)
+                .progressViewStyle(.linear)
+                .background(.black.opacity(0.65), in: Capsule())
+                .padding(.horizontal, 12).padding(.bottom, 8)
+                .accessibilityLabel("Watch progress")
+                .accessibilityValue(progress?.remainingLabel ?? "")
+        }
+    }
+
+    private var hasVideoArtwork: Bool {
+        item.kind == .video && (!item.backdrop.isEmpty || !item.poster.isEmpty)
     }
 
     private var actionSpacing: CGFloat {
