@@ -3,20 +3,35 @@ import SwiftUI
 struct WatchPosition: View {
     let item: MediaItem
     var compact = false
+    var barOnly = false
     @Environment(\.dynamicTypeSize) private var dynamicType
     @Environment(AppSession.self) private var session
     @State private var progress: WatchProgressSummary?
     var body: some View {
-        let layout = compact || dynamicType.isAccessibilitySize
-            ? AnyLayout(VStackLayout(alignment: .leading, spacing: 4))
-            : AnyLayout(HStackLayout(alignment: .center, spacing: 12))
-        layout {
-            if compact { remaining }
-            if let fraction = progress?.fraction {
-                ProgressView(value: fraction).tint(KinoTheme.signal).accessibilityLabel("Watch progress")
-                    .accessibilityValue(progress?.remainingLabel ?? "")
+        Group {
+            if barOnly {
+                Color.clear.frame(height: 6).overlay {
+                    if let fraction = progress?.fraction {
+                        ProgressView(value: fraction).tint(KinoTheme.signal)
+                            .progressViewStyle(.linear)
+                            .background(KinoTheme.muted.opacity(0.35), in: Capsule())
+                            .accessibilityLabel("Watch progress")
+                            .accessibilityValue("\(Int((fraction * 100).rounded())) percent")
+                    }
+                }
+            } else {
+                let layout = compact || dynamicType.isAccessibilitySize
+                    ? AnyLayout(VStackLayout(alignment: .leading, spacing: 4))
+                    : AnyLayout(HStackLayout(alignment: .center, spacing: 12))
+                layout {
+                    if compact { remaining }
+                    if let fraction = progress?.fraction {
+                        ProgressView(value: fraction).tint(KinoTheme.signal).accessibilityLabel("Watch progress")
+                            .accessibilityValue(progress?.remainingLabel ?? "")
+                    }
+                    if !compact { remaining }
+                }
             }
-            if !compact { remaining }
         }
         .task(id: "\(session.profileKey ?? ""):\(item.id):\(session.contentRevision)") {
             progress = nil
