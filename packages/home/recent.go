@@ -25,12 +25,16 @@ type ShelfItem struct {
 
 // RecentlyAdded projects the newest canonical home shelf.
 func RecentlyAdded(items []library.Item, artwork, showTitles map[string]string) []ShelfItem {
-	recent := append([]library.Item(nil), items...)
-	sort.SliceStable(recent, func(left, right int) bool { return recent[left].Added.After(recent[right].Added) })
-	if len(recent) > recentItemLimit {
-		recent = recent[:recentItemLimit]
+	recent := make([]*library.Item, len(items))
+	for position := range items {
+		recent[position] = &items[position]
 	}
-	return episodeShelf(recent, artwork, showTitles, "plus", "recently added episodes stacked")
+	sort.SliceStable(recent, func(left, right int) bool { return recent[left].Added.After(recent[right].Added) })
+	selected := make([]library.Item, min(len(recent), recentItemLimit))
+	for position := range selected {
+		selected[position] = *recent[position]
+	}
+	return episodeShelf(selected, artwork, showTitles, "plus", "recently added episodes stacked")
 }
 
 // RecentlyPlayed projects the Player-canonical playback-history shelf.
