@@ -182,10 +182,12 @@ struct MediaGrid: View {
         if accessibility { return [GridItem(.flexible(), alignment: .top)] }
         #if os(tvOS)
         let minimum: CGFloat = landscape ? 360 : 230
+        let spacing: CGFloat = 20
         #else
-        let minimum: CGFloat = landscape ? 280 : 144
+        let minimum: CGFloat = landscape ? 280 : 96
+        let spacing: CGFloat = landscape ? 20 : 12
         #endif
-        return [GridItem(.adaptive(minimum: minimum), spacing: 20, alignment: .top)]
+        return [GridItem(.adaptive(minimum: minimum), spacing: spacing, alignment: .top)]
     }
 }
 
