@@ -69,13 +69,11 @@ func DecodeJSON(reader io.Reader, maximum int64, target any, strict bool) error 
 // DecodeRequestJSON decodes one strict, one-megabyte HTTP JSON object.
 func DecodeRequestJSON(writer http.ResponseWriter, request *http.Request, target any) error {
 	request.Body = http.MaxBytesReader(writer, request.Body, 1<<20)
-	decoder := json.NewDecoder(request.Body)
-	decoder.DisallowUnknownFields()
-	if err := decoder.Decode(target); err != nil {
+	if err := DecodeUniqueJSON(request.Body, 1<<20, target); err != nil {
+		if errors.Is(err, errTrailingJSON) {
+			return errors.New("request must contain one JSON object")
+		}
 		return errors.New("invalid JSON request")
-	}
-	if err := decoder.Decode(&struct{}{}); !errors.Is(err, io.EOF) {
-		return errors.New("request must contain one JSON object")
 	}
 	return nil
 }

@@ -32,12 +32,12 @@ func TestDecodeRequestJSONAcceptsOneStrictObject(t *testing.T) {
 
 func TestDecodeRequestJSONRejectsInvalidDocuments(t *testing.T) {
 	t.Parallel()
-	for _, body := range []string{`{`, `{"unknown":true}`, `{"ok":true}{}`, strings.Repeat(" ", 1<<20) + `{}`} {
+	for _, body := range []string{`{`, `null`, `[]`, `{"unknown":true}`, `{"ok":false,"ok":true}`, `{"ok":false,"OK":true}`, `{"ok":true}{}`, strings.Repeat(" ", 1<<20) + `{}`} {
 		request := httptest.NewRequestWithContext(t.Context(), http.MethodPost, "/", strings.NewReader(body))
 		var target struct {
 			OK bool `json:"ok"`
 		}
-		if DecodeRequestJSON(httptest.NewRecorder(), request, &target) == nil {
+		if DecodeRequestJSON(httptest.NewRecorder(), request, &target) == nil || target.OK {
 			t.Fatalf("invalid request was accepted: %.40q", body)
 		}
 	}
