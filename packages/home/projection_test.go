@@ -93,6 +93,11 @@ func TestRecentShelfProjection(t *testing.T) { //nolint:cyclop // One fixture ve
 	if len(added) != recentItemLimit || added[0].Href != "/book/n" || added[0].PlaceholderIcon != "plus" {
 		t.Fatalf("added=%+v", added)
 	}
+	addedItems[12].Added = addedItems[13].Added
+	added = RecentlyAdded(addedItems, nil, nil)
+	if added[0].Href != "/book/m" || added[1].Href != "/book/n" || addedItems[0].ID != "a" || addedItems[13].ID != "n" {
+		t.Fatalf("added order=%+v, input first=%q last=%q", added[:2], addedItems[0].ID, addedItems[13].ID)
+	}
 	if item := singleItem(items[0], artwork, titles, "play"); item.Title != "Series · Pilot" || item.Meta != "MKV · 2025" || item.ArtworkID != "poster" || item.Count != 1 {
 		t.Fatalf("single=%+v", item)
 	}
