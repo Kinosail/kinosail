@@ -147,7 +147,9 @@ test("Readiness, quota, and history remain usable on compact screens", async ({ 
   for (const viewport of [{ width: 1024, height: 768 }, { width: 390, height: 844 }, { width: 320, height: 800 }]) {
     await page.setViewportSize(viewport);
     await page.goto("/");
-    await page.locator(".subtitle-system > summary").click();
+    if (await page.locator(".subtitle-system").getAttribute("open") === null) {
+      await page.locator(".subtitle-system > summary").click();
+    }
     await expect(page.getByRole("heading", { name: "Server readiness" })).toBeVisible();
     await expect(page.getByRole("heading", { name: "Subtitle sources" })).toBeVisible();
     await expectNoHorizontalOverflow(page);
