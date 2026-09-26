@@ -23,6 +23,7 @@ import androidx.media3.exoplayer.source.DefaultMediaSourceFactory
 import java.io.IOException
 import java.net.URL
 import java.util.UUID
+import java.lang.ref.WeakReference
 import java.util.concurrent.CancellationException
 import kotlin.math.abs
 import kotlinx.coroutines.Dispatchers
@@ -33,12 +34,19 @@ import kotlinx.coroutines.withContext
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import okhttp3.OkHttpClient
+import com.kinosail.player.watchcore.WatchPlayer
+import com.kinosail.player.watchcore.WatchRequest
 
 class PlaybackModel(application: Application) : AndroidViewModel(application) {
     private val sessions = SessionStore(application)
     private var generation = 0
     private var source: PlaybackSource? = null
     private var activeTitle = ""
+    private var activeSubtitle = ""
+    private var activeAudio = false
+    private var remoteTV = false
+    private var remoteTVId: String? = null
+    private var remoteJob: Job? = null
     private var server: ServerAddress? = null
     private var policy: MediaUriPolicy? = null
     private val syncLock = Mutex()
@@ -88,13 +96,14 @@ class PlaybackModel(application: Application) : AndroidViewModel(application) {
     }
 
     @androidx.annotation.OptIn(markerClass = [UnstableApi::class])
-    fun start(item: CatalogItem, viewer: Viewer) {
+    fun start(item: CatalogItem, viewer: Viewer, tv: Boolean = false) {
         stop()
         if (item.kind !in setOf("video", "music", "audiobook")) {
             message = "This title cannot be played here."
             return
         }
         val attempt = generation
+        remoteTV = tv
         loading = true
         viewModelScope.launch {
             try {
@@ -130,6 +139,8 @@ class PlaybackModel(application: Application) : AndroidViewModel(application) {
                 policy = allowed
                 source = plan
                 activeTitle = item.title
+                activeSubtitle = if (item.kind == "video") "" else item.artist
+                activeAudio = item.kind != "video"
                 preferences = loadedPreferences
                 playbackSpeed = loadedPreferences?.rate?.toFloat() ?: 1f
                 preferenceNotice = if (loadedPreferences == null)
@@ -187,6 +198,7 @@ class PlaybackModel(application: Application) : AndroidViewModel(application) {
                     }
                 })
                 player = engine
+                currentPhoneRef = WeakReference(this@PlaybackModel)
                 try { onPlayerChanged?.invoke(engine) }
                 catch (error: Exception) { player = null; engine.release(); throw error }
                 val path = plan.direct ?: requireNotNull(plan.compatible)
@@ -200,6 +212,7 @@ class PlaybackModel(application: Application) : AndroidViewModel(application) {
                 progressJob = viewModelScope.launch {
                     while (attempt == generation) { delay(15_000); checkpoint() }
                 }
+                if (tv) remoteJob = viewModelScope.launch { publishRemote(attempt, saved, viewer) }
             } catch (error: ServerHttpException) {
                 if (attempt == generation) fail(if (error.status == 401 || error.status == 403)
                     "This connection cannot play this title. Reconnect or check the Viewer permissions."
@@ -388,12 +401,19 @@ class PlaybackModel(application: Application) : AndroidViewModel(application) {
         generation++
         progressJob?.cancel()
         progressJob = null
+        remoteJob?.cancel()
+        remoteJob = null
+        if (currentPhoneRef?.get() === this) currentPhoneRef = null
         runCatching { onPlayerChanged?.invoke(null) }
         player?.release()
         player = null
         source = null
         activeAudioItem = null
         activeTitle = ""
+        activeSubtitle = ""
+        activeAudio = false
+        remoteTV = false
+        remoteTVId = null
         server = null
         policy = null
         journal = null
@@ -419,7 +439,68 @@ class PlaybackModel(application: Application) : AndroidViewModel(application) {
 
     override fun onCleared() { stop(); super.onCleared() }
 
+    internal fun remoteState(id: String, name: String): WatchPlayer {
+        val engine = player
+        val plan = source
+        if (engine == null || plan == null) return WatchPlayer(id, name, "", "", "", "idle", 0.0, 0.0, false)
+        val duration = plan.duration.coerceIn(0.0, 1_000_000_000.0)
+        val position = plan.sourceTime(engine.currentPosition.coerceAtLeast(0L) / 1000.0, usingCompatible)
+            .coerceIn(0.0, duration)
+        val state = when {
+            engine.playbackState == Player.STATE_BUFFERING -> "buffering"
+            engine.isPlaying -> "playing"
+            else -> "paused"
+        }
+        return WatchPlayer(id, name, activeTitle, activeSubtitle, plan.itemId, state,
+            position, duration, activeAudio).checked()
+    }
+
+    internal fun applyRemote(request: WatchRequest): Boolean {
+        request.checked()
+        val engine = player ?: return false
+        val plan = source ?: return false
+        val targetID = request.target ?: return false
+        if (request.itemId != plan.itemId || targetID != (if (remoteTV) remoteTVId else "phone")) return false
+        val position = remoteState(targetID, "Player").position
+        val target = when (request.command) {
+            "play" -> { engine.play(); return true }
+            "pause" -> { engine.pause(); return true }
+            "backward" -> (position - 15).coerceAtLeast(0.0)
+            "forward" -> (position + 30).coerceAtMost(plan.duration)
+            "seek" -> request.position?.takeIf { it <= plan.duration } ?: return false
+            else -> return false
+        }
+        val presentation = if (usingCompatible) plan.compatibleTimeline.presentationTime(target) else target
+        engine.seekTo((presentation * 1000).toLong())
+        return true
+    }
+
+    private suspend fun publishRemote(attempt: Int, saved: SavedSession, viewer: Viewer) {
+        val api = RemotePlayersApi(saved.server)
+        val id = tvRemoteId()
+        remoteTVId = id
+        while (attempt == generation) {
+            val state = remoteState(id, "Android TV")
+            try {
+                val command = withContext(Dispatchers.IO) { api.update(state, saved.token, viewer.id) }
+                if (attempt == generation && command != null) applyRemote(command)
+            } catch (error: CancellationException) { throw error }
+            catch (_: Exception) { /* The TV remains playable when remote discovery is unavailable. */ }
+            delay(5_000)
+        }
+    }
+
+    private fun tvRemoteId(): String {
+        val preferences = getApplication<Application>().getSharedPreferences("kinosail_remote_player", 0)
+        val saved = preferences.getString("id", null)
+        if (saved != null && runCatching { UUID.fromString(saved).toString() }.getOrNull() == saved) return saved
+        return UUID.randomUUID().toString().also { check(preferences.edit().putString("id", it).commit()) }
+    }
+
     companion object {
+        private var currentPhoneRef: WeakReference<PlaybackModel>? = null
+        internal fun currentPhone(): PlaybackModel? = currentPhoneRef?.get()?.takeIf { !it.remoteTV && it.player != null }
+            ?: AudioPlaybackService.phonePlayback()
         internal val SPEEDS = listOf(0.5f, 0.75f, 1f, 1.25f, 1.5f, 1.75f, 2f, 2.5f, 3f)
         internal fun checkedSpeed(rate: Float): Float {
             require(rate in SPEEDS) { "Choose a supported playback speed." }
