@@ -10,6 +10,6 @@ func hlsSkipInput(arguments []string, directory, path string, duration float64, 
 	if recipe.offset > 0 {
 		arguments = append(arguments, "-ss", ffmpegSeconds(recipe.offset))
 	}
-	arguments = append(arguments, "-readrate_initial_burst", "8", "-readrate", "1")
+	arguments = append(arguments, "-readrate_initial_burst", "16", "-readrate", "1")
 	return append(arguments, "-f", "concat", "-safe", "0", "-i", concat), "1", nil
 }

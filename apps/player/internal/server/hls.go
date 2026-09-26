@@ -229,7 +229,7 @@ func (manager *hlsManager) encodeVariant(ctx context.Context, item library.Item,
 	if recipe.mode == "transcode" {
 		arguments = append(arguments, input...)
 	} else {
-		arguments = append(arguments, "-readrate_initial_burst", "8", "-readrate", "1")
+		arguments = append(arguments, "-readrate_initial_burst", "16", "-readrate", "1")
 	}
 	if start > 0 {
 		arguments = append(arguments, "-ss", ffmpegSeconds(start))
