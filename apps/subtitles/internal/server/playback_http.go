@@ -30,7 +30,7 @@ func requestedVideoCodecs(request *http.Request) ([]string, error) {
 
 func subtitleRoleLabel(role string) string { return playback.SubtitleRoleLabel(role) }
 
-func playbackSubtitles(item library.Item, media probeResult, provider *subtitleProvider, languages []string, preference string, limited, enabled bool) []subtitleTrack {
+func playbackSubtitles(item library.Item, media probeResult, provider *subtitleProvider, languages []string, preference string, limited, keepForced, enabled bool) []subtitleTrack {
 	tracks := make([]subtitleTrack, 0, len(media.SubtitleFacts)+len(item.Subtitles)+1)
 	for _, track := range media.SubtitleFacts {
 		if !track.Text {
@@ -59,15 +59,15 @@ func playbackSubtitles(item library.Item, media probeResult, provider *subtitleP
 		selectDefaultTextSubtitle(tracks, enabled)
 		return tracks
 	}
-	return preferredSubtitleTracks(tracks, languages, preference, enabled)
+	return preferredSubtitleTracks(tracks, languages, preference, keepForced, enabled)
 }
 
-func preferredSubtitleTracks(tracks []subtitleTrack, languages []string, preference string, enabled bool) []subtitleTrack {
+func preferredSubtitleTracks(tracks []subtitleTrack, languages []string, preference string, keepForced, enabled bool) []subtitleTrack { //nolint:gocognit // Keep preferred-language and forced choices in one ordered selection.
 	selected := make([]subtitleTrack, 0, len(languages))
 	for _, language := range languages {
 		best, score := -1, -1
 		for index, track := range tracks {
-			if !subtitleLanguageMatches(language, track.Language) {
+			if track.Forced || !subtitleLanguageMatches(language, track.Language) {
 				continue
 			}
 			rank := subtitlePickerRank(track, preference)
@@ -77,6 +77,13 @@ func preferredSubtitleTracks(tracks []subtitleTrack, languages []string, prefere
 		}
 		if best >= 0 {
 			selected = append(selected, tracks[best])
+		}
+	}
+	if keepForced {
+		for _, track := range tracks {
+			if track.Forced {
+				selected = append(selected, track)
+			}
 		}
 	}
 	selectDefaultTextSubtitle(selected, enabled)

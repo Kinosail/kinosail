@@ -12,11 +12,11 @@ func TestPlaybackSubtitlesOwnsDefaultSelection(t *testing.T) {
 	media := probeResult{SubtitleFacts: []SubtitleFacts{{SourceIndex: 2, Language: "fr", Text: true}}}
 	provider := &subtitleProvider{cache: t.TempDir()}
 
-	tracks := playbackSubtitles(item, media, provider, []string{"en", "fr"}, "standard", false, true)
+	tracks := playbackSubtitles(item, media, provider, []string{"en", "fr"}, "standard", false, false, true)
 	if len(tracks) != 2 || tracks[0].Default || !tracks[1].Default {
 		t.Fatalf("enabled tracks = %#v", tracks)
 	}
-	tracks = playbackSubtitles(item, media, provider, []string{"en", "fr"}, "standard", false, false)
+	tracks = playbackSubtitles(item, media, provider, []string{"en", "fr"}, "standard", false, false, false)
 	if tracks[0].Default || tracks[1].Default {
 		t.Fatalf("disabled tracks = %#v", tracks)
 	}
@@ -38,7 +38,7 @@ func TestPlaybackSubtitlesChoosesOnePreferredTrackPerLanguage(t *testing.T) {
 		{"standard", "/subtitle/film/embedded/3"},
 		{"sdh", "/subtitle/film/embedded/4"},
 	} {
-		tracks := playbackSubtitles(item, media, provider, []string{"en"}, test.preference, true, true)
+		tracks := playbackSubtitles(item, media, provider, []string{"en"}, test.preference, true, false, true)
 		if len(tracks) != 1 || tracks[0].Source != test.source || !tracks[0].Default {
 			t.Errorf("%s tracks = %#v", test.preference, tracks)
 		}

@@ -33,6 +33,7 @@ type installationSettings struct {
 	SubtitleLanguage      string          `json:"subtitleLanguage,omitempty"`
 	SubtitleLanguages     []string        `json:"subtitleLanguages,omitempty"`
 	SubtitlePickerLimited bool            `json:"subtitlePickerLimited,omitempty"`
+	PickerKeepForced      bool            `json:"subtitlePickerKeepForced,omitempty"`
 	SubtitlePreference    string          `json:"subtitlePreference,omitempty"`
 	ScanFrequency         string          `json:"scanFrequency,omitempty"`
 	DLNAToken             string          `json:"dlnaToken,omitempty"`

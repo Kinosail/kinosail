@@ -23,6 +23,8 @@ func TestSettingsRejectInvalidPersistedSubtitleLanguagesWithoutSave(t *testing.T
 		"wrong type":           `{"name":"Kinosail","libraries":["."],"subtitleLanguages":"en"}`,
 		"picker wrong type":    `{"name":"Kinosail","libraries":["."],"subtitlePickerLimited":"on"}`,
 		"picker null":          `{"name":"Kinosail","libraries":["."],"subtitlePickerLimited":null}`,
+		"forced wrong type":    `{"name":"Kinosail","libraries":["."],"subtitlePickerKeepForced":"on"}`,
+		"forced null":          `{"name":"Kinosail","libraries":["."],"subtitlePickerKeepForced":null}`,
 		"wrong patron type":    `{"name":"Kinosail","libraries":["."],"supporter":{"patronOrder":[]}}`,
 		"unknown patron field": `{"name":"Kinosail","libraries":["."],"supporter":{"patronOrder":{"unexpected":true}}}`,
 		"malformed patron":     `{"name":"Kinosail","libraries":["."],"supporter":{"patronOrder":{`,

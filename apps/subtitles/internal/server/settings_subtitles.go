@@ -14,10 +14,10 @@ import (
 const maximumSubtitleLanguages = settingsstate.MaximumSubtitleLanguages
 
 func (store *settingsStore) setSubtitleLanguages(languages []string) error {
-	return store.saveSubtitleLanguages(languages, nil)
+	return store.saveSubtitleLanguages(languages, nil, nil)
 }
 
-func (store *settingsStore) saveSubtitleLanguages(languages []string, limited *bool) error {
+func (store *settingsStore) saveSubtitleLanguages(languages []string, limited, keepForced *bool) error {
 	if err := store.editable("subtitles.language"); err != nil {
 		return err
 	}
@@ -33,6 +33,9 @@ func (store *settingsStore) saveSubtitleLanguages(languages []string, limited *b
 	if limited != nil {
 		settings.SubtitlePickerLimited = *limited
 	}
+	if keepForced != nil {
+		settings.PickerKeepForced = *keepForced
+	}
 	if err := store.save(settings); err != nil {
 		return err
 	}
@@ -41,21 +44,26 @@ func (store *settingsStore) saveSubtitleLanguages(languages []string, limited *b
 }
 
 func (store *settingsStore) setSubtitlePickerLimited(limited bool) error {
-	store.mu.Lock()
-	defer store.mu.Unlock()
-	settings := store.value
-	settings.SubtitlePickerLimited = limited
-	if err := store.save(settings); err != nil {
-		return err
-	}
-	store.value = settings
-	return nil
+	return store.changeInstallationSettings(func(value *installationSettings) { value.SubtitlePickerLimited = limited })
+}
+
+func (store *settingsStore) setSubtitlePickerChoices(limited, keepForced bool) error {
+	return store.changeInstallationSettings(func(value *installationSettings) {
+		value.SubtitlePickerLimited = limited
+		value.PickerKeepForced = keepForced
+	})
 }
 
 func (store *settingsStore) subtitlePickerLimited() bool {
 	store.mu.RLock()
 	defer store.mu.RUnlock()
 	return store.value.SubtitlePickerLimited
+}
+
+func (store *settingsStore) subtitlePickerKeepForced() bool {
+	store.mu.RLock()
+	defer store.mu.RUnlock()
+	return store.value.PickerKeepForced
 }
 
 func (store *settingsStore) setSubtitlePlan(language, preference string) error {
