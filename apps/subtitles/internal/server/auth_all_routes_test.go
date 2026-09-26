@@ -7,7 +7,7 @@ import (
 	"github.com/MikeO7/kinosail/packages/servertest"
 )
 
-const reviewedRouteInventorySHA256 = "3d1326dcdb5161f218728db7c1f90aba35b037bff9b37b848cdb9b98b2f80360"
+const reviewedRouteInventorySHA256 = "b9f01f1b33900d6a2755e4eed46c3e118a8d4d6435b5f66d84576169ae3dceed"
 
 var explicitlyAnonymousRoutes = routeSet(
 	"GET /static/public-login.js", "POST /auth/quick-connect", "POST /auth/quick-connect/token", "POST /auth/quick-connect/cancel",
@@ -89,7 +89,7 @@ var ownerOnlyRoutes = routeSet(
 	"POST /settings/profiles", "POST /settings/profiles/password", "POST /settings/profiles/permissions", "POST /settings/profiles/remove",
 	"POST /settings/remote/enable", "POST /settings/remote/kill",
 	"POST /settings/trusted-https", "POST /settings/trusted-https/disable",
-	"POST /settings/navigation", "POST /settings/scans", "POST /settings/server", "POST /settings/sessions/device", "POST /settings/sessions/revoke", "POST /settings/subtitles", "POST /settings/subtitles/cleanup", "POST /settings/subtitles/subsource", "POST /settings/subtitles/subsource/reset",
+	"POST /settings/navigation", "POST /settings/scans", "POST /settings/server", "POST /settings/sessions/device", "POST /settings/sessions/revoke", "POST /settings/subtitles", "POST /settings/subtitles/cleanup", "POST /settings/subtitles/picker", "POST /settings/subtitles/subsource", "POST /settings/subtitles/subsource/reset",
 	"POST /settings/tasks/maintain", "POST /settings/tasks/metadata", "POST /settings/tasks/scan", "POST /settings/transcoder", "POST /settings/transcoder/test", "POST /settings/updates", "POST /settings/updates/check",
 	"POST /api/v1/updates", "POST /api/v1/updates/check",
 	"POST /settings/viewing-imports/apply", "POST /settings/viewing-imports/preview", "POST /settings/viewing-syncs", "POST /settings/viewing-syncs/remove", "POST /settings/viewing-syncs/run",
@@ -132,7 +132,7 @@ var sessionOnlyAPIRoutes = routeSet(
 )
 
 func TestEveryRegisteredRouteHasReviewedAnonymousAccess(t *testing.T) {
-	authRoutesContract().ReviewedAnonymousAccess(t, 461, reviewedRouteInventorySHA256, func(t *testing.T, data string) http.Handler {
+	authRoutesContract().ReviewedAnonymousAccess(t, 462, reviewedRouteInventorySHA256, func(t *testing.T, data string) http.Handler {
 		return New(Config{DataDir: data, RequireAuth: true, Configuration: jellyfinRouteConfiguration(t, data)})
 	})
 }

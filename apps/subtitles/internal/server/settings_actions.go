@@ -92,6 +92,26 @@ func savePrimarySubtitleLanguage(settings *settingsStore, destination string) ht
 	return saveSubtitleLanguageForm(settings, destination, true)
 }
 
+func saveSubtitlePicker(settings *settingsStore) http.HandlerFunc {
+	return func(writer http.ResponseWriter, request *http.Request) {
+		request.Body = http.MaxBytesReader(writer, request.Body, 128)
+		if !formEncoded(request) || request.URL.RawQuery != "" || request.ParseForm() != nil || !onlyFormKeys(request.PostForm, "limited") {
+			localizedError(writer, request, "subtitle picker request is invalid", http.StatusBadRequest)
+			return
+		}
+		value, ok := oneValue(request.PostForm, "limited", 3)
+		if !ok || !oneOf(value, "on", "off") {
+			localizedError(writer, request, "subtitle picker request is invalid", http.StatusBadRequest)
+			return
+		}
+		if err := settings.setSubtitlePickerLimited(value == "on"); err != nil {
+			localizedError(writer, request, "subtitle picker setting could not be saved", http.StatusInternalServerError)
+			return
+		}
+		http.Redirect(writer, request, "/settings#language", http.StatusSeeOther)
+	}
+}
+
 func invalidSubtitleLanguageAction(primary, actionPresent bool, action string, preferencePresent bool) bool {
 	if !actionPresent {
 		return false
