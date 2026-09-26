@@ -5,6 +5,7 @@ import (
 	"io"
 	"net/http"
 	"strings"
+	"sync"
 	"testing"
 )
 
@@ -14,7 +15,10 @@ func viewingTestClient(handler func(*http.Request) (int, string)) *http.Client {
 
 func viewingTestClientLimit(limit int, handler func(*http.Request) (int, string)) *http.Client {
 	calls := 0
+	var mutex sync.Mutex
 	return &http.Client{Transport: roundTripFunc(func(request *http.Request) (*http.Response, error) {
+		mutex.Lock()
+		defer mutex.Unlock()
 		calls++
 		if calls > limit {
 			return &http.Response{StatusCode: http.StatusLoopDetected, Status: "508 Loop", Body: io.NopCloser(strings.NewReader(`{}`)), Header: make(http.Header)}, nil

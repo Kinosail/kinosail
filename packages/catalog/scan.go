@@ -3,6 +3,7 @@ package catalog
 import (
 	"context"
 	"path/filepath"
+	"runtime"
 	"strings"
 	"sync"
 	"time"
@@ -98,14 +99,49 @@ func WaitRefresh(ctx context.Context, interval time.Duration, reschedule <-chan 
 }
 
 // Scan reads all roots and applies one complete decoration pipeline.
-func Scan(ctx context.Context, roots []ScanRoot, decorate func([]library.Item) []library.Item) ([]library.Item, error) {
+func Scan(ctx context.Context, roots []ScanRoot, decorate func([]library.Item) []library.Item) ([]library.Item, error) { //nolint:cyclop,gocognit // Bounded dispatch and ordered publication share one cancellation boundary.
 	items := make([]library.Item, 0)
-	for _, root := range roots {
-		scanned, err := library.ScanContext(ctx, root.Path, root.Namespace)
-		items = append(items, scanned...)
-		if err != nil {
-			return items, err
+	if len(roots) == 0 {
+		if decorate != nil {
+			items = decorate(items)
 		}
+		return items, nil
+	}
+	type result struct {
+		items []library.Item
+		err   error
+	}
+	results := make([]result, len(roots))
+	jobs := make(chan int)
+	var workers sync.WaitGroup
+	for range min(len(roots), max(1, min(2, runtime.GOMAXPROCS(0)-1))) {
+		workers.Add(1)
+		go func() {
+			defer workers.Done()
+			for position := range jobs {
+				root := roots[position]
+				results[position].items, results[position].err = library.ScanContext(ctx, root.Path, root.Namespace)
+			}
+		}()
+	}
+dispatch:
+	for position := range roots {
+		select {
+		case jobs <- position:
+		case <-ctx.Done():
+			break dispatch
+		}
+	}
+	close(jobs)
+	workers.Wait()
+	for _, result := range results {
+		items = append(items, result.items...)
+		if result.err != nil {
+			return items, result.err
+		}
+	}
+	if err := ctx.Err(); err != nil {
+		return items, err
 	}
 	if decorate != nil {
 		items = decorate(items)
