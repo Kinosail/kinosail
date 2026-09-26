@@ -14,6 +14,43 @@ import (
 
 func TestHomeFollowsMobileWatchSectionOrderAndViewerProgress(t *testing.T) {
 	t.Parallel()
+	body := homeLayoutWithWatchedMovie(t)
+	order := []string{"Recently added movies", "Recently added TV shows", "Unwatched TV shows", "Unwatched movies", "Movie genres", "Recently added music", "Recently added audiobooks"}
+	previous := -1
+	for _, title := range order {
+		position := strings.Index(body, ">"+title+"</h2>")
+		if position <= previous {
+			t.Fatalf("home section %q is missing or out of order", title)
+		}
+		previous = position
+	}
+	section := func(name string) string {
+		expression := regexp.MustCompile(`(?s)<section class="home-shelf" data-home-shelf="` + name + `".*?</section>`)
+		return expression.FindString(body)
+	}
+	for _, check := range []struct {
+		shelf   string
+		text    string
+		present bool
+	}{
+		{"recent-movies", "Watched Movie", true},
+		{"unwatched-movies", "Watched Movie", false},
+		{"unwatched-movies", "Fresh Movie", true},
+		{"recent-shows", `href="/watch/`, true},
+		{"unwatched-shows", "Fresh Show", true},
+		{"recent-movies", "Fresh Show", false},
+		{"recent-music", "Story", false},
+		{"recent-audiobooks", "Record", false},
+		{"recent-other", "Book", true},
+	} {
+		if strings.Contains(section(check.shelf), check.text) != check.present {
+			t.Errorf("home shelf %q contains %q: want %t", check.shelf, check.text, check.present)
+		}
+	}
+}
+
+func homeLayoutWithWatchedMovie(t *testing.T) string {
+	t.Helper()
 	media := t.TempDir()
 	for _, name := range []string{"Fresh Movie.mp4", "Watched Movie.mp4", "Record.mp3", "Story.m4b", "Book.pdf"} {
 		if err := os.WriteFile(filepath.Join(media, name), nil, 0o600); err != nil {
@@ -46,27 +83,5 @@ func TestHomeFollowsMobileWatchSectionOrderAndViewerProgress(t *testing.T) {
 	mark := httptest.NewRequestWithContext(t.Context(), http.MethodPost, "/watched/"+match[1], strings.NewReader("watched=true"))
 	mark.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 	handler.ServeHTTP(httptest.NewRecorder(), mark)
-	body := get("/")
-	order := []string{"Recently added movies", "Recently added TV shows", "Unwatched TV shows", "Unwatched movies", "Movie genres", "Recently added music", "Recently added audiobooks"}
-	previous := -1
-	for _, title := range order {
-		position := strings.Index(body, ">"+title+"</h2>")
-		if position <= previous {
-			t.Fatalf("home section %q is missing or out of order", title)
-		}
-		previous = position
-	}
-	section := func(name string) string {
-		expression := regexp.MustCompile(`(?s)<section class="home-shelf" data-home-shelf="` + name + `".*?</section>`)
-		return expression.FindString(body)
-	}
-	if !strings.Contains(section("recent-movies"), "Watched Movie") || strings.Contains(section("unwatched-movies"), "Watched Movie") || !strings.Contains(section("unwatched-movies"), "Fresh Movie") {
-		t.Fatal("unwatched movies did not follow saved viewer progress")
-	}
-	if !strings.Contains(section("recent-shows"), `href="/watch/`) || !strings.Contains(section("unwatched-shows"), "Fresh Show") || strings.Contains(section("recent-movies"), "Fresh Show") {
-		t.Fatal("TV shows were not separated from movies")
-	}
-	if strings.Contains(section("recent-music"), "Story") || strings.Contains(section("recent-audiobooks"), "Record") || !strings.Contains(section("recent-other"), "Book") {
-		t.Fatal("non-video home media is missing or misclassified")
-	}
+	return get("/")
 }
