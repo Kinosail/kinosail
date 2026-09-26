@@ -38,6 +38,7 @@ var mcpManageRoutes = routeSet(
 )
 
 var mcpBlockedRoutes = routeSet(
+	"POST /api/v1/subtitles/cleanup", "POST /api/v1/subtitles/cleanup/preview",
 	"DELETE /api/v1/management-access", "DELETE /api/v1/management-access/devices", "GET /api/v1/management-access", "POST /api/v1/management-access", "POST /api/v1/management-access/devices",
 	"GET /api/v1/subtitle-library/{id}/export",
 	"GET /api/v1/downloads/identity", "GET /api/v1/downloads/{id}/manifest", "GET /api/v1/items/{id}/download-tracks", "GET /api/v1/items/{id}/watch-progress",

@@ -30,6 +30,8 @@ func registerSettings(mux *http.ServeMux, settings *settingsStore, updates *upda
 	if subtitleApp {
 		settingsPage = showSubtitleSettings(settings, subtitles, trusted)
 	}
+	mux.Handle("POST /api/v1/subtitles/cleanup/preview", auth.owner(apiPreviewSubtitleCleanup(index, settings)))
+	mux.Handle("POST /api/v1/subtitles/cleanup", auth.owner(apiApplySubtitleCleanup(index, settings)))
 	mux.Handle("GET /settings", auth.owner(settingsPage))
 	mux.Handle("GET /settings/subtitles/cleanup", auth.owner(previewSubtitleCleanup(index, settings)))
 	mux.Handle("POST /settings/subtitles/cleanup", auth.owner(deleteSubtitleCleanup(index, settings)))
