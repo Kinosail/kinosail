@@ -234,20 +234,18 @@ private struct TVHomeBrowse: View {
     }
 
     private func tile(title: String, icon: String, action: @escaping () -> Void) -> some View {
-        VStack(spacing: 10) {
-            Button(action: action) {
-                RoundedRectangle(cornerRadius: 14)
-                    .fill(KinoTheme.raised)
-                    .overlay {
-                        Image(icon).resizable().scaledToFit().frame(width: 112, height: 112)
-                    }
-                    .frame(width: 320, height: 150)
+        Button(action: action) {
+            VStack(spacing: 6) {
+                Image(icon).resizable().scaledToFit().frame(width: 80, height: 80).accessibilityHidden(true)
+                Text(title).font(.headline).foregroundStyle(KinoTheme.text).multilineTextAlignment(.center)
             }
-            .buttonStyle(.card)
-            .accessibilityLabel(title)
-            Text(title).font(.headline).foregroundStyle(KinoTheme.text).accessibilityHidden(true)
+            .padding(12)
+            .frame(width: 320)
+            .frame(minHeight: 150)
+            .background(RoundedRectangle(cornerRadius: 14).fill(KinoTheme.raised))
         }
-        .frame(width: 320)
+        .buttonStyle(.card)
+        .accessibilityLabel(title)
     }
 
     private func icon(for tab: PlayerTab) -> String {

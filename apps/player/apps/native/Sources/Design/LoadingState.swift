@@ -28,10 +28,9 @@ struct LoadingState: View {
                 ScrollView(.horizontal) {
                     HStack(spacing: 18) {
                         ForEach(0..<4) { _ in
-                            VStack(spacing: 10) {
-                                RoundedRectangle(cornerRadius: 14).fill(KinoTheme.surface).frame(width: 320, height: 150)
-                                line(width: 120, height: 20)
-                            }
+                            RoundedRectangle(cornerRadius: 14).fill(KinoTheme.surface)
+                                .overlay(alignment: .bottom) { line(width: 120, height: 20).padding(.bottom, 16) }
+                                .frame(width: 320, height: 150)
                         }
                     }
                     .padding(.horizontal, 24).padding(.vertical, 24)
