@@ -29,8 +29,8 @@ struct ShowScreen: View {
                 VStack(alignment: .leading, spacing: 28) {
                     if let next = ShowSeasonSelection.featuredEpisode(in: episodes) {
                         #if os(tvOS)
-                        let seasons = Array(Set(episodes.map(\.season))).sorted()
-                        let season = ShowSeasonSelection.resolve(selectedSeason, among: seasons, defaultingTo: next.season) ?? 0
+                        let groups = ShowSeasonSelection.groups(episodes)
+                        let season = ShowSeasonSelection.resolve(selectedSeason, among: groups.map(\.number), defaultingTo: next.season) ?? 0
                         VStack(alignment: .leading, spacing: 16) {
                             Text(next.show.isEmpty ? "Episodes" : next.show)
                                 .font(.system(.largeTitle, design: .rounded).weight(.bold))
@@ -39,23 +39,14 @@ struct ShowScreen: View {
                             if !next.title.isEmpty {
                                 Text(next.title).font(.title3).foregroundStyle(.secondary)
                             }
-                            HStack(spacing: 36) {
-                                NavigationLink(value: ScreenDestination.playback(next.id)) {
-                                    Label("\(next.playLabel) · S\(next.season) E\(next.episode)", systemImage: "play.fill")
-                                        .frame(minWidth: 240).padding(.vertical, 12)
-                                        .foregroundStyle(KinoTheme.tvOSPrimaryInk)
-                                        .background(KinoTheme.tvOSPrimaryFill, in: Capsule())
-                                }
-                                .buttonStyle(.card)
-                                .tvOSDefaultPlayFocus(in: showFocus, id: "show.next-play.\(next.id)")
-                                Picker("Season", selection: Binding(get: { season }, set: { selectedSeason = $0 })) {
-                                    ForEach(seasons, id: \.self) { Text($0 == 0 ? "Specials" : "Season \($0)").tag($0) }
-                                }
-                                .pickerStyle(.menu)
-                                .tint(KinoTheme.secondaryControlTint)
-                                .secondaryControlForeground()
-                                .accessibilityIdentifier("show.season-picker")
+                            NavigationLink(value: ScreenDestination.playback(next.id)) {
+                                Label("\(next.playLabel) · S\(next.season) E\(next.episode)", systemImage: "play.fill")
+                                    .frame(minWidth: 240).padding(.vertical, 12)
+                                    .foregroundStyle(KinoTheme.tvOSPrimaryInk)
+                                    .background(KinoTheme.tvOSPrimaryFill, in: Capsule())
                             }
+                            .buttonStyle(.card)
+                            .tvOSDefaultPlayFocus(in: showFocus, id: "show.next-play.\(next.id)")
                             .controlSize(.large)
                         }
                         .foregroundStyle(KinoTheme.text)
@@ -73,7 +64,34 @@ struct ShowScreen: View {
                             .id(showID)
                         #endif
                         #if os(tvOS)
-                        MediaGrid(landscape: true, items: episodes.filter { $0.season == season }, onQuickPlay: { quickPlay = $0 })
+                        HStack(alignment: .top, spacing: 32) {
+                            VStack(alignment: .leading, spacing: 16) {
+                                Text("Seasons").font(.title2.bold()).accessibilityAddTraits(.isHeader)
+                                ForEach(groups) { group in
+                                    Button { selectedSeason = group.number } label: {
+                                        HStack {
+                                            Text(group.title)
+                                            Spacer()
+                                            if group.number == season { Image(systemName: "checkmark").accessibilityHidden(true) }
+                                        }
+                                        .font(.headline)
+                                        .foregroundStyle(group.number == season ? KinoTheme.signal : KinoTheme.text)
+                                        .padding(16)
+                                        .frame(maxWidth: .infinity, alignment: .leading)
+                                        .background(KinoTheme.surface, in: RoundedRectangle(cornerRadius: 12))
+                                    }
+                                    .buttonStyle(.card)
+                                    .accessibilityAddTraits(group.number == season ? .isSelected : [])
+                                    .accessibilityIdentifier("show.season-\(group.number)")
+                                }
+                            }
+                            .frame(width: 220)
+                            .focusSection()
+                            MediaShelf(title: "Episodes", items: episodes.filter { $0.season == season }, landscape: true,
+                                       onQuickPlay: { quickPlay = $0 })
+                                .id(season)
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                        }
                         CastShelf(people: show.cast)
                         #endif
                     } else { ContentUnavailableView("No episodes", systemImage: "tv", description: Text("This show has no available episodes.")) }

@@ -15,12 +15,12 @@ if [[ -n "${KINOSAIL_MUTATION_DIFF:-}" ]]; then
 	diff_arguments=(--diff "$KINOSAIL_MUTATION_DIFF")
 fi
 if (( ${#apps[@]} == 0 )); then
-	apps=(player subtitles dashboard packages)
+	apps=(player subtitles packages)
 fi
 selected=()
 for app in "${apps[@]}"; do
 	case "$app" in
-	player|subtitles|dashboard|packages) ;;
+	player|subtitles|packages) ;;
 	*) printf 'unknown app: %s\n' "$app" >&2; exit 2 ;;
 	esac
 	relative="apps/$app"

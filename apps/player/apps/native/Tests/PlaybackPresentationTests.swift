@@ -168,6 +168,15 @@ import Testing
         #expect(!presentation.pictureInPicturePossible)
     }
 
+    @Test func returningFromInactivePictureInPictureKeepsPlaybackReady() {
+        let presentation = PlayerPresentation()
+        let player = AVPlayer()
+        presentation.attach(player)
+        presentation.stopPictureInPicture()
+        #expect(presentation.videoView.playerLayer.player === player)
+        #expect(!presentation.pictureInPicture)
+    }
+
     @Test(.enabled(if: AVPictureInPictureController.isPictureInPictureSupported()))
     func obsoletePictureInPictureCallbacksCannotCloseNewPlayback() throws {
         let presentation = PlayerPresentation()

@@ -4,17 +4,17 @@ source "$(dirname "${BASH_SOURCE[0]}")/../tooling/gates-pause.sh"
 set -euo pipefail
 
 if (( $# > 1 )); then
-  echo 'expected at most one scope: player, subtitles, dashboard, packages' >&2
+  echo 'expected at most one scope: player, subtitles, packages' >&2
   exit 2
 fi
 if (( $# == 1 )); then
-  case "$1" in player|subtitles|dashboard|packages) ;; *) echo 'invalid quality scope' >&2; exit 2 ;; esac
+  case "$1" in player|subtitles|packages) ;; *) echo 'invalid quality scope' >&2; exit 2 ;; esac
 fi
 
 repo="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 status=0
 
-apps=(player subtitles dashboard)
+apps=(player subtitles)
 if (( $# == 1 )); then
   apps=("$1")
 fi
