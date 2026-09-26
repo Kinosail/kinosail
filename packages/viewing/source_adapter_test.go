@@ -7,6 +7,7 @@ import (
 	"net/http/httptest"
 	"strconv"
 	"strings"
+	"sync"
 	"testing"
 )
 
@@ -71,9 +72,13 @@ func TestFetchPlexProjectsProviderIDsAndPlaylists(t *testing.T) { //nolint:cyclo
 	token := strings.Join([]string{"plex", "fixture"}, "-")
 	var starts []string
 	calls := 0
+	var mutex sync.Mutex
 	server := httptest.NewServer(http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
+		mutex.Lock()
 		calls++
-		if calls > 20 {
+		tooMany := calls > 20
+		mutex.Unlock()
+		if tooMany {
 			http.Error(writer, "pagination runaway", http.StatusLoopDetected)
 			return
 		}
@@ -85,7 +90,9 @@ func TestFetchPlexProjectsProviderIDsAndPlaylists(t *testing.T) { //nolint:cyclo
 		case "/library/sections":
 			_, _ = writer.Write([]byte(`{"MediaContainer":{"Directory":[{"Key":"1","Type":"movie"},{"Key":"2","Type":"show"},{"Key":"3","Type":"music"}]}}`))
 		case "/library/sections/1/all":
+			mutex.Lock()
 			starts = append(starts, request.Header.Get("X-Plex-Container-Start"))
+			mutex.Unlock()
 			if request.Header.Get("X-Plex-Container-Start") == "0" {
 				_, _ = writer.Write([]byte(`{"MediaContainer":{"TotalSize":2,"Metadata":[{"RatingKey":"10","Type":"movie","Title":"Arrival","Year":2016,"ViewOffset":42000,"Duration":100000,"LastViewedAt":1787486400,"guid":"tmdb://329865","Guid":[{"ID":"imdb://tt2543164"}],"Media":[{"Part":[{"File":"/Arrival.mkv"}]}]}]}}`))
 			} else {
