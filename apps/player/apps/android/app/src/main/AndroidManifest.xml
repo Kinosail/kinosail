@@ -36,5 +36,11 @@
                 <action android:name="androidx.media3.session.MediaSessionService" />
             </intent-filter>
         </service>
+        <service android:name=".core.WearRemoteService" android:exported="true">
+            <intent-filter>
+                <action android:name="com.google.android.gms.wearable.REQUEST_RECEIVED" />
+                <data android:scheme="wear" android:host="*" android:path="/kinosail/watch-remote/v1" />
+            </intent-filter>
+        </service>
     </application>
 </manifest>

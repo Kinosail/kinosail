@@ -95,7 +95,7 @@ internal fun PlaybackScreen(item: CatalogItem, viewer: Viewer, tv: Boolean, clos
     BackHandler { if (speedPicker) speedPicker = false else if (trackPicker) closeTracks() else close() }
     LaunchedEffect(item.id, viewer.id, playback) {
         if (playback.activeItemId != item.id || playback.player?.playbackState == Player.STATE_ENDED)
-            playback.start(item, viewer)
+            playback.start(item, viewer, tv)
     }
     LaunchedEffect(speedPicker, tv) { if (speedPicker && tv) speedFocus.requestFocus() }
     LaunchedEffect(playback.retryable, tv) { if (playback.retryable && tv) retryFocus.requestFocus() }

@@ -143,6 +143,27 @@ class ServerApi(
             viewerId = viewerId, expected = setOf(204))
     }
 
+    internal fun remotePlayers(token: String, viewerId: String): kotlinx.serialization.json.JsonElement {
+        require(viewerId.matches(Regex("[A-Za-z0-9_-]{1,128}"))) { "Invalid remote player request." }
+        return requestWithStatus("/api/v1/remote-players", "GET", token = checkedCredential(token, 512),
+            viewerId = viewerId, expected = setOf(200)).second
+    }
+
+    internal fun updateRemotePlayer(id: String, token: String, viewerId: String, body: JsonObject):
+        kotlinx.serialization.json.JsonElement {
+        require(id.matches(Regex("[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}")) &&
+            viewerId.matches(Regex("[A-Za-z0-9_-]{1,128}"))) { "Invalid remote player request." }
+        return requestWithStatus("/api/v1/remote-players/$id", "PUT", body,
+            token = checkedCredential(token, 512), viewerId = viewerId, expected = setOf(200)).second
+    }
+
+    internal fun commandRemotePlayer(id: String, token: String, viewerId: String, body: JsonObject) {
+        require(id.matches(Regex("[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}")) &&
+            viewerId.matches(Regex("[A-Za-z0-9_-]{1,128}"))) { "Invalid remote player request." }
+        requestWithStatus("/api/v1/remote-players/$id/commands", "POST", body,
+            token = checkedCredential(token, 512), viewerId = viewerId, expected = setOf(202))
+    }
+
     internal fun setListed(itemId: String, token: String, viewerId: String, listed: Boolean):
         kotlinx.serialization.json.JsonElement {
         require(itemId.matches(Regex("[A-Za-z0-9_-]{1,128}")) &&
