@@ -10,11 +10,11 @@ from app_plan import select
 class AppPlanTests(unittest.TestCase):
     def test_selected_server_and_native_only_inputs(self):
         plan = dict.fromkeys((*FLAGS, "deep"), False)
-        plan["dashboard"] = plan["dashboard_browsers"] = True
-        self.assertEqual(select("dashboard", json.dumps(plan)),
+        plan["subtitles"] = plan["subtitles_browsers"] = True
+        self.assertEqual(select("subtitles", json.dumps(plan)),
                          {"selected": True, "tools": False, "browsers": True, "arm": False,
                           "client": False, "android": False})
-        plan["dashboard"] = plan["dashboard_browsers"] = False
+        plan["subtitles"] = plan["subtitles_browsers"] = False
         plan["client"] = True
         self.assertEqual(select("player", json.dumps(plan))["client"], True)
         self.assertFalse(select("player", json.dumps(plan))["selected"])
@@ -26,7 +26,7 @@ class AppPlanTests(unittest.TestCase):
         plan = dict.fromkeys((*FLAGS, "deep"), False)
         plan["player"] = True
         raw = json.dumps(plan)
-        for app, value in (("../player", raw), ("unknown", raw), ("player", "[]"),
+        for app, value in (("../player", raw), ("dashboard", raw), ("unknown", raw), ("player", "[]"),
                            ("player", "x" * 16385), ("player", json.dumps(plan | {"extra": True})),
                            ("player", json.dumps(plan | {"player": "true"}))):
             with self.subTest(app=app, value=value[:20]), self.assertRaises(ValueError):

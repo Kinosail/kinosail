@@ -53,15 +53,42 @@ struct LoadingState: View {
             }
             if layout == .show {
                 #if os(tvOS)
-                featureInformation.accessibilityHidden(true)
+                VStack(alignment: .leading, spacing: 16) {
+                    line(width: 260, height: 42)
+                    line(width: 360, height: 24)
+                    Capsule().fill(KinoTheme.raised).frame(width: 280, height: 50)
+                }
+                .accessibilityHidden(true)
+                HStack(alignment: .top, spacing: 32) {
+                    VStack(alignment: .leading, spacing: 16) {
+                        line(width: 140, height: 28)
+                        ForEach(0..<3) { _ in
+                            RoundedRectangle(cornerRadius: 12).fill(KinoTheme.surface).frame(width: 220, height: 64)
+                        }
+                    }
+                    .frame(width: 220)
+                    VStack(alignment: .leading, spacing: 16) {
+                        line(width: 160, height: 28)
+                        ScrollView(.horizontal) {
+                            HStack(alignment: .top, spacing: 18) {
+                                ForEach(0..<3) { _ in card(ratio: 16 / 9).frame(width: 390) }
+                            }
+                            .padding(.horizontal, 24)
+                            .padding(.vertical, 24)
+                        }
+                        .scrollIndicators(.hidden).scrollDisabled(true)
+                    }
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                }
+                .accessibilityHidden(true)
                 #else
                 CinemaHeroLayout {
                     RoundedRectangle(cornerRadius: 12).fill(KinoTheme.surface).aspectRatio(16 / 9, contentMode: .fit)
                 } information: {
                     featureInformation.frame(maxWidth: .infinity, alignment: .leading)
                 }.accessibilityHidden(true)
-                #endif
                 line(width: 240, height: 48).accessibilityHidden(true)
+                #endif
             }
             if layout == .album {
                 #if os(tvOS)
@@ -118,7 +145,7 @@ struct LoadingState: View {
             if layout == .playback {
                 Text("Opening media…").foregroundStyle(KinoTheme.muted).frame(maxWidth: .infinity, minHeight: 220)
             }
-            if layout == .grid || layout == .squareGrid || layout == .musicGrid || layout == .show || layout == .actor || layout == .collectionGrid {
+            if layout == .grid || layout == .squareGrid || layout == .musicGrid || showsGrid || layout == .actor || layout == .collectionGrid {
                 if layout == .musicGrid {
                     #if os(tvOS)
                     HStack { line(width: 180, height: 42); Spacer(); Capsule().fill(KinoTheme.raised).frame(width: 200, height: 48) }.accessibilityHidden(true)
@@ -224,6 +251,13 @@ struct LoadingState: View {
     private var gridRatio: CGFloat {
         if layout == .musicGrid || layout == .squareGrid { return 1 }
         return layout == .show ? 16 / 9 : 2 / 3
+    }
+    private var showsGrid: Bool {
+        #if os(tvOS)
+        false
+        #else
+        layout == .show
+        #endif
     }
     private var resumeArtworkWidth: CGFloat {
         #if os(tvOS)
