@@ -171,7 +171,7 @@ struct HomeSelection {
         let watching = continueWatching.filter { mode?.includes($0) ?? true }
         let added = recent.filter { mode?.includes($0) ?? true }
         featured = watching.first ?? added.first
-        continuation = Array(watching.dropFirst().prefix(4))
+        continuation = Array(watching.dropFirst())
         self.recent = added
     }
 
