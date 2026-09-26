@@ -1,10 +1,12 @@
 package com.kinosail.player.core
 
+import android.util.Log
 import java.net.HttpURLConnection
 import java.net.URL
 import java.io.IOException
 import java.nio.ByteBuffer
 import java.nio.charset.CodingErrorAction
+import java.util.UUID
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
@@ -212,7 +214,9 @@ class ServerApi(
     ): Pair<Int, kotlinx.serialization.json.JsonElement> {
         val bytes = body?.toString()?.toByteArray(Charsets.UTF_8)
         require(bytes == null || bytes.size <= 4096) { "Request is too large." }
+        val requestId = UUID.randomUUID().toString()
         val connection = open(URL(server.url, path))
+        var statusCode: Int? = null
         try {
             connection.requestMethod = method
             connection.instanceFollowRedirects = false
@@ -220,6 +224,7 @@ class ServerApi(
             connection.readTimeout = 20_000
             connection.useCaches = false
             connection.setRequestProperty("Accept", "application/json")
+            connection.setRequestProperty("X-Request-ID", requestId)
             if (token != null) connection.setRequestProperty("Authorization", "Bearer $token")
             if (viewerId != null) connection.setRequestProperty("X-Kinosail-Viewer-Profile", viewerId)
             if (bytes != null) {
@@ -228,6 +233,7 @@ class ServerApi(
                 connection.outputStream.use { it.write(bytes) }
             }
             val status = connection.responseCode
+            statusCode = status
             if (status !in expected) throw ServerHttpException(status)
             if (status == 204 || status == 404) return status to kotlinx.serialization.json.JsonNull
             require(connection.contentType?.substringBefore(';')?.trim()?.lowercase() == "application/json" &&
@@ -247,6 +253,17 @@ class ServerApi(
             val decoded = Charsets.UTF_8.newDecoder().onMalformedInput(CodingErrorAction.REPORT)
                 .decode(ByteBuffer.wrap(response)).toString()
             return status to StrictJson.parse(decoded)
+        } catch (failure: Exception) {
+            val kind = when (failure) {
+                is ServerHttpException -> "http"
+                is IOException -> "transport"
+                else -> "invalid_response"
+            }
+            val message = "HTTP request failed request_id=$requestId operation=${diagnosticOperation(path)} " +
+                "method=$method status=${statusCode ?: 0} kind=$kind cause=${failure.javaClass.simpleName}"
+            if ((statusCode != null && statusCode >= 500) || kind == "invalid_response") Log.e("KinosailNetwork", message)
+            else Log.w("KinosailNetwork", message)
+            throw failure
         } finally {
             connection.disconnect()
         }
