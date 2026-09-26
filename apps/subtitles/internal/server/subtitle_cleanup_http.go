@@ -40,6 +40,11 @@ func subtitleCleanupInput(request *http.Request, applying bool) (string, string,
 		if err != nil {
 			return "", "", "", errors.New("subtitle cleanup request is invalid")
 		}
+	} else if csrf, present := values["_csrf"]; present {
+		if len(csrf) != 1 || csrf[0] == "" || len(csrf[0]) > 128 {
+			return "", "", "", errors.New("subtitle cleanup request is invalid")
+		}
+		delete(values, "_csrf")
 	}
 	want := 2
 	if applying {

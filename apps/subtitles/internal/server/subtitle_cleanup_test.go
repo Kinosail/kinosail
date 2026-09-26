@@ -171,10 +171,17 @@ func TestSubtitleCleanupWebPreviewAndDelete(t *testing.T) {
 			t.Errorf("accepted %q", body)
 		}
 	}
+	request := httptest.NewRequestWithContext(t.Context(), http.MethodPost, "/settings/subtitles/cleanup", strings.NewReader("language=en&forced=keep&digest="+match[1]+"&_csrf=one&_csrf=two"))
+	request.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+	duplicate := httptest.NewRecorder()
+	apply(duplicate, request)
+	if duplicate.Code != http.StatusBadRequest {
+		t.Fatalf("duplicate CSRF field = %d", duplicate.Code)
+	}
 	if _, err := os.Stat(sidecar); err != nil {
 		t.Fatal("invalid request deleted subtitle")
 	}
-	request := httptest.NewRequestWithContext(t.Context(), http.MethodPost, "/settings/subtitles/cleanup", strings.NewReader("language=en&forced=keep&digest="+match[1]))
+	request = httptest.NewRequestWithContext(t.Context(), http.MethodPost, "/settings/subtitles/cleanup", strings.NewReader("language=en&forced=keep&digest="+match[1]+"&_csrf=fixture"))
 	request.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 	result := httptest.NewRecorder()
 	apply(result, request)
