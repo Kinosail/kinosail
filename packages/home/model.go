@@ -72,6 +72,7 @@ type Page[Show, Resume, Playlist, Collection any] struct {
 	Continue                          []Resume
 	List                              []library.Item
 	Recent                            []ShelfItem
+	MovieGenres                       []MovieGenre
 	Played                            []ShelfItem
 	Query                             string
 	View                              string
