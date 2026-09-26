@@ -39,17 +39,7 @@ func serveEpisodeStill(index *libraryIndex, probe *mediaProbe, workloads *worklo
 		}
 		target := filepath.Join(probe.cacheDir, "episode-stills", item.ID+".jpg")
 		if !playback.Fresh(target, item.Path) {
-			release, err := workloads.Acquire(request.Context(), workload.Background)
-			if err != nil {
-				localizedError(writer, request, "episode still unavailable", http.StatusServiceUnavailable)
-				return
-			}
-			if !playback.Fresh(target, item.Path) {
-				second := min(300, int(probe.core.Duration(request.Context(), item)*0.2))
-				err = playback.GenerateEpisodeStill(request.Context(), probe.cacheDir, probe.ffmpeg, item.Path, target, second)
-			}
-			release()
-			if err != nil {
+			if err := generateEpisodeStill(request, probe, workloads, item, target); err != nil {
 				localizedError(writer, request, "episode still unavailable", http.StatusServiceUnavailable)
 				return
 			}
@@ -57,6 +47,19 @@ func serveEpisodeStill(index *libraryIndex, probe *mediaProbe, workloads *worklo
 		writer.Header().Set("Content-Type", "image/jpeg")
 		http.ServeFile(writer, request, target) //nolint:gosec // The cache path uses a visible scanned item ID.
 	}
+}
+
+func generateEpisodeStill(request *http.Request, probe *mediaProbe, workloads *workload.Governor, item library.Item, target string) error {
+	release, err := workloads.Acquire(request.Context(), workload.Background)
+	if err != nil {
+		return err
+	}
+	defer release()
+	if playback.Fresh(target, item.Path) {
+		return nil
+	}
+	second := min(300, int(probe.core.Duration(request.Context(), item)*0.2))
+	return playback.GenerateEpisodeStill(request.Context(), probe.cacheDir, probe.ffmpeg, item.Path, target, second)
 }
 
 func serveArtwork(index *libraryIndex) http.HandlerFunc {
