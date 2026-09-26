@@ -26,7 +26,7 @@ func TestPlaybackSubtitlesOwnsDefaultSelection(t *testing.T) {
 	}
 }
 
-func TestPlaybackSubtitlesUseReadableAndVerifiedLabels(t *testing.T) {
+func TestPlaybackSubtitlesUseReadableAndVerifiedLabels(t *testing.T) { //nolint:cyclop // One fixture checks each visible role and its matching playback metadata.
 	t.Parallel()
 	item := library.Item{ID: "film", Path: "Film.mkv", Subtitles: []string{"Film.en.srt", "Film.en.FORCED.srt", "Film.fr.sdh.srt", "Film.hi.srt", "Film.en.hi.srt"}}
 	media := probeResult{SubtitleFacts: []SubtitleFacts{

@@ -42,11 +42,12 @@ func requestedVideoCodecs(request *http.Request) ([]string, error) {
 
 func subtitleTrackLabel(code, role string, forced bool) string {
 	label := "Subtitles"
-	if forced {
+	switch {
+	case forced:
 		label = "Forced"
-	} else if role == "captions" {
+	case role == "captions":
 		label = "Captions"
-	} else if role == "commentary" {
+	case role == "commentary":
 		label = "Commentary"
 	}
 	if tag, err := language.Parse(code); err == nil && tag != language.Und {
