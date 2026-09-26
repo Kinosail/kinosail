@@ -112,6 +112,11 @@
 
 /* Keep native selector overflow inside its label while preserving the focus ring. */
 .subtitle-language-add label{overflow:clip;overflow-clip-margin:.25rem}
+/* WebKit does not always resolve inherited theme variables on these labels. */
+.subtitle-settings #cleanup label{color:#a0a79c}
+:root[data-theme=light] .subtitle-settings #cleanup label{color:#5b6852}
+@media(prefers-color-scheme:light){:root:not([data-theme]) .subtitle-settings #cleanup label{color:#5b6852}}
+@media(forced-colors:active){.subtitle-settings #cleanup label{color:CanvasText}}
 
 /* Shared CinemaSail family background, with accessibility fallbacks. */
 :root:not([data-theme=light]) body.subtitle-dashboard{background:linear-gradient(180deg,rgba(11,13,11,.6),rgba(11,13,11,.8) 58%,var(--bg)),url('/static/cinema-backdrop.jpg?v=2') center top/cover fixed no-repeat,var(--bg)}
