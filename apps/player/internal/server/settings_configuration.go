@@ -138,8 +138,11 @@ func (store *settingsStore) validateTMDBEndpoint(ctx context.Context, key, value
 	if !metadata.ValidProviderBaseURL(value) {
 		return "", errors.New("TMDB address is invalid")
 	}
+	if key == "integrations.tmdb.url" && strings.TrimRight(value, "/") != tmdbDefaultURL {
+		return "", errors.New("TMDB credentials require the official API address")
+	}
 	if key == "integrations.tmdb.url" && token != "" {
-		return token, checkTMDBToken(ctx, value, token)
+		return token, store.tmdbCheck(ctx, value, token)
 	}
 	return token, nil
 }
