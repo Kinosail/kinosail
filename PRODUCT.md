@@ -12,11 +12,11 @@ Self-hosting households: Owners administer their servers and Viewers use their m
 
 ## Product Purpose
 
-Kinosail Player provides private media browsing and playback. Kinosail Subtitles finds, validates, and adds subtitle sidecars for media the household controls. Kinosail Dashboard provides direct access to configured household applications and bounded service-health information.
+Kinosail Player provides private media browsing and playback. Kinosail Subtitles finds, validates, and adds subtitle sidecars for media the household controls.
 
 ## Operating Context
 
-This monorepo owns Player, Subtitles, Dashboard, shared packages, and native Player clients. Web servers are independent Go applications with embedded browser assets. Each application retains its own binary, container, version, release, deployment, and health evidence.
+This monorepo owns Player, Subtitles, shared packages, and native Player clients. Web servers are independent Go applications with embedded browser assets. Each application retains its own binary, container, version, release, deployment, and health evidence.
 
 The native Player workspace has its own PRODUCT.md and platform guidance. Supporter and Home Assistant remain in separate repositories.
 
@@ -26,7 +26,6 @@ The native Player workspace has its own PRODUCT.md and platform guidance. Suppor
 - Preserve privacy and Direct First playback; buffering alone does not authorize transcoding.
 - Web and versioned HTTP API adapters call shared validated application operations.
 - Validate untrusted inputs before side effects and preserve application-specific authorization.
-- Dashboard opens application addresses directly and does not proxy application content.
 - Kinosail is source-available, not open source.
 - Existing AGENTS.md instructions remain authoritative. Quality gates remain disabled while .gates-disabled exists.
 

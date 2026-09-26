@@ -7,7 +7,7 @@ from pathlib import Path, PurePosixPath
 import re
 import subprocess
 
-APPS = ("player", "subtitles", "dashboard")
+APPS = ("player", "subtitles")
 LANGUAGES = ("go", "java-kotlin", "javascript-typescript", "python", "actions")
 FLAGS = (*APPS, "packages", "tooling", "web", "docs", "client", "android", "supply",
          *LANGUAGES,

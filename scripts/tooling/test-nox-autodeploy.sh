@@ -20,7 +20,7 @@ printf '%s\n' '#!/usr/bin/env bash' \
   'if [[ " $* " == *" run list "* && ${KINOSAIL_TEST_RUNS_JSON+x} ]]; then printf "%s\n" "$KINOSAIL_TEST_RUNS_JSON"; exit; fi' \
   'if [[ " $* " == *" run list "* ]]; then for ((i=1;i<=$#;i++)); do if [[ "${!i}" == --commit ]]; then j=$((i+1)); commit="${!j}"; fi; done; run=123; [[ "$commit" != "${KINOSAIL_TEST_PREV_SHA:-}" ]] || run=124; printf "[{\"databaseId\":%s,\"headSha\":\"%s\",\"status\":\"completed\",\"conclusion\":\"%s\"}]\n" "$run" "$commit" "${KINOSAIL_TEST_CI_CONCLUSION:-success}"; exit; fi' \
   'if [[ " $* " == *" run view "* && ${KINOSAIL_TEST_JOBS_JSON+x} ]]; then printf "%s\n" "$KINOSAIL_TEST_JOBS_JSON"; exit; fi' \
-  'if [[ " $* " == *" run view "* ]]; then if [[ "${KINOSAIL_TEST_PUBLISHED:-1}" == 1 || " $* " == *" run view 124 "* ]]; then printf "{\"jobs\":[{\"name\":\"Publish verified containers / Advance player production tags\",\"conclusion\":\"success\"},{\"name\":\"Publish verified containers / Advance subtitles production tags\",\"conclusion\":\"success\"},{\"name\":\"Publish verified containers / Advance dashboard production tags\",\"conclusion\":\"success\"}]}\n"; else printf "{\"jobs\":[]}\n"; fi; exit; fi' \
+  'if [[ " $* " == *" run view "* ]]; then if [[ "${KINOSAIL_TEST_PUBLISHED:-1}" == 1 || " $* " == *" run view 124 "* ]]; then printf "{\"jobs\":[{\"name\":\"Publish verified containers / Advance player production tags\",\"conclusion\":\"success\"},{\"name\":\"Publish verified containers / Advance subtitles production tags\",\"conclusion\":\"success\"}]}\n"; else printf "{\"jobs\":[]}\n"; fi; exit; fi' \
   'exit 99' >"$tmp/bin/gh"
 chmod +x "$tmp/bin/"*
 
@@ -58,7 +58,7 @@ reject_watch_env KINOSAIL_DEPLOY_ROOT /
 reject_watch_env KINOSAIL_DEPLOY_REPO_URL -invalid
 reject_watch_env KINOSAIL_DEPLOY_REPO_URL $'https://example.invalid/repo.git\ninvalid'
 
-for app in player subtitles dashboard; do
+for app in player subtitles; do
   home="$tmp/$app"
   HOME="$home" PATH="$tmp/bin:$PATH" "$script_dir/install-nox-autodeploy.sh" "$app" >/dev/null
   install_root="$(find "$home/Library/Application Support" -mindepth 1 -maxdepth 1 -type d)"

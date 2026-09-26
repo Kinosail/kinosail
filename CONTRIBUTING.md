@@ -29,7 +29,6 @@ Compile without starting a service:
 cd apps/player
 go build ./cmd/kinosail
 # Subtitles: cd ../subtitles && go build ./cmd/kinosail
-# Dashboard: cd ../dashboard && go build ./cmd/kinosail-dashboard
 ```
 
 Use the app README for a disposable local instance. Never use a real library or production database as a test fixture.
@@ -72,7 +71,7 @@ make -C apps/player check
 make max-loc
 ```
 
-Substitute `subtitles` or `dashboard` as appropriate. Shared-package changes require affected consumers as well as `make packages-check`. Root checks run serially because tooling uses a shared lock. Relevant container, browser, race, performance, and release requirements are described by each app's Makefile and release checklist; do not run unrelated suites solely to add checkmarks.
+Substitute `subtitles` as appropriate. Shared-package changes require affected consumers as well as `make packages-check`. Root checks run serially because tooling uses a shared lock. Relevant container, browser, race, performance, and release requirements are described by each app's Makefile and release checklist; do not run unrelated suites solely to add checkmarks.
 
 Report exact commands and results. A source check does not prove a browser flow, a healthy container does not prove playback, and a simulator build does not prove a physical-device installation. See [engineering](engineering/README.md) for the release boundary.
 

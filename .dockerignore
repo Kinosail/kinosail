@@ -18,13 +18,6 @@
 !apps/subtitles/cmd/**
 !apps/subtitles/internal/**
 !apps/subtitles/third_party/**
-!apps/dashboard/Containerfile
-!apps/dashboard/go.mod
-!apps/dashboard/go.sum
-!apps/dashboard/LICENSE
-!apps/dashboard/LICENSING.md
-!apps/dashboard/cmd/**
-!apps/dashboard/internal/**
 **/.env
 **/.env.*
 **/node_modules
