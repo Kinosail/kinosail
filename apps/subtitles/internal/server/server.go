@@ -103,6 +103,17 @@ func New(config Config) http.Handler {
 
 func newApplication(config Config) http.Handler { //nolint:funlen,cyclop,gocognit // The composition root validates defaults and wires every adapter to shared application services.
 	lifecycle, managedLifecycle := prepareApplicationConfig(&config)
+	startupReady := false
+	if managedLifecycle {
+		var cancel context.CancelFunc
+		config.Lifecycle, cancel = context.WithCancel(config.Lifecycle)
+		lifecycle = config.Lifecycle
+		defer func() {
+			if !startupReady {
+				cancel()
+			}
+		}()
+	}
 	stateDB, err := database.OpenContext(config.Lifecycle, config.DataDir, managedLifecycle)
 	if err != nil {
 		return unavailableApplication(config, "application state is unavailable")
@@ -243,6 +254,7 @@ func newApplication(config Config) http.Handler { //nolint:funlen,cyclop,gocogni
 	if management != nil && managedLifecycle {
 		management.Attach(config.Lifecycle, handler)
 	}
+	startupReady = true
 	return handler
 }
 
