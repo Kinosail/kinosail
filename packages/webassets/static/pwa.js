@@ -16,7 +16,7 @@ if ("serviceWorker" in navigator && window.isSecureContext) {
     return registration;
   };
   navigator.serviceWorker.addEventListener("controllerchange", () => identify({active: navigator.serviceWorker.controller}));
-  navigator.serviceWorker.register("/service-worker.js?v=53").then(identify).then(() => navigator.serviceWorker.ready).then(identify).catch(() => {});
+  navigator.serviceWorker.register("/service-worker.js?v=54").then(identify).then(() => navigator.serviceWorker.ready).then(identify).catch(() => {});
 }
 if (appleMobile && !standalone && installs.length) {
   for (const install of installs) {

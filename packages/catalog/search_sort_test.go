@@ -42,3 +42,16 @@ func TestSearchSortingPreservesRelevanceAndTieBreaks(t *testing.T) {
 		}
 	}
 }
+
+func TestSearchTextNormalizesASCIIAndUnicodeMetadata(t *testing.T) {
+	for input, want := range map[string]string{
+		" The.DARK\tKnight! 2026 ": "the dark knight 2026",
+		"_--_":                     "",
+		"A+B/C":                    "a b c",
+		"Été & Summer":             "ete summer",
+	} {
+		if got := searchText(input); got != want {
+			t.Errorf("searchText(%q) = %q, want %q", input, got, want)
+		}
+	}
+}

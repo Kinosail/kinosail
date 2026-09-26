@@ -1,4 +1,4 @@
-const cacheName = "kinosail-shell-v53";
+const cacheName = "kinosail-shell-v54";
 const offlineDatabase = "kinosail-offline-v1";
 const chunkSize = 8 * 1024 * 1024;
 const retiredOfflinePages = "kinosail-offline-pages-v1";
@@ -16,7 +16,7 @@ const storePrivateImage = async (cache, request, response) => {
   const url = new URL(response.url || request.url);
   const type = response.headers.get("Content-Type")?.split(";", 1)[0];
   if (response.status !== 200 || response.redirected || url.origin !== self.location.origin || !type?.startsWith("image/")) return response;
-  await cache.put(request, response.clone());
+  await cache.put(request, response);
   await trimPrivateImages(cache);
   return response;
 };
@@ -36,7 +36,9 @@ const servePrivateImage = (event, url) => {
       event.waitUntil(refreshPrivateImage(event.request, cacheNameForProfile, profile));
       return cached;
     }
-    return storePrivateImage(cache, event.request, await fetch(event.request, {credentials: "include", cache: "no-cache"}));
+    const response = await fetch(event.request, {credentials: "include", cache: "no-cache"});
+    event.waitUntil(storePrivateImage(cache, event.request, response.clone()).catch(() => {}));
+    return response;
   }));
 };
 const clearPrivateImageCaches = async (keep) => {

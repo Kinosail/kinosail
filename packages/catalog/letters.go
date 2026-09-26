@@ -28,8 +28,9 @@ func parseLetter(values url.Values, locale string) (string, error) {
 
 func browseLetters(values url.Values, items []*library.Item, current, locale string) []Letter {
 	letters := make([]Letter, 0, 26)
+	upper := cases.Upper(language.Make(locale))
 	for offset, item := range items {
-		label := titleLetter(sortTitle(*item), locale)
+		label := titleLetterWithCaser(sortTitle(*item), upper)
 		if len(letters) == 0 || letters[len(letters)-1].Label != label {
 			query := cloneValues(values)
 			query.Del("offset")
@@ -122,9 +123,13 @@ func sortKey(item library.Item) string {
 }
 
 func titleLetter(title, locale string) string {
+	return titleLetterWithCaser(title, cases.Upper(language.Make(locale)))
+}
+
+func titleLetterWithCaser(title string, upper cases.Caser) string {
 	for _, value := range strings.TrimSpace(title) {
 		if unicode.IsLetter(value) {
-			return normalizeLetter(string(value), locale)
+			return normalizedLetter(string(value), upper)
 		}
 		if unicode.IsDigit(value) {
 			return "#"
@@ -146,7 +151,11 @@ func lettersOnly(value string) bool {
 }
 
 func normalizeLetter(value, locale string) string {
-	value = cases.Upper(language.Make(locale)).String(value)
+	return normalizedLetter(value, cases.Upper(language.Make(locale)))
+}
+
+func normalizedLetter(value string, upper cases.Caser) string {
+	value = upper.String(value)
 	var normalized strings.Builder
 	for _, current := range norm.NFD.String(value) {
 		if !unicode.Is(unicode.Mn, current) {
