@@ -39,7 +39,6 @@ struct TVTopBar: View {
             Image(systemName: "chevron.right")
                 .opacity(focus.wrappedValue == .library ? 0.3 : 1)
                 .accessibilityHidden(true)
-            Spacer(minLength: 24)
             ForEach(PlayerTab.tvUtilities) { tab in
                 Button { selection = tab } label: {
                     Image(systemName: tab.symbol)
@@ -54,6 +53,7 @@ struct TVTopBar: View {
         }
         .font(.title3)
         .foregroundStyle(KinoTheme.muted)
+        .frame(maxWidth: .infinity, alignment: .leading)
         .padding(.horizontal, KinoTheme.contentPadding)
         .padding(.vertical, 12)
         .background(KinoTheme.background)

@@ -55,6 +55,11 @@ private struct TopBarProbeScreen: View {
         try await Task.sleep(for: .milliseconds(100))
         #expect(probe.focused == .movies)
 
+        probe.requestedFocus = .library
+        try await Task.sleep(for: .milliseconds(300))
+        #expect(probe.selection == .library)
+        #expect(probe.focused == .library)
+
         probe.requestedFocus = .search
         try await Task.sleep(for: .milliseconds(100))
         #expect(probe.selection == .search)
