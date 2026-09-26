@@ -230,7 +230,7 @@ func playbackReason(video, size, bitrate, hdr bool, subtitle string) string {
 
 // BrowserCapabilities returns Player's baseline browser contract.
 func BrowserCapabilities() ClientCapabilities {
-	return ClientCapabilities{Containers: []string{"mp4", "mov", "webm"}, VideoCodecs: []string{"h264", "vp8", "vp9", "av1"}, AudioCodecs: []string{"aac", "mp3", "opus", "vorbis"}, TextSubtitleCodecs: []string{"vtt", "webvtt"}, HDRFormats: []string{"sdr"}, MaxAudioChannels: 2, VideoLimits: []VideoLimit{{Codec: "h264", Profiles: []string{"baseline", "constrained baseline", "main", "high"}, MaxBitDepth: 8, MaxLevel: 42}}, SupportsExternalSubtitles: true, SupportsRemux: true, MaxWidth: 3840, MaxHeight: 2160}
+	return ClientCapabilities{Containers: []string{"mp4", "mov", "webm"}, VideoCodecs: []string{"h264", "vp8", "vp9", "av1"}, AudioCodecs: []string{"aac", "mp3", "opus", "vorbis"}, TextSubtitleCodecs: []string{"vtt", "webvtt", "srt", "subrip", "ass", "ssa", "mov_text", "text"}, HDRFormats: []string{"sdr"}, MaxAudioChannels: 2, VideoLimits: []VideoLimit{{Codec: "h264", Profiles: []string{"baseline", "constrained baseline", "main", "high"}, MaxBitDepth: 8, MaxLevel: 42}}, SupportsExternalSubtitles: true, SupportsRemux: true, MaxWidth: 3840, MaxHeight: 2160}
 }
 
 func NormalizeContainer(value string) string {

@@ -203,7 +203,7 @@ expect_status 303 --cookie "$media_dir/cookies" --header "Origin: $url" --header
 if [[ "${KINOSAIL_BROWSER_TEST:-}" == "1" ]]; then
   browser_args=(subtitle-dashboard.spec.ts subtitle-inspector-loading.spec.ts)
   if [[ "${KINOSAIL_BROWSER_SMOKE:-}" == "1" ]]; then browser_args+=(--grep=@smoke); fi
-  KINOSAIL_TEST_INSTANCE=1 KINOSAIL_TEST_TOTP_SECRET="$secret" KINOSAIL_E2E_URL="$url" KINOSAIL_E2E_OUTPUT_DIR="${KINOSAIL_E2E_OUTPUT_DIR:-$media_dir/playwright-results}" pnpm --dir e2e test "${browser_args[@]}"
+  KINOSAIL_TEST_INSTANCE=1 KINOSAIL_E2E_MEDIA_DIR="$media_dir" KINOSAIL_TEST_TOTP_SECRET="$secret" KINOSAIL_E2E_URL="$url" KINOSAIL_E2E_OUTPUT_DIR="${KINOSAIL_E2E_OUTPUT_DIR:-$media_dir/playwright-results}" pnpm --dir e2e test "${browser_args[@]}"
   exit
 fi
 mkfifo "$mcp_dir/input"
