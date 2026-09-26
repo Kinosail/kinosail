@@ -68,7 +68,9 @@ struct HomeScreen: View {
                         if homeMode == .listen {
                             ResumeRows(items: selection.continuation, title: "Continue listening", showsAll: false)
                         } else {
-                            UpNextShelf(items: selection.continuation)
+                            MediaShelf(title: "Up Next", items: Array(selection.continuation.prefix(4)),
+                                       landscape: true, resumesPlayback: true,
+                                       moreTitle: "See all", moreDestination: .library(.history))
                         }
                     }
                     if homeMode == .watch {
@@ -156,37 +158,6 @@ struct HomeScreen: View {
             MediaShelf(title: title, items: items, opensShows: opensShows)
             #endif
         }
-    }
-}
-
-private struct UpNextShelf: View {
-    let items: [MediaItem]
-    @State private var isExpanded = false
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            MediaShelf(title: "Up Next", items: visibleItems, landscape: true, resumesPlayback: true,
-                       moreTitle: "See all", moreDestination: .library(.history))
-            #if os(iOS)
-            if items.count > 4 {
-                Button { isExpanded.toggle() } label: {
-                    Label(isExpanded ? "Show less" : "Show more", systemImage: isExpanded ? "chevron.up" : "chevron.down")
-                        .frame(minHeight: 44)
-                }
-                .buttonStyle(.bordered).buttonBorderShape(.capsule)
-                .tint(KinoTheme.secondaryControlTint).secondaryControlForeground()
-                .accessibilityLabel("\(isExpanded ? "Show less" : "Show more") Up Next")
-            }
-            #endif
-        }
-    }
-
-    private var visibleItems: [MediaItem] {
-        #if os(tvOS)
-        Array(items.prefix(4))
-        #else
-        Array(items.prefix(isExpanded ? items.count : 4))
-        #endif
     }
 }
 
