@@ -5,9 +5,20 @@ import (
 	"errors"
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 	"time"
 )
+
+func TestHLSSkipInputBurstsBeforeSettlingToSourceRate(t *testing.T) {
+	arguments, rate, err := hlsSkipInput(nil, t.TempDir(), "/media/movie.mp4", 60, hlsRecipe{})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if rate != "1" || !strings.Contains(strings.Join(arguments, " "), "-readrate_initial_burst 16 -readrate 1 -f concat") {
+		t.Fatalf("skip input pacing = %q, %q", arguments, rate)
+	}
+}
 
 func TestHLSJobIdleTimeoutResetsOnSegmentActivity(t *testing.T) {
 	ctx, cancel := context.WithCancelCause(t.Context())
