@@ -106,6 +106,39 @@ func TestSubtitleCleanupRejectsInvalidPolicyAndChangedFiles(t *testing.T) {
 	}
 }
 
+func TestSubtitleCleanupRestoresLanguagesWhenRemovalFails(t *testing.T) {
+	dir := t.TempDir()
+	media, sidecar := filepath.Join(dir, "Film.mkv"), filepath.Join(dir, "Film.es.srt")
+	for _, path := range []string{media, sidecar} {
+		if err := os.WriteFile(path, []byte("fixture"), 0o600); err != nil {
+			t.Fatal(err)
+		}
+	}
+	index := sidecarTestIndex(library.Item{Kind: "video", Path: media, Subtitles: []string{sidecar}})
+	writes := 0
+	settings := &settingsStore{file: "settings.json", value: installationSettings{SubtitleLanguage: "en", SubtitleLanguages: []string{"en", "es"}}, persist: func(string, any) error {
+		writes++
+		if writes == 1 {
+			return os.WriteFile(sidecar, []byte("changed after setting save"), 0o600)
+		}
+		return nil
+	}}
+	plan, err := planSubtitleCleanup(index, "en", "keep")
+	if err != nil {
+		t.Fatal(err)
+	}
+	removed, err := applySubtitleCleanup(index, settings, "en", "keep", plan.Digest)
+	if err == nil || removed != 0 || writes != 2 {
+		t.Fatalf("failed removal: removed=%d writes=%d err=%v", removed, writes, err)
+	}
+	if !slices.Equal(settings.subtitleLanguages(), []string{"en", "es"}) {
+		t.Fatalf("languages changed after failed removal: %q", settings.subtitleLanguages())
+	}
+	if _, err := os.Stat(sidecar); err != nil {
+		t.Fatalf("changed sidecar removed: %v", err)
+	}
+}
+
 func TestSubtitleCleanupLeavesSymlinksAndPathsOutsideTheVideoDirectory(t *testing.T) {
 	dir := t.TempDir()
 	media := filepath.Join(dir, "Film.mkv")

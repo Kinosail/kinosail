@@ -144,22 +144,36 @@ func applySubtitleCleanup(index *libraryIndex, settings *settingsStore, language
 	if plan.Digest != digest {
 		return 0, errors.New("subtitle files changed; preview again")
 	}
-	if !slices.Equal(settings.subtitleLanguages(), []string{language}) {
+	previous := settings.subtitleLanguages()
+	changed := !slices.Equal(previous, []string{language})
+	if changed {
 		if err := settings.setSubtitleLanguages([]string{language}); err != nil {
 			return 0, err
 		}
 	}
 	removed := 0
+	defer func() {
+		if removed > 0 {
+			index.RequestRefresh()
+		}
+	}()
 	for _, file := range plan.Files {
 		if err := removeCleanupSidecar(index, file); err != nil {
-			return removed, err
+			return removed, restoreCleanupLanguages(settings, previous, language, err)
 		}
 		removed++
 	}
-	if removed > 0 {
-		index.RequestRefresh()
-	}
 	return removed, nil
+}
+
+func restoreCleanupLanguages(settings *settingsStore, previous []string, language string, cause error) error {
+	if slices.Equal(previous, []string{language}) || !slices.Equal(settings.subtitleLanguages(), []string{language}) {
+		return cause
+	}
+	if err := settings.setSubtitleLanguages(previous); err != nil {
+		return errors.Join(cause, fmt.Errorf("restore subtitle languages: %w", err))
+	}
+	return cause
 }
 
 func removeCleanupSidecar(index *libraryIndex, file subtitleCleanupFile) error {

@@ -109,7 +109,7 @@ func deleteSubtitleCleanup(index *libraryIndex, settings *settingsStore) http.Ha
 		}
 		removed, err := applySubtitleCleanup(index, settings, language, forced, digest)
 		if err != nil {
-			localizedError(writer, request, "subtitle files changed or could not be deleted; preview again", http.StatusConflict)
+			localizedError(writer, request, "subtitle cleanup stopped; check your preferred language and preview again", http.StatusConflict)
 			return
 		}
 		writer.Header().Set("Content-Type", "text/html; charset=utf-8")
