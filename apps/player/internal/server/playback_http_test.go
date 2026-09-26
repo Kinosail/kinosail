@@ -26,6 +26,33 @@ func TestPlaybackSubtitlesOwnsDefaultSelection(t *testing.T) {
 	}
 }
 
+func TestPlaybackSubtitlesUseReadableAndVerifiedLabels(t *testing.T) {
+	t.Parallel()
+	item := library.Item{ID: "film", Path: "Film.mkv", Subtitles: []string{"Film.en.srt", "Film.en.FORCED.srt", "Film.fr.sdh.srt", "Film.hi.srt", "Film.en.hi.srt"}}
+	media := probeResult{SubtitleFacts: []SubtitleFacts{
+		{SourceIndex: 2, Language: "eng", Role: "translation", Text: true},
+		{SourceIndex: 3, Language: "eng", Role: "translation", Text: true, Forced: true},
+		{SourceIndex: 4, Language: "fra", Role: "captions", Text: true},
+		{SourceIndex: 5, Language: "invalid<language>", Role: "translation", Text: true},
+	}}
+	tracks := playbackSubtitles(item, media, "en", true)
+	want := []string{"English · Subtitles", "English · Forced", "French · Captions", "Subtitles", "English · Subtitles", "English · Forced", "French · Captions", "Hindi · Subtitles", "English · Captions"}
+	if len(tracks) != len(want) {
+		t.Fatalf("tracks = %#v", tracks)
+	}
+	for index, track := range tracks {
+		if track.Label != want[index] {
+			t.Errorf("track %d label = %q, want %q", index, track.Label, want[index])
+		}
+	}
+	if tracks[0].Role != "" || tracks[1].Role != "" {
+		t.Fatalf("inferred translation leaked as a verified role: %#v", tracks[:2])
+	}
+	if tracks[4].Language != "en" || tracks[5].Language != "en" || !tracks[5].Forced || tracks[6].Kind != "captions" || tracks[6].Role != "captions" || tracks[7].Kind != "subtitles" || tracks[8].Kind != "captions" {
+		t.Fatalf("sidecar playback metadata changed: %#v", tracks[4:])
+	}
+}
+
 func assertPreferredSubtitleDefaults(t *testing.T, tracks []subtitleTrack) {
 	t.Helper()
 	if len(tracks) != 3 || tracks[0].Default || !tracks[1].Default || tracks[1].Language != "en" || tracks[2].Default {

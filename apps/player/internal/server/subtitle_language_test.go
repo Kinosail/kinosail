@@ -43,7 +43,7 @@ func TestPreferredSubtitleLanguageUsesLocalTracksAcrossWebAndAPI(t *testing.T) {
 	if saved.Code != http.StatusSeeOther || !strings.Contains(settings.Body.String(), `name="language" value="fr"`) || !strings.Contains(settings.Body.String(), `href="https://github.com/Kinosail/kinosail/tree/main/apps/subtitles" rel="noreferrer">Kino Subtitles on GitHub</a>`) || strings.Contains(settings.Body.String(), "SubDL") {
 		t.Fatalf("save = %d, settings = %q", saved.Code, settings.Body.String())
 	}
-	if !strings.Contains(player.Body.String(), `<track default kind="subtitles" label="FR" data-subtitle-source="`) || !strings.Contains(playback.Body.String(), `"label":"FR","source":"/subtitle/`+id+`/2","default":true,"language":"fr"`) {
+	if !strings.Contains(player.Body.String(), `<track default kind="subtitles" label="French · Subtitles" data-subtitle-source="`) || !strings.Contains(playback.Body.String(), `"label":"French · Subtitles","source":"/subtitle/`+id+`/2","default":true,"language":"fr"`) {
 		t.Fatalf("player = %q, playback = %q", player.Body.String(), playback.Body.String())
 	}
 	if strings.Contains(apiSettings.Body.String(), "subtitleProvider") {
