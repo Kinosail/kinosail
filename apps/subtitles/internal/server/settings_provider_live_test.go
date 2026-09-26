@@ -11,7 +11,7 @@ import (
 	"github.com/MikeO7/kinosail-subtitles/internal/server"
 )
 
-func TestSubDLKeyChangesTakeEffectWithoutRestart(t *testing.T) {
+func TestSubDLKeyChangesTakeEffectWithoutRestart(t *testing.T) { //nolint:gocognit // One public journey covers save, rejection, replacement, reset, and active credentials.
 	t.Parallel()
 	remote := httptest.NewServer(http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
 		if request.URL.Path != "/api/v2/me" {
@@ -90,7 +90,7 @@ func TestSubDLKeyChangesTakeEffectWithoutRestart(t *testing.T) {
 	check(0, 0)
 }
 
-func TestOpenSubtitlesAndSubSourceKeysChangeWithoutRestart(t *testing.T) {
+func TestOpenSubtitlesAndSubSourceKeysChangeWithoutRestart(t *testing.T) { //nolint:gocognit // One public journey covers atomic credential changes and retry recovery for both providers.
 	t.Parallel()
 	remote := httptest.NewServer(http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
 		switch request.URL.Path {
