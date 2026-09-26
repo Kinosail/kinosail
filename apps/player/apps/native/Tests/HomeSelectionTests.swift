@@ -25,12 +25,12 @@ struct HomeSelectionTests {
         #expect(selection.recent(for: .video).map(\.id) == [new.id])
     }
 
-    @Test func continuationKeepsTheExistingFourRowLimit() throws {
+    @Test func continuationKeepsAllTitlesAfterTheFeature() throws {
         let server = try ServerAddress("https://media.example")
         let watching = try (0..<7).map { try item("item-\($0)", server: server) }
         let selection = HomeSelection(continueWatching: watching, recent: [])
         #expect(selection.featured?.id == "item-0")
-        #expect(selection.continuation.map(\.id) == ["item-1", "item-2", "item-3", "item-4"])
+        #expect(selection.continuation.map(\.id) == ["item-1", "item-2", "item-3", "item-4", "item-5", "item-6"])
     }
 
     @Test func emptyLibraryKeepsTheEmptyState() {

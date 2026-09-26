@@ -68,8 +68,7 @@ struct HomeScreen: View {
                         if homeMode == .listen {
                             ResumeRows(items: selection.continuation, title: "Continue listening", showsAll: false)
                         } else {
-                            MediaShelf(title: "Up Next", items: selection.continuation, landscape: true, resumesPlayback: true,
-                                       moreTitle: "See all", moreDestination: .library(.history))
+                            UpNextShelf(items: selection.continuation)
                         }
                     }
                     if homeMode == .watch {
@@ -160,6 +159,37 @@ struct HomeScreen: View {
     }
 }
 
+private struct UpNextShelf: View {
+    let items: [MediaItem]
+    @State private var isExpanded = false
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            MediaShelf(title: "Up Next", items: visibleItems, landscape: true, resumesPlayback: true,
+                       moreTitle: "See all", moreDestination: .library(.history))
+            #if os(iOS)
+            if items.count > 4 {
+                Button { isExpanded.toggle() } label: {
+                    Label(isExpanded ? "Show less" : "Show more", systemImage: isExpanded ? "chevron.up" : "chevron.down")
+                        .frame(minHeight: 44)
+                }
+                .buttonStyle(.bordered).buttonBorderShape(.capsule)
+                .tint(KinoTheme.secondaryControlTint).secondaryControlForeground()
+                .accessibilityLabel("\(isExpanded ? "Show less" : "Show more") Up Next")
+            }
+            #endif
+        }
+    }
+
+    private var visibleItems: [MediaItem] {
+        #if os(tvOS)
+        Array(items.prefix(4))
+        #else
+        Array(items.prefix(isExpanded ? items.count : 4))
+        #endif
+    }
+}
+
 struct HomeSelection {
     struct MovieGenre: Identifiable {
         let name: String
@@ -177,7 +207,7 @@ struct HomeSelection {
         let added = recent.filter { mode?.includes($0) ?? true }
         featured = watching.first ?? added.first
         featuredIsContinuing = !watching.isEmpty
-        continuation = Array(watching.dropFirst().prefix(4))
+        continuation = Array(watching.dropFirst())
         self.recent = added
     }
 
