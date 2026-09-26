@@ -17,9 +17,22 @@ actor LocalMediaCache {
         let saved: Date
         let fresh: Bool
     }
+    private struct DiskEntry {
+        let file: URL
+        let bytes: Int
+        let modified: Date
+    }
+    private struct PendingWrite {
+        let key: String
+        let kind: Kind
+        let task: Task<Void, Never>
+    }
     private let root: URL
     private let scope: String
     private var closed = false
+    private var closing = false
+    private var pendingWrites: [UUID: PendingWrite] = [:]
+    private var diskEntries: [Kind: [String: DiskEntry]] = [:]
     private(set) var revision = UUID()
     private(set) var pagesRevision = UUID()
     private var freshAfter: Date?
@@ -65,15 +78,46 @@ actor LocalMediaCache {
         var timestamp = saved.timeIntervalSince1970.bitPattern.bigEndian
         withUnsafeBytes(of: &timestamp) { output.append(contentsOf: $0) }
         output.append(data)
-        try trim(kind, replacing: file, bytes: output.count)
-        try output.write(to: file, options: [.atomic, .completeFileProtectionUntilFirstUserAuthentication])
+        do {
+            try trim(kind, replacing: file, bytes: output.count)
+            try output.write(to: file, options: [.atomic, .completeFileProtectionUntilFirstUserAuthentication])
+        } catch {
+            diskEntries = [:]
+            throw error
+        }
+        diskEntries[kind]?[file.lastPathComponent] = DiskEntry(file: file, bytes: output.count, modified: saved)
         if kind == .catalog { remember(Entry(data: data, saved: saved, fresh: true), id: file.lastPathComponent) }
     }
 
+    func enqueueWrite(_ data: Data, key: String, kind: Kind, revision expectedRevision: UUID? = nil,
+                      pagesRevision expectedPagesRevision: UUID? = nil) {
+        guard !closed, !closing, pendingWrites.count < 128, !data.isEmpty, data.count <= kind.maximum,
+              expectedRevision == nil || expectedRevision == revision,
+              expectedPagesRevision == nil || expectedPagesRevision == pagesRevision,
+              let file = try? location(key, kind: kind) else { return }
+        if kind == .catalog { remember(Entry(data: data, saved: Date(), fresh: true), id: file.lastPathComponent) }
+        let id = UUID()
+        let task = Task(priority: .utility) {
+            defer { pendingWrites[id] = nil }
+            guard !Task.isCancelled else { return }
+            try? write(data, key: key, kind: kind, revision: expectedRevision,
+                       pagesRevision: expectedPagesRevision)
+        }
+        pendingWrites[id] = PendingWrite(key: key, kind: kind, task: task)
+    }
+
+    func flushWrites() async {
+        for pending in Array(pendingWrites.values) { await pending.task.value }
+    }
+
     func remove(_ key: String, kind: Kind) {
+        for pending in pendingWrites.values where pending.key == key && pending.kind == kind { pending.task.cancel() }
         guard let file = try? location(key, kind: kind) else { return }
         forget(file.lastPathComponent)
-        try? manager.removeItem(at: file)
+        do {
+            try manager.removeItem(at: file)
+            diskEntries[kind]?[file.lastPathComponent] = nil
+        } catch { diskEntries = [:] }
     }
 
     /// Keep the saved screen visible, but require a refresh after a local mutation.
@@ -102,7 +146,10 @@ actor LocalMediaCache {
         } catch { /* Cache failure must not turn a successful Server mutation into failure. */ }
     }
 
-    func close(purge: Bool) {
+    func close(purge: Bool) async {
+        closing = true
+        if purge { closed = true }
+        await flushWrites()
         closed = true
         memory = [:]; memoryBytes = 0
         if purge, root.resolvingSymlinksInPath().path == root.path { try? manager.removeItem(at: root) }
@@ -164,26 +211,37 @@ actor LocalMediaCache {
     }
 
     private func trim(_ kind: Kind, replacing: URL, bytes: Int) throws {
+        if diskEntries.isEmpty { try indexDiskEntries() }
+        var entries = diskEntries[kind] ?? [:]
+        entries[replacing.lastPathComponent] = nil
+        var total = entries.values.reduce(bytes) { $0 + $1.bytes }
+        var count = entries.count + 1
+        if total > kind.budget || count > kind.count {
+            for entry in entries.values.sorted(by: { $0.modified < $1.modified }) where total > kind.budget || count > kind.count {
+                try manager.removeItem(at: entry.file)
+                forget(entry.file.lastPathComponent)
+                entries[entry.file.lastPathComponent] = nil
+                total -= entry.bytes; count -= 1
+            }
+        }
+        diskEntries[kind] = entries
+    }
+
+    private func indexDiskEntries() throws {
         let keys: [URLResourceKey] = [.isRegularFileKey, .fileSizeKey, .contentModificationDateKey]
         guard let listing = manager.enumerator(at: root, includingPropertiesForKeys: keys, options: [.skipsSubdirectoryDescendants]) else { throw ClientError.invalidResponse }
-        var entries: [(URL, Int, Date)] = []
+        var entries: [Kind: [String: DiskEntry]] = [.catalog: [:], .artwork: [:]]
         var seen = 0
         for case let file as URL in listing {
             seen += 1
             guard seen <= 4096 else { throw ClientError.invalidResponse }
-            guard file != replacing, file.lastPathComponent.hasPrefix(kind.rawValue + "-"), file.pathExtension == "cache",
-                  file.resolvingSymlinksInPath().path == file.path else { continue }
+            guard file.pathExtension == "cache", file.resolvingSymlinksInPath().path == file.path,
+                  let kind = [Kind.catalog, .artwork].first(where: { file.lastPathComponent.hasPrefix($0.rawValue + "-") }) else { continue }
             let values = try file.resourceValues(forKeys: Set(keys))
             guard values.isRegularFile == true, let size = values.fileSize else { continue }
-            entries.append((file, size, values.contentModificationDate ?? .distantPast))
+            entries[kind]?[file.lastPathComponent] = DiskEntry(file: file, bytes: size, modified: values.contentModificationDate ?? .distantPast)
         }
-        var total = entries.reduce(bytes) { $0 + $1.1 }
-        var count = entries.count + 1
-        for entry in entries.sorted(by: { $0.2 < $1.2 }) where total > kind.budget || count > kind.count {
-            try manager.removeItem(at: entry.0)
-            forget(entry.0.lastPathComponent)
-            total -= entry.1; count -= 1
-        }
+        diskEntries = entries
     }
 
     private func remember(_ entry: Entry, id: String) {

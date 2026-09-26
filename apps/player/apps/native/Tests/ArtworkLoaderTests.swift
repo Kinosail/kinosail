@@ -14,6 +14,7 @@ struct ArtworkLoaderTests {
         defer { fixture.remove() }
         try installImage(fixture, path: "/art/movie", width: 800, height: 400)
         _ = try await ArtworkLoader().image(path: "/art/movie", client: fixture.client, dimension: 400)
+        if let store = try await fixture.client.cacheStore() { await store.flushWrites() }
         let loader = ArtworkLoader()
         let disk = try await loader.image(path: "/art/movie", client: fixture.client, dimension: 400)
         let memory = try await loader.image(path: "/art/movie", client: fixture.client, dimension: 400)

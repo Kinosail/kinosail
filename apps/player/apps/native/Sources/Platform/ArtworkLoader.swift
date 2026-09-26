@@ -60,10 +60,11 @@ actor ArtworkLoader {
             let image = try Self.decodedThumbnail(data, dimension: dimension)
             try Task.checkCancellation()
             let savedAt = Date()
-            try? await store?.write(data, key: url.absoluteString, kind: .artwork)
-            try Task.checkCancellation()
             guard generation == attempt else { throw CancellationError() }
             remember(image, key: key, saved: savedAt)
+            if let store {
+                await store.enqueueWrite(data, key: url.absoluteString, kind: .artwork)
+            }
             return Loaded(image: image, stale: false)
         }
         pending[key] = request
@@ -143,8 +144,10 @@ actor ArtworkLoader {
             guard generation == attempt else { return }
             let savedAt = Date()
             let store = try await client.cacheStore()
-            try? await store?.write(data, key: url.absoluteString, kind: .artwork)
             remember(image, key: key, saved: savedAt)
+            if let store {
+                await store.enqueueWrite(data, key: url.absoluteString, kind: .artwork)
+            }
         } catch is CancellationError {} catch {}
     }
 
