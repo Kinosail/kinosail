@@ -51,21 +51,22 @@ private struct LaunchingAppShell: View {
         ZStack {
             AppShell()
                 .accessibilityHidden(showingLaunch)
-            if showingLaunch {
-                ZStack {
-                    Color.black.ignoresSafeArea()
-                    Image("LaunchMark")
-                        .resizable()
-                        .scaledToFit()
-                        #if os(tvOS)
-                        .frame(width: 160, height: 206)
-                        #else
-                        .frame(width: 100, height: 129)
-                        #endif
-                        .accessibilityLabel("Kinosail Player")
-                }
-                .transition(.opacity)
+            ZStack {
+                Color.black
+                Image("LaunchMark")
+                    .resizable()
+                    .scaledToFit()
+                    #if os(tvOS)
+                    .frame(width: 160, height: 206)
+                    #else
+                    .frame(width: 100, height: 129)
+                    #endif
+                    .accessibilityLabel("Kinosail Player")
             }
+            .ignoresSafeArea()
+            .opacity(showingLaunch ? 1 : 0)
+            .allowsHitTesting(showingLaunch)
+            .accessibilityHidden(!showingLaunch)
         }
         .task {
             do { try await Task.sleep(for: .milliseconds(250)) }
