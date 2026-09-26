@@ -47,17 +47,17 @@ type installationSettings struct {
 }
 
 type settingsStore struct {
-	mu              sync.RWMutex
-	file            string
-	mediaRoot       string
-	dlnaURL         string
-	ffmpeg          string
-	value           installationSettings
-	config          configuration.Snapshot
-	hardware        hardwareCapabilities
-	transcoderCheck transcodepolicy.CheckResult
-	persist         func(string, any) error
-	err             error
+	mu               sync.RWMutex
+	file, mediaRoot  string
+	dlnaURL          string
+	ffmpeg           string
+	value            installationSettings
+	config           configuration.Snapshot
+	subtitleProvider *subtitleProvider
+	hardware         hardwareCapabilities
+	transcoderCheck  transcodepolicy.CheckResult
+	persist          func(string, any) error
+	err              error
 }
 
 func (store *settingsStore) transcoderState() transcodehardware.SelectionState {

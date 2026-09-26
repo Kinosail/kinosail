@@ -8,6 +8,7 @@ import (
 	"os"
 	"sort"
 	"sync"
+	"sync/atomic"
 	"time"
 
 	"github.com/MikeO7/kinosail/packages/library"
@@ -32,6 +33,7 @@ type subtitleProvider struct {
 	ledger    *subtitleLedger
 	health    *subtitleProviderHealthRegistry
 	sidecar   sync.Mutex
+	current   atomic.Pointer[subtitleProvider]
 }
 
 type subtitleDownloadCandidate struct {
@@ -72,6 +74,42 @@ func newSubtitleProvider(config SubtitleConfig, cache, data string, index *libra
 	return provider
 }
 
+func (provider *subtitleProvider) active() *subtitleProvider {
+	if current := provider.current.Load(); current != nil {
+		return current
+	}
+	return provider
+}
+
+func (provider *subtitleProvider) replaceConfig(config SubtitleConfig) {
+	previous := provider.active().config
+	if config.URL == "" {
+		config.URL = "https://api.subdl.com/api/v1"
+	}
+	if config == previous {
+		return
+	}
+	next := &subtitleProvider{config: config, cache: provider.cache, index: provider.index, settings: provider.settings, sync: provider.sync, open: newOpenSubtitlesProvider(config.OpenSubtitles), subsource: newSubSourceProvider(config.SubSource), ledger: provider.ledger, health: provider.health}
+	next.open.health, next.subsource.health = provider.health, provider.health
+	next.client = localIntegrationHTTPClient(15 * time.Second)
+	next.client.CheckRedirect = func(request *http.Request, _ []*http.Request) error {
+		if !next.allowed(request.URL.String()) {
+			return http.ErrUseLastResponse
+		}
+		return nil
+	}
+	provider.current.Store(next)
+	if config.URL != previous.URL || config.APIKey != previous.APIKey {
+		provider.health.reset("SubDL")
+	}
+	if config.OpenSubtitles != previous.OpenSubtitles {
+		provider.health.reset("OpenSubtitles")
+	}
+	if config.SubSource != previous.SubSource {
+		provider.health.reset("SubSource")
+	}
+}
+
 func (provider *subtitleProvider) label() string {
 	if provider.configured() {
 		return "Credentials configured"
@@ -80,10 +118,12 @@ func (provider *subtitleProvider) label() string {
 }
 
 func (provider *subtitleProvider) configured() bool {
+	provider = provider.active()
 	return provider.cache != "" && (provider.subDLConfigured() || provider.open.configured() || provider.subsource.configured())
 }
 
 func (provider *subtitleProvider) subDLConfigured() bool {
+	provider = provider.active()
 	return validSubtitleProviderEndpoint(provider.config.URL) && validSubtitleProviderCredential(provider.config.APIKey)
 }
 
@@ -176,6 +216,7 @@ func (provider *subtitleProvider) fetchSidecar(ctx context.Context, item library
 }
 
 func (provider *subtitleProvider) acquire(ctx context.Context, item library.Item, language string, accept func(subtitleDownloadCandidate) bool) (cleanedSubtitle, subtitleRecord, error) {
+	provider = provider.active()
 	if !provider.configured() || !validLanguage(language) {
 		return cleanedSubtitle{}, subtitleRecord{}, errors.New("subtitle provider is not configured")
 	}
@@ -188,6 +229,7 @@ func (provider *subtitleProvider) acquire(ctx context.Context, item library.Item
 }
 
 func (provider *subtitleProvider) subtitleCandidates(ctx context.Context, item library.Item, language string) ([]subtitleDownloadCandidate, int, int) {
+	provider = provider.active()
 	candidates := make([]subtitleDownloadCandidate, 0, maximumDownloadTries*3)
 	configured, failed := 0, 0
 	searchContext, cancel := context.WithTimeout(ctx, 15*time.Second)
