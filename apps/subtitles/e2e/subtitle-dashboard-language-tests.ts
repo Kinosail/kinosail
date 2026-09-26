@@ -7,10 +7,13 @@ import { compactViewports, expectNoHorizontalOverflow, expectSkipLinkOffscreen, 
 export function registerSubtitleLanguageTests() {
 test("Owner deletes other languages and English forced subtitles from a populated library", async ({ page }, testInfo) => {
   const root = process.env.KINOSAIL_TEST_ROOT;
-  if (!root) throw new Error("populated test media root is unavailable");
-  const media = join(root, "media", "Movies");
-  const spanish = join(media, "Example Movie.es.srt");
-  const forced = join(media, "Example Movie.en.forced.srt");
+  const containerMedia = process.env.KINOSAIL_E2E_MEDIA_DIR;
+  if (!root && !containerMedia) throw new Error("populated test media root is unavailable");
+  const media = containerMedia ?? join(root!, "media", "Movies");
+  const title = containerMedia ? "Arrival" : "Example Movie";
+  const kept = containerMedia ? `${title}.en.srt` : `${title}.vtt`;
+  const spanish = join(media, `${title}.es.srt`);
+  const forced = join(media, `${title}.en.forced.srt`);
   const rescan = () => page.evaluate(async () => {
     const csrf = document.querySelector<HTMLMetaElement>('meta[name="kinosail-csrf"]')?.content ?? "";
     return (await fetch("/scan", { method: "POST", headers: { "X-Kinosail-CSRF": csrf } })).status;
@@ -24,8 +27,8 @@ test("Owner deletes other languages and English forced subtitles from a populate
     await page.getByLabel("Forced subtitles in that language").selectOption("delete");
     await page.getByRole("button", { name: "Preview files to delete" }).click();
     await expect(page.getByRole("heading", { name: "2 subtitle files to delete" })).toBeVisible();
-    await expect(page.getByText("Example Movie.es.srt")).toBeVisible();
-    await expect(page.getByText("Example Movie.en.forced.srt")).toBeVisible();
+    await expect(page.getByText(`${title}.es.srt`)).toBeVisible();
+    await expect(page.getByText(`${title}.en.forced.srt`)).toBeVisible();
     await expectNoHorizontalOverflow(page);
     await page.screenshot({ path: testInfo.outputPath("390-populated-subtitle-cleanup-preview.png"), fullPage: true });
     await page.getByRole("button", { name: "Delete 2 subtitle files" }).click();
@@ -33,7 +36,7 @@ test("Owner deletes other languages and English forced subtitles from a populate
     await expect(page.getByText("en is now your only preferred language. Deleted 2 subtitle files.")).toBeVisible();
     await expect(access(spanish)).rejects.toMatchObject({ code: "ENOENT" });
     await expect(access(forced)).rejects.toMatchObject({ code: "ENOENT" });
-    await access(join(media, "Example Movie.vtt"));
+    await access(join(media, kept));
   } finally {
     await Promise.all([unlink(spanish).catch(() => {}), unlink(forced).catch(() => {})]);
     await rescan().catch(() => {});
