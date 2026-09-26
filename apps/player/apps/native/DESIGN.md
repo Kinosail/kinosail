@@ -136,7 +136,7 @@ The Apple Watch opens on a compact Remote page with the current player, title, p
 
 `TouchVideoSurface` uses AVPlayerLayer with aspect-fit rendering and captions inside the picture. AVFoundation owns video rendering and system Picture in Picture. Loading, buffering and reconnection retain the player surface; terminal failures expose readable retry and dismissal. Speed applies immediately to the session, including downloads, while Server preference saving happens separately. External captions remain an in-app capability and do not claim system PiP support.
 
-Tabs default to Home, TV Shows, Movies and Search with persistent More. One to four destinations can be added, removed or reordered for the current Viewer Profile on this device. More always exposes the remaining destinations and Customize tabs. iPhone uses system tabs; iPad retains `.sidebarAdaptable`; Apple TV retains system tab and remote focus behavior. Search opens library search; Home shows a toolbar Search action only when Search is absent from the pinned tabs. Settings remains reachable through More.
+Tabs default to Home, TV Shows, Movies and Search with persistent More. One to four destinations can be added, removed or reordered for the current Viewer Profile on this device. More always exposes the remaining destinations and Customize tabs. iPhone uses system tabs; iPad retains `.sidebarAdaptable`. Apple TV uses a horizontal browse bar with visible left and right cues and persistent Search and Settings icons; remote focus moves across the bar and down to content. Search opens library search; Home shows a toolbar Search action only when Search is absent from the pinned tabs. Settings remains reachable through More on iPhone and iPad.
 
 ### Personal tab editor
 
