@@ -7,8 +7,12 @@ struct LoadingState: View {
     var layout = LoadingLayout.shelf
     @Environment(\.dynamicTypeSize) private var dynamicType
     @ScaledMetric(relativeTo: .headline) private var posterWidth = 164.0
+    @ScaledMetric(relativeTo: .headline) private var landscapeWidth = 260.0
     var body: some View {
         VStack(alignment: .leading, spacing: 20) {
+            if layout == .home || layout == .homeAudio {
+                line(width: 180, height: 28).accessibilityHidden(true)
+            }
             if layout == .home || layout == .homeAudio || layout == .detail {
                 CinemaHeroLayout {
                     RoundedRectangle(cornerRadius: 12).fill(KinoTheme.surface)
@@ -18,7 +22,21 @@ struct LoadingState: View {
                     featureInformation.frame(maxWidth: .infinity, alignment: .leading)
                 }.accessibilityHidden(true)
             }
-            if layout == .home || layout == .homeAudio {
+            if layout == .home {
+                VStack(alignment: .leading, spacing: 12) {
+                    line(width: 200, height: 28)
+                    ScrollView(.horizontal) {
+                        HStack(alignment: .top, spacing: 18) {
+                            ForEach(0..<4) { _ in card(ratio: 16 / 9, showsProgress: true).frame(width: continuationWidth) }
+                        }
+                        #if os(tvOS)
+                        .padding(.horizontal, 24)
+                        #endif
+                        .padding(.vertical, 24)
+                    }.scrollIndicators(.hidden).scrollDisabled(true)
+                }.padding(.top, 12).accessibilityHidden(true)
+            }
+            if layout == .homeAudio {
                 VStack(alignment: .leading, spacing: 12) {
                     line(width: 200, height: 28)
                     LazyVGrid(columns: ResumeRows.columns(accessibility: dynamicType.isAccessibilitySize), alignment: .leading, spacing: 16) {
@@ -35,15 +53,42 @@ struct LoadingState: View {
             }
             if layout == .show {
                 #if os(tvOS)
-                featureInformation.accessibilityHidden(true)
+                VStack(alignment: .leading, spacing: 16) {
+                    line(width: 260, height: 42)
+                    line(width: 360, height: 24)
+                    Capsule().fill(KinoTheme.raised).frame(width: 280, height: 50)
+                }
+                .accessibilityHidden(true)
+                HStack(alignment: .top, spacing: 32) {
+                    VStack(alignment: .leading, spacing: 16) {
+                        line(width: 140, height: 28)
+                        ForEach(0..<3) { _ in
+                            RoundedRectangle(cornerRadius: 12).fill(KinoTheme.surface).frame(width: 220, height: 64)
+                        }
+                    }
+                    .frame(width: 220)
+                    VStack(alignment: .leading, spacing: 16) {
+                        line(width: 160, height: 28)
+                        ScrollView(.horizontal) {
+                            HStack(alignment: .top, spacing: 18) {
+                                ForEach(0..<3) { _ in card(ratio: 16 / 9).frame(width: 390) }
+                            }
+                            .padding(.horizontal, 24)
+                            .padding(.vertical, 24)
+                        }
+                        .scrollIndicators(.hidden).scrollDisabled(true)
+                    }
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                }
+                .accessibilityHidden(true)
                 #else
                 CinemaHeroLayout {
                     RoundedRectangle(cornerRadius: 12).fill(KinoTheme.surface).aspectRatio(16 / 9, contentMode: .fit)
                 } information: {
                     featureInformation.frame(maxWidth: .infinity, alignment: .leading)
                 }.accessibilityHidden(true)
-                #endif
                 line(width: 240, height: 48).accessibilityHidden(true)
+                #endif
             }
             if layout == .album {
                 #if os(tvOS)
@@ -100,7 +145,7 @@ struct LoadingState: View {
             if layout == .playback {
                 Text("Opening media…").foregroundStyle(KinoTheme.muted).frame(maxWidth: .infinity, minHeight: 220)
             }
-            if layout == .grid || layout == .squareGrid || layout == .musicGrid || layout == .show || layout == .actor || layout == .collectionGrid {
+            if layout == .grid || layout == .squareGrid || layout == .musicGrid || showsGrid || layout == .actor || layout == .collectionGrid {
                 if layout == .musicGrid {
                     #if os(tvOS)
                     HStack { line(width: 180, height: 42); Spacer(); Capsule().fill(KinoTheme.raised).frame(width: 200, height: 48) }.accessibilityHidden(true)
@@ -150,12 +195,13 @@ struct LoadingState: View {
         .frame(maxWidth: .infinity, alignment: .leading)
         .skeletonLoading(layout == .playback ? "Opening media…" : title, shimmers: layout != .playback)
     }
-    private func card(ratio: CGFloat = 2 / 3) -> some View {
+    private func card(ratio: CGFloat = 2 / 3, showsProgress: Bool = false) -> some View {
         VStack(alignment: .leading, spacing: 10) {
             RoundedRectangle(cornerRadius: 12).fill(KinoTheme.surface).aspectRatio(ratio, contentMode: .fit)
             VStack(alignment: .leading, spacing: 8) {
                 line(width: 100, height: 20)
                 line(width: 80, height: 14)
+                if showsProgress { line(width: 140, height: 4) }
             }
             #if os(tvOS)
             .padding([.horizontal, .bottom], 12)
@@ -195,9 +241,23 @@ struct LoadingState: View {
         min(posterWidth, 260)
         #endif
     }
+    private var continuationWidth: CGFloat {
+        #if os(tvOS)
+        390
+        #else
+        min(landscapeWidth, 300)
+        #endif
+    }
     private var gridRatio: CGFloat {
         if layout == .musicGrid || layout == .squareGrid { return 1 }
         return layout == .show ? 16 / 9 : 2 / 3
+    }
+    private var showsGrid: Bool {
+        #if os(tvOS)
+        false
+        #else
+        layout == .show
+        #endif
     }
     private var resumeArtworkWidth: CGFloat {
         #if os(tvOS)

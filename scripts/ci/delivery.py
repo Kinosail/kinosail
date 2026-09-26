@@ -8,8 +8,7 @@ import subprocess
 
 from affected import APPS, FLAGS
 
-REQUIRED = ("repository-required", "player-required", "subtitles-required",
-            "dashboard-required", "security-required")
+REQUIRED = ("repository-required", "player-required", "subtitles-required", "security-required")
 
 
 def targets(raw):

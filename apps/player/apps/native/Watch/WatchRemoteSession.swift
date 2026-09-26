@@ -44,10 +44,7 @@ final class WatchRemoteSession: NSObject, WCSessionDelegate {
         defer { busy = false }
         do {
             let payload = try request.data()
-            let response: Data = try await withCheckedThrowingContinuation { continuation in
-                WCSession.default.sendMessageData(payload, replyHandler: { continuation.resume(returning: $0) },
-                                                  errorHandler: { continuation.resume(throwing: $0) })
-            }
+            let response = try await Self.exchange(payload)
             let reply = try WatchRemoteReply.parse(response)
             players = reply.players
             selectedID = players.selectedID(after: selectedID)
@@ -57,6 +54,13 @@ final class WatchRemoteSession: NSObject, WCSessionDelegate {
         } catch {
             players = []
             message = "Connect the paired iPhone to control playback."
+        }
+    }
+
+    nonisolated private static func exchange(_ payload: Data) async throws -> Data {
+        try await withCheckedThrowingContinuation { continuation in
+            WCSession.default.sendMessageData(payload, replyHandler: { continuation.resume(returning: $0) },
+                                              errorHandler: { continuation.resume(throwing: $0) })
         }
     }
 

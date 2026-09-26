@@ -5,7 +5,7 @@ repo="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 app="${1:-}"
 if (( $# < 1 || $# > 2 )); then
-  printf 'usage: %s {player|subtitles|dashboard} [revision]\n' "$0" >&2
+  printf 'usage: %s {player|subtitles} [revision]\n' "$0" >&2
   exit 2
 fi
 

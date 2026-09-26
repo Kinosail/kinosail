@@ -38,7 +38,7 @@ def verify(scope, needs, raw_plan=None, app=None):
     else:
         select(app, raw_plan)
         expected = dict.fromkeys(("static", "race", "security", "system", "browser"), plan[app])
-        expected["tooling"] = app != "dashboard" and plan[f"{app}_tools"]
+        expected["tooling"] = plan[f"{app}_tools"]
         expected["client"] = app == "player" and plan["client"]
         expected["android"] = app == "player" and plan["android"]
     if set(needs) != ({"plan", *expected} if scope != "app" else set(expected)):

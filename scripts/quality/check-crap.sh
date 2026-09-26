@@ -4,18 +4,18 @@ source "$(dirname "${BASH_SOURCE[0]}")/../tooling/gates-pause.sh"
 set -euo pipefail
 
 if (( $# > 1 )); then
-  echo 'expected at most one scope: player, subtitles, dashboard, packages' >&2
+  echo 'expected at most one scope: player, subtitles, packages' >&2
   exit 2
 fi
 if (( $# == 1 )); then
-  case "$1" in player|subtitles|dashboard|packages) ;; *) echo 'invalid quality scope' >&2; exit 2 ;; esac
+  case "$1" in player|subtitles|packages) ;; *) echo 'invalid quality scope' >&2; exit 2 ;; esac
 fi
 
 repo="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 tools="$(mktemp -d "${TMPDIR:-/tmp}/kinosail-metrics.XXXXXX")"
 trap 'rm -rf "$tools"' EXIT
 GOWORK=off go -C "$repo/scripts/quality/metrics" build -o "$tools/metrics" .
-apps=(player subtitles dashboard packages)
+apps=(player subtitles packages)
 if (( $# == 1 )); then apps=("$1"); fi
 for app in "${apps[@]}"; do
 	targets=(./...)
