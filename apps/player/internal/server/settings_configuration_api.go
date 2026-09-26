@@ -1,12 +1,17 @@
 package server
 
-import "net/http"
+import (
+	"context"
+	"net/http"
+
+	"github.com/MikeO7/kinosail-player/internal/configuration"
+)
 
 func apiConfiguration(settings *settingsStore) http.HandlerFunc {
 	return func(writer http.ResponseWriter, _ *http.Request) {
 		fields := settings.configuration().Fields()
 		for index := range fields {
-			if fields[index].Key == "logging.level" && fields[index].Source != "environment" && fields[index].Source != "yaml" {
+			if (liveTMDBSetting(fields[index].Key) || fields[index].Key == "logging.level") && (fields[index].Source == configuration.GUI || fields[index].Source == configuration.Default) {
 				fields[index].Restart = false
 			}
 		}
@@ -24,11 +29,15 @@ func apiChangeConfiguration(settings *settingsStore, reset bool) http.HandlerFun
 		if !ok {
 			return
 		}
-		if err := applyAPIConfiguration(settings, key, value, expiresAt, reset); err != nil {
+		if err := applyAPIConfiguration(request.Context(), settings, key, value, expiresAt, reset); err != nil {
 			apiError(writer, err, http.StatusConflict)
 			return
 		}
-		writeJSON(writer, map[string]any{"status": "saved", "restartRequired": key != "logging.level"}, http.StatusAccepted)
+		if liveTMDBSetting(key) || key == "logging.level" {
+			writeJSON(writer, map[string]any{"status": "active", "restartRequired": false}, http.StatusAccepted)
+			return
+		}
+		writeConfigurationSaved(writer)
 	}
 }
 
@@ -67,11 +76,11 @@ func apiConfigurationInput(writer http.ResponseWriter, request *http.Request, ke
 	return input.Value, "", ok
 }
 
-func applyAPIConfiguration(settings *settingsStore, key, value, expiresAt string, reset bool) error {
+func applyAPIConfiguration(ctx context.Context, settings *settingsStore, key, value, expiresAt string, reset bool) error {
 	if key == "integrations.scim.token" && !reset {
 		return settings.changeSCIMConfiguration(value, expiresAt, false)
 	}
-	return settings.changeConfiguration(key, value, reset)
+	return settings.changeConfiguration(ctx, key, value, reset)
 }
 
 func apiChangeOIDCConfiguration(writer http.ResponseWriter, request *http.Request, settings *settingsStore, reset bool) {

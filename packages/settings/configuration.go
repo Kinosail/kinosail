@@ -24,10 +24,11 @@ type ConfigurationStore[S ~string] struct {
 	Set     func(string, string, string) error
 	Delete  func(string, string) error
 	Update  func(string, string, bool)
+	Check   func() error
 }
 
 // Change validates and persists one restart configuration field.
-func (store ConfigurationStore[S]) Change(key, value string, reset bool) error {
+func (store ConfigurationStore[S]) Change(key, value string, reset bool) error { //nolint:cyclop // Authorization, precondition, and persistence share one locked transaction.
 	store.Lock.Lock()
 	defer store.Lock.Unlock()
 	if store.File == "" {
@@ -45,6 +46,11 @@ func (store ConfigurationStore[S]) Change(key, value string, reset bool) error {
 	field := store.Field(key)
 	if !field.Known || !field.Restart {
 		return errors.New("setting is changed through its dedicated settings operation")
+	}
+	if store.Check != nil {
+		if err := store.Check(); err != nil {
+			return err
+		}
 	}
 	directory := filepath.Dir(store.File)
 	if reset {

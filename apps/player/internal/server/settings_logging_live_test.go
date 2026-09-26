@@ -63,7 +63,7 @@ func TestLoggingLevelChangesWithoutRestart(t *testing.T) { //nolint:gocognit,cyc
 		t.Fatalf("invalid logging values changed stored level: %v, %q", err, loaded.String("logging.level"))
 	}
 	page := requestWithCookie(t, handler, http.MethodGet, "/settings/configuration", "", owner)
-	if page.Code != http.StatusOK || !strings.Contains(page.Body.String(), `id="logging.level"`) || !strings.Contains(page.Body.String(), "Changes take effect immediately.") {
+	if page.Code != http.StatusOK || !strings.Contains(page.Body.String(), `id="logging.level"`) || !strings.Contains(page.Body.String(), "Takes effect immediately.") {
 		t.Fatalf("logging configuration page = %d", page.Code)
 	}
 	reset := apiCall(t, handler, owner.Value, http.MethodDelete, "/api/v1/configuration/logging.level", nil)
