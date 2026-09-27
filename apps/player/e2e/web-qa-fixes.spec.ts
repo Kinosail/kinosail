@@ -43,4 +43,3 @@ test("watch page keeps device warnings out of initial playback", async ({ page }
 	await expect(page.getByRole("dialog", { name: "Play on another device" })).toBeVisible();
 	await page.screenshot({ path: testInfo.outputPath("390-cast-picker.png") });
 });
-
