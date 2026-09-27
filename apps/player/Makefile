@@ -1,4 +1,4 @@
-.PHONY: bootstrap package-installer deploy-nox hooks install-nox-autodeploy browser-test check check-fast client-check container-test coverage deadcode installer-test native-build format lint local-pipeline local-pipeline-test performance-test media-server-benchmark-test playback-test test test-instance-check test-race tidy-check verify-changed verify-watch vuln secrets max-loc single-container shellcheck actionlint
+.PHONY: bootstrap package-installer deploy-nox hooks install-nox-autodeploy browser-test check check-fast client-check container-test coverage deadcode installer-test native-build native-copy-check format lint local-pipeline local-pipeline-test performance-test media-server-benchmark-test playback-test test test-instance-check test-race tidy-check verify-changed verify-watch vuln secrets max-loc single-container shellcheck actionlint
 
 bootstrap:
 	brew bundle
@@ -33,7 +33,7 @@ client-build-tvos:
 
 check: check-fast test-race vuln
 
-check-fast: max-loc single-container tidy-check lint deadcode coverage installer-test native-build shellcheck actionlint secrets local-pipeline-test
+check-fast: max-loc single-container tidy-check lint deadcode coverage installer-test native-build native-copy-check shellcheck actionlint secrets local-pipeline-test
 
 container-test:
 	@./scripts/test-container.sh
@@ -51,6 +51,9 @@ installer-test:
 
 native-build:
 	@./scripts/test-native-builds.sh
+
+native-copy-check:
+	@python3 scripts/generate-native-copy.py --check
 
 local-pipeline:
 	@./scripts/local-pipeline.sh

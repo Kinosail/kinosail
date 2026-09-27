@@ -1,5 +1,6 @@
 package com.kinosail.player.tv
 
+import com.kinosail.player.core.interfaceText
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
@@ -74,20 +75,20 @@ private fun TvStart() {
             Column(Modifier.widthIn(max = 800.dp), verticalArrangement = Arrangement.spacedBy(20.dp)) {
                 when (phase) {
                     ConnectionPhase.Restoring -> {
-                        Text("Restoring your Server", style = MaterialTheme.typography.displayMedium,
+                        Text(interfaceText("Restoring your Server"), style = MaterialTheme.typography.displayMedium,
                             color = MaterialTheme.colorScheme.onBackground)
-                        Text("Checking your saved connection…", style = MaterialTheme.typography.titleLarge,
+                        Text(interfaceText("Checking your saved connection…"), style = MaterialTheme.typography.titleLarge,
                             color = MaterialTheme.colorScheme.onSurfaceVariant)
                     }
                     ConnectionPhase.Setup -> {
-                        if (!editing) Text("Your library, on the big screen", style = MaterialTheme.typography.displayMedium,
+                        if (!editing) Text(interfaceText("Your library, on the big screen"), style = MaterialTheme.typography.displayMedium,
                             color = MaterialTheme.colorScheme.onBackground)
-                        if (!editing) Text("Enter your Kinosail Server address to connect this TV.",
+                        if (!editing) Text(interfaceText("Enter your Kinosail Server address to connect this TV."),
                             style = MaterialTheme.typography.titleLarge,
                             color = MaterialTheme.colorScheme.onSurfaceVariant)
                         OutlinedTextField(value = connection.address,
                             onValueChange = { if (it.length <= 2048) connection.address = it },
-                            label = { androidx.compose.material3.Text("Server address") },
+                            label = { androidx.compose.material3.Text(interfaceText("Server address")) },
                             placeholder = { androidx.compose.material3.Text("https://your-server") },
                             singleLine = true, enabled = !connection.busy,
                             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Uri, imeAction = ImeAction.Go),
@@ -104,7 +105,7 @@ private fun TvStart() {
                         }
                     }
                     is ConnectionPhase.Pairing -> {
-                        Text("Approve this TV", style = MaterialTheme.typography.displayMedium,
+                        Text(interfaceText("Approve this TV"), style = MaterialTheme.typography.displayMedium,
                             color = MaterialTheme.colorScheme.onBackground)
                         Text("On a signed in device, open ${phase.server}/quick-connect and enter:",
                             style = MaterialTheme.typography.titleLarge,
@@ -112,10 +113,10 @@ private fun TvStart() {
                         Text(phase.code, style = MaterialTheme.typography.displayLarge,
                             fontFamily = FontFamily.Monospace, letterSpacing = 8.sp,
                             color = MaterialTheme.colorScheme.primary)
-                        Text("Waiting for approval…", style = MaterialTheme.typography.titleLarge,
+                        Text(interfaceText("Waiting for approval…"), style = MaterialTheme.typography.titleLarge,
                             color = MaterialTheme.colorScheme.onSurfaceVariant)
                         Button(onClick = connection::cancelPairing, modifier = Modifier.focusRequester(firstFocus)) {
-                            Text("Cancel")
+                            Text(interfaceText("Cancel"))
                         }
                     }
                     is ConnectionPhase.Connected -> Unit

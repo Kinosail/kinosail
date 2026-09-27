@@ -10,8 +10,10 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.RuntimeEnvironment
+import org.robolectric.annotation.Config
 
 @RunWith(RobolectricTestRunner::class)
+@Config(sdk = [35])
 class HeartStoreTest {
     private val context get() = RuntimeEnvironment.getApplication() as Context
     private val player = WatchPlayer("phone", "This phone", "Scary Movie", "", "movie-1", "playing", 10.0, 120.0, false)

@@ -111,12 +111,12 @@ internal fun PhotoScreen(item: CatalogItem, catalog: CatalogModel, tv: Boolean, 
                         enabled = image != null, modifier = Modifier.focusRequester(zoomFocus)) {
                         androidx.tv.material3.Text(if (zoom > 1f) "Fit photo" else "Zoom in")
                     }
-                    androidx.tv.material3.Button(onClick = close) { androidx.tv.material3.Text("Done") }
+                    androidx.tv.material3.Button(onClick = close) { androidx.tv.material3.Text(interfaceText("Done")) }
                 } else {
                     Button(onClick = { if (zoom > 1f) fit() else zoom = 2f }, enabled = image != null) {
                         Text(if (zoom > 1f) "Fit photo" else "Zoom in")
                     }
-                    Button(onClick = close) { Text("Done") }
+                    Button(onClick = close) { Text(interfaceText("Done")) }
                 }
             }
             if (loaded && image == null) {
@@ -125,10 +125,10 @@ internal fun PhotoScreen(item: CatalogItem, catalog: CatalogModel, tv: Boolean, 
                     color = Color.White)
                 if (item.stream.isNotEmpty()) {
                     if (tv) androidx.tv.material3.Button(onClick = { revision++ }) {
-                        androidx.tv.material3.Text("Try again")
-                    } else Button(onClick = { revision++ }) { Text("Try again") }
+                        androidx.tv.material3.Text(interfaceText("Try again"))
+                    } else Button(onClick = { revision++ }) { Text(interfaceText("Try again")) }
                 }
-            } else if (!loaded) Text("Opening photo…", color = Color.White)
+            } else if (!loaded) Text(interfaceText("Opening photo…"), color = Color.White)
         }
     }
 }

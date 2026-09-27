@@ -68,7 +68,7 @@ struct HomeScreen: View {
                             VStack(alignment: .leading, spacing: 18) {
                                 Text("Movie genres").font(.title2.bold()).accessibilityAddTraits(.isHeader)
                                 ForEach(selection.movieGenres) { genre in
-                                    recentShelf(genre.name, items: genre.items)
+                                    recentShelf(LocalizedStringKey(genre.name), items: genre.items)
                                 }
                             }
                         }
@@ -144,7 +144,7 @@ struct HomeScreen: View {
         #endif
     }
 
-    @ViewBuilder private func recentShelf(_ title: String, items: [MediaItem], opensShows: Bool = false) -> some View {
+    @ViewBuilder private func recentShelf(_ title: LocalizedStringKey, items: [MediaItem], opensShows: Bool = false) -> some View {
         if !items.isEmpty {
             #if os(tvOS)
             MediaShelf(title: title, items: items, onQuickPlay: { quickPlay = $0 }, opensShows: opensShows)

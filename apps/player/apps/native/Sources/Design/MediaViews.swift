@@ -205,7 +205,7 @@ enum TVOSQuickPlay {
 struct MediaShelf: View {
     @ScaledMetric(relativeTo: .headline) private var posterWidth = 164.0
     @ScaledMetric(relativeTo: .headline) private var landscapeWidth = 260.0
-    let title: String
+    let title: LocalizedStringKey
     let items: [MediaItem]
     var landscape = false
     var resumesPlayback = false

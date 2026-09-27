@@ -1,5 +1,6 @@
 package com.kinosail.player.tv
 
+import com.kinosail.player.core.interfaceText
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.Image
@@ -45,6 +46,7 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.selected
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.focusProperties
@@ -146,7 +148,7 @@ internal fun TvLibrary(connection: ConnectionModel, viewer: Viewer) {
                 verticalAlignment = Alignment.CenterVertically) {
                 Text("Kinosail", style = MaterialTheme.typography.headlineLarge,
                     color = MaterialTheme.colorScheme.onBackground)
-                Button(onClick = connection::signOut, enabled = !connection.busy) { Text("Disconnect") }
+                Button(onClick = connection::signOut, enabled = !connection.busy) { Text(interfaceText("Sign out")) }
             }
             if (nowPlaying != null) Button(onClick = { playingItem = nowPlaying }) {
                 Text("Now playing · ${nowPlaying.title}")
@@ -158,20 +160,21 @@ internal fun TvLibrary(connection: ConnectionModel, viewer: Viewer) {
                 Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.Bottom) {
                     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                        Text(if (state.view == "all") "Library" else LIBRARY_VIEWS.first { it.first == state.view }.second,
+                        Text(interfaceText(if (state.view == "all") "Library" else LIBRARY_VIEWS.first { it.first == state.view }.second),
                             style = MaterialTheme.typography.displayMedium,
                             color = MaterialTheme.colorScheme.onBackground)
                         Text("${viewer.name} · ${viewer.server}", style = MaterialTheme.typography.titleLarge,
                             color = MaterialTheme.colorScheme.onSurfaceVariant)
                     }
-                    Button(onClick = { home = true }) { Text("For you") }
+                    Button(onClick = { home = true }) { Text(interfaceText("Home")) }
                 }
                 LazyRow(horizontalArrangement = Arrangement.spacedBy(16.dp),
                     modifier = Modifier.fillMaxWidth()) {
                     items(LIBRARY_VIEWS, key = { it.first }) { (view, label) ->
                         Button(onClick = { catalog.changeView(view) },
-                            modifier = if (view == "shows") Modifier.focusRequester(showsFocus) else Modifier) {
-                            Text(if (state.view == view) "$label · Selected" else label)
+                            modifier = (if (view == "shows") Modifier.focusRequester(showsFocus) else Modifier)
+                                .semantics { selected = state.view == view }) {
+                            Text(interfaceText(label))
                         }
                     }
                 }
@@ -179,7 +182,7 @@ internal fun TvLibrary(connection: ConnectionModel, viewer: Viewer) {
                     if (searchEditing) {
                         OutlinedTextField(value = catalog.searchInput,
                             onValueChange = { if (it.length <= 512) catalog.searchInput = it },
-                            label = { androidx.compose.material3.Text("Search your library") },
+                            label = { androidx.compose.material3.Text(interfaceText("Search library")) },
                             singleLine = true, keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
                             keyboardActions = KeyboardActions(onSearch = { submitSearch() }),
                             colors = OutlinedTextFieldDefaults.colors(
@@ -187,17 +190,17 @@ internal fun TvLibrary(connection: ConnectionModel, viewer: Viewer) {
                                 focusedLabelColor = KinoColor.signal, unfocusedLabelColor = KinoColor.muted,
                                 focusedBorderColor = KinoColor.signal, unfocusedBorderColor = KinoColor.muted),
                             modifier = Modifier.width(650.dp).focusRequester(searchEditFocus))
-                        Button(onClick = submitSearch) { Text("Search") }
+                        Button(onClick = submitSearch) { Text(interfaceText("Search")) }
                     } else Button(onClick = { searchEditing = true },
                         modifier = Modifier.focusRequester(searchFocus).focusProperties { up = showsFocus }) {
                         Text(if (catalog.searchInput.isEmpty()) "Search library" else "Search: ${catalog.searchInput}")
                     }
                 }
                 state.notice?.let { Text(it, color = MaterialTheme.colorScheme.error) }
-                if (state.notice != null) Button(onClick = catalog::retry) { Text("Retry") }
+                if (state.notice != null) Button(onClick = catalog::retry) { Text(interfaceText("Try again")) }
                 if (state.items.isEmpty() && !state.loading && state.notice == null) {
-                    Text(if (state.view == "list") "Save a title to keep it in My List."
-                        else "Nothing in your library yet.", style = MaterialTheme.typography.titleLarge,
+                    Text(interfaceText(if (state.view == "list") "Save a title to keep it in My List."
+                        else "Nothing in your library yet."), style = MaterialTheme.typography.titleLarge,
                         color = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
                 LazyVerticalGrid(columns = GridCells.Fixed(5), modifier = Modifier.weight(1f), state = gridState,
@@ -216,7 +219,7 @@ internal fun TvLibrary(connection: ConnectionModel, viewer: Viewer) {
                         }
                     }
                     if (state.loading && state.items.isNotEmpty()) item(span = { GridItemSpan(maxLineSpan) }) {
-                        Text("Loading more…", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        Text(interfaceText("Loading more…"), color = MaterialTheme.colorScheme.onSurfaceVariant)
                     }
                 }
             }
@@ -231,31 +234,31 @@ private fun TvDetail(item: CatalogItem, catalog: CatalogModel, firstModifier: Mo
         verticalArrangement = Arrangement.spacedBy(24.dp)) {
         if (item.kind in setOf("video", "music", "audiobook")) {
             Button(onClick = play, modifier = firstModifier) {
-                Text(if (item.progress.seconds > 0 && !item.progress.watched) "Resume" else "Play")
+                Text(interfaceText(if (item.progress.seconds > 0 && !item.progress.watched) "Resume" else "Play"))
             }
-            Button(onClick = catalog::closeDetail) { Text("Back") }
+            Button(onClick = catalog::closeDetail) { Text(interfaceText("Back")) }
         } else if (item.kind == "photo") {
             Button(onClick = viewPhoto, enabled = item.stream.isNotEmpty(),
                 modifier = if (item.stream.isNotEmpty()) firstModifier else Modifier) {
-                Text("View photo")
+                Text(interfaceText("View photo"))
             }
             Button(onClick = catalog::closeDetail,
-                modifier = if (item.stream.isEmpty()) firstModifier else Modifier) { Text("Back") }
-        } else Button(onClick = catalog::closeDetail, modifier = firstModifier) { Text("Back") }
+                modifier = if (item.stream.isEmpty()) firstModifier else Modifier) { Text(interfaceText("Back")) }
+        } else Button(onClick = catalog::closeDetail, modifier = firstModifier) { Text(interfaceText("Back")) }
         if (item.kind == "photo" && item.stream.isEmpty()) Text(
-            "Photo viewing is unavailable for this Viewer.",
+            interfaceText("Photo viewing is unavailable for this Viewer."),
             color = MaterialTheme.colorScheme.onSurfaceVariant)
-        if (item.kind == "book") Text("Read this book on an Android phone or tablet.",
+        if (item.kind == "book") Text(interfaceText("Read this book on an Android phone or tablet."),
             color = MaterialTheme.colorScheme.onSurfaceVariant)
         catalog.state.listed?.let { listed ->
             Button(onClick = { catalog.setListed(!listed) }, enabled = !catalog.state.listBusy) {
-                Text(if (listed) "Remove from My List" else "Add to My List")
+                Text(interfaceText(if (listed) "Remove from My List" else "Add to My List"))
             }
         }
-        if (catalog.state.listBusy && catalog.state.listed == null) Text("Loading My List status…")
+        if (catalog.state.listBusy && catalog.state.listed == null) Text(interfaceText("Loading My List status…"))
         catalog.state.detailNotice?.let { notice ->
             Text(notice, color = MaterialTheme.colorScheme.error)
-            if (catalog.state.listed == null) Button(onClick = catalog::retryDetail) { Text("Retry") }
+            if (catalog.state.listed == null) Button(onClick = catalog::retryDetail) { Text(interfaceText("Try again")) }
         }
         Row(horizontalArrangement = Arrangement.spacedBy(32.dp)) {
             TvPoster(item, catalog, Modifier.width(260.dp), ratio = 2f / 3f, dimension = 800)

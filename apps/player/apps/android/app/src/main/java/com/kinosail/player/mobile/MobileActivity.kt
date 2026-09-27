@@ -1,5 +1,6 @@
 package com.kinosail.player.mobile
 
+import com.kinosail.player.core.interfaceText
 import android.app.PictureInPictureParams
 import android.content.pm.PackageManager
 import android.content.Intent
@@ -135,18 +136,18 @@ private fun MobileStart() {
             Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
                 when (phase) {
                     ConnectionPhase.Restoring -> {
-                        Text("Restoring your Server", style = MaterialTheme.typography.displaySmall,
+                        Text(interfaceText("Restoring your Server"), style = MaterialTheme.typography.displaySmall,
                             color = MaterialTheme.colorScheme.onBackground)
-                        Text("Checking your saved connection…", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        Text(interfaceText("Checking your saved connection…"), color = MaterialTheme.colorScheme.onSurfaceVariant)
                     }
                     ConnectionPhase.Setup -> {
-                        Text("Your library starts here", style = MaterialTheme.typography.displaySmall,
+                        Text(interfaceText("Your library starts here"), style = MaterialTheme.typography.displaySmall,
                             color = MaterialTheme.colorScheme.onBackground)
-                        Text("Enter your Kinosail Server address to connect this device.",
+                        Text(interfaceText("Enter your Kinosail Server address to connect this device."),
                             style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.onSurfaceVariant)
                         OutlinedTextField(value = connection.address,
                             onValueChange = { if (it.length <= 2048) connection.address = it },
-                            label = { Text("Server address") }, placeholder = { Text("https://your-server") },
+                            label = { Text(interfaceText("Server address")) }, placeholder = { Text("https://your-server") },
                             singleLine = true, enabled = !connection.busy,
                             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Uri, imeAction = ImeAction.Go),
                             keyboardActions = KeyboardActions(onGo = { connection.connect("Kinosail Android phone") }),
@@ -157,20 +158,20 @@ private fun MobileStart() {
                         }
                     }
                     is ConnectionPhase.Pairing -> {
-                        Text("Approve this device", style = MaterialTheme.typography.displaySmall,
+                        Text(interfaceText("Approve this device"), style = MaterialTheme.typography.displaySmall,
                             color = MaterialTheme.colorScheme.onBackground)
                         Text("On a device signed in to ${phase.server}, open Quick Connect and enter this code.",
                             style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.onSurfaceVariant)
                         Text(phase.code, style = MaterialTheme.typography.displayLarge,
                             fontFamily = FontFamily.Monospace, letterSpacing = 4.sp,
                             color = MaterialTheme.colorScheme.primary)
-                        Text("Waiting for approval…", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        Text(interfaceText("Waiting for approval…"), color = MaterialTheme.colorScheme.onSurfaceVariant)
                         Button(onClick = {
                             val uri = Uri.parse("${phase.server}/quick-connect?code=${phase.code}")
                             context.startActivity(Intent(Intent.ACTION_VIEW, uri))
-                        }, modifier = Modifier.fillMaxWidth()) { Text("Open approval page") }
+                        }, modifier = Modifier.fillMaxWidth()) { Text(interfaceText("Open approval page")) }
                         TextButton(onClick = connection::cancelPairing, modifier = Modifier.fillMaxWidth()) {
-                            Text("Cancel")
+                            Text(interfaceText("Cancel"))
                         }
                     }
                     is ConnectionPhase.Connected -> Unit
