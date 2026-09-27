@@ -208,7 +208,7 @@ test("Owner manages an ordered preferred-language list at every supported width"
           }),
         };
       });
-      expect(geometry).toEqual({ pageOverflow: 0, rowOverflow: false, controlsOutside: false, outsideSection: false, smallTouchTarget: false });
+      expect(geometry, `${viewport.width}px language controls`).toEqual({ pageOverflow: 0, rowOverflow: false, controlsOutside: false, outsideSection: false, smallTouchTarget: false });
       // Short landscape screens must make each control reachable by scrolling.
       expect(await occludedTargets(page, ["#language button", "#language select"], [".app-header", ".app-header nav"])).toEqual([]);
       expect((await new AxeBuilder({ page }).include("#language").analyze()).violations).toEqual([]);

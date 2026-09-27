@@ -28,9 +28,12 @@ struct LoadingState: View {
                 ScrollView(.horizontal) {
                     HStack(spacing: 18) {
                         ForEach(0..<4) { _ in
-                            RoundedRectangle(cornerRadius: 14).fill(KinoTheme.surface)
-                                .overlay(alignment: .bottom) { line(width: 120, height: 20).padding(.bottom, 16) }
-                                .frame(width: 320, height: 150)
+                            HStack(spacing: 18) {
+                                RoundedRectangle(cornerRadius: 12).fill(KinoTheme.surface).frame(width: 60, height: 60)
+                                line(width: 120, height: 20)
+                                Spacer(minLength: 0)
+                            }
+                            .frame(width: 280, height: 100)
                         }
                     }
                     .padding(.horizontal, 24).padding(.vertical, 24)
@@ -46,7 +49,7 @@ struct LoadingState: View {
             if layout == .home || layout == .homeAudio {
                 line(width: 180, height: 28).accessibilityHidden(true)
             }
-            if layout == .home || layout == .homeAudio || layout == .detail {
+            if layout == .home || layout == .homeAudio {
                 CinemaHeroLayout {
                     RoundedRectangle(cornerRadius: 12).fill(KinoTheme.surface)
                         .aspectRatio(layout == .homeAudio ? 1 : 16 / 9, contentMode: .fit)
@@ -73,42 +76,40 @@ struct LoadingState: View {
                 }.padding(.top, 12).accessibilityHidden(true)
             }
             if layout == .detail {
-                VStack(alignment: .leading, spacing: 20) {
-                    line(width: 340, height: 20)
-                    line(width: 260, height: 16)
-                    line(width: 180, height: 16)
-                }.padding(.top, 8).accessibilityHidden(true)
+                DetailLoadingState().accessibilityHidden(true)
             }
             if layout == .show {
                 #if os(tvOS)
-                VStack(alignment: .leading, spacing: 16) {
-                    line(width: 260, height: 42)
-                    line(width: 360, height: 24)
-                    Capsule().fill(KinoTheme.raised).frame(width: 280, height: 50)
-                }
-                .accessibilityHidden(true)
-                HStack(alignment: .top, spacing: 32) {
-                    VStack(alignment: .leading, spacing: 16) {
-                        line(width: 140, height: 28)
-                        ForEach(0..<3) { _ in
-                            RoundedRectangle(cornerRadius: 12).fill(KinoTheme.surface).frame(width: 220, height: 64)
-                        }
+                RoundedRectangle(cornerRadius: 12).fill(KinoTheme.surface).frame(height: 480)
+                    .overlay(alignment: .bottomLeading) {
+                        VStack(alignment: .leading, spacing: 16) {
+                            line(width: 320, height: 52)
+                            line(width: 400, height: 24)
+                            line(width: 580, height: 22)
+                            line(width: 360, height: 22)
+                            Capsule().fill(KinoTheme.raised).frame(width: 280, height: 58)
+                        }.padding(40)
                     }
-                    .frame(width: 220)
-                    VStack(alignment: .leading, spacing: 16) {
-                        line(width: 160, height: 28)
-                        ScrollView(.horizontal) {
-                            HStack(alignment: .top, spacing: 18) {
-                                ForEach(0..<3) { _ in card(ratio: 16 / 9).frame(width: 390) }
-                            }
-                            .padding(.horizontal, 24)
-                            .padding(.vertical, 24)
-                        }
-                        .scrollIndicators(.hidden).scrollDisabled(true)
-                    }
-                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .accessibilityHidden(true)
+                HStack(spacing: 16) {
+                    ForEach(0..<3) { _ in Capsule().fill(KinoTheme.raised).frame(width: 156, height: 52) }
                 }
+                .padding(.horizontal, 24).padding(.vertical, 18)
                 .accessibilityHidden(true)
+                line(width: 160, height: 28).accessibilityHidden(true)
+                ScrollView(.horizontal) {
+                    HStack(alignment: .top, spacing: 18) {
+                        ForEach(0..<3) { _ in card(ratio: 16 / 9).frame(width: 390) }
+                    }
+                    .padding(.horizontal, 24).padding(.vertical, 24)
+                }
+                .scrollIndicators(.hidden).scrollDisabled(true).accessibilityHidden(true)
+                line(width: 120, height: 28).accessibilityHidden(true)
+                ScrollView(.horizontal) {
+                    HStack(alignment: .top, spacing: 18) { ForEach(0..<3) { _ in card(ratio: 2 / 3).frame(width: 230) } }
+                        .padding(.horizontal, 24).padding(.vertical, 24)
+                }
+                .scrollIndicators(.hidden).scrollDisabled(true).accessibilityHidden(true)
                 #else
                 CinemaHeroLayout {
                     RoundedRectangle(cornerRadius: 12).fill(KinoTheme.surface).aspectRatio(16 / 9, contentMode: .fit)
@@ -229,9 +230,6 @@ struct LoadingState: View {
                 if showsSubtitle { line(width: 80, height: 14) }
                 if showsProgress { line(width: 140, height: 4) }
             }
-            #if os(tvOS)
-            .padding([.horizontal, .bottom], 12)
-            #endif
         }
     }
     private var resumeRow: some View {
