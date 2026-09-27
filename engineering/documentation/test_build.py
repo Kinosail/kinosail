@@ -55,6 +55,22 @@ class BuildInputsTest(unittest.TestCase):
                     self.assertIn('viewBox="0 0 512 512"', (args.output / 'assets/images/kinosail-mark.svg').read_text())
                     app = next(item for item in graph if item['@type'] == 'SoftwareApplication')
                     self.assertEqual(app['offers'], {'@type': 'Offer', 'price': 0})
+                    subtitles = (args.output / 'subtitles/index.html').read_text()
+                    self.assertIn(f'<link rel="canonical" href="{origin}{prefix}/subtitles/">', subtitles)
+                    self.assertIn('Kinosail Subtitles', subtitles)
+                    self.assertIn(f'<loc>{origin}{prefix}/subtitles/</loc>',
+                                  (args.output / 'sitemap.xml').read_text())
+                    subtitles_index = json.loads((args.output / 'subtitles/search.json').read_text())
+                    self.assertGreater(len(subtitles_index), 10)
+                    self.assertEqual({item['product'] for item in subtitles_index}, {'Subtitles'})
+                    self.assertTrue(all(item['url'].startswith(prefix + '/subtitles/') for item in subtitles_index))
+                    subtitles_graph = json.loads(SearchMetadata(subtitles).blocks[0])['@graph']
+                    subtitles_app = next(item for item in subtitles_graph if item['@type'] == 'SoftwareApplication')
+                    self.assertEqual(subtitles_app['name'], 'Kinosail Subtitles')
+                    self.assertEqual(subtitles_app['offers'], {'@type': 'Offer', 'price': 0})
+                    install = (args.output / 'subtitles/getting-started/install/index.html').read_text()
+                    self.assertIn('ghcr.io/kinosail/kinosail-subtitles:latest', install)
+                    self.assertIn('Kinosail Subtitles dashboard', subtitles)
                     check(args.output, prefix)
 
     def test_invalid_inputs_have_no_side_effects(self):
@@ -74,6 +90,15 @@ class BuildInputsTest(unittest.TestCase):
                     run.assert_not_called()
                     self.assertFalse(output.exists())
                     self.assertEqual(list(Path(directory).iterdir()), [])
+
+    def test_subtitles_metadata_is_checked(self):
+        with tempfile.TemporaryDirectory() as directory:
+            output = Path(directory) / 'site'
+            build(settings(['--output', str(output)]))
+            page = output / 'subtitles/index.html'
+            page.write_text(page.read_text().replace('rel="canonical"', 'rel="alternate"'))
+            with self.assertRaisesRegex(SystemExit, 'subtitles/: canonical'):
+                check(output, '')
 
     def test_missing_output_is_rejected(self):
         with contextlib.redirect_stderr(io.StringIO()), self.assertRaises(SystemExit):

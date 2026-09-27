@@ -44,9 +44,13 @@ var (
 	PublicLogin []byte
 	//go:embed static/player-controls.js
 	playerControls []byte
+	//go:embed static/player-status.js
+	playerStatus []byte
 	//go:embed static/player-presentation.js
 	playerPresentation []byte
-	PlayerControls     = append(append([]byte(nil), playerControls...), playerPresentation...)
+
+	playerStatusControls = append(append([]byte(nil), playerControls...), playerStatus...)
+	PlayerControls       = append(append([]byte(nil), playerStatusControls...), playerPresentation...)
 	//go:embed static/player-core.js
 	PlayerCore []byte
 	//go:embed static/player-devices.js

@@ -7,6 +7,9 @@ struct ShowScreen: View {
     @State private var selectedSeason: Int?
     @Namespace private var showFocus
     @State private var quickPlay: ScreenDestination?
+    @Environment(\.colorSchemeContrast) private var contrast
+    @Environment(\.accessibilityReduceTransparency) private var reduceTransparency
+    @Environment(\.dynamicTypeSize) private var dynamicType
     #endif
 
     var body: some View {
@@ -27,75 +30,32 @@ struct ShowScreen: View {
             }) { show in
                 let episodes = show.episodes
                 VStack(alignment: .leading, spacing: 28) {
-                    if let next = ShowSeasonSelection.featuredEpisode(in: episodes) {
-                        #if os(tvOS)
+                    #if os(tvOS)
+                    let next = ShowSeasonSelection.featuredEpisode(in: episodes)
+                    tvHero(show: show, next: next)
+                    if let next {
                         let groups = ShowSeasonSelection.groups(episodes)
-                        let season = ShowSeasonSelection.resolve(selectedSeason, among: groups.map(\.number), defaultingTo: next.season) ?? 0
-                        VStack(alignment: .leading, spacing: 16) {
-                            Text(next.show.isEmpty ? "Episodes" : next.show)
-                                .font(.system(.largeTitle, design: .rounded).weight(.bold))
-                                .fixedSize(horizontal: false, vertical: true)
-                                .accessibilityAddTraits(.isHeader)
-                            if !next.title.isEmpty {
-                                Text(next.title).font(.title3).foregroundStyle(.secondary)
-                            }
-                            NavigationLink(value: ScreenDestination.playback(next.id)) {
-                                Label("\(next.playLabel) · S\(next.season) E\(next.episode)", systemImage: "play.fill")
-                                    .frame(minWidth: 240).padding(.vertical, 12)
-                                    .foregroundStyle(KinoTheme.tvOSPrimaryInk)
-                                    .background(KinoTheme.tvOSPrimaryFill, in: Capsule())
-                            }
-                            .buttonStyle(.card)
-                            .tvOSDefaultPlayFocus(in: showFocus, id: "show.next-play.\(next.id)")
-                            .controlSize(.large)
-                        }
-                        .foregroundStyle(KinoTheme.text)
-                        .focusSection()
-                        #else
+                        let season = ShowSeasonSelection.resolve(selectedSeason, among: groups.map(\.number), defaultingTo: next.season) ?? next.season
+                        tvSeasons(groups, selected: season)
+                        MediaShelf(title: "Episodes", items: episodes.filter { $0.season == season },
+                                   landscape: true, onQuickPlay: { quickPlay = $0 })
+                            .id(season)
+                    } else {
+                        ContentUnavailableView("No episodes", systemImage: "tv",
+                                               description: Text("This show has no available episodes."))
+                    }
+                    CastShelf(people: show.cast)
+                    #else
+                    if let next = ShowSeasonSelection.featuredEpisode(in: episodes) {
                         CinemaHero(item: next, title: next.show.isEmpty ? "Episodes" : next.show,
                                    subtitle: next.title, showsPlot: false) {
                             NavigationLink(value: ScreenDestination.playback(next.id)) {
                                 Label("\(next.playLabel) · S\(next.season) E\(next.episode)", systemImage: "play.fill")
                             }.buttonStyle(.borderedProminent).buttonBorderShape(.capsule).tint(KinoTheme.signal).foregroundStyle(KinoTheme.signalInk)
                         }
-                        #endif
-                        #if os(iOS)
                         IOSShowEpisodes(episodes: episodes, nextID: next.id, jumpTo: jumpTo)
                             .id(showID)
-                        #endif
-                        #if os(tvOS)
-                        HStack(alignment: .top, spacing: 32) {
-                            VStack(alignment: .leading, spacing: 16) {
-                                Text("Seasons").font(.title2.bold()).accessibilityAddTraits(.isHeader)
-                                ForEach(groups) { group in
-                                    Button { selectedSeason = group.number } label: {
-                                        HStack {
-                                            Text(group.title)
-                                            Spacer()
-                                            if group.number == season { Image(systemName: "checkmark").accessibilityHidden(true) }
-                                        }
-                                        .font(.headline)
-                                        .foregroundStyle(group.number == season ? KinoTheme.signal : KinoTheme.text)
-                                        .padding(16)
-                                        .frame(maxWidth: .infinity, alignment: .leading)
-                                        .background(KinoTheme.surface, in: RoundedRectangle(cornerRadius: 12))
-                                    }
-                                    .buttonStyle(.card)
-                                    .accessibilityAddTraits(group.number == season ? .isSelected : [])
-                                    .accessibilityIdentifier("show.season-\(group.number)")
-                                }
-                            }
-                            .frame(width: 220)
-                            .focusSection()
-                            MediaShelf(title: "Episodes", items: episodes.filter { $0.season == season }, landscape: true,
-                                       onQuickPlay: { quickPlay = $0 })
-                                .id(season)
-                                .frame(maxWidth: .infinity, alignment: .leading)
-                        }
-                        CastShelf(people: show.cast)
-                        #endif
                     } else { ContentUnavailableView("No episodes", systemImage: "tv", description: Text("This show has no available episodes.")) }
-                    #if os(iOS)
                     IOSShowCast(people: show.cast)
                     #endif
                 }
@@ -116,6 +76,79 @@ struct ShowScreen: View {
         .onChange(of: showID) { _, _ in selectedSeason = nil }
         #endif
     }
+
+    #if os(tvOS)
+    private func tvHero(show: ShowDetail, next: MediaItem?) -> some View {
+        let metadata = [show.year, show.genres].filter { !$0.isEmpty }.joined(separator: " · ")
+        return VStack(alignment: .leading, spacing: 14) {
+            Text(show.title)
+                .font(.system(.largeTitle, design: .rounded).weight(.bold))
+                .fixedSize(horizontal: false, vertical: true)
+                .accessibilityAddTraits(.isHeader)
+            if !metadata.isEmpty { Text(metadata).font(.callout).foregroundStyle(KinoTheme.muted) }
+            if !show.plot.isEmpty {
+                Text(show.plot).font(.body).lineLimit(dynamicType.isAccessibilitySize ? nil : 4)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+            if let next {
+                Text(ShowSeasonSelection.episodeSummary(next))
+                    .font(.headline).foregroundStyle(KinoTheme.muted)
+                NavigationLink(value: ScreenDestination.playback(next.id)) {
+                    Label(next.playLabel, systemImage: "play.fill")
+                        .frame(minWidth: 240).padding(.vertical, 12)
+                        .foregroundStyle(KinoTheme.tvOSPrimaryInk)
+                        .background(KinoTheme.tvOSPrimaryFill, in: Capsule())
+                }
+                .buttonStyle(.card)
+                .tvOSDefaultPlayFocus(in: showFocus, id: "show.next-play.\(next.id)")
+            }
+        }
+        .frame(maxWidth: 740, alignment: .leading)
+        .padding(40)
+        .frame(maxWidth: .infinity, minHeight: 480, alignment: .bottomLeading)
+        .background {
+            ZStack {
+                KinoTheme.surface
+                if !show.backdrop.isEmpty && contrast != .increased && !reduceTransparency {
+                    GeometryReader { geometry in
+                        Artwork(path: show.backdrop, ratio: 16 / 9, dimension: 1920,
+                                fillsFrame: true, isBackdrop: true, canvasSize: geometry.size)
+                    }
+                    LinearGradient(colors: [.black.opacity(0.88), .black.opacity(0.38), .clear],
+                                   startPoint: .leading, endPoint: .trailing)
+                    LinearGradient(colors: [.clear, .black.opacity(0.75)], startPoint: .top, endPoint: .bottom)
+                }
+            }
+        }
+        .clipShape(.rect(cornerRadius: 12))
+        .foregroundStyle(KinoTheme.text)
+        .focusSection()
+    }
+
+    private func tvSeasons(_ groups: [ShowSeasonSelection.Group], selected: Int) -> some View {
+        ScrollView(.horizontal) {
+            HStack(spacing: 16) {
+                ForEach(groups) { group in
+                    let isSelected = group.number == selected
+                    Button { selectedSeason = group.number } label: {
+                        Text(group.title)
+                            .font(.headline)
+                            .foregroundStyle(isSelected ? KinoTheme.signalInk : KinoTheme.text)
+                            .padding(.horizontal, 20).padding(.vertical, 12)
+                            .background(isSelected ? KinoTheme.signal : KinoTheme.raised, in: Capsule())
+                    }
+                    .buttonStyle(.card)
+                    .accessibilityAddTraits(isSelected ? .isSelected : [])
+                    .accessibilityIdentifier("show.season-\(group.number)")
+                }
+            }
+            .padding(.horizontal, 24).padding(.vertical, 18)
+        }
+        .scrollIndicators(.hidden)
+        .scrollClipDisabled()
+        .focusSection()
+    }
+    #endif
 }
 
 enum ShowSeasonSelection {
@@ -135,6 +168,10 @@ enum ShowSeasonSelection {
     static func episodeTitle(_ item: MediaItem) -> String {
         let prefix = String(format: "S%02dE%02d · ", item.season, item.episode)
         return item.title.hasPrefix(prefix) ? String(item.title.dropFirst(prefix.count)) : item.title
+    }
+
+    static func episodeSummary(_ item: MediaItem) -> String {
+        (["S\(item.season)", "E\(item.episode)", episodeTitle(item), item.rating].filter { !$0.isEmpty }).joined(separator: " · ")
     }
 
     static func featuredEpisode(in episodes: [MediaItem]) -> MediaItem? {

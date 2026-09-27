@@ -38,6 +38,17 @@ struct ShowSeasonSelectionTests {
         #expect(ShowSeasonSelection.episodeTitle(groups[0].episodes[0]) == groups[0].episodes[0].title)
     }
 
+    @Test func nextEpisodeSummaryIncludesOnlyItsOwnContentRating() throws {
+        let server = try ServerAddress("https://media.example")
+        for (rating, expected) in [("TV-MA", "S1 · E2 · Pilot · TV-MA"), ("", "S1 · E2 · Pilot")] {
+            let item = try MediaItem(.object(["id": .string("episode"), "kind": .string("video"),
+                                              "title": .string("S01E02 · Pilot"), "show": .string("Series"),
+                                              "season": .number(1), "episode": .number(2),
+                                              "rating": .string(rating)]), server: server)
+            #expect(ShowSeasonSelection.episodeSummary(item) == expected)
+        }
+    }
+
     private func episode(_ id: String, watched: Bool, server: ServerAddress) throws -> MediaItem {
         try MediaItem(.object(["id": .string(id), "kind": .string("video"), "title": .string(id),
                                "progress": .object(["watched": .bool(watched)])]), server: server)

@@ -1,13 +1,13 @@
 ---
-title: Get started with Subtitles
-description: Choose an installation and reach your first subtitle.
+title: Get started with Kinosail Subtitles
+description: Install the published subtitle container and save your first validated subtitle sidecar.
 section: Start here
-last_reviewed: 2026-09-15
+last_reviewed: 2026-09-27
 ---
 
 # Get started with Subtitles
 
-You need Docker Compose or Podman Compose, repository access, and an existing movie/episode directory that the container can read and write. The source container targets 64-bit Linux hosts; macOS uses the container engine's Linux VM.
+You need Docker or Podman and an existing movie or episode folder that the container can read and write. The published container supports 64-bit Linux hosts; macOS uses the container engine's Linux VM.
 
 1. [Install the Server]({{ '/getting-started/install/' | relative_url }}) on localhost.
 2. [Create and secure the Owner]({{ '/getting-started/first-setup/' | relative_url }}).
@@ -15,4 +15,4 @@ You need Docker Compose or Podman Compose, repository access, and an existing mo
 4. [Configure one provider]({{ '/owner-guide/integrations/' | relative_url }}).
 5. Fetch one wanted subtitle and check the result before relying on automation.
 
-As of September 15, 2026, the monorepo has no published GitHub releases. These guides document source installation; retained release workflows do not mean a signed customer release is available.
+The `latest` image is published from a passing `main` build. A numbered GitHub release is not required to install it.

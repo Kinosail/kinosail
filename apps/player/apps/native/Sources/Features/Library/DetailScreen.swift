@@ -29,19 +29,27 @@ private struct DetailContent: View {
     @State private var showsDownloads = false
     #if os(tvOS)
     @Namespace private var detailFocus
+    @Environment(\.colorSchemeContrast) private var contrast
+    @Environment(\.accessibilityReduceTransparency) private var reduceTransparency
+    @Environment(\.dynamicTypeSize) private var dynamicType
     #endif
     private var item: MediaItem { detail.item }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 28) {
+            #if os(tvOS)
+            if TVMovieDetail(item: item).usesBackdrop {
+                tvMovieHero
+                if let message { Text(message).font(.callout).foregroundStyle(KinoTheme.muted) }
+            } else {
+                CinemaHero(item: item, showsPlot: false, prefersEpisodeStill: true) { actions }
+                information.frame(maxWidth: 900, alignment: .leading)
+            }
+            CastShelf(people: item.cast ?? [])
+            #else
             CinemaHero(item: item, showsPlot: false, prefersEpisodeStill: true) { actions }
             information
                 .frame(maxWidth: 900, alignment: .leading)
-                #if os(tvOS)
-                .buttonStyle(.bordered).tint(KinoTheme.secondaryControlTint).foregroundStyle(KinoTheme.text)
-                #endif
-            #if os(tvOS)
-            CastShelf(people: item.cast ?? [])
             #endif
         }
         .frame(maxWidth: .infinity, alignment: .center)
@@ -57,6 +65,50 @@ private struct DetailContent: View {
             try? await session.player.prepare(item, client: client)
         }
     }
+
+    #if os(tvOS)
+    private var tvMovieHero: some View {
+        let metadata = TVMovieDetail(item: item).metadata
+        return VStack(alignment: .leading, spacing: 14) {
+            Text(item.title)
+                .font(.system(.largeTitle, design: .rounded).weight(.bold))
+                .fixedSize(horizontal: false, vertical: true)
+                .accessibilityAddTraits(.isHeader)
+            if !metadata.isEmpty { Text(metadata).font(.callout).foregroundStyle(KinoTheme.muted) }
+            if !item.plot.isEmpty {
+                Text(item.plot).font(.body).lineLimit(dynamicType.isAccessibilitySize ? nil : 4)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+            if item.progress.seconds > 0 && !item.progress.watched { WatchPosition(item: item) }
+            playAction
+            ViewThatFits(in: .horizontal) {
+                HStack(spacing: 16) { secondaryActions.fixedSize() }
+                VStack(alignment: .leading, spacing: 12) { secondaryActions }
+            }
+            .controlSize(.large)
+        }
+        .frame(maxWidth: 740, alignment: .leading)
+        .padding(40)
+        .frame(maxWidth: .infinity, minHeight: 520, alignment: .bottomLeading)
+        .background {
+            ZStack {
+                KinoTheme.surface
+                if contrast != .increased && !reduceTransparency {
+                    GeometryReader { geometry in
+                        Artwork(path: item.backdrop, ratio: 16 / 9, dimension: 1920,
+                                fillsFrame: true, isBackdrop: true, canvasSize: geometry.size)
+                    }
+                    LinearGradient(colors: [.black.opacity(0.88), .black.opacity(0.38), .clear],
+                                   startPoint: .leading, endPoint: .trailing)
+                    LinearGradient(colors: [.clear, .black.opacity(0.75)], startPoint: .top, endPoint: .bottom)
+                }
+            }
+        }
+        .clipShape(.rect(cornerRadius: 12))
+        .foregroundStyle(KinoTheme.text)
+        .focusSection()
+    }
+    #endif
 
     private var information: some View {
         VStack(alignment: .leading, spacing: 20) {
@@ -77,6 +129,11 @@ private struct DetailContent: View {
         }
     }
     @ViewBuilder private var actions: some View {
+        primaryAction
+        secondaryActions
+    }
+
+    @ViewBuilder private var primaryAction: some View {
         #if os(tvOS)
         if item.kind == .book {
             Label("Read on iPhone or iPad", systemImage: "iphone")
@@ -87,6 +144,9 @@ private struct DetailContent: View {
         #else
         playAction
         #endif
+    }
+
+    @ViewBuilder private var secondaryActions: some View {
         Button {
             change { client in listed = try await client.setListed(itemID: item.id, listed: !(listed ?? detail.listed)) }
         } label: { Label((listed ?? detail.listed) ? "In My List" : "My List", systemImage: (listed ?? detail.listed) ? "checkmark" : "plus") }
@@ -142,3 +202,13 @@ private struct DetailContent: View {
         }
     }
 }
+
+#if os(tvOS)
+struct TVMovieDetail {
+    let item: MediaItem
+    var usesBackdrop: Bool {
+        item.kind == .video && item.show.isEmpty && item.showID.isEmpty && !item.backdrop.isEmpty
+    }
+    var metadata: String { [item.year, item.rating, item.genres].filter { !$0.isEmpty }.joined(separator: " · ") }
+}
+#endif
