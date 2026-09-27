@@ -15,6 +15,9 @@ class AttributionTest {
             .bufferedReader().use { it.readText() }
         assertTrue(notice.contains("Jetpack Compose"))
         assertTrue(notice.contains("Media3"))
-        assertTrue(notice.contains("Apache License 2.0"))
+        assertTrue(notice.contains("Apache-2.0.txt"))
+        val license = RuntimeEnvironment.getApplication().assets.open("Apache-2.0.txt")
+            .bufferedReader().use { it.readText() }
+        assertTrue(license.contains("Apache License"))
     }
 }

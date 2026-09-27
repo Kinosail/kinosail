@@ -14,6 +14,9 @@ class AttributionTest {
         val notice = RuntimeEnvironment.getApplication().assets.open("THIRD_PARTY_NOTICES.md")
             .bufferedReader().use { it.readText() }
         assertTrue(notice.contains("Wear Compose"))
-        assertTrue(notice.contains("Apache License 2.0"))
+        assertTrue(notice.contains("Apache-2.0.txt"))
+        val license = RuntimeEnvironment.getApplication().assets.open("Apache-2.0.txt")
+            .bufferedReader().use { it.readText() }
+        assertTrue(license.contains("Apache License"))
     }
 }
