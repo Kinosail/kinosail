@@ -26,6 +26,7 @@ def compose_command():
 class PlatformInstallKitsTest(unittest.TestCase):
     def compose(self, app):
         path = ROOT / "apps" / app / "packaging" / "platform-compose.yaml"
+        self.assertIn("create_host_path: false", path.read_text())
         media = ROOT / "apps" / app / "packaging"
         result = subprocess.run(
             [*compose_command(), "-f", str(path), "config", "--format", "json"],
@@ -62,7 +63,7 @@ class PlatformInstallKitsTest(unittest.TestCase):
                 self.assertEqual(set(mounts), {"/config", "/cache", "/backups", "/media"})
                 self.assertEqual(mounts["/media"]["type"], "bind")
                 self.assertEqual(mounts["/media"].get("read_only", False), access)
-                self.assertFalse(mounts["/media"]["bind"]["create_host_path"])
+                self.assertFalse(mounts["/media"].get("bind", {}).get("create_host_path", False))
                 self.assertEqual(mounts["/media"]["source"], str(ROOT / "apps" / app / "packaging"))
                 for target in ("/config", "/cache", "/backups"):
                     self.assertEqual(mounts[target]["type"], "volume")
