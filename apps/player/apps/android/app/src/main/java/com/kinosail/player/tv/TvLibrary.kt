@@ -45,6 +45,8 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.LiveRegionMode
+import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.selected
 import androidx.compose.ui.focus.FocusRequester
@@ -196,7 +198,8 @@ internal fun TvLibrary(connection: ConnectionModel, viewer: Viewer) {
                         Text(if (catalog.searchInput.isEmpty()) "Search library" else "Search: ${catalog.searchInput}")
                     }
                 }
-                state.notice?.let { Text(it, color = MaterialTheme.colorScheme.error) }
+                state.notice?.let { Text(it, color = MaterialTheme.colorScheme.error,
+                    modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite }) }
                 if (state.notice != null) Button(onClick = catalog::retry) { Text(interfaceText("Try again")) }
                 if (state.items.isEmpty() && !state.loading && state.notice == null) {
                     Text(interfaceText(if (state.view == "list") "Save a title to keep it in My List."
@@ -257,7 +260,8 @@ private fun TvDetail(item: CatalogItem, catalog: CatalogModel, firstModifier: Mo
         }
         if (catalog.state.listBusy && catalog.state.listed == null) Text(interfaceText("Loading My List status…"))
         catalog.state.detailNotice?.let { notice ->
-            Text(notice, color = MaterialTheme.colorScheme.error)
+            Text(notice, color = MaterialTheme.colorScheme.error,
+                modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite })
             if (catalog.state.listed == null) Button(onClick = catalog::retryDetail) { Text(interfaceText("Try again")) }
         }
         Row(horizontalArrangement = Arrangement.spacedBy(32.dp)) {
