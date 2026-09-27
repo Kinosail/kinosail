@@ -69,6 +69,7 @@ test("Owner previews language cleanup and forced subtitle choice", async ({ page
   for (const viewport of [{ width: 390, height: 844 }, { width: 1440, height: 900 }]) {
     await page.setViewportSize(viewport);
     await page.goto("/settings#cleanup");
+    await expect(page.getByText("Limiting choices hides extra tracks from subtitle selection menus; it does not rename or delete subtitle files.", { exact: false })).toBeVisible();
     const cleanup = page.locator("#cleanup");
     await expect(cleanup.getByRole("heading", { name: "Remove unwanted subtitle files" })).toBeVisible();
     await expect(cleanup.getByText("Keep the languages you use so playback has fewer choices.", { exact: false })).toBeVisible();
