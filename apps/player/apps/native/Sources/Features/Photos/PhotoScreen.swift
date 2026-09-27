@@ -8,6 +8,7 @@ struct PhotoScreen: View {
     @State private var failure: String?
     @State private var revision = 0
     #if os(tvOS)
+    @Namespace private var photoFocus
     @State private var zoomed = false
     @State private var offset = CGSize.zero
     #endif
@@ -24,7 +25,9 @@ struct PhotoScreen: View {
                         .scaleEffect(zoomed ? 2 : 1).offset(offset).clipped()
                         .accessibilityLabel(title)
                         .accessibilityHint(zoomed ? "Press Select to fit. Use the remote to pan." : "Press Select to zoom.")
-                        .focusable().onPlayPauseCommand { zoomed.toggle(); offset = .zero }
+                        .focusable()
+                        .tvOSDefaultPlayFocus(in: photoFocus, id: "photo.\(itemID)")
+                        .onPlayPauseCommand { zoomed.toggle(); offset = .zero }
                         .onTapGesture { zoomed.toggle(); offset = .zero }
                         .onMoveCommand(perform: zoomed ? { direction in
                             switch direction {
@@ -44,6 +47,7 @@ struct PhotoScreen: View {
         .preferredColorScheme(.dark)
         .navigationTitle(title)
         #if os(tvOS)
+        .focusScope(photoFocus)
         .toolbar(.hidden, for: .navigationBar)
         .toolbar(.hidden, for: .tabBar)
         .overlay(alignment: .bottom) {
