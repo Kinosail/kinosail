@@ -1,0 +1,36 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<testsuites tests="1" failures="1" errors="0" skipped="0" time="0.000" timestamp="2026-09-27T18:43:24" hostname="localhost">
+  <testsuite name="com.kinosail.player.mobile.CastChooserTest" tests="1" failures="1" errors="0" skipped="0" time="0.562" timestamp="2026-09-27T18:43:24" hostname="localhost">
+    <properties>
+      <property name="device" value="emulator-5570" />
+    </properties>
+    <testcase name="castChooserOpensUnderPhoneTheme" classname="com.kinosail.player.mobile.CastChooserTest" time="0.562">
+      <failure>java.lang.IllegalStateException: You need to use a Theme.AppCompat theme (or descendant) with this activity.
+	at androidx.appcompat.app.AppCompatDelegateImpl.createSubDecor(AppCompatDelegateImpl.java:696)
+	at androidx.appcompat.app.AppCompatDelegateImpl.ensureSubDecor(AppCompatDelegateImpl.java:659)
+	at androidx.appcompat.app.AppCompatDelegateImpl.setContentView(AppCompatDelegateImpl.java:552)
+	at androidx.appcompat.app.AppCompatDialog.setContentView(AppCompatDialog.java:95)
+	at androidx.mediarouter.app.MediaRouteChooserDialog.onCreate(MediaRouteChooserDialog.java:230)
+	at android.app.Dialog.dispatchOnCreate(Dialog.java:394)
+	at android.app.Dialog.show(Dialog.java:295)
+	at androidx.fragment.app.DialogFragment.onStart(DialogFragment.java:980)
+	at androidx.fragment.app.Fragment$$ExternalSyntheticLambda5.run(D8$$SyntheticClass:0)
+	at androidx.fragment.app.FragmentTracer.trace(FragmentTracer.kt:52)
+	at androidx.fragment.app.Fragment.performStart(Fragment.java:3165)
+	at androidx.fragment.app.FragmentStateManager.start(FragmentStateManager.java:647)
+	at androidx.fragment.app.FragmentStateManager.moveToExpectedState(FragmentStateManager.java:303)
+	at androidx.fragment.app.FragmentManager.executeOpsTogether(FragmentManager.java:2193)
+	at androidx.fragment.app.FragmentManager.removeRedundantOperationsAndExecute(FragmentManager.java:2088)
+	at androidx.fragment.app.FragmentManager.execPendingActions(FragmentManager.java:2031)
+	at androidx.fragment.app.FragmentManager$5.run(FragmentManager.java:700)
+	at android.os.Handler.handleCallback(Handler.java:739)
+	at android.os.Handler.dispatchMessage(Handler.java:95)
+	at android.os.Looper.loop(Looper.java:148)
+	at android.app.ActivityThread.main(ActivityThread.java:5417)
+	at java.lang.reflect.Method.invoke(Native Method)
+	at com.android.internal.os.ZygoteInit$MethodAndArgsCaller.run(ZygoteInit.java:726)
+	at com.android.internal.os.ZygoteInit.main(ZygoteInit.java:616)
+</failure>
+    </testcase>
+  </testsuite>
+</testsuites>
