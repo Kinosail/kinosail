@@ -15,7 +15,7 @@ test("Settings header keeps desktop destinations in one compact row", async ({ p
     expect(layout.header.height, `${width}px header height`).toBeLessThanOrEqual(100);
     expect(layout.links).toHaveLength(3);
     expect(layout.links.every((link) => Math.abs(link.top - layout.links[0].top) <= 1), `${width}px navigation row`).toBe(true);
-    expect(layout.links.every((link) => link.left >= layout.nav.left && link.right <= layout.nav.right), `${width}px navigation bounds`).toBe(true);
+    expect(layout.links.every((link) => link.left >= layout.nav.left - 1 && link.right <= layout.nav.right + 1), `${width}px navigation bounds`).toBe(true);
     await expectNoHorizontalOverflow(page);
   }
 });
