@@ -255,7 +255,7 @@ func TestMissingMetadataBackfillsCastOnceAndPreservesOwner(t *testing.T) {
 		t.Fatal(err)
 	}
 	items := []library.Item{{ID: "old", Kind: "video", Artwork: path}, {ID: "complete", Kind: "video", Artwork: path}, {ID: "owner", Kind: "video", Artwork: path}}
-	config := metadataFixture(items, map[string]metadata.Record{"old": {Title: "Old", CastFetched: true}, "complete": {Title: "Complete", CastFetched: true, BackdropChecked: true}, "owner": {Title: "Owner", Owner: true}})
+	config := metadataFixture(items, map[string]metadata.Record{"old": {Title: "Old", CastFetched: true}, "complete": {Title: "Complete", CastFetched: true, BackdropChecked: true, RatingChecked: true}, "owner": {Title: "Owner", Owner: true}})
 	config.Configured = true
 	missing := missingMetadata(config)
 	if len(missing) != 1 || missing[0].ID != "old" {

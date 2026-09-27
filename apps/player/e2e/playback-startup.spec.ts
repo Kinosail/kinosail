@@ -40,6 +40,7 @@ test("selecting a movie starts moving playback promptly", async ({ page }, testI
 	await page.getByRole("link", { name: /Example Movie/ }).click();
 	const started = Date.now();
 	await page.getByRole("link", { name: /^(Play|Resume|Play again)$/ }).click();
+	await expect(page.getByLabel("Content rating")).toHaveText("PG-13");
 	const video = page.locator("video");
 	await expect.poll(() => video.evaluate((element: HTMLVideoElement) => element.currentTime), { timeout: 3_000 }).toBeGreaterThan(0.25);
 	const result = await page.evaluate((click) => {
@@ -59,6 +60,40 @@ test("selecting a movie starts moving playback promptly", async ({ page }, testI
 		await expect(page.locator("[data-player-controls]")).toHaveClass(/is-idle/);
 		await page.screenshot({ path: testInfo.outputPath(`${viewport.width}-playing-player.png`), fullPage: true });
 	}
+});
+
+test("blocked autoplay offers a Play button that starts the video", async ({ page }, testInfo) => {
+	await page.setViewportSize({ width: 390, height: 844 });
+	await page.addInitScript(() => {
+		const nativePlay = HTMLMediaElement.prototype.play;
+		let blocked = true;
+		const observer = new MutationObserver(() => {
+			const video = document.querySelector("video[autoplay]");
+			if (!video) return;
+			video.removeAttribute("autoplay");
+			video.setAttribute("data-autoplay", "");
+			observer.disconnect();
+		});
+		observer.observe(document, { childList: true, subtree: true });
+		HTMLMediaElement.prototype.play = function () {
+			return blocked ? Promise.reject(new DOMException("A tap is required", "NotAllowedError")) : nativePlay.call(this);
+		};
+		(window as Window & { allowVideoPlay: () => void }).allowVideoPlay = () => { blocked = false; };
+	});
+	await page.goto("/login");
+	await page.getByLabel("Name").fill("Owner");
+	await page.getByLabel("Password", { exact: true }).fill("test-instance-password");
+	await page.getByLabel("Authentication or recovery code").fill(totp());
+	await page.getByRole("button", { name: "Sign in", exact: true }).click();
+	await page.goto("/?view=movies");
+	await page.getByRole("link", { name: /Example Movie/ }).click();
+	await page.getByRole("link", { name: /^(Play|Resume|Play again)$/ }).click();
+	await expect(page.getByRole("button", { name: "Play video" })).toBeVisible();
+	await page.screenshot({ path: testInfo.outputPath("390-start-prompt.png"), fullPage: true });
+	await page.evaluate(() => (window as Window & { allowVideoPlay: () => void }).allowVideoPlay());
+	await page.getByRole("button", { name: "Play video" }).click();
+	await expect.poll(() => page.locator("video").evaluate((video: HTMLVideoElement) => video.currentTime)).toBeGreaterThan(0.25);
+	await expect(page.locator("[data-player-status]")).toBeHidden();
 });
 
 test("restricted browser storage does not stop playback", async ({ page }) => {
