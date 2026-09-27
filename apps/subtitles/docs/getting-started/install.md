@@ -1,11 +1,25 @@
 ---
-title: Install Subtitles
-description: Build the source container with writable media and persistent state.
+title: Install Kinosail Subtitles with Docker
+description: Run the published Kinosail Subtitles container with a writable media folder and persistent app state.
 section: Start here
-last_reviewed: 2026-09-15
+last_reviewed: 2026-09-27
 ---
 
-# Install Subtitles
+# Install Kinosail Subtitles
+
+Install Docker Engine on a 64-bit Linux host, or use Docker Desktop on macOS. Choose an existing movie or episode folder that container user 10001 can read and write. Replace `/path/to/your/media` below with its absolute path on the host.
+
+```sh
+docker run --detach --name kinosail-subtitles --restart unless-stopped --init --user 10001:10001 --read-only --cap-drop ALL --security-opt no-new-privileges:true --publish 127.0.0.1:38128:38128 --mount type=volume,source=kinosail-subtitles-config,target=/config --mount type=volume,source=kinosail-subtitles-cache,target=/cache --mount type=volume,source=kinosail-subtitles-backups,target=/backups --mount "type=bind,source=/path/to/your/media,target=/media" --tmpfs /tmp:rw,noexec,nosuid,nodev,size=256m --env KINOSAIL_DATA_DIR=/config --env KINOSAIL_CACHE_DIR=/cache --env KINOSAIL_MEDIA_DIR=/media ghcr.io/kinosail/kinosail-subtitles:latest
+```
+
+Open **https://localhost:38128** on that host. The initial certificate is generated locally; trust only your own installation. Create the first Owner with a unique password of at least 12 characters, then set up a passkey or time-based one-time password.
+
+The media mount is writable because Subtitles saves sidecar files beside videos. App state, cache, and backups use separate volumes. The web port stays on localhost until you deliberately change its binding. Configure an encryption key before relying on automatic backups; see [Back up and update]({{ '/owner-guide/backups-and-updates/' | relative_url }}).
+
+To update, pull the latest published image and recreate the container with the same mounts and settings. Keep the three named volumes and the media folder. The [release checklist](https://github.com/Kinosail/kinosail/blob/main/apps/subtitles/engineering/release-checklist.md) explains signed images and immutable digests.
+
+## Build from source
 
 Install Git and a working Docker Compose or Podman Compose engine. Start its Linux VM on macOS. Clone the complete monorepo; the image needs shared `packages/` outside this app directory.
 

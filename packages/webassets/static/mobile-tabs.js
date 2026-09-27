@@ -57,7 +57,7 @@ function restoreMobileTabs(raw, legacy) {
   dialog.addEventListener("close", () => returnFocus?.focus());
   menu.append(group, customize);
   const title = id => mobileTabCatalog.find(item => item[0] === id)[1];
-  const currentView = () => location.pathname !== "/" ? null : new URLSearchParams(location.search).get("q")?.trim() ? "search" : new URLSearchParams(location.search).get("view") || "all";
+  const currentView = () => location.pathname !== "/" ? nav.dataset.navView || null : new URLSearchParams(location.search).get("q")?.trim() ? "search" : new URLSearchParams(location.search).get("view") || "all";
   const link = id => {
     const a = document.createElement("a"); a.href = id === "search" ? "#library-search" : `/?view=${id}`; a.textContent = title(id);
     if (id === "search") a.addEventListener("click", event => {
@@ -66,7 +66,7 @@ function restoreMobileTabs(raw, legacy) {
       event.preventDefault(); more.open = false; input.focus(); input.select();
     });
     const view = currentView();
-    if (location.pathname === "/" && view === id) { a.classList.add("active"); a.setAttribute("aria-current", "page"); }
+    if (view === id) { a.classList.add("active"); a.setAttribute("aria-current", "page"); }
     return a;
   };
   function renderNavigation() {

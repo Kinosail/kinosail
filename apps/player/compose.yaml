@@ -5,6 +5,7 @@ services:
       dockerfile: apps/player/Containerfile
     image: localhost/kinosail:dev
     restart: unless-stopped
+    stop_grace_period: 30s
     init: true
     pids_limit: 256
     read_only: true

@@ -167,12 +167,15 @@ func TestSupporterStoresPatronOrderAndLivingStandardIndependently(t *testing.T) 
 	if patronCertificate.Code != http.StatusOK || strings.Contains(patronCertificate.Body.String(), "LIVING SERVICE") {
 		t.Fatalf("Patron certificate included Living tenure: %d %q", patronCertificate.Code, patronCertificate.Body.String())
 	}
+	if !strings.Contains(patronCertificate.Body.String(), "Kinosail Subtitles — Lighthouse — Patron Order") {
+		t.Fatal("Patron certificate does not use the Subtitles badge artwork")
+	}
 
 	signer.tier, signer.sustaining = "admiral", true
 	living := apiCall(t, handler, token, http.MethodPost, "/api/v1/supporter/activate", map[string]any{"key": "MONTHLY_SUPPORTER_KEY"})
 	assertAPIBody(t, living, http.StatusOK, `"tier":"admiral"`, `"sustaining":true`, `"livingStandard":{"family":"living-standard"`, `"rank":8`, `"active":true`, `"serviceMarks":[3,6,12]`, `"patronOrder":{"family":"patron-order"`, `"tier":"lighthouse"`, `"livingLevel":8`, `"patronLevel":6`, `"masterworkLevel":6`, `"unlocked":14`, `"masterworkName":"Perfect Sync"`, `"masterworkEarned":true`, `"masterworkActive":true`)
 	page := apiCall(t, handler, token, http.MethodGet, "/supporter", nil)
-	assertAPIBody(t, page, http.StatusOK, "Monthly support · Recommended", "Living Standards", "Patron Orders", "Polyglot Array", "Linguist Crest", "Kinosail Subtitles", "caption emblem", "Download SVG certificate", "Share PNG certificate", "Perfect Sync · Level 6", "Caption Concord", "Living cadence active", "Collected", "/static/app.css?v=cinema-7")
+	assertAPIBody(t, page, http.StatusOK, "Monthly support · Recommended", "Living Standards", "Patron Orders", "Polyglot Array", "Linguist Crest", "Kinosail Subtitles", "caption emblem", "Download SVG certificate", "Share PNG certificate", "Perfect Sync · Level 6", "Caption Concord", "Living cadence active", "Collected", "/static/app.css?v=cinema-8")
 	if strings.Contains(page.Body.String(), "/static/app.css?v=electric-1") {
 		t.Fatal("supporter page retained the previous combined stylesheet key")
 	}

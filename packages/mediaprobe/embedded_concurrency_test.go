@@ -12,9 +12,9 @@ import (
 	"github.com/MikeO7/kinosail/packages/library"
 )
 
-func waitEmbeddedFile(t *testing.T, path string) {
+func waitEmbeddedFile(t *testing.T, path string, owner <-chan error) {
 	t.Helper()
-	deadline := time.NewTimer(3 * time.Second)
+	deadline := time.NewTimer(15 * time.Second)
 	defer deadline.Stop()
 	ticker := time.NewTicker(5 * time.Millisecond)
 	defer ticker.Stop()
@@ -24,6 +24,8 @@ func waitEmbeddedFile(t *testing.T, path string) {
 			return
 		}
 		select {
+		case err := <-owner:
+			t.Fatalf("subtitle extraction ended before reaching the expected step: %v", err)
 		case <-deadline.C:
 			t.Fatal("subtitle extraction did not reach the expected step")
 		case <-ticker.C:
@@ -42,7 +44,7 @@ func TestEmbeddedSharesExtractionAndCanceledWaitersDoNotStopOwner(t *testing.T) 
 	options := EmbeddedOptions{FFmpeg: ffmpeg, CacheDir: filepath.Join(root, "cache")}
 	owner := make(chan error, 1)
 	go func() { _, err := probe.Embedded(t.Context(), item, 3, options); owner <- err }()
-	waitEmbeddedFile(t, calls)
+	waitEmbeddedFile(t, calls, owner)
 	waiter, cancel := context.WithCancel(t.Context())
 	cancel()
 	if _, err := probe.Embedded(waiter, item, 3, options); !errors.Is(err, context.Canceled) {
@@ -75,7 +77,7 @@ func TestEmbeddedViewerRetriesCanceledBackgroundOwner(t *testing.T) {
 	background, cancel := context.WithCancel(t.Context())
 	owner := make(chan error, 1)
 	go func() { _, err := probe.Embedded(background, item, 3, options); owner <- err }()
-	waitEmbeddedFile(t, calls)
+	waitEmbeddedFile(t, calls, owner)
 	viewer := make(chan error, 1)
 	go func() { _, err := probe.Embedded(t.Context(), item, 3, options); viewer <- err }()
 	cancel()

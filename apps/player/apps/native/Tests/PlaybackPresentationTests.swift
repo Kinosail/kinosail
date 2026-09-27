@@ -1,4 +1,5 @@
 import AVKit
+import SwiftUI
 import Testing
 @testable import KinosailPlayer
 
@@ -73,6 +74,25 @@ import Testing
     }
 
     #if os(tvOS)
+    @Test func televisionPlaybackCoversBrowseChrome() async throws {
+        let scene = try #require(UIApplication.shared.connectedScenes.first as? UIWindowScene)
+        let window = UIWindow(windowScene: scene)
+        window.rootViewController = UIHostingController(rootView:
+            NavigationStack {
+                VStack {
+                    Text("Browse")
+                    PlaybackScreen(itemID: "movie")
+                }
+            }
+            .environment(AppSession()))
+        window.makeKeyAndVisible()
+        defer { window.isHidden = true }
+
+        try await Task.sleep(for: .milliseconds(500))
+        let cover = try #require(window.rootViewController?.presentedViewController)
+        #expect(cover.view.frame.size == window.bounds.size)
+    }
+
     @Test func televisionWaitsForVideoAndClearsPresentation() throws {
         let presentation = PlayerPresentation()
         let actions = presentation.controller.transportBarCustomMenuItems.compactMap { $0 as? UIAction }

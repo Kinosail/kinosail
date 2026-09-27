@@ -32,6 +32,9 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.semantics.LiveRegionMode
+import androidx.compose.ui.semantics.liveRegion
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 
@@ -69,12 +72,14 @@ internal fun ReaderPageView(title: String, bitmap: Bitmap?, page: Int, total: In
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 if (total == 0 && notice == null) CircularProgressIndicator()
                 notice?.let {
-                    Text(it, color = MaterialTheme.colorScheme.error)
+                    Text(it, color = MaterialTheme.colorScheme.error,
+                        modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite })
                     if (it != "This book format is not available on Android yet.") {
                         TextButton(onClick = retry) { Text(interfaceText("Try again")) }
                     }
                 }
-                savingNotice?.let { Text(it, color = MaterialTheme.colorScheme.error) }
+                savingNotice?.let { Text(it, color = MaterialTheme.colorScheme.error,
+                    modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite }) }
                 if (savingNotice != null) TextButton(onClick = retrySync) { Text(interfaceText("Retry sync")) }
                 if (total > 0) Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically) {

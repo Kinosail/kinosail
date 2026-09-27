@@ -45,6 +45,13 @@
 			remoteGlobalIDString = B28000000000000000000001;
 			remoteInfo = KinosailWatch;
 		};
+		F0C0DE000000000000000006 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = BD78DBAA6F46B4C8AAFFC3B5 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = BA7E0317BF05ADD1A09AC29C;
+			remoteInfo = "Kinosail-tvOS";
+		};
 		E432B122341CE669D5D300AD /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = BD78DBAA6F46B4C8AAFFC3B5 /* Project object */;
@@ -94,6 +101,7 @@
 		B28000000000000000000014 /* Sources/Core/HeartTimeline.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/Core/HeartTimeline.swift; sourceTree = "<group>"; };
 		AC29D74436D094327D2CC417 /* Configuration/tvOS-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Configuration/tvOS-Info.plist"; sourceTree = "<group>"; };
 		B833FD8937156128B3514625 /* KinosailPlayer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = KinosailPlayer.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		F0C0DE000000000000000001 /* KinosailRemoteUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = KinosailRemoteUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		C87BA4C13320E285D0730317 /* KinosailPlayer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = KinosailPlayer.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		CD0ACFFF9F93025CCF567118 /* Resources/PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = Resources/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		FA2C79B22DC2E156D3845D23 /* Configuration/iOS-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Configuration/iOS-Info.plist"; sourceTree = "<group>"; };
@@ -105,6 +113,7 @@
 		A27000000000000000000001 /* TopShelf */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = TopShelf; sourceTree = "<group>"; };
 		A27000000000000000000002 /* TopShelfShared */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = TopShelfShared; sourceTree = "<group>"; };
 		B28000000000000000000003 /* Watch */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = Watch; sourceTree = "<group>"; };
+		F0C0DE000000000000000002 /* RemoteUITests */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = RemoteUITests; sourceTree = "<group>"; };
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -143,6 +152,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		F0C0DE000000000000000003 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		D2C59A65FC8C0133CDE02975 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -162,6 +178,7 @@
 				1523F6D69D5D948BDA2EF1FC /* KinosailPlayerTests.xctest */,
 				B833FD8937156128B3514625 /* KinosailPlayer.app */,
 				1594338D089D65A2F5D19212 /* KinosailPlayerTests.xctest */,
+				F0C0DE000000000000000001 /* KinosailRemoteUITests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -174,6 +191,7 @@
 				B28000000000000000000003 /* Watch */,
 				4A419C504A5B6CAD4F610ED7 /* Sources */,
 				3EC6D11BEEF7253C16E09FDF /* Tests */,
+				F0C0DE000000000000000002 /* RemoteUITests */,
 				4F62CA20BF0D6C65D69896FC /* Resources/iOS.xcassets */,
 				99A64CCF75F24274F0027F7E /* Resources/tvOS.xcassets */,
 				B2800000000000000000000A /* Resources/watchOS.xcassets */,
@@ -338,6 +356,27 @@
 			productReference = 1594338D089D65A2F5D19212 /* KinosailPlayerTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
+		F0C0DE000000000000000008 /* Kinosail-tvOSRemoteUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = F0C0DE00000000000000000B /* Build configuration list for PBXNativeTarget "Kinosail-tvOSRemoteUITests" */;
+			buildPhases = (
+				F0C0DE000000000000000005 /* Sources */,
+				F0C0DE000000000000000003 /* Frameworks */,
+				F0C0DE000000000000000004 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				F0C0DE000000000000000007 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				F0C0DE000000000000000002 /* RemoteUITests */,
+			);
+			name = "Kinosail-tvOSRemoteUITests";
+			productName = KinosailRemoteUITests;
+			productReference = F0C0DE000000000000000001 /* KinosailRemoteUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -362,6 +401,10 @@
 					};
 					E443E9C03FD7ACF1982CC7B1 = {
 						CreatedOnToolsVersion = 26.6;
+					};
+					F0C0DE000000000000000008 = {
+						CreatedOnToolsVersion = 27.0;
+						TestTargetID = BA7E0317BF05ADD1A09AC29C;
 					};
 				};
 			};
@@ -401,6 +444,7 @@
 				B28000000000000000000001 /* KinosailWatch */,
 				E027A92FD049716B2B6E30FC /* Kinosail-iOSTests */,
 				E443E9C03FD7ACF1982CC7B1 /* Kinosail-tvOSTests */,
+				F0C0DE000000000000000008 /* Kinosail-tvOSRemoteUITests */,
 			);
 		};
 /* End PBXProject section */
@@ -446,6 +490,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		F0C0DE000000000000000004 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		F1C9DCF6904074962C248AF6 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -474,6 +525,13 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		A10815134DFF25D1763A6BDB /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F0C0DE000000000000000005 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -528,9 +586,46 @@
 			target = BA7E0317BF05ADD1A09AC29C /* Kinosail-tvOS */;
 			targetProxy = E432B122341CE669D5D300AD /* PBXContainerItemProxy */;
 		};
+		F0C0DE000000000000000007 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = BA7E0317BF05ADD1A09AC29C /* Kinosail-tvOS */;
+			targetProxy = F0C0DE000000000000000006 /* PBXContainerItemProxy */;
+		};
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
+		F0C0DE000000000000000009 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				GENERATE_INFOPLIST_FILE = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = com.kinosail.player.remoteuitests;
+				PRODUCT_NAME = KinosailRemoteUITests;
+				SDKROOT = appletvos;
+				SUPPORTED_PLATFORMS = "appletvos appletvsimulator";
+				SWIFT_VERSION = 6.0;
+				TARGETED_DEVICE_FAMILY = 3;
+				TEST_TARGET_NAME = "Kinosail-tvOS";
+				TVOS_DEPLOYMENT_TARGET = 26.0;
+			};
+			name = Debug;
+		};
+		F0C0DE00000000000000000A /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				GENERATE_INFOPLIST_FILE = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = com.kinosail.player.remoteuitests;
+				PRODUCT_NAME = KinosailRemoteUITests;
+				SDKROOT = appletvos;
+				SUPPORTED_PLATFORMS = "appletvos appletvsimulator";
+				SWIFT_VERSION = 6.0;
+				TARGETED_DEVICE_FAMILY = 3;
+				TEST_TARGET_NAME = "Kinosail-tvOS";
+				TVOS_DEPLOYMENT_TARGET = 26.0;
+			};
+			name = Release;
+		};
 		B28000000000000000000007 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -965,6 +1060,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		F0C0DE00000000000000000B /* Build configuration list for PBXNativeTarget "Kinosail-tvOSRemoteUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F0C0DE000000000000000009 /* Debug */,
+				F0C0DE00000000000000000A /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		B28000000000000000000009 /* Build configuration list for PBXNativeTarget "KinosailWatch" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
