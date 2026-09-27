@@ -54,6 +54,7 @@ type settingsStore struct {
 	ffmpeg            string
 	value             installationSettings
 	config            configuration.Snapshot
+	startupConfig     configuration.Snapshot
 	metadata          *metadataStore
 	metadataChanged   func()
 	tmdbCheck         func(context.Context, string, string) error
@@ -78,6 +79,7 @@ func newSettingsStore(mediaRoot, dataDir, dlnaURL string, stateDB *database.Stor
 	if len(configured) > 0 {
 		store.config = configured[0]
 	}
+	store.startupConfig = store.config.Clone()
 	if dataDir == "" {
 		if err := store.ensureJellyfinID(); err != nil {
 			store.err = err

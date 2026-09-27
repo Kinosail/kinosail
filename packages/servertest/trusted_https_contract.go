@@ -73,6 +73,14 @@ func (flow trustedHTTPSFlow) render() {
 	if settings.Code != http.StatusOK || page.Code != http.StatusOK || strings.Contains(settings.Body.String(), fixture.Token) || strings.Contains(page.Body.String(), fixture.Token) || !strings.Contains(settings.Body.String(), `"tokenConfigured":true`) || !strings.Contains(page.Body.String(), `value="family-media"`) || !strings.Contains(page.Body.String(), `value="192.168.1.10"`) || !strings.Contains(page.Body.String(), "Leave blank to keep the current token") {
 		t.Fatalf("settings=%d %q page=%d %q", settings.Code, settings.Body.String(), page.Code, page.Body.String())
 	}
+	assertTrustedRestartNotice(t, page.Body.String())
+}
+
+func assertTrustedRestartNotice(t *testing.T, page string) {
+	t.Helper()
+	if !strings.Contains(page, `id="restart-required"`) || !strings.Contains(page, "Trusted HTTPS") {
+		t.Fatal("trusted HTTPS save did not show the pending restart notice")
+	}
 }
 
 func (flow trustedHTTPSFlow) update() {
@@ -100,7 +108,11 @@ func (flow trustedHTTPSFlow) disable() {
 	}
 	resaved := APICall(t, handler, owner.Value, http.MethodPut, "/api/v1/settings/trusted-https", map[string]any{"domain": "family-media", "token": fixture.Token, "address": "192.168.1.10", "termsAccepted": true})
 	apiDisabled := APICall(t, handler, owner.Value, http.MethodDelete, "/api/v1/settings/trusted-https", nil)
-	if resaved.Code != http.StatusAccepted || apiDisabled.Code != http.StatusAccepted || !strings.Contains(apiDisabled.Body.String(), `"restartRequired":true`) {
+	if resaved.Code != http.StatusAccepted || apiDisabled.Code != http.StatusAccepted || !strings.Contains(apiDisabled.Body.String(), `"restartRequired":false`) {
 		t.Fatalf("API resave=%d %q disable=%d %q", resaved.Code, resaved.Body.String(), apiDisabled.Code, apiDisabled.Body.String())
+	}
+	page := fixture.Web(t, handler, http.MethodGet, "/settings", "", owner)
+	if page.Code != http.StatusOK || strings.Contains(page.Body.String(), `id="restart-required"`) {
+		t.Fatalf("disabling trusted HTTPS still asks for a restart: %d", page.Code)
 	}
 }
