@@ -81,34 +81,36 @@ struct LoadingState: View {
             }
             if layout == .show {
                 #if os(tvOS)
-                VStack(alignment: .leading, spacing: 16) {
-                    line(width: 260, height: 42)
-                    line(width: 360, height: 24)
-                    Capsule().fill(KinoTheme.raised).frame(width: 280, height: 50)
-                }
-                .accessibilityHidden(true)
-                HStack(alignment: .top, spacing: 32) {
-                    VStack(alignment: .leading, spacing: 16) {
-                        line(width: 140, height: 28)
-                        ForEach(0..<3) { _ in
-                            RoundedRectangle(cornerRadius: 12).fill(KinoTheme.surface).frame(width: 220, height: 64)
-                        }
+                RoundedRectangle(cornerRadius: 12).fill(KinoTheme.surface).frame(height: 480)
+                    .overlay(alignment: .bottomLeading) {
+                        VStack(alignment: .leading, spacing: 16) {
+                            line(width: 320, height: 52)
+                            line(width: 400, height: 24)
+                            line(width: 580, height: 22)
+                            line(width: 360, height: 22)
+                            Capsule().fill(KinoTheme.raised).frame(width: 280, height: 58)
+                        }.padding(40)
                     }
-                    .frame(width: 220)
-                    VStack(alignment: .leading, spacing: 16) {
-                        line(width: 160, height: 28)
-                        ScrollView(.horizontal) {
-                            HStack(alignment: .top, spacing: 18) {
-                                ForEach(0..<3) { _ in card(ratio: 16 / 9).frame(width: 390) }
-                            }
-                            .padding(.horizontal, 24)
-                            .padding(.vertical, 24)
-                        }
-                        .scrollIndicators(.hidden).scrollDisabled(true)
-                    }
-                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .accessibilityHidden(true)
+                HStack(spacing: 16) {
+                    ForEach(0..<3) { _ in Capsule().fill(KinoTheme.raised).frame(width: 156, height: 52) }
                 }
+                .padding(.horizontal, 24).padding(.vertical, 18)
                 .accessibilityHidden(true)
+                line(width: 160, height: 28).accessibilityHidden(true)
+                ScrollView(.horizontal) {
+                    HStack(alignment: .top, spacing: 18) {
+                        ForEach(0..<3) { _ in card(ratio: 16 / 9).frame(width: 390) }
+                    }
+                    .padding(.horizontal, 24).padding(.vertical, 24)
+                }
+                .scrollIndicators(.hidden).scrollDisabled(true).accessibilityHidden(true)
+                line(width: 120, height: 28).accessibilityHidden(true)
+                ScrollView(.horizontal) {
+                    HStack(alignment: .top, spacing: 18) { ForEach(0..<3) { _ in card(ratio: 2 / 3).frame(width: 230) } }
+                        .padding(.horizontal, 24).padding(.vertical, 24)
+                }
+                .scrollIndicators(.hidden).scrollDisabled(true).accessibilityHidden(true)
                 #else
                 CinemaHeroLayout {
                     RoundedRectangle(cornerRadius: 12).fill(KinoTheme.surface).aspectRatio(16 / 9, contentMode: .fit)
