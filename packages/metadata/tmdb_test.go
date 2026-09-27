@@ -31,7 +31,7 @@ func TestTMDBEnrichesMoviesAndUsesFreshCache(t *testing.T) { //nolint:cyclop,goc
 			}
 			_, _ = writer.Write([]byte(`{"results":[{"id":42}]}`))
 		case "/movie/42":
-			_, _ = writer.Write([]byte(`{"title":"Movie Online","release_date":"2020-02-03","overview":"Plot","poster_path":"/poster.jpg","genres":[{"name":"Drama"},{"name":"Thriller"}],"credits":{"cast":[{"name":"Actor","character":"Hero","profile_path":"/actor.png"},{"name":"","character":"Ignored"}],"crew":[{"name":"Director","job":"Director"}]}}`))
+			_, _ = writer.Write([]byte(`{"title":"Movie Online","release_date":"2020-02-03","overview":"Plot","poster_path":"/poster.jpg","genres":[{"name":"Drama"},{"name":"Thriller"}],"release_dates":{"results":[{"iso_3166_1":"US","release_dates":[{"certification":"PG-13","type":3}]}]},"credits":{"cast":[{"name":"Actor","character":"Hero","profile_path":"/actor.png"},{"name":"","character":"Ignored"}],"crew":[{"name":"Director","job":"Director"}]}}`))
 		case "/image/poster.jpg", "/image/actor.png":
 			writer.Header().Set("Content-Type", "image/jpeg")
 			_, _ = writer.Write([]byte("image"))
@@ -64,8 +64,34 @@ func TestTMDBEnrichesMoviesAndUsesFreshCache(t *testing.T) { //nolint:cyclop,goc
 
 func assertEnrichedTMDBMovie(t *testing.T, item library.Item) {
 	t.Helper()
-	if item.Title != "Movie Online" || item.Year != "2020" || item.Plot != "Plot" || item.Genres != "Drama · Thriller" || item.Director != "Director" || item.ProviderIDs["tmdb"] != "42" || len(item.Cast) != 1 {
+	if item.Title != "Movie Online" || item.Year != "2020" || item.Plot != "Plot" || item.Rating != "PG-13" || item.Genres != "Drama · Thriller" || item.Director != "Director" || item.ProviderIDs["tmdb"] != "42" || len(item.Cast) != 1 {
 		t.Fatalf("enriched movie = %#v", item)
+	}
+}
+
+func TestTMDBMovieCertificationRejectsUntrustedRatings(t *testing.T) {
+	t.Parallel()
+	for name, releases := range map[string]string{
+		"unknown":     `[{"iso_3166_1":"US","release_dates":[{"certification":"PG-15"}]}]`,
+		"oversized":   `[{"iso_3166_1":"US","release_dates":[{"certification":"` + strings.Repeat("P", 33) + `"}]}]`,
+		"conflicting": `[{"iso_3166_1":"US","release_dates":[{"certification":"PG"},{"certification":"R"}]}]`,
+	} {
+		t.Run(name, func(t *testing.T) {
+			provider := httptest.NewServer(http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
+				if request.URL.Path == "/search/movie" {
+					_, _ = writer.Write([]byte(`{"results":[{"id":7}]}`))
+					return
+				}
+				_, _ = writer.Write([]byte(`{"title":"Remote","release_dates":{"results":` + releases + `}}`))
+			}))
+			defer provider.Close()
+			client := NewTMDB(TMDBConfig{Token: "token", URL: provider.URL, ImageURL: provider.URL, CacheDir: t.TempDir()})
+			item := client.Enrich(t.Context(), []library.Item{{ID: "movie", Kind: "video", Title: "Local"}})[0]
+			cached, _ := client.Load("movie")
+			if item.Title != "Local" || item.Rating != "" || cached.Title != "" {
+				t.Fatalf("invalid certification changed Library or cache: item=%#v cache=%#v", item, cached)
+			}
+		})
 	}
 }
 
@@ -160,7 +186,7 @@ func TestTMDBCacheValidationAndDownloadBoundaries(t *testing.T) { //nolint:cyclo
 		t.Fatal(err)
 	}
 	loaded, fresh := client.Load("movie")
-	if !fresh || !reflect.DeepEqual(loaded, valid) || !client.Active() {
+	if fresh || !reflect.DeepEqual(loaded, valid) || !client.Active() {
 		t.Fatalf("cache = %#v, %v", loaded, fresh)
 	}
 	if escaped, fresh := client.Load("../movie"); fresh || escaped.Title != "" {

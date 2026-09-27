@@ -37,7 +37,11 @@ const requestPause = () => { player.dispatchEvent(new CustomEvent("kinosail:play
 const requestPlay = (detail) => {
   player.dispatchEvent(new CustomEvent("kinosail:playback-intent", {detail: {playing: true}}));
   playbackTrace("play-request", detail);
-  const rejected = (error) => { playbackTrace("play-rejected", `${detail}:${error?.name || "Error"}`); throw error; };
+  const rejected = (error) => {
+    playbackTrace("play-rejected", `${detail}:${error?.name || "Error"}`);
+    if (error?.name === "NotAllowedError") player.dispatchEvent(new Event("kinosail:play-needs-gesture"));
+    throw error;
+  };
   try { return Promise.resolve(player.play()).catch(rejected); } catch (error) { return Promise.reject(error).catch(rejected); }
 };
 const playbackURLBase = location.origin === "null" ? "https://kinosail.invalid/" : location.href;

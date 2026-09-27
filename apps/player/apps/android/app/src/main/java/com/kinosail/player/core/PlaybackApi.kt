@@ -38,7 +38,7 @@ class PlaybackApi(
     fun source(itemId: String, token: String, viewerId: String, capabilities: PlaybackCapabilities): PlaybackSource {
         require(itemId.matches(ID)) { "Invalid playback request." }
         val value = api.playback("/api/v1/items/$itemId/playback?${capabilities.query}", token, viewerId)
-            .fields(PLAYBACK_KEYS, setOf("plan", "directAllowed", "duration", "start"))
+            .fields(PLAYBACK_KEYS, setOf("plan", "directAllowed", "duration"))
         val plan = value.getValue("plan").fields(PLAN_KEYS, setOf("allowed", "mode", "reason"))
         require(plan.flag("allowed") == (plan.text("mode", 32) != "denied") &&
             plan.text("mode", 32) in MODES && plan.text("reason", 128).isNotEmpty() &&
@@ -66,7 +66,7 @@ class PlaybackApi(
         } else require(value["compatiblePlan"] == null) { INVALID_RESPONSE }
         require(directAllowed || compatiblePath.isNotEmpty()) { INVALID_RESPONSE }
         val duration = value.number("duration", 0.0..1_000_000_000.0)
-        val start = value.number("start", 0.0..1_000_000_000.0)
+        val start = if (value["start"] == null) 0.0 else value.number("start", 0.0..1_000_000_000.0)
         val type = value.text("directType", 128)
         require(directAllowed == type.isNotEmpty()) { INVALID_RESPONSE }
         val progressToken = value.text("progressToken", 8192)

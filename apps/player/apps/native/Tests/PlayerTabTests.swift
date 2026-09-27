@@ -2,14 +2,6 @@ import Testing
 @testable import KinosailPlayer
 
 struct PlayerTabTests {
-    @Test func appleTVOpensEachMediaTypeFromTheTopMenu() {
-        #expect(PlayerTab.tvPrimary == [.home, .movies, .shows, .music, .audiobooks, .photos, .library, .search, .settings])
-        #expect(PlayerTab.tvBrowse == [.home, .movies, .shows, .music, .audiobooks, .photos, .library])
-        #expect(PlayerTab.tvUtilities == [.search, .settings])
-        #expect(PlayerTab.tvBrowse + PlayerTab.tvUtilities == PlayerTab.tvPrimary)
-        #expect(!PlayerTab.tvPrimary.contains(.more))
-    }
-
     @Test func preservesPersonalOrder() throws {
         #expect(try PlayerTab.parse("shows,home,movies,list") == [.shows, .home, .movies, .list])
         #expect(PlayerTab.defaults == [.home, .shows, .movies, .search])

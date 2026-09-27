@@ -40,6 +40,14 @@ struct MediaLabelTests {
         ]), server: server)
         #expect(episode.title == "S01E01 · Pilot")
         #expect(episode.subtitle.isEmpty)
+        let ratedEpisode = try MediaItem(.object([
+            "id": .string("rated-episode"), "kind": .string("video"),
+            "title": .string("S01E02 · Return"), "show": .string("Series"),
+            "year": .string("2024"), "rating": .string("TV-14")
+        ]), server: server)
+        #expect(ratedEpisode.subtitle == "TV-14")
+        #expect(ratedEpisode.subtitleWithoutYear == "TV-14")
+        #expect(try MediaItem(ratedEpisode.json, server: server).subtitleWithoutYear == "TV-14")
         for (kind, title, artist, rating, expected, withoutYear) in [
             ("video", "1917", "", "PG-13", "2019 · PG-13", "PG-13"),
             ("audio", "Track", "Artist", "PG-13", "Artist · 2019 · PG-13", "Artist · PG-13"),
@@ -52,6 +60,16 @@ struct MediaLabelTests {
             #expect(item.title == title)
             #expect(item.subtitle == expected)
             #expect(item.subtitleWithoutYear == withoutYear)
+        }
+    }
+
+    @Test func malformedRatingsCannotEnterCardMetadata() throws {
+        let server = try ServerAddress("https://media.example")
+        for rating in [.string("PG\u{0000}13"), .string(String(repeating: "A", count: 33)), .number(13)] as [JSONValue] {
+            #expect(throws: ClientError.self) {
+                try MediaItem(.object(["id": .string("sample"), "kind": .string("video"),
+                                       "title": .string("Sample"), "rating": rating]), server: server)
+            }
         }
     }
 }

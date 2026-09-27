@@ -36,6 +36,9 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.semantics.LiveRegionMode
+import androidx.compose.ui.semantics.liveRegion
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.kinosail.player.design.KinoColor
@@ -77,7 +80,8 @@ internal fun ShowScreen(showId: String, viewer: Viewer, catalog: CatalogModel, t
             if (state.loading && detail == null) item { CircularProgressIndicator(color = KinoColor.signal) }
             state.notice?.let { notice -> item {
                 Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    Text(notice, color = if (tv) KinoColor.text else MaterialTheme.colorScheme.error)
+                    Text(notice, color = if (tv) KinoColor.text else MaterialTheme.colorScheme.error,
+                        modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite })
                     if (tv) androidx.tv.material3.Button(onClick = model::retry) {
                         androidx.tv.material3.Text(interfaceText("Try again"))
                     } else TextButton(onClick = model::retry) { Text(interfaceText("Try again")) }

@@ -13,3 +13,4 @@
 @media(forced-colors:active){*{border-color:CanvasText!important}.sidebar a[aria-current=page]{outline:2px solid Highlight}.eyebrow{color:Highlight}}
 .prose :not(pre)>code{overflow-wrap:anywhere}
 @media(max-width:340px){.brand b{display:none}}
+.product-screenshot{margin:2rem 0}.product-screenshot img{display:block;width:100%;height:auto;border:1px solid var(--line-strong);border-radius:12px}.product-screenshot figcaption{margin-top:.55rem;color:var(--muted);font-size:.78rem}

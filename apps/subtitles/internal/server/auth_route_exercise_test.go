@@ -39,6 +39,9 @@ func exerciseRouteAsMethod(t *testing.T, handler http.Handler, pattern, requestM
 		method = requestMethod
 	}
 	path = concreteRoutePath(path)
+	if pattern == "GET /static/supporter/badges/{file}" {
+		path = "/static/supporter/badges/living-standard-1.svg"
+	}
 	if capability && strings.HasPrefix(pattern, "GET /Videos/") || capability && pattern == "GET /Audio/{id}/{stream}" {
 		path += "?playSessionId=invalid"
 	}

@@ -21,6 +21,11 @@ struct CastMember: Codable, Hashable, Sendable {
 }
 
 struct ShowDetail: Sendable {
+    let title: String
+    let backdrop: String
+    let year: String
+    let genres: String
+    let plot: String
     let episodes: [MediaItem]
     let cast: [CastMember]
 }
