@@ -41,6 +41,43 @@ struct DownloadOperationTests {
     }
 
     #if os(iOS)
+    @Test func readsSubtitleChoiceForDownloadWithoutPlayableSource() async throws {
+        let fixture = try HTTPFixture(body: #"{"subtitleLanguage":"en","subtitlePickerLimited":true}"#)
+        defer { fixture.remove() }
+        let policy = try await fixture.client.playbackSubtitlePolicy(itemID: "movie")
+        #expect(policy.allows("eng"))
+        #expect(!policy.allows("nld"))
+        #expect(fixture.requests.count == 1)
+        await #expect(throws: ClientError.self) { try await fixture.client.playbackSubtitlePolicy(itemID: "../movie") }
+        #expect(fixture.requests.count == 1)
+    }
+
+    @Test func keepsSubtitleChoicesWithOfflineDownloadMetadata() throws {
+        let server = try ServerAddress("https://example.com")
+        let item = try MediaItem(.object(["id": .string("movie"), "kind": .string("video"), "title": .string("Movie")]), server: server)
+        let policy = try SubtitleChoicePolicy(language: "en", limited: true)
+        let record = try OfflineRecord(item: item, jobID: String(repeating: "a", count: 16), quality: .original, tracks: nil, subtitlePolicy: policy)
+        let restored = try OfflineRecord(record.json, server: server)
+        #expect(restored.subtitlePolicy?.allows("eng") == true)
+        #expect(restored.subtitlePolicy?.allows("en-US") == true)
+        #expect(restored.subtitlePolicy?.allows("nld") == false)
+        #expect(restored.subtitlePolicy?.allows("") == false)
+        #expect(restored.subtitlePolicy?.allows(String(repeating: "x", count: 33)) == false)
+        #expect(restored.subtitlePolicy?.allows("../en") == false)
+        var legacy = try record.json.object(allowing: ["key", "jobID", "item", "quality", "tracks", "error", "deleting", "subtitleLanguage", "subtitlePickerLimited"])
+        legacy.removeValue(forKey: "subtitleLanguage")
+        legacy.removeValue(forKey: "subtitlePickerLimited")
+        #expect(try OfflineRecord(.object(legacy), server: server).subtitlePolicy == nil)
+        for (key, value) in [("subtitleLanguage", JSONValue.string("auto")), ("subtitleLanguage", .string(String(repeating: "x", count: 33))),
+                             ("subtitlePickerLimited", .string("true")), ("subtitlePickerLimited", .number(1))] {
+            var invalid = try record.json.object(allowing: ["key", "jobID", "item", "quality", "tracks", "error", "deleting", "subtitleLanguage", "subtitlePickerLimited"])
+            invalid[key] = value
+            #expect(throws: ClientError.self) { try OfflineRecord(.object(invalid), server: server) }
+        }
+        legacy["subtitlePickerLimited"] = .bool(true)
+        #expect(throws: ClientError.self) { try OfflineRecord(.object(legacy), server: server) }
+    }
+
     @MainActor @Test func rejectsInvalidSeriesBeforeAnyDownloadRequest() async throws {
         let fixture = try HTTPFixture(body: "{}")
         defer { fixture.remove() }

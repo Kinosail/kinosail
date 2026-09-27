@@ -66,7 +66,7 @@ extension PlaybackEngine {
             let position = seconds
             let shouldResume = nativeIntent.playing.withLock { $0 } ?? wantsPlayback
             self.preferences = valid
-            source = details
+            source = details; subtitlePolicy = details.subtitlePolicy
             #if os(tvOS)
             presentation.limitSubtitleLanguages(to: details.subtitlePickerLimited ? details.subtitleLanguage : nil)
             #endif
@@ -89,12 +89,12 @@ extension PlaybackEngine {
         guard let item = player?.currentItem else { return }
         selectPreferred(in: audioGroup, options: audioOptions, language: valid.audioLanguage, label: valid.audioTrack, item: item)
         if valid.subtitleLanguage == "off", let subtitleGroup { item.select(nil, in: subtitleGroup) }
-        else if let source, source.subtitlePickerLimited, let subtitleGroup {
-            item.select(subtitleOptions.first(where: { source.allowsSubtitleLanguage($0.extendedLanguageTag ?? $0.locale?.identifier ?? "") }), in: subtitleGroup)
+        else if subtitlePolicy?.limited == true, let subtitleGroup {
+            item.select(subtitleOptions.first(where: { allowsSubtitleLanguage($0.extendedLanguageTag ?? $0.locale?.identifier ?? "") }), in: subtitleGroup)
         } else { selectPreferred(in: subtitleGroup, options: subtitleOptions, language: valid.subtitleLanguage, label: valid.subtitleTrack, item: item) }
         let external = source?.subtitles ?? []
         let rememberedOn = devicePreferencesScope.flatMap { DevicePlaybackChoices.load(scope: $0).subtitleLanguage }.map { $0 != "off" } ?? false
-        let preferredExternal = source?.subtitlePickerLimited == true
+        let preferredExternal = subtitlePolicy?.limited == true
             ? external.firstIndex(where: { $0.isDefault }) ?? (valid.subtitleLanguage != "auto" && valid.subtitleLanguage != "off" ? external.indices.first : nil)
             : external.firstIndex(where: { !valid.subtitleTrack.isEmpty && $0.label == valid.subtitleTrack })
             ?? external.firstIndex(where: { valid.subtitleLanguage == "auto" ? $0.isDefault : $0.language.lowercased() == valid.subtitleLanguage.lowercased() })
@@ -106,7 +106,7 @@ extension PlaybackEngine {
             catch { progressMessage = "The selected subtitles could not be loaded. Choose a track in Playback options." }
         }
         if rememberedOn, selectedSubtitleTrackID == nil, let subtitleGroup,
-           let first = subtitleOptions.first(where: { source?.allowsSubtitleLanguage($0.extendedLanguageTag ?? $0.locale?.identifier ?? "") ?? true }) {
+           let first = subtitleOptions.first(where: { allowsSubtitleLanguage($0.extendedLanguageTag ?? $0.locale?.identifier ?? "") }) {
             item.select(first, in: subtitleGroup)
         }
         observedAudioTrackID = selectedAudioTrackID
@@ -159,6 +159,8 @@ extension PlaybackEngine {
         }
     }
 
+    func allowsSubtitleLanguage(_ language: String) -> Bool { subtitlePolicy?.allows(language) ?? true }
+
     func loadTracks(_ item: AVPlayerItem, attempt: UUID) async throws {
         let audio = Task { @MainActor in
             let group = try await item.asset.loadMediaSelectionGroup(for: .audible)
@@ -178,8 +180,8 @@ extension PlaybackEngine {
         audioTracks = audioOptions.enumerated().map { PlayerTrack(id: String($0.offset), title: $0.element.displayName) }
         var regularShown = false
         subtitleTracks = subtitleOptions.enumerated().compactMap { index, option in
-            guard source?.allowsSubtitleLanguage(option.extendedLanguageTag ?? option.locale?.identifier ?? "") ?? true else { return nil }
-            if source?.subtitlePickerLimited == true && !option.hasMediaCharacteristic(.containsOnlyForcedSubtitles) {
+            guard allowsSubtitleLanguage(option.extendedLanguageTag ?? option.locale?.identifier ?? "") else { return nil }
+            if subtitlePolicy?.limited == true && !option.hasMediaCharacteristic(.containsOnlyForcedSubtitles) {
                 guard !regularShown else { return nil }
                 regularShown = true
             }

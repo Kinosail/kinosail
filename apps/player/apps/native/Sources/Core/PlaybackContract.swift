@@ -1,11 +1,22 @@
 import Foundation
 
+extension SubtitleChoicePolicy {
+    init(playback value: [String: JSONValue]) throws {
+        let limited = try value.flag("subtitlePickerLimited", fallback: false)
+        let language = try value.text("subtitleLanguage", max: 32)
+        guard !language.isEmpty || !limited else { throw ClientError.invalidResponse }
+        try self.init(language: language.isEmpty ? "en" : language, limited: limited)
+    }
+}
+
 extension PlaybackSource {
+    static let allowedFields: Set<String> = ["media", "plan", "compatiblePlan", "compatibleLabel", "compatibleDescription", "qualities",
+                                             "directAllowed", "direct", "compatibleDuration", "compatibleProgressToken", "compatible", "download", "directType",
+                                             "summary", "duration", "start", "audio", "chapters", "markers", "autoSkip", "subtitles", "next", "downloadNext",
+                                             "trickplay", "progressToken", "replayGain", "subtitleLanguage", "subtitlePickerLimited"]
+
     init(_ raw: JSONValue, itemID: String, server: ServerAddress) throws {
-        let value = try raw.object(allowing: ["media", "plan", "compatiblePlan", "compatibleLabel", "compatibleDescription", "qualities",
-                                            "directAllowed", "direct", "compatibleDuration", "compatibleProgressToken", "compatible", "download", "directType",
-                                            "summary", "duration", "start", "audio", "chapters", "markers", "autoSkip", "subtitles", "next", "downloadNext",
-                                            "trickplay", "progressToken", "replayGain", "subtitleLanguage", "subtitlePickerLimited"])
+        let value = try raw.object(allowing: Self.allowedFields)
         let plan = try Self.plan(value.required("plan"))
         let media = try value.required("media").object(allowing: ["kind", "fileVersion", "container", "bitrate", "duration", "seekable", "video", "audio", "subtitles"])
         let reportedDuration = try value.number("duration")
@@ -82,12 +93,7 @@ extension PlaybackSource {
             return try ExternalSubtitle(label: track.text("label", max: 512, required: true), language: track.text("language", max: 32),
                                         url: url, isDefault: track.flag("default"))
         })
-        subtitlePickerLimited = try value.flag("subtitlePickerLimited", fallback: false)
-        let selectedSubtitleLanguage = try value.text("subtitleLanguage", max: 32)
-        guard selectedSubtitleLanguage.isEmpty && !subtitlePickerLimited ||
-              !selectedSubtitleLanguage.isEmpty && selectedSubtitleLanguage != "auto" &&
-              (try? PlaybackPreferences.language(selectedSubtitleLanguage, subtitle: false)) != nil else { throw ClientError.invalidResponse }
-        subtitleLanguage = selectedSubtitleLanguage.isEmpty ? "en" : selectedSubtitleLanguage
+        subtitlePolicy = try SubtitleChoicePolicy(playback: value)
         let types: Set<String> = ["intro", "recap", "commercial", "outro", "credits"]
         markers = try Input.unique(value.list("markers", max: 128).map { raw in
             let marker = try raw.object(allowing: ["type", "label", "start", "end", "source"])

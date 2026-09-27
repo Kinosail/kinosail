@@ -21,6 +21,8 @@ data class PlaybackSource(
     val compatibleTimeline: MediaTimeline,
     val nextItemId: String?,
     val subtitles: List<PlaybackSubtitle>,
+    val subtitleLanguage: String,
+    val subtitlePickerLimited: Boolean,
 ) {
     fun sourceTime(position: Double, compatible: Boolean): Double =
         if (compatible) compatibleTimeline.sourceTime(position) else position
@@ -92,11 +94,14 @@ class PlaybackApi(
         }
         require(subtitles.map(PlaybackSubtitle::path).toSet().size == subtitles.size &&
             subtitles.count(PlaybackSubtitle::isDefault) <= 1) { INVALID_RESPONSE }
+        val limited = value["subtitlePickerLimited"]?.let { value.strictFlag("subtitlePickerLimited") } ?: false
+        val language = value.text("subtitleLanguage", 32)
+        require((language.isEmpty() && !limited) || language.matches(Regex("[A-Za-z]{2,3}"))) { INVALID_RESPONSE }
         val safeStart = if (start < duration) start else 0.0
         val compatibleTimeline = timeline ?: MediaTimeline(duration, duration)
         return PlaybackSource(itemId, directPath.ifEmpty { null }, compatiblePath.ifEmpty { null },
             type, compatibleTimeline.sourceDuration, safeStart, compatibleTimeline.presentationTime(safeStart),
-            progressToken, compatibleTimeline, next.ifEmpty { null }, subtitles)
+            progressToken, compatibleTimeline, next.ifEmpty { null }, subtitles, language.ifEmpty { "en" }, limited)
     }
 
     companion object {
@@ -107,7 +112,8 @@ class PlaybackApi(
         private val PLAYBACK_KEYS = setOf("media", "plan", "compatiblePlan", "compatibleLabel", "compatibleDescription",
             "qualities", "directAllowed", "direct", "compatibleDuration", "compatibleProgressToken", "compatible",
             "download", "directType", "summary", "duration", "start", "audio", "chapters", "markers", "autoSkip",
-            "subtitles", "next", "downloadNext", "trickplay", "progressToken", "replayGain")
+            "subtitles", "next", "downloadNext", "trickplay", "progressToken", "replayGain",
+            "subtitleLanguage", "subtitlePickerLimited")
         private val PLAN_KEYS = setOf("allowed", "mode", "reason", "container", "videoCodec", "audioCodec", "subtitleMode",
             "colorMode", "audioIndex", "subtitleIndex", "subtitleSourceIndex", "subtitleText", "subtitleExternal",
             "subtitleExternalIndex", "maxBitrate", "width", "height", "adaptive", "qualities", "markerMode", "timeline")
