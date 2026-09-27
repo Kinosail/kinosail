@@ -28,9 +28,12 @@ struct LoadingState: View {
                 ScrollView(.horizontal) {
                     HStack(spacing: 18) {
                         ForEach(0..<4) { _ in
-                            RoundedRectangle(cornerRadius: 14).fill(KinoTheme.surface)
-                                .overlay(alignment: .bottom) { line(width: 120, height: 20).padding(.bottom, 16) }
-                                .frame(width: 320, height: 150)
+                            HStack(spacing: 18) {
+                                RoundedRectangle(cornerRadius: 12).fill(KinoTheme.surface).frame(width: 60, height: 60)
+                                line(width: 120, height: 20)
+                                Spacer(minLength: 0)
+                            }
+                            .frame(width: 280, height: 100)
                         }
                     }
                     .padding(.horizontal, 24).padding(.vertical, 24)
@@ -229,9 +232,6 @@ struct LoadingState: View {
                 if showsSubtitle { line(width: 80, height: 14) }
                 if showsProgress { line(width: 140, height: 4) }
             }
-            #if os(tvOS)
-            .padding([.horizontal, .bottom], 12)
-            #endif
         }
     }
     private var resumeRow: some View {

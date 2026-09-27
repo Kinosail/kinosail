@@ -205,6 +205,7 @@ struct HomeSelection {
 
 #if os(tvOS)
 private struct TVHomeBrowse: View {
+    @FocusState private var focusedTitle: String?
     let mode: PlayerMode
     let selectTab: (PlayerTab) -> Void
     let changeMode: ((PlayerMode) -> Void)?
@@ -235,21 +236,28 @@ private struct TVHomeBrowse: View {
 
     private func tile(title: String, icon: String, systemIcon: Bool = false, action: @escaping () -> Void) -> some View {
         Button(action: action) {
-            VStack(spacing: 6) {
+            HStack(spacing: 18) {
                 if systemIcon {
                     Image(systemName: icon).resizable().scaledToFit()
-                        .frame(width: 80, height: 80).foregroundStyle(KinoTheme.signal).accessibilityHidden(true)
+                        .frame(width: 60, height: 60).foregroundStyle(KinoTheme.signal).accessibilityHidden(true)
                 } else {
-                    Image(icon).resizable().scaledToFit().frame(width: 80, height: 80).accessibilityHidden(true)
+                    Image(icon).resizable().scaledToFit().frame(width: 60, height: 60).accessibilityHidden(true)
                 }
-                Text(title).font(.headline).foregroundStyle(KinoTheme.text).multilineTextAlignment(.center)
+                Text(title).font(.title3.weight(.semibold)).foregroundStyle(KinoTheme.text)
+                    .multilineTextAlignment(.leading)
+                Spacer(minLength: 0)
             }
-            .padding(12)
-            .frame(width: 320)
-            .frame(minHeight: 150)
-            .background(RoundedRectangle(cornerRadius: 14).fill(KinoTheme.raised))
+            .frame(width: 280)
+            .frame(minHeight: 100)
+            .contentShape(.rect)
+            .overlay {
+                if focusedTitle == title {
+                    RoundedRectangle(cornerRadius: 14).strokeBorder(KinoTheme.text, lineWidth: 4)
+                }
+            }
         }
-        .buttonStyle(.card)
+        .buttonStyle(.plain)
+        .focused($focusedTitle, equals: title)
         .accessibilityLabel(title)
     }
 
