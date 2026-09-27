@@ -3,6 +3,7 @@ import AxeBuilder from "@axe-core/playwright";
 import { configureTestInstance, login } from "./test-instance-helpers";
 
 configureTestInstance();
+test.use({ serviceWorkers: "block" });
 
 test("Connection choices stay optional and secure by default", async ({ page }, testInfo) => {
 	await login(page);

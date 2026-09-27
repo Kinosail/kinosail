@@ -61,25 +61,34 @@ def check(root, base):
     expected_sitemap = f'Sitemap: {canonical.group(1)}{base}/sitemap.xml' if canonical else ''
     if not canonical or not robots.is_file() or expected_sitemap not in robots.read_text().splitlines():
         errors.append('robots.txt must name this build\'s sitemap')
-    entries = json.loads((root / 'search.json').read_text())
-    for entry in entries:
-        if not all(isinstance(entry.get(key), str) for key in ('title', 'description', 'url', 'content', 'product')):
-            errors.append('invalid search schema')
-        if not entry['url'].startswith(base + '/'):
-            errors.append('search URL escapes base')
-    for entry in entries:
-        relative = entry['url'][len(base) + 1:]
-        document = root / relative / 'index.html' if entry['url'].endswith('/') else root / relative
-        if document.is_file():
+    entries = []
+    for index, product, prefix in (('search.json', 'Player', base),
+                                   ('subtitles/search.json', 'Subtitles', base + '/subtitles')):
+        product_entries = json.loads((root / index).read_text())
+        if not product_entries or {entry.get('product') for entry in product_entries} != {product}:
+            errors.append(f'{index}: wrong product or empty search')
+        for entry in product_entries:
+            if not all(isinstance(entry.get(key), str) for key in ('title', 'description', 'url', 'content', 'product')):
+                errors.append(f'{index}: invalid search schema')
+                continue
+            if not entry['url'].startswith(prefix + '/'):
+                errors.append(f'{index}: search URL escapes base')
+                continue
+            relative = entry['url'][len(base) + 1:]
+            document = root / relative / 'index.html' if entry['url'].endswith('/') else root / relative
+            if not document.is_file():
+                errors.append(f'{relative}: search page missing')
+                continue
             # The canonical origin is supplied by the build, including preview builds.
             source = document.read_text()
             canonical = re.search(r'<link rel="canonical" href="(https://[^/]+)', source)
             origin = canonical.group(1) if canonical else ''
             errors.extend(f'{relative}: {error}' for error in validate(source, origin + entry['url']))
+        entries.extend(product_entries)
     if len({entry['url'] for entry in entries}) != len(entries):
         errors.append('duplicate search URLs')
-    if {'Player'} != {entry['product'] for entry in entries}:
-        errors.append('search must contain only Player docs')
+    if {'Player', 'Subtitles'} != {entry['product'] for entry in entries if isinstance(entry, dict) and isinstance(entry.get('product'), str)}:
+        errors.append('search must contain both product docs')
     for forbidden in ('research', '.env', '.git', 'Gemfile'):
         if any(p.name == forbidden for p in root.rglob('*')):
             errors.append(f'non-public build input copied: {forbidden}')

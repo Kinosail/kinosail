@@ -7,6 +7,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -44,23 +45,57 @@ class ConnectionModel(application: Application) : AndroidViewModel(application) 
                 }
             if (saved != null) {
                 address = saved.server.url.toString()
-                try {
-                    val viewer = withContext(Dispatchers.IO) { ServerApi(saved.server).viewer(saved.token) }
-                    current = saved
-                    phase = ConnectionPhase.Connected(viewer)
-                    return@launch
-                } catch (error: ServerHttpException) {
-                    if (error.status == 401 || error.status == 403) {
-                        AudioPlaybackService.stopIfRunning(getApplication())
-                        withContext(Dispatchers.IO) { runCatching { sessions.clear() } }
-                        notice = "This connection expired. Connect again."
-                    } else notice = "Could not reach your Server. Try connecting again."
-                } catch (_: Exception) {
-                    notice = "Could not reach your Server. Try connecting again."
-                }
+                current = saved
+                saved.viewer?.let { phase = ConnectionPhase.Connected(it) }
+                revalidate(saved)
+                return@launch
             }
             phase = ConnectionPhase.Setup
         }
+    }
+
+    private suspend fun revalidate(saved: SavedSession) {
+        val attempt = generation
+        var wait = 2_000L
+        while (attempt == generation) {
+            try {
+                val viewer = withContext(Dispatchers.IO) { ServerApi(saved.server).viewer(saved.token) }
+                if (attempt != generation) return
+                require(saved.viewer == null || saved.viewer.serverId == viewer.serverId && saved.viewer.id == viewer.id) {
+                    "The saved Viewer identity changed."
+                }
+                val refreshed = saved.copy(viewer = viewer)
+                withContext(Dispatchers.IO) { sessions.save(refreshed) }
+                if (attempt != generation) return
+                current = refreshed
+                phase = ConnectionPhase.Connected(viewer)
+                notice = null
+                return
+            } catch (error: CancellationException) { throw error }
+            catch (error: ServerHttpException) {
+                if (error.status == 401 || error.status == 403) {
+                    forgetSaved(attempt, "This connection expired. Connect again.")
+                    return
+                }
+            } catch (error: IllegalArgumentException) {
+                forgetSaved(attempt, "The saved connection changed. Connect again.")
+                return
+            } catch (_: Exception) { /* Keep the last verified Viewer while the Server restarts. */ }
+            if (attempt != generation) return
+            if (saved.viewer == null) notice = "Waiting for your Server to return."
+            delay(wait)
+            wait = (wait * 2).coerceAtMost(15_000)
+        }
+    }
+
+    private suspend fun forgetSaved(attempt: Int, message: String) {
+        if (attempt != generation) return
+        AudioPlaybackService.stopIfRunning(getApplication())
+        withContext(Dispatchers.IO) { sessions.clear() }
+        if (attempt != generation) return
+        current = null
+        phase = ConnectionPhase.Setup
+        notice = message
     }
 
     fun connect(device: String) {
@@ -106,9 +141,10 @@ class ConnectionModel(application: Application) : AndroidViewModel(application) 
                     try {
                         val viewer = withContext(Dispatchers.IO) { api.viewer(token) }
                         if (attempt == generation) {
-                            withContext(Dispatchers.IO) { sessions.save(SavedSession(server, token)) }
+                            val saved = SavedSession(server, token, viewer)
+                            withContext(Dispatchers.IO) { sessions.save(saved) }
                             if (attempt == generation) {
-                                current = SavedSession(server, token)
+                                current = saved
                                 phase = ConnectionPhase.Connected(viewer)
                                 return
                             }
@@ -149,6 +185,7 @@ class ConnectionModel(application: Application) : AndroidViewModel(application) 
     fun signOut() {
         val session = current ?: return
         if (busy) return
+        generation++
         busy = true
         notice = null
         viewModelScope.launch {

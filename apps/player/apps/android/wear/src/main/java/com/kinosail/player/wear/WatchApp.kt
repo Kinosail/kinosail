@@ -26,7 +26,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -131,13 +133,14 @@ private fun RemotePage(
         } else {
             val disconnected = remote.players.isEmpty() && remote.message != null
             Text(interfaceText(if (disconnected) "Connect phone" else if (remote.selectedId != null && player == null)
-                "Selected player unavailable" else "Nothing playing"), fontWeight = FontWeight.Bold, fontSize = 17.sp)
+                "Selected player unavailable" else "Nothing playing"), fontWeight = FontWeight.Bold, fontSize = 17.sp,
+                modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite })
             Text(interfaceText(if (disconnected) "Pair Android phone."
                 else "Start a title on your Android phone or TV."), color = muted, fontSize = 12.sp)
         }
         if (timeline != null && player?.active == true) HeartLink(timeline, onHeartPage)
         (heartMessage ?: remote.message?.takeUnless { remote.players.isEmpty() })?.let {
-            Text(it, color = muted, fontSize = 12.sp)
+            Text(it, color = muted, fontSize = 12.sp, modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite })
         }
     }
 }
@@ -185,7 +188,8 @@ private fun HeartPage(timeline: HeartTimeline, message: String?, onStop: () -> U
         Text(interfaceText("Gaps mean no reading or movie position was available."), color = muted, fontSize = 11.sp)
         if (timeline.tracking) Button(onClick = onStop, modifier = Modifier.fillMaxWidth(),
             label = { Text(interfaceText("Stop tracking")) })
-        message?.let { Text(it, color = muted, fontSize = 12.sp) }
+        message?.let { Text(it, color = muted, fontSize = 12.sp,
+            modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite }) }
     }
 }
 

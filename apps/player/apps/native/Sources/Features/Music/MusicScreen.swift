@@ -5,6 +5,9 @@ struct MusicScreen: View {
     @Environment(AppSession.self) private var session
     #if os(tvOS)
     @Namespace private var albumsFocus
+    @FocusState private var focusedControl: MusicFocus?
+    @State private var requestedInitialFocus = false
+    private enum MusicFocus: Hashable { case tracks, album(String) }
     #endif
     var body: some View {
         ScrollView {
@@ -19,6 +22,7 @@ struct MusicScreen: View {
                     Spacer()
                     NavigationLink("All music tracks", value: ScreenDestination.library(.music))
                         .buttonStyle(.bordered).tint(KinoTheme.secondaryControlTint).secondaryControlForeground()
+                        .focused($focusedControl, equals: .tracks)
                 }
                 .focusSection()
                 #else
@@ -45,12 +49,18 @@ struct MusicScreen: View {
                         #else
                         .buttonStyle(.card)
                         .tvOSDefaultPlayFocus(in: albumsFocus, id: "albums.first.\(album.id)", enabled: albums.first?.id == album.id)
+                        .focused($focusedControl, equals: .album(album.id))
                         #endif
                     }
                 }
                 #if os(tvOS)
                 .padding(.vertical, 24)
                 .focusSection()
+                .task(id: albums.first?.id) {
+                    guard !requestedInitialFocus else { return }
+                    requestedInitialFocus = true
+                    if focusedControl == nil { focusedControl = albums.first.map { .album($0.id) } ?? .tracks }
+                }
                 #endif
             }.padding(KinoTheme.contentPadding)
         }

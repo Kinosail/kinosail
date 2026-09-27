@@ -1,8 +1,9 @@
 package server
 
 import (
-	_ "embed"
+	"embed"
 	"net/http"
+	"regexp"
 
 	"github.com/MikeO7/kinosail/packages/webassets"
 )
@@ -18,6 +19,8 @@ var (
 	supporterAppJS []byte
 	//go:embed static/supporter.css
 	supporterCSS []byte
+	//go:embed static/supporter/badges/*.svg
+	supporterBadges embed.FS
 	//go:embed static/subtitle-status.js
 	subtitleStatusJS []byte
 	//go:embed static/subtitle-inspector.js
@@ -125,6 +128,22 @@ func serveAsset(content []byte, contentType string) http.HandlerFunc {
 		cacheStatic(writer, request)
 		_, _ = writer.Write(content)
 	}
+}
+
+var supporterBadgeFile = regexp.MustCompile(`^(living-standard|patron-order)-(?:[1-9]|10)\.svg$`)
+
+func serveSupporterBadge(writer http.ResponseWriter, request *http.Request) {
+	name := request.PathValue("file")
+	if !supporterBadgeFile.MatchString(name) {
+		http.NotFound(writer, request)
+		return
+	}
+	content, err := supporterBadges.ReadFile("static/supporter/badges/" + name)
+	if err != nil {
+		http.NotFound(writer, request)
+		return
+	}
+	serveAsset(content, "image/svg+xml")(writer, request)
 }
 
 func cacheStatic(writer http.ResponseWriter, request *http.Request) {

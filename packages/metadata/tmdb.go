@@ -1,6 +1,7 @@
 package metadata
 
 import (
+	"cmp"
 	"context"
 	"errors"
 	"fmt"
@@ -29,9 +30,10 @@ type TMDBConfig struct {
 }
 
 type TMDBMetadata struct {
-	Title, Year, Plot, Genres, Director, Poster string
-	Cast                                        []library.Person
-	TMDBID                                      int
+	Title, Year, Plot, Rating, Genres, Director, Poster string
+	Cast                                                []library.Person
+	TMDBID                                              int
+	Version                                             int
 }
 
 type tmdbMovie struct {
@@ -42,7 +44,8 @@ type tmdbMovie struct {
 	Genres      []struct {
 		Name string `json:"name"`
 	} `json:"genres"`
-	Credits struct {
+	ReleaseDates tmdbReleaseDates `json:"release_dates"`
+	Credits      struct {
 		Cast []TMDBCastMember `json:"cast"`
 		Crew []struct {
 			Name       string `json:"name"`
@@ -50,6 +53,15 @@ type tmdbMovie struct {
 			Department string `json:"department"`
 		} `json:"crew"`
 	} `json:"credits"`
+}
+
+type tmdbReleaseDates struct {
+	Results []struct {
+		Country string `json:"iso_3166_1"`
+		Dates   []struct {
+			Certification string `json:"certification"`
+		} `json:"release_dates"`
+	} `json:"results"`
 }
 
 type TMDBCastMember struct {
@@ -138,7 +150,7 @@ func (client *TMDBClient) enrichOne(ctx context.Context, item *library.Item) {
 }
 
 func metadataFor(movie tmdbMovie) TMDBMetadata {
-	metadata := TMDBMetadata{Title: strings.TrimSpace(movie.Title), Plot: strings.TrimSpace(movie.Overview)}
+	metadata := TMDBMetadata{Title: strings.TrimSpace(movie.Title), Plot: strings.TrimSpace(movie.Overview), Version: 2}
 	if len(movie.ReleaseDate) >= 4 {
 		metadata.Year = movie.ReleaseDate[:4]
 	}
@@ -231,6 +243,7 @@ func applyTMDB(item *library.Item, metadata TMDBMetadata) {
 	if item.Plot == "" {
 		item.Plot = metadata.Plot
 	}
+	item.Rating = cmp.Or(item.Rating, metadata.Rating)
 	if item.Genres == "" {
 		item.Genres = metadata.Genres
 	}

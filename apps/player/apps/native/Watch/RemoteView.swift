@@ -17,6 +17,9 @@ struct RemoteView: View {
             }
         }
         .tabViewStyle(.verticalPage)
+        .onChange(of: heart.message ?? remote.message) { _, message in
+            if page == 0, let message { AccessibilityNotification.Announcement(message).post() }
+        }
         .task {
             while !Task.isCancelled {
                 await remote.refresh()

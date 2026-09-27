@@ -156,7 +156,7 @@ func subtitleLanguageSupport(choice subtitlelanguage.Choice) string {
 		}
 	}
 	if len(providers) == 0 {
-		return "No configured provider"
+		return "Local files only"
 	}
 	return strings.Join(providers, ", ")
 }

@@ -133,11 +133,20 @@ actor ServerClient {
         requestSequence &+= 1
         let sequence = requestSequence
         do {
-            let (data, http) = try await BoundedHTTPResponse.receive(request, session: session, maximum: maximum, expected: expected)
-            try Task.checkCancellation()
-            guard !closed else { throw CancellationError() }
-            recordConnection(.reachable, sequence: sequence)
-            return (data, http)
+            var retries = 0
+            while true {
+                do {
+                    let (data, http) = try await BoundedHTTPResponse.receive(request, session: session, maximum: maximum, expected: expected)
+                    try Task.checkCancellation()
+                    guard !closed else { throw CancellationError() }
+                    recordConnection(.reachable, sequence: sequence)
+                    return (data, http)
+                } catch {
+                    guard method == "GET", retries < 2, Self.retryableRead(error) else { throw error }
+                    retries += 1
+                    try await Task.sleep(for: .milliseconds(250 * retries))
+                }
+            }
         } catch is CancellationError { throw CancellationError() }
         catch let error as ClientError {
             if case .http(let status) = error {
@@ -159,6 +168,15 @@ actor ServerClient {
             networkLog.warning("HTTP transport failed request_id=\(requestID, privacy: .public) operation=\(operation, privacy: .public) method=\(method, privacy: .public) code=\(code)")
             throw ClientError.unavailable
         }
+    }
+
+    private static func retryableRead(_ error: Error) -> Bool {
+        if case ClientError.http(let status) = error { return [408, 500, 502, 503, 504].contains(status) }
+        if let network = error as? URLError {
+            return [.timedOut, .cannotFindHost, .cannotConnectToHost, .networkConnectionLost,
+                    .dnsLookupFailed, .notConnectedToInternet, .resourceUnavailable].contains(network.code)
+        }
+        return false
     }
 
     func downloadAuthorization() throws -> DownloadAuthorization {

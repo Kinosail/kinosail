@@ -56,6 +56,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.LiveRegionMode
+import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.input.ImeAction
@@ -166,7 +168,8 @@ internal fun MobileLibrary(connection: ConnectionModel, viewer: Viewer) {
                     keyboardActions = KeyboardActions(onSearch = { submitSearch() }),
                     modifier = Modifier.fillMaxWidth())
                 Button(onClick = submitSearch, modifier = Modifier.fillMaxWidth()) { Text(interfaceText("Search")) }
-                state.notice?.let { Text(it, color = MaterialTheme.colorScheme.error) }
+                state.notice?.let { Text(it, color = MaterialTheme.colorScheme.error,
+                    modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite }) }
                 if (state.notice != null) TextButton(onClick = catalog::retry) { Text(interfaceText("Try again")) }
                 if (state.loading && state.items.isEmpty()) CircularProgressIndicator()
                 else if (state.items.isEmpty() && state.notice == null) {
@@ -236,7 +239,8 @@ private fun MobileDetail(item: CatalogItem, catalog: CatalogModel, play: () -> U
             }
             if (catalog.state.listBusy && catalog.state.listed == null) CircularProgressIndicator()
             catalog.state.detailNotice?.let { notice ->
-                Text(notice, color = MaterialTheme.colorScheme.error)
+                Text(notice, color = MaterialTheme.colorScheme.error,
+                    modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite })
                 if (catalog.state.listed == null) TextButton(onClick = catalog::retryDetail) { Text(interfaceText("Try again")) }
             }
             if (tablet) Row(horizontalArrangement = Arrangement.spacedBy(28.dp),

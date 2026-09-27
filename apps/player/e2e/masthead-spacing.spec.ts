@@ -106,6 +106,7 @@ test("Show seasons stay below the desktop header while scrolling", async ({ page
 		await page.setViewportSize({ width, height: 768 });
 		await page.goto("/?view=shows");
 		await page.locator('a.show-details[href^="/show/"]').first().click();
+		await expect(page.locator(".season-heading")).toBeVisible();
 		await page.evaluate(() => scrollTo(0, document.body.scrollHeight));
 		const positions = await page.evaluate(() => ({
 			header: document.querySelector(".app-header")!.getBoundingClientRect().bottom,

@@ -9,12 +9,12 @@ extension PlaybackEngine {
         while true {
             if let error {
                 try check(attempt)
-                guard Self.isNetworkFailure(error), networkRecoveries < 3 else { throw error }
+                guard Self.isNetworkFailure(error), networkRecoveries < 8 else { throw error }
                 networkRecoveries += 1
                 networkStableSince = nil
                 recoveringNetwork = true
                 message = "Connection interrupted. Reconnecting…"
-                try await Task.sleep(for: .seconds(pow(2, Double(networkRecoveries - 1)) + Double.random(in: 0...0.5)))
+                try await Task.sleep(for: .seconds(min(8, pow(2, Double(networkRecoveries - 1))) + Double.random(in: 0...0.5)))
             }
             try check(attempt)
             do {
