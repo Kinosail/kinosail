@@ -124,7 +124,7 @@ func TestOfflinePagesUseTheCurrentNavigationBundle(t *testing.T) {
 		if !strings.Contains(body, `downloads.js?v=29`) || strings.Contains(body, `main.kinosail.bundle.js?v=12`) || strings.Contains(body, `main.kinosail.bundle.js?v=16`) {
 			t.Fatalf("%s can register an obsolete offline worker: %s", path, body)
 		}
-		if path == "/offline-downloads" && !strings.Contains(body, `main.kinosail.bundle.js?v=30`) {
+		if path == "/offline-downloads" && !strings.Contains(body, `main.kinosail.bundle.js?v=31`) {
 			t.Fatal("downloads page did not receive the current injected bundle")
 		}
 	}
@@ -136,7 +136,7 @@ func TestNavigationPagesRefreshCachedAssets(t *testing.T) {
 		response := httptest.NewRecorder()
 		handler.ServeHTTP(response, httptest.NewRequestWithContext(t.Context(), http.MethodGet, path, nil))
 		body := response.Body.String()
-		if response.Code != http.StatusOK || !strings.Contains(body, `main.kinosail.bundle.js?v=30`) || !strings.Contains(body, `app.css?v=electric-33`) {
+		if response.Code != http.StatusOK || !strings.Contains(body, `main.kinosail.bundle.js?v=31`) || !strings.Contains(body, `app.css?v=electric-34`) {
 			t.Fatalf("%s did not receive current navigation assets", path)
 		}
 	}
