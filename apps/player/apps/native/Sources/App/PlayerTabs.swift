@@ -45,9 +45,9 @@ struct PlayerTabs: View {
     var body: some View {
         Group {
             #if os(tvOS)
-            VStack(spacing: 0) {
+            ZStack(alignment: .top) {
+                tabs.safeAreaInset(edge: .top, spacing: 0) { Color.clear.frame(height: 76) }
                 TVTopBar(selection: $selection, focus: $topFocus)
-                tabs
             }
             #else
             tabs

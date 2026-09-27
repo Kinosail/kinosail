@@ -17,12 +17,6 @@ struct TVTopBar: View {
                     .foregroundStyle(focus.wrappedValue == .search ? KinoTheme.text : KinoTheme.muted)
                     .background(focus.wrappedValue == .search ? KinoTheme.raised : KinoTheme.surface, in: Capsule())
                 Spacer()
-                Button { selection = .library } label: { Image(systemName: "square.grid.2x2").frame(width: 52, height: 52) }
-                    .focused(focus, equals: .library)
-                    .buttonStyle(.plain)
-                    .foregroundStyle(focus.wrappedValue == .library ? KinoTheme.text : KinoTheme.muted)
-                    .background(focus.wrappedValue == .library ? KinoTheme.raised : KinoTheme.surface, in: RoundedRectangle(cornerRadius: 16))
-                    .accessibilityLabel("Library")
                 Button { selection = .settings } label: { Image(systemName: "gearshape").frame(width: 52, height: 52) }
                     .focused(focus, equals: .settings)
                     .buttonStyle(.plain)
@@ -80,7 +74,6 @@ struct TVTopBar: View {
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(.horizontal, KinoTheme.contentPadding)
         .padding(.vertical, 12)
-        .background(KinoTheme.background)
         .focusSection()
         .onChange(of: focus.wrappedValue) { _, tab in
             if selection != .home, let tab, tab != .home { selection = tab }

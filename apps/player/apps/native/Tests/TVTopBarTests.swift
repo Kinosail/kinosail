@@ -36,6 +36,27 @@ private struct TopBarProbeScreen: View {
 }
 
 @Suite(.serialized) struct TVTopBarTests {
+    @Test @MainActor func homeHasSearchAndSettingsWithoutLibraryMenu() async throws {
+        let scene = try #require(UIApplication.shared.connectedScenes.first as? UIWindowScene)
+        let probe = TopBarProbe()
+        probe.selection = .home
+        probe.requestedFocus = .search
+        let window = UIWindow(windowScene: scene)
+        window.rootViewController = UIHostingController(rootView: TopBarProbeScreen(probe: probe))
+        window.makeKeyAndVisible()
+        defer { window.isHidden = true }
+
+        try await Task.sleep(for: .milliseconds(300))
+        #expect(probe.focused == .search)
+        probe.requestedFocus = .library
+        try await Task.sleep(for: .milliseconds(100))
+        #expect(probe.focused != .library)
+        #expect(probe.selection == .home)
+        probe.requestedFocus = .settings
+        try await Task.sleep(for: .milliseconds(100))
+        #expect(probe.focused == .settings)
+    }
+
     @Test @MainActor func movingAcrossBrowseAndUtilityControlsKeepsTopFocus() async throws {
         let scene = try #require(UIApplication.shared.connectedScenes.first as? UIWindowScene)
         let probe = TopBarProbe()
