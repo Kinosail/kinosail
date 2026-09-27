@@ -147,13 +147,15 @@ if (controls && player.tagName === "VIDEO") {
   volume.addEventListener("input", () => { player.muted = false; player.volume = Number(volume.value); syncControls(); });
   mute.addEventListener("click", () => { player.muted = !player.muted; syncControls(); });
   const subtitleSelect = document.querySelector("[data-subtitles]");
+  const selectableTracks = player.dataset.subtitlePickerLimited === "true" ? [...player.querySelectorAll("track[data-subtitle-source]")].map((element) => element.track) : null;
+  const visibleTracks = () => selectableTracks || [...player.textTracks];
   let lastSubtitle = subtitleSelect?.value !== "off" ? subtitleSelect?.value : "0";
   const syncSubtitles = () => {
     const available = Boolean(subtitleSelect && subtitleSelect.options.length > 1);
     captions.disabled = !available;
     captions.title = available ? "Toggle subtitles" : "No subtitles available";
     captions.setAttribute("aria-label", available ? "Subtitles" : "No subtitles available");
-    const index = [...player.textTracks].findIndex((track) => track.mode === "showing");
+    const index = visibleTracks().findIndex((track) => track.mode === "showing");
     const selected = index < 0 ? "off" : String(index);
     if (subtitleSelect && [...subtitleSelect.options].some((option) => option.value === selected)) subtitleSelect.value = selected;
     if (index >= 0) lastSubtitle = selected;
@@ -165,7 +167,7 @@ if (controls && player.tagName === "VIDEO") {
   captions.addEventListener("click", () => {
     const select = document.querySelector("[data-subtitles]");
     if (!select || select.options.length < 2) return;
-    select.value = [...player.textTracks].some((track) => track.mode === "showing") ? "off" : lastSubtitle || "0";
+    select.value = visibleTracks().some((track) => track.mode === "showing") ? "off" : lastSubtitle || "0";
     select.dispatchEvent(new Event("change", {bubbles: true}));
     syncSubtitles();
   });
