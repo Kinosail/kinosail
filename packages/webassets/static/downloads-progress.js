@@ -80,7 +80,7 @@ async function syncOfflineProgress() {
   // Only an online, Server-rendered page supplies an authoritative profile and
   // CSRF token. The cached offline shell must never pick a sync identity.
   const profile = currentOfflineProfile(), csrf = document.querySelector('meta[name="kinosail-csrf"]')?.content;
-  if (syncingOfflineProgress || !profile || !hasOfflineStorage || !navigator.onLine) return;
+  if (syncingOfflineProgress || !profile || !hasOfflineStorage || !navigator.locks?.request || !navigator.onLine) return;
   syncingOfflineProgress = true;
   try {
     const records = await getOfflineJobs();
