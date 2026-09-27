@@ -121,10 +121,16 @@ extension ServerClient {
                 "id", "title", "backdrop", "play", "episodes", "cast", "year", "plot", "genres", "studio"
             ])
             guard try value.text("id", required: true) == id else { throw ClientError.invalidResponse }
-            _ = try value.text("title", max: 512, required: true)
+            let title = try value.text("title", max: 512, required: true)
+            let backdrop = try value.text("backdrop")
+            if !backdrop.isEmpty { _ = try server.mediaURL(backdrop) }
+            let year = try value.text("year", max: 16)
+            let genres = try value.text("genres", max: 512)
+            let plot = try value.text("plot", max: 10_000)
             let items = try mediaItems(value.required("episodes"))
             guard items.allSatisfy({ $0.showID == id && $0.kind == .video }) else { throw ClientError.invalidResponse }
-            return try ShowDetail(episodes: items.sorted { ($0.season, $0.episode, $0.title) < ($1.season, $1.episode, $1.title) },
+            return try ShowDetail(title: title, backdrop: backdrop, year: year, genres: genres, plot: plot,
+                                  episodes: items.sorted { ($0.season, $0.episode, $0.title) < ($1.season, $1.episode, $1.title) },
                                   cast: CastMember.list(value, server: server))
         }
     }
