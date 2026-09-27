@@ -32,6 +32,8 @@ test("Supporter populated page shares a social PNG with safe fallbacks", async (
   await expect(page.getByLabel("Subscriber service marks").locator("span")).toHaveCount(6);
   await expect(page.getByText("Complete Fleet · Living")).toBeVisible();
   await page.screenshot({ path: testInfo.outputPath("1440-supporter-populated-active.png"), fullPage: true });
+  await page.setViewportSize({ width: 1200, height: 630 });
+  await page.screenshot({ path: testInfo.outputPath("1200-supporter-populated-viewport.png") });
   await page.setViewportSize({ width: 320, height: 800 });
   await page.screenshot({ path: testInfo.outputPath("320-supporter-populated-active.png"), fullPage: true });
   await page.setViewportSize({ width: 1440, height: 900 });

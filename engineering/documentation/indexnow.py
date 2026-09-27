@@ -10,8 +10,9 @@ from urllib.request import Request, urlopen
 
 ROOT = Path(__file__).resolve().parents[2]
 SOURCE = 'apps/player/docs/'
+SUBTITLES_SOURCE = 'apps/subtitles/docs/'
 ORIGIN = 'https://kinosail.com'
-GLOBAL = {'apps/player/docs/_config.yml', 'engineering/documentation/build.py'}
+GLOBAL = {'apps/player/docs/_config.yml', 'apps/subtitles/docs/_config.yml', 'engineering/documentation/build.py'}
 ENDPOINT = 'https://api.indexnow.org/indexnow'
 
 
@@ -29,9 +30,10 @@ def public_key():
 def page_url(path):
     if len(path) > 512:
         raise ValueError('documentation path is too long')
-    if not path.startswith(SOURCE):
+    source = next((prefix for prefix in (SOURCE, SUBTITLES_SOURCE) if path.startswith(prefix)), None)
+    if source is None:
         return None
-    relative = path[len(SOURCE):]
+    relative = path[len(source):]
     parts = relative.split('/')
     if (not relative or any(part.startswith('_') for part in parts)
             or parts[0] == 'research' or parts[-1] in {'README.md', '404.md'}):
@@ -46,7 +48,8 @@ def page_url(path):
         parts.pop()
     if any(not re.fullmatch(r'[a-z0-9]+(?:-[a-z0-9]+)*', part) for part in parts):
         raise ValueError(f'unsupported documentation path: {path}')
-    return f'{ORIGIN}/{"/".join(parts)}' + ('/' if parts else '')
+    public_prefix = 'subtitles/' if source == SUBTITLES_SOURCE else ''
+    return f'{ORIGIN}/{public_prefix}{"/".join(parts)}' + ('/' if parts else '')
 
 
 def changed_urls(before, after):
@@ -60,16 +63,18 @@ def changed_urls(before, after):
         subprocess.run(['git', 'cat-file', '-e', f'{before}^{{commit}}'], cwd=ROOT, check=True)
         subprocess.run(['git', 'merge-base', '--is-ancestor', before, after], cwd=ROOT, check=True)
         result = subprocess.run(['git', 'diff', '--no-renames', '--name-only', '-z', before, after,
-                                 '--', SOURCE, 'engineering/documentation/build.py'], cwd=ROOT,
+                                 '--', SOURCE, SUBTITLES_SOURCE, 'engineering/documentation/build.py'], cwd=ROOT,
                                 check=True, stdout=subprocess.PIPE)
         if len(result.stdout) > 1_000_000:
             raise ValueError('changed path list is too large')
         paths = [item.decode('utf-8') for item in result.stdout.split(b'\0') if item]
-        all_pages = any(path in GLOBAL or path.startswith((SOURCE + '_includes/',
-                                                           SOURCE + '_layouts/', SOURCE + '_data/'))
+        all_pages = any(path in GLOBAL or path.startswith(tuple(
+            source + part for source in (SOURCE, SUBTITLES_SOURCE)
+            for part in ('_includes/', '_layouts/', '_data/')))
                         for path in paths)
     if all_pages:
-        paths.extend(str(path.relative_to(ROOT)) for path in (ROOT / SOURCE).rglob('*') if path.is_file())
+        paths.extend(str(path.relative_to(ROOT)) for source in (SOURCE, SUBTITLES_SOURCE)
+                     for path in (ROOT / source).rglob('*') if path.is_file())
     urls = sorted({url for path in paths if (url := page_url(path))})
     if len(urls) > 10_000:
         raise ValueError('IndexNow accepts at most 10,000 URLs')

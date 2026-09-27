@@ -29,7 +29,7 @@ func TestConfiguredProviderAutomaticallyEnrichesLibrary(t *testing.T) {
 	for range 30 {
 		player := httptest.NewRecorder()
 		handler.ServeHTTP(player, httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/watch/"+id, nil))
-		if strings.Contains(player.Body.String(), "A linguist meets visitors.") {
+		if strings.Contains(player.Body.String(), "A linguist meets visitors.") && strings.Contains(player.Body.String(), `aria-label="Content rating">PG-13</small>`) {
 			return
 		}
 		time.Sleep(25 * time.Millisecond)

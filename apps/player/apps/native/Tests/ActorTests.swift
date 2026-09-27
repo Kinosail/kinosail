@@ -33,13 +33,45 @@ struct ActorTests {
 
     @Test func showUsesItsCastAndPreservesEpisodeOrdering() async throws {
         let cast = JSONValue.array([.object(["name": .string("Show actor"), "image": .string("/person/episode/0?scope=show")])])
-        let fixture = try HTTPFixture(body: encode(show(cast: cast)))
+        var fields = try show(cast: cast).object()
+        fields["backdrop"] = .string("/backdrop/\(showID)")
+        fields["year"] = .string("2023")
+        fields["genres"] = .string("Drama, Action")
+        fields["plot"] = .string("A team faces a difficult mission.")
+        let fixture = try HTTPFixture(body: encode(.object(fields)))
         defer { fixture.remove() }
         let detail = try await fixture.client.show(id: showID)
+        #expect(detail.title == "Show")
+        #expect(detail.backdrop == "/backdrop/\(showID)")
+        #expect(detail.year == "2023")
+        #expect(detail.genres == "Drama, Action")
+        #expect(detail.plot == "A team faces a difficult mission.")
         #expect(detail.cast.first?.name == "Show actor")
         #expect(detail.cast.first?.image == "/person/episode/0?scope=show")
         #expect(detail.episodes.map(\.episode) == [1, 2])
         #expect(try await fixture.client.episodes(showID: showID).map(\.id) == detail.episodes.map(\.id))
+    }
+
+    @Test func invalidShowHeroMetadataIsRejectedBeforeArtworkRequestsOrWrites() async throws {
+        let cases: [(String, JSONValue)] = [
+            ("title", .string("")), ("title", .string(String(repeating: "a", count: 513))),
+            ("backdrop", .bool(true)), ("backdrop", .string("https://other.example/backdrop/1")),
+            ("year", .bool(true)), ("year", .string(String(repeating: "1", count: 17))),
+            ("genres", .string(String(repeating: "g", count: 513))),
+            ("plot", .string(String(repeating: "p", count: 10_001))),
+            ("unrecognized", .string("value"))
+        ]
+        for (key, value) in cases {
+            var fields = try show(cast: .array([])).object()
+            fields[key] = value
+            let fixture = try HTTPFixture(body: encode(.object(fields)))
+            defer { fixture.remove() }
+            await #expect(throws: ClientError.self) { try await fixture.client.show(id: showID) }
+            await #expect(throws: CatalogCacheMiss.self) { try await fixture.client.show(id: showID, policy: .cached) }
+            #expect(fixture.requests.count == 1)
+            #expect(fixture.requests.first?.httpMethod == "GET")
+            #expect(fixture.requests.first?.url?.path == "/api/v1/shows/\(showID)")
+        }
     }
 
     @Test func malformedCastIsRejectedForMoviesAndShowsWithoutWrites() async throws {

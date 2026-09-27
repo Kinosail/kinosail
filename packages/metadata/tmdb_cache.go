@@ -61,11 +61,15 @@ func (client *TMDBClient) Load(id string) (TMDBMetadata, bool) {
 	if decodeExternalJSON(file, 1<<20, &metadata) != nil || !validCachedTMDB(metadata, filepath.Dir(path)) {
 		return TMDBMetadata{}, false
 	}
-	return metadata, time.Since(info.ModTime()) < 7*24*time.Hour
+	return metadata, freshTMDBCache(metadata, info.ModTime())
+}
+
+func freshTMDBCache(metadata TMDBMetadata, modified time.Time) bool {
+	return metadata.Version == 2 && time.Since(modified) < 7*24*time.Hour
 }
 
 func validCachedTMDB(metadata TMDBMetadata, directory string) bool {
-	if !validTMDBText(metadata) || metadata.TMDBID <= 0 || len(metadata.Cast) > 15 || !validTMDBCachePath(directory, metadata.Poster) {
+	if !validTMDBText(metadata) || metadata.Version != 0 && metadata.Version != 2 || metadata.TMDBID <= 0 || len(metadata.Cast) > 15 || !validTMDBCachePath(directory, metadata.Poster) {
 		return false
 	}
 	return validCachedTMDBCast(metadata.Cast, directory)

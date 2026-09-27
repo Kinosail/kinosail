@@ -180,7 +180,15 @@ func needsMetadata(item library.Item, record metadata.Record, found, configured 
 	if item.Show != "" {
 		artwork = item.ShowArtwork
 	}
-	return !metadata.RegularFile(artwork) || configured && (!record.CastFetched || needsBackdrop(item, record))
+	return !metadata.RegularFile(artwork) || configured && needsConfiguredMetadata(item, record)
+}
+
+func needsConfiguredMetadata(item library.Item, record metadata.Record) bool {
+	return !record.CastFetched || needsBackdrop(item, record) || needsMovieRating(item, record)
+}
+
+func needsMovieRating(item library.Item, record metadata.Record) bool {
+	return item.Show == "" && item.Rating == "" && !record.RatingChecked
 }
 
 func needsBackdrop(item library.Item, record metadata.Record) bool {

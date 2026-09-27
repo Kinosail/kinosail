@@ -74,6 +74,28 @@ struct HTTPTests {
         #expect(request.value(forHTTPHeaderField: "Authorization") == "Bearer fixture-token")
     }
 
+    @Test func retriesTemporaryReadFailureButNeverRepeatsAMutationOrAuthorizationFailure() async throws {
+        let profile = Data("{\"server\":\"Fixture\",\"serverId\":\"server\",\"viewer\":{\"id\":\"viewer\",\"name\":\"Alex\",\"owner\":true,\"downloads\":true,\"transcode\":true,\"remote\":false}}".utf8)
+        let read = try HTTPFixture(body: "", status: 503)
+        defer { read.remove() }
+        FixtureURLProtocol.entries.withLock {
+            $0[read.host]?.sequence = [.init(data: Data(), status: 503, headers: [:]),
+                                      .init(data: profile, status: 200, headers: [:])]
+        }
+        #expect(try await read.client.viewer().id == "viewer")
+        #expect(read.requests.count == 2)
+
+        let mutation = try HTTPFixture(body: "", status: 503)
+        defer { mutation.remove() }
+        await #expect(throws: ClientError.http(503)) { try await mutation.client.startQuickConnect(device: "Phone") }
+        #expect(mutation.requests.count == 1)
+
+        let denied = try HTTPFixture(body: "", status: 401)
+        defer { denied.remove() }
+        await #expect(throws: ClientError.http(401)) { try await denied.client.viewer() }
+        #expect(denied.requests.count == 1)
+    }
+
     @Test func diagnosticOperationExcludesMediaIDsAndQueries() {
         #expect(diagnosticOperation("/api/v1/items/private-title/playback?token=secret") == "items-playback")
         #expect(diagnosticOperation("/api/v1/library?q=private-title") == "library")
@@ -140,6 +162,7 @@ final class FixtureURLProtocol: URLProtocol, @unchecked Sendable {
         let headers: [String: String]
         var requests: [URLRequest] = []
         var routes: [String: Entry] = [:]
+        var sequence: [Entry] = []
         var hold = false
         var chunkSize: Int?
         var failure: URLError.Code?
@@ -151,6 +174,7 @@ final class FixtureURLProtocol: URLProtocol, @unchecked Sendable {
         guard let url = request.url, let host = url.host else { return }
         let entry = Self.entries.withLock { values -> Entry? in
             values[host]?.requests.append(request)
+            if values[host]?.sequence.isEmpty == false { return values[host]?.sequence.removeFirst() }
             return values[host]?.routes[url.path] ?? values[host]
         }
         guard let entry else { client?.urlProtocol(self, didFailWithError: URLError(.unsupportedURL)); return }

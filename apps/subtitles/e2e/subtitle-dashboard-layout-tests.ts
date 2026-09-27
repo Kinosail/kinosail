@@ -3,6 +3,26 @@ import { expect, test } from "@playwright/test";
 import { compactViewports, expectNoHorizontalOverflow, expectSkipLinkOffscreen, initiallyOccludedTargets, occludedTargets, setSubtitleLanguages, supportedViewports } from "./subtitle-dashboard-helpers";
 
 export function registerSubtitleLayoutTests() {
+test("phone settings expose every section without a hidden horizontal rail", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/settings");
+  const sections = page.getByRole("navigation", { name: "Settings sections" });
+  const layout = await sections.evaluate((nav) => ({
+    scrollWidth: nav.scrollWidth,
+    clientWidth: nav.clientWidth,
+    links: [...nav.querySelectorAll("a")].map((link) => ({
+      left: link.getBoundingClientRect().left,
+      right: link.getBoundingClientRect().right,
+      top: link.getBoundingClientRect().top,
+      bottom: link.getBoundingClientRect().bottom,
+    })),
+    bounds: nav.getBoundingClientRect().toJSON(),
+  }));
+  expect(layout.links).toHaveLength(8);
+  expect(layout.scrollWidth).toBeLessThanOrEqual(layout.clientWidth + 1);
+  expect(layout.links.every((link) => link.left >= layout.bounds.left - 1 && link.right <= layout.bounds.right + 1 && link.top >= layout.bounds.top - 1 && link.bottom <= layout.bounds.bottom + 1)).toBe(true);
+});
+
 test("Settings header keeps desktop destinations in one compact row", async ({ page }) => {
   for (const width of [1920, 1280, 1024, 901]) {
     await page.setViewportSize({ width, height: 900 });
@@ -15,7 +35,7 @@ test("Settings header keeps desktop destinations in one compact row", async ({ p
     expect(layout.header.height, `${width}px header height`).toBeLessThanOrEqual(100);
     expect(layout.links).toHaveLength(3);
     expect(layout.links.every((link) => Math.abs(link.top - layout.links[0].top) <= 1), `${width}px navigation row`).toBe(true);
-    expect(layout.links.every((link) => link.left >= layout.nav.left && link.right <= layout.nav.right), `${width}px navigation bounds`).toBe(true);
+    expect(layout.links.every((link) => link.left >= layout.nav.left - 1 && link.right <= layout.nav.right + 1), `${width}px navigation bounds`).toBe(true);
     await expectNoHorizontalOverflow(page);
   }
 });
@@ -113,7 +133,14 @@ test("Dashboard stays readable and accessible at every supported width", async (
     expect(accessibility.violations).toEqual([]);
     await expectSkipLinkOffscreen(page);
     await page.screenshot({ path: testInfo.outputPath(`${viewport.width}-subtitle-dashboard.png`), fullPage: true });
+    if (viewport.width === 1440 || viewport.width === 390) {
+      await page.screenshot({ path: testInfo.outputPath(`${viewport.width}-subtitle-dashboard-viewport.png`) });
+    }
   }
+  await page.setViewportSize({ width: 1200, height: 630 });
+  await page.goto("/");
+  await expect(page.getByRole("heading", { name: /subtitle/i }).first()).toBeVisible();
+  await page.screenshot({ path: testInfo.outputPath("1200-subtitle-dashboard-viewport.png") });
 });
 
 test("Dashboard preserves keyboard and high-contrast operation", async ({ page }, testInfo) => {

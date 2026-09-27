@@ -1,0 +1,33 @@
+<meta name="robots" content="index,follow,max-image-preview:large">
+<meta property="og:site_name" content="Kinosail">
+<meta property="og:image" content="{{ '/assets/images/subtitles-dashboard-1200.png' | absolute_url }}">
+<meta property="og:image:type" content="image/png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Kinosail Subtitles dashboard with a fictional test library">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="{{ '/assets/images/subtitles-dashboard-1200.png' | absolute_url }}">
+<link rel="sitemap" type="application/xml" href="{{ site.root_baseurl | default: '' }}/sitemap.xml">
+{% assign breadcrumb_group = nil %}{% for group in site.data.navigation %}{% if group.title == page.section %}{% assign breadcrumb_group = group %}{% endif %}{% endfor %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {"@type":"Organization","@id":{{ site.url | append: '/#organization' | jsonify }},"name":"Kinosail","url":{{ site.url | append: '/' | jsonify }},"logo":{{ '/assets/images/kinosail-mark.svg' | absolute_url | jsonify }},"sameAs":["https://github.com/Kinosail"]},
+    {"@type":"WebSite","@id":{{ '/#website' | absolute_url | jsonify }},"name":"Kinosail Subtitles documentation","url":{{ '/' | absolute_url | jsonify }},"publisher":{"@id":{{ site.url | append: '/#organization' | jsonify }}}},
+    {"@type":"WebPage","@id":{{ page.url | absolute_url | jsonify }},"url":{{ page.url | absolute_url | jsonify }},"name":{{ page.title | jsonify }},"description":{{ page.description | default: site.description | jsonify }},"isPartOf":{"@id":{{ '/#website' | absolute_url | jsonify }}},"inLanguage":"en"}
+    {% if page.section and page.url != '/' %},
+    {"@type":"BreadcrumbList","itemListElement":[
+      {"@type":"ListItem","position":1,"name":"Subtitles docs","item":{{ '/' | absolute_url | jsonify }}}
+      {% if breadcrumb_group and breadcrumb_group.url != page.url %},
+      {"@type":"ListItem","position":2,"name":{{ breadcrumb_group.title | jsonify }},"item":{{ breadcrumb_group.url | absolute_url | jsonify }}}
+      {% endif %},
+      {"@type":"ListItem","position":{% if breadcrumb_group and breadcrumb_group.url != page.url %}3{% else %}2{% endif %},"name":{{ page.title | jsonify }},"item":{{ page.url | absolute_url | jsonify }}}
+    ]}
+    {% endif %}
+    {% if page.url == '/' %},
+    {"@type":"SoftwareApplication","@id":{{ '/#subtitles' | absolute_url | jsonify }},"name":"Kinosail Subtitles","applicationCategory":"MultimediaApplication","operatingSystem":"Linux server; web browser client","url":{{ '/' | absolute_url | jsonify }},"description":"A free, self-hosted subtitle automation app that scans local movies and episodes and writes validated SRT or WebVTT sidecar files.","offers":{"@type":"Offer","price":0},"license":"https://github.com/Kinosail/kinosail/blob/main/apps/subtitles/LICENSE","downloadUrl":{{ '/getting-started/install/' | absolute_url | jsonify }},"screenshot":{{ '/assets/images/subtitles-dashboard-1200.png' | absolute_url | jsonify }},"publisher":{"@id":{{ site.url | append: '/#organization' | jsonify }}}}
+    {% endif %}
+  ]
+}
+</script>

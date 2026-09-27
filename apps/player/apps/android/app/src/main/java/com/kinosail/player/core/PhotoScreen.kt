@@ -37,6 +37,9 @@ import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.semantics.LiveRegionMode
+import androidx.compose.ui.semantics.liveRegion
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 
@@ -122,7 +125,8 @@ internal fun PhotoScreen(item: CatalogItem, catalog: CatalogModel, tv: Boolean, 
             if (loaded && image == null) {
                 Text(if (item.stream.isEmpty()) "This Viewer cannot open the photo."
                     else "Could not open the photo. Check your Server connection and try again.",
-                    color = Color.White)
+                    color = Color.White,
+                    modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite })
                 if (item.stream.isNotEmpty()) {
                     if (tv) androidx.tv.material3.Button(onClick = { revision++ }) {
                         androidx.tv.material3.Text(interfaceText("Try again"))
