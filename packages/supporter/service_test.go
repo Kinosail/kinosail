@@ -78,7 +78,7 @@ func (fixture *signingFixture) handler(writer http.ResponseWriter, request *http
 		if sustaining {
 			edition = "Living"
 		}
-		value["collection"] = map[string]any{"id": completeFleetID, "name": "Complete Fleet", "edition": edition, "appIds": []string{"kino-dashboard", "kino-player"}}
+		value["collection"] = map[string]any{"id": completeFleetID, "name": "Complete Fleet", "edition": edition, "appIds": []string{"kino-archive", "kino-player"}}
 	}
 	record, _ := json.Marshal(value)
 	_ = json.NewEncoder(writer).Encode(map[string]string{

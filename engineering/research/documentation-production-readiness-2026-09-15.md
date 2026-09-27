@@ -24,7 +24,6 @@ Provider setup also uses the official [SubDL API guide](https://subdl.com/api-do
 - Removed the Player README's stale live-TV claim and the app security docs' stale enabled-by-default Jellyfin and running release-CI claims.
 - Made source backup-key configuration explicit. Source Compose does not mount the release installer key; CLI backups without a key are unencrypted portable archives, while automatic backups require encryption.
 - Corrected backup filenames, added explicit verification before restore, and distinguished app state from external configuration, secret material, media, and subtitle sidecars.
-- Expanded Dashboard first setup, HTTPS/public-origin configuration, data protection, updates, and troubleshooting.
 - Corrected native README distribution state against the current `implemented` Info-plist value while preserving device/signing acceptance boundaries.
 - Replaced copied Player workflows in the Subtitles guide with provider setup, coverage, matching, maintenance, sidecar protection, inspection, recovery, API, and MCP instructions.
 - Documented that the supplied Compose files do not forward SubSource variables; Owner Settings or an explicit deployment override is required.
@@ -34,7 +33,7 @@ Provider setup also uses the official [SubDL API guide](https://subdl.com/api-do
 
 ## README inventory
 
-All 20 tracked READMEs present at the start were reviewed. Nineteen were updated; the dated dependency-provenance record was retained. Added three entry points for shared packages, cross-app engineering, and the documentation renderer.
+This inventory lists the retained README entry points. The dated dependency-provenance record was retained. Three entry points were added for shared packages, cross-app engineering, and the documentation renderer.
 
 | README | Role and disposition |
 | --- | --- |
@@ -42,14 +41,12 @@ All 20 tracked READMEs present at the start were reviewed. Nineteen were updated
 | `.codex/skills/README.md` | Agent-tooling entry point. Added scope and root navigation. |
 | `apps/player/README.md` | Player setup and operations. Corrected current behavior and prerequisites. |
 | `apps/subtitles/README.md` | Subtitles setup and operations. Expanded permissions, provider wiring, first success, and recovery. |
-| `apps/dashboard/README.md` | Complete Dashboard operator entry point. Expanded. |
 | `apps/player/apps/native/README.md` | Swift client connection/build/distribution boundary. Corrected. |
 | `apps/player/apps/native/patches/README.md` | Retained Expo patch reference. Explicitly marked legacy. |
 | `apps/player/docs/README.md` | User-guide map and reproducible local rendering. Expanded. |
 | `apps/subtitles/docs/README.md` | Subtitle guide map and reproducible local rendering. Expanded. |
 | `apps/player/engineering/README.md` | Actual architecture/release/research navigation. Expanded. |
 | `apps/subtitles/engineering/README.md` | Actual architecture/release/research navigation. Expanded. |
-| `apps/dashboard/engineering/README.md` | Removed references to nonexistent docs/ADR/checklist locations. |
 | `apps/player/engineering/architecture-explorer/README.md` | Monorepo generator context and publication boundary. Clarified. |
 | `apps/subtitles/engineering/architecture-explorer/README.md` | Monorepo generator context and publication boundary. Clarified. |
 | `apps/player/engineering/design/supporter-badge-vector-samples/README.md` | Working directory, design-study scope, and gate policy. Clarified. |
@@ -61,7 +58,7 @@ All 20 tracked READMEs present at the start were reviewed. Nineteen were updated
 
 ## Source and artifact evidence
 
-- Current Compose files, example configuration, runtime configuration definitions, backup commands, subtitle route/authentication policies, Dashboard setup/configuration, native Info plists, Makefiles, installer, and release checklist were read for the affected instructions.
+- Current Compose files, example configuration, runtime configuration definitions, backup commands, subtitle route/authentication policies, native Info plists, Makefiles, installer, and release checklist were read for the affected instructions.
 - `gh release list --repo MikeO7/kinosail --limit 5` returned no releases on this date. Release availability is recorded as a dated observation.
 - Both sites rendered with the locked Jekyll 4.4.1 bundle under distinct nonempty base paths (`/preview/player` and `/preview/subtitles`). The render produced 78 HTML files across both outputs.
 - Inspection of rendered local link targets and fragment anchors found no unresolved destinations. Configuration inventory review found no missing or extra source-defined keys.

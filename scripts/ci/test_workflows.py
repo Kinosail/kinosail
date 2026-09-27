@@ -15,7 +15,7 @@ class WorkflowSecurityTests(unittest.TestCase):
         self.assertEqual(ci.count('run: python3 scripts/ci/affected.py'), 1)
         for scope in ('Repository', 'Player', 'Subtitles', 'Security'):
             self.assertIn(f'name: {scope} checks', ci)
-        self.assertNotIn('dashboard-required', ci)
+        self.assertEqual(len(re.findall(r'^  [a-z-]+-required:$', ci, re.M)), 4)
         for source in (ci, app):
             self.assertNotIn('continue-on-error:', source)
             self.assertNotIn('enabled=false', source)

@@ -186,12 +186,11 @@ Never delay the underlying action until decoration finishes. Keep repeated contr
 | Player home / browse | A clearly authored resume composition when progress exists; rich artwork, legible media names, focused shelf hierarchy; visibly accessible search/filtering | People resume or find a title quickly; empty/missing-art states remain intentional. |
 | Player detail / playback | Strong title/artwork relationship; one Play/Resume action; secondary options nearby; chapter/episode structure easy to scan | Playback dominates; tracks, device routing, recovery, and policy remain understandable. |
 | Native Player | Platform-adapted controls, typography, safe areas, and navigation; meaningful tablet split compositions and remote focus | Same task quality on phone, tablet, desktop, and TV; web rendering is not device proof. |
-| Dashboard | A confident household service board with compact status, readable destinations, and direct editing; compare tile and list density | Primary services appear early; no fake monitoring metrics; complete keyboard reordering. |
 | Subtitles | Coverage and exceptions lead; language priorities and provider state close to the work; concise action feedback | Owners understand what is missing, what will run, and whether files changed. |
 | Supporter surfaces | Beautiful ownership and badge presentation tied to real entitlement; clear selected/locked/available states | Recognition is understandable and private; appearance never implies ownership that does not exist. |
 | Home Assistant integration | Native Home Assistant selectors, field copy, and state feedback; improve integration-owned flows | Setup errors are actionable; the integration fits its host. Replacing the host's entire visual system is a separate product decision. |
 
-Repository boundaries verified during this review: Player/Subtitles/Dashboard and native Player live here; Supporter is an API service with visible surfaces in consuming apps; Home Assistant provides the integration's host UI. Recheck this map before future work if repository ownership changes.
+Repository boundaries verified during this review: Player/Subtitles and native Player live here; Supporter is an API service with visible surfaces in consuming apps; Home Assistant provides the integration's host UI. Recheck this map before future work if repository ownership changes.
 
 ## Modern web techniques worth evaluating
 

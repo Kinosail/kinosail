@@ -62,7 +62,7 @@ class RequiredTests(unittest.TestCase):
         for value in ("", "[]", "x" * 16385, "{}", json.dumps(dict.fromkeys((*FLAGS, "deep"), "false"))):
             with self.subTest(value=value[:20]), self.assertRaises(ValueError):
                 verify("app", needs, value, "player")
-        for app in (None, "../player", "dashboard"):
+        for app in (None, "../player", "retired"):
             with self.subTest(app=app), self.assertRaises(ValueError):
                 verify("app", needs, raw, app)
 

@@ -24,7 +24,7 @@ func TestTrustedProxyUsesPublicInternetPolicy(t *testing.T) {
 	if response := serveRequest(public, requestWithCookieRequest(t, http.MethodGet, "/settings", "", owner)); response.Code != http.StatusForbidden {
 		t.Fatalf("trusted proxy Owner settings = %d %q", response.Code, response.Body.String())
 	}
-	createdKey := requestWithCookie(t, handler, http.MethodPost, "/settings/api-keys", "name=Dashboard&scopes=library", owner)
+	createdKey := requestWithCookie(t, handler, http.MethodPost, "/settings/api-keys", "name=Library+tool&scopes=library", owner)
 	key := regexp.MustCompile(`ks_[A-Z2-7]+`).FindString(createdKey.Body.String())
 	if createdKey.Code != http.StatusCreated || key == "" {
 		t.Fatalf("create API key = %d %q", createdKey.Code, createdKey.Body.String())
