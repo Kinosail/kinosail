@@ -53,7 +53,7 @@ struct LibraryHubScreen: View {
     }
 
     #if os(tvOS)
-    private func hubSection(_ title: String, _ links: [(String, String, ScreenDestination)]) -> some View {
+    private func hubSection(_ title: LocalizedStringKey, _ links: [(LocalizedStringKey, String, ScreenDestination)]) -> some View {
         VStack(alignment: .leading, spacing: 18) {
             Text(title).font(.title2.bold()).accessibilityAddTraits(.isHeader)
             LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 24),
@@ -105,11 +105,11 @@ struct LibraryQuickLinks: View {
 }
 
 struct LibraryDestinationLink: View {
-    let title: String
+    let title: LocalizedStringKey
     let symbol: String
     let destination: ScreenDestination
 
-    init(_ title: String, _ symbol: String, _ destination: ScreenDestination) {
+    init(_ title: LocalizedStringKey, _ symbol: String, _ destination: ScreenDestination) {
         self.title = title
         self.symbol = symbol
         self.destination = destination

@@ -28,7 +28,7 @@ data class CatalogItem(
 
 data class CatalogPage(val items: List<CatalogItem>, val total: Int, val offset: Int, val limit: Int)
 data class CatalogDetail(val item: CatalogItem, val listed: Boolean)
-internal val LIBRARY_VIEWS = listOf("all" to "All media", "movies" to "Movies", "shows" to "TV Shows",
+internal val LIBRARY_VIEWS = listOf("all" to "All media", "movies" to "Movies", "shows" to "Shows",
     "music" to "Music", "audiobooks" to "Audiobooks", "books" to "Books", "photos" to "Photos",
     "list" to "My List")
 
