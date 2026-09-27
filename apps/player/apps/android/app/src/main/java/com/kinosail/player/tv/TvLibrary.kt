@@ -232,49 +232,52 @@ internal fun TvLibrary(connection: ConnectionModel, viewer: Viewer) {
 }
 
 @Composable
-private fun TvDetail(item: CatalogItem, catalog: CatalogModel, firstModifier: Modifier,
+internal fun TvDetail(item: CatalogItem, catalog: CatalogModel, firstModifier: Modifier,
                      play: () -> Unit, viewPhoto: () -> Unit) {
-    Column(Modifier.fillMaxWidth().verticalScroll(rememberScrollState()),
-        verticalArrangement = Arrangement.spacedBy(24.dp)) {
-        if (item.kind in setOf("video", "music", "audiobook")) {
-            Button(onClick = play, modifier = firstModifier) {
-                Text(interfaceText(if (item.progress.seconds > 0 && !item.progress.watched) "Resume" else "Play"))
+    val playable = item.kind in setOf("video", "music", "audiobook")
+    val viewablePhoto = item.kind == "photo" && item.stream.isNotEmpty()
+    Row(Modifier.fillMaxWidth().verticalScroll(rememberScrollState()),
+        horizontalArrangement = Arrangement.spacedBy(32.dp)) {
+        TvPoster(item, catalog, Modifier.width(260.dp), ratio = 2f / 3f, dimension = 800)
+        Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(16.dp)) {
+            Text(item.title, style = MaterialTheme.typography.displayMedium,
+                color = MaterialTheme.colorScheme.onBackground)
+            Text(listOf(item.kind.replaceFirstChar(Char::uppercaseChar), item.year).filter(String::isNotEmpty)
+                .joinToString(" · "), style = MaterialTheme.typography.titleLarge,
+                color = MaterialTheme.colorScheme.onSurfaceVariant)
+            if (item.plot.isNotEmpty()) Text(item.plot, style = MaterialTheme.typography.bodyLarge,
+                color = MaterialTheme.colorScheme.onBackground)
+            Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+                if (playable) {
+                    Button(onClick = play, modifier = firstModifier) {
+                        Text(interfaceText(if (item.progress.seconds > 0 && !item.progress.watched) "Resume" else "Play"))
+                    }
+                } else if (item.kind == "photo") {
+                    Button(onClick = viewPhoto, enabled = viewablePhoto,
+                        modifier = if (viewablePhoto) firstModifier else Modifier) {
+                        Text(interfaceText("View photo"))
+                    }
+                }
+                Button(onClick = catalog::closeDetail,
+                    modifier = if (!playable && !viewablePhoto) firstModifier else Modifier) {
+                    Text(interfaceText("Back"))
+                }
+                catalog.state.listed?.let { listed ->
+                    Button(onClick = { catalog.setListed(!listed) }, enabled = !catalog.state.listBusy) {
+                        Text(interfaceText(if (listed) "Remove from My List" else "Add to My List"))
+                    }
+                }
             }
-            Button(onClick = catalog::closeDetail) { Text(interfaceText("Back")) }
-        } else if (item.kind == "photo") {
-            Button(onClick = viewPhoto, enabled = item.stream.isNotEmpty(),
-                modifier = if (item.stream.isNotEmpty()) firstModifier else Modifier) {
-                Text(interfaceText("View photo"))
-            }
-            Button(onClick = catalog::closeDetail,
-                modifier = if (item.stream.isEmpty()) firstModifier else Modifier) { Text(interfaceText("Back")) }
-        } else Button(onClick = catalog::closeDetail, modifier = firstModifier) { Text(interfaceText("Back")) }
-        if (item.kind == "photo" && item.stream.isEmpty()) Text(
-            interfaceText("Photo viewing is unavailable for this Viewer."),
-            color = MaterialTheme.colorScheme.onSurfaceVariant)
-        if (item.kind == "book") Text(interfaceText("Read this book on an Android phone or tablet."),
-            color = MaterialTheme.colorScheme.onSurfaceVariant)
-        catalog.state.listed?.let { listed ->
-            Button(onClick = { catalog.setListed(!listed) }, enabled = !catalog.state.listBusy) {
-                Text(interfaceText(if (listed) "Remove from My List" else "Add to My List"))
-            }
-        }
-        if (catalog.state.listBusy && catalog.state.listed == null) Text(interfaceText("Loading My List status…"))
-        catalog.state.detailNotice?.let { notice ->
-            Text(notice, color = MaterialTheme.colorScheme.error,
-                modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite })
-            if (catalog.state.listed == null) Button(onClick = catalog::retryDetail) { Text(interfaceText("Try again")) }
-        }
-        Row(horizontalArrangement = Arrangement.spacedBy(32.dp)) {
-            TvPoster(item, catalog, Modifier.width(260.dp), ratio = 2f / 3f, dimension = 800)
-            Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(16.dp)) {
-                Text(item.title, style = MaterialTheme.typography.displayMedium,
-                    color = MaterialTheme.colorScheme.onBackground)
-                Text(listOf(item.kind.replaceFirstChar(Char::uppercaseChar), item.year).filter(String::isNotEmpty)
-                    .joinToString(" · "), style = MaterialTheme.typography.titleLarge,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant)
-                if (item.plot.isNotEmpty()) Text(item.plot, style = MaterialTheme.typography.bodyLarge,
-                    color = MaterialTheme.colorScheme.onBackground)
+            if (item.kind == "photo" && item.stream.isEmpty()) Text(
+                interfaceText("Photo viewing is unavailable for this Viewer."),
+                color = MaterialTheme.colorScheme.onSurfaceVariant)
+            if (item.kind == "book") Text(interfaceText("Read this book on an Android phone or tablet."),
+                color = MaterialTheme.colorScheme.onSurfaceVariant)
+            if (catalog.state.listBusy && catalog.state.listed == null) Text(interfaceText("Loading My List status…"))
+            catalog.state.detailNotice?.let { notice ->
+                Text(notice, color = MaterialTheme.colorScheme.error,
+                    modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite })
+                if (catalog.state.listed == null) Button(onClick = catalog::retryDetail) { Text(interfaceText("Try again")) }
             }
         }
     }
