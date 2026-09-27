@@ -24,6 +24,42 @@ updates:
     groups:
       dependencies:
         patterns: ["*"]
+  - package-ecosystem: gomod
+    directory: /scripts/quality/metrics
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 1
+    groups:
+      dependencies:
+        patterns: ["*"]
+  - package-ecosystem: gradle
+    directory: /apps/player/apps/android
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 1
+    groups:
+      dependencies:
+        patterns: ["*"]
+  - package-ecosystem: docker
+    directory: /apps/player
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 1
+    exclude-paths:
+      - Containerfile.test
+    groups:
+      dependencies:
+        patterns: ["*"]
+  - package-ecosystem: docker
+    directory: /apps/subtitles
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 1
+    exclude-paths:
+      - Containerfile.test
+    groups:
+      dependencies:
+        patterns: ["*"]
   - package-ecosystem: github-actions
     directory: /
     schedule:
@@ -50,6 +86,22 @@ updates:
         patterns: ["*"]
   - package-ecosystem: npm
     directory: /apps/subtitles/e2e
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 1
+    groups:
+      dependencies:
+        patterns: ["*"]
+  - package-ecosystem: npm
+    directory: /engineering/documentation
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 1
+    groups:
+      dependencies:
+        patterns: ["*"]
+  - package-ecosystem: bundler
+    directory: /engineering/documentation
     schedule:
       interval: weekly
     open-pull-requests-limit: 1
