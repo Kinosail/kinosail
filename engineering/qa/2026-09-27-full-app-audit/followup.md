@@ -49,3 +49,11 @@ Replay the local browser checks with each isolated test instance running and `KI
 ## Remaining boundaries
 
 This follow-up does not establish complete product coverage. It does not verify a real Cast receiver, physical Android or Apple devices, an authenticated Apple simulator journey, external subtitle providers, paid supporter checkout, production deployment, or long-duration playback recovery. The initial report records the sampled full audit of web, Android phone/TV/Wear, and Apple iOS/tvOS/watchOS. Those app journeys remain separate from the source and local test evidence here.
+
+## Further iteration — passive passkey error
+
+On a fresh Player sign-in page, the automatic passkey offer received HTTP 503 from the isolated local server and showed “Could not use your passkey” before any sign-in attempt. This reproduced in Chrome and the in-app browser. The automatic offer now stays quiet on failure; an explicit click still shows the error. The passkey script URL moved from `v=14` to `v=15` because the old URL is cacheable for 24 hours.
+
+The test was added first: `KINOSAIL_E2E_URL=http://127.0.0.1:38129 pnpm --dir apps/player/e2e exec playwright test passkeys.spec.ts --grep 'unavailable automatic' --project=chromium` failed on the original script. After the fix, the full passkey spec passed 24/24 across Chromium, Firefox, and WebKit. The updated sign-in script URL failed its Go server test before the version bump and passed afterward; the related `TestPasskey|TestPasswordLoginOffersPasskey` selection passed. A rebuilt isolated Player instance showed an empty status on first load at the previously cached `127.0.0.1` origin, then showed the error after the passkey button was clicked. The fixture used generated media and a fresh Owner; its container and volumes were removed after verification.
+
+The same iteration rendered a populated Chrome desktop library, a 390 px phone library and movie detail, and playing Arrival on the phone through its 12-second fixture. A current iOS simulator build succeeded and showed the Connect screen; simulator input control was unavailable, so this does not verify authenticated iOS playback. The task-created simulator was removed after capturing the setup state. No claim of 20/20 or complete device coverage follows from these checks.

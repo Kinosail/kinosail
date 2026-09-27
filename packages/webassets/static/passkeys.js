@@ -97,9 +97,7 @@ async function offerConditionalLogin() {
         !await PublicKeyCredential.isConditionalMediationAvailable() || manualLogin) return;
     conditionalLogin = new AbortController();
     await login({conditional: true, signal: conditionalLogin.signal});
-  } catch (error) {
-    if (error.name !== "AbortError" && error.name !== "NotAllowedError") failed(error);
-  }
+  } catch { /* A passive passkey offer should not show a sign-in error. */ }
 }
 
 async function offerLogin() {
