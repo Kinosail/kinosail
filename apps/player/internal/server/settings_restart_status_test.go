@@ -18,45 +18,41 @@ func TestOwnerSeesOnlyUnappliedRestartChanges(t *testing.T) {
 	}
 	handler := server.New(server.Config{DataDir: directory, RequireAuth: true, Configuration: configured})
 	owner := signInTestProfile(t, handler, "/setup", "name=Owner&password=owner-password")
-	check := func(want bool) {
-		t.Helper()
-		for _, path := range []string{"/settings", "/settings/configuration"} {
-			page := requestWithCookie(t, handler, http.MethodGet, path, "", owner)
-			if page.Code != http.StatusOK || strings.Contains(page.Body.String(), `id="restart-required"`) != want {
-				t.Fatalf("%s restart status = %d, want visible=%t", path, page.Code, want)
-			}
-			if want && (!strings.Contains(page.Body.String(), "Backup frequency") || !strings.Contains(page.Body.String(), "Restart Kinosail Player Server")) {
-				t.Fatalf("%s lacks actionable restart status", path)
-			}
-		}
-	}
-	check(false)
+	assertRestartPages(t, handler, owner, false)
 	change := apiCall(t, handler, owner.Value, http.MethodPut, "/api/v1/configuration/backup.interval", map[string]string{"value": "12h"})
 	if change.Code != http.StatusAccepted || !strings.Contains(change.Body.String(), `"restartRequired":true`) {
 		t.Fatalf("save = %d %s", change.Code, change.Body.String())
 	}
-	check(true)
+	assertRestartPages(t, handler, owner, true)
 	loaded, err := configuration.Load(directory, "", func(string) (string, bool) { return "", false })
 	if err != nil {
 		t.Fatal(err)
 	}
 	restarted := server.New(server.Config{DataDir: directory, RequireAuth: true, Configuration: loaded})
-	for _, path := range []string{"/settings", "/settings/configuration"} {
-		page := requestWithCookie(t, restarted, http.MethodGet, path, "", owner)
-		if page.Code != http.StatusOK || strings.Contains(page.Body.String(), `id="restart-required"`) {
-			t.Fatalf("%s still asks for a restart after loading saved settings: %d", path, page.Code)
-		}
-	}
+	assertRestartPages(t, restarted, owner, false)
 	invalid := apiCall(t, handler, owner.Value, http.MethodPut, "/api/v1/configuration/backup.interval", map[string]string{"value": "invalid"})
 	if invalid.Code == http.StatusAccepted {
 		t.Fatal("invalid interval was accepted")
 	}
-	check(true)
+	assertRestartPages(t, handler, owner, true)
 	reset := apiCall(t, handler, owner.Value, http.MethodDelete, "/api/v1/configuration/backup.interval", nil)
 	if reset.Code != http.StatusAccepted || !strings.Contains(reset.Body.String(), `"restartRequired":false`) {
 		t.Fatalf("reset = %d %s", reset.Code, reset.Body.String())
 	}
-	check(false)
+	assertRestartPages(t, handler, owner, false)
+}
+
+func assertRestartPages(t *testing.T, handler http.Handler, owner *http.Cookie, want bool) {
+	t.Helper()
+	for _, path := range []string{"/settings", "/settings/configuration"} {
+		page := requestWithCookie(t, handler, http.MethodGet, path, "", owner)
+		if page.Code != http.StatusOK || strings.Contains(page.Body.String(), `id="restart-required"`) != want {
+			t.Fatalf("%s restart status = %d, want visible=%t", path, page.Code, want)
+		}
+		if want && (!strings.Contains(page.Body.String(), "Backup frequency") || !strings.Contains(page.Body.String(), "Restart Kinosail Player Server")) {
+			t.Fatalf("%s lacks actionable restart status", path)
+		}
+	}
 }
 
 func TestPendingRestartNoticeInPhoneAndDesktopBrowsers(t *testing.T) {
