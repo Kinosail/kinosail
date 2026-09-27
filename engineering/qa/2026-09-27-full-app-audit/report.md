@@ -69,6 +69,9 @@ The nondefault `test-instance.spec.ts`/`ui-happy-paths.spec.ts` run reached 15 o
 | Android | Focused `CatalogEmptyMessageTest` | Red for absent-search case before fix; green 2/2 after fix |
 | Apple | `./scripts/build-apple.sh ios`, `tvos`, `watchos` | All builds passed |
 | Apple | iOS simulator `xcodebuild test`, tvOS remote `xcodebuild test` | iOS 241/241; tvOS 11/11 |
+| Repository | `make max-loc`, `git diff --check` | Passed |
+| Repository | `make -C apps/player verify-changed` | Passed; 5 changed Player paths, file cap and diff checks. Android source was separately checked by Gradle above. |
+| Repository | `make -C apps/subtitles verify-changed` | Passed; Go compile/focused tests and Playwright spec listing. |
 
 The audit report, screenshots, and observation JSON are the repeatable E2E run artifact: they identify source, commands, test data, environment, outcomes, and evidence. Browser runner logs remain under the isolated local test roots. Temporary observation specs were removed after the JSON was saved.
 
@@ -76,4 +79,4 @@ The audit report, screenshots, and observation JSON are the repeatable E2E run a
 
 This is a sampled full-product audit, not a claim that every feature is tested. Automated axe scans cover the observed `main` regions and do not establish complete accessibility. Targeted keyboard and D-pad interaction do not replace a physical accessibility or remote review. The Android TV and Wear checks used emulators. Apple authenticated flows, real providers, Cast on API 23, physical devices, production TLS, publication, deployment health, and long-running resilience were not verified. Test data stayed isolated; no purchase, email, or destructive production workflow was attempted.
 
-Repository gates, CI, PR, and remote-main integration results will be added after delivery.
+Hosted CI and remote-main integration are separate delivery evidence. They are not established by the local checks above.
