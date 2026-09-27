@@ -49,7 +49,7 @@ struct LoadingState: View {
             if layout == .home || layout == .homeAudio {
                 line(width: 180, height: 28).accessibilityHidden(true)
             }
-            if layout == .home || layout == .homeAudio || layout == .detail {
+            if layout == .home || layout == .homeAudio {
                 CinemaHeroLayout {
                     RoundedRectangle(cornerRadius: 12).fill(KinoTheme.surface)
                         .aspectRatio(layout == .homeAudio ? 1 : 16 / 9, contentMode: .fit)
@@ -76,11 +76,7 @@ struct LoadingState: View {
                 }.padding(.top, 12).accessibilityHidden(true)
             }
             if layout == .detail {
-                VStack(alignment: .leading, spacing: 20) {
-                    line(width: 340, height: 20)
-                    line(width: 260, height: 16)
-                    line(width: 180, height: 16)
-                }.padding(.top, 8).accessibilityHidden(true)
+                DetailLoadingState().accessibilityHidden(true)
             }
             if layout == .show {
                 #if os(tvOS)
