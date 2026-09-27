@@ -1,0 +1,23 @@
+<Container version="2">
+  <Name>Kinosail-Subtitles</Name>
+  <Repository>ghcr.io/kinosail/kinosail-subtitles:latest</Repository>
+  <Registry>https://ghcr.io/kinosail/kinosail-subtitles</Registry>
+  <Network>bridge</Network>
+  <Privileged>false</Privileged>
+  <ExtraParams>--init --user=10001:10001 --read-only --cap-drop=ALL --security-opt=no-new-privileges:true --pids-limit=256 --tmpfs /tmp:rw,noexec,nosuid,nodev,size=256m --tmpfs /run:rw,noexec,nosuid,nodev,size=16m</ExtraParams>
+  <WebUI>https://[IP]:[PORT:38128]</WebUI>
+  <Overview>Find and save subtitle files beside your media. Set a writable media path before starting. Keep this service on a trusted local network.</Overview>
+  <Project>https://github.com/Kinosail/kinosail</Project>
+  <ReadMe>https://github.com/Kinosail/kinosail/blob/main/apps/player/docs/getting-started/platforms.md</ReadMe>
+  <TemplateURL>https://raw.githubusercontent.com/Kinosail/kinosail/main/apps/subtitles/packaging/unraid.xml</TemplateURL>
+  <Category>MediaApp:Video</Category>
+  <Config Name="Web port" Target="38128" Default="38128" Mode="tcp" Description="HTTPS port for Kinosail Subtitles." Type="Port" Display="always" Required="true" Mask="false"/>
+  <Config Name="Media" Target="/media" Default="" Mode="rw" Description="Existing media share. Kinosail Subtitles must write sidecar files here." Type="Path" Display="always" Required="true" Mask="false"/>
+  <Config Name="Config" Target="/config" Default="/mnt/user/appdata/kinosail-subtitles/config" Mode="rw" Description="Persistent server settings and accounts." Type="Path" Display="always" Required="true" Mask="false"/>
+  <Config Name="Cache" Target="/cache" Default="/mnt/user/appdata/kinosail-subtitles/cache" Mode="rw" Description="Persistent subtitle and artwork cache." Type="Path" Display="always" Required="true" Mask="false"/>
+  <Config Name="Backups" Target="/backups" Default="/mnt/user/appdata/kinosail-subtitles/backups" Mode="rw" Description="Backup archives. Keep a separate copy outside this server." Type="Path" Display="always" Required="true" Mask="false"/>
+  <Config Name="Data directory" Target="KINOSAIL_DATA_DIR" Default="/config" Description="Container data path." Type="Variable" Display="advanced" Required="true" Mask="false"/>
+  <Config Name="Cache directory" Target="KINOSAIL_CACHE_DIR" Default="/cache" Description="Container cache path." Type="Variable" Display="advanced" Required="true" Mask="false"/>
+  <Config Name="Media directory" Target="KINOSAIL_MEDIA_DIR" Default="/media" Description="Container media path." Type="Variable" Display="advanced" Required="true" Mask="false"/>
+  <Config Name="Backup directory" Target="KINOSAIL_BACKUP_DIR" Default="/backups" Description="Container backup path." Type="Variable" Display="advanced" Required="true" Mask="false"/>
+</Container>

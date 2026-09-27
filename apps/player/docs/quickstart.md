@@ -6,6 +6,8 @@ section: Start here
 
 # Get Kinosail running
 
+Installing on a NAS, CasaOS, Unraid, or Proxmox VE? Use the [platform install guide]({{ '/getting-started/platforms/' | relative_url }}).
+
 Kinosail Server is free to run on your own hardware. The web Player runs in a published container. Docker Compose pulls it from GitHub Container Registry; you do not need to build it from source.
 
 ## Docker Compose (recommended)

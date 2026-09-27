@@ -1,0 +1,42 @@
+services:
+  kinosail:
+    image: ghcr.io/kinosail/kinosail-subtitles:latest
+    restart: unless-stopped
+    stop_grace_period: 30s
+    init: true
+    user: "10001:10001"
+    pids_limit: 256
+    read_only: true
+    cap_drop: [ALL]
+    security_opt:
+      - no-new-privileges:true
+    ports:
+      - "38128:38128"
+    environment:
+      KINOSAIL_DATA_DIR: /config
+      KINOSAIL_CACHE_DIR: /cache
+      KINOSAIL_MEDIA_DIR: /media
+      KINOSAIL_BACKUP_DIR: /backups
+    volumes:
+      - subtitles-config:/config
+      - subtitles-cache:/cache
+      - subtitles-backups:/backups
+      - type: bind
+        source: "${KINOSAIL_MEDIA_PATH:?Set an existing absolute media path}"
+        target: /media
+        read_only: false
+        bind:
+          create_host_path: false
+    tmpfs:
+      - /tmp:rw,noexec,nosuid,nodev,size=256m
+      - /run:rw,noexec,nosuid,nodev,size=16m
+    healthcheck:
+      test: ["CMD", "kinosail", "healthcheck"]
+      interval: 30s
+      timeout: 15s
+      retries: 3
+
+volumes:
+  subtitles-config:
+  subtitles-cache:
+  subtitles-backups:
