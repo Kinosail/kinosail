@@ -36,14 +36,15 @@ type installationSettings struct {
 	JellyfinID            string   `json:"jellyfinId,omitempty"`
 	settingsops.Playback
 	transcodehardware.Selection
-	SubtitleLanguage  string          `json:"subtitleLanguage,omitempty"`
-	ScanFrequency     string          `json:"scanFrequency,omitempty"`
-	DLNAToken         string          `json:"dlnaToken,omitempty"`
-	Navigation        []string        `json:"navigation"`
-	OnboardingPending bool            `json:"onboardingPending,omitempty"`
-	UpdateChecks      bool            `json:"updateChecks"`
-	SupporterDisplay  string          `json:"supporterDisplay,omitempty"`
-	Supporter         *supporterState `json:"supporter,omitempty"`
+	SubtitleLanguage      string          `json:"subtitleLanguage,omitempty"`
+	SubtitlePickerLimited bool            `json:"subtitlePickerLimited,omitempty"`
+	ScanFrequency         string          `json:"scanFrequency,omitempty"`
+	DLNAToken             string          `json:"dlnaToken,omitempty"`
+	Navigation            []string        `json:"navigation"`
+	OnboardingPending     bool            `json:"onboardingPending,omitempty"`
+	UpdateChecks          bool            `json:"updateChecks"`
+	SupporterDisplay      string          `json:"supporterDisplay,omitempty"`
+	Supporter             *supporterState `json:"supporter,omitempty"`
 }
 
 type settingsStore struct {

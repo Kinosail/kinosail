@@ -91,7 +91,7 @@ func (service *castService) planCast(facts MediaFacts, viewer viewerProfile, kin
 func (service *castService) attachCastTracks(session *castSession, item library.Item, media probeResult, token string) {
 	session.Tracks = []castTrack{}
 	if session.Protocol == "google-cast" {
-		for index, track := range playbackSubtitles(item, media, service.settings.subtitleLanguage(), service.settings.subtitlesDefault()) {
+		for index, track := range playbackSubtitleChoices(item, media, service.settings.subtitleLanguage(), service.settings.subtitlesDefault(), service.settings.subtitlePickerLimited()) {
 			if index >= 64 {
 				break
 			}

@@ -34,6 +34,7 @@ func TestVersionedAPIRejectsMalformedMutationBodies(t *testing.T) { //nolint:fun
 		{http.MethodPut, "/api/v1/settings/playback"},
 		{http.MethodPut, "/api/v1/settings/transcoder"},
 		{http.MethodPut, "/api/v1/settings/subtitles"},
+		{http.MethodPut, "/api/v1/settings/subtitle-picker"},
 		{http.MethodPut, "/api/v1/settings/scans"},
 		{http.MethodPut, "/api/v1/settings/dlna"},
 		{http.MethodPut, "/api/v1/settings/jellyfin"},

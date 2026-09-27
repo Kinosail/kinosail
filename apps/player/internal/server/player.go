@@ -121,7 +121,7 @@ func buildPlayerData(request *http.Request, item library.Item, index *libraryInd
 		data.Collections = append(data.Collections, playlistOption{Name: name, Included: len(lists.collection(name, []library.Item{item})) == 1})
 	}
 	data.Owner, data.CanRefreshMetadata = viewer.Owner, viewer.Owner && metadata.configured()
-	data.Tracks = playbackSubtitles(item, media, settings.subtitleLanguage(), data.DefaultSubtitles)
+	data.Tracks = playbackSubtitleChoices(item, media, settings.subtitleLanguage(), data.DefaultSubtitles, settings.subtitlePickerLimited())
 	applyPlayback(request, settings, mediaFactsFor(item, media), &data)
 	setPlaybackSession(request, data.PlaybackSession)
 	data.Finalize(request)

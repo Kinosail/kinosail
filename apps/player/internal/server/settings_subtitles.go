@@ -35,6 +35,19 @@ func (store *settingsStore) subtitleLanguage() string {
 	return "en"
 }
 
+func (store *settingsStore) setSubtitlePickerLimited(limited *bool) error {
+	if limited == nil {
+		return errors.New("choose which subtitle tracks to show")
+	}
+	return store.changeInstallationSettings(func(value *installationSettings) { value.SubtitlePickerLimited = *limited })
+}
+
+func (store *settingsStore) subtitlePickerLimited() bool {
+	store.mu.RLock()
+	defer store.mu.RUnlock()
+	return store.value.SubtitlePickerLimited
+}
+
 func canonicalSubtitleLanguage(value string) (string, error) {
 	base, err := language.ParseBase(strings.ToLower(strings.TrimSpace(value)))
 	if err != nil {

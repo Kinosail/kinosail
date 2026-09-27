@@ -43,6 +43,8 @@ type apiPlayback struct {
 	Markers                 []playbackMarker  `json:"markers"`
 	AutoSkip                []string          `json:"autoSkip"`
 	Subtitles               []subtitleTrack   `json:"subtitles"`
+	SubtitleLanguage        string            `json:"subtitleLanguage"`
+	SubtitlePickerLimited   bool              `json:"subtitlePickerLimited"`
 	Next                    string            `json:"next,omitempty"`
 	DownloadNext            string            `json:"downloadNext,omitempty"`
 	Trickplay               string            `json:"trickplay,omitempty"`
@@ -139,7 +141,7 @@ func apiPlaybackInfo(api apiServices) http.HandlerFunc {
 		policy.AllowTranscode = policy.AllowTranscode && !intent.ForceDirect
 
 		plan := playbackWithAutomaticSkip(facts, client, policy, intent, media.Markers, api.settings.autoSkip())
-		result := apiPlayback{Plan: plan, Summary: media.Summary, Duration: media.Duration, Start: api.progress.Get(request, item.ID).Seconds, Audio: apiAudioSources(item.ID, media.Audio, canTranscode), Chapters: media.Chapters, Markers: media.Markers, AutoSkip: automaticSkipSelection(media.Markers, api.settings.autoSkip()), Next: autoNext(request, api.settings, api.index, item), ReplayGain: apiReplayGainFor(media.ReplayGain)}
+		result := apiPlayback{Plan: plan, Summary: media.Summary, Duration: media.Duration, Start: api.progress.Get(request, item.ID).Seconds, Audio: apiAudioSources(item.ID, media.Audio, canTranscode), Chapters: media.Chapters, Markers: media.Markers, AutoSkip: automaticSkipSelection(media.Markers, api.settings.autoSkip()), Next: autoNext(request, api.settings, api.index, item), ReplayGain: apiReplayGainFor(media.ReplayGain), SubtitleLanguage: api.settings.subtitleLanguage(), SubtitlePickerLimited: api.settings.subtitlePickerLimited()}
 		result.Media = facts
 		sharedplayback.ApplyAPIPlaybackTimeline(&result, plan, result.Start, media.Duration, media.Chapters, media.Markers, api.settings.autoSkip(), result.AutoSkip, func() string { return recipeFor(plan).token() })
 		api.applyPlaybackSources(&result, item, media, viewer, facts, client, plan, preferences, canStream, canTranscode)
@@ -156,7 +158,7 @@ func (api apiServices) applyPlaybackSources(result *apiPlayback, item library.It
 		result.DirectAllowed = true
 		result.Direct = "/media/" + item.ID
 		result.DirectType = directMediaType(item.Path, facts)
-		result.Subtitles = playbackSubtitles(item, media, api.settings.subtitleLanguage(), api.settings.subtitlesDefault())
+		result.Subtitles = playbackSubtitleChoices(item, media, api.settings.subtitleLanguage(), api.settings.subtitlesDefault(), api.settings.subtitlePickerLimited())
 	}
 	if canStream && item.Kind == "video" {
 		result.Trickplay = "/trickplay/" + item.ID + "/{second}"

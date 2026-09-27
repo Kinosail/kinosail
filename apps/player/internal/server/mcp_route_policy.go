@@ -28,7 +28,7 @@ var mcpManageRoutes = routeSet(
 	"PUT /api/v1/items/{id}/markers", "DELETE /api/v1/items/{id}/markers/{type}", "POST /api/v1/marker-analysis",
 	"POST /api/v1/collections", "DELETE /api/v1/collections/{name}", "PUT /api/v1/collections/{name}/items/{id}",
 	"PUT /api/v1/configuration/{key}", "DELETE /api/v1/configuration/{key}", "POST /api/v1/libraries", "DELETE /api/v1/libraries",
-	"PUT /api/v1/settings/server", "PUT /api/v1/settings/navigation", "PUT /api/v1/settings/onboarding", "PUT /api/v1/settings/playback", "PUT /api/v1/settings/transcoder", "PUT /api/v1/settings/subtitles",
+	"PUT /api/v1/settings/server", "PUT /api/v1/settings/navigation", "PUT /api/v1/settings/onboarding", "PUT /api/v1/settings/playback", "PUT /api/v1/settings/transcoder", "PUT /api/v1/settings/subtitles", "PUT /api/v1/settings/subtitle-picker",
 	"PUT /api/v1/settings/scans", "PUT /api/v1/settings/dlna", "PUT /api/v1/settings/jellyfin", "PUT /api/v1/settings/trusted-https", "POST /api/v1/settings/trusted-https/validate", "POST /api/v1/settings/trusted-https/test", "PUT /api/v1/settings/updates", "DELETE /api/v1/settings/trusted-https",
 	"POST /api/v1/transcoder/test", "POST /api/v1/tasks/{task}", "POST /api/v1/backups", "POST /api/v1/backups/verify",
 	"POST /api/v1/viewing-imports/preview", "POST /api/v1/viewing-imports/{id}/apply",

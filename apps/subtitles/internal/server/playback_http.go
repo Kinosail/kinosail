@@ -81,8 +81,14 @@ func preferredSubtitleTracks(tracks []subtitleTrack, languages []string, prefere
 	}
 	if keepForced {
 		for _, track := range tracks {
-			if track.Forced {
-				selected = append(selected, track)
+			if !track.Forced {
+				continue
+			}
+			for _, language := range languages {
+				if subtitleLanguageMatches(language, track.Language) {
+					selected = append(selected, track)
+					break
+				}
 			}
 		}
 	}

@@ -74,6 +74,17 @@ import Testing
     }
 
     #if os(tvOS)
+    @Test func televisionSubtitleChoicesFollowTheSelectedLanguage() {
+        let presentation = PlayerPresentation()
+        presentation.limitSubtitleLanguages(to: "en")
+        #expect(presentation.controller.allowedSubtitleOptionLanguages == ["en"])
+        presentation.limitSubtitleLanguages(to: nil)
+        #expect(presentation.controller.allowedSubtitleOptionLanguages == nil)
+        presentation.limitSubtitleLanguages(to: "fr")
+        presentation.clear()
+        #expect(presentation.controller.allowedSubtitleOptionLanguages == nil)
+    }
+
     @Test func televisionPlaybackCoversBrowseChrome() async throws {
         let scene = try #require(UIApplication.shared.connectedScenes.first as? UIWindowScene)
         let window = UIWindow(windowScene: scene)

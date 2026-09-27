@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
+	"os"
 	"path/filepath"
 	"regexp"
 	"strings"
@@ -15,7 +16,7 @@ import (
 func TestPlaybackPickerShowsOnlySelectedSubtitleLanguages(t *testing.T) { //nolint:gocognit,cyclop,funlen // One public journey covers default off, cleanup opt-in, choices, invalid toggles, and reset.
 	media, tools := t.TempDir(), t.TempDir()
 	writeTestFile(t, filepath.Join(media, "Film.mp4"), "video")
-	for _, name := range []string{"Film.en.srt", "Film.es.srt", "Film.fr.srt", "Film.de.srt"} {
+	for _, name := range []string{"Film.en.srt", "Film.es.srt", "Film.fr.srt", "Film.de.srt", "Film.nl.forced.srt"} {
 		writeTestFile(t, filepath.Join(media, name), name)
 	}
 	ffprobe := filepath.Join(tools, "ffprobe")
@@ -25,7 +26,7 @@ printf '%s' '{"streams":[{"index":0,"codec_type":"video","codec_name":"h264","wi
 	handler := server.New(server.Config{SubtitleApp: true, MediaDir: media, DataDir: t.TempDir(), CacheDir: t.TempDir(), FFprobe: ffprobe})
 	id := firstSubtitleInventoryID(t, handler)
 	before := requestApp(t, handler, http.MethodGet, "/watch/"+id, "")
-	if before.Code != http.StatusOK || strings.Count(before.Body.String(), "<track ") != 7 {
+	if before.Code != http.StatusOK || strings.Count(before.Body.String(), "<track ") != 8 {
 		t.Fatalf("default picker should remain unrestricted: %d %s", before.Code, before.Body.String())
 	}
 	preview := requestJSON(t, handler, http.MethodPost, "/api/v1/subtitles/cleanup/preview", `{"enabled":true,"languages":["en","es","fr","de"],"forced":"keep"}`)
@@ -74,6 +75,9 @@ printf '%s' '{"streams":[{"index":0,"codec_type":"video","codec_name":"h264","wi
 				t.Errorf("API track %d for %s = %q, want %s", index, test.languages, result.Subtitles[index].Source, suffix)
 			}
 		}
+		if _, err := os.Stat(filepath.Join(media, "Film.nl.forced.srt")); err != nil {
+			t.Fatalf("limiting choices changed the Dutch subtitle file: %v", err)
+		}
 	}
 	for _, body := range []string{"", "limited=unknown", "limited=on&limited=off", "limited=on&extra=1", "limited=" + strings.Repeat("x", 4097)} {
 		request := httptest.NewRequestWithContext(t.Context(), http.MethodPost, "/settings/subtitles/picker", strings.NewReader(body))
@@ -93,7 +97,7 @@ printf '%s' '{"streams":[{"index":0,"codec_type":"video","codec_name":"h264","wi
 	response := httptest.NewRecorder()
 	handler.ServeHTTP(response, request)
 	after := requestApp(t, handler, http.MethodGet, "/watch/"+id, "")
-	if response.Code != http.StatusSeeOther || strings.Count(after.Body.String(), "<track ") != 7 {
+	if response.Code != http.StatusSeeOther || strings.Count(after.Body.String(), "<track ") != 8 {
 		t.Fatalf("turning off picker limit: %d, tracks=%d", response.Code, strings.Count(after.Body.String(), "<track "))
 	}
 }
