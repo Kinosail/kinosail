@@ -24,7 +24,7 @@ type SetupLink struct {
 
 func remoteSetupSteps(readiness Readiness) []SetupStep {
 	if readiness.Stopped {
-		return []SetupStep{{Title: "Public access is turned off", Instruction: "Keep the router rule disabled while you investigate. When you are ready, return to Settings → Remote access, choose Allow public access after restart, then restart your Server and check this page again. Local access stays available."}}
+		return []SetupStep{{Title: "Public access is turned off", Instruction: "Keep the router rule disabled while you investigate. When ready, choose Allow public access now in Settings → Remote access. After the Server reports ready, re-enable the router rule and check this page again. Local access stays available."}}
 	}
 	steps := []SetupStep{}
 	fixes := map[string]SetupStep{

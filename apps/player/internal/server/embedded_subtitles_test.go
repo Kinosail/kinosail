@@ -9,7 +9,8 @@ import (
 func TestEmbeddedTextCaptionsAreSemanticAndExtractedThroughEveryAdapter(t *testing.T) {
 	fixture := servertest.EmbeddedSubtitleFixture{
 		New: automaticSkipFixture.New, SignIn: signInTestProfile, Login: jellyfinLogin,
-		WebCall: requestWithCookie, Call: jellyfinCall, Decode: decodeJellyfin,
+		WebCaptionLabel: "English · Captions",
+		WebCall:         requestWithCookie, Call: jellyfinCall, Decode: decodeJellyfin,
 	}
 	fixture.TextCaptionsAcrossAdapters(t)
 }

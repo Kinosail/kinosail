@@ -1,21 +1,25 @@
 package server
 
 import (
+	"context"
 	"errors"
 	"net/http"
 	"strings"
 
 	"github.com/MikeO7/kinosail-player/internal/configuration"
+	"github.com/MikeO7/kinosail/packages/appcli"
+	"github.com/MikeO7/kinosail/packages/metadata"
 	settingsops "github.com/MikeO7/kinosail/packages/settings"
 )
 
-const configurationHTML = `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width"><script src="/static/theme.js?v=electric-1"></script><link rel="stylesheet" href="/static/app.css?v=skeleton-3"><title>Configuration · Kinosail Player</title></head><body class="settings-page"><main class="settings-shell"><a class="back" href="/settings">{{icon "back"}} Settings</a><header class="settings-intro"><span class="eyebrow">Owner controls</span><h1>Advanced configuration</h1><p>Change settings normally managed by Docker, environment variables, or YAML. Changes saved here apply the next time Kinosail Server starts.</p></header>{{range .}}<section id="{{.Key}}"><h2>{{.Label}}</h2>{{if eq .Source "environment"}}<p>Set by your deployment environment.</p>{{else if eq .Source "yaml"}}<p>Set in your YAML configuration file.</p>{{else if eq .Source "gui"}}<p>Using a value saved here.</p>{{else}}<p>Using the Kinosail default.</p>{{end}}{{if .Secret}}<p>{{if .Configured}}A secret is configured. Its value is hidden.{{else}}No secret is configured.{{end}}</p>{{end}}{{if or (eq .Source "environment") (eq .Source "yaml")}}<p>To change this setting, update the external value and restart Kinosail Server.</p>{{else}}<form action="/settings/configuration" method="post"><input type="hidden" name="key" value="{{.Key}}"><label>{{if .Secret}}New secret{{else}}Value{{end}}<input aria-label="{{.Label}}" name="value" {{if .Secret}}type="password" autocomplete="off" placeholder="New secret"{{else}}value="{{.Value}}"{{end}} required></label><button>Save change</button><p>Applies after a restart.</p></form>{{if eq .Source "gui"}}<form action="/settings/configuration/reset" method="post"><button class="quiet" name="key" value="{{.Key}}">Use default</button></form>{{end}}{{end}}<details><summary>Technical details</summary><p>Configuration key: <code>{{.Key}}</code><br>Environment variable: <code>{{.Env}}</code></p></details></section>{{end}}</main></body></html>`
+const configurationHTML = `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width"><script src="/static/theme.js?v=electric-1"></script><link rel="stylesheet" href="/static/app.css?v=skeleton-3"><title>Configuration · Kinosail Player</title></head><body class="settings-page"><main class="settings-shell"><a class="back" href="/settings">{{icon "back"}} Settings</a><header class="settings-intro"><span class="eyebrow">Owner controls</span><h1>Advanced configuration</h1><p>Change settings normally managed by Docker, environment variables, or YAML. Each setting shows when a saved change takes effect.</p></header>{{range .}}<section id="{{.Key}}"><h2>{{.Label}}</h2>{{if eq .Source "environment"}}<p>Set by your deployment environment.</p>{{else if eq .Source "yaml"}}<p>Set in your YAML configuration file.</p>{{else if eq .Source "gui"}}<p>Using a value saved here.</p>{{else}}<p>Using the Kinosail default.</p>{{end}}{{if .Secret}}<p>{{if .Configured}}A secret is configured. Its value is hidden.{{else}}No secret is configured.{{end}}</p>{{end}}{{if or (eq .Source "environment") (eq .Source "yaml")}}<p>To change this setting, update the external value and restart Kinosail Server.</p>{{else}}<form action="/settings/configuration" method="post"><input type="hidden" name="key" value="{{.Key}}"><label>{{if .Secret}}New secret{{else}}Value{{end}}<input aria-label="{{.Label}}" name="value" {{if .Secret}}type="password" autocomplete="off" placeholder="New secret"{{else}}value="{{.Value}}"{{end}} required></label><button>Save change</button><p>{{if .Live}}Takes effect immediately.{{else}}Applies after a restart.{{end}}</p></form>{{if eq .Source "gui"}}<form action="/settings/configuration/reset" method="post"><button class="quiet" name="key" value="{{.Key}}">Use default</button></form>{{end}}{{end}}<details><summary>Technical details</summary><p>Configuration key: <code>{{.Key}}</code><br>Environment variable: <code>{{.Env}}</code></p></details></section>{{end}}</main></body></html>`
 
 var configurationView = newLocalizedTemplate("configuration", ignoreNonPasswordSecretAutofill(settingControlHTML+strings.NewReplacer("Set by your deployment environment.", `Configured via Docker: <code>{{.Env}}</code>.`, "</header>", "</header>"+tmdbConfigurationHTML+oidcConfigurationHTML+samlConfigurationHTML+scimConfigurationHTML, "{{range .}}", "{{range .Fields}}").Replace(configurationHTML)))
 
 type configurationField struct {
 	configuration.PublicValue
 	Label string
+	Live  bool
 }
 
 type configurationPage struct {
@@ -73,14 +77,14 @@ func (store *settingsStore) deploymentFields() []configurationField {
 	result := make([]configurationField, 0)
 	for _, field := range store.config.Fields() {
 		if field.Restart && field.Key != "paths.data" && field.Key != "tls.duckdns" && field.Key != tmdbTokenKey && !strings.HasPrefix(field.Key, oidcConfigurationKey+".") && !strings.HasPrefix(field.Key, samlConfigurationGroupKey+".") && !strings.HasPrefix(field.Key, scimConfigurationKey+".") {
-			view := configurationField{PublicValue: field, Label: configurationLabels[field.Key]}
+			view := configurationField{PublicValue: field, Label: configurationLabels[field.Key], Live: liveTMDBSetting(field.Key) || field.Key == "logging.level"}
 			result = append(result, view)
 		}
 	}
 	return result
 }
 
-func (store *settingsStore) changeConfiguration(key, value string, reset bool) error {
+func (store *settingsStore) changeConfiguration(ctx context.Context, key, value string, reset bool) error {
 	if key == tmdbTokenKey {
 		return errors.New("TMDB access is changed through its dedicated settings operation")
 	}
@@ -90,15 +94,57 @@ func (store *settingsStore) changeConfiguration(key, value string, reset bool) e
 		}
 		return store.changeSCIMConfiguration("", "", true)
 	}
+	tmdbToken, err := store.validateTMDBEndpoint(ctx, key, value, reset)
+	if err != nil {
+		return err
+	}
 	configured := settingsops.ConfigurationStore[configuration.Source]{
 		File: store.file, Lock: &store.mu, Managed: store.config.Managed, Source: store.config.Source,
 		Field: func(key string) settingsops.ConfigurationField {
 			field := store.config.Public(key)
 			return settingsops.ConfigurationField{Known: field.Key != "", Restart: field.Restart}
 		},
-		Set: configuration.Set, Delete: configuration.Delete, Update: store.config.UpdateGUI,
+		Set: configuration.Set, Delete: configuration.Delete, Update: func(key, raw string, reset bool) {
+			store.config.UpdateGUI(key, raw, reset)
+			if key == "integrations.tmdb.url" || key == "integrations.tmdb.image_url" {
+				store.refreshMetadataProviderLocked()
+			}
+		},
+		Check: func() error {
+			if key == "integrations.tmdb.url" && store.config.String(tmdbTokenKey) != tmdbToken {
+				return errors.New("TMDB configuration changed; try again")
+			}
+			return nil
+		},
 	}
-	return configured.Change(key, value, reset)
+	if err := configured.Change(key, value, reset); err != nil {
+		return err
+	}
+	if key == "logging.level" {
+		store.mu.Lock()
+		appcli.UpdateLoggingLevel(store.config.String(key))
+		store.mu.Unlock()
+	}
+	return nil
+}
+
+func (store *settingsStore) validateTMDBEndpoint(ctx context.Context, key, value string, reset bool) (string, error) {
+	store.mu.RLock()
+	token := store.config.String(tmdbTokenKey)
+	store.mu.RUnlock()
+	if reset || key != "integrations.tmdb.url" && key != "integrations.tmdb.image_url" {
+		return token, nil
+	}
+	if !metadata.ValidProviderBaseURL(value) {
+		return "", errors.New("TMDB address is invalid")
+	}
+	if key == "integrations.tmdb.url" && strings.TrimRight(value, "/") != tmdbDefaultURL {
+		return "", errors.New("TMDB credentials require the official API address")
+	}
+	if key == "integrations.tmdb.url" && token != "" {
+		return token, store.tmdbCheck(ctx, value, token)
+	}
+	return token, nil
 }
 
 func showConfiguration(settings *settingsStore) http.HandlerFunc {
@@ -143,7 +189,7 @@ func saveConfiguration(settings *settingsStore, reset bool) http.HandlerFunc { /
 		case scimConfigurationKey:
 			err = settings.changeSCIMConfiguration("", "", true)
 		default:
-			err = settings.changeConfiguration(key, value, reset)
+			err = settings.changeConfiguration(request.Context(), key, value, reset)
 		}
 		if err != nil {
 			localizedError(writer, request, err.Error(), http.StatusConflict)

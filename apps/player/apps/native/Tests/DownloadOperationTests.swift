@@ -41,6 +41,36 @@ struct DownloadOperationTests {
     }
 
     #if os(iOS)
+    @MainActor @Test func rejectsInvalidSeriesBeforeAnyDownloadRequest() async throws {
+        let fixture = try HTTPFixture(body: "{}")
+        defer { fixture.remove() }
+        let manager = OfflineDownloadManager()
+        let server = try ServerAddress("https://\(fixture.host)")
+        func episode(_ id: String, show: String = "aaaaaaaaaaaaaaaa", season: Int = 1, kind: String = "video") throws -> MediaItem {
+            try MediaItem(.object(["id": .string(id), "kind": .string(kind), "title": .string(id),
+                                   "showId": .string(show), "season": .number(Double(season)), "episode": .number(1)]), server: server)
+        }
+        let first = try episode("first")
+        let second = try episode("second", season: 2)
+        let foreign = try episode("foreign", show: "bbbbbbbbbbbbbbbb")
+        let audio = try episode("audio", kind: "music")
+        let missingShow = try episode("missing", show: "")
+        let oversized = try (0..<51).map { try episode("episode-\($0)") }
+        for items in [[], [missingShow], [first, first], [first, foreign], [first, audio], oversized] {
+            await #expect(throws: ClientError.invalidInput("Choose up to 50 unique video episodes from one series.")) {
+                try await manager.enqueueSeries(items, quality: .compatible, client: fixture.client)
+            }
+        }
+        await #expect(throws: ClientError.invalidInput("Choose up to 50 unique video episodes from one series.")) {
+            try await manager.enqueueSeries([first, second], quality: .audio, client: fixture.client)
+        }
+        await #expect(throws: ClientError.invalidInput("Wait for the current download operation to finish.")) {
+            try await manager.enqueueSeries([first, second], quality: .compatible, client: fixture.client)
+        }
+        #expect(fixture.requests.isEmpty)
+        #expect(manager.downloads.isEmpty)
+    }
+
     @Test func identifiesExtensionlessMediaWithoutAcceptingPlaylists() throws {
         #expect(try OfflineProbe.contentType(Data([0, 0, 0, 24] + Array("ftypisom".utf8))) == "video/mp4")
         #expect(try OfflineProbe.contentType(Data("RIFF0000WAVE".utf8)) == "audio/wav")

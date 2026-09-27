@@ -14,7 +14,7 @@ struct WatchPosition: View {
                     if let fraction = progress?.fraction {
                         ProgressView(value: fraction).tint(KinoTheme.signal)
                             .progressViewStyle(.linear)
-                            .background(KinoTheme.muted.opacity(0.35), in: Capsule())
+                            .background(.black.opacity(0.78), in: Capsule())
                             .accessibilityLabel("Watch progress")
                             .accessibilityValue("\(Int((fraction * 100).rounded())) percent")
                     }

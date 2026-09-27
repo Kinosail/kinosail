@@ -44,6 +44,7 @@ func finishObservedRequest(activity *auditStore, route func(*http.Request) strin
 		status = http.StatusOK
 	}
 	recordObservedStatus(activity, request, facts, status, panicked)
+	activity.failures.Record(facts.id, request.Method, request.URL.Path, status, time.Since(started))
 	pattern := route(request)
 	if jellyfinMediaPath(request.URL.Path) && status >= http.StatusBadRequest {
 		slog.Warn("Jellyfin media authentication diagnostic", "diagnostic", "[PLAYBACK-AUTH]", "request_id", facts.id, "route", pattern, "status", status, "token_source", sessionTokenSource(request), "api_key_query", jellyfinQueryShape(request, "api_key"), "play_session_query", jellyfinQueryShape(request, "playSessionId"), "client", jellyfinClientClass(request))

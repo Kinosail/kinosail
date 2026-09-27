@@ -6,6 +6,13 @@ import Synchronization
 struct PlayerTrack: Identifiable {
     let id: String
     let title: String
+
+    static func embeddedSubtitleTitle(_ title: String) -> String {
+        for role in ["Transcribed", "Forced"] where title.hasSuffix(" \(role)") {
+            return String(title.dropLast(role.count + 1)) + " · " + role
+        }
+        return title
+    }
 }
 
 final class NativePlaybackIntent: Sendable {
@@ -29,6 +36,7 @@ final class PlaybackCoordinator {
     var progressMessage: String? { engine.progressMessage }
     var audioTracks: [PlayerTrack] { engine.audioTracks }
     var subtitleTracks: [PlayerTrack] { engine.subtitleTracks }
+    var trackControlsTitle: String { audioTracks.isEmpty ? "Subtitles" : "Audio & subtitles" }
     var externalCaptions: Bool { engine.externalCaptions }
     var playbackRate: Double { engine.playbackRate }
     var selectedExternalSubtitleID: String? { engine.selectedExternalSubtitleID }

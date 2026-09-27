@@ -23,6 +23,8 @@ Start with the visible symptom. Use the smallest diagnostic that can confirm the
 4. Retry one time after a small, reversible change.
 5. Collect a short log excerpt and remove secrets before sharing it.
 
+Server logs use `debug`, `info`, `warn`, and `error`; the default is `info`. An Owner can temporarily set `logging.level` to `debug` in **Settings → Configuration** without restarting. Repeat the problem, then restore `info`. Match a native app's `request_id` or a browser response's `X-Request-ID` to the Server log's `request_id`. Keep the time, HTTP status, and route pattern; do not share raw URLs or tokens.
+
 Do not paste passwords, passkeys, TOTP secrets, recovery codes, API keys, Media Share links, cookies, private hostnames, or full request URLs. Kinosail logs redact sensitive values, but review any excerpt yourself.
 
 If an issue can affect data, stop before deleting a volume, library path, configuration file, or backup. Make a verified backup first.

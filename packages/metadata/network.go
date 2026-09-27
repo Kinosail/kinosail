@@ -120,6 +120,9 @@ func validProviderBaseURL(raw string) bool { //nolint:cyclop // Explicit HTTPS i
 	return endpoint.Scheme == "http" && endpoint.Port() != "" && (endpoint.Hostname() == "localhost" || ip != nil && ip.IsLoopback())
 }
 
+// ValidProviderBaseURL checks a configured metadata endpoint before it is saved.
+func ValidProviderBaseURL(raw string) bool { return validProviderBaseURL(raw) }
+
 // Configured reports whether the licensed metadata provider can be used safely.
 func Configured(cache, token, baseURL, imageURL string) bool {
 	return cache != "" && token != "" && validProviderBaseURL(baseURL) && validProviderBaseURL(imageURL)

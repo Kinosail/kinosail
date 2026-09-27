@@ -62,6 +62,24 @@ func TestDecideCoversOrderedDeliveryModes(t *testing.T) {
 	}
 }
 
+func TestBrowserDeliversConvertibleTextSubtitlesWithoutVideoTranscoding(t *testing.T) {
+	t.Parallel()
+	client := BrowserCapabilities()
+	policy := ViewerPolicy{AllowPlayback: true, AllowTranscode: true}
+	index := 0
+	for _, track := range []SubtitleFacts{
+		{Index: 0, SourceIndex: 2, Codec: "subrip", Text: true},
+		{Index: 0, SourceIndex: 2, Codec: "ass", Text: true},
+		{Index: 0, SourceIndex: -1, ExternalIndex: 0, Codec: "srt", Text: true, External: true},
+	} {
+		facts := MediaFacts{Kind: "video", Container: "mp4", Video: VideoFacts{Codec: "h264", Width: 1280, Height: 720}, Audio: []AudioFacts{{Index: 0, Codec: "aac", Default: true}}, Subtitles: []SubtitleFacts{track}}
+		plan := Decide(facts, client, policy, NetworkIntent{SubtitleIndex: &index}, DecisionPolicy{})
+		if !plan.Allowed || plan.Mode != "direct" || plan.SubtitleMode == "burn-in" {
+			t.Errorf("browser text subtitle %q required video conversion: %#v", track.Codec, plan)
+		}
+	}
+}
+
 func TestDecideExplainsEachVideoConstraint(t *testing.T) {
 	t.Parallel()
 	base := MediaFacts{Kind: "video", Container: "mp4", Video: VideoFacts{Codec: "h264", Width: 1280, Height: 720, HDR: "sdr"}}

@@ -1,7 +1,24 @@
 import Foundation
 import CryptoKit
+import OSLog
 
 enum HTTPMethod: String, Sendable { case get = "GET", post = "POST", put = "PUT", delete = "DELETE" }
+
+func diagnosticOperation(_ rawPath: String) -> String {
+    guard rawPath.utf8.count <= 2048 else { return "other" }
+    let parts = rawPath.prefix(while: { $0 != "?" }).split(separator: "/")
+    guard let first = parts.first else { return "other" }
+    if parts.count >= 3, first == "api", parts[1] == "v1" {
+        if parts[2] == "items", parts.count >= 5,
+           ["playback", "playback-preferences", "progress", "list", "reader"].contains(parts[4]) {
+            return "items-\(parts[4])"
+        }
+        if ["items", "library", "me", "session", "quick-connect", "shows", "albums", "collections",
+            "books", "cast", "remote-players", "downloads"].contains(parts[2]) { return String(parts[2]) }
+        return "api-other"
+    }
+    return ["hls", "media", "art"].contains(first) ? String(first) : "other"
+}
 
 struct APIResponse: Sendable {
     let status: Int
@@ -14,6 +31,7 @@ actor ServerClient {
     let server: ServerAddress
     private let token: String
     private let session: URLSession
+    private let networkLog = Logger(subsystem: "com.kinosail.player", category: "network")
     private var closed = false
     private(set) var viewerID: String?
     private var serverID: String?
@@ -107,6 +125,11 @@ actor ServerClient {
 
     private func receive(_ request: URLRequest, maximum: Int, expected: Set<Int> = [200]) async throws -> (Data, HTTPURLResponse) {
         try Task.checkCancellation()
+        var request = request
+        let requestID = UUID().uuidString
+        request.setValue(requestID, forHTTPHeaderField: "X-Request-ID")
+        let method = request.httpMethod ?? "GET"
+        let operation = diagnosticOperation(request.url?.path ?? "")
         requestSequence &+= 1
         let sequence = requestSequence
         do {
@@ -119,12 +142,21 @@ actor ServerClient {
         catch let error as ClientError {
             if case .http(let status) = error {
                 recordConnection(status >= 500 ? .unreachable : .reachable, sequence: sequence)
+                if status >= 500 {
+                    networkLog.error("HTTP request failed request_id=\(requestID, privacy: .public) operation=\(operation, privacy: .public) method=\(method, privacy: .public) status=\(status)")
+                } else {
+                    networkLog.warning("HTTP request failed request_id=\(requestID, privacy: .public) operation=\(operation, privacy: .public) method=\(method, privacy: .public) status=\(status)")
+                }
+            } else {
+                networkLog.error("Invalid HTTP response request_id=\(requestID, privacy: .public) operation=\(operation, privacy: .public) method=\(method, privacy: .public)")
             }
             throw error
         }
         catch {
             if Task.isCancelled || (error as? URLError)?.code == .cancelled { throw CancellationError() }
             recordConnection(.unreachable, sequence: sequence)
+            let code = (error as? URLError)?.errorCode ?? 0
+            networkLog.warning("HTTP transport failed request_id=\(requestID, privacy: .public) operation=\(operation, privacy: .public) method=\(method, privacy: .public) code=\(code)")
             throw ClientError.unavailable
         }
     }

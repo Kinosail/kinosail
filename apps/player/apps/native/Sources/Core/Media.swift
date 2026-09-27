@@ -114,6 +114,10 @@ struct MediaItem: Codable, Identifiable, Hashable, Sendable {
     }
 
     var poster: String { show.isEmpty ? artwork : "/art/\(id)" }
+    var landscapeArtwork: String {
+        if !show.isEmpty && !artwork.isEmpty { return artwork }
+        return backdrop.isEmpty ? poster : backdrop
+    }
     var isAudio: Bool { kind == .music || kind == .audiobook }
     var isUnwatched: Bool { (kind == .video || kind == .show) && !progress.watched }
     var playLabel: String {

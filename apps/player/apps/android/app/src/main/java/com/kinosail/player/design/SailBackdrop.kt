@@ -14,7 +14,7 @@ fun SailBackdrop() {
     Image(
         painter = painterResource(R.drawable.cinema_sail),
         contentDescription = null,
-        modifier = Modifier.fillMaxSize().alpha(0.45f),
+        modifier = Modifier.fillMaxSize().alpha(0.22f),
         contentScale = ContentScale.Crop,
     )
 }

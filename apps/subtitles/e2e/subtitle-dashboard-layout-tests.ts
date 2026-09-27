@@ -3,6 +3,23 @@ import { expect, test } from "@playwright/test";
 import { compactViewports, expectNoHorizontalOverflow, expectSkipLinkOffscreen, initiallyOccludedTargets, occludedTargets, setSubtitleLanguages, supportedViewports } from "./subtitle-dashboard-helpers";
 
 export function registerSubtitleLayoutTests() {
+test("Settings header keeps desktop destinations in one compact row", async ({ page }) => {
+  for (const width of [1920, 1280, 1024, 901]) {
+    await page.setViewportSize({ width, height: 900 });
+    await page.goto("/settings#provider");
+    const layout = await page.locator(".app-header").evaluate((header) => {
+      const nav = header.querySelector('nav[aria-label="Main navigation"]');
+      const links = [...nav.querySelectorAll(":scope > a")].map((link) => link.getBoundingClientRect());
+      return { header: header.getBoundingClientRect().toJSON(), nav: nav.getBoundingClientRect().toJSON(), links: links.map((box) => box.toJSON()) };
+    });
+    expect(layout.header.height, `${width}px header height`).toBeLessThanOrEqual(100);
+    expect(layout.links).toHaveLength(3);
+    expect(layout.links.every((link) => Math.abs(link.top - layout.links[0].top) <= 1), `${width}px navigation row`).toBe(true);
+    expect(layout.links.every((link) => link.left >= layout.nav.left && link.right <= layout.nav.right), `${width}px navigation bounds`).toBe(true);
+    await expectNoHorizontalOverflow(page);
+  }
+});
+
 test("Subtitle API reports the rendered inventory and rejects ambiguous input", async ({ page }) => {
   const inventory = await page.evaluate(async () => {
     const response = await fetch("/api/v1/subtitle-library?view=library");
@@ -90,7 +107,7 @@ test("Dashboard stays readable and accessible at every supported width", async (
       expect(alignment).toBe(true);
       await expect(page.locator(".subtitle-coverage-stat > p")).toContainText(/\d+ of \d+ files ready/);
       await expect(page.locator(".subtitle-coverage-stat meter")).toBeHidden();
-      expect(await occludedTargets(page, [".subtitle-coverage-stat > p", ".subtitle-overview-actions button"], [".app-header nav"])).toEqual([]);
+      expect(await occludedTargets(page, [".subtitle-coverage-stat > p", ".subtitle-overview-actions :is(button, a.button)"], [".app-header nav"])).toEqual([]);
     }
     const accessibility = await new AxeBuilder({ page }).include("main").analyze();
     expect(accessibility.violations).toEqual([]);
@@ -121,9 +138,9 @@ test("Compact navigation does not cover the current subtitle task", async ({ pag
     await page.setViewportSize(viewport);
     await page.goto("/");
     if (viewport.height <= 600) {
-      failures.push(...(await initiallyOccludedTargets(page, [".subtitle-overview-copy h2", ".subtitle-coverage-stat > p", ".subtitle-overview-actions button"], [".app-header nav"])).map((failure) => `${viewport.width}px dashboard: ${failure}`));
+      failures.push(...(await initiallyOccludedTargets(page, [".subtitle-overview-copy h2", ".subtitle-coverage-stat > p", ".subtitle-overview-actions :is(button, a.button)"], [".app-header nav"])).map((failure) => `${viewport.width}px dashboard: ${failure}`));
     }
-    failures.push(...(await occludedTargets(page, [".subtitle-coverage-stat > p", ".subtitle-overview-copy h2", ".subtitle-overview-actions button", ".subtitle-system > summary"], [".app-header nav"])).map((failure) => `${viewport.width}px dashboard: ${failure}`));
+    failures.push(...(await occludedTargets(page, [".subtitle-coverage-stat > p", ".subtitle-overview-copy h2", ".subtitle-overview-actions :is(button, a.button)", ".subtitle-system > summary"], [".app-header nav"])).map((failure) => `${viewport.width}px dashboard: ${failure}`));
 
     await page.goto("/settings#provider");
     failures.push(...(await occludedTargets(page, ["#provider h2", "#provider input[name=apiKey]", "#provider form[action='/settings/subtitles/subsource'] button"], [".app-header nav", ".search", ".settings-nav"])).map((failure) => `${viewport.width}px provider settings: ${failure}`));
@@ -140,14 +157,15 @@ test("Dashboard preserves its task at 200 percent reflow", async ({ page }) => {
   await page.setViewportSize({ width: 360, height: 450 });
   await page.goto("/");
   expect(await page.locator("html").evaluate((element) => element.scrollWidth <= element.clientWidth)).toBe(true);
-  expect(await occludedTargets(page, [".subtitle-coverage-stat > p", ".subtitle-overview-copy h2", ".subtitle-overview-actions button", ".subtitle-system > summary"], [".app-header nav"])).toEqual([]);
+  expect(await occludedTargets(page, [".subtitle-coverage-stat > p", ".subtitle-overview-copy h2", ".subtitle-overview-actions :is(button, a.button)", ".subtitle-system > summary"], [".app-header nav"])).toEqual([]);
 });
 
 test("Readiness, quota, and history remain usable on compact screens", async ({ page }, testInfo) => {
   for (const viewport of [{ width: 1024, height: 768 }, { width: 390, height: 844 }, { width: 320, height: 800 }]) {
     await page.setViewportSize(viewport);
     await page.goto("/");
-    await page.locator(".subtitle-system > summary").click();
+    const system = page.locator(".subtitle-system");
+    if (await system.getAttribute("open") === null) await system.locator(":scope > summary").click();
     await expect(page.getByRole("heading", { name: "Server readiness" })).toBeVisible();
     await expect(page.getByRole("heading", { name: "Subtitle sources" })).toBeVisible();
     await expectNoHorizontalOverflow(page);
@@ -178,9 +196,17 @@ test("Subtitle setup guide keeps readiness and recovery visible", async ({ page 
     await expect(page.getByRole("button", { name: /^Remove/ })).toHaveCount(0);
     const providers = page.locator("#providers");
     await expect(providers).toContainText("Connect a subtitle provider");
-    await expect(providers.getByRole("link", { name: "Provider account" }).nth(0)).toHaveAttribute("href", "https://subdl.com/panel");
-    await expect(providers.getByRole("link", { name: "Provider account" }).nth(1)).toHaveAttribute("href", "https://dl.opensubtitles.com/en/users/sign_in");
-    await expect(providers.getByRole("link", { name: "Provider account" }).nth(2)).toHaveAttribute("href", "https://subsource.net/");
+    for (const [name, url] of [
+      ["SubDL", "https://subdl.com/panel/register"],
+      ["OpenSubtitles", "https://www.opensubtitles.com/en/users/sign_up"],
+      ["SubSource", "https://subsource.net/"],
+    ]) {
+      const link = providers.getByRole("link", { name: `Create ${name} account` });
+      await expect(link).toHaveAttribute("href", url);
+      await expect(link).toHaveAttribute("target", "_blank");
+      await expect(link).toHaveAttribute("rel", /noopener noreferrer/);
+    }
+    await expect(providers).toContainText("On SubSource, choose Create Account.");
     await expect(page.getByRole("complementary", { name: "Your subtitle plan" }).getByText("Not configured", { exact: true })).toBeVisible();
     await expect(page.getByRole("link", { name: "Finish and open overview" })).toBeVisible();
     await expectNoHorizontalOverflow(page);

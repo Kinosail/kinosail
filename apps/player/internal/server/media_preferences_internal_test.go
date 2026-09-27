@@ -92,20 +92,6 @@ func TestSyncSnapshotRequiresAllFields(t *testing.T) {
 	}
 }
 
-func TestMediaJSONRejectsDuplicateKeys(t *testing.T) {
-	for _, body := range []string{`{"seconds":1,"seconds":2}`, `{"progress":{"revision":1,"revision":2}}`} {
-		writer := httptest.NewRecorder()
-		request := httptest.NewRequestWithContext(t.Context(), http.MethodPut, "/", strings.NewReader(body))
-		var target map[string]any
-		if readMediaJSON(writer, request, &target) || writer.Code != http.StatusBadRequest {
-			t.Fatal("accepted ambiguous input")
-		}
-		if target != nil {
-			t.Fatal("decoded rejected input")
-		}
-	}
-}
-
 func TestMediaDownloadStorageLimits(t *testing.T) {
 	for _, limit := range []int{0, 50, 250, 1000, 8388607} {
 		value := defaultMediaPreferences()

@@ -14,6 +14,23 @@ import (
 	"golang.org/x/crypto/acme"
 )
 
+// ServeContinuously reopens the listener after an Owner resets the kill switch.
+func (manager *Manager) ServeContinuously(ctx context.Context, handler http.Handler) error {
+	if manager == nil || !manager.config.Enabled {
+		return nil
+	}
+	for {
+		if err := manager.Serve(ctx, handler); err != nil {
+			return err
+		}
+		select {
+		case <-ctx.Done():
+			return nil
+		case <-manager.resume:
+		}
+	}
+}
+
 // Serve updates DuckDNS before opening a TLS-only listener and closes with ctx.
 func (manager *Manager) Serve(ctx context.Context, handler http.Handler) error { //nolint:cyclop,funlen,gocognit // Listener startup is intentionally linear and fail-closed.
 	if !manager.config.Enabled {

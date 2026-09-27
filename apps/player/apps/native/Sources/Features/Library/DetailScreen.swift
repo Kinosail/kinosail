@@ -34,7 +34,7 @@ private struct DetailContent: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 28) {
-            CinemaHero(item: item, showsPlot: false) { actions }
+            CinemaHero(item: item, showsPlot: false, prefersEpisodeStill: true) { actions }
             information
                 .frame(maxWidth: 900, alignment: .leading)
                 #if os(tvOS)

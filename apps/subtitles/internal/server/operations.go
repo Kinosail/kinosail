@@ -37,6 +37,7 @@ func operationDiagnostics(settings *settingsStore, index *libraryIndex, profiles
 		HTTPActivity: func() (uint64, uint64, uint64) {
 			return audit.requests.Load(), audit.requestErrors.Load(), audit.panics.Load()
 		},
+		Failures: audit.failures.Recent,
 		PlaybackSettings: func() (string, string, string) {
 			return settings.playbackMode(), settings.transcoding().Name, settings.scanFrequency()
 		}, Sessions: profiles.activeSessions,

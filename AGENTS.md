@@ -48,6 +48,14 @@
 - For each UI change in Player, Subtitles, or the native iOS/tvOS clients, compare pending, loaded, empty, and failed states. Check skeleton geometry against loaded content at affected phone, desktop, and TV sizes. Show placeholders only during actual pending work, remove them on success or failure, and add a focused regression check for changed asynchronous surfaces.
 - Report exactly what passed, what was not run, and every remaining device, browser, deployment, or environment boundary.
 
+## Diagnostic logging
+
+- For each new or changed failure path, emit enough structured context to identify the operation, safe outcome or failure class, and relevant request ID or playback session. Log the root cause at the boundary that knows it; avoid duplicate messages for one failure.
+- Use `debug` for routine detail, `info` for meaningful lifecycle events, `warn` for recoverable failures or rejected requests, and `error` for failed operations needing intervention. Keep normal polling and media segments quiet at the default `info` level.
+- Treat log fields as an external data boundary. Never log credentials, tokens, cookies, request or response bodies, raw URLs or query strings, personal data, or unbounded remote error text. Use bounded, validated identifiers and route patterns. Keep diagnostics private and redact before sharing.
+- For a changed failure path, verify the log level, useful correlation fields, and absence of secrets under both success and failure. Report server, browser, simulator, physical device, and deployment log evidence separately.
+- MCP may read only a bounded, explicitly safe diagnostic projection of logs. Keep raw process logs and activity records with private targets out of MCP responses; require Owner management access for diagnostic failure history.
+
 ## Delivery
 
 - Unless the user requests read-only work or says not to publish, complete implementation through a pull request into protected `origin/main`. Required GitHub checks must pass; never bypass protection or force-push main.

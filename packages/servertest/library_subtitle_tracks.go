@@ -30,7 +30,8 @@ func (fixture LibraryAPIFixture) ViewerCanChooseMultipleSubtitleTracks(t *testin
 	handler.ServeHTTP(player, httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/watch/"+id, nil))
 	spanish := httptest.NewRecorder()
 	handler.ServeHTTP(spanish, httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/subtitle/"+id+"/1", nil))
-	if strings.Count(player.Body.String(), "<track ") != 2 || !strings.Contains(player.Body.String(), `label="EN"`) || !strings.Contains(player.Body.String(), `label="ES"`) || !strings.Contains(spanish.Body.String(), "Hola") {
+	labels := fixture.SubtitleLabels
+	if strings.Count(player.Body.String(), "<track ") != 2 || !strings.Contains(player.Body.String(), `label="`+labels[0]+`"`) || !strings.Contains(player.Body.String(), `label="`+labels[1]+`"`) || !strings.Contains(spanish.Body.String(), "Hola") {
 		t.Fatalf("player = %q, spanish = %q", player.Body.String(), spanish.Body.String())
 	}
 }

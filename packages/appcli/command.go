@@ -162,7 +162,7 @@ func startAccessManagers(ctx context.Context, remoteMode string, server *http.Se
 	}
 	if remoteMode != "off" && internet != nil {
 		go func() {
-			if err := internet.Serve(ctx, remoteHandler(server.Handler)); err != nil && !errors.Is(err, context.Canceled) {
+			if err := internet.ServeContinuously(ctx, remoteHandler(server.Handler)); err != nil && !errors.Is(err, context.Canceled) {
 				slog.Error("secure remote access stopped", "error", err)
 			}
 		}()

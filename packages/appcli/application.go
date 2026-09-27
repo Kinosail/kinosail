@@ -12,6 +12,17 @@ import (
 	"github.com/MikeO7/kinosail/packages/publicgateway"
 )
 
+var liveLogLevel slog.LevelVar
+
+// ConfigureLogging installs a logger whose level can change without a restart.
+func ConfigureLogging(value string) {
+	UpdateLoggingLevel(value)
+	slog.SetDefault(slog.New(slog.NewJSONHandler(os.Stderr, &slog.HandlerOptions{Level: &liveLogLevel})))
+}
+
+// UpdateLoggingLevel applies a validated configuration value to the active logger.
+func UpdateLoggingLevel(value string) { liveLogLevel.Set(LogLevel(value)) }
+
 // Application adapts one Player-derived process to the shared command lifecycle.
 type Application[Configuration Settings] struct {
 	Configuration func([]string, io.Writer) (bool, error)
@@ -55,7 +66,7 @@ func Execute[Configuration Settings](args []string, input io.Reader, output io.W
 		slog.Error("configuration failed", "error", configErr)
 		return 1
 	}
-	slog.SetDefault(slog.New(slog.NewJSONHandler(os.Stderr, &slog.HandlerOptions{Level: LogLevel(configured.String("logging.level"))})))
+	ConfigureLogging(configured.String("logging.level"))
 	if !SecureProxyConfiguration(configured.String("remote.proxy_token"), getenv("KINOSAIL_HOSTNAME")) {
 		slog.Error("remote access requires a 32-character proxy capability")
 		return 1
