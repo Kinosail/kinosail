@@ -16,7 +16,7 @@ test("Twenty long language choices remain usable at the preference limit", async
     await expect(list.getByText("Portuguese (Mozambique)", { exact: true })).toBeVisible();
     await expect(list.getByText("Chinese (Traditional)", { exact: true })).toBeVisible();
     await expect(list).toContainText("SubDL, OpenSubtitles, SubSource");
-    await expect(list).toContainText("No configured provider");
+    await expect(list).toContainText("Local files only");
     await expect(section.getByLabel("Add a language")).toBeDisabled();
     await expect(section.getByRole("button", { name: "Add language" })).toBeDisabled();
     await expect(section.getByText("You have selected 20 languages. Remove one before adding another.", { exact: true })).toBeVisible();
