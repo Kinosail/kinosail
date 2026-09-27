@@ -19,7 +19,8 @@ test("Owner can read dependency thanks and notices on phone and desktop", async 
 		await thanks.screenshot({ path: testInfo.outputPath(`thanks-${width}.png`) });
 		if (width === 1440) {
 			await page.evaluate(() => { document.documentElement.dataset.theme = "light"; });
-			expect((await new AxeBuilder({ page }).analyze()).violations.map(({ id }) => id)).toEqual([]);
+			await page.waitForTimeout(250);
+			expect((await new AxeBuilder({ page }).analyze()).violations.map(({ id, nodes }) => ({ id, targets: nodes.map(({ target, html, failureSummary }) => ({ target, html, failureSummary })) }))).toEqual([]);
 			await thanks.screenshot({ path: testInfo.outputPath("thanks-light-1440.png") });
 		}
 	}
