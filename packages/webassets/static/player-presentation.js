@@ -56,8 +56,17 @@ const setSettings = (open) => {
 };
 settingsButton?.addEventListener("click", () => setSettings(settingsPanel.hidden));
 document.querySelector("[data-player-settings-close]")?.addEventListener("click", () => { setSettings(false); settingsButton.focus(); });
+const limitedSubtitleTracks = player.dataset.subtitlePickerLimited === "true" ? [...player.querySelectorAll("track[data-subtitle-source]")].map((element) => element.track) : null;
+if (limitedSubtitleTracks) {
+  const hideEmbeddedSubtitles = () => [...player.textTracks].forEach((track) => { if (!limitedSubtitleTracks.includes(track)) track.mode = "disabled"; });
+  player.textTracks?.addEventListener?.("addtrack", hideEmbeddedSubtitles);
+  player.textTracks?.addEventListener?.("change", hideEmbeddedSubtitles);
+  hideEmbeddedSubtitles();
+}
 document.querySelector("[data-subtitles]")?.addEventListener("change", ({target}) => {
-  [...player.textTracks].forEach((track, index) => { track.mode = String(index) === target.value ? "showing" : "disabled"; });
+  const selected = limitedSubtitleTracks?.find((_, index) => String(index) === target.value);
+  [...player.textTracks].forEach((track, index) => { track.mode = (limitedSubtitleTracks ? track === selected : String(index) === target.value) ? "showing" : "disabled"; });
+  if (selected) selected.mode = "showing";
   document.querySelector("[data-player-captions]")?.setAttribute("aria-pressed", String(target.value !== "off"));
 });
 if (theaterButton) {
