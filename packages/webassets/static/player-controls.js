@@ -170,16 +170,18 @@ if (controls && player.tagName === "VIDEO") {
     syncSubtitles();
   });
   const fullscreen = document.querySelector("[data-player-fullscreen]");
-  const fullscreenSupported = Boolean((document.fullscreenEnabled && stage.requestFullscreen) || player.webkitEnterFullscreen);
+  const nativeFullscreenAllowed = player.dataset.subtitlePickerLimited !== "true";
+  const fullscreenSupported = Boolean((document.fullscreenEnabled && stage.requestFullscreen) || (nativeFullscreenAllowed && player.webkitEnterFullscreen));
   if (fullscreen) {
+    fullscreen.hidden = !fullscreenSupported && !nativeFullscreenAllowed;
     fullscreen.disabled = !fullscreenSupported;
-    fullscreen.title = fullscreenSupported ? "Fullscreen" : "Fullscreen is unavailable in this browser";
+    fullscreen.title = fullscreenSupported ? "Fullscreen" : nativeFullscreenAllowed ? "Fullscreen is unavailable in this browser" : "Fullscreen is unavailable while subtitle choices are limited. Use Theater mode.";
   }
   fullscreen?.addEventListener("click", async () => {
     try {
       if (document.fullscreenElement) await document.exitFullscreen();
       else if (document.fullscreenEnabled && stage.requestFullscreen) await stage.requestFullscreen();
-      else if (player.webkitEnterFullscreen) player.webkitEnterFullscreen();
+      else if (nativeFullscreenAllowed && player.webkitEnterFullscreen) player.webkitEnterFullscreen();
     } catch (_) { reportControlFailure("Fullscreen could not open. Try again, or use Theater mode."); }
   });
   pictureInPicture?.addEventListener("click", () => togglePictureInPicture().catch(() => reportControlFailure("Picture-in-Picture could not open. Start the video, then try again.")));

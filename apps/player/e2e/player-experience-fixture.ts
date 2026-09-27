@@ -7,7 +7,7 @@ test.beforeEach(async ({ page }, testInfo) => {
   if (testInfo.title === "theater control gets out of the way during playback") await page.clock.install();
   const markup = `
     <meta charset="utf-8"><body class="player-page"><main class="player-shell"><div class="media-stage">
-      <video id="player-media" data-title="Arrival" data-duration="100" data-start="20" data-progress="/progress/movie" data-playback-session="trace-session" data-playback-trace="https://127.0.0.1:38127/api/v1/items/movie/playback-events"${testInfo.title.includes("retries requested autoplay") ? " autoplay" : ""}${testInfo.title.includes("resumed autoplay") ? " data-autoplay" : ""}></video>
+      <video id="player-media" data-title="Arrival" data-duration="100" data-start="20" data-progress="/progress/movie" data-playback-session="trace-session" data-playback-trace="https://127.0.0.1:38127/api/v1/items/movie/playback-events"${testInfo.title.includes("limited native fullscreen") ? ' data-subtitle-picker-limited="true"' : ""}${testInfo.title.includes("retries requested autoplay") ? " autoplay" : ""}${testInfo.title.includes("resumed autoplay") ? " data-autoplay" : ""}></video>
       <div class="player-stage-toolbar"><strong>Arrival</strong>${testInfo.title.includes("device playback") || testInfo.title.includes("remote playback") || testInfo.title.includes("AirPlay") ? '<div class="player-stage-actions"><button hidden class="quiet" type="button" aria-label="Play on device" data-cast>Play on device</button><span role="status" aria-live="polite" data-cast-state>Available devices use a direct connection to this Server.</span></div>' : ""}</div>
       <div class="player-controls" data-player-controls hidden><button class="player-center-control" type="button" aria-label="Play" data-player-toggle><span data-play-icon></span></button><button class="player-center-control seek-back" type="button" aria-label="Go back 10 seconds" data-player-back>10</button><button class="player-center-control seek-forward" type="button" aria-label="Go forward 10 seconds" data-player-forward>10</button><div class="player-control-dock"><label class="player-scrubber"><span class="sr-only">Seek</span><span class="player-seek-preview" data-seek-preview hidden><span data-seek-frame></span><span data-preview-time>0:00</span></span><input type="range" min="0" max="100" value="0" data-player-seek data-trickplay="/trickplay/movie/{second}"></label><div class="player-control-row"><button type="button" aria-label="Play" data-player-toggle><span data-play-icon></span></button><button type="button" aria-label="Go back 10 seconds" data-player-back>−10</button><button type="button" aria-label="Go forward 10 seconds" data-player-forward>+10</button><button type="button" aria-label="Mute" data-player-mute><span>·</span></button><label class="player-volume"><span class="sr-only">Volume</span><input type="range" min="0" max="1" value="1" step=".05" data-player-volume></label><output data-player-time></output><span class="player-control-spacer"></span><button type="button" aria-label="Subtitles" data-player-captions>CC</button><button type="button" aria-label="Settings" aria-controls="player-settings" aria-expanded="false" data-player-settings><span>·</span></button><button type="button" aria-label="Theater" aria-pressed="false" data-theater><span data-theater-label>▭</span></button><button type="button" aria-label="Enter fullscreen" data-player-fullscreen><span>·</span></button></div></div></div>
       <div class="player-settings" id="player-settings" hidden><button type="button" data-player-settings-close>Close</button><label>Subtitles <select data-subtitles><option value="off">Off</option><option value="0">English</option></select></label></div>
@@ -217,6 +217,14 @@ test.beforeEach(async ({ page }, testInfo) => {
   }));
   await page.addStyleTag({ content: await readFile("../../../packages/webassets/static/player-app.css", "utf8") });
   const playerScript = playerSource;
+  if (testInfo.title.includes("native fullscreen fallback")) await page.evaluate(() => {
+    Object.defineProperty(document, "fullscreenEnabled", {configurable: true, value: false});
+    const video = document.querySelector("video")!;
+    Object.defineProperty(video, "webkitEnterFullscreen", {configurable: true, value: () => {
+      const state = window as Window & {nativeFullscreenCalls?: number};
+      state.nativeFullscreenCalls = (state.nativeFullscreenCalls || 0) + 1;
+    }});
+  });
   if (testInfo.title.includes("pending HLS loader")) {
     await page.evaluate(() => {
       const originalAppend = document.head.append.bind(document.head);

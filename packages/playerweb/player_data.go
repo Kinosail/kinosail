@@ -29,6 +29,7 @@ type PlayerData struct { //nolint:recvcheck // Templates need a value receiver f
 	CanTranscode             bool
 	FileSize                 string
 	DefaultSubtitles         bool
+	SubtitlePickerLimited    bool
 	Tracks                   []SubtitleTrack
 	Playlists                []PlaylistOption
 	MediaDetails             string
