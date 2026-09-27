@@ -1,8 +1,6 @@
 import { createHmac } from "node:crypto";
 import { type Browser, type Page } from "@playwright/test";
 
-export type OfflineClient = { KinosailOfflineMedia: { source: (itemID: string) => Promise<string> } };
-
 function totp(): string {
   const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567";
   const bits = [...(process.env.KINOSAIL_TEST_TOTP_SECRET ?? "")].map((character) => alphabet.indexOf(character).toString(2).padStart(5, "0")).join("");
@@ -14,13 +12,14 @@ function totp(): string {
   return (((digest.readUInt32BE(offset) & 0x7fffffff) % 1_000_000).toString().padStart(6, "0"));
 }
 
-export async function login(page: import("@playwright/test").Page) {
+export async function login(page: Page) {
   await page.goto("/login");
   await page.getByLabel("Name").fill(process.env.KINOSAIL_E2E_OWNER_NAME ?? "Owner");
   await page.getByLabel("Password", { exact: true }).fill(process.env.KINOSAIL_E2E_OWNER_PASSWORD ?? "test-instance-password");
   await page.getByLabel("6-digit code").fill(totp());
   await page.getByRole("button", { name: "Sign in", exact: true }).click();
-  if (await page.getByRole("link", { name: "Not now" }).isVisible()) await page.getByRole("link", { name: "Not now" }).click();
+  await page.waitForURL((url) => url.pathname !== "/login");
+  if (new URL(page.url()).pathname === "/account") await page.getByRole("link", { name: "Not now" }).click();
 }
 
 export async function loginViewer(page: Page, name: string, password: string) {
@@ -57,22 +56,4 @@ export async function newViewerPage(browser: Browser, baseURL: string): Promise<
   const context = await browser.newContext({ baseURL, ignoreHTTPSErrors: true });
   await context.addInitScript(() => Object.defineProperty(PublicKeyCredential, "isConditionalMediationAvailable", { value: async () => false }));
   return context.newPage();
-}
-
-export async function firstPlayable(page: Page): Promise<string> {
-  for (const path of ["/?view=movies", "/"]) {
-    await page.goto(path);
-    const cards = page.locator('a.card[href^="/watch/"]');
-    const example = cards.filter({ hasText: "Example Movie" });
-    const watch = await (await example.count() ? example.first() : cards.first()).getAttribute("href");
-    if (watch) return watch;
-  }
-  throw new Error("the Library does not contain playable video");
-}
-
-export async function openLibrarySection(page: import("@playwright/test").Page, section: string) {
-  const navigation = page.getByRole("navigation", { name: "Main navigation" });
-  const link = navigation.getByRole("link", { name: section, exact: true });
-  if (!await link.isVisible()) await navigation.getByText("More", { exact: true }).click();
-  await link.click();
 }

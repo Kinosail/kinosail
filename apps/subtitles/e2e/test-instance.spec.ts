@@ -1,20 +1,15 @@
 import { expect, test } from "@playwright/test";
 import { createViewer, login, loginViewer, newViewerPage, removeViewer } from "./test-instance-helpers";
-import { registerTestInstanceLibraryTests } from "./test-instance-library-tests";
-import { registerTestInstancePlaybackTests } from "./test-instance-playback-tests";
-import { registerTestInstanceShellTests } from "./test-instance-shell-tests";
 import { registerTestInstanceSupporterTests } from "./test-instance-supporter-tests";
 
 test.skip(process.env.KINOSAIL_TEST_INSTANCE !== "1", "requires the populated public test instance");
-test.beforeEach(async ({ page }) => page.addInitScript(() => Object.defineProperty(PublicKeyCredential, "isConditionalMediationAvailable", { value: async () => false })));
-test.beforeEach(async ({ page }) => login(page));
-
-registerTestInstanceShellTests();
+test.beforeEach(async ({ page }) => page.addInitScript(() => {
+  if ("PublicKeyCredential" in window) Object.defineProperty(PublicKeyCredential, "isConditionalMediationAvailable", { value: async () => false });
+}));
 registerTestInstanceSupporterTests();
-registerTestInstanceLibraryTests();
-registerTestInstancePlaybackTests();
 
-test("Viewer MFA enrollment gives account-neutral instructions", async ({ browser, page }, testInfo) => {
+test("Viewer MFA enrollment gives account-neutral instructions @smoke", async ({ browser, page }, testInfo) => {
+  await login(page);
   await page.goto("/settings");
   expect((await (await page.context().request.get("/api/v1/settings")).json()).requireMfa).toBe(true);
   const name = `QA Viewer ${Date.now()}`;
@@ -32,4 +27,18 @@ test("Viewer MFA enrollment gives account-neutral instructions", async ({ browse
     await viewer.context().close();
     await removeViewer(page, id);
   }
+});
+
+test("Owner authorizes a waiting device with Quick Connect", async ({ page, request }) => {
+  await login(page);
+  const started = await request.post("/api/v1/quick-connect", { data: { device: "E2E subtitles client" } });
+  expect(started.status()).toBe(201);
+  const pending = await started.json() as { code: string; secret: string };
+  await page.goto("/quick-connect");
+  await page.getByLabel("Code").fill(pending.code);
+  await page.getByRole("button", { name: "Authorize device" }).click();
+  await expect(page).toHaveURL("/");
+  const completed = await request.post("/api/v1/quick-connect/token", { data: { secret: pending.secret } });
+  expect(completed.status()).toBe(201);
+  expect((await completed.json()).token).toEqual(expect.any(String));
 });

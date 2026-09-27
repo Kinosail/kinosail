@@ -1,11 +1,46 @@
 import AxeBuilder from "@axe-core/playwright";
-import { createHash } from "node:crypto";
 import { readFile } from "node:fs/promises";
 import { join } from "node:path";
 import { expect, test } from "@playwright/test";
-import { createViewer, firstPlayable, login, loginViewer, newViewerPage, openLibrarySection, removeViewer, type OfflineClient } from "./test-instance-helpers";
+import { login } from "./test-instance-helpers";
 
 export function registerTestInstanceSupporterTests() {
+test("Supporter page loads twenty distinct badges with accessible names", async ({ page }, testInfo) => {
+  await login(page);
+  for (const viewport of [{ width: 1440, height: 900 }, { width: 390, height: 844 }, { width: 320, height: 800 }]) {
+    await page.setViewportSize(viewport);
+    await page.goto("/supporter");
+    await expect(page.getByRole("heading", { name: "Living Standards" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Patron Orders" })).toBeVisible();
+    const living = page.locator(".family-living-standard");
+    const patron = page.locator(".family-patron-order");
+    for (const family of [living, patron]) {
+      await expect(family.locator(".badge-level")).toHaveCount(10);
+      await expect(family.locator(".badge-level.elite")).toHaveCount(4);
+      const badges = family.locator(".badge-gallery img.badge-sigil");
+      expect(await badges.evaluateAll((images: HTMLImageElement[]) => images.every((image) => image.complete && image.naturalWidth > 0))).toBe(true);
+      expect(await badges.evaluateAll((images: HTMLImageElement[]) => images.every((image) => image.alt.includes("badge for Kinosail Subtitles")))).toBe(true);
+      if (viewport.width === 1440) {
+        const sources = await badges.evaluateAll((images: HTMLImageElement[]) => images.map((image) => image.getAttribute("src")!));
+        const artwork = await Promise.all(sources.map(async (source) => {
+          const response = await page.request.get(source);
+          expect(response.status()).toBe(200);
+          expect(response.headers()["content-type"]).toContain("image/svg+xml");
+          return (await response.text()).replace(/<title[^>]*>.*?<\/title>/s, "");
+        }));
+        expect(new Set(artwork).size).toBe(10);
+      }
+    }
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+    expect((await new AxeBuilder({ page }).include("main").analyze()).violations).toEqual([]);
+    await page.screenshot({ path: testInfo.outputPath(`${viewport.width}-supporter-badges.png`), fullPage: true });
+  }
+  await page.emulateMedia({ forcedColors: "active", reducedMotion: "reduce" });
+  await expect(page.locator(".badge-gallery img.badge-sigil")).toHaveCount(20);
+  expect(await page.locator(".badge-gallery img.badge-sigil").evaluateAll((images: HTMLImageElement[]) => images.every((image) => image.complete && image.naturalWidth > 0))).toBe(true);
+  await page.screenshot({ path: testInfo.outputPath("320-supporter-forced-colors.png"), fullPage: true });
+});
+
 test.describe("Supporter populated fixtures", () => {
 test.use({ serviceWorkers: "block" });
 test("Supporter populated page shares a social PNG with safe fallbacks", async ({ page }, testInfo) => {
@@ -105,7 +140,12 @@ test("Supporter populated archive never implies an active entitlement", async ({
 
 test("a stale login page redirects passkey sign-in to the canonical origin", async ({ page }) => {
   await page.addInitScript(() => Object.defineProperty(navigator, "credentials", { value: { get: async () => { throw new DOMException("no test passkey", "NotAllowedError"); } } }));
-  await page.goto("/login");
+  const canonical = new URL(process.env.KINOSAIL_E2E_URL ?? "https://localhost:38128");
+  canonical.hostname = "localhost";
+  const alternate = new URL(canonical);
+  alternate.hostname = "127.0.0.1";
+  alternate.pathname = "/login";
+  await page.goto(alternate.toString());
   await expect(page.locator('meta[name="kinosail-csrf"]')).toHaveCount(0);
   const login = new URL(page.url());
   await page.context().addCookies([{ name: login.protocol === "https:" ? "__Host-kinosail_session" : "kinosail_session", value: "stale-test-session", url: new URL("/", login).toString(), httpOnly: true, secure: login.protocol === "https:", sameSite: "Strict" }]);
@@ -113,6 +153,6 @@ test("a stale login page redirects passkey sign-in to the canonical origin", asy
   await page.getByRole("button", { name: "Sign in with passkey" }).click();
   const begin = await response;
   expect(begin.status()).toBe(421);
-  expect(begin.headers().location).toBe("https://localhost:38128/login");
+  expect(begin.headers().location).toBe(new URL("/login", canonical).toString());
 });
 }

@@ -16,6 +16,9 @@ function totp(): string {
 }
 
 export async function login(page: import("@playwright/test").Page) {
+  await page.addInitScript(() => {
+    if ("PublicKeyCredential" in window) Object.defineProperty(PublicKeyCredential, "isConditionalMediationAvailable", { value: async () => false });
+  });
   await page.goto("/login?next=/", { waitUntil: "domcontentloaded" });
   await page.getByLabel("Name").fill("Owner");
   await page.getByLabel("Password", { exact: true }).fill("test-instance-password");
