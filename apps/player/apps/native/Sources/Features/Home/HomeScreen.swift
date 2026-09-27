@@ -28,7 +28,7 @@ struct HomeScreen: View {
                     } else if homeMode == .listen, !selection.featuredAndContinuation.isEmpty {
                         ResumeRows(items: selection.featuredAndContinuation, title: "Listening", showsAll: false)
                     }
-                    TVHomeBrowse(mode: homeMode, selectTab: selectTab, changeMode: changeMode)
+                    TVHomeBrowse(selectTab: selectTab)
                     #else
                     VStack(alignment: .leading, spacing: 12) {
                         HStack(spacing: 28) {
@@ -206,10 +206,8 @@ struct HomeSelection {
 #if os(tvOS)
 private struct TVHomeBrowse: View {
     @FocusState private var focusedTitle: String?
-    let mode: PlayerMode
     let selectTab: (PlayerTab) -> Void
-    let changeMode: ((PlayerMode) -> Void)?
-    private let tabs: [PlayerTab] = [.movies, .shows, .music, .audiobooks, .photos, .collections, .library]
+    private let tabs: [PlayerTab] = [.movies, .shows, .music, .audiobooks, .photos, .library]
 
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
@@ -218,9 +216,6 @@ private struct TVHomeBrowse: View {
                 LazyHStack(alignment: .top, spacing: 18) {
                     ForEach(tabs) { tab in
                         tile(title: tab.title, icon: icon(for: tab), systemIcon: tab == .library) { selectTab(tab) }
-                    }
-                    if let changeMode {
-                        tile(title: "\(mode.other.title) Home", icon: "KinosailMark") { changeMode(mode.other) }
                     }
                 }
                 .padding(.horizontal, 24)
