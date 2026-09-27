@@ -39,6 +39,14 @@ class BuildInputsTest(unittest.TestCase):
                     self.assertEqual('<loc>https://kinosail.com/architecture-explorer/</loc>'
                                      in (args.output / 'sitemap.xml').read_text(), name == 'production')
                     homepage = (args.output / 'index.html').read_text()
+                    for app_name in ('player', 'subtitles'):
+                        self.assertEqual(
+                            (args.output / f'assets/install/{app_name}.yaml').read_bytes(),
+                            (ROOT / f'apps/{app_name}/packaging/platform-compose.yaml').read_bytes(),
+                        )
+                    install_helper = (args.output / 'getting-started/platforms/index.html').read_text()
+                    self.assertIn('data-install-builder', install_helper)
+                    self.assertIn(f'{prefix}/assets/js/platform-install.js', install_helper)
                     favicon = (args.output / 'assets/images/kinosail-mark.png').read_bytes()
                     self.assertEqual(favicon[:8], b'\x89PNG\r\n\x1a\n')
                     self.assertEqual(struct.unpack('>II', favicon[16:24]), (96, 96))
