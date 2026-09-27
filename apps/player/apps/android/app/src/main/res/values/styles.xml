@@ -1,5 +1,6 @@
 <resources>
     <style name="Theme.Kinosail" parent="android:style/Theme.Material.NoActionBar">
+        <item name="colorPrimary">#C4FF47</item>
         <item name="android:windowLightStatusBar">false</item>
         <item name="android:statusBarColor">#0b0d0b</item>
         <item name="android:navigationBarColor">#0b0d0b</item>
