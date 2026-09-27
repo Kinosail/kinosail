@@ -1,0 +1,10 @@
+Source baseline: 7f69539c20307f7b92f4541a6f7b651188d47908
+Environment: isolated synthetic Player instance, macOS Playwright Firefox and WebKit, one worker.
+Command: the sixteen specs from apps/player/scripts/test-instance.sh browser, with KINOSAIL_BROWSER_MATRIX=full --project=firefox --project=webkit --workers=1.
+
+Initial expanded run: 118 attempts; 107 passed, 10 intentionally skipped, 1 failed in Firefox after page.goto('/login') timed out while waiting for load. The failure was at the first navigation of the test, before the keyboard/theme assertions. The equivalent WebKit case passed.
+
+Isolated retry: pnpm --dir e2e exec playwright test ui-happy-paths.spec.ts --grep 'Owner can use keyboard utilities' --project=firefox --workers=1
+Result: 1 passed in 3.6 seconds, with no code or data change. The initial timeout is classified as an unverified transient local harness failure, not a confirmed product defect.
+
+After reconciliation with origin/main at 7a2aaa4c, the Player test image was rebuilt and its Chromium browser suite passed 60/60. A selected Firefox/WebKit run of populated library accessibility, Compatibility playback, and preferred-language subtitle choices passed 6/6.

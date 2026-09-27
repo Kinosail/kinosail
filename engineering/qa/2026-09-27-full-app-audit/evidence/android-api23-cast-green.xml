@@ -1,0 +1,28 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<testsuites tests="5" failures="0" errors="0" skipped="0" time="0.000" timestamp="2026-09-27T18:44:23" hostname="localhost">
+  <testsuite name="com.kinosail.player.core.PlaybackContentAccessibilityTest" tests="2" failures="0" errors="0" skipped="0" time="0.972" timestamp="2026-09-27T18:44:23" hostname="localhost">
+    <properties>
+      <property name="device" value="emulator-5570" />
+    </properties>
+    <testcase name="playbackErrorPassesAccessibilityChecks" classname="com.kinosail.player.core.PlaybackContentAccessibilityTest" time="0.524" />
+    <testcase name="readerErrorsPassAccessibilityChecks" classname="com.kinosail.player.core.PlaybackContentAccessibilityTest" time="0.448" />
+  </testsuite>
+  <testsuite name="com.kinosail.player.mobile.CastChooserTest" tests="1" failures="0" errors="0" skipped="0" time="1.209" timestamp="2026-09-27T18:44:23" hostname="localhost">
+    <properties>
+      <property name="device" value="emulator-5570" />
+    </properties>
+    <testcase name="castChooserOpensUnderPhoneTheme" classname="com.kinosail.player.mobile.CastChooserTest" time="1.209" />
+  </testsuite>
+  <testsuite name="com.kinosail.player.mobile.MobileAccessibilityTest" tests="1" failures="0" errors="0" skipped="0" time="0.531" timestamp="2026-09-27T18:44:23" hostname="localhost">
+    <properties>
+      <property name="device" value="emulator-5570" />
+    </properties>
+    <testcase name="setupPassesAccessibilityChecks" classname="com.kinosail.player.mobile.MobileAccessibilityTest" time="0.531" />
+  </testsuite>
+  <testsuite name="com.kinosail.player.tv.TvAccessibilityTest" tests="1" failures="0" errors="0" skipped="0" time="0.807" timestamp="2026-09-27T18:44:23" hostname="localhost">
+    <properties>
+      <property name="device" value="emulator-5570" />
+    </properties>
+    <testcase name="setupPassesAccessibilityChecks" classname="com.kinosail.player.tv.TvAccessibilityTest" time="0.807" />
+  </testsuite>
+</testsuites>
