@@ -1,0 +1,18 @@
+$ ../../../scripts/tooling/gate-shell.sh -c 'exec playwright test "$@"' -- test-instance-production.spec.ts --grep 'populated library views|saved video Compatibility' --workers=1
+
+Running 6 tests using 1 worker
+
+(node:70309) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  1 [chromium] › test-instance-production.spec.ts:27:1 › populated library views stay accessible at desktop and phone sizes (7.5s)
+  ✓  2 [chromium] › test-instance-production.spec.ts:46:1 › saved video Compatibility keeps real music and audiobook playback on their pages (2.4s)
+(node:70609) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  3 [firefox] › test-instance-production.spec.ts:27:1 › populated library views stay accessible at desktop and phone sizes (9.5s)
+  ✓  4 [firefox] › test-instance-production.spec.ts:46:1 › saved video Compatibility keeps real music and audiobook playback on their pages (2.2s)
+(node:70741) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  5 [webkit] › test-instance-production.spec.ts:27:1 › populated library views stay accessible at desktop and phone sizes (11.4s)
+  ✓  6 [webkit] › test-instance-production.spec.ts:46:1 › saved video Compatibility keeps real music and audiobook playback on their pages (2.5s)
+
+  6 passed (49.3s)

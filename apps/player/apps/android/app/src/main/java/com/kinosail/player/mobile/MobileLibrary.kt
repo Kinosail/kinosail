@@ -65,6 +65,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.kinosail.player.core.CatalogItem
 import com.kinosail.player.core.CatalogModel
+import com.kinosail.player.core.catalogEmptyMessage
 import com.kinosail.player.core.AudioPlaybackService
 import com.kinosail.player.core.ConnectionModel
 import com.kinosail.player.core.HomeScreen
@@ -173,8 +174,8 @@ internal fun MobileLibrary(connection: ConnectionModel, viewer: Viewer) {
                 if (state.notice != null) TextButton(onClick = catalog::retry) { Text(interfaceText("Try again")) }
                 if (state.loading && state.items.isEmpty()) CircularProgressIndicator()
                 else if (state.items.isEmpty() && state.notice == null) {
-                    Text(interfaceText(if (state.view == "list") "Save a title to keep it in My List."
-                        else "Nothing in your library yet."), color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    Text(interfaceText(catalogEmptyMessage(state.view, catalog.hasActiveSearch)),
+                        color = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
                 LazyVerticalGrid(columns = GridCells.Adaptive(144.dp), modifier = Modifier.weight(1f), state = gridState,
                     horizontalArrangement = Arrangement.spacedBy(12.dp),

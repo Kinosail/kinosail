@@ -1,0 +1,33 @@
+ok  	github.com/MikeO7/kinosail-subtitles/internal/server	6.309s
+>>>> Executing external compose provider "/usr/local/bin/docker-compose". Please see podman-compose(1) for how to disable this message. <<<<
+
+$ ../../../scripts/tooling/gate-shell.sh -c 'exec playwright test "$@"' -- subtitle-dashboard.spec.ts --workers=1
+
+Running 22 tests using 1 worker
+
+(node:68043) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   1 [chromium] › subtitle-dashboard-language-tests.ts:8:1 › language choices describe online support without implying saved credentials (1.2s)
+  ✓   2 [chromium] › subtitle-dashboard-language-tests.ts:14:1 › Owner deletes other languages and English forced subtitles from a populated library (3.7s)
+  ✓   3 [chromium] › subtitle-dashboard-language-tests.ts:68:1 › Owner previews language cleanup and forced subtitle choice (8.0s)
+  ✓   4 [chromium] › subtitle-dashboard-language-tests.ts:100:1 › Owner sees real coverage, wanted files, and a focused setup path @smoke (1.6s)
+  ✓   5 [chromium] › subtitle-dashboard-language-tests.ts:152:1 › Owner manages an ordered preferred-language list at every supported width (24.0s)
+  ✓   6 [chromium] › subtitle-dashboard-provider-tests.ts:6:1 › Twenty long language choices remain usable at the preference limit (5.9s)
+  ✓   7 [chromium] › subtitle-dashboard-provider-tests.ts:72:1 › Local-only languages do not advertise unavailable item actions (3.5s)
+  ✓   8 [chromium] › subtitle-dashboard-provider-tests.ts:122:1 › Trusted HTTPS guidance keeps the paired names readable (7.9s)
+  ✓   9 [chromium] › subtitle-dashboard-provider-tests.ts:145:1 › Provider setup stays compact and accessible at every supported width (9.9s)
+  ✓  10 [chromium] › subtitle-dashboard-layout-tests.ts:6:1 › Subtitles navigation follows the Player shell at each breakpoint (1.6s)
+  ✓  11 [chromium] › subtitle-dashboard-layout-tests.ts:36:1 › phone settings expose every section without a hidden horizontal rail (810ms)
+  ✓  12 [chromium] › subtitle-dashboard-layout-tests.ts:60:1 › Settings header keeps destinations inside the Player-style shell (1.1s)
+  ✓  13 [chromium] › subtitle-dashboard-layout-tests.ts:82:1 › Subtitle API reports the rendered inventory and rejects ambiguous input (813ms)
+  ✓  14 [chromium] › subtitle-dashboard-layout-tests.ts:106:1 › Overview preview keeps the complete wanted inventory accessible (877ms)
+  ✓  15 [chromium] › subtitle-dashboard-layout-tests.ts:116:1 › Overview search finds covered titles and offers a clear recovery (1.1s)
+  ✓  16 [chromium] › subtitle-dashboard-layout-tests.ts:139:1 › Dashboard stays readable and accessible at every supported width (6.0s)
+  ✓  17 [chromium] › subtitle-dashboard-layout-tests.ts:185:1 › Dashboard preserves keyboard and high-contrast operation (1.0s)
+  ✓  18 [chromium] › subtitle-dashboard-layout-tests.ts:201:1 › Compact navigation does not cover the current subtitle task (12.2s)
+  ✓  19 [chromium] › subtitle-dashboard-layout-tests.ts:222:1 › Dashboard preserves its task at 200 percent reflow (1.4s)
+  ✓  20 [chromium] › subtitle-dashboard-layout-tests.ts:229:1 › Readiness, quota, and history remain usable on compact screens (3.3s)
+  ✓  21 [chromium] › subtitle-dashboard-layout-tests.ts:249:1 › Subtitle setup guide keeps readiness and recovery visible (6.1s)
+  ✓  22 [chromium] › subtitle-dashboard-layout-tests.ts:294:1 › Subtitle setup respects saved light and dark themes (1.7s)
+
+  22 passed (1.8m)
