@@ -30,6 +30,14 @@ class PlaybackApiTest {
         assertFalse(connection.instanceFollowRedirects)
     }
 
+    @Test fun aNewTitleMayOmitZeroStartAndUnusedProgressToken() {
+        val fresh = response.replace("\"start\":30,", "").replace(",\"progressToken\":\"abc\"", "")
+        val source = PlaybackApi(server) { PlaybackResponse(200, fresh) }
+            .source("film-1", "token", "alex", capabilities)
+        assertEquals(0.0, source.start, 0.0)
+        assertEquals("", source.progressToken)
+    }
+
     @Test fun rejectsInvalidInputsBeforeNetwork() {
         var opens = 0
         val api = PlaybackApi(server) { opens++; PlaybackResponse(200, response) }

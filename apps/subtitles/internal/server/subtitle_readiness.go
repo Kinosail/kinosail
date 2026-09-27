@@ -53,7 +53,7 @@ func (manager *subtitleManager) readiness() subtitleReadiness { //nolint:cyclop 
 	checks := []subtitleReadinessCheck{
 		{"Media library readable", readable, true, map[bool]string{true: "All configured folders are readable", false: "Fix the media mount or folder access"}[readable]},
 		{"Sidecar folder writable", writable, true, map[bool]string{true: "Sidecars can be written beside media", false: "Grant the Server write access to the media folders"}[writable]},
-		{"Subtitle sources configured", providerReady, true, sourceDetail},
+		{"Subtitle processing available", providerReady, true, sourceDetail},
 		{"Preferred language valid", languageReady, true, manager.settings.subtitleLanguage()},
 		{"Background scan active", background, true, map[bool]string{true: "Filesystem monitoring or a safety scan is active", false: "Turn on a safety scan"}[background]},
 		{"Encrypted backup configured", backupReady, false, map[bool]string{true: "Automatic encrypted recovery is configured", false: "Optional: configure an encrypted backup; subtitle replacements keep a local recovery copy"}[backupReady]},

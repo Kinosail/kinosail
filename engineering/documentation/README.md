@@ -1,12 +1,12 @@
 # Kinosail documentation site
 
-The web Player documentation site is published to <https://kinosail.com/> by `.github/workflows/ci.yml`. Pull requests build and check the artifact; only `main` can deploy to the `github-pages` environment.
+The Player site is published at <https://kinosail.com/> and the Subtitles docs at <https://kinosail.com/subtitles/> by `.github/workflows/ci.yml`. Pull requests build and check both; only `main` can deploy to the `github-pages` environment.
 
 ## Edit the source
 
-- User guides: `apps/player/docs/`.
-- Layout, search, and assets: `apps/player/docs/_layouts/` and `apps/player/docs/assets/`.
-- Scope: web Player only, Docker first; other apps and native clients are not promoted here.
+- Player guides, layout, search, and assets: `apps/player/docs/`.
+- Subtitles guides, layout, search, and assets: `apps/subtitles/docs/`.
+- Scope: Player and Subtitles. Each app has its own install guide and container.
 
 The build copies only documentation inputs into a temporary staging directory. It excludes research folders, preserves guide URLs, bundles the local font, and builds full-text search. The app documentation remains usable in its standalone renderer. Nothing changes application binaries or deployment.
 
@@ -25,7 +25,7 @@ python3 engineering/documentation/check.py /tmp/kinosail-preview-root
 python3 -m http.server 4180 --bind 127.0.0.1 --directory /tmp/kinosail-preview-root
 ```
 
-Open <http://127.0.0.1:4180/>. Stop with Ctrl-C. The output directory must be new and outside the checkout; choose a new output name for each build rather than deleting unrelated files. The default build targets the root of <https://kinosail.com/> with no base path; set `--baseurl` only when publishing under a subpath, and pass that same base path as the second argument to `check.py`.
+Open <http://127.0.0.1:4180/> for Player and <http://127.0.0.1:4180/subtitles/> for Subtitles. Stop with Ctrl-C. The output directory must be new and outside the checkout; choose a new output name for each build rather than deleting unrelated files. The default build targets the root of <https://kinosail.com/> with no base path; set `--baseurl` only when publishing under a subpath, and pass that same base path as the second argument to `check.py`.
 
 Keep generated output and local Bundler caches outside tracked source. Update `Gemfile` and `Gemfile.lock` together when changing dependencies.
 
@@ -35,4 +35,4 @@ The checker verifies every local link, fragment, asset, page heading, and the ag
 
 GitHub Pages must use **GitHub Actions** as its build source. No custom domain is required. Deployment uses a static artifact with only Pages and OIDC write permissions; pull-request jobs have read-only repository access and cannot deploy. A failed build or link check blocks publication.
 
-After the protected pull request merges, verify the CI documentation job and Pages deployment, public HTTPS home page, a nested guide, and search JSON. Source merge and live publication are separate facts.
+After the protected pull request merges, verify the CI documentation job and Pages deployment, public HTTPS home pages, nested guides, sitemap, and search JSON for both apps. Source merge and live publication are separate facts.

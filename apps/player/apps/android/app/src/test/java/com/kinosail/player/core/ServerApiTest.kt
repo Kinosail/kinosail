@@ -73,6 +73,38 @@ class ServerApiTest {
         assertEquals("DELETE", signOut.requestMethod)
     }
 
+    @Test fun unrestrictedViewerAcceptsNullLibrariesButRejectsMalformedRestrictions() {
+        val profile = """{"server":"Living Room","serverId":"server-1","viewer":{"id":"viewer-1","name":"Alex","libraries":null}}"""
+        assertEquals("viewer-1", ServerApi(server) { FakeResponse(200, profile) }.viewer("token-123").id)
+        val malformed = profile.replace("\"libraries\":null", "\"libraries\":\"private\"")
+        assertThrows(IllegalArgumentException::class.java) {
+            ServerApi(server) { FakeResponse(200, malformed) }.viewer("token-123")
+        }
+    }
+
+    @Test fun temporaryReadFailureRetriesButMutationsAndAuthorizationFailuresDoNot() {
+        val profile = """{"server":"Living Room","serverId":"server-1","viewer":{"id":"viewer-1","name":"Alex"}}"""
+        val first = FakeResponse(503, "")
+        val second = FakeResponse(200, profile)
+        val responses = ArrayDeque(listOf(first, second))
+        val api = ServerApi(server) { responses.removeFirst() }
+        assertEquals("viewer-1", api.viewer("token-123").id)
+        assertTrue(first.closed && second.closed)
+        assertTrue(responses.isEmpty())
+
+        var mutations = 0
+        assertThrows(ServerHttpException::class.java) {
+            ServerApi(server) { mutations++; FakeResponse(503, "") }.start("Android phone")
+        }
+        assertEquals(1, mutations)
+
+        var denied = 0
+        assertThrows(ServerHttpException::class.java) {
+            ServerApi(server) { denied++; FakeResponse(401, "") }.viewer("token-123")
+        }
+        assertEquals(1, denied)
+    }
+
     @Test fun invalidInputsNeverOpenAConnection() {
         var opens = 0
         val api = ServerApi(server) { opens++; FakeResponse(201, "{}") }

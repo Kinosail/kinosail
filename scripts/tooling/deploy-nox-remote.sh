@@ -25,11 +25,11 @@ cd -- "$compose_dir"
 old="$(docker image inspect "$stable_image" --format '{{.Id}}' 2>/dev/null || true)"
 rollback() {
   [[ -z "$old" ]] || docker tag "$old" "$stable_image"
-  docker compose up --detach --no-deps --force-recreate "$service" >/dev/null 2>&1 || true
+  docker compose up --detach --no-deps --force-recreate --timeout 30 "$service" >/dev/null 2>&1 || true
 }
 trap rollback ERR
 docker tag "$image" "$stable_image"
-docker compose up --detach --no-deps --force-recreate "$service" >/dev/null 2>&1
+docker compose up --detach --no-deps --force-recreate --timeout 30 "$service" >/dev/null 2>&1
 for _ in {1..90}; do
   state="$(docker inspect "$container" --format '{{if .State.Health}}{{.State.Health.Status}}{{else}}{{.State.Status}}{{end}}')"
   [[ "$state" == healthy ]] && break
