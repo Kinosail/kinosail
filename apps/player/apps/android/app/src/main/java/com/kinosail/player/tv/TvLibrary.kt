@@ -62,6 +62,7 @@ import androidx.tv.material3.MaterialTheme
 import androidx.tv.material3.Text
 import com.kinosail.player.core.CatalogItem
 import com.kinosail.player.core.CatalogModel
+import com.kinosail.player.core.catalogEmptyMessage
 import com.kinosail.player.core.AudioPlaybackService
 import com.kinosail.player.core.ConnectionModel
 import com.kinosail.player.core.HomeScreen
@@ -202,8 +203,8 @@ internal fun TvLibrary(connection: ConnectionModel, viewer: Viewer) {
                     modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite }) }
                 if (state.notice != null) Button(onClick = catalog::retry) { Text(interfaceText("Try again")) }
                 if (state.items.isEmpty() && !state.loading && state.notice == null) {
-                    Text(interfaceText(if (state.view == "list") "Save a title to keep it in My List."
-                        else "Nothing in your library yet."), style = MaterialTheme.typography.titleLarge,
+                    Text(interfaceText(catalogEmptyMessage(state.view, catalog.hasActiveSearch)),
+                        style = MaterialTheme.typography.titleLarge,
                         color = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
                 LazyVerticalGrid(columns = GridCells.Fixed(5), modifier = Modifier.weight(1f), state = gridState,

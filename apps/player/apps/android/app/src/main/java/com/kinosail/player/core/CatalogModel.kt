@@ -27,6 +27,10 @@ data class CatalogState(
     val detailNotice: String? = null,
 )
 
+internal fun catalogEmptyMessage(view: String, searched: Boolean): String =
+    if (searched) "No results. Try another search."
+    else if (view == "list") "Save a title to keep it in My List." else "Nothing in your library yet."
+
 class CatalogModel(application: Application) : AndroidViewModel(application) {
     private val sessions = SessionStore(application)
     private val artworkCache = object : LruCache<String, Bitmap>(24 * 1024 * 1024) {
@@ -41,6 +45,7 @@ class CatalogModel(application: Application) : AndroidViewModel(application) {
     private var refreshAfterDetail = false
 
     var searchInput by mutableStateOf("")
+    val hasActiveSearch get() = activeQuery.isNotEmpty()
     var state by mutableStateOf(CatalogState())
         private set
 
