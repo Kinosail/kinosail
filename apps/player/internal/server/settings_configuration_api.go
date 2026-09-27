@@ -37,7 +37,7 @@ func apiChangeConfiguration(settings *settingsStore, reset bool) http.HandlerFun
 			writeJSON(writer, map[string]any{"status": "active", "restartRequired": false}, http.StatusAccepted)
 			return
 		}
-		writeConfigurationSaved(writer)
+		writeConfigurationSaved(writer, settings)
 	}
 }
 
@@ -98,7 +98,7 @@ func apiChangeOIDCConfiguration(writer http.ResponseWriter, request *http.Reques
 		apiError(writer, err, http.StatusConflict)
 		return
 	}
-	writeConfigurationSaved(writer)
+	writeConfigurationSaved(writer, settings)
 }
 
 func apiChangeSAMLConfiguration(writer http.ResponseWriter, request *http.Request, settings *settingsStore, reset bool) {
@@ -114,7 +114,7 @@ func apiChangeSAMLConfiguration(writer http.ResponseWriter, request *http.Reques
 		apiError(writer, err, http.StatusConflict)
 		return
 	}
-	writeConfigurationSaved(writer)
+	writeConfigurationSaved(writer, settings)
 }
 
 func apiChangeSCIMConfiguration(writer http.ResponseWriter, request *http.Request, settings *settingsStore, reset bool) {
@@ -129,9 +129,9 @@ func apiChangeSCIMConfiguration(writer http.ResponseWriter, request *http.Reques
 		apiError(writer, err, http.StatusConflict)
 		return
 	}
-	writeConfigurationSaved(writer)
+	writeConfigurationSaved(writer, settings)
 }
 
-func writeConfigurationSaved(writer http.ResponseWriter) {
-	writeJSON(writer, map[string]any{"status": "saved", "restartRequired": true}, http.StatusAccepted)
+func writeConfigurationSaved(writer http.ResponseWriter, settings *settingsStore) {
+	writeJSON(writer, map[string]any{"status": "saved", "restartRequired": len(settings.pendingRestart()) > 0}, http.StatusAccepted)
 }

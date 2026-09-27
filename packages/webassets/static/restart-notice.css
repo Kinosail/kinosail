@@ -1,0 +1,3 @@
+.settings-shell>section.restart-notice{grid-column:1/-1;width:100%;padding:1.25rem 1.5rem;border:1px solid color-mix(in srgb,var(--warning) 55%,var(--line));border-radius:12px;background:color-mix(in srgb,var(--warning) 9%,var(--surface));box-shadow:none}
+.restart-notice h2{margin:0 0 .5rem;color:var(--warning);font-size:1.15rem}.restart-notice p{max-width:70ch;margin:.5rem 0}.restart-notice ul{display:flex;flex-wrap:wrap;gap:.4rem 1.3rem;margin:.65rem 0 1rem;padding-left:1.2rem}.restart-notice details{max-width:70ch}.restart-notice summary{cursor:pointer;font-weight:700;text-decoration:underline;text-underline-offset:.2em}
+@media(forced-colors:active){.settings-shell>section.restart-notice{border-color:CanvasText;background:Canvas}.restart-notice h2{color:CanvasText}}

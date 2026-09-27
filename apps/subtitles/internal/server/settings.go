@@ -50,6 +50,7 @@ type settingsStore struct {
 	ffmpeg           string
 	value            installationSettings
 	config           configuration.Snapshot
+	startupConfig    configuration.Snapshot
 	subtitleProvider *subtitleProvider
 	hardware         hardwareCapabilities
 	transcoderCheck  transcodepolicy.CheckResult
@@ -70,6 +71,7 @@ func newSettingsStore(mediaRoot, dataDir, dlnaURL string, stateDB *database.Stor
 	if len(configured) > 0 {
 		store.config = configured[0]
 	}
+	store.startupConfig = store.config.Clone()
 	if dataDir == "" {
 		if err := store.ensureJellyfinID(); err != nil {
 			store.err = err

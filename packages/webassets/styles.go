@@ -14,12 +14,15 @@ var (
 	playerBaseCSS []byte
 	//go:embed static/player-stage.css
 	playerStageCSS []byte
-	PlayerCSS      = append(append([]byte(nil), playerBaseCSS...), playerStageCSS...)
+	//go:embed static/restart-notice.css
+	restartNoticeCSS []byte
+	playerCoreCSS    = append(append([]byte(nil), playerBaseCSS...), playerStageCSS...)
+	PlayerCSS        = append(append([]byte(nil), playerCoreCSS...), restartNoticeCSS...)
 	//go:embed static/subtitles-app.css.patch
 	subtitlesCSSPatch []byte
 
 	// SubtitlesCSS derives the Subtitles stylesheet from Player's stylesheet.
-	SubtitlesCSS = mustApplyStylePatch(PlayerCSS, subtitlesCSSPatch)
+	SubtitlesCSS = append(mustApplyStylePatch(playerCoreCSS, subtitlesCSSPatch), restartNoticeCSS...)
 )
 
 var errInvalidStylePatch = errors.New("invalid embedded stylesheet patch")

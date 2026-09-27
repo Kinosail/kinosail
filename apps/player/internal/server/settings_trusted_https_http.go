@@ -33,7 +33,7 @@ func apiTrustedHTTPS(settings *settingsStore) http.HandlerFunc {
 			apiError(writer, err, status)
 			return
 		}
-		writeJSON(writer, map[string]any{"status": "saved", "restartRequired": true, "trustedHttps": view}, http.StatusAccepted)
+		writeJSON(writer, map[string]any{"status": "saved", "restartRequired": len(settings.pendingRestart()) > 0, "trustedHttps": view}, http.StatusAccepted)
 	}
 }
 
@@ -87,7 +87,7 @@ func apiDisableTrustedHTTPS(settings *settingsStore) http.HandlerFunc {
 			apiError(writer, err, status)
 			return
 		}
-		writeJSON(writer, map[string]any{"status": "saved", "restartRequired": true}, http.StatusAccepted)
+		writeJSON(writer, map[string]any{"status": "saved", "restartRequired": len(settings.pendingRestart()) > 0}, http.StatusAccepted)
 	}
 }
 
