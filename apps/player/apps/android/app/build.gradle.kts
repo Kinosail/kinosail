@@ -55,7 +55,7 @@ dependencies {
     implementation("androidx.mediarouter:mediarouter:1.8.1")
     implementation("com.google.android.gms:play-services-cast-framework:22.3.1")
     testImplementation("junit:junit:4.13.2")
-    testImplementation("org.robolectric:robolectric:4.16.1")
+    testImplementation("org.robolectric:robolectric:4.17")
     testImplementation(platform("androidx.compose:compose-bom:2026.09.00"))
     testImplementation("androidx.compose.ui:ui-test-junit4")
     androidTestImplementation(platform("androidx.compose:compose-bom:2026.09.00"))
