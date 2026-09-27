@@ -10,7 +10,7 @@ struct PlaybackScreen: View {
     @State private var revision = 0
     @State private var showsTools = false
     @State private var showsSeekPreview = false
-    #if os(iOS)
+    #if os(iOS) || os(tvOS)
     @State private var showsFullScreen = false
     @State private var didPresentFullScreen = false
     #endif
@@ -18,24 +18,33 @@ struct PlaybackScreen: View {
     var body: some View {
         #if os(iOS)
         if UIDevice.current.userInterfaceIdiom == .pad && onClose == nil {
-            Color.clear
-                .fullScreenCover(isPresented: $showsFullScreen, onDismiss: { dismiss() }) {
-                    NavigationStack {
-                        PlaybackScreen(itemID: itemID, onClose: { showsFullScreen = false })
-                    }
-                }
-                .onAppear {
-                    guard !didPresentFullScreen else { return }
-                    didPresentFullScreen = true
-                    showsFullScreen = true
-                }
+            fullScreenPlayback
         } else {
             playbackContent
         }
+        #elseif os(tvOS)
+        if onClose == nil { fullScreenPlayback }
+        else { playbackContent }
         #else
         playbackContent
         #endif
     }
+
+    #if os(iOS) || os(tvOS)
+    private var fullScreenPlayback: some View {
+        Color.clear
+            .fullScreenCover(isPresented: $showsFullScreen, onDismiss: { dismiss() }) {
+                NavigationStack {
+                    PlaybackScreen(itemID: itemID, onClose: { showsFullScreen = false })
+                }
+            }
+            .onAppear {
+                guard !didPresentFullScreen else { return }
+                didPresentFullScreen = true
+                showsFullScreen = true
+            }
+    }
+    #endif
 
     private var playbackContent: some View {
         Group {
