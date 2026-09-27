@@ -33,7 +33,7 @@ struct LoadingState: View {
                                 line(width: 120, height: 20)
                                 Spacer(minLength: 0)
                             }
-                            .frame(width: 280, height: 100)
+                            .frame(width: 400, height: 100)
                         }
                     }
                     .padding(.horizontal, 24).padding(.vertical, 24)
