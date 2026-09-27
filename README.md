@@ -6,6 +6,15 @@ Kinosail Player Server is free to run on hardware you control. The web Player is
 
 **[Official website](https://kinosail.com/)** · **[Get started](https://kinosail.com/quickstart/)** · **[Documentation](https://kinosail.com/docs/)** · **[Player merch](https://kinosail-shop.fourthwall.com/)** · **[Contribute](CONTRIBUTING.md)** · **[Get help](SUPPORT.md)** · **[Security](SECURITY.md)**
 
+## Player preview
+
+<p align="center">
+  <a href=".github/assets/player-home-desktop.webp"><img src=".github/assets/player-home-desktop.webp" width="690" alt="Kinosail web Player on desktop, featuring The Last Observatory and four fictional movie posters"></a>
+  <a href=".github/assets/player-home-mobile.webp"><img src=".github/assets/player-home-mobile.webp" width="180" alt="Kinosail web Player on a phone, showing the fictional movie library and bottom navigation"></a>
+</p>
+
+These are screenshots of the real Player running in Podman with fictional movies and original demo artwork. [View the film detail screen](.github/assets/player-film-detail.webp).
+
 ## Choose your app
 
 | App | What it does | Default local address |
