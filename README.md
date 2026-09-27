@@ -28,14 +28,14 @@ Subtitles runs in its own [published container](https://github.com/Kinosail/kino
 
 ## Install on a NAS or Proxmox VE
 
-Import a prepared file into Synology Container Manager, TrueNAS SCALE, QNAP Container Station, CasaOS, or Portainer. Use the XML template for a local Unraid install. On Proxmox VE, run Docker in a Linux VM with your media share mounted inside the VM.
+Use the [Compose file maker](https://kinosail.com/getting-started/platforms/#make-a-ready-to-import-compose-file) to choose Player or Subtitles, enter the server's media path, and download a file ready to import. It works with Synology Container Manager, TrueNAS SCALE, QNAP Container Station, CasaOS, Portainer, Dockge, and Docker Compose. On Proxmox VE, run Docker in a Linux VM with your media share mounted inside the VM. Use the XML template for a local Unraid install.
 
-| App | Compose file | Unraid template | Media access | Default HTTPS port |
+| App | Original Compose file | Unraid template | Media access | Default HTTPS port |
 | --- | --- | --- | --- | --- |
 | Player | [Download Compose YAML](https://raw.githubusercontent.com/Kinosail/kinosail/main/apps/player/packaging/platform-compose.yaml) | [Download XML](https://raw.githubusercontent.com/Kinosail/kinosail/main/apps/player/packaging/unraid.xml) | Read-only | `38127` |
 | Subtitles | [Download Compose YAML](https://raw.githubusercontent.com/Kinosail/kinosail/main/apps/subtitles/packaging/platform-compose.yaml) | [Download XML](https://raw.githubusercontent.com/Kinosail/kinosail/main/apps/subtitles/packaging/unraid.xml) | Read and write | `38128` |
 
-Set `KINOSAIL_MEDIA_PATH` to an existing absolute path on the container host before importing Compose. Give container user `10001:10001` the access shown above. The Unraid templates require you to choose the Media path. After starting the app, check that it is healthy, open its HTTPS port, and create the first Owner. Protect a backup key before relying on recovery.
+The file maker fills in `KINOSAIL_MEDIA_PATH` for you. If you download an original Compose file, set that value before importing it. Give container user `10001:10001` the access shown above. The Unraid templates require you to choose the Media path. After starting the app, check that it is healthy, open its HTTPS port, and create the first Owner. Protect a backup key before relying on recovery.
 
 Follow the [platform install guide](https://kinosail.com/getting-started/platforms/) for manager-specific steps, updates, and backup details. The Unraid templates are local files, not Community Apps listings.
 

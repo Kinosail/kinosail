@@ -43,6 +43,10 @@ def build(args):
         source = staging / 'source'
         artifact = staging / 'output'
         shutil.copytree(ROOT / 'apps/player/docs', source, ignore=shutil.ignore_patterns('research'))
+        install_assets = source / 'assets/install'
+        install_assets.mkdir(parents=True, exist_ok=True)
+        for app in ('player', 'subtitles'):
+            shutil.copyfile(ROOT / 'apps' / app / 'packaging/platform-compose.yaml', install_assets / f'{app}.yaml')
         fonts = source / 'assets/fonts'
         fonts.mkdir(parents=True, exist_ok=True)
         shutil.copyfile(ROOT / 'packages/webassets/static/fonts/manrope.woff2', fonts / 'manrope.woff2')
