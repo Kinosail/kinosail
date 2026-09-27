@@ -3,6 +3,36 @@ import { expect, test } from "@playwright/test";
 import { compactViewports, expectNoHorizontalOverflow, expectSkipLinkOffscreen, initiallyOccludedTargets, occludedTargets, setSubtitleLanguages, supportedViewports } from "./subtitle-dashboard-helpers";
 
 export function registerSubtitleLayoutTests() {
+test("Subtitles navigation follows the Player shell at each breakpoint", async ({ page }, testInfo) => {
+  for (const [width, height] of [[1440, 900], [1200, 900], [1024, 768], [390, 844]]) {
+    await page.setViewportSize({ width, height });
+    await page.goto("/");
+    const shell = await page.evaluate(() => {
+      const header = document.querySelector(".app-header")!.getBoundingClientRect();
+      const nav = document.querySelector('.app-header nav[aria-label="Main navigation"]')!.getBoundingClientRect();
+      const main = document.querySelector(".subtitle-main")!.getBoundingClientRect();
+      return { header: { x: header.x, y: header.y, width: header.width, height: header.height }, nav: { x: nav.x, y: nav.y, width: nav.width, height: nav.height }, main: { x: main.x, y: main.y } };
+    });
+    expect(shell.header.x).toBe(0);
+    expect(shell.header.width).toBe(width);
+    if (width > 1100) {
+      expect(shell.nav.y).toBeGreaterThanOrEqual(shell.header.height - 1);
+      expect(shell.nav.x).toBe(0);
+      expect(shell.nav.width).toBe(240);
+      expect(shell.main.x).toBeGreaterThanOrEqual(shell.nav.width);
+    } else if (width > 900) {
+      expect(shell.nav.y).toBeGreaterThan(0);
+      expect(shell.nav.y).toBeLessThan(shell.header.height);
+      expect(shell.main.x).toBe(0);
+    } else {
+      expect(Math.round(shell.nav.y + shell.nav.height)).toBe(height);
+      expect(shell.main.x).toBe(0);
+    }
+    await expect(page.getByRole("link", { name: "Settings", exact: true })).toBeVisible();
+    await expectNoHorizontalOverflow(page);
+    if (width !== 1024) await page.screenshot({ path: testInfo.outputPath(`subtitles-dashboard-${width}.png`) });
+  }
+});
 test("phone settings expose every section without a hidden horizontal rail", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/settings");
@@ -23,7 +53,7 @@ test("phone settings expose every section without a hidden horizontal rail", asy
   expect(layout.links.every((link) => link.left >= layout.bounds.left - 1 && link.right <= layout.bounds.right + 1 && link.top >= layout.bounds.top - 1 && link.bottom <= layout.bounds.bottom + 1)).toBe(true);
 });
 
-test("Settings header keeps desktop destinations in one compact row", async ({ page }) => {
+test("Settings header keeps destinations inside the Player-style shell", async ({ page }) => {
   for (const width of [1920, 1280, 1024, 901]) {
     await page.setViewportSize({ width, height: 900 });
     await page.goto("/settings#provider");
@@ -34,7 +64,12 @@ test("Settings header keeps desktop destinations in one compact row", async ({ p
     });
     expect(layout.header.height, `${width}px header height`).toBeLessThanOrEqual(100);
     expect(layout.links).toHaveLength(3);
-    expect(layout.links.every((link) => Math.abs(link.top - layout.links[0].top) <= 1), `${width}px navigation row`).toBe(true);
+    if (width > 1100) {
+      expect(layout.links.every((link) => link.top >= layout.header.bottom - 1), `${width}px navigation rail`).toBe(true);
+      expect(layout.links[1].top).toBeGreaterThan(layout.links[0].top);
+    } else {
+      expect(layout.links.every((link) => Math.abs(link.top - layout.links[0].top) <= 1), `${width}px navigation row`).toBe(true);
+    }
     expect(layout.links.every((link) => link.left >= layout.nav.left - 1 && link.right <= layout.nav.right + 1), `${width}px navigation bounds`).toBe(true);
     await expectNoHorizontalOverflow(page);
   }

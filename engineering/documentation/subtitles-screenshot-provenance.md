@@ -1,12 +1,12 @@
 # Subtitles documentation screenshots
 
-The four PNGs in `apps/subtitles/docs/assets/images/subtitles-*.png` were captured on 2026-09-27 from the actual Subtitles test instance at source revision `d5b98a585b8576e6f2b00cad5e7d070d43674e8a`. It ran in a local Podman container with synthetic movie and episode files made by `apps/subtitles/scripts/generate-test-media.sh`. The Owner and Supporter badge were test fixtures. No personal media, purchase, or production account was used.
+The three dashboard PNGs in `apps/subtitles/docs/assets/images/` were recaptured on 2026-09-27 from this commit's Subtitles app with the Player-style navigation. The isolated Podman test instance used synthetic movies and episodes from `apps/subtitles/scripts/generate-test-media.sh`, a test Owner, and no production account or personal media. The Supporter PNG retains its earlier synthetic capture at revision `d5b98a585b8576e6f2b00cad5e7d070d43674e8a`.
 
-The repeatable run used `apps/subtitles/scripts/test-instance.sh up` and `verify`, `go test ./internal/server -run TestWriteUIStateFixtures`, and the targeted Playwright dashboard and Supporter tests in `apps/subtitles/e2e/`. The run passed. Its command, environment, data, result, and original full-page and viewport screenshots are recorded in `/tmp/kinosail-subtitles-shipping.2yxgoP/manifest.txt` on the capture host. The committed PNGs are copies of the viewport artifacts without editing.
+The dashboard capture used `KINOSAIL_TEST_PROJECT=kinosail-nav-test KINOSAIL_PORT=38138 ./scripts/test-instance.sh up`, followed by the `Subtitles navigation follows the Player shell` Playwright test with `KINOSAIL_TEST_INSTANCE=1`, `KINOSAIL_E2E_URL=https://127.0.0.1:38138`, and the test instance TOTP secret read from its local fixture file. The focused capture passed (1 test). The complete populated dashboard suite passed (22 tests). The committed PNGs are unchanged copies of the viewport artifacts. The earlier Supporter capture remains documented in `/tmp/kinosail-subtitles-shipping.2yxgoP/manifest.txt` on the capture host.
 
 | Screenshot | SHA-256 |
 | --- | --- |
-| `subtitles-dashboard-1200.png` | `773c7cbbaa2e2006ef90b420559dde5168abc6dd23be70269750a3dc005ce14e` |
-| `subtitles-dashboard-1440.png` | `9c58a81a5f8d817619b304950e88bff8ab122643e7768a05d61325252f006812` |
-| `subtitles-dashboard-mobile-390.png` | `37cc26b5f3255a42baaf9ec37b5fadb8d6bcd35e56ba5d8ac467cba206feda05` |
+| `subtitles-dashboard-1200.png` | `443d1ffc2264ebb1ee178b872b8908bb418caca80243004597476fc03f43ca64` |
+| `subtitles-dashboard-1440.png` | `d6a4af5b0c919560ca5159e1e469410ac908ba7c0d87465ca1df5e021d2f0457` |
+| `subtitles-dashboard-mobile-390.png` | `5866e40d029b30434afa42fcda45775b67fbf7d01b97401a8c5ee71a8b4e8063` |
 | `subtitles-supporter-1200.png` | `64f43cebdc6d62b1ca8436f33bcc933ee466f21ff38cffc3ed8275a445bcb190` |

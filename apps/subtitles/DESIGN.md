@@ -124,7 +124,7 @@ The frontmatter records reused roles from the current cascade. Apple clients hav
 
 ## Layout
 
-The sticky desktop header is at least 80px high. The main workspace is capped at 96rem, with `clamp(1.25rem,4vw,4rem)` horizontal padding. The overview combines flexible task copy with a 16rem coverage column and a 3rem gap. Its heading uses `clamp(1.75rem,3vw,2.75rem)`, weight 750 and 1.18 line height; the supporting paragraph uses 1rem with 1.65 line height.
+The sticky desktop header is at least 80px high. Above 1100px, a 15rem navigation rail starts below the full-width header, as in Player. The main workspace is capped at 96rem, with `clamp(1.25rem,4vw,4rem)` horizontal padding. The overview combines flexible task copy with a 16rem coverage column and a 3rem gap. Its heading uses `clamp(1.75rem,3vw,2.75rem)`, weight 750 and 1.18 line height; the supporting paragraph uses 1rem with 1.65 line height.
 
 At 900px and below, the header becomes 72px high and the three-destination navigation moves to the safe-area-aware bottom edge. Filters remain sticky beneath the header. Below 700px, overview columns stack, coverage becomes compact supporting text, the large number/meter recedes and primary task actions span the available width. Pending or unavailable state remains explicit.
 
@@ -152,7 +152,7 @@ Fields keep visible labels, native form behavior and a minimum 44px control heig
 
 ### Navigation and filters
 
-The selected destination has green text and a bottom rule. Desktop navigation is horizontal; mobile keeps the three actual destinations at the bottom. Search and filter fields are 50px high, use the surface role and retain their labels and native selection behavior. File disclosure remains a semantic details/summary control with its existing keyboard behavior.
+The selected destination has a green rule in the left rail or a bottom rule in compact navigation. Navigation stays horizontal from 901px to 1100px; mobile keeps the three actual destinations at the bottom. Search and filter fields are 50px high, use the surface role and retain their labels and native selection behavior. File disclosure remains a semantic details/summary control with its existing keyboard behavior.
 
 ### Cards / Containers
 
