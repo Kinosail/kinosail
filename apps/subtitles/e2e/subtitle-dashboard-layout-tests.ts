@@ -41,14 +41,14 @@ test("phone settings expose every section without a hidden horizontal rail", asy
     scrollWidth: nav.scrollWidth,
     clientWidth: nav.clientWidth,
     links: [...nav.querySelectorAll("a")].map((link) => ({
-      left: link.getBoundingClientRect().left,
+      href: link.getAttribute("href"), left: link.getBoundingClientRect().left,
       right: link.getBoundingClientRect().right,
       top: link.getBoundingClientRect().top,
       bottom: link.getBoundingClientRect().bottom,
     })),
     bounds: nav.getBoundingClientRect().toJSON(),
   }));
-  expect(layout.links).toHaveLength(8);
+  expect(layout.links.map((link) => link.href).join(" ")).toBe("#language #cleanup #provider #libraries #automation #appearance #trusted-https #account #thanks");
   expect(layout.scrollWidth).toBeLessThanOrEqual(layout.clientWidth + 1);
   expect(layout.links.every((link) => link.left >= layout.bounds.left - 1 && link.right <= layout.bounds.right + 1 && link.top >= layout.bounds.top - 1 && link.bottom <= layout.bounds.bottom + 1)).toBe(true);
 });

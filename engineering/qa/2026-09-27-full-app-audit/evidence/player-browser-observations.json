@@ -1,0 +1,98 @@
+[
+  {
+    "width": 1440,
+    "path": "/",
+    "heading": null,
+    "overflow": false,
+    "violations": [],
+    "errors": []
+  },
+  {
+    "width": 1440,
+    "path": "/?view=movies",
+    "heading": null,
+    "overflow": false,
+    "violations": [],
+    "errors": []
+  },
+  {
+    "width": 1440,
+    "path": "/?view=music",
+    "heading": null,
+    "overflow": false,
+    "violations": [],
+    "errors": []
+  },
+  {
+    "width": 1440,
+    "path": "/?view=books",
+    "heading": null,
+    "overflow": false,
+    "violations": [],
+    "errors": []
+  },
+  {
+    "width": 1440,
+    "path": "/offline-downloads",
+    "heading": "Offline downloads",
+    "overflow": false,
+    "violations": [],
+    "errors": []
+  },
+  {
+    "width": 1440,
+    "path": "/settings",
+    "heading": "Server settings",
+    "overflow": false,
+    "violations": [],
+    "errors": []
+  },
+  {
+    "width": 390,
+    "path": "/",
+    "heading": null,
+    "overflow": false,
+    "violations": [],
+    "errors": []
+  },
+  {
+    "width": 390,
+    "path": "/?view=movies",
+    "heading": null,
+    "overflow": false,
+    "violations": [],
+    "errors": []
+  },
+  {
+    "width": 390,
+    "path": "/?view=music",
+    "heading": null,
+    "overflow": false,
+    "violations": [],
+    "errors": []
+  },
+  {
+    "width": 390,
+    "path": "/?view=books",
+    "heading": null,
+    "overflow": false,
+    "violations": [],
+    "errors": []
+  },
+  {
+    "width": 390,
+    "path": "/offline-downloads",
+    "heading": "Offline downloads",
+    "overflow": false,
+    "violations": [],
+    "errors": []
+  },
+  {
+    "width": 390,
+    "path": "/settings",
+    "heading": "Server settings",
+    "overflow": false,
+    "violations": [],
+    "errors": []
+  }
+]

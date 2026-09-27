@@ -1,0 +1,98 @@
+[
+  {
+    "width": 1440,
+    "path": "/",
+    "heading": "Overview",
+    "overflow": false,
+    "violations": [],
+    "errors": []
+  },
+  {
+    "width": 1440,
+    "path": "/?view=wanted",
+    "heading": "Wanted",
+    "overflow": false,
+    "violations": [],
+    "errors": []
+  },
+  {
+    "width": 1440,
+    "path": "/?view=library",
+    "heading": "Library",
+    "overflow": false,
+    "violations": [],
+    "errors": []
+  },
+  {
+    "width": 1440,
+    "path": "/settings#language",
+    "heading": "Subtitle settings",
+    "overflow": false,
+    "violations": [],
+    "errors": []
+  },
+  {
+    "width": 1440,
+    "path": "/settings#provider",
+    "heading": "Subtitle settings",
+    "overflow": false,
+    "violations": [],
+    "errors": []
+  },
+  {
+    "width": 1440,
+    "path": "/settings#cleanup",
+    "heading": "Subtitle settings",
+    "overflow": false,
+    "violations": [],
+    "errors": []
+  },
+  {
+    "width": 390,
+    "path": "/",
+    "heading": "Overview",
+    "overflow": false,
+    "violations": [],
+    "errors": []
+  },
+  {
+    "width": 390,
+    "path": "/?view=wanted",
+    "heading": "Wanted",
+    "overflow": false,
+    "violations": [],
+    "errors": []
+  },
+  {
+    "width": 390,
+    "path": "/?view=library",
+    "heading": "Library",
+    "overflow": false,
+    "violations": [],
+    "errors": []
+  },
+  {
+    "width": 390,
+    "path": "/settings#language",
+    "heading": "Subtitle settings",
+    "overflow": false,
+    "violations": [],
+    "errors": []
+  },
+  {
+    "width": 390,
+    "path": "/settings#provider",
+    "heading": "Subtitle settings",
+    "overflow": false,
+    "violations": [],
+    "errors": []
+  },
+  {
+    "width": 390,
+    "path": "/settings#cleanup",
+    "heading": "Subtitle settings",
+    "overflow": false,
+    "violations": [],
+    "errors": []
+  }
+]

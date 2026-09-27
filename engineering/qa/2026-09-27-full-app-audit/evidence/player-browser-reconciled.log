@@ -1,0 +1,79 @@
+ok  	github.com/MikeO7/kinosail-player/internal/server	4.692s
+>>>> Executing external compose provider "/usr/local/bin/docker-compose". Please see podman-compose(1) for how to disable this message. <<<<
+
+$ ../../../scripts/tooling/gate-shell.sh -c 'exec playwright test "$@"' -- test-instance.spec.ts test-instance-production.spec.ts ui-happy-paths.spec.ts web-qa-fixes.spec.ts supporter-checkout.spec.ts shortcuts.spec.ts jellyfin-setup.spec.ts playback-bandwidth.spec.ts playback-pause-repro.spec.ts playback-startup.spec.ts layout-audit-player.spec.ts masthead-spacing.spec.ts conditional-states.spec.ts password-reveal.spec.ts loading-review.spec.ts session-timeouts.spec.ts --workers=1
+
+Running 59 tests using 1 worker
+
+(node:67600) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   1 [chromium] › conditional-states.spec.ts:12:2 › conditional and transient UI states fit the 1440px viewport (5.3s)
+  ✓   2 [chromium] › conditional-states.spec.ts:12:2 › conditional and transient UI states fit the 1024px viewport (5.1s)
+  ✓   3 [chromium] › conditional-states.spec.ts:12:2 › conditional and transient UI states fit the 720px viewport (5.0s)
+  ✓   4 [chromium] › conditional-states.spec.ts:12:2 › conditional and transient UI states fit the 390px viewport (5.1s)
+  ✓   5 [chromium] › conditional-states.spec.ts:12:2 › conditional and transient UI states fit the 320px viewport (5.1s)
+  ✓   6 [chromium] › jellyfin-setup.spec.ts:38:1 › Jellyfin setup stays blocked until trusted HTTPS is saved (11.8s)
+  ✓   7 [chromium] › layout-audit-player.spec.ts:8:1 › player shows and switches its playback method without crowding actions (17.8s)
+  ✓   8 [chromium] › layout-audit-player.spec.ts:91:1 › player stays accessible in alternate display modes (3.2s)
+  ✓   9 [chromium] › layout-audit-player.spec.ts:144:1 › player explains and recovers from a required video transcode (6.8s)
+  ✓  10 [chromium] › layout-audit-player.spec.ts:248:1 › artwork-backed media copy remains readable (8.3s)
+  ✓  11 [chromium] › loading-review.spec.ts:18:1 › player stage stays visible across loading and bandwidth changes (9.7s)
+  ✓  12 [chromium] › masthead-spacing.spec.ts:26:1 › Home keeps featured resume and navigation reachable (3.9s)
+  ✓  13 [chromium] › masthead-spacing.spec.ts:69:1 › Home resume remains accessible across appearance and input preferences (7.6s)
+  ✓  14 [chromium] › masthead-spacing.spec.ts:103:1 › Show seasons stay below the desktop header while scrolling (1.9s)
+  ✓  15 [chromium] › password-reveal.spec.ts:19:1 › passwords can be shown and hidden without changing their value (1.9s)
+  ✓  16 [chromium] › password-reveal.spec.ts:62:1 › the password reveal control stays aligned across responsive settings (4.8s)
+{"currentTime":2.445559,"paused":false,"readyState":4,"status":"hidden","events":[{"name":"loadstart","seconds":0,"readyState":0,"status":"Loading video…Try again0%Play video"},{"name":"loadedmetadata","seconds":1,"readyState":1,"status":"Loading video…Try again0%Play video"},{"name":"seeking","seconds":1,"readyState":1,"status":"Loading video…Try again17%Play video"},{"name":"play","seconds":1,"readyState":1,"status":"Seeking…Try again17%Play video"},{"name":"waiting","seconds":1,"readyState":1,"status":"Seeking…Try again17%Play video"},{"name":"seeked","seconds":1,"readyState":4,"status":"Seeking…Try again17%Play video"},{"name":"canplay","seconds":1,"readyState":4,"status":"hidden"},{"name":"playing","seconds":1,"readyState":4,"status":"hidden"},{"name":"waiting","seconds":1.234304,"readyState":2,"status":"hidden"},{"name":"canplay","seconds":1.28,"readyState":4,"status":"hidden"},{"name":"playing","seconds":1.28,"readyState":4,"status":"hidden"}]}
+  ✓  17 [chromium] › playback-bandwidth.spec.ts:68:1 › ordinary mobile bandwidth keeps moving video unobstructed (3.2s)
+{"currentTime":1.298682,"paused":false,"readyState":4,"status":"hidden","events":[{"name":"loadstart","seconds":0,"readyState":0,"status":"Loading video…Try again0%Play video"},{"name":"loadedmetadata","seconds":1,"readyState":1,"status":"Loading video…Try again0%Play video"},{"name":"seeking","seconds":1,"readyState":1,"status":"Loading video…Try again17%Play video"},{"name":"play","seconds":1,"readyState":1,"status":"Seeking…Try again17%Play video"},{"name":"waiting","seconds":1,"readyState":1,"status":"Seeking…Try again17%Play video"},{"name":"seeked","seconds":1,"readyState":3,"status":"Seeking…Try again17%Play video"},{"name":"canplay","seconds":1,"readyState":3,"status":"hidden"},{"name":"playing","seconds":1,"readyState":3,"status":"hidden"},{"name":"waiting","seconds":1.234339,"readyState":2,"status":"hidden"},{"name":"canplay","seconds":1.28,"readyState":4,"status":"Buffering · 100% bufferedTry again100%Play video"},{"name":"playing","seconds":1.28,"readyState":4,"status":"hidden"}]}
+  ✓  18 [chromium] › playback-bandwidth.spec.ts:91:1 › bandwidth starvation keeps Direct Play and recovers in place (19.9s)
+{"currentTime":1.055869,"paused":false,"readyState":4,"status":"hidden","events":[{"name":"loadstart","seconds":0,"readyState":0,"status":"Loading video…Try again0%Play video"},{"name":"loadedmetadata","seconds":1,"readyState":1,"status":"Loading video…Try again0%Play video"},{"name":"seeking","seconds":1,"readyState":1,"status":"Loading video…Try again17%Play video"},{"name":"play","seconds":1,"readyState":1,"status":"Seeking…Try again17%Play video"},{"name":"waiting","seconds":1,"readyState":1,"status":"Seeking…Try again17%Play video"},{"name":"seeked","seconds":1,"readyState":3,"status":"Seeking…Try again17%Play video"},{"name":"canplay","seconds":1,"readyState":3,"status":"hidden"},{"name":"playing","seconds":1,"readyState":3,"status":"hidden"},{"name":"play","seconds":0,"readyState":0,"status":"hidden"},{"name":"waiting","seconds":0,"readyState":0,"status":"hidden"},{"name":"loadstart","seconds":0,"readyState":0,"status":"hidden"},{"name":"error","seconds":0,"readyState":0,"status":"Loading video…Try again0%Play video"},{"name":"pause","seconds":0,"readyState":0,"status":"Playback unavailableTry again0%Play video"},{"name":"loadstart","seconds":0,"readyState":0,"status":"Connection interrupted. Reconnecting…Try again0%Play video"},{"name":"error","seconds":0,"readyState":0,"status":"Loading video…Try again0%Play video"},{"name":"loadstart","seconds":0,"readyState":0,"status":"Connection interrupted. Reconnecting…Try again0%Play video"},{"name":"error","seconds":0,"readyState":0,"status":"Loading video…Try again0%Play video"},{"name":"loadstart","seconds":0,"readyState":0,"status":"Connection interrupted. Reconnecting…Try again0%Play video"},{"name":"error","seconds":0,"readyState":0,"status":"Loading video…Try again0%Play video"},{"name":"loadstart","seconds":0,"readyState":0,"status":"Connection interrupted. Your position is retained.Retry playback0%Play video"},{"name":"loadedmetadata","seconds":0,"readyState":1,"status":"Connection interrupted. Your position is retained.Retry playback0%Play video"},{"name":"seeking","seconds":1,"readyState":1,"status":"Connection interrupted. Your position is retained.Retry playback34%Play video"},{"name":"play","seconds":1,"readyState":1,"status":"Connection interrupted. Your position is retained.Retry playback34%Play video"},{"name":"waiting","seconds":1,"readyState":1,"status":"Connection interrupted. Your position is retained.Retry playback34%Play video"},{"name":"seeked","seconds":1,"readyState":4,"status":"Connection interrupted. Your position is retained.Retry playback100%Play video"},{"name":"canplay","seconds":1,"readyState":4,"status":"Connection interrupted. Your position is retained.Retry playback100%Play video"},{"name":"playing","seconds":1,"readyState":4,"status":"hidden"}]}
+  ✓  19 [chromium] › playback-bandwidth.spec.ts:116:1 › an interrupted Direct Play request retries without transcoding (9.3s)
+{"currentTime":3.509702,"paused":false,"readyState":4,"status":"hidden","events":[{"name":"loadstart","seconds":0,"readyState":0,"status":"Loading video…Try again0%Play video"},{"name":"loadedmetadata","seconds":0,"readyState":1,"status":"Loading video…Try again0%Play video"},{"name":"canplay","seconds":0,"readyState":3,"status":"Loading video…Try again17%Play video"},{"name":"play","seconds":0,"readyState":3,"status":"hidden"},{"name":"playing","seconds":0,"readyState":3,"status":"hidden"}]}
+  ✓  20 [chromium] › playback-bandwidth.spec.ts:145:1 › repeated bandwidth changes do not leave a stale player state (7.7s)
+{"currentTime":10.737786,"paused":false,"readyState":4,"status":"hidden","events":[{"name":"loadstart","seconds":0,"readyState":0,"status":"Loading video…Try again0%Play video"},{"name":"loadedmetadata","seconds":0,"readyState":1,"status":"Loading video…Try again0%Play video"},{"name":"canplay","seconds":0,"readyState":4,"status":"Loading video…Try again15%Play video"},{"name":"play","seconds":0,"readyState":4,"status":"hidden"},{"name":"playing","seconds":0,"readyState":4,"status":"hidden"},{"name":"seeking","seconds":10,"readyState":1,"status":"hidden"},{"name":"waiting","seconds":10,"readyState":1,"status":"Seeking…Try again66%Play video"},{"name":"seeked","seconds":10,"readyState":4,"status":"Seeking…Try again66%Play video"},{"name":"canplay","seconds":10,"readyState":4,"status":"hidden"},{"name":"playing","seconds":10,"readyState":4,"status":"hidden"}]}
+  ✓  21 [chromium] › playback-bandwidth.spec.ts:170:1 › compatibility streaming recovers after the network disappears (10.5s)
+{"events":[],"paused":false,"currentTime":1.51339}
+  ✓  22 [chromium] › playback-pause-repro.spec.ts:19:41 › one play request does not immediately pause (direct) (2.5s)
+{"events":[{"event":"play","time":115.20000000298023},{"event":"waiting","time":115.29999999701977},{"event":"playing","time":135.59999999403954}],"paused":false,"currentTime":1.459483}
+  ✓  23 [chromium] › playback-pause-repro.spec.ts:19:41 › one play request does not immediately pause (compatible) (2.8s)
+{"clickToMovingMs":537,"events":[{"name":"loadstart","ms":64},{"name":"loadedmetadata","ms":112},{"name":"canplay","ms":126},{"name":"play","ms":126},{"name":"playing","ms":126}]}
+  ✓  24 [chromium] › playback-startup.spec.ts:30:1 › selecting a movie starts moving playback promptly (4.0s)
+  ✓  25 [chromium] › playback-startup.spec.ts:65:1 › blocked autoplay offers a Play button that starts the video (1.4s)
+  ✓  26 [chromium] › playback-startup.spec.ts:100:1 › restricted browser storage does not stop playback (1.5s)
+  ✓  27 [chromium] › playback-startup.spec.ts:118:1 › failed progress save does not stop playback flow (1.1s)
+{"compatibilityClickToPlayingMs":241,"paused":false,"seconds":0.266319}
+  ✓  28 [chromium] › playback-startup.spec.ts:136:1 › selecting compatibility playback starts without a second play click (1.7s)
+  ✓  29 [chromium] › playback-startup.spec.ts:164:1 › trusted source opening sets the first media time (1.1s)
+  ✓  30 [chromium] › session-timeouts.spec.ts:18:1 › Owner can understand and customize automatic sign-out (2.9s)
+  ✓  31 [chromium] › shortcuts.spec.ts:33:1 › Linear-style navigation shortcuts work on browse and settings pages (1.3s)
+  ✓  32 [chromium] › shortcuts.spec.ts:61:1 › closed command inputs and active editable fields handle go chords safely (2.1s)
+  ✓  33 [chromium] › supporter-checkout.spec.ts:7:1 › Owner can switch Player checkout cadence without losing levels or accessibility (1.4s)
+  ✓  34 [chromium] › test-instance-production.spec.ts:8:1 › fresh installation controls the populated app and serves its complete shell offline (954ms)
+  ✓  35 [chromium] › test-instance-production.spec.ts:27:1 › populated library views stay accessible at desktop and phone sizes (7.0s)
+  ✓  36 [chromium] › test-instance-production.spec.ts:46:1 › saved video Compatibility keeps real music and audiobook playback on their pages (1.7s)
+  ✓  37 [chromium] › test-instance-production.spec.ts:63:1 › authenticated video reports its state to Home Assistant (1.1s)
+  ✓  38 [chromium] › test-instance-production.spec.ts:82:1 › a real offline download plays and seeks after the network disconnects (2.7s)
+  ✓  39 [chromium] › test-instance-production.spec.ts:114:1 › video and music open the receiver picker and restore focus (3.4s)
+  ✓  40 [chromium] › test-instance.spec.ts:8:1 › unavailable Web Locks do not initialize offline storage on the downloads page (829ms)
+  ✓  41 [chromium] › test-instance.spec.ts:34:1 › Viewer MFA enrollment gives accurate instructions (1.9s)
+  ✓  42 [chromium] › test-instance.spec.ts:55:1 › Connection choices stay optional and secure by default (4.5s)
+  ✓  43 [chromium] › test-instance.spec.ts:77:1 › Mobile More menu prioritizes personal tabs (1.1s)
+  ✓  44 [chromium] › test-instance.spec.ts:96:1 › Owner can edit Main navigation from desktop and compact layouts (5.4s)
+  ✓  45 [chromium] › test-instance.spec.ts:142:1 › Community edition keeps Support Kinosail reachable (1.9s)
+  ✓  46 [chromium] › test-instance.spec.ts:177:1 › supporter collection shows valid badges in the header (2.1s)
+  ✓  47 [chromium] › test-instance.spec.ts:196:1 › clearing a supporter collection removes badge styling (955ms)
+  ✓  48 [chromium] › test-instance.spec.ts:212:1 › invalid supporter levels do not render a badge (943ms)
+  ✓  49 [chromium] › ui-happy-paths.spec.ts:17:1 › Owner can toggle the active title letter without a second scroll (1.1s)
+  ✓  50 [chromium] › ui-happy-paths.spec.ts:37:1 › Owner can use keyboard utilities and persist the chosen theme (1.5s)
+  ✓  51 [chromium] › ui-happy-paths.spec.ts:59:1 › Dark is the default and every theme choice persists (5.3s)
+  ✓  52 [chromium] › ui-happy-paths.spec.ts:89:1 › Owner can create, fill, empty, and delete a playlist and Collection (3.1s)
+  ✓  53 [chromium] › ui-happy-paths.spec.ts:165:1 › Owner can create and revoke an API key and manage a Viewer Profile (6.7s)
+  ✓  54 [chromium] › ui-happy-paths.spec.ts:220:1 › Owner can share Library Content, open the claim, and revoke it (1.9s)
+  ✓  55 [chromium] › ui-happy-paths.spec.ts:255:1 › Owner can authorize a waiting device with Quick Connect (1.1s)
+  ✓  56 [chromium] › ui-happy-paths.spec.ts:272:1 › Owner can paste a Quick Connect code into the digit fields (919ms)
+  ✓  57 [chromium] › web-qa-fixes.spec.ts:6:1 › phone navigation keeps the TV Shows context on show details (1.1s)
+  ✓  58 [chromium] › web-qa-fixes.spec.ts:21:1 › phone brand link has a full touch target (744ms)
+  ✓  59 [chromium] › web-qa-fixes.spec.ts:28:1 › watch page keeps device warnings out of initial playback (1.4s)
+
+  59 passed (4.1m)

@@ -32,12 +32,14 @@ android {
     }
 
     compileOptions {
+        isCoreLibraryDesugaringEnabled = true
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
 }
 
 dependencies {
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.3")
     implementation(project(":watchcore"))
     implementation("com.google.android.gms:play-services-wearable:20.0.1")
     implementation(platform("androidx.compose:compose-bom:2026.09.00"))
