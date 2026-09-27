@@ -3,7 +3,7 @@ import { readFileSync } from 'node:fs';
 import test from 'node:test';
 import vm from 'node:vm';
 
-function fixture() {
+function fixture(startControl = true) {
   const listeners = new Map(), timers = new Set();
   const classes = new Set(), attrs = new Map();
   const classList = {
@@ -26,10 +26,12 @@ function fixture() {
     addEventListener(name, handler) { listeners.set(name, handler); },
   };
   const message = { textContent: '' };
-  const source = readFileSync(new URL('./static/player-controls.js', import.meta.url), 'utf8');
-  vm.runInNewContext(source.slice(source.indexOf('if (playerStatus) {'), source.indexOf('const setTheater =')), {
-    player, playerStatus: status, playerMessage: message,
-    bufferedProgress: { setAttribute() {} }, HTMLMediaElement: { HAVE_CURRENT_DATA: 2 },
+  const playerStart = startControl ? { hidden: true, addEventListener() {} } : null;
+  const source = readFileSync(new URL('./static/player-status.js', import.meta.url), 'utf8');
+  vm.runInNewContext(source, {
+    player, playerStatus: status, playerMessage: message, playerStart,
+    navigator: { userAgent: '', platform: '', maxTouchPoints: 0 },
+    bufferedProgress: { setAttribute() {} }, HTMLMediaElement: { HAVE_CURRENT_DATA: 2, HAVE_FUTURE_DATA: 3 },
     setTimeout(handler) { timers.add(handler); return handler; },
     clearTimeout(handler) { timers.delete(handler); },
   });
@@ -76,5 +78,25 @@ test('pause and ended preserve a recovery action or an active seek message', () 
   f.classes.add('is-recovery');
   f.status.dataset.state = 'buffering';
   f.emit('ended');
+  assert.equal(f.status.hidden, false);
+});
+
+test('canplay keeps the gesture prompt until playback starts', () => {
+  const f = fixture();
+  f.player.paused = true;
+  f.emit('kinosail:play-needs-gesture');
+  f.emit('canplay');
+  assert.equal(f.status.dataset.state, 'start');
+  assert.equal(f.status.hidden, false);
+  f.player.paused = false;
+  f.emit('playing');
+  assert.equal(f.status.hidden, true);
+});
+
+test('shared players without a start control keep their loading state', () => {
+  const f = fixture(false);
+  f.player.paused = true;
+  f.emit('kinosail:play-needs-gesture');
+  assert.equal(f.status.dataset.state, 'loading');
   assert.equal(f.status.hidden, false);
 });
