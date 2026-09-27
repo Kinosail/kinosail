@@ -18,7 +18,7 @@ import (
 	"github.com/MikeO7/kinosail/packages/trustedhttps"
 )
 
-func TestRunWaitsForActiveRequestBeforeExiting(t *testing.T) {
+func TestRunWaitsForActiveRequestBeforeExiting(t *testing.T) { //nolint:cyclop,funlen,gocognit // The subprocess handshake verifies the real signal and request lifecycle.
 	if os.Getenv("KINOSAIL_LIFECYCLE_HELPER") == "1" {
 		listener, err := (&net.ListenConfig{}).Listen(t.Context(), "tcp", "127.0.0.1:0")
 		if err != nil {
@@ -37,7 +37,7 @@ func TestRunWaitsForActiveRequestBeforeExiting(t *testing.T) {
 			func(Settings) (*trustedhttps.Manager, error) { return nil, nil },
 			func(got *http.Server, _ servertransport.TLSConfig) error { return got.Serve(listener) }))
 	}
-	command := exec.CommandContext(t.Context(), os.Args[0], "-test.run=^TestRunWaitsForActiveRequestBeforeExiting$")
+	command := exec.CommandContext(t.Context(), os.Args[0], "-test.run=^TestRunWaitsForActiveRequestBeforeExiting$") //nolint:gosec // Reexecutes this test binary with a fixed test selector.
 	command.Env = append(os.Environ(), "KINOSAIL_LIFECYCLE_HELPER=1")
 	stdout, err := command.StdoutPipe()
 	if err != nil {
@@ -58,7 +58,12 @@ func TestRunWaitsForActiveRequestBeforeExiting(t *testing.T) {
 	address := lines.Text()
 	result := make(chan error, 1)
 	go func() {
-		response, err := http.Get("http://" + address)
+		request, err := http.NewRequestWithContext(t.Context(), http.MethodGet, "http://"+address, nil)
+		if err != nil {
+			result <- err
+			return
+		}
+		response, err := http.DefaultClient.Do(request)
 		if err != nil {
 			result <- err
 			return
