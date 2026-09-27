@@ -55,8 +55,10 @@ final class PlaybackCoordinator {
     func play(_ item: MediaItem, client: ServerClient, store: ProgressSyncStore) async throws { try await engine.play(item, client: client, store: store) }
     func prepare(_ item: MediaItem, client: ServerClient) async throws { try await engine.prepare(item, client: client) }
     #if os(iOS)
-    func playOffline(_ item: MediaItem, file: URL, downloadID: String, client: ServerClient, store: ProgressSyncStore, preferences: PlaybackPreferences) async throws {
-        try await engine.playOffline(item, file: file, downloadID: downloadID, client: client, store: store, preferences: preferences)
+    func playOffline(_ item: MediaItem, file: URL, downloadID: String, client: ServerClient, store: ProgressSyncStore,
+                     preferences: PlaybackPreferences, subtitlePolicy: SubtitleChoicePolicy?) async throws {
+        try await engine.playOffline(item, file: file, downloadID: downloadID, client: client, store: store,
+                                     preferences: preferences, subtitlePolicy: subtitlePolicy)
     }
     #endif
     func seek(to seconds: Double) async throws { try await engine.seek(to: seconds) }
@@ -120,6 +122,7 @@ final class PlaybackEngine {
     @ObservationIgnored var writer: ProgressWriter?
     @ObservationIgnored var timeline: MediaTimeline?
     @ObservationIgnored var preferences = PlaybackPreferences()
+    @ObservationIgnored var subtitlePolicy: SubtitleChoicePolicy?
     @ObservationIgnored var devicePreferencesScope: String?
     @ObservationIgnored var observedAudioTrackID: String?
     @ObservationIgnored var observedSubtitleTrackID: String?
@@ -170,7 +173,7 @@ final class PlaybackEngine {
             catch { prepared = try await fetchPlaybackPreparation(for: item, client: client) }
             let details = prepared.source
             try check(attempt)
-            source = details
+            source = details; subtitlePolicy = details.subtitlePolicy
             #if os(tvOS)
             presentation.limitSubtitleLanguages(to: details.subtitlePickerLimited ? details.subtitleLanguage : nil)
             #endif
@@ -199,7 +202,8 @@ final class PlaybackEngine {
     }
 
     #if os(iOS)
-    func playOffline(_ item: MediaItem, file: URL, downloadID: String, client: ServerClient, store: ProgressSyncStore, preferences: PlaybackPreferences) async throws {
+    func playOffline(_ item: MediaItem, file: URL, downloadID: String, client: ServerClient, store: ProgressSyncStore,
+                     preferences: PlaybackPreferences, subtitlePolicy: SubtitleChoicePolicy?) async throws {
         _ = try Input.hex(downloadID, count: 64)
         guard [.video, .music, .audiobook].contains(item.kind) else { throw ClientError.invalidInput("This download does not contain playable media.") }
         let scope = try await client.profileScope()
@@ -211,7 +215,8 @@ final class PlaybackEngine {
         stop()
         let attempt = generation
         devicePreferencesScope = scope
-        currentItem = item; self.client = client; self.store = store; self.preferences = preferences; loading = true; wantsPlayback = true
+        currentItem = item; self.client = client; self.store = store; self.preferences = preferences
+        self.subtitlePolicy = subtitlePolicy; loading = true; wantsPlayback = true
         if preferences.audioEnhancementsEnabled {
             progressMessage = "Audio enhancements need a Server stream and aren’t applied to this download."
         }
@@ -246,7 +251,7 @@ final class PlaybackEngine {
         if let endObserver { NotificationCenter.default.removeObserver(endObserver); self.endObserver = nil }
         nowPlaying.deactivate()
         presentation.clear()
-        player = nil; currentItem = nil; source = nil; writer = nil
+        player = nil; currentItem = nil; source = nil; subtitlePolicy = nil; writer = nil
         audioOptions = []; subtitleOptions = []; audioTracks = []; subtitleTracks = []
         audioGroup = nil; subtitleGroup = nil
         subtitleDocument = nil; subtitleGeneration = UUID(); externalCaptions = false; lastNowPlayingSecond = -1

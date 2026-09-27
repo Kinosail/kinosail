@@ -34,6 +34,27 @@ struct Chapter: Identifiable, Hashable, Sendable {
     var id: Double { start }
 }
 
+struct SubtitleChoicePolicy: Equatable, Sendable {
+    let language: String
+    let limited: Bool
+
+    init(language: String, limited: Bool) throws {
+        guard language.range(of: "\\A[A-Za-z]{2,3}\\z", options: .regularExpression) != nil,
+              (try? PlaybackPreferences.language(language, subtitle: false)) != nil else { throw ClientError.invalidResponse }
+        self.language = language
+        self.limited = limited
+    }
+
+    func allows(_ candidate: String) -> Bool {
+        guard limited else { return true }
+        guard candidate.utf8.count <= 32,
+              candidate.range(of: "\\A[A-Za-z]{2,3}(?:[-_][A-Za-z0-9]{2,8}){0,3}\\z", options: .regularExpression) != nil,
+              let selected = Locale.Language(identifier: language).languageCode?.identifier,
+              let other = Locale.Language(identifier: candidate).languageCode?.identifier else { return false }
+        return selected == other
+    }
+}
+
 struct PlaybackSource: Sendable {
     let direct: URL?
     let contentType: String
@@ -45,17 +66,13 @@ struct PlaybackSource: Sendable {
     let chapters: [Chapter]
     let nextItemID: String?
     let subtitles: [ExternalSubtitle]
-    let subtitleLanguage: String
-    let subtitlePickerLimited: Bool
+    let subtitlePolicy: SubtitleChoicePolicy
     let markers: [PlaybackMarker]
     let autoSkip: Set<String>
 
-    func allowsSubtitleLanguage(_ language: String) -> Bool {
-        guard subtitlePickerLimited else { return true }
-        guard let selected = Locale.Language(identifier: subtitleLanguage).languageCode?.identifier,
-              let candidate = Locale.Language(identifier: language).languageCode?.identifier else { return false }
-        return selected == candidate
-    }
+    var subtitleLanguage: String { subtitlePolicy.language }
+    var subtitlePickerLimited: Bool { subtitlePolicy.limited }
+    func allowsSubtitleLanguage(_ language: String) -> Bool { subtitlePolicy.allows(language) }
 
     #if os(tvOS)
     /// Automatic playback may offer an original file first even when its

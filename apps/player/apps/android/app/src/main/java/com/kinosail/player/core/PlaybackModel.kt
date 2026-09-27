@@ -175,7 +175,13 @@ class PlaybackModel(application: Application) : AndroidViewModel(application) {
                     .build(), true)
                 engine.setPlaybackSpeed(playbackSpeed)
                 engine.addListener(object : Player.Listener {
-                    override fun onTracksChanged(tracks: Tracks) { trackChoices.update(tracks) }
+                    override fun onTracksChanged(tracks: Tracks) {
+                        if (attempt != generation || player !== engine) return
+                        trackChoices.update(tracks, source?.subtitleLanguage?.takeIf { source?.subtitlePickerLimited == true })
+                        if (source?.subtitlePickerLimited == true && trackChoices.captionsEnabled &&
+                            trackChoices.text.none { it.selected })
+                            trackChoices.selectText(engine, trackChoices.text.firstOrNull())
+                    }
                     override fun onPlaybackStateChanged(state: Int) {
                         if (attempt != generation || player !== engine) return
                         loading = state == Player.STATE_BUFFERING || state == Player.STATE_IDLE && message == null
@@ -272,7 +278,8 @@ class PlaybackModel(application: Application) : AndroidViewModel(application) {
                 .setSelectionFlags((if (track.isDefault) C.SELECTION_FLAG_DEFAULT else 0) or
                     (if (track.forced) C.SELECTION_FLAG_FORCED else 0)).build()
         }
-        trackChoices.prepare(engine, source?.subtitles?.any(PlaybackSubtitle::isDefault) == true)
+        trackChoices.prepare(engine, source?.subtitles?.any(PlaybackSubtitle::isDefault) == true,
+            source?.subtitleLanguage?.takeIf { source?.subtitlePickerLimited == true })
         engine.setMediaItem(MediaItem.Builder().setUri(URL(target.url, path).toString()).setMimeType(type)
             .setMediaId(requireNotNull(source).itemId)
             .setMediaMetadata(MediaMetadata.Builder().setTitle(activeTitle).build())

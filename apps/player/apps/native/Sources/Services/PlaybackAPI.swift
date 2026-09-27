@@ -7,6 +7,13 @@ extension ServerClient {
         return try PlaybackSource(await request("/api/v1/items/\(id)/playback?\(capabilities.query)").body, itemID: id, server: server)
     }
 
+    func playbackSubtitlePolicy(itemID: String) async throws -> SubtitleChoicePolicy {
+        let id = try Input.id(itemID)
+        let capabilities = try await PlaybackCapabilities.detect()
+        let value = try await request("/api/v1/items/\(id)/playback?\(capabilities.query)").body.object(allowing: PlaybackSource.allowedFields)
+        return try SubtitleChoicePolicy(playback: value)
+    }
+
     func syncProgress(itemID: String, progress: WatchProgress, expected: WatchProgress, playbackToken: String) async throws -> ProgressSyncResult {
         let valid = try progress.validated(required: true)
         let baseline = try expected.validated(required: false)

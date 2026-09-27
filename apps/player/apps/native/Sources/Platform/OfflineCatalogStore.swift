@@ -7,26 +7,31 @@ struct OfflineRecord: Identifiable, Sendable {
     let item: MediaItem
     let quality: DownloadQuality
     let tracks: DownloadTrackSelection?
+    var subtitlePolicy: SubtitleChoicePolicy?
     var error = ""
     var deleting = false
     var id: String { key }
 
-    init(item: MediaItem, jobID: String, quality: DownloadQuality, tracks: DownloadTrackSelection?) throws {
+    init(item: MediaItem, jobID: String, quality: DownloadQuality, tracks: DownloadTrackSelection?, subtitlePolicy: SubtitleChoicePolicy? = nil) throws {
         self.jobID = try Input.hex(jobID, count: 16)
         self.item = item
         self.quality = quality
         self.tracks = try tracks?.validated()
+        self.subtitlePolicy = subtitlePolicy
         let selection = tracks.map { $0.audio.sorted().map(String.init).joined(separator: ",") + ":" + $0.subtitles.sorted().map(String.init).joined(separator: ",") } ?? "all"
         key = DownloadAuthorization.hash(Data("\(item.id)\n\(quality.rawValue)\n\(selection)".utf8))
     }
 
     init(_ raw: JSONValue, server: ServerAddress) throws {
-        let value = try raw.object(allowing: ["key", "jobID", "item", "quality", "tracks", "error", "deleting"])
+        let value = try raw.object(allowing: ["key", "jobID", "item", "quality", "tracks", "error", "deleting", "subtitleLanguage", "subtitlePickerLimited"])
         let item = try MediaItem(value.required("item"), server: server)
         guard let quality = try DownloadQuality(rawValue: value.text("quality", max: 32, required: true)) else { throw ClientError.invalidResponse }
         let tracks = try value["tracks"].map(DownloadTrackSelection.init)
         try OfflineDownloadManager.validate(item: item, quality: quality, tracks: tracks)
-        try self.init(item: item, jobID: value.text("jobID", max: 16, required: true), quality: quality, tracks: tracks)
+        guard (value["subtitleLanguage"] == nil) == (value["subtitlePickerLimited"] == nil) else { throw ClientError.invalidResponse }
+        let policy = value["subtitleLanguage"] == nil ? nil : try SubtitleChoicePolicy(language: value.text("subtitleLanguage", max: 32, required: true),
+                                                                                       limited: value.flag("subtitlePickerLimited"))
+        try self.init(item: item, jobID: value.text("jobID", max: 16, required: true), quality: quality, tracks: tracks, subtitlePolicy: policy)
         guard try value.text("key", max: 64, required: true) == key else { throw ClientError.invalidResponse }
         error = try value.text("error", max: 512)
         deleting = try value.flag("deleting", fallback: false)
@@ -35,6 +40,10 @@ struct OfflineRecord: Identifiable, Sendable {
     var json: JSONValue {
         var value: [String: JSONValue] = ["key": .string(key), "jobID": .string(jobID), "item": item.json, "quality": .string(quality.rawValue), "error": .string(error), "deleting": .bool(deleting)]
         if let tracks { value["tracks"] = tracks.json }
+        if let subtitlePolicy {
+            value["subtitleLanguage"] = .string(subtitlePolicy.language)
+            value["subtitlePickerLimited"] = .bool(subtitlePolicy.limited)
+        }
         return .object(value)
     }
 }

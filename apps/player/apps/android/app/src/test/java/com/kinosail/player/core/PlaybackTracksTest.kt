@@ -45,9 +45,28 @@ class PlaybackTracksTest {
         assertFalse(tracks.captionsEnabled)
     }
 
+    @Test fun limitsEmbeddedMenuToPreferredRegularAndForcedTracks() {
+        val available = Tracks(listOf(
+            group(MimeTypes.TEXT_VTT, "English", false, language = "en"),
+            group(MimeTypes.TEXT_VTT, "Dutch", true, language = "nld"),
+            group(MimeTypes.TEXT_VTT, "English alternate", false, language = "eng"),
+            group(MimeTypes.TEXT_VTT, "English forced", false, language = "eng", flags = C.SELECTION_FLAG_FORCED),
+            group(MimeTypes.TEXT_VTT, "Unknown", false),
+            group(MimeTypes.TEXT_VTT, "English forced regional", false, language = "en-Latn-US", flags = C.SELECTION_FLAG_FORCED),
+            group(MimeTypes.TEXT_VTT, "Invalid language", false, language = "en" + "x".repeat(40)),
+        ))
+        val tracks = PlaybackTracks().apply { update(available, "en") }
+        assertEquals(listOf("1. English", "2. English forced", "3. English forced regional"), tracks.text.map { it.label })
+        assertTrue(tracks.captionsEnabled)
+        assertFalse(tracks.text.any { it.selected })
+        tracks.update(available)
+        assertEquals(7, tracks.text.size)
+    }
+
     private fun group(mime: String, label: String, selected: Boolean,
-                      support: Int = C.FORMAT_HANDLED): Tracks.Group {
-        val format = Format.Builder().setSampleMimeType(mime).setLabel(label).build()
+                      support: Int = C.FORMAT_HANDLED, language: String? = null, flags: Int = 0): Tracks.Group {
+        val format = Format.Builder().setSampleMimeType(mime).setLabel(label).setLanguage(language)
+            .setSelectionFlags(flags).build()
         return Tracks.Group(TrackGroup(format), false, intArrayOf(support), booleanArrayOf(selected))
     }
 }

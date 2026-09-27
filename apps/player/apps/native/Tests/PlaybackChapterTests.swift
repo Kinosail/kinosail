@@ -26,6 +26,15 @@ struct PlaybackChapterTests {
         }
     }
 
+    @MainActor @Test func offlinePolicyFiltersTracksAndClearsBetweenTitles() throws {
+        let engine = PlaybackEngine()
+        engine.subtitlePolicy = try SubtitleChoicePolicy(language: "en", limited: true)
+        #expect(engine.allowsSubtitleLanguage("eng"))
+        #expect(!engine.allowsSubtitleLanguage("nld"))
+        engine.stop()
+        #expect(engine.allowsSubtitleLanguage("nld"))
+    }
+
     private func source(_ chapters: String, start: String = "0", preview: String = "", token: String = "") throws -> PlaybackSource {
         let body = """
         {"media":{"duration":60},"plan":{"allowed":true,"mode":"direct","reason":"direct-preferred"},"duration":60,"start":\(start),"directAllowed":true,"direct":"/media/movie","directType":"video/mp4","chapters":\(chapters),"trickplay":"\(preview)","progressToken":"\(token)"}

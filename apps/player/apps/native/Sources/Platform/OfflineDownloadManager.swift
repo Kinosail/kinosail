@@ -55,7 +55,25 @@ final class OfflineDownloadManager {
             }
             try check(attempt)
             await refresh()
+            Task { await refreshSubtitlePolicy(client: client, attempt: attempt) }
         } catch { if generation == attempt { await engine.lock(); message = AppSession.message(error) } }
+    }
+
+    private func refreshSubtitlePolicy(client: ServerClient, attempt: UUID) async {
+        guard let record = catalog.records.first(where: { $0.item.kind == .video && !$0.deleting }), let storage else { return }
+        do {
+            let policy = try await client.playbackSubtitlePolicy(itemID: record.item.id)
+            try check(attempt)
+            guard !operation else { return }
+            operation = true; defer { operation = false }
+            var next = catalog
+            for index in next.records.indices where next.records[index].item.kind == .video {
+                next.records[index].subtitlePolicy = policy
+            }
+            try await storage.save(next)
+            try check(attempt)
+            catalog = next
+        } catch { /* Keep the last validated policy when the Server is unavailable. */ }
     }
 
     func performEnqueue(_ action: () async throws -> Void) async rethrows {

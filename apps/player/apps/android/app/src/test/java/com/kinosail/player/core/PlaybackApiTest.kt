@@ -140,6 +140,30 @@ class PlaybackApiTest {
                 .source("film-1", "token", "alex", capabilities)
         } }
     }
+
+    @Test fun acceptsPreferredSubtitlePolicyAndRejectsMalformedPolicy() {
+        val limited = response.replace("\"progressToken\":\"abc\"",
+            "\"subtitlePickerLimited\":true,\"subtitleLanguage\":\"en\",\"progressToken\":\"abc\"")
+        val source = PlaybackApi(server) { PlaybackResponse(200, limited) }
+            .source("film-1", "token", "alex", capabilities)
+        assertTrue(source.subtitlePickerLimited)
+        assertEquals("en", source.subtitleLanguage)
+        assertFalse(PlaybackApi(server) { PlaybackResponse(200, response) }
+            .source("film-1", "token", "alex", capabilities).subtitlePickerLimited)
+        listOf(
+            limited.replace("\"subtitleLanguage\":\"en\",", ""),
+            limited.replace("\"subtitleLanguage\":\"en\"", "\"subtitleLanguage\":\"auto\""),
+            limited.replace("\"subtitleLanguage\":\"en\"", "\"subtitleLanguage\":\"dutch\""),
+            limited.replace("\"subtitleLanguage\":\"en\"", "\"subtitleLanguage\":null"),
+            limited.replace("\"subtitlePickerLimited\":true", "\"subtitlePickerLimited\":\"true\""),
+            limited.replace("\"subtitlePickerLimited\":true", "\"subtitlePickerLimited\":null"),
+            limited.replace("\"subtitleLanguage\":\"en\"", "\"subtitleLanguage\":\"${"x".repeat(33)}\""),
+            limited.replace("\"subtitleLanguage\":\"en\"", "\"subtitleLanguage\":\"en\",\"subtitleLanguage\":\"nl\""),
+        ).forEach { body -> assertThrows(body, Exception::class.java) {
+            PlaybackApi(server) { PlaybackResponse(200, body) }
+                .source("film-1", "token", "alex", capabilities)
+        } }
+    }
 }
 
 private class PlaybackResponse(private val status: Int, private val body: String,

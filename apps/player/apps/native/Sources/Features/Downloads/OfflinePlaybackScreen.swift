@@ -36,7 +36,11 @@ struct OfflinePlaybackScreen: View {
             do {
                 let file = try await session.downloads.verifiedFile(id: downloadID)
                 try Task.checkCancellation()
-                try await session.player.playOffline(download.item, file: file, downloadID: downloadID, client: client, store: store, preferences: session.downloads.preferences.playback)
+                guard let record = session.downloads.catalog.records.first(where: { $0.key == downloadID && !$0.deleting }) else {
+                    failure = "This download is unavailable for the current Viewer Profile."; return
+                }
+                try await session.player.playOffline(download.item, file: file, downloadID: downloadID, client: client, store: store,
+                                                     preferences: session.downloads.preferences.playback, subtitlePolicy: record.subtitlePolicy)
                 ready = true
             } catch is CancellationError {} catch { failure = AppSession.message(error) }
         }
