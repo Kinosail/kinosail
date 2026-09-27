@@ -12,8 +12,8 @@ Kinosail Subtitles keeps every core feature free. Support is voluntary. A Polar 
 Choose [monthly support](https://buy.polar.sh/polar_cl_HTsVz4n50S840QL5zKCZ0yTZe6HpVfHqagCtQ1LZ6sN) for a Living Standard or [one-time support](https://buy.polar.sh/polar_cl_Aec8B5u63m6Wr6l6bfZNMS6dmYRyM4jAMAzxQ28S4b3) for a Patron Order. Each family has ten levels. The checkout shows the current price before an order.
 
 <figure class="product-screenshot">
-  <img src="{{ '/assets/images/subtitles-supporter-1200.png' | relative_url }}" width="1200" height="630" loading="lazy" alt="Kinosail Subtitles Supporter page showing the two badge families on a synthetic test Server">
-  <figcaption>Actual Supporter page rendered with a synthetic test badge. No purchase or personal account data.</figcaption>
+  <img src="{{ '/assets/images/subtitles-supporter-gallery.webp' | relative_url }}" width="2400" height="1800" loading="lazy" alt="Kinosail Subtitles Supporter page showing the first five Living Standards badges">
+  <figcaption>Actual Supporter badge gallery from the Podman demo. No purchase or personal account data. <a href="{{ '/assets/images/subtitles-supporter-gallery.webp' | relative_url }}">View full-size image</a>.</figcaption>
 </figure>
 
 ## Activate on your Server
