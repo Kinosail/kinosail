@@ -25,6 +25,8 @@ android {
 
     buildFeatures { compose = true }
 
+    sourceSets.getByName("main").assets.srcDir("../licenses")
+
     testOptions {
         unitTests.isIncludeAndroidResources = true
     }

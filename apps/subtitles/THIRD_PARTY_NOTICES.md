@@ -7,16 +7,23 @@ listed license files control. Kinosail's license does not replace them.
 | --- | --- | --- | --- |
 | hls.js | 1.7.1 | Apache License 2.0 | [`third_party/hls.js/LICENSE`](third_party/hls.js/LICENSE) |
 | HTMX | 2.0.10 | Zero-Clause BSD | [`third_party/htmx/LICENSE`](third_party/htmx/LICENSE) |
+| Manrope | Bundled web font | SIL Open Font License 1.1 | [`../../packages/webassets/static/fonts/OFL-Manrope.txt`](../../packages/webassets/static/fonts/OFL-Manrope.txt) |
+| TMDB logo | Approved logo by Travis Bell | CC BY-SA 4.0 and TMDB brand rules | [Logo source and credit](https://commons.wikimedia.org/wiki/File:Tmdb.new.logo.svg), [license](https://creativecommons.org/licenses/by-sa/4.0/), [TMDB rules](https://developer.themoviedb.org/docs/faq) |
 | govad | 2026-03-30 revision | MIT | [`third_party/govad.LICENSE`](third_party/govad.LICENSE) |
 | Silero VAD model | v5 weights | MIT | [`third_party/silero-vad.LICENSE`](third_party/silero-vad.LICENSE) |
 | SecLists test fixture | Pinned repository revision | MIT | [`third_party/seclists.LICENSE`](third_party/seclists.LICENSE) |
-| Jellyfin FFmpeg runtime | 8.1.2-5 | Upstream and Debian package terms | [Jellyfin FFmpeg](https://github.com/jellyfin/jellyfin-ffmpeg) |
+| Jellyfin FFmpeg runtime | 8.1.2-5 | GNU GPL v3 or later for the packaged build | [Exact release, source, and build files](https://github.com/jellyfin/jellyfin-ffmpeg/tree/v8.1.2-5) |
+| FDK AAC stripped library in Jellyfin FFmpeg | stripped5 | Fraunhofer FDK AAC terms | [NOTICE](third_party/fdk-aac-stripped.NOTICE), [source](https://gitlab.freedesktop.org/wtaymans/fdk-aac-stripped/-/tree/stripped5) |
 | libarchive tools | Debian runtime package | BSD-2-Clause and Debian package terms | [libarchive](https://github.com/libarchive/libarchive) |
 
 SecLists is used only by repository tests and is not included in the runtime
-image. Jellyfin FFmpeg is installed in the runtime image from its signed,
-checksum-verified upstream Debian package. The package's own notices remain
-authoritative and are installed by the package manager.
+image. Jellyfin FFmpeg is installed in the runtime image from its checksum-verified upstream Debian package. The package's own notices remain
+authoritative and are installed by the package manager under
+`/usr/share/doc/jellyfin-ffmpeg8/copyright`; the GPL v3 text is at
+`/usr/share/common-licenses/GPL-3`. The installed `ffmpeg -L` reports GPL v3
+or later because this build enables GPL components and version 3. The pinned
+release above provides the corresponding modified source and build files.
+See [FFmpeg's redistribution guidance](https://ffmpeg.org/legal.html).
 
 govad and its embedded Silero VAD model perform local speech detection for
 subtitle synchronization. Media is not sent to the model author.

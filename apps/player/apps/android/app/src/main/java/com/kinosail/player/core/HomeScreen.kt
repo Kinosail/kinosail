@@ -26,8 +26,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.withFrameNanos
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -35,6 +37,8 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
@@ -42,6 +46,7 @@ import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.kinosail.player.R
 import com.kinosail.player.design.KinoColor
 import com.kinosail.player.design.SailBackdrop
 
@@ -56,6 +61,9 @@ internal fun HomeScreen(viewer: Viewer, catalog: CatalogModel, tv: Boolean, nowP
         it.kind in setOf("video", "music", "audiobook")
     }
     val playFocus = remember { FocusRequester() }
+    var showThanks by remember { mutableStateOf(false) }
+    var showNotices by remember { mutableStateOf(false) }
+    val context = LocalContext.current
     LaunchedEffect(viewer.serverId, viewer.id) { model.open(viewer) }
     DisposableEffect(Unit) { onDispose { model.reset() } }
     LaunchedEffect(featured?.id, tv) {
@@ -76,9 +84,19 @@ internal fun HomeScreen(viewer: Viewer, catalog: CatalogModel, tv: Boolean, nowP
                         color = KinoColor.text)
                     Text(viewer.name, color = KinoColor.muted)
                 }
-                if (tv) androidx.tv.material3.Button(onClick = browse) {
-                    androidx.tv.material3.Text(interfaceText("Browse library"))
-                } else TextButton(onClick = browse) { Text(interfaceText("Library")) }
+                Column(horizontalAlignment = Alignment.End) {
+                    if (tv) {
+                        androidx.tv.material3.Button(onClick = browse) {
+                            androidx.tv.material3.Text(interfaceText("Browse library"))
+                        }
+                        androidx.tv.material3.Button(onClick = { showThanks = !showThanks }) {
+                            androidx.tv.material3.Text("Made possible by")
+                        }
+                    } else {
+                        TextButton(onClick = browse) { Text(interfaceText("Library")) }
+                        TextButton(onClick = { showThanks = !showThanks }) { Text("Thanks") }
+                    }
+                }
             }
             if (nowPlaying != null) {
                 val label = "Now playing · ${nowPlaying.title}"
@@ -89,6 +107,21 @@ internal fun HomeScreen(viewer: Viewer, catalog: CatalogModel, tv: Boolean, nowP
             }
             LazyColumn(Modifier.weight(1f), contentPadding = PaddingValues(bottom = 24.dp),
                 verticalArrangement = Arrangement.spacedBy(if (tv) 24.dp else 16.dp)) {
+                if (showThanks) item {
+                    Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                        Text("Made possible by", style = MaterialTheme.typography.headlineMedium, color = KinoColor.text)
+                        Text("Thank you to the people behind Jetpack Compose, Media3, and the Android libraries that bring Kinosail to this device. FFmpeg and Jellyfin FFmpeg power media tools on your Server.", color = KinoColor.text)
+                        Image(painter = painterResource(R.drawable.tmdb_logo), contentDescription = "TMDB", modifier = Modifier.width(80.dp))
+                        Text("This product uses the TMDB API but is not endorsed or certified by TMDB.", color = KinoColor.muted)
+                        if (tv) androidx.tv.material3.Button(onClick = { showNotices = !showNotices }) {
+                            androidx.tv.material3.Text("Third-party notices")
+                        } else TextButton(onClick = { showNotices = !showNotices }) { Text("Third-party notices") }
+                        if (showNotices) {
+                            val notices = remember(context) { runCatching { context.assets.open("THIRD_PARTY_NOTICES.md").bufferedReader().use { it.readText() } }.getOrNull() }
+                            Text(notices ?: "Notices could not be opened. Reinstall Kinosail and try again.", color = KinoColor.muted)
+                        }
+                    }
+                }
                 if (state.loading) item { CircularProgressIndicator(color = KinoColor.signal) }
                 state.notice?.let { notice -> item {
                     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {

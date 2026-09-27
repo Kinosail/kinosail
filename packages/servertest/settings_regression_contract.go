@@ -24,6 +24,7 @@ func RunSettings(t *testing.T, suite SettingsRegression) {
 	t.Run("TranscoderDefaultsToRecommendedAutomaticSelections", suite.TranscoderDefaultsToRecommendedAutomaticSelections)
 	t.Run("PlaybackSettingsExplainTheDirectFirstDefault", suite.PlaybackSettingsExplainTheDirectFirstDefault)
 	t.Run("SettingsDoNotExposeRetiredCloudBroker", suite.SettingsDoNotExposeRetiredCloudBroker)
+	t.Run("SettingsThankDependencies", suite.SettingsThankDependencies)
 	t.Run("OwnerCanChooseCompatiblePlaybackByDefault", suite.OwnerCanChooseCompatiblePlaybackByDefault)
 	t.Run("OwnerCanAutoplayTheNextEpisode", suite.OwnerCanAutoplayTheNextEpisode)
 	t.Run("OwnerCanDisableSubtitlesByDefault", suite.OwnerCanDisableSubtitlesByDefault)

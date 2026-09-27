@@ -4,7 +4,7 @@
   "title": "Design System: Kinosail logo family",
   "extensions": {
     "scope": "Logo assets only; original Kino palette. No synthesized interface tokens or tonal ramps.",
-    "verification": "Source and rendered contact-sheet inspection only; gates disabled."
+    "verification": "Source inspection only; gates disabled."
   },
   "components": [
     {
