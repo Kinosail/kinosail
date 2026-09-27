@@ -61,6 +61,15 @@ func TestPreferredSubtitleLanguageAndPickerLimitAcrossWebAndAPI(t *testing.T) { 
 	if limitSave.Code != http.StatusSeeOther || strings.Contains(limitedPlayer.Body.String(), "English · Subtitles") || strings.Contains(limitedPlayer.Body.String(), "Dutch · Forced") || strings.Contains(limitedPlayback.Body.String(), `"language":"en"`) || strings.Contains(limitedPlayback.Body.String(), `"language":"nl"`) {
 		t.Fatalf("unselected track remained visible: save=%d player=%s API=%s", limitSave.Code, limitedPlayer.Body.String(), limitedPlayback.Body.String())
 	}
+	videoTag := regexp.MustCompile(`<video\b[^>]*>`)
+	limitedVideo := videoTag.FindString(limitedPlayer.Body.String())
+	if !strings.Contains(limitedVideo, `data-subtitle-picker-limited="true"`) || strings.Contains(limitedVideo, " controls ") {
+		t.Fatalf("limited player exposed native subtitle controls: %q", limitedVideo)
+	}
+	unlimitedVideo := videoTag.FindString(player.Body.String())
+	if !strings.Contains(unlimitedVideo, " controls ") {
+		t.Fatalf("unlimited player lost native control fallback: %q", unlimitedVideo)
+	}
 	for _, name := range []string{"Arrival.en.srt", "Arrival.nl.forced.srt"} {
 		if _, err := os.Stat(filepath.Join(media, name)); err != nil {
 			t.Fatalf("subtitle choice filtering changed %s: %v", name, err)
