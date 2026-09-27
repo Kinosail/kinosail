@@ -1,9 +1,38 @@
 import { expect, test } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
-import { configureTestInstance, login } from "./test-instance-helpers";
+import { configureTestInstance, firstPlayable, login } from "./test-instance-helpers";
 
 configureTestInstance();
 test.use({ serviceWorkers: "block" });
+
+test("preferred-language subtitle choices hide other tracks without changing files", async ({ page }, testInfo) => {
+	await login(page);
+	const watch = await firstPlayable(page);
+	const choices = page.locator('form[action="/settings/subtitles/picker"]');
+	try {
+		for (const viewport of [{ width: 390, height: 844 }, { width: 1440, height: 900 }]) {
+			await page.setViewportSize(viewport);
+			await page.goto("/settings#playback");
+			await expect(choices.getByLabel("Playback subtitle choices")).toHaveValue("off");
+			await expect(choices).toContainText("without renaming or deleting subtitle files");
+			await expect(choices).toContainText("The picker shows one regular track and any forced tracks in the preferred language.");
+			expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(viewport.width);
+			expect((await new AxeBuilder({ page }).include('form[action="/settings/subtitles/picker"]').analyze()).violations).toEqual([]);
+			await page.screenshot({ path: testInfo.outputPath(`${viewport.width}-subtitle-choices.png`), fullPage: true });
+		}
+		await choices.getByLabel("Playback subtitle choices").selectOption("on");
+		await choices.getByRole("button", { name: "Save subtitle choices" }).click();
+		await page.goto(watch);
+		await expect(page.locator('video track[srclang="en"]')).toHaveCount(1);
+		await expect(page.locator('video track[srclang="es"]')).toHaveCount(0);
+	} finally {
+		await page.goto("/settings#playback");
+		await choices.getByLabel("Playback subtitle choices").selectOption("off");
+		await choices.getByRole("button", { name: "Save subtitle choices" }).click();
+	}
+	await page.goto(watch);
+	await expect(page.locator('video track[srclang="es"]')).toHaveCount(1);
+});
 
 test("Connection choices stay optional and secure by default", async ({ page }, testInfo) => {
 	await login(page);

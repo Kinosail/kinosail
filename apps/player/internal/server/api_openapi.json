@@ -139,6 +139,7 @@
     "/api/v1/settings/playback": {"put": {"operationId": "savePlaybackSettings", "responses": {"default": {"$ref": "#/components/responses/Result"}}}},
     "/api/v1/settings/transcoder": {"put": {"operationId": "saveTranscoderSettings", "responses": {"default": {"$ref": "#/components/responses/Result"}}}},
     "/api/v1/settings/subtitles": {"put": {"operationId": "saveSubtitleSettings", "responses": {"default": {"$ref": "#/components/responses/Result"}}}},
+    "/api/v1/settings/subtitle-picker": {"put": {"operationId": "saveSubtitlePicker", "requestBody": {"required": true, "content": {"application/json": {"schema": {"type": "object", "additionalProperties": false, "required": ["limited"], "properties": {"limited": {"type": "boolean"}}}}}}, "responses": {"default": {"$ref": "#/components/responses/Result"}}}},
     "/api/v1/settings/scans": {"put": {"operationId": "saveScanSettings", "responses": {"default": {"$ref": "#/components/responses/Result"}}}},
     "/api/v1/settings/dlna": {"put": {"operationId": "saveDLNASettings", "responses": {"default": {"$ref": "#/components/responses/Result"}}}},
     "/api/v1/settings/home-assistant": {"put": {"operationId": "saveHomeAssistantSettings", "requestBody": {"required": true, "content": {"application/json": {"schema": {"type": "object", "additionalProperties": false, "required": ["enabled"], "properties": {"enabled": {"type": "boolean"}}}}}}, "responses": {"default": {"$ref": "#/components/responses/Result"}}}},

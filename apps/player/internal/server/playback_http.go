@@ -88,6 +88,24 @@ func playbackSubtitles(item library.Item, media probeResult, preferredLanguage s
 	return tracks
 }
 
+func playbackSubtitleChoices(item library.Item, media probeResult, language string, enabled, limited bool) []subtitleTrack {
+	tracks := playbackSubtitles(item, media, language, enabled)
+	if !limited {
+		return tracks
+	}
+	choices := make([]subtitleTrack, 0, len(tracks))
+	regular := false
+	for _, track := range tracks {
+		if !sameSubtitleLanguage(track.Language, language) || regular && !track.Forced {
+			continue
+		}
+		choices = append(choices, track)
+		regular = regular || !track.Forced
+	}
+	selectDefaultTextSubtitle(choices, language, enabled)
+	return choices
+}
+
 func selectDefaultTextSubtitle(tracks []subtitleTrack, preferredLanguage string, enabled bool) {
 	selected := defaultTextSubtitle(tracks, preferredLanguage, enabled)
 	for index := range tracks {

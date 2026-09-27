@@ -7,6 +7,7 @@ import (
 	"path/filepath"
 
 	"github.com/MikeO7/kinosail-player/internal/backup"
+	"github.com/MikeO7/kinosail/packages/httpguard"
 	settingsops "github.com/MikeO7/kinosail/packages/settings"
 )
 
@@ -91,6 +92,26 @@ func saveSubtitleLanguage(settings *settingsStore) http.HandlerFunc {
 			return
 		}
 		http.Redirect(writer, request, "/settings", http.StatusSeeOther)
+	}
+}
+
+func saveSubtitlePicker(settings *settingsStore) http.HandlerFunc {
+	return func(writer http.ResponseWriter, request *http.Request) {
+		if httpguard.DecodeForm(writer, request, 2048, "limited", "_csrf") != nil || len(request.PostForm["limited"]) != 1 {
+			localizedError(writer, request, "choose which subtitle tracks to show", http.StatusBadRequest)
+			return
+		}
+		choice := request.PostForm.Get("limited")
+		if choice != "on" && choice != "off" {
+			localizedError(writer, request, "choose which subtitle tracks to show", http.StatusBadRequest)
+			return
+		}
+		limited := choice == "on"
+		if err := settings.setSubtitlePickerLimited(&limited); err != nil {
+			localizedError(writer, request, err.Error(), http.StatusBadRequest)
+			return
+		}
+		http.Redirect(writer, request, "/settings#playback", http.StatusSeeOther)
 	}
 }
 

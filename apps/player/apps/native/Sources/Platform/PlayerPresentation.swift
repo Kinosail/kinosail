@@ -85,6 +85,7 @@ final class PlayerPresentation: NSObject, AVPlayerViewControllerDelegate {
         presentationMessage = nil
         #else
         controller.player = nil
+        controller.allowedSubtitleOptionLanguages = nil
         showOptions = nil
         showSeekPreview = nil
         #endif
@@ -94,6 +95,12 @@ final class PlayerPresentation: NSObject, AVPlayerViewControllerDelegate {
         restorationCompletion = nil
         restore = nil
     }
+
+    #if os(tvOS)
+    func limitSubtitleLanguages(to language: String?) {
+        controller.allowedSubtitleOptionLanguages = language.map { [$0] }
+    }
+    #endif
 
     func showCaptions(_ text: String) {
         guard captionText != text else { return }

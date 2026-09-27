@@ -6,6 +6,26 @@ import UIKit
 @testable import KinosailPlayer
 
 struct PlaybackChapterTests {
+    private func sourceWithSubtitlePolicy(_ policy: String) throws -> PlaybackSource {
+        let body = """
+        {"media":{"duration":60},"plan":{"allowed":true,"mode":"direct","reason":"direct-preferred"},"duration":60,"start":0,"directAllowed":true,"direct":"/media/movie","directType":"video/mp4","chapters":[],\(policy)}
+        """
+        return try PlaybackSource(StrictJSON.decode(Data(body.utf8)), itemID: "movie", server: ServerAddress("https://example.com"))
+    }
+
+    @Test func filtersUnselectedSubtitleLanguages() throws {
+        let limited = try sourceWithSubtitlePolicy(#""subtitlePickerLimited":true,"subtitleLanguage":"en""#)
+        #expect(limited.allowsSubtitleLanguage("eng"))
+        #expect(limited.allowsSubtitleLanguage("en-US"))
+        #expect(!limited.allowsSubtitleLanguage("nld"))
+        #expect(!limited.allowsSubtitleLanguage(""))
+        let all = try sourceWithSubtitlePolicy(#""subtitlePickerLimited":false,"subtitleLanguage":"en""#)
+        #expect(all.allowsSubtitleLanguage("nld"))
+        #expect(throws: ClientError.self) {
+            try sourceWithSubtitlePolicy(#""subtitlePickerLimited":true,"subtitleLanguage":"auto""#)
+        }
+    }
+
     private func source(_ chapters: String, start: String = "0", preview: String = "", token: String = "") throws -> PlaybackSource {
         let body = """
         {"media":{"duration":60},"plan":{"allowed":true,"mode":"direct","reason":"direct-preferred"},"duration":60,"start":\(start),"directAllowed":true,"direct":"/media/movie","directType":"video/mp4","chapters":\(chapters),"trickplay":"\(preview)","progressToken":"\(token)"}

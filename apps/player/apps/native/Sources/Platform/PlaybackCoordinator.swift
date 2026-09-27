@@ -171,6 +171,9 @@ final class PlaybackEngine {
             let details = prepared.source
             try check(attempt)
             source = details
+            #if os(tvOS)
+            presentation.limitSubtitleLanguages(to: details.subtitlePickerLimited ? details.subtitleLanguage : nil)
+            #endif
             preferences = DevicePlaybackChoices.load(scope: scope).apply(to: prepared.preferences)
             duration = details.duration
             writer = try ProgressWriter(itemID: item.id, expected: item.progress, client: client, store: store)

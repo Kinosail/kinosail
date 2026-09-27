@@ -67,6 +67,9 @@ extension PlaybackEngine {
             let shouldResume = nativeIntent.playing.withLock { $0 } ?? wantsPlayback
             self.preferences = valid
             source = details
+            #if os(tvOS)
+            presentation.limitSubtitleLanguages(to: details.subtitlePickerLimited ? details.subtitleLanguage : nil)
+            #endif
             playbackPreparation = nil
             playbackPreparationTask?.cancel(); playbackPreparationTask = nil
             try await install(details: details, compatible: valid.audioEnhancementsEnabled || details.direct == nil, at: position, attempt: attempt)
@@ -86,10 +89,14 @@ extension PlaybackEngine {
         guard let item = player?.currentItem else { return }
         selectPreferred(in: audioGroup, options: audioOptions, language: valid.audioLanguage, label: valid.audioTrack, item: item)
         if valid.subtitleLanguage == "off", let subtitleGroup { item.select(nil, in: subtitleGroup) }
-        else { selectPreferred(in: subtitleGroup, options: subtitleOptions, language: valid.subtitleLanguage, label: valid.subtitleTrack, item: item) }
+        else if let source, source.subtitlePickerLimited, let subtitleGroup {
+            item.select(subtitleOptions.first(where: { source.allowsSubtitleLanguage($0.extendedLanguageTag ?? $0.locale?.identifier ?? "") }), in: subtitleGroup)
+        } else { selectPreferred(in: subtitleGroup, options: subtitleOptions, language: valid.subtitleLanguage, label: valid.subtitleTrack, item: item) }
         let external = source?.subtitles ?? []
         let rememberedOn = devicePreferencesScope.flatMap { DevicePlaybackChoices.load(scope: $0).subtitleLanguage }.map { $0 != "off" } ?? false
-        let preferredExternal = external.firstIndex(where: { !valid.subtitleTrack.isEmpty && $0.label == valid.subtitleTrack })
+        let preferredExternal = source?.subtitlePickerLimited == true
+            ? external.firstIndex(where: { $0.isDefault }) ?? (valid.subtitleLanguage != "auto" && valid.subtitleLanguage != "off" ? external.indices.first : nil)
+            : external.firstIndex(where: { !valid.subtitleTrack.isEmpty && $0.label == valid.subtitleTrack })
             ?? external.firstIndex(where: { valid.subtitleLanguage == "auto" ? $0.isDefault : $0.language.lowercased() == valid.subtitleLanguage.lowercased() })
             ?? (rememberedOn && selectedSubtitleTrackID == nil && subtitleOptions.isEmpty ? external.indices.first : nil)
         if valid.subtitleLanguage == "off" { subtitleDocument = nil; externalCaptions = false; presentation.showCaptions("") }
@@ -98,7 +105,10 @@ extension PlaybackEngine {
             catch is CancellationError { throw CancellationError() }
             catch { progressMessage = "The selected subtitles could not be loaded. Choose a track in Playback options." }
         }
-        if rememberedOn, selectedSubtitleTrackID == nil, let subtitleGroup, let first = subtitleOptions.first { item.select(first, in: subtitleGroup) }
+        if rememberedOn, selectedSubtitleTrackID == nil, let subtitleGroup,
+           let first = subtitleOptions.first(where: { source?.allowsSubtitleLanguage($0.extendedLanguageTag ?? $0.locale?.identifier ?? "") ?? true }) {
+            item.select(first, in: subtitleGroup)
+        }
         observedAudioTrackID = selectedAudioTrackID
         observedSubtitleTrackID = selectedSubtitleTrackID
     }
@@ -166,7 +176,15 @@ extension PlaybackEngine {
         audioOptions = audioGroup?.options ?? []
         subtitleOptions = subtitleGroup?.options ?? []
         audioTracks = audioOptions.enumerated().map { PlayerTrack(id: String($0.offset), title: $0.element.displayName) }
-        subtitleTracks = subtitleOptions.enumerated().map { PlayerTrack(id: String($0.offset), title: PlayerTrack.embeddedSubtitleTitle($0.element.displayName)) }
+        var regularShown = false
+        subtitleTracks = subtitleOptions.enumerated().compactMap { index, option in
+            guard source?.allowsSubtitleLanguage(option.extendedLanguageTag ?? option.locale?.identifier ?? "") ?? true else { return nil }
+            if source?.subtitlePickerLimited == true && !option.hasMediaCharacteristic(.containsOnlyForcedSubtitles) {
+                guard !regularShown else { return nil }
+                regularShown = true
+            }
+            return PlayerTrack(id: String(index), title: PlayerTrack.embeddedSubtitleTitle(option.displayName))
+        }
         subtitleTracks += (source?.subtitles ?? []).enumerated().map { PlayerTrack(id: "external:\($0.offset)", title: $0.element.label) }
     }
 

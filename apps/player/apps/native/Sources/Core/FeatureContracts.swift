@@ -45,8 +45,17 @@ struct PlaybackSource: Sendable {
     let chapters: [Chapter]
     let nextItemID: String?
     let subtitles: [ExternalSubtitle]
+    let subtitleLanguage: String
+    let subtitlePickerLimited: Bool
     let markers: [PlaybackMarker]
     let autoSkip: Set<String>
+
+    func allowsSubtitleLanguage(_ language: String) -> Bool {
+        guard subtitlePickerLimited else { return true }
+        guard let selected = Locale.Language(identifier: subtitleLanguage).languageCode?.identifier,
+              let candidate = Locale.Language(identifier: language).languageCode?.identifier else { return false }
+        return selected == candidate
+    }
 
     #if os(tvOS)
     /// Automatic playback may offer an original file first even when its

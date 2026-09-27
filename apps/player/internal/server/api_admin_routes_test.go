@@ -17,6 +17,7 @@ func TestOwnerSettingsAndOperationsAPIRoutes(t *testing.T) { //nolint:cyclop // 
 		{Method: http.MethodPut, Path: "/api/v1/settings/updates", Body: map[string]any{"automatic": true}, Status: http.StatusOK},
 		{Method: http.MethodPut, Path: "/api/v1/settings/transcoder", Body: map[string]any{"quality": "speed", "accelerator": "none", "toneMap": false}, Status: http.StatusOK},
 		{Method: http.MethodPut, Path: "/api/v1/settings/subtitles", Body: map[string]any{"language": "es"}, Status: http.StatusOK},
+		{Method: http.MethodPut, Path: "/api/v1/settings/subtitle-picker", Body: map[string]any{"limited": true}, Status: http.StatusOK},
 		{Method: http.MethodPut, Path: "/api/v1/settings/scans", Body: map[string]any{"frequency": "off"}, Status: http.StatusOK},
 		{Method: http.MethodPut, Path: "/api/v1/settings/dlna", Body: map[string]any{"enabled": false}, Status: http.StatusOK},
 		{Method: http.MethodPost, Path: "/api/v1/libraries", Body: map[string]any{"path": "/outside"}, Status: http.StatusBadRequest},

@@ -77,6 +77,7 @@ func registerAdminAPI(mux *http.ServeMux, api apiServices) { //nolint:funlen // 
 		return api.settings.setTranscoder(input.Quality, input.Codec, input.Accelerator, input.ToneMap)
 	}))
 	owner("PUT /api/v1/settings/subtitles", apiSetting(func(input apiSettingInput) error { return api.settings.setSubtitleLanguage(input.Language) }))
+	owner("PUT /api/v1/settings/subtitle-picker", apihttp.Save(func(input struct{ Limited *bool }) error { return api.settings.setSubtitlePickerLimited(input.Limited) }))
 	owner("PUT /api/v1/settings/scans", apiSetting(func(input apiSettingInput) error {
 		if err := api.settings.setScanFrequency(input.Frequency); err != nil {
 			return err
