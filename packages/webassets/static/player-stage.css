@@ -3,6 +3,7 @@
 .player-page .title-block{margin:1.5rem 0 1rem;padding:0;border-radius:0;background:none;backdrop-filter:none;width:auto}
 .player-page .title-block h1{max-width:100%;font-size:clamp(1.75rem,3vw,2.75rem);line-height:1.15;letter-spacing:-.035em;text-shadow:none;overflow-wrap:anywhere;text-wrap:pretty}
 .player-page .title-block h1 small{font-size:.5em;white-space:nowrap}
+.player-page .title-block h1 .content-rating{display:inline-block;padding:.2em .45em;border:1px solid var(--line-strong);border-radius:6px;color:var(--text);font-size:.38em;font-weight:800;letter-spacing:0;line-height:1.2;vertical-align:middle}
 .player-page .primary-player-actions{background:transparent!important;box-shadow:none;backdrop-filter:none}
 .player-page .primary-action-row form button{background:var(--surface);border:1px solid var(--line);color:var(--text);border-radius:10px}
 .player-page:not(.player-theater) .media-stage:has(>video):not(:fullscreen){display:grid;grid-template-columns:minmax(0,1fr);aspect-ratio:auto;background:#000;border-radius:12px;box-shadow:none}
@@ -16,6 +17,12 @@
 .player-page:not(.player-theater) .media-stage:not(:fullscreen)>.player-settings{grid-area:1/1/2/2}
 .player-page:not(.player-theater) .media-stage:not(:fullscreen)>.player-buffer{position:relative;grid-area:1/1;place-self:center;top:auto;left:auto;transform:none;box-sizing:border-box;margin:.6rem;min-width:0;width:min(20rem,calc(100% - 1.2rem))}
 .player-page .player-buffer .buffer-skeleton{width:3rem;height:.5rem;border:0;border-radius:3px;background:currentColor;opacity:.35}
+.player-page .player-buffer[data-state="start"]{z-index:5;grid-template-columns:1fr;pointer-events:auto}
+.player-page .player-buffer[data-state="start"] .buffer-skeleton{display:none}
+.player-page .player-buffer [data-player-start]{min-height:44px;padding:.65rem 1rem;border:0;border-radius:999px;background:var(--signal);color:var(--signal-ink);font:inherit;cursor:pointer;pointer-events:auto}
+.player-page .player-buffer [data-player-start][hidden]{display:none}
+.player-page .player-buffer.is-recovery [data-player-start]{display:none}
+.player-page .player-buffer [data-player-start]:focus-visible{outline:2px solid var(--focus);outline-offset:3px}
 @media(forced-colors:active){.player-page .player-buffer{background:Canvas;color:CanvasText;border-color:CanvasText}.player-page .player-buffer .buffer-skeleton{background:GrayText}}
 @media(max-width:700px){
   .player-page .player-shell{padding-top:max(.75rem,env(safe-area-inset-top));padding-inline:max(.75rem,env(safe-area-inset-left)) max(.75rem,env(safe-area-inset-right))}

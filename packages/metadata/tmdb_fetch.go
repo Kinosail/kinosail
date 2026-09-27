@@ -70,10 +70,15 @@ func (client *TMDBClient) fetch(ctx context.Context, item library.Item) (TMDBMet
 		return TMDBMetadata{}, fmt.Errorf("no match for %q", title)
 	}
 	var movie tmdbMovie
-	if err := client.get(ctx, fmt.Sprintf("/movie/%d?append_to_response=credits", candidates.Results[0].ID), &movie); err != nil {
+	if err := client.get(ctx, fmt.Sprintf("/movie/%d?append_to_response=credits,release_dates", candidates.Results[0].ID), &movie); err != nil {
 		return TMDBMetadata{}, err
 	}
 	metadata := metadataFor(movie)
+	rating, err := movieCertification(movie.ReleaseDates)
+	if err != nil {
+		return TMDBMetadata{}, err
+	}
+	metadata.Rating = rating
 	if !validTMDBText(metadata) || !ValidTMDBPath(movie.PosterPath) || !ValidTMDBCast(movie.Credits.Cast) {
 		return TMDBMetadata{}, errors.New("TMDB returned invalid metadata")
 	}
@@ -99,7 +104,55 @@ func ValidTMDBCast(cast []TMDBCastMember) bool {
 }
 
 func validTMDBText(metadata TMDBMetadata) bool {
-	return metadata.Title != "" && len(metadata.Title) <= 200 && validMetadataYear(metadata.Year) && len(metadata.Plot) <= 5000 && len(metadata.Genres) <= 500 && len(metadata.Director) <= 200 && !hasControlText(metadata.Title+metadata.Genres+metadata.Director) && !hasInvalidRecordText(metadata.Plot, true)
+	return metadata.Title != "" && len(metadata.Title) <= 200 && validMetadataYear(metadata.Year) && len(metadata.Plot) <= 5000 && len(metadata.Genres) <= 500 && len(metadata.Director) <= 200 && (metadata.Rating == "" || validMovieRating(metadata.Rating)) && !hasControlText(metadata.Title+metadata.Genres+metadata.Director) && !hasInvalidRecordText(metadata.Plot, true)
+}
+
+func validMovieRating(value string) bool {
+	switch value {
+	case "G", "PG", "PG-13", "R", "NC-17", "NR", "UNRATED":
+		return true
+	}
+	return false
+}
+
+func movieCertification(releases tmdbReleaseDates) (string, error) {
+	if len(releases.Results) > 200 {
+		return "", errors.New("TMDB returned too many release regions")
+	}
+	rating := ""
+	for _, region := range releases.Results {
+		if len(region.Dates) > 100 {
+			return "", errors.New("TMDB returned too many release dates")
+		}
+		if region.Country != "US" {
+			continue
+		}
+		for _, release := range region.Dates {
+			var err error
+			rating, err = addMovieCertification(rating, release.Certification)
+			if err != nil {
+				return "", err
+			}
+		}
+	}
+	return rating, nil
+}
+
+func addMovieCertification(current, value string) (string, error) {
+	if len(value) > 32 {
+		return "", errors.New("TMDB returned an invalid certification")
+	}
+	rating := strings.ToUpper(strings.TrimSpace(value))
+	if rating != "" && !validMovieRating(rating) {
+		return "", errors.New("TMDB returned an invalid certification")
+	}
+	if rating == "" {
+		return current, nil
+	}
+	if current != "" && current != rating {
+		return "", errors.New("TMDB returned conflicting certifications")
+	}
+	return rating, nil
 }
 
 // MovieIdentity returns a normalized title and optional release year.

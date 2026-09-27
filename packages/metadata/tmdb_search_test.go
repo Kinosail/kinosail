@@ -2,6 +2,7 @@ package metadata
 
 import (
 	"context"
+	"encoding/json"
 	"net/url"
 	"strings"
 	"testing"
@@ -204,11 +205,28 @@ func TestResolveTMDBRecordBuildsMovieAndEpisodeResults(t *testing.T) { //nolint:
 	}
 }
 
+func TestResolveTMDBMovieRejectsInvalidCertificationBeforeMetadataEffects(t *testing.T) {
+	t.Parallel()
+	collectionCalls := 0
+	fetch := func(_ context.Context, endpoint string, target any) error {
+		if strings.Contains(endpoint, "append_to_response=release_dates") {
+			return json.Unmarshal([]byte(`{"release_dates":{"results":[{"iso_3166_1":"US","release_dates":[{"certification":"PG-15"}]}]}}`), target)
+		}
+		return json.Unmarshal([]byte(`{"results":[{"id":7,"title":"Movie"}]}`), target)
+	}
+	_, err := ResolveTMDBRecord(t.Context(), library.Item{ID: "movie", Title: "Movie"}, "https://example.com", fetch, func(context.Context, int) string { collectionCalls++; return "" }, func(context.Context, library.Item, int, string, string, *Record, *string) {}, func(string) string { return "art" })
+	if err == nil || collectionCalls != 0 {
+		t.Fatalf("invalid certification result: err=%v collection calls=%d", err, collectionCalls)
+	}
+}
+
 func TestResolveTMDBRecordRejectsInvalidAdaptersAndProviderData(t *testing.T) { //nolint:staticcheck // An intentional nil context proves the adapter boundary fails closed.
 	t.Parallel()
 	item := library.Item{ID: "movie", Title: "Movie"}
 	fetch := func(_ context.Context, _ string, target any) error {
-		target.(*TMDBCandidates).Results = []TMDBCandidate{{ID: 1, Title: "Movie", PosterPath: "/poster.jpg"}}
+		if candidates, ok := target.(*TMDBCandidates); ok {
+			candidates.Results = []TMDBCandidate{{ID: 1, Title: "Movie", PosterPath: "/poster.jpg"}}
+		}
 		return nil
 	}
 	noopDetails := func(context.Context, library.Item, int, string, string, *Record, *string) {}
