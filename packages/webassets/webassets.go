@@ -48,7 +48,9 @@ var (
 	playerStatus []byte
 	//go:embed static/player-presentation.js
 	playerPresentation []byte
-	PlayerControls     = append(append(append([]byte(nil), playerControls...), playerStatus...), playerPresentation...)
+
+	playerStatusControls = append(append([]byte(nil), playerControls...), playerStatus...)
+	PlayerControls       = append(append([]byte(nil), playerStatusControls...), playerPresentation...)
 	//go:embed static/player-core.js
 	PlayerCore []byte
 	//go:embed static/player-devices.js
