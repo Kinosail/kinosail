@@ -73,24 +73,25 @@ type DiagnosticSnapshot struct {
 
 // DiagnosticReport is the safe downloadable server diagnostic document.
 type DiagnosticReport struct {
-	Version             string `json:"version"`
-	Generated           string `json:"generated"`
-	UptimeSeconds       int64  `json:"uptimeSeconds"`
-	LastScan            string `json:"lastScan"`
-	PlaybackMode        string `json:"playbackMode"`
-	Transcoder          string `json:"transcoder"`
-	ScanFrequency       string `json:"scanFrequency"`
-	LibraryMonitoring   string `json:"libraryMonitoring"`
-	Healthy             bool   `json:"healthy"`
-	ScanError           bool   `json:"scanError"`
-	LibraryItems        int    `json:"libraryItems"`
-	Sessions            int    `json:"sessions"`
-	TranscodeCacheBytes int64  `json:"transcodeCacheBytes"`
-	HTTPRequests        uint64 `json:"httpRequests"`
-	HTTPErrors          uint64 `json:"httpErrors"`
-	HTTPPanics          uint64 `json:"httpPanics"`
-	ActivityFailures    uint64 `json:"activityFailures"`
-	ActivityHealthy     bool   `json:"activityHealthy"`
+	Version             string         `json:"version"`
+	Generated           string         `json:"generated"`
+	UptimeSeconds       int64          `json:"uptimeSeconds"`
+	LastScan            string         `json:"lastScan"`
+	PlaybackMode        string         `json:"playbackMode"`
+	Transcoder          string         `json:"transcoder"`
+	ScanFrequency       string         `json:"scanFrequency"`
+	LibraryMonitoring   string         `json:"libraryMonitoring"`
+	Healthy             bool           `json:"healthy"`
+	ScanError           bool           `json:"scanError"`
+	LibraryItems        int            `json:"libraryItems"`
+	Sessions            int            `json:"sessions"`
+	TranscodeCacheBytes int64          `json:"transcodeCacheBytes"`
+	HTTPRequests        uint64         `json:"httpRequests"`
+	HTTPErrors          uint64         `json:"httpErrors"`
+	HTTPPanics          uint64         `json:"httpPanics"`
+	ActivityFailures    uint64         `json:"activityFailures"`
+	ActivityHealthy     bool           `json:"activityHealthy"`
+	RecentFailures      []FailureEvent `json:"recentFailures,omitempty"`
 }
 
 // BuildDiagnosticReport adds process identity and time values to a diagnostic snapshot.
@@ -103,7 +104,7 @@ func BuildDiagnosticReport(version string, started, now time.Time, snapshot Diag
 		version, now.UTC().Format(time.RFC3339), int64(now.Sub(started).Seconds()), snapshot.LastScan.UTC().Format(time.RFC3339),
 		snapshot.PlaybackMode, snapshot.Transcoder, snapshot.ScanFrequency, monitoring, snapshot.Healthy, snapshot.ScanError,
 		snapshot.LibraryItems, snapshot.Sessions, snapshot.TranscodeCacheBytes, snapshot.HTTPRequests, snapshot.HTTPErrors,
-		snapshot.HTTPPanics, snapshot.ActivityFailures, snapshot.ActivityHealthy,
+		snapshot.HTTPPanics, snapshot.ActivityFailures, snapshot.ActivityHealthy, nil,
 	}
 }
 
