@@ -22,6 +22,8 @@ These are screenshots of the real Player running in Podman with fictional movies
 | [Kinosail Player](apps/player/README.md) | Browse and play movies, Shows, music, audiobooks, books, and photos. Includes Profiles, playback progress, collections, and compatible playback. | `https://localhost:38127` |
 | [Kinosail Subtitles](https://kinosail.com/subtitles/) | Find, validate, and save subtitle sidecars beside your movies and episodes. | `https://localhost:38128` |
 
+For Synology, TrueNAS, QNAP, CasaOS, Portainer, Unraid, and Proxmox VE, follow the [platform install guide](apps/player/docs/getting-started/platforms.md).
+
 Player reads your media and does not change the source files. Subtitles needs write access to save subtitle files beside your media. Kinosail does not relay media. You do not need a Kinosail account for local use.
 
 Subtitles runs in its own [published container](https://github.com/Kinosail/kinosail/pkgs/container/kinosail-subtitles). Follow the [Subtitles Docker guide](https://kinosail.com/subtitles/getting-started/install/) for its writable media mount, or see the [source and test-instance screenshots](apps/subtitles/README.md). Core subtitle features are free; [Supporter badges](https://kinosail.com/subtitles/owner-guide/supporter/) are optional.

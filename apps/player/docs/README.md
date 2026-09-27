@@ -1,6 +1,6 @@
 # Kinosail web Player documentation
 
-Read **[Kinosail Player Docs](https://kinosail.com/docs/)**. Start with **[Install with Docker](https://kinosail.com/quickstart/)**. Use a source build to contribute or test code that is not released yet. These docs do not cover other Kinosail apps.
+Read **[Kinosail Player Docs](https://kinosail.com/docs/)**. Start with **[Install with Docker](https://kinosail.com/quickstart/)**. Use a source build to contribute or test code that is not released yet. The [platform install guide](getting-started/platforms.md) also covers Kinosail Subtitles.
 
 ## Read the guides
 
