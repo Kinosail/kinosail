@@ -12,7 +12,7 @@ import (
 	"github.com/MikeO7/kinosail-player/internal/server"
 )
 
-func TestPreferredSubtitleLanguageAndPickerLimitAcrossWebAndAPI(t *testing.T) { //nolint:cyclop,funlen // One lifecycle proves selection, filtering, validation, and unchanged files across both adapters.
+func TestPreferredSubtitleLanguageAndPickerLimitAcrossWebAndAPI(t *testing.T) { //nolint:cyclop,funlen // One lifecycle proves selection, filtering, and unchanged files across both adapters.
 	t.Parallel()
 	media, data := t.TempDir(), t.TempDir()
 	for name, contents := range map[string]string{
@@ -66,6 +66,39 @@ func TestPreferredSubtitleLanguageAndPickerLimitAcrossWebAndAPI(t *testing.T) { 
 			t.Fatalf("subtitle choice filtering changed %s: %v", name, err)
 		}
 	}
+}
+
+func TestRetiredSubtitleRoutes(t *testing.T) {
+	t.Parallel()
+	media := t.TempDir()
+	if err := os.WriteFile(filepath.Join(media, "Arrival.mp4"), []byte("video"), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	handler := server.New(server.Config{MediaDir: media, DataDir: t.TempDir()})
+	id := firstWebItemID(t, handler)
+	for _, retired := range []struct{ method, path string }{
+		{http.MethodPost, "/subtitles/" + id + "/fetch"},
+		{http.MethodGet, "/subtitles/" + id + "/fr"},
+		{http.MethodPost, "/api/v1/items/" + id + "/subtitles"},
+	} {
+		response := httptest.NewRecorder()
+		handler.ServeHTTP(response, httptest.NewRequestWithContext(t.Context(), retired.method, retired.path, nil))
+		if response.Code != http.StatusNotFound {
+			t.Fatalf("retired route %s %s = %d", retired.method, retired.path, response.Code)
+		}
+	}
+}
+
+func TestSubtitlePickerRejectsInvalidValuesWithoutChangingSettings(t *testing.T) {
+	t.Parallel()
+	handler := server.New(server.Config{DataDir: t.TempDir()})
+	valid := httptest.NewRequestWithContext(t.Context(), http.MethodPost, "/settings/subtitles/picker", strings.NewReader("limited=on"))
+	valid.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+	saved := httptest.NewRecorder()
+	handler.ServeHTTP(saved, valid)
+	if saved.Code != http.StatusSeeOther {
+		t.Fatalf("valid picker setting = %d", saved.Code)
+	}
 	for _, body := range []string{"", "limited=maybe", "limited=on&limited=off", "limited=on&extra=1", "limited=" + strings.Repeat("x", 4097)} {
 		request := httptest.NewRequestWithContext(t.Context(), http.MethodPost, "/settings/subtitles/picker", strings.NewReader(body))
 		request.Header.Set("Content-Type", "application/x-www-form-urlencoded")
@@ -92,20 +125,9 @@ func TestPreferredSubtitleLanguageAndPickerLimitAcrossWebAndAPI(t *testing.T) { 
 		t.Fatalf("oversized API picker input = %d", oversizedResponse.Code)
 	}
 	stillLimited := httptest.NewRecorder()
-	handler.ServeHTTP(stillLimited, httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/watch/"+id, nil))
-	if strings.Contains(stillLimited.Body.String(), "English · Subtitles") {
+	handler.ServeHTTP(stillLimited, httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/api/v1/settings", nil))
+	if !strings.Contains(stillLimited.Body.String(), `"subtitlePickerLimited":true`) {
 		t.Fatal("rejected picker input changed saved choices")
-	}
-	for _, retired := range []struct{ method, path string }{
-		{http.MethodPost, "/subtitles/" + id + "/fetch"},
-		{http.MethodGet, "/subtitles/" + id + "/fr"},
-		{http.MethodPost, "/api/v1/items/" + id + "/subtitles"},
-	} {
-		response := httptest.NewRecorder()
-		handler.ServeHTTP(response, httptest.NewRequestWithContext(t.Context(), retired.method, retired.path, nil))
-		if response.Code != http.StatusNotFound {
-			t.Fatalf("retired route %s %s = %d", retired.method, retired.path, response.Code)
-		}
 	}
 }
 
