@@ -27,6 +27,7 @@ struct TVTopBar: View {
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(.horizontal, KinoTheme.contentPadding)
         .padding(.vertical, 12)
+        .background(KinoTheme.background)
         .focusSection()
     }
 }

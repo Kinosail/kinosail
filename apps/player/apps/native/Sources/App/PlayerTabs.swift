@@ -46,11 +46,10 @@ struct PlayerTabs: View {
         Group {
             #if os(tvOS)
             stack(tab: .home) {
-                ZStack(alignment: .top) {
+                VStack(spacing: 0) {
+                    TVTopBar(focus: $topFocus, onSelect: selectBrowseTab)
                     PlayerTabScreen(tab: .home, mode: screenMode, showsSearch: false,
                                     changeMode: changeMode, selectTab: selectBrowseTab)
-                        .safeAreaInset(edge: .top, spacing: 0) { Color.clear.frame(height: 76) }
-                    TVTopBar(focus: $topFocus, onSelect: selectBrowseTab)
                 }
             }
             #else
