@@ -1,10 +1,10 @@
 # UI element audit — 2026-09-05
 
-Status: component-family audit and nine fixes complete within the tested scope below. A passing screenshot or source search is not proof of every possible state.
+Status: component-family audit and eight retained fixes complete within the tested scope below. A passing screenshot or source search is not proof of every possible state.
 
 ## Design intent
 
-Review the three monorepo web apps and Player native component families. Help household members find media or services and let Owners configure them confidently. Priority: primary task, current state, then secondary configuration. Preserve Player's cinematic media hierarchy, Dashboard's network board, and Subtitles' coverage ledger. Use existing tokens, icons, native semantics, and compact task groups. Keep essential actions visible at 320px and allow vertical scrolling; show pending work and actionable recovery without discarding entered values. Avoid decorative glass panels, anonymous icon-only actions, and replacing a usable native control solely for novelty.
+Review Player and Subtitles web apps and Player native component families. Help household members find media or services and let Owners configure them confidently. Priority: primary task, current state, then secondary configuration. Preserve Player's cinematic media hierarchy and Subtitles' coverage ledger. Use existing tokens, icons, native semantics, and compact task groups. Keep essential actions visible at 320px and allow vertical scrolling; show pending work and actionable recovery without discarding entered values. Avoid decorative glass panels, anonymous icon-only actions, and replacing a usable native control solely for novelty.
 
 ## Coverage ledger
 
@@ -12,8 +12,6 @@ Distinct families, not repeated list rows, are the audit unit. Source review, re
 
 | Family | Source / rendered evidence | Status |
 | --- | --- | --- |
-| Dashboard setup, login, passkey offer, password and token controls | `apps/dashboard/e2e/dashboard.spec.ts` | Full browser run: 60 passed, 15 skipped |
-| Dashboard navigation, search/command dialog, filters, view modes, app cards, drag/reorder, edit/remove/restore, settings and import | Same populated workflow at desktop, tablet and phone sizes | Save recovery passed across three browsers; inventory rerun: 25 passed |
 | Player entry pages, shell, browse/filter/sort/search, media cards, playback and recovery, lists, settings families | `apps/player/e2e/layout-audit.spec.ts` | Broad run: 97 passed; all 8 failures passed on a 9-test rerun. Final playback: 8 passed; startup connection reset passed on isolated rerun |
 | Player API keys, Media Shares, MFA/passkeys, imports, MCP approval, supporter and transient states | `apps/player/e2e/conditional-states.spec.ts`; exact production templates at five widths | 15 passed across three browsers; fixtures do not prove external authentication |
 | Subtitles coverage/wanted ledger, item actions, language ordering, providers and onboarding | `apps/subtitles/e2e/subtitle-dashboard.spec.ts` | 13 browser tests passed |
@@ -22,15 +20,14 @@ Distinct families, not repeated list rows, are the audit unit. Source review, re
 
 ## Findings
 
-1. Dashboard Save board had no pending indication or repeat-submission guard. App saves disabled their button but not implicit form submissions. Preserve action-specific progress text, expose busy state, ignore repeats, and restore controls on failure.
-2. Subtitles' populated supporter hero overflows at 720px. Fix the layout constraint, not page-level overflow hiding.
-3. Playback choice descriptions inherited a two-column field layout. The settings panel could extend behind the title or collapse to a thin strip on phones. Give descriptions their full width, bound the scroll region, keep Close visible, and reserve room below the video. Test a usable panel height, real selection changes, keyboard recovery, and clearance from the next action row.
-4. Theater mode inherited the embedded video's aspect ratio. Recovery also retained a normal-page margin. Keep the theater stage at full viewport height.
-5. Subtitles' Media Share player exceeded 320px. Reuse Player's explicit shrink constraints for the shared-media container and video.
-6. Native Connect could submit twice through the keyboard while its button was disabled. Guard the operation itself, retain the URL, show Connecting with the spinner, and expose busy state. Decorative spinners are hidden from the accessibility tree; standalone loading states have names.
-7. Native approval failures still said Waiting. Show that polling stopped and provide Retry approval without generating another device code.
-8. Native empty libraries asked people to refresh without providing a control. Add Refresh library through the existing loading operation. Align the viewer name with the account buttons.
-9. Screenshot review found white header text on white in desktop light-theme playback settings. The offscreen automated scan missed this. Use semantic surface/text tokens throughout the panel. Scroll the header into view before checking contrast and save its screenshot.
+1. Subtitles' populated supporter hero overflows at 720px. Fix the layout constraint, not page-level overflow hiding.
+2. Playback choice descriptions inherited a two-column field layout. The settings panel could extend behind the title or collapse to a thin strip on phones. Give descriptions their full width, bound the scroll region, keep Close visible, and reserve room below the video. Test a usable panel height, real selection changes, keyboard recovery, and clearance from the next action row.
+3. Theater mode inherited the embedded video's aspect ratio. Recovery also retained a normal-page margin. Keep the theater stage at full viewport height.
+4. Subtitles' Media Share player exceeded 320px. Reuse Player's explicit shrink constraints for the shared-media container and video.
+5. Native Connect could submit twice through the keyboard while its button was disabled. Guard the operation itself, retain the URL, show Connecting with the spinner, and expose busy state. Decorative spinners are hidden from the accessibility tree; standalone loading states have names.
+6. Native approval failures still said Waiting. Show that polling stopped and provide Retry approval without generating another device code.
+7. Native empty libraries asked people to refresh without providing a control. Add Refresh library through the existing loading operation. Align the viewer name with the account buttons.
+8. Screenshot review found white header text on white in desktop light-theme playback settings. The offscreen automated scan missed this. Use semantic surface/text tokens throughout the panel. Scroll the header into view before checking contrast and save its screenshot.
 
 ## Element decisions
 
@@ -54,15 +51,15 @@ Distinct families, not repeated list rows, are the audit unit. Source review, re
 
 `scripts/testing/ui-element-inventory.ts` records the DOM elements in each tested state: tag, identifier, label evidence, visibility, disabled/checked/expanded/busy/focus state and dimensions. It deliberately excludes field values, URLs and arbitrary status text. It is DOM evidence, not a computed accessibility-tree replacement.
 
-The Dashboard workflow, Player route/conditional matrix, Subtitles conditional matrix and native-web audit save `*-elements.json` beside screenshots. Repeated rows and viewport variants are not counted as unique components. Each screen also retains its existing accessibility and interaction assertions. Native web fixtures cover setup, connecting, connection error, approval error/retry, populated home, details, playback error/return, library error/retry, empty-library refresh and sign-out.
+The Player route/conditional matrix, Subtitles conditional matrix and native-web audit save `*-elements.json` beside screenshots. Repeated rows and viewport variants are not counted as unique components. Each screen also retains its existing accessibility and interaction assertions. Native web fixtures cover setup, connecting, connection error, approval error/retry, populated home, details, playback error/return, library error/retry, empty-library refresh and sign-out.
 
-Rendered review found more than three material weaknesses (findings 2–8). The review kept the cinematic media stage, household board and operational ledgers, and removed no useful information merely to make the screenshots look simpler.
+Rendered review found more than three material weaknesses (findings 1–7). The review kept the cinematic media stage and operational ledgers, and removed no useful information merely to make the screenshots look simpler.
 
 ## Visual critique
 
 The anti-ai-slop-ui review required populated screenshots, not only successful tests. Screenshot inspection caught the light-theme header defect after the automated offscreen scan passed.
 
-Reviewed corrections include Dashboard's pending save, native setup and recovery, Subtitles' 720px supporter and 320px share, and Player's light desktop and dark phone panels. The final light panel has readable text, a visible Close action and consistent surface colors. The phone panel scrolls without covering the following actions.
+Reviewed corrections include native setup and recovery, Subtitles' 720px supporter and 320px share, and Player's light desktop and dark phone panels. The final light panel has readable text, a visible Close action and consistent surface colors. The phone panel scrolls without covering the following actions.
 
 Review judgment for these representative compositions: AI Slop 3/10 and Distinctiveness 8/10. Slop categories are palette 0, layout 0, components 1, typography 1 and decoration 1. Distinctiveness categories are product fit 2, system clarity 2, layout 2, typography 1 and signature interaction 1. These are qualitative judgments, not accessibility metrics.
 
@@ -70,9 +67,8 @@ No new design library, decorative animation or generic dashboard shell was intro
 
 ## Verification boundaries
 
-Server tests passed for Player, Subtitles, and Dashboard. Player and Subtitles changed-path checks passed. Native lint, formatting, types, coverage tests and web export passed.
+Server tests passed for Player and Subtitles. Player and Subtitles changed-path checks passed. Native lint, formatting, types, coverage tests and web export passed.
 
-Dashboard's fast gate stopped at two historical secret-scan findings. This audit does not clear that gate or modify repository history. Browser skips remain skips.
 
 The broad Player run had five stale stylesheet-version expectations, two connection resets during local fixture work, and one timeout. All passed on isolated rerun. Subtitles had one Firefox timeout that also passed on isolated rerun. These are separate runs, not a claimed uninterrupted green suite.
 

@@ -1,6 +1,6 @@
 # Kinosail Electric
 
-Scope at the September 12, 2026 selection: Player web and Swift iPhone/iPad/tvOS, Subtitles web, and Dashboard web. Dashboard was retired on September 26, 2026. The user selected Electric option 1 and authorized replacing the previous coral direction. Kinosail names and the approved app-symbol family remain.
+Scope at the September 12, 2026 selection: Player web and Swift iPhone/iPad/tvOS, and Subtitles web. The user selected Electric option 1 and authorized replacing the previous coral direction. Kinosail names and the approved app-symbol family remain.
 
 ## Direction contract
 

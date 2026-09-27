@@ -29,7 +29,7 @@ These paths were inspected for ownership, bounding, caching, cancellation, and f
 - **Library/catalog:** `packages/catalog/{index,scan,browse,browse_apply,browse_sort,search}.go`. ID lookup uses an index, refreshes serialize work and atomically publish successful snapshots, and browse inputs/pages are bounded.
 - **Subtitles/media delivery:** embedded subtitle validation and caching in `packages/mediaprobe/embedded.go`, source/track validation in shared playback, and authorized file delivery in `packages/playback/file_delivery.go`.
 - **Persistence:** `packages/documentdb/{documentdb,config}.go`. Document names and sizes are bounded and related saves use transactions. Request cancellation and storage latency still need runtime evaluation.
-- **Sessions/transport:** shared session-token handling, Dashboard host protection/login limiting, and server transport limits. These were sampled backend paths, not a complete authentication review.
+- **Sessions/transport:** shared session-token handling, server transport limits. These were sampled backend paths, not a complete authentication review.
 - **Metadata:** provider HTTP deadlines, bounded JSON/images, outbound address checks, and artwork/metadata caches. No provider requests were made.
 - **Installation:** Player/Subtitles device mapping logic and Player's container build inputs. Source includes DRM device/group mapping, NVIDIA CDI selection, and Rockchip mapping. No host passthrough or driver operation was verified.
 

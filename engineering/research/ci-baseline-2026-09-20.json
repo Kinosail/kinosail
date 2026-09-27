@@ -169,10 +169,10 @@
       "headSha": "375ce3b1e97e37ea9c88cbad262f2644eb4b4582",
       "status": "completed",
       "updatedAt": "2026-09-20T23:15:36Z",
-      "workflowName": "Dashboard Hygiene",
+      "workflowName": "Retired app Hygiene",
       "jobs": [
         {
-          "name": "Dashboard runtime and browser checks",
+          "name": "Retired app runtime and browser checks",
           "conclusion": "success",
           "startedAt": "2026-09-20T23:09:32Z",
           "completedAt": "2026-09-20T23:15:31Z",
@@ -180,7 +180,7 @@
           "elapsed_is_lower_bound": false
         },
         {
-          "name": "Dashboard security checks",
+          "name": "Retired app security checks",
           "conclusion": "success",
           "startedAt": "2026-09-20T23:09:46Z",
           "completedAt": "2026-09-20T23:10:07Z",
@@ -188,7 +188,7 @@
           "elapsed_is_lower_bound": false
         },
         {
-          "name": "Dashboard race tests",
+          "name": "Retired app race tests",
           "conclusion": "success",
           "startedAt": "2026-09-20T23:10:22Z",
           "completedAt": "2026-09-20T23:14:07Z",
@@ -196,7 +196,7 @@
           "elapsed_is_lower_bound": false
         },
         {
-          "name": "Build Dashboard container (linux/arm64)",
+          "name": "Build Retired app container (linux/arm64)",
           "conclusion": "success",
           "startedAt": "2026-09-20T23:08:39Z",
           "completedAt": "2026-09-20T23:09:44Z",
@@ -204,7 +204,7 @@
           "elapsed_is_lower_bound": false
         },
         {
-          "name": "Dashboard static checks",
+          "name": "Retired app static checks",
           "conclusion": "success",
           "startedAt": "2026-09-20T23:09:55Z",
           "completedAt": "2026-09-20T23:10:31Z",
@@ -212,7 +212,7 @@
           "elapsed_is_lower_bound": false
         },
         {
-          "name": "Build Dashboard container (linux/amd64)",
+          "name": "Build Retired app container (linux/amd64)",
           "conclusion": "success",
           "startedAt": "2026-09-20T23:10:25Z",
           "completedAt": "2026-09-20T23:11:50Z",
@@ -220,7 +220,7 @@
           "elapsed_is_lower_bound": false
         },
         {
-          "name": "Dashboard checks",
+          "name": "Retired app checks",
           "conclusion": "success",
           "startedAt": "2026-09-20T23:15:33Z",
           "completedAt": "2026-09-20T23:15:35Z",
@@ -304,7 +304,7 @@
           "elapsed_is_lower_bound": false
         },
         {
-          "name": "Mutation policy (dashboard)",
+          "name": "Mutation policy (retired app)",
           "conclusion": "",
           "startedAt": "2026-09-20T23:13:33Z",
           "completedAt": "0001-01-01T00:00:00Z",
@@ -312,7 +312,7 @@
           "elapsed_is_lower_bound": true
         },
         {
-          "name": "Coverage and CRAP policy (dashboard)",
+          "name": "Coverage and CRAP policy (retired app)",
           "conclusion": "success",
           "startedAt": "2026-09-20T23:14:03Z",
           "completedAt": "2026-09-20T23:15:25Z",

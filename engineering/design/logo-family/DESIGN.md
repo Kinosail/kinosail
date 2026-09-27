@@ -13,7 +13,7 @@ background:
 
 ## Overview
 
-Player and Subtitles share the original Kino colors and flat, solid geometry. Each app has a distinct silhouette: a split sail for Player and paired caption bands for Subtitles. The contact sheet also records the retired Dashboard mark. This document governs logo assets only.
+Player and Subtitles share the original Kino colors and flat, solid geometry. Each app has a distinct silhouette: a split sail for Player and paired caption bands for Subtitles. This document governs logo assets only.
 
 The rendered contact sheet is [logos.png](logos.png). App interface design, typography, and layout remain owned by their existing design documents.
 

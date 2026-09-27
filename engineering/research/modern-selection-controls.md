@@ -75,11 +75,10 @@ These requirements apply regardless of visual treatment.
 
 ## Kinosail control audit
 
-The implementation audit covered every production `select` in Dashboard, Player, and Subtitles, plus Player's native clients. The replacements keep native radio semantics and the existing server-side allowlists. No production picker, dropdown, or menu-based value selector was found in the native-client source.
+The implementation audit covered every production `select` in Player and Subtitles, plus Player's native clients. The replacements keep native radio semantics and the existing server-side allowlists. No production picker, dropdown, or menu-based value selector was found in the native-client source.
 
 | Area | Replaced | Deliberately retained |
 | --- | --- | --- |
-| Dashboard | Accent swatches, import format segments, and descriptive household-view cards. | None of the audited fixed-choice selects. |
 | Player | Playback-policy cards; subtitle, conversion, theme, profile-type, import-source, content-rating, Media Share lifetime/device-limit groups; DNS-provider cards. | Long or dynamic language, profile, library, device, media-track, codec, accelerator, schedule, playback-rate, sleep, sort, and marker lists. |
 | Subtitles | The Player groups above plus preferred subtitle-role segments. | Long or dynamic language, profile, library, device, track, codec, schedule, playback-rate, sleep, sort, and marker lists. |
 

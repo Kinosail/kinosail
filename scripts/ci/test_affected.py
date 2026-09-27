@@ -66,7 +66,7 @@ class SelectionTests(unittest.TestCase):
 
     def test_build_inputs_and_unknown_paths_are_conservative(self):
         for path in (".github/workflows/ci.yml", "scripts/ci/affected.py", "new-service/main.go", ".dockerignore",
-                     "apps/dashboard/go.mod"):
+                     "apps/retired/go.mod"):
             self.assertTrue(all(affected([path]).values()))
         for path in ("apps/subtitles/Containerfile", "apps/subtitles/scripts/install.sh"):
             plan = affected([path])
@@ -148,8 +148,8 @@ class GitDiffTests(unittest.TestCase):
             git("add", ".")
             git("commit", "-m", "base")
             base = git("rev-parse", "HEAD")
-            (repo / "apps/dashboard").mkdir(parents=True)
-            git("mv", "apps/player/old.go", "apps/dashboard/new.go")
+            (repo / "apps/retired").mkdir(parents=True)
+            git("mv", "apps/player/old.go", "apps/retired/new.go")
             (repo / "docs").mkdir()
             for index in range(350):
                 (repo / f"docs/{index}.md").write_text("prose")
@@ -168,14 +168,14 @@ class GitDiffTests(unittest.TestCase):
                     paths = changed_paths(event_name, event, head)
                     self.assertEqual(len(paths), 353)
                     self.assertIn("apps/player/old.go", paths)
-                    self.assertIn("apps/dashboard/new.go", paths)
+                    self.assertIn("apps/retired/new.go", paths)
                     self.assertIn("apps/subtitles/with\nnewline.go", paths)
                     self.assertTrue(all(affected(paths)[app] for app in APPS))
-            git("rm", "apps/dashboard/new.go")
+            git("rm", "apps/retired/new.go")
             git("commit", "-m", "delete")
             deleted_head = git("rev-parse", "HEAD")
             with patch("affected.subprocess.run", side_effect=in_repo):
-                self.assertEqual(changed_paths("push", {"before": head}, deleted_head), ["apps/dashboard/new.go"])
+                self.assertEqual(changed_paths("push", {"before": head}, deleted_head), ["apps/retired/new.go"])
 
     def test_pr_uses_merge_base_so_unrelated_base_changes_do_not_select_apps(self):
         with tempfile.TemporaryDirectory() as directory:

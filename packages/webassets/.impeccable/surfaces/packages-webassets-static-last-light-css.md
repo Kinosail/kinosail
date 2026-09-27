@@ -7,7 +7,7 @@ related_targets: ["apps/player/internal/server/static/home.css","apps/subtitles/
 
 # Kinosail Electric
 
-Scope: Player web, iPhone, iPad and Apple TV; Subtitles and Dashboard web. User selected Electric (option 1) on September 12 and explicitly requested application across all apps.
+Scope: Player web, iPhone, iPad and Apple TV; Subtitles web. User selected Electric (option 1) on September 12 and explicitly requested application across all apps.
 
 ## Direction contract
 
@@ -27,7 +27,7 @@ FINISH: unreviewed and undocumented is unfinished; this build ends with the fini
 
 ## Invariants and boundaries
 
-Preserve API compatibility, Direct First playback, permissions, account/session isolation, offline downloads, direct Dashboard links and real subtitle state. Real library artwork replaces the comp's illustrative media. Unknown runtimes show saved position rather than invented percentages. Accessible light and increased-contrast appearances remain available. Root .gates-disabled excludes test suites and automated design gates; builds, manual rendering and independent design review supply separate evidence.
+Preserve API compatibility, Direct First playback, permissions, account/session isolation, offline downloads and real subtitle state. Real library artwork replaces the comp's illustrative media. Unknown runtimes show saved position rather than invented percentages. Accessible light and increased-contrast appearances remain available. Root .gates-disabled excludes test suites and automated design gates; builds, manual rendering and independent design review supply separate evidence.
 
 ## Confirmed navigation update
 

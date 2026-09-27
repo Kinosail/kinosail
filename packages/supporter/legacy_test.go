@@ -170,10 +170,10 @@ func TestCurrentCertificateRejectsNonPlayerFieldsAndMalformedCollections(t *test
 	for name, mutate := range map[string]func(map[string]any){
 		"legacy subscription": func(value map[string]any) { value["subscriptionTier"] = "watch" },
 		"collection field": func(value map[string]any) {
-			value["collection"] = map[string]any{"id": completeFleetID, "name": "Complete Fleet", "edition": "2026 Edition", "appIds": []string{"kino-dashboard", "kino-player"}, "unknown": true}
+			value["collection"] = map[string]any{"id": completeFleetID, "name": "Complete Fleet", "edition": "2026 Edition", "appIds": []string{"kino-archive", "kino-player"}, "unknown": true}
 		},
 		"padded edition": func(value map[string]any) {
-			value["collection"] = map[string]any{"id": completeFleetID, "name": "Complete Fleet", "edition": "2026 Edition ", "appIds": []string{"kino-dashboard", "kino-player"}}
+			value["collection"] = map[string]any{"id": completeFleetID, "name": "Complete Fleet", "edition": "2026 Edition ", "appIds": []string{"kino-archive", "kino-player"}}
 		},
 	} {
 		t.Run(name, func(t *testing.T) {
@@ -186,7 +186,7 @@ func TestCurrentCertificateRejectsNonPlayerFieldsAndMalformedCollections(t *test
 			}
 		})
 	}
-	record := []byte(fmt.Sprintf(`{"version":4,"audience":"com.kinosail.player","appId":"kino-player","family":"patron-order","level":10,"tier":"legacy","supporterId":"A1B2C3D4E5","supportedSince":"2025-08-30T12:00:00Z","issuedAt":"2026-08-30T12:00:00Z","expiresAt":null,"sustaining":false,"founding":true,"installationKey":"%s","collection":{"id":"complete-fleet","id":"complete-fleet","name":"Complete Fleet","edition":"2026 Edition","appIds":["kino-dashboard","kino-player"]}}`, installation))
+	record := []byte(fmt.Sprintf(`{"version":4,"audience":"com.kinosail.player","appId":"kino-player","family":"patron-order","level":10,"tier":"legacy","supporterId":"A1B2C3D4E5","supportedSince":"2025-08-30T12:00:00Z","issuedAt":"2026-08-30T12:00:00Z","expiresAt":null,"sustaining":false,"founding":true,"installationKey":"%s","collection":{"id":"complete-fleet","id":"complete-fleet","name":"Complete Fleet","edition":"2026 Edition","appIds":["kino-archive","kino-player"]}}`, installation))
 	grant := legacySignedRecord(t, record)
 	if status := service.Status(State{InstallationKey: installation, PublicKey: grant.PublicKey, PatronOrder: &grant}); status.PatronOrder != nil {
 		t.Fatalf("duplicate collection field produced badge %#v", status.PatronOrder)
