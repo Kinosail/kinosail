@@ -7,6 +7,8 @@ last_reviewed: 2026-09-27
 
 # Install Kinosail Subtitles
 
+For Synology, TrueNAS, QNAP, CasaOS, Portainer, Unraid, or Proxmox VE, use the [platform install guide](https://kinosail.com/getting-started/platforms/). It includes a ready-to-import Subtitles container file.
+
 Install Docker Engine on a 64-bit Linux host, or use Docker Desktop on macOS. Choose an existing movie or episode folder that container user 10001 can read and write. Replace `/path/to/your/media` with its absolute path on the host.
 
 Use either Docker CLI or Docker Compose to run the published image.

@@ -7,6 +7,8 @@
       url: /getting-started/
     - title: Docker installation details
       url: /getting-started/install/
+    - title: Install on a NAS or Proxmox
+      url: /getting-started/platforms/
     - title: Complete first setup
       url: /getting-started/first-setup/
     - title: Connect browsers and Jellyfin apps
