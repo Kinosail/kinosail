@@ -70,6 +70,7 @@ test("Owner previews language cleanup and forced subtitle choice", async ({ page
     await page.setViewportSize(viewport);
     await page.goto("/settings#cleanup");
     await expect(page.getByText("Limiting choices hides extra tracks from subtitle selection menus; it does not rename or delete subtitle files.", { exact: false })).toBeVisible();
+    await expect(page.getByText("Kept forced tracks appear only in selected languages.", { exact: false })).toBeVisible();
     const cleanup = page.locator("#cleanup");
     await expect(cleanup.getByRole("heading", { name: "Remove unwanted subtitle files" })).toBeVisible();
     await expect(cleanup.getByText("Keep the languages you use so playback has fewer choices.", { exact: false })).toBeVisible();
@@ -82,7 +83,7 @@ test("Owner previews language cleanup and forced subtitle choice", async ({ page
     await page.screenshot({ path: testInfo.outputPath(`${viewport.width}-subtitle-cleanup-setting.png`), fullPage: true });
     await cleanup.getByRole("button", { name: "Preview files to delete" }).click();
     await expect(page.getByRole("heading", { name: "Subtitle cleanup" })).toBeVisible();
-    await expect(page.getByText("Forced tracks in every language will also stay and appear in the picker.")).toBeVisible();
+    await expect(page.getByText("Forced tracks in every language will stay. Only selected languages appear in the picker.")).toBeVisible();
     await expect(page.getByText("Keep subtitles in en, es.", { exact: false })).toBeVisible();
     await expect(page.getByRole("button", { name: "Save selected languages" })).toBeVisible();
     await expectNoHorizontalOverflow(page);

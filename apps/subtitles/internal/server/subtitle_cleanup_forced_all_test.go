@@ -11,7 +11,7 @@ import (
 	"github.com/MikeO7/kinosail-subtitles/internal/server"
 )
 
-func TestCleanupKeepsForcedInEveryLanguageAndOffersThemForPlayback(t *testing.T) { //nolint:gocognit,funlen,cyclop // One public journey proves the preview, deletion, saved choice, and playback options agree.
+func TestCleanupKeepsForcedInEveryLanguageButHidesUnselectedLanguages(t *testing.T) { //nolint:gocognit,funlen,cyclop // One public journey proves the preview, deletion, saved choice, and playback options agree.
 	media, tools := t.TempDir(), t.TempDir()
 	writeTestFile(t, filepath.Join(media, "Film.mp4"), "video")
 	for _, name := range []string{"Film.en.srt", "Film.es.srt", "Film.fr.srt", "Film.it.srt", "Film.en.forced.srt", "Film.fr.forced.srt", "Film.de.forced.vtt"} {
@@ -70,10 +70,10 @@ printf '%s' '{"streams":[{"index":0,"codec_type":"video","codec_name":"h264","wi
 			Role     string `json:"role"`
 		} `json:"subtitles"`
 	}
-	if page.Code != http.StatusOK || strings.Count(page.Body.String(), "<track ") != 5 || api.Code != http.StatusOK || json.Unmarshal(api.Body.Bytes(), &playback) != nil || len(playback.Subtitles) != 5 {
+	if page.Code != http.StatusOK || strings.Count(page.Body.String(), "<track ") != 3 || api.Code != http.StatusOK || json.Unmarshal(api.Body.Bytes(), &playback) != nil || len(playback.Subtitles) != 3 {
 		t.Fatalf("playback choices: page=%d API=%d %s", page.Code, api.Code, api.Body.String())
 	}
-	for _, want := range []string{"en/translation", "es/translation", "en/forced", "fr/forced", "de/forced"} {
+	for _, want := range []string{"en/translation", "es/translation", "en/forced"} {
 		found := false
 		for _, track := range playback.Subtitles {
 			found = found || track.Language+"/"+track.Role == want
@@ -85,7 +85,7 @@ printf '%s' '{"streams":[{"index":0,"codec_type":"video","codec_name":"h264","wi
 	restarted := server.New(server.Config{SubtitleApp: true, MediaDir: media, DataDir: data, CacheDir: t.TempDir(), FFprobe: ffprobe})
 	restartedID := firstSubtitleInventoryID(t, restarted)
 	reopened := requestApp(t, restarted, http.MethodGet, "/watch/"+restartedID, "")
-	if reopened.Code != http.StatusOK || strings.Count(reopened.Body.String(), "<track ") != 5 {
+	if reopened.Code != http.StatusOK || strings.Count(reopened.Body.String(), "<track ") != 3 {
 		t.Fatalf("forced picker choice was not saved: %d tracks=%d", reopened.Code, strings.Count(reopened.Body.String(), "<track "))
 	}
 }
