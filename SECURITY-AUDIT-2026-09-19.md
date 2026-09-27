@@ -1,13 +1,10 @@
 # Security audit hardening ledger
 
-This ledger closes every candidate listed under “Findings not raised” in the Kinosail Security Auditor review for `kinosail-audit-target.Uz9b4t`. A candidate is marked closed either by a code hardening change with regression coverage or by an existing, directly verified repository control that already prevents the proposed path.
+This ledger records current-product candidates from “Findings not raised” in the Kinosail Security Auditor review for `kinosail-audit-target.Uz9b4t`. A candidate is marked closed either by a code hardening change with regression coverage or by an existing, directly verified repository control that already prevents the proposed path.
 
 | Candidate | Resolution and evidence |
 |---|---|
 | Subtitle sidecar TOCTOU | `readUpgradeSidecar` and backup state reads now validate the opened inode with `os.SameFile` and use bounded reads. Replacement-after-check regression coverage is in `apps/subtitles/internal/server/subtitle_v1_coverage_internal_test.go`. |
-| First-owner setup race | Bootstrap remains loopback-by-default, setup-before-LAN is documented, and `auth.Manager.Setup` serializes the first successful owner creation. The concurrent setup regression remains in `apps/dashboard/internal/auth/coverage_setup_race_test.go`. |
-| Plaintext non-loopback browser session theft | Non-loopback Dashboard public URLs must use HTTPS; HTTPS origins force Secure session cookies even when an embedding caller builds `server.Config` directly. Coverage is in `apps/dashboard/cmd/kinosail-dashboard/main_test.go` and `apps/dashboard/internal/server/auth_http_test.go`. |
-| Dashboard probe SSRF | Existing Owner/MCP authorization, normalized HTTP(S) targets, DNS/IP validation and pinning, disabled redirects/proxies, special-use blocking, and public-host allowlisting remain covered by `apps/dashboard/internal/dashboard` tests. |
 | Public gateway reaching private Player routes | Existing fixed-socket routing, provenance-header stripping, public-host validation, and Player public-route deny-by-default policy remain covered by `packages/publicgateway`, `packages/remoteaccess`, and Player authorization tests. |
 | Jellyfin `{user}` cross-profile access | User-scoped browse, latest, item, and played-item handlers now require the path user to match the authenticated viewer. Cross-profile 404 and same-profile success coverage is in `apps/player/internal/server/jellyfin_extended_test.go`. |
 | OIDC/SAML issuer or account-link confusion | Existing issuer/audience/signature/nonce/state/PKCE checks, signed SAML correlation, authenticated local-profile linking, and exact SCIM identity matching remain covered by `packages/federation` tests. |

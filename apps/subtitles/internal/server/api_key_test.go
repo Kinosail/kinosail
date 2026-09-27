@@ -21,7 +21,7 @@ func TestScopedAPIKeysAreHashedEnforcedAndRevocable(t *testing.T) {
 	}
 	handler := server.New(server.Config{MediaDir: mediaDir, DataDir: dataDir, RequireAuth: true})
 	owner := signInTestProfile(t, handler, "/setup", "name=Owner&password=owner-password")
-	create := requestWithCookie(t, handler, http.MethodPost, "/settings/api-keys", "name=Dashboard&scopes=library", owner)
+	create := requestWithCookie(t, handler, http.MethodPost, "/settings/api-keys", "name=Automation&scopes=library", owner)
 	secret := regexp.MustCompile(`ks_[A-Z2-7]+`).FindString(create.Body.String())
 	if create.Code != http.StatusCreated || secret == "" {
 		t.Fatalf("create key = %d %q", create.Code, create.Body.String())
@@ -46,7 +46,7 @@ func TestScopedAPIKeysAreHashedEnforcedAndRevocable(t *testing.T) {
 		t.Fatalf("metrics without scope = %d %q", metrics.Code, metrics.Body.String())
 	}
 	settings := requestWithCookie(t, handler, http.MethodGet, "/settings", "", owner)
-	keyID := regexp.MustCompile(`name="id" value="([a-f0-9]+)">Revoke Dashboard`).FindStringSubmatch(settings.Body.String())[1]
+	keyID := regexp.MustCompile(`name="id" value="([a-f0-9]+)">Revoke Automation`).FindStringSubmatch(settings.Body.String())[1]
 	revoke := requestWithCookieRequest(t, http.MethodPost, "/settings/api-keys/revoke", "id="+keyID, owner)
 	serveRequest(handler, revoke)
 	if revoked := apiKeyRequest(t, handler, "/api/v1/library", secret); revoked.Code != http.StatusUnauthorized {

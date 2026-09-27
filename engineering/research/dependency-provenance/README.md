@@ -4,7 +4,7 @@ Owner: the maintainers of each consuming app; shared tooling belongs to monorepo
 
 | Component | Decision and resulting contract |
 | --- | --- |
-| YAML | Use the maintained `go.yaml.in/yaml/v3` continuation. Configuration and Dashboard imports reject additional documents as well as malformed, oversized, duplicate, and unknown inputs before writes. |
+| YAML | Use the maintained `go.yaml.in/yaml/v3` continuation. Configuration imports reject additional documents as well as malformed, oversized, duplicate, and unknown inputs before writes. |
 | DNS-SD | Use `github.com/libp2p/zeroconf/v2` with an updated DNS parser. Validate the complete advertisement before opening sockets. The initially considered `brutella/dnssd` lacks a public close operation for its initial-probe failure path; its implementation was rejected after lifecycle review. |
 | govad | Keep the immutable commit. Independent reconstruction matches its embedded Silero weights byte for byte; official ONNX inference matches 596 reference/synthetic frames within 0.000002. See [source/model review](govad.md). |
 | Go metrics | Own the narrow AST/counting and coverage calculations in `scripts/quality/metrics`; standard library only. Keep Halstead difficulty below 80 and CRAP below 25. Reject missing, malformed, and stale coverage. |
@@ -15,7 +15,7 @@ Owner: the maintainers of each consuming app; shared tooling belongs to monorepo
 
 The migrated YAML and DNS-SD upstream license/notice texts are retained under `packages/third_party` and copied into the consuming runtime images. Refresh those texts when updating their selected modules.
 
-Installed Nox watchers use copied scripts. Refresh each one with `make -C apps/<app> install-nox-autodeploy` for Player, Subtitles, and Dashboard before publishing this upgrade; the installer includes the deployment scanner.
+Installed Nox watchers use copied scripts. Refresh each one with `make -C apps/<app> install-nox-autodeploy` for Player and Subtitles before publishing this upgrade; the installer includes the deployment scanner.
 
 ## Verification contracts
 

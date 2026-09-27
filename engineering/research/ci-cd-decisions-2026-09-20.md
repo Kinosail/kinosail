@@ -18,7 +18,7 @@ Raw evidence: [ci-baseline-2026-09-20.json](ci-baseline-2026-09-20.json), captur
 | --- | --- | ---: | ---: |
 | Player Hygiene | Failed | 9 | 23.7 minutes |
 | Subtitles Hygiene | Failed | 8 | 24.6 minutes |
-| Dashboard Hygiene | Passed | 7 | 13.2 minutes |
+| Retired app Hygiene | Passed | 7 | 13.2 minutes |
 | Repository Quality | Still running | 11 | At least 113.7 minutes |
 | Security | Passed | 6 | 7.1 minutes |
 
@@ -28,7 +28,7 @@ Specific observations:
 
 - Player's standalone race suite took 322 seconds. Its static job took 190 seconds and included another coverage run. Repository Quality ran Player coverage again for 176 seconds.
 - Static quality scanned every app again and took 305 seconds. Every app also linted its own code and revalidated repository workflows.
-- Mutation was on the protected merge path for every module, with a 360-minute timeout. At capture, package and Dashboard mutation jobs had still not finished after approximately 38 and 35 minutes, respectively.
+- Mutation was on the protected merge path for every module, with a 360-minute timeout. At capture, package and retired app mutation jobs had still not finished after approximately 38 and 35 minutes, respectively.
 - A normal application change scheduled Swift compilation, both container architectures, and every app's full browser matrix regardless of which app changed.
 - Releases required version tags. Main pushes did not themselves create deployable published containers.
 
@@ -60,7 +60,7 @@ Tradeoff: five short detector jobs preserve existing workflow/check identities a
 
 `test-go.sh` runs the complete module with `-race -count=1 -covermode=atomic -coverprofile=...`, then inspects that same profile. This removes two repeated non-race app test runs from the normal merge path. Test-support packages are excluded only from standalone coverage accounting; their tests still execute and their consumers still run.
 
-Coverage policy: Player/Subtitles retain 89%; Dashboard retains 100%; shared packages use the established `packages/Makefile` floor of 85%, replacing the conflicting repository-wide 100% policy. This is a deliberate policy reconciliation, not evidence that 85% proves correctness. Full observable-behavior tests, race checks, security analysis, and runtime tests remain independent gates. The 300-line cap and its existing frozen debt policy are unchanged.
+Coverage policy: Player/Subtitles retain 89%; retired app retains 100%; shared packages use the established `packages/Makefile` floor of 85%, replacing the conflicting repository-wide 100% policy. This is a deliberate policy reconciliation, not evidence that 85% proves correctness. Full observable-behavior tests, race checks, security analysis, and runtime tests remain independent gates. The 300-line cap and its existing frozen debt policy are unchanged.
 
 ### 4. Match runtime breadth to risk; move diagnostics off the merge path
 
@@ -121,19 +121,19 @@ Revisit selection when app imports/build inputs change or a scheduled run catche
 
 - [Security](https://github.com/Kinosail/kinosail/actions/runs/35546041347) passed, including Go/JavaScript/Python CodeQL, findings policy, secret scanning, and supply-chain checks. Repository policy/CI contracts and Swift compilation also passed.
 - [Player](https://github.com/Kinosail/kinosail/actions/runs/35546041335) had 16 failing top-level Go tests; [Subtitles](https://github.com/Kinosail/kinosail/actions/runs/35546041327) had 49. These application source/tests were unchanged from the base, including update-adapter, authentication, API, playback, and presentation contracts. The combined race jobs took 7m08s and 8m15s respectively, including setup; these are failed-run timings.
-- [Dashboard](https://github.com/Kinosail/kinosail/actions/runs/35546041326) passed its Go tests but failed the unchanged 100% coverage requirement at 99.2%. Coverage floors were not lowered to hide this result.
+- [Retired app](https://github.com/Kinosail/kinosail/actions/runs/35546041326) passed its Go tests but failed the unchanged 100% coverage requirement at 99.2%. Coverage floors were not lowered to hide this result.
 - [Shared packages](https://github.com/Kinosail/kinosail/actions/runs/35546041328/job/106172017099) failed existing identity/session, safe-return, and WebSocket tests. Their failure paths remain on the merge gate.
 - The first run also exposed stale or incorrect harness contracts: CSS parsed as JavaScript, partial JavaScript scopes, gateway service count, installer signing expectations, Docker restart port reuse, and a five-second MCP startup assumption. The follow-up repairs these contracts while retaining their observable assertions. MCP startup is now bounded at 60 seconds and captures relay stderr; success still requires twelve single-thread relay processes.
 - Local full tooling validation remains blocked by stale generated architecture-explorer links (`apps/player/internal/server/home_assistant_http.go` no longer exists). The separate remote-setup fixture also fails locally. These are recorded rather than silently skipped.
 
-Independent review caught four missing safety details and two delivery/consumer edge cases: invalid Chromium-only configuration could skip all browsers; Dashboard swallowed project arguments; old version workflows could overwrite latest; app-local vendor edits could miss integrity validation; pending promotions could be cancelled in arrival order; and commit versions could falsely report current. Each now has a focused regression or workflow contract check. Hosted publication, OCI signatures, promotion queue behavior, live deployment, and physical devices remain unverified until protected main can pass.
+Independent review caught four missing safety details and two delivery/consumer edge cases: invalid Chromium-only configuration could skip all browsers; retired app swallowed project arguments; old version workflows could overwrite latest; app-local vendor edits could miss integrity validation; pending promotions could be cancelled in arrival order; and commit versions could falsely report current. Each now has a focused regression or workflow contract check. Hosted publication, OCI signatures, promotion queue behavior, live deployment, and physical devices remain unverified until protected main can pass.
 
 
 ### Follow-up local verification
 
 - Passed: 33 CI selection/aggregation/delivery/runtime-contract tests; 5 dependency-integrity tests; 12 browser-lint harness tests; browser lint (zero errors, two pre-existing unused-variable warnings); full `updatecontrol` race suite; changed `updatecontrol` lint; repository shellcheck; actionlint with the documented queue compatibility assertion; workflow boundary validation; `make max-loc`; and `git diff --check`.
 - Player and Subtitles single-container boundary checks and direct `test-installer.sh` tests passed. The enclosing `make installer-test` still fails in the unchanged `test-remote-setup.sh` fixture.
-- The required Player/Subtitles `make verify-changed` commands were attempted with working-tree changes included. Shell/installer checks passed; full shared-package lint blocked them with 116 existing findings. The changed update checker itself reports zero lint issues. Dashboard's initial local `verify-changed` ran its Go tests and exposed the shared shell-source lookup issue, now repaired; the hosted 100% coverage gate remains red.
+- The required Player/Subtitles `make verify-changed` commands were attempted with working-tree changes included. Shell/installer checks passed; full shared-package lint blocked them with 116 existing findings. The changed update checker itself reports zero lint issues. The retired app's initial local `verify-changed` ran its Go tests and exposed the shared shell-source lookup issue, now repaired; the hosted 100% coverage gate remains red.
 - An independent read-only review verified the six safety/compatibility fixes, reran CI/integrity tests and actionlint, and found no further concrete blocker in those deltas. This does not substitute for successful app suites or hosted delivery.
 
 PR: [#41](https://github.com/Kinosail/kinosail/pull/41). Keep branch protection and publication prerequisites enabled. Do not merge or claim production delivery while any required check fails. Retain the task branch/worktree if these unrelated repair blockers prevent safe integration; the primary working tree contains separate unfinished work and must not be overwritten.
@@ -147,7 +147,7 @@ PR: [#41](https://github.com/Kinosail/kinosail/pull/41). Keep branch protection 
 | --- | --- | ---: | ---: |
 | [Repository Quality](https://github.com/Kinosail/kinosail/actions/runs/35552004730) | Passed | 5m28s | 6m03s |
 | [Security](https://github.com/Kinosail/kinosail/actions/runs/35552004742) | Passed | 4m16s | 6m54s |
-| [Dashboard](https://github.com/Kinosail/kinosail/actions/runs/35552004731) | Passed | 7m26s | 13m20s |
+| [Retired app](https://github.com/Kinosail/kinosail/actions/runs/35552004731) | Passed | 7m26s | 13m20s |
 | [Player](https://github.com/Kinosail/kinosail/actions/runs/35552004744) | Passed with one browser retry | 12m08s | 30m30s |
 | [Subtitles](https://github.com/Kinosail/kinosail/actions/runs/35552004729) | Failed | 10m51s | 26m13s |
 | [Documentation](https://github.com/Kinosail/kinosail/actions/runs/35552004636) | Passed | 28s | 25s |
@@ -174,4 +174,4 @@ The same head's [Player trace](https://github.com/Kinosail/kinosail/actions/runs
 
 Head `3ee5cdcf` passed four required gates and all 203 Chromium cases. Its [Firefox trace](https://github.com/Kinosail/kinosail/actions/runs/35555006010) showed the test starting a new navigation 8.4 ms after Cancel reached Home, interrupting the outgoing theme and navigation scripts with `NS_BINDING_ABORTED`; both assets returned 200 on the replacement page. The journey now waits for Home's load and checks its heading before continuing. This verifies the Cancel destination and avoids test-induced cancellation; the service-worker strategy and strict browser-error assertion stay unchanged.
 
-The accepted PR run completed all five gates in 8m17s; exact timings and merge proof are recorded in [PR #42](https://github.com/Kinosail/kinosail/pull/42). Main `8aa9720b` also passed its app suites, but [release image scanning](https://github.com/Kinosail/kinosail/actions/runs/35556084496/job/106201997737) found 13 fixable OS vulnerabilities (10 high, three critical) in Subtitles. Player and Dashboard passed on both architectures. Subtitles omitted the Debian base-package upgrade already present in Player. Apply that upgrade in its final runtime image, and scan both apps' already-built native images before their integration tests with the same pinned Trivy action and release policy. The failing scan engine took 5.2 seconds, and its complete action took about 12 seconds including cache restoration: catching these findings before merge is worth that measured cost and requires no extra image build. Keep the post-build release scan because the published digest is the delivery authority. No source-test coverage or severity floor is reduced.
+The accepted PR run completed all five gates in 8m17s; exact timings and merge proof are recorded in [PR #42](https://github.com/Kinosail/kinosail/pull/42). Main `8aa9720b` also passed its app suites, but [release image scanning](https://github.com/Kinosail/kinosail/actions/runs/35556084496/job/106201997737) found 13 fixable OS vulnerabilities (10 high, three critical) in Subtitles. Player and retired app passed on both architectures. Subtitles omitted the Debian base-package upgrade already present in Player. Apply that upgrade in its final runtime image, and scan both apps' already-built native images before their integration tests with the same pinned Trivy action and release policy. The failing scan engine took 5.2 seconds, and its complete action took about 12 seconds including cache restoration: catching these findings before merge is worth that measured cost and requires no extra image build. Keep the post-build release scan because the published digest is the delivery authority. No source-test coverage or severity floor is reduced.

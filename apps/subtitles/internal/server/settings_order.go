@@ -8,7 +8,7 @@ import (
 func orderSettingsPage(page string) string {
 	page = strings.Replace(page,
 		`<nav class="settings-nav" data-settings-nav aria-label="Settings sections"><a data-settings-group="general" href="#general">General</a><a data-settings-group="playback" href="#playback">Playback</a><a data-settings-group="access" href="#access">Access</a><a data-settings-group="migration" href="#viewing-imports">Migration</a><a data-settings-group="library" href="#library">Library</a><a data-settings-group="system" href="#system">System</a><a data-settings-group="appearance" href="#appearance">Appearance</a></nav>`,
-		`<nav class="settings-nav" data-settings-nav aria-label="Settings sections"><a data-settings-group="playback" href="#playback">Playback</a><a data-settings-group="access" href="#access">Access</a><a data-settings-group="library" href="#library">Library</a><a data-settings-group="general" href="#security">General</a><a data-settings-group="appearance" href="#appearance">Appearance</a><a data-settings-group="system" href="#system">System</a><a data-settings-group="migration" href="#viewing-imports">Migration</a></nav>`, 1)
+		`<nav class="settings-nav" data-settings-nav aria-label="Settings sections"><a data-settings-group="playback" href="#playback">Playback</a><a data-settings-group="access" href="#access">Access</a><a data-settings-group="library" href="#library">Library</a><a data-settings-group="general" href="#security">General</a><a data-settings-group="appearance" href="#appearance">Appearance</a><a data-settings-group="system" href="#system">System</a><a data-settings-group="migration" href="#viewing-imports">Migration</a><a data-settings-group="thanks" href="#thanks">About &amp; thanks</a></nav>`, 1)
 	flowStart := strings.Index(page, `<div class="settings-flow" data-settings-flow>`)
 	flowEnd := strings.LastIndex(page, `</div></main>`)
 	if flowStart < 0 || flowEnd <= flowStart {
@@ -83,6 +83,8 @@ func settingsGroupRank(section string) int { //nolint:cyclop // The fixed displa
 		return 5
 	case "migration":
 		return 6
+	case "thanks":
+		return 7
 	default:
 		return 99
 	}

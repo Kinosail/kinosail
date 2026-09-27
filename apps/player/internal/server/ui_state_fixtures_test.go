@@ -13,7 +13,7 @@ import (
 )
 
 func supporterBadgeCaseFixture() supporterPageData {
-	collection := &supporterCollection{ID: "complete-fleet", Name: "Complete Fleet", Edition: "Living", AppIDs: []string{"kino-dashboard", "kino-player", "kino-subtitles"}}
+	collection := &supporterCollection{ID: "complete-fleet", Name: "Complete Fleet", Edition: "Living", AppIDs: []string{"kino-archive", "kino-player", "kino-subtitles"}}
 	living := &supporterBadgeStatus{Family: livingStandardFamily, Tier: "admiral", Name: "Admiral", Rank: 8, Active: true, Founding: true, RecognitionName: "Quiet Benefactor", SupportedSince: "2025-01-01T12:00:00Z", ExpiresAt: "2026-09-30T12:00:00Z", ServiceMarks: []int{3, 6, 12}, Collection: collection}
 	patron := &supporterBadgeStatus{Family: patronOrderFamily, Tier: "lighthouse", Name: "Lighthouse", Rank: 6, Active: true, Founding: true, SupportedSince: "2025-08-01T12:00:00Z", Collection: &supporterCollection{ID: "complete-fleet", Name: "Complete Fleet", Edition: "2026 Founders", AppIDs: collection.AppIDs}}
 	status := supporterStatus{AppID: supporterAppID, LivingStandard: living, PatronOrder: patron, CompleteFleetActive: true, BadgeCase: supporterBadgeCase{LivingLevel: 8, PatronLevel: 6, MasterworkLevel: 6, Unlocked: 14, Total: 20, MasterworkName: "Full Sail", MasterworkEarned: true, MasterworkActive: true}, SupportURL: "https://support.example"}

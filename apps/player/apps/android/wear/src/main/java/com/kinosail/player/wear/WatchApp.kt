@@ -1,6 +1,7 @@
 package com.kinosail.player.wear
 
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -20,6 +21,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
@@ -43,6 +46,7 @@ import androidx.wear.compose.material3.ColorScheme
 import androidx.wear.compose.material3.HorizontalPagerScaffold
 import androidx.wear.compose.material3.MaterialTheme
 import androidx.wear.compose.material3.Text
+import com.kinosail.player.wear.R
 import com.kinosail.player.watchcore.HeartPoint
 import com.kinosail.player.watchcore.HeartTimeline
 import com.kinosail.player.watchcore.WatchPlayer
@@ -90,6 +94,9 @@ private fun RemotePage(
     onStartHeart: (WatchPlayer) -> Unit, onHeartPage: () -> Unit,
 ) {
     var choosing by remember { mutableStateOf(false) }
+    var showingThanks by remember { mutableStateOf(false) }
+    var showingNotices by remember { mutableStateOf(false) }
+    val context = LocalContext.current
     Column(Modifier.fillMaxSize().background(ink).verticalScroll(rememberScrollState())
         .padding(horizontal = 22.dp, vertical = 36.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
         Text("KINOSAIL", color = signal, fontWeight = FontWeight.Bold, fontSize = 12.sp)
@@ -141,6 +148,19 @@ private fun RemotePage(
         if (timeline != null && player?.active == true) HeartLink(timeline, onHeartPage)
         (heartMessage ?: remote.message?.takeUnless { remote.players.isEmpty() })?.let {
             Text(it, color = muted, fontSize = 12.sp, modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite })
+        }
+        Button(onClick = { showingThanks = !showingThanks }, modifier = Modifier.fillMaxWidth(),
+            label = { Text("Made possible by") })
+        if (showingThanks) {
+            Text("Thank you to the people behind Wear Compose and the Android tools that make this remote possible. FFmpeg powers media tools on your Server.", fontSize = 12.sp)
+            Image(painter = painterResource(R.drawable.tmdb_logo), contentDescription = "TMDB", modifier = Modifier.size(72.dp, 52.dp))
+            Text("This product uses the TMDB API but is not endorsed or certified by TMDB.", fontSize = 11.sp)
+            Button(onClick = { showingNotices = !showingNotices }, modifier = Modifier.fillMaxWidth(),
+                label = { Text("Third-party notices") })
+            if (showingNotices) {
+                val notices = remember(context) { runCatching { context.assets.open("THIRD_PARTY_NOTICES.md").bufferedReader().use { it.readText() } }.getOrNull() }
+                Text(notices ?: "Notices could not be opened. Reinstall Kinosail and try again.", fontSize = 11.sp)
+            }
         }
     }
 }

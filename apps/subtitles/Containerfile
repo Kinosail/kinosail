@@ -54,6 +54,7 @@ COPY --from=whisper /whisper/LICENSE /licenses/third_party/whisper.cpp/LICENSE
 COPY --from=whisper /whisper/miniaudio-LICENSE /whisper/stb_vorbis-LICENSE /licenses/third_party/whisper.cpp/
 COPY apps/subtitles/LICENSE apps/subtitles/LICENSING.md apps/subtitles/THIRD_PARTY_NOTICES.md /licenses/
 COPY apps/subtitles/third_party /licenses/third_party
+COPY packages/webassets/static/fonts/OFL-Manrope.txt /licenses/third_party/Manrope.LICENSE
 COPY packages/third_party /licenses/third_party
 USER kinosail
 ENV KINOSAIL_LISTEN=:38128

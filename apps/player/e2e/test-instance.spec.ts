@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
-import { configureTestInstance, firstPlayable, login } from "./test-instance-helpers";
+import { configureTestInstance, createViewer, firstPlayable, login, loginViewer, newViewerPage, removeViewer } from "./test-instance-helpers";
 
 configureTestInstance();
 test.use({ serviceWorkers: "block" });
@@ -32,6 +32,53 @@ test("preferred-language subtitle choices hide other tracks without changing fil
 	}
 	await page.goto(watch);
 	await expect(page.locator('video track[srclang="es"]')).toHaveCount(1);
+});
+
+test("unavailable Web Locks do not initialize offline storage on the downloads page", async ({ page }) => {
+  await page.addInitScript(() => {
+    Object.defineProperty(navigator, "locks", { configurable: true, value: undefined });
+    const worker = { scriptURL: new URL("/service-worker.js?v=54", location.href).href, state: "activated" };
+    Object.defineProperties(navigator.serviceWorker, {
+      controller: { configurable: true, get: () => worker },
+      getRegistration: { configurable: true, value: async () => ({ active: worker }) },
+    });
+    const opens: string[] = [];
+    Object.assign(window, { __qaOfflineOpens: opens });
+    const open = indexedDB.open.bind(indexedDB);
+    Object.defineProperty(indexedDB, "open", {
+      configurable: true,
+      value: (...args: Parameters<IDBFactory["open"]>) => {
+        opens.push(String(args[0]));
+        return open(...args);
+      },
+    });
+  });
+  await login(page);
+  await page.goto("/offline-downloads", { waitUntil: "load" });
+  await expect(page.getByRole("heading", { name: "Offline downloads", exact: true })).toBeVisible();
+  await page.evaluate(() => window.dispatchEvent(new Event("online")));
+  expect(await page.evaluate(() => (window as typeof window & { __qaOfflineOpens: string[] }).__qaOfflineOpens.filter((name) => name === "kinosail-offline-v1"))).toEqual([]);
+});
+
+test("Viewer MFA enrollment gives accurate instructions", async ({ browser, page }, testInfo) => {
+  await login(page);
+  await page.goto("/settings#security");
+  await expect(page.locator('form[action="/settings/mfa"] input[name="required"]')).toBeChecked();
+  const name = `QA Viewer ${Date.now()}`;
+  const password = "qa-viewer-password";
+  const id = await createViewer(page, name, password);
+  const viewer = await newViewerPage(browser, new URL(page.url()).origin);
+  try {
+    await loginViewer(viewer, name, password);
+    await expect(viewer).toHaveURL(/\/account\?mfa=required$/);
+    await expect(viewer.getByRole("heading", { name: "Extra sign-in protection is required" })).toBeVisible();
+    await expect(viewer.getByText("Add a passkey or authenticator app to continue.", { exact: true })).toBeVisible();
+    await expect(viewer.getByText("Owner account")).toHaveCount(0);
+    await viewer.screenshot({ path: testInfo.outputPath("viewer-mfa-required.png") });
+  } finally {
+    await viewer.context().close();
+    await removeViewer(page, id);
+  }
 });
 
 test("Connection choices stay optional and secure by default", async ({ page }, testInfo) => {

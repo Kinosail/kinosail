@@ -2,7 +2,7 @@
 
 ## Scope and standard
 
-This audit covers the current Player and Subtitles web apps, plus the Player clients for Apple and Android devices. The standalone Dashboard has been retired. Web review uses [WCAG 2.2 Level AA](https://www.w3.org/TR/WCAG22/) as the target. Native review uses the [Apple accessibility guidance](https://developer.apple.com/design/human-interface-guidelines/accessibility) and [Android accessibility guidance](https://developer.android.com/guide/topics/ui/accessibility/testing). The [WCAG evaluation method](https://www.w3.org/TR/WCAG-EM/) informs the evidence and limitations below.
+This audit covers the current Player and Subtitles web apps, plus the Player clients for Apple and Android devices. Web review uses [WCAG 2.2 Level AA](https://www.w3.org/TR/WCAG22/) as the target. Native review uses the [Apple accessibility guidance](https://developer.apple.com/design/human-interface-guidelines/accessibility) and [Android accessibility guidance](https://developer.android.com/guide/topics/ui/accessibility/testing). The [WCAG evaluation method](https://www.w3.org/TR/WCAG-EM/) informs the evidence and limitations below.
 
 ## Evidence
 

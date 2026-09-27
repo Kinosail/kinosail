@@ -38,6 +38,8 @@ var (
 	manifest []byte
 	//go:embed static/icon.svg
 	icon []byte
+	//go:embed static/tmdb-logo.svg
+	tmdbLogo []byte
 	//go:embed static/icon-192.png
 	icon192 []byte
 	//go:embed static/icon-512.png

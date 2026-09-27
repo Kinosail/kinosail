@@ -20,7 +20,7 @@ class ReleaseTagTests(unittest.TestCase):
                                  {"app": app, "version": "v1.2.3", "container_version": "1.2.3"})
 
     def test_invalid_tag_or_context_creates_no_output(self):
-        for tag in ("", "v1.2.3", "dashboard-v1.2.3", "player-v01.2.3", "player-v1.2", "player-v1.2.3-extra",
+        for tag in ("", "v1.2.3", "retired-v1.2.3", "player-v01.2.3", "player-v1.2", "player-v1.2.3-extra",
                     "player-v1.2.3\nname=other", "other-v1.2.3", "player-v" + "1" * 80):
             with self.subTest(tag=tag[:20]), tempfile.TemporaryDirectory() as directory:
                 output = Path(directory) / "output"
@@ -46,7 +46,7 @@ class ReleaseTagTests(unittest.TestCase):
                 binary = Path(directory) / tool
                 binary.write_text(f'#!/bin/sh\ntouch "{marker}"\n')
                 binary.chmod(0o755)
-            for args in ([], ["player"], ["dashboard", "v1.2.3"], ["../player", "v1.2.3"],
+            for args in ([], ["player"], ["retired", "v1.2.3"], ["../player", "v1.2.3"],
                          ["player", "v01.2.3"], ["player", "x" * 10000]):
                 result = subprocess.run(["bash", str(ROOT / "scripts/ci/package-release.sh"), *args],
                                         env=os.environ | {"PATH": directory + ":" + os.environ["PATH"]},

@@ -26,7 +26,7 @@ class AppPlanTests(unittest.TestCase):
         plan = dict.fromkeys((*FLAGS, "deep"), False)
         plan["player"] = True
         raw = json.dumps(plan)
-        for app, value in (("../player", raw), ("dashboard", raw), ("unknown", raw), ("player", "[]"),
+        for app, value in (("../player", raw), ("retired", raw), ("unknown", raw), ("player", "[]"),
                            ("player", "x" * 16385), ("player", json.dumps(plan | {"extra": True})),
                            ("player", json.dumps(plan | {"player": "true"}))):
             with self.subTest(app=app, value=value[:20]), self.assertRaises(ValueError):

@@ -21,7 +21,7 @@ func TestScopedAPIKeysAreHashedEnforcedAndRevocable(t *testing.T) {
 	}
 	handler := server.New(server.Config{MediaDir: mediaDir, DataDir: dataDir, RequireAuth: true})
 	owner := signInTestProfile(t, handler, "/setup", "name=Owner&password=owner-password")
-	createRequest := requestWithCookieRequest(t, http.MethodPost, "/settings/api-keys", "name=Dashboard&scopes=library", owner)
+	createRequest := requestWithCookieRequest(t, http.MethodPost, "/settings/api-keys", "name=Library+tool&scopes=library", owner)
 	createRequest.Header.Set("Accept-Language", "ar")
 	create := httptest.NewRecorder()
 	handler.ServeHTTP(create, createRequest)
@@ -49,7 +49,7 @@ func TestScopedAPIKeysAreHashedEnforcedAndRevocable(t *testing.T) {
 		t.Fatalf("metrics without scope = %d %q", metrics.Code, metrics.Body.String())
 	}
 	settings := requestWithCookie(t, handler, http.MethodGet, "/settings", "", owner)
-	keyID := regexp.MustCompile(`name="id" value="([a-f0-9]+)">Revoke Dashboard`).FindStringSubmatch(settings.Body.String())[1]
+	keyID := regexp.MustCompile(`name="id" value="([a-f0-9]+)">Revoke Library tool`).FindStringSubmatch(settings.Body.String())[1]
 	revoke := requestWithCookieRequest(t, http.MethodPost, "/settings/api-keys/revoke", "id="+keyID, owner)
 	serveRequest(handler, revoke)
 	if revoked := apiKeyRequest(t, handler, "/api/v1/library", secret); revoked.Code != http.StatusUnauthorized {

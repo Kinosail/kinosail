@@ -13,9 +13,9 @@ background:
 
 ## Overview
 
-Player and Subtitles share the original Kino colors and flat, solid geometry. Each app has a distinct silhouette: a split sail for Player and paired caption bands for Subtitles. The contact sheet also records the retired Dashboard mark. This document governs logo assets only.
+Player and Subtitles share the original Kino colors and flat, solid geometry. Each app has a distinct silhouette: a split sail for Player and paired caption bands for Subtitles. This document governs logo assets only.
 
-The rendered contact sheet is [logos.png](logos.png). App interface design, typography, and layout remain owned by their existing design documents.
+App interface design, typography, and layout remain owned by their existing design documents.
 
 ## Colors
 
@@ -44,9 +44,9 @@ Regenerate the Swift asset catalogs from the repository root on macOS:
 bash apps/player/apps/native/scripts/generate-brand-assets.sh
 ```
 
-The script requires `sips` and `ffmpeg`; it emits the iOS icon as RGB and renders tvOS foreground and background layers separately. It does not generate the web PNGs or the contact sheet. Keep raster exports derived from their SVG sources rather than hand-editing them.
+The script requires `sips` and `ffmpeg`; it emits the iOS icon as RGB and renders tvOS foreground and background layers separately. It does not generate the web PNGs. Keep raster exports derived from their SVG sources rather than hand-editing them.
 
-Verification for this documentation consists of source inspection and visual inspection of the rendered contact sheet. `.gates-disabled` remains in force: no tests or detector commands were run for this documentation. This evidence does not establish populated-browser behavior, deployment state, installed-icon appearance, tvOS parallax, or physical-device rendering.
+Verification for this documentation consists of source inspection. `.gates-disabled` remains in force: no tests or detector commands were run for this documentation. This evidence does not establish populated-browser behavior, deployment state, installed-icon appearance, tvOS parallax, or physical-device rendering.
 
 ## Do's and Don'ts
 
