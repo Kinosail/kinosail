@@ -44,7 +44,7 @@ if (playerStatus) {
   const scheduleStartPrompt = () => {
     if (!appleTouch) return;
     setTimeout(() => {
-      if (!hasPlayed && player.readyState < HTMLMediaElement.HAVE_FUTURE_DATA && (player.currentSrc || player.getAttribute("src"))) showStartPrompt();
+      if (!hasPlayed && (player.currentSrc || player.getAttribute("src"))) showStartPrompt();
     }, 1500);
   };
   player.addEventListener("kinosail:play-needs-gesture", showStartPrompt);
