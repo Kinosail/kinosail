@@ -1,6 +1,6 @@
 # Kinosail Subtitles documentation
 
-Start with the [app README](../README.md) for requirements and a local source installation. These are the user-guide sources; engineering notes belong in [engineering](../engineering/README.md).
+Read the published [Kinosail Subtitles documentation](https://kinosail.com/subtitles/), or start with the [app README](../README.md). These are the user-guide sources; engineering notes belong in [engineering](../engineering/README.md).
 
 ## Read the guides
 
@@ -25,6 +25,6 @@ bundle exec jekyll serve --source apps/subtitles/docs --destination /tmp/kinosai
 
 Open `http://127.0.0.1:4101`. Use a separate output directory so generated files never mix with source. The shared `Gemfile.lock` pins the renderer and parser used for both app sites.
 
-`_config.yml` defaults to a local root with no public hostname. Before hosting, explicitly set `url` and `baseurl` for the chosen origin and path. Build and inspect both app sites with distinct output locations. GitHub Actions is disabled, and this documentation change does not enable Pages or publish a website. Review publication permissions before exposing private repository content.
+`_config.yml` defaults to a local root with no public hostname. The shared Pages build sets `url` and `baseurl`, publishes Subtitles at `/subtitles/`, and checks both app sites before deployment. Build and inspect a preview at the actual hosting base path.
 
-When quality gates are enabled, check rendered links, asset paths, search, keyboard navigation, and narrow layouts at the actual hosting base path. While `.gates-disabled` exists, disabled suites remain off; do not claim their checks passed. Follow the [documentation guide](contributing/documentation.md).
+Check rendered links, asset paths, search, keyboard navigation, and narrow layouts at the actual hosting base path. Follow the [documentation guide](contributing/documentation.md).

@@ -76,7 +76,8 @@ class SelectionTests(unittest.TestCase):
 
     def test_documentation_selects_its_build_without_server_suites(self):
         for path in ("engineering/documentation/index.md", "engineering/documentation/site.js",
-                     "apps/player/docs/architecture-explorer/index.html"):
+                     "apps/player/docs/architecture-explorer/index.html",
+                     "apps/subtitles/docs/index.md", "apps/subtitles/docs/assets/css/docs.css"):
             with self.subTest(path=path):
                 plan = affected([path])
                 self.assertTrue(plan["docs"])

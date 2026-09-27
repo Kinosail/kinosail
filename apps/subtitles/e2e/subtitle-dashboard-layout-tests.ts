@@ -113,7 +113,14 @@ test("Dashboard stays readable and accessible at every supported width", async (
     expect(accessibility.violations).toEqual([]);
     await expectSkipLinkOffscreen(page);
     await page.screenshot({ path: testInfo.outputPath(`${viewport.width}-subtitle-dashboard.png`), fullPage: true });
+    if (viewport.width === 1440 || viewport.width === 390) {
+      await page.screenshot({ path: testInfo.outputPath(`${viewport.width}-subtitle-dashboard-viewport.png`) });
+    }
   }
+  await page.setViewportSize({ width: 1200, height: 630 });
+  await page.goto("/");
+  await expect(page.getByRole("heading", { name: /subtitle/i }).first()).toBeVisible();
+  await page.screenshot({ path: testInfo.outputPath("1200-subtitle-dashboard-viewport.png") });
 });
 
 test("Dashboard preserves keyboard and high-contrast operation", async ({ page }, testInfo) => {

@@ -19,9 +19,19 @@ class IndexNowTest(unittest.TestCase):
             build(settings(['--output', str(output)]))
             sitemap = ElementTree.parse(output / 'sitemap.xml')
             published = {item.text for item in sitemap.iter('{http://www.sitemaps.org/schemas/sitemap/0.9}loc')}
-            source = {url for path in (indexnow.ROOT / indexnow.SOURCE).rglob('*') if path.is_file()
+            source = {url for docs in ('apps/player/docs', 'apps/subtitles/docs')
+                      for path in (indexnow.ROOT / docs).rglob('*') if path.is_file()
                       if (url := indexnow.page_url(str(path.relative_to(indexnow.ROOT))))}
             self.assertEqual(source, published)
+
+    def test_subtitles_pages_have_distinct_public_urls(self):
+        self.assertEqual(indexnow.page_url('apps/subtitles/docs/index.md'),
+                         'https://kinosail.com/subtitles/')
+        self.assertEqual(indexnow.page_url('apps/subtitles/docs/getting-started/install.md'),
+                         'https://kinosail.com/subtitles/getting-started/install/')
+        self.assertIsNone(indexnow.page_url('apps/subtitles/docs/404.md'))
+        with self.assertRaises(ValueError):
+            indexnow.page_url('apps/subtitles/docs/../secret.md')
 
     def test_diff_includes_changed_deleted_and_renamed_pages(self):
         with tempfile.TemporaryDirectory() as directory, patch.object(indexnow, 'ROOT', Path(directory)):
@@ -45,6 +55,12 @@ class IndexNowTest(unittest.TestCase):
             global_after = self.commit(root)
             self.assertEqual(indexnow.changed_urls(after, global_after),
                              ['https://kinosail.com/faq/', 'https://kinosail.com/guide/'])
+            subtitles = root / 'apps/subtitles/docs'
+            subtitles.mkdir(parents=True)
+            (subtitles / 'index.md').write_text('Subtitles')
+            subtitle_after = self.commit(root)
+            self.assertEqual(indexnow.changed_urls(global_after, subtitle_after),
+                             ['https://kinosail.com/subtitles/'])
 
     @staticmethod
     def commit(root):

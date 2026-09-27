@@ -35,6 +35,8 @@
       url: /owner-guide/security/
     - title: Backups and updates
       url: /owner-guide/backups-and-updates/
+    - title: Optional Supporter badges
+      url: /owner-guide/supporter/
 - title: Build with Subtitles
   url: /developer-guide/
   pages:
