@@ -34,6 +34,8 @@ For HTTPS, copy the Server's resource URL, configure it in a client that support
 
 Only approved relative `/api/v1` paths are accepted. Discover the Server's tool schemas before calling them. Responses are bounded JSON. Subtitle export bytes, credentials, sessions, API-key management, and unrestricted filesystem paths are blocked from MCP.
 
+An Owner management connection can call `manage_api` with `{"method":"GET","path":"/api/v1/diagnostics"}`. The response includes up to 50 recent failed requests with safe operation names, request IDs, status, level, and duration. It excludes raw log lines, URLs, media titles, credentials, and error text. The private activity journal is not available through MCP.
+
 Begin with inventory and a single explicitly requested operation. Confirm the item, language, and intended replacement before approving a mutation. Provider quotas, input validation, Owner policy, and sidecar protection apply just as they do to HTTP and web requests.
 
 See the [HTTP API reference]({{ '/reference/api/' | relative_url }}) for routes and payloads. Source of truth: `internal/server/mcp_route_policy.go` and the connection details returned by your installed Server.

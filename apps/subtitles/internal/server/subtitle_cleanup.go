@@ -72,7 +72,8 @@ func cleanupSidecarCandidate(index *libraryIndex, item library.Item, path string
 	if tagged == "" {
 		return nil, true
 	}
-	if slices.ContainsFunc(languages, func(language string) bool { return subtitleLanguageMatches(language, tagged) }) && (forced == "keep" || subtitleRoleFromPath(path) != "forced") {
+	role := subtitleRoleFromPath(path)
+	if role == "forced" && forced == "keep" || role != "forced" && slices.ContainsFunc(languages, func(language string) bool { return subtitleLanguageMatches(language, tagged) }) {
 		return nil, false
 	}
 	root, name, err := openCleanupSidecar(index, item, path)
@@ -150,9 +151,17 @@ func applySubtitleCleanup(index *libraryIndex, settings *settingsStore, language
 		return 0, errors.New("subtitle files changed; preview again")
 	}
 	previous := settings.subtitleLanguages()
+	previousLimited := settings.subtitlePickerLimited()
+	previousForced := settings.subtitlePickerKeepForced()
+	keepForced := forced == "keep"
 	changed := !slices.Equal(previous, plan.Languages)
 	if changed {
-		if err := settings.setSubtitleLanguages(plan.Languages); err != nil {
+		limited := true
+		if err := settings.saveSubtitleLanguages(plan.Languages, &limited, &keepForced); err != nil {
+			return 0, err
+		}
+	} else if !previousLimited || previousForced != keepForced {
+		if err := settings.setSubtitlePickerChoices(true, keepForced); err != nil {
 			return 0, err
 		}
 	}
@@ -164,18 +173,24 @@ func applySubtitleCleanup(index *libraryIndex, settings *settingsStore, language
 	}()
 	for _, file := range plan.Files {
 		if err := removeCleanupSidecar(index, file); err != nil {
-			return removed, restoreCleanupLanguages(settings, previous, plan.Languages, err)
+			return removed, restoreCleanupLanguages(settings, previous, previousLimited, previousForced, plan.Languages, err)
 		}
 		removed++
 	}
 	return removed, nil
 }
 
-func restoreCleanupLanguages(settings *settingsStore, previous, languages []string, cause error) error {
-	if slices.Equal(previous, languages) || !slices.Equal(settings.subtitleLanguages(), languages) {
+func restoreCleanupLanguages(settings *settingsStore, previous []string, previousLimited, previousForced bool, languages []string, cause error) error {
+	if !slices.Equal(settings.subtitleLanguages(), languages) || !settings.subtitlePickerLimited() {
 		return cause
 	}
-	if err := settings.setSubtitleLanguages(previous); err != nil {
+	var err error
+	if slices.Equal(previous, languages) {
+		err = settings.setSubtitlePickerChoices(previousLimited, previousForced)
+	} else {
+		err = settings.saveSubtitleLanguages(previous, &previousLimited, &previousForced)
+	}
+	if err != nil {
 		return errors.Join(cause, fmt.Errorf("restore subtitle languages: %w", err))
 	}
 	return cause

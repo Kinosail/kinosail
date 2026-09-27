@@ -55,7 +55,7 @@ fi
 
 run_remote "$sha" "$image" "$stable" kinosail kinosail localhost/kinosail
 grep -Fq "tag $image $stable" "$tmp/docker.log"
-grep -Fq 'compose up --detach --no-deps --force-recreate kinosail' "$tmp/docker.log"
+grep -Fq 'compose up --detach --no-deps --force-recreate --timeout 30 kinosail' "$tmp/docker.log"
 
 : >"$tmp/docker.log"
 rm -f "$tmp/compose-count"
@@ -67,7 +67,7 @@ if PATH="$tmp/bin:$PATH" KINOSAIL_NOX_COMPOSE_DIR="$tmp/compose" \
   exit 1
 fi
 grep -Fq "tag old-image $stable" "$tmp/docker.log"
-[[ "$(grep -Fc 'compose up --detach --no-deps --force-recreate kinosail' "$tmp/docker.log")" == 2 ]]
+[[ "$(grep -Fc 'compose up --detach --no-deps --force-recreate --timeout 30 kinosail' "$tmp/docker.log")" == 2 ]]
 
 for state in exited dead; do
   : >"$tmp/docker.log"
@@ -77,7 +77,7 @@ for state in exited dead; do
     exit 1
   fi
   grep -Fq "tag old-image $stable" "$tmp/docker.log"
-  [[ "$(grep -Fc 'compose up --detach --no-deps --force-recreate kinosail' "$tmp/docker.log")" == 2 ]]
+  [[ "$(grep -Fc 'compose up --detach --no-deps --force-recreate --timeout 30 kinosail' "$tmp/docker.log")" == 2 ]]
 done
 
 printf 'Nox remote deployment tests passed\n'

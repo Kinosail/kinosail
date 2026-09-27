@@ -36,6 +36,9 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.semantics.LiveRegionMode
+import androidx.compose.ui.semantics.liveRegion
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.kinosail.player.design.KinoColor
@@ -70,17 +73,18 @@ internal fun ShowScreen(showId: String, viewer: Viewer, catalog: CatalogModel, t
                         color = KinoColor.text,
                         modifier = Modifier.weight(1f))
                     if (tv) androidx.tv.material3.Button(onClick = close) {
-                        androidx.tv.material3.Text("Back to Library")
-                    } else TextButton(onClick = close) { Text("Back") }
+                        androidx.tv.material3.Text(interfaceText("Back to Library"))
+                    } else TextButton(onClick = close) { Text(interfaceText("Back")) }
                 }
             }
             if (state.loading && detail == null) item { CircularProgressIndicator(color = KinoColor.signal) }
             state.notice?.let { notice -> item {
                 Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    Text(notice, color = if (tv) KinoColor.text else MaterialTheme.colorScheme.error)
+                    Text(notice, color = if (tv) KinoColor.text else MaterialTheme.colorScheme.error,
+                        modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite })
                     if (tv) androidx.tv.material3.Button(onClick = model::retry) {
-                        androidx.tv.material3.Text("Try again")
-                    } else TextButton(onClick = model::retry) { Text("Try again") }
+                        androidx.tv.material3.Text(interfaceText("Try again"))
+                    } else TextButton(onClick = model::retry) { Text(interfaceText("Try again")) }
                 }
             } }
             if (featured != null) {
@@ -95,7 +99,7 @@ internal fun ShowScreen(showId: String, viewer: Viewer, catalog: CatalogModel, t
                     }
                 }
                 item {
-                    Text("Seasons", style = MaterialTheme.typography.titleLarge,
+                    Text(interfaceText("Seasons"), style = MaterialTheme.typography.titleLarge,
                         color = KinoColor.text)
                 }
                 item {
@@ -122,7 +126,7 @@ internal fun ShowScreen(showId: String, viewer: Viewer, catalog: CatalogModel, t
                     }
                 }
             } else if (detail != null) item {
-                Text("This show has no available episodes.", color = KinoColor.muted)
+                Text(interfaceText("This show has no available episodes."), color = KinoColor.muted)
             }
         }
     }
@@ -147,7 +151,7 @@ private fun EpisodeRow(item: CatalogItem, catalog: CatalogModel, tv: Boolean) {
                 color = if (tv) KinoColor.text else MaterialTheme.colorScheme.onSurface)
             if (item.progress.seconds > 0 && !item.progress.watched) Text("Resume at ${item.progress.seconds.toInt() / 60}m ${item.progress.seconds.toInt() % 60}s",
                 color = if (tv) KinoColor.muted else MaterialTheme.colorScheme.onSurfaceVariant)
-            else if (item.progress.watched) Text("Watched",
+            else if (item.progress.watched) Text(interfaceText("Watched"),
                 color = if (tv) KinoColor.muted else MaterialTheme.colorScheme.onSurfaceVariant)
         }
     }

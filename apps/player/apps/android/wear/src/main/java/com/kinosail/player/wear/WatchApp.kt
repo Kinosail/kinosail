@@ -26,7 +26,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -93,13 +95,13 @@ private fun RemotePage(
         Text("KINOSAIL", color = signal, fontWeight = FontWeight.Bold, fontSize = 12.sp)
         if (remote.players.size > 1 || choosing) {
             Button(onClick = { choosing = !choosing }, modifier = Modifier.fillMaxWidth(),
-                label = { Text(remote.selected?.name ?: "Choose player", maxLines = 1) })
+                label = { Text(remote.selected?.name ?: interfaceText("Choose player"), maxLines = 1) })
             if (choosing) remote.players.forEach { player ->
                 Button(onClick = { remote.select(player.id); choosing = false }, modifier = Modifier.fillMaxWidth(),
-                    label = { Text("${player.name} · ${if (player.active) player.title else "Idle"}", maxLines = 1,
+                    label = { Text("${player.name} · ${if (player.active) player.title else interfaceText("Nothing playing")}", maxLines = 1,
                         overflow = TextOverflow.Ellipsis) })
             }
-        } else if (remote.players.isNotEmpty()) Text(remote.selected?.name ?: "Remote", color = muted, fontSize = 12.sp)
+        } else if (remote.players.isNotEmpty()) Text(remote.selected?.name ?: interfaceText("Remote"), color = muted, fontSize = 12.sp)
 
         val player = remote.selected
         if (timeline != null && player?.active != true) HeartLink(timeline, onHeartPage)
@@ -119,25 +121,26 @@ private fun RemotePage(
                 }
             }
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                Control("−15", "Back 15 seconds", !remote.busy) { remote.command("backward") }
-                Control(if (player.playing) "Ⅱ" else "▶", if (player.playing) "Pause" else "Play", !remote.busy,
+                Control("−15", interfaceText("Back 15 seconds"), !remote.busy) { remote.command("backward") }
+                Control(if (player.playing) "Ⅱ" else "▶", interfaceText(if (player.playing) "Pause" else "Play"), !remote.busy,
                     primary = true) { remote.command(if (player.playing) "pause" else "play") }
-                Control("+30", "Forward 30 seconds", !remote.busy) { remote.command("forward") }
+                Control("+30", interfaceText("Forward 30 seconds"), !remote.busy) { remote.command("forward") }
             }
             if (!player.audio && player.duration > 0 && timeline?.tracking != true) {
                 Button(onClick = { onStartHeart(player) }, modifier = Modifier.fillMaxWidth(),
-                    label = { Text("♡ Start heart graph") })
+                    label = { Text(interfaceText("Start heart graph")) })
             }
         } else {
             val disconnected = remote.players.isEmpty() && remote.message != null
-            Text(if (disconnected) "Connect phone" else if (remote.selectedId != null && player == null)
-                "Selected player unavailable" else "Nothing playing", fontWeight = FontWeight.Bold, fontSize = 17.sp)
-            Text(if (disconnected) "Pair Android phone."
-                else "Start a title on your Android phone or TV.", color = muted, fontSize = 12.sp)
+            Text(interfaceText(if (disconnected) "Connect phone" else if (remote.selectedId != null && player == null)
+                "Selected player unavailable" else "Nothing playing"), fontWeight = FontWeight.Bold, fontSize = 17.sp,
+                modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite })
+            Text(interfaceText(if (disconnected) "Pair Android phone."
+                else "Start a title on your Android phone or TV."), color = muted, fontSize = 12.sp)
         }
         if (timeline != null && player?.active == true) HeartLink(timeline, onHeartPage)
         (heartMessage ?: remote.message?.takeUnless { remote.players.isEmpty() })?.let {
-            Text(it, color = muted, fontSize = 12.sp)
+            Text(it, color = muted, fontSize = 12.sp, modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite })
         }
     }
 }
@@ -146,7 +149,7 @@ private fun RemotePage(
 private fun HeartLink(timeline: HeartTimeline, onClick: () -> Unit) {
     Button(onClick = onClick, modifier = Modifier.fillMaxWidth(),
         colors = ButtonDefaults.buttonColors(containerColor = raised, contentColor = signal),
-        label = { Text(if (timeline.tracking) "♥ Heart graph" else "♥ Last heart graph", fontSize = 12.sp) })
+        label = { Text(interfaceText(if (timeline.tracking) "Heart graph" else "Last heart graph"), fontSize = 12.sp) })
 }
 
 @Composable
@@ -164,11 +167,11 @@ private fun Control(label: String, description: String, enabled: Boolean, primar
 private fun HeartPage(timeline: HeartTimeline, message: String?, onStop: () -> Unit) {
     Column(Modifier.fillMaxSize().background(ink).verticalScroll(rememberScrollState())
         .padding(horizontal = 22.dp, vertical = 36.dp), verticalArrangement = Arrangement.spacedBy(5.dp)) {
-        Text("HEART / MOVIE", color = signal, fontWeight = FontWeight.Bold, fontSize = 12.sp)
+        Text(interfaceText("Heart graph"), color = signal, fontWeight = FontWeight.Bold, fontSize = 12.sp)
         Text(timeline.title, fontWeight = FontWeight.Bold, fontSize = 17.sp, maxLines = 2, overflow = TextOverflow.Ellipsis)
         if (timeline.points.isEmpty()) {
-            Text("No readings yet", fontWeight = FontWeight.Bold)
-            Text("Readings appear at their movie time as you watch.", color = muted, fontSize = 12.sp)
+            Text(interfaceText("No readings yet"), fontWeight = FontWeight.Bold)
+            Text(interfaceText("Readings appear at their movie time as you watch."), color = muted, fontSize = 12.sp)
         } else {
             timeline.peak?.let {
                 Text("♥ ${it.bpm.toInt()} bpm · ${clock(it.position)}", color = signal, fontSize = 11.sp,
@@ -182,10 +185,11 @@ private fun HeartPage(timeline: HeartTimeline, message: String?, onStop: () -> U
                 Text(clock(timeline.duration), color = muted, fontSize = 11.sp)
             }
         }
-        Text("Gaps mean no reading or movie position was available.", color = muted, fontSize = 11.sp)
+        Text(interfaceText("Gaps mean no reading or movie position was available."), color = muted, fontSize = 11.sp)
         if (timeline.tracking) Button(onClick = onStop, modifier = Modifier.fillMaxWidth(),
-            label = { Text("Stop tracking") })
-        message?.let { Text(it, color = muted, fontSize = 12.sp) }
+            label = { Text(interfaceText("Stop tracking")) })
+        message?.let { Text(it, color = muted, fontSize = 12.sp,
+            modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite }) }
     }
 }
 

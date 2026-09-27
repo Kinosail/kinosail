@@ -34,7 +34,7 @@ func TestSubtitleCleanupPreviewsAndRemovesOnlySelectedSidecars(t *testing.T) { /
 	if err != nil {
 		t.Fatal(err)
 	}
-	if len(plan.Files) != 3 || plan.Skipped != 2 {
+	if len(plan.Files) != 2 || plan.Skipped != 2 {
 		t.Fatalf("preview: files=%v skipped=%d", plan.Files, plan.Skipped)
 	}
 	if _, err := applySubtitleCleanup(index, settings, []string{"en"}, "keep", strings.Repeat("0", 64)); err == nil {
@@ -49,7 +49,7 @@ func TestSubtitleCleanupPreviewsAndRemovesOnlySelectedSidecars(t *testing.T) { /
 		}
 	}
 	removed, err := applySubtitleCleanup(index, settings, []string{"en"}, "keep", plan.Digest)
-	if err != nil || removed != 3 {
+	if err != nil || removed != 2 {
 		t.Fatalf("apply: removed=%d err=%v", removed, err)
 	}
 	if !slices.Equal(settings.subtitleLanguages(), []string{"en"}) {
@@ -57,17 +57,17 @@ func TestSubtitleCleanupPreviewsAndRemovesOnlySelectedSidecars(t *testing.T) { /
 	}
 	for _, name := range files {
 		_, err := os.Stat(filepath.Join(dir, name))
-		wantRemoved := strings.Contains(name, ".es.") || strings.Contains(name, ".fr.")
+		wantRemoved := name == "Film.es.srt" || name == "Film.fr.vtt"
 		if (err != nil) != wantRemoved {
 			t.Errorf("%s: err=%v wantRemoved=%v", name, err, wantRemoved)
 		}
 	}
 	plan, err = planSubtitleCleanup(index, []string{"en"}, "delete")
-	if err != nil || len(plan.Files) != 2 {
+	if err != nil || len(plan.Files) != 3 {
 		t.Fatalf("forced preview: %v %v", plan, err)
 	}
 	removed, err = applySubtitleCleanup(index, settings, []string{"en"}, "delete", plan.Digest)
-	if err != nil || removed != 2 {
+	if err != nil || removed != 3 {
 		t.Fatalf("forced apply: %d %v", removed, err)
 	}
 	if _, err := os.Stat(filepath.Join(dir, "Film.en.srt")); err != nil {
@@ -133,6 +133,9 @@ func TestSubtitleCleanupRestoresLanguagesWhenRemovalFails(t *testing.T) {
 	}
 	if !slices.Equal(settings.subtitleLanguages(), []string{"en", "es"}) {
 		t.Fatalf("languages changed after failed removal: %q", settings.subtitleLanguages())
+	}
+	if settings.subtitlePickerLimited() || settings.subtitlePickerKeepForced() {
+		t.Fatal("failed removal changed playback choices")
 	}
 	if _, err := os.Stat(sidecar); err != nil {
 		t.Fatalf("changed sidecar removed: %v", err)

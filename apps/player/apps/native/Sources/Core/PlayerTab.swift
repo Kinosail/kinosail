@@ -4,9 +4,6 @@ enum PlayerTab: String, CaseIterable, Identifiable, Sendable {
     case movies, shows, home, search, list, library, music, audiobooks, books, photos, collections, downloads, settings, more
     var id: String { rawValue }
     static let defaults: [Self] = [.home, .shows, .movies, .search]
-    static let tvPrimary: [Self] = [.home, .movies, .shows, .music, .audiobooks, .photos, .library, .search, .settings]
-    static let tvBrowse = Array(tvPrimary.dropLast(2))
-    static let tvUtilities = Array(tvPrimary.suffix(2))
     static func legacyDefault(_ raw: String?) -> String {
         guard let raw, let items = try? parse(raw), items != [.movies, .shows] else {
             return defaults.map(\.rawValue).joined(separator: ",")
@@ -32,20 +29,20 @@ enum PlayerTab: String, CaseIterable, Identifiable, Sendable {
     }
     var title: String {
         switch self {
-        case .movies: "Movies"
-        case .shows: "TV Shows"
-        case .home: "Home"
-        case .search: "Search"
-        case .list: "My List"
-        case .library: "Library"
-        case .music: "Music"
-        case .audiobooks: "Audiobooks"
-        case .books: "Books"
-        case .photos: "Photos"
-        case .collections: "Collections"
-        case .downloads: "Downloads"
-        case .settings: "Settings"
-        case .more: "More"
+        case .movies: String(localized: "Movies")
+        case .shows: String(localized: "Shows")
+        case .home: String(localized: "Home")
+        case .search: String(localized: "Search")
+        case .list: String(localized: "My List")
+        case .library: String(localized: "Library")
+        case .music: String(localized: "Music")
+        case .audiobooks: String(localized: "Audiobooks")
+        case .books: String(localized: "Books")
+        case .photos: String(localized: "Photos")
+        case .collections: String(localized: "Collections")
+        case .downloads: String(localized: "Downloads")
+        case .settings: String(localized: "Settings")
+        case .more: String(localized: "More")
         }
     }
     var symbol: String {

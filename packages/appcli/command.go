@@ -132,10 +132,15 @@ func run(configured Settings, signals []os.Signal, build ServerBuilder, remoteHa
 	}
 	httpServer.Handler = identitycore.PrivateNetwork(httpServer.Handler)
 	startAccessManagers(ctx, configured.String("remote.mode"), httpServer, internet, trusted, remoteHandler)
-	go shutdownOnCancel(ctx, httpServer)
+	shutdownDone := make(chan struct{})
+	go func() { defer close(shutdownDone); shutdownOnCancel(ctx, httpServer) }()
 
 	slog.Info("Kinosail ready", "listen", httpServer.Addr, "tls", configured.Bool("tls.enabled"))
-	if err := serve(httpServer, servertransport.TLSConfig{Enabled: configured.Bool("tls.enabled"), DataDir: configured.String("paths.data"), Hosts: configured.Strings("tls.hosts"), Certificates: trusted}); err != nil && !errors.Is(err, http.ErrServerClosed) {
+	err := serve(httpServer, servertransport.TLSConfig{Enabled: configured.Bool("tls.enabled"), DataDir: configured.String("paths.data"), Hosts: configured.Strings("tls.hosts"), Certificates: trusted})
+	if ctx.Err() != nil {
+		<-shutdownDone
+	}
+	if err != nil && !errors.Is(err, http.ErrServerClosed) {
 		slog.Error("server failed", "error", err)
 		return 1
 	}
@@ -162,7 +167,7 @@ func startAccessManagers(ctx context.Context, remoteMode string, server *http.Se
 	}
 	if remoteMode != "off" && internet != nil {
 		go func() {
-			if err := internet.Serve(ctx, remoteHandler(server.Handler)); err != nil && !errors.Is(err, context.Canceled) {
+			if err := internet.ServeContinuously(ctx, remoteHandler(server.Handler)); err != nil && !errors.Is(err, context.Canceled) {
 				slog.Error("secure remote access stopped", "error", err)
 			}
 		}()
@@ -171,7 +176,7 @@ func startAccessManagers(ctx context.Context, remoteMode string, server *http.Se
 
 func shutdownOnCancel(ctx context.Context, server *http.Server) {
 	<-ctx.Done()
-	shutdownCtx, cancel := context.WithTimeout(context.WithoutCancel(ctx), 10*time.Second)
+	shutdownCtx, cancel := context.WithTimeout(context.WithoutCancel(ctx), 25*time.Second)
 	defer cancel()
 	if err := server.Shutdown(shutdownCtx); err != nil {
 		slog.Error("shutdown failed", "error", err)

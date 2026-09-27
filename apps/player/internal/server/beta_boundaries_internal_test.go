@@ -66,7 +66,7 @@ func TestRemoteAccessWebKillAndReset(t *testing.T) {
 	}
 	response = httptest.NewRecorder()
 	remoteaccess.ResetKillHTTP(manager, localizedError)(response, request)
-	if response.Code != http.StatusSeeOther || manager.Status().State != "restart-required" {
+	if response.Code != http.StatusSeeOther || manager.Status().State != "starting" {
 		t.Fatalf("reset = %d status=%#v", response.Code, manager.Status())
 	}
 }

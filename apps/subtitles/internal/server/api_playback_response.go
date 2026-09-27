@@ -10,7 +10,7 @@ func (api apiServices) applyPlaybackSources(result *apiPlayback, item library.It
 	if canStream && plan.MarkerMode != "server" {
 		result.Direct = "/media/" + item.ID
 		result.DirectType = directMediaType(item.Path, facts)
-		result.Subtitles = playbackSubtitles(item, media, api.subtitles, api.settings.subtitleLanguage(), api.settings.subtitlesDefault())
+		result.Subtitles = playbackSubtitles(item, media, api.subtitles, api.settings.subtitleLanguages(), api.settings.subtitlePreference(), api.settings.subtitlePickerLimited(), api.settings.subtitlePickerKeepForced(), api.settings.subtitlesDefault())
 	}
 	if canStream && item.Kind == "video" {
 		result.Trickplay = "/trickplay/" + item.ID + "/{second}"

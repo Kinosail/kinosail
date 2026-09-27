@@ -17,6 +17,7 @@ import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
 import androidx.media3.common.Tracks
 import androidx.media3.datasource.ResolvingDataSource
+import androidx.media3.datasource.HttpDataSource
 import androidx.media3.datasource.okhttp.OkHttpDataSource
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.source.DefaultMediaSourceFactory
@@ -56,6 +57,9 @@ class PlaybackModel(application: Application) : AndroidViewModel(application) {
     private var progressSession = ""
     private var progressRevision = 0L
     private var progressJob: Job? = null
+    private var recoveryJob: Job? = null
+    private var recoveryResetJob: Job? = null
+    private var networkRecoveries = 0
     private var rateSave: Job? = null
     private var rateChoice = 0
     private var preferences: PlaybackPreferences? = null
@@ -113,16 +117,18 @@ class PlaybackModel(application: Application) : AndroidViewModel(application) {
                 val progressApi = ProgressApi(saved.server)
                 val savedJournal = ProgressJournal.forViewer(getApplication(), saved.server, viewer)
                 val current = withContext(Dispatchers.IO) {
-                    val identity = ServerApi(saved.server).viewer(saved.token)
+                    val identity = saved.viewer ?: ServerApi(saved.server).viewer(saved.token)
                     require(identity.id == viewer.id && identity.serverId == viewer.serverId) {
                         "The Viewer Profile changed. Reconnect to continue."
                     }
-                    syncPending(savedJournal, saved, viewer)
-                    progressApi.current(item.id, saved.token, viewer.id)
+                    try { syncPending(savedJournal, saved, viewer) }
+                    catch (error: CancellationException) { throw error }
+                    catch (error: Exception) { if (!isTransientRequestFailure(error)) throw error }
+                    try { progressApi.current(item.id, saved.token, viewer.id) }
+                    catch (error: CancellationException) { throw error }
+                    catch (error: Exception) { if (isTransientRequestFailure(error)) item.progress else throw error }
                 }
-                val plan = withContext(Dispatchers.IO) {
-                    PlaybackApi(saved.server).source(item.id, saved.token, viewer.id, capabilities)
-                }
+                val plan = loadPlan(saved, viewer, item.id, capabilities, attempt)
                 rateSave?.join()
                 val loadedPreferences = try {
                     withContext(Dispatchers.IO) {
@@ -171,7 +177,16 @@ class PlaybackModel(application: Application) : AndroidViewModel(application) {
                 engine.addListener(object : Player.Listener {
                     override fun onTracksChanged(tracks: Tracks) { trackChoices.update(tracks) }
                     override fun onPlaybackStateChanged(state: Int) {
+                        if (attempt != generation || player !== engine) return
                         loading = state == Player.STATE_BUFFERING || state == Player.STATE_IDLE && message == null
+                        if (state == Player.STATE_READY && networkRecoveries > 0) {
+                            recoveryResetJob?.cancel()
+                            recoveryResetJob = viewModelScope.launch {
+                                delay(30_000)
+                                if (attempt == generation && player === engine && engine.isPlaying)
+                                    networkRecoveries = 0
+                            }
+                        }
                         if (state == Player.STATE_ENDED) {
                             checkpoint()
                             activeAudioItem = null
@@ -179,10 +194,12 @@ class PlaybackModel(application: Application) : AndroidViewModel(application) {
                     }
 
                     override fun onIsPlayingChanged(isPlaying: Boolean) {
+                        if (attempt != generation || player !== engine) return
                         if (!isPlaying) checkpoint()
                     }
 
                     override fun onPlayerError(error: PlaybackException) {
+                        if (attempt != generation || player !== engine) return
                         val current = source
                         if (!usingCompatible && current?.compatible != null && isFormatFailure(error)) {
                             checkpoint()
@@ -190,6 +207,25 @@ class PlaybackModel(application: Application) : AndroidViewModel(application) {
                                 engine.currentPosition / 1000.0).times(1000).toLong()
                             install(engine, current.compatible, MimeTypes.APPLICATION_M3U8,
                                 at, true)
+                        } else if (isTransientMediaFailure(error) && networkRecoveries < 8) {
+                            checkpoint()
+                            val position = engine.currentPosition.coerceAtLeast(0)
+                            val wanted = engine.playWhenReady
+                            val pause = (1L shl networkRecoveries.coerceAtMost(3)) * 1_000L
+                            networkRecoveries++
+                            recoveryJob?.cancel()
+                            recoveryResetJob?.cancel()
+                            loading = true
+                            message = null
+                            retryable = false
+                            recoveryJob = viewModelScope.launch {
+                                delay(pause)
+                                if (attempt == generation && player === engine) {
+                                    engine.seekTo(position)
+                                    engine.prepare()
+                                    engine.playWhenReady = wanted
+                                }
+                            }
                         } else {
                             loading = false
                             message = "Playback stopped. Check this title and your Server connection."
@@ -282,6 +318,24 @@ class PlaybackModel(application: Application) : AndroidViewModel(application) {
     }
 
     private var baseline = WatchProgress()
+
+    private suspend fun loadPlan(saved: SavedSession, viewer: Viewer, itemId: String,
+                                 capabilities: PlaybackCapabilities, attempt: Int): PlaybackSource {
+        var failures = 0
+        while (true) {
+            if (attempt != generation) throw CancellationException()
+            try {
+                return withContext(Dispatchers.IO) {
+                    PlaybackApi(saved.server).source(itemId, saved.token, viewer.id, capabilities)
+                }
+            } catch (error: CancellationException) { throw error }
+            catch (error: Exception) {
+                if (!isTransientRequestFailure(error) || failures >= 7) throw error
+                delay((1L shl failures.coerceAtMost(3)) * 1_000L)
+                failures++
+            }
+        }
+    }
 
     private suspend fun syncPending(savedJournal: ProgressJournal, saved: SavedSession, viewer: Viewer) {
         syncLock.withLock {
@@ -401,6 +455,11 @@ class PlaybackModel(application: Application) : AndroidViewModel(application) {
         generation++
         progressJob?.cancel()
         progressJob = null
+        recoveryJob?.cancel()
+        recoveryJob = null
+        recoveryResetJob?.cancel()
+        recoveryResetJob = null
+        networkRecoveries = 0
         remoteJob?.cancel()
         remoteJob = null
         if (currentPhoneRef?.get() === this) currentPhoneRef = null
@@ -502,6 +561,26 @@ class PlaybackModel(application: Application) : AndroidViewModel(application) {
         internal fun currentPhone(): PlaybackModel? = currentPhoneRef?.get()?.takeIf { !it.remoteTV && it.player != null }
             ?: AudioPlaybackService.phonePlayback()
         internal val SPEEDS = listOf(0.5f, 0.75f, 1f, 1.25f, 1.5f, 1.75f, 2f, 2.5f, 3f)
+        private fun isTransientRequestFailure(error: Exception): Boolean = when (error) {
+            is ServerHttpException -> error.status in setOf(408, 429, 500, 502, 503, 504)
+            is javax.net.ssl.SSLException, is java.net.ProtocolException -> false
+            is IOException -> true
+            else -> false
+        }
+        @androidx.annotation.OptIn(markerClass = [UnstableApi::class])
+        internal fun isTransientMediaFailure(error: PlaybackException): Boolean {
+            if (error.errorCode in setOf(PlaybackException.ERROR_CODE_IO_NETWORK_CONNECTION_FAILED,
+                    PlaybackException.ERROR_CODE_IO_NETWORK_CONNECTION_TIMEOUT)) return true
+            if (error.errorCode != PlaybackException.ERROR_CODE_IO_BAD_HTTP_STATUS) return false
+            var cause: Throwable? = error.cause
+            repeat(8) {
+                if (cause is HttpDataSource.InvalidResponseCodeException)
+                    return cause.responseCode in
+                        setOf(408, 429, 500, 502, 503, 504)
+                cause = cause?.cause
+            }
+            return false
+        }
         internal fun checkedSpeed(rate: Float): Float {
             require(rate in SPEEDS) { "Choose a supported playback speed." }
             return rate

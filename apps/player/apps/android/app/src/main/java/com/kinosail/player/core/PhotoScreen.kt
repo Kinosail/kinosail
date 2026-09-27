@@ -37,6 +37,9 @@ import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.semantics.LiveRegionMode
+import androidx.compose.ui.semantics.liveRegion
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 
@@ -111,24 +114,25 @@ internal fun PhotoScreen(item: CatalogItem, catalog: CatalogModel, tv: Boolean, 
                         enabled = image != null, modifier = Modifier.focusRequester(zoomFocus)) {
                         androidx.tv.material3.Text(if (zoom > 1f) "Fit photo" else "Zoom in")
                     }
-                    androidx.tv.material3.Button(onClick = close) { androidx.tv.material3.Text("Done") }
+                    androidx.tv.material3.Button(onClick = close) { androidx.tv.material3.Text(interfaceText("Done")) }
                 } else {
                     Button(onClick = { if (zoom > 1f) fit() else zoom = 2f }, enabled = image != null) {
                         Text(if (zoom > 1f) "Fit photo" else "Zoom in")
                     }
-                    Button(onClick = close) { Text("Done") }
+                    Button(onClick = close) { Text(interfaceText("Done")) }
                 }
             }
             if (loaded && image == null) {
                 Text(if (item.stream.isEmpty()) "This Viewer cannot open the photo."
                     else "Could not open the photo. Check your Server connection and try again.",
-                    color = Color.White)
+                    color = Color.White,
+                    modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite })
                 if (item.stream.isNotEmpty()) {
                     if (tv) androidx.tv.material3.Button(onClick = { revision++ }) {
-                        androidx.tv.material3.Text("Try again")
-                    } else Button(onClick = { revision++ }) { Text("Try again") }
+                        androidx.tv.material3.Text(interfaceText("Try again"))
+                    } else Button(onClick = { revision++ }) { Text(interfaceText("Try again")) }
                 }
-            } else if (!loaded) Text("Opening photo…", color = Color.White)
+            } else if (!loaded) Text(interfaceText("Opening photo…"), color = Color.White)
         }
     }
 }

@@ -102,6 +102,13 @@ struct MediaCard: View {
                         }
                     }
                     .clipShape(.rect(cornerRadius: 12))
+                    #if os(tvOS)
+                    .overlay {
+                        if focused {
+                            RoundedRectangle(cornerRadius: 12).strokeBorder(KinoTheme.text, lineWidth: 4)
+                        }
+                    }
+                    #endif
                 VStack(alignment: .leading, spacing: 8) {
                     Text(item.title).font(.headline).foregroundStyle(KinoTheme.text)
                         .mediaLineLimit(2, accessibility: dynamicTypeSize.isAccessibilitySize)
@@ -121,17 +128,12 @@ struct MediaCard: View {
                         } else { Text(" ").font(.caption).accessibilityHidden(true) }
                     }
                 }
-                #if os(tvOS)
-                .padding([.horizontal, .bottom], 12)
-                #endif
             }
             .frame(maxWidth: .infinity, alignment: .topLeading)
             .contentShape(.rect)
         }
-        #if os(iOS)
         .buttonStyle(.plain)
-        #else
-        .buttonStyle(.card)
+        #if os(tvOS)
         .focused($focused)
         .onChange(of: focused) { _, value in if value { onFocus?(item) } }
         .onPlayPauseCommand(perform: quickPlayAction)
@@ -205,7 +207,7 @@ enum TVOSQuickPlay {
 struct MediaShelf: View {
     @ScaledMetric(relativeTo: .headline) private var posterWidth = 164.0
     @ScaledMetric(relativeTo: .headline) private var landscapeWidth = 260.0
-    let title: String
+    let title: LocalizedStringKey
     let items: [MediaItem]
     var landscape = false
     var resumesPlayback = false

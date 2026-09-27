@@ -28,7 +28,7 @@ struct HomeScreen: View {
                     } else if homeMode == .listen, !selection.featuredAndContinuation.isEmpty {
                         ResumeRows(items: selection.featuredAndContinuation, title: "Listening", showsAll: false)
                     }
-                    TVHomeBrowse(mode: homeMode, selectTab: selectTab, changeMode: changeMode)
+                    TVHomeBrowse(selectTab: selectTab)
                     #else
                     VStack(alignment: .leading, spacing: 12) {
                         HStack(spacing: 28) {
@@ -68,7 +68,7 @@ struct HomeScreen: View {
                             VStack(alignment: .leading, spacing: 18) {
                                 Text("Movie genres").font(.title2.bold()).accessibilityAddTraits(.isHeader)
                                 ForEach(selection.movieGenres) { genre in
-                                    recentShelf(genre.name, items: genre.items)
+                                    recentShelf(LocalizedStringKey(genre.name), items: genre.items)
                                 }
                             }
                         }
@@ -144,7 +144,7 @@ struct HomeScreen: View {
         #endif
     }
 
-    @ViewBuilder private func recentShelf(_ title: String, items: [MediaItem], opensShows: Bool = false) -> some View {
+    @ViewBuilder private func recentShelf(_ title: LocalizedStringKey, items: [MediaItem], opensShows: Bool = false) -> some View {
         if !items.isEmpty {
             #if os(tvOS)
             MediaShelf(title: title, items: items, onQuickPlay: { quickPlay = $0 }, opensShows: opensShows)
@@ -205,10 +205,9 @@ struct HomeSelection {
 
 #if os(tvOS)
 private struct TVHomeBrowse: View {
-    let mode: PlayerMode
+    @FocusState private var focusedTitle: String?
     let selectTab: (PlayerTab) -> Void
-    let changeMode: ((PlayerMode) -> Void)?
-    private let tabs: [PlayerTab] = [.movies, .shows, .music, .audiobooks, .photos, .collections]
+    private let tabs: [PlayerTab] = [.movies, .shows, .music, .audiobooks, .photos, .library]
 
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
@@ -216,10 +215,7 @@ private struct TVHomeBrowse: View {
             ScrollView(.horizontal) {
                 LazyHStack(alignment: .top, spacing: 18) {
                     ForEach(tabs) { tab in
-                        tile(title: tab.title, icon: icon(for: tab)) { selectTab(tab) }
-                    }
-                    if let changeMode {
-                        tile(title: "\(mode.other.title) Home", icon: "KinosailMark") { changeMode(mode.other) }
+                        tile(title: tab.title, icon: icon(for: tab), systemIcon: tab == .library) { selectTab(tab) }
                     }
                 }
                 .padding(.horizontal, 24)
@@ -233,21 +229,32 @@ private struct TVHomeBrowse: View {
         .focusSection()
     }
 
-    private func tile(title: String, icon: String, action: @escaping () -> Void) -> some View {
-        VStack(spacing: 10) {
-            Button(action: action) {
-                RoundedRectangle(cornerRadius: 14)
-                    .fill(KinoTheme.raised)
-                    .overlay {
-                        Image(icon).resizable().scaledToFit().frame(width: 112, height: 112)
-                    }
-                    .frame(width: 320, height: 150)
+    private func tile(title: String, icon: String, systemIcon: Bool = false, action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            HStack(spacing: 18) {
+                if systemIcon {
+                    Image(systemName: icon).resizable().scaledToFit()
+                        .frame(width: 60, height: 60).foregroundStyle(KinoTheme.signal).accessibilityHidden(true)
+                } else {
+                    Image(icon).resizable().scaledToFit().frame(width: 60, height: 60).accessibilityHidden(true)
+                }
+                Text(title).font(.title3.weight(.semibold)).foregroundStyle(KinoTheme.text)
+                    .multilineTextAlignment(.leading)
+                    .lineLimit(2).fixedSize(horizontal: false, vertical: true)
+                Spacer(minLength: 0)
             }
-            .buttonStyle(.card)
-            .accessibilityLabel(title)
-            Text(title).font(.headline).foregroundStyle(KinoTheme.text).accessibilityHidden(true)
+            .frame(width: 400)
+            .frame(minHeight: 100)
+            .contentShape(.rect)
+            .overlay {
+                if focusedTitle == title {
+                    RoundedRectangle(cornerRadius: 14).strokeBorder(KinoTheme.text, lineWidth: 4)
+                }
+            }
         }
-        .frame(width: 320)
+        .buttonStyle(.plain)
+        .focused($focusedTitle, equals: title)
+        .accessibilityLabel(title)
     }
 
     private func icon(for tab: PlayerTab) -> String {
@@ -258,6 +265,7 @@ private struct TVHomeBrowse: View {
         case .audiobooks: "BrowseAudiobooks"
         case .photos: "BrowsePhotos"
         case .collections: "BrowseCollections"
+        case .library: "books.vertical"
         default: tab.symbol
         }
     }

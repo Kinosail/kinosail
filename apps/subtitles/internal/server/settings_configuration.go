@@ -7,11 +7,12 @@ import (
 	"strings"
 
 	"github.com/MikeO7/kinosail-subtitles/internal/configuration"
+	"github.com/MikeO7/kinosail/packages/appcli"
 )
 
-const configurationHTML = `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width"><script src="/static/theme.js?v=electric-1"></script><link rel="stylesheet" href="/static/app.css?v=electric-1"><title>Configuration · Kinosail Subtitles</title></head><body class="settings-page"><main class="settings-shell"><a class="back" href="/settings">{{icon "back"}} Settings</a><header class="settings-intro"><span class="eyebrow">Owner controls</span><h1>Advanced configuration</h1><p>Change settings normally managed by Docker, environment variables, or YAML. Provider changes saved here take effect immediately. Other changes apply after a restart.</p></header>{{range .}}<section id="{{.Key}}"><h2>{{.Label}}</h2>{{if eq .Source "environment"}}<p>Set by your deployment environment.</p>{{else if eq .Source "yaml"}}<p>Set in your YAML configuration file.</p>{{else if eq .Source "gui"}}<p>Using a value saved here.</p>{{else}}<p>Using the Kinosail default.</p>{{end}}{{if .Secret}}<p>{{if .Configured}}A secret is configured. Its value is hidden.{{else}}No secret is configured.{{end}}</p>{{end}}{{if or (eq .Source "environment") (eq .Source "yaml")}}<p>To change this setting, update the external value and restart Kinosail Server.</p>{{else}}<form action="/settings/configuration" method="post"><input type="hidden" name="key" value="{{.Key}}"><label>{{if .Secret}}New secret{{else}}Value{{end}}<input aria-label="{{.Label}}" name="value" {{if .Secret}}type="password" autocomplete="off" placeholder="New secret"{{else}}value="{{.Value}}"{{end}} required></label><button>Save change</button><p>{{if .Live}}Changes take effect immediately.{{else}}Applies after a restart.{{end}}</p></form>{{if eq .Source "gui"}}<form action="/settings/configuration/reset" method="post"><button class="quiet" name="key" value="{{.Key}}">Use default</button></form>{{end}}{{end}}<details><summary>Technical details</summary><p>Configuration key: <code>{{.Key}}</code><br>Environment variable: <code>{{.Env}}</code></p></details></section>{{end}}</main></body></html>`
+const configurationHTML = `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width"><script src="/static/theme.js?v=electric-1"></script><link rel="stylesheet" href="/static/app.css?v=electric-1"><title>Configuration · Kinosail Subtitles</title></head><body class="settings-page"><main class="settings-shell"><a class="back" href="/settings">{{icon "back"}} Settings</a><header class="settings-intro"><span class="eyebrow">Owner controls</span><h1>Advanced configuration</h1><p>Change settings normally managed by Docker, environment variables, or YAML. Provider and log detail changes take effect immediately. Other changes apply after a restart.</p></header>{{range .}}<section id="{{.Key}}"><h2>{{.Label}}</h2>{{if eq .Source "environment"}}<p>Set by your deployment environment.</p>{{else if eq .Source "yaml"}}<p>Set in your YAML configuration file.</p>{{else if eq .Source "gui"}}<p>Using a value saved here.</p>{{else}}<p>Using the Kinosail default.</p>{{end}}{{if .Secret}}<p>{{if .Configured}}A secret is configured. Its value is hidden.{{else}}No secret is configured.{{end}}</p>{{end}}{{if or (eq .Source "environment") (eq .Source "yaml")}}<p>To change this setting, update the external value and restart Kinosail Server.</p>{{else}}<form action="/settings/configuration" method="post"><input type="hidden" name="key" value="{{.Key}}"><label>{{if .Secret}}New secret{{else}}Value{{end}}<input aria-label="{{.Label}}" name="value" {{if .Secret}}type="password" autocomplete="off" placeholder="New secret"{{else}}value="{{.Value}}"{{end}} required></label><button>Save change</button><p>{{if .Live}}Changes take effect immediately.{{else}}Applies after a restart.{{end}}</p></form>{{if eq .Source "gui"}}<form action="/settings/configuration/reset" method="post"><button class="quiet" name="key" value="{{.Key}}">Use default</button></form>{{end}}{{end}}<details><summary>Technical details</summary><p>Configuration key: <code>{{.Key}}</code><br>Environment variable: <code>{{.Env}}</code></p></details></section>{{end}}</main></body></html>`
 
-var configurationView = newLocalizedTemplate("configuration", ignoreNonPasswordSecretAutofill(strings.NewReplacer("Set by your deployment environment.", `Configured via Docker: <code>{{.Env}}</code>.`, "</header>", "</header>"+openSubtitlesConfigurationHTML+oidcConfigurationHTML+samlConfigurationHTML+scimConfigurationHTML, "{{range .}}", "{{range .Fields}}", "app.css?v=46", "app.css?v=64").Replace(configurationHTML)))
+var configurationView = newLocalizedTemplate("configuration", ignoreNonPasswordSecretAutofill(strings.NewReplacer("Set by your deployment environment.", `Configured via Docker: <code>{{.Env}}</code>.`, "</header>", "</header>"+restartNoticeHTML+openSubtitlesConfigurationHTML+oidcConfigurationHTML+samlConfigurationHTML+scimConfigurationHTML, "{{range .}}", "{{range .Fields}}", "app.css?v=46", "app.css?v=64").Replace(configurationHTML)))
 
 type configurationField struct {
 	configuration.PublicValue
@@ -19,12 +20,33 @@ type configurationField struct {
 	Live  bool
 }
 type configurationPage struct {
-	Fields        []configurationField
-	OpenSubtitles openSubtitlesConfigurationView
-	OIDC          oidcConfigurationView
-	SAML          samlConfigurationView
-	SCIM          scimConfigurationView
+	Fields         []configurationField
+	RestartPending []string
+	OpenSubtitles  openSubtitlesConfigurationView
+	OIDC           oidcConfigurationView
+	SAML           samlConfigurationView
+	SCIM           scimConfigurationView
 }
+
+const restartNoticeHTML = `{{if .RestartPending}}<section class="wide restart-notice" id="restart-required" role="status" aria-labelledby="restart-required-title"><h2 id="restart-required-title">Restart Kinosail Subtitles Server to apply saved changes</h2><p>These settings are saved but not active yet:</p><ul>{{range .RestartPending}}<li>{{.}}</li>{{end}}</ul><details><summary>How to restart</summary><p>Use the tool that runs this Server. For a release Docker Compose install, run <code>docker compose --file compose.release.yaml restart kinosail</code> in its installation directory. Include your usual override files. For another install method, restart its Server service.</p><p>Reopen Settings after the Server starts. This notice clears when the saved settings are active.</p></details></section>{{end}}`
+
+func (store *settingsStore) pendingRestart() []string {
+	store.mu.RLock()
+	defer store.mu.RUnlock()
+	var pending []string
+	for _, field := range store.config.Fields() {
+		if !field.Restart || store.config.Managed(field.Key) || subtitleProviderSetting(field.Key) || field.Key == "logging.level" || store.config.String(field.Key) == store.startupConfig.String(field.Key) {
+			continue
+		}
+		label := configurationLabels[field.Key]
+		if label == "" {
+			label = field.Key
+		}
+		pending = append(pending, label)
+	}
+	return pending
+}
+
 type settingControl struct {
 	Managed              bool
 	DockerVars, YAMLKeys []string
@@ -79,7 +101,7 @@ func (store *settingsStore) deploymentFields() []configurationField {
 	result := make([]configurationField, 0)
 	for _, field := range store.config.Fields() {
 		if field.Restart && field.Key != "paths.data" && field.Key != "tls.duckdns" && !strings.HasPrefix(field.Key, openSubtitlesConfigurationKey+".") && !strings.HasPrefix(field.Key, oidcConfigurationKey+".") && !strings.HasPrefix(field.Key, samlConfigurationGroupKey+".") && !strings.HasPrefix(field.Key, scimConfigurationKey+".") && !strings.HasPrefix(field.Key, subSourceConfigurationKey+".") {
-			view := configurationField{PublicValue: field, Label: configurationLabels[field.Key], Live: subtitleProviderSetting(field.Key)}
+			view := configurationField{PublicValue: field, Label: configurationLabels[field.Key], Live: subtitleProviderSetting(field.Key) || field.Key == "logging.level"}
 			result = append(result, view)
 		}
 	}
@@ -121,6 +143,9 @@ func (store *settingsStore) changeConfigurationLocked(key, value string, reset b
 		}
 		store.config.UpdateGUI(key, "", true)
 		store.refreshSubtitleProviderLocked(key)
+		if key == "logging.level" {
+			appcli.UpdateLoggingLevel(store.config.String(key))
+		}
 		return nil
 	}
 	if err := configuration.Set(filepath.Dir(store.file), key, value); err != nil {
@@ -128,6 +153,9 @@ func (store *settingsStore) changeConfigurationLocked(key, value string, reset b
 	}
 	store.config.UpdateGUI(key, value, false)
 	store.refreshSubtitleProviderLocked(key)
+	if key == "logging.level" {
+		appcli.UpdateLoggingLevel(store.config.String(key))
+	}
 	return nil
 }
 
@@ -165,7 +193,7 @@ func subtitleProviderSetting(key string) bool {
 func showConfiguration(settings *settingsStore) http.HandlerFunc {
 	return func(writer http.ResponseWriter, request *http.Request) {
 		writer.Header().Set("Content-Type", "text/html; charset=utf-8")
-		if err := configurationView.Execute(writer, request, configurationPage{Fields: settings.deploymentFields(), OpenSubtitles: settings.openSubtitlesConfiguration(), OIDC: settings.oidcConfiguration(), SAML: settings.samlConfiguration(request), SCIM: settings.scimConfiguration(request)}); err != nil {
+		if err := configurationView.Execute(writer, request, configurationPage{Fields: settings.deploymentFields(), RestartPending: settings.pendingRestart(), OpenSubtitles: settings.openSubtitlesConfiguration(), OIDC: settings.oidcConfiguration(), SAML: settings.samlConfiguration(request), SCIM: settings.scimConfiguration(request)}); err != nil {
 			localizedError(writer, request, err.Error(), http.StatusInternalServerError)
 		}
 	}

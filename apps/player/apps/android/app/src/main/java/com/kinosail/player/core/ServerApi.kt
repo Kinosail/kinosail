@@ -1,20 +1,31 @@
 package com.kinosail.player.core
 
+import android.util.Log
 import java.net.HttpURLConnection
 import java.net.URL
 import java.io.IOException
 import java.nio.ByteBuffer
 import java.nio.charset.CodingErrorAction
+import java.util.UUID
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
+import kotlinx.serialization.json.JsonNull
 import kotlinx.serialization.json.booleanOrNull
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.intOrNull
 import kotlinx.serialization.json.put
 
 data class ConnectChallenge(val code: String, val secret: String)
-data class Viewer(val server: String, val serverId: String, val id: String, val name: String)
+data class Viewer(val server: String, val serverId: String, val id: String, val name: String) {
+    fun validated(): Viewer {
+        require(server.toByteArray(Charsets.UTF_8).size in 1..120 && server.none(Char::isISOControl) &&
+            serverId.toByteArray(Charsets.UTF_8).size in 1..256 && serverId.none(Char::isISOControl) &&
+            id.matches(Regex("[A-Za-z0-9_-]{1,128}")) &&
+            name.toByteArray(Charsets.UTF_8).size in 1..120 && name.none(Char::isISOControl)) { "Invalid Viewer identity." }
+        return this
+    }
+}
 class ServerHttpException(val status: Int) : IOException("Server request failed ($status).")
 
 internal fun boundedContentLength(connection: HttpURLConnection, maximum: Long): Boolean {
@@ -68,12 +79,12 @@ class ServerApi(
         for (field in listOf("owner", "downloads", "transcode", "remote")) {
             profile[field]?.let { require((it as? JsonPrimitive)?.booleanOrNull != null) { INVALID_RESPONSE } }
         }
-        profile["libraries"]?.let { libraries ->
+        profile["libraries"]?.takeUnless { it is JsonNull }?.let { libraries ->
             require(libraries is JsonArray && libraries.size <= 256 && libraries.all { entry ->
                 entry is JsonPrimitive && entry.isString && entry.content.toByteArray().size <= 4096
             }) { INVALID_RESPONSE }
         }
-        return Viewer(fields.text("server", 120), fields.text("serverId", 256), id, profile.text("name", 120))
+        return Viewer(fields.text("server", 120), fields.text("serverId", 256), id, profile.text("name", 120)).validated()
     }
 
     fun signOut(token: String) {
@@ -212,7 +223,11 @@ class ServerApi(
     ): Pair<Int, kotlinx.serialization.json.JsonElement> {
         val bytes = body?.toString()?.toByteArray(Charsets.UTF_8)
         require(bytes == null || bytes.size <= 4096) { "Request is too large." }
+        var retries = 0
+        while (true) {
+        val requestId = UUID.randomUUID().toString()
         val connection = open(URL(server.url, path))
+        var statusCode: Int? = null
         try {
             connection.requestMethod = method
             connection.instanceFollowRedirects = false
@@ -220,6 +235,7 @@ class ServerApi(
             connection.readTimeout = 20_000
             connection.useCaches = false
             connection.setRequestProperty("Accept", "application/json")
+            connection.setRequestProperty("X-Request-ID", requestId)
             if (token != null) connection.setRequestProperty("Authorization", "Bearer $token")
             if (viewerId != null) connection.setRequestProperty("X-Kinosail-Viewer-Profile", viewerId)
             if (bytes != null) {
@@ -228,6 +244,7 @@ class ServerApi(
                 connection.outputStream.use { it.write(bytes) }
             }
             val status = connection.responseCode
+            statusCode = status
             if (status !in expected) throw ServerHttpException(status)
             if (status == 204 || status == 404) return status to kotlinx.serialization.json.JsonNull
             require(connection.contentType?.substringBefore(';')?.trim()?.lowercase() == "application/json" &&
@@ -247,8 +264,35 @@ class ServerApi(
             val decoded = Charsets.UTF_8.newDecoder().onMalformedInput(CodingErrorAction.REPORT)
                 .decode(ByteBuffer.wrap(response)).toString()
             return status to StrictJson.parse(decoded)
+        } catch (failure: Exception) {
+            val kind = when (failure) {
+                is ServerHttpException -> "http"
+                is IOException -> "transport"
+                else -> "invalid_response"
+            }
+            val message = "HTTP request failed request_id=$requestId operation=${diagnosticOperation(path)} " +
+                "method=$method status=${statusCode ?: 0} kind=$kind cause=${failure.javaClass.simpleName}"
+            if ((statusCode != null && statusCode >= 500) || kind == "invalid_response") Log.e("KinosailNetwork", message)
+            else Log.w("KinosailNetwork", message)
+            val transient = when (failure) {
+                is ServerHttpException -> failure.status in setOf(408, 500, 502, 503, 504)
+                is javax.net.ssl.SSLException, is java.net.ProtocolException -> false
+                is IOException -> failure.message != INVALID_RESPONSE
+                else -> false
+            }
+            if (method == "GET" && retries < 2 && transient) {
+                retries++
+                try { Thread.sleep(250L * retries) }
+                catch (interrupted: InterruptedException) {
+                    Thread.currentThread().interrupt()
+                    throw IOException("Request interrupted.", interrupted)
+                }
+                continue
+            }
+            throw failure
         } finally {
             connection.disconnect()
+        }
         }
     }
 

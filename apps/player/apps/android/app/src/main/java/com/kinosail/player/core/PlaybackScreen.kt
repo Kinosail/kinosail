@@ -60,10 +60,11 @@ internal fun PlaybackScreen(item: CatalogItem, viewer: Viewer, tv: Boolean, clos
         Column(Modifier.fillMaxSize().background(Color.Black).safeDrawingPadding().padding(24.dp),
             verticalArrangement = Arrangement.spacedBy(20.dp)) {
             Text(if (audioConnection.error) "Could not start audio. Return to the library and try again."
-                else "Starting audio…", color = Color.White)
+                else "Starting audio…", color = Color.White,
+                modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite })
             if (tv) androidx.tv.material3.Button(onClick = close) {
-                androidx.tv.material3.Text("Done")
-            } else TextButton(onClick = close) { Text("Done", color = KinoColor.signal) }
+                androidx.tv.material3.Text(interfaceText("Done"))
+            } else TextButton(onClick = close) { Text(interfaceText("Done"), color = KinoColor.signal) }
         }
         return
     }
@@ -140,7 +141,7 @@ internal fun PlaybackScreen(item: CatalogItem, viewer: Viewer, tv: Boolean, clos
                         }
                     })
                     if (casting?.connected == true) TextButton(onClick = casting::playSelected,
-                        enabled = !casting.busy) { Text("Play on Cast", color = KinoColor.signal) }
+                        enabled = !casting.busy) { Text(interfaceText("Play on Cast"), color = KinoColor.signal) }
                     if (player != null) {
                         val label = "Speed ${speedText(playback.playbackSpeed)}"
                         if (tv) androidx.tv.material3.Button(onClick = { speedPicker = !speedPicker }) {
@@ -161,34 +162,34 @@ internal fun PlaybackScreen(item: CatalogItem, viewer: Viewer, tv: Boolean, clos
                         if (tv) androidx.tv.material3.Button(onClick = {
                             speedPicker = false; trackPicker = !trackPicker
                         }, modifier = Modifier.focusRequester(trackButtonFocus)) {
-                            androidx.tv.material3.Text("Audio & captions")
+                            androidx.tv.material3.Text(interfaceText("Audio & captions"))
                         }
                         else TextButton(onClick = { speedPicker = false; trackPicker = !trackPicker }) {
-                            Text("Audio & captions", color = KinoColor.signal)
+                            Text(interfaceText("Audio & captions"), color = KinoColor.signal)
                         }
                     }
                     if (playback.nextItemId != null) {
                         if (tv) androidx.tv.material3.Button(onClick = { playback.playNext(onNext) },
-                            enabled = !playback.nextBusy) { androidx.tv.material3.Text("Next episode") }
+                            enabled = !playback.nextBusy) { androidx.tv.material3.Text(interfaceText("Next episode")) }
                         else TextButton(onClick = { playback.playNext(onNext) }, enabled = !playback.nextBusy) {
-                            Text("Next episode", color = KinoColor.signal)
+                            Text(interfaceText("Next episode"), color = KinoColor.signal)
                         }
                     }
                     if (tv) androidx.tv.material3.Button(onClick = close) {
-                        androidx.tv.material3.Text("Done")
-                    } else TextButton(onClick = close) { Text("Done", color = KinoColor.signal) }
+                        androidx.tv.material3.Text(interfaceText("Done"))
+                    } else TextButton(onClick = close) { Text(interfaceText("Done"), color = KinoColor.signal) }
                 }
                 if (casting?.active != null) Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                    TextButton(onClick = { casting.skip(-30.0) }) { Text("Back 30", color = KinoColor.signal) }
-                    TextButton(onClick = casting::playPause) { Text("Play / pause", color = KinoColor.signal) }
-                    TextButton(onClick = { casting.skip(30.0) }) { Text("Forward 30", color = KinoColor.signal) }
-                    TextButton(onClick = casting::stop) { Text("Stop Cast", color = KinoColor.signal) }
+                    TextButton(onClick = { casting.skip(-30.0) }) { Text(interfaceText("Back 30"), color = KinoColor.signal) }
+                    TextButton(onClick = casting::playPause) { Text(interfaceText("Play / pause"), color = KinoColor.signal) }
+                    TextButton(onClick = { casting.skip(30.0) }) { Text(interfaceText("Forward 30"), color = KinoColor.signal) }
+                    TextButton(onClick = casting::stop) { Text(interfaceText("Stop Cast"), color = KinoColor.signal) }
                 }
                 casting?.notice?.let { Text(it, color = Color.White,
                     modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite }) }
                 if (speedPicker) Column(Modifier.fillMaxWidth().background(Color.Black.copy(alpha = 0.82f))
                     .padding(12.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                    Text("Playback speed", color = Color.White)
+                    Text(interfaceText("Playback speed"), color = Color.White)
                     LazyRow(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                         items(PlaybackModel.SPEEDS) { rate ->
                             val label = if (rate == 1f) "Normal" else speedText(rate)
@@ -205,7 +206,7 @@ internal fun PlaybackScreen(item: CatalogItem, viewer: Viewer, tv: Boolean, clos
                 if (trackPicker) Column(Modifier.fillMaxWidth().background(Color.Black.copy(alpha = 0.82f))
                     .padding(12.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
                     if (playback.audioTracks.size > 1) {
-                        Text("Audio", color = Color.White)
+                        Text(interfaceText("Audio"), color = Color.White)
                         LazyRow(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                             items(playback.audioTracks) { choice ->
                                 val label = choice.label + if (choice.selected) " · Selected" else ""
@@ -219,7 +220,7 @@ internal fun PlaybackScreen(item: CatalogItem, viewer: Viewer, tv: Boolean, clos
                         }
                     }
                     if (playback.textTracks.size > 1) {
-                        Text("Captions", color = Color.White)
+                        Text(interfaceText("Captions"), color = Color.White)
                         LazyRow(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                             item {
                                 val label = if (playback.captionsEnabled) "Off" else "Off · Selected"
@@ -246,14 +247,15 @@ internal fun PlaybackScreen(item: CatalogItem, viewer: Viewer, tv: Boolean, clos
                     Modifier.background(Color.Black.copy(alpha = 0.82f)).padding(12.dp) else Modifier),
                 verticalArrangement = Arrangement.spacedBy(12.dp)) {
                 if (playback.loading) CircularProgressIndicator(color = KinoColor.signal)
-                if (playback.usingCompatible) Text("Compatible playback", color = Color.White)
-                playback.message?.let { Text(it, color = Color.White) }
+                if (playback.usingCompatible) Text(interfaceText("Compatible playback"), color = Color.White)
+                playback.message?.let { Text(it, color = Color.White,
+                    modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite }) }
                 if (playback.retryable) {
                     if (tv) androidx.tv.material3.Button(onClick = { playback.start(item, viewer) },
                         modifier = Modifier.focusRequester(retryFocus)) {
-                        androidx.tv.material3.Text("Try again")
+                        androidx.tv.material3.Text(interfaceText("Try again"))
                     } else TextButton(onClick = { playback.start(item, viewer) }) {
-                        Text("Try again", color = KinoColor.signal)
+                        Text(interfaceText("Try again"), color = KinoColor.signal)
                     }
                 }
                 playback.progressNotice?.let { Text(it, color = Color.White,
@@ -263,14 +265,14 @@ internal fun PlaybackScreen(item: CatalogItem, viewer: Viewer, tv: Boolean, clos
                 if (playback.progressConflict) Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                     if (tv) {
                         androidx.tv.material3.Button(onClick = { playback.resolveProgress(true) }) {
-                            androidx.tv.material3.Text("Use this device")
+                            androidx.tv.material3.Text(interfaceText("Use this device"))
                         }
                         androidx.tv.material3.Button(onClick = { playback.resolveProgress(false) }) {
-                            androidx.tv.material3.Text("Keep other device")
+                            androidx.tv.material3.Text(interfaceText("Keep other device"))
                         }
                     } else {
-                        TextButton(onClick = { playback.resolveProgress(true) }) { Text("Use this device") }
-                        TextButton(onClick = { playback.resolveProgress(false) }) { Text("Keep other device") }
+                        TextButton(onClick = { playback.resolveProgress(true) }) { Text(interfaceText("Use this device")) }
+                        TextButton(onClick = { playback.resolveProgress(false) }) { Text(interfaceText("Keep other device")) }
                     }
                 }
             }

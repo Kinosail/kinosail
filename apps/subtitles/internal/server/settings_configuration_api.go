@@ -6,7 +6,7 @@ func apiConfiguration(settings *settingsStore) http.HandlerFunc {
 	return func(writer http.ResponseWriter, _ *http.Request) {
 		fields := settings.configuration().Fields()
 		for index := range fields {
-			if subtitleProviderSetting(fields[index].Key) && fields[index].Source != "environment" && fields[index].Source != "yaml" {
+			if (subtitleProviderSetting(fields[index].Key) || fields[index].Key == "logging.level") && fields[index].Source != "environment" && fields[index].Source != "yaml" {
 				fields[index].Restart = false
 			}
 		}
@@ -29,7 +29,7 @@ func apiChangeConfiguration(settings *settingsStore, reset bool) http.HandlerFun
 			apiError(writer, err, http.StatusConflict)
 			return
 		}
-		writeJSON(writer, map[string]any{"status": "saved", "restartRequired": !subtitleProviderSetting(key)}, http.StatusAccepted)
+		writeJSON(writer, map[string]any{"status": "saved", "restartRequired": !subtitleProviderSetting(key) && key != "logging.level" && len(settings.pendingRestart()) > 0}, http.StatusAccepted)
 	}
 }
 
@@ -92,7 +92,7 @@ func apiChangeOIDCConfiguration(writer http.ResponseWriter, request *http.Reques
 		apiError(writer, err, http.StatusConflict)
 		return
 	}
-	writeJSON(writer, map[string]any{"status": "saved", "restartRequired": true}, http.StatusAccepted)
+	writeJSON(writer, map[string]any{"status": "saved", "restartRequired": len(settings.pendingRestart()) > 0}, http.StatusAccepted)
 }
 
 func apiChangeSAMLConfiguration(writer http.ResponseWriter, request *http.Request, settings *settingsStore, reset bool) {
@@ -108,7 +108,7 @@ func apiChangeSAMLConfiguration(writer http.ResponseWriter, request *http.Reques
 		apiError(writer, err, http.StatusConflict)
 		return
 	}
-	writeJSON(writer, map[string]any{"status": "saved", "restartRequired": true}, http.StatusAccepted)
+	writeJSON(writer, map[string]any{"status": "saved", "restartRequired": len(settings.pendingRestart()) > 0}, http.StatusAccepted)
 }
 
 func apiChangeSCIMConfiguration(writer http.ResponseWriter, request *http.Request, settings *settingsStore, reset bool) {
@@ -123,5 +123,5 @@ func apiChangeSCIMConfiguration(writer http.ResponseWriter, request *http.Reques
 		apiError(writer, err, http.StatusConflict)
 		return
 	}
-	writeJSON(writer, map[string]any{"status": "saved", "restartRequired": true}, http.StatusAccepted)
+	writeJSON(writer, map[string]any{"status": "saved", "restartRequired": len(settings.pendingRestart()) > 0}, http.StatusAccepted)
 }

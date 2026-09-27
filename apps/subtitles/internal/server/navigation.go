@@ -2,6 +2,11 @@ package server
 
 import sharednavigation "github.com/MikeO7/kinosail/packages/navigation"
 
+type (
+	navigationLink       = sharednavigation.Link
+	navigationPreference = sharednavigation.Preference
+)
+
 func (store *settingsStore) navigation() []string {
 	store.mu.RLock()
 	defer store.mu.RUnlock()
