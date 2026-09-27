@@ -4,88 +4,52 @@ import Testing
 import UIKit
 @testable import KinosailPlayer
 
-@MainActor @Observable private final class TopBarProbe {
-    var selection = PlayerTab.movies
-    var requestedFocus = PlayerTab.movies
+@MainActor @Observable private final class HomeActionsProbe {
+    var requestedFocus = PlayerTab.search
     var focused: PlayerTab?
+    var opened: PlayerTab?
     var showsContent = false
 }
 
-private struct TopBarProbeScreen: View {
-    @Bindable var probe: TopBarProbe
+private struct HomeActionsProbeScreen: View {
+    @Bindable var probe: HomeActionsProbe
     @FocusState private var focus: PlayerTab?
 
     var body: some View {
         VStack {
-            TVTopBar(selection: $probe.selection, focus: $focus)
-            TabView(selection: $probe.selection) {
-                ForEach(PlayerTab.tvPrimary) { tab in
-                    Tab(tab.title, systemImage: tab.symbol, value: tab) {
-                        VStack {
-                            if probe.showsContent { Button("Play") {} }
-                        }
-                        .toolbar(.hidden, for: .tabBar)
-                    }
-                }
-            }
+            TVTopBar(focus: $focus) { probe.opened = $0 }
+            if probe.showsContent { Button("Play") {} }
         }
-        .onAppear { focus = .movies }
+        .onAppear { focus = .search }
         .onChange(of: probe.requestedFocus) { _, value in focus = value }
         .onChange(of: focus) { _, value in probe.focused = value }
     }
 }
 
 @Suite(.serialized) struct TVTopBarTests {
-    @Test @MainActor func homeHasSearchAndSettingsWithoutLibraryMenu() async throws {
+    @Test @MainActor func homeKeepsSearchAndSettingsWithoutLibraryMenu() async throws {
         let scene = try #require(UIApplication.shared.connectedScenes.first as? UIWindowScene)
-        let probe = TopBarProbe()
-        probe.selection = .home
-        probe.requestedFocus = .search
+        let probe = HomeActionsProbe()
         let window = UIWindow(windowScene: scene)
-        window.rootViewController = UIHostingController(rootView: TopBarProbeScreen(probe: probe))
+        window.rootViewController = UIHostingController(rootView: HomeActionsProbeScreen(probe: probe))
         window.makeKeyAndVisible()
         defer { window.isHidden = true }
 
         try await Task.sleep(for: .milliseconds(300))
         #expect(probe.focused == .search)
+        probe.showsContent = true
+        try await Task.sleep(for: .milliseconds(100))
+        #expect(probe.focused == .search)
+
         probe.requestedFocus = .library
         try await Task.sleep(for: .milliseconds(100))
         #expect(probe.focused != .library)
-        #expect(probe.selection == .home)
+        #expect(probe.opened == nil)
+
         probe.requestedFocus = .settings
         try await Task.sleep(for: .milliseconds(100))
         #expect(probe.focused == .settings)
-    }
-
-    @Test @MainActor func movingAcrossBrowseAndUtilityControlsKeepsTopFocus() async throws {
-        let scene = try #require(UIApplication.shared.connectedScenes.first as? UIWindowScene)
-        let probe = TopBarProbe()
-        let window = UIWindow(windowScene: scene)
-        window.rootViewController = UIHostingController(rootView: TopBarProbeScreen(probe: probe))
-        window.makeKeyAndVisible()
-        defer { window.isHidden = true }
-
-        try await Task.sleep(for: .milliseconds(300))
-        #expect(probe.selection == .movies)
-        #expect(probe.focused == .movies)
-
-        probe.showsContent = true
-        try await Task.sleep(for: .milliseconds(100))
-        #expect(probe.focused == .movies)
-
-        probe.requestedFocus = .library
-        try await Task.sleep(for: .milliseconds(300))
-        #expect(probe.selection == .library)
-        #expect(probe.focused == .library)
-
-        probe.requestedFocus = .search
-        try await Task.sleep(for: .milliseconds(100))
-        #expect(probe.selection == .search)
-        #expect(probe.focused == .search)
-        probe.requestedFocus = .settings
-        try await Task.sleep(for: .milliseconds(100))
-        #expect(probe.selection == .settings)
-        #expect(probe.focused == .settings)
+        #expect(probe.opened == nil)
     }
 }
 #endif

@@ -28,7 +28,7 @@ struct PlayerTabs: View {
     private var mode: PlayerMode { PlayerMode.stored(modeStored) }
     private var pinned: [PlayerTab] {
         #if os(tvOS)
-        PlayerTab.tvPrimary
+        [.home]
         #else
         (try? PlayerTab.parse(mode == .watch ? watchStored : listenStored)) ?? mode.defaultTabs
         #endif
@@ -45,9 +45,13 @@ struct PlayerTabs: View {
     var body: some View {
         Group {
             #if os(tvOS)
-            ZStack(alignment: .top) {
-                tabs.safeAreaInset(edge: .top, spacing: 0) { Color.clear.frame(height: 76) }
-                TVTopBar(selection: $selection, focus: $topFocus)
+            stack(tab: .home) {
+                ZStack(alignment: .top) {
+                    PlayerTabScreen(tab: .home, mode: screenMode, showsSearch: false,
+                                    changeMode: changeMode, selectTab: selectBrowseTab)
+                        .safeAreaInset(edge: .top, spacing: 0) { Color.clear.frame(height: 76) }
+                    TVTopBar(focus: $topFocus, onSelect: selectBrowseTab)
+                }
             }
             #else
             tabs
@@ -55,11 +59,15 @@ struct PlayerTabs: View {
         }
         .safeAreaInset(edge: .top, spacing: 0) {
             ConnectionBanner {
+                #if os(tvOS)
+                selectBrowseTab(.downloads)
+                #else
                 let tab: PlayerTab = pinned.contains(.downloads) ? .downloads : .more
                 var path = NavigationPath()
                 if tab == .more { path.append(PlayerTab.downloads) }
                 paths[tab] = path
                 selection = tab
+                #endif
             }
         }
         .onAppear { if !pinned.contains(selection) && selection != .more { selection = pinned[0] } }
@@ -123,6 +131,11 @@ struct PlayerTabs: View {
         }
     }
     private func selectBrowseTab(_ tab: PlayerTab) {
+        #if os(tvOS)
+        var path = NavigationPath()
+        path.append(tab)
+        paths[.home] = path
+        #else
         if pinned.contains(tab) {
             selection = tab
         } else {
@@ -131,6 +144,7 @@ struct PlayerTabs: View {
             paths[.home] = path
             selection = .home
         }
+        #endif
     }
     private func moreLink(_ tab: PlayerTab) -> some View {
         NavigationLink(value: tab) {

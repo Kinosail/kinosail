@@ -208,7 +208,7 @@ private struct TVHomeBrowse: View {
     let mode: PlayerMode
     let selectTab: (PlayerTab) -> Void
     let changeMode: ((PlayerMode) -> Void)?
-    private let tabs: [PlayerTab] = [.movies, .shows, .music, .audiobooks, .photos, .collections]
+    private let tabs: [PlayerTab] = [.movies, .shows, .music, .audiobooks, .photos, .collections, .library]
 
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
@@ -216,7 +216,7 @@ private struct TVHomeBrowse: View {
             ScrollView(.horizontal) {
                 LazyHStack(alignment: .top, spacing: 18) {
                     ForEach(tabs) { tab in
-                        tile(title: tab.title, icon: icon(for: tab)) { selectTab(tab) }
+                        tile(title: tab.title, icon: icon(for: tab), systemIcon: tab == .library) { selectTab(tab) }
                     }
                     if let changeMode {
                         tile(title: "\(mode.other.title) Home", icon: "KinosailMark") { changeMode(mode.other) }
@@ -233,10 +233,15 @@ private struct TVHomeBrowse: View {
         .focusSection()
     }
 
-    private func tile(title: String, icon: String, action: @escaping () -> Void) -> some View {
+    private func tile(title: String, icon: String, systemIcon: Bool = false, action: @escaping () -> Void) -> some View {
         Button(action: action) {
             VStack(spacing: 6) {
-                Image(icon).resizable().scaledToFit().frame(width: 80, height: 80).accessibilityHidden(true)
+                if systemIcon {
+                    Image(systemName: icon).resizable().scaledToFit()
+                        .frame(width: 80, height: 80).foregroundStyle(KinoTheme.signal).accessibilityHidden(true)
+                } else {
+                    Image(icon).resizable().scaledToFit().frame(width: 80, height: 80).accessibilityHidden(true)
+                }
                 Text(title).font(.headline).foregroundStyle(KinoTheme.text).multilineTextAlignment(.center)
             }
             .padding(12)
@@ -256,6 +261,7 @@ private struct TVHomeBrowse: View {
         case .audiobooks: "BrowseAudiobooks"
         case .photos: "BrowsePhotos"
         case .collections: "BrowseCollections"
+        case .library: "books.vertical"
         default: tab.symbol
         }
     }
