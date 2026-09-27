@@ -4,9 +4,9 @@ Kinosail Subtitles finds, validates, and adds subtitle sidecar files to movies a
 
 [Repository home](../../README.md) · [Subtitles documentation](https://kinosail.com/subtitles/) · [Published container](https://github.com/Kinosail/kinosail/pkgs/container/kinosail-subtitles) · [Support](../../SUPPORT.md)
 
-![Kinosail Subtitles dashboard in a synthetic test instance, with one ready file and five wanted files](docs/assets/images/subtitles-dashboard-1200.png)
+![Kinosail Subtitles dashboard in a Podman demo with fictional movies and episodes, one ready file, and five wanted files](docs/assets/images/subtitles-dashboard-desktop.webp)
 
-This screenshot comes from the real Subtitles app with generated movie and episode files. It contains no personal library or account data.
+This screenshot comes from the real Subtitles app running in Podman with generated movie and episode files. It contains no personal library or account data.
 
 The application uses the same foundation as Kinosail Player: a Go API-driven monolith, server-rendered HTML with small browser enhancements, embedded SQLite, one hardened container, local-first authentication, and the shared Kinosail design and verification system.
 
