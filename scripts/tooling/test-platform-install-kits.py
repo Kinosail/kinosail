@@ -33,7 +33,9 @@ class PlatformInstallKitsTest(unittest.TestCase):
             capture_output=True, text=True, check=True, timeout=30,
             env=os.environ | {"KINOSAIL_MEDIA_PATH": str(media)},
         )
-        return json.loads(result.stdout)["services"]["kinosail"]
+        config = json.loads(result.stdout)
+        self.assertEqual(config["name"], f"kinosail-{app}")
+        return config["services"]["kinosail"]
 
     def test_missing_media_path_rejects_before_deployment(self):
         env = os.environ.copy()

@@ -1,3 +1,5 @@
+name: kinosail-player
+
 services:
   kinosail:
     image: ghcr.io/kinosail/kinosail-player:latest

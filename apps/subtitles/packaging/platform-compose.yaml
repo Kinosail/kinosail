@@ -1,3 +1,5 @@
+name: kinosail-subtitles
+
 services:
   kinosail:
     image: ghcr.io/kinosail/kinosail-subtitles:latest

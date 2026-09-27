@@ -9,7 +9,7 @@ last_reviewed: 2026-09-27
 
 Kinosail provides two independent containers. Install [Player](https://raw.githubusercontent.com/Kinosail/kinosail/main/apps/player/packaging/platform-compose.yaml) to browse and play media. Install [Subtitles](https://raw.githubusercontent.com/Kinosail/kinosail/main/apps/subtitles/packaging/platform-compose.yaml) to save subtitle files beside media. Both images support Linux AMD64 and ARM64.
 
-The linked Compose files work with Synology Container Manager, TrueNAS SCALE Custom Apps, QNAP Container Station, CasaOS, Portainer stacks, and ordinary Docker Compose. They use the published images, so you do not need to build Kinosail. Each app has its own port and saved volumes.
+The linked Compose files work with Synology Container Manager, TrueNAS SCALE Custom Apps, QNAP Container Station, CasaOS, Portainer stacks, and ordinary Docker Compose. They use the published images, so you do not need to build Kinosail. Each app has its own project name, port, and saved volumes, so both can run on one host.
 
 ## Prepare the media path
 
