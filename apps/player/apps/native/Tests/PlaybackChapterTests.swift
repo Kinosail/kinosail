@@ -28,11 +28,13 @@ struct PlaybackChapterTests {
 
     @MainActor @Test func offlinePolicyFiltersTracksAndClearsBetweenTitles() throws {
         let engine = PlaybackEngine()
+        #expect(!engine.allowsSubtitleLanguage("eng"))
+        #expect(!engine.allowsSubtitleLanguage("nld"))
         engine.subtitlePolicy = try SubtitleChoicePolicy(language: "en", limited: true)
         #expect(engine.allowsSubtitleLanguage("eng"))
         #expect(!engine.allowsSubtitleLanguage("nld"))
         engine.stop()
-        #expect(engine.allowsSubtitleLanguage("nld"))
+        #expect(!engine.allowsSubtitleLanguage("nld"))
     }
 
     private func source(_ chapters: String, start: String = "0", preview: String = "", token: String = "") throws -> PlaybackSource {

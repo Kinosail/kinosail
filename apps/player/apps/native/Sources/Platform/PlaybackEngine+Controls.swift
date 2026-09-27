@@ -88,7 +88,7 @@ extension PlaybackEngine {
         if isPlaying { player?.rate = Float(valid.rate) }
         guard let item = player?.currentItem else { return }
         selectPreferred(in: audioGroup, options: audioOptions, language: valid.audioLanguage, label: valid.audioTrack, item: item)
-        if valid.subtitleLanguage == "off", let subtitleGroup { item.select(nil, in: subtitleGroup) }
+        if (valid.subtitleLanguage == "off" || subtitlePolicy == nil), let subtitleGroup { item.select(nil, in: subtitleGroup) }
         else if subtitlePolicy?.limited == true, let subtitleGroup {
             item.select(subtitleOptions.first(where: { allowsSubtitleLanguage($0.extendedLanguageTag ?? $0.locale?.identifier ?? "") }), in: subtitleGroup)
         } else { selectPreferred(in: subtitleGroup, options: subtitleOptions, language: valid.subtitleLanguage, label: valid.subtitleTrack, item: item) }
@@ -159,7 +159,7 @@ extension PlaybackEngine {
         }
     }
 
-    func allowsSubtitleLanguage(_ language: String) -> Bool { subtitlePolicy?.allows(language) ?? true }
+    func allowsSubtitleLanguage(_ language: String) -> Bool { subtitlePolicy?.allows(language) ?? false }
 
     func loadTracks(_ item: AVPlayerItem, attempt: UUID) async throws {
         let audio = Task { @MainActor in
@@ -229,7 +229,8 @@ extension PlaybackEngine {
         }
         guard let group = subtitleGroup else { throw ClientError.invalidInput("This stream has no selectable subtitles.") }
         if let id {
-            guard let index = Int(id), String(index) == id, subtitleOptions.indices.contains(index) else { throw ClientError.invalidInput("The subtitle track is unavailable.") }
+            guard let index = Int(id), String(index) == id, subtitleOptions.indices.contains(index),
+                  allowsSubtitleLanguage(subtitleOptions[index].extendedLanguageTag ?? subtitleOptions[index].locale?.identifier ?? "") else { throw ClientError.invalidInput("The subtitle track is unavailable.") }
             player?.currentItem?.select(subtitleOptions[index], in: group)
             subtitleDocument = nil; externalCaptions = false; presentation.showCaptions("")
             selectedExternalSubtitleID = nil
