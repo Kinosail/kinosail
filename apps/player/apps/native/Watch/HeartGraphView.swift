@@ -43,6 +43,9 @@ struct HeartGraphView: View {
             }
             .padding(.horizontal, 8)
         }
+        .onChange(of: heart.message) { _, message in
+            if isVisible, let message { AccessibilityNotification.Announcement(message).post() }
+        }
         .task(id: isVisible) {
             guard isVisible else { return }
             while !Task.isCancelled {
