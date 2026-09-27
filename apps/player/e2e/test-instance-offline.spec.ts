@@ -8,6 +8,14 @@ test("two browser clients synchronize and reconnect in one Watch Together room",
   const viewerName = `Room Viewer ${Date.now()}`;
   const viewerPassword = "room-viewer-password";
   const viewerID = await createViewer(page, viewerName, viewerPassword);
+  await page.goto("/settings#security");
+  const mfaWasRequired = await page.locator('form[action="/settings/mfa"] input[name="required"]').isChecked();
+  const setViewerMFA = (required: boolean) => page.evaluate(async (required) => {
+    const csrf = document.querySelector<HTMLMetaElement>('meta[name="kinosail-csrf"]')?.content || "";
+    const response = await fetch("/api/v1/settings/mfa", { method: "PUT", headers: { "Content-Type": "application/json", "X-Kinosail-CSRF": csrf }, body: JSON.stringify({ required }) });
+    return response.ok;
+  }, required);
+  if (mfaWasRequired) expect(await setViewerMFA(false)).toBeTruthy();
   const viewer = await newViewerPage(browser, new URL(page.url()).origin);
   const leaderFrames: string[] = [];
   page.on("websocket", (socket) => socket.on("framesent", ({ payload }) => leaderFrames.push(payload.toString())));
@@ -38,6 +46,7 @@ test("two browser clients synchronize and reconnect in one Watch Together room",
   } finally {
     await viewer.context().close();
     await removeViewer(page, viewerID);
+    if (mfaWasRequired) expect(await setViewerMFA(true)).toBeTruthy();
   }
 });
 
