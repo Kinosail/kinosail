@@ -7,6 +7,8 @@ section: Start here
 
 **[Install with Docker]({{ '/quickstart/' | relative_url }})** is the recommended path for running the web Player. Use the prebuilt `ghcr.io/kinosail/kinosail-player:latest` container with the current deployment files. Git downloads those files; Go and a local image build are not required.
 
+For Synology, TrueNAS, QNAP, CasaOS, Portainer, Unraid, or Proxmox VE, follow [Install on a NAS or Proxmox]({{ '/getting-started/platforms/' | relative_url }}). It links to importable Player and Subtitles files and explains the required media path.
+
 The Docker guide installs the continuous container channel. You do not need a numbered GitHub release or an installer archive. Source builds remain a separate path for contributors and development.
 
 ## Your first successful setup

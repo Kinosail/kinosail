@@ -11,6 +11,8 @@ Bring movies, shows, music, books, and photos together in one library. Watch the
 
 <a class="start-link" href="{{ '/quickstart/' | relative_url }}">Install with Docker</a>
 
+On a NAS or Proxmox VE, [get the importable Player and Subtitles files]({{ '/getting-started/platforms/' | relative_url }}) for Synology, TrueNAS, QNAP, CasaOS, Portainer, and Unraid.
+
 ## From Server to first play
 
 <div class="app-directory">

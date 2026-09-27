@@ -5,6 +5,7 @@ Read **[Kinosail Player Docs](https://kinosail.com/docs/)**. Start with **[Insta
 ## Read the guides
 
 - [Docker installation](quickstart.md) and [first setup](getting-started/first-setup.md).
+- [NAS, Proxmox, and Unraid installation](getting-started/platforms.md) for Player and Subtitles.
 - [User guide](user-guide/index.md) for browsing, playback, profiles, and collections.
 - [Owner guide](owner-guide/index.md) for libraries, access, playback, and recovery.
 - [Developer guide](developer-guide/index.md) for the versioned API and MCP.
