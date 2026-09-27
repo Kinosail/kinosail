@@ -2,7 +2,11 @@
 
 Kinosail Subtitles finds, validates, and adds subtitle sidecar files to movies and episodes you control. It is the subtitle automation app in the Kinosail family.
 
-[Repository home](../../README.md) · [User documentation](docs/README.md) · [Support](../../SUPPORT.md) · [Contributing](../../CONTRIBUTING.md)
+[Repository home](../../README.md) · [Subtitles documentation](https://kinosail.com/subtitles/) · [Published container](https://github.com/Kinosail/kinosail/pkgs/container/kinosail-subtitles) · [Support](../../SUPPORT.md)
+
+![Kinosail Subtitles dashboard in a synthetic test instance, with one ready file and five wanted files](docs/assets/images/subtitles-dashboard-1200.png)
+
+This screenshot comes from the real Subtitles app with generated movie and episode files. It contains no personal library or account data.
 
 The application uses the same foundation as Kinosail Player: a Go API-driven monolith, server-rendered HTML with small browser enhancements, embedded SQLite, one hardened container, local-first authentication, and the shared Kinosail design and verification system.
 
@@ -23,6 +27,10 @@ The application uses the same foundation as Kinosail Player: a Go API-driven mon
 - Keeps provider credentials, application state, and media files on the owner-hosted Server.
 
 The default is deliberately conservative. Kinosail upgrades its own sidecars only after a candidate gains at least ten score points. It upgrades an unknown sidecar only for an exact OpenSubtitles hash match and keeps the original as a `.kinosail.bak` recovery file.
+
+## Install the published container
+
+The signed `ghcr.io/kinosail/kinosail-subtitles:latest` image is published after a passing `main` build. Follow the [Docker installation guide](https://kinosail.com/subtitles/getting-started/install/) for a writable media mount and persistent app volumes. Kinosail Subtitles runs independently from Player. Every core feature is free; [Supporter badges](https://kinosail.com/subtitles/owner-guide/supporter/) are optional.
 
 ## Install from source
 
@@ -149,7 +157,7 @@ The binary enables subtitle-app mode. The user-facing product is the subtitle co
 
 ## Development and verification
 
-Follow the [root contribution guide](../../CONTRIBUTING.md). While `.gates-disabled` exists, do not run the suites below or count skipped checks as passes. GitHub Actions is disabled. When gates are enabled, run focused server coverage while editing:
+Follow the [root contribution guide](../../CONTRIBUTING.md). Run focused server coverage while editing:
 
 ```sh
 go test ./internal/server -run 'TestSubtitle(App|Dashboard|Mutations)'
@@ -159,7 +167,7 @@ Run the repository gates before publication:
 
 ```sh
 make max-loc
-KINOSAIL_VERIFY_WORKTREE=1 make verify-changed
+make verify-changed
 make check
 ```
 

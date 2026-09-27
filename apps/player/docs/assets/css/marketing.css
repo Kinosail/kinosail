@@ -47,6 +47,8 @@ h3{font-size:23px;line-height:1.25;letter-spacing:-.6px}
 .story-inner{padding-block:86px;max-width:900px}
 .story-inner>p:not(.section-label){font-size:20px;max-width:660px;color:#bac0b6}
 .start{padding-block:112px;display:grid;grid-template-columns:1fr 1fr;gap:80px}
+.subtitles-intro{padding-bottom:32px}
+.subtitles-intro+.start{padding-top:32px}
 .start>div{max-width:440px}
 .start p{font-size:18px;color:var(--muted)}
 .start .fine{font-size:14px;margin-top:24px}
@@ -63,7 +65,7 @@ h3{font-size:23px;line-height:1.25;letter-spacing:-.6px}
 .essay-copy .actions{margin-top:40px}
 @media(max-width:760px){.wrap{padding-inline:24px}
 .masthead{min-height:88px;gap:18px;flex-wrap:wrap;padding-block:20px}
-.masthead nav{gap:18px}
+.masthead nav{gap:8px}
 .masthead nav a{font-size:13px}
 .hero{padding-top:44px}
 h1{font-size:clamp(42px,9vw,68px);letter-spacing:-.03em}

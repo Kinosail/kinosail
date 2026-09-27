@@ -167,6 +167,9 @@ func TestSupporterStoresPatronOrderAndLivingStandardIndependently(t *testing.T) 
 	if patronCertificate.Code != http.StatusOK || strings.Contains(patronCertificate.Body.String(), "LIVING SERVICE") {
 		t.Fatalf("Patron certificate included Living tenure: %d %q", patronCertificate.Code, patronCertificate.Body.String())
 	}
+	if !strings.Contains(patronCertificate.Body.String(), "Kinosail Subtitles — Lighthouse — Patron Order") {
+		t.Fatal("Patron certificate does not use the Subtitles badge artwork")
+	}
 
 	signer.tier, signer.sustaining = "admiral", true
 	living := apiCall(t, handler, token, http.MethodPost, "/api/v1/supporter/activate", map[string]any{"key": "MONTHLY_SUPPORTER_KEY"})
