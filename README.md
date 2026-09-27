@@ -4,7 +4,7 @@ Kinosail is a set of self-hosted apps for your media and home network. Run the a
 
 Kinosail Player Server is free to run on hardware you control. The web Player is included.
 
-**[Official website](https://kinosail.com/)** · **[Get started](https://kinosail.com/quickstart/)** · **[Documentation](https://kinosail.com/docs/)** · **[Player merch](https://kinosail-shop.fourthwall.com/)** · **[Contribute](CONTRIBUTING.md)** · **[Get help](SUPPORT.md)** · **[Security](SECURITY.md)**
+**[Official website](https://kinosail.com/)** · **[Get started](https://kinosail.com/quickstart/)** · **[NAS and Proxmox installs](https://kinosail.com/getting-started/platforms/)** · **[Documentation](https://kinosail.com/docs/)** · **[Player merch](https://kinosail-shop.fourthwall.com/)** · **[Contribute](CONTRIBUTING.md)** · **[Get help](SUPPORT.md)** · **[Security](SECURITY.md)**
 
 ## Player preview
 
@@ -22,11 +22,22 @@ These are screenshots of the real Player running in Podman with fictional movies
 | [Kinosail Player](apps/player/README.md) | Browse and play movies, Shows, music, audiobooks, books, and photos. Includes Profiles, playback progress, collections, and compatible playback. | `https://localhost:38127` |
 | [Kinosail Subtitles](https://kinosail.com/subtitles/) | Find, validate, and save subtitle sidecars beside your movies and episodes. | `https://localhost:38128` |
 
-For Synology, TrueNAS, QNAP, CasaOS, Portainer, Unraid, and Proxmox VE, follow the [platform install guide](apps/player/docs/getting-started/platforms.md).
-
 Player reads your media and does not change the source files. Subtitles needs write access to save subtitle files beside your media. Kinosail does not relay media. You do not need a Kinosail account for local use.
 
 Subtitles runs in its own [published container](https://github.com/Kinosail/kinosail/pkgs/container/kinosail-subtitles). Follow the [Subtitles Docker guide](https://kinosail.com/subtitles/getting-started/install/) for its writable media mount, or see the [source and test-instance screenshots](apps/subtitles/README.md). Core subtitle features are free; [Supporter badges](https://kinosail.com/subtitles/owner-guide/supporter/) are optional.
+
+## Install on a NAS or Proxmox VE
+
+Import a prepared file into Synology Container Manager, TrueNAS SCALE, QNAP Container Station, CasaOS, or Portainer. Use the XML template for a local Unraid install. On Proxmox VE, run Docker in a Linux VM with your media share mounted inside the VM.
+
+| App | Compose file | Unraid template | Media access | Default HTTPS port |
+| --- | --- | --- | --- | --- |
+| Player | [Download Compose YAML](https://raw.githubusercontent.com/Kinosail/kinosail/main/apps/player/packaging/platform-compose.yaml) | [Download XML](https://raw.githubusercontent.com/Kinosail/kinosail/main/apps/player/packaging/unraid.xml) | Read-only | `38127` |
+| Subtitles | [Download Compose YAML](https://raw.githubusercontent.com/Kinosail/kinosail/main/apps/subtitles/packaging/platform-compose.yaml) | [Download XML](https://raw.githubusercontent.com/Kinosail/kinosail/main/apps/subtitles/packaging/unraid.xml) | Read and write | `38128` |
+
+Set `KINOSAIL_MEDIA_PATH` to an existing absolute path on the container host before importing Compose. Give container user `10001:10001` the access shown above. The Unraid templates require you to choose the Media path. After starting the app, check that it is healthy, open its HTTPS port, and create the first Owner. Protect a backup key before relying on recovery.
+
+Follow the [platform install guide](https://kinosail.com/getting-started/platforms/) for manager-specific steps, updates, and backup details. The Unraid templates are local files, not Community Apps listings.
 
 ## Get started with Kinosail Player
 

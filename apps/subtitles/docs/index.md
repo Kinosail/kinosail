@@ -18,6 +18,7 @@ Kinosail Subtitles is a free, self-hosted app that scans local movies and episod
 </figure>
 
 - [Install the published container]({{ '/getting-started/install/' | relative_url }})
+- [Install on a NAS or Proxmox VE](https://kinosail.com/getting-started/platforms/) with an importable Compose file or local Unraid template.
 - [Complete first setup]({{ '/getting-started/first-setup/' | relative_url }})
 - [Connect a subtitle provider]({{ '/owner-guide/integrations/' | relative_url }})
 - [Find and manage subtitles]({{ '/user-guide/' | relative_url }})
