@@ -39,19 +39,12 @@ private struct HeaderBackgroundProbeScreen: View {
 }
 
 @Suite(.serialized) struct TVTopBarTests {
-    @Test @MainActor func topControlsHaveAnOpaqueHeader() async throws {
-        let scene = try #require(UIApplication.shared.connectedScenes.first as? UIWindowScene)
-        let window = UIWindow(windowScene: scene)
-        window.rootViewController = UIHostingController(rootView: HeaderBackgroundProbeScreen())
-        window.makeKeyAndVisible()
-        defer { window.isHidden = true }
-
-        try await Task.sleep(for: .milliseconds(300))
-        let image = UIGraphicsImageRenderer(size: window.bounds.size).image { _ in
-            window.drawHierarchy(in: window.bounds, afterScreenUpdates: true)
-        }
-        let scale = image.scale
-        let sample = CGRect(x: window.bounds.midX * scale, y: (window.safeAreaInsets.top + 38) * scale, width: 1, height: 1)
+    @Test @MainActor func topControlsHaveAnOpaqueHeader() throws {
+        let renderer = ImageRenderer(content: HeaderBackgroundProbeScreen().frame(width: 800, height: 76)
+            .environment(\.colorScheme, .dark))
+        renderer.scale = 1
+        let image = try #require(renderer.uiImage)
+        let sample = CGRect(x: 400, y: 38, width: 1, height: 1)
         let pixel = try #require(image.cgImage?.cropping(to: sample))
         var rgba = [UInt8](repeating: 0, count: 4)
         rgba.withUnsafeMutableBytes { bytes in
