@@ -4,10 +4,12 @@
 
 - Mode: full audit. Player web was first, followed by Subtitles web, Android phone/TV/Wear, and Apple iOS/tvOS/watchOS.
 - Source baseline: `2efa5638fdd521e7e9c44c35f584e19114b5f893`. The two web test images were built from this source and rebuilt after their applicable fix. Native apps were built from this worktree. The final PR and main revisions are recorded in Git history.
+- Reconciliation: the task branch was rebased onto `0a8bcafccdad4847f18de42cc3f537ed78fd52f5` after the first audit runs. Android lint, unit, and APK checks and both changed-path gates passed again. The isolated web images were rebuilt from that base; [Player 59/59](evidence/player-browser-reconciled.log) and [Subtitles 22/22](evidence/subtitles-browser-reconciled.log) passed in Chromium. The new Viewer MFA test separately passed 1/1 on that rebuilt Subtitles image. Selected [Player](evidence/player-browser-matrix-reconciled.log) and [Subtitles](evidence/subtitles-browser-matrix-reconciled.log) Chromium/Firefox/WebKit matrices each passed 6/6.
 - Host: macOS, local Podman, pinned repository Playwright and axe packages, Chromium/Firefox/WebKit, Android API 36 emulators, and Apple simulators. All browser and Android account/media changes used isolated synthetic test instances. No production records were changed.
 - Isolated Player: `KINOSAIL_TEST_PROJECT=kinosail-fullqa-player-20260927`, `KINOSAIL_TEST_ROOT=/Users/mikeo/.cache/kinosail-fullqa-player-20260927`; run `cd apps/player && ./scripts/test-instance.sh up`, `verify`, and `browser` with those variables set. Reset with `down --volumes` and the same variables.
 - Isolated Subtitles: use the equivalent `kinosail-fullqa-subtitles-20260927` project and root under `apps/subtitles`. Reset with its own `down --volumes`. The test harness creates temporary Owner/Viewer accounts and synthetic media. Credentials are not in this report.
 - Android phone and TV connected only to that local Player instance. A loopback-only HTTP proxy bridged the emulator to its self-signed local HTTPS certificate. The Wear emulator was fresh and unpaired. Apple simulator login was not completed.
+- Cleanup: both isolated Podman projects were stopped with `down --volumes`; all three task-owned Android AVDs and the loopback proxy were stopped or removed. The local test roots retain runner logs outside Git.
 - Evidence is in [evidence](evidence). The JSON observations record 12 desktop/phone routes per web app, with page/console errors, failed requests, HTTP failures, axe findings, and horizontal overflow. Captures include synthetic data only.
 
 ## Journey coverage
@@ -32,7 +34,7 @@
 - **Actual:** Both All media and Movies displayed “Nothing in your library yet.” for absent titles while Home and Library held synthetic media.
 - **Reproduce:** (1) Boot a fresh Android phone API 36 emulator. (2) Pair the debug app with the isolated populated Player. (3) Open Library and search for a title absent from the fixture. (4) Repeat with another absent title in Movies. Both attempts showed the library-empty sentence.
 - **Evidence:** [before screenshot](evidence/android-phone-empty-search-before.png), [populated Home](evidence/android-phone-home.png), and [after screenshot](evidence/android-phone-empty-search-after.png).
-- **Regression proof:** `CatalogEmptyMessageTest` was written before the production fix. With the old branching logic extracted into the shared helper, the no-results assertion failed while the true-empty assertion passed. After the fix, both passed. The fresh phone was then reinstalled and showed “No results. Try another search.” The phone and TV now use the same empty-state choice. The TV search screen was not manually retested.
+- **Regression proof:** `CatalogEmptyMessageTest` was written before the production fix. With the old branching logic extracted into the shared helper, the no-results assertion failed while the true-empty assertion passed. After the fix, both passed ([red/green run record](evidence/android-regression-runs.txt)). The fresh phone was then reinstalled and showed “No results. Try another search.” The phone and TV now use the same empty-state choice. The TV search screen was not manually retested.
 
 ### QA-002 — Subtitles Viewer MFA page names the Owner account (P2, confirmed, fixed)
 
@@ -47,22 +49,26 @@
 - **Expected:** `:app:lintDebug` passes for the declared minimum SDK 23, and Cast can use its `java.time.Instant` calls on that SDK level.
 - **Actual:** Lint reported six `NewApi` errors at the `Instant` uses in `CastApi.kt` because core library desugaring was not enabled. This is a reproducible build-gate failure; an API 23 Cast failure was **not** observed on a device.
 - **Reproduce:** Run `JAVA_HOME=<JDK17> ANDROID_HOME=<SDK> ./gradlew :app:lintDebug` from `apps/player/apps/android` before the Gradle change. The six errors recur.
-- **Evidence and fix:** The Android app now enables core library desugaring and pins `com.android.tools:desugar_jdk_libs:2.0.3`. The same lint command and the combined Android lint/unit/APK command passed. Runtime Cast on API 23 remains a coverage gap.
+- **Evidence and fix:** [The red/green lint record](evidence/android-regression-runs.txt) captures the failure and passing gate. The Android app now enables [core library desugaring](https://developer.android.com/studio/write/java8-support) and pins `com.android.tools:desugar_jdk_libs:2.0.3`. Runtime Cast on API 23 remains a coverage gap.
 
 ### QA-004 — Expanded Subtitles spec contains Player UI assumptions (P2 test-maintenance gap, open)
 
 The nondefault `test-instance.spec.ts`/`ui-happy-paths.spec.ts` run reached 15 of 26 tests before it was stopped after repeated one-minute failures (13 failed, 2 skipped at that point). Examples expect Player Settings sections (“Jellyfin apps,” “Trusted HTTPS”) or “Watch & view” on Subtitles pages. Those failures do not establish a Subtitles product defect. The default 22-test Subtitles browser suite passed. The stale tests need a separate scope decision and replacement with Subtitles-specific assertions; no intended assertion was weakened here.
 
+### QA-005 — Subtitles phone settings test omits Cleanup (P2 test reliability, confirmed, fixed)
+
+After rebuilding on the reconciled base, the default browser suite stopped at test 11: the phone settings test expected eight links, while the rendered page had nine. [The failure screenshot](evidence/subtitles-nine-settings-links.png) shows the existing Cleanup section alongside the other eight sections. Source inspection confirmed that Cleanup was already injected into the settings template before this rebase. This was a stale assertion, not a UI defect. The test now checks the exact nine destination hashes and retains its no-overflow and in-bounds assertions. The targeted test failed before that change and passed 1/1 after it.
+
 ## Commands and results
 
 | Surface | Command or suite | Result |
 | --- | --- | --- |
-| Player web | `./scripts/test-instance.sh verify` and `browser` | Passed; Chromium 59/59 |
-| Player web | Selected `test-instance-production.spec.ts` library and Compatibility matrix, `KINOSAIL_BROWSER_MATRIX=full` | Chromium/Firefox/WebKit 6/6 |
+| Player web | `./scripts/test-instance.sh verify` and `browser`, including after rebase | Passed; Chromium 59/59 on reconciled source |
+| Player web | Selected `test-instance-production.spec.ts` library and Compatibility matrix, `KINOSAIL_BROWSER_MATRIX=full` | Chromium/Firefox/WebKit 6/6 after reconciliation |
 | Player web | Ad hoc 6-route × 2-width observation with console/network/axe/overflow capture | Passed; 12/12 states clear in the recorded checks |
-| Subtitles web | `./scripts/test-instance.sh verify` and `browser` | Passed; Chromium 22/22 |
-| Subtitles web | New Viewer MFA test, old then rebuilt image | Red twice on exact copy assertion; green 1/1 |
-| Subtitles web | Selected dashboard/layout matrix, `KINOSAIL_BROWSER_MATRIX=full` | Chromium/Firefox/WebKit 6/6 |
+| Subtitles web | `./scripts/test-instance.sh verify` and `browser`, including after rebase and QA-005 test repair | Passed; Chromium 22/22 on reconciled source |
+| Subtitles web | New Viewer MFA test, old then rebuilt image | Red twice on exact copy assertion; green 1/1 before and after rebase |
+| Subtitles web | Selected dashboard/layout matrix, `KINOSAIL_BROWSER_MATRIX=full` | Chromium/Firefox/WebKit 6/6 after reconciliation |
 | Subtitles web | Ad hoc 6-route × 2-width observation; `go test ./internal/server` | 12/12 observation states clear; Go test passed |
 | Android | `:app:lintDebug :app:testDebugUnitTest :app:assembleDebug :wear:lintDebug :watchcore:testDebugUnitTest :wear:testDebugUnitTest :wear:assembleDebug` | Passed after QA-003 fix |
 | Android | `:app:connectedDebugAndroidTest` on fresh phone API 36 | Passed; 4 instrumented tests |

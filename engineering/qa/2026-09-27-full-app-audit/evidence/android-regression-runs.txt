@@ -1,0 +1,24 @@
+Source before fix: 2efa5638fdd521e7e9c44c35f584e19114b5f893 plus test/helper extraction.
+Environment: JDK 17, Android SDK API 36, Gradle in apps/player/apps/android; declared app minSdk 23.
+
+Command: ./gradlew :app:testDebugUnitTest
+Before fix:
+  CatalogEmptyMessageTest > searchWithoutMatchesDoesNotCallTheLibraryEmpty FAILED
+  org.junit.ComparisonFailure at CatalogEmptyMessageTest.kt:8
+  2 tests completed, 1 failed
+  BUILD FAILED in 5s
+After fix:
+  :app:testDebugUnitTest
+  BUILD SUCCESSFUL in 2s
+
+Command: ./gradlew :app:lintDebug
+Before fix:
+  Lint found 6 errors, 19 warnings and 1 hint.
+  CastApi.kt:44: Call requires API level 26, or core library desugaring (current min is 23): java.time.Instant#parse [NewApi]
+  BUILD FAILED in 1m 22s
+After enabling core library desugaring and pinning desugar_jdk_libs:2.0.3:
+  :app:lintDebug
+  BUILD SUCCESSFUL in 28s (combined lint, unit, and APK tasks)
+After rebasing on 0a8bcafccdad4847f18de42cc3f537ed78fd52f5:
+  :app:lintDebug :app:testDebugUnitTest :app:assembleDebug :wear:lintDebug :watchcore:testDebugUnitTest :wear:testDebugUnitTest :wear:assembleDebug
+  BUILD SUCCESSFUL in 24s
