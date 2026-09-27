@@ -27,7 +27,7 @@ private struct HomeActionsProbeScreen: View {
 }
 
 @Suite(.serialized) struct TVTopBarTests {
-    @Test @MainActor func movingAcrossHomeActionsDoesNotOpenAnotherScreen() async throws {
+    @Test @MainActor func homeKeepsSearchAndSettingsWithoutLibraryMenu() async throws {
         let scene = try #require(UIApplication.shared.connectedScenes.first as? UIWindowScene)
         let probe = HomeActionsProbe()
         let window = UIWindow(windowScene: scene)
@@ -43,7 +43,7 @@ private struct HomeActionsProbeScreen: View {
 
         probe.requestedFocus = .library
         try await Task.sleep(for: .milliseconds(100))
-        #expect(probe.focused == .library)
+        #expect(probe.focused != .library)
         #expect(probe.opened == nil)
 
         probe.requestedFocus = .settings
