@@ -167,7 +167,7 @@ cat >"$output/TMDB/api/search/movie" <<'EOF'
 {"results":[{"id":101,"title":"Example Movie","overview":"Example metadata from the local generated TMDB fixture.","release_date":"2026-01-01","poster_path":"/provider-poster.jpg"}]}
 EOF
 cat >"$output/TMDB/api/movie/101" <<'EOF'
-{"belongs_to_collection":{"name":"Example Collection"}}
+{"belongs_to_collection":{"name":"Example Collection"},"release_dates":{"results":[{"iso_3166_1":"US","release_dates":[{"certification":"PG-13"}]}]}}
 EOF
 cat >"$output/TMDB/api/search/tv" <<'EOF'
 {"results":[{"id":202,"name":"Example Show","overview":"An original generated episodic fixture.","first_air_date":"2026-01-01","poster_path":"/provider-poster.jpg"}]}

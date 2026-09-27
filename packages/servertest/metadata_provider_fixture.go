@@ -32,7 +32,7 @@ func MetadataProviderFixture(writer http.ResponseWriter, request *http.Request) 
 	case "/search/movie":
 		_ = json.NewEncoder(writer).Encode(map[string]any{"results": []any{map[string]any{"id": 101, "title": "Arrival", "overview": "A linguist meets visitors.", "release_date": "2016-11-11", "poster_path": "/poster.jpg"}}})
 	case "/movie/101":
-		_ = json.NewEncoder(writer).Encode(map[string]any{"belongs_to_collection": map[string]any{"name": "Arrival Collection"}})
+		_ = json.NewEncoder(writer).Encode(map[string]any{"belongs_to_collection": map[string]any{"name": "Arrival Collection"}, "release_dates": map[string]any{"results": []any{map[string]any{"iso_3166_1": "US", "release_dates": []any{map[string]any{"certification": "PG-13"}}}}}})
 	case "/poster.jpg":
 		writer.Header().Set("Content-Type", "image/jpeg")
 		_, _ = writer.Write([]byte("poster"))

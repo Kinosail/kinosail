@@ -3,6 +3,7 @@ package metadata
 import (
 	"context"
 	"errors"
+	"fmt"
 	"net/url"
 	"regexp"
 	"strconv"
@@ -32,7 +33,11 @@ func resolveTMDBMovie(ctx context.Context, item library.Item, baseURL string, fe
 	if err != nil {
 		return Result{}, err
 	}
-	record := Record{Title: candidate.Title, Plot: candidate.Overview, Year: Year(candidate.ReleaseDate), Collection: collection(ctx, candidate.ID), ProviderIDs: map[string]string{"tmdb": strconv.Itoa(candidate.ID)}, BackdropChecked: true}
+	rating, err := fetchTMDBMovieRating(ctx, baseURL, candidate.ID, fetch)
+	if err != nil {
+		return Result{}, err
+	}
+	record := Record{Title: candidate.Title, Plot: candidate.Overview, Year: Year(candidate.ReleaseDate), Rating: rating, RatingChecked: true, Collection: collection(ctx, candidate.ID), ProviderIDs: map[string]string{"tmdb": strconv.Itoa(candidate.ID)}, BackdropChecked: true}
 	if candidate.PosterPath != "" {
 		record.Artwork = artwork(item.ID)
 	}
@@ -47,6 +52,16 @@ func resolveTMDBMovie(ctx context.Context, item library.Item, baseURL string, fe
 		return Result{}, err
 	}
 	return enrichTMDBCast(ctx, baseURL, "movie", candidate.ID, fetch, artwork, result)
+}
+
+func fetchTMDBMovieRating(ctx context.Context, baseURL string, id int, fetch func(context.Context, string, any) error) (string, error) {
+	var movie struct {
+		ReleaseDates tmdbReleaseDates `json:"release_dates"`
+	}
+	if err := fetch(ctx, fmt.Sprintf("%s/movie/%d?append_to_response=release_dates", strings.TrimRight(baseURL, "/"), id), &movie); err != nil {
+		return "", err
+	}
+	return movieCertification(movie.ReleaseDates)
 }
 
 func resolveTMDBShow(ctx context.Context, item library.Item, baseURL string, fetch func(context.Context, string, any) error, details func(context.Context, library.Item, int, string, string, *Record, *string), artwork func(string) string) (Result, error) { //nolint:cyclop // Show identity, details, and two independent artwork targets form one result contract.
