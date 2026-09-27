@@ -245,9 +245,10 @@ private struct TVHomeBrowse: View {
                 }
                 Text(title).font(.title3.weight(.semibold)).foregroundStyle(KinoTheme.text)
                     .multilineTextAlignment(.leading)
+                    .lineLimit(2).fixedSize(horizontal: false, vertical: true)
                 Spacer(minLength: 0)
             }
-            .frame(width: 280)
+            .frame(width: 400)
             .frame(minHeight: 100)
             .contentShape(.rect)
             .overlay {

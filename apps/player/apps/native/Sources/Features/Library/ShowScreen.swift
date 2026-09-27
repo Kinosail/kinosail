@@ -91,7 +91,7 @@ struct ShowScreen: View {
                     .fixedSize(horizontal: false, vertical: true)
             }
             if let next {
-                Text("S\(next.season) · E\(next.episode) · \(ShowSeasonSelection.episodeTitle(next))")
+                Text(ShowSeasonSelection.episodeSummary(next))
                     .font(.headline).foregroundStyle(KinoTheme.muted)
                 NavigationLink(value: ScreenDestination.playback(next.id)) {
                     Label(next.playLabel, systemImage: "play.fill")
@@ -168,6 +168,10 @@ enum ShowSeasonSelection {
     static func episodeTitle(_ item: MediaItem) -> String {
         let prefix = String(format: "S%02dE%02d · ", item.season, item.episode)
         return item.title.hasPrefix(prefix) ? String(item.title.dropFirst(prefix.count)) : item.title
+    }
+
+    static func episodeSummary(_ item: MediaItem) -> String {
+        (["S\(item.season)", "E\(item.episode)", episodeTitle(item), item.rating].filter { !$0.isEmpty }).joined(separator: " · ")
     }
 
     static func featuredEpisode(in episodes: [MediaItem]) -> MediaItem? {
