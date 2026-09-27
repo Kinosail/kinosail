@@ -45,13 +45,19 @@ let hlsLoader;
 let streamNegotiated = false;
 let destroyed = false;
 let pendingResume;
-const mediaVideo = (contentType) => ({
-  contentType,
-  width: Number(player.dataset.mediaWidth) || 1920,
-  height: Number(player.dataset.mediaHeight) || 1080,
-  bitrate: Number(player.dataset.mediaBitrate) || 8000000,
-  framerate: Number(player.dataset.mediaFramerate) || 30,
-});
+const mediaPositive = (value, fallback) => {
+  const number = Number(value);
+  return Number.isFinite(number) && number > 0 ? number : fallback;
+};
+const mediaVideo = (contentType, compatible = false) => {
+  const width = mediaPositive(player.dataset.mediaWidth, 1920);
+  const height = mediaPositive(player.dataset.mediaHeight, 1080);
+  const bitrate = mediaPositive(player.dataset.mediaBitrate, 8000000);
+  const framerate = mediaPositive(player.dataset.mediaFramerate, 30);
+  const scale = compatible ? Math.min(1, 1920 / width, 1080 / height) : 1;
+  return {contentType, width: Math.floor(width * scale), height: Math.floor(height * scale),
+    bitrate: compatible ? Math.min(bitrate, 6128000) : bitrate, framerate: compatible ? Math.min(framerate, 60) : framerate};
+};
 if (player.dataset.directType && navigator.mediaCapabilities?.decodingInfo) navigator.mediaCapabilities.decodingInfo({type: "file", video: mediaVideo(player.dataset.directType)})
   .then((result) => playbackTrace("capability-direct", result.supported ? result.smooth ? "smooth" : "supported" : "unsupported"))
   .catch(() => {});
@@ -87,13 +93,14 @@ const codecTypes = [
   ["h264", 'video/mp4; codecs="avc1.64002a"'],
 ];
 const supportsCodec = async ([codec, contentType]) => {
+  const mediaSourcePlayback = (typeof Hls !== "undefined" && Hls.isSupported()) || !player.canPlayType("application/vnd.apple.mpegurl");
   try {
     if (navigator.mediaCapabilities?.decodingInfo) {
-      const result = await navigator.mediaCapabilities.decodingInfo({type: "media-source", video: mediaVideo(contentType)});
+      const result = await navigator.mediaCapabilities.decodingInfo({type: mediaSourcePlayback ? "media-source" : "file", video: mediaVideo(contentType, true)});
       return result.supported && result.smooth && (codec === "h264" || result.powerEfficient);
     }
   } catch (_) {}
-  return (typeof MediaSource !== "undefined" && MediaSource.isTypeSupported(contentType)) || player.canPlayType(contentType) !== "";
+  return mediaSourcePlayback ? typeof MediaSource !== "undefined" && MediaSource.isTypeSupported(contentType) : player.canPlayType(contentType) !== "";
 };
 const negotiateStream = async (generation) => {
   if (!stream || !player.dataset.playbackApi) return;
