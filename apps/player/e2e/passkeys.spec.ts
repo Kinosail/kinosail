@@ -40,6 +40,14 @@ test("a declined conditional passkey offer stays silent", async ({ page }) => {
 	await expect(page.getByRole("status")).toBeEmpty();
 });
 
+test("an unavailable automatic passkey offer stays silent until manual sign-in", async ({ page }) => {
+	const origin = await mockPasskeyPage(page, mockOrigin, () => ({ status: 503, body: "passkeys unavailable" }), `<body data-passkey-failed="Could not use your passkey. Try again or use another sign-in method."><input autocomplete="username webauthn"><button data-passkey-login>Sign in with passkey</button><output data-passkey-status></output><script src="/static/passkeys.js"></script></body>`);
+	await page.goto(`${origin}/login`, {waitUntil: "commit"});
+	await expect(page.getByRole("status")).toBeEmpty();
+	await page.getByRole("button", { name: "Sign in with passkey" }).click();
+	await expect(page.getByRole("status")).toHaveText("Could not use your passkey. Try again or use another sign-in method.");
+});
+
 test("a returning passkey browser opens the chooser and falls back silently when dismissed", async ({ page }) => {
 	const origin = await mockPasskeyPage(page, mockOrigin, () => ({ status: 200, contentType: "application/json", body: '{"publicKey":{}}' }), `<body data-passkey-waiting="Waiting for your passkey…"><input autocomplete="username webauthn"><button data-passkey-login>Sign in with passkey</button><output data-passkey-status></output><script src="/static/passkeys.js"></script></body>`);
 	await page.addInitScript(() => localStorage.setItem("kinosail-passkey", "1"));
