@@ -2,6 +2,7 @@
 /* Subtitle workspace: the next file decision leads; coverage gives context. */
 .subtitle-dashboard{padding-left:0}
 .subtitle-dashboard>.app-header{position:sticky;inset:0 0 auto;display:grid;grid-template:"brand nav actions" auto/auto 1fr auto;align-items:center;width:100%;height:auto;min-height:80px;padding:1rem clamp(1.25rem,4vw,4rem);border:0;border-bottom:1px solid var(--line);background:var(--bg)}
+.subtitle-nav-heading{display:none}
 .subtitle-dashboard .brand-lockup{min-width:0;padding:0;gap:.8rem}
 .subtitle-brand-name{font-size:1rem;font-weight:800}
 .subtitle-brand-name small{font-size:.75rem;font-weight:500}
@@ -11,6 +12,18 @@
 .subtitle-dashboard .app-header nav a.active{background:none;color:var(--signal);box-shadow:inset 0 -2px var(--signal)}
 .subtitle-dashboard .subtitle-header-settings{grid-area:actions;display:flex;align-items:center;gap:.4rem;margin:0;padding:0;border:0;white-space:nowrap}
 .subtitle-dashboard .header-link{min-height:44px;padding:.6rem 1rem;border:1px solid var(--line);border-radius:10px;white-space:nowrap}
+.subtitle-dashboard .header-supporter{border:0;gap:.25rem}
+@media(min-width:1101px){
+  .subtitle-dashboard{padding-left:15rem}
+  .subtitle-dashboard>.app-header{grid-template:"brand actions" auto/minmax(0,1fr) auto;height:5rem;min-height:5rem;margin-left:-15rem;width:calc(100% + 15rem);padding:.45rem clamp(1.5rem,3vw,3rem);background:var(--shell)}
+  .subtitle-dashboard .app-header nav{position:fixed;inset:5rem auto 0 0;z-index:29;display:grid;align-content:start;justify-content:stretch;width:15rem;min-height:0;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin;margin:0;padding:1rem .6rem 1.5rem;border-right:1px solid var(--line);background:var(--surface)}
+  .subtitle-dashboard .subtitle-nav-heading{display:block;margin:.9rem .75rem .3rem;color:var(--muted);font-size:.7rem;line-height:1.3;font-weight:800;letter-spacing:.11em;text-transform:uppercase}
+  .subtitle-dashboard .app-header nav a{width:100%;min-height:44px;padding:.55rem .75rem;border-radius:9px;color:var(--text);font-size:.9rem;font-weight:700}
+  .subtitle-dashboard .app-header nav a.active{background:var(--surface-2);box-shadow:inset 3px 0 var(--signal);color:var(--text)}
+  .subtitle-dashboard .app-header nav a.active:before{color:var(--signal)}
+  .subtitle-dashboard .app-header nav a:hover{background:var(--surface-2)}
+}
+@media(min-width:1101px) and (forced-colors:active){.subtitle-dashboard .app-header nav a.active{outline:2px solid Highlight;box-shadow:none}}
 .subtitle-dashboard>.subtitle-main{width:min(100%,96rem);padding:2.5rem clamp(1.25rem,4vw,4rem) 5rem}
 .subtitle-page-heading{align-items:center;padding-bottom:1.5rem;border:0}
 .subtitle-page-heading h1{margin:0;font-size:clamp(2rem,3.5vw,3.25rem);font-weight:800;line-height:1.1;letter-spacing:-.035em}

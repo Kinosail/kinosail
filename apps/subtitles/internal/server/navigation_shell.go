@@ -26,7 +26,7 @@ func saveNavigation(settings *settingsStore) http.HandlerFunc {
 	return settings.navigationController().Handler(localizedError)
 }
 
-const applicationCSSVersion = "cinema-8"
+const applicationCSSVersion = "cinema-9"
 
 var applicationNavigationView = newLocalizedTemplate("application-navigation", subtitleAppHeader)
 
