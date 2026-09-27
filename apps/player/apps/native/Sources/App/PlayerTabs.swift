@@ -55,7 +55,8 @@ struct PlayerTabs: View {
                 VStack(spacing: 0) {
                     TVTopBar(focus: $topFocus, onSelect: selectBrowseTab)
                     PlayerTabScreen(tab: .home, mode: screenMode, showsSearch: false,
-                                    changeMode: changeMode, selectTab: selectBrowseTab)
+                                    changeMode: changeMode, selectTab: selectBrowseTab,
+                                    focusTopBar: { topFocus = .search })
                 }
             }
             #else
@@ -210,11 +211,13 @@ private struct PlayerTabScreen: View {
     let showsSearch: Bool
     let changeMode: (PlayerMode) -> Void
     let selectTab: (PlayerTab) -> Void
+    var focusTopBar: (() -> Void)? = nil
     var body: some View {
         switch tab {
         case .movies: LibraryScreen(initialView: .movies)
         case .shows: LibraryScreen(initialView: .shows)
-        case .home: HomeScreen(showsSearch: showsSearch, mode: mode, changeMode: mode == nil ? nil : changeMode, selectTab: selectTab)
+        case .home: HomeScreen(showsSearch: showsSearch, mode: mode, changeMode: mode == nil ? nil : changeMode,
+                               selectTab: selectTab, focusTopBar: focusTopBar)
         case .search: LibraryScreen(initialView: mode?.searchViews.first ?? .all, searchMode: true, mode: mode).id(mode)
         case .list: LibraryScreen(initialView: .list)
         case .library: LibraryHubScreen(mode: mode)

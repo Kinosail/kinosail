@@ -74,6 +74,9 @@ struct PlaybackScreen: View {
         }
         .navigationTitle(session.player.currentItem?.title ?? "Playback")
         .toolbar(.hidden, for: .navigationBar, .tabBar)
+        #if os(tvOS)
+        .onExitCommand { if let onClose { onClose() } else { dismiss() } }
+        #endif
         .sheet(isPresented: $showsTools) { NavigationStack { PlaybackToolsScreen() } }
         #if os(tvOS)
         .sheet(isPresented: $showsSeekPreview) { TVSeekPreviewScreen() }
