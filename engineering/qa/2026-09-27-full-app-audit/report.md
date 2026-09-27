@@ -51,6 +51,8 @@
 - **Reproduce:** Run `JAVA_HOME=<JDK17> ANDROID_HOME=<SDK> ./gradlew :app:lintDebug` from `apps/player/apps/android` before the Gradle change. The six errors recur.
 - **Evidence and fix:** [The red/green lint record](evidence/android-regression-runs.txt) captures the failure and passing gate. The Android app now enables [core library desugaring](https://developer.android.com/studio/write/java8-support) and pins `com.android.tools:desugar_jdk_libs:2.0.3`. Runtime Cast on API 23 remains a coverage gap.
 
+Status update: [the follow-up](followup.md) exercises the API 23 Cast chooser and fixes a separate theme crash. An actual receiver session remains unverified.
+
 ### QA-004 — Expanded Subtitles spec contains Player UI assumptions (P2 test-maintenance gap, resolved in follow-up)
 
 The nondefault `test-instance.spec.ts`/`ui-happy-paths.spec.ts` run reached 15 of 26 tests before it was stopped after repeated one-minute failures (13 failed, 2 skipped at that point). Examples expect Player Settings sections (“Jellyfin apps,” “Trusted HTTPS”) or “Watch & view” on Subtitles pages. Those failures do not establish a Subtitles product defect. The default 22-test Subtitles browser suite passed. The stale tests need a separate scope decision and replacement with Subtitles-specific assertions; no intended assertion was weakened here.
