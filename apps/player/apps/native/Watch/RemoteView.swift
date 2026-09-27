@@ -114,6 +114,23 @@ struct RemoteView: View {
                 if let message = heart.message ?? remote.message {
                     Text(message).font(.caption2).foregroundStyle(.secondary)
                 }
+                NavigationLink("Made possible by") {
+                    ScrollView {
+                        VStack(alignment: .leading, spacing: 10) {
+                            Text("Thank you to the people behind the media tools that power your Kinosail Server, including FFmpeg and Jellyfin FFmpeg.")
+                            Image("tmdb-logo").resizable().scaledToFit().frame(width: 72, height: 52)
+                                .accessibilityLabel("TMDB")
+                            Text("This product uses the TMDB API but is not endorsed or certified by TMDB.")
+                            Text("TMDB logo by Travis Bell · CC BY-SA 4.0.")
+                                .foregroundStyle(.secondary)
+                            Text("Read third-party notices in the iPhone app under Settings → Made possible by.")
+                                .foregroundStyle(.secondary)
+                        }
+                        .font(.caption)
+                    }
+                    .navigationTitle("Thanks")
+                }
+                .font(.caption)
             }
             .frame(maxWidth: .infinity, alignment: .leading)
             .padding(.horizontal, 8)

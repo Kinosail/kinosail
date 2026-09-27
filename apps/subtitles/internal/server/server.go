@@ -211,6 +211,7 @@ func newApplication(config Config) http.Handler { //nolint:funlen,cyclop,gocogni
 	mux.HandleFunc("GET /manifest.webmanifest", serveAsset(manifest, "application/manifest+json"))
 	mux.HandleFunc("GET /static/manrope.woff2", serveAsset(webassets.Manrope, "font/woff2"))
 	mux.HandleFunc("GET /static/icon.svg", serveAsset(icon, "image/svg+xml"))
+	mux.HandleFunc("GET /static/tmdb-logo.svg", serveAsset(tmdbLogo, "image/svg+xml"))
 	mux.HandleFunc("GET /static/icon-192.png", serveAsset(icon192, "image/png"))
 	mux.HandleFunc("GET /static/icon-512.png", serveAsset(icon512, "image/png"))
 	mux.HandleFunc("GET /static/icon-maskable-512.png", serveAsset(iconMaskable512, "image/png"))

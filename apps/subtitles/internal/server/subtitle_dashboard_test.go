@@ -187,7 +187,7 @@ func TestSubtitleAppUsesKinosailSisterSetupAndFocusedSettings(t *testing.T) { //
 	if settings.Code != http.StatusOK {
 		t.Fatalf("settings = %d %q", settings.Code, settings.Body.String())
 	}
-	assertResponseContains(t, "settings", settings, "Subtitle settings", "Preferred languages", `aria-label="Preferred subtitle languages"`, "Add a language", `value="es-419"`, "Media Libraries", `href="#appearance">Appearance`, `<legend>Theme</legend>`, `value="dark" data-theme-choice checked`, "Trusted HTTPS", "myhome-subtitles.duckdns.org", `action="/settings/trusted-https"`, "Open setup guide")
+	assertResponseContains(t, "settings", settings, "Subtitle settings", "Preferred languages", `aria-label="Preferred subtitle languages"`, "Add a language", `value="es-419"`, "Media Libraries", `href="#appearance">Appearance`, `href="#thanks">Thanks`, `<legend>Theme</legend>`, `value="dark" data-theme-choice checked`, "Trusted HTTPS", "myhome-subtitles.duckdns.org", `action="/settings/trusted-https"`, "Open setup guide", "Made possible by", "This product uses the TMDB API but is not endorsed or certified by TMDB.")
 	if strings.Contains(settings.Body.String(), "Transcoder") {
 		t.Fatalf("settings unexpectedly expose transcoder controls: %q", settings.Body.String())
 	}
