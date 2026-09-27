@@ -4,9 +4,10 @@
 
 - Mode: full audit, focused on Player web. The repository also has Subtitles and Dashboard web apps and Swift iOS/tvOS clients.
 - Source before fix: `147afde826aa2c65fd96eb11b392ea23fdc7bfba`. The isolated container was built from this worktree. The post-fix image was rebuilt from the same worktree plus the changes in this report.
+- Reconciliation: this change was rebased after the local browser runs. The newer base changed Player and shared Go dependencies, so the local browser image does not prove the final PR build. Fresh local Go and container checks are reported below; hosted CI is the authority for the final PR revision.
 - Environment: macOS, local Podman, isolated `kinosail-app-qa-20260927` Compose project and volumes, synthetic media, Playwright 1.63.0 and axe 4.13.0. Browser results are labeled below. No production account or data was used.
 - Start: from `apps/player`, set a unique `KINOSAIL_TEST_PROJECT` and an absolute `KINOSAIL_TEST_ROOT`, then run `./scripts/test-instance.sh up` and `./scripts/test-instance.sh verify`. Use `./scripts/test-instance.sh url` for the loopback base URL. Reset with `./scripts/test-instance.sh down --volumes` using the same project and root.
-- Evidence: [offline repro trace](evidence/offline-no-locks-red-trace.zip), [offline repro screenshot](evidence/offline-no-locks-red.png), [offline repro video](evidence/offline-no-locks-red.webm), [Viewer MFA repro](evidence/viewer-mfa-owner-copy.png) and [fixed state](evidence/viewer-mfa-fixed.png), [phone empty search](evidence/search-empty-phone.png), [phone menu](evidence/more-phone.png), and [exploration observations](evidence/exploration.json). The trace is from a synthetic page without credentials. The iOS launch screenshot stays local because nearby discovery exposed a private Server address.
+- Evidence: [offline repro trace](evidence/offline-no-locks-red-trace.zip), [offline repro screenshot](evidence/offline-no-locks-red.png), [offline repro video](evidence/offline-no-locks-red.webm), [Viewer MFA repro](evidence/viewer-mfa-owner-copy.png) and [fixed state](evidence/viewer-mfa-fixed.png), [passkey prompt test failure](evidence/passkey-offer-test-race.png), [phone empty search](evidence/search-empty-phone.png), [phone menu](evidence/more-phone.png), and [exploration observations](evidence/exploration.json). The published trace is from a synthetic page without credentials. The iOS launch screenshot stays local because nearby discovery exposed a private Server address.
 
 ## Journey coverage
 
@@ -55,15 +56,15 @@
 
 ### QA-003 — Watch Together test blocked its own Viewer (P2 test reliability, confirmed, fixed)
 
-The two-client test created a Viewer while the isolated Server required extra sign-in protection. Its Viewer reached `/account?mfa=required`, so the test could not reach the room. This was correct product behavior, not a Watch Together defect. The test now records the requirement, disables it only for its isolated Viewer run, removes the Viewer, and restores the original requirement. The full five-test offline spec passed after this repair.
+**Expected:** The two-client test should sign in its temporary Viewer and reach the Watch Together room. **Actual:** The isolated Server required extra sign-in protection, so the new Viewer reached `/account?mfa=required` before joining. This was correct product behavior, not a Watch Together defect. To reproduce, start the isolated instance with Require MFA on and run the Watch Together test with a new Viewer; [the Viewer screenshot](evidence/viewer-mfa-owner-copy.png) shows the blocking page. The test now records the requirement, disables it only for its isolated Viewer run, removes the Viewer, and restores the original requirement. The full five-test offline spec passed after this repair.
 
-### QA-004 — Optional passkey prompt races a browser test helper (P2 test reliability, confirmed, fixed)
+### QA-004 — Optional passkey prompt races a browser test helper (P2 test reliability, observed once, repaired)
 
-The Owner sign-in helper in `ui-happy-paths.spec.ts` checked whether “Not now” was visible immediately after clicking Sign in. In the full suite, the check ran before the optional passkey page arrived; the test then waited for Home while still on `/account?passkey=offer&next=%2F`. The browser trace and failure screenshot are retained in the isolated test output. The helper now waits for either Home or the offer redirect, dismisses the offer only after that redirect, and keeps its Home assertion. The affected spec is rerun below.
+**Expected:** After Owner sign-in, the helper should dismiss an optional passkey offer and reach Home. **Actual:** In one full-suite run, its immediate “Not now” visibility check ran before the offer appeared; the test then waited for Home while still on `/account?passkey=offer&next=%2F`. To reproduce the observed run, use the isolated Owner without a passkey and run `./scripts/test-instance.sh browser`; the [failure screenshot](evidence/passkey-offer-test-race.png) shows the prompt left open. Its exact recurrence rate is unverified. The trace remains local because login fields may be recorded. The helper now waits for either Home or the offer redirect, dismisses the offer only after that redirect, and keeps its Home assertion. The affected spec passed twice after this repair.
 
 ### QA-005 — Optional expanded suite has stale assumptions (P2 coverage gap, open)
 
-The exploratory 22-test Chromium run had 9 passes and 13 failures before the fixes. QA-001 and QA-003 account for two failures and now pass individually. The other 11 were not rerun as a group. The observed failures include an old search accessible name, an exact `0s` motion string where the browser reports `1e-05s` with no animation, a Docker-managed Server name that the test tries to edit, links expected to go directly to `/watch/` where the UI now opens item detail first, and layout geometry measured across separate grid rows. These are test-maintenance leads. No product defect is claimed from them without a fresh behavior check. Their local Playwright traces remain under the isolated test root until cleanup.
+The exploratory 22-test Chromium run had 9 passes and 13 failures before the fixes. QA-001 and QA-003 account for two failures and now pass individually. The other 11 were not rerun as a group. The observed failures include an old search accessible name, an exact `0s` motion string where the browser reports `1e-05s` with no animation, a Docker-managed Server name that the test tries to edit, links expected to go directly to `/watch/` where the UI now opens item detail first, and layout geometry measured across separate grid rows. These are test-maintenance leads. No product defect is claimed from them without a fresh behavior check. Their traces were kept local because they may contain sign-in inputs.
 
 ### QA-006 — Local certificate and canonical-origin diagnostics (P3 environment boundary)
 
@@ -84,6 +85,15 @@ Exploration recorded certificate-related script errors and a `421` passkey begin
 - `./scripts/build-apple.sh ios` and `./scripts/build-apple.sh tvos`: passed. Focused iOS `xcodebuild test` run: 17 tests in `ServerReachabilityTests`, `LibraryEmptyStateTests`, and `PlayerStateTests` passed.
 - Skill validation: `quick_validate.py` passed with PyYAML 6.0.2 installed outside the repository.
 - `make max-loc` and `git diff --check`: passed. `make worktree-audit` reported 59 unrelated inactive checkouts; no other checkout was changed.
+
+### Checks after rebasing onto current main
+
+- `make -C apps/player verify-changed` and `make -C apps/subtitles verify-changed`: both reached `shared-packages` and stopped at full local `golangci-lint` findings in untouched Go packages. Player had already passed its file cap, diff, compile, and focused server tests. Local lint is 2.13.2; GitHub CI pins 2.13.1 and checks new findings against the PR base. `golangci-lint run --new-from-rev=origin/main` passed in both `packages` and `apps/player` locally.
+- `make -C packages test`: first failed when the isolated QA container held management UDP port 51821. After stopping that container, the full package test command passed.
+- `make -C apps/player test`: one failure in metadata test temporary-directory cleanup (`metadata: directory not empty`) while background work was active; the affected test passed twice in isolation. The full command is not counted as a pass.
+- `make -C apps/subtitles test`: one analogous metadata temporary-directory cleanup failure; the affected test passed twice in isolation. The full command is not counted as a pass.
+- `make -C apps/player container-test`: passed on the rebased source, including image build and runtime container checks.
+- `./scripts/quality/check-script-lint.sh`: passed after installing the repository-pinned `scripts/quality` dependencies with `pnpm --frozen-lockfile`. Its first attempt could not start because ESLint was not installed in this worktree.
 
 ## Remaining verification boundaries
 
