@@ -8,6 +8,8 @@ section: Use Kinosail
 
 Open a media item and select **Play**. Kinosail saves your position and watched state for your Profile.
 
+<figure class="product-shot"><a href="{{ '/assets/images/player-detail-2880.webp' | relative_url }}" aria-label="View full-size Player film detail screenshot"><img src="{{ '/assets/images/player-detail.webp' | relative_url }}" srcset="{{ '/assets/images/player-detail-688.webp' | relative_url }} 688w, {{ '/assets/images/player-detail-1024.webp' | relative_url }} 1024w, {{ '/assets/images/player-detail.webp' | relative_url }} 1280w, {{ '/assets/images/player-detail-2880.webp' | relative_url }} 2880w" sizes="(max-width: 760px) calc(100vw - 32px), (max-width: 1280px) calc(100vw - 360px), 900px" width="1280" height="800" loading="lazy" alt="Film detail page for the fictional film The Last Observatory, showing Play and My List"></a><figcaption>A fictional film in the real Player, captured from a Podman demo.</figcaption></figure>
+
 ## Use the player
 
 The player provides controls that depend on the media type and device:

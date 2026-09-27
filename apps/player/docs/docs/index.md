@@ -20,6 +20,11 @@ Bring movies, shows, music, books, and photos together in one library. Watch the
 <a href="{{ '/user-guide/playback/' | relative_url }}"><strong>Press play</strong><span>Watch and listen in the web Player or a compatible Jellyfin mobile app. Pick an audio track, turn on subtitles, or resume where you left off.</span></a>
 </div>
 
+<figure class="product-shot">
+<picture><source media="(max-width: 760px)" srcset="{{ '/assets/images/player-home-mobile.webp' | relative_url }}"><img src="{{ '/assets/images/player-library.webp' | relative_url }}" srcset="{{ '/assets/images/player-library-688.webp' | relative_url }} 688w, {{ '/assets/images/player-library-1024.webp' | relative_url }} 1024w, {{ '/assets/images/player-library.webp' | relative_url }} 1280w, {{ '/assets/images/player-library-2880.webp' | relative_url }} 2880w" sizes="(max-width: 760px) calc(100vw - 32px), (max-width: 1280px) calc(100vw - 360px), 900px" width="1280" height="800" loading="lazy" alt="Kinosail Player Home on desktop or phone, with a fictional film library and original posters"></picture>
+<figcaption>Player running with a fictional demo library. <a href="{{ '/assets/images/player-library-2880.webp' | relative_url }}">View desktop image</a> · <a href="{{ '/assets/images/player-home-mobile.webp' | relative_url }}">View phone image</a></figcaption>
+</figure>
+
 ## Already watching?
 
 Read the [Player feature guide]({{ "/features/" | relative_url }}) for details about watching, reading, offline use, Server management, the API, and MCP.
