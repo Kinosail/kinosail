@@ -3,6 +3,26 @@ import { expect, test } from "@playwright/test";
 import { compactViewports, expectNoHorizontalOverflow, expectSkipLinkOffscreen, initiallyOccludedTargets, occludedTargets, setSubtitleLanguages, supportedViewports } from "./subtitle-dashboard-helpers";
 
 export function registerSubtitleLayoutTests() {
+test("phone settings expose every section without a hidden horizontal rail", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/settings");
+  const sections = page.getByRole("navigation", { name: "Settings sections" });
+  const layout = await sections.evaluate((nav) => ({
+    scrollWidth: nav.scrollWidth,
+    clientWidth: nav.clientWidth,
+    links: [...nav.querySelectorAll("a")].map((link) => ({
+      left: link.getBoundingClientRect().left,
+      right: link.getBoundingClientRect().right,
+      top: link.getBoundingClientRect().top,
+      bottom: link.getBoundingClientRect().bottom,
+    })),
+    bounds: nav.getBoundingClientRect().toJSON(),
+  }));
+  expect(layout.links).toHaveLength(8);
+  expect(layout.scrollWidth).toBeLessThanOrEqual(layout.clientWidth + 1);
+  expect(layout.links.every((link) => link.left >= layout.bounds.left - 1 && link.right <= layout.bounds.right + 1 && link.top >= layout.bounds.top - 1 && link.bottom <= layout.bounds.bottom + 1)).toBe(true);
+});
+
 test("Settings header keeps desktop destinations in one compact row", async ({ page }) => {
   for (const width of [1920, 1280, 1024, 901]) {
     await page.setViewportSize({ width, height: 900 });
