@@ -20,7 +20,7 @@ type Record struct {
 	Title, Year, Plot, Rating, Tagline, Genres, Artwork, Backdrop, Collection string
 	ShowTitle, ShowYear, ShowPlot, ShowArtwork, ShowBackdrop                  string
 	Cast, ShowCast                                                            []library.Person
-	Owner, CastFetched, BackdropChecked                                       bool
+	Owner, CastFetched, BackdropChecked, RatingChecked                        bool
 	ProviderIDs                                                               map[string]string `json:"providerIds,omitempty"`
 	ShowProviderIDs                                                           map[string]string `json:"showProviderIds,omitempty"`
 }

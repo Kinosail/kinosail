@@ -60,7 +60,8 @@ internal fun PlaybackScreen(item: CatalogItem, viewer: Viewer, tv: Boolean, clos
         Column(Modifier.fillMaxSize().background(Color.Black).safeDrawingPadding().padding(24.dp),
             verticalArrangement = Arrangement.spacedBy(20.dp)) {
             Text(if (audioConnection.error) "Could not start audio. Return to the library and try again."
-                else "Starting audio…", color = Color.White)
+                else "Starting audio…", color = Color.White,
+                modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite })
             if (tv) androidx.tv.material3.Button(onClick = close) {
                 androidx.tv.material3.Text(interfaceText("Done"))
             } else TextButton(onClick = close) { Text(interfaceText("Done"), color = KinoColor.signal) }
@@ -247,7 +248,8 @@ internal fun PlaybackScreen(item: CatalogItem, viewer: Viewer, tv: Boolean, clos
                 verticalArrangement = Arrangement.spacedBy(12.dp)) {
                 if (playback.loading) CircularProgressIndicator(color = KinoColor.signal)
                 if (playback.usingCompatible) Text(interfaceText("Compatible playback"), color = Color.White)
-                playback.message?.let { Text(it, color = Color.White) }
+                playback.message?.let { Text(it, color = Color.White,
+                    modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite }) }
                 if (playback.retryable) {
                     if (tv) androidx.tv.material3.Button(onClick = { playback.start(item, viewer) },
                         modifier = Modifier.focusRequester(retryFocus)) {

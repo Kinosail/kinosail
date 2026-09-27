@@ -53,9 +53,35 @@ func TestSubtitleLibraryBoundsLargeResponsesAndKeepsGlobalCounts(t *testing.T) {
 	if strings.Count(recorder.Body.String(), `class="subtitle-file"`) != 40 || recorder.Body.Len() > 160<<10 {
 		t.Fatalf("unbounded HTML: %d bytes", recorder.Body.Len())
 	}
+	if !strings.Contains(recorder.Body.String(), `aria-label="Go to page"`) || !strings.Contains(recorder.Body.String(), `max="100"`) || !strings.Contains(recorder.Body.String(), `aria-label="Next page"`) {
+		t.Fatal("large library does not offer bounded page navigation")
+	}
 	overview := readSubtitlePage(t, manager, "")
 	if len(overview.Items) != 6 || overview.Matched != 2000 || overview.NextURL != "" {
 		t.Fatalf("overview is not a bounded preview: %#v", overview)
+	}
+}
+
+func TestSubtitleOverviewShowsSmallNonzeroCoverage(t *testing.T) {
+	t.Parallel()
+	manager := pagedSubtitleFixture(t, 1)
+	items := make([]library.Item, 126)
+	for index := range items {
+		items[index] = library.Item{ID: fmt.Sprintf("%016x", index+1), Kind: "video", Title: fmt.Sprintf("Film %03d", index), Path: fmt.Sprintf("/missing/Film-%03d.mkv", index)}
+	}
+	items[0].Subtitles = []string{"/missing/Film-000.en.srt"}
+	manager.index = memoryLibraryIndex(items, true)
+	recorder := httptest.NewRecorder()
+	manager.dashboard(recorder, ownerRequest("/"))
+	if !strings.Contains(recorder.Body.String(), `<span>&lt;1</span><small>%</small>`) || !strings.Contains(recorder.Body.String(), `1</strong> of <span data-number>126</span> files ready`) {
+		t.Fatalf("small coverage reads as zero: %q", recorder.Body.String())
+	}
+	items[0].Subtitles = nil
+	manager.index = memoryLibraryIndex(items, true)
+	recorder = httptest.NewRecorder()
+	manager.dashboard(recorder, ownerRequest("/"))
+	if !strings.Contains(recorder.Body.String(), `<span>0</span><small>%</small>`) || strings.Contains(recorder.Body.String(), `<span>&lt;1</span><small>%</small>`) {
+		t.Fatal("zero coverage is not distinct from a small nonzero result")
 	}
 }
 
@@ -96,6 +122,13 @@ func TestSubtitleLibraryFiltersBeforePaginationAndPreservesNavigation(t *testing
 	next, err := url.Parse(page.NextURL)
 	if err != nil || next.Query().Get("status") != "wanted" || next.Query().Get("kind") != "movie" || next.Query().Get("sort") != "modified" || next.Query().Get("q") != "Film" || next.Query().Get("page") != "2" {
 		t.Fatalf("filters lost: %q", page.NextURL)
+	}
+	recorder := httptest.NewRecorder()
+	manager.dashboard(recorder, ownerRequest("/?view=library&status=wanted&kind=movie&sort=modified&q=Film&page=2"))
+	for _, field := range []string{`name="view" value="library"`, `name="status" value="wanted"`, `name="kind" value="movie"`, `name="sort" value="modified"`, `name="q" value="Film"`, `aria-label="Go to page"`} {
+		if !strings.Contains(recorder.Body.String(), field) {
+			t.Fatalf("page jump lost %s", field)
+		}
 	}
 	for _, row := range page.Items {
 		if row.Ready || row.MediaKind != "movie" {

@@ -27,7 +27,7 @@ def affected(paths):
             raise ValueError("invalid repository path")
     for path in paths:
         parts = PurePosixPath(path).parts
-        if path.startswith(("engineering/documentation/", "apps/player/docs/")):
+        if path.startswith(("engineering/documentation/", "apps/player/docs/", "apps/subtitles/docs/")):
             selected["docs"] = True
             if path.endswith((".js", ".cjs", ".mjs", ".ts", ".tsx", ".html")):
                 selected["javascript-typescript"] = True

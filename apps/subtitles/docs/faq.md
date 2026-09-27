@@ -2,7 +2,7 @@
 title: Subtitles FAQ
 description: Answers about providers, privacy, writes, and app boundaries.
 section: Project
-last_reviewed: 2026-09-15
+last_reviewed: 2026-09-27
 ---
 
 # Subtitles FAQ
@@ -29,4 +29,8 @@ No. Sidecars live in the media tree. Back up media and sidecars separately from 
 
 ## Where are the production downloads?
 
-As of September 15, 2026, this monorepo has no published GitHub releases. Use the documented source setup and evaluate the app's release checklist before production deployment. A source build is not a signed-release acceptance result.
+Passing builds on `main` publish a signed `ghcr.io/kinosail/kinosail-subtitles:latest` container. Use the [Docker install guide]({{ '/getting-started/install/' | relative_url }}). Numbered GitHub releases are separate from the current container publication flow.
+
+## Do I need to pay to use subtitle search?
+
+No. Every core feature is free on your own Server. [Optional Supporter badges]({{ '/owner-guide/supporter/' | relative_url }}) recognize monthly or one-time support.
