@@ -4,6 +4,7 @@ services:
   kinosail:
     image: "${KINOSAIL_IMAGE:-ghcr.io/kinosail/kinosail-player:latest}"
     restart: unless-stopped
+    stop_grace_period: 30s
     init: true
     user: "10001:10001"
     pids_limit: 256

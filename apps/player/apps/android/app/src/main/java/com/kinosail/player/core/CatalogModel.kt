@@ -3,12 +3,15 @@ package com.kinosail.player.core
 import android.app.Application
 import android.graphics.Bitmap
 import android.util.LruCache
+import java.io.IOException
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
@@ -31,6 +34,7 @@ class CatalogModel(application: Application) : AndroidViewModel(application) {
     }
     private var session: SavedSession? = null
     private var viewerId: String? = null
+    private var viewer: Viewer? = null
     private var generation = 0
     private var activeQuery = ""
     private var activeView = "all"
@@ -42,12 +46,16 @@ class CatalogModel(application: Application) : AndroidViewModel(application) {
 
     fun open(viewer: Viewer) {
         val attempt = ++generation
+        val changed = viewerId != viewer.id || this.viewer?.serverId != viewer.serverId
         viewerId = viewer.id
-        artworkCache.evictAll()
-        state = CatalogState(loading = true)
-        searchInput = ""
-        activeQuery = ""
-        activeView = "all"
+        this.viewer = viewer
+        if (changed) {
+            artworkCache.evictAll()
+            state = CatalogState(loading = true)
+            searchInput = ""
+            activeQuery = ""
+            activeView = "all"
+        }
         viewModelScope.launch {
             try {
                 val saved = withContext(Dispatchers.IO) { sessions.load() }
@@ -98,7 +106,7 @@ class CatalogModel(application: Application) : AndroidViewModel(application) {
         if (session == null) return
         val attempt = generation
         state = state.copy(loading = true, notice = null)
-        viewModelScope.launch { fetch(attempt, state.items.size) }
+        viewModelScope.launch { fetch(attempt, 0) }
     }
 
     fun select(item: CatalogItem) {
@@ -171,6 +179,7 @@ class CatalogModel(application: Application) : AndroidViewModel(application) {
         generation++
         session = null
         viewerId = null
+        viewer = null
         activeView = "all"
         refreshAfterDetail = false
         artworkCache.evictAll()
@@ -208,6 +217,14 @@ class CatalogModel(application: Application) : AndroidViewModel(application) {
         val saved = session ?: return
         val viewer = viewerId ?: return
         try {
+            if (offset == 0 && activeQuery.isEmpty() && state.items.isEmpty()) {
+                val identity = this.viewer
+                val cached = if (identity != null) withContext(Dispatchers.IO) {
+                    sessions.loadCatalog(saved.server, identity, "library-$activeView")
+                } else null
+                if (attempt == generation && cached != null) state = state.copy(
+                    items = cached.items, total = cached.total, loading = false, notice = null)
+            }
             val page = withContext(Dispatchers.IO) {
                 CatalogApi(saved.server).list(saved.token, viewer, activeQuery, offset, activeView)
             }
@@ -217,14 +234,31 @@ class CatalogModel(application: Application) : AndroidViewModel(application) {
             }
             state = state.copy(items = if (offset == 0) page.items else state.items + page.items,
                 total = page.total, loading = false, notice = null)
-        } catch (error: ServerHttpException) {
+            if (offset == 0 && activeQuery.isEmpty()) this.viewer?.let { identity ->
+                withContext(Dispatchers.IO) {
+                    runCatching { sessions.saveCatalog(saved.server, identity, "library-$activeView", page) }
+                }
+            }
+        } catch (error: CancellationException) { throw error } catch (error: ServerHttpException) {
             if (attempt == generation) state = state.copy(loading = false,
                 notice = if (error.status == 401 || error.status == 403)
                     "This connection expired. Disconnect and connect again."
-                else "Could not load your library. Try again.")
+                else if (state.items.isEmpty()) "Could not load your library. Try again." else null)
+            if (error.status in setOf(408, 429, 500, 502, 503, 504)) retryLater(attempt)
+        } catch (_: IOException) {
+            if (attempt == generation) state = state.copy(loading = false,
+                notice = if (state.items.isEmpty()) "Could not load your library. Try again." else null)
+            retryLater(attempt)
         } catch (_: Exception) {
             if (attempt == generation) state = state.copy(loading = false,
-                notice = "Could not load your library. Try again.")
+                notice = if (state.items.isEmpty()) "Could not load your library. Try again." else null)
+        }
+    }
+
+    private fun retryLater(attempt: Int) {
+        viewModelScope.launch {
+            delay(15_000)
+            if (attempt == generation) fetch(attempt, 0)
         }
     }
 }
