@@ -14,9 +14,10 @@ type subtitleReadinessCheck struct {
 }
 
 type subtitleReadiness struct {
-	State      string                   `json:"state"`
-	Correction string                   `json:"correction,omitempty"`
-	Checks     []subtitleReadinessCheck `json:"checks"`
+	State         string                   `json:"state"`
+	Correction    string                   `json:"correction,omitempty"`
+	CorrectionURL string                   `json:"correctionURL,omitempty"`
+	Checks        []subtitleReadinessCheck `json:"checks"`
 }
 
 func (manager *subtitleManager) readiness() subtitleReadiness { //nolint:cyclop // One projection must evaluate all public readiness checks together.
@@ -63,6 +64,16 @@ func (manager *subtitleManager) readiness() subtitleReadiness { //nolint:cyclop 
 	for _, check := range checks {
 		if check.Blocking && !check.Ready {
 			result.State, result.Correction = "Needs one correction", check.Detail
+			switch check.Name {
+			case "Media library readable", "Sidecar folder writable":
+				result.CorrectionURL = "/settings#libraries"
+			case "Subtitle processing available":
+				result.CorrectionURL = "/settings#provider"
+			case "Preferred language valid":
+				result.CorrectionURL = "/settings#language"
+			case "Background scan active":
+				result.CorrectionURL = "/settings#automation"
+			}
 			break
 		}
 	}

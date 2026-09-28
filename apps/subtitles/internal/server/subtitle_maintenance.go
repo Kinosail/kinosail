@@ -56,7 +56,7 @@ func (manager *subtitleManager) maintainLanguageItem(ctx context.Context, item l
 
 func (manager *subtitleManager) maintainMissingSubtitle(ctx context.Context, item library.Item, language string) subtitleMaintenanceResult {
 	_, searchable := manager.searchableSubtitleLanguage(ctx, item, []string{language})
-	searchReady := manager.provider.ledger.automaticSearchReady(subtitleSearchKey(item.ID, language, manager.provider.preference()), time.Now())
+	searchReady := manager.provider.ledger.automaticSearchReady(subtitleSearchKey(item.ID, language, manager.provider.preference()), item, time.Now())
 	if !searchable || !searchReady {
 		return subtitleMaintenanceResult{}
 	}
@@ -65,6 +65,9 @@ func (manager *subtitleManager) maintainMissingSubtitle(ctx context.Context, ite
 
 func (manager *subtitleManager) maintainReadySubtitle(ctx context.Context, item library.Item, language string, tracks []string, sidecarReady bool) subtitleMaintenanceResult {
 	if !sidecarReady && subtitleTrackListed(tracks, "Embedded "+language) {
+		if !manager.provider.ledger.automaticSearchReady(subtitleSearchKey(item.ID, language, manager.provider.preference()), item, time.Now()) {
+			return subtitleMaintenanceResult{}
+		}
 		return manager.fetchMaintenanceSubtitle(ctx, item, language)
 	}
 	if !manager.provider.upgradeEligible(item, language, time.Now()) {

@@ -78,7 +78,7 @@ func TestSubtitleOverviewOffersSetupForAnEmptyLibrary(t *testing.T) {
 	t.Parallel()
 	handler := subtitleOverviewServer(t, 0, false)
 	body := requestApp(t, handler, http.MethodGet, "/", "").Body.String()
-	if !strings.Contains(body, "Add your subtitle library") || !strings.Contains(body, `href="/settings#library">Add a media folder `) {
+	if !strings.Contains(body, "Add your subtitle library") || !strings.Contains(body, `href="/settings#libraries">Add a media folder `) {
 		t.Fatal("empty library lacks setup recovery")
 	}
 	if strings.Contains(body, "Your subtitles are ready.") || strings.Contains(body, "<meter") || strings.Contains(body, `action="/subtitles/manage/maintain"`) {
