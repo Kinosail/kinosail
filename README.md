@@ -31,7 +31,7 @@ Kinosail Player turns the folders you already own into a personal library for mo
 2. Follow the [verified Player quickstart](https://kinosail.com/quickstart/). It checks the published image signature, pins its digest, and mounts your media read-only.
 3. Open your Server's local HTTPS address. Create the first Owner, add a passkey or authenticator, then [add a library](https://kinosail.com/getting-started/add-media/).
 
-The Server and web Player are free for local use. The default web port stays on localhost during setup. For Synology, TrueNAS, QNAP, Unraid, Portainer, Dockge, and Proxmox VE, use the [platform install guide](https://kinosail.com/getting-started/platforms/) to prepare a container file for Player, Subtitles, or both.
+The Server and web Player are free for local use. The default web port stays on localhost during setup. Use the [platform install guide](https://kinosail.com/getting-started/platforms/) for NAS, Proxmox VE, and container managers. It prepares a file for Player, Subtitles, or both. Native catalog submissions are in review for [TrueNAS](https://github.com/truenas/apps/pull/5924) and [ZimaOS/CasaOS](https://github.com/IceWhaleTech/CasaOS-AppStore/pull/1069). [Unraid templates](https://github.com/Kinosail/kinosail-unraid-templates) are ready for local installs.
 
 ### Watch on your devices
 
