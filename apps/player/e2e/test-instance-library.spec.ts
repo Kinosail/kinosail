@@ -35,7 +35,9 @@ test("public test instance exercises every media section and local TMDB metadata
 
   await page.getByRole("link", { name: "Movies", exact: true }).click();
   await page.getByRole("link", { name: /Example Movie/ }).click();
+  await expect(page).toHaveURL(/\/watch\/[a-f0-9]+$/);
   await expect(page.locator("video")).toBeVisible();
+	await expect(page.locator("[data-cast]")).toBeVisible();
 	await expect(page.locator('video track[label="EN"]')).toHaveAttribute("default", "");
   await expect(page.getByRole("paragraph").filter({ hasText: "Example metadata from the local generated TMDB fixture." })).toBeVisible();
 	await page.goto("/settings#playback");
@@ -108,7 +110,7 @@ test("mobile media detail heroes stack artwork for movies, shows, albums, and bo
 
 	const routes: string[] = [];
 	for (const [view, selector] of [
-		["movies", 'a.card[href^="/item/"]'],
+		["movies", 'a.card[href^="/watch/"]'],
 		["shows", 'a.show-details[href^="/show/"]'],
 		["music", 'a.card[href^="/album/"]'],
 		["books", 'a.card[href^="/book/"]'],
@@ -116,7 +118,7 @@ test("mobile media detail heroes stack artwork for movies, shows, albums, and bo
 		await page.goto(`/?view=${view}`, { waitUntil: "domcontentloaded" });
 		const href = await page.locator(selector).first().getAttribute("href");
 		expect(href, `${view} detail link`).toBeTruthy();
-		routes.push(href!);
+		routes.push(view === "movies" ? href!.replace("/watch/", "/item/") : href!);
 	}
 
 	for (const route of routes) {

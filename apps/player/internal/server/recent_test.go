@@ -74,7 +74,7 @@ func TestHomeShowsMovieGenresFromVisibleMovies(t *testing.T) { //nolint:cyclop /
 		!strings.Contains(section, ">Drama<") || !strings.Contains(section, ">Science Fiction<") ||
 		strings.Count(section, ">Arrival<") != 2 || strings.Count(section, ">Contact<") != 1 ||
 		strings.Contains(section, ">Pilot<") || strings.Contains(section, ">No Genre<") ||
-		!regexp.MustCompile(`href="/item/[a-f0-9]+"`).MatchString(section) {
+		!regexp.MustCompile(`href="/watch/[a-f0-9]+"`).MatchString(section) {
 		t.Fatalf("movie genres = %d %q", response.Code, section)
 	}
 	filtered := httptest.NewRecorder()

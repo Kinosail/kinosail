@@ -30,7 +30,6 @@ test("watch page keeps device warnings out of initial playback", async ({ page }
 	await login(page);
 	await page.goto("/?view=movies");
 	await page.getByRole("link", { name: "Example Movie", exact: true }).first().click();
-	await page.getByRole("link", { name: /^(Play|Resume|Play again)$/ }).click();
 	await expect(page.locator("[data-cast-state]")).toBeHidden();
 	await expect.poll(() => page.locator("video").evaluate((video) => (video as HTMLVideoElement).readyState)).toBeGreaterThanOrEqual(2);
 	await expect(page.locator("[data-player-status]")).toBeHidden();
