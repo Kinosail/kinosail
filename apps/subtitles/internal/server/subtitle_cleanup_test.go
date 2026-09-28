@@ -13,7 +13,7 @@ import (
 	"github.com/MikeO7/kinosail/packages/library"
 )
 
-func TestSubtitleCleanupPreviewsAndRemovesOnlySelectedSidecars(t *testing.T) { //nolint:cyclop,gocognit,funlen // The matrix checks both forced choices and every kept or removed sidecar.
+func TestSubtitleCleanupPreviewsAndHidesOnlySelectedSidecars(t *testing.T) { //nolint:cyclop,gocognit,funlen // The matrix checks both forced choices and every kept or hidden sidecar.
 	dir := t.TempDir()
 	media := filepath.Join(dir, "Film.mkv")
 	if err := os.WriteFile(media, []byte("video"), 0o600); err != nil {
@@ -62,11 +62,11 @@ func TestSubtitleCleanupPreviewsAndRemovesOnlySelectedSidecars(t *testing.T) { /
 			t.Errorf("%s: err=%v wantRemoved=%v", name, err, wantRemoved)
 		}
 	}
-	plan, err = planSubtitleCleanup(index, []string{"en"}, "delete")
+	plan, err = planSubtitleCleanup(index, []string{"en"}, "hide")
 	if err != nil || len(plan.Files) != 3 {
 		t.Fatalf("forced preview: %v %v", plan, err)
 	}
-	removed, err = applySubtitleCleanup(index, settings, []string{"en"}, "delete", plan.Digest)
+	removed, err = applySubtitleCleanup(index, settings, []string{"en"}, "hide", plan.Digest)
 	if err != nil || removed != 3 {
 		t.Fatalf("forced apply: %d %v", removed, err)
 	}
@@ -86,7 +86,7 @@ func TestSubtitleCleanupRejectsInvalidPolicyAndChangedFiles(t *testing.T) {
 	}
 	index := sidecarTestIndex(library.Item{Kind: "video", Path: media, Subtitles: []string{sidecar}})
 	settings := &settingsStore{file: "settings.json", value: installationSettings{SubtitleLanguage: "en"}, persist: func(string, any) error { return nil }}
-	for _, input := range [][2]string{{"", "keep"}, {"invalid", "keep"}, {"en", ""}, {"en", "other"}, {strings.Repeat("x", 100), "keep"}} {
+	for _, input := range [][2]string{{"", "keep"}, {"invalid", "keep"}, {"en", ""}, {"en", "other"}, {"en", "delete"}, {strings.Repeat("x", 100), "keep"}} {
 		if _, err := planSubtitleCleanup(index, []string{input[0]}, input[1]); err == nil {
 			t.Errorf("accepted %q", input)
 		}
@@ -106,7 +106,7 @@ func TestSubtitleCleanupRejectsInvalidPolicyAndChangedFiles(t *testing.T) {
 	}
 }
 
-func TestSubtitleCleanupRestoresLanguagesWhenRemovalFails(t *testing.T) {
+func TestSubtitleCleanupRestoresLanguagesWhenHidingFails(t *testing.T) { //nolint:cyclop // One failed hide must preserve both the file and playback settings.
 	dir := t.TempDir()
 	media, sidecar := filepath.Join(dir, "Film.mkv"), filepath.Join(dir, "Film.es.srt")
 	for _, path := range []string{media, sidecar} {
@@ -129,10 +129,10 @@ func TestSubtitleCleanupRestoresLanguagesWhenRemovalFails(t *testing.T) {
 	}
 	removed, err := applySubtitleCleanup(index, settings, []string{"en"}, "keep", plan.Digest)
 	if err == nil || removed != 0 || writes != 2 {
-		t.Fatalf("failed removal: removed=%d writes=%d err=%v", removed, writes, err)
+		t.Fatalf("failed hiding: removed=%d writes=%d err=%v", removed, writes, err)
 	}
 	if !slices.Equal(settings.subtitleLanguages(), []string{"en", "es"}) {
-		t.Fatalf("languages changed after failed removal: %q", settings.subtitleLanguages())
+		t.Fatalf("languages changed after failed hiding: %q", settings.subtitleLanguages())
 	}
 	if settings.subtitlePickerLimited() || settings.subtitlePickerKeepForced() {
 		t.Fatal("failed removal changed playback choices")
@@ -170,7 +170,7 @@ func TestSubtitleCleanupLeavesSymlinksAndPathsOutsideTheVideoDirectory(t *testin
 	}
 }
 
-func TestSubtitleCleanupWebPreviewAndDelete(t *testing.T) { //nolint:cyclop,gocognit,funlen // The route journey covers malformed requests and a real deletion.
+func TestSubtitleCleanupWebPreviewAndHide(t *testing.T) { //nolint:cyclop,gocognit,funlen // The route journey covers malformed requests and hiding real files.
 	dir := t.TempDir()
 	media, sidecar := filepath.Join(dir, "Film.mkv"), filepath.Join(dir, "Film.es.srt")
 	for _, path := range []string{media, sidecar} {
@@ -190,15 +190,15 @@ func TestSubtitleCleanupWebPreviewAndDelete(t *testing.T) { //nolint:cyclop,goco
 	}
 	response := httptest.NewRecorder()
 	preview(response, httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/settings/subtitles/cleanup?enabled=on&language=en&forced=keep", nil))
-	if response.Code != http.StatusOK || !strings.Contains(response.Body.String(), "1 subtitle file to delete") {
+	if response.Code != http.StatusOK || !strings.Contains(response.Body.String(), "1 subtitle file to hide") {
 		t.Fatalf("preview: %d %s", response.Code, response.Body.String())
 	}
 	match := regexp.MustCompile(`name="digest" value="([0-9a-f]{64})"`).FindStringSubmatch(response.Body.String())
 	if len(match) != 2 {
 		t.Fatal("preview digest missing")
 	}
-	apply := deleteSubtitleCleanup(index, settings)
-	for _, body := range []string{"enabled=on&language=en&forced=keep", "enabled=on&language=en&forced=keep&digest=" + match[1] + "&extra=1", "enabled=on&language=en&forced=delete&digest=" + match[1]} {
+	apply := hideSubtitleCleanup(index, settings)
+	for _, body := range []string{"enabled=on&language=en&forced=keep", "enabled=on&language=en&forced=keep&digest=" + match[1] + "&extra=1", "enabled=on&language=en&forced=hide&digest=" + match[1]} {
 		request := httptest.NewRequestWithContext(t.Context(), http.MethodPost, "/settings/subtitles/cleanup", strings.NewReader(body))
 		request.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 		result := httptest.NewRecorder()
@@ -215,13 +215,13 @@ func TestSubtitleCleanupWebPreviewAndDelete(t *testing.T) { //nolint:cyclop,goco
 		t.Fatalf("duplicate CSRF field = %d", duplicate.Code)
 	}
 	if _, err := os.Stat(sidecar); err != nil {
-		t.Fatal("invalid request deleted subtitle")
+		t.Fatal("invalid request hid subtitle")
 	}
 	request = httptest.NewRequestWithContext(t.Context(), http.MethodPost, "/settings/subtitles/cleanup", strings.NewReader("enabled=on&language=en&forced=keep&digest="+match[1]+"&_csrf=fixture"))
 	request.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 	result := httptest.NewRecorder()
 	apply(result, request)
-	if result.Code != http.StatusOK || !strings.Contains(result.Body.String(), "Deleted 1 subtitle file") {
+	if result.Code != http.StatusOK || !strings.Contains(result.Body.String(), "Hidden 1 subtitle file") {
 		t.Fatalf("apply: %d %s", result.Code, result.Body.String())
 	}
 	if _, err := os.Stat(sidecar); !os.IsNotExist(err) {

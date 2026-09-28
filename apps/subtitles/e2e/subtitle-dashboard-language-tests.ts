@@ -11,7 +11,7 @@ test("language choices describe online support without implying saved credential
   await expect(page.getByLabel("Add a language").locator('option[value="es"]')).toContainText("SubDL, OpenSubtitles, SubSource");
 });
 
-test("Owner deletes other languages and English forced subtitles from a populated library", async ({ page }, testInfo) => {
+test("Owner hides other languages and English forced subtitles from a populated library", async ({ page }, testInfo) => {
   const root = process.env.KINOSAIL_TEST_ROOT;
   const containerMedia = process.env.KINOSAIL_E2E_MEDIA_DIR;
   if (!root && !containerMedia) throw new Error("populated test media root is unavailable");
@@ -34,18 +34,20 @@ test("Owner deletes other languages and English forced subtitles from a populate
     await page.goto("/settings#cleanup");
     await page.getByLabel("Enable subtitle language cleanup").check();
     await page.getByLabel("Languages to keep").selectOption(["en"]);
-    await page.getByLabel("Forced subtitles in every language").selectOption("delete");
-    await page.getByRole("button", { name: "Preview files to delete" }).click();
-    await expect(page.getByRole("heading", { name: "2 subtitle files to delete" })).toBeVisible();
+    await page.getByLabel("Forced subtitles in every language").selectOption("hide");
+    await page.getByRole("button", { name: "Preview files to hide" }).click();
+    await expect(page.getByRole("heading", { name: "2 subtitle files to hide" })).toBeVisible();
     await expect(page.getByText(`${title}.es.srt`)).toBeVisible();
     await expect(page.getByText(`${title}.en.forced.srt`)).toBeVisible();
     await expectNoHorizontalOverflow(page);
     await page.screenshot({ path: testInfo.outputPath("390-populated-subtitle-cleanup-preview.png"), fullPage: true });
-    await page.getByRole("button", { name: "Delete 2 subtitle files" }).click();
+    await page.getByRole("button", { name: "Hide 2 subtitle files" }).click();
     await expect(page.getByRole("heading", { name: "Subtitle cleanup complete" })).toBeVisible();
-    await expect(page.getByText("en is now your preferred language. Deleted 2 subtitle files.")).toBeVisible();
+    await expect(page.getByText("en is now your preferred language. Hidden 2 subtitle files.")).toBeVisible();
     await expect(access(spanish)).rejects.toMatchObject({ code: "ENOENT" });
     await expect(access(forced)).rejects.toMatchObject({ code: "ENOENT" });
+    await access(`${spanish}.hidden`);
+    await access(`${forced}.hidden`);
     await access(join(media, kept));
     const library = await page.evaluate(async () => {
       const response = await fetch("/api/v1/library?view=movies");
@@ -59,7 +61,7 @@ test("Owner deletes other languages and English forced subtitles from a populate
     await page.getByRole("button", { name: "Settings", exact: true }).click();
     await expect(page.locator("[data-subtitles] option")).toHaveCount(2);
   } finally {
-    await Promise.all([unlink(spanish).catch(() => {}), unlink(forced).catch(() => {})]);
+    await Promise.all([spanish, forced, `${spanish}.hidden`, `${forced}.hidden`].map((path) => unlink(path).catch(() => {})));
     if (addedEnglish) await unlink(addedEnglish).catch(() => {});
     await rescan().catch(() => {});
   }
@@ -73,7 +75,7 @@ test("Owner previews language cleanup and forced subtitle choice", async ({ page
     await expect(page.getByText("Kept forced tracks appear only in selected languages.", { exact: false })).toBeVisible();
     await expect(page.getByText("Cleanup enables this choice after confirmation.", { exact: false })).toBeVisible();
     const cleanup = page.locator("#cleanup");
-    await expect(cleanup.getByRole("heading", { name: "Remove unwanted subtitle files" })).toBeVisible();
+    await expect(cleanup.getByRole("heading", { name: "Hide unwanted subtitle files" })).toBeVisible();
     await expect(cleanup.getByText("Keep the languages you use so playback has fewer choices.", { exact: false })).toBeVisible();
     await expect(cleanup.getByLabel("Enable subtitle language cleanup")).not.toBeChecked();
     await cleanup.getByLabel("Enable subtitle language cleanup").check();
@@ -82,7 +84,7 @@ test("Owner previews language cleanup and forced subtitle choice", async ({ page
     await expectNoHorizontalOverflow(page);
     expect((await new AxeBuilder({ page }).include("#cleanup").analyze()).violations).toEqual([]);
     await page.screenshot({ path: testInfo.outputPath(`${viewport.width}-subtitle-cleanup-setting.png`), fullPage: true });
-    await cleanup.getByRole("button", { name: "Preview files to delete" }).click();
+    await cleanup.getByRole("button", { name: "Preview files to hide" }).click();
     await expect(page.getByRole("heading", { name: "Subtitle cleanup" })).toBeVisible();
     await expect(page.getByText("Forced tracks in every language will stay. Only selected languages appear in the picker.")).toBeVisible();
     await expect(page.getByText("Keep subtitles in en, es.", { exact: false })).toBeVisible();
