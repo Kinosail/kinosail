@@ -44,6 +44,10 @@ class BuildInputsTest(unittest.TestCase):
                             (args.output / f'assets/install/{app_name}.yaml').read_bytes(),
                             (ROOT / f'apps/{app_name}/packaging/platform-compose.yaml').read_bytes(),
                         )
+                    self.assertEqual(
+                        (args.output / 'assets/install/both.yaml').read_bytes(),
+                        (ROOT / 'apps/player/packaging/platform-compose-both.yaml').read_bytes(),
+                    )
                     install_helper = (args.output / 'getting-started/platforms/index.html').read_text()
                     self.assertIn('data-install-builder', install_helper)
                     self.assertIn(f'{prefix}/assets/js/platform-install.js', install_helper)

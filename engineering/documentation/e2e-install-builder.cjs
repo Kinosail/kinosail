@@ -14,7 +14,7 @@ const output = mkdtempSync(join(tmpdir(), 'kinosail-install-e2e-'));
 const revision = execFileSync('git', ['rev-parse', 'HEAD'], { encoding: 'utf8' }).trim();
 const composeVersion = execFileSync('docker-compose', ['version'], { encoding: 'utf8' }).trim();
 
-async function verify(app, media, port) {
+async function verify(app, media, port, subtitlesPort = 38128) {
   const dom = new JSDOM(page, { url: 'https://kinosail.com/getting-started/platforms/', runScripts: 'outside-only' });
   const { window } = dom;
   window.fetch = async url => ({
@@ -30,6 +30,7 @@ async function verify(app, media, port) {
   field('app').dispatchEvent(new window.Event('change'));
   field('media').value = media;
   field('port').value = String(port);
+  if (app === 'both') field('subtitles-port').value = String(subtitlesPort);
   field('create').click();
   await new Promise(setImmediate);
   assert.equal(field('error').hidden, true, field('error').textContent);
@@ -41,12 +42,15 @@ async function verify(app, media, port) {
   const file = join(output, field('download').download);
   writeFileSync(file, yaml);
   const config = JSON.parse(execFileSync('docker-compose', ['-f', file, 'config', '--format', 'json'], { encoding: 'utf8' }));
-  const service = config.services.kinosail;
   assert.equal(config.name, `kinosail-${app}`);
-  assert.equal(service.image, `ghcr.io/kinosail/kinosail-${app}:latest`);
-  assert.equal(service.volumes.find(volume => volume.target === '/media').source, media);
-  assert.equal(Boolean(service.volumes.find(volume => volume.target === '/media').read_only), app === 'player');
-  assert.equal(String(service.ports[0].published), String(port));
+  const apps = app === 'both' ? ['player', 'subtitles'] : [app];
+  for (const selected of apps) {
+    const service = config.services[app === 'both' ? selected : 'kinosail'];
+    assert.equal(service.image, `ghcr.io/kinosail/kinosail-${selected}:latest`);
+    assert.equal(service.volumes.find(volume => volume.target === '/media').source, media);
+    assert.equal(Boolean(service.volumes.find(volume => volume.target === '/media').read_only), selected === 'player');
+    assert.equal(String(service.ports[0].published), String(selected === 'subtitles' && app === 'both' ? subtitlesPort : port));
+  }
   dom.window.close();
   return { app, media, port, file, result: 'pass' };
 }
@@ -55,6 +59,7 @@ async function verify(app, media, port) {
   const cases = [
     await verify('player', '/mnt/tank/Movies & TV', 38127),
     await verify('subtitles', '/srv/media', 49128),
+    await verify('both', '/srv/Movies & TV', 49127, 49128),
   ];
   const artifact = { revision, command: `node engineering/documentation/e2e-install-builder.cjs ${site}`, environment: { platform: process.platform, node: process.version, compose: composeVersion }, cases };
   writeFileSync(join(output, 'result.json'), JSON.stringify(artifact, null, 2) + '\n');
