@@ -99,12 +99,13 @@ func TestSubtitleSearchBackoffAdaptsToRepeatedNoResults(t *testing.T) {
 	t.Parallel()
 	ledger := newSubtitleLedger("")
 	key := subtitleSearchKey("0123456789abcdef", "en", "standard")
+	item := library.Item{}
 	now := time.Date(2026, 8, 30, 12, 0, 0, 0, time.UTC)
-	ledger.noteSearch(key, "no-result", "No trusted subtitle found", now)
+	ledger.noteSearch(key, "no-result", "No trusted subtitle found", item, now)
 	first, _, _ := ledger.search(key)
-	ledger.noteSearch(key, "no-result", "No trusted subtitle found", now.Add(time.Hour))
+	ledger.noteSearch(key, "no-result", "No trusted subtitle found", item, now.Add(time.Hour))
 	second, _, _ := ledger.search(key)
-	if first.NextAt != now.Add(6*time.Hour).Unix() || second.NextAt != now.Add(time.Hour+24*time.Hour).Unix() || ledger.automaticSearchReady(key, now.Add(12*time.Hour)) {
+	if first.NextAt != now.Add(6*time.Hour).Unix() || second.NextAt != now.Add(time.Hour+24*time.Hour).Unix() || ledger.automaticSearchReady(key, item, now.Add(12*time.Hour)) {
 		t.Fatalf("adaptive records = %#v, %#v", first, second)
 	}
 }
