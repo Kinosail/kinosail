@@ -35,7 +35,9 @@ test("public test instance exercises every media section and local TMDB metadata
 
   await page.getByRole("link", { name: "Movies", exact: true }).click();
   await page.getByRole("link", { name: /Example Movie/ }).click();
+  await expect(page).toHaveURL(/\/watch\/[a-f0-9]+$/);
   await expect(page.locator("video")).toBeVisible();
+	await expect(page.locator("[data-cast]")).toBeVisible();
 	await expect(page.locator('video track[label="EN"]')).toHaveAttribute("default", "");
   await expect(page.getByRole("paragraph").filter({ hasText: "Example metadata from the local generated TMDB fixture." })).toBeVisible();
 	await page.goto("/settings#playback");

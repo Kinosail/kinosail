@@ -2,7 +2,6 @@ package server
 
 import (
 	"net/http"
-	"strings"
 
 	"github.com/MikeO7/kinosail/packages/catalog"
 	homeview "github.com/MikeO7/kinosail/packages/home"
@@ -18,7 +17,7 @@ type homeSource struct {
 }
 
 func showHome(index *libraryIndex, progress *progressStore, lists *listStore, settings *settingsStore, updates *updateChecker, tmdb bool) http.HandlerFunc {
-	return homeview.NewHandler(homeSource{index, progress, lists, settings, updates}, homePlaybackView{homeView, index}, tmdb, localizedError)
+	return homeview.NewHandler(homeSource{index, progress, lists, settings, updates}, homeView, tmdb, localizedError)
 }
 
 func (source homeSource) Browse(request *http.Request) (catalog.Result, error) {
@@ -50,21 +49,3 @@ var (
 	filter      = catalog.Filter
 	sortLibrary = catalog.Sort
 )
-
-type homePlaybackView struct {
-	localizedTemplate
-	index *libraryIndex
-}
-
-func (view homePlaybackView) Execute(writer http.ResponseWriter, request *http.Request, value any) error {
-	if page, ok := value.(homeview.Page[showCard, resumeItem, playlistSummary, collectionSummary]); ok {
-		for i := range page.Recent {
-			id, watch := strings.CutPrefix(page.Recent[i].Href, "/watch/")
-			if item, found := visibleItem(request, view.index, id); watch && found && item.Kind == "video" {
-				page.Recent[i].PlayHref = page.Recent[i].Href
-			}
-		}
-		value = page
-	}
-	return view.localizedTemplate.Execute(writer, request, value)
-}

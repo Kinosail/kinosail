@@ -96,8 +96,7 @@ func MovieGenres(items []library.Item, artwork map[string]string) []MovieGenre {
 		sort.SliceStable(movies, func(i, j int) bool { return movies[i].Added.After(movies[j].Added) })
 		cards := make([]ShelfItem, 0, min(len(movies), recentItemLimit))
 		for _, movie := range movies[:min(len(movies), recentItemLimit)] {
-			card := singleItem(movie, artwork, nil, "play")
-			cards = append(cards, card)
+			cards = append(cards, singleItem(movie, artwork, nil, "play"))
 		}
 		genres = append(genres, MovieGenre{Name: name, Items: cards})
 	}
@@ -165,6 +164,7 @@ func episodeShelf(items []library.Item, artwork, showTitles map[string]string, p
 			stack.Count++
 			stack.Stacked = true
 			stack.Href = "/show/" + show.ID
+			stack.PlayHref = ""
 			stack.Title = show.Title
 			stack.StackLabel = stackLabel
 			stack.Meta = stackMeta(stack.Count, item)
@@ -187,7 +187,11 @@ func singleItem(item library.Item, artwork, showTitles map[string]string, placeh
 	if showTitle := showTitles[item.ID]; showTitle != "" {
 		title = showTitle + " · " + title
 	}
-	return ShelfItem{Href: mediaHref(item), Title: title, Meta: mediaMeta(item), ArtworkID: artwork[item.ID], PlaceholderIcon: placeholderIcon, Count: 1}
+	card := ShelfItem{Href: mediaHref(item), Title: title, Meta: mediaMeta(item), ArtworkID: artwork[item.ID], PlaceholderIcon: placeholderIcon, Count: 1}
+	if item.Kind == "video" {
+		card.PlayHref = card.Href
+	}
+	return card
 }
 
 func mediaHref(item library.Item) string {

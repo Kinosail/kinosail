@@ -30,13 +30,13 @@ func TestMovieCardsOpenPlayerAndOldDetailsRedirect(t *testing.T) {
 		return response
 	}
 	library := call(http.MethodGet, "/?view=movies", "")
-	match := regexp.MustCompile(`/watch/([a-f0-9]+)`).FindStringSubmatch(library.Body.String())
+	match := regexp.MustCompile(`href="/watch/([a-f0-9]+)"`).FindStringSubmatch(library.Body.String())
 	if len(match) != 2 {
 		t.Fatal("movie poster does not open playback")
 	}
 	path := "/item/" + match[1]
 	player := call(http.MethodGet, "/watch/"+match[1], "")
-	for _, expected := range []string{"<video", ">Add to My List</button>", "Playback &amp; downloads", "Movie"} {
+	for _, expected := range []string{"<video", "data-cast", ">Add to My List</button>", "Playback &amp; downloads", "Movie"} {
 		if player.Code != http.StatusOK || !strings.Contains(player.Body.String(), expected) {
 			t.Fatalf("player lacks %q", expected)
 		}
@@ -75,7 +75,7 @@ func TestMovieBrowseCardOmitsYearAndPlayerRetainsIt(t *testing.T) {
 		return response.Body.String()
 	}
 	browse := get("/?view=movies")
-	match := regexp.MustCompile(`/watch/([a-f0-9]+)`).FindStringSubmatch(browse)
+	match := regexp.MustCompile(`href="/watch/([a-f0-9]+)"`).FindStringSubmatch(browse)
 	if len(match) != 2 {
 		t.Fatal("movie is missing from browse results")
 	}
@@ -108,6 +108,9 @@ func TestFeaturedMovieAndShelfOpenPlayer(t *testing.T) {
 	}
 	if strings.Contains(feature, `href="/item/`+play[1]+`"`) || strings.Contains(feature, `View details`) {
 		t.Fatal("featured movie still offers the removed detail screen")
+	}
+	if !strings.Contains(feature, `<span data-feature-label>Play</span>`) {
+		t.Fatal("featured movie does not name its direct play action")
 	}
 	shelf := regexp.MustCompile(`(?s)<section[^>]*data-home-shelf="recent-movies".*?</section>`).FindString(body)
 	if !strings.Contains(shelf, `href="/watch/`+play[1]+`"`) {

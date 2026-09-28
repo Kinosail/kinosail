@@ -39,6 +39,7 @@ test("selecting a movie starts moving playback promptly", async ({ page }, testI
 
 	const started = Date.now();
 	await page.getByRole("link", { name: /Example Movie/ }).click();
+	await expect(page).toHaveURL(/\/watch\/[a-f0-9]+$/);
 	await expect(page.getByLabel("Content rating")).toHaveText("PG-13");
 	const video = page.locator("video");
 	await expect.poll(() => video.evaluate((element: HTMLVideoElement) => element.currentTime), { timeout: 3_000 }).toBeGreaterThan(0.25);

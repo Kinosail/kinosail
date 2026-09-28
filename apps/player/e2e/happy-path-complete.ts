@@ -76,6 +76,7 @@ export async function completeHappyPath(page: Page, testInfo: TestInfo, { captur
 	await page.goto("/?q=Arrival");
   await expect(page.getByRole("heading", { name: "Arrival" }).first()).toBeVisible();
   await page.locator('a.card[href^="/watch/"]').first().click();
+  await expect(page).toHaveURL(/\/watch\/[a-f0-9]+$/);
 
   await expect(page.getByRole("heading", { name: "Arrival" })).toBeVisible();
 	await expectAccessible(page, capture);

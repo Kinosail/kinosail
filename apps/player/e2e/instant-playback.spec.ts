@@ -40,7 +40,7 @@ async function login(page: Page) {
 	if (await page.getByRole("link", { name: "Not now" }).isVisible()) await page.getByRole("link", { name: "Not now" }).click();
 }
 
-test("Movie selection reaches moving video in under two seconds", async ({ page }) => {
+test("Selecting a movie reaches moving video in under two seconds", async ({ page }) => {
 	await login(page);
 	await page.getByRole("link", { name: "Movies", exact: true }).click();
 	const started = Date.now();
