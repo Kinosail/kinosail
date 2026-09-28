@@ -91,7 +91,22 @@ class BuildInputsTest(unittest.TestCase):
                     self.assertEqual(app['offers'], {'@type': 'Offer', 'price': 0})
                     subtitles = (args.output / 'subtitles/index.html').read_text()
                     self.assertIn(f'<link rel="canonical" href="{origin}{prefix}/subtitles/">', subtitles)
+                    self.assertIn(f'<meta property="og:url" content="{origin}{prefix}/subtitles/">', subtitles)
                     self.assertIn('Kinosail Subtitles', subtitles)
+                    self.assertIn('<meta property="og:title" content="Kinosail Subtitles · Self-hosted subtitle automation">', subtitles)
+                    share_url = f'{origin}{prefix}/subtitles/assets/images/kinosail-subtitles-docs-share.png'
+                    subtitles_install = (args.output / 'subtitles/getting-started/install/index.html').read_text()
+                    self.assertIn(f'<meta property="og:url" content="{origin}{prefix}/subtitles/getting-started/install/">', subtitles_install)
+                    for page in (subtitles, subtitles_install):
+                        social = SearchMetadata(page).social
+                        self.assertEqual(social['og:image'], [share_url])
+                        self.assertEqual(social['twitter:image'], [share_url])
+                        self.assertEqual(social['og:image:alt'], ['Kinosail Subtitles Docs mark and the words Find. Validate. Save.'])
+                    self.assertEqual(SearchMetadata(subtitles).social['og:image:width'], ['1200'])
+                    self.assertEqual(SearchMetadata(subtitles).social['og:image:height'], ['630'])
+                    share_png = (args.output / 'subtitles/assets/images/kinosail-subtitles-docs-share.png').read_bytes()
+                    self.assertEqual(share_png[:8], b'\x89PNG\r\n\x1a\n')
+                    self.assertEqual(struct.unpack('>II', share_png[16:24]), (1200, 630))
                     self.assertIn(f'<loc>{origin}{prefix}/subtitles/</loc>',
                                   (args.output / 'sitemap.xml').read_text())
                     subtitles_index = json.loads((args.output / 'subtitles/search.json').read_text())
@@ -102,8 +117,7 @@ class BuildInputsTest(unittest.TestCase):
                     subtitles_app = next(item for item in subtitles_graph if item['@type'] == 'SoftwareApplication')
                     self.assertEqual(subtitles_app['name'], 'Kinosail Subtitles')
                     self.assertEqual(subtitles_app['offers'], {'@type': 'Offer', 'price': 0})
-                    install = (args.output / 'subtitles/getting-started/install/index.html').read_text()
-                    self.assertIn('ghcr.io/kinosail/kinosail-subtitles:latest', install)
+                    self.assertIn('ghcr.io/kinosail/kinosail-subtitles:latest', subtitles_install)
                     self.assertIn('Kinosail Subtitles dashboard', subtitles)
                     why_links = LinkText((args.output / 'why/index.html').read_text()).links
                     self.assertIn([f'{prefix}/quickstart/', 'Try Kinosail Player'], why_links)

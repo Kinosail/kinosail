@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     <meta name="theme-color" content="#090a08">
     <meta name="description" content="{{ page.description | default: site.description | escape }}">
-    <meta property="og:title" content="{{ page.title | escape }} · {{ site.title }}">
+    <meta property="og:title" content="{% if page.url == '/' %}Kinosail Subtitles · Self-hosted subtitle automation{% else %}{{ page.title | escape }} · {{ site.title }}{% endif %}">
     <meta property="og:description" content="{{ page.description | default: site.description | escape }}">
     <meta property="og:type" content="website">
     <meta property="og:url" content="{{ page.url | absolute_url }}">
