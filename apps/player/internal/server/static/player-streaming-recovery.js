@@ -8,7 +8,14 @@ const showFailure = (message, action = "", recover) => {
   playbackTrace("fallback-offered", action ? "action-available" : "no-action");
   const state = document.querySelector("[data-player-status]");
   const playerMessage = document.querySelector("[data-player-message]");
-  if (state) { state.hidden = false; state.classList.add("is-recovery"); }
+  if (state) {
+    state.hidden = false;
+    state.classList.add("is-recovery");
+    state.setAttribute("aria-busy", "false");
+    state.querySelector(".buffer-skeleton")?.setAttribute("hidden", "");
+    state.querySelector("[data-buffered]")?.setAttribute("hidden", "");
+    state.closest(".media-stage")?.classList.remove("is-busy");
+  }
   if (playerMessage) playerMessage.textContent = message;
   if (playbackModeStatus) {
     playbackModeStatus.textContent = adaptiveActive ? "Playback interrupted" : "Direct Play stopped";
@@ -57,6 +64,47 @@ const showReadyPlaybackMode = () => {
 };
 player.addEventListener("canplay", showReadyPlaybackMode);
 player.addEventListener("playing", showReadyPlaybackMode);
+let bufferingRecoveryTimer, bufferingPosition, bufferingRecoveryGeneration, bufferingRecoveryHls, bufferingRecoverySource, bufferingRetryAt = -Infinity;
+const clearBufferingRecovery = () => { clearTimeout(bufferingRecoveryTimer); bufferingRecoveryTimer = undefined; };
+const retryStalledPlayback = () => {
+  clearRecovery();
+  if (!adaptiveActive) return useOriginal(true, player.currentTime);
+  if (hls) return useAdaptive(playerStorage.get(qualityPreference) || "auto", true, player.currentTime);
+  resumeAfterSourceChange(true, true, player.currentTime);
+  player.load();
+};
+const watchBuffering = (position = player.currentTime) => {
+  clearBufferingRecovery();
+  bufferingPosition = position;
+  const generation = adaptiveGeneration;
+  const activeHls = hls;
+  const source = player.currentSrc || player.src;
+  bufferingRecoveryGeneration = generation;
+  bufferingRecoveryHls = activeHls;
+  bufferingRecoverySource = source;
+  bufferingRecoveryTimer = setTimeout(() => {
+    bufferingRecoveryTimer = undefined;
+    if (destroyed || player.seeking || player.error || generation !== adaptiveGeneration || hls !== activeHls ||
+      (player.currentSrc || player.src) !== source || player.currentTime > position + 0.1 ||
+      player.paused && !pendingResume?.playing && !networkWantsPlay) return;
+    if (performance.now() - bufferingRetryAt >= 30000) {
+      bufferingRetryAt = performance.now();
+      playbackTrace("buffering-retry", adaptiveActive ? "compatible" : "direct");
+      retryStalledPlayback();
+      watchBuffering(position);
+      return;
+    }
+    showFailure("Playback has not advanced. Your position is saved.", "Retry playback", retryStalledPlayback);
+  }, 12000);
+};
+player.addEventListener("waiting", () => {
+  if (player.paused || player.seeking) return;
+  if (bufferingRecoveryTimer !== undefined && adaptiveGeneration === bufferingRecoveryGeneration && hls === bufferingRecoveryHls &&
+    (player.currentSrc || player.src) === bufferingRecoverySource) return;
+  watchBuffering();
+});
+player.addEventListener("timeupdate", () => { if (bufferingRecoveryTimer !== undefined && player.currentTime > bufferingPosition + 0.1) clearBufferingRecovery(); });
+for (const event of ["pause", "seeking", "ended"]) player.addEventListener(event, clearBufferingRecovery);
 let networkRetryTimer, reachabilityController, networkRetryAction;
 let networkRetryCount = 0, networkStableSince = 0;
 let networkPosition = player.currentTime || Number(player.dataset.start) || 0;
