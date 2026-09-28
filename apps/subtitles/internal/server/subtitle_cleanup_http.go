@@ -8,7 +8,7 @@ import (
 	"strings"
 )
 
-const subtitleCleanupPreviewHTML = `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#0b0d0b"><title>Subtitle cleanup · Kinosail Subtitles</title><script src="/static/theme.js?v=electric-1"></script><link rel="stylesheet" href="/static/app.css?v=electric-1"></head><body class="settings-page subtitle-settings"><a class="skip" href="#main">Skip to content</a><main id="main" class="settings-shell"><a class="back" href="/settings#cleanup">{{icon "back"}} Subtitle settings</a><header class="settings-intro"><h1>Subtitle cleanup</h1><p>Keep subtitles in {{.LanguageSummary}}. Kinosail will use this language order for playback. The picker will show one regular track per kept language. {{if eq .Forced "keep"}}Forced tracks in every language will stay. Only selected languages appear in the picker.{{else}}Forced subtitle files in every language will be deleted.{{end}}</p></header><section class="wide"><h2>{{.Count}} subtitle {{if eq .Count 1}}file{{else}}files{{end}} to delete</h2><p>Only tagged .srt and .vtt files beside videos are included. Embedded tracks and files with uncertain language stay in place. {{.Skipped}} {{if eq .Skipped 1}}file was{{else}}files were{{end}} skipped.{{if gt .Count (len .Files)}} The first {{len .Files}} matches are shown.{{end}}</p>{{if .Files}}<ul>{{range .Files}}<li><code>{{.Path}}</code></li>{{end}}</ul>{{else}}<p>No files match this cleanup choice.</p>{{end}}<form action="/settings/subtitles/cleanup" method="post"><input type="hidden" name="enabled" value="on">{{range .Languages}}<input type="hidden" name="language" value="{{.}}">{{end}}<input type="hidden" name="forced" value="{{.Forced}}"><input type="hidden" name="digest" value="{{.Digest}}"><button>{{if .Files}}Delete {{.Count}} subtitle {{if eq .Count 1}}file{{else}}files{{end}}{{else}}Save selected languages{{end}}</button></form></section></main></body></html>`
+const subtitleCleanupPreviewHTML = `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#0b0d0b"><title>Subtitle cleanup · Kinosail Subtitles</title><script src="/static/theme.js?v=electric-1"></script><link rel="stylesheet" href="/static/app.css?v=electric-1"></head><body class="settings-page subtitle-settings"><a class="skip" href="#main">Skip to content</a><main id="main" class="settings-shell"><a class="back" href="/settings#cleanup">{{icon "back"}} Subtitle settings</a><header class="settings-intro"><h1>Subtitle cleanup</h1><p>Keep subtitles in {{.LanguageSummary}}. Kinosail will use this language order for playback. The picker will show one regular track per kept language. {{if eq .Forced "keep"}}Forced tracks in every language will stay. Only selected languages appear in the picker.{{else}}Forced subtitle files in every language will be hidden.{{end}}</p></header><section class="wide"><h2>{{.Count}} subtitle {{if eq .Count 1}}file{{else}}files{{end}} to hide</h2><p>Only tagged .srt and .vtt files beside videos are included. Hidden files keep their contents with a .hidden suffix; remove that suffix to restore them. Embedded tracks and files with uncertain language stay in place. {{.Skipped}} {{if eq .Skipped 1}}file was{{else}}files were{{end}} skipped.{{if gt .Count (len .Files)}} The first {{len .Files}} matches are shown.{{end}}</p>{{if .Files}}<ul>{{range .Files}}<li><code>{{.Path}}</code></li>{{end}}</ul>{{else}}<p>No files match this cleanup choice.</p>{{end}}<form action="/settings/subtitles/cleanup" method="post"><input type="hidden" name="enabled" value="on">{{range .Languages}}<input type="hidden" name="language" value="{{.}}">{{end}}<input type="hidden" name="forced" value="{{.Forced}}"><input type="hidden" name="digest" value="{{.Digest}}"><button>{{if .Files}}Hide {{.Count}} subtitle {{if eq .Count 1}}file{{else}}files{{end}}{{else}}Save selected languages{{end}}</button></form></section></main></body></html>`
 
 var subtitleCleanupPreviewView = newLocalizedTemplate("subtitle-cleanup-preview", subtitleCleanupPreviewHTML)
 
@@ -23,10 +23,10 @@ type subtitleCleanupPreviewData struct {
 type subtitleCleanupDoneData struct {
 	LanguageSummary string
 	LanguageCount   int
-	Removed         int
+	Hidden          int
 }
 
-func subtitleCleanupInput(request *http.Request, applying bool) ([]string, string, string, error) { //nolint:cyclop // Reject every missing, repeated, and conflicting cleanup field before planning or deletion.
+func subtitleCleanupInput(request *http.Request, applying bool) ([]string, string, string, error) { //nolint:cyclop // Reject every missing, repeated, and conflicting cleanup field before planning or hiding.
 	values, err := subtitleCleanupValues(request, applying)
 	if err != nil {
 		return nil, "", "", err
@@ -40,7 +40,7 @@ func subtitleCleanupInput(request *http.Request, applying bool) ([]string, strin
 	}
 	forced := values.Get("forced")
 	canonical, err := validateSubtitleLanguages(values["language"])
-	if err != nil || !oneOf(forced, "keep", "delete") {
+	if err != nil || !oneOf(forced, "keep", "hide") {
 		return nil, "", "", errors.New("subtitle cleanup request is invalid")
 	}
 	return canonical, forced, values.Get("digest"), nil
@@ -98,7 +98,7 @@ func previewSubtitleCleanup(index *libraryIndex, settings *settingsStore) http.H
 	}
 }
 
-func deleteSubtitleCleanup(index *libraryIndex, settings *settingsStore) http.HandlerFunc {
+func hideSubtitleCleanup(index *libraryIndex, settings *settingsStore) http.HandlerFunc {
 	return func(writer http.ResponseWriter, request *http.Request) {
 		languages, forced, digest, err := subtitleCleanupInput(request, true)
 		if err != nil {
@@ -109,16 +109,16 @@ func deleteSubtitleCleanup(index *libraryIndex, settings *settingsStore) http.Ha
 			localizedError(writer, request, "subtitle cleanup preview has expired", http.StatusBadRequest)
 			return
 		}
-		removed, err := applySubtitleCleanup(index, settings, languages, forced, digest)
+		hidden, err := applySubtitleCleanup(index, settings, languages, forced, digest)
 		if err != nil {
 			localizedError(writer, request, "subtitle cleanup stopped; check your preferred language and preview again", http.StatusConflict)
 			return
 		}
 		writer.Header().Set("Content-Type", "text/html; charset=utf-8")
-		if err := subtitleCleanupDoneView.Execute(writer, request, subtitleCleanupDoneData{LanguageSummary: strings.Join(languages, ", "), LanguageCount: len(languages), Removed: removed}); err != nil {
+		if err := subtitleCleanupDoneView.Execute(writer, request, subtitleCleanupDoneData{LanguageSummary: strings.Join(languages, ", "), LanguageCount: len(languages), Hidden: hidden}); err != nil {
 			localizedError(writer, request, "subtitle cleanup result is unavailable", http.StatusInternalServerError)
 		}
 	}
 }
 
-var subtitleCleanupDoneView = newLocalizedTemplate("subtitle-cleanup-done", `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#0b0d0b"><title>Subtitle cleanup · Kinosail Subtitles</title><script src="/static/theme.js?v=electric-1"></script><link rel="stylesheet" href="/static/app.css?v=electric-1"></head><body class="settings-page subtitle-settings"><a class="skip" href="#main">Skip to content</a><main id="main" class="settings-shell"><a class="back" href="/settings#cleanup">{{icon "back"}} Subtitle settings</a><header class="settings-intro"><h1>Subtitle cleanup complete</h1><p>{{.LanguageSummary}} {{if eq .LanguageCount 1}}is now your preferred language{{else}}are now your preferred languages{{end}}. Deleted {{.Removed}} subtitle {{if eq .Removed 1}}file{{else}}files{{end}}.</p></header></main></body></html>`)
+var subtitleCleanupDoneView = newLocalizedTemplate("subtitle-cleanup-done", `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#0b0d0b"><title>Subtitle cleanup · Kinosail Subtitles</title><script src="/static/theme.js?v=electric-1"></script><link rel="stylesheet" href="/static/app.css?v=electric-1"></head><body class="settings-page subtitle-settings"><a class="skip" href="#main">Skip to content</a><main id="main" class="settings-shell"><a class="back" href="/settings#cleanup">{{icon "back"}} Subtitle settings</a><header class="settings-intro"><h1>Subtitle cleanup complete</h1><p>{{.LanguageSummary}} {{if eq .LanguageCount 1}}is now your preferred language{{else}}are now your preferred languages{{end}}. Hidden {{.Hidden}} subtitle {{if eq .Hidden 1}}file{{else}}files{{end}}.</p></header></main></body></html>`)
