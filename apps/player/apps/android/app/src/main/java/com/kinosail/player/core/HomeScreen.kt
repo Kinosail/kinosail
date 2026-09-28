@@ -55,11 +55,7 @@ internal fun HomeScreen(viewer: Viewer, catalog: CatalogModel, tv: Boolean, nowP
                         open: (CatalogItem) -> Unit, play: (CatalogItem) -> Unit) {
     val model: HomeModel = viewModel()
     val state = model.state
-    val featured = state.continueWatching.firstOrNull {
-        it.kind in setOf("video", "music", "audiobook")
-    } ?: state.recent.firstOrNull {
-        it.kind in setOf("video", "music", "audiobook")
-    }
+    val featured = state.featured
     val playFocus = remember { FocusRequester() }
     var showThanks by remember { mutableStateOf(false) }
     var showNotices by remember { mutableStateOf(false) }
@@ -156,11 +152,11 @@ internal fun HomeScreen(viewer: Viewer, catalog: CatalogModel, tv: Boolean, nowP
                         }
                     }
                 }
-                if (state.continueWatching.isNotEmpty()) item {
-                    HomeShelf("Continue watching", state.continueWatching.take(12), catalog, tv, wideTouch, open)
+                if (state.watchShelf.isNotEmpty()) item {
+                    HomeShelf("Continue watching", state.watchShelf, catalog, tv, wideTouch, open)
                 }
-                if (state.recent.isNotEmpty()) item {
-                    HomeShelf("Recently added", state.recent.take(24), catalog, tv, wideTouch, open)
+                if (state.recentShelf.isNotEmpty()) item {
+                    HomeShelf("Recently added", state.recentShelf, catalog, tv, wideTouch, open)
                 }
                 if (!state.loading && state.notice == null && state.continueWatching.isEmpty() &&
                     state.recent.isEmpty()) item {
