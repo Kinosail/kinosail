@@ -1,7 +1,6 @@
 const playerStatus = document.querySelector("[data-player-status]");
 const bufferedProgress = document.querySelector("[data-buffered]");
 const playerMessage = document.querySelector("[data-player-message]");
-const playerStart = document.querySelector("[data-player-start]");
 const theaterButton = document.querySelector("[data-theater]");
 const settingsButton = document.querySelector("[data-player-settings]");
 const settingsPanel = document.querySelector(".player-settings");

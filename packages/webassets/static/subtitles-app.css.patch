@@ -185,7 +185,7 @@
  .player-settings{max-height:calc(100% - 8rem);overflow-y:auto;overscroll-behavior:contain;scroll-padding:1rem}.player-settings header{position:sticky;top:0;z-index:2;background:var(--overlay);padding-block:.5rem}.player-settings header button{min-height:44px}.player-settings .choice-option{padding:0;border:0}.player-policy small{grid-column:auto}@media(max-width:700px){.player-page:not(.player-theater) .media-stage.has-settings{margin-bottom:24rem}.media-stage.has-settings .player-settings{bottom:auto;max-height:23rem}.player-theater .media-stage.has-settings .player-settings{bottom:4.3rem;max-height:calc(100% - 8rem)}}
  .player-theater .media-stage:has(>video){aspect-ratio:auto;height:100%}.player-theater .media-stage.has-settings:has(.player-recovery:not([hidden])){margin:0}
  .media-stage.has-settings .player-settings{background:var(--overlay);color:var(--text);border-color:var(--line);scroll-padding-top:5rem}.media-stage.has-settings .player-settings header button,.media-stage.has-settings .player-settings select{background:var(--surface-2);color:var(--text)}.media-stage.has-settings .player-settings p,.media-stage.has-settings .player-settings small{color:var(--muted)}
-@@ -276,39 +325,14 @@
+@@ -276,33 +325,14 @@
  button[aria-busy=true]:after{content:"";display:inline-block;width:2rem;height:.5rem;margin-inline-start:.5rem;border-radius:3px;background:currentColor;opacity:.35}
  @media(forced-colors:active){.buffer-skeleton,.pagination[aria-busy=true] [data-library-next]:after{background:GrayText}.request-skeleton:after{border:1px solid GrayText}}
  
@@ -207,12 +207,6 @@
 -.player-page:not(.player-theater) .media-stage:not(:fullscreen)>.player-settings{grid-area:1/1/2/2}
 -.player-page:not(.player-theater) .media-stage:not(:fullscreen)>.player-buffer{position:relative;grid-area:1/1;place-self:center;top:auto;left:auto;transform:none;box-sizing:border-box;margin:.6rem;min-width:0;width:min(20rem,calc(100% - 1.2rem))}
 -.player-page .player-buffer .buffer-skeleton{width:3rem;height:.5rem;border:0;border-radius:3px;background:currentColor;opacity:.35}
--.player-page .player-buffer[data-state="start"]{z-index:5;grid-template-columns:1fr;pointer-events:auto}
--.player-page .player-buffer[data-state="start"] .buffer-skeleton{display:none}
--.player-page .player-buffer [data-player-start]{min-height:44px;padding:.65rem 1rem;border:0;border-radius:999px;background:var(--signal);color:var(--signal-ink);font:inherit;cursor:pointer;pointer-events:auto}
--.player-page .player-buffer [data-player-start][hidden]{display:none}
--.player-page .player-buffer.is-recovery [data-player-start]{display:none}
--.player-page .player-buffer [data-player-start]:focus-visible{outline:2px solid var(--focus);outline-offset:3px}
 -@media(forced-colors:active){.player-page .player-buffer{background:Canvas;color:CanvasText;border-color:CanvasText}.player-page .player-buffer .buffer-skeleton{background:GrayText}}
 +/* Keep inline mobile actions out of the video and its buffering/recovery overlay. */
  @media(max-width:700px){

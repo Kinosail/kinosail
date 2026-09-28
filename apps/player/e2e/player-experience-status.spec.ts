@@ -1,7 +1,23 @@
 import { expect, test } from "@playwright/test";
+import { readFile } from "node:fs/promises";
 import { installPlayerExperienceFixture } from "./player-experience-fixture";
 
 installPlayerExperienceFixture();
+
+test("blocked autoplay reveals Play without a second action", async ({ page }, testInfo) => {
+  await page.addStyleTag({ content: await readFile("../../../packages/webassets/static/player-stage.css", "utf8") });
+  await page.addStyleTag({ content: await readFile("../internal/server/static/home.css", "utf8") });
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.locator("video").dispatchEvent("kinosail:play-needs-gesture");
+  await expect(page.locator("[data-player-status]")).toBeHidden();
+  const play = page.locator(".player-center-control[data-player-toggle]");
+  await expect(play).toBeVisible();
+  await expect(page.locator(".player-control-row [data-player-toggle]")).toBeHidden();
+  await expect(page.locator("[data-player-controls]")).toHaveCSS("opacity", "1");
+  await page.screenshot({ path: testInfo.outputPath("390-one-play-button.png") });
+  await play.click();
+  await expect(page.locator("video")).toHaveJSProperty("paused", false);
+});
 
 test("traces a rejected Safari play request", async ({ page }) => {
   const events: string[] = [];

@@ -13,21 +13,19 @@ if (playerStatus) {
   };
   const showPlayerState = (state, message) => {
     if (playerStatus.classList.contains("is-recovery")) return;
-    mediaStage.classList.toggle("is-busy", state !== "error" && state !== "start");
+    mediaStage.classList.toggle("is-busy", state !== "error");
     playerStatus.dataset.state = state;
     bufferedProgress.hidden = state !== "buffering";
-    if (playerStart) playerStart.hidden = state !== "start";
     playerStatus.hidden = false;
-    playerStatus.setAttribute("aria-busy", String(state !== "error" && state !== "start"));
+    playerStatus.setAttribute("aria-busy", String(state !== "error"));
     const loadingIndicator = playerStatus.querySelector(".buffer-skeleton");
-    if (loadingIndicator) loadingIndicator.hidden = state === "error" || state === "start";
+    if (loadingIndicator) loadingIndicator.hidden = state === "error";
     playerMessage.textContent = message;
     bufferedPercent();
   };
   const hidePlayerState = () => {
     if (playerStatus.classList.contains("is-recovery")) return;
     mediaStage.classList.remove("is-busy");
-    if (playerStart) playerStart.hidden = true;
     playerStatus.hidden = true;
     playerStatus.removeAttribute("aria-busy");
     playerStatus.dataset.state = "ready";
@@ -37,25 +35,19 @@ if (playerStatus) {
   let playbackTime = player.currentTime;
   const clearBufferingTimer = () => { clearTimeout(bufferingTimer); bufferingTimer = undefined; };
   let hasPlayed = false;
-  const showStartPrompt = () => {
-    if (playerStart && player.paused && !player.error && !playerStatus.classList.contains("is-recovery")) showPlayerState("start", "Ready to play");
+  const revealPlayControl = () => {
+    if (player.paused && !player.error && !playerStatus.classList.contains("is-recovery")) hidePlayerState();
   };
   const appleTouch = /iPhone|iPad|iPod/.test(navigator.userAgent) || navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1;
-  const scheduleStartPrompt = () => {
+  const schedulePlayControl = () => {
     if (!appleTouch) return;
     setTimeout(() => {
-      if (!hasPlayed && (player.currentSrc || player.getAttribute("src"))) showStartPrompt();
+      if (!hasPlayed && (player.currentSrc || player.getAttribute("src"))) revealPlayControl();
     }, 1500);
   };
-  player.addEventListener("kinosail:play-needs-gesture", showStartPrompt);
-  playerStart?.addEventListener("click", () => {
-    showPlayerState("loading", "Starting video…");
-    requestPlay("tap-to-play").catch((error) => {
-      if (error?.name !== "NotAllowedError") showPlayerState("error", "Playback unavailable");
-    });
-  });
-  player.addEventListener("loadstart", () => { if (!seeking) showPlayerState("loading", "Loading video…"); scheduleStartPrompt(); });
-  scheduleStartPrompt();
+  player.addEventListener("kinosail:play-needs-gesture", revealPlayControl);
+  player.addEventListener("loadstart", () => { if (!seeking) showPlayerState("loading", "Loading video…"); schedulePlayControl(); });
+  schedulePlayControl();
   player.addEventListener("waiting", () => {
     clearBufferingTimer();
     const waitingAt = player.currentTime;
@@ -88,7 +80,6 @@ if (playerStatus) {
   for (const event of ["canplay", "playing"]) player.addEventListener(event, () => {
     clearBufferingTimer();
     seeking = false;
-    if (event === "canplay" && player.paused && playerStatus.dataset.state === "start") return;
     if (event === "playing") hasPlayed = true;
     hidePlayerState();
   });
