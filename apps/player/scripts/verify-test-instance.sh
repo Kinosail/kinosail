@@ -49,7 +49,7 @@ for pair in \
 done
 
 home="$(curl --fail --silent --insecure --cookie "$fixture/cookies" "$base/?view=movies")"
-movie_id="$(sed -n 's|.*href="/item/\([a-f0-9]*\)".*Example Movie.*|\1|p' <<<"$home" | head -1)"
+movie_id="$(sed -n 's|.*href="/watch/\([a-f0-9]*\)".*Example Movie.*|\1|p' <<<"$home" | head -1)"
 [[ -n "$movie_id" ]]
 grep -Fq '<video' <<<"$(curl --fail --silent --insecure --cookie "$fixture/cookies" "$base/watch/$movie_id")"
 curl --fail --silent --insecure --cookie "$fixture/cookies" "$base/art/$movie_id" --output "$fixture/poster.jpg"

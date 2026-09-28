@@ -42,7 +42,7 @@ func TestCompactHomeKeepsFeaturedResumeOutOfShelf(t *testing.T) {
 				return response.Body.String()
 			}
 			seen := map[string]bool{}
-			for _, match := range regexp.MustCompile(`/item/([a-f0-9]+)`).FindAllStringSubmatch(get(), -1) {
+			for _, match := range regexp.MustCompile(`/watch/([a-f0-9]+)`).FindAllStringSubmatch(get(), -1) {
 				id := match[1]
 				if seen[id] {
 					continue

@@ -40,12 +40,11 @@ async function login(page: Page) {
 	if (await page.getByRole("link", { name: "Not now" }).isVisible()) await page.getByRole("link", { name: "Not now" }).click();
 }
 
-test("Play on a movie detail reaches moving video in under two seconds", async ({ page }) => {
+test("Selecting a movie reaches moving video in under two seconds", async ({ page }) => {
 	await login(page);
 	await page.getByRole("link", { name: "Movies", exact: true }).click();
-	await page.getByRole("link", { name: /Example Movie/ }).click();
 	const started = Date.now();
-	await page.getByRole("link", { name: /^(Play|Resume)$/ }).click();
+	await page.getByRole("link", { name: /Example Movie/ }).click();
 	const video = page.locator("video");
 	await expect.poll(() => page.evaluate(() => (window as Window & { mediaFrames: Array<{ mediaTime: number }> }).mediaFrames.some((frame, index, frames) => index > 0 && frame.mediaTime > frames[0].mediaTime)), { timeout: 3_000 }).toBe(true);
 	const result = await page.evaluate((click) => {
