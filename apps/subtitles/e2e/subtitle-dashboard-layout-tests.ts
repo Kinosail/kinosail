@@ -63,7 +63,7 @@ test("Settings header keeps destinations inside the Player-style shell", async (
       return { header: header.getBoundingClientRect().toJSON(), nav: nav.getBoundingClientRect().toJSON(), links: links.map((box) => box.toJSON()) };
     });
     expect(layout.header.height, `${width}px header height`).toBeLessThanOrEqual(100);
-    expect(layout.links).toHaveLength(3);
+    expect(layout.links).toHaveLength(4);
     if (width > 1100) {
       expect(layout.links.every((link) => link.top >= layout.header.bottom - 1), `${width}px navigation rail`).toBe(true);
       expect(layout.links[1].top).toBeGreaterThan(layout.links[0].top);

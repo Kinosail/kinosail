@@ -56,6 +56,10 @@ func TestSubtitleRecoveryWorksThroughWebAndVersionedAPI(t *testing.T) { //nolint
 	if restored.Code != http.StatusNoContent || restoredErr != nil || backupErr != nil || string(restoredData) != previous || string(backupData) != current {
 		t.Fatalf("restore = %d %q, target = %q %v, backup = %q %v", restored.Code, restored.Body.String(), restoredData, restoredErr, backupData, backupErr)
 	}
+	history := requestApp(t, handler, http.MethodGet, "/api/v1/subtitle-library?view=history", "")
+	if history.Code != http.StatusOK || !strings.Contains(history.Body.String(), `"action":"restored"`) || !strings.Contains(history.Body.String(), `"matched":1`) {
+		t.Fatalf("restore history = %d %q", history.Code, history.Body.String())
+	}
 	library := requestApp(t, handler, http.MethodGet, "/?view=library", "")
 	if !strings.Contains(library.Body.String(), "Restore previous") || !strings.Contains(library.Body.String(), "Allow automatic upgrades") || !strings.Contains(library.Body.String(), "Restored previous subtitle") {
 		t.Fatalf("recovery history = %d %q", library.Code, library.Body.String())
