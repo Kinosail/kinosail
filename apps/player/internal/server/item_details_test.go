@@ -40,14 +40,7 @@ func TestMovieCardOpensWatchAndExplicitDetailsStillWork(t *testing.T) {
 	}
 	path := "/item/" + match[1]
 	response := call(http.MethodGet, path, "")
-	for _, forbidden := range []string{"<video", "<audio", "autoplay", "/media/"} {
-		if strings.Contains(response.Body.String(), forbidden) {
-			t.Fatalf("details starts media: %s", forbidden)
-		}
-	}
-	if !strings.Contains(response.Body.String(), `href="/watch/`+match[1]+`"`) {
-		t.Fatal("details lacks explicit play")
-	}
+	assertMovieDetailsDoNotPlay(t, response, match[1])
 	assertMovieListReturnsToDetails(t, call, path)
 	assertInvalidMovieListActions(t, call, path)
 	if call(http.MethodGet, path+"?unexpected=1", "").Code != http.StatusBadRequest {
@@ -55,6 +48,18 @@ func TestMovieCardOpensWatchAndExplicitDetailsStillWork(t *testing.T) {
 	}
 	if call(http.MethodGet, "/item/missing", "").Code != http.StatusNotFound {
 		t.Fatal("missing title was not rejected")
+	}
+}
+
+func assertMovieDetailsDoNotPlay(t *testing.T, response *httptest.ResponseRecorder, id string) {
+	t.Helper()
+	for _, forbidden := range []string{"<video", "<audio", "autoplay", "/media/"} {
+		if strings.Contains(response.Body.String(), forbidden) {
+			t.Fatalf("details starts media: %s", forbidden)
+		}
+	}
+	if !strings.Contains(response.Body.String(), `href="/watch/`+id+`"`) {
+		t.Fatal("details lacks explicit play")
 	}
 }
 
