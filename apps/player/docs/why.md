@@ -20,6 +20,6 @@ description: "Why Kinosail Player exists: a free, source-available media Server 
 <p>Kinosail is source-available under the <a href="https://github.com/Kinosail/kinosail/blob/main/LICENSING.md">PolyForm Perimeter license</a>. Read the license for its permissions and commercial-competition boundary.</p>
 <h2>Help make it better.</h2>
 <p>I use Kinosail myself, but my setup only tells part of the story. Bug reports and honest feedback help: what works, what’s confusing, and what breaks.</p>
-<p>This site focuses on the web Player. Start with the Docker installation, explore the features, and tell me how it goes.</p>
-<div class="actions"><a class="button" href="{{ '/quickstart/' | relative_url }}">Try Kinosail</a><a class="text-link" href="https://github.com/Kinosail/kinosail/issues">Share feedback ↗</a></div>
+<p>Start with Player for playback or Subtitles for sidecar files, then tell me how it goes.</p>
+<div class="actions"><a class="button" href="{{ '/quickstart/' | relative_url }}">Try Kinosail Player</a><a class="button" href="{{ '/subtitles/getting-started/install/' | relative_url }}">Try Kinosail Subtitles</a><a class="text-link" href="https://github.com/Kinosail/kinosail/issues/new/choose">Share feedback ↗</a></div>
 </div></div>
