@@ -7,19 +7,13 @@ last_reviewed: 2026-09-27
 
 # Install on a NAS or Proxmox
 
-Kinosail provides two independent containers. Install Player to browse and play media. Install Subtitles to save subtitle files beside media. Both images support Linux AMD64 and ARM64.
+Kinosail Player streams your media. Subtitles saves subtitle files beside it. Install either app or both on Linux AMD64 or ARM64.
 
-The Compose files work with Synology Container Manager, TrueNAS SCALE Custom Apps, QNAP Container Station, OpenMediaVault with the Compose plugin, CasaOS, Portainer, Dockge, and Docker Compose. They use published images, so you do not need to build Kinosail. Choose one app or install both in one project. Player and Subtitles keep separate ports and saved volumes.
-
-## Prepare the media path
-
-1. Find the absolute path on the machine that runs containers. A path on your laptop will not work on a NAS. In a Proxmox VM, mount the media share inside the VM first.
-2. Give container user and group 10001:10001 access to that path. Player needs read access. Subtitles needs read and write access to create sidecar files.
-3. Keep the machine on a trusted private network. Do not forward ports 38127 or 38128 to the internet.
+Use the helper for Synology, TrueNAS, QNAP, OpenMediaVault, CasaOS, Portainer, Dockge, and Docker Compose. You do not need to build Kinosail.
 
 ## Make a ready-to-import Compose file
 
-Choose Player, Subtitles, or Both. Enter the media path on the machine that runs the containers. The helper fills that path into a Compose file for you. It does not send your path to Kinosail. Your browser cannot check that the folder exists or that user 10001 can use it. If you choose Both, Player reads the media path and Subtitles can write subtitle files there.
+Choose Player, Subtitles, or Both. Enter an existing media path on the server. The file is made in your browser; your path is not sent to Kinosail. Check that the path exists and user 10001 can access it. With Both, Player reads media and Subtitles can write files there.
 
 <section class="install-builder" hidden data-install-builder data-player-template="{{ '/assets/install/player.yaml' | relative_url }}" data-subtitles-template="{{ '/assets/install/subtitles.yaml' | relative_url }}" data-both-template="{{ '/assets/install/both.yaml' | relative_url }}">
   <div class="install-fields">
@@ -52,6 +46,20 @@ Choose Player, Subtitles, or Both. Enter the media path on the machine that runs
 </section>
 <script defer src="{{ '/assets/js/platform-install.js' | relative_url }}"></script>
 
+## Prepare the media path
+
+1. Find the absolute path on the machine that runs containers. A path on your laptop will not work on a NAS. In a Proxmox VM, mount the media share inside the VM first.
+2. Give container user and group 10001:10001 access to that path. Player needs read access. Subtitles needs read and write access to create sidecar files.
+3. Keep the machine on a trusted private network. Do not forward ports 38127 or 38128 to the internet.
+
+## App store status
+
+- **TrueNAS:** A [Kinosail catalog app](https://github.com/truenas/apps/pull/5924) with Player, Subtitles, and Both choices is under review. Until it appears in **Apps → Discover**, use the Compose helper below.
+- **ZimaOS and CasaOS:** [Player, Subtitles, and Both entries](https://github.com/IceWhaleTech/CasaOS-AppStore/pull/1069) passed the store's validation and await review. Until they appear in the AppStore, import a Compose file below.
+- **Unraid:** The [Player and Subtitles templates](https://github.com/Kinosail/kinosail-unraid-templates) are public. They are not yet Community Apps listings. Use the [local template steps](#install-with-unraid). For Both, use the Compose helper with an Unraid Compose manager.
+
+App store review is outside Kinosail. A review link is not an install button. The Compose helper works now on supported container managers.
+
 ## Import with a Compose app manager
 
 1. Download the file from the helper above. If the helper is unavailable, download the original [Player Compose file](https://raw.githubusercontent.com/Kinosail/kinosail/main/apps/player/packaging/platform-compose.yaml), [Subtitles Compose file](https://raw.githubusercontent.com/Kinosail/kinosail/main/apps/subtitles/packaging/platform-compose.yaml), or [Both Compose file](https://raw.githubusercontent.com/Kinosail/kinosail/main/apps/player/packaging/platform-compose-both.yaml). Set `KINOSAIL_MEDIA_PATH` in your manager when you use an original file.
@@ -77,11 +85,13 @@ The files publish only the HTTPS port. They do not turn on public remote access 
 
 ## Install with Unraid
 
-Download the [Player template](https://raw.githubusercontent.com/Kinosail/kinosail/main/apps/player/packaging/unraid.xml) or [Subtitles template](https://raw.githubusercontent.com/Kinosail/kinosail/main/apps/subtitles/packaging/unraid.xml). Place it in /boot/config/plugins/dockerMan/templates-user/ on the Unraid host. In **Docker → Add Container**, select the Kinosail template.
+1. Download the [Player template](https://raw.githubusercontent.com/Kinosail/kinosail-unraid-templates/main/templates/kinosail-player.xml) or [Subtitles template](https://raw.githubusercontent.com/Kinosail/kinosail-unraid-templates/main/templates/kinosail-subtitles.xml).
+2. Place the XML file in `/boot/config/plugins/dockerMan/templates-user/` on the Unraid host.
+3. In **Docker → Add Container**, select the Kinosail template. For both apps, add each template or import a Both Compose file above with an Unraid Compose manager.
 
 Set **Media** to an existing share before applying the template. The field has no default. Keep Player's media mapping read-only. Subtitles needs a writable mapping and suitable permissions for user 10001. The default app data paths are under /mnt/user/appdata/; include them in your normal app data backup.
 
-These XML files are local templates. They are not listings in Unraid Community Apps.
+The Unraid templates are ready to use locally. Community Apps submission requires an Unraid.net account and review.
 
 ## Install with Proxmox VE
 

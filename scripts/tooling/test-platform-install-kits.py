@@ -119,6 +119,9 @@ class PlatformInstallKitsTest(unittest.TestCase):
                 self.assertEqual(root.findtext("Repository"), f"ghcr.io/kinosail/kinosail-{app}:latest")
                 self.assertEqual(root.findtext("Privileged"), "false")
                 self.assertEqual(root.findtext("Network"), "bridge")
+                self.assertEqual(root.findtext("TemplateURL"), f"https://raw.githubusercontent.com/Kinosail/kinosail-unraid-templates/main/templates/kinosail-{app}.xml")
+                self.assertEqual(root.findtext("Icon"), "https://raw.githubusercontent.com/Kinosail/kinosail/main/apps/player/internal/server/static/icon-512.png")
+                self.assertEqual(root.findtext("License"), "PolyForm Perimeter License 1.0.1")
                 self.assertIn(f"[PORT:{port}]", root.findtext("WebUI"))
                 extras = root.findtext("ExtraParams")
                 for flag in ("--read-only", "--cap-drop=ALL", "--security-opt=no-new-privileges:true", "--user=10001:10001", "--init"):
@@ -131,6 +134,32 @@ class PlatformInstallKitsTest(unittest.TestCase):
                     self.assertEqual(configs[target].get("Type"), "Path")
                 self.assertEqual(configs[port].get("Type"), "Port")
                 self.assertEqual(configs[port].get("Default"), port)
+
+    def test_zimaos_catalog_offers_player_subtitles_and_both(self):
+        for choice, apps in (("Player", {"player"}), ("Subtitles", {"subtitles"}), ("Both", {"player", "subtitles"})):
+            with self.subTest(choice=choice):
+                path = ROOT / "catalogs" / "zimaos" / choice / "docker-compose.yml"
+                result = subprocess.run(
+                    [*compose_command(), "-f", str(path), "config", "--format", "json"],
+                    capture_output=True, text=True, check=True, timeout=30,
+                    env=os.environ | {"AppID": f"kinosail-{choice.lower()}"},
+                )
+                config = json.loads(result.stdout)
+                self.assertEqual(set(config["services"]), apps)
+                self.assertEqual(config["x-casaos"]["main"], "player" if "player" in apps else "subtitles")
+                self.assertEqual(config["x-casaos"]["version"], "0.0.1")
+                for app in apps:
+                    service = config["services"][app]
+                    self.assertEqual(service["image"], f"ghcr.io/kinosail/kinosail-{app}:latest")
+                    self.assertEqual(service["user"], "10001:10001")
+                    self.assertTrue(service["read_only"])
+                    mounts = {volume["target"]: volume for volume in service["volumes"]}
+                    self.assertEqual(set(mounts), {"/config", "/cache", "/backups", "/media"})
+                    self.assertEqual(mounts["/media"]["source"], "/DATA/Media")
+                    self.assertEqual(mounts["/media"].get("read_only", False), app == "player")
+                    for target in ("/config", "/cache", "/backups"):
+                        self.assertEqual(mounts[target]["type"], "volume")
+                self.assertEqual(len(config["volumes"]), 3 * len(apps))
 
 
 if __name__ == "__main__":

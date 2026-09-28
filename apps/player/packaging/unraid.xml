@@ -2,14 +2,17 @@
   <Name>Kinosail-Player</Name>
   <Repository>ghcr.io/kinosail/kinosail-player:latest</Repository>
   <Registry>https://ghcr.io/kinosail/kinosail-player</Registry>
+  <Icon>https://raw.githubusercontent.com/Kinosail/kinosail/main/apps/player/internal/server/static/icon-512.png</Icon>
   <Network>bridge</Network>
   <Privileged>false</Privileged>
   <ExtraParams>--init --user=10001:10001 --read-only --cap-drop=ALL --security-opt=no-new-privileges:true --pids-limit=256 --tmpfs /tmp:rw,noexec,nosuid,nodev,size=256m --tmpfs /run:rw,noexec,nosuid,nodev,size=16m</ExtraParams>
   <WebUI>https://[IP]:[PORT:38127]</WebUI>
   <Overview>Private media server and web Player. Set the media path before starting. Keep this service on a trusted local network.</Overview>
   <Project>https://github.com/Kinosail/kinosail</Project>
+  <Support>https://github.com/Kinosail/kinosail/issues</Support>
+  <License>PolyForm Perimeter License 1.0.1</License>
   <ReadMe>https://github.com/Kinosail/kinosail/blob/main/apps/player/docs/getting-started/platforms.md</ReadMe>
-  <TemplateURL>https://raw.githubusercontent.com/Kinosail/kinosail/main/apps/player/packaging/unraid.xml</TemplateURL>
+  <TemplateURL>https://raw.githubusercontent.com/Kinosail/kinosail-unraid-templates/main/templates/kinosail-player.xml</TemplateURL>
   <Category>MediaApp:Video</Category>
   <Config Name="Web port" Target="38127" Default="38127" Mode="tcp" Description="HTTPS port for Kinosail Player." Type="Port" Display="always" Required="true" Mask="false"/>
   <Config Name="Media" Target="/media" Default="" Mode="ro" Description="Existing media share. Kinosail Player reads this path without changing media files." Type="Path" Display="always" Required="true" Mask="false"/>
