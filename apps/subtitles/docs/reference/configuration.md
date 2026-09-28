@@ -2,7 +2,7 @@
 title: Configuration reference
 description: Understand Kinosail setting sources, precedence, validation, restart behavior, and secret handling.
 section: Reference
-last_reviewed: 2026-08-28
+last_reviewed: 2026-09-27
 ---
 
 # Configuration reference
@@ -36,6 +36,8 @@ The `paths.data` value is resolved before stored Owner settings load. This lets 
 - `_FILE` is valid only for secret settings.
 - Unknown keys, malformed values, and invalid cross-field combinations stop configuration loading.
 - Settings marked “restart” take effect after a Server restart. Other settings are live or are applied by their owning operation.
+
+An Owner change to `logging.level` takes effect immediately. A value managed by YAML or the environment needs a Server restart after that external source changes.
 
 Do not place secrets in a committed YAML file. Prefer a mounted secret file or the Owner settings flow. Secret values are never returned by the configuration API.
 
@@ -84,7 +86,7 @@ The following table describes typed application settings. Use the running config
 | `backup.key` | `KINOSAIL_BACKUP_KEY` | secret text | blank | yes |
 | `backup.interval` | `KINOSAIL_BACKUP_INTERVAL` | duration | `24h` | yes |
 | `backup.retention` | `KINOSAIL_BACKUP_RETENTION` | positive integer | `7` | yes |
-| `logging.level` | `KINOSAIL_LOG_LEVEL` | `debug`, `info`, `warn`, `error` | `info` | yes |
+| `logging.level` | `KINOSAIL_LOG_LEVEL` | `debug`, `info`, `warn`, `error` | `info` | no for Owner changes |
 | `logging.audit_retention` | `KINOSAIL_AUDIT_RETENTION` | positive duration | `8760h` | yes |
 | `logging.playback_retention` | `KINOSAIL_PLAYBACK_RETENTION` | positive duration | `2160h` | yes |
 | `remote.proxy_token` | `KINOSAIL_PROXY_TOKEN` | secret text | blank | yes |

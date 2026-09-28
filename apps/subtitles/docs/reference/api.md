@@ -2,7 +2,7 @@
 title: Subtitle HTTP API
 description: Use bounded subtitle inventory and mutation operations.
 section: Reference
-last_reviewed: 2026-09-15
+last_reviewed: 2026-09-27
 ---
 
 # Subtitle HTTP API
@@ -24,6 +24,8 @@ The web dashboard and HTTP API call the same validated application operations. U
 | `POST /api/v1/subtitle-library/{id}/audio` | Run the supported local audio-draft operation. |
 | `POST /api/v1/subtitle-library/{id}/preview` | Preview a subtitle edit. |
 | `POST /api/v1/subtitle-library/{id}/apply` | Apply a validated reviewed edit. |
+| `POST /api/v1/subtitles/cleanup/preview` | Preview eligible sidecars for optional deletion. |
+| `POST /api/v1/subtitles/cleanup` | Apply the reviewed cleanup plan. |
 
 Use an item ID returned by inventory; do not submit a filesystem path. For a single fetch, send `{}` to use the configured language, or `{"language":"es"}` for an explicit language. Batch operations accept, for example:
 
@@ -40,3 +42,7 @@ See [API quickstart]({{ '/developer-guide/api-quickstart/' | relative_url }}) an
 Restore accepts `{}` for the configured language or `{"language":"en"}`. Replacement requires a boolean, for example `{"replaceable":false}` to freeze replacement. Provider testing accepts `{}`. Read current inspect/preview/draft schemas from OpenAPI before editing; do not invent stale fingerprints or approval data.
 
 Inspect accepts the `language` query field. Export additionally accepts `format=srt`, `vtt`, or `original`. Duplicate/unknown query fields and invalid values are rejected. Export returns bytes directly to the authenticated client and is not exposed through MCP.
+
+## Optional subtitle cleanup
+
+Send `{"enabled":true,"languages":["en","es"],"forced":"keep"}` to the preview route. `forced` must be `keep` or `delete`. The response lists matching files, skipped files, and a digest. To apply that exact plan, send the same fields and the returned `digest` to the cleanup route. A changed file or policy requires a fresh preview. Cleanup is off until explicitly requested; it can delete tagged SRT or WebVTT sidecars, and deletion does not create a recovery copy. See [Configure languages and automation]({{ '/owner-guide/playback/' | relative_url }}) before using it.
