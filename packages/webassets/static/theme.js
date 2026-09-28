@@ -1,3 +1,5 @@
+document.documentElement.classList.add("js");
+
 function bindPasswordControls() {
   document.querySelectorAll('input[type="password"]:not([data-password-toggle])').forEach((input) => {
     input.dataset.passwordToggle = "";
