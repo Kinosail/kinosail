@@ -4,6 +4,7 @@ import (
 	"context"
 	"net/http"
 	"net/http/httptest"
+	"os"
 	"strings"
 	"testing"
 )
@@ -72,5 +73,20 @@ func TestSubtitleDashboardDisconnectAfterShellSkipsProjection(t *testing.T) {
 	manager.dashboard(writer, ownerRequest("/").WithContext(ctx))
 	if !response.Flushed || strings.Contains(response.Body.String(), "subtitle-browser") {
 		t.Fatal("disconnected request continued projecting the library")
+	}
+}
+
+func TestSubtitleOverviewShowsBlockedAutomationInsteadOfOfferingMaintenance(t *testing.T) {
+	t.Parallel()
+	manager, _ := subtitleFactsFixture(t, "#!/bin/sh\nexit 1\n")
+	manager.provider = newSubtitleProvider(SubtitleConfig{URL: "https://example.com/api/v1", APIKey: "key"}, t.TempDir(), t.TempDir(), manager.index, manager.settings, "")
+	if err := os.RemoveAll(manager.settings.mediaRoot); err != nil {
+		t.Fatal(err)
+	}
+	response := httptest.NewRecorder()
+	manager.dashboard(response, ownerRequest("/"))
+	body := response.Body.String()
+	if response.Code != http.StatusOK || !strings.Contains(body, "Automatic care needs attention") || !strings.Contains(body, "Fix the media mount or folder access") || strings.Contains(body, "Check up to 10 subtitles now") || !strings.Contains(body, `href="/settings#libraries"`) {
+		t.Fatalf("blocked overview = %d %q", response.Code, body)
 	}
 }
