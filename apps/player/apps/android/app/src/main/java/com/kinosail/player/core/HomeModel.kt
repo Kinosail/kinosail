@@ -17,7 +17,14 @@ import kotlinx.coroutines.withContext
 
 data class HomeState(val continueWatching: List<CatalogItem> = emptyList(),
                      val recent: List<CatalogItem> = emptyList(), val loading: Boolean = false,
-                     val notice: String? = null)
+                     val notice: String? = null) {
+    val featured: CatalogItem? get() = continueWatching.firstOrNull { it.kind in PLAYABLE_KINDS }
+        ?: recent.firstOrNull { it.kind in PLAYABLE_KINDS }
+    val watchShelf: List<CatalogItem> get() = continueWatching.filterNot { it.id == featured?.id }.take(12)
+    val recentShelf: List<CatalogItem> get() = recent.filterNot { it.id == featured?.id }.take(24)
+
+    private companion object { val PLAYABLE_KINDS = setOf("video", "music", "audiobook") }
+}
 
 class HomeModel(application: Application) : AndroidViewModel(application) {
     private val sessions = SessionStore(application)

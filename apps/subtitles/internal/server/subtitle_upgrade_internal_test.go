@@ -3,6 +3,7 @@ package server
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -153,6 +154,56 @@ func TestSubtitleAutomationCursorContinuesAfterFailedLanguage(t *testing.T) { //
 	}
 }
 
+func TestSubtitleAutomationRetriesAfterMediaOrProviderChanges(t *testing.T) {
+	t.Parallel()
+	var searches atomic.Int32
+	remote := httptest.NewServer(http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
+		if request.URL.Path != "/subtitles" {
+			http.NotFound(writer, request)
+			return
+		}
+		searches.Add(1)
+		_ = json.NewEncoder(writer).Encode(map[string]any{"status": true, "results": []any{}, "subtitles": []any{}})
+	}))
+	t.Cleanup(remote.Close)
+	media := t.TempDir()
+	item := library.Item{ID: "0123456789abcdef", Kind: "video", Title: "Arrival", Path: filepath.Join(media, "Arrival.mp4")}
+	if err := os.WriteFile(item.Path, []byte("original"), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	info, err := os.Stat(item.Path)
+	if err != nil {
+		t.Fatal(err)
+	}
+	item.Size, item.Added = info.Size(), info.ModTime()
+	provider := newSubtitleProvider(SubtitleConfig{URL: remote.URL, APIKey: "key"}, t.TempDir(), t.TempDir(), sidecarTestIndex(item), nil, "")
+	manager := &subtitleManager{provider: provider}
+	check := func(wantAttempts int, wantSearches int32) {
+		t.Helper()
+		result := manager.maintainLanguageItems(t.Context(), []library.Item{item}, []string{"en"}, 1, 0)
+		if result.Attempted != wantAttempts || searches.Load() != wantSearches {
+			t.Fatalf("maintenance = %+v, provider searches = %d; want %d, %d", result, searches.Load(), wantAttempts, wantSearches)
+		}
+		if _, err := os.Stat(subtitleSidecarPath(item, "en")); !os.IsNotExist(err) {
+			t.Fatalf("failed search wrote a sidecar: %v", err)
+		}
+	}
+	check(1, 1)
+	check(0, 1)
+	if err := os.WriteFile(item.Path, []byte("replacement"), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	info, err = os.Stat(item.Path)
+	if err != nil {
+		t.Fatal(err)
+	}
+	item.Size, item.Added = info.Size(), info.ModTime()
+	check(1, 2)
+	check(0, 2)
+	provider.replaceConfig(SubtitleConfig{URL: remote.URL, APIKey: "new-key"})
+	check(1, 3)
+}
+
 func TestSubtitleProviderOnlyReplacesUnknownSidecarWithExactHashMatch(t *testing.T) { //nolint:cyclop // One fake official API proves login, exact-match replacement, backup, and provenance.
 	t.Parallel()
 	var remote *httptest.Server
@@ -204,15 +255,39 @@ func TestSubtitleLedgerRejectsMalformedPersistedStateAndStopsDownloads(t *testin
 	t.Parallel()
 	data := t.TempDir()
 	path := filepath.Join(data, "subtitle_acquisitions.json")
-	if err := os.WriteFile(path, []byte(`{"version":1,"records":{"bad":{"fingerprint":"x"}}}`), 0o600); err != nil {
+	invalid := `{"version":1,"records":{"bad":{"fingerprint":"x"}}}`
+	if err := os.WriteFile(path, []byte(invalid), 0o600); err != nil {
 		t.Fatal(err)
 	}
 	ledger := newSubtitleLedger(data)
 	if ledger.err == nil || ledger.takeSubDLDownload(time.Now()) {
 		t.Fatalf("invalid ledger = %v, download allowed", ledger.err)
 	}
-	if info, err := os.Stat(path); err != nil || info.Size() == 0 {
-		t.Fatalf("invalid state changed: %v, %#v", err, info)
+	ledger.clearSearches()
+	if contents, err := os.ReadFile(path); err != nil || string(contents) != invalid {
+		t.Fatalf("invalid state changed: %v, %q", err, contents)
+	}
+}
+
+func TestSubtitleLedgerRejectsInvalidMediaVersionWithoutChangingState(t *testing.T) {
+	t.Parallel()
+	for _, invalid := range []string{`"media_size":-1`, `"media_modified":-1`, `"media_size":"large"`} {
+		t.Run(invalid, func(t *testing.T) {
+			data := t.TempDir()
+			path := filepath.Join(data, "subtitle_acquisitions.json")
+			contents := fmt.Sprintf(`{"version":2,"records":{},"searches":{"0123456789abcdef:en:standard":{"outcome":"no-result","attempts":1,"checked_at":%d,"next_at":%d,%s}}}`, time.Now().Unix(), time.Now().Add(time.Hour).Unix(), invalid)
+			if err := os.WriteFile(path, []byte(contents), 0o600); err != nil {
+				t.Fatal(err)
+			}
+			ledger := newSubtitleLedger(data)
+			if ledger.err == nil || ledger.automaticSearchReady(subtitleSearchKey("0123456789abcdef", "en", "standard"), library.Item{}, time.Now()) || ledger.takeSubDLDownload(time.Now()) {
+				t.Fatalf("invalid state accepted: %v", ledger.err)
+			}
+			stored, err := os.ReadFile(path)
+			if err != nil || string(stored) != contents {
+				t.Fatalf("invalid state changed: %v, %q", err, stored)
+			}
+		})
 	}
 }
 

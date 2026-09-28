@@ -22,7 +22,7 @@ func readSubtitleCleanupAPI(writer http.ResponseWriter, request *http.Request, a
 	if !readSubtitleJSON(writer, request, &input) {
 		return input, false
 	}
-	if !input.Enabled || len(input.Languages) == 0 || len(input.Languages) > maximumSubtitleLanguages || !oneOf(input.Forced, "keep", "delete") || (!applying && input.Digest != "") || (applying && !validSubtitleCleanupDigest(input.Digest)) {
+	if !input.Enabled || len(input.Languages) == 0 || len(input.Languages) > maximumSubtitleLanguages || !oneOf(input.Forced, "keep", "hide") || (!applying && input.Digest != "") || (applying && !validSubtitleCleanupDigest(input.Digest)) {
 		apiError(writer, errors.New("subtitle cleanup request is invalid"), http.StatusBadRequest)
 		return input, false
 	}
@@ -64,11 +64,11 @@ func apiApplySubtitleCleanup(index *libraryIndex, settings *settingsStore) http.
 		if !ok {
 			return
 		}
-		removed, err := applySubtitleCleanup(index, settings, input.Languages, input.Forced, input.Digest)
+		hidden, err := applySubtitleCleanup(index, settings, input.Languages, input.Forced, input.Digest)
 		if err != nil {
 			apiError(writer, errors.New("subtitle cleanup stopped; preview again"), http.StatusConflict)
 			return
 		}
-		writeJSON(writer, map[string]any{"languages": input.Languages, "removed": removed}, http.StatusOK)
+		writeJSON(writer, map[string]any{"languages": input.Languages, "hidden": hidden}, http.StatusOK)
 	}
 }

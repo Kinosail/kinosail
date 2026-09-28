@@ -11,7 +11,7 @@ import (
 	"github.com/MikeO7/kinosail-subtitles/internal/server"
 )
 
-func TestCleanupKeepsForcedInEveryLanguageButHidesUnselectedLanguages(t *testing.T) { //nolint:gocognit,funlen,cyclop // One public journey proves the preview, deletion, saved choice, and playback options agree.
+func TestCleanupKeepsForcedInEveryLanguageButHidesUnselectedLanguages(t *testing.T) { //nolint:gocognit,funlen,cyclop // One public journey proves the preview, hidden files, saved choice, and playback options agree.
 	media, tools := t.TempDir(), t.TempDir()
 	writeTestFile(t, filepath.Join(media, "Film.mp4"), "video")
 	for _, name := range []string{"Film.en.srt", "Film.es.srt", "Film.fr.srt", "Film.it.srt", "Film.en.forced.srt", "Film.fr.forced.srt", "Film.de.forced.vtt"} {
@@ -36,10 +36,10 @@ printf '%s' '{"streams":[{"index":0,"codec_type":"video","codec_name":"h264","wi
 	}
 	for _, file := range plan.Files {
 		if !strings.HasSuffix(file.Path, "Film.fr.srt") && !strings.HasSuffix(file.Path, "Film.it.srt") {
-			t.Fatalf("preview would remove a kept track: %s", file.Path)
+			t.Fatalf("preview would hide a kept track: %s", file.Path)
 		}
 	}
-	conflict := requestJSON(t, handler, http.MethodPost, "/api/v1/subtitles/cleanup", `{"enabled":true,"languages":["en","es"],"forced":"delete","digest":"`+plan.Digest+`"}`)
+	conflict := requestJSON(t, handler, http.MethodPost, "/api/v1/subtitles/cleanup", `{"enabled":true,"languages":["en","es"],"forced":"hide","digest":"`+plan.Digest+`"}`)
 	if conflict.Code < http.StatusBadRequest {
 		t.Fatalf("changed forced choice accepted: %d %s", conflict.Code, conflict.Body.String())
 	}
@@ -55,6 +55,10 @@ printf '%s' '{"streams":[{"index":0,"codec_type":"video","codec_name":"h264","wi
 	for _, name := range []string{"Film.fr.srt", "Film.it.srt"} {
 		if _, err := os.Stat(filepath.Join(media, name)); !os.IsNotExist(err) {
 			t.Fatalf("unselected subtitle remains %s: %v", name, err)
+		}
+		content, err := os.ReadFile(filepath.Join(media, name+".hidden"))
+		if err != nil || string(content) != name {
+			t.Fatalf("hidden subtitle content %s: %q %v", name, content, err)
 		}
 	}
 	for _, name := range []string{"Film.en.srt", "Film.es.srt", "Film.en.forced.srt", "Film.fr.forced.srt", "Film.de.forced.vtt"} {
