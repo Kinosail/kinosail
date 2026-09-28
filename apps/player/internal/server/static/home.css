@@ -265,3 +265,11 @@ body .app-header .web-beta-badge{display:inline-flex;flex:none;align-items:cente
 @media(prefers-contrast:more),(prefers-reduced-transparency:reduce),(forced-colors:active){
   :root:not([data-theme=light]) body:is(.library-page,.detail-page){background:var(--bg)}
 }
+/* Keep playback feedback compact; the status text already reports buffered progress. */
+.player-page:not(.player-theater) .media-stage:not(:fullscreen)>.player-buffer{max-width:min(20rem,calc(100% - 1.2rem));width:max-content}
+.player-page:not(.player-theater) .media-stage:not(:fullscreen)>.player-buffer.is-recovery{width:min(20rem,calc(100% - 1.2rem))}
+.player-page .player-buffer .buffer-skeleton{width:1.25rem;height:1.25rem;border:2px solid rgba(255,255,255,.3);border-top-color:currentColor;border-radius:50%;background:none;opacity:1;animation:player-buffer-spin .8s linear infinite}
+.player-page .player-buffer progress{display:none}
+@keyframes player-buffer-spin{to{transform:rotate(1turn)}}
+@media(prefers-reduced-motion:reduce){.player-page .player-buffer .buffer-skeleton{animation:none}}
+@media(forced-colors:active){.player-page .player-buffer .buffer-skeleton{border-color:GrayText;border-top-color:CanvasText;background:none}}
