@@ -100,8 +100,16 @@ func TestReviewedDraftApplyRetainsOriginalAndRejectsStaleSave(t *testing.T) {
 	installReadyReviewDraft(t, manager, item, draftID, generated)
 	input := subtitleEdit{Language: "en", Fingerprint: subtitleFingerprint(current), DraftID: draftID, Text: "1\n00:00:01,000 --> 00:00:03,000\nReviewed words\n"}
 	assertReviewedDraftSaved(t, manager, item, request, input, generated)
+	events, err := manager.provider.ledger.history()
+	if err != nil || len(events) != 1 || events[0].Action != "updated" || events[0].Source != "transcription" {
+		t.Fatalf("review history = %#v %v", events, err)
+	}
 	if _, status, err := manager.applySubtitleEdit(request, item.ID, input); status != 409 || err == nil {
 		t.Fatalf("stale save=%d %v", status, err)
+	}
+	events, err = manager.provider.ledger.history()
+	if err != nil || len(events) != 1 {
+		t.Fatalf("stale save added history = %#v %v", events, err)
 	}
 }
 

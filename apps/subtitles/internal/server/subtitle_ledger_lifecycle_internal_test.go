@@ -69,8 +69,39 @@ func TestSubtitleLedgerRejectsInvalidStateAndRollsBackFailedWrites(t *testing.T)
 	if err := blocked.store("0123456789abcdef:en", updated); err == nil || blocked.state.Records["0123456789abcdef:en"].Score != record.Score {
 		t.Fatal("failed subtitle record update did not restore the previous record")
 	}
+	record.InstalledAt = time.Now().Unix()
+	for _, action := range []string{"", "changed", "added"} {
+		if err := blocked.storeHistory("0123456789abcdef:en", record, action); err == nil || len(blocked.state.History) != 0 || blocked.state.Records["0123456789abcdef:en"].InstalledAt != 0 {
+			t.Fatalf("failed history write changed memory: %q, %#v", action, blocked.state)
+		}
+	}
 	if err := newSubtitleLedger("").save(); err != nil {
 		t.Fatalf("memory-only subtitle ledger save: %v", err)
+	}
+}
+
+func TestSubtitleLedgerRejectsMalformedHistoryWithoutSideEffects(t *testing.T) {
+	t.Parallel()
+	key := "0123456789abcdef:en"
+	valid := subtitleHistoryEvent{Key: key, Action: "added", Source: "subdl", InstalledAt: time.Now().Unix()}
+	for name, mutate := range map[string]func(*subtitleHistoryEvent){
+		"missing key":    func(event *subtitleHistoryEvent) { event.Key = "" },
+		"unknown action": func(event *subtitleHistoryEvent) { event.Action = "changed" },
+		"unknown source": func(event *subtitleHistoryEvent) { event.Source = "remote" },
+		"future time":    func(event *subtitleHistoryEvent) { event.InstalledAt += 7 * 86400 },
+	} {
+		t.Run(name, func(t *testing.T) {
+			bad := valid
+			mutate(&bad)
+			state := subtitleLedgerState{Version: subtitleLedgerVersion, Records: map[string]subtitleRecord{}, History: []subtitleHistoryEvent{bad}}
+			if validSubtitleLedgerState(state) {
+				t.Fatalf("accepted malformed history: %#v", bad)
+			}
+		})
+	}
+	state := subtitleLedgerState{Version: subtitleLedgerVersion, Records: map[string]subtitleRecord{}, History: make([]subtitleHistoryEvent, subtitleHistoryLimit+1)}
+	if validSubtitleLedgerState(state) {
+		t.Fatal("accepted oversized history")
 	}
 }
 

@@ -254,7 +254,11 @@ func (provider *subtitleProvider) saveSubtitleEdit(target *subtitleSidecar, key 
 	if err != nil {
 		return http.StatusConflict, errors.New("subtitle could not be saved")
 	}
-	if err = provider.ledger.store(key, target.record(data, record)); err != nil {
+	action := "added"
+	if exists {
+		action = "updated"
+	}
+	if err = provider.ledger.storeHistory(key, target.record(data, record), action); err != nil {
 		if exists {
 			_ = target.write("", current, false)
 		} else {

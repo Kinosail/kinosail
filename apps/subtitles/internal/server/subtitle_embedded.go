@@ -39,7 +39,7 @@ func (manager *subtitleManager) fetchSidecar(ctx context.Context, item library.I
 	}
 	err = manager.provider.retainSubtitleOriginal(cleaned.Original, &record)
 	if err == nil {
-		err = manager.provider.ledger.store(subtitleRecordKey(item.ID, language), record)
+		err = manager.provider.ledger.storeHistory(subtitleRecordKey(item.ID, language), record, "added")
 	}
 	if err != nil {
 		_ = target.remove()

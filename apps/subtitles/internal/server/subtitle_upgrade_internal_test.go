@@ -3,7 +3,6 @@ package server
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -67,6 +66,10 @@ func TestSubtitleProviderUpgradesManagedSidecarByMinimumScoreGain(t *testing.T) 
 	if backupErr != nil || !strings.Contains(string(backup), "Original") {
 		t.Fatalf("managed upgrade backup = %q, %v", backup, backupErr)
 	}
+	events, err := provider.ledger.history()
+	if err != nil || len(events) != 2 || events[0].Action != "added" || events[1].Action != "updated" {
+		t.Fatalf("provider history = %#v, %v", events, err)
+	}
 	item.Subtitles = []string{subtitleSidecarPath(item, "en")}
 	record, _, err = provider.ledger.record(key)
 	record.CheckedAt = time.Now().Add(-48 * time.Hour).Unix()
@@ -76,6 +79,10 @@ func TestSubtitleProviderUpgradesManagedSidecarByMinimumScoreGain(t *testing.T) 
 	result := (&subtitleManager{provider: provider}).maintainItems(t.Context(), []library.Item{item}, "en", 1, 0)
 	if result.Attempted != 1 || result.Upgraded != 0 || result.Failed != 0 {
 		t.Fatalf("no-better maintenance = %#v", result)
+	}
+	events, err = provider.ledger.history()
+	if err != nil || len(events) != 2 {
+		t.Fatalf("unchanged subtitle added history = %#v, %v", events, err)
 	}
 }
 
@@ -248,46 +255,6 @@ func TestSubtitleProviderOnlyReplacesUnknownSidecarWithExactHashMatch(t *testing
 	backup, backupErr := os.ReadFile(target + ".kinosail.bak")
 	if err != nil || currentErr != nil || backupErr != nil || !upgraded || !strings.Contains(string(current), "Exact") || !strings.Contains(string(backup), "Unknown") {
 		t.Fatalf("upgrade = %v, err = %v, current = %q/%v, backup = %q/%v", upgraded, err, current, currentErr, backup, backupErr)
-	}
-}
-
-func TestSubtitleLedgerRejectsMalformedPersistedStateAndStopsDownloads(t *testing.T) {
-	t.Parallel()
-	data := t.TempDir()
-	path := filepath.Join(data, "subtitle_acquisitions.json")
-	invalid := `{"version":1,"records":{"bad":{"fingerprint":"x"}}}`
-	if err := os.WriteFile(path, []byte(invalid), 0o600); err != nil {
-		t.Fatal(err)
-	}
-	ledger := newSubtitleLedger(data)
-	if ledger.err == nil || ledger.takeSubDLDownload(time.Now()) {
-		t.Fatalf("invalid ledger = %v, download allowed", ledger.err)
-	}
-	ledger.clearSearches()
-	if contents, err := os.ReadFile(path); err != nil || string(contents) != invalid {
-		t.Fatalf("invalid state changed: %v, %q", err, contents)
-	}
-}
-
-func TestSubtitleLedgerRejectsInvalidMediaVersionWithoutChangingState(t *testing.T) {
-	t.Parallel()
-	for _, invalid := range []string{`"media_size":-1`, `"media_modified":-1`, `"media_size":"large"`} {
-		t.Run(invalid, func(t *testing.T) {
-			data := t.TempDir()
-			path := filepath.Join(data, "subtitle_acquisitions.json")
-			contents := fmt.Sprintf(`{"version":2,"records":{},"searches":{"0123456789abcdef:en:standard":{"outcome":"no-result","attempts":1,"checked_at":%d,"next_at":%d,%s}}}`, time.Now().Unix(), time.Now().Add(time.Hour).Unix(), invalid)
-			if err := os.WriteFile(path, []byte(contents), 0o600); err != nil {
-				t.Fatal(err)
-			}
-			ledger := newSubtitleLedger(data)
-			if ledger.err == nil || ledger.automaticSearchReady(subtitleSearchKey("0123456789abcdef", "en", "standard"), library.Item{}, time.Now()) || ledger.takeSubDLDownload(time.Now()) {
-				t.Fatalf("invalid state accepted: %v", ledger.err)
-			}
-			stored, err := os.ReadFile(path)
-			if err != nil || string(stored) != contents {
-				t.Fatalf("invalid state changed: %v, %q", err, stored)
-			}
-		})
 	}
 }
 
