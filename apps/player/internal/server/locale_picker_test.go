@@ -26,7 +26,7 @@ func TestLanguagePickerTemplatesUseCurrentStylesheet(t *testing.T) {
 	} {
 		currentStylesheet := stylesheet
 		if name == "home" {
-			currentStylesheet = `/static/app.css?v=skeleton-3`
+			currentStylesheet = `/static/app.css?v=media-titles-1`
 		}
 		if name == "settings" {
 			currentStylesheet = `/static/app.css?v=skeleton-3`
