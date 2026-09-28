@@ -47,7 +47,7 @@ func playerTemplate(template string) string {
 func registerPlayer(mux *http.ServeMux, index *libraryIndex, progress *progressStore, settings *settingsStore, lists *listStore, hls *hlsManager, probe *mediaProbe, metadata *metadataStore, rooms *watchRoomAdapter, auth *authentication) {
 	listHandlers := newListHandlers(index, lists)
 	progressHandlers := catalog.NewProgressHTTPHandlers(progress, index, timelineFromPlaybackToken, localizedError, localizedNotFound, apiStoreStatus)
-	mux.HandleFunc("GET /item/{id}", showItemDetails(index, progress, lists))
+	mux.HandleFunc("GET /item/{id}", showItemDetails(index))
 	mux.HandleFunc("POST /item/{id}/list", saveDetailsList(index, lists))
 	mux.HandleFunc("GET /watch/{id}", watch(index, progress, settings, lists, probe, metadata, rooms))
 	mux.HandleFunc("GET /hls/{id}/{file...}", hls.serve)
