@@ -29,7 +29,7 @@ type subtitleCleanupPlan struct {
 
 func planSubtitleCleanup(index *libraryIndex, languages []string, forced string) (subtitleCleanupPlan, error) { //nolint:cyclop,gocognit // Selection, deduplication, and skipped-file accounting belong to one preview plan.
 	canonical, err := validateSubtitleLanguages(languages)
-	if err != nil || !oneOf(forced, "keep", "delete") {
+	if err != nil || !oneOf(forced, "keep", "hide") {
 		return subtitleCleanupPlan{}, errors.New("choose a supported language and forced subtitle option")
 	}
 	if index == nil || index.Index == nil {
@@ -165,19 +165,19 @@ func applySubtitleCleanup(index *libraryIndex, settings *settingsStore, language
 			return 0, err
 		}
 	}
-	removed := 0
+	hidden := 0
 	defer func() {
-		if removed > 0 {
+		if hidden > 0 {
 			index.RequestRefresh()
 		}
 	}()
 	for _, file := range plan.Files {
-		if err := removeCleanupSidecar(index, file); err != nil {
-			return removed, restoreCleanupLanguages(settings, previous, previousLimited, previousForced, plan.Languages, err)
+		if err := hideCleanupSidecar(index, file); err != nil {
+			return hidden, restoreCleanupLanguages(settings, previous, previousLimited, previousForced, plan.Languages, err)
 		}
-		removed++
+		hidden++
 	}
-	return removed, nil
+	return hidden, nil
 }
 
 func restoreCleanupLanguages(settings *settingsStore, previous []string, previousLimited, previousForced bool, languages []string, cause error) error {
@@ -196,7 +196,7 @@ func restoreCleanupLanguages(settings *settingsStore, previous []string, previou
 	return cause
 }
 
-func removeCleanupSidecar(index *libraryIndex, file subtitleCleanupFile) error {
+func hideCleanupSidecar(index *libraryIndex, file subtitleCleanupFile) error {
 	root, name, err := openCleanupSidecar(index, library.Item{Path: file.Media}, file.Path)
 	if err != nil {
 		return err
@@ -206,5 +206,12 @@ func removeCleanupSidecar(index *libraryIndex, file subtitleCleanupFile) error {
 	if err != nil || !info.Mode().IsRegular() || info.Size() != file.Size || info.ModTime().UnixNano() != file.Modified {
 		return errors.New("subtitle files changed; preview again")
 	}
-	return root.Remove(name)
+	hidden := name + ".hidden"
+	if err := root.Link(name, hidden); err != nil {
+		return err
+	}
+	if err := root.Remove(name); err != nil {
+		return errors.Join(err, root.Remove(hidden))
+	}
+	return nil
 }
