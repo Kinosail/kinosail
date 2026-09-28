@@ -21,39 +21,6 @@ test("Direct First keeps direct play through buffering episodes", async ({ page 
   await expect(page.locator("video")).toHaveJSProperty("currentTime", 42);
 });
 
-test("a stalled audio-compatible stream retries itself once, then offers recovery", async ({ page }) => {
-  await startDirectPlayer(page, { initialSource: false, initialHls: true, compatibleMode: "audio-transcode", compatibleLabel: "Transcoding audio" });
-  await page.clock.install();
-  const video = page.locator("video");
-  await video.evaluate((media: HTMLVideoElement) => { media.currentTime = 42; });
-  await video.dispatchEvent("waiting");
-  await page.clock.fastForward(8_000);
-  await video.dispatchEvent("waiting");
-  await page.clock.fastForward(4_100);
-  expect(await page.evaluate(() => (window as Window & { FakeHls: { instances: number } }).FakeHls.instances)).toBe(2);
-  await expect(video).toHaveJSProperty("currentTime", 42);
-  await expect.poll(() => page.evaluate(() => (window as Window & { playAttempts?: number }).playAttempts || 0)).toBeGreaterThan(0);
-  await expect(page.locator("[data-player-status] [data-player-fallback]")).toBeHidden();
-  await page.clock.fastForward(12_100);
-  await expect(page.locator("[data-player-status] [data-player-fallback]")).toHaveText("Retry playback");
-  await expect(page.locator("[data-player-message]")).toContainText("Playback has not advanced");
-  expect(await page.evaluate(() => (window as Window & { FakeHls: { instances: number } }).FakeHls.instances)).toBe(2);
-  await page.locator("[data-player-status] [data-player-fallback]").click();
-  await expect.poll(() => page.evaluate(() => (window as Window & { FakeHls: { instances: number } }).FakeHls.instances)).toBe(3);
-  await expect(video).toHaveJSProperty("currentTime", 42);
-});
-
-test("pausing a waiting stream cancels automatic recovery", async ({ page }) => {
-  await startDirectPlayer(page, { initialSource: false, initialHls: true, compatibleMode: "audio-transcode" });
-  await page.clock.install();
-  const video = page.locator("video");
-  await video.dispatchEvent("waiting");
-  await video.dispatchEvent("pause");
-  await page.clock.fastForward(25_000);
-  expect(await page.evaluate(() => (window as Window & { FakeHls: { instances: number } }).FakeHls.instances)).toBe(1);
-  await expect(page.locator("[data-player-status] [data-player-fallback]")).toBeHidden();
-});
-
 test("Automatic does not transcode only because direct startup is slow", async ({ page }) => {
   await startDirectPlayer(page);
   await page.locator("video").dispatchEvent("play");

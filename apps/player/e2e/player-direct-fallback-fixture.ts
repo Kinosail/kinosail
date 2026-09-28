@@ -46,6 +46,7 @@ export async function startDirectPlayer(page: Page, options: { preloadHls?: bool
         media.dispatchEvent(new Event("loadedmetadata"));
       }
       startLoad() { const state = window as Window & { hlsReloads?: number }; state.hlsReloads = (state.hlsReloads || 0) + 1; }
+      recoverMediaError() { const state = window as Window & { mediaRecoveries?: number }; state.mediaRecoveries = (state.mediaRecoveries || 0) + 1; }
       destroy() {}
     }
     Object.assign(window, { ...(preload ? { Hls: FakeHls } : {}), FakeHls });
