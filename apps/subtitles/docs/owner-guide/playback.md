@@ -15,11 +15,11 @@ The dashboard checks coverage in every selected language. Existing embedded text
 
 **Playback subtitle choices** defaults to **Show every available track**. Select **Show preferred languages only** to show one regular track per selected language in the subtitle menu. **Off** remains available. If cleanup is confirmed with **Keep** for forced files, forced tracks remain in the limited menu only for selected languages. This setting hides choices; it does not rename or delete files.
 
-## Remove unwanted subtitle files
+## Hide unwanted subtitle files
 
-Cleanup is optional and off by default. Back up your media and sidecars before using it. In **Settings → Cleanup**, enable cleanup, select at least one language to keep, and choose whether to keep or delete forced subtitle files in every language. Select **Preview files to delete** and review the count and file paths. The preview shows at most 100 paths; check the media tree when more files match. Confirm only when the selection is correct.
+Cleanup is optional and off by default. Back up your media and sidecars before using it. In **Settings → Cleanup**, enable cleanup, select at least one language to keep, and choose whether to keep or hide forced subtitle files in every language. Select **Preview files to hide** and review the count and file paths. The preview shows at most 100 paths; check the media tree when more files match. Confirm only when the selection is correct.
 
-Cleanup can delete language-tagged `.srt` and `.vtt` sidecars beside scanned videos. Embedded tracks and files with uncertain language stay in place. Confirmation also saves the selected language order and limits playback choices. If files change after the preview, preview again. Deleted files are not placed in a recovery copy by cleanup.
+Cleanup hides language-tagged `.srt` and `.vtt` sidecars beside scanned videos by adding a `.hidden` suffix. Remove that suffix to restore a file. Embedded tracks and files with uncertain language stay in place. Confirmation also saves the selected language order and limits playback choices. If files change after the preview, preview again.
 
 To reduce a crowded subtitle menu without deleting files, use **Playback subtitle choices** alone.
 

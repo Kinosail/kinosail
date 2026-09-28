@@ -45,7 +45,7 @@ Browser and device format support varies. Scanning a file does not certify direc
 
 ## Add subtitles without giving up control
 
-[Kinosail Subtitles](https://kinosail.com/subtitles/) is a separate, free app for movies and episodes. It checks existing text tracks, searches the providers you configure, validates matches, and saves sidecar files beside your videos. Choose preferred languages, manage playback choices, and preview optional file cleanup before confirming deletion. It runs without Player and needs a writable media mount.
+[Kinosail Subtitles](https://kinosail.com/subtitles/) is a separate, free app for movies and episodes. It checks existing text tracks, searches the providers you configure, validates matches, and saves sidecar files beside your videos. Choose preferred languages, manage playback choices, and preview optional file cleanup before hiding files with a reversible `.hidden` suffix. It runs without Player and needs a writable media mount.
 
 <p align="center">
   <a href="apps/subtitles/docs/assets/images/subtitles-dashboard-1200.png"><img src="apps/subtitles/docs/assets/images/subtitles-dashboard-1200.png" width="840" alt="Kinosail Subtitles dashboard showing wanted fictional films and subtitle coverage"></a>
