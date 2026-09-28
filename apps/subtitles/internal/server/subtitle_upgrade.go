@@ -111,7 +111,7 @@ func (provider *subtitleProvider) installSubtitleUpgrade(target *subtitleSidecar
 		return false, err
 	}
 	next.Backup = true
-	if err := provider.ledger.store(key, target.record(data, next)); err != nil {
+	if err := provider.ledger.storeDownload(key, target.record(data, next)); err != nil {
 		_ = target.write("", current, false)
 		return false, err
 	}

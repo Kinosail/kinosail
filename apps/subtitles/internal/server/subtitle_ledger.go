@@ -14,7 +14,7 @@ import (
 )
 
 const (
-	subtitleLedgerVersion       = 2
+	subtitleLedgerVersion       = 3
 	subtitleLedgerLimit         = 100000
 	subtitleLedgerSizeLimit     = 4 << 20
 	subDLAutomaticDownloadLimit = 40
@@ -54,6 +54,7 @@ type subtitleLedgerState struct {
 	Version        int                             `json:"version"`
 	Records        map[string]subtitleRecord       `json:"records"`
 	Searches       map[string]subtitleSearchRecord `json:"searches,omitempty"`
+	Downloads      []subtitleDownloadEvent         `json:"downloads,omitempty"`
 	SubDLDay       string                          `json:"subdl_day,omitempty"`
 	SubDLDownloads int                             `json:"subdl_downloads,omitempty"`
 }
@@ -100,14 +101,20 @@ func (ledger *subtitleLedger) load() error { //nolint:cyclop // One bounded load
 	if state.Searches == nil {
 		state.Searches = make(map[string]subtitleSearchRecord)
 	}
+	state = migrateSubtitleDownloads(state)
 	state.Version = subtitleLedgerVersion
 	ledger.state = state
 	return nil
 }
 
 func validSubtitleLedgerState(state subtitleLedgerState) bool { //nolint:cyclop // Persisted state requires explicit validation of every map key and record.
-	if state.Version != 1 && state.Version != subtitleLedgerVersion || len(state.Records) > subtitleLedgerLimit || len(state.Searches) > subtitleLedgerLimit || state.SubDLDownloads < 0 || state.SubDLDownloads > subDLAutomaticDownloadLimit {
+	if state.Version < 1 || state.Version > subtitleLedgerVersion || len(state.Records) > subtitleLedgerLimit || len(state.Searches) > subtitleLedgerLimit || len(state.Downloads) > subtitleDownloadHistoryLimit || state.Version < subtitleLedgerVersion && len(state.Downloads) > 0 || state.SubDLDownloads < 0 || state.SubDLDownloads > subDLAutomaticDownloadLimit {
 		return false
+	}
+	for _, event := range state.Downloads {
+		if !validSubtitleDownloadEvent(event) {
+			return false
+		}
 	}
 	for key, search := range state.Searches {
 		parts := strings.Split(key, ":")

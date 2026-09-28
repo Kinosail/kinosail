@@ -235,7 +235,8 @@ func TestSubtitleAppWritesValidatedSidecarBesideVideo(t *testing.T) { //nolint:c
 	video := filepath.Join(media, "Arrival.BluRay-GROUP.mp4")
 	target := filepath.Join(media, "Arrival.BluRay-GROUP.en.srt")
 	writeTestFile(t, video, "video")
-	handler := server.New(server.Config{SubtitleApp: true, MediaDir: media, DataDir: t.TempDir(), CacheDir: t.TempDir(), Subtitles: server.SubtitleConfig{URL: provider.URL, APIKey: "key"}})
+	dataDir := t.TempDir()
+	handler := server.New(server.Config{SubtitleApp: true, MediaDir: media, DataDir: dataDir, CacheDir: t.TempDir(), Subtitles: server.SubtitleConfig{URL: provider.URL, APIKey: "key"}})
 	home := requestApp(t, handler, http.MethodGet, "/", "")
 	match := regexp.MustCompile(`/subtitles/manage/([a-f0-9]+)/fetch`).FindStringSubmatch(home.Body.String())
 	if len(match) != 2 {
@@ -247,10 +248,23 @@ func TestSubtitleAppWritesValidatedSidecarBesideVideo(t *testing.T) { //nolint:c
 	if fetched.Code != http.StatusCreated || err != nil || !strings.Contains(string(data), "Hello") || searches.Load() != 1 {
 		t.Fatalf("fetch = %d %q, sidecar = %q, err = %v, searches = %d", fetched.Code, fetched.Body.String(), data, err, searches.Load())
 	}
+	history := requestApp(t, handler, http.MethodGet, "/?view=history", "")
+	if history.Code != http.StatusOK || !strings.Contains(history.Body.String(), "Download history") || !strings.Contains(history.Body.String(), "Arrival") || !strings.Contains(history.Body.String(), "SubDL") {
+		t.Fatalf("download history = %d %q", history.Code, history.Body.String())
+	}
+	apiHistory := requestApp(t, handler, http.MethodGet, "/api/v1/subtitle-library?view=history", "")
+	if apiHistory.Code != http.StatusOK || !strings.Contains(apiHistory.Body.String(), `"source":"subdl"`) || !strings.Contains(apiHistory.Body.String(), `"language":"en"`) || !strings.Contains(apiHistory.Body.String(), `"matched":1`) {
+		t.Fatalf("download history API = %d %q", apiHistory.Code, apiHistory.Body.String())
+	}
 
 	again := requestJSON(t, handler, http.MethodPost, "/api/v1/subtitle-library/"+match[1]+"/fetch", `{}`)
 	if again.Code != http.StatusConflict || searches.Load() != 1 {
 		t.Fatalf("duplicate = %d %q, searches = %d", again.Code, again.Body.String(), searches.Load())
+	}
+	restarted := server.New(server.Config{SubtitleApp: true, MediaDir: media, DataDir: dataDir, CacheDir: t.TempDir(), Subtitles: server.SubtitleConfig{URL: provider.URL, APIKey: "key"}})
+	apiHistory = requestApp(t, restarted, http.MethodGet, "/api/v1/subtitle-library?view=history", "")
+	if apiHistory.Code != http.StatusOK || !strings.Contains(apiHistory.Body.String(), `"matched":1`) {
+		t.Fatalf("restarted download history = %d %q", apiHistory.Code, apiHistory.Body.String())
 	}
 	refreshed := requestApp(t, handler, http.MethodGet, "/?view=library", "")
 	if !strings.Contains(refreshed.Body.String(), "Your subtitles are ready") && !strings.Contains(refreshed.Body.String(), ">Ready<") {
@@ -266,7 +280,7 @@ func TestSubtitleSettingsKeepsSubtitleNavigation(t *testing.T) {
 	if response.Code != http.StatusOK {
 		t.Fatalf("settings status = %d", response.Code)
 	}
-	for _, href := range []string{`href="/?view=summary"`, `href="/?view=wanted"`, `href="/?view=library"`} {
+	for _, href := range []string{`href="/?view=summary"`, `href="/?view=wanted"`, `href="/?view=library"`, `href="/?view=history"`} {
 		if !strings.Contains(body, href) {
 			t.Errorf("settings missing navigation %s", href)
 		}

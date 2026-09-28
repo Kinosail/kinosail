@@ -42,6 +42,17 @@ type subtitleDashboardItem struct {
 	ActionLanguage  string   `json:"actionLanguage,omitempty"`
 }
 
+type subtitleDownloadView struct {
+	ID          string `json:"id"`
+	Title       string `json:"title"`
+	Context     string `json:"context,omitempty"`
+	Language    string `json:"language"`
+	Source      string `json:"source"`
+	SourceLabel string `json:"sourceLabel"`
+	Installed   string `json:"installed"`
+	Available   bool   `json:"available"`
+}
+
 type subtitleDashboardData struct {
 	subtitleDashboardOptions
 	Owner              bool                     `json:"-"`
@@ -71,6 +82,7 @@ type subtitleDashboardData struct {
 	Readiness          subtitleReadiness        `json:"readiness"`
 	Providers          []subtitleProviderHealth `json:"providers"`
 	Items              []subtitleDashboardItem  `json:"items"`
+	Downloads          []subtitleDownloadView   `json:"downloads,omitempty"`
 }
 
 type subtitleManager struct {
