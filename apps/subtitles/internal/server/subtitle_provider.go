@@ -108,6 +108,7 @@ func (provider *subtitleProvider) replaceConfig(config SubtitleConfig) {
 	if config.SubSource != previous.SubSource {
 		provider.health.reset("SubSource")
 	}
+	provider.ledger.clearSearches()
 }
 
 func (provider *subtitleProvider) label() string {
@@ -197,7 +198,7 @@ func (provider *subtitleProvider) fetchSidecar(ctx context.Context, item library
 		if errors.Is(err, errSubtitleProviderUnavailable) {
 			outcome, safeError = "provider-error", "Providers are temporarily unavailable"
 		}
-		provider.ledger.noteSearch(subtitleSearchKey(item.ID, language, provider.preference()), outcome, safeError, time.Now())
+		provider.ledger.noteSearch(subtitleSearchKey(item.ID, language, provider.preference()), outcome, safeError, item, time.Now())
 		return err
 	}
 	if err = provider.retainSubtitleOriginal(cleaned.Original, &record); err != nil {
@@ -211,7 +212,7 @@ func (provider *subtitleProvider) fetchSidecar(ctx context.Context, item library
 		_ = target.remove()
 		return err
 	}
-	provider.ledger.noteSearch(subtitleSearchKey(item.ID, language, provider.preference()), "installed", "", time.Now())
+	provider.ledger.noteSearch(subtitleSearchKey(item.ID, language, provider.preference()), "installed", "", item, time.Now())
 	return nil
 }
 

@@ -2,7 +2,7 @@
 title: Make the web Player yours
 description: Install the web app, use keyboard shortcuts, and adjust your browsing experience.
 section: Use Kinosail
-last_reviewed: 2026-09-20
+last_reviewed: 2026-09-27
 ---
 
 # Make the web Player yours
@@ -33,7 +33,9 @@ Use Tab and Shift+Tab to move through links and controls, and Enter or Space to 
 
 Use the theme control to choose the appearance you prefer. Language choices apply to supported interface translations; media titles and descriptions come from your library metadata.
 
-Owners can adjust the Server's navigation in Settings. If a destination is missing, first check navigation and library permissions. See [Profiles and household access]({{ '/user-guide/profiles/' | relative_url }}).
+On a phone, open **More → Customize tabs** to choose and order up to four destinations. Other destinations remain in **More**. Use **Reset to default tabs** to restore Home, TV Shows, Movies, and Search. These choices are saved for this Viewer Profile in this browser, so another browser or Profile can have different tabs.
+
+Owners can change household desktop navigation in **Settings → Appearance → Navigation**. Desktop changes do not change personal mobile tabs. If a destination is missing from both places, check library permissions. See [Profiles and household access]({{ '/user-guide/profiles/' | relative_url }}).
 
 ## Play on another device
 

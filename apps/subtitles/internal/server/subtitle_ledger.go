@@ -43,11 +43,13 @@ type subtitleRecord struct {
 }
 
 type subtitleSearchRecord struct {
-	Outcome   string `json:"outcome"`
-	Attempts  int    `json:"attempts"`
-	CheckedAt int64  `json:"checked_at"`
-	NextAt    int64  `json:"next_at"`
-	SafeError string `json:"safe_error,omitempty"`
+	Outcome       string `json:"outcome"`
+	Attempts      int    `json:"attempts"`
+	CheckedAt     int64  `json:"checked_at"`
+	NextAt        int64  `json:"next_at"`
+	SafeError     string `json:"safe_error,omitempty"`
+	MediaSize     int64  `json:"media_size,omitempty"`
+	MediaModified int64  `json:"media_modified,omitempty"`
 }
 
 type subtitleLedgerState struct {
@@ -157,7 +159,7 @@ func validSubtitleRecordTimes(record subtitleRecord) bool {
 }
 
 func validSubtitleSearchRecord(record subtitleSearchRecord) bool {
-	return oneOf(record.Outcome, "installed", "no-result", "provider-error") && record.Attempts >= 0 && record.Attempts <= 1000 && record.CheckedAt >= 0 && record.CheckedAt <= time.Now().Add(24*time.Hour).Unix() && record.NextAt >= record.CheckedAt && record.NextAt <= time.Now().Add(8*24*time.Hour).Unix() && len(record.SafeError) <= 256
+	return oneOf(record.Outcome, "installed", "no-result", "provider-error") && record.Attempts >= 0 && record.Attempts <= 1000 && record.CheckedAt >= 0 && record.CheckedAt <= time.Now().Add(24*time.Hour).Unix() && record.NextAt >= record.CheckedAt && record.NextAt <= time.Now().Add(8*24*time.Hour).Unix() && len(record.SafeError) <= 256 && record.MediaSize >= 0 && record.MediaModified >= 0
 }
 
 func validSubtitleDay(value string) bool {
@@ -219,28 +221,6 @@ func storeLedgerRecord[T any](records map[string]T, key string, record T, availa
 		return err
 	}
 	return nil
-}
-
-func (ledger *subtitleLedger) automaticSearchReady(key string, now time.Time) bool {
-	record, found, err := ledger.search(key)
-	return err == nil && (!found || now.Unix() >= record.NextAt)
-}
-
-func (ledger *subtitleLedger) noteSearch(key, outcome, safeError string, now time.Time) {
-	previous, found, _ := ledger.search(key)
-	attempts := 0
-	if found && outcome != "installed" {
-		attempts = min(previous.Attempts+1, 1000)
-	}
-	delay := 24 * time.Hour
-	switch outcome {
-	case "provider-error":
-		delay = min(time.Duration(1<<min(attempts, 6))*time.Minute, time.Hour)
-	case "no-result":
-		delays := []time.Duration{6 * time.Hour, 24 * time.Hour, 72 * time.Hour, 7 * 24 * time.Hour}
-		delay = delays[min(attempts, len(delays)-1)]
-	}
-	_ = ledger.storeSearch(key, subtitleSearchRecord{Outcome: outcome, Attempts: attempts, CheckedAt: now.Unix(), NextAt: now.Add(delay).Unix(), SafeError: safeError})
 }
 
 func (ledger *subtitleLedger) lastSuccessfulWrite() time.Time {

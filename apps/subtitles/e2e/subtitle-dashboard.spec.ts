@@ -1,4 +1,4 @@
-import { test } from "@playwright/test";
+import { expect, test } from "@playwright/test";
 import { login } from "./subtitle-dashboard-helpers";
 import { registerSubtitleHistoryTests } from "./subtitle-dashboard-history-tests";
 import { registerSubtitleLanguageTests } from "./subtitle-dashboard-language-tests";
@@ -14,3 +14,21 @@ registerSubtitleProviderTests();
 registerSubtitleLayoutTests();
 
 registerSubtitleHistoryTests();
+
+test("phone search hint fits beside its submit action", async ({ page }) => {
+  for (const width of [320, 390]) {
+    await page.setViewportSize({ width, height: 800 });
+    for (const view of ["/", "/?view=wanted"]) {
+      await page.goto(view);
+      const fits = await page.getByRole("searchbox", { name: "Search subtitle library" }).evaluate((input) => {
+        const style = getComputedStyle(input);
+        const canvas = document.createElement("canvas");
+        const context = canvas.getContext("2d")!;
+        context.font = style.font;
+        const available = input.clientWidth - parseFloat(style.paddingLeft) - parseFloat(style.paddingRight);
+        return context.measureText((input as HTMLInputElement).placeholder).width <= available;
+      });
+      expect(fits, `${width}px ${view} search placeholder`).toBe(true);
+    }
+  }
+});

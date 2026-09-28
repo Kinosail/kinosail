@@ -18,6 +18,8 @@ Check the item in this order:
 4. Try **Direct** only when the device supports the source.
 5. Check whether the Owner allows transcoding for your Profile.
 
+If the video is ready but paused, select **Play**. Some browsers block automatic playback until you interact with the page.
+
 **Direct** uses the original media path and does not transcode. **Automatic** tries Direct first and can fall back to remuxing, audio conversion, or HLS transcoding. **Compatibility** requests a converted HLS stream.
 
 A Viewer without transcoding permission cannot use a stream that requires conversion. An Owner can enable transcoding for that Profile or choose a device that supports Direct playback.

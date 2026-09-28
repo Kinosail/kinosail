@@ -9,6 +9,7 @@ img{display:block;max-width:100%;height:auto}
 .wrap{max-width:1280px;margin-inline:auto;padding-inline:48px}
 .skip{position:absolute;left:20px;top:-100px;z-index:9;background:var(--lime);color:var(--bg);padding:12px}
 .skip:focus{top:12px}
+.skip:hover{color:var(--bg)}
 .masthead{display:flex;align-items:center;justify-content:space-between;min-height:104px;gap:24px}
 .brand{display:inline-flex;align-items:center;gap:12px;font-weight:800;font-size:23px;text-decoration:none;letter-spacing:-.7px}
 .masthead nav,.footer nav{display:flex;gap:24px;flex-wrap:wrap}

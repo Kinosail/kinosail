@@ -2,21 +2,25 @@
 title: Find and manage subtitles
 description: Read coverage and fetch or upgrade subtitle sidecars.
 section: Use Subtitles
-last_reviewed: 2026-09-15
+last_reviewed: 2026-09-27
 ---
 
 # Find and manage subtitles
 
-The dashboard shows local coverage for your preferred language, wanted items, and scanned videos. Start with [first setup]({{ '/getting-started/first-setup/' | relative_url }}) if no library or provider is configured.
+The dashboard shows local coverage for your preferred languages, wanted items, and scanned videos. Start with [first setup]({{ '/getting-started/first-setup/' | relative_url }}) if no library or provider is configured.
 
 ## Fetch one subtitle
 
 1. Locate a movie or episode in the library/wanted view.
-2. Review the video identity and preferred language.
+2. Review the video identity and preferred languages.
 3. Fetch a subtitle and read the operation result.
 4. Check the saved sidecar beside the video and verify it in your player.
 
 A wanted batch from the dashboard handles up to ten items. The HTTP API accepts bounded batches up to 50. A batch can have mixed outcomes; retry only the items that still need work after resolving the cause.
+
+## Keep playback choices manageable
+
+In **Settings → Languages**, choose the languages and their order. **Playback subtitle choices** can show one regular track per preferred language while leaving all subtitle files in place. To hide unwanted language-tagged sidecars, use the separate, default-off [cleanup preview]({{ '/owner-guide/playback/#hide-unwanted-subtitle-files' | relative_url }}). Back up sidecars and review the file list before confirming. Hidden files keep their contents with a `.hidden` suffix.
 
 ## Automatic maintenance
 

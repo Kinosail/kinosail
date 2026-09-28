@@ -94,7 +94,7 @@
         {% unless page.hide_contribute %}
         <footer class="page-footer">
           <p>{% if page.last_reviewed %}Last reviewed {{ page.last_reviewed | date: "%B %-d, %Y" }}.{% endif %} Maintained with the source on GitHub.</p>
-          <a href="{{ site.github_url }}/issues/new">Open an issue</a>
+          <a href="{{ site.github_url }}/issues/new/choose">Open an issue</a>
           <a href="{{ site.github_url }}/edit/main/{% if page.source_file %}{{ page.source_file }}{% else %}{{ site.source_path }}/{{ page.path }}{% endif %}">Edit this page</a>
         </footer>
         {% endunless %}

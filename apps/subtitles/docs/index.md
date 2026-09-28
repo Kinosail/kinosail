@@ -37,6 +37,8 @@ You can fetch one wanted file or let bounded maintenance fill gaps. The dashboar
 
 For a movie such as `Film.mkv`, an English sidecar is named `Film.en.srt`. The Server writes beside the video, so its media mount must be writable. It can upgrade its own managed files after a meaningful improvement. An unknown sidecar needs an exact OpenSubtitles hash match before replacement, and the original is kept as a `.kinosail.bak` recovery file. SubSource downloads remain unchanged under that provider's terms.
 
+Optional cleanup is off by default. It can hide language-tagged sidecars after you preview and confirm the selected files. Hidden files stay beside the video with a `.hidden` suffix. Remove that suffix to restore them. [Choose languages and review cleanup]({{ '/owner-guide/playback/' | relative_url }}) before using it.
+
 Kinosail Player has a different role: it reads media and does not change source files. The apps have separate containers and app state. You can run Subtitles without Player. [Read the library guide]({{ '/owner-guide/libraries/' | relative_url }}).
 
 ## Does it upload my videos?
