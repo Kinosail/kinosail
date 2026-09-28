@@ -76,7 +76,7 @@ func homeLayoutWithWatchedMovie(t *testing.T) string {
 		}
 		return response.Body.String()
 	}
-	match := regexp.MustCompile(`href="/item/([a-f0-9]+)"`).FindStringSubmatch(get("/?q=Watched+Movie"))
+	match := regexp.MustCompile(`href="/watch/([a-f0-9]+)"`).FindStringSubmatch(get("/?q=Watched+Movie"))
 	if len(match) != 2 {
 		t.Fatal("watched movie was not found")
 	}
