@@ -13,7 +13,7 @@ import (
 	"github.com/MikeO7/kinosail-subtitles/internal/server"
 )
 
-func TestSubtitleHistoryShowsEmptyStateAndEarlierInstall(t *testing.T) {
+func TestSubtitleHistoryShowsEmptyState(t *testing.T) {
 	t.Parallel()
 	media, dataDir := t.TempDir(), t.TempDir()
 	writeTestFile(t, filepath.Join(media, "Arrival.mp4"), "video")
@@ -22,6 +22,13 @@ func TestSubtitleHistoryShowsEmptyStateAndEarlierInstall(t *testing.T) {
 	if empty.Code != http.StatusOK || !strings.Contains(empty.Body.String(), "No subtitle changes yet.") || !strings.Contains(empty.Body.String(), "Find subtitles") {
 		t.Fatalf("empty subtitle history = %d %q", empty.Code, empty.Body.String())
 	}
+}
+
+func TestSubtitleHistoryMigratesLatestProviderInstall(t *testing.T) {
+	t.Parallel()
+	media, dataDir := t.TempDir(), t.TempDir()
+	writeTestFile(t, filepath.Join(media, "Arrival.mp4"), "video")
+	handler := server.New(server.Config{SubtitleApp: true, MediaDir: media, DataDir: dataDir, CacheDir: t.TempDir()})
 	home := requestApp(t, handler, http.MethodGet, "/", "")
 	match := regexp.MustCompile(`/subtitles/inspect/([a-f0-9]+)`).FindStringSubmatch(home.Body.String())
 	if len(match) != 2 {
