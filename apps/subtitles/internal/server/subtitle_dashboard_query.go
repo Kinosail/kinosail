@@ -57,6 +57,13 @@ func subtitleDashboardQuery(request *http.Request) (subtitleDashboardOptions, er
 			return options, invalid
 		}
 	}
+	if options.View == "history" {
+		for _, key := range []string{"q", "status", "kind", "sort"} {
+			if _, found := values[key]; found {
+				return options, invalid
+			}
+		}
+	}
 	if !options.valid() {
 		return options, invalid
 	}
@@ -96,5 +103,5 @@ func (options subtitleDashboardOptions) valid() bool {
 }
 
 func (options subtitleDashboardOptions) validSearch() bool {
-	return oneOf(options.View, "summary", "wanted", "library") && len(options.Query) <= 128 && utf8.ValidString(options.Query)
+	return oneOf(options.View, "summary", "wanted", "library", "history") && len(options.Query) <= 128 && utf8.ValidString(options.Query)
 }

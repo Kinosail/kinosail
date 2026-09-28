@@ -178,7 +178,7 @@ func TestSubtitleLibraryRejectsMalformedFiltersBeforeAnyWork(t *testing.T) {
 	invalid := []string{
 		"page=0", "page=-1", "page=+1", "page=01", "page=1.0", "page=", "page=1000001", "page=999999999999999999999", "page=1&page=2",
 		"kind=series", "kind=", "kind=movie&kind=episode", "sort=random", "sort=", "status=unknown", "status=", "status=ready&status=wanted",
-		"view=wanted&status=ready", "view=summary&status=checking", "view=summary&page=2", "q=%FF", "q=%", "q=a;b", "q=" + strings.Repeat("x", 129), "q=" + strings.Repeat("x", 1025), "unexpected=1",
+		"view=wanted&status=ready", "view=summary&status=checking", "view=summary&page=2", "view=history&status=ready", "view=history&q=Arrival", "view=history&kind=movie", "view=history&sort=modified", "view=history&page=0", "view=history&page=1&page=2", "q=%FF", "q=%", "q=a;b", "q=" + strings.Repeat("x", 129), "q=" + strings.Repeat("x", 1025), "unexpected=1",
 	}
 	for _, query := range invalid {
 		t.Run(query[:min(len(query), 40)], func(t *testing.T) {

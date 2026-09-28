@@ -199,6 +199,7 @@
 
   function schedulePoll() {
     clearTimeout(pollTimer);
+    if (main()?.dataset.view === "history") return;
     const pending = Number(document.getElementById("subtitle-content")?.dataset.pending);
     pollTimer = setTimeout(checkCoverage, pending > 0 ? 15000 : 60000);
   }

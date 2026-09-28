@@ -7,6 +7,7 @@ const subtitleAppHeader = `<header class="app-header">
 <a href="/?view=summary" data-subtitle-nav {{if eq .View "summary"}}class="active" aria-current="page"{{end}}>Overview</a>
 <a href="/?view=wanted" data-subtitle-nav {{if eq .View "wanted"}}class="active" aria-current="page"{{end}}>Wanted</a>
 <a href="/?view=library" data-subtitle-nav {{if eq .View "library"}}class="active" aria-current="page"{{end}}>Library</a>
+<a href="/?view=history" data-subtitle-nav {{if eq .View "history"}}class="active" aria-current="page"{{end}}>History</a>
 </nav>
 <div class="subtitle-header-settings">{{if .Owner}}<a class="header-link header-supporter" href="/supporter" aria-label="Support Kinosail">Support <span class="supporter-long">Kinosail</span></a><a class="header-link" href="/settings" {{if eq .View "settings"}}aria-current="page"{{end}}>Settings</a>{{else}}<a class="header-link" href="/account" {{if eq .View "account"}}aria-current="page"{{end}}>Account</a>{{end}}</div>
 </header>`
