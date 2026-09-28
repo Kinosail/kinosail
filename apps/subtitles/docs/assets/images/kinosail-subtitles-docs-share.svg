@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" role="img" aria-labelledby="title">
+  <title id="title">Kinosail Subtitles Docs — Find, validate, and save subtitles</title>
+  <rect width="1200" height="630" fill="#0b0d0b"/>
+  <g transform="translate(-95 -90) scale(1.5)">
+    <path fill="#c4ff47" d="M128 144h256v96H184l-56 48Z"/>
+    <path fill="#f6f8f2" d="M128 272h256v112l-56-32H128Z"/>
+  </g>
+  <g font-family="Manrope, Helvetica Neue, Arial, sans-serif">
+    <text x="510" y="264" fill="#f6f8f2" font-size="105" font-weight="800" letter-spacing="-4">Kinosail</text>
+    <text x="515" y="364" fill="#f6f8f2" font-size="64" font-weight="700" letter-spacing="-2">Subtitles Docs</text>
+    <text x="515" y="466" fill="#c4ff47" font-size="43" font-weight="650" letter-spacing="-.5">Find. Validate. Save.</text>
+  </g>
+</svg>
