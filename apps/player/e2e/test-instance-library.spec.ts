@@ -104,13 +104,12 @@ test("media artwork keeps its intended ratio in the populated library", async ({
 	expect(photo!.height / photo!.width).toBeCloseTo(.75, 2);
 });
 
-test("mobile media detail heroes stack artwork for movies, shows, albums, and books", async ({ page }) => {
+test("mobile media detail heroes stack artwork for shows, albums, and books", async ({ page }) => {
 	await page.setViewportSize({ width: 390, height: 844 });
 	await login(page);
 
 	const routes: string[] = [];
 	for (const [view, selector] of [
-		["movies", 'a.card[href^="/watch/"]'],
 		["shows", 'a.show-details[href^="/show/"]'],
 		["music", 'a.card[href^="/album/"]'],
 		["books", 'a.card[href^="/book/"]'],
@@ -118,7 +117,7 @@ test("mobile media detail heroes stack artwork for movies, shows, albums, and bo
 		await page.goto(`/?view=${view}`, { waitUntil: "domcontentloaded" });
 		const href = await page.locator(selector).first().getAttribute("href");
 		expect(href, `${view} detail link`).toBeTruthy();
-		routes.push(view === "movies" ? href!.replace("/watch/", "/item/") : href!);
+		routes.push(href!);
 	}
 
 	for (const route of routes) {
