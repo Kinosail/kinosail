@@ -37,7 +37,7 @@ test("Home keeps featured resume and navigation reachable", async ({ page }, tes
 		await expect(feature.getByRole("progressbar", { name: "Watch progress" })).toBeVisible();
 		const resume = feature.getByRole("link", { name: "Resume", exact: true });
 		await expect(resume).toHaveAttribute("href", /^\/watch\//);
-		await expect(feature.getByRole("link", { name: "View details" })).toHaveAttribute("href", /^\/item\//);
+		await expect(feature.getByRole("link", { name: "View details" })).toHaveCount(0);
 		const removal = feature.getByRole("button", { name: /Remove Example Movie/ });
 		expect((await removal.boundingBox())!.height).toBeGreaterThanOrEqual(44);
 		const geometry = await page.evaluate(() => {
