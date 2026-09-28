@@ -44,7 +44,7 @@ func (manager *subtitleManager) fetchSidecar(ctx context.Context, item library.I
 	if err != nil {
 		_ = target.remove()
 	} else {
-		manager.provider.ledger.noteSearch(subtitleSearchKey(item.ID, language, manager.settings.subtitlePreference()), "installed", "", time.Now())
+		manager.provider.ledger.noteSearch(subtitleSearchKey(item.ID, language, manager.settings.subtitlePreference()), "installed", "", item, time.Now())
 	}
 	return err
 }

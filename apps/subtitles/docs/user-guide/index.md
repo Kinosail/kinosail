@@ -20,7 +20,7 @@ A wanted batch from the dashboard handles up to ten items. The HTTP API accepts 
 
 ## Keep playback choices manageable
 
-In **Settings → Languages**, choose the languages and their order. **Playback subtitle choices** can show one regular track per preferred language while leaving all subtitle files in place. To remove unwanted language-tagged sidecars, use the separate, default-off [cleanup preview]({{ '/owner-guide/playback/#remove-unwanted-subtitle-files' | relative_url }}). Back up sidecars and review the file list before confirming deletion.
+In **Settings → Languages**, choose the languages and their order. **Playback subtitle choices** can show one regular track per preferred language while leaving all subtitle files in place. To hide unwanted language-tagged sidecars, use the separate, default-off [cleanup preview]({{ '/owner-guide/playback/#hide-unwanted-subtitle-files' | relative_url }}). Back up sidecars and review the file list before confirming. Hidden files keep their contents with a `.hidden` suffix.
 
 ## Automatic maintenance
 

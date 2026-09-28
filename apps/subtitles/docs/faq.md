@@ -25,7 +25,7 @@ Yes, under conservative maintenance rules. Managed files need a meaningful score
 
 ## Can I keep fewer subtitle files or playback choices?
 
-Yes. **Playback subtitle choices** can hide extra tracks without changing files. Optional cleanup is off by default and shows the files it would delete before confirmation. Cleanup deletion does not create a `.kinosail.bak` copy. Back up your sidecars first and follow [Configure languages and automation]({{ '/owner-guide/playback/' | relative_url }}).
+Yes. **Playback subtitle choices** can hide extra tracks without changing files. Optional cleanup is off by default and shows the files it would hide before confirmation. It keeps file contents beside each video with a `.hidden` suffix. Remove the suffix to restore a file. Back up your sidecars first and follow [Configure languages and automation]({{ '/owner-guide/playback/' | relative_url }}).
 
 ## Does an app backup include my subtitles?
 
