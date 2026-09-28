@@ -47,6 +47,11 @@ func TestMovieCardsOpenPlayerAndOldDetailsRedirect(t *testing.T) {
 	}
 	assertMovieListReturnsToPlayer(t, call, path)
 	assertInvalidMovieListActions(t, call, path)
+	assertInvalidMovieDetailsRoutes(t, call, path)
+}
+
+func assertInvalidMovieDetailsRoutes(t *testing.T, call func(string, string, string) *httptest.ResponseRecorder, path string) {
+	t.Helper()
 	if call(http.MethodGet, path+"?unexpected=1", "").Code != http.StatusBadRequest {
 		t.Fatal("ambiguous title query accepted")
 	}
