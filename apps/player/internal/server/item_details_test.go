@@ -14,7 +14,7 @@ import (
 	"github.com/MikeO7/kinosail-player/internal/server"
 )
 
-func TestMovieDetailsDoNotStartPlaybackAndListActionsReturnToDetails(t *testing.T) {
+func TestMovieCardOpensWatchAndExplicitDetailsStillWork(t *testing.T) {
 	media := t.TempDir()
 	if err := os.WriteFile(filepath.Join(media, "Movie.mp4"), []byte("media"), 0o600); err != nil {
 		t.Fatal(err)
@@ -30,20 +30,17 @@ func TestMovieDetailsDoNotStartPlaybackAndListActionsReturnToDetails(t *testing.
 		return response
 	}
 	library := call(http.MethodGet, "/?view=movies", "")
-	match := regexp.MustCompile(`/item/([a-f0-9]+)`).FindStringSubmatch(library.Body.String())
+	match := regexp.MustCompile(`href="/watch/([a-f0-9]+)"`).FindStringSubmatch(library.Body.String())
 	if len(match) != 2 {
-		t.Fatal("movie poster does not open details")
+		t.Fatal("movie poster does not open watch")
+	}
+	watch := call(http.MethodGet, "/watch/"+match[1], "")
+	if watch.Code != http.StatusOK || !strings.Contains(watch.Body.String(), `<video`) || !strings.Contains(watch.Body.String(), `data-cast`) {
+		t.Fatal("movie poster does not reach the player and casting controls")
 	}
 	path := "/item/" + match[1]
 	response := call(http.MethodGet, path, "")
-	for _, forbidden := range []string{"<video", "<audio", "autoplay", "/media/"} {
-		if strings.Contains(response.Body.String(), forbidden) {
-			t.Fatalf("details starts media: %s", forbidden)
-		}
-	}
-	if !strings.Contains(response.Body.String(), `href="/watch/`+match[1]+`"`) {
-		t.Fatal("details lacks explicit play")
-	}
+	assertMovieDetailsDoNotPlay(t, response, match[1])
 	assertMovieListReturnsToDetails(t, call, path)
 	assertInvalidMovieListActions(t, call, path)
 	if call(http.MethodGet, path+"?unexpected=1", "").Code != http.StatusBadRequest {
@@ -54,7 +51,19 @@ func TestMovieDetailsDoNotStartPlaybackAndListActionsReturnToDetails(t *testing.
 	}
 }
 
-func TestMovieBrowseCardOmitsYearAndDetailsRetainIt(t *testing.T) {
+func assertMovieDetailsDoNotPlay(t *testing.T, response *httptest.ResponseRecorder, id string) {
+	t.Helper()
+	for _, forbidden := range []string{"<video", "<audio", "autoplay", "/media/"} {
+		if strings.Contains(response.Body.String(), forbidden) {
+			t.Fatalf("details starts media: %s", forbidden)
+		}
+	}
+	if !strings.Contains(response.Body.String(), `href="/watch/`+id+`"`) {
+		t.Fatal("details lacks explicit play")
+	}
+}
+
+func TestMovieBrowseCardOmitsYearAndWatchRetainsIt(t *testing.T) {
 	media := t.TempDir()
 	if err := os.WriteFile(filepath.Join(media, "Arrival (2016).mp4"), []byte("media"), 0o600); err != nil {
 		t.Fatal(err)
@@ -69,19 +78,19 @@ func TestMovieBrowseCardOmitsYearAndDetailsRetainIt(t *testing.T) {
 		return response.Body.String()
 	}
 	browse := get("/?view=movies")
-	match := regexp.MustCompile(`/item/([a-f0-9]+)`).FindStringSubmatch(browse)
+	match := regexp.MustCompile(`href="/watch/([a-f0-9]+)"`).FindStringSubmatch(browse)
 	if len(match) != 2 {
 		t.Fatal("movie is missing from browse results")
 	}
 	if strings.Contains(browse, ">2016<") || strings.Contains(browse, " · 2016</h2>") {
 		t.Fatal("browse card shows release year")
 	}
-	if !strings.Contains(get("/item/"+match[1]), `class="meta-line">2016`) {
-		t.Fatal("movie details omit release year")
+	if !strings.Contains(get("/watch/"+match[1]), `<small>2016</small>`) {
+		t.Fatal("movie watch page omits release year")
 	}
 }
 
-func TestFeaturedMovieOffersPlayAndKeepsShelfOnDetails(t *testing.T) {
+func TestFeaturedMovieAndShelfOpenWatch(t *testing.T) {
 	media := t.TempDir()
 	folder := filepath.Join(media, "Movie")
 	if err := os.Mkdir(folder, 0o700); err != nil {
@@ -100,12 +109,12 @@ func TestFeaturedMovieOffersPlayAndKeepsShelfOnDetails(t *testing.T) {
 	if len(play) != 2 {
 		t.Fatal("featured movie lacks explicit playback")
 	}
-	if !strings.Contains(feature, `href="/item/`+play[1]+`"`) {
-		t.Fatal("featured movie lacks adjacent details")
+	if !strings.Contains(feature, `<span data-feature-label>Play</span>`) || strings.Contains(feature, `View details`) {
+		t.Fatal("featured movie does not name its direct play action")
 	}
 	shelf := regexp.MustCompile(`(?s)<section class="home-shelf".*?Recently added.*?</section>`).FindString(body)
-	if !strings.Contains(shelf, `href="/item/`+play[1]+`"`) {
-		t.Fatal("browsing the movie must still open details")
+	if !strings.Contains(shelf, `href="/watch/`+play[1]+`"`) {
+		t.Fatal("browsing the movie does not open watch")
 	}
 	if strings.Contains(body, "<video") || strings.Contains(body, "autoplay") {
 		t.Fatal("home must not start playback")

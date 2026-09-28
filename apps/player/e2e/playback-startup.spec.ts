@@ -37,9 +37,9 @@ test("selecting a movie starts moving playback promptly", async ({ page }, testI
 	if (await page.getByRole("link", { name: "Not now" }).isVisible()) await page.getByRole("link", { name: "Not now" }).click();
 	await page.getByRole("link", { name: "Movies", exact: true }).click();
 
-	await page.getByRole("link", { name: /Example Movie/ }).click();
 	const started = Date.now();
-	await page.getByRole("link", { name: /^(Play|Resume|Play again)$/ }).click();
+	await page.getByRole("link", { name: /Example Movie/ }).click();
+	await expect(page).toHaveURL(/\/watch\/[a-f0-9]+$/);
 	await expect(page.getByLabel("Content rating")).toHaveText("PG-13");
 	const video = page.locator("video");
 	await expect.poll(() => video.evaluate((element: HTMLVideoElement) => element.currentTime), { timeout: 3_000 }).toBeGreaterThan(0.25);
@@ -88,7 +88,6 @@ test("blocked autoplay leaves one Play control that starts the video", async ({ 
 	await page.getByRole("button", { name: "Sign in", exact: true }).click();
 	await page.goto("/?view=movies");
 	await page.getByRole("link", { name: /Example Movie/ }).click();
-	await page.getByRole("link", { name: /^(Play|Resume|Play again)$/ }).click();
 	await expect(page.locator("[data-player-status]")).toBeHidden();
 	await expect(page.locator(".player-center-control[data-player-toggle]")).toBeVisible();
 	await expect(page.getByRole("button", { name: "Play video" })).toHaveCount(0);
@@ -111,7 +110,6 @@ test("restricted browser storage does not stop playback", async ({ page }) => {
 	if (await page.getByRole("link", { name: "Not now" }).isVisible()) await page.getByRole("link", { name: "Not now" }).click();
 	await page.getByRole("link", { name: "Movies", exact: true }).click();
 	await page.getByRole("link", { name: /Example Movie/ }).click();
-	await page.getByRole("link", { name: /^(Play|Resume|Play again)$/ }).click();
 	const video = page.locator("video");
 	await expect.poll(() => video.evaluate((element: HTMLVideoElement) => element.currentTime), { timeout: 5_000 }).toBeGreaterThan(0.25);
 	expect(errors).toEqual([]);
@@ -126,7 +124,6 @@ test("failed progress save does not stop playback flow", async ({ page }) => {
 	if (await page.getByRole("link", { name: "Not now" }).isVisible()) await page.getByRole("link", { name: "Not now" }).click();
 	await page.getByRole("link", { name: "Movies", exact: true }).click();
 	await page.getByRole("link", { name: /Example Movie/ }).click();
-	await page.getByRole("link", { name: /^(Play|Resume|Play again)$/ }).click();
 	await page.route("**/progress/**", (route) => route.abort());
 	await page.locator("video").evaluate((video: HTMLVideoElement) => {
 		video.dataset.next = "/?view=movies&after=failed-save";
@@ -148,7 +145,6 @@ test("selecting compatibility playback starts without a second play click", asyn
 	if (await page.getByRole("link", { name: "Not now" }).isVisible()) await page.getByRole("link", { name: "Not now" }).click();
 	await page.getByRole("link", { name: "Movies", exact: true }).click();
 	await page.getByRole("link", { name: /Example Movie/ }).click();
-	await page.getByRole("link", { name: /^(Play|Resume|Play again)$/ }).click();
 
 	const started = Date.now();
 	await page.getByText("Playback & downloads", { exact: true }).click();

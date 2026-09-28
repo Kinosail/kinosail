@@ -73,10 +73,10 @@ export async function newViewerPage(browser: Browser, baseURL: string): Promise<
 export async function firstPlayable(page: Page): Promise<string> {
   for (const path of ["/?view=movies", "/"]) {
     await page.goto(path);
-    const cards = page.locator('a.card[href^="/watch/"], a.card[href^="/item/"]');
+    const cards = page.locator('a.card[href^="/watch/"]');
     const example = cards.filter({ hasText: "Example Movie" });
     const watch = await (await example.count() ? example.first() : cards.first()).getAttribute("href");
-    if (watch) return watch.replace(/^\/item\//, "/watch/");
+    if (watch) return watch;
   }
   throw new Error("the Library does not contain playable video");
 }
