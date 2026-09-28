@@ -249,12 +249,12 @@ func TestSubtitleAppWritesValidatedSidecarBesideVideo(t *testing.T) { //nolint:c
 		t.Fatalf("fetch = %d %q, sidecar = %q, err = %v, searches = %d", fetched.Code, fetched.Body.String(), data, err, searches.Load())
 	}
 	history := requestApp(t, handler, http.MethodGet, "/?view=history", "")
-	if history.Code != http.StatusOK || !strings.Contains(history.Body.String(), "Download history") || !strings.Contains(history.Body.String(), "Arrival") || !strings.Contains(history.Body.String(), "SubDL") {
-		t.Fatalf("download history = %d %q", history.Code, history.Body.String())
+	if history.Code != http.StatusOK || !strings.Contains(history.Body.String(), "Subtitle history") || !strings.Contains(history.Body.String(), "Arrival") || !strings.Contains(history.Body.String(), "SubDL") || !strings.Contains(history.Body.String(), "Added") {
+		t.Fatalf("subtitle history = %d %q", history.Code, history.Body.String())
 	}
 	apiHistory := requestApp(t, handler, http.MethodGet, "/api/v1/subtitle-library?view=history", "")
-	if apiHistory.Code != http.StatusOK || !strings.Contains(apiHistory.Body.String(), `"source":"subdl"`) || !strings.Contains(apiHistory.Body.String(), `"language":"en"`) || !strings.Contains(apiHistory.Body.String(), `"matched":1`) {
-		t.Fatalf("download history API = %d %q", apiHistory.Code, apiHistory.Body.String())
+	if apiHistory.Code != http.StatusOK || !strings.Contains(apiHistory.Body.String(), `"source":"subdl"`) || !strings.Contains(apiHistory.Body.String(), `"action":"added"`) || !strings.Contains(apiHistory.Body.String(), `"language":"en"`) || !strings.Contains(apiHistory.Body.String(), `"matched":1`) {
+		t.Fatalf("subtitle history API = %d %q", apiHistory.Code, apiHistory.Body.String())
 	}
 
 	again := requestJSON(t, handler, http.MethodPost, "/api/v1/subtitle-library/"+match[1]+"/fetch", `{}`)
@@ -264,7 +264,7 @@ func TestSubtitleAppWritesValidatedSidecarBesideVideo(t *testing.T) { //nolint:c
 	restarted := server.New(server.Config{SubtitleApp: true, MediaDir: media, DataDir: dataDir, CacheDir: t.TempDir(), Subtitles: server.SubtitleConfig{URL: provider.URL, APIKey: "key"}})
 	apiHistory = requestApp(t, restarted, http.MethodGet, "/api/v1/subtitle-library?view=history", "")
 	if apiHistory.Code != http.StatusOK || !strings.Contains(apiHistory.Body.String(), `"matched":1`) {
-		t.Fatalf("restarted download history = %d %q", apiHistory.Code, apiHistory.Body.String())
+		t.Fatalf("restarted subtitle history = %d %q", apiHistory.Code, apiHistory.Body.String())
 	}
 	refreshed := requestApp(t, handler, http.MethodGet, "/?view=library", "")
 	if !strings.Contains(refreshed.Body.String(), "Your subtitles are ready") && !strings.Contains(refreshed.Body.String(), ">Ready<") {

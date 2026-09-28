@@ -7,10 +7,10 @@ import (
 	"github.com/MikeO7/kinosail/packages/library"
 )
 
-const subtitleDownloadPageSize = 20
+const subtitleHistoryPageSize = 20
 
-func (manager *subtitleManager) downloadHistoryProjection(options subtitleDashboardOptions, items []library.Item) (subtitleDashboardData, error) {
-	events, err := manager.provider.ledger.downloads()
+func (manager *subtitleManager) subtitleHistoryProjection(options subtitleDashboardOptions, items []library.Item) (subtitleDashboardData, error) {
+	events, err := manager.provider.ledger.history()
 	if err != nil {
 		return subtitleDashboardData{}, err
 	}
@@ -18,7 +18,7 @@ func (manager *subtitleManager) downloadHistoryProjection(options subtitleDashbo
 	for _, item := range items {
 		byID[item.ID] = item
 	}
-	data := subtitleDashboardData{subtitleDashboardOptions: options, ServerName: manager.settings.serverName(), PageSize: subtitleDownloadPageSize, Matched: len(events), Downloads: []subtitleDownloadView{}}
+	data := subtitleDashboardData{subtitleDashboardOptions: options, ServerName: manager.settings.serverName(), PageSize: subtitleHistoryPageSize, Matched: len(events), History: []subtitleHistoryView{}}
 	data.Pages = max(1, (data.Matched+data.PageSize-1)/data.PageSize)
 	data.Page = min(data.Page, data.Pages)
 	start := (data.Page - 1) * data.PageSize
@@ -26,12 +26,13 @@ func (manager *subtitleManager) downloadHistoryProjection(options subtitleDashbo
 	for i := len(events) - 1 - start; i >= len(events)-end; i-- {
 		event := events[i]
 		parts := strings.SplitN(event.Key, ":", 2)
-		view := subtitleDownloadView{ID: parts[0], Title: "File no longer in library", Language: parts[1], Source: event.Source, SourceLabel: subtitleDownloadSourceLabel(event.Source), Installed: time.Unix(event.InstalledAt, 0).UTC().Format(time.RFC3339)}
+		changed := time.Unix(event.InstalledAt, 0).UTC()
+		view := subtitleHistoryView{ID: parts[0], Action: event.Action, Title: "File no longer in library", Language: parts[1], Source: event.Source, SourceLabel: subtitleHistorySourceLabel(event.Source), Changed: changed.Format(time.RFC3339), DisplayTime: changed.Format("2006-01-02 15:04") + " UTC"}
 		if item, found := byID[view.ID]; found {
 			identity := subtitleDashboardIdentity(item)
 			view.Title, view.Context, view.Available = identity.Title, identity.Context, true
 		}
-		data.Downloads = append(data.Downloads, view)
+		data.History = append(data.History, view)
 	}
 	if data.Matched > 0 {
 		data.Start, data.End = start+1, end
@@ -46,7 +47,7 @@ func (manager *subtitleManager) downloadHistoryProjection(options subtitleDashbo
 	return data, nil
 }
 
-func subtitleDownloadSourceLabel(source string) string {
+func subtitleHistorySourceLabel(source string) string {
 	switch source {
 	case "subdl":
 		return "SubDL"
@@ -54,6 +55,14 @@ func subtitleDownloadSourceLabel(source string) string {
 		return "OpenSubtitles"
 	case "subsource":
 		return "SubSource"
+	case "embedded":
+		return "Embedded track"
+	case "ocr":
+		return "Local OCR"
+	case "transcription":
+		return "Local transcription"
+	case "external":
+		return "Local file"
 	default:
 		return "Subtitle source"
 	}

@@ -20,7 +20,7 @@ func (manager *subtitleManager) projection(request *http.Request, options subtit
 		return subtitleDashboardData{}, err
 	}
 	if options.View == "history" {
-		return manager.downloadHistoryProjection(options, items)
+		return manager.subtitleHistoryProjection(options, items)
 	}
 	languages := manager.settings.subtitleLanguages()
 	data := subtitleDashboardData{subtitleDashboardOptions: options, ServerName: manager.settings.serverName(), Language: languages[0], Languages: languages, LanguageSummary: strings.Join(languages, ", "), ProviderConfigured: manager.provider.configured(), Preference: manager.settings.subtitlePreference(), PageSize: subtitleLibraryPageSize, Items: []subtitleDashboardItem{}}

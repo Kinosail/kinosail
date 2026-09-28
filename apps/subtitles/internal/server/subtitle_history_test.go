@@ -13,14 +13,14 @@ import (
 	"github.com/MikeO7/kinosail-subtitles/internal/server"
 )
 
-func TestSubtitleDownloadHistoryShowsEmptyStateAndEarlierInstall(t *testing.T) {
+func TestSubtitleHistoryShowsEmptyStateAndEarlierInstall(t *testing.T) {
 	t.Parallel()
 	media, dataDir := t.TempDir(), t.TempDir()
 	writeTestFile(t, filepath.Join(media, "Arrival.mp4"), "video")
 	handler := server.New(server.Config{SubtitleApp: true, MediaDir: media, DataDir: dataDir, CacheDir: t.TempDir()})
 	empty := requestApp(t, handler, http.MethodGet, "/?view=history", "")
-	if empty.Code != http.StatusOK || !strings.Contains(empty.Body.String(), "No downloads yet.") || !strings.Contains(empty.Body.String(), "Find subtitles") {
-		t.Fatalf("empty download history = %d %q", empty.Code, empty.Body.String())
+	if empty.Code != http.StatusOK || !strings.Contains(empty.Body.String(), "No subtitle changes yet.") || !strings.Contains(empty.Body.String(), "Find subtitles") {
+		t.Fatalf("empty subtitle history = %d %q", empty.Code, empty.Body.String())
 	}
 	home := requestApp(t, handler, http.MethodGet, "/", "")
 	match := regexp.MustCompile(`/subtitles/inspect/([a-f0-9]+)`).FindStringSubmatch(home.Body.String())
@@ -35,7 +35,7 @@ func TestSubtitleDownloadHistoryShowsEmptyStateAndEarlierInstall(t *testing.T) {
 	reloaded := server.New(server.Config{SubtitleApp: true, MediaDir: media, DataDir: dataDir, CacheDir: t.TempDir()})
 	page := requestApp(t, reloaded, http.MethodGet, "/?view=history", "")
 	api := requestApp(t, reloaded, http.MethodGet, "/api/v1/subtitle-library?view=history", "")
-	if page.Code != http.StatusOK || !strings.Contains(page.Body.String(), "Arrival") || !strings.Contains(page.Body.String(), "SubDL") || api.Code != http.StatusOK || !strings.Contains(api.Body.String(), `"matched":1`) {
-		t.Fatalf("migrated download history = %d %q; API = %d %q", page.Code, page.Body.String(), api.Code, api.Body.String())
+	if page.Code != http.StatusOK || !strings.Contains(page.Body.String(), "Arrival") || !strings.Contains(page.Body.String(), "SubDL") || !strings.Contains(page.Body.String(), "Added") || api.Code != http.StatusOK || !strings.Contains(api.Body.String(), `"matched":1`) || !strings.Contains(api.Body.String(), `"action":"added"`) {
+		t.Fatalf("migrated subtitle history = %d %q; API = %d %q", page.Code, page.Body.String(), api.Code, api.Body.String())
 	}
 }

@@ -260,10 +260,10 @@
 .subtitle-history{padding-top:1.75rem}
 .subtitle-history-count{color:var(--muted);font-size:.78rem;font-variant-numeric:tabular-nums;white-space:nowrap}
 .subtitle-history-list{margin-top:1.25rem;border-top:1px solid var(--line)}
-.subtitle-history-columns,.subtitle-history-row{display:grid;grid-template-columns:minmax(0,1fr) 6rem 9rem 11rem;align-items:center;gap:1rem}
+.subtitle-history-columns,.subtitle-history-row{display:grid;grid-template-columns:minmax(0,1fr) 5rem 5rem 9rem 11rem;align-items:center;gap:1rem}
 .subtitle-history-columns{padding:.7rem .85rem;color:var(--muted);font-size:.7rem}
 .subtitle-history-row{min-height:4.75rem;padding:.8rem .85rem;border-top:1px solid var(--line);font-size:.82rem}
 .subtitle-history-title{min-width:0}.subtitle-history-title a,.subtitle-history-title strong{color:var(--text);font-weight:600;overflow-wrap:anywhere}.subtitle-history-title a{text-decoration:none}.subtitle-history-title a:hover{text-decoration:underline;text-underline-offset:.2em}
 .subtitle-history-title small{display:block;margin-top:.25rem;color:var(--muted);font-size:.74rem}
-.subtitle-history-language{color:var(--text);font-weight:600}.subtitle-history-source,.subtitle-history-row time{color:var(--muted)}.subtitle-history-row time{font-variant-numeric:tabular-nums}
-@media(max-width:700px){.subtitle-history-columns{display:none}.subtitle-history-row{grid-template-columns:minmax(0,1fr) auto;gap:.35rem 1rem}.subtitle-history-title{grid-column:1/-1}.subtitle-history-language{grid-column:1}.subtitle-history-source{grid-column:2;grid-row:2;text-align:right}.subtitle-history-row time{grid-column:1/-1;font-size:.74rem}}
+.subtitle-history-action{color:var(--text);font-weight:600}.subtitle-history-language{color:var(--text)}.subtitle-history-source,.subtitle-history-row time{color:var(--muted)}.subtitle-history-row time{font-variant-numeric:tabular-nums}
+@media(max-width:900px){.subtitle-history-columns{display:none}.subtitle-history-row{grid-template-columns:minmax(0,1fr) auto;gap:.35rem 1rem}.subtitle-history-title{grid-column:1/-1}.subtitle-history-action{grid-column:1}.subtitle-history-language{grid-column:2;grid-row:2;text-align:right}.subtitle-history-source{grid-column:1}.subtitle-history-row time{grid-column:2;grid-row:3;text-align:right;font-size:.74rem}}

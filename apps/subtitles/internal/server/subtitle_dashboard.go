@@ -42,14 +42,16 @@ type subtitleDashboardItem struct {
 	ActionLanguage  string   `json:"actionLanguage,omitempty"`
 }
 
-type subtitleDownloadView struct {
+type subtitleHistoryView struct {
 	ID          string `json:"id"`
+	Action      string `json:"action"`
 	Title       string `json:"title"`
 	Context     string `json:"context,omitempty"`
 	Language    string `json:"language"`
 	Source      string `json:"source"`
 	SourceLabel string `json:"sourceLabel"`
-	Installed   string `json:"installed"`
+	Changed     string `json:"changed"`
+	DisplayTime string `json:"displayTime"`
 	Available   bool   `json:"available"`
 }
 
@@ -82,7 +84,7 @@ type subtitleDashboardData struct {
 	Readiness          subtitleReadiness        `json:"readiness"`
 	Providers          []subtitleProviderHealth `json:"providers"`
 	Items              []subtitleDashboardItem  `json:"items"`
-	Downloads          []subtitleDownloadView   `json:"downloads,omitempty"`
+	History            []subtitleHistoryView    `json:"history,omitempty"`
 }
 
 type subtitleManager struct {

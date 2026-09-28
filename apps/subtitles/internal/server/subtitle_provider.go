@@ -207,7 +207,7 @@ func (provider *subtitleProvider) fetchSidecar(ctx context.Context, item library
 		return err
 	}
 	record = target.record(cleaned.Data, record)
-	if err = provider.ledger.storeDownload(subtitleRecordKey(item.ID, language), record); err != nil {
+	if err = provider.ledger.storeHistory(subtitleRecordKey(item.ID, language), record, "added"); err != nil {
 		_ = target.remove()
 		return err
 	}
