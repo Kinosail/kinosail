@@ -106,7 +106,7 @@ func TestSubtitleCleanupRejectsInvalidPolicyAndChangedFiles(t *testing.T) {
 	}
 }
 
-func TestSubtitleCleanupRestoresLanguagesWhenHidingFails(t *testing.T) {
+func TestSubtitleCleanupRestoresLanguagesWhenHidingFails(t *testing.T) { //nolint:cyclop // One failed hide must preserve both the file and playback settings.
 	dir := t.TempDir()
 	media, sidecar := filepath.Join(dir, "Film.mkv"), filepath.Join(dir, "Film.es.srt")
 	for _, path := range []string{media, sidecar} {
