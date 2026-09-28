@@ -123,6 +123,7 @@ test("Owner can create, fill, empty, and delete a playlist and Collection", asyn
 
 	await page.goto("/?view=movies");
 	await page.getByRole("link", { name: /Example Movie/ }).click();
+	await expect(page.locator("video")).toBeVisible();
 	await page.getByText("Add to playlist or collection", { exact: true }).click();
 	await expect(page.getByRole("heading", { name: "Playlists", exact: true })).toBeVisible();
 	await expect(page.getByRole("heading", { name: "Collections", exact: true })).toBeVisible();
