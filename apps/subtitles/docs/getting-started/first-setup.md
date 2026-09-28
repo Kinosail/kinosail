@@ -2,7 +2,7 @@
 title: Complete first setup
 description: Secure the Owner and find a subtitle for one video.
 section: Start here
-last_reviewed: 2026-09-15
+last_reviewed: 2026-09-27
 ---
 
 # Complete first setup
@@ -13,7 +13,7 @@ Open the local address from [installation]({{ '/getting-started/install/' | rela
 
 1. Follow **Connect a subtitle provider**. One provider is sufficient; use the linked account and key instructions.
 2. Enter credentials in Owner Settings. Restart when prompted and confirm that the provider is configured.
-3. Choose the primary language and subtitle role: standard dialogue or SDH/captions.
+3. Choose the primary language and subtitle role: standard dialogue or SDH/captions. Add more preferred languages and set their order in **Settings → Languages** after setup.
 4. Review **Choose where to save subtitle files**. Add folders inside the media mount, such as `Movies` or `Shows`.
 5. Choose a safety-scan schedule and save the plan.
 

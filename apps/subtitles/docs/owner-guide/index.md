@@ -11,7 +11,7 @@ Owner controls determine which folders Subtitles may scan and write, which provi
 
 - [Manage library folders]({{ '/owner-guide/libraries/' | relative_url }})
 - [Connect providers]({{ '/owner-guide/integrations/' | relative_url }})
-- [Configure language and automation]({{ '/owner-guide/playback/' | relative_url }})
+- [Configure languages and automation]({{ '/owner-guide/playback/' | relative_url }})
 - [Secure access]({{ '/owner-guide/security/' | relative_url }})
 - [Back up and update]({{ '/owner-guide/backups-and-updates/' | relative_url }})
 - [Look up configuration]({{ '/reference/configuration/' | relative_url }})

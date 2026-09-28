@@ -1,5 +1,6 @@
 """Reject invalid deployment inputs before invoking tools or writing output."""
 import contextlib
+from html.parser import HTMLParser
 import io
 import json
 from pathlib import Path
@@ -11,6 +12,27 @@ from unittest.mock import patch
 from build import ROOT, build, settings
 from check import Page, check
 from seo_check import SearchMetadata
+
+
+class LinkText(HTMLParser):
+    def __init__(self, source):
+        super().__init__()
+        self.links = []
+        self.href = None
+        self.feed(source)
+
+    def handle_starttag(self, tag, attributes):
+        if tag == 'a':
+            self.href = dict(attributes).get('href')
+            self.links.append([self.href, ''])
+
+    def handle_data(self, data):
+        if self.href is not None:
+            self.links[-1][1] += data
+
+    def handle_endtag(self, tag):
+        if tag == 'a':
+            self.href = None
 
 
 class BuildInputsTest(unittest.TestCase):
@@ -83,6 +105,14 @@ class BuildInputsTest(unittest.TestCase):
                     install = (args.output / 'subtitles/getting-started/install/index.html').read_text()
                     self.assertIn('ghcr.io/kinosail/kinosail-subtitles:latest', install)
                     self.assertIn('Kinosail Subtitles dashboard', subtitles)
+                    why_links = LinkText((args.output / 'why/index.html').read_text()).links
+                    self.assertIn([f'{prefix}/quickstart/', 'Try Kinosail Player'], why_links)
+                    self.assertIn([f'{prefix}/subtitles/getting-started/install/', 'Try Kinosail Subtitles'], why_links)
+                    self.assertIn(['https://github.com/Kinosail/kinosail/issues/new/choose', 'Share feedback ↗'], why_links)
+                    self.assertIn(['https://github.com/Kinosail/kinosail/issues/new/choose', 'Report a bug'], why_links)
+                    for guide in ('getting-started/first-setup/index.html', 'subtitles/getting-started/install/index.html'):
+                        guide_links = LinkText((args.output / guide).read_text()).links
+                        self.assertIn(['https://github.com/Kinosail/kinosail/issues/new/choose', 'Open an issue'], guide_links)
                     check(args.output, prefix)
 
     def test_invalid_inputs_have_no_side_effects(self):

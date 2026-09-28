@@ -2,7 +2,7 @@
 title: Subtitle API workflows
 description: Use one-item fetches and bounded maintenance with visible results.
 section: Build with Subtitles
-last_reviewed: 2026-09-15
+last_reviewed: 2026-09-27
 ---
 
 # Subtitle API workflows
@@ -18,6 +18,10 @@ POST `{"language":"en","limit":10}` to `/api/v1/subtitle-library/fetch-wanted`. 
 ## Maintain coverage
 
 POST a bounded request to `/api/v1/subtitle-library/maintain` to use the same shared operation as automatic maintenance. It can add missing sidecars and safely upgrade eligible files. Preserve `.kinosail.bak` originals until replacements are checked.
+
+## Preview optional cleanup
+
+Call `/api/v1/subtitles/cleanup/preview` with explicit languages and a forced-track choice. Review the returned count and paths. Send the same policy and returned digest to `/api/v1/subtitles/cleanup` only after deciding to delete those files. Cleanup does not make recovery copies; back up sidecars first. A stale digest stops the request and requires another preview. See the [cleanup contract]({{ '/reference/api/#optional-subtitle-cleanup' | relative_url }}).
 
 ## Handle failure
 
