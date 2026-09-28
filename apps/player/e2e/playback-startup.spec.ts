@@ -62,7 +62,7 @@ test("selecting a movie starts moving playback promptly", async ({ page }, testI
 	}
 });
 
-test("blocked autoplay offers a Play button that starts the video", async ({ page }, testInfo) => {
+test("blocked autoplay leaves one Play control that starts the video", async ({ page }, testInfo) => {
 	await page.setViewportSize({ width: 390, height: 844 });
 	await page.addInitScript(() => {
 		Object.defineProperty(navigator, "userAgent", { configurable: true, value: "Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 Mobile/15E148" });
@@ -89,10 +89,12 @@ test("blocked autoplay offers a Play button that starts the video", async ({ pag
 	await page.goto("/?view=movies");
 	await page.getByRole("link", { name: /Example Movie/ }).click();
 	await page.getByRole("link", { name: /^(Play|Resume|Play again)$/ }).click();
-	await expect(page.getByRole("button", { name: "Play video" })).toBeVisible();
-	await page.screenshot({ path: testInfo.outputPath("390-start-prompt.png"), fullPage: true });
+	await expect(page.locator("[data-player-status]")).toBeHidden();
+	await expect(page.locator(".player-center-control[data-player-toggle]")).toBeVisible();
+	await expect(page.getByRole("button", { name: "Play video" })).toHaveCount(0);
+	await page.screenshot({ path: testInfo.outputPath("390-play-control.png"), fullPage: true });
 	await page.evaluate(() => (window as Window & { allowVideoPlay: () => void }).allowVideoPlay());
-	await page.getByRole("button", { name: "Play video" }).click();
+	await page.locator(".player-center-control[data-player-toggle]").click();
 	await expect.poll(() => page.locator("video").evaluate((video: HTMLVideoElement) => video.currentTime)).toBeGreaterThan(0.25);
 	await expect(page.locator("[data-player-status]")).toBeHidden();
 });

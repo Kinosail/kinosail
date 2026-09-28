@@ -3,7 +3,7 @@ import { readFileSync } from 'node:fs';
 import test from 'node:test';
 import vm from 'node:vm';
 
-function fixture(startControl = true) {
+function fixture(appleTouch = false) {
   const listeners = new Map(), timers = new Set();
   const classes = new Set(), attrs = new Map();
   const classList = {
@@ -21,16 +21,15 @@ function fixture(startControl = true) {
     removeAttribute: name => attrs.delete(name),
   };
   const player = {
-    currentTime: 12, duration: 120, paused: false, readyState: 0, dataset: {},
+    currentTime: 12, duration: 120, paused: false, readyState: 0, dataset: {}, currentSrc: '/movie',
     buffered: { length: 1, end: () => 24 },
     addEventListener(name, handler) { listeners.set(name, handler); },
   };
   const message = { textContent: '' };
-  const playerStart = startControl ? { hidden: true, addEventListener() {} } : null;
   const source = readFileSync(new URL('./static/player-status.js', import.meta.url), 'utf8');
   vm.runInNewContext(source, {
-    player, playerStatus: status, playerMessage: message, playerStart,
-    navigator: { userAgent: '', platform: '', maxTouchPoints: 0 },
+    player, playerStatus: status, playerMessage: message,
+    navigator: { userAgent: appleTouch ? 'iPhone' : '', platform: '', maxTouchPoints: 0 },
     bufferedProgress: { setAttribute() {} }, HTMLMediaElement: { HAVE_CURRENT_DATA: 2, HAVE_FUTURE_DATA: 3 },
     setTimeout(handler) { timers.add(handler); return handler; },
     clearTimeout(handler) { timers.delete(handler); },
@@ -81,22 +80,22 @@ test('pause and ended preserve a recovery action or an active seek message', () 
   assert.equal(f.status.hidden, false);
 });
 
-test('canplay keeps the gesture prompt until playback starts', () => {
+test('blocked autoplay and canplay keep the existing Play control available', () => {
   const f = fixture();
   f.player.paused = true;
   f.emit('kinosail:play-needs-gesture');
   f.emit('canplay');
-  assert.equal(f.status.dataset.state, 'start');
-  assert.equal(f.status.hidden, false);
+  assert.equal(f.status.hidden, true);
+  assert.equal(f.classes.has('is-busy'), false);
   f.player.paused = false;
   f.emit('playing');
   assert.equal(f.status.hidden, true);
 });
 
-test('shared players without a start control keep their loading state', () => {
-  const f = fixture(false);
+test('an iPhone startup delay exposes Play while media remains paused', () => {
+  const f = fixture(true);
   f.player.paused = true;
-  f.emit('kinosail:play-needs-gesture');
-  assert.equal(f.status.dataset.state, 'loading');
-  assert.equal(f.status.hidden, false);
+  f.flush();
+  assert.equal(f.status.hidden, true);
+  assert.equal(f.classes.has('is-busy'), false);
 });
