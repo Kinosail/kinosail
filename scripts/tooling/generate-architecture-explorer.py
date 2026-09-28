@@ -209,14 +209,19 @@ def main() -> None:
     template = TEMPLATE.read_text(encoding="utf-8")
     data = json.dumps(build_snapshot(), separators=(",", ":"))
     social = ""
-    if APP == "player":
-        url = "https://kinosail.com/architecture-explorer/"
-        image = "https://kinosail.com/assets/images/kinosail-docs-share.png"
-        description = "Explore Kinosail Player package dependencies, files, source symbols, and guided architecture journeys."
+    if APP in ("player", "subtitles"):
+        prefix = "/subtitles" if APP == "subtitles" else ""
+        product = "Subtitles" if APP == "subtitles" else "Player"
+        image_name = "kinosail-subtitles-docs-share.png" if APP == "subtitles" else "kinosail-docs-share.png"
+        tagline = "Find. Validate. Save." if APP == "subtitles" else "Install. Use. Connect."
+        mark = "mark" if APP == "subtitles" else "sail mark"
+        url = f"https://kinosail.com{prefix}/architecture-explorer/"
+        image = f"https://kinosail.com{prefix}/assets/images/{image_name}"
+        description = f"Explore Kinosail {product} package dependencies, files, source symbols, and guided architecture journeys."
         social = f"""
   <meta name="description" content="{description}">
   <link rel="canonical" href="{url}">
-  <meta property="og:title" content="Kinosail Code Atlas · Kinosail Player Docs">
+  <meta property="og:title" content="Kinosail Code Atlas · Kinosail {product} Docs">
   <meta property="og:description" content="{description}">
   <meta property="og:type" content="website">
   <meta property="og:url" content="{url}">
@@ -224,7 +229,7 @@ def main() -> None:
   <meta property="og:image:type" content="image/png">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
-  <meta property="og:image:alt" content="Kinosail Player Docs sail mark and the words Install. Use. Connect.">
+  <meta property="og:image:alt" content="Kinosail {product} Docs {mark} and the words {tagline}">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:image" content="{image}">"""
     output = (
