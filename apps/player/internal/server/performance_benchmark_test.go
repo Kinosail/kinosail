@@ -23,7 +23,7 @@ func TestLargeLibraryWebResponseIsBounded(t *testing.T) {
 	index := memoryLibraryIndex(items, true)
 	response := httptest.NewRecorder()
 	showHome(index, newProgressStore(""), newListStore(""), newSettingsStore("", "", "", nil), nil, false)(response, ownerRequest("/?view=movies"))
-	if cards := strings.Count(response.Body.String(), `/item/`); response.Code != 200 || cards != catalog.DefaultPageSize || response.Body.Len() > 27_000 || !strings.Contains(response.Body.String(), `offset=100`) {
+	if cards := strings.Count(response.Body.String(), `/watch/`); response.Code != 200 || cards != catalog.DefaultPageSize || response.Body.Len() > 27_000 || !strings.Contains(response.Body.String(), `offset=100`) {
 		t.Fatalf("large Library page = status %d, cards %d, bytes %d", response.Code, cards, response.Body.Len())
 	}
 }
@@ -34,12 +34,12 @@ func TestLargeLetterBucketRemainsBoundedAndPageable(t *testing.T) {
 	handler := showHome(index, newProgressStore(""), newListStore(""), newSettingsStore("", "", "", nil), nil, false)
 	response := httptest.NewRecorder()
 	handler(response, ownerRequest("/?view=movies&letter=M"))
-	if cards := strings.Count(response.Body.String(), `/item/`); response.Code != http.StatusOK || cards != catalog.DefaultPageSize || !strings.Contains(response.Body.String(), `letter=M&amp;limit=100&amp;offset=100`) {
+	if cards := strings.Count(response.Body.String(), `/watch/`); response.Code != http.StatusOK || cards != catalog.DefaultPageSize || !strings.Contains(response.Body.String(), `letter=M&amp;limit=100&amp;offset=100`) {
 		t.Fatalf("large letter page = status %d, cards %d, bytes %d", response.Code, cards, response.Body.Len())
 	}
 	next := httptest.NewRecorder()
 	handler(next, ownerRequest("/?view=movies&letter=M&limit=100&offset=100"))
-	if cards := strings.Count(next.Body.String(), `/item/`); next.Code != http.StatusOK || cards != catalog.DefaultPageSize {
+	if cards := strings.Count(next.Body.String(), `/watch/`); next.Code != http.StatusOK || cards != catalog.DefaultPageSize {
 		t.Fatalf("next letter page = status %d, cards %d", next.Code, cards)
 	}
 }

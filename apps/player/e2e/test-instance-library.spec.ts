@@ -102,13 +102,12 @@ test("media artwork keeps its intended ratio in the populated library", async ({
 	expect(photo!.height / photo!.width).toBeCloseTo(.75, 2);
 });
 
-test("mobile media detail heroes stack artwork for movies, shows, albums, and books", async ({ page }) => {
+test("mobile media detail heroes stack artwork for shows, albums, and books", async ({ page }) => {
 	await page.setViewportSize({ width: 390, height: 844 });
 	await login(page);
 
 	const routes: string[] = [];
 	for (const [view, selector] of [
-		["movies", 'a.card[href^="/item/"]'],
 		["shows", 'a.show-details[href^="/show/"]'],
 		["music", 'a.card[href^="/album/"]'],
 		["books", 'a.card[href^="/book/"]'],

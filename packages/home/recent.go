@@ -59,13 +59,7 @@ func recentFor(items []library.Item, artwork, showTitles map[string]string, kind
 	}
 	sort.SliceStable(selected, func(i, j int) bool { return selected[i].Added.After(selected[j].Added) })
 	selected = selected[:min(len(selected), recentItemLimit)]
-	cards := episodeShelf(selected, artwork, showTitles, "plus", "recently added episodes stacked")
-	if kind == "movie" {
-		for index := range cards {
-			cards[index].Href = "/item/" + selected[index].ID
-		}
-	}
-	return cards
+	return episodeShelf(selected, artwork, showTitles, "plus", "recently added episodes stacked")
 }
 
 func homeKind(item library.Item, kind string) bool {
@@ -103,7 +97,6 @@ func MovieGenres(items []library.Item, artwork map[string]string) []MovieGenre {
 		cards := make([]ShelfItem, 0, min(len(movies), recentItemLimit))
 		for _, movie := range movies[:min(len(movies), recentItemLimit)] {
 			card := singleItem(movie, artwork, nil, "play")
-			card.Href = "/item/" + movie.ID
 			cards = append(cards, card)
 		}
 		genres = append(genres, MovieGenre{Name: name, Items: cards})

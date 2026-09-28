@@ -42,7 +42,7 @@ func TestCompactHomeKeepsFeaturedResumeOutOfShelf(t *testing.T) {
 				return response.Body.String()
 			}
 			seen := map[string]bool{}
-			for _, match := range regexp.MustCompile(`/item/([a-f0-9]+)`).FindAllStringSubmatch(get(), -1) {
+			for _, match := range regexp.MustCompile(`/watch/([a-f0-9]+)`).FindAllStringSubmatch(get(), -1) {
 				id := match[1]
 				if seen[id] {
 					continue
@@ -63,7 +63,7 @@ func TestCompactHomeKeepsFeaturedResumeOutOfShelf(t *testing.T) {
 				t.Fatal("missing featured resume")
 			}
 			id := match[1]
-			for _, fragment := range []string{`href="/watch/` + id + `"`, `href="/item/` + id + `"`, `action="/continue-watching/` + id + `/remove"`, `data-watch-progress="` + id + `"`, "Resume at 1m"} {
+			for _, fragment := range []string{`href="/watch/` + id + `"`, `action="/continue-watching/` + id + `/remove"`, `data-watch-progress="` + id + `"`, "Resume at 1m"} {
 				if !strings.Contains(feature, fragment) {
 					t.Errorf("feature missing %s", fragment)
 				}
