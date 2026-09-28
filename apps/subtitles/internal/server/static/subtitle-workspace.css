@@ -13,6 +13,7 @@
 .subtitle-dashboard .subtitle-header-settings{grid-area:actions;display:flex;align-items:center;gap:.4rem;margin:0;padding:0;border:0;white-space:nowrap}
 .subtitle-dashboard .header-link{min-height:44px;padding:.6rem 1rem;border:1px solid var(--line);border-radius:10px;white-space:nowrap}
 .subtitle-dashboard .header-supporter{border:0;gap:.25rem}
+@media(min-width:901px) and (max-width:1100px){.subtitle-dashboard .subtitle-brand-name{display:none}.subtitle-dashboard .app-header nav a{padding-inline:.65rem}}
 @media(min-width:1101px){
   .subtitle-dashboard{padding-left:15rem}
   .subtitle-dashboard>.app-header{grid-template:"brand actions" auto/minmax(0,1fr) auto;height:5rem;min-height:5rem;margin-left:-15rem;width:calc(100% + 15rem);padding:.45rem clamp(1.5rem,3vw,3rem);background:var(--shell)}
