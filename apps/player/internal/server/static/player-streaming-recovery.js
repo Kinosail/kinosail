@@ -66,11 +66,11 @@ player.addEventListener("canplay", showReadyPlaybackMode);
 player.addEventListener("playing", showReadyPlaybackMode);
 let bufferingRecoveryTimer, bufferingPosition, bufferingRecoveryGeneration, bufferingRecoveryHls, bufferingRecoverySource, bufferingRetryAt = -Infinity;
 const clearBufferingRecovery = () => { clearTimeout(bufferingRecoveryTimer); bufferingRecoveryTimer = undefined; };
-const retryStalledPlayback = () => {
+const retryStalledPlayback = (position = player.currentTime) => {
   clearRecovery();
-  if (!adaptiveActive) return useOriginal(true, player.currentTime);
-  if (hls) return useAdaptive(playerStorage.get(qualityPreference) || "auto", true, player.currentTime);
-  resumeAfterSourceChange(true, true, player.currentTime);
+  if (!adaptiveActive) return useOriginal(true, position);
+  if (hls) return useAdaptive(playerStorage.get(qualityPreference) || "auto", true, position);
+  resumeAfterSourceChange(true, true, position);
   player.load();
 };
 const watchBuffering = (position = player.currentTime) => {
@@ -150,8 +150,20 @@ const scheduleNetworkRetry = (retry, manual) => {
   networkRetryAction = action;
   if (networkRetryCount >= 3 || !networkWantsPlay) return showFailure("Connection interrupted. Your position is retained.", "Retry playback", action);
   const delay = 1000 * 2 ** networkRetryCount++ + Math.random() * 500;
-  const status = document.querySelector("[data-player-message]");
-  if (status) status.textContent = "Connection interrupted. Reconnecting…";
+  queueMicrotask(() => {
+    if (networkRetryTimer === undefined) return;
+    const state = document.querySelector("[data-player-status]");
+    if (state) {
+      state.hidden = false;
+      state.dataset.state = "loading";
+      state.setAttribute("aria-busy", "true");
+      state.querySelector(".buffer-skeleton")?.removeAttribute("hidden");
+      state.querySelector("[data-buffered]")?.setAttribute("hidden", "");
+      state.closest(".media-stage")?.classList.add("is-busy");
+    }
+    const message = document.querySelector("[data-player-message]");
+    if (message) message.textContent = "Connection interrupted. Reconnecting…";
+  });
   networkRetryTimer = setTimeout(() => {
     networkRetryTimer = undefined;
     if (destroyed || generation !== adaptiveGeneration || player.dataset.offline === "true" || (player.currentSrc || player.src) !== source || !networkWantsPlay) return;
@@ -179,8 +191,10 @@ const directIsReachable = async () => {
 const recoverDirectFailure = async (code = player.error?.code || 0, verifySource = true) => {
   if (destroyed || player.dataset.offline === "true") return;
   if (adaptiveActive) {
-    if (!hls && code === MediaError.MEDIA_ERR_NETWORK) scheduleNetworkRetry(() => { resumeAfterSourceChange(networkWantsPlay, true, networkPosition); player.load(); });
-    return;
+    if (code === MediaError.MEDIA_ERR_ABORTED) return;
+    if (code === MediaError.MEDIA_ERR_NETWORK) return scheduleNetworkRetry(() => retryStalledPlayback(networkPosition));
+    if (hls && code === MediaError.MEDIA_ERR_DECODE && mediaRecoveries++ < 1) return hls.recoverMediaError();
+    return showFailure("Playback interrupted. Your position is saved.", "Retry playback", () => retryStalledPlayback(networkPosition));
   }
   const generation = adaptiveGeneration;
   const failedSource = player.currentSrc || player.src;
