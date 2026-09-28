@@ -12,7 +12,7 @@ export async function startDirectPlayer(page: Page, options: { preloadHls?: bool
       <small data-playback-reason></small>
       <div data-quality-control hidden><select data-quality></select><span data-quality-state></span></div>
       <div data-playback-recovery hidden><span data-playback-recovery-message></span><button type="button" data-player-fallback></button></div>
-      <div data-player-status hidden><span data-player-message></span><button type="button" data-player-fallback hidden></button></div>
+      <div data-player-status hidden><span class="buffer-skeleton"></span><span data-player-message></span><button type="button" data-player-fallback hidden></button><progress data-buffered hidden></progress></div>
       <span data-playback-method-detail></span>
     </div></body>
   ` }));
@@ -28,7 +28,7 @@ export async function startDirectPlayer(page: Page, options: { preloadHls?: bool
       duration: { value: 120 },
       paused: { value: false },
       load: { value() { const state = window as Window & { directLoads?: number }; state.directLoads = (state.directLoads || 0) + 1; } },
-      play: { value: async () => {} },
+      play: { value: async () => { const state = window as Window & { playAttempts?: number }; state.playAttempts = (state.playAttempts || 0) + 1; } },
     });
     class FakeHls {
       static Events = { MANIFEST_PARSED: "manifest", LEVEL_SWITCHED: "switched", ERROR: "error" };

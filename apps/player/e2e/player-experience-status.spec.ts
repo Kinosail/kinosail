@@ -121,16 +121,47 @@ test("does not obstruct playable video when the network stalls", async ({ page }
 });
 
 test("clears a transient buffering signal when playback advances", async ({ page }) => {
+  await page.clock.install();
   const video = page.locator("video");
   const status = page.locator("[data-player-status]");
   await video.evaluate((element) => element.play());
   await video.dispatchEvent("waiting");
   await video.evaluate((element) => { element.currentTime += 1; });
   await video.dispatchEvent("timeupdate");
-  await page.waitForTimeout(600);
+  await page.clock.runFor(600);
   await video.dispatchEvent("stalled");
   await expect(status).toBeHidden();
   await expect(page.locator(".media-stage")).not.toHaveClass(/is-busy/);
+  await page.clock.fastForward(25_000);
+  await expect(status).toBeHidden();
+  await expect(status.locator("[data-player-fallback]")).toBeHidden();
+});
+
+test("a stream that never advances offers a retry and clears it on recovery", async ({ page }, testInfo) => {
+  await page.addStyleTag({ content: await readFile("../../../packages/webassets/static/player-app.css", "utf8") });
+  await page.addStyleTag({ content: await readFile("../../../packages/webassets/static/player-stage.css", "utf8") });
+  await page.clock.install();
+  const video = page.locator("video");
+  const status = page.locator("[data-player-status]");
+  await video.evaluate((element) => element.play());
+  await video.dispatchEvent("waiting");
+  await page.clock.runFor(600);
+  await expect(status).toContainText("Buffering · 60% buffered");
+  await page.clock.fastForward(12_100);
+  await expect(status.locator("[data-player-fallback]")).toBeHidden();
+  await page.clock.fastForward(12_100);
+  await expect(status).toContainText("Playback has not advanced");
+  await expect(status.locator("[data-player-fallback]")).toHaveText("Retry playback");
+  await expect(status).toHaveAttribute("aria-busy", "false");
+  await expect(page.locator(".media-stage")).not.toHaveClass(/is-busy/);
+  for (const viewport of [{ width: 390, height: 844 }, { width: 1440, height: 900 }]) {
+    await page.setViewportSize(viewport);
+    await page.screenshot({ path: testInfo.outputPath(`${viewport.width}-stalled-recovery.png`) });
+  }
+  await video.dispatchEvent("playing");
+  await expect(status).toBeHidden();
+  await page.clock.fastForward(15_000);
+  await expect(status).toBeHidden();
 });
 
 test("does not call a fully buffered video buffering", async ({ page }) => {
