@@ -21,7 +21,7 @@ POST a bounded request to `/api/v1/subtitle-library/maintain` to use the same sh
 
 ## Preview optional cleanup
 
-Call `/api/v1/subtitles/cleanup/preview` with explicit languages and a forced-track choice. Review the returned count and paths. Send the same policy and returned digest to `/api/v1/subtitles/cleanup` only after deciding to delete those files. Cleanup does not make recovery copies; back up sidecars first. A stale digest stops the request and requires another preview. See the [cleanup contract]({{ '/reference/api/#optional-subtitle-cleanup' | relative_url }}).
+Call `/api/v1/subtitles/cleanup/preview` with explicit languages and a `keep` or `hide` forced-track choice. Review the returned count and paths. Send the same policy and returned digest to `/api/v1/subtitles/cleanup` only after deciding to hide those files. Hidden files retain their contents with a `.hidden` suffix; remove it to restore a file. A stale digest stops the request and requires another preview. See the [cleanup contract]({{ '/reference/api/#optional-subtitle-cleanup' | relative_url }}).
 
 ## Handle failure
 
