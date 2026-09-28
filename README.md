@@ -7,11 +7,10 @@ Kinosail Player turns the folders you already own into a personal library for mo
 **[Install Player](https://kinosail.com/quickstart/)** · **[Explore the website](https://kinosail.com/)** · **[Read the docs](https://kinosail.com/docs/)** · **[Install on a NAS or Proxmox](https://kinosail.com/getting-started/platforms/)**
 
 <p align="center">
-  <a href=".github/assets/player-home-desktop.webp"><img src=".github/assets/player-home-desktop.webp" width="690" alt="Kinosail web Player on desktop, with a featured fictional film and a row of four original movie posters"></a>
-  <a href=".github/assets/player-home-mobile.webp"><img src=".github/assets/player-home-mobile.webp" width="180" alt="Kinosail web Player on a phone, with search, a featured film, and bottom navigation"></a>
+  <a href=".github/assets/player-home-desktop.webp"><img src=".github/assets/player-home-desktop.webp" width="850" alt="Kinosail web Player on desktop, with a featured fictional film and a row of four original movie posters"></a>
 </p>
 
-<p align="center"><em>The real web Player running in Podman with fictional films and original demo artwork. <a href="engineering/documentation/DEMO-ASSETS.md">How these screenshots were made</a>.</em></p>
+<p align="center"><em>The real web Player running in Podman with fictional films and original demo artwork. <a href=".github/assets/player-home-mobile.webp">View the phone screen</a> · <a href="engineering/documentation/DEMO-ASSETS.md">Screenshot provenance</a>.</em></p>
 
 ### Made for the whole collection
 
