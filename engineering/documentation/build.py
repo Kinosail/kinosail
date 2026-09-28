@@ -47,6 +47,7 @@ def build(args):
         install_assets.mkdir(parents=True, exist_ok=True)
         for app in ('player', 'subtitles'):
             shutil.copyfile(ROOT / 'apps' / app / 'packaging/platform-compose.yaml', install_assets / f'{app}.yaml')
+        shutil.copyfile(ROOT / 'apps/player/packaging/platform-compose-both.yaml', install_assets / 'both.yaml')
         fonts = source / 'assets/fonts'
         fonts.mkdir(parents=True, exist_ok=True)
         shutil.copyfile(ROOT / 'packages/webassets/static/fonts/manrope.woff2', fonts / 'manrope.woff2')

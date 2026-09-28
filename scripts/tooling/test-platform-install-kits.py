@@ -40,14 +40,49 @@ class PlatformInstallKitsTest(unittest.TestCase):
     def test_missing_media_path_rejects_before_deployment(self):
         env = os.environ.copy()
         env.pop("KINOSAIL_MEDIA_PATH", None)
-        for app in ("player", "subtitles"):
+        for app in ("player", "subtitles", "both"):
             with self.subTest(app=app):
-                path = ROOT / "apps" / app / "packaging" / "platform-compose.yaml"
+                path = ROOT / "apps" / ("player" if app == "both" else app) / "packaging" / f"platform-compose{'-both' if app == 'both' else ''}.yaml"
                 result = subprocess.run(
                     [*compose_command(), "-f", str(path), "config", "--quiet"],
                     capture_output=True, text=True, check=False, timeout=30, env=env,
                 )
                 self.assertNotEqual(result.returncode, 0)
+
+    def test_both_compose_keeps_each_app_contract(self):
+        path = ROOT / "apps/player/packaging/platform-compose-both.yaml"
+        result = subprocess.run(
+            [*compose_command(), "-f", str(path), "config", "--format", "json"],
+            capture_output=True, text=True, check=True, timeout=30,
+            env=os.environ | {"KINOSAIL_MEDIA_PATH": str(ROOT / "apps/player/packaging")},
+        )
+        config = json.loads(result.stdout)
+        self.assertEqual(config["name"], "kinosail-both")
+        self.assertEqual(set(config["services"]), {"player", "subtitles"})
+        self.assertEqual(len(config["volumes"]), 6)
+        for app, port, read_only in (("player", 38127, True), ("subtitles", 38128, False)):
+            service = config["services"][app]
+            standalone = self.compose(app)
+            self.assertEqual(service["image"], f"ghcr.io/kinosail/kinosail-{app}:latest")
+            self.assertEqual(service["user"], "10001:10001")
+            self.assertTrue(service["read_only"])
+            self.assertTrue(service["init"])
+            self.assertEqual(service["restart"], "unless-stopped")
+            self.assertEqual(service["pids_limit"], 256)
+            self.assertEqual(service["cap_drop"], ["ALL"])
+            self.assertIn("no-new-privileges:true", service["security_opt"])
+            self.assertEqual(service["healthcheck"], standalone["healthcheck"])
+            self.assertEqual(service["environment"], standalone["environment"])
+            self.assertEqual(service["tmpfs"], standalone["tmpfs"])
+            self.assertEqual(service["ports"][0]["target"], port)
+            self.assertEqual(service["ports"][0]["published"], str(port))
+            mounts = {volume["target"]: volume for volume in service["volumes"]}
+            self.assertEqual(set(mounts), {"/config", "/cache", "/backups", "/media"})
+            self.assertEqual(mounts["/media"]["source"], str(ROOT / "apps/player/packaging"))
+            self.assertEqual(mounts["/media"].get("read_only", False), read_only)
+            self.assertFalse(mounts["/media"].get("bind", {}).get("create_host_path", False))
+            for target, name in (("/config", "config"), ("/cache", "cache"), ("/backups", "backups")):
+                self.assertTrue(mounts[target]["source"].endswith(f"{app}-{name}"))
 
     def test_compose_imports_keep_media_and_state_separate(self):
         for app, port, access in (("player", 38127, True), ("subtitles", 38128, False)):

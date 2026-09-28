@@ -6,6 +6,9 @@
   const app = field('app');
   const media = field('media');
   const port = field('port');
+  const portLabel = field('port-label');
+  const subtitlesPort = field('subtitles-port');
+  const subtitlesPortField = field('subtitles-port-field');
   const create = field('create');
   const error = field('error');
   const result = field('result');
@@ -13,7 +16,7 @@
   const download = field('download');
   const copy = field('copy');
   const status = field('status');
-  const specs = { player: { port: 38127 }, subtitles: { port: 38128 } };
+  const specs = { player: { port: 38127 }, subtitles: { port: 38128 }, both: { port: 38127 } };
   let file = '';
   let fileUrl = '';
   let revision = 0;
@@ -42,17 +45,22 @@
     return value.split(marker).length === 2;
   }
 
+  function validPort(value) {
+    return /^[1-9][0-9]{0,4}$/.test(value) && Number(value) >= 1024 && Number(value) <= 65535;
+  }
+
   async function makeFile() {
     clear();
     const choice = app.value;
-    if (!Object.hasOwn(specs, choice)) return fail('Choose Player or Subtitles.');
+    if (!Object.hasOwn(specs, choice)) return fail('Choose Player, Subtitles, or Both.');
     const path = media.value;
     if (path.length > 4096 || path !== path.trim() || path === '/' || !path.startsWith('/') || path.split('/').some(part => part === '.' || part === '..') || /[\u0000-\u001f\u007f-\u009f$]/u.test(path)) {
       return fail('Enter an absolute media path on the server. Do not use . or .. in the path.');
     }
     const hostPort = port.value.trim();
-    if (!/^[1-9][0-9]{0,4}$/.test(hostPort) || Number(hostPort) < 1024 || Number(hostPort) > 65535) {
-      return fail('Enter an unused host port from 1024 to 65535.');
+    const secondPort = subtitlesPort.value.trim();
+    if (!validPort(hostPort) || (choice === 'both' && (!validPort(secondPort) || hostPort === secondPort))) {
+      return fail(choice === 'both' ? 'Enter two different host ports from 1024 to 65535.' : 'Enter an unused host port from 1024 to 65535.');
     }
     const source = builder.dataset[`${choice}Template`];
     const address = new URL(source, location.href);
@@ -71,16 +79,25 @@
       if (current !== revision) return;
       const mediaMarker = 'source: "${KINOSAIL_MEDIA_PATH:?Set an existing absolute media path}"';
       const portMarker = `- "${specs[choice].port}:${specs[choice].port}"`;
-      if (template.length > 16384 || !once(template, mediaMarker) || !once(template, portMarker) ||
+      const both = choice === 'both';
+      const secondPortMarker = '- "38128:38128"';
+      if (template.length > 16384 || template.split(mediaMarker).length !== (both ? 3 : 2) || !once(template, portMarker) ||
           !once(template, `name: kinosail-${choice}`) ||
-          !once(template, `image: ghcr.io/kinosail/kinosail-${choice}:latest`) ||
-          !once(template, 'user: "10001:10001"') || !once(template, 'target: /media') ||
-          !once(template, 'create_host_path: false') ||
-          !template.includes(`read_only: ${choice === 'player' ? 'true' : 'false'}\n        bind:`)) {
+          (both ? !once(template, 'image: ghcr.io/kinosail/kinosail-player:latest') ||
+            !once(template, 'image: ghcr.io/kinosail/kinosail-subtitles:latest') ||
+            !once(template, secondPortMarker) ||
+            !template.includes('read_only: true\n        bind:') ||
+            !template.includes('read_only: false\n        bind:') :
+            !once(template, `image: ghcr.io/kinosail/kinosail-${choice}:latest`) ||
+            !template.includes(`read_only: ${choice === 'player' ? 'true' : 'false'}\n        bind:`)) ||
+          template.split('user: "10001:10001"').length !== (both ? 3 : 2) ||
+          template.split('target: /media').length !== (both ? 3 : 2) ||
+          template.split('create_host_path: false').length !== (both ? 3 : 2)) {
         throw new Error('Unexpected template');
       }
-      file = template.replace(mediaMarker, `source: ${JSON.stringify(path)}`)
-        .replace(portMarker, `- "${hostPort}:${specs[choice].port}"`);
+      file = template.replaceAll(mediaMarker, `source: ${JSON.stringify(path)}`)
+        .replace(portMarker, `- "${hostPort}:${specs[choice].port}"`)
+        .replace(secondPortMarker, both ? `- "${secondPort}:38128"` : secondPortMarker);
       fileUrl = URL.createObjectURL(new Blob([file], { type: 'application/yaml;charset=utf-8' }));
       download.href = fileUrl;
       download.download = `kinosail-${choice}-compose.yaml`;
@@ -99,10 +116,14 @@
 
   app.addEventListener('change', () => {
     port.value = specs[app.value]?.port ?? '';
+    subtitlesPort.value = '38128';
+    subtitlesPortField.hidden = app.value !== 'both';
+    portLabel.textContent = app.value === 'both' ? 'Player HTTPS port on the server' : 'HTTPS port on the server';
     clear();
   });
   media.addEventListener('input', clear);
   port.addEventListener('input', clear);
+  subtitlesPort.addEventListener('input', clear);
   create.addEventListener('click', makeFile);
   copy.addEventListener('click', async () => {
     if (!file) return;
