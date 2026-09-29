@@ -2,8 +2,8 @@ package server
 
 import "net/http"
 
-const subtitleInspectorHTML = `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#0b0d0b"><title>{{.Review.Title}} · Subtitle inspector</title><script src="/static/theme.js?v=electric-1"></script><link rel="stylesheet" href="/static/app.css?v=electric-1"><link rel="stylesheet" href="/static/subtitle-inspector.css?v=2"><script src="/static/subtitle-inspector.js?v=5" defer></script></head>
-<body class="library-page subtitle-app"><a class="skip" href="#main">Skip to content</a><header class="app-header"><a class="brand-lockup" href="/"><img class="brand-icon" src="/static/icon.svg?v=11" alt=""><h1>Kinosail Subtitles</h1></a><nav aria-label="Main navigation"><a href="/">Overview</a><a href="/?view=wanted">Wanted</a><a href="/?view=library" class="active">Library</a></nav><div class="header-actions"><a class="header-link" href="/settings">Settings</a></div></header>
+const subtitleInspectorHTML = `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#0b0d0b"><title>{{.Review.Title}} · Subtitle inspector</title><script src="/static/theme.js?v=electric-1"></script><link rel="stylesheet" href="/static/app.css?v=` + applicationCSSVersion + `"><link rel="stylesheet" href="/static/subtitle-inspector.css?v=3"><script src="/static/subtitle-inspector.js?v=5" defer></script></head>
+<body class="library-page subtitle-app subtitle-dashboard"><a class="skip" href="#main">Skip to content</a>` + subtitleAppHeader + `
 <main id="main" class="subtitle-main subtitle-inspector" data-id="{{.Review.ID}}" data-language="{{.Review.Language}}" tabindex="-1"><header class="subtitle-topbar"><div><a href="/?view=library">Back to library</a><h1>{{.Review.Title}}</h1><p>Subtitle inspector · {{.Review.Language}}</p></div></header>
 <p id="inspector-status" role="status" aria-live="polite">Loading subtitle details…</p><noscript><p>Interactive previews need JavaScript. You can export installed subtitles below or use the subtitle API.</p></noscript>
 <div class="subtitle-inspector-workspace"><section aria-labelledby="preview-title"><h2 id="preview-title">Video preview</h2><video id="subtitle-preview-video" controls preload="metadata" playsinline src="/media/{{.Review.ID}}" aria-label="Video with subtitle preview"></video><p id="video-help">Choose a cue below to hear it in context. If this format cannot play here, <a href="/watch/{{.Review.ID}}">open the compatible player</a>.</p><fieldset class="subtitle-preview-choice"><legend>Preview track</legend><label><input type="radio" name="preview-track" value="current" checked> Current</label><label><input type="radio" name="preview-track" value="proposed" disabled> Proposed</label></fieldset><section aria-labelledby="quality-title"><h2 id="quality-title">Quality findings</h2><div id="subtitle-quality" class="subtitle-quality"></div><ul id="subtitle-warnings"></ul></section><section aria-labelledby="speech-title"><h2 id="speech-title">Audio reference</h2><p>Analyze the audio on this Server to see where dialogue occurs throughout the video.</p><button type="button" id="analyze-speech" class="quiet">Analyze audio</button><canvas id="subtitle-waveform" height="100" aria-label="Audio waveform and dialogue activity" role="img" hidden></canvas><p id="speech-summary" role="status" aria-live="polite"></p></section></section>
@@ -25,10 +25,11 @@ func (manager *subtitleManager) subtitleInspectorWeb(writer http.ResponseWriter,
 	}
 	_, _, languages := subtitleLanguageViews([]string{language})
 	data := struct {
+		applicationNavigationData
 		Review    subtitleReview
 		Languages []subtitleLanguageOption
 		Encodings []string
-	}{review, languages, subtitleEncodings}
+	}{applicationNavigationData{ServerName: manager.settings.serverName(), Owner: currentViewer(request).Owner, View: "library"}, review, languages, subtitleEncodings}
 	writer.Header().Set("Content-Type", "text/html; charset=utf-8")
 	if err = subtitleInspectorView.Execute(writer, request, data); err != nil {
 		localizedError(writer, request, "subtitle inspector is unavailable", http.StatusInternalServerError)
