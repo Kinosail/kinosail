@@ -11,7 +11,7 @@ export function registerSubtitleDefaultTests() {
     expect(item?.id).toBeTruthy();
     const base = `/api/v1/subtitle-library/${item.id}`;
     const media = process.env.KINOSAIL_E2E_MEDIA_DIR ?? join(process.env.KINOSAIL_TEST_ROOT!, "media", "Movies");
-    const path = join(media, item.title === "Arrival" ? "Arrival.en.srt" : "Example Movie.vtt");
+    const path = join(media, process.env.KINOSAIL_E2E_MEDIA_DIR ? "Arrival.en.srt" : "Example Movie.vtt");
     const original = await readFile(path);
     const capture = async (state: string) => {
       for (const viewport of [{ width: 390, height: 844 }, { width: 1440, height: 900 }]) {
