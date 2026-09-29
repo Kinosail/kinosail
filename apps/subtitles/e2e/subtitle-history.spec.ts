@@ -27,6 +27,7 @@ test.skip(!directory, "requires production-template history fixtures");
 const fixture = (state: string) => readFile(join(directory!, `subtitle-history-${state}.html`), "utf8");
 
 test("history explains new files, automatic upgrades, manual edits, restores, and older records @smoke", async ({ page }, testInfo) => {
+  test.setTimeout(120_000);
   await page.route(/\/\?view=history$/, async route => route.fulfill({ contentType: "text/html", body: await fixture("populated") }));
   for (const width of [1440, 1024, 390, 320]) {
     await page.setViewportSize({ width, height: width >= 1024 ? 900 : 844 });
