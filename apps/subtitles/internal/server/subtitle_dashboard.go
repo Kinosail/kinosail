@@ -43,6 +43,10 @@ type subtitleDashboardItem struct {
 }
 
 type subtitleHistoryView struct {
+	subtitleHistoryEvidence
+	ActionLabel string `json:"actionLabel"`
+	Explanation string `json:"explanation"`
+	Match       string `json:"match,omitempty"`
 	ID          string `json:"id"`
 	Action      string `json:"action"`
 	Title       string `json:"title"`

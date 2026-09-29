@@ -33,7 +33,7 @@ func TestSubtitleAppShowsCoverageAndWantedFiles(t *testing.T) { //nolint:cyclop 
 	if overview.Code != http.StatusOK || !strings.Contains(overview.Body.String(), "50%") || !strings.Contains(overview.Body.String(), "file needs") || !strings.Contains(overview.Body.String(), "Arrival") || strings.Contains(overview.Body.String(), "soundtrack") {
 		t.Fatalf("overview = %d %q", overview.Code, overview.Body.String())
 	}
-	for _, expected := range []string{`class="library-page subtitle-app subtitle-dashboard"`, `class="app-header"`, `class="brand-lockup"`, `class="web-beta-badge">Beta`, `href="/supporter" aria-label="Support Kinosail"`, `href="/?view=summary"`, `aria-current="page"`, `/static/app.css?v=cinema-9`} {
+	for _, expected := range []string{`class="library-page subtitle-app subtitle-dashboard"`, `class="app-header"`, `class="brand-lockup"`, `class="web-beta-badge">Beta`, `href="/supporter" aria-label="Support Kinosail"`, `href="/?view=summary"`, `aria-current="page"`, `/static/app.css?v=cinema-10`} {
 		if !strings.Contains(overview.Body.String(), expected) {
 			t.Fatalf("overview shell missing %q: %q", expected, overview.Body.String())
 		}
@@ -181,7 +181,7 @@ func TestSubtitleAppUsesKinosailSisterSetupAndFocusedSettings(t *testing.T) { //
 	start := requestApp(t, handler, http.MethodGet, "/onboarding", "")
 	onboarding := requestApp(t, handler, http.MethodGet, "/onboarding/connection", "")
 	setupBody := setup.Body.String()
-	if setup.Code != http.StatusOK || !strings.Contains(setupBody, "Kinosail Subtitles") || !strings.Contains(setupBody, "choose subtitle settings") || !strings.Contains(setupBody, "Create the Owner account first.") || !strings.Contains(setupBody, `/static/app.css?v=cinema-9`) || !strings.Contains(setupBody, `class="language-picker"`) || strings.Index(setupBody, `class="language-picker"`) > strings.Index(setupBody, `class="wizard-stage"`) {
+	if setup.Code != http.StatusOK || !strings.Contains(setupBody, "Kinosail Subtitles") || !strings.Contains(setupBody, "choose subtitle settings") || !strings.Contains(setupBody, "Create the Owner account first.") || !strings.Contains(setupBody, `/static/app.css?v=cinema-10`) || !strings.Contains(setupBody, `class="language-picker"`) || strings.Index(setupBody, `class="language-picker"`) > strings.Index(setupBody, `class="wizard-stage"`) {
 		t.Fatalf("setup = %d %q", setup.Code, setup.Body.String())
 	}
 	if settings.Code != http.StatusOK {
@@ -212,7 +212,7 @@ func assertResponseContains(t *testing.T, name string, response *httptest.Respon
 	}
 }
 
-func TestSubtitleAppWritesValidatedSidecarBesideVideo(t *testing.T) { //nolint:cyclop // The provider request, sidecar write, conflict, and refreshed projection form one vertical slice.
+func TestSubtitleAppWritesValidatedSidecarBesideVideo(t *testing.T) { //nolint:cyclop,gocognit // The provider request, sidecar write, conflict, and refreshed projection form one vertical slice.
 	t.Parallel()
 	var searches atomic.Int32
 	provider := httptest.NewServer(http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
@@ -253,7 +253,7 @@ func TestSubtitleAppWritesValidatedSidecarBesideVideo(t *testing.T) { //nolint:c
 		t.Fatalf("subtitle history = %d %q", history.Code, history.Body.String())
 	}
 	apiHistory := requestApp(t, handler, http.MethodGet, "/api/v1/subtitle-library?view=history", "")
-	if apiHistory.Code != http.StatusOK || !strings.Contains(apiHistory.Body.String(), `"source":"subdl"`) || !strings.Contains(apiHistory.Body.String(), `"action":"added"`) || !strings.Contains(apiHistory.Body.String(), `"language":"en"`) || !strings.Contains(apiHistory.Body.String(), `"matched":1`) {
+	if apiHistory.Code != http.StatusOK || !strings.Contains(apiHistory.Body.String(), `"source":"subdl"`) || !strings.Contains(apiHistory.Body.String(), `"action":"added"`) || !strings.Contains(apiHistory.Body.String(), `"language":"en"`) || !strings.Contains(apiHistory.Body.String(), `"matched":1`) || !strings.Contains(apiHistory.Body.String(), `"reason":"missing"`) || !strings.Contains(apiHistory.Body.String(), `"score":60`) {
 		t.Fatalf("subtitle history API = %d %q", apiHistory.Code, apiHistory.Body.String())
 	}
 
@@ -263,7 +263,7 @@ func TestSubtitleAppWritesValidatedSidecarBesideVideo(t *testing.T) { //nolint:c
 	}
 	restarted := server.New(server.Config{SubtitleApp: true, MediaDir: media, DataDir: dataDir, CacheDir: t.TempDir(), Subtitles: server.SubtitleConfig{URL: provider.URL, APIKey: "key"}})
 	apiHistory = requestApp(t, restarted, http.MethodGet, "/api/v1/subtitle-library?view=history", "")
-	if apiHistory.Code != http.StatusOK || !strings.Contains(apiHistory.Body.String(), `"matched":1`) {
+	if apiHistory.Code != http.StatusOK || !strings.Contains(apiHistory.Body.String(), `"matched":1`) || !strings.Contains(apiHistory.Body.String(), `"reason":"missing"`) || !strings.Contains(apiHistory.Body.String(), `"score":60`) {
 		t.Fatalf("restarted subtitle history = %d %q", apiHistory.Code, apiHistory.Body.String())
 	}
 	refreshed := requestApp(t, handler, http.MethodGet, "/?view=library", "")
