@@ -13,7 +13,7 @@ func TestWriteUIStateFixturesSubtitleInspector(t *testing.T) { //nolint:parallel
 	if dir == "" {
 		t.Skip("KINOSAIL_UI_FIXTURE_DIR is not set")
 	}
-	if err := os.MkdirAll(dir, 0o700); err != nil {
+	if err := os.MkdirAll(dir, 0o700); err != nil { //nolint:gosec // The caller explicitly supplies this test-artifact directory, as in TestWriteUIStateFixtures.
 		t.Fatal(err)
 	}
 	handler, base, _ := subtitleInspectorFixture(t, "1\n00:00:01,000 --> 00:00:03,000\nHello world.\n\n2\n00:00:04,000 --> 00:00:06,000\nA second line.\n")
