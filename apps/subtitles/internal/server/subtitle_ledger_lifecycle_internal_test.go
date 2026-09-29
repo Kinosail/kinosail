@@ -71,7 +71,7 @@ func TestSubtitleLedgerRejectsInvalidStateAndRollsBackFailedWrites(t *testing.T)
 	}
 	record.InstalledAt = time.Now().Unix()
 	for _, action := range []string{"", "changed", "added"} {
-		if err := blocked.storeHistory("0123456789abcdef:en", record, action); err == nil || len(blocked.state.History) != 0 || blocked.state.Records["0123456789abcdef:en"].InstalledAt != 0 {
+		if err := blocked.storeHistory("0123456789abcdef:en", record, action, "manual"); err == nil || len(blocked.state.History) != 0 || blocked.state.Records["0123456789abcdef:en"].InstalledAt != 0 {
 			t.Fatalf("failed history write changed memory: %q, %#v", action, blocked.state)
 		}
 	}

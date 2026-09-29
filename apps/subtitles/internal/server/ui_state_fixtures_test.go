@@ -47,6 +47,7 @@ func TestWriteUIStateFixtures(t *testing.T) { //nolint:paralleltest,funlen // Th
 	if err := os.MkdirAll(dir, 0o700); err != nil { //nolint:gosec // The caller explicitly supplies this test-artifact directory.
 		t.Fatal(err)
 	}
+	writeSubtitleHistoryUIFixtures(t, dir)
 	request := httptest.NewRequestWithContext(t.Context(), "GET", "https://kinosail.test/", nil)
 	localized := func(view localizedTemplate, data any) func(*bytes.Buffer) error {
 		return func(output *bytes.Buffer) error {

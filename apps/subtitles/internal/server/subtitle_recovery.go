@@ -90,7 +90,7 @@ func (provider *subtitleProvider) restorePrevious(item library.Item, language st
 		return err
 	}
 	record = target.record(previous, record)
-	if err = provider.ledger.storeHistory(subtitleRecordKey(item.ID, language), record, "restored"); err != nil {
+	if err = provider.ledger.storeHistory(subtitleRecordKey(item.ID, language), record, "restored", "restore"); err != nil {
 		_ = target.write("", current, false)
 		_ = target.write(".kinosail.bak", previous, false)
 		return err

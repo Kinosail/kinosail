@@ -16,7 +16,7 @@ import (
 	"github.com/MikeO7/kinosail/packages/workload"
 )
 
-func TestSubtitleProviderUpgradesManagedSidecarByMinimumScoreGain(t *testing.T) { //nolint:cyclop,gocognit // One test proves selection, backup, rollback, freeze, and ledger state.
+func TestSubtitleProviderUpgradesManagedSidecarByMinimumScoreGain(t *testing.T) { //nolint:cyclop,gocognit,funlen // One test proves selection, backup, rollback, freeze, and ledger state.
 	t.Parallel()
 	var better atomic.Bool
 	remote := httptest.NewServer(http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
@@ -69,6 +69,10 @@ func TestSubtitleProviderUpgradesManagedSidecarByMinimumScoreGain(t *testing.T) 
 	events, err := provider.ledger.history()
 	if err != nil || len(events) != 2 || events[0].Action != "added" || events[1].Action != "updated" {
 		t.Fatalf("provider history = %#v, %v", events, err)
+	}
+	evidence, marshalErr := json.Marshal(newSubtitleLedger(data).state.History)
+	if marshalErr != nil || !strings.Contains(string(evidence), `"reason":"higher-score"`) || !strings.Contains(string(evidence), `"previousScore":70`) || !strings.Contains(string(evidence), `"score":90`) || !strings.Contains(string(evidence), `"previousSource":"subdl"`) {
+		t.Fatalf("persisted upgrade explanation = %s, %v", evidence, marshalErr)
 	}
 	item.Subtitles = []string{subtitleSidecarPath(item, "en")}
 	record, _, err = provider.ledger.record(key)
@@ -250,11 +254,20 @@ func TestSubtitleProviderOnlyReplacesUnknownSidecarWithExactHashMatch(t *testing
 	}
 	config := SubtitleConfig{OpenSubtitles: OpenSubtitlesConfig{URL: remote.URL, APIKey: "key", Username: "user", Password: "password"}}
 	provider := newSubtitleProvider(config, t.TempDir(), t.TempDir(), sidecarTestIndex(item), nil, "")
+	// An externally changed file must not inherit an old managed file's score.
+	stale := subtitleRecord{Fingerprint: subtitleFingerprint([]byte("different file")), Source: "subdl", Score: 70, Managed: true}
+	if err := provider.ledger.store(subtitleRecordKey(item.ID, "en"), stale); err != nil {
+		t.Fatal(err)
+	}
 	upgraded, err := provider.upgradeSidecar(t.Context(), item, "en")
 	current, currentErr := os.ReadFile(target)
 	backup, backupErr := os.ReadFile(target + ".kinosail.bak")
 	if err != nil || currentErr != nil || backupErr != nil || !upgraded || !strings.Contains(string(current), "Exact") || !strings.Contains(string(backup), "Unknown") {
 		t.Fatalf("upgrade = %v, err = %v, current = %q/%v, backup = %q/%v", upgraded, err, current, currentErr, backup, backupErr)
+	}
+	evidence, marshalErr := json.Marshal(provider.ledger.state.History)
+	if marshalErr != nil || !strings.Contains(string(evidence), `"reason":"exact-hash"`) || !strings.Contains(string(evidence), `"score":100`) || strings.Contains(string(evidence), `"previousScore"`) {
+		t.Fatalf("unknown-file upgrade explanation = %s, %v", evidence, marshalErr)
 	}
 }
 
