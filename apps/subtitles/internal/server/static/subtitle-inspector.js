@@ -114,6 +114,8 @@
   });
   document.getElementById("clear-preview-text").addEventListener("click", () => { form.elements.text.value = ""; invalidate(); });
   form.addEventListener("input", invalidate);
+  form.elements.offset.addEventListener("input", () => { if (Number(form.elements.offset.value) !== 0) { form.elements.automaticSync.checked = false; document.getElementById("subtitle-anchors").replaceChildren(); } });
+  form.elements.automaticSync.addEventListener("change", () => { if (form.elements.automaticSync.checked) { form.elements.offset.value = "0"; document.getElementById("subtitle-anchors").replaceChildren(); } });
   form.elements.file.addEventListener("change", () => { draftID = ""; form.elements.text.value = ""; form.elements.role.value = "translation"; });
   form.elements.language.addEventListener("change", () => { draftID = ""; form.elements.text.value = ""; load().catch(showError); loadDraft().catch(showError); });
   form.addEventListener("submit", async event => {
@@ -128,6 +130,7 @@
   });
   document.getElementById("add-anchor").addEventListener("click", () => {
     const container = document.getElementById("subtitle-anchors"); if (container.children.length >= 8) return;
+    form.elements.automaticSync.checked = false; form.elements.offset.value = "0";
     const row = element("div", undefined, "subtitle-anchor");
     for (const [name, text] of [["anchor-at", "Subtitle time (seconds)"], ["anchor-target", "Correct video time (seconds)"]]) { const label = element("label", text), field = element("input"); field.name = name; field.type = "number"; field.min = "0"; field.max = "129600"; field.step = ".001"; field.required = true; field.value = video.currentTime.toFixed(3); label.append(field); row.append(label); }
     const remove = element("button", "Remove", "quiet"); remove.type = "button"; remove.addEventListener("click", () => { row.remove(); invalidate(); }); row.append(remove); container.append(row); row.querySelector("input").focus(); invalidate();
