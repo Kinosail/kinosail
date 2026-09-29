@@ -13,7 +13,7 @@ import (
 	"github.com/MikeO7/kinosail-subtitles/internal/server"
 )
 
-func TestPlaybackPickerShowsOnlySelectedSubtitleLanguages(t *testing.T) { //nolint:gocognit,cyclop,funlen // One public journey covers default off, cleanup opt-in, choices, invalid toggles, and reset.
+func TestPlaybackPickerShowsOnlySelectedSubtitleLanguages(t *testing.T) { //nolint:gocognit,cyclop,funlen // One public journey covers preferred-language default, cleanup opt-in, choices, invalid toggles, and reset.
 	media, tools := t.TempDir(), t.TempDir()
 	writeTestFile(t, filepath.Join(media, "Film.mp4"), "video")
 	for _, name := range []string{"Film.en.srt", "Film.es.srt", "Film.fr.srt", "Film.de.srt", "Film.nl.forced.srt"} {
@@ -26,8 +26,8 @@ printf '%s' '{"streams":[{"index":0,"codec_type":"video","codec_name":"h264","wi
 	handler := server.New(server.Config{SubtitleApp: true, MediaDir: media, DataDir: t.TempDir(), CacheDir: t.TempDir(), FFprobe: ffprobe})
 	id := firstSubtitleInventoryID(t, handler)
 	before := requestApp(t, handler, http.MethodGet, "/watch/"+id, "")
-	if before.Code != http.StatusOK || strings.Count(before.Body.String(), "<track ") != 8 {
-		t.Fatalf("default picker should remain unrestricted: %d %s", before.Code, before.Body.String())
+	if before.Code != http.StatusOK || strings.Count(before.Body.String(), "<track ") != 1 {
+		t.Fatalf("default picker should show the preferred language: %d %s", before.Code, before.Body.String())
 	}
 	preview := requestJSON(t, handler, http.MethodPost, "/api/v1/subtitles/cleanup/preview", `{"enabled":true,"languages":["en","es","fr","de"],"forced":"keep"}`)
 	var plan struct {
@@ -99,5 +99,46 @@ printf '%s' '{"streams":[{"index":0,"codec_type":"video","codec_name":"h264","wi
 	after := requestApp(t, handler, http.MethodGet, "/watch/"+id, "")
 	if response.Code != http.StatusSeeOther || strings.Count(after.Body.String(), "<track ") != 8 {
 		t.Fatalf("turning off picker limit: %d, tracks=%d", response.Code, strings.Count(after.Body.String(), "<track "))
+	}
+}
+
+func TestSubtitlePickerDefaultsPreserveFilesAndSavedChoices(t *testing.T) {
+	for _, test := range []struct {
+		name, saved string
+		want        int
+	}{
+		{"new installation", "", 2},
+		{"legacy unrestricted", `{"libraries":["."]}`, 3},
+		{"saved unrestricted", `{"libraries":["."],"subtitlePickerLimited":false}`, 3},
+		{"saved limited without forced", `{"libraries":["."],"subtitlePickerLimited":true,"subtitlePickerKeepForced":false}`, 1},
+	} {
+		t.Run(test.name, func(t *testing.T) {
+			media, data := t.TempDir(), t.TempDir()
+			writeTestFile(t, filepath.Join(media, "Film.mp4"), "video")
+			original := "1\n00:00:01,000 --> 00:00:02,000\nHello\n"
+			for _, name := range []string{"Film.en.srt", "Film.en.forced.srt", "Film.es.srt"} {
+				writeTestFile(t, filepath.Join(media, name), original)
+			}
+			if test.saved != "" {
+				writeTestFile(t, filepath.Join(data, "settings.json"), test.saved)
+			}
+			handler := server.New(server.Config{SubtitleApp: true, MediaDir: media, DataDir: data, CacheDir: t.TempDir()})
+			id := firstSubtitleInventoryID(t, handler)
+			response := requestApp(t, handler, http.MethodGet, "/api/v1/items/"+id+"/playback", "")
+			var playback struct {
+				Subtitles []struct {
+					Language string `json:"language"`
+				} `json:"subtitles"`
+			}
+			if response.Code != http.StatusOK || json.Unmarshal(response.Body.Bytes(), &playback) != nil || len(playback.Subtitles) != test.want {
+				t.Fatalf("default playback choices = %d %s", response.Code, response.Body.String())
+			}
+			for _, name := range []string{"Film.en.srt", "Film.en.forced.srt", "Film.es.srt"} {
+				bytes, err := os.ReadFile(filepath.Join(media, name))
+				if err != nil || string(bytes) != original {
+					t.Fatalf("default changed %s: %q %v", name, bytes, err)
+				}
+			}
+		})
 	}
 }
