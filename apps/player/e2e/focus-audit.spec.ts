@@ -19,7 +19,7 @@ for (const width of [390, 1440]) {
 			if (!response?.headers()["content-type"]?.includes("text/html")) continue;
 			await expect(page.locator("main")).toBeVisible();
 			// Discover detail and settings pages from production links, excluding exports and mutation endpoints.
-			const discovered = await page.locator("main a[href]").evaluateAll(links => links.map(link => link.getAttribute("href")!).filter(href => /^\/(show|album|book|item|collection|watch|photo|playlist)\//.test(href) || /^\/settings(?:\/[^/.?#]+)?$/.test(href)));
+			const discovered = await page.locator("main a[href]:not([download])").evaluateAll(links => links.map(link => link.getAttribute("href")!).filter(href => /^\/(show|album|book|item|collection|watch|photo|playlist)\/[^/?.#]+$/.test(href) || /^\/settings(?:\/[^/.?#]+)?$/.test(href) && !["/settings/metrics", "/settings/backup"].includes(href)));
 			for (const href of discovered) routes.add(href);
 			const controls = page.locator('a[href]:visible,button:visible:not(:disabled),input:visible:not(:disabled):not([type=hidden]),select:visible:not(:disabled),textarea:visible:not(:disabled),summary:visible,[tabindex="0"]:visible');
 			let checked = 0;
@@ -42,6 +42,9 @@ for (const width of [390, 1440]) {
 			}
 			report.push({ route, controls: checked });
 			console.log(`${width}px ${route}: ${checked} controls`);
+			const artwork = page.locator("main a:visible:has(.poster,.curation-poster,.collection-poster)").first();
+			const sample = await artwork.count() ? artwork : page.locator("main a:visible,main button:visible:not(:disabled)").first();
+			if (await sample.count()) await sample.focus();
 			await page.screenshot({ path: testInfo.outputPath(`${report.length}-focus.png`) });
 		}
 		await testInfo.attach("focus-audit.json", { body: JSON.stringify({ revision: process.env.KINOSAIL_TEST_REVISION, command: "pnpm exec playwright test focus-audit.spec.ts", width, environment: "isolated populated test Server, generated media and metadata", pages: report, failures }, null, 2), contentType: "application/json" });
