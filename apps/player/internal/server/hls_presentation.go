@@ -10,6 +10,7 @@ import (
 	"strings"
 
 	"github.com/MikeO7/kinosail/packages/library"
+	"github.com/MikeO7/kinosail/packages/playback"
 	"github.com/MikeO7/kinosail/packages/transcodehardware"
 	"github.com/MikeO7/kinosail/packages/workload"
 )
@@ -44,7 +45,7 @@ func (manager *hlsManager) encodePresentation(ctx context.Context, item library.
 		arguments = append(arguments, mapping...)
 		if audioBitrate > 0 {
 			arguments = append(arguments, "-map", "0:a:"+strconv.Itoa(recipe.audio)+"?")
-			arguments = append(arguments, automaticSkipAudioArguments(recipe)...)
+			arguments = append(arguments, playback.AudioFilterArguments(sharedHLSRecipe(recipe), hlsPolicy())...)
 		}
 		arguments = append(arguments, "-sn")
 		arguments = append(arguments, encoded...)
