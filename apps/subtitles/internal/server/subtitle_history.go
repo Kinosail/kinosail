@@ -1,6 +1,7 @@
 package server
 
 import (
+	"fmt"
 	"strings"
 	"time"
 
@@ -28,6 +29,14 @@ func (manager *subtitleManager) subtitleHistoryProjection(options subtitleDashbo
 		parts := strings.SplitN(event.Key, ":", 2)
 		changed := time.Unix(event.InstalledAt, 0).UTC()
 		view := subtitleHistoryView{ID: parts[0], Action: event.Action, Title: "File no longer in library", Language: parts[1], Source: event.Source, SourceLabel: subtitleHistorySourceLabel(event.Source), Changed: changed.Format(time.RFC3339), DisplayTime: changed.Format("2006-01-02 15:04") + " UTC"}
+		view.subtitleHistoryEvidence = event.subtitleHistoryEvidence
+		view.ActionLabel, view.Explanation, view.Match = subtitleHistoryDescription(event)
+		if view.ActionLabel == "Recorded" {
+			view.Action = "recorded"
+		}
+		if event.PreviousSource != "" {
+			view.SourceLabel = subtitleHistorySourceLabel(event.PreviousSource) + " → " + view.SourceLabel
+		}
 		if item, found := byID[view.ID]; found {
 			identity := subtitleDashboardIdentity(item)
 			view.Title, view.Context, view.Available = identity.Title, identity.Context, true
@@ -66,4 +75,43 @@ func subtitleHistorySourceLabel(source string) string {
 	default:
 		return "Subtitle source"
 	}
+}
+
+func subtitleHistoryDescription(event subtitleHistoryEvent) (string, string, string) { //nolint:cyclop // Each recorded operation has one factual explanation.
+	action, explanation := "Recorded", "The reason for this earlier change was not recorded."
+	switch event.Action {
+	case "added":
+		action = "Added"
+	case "updated":
+		action = "Updated"
+	case "restored":
+		action = "Restored"
+	}
+	switch event.Reason {
+	case "missing":
+		explanation = "Added a new subtitle file for a missing language."
+	case "embedded":
+		explanation = "Copied an embedded text track to a new subtitle file."
+	case "higher-score":
+		action, explanation = "Upgraded", fmt.Sprintf("Automatic upgrade: match score improved by %d points.", *event.Score-*event.PreviousScore)
+	case "exact-hash":
+		action, explanation = "Upgraded", "Automatic upgrade: exact file-hash match. The previous local file had no verified match score."
+	case "manual":
+		explanation = "Saved manually in the subtitle editor."
+	case "restore":
+		explanation = "Restored the previous subtitle from its recovery copy."
+	case "legacy":
+		explanation = "Earlier installation; whether it added or replaced a file was not recorded."
+	}
+	if event.Reason == "" && event.Action == "added" {
+		action = "Recorded"
+	}
+	match := ""
+	if event.Score != nil {
+		match = fmt.Sprintf("Match score %d / 100 · Release match %.0f%%", *event.Score, *event.ReleaseMatch*100)
+		if event.PreviousScore != nil {
+			match = fmt.Sprintf("Match score %d → %d / 100 · Release match %.0f%% → %.0f%%", *event.PreviousScore, *event.Score, *event.PreviousReleaseMatch*100, *event.ReleaseMatch*100)
+		}
+	}
+	return action, explanation, match
 }

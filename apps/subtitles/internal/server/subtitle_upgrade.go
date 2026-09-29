@@ -90,7 +90,7 @@ func (provider *subtitleProvider) upgradeSidecar(ctx context.Context, item libra
 		}
 		return false, provider.ledger.store(key, target.record(current, next))
 	}
-	return provider.installSubtitleUpgrade(target, key, current, cleaned.Data, previous, next)
+	return provider.installSubtitleUpgrade(target, key, current, cleaned.Data, previous, next, managed)
 }
 
 func subtitleUpgradeImproves(candidate subtitleDownloadCandidate, previous subtitleRecord, managed bool) bool {
@@ -100,7 +100,7 @@ func subtitleUpgradeImproves(candidate subtitleDownloadCandidate, previous subti
 	return candidate.ExactHash && candidate.Score == 100 && candidate.ReleaseMatch >= 1
 }
 
-func (provider *subtitleProvider) installSubtitleUpgrade(target *subtitleSidecar, key string, current, data []byte, previous, next subtitleRecord) (bool, error) {
+func (provider *subtitleProvider) installSubtitleUpgrade(target *subtitleSidecar, key string, current, data []byte, previous, next subtitleRecord, managed bool) (bool, error) {
 	if err := provider.retainSubtitleRecoveryOriginal(current, previous, &next); err != nil {
 		return false, err
 	}
@@ -111,7 +111,11 @@ func (provider *subtitleProvider) installSubtitleUpgrade(target *subtitleSidecar
 		return false, err
 	}
 	next.Backup = true
-	if err := provider.ledger.storeHistory(key, target.record(data, next), "updated"); err != nil {
+	reason := "exact-hash"
+	if managed {
+		reason = "higher-score"
+	}
+	if err := provider.ledger.storeHistory(key, target.record(data, next), "updated", reason); err != nil {
 		_ = target.write("", current, false)
 		return false, err
 	}

@@ -258,7 +258,7 @@ func (provider *subtitleProvider) saveSubtitleEdit(target *subtitleSidecar, key 
 	if exists {
 		action = "updated"
 	}
-	if err = provider.ledger.storeHistory(key, target.record(data, record), action); err != nil {
+	if err = provider.ledger.storeHistory(key, target.record(data, record), action, "manual"); err != nil {
 		if exists {
 			_ = target.write("", current, false)
 		} else {
