@@ -1,5 +1,6 @@
 import { expect, test } from "@playwright/test";
 import { login } from "./subtitle-dashboard-helpers";
+import { registerSubtitleDefaultTests } from "./subtitle-defaults-tests";
 import { registerSubtitleHistoryTests } from "./subtitle-dashboard-history-tests";
 import { registerSubtitleLanguageTests } from "./subtitle-dashboard-language-tests";
 import { registerSubtitleLayoutTests } from "./subtitle-dashboard-layout-tests";
@@ -9,6 +10,7 @@ test.skip(process.env.KINOSAIL_TEST_INSTANCE !== "1", "requires the populated Ki
 test.describe.configure({ mode: "serial", timeout: 120_000 });
 test.beforeEach(async ({ page }) => login(page));
 
+registerSubtitleDefaultTests();
 registerSubtitleLanguageTests();
 registerSubtitleProviderTests();
 registerSubtitleLayoutTests();

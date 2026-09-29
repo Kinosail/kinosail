@@ -89,7 +89,7 @@ func (attempt *subtitleCandidateAttempt) prepareCandidate(candidate subtitleDown
 	if err != nil {
 		return cleanedSubtitle{}, false
 	}
-	cleaned, err := convertSubtitle(data, firstNonempty(candidate.Language, "en"), subtitleConversionOptions{})
+	cleaned, err := convertSubtitle(data, firstNonempty(candidate.Language, "en"), subtitleConversionOptions{RemoveCredits: !candidate.Preserve, MergeRepeated: !candidate.Preserve})
 	if err != nil {
 		return cleanedSubtitle{}, false
 	}

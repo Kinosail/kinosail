@@ -31,18 +31,27 @@ test("traces a rejected Safari play request", async ({ page }) => {
 });
 
 test("reports honest loading and buffering progress", async ({ page }) => {
+  await page.addStyleTag({ content: await readFile("../../../packages/webassets/static/player-app.css", "utf8") });
+  await page.addStyleTag({ content: await readFile("../../../packages/webassets/static/player-stage.css", "utf8") });
+  await page.addStyleTag({ content: await readFile("../internal/server/static/home.css", "utf8") });
   const status = page.locator("[data-player-status]");
+  const spinner = status.locator(".buffer-skeleton");
   const buffered = page.locator("[data-buffered]");
   await page.locator("video").evaluate((element) => element.play());
   await page.locator("video").dispatchEvent("loadstart");
   await expect(status).toContainText("Loading video…");
+  await expect(spinner).toBeVisible();
+  await expect(spinner).toHaveCSS("border-top-style", "solid");
+  await expect(spinner).toHaveCSS("border-radius", "50%");
+  await expect(spinner).toHaveCSS("animation-name", "player-buffer-spin");
   await expect(buffered).toBeHidden();
   await expect(buffered).toHaveAttribute("aria-valuetext", "60% buffered");
 
   await page.locator("video").dispatchEvent("waiting");
   await page.waitForTimeout(600);
   await expect(status).toContainText("Buffering · 60% buffered");
-  await expect(buffered).toBeVisible();
+  await expect(spinner).toBeVisible();
+  await expect(buffered).toBeHidden();
   await expect(page.locator(".media-stage")).toHaveClass(/is-busy/);
   await page.evaluate(() => (window as Window & { setBufferedEnd: (value: number) => void }).setBufferedEnd(78));
   await page.locator("video").dispatchEvent("progress");
@@ -57,6 +66,10 @@ test("reports honest loading and buffering progress", async ({ page }) => {
   await expect(buffered).toBeHidden();
   await page.locator("video").dispatchEvent("seeked");
   await expect(status).toBeHidden();
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.locator("video").dispatchEvent("loadstart");
+  await expect(spinner).toBeVisible();
+  await expect(spinner).toHaveCSS("animation-name", "none");
 });
 
 test("records one private trace across playback events", async ({ page }) => {
