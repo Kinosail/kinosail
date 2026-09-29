@@ -7,7 +7,8 @@ import { expectNoHorizontalOverflow } from "./subtitle-dashboard-helpers";
 export function registerSubtitleDefaultTests() {
   test("review starts with sync and cleanup and keeps manual timing exclusive", { tag: "@smoke" }, async ({ page }, testInfo) => {
     const inventory = await page.evaluate(async () => (await fetch("/api/v1/subtitle-library?view=library")).json());
-    const item = inventory.items.find((item: { title: string }) => item.title === "Example Movie" || item.title === "Arrival");
+    const filename = process.env.KINOSAIL_E2E_MEDIA_DIR ? "Arrival.mkv" : "Example Movie.mp4";
+    const item = inventory.items.find((item: { file: string }) => item.file.endsWith(filename));
     expect(item?.id).toBeTruthy();
     const base = `/api/v1/subtitle-library/${item.id}`;
     const media = process.env.KINOSAIL_E2E_MEDIA_DIR ?? join(process.env.KINOSAIL_TEST_ROOT!, "media", "Movies");
