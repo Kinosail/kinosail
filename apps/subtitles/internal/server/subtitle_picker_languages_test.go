@@ -102,7 +102,7 @@ printf '%s' '{"streams":[{"index":0,"codec_type":"video","codec_name":"h264","wi
 	}
 }
 
-func TestSubtitlePickerDefaultsPreserveFilesAndSavedChoices(t *testing.T) {
+func TestSubtitlePickerDefaultsPreserveFilesAndSavedChoices(t *testing.T) { //nolint:gocognit // Each public playback case also proves saved choices and original files are preserved.
 	for _, test := range []struct {
 		name, saved string
 		want        int
