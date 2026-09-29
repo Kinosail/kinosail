@@ -1,4 +1,4 @@
-import { readFile } from "node:fs/promises";
+import { readFile, writeFile } from "node:fs/promises";
 import { expect, test, type Locator, type Page } from "@playwright/test";
 
 const css = (await Promise.all([
@@ -76,7 +76,9 @@ for (const width of [390, 1440]) {
 			await page.emulateMedia({ forcedColors: "none" });
 			await page.locator(".curation-card").nth(2).focus();
 			await page.screenshot({ path: testInfo.outputPath("card-highlights.png"), fullPage: true });
-			await testInfo.attach("environment.json", { body: JSON.stringify({ width, theme, data: "synthetic 0–4 poster mosaics, nested and direct card links", command: "pnpm exec playwright test card-highlights.spec.ts", revision: process.env.KINOSAIL_TEST_REVISION }), contentType: "application/json" });
+			const evidence = testInfo.outputPath("environment.json");
+			await writeFile(evidence, JSON.stringify({ width, theme, browser: testInfo.project.name, data: "synthetic 0–4 poster mosaics, nested and direct card links", command: "pnpm exec playwright test card-highlights.spec.ts", revision: process.env.KINOSAIL_TEST_REVISION ?? process.env.GITHUB_SHA, result: "passed" }, null, 2));
+			await testInfo.attach("environment.json", { path: evidence, contentType: "application/json" });
 		});
 	}
 }

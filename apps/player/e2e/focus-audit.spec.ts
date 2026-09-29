@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { writeFile } from "node:fs/promises";
 import { configureTestInstance, login } from "./test-instance-helpers";
 
 configureTestInstance();
@@ -47,7 +48,9 @@ for (const width of [390, 1440]) {
 			if (await sample.count()) await sample.focus();
 			await page.screenshot({ path: testInfo.outputPath(`${report.length}-focus.png`) });
 		}
-		await testInfo.attach("focus-audit.json", { body: JSON.stringify({ revision: process.env.KINOSAIL_TEST_REVISION, command: "pnpm exec playwright test focus-audit.spec.ts", width, environment: "isolated populated test Server, generated media and metadata", pages: report, failures }, null, 2), contentType: "application/json" });
+		const evidence = testInfo.outputPath("focus-audit.json");
+		await writeFile(evidence, JSON.stringify({ revision: process.env.KINOSAIL_TEST_REVISION ?? process.env.GITHUB_SHA, command: "pnpm exec playwright test focus-audit.spec.ts", width, browser: testInfo.project.name, environment: "isolated populated test Server, generated media and metadata", pages: report, failures, result: failures.length ? "failed" : "passed" }, null, 2));
+		await testInfo.attach("focus-audit.json", { path: evidence, contentType: "application/json" });
 		expect(report.length).toBeGreaterThan(25);
 		expect(failures).toEqual([]);
 	});
