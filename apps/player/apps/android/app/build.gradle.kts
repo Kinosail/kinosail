@@ -39,7 +39,7 @@ android {
 }
 
 dependencies {
-    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.3")
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.5")
     implementation(project(":watchcore"))
     implementation("com.google.android.gms:play-services-wearable:20.0.1")
     implementation(platform("androidx.compose:compose-bom:2026.09.00"))
