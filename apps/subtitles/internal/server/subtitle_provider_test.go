@@ -102,7 +102,7 @@ func fakeSubDL(writer http.ResponseWriter, request *http.Request) { //nolint:cyc
 		var archive bytes.Buffer
 		files := zip.NewWriter(&archive)
 		file, _ := files.Create("Arrival.BluRay-GROUP.en.srt")
-		_, _ = file.Write([]byte("1\n00:00:01,000 --> 00:00:02,000\nHello\n"))
+		_, _ = file.Write([]byte("1\n00:00:00,000 --> 00:00:00,500\nSubtitles by Example\n\n2\n00:00:01,000 --> 00:00:02,000\nHello\n\n3\n00:00:02,050 --> 00:00:03,000\nHello\n"))
 		_ = files.Close()
 		_, _ = writer.Write(archive.Bytes())
 	default:
@@ -240,5 +240,55 @@ func TestOwnerCanChooseSubtitleLanguage(t *testing.T) { //nolint:cyclop // One s
 
 	if response.Code != http.StatusSeeOther || !strings.Contains(subtitleSettings.Body.String(), `name="preference" value="sdh" checked`) || !strings.Contains(settings.Body.String(), `name="language" value="es"`) || !strings.Contains(settings.Body.String(), "Embedded first · SubDL · OpenSubtitles · SubSource") || !strings.Contains(settings.Body.String(), `href="/settings/configuration#integrations.subdl.api_key"`) || !strings.Contains(settings.Body.String(), "Credentials configured") || strings.Contains(settings.Body.String(), `value="key"`) || !strings.Contains(configuration.Body.String(), `id="integrations.subdl.api_key"`) || !strings.Contains(configuration.Body.String(), `id="integrations.opensubtitles"`) || !strings.Contains(player.Body.String(), `<span>Subtitles</span><strong>Find es</strong>`) {
 		t.Fatalf("save = %d, settings = %q, configuration = %q, player = %q", response.Code, settings.Body.String(), configuration.Body.String(), player.Body.String())
+	}
+}
+
+func TestDefaultProviderCleanupRetainsOriginal(t *testing.T) {
+	provider := httptest.NewServer(http.HandlerFunc(fakeSubDL))
+	t.Cleanup(provider.Close)
+	mediaDir := t.TempDir()
+	writeTestFile(t, filepath.Join(mediaDir, "Arrival.BluRay-GROUP.mp4"), "video")
+	handler := server.New(server.Config{SubtitleApp: true, MediaDir: mediaDir, DataDir: t.TempDir(), CacheDir: t.TempDir(), Subtitles: server.SubtitleConfig{URL: provider.URL, APIKey: "key"}})
+	id := firstSubtitleInventoryID(t, handler)
+	fetch := requestApp(t, handler, http.MethodPost, "/subtitles/manage/"+id+"/fetch", "")
+	if fetch.Code != http.StatusSeeOther {
+		t.Fatalf("fetch = %d %s", fetch.Code, fetch.Body.String())
+	}
+
+	installed, err := os.ReadFile(filepath.Join(mediaDir, "Arrival.BluRay-GROUP.en.srt"))
+	if err != nil || strings.Contains(string(installed), "Subtitles by") || strings.Count(string(installed), "Hello") != 1 || !strings.Contains(string(installed), "00:00:01,000 --> 00:00:03,000") {
+		t.Fatalf("default cleanup did not remove credits and merge repeated dialogue: %q, %v", installed, err)
+	}
+	original := requestApp(t, handler, http.MethodGet, "/api/v1/subtitle-library/"+id+"/export?language=en&format=original", "")
+	if original.Code != http.StatusOK || !strings.Contains(original.Body.String(), "Subtitles by Example") || strings.Count(original.Body.String(), "Hello") != 2 {
+		t.Fatalf("default cleanup lost the original: %d %q", original.Code, original.Body.String())
+	}
+}
+
+func TestDefaultProviderCleanupRejectsCreditOnlyFilesWithoutWriting(t *testing.T) {
+	provider := httptest.NewServer(http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
+		if request.URL.Path != "/arrival.zip" {
+			fakeSubDL(writer, request)
+			return
+		}
+		var archive bytes.Buffer
+		files := zip.NewWriter(&archive)
+		file, _ := files.Create("Arrival.BluRay-GROUP.en.srt")
+		_, _ = file.Write([]byte("1\n00:00:00,000 --> 00:00:02,000\nSubtitles by Example\n"))
+		_ = files.Close()
+		_, _ = writer.Write(archive.Bytes())
+	}))
+	t.Cleanup(provider.Close)
+	media := t.TempDir()
+	writeTestFile(t, filepath.Join(media, "Arrival.BluRay-GROUP.mp4"), "video")
+	handler := server.New(server.Config{SubtitleApp: true, MediaDir: media, DataDir: t.TempDir(), CacheDir: t.TempDir(), Subtitles: server.SubtitleConfig{URL: provider.URL, APIKey: "key"}})
+	id := firstSubtitleInventoryID(t, handler)
+	result := requestJSON(t, handler, http.MethodPost, "/api/v1/subtitle-library/"+id+"/fetch", `{"language":"en"}`)
+	if result.Code != http.StatusBadGateway {
+		t.Fatalf("credit-only fetch = %d %s", result.Code, result.Body.String())
+	}
+	files, err := os.ReadDir(media)
+	if err != nil || len(files) != 1 {
+		t.Fatalf("rejected acquisition wrote files: %v %v", files, err)
 	}
 }
