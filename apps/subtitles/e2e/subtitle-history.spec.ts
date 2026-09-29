@@ -29,10 +29,10 @@ const fixture = (state: string) => readFile(join(directory!, `subtitle-history-$
 test("history explains new files, automatic upgrades, manual edits, restores, and older records @smoke", async ({ page }, testInfo) => {
   test.setTimeout(120_000);
   await page.route(/\/\?view=history$/, async route => route.fulfill({ contentType: "text/html", body: await fixture("populated") }));
+  await page.goto("/?view=history");
   for (const width of [1440, 1024, 390, 320]) {
     await page.setViewportSize({ width, height: width >= 1024 ? 900 : 844 });
     for (const theme of ["light", "dark"]) {
-      await page.goto("/?view=history");
       await page.evaluate(value => { document.documentElement.dataset.theme = value; }, theme);
       const rows = page.locator(".subtitle-history-row");
       await expect(rows).toHaveCount(8);
