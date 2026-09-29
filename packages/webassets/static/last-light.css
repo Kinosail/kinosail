@@ -49,9 +49,17 @@ body :is(.rail,.sort,.library-toolbar){background:transparent;box-shadow:none}
 body .rail{padding:.4rem 0 1rem;border:0;border-radius:0;gap:1.2rem;scroll-snap-type:x proximity}
 body .rail>.card{scroll-snap-align:start}
 body .library-content{padding-top:1rem;gap:3rem}
-body :is(.card .poster,.home-media-card .poster,.curation-poster,.collection-poster,.hero-poster){border-radius:12px;border:0;box-shadow:none;transition:box-shadow 180ms var(--ease-out),filter 180ms var(--ease-out)}
-body :is(.card,.curation-card,.collection-card):has(.poster,.curation-poster,.collection-poster):focus-visible{outline:0}
-body :is(.card:hover .poster,.card:focus-visible .poster,.curation-card:hover .curation-poster,.curation-card:focus-visible .curation-poster,.collection-card:hover .collection-poster,.collection-card:focus-visible .collection-poster){transform:none;outline:3px solid var(--signal);outline-offset:-3px}
+body :is(.card .poster,.home-media-card .poster,.curation-poster,.collection-poster,.hero-poster){border-radius:12px;border:0;box-shadow:none;transform:none;transition:box-shadow 180ms var(--ease-out),filter 180ms var(--ease-out)}
+body :is(a.card,.card>a:not(.resume-link),.curation-card,.collection-card):has(.poster,.curation-poster,.collection-poster):focus-visible{outline:0}
+body :is(a.card,.card>a,.curation-card,.collection-card):hover{--card-highlight:var(--signal)}
+body :is(a.card,.card>a,.curation-card,.collection-card):focus-visible{--card-highlight:var(--focus)}
+body .card:hover .poster{transform:none}
+body :is(a.card,.card>a,.curation-card,.collection-card):is(:hover,:focus-visible) :is(.poster,.curation-poster,.collection-poster){transform:none;outline:3px solid var(--card-highlight);outline-offset:-3px}
+body :is(.curation-poster,.collection-poster){position:relative}
+body :is(.curation-card,.collection-card):is(:hover,:focus-visible) :is(.curation-poster,.collection-poster)::after{position:absolute;z-index:2;inset:0;outline:3px solid var(--card-highlight);outline-offset:-3px;border-radius:inherit;pointer-events:none;content:""}
+body .curation-poster::before{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%)}
+body .curation-poster:has(>:nth-child(2)):not(:has(>:nth-child(3)))::before{top:75%}
+body .curation-poster:has(>:nth-child(3)):not(:has(>:nth-child(4)))::before{top:75%;left:75%}
 body :is(.card h2,.card h3,.home-media-card h3){margin-top:.75rem;font-size:1rem;line-height:1.4;font-weight:700;letter-spacing:-.015em}
 body :is(.poster.art,.card>.poster:not(img),.card .art){background:var(--surface-2)}
 body :is(.shelf>h2,.home-shelf>header h2)::before{display:none}
