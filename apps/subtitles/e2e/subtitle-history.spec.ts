@@ -2,6 +2,7 @@ import { expect, test } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
 import { readFile } from "node:fs/promises";
 import { join } from "node:path";
+import { execFileSync } from "node:child_process";
 import { expectNoHorizontalOverflow } from "./subtitle-dashboard-helpers";
 
 test.use({ serviceWorkers: "block" });
@@ -10,11 +11,22 @@ test.beforeEach(async ({ page }) => {
   await page.route("**/static/subtitle-status.js?*", route => route.fulfill({ contentType: "text/javascript", body: source }));
 });
 
+test.afterEach(async ({ page }, testInfo) => {
+  const evidence = {
+    revision: process.env.GITHUB_SHA || execFileSync("git", ["rev-parse", "HEAD"], { encoding: "utf8" }).trim(),
+    command: process.argv.join(" "),
+    testData: "Production history templates: new sidecar, score upgrade, exact hash, embedded track, restore, manual edit, v2 migration, v3 history",
+    environment: { platform: process.platform, arch: process.arch, browser: testInfo.project.name, version: page.context().browser()?.version() },
+    result: testInfo.status,
+  };
+  await testInfo.attach("history-evidence", { body: Buffer.from(JSON.stringify(evidence, null, 2)), contentType: "application/json" });
+});
+
 const directory = process.env.KINOSAIL_UI_FIXTURE_DIR;
 test.skip(!directory, "requires production-template history fixtures");
 const fixture = (state: string) => readFile(join(directory!, `subtitle-history-${state}.html`), "utf8");
 
-test("history explains new files, automatic upgrades, manual edits, restores, and older records", async ({ page }, testInfo) => {
+test("history explains new files, automatic upgrades, manual edits, restores, and older records @smoke", async ({ page }, testInfo) => {
   await page.route(/\/\?view=history$/, async route => route.fulfill({ contentType: "text/html", body: await fixture("populated") }));
   for (const width of [1440, 1024, 390, 320]) {
     await page.setViewportSize({ width, height: width >= 1024 ? 900 : 844 });
