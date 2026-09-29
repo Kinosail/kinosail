@@ -59,8 +59,4 @@ func applyBurnIn(video []string, itemPath string, recipe hlsRecipe) ([]string, [
 	return playback.ApplyBurnIn(video, itemPath, sharedHLSRecipe(recipe), hlsPolicy())
 }
 
-func automaticSkipAudioArguments(recipe hlsRecipe) []string {
-	return playback.AutomaticSkipAudioArguments(sharedHLSRecipe(recipe), hlsPolicy())
-}
-
 func ffmpegSeconds(value float64) string { return playback.FFmpegSeconds(value) }
