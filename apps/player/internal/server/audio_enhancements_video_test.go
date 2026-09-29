@@ -72,7 +72,7 @@ func videoAudioEnhancementFixture(t *testing.T, ctx context.Context) (http.Handl
 	if output, err := command.CombinedOutput(); err != nil {
 		t.Fatalf("generate video: %v: %s", err, output)
 	}
-	handler, id := formatTestItem(t, server.Config{Lifecycle: ctx, MediaDir: media, CacheDir: t.TempDir(), FFmpeg: ffmpeg, FFprobe: ffprobe})
+	handler, id := formatTestItem(t, server.Config{Lifecycle: ctx, MediaDir: media, CacheDir: t.TempDir(), FFmpeg: ffmpeg, FFprobe: ffprobe}) //nolint:contextcheck // The Server lifecycle carries ctx through configuration.
 	return handler, id, ffmpeg
 }
 
