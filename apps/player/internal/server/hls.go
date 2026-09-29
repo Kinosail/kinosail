@@ -114,7 +114,7 @@ func (manager *hlsManager) prepare(ctx context.Context, item library.Item, recip
 	if recipe.subtitlePath != "" {
 		options.Cache += ":subtitle=" + sourceVersion(recipe.subtitlePath)
 	}
-	options.Cache += ":" + sourceVersion(item.Path) + ":" + recipe.token() + ":hls=11"
+	options.Cache += ":" + sourceVersion(item.Path) + ":" + recipe.token() + ":hls=12"
 	if cacheFresh(playlist, item.Path, options.Cache) || seekCacheFresh(filepath.Dir(playlist), item.Path, options.Cache) {
 		return nil
 	}
