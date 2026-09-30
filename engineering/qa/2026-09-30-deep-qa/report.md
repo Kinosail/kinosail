@@ -169,6 +169,8 @@ The dashboard browser tests now block service workers so their explicit API resp
 
 The next complete Linux WebKit run passed the fixed inspector cases, but the cleanup journey timed out waiting for a generic Settings button. Both saved failure renders show the MKV fixture's explicit unsupported-decoder prompt and its available “Open playback settings” status control. The test now uses that public control and retains the exact two-option subtitle assertion. The local focused cleanup matrix passed in all three browsers (`cleanup-playback-settings-chip.log`). This corrects the test's decoder assumption; no transcoding is started or playback policy changed. Hosted Linux verification remains required.
 
+Browser jobs now allow thirty minutes for dependency installation, image startup and the unchanged full suite. An earlier twenty-minute Player WebKit job spent seventeen minutes installing dependencies and was cancelled only fifty-three seconds into the test step (`36754933827`, job `110022753859`). A later unchanged Subtitles rerun again spent over fourteen minutes installing dependencies. The test selection, assertions and `failOnFlakyTests` policy remain intact. CI contract tests passed 48 cases; actionlint and source caps passed (`browser-timeout-ci-contracts.log`, `browser-timeout-actionlint.log`, `browser-timeout-max-loc.log`).
+
 ## Repeatable commands
 
 Run these from the repository root or the indicated app directory. Evidence artifacts record the isolated environment and result; synthetic credentials stay local.
