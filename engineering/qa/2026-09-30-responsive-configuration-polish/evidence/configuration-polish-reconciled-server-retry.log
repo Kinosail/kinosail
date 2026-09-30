@@ -1,0 +1,5 @@
+ok  	github.com/MikeO7/kinosail-player/cmd/kinosail	(cached)
+ok  	github.com/MikeO7/kinosail-player/internal/backup	(cached)
+ok  	github.com/MikeO7/kinosail-player/internal/configuration	(cached)
+ok  	github.com/MikeO7/kinosail-player/internal/database	(cached)
+ok  	github.com/MikeO7/kinosail-player/internal/server	138.438s

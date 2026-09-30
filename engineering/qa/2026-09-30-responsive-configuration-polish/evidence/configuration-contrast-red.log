@@ -1,0 +1,102 @@
+
+Running 1 test using 1 worker
+
+(node:67109) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  1 [chromium] › layout-audit-configuration.spec.ts:7:1 › SCIM configuration stays usable at every supported width (6.6s)
+
+
+  1) [chromium] › layout-audit-configuration.spec.ts:7:1 › SCIM configuration stays usable at every supported width 
+
+    Error: 720px accessibility
+
+    expect(received).toEqual(expected) // deep equality
+
+    - Expected  -  1
+    + Received  + 58
+
+    - Array []
+    + Array [
+    +   Object {
+    +     "description": "Ensure the contrast between foreground and background colors meets WCAG 2 AA minimum contrast ratio thresholds",
+    +     "help": "Elements must meet minimum color contrast ratio thresholds",
+    +     "helpUrl": "https://dequeuniversity.com/rules/axe/4.13/color-contrast?application=playwright",
+    +     "id": "color-contrast",
+    +     "impact": "serious",
+    +     "nodes": Array [
+    +       Object {
+    +         "all": Array [],
+    +         "any": Array [
+    +           Object {
+    +             "data": Object {
+    +               "bgColor": "#151914",
+    +               "contrastRatio": 1.02,
+    +               "expectedContrastRatio": "4.5:1",
+    +               "fgColor": "#171b16",
+    +               "fontSize": "12.0pt (16px)",
+    +               "fontWeight": "normal",
+    +               "messageKey": null,
+    +             },
+    +             "id": "color-contrast",
+    +             "impact": "serious",
+    +             "message": "Element has insufficient color contrast of 1.02 (foreground color: #171b16, background color: #151914, font size: 12.0pt (16px), font weight: normal). Expected contrast ratio of 4.5:1",
+    +             "relatedNodes": Array [
+    +               Object {
+    +                 "html": "<input id=\"library-search\" type=\"search\" enterkeyhint=\"search\" autocomplete=\"off\" autocapitalize=\"none\" spellcheck=\"false\" aria-label=\"Search all libraries\" name=\"q\" value=\"\" placeholder=\"Search all libraries\" hx-get=\"/\" hx-target=\"#main\" hx-select=\"#main\" hx-swap=\"outerHTML\" hx-push-url=\"true\" ...>",
+    +                 "target": Array [
+    +                   "#library-search",
+    +                 ],
+    +               },
+    +             ],
+    +           },
+    +         ],
+    +         "failureSummary": "Fix any of the following:
+    +   Element has insufficient color contrast of 1.02 (foreground color: #171b16, background color: #151914, font size: 12.0pt (16px), font weight: normal). Expected contrast ratio of 4.5:1",
+    +         "html": "<input id=\"library-search\" type=\"search\" enterkeyhint=\"search\" autocomplete=\"off\" autocapitalize=\"none\" spellcheck=\"false\" aria-label=\"Search all libraries\" name=\"q\" value=\"\" placeholder=\"Search all libraries\" hx-get=\"/\" hx-target=\"#main\" hx-select=\"#main\" hx-swap=\"outerHTML\" hx-push-url=\"true\" ...>",
+    +         "impact": "serious",
+    +         "none": Array [],
+    +         "target": Array [
+    +           "#library-search",
+    +         ],
+    +       },
+    +     ],
+    +     "tags": Array [
+    +       "cat.color",
+    +       "wcag2aa",
+    +       "wcag143",
+    +       "TTv5",
+    +       "TT13.c",
+    +       "EN-301-549",
+    +       "EN-9.1.4.3",
+    +       "ACT",
+    +       "RGAAv4",
+    +       "RGAA-3.2.1",
+    +     ],
+    +   },
+    + ]
+
+      33 | 		expect(Boolean(problems.documentOverflow), `${viewport.width}px overflow`).toBe(false);
+      34 | 		expect({ ...problems, documentOverflow: false }, `${viewport.width}px layout`).toEqual({ documentOverflow: false, outside: [], tinyControls: [], distortedChecks: [], clippedControls: [], overlappingStatuses: [] });
+    > 35 | 		expect((await new AxeBuilder({ page }).analyze()).violations, `${viewport.width}px accessibility`).toEqual([]);
+         | 		                                                                                                   ^
+      36 | 		await section.screenshot({ path: testInfo.outputPath(`scim-configuration-${viewport.width}.png`) });
+      37 | 	}
+      38 | });
+        at [task checkout]/apps/player/e2e/layout-audit-configuration.spec.ts:35:102
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../.kinosail-test/configuration-contrast-red/layout-audit-configuration-6b9b6-le-at-every-supported-width-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../.kinosail-test/configuration-contrast-red/layout-audit-configuration-6b9b6-le-at-every-supported-width-chromium/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../.kinosail-test/configuration-contrast-red/layout-audit-configuration-6b9b6-le-at-every-supported-width-chromium/trace.zip
+    Usage:
+
+        pnpm exec playwright show-trace ../.kinosail-test/configuration-contrast-red/layout-audit-configuration-6b9b6-le-at-every-supported-width-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    [chromium] › layout-audit-configuration.spec.ts:7:1 › SCIM configuration stays usable at every supported width 

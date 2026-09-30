@@ -239,7 +239,7 @@ body .app-header .web-beta-badge{display:inline-flex;flex:none;align-items:cente
   body .app-header .header-actions>.header-supporter{display:none}
   body .app-header>.search{left:auto;width:48px}
   body .app-header>.search:focus-within{left:calc(4rem + var(--safe-left));width:auto}
-  body .app-header>.search input[type=search]{width:48px;color:transparent;caret-color:transparent}
+  body .app-header>.search input[type=search]{width:48px;color:transparent;caret-color:transparent;transition-property:background-color,border-color}
   body .app-header>.search:focus-within input[type=search]{width:100%;color:var(--text);caret-color:auto}
   body .app-header>.search input[type=search]::placeholder{color:transparent}
   body .app-header>.search:focus-within input[type=search]::placeholder{color:var(--muted)}

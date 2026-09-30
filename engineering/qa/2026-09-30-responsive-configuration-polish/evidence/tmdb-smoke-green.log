@@ -1,0 +1,14 @@
+
+Running 3 tests using 1 worker
+
+(node:77500) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  1 [chromium] › polish-shell.spec.ts:70:1 › TMDB connection instructions remain readable without horizontal scrolling @smoke (2.0s)
+(node:77902) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  2 [firefox] › polish-shell.spec.ts:70:1 › TMDB connection instructions remain readable without horizontal scrolling @smoke (3.6s)
+(node:78122) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  3 [webkit] › polish-shell.spec.ts:70:1 › TMDB connection instructions remain readable without horizontal scrolling @smoke (2.7s)
+
+  3 passed (21.8s)

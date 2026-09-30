@@ -1,0 +1,29 @@
+
+Running 18 tests using 1 worker
+
+(node:71025) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   1 [chromium] › layout-audit-configuration.spec.ts:7:1 › TMDB connection instructions remain readable without horizontal scrolling (1.4s)
+  ✓   2 [chromium] › layout-audit-configuration.spec.ts:29:1 › SCIM configuration stays usable at every supported width (8.3s)
+  ✓   3 [chromium] › layout-audit-configuration.spec.ts:62:1 › single sign-on configuration stays usable at every supported width (8.3s)
+  ✓   4 [chromium] › layout-audit-configuration.spec.ts:100:1 › SAML configuration stays usable at every supported width (7.1s)
+  ✓   5 [chromium] › polish-shell.spec.ts:21:1 › administration uses a plain canvas while dark media browsing retains CinemaSail @smoke (2.6s)
+  ✓   6 [chromium] › polish-shell.spec.ts:35:1 › landscape search stays reachable before and after focus on signed-in pages @smoke (1.9s)
+(node:73990) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   7 [firefox] › layout-audit-configuration.spec.ts:7:1 › TMDB connection instructions remain readable without horizontal scrolling (2.6s)
+  ✓   8 [firefox] › layout-audit-configuration.spec.ts:29:1 › SCIM configuration stays usable at every supported width (9.4s)
+  ✓   9 [firefox] › layout-audit-configuration.spec.ts:62:1 › single sign-on configuration stays usable at every supported width (9.4s)
+  ✓  10 [firefox] › layout-audit-configuration.spec.ts:100:1 › SAML configuration stays usable at every supported width (9.0s)
+  ✓  11 [firefox] › polish-shell.spec.ts:21:1 › administration uses a plain canvas while dark media browsing retains CinemaSail @smoke (2.2s)
+  ✓  12 [firefox] › polish-shell.spec.ts:35:1 › landscape search stays reachable before and after focus on signed-in pages @smoke (1.8s)
+(node:75535) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  13 [webkit] › layout-audit-configuration.spec.ts:7:1 › TMDB connection instructions remain readable without horizontal scrolling (2.4s)
+  ✓  14 [webkit] › layout-audit-configuration.spec.ts:29:1 › SCIM configuration stays usable at every supported width (8.3s)
+  ✓  15 [webkit] › layout-audit-configuration.spec.ts:62:1 › single sign-on configuration stays usable at every supported width (8.5s)
+  ✓  16 [webkit] › layout-audit-configuration.spec.ts:100:1 › SAML configuration stays usable at every supported width (7.6s)
+  ✓  17 [webkit] › polish-shell.spec.ts:21:1 › administration uses a plain canvas while dark media browsing retains CinemaSail @smoke (2.4s)
+  ✓  18 [webkit] › polish-shell.spec.ts:35:1 › landscape search stays reachable before and after focus on signed-in pages @smoke (2.1s)
+
+  18 passed (1.8m)
