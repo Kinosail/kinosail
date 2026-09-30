@@ -38,6 +38,10 @@ The branch merged current main through PR #392 before publication. That update c
 
 [Initial PR CI](https://github.com/Kinosail/kinosail/actions/runs/36790424244) passed Android compilation and unit tests on Linux, but tooling rejected stale Code Atlas snapshots. The stale records are the two app `internal/server/player.go` files and shared `assets_performance_contract.go`, changed earlier on main. Both snapshots were regenerated. Only their data records changed. The complete local `make tooling-check` then passed with stable snapshot hashes. A fresh hosted run is required for the updated head.
 
+## Launch reconciliation
+
+Main advanced again with PR #386 before the updated CI could start. Its generated snapshots conflicted. Both were regenerated from the combined source and exactly match current main. The only differing snapshot record was shared `transcodehardware/probe.go`. No conflict markers remain. Both tested Android hashes remain unchanged. The full local tooling gate passed again after this reconciliation; fresh hosted CI is required for the combined revision.
+
 ## Boundaries
 
 These are Compose component tests and Robolectric native graphics captures on macOS, not emulator, physical-device, live API, or full-reader E2E proof. This batch did not rerun Android instrumentation on a device. It compiled that APK. Android TV and Wear have unit/build evidence; the book reader is reached through the mobile library route.

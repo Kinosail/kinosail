@@ -284,6 +284,14 @@
       "sha256": "c0020c5ff398eb586418cf67f322f9992851c40d159ae3e80ffc84ae437658ec"
     },
     {
+      "path": "native-reader-launch-tooling-context.json",
+      "sha256": "fd454f17433538881734df79298f1b69fd80f3fa73aa3a9585b5de6b9c6b1ebf"
+    },
+    {
+      "path": "native-reader-launch-tooling.log",
+      "sha256": "f91533ccc964dd6a31f1a0cddd6e12cdfc0188a1d6ca854242c8b5fa87bc4966"
+    },
+    {
       "path": "native-reader-loading-authoring-gate.json",
       "sha256": "b34df502eaa9a3e0eb76511d0688afe17911deddfacb6ee2b2d075356caebd55"
     },
@@ -313,7 +321,7 @@
     },
     {
       "path": "report.md",
-      "sha256": "bb2edc09550e36952de1f545e379fa130ff731bc1e8bb210cbd52206944ed135"
+      "sha256": "cf3cb924175b1a1dfcb631af9e2b95ea2bf5ca37b873a84f6f4e866b91188e71"
     }
   ],
   "reconciliation": {
@@ -344,5 +352,26 @@
       }
     ],
     "androidSourceUnchanged": true
+  },
+  "launchReconciliation": {
+    "originMain": "b28ccfebefca59744241c24821c83a09249f9919",
+    "mergeCommit": "ab8421e176a620742374d7a2bcb26c821329e4d6",
+    "androidSourceHashesUnchanged": true,
+    "conflicts": [
+      "apps/player/docs/architecture-explorer/index.html",
+      "apps/subtitles/docs/architecture-explorer/index.html"
+    ],
+    "resolution": "regenerated from combined source; byte-identical to current main",
+    "localToolingExitCode": 0,
+    "snapshotSource": [
+      {
+        "path": "apps/player/docs/architecture-explorer/index.html",
+        "sha256": "fe7abc1e52fcbb1abcdd11b49bb43dd933e0415809c18027a2f1a1f6ac57de88"
+      },
+      {
+        "path": "apps/subtitles/docs/architecture-explorer/index.html",
+        "sha256": "713c73f247331ef8192d43438ca5efe2529bad9b6156ff531aef1a5c6383b616"
+      }
+    ]
   }
 }
