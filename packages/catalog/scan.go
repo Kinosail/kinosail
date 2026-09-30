@@ -51,6 +51,7 @@ type IndexStorage struct {
 	Scanned   *time.Time
 	Decorator *func([]library.Item) []library.Item
 	Analyzers *[]func([]library.Item)
+	published func()
 }
 
 // RefreshWork serializes a bounded background-work lease around one index refresh.
@@ -170,6 +171,9 @@ func (storage IndexStorage) Refresh(ctx context.Context, roots []ScanRoot) error
 	*storage.Err = err
 	if err == nil {
 		*storage.Items, *storage.ByID, *storage.Ready, *storage.Scanned = items, ItemsByID(items), true, time.Now()
+		if storage.published != nil {
+			storage.published()
+		}
 	}
 	analyzers := append([]func([]library.Item){}, (*storage.Analyzers)...)
 	storage.Mutex.Unlock()
@@ -185,8 +189,11 @@ func (storage IndexStorage) Refresh(ctx context.Context, roots []ScanRoot) error
 func (storage IndexStorage) SetDecorator(decorate func([]library.Item) []library.Item) {
 	storage.Mutex.Lock()
 	*storage.Decorator = decorate
-	*storage.Items = decorate(*storage.Items)
+	*storage.Items = decorate(append([]library.Item(nil), (*storage.Items)...))
 	*storage.ByID = ItemsByID(*storage.Items)
+	if storage.published != nil {
+		storage.published()
+	}
 	storage.Mutex.Unlock()
 }
 
