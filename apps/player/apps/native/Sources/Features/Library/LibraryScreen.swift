@@ -76,7 +76,12 @@ struct LibraryScreen: View {
                     VStack(alignment: .leading, spacing: 16) { filters }
                 }
                 if visibleItems.isEmpty {
-                    if visiblePage == nil && (loading || loadedKey == nil && failure == nil) { LoadingState(layout: selection == .music || selection == .audiobooks ? .squareGrid : .grid) }
+                    if visiblePage == nil && (loading || loadedKey == nil && failure == nil) {
+                        #if os(iOS)
+                        Text("Titles").font(.callout).redacted(reason: .placeholder).accessibilityHidden(true)
+                        #endif
+                        LoadingState(layout: selection == .music || selection == .audiobooks ? .squareGrid : .grid)
+                    }
                     else if let failure { RetryState(message: failure) { Task { await load(reset: true) } } }
                     else {
                         let empty = LibraryEmptyState(view: selection, hasQuery: !query.isEmpty)
@@ -177,7 +182,6 @@ struct LibraryScreen: View {
         .onAppear { if searchMode && query.isEmpty { showsSearch = true } }
         #endif
         .task(id: "\(requestKey):\(session.contentRevision):\(scenePhase)") {
-            guard scenePhase == .active else { return }
             if loadedKey != requestKey, let saved = savedSnapshot {
                 items = saved.items; page = saved.page; loadedKey = requestKey; loadedRevision = saved.revision
             }

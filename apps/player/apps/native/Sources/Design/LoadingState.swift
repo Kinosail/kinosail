@@ -53,14 +53,16 @@ struct LoadingState: View {
                 }
             }
             if layout == .home || layout == .homeAudio {
-                line(width: 180, height: 28).accessibilityHidden(true)
-                CinemaHeroLayout {
-                    RoundedRectangle(cornerRadius: 12).fill(KinoTheme.surface)
-                        .aspectRatio(layout == .homeAudio ? 1 : 16 / 9, contentMode: .fit)
-                        .frame(maxWidth: layout == .homeAudio ? 240 : .infinity)
-                } information: {
-                    featureInformation.frame(maxWidth: .infinity, alignment: .leading)
-                }.accessibilityHidden(true)
+                VStack(alignment: .leading, spacing: 12) {
+                    line(width: 180, height: 44).accessibilityHidden(true)
+                    CinemaHeroLayout {
+                        RoundedRectangle(cornerRadius: 12).fill(KinoTheme.surface)
+                            .aspectRatio(layout == .homeAudio ? 1 : 16 / 9, contentMode: .fit)
+                            .frame(maxWidth: layout == .homeAudio ? 240 : .infinity)
+                    } information: {
+                        featureInformation.frame(maxWidth: .infinity, alignment: .leading)
+                    }.accessibilityHidden(true)
+                }
             }
             if layout == .home {
                 VStack(alignment: .leading, spacing: 12) {
