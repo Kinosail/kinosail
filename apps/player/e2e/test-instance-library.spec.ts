@@ -37,8 +37,8 @@ test("public test instance exercises every media section and local TMDB metadata
   await page.getByRole("link", { name: /Example Movie/ }).click();
   await expect(page).toHaveURL(/\/watch\/[a-f0-9]+$/);
   await expect(page.locator("video")).toBeVisible();
-	await expect(page.locator("[data-cast]")).toBeVisible();
-	await expect(page.locator('video track[label="EN"]')).toHaveAttribute("default", "");
+	await expect(page.getByRole("button", { name: "Play on another device", exact: true })).toBeVisible();
+	await expect(page.locator('video track[srclang="en"]')).toHaveAttribute("default", "");
   await expect(page.getByRole("paragraph").filter({ hasText: "Example metadata from the local generated TMDB fixture." })).toBeVisible();
 	await page.goto("/settings#playback");
 	const subtitles = page.locator('form[action="/settings/subtitles"]').locator("..");
@@ -46,9 +46,9 @@ test("public test instance exercises every media section and local TMDB metadata
 	await expect(subtitles).toContainText("Find local subtitle files with");
 	await expect(subtitles.getByRole("link", { name: "Kino Subtitles on GitHub" })).toHaveAttribute("href", "https://github.com/Kinosail/kinosail/tree/main/apps/subtitles");
 	await expect(subtitles).not.toContainText("SubDL");
-	await expect(subtitles.getByLabel("Preferred language")).toHaveValue("en");
+	await expect(subtitles.getByLabel("Preferred language", { exact: true })).toHaveValue("en");
 
-  await page.getByRole("link", { name: "Browse library", exact: true }).click();
+  await page.getByRole("main").getByRole("link", { name: "Library", exact: true }).and(page.locator('a[href="/"]')).click();
   await openLibrarySection(page, "Music");
   await page.getByRole("link", { name: /Example Album/ }).click();
   await page.getByRole("link", { name: "Example Track One" }).click();
@@ -80,12 +80,11 @@ test("public test instance exercises every media section and local TMDB metadata
 test("media artwork keeps its intended ratio in the populated library", async ({ page }) => {
   await page.setViewportSize({ width: 992, height: 964 });
   await login(page);
-	await page.goto("/settings");
-	await page.getByRole("link", { name: "System", exact: true }).click();
+	await page.goto("/settings#library");
 	await page.locator('form[action="/settings/tasks/metadata"] button').click();
 	await page.goto("/?view=shows");
 	await page.getByRole("link", { name: "Example Show", exact: true }).click();
-	const episode = await page.locator('a.episode[href^="/watch/"]').first().getAttribute("href");
+	const episode = await page.locator('[data-episode-row][href^="/watch/"]').first().getAttribute("href");
 	expect(episode).toBeTruthy();
 	const show = new URL(page.url()).pathname;
 	await page.goto("/");
@@ -186,7 +185,7 @@ test("beta UI surfaces stay reachable and expose only working controls", async (
   await expect(owner).toHaveAttribute("href", "/account");
   await page.getByRole("link", { name: "Movies", exact: true }).click();
   const watch = await page.locator('a.card[href^="/watch/"]').filter({ hasText: "Example Movie" }).first().getAttribute("href");
-  await page.getByRole("link", { name: "Shows", exact: true }).click();
+  await openLibrarySection(page, "Shows");
   const show = await page.locator('a.show-details[href^="/show/"]').first().getAttribute("href");
   await openLibrarySection(page, "Music");
   const album = await page.locator('a.card[href^="/album/"]').first().getAttribute("href");
@@ -227,7 +226,7 @@ test("beta UI surfaces stay reachable and expose only working controls", async (
   await expect(page.getByText("720p · Ready to download", { exact: true })).toBeVisible({ timeout: 30_000 });
   await expect(page.getByRole("link", { name: "Save file", exact: true })).toBeVisible();
   await page.getByRole("button", { name: "Download to this device", exact: true }).click();
-  await expect(page.getByText("Ready offline on this device", { exact: true })).toBeVisible({ timeout: 30_000 });
+  await expect(page.getByText("Saved and verified. Play to check compatibility.", { exact: true })).toBeVisible({ timeout: 30_000 });
   await page.goto("/offline");
   await page.getByRole("link", { name: /Example Movie · 720p/ }).click();
   await expect(page.locator("video")).toHaveAttribute("src", /\/offline-media\//);
