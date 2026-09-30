@@ -22,11 +22,12 @@ import WebKit
             for (state, delay, populated, fails) in [("pending", 1.5, true, false), ("loaded", 0.0, true, false),
                                                      ("empty", 0.0, false, false), ("failed", 0.0, true, true)] {
                 fixture.delay = delay; fixture.populated = populated; fixture.fails = fails
+                if state == "failed" { await session.client?.discardMediaCache() }
                 for (name, view) in views {
                     await session.client?.invalidateCatalog()
                     session.resourceSnapshots.clear()
                     try await render(AnyView(view.environment(\.scenePhase, .inactive)), name: name + "-" + state,
-                                     scene: scene, session: session, wait: state == "pending" ? 0.2 : 0.7)
+                                     scene: scene, session: session, wait: state == "pending" ? 0.2 : state == "failed" ? 1.5 : 0.7)
                 }
             }
             fixture.delay = 0; fixture.populated = true; fixture.fails = false
