@@ -34,10 +34,10 @@ async function signIn(page: Page) {
 }
 
 async function openSettings(page: Page) {
-	await page.goto("/settings#access");
+	await page.goto("/settings#settings-integrations");
 	if (new URL(page.url()).pathname === "/login") {
 		await signIn(page);
-		await page.goto("/settings#access");
+		await page.goto("/settings#settings-integrations");
 	}
 }
 
