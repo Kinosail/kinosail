@@ -9,6 +9,11 @@ import (
 
 // Apply selects, orders, groups, and pages Viewer-visible candidates.
 func (browse Browse) Apply(candidates []Candidate) (Result, error) {
+	return browse.apply(append([]Candidate(nil), candidates...))
+}
+
+// apply owns its candidate storage and can compact it after releasing profile locks.
+func (browse Browse) apply(candidates []Candidate) (Result, error) {
 	selected := browseCandidates(candidates, browse.view, browse.query)
 	if browse.view == "history" {
 		sortHistory(selected)
@@ -25,7 +30,7 @@ func (browse Browse) Apply(candidates []Candidate) (Result, error) {
 }
 
 func browseCandidates(candidates []Candidate, view, query string) []Candidate {
-	selected := make([]Candidate, 0, len(candidates))
+	selected := candidates[:0]
 	normalized := searchText(query)
 	for _, candidate := range candidates {
 		if candidate.Item != nil && viewMatches(candidate, view) && (query == "" || matchesNormalized(*candidate.Item, normalized)) {
@@ -111,5 +116,5 @@ func (browse Browse) ApplyAccess(items []*library.Item, access BrowseAccess) (Re
 	})
 	access.ListMutex.RUnlock()
 	access.ProgressMutex.Unlock()
-	return browse.Apply(candidates)
+	return browse.apply(candidates)
 }
