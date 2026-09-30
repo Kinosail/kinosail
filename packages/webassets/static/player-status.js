@@ -123,6 +123,7 @@ if (playerStatus) {
     if (advancing && !seeking && !player.paused) { clearBufferingTimer(); hidePlayerState(); }
   });
   for (const event of ["canplay", "playing"]) player.addEventListener(event, () => {
+    if (event === "playing" && player.paused) return;
     clearBufferingTimer();
     seeking = false;
     if (playbackPreparation) return finishPreparation();
@@ -132,6 +133,7 @@ if (playerStatus) {
   player.addEventListener("seeked", () => {
     clearBufferingTimer();
     seeking = false;
+    if (player.paused && needsGesture) return revealPlayControl();
     if (hasPlayed ? player.readyState >= HTMLMediaElement.HAVE_FUTURE_DATA : readyForPlay()) hidePlayerState();
     else showPlayerState("buffering", bufferedPercent() ? `Buffering · ${bufferedPercent()}% buffered` : "Buffering…");
   });

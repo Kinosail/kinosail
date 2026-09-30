@@ -125,7 +125,7 @@ test("advancing video hides controls when WebKit omits playing", async ({ page }
 test("does not obstruct playable video when the network stalls", async ({ page }) => {
   const video = page.locator("video");
   const status = page.locator("[data-player-status]");
-  await video.dispatchEvent("playing");
+  await video.evaluate((element) => element.play());
   await expect(status).toBeHidden();
 
   await video.dispatchEvent("stalled");

@@ -45,6 +45,10 @@ test("Safari startup waits after preparation restores a position following block
   await video.dispatchEvent("progress");
   await expect(video).toHaveJSProperty("currentTime", 20);
   await expect(page.locator("[data-player-status]")).toBeVisible();
+  // WebKit can deliver the preparation's queued playing event after pause and seek.
+  await video.dispatchEvent("playing");
+  await expect(video).toHaveJSProperty("paused", true);
+  await expect(page.locator("[data-player-status]")).toBeVisible();
   await page.evaluate(() => (window as Window & {setReadyState: (value: number) => void}).setReadyState(3));
   await video.dispatchEvent("canplay");
   await expect(page.locator("[data-player-status]")).toBeHidden();
@@ -105,6 +109,10 @@ for (const readyState of [1, 3]) test(`Safari startup keeps the required gesture
   }, readyState);
   await video.dispatchEvent("loadstart");
   await page.clock.runFor(2_000);
+  await expect(play).toBeVisible();
+  await expect(status).toBeHidden();
+  await video.dispatchEvent("seeking");
+  await video.dispatchEvent("seeked");
   await expect(play).toBeVisible();
   await expect(status).toBeHidden();
   await page.evaluate(() => {

@@ -60,7 +60,8 @@ test("Owner hides other languages and English forced subtitles from a populated 
     const items = library;
     const movie = items.items?.find((item) => item.title === title);
     expect(movie?.id, `${title} is in the playable library`).toBeTruthy();
-    await page.goto(`/watch/${movie!.id}`);
+    // The container fixture uses FFV1, which WebKit cannot decode directly.
+    await page.goto(`/watch/${movie!.id}?compatible=1`);
     await page.getByRole("button", { name: "Settings", exact: true }).click();
     await expect(page.locator("[data-subtitles] option")).toHaveCount(2);
   } finally {
