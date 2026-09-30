@@ -67,6 +67,29 @@ test("landscape search stays reachable before and after focus on signed-in pages
   }
 });
 
+test("long Server names preserve landscape header controls", { tag: "@smoke" }, async ({ page }, info) => {
+  for (const width of [720, 390]) {
+    await page.setViewportSize({ width, height: 450 });
+    await page.goto("/?view=movies");
+    for (const name of ["Kinosail QA Server", "A".repeat(64)]) {
+      await page.locator(".brand-lockup h1").evaluate((element, text) => { element.textContent = text; }, name);
+      const supporter = page.locator(".app-header > .mobile-supporter");
+      await expect(supporter).toBeVisible();
+      const layout = await supporter.evaluate(element => {
+        const support = element.getBoundingClientRect();
+        const search = document.querySelector(".app-header > .search")!.getBoundingClientRect();
+        const brand = document.querySelector(".app-header > .brand-lockup")!.getBoundingClientRect();
+        return { left: support.left, right: support.right, search: search.left,
+          brand: brand.right, viewport: innerWidth };
+      });
+      expect(layout.left).toBeGreaterThanOrEqual(layout.brand);
+      expect(layout.right).toBeLessThanOrEqual(layout.search);
+      expect(layout.right).toBeLessThanOrEqual(layout.viewport);
+      await page.screenshot({ path: info.outputPath(`${width}-server-name-${name.length}.png`) });
+    }
+  }
+});
+
 // Compare rendered canvas pixels; WebKit can report a painted body background as "none".
 async function hasCanvasArtwork(page: Page): Promise<boolean> {
   const clip = { x: page.viewportSize()!.width - 4, y: 200, width: 4, height: 40 };

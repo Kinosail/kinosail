@@ -1,13 +1,14 @@
 # Kinosail deep QA — September 30, 2026
 
-This audit found and fixed four confirmed defects. It does not establish that every product path or device is free of bugs.
+This audit found and fixed five confirmed defects. It does not establish that every product path or device is free of bugs.
 
 ## Run record
 
 - Scope: Player, Subtitles, shared Go packages, Apple clients, and Android clients. Dashboard is absent from current main.
 - Starting revision: `55c0b765c16eb68a403b1a8f4c76f8a71340bdad`.
 - Fix commit: `b6288a48`; reconciled source and final host binaries: `d95bf65a4d4b9f3cd9462ddf489bcbce8ee1bc1f`.
-- Reconciled upstream: `77494fdff25d5e97a6d1f8e87a0659eb31dc990a`.
+- Reconciled upstream: `77494fdff25d5e97a6d1f8e87a0659eb31dc990a`, then `2a62a537a` (UI polish and HLS speed fixes).
+- Second reconciled app binaries: `4b92154499531410a596ad2b2db705c9abeace7d`; final landscape header follow-up is recorded separately below.
 - Environment: macOS ARM64, Xcode 27, iOS 27, tvOS 27, installed Android API 36 images, repository-pinned Playwright 1.63.
 - Local evidence: `.verification/deep-qa-20260930/` in the task checkout. This directory is ignored and contains private disposable session state.
 - Test data: generated fictional movies, episodes, music, audiobooks, books, photos, and a loopback metadata provider. Native captures use the existing fictional preferences fixture.
@@ -70,6 +71,17 @@ The shell now distinguishes the normal attribute and makes main content programm
 - Final green: `setup-skip-final.log`, 21 total instruction and keyboard checks across three browsers.
 - The keyboard check activates the visible skip link with Enter and asserts the main content receives focus. Phone instructions and skip navigation are selected by hosted smoke checks.
 
+### QA-005 — Long Server names hide the landscape Support link (medium; fixed)
+
+The reconciled landscape header let the brand column consume the space needed by Support. A normal eighteen-character Server name reproduced the overlap at 390px in Chromium, Firefox and WebKit. A sixty-four-character name also overflowed at 720px.
+
+The header now reserves the Support column and truncates the brand within the remaining space. The Player stylesheet version advances to `electric-39`, including the album adapter and existing cache-version contracts.
+
+- Red: `player-reconciled-ui.log`, three browsers; `header-names-red.log`, focused long-name bounds.
+- Green: `header-names-green.log`, nine checks across three browsers. Existing landscape keyboard behavior remains covered.
+- The added smoke check exercises eighteen- and sixty-four-character names at 390px and 720px and saves rendered screenshots.
+- Source/cache contracts: `player-header-cache-tests.log` passed.
+
 ## Verification
 
 | Surface | Result | Evidence and limits |
@@ -79,9 +91,10 @@ The shell now distinguishes the normal attribute and makes main content programm
 | Vulnerabilities | No reachable vulnerabilities | Scanner also reported one unused required-module advisory; see `packages-remainder.log` |
 | Player Go suite | All packages passed again after the setup and skip-navigation fixes | `player-source-setup-skip-final.log`; server suite 387 seconds. Earlier run: `player-source-final.log` |
 | Subtitles Go suite | All packages passed | `subtitles-source-final.log`; server suite 187 seconds |
-| Reconciliation | Catalog/metadata/operations checks and both app HTTP race regressions passed | `reconciled-packages.log`, `reconciled-player.log`, `reconciled-subtitles.log` |
+| Reconciliation | Catalog/metadata/operations checks and both app HTTP race regressions passed; final Player metadata/TMDB/shell/HLS race checks passed | `reconciled-packages.log`, `reconciled-player.log`, `reconciled-subtitles.log`, `player-final-reconciliation.log` |
 | Source cap and shell scripts | Passed | `max-loc.log`, `subtitles-shellcheck.log` |
-| Badge and conditional browser matrix | 45 passed across Chromium, Firefox, WebKit | Loaded and failed artwork; 320–1440px; saved renders |
+| Reconciled Subtitles badge, conditional and shell matrix | 48 passed across Chromium, Firefox, WebKit | `subtitles-reconciled-ui.log`; loaded and failed artwork, pending/empty/error states and shell polish; 320–1440px |
+| Reconciled Player setup, skip and masthead matrix | 33 passed; three new landscape failures were reproduced and fixed | `player-reconciled-ui.log`, followed by all nine `header-names-green.log` checks passing |
 | Player complete beta route audit at 390px and 1440px | 18 passed | `beta-fixed.log`; includes library, utilities, configuration, onboarding, media detail/reader, playlists and collections |
 | Player populated Chromium journey set | 61 passed, one failed | Playback, seeking/startup/bandwidth, navigation, keyboard, themes, MFA, Quick Connect, checkout and responsive views; `player-populated-final.log` |
 | Player masthead fixture | Six checks passed after isolating continued playback | `masthead-fixture-green.log`; prior failures came from earlier media progress. Exact feature and geometry assertions remain |
@@ -94,7 +107,8 @@ The shell now distinguishes the normal attribute and makes main content programm
 | Android source | Phone, watchcore and Wear unit tests passed; app and Wear debug/instrumentation APK builds passed | `android-baseline.log`, `android-emulator-build.log`, `android-wear-build.log` |
 | Android phone emulator | Four instrumentation checks passed; populated connection, home, search, detail and short movie playback observed | `android-phone-instrumentation.log`, `android-phone-extra-instrumentation-second.log`, saved XML and screenshots; API 36 read-only task overlay, debug app only |
 | Android TV emulator | One accessibility instrumentation check passed; populated pairing, home and D-pad scrolling observed | `android-tv-instrumentation.log`, `android-tv-loaded.png`, `android-tv-down.png`; playback was not proven |
-| Android reader, tablet and Wear runtime | Incomplete | Host disk and memory pressure interrupted reader/tablet capture. Wear APKs built; its emulator has not run |
+| Wear emulator | Two accessibility instrumentation checks passed; disconnected and scrolled empty views inspected | `android-wear-instrumentation.log`, saved API 36 renders; debug data cleared only inside the read-only task overlay |
+| Android reader and tablet runtime | Incomplete | Host disk and memory pressure interrupted reader/tablet capture; stale/null UI roots are excluded from evidence |
 | Containers | Blocked before build | Podman VM full; test-instance build failed creating a temporary builder directory |
 | Local changed-app gates | Both stopped at the full shared lint gate | `player-verify-changed.log`, `subtitles-verify-changed.log`; 113 repository-wide findings. No gate override was used |
 | Design detector | Two unchanged border-style findings retained | `badge-ui-lint.log`; owned recognition and error status use these accents |
@@ -103,7 +117,7 @@ The larger Subtitles follow-up (`subtitles-fixtures-final.log`) passed nine chec
 
 The initial broad browser runs are diagnostic evidence, not passing suites. They included copied Player routes in Subtitles, stale numeric CSS expectations, already-initialized setup state, and connection failures during the metadata storm. Their raw logs are retained separately.
 
-The final follow-up run record is `followup-run-record.json`. Phone and TV AVDs used read-only overlays and were stopped after evidence capture. The existing release app and unrelated simulators were preserved. Android used a task-only HTTP loopback proxy to the host HTTPS server; this does not prove native certificate trust.
+The final follow-up run record is `followup-run-record.json`. Phone, TV and Wear AVDs used read-only overlays and were stopped after evidence capture. The existing release app and unrelated simulators were preserved. Android used a task-only HTTP loopback proxy to the host HTTPS server; this does not prove native certificate trust.
 
 Native loaded, pending, empty, error, large-text, reader, photo, preference, approval, and casting views were inspected from populated captures. Some snapshots labelled `supporter-failed` were taken during request retries and still show pending geometry; they do not prove the terminal failure render. Physical interaction and media decoder behavior remain separate boundaries.
 
@@ -134,7 +148,7 @@ Apple runs used task-owned simulators, `xcodebuild test`, isolated DerivedData, 
 ## Remaining work
 
 - Reclaim storage with authorization, then run container startup/media/API checks and the supported populated browser matrix against exact images.
-- Complete remaining Android reader, tablet, TV playback and Wear journeys, plus Apple TV remote and watchOS interaction journeys.
+- Complete remaining Android reader, tablet and TV playback journeys, paired Wear remote/heart-rate interaction, Apple TV remote and watchOS interaction journeys.
 - Repeat the broad browser matrices with adequate host resources and all required fixture directories. Masthead, cleanup and canonical-origin setup defects have focused passing evidence.
 - Exercise physical codecs, HDR, hardware acceleration, AirPlay, casting, PiP/background playback, long playback, and paid activation on suitable devices.
 - Record required GitHub checks, merged source ancestry, image publication, and any later deployment as separate evidence.
