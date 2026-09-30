@@ -591,3 +591,10 @@ At commit `6b94c0f5764a00889f44bbb29e94515d791152f9`, `go -C apps/player test -c
 
 
 The required post-commit Player `make verify-changed` then passed caps, diff checks, server compilation, and all selected maintenance tests. It stopped at the same 112 existing shared lint findings, after 69.727 seconds. Shared consumer, container, and later stages did not run through this command. Separate full Player/shared/Subtitles and catalog race results above remain distinct. Changed-code lint passed with zero issues after the final fixture edit. No gate was disabled or bypassed.
+
+
+## Hosted image scan and runtime dependency repair
+
+PR [#388](https://github.com/Kinosail/kinosail/pull/388), first CI run `36772388322`, failed all four production image scans. Each reported six HIGH findings: two OpenSSL CVEs across `libssl3t64`, `openssl`, and `openssl-provider-legacy`. The images contained `3.5.7-1~deb13u2`. Runtime path tests did not run after those scan failures.
+
+Debian's trackers for [CVE-2026-75804](https://security-tracker.debian.org/tracker/CVE-2026-75804) and [CVE-2026-84782](https://security-tracker.debian.org/tracker/CVE-2026-84782) identify trixie security version `3.5.7-1~deb13u3` as fixed. Both runtime Containerfiles already update and upgrade packages. Their unchanged package layers can still be reused from the build cache. A minimum-version check beside the existing libaom check invalidates that layer and rejects an unpatched repository. Required scans and real runtime paths remain the complete dependency and behavior verification. This delivery repair has no measured performance claim. The original scan logs remain private.
