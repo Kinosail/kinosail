@@ -26,6 +26,16 @@ Five samples reduce allocated bytes from approximately 4.71 MB to 2.83 MB per br
 
 A separate known-title navigation benchmark still allocates about 1.88 MB and 28,962–28,964 objects for an exact-title search across 10,000 titles. Concurrent builds heavily affected wall time. Its raw samples are preserved as a follow-up baseline, without a before/after latency claim.
 
+### Reuse the owned catalog snapshot
+
+The search profile also identifies two candidate arrays. Browsing already projects visibility, progress, and list state into detached request-owned storage. Filtering then allocates another array with the same capacity.
+
+The application path now compacts its owned snapshot after releasing profile locks. The public `Browse.Apply` operation still copies caller-owned input before selection. This removes one array without adding shared mutable storage, cached pages, or invalidation rules. A focused regression detects input mutation by an unsafe implementation.
+
+Three-sample handler benchmarks show approximately 400 KB fewer allocated bytes at 10,000 titles. Web browse changes from 2.83 MB to 2.43 MB, and web exact-title search from 1.88 MB to 1.48 MB. Native JSON browse changes from about 2.17 MB to 1.77 MB, and search from 1.38 MB to 0.97 MB. At 100,000 titles, the native API saves about 4 MB per request. Response byte counts stay unchanged.
+
+The shared host was running other builds, and wall-clock samples vary substantially. These results prove allocation reductions, not interaction or frame latency. The [raw evidence](evidence/player-performance-frontiers-2026-09-30.md) preserves all samples, including slower ones. The [official Go GC guide](https://go.dev/doc/gc-guide) explains the connection between heap allocation and collection work; reduced pauses remain an inference requiring runtime measurements here.
+
 ## Current primary-source research
 
 These findings are research inputs. Paper results are not Kinosail results.

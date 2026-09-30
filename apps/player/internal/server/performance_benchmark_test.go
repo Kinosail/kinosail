@@ -19,7 +19,7 @@ func ownerRequest(target string) *http.Request {
 }
 
 func TestLargeLibraryWebResponseIsBounded(t *testing.T) {
-	items := benchmarkLibraryItems()
+	items := benchmarkLibraryItems(10_000)
 	index := memoryLibraryIndex(items, true)
 	response := httptest.NewRecorder()
 	showHome(index, newProgressStore(""), newListStore(""), newSettingsStore("", "", "", nil), nil, false)(response, ownerRequest("/?view=movies"))
@@ -29,7 +29,7 @@ func TestLargeLibraryWebResponseIsBounded(t *testing.T) {
 }
 
 func TestLargeLetterBucketRemainsBoundedAndPageable(t *testing.T) {
-	items := benchmarkLibraryItems()
+	items := benchmarkLibraryItems(10_000)
 	index := memoryLibraryIndex(items, true)
 	handler := showHome(index, newProgressStore(""), newListStore(""), newSettingsStore("", "", "", nil), nil, false)
 	response := httptest.NewRecorder()
@@ -45,7 +45,7 @@ func TestLargeLetterBucketRemainsBoundedAndPageable(t *testing.T) {
 }
 
 func BenchmarkLargeLibraryBrowse(b *testing.B) {
-	items := benchmarkLibraryItems()
+	items := benchmarkLibraryItems(10_000)
 	index := memoryLibraryIndex(items, true)
 	handler := showHome(index, newProgressStore(""), newListStore(""), newSettingsStore("", "", "", nil), nil, false)
 	request := ownerRequest("/?view=movies")
@@ -60,7 +60,7 @@ func BenchmarkLargeLibraryBrowse(b *testing.B) {
 }
 
 func BenchmarkLargeLibraryKnownTitleNavigation(b *testing.B) {
-	items := benchmarkLibraryItems()
+	items := benchmarkLibraryItems(10_000)
 	index := memoryLibraryIndex(items, true)
 	handler := showHome(index, newProgressStore(""), newListStore(""), newSettingsStore("", "", "", nil), nil, false)
 	for name, target := range map[string]string{"search": "/?view=movies&q=Movie+9999", "letter": "/?view=movies&letter=M"} {
@@ -78,8 +78,8 @@ func BenchmarkLargeLibraryKnownTitleNavigation(b *testing.B) {
 	}
 }
 
-func benchmarkLibraryItems() []library.Item {
-	items := make([]library.Item, 10_000)
+func benchmarkLibraryItems(count int) []library.Item {
+	items := make([]library.Item, count)
 	for index := range items {
 		id := strconv.Itoa(index)
 		items[index] = library.Item{ID: id, Kind: "video", Title: "Movie " + id, Year: "2026"}
