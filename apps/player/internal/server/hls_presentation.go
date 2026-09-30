@@ -30,7 +30,6 @@ func (manager *hlsManager) encodePresentation(ctx context.Context, item library.
 	if start > 0 {
 		arguments = append(arguments, "-ss", ffmpegSeconds(start))
 	}
-	arguments = append(arguments, "-readrate_initial_burst", "12", "-readrate", "1")
 	arguments = append(arguments, "-i", item.Path)
 	encoderThreads := max(1, runtime.GOMAXPROCS(0)/len(qualities))
 	for index, quality := range qualities {
