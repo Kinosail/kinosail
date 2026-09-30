@@ -116,7 +116,7 @@ Recognition now aborts its previous read on navigation swaps and cancels the cur
 | tvOS simulator | 257 tests in 52 suites passed | `tvos-baseline.log`, `tvos-baseline.xcresult`; includes rendered focus regressions, not a full remote playback journey |
 | Android source | Phone, watchcore and Wear unit tests passed; app and Wear debug/instrumentation APK builds passed | `android-baseline.log`, `android-emulator-build.log`, `android-wear-build.log` |
 | Android phone emulator | Four instrumentation checks passed; populated connection, home, search, detail and short movie playback observed | `android-phone-instrumentation.log`, `android-phone-extra-instrumentation-second.log`, saved XML and screenshots; API 36 read-only task overlay, debug app only |
-| Android TV emulator | One accessibility instrumentation check passed; populated pairing, home and D-pad scrolling observed | `android-tv-instrumentation.log`, `android-tv-loaded.png`, `android-tv-down.png`; playback was not proven |
+| Android TV emulator | One accessibility instrumentation check passed; pairing, populated Home, D-pad scrolling, short decoded video playback and Back navigation observed | Earlier captures plus `android-tv-followup-loaded.png`, two changing playback frames and `android-tv-followup-return.xml`; current clean Player source `dc8744db5`, current Android APK, read-only overlay. Full playback-control and long-session behavior remain unverified |
 | Wear emulator | Two accessibility instrumentation checks passed; disconnected and scrolled empty views inspected | `android-wear-instrumentation.log`, saved API 36 renders; debug data cleared only inside the read-only task overlay |
 | Android reader and tablet rendering | Fresh retry passed EPUB unsupported-state transitions twice; PDF rendered at tablet portrait and landscape sizes | `android-reader-retry-open.png`, repeated XML, `android-tablet-pdf-loaded.png`, `android-tablet-pdf-landscape.png`; phone AVD geometry override, not separate tablet hardware |
 | Containers | Blocked before build | Podman VM full; test-instance build failed creating a temporary builder directory |
@@ -138,6 +138,8 @@ Native loaded, pending, empty, error, large-text, reader, photo, preference, app
 The manual deep run `36750352124` caught three additional verification problems. The Supporter lifecycle mismatch exposed QA-006 above. Subtitles created its private HTML fixtures inside the media bind mount, making scans fail with `open /media/ui-fixtures: permission denied`. The container script now keeps those fixtures in its separate temporary artifact root; it retains private permissions and the exact cleanup assertions.
 
 The Player maintenance regression failed because startup maintenance pruned its deliberately over-limit cache before the test started a stream. `maintenance-race-reproduction.log` reproduced this repeatedly, and `maintenance-before-stream-diagnostic.log` confirms pruning before the media request. The test now invokes the same automatic operation explicitly with its background scheduler disabled, and always releases its blocked response writer. Separate tests still verify scheduled eviction and startup lifecycle behavior. This is a test setup correction, not a confirmed production playback failure.
+
+The next deep run passed the scan but reached a later cleanup conflict. Browser-created sidecars were owned by the runner and lacked write access for container UID 10001. Linux protected hardlinks reject the cleanup operation under those permissions. The two temporary cleanup files now receive writable test permissions before confirmation; an attached artifact records their owner and before/after modes. Production no-overwrite safeguards stay intact. Hosted reruns are required to confirm this diagnosis.
 
 ## Repeatable commands
 
@@ -168,7 +170,7 @@ Upstream native QA evidence from PR #383 is retained in `engineering/qa/2026-09-
 ## Remaining work
 
 - Reclaim storage with authorization, then run container startup/media/API checks and the supported populated browser matrix against exact images.
-- Complete longer Android reading, comic, TV playback and paired Wear remote/heart-rate journeys, Apple TV remote and watchOS interaction journeys.
+- Complete longer Android reading, comic, full TV playback-control and paired Wear remote/heart-rate journeys, Apple TV remote and watchOS interaction journeys.
 - Repeat the broad browser matrices with adequate host resources and all required fixture directories. Masthead, cleanup and canonical-origin setup defects have focused passing evidence.
 - Exercise physical codecs, HDR, hardware acceleration, AirPlay, casting, PiP/background playback, long playback, and paid activation on suitable devices.
 - Finish required and manual deep GitHub checks, then record merged source ancestry, image publication, and any later deployment as separate evidence.

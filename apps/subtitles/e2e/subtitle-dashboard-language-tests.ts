@@ -1,6 +1,6 @@
 import AxeBuilder from "@axe-core/playwright";
 import { expect, test } from "@playwright/test";
-import { access, readFile, unlink, writeFile } from "node:fs/promises";
+import { access, chmod, readFile, stat, unlink, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 import { compactViewports, expectNoHorizontalOverflow, expectSkipLinkOffscreen, initiallyOccludedTargets, occludedTargets, setSubtitleLanguages, supportedViewports } from "./subtitle-dashboard-helpers";
 
@@ -34,6 +34,17 @@ test("Owner hides other languages and English forced subtitles from a populated 
   await writeFile(spanish, "1\n00:00:01,000 --> 00:00:02,000\nHola\n");
   await writeFile(forced, "1\n00:00:01,000 --> 00:00:02,000\nSigns\n");
   if (addedEnglish) await writeFile(addedEnglish, "1\n00:00:01,000 --> 00:00:02,000\nHello\n");
+  if (containerMedia) {
+    // The container UID needs write access for Linux's protected no-overwrite hardlink move.
+    const permissions = [];
+    for (const path of [spanish, forced]) {
+      const before = await stat(path);
+      await chmod(path, 0o666);
+      const after = await stat(path);
+      permissions.push({ uid: before.uid, gid: before.gid, before: before.mode & 0o777, after: after.mode & 0o777 });
+    }
+    await testInfo.attach("cleanup-fixture-permissions.json", { body: JSON.stringify(permissions), contentType: "application/json" });
+  }
   try {
     expect(await rescan()).toBe(200);
     await page.setViewportSize({ width: 390, height: 844 });
