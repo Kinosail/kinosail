@@ -40,7 +40,8 @@ func TestAutomaticMaintenanceDefersHeavyWorkWhileStreaming(t *testing.T) {
 	if err := os.WriteFile(filepath.Join(mediaDir, "Arrival.mp4"), []byte("video"), 0o600); err != nil {
 		t.Fatal(err)
 	}
-	handler := server.New(server.Config{Lifecycle: t.Context(), MediaDir: mediaDir, DataDir: t.TempDir(), CacheDir: cacheDir, MaintenanceInterval: time.Hour, TranscodeCacheLimit: 1})
+	// Explicit upkeep tests the streaming guard; lifecycle tests cover background scheduling.
+	handler := server.New(server.Config{MediaDir: mediaDir, DataDir: t.TempDir(), CacheDir: cacheDir, MaintenanceInterval: time.Hour, TranscodeCacheLimit: 1})
 	home := httptest.NewRecorder()
 	handler.ServeHTTP(home, httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/", nil))
 	match := regexp.MustCompile(`/(?:watch|item)/([a-f0-9]+)`).FindStringSubmatch(home.Body.String())
@@ -50,6 +51,10 @@ func TestAutomaticMaintenanceDefersHeavyWorkWhileStreaming(t *testing.T) {
 	id := match[1]
 	stream := &blockingResponseWriter{header: make(http.Header), started: make(chan struct{}), release: make(chan struct{})}
 	done := make(chan struct{})
+	t.Cleanup(func() {
+		close(stream.release)
+		<-done
+	})
 	go func() {
 		handler.ServeHTTP(stream, httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/media/"+id, nil))
 		close(done)
@@ -59,9 +64,7 @@ func TestAutomaticMaintenanceDefersHeavyWorkWhileStreaming(t *testing.T) {
 	case <-time.After(time.Second):
 		t.Fatal("media stream did not start")
 	}
-	defer func() { close(stream.release); <-done }()
-	// Startup upkeep may legitimately prune idle cache before streaming begins.
-	// Create this entry only after the public media request holds the busy guard.
+	// Establish an over-budget cache while the stream is blocked and active.
 	if err := os.MkdirAll(filepath.Dir(cacheFile), 0o700); err != nil {
 		t.Fatal(err)
 	}
