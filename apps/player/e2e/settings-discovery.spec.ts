@@ -11,7 +11,7 @@ test("settings search crosses levels and preserves unsaved preferences", async (
  await page.locator('[data-settings-nav] a[href="#general"]').click();
  const originalName = await page.getByRole("textbox", { name: "Server name", exact: true }).inputValue();
  await page.getByRole("textbox", { name: "Server name", exact: true }).fill("Unsaved name");
- await page.keyboard.press("Tab");
+ await page.locator('[data-settings-nav] a[href="#general"]').focus();
  await page.keyboard.press("/");
  await expect(search).toBeFocused();
  for (const query of ["remote access", "session timeout", "mfa"]) {

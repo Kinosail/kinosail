@@ -105,22 +105,29 @@ test("Display settings persist through the web form and API", async ({ page }) =
     const response = await route.fetch();
     const original = await response.text();
     const csrf = original.match(/<meta name="kinosail-csrf" content="([^"]+)"/);
-    const rendered = csrf ? body.replace('</head>', `${csrf[0]}></head>`).replace('action="/supporter/display">', `action="/supporter/display"><input type="hidden" name="_csrf" value="${csrf[1]}">`) : body;
+    const { display } = await (await page.request.get("/api/v1/supporter/display")).json();
+    const selected = display === "hidden" ? "hidden" : "automatic";
+    const current = body.replace(/(<option value="(?:automatic|hidden)")\s+selected/g, "$1")
+      .replace(`<option value="${selected}"`, `<option value="${selected}" selected`);
+    const rendered = csrf ? current.replace('</head>', `${csrf[0]}></head>`).replace('action="/supporter/display">', `action="/supporter/display"><input type="hidden" name="_csrf" value="${csrf[1]}">`) : current;
     await route.fulfill({ response, contentType: "text/html", body: rendered });
   });
   await page.goto("/supporter");
   const setting = page.getByLabel("Show supporter badges around the app");
   const original = (await (await page.request.get("/api/v1/supporter/display")).json()).display;
   try {
-    await setting.uncheck();
+    await setting.selectOption("hidden");
+    await page.getByRole("button", { name: "Save display choice", exact: true }).click();
+    await expect(page).toHaveURL(/\/supporter#recognition$/);
     await expect.poll(async () => (await (await page.request.get("/api/v1/supporter/display")).json()).display).toBe("hidden");
-    await expect(page.locator("[data-supporter-visibility-status]")).toContainText("Saved.");
     await page.reload();
-    await expect(setting).not.toBeChecked();
-    await setting.check();
+    await expect(setting).toHaveValue("hidden");
+    await setting.selectOption("automatic");
+    await page.getByRole("button", { name: "Save display choice", exact: true }).click();
+    await expect(page).toHaveURL(/\/supporter#recognition$/);
     await expect.poll(async () => (await (await page.request.get("/api/v1/supporter/display")).json()).display).toBe("automatic");
     await page.reload();
-    await expect(setting).toBeChecked();
+    await expect(setting).toHaveValue("automatic");
   } finally {
     const status = await page.evaluate(async display => {
       const csrf = document.querySelector<HTMLMetaElement>('meta[name="kinosail-csrf"]')!.content;

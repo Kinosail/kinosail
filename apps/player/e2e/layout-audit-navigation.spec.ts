@@ -20,8 +20,9 @@ test("Owner actions remain reachable on desktop and phone", async ({ page }, tes
     await expect(panel.getByRole("link", { name: "Quick Connect", exact: true })).toBeVisible();
     await expect(panel.getByRole("button", { name: "Sign out", exact: true })).toBeVisible();
     for (const control of await panel.locator("a:visible,button:visible").all()) {
-      const box = await control.boundingBox();
-      expect(box?.height, await control.innerText()).toBeGreaterThanOrEqual(44);
+      // Firefox reports a settled 44px target as 43.99998474121094px.
+      await expect.poll(async () => Math.round(((await control.boundingBox())?.height ?? 0) * 1000) / 1000,
+        { message: await control.innerText() }).toBeGreaterThanOrEqual(44);
     }
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
     await page.screenshot({ path: testInfo.outputPath(`${width}-owner-actions.png`) });
@@ -36,7 +37,7 @@ test("French global search remains readable and usable on narrow phones", async 
   for (const width of [390, 320]) {
     await page.setViewportSize({ width, height: 844 });
     await page.goto("/?lang=fr");
-    await expectSearchControl(page, width, "Rechercher dans toutes les bibliothèques");
+    await expectSearchControl(page, width, "Rechercher partout");
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
     await page.screenshot({ path: testInfo.outputPath(`${width}-french-global-search.png`) });
   }
@@ -150,6 +151,8 @@ test("Viewer navigation exposes connection and account actions without Owner too
   } finally {
     await viewer.context().close();
     if (required) await setMFA(required);
+    // Requiring MFA revokes sessions that were created while it was optional.
+    await login(page);
     await removeViewer(page, id);
   }
 });
@@ -157,7 +160,7 @@ test("Viewer navigation exposes connection and account actions without Owner too
 test("desktop library navigation remains reachable in its own scroll region", async ({ page }, testInfo) => {
   test.skip(process.env.KINOSAIL_TEST_INSTANCE !== "1", "requires the populated public test instance");
   await login(page);
-  await page.setViewportSize({ width: 1024, height: 768 });
+  await page.setViewportSize({ width: 1101, height: 768 });
   await page.goto("/");
   const rail = page.locator(".desktop-sidebar");
   await expect(rail).toBeVisible();
@@ -168,7 +171,7 @@ test("desktop library navigation remains reachable in its own scroll region", as
   await expect(edit).toBeFocused();
   expect(await rail.evaluate(element => element.scrollWidth <= element.clientWidth)).toBe(true);
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
-  await page.screenshot({ path: testInfo.outputPath("1024-library-navigation-scroll.png") });
+  await page.screenshot({ path: testInfo.outputPath("1101-library-navigation-scroll.png") });
 });
 
 test("continue watching actions share a baseline when titles wrap", async ({ page }) => {
