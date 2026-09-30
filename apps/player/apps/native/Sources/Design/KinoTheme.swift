@@ -43,6 +43,22 @@ enum KinoTheme {
         #endif
     }
 
+    static var mediaTitleHeight: CGFloat? {
+        #if os(tvOS)
+        UIFont.preferredFont(forTextStyle: .headline).lineHeight * 2
+        #else
+        nil
+        #endif
+    }
+
+    static var shelfHeadingHeight: CGFloat? {
+        #if os(tvOS)
+        UIFont.preferredFont(forTextStyle: .title2).lineHeight
+        #else
+        nil
+        #endif
+    }
+
     private static func adaptive(dark: UInt32, light: UInt32, highDark: UInt32? = nil, highLight: UInt32? = nil) -> Color {
         Color(uiColor: UIColor { traits in
             let increased = traits.accessibilityContrast == .high

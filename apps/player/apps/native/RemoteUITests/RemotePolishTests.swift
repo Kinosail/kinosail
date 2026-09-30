@@ -33,6 +33,43 @@ final class RemotePolishTests: RemoteTestCase {
     }
 
     @MainActor
+    func testAudioOptionsKeepUnfocusedLabelsLegible() {
+        let app = XCUIApplication(bundleIdentifier: "com.kinosail.player")
+        let remote = XCUIRemote.shared
+        app.launch()
+        XCTAssertTrue(app.buttons["Search"].waitForExistence(timeout: 15))
+        remote.press(.down)
+        remote.press(.down)
+        remote.press(.right)
+        remote.press(.right)
+        remote.press(.select)
+        XCTAssertTrue(app.staticTexts["Albums"].waitForExistence(timeout: 10))
+        remote.press(.select)
+        XCTAssertTrue(app.staticTexts["Tracks"].waitForExistence(timeout: 10))
+        remote.press(.select)
+        XCTAssertTrue(app.buttons["Back 15 seconds"].waitForExistence(timeout: 20))
+        for _ in 0..<5 {
+            let focused = app.buttons.matching(NSPredicate(format: "hasFocus == true")).firstMatch
+            if focused.label == "Shuffle off" || focused.label == "Repeat: off" { break }
+            remote.press(.down)
+        }
+        let sleep = app.buttons["Sleep timer"]
+        XCTAssertTrue(sleep.exists)
+        XCTAssertFalse(sleep.hasFocus)
+        let frame = sleep.frame.insetBy(dx: 25, dy: 15)
+        let image = app.screenshot().image
+        var lightSamples = 0
+        for x in stride(from: frame.minX, through: frame.maxX, by: 3) {
+            for y in stride(from: frame.minY, through: frame.maxY, by: 3) {
+                let color = pixel(image, x: x / image.size.width, y: y / image.size.height)
+                if color[0] > 220 && color[1] > 220 && color[2] > 220 { lightSamples += 1 }
+            }
+        }
+        XCTAssertGreaterThan(lightSamples, 20, "An unfocused option must keep a readable light label")
+        record("audio option focus and neighboring labels", app)
+    }
+
+    @MainActor
     func testMovieAndShowHeroArtworkActuallyRenders() {
         let app = XCUIApplication(bundleIdentifier: "com.kinosail.player")
         let remote = XCUIRemote.shared

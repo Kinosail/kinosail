@@ -104,6 +104,7 @@ struct MediaCard: View {
                     Text(item.title).font(.headline).foregroundStyle(KinoTheme.text)
                         .mediaLineLimit(2, accessibility: dynamicTypeSize.isAccessibilitySize)
                         .frame(maxWidth: .infinity, alignment: .leading)
+                        .frame(minHeight: KinoTheme.mediaTitleHeight, alignment: .topLeading)
                     let subtitle = item.kind == .video || item.kind == .show ? item.subtitleWithoutYear : item.subtitle
                     if !subtitle.isEmpty {
                         Text(subtitle).font(.caption).foregroundStyle(KinoTheme.muted)
