@@ -95,7 +95,7 @@ for (const source of ["direct", "compatible"]) test(`blocked autoplay leaves one
 	const movie = page.getByRole("link", { name: /Example Movie/ });
 	if (source === "compatible") await page.goto(`${await movie.getAttribute("href")}?compatible=1`, { waitUntil: "domcontentloaded" });
 	else await movie.click({ noWaitAfter: true });
-	await expect(page).toHaveURL(/\/watch\/[a-f0-9]+$/);
+	await expect(page).toHaveURL(/\/watch\/[a-f0-9]+(?:\?compatible=1)?$/);
 	await expect(page.locator("[data-player-status]")).toBeVisible();
 	await page.waitForTimeout(2_000);
 	await expect(page.locator("[data-player-status]")).toBeVisible();
