@@ -1,0 +1,19 @@
+
+Running 3 tests using 1 worker
+
+(node:22433) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1/3] [chromium] › polish-shell.spec.ts:15:1 › administration uses a plain canvas while the dark subtitle workspace retains CinemaSail @smoke
+(node:22668) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[2/3] [firefox] › polish-shell.spec.ts:15:1 › administration uses a plain canvas while the dark subtitle workspace retains CinemaSail @smoke
+(node:22768) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[3/3] [webkit] › polish-shell.spec.ts:15:1 › administration uses a plain canvas while the dark subtitle workspace retains CinemaSail @smoke
+  3 passed (22.4s)
