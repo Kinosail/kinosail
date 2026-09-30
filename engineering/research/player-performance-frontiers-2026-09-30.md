@@ -40,6 +40,8 @@ The shared host was running other builds, and wall-clock samples vary substantia
 
 A dedicated tvOS 27 simulator ran the optimized app against a loopback fixture with 160 synthetic movies. The journey reverses across the Home shelf, opens Movies, traverses several grid rows, and returns to Home. Five runs passed, including assertions that Movies regains focus. Screenshots confirm populated artwork after traversal. Test durations include automation and are not input-latency measurements.
 
+The measured source revision is `eda10c42461d9985e868b0d03536e3ecc6c57c1f`. Later native changes need new measurements; merging this record does not validate their performance.
+
 An app-only Time Profiler recording produced 13,281 running-thread samples with a 1 ms weight. The main thread accounts for 9,000 samples. App symbols identify thumbnail decoding and library-response construction on other threads. These observations support the existing executor placement; they do not establish a hardware frame-time improvement.
 
 The trace also reports three potential microhangs, lasting approximately 284–434 ms. Test activation, accessibility queries, navigation, and screenshots overlap the recording. Most main-thread leaf symbols remain unresolved, even after matching the app's debug symbols. We cannot attribute these intervals confidently to a specific application update or to real-world remote latency.
