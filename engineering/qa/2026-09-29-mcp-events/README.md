@@ -40,6 +40,8 @@ Persisted authority conflicts must prevent subscription loading.
 | `golangci-lint run --allow-serial-runners --new-from-rev=origin/main ./mcpgateway/... ./liveevents/...` in `packages` | Passed after reconciliation: zero issues |
 | `make max-loc` and `git diff --check` | Passed |
 | `make -C apps/player verify-changed` | App cap, diff, compile, and focused checks passed; shared-package full lint blocked by 112 existing issues |
+| `make -C apps/subtitles verify-changed` | App cap, diff, compile, and focused checks passed; the same shared-package lint blocked completion |
+| Changed-code Subtitles server lint | Passed after reconciliation: zero issues |
 
 The full lint failures concern unchanged code, including identity, Owner access,
 public gateway, and existing MCP Profile checks. No gate marker or protection was
