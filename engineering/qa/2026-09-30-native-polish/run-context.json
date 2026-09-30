@@ -20,7 +20,9 @@
     "changed-app": "make -C apps/player verify-changed",
     "android-real-library": "adb -s emulator-5572 shell am instrument -w -r -e class com.kinosail.player.mobile.PolishLiveJourneyTest com.kinosail.player.dev.test/androidx.test.runner.AndroidJUnitRunner",
     "android-accessibility": "adb -s emulator-5572 shell am instrument -w -r -e class com.kinosail.player.mobile.MobileAccessibilityTest,com.kinosail.player.core.PlaybackContentAccessibilityTest com.kinosail.player.dev.test/androidx.test.runner.AndroidJUnitRunner",
-    "android-cast": "adb -s emulator-5572 shell am instrument -w -r -e class com.kinosail.player.mobile.CastChooserTest com.kinosail.player.dev.test/androidx.test.runner.AndroidJUnitRunner"
+    "android-cast": "adb -s emulator-5572 shell am instrument -w -r -e class com.kinosail.player.mobile.CastChooserTest com.kinosail.player.dev.test/androidx.test.runner.AndroidJUnitRunner",
+    "tvos-lifecycle": "xcodebuild -project Kinosail.xcodeproj -scheme Kinosail-tvOS -destination platform=tvOS Simulator,id=8D8C36D3-B5B6-4056-A411-6297A60A78AC -only-testing:Kinosail-tvOSTests/TVPolishGalleryTests -derivedDataPath .build/tvos-simulator CODE_SIGNING_ALLOWED=YES CODE_SIGN_IDENTITY=- test",
+    "watch_protocol": "xcodebuild -project Kinosail.xcodeproj -scheme Kinosail-iOS -configuration Debug -destination platform=iOS Simulator,id=4699B9B3-727E-4743-AC83-79EC750D71F7 -derivedDataPath .build/ios-simulator -only-testing:Kinosail-iOSTests/WatchRemoteTests -only-testing:Kinosail-iOSTests/WatchProgressSummaryTests CODE_SIGNING_ALLOWED=YES CODE_SIGN_IDENTITY=- test"
   },
   "results": {
     "android_unit": {
@@ -49,17 +51,28 @@
     },
     "apple_lifecycle": {
       "iphone": 8,
-      "ipad": 8
+      "ipad": 8,
+      "apple_tv": 8
     },
     "apple_ui_suite_final": "5 test functions passed in each final run",
     "tvos_combined": "6 test functions; focus test had two failed expectations",
     "tvos_focus_isolated": "1 passed",
-    "unverified": "Initial cached-progress timeout did not recur; device and deployment boundaries in report.md"
+    "unverified": "Initial cached-progress timeout did not recur; device and deployment boundaries in report.md",
+    "watch_protocol": "9 tests in 2 suites passed",
+    "watch_paired": "Simulator pair active and connected; app showed connection fallback, no playback control proof"
   },
   "artifacts": [
     {
       "path": "PolishLiveJourneyTest.kt.txt",
       "sha256": "52670a1cf0291a558eaeac71680f42b826f1471a158f30cbb5afd1ec7a0f1f3e"
+    },
+    {
+      "path": "TVPolishGalleryTests.swift.txt",
+      "sha256": "d98ee04ef33b1e191001278e01412e591a7fc4753bdc3763cf381b7a28212f5b"
+    },
+    {
+      "path": "TVPolishLoopbackFixture.swift.txt",
+      "sha256": "523992136cb293192a1bcbcb6d160ef7a2745fe3883aaade473b5d31874b0643"
     },
     {
       "path": "android-cast-chooser.log",
@@ -158,6 +171,14 @@
       "sha256": "74b34569618d5064b9ef408992b576cf04dfee87162292a50686e9389afb6179"
     },
     {
+      "path": "evidence/native-tvos-lifecycle-contact.png",
+      "sha256": "fa58a350e1c638152929c8498d18c1952171454bcf85fde6679fec63c65b46da"
+    },
+    {
+      "path": "evidence/native-watch-paired-idle.png",
+      "sha256": "06a97feec97f91449e0bcd581cc58484ded25a1edb9f1ebd597ef109dd8096d3"
+    },
+    {
       "path": "evidence/native-watch-unpaired.png",
       "sha256": "de6166c455871f6af9999d0ecd5dcb16339ed406943d4d8ca0c8b90cd6c7a314"
     },
@@ -167,7 +188,7 @@
     },
     {
       "path": "gallery.html",
-      "sha256": "3a8a4d04794faa8c6d24ce07a99ac8112bc511d4610ace31c69d309962b0d31d"
+      "sha256": "1feea9b5cdd55a8bf2b81f2ac1857c00b9d1b2b9e55af5f45fa7ba945f6e93db"
     },
     {
       "path": "library-response.json",
@@ -202,12 +223,20 @@
       "sha256": "fdce0cd662fd8c75dbaa65311bd1fa8e3a39a38c4bd4abbf3d0386c86c698baf"
     },
     {
+      "path": "native-tvos-lifecycle.log",
+      "sha256": "e98866fd11ee881f8a1c2df5ca750d92a6b2b6ec009bdca1cefb9afedb6c084e"
+    },
+    {
       "path": "native-verify-changed.log",
       "sha256": "f65d0c3f13a984f60d627e52eaf787c952d9f8fc883712168bc8aa8c0d77295c"
     },
     {
+      "path": "native-watch-protocol.log",
+      "sha256": "098be1c892743df999211ed229177de27eb6ccd19d89f3eb904d3325d0d02e3a"
+    },
+    {
       "path": "report.md",
-      "sha256": "72066c765d671da943b74e091ad2f998c26e0ab129e5d328fe6c8d88452b84ed"
+      "sha256": "62563cf1c925475730001e7c41847487dd213b9541edaeb19162b2370a225d2d"
     }
   ]
 }

@@ -1,0 +1,56 @@
+#if os(tvOS)
+import SwiftUI
+import Testing
+import UIKit
+@testable import KinosailPlayer
+
+@MainActor @Suite(.serialized) struct TVPolishGalleryTests {
+    @Test func renderLibraryLifecycles() async throws {
+        let fixture = try await PreferencesLoopbackFixture()
+        defer { fixture.listener.cancel() }
+        fixture.artwork = UIGraphicsImageRenderer(size: CGSize(width: 600, height: 900)).pngData { context in
+            UIColor.systemTeal.setFill(); context.fill(CGRect(x: 0, y: 0, width: 600, height: 900))
+        }
+        fixture.landscape = UIGraphicsImageRenderer(size: CGSize(width: 900, height: 506)).pngData { context in
+            UIColor.systemTeal.setFill(); context.fill(CGRect(x: 0, y: 0, width: 900, height: 506))
+        }
+        let keychain = SessionKeychain()
+        let previous = try await keychain.restore()
+        try await keychain.save(SavedSession(server: fixture.server, token: "isolated-test-token", viewer: fixture.viewer))
+        let session = AppSession()
+        await session.restore()
+        do {
+            let scene = try #require(UIApplication.shared.connectedScenes.first as? UIWindowScene)
+            let directory = FileManager.default.temporaryDirectory.appendingPathComponent("tv-polish-evidence")
+            try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+            let screens = [("home", AnyView(HomeScreen(selectTab: { _ in }))), ("library", AnyView(LibraryScreen(initialView: .shows)))]
+            for (state, delay, populated, failed) in [("pending", 1.5, true, false), ("loaded", 0.0, true, false), ("empty", 0.0, false, false), ("failed", 0.0, true, true)] {
+                fixture.delay = delay; fixture.populated = populated; fixture.fails = failed
+                for (name, view) in screens {
+                    await session.client?.discardMediaCache()
+                    await session.client?.invalidateCatalog()
+                    session.resourceSnapshots.clear()
+                    let previousWindow = scene.windows.first { $0.isKeyWindow }
+                    let window = UIWindow(windowScene: scene)
+                    window.rootViewController = UIHostingController(rootView: NavigationStack { view }
+                        .environment(session).environment(\.scenePhase, .active)
+                        .tint(KinoTheme.signal).preferredColorScheme(.dark))
+                    window.makeKeyAndVisible()
+                    try await Task.sleep(for: .seconds(state == "pending" ? 0.2 : state == "failed" ? 1.5 : 0.8))
+                    window.layoutIfNeeded()
+                    let image = UIGraphicsImageRenderer(bounds: window.bounds).image { _ in window.drawHierarchy(in: window.bounds, afterScreenUpdates: true) }
+                    try #require(image.pngData()).write(to: directory.appendingPathComponent(name + "-" + state + ".png"))
+                    print("TV_POLISH_RENDER \(name)-\(state) \(Int(window.bounds.width))x\(Int(window.bounds.height)) \(directory.path)")
+                    window.isHidden = true; previousWindow?.makeKey()
+                }
+            }
+        } catch {
+            if let previous { try await keychain.save(previous) } else { try await keychain.clear() }
+            await session.client?.close()
+            throw error
+        }
+        if let previous { try await keychain.save(previous) } else { try await keychain.clear() }
+        await session.client?.close()
+    }
+}
+#endif
