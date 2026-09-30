@@ -39,7 +39,7 @@ private struct HeaderBackgroundProbeScreen: View {
 }
 
 @Suite(.serialized) struct TVTopBarTests {
-    @Test @MainActor func topControlsHaveAnOpaqueHeader() throws {
+    @Test @MainActor func topControlsShareThePageBackground() throws {
         let renderer = ImageRenderer(content: HeaderBackgroundProbeScreen().frame(width: 800, height: 76)
             .environment(\.colorScheme, .dark))
         renderer.scale = 1
@@ -53,7 +53,7 @@ private struct HeaderBackgroundProbeScreen: View {
                                     bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue)!
             context.draw(pixel, in: CGRect(x: 0, y: 0, width: 1, height: 1))
         }
-        #expect(rgba[0] < 100 && rgba[1] < 100 && rgba[2] < 100)
+        #expect(rgba[0] > 240 && rgba[1] < 10 && rgba[2] > 240)
     }
 
     @Test @MainActor func homeKeepsSearchAndSettingsWithoutLibraryMenu() async throws {
