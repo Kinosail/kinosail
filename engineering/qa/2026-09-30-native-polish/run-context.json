@@ -17,7 +17,10 @@
     "apple-gallery": "TEST_RUNNER_KINOSAIL_POLISH_GALLERY=1 xcodebuild -project Kinosail.xcodeproj -scheme Kinosail-iOS -configuration Debug -destination platform=iOS Simulator,id=<task-device> -derivedDataPath .build/ios-simulator -resultBundlePath <task-result>.xcresult -only-testing:Kinosail-iOSTests/NativePreferencesUXTests CODE_SIGNING_ALLOWED=YES CODE_SIGN_IDENTITY=- test",
     "apple-lifecycle": "Same Apple command with TEST_RUNNER_KINOSAIL_POLISH_GALLERY=lifecycle",
     "tvos-focus": "xcodebuild -project Kinosail.xcodeproj -scheme Kinosail-tvOS -destination platform=tvOS Simulator,id=8D8C36D3-B5B6-4056-A411-6297A60A78AC -only-testing:Kinosail-tvOSTests/TVOSFocusTests -derivedDataPath .build/tvos-simulator CODE_SIGNING_ALLOWED=YES CODE_SIGN_IDENTITY=- test",
-    "changed-app": "make -C apps/player verify-changed"
+    "changed-app": "make -C apps/player verify-changed",
+    "android-real-library": "adb -s emulator-5572 shell am instrument -w -r -e class com.kinosail.player.mobile.PolishLiveJourneyTest com.kinosail.player.dev.test/androidx.test.runner.AndroidJUnitRunner",
+    "android-accessibility": "adb -s emulator-5572 shell am instrument -w -r -e class com.kinosail.player.mobile.MobileAccessibilityTest,com.kinosail.player.core.PlaybackContentAccessibilityTest com.kinosail.player.dev.test/androidx.test.runner.AndroidJUnitRunner",
+    "android-cast": "adb -s emulator-5572 shell am instrument -w -r -e class com.kinosail.player.mobile.CastChooserTest com.kinosail.player.dev.test/androidx.test.runner.AndroidJUnitRunner"
   },
   "results": {
     "android_unit": {
@@ -55,6 +58,10 @@
   },
   "artifacts": [
     {
+      "path": "PolishLiveJourneyTest.kt.txt",
+      "sha256": "52670a1cf0291a558eaeac71680f42b826f1471a158f30cbb5afd1ec7a0f1f3e"
+    },
+    {
       "path": "android-cast-chooser.log",
       "sha256": "d09d62268cd3b1b464347ab7a2fa28cfe2ce41ce766e2f7c395c5fac843e8e1b"
     },
@@ -81,6 +88,10 @@
     {
       "path": "android-live-repro.log",
       "sha256": "5c4be78927a3c4a005c7bcb8b35dbec3f907c000659ea229a0b1a481a8d8f2a6"
+    },
+    {
+      "path": "android-loopback-bridge.py.txt",
+      "sha256": "a5d87ac39881b90f5cda9ec39bcf048a53828eb6414a75f2e3f9ff3233db68b2"
     },
     {
       "path": "android-unit.log",
@@ -153,6 +164,10 @@
     {
       "path": "evidence/supporter-failed.png",
       "sha256": "3966d29ab299341f71dbc26a59691ffe6ba72a771af8562263f6e5e722ef1638"
+    },
+    {
+      "path": "gallery.html",
+      "sha256": "3a8a4d04794faa8c6d24ce07a99ac8112bc511d4610ace31c69d309962b0d31d"
     },
     {
       "path": "library-response.json",
