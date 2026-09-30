@@ -1,0 +1,27 @@
+{
+  "paths": [
+    "apps/subtitles/e2e/subtitle-defaults-tests.ts"
+  ],
+  "selected": {
+    "player": false,
+    "subtitles": true,
+    "packages": false,
+    "tooling": false,
+    "web": true,
+    "docs": false,
+    "client": false,
+    "android": false,
+    "supply": false,
+    "go": true,
+    "java-kotlin": false,
+    "javascript-typescript": true,
+    "python": false,
+    "actions": false,
+    "player_tools": false,
+    "player_browsers": false,
+    "player_arm": false,
+    "subtitles_tools": false,
+    "subtitles_browsers": true,
+    "subtitles_arm": false
+  }
+}

@@ -1,0 +1,16 @@
+import { test } from "@playwright/test";
+import { login } from "./subtitle-dashboard-helpers";
+import { registerSubtitleDefaultTests } from "./subtitle-defaults-tests";
+for (const serviceWorkers of ["allow", "block"] as const) {
+  test.describe(`review routing ${serviceWorkers}`, () => {
+    test.use({ serviceWorkers });
+    test.describe.configure({ mode: "serial", timeout: 120_000 });
+    test.beforeEach(async ({ page }) => login(page));
+    test.afterEach(async ({ page }, testInfo) => {
+      const state = await page.evaluate(() => ({ controlled: Boolean(navigator.serviceWorker.controller), status: document.getElementById("inspector-status")?.textContent, busy: document.getElementById("inspector-status")?.getAttribute("aria-busy") }));
+      await testInfo.attach("service-worker-routing", { body: Buffer.from(JSON.stringify({ serviceWorkers, result: testInfo.status, ...state }, null, 2)), contentType: "application/json" });
+      console.log(JSON.stringify({ serviceWorkers, result: testInfo.status, ...state }));
+    });
+    registerSubtitleDefaultTests();
+  });
+}

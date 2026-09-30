@@ -1,0 +1,269 @@
+{
+  "sourceCommit": "c1c78d999ca67c3311341be2b87b47d52f655bae",
+  "baseMain": "60d11e2054e31eac090af9ffed3ff85dd0b52c27",
+  "result": {
+    "historyAndStatus": 36,
+    "responsiveDashboard": 27,
+    "cleanupPreviews": 6,
+    "realAPIInspector": 3,
+    "finalPasses": 72
+  },
+  "intermediateFailures": {
+    "initialInspectorMatrix": "2 passed, WebKit pending interception failed",
+    "controlledRouting": "serviceWorkers allow failed with controlled page; block passed"
+  },
+  "runtimeEvidence": "Current CSS and inspector JavaScript/CSS match the production Go response. Binary SHA256 is recorded; go run build information has no VCS revision. Local containers remain blocked by shared Podman storage.",
+  "artifacts": [
+    {
+      "path": "evidence/ci-a42-reconciled-checkpoint.json",
+      "sha256": "9ad1705100868e0371a24532dd8e61cd19b397427705b719b910050f43f5733b"
+    },
+    {
+      "path": "evidence/cleanup-light.png",
+      "sha256": "3a7fa64fe75d25efc7635c6e98a14105e8be2f9538b970f161754214b7e3c119"
+    },
+    {
+      "path": "evidence/cleanup-responsive-context.json",
+      "sha256": "a7be83054727430e79f84520a7fc121241d2678af6e34bd525fd7997c44c537a"
+    },
+    {
+      "path": "evidence/cleanup-responsive-matrix.log",
+      "sha256": "f33eaddcf3ff796b619778a179b36d351f7a9c91daa75638d94cde38c339cb0b"
+    },
+    {
+      "path": "evidence/dashboard-desktop.png",
+      "sha256": "2e1f8feadb096327af1415244654731dc55493497ce2fd1508b8ceb6d6ce3da0"
+    },
+    {
+      "path": "evidence/dashboard-landscape.png",
+      "sha256": "00269e1fb36656e241a4000068883ced8e900e6b1aa831e94217e4cc0e274a82"
+    },
+    {
+      "path": "evidence/dashboard-phone.png",
+      "sha256": "ffc67944b469e56e995aa60d2be3233fc5f67fd142bd7948fb180cb02a16a832"
+    },
+    {
+      "path": "evidence/dashboard-responsive-context.json",
+      "sha256": "32a50f57439313e8a9966f442671e2b2cfb77c1f22b4c5969f63ec0cf2050093"
+    },
+    {
+      "path": "evidence/dashboard-responsive-matrix.log",
+      "sha256": "13203100affe78875c590ffdc3eebcb8c6af7dea02877704f78b2dd5ab57475a"
+    },
+    {
+      "path": "evidence/evidence-secret-scan.log",
+      "sha256": "ac58e72fcd929112168d67b950f42a447ec8b5bf74ad0b6e34bfdddc6674f3b9"
+    },
+    {
+      "path": "evidence/history-empty.png",
+      "sha256": "00f75ded9923da3eee2bec0f11bcfb9b073521c3ea879550a7b32df2538f8df1"
+    },
+    {
+      "path": "evidence/history-failed.png",
+      "sha256": "53f08fdb31c532ace9e0847f829256855a38e0b3faf4a931a13a8709344dd9ef"
+    },
+    {
+      "path": "evidence/history-fixtures-current.log",
+      "sha256": "411ebf68555e279668a2e12a2f8013a95facb53625ee5b4028d4ff4d2cd25b85"
+    },
+    {
+      "path": "evidence/history-loaded.png",
+      "sha256": "e10b282f1dd0e0e6f4b93b3fe49015d500c4c46cfa10d7f408cabdf5b330815c"
+    },
+    {
+      "path": "evidence/history-pending.png",
+      "sha256": "fb75d95f12cb880c1f4f3efa891b4f894b19a723a80032e93107e51358fea262"
+    },
+    {
+      "path": "evidence/history-state-audit-context.json",
+      "sha256": "292fb9c681c467499fdd61ba2ded1d3427662635981b2a0cebd351c4d93923df"
+    },
+    {
+      "path": "evidence/history-state-audit.log",
+      "sha256": "d4aff367bcc4d837f314fb9621fa906925045bdcaf7ebf350295e8acf63612ca"
+    },
+    {
+      "path": "evidence/manifest-format-validation.json",
+      "sha256": "db3986b43d536f577731b167adb1bac91d00a45d7391ca9872158e9a2d25d01b"
+    },
+    {
+      "path": "evidence/player-metadata-cleanup-stress-context.json",
+      "sha256": "4e4f66007d1517878d63fc8164f94d0d7254cc26af537c14d1fbef4a63fdd9d3"
+    },
+    {
+      "path": "evidence/player-metadata-cleanup-stress.log",
+      "sha256": "9f1a8c52b46e242d9df26dfaeb5f472acb672a13a1d1fdbf6a7777cc9c8ab7a4"
+    },
+    {
+      "path": "evidence/player-reconciled-build.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "evidence/player-seek-reconciled-audio-context.json",
+      "sha256": "ebed3baf856d9591da9a39c0951f33de9c6e90e8fdd97c4c11710c7140266c6f"
+    },
+    {
+      "path": "evidence/player-seek-reconciled-audio.log",
+      "sha256": "727bdba4e9390ad48623df88ce6495f78426615e3c4e1b1dd85c71e16bbead46"
+    },
+    {
+      "path": "evidence/player-seek-reconciled-status-context.json",
+      "sha256": "ad3b1b39b0ba5a3c51a7b3f265875df20496018210f2e2f8a834654e610c7763"
+    },
+    {
+      "path": "evidence/player-seek-reconciled-status.log",
+      "sha256": "4221d8156710fef5e52686015dfaf99b3b22b77cfd861080daf62645a89d223b"
+    },
+    {
+      "path": "evidence/previous-main-complete.json",
+      "sha256": "942e3733593e8fcb29758688b99e24c7965b726e5815deecfa331dcfaa7ae3ab"
+    },
+    {
+      "path": "evidence/previous-runtime-pr-checkpoint.json",
+      "sha256": "73593ecfc4111655de96db3588a2f04487817b56f5f5fb5d5d485fa0611c49a1"
+    },
+    {
+      "path": "evidence/reconciled-catalog-test.log",
+      "sha256": "a7b778c4376c7c37da46ebb53c7c398264954b17a6a242916b1871534ac87f9a"
+    },
+    {
+      "path": "evidence/reconciled-evidence-secrets.log",
+      "sha256": "ec65ee078f9e8d9a608e47a143855a998830187d3b7297980f94c02ed101a1cc"
+    },
+    {
+      "path": "evidence/reconciled-max-loc.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "evidence/reconciled-state-context.json",
+      "sha256": "35663daed2a03d33fceec4582ab956711caa1618a1a0e8302f10d5fb4bee82a6"
+    },
+    {
+      "path": "evidence/reconciled-state-matrix.log",
+      "sha256": "92f8a4c2ac0b917e871a92e3a60b73fda4375219c94c7a2aeaeb11ede4bace0f"
+    },
+    {
+      "path": "evidence/review-asset-fixtures-current.log",
+      "sha256": "cc1a666ba4fc0e1276ed515f1303d49931a313e36e939063f43f3e51e8a9f6d3"
+    },
+    {
+      "path": "evidence/review-empty.png",
+      "sha256": "4589f0bb5b82b2dba7319f3d2ef3eee6b09ebde25ccf310de36676a5453dbecf"
+    },
+    {
+      "path": "evidence/review-failed.png",
+      "sha256": "f8fa425d8a452aa7e65852cab9272367f603df7d6dd9a82928f826d774ed18ec"
+    },
+    {
+      "path": "evidence/review-loaded.png",
+      "sha256": "f8f93a6a98fbbbf13de3ec186b5853337f53ac2f637db3af7638929896ca1b3c"
+    },
+    {
+      "path": "evidence/review-max-loc.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "evidence/review-pending.png",
+      "sha256": "0dc6a660be148408cae319ad98c018def225e6c6b8f1343d5680de426cf00d46"
+    },
+    {
+      "path": "evidence/review-routing-diagnostic-context.json",
+      "sha256": "30aee86fca39491b6b2f4e4d150c3364c14ee20b5685b1490702b4eac0a9ef61"
+    },
+    {
+      "path": "evidence/review-routing-diagnostic.log",
+      "sha256": "59a786ca7aa59baae742e3a36a031d7272c1febe61522ce12f6b9fb311f181bb"
+    },
+    {
+      "path": "evidence/review-routing-green-context.json",
+      "sha256": "99d5fe4f2a3541960667c7e8c5a7e48fdff80feda3e4c7246b71eed06663bdea"
+    },
+    {
+      "path": "evidence/review-routing-green-matrix.log",
+      "sha256": "59b7e5c40a4f414ed4d268fff7aacf2d9216f963db826f83e84fdd56112a241e"
+    },
+    {
+      "path": "evidence/review-routing.disposable.spec.ts.txt",
+      "sha256": "7cae7190ed18768060ebaa3acd6a479e6ce1a143d68ee9f8563d0868caa4e7ed"
+    },
+    {
+      "path": "evidence/review-served-assets.json",
+      "sha256": "a8c2893cd6239215dc009ed65bd60bcd7e81168c24e64e2524fd86a961589df8"
+    },
+    {
+      "path": "evidence/review-source-affected.json",
+      "sha256": "fa85df469b918de0b5647f50b0ed1cb45168fce9f16aa66430379cbbf9e6c969"
+    },
+    {
+      "path": "evidence/review-state-context.json",
+      "sha256": "95239a2eef657a60caf839737a5fcb73bc677dc00aff4bea7ec03d506e17e16d"
+    },
+    {
+      "path": "evidence/review-state-final-context.json",
+      "sha256": "ea243a662232c8b50e1cf17d7b8ded40552b877e1f987186a4ffd76595bd3db7"
+    },
+    {
+      "path": "evidence/review-state-final-matrix.log",
+      "sha256": "cc8f2bdd0107033fe3064046d8da3704ecb13b42f01f1954daf47babe7249d70"
+    },
+    {
+      "path": "evidence/review-state-matrix.log",
+      "sha256": "0e8328974ba41b5b6a57901e4aa95fa109e0b1029d39295429e81084691c0d06"
+    },
+    {
+      "path": "evidence/review-test-authoring-gate.json",
+      "sha256": "9560c2e56262b433545c27d16f961c62f86fb68ca457eb6cb437858eb0bf4432"
+    },
+    {
+      "path": "evidence/review-verify-changed.log",
+      "sha256": "8e5b6dfb17353f2582335246a49aed4b04e00745568e4afda5e1c79fdadc35f3"
+    },
+    {
+      "path": "evidence/seek-evidence-secrets.log",
+      "sha256": "8a3fdb35174e0e1789265fad5dc881a738b7e66f841c5f22e8714c0d9b5128fd"
+    },
+    {
+      "path": "evidence/seek-max-loc.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "evidence/seek-reconciled-binary-vcs.json",
+      "sha256": "55c092da2e424cceab69959c064f657b094fc6162e3ff81fdb7ad9ae68f00935"
+    },
+    {
+      "path": "evidence/subtitle-seek-reconciled-review-context.json",
+      "sha256": "711fda6267e744a1c50fd1d6300b1412bd18559623272cba33811206c0e7790b"
+    },
+    {
+      "path": "evidence/subtitle-seek-reconciled-review.log",
+      "sha256": "e272f00870655330393d835827da6a1c8047885298e3183c5b5614d959ef1753"
+    },
+    {
+      "path": "evidence/subtitles-reconciled-build.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "previousMainPublication": {
+    "revision": "60d11e2054e31eac090af9ffed3ff85dd0b52c27",
+    "runURL": "https://github.com/Kinosail/kinosail/actions/runs/36774578971",
+    "conclusion": "success"
+  },
+  "reconciliation": {
+    "integratedMain": "199bbcfaea2f6ccc15da68ae48ab8cbaa58f55b4",
+    "sourceCommit": "2928156fac0cb3d79126e0467e89494eaf6fa37c",
+    "result": "36/36 repeated selected real-server checks passed; catalog package passed; both app binaries rebuilt",
+    "binarySHA256": "1235bf047d184731da38abc21256f692dcb9134f663597e53c436e6f5a9b5e73",
+    "sourceStable": true,
+    "originalPreserved": true,
+    "temporarySidecarAbsent": true,
+    "fixtureRerun": "History and status production templates were unchanged; their previous 36 passes were not repeated."
+  },
+  "seekingReconciliation": {
+    "integratedMain": "f28d32c3618b14952e51833925841fb6ac93b64f",
+    "sourceCommit": "dbcff58f2657310e0a87876556467b734bee0f73",
+    "result": "45/45 Player state fixture checks, 3/3 actual audio journeys and 3/3 actual Subtitles review journeys passed across all three engines.",
+    "binaryEvidence": "Both go build binaries embed vcs.revision dbcff58f2657310e0a87876556467b734bee0f73 and vcs.modified=false; hashes and stability are recorded.",
+    "subtitlePreservation": "Original subtitle unchanged; temporary sidecar absent.",
+    "scope": "Shared seeking-status JavaScript changed in main. Unchanged responsive and history/status fixture batches were not repeated."
+  }
+}
