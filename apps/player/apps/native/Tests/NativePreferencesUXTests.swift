@@ -178,9 +178,13 @@ struct NativePreferencesUXTests {
             let window = try host(screen, session: session)
             defer { window.isHidden = true }
             try await until { fixture.libraryReads > 0 }
+            try snapshot(window, name: "position-\(library ? "library" : "home")-pending")
             let pendingY = try #require(artworkTop(in: window, loaded: false))
+            try await Task.sleep(for: .seconds(2))
+            try snapshot(window, name: "position-\(library ? "library" : "home")-loaded")
             try await until { artworkTop(in: window, loaded: true) != nil }
             let loadedY = try #require(artworkTop(in: window, loaded: true))
+            print("NATIVE_ARTWORK_POSITIONS library=\(library) pending=\(pendingY) loaded=\(loadedY)")
             #expect(abs(loadedY - pendingY) <= 2, "The first artwork must stay in place when real content replaces its skeleton")
         } catch {
             try await restore(previous, keychain: keychain, session: session)
@@ -199,13 +203,14 @@ struct NativePreferencesUXTests {
                 .draw(image, in: CGRect(x: 0, y: 0, width: image.width, height: image.height))
         }
         let scale = Double(image.width) / window.bounds.width
-        let x = Int(60 * scale)
         for y in Int(140 * scale)..<image.height {
-            let index = (y * image.width + x) * 4
-            let r = Int(pixels[index]), g = Int(pixels[index + 1]), b = Int(pixels[index + 2])
-            if loaded ? (r > 240 && g < 15 && b > 240) : (abs(r - 21) <= 2 && abs(g - 25) <= 2 && abs(b - 20) <= 2) {
-                return Double(y) / scale
+            var matches = 0
+            for x in 0..<image.width {
+                let index = (y * image.width + x) * 4
+                let r = Int(pixels[index]), g = Int(pixels[index + 1]), b = Int(pixels[index + 2])
+                if loaded ? (r > 170 && g < 60 && b > 170) : (r == 21 && g == 25 && b == 20) { matches += 1 }
             }
+            if matches > image.width / 30 { return Double(y) / scale }
         }
         return nil
     }
