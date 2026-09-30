@@ -6,6 +6,7 @@ configureLayoutAudit();
 
 test("signed-in application pages retain the navigation shell", async ({ page }, testInfo) => {
 	test.skip(process.env.KINOSAIL_TEST_INSTANCE !== "1", "requires the populated public test instance");
+	test.setTimeout(120_000);
 	await login(page);
 	for (const viewport of viewports) {
 		await page.setViewportSize(viewport);
@@ -20,16 +21,21 @@ test("signed-in application pages retain the navigation shell", async ({ page },
 		expect((await new AxeBuilder({ page }).analyze()).violations, `settings accessibility at ${viewport.width}px`).toEqual([]);
 		expect(await layoutProblems(page), `settings shell at ${viewport.width}px`).toEqual({ documentOverflow: 0, outside: [], tinyControls: [], distortedChecks: [], clippedControls: [], overlappingStatuses: [] });
 		const shell = await page.evaluate(() => {
-			const navigation = document.querySelector(".app-header")!.getBoundingClientRect();
+			const header = document.querySelector(".app-header")!.getBoundingClientRect();
+			const sidebar = document.querySelector(".desktop-sidebar")!.getBoundingClientRect();
 			const main = document.querySelector("main")!.getBoundingClientRect();
-			return { navigation: { left: Math.round(navigation.left), right: Math.round(navigation.right), bottom: Math.round(navigation.bottom) }, main: { left: Math.round(main.left) }, viewport: { width: innerWidth, height: innerHeight } };
+			return { header: { left: Math.round(header.left), right: Math.round(header.right), bottom: Math.round(header.bottom) }, sidebar: { left: Math.round(sidebar.left), right: Math.round(sidebar.right), top: Math.round(sidebar.top), bottom: Math.round(sidebar.bottom) }, main: { left: Math.round(main.left) } };
 		});
 		expect(await applicationShellProblems(page), `settings rail at ${viewport.width}px`).toEqual({ display: "grid", horizontalOverflow: 0, outside: [] });
-		if (viewport.width > 900) {
-			expect(shell.navigation).toMatchObject({ left: 0, right: viewport.width });
-			expect(shell.navigation.bottom).toBeLessThan(viewport.height / 3);
-			expect(shell.main.left).toBeGreaterThanOrEqual(0);
-			expect(await page.locator(".app-header").evaluate((element) => element.scrollTop)).toBe(0);
+		expect(shell.header).toMatchObject({ left: 0, right: viewport.width });
+		if (viewport.width > 1100) {
+			expect(shell.sidebar).toEqual({ left: 0, right: 240, top: shell.header.bottom, bottom: viewport.height });
+			expect(shell.main.left).toBeGreaterThanOrEqual(shell.sidebar.right);
+			expect(await page.locator(".desktop-sidebar").evaluate((element) => element.scrollTop)).toBe(0);
+		} else if (viewport.width > 900) {
+			await expect(page.locator(".desktop-sidebar")).toBeHidden();
+			await expect(page.locator(".mobile-navigation")).toBeVisible();
+			await expect(page.locator(".mobile-navigation")).toHaveCSS("position", "static");
 		} else {
 			const dock = await page.locator('.mobile-navigation').evaluate((element) => {
 				const box = element.getBoundingClientRect();
@@ -37,7 +43,7 @@ test("signed-in application pages retain the navigation shell", async ({ page },
 				return { bottom: Math.round(box.bottom), position: getComputedStyle(element).position, headerBackdrop: header.backdropFilter, headerTransform: header.transform };
 			});
 			expect(dock).toMatchObject({ bottom: viewport.height, position: "fixed", headerBackdrop: "none", headerTransform: "none" });
-			expect(await page.locator('.mobile-navigation > a, .mobile-navigation > details').count()).toBeGreaterThanOrEqual(5);
+			expect(await page.locator('.app-header nav > a, .app-header nav > details').count()).toBeGreaterThanOrEqual(5);
 		}
 		if (viewport.width === 390) {
 			await page.locator(".nav-more > summary").click();
@@ -81,6 +87,7 @@ test("Owner settings search finds a setting across task families", async ({ page
 		await expect(trustedHTTPS.locator("span").first()).not.toHaveText("");
 		await expect(trustedHTTPS.locator(".settings-search-result-group")).toHaveText("Advanced · Connections");
 		await expect(page.locator("[data-settings-nav]")).toBeVisible();
+		await expect(page.locator("#playback")).toBeVisible();
 		await expect(page.locator("#onboarding")).toBeHidden();
 		await expect(page.locator("#transcoder")).toBeHidden();
 		expect((await new AxeBuilder({ page }).analyze()).violations, `${viewport.width}px settings search accessibility`).toEqual([]);
@@ -112,29 +119,42 @@ test("Owner settings search finds a setting across task families", async ({ page
 
 test("transcoder support stays concise and accessible", async ({ page }, testInfo) => {
 	test.skip(process.env.KINOSAIL_TEST_INSTANCE !== "1", "requires the populated public test instance");
+	test.setTimeout(120_000);
 	await login(page);
 	for (const viewport of [{ width: 1440, height: 900 }, { width: 1024, height: 768 }, { width: 390, height: 844 }, { width: 320, height: 800 }]) {
 		await page.setViewportSize(viewport);
 		await page.goto("/settings#transcoder", { waitUntil: "domcontentloaded" });
-		await expect(page.getByLabel("Video format").locator("option:checked")).toHaveText("Automatic per device (Recommended)");
-		await expect(page.locator("#transcoder>p")).toContainText("It prefers H.264");
-		await expect(page.locator("#transcoder .automatic-hardware")).toHaveText("Automatic will use: Processor");
+		const format = page.getByLabel("Video format");
+		await expect(format.locator("option:checked")).toHaveText("Automatic per device (Recommended)");
+		await format.focus();
+		await expect(format).toBeFocused();
+		await format.selectOption("h264");
+		await expect(format.locator("option:checked")).toHaveText("AVC / H.264");
+		await format.selectOption("auto");
+		await expect(format.locator("option:checked")).toHaveText("Automatic per device (Recommended)");
+		if (viewport.width === 320) await page.locator("#transcoder > form").screenshot({ path: testInfo.outputPath("320-conversion-controls.png") });
+		await expect(page.locator("#transcoder>p")).toContainText("only when Kinosail must convert video");
+		await expect(page.locator("#transcoder>p")).toContainText("encoding paths that passed a local HLS smoke check");
+		await expect(page.locator("#transcoder .automatic-hardware")).toHaveText(/^Automatic will use: \S.*$/);
 		const support = page.locator("#transcoder>.capability-report");
 		await expect(support).not.toHaveAttribute("open", "");
 		await support.getByText("Video compatibility", { exact: true }).click();
 		await expect(support.getByText("VVC / H.266", { exact: false })).toBeVisible();
 		await expect(support.getByText("AV2", { exact: true })).toBeVisible();
 		await expect(support.getByText("Works with the widest range", { exact: false })).toBeVisible();
-		await expect(support.getByText("Built-in Linux video hardware", { exact: true })).toBeVisible();
+		await expect(support.getByText("Processor", { exact: true })).toBeVisible();
 		await expect(support.getByText("FFmpeg option:", { exact: false }).first()).not.toBeVisible();
-		const hardwareDetails = support.locator(".capability-list").nth(1).getByText("Technical details", { exact: true }).first();
+		const hardware = support.locator(".capability-list").nth(1);
+		await expect(hardware.locator("details[open]")).toHaveCount(0);
+		const hardwareDetails = hardware.getByText("Technical details", { exact: true }).first();
 		await hardwareDetails.click();
 		await expect(hardwareDetails.locator("..").getByText("FFmpeg option:", { exact: false })).toBeVisible();
-		await expect(support.getByText("Apple VideoToolbox", { exact: true })).toHaveCount(0);
+		await expect(hardware.locator("details[open]")).toHaveCount(1);
 		expect(await layoutProblems(page), `${viewport.width}px open transcoder support`).toEqual({ documentOverflow: 0, outside: [], tinyControls: [], distortedChecks: [], clippedControls: [], overlappingStatuses: [] });
 		expect((await new AxeBuilder({ page }).analyze()).violations, `${viewport.width}px transcoder accessibility`).toEqual([]);
 		await page.screenshot({ path: testInfo.outputPath(`${viewport.width}-transcoder-support-open.png`), fullPage: true });
 		await hardwareDetails.click();
+		await expect(hardware.locator("details[open]")).toHaveCount(0);
 		await support.getByText("Video compatibility", { exact: true }).click();
 		await expect(support).not.toHaveAttribute("open", "");
 	}

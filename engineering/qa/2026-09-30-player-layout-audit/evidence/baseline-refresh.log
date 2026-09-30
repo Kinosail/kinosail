@@ -1,0 +1,398 @@
+
+Running 13 tests using 1 worker
+
+(node:60606) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘   1 [chromium] › layout-audit-configuration.spec.ts:7:1 › SCIM configuration stays usable at every supported width (6.8s)
+(node:60860) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘   2 [chromium] › layout-audit-configuration.spec.ts:40:1 › single sign-on configuration stays usable at every supported width (5.1s)
+(node:61075) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘   3 [chromium] › layout-audit-configuration.spec.ts:78:1 › SAML configuration stays usable at every supported width (5.3s)
+(node:61302) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘   4 [chromium] › layout-audit-configuration.spec.ts:97:1 › software update choices stay clear at supported widths (966ms)
+(node:61425) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘   5 [chromium] › layout-audit-configuration.spec.ts:117:1 › Media Shares keeps its heading and controls in a readable composition (1.1s)
+(node:61587) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   6 [chromium] › layout-audit-configuration.spec.ts:143:1 › Owner settings separates everyday preferences from advanced tools (39.4s)
+  ✓   7 [chromium] › layout-audit-library.spec.ts:7:1 › browse shows artwork before scrolling on desktop and phone (2.0s)
+  ✘   8 [chromium] › layout-audit-library.spec.ts:28:1 › ordinary browse keeps results in the first useful viewport (780ms)
+(node:62255) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   9 [chromium] › layout-audit-library.spec.ts:53:1 › mobile browse spacing holds across every media page (1.6s)
+  ✘  10 [chromium] › layout-audit-library.spec.ts:85:1 › compact landscape shell keeps search and primary actions reachable (1.0m)
+(node:63095) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  11 [chromium] › layout-audit-shell.spec.ts:7:1 › signed-in application pages retain the navigation shell (1.6s)
+(node:63314) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  12 [chromium] › layout-audit-shell.spec.ts:69:1 › Owner settings search finds a setting across task families (10.9s)
+(node:63591) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  13 [chromium] › layout-audit-shell.spec.ts:112:1 › transcoder support stays concise and accessible (11.0s)
+
+
+  1) [chromium] › layout-audit-configuration.spec.ts:7:1 › SCIM configuration stays usable at every supported width 
+
+    Error: 720px accessibility
+
+    expect(received).toEqual(expected) // deep equality
+
+    - Expected  - 1
+    + Received  + 3
+
+    - Array []
+    + Array [
+    +   "color-contrast",
+    + ]
+
+      33 | 		expect(Boolean(problems.documentOverflow), `${viewport.width}px overflow`).toBe(false);
+      34 | 		expect({ ...problems, documentOverflow: false }, `${viewport.width}px layout`).toEqual({ documentOverflow: false, outside: [], tinyControls: [], distortedChecks: [], clippedControls: [], overlappingStatuses: [] });
+    > 35 | 		expect((await new AxeBuilder({ page }).analyze()).violations.map(({ id }) => id), `${viewport.width}px accessibility`).toEqual([]);
+         | 		                                                                                                                       ^
+      36 | 		await section.screenshot({ path: testInfo.outputPath(`scim-configuration-${viewport.width}.png`) });
+      37 | 	}
+      38 | });
+        at /Users/mikeo/.codex/worktrees/all-app-polish/kinosail/apps/player/e2e/layout-audit-configuration.spec.ts:35:122
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../.kinosail-test/baseline-refresh/layout-audit-configuration-6b9b6-le-at-every-supported-width-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../.kinosail-test/baseline-refresh/layout-audit-configuration-6b9b6-le-at-every-supported-width-chromium/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../.kinosail-test/baseline-refresh/layout-audit-configuration-6b9b6-le-at-every-supported-width-chromium/trace.zip
+    Usage:
+
+        pnpm exec playwright show-trace ../.kinosail-test/baseline-refresh/layout-audit-configuration-6b9b6-le-at-every-supported-width-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2) [chromium] › layout-audit-configuration.spec.ts:40:1 › single sign-on configuration stays usable at every supported width 
+
+    Error: 720px accessibility
+
+    expect(received).toEqual(expected) // deep equality
+
+    - Expected  - 1
+    + Received  + 3
+
+    - Array []
+    + Array [
+    +   "color-contrast",
+    + ]
+
+      58 | 		expect(Boolean(problems.documentOverflow), `${viewport.width}px overflow`).toBe(false);
+      59 | 		expect({ ...problems, documentOverflow: false }, `${viewport.width}px layout`).toEqual({ documentOverflow: false, outside: [], tinyControls: [], distortedChecks: [], clippedControls: [], overlappingStatuses: [] });
+    > 60 | 		expect((await new AxeBuilder({ page }).analyze()).violations.map(({ id }) => id), `${viewport.width}px accessibility`).toEqual([]);
+         | 		                                                                                                                       ^
+      61 | 		await section.screenshot({ path: testInfo.outputPath(`oidc-configuration-${viewport.width}.png`) });
+      62 | 	}
+      63 | 	await page.setViewportSize({ width: 1440, height: 900 });
+        at /Users/mikeo/.codex/worktrees/all-app-polish/kinosail/apps/player/e2e/layout-audit-configuration.spec.ts:60:122
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../.kinosail-test/baseline-refresh/layout-audit-configuration-a2dcf-le-at-every-supported-width-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../.kinosail-test/baseline-refresh/layout-audit-configuration-a2dcf-le-at-every-supported-width-chromium/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../.kinosail-test/baseline-refresh/layout-audit-configuration-a2dcf-le-at-every-supported-width-chromium/trace.zip
+    Usage:
+
+        pnpm exec playwright show-trace ../.kinosail-test/baseline-refresh/layout-audit-configuration-a2dcf-le-at-every-supported-width-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  3) [chromium] › layout-audit-configuration.spec.ts:78:1 › SAML configuration stays usable at every supported width 
+
+    Error: 720px accessibility
+
+    expect(received).toEqual(expected) // deep equality
+
+    - Expected  - 1
+    + Received  + 3
+
+    - Array []
+    + Array [
+    +   "color-contrast",
+    + ]
+
+      90 | 		const problems = await layoutProblems(page);
+      91 | 		expect({ ...problems, documentOverflow: false }, `${viewport.width}px layout`).toEqual({ documentOverflow: false, outside: [], tinyControls: [], distortedChecks: [], clippedControls: [], overlappingStatuses: [] });
+    > 92 | 		expect((await new AxeBuilder({ page }).analyze()).violations.map(({ id }) => id), `${viewport.width}px accessibility`).toEqual([]);
+         | 		                                                                                                                       ^
+      93 | 		await section.screenshot({ path: testInfo.outputPath(`saml-configuration-${viewport.width}.png`) });
+      94 | 	}
+      95 | });
+        at /Users/mikeo/.codex/worktrees/all-app-polish/kinosail/apps/player/e2e/layout-audit-configuration.spec.ts:92:122
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../.kinosail-test/baseline-refresh/layout-audit-configuration-93a27-le-at-every-supported-width-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../.kinosail-test/baseline-refresh/layout-audit-configuration-93a27-le-at-every-supported-width-chromium/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../.kinosail-test/baseline-refresh/layout-audit-configuration-93a27-le-at-every-supported-width-chromium/trace.zip
+    Usage:
+
+        pnpm exec playwright show-trace ../.kinosail-test/baseline-refresh/layout-audit-configuration-93a27-le-at-every-supported-width-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  4) [chromium] › layout-audit-configuration.spec.ts:97:1 › software update choices stay clear at supported widths 
+
+    Error: 1440px update heading below navigation
+
+    expect(received).toBeGreaterThanOrEqual(expected)
+
+    Expected: >= 569.96875
+    Received:    568.0625
+
+      107 | 		await expect(updates.getByLabel("Install updates automatically")).toBeChecked();
+      108 | 		const alignment = await page.evaluate(() => ({ navigation: document.querySelector("[data-settings-nav]")!.getBoundingClientRect().bottom, updates: document.querySelector("#updates h2")!.getBoundingClientRect().top }));
+    > 109 | 		expect(alignment.updates, `${viewport.width}px update heading below navigation`).toBeGreaterThanOrEqual(alignment.navigation);
+          | 		                                                                                 ^
+      110 | 		expect(await layoutProblems(page), `${viewport.width}px update layout`).toEqual({ documentOverflow: 0, outside: [], tinyControls: [], distortedChecks: [], clippedControls: [], overlappingStatuses: [] });
+      111 | 		await page.evaluate(() => (document.activeElement as HTMLElement)?.blur());
+      112 | 		await page.screenshot({ path: testInfo.outputPath(`${viewport.width}-settings-updates.png`), fullPage: true });
+        at /Users/mikeo/.codex/worktrees/all-app-polish/kinosail/apps/player/e2e/layout-audit-configuration.spec.ts:109:84
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../.kinosail-test/baseline-refresh/layout-audit-configuration-ddfdf-y-clear-at-supported-widths-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../.kinosail-test/baseline-refresh/layout-audit-configuration-ddfdf-y-clear-at-supported-widths-chromium/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../.kinosail-test/baseline-refresh/layout-audit-configuration-ddfdf-y-clear-at-supported-widths-chromium/trace.zip
+    Usage:
+
+        pnpm exec playwright show-trace ../.kinosail-test/baseline-refresh/layout-audit-configuration-ddfdf-y-clear-at-supported-widths-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  5) [chromium] › layout-audit-configuration.spec.ts:117:1 › Media Shares keeps its heading and controls in a readable composition 
+
+    Error: 320px form width
+
+    expect(received).toBeGreaterThan(expected)
+
+    Expected: > 280
+    Received:   260.796875
+
+      136 | 		expect(composition.headingLines, `${viewport.width}px heading lines`).toBeLessThanOrEqual(2);
+      137 | 		expect(composition.headingWidth, `${viewport.width}px heading width`).toBeGreaterThan(250);
+    > 138 | 		expect(composition.formWidth, `${viewport.width}px form width`).toBeGreaterThan(280);
+          | 		                                                                ^
+      139 | 		expect(composition.fieldsetWidth, `${viewport.width}px content width`).toBeGreaterThan(280);
+      140 | 	}
+      141 | });
+        at /Users/mikeo/.codex/worktrees/all-app-polish/kinosail/apps/player/e2e/layout-audit-configuration.spec.ts:138:67
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../.kinosail-test/baseline-refresh/layout-audit-configuration-3f1e0-s-in-a-readable-composition-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../.kinosail-test/baseline-refresh/layout-audit-configuration-3f1e0-s-in-a-readable-composition-chromium/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../.kinosail-test/baseline-refresh/layout-audit-configuration-3f1e0-s-in-a-readable-composition-chromium/trace.zip
+    Usage:
+
+        pnpm exec playwright show-trace ../.kinosail-test/baseline-refresh/layout-audit-configuration-3f1e0-s-in-a-readable-composition-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  6) [chromium] › layout-audit-library.spec.ts:28:1 › ordinary browse keeps results in the first useful viewport 
+
+    Error: page.evaluate: TypeError: Cannot read properties of null (reading 'getBoundingClientRect')
+        at eval (eval at evaluate (:311:30), <anonymous>:2:57)
+        at UtilityScript.evaluate (<anonymous>:313:16)
+        at UtilityScript.<anonymous> (<anonymous>:1:44)
+        at eval (eval at evaluate (:311:30), <anonymous>:2:57)
+        at UtilityScript.evaluate (<anonymous>:313:16)
+        at UtilityScript.<anonymous> (<anonymous>:1:44)
+        at /Users/mikeo/.codex/worktrees/all-app-polish/kinosail/apps/player/e2e/layout-audit-library.spec.ts:34:33
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../.kinosail-test/baseline-refresh/layout-audit-library-ordin-4c237-n-the-first-useful-viewport-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../.kinosail-test/baseline-refresh/layout-audit-library-ordin-4c237-n-the-first-useful-viewport-chromium/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../.kinosail-test/baseline-refresh/layout-audit-library-ordin-4c237-n-the-first-useful-viewport-chromium/trace.zip
+    Usage:
+
+        pnpm exec playwright show-trace ../.kinosail-test/baseline-refresh/layout-audit-library-ordin-4c237-n-the-first-useful-viewport-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  7) [chromium] › layout-audit-library.spec.ts:85:1 › compact landscape shell keeps search and primary actions reachable 
+
+    Test timeout of 60000ms exceeded.
+
+    Error: locator.evaluate: Test timeout of 60000ms exceeded.
+    Call log:
+      - waiting for getByRole('searchbox', { name: 'Search library' })
+
+
+      91 | 		const search = page.getByRole("searchbox", { name: "Search library" });
+      92 | 		const actions = page.locator(".header-compact-menu > summary");
+    > 93 | 		await search.evaluate((element) => (element as HTMLInputElement).blur());
+         | 		             ^
+      94 | 		const compact = await page.evaluate(() => {
+      95 | 			const intersects = (first: DOMRect, second: DOMRect) => first.left < second.right && first.right > second.left && first.top < second.bottom && first.bottom > second.top;
+      96 | 			const searchBox = document.querySelector(".search")!.getBoundingClientRect();
+        at /Users/mikeo/.codex/worktrees/all-app-polish/kinosail/apps/player/e2e/layout-audit-library.spec.ts:93:16
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../.kinosail-test/baseline-refresh/layout-audit-library-compa-4231f-d-primary-actions-reachable-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../.kinosail-test/baseline-refresh/layout-audit-library-compa-4231f-d-primary-actions-reachable-chromium/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../.kinosail-test/baseline-refresh/layout-audit-library-compa-4231f-d-primary-actions-reachable-chromium/trace.zip
+    Usage:
+
+        pnpm exec playwright show-trace ../.kinosail-test/baseline-refresh/layout-audit-library-compa-4231f-d-primary-actions-reachable-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  8) [chromium] › layout-audit-shell.spec.ts:7:1 › signed-in application pages retain the navigation shell 
+
+    Error: expect(received).toMatchObject(expected)
+
+    - Expected  - 2
+    + Received  + 2
+
+      Object {
+    -   "bottom": 900,
+    +   "bottom": 80,
+        "left": 0,
+    -   "right": 256,
+    +   "right": 1440,
+      }
+
+      27 | 		expect(await applicationShellProblems(page), `settings rail at ${viewport.width}px`).toEqual({ display: "grid", horizontalOverflow: 0, outside: [] });
+      28 | 		if (viewport.width > 900) {
+    > 29 | 			expect(shell.navigation).toMatchObject({ left: 0, right: 256, bottom: viewport.height });
+         | 			                         ^
+      30 | 			expect(shell.main.left).toBeGreaterThanOrEqual(256);
+      31 | 			expect(await page.locator(".app-header").evaluate((element) => element.scrollTop)).toBe(0);
+      32 | 		} else {
+        at /Users/mikeo/.codex/worktrees/all-app-polish/kinosail/apps/player/e2e/layout-audit-shell.spec.ts:29:29
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../.kinosail-test/baseline-refresh/layout-audit-shell-signed--b8c54-retain-the-navigation-shell-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../.kinosail-test/baseline-refresh/layout-audit-shell-signed--b8c54-retain-the-navigation-shell-chromium/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../.kinosail-test/baseline-refresh/layout-audit-shell-signed--b8c54-retain-the-navigation-shell-chromium/trace.zip
+    Usage:
+
+        pnpm exec playwright show-trace ../.kinosail-test/baseline-refresh/layout-audit-shell-signed--b8c54-retain-the-navigation-shell-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  9) [chromium] › layout-audit-shell.spec.ts:69:1 › Owner settings search finds a setting across task families 
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator:  locator('#onboarding')
+    Expected: visible
+    Received: hidden
+    Timeout:  10000ms
+
+    Call log:
+      - Expect "toBeVisible" locator('#onboarding') with timeout 10000ms
+      - waiting for locator('#onboarding')
+        24 × locator resolved to <section hidden="" id="onboarding" data-settings-group="general" class="wide onboarding-settings" data-settings-category="general">…</section>
+           - unexpected value "hidden"
+
+
+      81 | 		await expect(trustedHTTPS.locator(".settings-search-result-group")).toHaveText("Advanced · Connections");
+      82 | 		await expect(page.locator("[data-settings-nav]")).toBeVisible();
+    > 83 | 		await expect(page.locator("#onboarding")).toBeVisible();
+         | 		                                          ^
+      84 | 		await expect(page.locator("#transcoder")).toBeHidden();
+      85 | 		expect((await new AxeBuilder({ page }).analyze()).violations, `${viewport.width}px settings search accessibility`).toEqual([]);
+      86 | 		expect(await layoutProblems(page), `${viewport.width}px settings search layout`).toEqual({ documentOverflow: 0, outside: [], tinyControls: [], distortedChecks: [], clippedControls: [], overlappingStatuses: [] });
+        at /Users/mikeo/.codex/worktrees/all-app-polish/kinosail/apps/player/e2e/layout-audit-shell.spec.ts:83:45
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../.kinosail-test/baseline-refresh/layout-audit-shell-Owner-s-f8b31-etting-across-task-families-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../.kinosail-test/baseline-refresh/layout-audit-shell-Owner-s-f8b31-etting-across-task-families-chromium/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../.kinosail-test/baseline-refresh/layout-audit-shell-Owner-s-f8b31-etting-across-task-families-chromium/trace.zip
+    Usage:
+
+        pnpm exec playwright show-trace ../.kinosail-test/baseline-refresh/layout-audit-shell-Owner-s-f8b31-etting-across-task-families-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  10) [chromium] › layout-audit-shell.spec.ts:112:1 › transcoder support stays concise and accessible 
+
+    Error: expect(locator).toContainText(expected) failed
+
+    Locator: locator('#transcoder>p')
+    Expected substring: "It tries AV1, HEVC, then VP9"
+    Received string:    "Automatic checks each playback device only when Kinosail must convert video. It prefers H.264 and uses only encoding paths that passed a local HLS smoke check. A manual choice forces that format for every playback device."
+    Timeout: 10000ms
+
+    Call log:
+      - Expect "toContainText" locator('#transcoder>p') with timeout 10000ms
+      - waiting for locator('#transcoder>p')
+        24 × locator resolved to <p>Automatic checks each playback device only when K…</p>
+           - unexpected value "Automatic checks each playback device only when Kinosail must convert video. It prefers H.264 and uses only encoding paths that passed a local HLS smoke check. A manual choice forces that format for every playback device."
+
+
+      117 | 		await page.goto("/settings#transcoder", { waitUntil: "domcontentloaded" });
+      118 | 		await expect(page.getByLabel("Video format").locator("option:checked")).toHaveText("Automatic per device (Recommended)");
+    > 119 | 		await expect(page.locator("#transcoder>p")).toContainText("It tries AV1, HEVC, then VP9");
+          | 		                                            ^
+      120 | 		await expect(page.locator("#transcoder .automatic-hardware")).toHaveText("Automatic will use: Processor");
+      121 | 		const support = page.locator("#transcoder>.capability-report");
+      122 | 		await expect(support).not.toHaveAttribute("open", "");
+        at /Users/mikeo/.codex/worktrees/all-app-polish/kinosail/apps/player/e2e/layout-audit-shell.spec.ts:119:47
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../.kinosail-test/baseline-refresh/layout-audit-shell-transco-aed5d-tays-concise-and-accessible-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../.kinosail-test/baseline-refresh/layout-audit-shell-transco-aed5d-tays-concise-and-accessible-chromium/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../.kinosail-test/baseline-refresh/layout-audit-shell-transco-aed5d-tays-concise-and-accessible-chromium/trace.zip
+    Usage:
+
+        pnpm exec playwright show-trace ../.kinosail-test/baseline-refresh/layout-audit-shell-transco-aed5d-tays-concise-and-accessible-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  10 failed
+    [chromium] › layout-audit-configuration.spec.ts:7:1 › SCIM configuration stays usable at every supported width 
+    [chromium] › layout-audit-configuration.spec.ts:40:1 › single sign-on configuration stays usable at every supported width 
+    [chromium] › layout-audit-configuration.spec.ts:78:1 › SAML configuration stays usable at every supported width 
+    [chromium] › layout-audit-configuration.spec.ts:97:1 › software update choices stay clear at supported widths 
+    [chromium] › layout-audit-configuration.spec.ts:117:1 › Media Shares keeps its heading and controls in a readable composition 
+    [chromium] › layout-audit-library.spec.ts:28:1 › ordinary browse keeps results in the first useful viewport 
+    [chromium] › layout-audit-library.spec.ts:85:1 › compact landscape shell keeps search and primary actions reachable 
+    [chromium] › layout-audit-shell.spec.ts:7:1 › signed-in application pages retain the navigation shell 
+    [chromium] › layout-audit-shell.spec.ts:69:1 › Owner settings search finds a setting across task families 
+    [chromium] › layout-audit-shell.spec.ts:112:1 › transcoder support stays concise and accessible 
+  3 passed (4.3m)

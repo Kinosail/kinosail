@@ -32,7 +32,7 @@ test("ordinary browse keeps results in the first useful viewport", async ({ page
 	await page.goto("/?view=movies", { waitUntil: "domcontentloaded" });
 	await expect(page.locator(".browse-toolbar>span")).toBeVisible();
 	const composition = await page.evaluate(() => ({
-		masthead: document.querySelector(".library-masthead")?.getBoundingClientRect().height ?? 0,
+		masthead: document.querySelector(".library-masthead")!.getBoundingClientRect().height,
 		posterTop: document.querySelector("#library .poster")!.getBoundingClientRect().top,
 		navTop: document.querySelector(".mobile-navigation")!.getBoundingClientRect().top,
 	}));
@@ -159,11 +159,15 @@ test("compact landscape shell keeps search and primary actions reachable", async
 		if (route === "/quick-connect") {
 			const initial = await page.evaluate(() => {
 				const header = document.querySelector(".app-header")!.getBoundingClientRect();
-				const form = document.querySelector(".auth > main form")!.getBoundingClientRect();
-				return { headerBottom: header.bottom, formTop: form.top, scrollY };
+				const dock = document.querySelector(".mobile-navigation")!.getBoundingClientRect();
+				const digits = [...document.querySelectorAll("main input[data-quick-connect-digit]")].map(element => element.getBoundingClientRect());
+				return { headerBottom: header.bottom, dockTop: dock.top, digits: digits.map(box => ({ top: box.top, bottom: box.bottom })) };
 			});
-
-			expect(initial.formTop + initial.scrollY, "Quick Connect form starts below the masthead before autofocus scroll").toBeGreaterThanOrEqual(initial.headerBottom);
+			expect(initial.digits).toHaveLength(6);
+			for (const digit of initial.digits) {
+				expect(digit.top, "Quick Connect code clears the header").toBeGreaterThanOrEqual(initial.headerBottom);
+				expect(digit.bottom, "Quick Connect code clears bottom navigation").toBeLessThanOrEqual(initial.dockTop);
+			}
 		}
 		for (const selector of selectors) {
 			const target = page.locator(selector).first();
