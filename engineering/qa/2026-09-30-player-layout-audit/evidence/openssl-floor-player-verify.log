@@ -1,0 +1,12 @@
+VERIFY 17 changed path(s) against origin/main
+PASS max-loc (0s)
+PASS diff-check (0s)
+CACHED go-compile:internal/server
+CACHED go-focused:internal/server
+CACHED ui-lint:internal/server/static/settings.css
+CACHED e2e-list
+FAIL container-native (1s); full log: /Users/mikeo/Documents/GitHub/kinosail/.git/kinosail-verify-logs/apps-player/c7d84d5c21db43dc5ce6d7837854006bec2afece6d6e1c46d6ef2146a8c0df26.log
+Error: mkdir /var/tmp/libpod_builder1693111356: no space left on device
+container test failed at line 84
+make[1]: *** [container-test] Error 125
+make: *** [verify-changed] Error 1

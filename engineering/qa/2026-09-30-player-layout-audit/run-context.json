@@ -189,6 +189,26 @@
       "sha256": "e50a78ab5b2eb7d703a0fca4192869abc7e14164272d71c821f1c5a686aff8e5"
     },
     {
+      "path": "evidence/openssl-floor-hosted-scan-red.log",
+      "sha256": "ff9f8228c5c6427c1b5ec8cd21dc89273a5ef863c7283f0aa78bcf6a7c46454c"
+    },
+    {
+      "path": "evidence/openssl-floor-max-loc.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "evidence/openssl-floor-player-verify.log",
+      "sha256": "59db5afd9b09525f6d24159e290e68614c8948f8895014f1549b83d494905ac9"
+    },
+    {
+      "path": "evidence/openssl-floor-red-context.json",
+      "sha256": "e755ce8f8dbcb644215c3fd344d827dedb67861f99dcb8c59313257b69e25564"
+    },
+    {
+      "path": "evidence/openssl-floor-subtitles-verify.log",
+      "sha256": "527427c248cfe3f5e2f3a0ea58b5869c9d883ad412951ab6b6f8e87723a3f612"
+    },
+    {
       "path": "evidence/quick-connect-landscape-red.log",
       "sha256": "17409ec608b7caeeffcc3f3f8514f5cef218e3b4756b915b317df9a4946b0a71"
     },
@@ -224,5 +244,15 @@
       "path": "polish-overflow-diagnostic.spec.ts.txt",
       "sha256": "05d12870c0f23151c43b6861db6ab03b0a4c6b0b5ae0fb7a85deeae20a03f7d3"
     }
-  ]
+  ],
+  "runtimeFollowup": {
+    "sourceCommit": "6f9d8f521de08edefc2fdddd90a88e2f14fa45ec",
+    "files": {
+      "apps/player/Containerfile": "a9cf8071d04d72ffb149278654033445cf0d878d7d4c0503cfd356a92fc69f40",
+      "apps/subtitles/Containerfile": "bb294c10b2e5af54a6769e27b8c7e2d794ce9574c54c59abc715b46249624f44"
+    },
+    "requiredMinimum": "3.5.7-1~deb13u3",
+    "package": "libssl3t64",
+    "verification": "Local container stages blocked by full shared Podman VM; fresh hosted scans required; UI source hashes remain unchanged"
+  }
 }

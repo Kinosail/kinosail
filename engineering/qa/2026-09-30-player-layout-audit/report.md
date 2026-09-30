@@ -39,6 +39,14 @@ See the [responsive gallery](gallery.html) and [run context](run-context.json). 
 
 The committed production and test files at `94c972af866a5c7639f5f3b5d9d8f895fccfef5e` match the final run's recorded hashes. The full final matrix remained stable during execution. Intermediate failed attempts are retained separately and are not counted as final passes.
 
+## Runtime security follow-up
+
+The first hosted run, [36770224275](https://github.com/Kinosail/kinosail/actions/runs/36770224275), passed both populated Chromium smoke suites: Player 36 passed with 3 skipped, and Subtitles 9 passed. Its four final production-image scans failed. They found OpenSSL packages at `3.5.7-1~deb13u2` with six high-severity findings per image. Debian lists `3.5.7-1~deb13u3` as fixed for [CVE-2026-75804](https://security-tracker.debian.org/tracker/CVE-2026-75804) and [CVE-2026-84782](https://security-tracker.debian.org/tracker/CVE-2026-84782).
+
+The official Debian image digest was already current. The builds reused cached package-upgrade layers. Both runtime recipes now require `libssl3t64` at or above the fixed version. Adding this comparison refreshes that build layer and makes an older or unavailable package fail the build. The existing final-image vulnerability policy is unchanged.
+
+After committing the two recipe changes, both local changed-app gates reached their container stage and stopped because the shared Podman VM has no space. Player's unchanged compilation, focused tests, CSS lint, and E2E discovery were cached. Both file-cap and diff checks passed. Unrelated storage was preserved. The unchanged UI matrix was not repeated for these package-only changes. Hosted fresh-image scans and production-path checks remain the authority for this follow-up.
+
 ## Reproduction and boundaries
 
 Start the repository's isolated populated Player test instance. Export its URL, `KINOSAIL_TEST_INSTANCE=1`, and its TOTP secret from the local fixture. From `apps/player/e2e`, run:
