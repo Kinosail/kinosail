@@ -1,6 +1,7 @@
 package server
 
 import (
+	"context"
 	"net/http"
 	"net/http/httptest"
 	"strconv"
@@ -26,6 +27,9 @@ func BenchmarkNativeCatalogNavigation(b *testing.B) {
 			} {
 				b.Run(name, func(b *testing.B) {
 					request := ownerRequest(target)
+					ctx, cancel := context.WithCancel(request.Context())
+					b.Cleanup(cancel)
+					request = request.WithContext(ctx)
 					b.ReportAllocs()
 					responseBytes := 0
 					for b.Loop() {
@@ -63,6 +67,9 @@ func BenchmarkNativeCatalogMetadataSearch(b *testing.B) {
 				return browseLibrary(request, index, progress, lists)
 			}, progress.ClientItem)
 			request := ownerRequest("/api/v1/library?view=movies&q=Movie+9999")
+			ctx, cancel := context.WithCancel(request.Context())
+			b.Cleanup(cancel)
+			request = request.WithContext(ctx)
 			b.ReportAllocs()
 			responseBytes := 0
 			for b.Loop() {

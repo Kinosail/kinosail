@@ -1,7 +1,6 @@
 package catalog
 
 import (
-	"context"
 	"errors"
 	"math"
 	"net/url"
@@ -45,7 +44,7 @@ func TestBrowseValidatesBeforeSelectionAndBuildsStablePages(t *testing.T) { //no
 	if err != nil {
 		t.Fatal(err)
 	}
-	result, err := browse.Apply(candidates)
+	result, err := browse.Apply(t.Context(), candidates)
 	if err != nil || result.Total != 1 || len(result.Items) != 1 || result.Items[0].ID != "a" || result.View != "all" || result.Sort != "title" {
 		t.Fatalf("result = %#v, error = %v", result, err)
 	}
@@ -59,7 +58,7 @@ func TestBrowseValidatesBeforeSelectionAndBuildsStablePages(t *testing.T) { //no
 	}
 
 	history, _ := ParseBrowse(url.Values{"view": {"history"}, "limit": {"1"}}, "en")
-	result, err = history.Apply(candidates)
+	result, err = history.Apply(t.Context(), candidates)
 	if err != nil || result.Items[0].ID != "a" || result.NextURL() == "" || result.PreviousURL() != "" {
 		t.Fatalf("history = %#v, error = %v", result, err)
 	}
@@ -68,10 +67,10 @@ func TestBrowseValidatesBeforeSelectionAndBuildsStablePages(t *testing.T) { //no
 func TestBrowseLibraryValidatesBeforeLoading(t *testing.T) {
 	loads := 0
 	load := func() ([]*library.Item, error) { loads++; return nil, errors.New("index") }
-	if _, err := BrowseLibrary(url.Values{"unknown": {"x"}}, "en", load, func() BrowseAccess { return BrowseAccess{} }); !errors.Is(err, ErrInvalidBrowse) || loads != 0 {
+	if _, err := BrowseLibrary(t.Context(), url.Values{"unknown": {"x"}}, "en", load, func() BrowseAccess { return BrowseAccess{} }); !errors.Is(err, ErrInvalidBrowse) || loads != 0 {
 		t.Fatalf("invalid query loaded index: loads=%d error=%v", loads, err)
 	}
-	if _, err := BrowseLibrary(nil, "en", load, func() BrowseAccess { return BrowseAccess{} }); err == nil || loads != 1 {
+	if _, err := BrowseLibrary(t.Context(), nil, "en", load, func() BrowseAccess { return BrowseAccess{} }); err == nil || loads != 1 {
 		t.Fatalf("index error = %v, loads=%d", err, loads)
 	}
 	item := library.Item{ID: "visible", Title: "Visible"}
@@ -79,7 +78,7 @@ func TestBrowseLibraryValidatesBeforeLoading(t *testing.T) {
 	var listMutex sync.RWMutex
 	progress := map[string]PlaybackState{"viewer:visible": {Watched: true}}
 	listed := map[string]bool{"viewer:visible": true}
-	result, err := BrowseLibrary(url.Values{"view": {"list"}}, "en", func() ([]*library.Item, error) { return []*library.Item{&item}, nil }, func() BrowseAccess {
+	result, err := BrowseLibrary(t.Context(), url.Values{"view": {"list"}}, "en", func() ([]*library.Item, error) { return []*library.Item{&item}, nil }, func() BrowseAccess {
 		return BrowseAccess{ProgressMutex: &progressMutex, ListMutex: &listMutex, Progress: &progress, Listed: &listed, ProfileID: "viewer", Visible: func(library.Item) bool { return true }}
 	})
 	if err != nil || result.Total != 1 || result.Items[0].ID != item.ID || DefaultPageSize != 100 {
@@ -129,7 +128,7 @@ func TestBrowseViewsSortsLettersAndShows(t *testing.T) { //nolint:cyclop,gocogni
 		if err != nil {
 			t.Fatal(err)
 		}
-		result, err := browse.Apply(candidates)
+		result, err := browse.Apply(t.Context(), candidates)
 		if err != nil || result.Total != total {
 			t.Errorf("%s total = %d, error = %v", view, result.Total, err)
 		}
@@ -137,13 +136,13 @@ func TestBrowseViewsSortsLettersAndShows(t *testing.T) { //nolint:cyclop,gocogni
 
 	for _, order := range []string{"added", "year", "title"} {
 		browse, _ := ParseBrowse(url.Values{"sort": {order}}, "en")
-		if _, err := browse.Apply(candidates); err != nil {
+		if _, err := browse.Apply(t.Context(), candidates); err != nil {
 			t.Errorf("sort %s: %v", order, err)
 		}
 	}
 
 	letterBrowse, _ := ParseBrowse(url.Values{"letter": {"e"}, "limit": {"1"}}, "fr")
-	letterResult, err := letterBrowse.Apply(candidates)
+	letterResult, err := letterBrowse.Apply(t.Context(), candidates)
 	current := false
 	for _, letter := range letterResult.Letters {
 		current = current || letter.Label == "E" && letter.Current
@@ -152,7 +151,7 @@ func TestBrowseViewsSortsLettersAndShows(t *testing.T) { //nolint:cyclop,gocogni
 		t.Fatalf("letter result = %#v, error = %v", letterResult, err)
 	}
 	badOffset, _ := ParseBrowse(url.Values{"letter": {"E"}, "offset": {"0"}, "limit": {"1"}}, "fr")
-	if _, err := badOffset.Apply(candidates); !errors.Is(err, ErrInvalidBrowse) {
+	if _, err := badOffset.Apply(t.Context(), candidates); !errors.Is(err, ErrInvalidBrowse) {
 		t.Fatalf("bad letter offset error = %v", err)
 	}
 }
@@ -219,7 +218,7 @@ func TestStatePersistenceAndShowSelection(t *testing.T) { //nolint:cyclop // One
 
 	writes := 0
 	state := CloneListState(map[string]bool{"v:i": true}, nil, nil, nil)
-	if err := CommitListState(context.Background(), nil, ListPaths{Values: "lists.json"}, func(file string, value any) error { writes++; return nil }, state, 1); err != nil || writes != 1 {
+	if err := CommitListState(t.Context(), nil, ListPaths{Values: "lists.json"}, func(file string, value any) error { writes++; return nil }, state, 1); err != nil || writes != 1 {
 		t.Fatalf("list commit writes = %d, error = %v", writes, err)
 	}
 	if len(ListDocuments(state, 15)) != 4 {

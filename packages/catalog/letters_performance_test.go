@@ -32,7 +32,7 @@ func TestBrowseLetterJumpsPreserveLocaleAndUnicode(t *testing.T) {
 				t.Fatal(err)
 			}
 			item := library.Item{ID: "item", Title: test.title}
-			result, err := browse.Apply([]catalog.Candidate{{Item: &item}})
+			result, err := browse.Apply(t.Context(), []catalog.Candidate{{Item: &item}})
 			if err != nil || len(result.Items) != 1 || len(result.Letters) != 1 || result.Letters[0].Label != test.letter || !result.Letters[0].Current {
 				t.Fatalf("browse %q (%s) = %#v, %v", test.title, test.locale, result, err)
 			}
