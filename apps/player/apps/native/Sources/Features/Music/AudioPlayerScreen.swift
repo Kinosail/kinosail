@@ -44,6 +44,8 @@ struct AudioPlayerScreen: View {
     @State private var seeking = false
     #if os(tvOS)
     @State private var showsTools = false
+    @State private var focusedInitially = false
+    @Environment(\.resetFocus) private var resetFocus
     @Namespace private var audioFocus
     #endif
     private var upcoming: [MediaItem] { Array(session.player.queue.items.dropFirst((session.player.queue.currentIndex ?? 0) + 1).prefix(20)) }
@@ -131,16 +133,21 @@ struct AudioPlayerScreen: View {
         .navigationTitle("Now playing")
         #if os(tvOS)
         .focusScope(audioFocus)
+        .onChange(of: session.player.player != nil, initial: true) { _, ready in
+            if ready && !focusedInitially { focusedInitially = true; resetFocus(in: audioFocus) }
+        }
         .onPlayPauseCommand { if session.player.player != nil { session.player.togglePlayback() } }
         .onAppear { if hidesMiniPlayer { session.showsAudioPlayer = true } }
         .onDisappear { if hidesMiniPlayer { session.showsAudioPlayer = false } }
         #endif
         .toolbar { ToolbarItem(placement: .primaryAction) {
             #if os(tvOS)
+            if session.player.player != nil {
             Button { showsTools = true } label: {
                 Image(systemName: "ellipsis.circle.fill").font(.title2).foregroundStyle(KinoTheme.text)
             }
                 .accessibilityLabel("Playback options")
+            }
             #else
             NavigationLink { PlaybackToolsScreen() } label: { Label("Playback options", systemImage: "ellipsis.circle") }
             #endif
