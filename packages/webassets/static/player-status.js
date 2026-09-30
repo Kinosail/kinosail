@@ -84,7 +84,7 @@ if (playerStatus) {
     if (playerStatus.dataset.state === "buffering") playerMessage.textContent = percent ? `Buffering · ${percent}% buffered` : "Buffering…";
     if (!hasPlayed) revealPlayControl();
   });
-  player.addEventListener("suspend", () => { if (!hasPlayed) revealPlayControl(); });
+  player.addEventListener("suspend", () => { if (!hasPlayed) { revealPlayControl(); if (!playerStatus.hidden) schedulePlayControl(); } });
   player.addEventListener("loadedmetadata", bufferedPercent);
   player.addEventListener("timeupdate", () => {
     const advancing = player.currentTime > playbackTime;

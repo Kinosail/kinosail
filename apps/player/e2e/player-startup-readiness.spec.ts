@@ -4,6 +4,27 @@ import { installPlayerExperienceFixture } from "./player-experience-fixture";
 
 installPlayerExperienceFixture();
 
+test("Safari startup offers the required gesture after slow metadata loading", async ({ page }) => {
+  await page.addStyleTag({ content: await readFile("../../../packages/webassets/static/player-stage.css", "utf8") });
+  const video = page.locator("video");
+  await page.evaluate(() => {
+    const context = window as Window & {setBufferedEnd: (value: number) => void; setReadyState: (value: number) => void};
+    context.setBufferedEnd(20.1);
+    context.setReadyState(1);
+  });
+  await video.dispatchEvent("loadstart");
+  await page.clock.runFor(2_000);
+  await expect(page.locator("[data-player-status]")).toBeVisible();
+  await page.evaluate(() => {
+    const context = window as Window & {setNetworkState: (value: number) => void; setPlayFailure: (value: string) => void};
+    context.setNetworkState(1);
+    context.setPlayFailure("NotAllowedError");
+  });
+  await video.dispatchEvent("suspend");
+  await page.clock.runFor(2_000);
+  await expect(page.locator(".player-center-control[data-player-toggle]")).toBeVisible();
+});
+
 test("Safari startup preserves a pause requested before playback starts", async ({ page }) => {
   const video = page.locator("video");
   await page.evaluate(() => (window as Window & {setNetworkState: (value: number) => void}).setNetworkState(1));

@@ -3,6 +3,7 @@ import type { Page } from "@playwright/test";
 import { createHash, createHmac } from "node:crypto";
 
 test.skip(!process.env.KINOSAIL_TEST_INSTANCE, "requires the populated test instance");
+test.use({ serviceWorkers: "block" });
 test.beforeEach(async ({ page }) => page.addInitScript(() => Object.defineProperty(PublicKeyCredential, "isConditionalMediationAvailable", { value: async () => false })));
 
 function totp(): string {
