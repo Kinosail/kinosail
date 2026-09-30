@@ -3,6 +3,7 @@ import { createHash } from "node:crypto";
 import { configureTestInstance, downloadsSource, firstPlayable, login } from "./test-instance-helpers";
 
 configureTestInstance();
+test.use({ serviceWorkers: "block" });
 
 test.describe("large offline transfers", () => {
 
@@ -90,7 +91,7 @@ test.describe("large offline transfers", () => {
     }), { id: jobID!, itemID: itemID!, profileID: profileID!, quality: quality!, sha256, size: media.length, title: title! });
 
     await button.click();
-    await expect(page.getByText("Ready offline on this device", { exact: true })).toBeVisible({ timeout: 20_000 });
+    await expect(page.getByText("Saved and verified. Play to check compatibility.", { exact: true })).toBeVisible({ timeout: 20_000 });
     expect(ranges).toEqual([16, 16, 1]);
     expect(await page.evaluate(() => (window as typeof window & { __offlineFile: Uint8Array }).__offlineFile.length)).toBe(media.length);
   });
@@ -156,7 +157,7 @@ test.describe("large offline transfers", () => {
     }), { id: jobID!, itemID: itemID!, profileID: profileID!, quality: quality!, sha256, size: media.length, title: title! });
 
     await button.click();
-    await expect(page.getByText("Ready offline on this device", { exact: true })).toBeVisible({ timeout: 20_000 });
+    await expect(page.getByText("Saved and verified. Play to check compatibility.", { exact: true })).toBeVisible({ timeout: 20_000 });
     expect(ranges).toEqual([16, 16, 1]);
   });
 

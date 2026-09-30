@@ -3,6 +3,7 @@ import { createHash } from "node:crypto";
 import { configureTestInstance, downloadsSource, type OfflineClient } from "./test-instance-helpers";
 
 configureTestInstance();
+test.use({ serviceWorkers: "block" });
 
 test.describe("large offline transfers", () => {
 
@@ -82,6 +83,10 @@ test.describe("large offline transfers", () => {
     await context.route((url) => url.pathname === `/api/v1/downloads/${jobID}`, (route) => route.fulfill({
       contentType: "application/json",
       body: JSON.stringify({ id: jobID, itemId: itemID, profileId: profileID, title: "Movie", quality: "720p", state: "ready", extension: ".mp4", sha256, size: media.length, readyOffline: true }),
+    }));
+    await context.route((url) => url.pathname === `/api/v1/items/${itemID}`, (route) => route.fulfill({
+      contentType: "application/json",
+      body: JSON.stringify({ profileId: profileID, item: { id: itemID, progress: {} } }),
     }));
     let releaseFirstRange = () => {};
     const firstRangeReleased = new Promise<void>((resolve) => { releaseFirstRange = resolve; });
