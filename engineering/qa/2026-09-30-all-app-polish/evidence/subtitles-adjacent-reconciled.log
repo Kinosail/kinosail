@@ -1,0 +1,22 @@
+
+Running 14 tests using 1 worker
+
+(node:27715) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1/14] [chromium] › subtitle-inspector-layout.spec.ts:12:3 › inspector shell and review states fit 1920px dark
+[2/14] [chromium] › subtitle-inspector-layout.spec.ts:12:3 › inspector shell and review states fit 1440px dark @smoke
+[3/14] [chromium] › subtitle-inspector-layout.spec.ts:12:3 › inspector shell and review states fit 1024px dark
+[4/14] [chromium] › subtitle-inspector-layout.spec.ts:12:3 › inspector shell and review states fit 720px dark
+[5/14] [chromium] › subtitle-inspector-layout.spec.ts:12:3 › inspector shell and review states fit 568px dark
+[6/14] [chromium] › subtitle-inspector-layout.spec.ts:12:3 › inspector shell and review states fit 390px dark @smoke
+[7/14] [chromium] › subtitle-inspector-layout.spec.ts:12:3 › inspector shell and review states fit 320px dark
+[8/14] [chromium] › subtitle-inspector-layout.spec.ts:12:3 › inspector shell and review states fit 1920px light
+[9/14] [chromium] › subtitle-inspector-layout.spec.ts:12:3 › inspector shell and review states fit 1440px light
+[10/14] [chromium] › subtitle-inspector-layout.spec.ts:12:3 › inspector shell and review states fit 1024px light
+[11/14] [chromium] › subtitle-inspector-layout.spec.ts:12:3 › inspector shell and review states fit 720px light
+[12/14] [chromium] › subtitle-inspector-layout.spec.ts:12:3 › inspector shell and review states fit 568px light
+[13/14] [chromium] › subtitle-inspector-layout.spec.ts:12:3 › inspector shell and review states fit 390px light
+[14/14] [chromium] › subtitle-inspector-layout.spec.ts:12:3 › inspector shell and review states fit 320px light
+  14 passed (28.2s)

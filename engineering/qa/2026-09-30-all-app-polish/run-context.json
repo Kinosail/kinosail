@@ -1,0 +1,163 @@
+{
+  "baseline": "55c0b765c16eb68a403b1a8f4c76f8a71340bdad",
+  "environment": {
+    "host": "macOS",
+    "browser": "Playwright 1.63.0 Chromium, Firefox, WebKit",
+    "server": "Production Go entry points with task-owned data/cache/backups and loopback HTTPS"
+  },
+  "data": "Generated CC0 Movies, Shows, Music, Audiobooks, Books and Photos; isolated Owner with TOTP. No production data.",
+  "files": [
+    {
+      "path": "apps/player/internal/server/album.go",
+      "sha256": "cfbaa857220e717c124551f8333a77adeabe55495a93b5afad189fad7c86364c"
+    },
+    {
+      "path": "apps/player/internal/server/assets_performance_test.go",
+      "sha256": "3bbe97235ce7019a8870fdf8f91159939e32bb4888641243325fc56c89fa50a1"
+    },
+    {
+      "path": "apps/player/internal/server/assets_test.go",
+      "sha256": "91ab43c56894c12c483fbfef12e5214e70b987c65a0c24ab4230cc49076b70b4"
+    },
+    {
+      "path": "apps/player/internal/server/last_light_test.go",
+      "sha256": "fc0793ba1dbc458ea7559b7345a50b370300292060956f26867fc3706d4a4747"
+    },
+    {
+      "path": "apps/player/internal/server/navigation_shell.go",
+      "sha256": "d64b25dbd67e6671fe9dd8e4f55664b3e715ddc6aa264cb4dd0e7c2eafe7b2ad"
+    },
+    {
+      "path": "apps/player/internal/server/navigation_shell_internal_test.go",
+      "sha256": "20cf49a111abbb4e6d9af8bbcf657f60800fbda733702d2df0d3e1c143d2ee1c"
+    },
+    {
+      "path": "apps/player/internal/server/passkeys_test.go",
+      "sha256": "2cf3a41df3f468c1d2a960a9059b2d6ba4488802d06d87b86ff08022b3461521"
+    },
+    {
+      "path": "apps/player/internal/server/pwa_registration_test.go",
+      "sha256": "b3e9d0a689c430601140696c01e6d6fb85ff16da5ed2df5a081d698afdd25c73"
+    },
+    {
+      "path": "apps/player/internal/server/quick_connect_test.go",
+      "sha256": "727ed9dd15f0c7872dd060b83ce617829b200fd0ad5fa4a91a884a8c6f0d02ce"
+    },
+    {
+      "path": "apps/player/internal/server/static/home.css",
+      "sha256": "e02dc418ca77f69673cd14326cc0db5960f070a420de74bd5b7b6cb42a3158c5"
+    },
+    {
+      "path": "apps/player/internal/server/supporter_test.go",
+      "sha256": "2d4671cc15fb31baa99fac02e9cb88ba998af74d6e3891cf0be407d356dcb911"
+    },
+    {
+      "path": "apps/player/internal/server/timeline_test.go",
+      "sha256": "19201319222bc401a097961b7541afc14f7b4f7040a49cb6750e410a4d3ff796"
+    },
+    {
+      "path": "apps/player/internal/server/trusted_https_test.go",
+      "sha256": "26d15bbf92b36c65d2e680e391989b8f0411e35922af8b4f36b64be2a00bb1c4"
+    },
+    {
+      "path": "apps/player/scripts/test-instance.sh",
+      "sha256": "bec061572c590e3a58569ed12f4b460782c4278554e023c21616c6127111bc10"
+    },
+    {
+      "path": "apps/subtitles/internal/server/navigation_shell.go",
+      "sha256": "2bd4b23554aa5ce2d62901a10b969c6f03d753a38531f79f27f03697170a2d70"
+    },
+    {
+      "path": "apps/subtitles/internal/server/passkeys_test.go",
+      "sha256": "82bebf9572ebb1886540067c980d93d7f5a76eab0efeed11512204e35310869a"
+    },
+    {
+      "path": "apps/subtitles/internal/server/static/subtitle-workspace.css",
+      "sha256": "2697cd8a0147783e5b92cbdf1e0bab5503c9df1ce017f8a8876cbf35f25a5477"
+    },
+    {
+      "path": "apps/subtitles/internal/server/subtitle_dashboard_test.go",
+      "sha256": "3a5d57648acf3c24b2337f82913ba2db0548ec1bde55203547f5562ca44dd71e"
+    },
+    {
+      "path": "apps/subtitles/internal/server/supporter_test.go",
+      "sha256": "cf52d039a6042bbc82d2939d1e48d2aac4ab72383bf51532949a6b0da191d716"
+    },
+    {
+      "path": "apps/subtitles/internal/server/timeline_test.go",
+      "sha256": "7209c271c010360265c870c5194e9d5df175a8361c3fdb7001f748830cef0eaf"
+    },
+    {
+      "path": "apps/subtitles/scripts/test-container.sh",
+      "sha256": "f8833650cfaf56cac4ca1067cca2678ac408456298aedc70b21953839004f289"
+    },
+    {
+      "path": "apps/subtitles/scripts/test-instance.sh",
+      "sha256": "199681fc93a1f59dcdfbdf77852cc0cd7123ac007f8d0aeeab710ac33ae97003"
+    },
+    {
+      "path": "apps/player/e2e/polish-shell.spec.ts",
+      "sha256": "1c529875a69a109d230f97bbab880d39c8552659751370a57aff762e6b893a0c"
+    },
+    {
+      "path": "apps/subtitles/e2e/polish-shell.spec.ts",
+      "sha256": "e0ca269cc62414fb719698a25144bf2ea3960fd7460e263a8e65ed8f5c2eff74"
+    }
+  ],
+  "evidence": [
+    {
+      "path": "evidence/player-search-before.png",
+      "sha256": "2005cc04a9c7002b5ac836250bfd558a34928c2a6a0ca024a23125ca119e0378"
+    },
+    {
+      "path": "evidence/subtitles-verify-changed.log",
+      "sha256": "38bac2621942dbaf7f3a4c35a414cc1d4b3c883dddf53d93c786531cdcea7d96"
+    },
+    {
+      "path": "evidence/player-settings-after.png",
+      "sha256": "33a73ebe12cc5b32329e401242a42d78d0f5402d86fb821b743263034711960a"
+    },
+    {
+      "path": "evidence/subtitles-adjacent-reconciled.log",
+      "sha256": "d6cd608e12ad7a9a90f33983b5f0b7cbbb7aa9a54dbbe372fd56a7a65dbf4c93"
+    },
+    {
+      "path": "evidence/player-search-focus-after.png",
+      "sha256": "795f320188e753d4ef46def1503fb9c218f9b5ef2a2c2a98d3c765db57a35986"
+    },
+    {
+      "path": "evidence/player-adjacent-reconciled.log",
+      "sha256": "3dde6253b8f4ee7c21f85ab8f1ce6ef672f5a31e10fc596a4ebd674fb78a2dfb"
+    },
+    {
+      "path": "evidence/player-browser-matrix.log",
+      "sha256": "1ed4dd03c0a08a33a0f5bee07b2378a5d714df1b3de7936388128c077aef1c57"
+    },
+    {
+      "path": "evidence/subtitles-browser-matrix.log",
+      "sha256": "116b3ec3fa4723f3677638145f7e9eb5ca7ba44f2e9a211875c333554fd70e53"
+    },
+    {
+      "path": "evidence/player-settings-before.png",
+      "sha256": "7313c497d461a067b37ffdc4b53fc03d61a5e387cddc516b65a1e87a84228aed"
+    },
+    {
+      "path": "evidence/subtitles-settings-after.png",
+      "sha256": "1c8b14030c783d29b9e74fe617f9b4e8ca170582f88f5a4892e8f49da57e7894"
+    },
+    {
+      "path": "evidence/subtitles-settings-before.png",
+      "sha256": "546e1157a9cbcebad7652f2e1865c7be94d925830a69080bf9bfa6b347f9c5f3"
+    },
+    {
+      "path": "evidence/player-phone-landscape-after.png",
+      "sha256": "b227692964b5303db69aaeac2905bd4469151f3fd007961f1818acdc046ef8b5"
+    },
+    {
+      "path": "evidence/player-verify-changed.log",
+      "sha256": "4c78bb698bc6f93f8b0b8e29c74e495ba5fef83b313d5a9d6a0cb6d989a05a0a"
+    }
+  ],
+  "implementationRevision": "9d10883b42dcf2dc47c92721fcc3d712d41d89bf",
+  "reconciledRevision": "94962a5ceb35d2b67db6e84abadcc18659d09409"
+}
