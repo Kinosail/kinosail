@@ -1,0 +1,56 @@
+
+Running 3 tests using 1 worker
+
+(node:81881) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  1 [chromium] › subtitle-defaults-tests.ts:8:3 › review starts with sync and cleanup and keeps manual timing exclusive @smoke (7.4s)
+(node:83869) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  2 [firefox] › subtitle-defaults-tests.ts:8:3 › review starts with sync and cleanup and keeps manual timing exclusive @smoke (8.3s)
+(node:83999) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  3 [webkit] › subtitle-defaults-tests.ts:8:3 › review starts with sync and cleanup and keeps manual timing exclusive @smoke (11.8s)
+
+
+  1) [webkit] › subtitle-defaults-tests.ts:8:3 › review starts with sync and cleanup and keeps manual timing exclusive @smoke 
+
+    Error: expect(locator).toHaveAttribute(expected) failed
+
+    Locator:  locator('#inspector-status')
+    Expected: "true"
+    Received: ""
+    Timeout:  10000ms
+
+    Call log:
+      - Expect "toHaveAttribute" locator('#inspector-status') with timeout 10000ms
+      - waiting for locator('#inspector-status')
+        24 × locator resolved to <p role="status" aria-live="polite" id="inspector-status">Current subtitle loaded. Preview a change before …</p>
+           - unexpected value "null"
+
+
+      32 |       const sync = page.getByRole("checkbox", { name: "Synchronize against the video's main dialogue" });
+      33 |       await expect(sync).toBeChecked();
+    > 34 |       await expect(page.locator("#inspector-status")).toHaveAttribute("aria-busy", "true");
+         |                                                       ^
+      35 |       await expect(page.getByRole("button", { name: "Save reviewed subtitle" })).toBeDisabled();
+      36 |       await capture("pending");
+      37 |       release();
+        at /Users/mikeo/.codex/worktrees/all-app-polish/kinosail/apps/subtitles/e2e/subtitle-defaults-tests.ts:34:55
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../.kinosail-test/review-state-matrix/subtitle-dashboard-review--2d90a-eps-manual-timing-exclusive-webkit/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../.kinosail-test/review-state-matrix/subtitle-dashboard-review--2d90a-eps-manual-timing-exclusive-webkit/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../.kinosail-test/review-state-matrix/subtitle-dashboard-review--2d90a-eps-manual-timing-exclusive-webkit/trace.zip
+    Usage:
+
+        pnpm exec playwright show-trace ../.kinosail-test/review-state-matrix/subtitle-dashboard-review--2d90a-eps-manual-timing-exclusive-webkit/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    [webkit] › subtitle-defaults-tests.ts:8:3 › review starts with sync and cleanup and keeps manual timing exclusive @smoke 
+  2 passed (41.0s)

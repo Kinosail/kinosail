@@ -1,0 +1,70 @@
+{
+  "recordedAt": "2026-09-30T20:51:17.021069+00:00",
+  "pullRequest": "https://github.com/Kinosail/kinosail/pull/387",
+  "reviewedCommit": "d37015b4cef6919cc114df539f6ad38d5fded756",
+  "mainCommit": "60d11e2054e31eac090af9ffed3ff85dd0b52c27",
+  "requiredChecks": {
+    "Player checks": "SUCCESS",
+    "Subtitles checks": "SUCCESS",
+    "Repository checks": "SUCCESS",
+    "Security checks": "SUCCESS"
+  },
+  "imageResults": [
+    {
+      "image": "player-amd64",
+      "jobURL": "https://github.com/Kinosail/kinosail/actions/runs/36773104076/job/110084241362",
+      "package": "libssl3t64",
+      "version": "3.5.7-1~deb13u3",
+      "installedEvidence": "2026-09-30T20:31:45.8135347Z #17 3.749 Setting up libssl3t64:amd64 (3.5.7-1~deb13u3) ..."
+    },
+    {
+      "image": "player-arm64",
+      "jobURL": "https://github.com/Kinosail/kinosail/actions/runs/36773104076/job/110084241222",
+      "package": "libssl3t64",
+      "version": "3.5.7-1~deb13u3",
+      "installedEvidence": "2026-09-30T20:31:05.1828214Z #19 3.502 Setting up libssl3t64:arm64 (3.5.7-1~deb13u3) ..."
+    },
+    {
+      "image": "subtitles-amd64",
+      "jobURL": "https://github.com/Kinosail/kinosail/actions/runs/36773104076/job/110084241197",
+      "package": "libssl3t64",
+      "version": "3.5.7-1~deb13u3",
+      "installedEvidence": "2026-09-30T20:32:15.9570270Z #18 3.118 Setting up libssl3t64:amd64 (3.5.7-1~deb13u3) ..."
+    },
+    {
+      "image": "subtitles-arm64",
+      "jobURL": "https://github.com/Kinosail/kinosail/actions/runs/36773104076/job/110084241265",
+      "package": "libssl3t64",
+      "version": "3.5.7-1~deb13u3",
+      "installedEvidence": "2026-09-30T20:31:46.8790751Z #18 3.295 Setting up libssl3t64:arm64 (3.5.7-1~deb13u3) ..."
+    }
+  ],
+  "mainPublication": {
+    "runURL": "https://github.com/Kinosail/kinosail/actions/runs/36774578971",
+    "revision": "60d11e2054e31eac090af9ffed3ff85dd0b52c27",
+    "status": "completed",
+    "conclusion": "success",
+    "images": [
+      {
+        "app": "player",
+        "repository": "ghcr.io/kinosail/kinosail-player",
+        "digest": "sha256:423b1ff60651217ee62fada853c4aab6de8bff45835fc092c89a73cc4cc60c19",
+        "tags": [
+          "main",
+          "latest"
+        ]
+      },
+      {
+        "app": "subtitles",
+        "repository": "ghcr.io/kinosail/kinosail-subtitles",
+        "digest": "sha256:02ff8b2e54ef11355ee9700ce3b0e895dc65cf5123c8cb1eef63bf4df20ac06b",
+        "tags": [
+          "main",
+          "latest"
+        ]
+      }
+    ]
+  },
+  "localContainerBoundary": "Shared Podman storage full; no unrelated data removed",
+  "physicalDeviceBoundary": "Not certified"
+}
