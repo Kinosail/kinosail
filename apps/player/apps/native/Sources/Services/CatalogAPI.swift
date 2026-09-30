@@ -100,9 +100,9 @@ extension ServerClient {
         return saved
     }
 
-    func watchProgress(itemID: String) async throws -> WatchProgressSummary {
+    func watchProgress(itemID: String, policy: CatalogPolicy = .automatic) async throws -> WatchProgressSummary {
         let id = try Input.id(itemID)
-        return try await WatchProgressSummary(request("/api/v1/items/\(id)/watch-progress").body)
+        return try await catalog("/api/v1/items/\(id)/watch-progress", policy: policy, decode: WatchProgressSummary.init)
     }
 
     func dismissContinueWatching(itemID: String) async throws {

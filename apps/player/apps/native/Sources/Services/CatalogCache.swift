@@ -20,7 +20,8 @@ extension ServerClient {
         let parts = encodedPath.split(separator: "/")
         guard parts.count >= 3, parts[0] == "api", parts[1] == "v1",
               parts.count == 3 && ["library", "actor", "collections", "albums"].contains(parts[2]) ||
-              parts.count == 4 && ["items", "shows", "collections", "albums"].contains(parts[2]),
+              parts.count == 4 && ["items", "shows", "collections", "albums"].contains(parts[2]) ||
+              parts.count == 5 && parts[2] == "items" && parts[4] == "watch-progress",
               ["library", "actor"].contains(parts[2]) || url.query == nil else { throw ClientError.invalidInput("The catalog request is invalid.") }
         let generation = catalogGeneration
         let store = try cacheStore()
