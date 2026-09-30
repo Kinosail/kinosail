@@ -4,27 +4,6 @@ import { installPlayerExperienceFixture } from "./player-experience-fixture";
 
 installPlayerExperienceFixture();
 
-test("Safari startup offers the required gesture after slow metadata loading", async ({ page }) => {
-  await page.addStyleTag({ content: await readFile("../../../packages/webassets/static/player-stage.css", "utf8") });
-  const video = page.locator("video");
-  await page.evaluate(() => {
-    const context = window as Window & {setBufferedEnd: (value: number) => void; setReadyState: (value: number) => void};
-    context.setBufferedEnd(20.1);
-    context.setReadyState(1);
-  });
-  await video.dispatchEvent("loadstart");
-  await page.clock.runFor(2_000);
-  await expect(page.locator("[data-player-status]")).toBeVisible();
-  await page.evaluate(() => {
-    const context = window as Window & {setNetworkState: (value: number) => void; setPlayFailure: (value: string) => void};
-    context.setNetworkState(1);
-    context.setPlayFailure("NotAllowedError");
-  });
-  await video.dispatchEvent("suspend");
-  await page.clock.runFor(2_000);
-  await expect(page.locator(".player-center-control[data-player-toggle]")).toBeVisible();
-});
-
 test("Safari startup preserves a pause requested before playback starts", async ({ page }) => {
   const video = page.locator("video");
   await page.evaluate(() => (window as Window & {setNetworkState: (value: number) => void}).setNetworkState(1));
@@ -118,4 +97,119 @@ for (const readyState of [1, 3]) test(`Safari startup keeps the required gesture
   await page.evaluate(() => (window as Window & {finishPlay: () => void}).finishPlay());
   await expect(status).toBeHidden();
   await expect(video).toHaveJSProperty("paused", false);
+});
+
+
+for (const pauseDelivery of ["immediate", "queued pause"]) test(`Safari startup prepares muted media without a loading tap or progress save with ${pauseDelivery}`, async ({ page }, testInfo) => {
+  const saves: string[] = [];
+  page.on("request", (request) => { if (request.url().includes("/progress/movie")) saves.push(request.postData() || ""); });
+  await page.addStyleTag({ content: await readFile("../../../packages/webassets/static/player-stage.css", "utf8") });
+  const video = page.locator("video");
+  const status = page.locator("[data-player-status]");
+  await page.evaluate(() => {
+    const context = window as Window & {setBufferedEnd: (value: number) => void; setPlayPending: (value: boolean) => void};
+    context.setBufferedEnd(20.1);
+    context.setPlayPending(true);
+  });
+  await video.dispatchEvent("loadstart");
+  await expect(video).toHaveJSProperty("muted", true);
+  await expect(status).toBeVisible();
+  await expect(page.locator(".player-center-control[data-player-toggle]")).toBeHidden();
+  await page.clock.runFor(2_000);
+  await expect(status).toBeVisible();
+  await page.evaluate(() => {
+    const context = window as Window & {setBufferedEnd: (value: number) => void; setReadyState: (value: number) => void};
+    context.setBufferedEnd(23);
+    context.setReadyState(3);
+    document.querySelector("video")!.currentTime = 20.2;
+  });
+  await video.dispatchEvent("progress");
+  await expect(video).toHaveJSProperty("paused", true);
+  await expect(video).toHaveJSProperty("muted", false);
+  await expect(video).toHaveJSProperty("currentTime", 20);
+  await expect(status).toBeHidden();
+  await page.clock.runFor(1);
+  await page.waitForTimeout(100);
+  expect(saves).toEqual([]);
+  await page.screenshot({path: testInfo.outputPath("390-prepared-play.png")});
+  await page.evaluate(() => (window as Window & {setPlayPending: (value: boolean) => void}).setPlayPending(false));
+  await page.locator(".player-center-control[data-player-toggle]").click();
+  await expect(video).toHaveJSProperty("paused", false);
+  await expect(video).toHaveJSProperty("muted", false);
+  await expect(status).toBeHidden();
+  // A stale preparation promise must not pause the user's playback.
+  await page.evaluate(() => (window as Window & {finishPlay: () => void}).finishPlay());
+  await expect(video).toHaveJSProperty("paused", false);
+  await page.evaluate(() => (window as Window & {advanceMediaTime: (value: number) => void}).advanceMediaTime(25));
+  await video.evaluate((element: HTMLVideoElement) => element.pause());
+  await expect.poll(() => saves.length).toBe(1);
+  expect(new URLSearchParams(saves[0]).get("seconds")).toBe("25");
+  expect(new URLSearchParams(saves[0]).has("watched")).toBe(false);
+});
+
+for (const networkState of [1, 2]) test(`Safari startup shows Play when even muted preparation is rejected at networkState ${networkState}`, async ({ page }) => {
+  await page.addStyleTag({ content: await readFile("../../../packages/webassets/static/player-stage.css", "utf8") });
+  const video = page.locator("video");
+  await page.evaluate((state) => {
+    const context = window as Window & {setBufferedEnd: (value: number) => void; setNetworkState: (value: number) => void; setPlayFailure: (value: string) => void};
+    context.setBufferedEnd(20.1);
+    context.setNetworkState(state);
+    context.setPlayFailure("NotAllowedError");
+  }, networkState);
+  await video.dispatchEvent("loadstart");
+  await page.clock.runFor(2_000);
+  await expect(page.locator("[data-player-status]")).toBeHidden();
+  await expect(video).toHaveJSProperty("muted", false);
+  await expect(page.locator(".player-center-control[data-player-toggle]")).toBeVisible();
+  await page.evaluate(() => {
+    const context = window as Window & {setPlayFailure: (value: string) => void; setPlayPending: (value: boolean) => void};
+    context.setPlayFailure("");
+    context.setPlayPending(true);
+  });
+  await page.locator(".player-center-control[data-player-toggle]").click();
+  await expect(page.locator("[data-player-status]")).toBeVisible();
+  await page.evaluate(() => (window as Window & {finishPlay: () => void}).finishPlay());
+  await expect(page.locator("[data-player-status]")).toBeHidden();
+  await expect(video).toHaveJSProperty("paused", false);
+});
+
+
+test("Safari startup preserves a newer seek while preparing media", async ({ page }) => {
+  const video = page.locator("video");
+  await page.evaluate(() => {
+    const context = window as Window & {setBufferedEnd: (value: number) => void; setPlayPending: (value: boolean) => void};
+    context.setBufferedEnd(20.1);
+    context.setPlayPending(true);
+  });
+  await video.dispatchEvent("loadstart");
+  await video.evaluate((element) => { element.currentTime = 5; });
+  await video.dispatchEvent("seeking");
+  await page.evaluate(() => {
+    const context = window as Window & {setBufferedEnd: (value: number) => void; setReadyState: (value: number) => void};
+    context.setBufferedEnd(8);
+    context.setReadyState(3);
+  });
+  await video.dispatchEvent("canplay");
+  await expect(video).toHaveJSProperty("paused", true);
+  await expect(video).toHaveJSProperty("currentTime", 5);
+  await expect(video).toHaveJSProperty("muted", false);
+});
+
+test("Safari startup prevents progress saves from overlapping queued pause events", async ({ page }) => {
+  const saves: string[] = [];
+  page.on("request", (request) => { if (request.url().includes("/progress/movie")) saves.push(request.url()); });
+  await page.evaluate(() => {
+    const context = window as Window & {setBufferedEnd: (value: number) => void; setReadyState: (value: number) => void};
+    const video = document.querySelector("video")!;
+    context.setBufferedEnd(20.1);
+    video.dispatchEvent(new Event("loadstart"));
+    video.dispatchEvent(new Event("loadstart"));
+    context.setReadyState(3);
+    context.setBufferedEnd(23);
+    video.dispatchEvent(new Event("progress"));
+  });
+  await page.waitForTimeout(100);
+  expect(saves).toEqual([]);
+  await expect(page.locator("video")).toHaveJSProperty("paused", true);
+  await expect(page.locator("video")).toHaveJSProperty("muted", false);
 });
