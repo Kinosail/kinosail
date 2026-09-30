@@ -1,0 +1,22 @@
+import { test } from "@playwright/test";
+import { configureLayoutAudit, login } from "./layout-audit-helpers";
+configureLayoutAudit();
+test("measure WebKit settings control overflow", async ({ page }, testInfo) => {
+ await login(page);
+ await page.setViewportSize({ width: 320, height: 800 });
+ await page.goto("/settings#transcoder", { waitUntil: "domcontentloaded" });
+ const measure = () => page.locator('select[name="codec"]').evaluate(element => ({ documentWidth: document.documentElement.scrollWidth, viewportWidth: innerWidth, labelTrack: getComputedStyle(element.parentElement!).gridTemplateColumns, labelWidth: element.parentElement!.getBoundingClientRect().width, labelScrollWidth: element.parentElement!.scrollWidth, labelHTML: element.parentElement!.outerHTML, selectWidth: element.getBoundingClientRect().width, selectMinimum: getComputedStyle(element).minWidth, selectMaximum: getComputedStyle(element).maxWidth, selectOverflow: getComputedStyle(element).overflowX }));
+ const observations = [{ candidate: "baseline", geometry: await measure() }];
+ for (const css of [".settings-shell .settings-flow label{grid-template-columns:minmax(0,1fr)}", ".settings-shell .settings-flow select{overflow:hidden;text-overflow:ellipsis}", ".settings-shell .settings-flow select{max-width:100%}"]) {
+  const index = await page.evaluate(css => {
+   const sheet = [...document.styleSheets].find(sheet => sheet.href?.includes("/static/app.css"))!;
+   return sheet.insertRule(css, sheet.cssRules.length);
+  }, css);
+  await page.evaluate(() => new Promise(requestAnimationFrame));
+  observations.push({ candidate: css, geometry: await measure() });
+  await page.evaluate(index => [...document.styleSheets].find(sheet => sheet.href?.includes("/static/app.css"))!.deleteRule(index), index);
+  await page.evaluate(() => new Promise(requestAnimationFrame));
+ }
+ console.log(JSON.stringify(observations));
+ await testInfo.attach("control-geometry", { body: JSON.stringify(observations, null, 2), contentType: "application/json" });
+});

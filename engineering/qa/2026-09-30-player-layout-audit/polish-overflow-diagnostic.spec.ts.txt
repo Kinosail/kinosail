@@ -1,0 +1,30 @@
+import { test } from "@playwright/test";
+import { configureLayoutAudit, login } from "./layout-audit-helpers";
+
+configureLayoutAudit();
+
+test("capture narrow WebKit hardware overflow", async ({ page }, testInfo) => {
+	await login(page);
+	for (const viewport of [{ width: 1440, height: 900 }, { width: 1024, height: 768 }, { width: 390, height: 844 }, { width: 320, height: 800 }]) {
+		await page.setViewportSize(viewport);
+		await page.goto("/settings#transcoder", { waitUntil: "domcontentloaded" });
+		const support = page.locator("#transcoder>.capability-report");
+		await support.getByText("Video compatibility", { exact: true }).click();
+		await support.locator(".capability-list").nth(1).getByText("Technical details", { exact: true }).first().click();
+	}
+	const geometry = await page.evaluate(() => ({
+		width: innerWidth,
+		documentWidth: document.documentElement.scrollWidth,
+		bodyWidth: document.body.scrollWidth,
+		elements: [...document.querySelectorAll("body *")].flatMap(element => {
+			const box = element.getBoundingClientRect();
+			const style = getComputedStyle(element);
+			if (!box.width || !box.height || style.display === "none" || style.visibility === "hidden") return [];
+			if (box.right <= innerWidth && box.left >= 0 && element.scrollWidth <= element.clientWidth + 1) return [];
+			return [{ tag: element.tagName, id: element.id, classes: element.className, left: box.left, right: box.right, width: box.width, scrollWidth: element.scrollWidth, clientWidth: element.clientWidth, overflowX: style.overflowX, whiteSpace: style.whiteSpace, minWidth: style.minWidth }];
+		}),
+	}));
+	await testInfo.attach("overflow-geometry", { body: JSON.stringify(geometry, null, 2), contentType: "application/json" });
+	console.log(JSON.stringify(geometry));
+	await page.screenshot({ path: testInfo.outputPath("320-overflow.png") });
+});

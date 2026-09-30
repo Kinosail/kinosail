@@ -1,0 +1,270 @@
+
+Running 39 tests using 1 worker
+
+(node:48897) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   1 [chromium] › layout-audit-configuration.spec.ts:7:1 › SCIM configuration stays usable at every supported width (13.7s)
+  ✓   2 [chromium] › layout-audit-configuration.spec.ts:40:1 › single sign-on configuration stays usable at every supported width (17.7s)
+  ✓   3 [chromium] › layout-audit-configuration.spec.ts:78:1 › SAML configuration stays usable at every supported width (16.3s)
+  ✓   4 [chromium] › layout-audit-configuration.spec.ts:97:1 › software update choices stay clear at supported widths (10.6s)
+  ✓   5 [chromium] › layout-audit-configuration.spec.ts:127:1 › Media Shares keeps its heading and controls in a readable composition (4.3s)
+  ✘   6 [chromium] › layout-audit-configuration.spec.ts:155:1 › Owner settings separates everyday preferences from advanced tools (1.3m)
+(node:50493) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   7 [chromium] › layout-audit-library.spec.ts:7:1 › browse shows artwork before scrolling on desktop and phone (7.5s)
+  ✓   8 [chromium] › layout-audit-library.spec.ts:28:1 › ordinary browse keeps results in the first useful viewport (2.9s)
+  ✓   9 [chromium] › layout-audit-library.spec.ts:53:1 › mobile browse spacing holds across every media page (8.3s)
+  ✓  10 [chromium] › layout-audit-library.spec.ts:85:1 › compact landscape shell keeps search and primary actions reachable (17.2s)
+  ✓  11 [chromium] › layout-audit-shell.spec.ts:7:1 › signed-in application pages retain the navigation shell (35.5s)
+  ✓  12 [chromium] › layout-audit-shell.spec.ts:75:1 › Owner settings search finds a setting across task families (23.0s)
+  ✓  13 [chromium] › layout-audit-shell.spec.ts:119:1 › transcoder support stays concise and accessible (23.4s)
+(node:51687) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  14 [firefox] › layout-audit-configuration.spec.ts:7:1 › SCIM configuration stays usable at every supported width (47.4s)
+  ✓  15 [firefox] › layout-audit-configuration.spec.ts:40:1 › single sign-on configuration stays usable at every supported width (49.9s)
+  ✓  16 [firefox] › layout-audit-configuration.spec.ts:78:1 › SAML configuration stays usable at every supported width (50.1s)
+  ✓  17 [firefox] › layout-audit-configuration.spec.ts:97:1 › software update choices stay clear at supported widths (23.8s)
+  ✓  18 [firefox] › layout-audit-configuration.spec.ts:127:1 › Media Shares keeps its heading and controls in a readable composition (4.5s)
+  ✘  19 [firefox] › layout-audit-configuration.spec.ts:155:1 › Owner settings separates everyday preferences from advanced tools (1.4m)
+(node:55856) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  20 [firefox] › layout-audit-library.spec.ts:7:1 › browse shows artwork before scrolling on desktop and phone (26.3s)
+  ✓  21 [firefox] › layout-audit-library.spec.ts:28:1 › ordinary browse keeps results in the first useful viewport (7.6s)
+  ✓  22 [firefox] › layout-audit-library.spec.ts:53:1 › mobile browse spacing holds across every media page (13.8s)
+  ✘  23 [firefox] › layout-audit-library.spec.ts:85:1 › compact landscape shell keeps search and primary actions reachable (1.0m)
+(node:58726) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  24 [firefox] › layout-audit-shell.spec.ts:7:1 › signed-in application pages retain the navigation shell (1.2m)
+(node:60062) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  25 [firefox] › layout-audit-shell.spec.ts:75:1 › Owner settings search finds a setting across task families (42.4s)
+  ✘  26 [firefox] › layout-audit-shell.spec.ts:119:1 › transcoder support stays concise and accessible (1.2m)
+(node:62687) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  27 [webkit] › layout-audit-configuration.spec.ts:7:1 › SCIM configuration stays usable at every supported width (45.3s)
+  ✓  28 [webkit] › layout-audit-configuration.spec.ts:40:1 › single sign-on configuration stays usable at every supported width (38.8s)
+  ✓  29 [webkit] › layout-audit-configuration.spec.ts:78:1 › SAML configuration stays usable at every supported width (35.4s)
+  ✓  30 [webkit] › layout-audit-configuration.spec.ts:97:1 › software update choices stay clear at supported widths (25.2s)
+  ✓  31 [webkit] › layout-audit-configuration.spec.ts:127:1 › Media Shares keeps its heading and controls in a readable composition (7.0s)
+  ✘  32 [webkit] › layout-audit-configuration.spec.ts:155:1 › Owner settings separates everyday preferences from advanced tools (1.2m)
+(node:67385) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  33 [webkit] › layout-audit-library.spec.ts:7:1 › browse shows artwork before scrolling on desktop and phone (9.0s)
+  ✓  34 [webkit] › layout-audit-library.spec.ts:28:1 › ordinary browse keeps results in the first useful viewport (3.5s)
+  ✓  35 [webkit] › layout-audit-library.spec.ts:53:1 › mobile browse spacing holds across every media page (7.7s)
+  ✓  36 [webkit] › layout-audit-library.spec.ts:85:1 › compact landscape shell keeps search and primary actions reachable (10.5s)
+  ✓  37 [webkit] › layout-audit-shell.spec.ts:7:1 › signed-in application pages retain the navigation shell (26.3s)
+  ✓  38 [webkit] › layout-audit-shell.spec.ts:75:1 › Owner settings search finds a setting across task families (16.1s)
+  ✘  39 [webkit] › layout-audit-shell.spec.ts:119:1 › transcoder support stays concise and accessible (19.7s)
+
+
+  1) [chromium] › layout-audit-configuration.spec.ts:155:1 › Owner settings separates everyday preferences from advanced tools 
+
+    Test timeout of 60000ms exceeded.
+
+    Error: page.screenshot: Test timeout of 60000ms exceeded.
+    Call log:
+      - taking page screenshot
+      - waiting for fonts to load...
+      - fonts loaded
+
+
+      185 | 			await expect(page.locator(`[data-settings-flow]>[data-settings-category]:visible:not([data-settings-category="${category}"])`)).toHaveCount(0);
+      186 | 			expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
+    > 187 | 			await page.screenshot({ path: testInfo.outputPath(`${viewport.width}-settings-${category}.png`), fullPage: true });
+          | 			           ^
+      188 | 		}
+      189 | 		await page.goto("/settings#transcoder");
+      190 | 		await expect(levels.locator('[aria-current="page"]')).toHaveText("Advanced");
+        at /Users/mikeo/.codex/worktrees/all-app-polish/kinosail/apps/player/e2e/layout-audit-configuration.spec.ts:187:15
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../.kinosail-test/layout-audit-refresh-matrix/layout-audit-configuration-173e1-erences-from-advanced-tools-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../.kinosail-test/layout-audit-refresh-matrix/layout-audit-configuration-173e1-erences-from-advanced-tools-chromium/test-failed-2.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../.kinosail-test/layout-audit-refresh-matrix/layout-audit-configuration-173e1-erences-from-advanced-tools-chromium/error-context.md
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../.kinosail-test/layout-audit-refresh-matrix/layout-audit-configuration-173e1-erences-from-advanced-tools-chromium/trace.zip
+    Usage:
+
+        pnpm exec playwright show-trace ../.kinosail-test/layout-audit-refresh-matrix/layout-audit-configuration-173e1-erences-from-advanced-tools-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2) [firefox] › layout-audit-configuration.spec.ts:155:1 › Owner settings separates everyday preferences from advanced tools 
+
+    Test timeout of 60000ms exceeded.
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../.kinosail-test/layout-audit-refresh-matrix/layout-audit-configuration-173e1-erences-from-advanced-tools-firefox/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../.kinosail-test/layout-audit-refresh-matrix/layout-audit-configuration-173e1-erences-from-advanced-tools-firefox/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../.kinosail-test/layout-audit-refresh-matrix/layout-audit-configuration-173e1-erences-from-advanced-tools-firefox/trace.zip
+    Usage:
+
+        pnpm exec playwright show-trace ../.kinosail-test/layout-audit-refresh-matrix/layout-audit-configuration-173e1-erences-from-advanced-tools-firefox/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  3) [firefox] › layout-audit-library.spec.ts:85:1 › compact landscape shell keeps search and primary actions reachable 
+
+    Test timeout of 60000ms exceeded.
+
+    Error: page.goto: Test timeout of 60000ms exceeded.
+    Call log:
+      - navigating to "https://127.0.0.1:39227/login", waiting until "load"
+
+
+       at layout-audit-helpers.ts:30
+
+      28 |
+      29 | export async function login(page: Page, name = "Owner", password = "test-instance-password") {
+    > 30 | 	await page.goto("/login");
+         | 	           ^
+      31 | 	await page.getByLabel("Name").fill(name);
+      32 | 	await page.getByLabel("Password", { exact: true }).fill(password);
+      33 | 	const code = page.getByLabel("Authentication or recovery code");
+        at login (/Users/mikeo/.codex/worktrees/all-app-polish/kinosail/apps/player/e2e/layout-audit-helpers.ts:30:13)
+        at /Users/mikeo/.codex/worktrees/all-app-polish/kinosail/apps/player/e2e/layout-audit-library.spec.ts:87:8
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../.kinosail-test/layout-audit-refresh-matrix/layout-audit-library-compa-4231f-d-primary-actions-reachable-firefox/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../.kinosail-test/layout-audit-refresh-matrix/layout-audit-library-compa-4231f-d-primary-actions-reachable-firefox/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../.kinosail-test/layout-audit-refresh-matrix/layout-audit-library-compa-4231f-d-primary-actions-reachable-firefox/trace.zip
+    Usage:
+
+        pnpm exec playwright show-trace ../.kinosail-test/layout-audit-refresh-matrix/layout-audit-library-compa-4231f-d-primary-actions-reachable-firefox/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  4) [firefox] › layout-audit-shell.spec.ts:7:1 › signed-in application pages retain the navigation shell 
+
+    Test timeout of 60000ms exceeded.
+
+    Error: page.goto: Test timeout of 60000ms exceeded.
+    Call log:
+      - navigating to "https://127.0.0.1:39227/", waiting until "load"
+
+
+      66 | 	await page.screenshot({ path: testInfo.outputPath("1440-show-navigation-shell.png") });
+      67 |
+    > 68 | 	await page.goto("/");
+         | 	           ^
+      69 | 	const player = await page.locator('a[href^="/watch/"]').first().getAttribute("href");
+      70 | 	expect(player).toBeTruthy();
+      71 | 	await page.goto(player!);
+        at /Users/mikeo/.codex/worktrees/all-app-polish/kinosail/apps/player/e2e/layout-audit-shell.spec.ts:68:13
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../.kinosail-test/layout-audit-refresh-matrix/layout-audit-shell-signed--b8c54-retain-the-navigation-shell-firefox/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../.kinosail-test/layout-audit-refresh-matrix/layout-audit-shell-signed--b8c54-retain-the-navigation-shell-firefox/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../.kinosail-test/layout-audit-refresh-matrix/layout-audit-shell-signed--b8c54-retain-the-navigation-shell-firefox/trace.zip
+    Usage:
+
+        pnpm exec playwright show-trace ../.kinosail-test/layout-audit-refresh-matrix/layout-audit-shell-signed--b8c54-retain-the-navigation-shell-firefox/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  5) [firefox] › layout-audit-shell.spec.ts:119:1 › transcoder support stays concise and accessible 
+
+    Test timeout of 60000ms exceeded.
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../.kinosail-test/layout-audit-refresh-matrix/layout-audit-shell-transco-aed5d-tays-concise-and-accessible-firefox/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../.kinosail-test/layout-audit-refresh-matrix/layout-audit-shell-transco-aed5d-tays-concise-and-accessible-firefox/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../.kinosail-test/layout-audit-refresh-matrix/layout-audit-shell-transco-aed5d-tays-concise-and-accessible-firefox/trace.zip
+    Usage:
+
+        pnpm exec playwright show-trace ../.kinosail-test/layout-audit-refresh-matrix/layout-audit-shell-transco-aed5d-tays-concise-and-accessible-firefox/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  6) [webkit] › layout-audit-configuration.spec.ts:155:1 › Owner settings separates everyday preferences from advanced tools 
+
+    Test timeout of 60000ms exceeded.
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../.kinosail-test/layout-audit-refresh-matrix/layout-audit-configuration-173e1-erences-from-advanced-tools-webkit/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../.kinosail-test/layout-audit-refresh-matrix/layout-audit-configuration-173e1-erences-from-advanced-tools-webkit/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../.kinosail-test/layout-audit-refresh-matrix/layout-audit-configuration-173e1-erences-from-advanced-tools-webkit/trace.zip
+    Usage:
+
+        pnpm exec playwright show-trace ../.kinosail-test/layout-audit-refresh-matrix/layout-audit-configuration-173e1-erences-from-advanced-tools-webkit/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  7) [webkit] › layout-audit-shell.spec.ts:119:1 › transcoder support stays concise and accessible ─
+
+    Error: 320px open transcoder support
+
+    expect(received).toEqual(expected) // deep equality
+
+    - Expected  - 1
+    + Received  + 1
+
+      Object {
+        "clippedControls": Array [],
+        "distortedChecks": Array [],
+    -   "documentOverflow": 0,
+    +   "documentOverflow": 3,
+        "outside": Array [],
+        "overlappingStatuses": Array [],
+        "tinyControls": Array [],
+      }
+
+      141 | 		await expect(hardwareDetails.locator("..").getByText("FFmpeg option:", { exact: false })).toBeVisible();
+      142 | 		await expect(hardware.locator("details[open]")).toHaveCount(1);
+    > 143 | 		expect(await layoutProblems(page), `${viewport.width}px open transcoder support`).toEqual({ documentOverflow: 0, outside: [], tinyControls: [], distortedChecks: [], clippedControls: [], overlappingStatuses: [] });
+          | 		                                                                                  ^
+      144 | 		expect((await new AxeBuilder({ page }).analyze()).violations, `${viewport.width}px transcoder accessibility`).toEqual([]);
+      145 | 		await page.screenshot({ path: testInfo.outputPath(`${viewport.width}-transcoder-support-open.png`), fullPage: true });
+      146 | 		await hardwareDetails.click();
+        at /Users/mikeo/.codex/worktrees/all-app-polish/kinosail/apps/player/e2e/layout-audit-shell.spec.ts:143:85
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../.kinosail-test/layout-audit-refresh-matrix/layout-audit-shell-transco-aed5d-tays-concise-and-accessible-webkit/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../.kinosail-test/layout-audit-refresh-matrix/layout-audit-shell-transco-aed5d-tays-concise-and-accessible-webkit/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../.kinosail-test/layout-audit-refresh-matrix/layout-audit-shell-transco-aed5d-tays-concise-and-accessible-webkit/trace.zip
+    Usage:
+
+        pnpm exec playwright show-trace ../.kinosail-test/layout-audit-refresh-matrix/layout-audit-shell-transco-aed5d-tays-concise-and-accessible-webkit/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  7 failed
+    [chromium] › layout-audit-configuration.spec.ts:155:1 › Owner settings separates everyday preferences from advanced tools 
+    [firefox] › layout-audit-configuration.spec.ts:155:1 › Owner settings separates everyday preferences from advanced tools 
+    [firefox] › layout-audit-library.spec.ts:85:1 › compact landscape shell keeps search and primary actions reachable 
+    [firefox] › layout-audit-shell.spec.ts:7:1 › signed-in application pages retain the navigation shell 
+    [firefox] › layout-audit-shell.spec.ts:119:1 › transcoder support stays concise and accessible ─
+    [webkit] › layout-audit-configuration.spec.ts:155:1 › Owner settings separates everyday preferences from advanced tools 
+    [webkit] › layout-audit-shell.spec.ts:119:1 › transcoder support stays concise and accessible ──
+  32 passed (20.9m)
