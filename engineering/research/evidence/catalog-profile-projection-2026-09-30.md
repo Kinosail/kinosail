@@ -479,3 +479,94 @@ Showing top 20 nodes out of 105
       50ms  1.18% 72.17%      390ms  9.20%  runtime.concatstrings
       50ms  1.18% 73.35%      270ms  6.37%  runtime.mallocgcSmallNoScanSC5
 ```
+
+## Allocation samples
+
+These sampled totals include setup and cache seeding. Use benchmark bytes/op for request allocations.
+
+baseline-heap-top.txt
+
+```text
+File: baseline.test
+Type: alloc_space
+Time: 2026-09-30 12:32:25 MDT
+Showing nodes accounting for 2.06GB, 88.43% of 2.33GB total
+Dropped 203 nodes (cum <= 0.01GB)
+Showing top 12 nodes out of 77
+      flat  flat%   sum%        cum   cum%
+    0.56GB 23.95% 23.95%     1.08GB 46.43%  github.com/MikeO7/kinosail/packages/catalog.Browse.ApplyAccess.func1
+    0.52GB 22.48% 46.43%     0.52GB 22.48%  github.com/MikeO7/kinosail/packages/catalog.ProfileProgress (inline)
+    0.45GB 19.38% 65.81%     1.53GB 65.81%  github.com/MikeO7/kinosail/packages/catalog.itemCandidates
+    0.09GB  4.06% 69.87%     0.09GB  4.06%  strings.(*Builder).WriteString
+    0.09GB  3.93% 73.80%     0.09GB  3.93%  github.com/MikeO7/kinosail/packages/catalog.candidateReferences
+    0.09GB  3.77% 77.57%     0.09GB  3.77%  github.com/MikeO7/kinosail/packages/catalog.(*Index).titleReferences
+    0.08GB  3.39% 80.95%     0.08GB  3.58%  github.com/MikeO7/kinosail-player/internal/server.projectionBenchmarkFixture
+    0.07GB  2.97% 83.93%     0.07GB  3.15%  github.com/MikeO7/kinosail/packages/catalog.NewMemoryIndex
+    0.04GB  1.53% 85.46%     0.04GB  1.53%  text/template/parse.(*Tree).newText
+    0.03GB  1.13% 86.59%     0.03GB  1.13%  internal/bytealg.MakeNoZero
+    0.02GB  1.03% 87.62%     0.02GB  1.03%  text/template/parse.(*ListNode).append
+    0.02GB  0.82% 88.43%     0.02GB  0.82%  text/template/parse.(*Tree).newPipeline
+```
+
+candidate-heap-top.txt
+
+```text
+File: candidate.test
+Type: alloc_space
+Time: 2026-09-30 12:55:04 MDT
+Showing nodes accounting for 651.22MB, 74.00% of 879.99MB total
+Dropped 174 nodes (cum <= 4.40MB)
+Showing top 12 nodes out of 104
+      flat  flat%   sum%        cum   cum%
+  126.02MB 14.32% 14.32%   126.02MB 14.32%  github.com/MikeO7/kinosail/packages/catalog.Browse.accessItems
+  117.23MB 13.32% 27.64%   117.23MB 13.32%  github.com/MikeO7/kinosail/packages/catalog.(*Index).titleReferences
+  102.65MB 11.66% 39.31%   102.65MB 11.66%  strings.(*Builder).WriteString
+   78.18MB  8.88% 48.19%    82.68MB  9.40%  github.com/MikeO7/kinosail-player/internal/server.projectionBenchmarkFixture
+   70.96MB  8.06% 56.25%    75.58MB  8.59%  github.com/MikeO7/kinosail/packages/catalog.NewMemoryIndex
+   34.01MB  3.86% 60.12%    34.01MB  3.86%  text/template/parse.(*Tree).newText
+   24.46MB  2.78% 62.90%    24.46MB  2.78%  internal/bytealg.MakeNoZero
+      24MB  2.73% 65.63%       24MB  2.73%  text/template/parse.(*Tree).newPipeline
+   21.01MB  2.39% 68.01%    21.01MB  2.39%  text/template/parse.(*ListNode).append
+      20MB  2.27% 70.29%       20MB  2.27%  github.com/nicksnyder/go-i18n/v2/i18n.setPluralTemplate
+   16.50MB  1.88% 72.16%    16.50MB  1.88%  github.com/nicksnyder/go-i18n/v2/i18n.stringSubmap
+   16.20MB  1.84% 74.00%    16.20MB  1.84%  github.com/MikeO7/kinosail/packages/catalog.browsePage
+```
+
+## Comment and formatting changes after measurement
+
+Lint required explanations for the benchmark matrix and positive fixture-count conversion, plus formatting and a complexity explanation in the preservation contract. These changes affect comments and formatting only. The measured production owner remains byte-identical through reconciliation with `05da53145bc05235aa510fecc6392ec5928de061`. Measured benchmark code before comments is bound above; delivery file hashes are recorded here.
+
+```json
+[
+  {
+    "path": "packages/catalog/browse_apply.go",
+    "sha256": "7f11bae4a56c93473e547f6ce47f1fcc5ab31a5ba08c3851efb80292363d0e32"
+  },
+  {
+    "path": "packages/catalog/browse_access_test.go",
+    "sha256": "01a09ac2b421f9aa3b02efda62e3ccd87be8099a4cf829db12b9ee1ac025ca11"
+  },
+  {
+    "path": "apps/player/internal/server/catalog_projection_benchmark_test.go",
+    "sha256": "200aad261d047e43d4f67f2a851c2798a82457056e7c438452cba09b6da5b8d5"
+  }
+]
+```
+
+## Local verification
+
+| Check | Result and boundary |
+| --- | --- |
+| `go -C packages test -count=1 -p 2 ./...` | PASS on the final production owner before comment/formatting-only test changes. |
+| `go -C packages test -race -count=1 ./catalog` | PASS before and after test formatting; final run 5.635 seconds. |
+| `go -C apps/subtitles test -count=1 -p 2 ./...` | PASS after reconciliation, 241.577 seconds for the command. |
+| First full Player run | FAIL. It overlapped reconciliation. The compiled stylesheet differed from the filesystem stylesheet. A maintenance assertion also found its cache file missing. Do not count this as final revision evidence. |
+| Reconciled focused maintenance and stylesheet checks, `-count=3` | PASS, 26.031 seconds. The maintenance failure's cause is not established. |
+| `go -C apps/player test -count=1 -p 2 -parallel 2 ./...` | FAIL on reconciled source. Command, backup, configuration, and database packages passed. Server failed two real HLS-speed cases at their request deadlines. Other server tests did not report failures. |
+| Isolated `TestRealHLSGenerationKeepsAheadOfSupportedPlaybackSpeeds` | PASS, 22.878 seconds across all five cases. This does not certify loaded-host throughput. |
+| Changed-code lint against `05da53145bc05235aa510fecc6392ec5928de061` | Player, Subtitles, and packages PASS with zero issues. No production lint finding. |
+| `make max-loc`, `git diff --check`, regenerated Code Atlas, `make tooling-check` | PASS. |
+
+The first Player run's stylesheet mismatch was caused by changing source files while its previously compiled test was running. The fresh run uses one reconciled source state and resolves that mismatch. Its remaining HLS deadline failure is distinct from catalog correctness. The isolated HLS run passes without a playback-source change. Full hosted checks remain the required delivery authority; this record does not turn a focused retry into a full-suite pass.
+
+The primary checkout and unrelated worktrees remain untouched. Local main cleanup is blocked by unrelated dirty primary work. The active performance checkout remains leased for the ongoing goal. Physical-device hitch timing, deployment, production-network load, and mixed-library title-order admission remain separate work.

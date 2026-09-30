@@ -12,10 +12,11 @@ import (
 	"github.com/MikeO7/kinosail/packages/library"
 )
 
-func TestBrowseAccessPreservesCallerReferencesAndFreshViewState(t *testing.T) { //nolint:cyclop,funlen // One owner-boundary matrix checks literal view membership and caller storage ownership.
+func TestBrowseAccessPreservesCallerReferencesAndFreshViewState(t *testing.T) { //nolint:cyclop,funlen,gocognit // One owner-boundary matrix checks literal view membership and caller storage ownership.
 	profile := strings.Repeat("a", 26)
 	refs := []*library.Item{
-		{ID: "z", Title: "Zulu", Kind: "video", Added: time.Unix(20, 0)}, nil,
+		{ID: "z", Title: "Zulu", Kind: "video", Added: time.Unix(20, 0)},
+		nil,
 		{ID: "a", Title: "Alpha", Kind: "video", Added: time.Unix(10, 0)},
 		{ID: "e2", Title: "Episode Beta", Kind: "video", Show: "Series", ShowTitle: "Series", ShowPlot: "Merged plot"},
 		{ID: "e1", Title: "Episode Alpha", Kind: "video", Show: "Series", ShowTitle: "Series"},

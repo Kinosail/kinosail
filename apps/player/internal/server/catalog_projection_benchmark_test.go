@@ -16,7 +16,7 @@ import (
 	"github.com/MikeO7/kinosail/packages/library"
 )
 
-func BenchmarkNativeCatalogProfileProjection(b *testing.B) {
+func BenchmarkNativeCatalogProfileProjection(b *testing.B) { //nolint:gocognit // Keep the public view, profile, and cardinality matrix together.
 	for _, count := range []int{10_000, 100_000} {
 		for _, owner := range []bool{true, false} {
 			b.Run(fmt.Sprintf("%d/owner=%t", count, owner), func(b *testing.B) {
@@ -138,7 +138,7 @@ func projectionBenchmarkTotal(count int, owner bool, view string) int {
 	}
 }
 
-func projectionBenchmarkResponse(b *testing.B, response *httptest.ResponseRecorder, total, count int, owner bool) {
+func projectionBenchmarkResponse(b *testing.B, response *httptest.ResponseRecorder, total, count int, owner bool) { //nolint:cyclop // One response contract checks counts, IDs, visibility, and exact-search membership.
 	b.Helper()
 	var page struct {
 		Total int
@@ -149,7 +149,7 @@ func projectionBenchmarkResponse(b *testing.B, response *httptest.ResponseRecord
 	}
 	for _, item := range page.Items {
 		position, err := strconv.ParseUint(item.ID, 16, 64)
-		if err != nil || len(item.ID) != 16 || position >= uint64(count) || !owner && position%2 != 1 || total == 1 && position != uint64(count-1) {
+		if err != nil || len(item.ID) != 16 || position >= uint64(count) || !owner && position%2 != 1 || total == 1 && position != uint64(count-1) { //nolint:gosec // count is a positive 10,000 or 100,000 fixture constant.
 			b.Fatalf("unexpected or denied item %q: %v", item.ID, err)
 		}
 	}
