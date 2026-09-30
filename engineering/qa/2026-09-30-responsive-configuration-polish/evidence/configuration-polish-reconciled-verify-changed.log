@@ -1,0 +1,8 @@
+VERIFY 16 changed path(s) against origin/main
+PASS max-loc (0s)
+PASS diff-check (0s)
+PASS go-compile:internal/server (7s)
+PASS go-focused:internal/server (10s)
+CACHED ui-lint:internal/server/static/home.css
+CACHED e2e-list
+VERIFIED changed paths

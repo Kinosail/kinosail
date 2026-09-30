@@ -50,6 +50,29 @@
     {
       "command": "make max-loc && make tooling-check",
       "result": "Passed."
+    },
+    {
+      "command": "playwright test polish-shell.spec.ts layout-audit-configuration.spec.ts --grep \"TMDB connection instructions|SCIM configuration|landscape search|administration uses\"",
+      "environment": "reconciled revision; full browser matrix",
+      "result": "12/12 passed."
+    },
+    {
+      "command": "make -C apps/player test",
+      "environment": "reconciled revision",
+      "result": "First run failed on temporary-directory cleanup after metadata assertions. Next full run passed; server 138.438s."
+    },
+    {
+      "command": "go test ./internal/server -run ^TestConfiguredProviderAutomaticallyEnrichesMediaAddedLater$ -count=3",
+      "result": "3 repetitions passed."
+    },
+    {
+      "command": "make -C apps/player verify-changed && make tooling-check",
+      "environment": "reconciled revision",
+      "result": "Passed; unchanged UI lint and test discovery were cached."
+    },
+    {
+      "command": "GitHub main CI run 36752448363, revision 6e63f1cfffe5240804a369383d0afae9847e5311",
+      "result": "Complete success after one failed-job rerun; Player/Subtitles container publication and production-tag promotion passed."
     }
   ],
   "artifacts": [
@@ -70,6 +93,18 @@
       "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
     },
     {
+      "path": "evidence/configuration-polish-reconciled-browser.log",
+      "sha256": "b0a8ff35094795521cd0fd2fca3d9bbe5ebbd38876dc3c74a407e157de375567"
+    },
+    {
+      "path": "evidence/configuration-polish-reconciled-server-retry.log",
+      "sha256": "3cf02be2d0793ac42daab3576bba8eecf2b22c394fee1b999da3bef8af97c928"
+    },
+    {
+      "path": "evidence/configuration-polish-reconciled-verify-changed.log",
+      "sha256": "cf41234676be0ce89916b42f025d5be0e28d7fec268c75b514c57c6a1899d854"
+    },
+    {
       "path": "evidence/configuration-polish-server-suite.log",
       "sha256": "7ef6b4d463e4d165c0863e6e0b8b1931d445a3aa04b0022dba5f530882375e3b"
     },
@@ -84,6 +119,14 @@
     {
       "path": "evidence/native-main-fixture-repeats.log",
       "sha256": "6de8285ec8b88a34398dcdf049c8f65f8a7a64a4d8253cf22ddd4be04e0b5175"
+    },
+    {
+      "path": "evidence/reconciled-cleanup-failure.txt",
+      "sha256": "bceb0f972fb109127a7fc6b25fda4c232425ffbd7eb506a1d644f800a5f2b52b"
+    },
+    {
+      "path": "evidence/reconciled-provider-repeat.log",
+      "sha256": "5ddde54aa4d944a01a1add2515600ff0f1c662bb901716fd86bf9519db312acf"
     },
     {
       "path": "evidence/tmdb-after-1440.png",
@@ -109,5 +152,7 @@
       "path": "evidence/tmdb-smoke-green.log",
       "sha256": "c494c9821c04d38e27bffeb2e3b702e416f8f782a2bc2591868329112fbb6750"
     }
-  ]
+  ],
+  "reconciledRevision": "7583b933e86b2380082c2804212e718acddf0cee",
+  "reconciledMain": "96818c5e5b66796ab1a03a416e7b98c490225052"
 }
