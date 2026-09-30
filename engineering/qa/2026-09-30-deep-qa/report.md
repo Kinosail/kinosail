@@ -1,6 +1,6 @@
 # Kinosail deep QA — September 30, 2026
 
-This audit found and fixed seven confirmed defects. It does not establish that every product path or device is free of bugs.
+This audit fixed seven confirmed production defects and identified an eighth container security defect. Its updated images still require hosted scan verification. It does not establish that every product path or device is free of bugs.
 
 ## Run record
 
@@ -103,6 +103,17 @@ Select labels now use block layout with the existing half-rem spacing. Checkbox 
 - Green: `inspector-layout-final-green.log` (fourteen Chromium checks), `inspector-layout-final-cross-browser.log` (twenty-eight Firefox/WebKit checks), and `inspector-final-go.log` (focused inspector HTTP and rejection tests).
 - The matrix checks both themes at 320, 390, 568, 720, 1024, 1440 and 1920px. It saves pending, loaded, empty and failed renders, checks video geometry, keyboard/navigation landmarks, accessibility at desktop/phone sizes, and no writes during review. Empty and failed states also assert no horizontal overflow. Browser artifacts now record their actual project name.
 
+### QA-008 — Production images retain vulnerable OpenSSL packages (high; fix awaiting hosted proof)
+
+Current-head container scans failed for both apps on amd64 and arm64. They reported six high-severity findings: CVE-2026-75804 and CVE-2026-84782 in `libssl3t64`, `openssl` and `openssl-provider-legacy`, installed at `3.5.7-1~deb13u2`.
+
+Debian records `3.5.7-1~deb13u3` as fixed for both advisories: [QUIC flow control](https://security-tracker.debian.org/tracker/CVE-2026-75804) and [DTLS retransmission](https://security-tracker.debian.org/tracker/CVE-2026-84782). Direct checks of the official trixie-security package indexes confirmed that version for all three packages on both architectures (`debian-openssl-security-candidates.json`). This is package vulnerability evidence; no Kinosail exploit was demonstrated.
+
+Both runtime recipes now check all three minimum versions beside their existing libaom version check. Changing the installation layer also invalidates the older cached layer. Future builds fail if an insufficient package remains. The existing image scan and public production-path tests provide the behavioral verification; no new test mirrors the recipe text, and no advisory is ignored.
+
+- Red: required run `36765200869`, deep run `36765430447`, `final-ci-player-arm-container-failure.log` and `final-ci-subtitles-container-failure.log`.
+- Green: current-head amd64/arm64 image scans and production-path checks must pass before merge.
+
 ## Verification
 
 | Surface | Result | Evidence and limits |
@@ -154,7 +165,7 @@ The next deep run passed the scan but reached a later cleanup conflict. Browser-
 
 The required PR run `36757473280` passed on its second attempt. Its initial failures were temporary FFmpeg execution (`text file busy`) and Chromium startup, before the relevant assertions. The ordinary failed-job rerun passed without a source change. The subsequent deep run `36757578425` passed Player's complete three-browser matrix, shared/app Go race and coverage checks, native compilation, security policy and both app container builds. Its only failing browser job was Subtitles WebKit: QA-007 above and an inspector pending-state response gate bypassed by the service worker.
 
-The dashboard browser tests now block service workers so their explicit API response gates control pending states. A local WebKit reproduction failed before that test-context correction and passed afterward (`defaults-webkit-red.log`, `defaults-webkit-service-worker.log`). Product service-worker behavior is unchanged; offline/service-worker checks remain separate. The final complete dashboard matrix and current-head hosted rerun are recorded after completion.
+The dashboard browser tests now block service workers so their explicit API response gates control pending states. A local WebKit reproduction failed before that test-context correction and passed afterward (`defaults-webkit-red.log`, `defaults-webkit-service-worker.log`). Product service-worker behavior is unchanged; offline/service-worker checks remain separate. The complete local dashboard matrix then passed all 75 checks across Chromium, Firefox and WebKit (`dashboard-final-cross-browser.log`, `webkit-followup-run-record.json`). This host instance uses the earlier recorded Subtitles binary; current-head image checks remain separate. The combined Player UI run passed eleven checks and timed out once in Firefox before the sign-in page load event. Its nine resource requests all returned HTTP 200; the unchanged focused retry passed in 16.3 seconds (`player-reconciliation-ui-final.log`, `player-reconciliation-ui-firefox-retry.log`, `player-reconciliation-ui-run-record.json`).
 
 ## Repeatable commands
 
@@ -191,4 +202,4 @@ Upstream native QA evidence from PR #383 is retained in `engineering/qa/2026-09-
 - Finish required and manual deep GitHub checks, then record merged source ancestry, image publication, and any later deployment as separate evidence.
 - The first manual deep run caught stale generated architecture snapshots. Both were regenerated, and full local `make tooling-check` passed (`tooling-final.log`). The refreshed deep run exposed the lifecycle and fixture failures recorded above. A final deep run is required after their corrections.
 
-The requested deep QA goal remains active. Container and Android runtime work await storage recovery; this report is a delivery checkpoint for verified fixes.
+The requested deep QA goal remains active. Current source and image checks must pass before delivery. Local Podman storage and the device boundaries above remain explicit limits.
