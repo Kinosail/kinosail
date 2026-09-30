@@ -36,7 +36,7 @@ func TestLongLocaleTitlesStayOrderedAcrossPages(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		result, err := browse.Apply(candidates)
+		result, err := browse.Apply(t.Context(), candidates)
 		if err != nil {
 			t.Fatalf("page %d: %v", offset, err)
 		}

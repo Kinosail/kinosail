@@ -15,23 +15,31 @@ func TestBrowseOrderingAndPagingEdges(t *testing.T) { //nolint:cyclop // One com
 	if page := browsePage(items, len(items), len(items), 1); page != nil {
 		t.Fatalf("past-end page = %#v", page)
 	}
-	sortReferences(items, "title", "alpha", "en")
+	if err := sortReferences(t.Context(), items, "title", "alpha", "en"); err != nil {
+		t.Fatal(err)
+	}
 	if items[0].ID != "a" {
 		t.Fatalf("ranked items = %#v", items)
 	}
 	now := time.Now()
 	items = []*library.Item{{ID: "b", Added: now}, {ID: "a", Added: now.Add(time.Second)}}
-	sortReferences(items, "added", "", "en")
+	if err := sortReferences(t.Context(), items, "added", "", "en"); err != nil {
+		t.Fatal(err)
+	}
 	if items[0].ID != "a" {
 		t.Fatalf("added items = %#v", items)
 	}
 	items = []*library.Item{{ID: "b", Year: "2020"}, {ID: "a", Year: "2021"}}
-	sortReferences(items, "year", "", "en")
+	if err := sortReferences(t.Context(), items, "year", "", "en"); err != nil {
+		t.Fatal(err)
+	}
 	if items[0].ID != "a" {
 		t.Fatalf("year items = %#v", items)
 	}
 	items = []*library.Item{{ID: "b", Title: "Same"}, {ID: "a", Title: "Same"}}
-	sortReferences(items, "title", "same", "en")
+	if err := sortReferences(t.Context(), items, "title", "same", "en"); err != nil {
+		t.Fatal(err)
+	}
 	if items[0].ID != "a" {
 		t.Fatalf("query title tie = %#v", items)
 	}

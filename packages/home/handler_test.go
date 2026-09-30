@@ -77,7 +77,7 @@ func browseResult(t *testing.T, values url.Values, items []library.Item) catalog
 	for index := range items {
 		candidates[index].Item = &items[index]
 	}
-	result, err := browse.Apply(candidates)
+	result, err := browse.Apply(t.Context(), candidates)
 	if err != nil {
 		t.Fatal(err)
 	}

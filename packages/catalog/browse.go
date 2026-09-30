@@ -2,6 +2,7 @@
 package catalog
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"net/url"
@@ -120,16 +121,22 @@ func ParseBrowse(values url.Values, locale string) (Browse, error) { //nolint:cy
 }
 
 // BrowseLibrary validates a query before loading and projecting app-owned Library state.
-func BrowseLibrary(values url.Values, locale string, load func() ([]*library.Item, error), access func() BrowseAccess) (Result, error) {
+func BrowseLibrary(ctx context.Context, values url.Values, locale string, load func() ([]*library.Item, error), access func() BrowseAccess) (Result, error) {
 	browse, err := ParseBrowse(values, locale)
 	if err != nil {
+		return Result{}, err
+	}
+	if err := ctx.Err(); err != nil {
 		return Result{}, err
 	}
 	items, err := load()
 	if err != nil {
 		return Result{}, err
 	}
-	return browse.ApplyAccess(items, access())
+	if err := ctx.Err(); err != nil {
+		return Result{}, err
+	}
+	return browse.ApplyAccess(ctx, items, access())
 }
 
 // ProfileProgress returns profile state with the owner's legacy fallback.

@@ -48,6 +48,18 @@ A streaming normalization iterator reduced allocations but slowed the Unicode wo
 
 These results are server handler measurements on a shared Mac. They do not establish device animation smoothness or production tail latency. The [measurement record](evidence/player-performance-frontiers-2026-09-30.md) contains all matched samples, source hashes, commands, rejected controls, and limits.
 
+### Stop obsolete catalog work
+
+Both servers now pass the request context into shared catalog browsing. Validation still runs before index or profile access. Cancelled work returns an error without a partial page. Projection, metadata matching, ranking, and collation preparation check cancellation every 64 items.
+
+In a 10,000-title workload with long accented plots, an already-cancelled request previously completed a successful search in 138.675 ms. It now returns the existing unavailable response in 0.002328 ms. A request with a 10 ms deadline changes from 138.061 to 12.254 ms. That case reduces allocation traffic from about 124.027 MB to 10.519 MB, approximately 92%.
+
+A 256-item polling control takes 13.679 ms in the deadline case. More frequent checks improve recovery without adding retained storage. Successful-request allocation levels remain similar. Their median times are close to the original-source reverse control; this shared-host experiment does not prove zero overhead.
+
+[Go's request-context documentation](https://pkg.go.dev/net/http#Request.Context) describes cancellation when the client disconnects or cancels an HTTP/2 request. [Context propagation guidance](https://pkg.go.dev/context) supports carrying that signal through the application call chain. Reclaiming obsolete work should reduce competition with current requests, but smoother frames under load remain an inference.
+
+Index loading, mutex acquisition, grouping, copies, and comparison sorting already underway remain synchronous. The change checks safe boundaries rather than abandoning goroutines or disrupting sort comparisons. The [measurement record](evidence/player-performance-frontiers-2026-09-30.md#catalog-request-cancellation) preserves every sample, controls, source hashes, and limits.
+
 ### Release navigation now has a repeatable workload
 
 A dedicated tvOS 27 simulator ran the optimized app against a loopback fixture with 160 synthetic movies. The journey reverses across the Home shelf, opens Movies, traverses several grid rows, and returns to Home. Five runs passed, including assertions that Movies regains focus. Screenshots confirm populated artwork after traversal. Test durations include automation and are not input-latency measurements.
@@ -126,5 +138,7 @@ The measurement record holds raw samples, fixture descriptions, commands, source
 Local verification passed the full Player, Subtitles, and shared Go suites, the catalog race check, source-file caps, and repository tooling checks. The reconciled tvOS simulator run passed 26 tests in five artwork suites. Its growth regression covers both 1600px replacement and 4096px replacement above the retention budget. The independent review findings have regression controls and are resolved. Changed-code Go lint reports zero issues; full local shared-package lint has existing findings outside this patch.
 
 The metadata-search phase passed the full shared, Player, and Subtitles Go suites and the catalog race check. Changed-code lint reports zero issues in shared packages and Player. Source caps, tooling checks, and regenerated Code Atlas snapshots also passed. Its server benchmark gains remain separate from native presentation timing. Both app `verify-changed` commands stopped at 112 existing shared lint findings; later stages did not run. Hosted checks remain the delivery authority.
+
+The cancellation phase passed those three full Go suites and the catalog race check. Changed-code lint reports zero issues in shared packages, Player, and Subtitles. Source caps, repository tooling, regenerated snapshots, and an independent source review also passed. Both post-commit app checks passed compilation and focused Go tests, then stopped at the same 112 existing shared lint findings. Later stages did not run. Its synthetic handler gains remain separate from device frames and deployed load.
 
 The paired iPhone 16 Pro Max and Apple TV 4K (third generation) are reachable through the local device tools. A read-only attempt to attach Instruments to the observed phone app process failed before recording. The TV app was not running. These probes establish no physical frame timing or verified build revision. Older supported hardware, deployed first-frame measurement, and production-network benchmarks still need evidence. The goal remains active while these measurement and optimization opportunities remain unresolved.

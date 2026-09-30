@@ -1,5 +1,411 @@
 # Performance frontiers: measurement record
 
+## Catalog request cancellation
+
+Measured September 30, 2026, against `f386ad2cdf55bb0abf9f55b97126e33ee851cdbf`. Both applications now forward the HTTP request context into shared catalog browsing. Existing input validation runs first. Cancellation checks stop projection, matching, ranking, and collation preparation without returning a partial page or retaining profile locks.
+
+The cancelled workload uses 10,000 synthetic movies, with 120 repetitions of a plot followed by Café. Child contexts preserve the synthetic Owner identity. The real catalog HTTP adapter handles the request in process. Network and authentication middleware are excluded.
+
+| Condition | Median time before → selected, ms | Allocated bytes before → selected | HTTP status before → selected |
+| --- | --- | --- | --- |
+| Already cancelled | 138.674682 → 0.002328 | 124,024,757 → 2,792 | 200 → 503 |
+| 10 ms deadline | 138.061338 → 12.253801 | 124,026,949 → 10,518,784 | 200 → 503 |
+
+The selected deadline case uses about 92% fewer allocated bytes and returns about 91% sooner. It stops obsolete work; it does not make a completed successful search 91% faster. The initial 256-item polling candidate takes 13.679394 ms and allocates 11,978,566 bytes. Polling every 64 items improves that recovery to 12.253801 ms and 10,518,784 bytes. Timer scheduling and collection affect the measured stop time.
+
+Successful requests use a live, uncancelled `context.WithCancel`, closer to an incoming server request than a background context. The table includes an original-source reverse control.
+
+| Successful workload | Baseline median, ms | Selected median, ms | Reverse control, ms |
+| --- | --- | --- | --- |
+| 10,000-title browse | 4.852141 | 5.066199 | 5.048016 |
+| 10,000-title search | 2.149468 | 2.178868 | 2.168623 |
+| 100,000-title browse | 56.465093 | 57.662148 | 57.810444 |
+| 100,000-title search | 21.271157 | 21.514086 | 21.328890 |
+| Short ASCII metadata | 7.047155 | 7.084135 | Not run |
+| Long ASCII metadata | 41.534290 | 41.554780 | Not run |
+| Long plot ending in Unicode | 138.715307 | 138.601490 | Not run |
+
+Ordinary response byte counts remain unchanged: 19,286/19,668 for browsing, 316/321 for simple search, and 631/2501/2506 for metadata search. Allocation counts and bytes remain similar; raw variation is preserved below. No material overhead is detected against the reverse control, but these sequential shared-host samples do not establish zero overhead or a confidence interval.
+
+An initial diagnostic replaced the Owner context with a background context and produced an empty successful response. That comparison was rejected. Preserving Owner identity reproduced a 146.704 ms search after cancellation. The HTTP regression then failed in all three conditions before implementation: cancelled, expired, and expires during search. Each returned HTTP 200 and 2371 bytes. Shared test compilation also failed because the new context interface did not exist; that failure alone is not behavioral evidence.
+
+The final API regression passes. Shared tests cover cancellation before load, after load, during visibility projection, lock release, unchanged caller storage and profile state, and invalid-input precedence. Ranking and collation preparation are source-reviewed without deterministic cancellation tests. Subtitles cancellation is source-reviewed; its full Go suite provides consumer verification.
+
+Validation passed on the bound candidate source: `go -C packages test ./...`, `go -C apps/player test ./...`, `go -C apps/subtitles test ./...`, and `go -C packages test -race ./catalog`. Changed-code lint against the exact baseline reports zero issues in all three modules. Both Code Atlas snapshots were regenerated. `make max-loc`, `make tooling-check`, and `git diff --check` passed. An independent review found no correctness issue and verified the measurement source hashes. Private logs and the reproducible fixture remain under `.verification/catalog-cancellation-profile`.
+
+Post-commit verification used `a69c5d2157d8ec4bd8e79326af29c435c35233d2`: `make -C apps/player verify-changed BASE=f386ad2cdf55bb0abf9f55b97126e33ee851cdbf`, followed by the equivalent Subtitles command. Both passed caps, diff checks, server compilation, and focused Go tests. Each then exited 2 at 112 existing shared lint findings. Later stages did not run. The private `verify-changed-results.json` records the exact revision, commands, timestamps, and exit codes. Required hosted checks remain the delivery authority.
+
+Index loading, mutex acquisition, grouping, reference/page copies, and sorting already underway remain synchronous. No physical UI, production tail-latency, deployed network, or Nox gain is claimed. The prior metadata-search change merged through PR #376; both its required PR checks and main publication workflow succeeded. That publication remains separate from deployment proof.
+
+```json
+{
+  "baseline_revision": "f386ad2cdf55bb0abf9f55b97126e33ee851cdbf",
+  "candidate_binding": "Baseline plus the five production file hashes below. Selected polling interval: 64 items.",
+  "environment": {
+    "go": "go1.27.1",
+    "os": "macOS 27.0 (26A428)",
+    "arch": "darwin/arm64",
+    "cpu": "Apple M1 Pro",
+    "concurrency": "Go benchmark suffix -10. Sequential conditions; no task-owned builds, lint, or tests overlapped timed runs. Other host activity is uncontrolled."
+  },
+  "fixture": {
+    "cancelled_metadata_items": 10000,
+    "plot": "A quiet journey. repeated 120 times, followed by Caf\u00e9",
+    "query": "Movie 9999",
+    "role": "Synthetic Owner, preserved by deriving child contexts from the request context",
+    "successful_item_counts": [
+      10000,
+      100000
+    ],
+    "successful_context": "Uncancelled context.WithCancel, including ordinary metadata benchmarks",
+    "successful_metadata": "10,000 items; short/long/late-Unicode plots, Drama / Mystery, Alex North, Sam Reed/Captain and Morgan Vale/Guide",
+    "excluded": "Network, authentication middleware, TLS, real media, physical display, deployed load"
+  },
+  "commands": {
+    "compile": "From apps/player: go test -c ./internal/server -o <private comparison binary>. For the baseline, restore only the five production files from the exact baseline revision, compile, then restore their candidate bytes in a finally block. Both binaries include the same benchmark and fixture source.",
+    "cancelled": "<comparison binary> -test.run ^$ -test.bench ^BenchmarkNativeCatalogCancelledMetadataSearch$ -test.benchtime=1s -test.count=5",
+    "successful": "<comparison binary> -test.run ^$ -test.bench ^BenchmarkNativeCatalogNavigation$ -test.benchtime=1s -test.count=5",
+    "metadata": "<comparison binary> -test.run ^$ -test.bench ^BenchmarkNativeCatalogMetadataSearch$ -test.benchtime=1s -test.count=3",
+    "sequence": "baseline cancelled; 256-item cancelled; baseline successful; 256-item successful; 64-item cancelled; 64-item successful; baseline metadata; 64-item metadata; baseline successful reverse control"
+  },
+  "source_binding": {
+    "baseline_revision": "f386ad2cdf55bb0abf9f55b97126e33ee851cdbf",
+    "source": [
+      {
+        "file": "packages/catalog/browse.go",
+        "baseline_sha256": "dec15c9ce65b98c3795f5fc89edc832e9a9644b865bd188d159ff56216f48e43",
+        "candidate_sha256": "0b1bbcef8c63e1b6f57a97272c0b9db35fa0799a7c95f541083a21309c6f77f6",
+        "polling_256_sha256": "0b1bbcef8c63e1b6f57a97272c0b9db35fa0799a7c95f541083a21309c6f77f6"
+      },
+      {
+        "file": "packages/catalog/browse_apply.go",
+        "baseline_sha256": "40e48c06ead5262347a34a65f0a01a8d3febc825b3ae64bd5fb9c7aa19ba6ec7",
+        "candidate_sha256": "1e17e5056f702b4a906d19721b143b5a1ce320e2323c9aafa80f01a07725c9f0",
+        "polling_256_sha256": "e49d220fd47b048b67bcd8442a6b900c550ab9f66fd4c41220d3f8ed41999725"
+      },
+      {
+        "file": "packages/catalog/browse_sort.go",
+        "baseline_sha256": "d783d39f6a1ddbdd61b1335910288ad818dd561352479b9b03d740643aefcb9f",
+        "candidate_sha256": "cbc6c6343910e88f1bb8475f3c9a4796a03a3c1b458906bb5865cf0e8fb2b066",
+        "polling_256_sha256": "252bfeb3a6f07177d35a3dbd3b24559d44a5f047f7c98317b056c33664205aa8"
+      },
+      {
+        "file": "apps/player/internal/server/browse.go",
+        "baseline_sha256": "0b675515b9cdd746efc4a77768d16d92632f6835ddd92ed9d682826ce31e7f85",
+        "candidate_sha256": "544b975f6231e8bc1e65fcfd90b94b2ca7e760e1bf7672d33e70f024f0a06cef",
+        "polling_256_sha256": "544b975f6231e8bc1e65fcfd90b94b2ca7e760e1bf7672d33e70f024f0a06cef"
+      },
+      {
+        "file": "apps/subtitles/internal/server/browse.go",
+        "baseline_sha256": "0b675515b9cdd746efc4a77768d16d92632f6835ddd92ed9d682826ce31e7f85",
+        "candidate_sha256": "544b975f6231e8bc1e65fcfd90b94b2ca7e760e1bf7672d33e70f024f0a06cef",
+        "polling_256_sha256": "544b975f6231e8bc1e65fcfd90b94b2ca7e760e1bf7672d33e70f024f0a06cef"
+      },
+      {
+        "file": "apps/player/internal/server/catalog_cancellation_test.go",
+        "sha256": "f5fac3b4226079622720e909c7274f26936a112d582fb1c9d829888e770dcd1a"
+      },
+      {
+        "file": "apps/player/internal/server/catalog_cancellation_benchmark_test.go",
+        "sha256": "c95ccf1bab1ef2487547a67626d37d2d1d35e327bf48bb1753b3dfb0fb56d533"
+      },
+      {
+        "file": "apps/player/internal/server/catalog_performance_benchmark_test.go",
+        "sha256": "be7d1a6d6d4e7f618673c5602d68431cb62ceeb626706f17cb2d8b29454f401b"
+      },
+      {
+        "file": "packages/catalog/browse_cancellation_test.go",
+        "sha256": "0e00f20fcb58e2db892615caeffd3c5950db10b0c5ea1ba952b276a9b0af2b52"
+      },
+      {
+        "file": "apps/player/internal/server/performance_benchmark_test.go",
+        "sha256": "25e23c79c788868df664d59d9face0667dc0302efa39ef8cea8fd2422aa7f306"
+      },
+      {
+        "file": "apps/player/internal/server/library_index_test.go",
+        "sha256": "284890cc3e7d02d277cd3d5537ce19cbc4bf26df3be533525716c737d43964bf"
+      }
+    ],
+    "binary": [
+      {
+        "file": "baseline.test",
+        "sha256": "00a64d112323dbca2b04d675581dd22c384671ff8db2560f92cea78d47a8e612"
+      },
+      {
+        "file": "candidate.test",
+        "sha256": "0fc1626ec8487e2379f028bcf693bd4e495fecc22be0f7756b02df9e5ccbe77f"
+      },
+      {
+        "file": "candidate-64.test",
+        "sha256": "4a9a8b636ec553ac9d95d193b4942a421129f76ebf182469f83731727bf8cd6a"
+      }
+    ],
+    "controls": "candidate.test is the initial 256-item polling control; candidate-64.test is the selected 64-item polling candidate."
+  },
+  "sample_columns": [
+    "iterations",
+    "ns/op",
+    "B/op",
+    "allocs/op",
+    "response-bytes",
+    "status-code"
+  ],
+  "raw_files": [
+    {
+      "file": "cancel-before.log",
+      "sha256": "d952cf1b9e2488278a275d223bb01b833df4e5577382b1c8af7a5a1d6cdd5b8f"
+    },
+    {
+      "file": "cancel-after.log",
+      "sha256": "19448ac056602baf58d2c2dc8eebfd25d5b487eaed454a694bc723d6b5f214b0"
+    },
+    {
+      "file": "cancel-polling-64.log",
+      "sha256": "abac4ca73781844f71a1cd0a15346127448254f86df299c5e65025cfe65af674"
+    },
+    {
+      "file": "api-before.log",
+      "sha256": "84603daf2702308452389d6c31c3b51bc56b6321551ca2da6b4b14df8187ce7d"
+    },
+    {
+      "file": "api-after.log",
+      "sha256": "4c5022c1f5ef053f2dc27187b3f73684b823de7e12580fffe0032e9655028ace"
+    },
+    {
+      "file": "api-polling-64.log",
+      "sha256": "5581539a73e6362fe3d2643f1652923b6b0a39d44a878062a47bfceb864b8327"
+    },
+    {
+      "file": "api-reverse-control.log",
+      "sha256": "cbff2f518b71f8417623bb719e6cf22c183d6928a76433fc844dfe2ebc69a6d2"
+    },
+    {
+      "file": "metadata-before.log",
+      "sha256": "e77684e9053871256601f720a06f706678308d10a26324530adbcf266d559159"
+    },
+    {
+      "file": "metadata-after.log",
+      "sha256": "05517a3b7e8903f4d61abb5d66a92b3d135fa585c0187881aa03277022b7bea1"
+    }
+  ],
+  "boundary": "Descriptive shared-host handler benchmarks, without randomized order or a confidence interval. Cancellation returns an existing 503 error instead of a successful obsolete page. Sorting, grouping, copies, index loading, and mutex acquisition already underway remain synchronous. No physical UI or production tail-latency gain is claimed.",
+  "controls": [
+    "Initial diagnostic replacing the Owner context with context.Background returned an empty successful response; rejected as an invalid comparison. The accepted diagnostic preserves Owner context and returned item 9999 after cancellation in 146.704 ms.",
+    "HTTP red regression: all three cancellation conditions returned 200 and 2371 bytes before implementation. Domain test red was a compile failure because the context interface did not exist.",
+    "256-item polling is retained as a control: deadline median 13.679 ms versus 12.254 ms at 64 items. Both preserve ordinary allocation levels."
+  ]
+}
+```
+
+All raw benchmark samples follow. Row columns are `iterations`, `ns/op`, `B/op`, `allocs/op`, `response-bytes`, and `status-code`. A null status metric means the successful-request benchmark checked HTTP 200 but did not emit that metric.
+
+```json
+{
+"cancel-before.log": {
+  "BenchmarkNativeCatalogCancelledMetadataSearch/already-cancelled": [
+    [8,138674682.0,124028208.0,60129.0,2371.0,200.0],
+    [8,140221302.0,124025526.0,60093.0,2371.0,200.0],
+    [8,138189964.0,124024757.0,60091.0,2371.0,200.0],
+    [8,134400208.0,124023968.0,60089.0,2371.0,200.0],
+    [8,139637838.0,124023982.0,60089.0,2371.0,200.0]
+  ],
+  "BenchmarkNativeCatalogCancelledMetadataSearch/10ms-deadline": [
+    [8,138363083.0,124025516.0,60096.0,2371.0,200.0],
+    [8,137775005.0,124027828.0,60101.0,2371.0,200.0],
+    [8,136696719.0,124027644.0,60101.0,2371.0,200.0],
+    [8,139328958.0,124026949.0,60099.0,2371.0,200.0],
+    [8,138061338.0,124025391.0,60096.0,2371.0,200.0]
+  ]
+},
+"cancel-after.log": {
+  "BenchmarkNativeCatalogCancelledMetadataSearch/already-cancelled": [
+    [477352,2289.0,2792.0,30.0,29.0,503.0],
+    [501453,2315.0,2792.0,30.0,29.0,503.0],
+    [501894,2334.0,2792.0,30.0,29.0,503.0],
+    [505826,2331.0,2792.0,30.0,29.0,503.0],
+    [494208,2356.0,2792.0,30.0,29.0,503.0]
+  ],
+  "BenchmarkNativeCatalogCancelledMetadataSearch/10ms-deadline": [
+    [82,13679394.0,12055753.0,5660.0,38.0,503.0],
+    [82,13666298.0,11978566.0,5622.0,38.0,503.0],
+    [84,13784323.0,12307257.0,5782.0,38.0,503.0],
+    [84,13386324.0,11516712.0,5398.0,38.0,503.0],
+    [81,13773657.0,11847155.0,5558.0,38.0,503.0]
+  ]
+},
+"cancel-polling-64.log": {
+  "BenchmarkNativeCatalogCancelledMetadataSearch/already-cancelled": [
+    [487122,2294.0,2792.0,30.0,29.0,503.0],
+    [495582,2318.0,2792.0,30.0,29.0,503.0],
+    [497232,2350.0,2792.0,30.0,29.0,503.0],
+    [507199,2364.0,2792.0,30.0,29.0,503.0],
+    [500124,2328.0,2792.0,30.0,29.0,503.0]
+  ],
+  "BenchmarkNativeCatalogCancelledMetadataSearch/10ms-deadline": [
+    [97,12253801.0,10600874.0,4953.0,38.0,503.0],
+    [93,12269535.0,10559841.0,4933.0,38.0,503.0],
+    [100,12280940.0,10479249.0,4894.0,38.0,503.0],
+    [100,12101318.0,10455543.0,4882.0,38.0,503.0],
+    [100,12117235.0,10518784.0,4913.0,38.0,503.0]
+  ]
+},
+"api-before.log": {
+  "BenchmarkNativeCatalogNavigation/10000/browse": [
+    [242,4947507.0,1767765.0,485.0,19286.0,null],
+    [250,4852141.0,1767270.0,484.0,19286.0,null],
+    [250,4836187.0,1767270.0,484.0,19286.0,null],
+    [248,4847873.0,1767625.0,484.0,19286.0,null],
+    [250,4888532.0,1767270.0,484.0,19286.0,null]
+  ],
+  "BenchmarkNativeCatalogNavigation/10000/search": [
+    [565,2153478.0,494818.0,81.0,316.0,null],
+    [571,2142057.0,494820.0,81.0,316.0,null],
+    [561,2135210.0,494824.0,81.0,316.0,null],
+    [571,2149468.0,494809.0,81.0,316.0,null],
+    [565,2152005.0,494818.0,81.0,316.0,null]
+  ],
+  "BenchmarkNativeCatalogNavigation/100000/browse": [
+    [20,57205367.0,15455325.0,486.0,19668.0,null],
+    [21,56465093.0,15458967.0,487.0,19668.0,null],
+    [21,55964194.0,15458967.0,487.0,19668.0,null],
+    [20,56507844.0,15459588.0,488.0,19668.0,null],
+    [21,56303708.0,15463027.0,488.0,19668.0,null]
+  ],
+  "BenchmarkNativeCatalogNavigation/100000/search": [
+    [55,21756302.0,4820316.0,81.0,321.0,null],
+    [56,21271157.0,4820287.0,81.0,321.0,null],
+    [56,20788541.0,4820259.0,81.0,321.0,null],
+    [56,21473060.0,4820259.0,81.0,321.0,null],
+    [56,21055662.0,4820314.0,81.0,321.0,null]
+  ]
+},
+"api-after.log": {
+  "BenchmarkNativeCatalogNavigation/10000/browse": [
+    [235,5062713.0,1766722.0,485.0,19286.0,null],
+    [246,5001580.0,1766600.0,484.0,19286.0,null],
+    [240,5015847.0,1767328.0,484.0,19286.0,null],
+    [241,5078760.0,1768030.0,484.0,19286.0,null],
+    [241,5006381.0,1767676.0,484.0,19286.0,null]
+  ],
+  "BenchmarkNativeCatalogNavigation/10000/search": [
+    [535,2194320.0,494819.0,81.0,316.0,null],
+    [558,2176181.0,494821.0,81.0,316.0,null],
+    [560,2188978.0,494824.0,81.0,316.0,null],
+    [548,2154985.0,494816.0,81.0,316.0,null],
+    [561,2177580.0,494815.0,81.0,316.0,null]
+  ],
+  "BenchmarkNativeCatalogNavigation/100000/browse": [
+    [20,57570898.0,15451061.0,485.0,19668.0,null],
+    [20,58213056.0,15455325.0,486.0,19668.0,null],
+    [20,58197750.0,15455326.0,486.0,19668.0,null],
+    [20,57286558.0,15455327.0,486.0,19668.0,null],
+    [20,58657871.0,15463853.0,489.0,19668.0,null]
+  ],
+  "BenchmarkNativeCatalogNavigation/100000/search": [
+    [54,21596471.0,4820318.0,81.0,321.0,null],
+    [55,21613673.0,4820288.0,81.0,321.0,null],
+    [55,21551595.0,4820288.0,81.0,321.0,null],
+    [55,21572964.0,4820345.0,81.0,321.0,null],
+    [55,21563029.0,4820316.0,81.0,321.0,null]
+  ]
+},
+"api-polling-64.log": {
+  "BenchmarkNativeCatalogNavigation/10000/search": [
+    [541,2212257.0,494867.0,81.0,316.0,null],
+    [554,2188723.0,494821.0,81.0,316.0,null],
+    [561,2175529.0,494818.0,81.0,316.0,null],
+    [556,2178868.0,494818.0,81.0,316.0,null],
+    [560,2165441.0,494818.0,81.0,316.0,null]
+  ],
+  "BenchmarkNativeCatalogNavigation/10000/browse": [
+    [240,5035263.0,1767337.0,484.0,19286.0,null],
+    [237,5113014.0,1767347.0,484.0,19286.0,null],
+    [240,5006621.0,1768039.0,484.0,19286.0,null],
+    [231,5124743.0,1767004.0,484.0,19286.0,null],
+    [242,5066199.0,1766964.0,484.0,19286.0,null]
+  ],
+  "BenchmarkNativeCatalogNavigation/100000/browse": [
+    [20,57662148.0,15455325.0,486.0,19668.0,null],
+    [20,57234019.0,15455326.0,486.0,19668.0,null],
+    [20,57272185.0,15451061.0,485.0,19668.0,null],
+    [20,58053956.0,15455326.0,486.0,19668.0,null],
+    [20,58111606.0,15459590.0,488.0,19668.0,null]
+  ],
+  "BenchmarkNativeCatalogNavigation/100000/search": [
+    [55,21532603.0,4820297.0,81.0,321.0,null],
+    [54,21406187.0,4820261.0,81.0,321.0,null],
+    [54,21541791.0,4820289.0,81.0,321.0,null],
+    [56,21514086.0,4820342.0,81.0,321.0,null],
+    [55,21445318.0,4820260.0,81.0,321.0,null]
+  ]
+},
+"api-reverse-control.log": {
+  "BenchmarkNativeCatalogNavigation/10000/browse": [
+    [238,5082092.0,1768145.0,485.0,19286.0,null],
+    [240,5048016.0,1766618.0,484.0,19286.0,null],
+    [249,4955646.0,1766934.0,484.0,19286.0,null],
+    [238,5086209.0,1767329.0,484.0,19286.0,null],
+    [246,5001101.0,1766946.0,484.0,19286.0,null]
+  ],
+  "BenchmarkNativeCatalogNavigation/10000/search": [
+    [538,2185035.0,494819.0,81.0,316.0,null],
+    [556,2168623.0,494818.0,81.0,316.0,null],
+    [567,2167896.0,494823.0,81.0,316.0,null],
+    [559,2181511.0,494815.0,81.0,316.0,null],
+    [562,2161999.0,494821.0,81.0,316.0,null]
+  ],
+  "BenchmarkNativeCatalogNavigation/100000/browse": [
+    [20,57896898.0,15459588.0,488.0,19668.0,null],
+    [20,58615462.0,15459588.0,488.0,19668.0,null],
+    [20,57311565.0,15455330.0,486.0,19668.0,null],
+    [20,57810444.0,15455324.0,486.0,19668.0,null],
+    [20,57236819.0,15463854.0,489.0,19668.0,null]
+  ],
+  "BenchmarkNativeCatalogNavigation/100000/search": [
+    [56,21461381.0,4820287.0,81.0,321.0,null],
+    [55,21664261.0,4820316.0,81.0,321.0,null],
+    [56,21294583.0,4820314.0,81.0,321.0,null],
+    [54,21328890.0,4820289.0,81.0,321.0,null],
+    [55,21301260.0,4820316.0,81.0,321.0,null]
+  ]
+},
+"metadata-before.log": {
+  "BenchmarkNativeCatalogMetadataSearch/late-unicode": [
+    [8,138715307.0,124029697.0,60136.0,2506.0,null],
+    [8,139184453.0,124025217.0,60093.0,2506.0,null],
+    [8,136580724.0,124025982.0,60094.0,2506.0,null]
+  ],
+  "BenchmarkNativeCatalogMetadataSearch/short-ascii": [
+    [168,7118694.0,495888.0,83.0,631.0,null],
+    [170,7013574.0,495917.0,83.0,631.0,null],
+    [169,7047155.0,495917.0,83.0,631.0,null]
+  ],
+  "BenchmarkNativeCatalogMetadataSearch/long-ascii": [
+    [27,41534290.0,23541034.0,10084.0,2501.0,null],
+    [28,41256677.0,23541248.0,10085.0,2501.0,null],
+    [28,42176152.0,23541471.0,10086.0,2501.0,null]
+  ]
+},
+"metadata-after.log": {
+  "BenchmarkNativeCatalogMetadataSearch/long-ascii": [
+    [28,42573996.0,23542750.0,10098.0,2501.0,null],
+    [28,40997976.0,23541476.0,10086.0,2501.0,null],
+    [28,41554780.0,23541916.0,10087.0,2501.0,null]
+  ],
+  "BenchmarkNativeCatalogMetadataSearch/late-unicode": [
+    [8,136648391.0,124025982.0,60094.0,2506.0,null],
+    [8,138601490.0,124025980.0,60094.0,2506.0,null],
+    [8,140292312.0,124026773.0,60096.0,2506.0,null]
+  ],
+  "BenchmarkNativeCatalogMetadataSearch/short-ascii": [
+    [169,7060443.0,495902.0,83.0,631.0,null],
+    [165,7140848.0,495903.0,83.0,631.0,null],
+    [169,7084135.0,495887.0,83.0,631.0,null]
+  ]
+}
+}
+```
+
 ## Web rendering and delayed placeholders
 
 Measured September 30, 2026. Baseline source: `964a60c7e61df208dbb4ce704d68f06a8b08b412`. The compiled comparison includes the shared placeholder delay and navigation bundle refresh. No production network or physical-device gain is claimed.
