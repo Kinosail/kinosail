@@ -69,8 +69,10 @@ func browseReferences(ctx context.Context, selected []Candidate, browse Browse) 
 		return nil, err
 	}
 	items := candidateReferences(selected)
-	if err := sortReferences(ctx, items, browse.order, browse.query, browse.locale); err != nil {
-		return nil, err
+	if !browse.titleOrdered {
+		if err := sortReferences(ctx, items, browse.order, browse.query, browse.locale); err != nil {
+			return nil, err
+		}
 	}
 	if browse.view == "shows" {
 		items = showReferences(items)
