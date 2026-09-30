@@ -143,6 +143,123 @@ Synthetic data only. Source hashes bind the native results to the validated work
       "subtitles_contract_command": "go test ./internal/server -run '^(TestClientCanAuthenticateAndBrowseLibraryWithoutFilesystemPaths|TestClientLibraryRequiresAuthentication|TestLibraryPaginationIsSharedByAPIAndWeb|TestDeepLibraryPageDoesNotRepeatHomeShelves|TestInfiniteLibraryPageReturnsOnlyTheBoundedFragment|TestLibraryPaginationRejectsAmbiguousAndOutOfRangeInput)$' -count=1"
     },
     "boundary": "Handler benchmarks include real browse and encoding/rendering operations, with synthetic fixtures and injected owner context. They exclude network, auth middleware, device decoding, and presentation. Byte reductions are measured; wall-clock latency is not established on this loaded host. Heap profiles also include initialization costs."
+  },
+  "native_release_navigation": {
+    "revision": "eda10c42461d9985e868b0d03536e3ecc6c57c1f",
+    "environment": {
+      "host": "macOS 27.0, arm64 Apple M1 Pro",
+      "xcode": "27.0 (27A266a)",
+      "target": "Dedicated Apple TV 1080p simulator, tvOS 27.0 (24J360)",
+      "configuration": "Release, -O, ENABLE_TESTABILITY=YES, arm64"
+    },
+    "fixture": {
+      "transport": "Loopback HTTP only, synthetic saved session, private disposable fixture",
+      "movies": 160,
+      "artwork": "Generated 1600x900 landscape, 600x900 poster and 900x900 square JPEGs; 100ms response delay",
+      "intentional_failure": "movie-005 artwork returns 404; its fallback is expected",
+      "python": "Bundled runtime with Pillow 12.3.0",
+      "sha256": {
+        "server.py": "9dcfb092f29e9ddd4ea29c1527a465027efcd650101f76864c3314a13fb8b338",
+        "remote-diagnostic.swift": "2a4dc8bd04a58180f11d0d4d1f12f7003b619bcdb880803c8b756885499bf2b5",
+        "seed.swift": "16c136e8ae4fbc76b952932e3e4b3a2a9a7c8e8d42362456b81ec46518f7fb20"
+      }
+    },
+    "source_sha256": {
+      "apps/player/apps/native/Sources/Design/MediaViews.swift": "4cfe896857cb59524802bbf8e87440e7e72f5e8e32e34244cfe18152bd9dad44",
+      "apps/player/apps/native/Sources/Design/Artwork.swift": "5c520575a5f052a98c3f66c047439951cb48c1a68d176c0a76423b2da062e01b",
+      "apps/player/apps/native/Sources/Design/ArtworkPrefetch.swift": "0eefb3abfbfa22c2a78806e30e7361aac332868fb49df5cb4b5457424e938492",
+      "apps/player/apps/native/Sources/Design/ResourceView.swift": "c912879bfc4610fdb858f955b3ebc4ea1cbbbcc1cd3220ed9ae791c4ea2ca5ec",
+      "apps/player/apps/native/Sources/Features/Home/HomeScreen.swift": "888b39cbc16cd180e33c74d949efede266b4511715a0eca0b62778d0fd0c4c4d",
+      "apps/player/apps/native/Sources/Platform/ArtworkLoader.swift": "2c71b58d54284ae8c68ad8d7265739cf0f334fde66b96f28c38090ebbb8608aa"
+    },
+    "journey": [
+      "Activate the seeded app; assert Search and Continue watching exist; attach screenshot",
+      "Down to watching shelf; hold Right then Left for 1s each, three times",
+      "Down to Movies; assert focus; Select; wait for Sort: Title",
+      "Down to grid; hold Right, Down, Left for 1s each, three times; attach screenshot",
+      "Menu to Home; assert Movies exists and has focus; attach screenshot"
+    ],
+    "reproduction": "Restore the ignored fixture, seed test and diagnostic sources, and verify their hashes. Start the fixture in loaded mode. Seed the synthetic session through the tvOS test target. Build the remote scheme for testing in Release. Relaunch the installed app before attached recordings so the journey starts at Search. Keep trace files and result bundles private.",
+    "ui_build_command": "xcodebuild -project Kinosail.xcodeproj -scheme Kinosail-tvOS-Remote -configuration Release -destination 'platform=tvOS Simulator,id=<task simulator>' -derivedDataPath .build/speed-tvos-release -jobs 2 -parallel-testing-enabled NO ONLY_ACTIVE_ARCH=YES CODE_SIGNING_ALLOWED=YES CODE_SIGN_IDENTITY=- ENABLE_TESTABILITY=YES build-for-testing",
+    "ui_command": "xcodebuild -project Kinosail.xcodeproj -scheme Kinosail-tvOS-Remote -configuration Release -destination 'platform=tvOS Simulator,id=<task simulator>' -derivedDataPath .build/speed-tvos-release -jobs 2 -parallel-testing-enabled NO ONLY_ACTIVE_ARCH=YES CODE_SIGNING_ALLOWED=YES CODE_SIGN_IDENTITY=- ENABLE_TESTABILITY=YES -only-testing:Kinosail-tvOSRemoteUITests/RemotePerformanceDiagnosticTests -resultBundlePath <unique private result bundle> test-without-building",
+    "ui_results": [
+      {
+        "recording": "combined all-process attempt",
+        "result": "1 passed, 0 failures",
+        "test_seconds": 26.701
+      },
+      {
+        "recording": "app-only CPU",
+        "result": "1 passed, 0 failures",
+        "test_seconds": 26.351
+      },
+      {
+        "recording": "app-only SwiftUI with layout tracing",
+        "result": "1 passed, 0 failures",
+        "test_seconds": 26.236
+      },
+      {
+        "recording": "relative launch attempt, app activated by test",
+        "result": "1 passed, 0 failures",
+        "test_seconds": 28.384
+      },
+      {
+        "recording": "absolute app launch with SwiftUI",
+        "result": "1 passed, 0 failures",
+        "test_seconds": 28.144
+      }
+    ],
+    "cpu_record_command": "xcrun xctrace record --template 'Time Profiler' --device <task simulator> --attach <observed app PID> --time-limit 45s --output <private trace> --no-prompt",
+    "cpu_export_command": "xcrun xctrace export --input <private trace> --xpath '/trace-toc/run[@number=\"1\"]/data/table[@schema=\"time-profile\"]' --output <private XML>",
+    "cpu_result": {
+      "record_exit": 0,
+      "duration_seconds": 45.685679,
+      "sample_weight_ms": 1,
+      "running_thread_samples": 13281,
+      "main_thread_samples": 9000,
+      "non_main_thread_samples": 4281,
+      "main_unresolved_leaf_samples": 7971,
+      "app_and_dsym_uuid_match": true,
+      "main_inclusive_ms": {
+        "MediaCard.body.getter": 32,
+        "Artwork.body.getter": 25,
+        "AppSession.profileKey.getter": 31
+      },
+      "non_main_inclusive_ms": {
+        "ArtworkLoader.decode closure": 2208,
+        "ArtworkLoader.decodedThumbnail": 2152,
+        "LibraryPage.init": 713
+      },
+      "note": "Inclusive stack counts overlap and must not be added. Samples include navigation and automation. Source names for unresolved app frames were recovered with atos and the matching Release dSYM."
+    },
+    "potential_hangs": {
+      "threshold_ms": 250,
+      "samples": [
+        {
+          "trace_start_seconds": 13.65992575,
+          "duration_ms": 302.083791
+        },
+        {
+          "trace_start_seconds": 14.213243958,
+          "duration_ms": 283.819417
+        },
+        {
+          "trace_start_seconds": 37.082390125,
+          "duration_ms": 433.988708
+        }
+      ],
+      "note": "The trace reports Microhang intervals. Automated activation, accessibility queries, navigation, and screenshots overlap the workload. No physical hitch or input-to-visible-feedback distribution is established."
+    },
+    "recording_limits": [
+      "SwiftUI template: Hitches unsupported on this simulator; the saved output has no exportable run data.",
+      "Combined all-process CPU/SwiftUI: overlapping dylib metadata prevents saving a usable trace.",
+      "App-only CPU: recording and export succeed, with a missing-input-source table warning and unresolved framework symbols.",
+      "App-only CPU plus SwiftUI, attached and launched with layout tracing enabled: CPU trace saved, but Instruments reports no SwiftUI data.",
+      "First UI filter used the scheme name as a target; it failed before running tests. The actual Kinosail-tvOSRemoteUITests target succeeds.",
+      "Relative app launch failed with posix_spawn file-not-found. Absolute app bundle launch succeeds, still without SwiftUI data."
+    ],
+    "raw_artifacts": "Ignored .verification/tvos-render-profile; native .verification/frontiers-navigation-*.xcresult; hashes retained in baseline-manifest.json. No raw process inventory, trace, credentials, or device identifiers are published.",
+    "boundary": "Synthetic loopback fixture and optimized simulator correctness/profiling only. Warm encoded caches, instrumentation, accessibility automation, and shared-host load affect results. No production UI code changed in this phase. No physical-device, deployed-network, Safari, iOS frame-time, or before/after smoothness gain is claimed."
   }
 }
 ```
