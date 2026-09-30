@@ -96,6 +96,125 @@ struct NativePreferencesUXTests {
         try await restore(previous, keychain: keychain, session: session)
     }
 
+    @Test(arguments: [ScenePhase.active, .inactive, .background])
+    func visibleLibraryCompletesLoadingAcrossScenePhases(phase: ScenePhase) async throws {
+        let fixture = try await PreferencesLoopbackFixture()
+        fixture.populated = true
+        defer { fixture.listener.cancel() }
+        let keychain = SessionKeychain()
+        let previous = try await keychain.restore()
+        try await keychain.save(SavedSession(server: fixture.server, token: "isolated-test-token", viewer: fixture.viewer))
+        let session = AppSession()
+        await session.restore()
+        do {
+            let client = try #require(session.client)
+            let clientID = await client.identity
+            let window = try host(LibraryScreen(initialView: .shows).environment(\.scenePhase, phase), session: session)
+            defer { window.isHidden = true }
+            try await until("An appearing library must start its request, even during a scene transition") { fixture.libraryReads > 0 }
+            try await until("The loaded episode card must replace the placeholder") {
+                session.resourceSnapshots.value(for: "watch-progress:episode", clientID: clientID, as: WatchProgressSummary.self) != nil
+            }
+            let saved: LibrarySnapshot? = session.resourceSnapshots.value(for: LibrarySnapshot.key(view: .shows), clientID: clientID)
+            #expect(saved?.page.total == 1)
+            #expect(saved?.items.first?.id == "episode")
+            try snapshot(window, name: "library-\(phase)")
+        } catch {
+            try await restore(previous, keychain: keychain, session: session)
+            throw error
+        }
+        try await restore(previous, keychain: keychain, session: session)
+    }
+
+    @Test(arguments: [ScenePhase.active, .inactive, .background])
+    func visibleHomeCompletesLoadingAcrossScenePhases(phase: ScenePhase) async throws {
+        let fixture = try await PreferencesLoopbackFixture()
+        fixture.populated = true
+        defer { fixture.listener.cancel() }
+        let keychain = SessionKeychain()
+        let previous = try await keychain.restore()
+        try await keychain.save(SavedSession(server: fixture.server, token: "isolated-test-token", viewer: fixture.viewer))
+        let session = AppSession()
+        await session.restore()
+        do {
+            let client = try #require(session.client)
+            let clientID = await client.identity
+            let window = try host(HomeScreen(selectTab: { _ in }).environment(\.scenePhase, phase), session: session)
+            defer { window.isHidden = true }
+            try await until("An appearing Home must start its request, even during a scene transition") { fixture.libraryReads > 0 }
+            let key = "\(session.profileKey ?? ""):watch"
+            try await until("Home must replace its placeholder with the loaded library") {
+                session.resourceSnapshots.value(for: key, clientID: clientID, as: HomeSnapshot.self) != nil
+            }
+            let saved = try #require(session.resourceSnapshots.value(for: key, clientID: clientID, as: HomeSnapshot.self))
+            #expect(saved.recent.contains { $0.id == "movie" })
+            try snapshot(window, name: "home-\(phase)")
+        } catch {
+            try await restore(previous, keychain: keychain, session: session)
+            throw error
+        }
+        try await restore(previous, keychain: keychain, session: session)
+    }
+
+    @Test(arguments: [true, false])
+    func firstArtworkKeepsItsPositionWhenLoadingCompletes(library: Bool) async throws {
+        let fixture = try await PreferencesLoopbackFixture()
+        fixture.populated = true; fixture.delay = 1
+        let art = UIGraphicsImageRenderer(size: CGSize(width: 100, height: 150)).pngData { context in
+            UIColor.magenta.setFill(); context.fill(CGRect(x: 0, y: 0, width: 100, height: 150))
+        }
+        fixture.artwork = art
+        fixture.landscape = UIGraphicsImageRenderer(size: CGSize(width: 900, height: 506)).pngData { context in
+            UIColor.magenta.setFill(); context.fill(CGRect(x: 0, y: 0, width: 900, height: 506))
+        }
+        defer { fixture.listener.cancel() }
+        let keychain = SessionKeychain()
+        let previous = try await keychain.restore()
+        try await keychain.save(SavedSession(server: fixture.server, token: "isolated-test-token", viewer: fixture.viewer))
+        let session = AppSession()
+        await session.restore()
+        do {
+            let screen = library ? AnyView(LibraryScreen(initialView: .shows)) : AnyView(HomeScreen(selectTab: { _ in }))
+            let window = try host(screen.environment(\.scenePhase, .inactive), session: session)
+            defer { window.isHidden = true }
+            try await until { fixture.libraryReads > 0 }
+            try snapshot(window, name: "position-\(library ? "library" : "home")-pending")
+            let pendingY = try #require(artworkTop(in: window, loaded: false))
+            try await Task.sleep(for: .seconds(2))
+            try snapshot(window, name: "position-\(library ? "library" : "home")-loaded")
+            try await until { artworkTop(in: window, loaded: true) != nil }
+            let loadedY = try #require(artworkTop(in: window, loaded: true))
+            print("NATIVE_ARTWORK_POSITIONS library=\(library) pending=\(pendingY) loaded=\(loadedY)")
+            #expect(abs(loadedY - pendingY) <= 2, "The first artwork must stay in place when real content replaces its skeleton")
+        } catch {
+            try await restore(previous, keychain: keychain, session: session)
+            throw error
+        }
+        try await restore(previous, keychain: keychain, session: session)
+    }
+
+    private func artworkTop(in window: UIWindow, loaded: Bool) -> Double? {
+        window.layoutIfNeeded()
+        let image = UIGraphicsImageRenderer(bounds: window.bounds).image { _ in window.drawHierarchy(in: window.bounds, afterScreenUpdates: true) }.cgImage!
+        var pixels = [UInt8](repeating: 0, count: image.width * image.height * 4)
+        pixels.withUnsafeMutableBytes { bytes in
+            CGContext(data: bytes.baseAddress, width: image.width, height: image.height, bitsPerComponent: 8,
+                      bytesPerRow: image.width * 4, space: CGColorSpaceCreateDeviceRGB(), bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue)!
+                .draw(image, in: CGRect(x: 0, y: 0, width: image.width, height: image.height))
+        }
+        let scale = Double(image.width) / window.bounds.width
+        for y in Int(140 * scale)..<image.height {
+            var matches = 0
+            for x in 0..<image.width {
+                let index = (y * image.width + x) * 4
+                let r = Int(pixels[index]), g = Int(pixels[index + 1]), b = Int(pixels[index + 2])
+                if loaded ? (r > 170 && g < 60 && b > 170) : (r == 21 && g == 25 && b == 20) { matches += 1 }
+            }
+            if matches > image.width / 30 { return Double(y) / scale }
+        }
+        return nil
+    }
+
     private func restore(_ previous: SavedSession?, keychain: SessionKeychain, session: AppSession) async throws {
         await session.client?.close()
         if let previous { try await keychain.save(previous) } else { try await keychain.clear() }

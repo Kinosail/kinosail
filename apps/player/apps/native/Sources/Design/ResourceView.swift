@@ -48,9 +48,8 @@ struct ResourceView<Value: Sendable, Content: View>: View {
             }
         }
         .task(id: "\(identity):\(revalidates ? cacheRevision : "once"):\(revision):\(revalidates ? String(describing: scenePhase) : "once")") {
-            guard !revalidates || scenePhase == .active else { return }
             await refresh(force: revision > 0)
-            while revalidates && !Task.isCancelled {
+            while revalidates && scenePhase == .active && !Task.isCancelled {
                 do { try await Task.sleep(for: .seconds(60)) }
                 catch { return }
                 await refresh(force: false)
