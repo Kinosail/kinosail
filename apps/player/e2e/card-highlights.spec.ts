@@ -40,7 +40,7 @@ async function perimeter(page: Page, poster: Locator, token: string) {
 
 for (const width of [390, 1440]) {
 	for (const theme of ["dark", "light"]) {
-		test(`cards keep complete hover and keyboard highlights at ${width}px in ${theme}`, async ({ page }, testInfo) => {
+		test(`cards keep complete hover and keyboard highlights at ${width}px in ${theme}`, { tag: "@smoke" }, async ({ page }, testInfo) => {
 			await page.setViewportSize({ width, height: 900 });
 			await page.emulateMedia({ reducedMotion: "reduce" });
 			const cards = [
