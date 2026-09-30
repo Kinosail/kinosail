@@ -50,7 +50,12 @@ extension PlaybackEngine {
 
     func togglePlayback() { isPlaying || buffering ? pause() : resume() }
     func pause() { wantsPlayback = false; nativeIntent.playing.withLock { $0 = false }; player?.pause(); isPlaying = false; buffering = false; saveProgress(watched: false) }
-    func resume() { wantsPlayback = true; nativeIntent.playing.withLock { $0 = true }; player?.playImmediately(atRate: Float(preferences.rate)); isPlaying = true }
+    func resume() {
+        wantsPlayback = true; nativeIntent.playing.withLock { $0 = true }
+        player?.play()
+        isPlaying = player?.timeControlStatus == .playing
+        buffering = player?.timeControlStatus == .waitingToPlayAtSpecifiedRate || (player == nil && (loading || recoveringNetwork))
+    }
     func checkpoint() { saveProgress(watched: false) }
 
     func applyPreferences(_ preferences: PlaybackPreferences) async throws {
@@ -74,7 +79,7 @@ extension PlaybackEngine {
             playbackPreparationTask?.cancel(); playbackPreparationTask = nil
             try await install(details: details, compatible: valid.audioEnhancementsEnabled || details.direct == nil, at: position, attempt: attempt)
             beginMonitoring(attempt: attempt)
-            if shouldResume { player?.playImmediately(atRate: Float(valid.rate)) }
+            if shouldResume { player?.play() }
             return
         }
         subtitleGeneration = UUID(); subtitleDocument = nil; externalCaptions = false; presentation.showCaptions("")
@@ -85,7 +90,7 @@ extension PlaybackEngine {
         playbackRate = valid.rate
         selectedExternalSubtitleID = nil
         player?.defaultRate = Float(valid.rate)
-        if isPlaying { player?.rate = Float(valid.rate) }
+        if player?.timeControlStatus != .paused { player?.rate = Float(valid.rate) }
         guard let item = player?.currentItem else { return }
         selectPreferred(in: audioGroup, options: audioOptions, language: valid.audioLanguage, label: valid.audioTrack, item: item)
         if (valid.subtitleLanguage == "off" || subtitlePolicy == nil), let subtitleGroup { item.select(nil, in: subtitleGroup) }
@@ -119,7 +124,7 @@ extension PlaybackEngine {
         preferences.rate = rate
         playbackRate = rate
         player.defaultRate = Float(rate)
-        if isPlaying { player.rate = Float(rate) }
+        if player.timeControlStatus != .paused { player.rate = Float(rate) }
         rememberChoices { $0.rate = rate }
     }
 

@@ -71,6 +71,7 @@ struct ShowScreen: View {
         .navigationTitle("")
         #else
         .navigationTitle("Seasons & episodes")
+        .navigationBarTitleDisplayMode(.inline)
         #endif
         #if os(tvOS)
         .onChange(of: showID) { _, _ in selectedSeason = nil }

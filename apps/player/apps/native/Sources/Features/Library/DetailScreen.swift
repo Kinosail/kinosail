@@ -116,14 +116,17 @@ private struct DetailContent: View {
             if !item.plot.isEmpty { Text(item.plot).font(.body).fixedSize(horizontal: false, vertical: true) }
             if !item.genres.isEmpty { Text(item.genres).font(.callout).foregroundStyle(.secondary) }
             #if os(iOS)
-            if !item.showID.isEmpty { NavigationLink("All episodes", value: ScreenDestination.show(item.showID)) }
+            if !item.showID.isEmpty { NavigationLink("All episodes", value: ScreenDestination.show(item.showID)).frame(minHeight: 44) }
             if item.kind == .video || item.isAudio {
                 NavigationLink(value: ScreenDestination.bookmarks(item.id)) { Label("Bookmarks", systemImage: "bookmark") }
+                    .frame(minHeight: 44)
                 NavigationLink(value: ScreenDestination.playOnTV(item.id)) { Label("Play on another device", systemImage: "tv") }
+                    .frame(minHeight: 44)
             }
             if item.progress.seconds > 0 || item.progress.watched {
                 Button("Remove from Continue watching") { change { client in try await client.dismissContinueWatching(itemID: item.id) } }
                     .disabled(busy)
+                    .frame(minHeight: 44)
             }
             #endif
         }

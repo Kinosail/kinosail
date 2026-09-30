@@ -194,7 +194,7 @@ final class PlaybackEngine {
             nowPlaying.activate(item: item, coordinator: self)
             beginMonitoring(attempt: attempt)
             observeAudioSession()
-            if nativeIntent.playing.withLock({ $0 }) ?? wantsPlayback { player?.playImmediately(atRate: Float(preferences.rate)) }
+            if nativeIntent.playing.withLock({ $0 }) ?? wantsPlayback { player?.play() }
         } catch {
             if generation == attempt, !(error is CancellationError) { message = Self.playbackMessage(error); player?.pause() }
             throw error
@@ -230,7 +230,7 @@ final class PlaybackEngine {
             try check(attempt)
             nowPlaying.activate(item: item, coordinator: self)
             beginMonitoring(attempt: attempt); observeAudioSession()
-            if nativeIntent.playing.withLock({ $0 }) ?? wantsPlayback { player?.playImmediately(atRate: Float(preferences.rate)) }
+            if nativeIntent.playing.withLock({ $0 }) ?? wantsPlayback { player?.play() }
         } catch {
             if generation == attempt, !(error is CancellationError) { message = Self.playbackMessage(error); player?.pause() }
             throw error

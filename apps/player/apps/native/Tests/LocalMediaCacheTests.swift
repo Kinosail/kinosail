@@ -30,6 +30,11 @@ struct LocalMediaCacheTests {
         await cache.enqueueWrite(data, key: "bad\nkey", kind: .catalog)
         await cache.enqueueWrite(Data(), key: "empty", kind: .catalog)
         await cache.enqueueWrite(Data(repeating: 1, count: 2 * 1024 * 1024 + 1), key: "large", kind: .catalog)
+        await Task {
+            withUnsafeCurrentTask { $0?.cancel() }
+            await cache.enqueueWrite(data, key: "cancelled", kind: .catalog)
+        }.value
+        #expect(await cache.read("cancelled", kind: .catalog) == nil)
         await cache.close(purge: false)
         #expect(!FileManager.default.fileExists(atPath: directory.path))
     }

@@ -144,6 +144,7 @@ struct AlbumScreen: View {
         .navigationTitle("")
         #else
         .navigationTitle("Album")
+        .navigationBarTitleDisplayMode(.inline)
         #endif
         #if os(tvOS)
         .focusScope(albumFocus)
@@ -156,7 +157,7 @@ struct AlbumScreen: View {
             if let item = session.player.currentItem { NavigationStack { AudioPlayerScreen(itemID: item.id) } }
         }
         #else
-        .sheet(isPresented: $showsPlayer) { if let item = session.player.currentItem { NavigationStack { AudioPlayerScreen(itemID: item.id) }.presentationSizing(.page) } }
+        .sheet(isPresented: $showsPlayer) { if let item = session.player.currentItem { NavigationStack { AudioPlayerScreen(itemID: item.id, hidesMiniPlayer: false) }.presentationSizing(.page) } }
         #endif
     }
 

@@ -24,6 +24,8 @@ enum AppLaunchCache {
         switch first {
         case .home:
             if let home = try? await client.home(mode: mode, policy: .cached), ifCurrent() {
+                await hydrateProgress(home.continueWatching + home.recent, client: client, snapshots: snapshots, ifCurrent: ifCurrent)
+                guard ifCurrent() else { return }
                 snapshots.store(home, for: "\(profileKey):\(mode.rawValue)", clientID: clientID)
             }
         case .music:
@@ -37,9 +39,22 @@ enum AppLaunchCache {
         case .movies, .shows, .search, .list, .audiobooks, .books, .photos:
             guard let view = first == .search ? mode.searchViews.first : LibraryView(rawValue: first.rawValue),
                   let page = try? await client.library(view: view, policy: .cached), ifCurrent() else { return }
+            await hydrateProgress(page.items, client: client, snapshots: snapshots, ifCurrent: ifCurrent)
+            guard ifCurrent() else { return }
             snapshots.store(LibrarySnapshot(items: page.items, page: page, revision: nil),
                             for: LibrarySnapshot.key(view: view), clientID: clientID)
         case .library, .downloads, .settings, .more: break
+        }
+    }
+
+    private static func hydrateProgress(_ items: [MediaItem], client: ServerClient, snapshots: ResourceSnapshotCache,
+                                        ifCurrent: () -> Bool) async {
+        var seen = Set<String>()
+        for item in items.filter({ $0.kind == .video && $0.progress.seconds > 0 && !$0.progress.watched }).prefix(60) {
+            guard ifCurrent(), !Task.isCancelled else { return }
+            if seen.insert(item.id).inserted, let saved = try? await client.watchProgress(itemID: item.id, policy: .cached), ifCurrent() {
+                snapshots.store(saved, for: "watch-progress:\(item.id)", clientID: client.identity)
+            }
         }
     }
 }

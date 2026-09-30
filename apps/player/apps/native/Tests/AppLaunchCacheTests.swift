@@ -4,6 +4,31 @@ import Testing
 
 @MainActor
 struct AppLaunchCacheTests {
+    @Test func restoresCardProgressBeforePublishingTheSavedLibrary() async throws {
+        let directory = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+        defer { try? FileManager.default.removeItem(at: directory) }
+        let fixture = try HTTPFixture(body: "{\"items\":[{\"id\":\"movie\",\"kind\":\"video\",\"title\":\"Saved movie\",\"progress\":{\"seconds\":120}}],\"total\":1,\"offset\":0,\"limit\":60}",
+                                      viewer: profile(), cacheDirectory: directory)
+        defer { fixture.remove() }
+        _ = try await fixture.client.library(view: .movies)
+        FixtureURLProtocol.entries.withLock { values in
+            values[fixture.host]?.routes["/api/v1/items/movie/watch-progress"] = .init(data: Data("{\"seconds\":120,\"duration\":600}".utf8), status: 200, headers: [:])
+        }
+        _ = try await fixture.client.watchProgress(itemID: "movie")
+        await fixture.client.close()
+        let reopened = try await ServerClient(server: fixture.client.server, viewer: profile(),
+                                              protocolClasses: [FixtureURLProtocol.self], cacheDirectory: directory)
+        let defaults = try #require(UserDefaults(suiteName: "launch-progress-\(UUID().uuidString)"))
+        defaults.set("movies,home", forKey: PlayerMode.watch.tabsKey("profile"))
+        let snapshots = ResourceSnapshotCache()
+        let clientID = await reopened.identity
+        await AppLaunchCache.hydrate(client: reopened, profileKey: "profile", snapshots: snapshots, defaults: defaults)
+        #expect(snapshots.value(for: "watch-progress:movie", clientID: clientID, as: WatchProgressSummary.self)?.fraction == 0.2)
+        #expect(snapshots.value(for: LibrarySnapshot.key(view: .movies), clientID: clientID, as: LibrarySnapshot.self)?.items.first?.title == "Saved movie")
+        #expect(fixture.requests.count == 2)
+        await reopened.close()
+    }
+
     @Test func reopensCustomMusicTabFromDiskWithoutARequest() async throws {
         let directory = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
         defer { try? FileManager.default.removeItem(at: directory) }

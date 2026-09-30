@@ -133,6 +133,11 @@ struct AudioPlayerScreen: View {
         .cinemaBackground()
         #endif
         .navigationTitle("Now playing")
+        #if os(iOS)
+        .background(KinoTheme.background)
+        .navigationBarTitleDisplayMode(.inline)
+        .toolbar { if !hidesMiniPlayer { ToolbarItem(placement: .cancellationAction) { Button("Close") { dismiss() } } } }
+        #endif
         #if os(tvOS)
         .focusScope(audioFocus)
         .onPlayPauseCommand { if session.player.player != nil { session.player.togglePlayback() } }

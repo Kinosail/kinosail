@@ -40,7 +40,7 @@ struct AppShell: View {
                 get: { session.pendingApprovalCode != nil && session.player.currentItem == nil && !session.reading },
                 set: { if !$0 { session.dismissApproval() } }
             )) {
-                NavigationStack { ApprovalScreen(initialCode: session.pendingApprovalCode ?? "") }
+                NavigationStack { ApprovalScreen(initialCode: session.pendingApprovalCode ?? "", showsDismiss: true) }
             }
             .alert("Kinosail", isPresented: Binding(
                 get: { session.notice != nil }, set: { if !$0 { session.notice = nil } }

@@ -84,7 +84,8 @@ class BuildInputsTest(unittest.TestCase):
                         '<meta name="google-site-verification" content="CyK7nEwl7e61vmJVjO4nsO4JpjaeKGUMffYcSNcUhFg">'), 1)
                     graph = json.loads(SearchMetadata(homepage).blocks[0])['@graph']
                     organization = next(item for item in graph if item['@type'] == 'Organization')
-                    self.assertIn('Kinosail Player, a free, source-available media server', organization['description'])
+                    self.assertIn('Kinosail Player', organization['description'])
+                    self.assertIn('Kinosail Subtitles', organization['description'])
                     self.assertEqual(organization['logo'], f'{origin}{prefix}/assets/images/kinosail-mark.svg')
                     self.assertIn('viewBox="0 0 512 512"', (args.output / 'assets/images/kinosail-mark.svg').read_text())
                     app = next(item for item in graph if item['@type'] == 'SoftwareApplication')
@@ -114,6 +115,22 @@ class BuildInputsTest(unittest.TestCase):
                     self.assertEqual({item['product'] for item in subtitles_index}, {'Subtitles'})
                     self.assertTrue(all(item['url'].startswith(prefix + '/subtitles/') for item in subtitles_index))
                     subtitles_graph = json.loads(SearchMetadata(subtitles).blocks[0])['@graph']
+                    subtitles_organization = next(item for item in subtitles_graph if item['@type'] == 'Organization')
+                    self.assertEqual(subtitles_organization, organization)
+                    for graph, app_id in ((graph, f'{origin}{prefix}/#player'),
+                                          (subtitles_graph, f'{origin}{prefix}/subtitles/#subtitles')):
+                        page = next(item for item in graph if item['@type'] == 'WebPage')
+                        self.assertEqual(page['mainEntity'], {'@id': app_id})
+                    products = (args.output / 'products/index.html').read_text()
+                    product_graph = json.loads(SearchMetadata(products).blocks[0])['@graph']
+                    product_page = next(item for item in product_graph if item['@type'] == 'WebPage')
+                    self.assertEqual(product_page['about'], [{'@id': f'{origin}{prefix}/#player'},
+                                                           {'@id': f'{origin}{prefix}/subtitles/#subtitles'}])
+                    self.assertIn([f'{prefix}/products/', 'Choose an app'], LinkText(homepage).links)
+                    self.assertIn([f'{prefix}/products/', 'Compare Player and Subtitles'], LinkText(subtitles).links)
+                    for error_page in ('404.html', 'subtitles/404.html'):
+                        self.assertIn('<meta name="robots" content="noindex,follow">',
+                                      (args.output / error_page).read_text())
                     subtitles_app = next(item for item in subtitles_graph if item['@type'] == 'SoftwareApplication')
                     self.assertEqual(subtitles_app['name'], 'Kinosail Subtitles')
                     self.assertEqual(subtitles_app['offers'], {'@type': 'Offer', 'price': 0})
@@ -128,6 +145,24 @@ class BuildInputsTest(unittest.TestCase):
                         guide_links = LinkText((args.output / guide).read_text()).links
                         self.assertIn(['https://github.com/Kinosail/kinosail/issues/new/choose', 'Open an issue'], guide_links)
                     check(args.output, prefix)
+
+    def test_sitemap_must_cover_only_unique_public_pages(self):
+        with tempfile.TemporaryDirectory() as directory:
+            output = Path(directory) / 'site'
+            build(settings(['--output', str(output)]))
+            sitemap = output / 'sitemap.xml'
+            valid = sitemap.read_text()
+            entry = '<url><loc>https://kinosail.com/</loc></url>'
+            for invalid in ('', '<broken>', valid.replace(entry, ''),
+                            valid.replace(entry, entry + entry),
+                            valid.replace(entry, entry + '<url></url>'),
+                            valid.replace(entry, entry + '<unknown/>'),
+                            valid.replace(entry, '<url><loc>https://other.example/</loc></url>'),
+                            valid.replace(entry, '<url><loc>https://kinosail.com/404.html</loc></url>')):
+                with self.subTest(sitemap=invalid[:120]):
+                    sitemap.write_text(invalid)
+                    with self.assertRaisesRegex(SystemExit, 'sitemap'):
+                        check(output, '')
 
     def test_invalid_inputs_have_no_side_effects(self):
         with tempfile.TemporaryDirectory() as directory:
