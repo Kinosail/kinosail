@@ -1,0 +1,44 @@
+INSTRUMENTATION_STATUS: class=com.kinosail.player.mobile.PolishLiveJourneyTest
+INSTRUMENTATION_STATUS: current=1
+INSTRUMENTATION_STATUS: id=AndroidJUnitRunner
+INSTRUMENTATION_STATUS: numtests=1
+INSTRUMENTATION_STATUS: stream=
+com.kinosail.player.mobile.PolishLiveJourneyTest:
+INSTRUMENTATION_STATUS: test=realFixtureLibraryAndAbsentSearch
+INSTRUMENTATION_STATUS_CODE: 1
+INSTRUMENTATION_STATUS: class=com.kinosail.player.mobile.PolishLiveJourneyTest
+INSTRUMENTATION_STATUS: current=1
+INSTRUMENTATION_STATUS: id=AndroidJUnitRunner
+INSTRUMENTATION_STATUS: numtests=1
+INSTRUMENTATION_STATUS: stack=java.lang.IllegalArgumentException: The Server returned an invalid library page.
+	at com.kinosail.player.core.CatalogApi$Companion.parseItem$app(CatalogApi.kt:110)
+	at com.kinosail.player.core.CatalogApi.list(CatalogApi.kt:62)
+	at com.kinosail.player.core.CatalogApi.list$default(CatalogApi.kt:41)
+	at com.kinosail.player.mobile.PolishLiveJourneyTest.realFixtureLibraryAndAbsentSearch(PolishLiveJourneyTest.kt:31)
+
+INSTRUMENTATION_STATUS: stream=
+Error in realFixtureLibraryAndAbsentSearch(com.kinosail.player.mobile.PolishLiveJourneyTest):
+java.lang.IllegalArgumentException: The Server returned an invalid library page.
+	at com.kinosail.player.core.CatalogApi$Companion.parseItem$app(CatalogApi.kt:110)
+	at com.kinosail.player.core.CatalogApi.list(CatalogApi.kt:62)
+	at com.kinosail.player.core.CatalogApi.list$default(CatalogApi.kt:41)
+	at com.kinosail.player.mobile.PolishLiveJourneyTest.realFixtureLibraryAndAbsentSearch(PolishLiveJourneyTest.kt:31)
+
+INSTRUMENTATION_STATUS: test=realFixtureLibraryAndAbsentSearch
+INSTRUMENTATION_STATUS_CODE: -2
+INSTRUMENTATION_RESULT: stream=
+
+Time: 2.184
+There was 1 failure:
+1) realFixtureLibraryAndAbsentSearch(com.kinosail.player.mobile.PolishLiveJourneyTest)
+java.lang.IllegalArgumentException: The Server returned an invalid library page.
+	at com.kinosail.player.core.CatalogApi$Companion.parseItem$app(CatalogApi.kt:110)
+	at com.kinosail.player.core.CatalogApi.list(CatalogApi.kt:62)
+	at com.kinosail.player.core.CatalogApi.list$default(CatalogApi.kt:41)
+	at com.kinosail.player.mobile.PolishLiveJourneyTest.realFixtureLibraryAndAbsentSearch(PolishLiveJourneyTest.kt:31)
+
+FAILURES!!!
+Tests run: 1,  Failures: 1
+
+
+INSTRUMENTATION_CODE: -1

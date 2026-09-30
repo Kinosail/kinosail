@@ -24,7 +24,7 @@ struct NativePreferencesUXTests {
             let clientID = await client.identity
             let window = try host(WatchPosition(item: item, barOnly: true), session: session)
             defer { window.isHidden = true }
-            try await until { session.resourceSnapshots.value(for: "watch-progress:movie", clientID: clientID, as: WatchProgressSummary.self) != nil }
+            try await until("The visible progress bar must fetch its duration") { session.resourceSnapshots.value(for: "watch-progress:movie", clientID: clientID, as: WatchProgressSummary.self) != nil }
             let renderer = ImageRenderer(content: CinemaHero(item: item, showsPlot: false) { EmptyView() }
                 .frame(width: 335).environment(session).environment(\.colorScheme, .dark))
             let image = try #require(renderer.cgImage)
@@ -41,7 +41,7 @@ struct NativePreferencesUXTests {
             let model = ProgressCardModel(item: item)
             let card = try host(ProgressCardProbe(model: model), session: session)
             defer { card.isHidden = true }
-            try await until { session.resourceSnapshots.isFresh(for: "watch-progress:movie", clientID: clientID, as: WatchProgressSummary.self, refreshID: session.contentRevision.uuidString) }
+            try await until("The reopened progress bar must refresh its duration") { session.resourceSnapshots.isFresh(for: "watch-progress:movie", clientID: clientID, as: WatchProgressSummary.self, refreshID: session.contentRevision.uuidString) }
             let before = greenPixelsIn(card)
             #expect(before > 40)
             model.item.progress.seconds = 300
