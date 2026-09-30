@@ -9,7 +9,12 @@ struct PlayOnTVScreen: View {
     @State private var scanned = false
     @State private var message: String?
     @State private var seekPosition = 0.0
-    @State private var isAudio: Bool?
+    @State private var detectedAudio: Bool?
+    private var isAudio: Bool? {
+        guard let clientID = session.client?.identity else { return nil }
+        let saved: ItemDetail? = session.resourceSnapshots.value(for: "\(session.profileKey ?? ""):\(itemID)", clientID: clientID)
+        return detectedAudio ?? saved?.item.isAudio
+    }
     #if os(tvOS)
     @Namespace private var castFocus
     #endif
@@ -19,9 +24,10 @@ struct PlayOnTVScreen: View {
             #if os(iOS)
             Section("AirPlay") {
                 HStack {
-                    Text("Choose an AirPlay \(isAudio == true ? "speaker" : "TV")")
+                    Text("Choose an AirPlay output")
                     Spacer()
                     AudioRoutePicker(video: isAudio != true).frame(width: 48, height: 48).accessibilityLabel("Choose AirPlay output")
+                        .allowsHitTesting(isAudio != nil)
                 }
                 Text("Choose a receiver, then play this title here. Screen Mirroring in Control Center also works with compatible TVs.").foregroundStyle(.secondary)
                 NavigationLink("Play on this device", value: isAudio == true ? ScreenDestination.audio(itemID) : .playback(itemID))
@@ -85,7 +91,7 @@ struct PlayOnTVScreen: View {
                 guard let client = session.client else { throw ClientError.unavailable }
                 let item = try await client.item(id: itemID, policy: .automatic)
                 try Task.checkCancellation()
-                isAudio = item.isAudio
+                detectedAudio = item.isAudio
             } catch is CancellationError {} catch { message = AppSession.message(error) }
         }
     }
