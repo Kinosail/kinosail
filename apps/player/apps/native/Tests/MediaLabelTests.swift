@@ -50,6 +50,7 @@ struct MediaLabelTests {
         #expect(try MediaItem(ratedEpisode.json, server: server).subtitleWithoutYear.isEmpty)
         for (kind, title, artist, rating, expected, withoutYear) in [
             ("video", "1917", "", "PG-13", "2019 · PG-13", ""),
+            ("video", "Concert", "Artist", "PG-13", "Artist · 2019 · PG-13", "Artist"),
             ("show", "Series", "", "TV-MA", "2019 · TV-MA", ""),
             ("audio", "Track", "Artist", "PG-13", "Artist · 2019 · PG-13", "Artist · PG-13"),
             ("video", "Movie", "", "", "2019", "")
