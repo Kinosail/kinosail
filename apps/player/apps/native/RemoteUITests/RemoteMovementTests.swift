@@ -24,6 +24,7 @@ final class RemoteMovementTests: RemoteTestCase {
         let settings = app.buttons["Settings"]
         XCTAssertTrue(search.waitForExistence(timeout: 15), app.debugDescription)
         XCTAssertTrue(search.hasFocus)
+        XCTAssertFalse(app.buttons["Library"].exists, "Browse should offer the media categories directly")
         record("launch", app)
 
         remote.press(.right)
@@ -70,7 +71,7 @@ final class RemoteMovementTests: RemoteTestCase {
         record("back from movies", app)
         XCTAssertTrue(app.buttons["Movies"].hasFocus)
 
-        for title in ["Shows", "Music", "Audiobooks", "Photos", "Library"] {
+        for title in ["Shows", "Music", "Audiobooks", "Photos"] {
             remote.press(.right)
             XCTAssertTrue(app.buttons[title].hasFocus, "Right should focus \(title)")
             record("focus \(title)", app)
@@ -84,9 +85,10 @@ final class RemoteMovementTests: RemoteTestCase {
             record("back from \(title)", app)
         }
         remote.press(.right)
-        XCTAssertTrue(app.buttons["Library"].hasFocus, "Right should stop at the last Browse tile")
+        XCTAssertTrue(app.buttons["Photos"].hasFocus, "Right should stop at the last Browse tile")
+        XCTAssertFalse(app.buttons["Library"].exists)
         remote.press(.left)
-        XCTAssertTrue(app.buttons["Photos"].hasFocus)
+        XCTAssertTrue(app.buttons["Audiobooks"].hasFocus)
     }
 
     @MainActor

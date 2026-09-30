@@ -47,42 +47,6 @@ final class RemoteDetailMovementTests: RemoteTestCase {
     }
 
     @MainActor
-    func testCollectionAndBackRestoreLibraryFocus() {
-        let app = XCUIApplication(bundleIdentifier: "com.kinosail.player")
-        let remote = XCUIRemote.shared
-        app.launch()
-        XCTAssertTrue(app.buttons["Search"].waitForExistence(timeout: 15))
-        remote.press(.down)
-        remote.press(.down)
-        for _ in 0..<5 { remote.press(.right) }
-        XCTAssertTrue(app.buttons["Library"].hasFocus)
-        remote.press(.select)
-        XCTAssertTrue(app.buttons["All media"].waitForExistence(timeout: 10))
-        remote.press(.down)
-        XCTAssertTrue(app.buttons["Collections"].hasFocus)
-        remote.press(.select)
-        XCTAssertTrue(app.staticTexts["Collections"].waitForExistence(timeout: 10))
-        let collection = app.buttons.firstMatch
-        XCTAssertTrue(collection.waitForExistence(timeout: 10), "Collections should load a collection")
-        if !collection.hasFocus { remote.press(.down) }
-        XCTAssertTrue(collection.hasFocus)
-        let name = collection.label
-        remote.press(.select)
-        XCTAssertTrue(app.staticTexts[name].waitForExistence(timeout: 10))
-        record("collection titles", app)
-        remote.press(.menu)
-        XCTAssertTrue(app.buttons[name].waitForExistence(timeout: 10))
-        XCTAssertTrue(app.buttons[name].hasFocus)
-        remote.press(.menu)
-        XCTAssertTrue(app.buttons["Collections"].waitForExistence(timeout: 10))
-        XCTAssertTrue(app.buttons["Collections"].hasFocus)
-        remote.press(.menu)
-        XCTAssertTrue(app.buttons["Library"].waitForExistence(timeout: 10))
-        XCTAssertTrue(app.buttons["Library"].hasFocus)
-        record("back to Library tile", app)
-    }
-
-    @MainActor
     func testSettingsPlaybackBackRestoresRowAndTopBarFocus() {
         let app = XCUIApplication(bundleIdentifier: "com.kinosail.player")
         let remote = XCUIRemote.shared
@@ -116,54 +80,6 @@ final class RemoteDetailMovementTests: RemoteTestCase {
         XCTAssertTrue(settings.waitForExistence(timeout: 10), app.debugDescription)
         XCTAssertTrue(settings.hasFocus)
         record("back to settings top bar", app)
-    }
-
-    @MainActor
-    func testLibraryHubGridAndBackPaths() {
-        let app = XCUIApplication(bundleIdentifier: "com.kinosail.player")
-        let remote = XCUIRemote.shared
-        app.launch()
-        XCTAssertTrue(app.buttons["Search"].waitForExistence(timeout: 15), app.debugDescription)
-        remote.press(.down)
-        remote.press(.down)
-        XCTAssertTrue(app.buttons["Movies"].hasFocus)
-        for title in ["Shows", "Music", "Audiobooks", "Photos", "Library"] {
-            remote.press(.right)
-            XCTAssertTrue(app.buttons[title].hasFocus)
-        }
-        remote.press(.select)
-        XCTAssertTrue(app.buttons["All media"].waitForExistence(timeout: 10), app.debugDescription)
-
-        for title in ["All media", "My List", "Unwatched"] {
-            XCTAssertTrue(app.buttons[title].hasFocus, "Hub should focus \(title)")
-            remote.press(.select)
-            XCTAssertTrue(app.staticTexts[title].waitForExistence(timeout: 10), app.debugDescription)
-            record("hub \(title)", app)
-            remote.press(.menu)
-            XCTAssertTrue(app.buttons[title].waitForExistence(timeout: 10), app.debugDescription)
-            XCTAssertTrue(app.buttons[title].hasFocus, "Back should restore \(title)")
-            if title != "Unwatched" { remote.press(.right) }
-        }
-        remote.press(.left)
-        XCTAssertTrue(app.buttons["My List"].hasFocus)
-        remote.press(.down)
-        record("hub second row", app)
-        XCTAssertTrue(app.buttons["History"].hasFocus)
-        remote.press(.left)
-        XCTAssertTrue(app.buttons["Collections"].hasFocus)
-        for title in ["Collections", "History"] {
-            remote.press(.select)
-            XCTAssertTrue(app.staticTexts[title].waitForExistence(timeout: 10), app.debugDescription)
-            record("hub \(title)", app)
-            remote.press(.menu)
-            XCTAssertTrue(app.buttons[title].waitForExistence(timeout: 10), app.debugDescription)
-            XCTAssertTrue(app.buttons[title].hasFocus, "Back should restore \(title)")
-            if title == "Collections" { remote.press(.right) }
-        }
-        remote.press(.menu)
-        XCTAssertTrue(app.buttons["Library"].waitForExistence(timeout: 10), app.debugDescription)
-        XCTAssertTrue(app.buttons["Library"].hasFocus)
-        record("back to Library tile", app)
     }
 
     @MainActor
