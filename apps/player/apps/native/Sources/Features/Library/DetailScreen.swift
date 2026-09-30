@@ -95,7 +95,7 @@ private struct DetailContent: View {
                 KinoTheme.surface
                 if contrast != .increased && !reduceTransparency {
                     GeometryReader { geometry in
-                        Artwork(path: item.backdrop, ratio: 16 / 9, dimension: 1920,
+                        Artwork(path: item.backdrop, ratio: 16 / 9, dimension: 1600,
                                 fillsFrame: true, isBackdrop: true, canvasSize: geometry.size)
                     }
                     LinearGradient(colors: [.black.opacity(0.88), .black.opacity(0.38), .clear],
@@ -166,8 +166,11 @@ private struct DetailContent: View {
                 .tint(KinoTheme.secondaryControlTint).secondaryControlForeground()
         }
         if item.progress.seconds > 0 || item.progress.watched {
-            Button("Remove from Continue watching") { change { client in try await client.dismissContinueWatching(itemID: item.id) } }
-                .disabled(busy)
+            Button { change { client in try await client.dismissContinueWatching(itemID: item.id) } }
+                label: { Label("Remove", systemImage: "minus.circle") }
+                .accessibilityLabel("Remove from Continue watching")
+                .buttonStyle(.bordered).buttonBorderShape(.capsule)
+                .tint(KinoTheme.secondaryControlTint).secondaryControlForeground().disabled(busy)
         }
         #endif
         #if os(iOS)

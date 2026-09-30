@@ -14,6 +14,9 @@ struct ConnectionBanner: View {
             .padding(.vertical, 12)
             .frame(maxWidth: .infinity, alignment: .leading)
             .background(KinoTheme.surface)
+            #if os(tvOS)
+            .focusSection()
+            #endif
         }
     }
 
@@ -47,7 +50,11 @@ struct ConnectionBanner: View {
             guard let client = session.client else { return }
             Task { await session.connection.check(client, force: true) }
         } label: {
+            #if os(tvOS)
+            Text(session.connection.checking ? "Checking…" : "Reconnect").frame(minHeight: 44)
+            #else
             Text(session.connection.checking ? "Checking…" : "Try again").frame(minHeight: 44)
+            #endif
         }
         .buttonStyle(.bordered).buttonBorderShape(.capsule).tint(KinoTheme.secondaryControlTint).secondaryControlForeground()
         .disabled(session.connection.checking)
