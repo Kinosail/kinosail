@@ -1,6 +1,6 @@
 import AxeBuilder from "@axe-core/playwright";
 import { expect, test } from "@playwright/test";
-import { access, unlink, writeFile } from "node:fs/promises";
+import { access, chmod, unlink, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 import { compactViewports, expectNoHorizontalOverflow, expectSkipLinkOffscreen, initiallyOccludedTargets, occludedTargets, setSubtitleLanguages, supportedViewports } from "./subtitle-dashboard-helpers";
 
@@ -28,6 +28,9 @@ test("Owner hides other languages and English forced subtitles from a populated 
   await writeFile(spanish, "1\n00:00:01,000 --> 00:00:02,000\nHola\n");
   await writeFile(forced, "1\n00:00:01,000 --> 00:00:02,000\nSigns\n");
   if (addedEnglish) await writeFile(addedEnglish, "1\n00:00:01,000 --> 00:00:02,000\nHello\n");
+  // The isolated Server runs as a different UID; Linux hard-link protection
+  // requires write access to files it hides without overwriting another file.
+  for (const file of [spanish, forced, ...(addedEnglish ? [addedEnglish] : [])]) await chmod(file, 0o666);
   try {
     expect(await rescan()).toBe(200);
     await page.setViewportSize({ width: 390, height: 844 });

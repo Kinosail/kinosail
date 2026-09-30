@@ -67,3 +67,13 @@ func TestApplicationShellLoadsRecognitionOnce(t *testing.T) {
 		}
 	}
 }
+
+func TestApplicationShellMainTarget(t *testing.T) {
+	// Attribute suffixes must not hide the missing target; existing IDs must survive.
+	for _, main := range []string{`<main>`, `<main data-palette-id="art">`, `<main class="detail-shell" data-palette-id="art">`, `<main id="main" data-palette-id="art">`} {
+		page := injectApplicationShell([]byte(`<html><body>`+main+`<section id="seasons">Episodes</section></main></body></html>`), nil)
+		if bytes.Count(page, []byte(` id="main"`)) != 1 || !bytes.Contains(page, []byte(`href="#main"`)) {
+			t.Errorf("main target missing or duplicated for %s: %s", main, page)
+		}
+	}
+}
