@@ -583,3 +583,11 @@ Seeding after stream admission initially passed 30 repetitions and the delayed c
 Final checks passed 30 repetitions of the streaming guard and the existing maintenance/lifecycle cases. A 350-millisecond pre-stream pause also passed three repetitions. Removing only the production `Manager.Run` busy guard caused all three repetitions to fail at the expected cache-preservation assertion. Production bytes were restored immediately. Three repetitions then passed with the guard restored. These controls preserve the test's ability to catch an actual guard regression. They make no maintenance throughput or device claim.
 
 Final fixture SHA-256: `284483d727245b8823646b322b2e1453988b9767226c9aa425459bfe91df7d3a`. Independent read-only review confirmed the startup-race finding was resolved and found no further issue. The reviewer did not execute tests independently. Original failures and control logs remain in `.verification/catalog-projection`.
+
+
+## Final fixed-revision Player suite
+
+At commit `6b94c0f5764a00889f44bbb29e94515d791152f9`, `go -C apps/player test -count=1 -p 2 -parallel 2 ./...` passed every package. The command took 252.426 seconds; the server package took 247.834 seconds. The measured catalog owner and final maintenance fixture stayed byte-identical throughout the run. Earlier full-suite failures remain recorded above. This pass establishes local suite behavior on this revision, not physical playback, native frames, or production load.
+
+
+The required post-commit Player `make verify-changed` then passed caps, diff checks, server compilation, and all selected maintenance tests. It stopped at the same 112 existing shared lint findings, after 69.727 seconds. Shared consumer, container, and later stages did not run through this command. Separate full Player/shared/Subtitles and catalog race results above remain distinct. Changed-code lint passed with zero issues after the final fixture edit. No gate was disabled or bypassed.
