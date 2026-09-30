@@ -32,18 +32,14 @@ func assertCompressedAsset(t *testing.T, handler http.Handler, path, encoding st
 		t.Fatalf("%s encoding %q = %d %v", path, encoding, compressed.Code, compressed.Header())
 	}
 	compressedSize := compressed.Body.Len()
-	if encoding == "gzip" {
-		t.Logf("%s: identity %d bytes, gzip %d bytes (%.1f%% reduction)", path, plain.Body.Len(), compressedSize, 100*(1-float64(compressedSize)/float64(plain.Body.Len())))
-	}
+	t.Logf("%s: identity %d bytes, gzip %d bytes (%.1f%% reduction)", path, plain.Body.Len(), compressedSize, 100*(1-float64(compressedSize)/float64(plain.Body.Len())))
 	reader, err := gzip.NewReader(compressed.Body)
 	if err != nil {
 		t.Fatal(err)
 	}
 	decoded, err := io.ReadAll(reader)
+	_ = reader.Close()
 	if err != nil {
-		t.Fatal(err)
-	}
-	if err := reader.Close(); err != nil {
 		t.Fatal(err)
 	}
 	if !bytes.Equal(decoded, plain.Body.Bytes()) || compressed.Header().Get("Content-Type") != plain.Header().Get("Content-Type") || compressed.Header().Get("Cache-Control") != "public, max-age=31536000, immutable" {

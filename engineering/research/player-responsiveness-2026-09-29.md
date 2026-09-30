@@ -48,7 +48,7 @@ WWDC26 guidance is current, but the app must retain its supported deployment tar
 - Web browse pages are bounded to 100 items by default, with a maximum of 200. Static assets with a version token already use one-year immutable caching.
 - Playback already prepares source information and preferences concurrently and retains short-lived preparation results. Wider prewarming requires evidence that it improves startup without competing with the active view.
 
-Source seams: `apps/player/apps/native/Sources/ArtworkLoader.swift`, `LocalMediaCache.swift`, `CatalogAPI.swift`, `PlaybackCoordinator.swift`; `packages/catalog/letters.go`; `apps/player/internal/server/assets.go` and `performance_benchmark_test.go`. Verify source paths and constants when extending this work.
+Source seams: native `Sources/Platform/ArtworkLoader.swift`, `LocalMediaCache.swift`, and `PlaybackCoordinator.swift`; `Sources/Services/CatalogAPI.swift`; `packages/catalog/letters.go`; `apps/player/internal/server/assets.go` and `performance_benchmark_test.go`. Native paths are relative to `apps/player/apps/native`. Verify constants when extending this work.
 
 ## Measurements and verification
 
@@ -57,13 +57,22 @@ Environment: macOS, Apple M1 Pro, arm64. Other builds ran on this host, so wall-
 | Check | Observed result |
 | --- | --- |
 | Baseline 10,000-title web browse, five 2-second samples | 17.62–33.09 ms/op; about 7,428,800 B/op; 41,590–41,591 allocations/op; 25,319 response bytes. |
+| Optimized 10,000-title browse, five 2-second samples | 8.62–13.08 ms/op; about 4,708,500 B/op; 11,590–11,591 allocations/op; the same 25,319 response bytes. Allocations fall about 72%; allocation bytes fall about 37%. Timing is host-dependent. |
 | Baseline CPU profile | Sorting consumes a material share of cumulative CPU; garbage collection is also prominent. This does not prove sorting is the physical-device UI bottleneck. |
-| Native artwork correctness on tvOS 27 Simulator | 17 tests passed across existing loader tests and cancellation tests. Includes shared-request survival when one consumer cancels and cancellation when the last consumer leaves. |
+| Native artwork correctness on tvOS 27 Simulator | 16 tests passed across existing loader tests and the new cancellation regression. Includes shared pixel reuse, capacity release, profile separation, disk hits, invalid input, and cancellation of the network request when its last consumer leaves. |
 | Static compression regression | Failed against the starting implementation, then passed with compression. Checks gzip negotiation, exclusions, bounds, cache headers, MIME types, and identical decoded bytes. |
-| Player Go suite | `go test ./...` passed before the subsequent catalog optimization. |
+| CSS transfer | 212,487 → 42,371 bytes: 80.1% fewer body bytes. |
+| Player JavaScript transfer | 107,554 → 27,040 bytes: 74.9% fewer body bytes. |
+| HLS JavaScript transfer | 618,156 → 195,347 bytes: 68.4% fewer body bytes. |
+| Populated Chromium, local production Go binary | Two tests passed at 390 × 650 and 1440 × 900 with 37 generated movies. Assets execute, decoded CSS matches, phone title jumps work, and the warm stylesheet transfers zero bytes. Screenshots were inspected. |
+| iOS and tvOS simulator builds | `make -C apps/player client-check` passed. This proves compilation, not device frame timing. |
+| Shared package suite and catalog race test | `go test ./...` in `packages` and `go test -race ./catalog` passed. |
+| Full shared-package check | Stops at 112 pre-existing lint findings outside this patch. Changed-code package lint passes. |
 | Container-backed populated browser gate | Could not build: Podman storage reported no space left on device. No container storage was pruned. |
 
-Final transfer measurements, post-change browse measurements, browser evidence, and delivery checks will be added before this task is delivered.
+The [measurement record](evidence/player-responsiveness-2026-09-29.md) preserves raw benchmark samples, commands, fixture details, environment, and browser resource metrics. The browser binary was built before the final parser refactor; later source tests verify stricter malformed-header rejection. No published speed percentage here represents measured physical-device smoothness.
+
+The implementation adds static text compression and an ASCII fast path for shared letter classification. It adds public HTTP, catalog, browser, and native cancellation regressions. It does not change native rendering, artwork dimensions, playback policy, or profile cache semantics.
 
 Repeat the browse measurement from `apps/player`:
 
@@ -79,6 +88,14 @@ go test ./internal/server -run 'TestStatic(Bundle|Compression)' -count=1 -v
 # packages
 go test ./catalog -run TestBrowseLetterJumpsPreserveLocaleAndUnicode -count=1
 ```
+
+Repeat the browser regression against the supported populated test instance:
+
+```sh
+KINOSAIL_TEST_INSTANCE=1 pnpm --dir apps/player/e2e exec playwright test static-compression.spec.ts --project=chromium --workers=1
+```
+
+Set `KINOSAIL_E2E_URL` and `KINOSAIL_TEST_TOTP_SECRET` for the isolated instance, as the existing test-instance scripts do. Each successful test writes `compression-evidence.json` and a populated screenshot to its Playwright output directory. This task used an original 8-second H.264/AAC fixture generated with FFmpeg `testsrc2` and `sine`, copied as `Movie 00` through `Movie 35`, with local NFO titles. It used a dedicated local data directory and TLS CA, with no user media.
 
 For device profiling, record revision, model, OS, display refresh, library size, cache state, network conditions, and background work. Report p50/p95/p99 latency and hitches, not only averages. A 60 Hz display has 16.67 ms per frame; 120 Hz has 8.33 ms. These are frame intervals, not guarantees that all of that time is available to application work. Google's [good INP threshold is 200 ms](https://web.dev/articles/optimize-inp); use it as an interaction target, not evidence that Kinosail meets it.
 
