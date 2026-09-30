@@ -2,7 +2,7 @@ import AxeBuilder from "@axe-core/playwright";
 import { expect, test } from "@playwright/test";
 import { readFile, writeFile, unlink } from "node:fs/promises";
 import { join } from "node:path";
-import { expectNoHorizontalOverflow } from "./subtitle-dashboard-helpers";
+import { expectNoHorizontalOverflow, expectSkipLinkOffscreen } from "./subtitle-dashboard-helpers";
 
 export function registerSubtitleDefaultTests() {
   test.describe("subtitle review request states", () => {
@@ -24,6 +24,7 @@ export function registerSubtitleDefaultTests() {
             await page.setViewportSize(viewport);
             await expectNoHorizontalOverflow(page);
             expect((await new AxeBuilder({ page }).include("#subtitle-edit-form").analyze()).violations).toEqual([]);
+            await expectSkipLinkOffscreen(page);
             await page.screenshot({ path: testInfo.outputPath(`${viewport.width}-subtitle-review-${state}.png`), fullPage: true });
           }
         };
