@@ -312,7 +312,7 @@ Browser runs used an isolated local production binary. Simulator results establi
   },
   "limits": [
     "Container-backed populated browser gate could not build: Podman storage full. No storage was pruned.",
-    "Full shared-package check stops at 112 pre-existing lint findings. Changed-code package lint passes.",
+    "Full shared-package check stops at 111 pre-existing lint findings. Changed-code package lint passes.",
     "No physical iPhone or Apple TV frame/hitch trace.",
     "No end-to-end playback first-frame, cross-browser matrix, production network, or deployment performance proof."
   ]

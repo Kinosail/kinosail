@@ -67,7 +67,7 @@ Environment: macOS, Apple M1 Pro, arm64. Other builds ran on this host, so wall-
 | Populated Chromium, local production Go binary | Two tests passed at 390 × 650 and 1440 × 900 with 37 generated movies. Assets execute, decoded CSS matches, phone title jumps work, and the warm stylesheet transfers zero bytes. Screenshots were inspected. |
 | iOS and tvOS simulator builds | `make -C apps/player client-check` passed. This proves compilation, not device frame timing. |
 | Shared package suite and catalog race test | `go test ./...` in `packages` and `go test -race ./catalog` passed. |
-| Full shared-package check | Stops at 112 pre-existing lint findings outside this patch. Changed-code package lint passes. |
+| Full shared-package check | Stops at 111 pre-existing lint findings outside this patch. Changed-code package lint passes. |
 | Container-backed populated browser gate | Could not build: Podman storage reported no space left on device. No container storage was pruned. |
 
 The [measurement record](evidence/player-responsiveness-2026-09-29.md) preserves raw benchmark samples, commands, fixture details, environment, and browser resource metrics. The browser binary was built before the final parser refactor; later source tests verify stricter malformed-header rejection. No published speed percentage here represents measured physical-device smoothness.
