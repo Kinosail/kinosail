@@ -38,7 +38,12 @@ actor ProgressSyncStore {
 
     init(scope: String, directory: URL? = nil) throws {
         self.scope = try Input.hex(scope, count: 64)
-        let root = directory ?? FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0].resolvingSymlinksInPath()
+        #if os(tvOS)
+        let location = FileManager.SearchPathDirectory.cachesDirectory
+        #else
+        let location = FileManager.SearchPathDirectory.applicationSupportDirectory
+        #endif
+        let root = directory ?? FileManager.default.urls(for: location, in: .userDomainMask)[0].resolvingSymlinksInPath()
             .appendingPathComponent("KinosailProgress", isDirectory: true)
         file = root.appendingPathComponent(scope + ".json")
     }

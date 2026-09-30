@@ -7,7 +7,7 @@ This audit identified nine confirmed defects and implemented corrections. The ev
 - Scope: Player, Subtitles, shared Go packages, Apple clients, and Android clients. Dashboard is absent from current main.
 - Starting revision: `55c0b765c16eb68a403b1a8f4c76f8a71340bdad`.
 - Fix commit: `b6288a48`; reconciled source and final host binaries: `d95bf65a4d4b9f3cd9462ddf489bcbce8ee1bc1f`.
-- Reconciled upstream: `77494fdff25d5e97a6d1f8e87a0659eb31dc990a`, `2a62a537a` (UI polish and HLS speed fixes), `96818c5e5` (native artwork validation and catalog ordering), `05da53145` (responsive configuration contrast), `60d11e205` (Player layout audits and narrow WebKit settings), `199bbcfae` (catalog projection and maintenance-test fixture timing), `f28d32c36` (missing seek completion events), `3c19d732e` (subtitle review-state evidence), and `8a488dda4` (player script content hashes).
+- Reconciled upstream: `77494fdff25d5e97a6d1f8e87a0659eb31dc990a`, `2a62a537a` (UI polish and HLS speed fixes), `96818c5e5` (native artwork validation and catalog ordering), `05da53145` (responsive configuration contrast), `60d11e205` (Player layout audits and narrow WebKit settings), `199bbcfae` (catalog projection and maintenance-test fixture timing), `f28d32c36` (missing seek completion events), `3c19d732e` (subtitle review-state evidence), `8a488dda4` (player script content hashes), and `74e18c46a` (tvOS playback options and progress storage).
 - Second reconciled app binaries: `4b92154499531410a596ad2b2db705c9abeace7d`; final landscape header follow-up is recorded separately below.
 - Environment: macOS ARM64, Xcode 27, iOS 27, tvOS 27, installed Android API 36 images, repository-pinned Playwright 1.63.
 - Local evidence: `.verification/deep-qa-20260930/` in the task checkout. This directory is ignored and contains private disposable session state.
@@ -127,6 +127,10 @@ The first correction requested Player version 96 and Subtitles version 58, after
 - The reconciled browser regressions exercise missing and late seek events, pending and resumed overlays, paused playback, and phone/desktop geometry.
 
 ## Verification
+
+The complete [manual deep run 36788186257](https://github.com/Kinosail/kinosail/actions/runs/36788186257) passed on `1be4230f0`. It includes all six browser suites, source/race/coverage and security checks, native compilation, and all four image scans and production-path jobs.
+
+The subsequent tvOS-only reconciliation passed 258 tests in 53 suites on a fresh task-owned tvOS 27.0 simulator. This includes the new default-journal regression. Its record is `reconciliation-74e-native-run-record.json`, with `tvos-74e-suite.log` and `tvos-74e.xcresult`. Browser, service, shared-package and workflow inputs remain byte-identical to the passing deep revision; `reconciliation-74e-unaffected-web-go.json` records that comparison. The new remote playback-options journey was not rerun in this audit. PR #392 reports passing populated 1080p and 4K options, preferences, dismissal and playback journeys; physical TV interaction and separate preference pending/failed renders remain unverified. Final-head required CI remains a separate delivery gate.
 
 | Surface | Result | Evidence and limits |
 | --- | --- | --- |
