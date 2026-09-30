@@ -48,9 +48,14 @@ func sortReferences(items []*library.Item, order, query, locale string) { //noli
 
 func sortTitles(items []*library.Item, titles *collate.Collator) {
 	var buffer collate.Buffer
+	keys := make([]byte, 0, len(items)*64)
 	keyed := make([]sortReference, len(items))
 	for position, item := range items {
-		keyed[position] = sortReference{item, titles.KeyFromString(&buffer, sortKey(*item))}
+		// Reuse collation scratch space; keep independent keys in compact storage.
+		buffer.Reset()
+		start := len(keys)
+		keys = append(keys, titles.KeyFromString(&buffer, sortKey(*item))...)
+		keyed[position] = sortReference{item, keys[start:]}
 	}
 	sort.Slice(keyed, func(left, right int) bool {
 		comparison := bytes.Compare(keyed[left].key, keyed[right].key)

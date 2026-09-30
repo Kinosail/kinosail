@@ -4,6 +4,8 @@ Date: September 29, 2026. Audited starting revision: `517fdf6b25047845adefd7bd94
 
 This note covers Player web, the native iOS and tvOS clients, shared catalog browsing, and playback startup. It records current research, source findings, verified changes, and work that still needs measurements. It does not establish smoothness on physical devices.
 
+The [September 30 follow-up](player-performance-frontiers-2026-09-30.md) records further profiling, cache admission work, current research, and the remaining performance experiments.
+
 ## Main findings
 
 1. **Cold web loads transfer avoidable bytes.** Player serves embedded CSS and JavaScript without HTTP compression. Precompress public static text once, preserve immutable versioned caching, and negotiate `Accept-Encoding`. Do not extend this change to authenticated HTML, API responses, images, or media.
