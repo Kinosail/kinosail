@@ -34,7 +34,6 @@ struct TVOSConfigurationLayout<Content: View>: View {
             .frame(maxWidth: 1120, maxHeight: .infinity, alignment: .center)
             .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
-        .background(KinoTheme.background)
         .cinemaBackground()
         #else
         content()
@@ -77,21 +76,6 @@ private struct TVOSConfigurationBrand: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 24) {
             ZStack {
-                Image("CinemaSail")
-                    .resizable()
-                    .scaledToFill()
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    .clipped()
-                LinearGradient(
-                    colors: [KinoTheme.background.opacity(0.18), KinoTheme.background.opacity(0.94)],
-                    startPoint: .top,
-                    endPoint: .bottom
-                )
-                LinearGradient(
-                    colors: [KinoTheme.background.opacity(0.9), .clear],
-                    startPoint: .leading,
-                    endPoint: .trailing
-                )
                 VStack(alignment: .leading, spacing: 24) {
                     VStack(alignment: .leading, spacing: 8) {
                         Image("KinosailMark")
