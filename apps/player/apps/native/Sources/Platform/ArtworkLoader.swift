@@ -4,7 +4,7 @@ import UniformTypeIdentifiers
 
 actor ArtworkLoader {
     private struct Key: Hashable, Sendable { let session: UUID; let path: String; let dimension: Int }
-    private struct Cached { let image: CGImage; var used: Date; let saved: Date }
+    private struct Cached { let image: CGImage; var used: Date; let saved: Date; var background: Bool }
     private struct Loaded { let image: CGImage; let stale: Bool }
     private struct Pending {
         let id: UUID
@@ -22,6 +22,7 @@ actor ArtworkLoader {
     private var active = 0
     private var activeBackground = 0
     private var foreground: [String: Int] = [:]
+    private var visible: [Key: Int] = [:]
     private var waiters: [(id: UUID, key: String, background: Bool, continuation: CheckedContinuation<Bool, Error>)] = []
 
     func prefetch(paths: [String], client: ServerClient, dimension: Int = 800) async throws {
@@ -38,6 +39,7 @@ actor ArtworkLoader {
         }
         let key = Key(session: client.identity, path: url.absoluteString, dimension: dimension)
         if var found = cache[key] {
+            if !background { found.background = false }
             found.used = Date(); cache[key] = found
             if Date().timeIntervalSince(found.saved) >= LocalMediaCache.artworkFreshLifetime {
                 scheduleRefresh(key: key, url: url, client: client, dimension: dimension)
@@ -46,12 +48,15 @@ actor ArtworkLoader {
         }
         let networkKey = "\(client.identity):\(url.absoluteString)"
         if !background {
+            visible[key, default: 0] += 1
             foreground[networkKey, default: 0] += 1
             for index in waiters.indices where waiters[index].key == networkKey { waiters[index].background = false }
             drain()
         }
         defer {
             if !background {
+                visible[key, default: 1] -= 1
+                if visible[key] == 0 { visible[key] = nil }
                 foreground[networkKey, default: 1] -= 1
                 if foreground[networkKey] == 0 { foreground[networkKey] = nil }
             }
@@ -77,7 +82,7 @@ actor ArtworkLoader {
                         let image = try await Self.decode(saved.data, dimension: dimension)
                         try Task.checkCancellation()
                         guard generation == attempt else { throw CancellationError() }
-                        remember(image, key: key, saved: saved.saved)
+                        remember(image, key: key, saved: saved.saved, background: background && visible[key] == nil)
                         return Loaded(image: image, stale: !saved.fresh)
                     } catch is CancellationError { throw CancellationError() }
                     catch { await store?.remove(url.absoluteString, kind: .artwork) }
@@ -89,7 +94,7 @@ actor ArtworkLoader {
                 try Task.checkCancellation()
                 let savedAt = Date()
                 guard generation == attempt else { throw CancellationError() }
-                remember(image, key: key, saved: savedAt)
+                remember(image, key: key, saved: savedAt, background: background && visible[key] == nil)
                 if let store {
                     await store.enqueueWrite(data, key: url.absoluteString, kind: .artwork)
                 }
@@ -201,26 +206,42 @@ actor ArtworkLoader {
             let savedAt = Date()
             let persist = URLComponents(url: url, resolvingAgainstBaseURL: false).map(ServerClient.cacheableMediaURL) == true
             let store = persist ? try await client.cacheStore() : nil
-            remember(image, key: key, saved: savedAt)
+            remember(image, key: key, saved: savedAt, background: true)
             if let store {
                 await store.enqueueWrite(data, key: url.absoluteString, kind: .artwork)
             }
         } catch is CancellationError {} catch {}
     }
 
-    private func remember(_ image: CGImage, key: Key, saved: Date) {
+    private func remember(_ image: CGImage, key: Key, saved: Date, background: Bool = false) {
         // Account for decoded pixels, not the much smaller compressed file.
         let cost = image.bytesPerRow * image.height
-        guard cost <= 32 * 1024 * 1024 else { return }
+        guard cost <= 32 * 1024 * 1024 else {
+            if let previous = cache.removeValue(forKey: key) { bytes -= previous.image.bytesPerRow * previous.image.height }
+            return
+        }
+        let retainedBackground = background && cache[key]?.background != false
+        if background {
+            let protected = cache.lazy.filter { $0.key != key && !$0.value.background }
+            guard protected.count < 96,
+                  protected.reduce(cost, { $0 + $1.value.image.bytesPerRow * $1.value.image.height }) <= 32 * 1024 * 1024 else {
+                // The next foreground visit can decode fresh disk bytes rather than stale pixels.
+                if let previous = cache.removeValue(forKey: key) { bytes -= previous.image.bytesPerRow * previous.image.height }
+                return
+            }
+        }
         if let previous = cache.removeValue(forKey: key) {
             bytes -= previous.image.bytesPerRow * previous.image.height
         }
         while bytes + cost > 32 * 1024 * 1024 || cache.count >= 96 {
-            guard let oldest = cache.min(by: { $0.value.used < $1.value.used }) else { break }
+            // Speculation may replace speculation, but never displace displayed pixels.
+            let oldest = cache.lazy.filter { $0.value.background }.min(by: { $0.value.used < $1.value.used })
+                ?? (background ? nil : cache.min(by: { $0.value.used < $1.value.used }))
+            guard let oldest else { return }
             bytes -= oldest.value.image.bytesPerRow * oldest.value.image.height
             cache[oldest.key] = nil
         }
-        cache[key] = Cached(image: image, used: Date(), saved: saved)
+        cache[key] = Cached(image: image, used: Date(), saved: saved, background: retainedBackground)
         bytes += cost
     }
 

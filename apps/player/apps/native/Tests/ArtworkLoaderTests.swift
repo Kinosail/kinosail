@@ -257,12 +257,4 @@ struct ArtworkLoaderTests {
         }
     }
 
-    private func ageArtwork(in directory: URL) throws {
-        guard let file = FileManager.default.enumerator(at: directory, includingPropertiesForKeys: nil)?
-            .compactMap({ $0 as? URL }).first(where: { $0.pathExtension == "cache" }) else { throw ClientError.invalidResponse }
-        var bytes = try Data(contentsOf: file)
-        var timestamp = Date().addingTimeInterval(-(LocalMediaCache.artworkFreshLifetime + 1)).timeIntervalSince1970.bitPattern.bigEndian
-        withUnsafeBytes(of: &timestamp) { bytes.replaceSubrange(40..<48, with: $0) }
-        try bytes.write(to: file)
-    }
 }
