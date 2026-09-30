@@ -59,10 +59,12 @@ These findings are research inputs. Paper results are not Kinosail results.
 - Learned prefetch needs to outperform a bounded focus-direction rule after accounting for its CPU, energy, memory, and prediction waste.
 - Increasing cache sizes needs device memory-pressure evidence. More retained pixels can cause eviction elsewhere or application termination.
 - Broad response caching needs complete library, profile, permission, locale, query, progress, and list invalidation. Do not trade freshness or isolation for a faster warm path.
-- Current research on SIMD credit classification previously produced no meaningful pipeline gain on the local workload. Profile the full media pipeline before revisiting that mechanism.
+- SIMD, parallel decode, and hardware-specific paths need full-pipeline benchmarks and a portable fallback before adoption. A faster inner loop may have little effect on playback or UI latency.
 
 ## Verification boundaries
 
 The measurement record holds raw samples, fixture descriptions, commands, source hashes, and test results. Required hosted checks remain separate from local evidence. The native tests exercise real HTTP adapters, decoded image identity, cache budgets, stale disk data, shared downloads, and cancellation.
+
+Local verification passed the full Player, Subtitles, and shared Go suites, the catalog race check, source-file caps, and repository tooling checks. The reconciled tvOS simulator run passed 26 tests in five artwork suites. Its growth regression covers both 1600px replacement and 4096px replacement above the retention budget. The independent review findings have regression controls and are resolved. Changed-code Go lint reports zero issues; full local shared-package lint has existing findings outside this patch.
 
 No physical iPhone or Apple TV frame trace, deployed first-frame measurement, or production-network benchmark is established by this follow-up. Until device models are supplied, the working target is older supported Apple hardware. The goal remains active while these measurement and optimization opportunities remain unresolved.

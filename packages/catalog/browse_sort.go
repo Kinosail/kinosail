@@ -55,7 +55,7 @@ func sortTitles(items []*library.Item, titles *collate.Collator) {
 		buffer.Reset()
 		start := len(keys)
 		keys = append(keys, titles.KeyFromString(&buffer, sortKey(*item))...)
-		keyed[position] = sortReference{item, keys[start:len(keys)]}
+		keyed[position] = sortReference{item, keys[start:]}
 	}
 	sort.Slice(keyed, func(left, right int) bool {
 		comparison := bytes.Compare(keyed[left].key, keyed[right].key)

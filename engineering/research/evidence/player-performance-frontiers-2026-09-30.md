@@ -65,7 +65,10 @@ Synthetic data only. Source hashes bind the native results to the validated work
     "native_final": "26 tests in five suites passed; refresh growth exercised 1600px and 4096px cases",
     "player_full": "go test ./... passed",
     "apple_builds": "make -C apps/player client-check passed (iOS and tvOS simulator builds)",
-    "required_hosted_checks": "pending"
+    "required_hosted_checks": "pending",
+    "subtitles_full": "go test ./... passed",
+    "changed_code_lint": "golangci-lint run --new-from-rev=9a45e9444613dbde5a277a8c7426919fcab97aa8: 0 issues",
+    "full_local_changed_gate": "Initial run stopped at 115 shared lint findings. Three task findings (test complexity and formatting) fixed; changed-code lint now passes. Full local shared lint remains a baseline limit."
   },
   "boundaries": [
     "Physical iPhone and Apple TV frame timing",
@@ -79,6 +82,17 @@ Synthetic data only. Source hashes bind the native results to the validated work
     "apps/player/apps/native/Tests/ArtworkAdmissionTests.swift": "0a7a459c3c9e8c22c604d72d9c8fefc0fb4d6415357633b465727dc37d0c1d5f",
     "apps/player/apps/native/Tests/ArtworkFixtureImages.swift": "6b1211c0b73d2b3fbb210d9919e9f442ce985f50c952893b662bbacb129c8fad",
     "apps/player/apps/native/Tests/ArtworkLoaderTests.swift": "596de51884ab26b3c2b0cdfa500361ffbced85d9a067b9ef68ecaed67122b79c"
-  }
+  },
+  "reconciliation": {
+    "origin_main": "0b0fda9f1c3030b80ecd09c099f5add64403c05f",
+    "integration_revision": "3140f3be2edca4c3d897b0137f7f4632c3c53779",
+    "native_artwork": "26 tests in five suites passed; 1600px and 4096px refresh cases exercised",
+    "tooling": "make tooling-check passed again after merging current main"
+  },
+  "delivery_source_sha256": {
+    "packages/catalog/browse_sort.go": "d783d39f6a1ddbdd61b1335910288ad818dd561352479b9b03d740643aefcb9f",
+    "packages/catalog/sort_storage_test.go": "7fb6a37b83d21d7e8a92ac4cb9dcb995b3e61e800e9a9a64d1981fb2ccfe9147"
+  },
+  "formatting_note": "Collation measurement preceded gofumpt formatting. Go statements are unchanged; delivery hashes record the formatted source."
 }
 ```
