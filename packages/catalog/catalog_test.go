@@ -5,6 +5,7 @@ import (
 	"errors"
 	"math"
 	"net/url"
+	"slices"
 	"strings"
 	"sync"
 	"testing"
@@ -39,6 +40,7 @@ func TestBrowseValidatesBeforeSelectionAndBuildsStablePages(t *testing.T) { //no
 		{ID: "c", Kind: "book", Title: "Élan"},
 	}
 	candidates := []Candidate{{Item: &items[0], Watched: true, Updated: now}, {Item: &items[1], Listed: true, Updated: now.Add(time.Hour)}, {Item: &items[2]}}
+	original := append([]Candidate(nil), candidates...)
 	browse, err := ParseBrowse(url.Values{"q": {"amy"}, "limit": {"1"}}, "en")
 	if err != nil {
 		t.Fatal(err)
@@ -46,6 +48,9 @@ func TestBrowseValidatesBeforeSelectionAndBuildsStablePages(t *testing.T) { //no
 	result, err := browse.Apply(candidates)
 	if err != nil || result.Total != 1 || len(result.Items) != 1 || result.Items[0].ID != "a" || result.View != "all" || result.Sort != "title" {
 		t.Fatalf("result = %#v, error = %v", result, err)
+	}
+	if !slices.Equal(candidates, original) {
+		t.Fatal("Apply changed caller-owned candidates")
 	}
 	all := result.AllItems()
 	all[0].Title = "changed"
