@@ -31,9 +31,13 @@ func TestDirectPlayerShowsSourceChaptersAndClientSkipMarkers(t *testing.T) { //n
 	player := httptest.NewRecorder()
 	handler.ServeHTTP(player, httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/watch/"+id, nil))
 	script := httptest.NewRecorder()
-	handler.ServeHTTP(script, httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/static/player.js", nil))
+	handler.ServeHTTP(script, httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/static/player.js?v=58", nil))
 
-	for _, expected := range []string{"First contact", `data-auto-skip="intro,credits"`, `data-playback-token="`, `data-chapter data-start="90" data-end="600" data-seek="90"`, `<time>1:30</time>`, `<summary><span>Chapters</span><small>3</small></summary>`, `data-marker="intro"`, `data-marker="credits"`, `controls playsinline`, `data-player-controls`, `data-player-fullscreen`, `data-seek-preview hidden`, `data-trickplay="/trickplay/` + id + `/{second}`, `/static/player.js?v=57`, `/static/app.css?v=cinema-11`} {
+	if script.Code != http.StatusOK || script.Header().Get("Cache-Control") != "public, max-age=31536000, immutable" {
+		t.Fatalf("versioned player script = %d %q", script.Code, script.Header().Get("Cache-Control"))
+	}
+
+	for _, expected := range []string{"First contact", `data-auto-skip="intro,credits"`, `data-playback-token="`, `data-chapter data-start="90" data-end="600" data-seek="90"`, `<time>1:30</time>`, `<summary><span>Chapters</span><small>3</small></summary>`, `data-marker="intro"`, `data-marker="credits"`, `controls playsinline`, `data-player-controls`, `data-player-fullscreen`, `data-seek-preview hidden`, `data-trickplay="/trickplay/` + id + `/{second}`, `/static/player.js?v=58`, `/static/app.css?v=cinema-11`} {
 		if !strings.Contains(player.Body.String(), expected) {
 			t.Fatalf("player lacks %q: %q", expected, player.Body.String())
 		}
