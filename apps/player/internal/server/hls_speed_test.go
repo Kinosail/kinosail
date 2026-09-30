@@ -63,39 +63,7 @@ func TestRealHLSGenerationKeepsAheadOfSupportedPlaybackSpeeds(t *testing.T) {
 				info.Compatible = strings.Replace(info.Compatible, "/index.m3u8", "-o12000/index.m3u8", 1)
 				duration -= 12
 			}
-			started := time.Now()
-			delivery, stop := context.WithTimeout(ctx, time.Duration(duration/3)*time.Second)
-			defer stop()
-			master := speedTestGET(t, delivery, handler, info.Compatible)
-			base := info.Compatible[:strings.LastIndex(info.Compatible, "/")+1]
-			variants := speedTestURIs(master)
-			if len(variants) == 0 {
-				t.Fatal("HLS master has no renditions")
-			}
-			for _, variant := range variants {
-				playlist := speedTestGET(t, delivery, handler, base+variant)
-				rendition := base + variant[:strings.LastIndex(variant, "/")+1]
-				fragments := speedTestGET(t, delivery, handler, rendition+"init.mp4")
-				segments := speedTestURIs(playlist)
-				if len(segments) < int(duration/2) {
-					t.Fatalf("rendition has only %d segments for %.0f seconds", len(segments), duration)
-				}
-				for _, segment := range segments[:int(duration/2)] {
-					fragments = append(fragments, speedTestGET(t, delivery, handler, rendition+segment)...)
-				}
-				decode := exec.CommandContext(ctx, ffmpeg, "-v", "error", "-i", "pipe:0", "-map", "0:v:0", "-map", "0:a:0", "-f", "null", "-") //nolint:gosec // Tool comes from LookPath and all arguments are fixed synthetic-test inputs.
-				decode.Stdin = bytes.NewReader(fragments)
-				if output, err := decode.CombinedOutput(); err != nil {
-					t.Fatalf("delivered rendition does not decode: %v: %s", err, output)
-				}
-			}
-			elapsed := time.Since(started)
-			for _, rate := range []float64{0.5, 0.75, 1, 1.25, 1.5, 1.75, 2, 2.5, 3} {
-				if elapsed.Seconds() > duration/rate {
-					t.Errorf("%.2fx: delivered %.0f seconds in %s; playback would exhaust its buffer", rate, duration, elapsed)
-				}
-			}
-			t.Logf("%.0f media seconds, %d renditions delivered and decoded in %s", duration, len(variants), elapsed)
+			assertSpeedTestDelivery(t, ctx, handler, info.Compatible, ffmpeg, duration)
 		})
 	}
 }
@@ -141,4 +109,41 @@ func speedTestURIs(manifest []byte) []string {
 		}
 	}
 	return result
+}
+
+func assertSpeedTestDelivery(t *testing.T, ctx context.Context, handler http.Handler, compatible, ffmpeg string, duration float64) {
+	t.Helper()
+	started := time.Now()
+	delivery, stop := context.WithTimeout(ctx, time.Duration(duration/3)*time.Second)
+	defer stop()
+	master := speedTestGET(t, delivery, handler, compatible)
+	base := compatible[:strings.LastIndex(compatible, "/")+1]
+	variants := speedTestURIs(master)
+	if len(variants) == 0 {
+		t.Fatal("HLS master has no renditions")
+	}
+	for _, variant := range variants {
+		playlist := speedTestGET(t, delivery, handler, base+variant)
+		rendition := base + variant[:strings.LastIndex(variant, "/")+1]
+		fragments := speedTestGET(t, delivery, handler, rendition+"init.mp4")
+		segments := speedTestURIs(playlist)
+		if len(segments) < int(duration/2) {
+			t.Fatalf("rendition has only %d segments for %.0f seconds", len(segments), duration)
+		}
+		for _, segment := range segments[:int(duration/2)] {
+			fragments = append(fragments, speedTestGET(t, delivery, handler, rendition+segment)...)
+		}
+		decode := exec.CommandContext(ctx, ffmpeg, "-v", "error", "-i", "pipe:0", "-map", "0:v:0", "-map", "0:a:0", "-f", "null", "-") //nolint:gosec // Tool comes from LookPath and all arguments are fixed synthetic-test inputs.
+		decode.Stdin = bytes.NewReader(fragments)
+		if output, err := decode.CombinedOutput(); err != nil {
+			t.Fatalf("delivered rendition does not decode: %v: %s", err, output)
+		}
+	}
+	elapsed := time.Since(started)
+	for _, rate := range []float64{0.5, 0.75, 1, 1.25, 1.5, 1.75, 2, 2.5, 3} {
+		if elapsed.Seconds() > duration/rate {
+			t.Errorf("%.2fx: delivered %.0f seconds in %s; playback would exhaust its buffer", rate, duration, elapsed)
+		}
+	}
+	t.Logf("%.0f media seconds, %d renditions delivered and decoded in %s", duration, len(variants), elapsed)
 }
