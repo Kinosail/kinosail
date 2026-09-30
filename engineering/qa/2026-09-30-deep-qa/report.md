@@ -7,7 +7,7 @@ This audit found and fixed seven confirmed defects. It does not establish that e
 - Scope: Player, Subtitles, shared Go packages, Apple clients, and Android clients. Dashboard is absent from current main.
 - Starting revision: `55c0b765c16eb68a403b1a8f4c76f8a71340bdad`.
 - Fix commit: `b6288a48`; reconciled source and final host binaries: `d95bf65a4d4b9f3cd9462ddf489bcbce8ee1bc1f`.
-- Reconciled upstream: `77494fdff25d5e97a6d1f8e87a0659eb31dc990a`, `2a62a537a` (UI polish and HLS speed fixes), and `96818c5e5` (native artwork validation and catalog ordering).
+- Reconciled upstream: `77494fdff25d5e97a6d1f8e87a0659eb31dc990a`, `2a62a537a` (UI polish and HLS speed fixes), `96818c5e5` (native artwork validation and catalog ordering), and `05da53145` (responsive configuration contrast).
 - Second reconciled app binaries: `4b92154499531410a596ad2b2db705c9abeace7d`; final landscape header follow-up is recorded separately below.
 - Environment: macOS ARM64, Xcode 27, iOS 27, tvOS 27, installed Android API 36 images, repository-pinned Playwright 1.63.
 - Local evidence: `.verification/deep-qa-20260930/` in the task checkout. This directory is ignored and contains private disposable session state.
@@ -75,12 +75,12 @@ The shell now distinguishes the normal attribute and makes main content programm
 
 The reconciled landscape header let the brand column consume the space needed by Support. A normal eighteen-character Server name reproduced the overlap at 390px in Chromium, Firefox and WebKit. A sixty-four-character name also overflowed at 720px.
 
-The header now reserves the Support column and truncates the brand within the remaining space. The Player stylesheet version advances to `electric-39`, including the album adapter and existing cache-version contracts.
+The header now reserves the Support column and truncates the brand within the remaining space. The Player stylesheet version initially advanced to `electric-39`, including the album adapter and existing cache-version contracts. After reconciliation, main already used that version, so the combined stylesheet advances to `electric-40`. The cache regression also proves version 39 is refreshed.
 
 - Red: `player-reconciled-ui.log`, three browsers; `header-names-red.log`, focused long-name bounds.
 - Green: `header-names-green.log`, nine checks across three browsers. Existing landscape keyboard behavior remains covered.
 - The added smoke check exercises eighteen- and sixty-four-character names at 390px and 720px and saves rendered screenshots.
-- Source/cache contracts: `player-header-cache-tests.log` passed.
+- Source/cache contracts: `player-header-cache-tests.log` passed. Reconciliation cache proof: `player-reconciliation-cache-red.log` failed with stale version 39; all ten relevant HTTP/cache tests passed in `player-reconciliation-cache-green.log`. The exact selection is saved in `player-reconciliation-cache-command.json`.
 
 ### QA-006 — Stale Supporter reads change newer navigation state (medium; fixed)
 
