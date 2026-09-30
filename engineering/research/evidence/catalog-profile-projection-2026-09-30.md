@@ -2,7 +2,7 @@
 
 Date: September 30, 2026. Baseline: `96818c5e5b66796ab1a03a416e7b98c490225052`.
 
-This experiment measures the shared server path used by web, iOS, and tvOS catalog requests. It evaluates in-process Go HTTP handlers. It does not measure network latency, native view updates, physical frames, or deployed load.
+This experiment measures the shared server path used by web, iOS, and tvOS catalog requests. It evaluates in-process Go HTTP handlers with a trusted synthetic Viewer context. Routing and authentication middleware are outside timing. It does not measure network latency, native view updates, physical frames, or deployed load.
 
 ## Finding and implementation
 
@@ -561,7 +561,7 @@ Lint required explanations for the benchmark matrix and positive fixture-count c
 | `go -C packages test -race -count=1 ./catalog` | PASS before and after test formatting; final run 5.635 seconds. |
 | `go -C apps/subtitles test -count=1 -p 2 ./...` | PASS after reconciliation, 241.577 seconds for the command. |
 | First full Player run | FAIL. It overlapped reconciliation. The compiled stylesheet differed from the filesystem stylesheet. A maintenance assertion also found its cache file missing. Do not count this as final revision evidence. |
-| Reconciled focused maintenance and stylesheet checks, `-count=3` | PASS, 26.031 seconds. The maintenance failure's cause is not established. |
+| Reconciled focused maintenance and stylesheet checks, `-count=3` | PASS, 26.031 seconds. Later fixture discrimination is recorded below. |
 | `go -C apps/player test -count=1 -p 2 -parallel 2 ./...` | FAIL on reconciled source. Command, backup, configuration, and database packages passed. Server failed two real HLS-speed cases at their request deadlines. Other server tests did not report failures. |
 | Isolated `TestRealHLSGenerationKeepsAheadOfSupportedPlaybackSpeeds` | PASS, 22.878 seconds across all five cases. This does not certify loaded-host throughput. |
 | Changed-code lint against `05da53145bc05235aa510fecc6392ec5928de061` | Player, Subtitles, and packages PASS with zero issues. No production lint finding. |
@@ -570,3 +570,16 @@ Lint required explanations for the benchmark matrix and positive fixture-count c
 The first Player run's stylesheet mismatch was caused by changing source files while its previously compiled test was running. The fresh run uses one reconciled source state and resolves that mismatch. Its remaining HLS deadline failure is distinct from catalog correctness. The isolated HLS run passes without a playback-source change. Full hosted checks remain the required delivery authority; this record does not turn a focused retry into a full-suite pass.
 
 The primary checkout and unrelated worktrees remain untouched. Local main cleanup is blocked by unrelated dirty primary work. The active performance checkout remains leased for the ongoing goal. Physical-device hitch timing, deployment, production-network load, and mixed-library title-order admission remain separate work.
+
+
+## Maintenance fixture diagnosis and guard control
+
+Post-commit checks ran at `01b5c8c8a5a20aa8d377e2f5b97b88d47d49ce7b`. Subtitles stopped at 112 existing shared lint findings. Player passed source caps, diff checks, and compilation, then failed its full server package because the maintenance fixture cache was missing. Player did not reach shared lint in that run.
+
+The unchanged streaming fixture failed once in 30 repetitions. It created an over-budget cache before starting its stream, while enabling background scheduling. Startup upkeep can run after 250 milliseconds even with a one-hour interval. A controlled 350-millisecond pause removed the cache before stream admission in all three repetitions. This reproduces a fixture failure mechanism; it does not identify the exact timing of every earlier failure.
+
+Seeding after stream admission initially passed 30 repetitions and the delayed control. Independent review identified a remaining admission race: an idle pass can observe the guard before streaming, then prune after the cache is seeded. The final fixture uses the existing nil-lifecycle configuration to isolate explicit HTTP upkeep from background scheduling. Separate lifecycle tests still exercise automatic scheduling. The blocked request keeps its test context. Cleanup releases its writer before waiting, including after assertion failures.
+
+Final checks passed 30 repetitions of the streaming guard and the existing maintenance/lifecycle cases. A 350-millisecond pre-stream pause also passed three repetitions. Removing only the production `Manager.Run` busy guard caused all three repetitions to fail at the expected cache-preservation assertion. Production bytes were restored immediately. Three repetitions then passed with the guard restored. These controls preserve the test's ability to catch an actual guard regression. They make no maintenance throughput or device claim.
+
+Final fixture SHA-256: `284483d727245b8823646b322b2e1453988b9767226c9aa425459bfe91df7d3a`. Independent read-only review confirmed the startup-race finding was resolved and found no further issue. The reviewer did not execute tests independently. Original failures and control logs remain in `.verification/catalog-projection`.
