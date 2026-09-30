@@ -1,0 +1,14 @@
+
+Running 3 tests using 1 worker
+
+(node:70012) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  1 [chromium] › subtitle-defaults-tests.ts:10:5 › subtitle review request states › review starts with sync and cleanup and keeps manual timing exclusive @smoke (11.9s)
+(node:70270) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  2 [firefox] › subtitle-defaults-tests.ts:10:5 › subtitle review request states › review starts with sync and cleanup and keeps manual timing exclusive @smoke (21.1s)
+(node:71122) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  3 [webkit] › subtitle-defaults-tests.ts:10:5 › subtitle review request states › review starts with sync and cleanup and keeps manual timing exclusive @smoke (31.7s)
+
+  3 passed (1.4m)

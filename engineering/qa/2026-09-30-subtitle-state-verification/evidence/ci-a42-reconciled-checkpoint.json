@@ -1,0 +1,31 @@
+{
+  "run": 36781191043,
+  "sourceCommit": "a42cd1a4237dedd5011d27496b81d6edbb10b3df",
+  "attempt1": {
+    "result": "failure",
+    "failure": "TestConfiguredProviderAutomaticallyEnrichesLibrary: TempDir RemoveAll cleanup: metadata directory not empty; enrichment assertions passed"
+  },
+  "localControl": "100 unchanged macOS repetitions passed. No Linux root-cause fix or universal resolution is claimed.",
+  "attempt2": {
+    "result": "success",
+    "required": [
+      {
+        "name": "Repository checks",
+        "result": "success"
+      },
+      {
+        "name": "Subtitles checks",
+        "result": "success"
+      },
+      {
+        "name": "Security checks",
+        "result": "success"
+      },
+      {
+        "name": "Player checks",
+        "result": "success"
+      }
+    ]
+  },
+  "merge": "Protected merge was rejected when main advanced through PR #390. This checkpoint does not prove the later reconciled head has passed CI."
+}

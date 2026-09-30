@@ -1,0 +1,29 @@
+{
+  "revision": "83dca74eb5ef62d4ad922fd567b0c10facad0dad",
+  "runtime": "Production Go HTTPS entry point, Go 1.27.1 darwin/arm64",
+  "binarySHA256": "e038bd0b2838abfc8cfac9ff077d4b7cedae393ff74be0a0e5d5d095edb36537",
+  "binaryVCSRevision": "Unavailable in go run build information",
+  "assets": [
+    {
+      "asset": "subtitle-inspector.js",
+      "contentType": "text/javascript",
+      "sourceSHA256": "8c0240b3af4aa31a18051131810be678ff8cf7a15e03e5b99fb2be06fcaf9004",
+      "servedSHA256": "8c0240b3af4aa31a18051131810be678ff8cf7a15e03e5b99fb2be06fcaf9004",
+      "matches": true
+    },
+    {
+      "asset": "subtitle-inspector.css",
+      "contentType": "text/css",
+      "sourceSHA256": "1a64bea27e5d08a977c9855e96dd12bc0588520da9e065484dff099e854e0f34",
+      "servedSHA256": "1a64bea27e5d08a977c9855e96dd12bc0588520da9e065484dff099e854e0f34",
+      "matches": true
+    },
+    {
+      "asset": "app.css",
+      "contentType": "text/css",
+      "sourceSHA256": "e6cab96956b30dc54db175a1ef3c1754cbc81983d0469ea89207b88c90a61c64",
+      "servedSHA256": "e6cab96956b30dc54db175a1ef3c1754cbc81983d0469ea89207b88c90a61c64",
+      "matches": true
+    }
+  ]
+}

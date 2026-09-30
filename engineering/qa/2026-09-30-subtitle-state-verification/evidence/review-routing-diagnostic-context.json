@@ -1,0 +1,43 @@
+{
+  "revision": "60d11e2054e31eac090af9ffed3ff85dd0b52c27",
+  "command": [
+    "pnpm",
+    "exec",
+    "playwright",
+    "test",
+    "subtitle-review-routing.disposable.spec.ts"
+  ],
+  "cwd": "/Users/mikeo/.codex/worktrees/all-app-polish/kinosail/apps/subtitles/e2e",
+  "testData": "Same real API inspector review flow; compare serviceWorkers allow and block; temporary subtitle removed by existing test",
+  "environment": {
+    "platform": "Darwin",
+    "arch": "arm64",
+    "url": "https://127.0.0.1:39228",
+    "browser": "webkit",
+    "workers": 1,
+    "video": "off"
+  },
+  "sourceSHA256": [
+    {
+      "path": "apps/subtitles/e2e/subtitle-review-routing.disposable.spec.ts",
+      "sha256": "7cae7190ed18768060ebaa3acd6a479e6ce1a143d68ee9f8563d0868caa4e7ed"
+    },
+    {
+      "path": "apps/subtitles/e2e/subtitle-defaults-tests.ts",
+      "sha256": "e603637918526173a7a89b85427864152206ed221370c7eeb9c93ebec9609031"
+    },
+    {
+      "path": "apps/subtitles/internal/server/static/subtitle-inspector.js",
+      "sha256": "8c0240b3af4aa31a18051131810be678ff8cf7a15e03e5b99fb2be06fcaf9004"
+    },
+    {
+      "path": "apps/subtitles/internal/server/static/service-worker.js",
+      "sha256": "5b567e0676bd04c3e1a010815e109b02599abba3a7df5ead6da80d6d799b7379"
+    }
+  ],
+  "startedAt": "2026-09-30T20:54:15.866723+00:00",
+  "exitCode": 1,
+  "finishedAt": "2026-09-30T20:54:40.482334+00:00",
+  "sourceStable": true,
+  "temporarySidecarAbsent": true
+}
