@@ -15,33 +15,8 @@ test.describe("large offline transfers", () => {
         controller: { configurable: true, get: () => worker },
         getRegistration: { configurable: true, value: async () => ({ active: worker }) },
       });
-      Object.assign(window, { __offlineFile: new Uint8Array(16).fill(1) });
-      const root = {
-        getFileHandle: async () => ({
-          createWritable: async () => ({
-            close: async () => {},
-            truncate: async (size: number) => {
-              const current = (window as typeof window & { __offlineFile: Uint8Array }).__offlineFile;
-              const replacement = new Uint8Array(size);
-              replacement.set(current.subarray(0, size));
-              (window as typeof window & { __offlineFile: Uint8Array }).__offlineFile = replacement;
-            },
-            write: async ({ data, position }: { data: ArrayBuffer; position: number }) => {
-              const current = (window as typeof window & { __offlineFile: Uint8Array }).__offlineFile;
-              const incoming = new Uint8Array(data);
-              const replacement = new Uint8Array(Math.max(current.length, position + incoming.length));
-              replacement.set(current);
-              replacement.set(incoming, position);
-              (window as typeof window & { __offlineFile: Uint8Array }).__offlineFile = replacement;
-            },
-          }),
-          getFile: async () => new File([(window as typeof window & { __offlineFile: Uint8Array }).__offlineFile], "offline.mp4"),
-        }),
-        removeEntry: async () => { (window as typeof window & { __offlineFile: Uint8Array }).__offlineFile = new Uint8Array(); },
-      };
       Object.defineProperties(navigator.storage, {
         estimate: { configurable: true, value: async () => ({ quota: 100, usage: 80 }) },
-        getDirectory: { configurable: true, value: async () => root },
         persist: { configurable: true, value: async () => true },
       });
     });
@@ -78,6 +53,12 @@ test.describe("large offline transfers", () => {
         headers: { "Content-Digest": `sha-256=:${createHash("sha256").update(body).digest("base64")}:`, "Content-Range": `bytes ${start}-${end}/${media.length}` },
       });
     });
+    await page.evaluate(async (id) => {
+      const file = await (await navigator.storage.getDirectory()).getFileHandle(id, { create: true });
+      const writer = await file.createWritable();
+      await writer.write(new Uint8Array(16).fill(1));
+      await writer.close();
+    }, jobID!);
     await page.evaluate(({ id, itemID, profileID, quality, sha256, size, title }) => new Promise<void>((resolve, reject) => {
       const request = indexedDB.open("kinosail-offline-v1", 4);
       request.onsuccess = () => {
@@ -93,7 +74,7 @@ test.describe("large offline transfers", () => {
     await button.click();
     await expect(page.getByText("Saved and verified. Play to check compatibility.", { exact: true })).toBeVisible({ timeout: 20_000 });
     expect(ranges).toEqual([16, 16, 1]);
-    expect(await page.evaluate(() => (window as typeof window & { __offlineFile: Uint8Array }).__offlineFile.length)).toBe(media.length);
+    expect(await page.evaluate(async (id) => (await (await (await navigator.storage.getDirectory()).getFileHandle(id)).getFile()).size, jobID!)).toBe(media.length);
   });
 
   test("offline resume accounts for replaced IndexedDB chunks near quota", async ({ page }) => {

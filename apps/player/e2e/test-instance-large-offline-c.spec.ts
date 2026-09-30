@@ -53,7 +53,7 @@ test.describe("large offline transfers", () => {
     }))).toEqual({ jobs: [], chunks: [] });
   });
 
-  test("offline removal waits for a transfer lock across tabs", async ({ context, page }) => {
+  test("explicit offline removal cancels a transfer across tabs without letting an old source delete its replacement", async ({ context, page }) => {
     await context.addInitScript(() => {
       const worker = { scriptURL: new URL("/service-worker.js?v=54", location.href).href, state: "activated" };
       Object.defineProperties(navigator.serviceWorker, {
@@ -122,7 +122,7 @@ test.describe("large offline transfers", () => {
       request.onsuccess = () => {
         const database = request.result;
         const transaction = database.transaction(["jobs", "chunks"], "readwrite");
-        transaction.objectStore("jobs").put({ id, integrityVersion: 2, profileID, itemID, title: "Movie", quality: "720p", extension: ".mp4", sha256, size: 33, storage: "indexeddb", state: "ready", readyOffline: true, bytes: 33 });
+        transaction.objectStore("jobs").put({ id, integrityVersion: 2, transferID: "f".repeat(32), transferStartedAt: Date.now() - 1000, profileID, itemID, title: "Movie", quality: "720p", extension: ".mp4", sha256, size: 33, storage: "indexeddb", state: "ready", readyOffline: true, bytes: 33 });
         for (const chunk of chunks) transaction.objectStore("chunks").put({ id: `${id}:${chunk.offset}`, jobID: id, offset: chunk.offset, length: chunk.data.length, sha256: chunk.sha256, data: new Uint8Array(chunk.data).buffer });
         transaction.oncomplete = () => { database.close(); resolve(); };
         transaction.onerror = () => reject(transaction.error);
@@ -145,25 +145,25 @@ test.describe("large offline transfers", () => {
     await removalPage.goto("/__offline-remove-lock-test");
     const form = removalPage.locator(`form[action="/offline-downloads/${jobID}/remove"]`);
     await expect(form).toHaveAttribute("data-bound", "true");
-    await removalPage.evaluate((id) => {
+    await page.evaluate((id) => {
       Object.assign(window, { __playerRemovalDone: false, __playerRemovalResult: undefined });
       (window as Window & OfflineClient).KinosailOfflineMedia.remove(id).then((result) => {
         Object.assign(window, { __playerRemovalDone: true, __playerRemovalResult: result });
       });
     }, jobID);
+    await expect.poll(() => page.evaluate(async (id) => (await navigator.locks.query()).pending.some(lock => lock.name === `kinosail-offline:${id}`), jobID)).toBe(true);
+    expect(removals).toBe(0);
+    expect(await page.evaluate(() => (window as typeof window & { __playerRemovalDone: boolean }).__playerRemovalDone)).toBe(false);
     expect(await form.evaluate((node) => {
       node.dispatchEvent(new Event("submit", { bubbles: true, cancelable: true }));
       return (node.querySelector("button") as HTMLButtonElement).disabled;
     })).toBe(true);
-    await new Promise((resolve) => setTimeout(resolve, 100));
-    expect(removals).toBe(0);
-    expect(await removalPage.evaluate(() => (window as typeof window & { __playerRemovalDone: boolean }).__playerRemovalDone)).toBe(false);
-    releaseFirstRange();
-    await expect(page.getByText("Ready offline on this device", { exact: true })).toBeVisible({ timeout: 20_000 });
-    await expect.poll(() => removalPage.evaluate(() => (window as typeof window & { __playerRemovalDone: boolean }).__playerRemovalDone)).toBe(true);
-    expect(await removalPage.evaluate(() => (window as typeof window & { __playerRemovalResult: boolean }).__playerRemovalResult)).toBe(false);
     await expect.poll(() => removals).toBe(1);
-    expect(ranges).toBe(3);
+    await expect(page.getByText("Download interrupted. Resume to continue where it stopped.", { exact: true })).toBeVisible();
+    await expect.poll(() => page.evaluate(() => (window as typeof window & { __playerRemovalDone: boolean }).__playerRemovalDone)).toBe(true);
+    expect(await page.evaluate(() => (window as typeof window & { __playerRemovalResult: boolean }).__playerRemovalResult)).toBe(false);
+    releaseFirstRange();
+    expect(ranges).toBe(1);
     expect(await page.evaluate(() => new Promise((resolve, reject) => {
       const request = indexedDB.open("kinosail-offline-v1");
       request.onsuccess = () => {

@@ -46,9 +46,9 @@ test("public test instance exercises every media section and local TMDB metadata
 	await expect(subtitles).toContainText("Find local subtitle files with");
 	await expect(subtitles.getByRole("link", { name: "Kino Subtitles on GitHub" })).toHaveAttribute("href", "https://github.com/Kinosail/kinosail/tree/main/apps/subtitles");
 	await expect(subtitles).not.toContainText("SubDL");
-	await expect(subtitles.getByLabel("Preferred language")).toHaveValue("en");
+	await expect(subtitles.getByLabel("Preferred language", { exact: true })).toHaveValue("en");
 
-  await page.getByRole("main").getByRole("link", { name: "Library", exact: true }).click();
+  await page.getByRole("main").getByRole("link", { name: "Library", exact: true }).and(page.locator('a[href="/"]')).click();
   await openLibrarySection(page, "Music");
   await page.getByRole("link", { name: /Example Album/ }).click();
   await page.getByRole("link", { name: "Example Track One" }).click();
