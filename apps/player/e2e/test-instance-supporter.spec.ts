@@ -7,24 +7,26 @@ import { configureTestInstance, login } from "./test-instance-helpers";
 configureTestInstance();
 test.use({ serviceWorkers: "block" });
 
-test("Pending supporter status does not flash the community signature", async ({ page }, testInfo) => {
+test("Pending supporter recognition keeps navigation usable and then shows the collection", async ({ page }, testInfo) => {
   await login(page);
   let gate = Promise.resolve();
   let release = () => {};
-  await page.route("**/api/v1/supporter", async (route) => {
+  await page.route("**/api/v1/supporter/collection", async (route) => {
     await gate;
-    await route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ active: true, patronOrder: { family: "patron-order", name: "Lighthouse", rank: 6, active: true } }) });
+    await route.fulfill({ json: { display: "automatic", badges: [{ family: "patron-order", edition: "one-time", name: "Lighthouse", rank: 6 }] } });
   });
   for (const viewport of [{ width: 1440, height: 900 }, { width: 1024, height: 768 }, { width: 390, height: 844 }]) {
     gate = new Promise<void>((resolve) => { release = resolve; });
     await page.setViewportSize(viewport);
     await page.goto("/?view=movies", { waitUntil: "domcontentloaded" });
-    const signature = page.locator(".supporter-signature");
-    await expect(signature).toBeAttached();
-    await expect(signature).toBeHidden();
-    release();
-    await expect(signature).toContainText("Lighthouse Patron Order");
-    await expect(signature).toBeVisible();
+    const support = page.locator(".header-supporter:visible");
+    try {
+      await expect(support).toHaveText("Support Kinosail");
+      await expect(support).toHaveAttribute("href", "/supporter");
+      await expect(support.locator("img")).toHaveCount(0);
+    } finally { release(); }
+    await expect(support).toHaveAttribute("aria-label", "Your supporter collection");
+    await expect(support.locator("img")).toHaveAttribute("alt", "Lighthouse · one-time");
     await page.screenshot({ path: testInfo.outputPath(`pending-supporter-${viewport.width}.png`), fullPage: true });
   }
 });
@@ -60,21 +62,19 @@ test("Supporter chooser combines badges and prices with optional activation", as
     await page.setViewportSize(viewport);
     await page.goto("/supporter");
     await expect(page.getByRole("heading", { name: "A place in the story." })).toBeVisible();
-    await expect(page.getByText("Monthly support · Living Standard badge, active while your support is current.")).toBeVisible();
+    await expect(page.getByText("Monthly support · Gold radiant crest. Collect it alongside your other editions.")).toBeVisible();
     await expect(page.getByLabel("Supporter key", { exact: true })).toBeHidden();
     await page.getByText("Already supported? Activate your badge", { exact: true }).click();
     await page.getByText("About badges and privacy", { exact: true }).click();
-    await expect(page.getByText("One Complete Fleet key covers every included app", { exact: false })).toBeVisible();
-    await expect(page.getByText("Each app keeps its own emblem and certificate", { exact: false })).toBeVisible();
-    await expect(page.getByText("Living editions include future configured apps while active", { exact: false })).toBeVisible();
-    await expect(page.getByText("Dated Patron editions stay fixed", { exact: false })).toBeVisible();
-    await expect(page.getByRole("link", { name: "Continue to support site" })).toHaveAttribute("rel", "external noreferrer");
+    await expect(page.getByText("One-time, monthly, and yearly support each have their own collectible badge.", { exact: false })).toBeVisible();
+    await expect(page.getByText("Existing recurring certificates stay in your archive until refreshed", { exact: false })).toBeVisible();
+    await expect(page.getByText("Activation sends your key, the Kinosail Player app ID", { exact: false })).toBeVisible();
+    await expect(page.getByRole("link", { name: "Continue to support", exact: true })).toHaveAttribute("rel", "external noreferrer");
     await expect(page.getByRole("heading", { name: "Add or refresh one badge" })).toBeVisible();
     await expect(page.getByLabel("Public certificate name")).toHaveAttribute("maxlength", "80");
-    await expect(page.getByText("3, 6, 12, 24, 36, and 60 months", { exact: false })).toBeVisible();
+    await expect(page.getByText("Kinosail does not store your key or payment details.", { exact: false })).toBeVisible();
     await expect(page.getByRole("link", { name: "Public supporters" })).toHaveAttribute("rel", "external noreferrer");
-    await expect(page.locator('.supporter-badge[data-family="living-standard"]')).toHaveCount(10);
-    await expect(page.locator('.supporter-badge[data-family="patron-order"]')).toHaveCount(10);
+    for (const edition of ["monthly", "yearly", "one-time"]) await expect(page.locator(`.supporter-badge[data-family="${edition}"]`)).toHaveCount(10);
     await expect(page.locator("[data-supporter-family]:not([hidden]) .supporter-price:visible")).toHaveCount(10);
     await expect(page.locator(".supporter-contribute details")).toHaveCount(0);
     for (const badge of ["Commodore", "Admiral", "North Star", "Legacy"]) await expect(page.getByRole("heading", { name: badge, exact: true })).toBeVisible();
@@ -104,22 +104,22 @@ test("Every supporter level shows its artwork and title", async ({ page }, testI
   await page.setViewportSize({ width: 1024, height: 768 });
   await page.goto("/supporter");
   await expect(page.locator(".supporter-contribute details")).toHaveCount(0);
-  for (const family of ["living-standard", "patron-order"] as const) {
-    await page.getByRole("radio", { name: family === "living-standard" ? "Monthly" : "One-time", exact: true }).check();
+  for (const [family, cadence] of [["monthly", "Monthly"], ["yearly", "Yearly"], ["one-time", "One-time"]] as const) {
+    await page.getByRole("radio", { name: cadence, exact: true }).check();
     for (let rank = 1; rank <= 10; rank += 1) {
       const badge = page.locator(`.supporter-badge[data-family="${family}"][data-rank="${rank}"]`).first();
       await expect(badge).toBeVisible();
       await expect(badge.locator(".supporter-badge-art")).toHaveAttribute("src", new RegExp(`/static/supporter/badges/${family}-${rank}\\.svg`));
     }
   }
-  await expect(page.locator(".supporter-badge-art")).toHaveCount(20);
+  await expect(page.locator(".supporter-badge-art")).toHaveCount(30);
   await expect.poll(() => page.locator(".supporter-badge-art").evaluateAll((images) => images.every((image) => (image as HTMLImageElement).naturalWidth > 0))).toBe(true);
-  await expect(page.locator('[data-supporter-family="patron-order"]').getByRole("heading", { name: "Legacy", exact: true })).toBeVisible();
+  await expect(page.locator('[data-supporter-family="one-time"]').getByRole("heading", { name: "Legacy", exact: true })).toBeVisible();
   await page.screenshot({ path: testInfo.outputPath("supporter-badge-families.png"), fullPage: true });
   expect(await page.locator("main").evaluate((element) => element.scrollWidth <= element.clientWidth)).toBe(true);
 });
 
-test("Both supporter families form one recognizable Player masterwork", async ({ browser }, testInfo) => {
+test("Legacy supporter honors and masterwork remain visible beside current editions", async ({ browser }, testInfo) => {
   const fixtureDirectory = process.env.KINOSAIL_UI_FIXTURE_DIR;
   test.skip(!fixtureDirectory, "requires the production supporter fixture");
   const supporterPage = await readFile(join(fixtureDirectory!, "supporter-populated-both.html"), "utf8");
@@ -134,7 +134,11 @@ test("Both supporter families form one recognizable Player masterwork", async ({
     await page.goto("/supporter");
     await expect(page.getByText("Full Sail joins your Patron Order and Living Standard.")).toBeVisible();
     await expect(page.getByText("Lighthouse Ascendant")).toBeVisible();
-    await expect(page.locator('.supporter-gallery li.collected')).toHaveCount(12);
+    await expect(page.locator('.supporter-owned-grid .owned-badge')).toHaveCount(2);
+    await expect(page.locator('.supporter-gallery li.collected')).toHaveCount(5);
+    await expect(page.locator('.supporter-gallery li.current')).toHaveCount(1);
+    await expect(page.locator('.supporter-gallery .supporter-badge[data-family="monthly"]')).toHaveCount(10);
+    await expect(page.locator('.supporter-gallery .supporter-badge[data-family="yearly"]')).toHaveCount(10);
     expect((await new AxeBuilder({ page }).include("main").analyze()).violations).toEqual([]);
     expect(await page.locator("main").evaluate((element) => element.scrollWidth <= element.clientWidth)).toBe(true);
     await page.screenshot({ path: testInfo.outputPath(`${viewport.width}-supporter-both.png`), fullPage: true, animations: "disabled" });
@@ -199,21 +203,23 @@ test("Supporter badge rendering and share conversion remain responsive", async (
 	await context.close();
 });
 
-test("Home explains development funding and respects hidden supporter recognition", async ({ page }) => {
+test("Home keeps support reachable and respects hidden supporter recognition", async ({ page }) => {
   await login(page);
-  await page.route("**/api/v1/supporter", route => route.fulfill({ json: { active: false } }));
-  await page.route("**/api/v1/supporter/display", route => route.fulfill({ json: { display: "automatic" } }));
+  await page.route("**/api/v1/supporter/collection", route => route.fulfill({ json: { badges: [], display: "automatic" } }));
   for (const width of [1440, 1024, 768, 390, 320]) {
     await page.setViewportSize({ width, height: 900 });
     await page.goto("/");
-    const notice = page.getByRole("complementary", { name: "Kinosail supporter status" });
+    const notice = page.locator(".header-supporter:visible");
     await expect(notice).toBeVisible();
-    await expect(notice).toContainText("Help fund development.");
-    await expect(notice.getByRole("link", { name: "Support Kinosail" })).toHaveAttribute("href", "/supporter");
+    await expect(notice).toHaveText("Support Kinosail");
+    await expect(notice).toHaveAttribute("href", "/supporter");
     expect(await notice.evaluate(el => el.scrollWidth <= el.clientWidth)).toBe(true);
     expect(await notice.evaluate(el => el.getBoundingClientRect().height)).toBeLessThanOrEqual(56);
   }
-  await page.route("**/api/v1/supporter/display", route => route.fulfill({ json: { display: "hidden" } }));
+  await page.route("**/api/v1/supporter/collection", route => route.fulfill({ json: { badges: [], display: "hidden" } }));
   await page.reload();
-  await expect(page.locator(".supporter-signature")).toBeHidden();
+  await expect(page.locator(".header-supporter:visible")).toHaveCount(0);
+  await page.route("**/api/v1/supporter/collection", route => route.fulfill({ status: 503 }));
+  await page.reload();
+  await expect(page.locator(".header-supporter:visible")).toHaveText("Support Kinosail");
 });
