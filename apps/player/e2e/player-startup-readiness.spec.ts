@@ -98,4 +98,3 @@ for (const readyState of [1, 3]) test(`Safari startup keeps the required gesture
   await expect(status).toBeHidden();
   await expect(video).toHaveJSProperty("paused", false);
 });
-
