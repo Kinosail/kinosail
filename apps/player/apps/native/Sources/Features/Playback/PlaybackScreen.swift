@@ -77,9 +77,11 @@ struct PlaybackScreen: View {
         #if os(tvOS)
         .onExitCommand { if let onClose { onClose() } else { dismiss() } }
         #endif
-        .sheet(isPresented: $showsTools) { NavigationStack { PlaybackToolsScreen() } }
         #if os(tvOS)
+        .fullScreenCover(isPresented: $showsTools) { NavigationStack { PlaybackToolsScreen() } }
         .sheet(isPresented: $showsSeekPreview) { TVSeekPreviewScreen() }
+        #else
+        .sheet(isPresented: $showsTools) { NavigationStack { PlaybackToolsScreen() } }
         #endif
         .task(id: "\(itemID):\(revision)") {
             failure = nil
