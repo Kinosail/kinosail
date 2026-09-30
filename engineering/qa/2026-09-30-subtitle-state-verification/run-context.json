@@ -15,6 +15,10 @@
   "runtimeEvidence": "Current CSS and inspector JavaScript/CSS match the production Go response. Binary SHA256 is recorded; go run build information has no VCS revision. Local containers remain blocked by shared Podman storage.",
   "artifacts": [
     {
+      "path": "evidence/ci-a42-reconciled-checkpoint.json",
+      "sha256": "9ad1705100868e0371a24532dd8e61cd19b397427705b719b910050f43f5733b"
+    },
+    {
       "path": "evidence/cleanup-light.png",
       "sha256": "3a7fa64fe75d25efc7635c6e98a14105e8be2f9538b970f161754214b7e3c119"
     },
@@ -83,8 +87,32 @@
       "sha256": "db3986b43d536f577731b167adb1bac91d00a45d7391ca9872158e9a2d25d01b"
     },
     {
+      "path": "evidence/player-metadata-cleanup-stress-context.json",
+      "sha256": "4e4f66007d1517878d63fc8164f94d0d7254cc26af537c14d1fbef4a63fdd9d3"
+    },
+    {
+      "path": "evidence/player-metadata-cleanup-stress.log",
+      "sha256": "9f1a8c52b46e242d9df26dfaeb5f472acb672a13a1d1fdbf6a7777cc9c8ab7a4"
+    },
+    {
       "path": "evidence/player-reconciled-build.log",
       "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "evidence/player-seek-reconciled-audio-context.json",
+      "sha256": "ebed3baf856d9591da9a39c0951f33de9c6e90e8fdd97c4c11710c7140266c6f"
+    },
+    {
+      "path": "evidence/player-seek-reconciled-audio.log",
+      "sha256": "727bdba4e9390ad48623df88ce6495f78426615e3c4e1b1dd85c71e16bbead46"
+    },
+    {
+      "path": "evidence/player-seek-reconciled-status-context.json",
+      "sha256": "ad3b1b39b0ba5a3c51a7b3f265875df20496018210f2e2f8a834654e610c7763"
+    },
+    {
+      "path": "evidence/player-seek-reconciled-status.log",
+      "sha256": "4221d8156710fef5e52686015dfaf99b3b22b77cfd861080daf62645a89d223b"
     },
     {
       "path": "evidence/previous-main-complete.json",
@@ -191,6 +219,26 @@
       "sha256": "8e5b6dfb17353f2582335246a49aed4b04e00745568e4afda5e1c79fdadc35f3"
     },
     {
+      "path": "evidence/seek-evidence-secrets.log",
+      "sha256": "8a3fdb35174e0e1789265fad5dc881a738b7e66f841c5f22e8714c0d9b5128fd"
+    },
+    {
+      "path": "evidence/seek-max-loc.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "evidence/seek-reconciled-binary-vcs.json",
+      "sha256": "55c092da2e424cceab69959c064f657b094fc6162e3ff81fdb7ad9ae68f00935"
+    },
+    {
+      "path": "evidence/subtitle-seek-reconciled-review-context.json",
+      "sha256": "711fda6267e744a1c50fd1d6300b1412bd18559623272cba33811206c0e7790b"
+    },
+    {
+      "path": "evidence/subtitle-seek-reconciled-review.log",
+      "sha256": "e272f00870655330393d835827da6a1c8047885298e3183c5b5614d959ef1753"
+    },
+    {
       "path": "evidence/subtitles-reconciled-build.log",
       "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
     }
@@ -209,5 +257,13 @@
     "originalPreserved": true,
     "temporarySidecarAbsent": true,
     "fixtureRerun": "History and status production templates were unchanged; their previous 36 passes were not repeated."
+  },
+  "seekingReconciliation": {
+    "integratedMain": "f28d32c3618b14952e51833925841fb6ac93b64f",
+    "sourceCommit": "dbcff58f2657310e0a87876556467b734bee0f73",
+    "result": "45/45 Player state fixture checks, 3/3 actual audio journeys and 3/3 actual Subtitles review journeys passed across all three engines.",
+    "binaryEvidence": "Both go build binaries embed vcs.revision dbcff58f2657310e0a87876556467b734bee0f73 and vcs.modified=false; hashes and stability are recorded.",
+    "subtitlePreservation": "Original subtitle unchanged; temporary sidecar absent.",
+    "scope": "Shared seeking-status JavaScript changed in main. Unchanged responsive and history/status fixture batches were not repeated."
   }
 }

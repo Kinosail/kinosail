@@ -1,0 +1,46 @@
+{
+  "revision": "dbcff58f2657310e0a87876556467b734bee0f73",
+  "integratedMain": "f28d32c3618b14952e51833925841fb6ac93b64f",
+  "command": [
+    "pnpm",
+    "exec",
+    "playwright",
+    "test",
+    "subtitle-dashboard.spec.ts",
+    "--grep",
+    "review starts with sync and cleanup"
+  ],
+  "buildCommand": "go build -o .kinosail-test/seek-reconciled-server ./cmd/kinosail",
+  "binarySHA256": "1ab08c9e1a1834b766a24a6aebdc8eb0f2841c6c79cc41fc61732aa3d68880ce",
+  "testData": "Generated movie and original VTT; real inspector pending, loaded, failed, preview and empty states; temporary sidecar removed.",
+  "sourceSHA256": [
+    {
+      "path": "apps/subtitles/e2e/subtitle-dashboard.spec.ts",
+      "sha256": "dee4a0a6c142d1c6d8e09234489f959d9b607db4005758f486d455b6d8dc46c1"
+    },
+    {
+      "path": "packages/webassets/static/player-status.js",
+      "sha256": "43572c323cc2d2eedfe498037f38699e9993dab9a66484cb0a6aaed2b3369114"
+    },
+    {
+      "path": "apps/subtitles/e2e/subtitle-defaults-tests.ts",
+      "sha256": "a7479fce1b5c779c3e7262ebee288bf6c892ca0a975ea2aeabf1c03365f88f61"
+    }
+  ],
+  "subtitleOriginalSHA256": "18533adef5122ff60ec61b9be9f7ff86db3e0d1f4b317926b5fac7823e076241",
+  "environment": {
+    "platform": "Darwin",
+    "arch": "arm64",
+    "url": "https://127.0.0.1:39228",
+    "matrix": "chromium,firefox,webkit",
+    "workers": 1,
+    "video": "off"
+  },
+  "startedAt": "2026-09-30T22:09:41.484778+00:00",
+  "exitCode": 0,
+  "finishedAt": "2026-09-30T22:11:06.617792+00:00",
+  "sourceStable": true,
+  "binaryStable": true,
+  "originalPreserved": true,
+  "temporarySidecarAbsent": true
+}

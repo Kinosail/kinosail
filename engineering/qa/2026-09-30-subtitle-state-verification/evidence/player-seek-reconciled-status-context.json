@@ -1,0 +1,46 @@
+{
+  "revision": "dbcff58f2657310e0a87876556467b734bee0f73",
+  "integratedMain": "f28d32c3618b14952e51833925841fb6ac93b64f",
+  "command": [
+    "pnpm",
+    "exec",
+    "playwright",
+    "test",
+    "player-experience-status.spec.ts"
+  ],
+  "sourceSHA256": [
+    {
+      "path": "apps/player/e2e/player-experience-status.spec.ts",
+      "sha256": "5b5101e52de4e35ea4f35be4f10a8728a2df842609294d2f14a0d0f0cb56f306"
+    },
+    {
+      "path": "apps/player/e2e/player-experience-fixture.ts",
+      "sha256": "e5004768ebd54d1128ea4c1d98dc9c96ed62dcaa6f97294e7b30a096772b4865"
+    },
+    {
+      "path": "packages/webassets/static/player-status.js",
+      "sha256": "43572c323cc2d2eedfe498037f38699e9993dab9a66484cb0a6aaed2b3369114"
+    },
+    {
+      "path": "packages/webassets/static/player-app.css",
+      "sha256": "788faa89b30f86f758b9e5a0d090ee9a846fb737e18086e10207d47203bfbeff"
+    },
+    {
+      "path": "packages/webassets/static/player-stage.css",
+      "sha256": "0b760c37fb20a90d2dc7acdf9b0a04f8143ef3b5af3fcc4a21f53c523151c499"
+    }
+  ],
+  "testData": "Existing Player experience event fixture, production player-status JavaScript and CSS; pending/resumed seeking, missing/late completion events, autoplay and buffering states. Synthetic media events, not physical-device playback.",
+  "environment": {
+    "platform": "Darwin",
+    "arch": "arm64",
+    "url": "https://127.0.0.1:39227",
+    "matrix": "chromium,firefox,webkit",
+    "workers": 1,
+    "video": "off"
+  },
+  "startedAt": "2026-09-30T22:06:52.590729+00:00",
+  "exitCode": 0,
+  "finishedAt": "2026-09-30T22:08:22.529866+00:00",
+  "sourceStable": true
+}
