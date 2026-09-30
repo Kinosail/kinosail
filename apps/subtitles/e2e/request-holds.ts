@@ -35,21 +35,14 @@ export async function holdNextMainRequest(page: Page, parameter: string, value: 
 	const marker = "mainRequestHeld";
 	const releaseEvent = "kinosail-release-main-request";
 	await page.evaluate(({ marker, parameter, releaseEvent, value }) => {
-		const open = XMLHttpRequest.prototype.open;
-		const send = XMLHttpRequest.prototype.send;
-		const urls = new WeakMap<XMLHttpRequest, string>();
-		XMLHttpRequest.prototype.open = function (...args) {
-			urls.set(this, String(args[1]));
-			return Reflect.apply(open, this, args);
-		};
-		XMLHttpRequest.prototype.send = function (...args) {
-			if (new URL(urls.get(this) ?? "", location.href).searchParams.get(parameter) === value && !document.documentElement.dataset[marker]) {
+		const fetch = window.fetch;
+		window.fetch = async (input, init) => {
+			const url = new URL(input instanceof Request ? input.url : String(input), location.href);
+			if (url.searchParams.get(parameter) === value && !document.documentElement.dataset[marker]) {
 				document.documentElement.dataset[marker] = "true";
-				const request = this;
-				window.addEventListener(releaseEvent, () => Reflect.apply(send, request, args), { once: true });
-				return;
+				await new Promise<void>((resolve) => window.addEventListener(releaseEvent, () => resolve(), { once: true }));
 			}
-			return Reflect.apply(send, this, args);
+			return fetch(input, init);
 		};
 	}, { marker, parameter, releaseEvent, value });
 	return hold(page, marker, releaseEvent);

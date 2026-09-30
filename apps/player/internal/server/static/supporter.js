@@ -102,6 +102,6 @@ function bindSupporterShare() {
 
 bindSupporterRecognition();
 bindSupporterShare();
-document.addEventListener("htmx:afterSwap", bindSupporterRecognition);
+document.addEventListener("htmx:after:swap", bindSupporterRecognition);
 
 window.addEventListener("pageshow", (event) => { if (event.persisted) bindSupporterRecognition(); });

@@ -37,7 +37,7 @@ test("preferred-language subtitle choices hide other tracks without changing fil
 test("unavailable Web Locks do not initialize offline storage on the downloads page", async ({ page }) => {
   await page.addInitScript(() => {
     Object.defineProperty(navigator, "locks", { configurable: true, value: undefined });
-    const worker = { scriptURL: new URL("/service-worker.js?v=54", location.href).href, state: "activated" };
+    const worker = { scriptURL: new URL("/service-worker.js?v=55", location.href).href, state: "activated" };
     Object.defineProperties(navigator.serviceWorker, {
       controller: { configurable: true, get: () => worker },
       getRegistration: { configurable: true, value: async () => ({ active: worker }) },

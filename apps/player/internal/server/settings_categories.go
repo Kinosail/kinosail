@@ -72,7 +72,7 @@ func categorizeSettingsPage(page string) string {
 		return page
 	}
 	page = page[:start] + nav.String() + page[start+end+len(`</nav>`):]
-	page = strings.Replace(page, `/static/main.kinosail.bundle.js?v=12`, `/static/main.kinosail.bundle.js?v=settings-3`, 1)
+	page = strings.Replace(page, `/static/main.kinosail.bundle.js?v=12-htmx4`, `/static/main.kinosail.bundle.js?v=settings-3-htmx4`, 1)
 	page = strings.Replace(page, "Everyday preferences in General. Server tools and configuration in Advanced.", "Make Kinosail feel right for your household.", 1)
 	return strings.Replace(page, `<div class="settings-flow" data-settings-flow>`, `<div class="settings-flow" data-settings-flow><p class="settings-category-description" data-settings-description hidden></p>`, 1)
 }
