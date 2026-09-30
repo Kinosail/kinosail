@@ -15,15 +15,7 @@ const metadataSearchScratchSize = 512
 // Normalize fields into local storage; field separators are normalization boundaries.
 func matchesMetadata(item library.Item, query string) bool {
 	fields := []string{item.Title, item.Show, item.Year, item.Plot, item.Genres, item.Director, item.Studio, item.Artist, item.Album}
-	size := len(fields)
-	for _, value := range fields {
-		size += len(value)
-	}
-	for _, people := range [][]library.Person{item.Cast, item.ShowCast} {
-		for _, person := range people {
-			size += len(person.Name) + len(person.Role) + 2
-		}
-	}
+	size := metadataSearchSize(fields, item.Cast, item.ShowCast)
 	var storage [metadataSearchScratchSize]byte
 	text := storage[:0]
 	if size > len(storage) {
@@ -49,6 +41,19 @@ func matchesMetadata(item library.Item, query string) bool {
 		}
 	}
 	return bytes.Contains(text, []byte(query))
+}
+
+func metadataSearchSize(fields []string, cast, showCast []library.Person) int {
+	size := len(fields)
+	for _, value := range fields {
+		size += len(value)
+	}
+	for _, people := range [][]library.Person{cast, showCast} {
+		for _, person := range people {
+			size += len(person.Name) + len(person.Role) + 2
+		}
+	}
+	return size
 }
 
 // Lowercase ASCII letters, digits, and spaces survive field normalization unchanged.

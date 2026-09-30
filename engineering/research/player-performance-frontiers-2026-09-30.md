@@ -64,11 +64,11 @@ Index loading, mutex acquisition, grouping, copies, and comparison sorting alrea
 
 Rich records now check short ASCII titles before allocating storage for other metadata. A bounded field-prefix check also admits literal matches that normalization preserves. Every other case keeps the complete matching path, including phrases spanning fields and credits.
 
-For 10,000 movies with long accented plots, broad title search changes from 179.982 to 42.638 ms. A common plot phrase changes from 176.721 to 44.036 ms. Both reduce allocated bytes by about 99%. The real HTTP adapter returns the same totals and response sizes.
+For 10,000 movies with long accented plots, broad title search changes from 181.102 to 43.247 ms. A common plot phrase changes from 181.118 to 44.728 ms. Both reduce allocated bytes by about 99%. The real HTTP adapter returns the same totals and response sizes.
 
 A first prototype grew temporary title storage on misses. Long ASCII titles added about 2.3 MB per 1,000-item search. Unicode expansion added about 6.9 MB. The selected guard retains baseline allocation levels for both controls.
 
-The exact-title median changes from 136.200 to 139.705 ms; the original-source reverse control takes 137.091 ms. The shortcut adds bounded checks and shows no benefit on this path. Absent searches remain similar. Ordinary 10,000/100,000-title requests retain similar allocation levels and response sizes. These server measurements do not establish native frame timing.
+The exact-title median changes from 138.950 to 138.941 ms; the original-source reverse control takes 137.964 ms. The shortcut adds bounded checks and shows no benefit on this path. Absent searches remain similar. Ordinary 10,000/100,000-title requests retain similar allocation levels and response sizes. These server measurements do not establish native frame timing.
 
 The public regression covers 32 rich-metadata cases. An unsafe control fails compatibility-character matching. The [measurement record](evidence/player-performance-frontiers-2026-09-30.md#confirmed-rich-metadata-matches) preserves final samples, an original-source reverse control, rejected allocation growth, and source bindings. Exact searches and misses remain useful targets for further profiling.
 

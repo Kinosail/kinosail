@@ -8,29 +8,29 @@ The fixture uses 10,000 synthetic movies. Each plot repeats `A quiet journey. ` 
 
 | Rich query | Baseline median, ms | Selected median, ms | Original-source reverse, ms | Allocated bytes before → selected |
 | --- | --- | --- | --- | --- |
-| Movie, 10,000 matches | 179.982 | 42.638 | 180.216 | 125,558,830 → 1,534,785 |
-| Movie 9999, one match | 136.200 | 139.705 | 137.091 | 124,022,034 → 124,010,448 |
-| quiet journey, 10,000 matches | 176.721 | 44.036 | 178.136 | 125,749,902 → 1,493,144 |
-| Absent owl, zero matches | 152.956 | 151.929 | 151.007 | 124,014,880 → 124,014,794 |
+| Movie, 10,000 matches | 181.102 | 43.247 | 178.278 | 125,750,333 → 1,448,070 |
+| Movie 9999, one match | 138.950 | 138.941 | 137.964 | 124,022,800 → 124,010,109 |
+| quiet journey, 10,000 matches | 181.118 | 44.728 | 179.141 | 125,555,280 → 1,582,725 |
+| Absent owl, zero matches | 151.991 | 153.099 | 151.087 | 124,014,782 → 124,014,893 |
 
-Broad title and literal plot matches return about 75–76% sooner and allocate about 99% fewer bytes. Their totals and response sizes remain unchanged. The exact-title median is 2.6% above the first baseline and 1.9% above the reverse control; sample ranges overlap. The shortcut adds bounded work on misses. These sequential shared-host samples do not establish zero overhead, a confidence interval, or an exact-search improvement.
+Broad title and literal plot matches return about 75–76% sooner and allocate about 99% fewer bytes. Their totals and response sizes remain unchanged. The exact-title median changes by -0.0% against the first baseline and +0.7% against the reverse control; sample ranges overlap. The shortcut adds bounded work on misses. These sequential shared-host samples do not establish zero overhead, a confidence interval, or an exact-search improvement.
 
 A rejected prototype normalized every title into scratch storage before allocating the full fallback. Long ASCII titles increased allocation from about 13.56 to 15.87 MB per 1,000-item search. A 450-byte compatibility title that expands during NFKD increased allocation from about 59.42 to 66.33 MB. The selected guard checks only ASCII titles shorter than the 512-byte scratch capacity, including room for a separator. Other titles remain in the complete fallback.
 
 | Additional workload | Baseline → selected median, ms | Allocated bytes before → selected | Response bytes |
 | --- | --- | --- | --- |
-| long-ascii | 17.484 → 17.494 | 13,562,900 → 13,562,859 | 125 |
-| unicode-expansion | 160.818 → 158.399 | 59,420,096 → 59,420,197 | 125 |
-| 10000/browse | 5.021 → 5.007 | 1,767,329 → 1,767,329 | 19,286 |
-| 10000/search | 2.161 → 2.140 | 494,823 → 494,820 | 316 |
-| 100000/browse | 57.973 → 58.564 | 15,459,589 → 15,459,590 | 19,668 |
-| 100000/search | 21.552 → 21.051 | 4,820,289 → 4,820,288 | 321 |
+| long-ascii | 17.472 → 17.501 | 13,562,874 → 13,562,903 | 125 |
+| unicode-expansion | 159.687 → 160.325 | 59,420,297 → 59,420,098 | 125 |
+| 10000/browse | 4.978 → 4.956 | 1,767,662 → 1,767,426 | 19,286 |
+| 10000/search | 2.192 → 2.136 | 494,825 → 494,821 | 316 |
+| 100000/browse | 57.529 → 58.140 | 15,458,966 → 15,461,043 | 19,668 |
+| 100000/search | 21.548 → 21.293 | 4,820,316 → 4,820,316 | 321 |
 
 The long-title control uses 1,000 movies with the same accented plot and an absent query. Titles repeat either `Long title. ` 100 times or `ﷺ` 150 times. Ordinary requests use the existing 10,000/100,000-title fixture. Allocation levels remain similar. This is allocation traffic per request, not retained cache memory.
 
-Before production changes, the 32-case public HTTP regression passed. Removing the literal-query byte guard then failed the two raw F/A versus ℉/𝐀 cases. The final regression preserves compatibility characters, phrases spanning fields and credits, late and cross-prefix matches, malformed field bytes, empty titles, and title expansion. Independent review found no production correctness issue. Review moved one UTF-8 fixture boundary by one byte after timing; its focused regression passed. Production and all benchmark fixtures retain the recorded hashes.
+Before production changes, the 32-case public HTTP regression passed. Removing the literal-query byte guard then failed the two raw F/A versus ℉/𝐀 cases. The final regression preserves compatibility characters, phrases spanning fields and credits, late and cross-prefix matches, malformed field bytes, empty titles, and title expansion. Independent review found no production correctness issue. Review corrected a UTF-8 fixture boundary before the final timing and validation. Production and all benchmark fixtures retain the recorded hashes.
 
-The full shared, Player, and Subtitles Go suites and catalog race check passed on the measured production source. A test-only assertion helper extraction resolved the new function-length lint issue and passed focused validation. Changed-code lint against the baseline passed in all three modules. Source caps, repository tooling, and regenerated Code Atlas snapshots passed. Post-commit app checks and hosted delivery are recorded separately below when complete. No new native, browser, Nox, or production-network performance claim is made.
+The full shared, Player, and Subtitles Go suites and catalog race check passed on the measured production source. A test-only assertion helper extraction resolved the new function-length lint issue and passed focused validation. Changed-code lint against the baseline passed in all three modules. Source caps, repository tooling, and regenerated Code Atlas snapshots passed. A full shared lint check caught a new complexity warning that diff-based lint missed. Extracting the unchanged size calculation resolved it; the compiler confirms inlining. Full shared lint returns to 112 existing findings. Post-commit app checks and hosted delivery are recorded separately below when complete. No new native, browser, Nox, or production-network performance claim is made.
 
 Both comparison binaries include identical benchmark sources. Compilation restores only the production file from the baseline and restores the candidate in a finally block. Final runs use `-test.run=^$ -test.bench=<expression> -test.benchmem -test.count=<count> -test.benchtime=1s`. Rich and large-title runs use three samples; ordinary navigation uses five. The reverse control reuses the original baseline binary. No task-owned builds, lint, or tests overlap a timed run. Other host activity is uncontrolled. Private scripts, binaries, raw logs, and validation records remain in `.verification/title-first-profile`.
 
@@ -50,12 +50,12 @@ Raw sample rows below use `[ns/op, B/op, allocs/op, response-bytes]`. Benchmark 
     {
       "name": "final-baseline",
       "production_sha256": "e92e2e727b8675358ae7c88b8198a01098538f2d702f5b15bef6069e4d03da6a",
-      "binary_sha256": "f14a75f03108c969b8655acd79e7df017fac23d54cbb763b655750d8329ab64c"
+      "binary_sha256": "5451cf57bfeebf6bdb9f981a4e1069ebea0ad5044de97005337aff62a9765690"
     },
     {
       "name": "final-candidate",
-      "production_sha256": "7eaf283ee6df9b241e621a0dc3999ead45c4140535e19bc8e97712de008c7b4a",
-      "binary_sha256": "06c40b6d99b85814e970f9e3388f1f2dfac270bb7fd177b506b5bf5ff260536f"
+      "production_sha256": "8553d891b6ce7791b7bea1ff6adf522a9c0af4160d513e391f4f488e785e3386",
+      "binary_sha256": "c27debf8b21cfe910d889499760b159587725ca2532eec9fdacfdd91bcbb08a7"
     }
   ],
   "benchmark_sources": [
@@ -82,7 +82,7 @@ Raw sample rows below use `[ns/op, B/op, allocs/op, response-bytes]`. Benchmark 
   ],
   "regression_source_at_compile": {
     "file": "apps/player/internal/server/catalog_rich_search_test.go",
-    "sha256": "7e5fb44ee22a8d63f051101cabddbc51664dde04caf4742dcaa37e0246181c97"
+    "sha256": "b3758c06c58a267b15221c7e775c5cb9e0e42a149ba8343a954909cf2dabef90"
   },
   "final_regression_source": {
     "file": "apps/player/internal/server/catalog_rich_search_test.go",
@@ -99,8 +99,8 @@ Raw sample rows below use `[ns/op, B/op, allocs/op, response-bytes]`. Benchmark 
         "-test.count=3",
         "-test.benchtime=1s"
       ],
-      "started": "2026-09-30T13:25:51.689815+00:00",
-      "seconds": 18.187,
+      "started": "2026-09-30T13:56:20.584826+00:00",
+      "seconds": 18.297,
       "exit": 0
     },
     {
@@ -113,8 +113,8 @@ Raw sample rows below use `[ns/op, B/op, allocs/op, response-bytes]`. Benchmark 
         "-test.count=3",
         "-test.benchtime=1s"
       ],
-      "started": "2026-09-30T13:26:09.877133+00:00",
-      "seconds": 11.178,
+      "started": "2026-09-30T13:56:38.882670+00:00",
+      "seconds": 11.148,
       "exit": 0
     },
     {
@@ -127,8 +127,8 @@ Raw sample rows below use `[ns/op, B/op, allocs/op, response-bytes]`. Benchmark 
         "-test.count=5",
         "-test.benchtime=1s"
       ],
-      "started": "2026-09-30T13:26:21.055422+00:00",
-      "seconds": 28.383,
+      "started": "2026-09-30T13:56:50.031207+00:00",
+      "seconds": 28.397,
       "exit": 0
     },
     {
@@ -141,8 +141,8 @@ Raw sample rows below use `[ns/op, B/op, allocs/op, response-bytes]`. Benchmark 
         "-test.count=3",
         "-test.benchtime=1s"
       ],
-      "started": "2026-09-30T13:26:49.438945+00:00",
-      "seconds": 18.696,
+      "started": "2026-09-30T13:57:18.428312+00:00",
+      "seconds": 18.62,
       "exit": 0
     },
     {
@@ -155,8 +155,8 @@ Raw sample rows below use `[ns/op, B/op, allocs/op, response-bytes]`. Benchmark 
         "-test.count=3",
         "-test.benchtime=1s"
       ],
-      "started": "2026-09-30T13:27:08.135927+00:00",
-      "seconds": 11.15,
+      "started": "2026-09-30T13:57:37.048523+00:00",
+      "seconds": 11.216,
       "exit": 0
     },
     {
@@ -169,8 +169,8 @@ Raw sample rows below use `[ns/op, B/op, allocs/op, response-bytes]`. Benchmark 
         "-test.count=5",
         "-test.benchtime=1s"
       ],
-      "started": "2026-09-30T13:27:19.286354+00:00",
-      "seconds": 28.601,
+      "started": "2026-09-30T13:57:48.265356+00:00",
+      "seconds": 28.409,
       "exit": 0
     },
     {
@@ -183,8 +183,8 @@ Raw sample rows below use `[ns/op, B/op, allocs/op, response-bytes]`. Benchmark 
         "-test.count=3",
         "-test.benchtime=1s"
       ],
-      "started": "2026-09-30T13:31:06.808509+00:00",
-      "seconds": 17.411,
+      "started": "2026-09-30T13:59:04.504311+00:00",
+      "seconds": 17.48,
       "exit": 0
     }
   ],
@@ -217,6 +217,15 @@ Raw sample rows below use `[ns/op, B/op, allocs/op, response-bytes]`. Benchmark 
         "binary_sha256": "d1039ebd4b5dacb31c93aa6f4c42f707fca6430a46d219e16bce9f1baf267bc8"
       }
     ]
+  },
+  "size_extraction_validation": {
+    "full_shared_lint_exit": 1,
+    "existing_findings": 112,
+    "modified_production_findings": 0,
+    "compiler": [
+      "catalog/search_metadata.go:46:6: can inline metadataSearchSize with cost 44 as: func([]string, []library.Person, []library.Person) int { size := len(fields); for loop; for loop; return size }",
+      "catalog/search_metadata.go:18:28: inlining call to metadataSearchSize"
+    ]
   }
 }
 ```
@@ -224,46 +233,40 @@ Raw sample rows below use `[ns/op, B/op, allocs/op, response-bytes]`. Benchmark 
 ```json
 {
   "final-baseline-rich.log": {
-    "RichSearch/title-all": [[179982208, 125558830, 70573, 224755], [177389875, 125554741, 70524, 224755], [180720028, 125750330, 70529, 224755]],
-    "RichSearch/title-exact": [[136199521, 124022034, 60090, 2371], [135997708, 124021256, 60088, 2371], [139307641, 124024340, 60094, 2371]],
-    "RichSearch/metadata-all": [[179020854, 125749902, 70531, 224763], [176480306, 125749902, 70531, 224763], [176721222, 126140618, 70540, 224763]],
-    "RichSearch/absent": [[151363845, 124014979, 60081, 125], [152955625, 124014875, 60080, 125], [153653583, 124014880, 60080, 125]]
+    "RichSearch/title-all": [[182110868, 125753896, 70577, 224755], [175543340, 125554738, 70524, 224755], [181102285, 125750333, 70529, 224755]],
+    "RichSearch/title-exact": [[137815833, 124022800, 60091, 2371], [138949807, 124022800, 60091, 2371], [142225375, 124022798, 60091, 2371]],
+    "RichSearch/metadata-all": [[182711570, 125554786, 70526, 224763], [176377188, 125555280, 70527, 224763], [181117535, 125749908, 70531, 224763]],
+    "RichSearch/absent": [[149289345, 124014776, 60079, 125], [151991405, 124014782, 60079, 125], [154557399, 124014789, 60079, 125]]
   },
   "final-baseline-overflow.log": {
-    "LargeTitles/long-ascii": [[17589023, 13562891, 6074, 125], [17158667, 13562900, 6074, 125], [17484308, 13562930, 6074, 125]],
-    "LargeTitles/unicode-expansion": [[161586000, 59420100, 19077, 125], [158470649, 59420096, 19077, 125], [160817571, 59420096, 19077, 125]]
+    "LargeTitles/long-ascii": [[17738112, 13562866, 6074, 125], [17471808, 13562915, 6074, 125], [17301085, 13562874, 6074, 125]],
+    "LargeTitles/unicode-expansion": [[157996762, 59420297, 19079, 125], [159834685, 59420098, 19077, 125], [159687089, 59420398, 19080, 125]]
   },
   "final-baseline-ordinary.log": {
-    "Navigation/10000/browse": [[5000524, 1767076, 485, 19286], [5020842, 1767323, 484, 19286], [5063994, 1767640, 484, 19286], [5025242, 1767330, 484, 19286], [5003662, 1767329, 484, 19286]],
-    "Navigation/10000/search": [[2144082, 494823, 81, 316], [2188859, 494825, 81, 316], [2206437, 494815, 81, 316], [2159900, 494821, 81, 316], [2161463, 494823, 81, 316]],
-    "Navigation/100000/browse": [[57973308, 15451061, 485, 19668], [58146550, 15459589, 488, 19668], [57822090, 15459589, 488, 19668], [58904450, 15463853, 489, 19668], [57891754, 15463853, 489, 19668]],
-    "Navigation/100000/search": [[21558076, 4820316, 81, 321], [21546950, 4820288, 81, 321], [21224346, 4820342, 81, 321], [21551967, 4820260, 81, 321], [21767633, 4820289, 81, 321]]
+    "Navigation/10000/browse": [[4980749, 1768119, 485, 19286], [4957408, 1766624, 484, 19286], [4977534, 1767662, 484, 19286], [4955669, 1767654, 484, 19286], [4977850, 1767986, 484, 19286]],
+    "Navigation/10000/search": [[2200781, 494827, 81, 316], [2184034, 494821, 81, 316], [2222815, 494821, 81, 316], [2179434, 494826, 81, 316], [2192435, 494825, 81, 316]],
+    "Navigation/100000/browse": [[57960204, 15455325, 486, 19668], [57137781, 15455326, 486, 19668], [57528767, 15459588, 488, 19668], [57389341, 15458966, 487, 19668], [57913892, 15459591, 488, 19668]],
+    "Navigation/100000/search": [[21792406, 4820318, 81, 321], [21548217, 4820316, 81, 321], [21569783, 4820287, 81, 321], [21487795, 4820263, 81, 321], [21545152, 4820345, 81, 321]]
   },
   "final-candidate-rich.log": {
-    "RichSearch/title-all": [[43282457, 1535577, 10521, 224755], [42322994, 1534785, 10511, 224755], [42638373, 1534785, 10511, 224755]],
-    "RichSearch/title-exact": [[137878714, 124009676, 60083, 2371], [139705099, 124010448, 60085, 2371], [139829474, 124012006, 60089, 2371]],
-    "RichSearch/metadata-all": [[44035704, 1583200, 10514, 224763], [43647620, 1491473, 10512, 224763], [44158506, 1493144, 10512, 224763]],
-    "RichSearch/absent": [[153271631, 124014676, 60078, 125], [150673738, 124014875, 60080, 125], [151929470, 124014794, 60079, 125]]
+    "RichSearch/title-all": [[43372064, 1583962, 10523, 224755], [43081248, 1448066, 10509, 224755], [43246699, 1448070, 10509, 224755]],
+    "RichSearch/title-exact": [[138940823, 124010447, 60085, 2371], [137430234, 124008906, 60082, 2371], [141065136, 124010109, 60085, 2371]],
+    "RichSearch/metadata-all": [[43605117, 1582725, 10513, 224763], [44749256, 1448117, 10511, 224763], [44728351, 1583200, 10514, 224763]],
+    "RichSearch/absent": [[153098851, 124015198, 60079, 125], [153177655, 124014893, 60080, 125], [152350935, 124014676, 60078, 125]]
   },
   "final-candidate-overflow.log": {
-    "LargeTitles/long-ascii": [[17406292, 13562859, 6074, 125], [17502472, 13562906, 6074, 125], [17493915, 13562843, 6073, 125]],
-    "LargeTitles/unicode-expansion": [[156369190, 59420197, 19078, 125], [159334250, 59420102, 19077, 125], [158399208, 59420213, 19078, 125]]
+    "LargeTitles/long-ascii": [[17501197, 13562879, 6074, 125], [17694663, 13562903, 6074, 125], [17393896, 13562914, 6074, 125]],
+    "LargeTitles/unicode-expansion": [[162836286, 59420098, 19077, 125], [159556589, 59420096, 19077, 125], [160324845, 59420229, 19079, 125]]
   },
   "final-candidate-ordinary.log": {
-    "Navigation/10000/browse": [[5036211, 1767078, 485, 19286], [5020709, 1767987, 484, 19286], [4949535, 1767288, 484, 19286], [4977322, 1767329, 484, 19286], [5007215, 1768313, 484, 19286]],
-    "Navigation/10000/search": [[2139720, 494818, 81, 316], [2150051, 494820, 81, 316], [2164262, 494826, 81, 316], [2118279, 494815, 81, 316], [2129975, 494820, 81, 316]],
-    "Navigation/100000/browse": [[58563704, 15468116, 490, 19668], [57833608, 15459590, 488, 19668], [58861058, 15451063, 485, 19668], [57971892, 15463853, 489, 19668], [58780954, 15459589, 488, 19668]],
-    "Navigation/100000/search": [[21046477, 4820288, 81, 321], [21126260, 4820362, 81, 321], [21218933, 4820287, 81, 321], [21051469, 4820314, 81, 321], [20837534, 4820258, 81, 321]]
+    "Navigation/10000/browse": [[5118179, 1767426, 485, 19286], [4877972, 1767270, 484, 19286], [4955807, 1766606, 484, 19286], [4947948, 1767618, 484, 19286], [4984436, 1768031, 484, 19286]],
+    "Navigation/10000/search": [[2135769, 494821, 81, 316], [2127969, 494826, 81, 316], [2137008, 494821, 81, 316], [2144644, 494820, 81, 316], [2122264, 494826, 81, 316]],
+    "Navigation/100000/browse": [[59014512, 15459589, 488, 19668], [57953325, 15459590, 488, 19668], [58140206, 15463854, 489, 19668], [57688731, 15472381, 491, 19668], [58272940, 15461043, 488, 19668]],
+    "Navigation/100000/search": [[21327847, 4820316, 81, 321], [20921417, 4820312, 81, 321], [21292838, 4820340, 81, 321], [20775346, 4820340, 81, 321], [21295958, 4820288, 81, 321]]
   },
   "overflow-prefix-overflow.log": {
     "BenchmarkTitleOverflowDiagnostic/long-ascii": [[18415787, 15866920, 8074, 125], [17592535, 15866889, 8074, 125], [17596693, 15866955, 8074, 125]],
     "BenchmarkTitleOverflowDiagnostic/unicode-expansion": [[158276101, 66332114, 23078, 125], [175733881, 66332297, 23079, 125], [157678411, 66332297, 23079, 125]]
-  },
-  "final-reverse-rich.log": {
-    "RichSearch/title-all": [[181105250, 125558777, 70573, 224755], [174511694, 125945453, 70534, 224755], [180215854, 125750333, 70529, 224755]],
-    "RichSearch/title-exact": [[137091490, 124022800, 60091, 2371], [137088094, 124020485, 60086, 2371], [140060417, 124024340, 60094, 2371]],
-    "RichSearch/metadata-all": [[179434993, 125749924, 70531, 224763], [178136125, 125749908, 70531, 224763], [176662368, 125555262, 70527, 224763]],
-    "RichSearch/absent": [[151006559, 124014674, 60078, 125], [150745202, 124014676, 60078, 125], [151605369, 124014778, 60079, 125]]
   },
   "overflow-baseline-overflow.log": {
     "BenchmarkTitleOverflowDiagnostic/long-ascii": [[17574746, 13562844, 6074, 125], [17210918, 13562831, 6073, 125], [17161568, 13562869, 6073, 125]],
@@ -272,6 +275,12 @@ Raw sample rows below use `[ns/op, B/op, allocs/op, response-bytes]`. Benchmark 
   "guarded-overflow.log": {
     "BenchmarkTitleOverflowDiagnostic/long-ascii": [[17361969, 13562869, 6074, 125], [17341678, 13562926, 6074, 125], [17382751, 13562842, 6073, 125]],
     "BenchmarkTitleOverflowDiagnostic/unicode-expansion": [[158200530, 59420098, 19077, 125], [158712434, 59420299, 19079, 125], [158287441, 59420197, 19078, 125]]
+  },
+  "final-reverse-rich.log": {
+    "RichSearch/title-all": [[180915333, 125558724, 70572, 224755], [178278208, 125554760, 70524, 224755], [177968674, 125750330, 70529, 224755]],
+    "RichSearch/title-exact": [[137963797, 124022459, 60091, 2371], [136487859, 124022798, 60091, 2371], [139143016, 124022798, 60091, 2371]],
+    "RichSearch/metadata-all": [[181106174, 126140616, 70540, 224763], [179141347, 125359670, 70522, 224763], [178079035, 125359668, 70522, 224763]],
+    "RichSearch/absent": [[151086714, 124014778, 60079, 125], [150920381, 124014776, 60079, 125], [151697446, 124014773, 60079, 125]]
   }
 }
 ```
