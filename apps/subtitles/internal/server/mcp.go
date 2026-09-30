@@ -39,7 +39,7 @@ func registerMCPWithConnections(mux *http.ServeMux, config MCPConfig, authentica
 		builtIn = connections.Connections
 	}
 	return mcpgateway.RegisterApplication(mux, mcpgateway.GatewayConfig{
-		OAuth: config, Principals: mcpPrincipals(authentication.profiles), API: mcpAPI(mux, api, authentication), Routes: mcpRoutePolicy{},
+		OAuth: config, Principals: mcpPrincipals(authentication.profiles), API: mcpAPI(mux, api, authentication), Routes: mcpRoutePolicy{}, SubtitleEvents: true,
 	}, builtIn)
 }
 

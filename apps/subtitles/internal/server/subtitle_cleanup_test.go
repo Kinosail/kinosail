@@ -30,6 +30,10 @@ func TestSubtitleCleanupPreviewsAndHidesOnlySelectedSidecars(t *testing.T) { //n
 	}
 	index := sidecarTestIndex(item)
 	settings := &settingsStore{file: "settings.json", value: installationSettings{SubtitleLanguage: "en", SubtitleLanguages: []string{"en", "es"}}, persist: func(string, any) error { return nil }}
+	notices := 0
+	ledger := newSubtitleLedger("")
+	ledger.setPublisher(func() { notices++ })
+	settings.subtitleProvider = &subtitleProvider{ledger: ledger}
 	plan, err := planSubtitleCleanup(index, []string{"en"}, "keep")
 	if err != nil {
 		t.Fatal(err)
@@ -43,6 +47,9 @@ func TestSubtitleCleanupPreviewsAndHidesOnlySelectedSidecars(t *testing.T) { //n
 	if !slices.Equal(settings.subtitleLanguages(), []string{"en", "es"}) {
 		t.Fatal("stale preview changed preferences")
 	}
+	if notices != 0 {
+		t.Fatal("rejected cleanup emitted a subtitle event")
+	}
 	for _, name := range files {
 		if _, err := os.Stat(filepath.Join(dir, name)); err != nil {
 			t.Fatalf("stale preview removed %s: %v", name, err)
@@ -51,6 +58,9 @@ func TestSubtitleCleanupPreviewsAndHidesOnlySelectedSidecars(t *testing.T) { //n
 	removed, err := applySubtitleCleanup(index, settings, []string{"en"}, "keep", plan.Digest)
 	if err != nil || removed != 2 {
 		t.Fatalf("apply: removed=%d err=%v", removed, err)
+	}
+	if notices != 1 {
+		t.Fatalf("successful Hide emitted %d subtitle events", notices)
 	}
 	if !slices.Equal(settings.subtitleLanguages(), []string{"en"}) {
 		t.Fatalf("preferences after cleanup: %q", settings.subtitleLanguages())

@@ -12,6 +12,8 @@ import (
 	"strings"
 	"time"
 
+	"github.com/MikeO7/kinosail/packages/identitycore"
+
 	mcpauth "github.com/modelcontextprotocol/go-sdk/auth"
 )
 
@@ -170,7 +172,7 @@ func (connections *Connections) VerifyToken(_ context.Context, token string, req
 			return nil, mcpauth.ErrInvalidToken
 		}
 		connections.principals.Attribute(request, profile)
-		return &mcpauth.TokenInfo{Scopes: append([]string(nil), grant.Scopes...), Expiration: time.Unix(grant.AccessExpires, 0), UserID: grant.ProfileID}, nil
+		return &mcpauth.TokenInfo{Scopes: append([]string(nil), grant.Scopes...), Expiration: time.Unix(grant.AccessExpires, 0), UserID: grant.ProfileID, Extra: map[string]any{"eventGrant": grant.ID, "eventRemote": identitycore.RemoteRequest(request)}}, nil
 	}
 	return nil, mcpauth.ErrInvalidToken
 }

@@ -32,6 +32,7 @@ type Connections struct {
 	sessionKey func(string) string
 	clients    map[string]mcpOAuthClient
 	grants     map[string]mcpOAuthGrant
+	events     map[string]eventSubscription
 	pending    map[string]mcpOAuthRequest
 	codes      map[string]mcpOAuthCode
 	err        error
@@ -43,8 +44,9 @@ type Connections struct {
 }
 
 type mcpConnectionState struct {
-	Clients map[string]mcpOAuthClient `json:"clients"`
-	Grants  map[string]mcpOAuthGrant  `json:"grants"`
+	Clients map[string]mcpOAuthClient    `json:"clients"`
+	Grants  map[string]mcpOAuthGrant     `json:"grants"`
+	Events  map[string]eventSubscription `json:"events,omitempty"`
 }
 
 type mcpOAuthClient struct {
@@ -127,7 +129,7 @@ func NewConnections(config ConnectionConfig) *Connections { //nolint:contextchec
 	}
 	connections := &Connections{
 		issuer: issuer, resource: resource, principals: config.Principals, store: config.Store, error: config.Error, approval: config.Approval, sessionKey: config.SessionKey,
-		clients: make(map[string]mcpOAuthClient), grants: make(map[string]mcpOAuthGrant),
+		clients: make(map[string]mcpOAuthClient), grants: make(map[string]mcpOAuthGrant), events: make(map[string]eventSubscription),
 		pending: make(map[string]mcpOAuthRequest), codes: make(map[string]mcpOAuthCode), now: time.Now, client: publicMetadataHTTPClient(10 * time.Second),
 	}
 	if config.Principals == nil || config.Store == nil || config.Error == nil || config.Approval == nil || config.SessionKey == nil || !validMCPIssuer(issuer) {
@@ -157,6 +159,9 @@ func (connections *Connections) loadState() {
 	}
 	if state.Grants != nil {
 		connections.grants = state.Grants
+	}
+	if state.Events != nil {
+		connections.events = state.Events
 	}
 }
 
