@@ -292,4 +292,4 @@ addEventListener("pageshow", ({persisted}) => {
   bindLiveDownloads();
   renderOfflineLibrary().catch(() => {});
 });
-document.body.addEventListener("htmx:afterSwap", bindOfflineDownloads);
+document.body.addEventListener("htmx:after:swap", bindOfflineDownloads);

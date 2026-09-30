@@ -37,7 +37,7 @@ printf '%s' '{"streams":[{"codec_type":"video","codec_name":"h264","width":1920,
 		t.Fatalf("start = %d %q", started.Code, started.Body.String())
 	}
 	pending := fixture.CookieRequest(t, handler, http.MethodGet, "/offline-downloads", "", owner)
-	AssertAPIBody(t, pending, http.StatusOK, `data-downloads-pending="true"`, fixture.DownloadsScript, `"includeIndicatorStyles":false`, `role="status"`, `<progress`, `Preparing Film for offline use`)
+	AssertAPIBody(t, pending, http.StatusOK, `data-downloads-pending="true"`, fixture.DownloadsScript, `"includeIndicatorCSS":false`, `role="status"`, `<progress`, `Preparing Film for offline use`)
 	if strings.Contains(pending.Body.String(), `http-equiv="refresh"`) {
 		t.Fatalf("downloads page uses a timed full-page refresh: %q", pending.Body.String())
 	}

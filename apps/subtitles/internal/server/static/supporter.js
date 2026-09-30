@@ -143,7 +143,7 @@ function bindCertificateSharing() {
 
 bindSupporterRecognition();
 bindCertificateSharing();
-document.addEventListener("htmx:afterSwap", () => {
+document.addEventListener("htmx:after:swap", () => {
   bindSupporterRecognition();
   bindCertificateSharing();
 });
