@@ -50,6 +50,18 @@ The SwiftUI template fails because its hitch instrument is unsupported on this s
 
 The next native measurement needs usable update causes and presentation timing. [Apple's performance documentation](https://developer.apple.com/documentation/xcode/understanding-and-improving-swiftui-performance) recommends investigating both expensive view bodies and excessive update frequency. A physical-device trace remains necessary before claiming smoother focus animation or choosing a framework rewrite. The [measurement record](evidence/player-performance-frontiers-2026-09-30.md) preserves configuration, hashes, commands, and failure boundaries.
 
+### Avoid placeholder work on fast web requests
+
+Chromium traces now exercise the real embedded web app with 10,000 synthetic movies and generated artwork. A warm desktop reload measured 237 ms LCP and zero layout shift. Traversing to 1,600 cards under 4× CPU throttling measured 52 ms observed interaction latency. These are local lab observations, not field or physical-device scores.
+
+The mobile title scrub revealed a smaller opportunity. Starting each request immediately hid artwork and animated placeholders across the current library. Fast responses paid that rendering cost before replacing the page. The shared web handler now waits 120 ms before showing visual placeholders. Busy state and inert content still begin immediately. Final completion cancels the timer; detached targets cannot acquire stale placeholders.
+
+Six comparable mobile scrubs measured a median observed interaction latency of 84 ms before the change and 46.5 ms with the compiled fix: approximately 45% lower. A browser-only prototype measured 43.5 ms. Restoring immediate placeholders returned the median to 84 ms. All measured layout shifts were zero. The [measurement record](evidence/player-performance-frontiers-2026-09-30.md) retains individual samples and limitations.
+
+This follows the presentation-delay diagnosis in the [current INP optimization guide](https://web.dev/articles/optimize-inp). Delaying unnecessary placeholder work avoids a transient rendering pass. It does not postpone the request or change its response. The 120 ms threshold is an application choice validated here, not a threshold established by that guide.
+
+One initial mobile scrub measured 285 ms, but subsequent controls did not reproduce it. It remains in the evidence and is excluded from the matched six-scrub comparison. The traces also flag oversized artwork. That is a candidate for responsive image derivatives, not a measured byte saving or a reason to weaken authenticated cache rules.
+
 ## Current primary-source research
 
 These findings are research inputs. Paper results are not Kinosail results.

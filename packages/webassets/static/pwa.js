@@ -104,8 +104,10 @@ document.body.addEventListener("htmx:before:request", ({ detail }) => {
     loadingTargets.set(target, state);
     target.setAttribute("aria-busy", "true");
     if (!target.matches("button, input, select, textarea")) {
-      target.classList.add("request-skeleton");
       target.inert = true;
+      state.skeleton = window.setTimeout(() => {
+        if (target.isConnected && loadingTargets.get(target) === state) target.classList.add("request-skeleton");
+      }, 120);
     }
   }
   state.count++;
@@ -117,6 +119,7 @@ function finishLoadingRequest({ detail }) {
   loadingRequests.delete(detail.ctx);
   const state = loadingTargets.get(target);
   if (--state.count) return;
+  window.clearTimeout(state.skeleton);
   target.classList.remove("request-skeleton");
   target.inert = state.inert;
   if (state.busy === null) target.removeAttribute("aria-busy");
