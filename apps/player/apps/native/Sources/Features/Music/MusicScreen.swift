@@ -146,6 +146,9 @@ struct AlbumScreen: View {
         #endif
         #if os(tvOS)
         .focusScope(albumFocus)
+        .onChange(of: session.player.loading) { _, loading in
+            if starting && loading { showsPlayer = true }
+        }
         #endif
         #if os(tvOS)
         .fullScreenCover(isPresented: $showsPlayer) {

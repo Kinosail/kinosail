@@ -45,7 +45,7 @@ struct AudioPlayerScreen: View {
     #if os(tvOS)
     @State private var showsTools = false
     @State private var focusedInitially = false
-    @Environment(\.resetFocus) private var resetFocus
+    @FocusState private var playFocused: Bool
     @Namespace private var audioFocus
     #endif
     private var upcoming: [MediaItem] { Array(session.player.queue.items.dropFirst((session.player.queue.currentIndex ?? 0) + 1).prefix(20)) }
@@ -98,6 +98,8 @@ struct AudioPlayerScreen: View {
                                 #endif
                                 #if os(tvOS)
                                 .tvOSDefaultPlayFocus(in: audioFocus, id: "audio.play.\(item.id)", enabled: session.player.player != nil)
+                                .focused($playFocused)
+                                .onAppear { if !focusedInitially { focusedInitially = true; playFocused = true } }
                                 #endif
                             Button("Forward 30 seconds", systemImage: "goforward.30") { perform { try await session.player.seek(to: min(session.player.duration, session.player.seconds + 30)) } }.labelStyle(.iconOnly).buttonStyle(.bordered).buttonBorderShape(.capsule).tint(KinoTheme.secondaryControlTint).secondaryControlForeground().controlSize(.large)
                         }.font(.title2).disabled(session.player.player == nil)
@@ -133,9 +135,6 @@ struct AudioPlayerScreen: View {
         .navigationTitle("Now playing")
         #if os(tvOS)
         .focusScope(audioFocus)
-        .onChange(of: session.player.player != nil, initial: true) { _, ready in
-            if ready && !focusedInitially { focusedInitially = true; resetFocus(in: audioFocus) }
-        }
         .onPlayPauseCommand { if session.player.player != nil { session.player.togglePlayback() } }
         .onAppear { if hidesMiniPlayer { session.showsAudioPlayer = true } }
         .onDisappear { if hidesMiniPlayer { session.showsAudioPlayer = false } }
