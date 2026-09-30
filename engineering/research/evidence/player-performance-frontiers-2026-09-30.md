@@ -33,6 +33,8 @@ The final API regression passes. Shared tests cover cancellation before load, af
 
 Validation passed on the bound candidate source: `go -C packages test ./...`, `go -C apps/player test ./...`, `go -C apps/subtitles test ./...`, and `go -C packages test -race ./catalog`. Changed-code lint against the exact baseline reports zero issues in all three modules. Both Code Atlas snapshots were regenerated. `make max-loc`, `make tooling-check`, and `git diff --check` passed. An independent review found no correctness issue and verified the measurement source hashes. Private logs and the reproducible fixture remain under `.verification/catalog-cancellation-profile`.
 
+Post-commit verification used `a69c5d2157d8ec4bd8e79326af29c435c35233d2`: `make -C apps/player verify-changed BASE=f386ad2cdf55bb0abf9f55b97126e33ee851cdbf`, followed by the equivalent Subtitles command. Both passed caps, diff checks, server compilation, and focused Go tests. Each then exited 2 at 112 existing shared lint findings. Later stages did not run. The private `verify-changed-results.json` records the exact revision, commands, timestamps, and exit codes. Required hosted checks remain the delivery authority.
+
 Index loading, mutex acquisition, grouping, reference/page copies, and sorting already underway remain synchronous. No physical UI, production tail-latency, deployed network, or Nox gain is claimed. The prior metadata-search change merged through PR #376; both its required PR checks and main publication workflow succeeded. That publication remains separate from deployment proof.
 
 ```json
