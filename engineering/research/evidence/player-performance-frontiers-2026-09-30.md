@@ -633,6 +633,8 @@ Metadata-search local validation:
 - `make max-loc`, `make tooling-check`, and `git diff --check`: passed. Required Code Atlas snapshots were regenerated for both apps.
 - Independent review found the early compatibility-capital regression. It confirmed the final fix and separator invariant. Its focused tests passed before the final ASCII-within-Unicode delta; the full local suites above cover that final delta.
 
+Both required app `verify-changed` commands ran on the implementation bound by the source hashes above. Both passed source caps and diff checks. Player also passed its server compile and focused package stage. Both then stopped at the same 112 existing shared-package lint findings recorded in the earlier web phase. Later stages of those commands did not run. Full local Go suites and changed-code lint were run separately as listed above. This is a local verification limit; no gate was bypassed. The hosted secret scan initially classified two SHA-256 log fingerprints as generic API keys. Filenames and fingerprints now use separate fields. Only task-owned PR history was rewritten; measured production and benchmark source hashes remain identical. No scanner rule or ignore list changed.
+
 The earlier web rendering change merged through [PR #375](https://github.com/Kinosail/kinosail/pull/375). Its [main workflow](https://github.com/Kinosail/kinosail/actions/runs/36699462274) completed successfully, including production-image publication checks. That establishes hosted publication evidence; this phase has no new Nox revision, remote health, physical-device, or production first-frame proof.
 
 ## Artwork dimension decode probe
