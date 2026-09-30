@@ -1,0 +1,47 @@
+◇ Test run started.
+◇ Suite WatchProgressSummaryTests started.
+◇ Suite WatchRemoteTests started.
+◇ Test acceptsOnlyBoundedPlayerState() started.
+◇ Test reusesProgressOnRepeatVisitsAndAfterRestart() started.
+◇ Test rejectsMalformedCommands(_:) started.
+◇ Test keepsSelectedPlayerWhenItTemporarilyDisappears() started.
+◇ Test invalidRemoteProgressDoesNotPoisonTheCache() started.
+◇ Test mapsReadingsToMovieTimeButLeavesGaps() started.
+◇ Test rejectsInvalidSummary(_:) started.
+◇ Test case passing 1 argument raw → "{}" to rejectsMalformedCommands(_:) started.
+◇ Test reportsOnlyKnownDuration() started.
+◇ Test rejectsInvalidItemWithoutNetwork(_:) started.
+◇ Test case passing 1 argument raw → "[]" to rejectsMalformedCommands(_:) started.
+◇ Test case passing 1 argument raw → "{"action":"unknown","target":"iphone"}" to rejectsMalformedCommands(_:) started.
+◇ Test case passing 1 argument raw → "{"action":"pause","target":"iphone","position":1}" to rejectsMalformedCommands(_:) started.
+◇ Test case passing 1 argument raw → "{"action":"seek","target":"iphone"}" to rejectsMalformedCommands(_:) started.
+​​◇ Test case passing 1 argument raw → "{"action":"seek","target":"iphone","position":true}" to rejectsMalformedCommands(_:) started.
+​◇ Test case passing 1 argument raw → "{"action":"seek","target":"iphone","position":-1}" to rejectsMalformedCommands(_:) started.
+◇ Test case passing 1 argument raw → "{"action":"pause","target":"iphone","extra":1}" to rejectsMalformedCommands(_:) started.
+◇ Test case passing 1 argument raw → .object([:]) to rejectsInvalidSummary(_:) started.
+◇ Test case passing 1 argument raw → "{"action":"pause","target":""}" to rejectsMalformedCommands(_:) started.
+​​​​​◇ Test case passing 1 argument raw → .object(["duration": KinosailPlayer.JSONValue.number(1.0)]) to rejectsInvalidSummary(_:) started.
+◇ Test case passing 1 argument raw → .object(["seconds": KinosailPlayer.JSONValue.number(-1.0), "duration": KinosailPlayer.JSONValue.number(10.0)]) to rejectsInvalidSummary(_:) started.
+◇ Test case passing 1 argument raw → .object(["duration": KinosailPlayer.JSONValue.number(10.0), "seconds": KinosailPlayer.JSONValue.string("1")]) to rejectsInvalidSummary(_:) started.
+​◇ Test case passing 1 argument raw → .object(["seconds": KinosailPlayer.JSONValue.number(1.0)]) to rejectsInvalidSummary(_:) started.
+◇ Test case passing 1 argument id → "" to rejectsInvalidItemWithoutNetwork(_:) started.
+◇ Test case passing 1 argument id → "../movie" to rejectsInvalidItemWithoutNetwork(_:) started.
+◇ Test case passing 1 argument id → "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" to rejectsInvalidItemWithoutNetwork(_:) started.
+◇ Test case passing 1 argument raw → .object(["seconds": KinosailPlayer.JSONValue.number(11.0), "duration": KinosailPlayer.JSONValue.number(10.0)]) to rejectsInvalidSummary(_:) started.
+​​​◇ Test case passing 1 argument raw → .object(["duration": KinosailPlayer.JSONValue.number(315360001.0), "seconds": KinosailPlayer.JSONValue.number(0.0)]) to rejectsInvalidSummary(_:) started.
+◇ Test case passing 1 argument raw → .object(["duration": KinosailPlayer.JSONValue.number(inf), "seconds": KinosailPlayer.JSONValue.number(0.0)]) to rejectsInvalidSummary(_:) started.
+​✔ Test keepsSelectedPlayerWhenItTemporarilyDisappears() passed after 0.006 seconds.
+​​​◇ Test case passing 1 argument raw → .object(["seconds": KinosailPlayer.JSONValue.number(nan), "duration": KinosailPlayer.JSONValue.number(10.0)]) to rejectsInvalidSummary(_:) started.
+​✔ Test acceptsOnlyBoundedPlayerState() passed after 0.012 seconds.
+​​◇ Test case passing 1 argument raw → .object(["seconds": KinosailPlayer.JSONValue.number(0.0), "duration": KinosailPlayer.JSONValue.number(10.0), "unknown": KinosailPlayer.JSONValue.bool(true)]) to rejectsInvalidSummary(_:) started.
+✔ Test mapsReadingsToMovieTimeButLeavesGaps() passed after 0.012 seconds.
+✔ Test reportsOnlyKnownDuration() passed after 0.012 seconds.
+​​​✔ Test rejectsInvalidSummary(_:) with 10 test cases passed after 0.012 seconds.
+✔ Test rejectsMalformedCommands(_:) with 9 test cases passed after 0.012 seconds.
+✔ Test rejectsInvalidItemWithoutNetwork(_:) with 3 test cases passed after 0.013 seconds.
+✔ Suite WatchRemoteTests passed after 0.014 seconds.
+✔ Test invalidRemoteProgressDoesNotPoisonTheCache() passed after 0.022 seconds.
+✔ Test reusesProgressOnRepeatVisitsAndAfterRestart() passed after 0.027 seconds.
+✔ Suite WatchProgressSummaryTests passed after 0.028 seconds.
+✔ Test run with 9 tests in 2 suites passed after 0.028 seconds.
+** TEST SUCCEEDED **

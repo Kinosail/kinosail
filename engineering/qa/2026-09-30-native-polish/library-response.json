@@ -1,0 +1,248 @@
+{
+  "items": [
+    {
+      "id": "3471d1ca25a17d92",
+      "kind": "video",
+      "title": "Arrival",
+      "year": "2016",
+      "stream": "/media/3471d1ca25a17d92",
+      "download": "/download/3471d1ca25a17d92",
+      "container": "MP4",
+      "size": 195650,
+      "added": "2026-09-30T08:20:45.022739926-06:00",
+      "progress": {
+        "updated": "0001-01-01T00:00:00Z"
+      }
+    },
+    {
+      "id": "86dcea5fe2b55a99",
+      "kind": "video",
+      "title": "Beta",
+      "year": "2026",
+      "stream": "/media/86dcea5fe2b55a99",
+      "download": "/download/86dcea5fe2b55a99",
+      "container": "MP4",
+      "size": 195723,
+      "added": "2026-09-30T08:20:48.059199575-06:00",
+      "progress": {
+        "updated": "0001-01-01T00:00:00Z"
+      }
+    },
+    {
+      "id": "7382720676dfd5d8",
+      "kind": "audiobook",
+      "title": "Example Audiobook",
+      "artist": "Kinosail Test Lab",
+      "stream": "/media/7382720676dfd5d8",
+      "download": "/download/7382720676dfd5d8",
+      "container": "M4B",
+      "size": 148480,
+      "added": "2026-09-30T08:20:54.560557282-06:00",
+      "progress": {
+        "updated": "0001-01-01T00:00:00Z"
+      }
+    },
+    {
+      "id": "5fdd5a3d2be2548f",
+      "kind": "book",
+      "title": "Example Comic",
+      "stream": "/media/5fdd5a3d2be2548f",
+      "download": "/download/5fdd5a3d2be2548f",
+      "container": "CBZ",
+      "size": 16730,
+      "added": "2026-09-30T08:20:54.809542312-06:00",
+      "progress": {
+        "updated": "0001-01-01T00:00:00Z"
+      }
+    },
+    {
+      "id": "ada0899652818e1f",
+      "kind": "book",
+      "title": "Example EPUB Book",
+      "stream": "/media/ada0899652818e1f",
+      "download": "/download/ada0899652818e1f",
+      "container": "EPUB",
+      "size": 1282,
+      "added": "2026-09-30T08:20:54.788370754-06:00",
+      "progress": {
+        "updated": "0001-01-01T00:00:00Z"
+      }
+    },
+    {
+      "id": "044ea04ee60778bf",
+      "kind": "video",
+      "title": "Example Movie",
+      "stream": "/media/044ea04ee60778bf",
+      "backdrop": "/backdrop/044ea04ee60778bf",
+      "download": "/download/044ea04ee60778bf",
+      "subtitles": 3,
+      "container": "MP4",
+      "size": 195553,
+      "added": "2026-09-30T08:20:42.801386525-06:00",
+      "progress": {
+        "updated": "0001-01-01T00:00:00Z"
+      }
+    },
+    {
+      "id": "7b16137f6a68d3d9",
+      "kind": "book",
+      "title": "Example PDF Book",
+      "stream": "/media/7b16137f6a68d3d9",
+      "download": "/download/7b16137f6a68d3d9",
+      "container": "PDF",
+      "size": 771,
+      "added": "2026-09-30T08:20:54.760154539-06:00",
+      "progress": {
+        "updated": "0001-01-01T00:00:00Z"
+      }
+    },
+    {
+      "id": "cddc984ff1ef81dd",
+      "kind": "photo",
+      "title": "Example Photo One",
+      "stream": "/media/cddc984ff1ef81dd",
+      "artwork": "/art/cddc984ff1ef81dd",
+      "download": "/download/cddc984ff1ef81dd",
+      "container": "JPG",
+      "size": 18934,
+      "added": "2026-09-30T08:20:54.628952365-06:00",
+      "progress": {
+        "updated": "0001-01-01T00:00:00Z"
+      }
+    },
+    {
+      "id": "ae79f510acb4f69a",
+      "kind": "photo",
+      "title": "Example Photo Two",
+      "stream": "/media/ae79f510acb4f69a",
+      "artwork": "/art/ae79f510acb4f69a",
+      "download": "/download/ae79f510acb4f69a",
+      "container": "JPG",
+      "size": 20129,
+      "added": "2026-09-30T08:20:54.695768034-06:00",
+      "progress": {
+        "updated": "0001-01-01T00:00:00Z"
+      }
+    },
+    {
+      "id": "851d114305320be9",
+      "kind": "audio",
+      "title": "Example Track One",
+      "artist": "Kinosail Test Lab",
+      "album": "Example Album",
+      "track": 1,
+      "stream": "/media/851d114305320be9",
+      "download": "/download/851d114305320be9",
+      "container": "M4A",
+      "size": 194711,
+      "added": "2026-09-30T08:20:54.299538141-06:00",
+      "progress": {
+        "updated": "0001-01-01T00:00:00Z"
+      }
+    },
+    {
+      "id": "f044682cf38f489f",
+      "kind": "audio",
+      "title": "Example Track Two",
+      "artist": "Kinosail Test Lab",
+      "album": "Example Album",
+      "track": 2,
+      "stream": "/media/f044682cf38f489f",
+      "download": "/download/f044682cf38f489f",
+      "container": "M4A",
+      "size": 194905,
+      "added": "2026-09-30T08:20:54.430695565-06:00",
+      "progress": {
+        "updated": "0001-01-01T00:00:00Z"
+      }
+    },
+    {
+      "id": "2086a0802dcb1d4c",
+      "kind": "video",
+      "title": "Gamma",
+      "year": "2026",
+      "stream": "/media/2086a0802dcb1d4c",
+      "download": "/download/2086a0802dcb1d4c",
+      "container": "MP4",
+      "size": 195693,
+      "added": "2026-09-30T08:20:50.36727724-06:00",
+      "progress": {
+        "updated": "0001-01-01T00:00:00Z"
+      }
+    },
+    {
+      "id": "6d4d276d46bbb01d",
+      "kind": "video",
+      "title": "S01E01 \u00b7 Example Episode One",
+      "plot": "An original generated episode used to test season and episode browsing.",
+      "showId": "fdc8c47b24e342a8",
+      "show": "Example Show",
+      "season": 1,
+      "episode": 1,
+      "stream": "/media/6d4d276d46bbb01d",
+      "artwork": "/episode-art/6d4d276d46bbb01d",
+      "backdrop": "/backdrop/6d4d276d46bbb01d",
+      "download": "/download/6d4d276d46bbb01d",
+      "container": "MP4",
+      "size": 195750,
+      "added": "2026-09-30T08:20:52.13762241-06:00",
+      "progress": {
+        "updated": "0001-01-01T00:00:00Z"
+      }
+    },
+    {
+      "id": "302d885ad2bb3553",
+      "kind": "video",
+      "title": "S01E02 \u00b7 Example Episode Two",
+      "plot": "A second original generated episode used to test next-Episode behavior.",
+      "showId": "fdc8c47b24e342a8",
+      "show": "Example Show",
+      "season": 1,
+      "episode": 2,
+      "stream": "/media/302d885ad2bb3553",
+      "artwork": "/episode-art/302d885ad2bb3553",
+      "backdrop": "/backdrop/302d885ad2bb3553",
+      "download": "/download/302d885ad2bb3553",
+      "container": "MP4",
+      "size": 195637,
+      "added": "2026-09-30T08:20:54.146077203-06:00",
+      "progress": {
+        "updated": "0001-01-01T00:00:00Z"
+      }
+    }
+  ],
+  "letter": "",
+  "letters": [
+    {
+      "label": "A",
+      "count": 1,
+      "offset": 0
+    },
+    {
+      "label": "B",
+      "count": 1,
+      "offset": 1
+    },
+    {
+      "label": "E",
+      "count": 9,
+      "offset": 2
+    },
+    {
+      "label": "G",
+      "count": 1,
+      "offset": 11
+    },
+    {
+      "label": "S",
+      "count": 2,
+      "offset": 12
+    }
+  ],
+  "limit": 60,
+  "offset": 0,
+  "query": "",
+  "sort": "title",
+  "total": 14,
+  "view": "all"
+}

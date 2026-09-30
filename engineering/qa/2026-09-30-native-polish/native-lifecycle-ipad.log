@@ -1,0 +1,35 @@
+◇ Test run started.
+↳ Testing Library Version: 2084
+↳ Target Platform: arm64-apple-ios17.0-simulator
+◇ Suite NativePreferencesUXTests started.
+◇ Test cachedHeroProgressIsPresentInTheFirstRenderedFrame() started.
+NATIVE_POLISH_RENDER home-pending 834x1210
+NATIVE_POLISH_RENDER library-pending 834x1210
+NATIVE_POLISH_RENDER home-loaded 834x1210
+NATIVE_POLISH_RENDER library-loaded 834x1210
+NATIVE_POLISH_RENDER home-empty 834x1210
+NATIVE_POLISH_RENDER library-empty 834x1210
+NATIVE_POLISH_RENDER home-failed 834x1210
+NATIVE_POLISH_RENDER library-failed 834x1210
+✔ Test cachedHeroProgressIsPresentInTheFirstRenderedFrame() passed after 10.861 seconds.
+◇ Test changingADownloadToggleSavesWithoutAnotherButton() started.
+✔ Test changingADownloadToggleSavesWithoutAnotherButton() passed after 0.698 seconds.
+◇ Test visibleLibraryCompletesLoadingAcrossScenePhases(phase:) started.
+◇ Test case passing 1 argument phase → .active to visibleLibraryCompletesLoadingAcrossScenePhases(phase:) started.
+​◇ Test case passing 1 argument phase → .inactive to visibleLibraryCompletesLoadingAcrossScenePhases(phase:) started.
+​◇ Test case passing 1 argument phase → .background to visibleLibraryCompletesLoadingAcrossScenePhases(phase:) started.
+​✔ Test visibleLibraryCompletesLoadingAcrossScenePhases(phase:) with 3 test cases passed after 1.360 seconds.
+◇ Test visibleHomeCompletesLoadingAcrossScenePhases(phase:) started.
+◇ Test case passing 1 argument phase → .active to visibleHomeCompletesLoadingAcrossScenePhases(phase:) started.
+​◇ Test case passing 1 argument phase → .inactive to visibleHomeCompletesLoadingAcrossScenePhases(phase:) started.
+​◇ Test case passing 1 argument phase → .background to visibleHomeCompletesLoadingAcrossScenePhases(phase:) started.
+​✔ Test visibleHomeCompletesLoadingAcrossScenePhases(phase:) with 3 test cases passed after 1.353 seconds.
+◇ Test firstArtworkKeepsItsPositionWhenLoadingCompletes(library:) started.
+◇ Test case passing 1 argument library → true to firstArtworkKeepsItsPositionWhenLoadingCompletes(library:) started.
+NATIVE_ARTWORK_POSITIONS library=true pending=264.0 loaded=264.0
+​◇ Test case passing 1 argument library → false to firstArtworkKeepsItsPositionWhenLoadingCompletes(library:) started.
+NATIVE_ARTWORK_POSITIONS library=false pending=154.0 loaded=154.0
+​✔ Test firstArtworkKeepsItsPositionWhenLoadingCompletes(library:) with 2 test cases passed after 8.601 seconds.
+✔ Suite NativePreferencesUXTests passed after 22.877 seconds.
+✔ Test run with 5 tests in 1 suite passed after 22.878 seconds.
+** TEST SUCCEEDED **

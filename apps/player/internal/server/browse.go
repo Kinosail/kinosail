@@ -7,7 +7,7 @@ import (
 )
 
 func browseLibrary(request *http.Request, index *libraryIndex, progress *progressStore, lists *listStore) (catalog.Result, error) {
-	return catalog.BrowseLibrary(request.Context(), request.URL.Query(), preferredLanguage(request), index.References, func() catalog.BrowseAccess {
+	return index.BrowseLibrary(request.Context(), request.URL.Query(), preferredLanguage(request), func() catalog.BrowseAccess {
 		viewer := currentViewer(request)
 		return progress.BrowseAccess(&lists.mu, &lists.values, request, viewerPolicy(viewer).Allows)
 	})

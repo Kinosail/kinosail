@@ -1,0 +1,58 @@
+package com.kinosail.player.mobile
+
+import android.graphics.Bitmap
+import androidx.compose.ui.test.junit4.v2.createEmptyComposeRule
+import androidx.compose.ui.test.*
+import androidx.test.core.app.ActivityScenario
+import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.platform.app.InstrumentationRegistry
+import com.kinosail.player.core.*
+import java.io.File
+import org.json.JSONObject
+import org.junit.Assert.*
+import org.junit.Rule
+import org.junit.Test
+import org.junit.runner.RunWith
+
+@RunWith(AndroidJUnit4::class)
+class PolishLiveJourneyTest {
+    @get:Rule val compose = createEmptyComposeRule()
+    @Test fun realFixtureLibraryAndAbsentSearch() {
+        val instrumentation = InstrumentationRegistry.getInstrumentation()
+        val context = instrumentation.targetContext
+        val store = SessionStore(context)
+        assertNull("Use an isolated fresh emulator", store.load())
+        val seed = File(context.filesDir, "polish-seed.json")
+        val json = JSONObject(seed.readText())
+        val server = ServerAddress(json.getString("server"))
+        val token = json.getString("token")
+        val viewer = ServerApi(server).viewer(token)
+        assertEquals(json.getJSONObject("viewer").getJSONObject("viewer").getString("id"), viewer.id)
+        val page = CatalogApi(server).list(token, viewer.id)
+        assertTrue("The real fixture must contain titles", page.total > 0)
+        val firstTitle = page.items.first().title
+        store.save(SavedSession(server, token, viewer)); seed.delete()
+        ActivityScenario.launch(MobileActivity::class.java).use {
+            compose.waitUntil(20_000) { compose.onAllNodesWithText("Library").fetchSemanticsNodes().isNotEmpty() }
+            compose.onNodeWithText("Library").assertIsDisplayed()
+            capture("android-phone-home")
+            compose.onNodeWithText("Library").performClick()
+            compose.waitUntil(20_000) { compose.onAllNodesWithText("Search library").fetchSemanticsNodes().isNotEmpty() }
+            compose.onNodeWithText("Search library").assertIsDisplayed()
+            compose.waitUntil(20_000) { compose.onAllNodes(hasContentDescription(firstTitle)).fetchSemanticsNodes().isNotEmpty() }
+            capture("android-phone-library")
+            compose.onNodeWithText("Search library").performTextInput("Absent synthetic title 01a0f2ab")
+            compose.onNodeWithText("Search", useUnmergedTree=true).performClick()
+            compose.waitUntil(20_000) { compose.onAllNodesWithText("No results. Try another search.").fetchSemanticsNodes().isNotEmpty() }
+            compose.onNodeWithText("No results. Try another search.").assertIsDisplayed()
+            capture("android-phone-search-empty")
+        }
+    }
+    private fun capture(name: String) {
+        val instrumentation = InstrumentationRegistry.getInstrumentation()
+        val destination = File(instrumentation.targetContext.filesDir, "$name.png")
+        val bitmap = requireNotNull(instrumentation.uiAutomation.takeScreenshot())
+        destination.outputStream().use { bitmap.compress(Bitmap.CompressFormat.PNG, 100, it) }
+        bitmap.recycle()
+    }
+}

@@ -64,6 +64,7 @@ type Browse struct {
 	query, view, order string
 	letter, locale     string
 	offset, limit      int
+	titleOrdered       bool
 }
 
 // Result is one bounded, stable Library browse page.
@@ -117,11 +118,15 @@ func ParseBrowse(values url.Values, locale string) (Browse, error) { //nolint:cy
 	if view == "" {
 		view = "all"
 	}
-	return Browse{cloneValues(values), query, view, order, letter, locale, offset, limit}, nil
+	return Browse{values: cloneValues(values), query: query, view: view, order: order, letter: letter, locale: locale, offset: offset, limit: limit}, nil
 }
 
 // BrowseLibrary validates a query before loading and projecting app-owned Library state.
 func BrowseLibrary(ctx context.Context, values url.Values, locale string, load func() ([]*library.Item, error), access func() BrowseAccess) (Result, error) {
+	return browseLibrary(ctx, values, locale, func(Browse) ([]*library.Item, bool, error) { items, err := load(); return items, false, err }, access)
+}
+
+func browseLibrary(ctx context.Context, values url.Values, locale string, load func(Browse) ([]*library.Item, bool, error), access func() BrowseAccess) (Result, error) {
 	browse, err := ParseBrowse(values, locale)
 	if err != nil {
 		return Result{}, err
@@ -129,7 +134,8 @@ func BrowseLibrary(ctx context.Context, values url.Values, locale string, load f
 	if err := ctx.Err(); err != nil {
 		return Result{}, err
 	}
-	items, err := load()
+	items, ordered, err := load(browse)
+	browse.titleOrdered = ordered
 	if err != nil {
 		return Result{}, err
 	}

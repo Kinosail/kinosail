@@ -91,6 +91,12 @@ class CatalogApiTest {
         }
     }
 
+    @Test fun acceptsCanonicalEpisodeArtworkInLibraryPages() {
+        val episode = item.replace("/art/film-1", "/episode-art/film-1")
+        val result = CatalogApi(server) { CatalogResponse(200, page(episode)) }.list("token", "alex")
+        assertEquals("/episode-art/film-1", result.items.single().artwork)
+    }
+
     @Test fun browsesEachMediaCategoryAndRejectsUnknownViewsBeforeNetwork() {
         for (view in listOf("movies", "music", "audiobooks", "books", "photos", "list")) {
             val response = CatalogResponse(200, page().replace("\"view\":\"all\"", "\"view\":\"$view\""))

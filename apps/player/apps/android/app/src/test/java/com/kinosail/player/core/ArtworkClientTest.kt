@@ -26,12 +26,25 @@ class ArtworkClientTest {
         var opens = 0
         val client = ArtworkClient(server) { opens++; ArtworkResponse(200, byteArrayOf(1)) }
         listOf("", "https://evil.example/art/id", "//evil.example/art/id", "/art/../id",
-            "/art/id?other=1", "/media/id", "/art/" + "x".repeat(129)).forEach {
+            "/art/id?other=1", "/media/id", "/art/" + "x".repeat(129),
+            "/episode-art/", "/episode-art/" + "x".repeat(129), "/episode-art/../id",
+            "/episode-art/%69d", "/episode-art/id?variant=episode", "/episode-art/id#fragment",
+            "/episode-art/id/extra", "/episode-arts/id").forEach {
             assertThrows(it, IllegalArgumentException::class.java) { client.bytes(it, "token", "alex") }
         }
         assertThrows(IllegalArgumentException::class.java) { client.bytes("/art/id", "bad token", "alex") }
         assertThrows(IllegalArgumentException::class.java) { client.bytes("/art/id", "token", "bad viewer") }
         assertEquals(0, opens)
+    }
+
+    @Test fun fetchesCanonicalEpisodeArtworkFromTheServerOrigin() {
+        val response = ArtworkResponse(200, byteArrayOf(1, 2, 3))
+        val client = ArtworkClient(server) { url -> response.also { it.requestedURL = url } }
+        assertArrayEquals(byteArrayOf(1, 2, 3), client.bytes("/episode-art/film-1", "token-1", "alex"))
+        assertEquals("https://example.com/episode-art/film-1", response.requestedURL.toString())
+        assertEquals("Bearer token-1", response.getRequestProperty("Authorization"))
+        assertEquals("alex", response.getRequestProperty("X-Kinosail-Viewer-Profile"))
+        assertTrue(response.closed && !response.instanceFollowRedirects)
     }
 
     @Test fun rejectsRedirectWrongTypeAndOversizedArtwork() {
