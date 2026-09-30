@@ -248,6 +248,9 @@ struct AudioLoadingState: View {
 struct MiniPlayer: View {
     @Environment(AppSession.self) private var session
     @State private var expanded = false
+    #if os(tvOS)
+    @FocusState private var titleFocused: Bool
+    #endif
     #if os(iOS)
     private let controlSize: ControlSize = .extraLarge
     private let contentSpacing: CGFloat = 12
@@ -267,7 +270,17 @@ struct MiniPlayer: View {
                         Artwork(path: item.artwork, symbol: "music.note", ratio: 1, dimension: 800).frame(width: 48).clipShape(.rect(cornerRadius: 8))
                         VStack(alignment: .leading) { Text(item.title).font(.headline).lineLimit(1); Text(item.artist).font(.caption).foregroundStyle(.secondary).lineLimit(1) }
                     }.frame(maxWidth: .infinity, alignment: .leading)
-                }.buttonStyle(.plain).accessibilityLabel("Now playing: \(item.title)")
+                        #if os(tvOS)
+                        .padding(12)
+                        .overlay { if titleFocused { RoundedRectangle(cornerRadius: 14).strokeBorder(KinoTheme.text, lineWidth: 3) } }
+                        #endif
+                }
+                    #if os(tvOS)
+                    .buttonStyle(.borderless).focused($titleFocused)
+                    #else
+                    .buttonStyle(.plain)
+                    #endif
+                    .accessibilityLabel("Now playing: \(item.title)")
                 Button(session.player.isPlaying || session.player.buffering ? "Pause" : "Play", systemImage: session.player.isPlaying || session.player.buffering ? "pause.fill" : "play.fill") { session.player.togglePlayback() }.labelStyle(.iconOnly).buttonStyle(.bordered).buttonBorderShape(.capsule).tint(KinoTheme.secondaryControlTint).secondaryControlForeground().controlSize(controlSize)
                 Button("Stop", systemImage: "xmark") { session.player.stop(); session.contentRevision = UUID() }.labelStyle(.iconOnly).buttonStyle(.bordered).buttonBorderShape(.capsule).tint(KinoTheme.secondaryControlTint).secondaryControlForeground().controlSize(controlSize)
             }

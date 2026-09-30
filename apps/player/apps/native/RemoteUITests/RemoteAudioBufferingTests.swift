@@ -37,6 +37,10 @@ final class RemoteAudioBufferingTests: RemoteTestCase {
         remote.press(.menu)
         XCTAssertTrue(app.staticTexts["Tracks"].waitForExistence(timeout: 5))
         XCTAssertTrue(app.buttons["Pause"].waitForExistence(timeout: 3))
+        let title = app.buttons["Now playing: Evening Light"]
+        XCTAssertTrue(title.hasFocus)
+        XCTAssertLessThanOrEqual(title.frame.maxX + 8, app.buttons["Pause"].frame.minX,
+                                 "The focused mini player must leave room for its transport controls")
         record("mini player buffering with Pause action", app)
         remote.press(.down)
         remote.press(.right)
