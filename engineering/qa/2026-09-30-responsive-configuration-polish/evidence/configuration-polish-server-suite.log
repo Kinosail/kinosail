@@ -1,0 +1,5 @@
+ok  	github.com/MikeO7/kinosail-player/cmd/kinosail	63.077s
+ok  	github.com/MikeO7/kinosail-player/internal/backup	0.909s
+ok  	github.com/MikeO7/kinosail-player/internal/configuration	0.794s
+ok  	github.com/MikeO7/kinosail-player/internal/database	0.311s
+ok  	github.com/MikeO7/kinosail-player/internal/server	134.678s
