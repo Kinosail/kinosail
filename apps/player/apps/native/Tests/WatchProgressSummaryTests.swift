@@ -1,7 +1,50 @@
+import Foundation
 import Testing
 @testable import KinosailPlayer
 
 struct WatchProgressSummaryTests {
+    @Test func reusesProgressOnRepeatVisitsAndAfterRestart() async throws {
+        let directory = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+        defer { try? FileManager.default.removeItem(at: directory) }
+        let viewer = try Self.viewer("viewer")
+        let fixture = try HTTPFixture(body: "{\"seconds\":120,\"duration\":600}", viewer: viewer, cacheDirectory: directory)
+        defer { fixture.remove() }
+        #expect(try await fixture.client.watchProgress(itemID: "movie").fraction == 0.2)
+        #expect(try await fixture.client.watchProgress(itemID: "movie").fraction == 0.2)
+        #expect(fixture.requests.count == 1)
+        await fixture.client.close()
+        let reopened = try await ServerClient(server: fixture.client.server, viewer: viewer,
+                                              protocolClasses: [FixtureURLProtocol.self], cacheDirectory: directory)
+        #expect(try await reopened.watchProgress(itemID: "movie").fraction == 0.2)
+        #expect(fixture.requests.count == 1)
+        await reopened.close()
+        let other = try await ServerClient(server: fixture.client.server, viewer: Self.viewer("other"),
+                                           protocolClasses: [FixtureURLProtocol.self], cacheDirectory: directory)
+        _ = try await other.watchProgress(itemID: "movie")
+        #expect(fixture.requests.count == 2)
+        #expect(fixture.requests.last?.value(forHTTPHeaderField: "X-Kinosail-Viewer-Profile") == "other")
+        await other.close()
+    }
+
+    @Test func invalidRemoteProgressDoesNotPoisonTheCache() async throws {
+        let fixture = try HTTPFixture(body: "{\"seconds\":601,\"duration\":600}", viewer: Self.viewer("viewer"))
+        defer { fixture.remove() }
+        await #expect(throws: ClientError.self) { try await fixture.client.watchProgress(itemID: "movie") }
+        FixtureURLProtocol.entries.withLock { values in
+            values[fixture.host] = .init(data: Data("{\"seconds\":120,\"duration\":600}".utf8), status: 200, headers: [:],
+                                         requests: values[fixture.host]?.requests ?? [])
+        }
+        #expect(try await fixture.client.watchProgress(itemID: "movie").fraction == 0.2)
+        #expect(fixture.requests.count == 2)
+        await fixture.client.close()
+    }
+
+    private static func viewer(_ id: String) throws -> Viewer {
+        try Viewer(.object(["server": .string("Test"), "serverId": .string("test-server"),
+            "viewer": .object(["id": .string(id), "name": .string("Viewer"), "owner": .bool(false),
+                               "downloads": .bool(false), "transcode": .bool(false), "remote": .bool(false)])]))
+    }
+
     @Test(arguments: ["", "../movie", String(repeating: "x", count: 129)])
     func rejectsInvalidItemWithoutNetwork(_ id: String) async throws {
         let fixture = try HTTPFixture(body: "{}")
