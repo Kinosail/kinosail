@@ -62,10 +62,26 @@ type subtitleLedgerState struct {
 }
 
 type subtitleLedger struct {
-	mu    sync.Mutex
-	path  string
-	state subtitleLedgerState
-	err   error
+	mu      sync.Mutex
+	path    string
+	state   subtitleLedgerState
+	err     error
+	publish func()
+}
+
+func (ledger *subtitleLedger) setPublisher(publish func()) {
+	ledger.mu.Lock()
+	defer ledger.mu.Unlock()
+	ledger.publish = publish
+}
+
+func (ledger *subtitleLedger) publishChange() {
+	ledger.mu.Lock()
+	publish := ledger.publish
+	ledger.mu.Unlock()
+	if publish != nil {
+		publish()
+	}
 }
 
 func newSubtitleLedger(dataDir string) *subtitleLedger {

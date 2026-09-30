@@ -59,6 +59,7 @@ type Hub struct {
 	now         func() time.Time
 	heartbeat   time.Duration
 	accessCheck time.Duration
+	observer    func(string, string, string)
 }
 
 // New creates an empty live event hub.
@@ -93,7 +94,18 @@ func (hub *Hub) Publish(profile, eventType, resource string) {
 			hub.slowDrops++
 		}
 	}
+	observer := hub.observer
 	hub.mu.Unlock()
+	if observer != nil {
+		observer(profile, eventType, resource)
+	}
+}
+
+// SetObserver connects an additional application delivery adapter.
+func (hub *Hub) SetObserver(observer func(string, string, string)) {
+	hub.mu.Lock()
+	defer hub.mu.Unlock()
+	hub.observer = observer
 }
 
 func (hub *Hub) subscribe(profile string, after uint64) ([]Event, *subscription, bool) {
