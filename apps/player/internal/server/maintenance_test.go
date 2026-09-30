@@ -46,7 +46,8 @@ func TestAutomaticMaintenanceDefersHeavyWorkWhileStreaming(t *testing.T) {
 	if err := os.WriteFile(cacheFile, []byte("cache"), 0o600); err != nil {
 		t.Fatal(err)
 	}
-	handler := server.New(server.Config{Lifecycle: t.Context(), MediaDir: mediaDir, DataDir: t.TempDir(), CacheDir: cacheDir, MaintenanceInterval: time.Hour, TranscodeCacheLimit: 1})
+	// Exercise the automatic operation explicitly; startup pruning must not race the pre-playback fixture.
+	handler := server.New(server.Config{MediaDir: mediaDir, DataDir: t.TempDir(), CacheDir: cacheDir, MaintenanceInterval: time.Hour, TranscodeCacheLimit: 1})
 	home := httptest.NewRecorder()
 	handler.ServeHTTP(home, httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/", nil))
 	match := regexp.MustCompile(`/(?:watch|item)/([a-f0-9]+)`).FindStringSubmatch(home.Body.String())
@@ -59,6 +60,10 @@ func TestAutomaticMaintenanceDefersHeavyWorkWhileStreaming(t *testing.T) {
 	go func() {
 		handler.ServeHTTP(stream, httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/media/"+id, nil))
 		close(done)
+	}()
+	defer func() {
+		close(stream.release)
+		<-done
 	}()
 	select {
 	case <-stream.started:
@@ -75,8 +80,6 @@ func TestAutomaticMaintenanceDefersHeavyWorkWhileStreaming(t *testing.T) {
 	if _, err := os.Stat(cacheFile); err != nil {
 		t.Fatalf("active playback cache was pruned: %v", err)
 	}
-	close(stream.release)
-	<-done
 }
 
 func TestAutomaticMaintenanceBoundsOnlyTheTranscodeCache(t *testing.T) { //nolint:cyclop // One lifecycle test verifies eviction, accounting, and download preservation.

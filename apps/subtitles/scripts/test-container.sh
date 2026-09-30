@@ -201,7 +201,7 @@ chunk="${digest:$((offset * 2)):8}"
 code="$(printf '%06d' "$(((16#$chunk & 0x7fffffff) % 1000000))")"
 expect_status 303 --cookie "$media_dir/cookies" --header "Origin: $url" --header "X-Kinosail-CSRF: $csrf" --data "code=$code" "$url/account/mfa/enable"
 if [[ "${KINOSAIL_BROWSER_TEST:-}" == "1" ]]; then
-  fixture_dir="$media_dir/ui-fixtures"
+  fixture_dir="$mcp_dir/ui-fixtures"
   KINOSAIL_UI_FIXTURE_DIR="$fixture_dir" go test ./internal/server -run TestWriteUIStateFixtures -count=1
   browser_args=(polish-shell.spec.ts subtitle-dashboard.spec.ts subtitle-history.spec.ts subtitle-inspector-loading.spec.ts subtitle-inspector-layout.spec.ts supporter-badge-layout.spec.ts test-instance.spec.ts)
   if [[ "${KINOSAIL_BROWSER_SMOKE:-}" == "1" ]]; then browser_args+=(--grep=@smoke); fi

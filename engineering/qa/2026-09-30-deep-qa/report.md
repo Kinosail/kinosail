@@ -1,6 +1,6 @@
 # Kinosail deep QA — September 30, 2026
 
-This audit found and fixed five confirmed defects. It does not establish that every product path or device is free of bugs.
+This audit found and fixed six confirmed defects. It does not establish that every product path or device is free of bugs.
 
 ## Run record
 
@@ -13,7 +13,7 @@ This audit found and fixed five confirmed defects. It does not establish that ev
 - Local evidence: `.verification/deep-qa-20260930/` in the task checkout. This directory is ignored and contains private disposable session state.
 - Test data: generated fictional movies, episodes, music, audiobooks, books, photos, and a loopback metadata provider. Native captures use the existing fictional preferences fixture.
 - Web instances: task-owned Go binaries on loopback HTTPS ports 38147 and 38148. These are host builds, not container or deployment evidence.
-- Final binaries contain the reconciled source revision above, confirmed with `go version -m`; `vcs.modified=false`.
+- The original final host binaries were verified with `go version -m`. Later header and Supporter follow-ups have separate source hashes and run records; the original identity does not certify those binaries.
 - Primary checkout and unrelated worktrees were preserved.
 
 ## Confirmed findings
@@ -82,6 +82,16 @@ The header now reserves the Support column and truncates the brand within the re
 - The added smoke check exercises eighteen- and sixty-four-character names at 390px and 720px and saves rendered screenshots.
 - Source/cache contracts: `player-header-cache-tests.log` passed.
 
+### QA-006 — Stale Supporter reads change newer navigation state (medium; fixed)
+
+The old lifecycle tests still expected separate status and preference requests. Updating them to the current collection API exposed three real failures: responses applied after leaving during headers, after leaving during the JSON body, and after a newer navigation response had already completed.
+
+Recognition now aborts its previous read on navigation swaps and cancels the current read on page exit. It checks cancellation before applying the collection and removes its exit listener when the read finishes. Back restoration requests a fresh collection. The script cache version advances to 18.
+
+- Red: `supporter-lifecycle-red.log`, three Chromium failures with the current API and header controls.
+- Green: `supporter-lifecycle-green.log`, fifteen checks across Chromium, Firefox and WebKit. `deep-followup-go-green.log` passed five repetitions of the maintenance, startup, Supporter HTTP and application-shell race checks. Source cap, shellcheck and tooling checks also passed. `deep-followup-run-record.json` records commands, source hashes, environment and results.
+- Checks preserve the single collection request, apply hidden preferences, prevent stale updates, restore on back navigation, and avoid authentication-page reads. Rendered state screenshots accompany the lifecycle checks.
+
 ## Verification
 
 | Surface | Result | Evidence and limits |
@@ -113,7 +123,7 @@ The header now reserves the Support column and truncates the brand within the re
 | Local changed-app gates | Both stopped at the full shared lint gate | `player-verify-changed.log`, `subtitles-verify-changed.log`; 113 repository-wide findings. No gate override was used |
 | Design detector | Two unchanged border-style findings retained | `badge-ui-lint.log`; owned recognition and error status use these accents |
 
-CodeQL identified a check/use race in the new optional VTT fixture helper. It now reads directly and restores with exclusive creation. An existing destination must still match the captured bytes. Both present-VTT and missing-VTT cleanup variants passed: `subtitles-cleanup-exclusive-green.log`, `subtitles-cleanup-missing-vtt-green.log`. Hosted rescanning remains required.
+CodeQL identified a check/use race in the new optional VTT fixture helper. It now reads directly and restores with exclusive creation. An existing destination must still match the captured bytes. Both present-VTT and missing-VTT cleanup variants passed: `subtitles-cleanup-exclusive-green.log`, `subtitles-cleanup-missing-vtt-green.log`. The subsequent current-head CodeQL findings policy passed on run `36752460006`; final delivery still requires scans of the later Supporter change.
 
 The larger Subtitles follow-up (`subtitles-fixtures-final.log`) passed nine checks, timed out in the multi-width preferred-language check, skipped nineteen fixture-dependent cases, and did not run nineteen later cases. The earlier focused thirty-plus-one passing checks remain valid. This run is incomplete and its timeout is not confirmed as a product defect.
 
@@ -124,6 +134,10 @@ The final follow-up run record is `followup-run-record.json`. Phone, TV and Wear
 The first Android reader attempt captured an app-unresponsive dialog during severe host memory pressure. A fresh emulator retry completed the transition twice; its captured ActivityManager/AndroidRuntime error log contains no app ANR or fatal markers. This observation is not treated as a confirmed product defect. Android EPUB reading remains unsupported by the current implementation; PDF rendering was verified.
 
 Native loaded, pending, empty, error, large-text, reader, photo, preference, approval, and casting views were inspected from populated captures. Some snapshots labelled `supporter-failed` were taken during request retries and still show pending geometry; they do not prove the terminal failure render. Physical interaction and media decoder behavior remain separate boundaries.
+
+The manual deep run `36750352124` caught three additional verification problems. The Supporter lifecycle mismatch exposed QA-006 above. Subtitles created its private HTML fixtures inside the media bind mount, making scans fail with `open /media/ui-fixtures: permission denied`. The container script now keeps those fixtures in its separate temporary artifact root; it retains private permissions and the exact cleanup assertions.
+
+The Player maintenance regression failed because startup maintenance pruned its deliberately over-limit cache before the test started a stream. `maintenance-race-reproduction.log` reproduced this repeatedly, and `maintenance-before-stream-diagnostic.log` confirms pruning before the media request. The test now invokes the same automatic operation explicitly with its background scheduler disabled, and always releases its blocked response writer. Separate tests still verify scheduled eviction and startup lifecycle behavior. This is a test setup correction, not a confirmed production playback failure.
 
 ## Repeatable commands
 
@@ -156,6 +170,6 @@ Apple runs used task-owned simulators, `xcodebuild test`, isolated DerivedData, 
 - Repeat the broad browser matrices with adequate host resources and all required fixture directories. Masthead, cleanup and canonical-origin setup defects have focused passing evidence.
 - Exercise physical codecs, HDR, hardware acceleration, AirPlay, casting, PiP/background playback, long playback, and paid activation on suitable devices.
 - Finish required and manual deep GitHub checks, then record merged source ancestry, image publication, and any later deployment as separate evidence.
-- The first manual deep run caught stale generated architecture snapshots. Both were regenerated, and full local `make tooling-check` passed (`tooling-final.log`). A refreshed deep run is in progress.
+- The first manual deep run caught stale generated architecture snapshots. Both were regenerated, and full local `make tooling-check` passed (`tooling-final.log`). The refreshed deep run exposed the lifecycle and fixture failures recorded above. A final deep run is required after their corrections.
 
 The requested deep QA goal remains active. Container and Android runtime work await storage recovery; this report is a delivery checkpoint for verified fixes.
