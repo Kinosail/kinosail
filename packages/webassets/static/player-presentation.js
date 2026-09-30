@@ -85,6 +85,7 @@ if (theaterButton) {
     }, 2200);
   };
   const setTheaterPlaying = (playing) => {
+    playing = playing && !player.paused && !playbackPreparation;
     mediaStage.classList.toggle("is-playing", playing);
     clearTimeout(theaterIdle);
     theaterToolbar.hidden = playing && !mediaStage.classList.contains("has-settings");
@@ -136,7 +137,7 @@ if ("mediaSession" in navigator) {
   };
   player.addEventListener("loadedmetadata", updateMediaPosition);
   player.addEventListener("timeupdate", updateMediaPosition);
-  player.addEventListener("play", () => { navigator.mediaSession.playbackState = "playing"; });
+  player.addEventListener("play", () => { if (!player.paused && !playbackPreparation) navigator.mediaSession.playbackState = "playing"; });
   player.addEventListener("pause", () => { navigator.mediaSession.playbackState = "paused"; });
 }
 let wakeLock;
