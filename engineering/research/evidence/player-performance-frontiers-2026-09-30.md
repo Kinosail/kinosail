@@ -1,5 +1,292 @@
 # Performance frontiers: measurement record
 
+## Confirmed rich-metadata matches
+
+Measured September 30, 2026, against `55c0b765c16eb68a403b1a8f4c76f8a71340bdad`. The selected implementation changes only `packages/catalog/search_metadata.go`. Rich records check an ASCII title that fits local storage, then literal field prefixes that preserve normalization. Unconfirmed matches retain the complete field and credit sequence. Short records keep the existing path.
+
+The fixture uses 10,000 synthetic movies. Each plot repeats `A quiet journey. ` 120 times and ends with Café. Requests preserve a synthetic Owner context and derive an uncancelled `context.WithCancel`. The real catalog HTTP adapter runs in process. Network, authentication middleware, real media, physical display, and deployed load are excluded.
+
+| Rich query | Baseline median, ms | Selected median, ms | Original-source reverse, ms | Allocated bytes before → selected |
+| --- | --- | --- | --- | --- |
+| Movie, 10,000 matches | 181.102 | 43.247 | 178.278 | 125,750,333 → 1,448,070 |
+| Movie 9999, one match | 138.950 | 138.941 | 137.964 | 124,022,800 → 124,010,109 |
+| quiet journey, 10,000 matches | 181.118 | 44.728 | 179.141 | 125,555,280 → 1,582,725 |
+| Absent owl, zero matches | 151.991 | 153.099 | 151.087 | 124,014,782 → 124,014,893 |
+
+Broad title and literal plot matches return about 75–76% sooner and allocate about 99% fewer bytes. Their totals and response sizes remain unchanged. The exact-title median is essentially unchanged against the first baseline and 0.7% above the reverse control; sample ranges overlap. The shortcut adds bounded work on misses. These sequential shared-host samples do not establish zero overhead, a confidence interval, or an exact-search improvement.
+
+A rejected prototype normalized every title into scratch storage before allocating the full fallback. Long ASCII titles increased allocation from about 13.56 to 15.87 MB per 1,000-item search. A 450-byte compatibility title that expands during NFKD increased allocation from about 59.42 to 66.33 MB. The selected guard checks only ASCII titles shorter than the 512-byte scratch capacity, including room for a separator. Other titles remain in the complete fallback.
+
+| Additional workload | Baseline → selected median, ms | Allocated bytes before → selected | Response bytes |
+| --- | --- | --- | --- |
+| long-ascii | 17.472 → 17.501 | 13,562,874 → 13,562,903 | 125 |
+| unicode-expansion | 159.687 → 160.325 | 59,420,297 → 59,420,098 | 125 |
+| 10000/browse | 4.978 → 4.956 | 1,767,662 → 1,767,426 | 19,286 |
+| 10000/search | 2.192 → 2.136 | 494,825 → 494,821 | 316 |
+| 100000/browse | 57.529 → 58.140 | 15,458,966 → 15,461,043 | 19,668 |
+| 100000/search | 21.548 → 21.293 | 4,820,316 → 4,820,316 | 321 |
+
+The long-title control uses 1,000 movies with the same accented plot and an absent query. Titles repeat either `Long title. ` 100 times or `ﷺ` 150 times. Ordinary requests use the existing 10,000/100,000-title fixture. Allocation levels remain similar. This is allocation traffic per request, not retained cache memory.
+
+Before production changes, the 32-case public HTTP regression passed. Removing the literal-query byte guard then failed the two raw F/A versus ℉/𝐀 cases. The final regression preserves compatibility characters, phrases spanning fields and credits, late and cross-prefix matches, malformed field bytes, empty titles, and title expansion. Independent review found no production correctness issue. Review corrected a UTF-8 fixture boundary before the final timing and validation. Production and all benchmark fixtures retain the recorded hashes.
+
+The full shared, Player, and Subtitles Go suites and catalog race check passed on the measured production source. A test-only assertion helper extraction resolved the new function-length lint issue and passed focused validation. Changed-code lint against the baseline passed in all three modules. Source caps, repository tooling, and regenerated Code Atlas snapshots passed. A full shared lint check caught a new complexity warning that diff-based lint missed. Extracting the unchanged size calculation resolved it; the compiler confirms inlining. Full shared lint returns to 112 existing findings. Post-commit app checks are recorded below. Required hosted checks remain the delivery authority. No new native, browser, Nox, or production-network performance claim is made.
+
+Post-commit verification used `bd6b6bf1da7a2cd92269d9644af2dc7203258d50`: `make -C apps/player verify-changed BASE=55c0b765c16eb68a403b1a8f4c76f8a71340bdad`, followed by the equivalent Subtitles command. Both passed caps and diff checks. Player reused cached server compilation and focused checks; Subtitles selected no app Go package before shared lint. Each exited 2 at 112 existing shared lint findings. Later stages did not run. Separate fresh full Go runs above cover the final consumer source. The private `verify-changed-results.json` preserves revision, commands, timestamps, durations, and exits.
+
+Both comparison binaries include identical benchmark sources. Compilation restores only the production file from the baseline and restores the candidate in a finally block. Final runs use `-test.run=^$ -test.bench=<expression> -test.benchmem -test.count=<count> -test.benchtime=1s`. Rich and large-title runs use three samples; ordinary navigation uses five. The reverse control reuses the original baseline binary. No task-owned builds, lint, or tests overlap a timed run. Other host activity is uncontrolled. Private scripts, binaries, raw logs, and validation records remain in `.verification/title-first-profile`.
+
+Raw sample rows below use `[ns/op, B/op, allocs/op, response-bytes]`. Benchmark paths omit the shared `BenchmarkNativeCatalog` prefix.
+
+```json
+{
+  "baseline_revision": "55c0b765c16eb68a403b1a8f4c76f8a71340bdad",
+  "environment": {
+    "go": "go version go1.27.1 darwin/arm64",
+    "os": "ProductName:\t\tmacOS\nProductVersion:\t\t27.0\nBuildVersion:\t\t26A428",
+    "machine": "arm64",
+    "concurrency": "Go suffix -10; sequential controls; no task-owned builds, lint or tests overlap timed runs. Other host activity is uncontrolled."
+  },
+  "production_file": "packages/catalog/search_metadata.go",
+  "binary_binding": [
+    {
+      "name": "final-baseline",
+      "production_sha256": "e92e2e727b8675358ae7c88b8198a01098538f2d702f5b15bef6069e4d03da6a",
+      "binary_sha256": "5451cf57bfeebf6bdb9f981a4e1069ebea0ad5044de97005337aff62a9765690"
+    },
+    {
+      "name": "final-candidate",
+      "production_sha256": "8553d891b6ce7791b7bea1ff6adf522a9c0af4160d513e391f4f488e785e3386",
+      "binary_sha256": "c27debf8b21cfe910d889499760b159587725ca2532eec9fdacfdd91bcbb08a7"
+    }
+  ],
+  "benchmark_sources": [
+    {
+      "file": "apps/player/internal/server/catalog_rich_search_benchmark_test.go",
+      "sha256": "115d436739d6e3e1f67d74067b9b871de1370c01d4d770db7bfa280183359a21"
+    },
+    {
+      "file": "apps/player/internal/server/catalog_large_titles_benchmark_test.go",
+      "sha256": "1c1cf885dcee1c93c355071b0324347dc048a7e06c3ec2e248a2d817accef8b4"
+    },
+    {
+      "file": "apps/player/internal/server/catalog_cancellation_test.go",
+      "sha256": "f5fac3b4226079622720e909c7274f26936a112d582fb1c9d829888e770dcd1a"
+    },
+    {
+      "file": "apps/player/internal/server/catalog_performance_benchmark_test.go",
+      "sha256": "be7d1a6d6d4e7f618673c5602d68431cb62ceeb626706f17cb2d8b29454f401b"
+    },
+    {
+      "file": "apps/player/internal/server/performance_benchmark_test.go",
+      "sha256": "25e23c79c788868df664d59d9face0667dc0302efa39ef8cea8fd2422aa7f306"
+    }
+  ],
+  "regression_source_at_compile": {
+    "file": "apps/player/internal/server/catalog_rich_search_test.go",
+    "sha256": "b3758c06c58a267b15221c7e775c5cb9e0e42a149ba8343a954909cf2dabef90"
+  },
+  "final_regression_source": {
+    "file": "apps/player/internal/server/catalog_rich_search_test.go",
+    "sha256": "b3758c06c58a267b15221c7e775c5cb9e0e42a149ba8343a954909cf2dabef90"
+  },
+  "commands": [
+    {
+      "file": "final-baseline-rich.log",
+      "command": [
+        ".verification/title-first-profile/final-baseline.test",
+        "-test.run=^$",
+        "-test.bench=^BenchmarkNativeCatalogRichSearch$",
+        "-test.benchmem",
+        "-test.count=3",
+        "-test.benchtime=1s"
+      ],
+      "started": "2026-09-30T13:56:20.584826+00:00",
+      "seconds": 18.297,
+      "exit": 0
+    },
+    {
+      "file": "final-baseline-overflow.log",
+      "command": [
+        ".verification/title-first-profile/final-baseline.test",
+        "-test.run=^$",
+        "-test.bench=^BenchmarkNativeCatalogLargeTitles$",
+        "-test.benchmem",
+        "-test.count=3",
+        "-test.benchtime=1s"
+      ],
+      "started": "2026-09-30T13:56:38.882670+00:00",
+      "seconds": 11.148,
+      "exit": 0
+    },
+    {
+      "file": "final-baseline-ordinary.log",
+      "command": [
+        ".verification/title-first-profile/final-baseline.test",
+        "-test.run=^$",
+        "-test.bench=^BenchmarkNativeCatalogNavigation$",
+        "-test.benchmem",
+        "-test.count=5",
+        "-test.benchtime=1s"
+      ],
+      "started": "2026-09-30T13:56:50.031207+00:00",
+      "seconds": 28.397,
+      "exit": 0
+    },
+    {
+      "file": "final-candidate-rich.log",
+      "command": [
+        ".verification/title-first-profile/final-candidate.test",
+        "-test.run=^$",
+        "-test.bench=^BenchmarkNativeCatalogRichSearch$",
+        "-test.benchmem",
+        "-test.count=3",
+        "-test.benchtime=1s"
+      ],
+      "started": "2026-09-30T13:57:18.428312+00:00",
+      "seconds": 18.62,
+      "exit": 0
+    },
+    {
+      "file": "final-candidate-overflow.log",
+      "command": [
+        ".verification/title-first-profile/final-candidate.test",
+        "-test.run=^$",
+        "-test.bench=^BenchmarkNativeCatalogLargeTitles$",
+        "-test.benchmem",
+        "-test.count=3",
+        "-test.benchtime=1s"
+      ],
+      "started": "2026-09-30T13:57:37.048523+00:00",
+      "seconds": 11.216,
+      "exit": 0
+    },
+    {
+      "file": "final-candidate-ordinary.log",
+      "command": [
+        ".verification/title-first-profile/final-candidate.test",
+        "-test.run=^$",
+        "-test.bench=^BenchmarkNativeCatalogNavigation$",
+        "-test.benchmem",
+        "-test.count=5",
+        "-test.benchtime=1s"
+      ],
+      "started": "2026-09-30T13:57:48.265356+00:00",
+      "seconds": 28.409,
+      "exit": 0
+    },
+    {
+      "file": "final-reverse-rich.log",
+      "command": [
+        ".verification/title-first-profile/final-baseline.test",
+        "-test.run=^$",
+        "-test.bench=^BenchmarkNativeCatalogRichSearch$",
+        "-test.benchmem",
+        "-test.count=3",
+        "-test.benchtime=1s"
+      ],
+      "started": "2026-09-30T13:59:04.504311+00:00",
+      "seconds": 17.48,
+      "exit": 0
+    }
+  ],
+  "rejected_prototype_experiment_binding": {
+    "revision": "10b621f2383e41d4d439e7dd988b3de4ca0235b2",
+    "fixtures": [
+      {
+        "file": "title_first_diagnostic_test.go",
+        "sha256": "c1110d533aebb9969d15683a12efcfbc402467abce81e1f0bf1cc816f363a95a"
+      },
+      {
+        "file": "title_overflow_diagnostic_test.go",
+        "sha256": "db51fda31a941276748e73b0f7e0d4179349d914053d1eae5a42c23c5b0b9f3e"
+      }
+    ],
+    "controls": [
+      {
+        "name": "overflow-baseline",
+        "production_sha256": "e92e2e727b8675358ae7c88b8198a01098538f2d702f5b15bef6069e4d03da6a",
+        "binary_sha256": "b4ad4a29b0b465f91f66a30e1d43ceeb5d7ee54da02da836e7cbd0c7797f2d24"
+      },
+      {
+        "name": "overflow-prefix",
+        "production_sha256": "14e897ab65f985797304189ed5a05f6df8d69b38530e9b08621e84208febaaae",
+        "binary_sha256": "bad84245c5c840514afe743da0fcfba222e20fab2d5164a2a1bbc96fee60c0ac"
+      },
+      {
+        "name": "guarded",
+        "production_sha256": "7eaf283ee6df9b241e621a0dc3999ead45c4140535e19bc8e97712de008c7b4a",
+        "binary_sha256": "d1039ebd4b5dacb31c93aa6f4c42f707fca6430a46d219e16bce9f1baf267bc8"
+      }
+    ]
+  },
+  "size_extraction_validation": {
+    "full_shared_lint_exit": 1,
+    "existing_findings": 112,
+    "modified_production_findings": 0,
+    "compiler": [
+      "catalog/search_metadata.go:46:6: can inline metadataSearchSize with cost 44 as: func([]string, []library.Person, []library.Person) int { size := len(fields); for loop; for loop; return size }",
+      "catalog/search_metadata.go:18:28: inlining call to metadataSearchSize"
+    ]
+  }
+}
+```
+
+```json
+{
+  "final-baseline-rich.log": {
+    "RichSearch/title-all": [[182110868, 125753896, 70577, 224755], [175543340, 125554738, 70524, 224755], [181102285, 125750333, 70529, 224755]],
+    "RichSearch/title-exact": [[137815833, 124022800, 60091, 2371], [138949807, 124022800, 60091, 2371], [142225375, 124022798, 60091, 2371]],
+    "RichSearch/metadata-all": [[182711570, 125554786, 70526, 224763], [176377188, 125555280, 70527, 224763], [181117535, 125749908, 70531, 224763]],
+    "RichSearch/absent": [[149289345, 124014776, 60079, 125], [151991405, 124014782, 60079, 125], [154557399, 124014789, 60079, 125]]
+  },
+  "final-baseline-overflow.log": {
+    "LargeTitles/long-ascii": [[17738112, 13562866, 6074, 125], [17471808, 13562915, 6074, 125], [17301085, 13562874, 6074, 125]],
+    "LargeTitles/unicode-expansion": [[157996762, 59420297, 19079, 125], [159834685, 59420098, 19077, 125], [159687089, 59420398, 19080, 125]]
+  },
+  "final-baseline-ordinary.log": {
+    "Navigation/10000/browse": [[4980749, 1768119, 485, 19286], [4957408, 1766624, 484, 19286], [4977534, 1767662, 484, 19286], [4955669, 1767654, 484, 19286], [4977850, 1767986, 484, 19286]],
+    "Navigation/10000/search": [[2200781, 494827, 81, 316], [2184034, 494821, 81, 316], [2222815, 494821, 81, 316], [2179434, 494826, 81, 316], [2192435, 494825, 81, 316]],
+    "Navigation/100000/browse": [[57960204, 15455325, 486, 19668], [57137781, 15455326, 486, 19668], [57528767, 15459588, 488, 19668], [57389341, 15458966, 487, 19668], [57913892, 15459591, 488, 19668]],
+    "Navigation/100000/search": [[21792406, 4820318, 81, 321], [21548217, 4820316, 81, 321], [21569783, 4820287, 81, 321], [21487795, 4820263, 81, 321], [21545152, 4820345, 81, 321]]
+  },
+  "final-candidate-rich.log": {
+    "RichSearch/title-all": [[43372064, 1583962, 10523, 224755], [43081248, 1448066, 10509, 224755], [43246699, 1448070, 10509, 224755]],
+    "RichSearch/title-exact": [[138940823, 124010447, 60085, 2371], [137430234, 124008906, 60082, 2371], [141065136, 124010109, 60085, 2371]],
+    "RichSearch/metadata-all": [[43605117, 1582725, 10513, 224763], [44749256, 1448117, 10511, 224763], [44728351, 1583200, 10514, 224763]],
+    "RichSearch/absent": [[153098851, 124015198, 60079, 125], [153177655, 124014893, 60080, 125], [152350935, 124014676, 60078, 125]]
+  },
+  "final-candidate-overflow.log": {
+    "LargeTitles/long-ascii": [[17501197, 13562879, 6074, 125], [17694663, 13562903, 6074, 125], [17393896, 13562914, 6074, 125]],
+    "LargeTitles/unicode-expansion": [[162836286, 59420098, 19077, 125], [159556589, 59420096, 19077, 125], [160324845, 59420229, 19079, 125]]
+  },
+  "final-candidate-ordinary.log": {
+    "Navigation/10000/browse": [[5118179, 1767426, 485, 19286], [4877972, 1767270, 484, 19286], [4955807, 1766606, 484, 19286], [4947948, 1767618, 484, 19286], [4984436, 1768031, 484, 19286]],
+    "Navigation/10000/search": [[2135769, 494821, 81, 316], [2127969, 494826, 81, 316], [2137008, 494821, 81, 316], [2144644, 494820, 81, 316], [2122264, 494826, 81, 316]],
+    "Navigation/100000/browse": [[59014512, 15459589, 488, 19668], [57953325, 15459590, 488, 19668], [58140206, 15463854, 489, 19668], [57688731, 15472381, 491, 19668], [58272940, 15461043, 488, 19668]],
+    "Navigation/100000/search": [[21327847, 4820316, 81, 321], [20921417, 4820312, 81, 321], [21292838, 4820340, 81, 321], [20775346, 4820340, 81, 321], [21295958, 4820288, 81, 321]]
+  },
+  "overflow-prefix-overflow.log": {
+    "BenchmarkTitleOverflowDiagnostic/long-ascii": [[18415787, 15866920, 8074, 125], [17592535, 15866889, 8074, 125], [17596693, 15866955, 8074, 125]],
+    "BenchmarkTitleOverflowDiagnostic/unicode-expansion": [[158276101, 66332114, 23078, 125], [175733881, 66332297, 23079, 125], [157678411, 66332297, 23079, 125]]
+  },
+  "overflow-baseline-overflow.log": {
+    "BenchmarkTitleOverflowDiagnostic/long-ascii": [[17574746, 13562844, 6074, 125], [17210918, 13562831, 6073, 125], [17161568, 13562869, 6073, 125]],
+    "BenchmarkTitleOverflowDiagnostic/unicode-expansion": [[160039625, 59420017, 19077, 125], [158424375, 59420096, 19077, 125], [159968506, 59420112, 19077, 125]]
+  },
+  "guarded-overflow.log": {
+    "BenchmarkTitleOverflowDiagnostic/long-ascii": [[17361969, 13562869, 6074, 125], [17341678, 13562926, 6074, 125], [17382751, 13562842, 6073, 125]],
+    "BenchmarkTitleOverflowDiagnostic/unicode-expansion": [[158200530, 59420098, 19077, 125], [158712434, 59420299, 19079, 125], [158287441, 59420197, 19078, 125]]
+  },
+  "final-reverse-rich.log": {
+    "RichSearch/title-all": [[180915333, 125558724, 70572, 224755], [178278208, 125554760, 70524, 224755], [177968674, 125750330, 70529, 224755]],
+    "RichSearch/title-exact": [[137963797, 124022459, 60091, 2371], [136487859, 124022798, 60091, 2371], [139143016, 124022798, 60091, 2371]],
+    "RichSearch/metadata-all": [[181106174, 126140616, 70540, 224763], [179141347, 125359670, 70522, 224763], [178079035, 125359668, 70522, 224763]],
+    "RichSearch/absent": [[151086714, 124014778, 60079, 125], [150920381, 124014776, 60079, 125], [151697446, 124014773, 60079, 125]]
+  }
+}
+```
+
 ## Catalog request cancellation
 
 Measured September 30, 2026, against `f386ad2cdf55bb0abf9f55b97126e33ee851cdbf`. Both applications now forward the HTTP request context into shared catalog browsing. Existing input validation runs first. Cancellation checks stop projection, matching, ranking, and collation preparation without returning a partial page or retaining profile locks.
@@ -35,7 +322,7 @@ Validation passed on the bound candidate source: `go -C packages test ./...`, `g
 
 Post-commit verification used `a69c5d2157d8ec4bd8e79326af29c435c35233d2`: `make -C apps/player verify-changed BASE=f386ad2cdf55bb0abf9f55b97126e33ee851cdbf`, followed by the equivalent Subtitles command. Both passed caps, diff checks, server compilation, and focused Go tests. Each then exited 2 at 112 existing shared lint findings. Later stages did not run. The private `verify-changed-results.json` records the exact revision, commands, timestamps, and exit codes. Required hosted checks remain the delivery authority.
 
-Index loading, mutex acquisition, grouping, reference/page copies, and sorting already underway remain synchronous. No physical UI, production tail-latency, deployed network, or Nox gain is claimed. The prior metadata-search change merged through PR #376; both its required PR checks and main publication workflow succeeded. That publication remains separate from deployment proof.
+Index loading, mutex acquisition, grouping, reference/page copies, and sorting already underway remain synchronous. No physical UI, production tail-latency, deployed network, or Nox gain is claimed. The prior metadata-search change merged through PR #376; both its required PR checks and main publication workflow succeeded. That publication remains separate from deployment proof. The cancellation change later merged through PR #377 into `55c0b765c16eb68a403b1a8f4c76f8a71340bdad`. Its required PR checks and main publication workflow also passed. No newer Nox deployment proof was collected.
 
 ```json
 {
@@ -1485,3 +1772,9 @@ Synthetic data only. Source hashes bind the native results to the validated work
   }
 }
 ```
+
+## Native artwork size and decoded reuse follow-up
+
+Production source remains `05917f8f91c43ca30fba465cea10732a953aafe4`. The optimized tvOS simulator experiment passed one selected Swift Testing case with ten workloads and 1,500 timed calls. A guarded cleanup removed only a prior synthetic session; diagnostic startup-contaminated samples are preserved separately. No application source or artwork dimension changed.
+
+The [complete native artwork record](native-artwork-loader-2026-09-30.md) preserves every measured sample, source bindings, replay code, fixture behavior, failed setup attempts, and limits. A smaller cold decode does not imply a faster warm path. A fixed 400px MiniPlayer change remains unadopted pending navigation frequency and rendered-quality evidence.

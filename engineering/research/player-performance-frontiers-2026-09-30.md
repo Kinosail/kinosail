@@ -60,6 +60,18 @@ A 256-item polling control takes 13.679 ms in the deadline case. More frequent c
 
 Index loading, mutex acquisition, grouping, copies, and comparison sorting already underway remain synchronous. The change checks safe boundaries rather than abandoning goroutines or disrupting sort comparisons. The [measurement record](evidence/player-performance-frontiers-2026-09-30.md#catalog-request-cancellation) preserves every sample, controls, source hashes, and limits.
 
+### Stop after a confirmed rich-metadata search match
+
+Rich records now check short ASCII titles before allocating storage for other metadata. A bounded field-prefix check also admits literal matches that normalization preserves. Every other case keeps the complete matching path, including phrases spanning fields and credits.
+
+For 10,000 movies with long accented plots, broad title search changes from 181.102 to 43.247 ms. A common plot phrase changes from 181.118 to 44.728 ms. Both reduce allocated bytes by about 99%. The real HTTP adapter returns the same totals and response sizes.
+
+A first prototype grew temporary title storage on misses. Long ASCII titles added about 2.3 MB per 1,000-item search. Unicode expansion added about 6.9 MB. The selected guard retains baseline allocation levels for both controls.
+
+The exact-title median changes from 138.950 to 138.941 ms; the original-source reverse control takes 137.964 ms. The shortcut adds bounded checks and shows no benefit on this path. Absent searches remain similar. Ordinary 10,000/100,000-title requests retain similar allocation levels and response sizes. These server measurements do not establish native frame timing.
+
+The public regression covers 32 rich-metadata cases. An unsafe control fails compatibility-character matching. The [measurement record](evidence/player-performance-frontiers-2026-09-30.md#confirmed-rich-metadata-matches) preserves final samples, an original-source reverse control, rejected allocation growth, and source bindings. Exact searches and misses remain useful targets for further profiling.
+
 ### Release navigation now has a repeatable workload
 
 A dedicated tvOS 27 simulator ran the optimized app against a loopback fixture with 160 synthetic movies. The journey reverses across the Home shelf, opens Movies, traverses several grid rows, and returns to Home. Five runs passed, including assertions that Movies regains focus. Screenshots confirm populated artwork after traversal. Test durations include automation and are not input-latency measurements.
@@ -92,7 +104,19 @@ A standalone optimized macOS ImageIO benchmark uses the production thumbnail met
 
 The 400px result uses 75% fewer decoded bytes and about 21% less decode time than 800px. This confirms the cost of unnecessary pixels in this fixture. It does not establish a native UI or network improvement. The source is a synthetic pattern, so it cannot establish photographic quality at focused TV size.
 
-The 48-point mini-player cover currently requests 800px. It is a concrete candidate for a smaller supported bucket. Shelf dimensions, display scale, focus enlargement, and accessibility sizes need separate checks. No artwork dimension changed in this phase.
+The 48-point MiniPlayer cover currently requests 800px. A native-loader follow-up compares cold, saved, and warm paths before changing that setting. Shelf dimensions, display scale, focus enlargement, and accessibility sizes still need separate checks.
+
+### A smaller image can lose a decoded cache hit
+
+An optimized tvOS simulator experiment runs the production artwork loader through ten controlled workloads. Cold 400px loads take about 10% less time than 800px loads through the URLProtocol transport fixture. Saved-image loads take about 11% less time. The smaller decoded image occupies 640,000 bytes instead of 2,560,000 bytes.
+
+Warm reuse changes the result. An 800px request with its exact decoded image cached takes 0.025 ms and returns the same object. Requesting 400px instead takes 4.985 ms and retains an additional image. Combined held pixels increase from 2.56 MB to 3.20 MB. A matching 400px cache hit is also fast, at 0.028 ms.
+
+Non-landscape media cards use 800px at standard text sizes. Landscape and accessibility variants use 1600px. The album grid, album detail, and full audio player use 1600px. A fixed MiniPlayer reduction could help a 1600px-only path while losing an 800px card hit. The experiment does not measure how often each path occurs in real navigation. The MiniPlayer setting remains unchanged.
+
+[Apple’s latest SwiftUI session](https://developer.apple.com/videos/play/wwdc2026/269/) adds HTTP caching and configurable image sessions. Kinosail also needs decoded-size reuse, profile isolation, protected storage, freshness, and cancellation. Those contracts need verification before replacing its loader. [Apple’s performance lab](https://developer.apple.com/videos/play/wwdc2026/8003/) supports appropriate image sizes and narrower view updates; that guidance does not establish hardware gains here.
+
+The [native artwork record](evidence/native-artwork-loader-2026-09-30.md) contains all 1,500 timed samples, source hashes, a complete replay fixture, startup contamination controls, and exact verification limits. ImageIO logged pixel-buffer errors during the untimed 1600px seed loads; images returned and checks passed. The cause remains unknown. These loader measurements exclude SwiftUI rendering, GPU upload, image quality, physical frames, and real network latency. An adaptive policy remains a candidate for navigation-trace and quality measurements.
 
 ## Current primary-source research
 
@@ -140,5 +164,7 @@ Local verification passed the full Player, Subtitles, and shared Go suites, the 
 The metadata-search phase passed the full shared, Player, and Subtitles Go suites and the catalog race check. Changed-code lint reports zero issues in shared packages and Player. Source caps, tooling checks, and regenerated Code Atlas snapshots also passed. Its server benchmark gains remain separate from native presentation timing. Both app `verify-changed` commands stopped at 112 existing shared lint findings; later stages did not run. Hosted checks remain the delivery authority.
 
 The cancellation phase passed those three full Go suites and the catalog race check. Changed-code lint reports zero issues in shared packages, Player, and Subtitles. Source caps, repository tooling, regenerated snapshots, and an independent source review also passed. Both post-commit app checks passed compilation and focused Go tests, then stopped at the same 112 existing shared lint findings. Later stages did not run. Its synthetic handler gains remain separate from device frames and deployed load.
+
+The confirmed-match phase passed the three full Go suites and catalog race check on its production source. The final public regression passed after test-only review corrections. Changed-code lint, source caps, repository tooling, and regenerated snapshots passed. Its independent review found no production correctness issue. Both post-commit checks stopped at 112 existing shared lint findings; later stages did not run. The measurement record preserves cache reuse and fresh consumer validation separately. Physical frames and deployed load remain separate.
 
 The paired iPhone 16 Pro Max and Apple TV 4K (third generation) are reachable through the local device tools. A read-only attempt to attach Instruments to the observed phone app process failed before recording. The TV app was not running. These probes establish no physical frame timing or verified build revision. Older supported hardware, deployed first-frame measurement, and production-network benchmarks still need evidence. The goal remains active while these measurement and optimization opportunities remain unresolved.
