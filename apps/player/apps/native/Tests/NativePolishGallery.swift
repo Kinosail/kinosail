@@ -62,7 +62,9 @@ import WebKit
         try await render(AnyView(SupporterScreen()), name: "supporter-pending", scene: scene, session: session, wait: 0.2)
         fixture.delay = 0
         fixture.fails = true
-        try await render(AnyView(SupporterScreen()), name: "supporter-failed", scene: scene, session: session)
+        // A 503 read retries after 250ms and 500ms. Capture the terminal error,
+        // rather than labeling the still-pending retry as a failed screen.
+        try await render(AnyView(SupporterScreen()), name: "supporter-failed", scene: scene, session: session, wait: 1.5)
         fixture.fails = false
         fixture.populated = false
         try await render(AnyView(SupporterScreen()), name: "supporter-empty", scene: scene, session: session)

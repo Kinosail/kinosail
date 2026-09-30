@@ -93,7 +93,7 @@ class CatalogApi(
         const val PAGE_SIZE = 24
         private const val INVALID_RESPONSE = "The Server returned an invalid library page."
         private val ID = Regex("[A-Za-z0-9_-]{1,128}")
-        internal val ARTWORK = Regex("/art/[A-Za-z0-9_-]{1,128}(\\?variant=episode)?")
+        internal val ARTWORK = Regex("/(?:art/[A-Za-z0-9_-]{1,128}(\\?variant=episode)?|episode-art/[A-Za-z0-9_-]{1,128})")
         private val KINDS = setOf("video", "show", "music", "audiobook", "book", "photo")
         private val PAGE_KEYS = setOf("items", "view", "sort", "query", "letter", "total", "offset", "limit", "letters")
         private val ITEM_KEYS = setOf("id", "kind", "title", "sortTitle", "year", "plot", "rating", "tagline",
