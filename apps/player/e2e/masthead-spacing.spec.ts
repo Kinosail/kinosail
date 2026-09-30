@@ -12,9 +12,15 @@ async function prepareContinuedMovie(page: import("@playwright/test").Page) {
 		const csrf = document.querySelector<HTMLMetaElement>('meta[name="kinosail-csrf"]')!.content;
 		const response = await fetch("/api/v1/library?view=all");
 		if (!response.ok) throw new Error(`library failed: ${response.status}`);
-		const catalog = await response.json() as { items: Array<{ id: string; title: string }> };
+		const catalog = await response.json() as { items: Array<{ id: string; title: string; progress?: { seconds?: number } }> };
 		const item = catalog.items.find((candidate) => candidate.title === "Example Movie");
 		if (!item) throw new Error("Example Movie fixture is missing");
+		for (const previous of catalog.items.filter((candidate) => candidate.id !== item.id && (candidate.progress?.seconds ?? 0) > 0)) {
+			const dismissed = await fetch(`/api/v1/items/${previous.id}/continue-watching`, {
+				method: "DELETE", headers: { "X-Kinosail-CSRF": csrf },
+			});
+			if (!dismissed.ok) throw new Error(`reset continued fixture failed: ${dismissed.status}`);
+		}
 		const saved = await fetch(`/api/v1/items/${item.id}/progress`, {
 			method: "PUT", headers: { "Content-Type": "application/json", "X-Kinosail-CSRF": csrf },
 			body: JSON.stringify({ seconds: 1, watched: false }),

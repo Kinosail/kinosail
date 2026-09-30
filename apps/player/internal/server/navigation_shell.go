@@ -116,8 +116,15 @@ func injectApplicationShell(page, navigation []byte) []byte {
 	}
 	if mainStart := bytes.Index(page, []byte("<main")); mainStart >= 0 {
 		mainEnd := mainStart + bytes.IndexByte(page[mainStart:], '>')
-		if mainEnd >= mainStart && !bytes.Contains(page[mainStart:mainEnd], []byte(`id="`)) {
-			page = append(append(append([]byte(nil), page[:mainStart+len("<main")]...), []byte(` id="main"`)...), page[mainStart+len("<main"):]...)
+		if mainEnd >= mainStart {
+			attributes := ""
+			if !bytes.Contains(page[mainStart:mainEnd], []byte(` id="`)) {
+				attributes += ` id="main"`
+			}
+			if !bytes.Contains(page[mainStart:mainEnd], []byte(` tabindex="`)) {
+				attributes += ` tabindex="-1"`
+			}
+			page = append(append(append([]byte(nil), page[:mainStart+len("<main")]...), []byte(attributes)...), page[mainStart+len("<main"):]...)
 		}
 	}
 	insertAt := bodyEnd + 1

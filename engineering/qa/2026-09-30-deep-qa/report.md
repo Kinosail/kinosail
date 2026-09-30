@@ -1,6 +1,6 @@
 # Kinosail deep QA — September 30, 2026
 
-This audit found and fixed two confirmed defects. It does not establish that every product path or device is free of bugs.
+This audit found and fixed four confirmed defects. It does not establish that every product path or device is free of bugs.
 
 ## Run record
 
@@ -51,6 +51,25 @@ The implicit grid column allowed image alternative text and descriptions to exce
 - Existing loaded/empty/conditional fixtures also passed. Their renderer now uses the real origin so relative artwork URLs resolve.
 - The new failed-artwork regression is selected by both Subtitles browser launch scripts. The dark phone case is included in hosted smoke checks.
 
+### QA-003 — TMDB instructions run off narrow viewports (medium; fixed)
+
+The TMDB setup list reused a class styled as a horizontal wizard rail. At 390px, steps two and three fell outside the visible page in configuration and onboarding. The list now uses its own class, so the three instructions wrap vertically.
+
+- Reproduced by `beta-stylesheet-green.log` and a second signed-in route observation in `beta-second.log`.
+- Focused red: `setup-skip-red.log`.
+- Green: eighteen instruction checks across Chromium, Firefox, WebKit, both routes, and six widths from 320px to 1440px. Each saves the rendered section.
+
+### QA-004 — Show skip navigation lacks a focus target (medium; fixed)
+
+The application shell mistook `data-palette-id` for the main element's `id`. The show page therefore linked to an absent `#main`. Adding the target alone still failed keyboard focus in all three browsers.
+
+The shell now distinguishes the normal attribute and makes main content programmatically focusable. Existing IDs and tabindex values are preserved.
+
+- Reproduced by the populated beta audit and `beta-second.log`.
+- Red target proof: `setup-skip-red.log`; red focus proof: `setup-skip-green.log`.
+- Final green: `setup-skip-final.log`, 21 total instruction and keyboard checks across three browsers.
+- The keyboard check activates the visible skip link with Enter and asserts the main content receives focus. Phone instructions and skip navigation are selected by hosted smoke checks.
+
 ## Verification
 
 | Surface | Result | Evidence and limits |
@@ -58,26 +77,33 @@ The implicit grid column allowed image alternative text and descriptions to exce
 | Shared Go packages | Passed full source tests, race suite, tidy, consumer compilation, and 97.7% coverage | `packages-baseline.log`, `packages-remainder.log`, `packages-final-coverage.log` |
 | Changed Go code | Zero new lint findings in packages and both apps | `packages-lint-reconciled.log`, `player-lint-changed-final.log`, `subtitles-lint-changed-final.log` |
 | Vulnerabilities | No reachable vulnerabilities | Scanner also reported one unused required-module advisory; see `packages-remainder.log` |
-| Player Go suite | All packages passed | `player-source-final.log`; server suite 231 seconds |
+| Player Go suite | All packages passed again after the setup and skip-navigation fixes | `player-source-setup-skip-final.log`; server suite 387 seconds. Earlier run: `player-source-final.log` |
 | Subtitles Go suite | All packages passed | `subtitles-source-final.log`; server suite 187 seconds |
 | Reconciliation | Catalog/metadata/operations checks and both app HTTP race regressions passed | `reconciled-packages.log`, `reconciled-player.log`, `reconciled-subtitles.log` |
 | Source cap and shell scripts | Passed | `max-loc.log`, `subtitles-shellcheck.log` |
 | Badge and conditional browser matrix | 45 passed across Chromium, Firefox, WebKit | Loaded and failed artwork; 320–1440px; saved renders |
+| Player complete beta route audit at 390px and 1440px | 18 passed | `beta-fixed.log`; includes library, utilities, configuration, onboarding, media detail/reader, playlists and collections |
 | Player populated Chromium journey set | 61 passed, one failed | Playback, seeking/startup/bandwidth, navigation, keyboard, themes, MFA, Quick Connect, checkout and responsive views; `player-populated-final.log` |
-| Player failed masthead assertion | Repeated twice; unresolved fixture isolation | Test expects Example Movie as the feature; page selects Arrival from previously populated progress. Four adjacent checks passed. See `player-masthead-isolated.log` |
-| Subtitles populated host set | 24 passed, two failed, 24 skipped | `subtitles-populated-final.log`; failures are missing test-root configuration and a hard-coded canonical port |
-| Subtitles dashboard follow-up | Two passed, one failed, 22 skipped | `subtitles-dashboard-final.log`; cleanup expects two files, but the generated host library also contains a Spanish VTT. Container fixture parity remains unverified |
+| Player masthead fixture | Six checks passed after isolating continued playback | `masthead-fixture-green.log`; prior failures came from earlier media progress. Exact feature and geometry assertions remain |
+| Subtitles populated host set | Initial run: 24 passed, two failed, 24 skipped | Missing root and hard-coded canonical port were corrected in test setup; see follow-up below |
+| Subtitles dashboard and instance fixture follow-up | 30 passed, plus one separate defaults pass | `subtitles-other-fixtures-green.log`, `subtitles-defaults-final.log`; cleanup accounts for the existing Spanish VTT and verifies its bytes remain recoverable |
 | Exploratory web routes | 34 valid route/viewport observations without overflow, axe violations, broken images, or page exceptions | `browser-exploration.json`; two invented `/settings/subtitles` routes returned 404 and are excluded |
 | iPhone simulator | 270 tests in 54 suites passed; 47 captures | `ios-baseline.log`, `ios-baseline.xcresult`, `iphone-gallery/` |
 | iPad simulator | Five focused lifecycle/preference tests passed; 47 captures | `ipad-baseline.log`, result bundle and `ipad-gallery/`; not a separate full-suite pass |
 | tvOS simulator | 257 tests in 52 suites passed | `tvos-baseline.log`, `tvos-baseline.xcresult`; includes rendered focus regressions, not a full remote playback journey |
-| Android source | Phone, watchcore and Wear unit tests passed; debug and instrumentation APK builds passed | `android-baseline.log`, `android-emulator-build.log` |
-| Android emulator | Blocked at startup | `android-phone-emulator.log`: insufficient host disk space; a build is not emulator QA |
+| Android source | Phone, watchcore and Wear unit tests passed; app and Wear debug/instrumentation APK builds passed | `android-baseline.log`, `android-emulator-build.log`, `android-wear-build.log` |
+| Android phone emulator | Four instrumentation checks passed; populated connection, home, search, detail and short movie playback observed | `android-phone-instrumentation.log`, `android-phone-extra-instrumentation-second.log`, saved XML and screenshots; API 36 read-only task overlay, debug app only |
+| Android TV emulator | One accessibility instrumentation check passed; populated pairing, home and D-pad scrolling observed | `android-tv-instrumentation.log`, `android-tv-loaded.png`, `android-tv-down.png`; playback was not proven |
+| Android reader, tablet and Wear runtime | Incomplete | Host disk and memory pressure interrupted reader/tablet capture. Wear APKs built; its emulator has not run |
 | Containers | Blocked before build | Podman VM full; test-instance build failed creating a temporary builder directory |
 | Local changed-app gates | Both stopped at the full shared lint gate | `player-verify-changed.log`, `subtitles-verify-changed.log`; 113 repository-wide findings. No gate override was used |
 | Design detector | Two unchanged border-style findings retained | `badge-ui-lint.log`; owned recognition and error status use these accents |
 
+The larger Subtitles follow-up (`subtitles-fixtures-final.log`) passed nine checks, timed out in the multi-width preferred-language check, skipped nineteen fixture-dependent cases, and did not run nineteen later cases. The earlier focused thirty-plus-one passing checks remain valid. This run is incomplete and its timeout is not confirmed as a product defect.
+
 The initial broad browser runs are diagnostic evidence, not passing suites. They included copied Player routes in Subtitles, stale numeric CSS expectations, already-initialized setup state, and connection failures during the metadata storm. Their raw logs are retained separately.
+
+The final follow-up run record is `followup-run-record.json`. Phone and TV AVDs used read-only overlays and were stopped after evidence capture. The existing release app and unrelated simulators were preserved. Android used a task-only HTTP loopback proxy to the host HTTPS server; this does not prove native certificate trust.
 
 Native loaded, pending, empty, error, large-text, reader, photo, preference, approval, and casting views were inspected from populated captures. Some snapshots labelled `supporter-failed` were taken during request retries and still show pending geometry; they do not prove the terminal failure render. Physical interaction and media decoder behavior remain separate boundaries.
 
@@ -108,8 +134,8 @@ Apple runs used task-owned simulators, `xcodebuild test`, isolated DerivedData, 
 ## Remaining work
 
 - Reclaim storage with authorization, then run container startup/media/API checks and the supported populated browser matrix against exact images.
-- Complete Android phone, TV, tablet and Wear emulator journeys, plus Apple TV remote and watchOS interaction journeys.
-- Reset host fixture state and resolve the remaining masthead/cleanup/canonical-origin assertions against supported isolated data.
+- Complete remaining Android reader, tablet, TV playback and Wear journeys, plus Apple TV remote and watchOS interaction journeys.
+- Repeat the broad browser matrices with adequate host resources and all required fixture directories. Masthead, cleanup and canonical-origin setup defects have focused passing evidence.
 - Exercise physical codecs, HDR, hardware acceleration, AirPlay, casting, PiP/background playback, long playback, and paid activation on suitable devices.
 - Record required GitHub checks, merged source ancestry, image publication, and any later deployment as separate evidence.
 

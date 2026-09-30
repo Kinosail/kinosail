@@ -63,7 +63,7 @@ export async function auditBetaRoutes(page: Page, testInfo: TestInfo, viewport: 
 				});
 				expect(response?.ok(), route).toBeTruthy();
 				await expect(routePage.locator("main")).toBeVisible();
-				const stylesheet = /\/static\/app\.css\?v=\d+$/;
+				const stylesheet = /\/static\/app\.css\?v=[a-z0-9-]+$/;
 				await expect(routePage.locator('link[rel="stylesheet"][href^="/static/app.css"]')).toHaveAttribute("href", stylesheet);
 				await expect(routePage.locator('link[rel="stylesheet"][href^="/static/app.css"]')).toHaveCount(1);
 				if (route === "/settings/configuration") await expect(routePage.getByLabel("SCIM token expiration date")).toBeVisible();
