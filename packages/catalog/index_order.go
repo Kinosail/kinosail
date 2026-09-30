@@ -21,14 +21,15 @@ func (index *Index) BrowseLibrary(ctx context.Context, values url.Values, locale
 	var key string
 	var version uint64
 	var ordered bool
-	result, err := browseLibrary(ctx, values, locale, func(browse *Browse) ([]*library.Item, error) {
+	result, err := browseLibrary(ctx, values, locale, func(browse Browse) ([]*library.Item, bool, error) {
 		if browse.query != "" || normalizeSort(browse.order) != "title" || browse.view == "history" || len(locale) > 64 {
-			return index.References()
+			items, err := index.References()
+			return items, false, err
 		}
 		key = language.Make(locale).String()
 		items, captured, cached, err := index.titleReferences(key)
-		version, ordered, browse.titleOrdered = captured, cached, cached
-		return items, err
+		version, ordered = captured, cached
+		return items, cached, err
 	}, access)
 	// Cold requests keep their existing selected sort. Only a complete catalog
 	// projection can seed shared order; restricted viewers never add global work.
@@ -76,7 +77,8 @@ func (index *Index) rememberTitleOrder(locale string, version uint64, items []*l
 		index.evictTitleOrder()
 	}
 	index.titleOrderUse++
-	index.titleOrders[locale] = &titleOrder{items: append([]*library.Item(nil), items...), used: index.titleOrderUse}
+	// Completed result references are immutable and never exposed as a slice.
+	index.titleOrders[locale] = &titleOrder{items: items, used: index.titleOrderUse}
 }
 
 // evictTitleOrder removes the least recently read completed order under mu.

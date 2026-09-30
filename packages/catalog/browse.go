@@ -123,10 +123,10 @@ func ParseBrowse(values url.Values, locale string) (Browse, error) { //nolint:cy
 
 // BrowseLibrary validates a query before loading and projecting app-owned Library state.
 func BrowseLibrary(ctx context.Context, values url.Values, locale string, load func() ([]*library.Item, error), access func() BrowseAccess) (Result, error) {
-	return browseLibrary(ctx, values, locale, func(*Browse) ([]*library.Item, error) { return load() }, access)
+	return browseLibrary(ctx, values, locale, func(Browse) ([]*library.Item, bool, error) { items, err := load(); return items, false, err }, access)
 }
 
-func browseLibrary(ctx context.Context, values url.Values, locale string, load func(*Browse) ([]*library.Item, error), access func() BrowseAccess) (Result, error) {
+func browseLibrary(ctx context.Context, values url.Values, locale string, load func(Browse) ([]*library.Item, bool, error), access func() BrowseAccess) (Result, error) {
 	browse, err := ParseBrowse(values, locale)
 	if err != nil {
 		return Result{}, err
@@ -134,7 +134,8 @@ func browseLibrary(ctx context.Context, values url.Values, locale string, load f
 	if err := ctx.Err(); err != nil {
 		return Result{}, err
 	}
-	items, err := load(&browse)
+	items, ordered, err := load(browse)
+	browse.titleOrdered = ordered
 	if err != nil {
 		return Result{}, err
 	}
