@@ -91,7 +91,8 @@ test("blocked autoplay leaves one Play control that starts the video", async ({ 
 	let releaseMedia: () => void = () => {};
 	const mediaReady = new Promise<void>((resolve) => { releaseMedia = resolve; });
 	await page.route("**/media/**", async (route) => { await mediaReady; await route.continue(); });
-	await page.getByRole("link", { name: /Example Movie/ }).click();
+	await page.getByRole("link", { name: /Example Movie/ }).click({ noWaitAfter: true });
+	await expect(page).toHaveURL(/\/watch\/[a-f0-9]+$/);
 	await expect(page.locator("[data-player-status]")).toBeVisible();
 	await page.waitForTimeout(2_000);
 	await expect(page.locator("[data-player-status]")).toBeVisible();
