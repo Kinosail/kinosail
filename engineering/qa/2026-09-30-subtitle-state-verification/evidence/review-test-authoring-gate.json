@@ -1,0 +1,16 @@
+{
+  "owner": "apps/subtitles/e2e/subtitle-defaults-tests.ts: review starts with sync and cleanup and keeps manual timing exclusive",
+  "contract": "Real inspector requests show pending state with disabled Save, then loaded/failed/preview/empty states. Preview does not change the subtitle file.",
+  "credibleRegression": "An active WebKit service worker bypasses page.route, so the intended held request reaches the server and the pending-state check fails. Reproduced in the full matrix and the controlled allow case.",
+  "whyExistingCoverageDoesNotCatch": "Source-sliced status fixtures do not exercise service-worker interception. Render fixtures supply their own API data. The same real API journey is the primary owner and will remain one test.",
+  "productionSeam": "None. Block service workers only inside this review test group, preserve all other dashboard and PWA behavior.",
+  "change": "Add scoped browser fixture option and assert the intended initial API request reaches the hold. Preserve all existing behavioral, accessibility and file-preservation assertions.",
+  "reference": "https://playwright.dev/docs/api/class-page#page-route",
+  "negativeControl": "allow: failed, controlled=true; block: passed, controlled=false",
+  "captureFollowup": {
+    "observation": "Loaded/failed/empty full-page captures preserve a scrolled sticky header position and visible focus treatment after accessibility scanning.",
+    "contract": "State evidence starts at the same page origin with an unfocused skip link, without changing production behavior.",
+    "existingSeam": "Reuse expectSkipLinkOffscreen, which already resets scroll/focus and waits for paint in dashboard checks.",
+    "validation": "Repeat the real API review test in all three engines and inspect all four WebKit state captures."
+  }
+}
