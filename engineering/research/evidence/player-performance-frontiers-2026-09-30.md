@@ -1,5 +1,281 @@
 # Performance frontiers: measurement record
 
+## Confirmed rich-metadata matches
+
+Measured September 30, 2026, against `55c0b765c16eb68a403b1a8f4c76f8a71340bdad`. The selected implementation changes only `packages/catalog/search_metadata.go`. Rich records check an ASCII title that fits local storage, then literal field prefixes that preserve normalization. Unconfirmed matches retain the complete field and credit sequence. Short records keep the existing path.
+
+The fixture uses 10,000 synthetic movies. Each plot repeats `A quiet journey. ` 120 times and ends with Café. Requests preserve a synthetic Owner context and derive an uncancelled `context.WithCancel`. The real catalog HTTP adapter runs in process. Network, authentication middleware, real media, physical display, and deployed load are excluded.
+
+| Rich query | Baseline median, ms | Selected median, ms | Original-source reverse, ms | Allocated bytes before → selected |
+| --- | --- | --- | --- | --- |
+| Movie, 10,000 matches | 179.982 | 42.638 | 180.216 | 125,558,830 → 1,534,785 |
+| Movie 9999, one match | 136.200 | 139.705 | 137.091 | 124,022,034 → 124,010,448 |
+| quiet journey, 10,000 matches | 176.721 | 44.036 | 178.136 | 125,749,902 → 1,493,144 |
+| Absent owl, zero matches | 152.956 | 151.929 | 151.007 | 124,014,880 → 124,014,794 |
+
+Broad title and literal plot matches return about 75–76% sooner and allocate about 99% fewer bytes. Their totals and response sizes remain unchanged. The exact-title median is 2.6% above the first baseline and 1.9% above the reverse control; sample ranges overlap. The shortcut adds bounded work on misses. These sequential shared-host samples do not establish zero overhead, a confidence interval, or an exact-search improvement.
+
+A rejected prototype normalized every title into scratch storage before allocating the full fallback. Long ASCII titles increased allocation from about 13.56 to 15.87 MB per 1,000-item search. A 450-byte compatibility title that expands during NFKD increased allocation from about 59.42 to 66.33 MB. The selected guard checks only ASCII titles shorter than the 512-byte scratch capacity, including room for a separator. Other titles remain in the complete fallback.
+
+| Additional workload | Baseline → selected median, ms | Allocated bytes before → selected | Response bytes |
+| --- | --- | --- | --- |
+| long-ascii | 17.484 → 17.494 | 13,562,900 → 13,562,859 | 125 |
+| unicode-expansion | 160.818 → 158.399 | 59,420,096 → 59,420,197 | 125 |
+| 10000/browse | 5.021 → 5.007 | 1,767,329 → 1,767,329 | 19,286 |
+| 10000/search | 2.161 → 2.140 | 494,823 → 494,820 | 316 |
+| 100000/browse | 57.973 → 58.564 | 15,459,589 → 15,459,590 | 19,668 |
+| 100000/search | 21.552 → 21.051 | 4,820,289 → 4,820,288 | 321 |
+
+The long-title control uses 1,000 movies with the same accented plot and an absent query. Titles repeat either `Long title. ` 100 times or `ﷺ` 150 times. Ordinary requests use the existing 10,000/100,000-title fixture. Allocation levels remain similar. This is allocation traffic per request, not retained cache memory.
+
+Before production changes, the 32-case public HTTP regression passed. Removing the literal-query byte guard then failed the two raw F/A versus ℉/𝐀 cases. The final regression preserves compatibility characters, phrases spanning fields and credits, late and cross-prefix matches, malformed field bytes, empty titles, and title expansion. Independent review found no production correctness issue. Review moved one UTF-8 fixture boundary by one byte after timing; its focused regression passed. Production and all benchmark fixtures retain the recorded hashes.
+
+The full shared, Player, and Subtitles Go suites and catalog race check passed on the measured production source. A test-only assertion helper extraction resolved the new function-length lint issue and passed focused validation. Changed-code lint against the baseline passed in all three modules. Source caps, repository tooling, and regenerated Code Atlas snapshots passed. Post-commit app checks and hosted delivery are recorded separately below when complete. No new native, browser, Nox, or production-network performance claim is made.
+
+Both comparison binaries include identical benchmark sources. Compilation restores only the production file from the baseline and restores the candidate in a finally block. Final runs use `-test.run=^$ -test.bench=<expression> -test.benchmem -test.count=<count> -test.benchtime=1s`. Rich and large-title runs use three samples; ordinary navigation uses five. The reverse control reuses the original baseline binary. No task-owned builds, lint, or tests overlap a timed run. Other host activity is uncontrolled. Private scripts, binaries, raw logs, and validation records remain in `.verification/title-first-profile`.
+
+Raw sample rows below use `[ns/op, B/op, allocs/op, response-bytes]`. Benchmark paths omit the shared `BenchmarkNativeCatalog` prefix.
+
+```json
+{
+  "baseline_revision": "55c0b765c16eb68a403b1a8f4c76f8a71340bdad",
+  "environment": {
+    "go": "go version go1.27.1 darwin/arm64",
+    "os": "ProductName:\t\tmacOS\nProductVersion:\t\t27.0\nBuildVersion:\t\t26A428",
+    "machine": "arm64",
+    "concurrency": "Go suffix -10; sequential controls; no task-owned builds, lint or tests overlap timed runs. Other host activity is uncontrolled."
+  },
+  "production_file": "packages/catalog/search_metadata.go",
+  "binary_binding": [
+    {
+      "name": "final-baseline",
+      "production_sha256": "e92e2e727b8675358ae7c88b8198a01098538f2d702f5b15bef6069e4d03da6a",
+      "binary_sha256": "f14a75f03108c969b8655acd79e7df017fac23d54cbb763b655750d8329ab64c"
+    },
+    {
+      "name": "final-candidate",
+      "production_sha256": "7eaf283ee6df9b241e621a0dc3999ead45c4140535e19bc8e97712de008c7b4a",
+      "binary_sha256": "06c40b6d99b85814e970f9e3388f1f2dfac270bb7fd177b506b5bf5ff260536f"
+    }
+  ],
+  "benchmark_sources": [
+    {
+      "file": "apps/player/internal/server/catalog_rich_search_benchmark_test.go",
+      "sha256": "115d436739d6e3e1f67d74067b9b871de1370c01d4d770db7bfa280183359a21"
+    },
+    {
+      "file": "apps/player/internal/server/catalog_large_titles_benchmark_test.go",
+      "sha256": "1c1cf885dcee1c93c355071b0324347dc048a7e06c3ec2e248a2d817accef8b4"
+    },
+    {
+      "file": "apps/player/internal/server/catalog_cancellation_test.go",
+      "sha256": "f5fac3b4226079622720e909c7274f26936a112d582fb1c9d829888e770dcd1a"
+    },
+    {
+      "file": "apps/player/internal/server/catalog_performance_benchmark_test.go",
+      "sha256": "be7d1a6d6d4e7f618673c5602d68431cb62ceeb626706f17cb2d8b29454f401b"
+    },
+    {
+      "file": "apps/player/internal/server/performance_benchmark_test.go",
+      "sha256": "25e23c79c788868df664d59d9face0667dc0302efa39ef8cea8fd2422aa7f306"
+    }
+  ],
+  "regression_source_at_compile": {
+    "file": "apps/player/internal/server/catalog_rich_search_test.go",
+    "sha256": "7e5fb44ee22a8d63f051101cabddbc51664dde04caf4742dcaa37e0246181c97"
+  },
+  "final_regression_source": {
+    "file": "apps/player/internal/server/catalog_rich_search_test.go",
+    "sha256": "b3758c06c58a267b15221c7e775c5cb9e0e42a149ba8343a954909cf2dabef90"
+  },
+  "commands": [
+    {
+      "file": "final-baseline-rich.log",
+      "command": [
+        ".verification/title-first-profile/final-baseline.test",
+        "-test.run=^$",
+        "-test.bench=^BenchmarkNativeCatalogRichSearch$",
+        "-test.benchmem",
+        "-test.count=3",
+        "-test.benchtime=1s"
+      ],
+      "started": "2026-09-30T13:25:51.689815+00:00",
+      "seconds": 18.187,
+      "exit": 0
+    },
+    {
+      "file": "final-baseline-overflow.log",
+      "command": [
+        ".verification/title-first-profile/final-baseline.test",
+        "-test.run=^$",
+        "-test.bench=^BenchmarkNativeCatalogLargeTitles$",
+        "-test.benchmem",
+        "-test.count=3",
+        "-test.benchtime=1s"
+      ],
+      "started": "2026-09-30T13:26:09.877133+00:00",
+      "seconds": 11.178,
+      "exit": 0
+    },
+    {
+      "file": "final-baseline-ordinary.log",
+      "command": [
+        ".verification/title-first-profile/final-baseline.test",
+        "-test.run=^$",
+        "-test.bench=^BenchmarkNativeCatalogNavigation$",
+        "-test.benchmem",
+        "-test.count=5",
+        "-test.benchtime=1s"
+      ],
+      "started": "2026-09-30T13:26:21.055422+00:00",
+      "seconds": 28.383,
+      "exit": 0
+    },
+    {
+      "file": "final-candidate-rich.log",
+      "command": [
+        ".verification/title-first-profile/final-candidate.test",
+        "-test.run=^$",
+        "-test.bench=^BenchmarkNativeCatalogRichSearch$",
+        "-test.benchmem",
+        "-test.count=3",
+        "-test.benchtime=1s"
+      ],
+      "started": "2026-09-30T13:26:49.438945+00:00",
+      "seconds": 18.696,
+      "exit": 0
+    },
+    {
+      "file": "final-candidate-overflow.log",
+      "command": [
+        ".verification/title-first-profile/final-candidate.test",
+        "-test.run=^$",
+        "-test.bench=^BenchmarkNativeCatalogLargeTitles$",
+        "-test.benchmem",
+        "-test.count=3",
+        "-test.benchtime=1s"
+      ],
+      "started": "2026-09-30T13:27:08.135927+00:00",
+      "seconds": 11.15,
+      "exit": 0
+    },
+    {
+      "file": "final-candidate-ordinary.log",
+      "command": [
+        ".verification/title-first-profile/final-candidate.test",
+        "-test.run=^$",
+        "-test.bench=^BenchmarkNativeCatalogNavigation$",
+        "-test.benchmem",
+        "-test.count=5",
+        "-test.benchtime=1s"
+      ],
+      "started": "2026-09-30T13:27:19.286354+00:00",
+      "seconds": 28.601,
+      "exit": 0
+    },
+    {
+      "file": "final-reverse-rich.log",
+      "command": [
+        ".verification/title-first-profile/final-baseline.test",
+        "-test.run=^$",
+        "-test.bench=^BenchmarkNativeCatalogRichSearch$",
+        "-test.benchmem",
+        "-test.count=3",
+        "-test.benchtime=1s"
+      ],
+      "started": "2026-09-30T13:31:06.808509+00:00",
+      "seconds": 17.411,
+      "exit": 0
+    }
+  ],
+  "rejected_prototype_experiment_binding": {
+    "revision": "10b621f2383e41d4d439e7dd988b3de4ca0235b2",
+    "fixtures": [
+      {
+        "file": "title_first_diagnostic_test.go",
+        "sha256": "c1110d533aebb9969d15683a12efcfbc402467abce81e1f0bf1cc816f363a95a"
+      },
+      {
+        "file": "title_overflow_diagnostic_test.go",
+        "sha256": "db51fda31a941276748e73b0f7e0d4179349d914053d1eae5a42c23c5b0b9f3e"
+      }
+    ],
+    "controls": [
+      {
+        "name": "overflow-baseline",
+        "production_sha256": "e92e2e727b8675358ae7c88b8198a01098538f2d702f5b15bef6069e4d03da6a",
+        "binary_sha256": "b4ad4a29b0b465f91f66a30e1d43ceeb5d7ee54da02da836e7cbd0c7797f2d24"
+      },
+      {
+        "name": "overflow-prefix",
+        "production_sha256": "14e897ab65f985797304189ed5a05f6df8d69b38530e9b08621e84208febaaae",
+        "binary_sha256": "bad84245c5c840514afe743da0fcfba222e20fab2d5164a2a1bbc96fee60c0ac"
+      },
+      {
+        "name": "guarded",
+        "production_sha256": "7eaf283ee6df9b241e621a0dc3999ead45c4140535e19bc8e97712de008c7b4a",
+        "binary_sha256": "d1039ebd4b5dacb31c93aa6f4c42f707fca6430a46d219e16bce9f1baf267bc8"
+      }
+    ]
+  }
+}
+```
+
+```json
+{
+  "final-baseline-rich.log": {
+    "RichSearch/title-all": [[179982208, 125558830, 70573, 224755], [177389875, 125554741, 70524, 224755], [180720028, 125750330, 70529, 224755]],
+    "RichSearch/title-exact": [[136199521, 124022034, 60090, 2371], [135997708, 124021256, 60088, 2371], [139307641, 124024340, 60094, 2371]],
+    "RichSearch/metadata-all": [[179020854, 125749902, 70531, 224763], [176480306, 125749902, 70531, 224763], [176721222, 126140618, 70540, 224763]],
+    "RichSearch/absent": [[151363845, 124014979, 60081, 125], [152955625, 124014875, 60080, 125], [153653583, 124014880, 60080, 125]]
+  },
+  "final-baseline-overflow.log": {
+    "LargeTitles/long-ascii": [[17589023, 13562891, 6074, 125], [17158667, 13562900, 6074, 125], [17484308, 13562930, 6074, 125]],
+    "LargeTitles/unicode-expansion": [[161586000, 59420100, 19077, 125], [158470649, 59420096, 19077, 125], [160817571, 59420096, 19077, 125]]
+  },
+  "final-baseline-ordinary.log": {
+    "Navigation/10000/browse": [[5000524, 1767076, 485, 19286], [5020842, 1767323, 484, 19286], [5063994, 1767640, 484, 19286], [5025242, 1767330, 484, 19286], [5003662, 1767329, 484, 19286]],
+    "Navigation/10000/search": [[2144082, 494823, 81, 316], [2188859, 494825, 81, 316], [2206437, 494815, 81, 316], [2159900, 494821, 81, 316], [2161463, 494823, 81, 316]],
+    "Navigation/100000/browse": [[57973308, 15451061, 485, 19668], [58146550, 15459589, 488, 19668], [57822090, 15459589, 488, 19668], [58904450, 15463853, 489, 19668], [57891754, 15463853, 489, 19668]],
+    "Navigation/100000/search": [[21558076, 4820316, 81, 321], [21546950, 4820288, 81, 321], [21224346, 4820342, 81, 321], [21551967, 4820260, 81, 321], [21767633, 4820289, 81, 321]]
+  },
+  "final-candidate-rich.log": {
+    "RichSearch/title-all": [[43282457, 1535577, 10521, 224755], [42322994, 1534785, 10511, 224755], [42638373, 1534785, 10511, 224755]],
+    "RichSearch/title-exact": [[137878714, 124009676, 60083, 2371], [139705099, 124010448, 60085, 2371], [139829474, 124012006, 60089, 2371]],
+    "RichSearch/metadata-all": [[44035704, 1583200, 10514, 224763], [43647620, 1491473, 10512, 224763], [44158506, 1493144, 10512, 224763]],
+    "RichSearch/absent": [[153271631, 124014676, 60078, 125], [150673738, 124014875, 60080, 125], [151929470, 124014794, 60079, 125]]
+  },
+  "final-candidate-overflow.log": {
+    "LargeTitles/long-ascii": [[17406292, 13562859, 6074, 125], [17502472, 13562906, 6074, 125], [17493915, 13562843, 6073, 125]],
+    "LargeTitles/unicode-expansion": [[156369190, 59420197, 19078, 125], [159334250, 59420102, 19077, 125], [158399208, 59420213, 19078, 125]]
+  },
+  "final-candidate-ordinary.log": {
+    "Navigation/10000/browse": [[5036211, 1767078, 485, 19286], [5020709, 1767987, 484, 19286], [4949535, 1767288, 484, 19286], [4977322, 1767329, 484, 19286], [5007215, 1768313, 484, 19286]],
+    "Navigation/10000/search": [[2139720, 494818, 81, 316], [2150051, 494820, 81, 316], [2164262, 494826, 81, 316], [2118279, 494815, 81, 316], [2129975, 494820, 81, 316]],
+    "Navigation/100000/browse": [[58563704, 15468116, 490, 19668], [57833608, 15459590, 488, 19668], [58861058, 15451063, 485, 19668], [57971892, 15463853, 489, 19668], [58780954, 15459589, 488, 19668]],
+    "Navigation/100000/search": [[21046477, 4820288, 81, 321], [21126260, 4820362, 81, 321], [21218933, 4820287, 81, 321], [21051469, 4820314, 81, 321], [20837534, 4820258, 81, 321]]
+  },
+  "overflow-prefix-overflow.log": {
+    "BenchmarkTitleOverflowDiagnostic/long-ascii": [[18415787, 15866920, 8074, 125], [17592535, 15866889, 8074, 125], [17596693, 15866955, 8074, 125]],
+    "BenchmarkTitleOverflowDiagnostic/unicode-expansion": [[158276101, 66332114, 23078, 125], [175733881, 66332297, 23079, 125], [157678411, 66332297, 23079, 125]]
+  },
+  "final-reverse-rich.log": {
+    "RichSearch/title-all": [[181105250, 125558777, 70573, 224755], [174511694, 125945453, 70534, 224755], [180215854, 125750333, 70529, 224755]],
+    "RichSearch/title-exact": [[137091490, 124022800, 60091, 2371], [137088094, 124020485, 60086, 2371], [140060417, 124024340, 60094, 2371]],
+    "RichSearch/metadata-all": [[179434993, 125749924, 70531, 224763], [178136125, 125749908, 70531, 224763], [176662368, 125555262, 70527, 224763]],
+    "RichSearch/absent": [[151006559, 124014674, 60078, 125], [150745202, 124014676, 60078, 125], [151605369, 124014778, 60079, 125]]
+  },
+  "overflow-baseline-overflow.log": {
+    "BenchmarkTitleOverflowDiagnostic/long-ascii": [[17574746, 13562844, 6074, 125], [17210918, 13562831, 6073, 125], [17161568, 13562869, 6073, 125]],
+    "BenchmarkTitleOverflowDiagnostic/unicode-expansion": [[160039625, 59420017, 19077, 125], [158424375, 59420096, 19077, 125], [159968506, 59420112, 19077, 125]]
+  },
+  "guarded-overflow.log": {
+    "BenchmarkTitleOverflowDiagnostic/long-ascii": [[17361969, 13562869, 6074, 125], [17341678, 13562926, 6074, 125], [17382751, 13562842, 6073, 125]],
+    "BenchmarkTitleOverflowDiagnostic/unicode-expansion": [[158200530, 59420098, 19077, 125], [158712434, 59420299, 19079, 125], [158287441, 59420197, 19078, 125]]
+  }
+}
+```
+
 ## Catalog request cancellation
 
 Measured September 30, 2026, against `f386ad2cdf55bb0abf9f55b97126e33ee851cdbf`. Both applications now forward the HTTP request context into shared catalog browsing. Existing input validation runs first. Cancellation checks stop projection, matching, ranking, and collation preparation without returning a partial page or retaining profile locks.
@@ -35,7 +311,7 @@ Validation passed on the bound candidate source: `go -C packages test ./...`, `g
 
 Post-commit verification used `a69c5d2157d8ec4bd8e79326af29c435c35233d2`: `make -C apps/player verify-changed BASE=f386ad2cdf55bb0abf9f55b97126e33ee851cdbf`, followed by the equivalent Subtitles command. Both passed caps, diff checks, server compilation, and focused Go tests. Each then exited 2 at 112 existing shared lint findings. Later stages did not run. The private `verify-changed-results.json` records the exact revision, commands, timestamps, and exit codes. Required hosted checks remain the delivery authority.
 
-Index loading, mutex acquisition, grouping, reference/page copies, and sorting already underway remain synchronous. No physical UI, production tail-latency, deployed network, or Nox gain is claimed. The prior metadata-search change merged through PR #376; both its required PR checks and main publication workflow succeeded. That publication remains separate from deployment proof.
+Index loading, mutex acquisition, grouping, reference/page copies, and sorting already underway remain synchronous. No physical UI, production tail-latency, deployed network, or Nox gain is claimed. The prior metadata-search change merged through PR #376; both its required PR checks and main publication workflow succeeded. That publication remains separate from deployment proof. The cancellation change later merged through PR #377 into `55c0b765c16eb68a403b1a8f4c76f8a71340bdad`. Its required PR checks and main publication workflow also passed. No newer Nox deployment proof was collected.
 
 ```json
 {

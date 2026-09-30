@@ -60,6 +60,18 @@ A 256-item polling control takes 13.679 ms in the deadline case. More frequent c
 
 Index loading, mutex acquisition, grouping, copies, and comparison sorting already underway remain synchronous. The change checks safe boundaries rather than abandoning goroutines or disrupting sort comparisons. The [measurement record](evidence/player-performance-frontiers-2026-09-30.md#catalog-request-cancellation) preserves every sample, controls, source hashes, and limits.
 
+### Stop after a confirmed rich-metadata search match
+
+Rich records now check short ASCII titles before allocating storage for other metadata. A bounded field-prefix check also admits literal matches that normalization preserves. Every other case keeps the complete matching path, including phrases spanning fields and credits.
+
+For 10,000 movies with long accented plots, broad title search changes from 179.982 to 42.638 ms. A common plot phrase changes from 176.721 to 44.036 ms. Both reduce allocated bytes by about 99%. The real HTTP adapter returns the same totals and response sizes.
+
+A first prototype grew temporary title storage on misses. Long ASCII titles added about 2.3 MB per 1,000-item search. Unicode expansion added about 6.9 MB. The selected guard retains baseline allocation levels for both controls.
+
+The exact-title median changes from 136.200 to 139.705 ms; the original-source reverse control takes 137.091 ms. The shortcut adds bounded checks and shows no benefit on this path. Absent searches remain similar. Ordinary 10,000/100,000-title requests retain similar allocation levels and response sizes. These server measurements do not establish native frame timing.
+
+The public regression covers 32 rich-metadata cases. An unsafe control fails compatibility-character matching. The [measurement record](evidence/player-performance-frontiers-2026-09-30.md#confirmed-rich-metadata-matches) preserves final samples, an original-source reverse control, rejected allocation growth, and source bindings. Exact searches and misses remain useful targets for further profiling.
+
 ### Release navigation now has a repeatable workload
 
 A dedicated tvOS 27 simulator ran the optimized app against a loopback fixture with 160 synthetic movies. The journey reverses across the Home shelf, opens Movies, traverses several grid rows, and returns to Home. Five runs passed, including assertions that Movies regains focus. Screenshots confirm populated artwork after traversal. Test durations include automation and are not input-latency measurements.
@@ -140,5 +152,7 @@ Local verification passed the full Player, Subtitles, and shared Go suites, the 
 The metadata-search phase passed the full shared, Player, and Subtitles Go suites and the catalog race check. Changed-code lint reports zero issues in shared packages and Player. Source caps, tooling checks, and regenerated Code Atlas snapshots also passed. Its server benchmark gains remain separate from native presentation timing. Both app `verify-changed` commands stopped at 112 existing shared lint findings; later stages did not run. Hosted checks remain the delivery authority.
 
 The cancellation phase passed those three full Go suites and the catalog race check. Changed-code lint reports zero issues in shared packages, Player, and Subtitles. Source caps, repository tooling, regenerated snapshots, and an independent source review also passed. Both post-commit app checks passed compilation and focused Go tests, then stopped at the same 112 existing shared lint findings. Later stages did not run. Its synthetic handler gains remain separate from device frames and deployed load.
+
+The confirmed-match phase passed the three full Go suites and catalog race check on its production source. The final public regression passed after test-only review corrections. Changed-code lint, source caps, repository tooling, and regenerated snapshots passed. Its independent review found no production correctness issue. Post-commit and hosted delivery results belong in the measurement record; physical frames and deployed load remain separate.
 
 The paired iPhone 16 Pro Max and Apple TV 4K (third generation) are reachable through the local device tools. A read-only attempt to attach Instruments to the observed phone app process failed before recording. The TV app was not running. These probes establish no physical frame timing or verified build revision. Older supported hardware, deployed first-frame measurement, and production-network benchmarks still need evidence. The goal remains active while these measurement and optimization opportunities remain unresolved.
