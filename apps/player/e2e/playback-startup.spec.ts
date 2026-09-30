@@ -87,8 +87,24 @@ test("blocked autoplay leaves one Play control that starts the video", async ({ 
 	await page.getByLabel("Authentication or recovery code").fill(totp());
 	await page.getByRole("button", { name: "Sign in", exact: true }).click();
 	await page.goto("/?view=movies");
+	let releaseMedia: () => void = () => {};
+	const mediaReady = new Promise<void>((resolve) => { releaseMedia = resolve; });
+	await page.route("**/media/**", async (route) => { await mediaReady; await route.continue(); });
 	await page.getByRole("link", { name: /Example Movie/ }).click();
+	await expect(page.locator("[data-player-status]")).toBeVisible();
+	await page.waitForTimeout(2_000);
+	await expect(page.locator("[data-player-status]")).toBeVisible();
+	await expect(page.locator(".player-center-control[data-player-toggle]")).toBeHidden();
+	await page.screenshot({ path: testInfo.outputPath("390-media-pending.png"), fullPage: true });
+	releaseMedia();
 	await expect(page.locator("[data-player-status]")).toBeHidden();
+	const readiness = await page.locator("video").evaluate((video: HTMLVideoElement) => {
+		let ahead = 0;
+		for (let index = 0; index < video.buffered.length; index++) if (video.buffered.start(index) <= video.currentTime && video.buffered.end(index) >= video.currentTime) ahead = video.buffered.end(index) - video.currentTime;
+		return { readyState: video.readyState, ahead, remaining: video.duration - video.currentTime };
+	});
+	expect(readiness.readyState).toBeGreaterThanOrEqual(3);
+	expect(readiness.ahead).toBeGreaterThanOrEqual(Math.min(2, readiness.remaining));
 	await expect(page.locator(".player-center-control[data-player-toggle]")).toBeVisible();
 	await expect(page.getByRole("button", { name: "Play video" })).toHaveCount(0);
 	await page.screenshot({ path: testInfo.outputPath("390-play-control.png"), fullPage: true });
