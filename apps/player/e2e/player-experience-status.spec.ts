@@ -113,7 +113,8 @@ test("canplay clears seeking when WebKit omits seeked", async ({ page }) => {
   await expect(status).toBeHidden();
 });
 
-for (const target of [45, 5]) test(`advancing playback clears seeking at ${target}s without completion events`, async ({ page }, testInfo) => {
+for (const target of [45, 5]) test(`advancing playback clears seeking at ${target}s without completion events`, { tag: "@smoke" }, async ({ page }, testInfo) => {
+  await page.emulateMedia({ colorScheme: "dark" });
   for (const path of ["../../../packages/webassets/static/player-app.css", "../../../packages/webassets/static/player-stage.css", "../internal/server/static/home.css"]) {
     await page.addStyleTag({ content: await readFile(path, "utf8") });
   }
@@ -152,6 +153,10 @@ for (const target of [45, 5]) test(`advancing playback clears seeking at ${targe
   await expect(status).toBeHidden();
   await expect(status).not.toHaveAttribute("aria-busy");
   await expect(page.locator(".media-stage")).not.toHaveClass(/is-busy/);
+  await video.dispatchEvent("seeking");
+  await expect(status).toBeVisible();
+  await video.evaluate((element) => { element.currentTime += 0.25; element.dispatchEvent(new Event("timeupdate")); });
+  await expect(status).toBeHidden();
   for (const viewport of [{ width: 390, height: 844 }, { width: 1440, height: 900 }]) {
     await page.setViewportSize(viewport);
     await page.screenshot({ path: testInfo.outputPath(`${viewport.width}-resumed-seek.png`) });
