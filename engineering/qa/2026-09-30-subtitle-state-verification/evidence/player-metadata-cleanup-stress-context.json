@@ -1,0 +1,27 @@
+{
+  "revision": "a42cd1a4237dedd5011d27496b81d6edbb10b3df",
+  "command": [
+    "go",
+    "test",
+    "-count=100",
+    "-run",
+    "^TestConfiguredProviderAutomaticallyEnrichesLibrary$",
+    "./internal/server"
+  ],
+  "testData": "Existing local metadata provider fixture and per-test temporary media/data/cache directories; no production sources or test assertions changed",
+  "environment": {
+    "platform": "Darwin",
+    "arch": "arm64",
+    "TMPDIR": "/tmp/kp-ci-01a0f2ab"
+  },
+  "sourceSHA256": "2d81eb695cf6d0d795e4fb585c0938cecf5d7ced80d4917c4fc5a973c1dd8f45",
+  "CI": {
+    "run": 36781191043,
+    "job": 110112140534,
+    "failure": "TempDir RemoveAll cleanup: metadata directory not empty; enrichment assertions passed"
+  },
+  "startedAt": "2026-09-30T21:55:07.860357+00:00",
+  "exitCode": 0,
+  "finishedAt": "2026-09-30T21:55:40.784575+00:00",
+  "sourceStable": true
+}
