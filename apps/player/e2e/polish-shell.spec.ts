@@ -67,6 +67,27 @@ test("landscape search stays reachable before and after focus on signed-in pages
   }
 });
 
+test("TMDB connection instructions remain readable without horizontal scrolling", { tag: "@smoke" }, async ({ page }, testInfo) => {
+	test.skip(process.env.KINOSAIL_TEST_INSTANCE !== "1", "requires the populated public test instance");
+	for (const viewport of [{ width: 1440, height: 900 }, { width: 390, height: 844 }, { width: 320, height: 800 }]) {
+		await page.setViewportSize(viewport);
+		await page.goto("/settings/configuration#integrations.tmdb");
+		const section = page.locator('section[id="integrations.tmdb"]');
+		const instructions = section.getByRole("list").getByRole("listitem");
+		await expect(instructions).toHaveCount(3);
+		for (const instruction of await instructions.all()) {
+			const box = await instruction.boundingBox();
+			expect(box).not.toBeNull();
+			expect(box!.x, `${viewport.width}px instruction left edge`).toBeGreaterThanOrEqual(0);
+			expect(box!.x + box!.width, `${viewport.width}px instruction right edge`).toBeLessThanOrEqual(viewport.width);
+		}
+		const requestAccess = section.getByRole("link", { name: "Request API access", exact: true });
+		await requestAccess.focus();
+		await expect(requestAccess).toBeFocused();
+		await section.screenshot({ path: testInfo.outputPath(`${viewport.width}-tmdb-instructions.png`) });
+	}
+});
+
 // Compare rendered canvas pixels; WebKit can report a painted body background as "none".
 async function hasCanvasArtwork(page: Page): Promise<boolean> {
   const clip = { x: page.viewportSize()!.width - 4, y: 200, width: 4, height: 40 };

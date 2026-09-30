@@ -32,7 +32,7 @@ test("SCIM configuration stays usable at every supported width", async ({ page }
 		const problems = await layoutProblems(page);
 		expect(Boolean(problems.documentOverflow), `${viewport.width}px overflow`).toBe(false);
 		expect({ ...problems, documentOverflow: false }, `${viewport.width}px layout`).toEqual({ documentOverflow: false, outside: [], tinyControls: [], distortedChecks: [], clippedControls: [], overlappingStatuses: [] });
-		expect((await new AxeBuilder({ page }).analyze()).violations.map(({ id }) => id), `${viewport.width}px accessibility`).toEqual([]);
+		expect((await new AxeBuilder({ page }).analyze()).violations, `${viewport.width}px accessibility`).toEqual([]);
 		await section.screenshot({ path: testInfo.outputPath(`scim-configuration-${viewport.width}.png`) });
 	}
 });

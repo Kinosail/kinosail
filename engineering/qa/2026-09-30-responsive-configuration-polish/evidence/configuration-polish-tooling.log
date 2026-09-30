@@ -1,0 +1,12 @@
+deploy: error: team must be ten uppercase alphanumeric characters; devices must differ
+usage: deploy [-h] --team TEAM --iphone IPHONE --tv TV [--install]
+deploy: error: argument --iphone: expected a paired CoreDevice UUID or Apple device identifier
+usage: deploy [-h] --team TEAM --iphone IPHONE --tv TV [--install]
+deploy: error: team must be ten uppercase alphanumeric characters; devices must differ
+.....iphone: Swift scaffold is build-only; installed device app is unchanged
+..
+----------------------------------------------------------------------
+Ran 12 tests in 0.077s
+
+OK
+validated four CI, app, publication, and version-release workflows
