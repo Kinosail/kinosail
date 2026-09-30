@@ -175,7 +175,7 @@ struct NativePreferencesUXTests {
         await session.restore()
         do {
             let screen = library ? AnyView(LibraryScreen(initialView: .shows)) : AnyView(HomeScreen(selectTab: { _ in }))
-            let window = try host(screen, session: session)
+            let window = try host(screen.environment(\.scenePhase, .inactive), session: session)
             defer { window.isHidden = true }
             try await until { fixture.libraryReads > 0 }
             try snapshot(window, name: "position-\(library ? "library" : "home")-pending")
