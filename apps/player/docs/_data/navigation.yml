@@ -118,6 +118,8 @@
 - title: Project
   url: /faq/
   pages:
+    - title: Choose a Kinosail app
+      url: /products/
     - title: Frequently asked questions
       url: /faq/
     - title: Build from source

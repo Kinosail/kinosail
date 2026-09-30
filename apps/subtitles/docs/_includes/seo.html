@@ -1,4 +1,4 @@
-<meta name="robots" content="index,follow,max-image-preview:large">
+<meta name="robots" content="{% if page.search == false %}noindex,follow{% else %}index,follow,max-image-preview:large{% endif %}">
 <meta property="og:site_name" content="Kinosail">
 <meta property="og:image" content="{{ '/assets/images/kinosail-subtitles-docs-share.png' | absolute_url }}">
 <meta property="og:image:type" content="image/png">
@@ -9,13 +9,14 @@
 <meta name="twitter:image" content="{{ '/assets/images/kinosail-subtitles-docs-share.png' | absolute_url }}">
 <link rel="sitemap" type="application/xml" href="{{ site.root_baseurl | default: '' }}/sitemap.xml">
 {% assign breadcrumb_group = nil %}{% for group in site.data.navigation %}{% if group.title == page.section %}{% assign breadcrumb_group = group %}{% endif %}{% endfor %}
+{% assign root_url = site.url | append: site.root_baseurl %}
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@graph": [
-    {"@type":"Organization","@id":{{ site.url | append: '/#organization' | jsonify }},"name":"Kinosail","url":{{ site.url | append: '/' | jsonify }},"logo":{{ '/assets/images/kinosail-mark.svg' | absolute_url | jsonify }},"sameAs":["https://github.com/Kinosail"]},
-    {"@type":"WebSite","@id":{{ '/#website' | absolute_url | jsonify }},"name":"Kinosail Subtitles documentation","url":{{ '/' | absolute_url | jsonify }},"publisher":{"@id":{{ site.url | append: '/#organization' | jsonify }}}},
-    {"@type":"WebPage","@id":{{ page.url | absolute_url | jsonify }},"url":{{ page.url | absolute_url | jsonify }},"name":{{ page.title | jsonify }},"description":{{ page.description | default: site.description | jsonify }},"isPartOf":{"@id":{{ '/#website' | absolute_url | jsonify }}},"inLanguage":"en"}
+    {"@type":"Organization","@id":{{ root_url | append: '/#organization' | jsonify }},"name":"Kinosail","description":"Kinosail makes free, source-available apps for personal media on your own hardware: Kinosail Player for browsing and playback, and Kinosail Subtitles for subtitle automation.","url":{{ root_url | append: '/' | jsonify }},"logo":{{ root_url | append: '/assets/images/kinosail-mark.svg' | jsonify }},"sameAs":["https://github.com/Kinosail"]},
+    {"@type":"WebSite","@id":{{ root_url | append: '/#website' | jsonify }},"name":"Kinosail","url":{{ root_url | append: '/' | jsonify }},"publisher":{"@id":{{ root_url | append: '/#organization' | jsonify }}}},
+    {"@type":"WebPage","@id":{{ page.url | absolute_url | jsonify }},"url":{{ page.url | absolute_url | jsonify }},"name":{{ page.title | jsonify }},"description":{{ page.description | default: site.description | jsonify }},"isPartOf":{"@id":{{ root_url | append: '/#website' | jsonify }}},"inLanguage":"en"{% if page.url == '/' %},"mainEntity":{"@id":{{ '/#subtitles' | absolute_url | jsonify }}}{% endif %}}
     {% if page.section and page.url != '/' %},
     {"@type":"BreadcrumbList","itemListElement":[
       {"@type":"ListItem","position":1,"name":"Subtitles docs","item":{{ '/' | absolute_url | jsonify }}}
@@ -26,7 +27,7 @@
     ]}
     {% endif %}
     {% if page.url == '/' %},
-    {"@type":"SoftwareApplication","@id":{{ '/#subtitles' | absolute_url | jsonify }},"name":"Kinosail Subtitles","applicationCategory":"MultimediaApplication","operatingSystem":"Linux server; web browser client","url":{{ '/' | absolute_url | jsonify }},"description":"A free, self-hosted subtitle automation app that scans local movies and episodes and writes validated SRT or WebVTT sidecar files.","offers":{"@type":"Offer","price":0},"license":"https://github.com/Kinosail/kinosail/blob/main/apps/subtitles/LICENSE","downloadUrl":{{ '/getting-started/install/' | absolute_url | jsonify }},"screenshot":{{ '/assets/images/subtitles-dashboard-1200.png' | absolute_url | jsonify }},"publisher":{"@id":{{ site.url | append: '/#organization' | jsonify }}}}
+    {"@type":"SoftwareApplication","@id":{{ '/#subtitles' | absolute_url | jsonify }},"name":"Kinosail Subtitles","applicationCategory":"MultimediaApplication","operatingSystem":"Linux server; web browser client","url":{{ '/' | absolute_url | jsonify }},"description":"A free, self-hosted subtitle automation app that scans local movies and episodes and writes validated SRT or WebVTT sidecar files.","offers":{"@type":"Offer","price":0},"license":"https://github.com/Kinosail/kinosail/blob/main/apps/subtitles/LICENSE","downloadUrl":{{ '/getting-started/install/' | absolute_url | jsonify }},"screenshot":{{ '/assets/images/subtitles-dashboard-desktop.webp' | absolute_url | jsonify }},"publisher":{"@id":{{ root_url | append: '/#organization' | jsonify }}}}
     {% endif %}
   ]
 }
