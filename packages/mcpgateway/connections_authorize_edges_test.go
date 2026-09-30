@@ -12,7 +12,7 @@ import (
 func validAuthorizationQuery(connections *Connections, clientID, scope string) string {
 	return url.Values{
 		"response_type": {"code"}, "client_id": {clientID}, "redirect_uri": {"http://127.0.0.1/callback"},
-		"code_challenge": {strings.Repeat("a", 43)}, "code_challenge_method": {"S256"},
+		"code_challenge": {strings.Repeat("A", 43)}, "code_challenge_method": {"S256"},
 		"resource": {connections.resource}, "scope": {scope},
 	}.Encode()
 }

@@ -117,7 +117,7 @@ var errTestSave = errors.New("save failed")
 func TestTokenIssueLimitsAndPersistenceFailureCreateNoGrant(t *testing.T) {
 	connections := testConnections("https://kino.test", &testPrincipals{values: map[string]Principal{}}, &memoryState{})
 	for index := range mcpConnectionLimit {
-		connections.grants[string(rune(index))] = mcpOAuthGrant{}
+		connections.grants[string(rune(index))] = mcpOAuthGrant{RefreshExpires: time.Now().Add(time.Hour).Unix()}
 	}
 	response := httptest.NewRecorder()
 	connections.issue(response, mcpOAuthClient{ID: "agent"}, Principal{ID: "viewer"}, []string{ReadScope})

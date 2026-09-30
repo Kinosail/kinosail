@@ -13,10 +13,11 @@ import (
 )
 
 const (
-	mcpAccessLifetime  = time.Hour
-	mcpRefreshLifetime = 30 * 24 * time.Hour
-	mcpRequestLifetime = 10 * time.Minute
-	mcpConnectionLimit = 128
+	mcpAccessLifetime      = time.Hour
+	mcpRefreshLifetime     = 30 * 24 * time.Hour
+	mcpRequestLifetime     = 10 * time.Minute
+	mcpConnectionLimit     = 128
+	mcpRefreshHistoryLimit = 1024
 )
 
 // Connections owns built-in OAuth clients, grants, and one-use credentials.
@@ -38,6 +39,7 @@ type Connections struct {
 	client     *http.Client
 	external   bool
 	register   httpguard.Limiter
+	requests   httpguard.Limiter
 }
 
 type mcpConnectionState struct {
@@ -54,6 +56,7 @@ type mcpOAuthClient struct {
 }
 
 type mcpOAuthGrant struct {
+	RefreshHistory  []string `json:"refreshHistory,omitempty"`
 	ProfileRevision uint64   `json:"profileRevision"`
 	ID              string   `json:"id"`
 	ClientID        string   `json:"clientId"`
@@ -145,6 +148,10 @@ func (connections *Connections) loadState() {
 	if !found {
 		return
 	}
+	if !validMCPConnectionState(state) {
+		connections.err = errors.New("agent connection state is invalid")
+		return
+	}
 	if state.Clients != nil {
 		connections.clients = state.Clients
 	}
@@ -166,8 +173,8 @@ func (connections *Connections) RegisterOAuth(mux *http.ServeMux) {
 	mux.HandleFunc("POST /oauth/register", connections.registerClient)
 	mux.HandleFunc("GET /oauth/authorize", connections.authorize)
 	mux.HandleFunc("POST /oauth/authorize", connections.authorize)
-	mux.HandleFunc("POST /oauth/token", connections.token)
-	mux.HandleFunc("POST /oauth/revoke", connections.revokeToken)
+	mux.Handle("POST /oauth/token", limitMCPRequests(&connections.requests, http.HandlerFunc(connections.token)))
+	mux.Handle("POST /oauth/revoke", limitMCPRequests(&connections.requests, http.HandlerFunc(connections.revokeToken)))
 }
 
 func (connections *Connections) metadata(writer http.ResponseWriter, _ *http.Request) {
