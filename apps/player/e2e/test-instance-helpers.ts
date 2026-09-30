@@ -31,6 +31,7 @@ export async function login(page: import("@playwright/test").Page) {
   await page.getByLabel("Password", { exact: true }).fill(process.env.KINOSAIL_E2E_OWNER_PASSWORD ?? "test-instance-password");
   await page.getByLabel("Authentication or recovery code").fill(totp());
   await page.getByRole("button", { name: "Sign in", exact: true }).click();
+  await page.waitForURL(url => url.pathname !== "/login");
   if (await page.getByRole("link", { name: "Not now" }).isVisible()) await page.getByRole("link", { name: "Not now" }).click();
 }
 
@@ -39,6 +40,7 @@ export async function loginViewer(page: Page, name: string, password: string) {
   await page.getByLabel("Name").fill(name);
   await page.getByLabel("Password", { exact: true }).fill(password);
   await page.getByRole("button", { name: "Sign in", exact: true }).click();
+  await page.waitForURL(url => url.pathname !== "/login");
 }
 
 export async function createViewer(page: Page, name: string, password: string): Promise<string> {

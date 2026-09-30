@@ -53,12 +53,28 @@ test.describe("large offline transfers", () => {
         headers: { "Content-Digest": `sha-256=:${createHash("sha256").update(body).digest("base64")}:`, "Content-Range": `bytes ${start}-${end}/${media.length}` },
       });
     });
-    await page.evaluate(async (id) => {
-      const file = await (await navigator.storage.getDirectory()).getFileHandle(id, { create: true });
-      const writer = await file.createWritable();
-      await writer.write(new Uint8Array(16).fill(1));
-      await writer.close();
+    const supportsOPFS = await page.evaluate(async (id) => {
+      // Match the production writer's worker API; Window createWritable is not portable.
+      const scope = async (jobID: string) => {
+        if (typeof FileSystemFileHandle === "undefined" || !FileSystemFileHandle.prototype.createSyncAccessHandle) return self.postMessage({ supported: false });
+        try {
+          const file = await (await navigator.storage.getDirectory()).getFileHandle(jobID, { create: true });
+          const writer = await file.createSyncAccessHandle();
+          try { writer.write(new Uint8Array(16).fill(1)); writer.flush(); }
+          finally { writer.close(); }
+          self.postMessage({ supported: true });
+        } catch (error) { self.postMessage({ error: String(error) }); }
+      };
+      const url = URL.createObjectURL(new Blob([`(${scope.toString()})(${JSON.stringify(id)})`], { type: "text/javascript" }));
+      const worker = new Worker(url);
+      try {
+        return await new Promise<boolean>((resolve, reject) => {
+          worker.onmessage = ({ data }) => data.error ? reject(new Error(data.error)) : resolve(data.supported);
+          worker.onerror = reject;
+        });
+      } finally { worker.terminate(); URL.revokeObjectURL(url); }
     }, jobID!);
+    test.skip(!supportsOPFS, "This engine lacks the OPFS sync writer; IndexedDB quota resume is covered separately.");
     await page.evaluate(({ id, itemID, profileID, quality, sha256, size, title }) => new Promise<void>((resolve, reject) => {
       const request = indexedDB.open("kinosail-offline-v1", 4);
       request.onsuccess = () => {

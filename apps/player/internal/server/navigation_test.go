@@ -40,8 +40,8 @@ func TestLibrarySearchUsesLocalizedAccessibleCopy(t *testing.T) {
 	page := apiCall(t, handler, "", http.MethodGet, "/?lang=fr", nil)
 	assertAPIBody(t, page, http.StatusOK,
 		`<label for="library-search">Rechercher dans la bibliothèque</label>`,
-		`aria-label="Rechercher dans toutes les bibliothèques"`,
-		`placeholder="Rechercher dans toutes les bibliothèques"`)
+		`aria-label="Rechercher partout"`,
+		`placeholder="Rechercher partout"`)
 	if strings.Contains(page.Body.String(), "Find something") {
 		t.Fatalf("search control retains untranslated copy: %q", page.Body.String())
 	}

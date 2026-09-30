@@ -1,9 +1,14 @@
+let supporterRecognition;
 async function bindSupporterRecognition() {
   if (document.body.classList.contains("auth")) return;
+  supporterRecognition?.abort();
+  const controller = new AbortController();
+  supporterRecognition = controller;
   try {
-    const response = await fetch("/api/v1/supporter/collection", {headers: {accept: "application/json"}});
+    const response = await fetch("/api/v1/supporter/collection", {headers: {accept: "application/json"}, signal: controller.signal});
     if (!response.ok) return;
     const collection = await response.json();
+    if (controller.signal.aborted) return;
     if (!Array.isArray(collection.badges) || collection.badges.length > 4) return;
     const badges = collection.badges.filter(badge => Number.isInteger(badge.rank) && badge.rank >= 1 && badge.rank <= 10 &&
       ["one-time", "monthly", "yearly", undefined].includes(badge.edition) && ["patron-order", "living-standard"].includes(badge.family));
@@ -104,4 +109,5 @@ bindSupporterRecognition();
 bindSupporterShare();
 document.addEventListener("htmx:after:swap", bindSupporterRecognition);
 
+window.addEventListener("pagehide", () => supporterRecognition?.abort());
 window.addEventListener("pageshow", (event) => { if (event.persisted) bindSupporterRecognition(); });

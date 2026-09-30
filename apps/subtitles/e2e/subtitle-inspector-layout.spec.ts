@@ -75,6 +75,6 @@ for (const theme of ["dark", "light"]) for (const viewport of viewports) {
       await page.screenshot({ path: testInfo.outputPath(`${state}.png`) });
     }
     expect(writes).toEqual([]);
-    await testInfo.attach("fixture-context", { body: JSON.stringify({ revision, command: "TestWriteUIStateFixturesSubtitleInspector + playwright test subtitle-inspector-layout.spec.ts", fixture: "Arrival, two installed SRT cues; isolated API pending/empty/503 states", viewport, theme, environment: "Chromium; server-rendered route and embedded production assets" }), contentType: "application/json" });
+    await testInfo.attach("fixture-context", { body: JSON.stringify({ revision, command: "TestWriteUIStateFixturesSubtitleInspector + playwright test subtitle-inspector-layout.spec.ts", fixture: "Arrival, two installed SRT cues; isolated API pending/empty/503 states", viewport, theme, environment: `${testInfo.project.name}; server-rendered route and embedded production assets` }), contentType: "application/json" });
   });
 }
