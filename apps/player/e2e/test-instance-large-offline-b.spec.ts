@@ -55,25 +55,22 @@ test.describe("large offline transfers", () => {
     });
     const supportsOPFS = await page.evaluate(async (id) => {
       // Match the production writer's worker API; Window createWritable is not portable.
-      const scope = () => {
-        self.onmessage = async ({ data: jobID }) => {
-          if (typeof FileSystemFileHandle === "undefined" || !FileSystemFileHandle.prototype.createSyncAccessHandle) return self.postMessage({ supported: false });
-          try {
-            const file = await (await navigator.storage.getDirectory()).getFileHandle(jobID, { create: true });
-            const writer = await file.createSyncAccessHandle();
-            try { writer.write(new Uint8Array(16).fill(1)); writer.flush(); }
-            finally { writer.close(); }
-            self.postMessage({ supported: true });
-          } catch (error) { self.postMessage({ error: String(error) }); }
-        };
+      const scope = async (jobID: string) => {
+        if (typeof FileSystemFileHandle === "undefined" || !FileSystemFileHandle.prototype.createSyncAccessHandle) return self.postMessage({ supported: false });
+        try {
+          const file = await (await navigator.storage.getDirectory()).getFileHandle(jobID, { create: true });
+          const writer = await file.createSyncAccessHandle();
+          try { writer.write(new Uint8Array(16).fill(1)); writer.flush(); }
+          finally { writer.close(); }
+          self.postMessage({ supported: true });
+        } catch (error) { self.postMessage({ error: String(error) }); }
       };
-      const url = URL.createObjectURL(new Blob([`(${scope.toString()})()`], { type: "text/javascript" }));
+      const url = URL.createObjectURL(new Blob([`(${scope.toString()})(${JSON.stringify(id)})`], { type: "text/javascript" }));
       const worker = new Worker(url);
       try {
         return await new Promise<boolean>((resolve, reject) => {
           worker.onmessage = ({ data }) => data.error ? reject(new Error(data.error)) : resolve(data.supported);
           worker.onerror = reject;
-          worker.postMessage(id);
         });
       } finally { worker.terminate(); URL.revokeObjectURL(url); }
     }, jobID!);
