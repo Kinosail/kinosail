@@ -5,6 +5,8 @@
 .subtitle-inspector video { display:block; width:100%; aspect-ratio:16/9; object-fit:contain; max-height:60vh; background:var(--bg); border:1px solid var(--line); border-radius:.5rem; }
 .subtitle-inspector label { display:flex; gap:.5rem; flex-wrap:wrap; align-items:center; margin:.75rem 0; }
 .subtitle-inspector label:has(select), .subtitle-inspector label:has(input:not([type=checkbox],[type=radio])) { flex-direction:column; align-items:stretch; }
+.subtitle-inspector label:has(select) { display:block; }
+.subtitle-inspector select { margin-top:.5rem; }
 .subtitle-inspector input:not([type=checkbox],[type=radio]), .subtitle-inspector select { width:100%; min-width:0; }
 .subtitle-inspector fieldset { border:0; padding:0; margin:.75rem 0; }
 .subtitle-preview-choice { display:flex; gap:1.5rem; }

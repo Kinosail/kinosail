@@ -47,12 +47,12 @@ for (const theme of ["dark", "light"]) for (const viewport of viewports) {
     await expect(page.getByRole("heading", { name: "Arrival", exact: true })).toBeVisible();
     const layout = await page.evaluate(() => {
       const box = (selector: string) => document.querySelector(selector)!.getBoundingClientRect().toJSON();
-      return { header: box(".app-header"), title: box(".subtitle-topbar h1"), nav: box(".app-header nav"), main: box(".subtitle-main"), video: box("video"), overflow: document.documentElement.scrollWidth - innerWidth };
+      return { header: box(".app-header"), title: box(".subtitle-topbar h1"), nav: box(".app-header nav"), main: box(".subtitle-main"), video: box("video"), overflow: document.documentElement.scrollWidth - innerWidth, offenders: [...document.querySelectorAll<HTMLElement>("body *")].filter(element => { const rect = element.getBoundingClientRect(); return rect.height > 0 && (rect.right > innerWidth + 1 || element.scrollWidth > element.clientWidth + 1); }).map(element => ({ tag: element.tagName, class: element.className, right: element.getBoundingClientRect().right, width: getComputedStyle(element).width, minWidth: getComputedStyle(element).minWidth, scrollWidth: element.scrollWidth, clientWidth: element.clientWidth })) };
     });
     expect(layout.header.width).toBeCloseTo(viewport.width, 0);
     expect(layout.header.height).toBeLessThanOrEqual(100);
     expect(layout.title.top).toBeGreaterThanOrEqual(layout.header.bottom);
-    expect(layout.overflow).toBeLessThanOrEqual(1);
+    expect(layout.overflow, JSON.stringify(layout.offenders)).toBeLessThanOrEqual(1);
     expect(layout.video.height).toBeGreaterThanOrEqual(Math.min(layout.video.width * 9 / 16, viewport.height * .6) - 2);
     expect(layout.video.height).toBeCloseTo(pendingVideo!.height, 0);
     if (viewport.width > 1100) expect(layout.main.left).toBeGreaterThanOrEqual(layout.nav.right);
@@ -72,9 +72,10 @@ for (const theme of ["dark", "light"]) for (const viewport of viewports) {
       await expect(page.getByRole("button", { name: "Save reviewed subtitle" })).toBeDisabled();
       await expect(page.locator(".subtitle-cue-row")).toHaveCount(0);
       await expect(page.locator(".subtitle-topbar h1")).toBeInViewport();
+      expect(await page.evaluate(() => document.documentElement.scrollWidth - innerWidth)).toBeLessThanOrEqual(1);
       await page.screenshot({ path: testInfo.outputPath(`${state}.png`) });
     }
     expect(writes).toEqual([]);
-    await testInfo.attach("fixture-context", { body: JSON.stringify({ revision, command: "TestWriteUIStateFixturesSubtitleInspector + playwright test subtitle-inspector-layout.spec.ts", fixture: "Arrival, two installed SRT cues; isolated API pending/empty/503 states", viewport, theme, environment: "Chromium; server-rendered route and embedded production assets" }), contentType: "application/json" });
+    await testInfo.attach("fixture-context", { body: JSON.stringify({ revision, command: "TestWriteUIStateFixturesSubtitleInspector + playwright test subtitle-inspector-layout.spec.ts", fixture: "Arrival, two installed SRT cues; isolated API pending/empty/503 states", viewport, theme, environment: `${testInfo.project.name}; server-rendered route and embedded production assets` }), contentType: "application/json" });
   });
 }

@@ -1,6 +1,6 @@
 # Kinosail deep QA — September 30, 2026
 
-This audit found and fixed six confirmed defects. It does not establish that every product path or device is free of bugs.
+This audit found and fixed seven confirmed defects. It does not establish that every product path or device is free of bugs.
 
 ## Run record
 
@@ -92,6 +92,17 @@ Recognition now aborts its previous read on navigation swaps and cancels the cur
 - Green: `supporter-lifecycle-green.log`, fifteen checks across Chromium, Firefox and WebKit. `deep-followup-go-green.log` passed five repetitions of the maintenance, startup, Supporter HTTP and application-shell race checks. Source cap, shellcheck and tooling checks also passed. `deep-followup-run-record.json` records commands, source hashes, environment and results.
 - Checks preserve the single collection request, apply hidden preferences, prevent stale updates, restore on back navigation, and avoid authentication-page reads. Rendered state screenshots accompany the lifecycle checks.
 
+### QA-007 — WebKit encoding controls overflow the inspector at 320px (medium; fixed)
+
+The full hosted WebKit suite found four pixels of page overflow in both themes. The Text encoding select exceeded its label's internal width even though normal element rectangles stayed inside the viewport. A local baseline matrix passed forty checks and failed these same two cases.
+
+Select labels now use block layout with the existing half-rem spacing. Checkbox and numeric-input layouts retain their existing behavior. The inspector stylesheet cache version advances to 4.
+
+- Red: `inspector-webkit-320-red.log`, hosted run `36757578425`, and `inspector-layout-grid-green.log`. The last filename is misleading: its proposed grid change was rejected by a failing diagnostic precondition, so it records unchanged production CSS and forty passes plus two failures.
+- Diagnosis: `inspector-overflow-block-probe.log` and `inspector-overflow-select-gap-probe.log` isolate the encoding label; block layout removes the overflow, while forcing the select itself to block layout brings it back.
+- Green: `inspector-layout-final-green.log` (fourteen Chromium checks), `inspector-layout-final-cross-browser.log` (twenty-eight Firefox/WebKit checks), and `inspector-final-go.log` (focused inspector HTTP and rejection tests).
+- The matrix checks both themes at 320, 390, 568, 720, 1024, 1440 and 1920px. It saves pending, loaded, empty and failed renders, checks video geometry, keyboard/navigation landmarks, accessibility at desktop/phone sizes, and no writes during review. Empty and failed states also assert no horizontal overflow. Browser artifacts now record their actual project name.
+
 ## Verification
 
 | Surface | Result | Evidence and limits |
@@ -139,7 +150,11 @@ The manual deep run `36750352124` caught three additional verification problems.
 
 The Player maintenance regression failed because startup maintenance pruned its deliberately over-limit cache before the test started a stream. `maintenance-race-reproduction.log` reproduced this repeatedly, and `maintenance-before-stream-diagnostic.log` confirms pruning before the media request. The test now invokes the same automatic operation explicitly with its background scheduler disabled, and always releases its blocked response writer. Separate tests still verify scheduled eviction and startup lifecycle behavior. This is a test setup correction, not a confirmed production playback failure.
 
-The next deep run passed the scan but reached a later cleanup conflict. Browser-created sidecars were owned by the runner and lacked write access for container UID 10001. Linux protected hardlinks reject the cleanup operation under those permissions. The two temporary cleanup files now receive writable test permissions before confirmation; an attached artifact records their owner and before/after modes. Production no-overwrite safeguards stay intact. Hosted reruns are required to confirm this diagnosis.
+The next deep run passed the scan but reached a later cleanup conflict. Browser-created sidecars were owned by the runner and lacked write access for container UID 10001. Linux protected hardlinks reject the cleanup operation under those permissions. The two temporary cleanup files now receive writable test permissions before confirmation; an attached artifact records their owner and before/after modes. Production no-overwrite safeguards stay intact. The next deep run passed cleanup in Chromium and Firefox; WebKit reached later, unrelated failures recorded below.
+
+The required PR run `36757473280` passed on its second attempt. Its initial failures were temporary FFmpeg execution (`text file busy`) and Chromium startup, before the relevant assertions. The ordinary failed-job rerun passed without a source change. The subsequent deep run `36757578425` passed Player's complete three-browser matrix, shared/app Go race and coverage checks, native compilation, security policy and both app container builds. Its only failing browser job was Subtitles WebKit: QA-007 above and an inspector pending-state response gate bypassed by the service worker.
+
+The dashboard browser tests now block service workers so their explicit API response gates control pending states. A local WebKit reproduction failed before that test-context correction and passed afterward (`defaults-webkit-red.log`, `defaults-webkit-service-worker.log`). Product service-worker behavior is unchanged; offline/service-worker checks remain separate. The final complete dashboard matrix and current-head hosted rerun are recorded after completion.
 
 ## Repeatable commands
 
