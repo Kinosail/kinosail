@@ -128,6 +128,12 @@ func titleLetter(title, locale string) string {
 
 func titleLetterWithCaser(title string, upper cases.Caser) string {
 	for _, value := range strings.TrimSpace(title) {
+		if value >= 'a' && value <= 'z' {
+			value -= 'a' - 'A'
+		}
+		if value >= 'A' && value <= 'Z' {
+			return "ABCDEFGHIJKLMNOPQRSTUVWXYZ"[value-'A' : value-'A'+1]
+		}
 		if unicode.IsLetter(value) {
 			return normalizedLetter(string(value), upper)
 		}

@@ -25,11 +25,12 @@ const (
 
 // Gateway provides the shared MCP protocol and API-tool implementation.
 type Gateway struct {
-	config          OAuthConfig
-	principals      PrincipalRepository
-	api             APIInvoker
-	routes          RoutePolicy
-	servers         [4]*mcp.Server
+	config     OAuthConfig
+	principals PrincipalRepository
+	api        APIInvoker
+	routes     RoutePolicy
+	servers    [4]*mcp.Server
+	eventGateway
 	requests, tools httpguard.Limiter
 }
 
@@ -72,6 +73,7 @@ func Register(mux *http.ServeMux, config GatewayConfig, connections *Connections
 		verifier = connections.VerifyToken
 	}
 	adapter := newGateway(config)
+	adapter.connections = connections
 	if verifier == nil {
 		verifier = adapter.verifyToken
 	}
@@ -94,7 +96,7 @@ func Register(mux *http.ServeMux, config GatewayConfig, connections *Connections
 }
 
 func newGateway(config GatewayConfig) *Gateway {
-	adapter := &Gateway{config: config.OAuth, principals: config.Principals, api: config.API, routes: config.Routes}
+	adapter := &Gateway{config: config.OAuth, principals: config.Principals, api: config.API, routes: config.Routes, eventGateway: newEventGateway(config)}
 	for access := range adapter.servers {
 		adapter.servers[access] = adapter.newServer(access&1 != 0, access&2 != 0)
 	}
@@ -108,6 +110,7 @@ func (adapter *Gateway) newServer(writable, manageable bool) *mcp.Server {
 	})
 	server.AddReceivingMiddleware(modernMCPResults)
 	server.AddReceivingMiddleware(adapter.limitTools)
+	adapter.registerEvents(server)
 	closed := false
 	mcp.AddTool(server, &mcp.Tool{
 		Name:        "read_api",
