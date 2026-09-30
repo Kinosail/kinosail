@@ -25,6 +25,31 @@ test("Safari startup accepts the remaining buffer near the end of a video", asyn
   await expect(page.locator("[data-player-status]")).toBeHidden();
 });
 
+test("Safari startup waits after preparation restores a position following blocked autoplay", async ({ page }) => {
+  const video = page.locator("video");
+  await page.evaluate(() => {
+    const context = window as Window & {setBufferedEnd: (value: number) => void; setPlayPending: (value: boolean) => void};
+    context.setBufferedEnd(20.1);
+    context.setPlayPending(true);
+  });
+  await video.dispatchEvent("loadstart");
+  await video.dispatchEvent("kinosail:play-needs-gesture");
+  await page.evaluate(() => {
+    const context = window as Window & {setBufferedEnd: (value: number) => void; setReadyState: (value: number) => void};
+    context.setBufferedEnd(23);
+    context.setReadyState(3);
+    const video = document.querySelector("video")!;
+    video.currentTime = 20.2;
+    video.addEventListener("pause", () => context.setReadyState(2), {once: true});
+  });
+  await video.dispatchEvent("progress");
+  await expect(video).toHaveJSProperty("currentTime", 20);
+  await expect(page.locator("[data-player-status]")).toBeVisible();
+  await page.evaluate(() => (window as Window & {setReadyState: (value: number) => void}).setReadyState(3));
+  await video.dispatchEvent("canplay");
+  await expect(page.locator("[data-player-status]")).toBeHidden();
+});
+
 for (const trigger of ["timer", "blocked autoplay", "canplay", "seeked"]) test(`Safari startup waits for a playable buffer after ${trigger}`, async ({ page }, testInfo) => {
   await page.addStyleTag({ content: await readFile("../../../packages/webassets/static/player-stage.css", "utf8") });
   await page.addStyleTag({ content: await readFile("../internal/server/static/home.css", "utf8") });

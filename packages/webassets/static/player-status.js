@@ -69,7 +69,10 @@ if (playerStatus) {
     try { Promise.resolve(player.play()).catch(failed); } catch (error) { failed(error); }
   };
   const finishPreparation = () => {
-    if (playbackPreparation && readyForPlay()) playbackPreparation.stop();
+    if (playbackPreparation && readyForPlay()) {
+      needsGesture = false;
+      playbackPreparation.stop();
+    }
     if (!playbackPreparation) revealPlayControl();
   };
   player.addEventListener("kinosail:playback-intent", ({detail}) => {
