@@ -1,5 +1,3 @@
-let managedSeek = false;
-const setPlayerTime = (seconds) => { managedSeek = true; player.currentTime = seconds; };
 const castButtons = [...document.querySelectorAll("[data-cast]")];
 const castState = document.querySelector("[data-cast-state]");
 const messages = document.body.dataset;
@@ -131,13 +129,14 @@ document.querySelector("[data-sleep-timer]")?.addEventListener("change", ({targe
 const autoSkip = new Set((player.dataset.autoSkip || "").split(","));
 const markers = document.querySelectorAll("[data-marker]");
 player.addEventListener("seeking", () => {
-  if (managedSeek) return;
+  if (playbackPreparation || managedSeek) return;
   for (const marker of markers) {
     if (player.currentTime >= Number(marker.dataset.start) && player.currentTime < Number(marker.dataset.seek)) marker.dataset.skipped = "true";
   }
 });
 player.addEventListener("seeked", () => { managedSeek = false; });
 player.addEventListener("timeupdate", () => {
+  if (playbackPreparation) return;
   for (const marker of markers) {
     const active = !marker.dataset.skipped && player.currentTime >= Number(marker.dataset.start) && player.currentTime < Number(marker.dataset.seek) - 1;
     marker.hidden = !active;

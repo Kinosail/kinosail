@@ -210,7 +210,7 @@ struct HomeSelection {
 private struct TVHomeBrowse: View {
     @FocusState private var focusedTitle: String?
     let selectTab: (PlayerTab) -> Void
-    private let tabs: [PlayerTab] = [.movies, .shows, .music, .audiobooks, .photos, .library]
+    private let tabs: [PlayerTab] = [.movies, .shows, .music, .audiobooks, .photos]
 
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
@@ -218,7 +218,7 @@ private struct TVHomeBrowse: View {
             ScrollView(.horizontal) {
                 LazyHStack(alignment: .top, spacing: 18) {
                     ForEach(tabs) { tab in
-                        tile(title: tab.title, icon: icon(for: tab), systemIcon: tab == .library) { selectTab(tab) }
+                        tile(title: tab.title, icon: icon(for: tab)) { selectTab(tab) }
                     }
                 }
                 .padding(.horizontal, 24)
@@ -232,15 +232,10 @@ private struct TVHomeBrowse: View {
         .focusSection()
     }
 
-    private func tile(title: String, icon: String, systemIcon: Bool = false, action: @escaping () -> Void) -> some View {
+    private func tile(title: String, icon: String, action: @escaping () -> Void) -> some View {
         Button(action: action) {
             HStack(spacing: 18) {
-                if systemIcon {
-                    Image(systemName: icon).resizable().scaledToFit()
-                        .frame(width: 60, height: 60).foregroundStyle(KinoTheme.signal).accessibilityHidden(true)
-                } else {
-                    Image(icon).resizable().scaledToFit().frame(width: 60, height: 60).accessibilityHidden(true)
-                }
+                Image(icon).resizable().scaledToFit().frame(width: 60, height: 60).accessibilityHidden(true)
                 Text(title).font(.title3.weight(.semibold)).foregroundStyle(KinoTheme.text)
                     .multilineTextAlignment(.leading)
                     .lineLimit(2).fixedSize(horizontal: false, vertical: true)
@@ -268,7 +263,6 @@ private struct TVHomeBrowse: View {
         case .audiobooks: "BrowseAudiobooks"
         case .photos: "BrowsePhotos"
         case .collections: "BrowseCollections"
-        case .library: "books.vertical"
         default: tab.symbol
         }
     }

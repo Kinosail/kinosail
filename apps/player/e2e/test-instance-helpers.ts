@@ -83,7 +83,7 @@ export async function firstPlayable(page: Page): Promise<string> {
 
 export async function openLibrarySection(page: import("@playwright/test").Page, section: string) {
   const navigation = page.getByRole("navigation", { name: "Main navigation" });
-  const link = navigation.getByRole("link", { name: section, exact: true });
+  const link = navigation.getByRole("link", { name: section === "Shows" ? /^(TV )?Shows$/ : section, exact: true });
   if (!await link.isVisible()) await navigation.getByText("More", { exact: true }).click();
   await link.click();
 }
