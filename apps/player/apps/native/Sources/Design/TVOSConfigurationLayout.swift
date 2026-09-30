@@ -44,11 +44,16 @@ struct TVOSConfigurationLayout<Content: View>: View {
 
 extension View {
     @ViewBuilder
-    func configurationNavigationTitle(_ title: String) -> some View {
+    func configurationNavigationTitle(_ title: String, large: Bool = false) -> some View {
         #if os(tvOS)
         self.navigationTitle("")
         #else
         self.navigationTitle(title)
+            .scrollContentBackground(.hidden)
+            .frame(maxWidth: 760)
+            .frame(maxWidth: .infinity)
+            .background(KinoTheme.background)
+            .navigationBarTitleDisplayMode(large ? .large : .inline)
         #endif
     }
 

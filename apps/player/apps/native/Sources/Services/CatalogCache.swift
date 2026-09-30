@@ -9,7 +9,7 @@ struct CatalogRequest: Sendable {
 
 extension ServerClient {
     /// Domain validation runs on both remote and persisted data. This seam is
-    /// deliberately limited to catalog reads, never playback or authentication.
+    /// limited to browsing metadata and preferences, never stream URLs or authentication.
     func catalog<Value: Sendable>(_ path: String, policy: CatalogPolicy,
                                  decode: @escaping (JSONValue) throws -> Value) async throws -> Value {
         try Task.checkCancellation()
@@ -21,7 +21,8 @@ extension ServerClient {
         guard parts.count >= 3, parts[0] == "api", parts[1] == "v1",
               parts.count == 3 && ["library", "actor", "collections", "albums"].contains(parts[2]) ||
               parts.count == 4 && ["items", "shows", "collections", "albums"].contains(parts[2]) ||
-              parts.count == 5 && parts[2] == "items" && parts[4] == "watch-progress",
+              parts.count == 5 && parts[2] == "items" && ["watch-progress", "playback-preferences"].contains(parts[4]) ||
+              parts.count == 4 && parts[2] == "me" && parts[3] == "media-preferences",
               ["library", "actor"].contains(parts[2]) || url.query == nil else { throw ClientError.invalidInput("The catalog request is invalid.") }
         let generation = catalogGeneration
         let store = try cacheStore()

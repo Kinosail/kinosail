@@ -4,12 +4,13 @@ struct WatchPosition: View {
     let item: MediaItem
     var compact = false
     var barOnly = false
+    var textOnly = false
     @Environment(\.dynamicTypeSize) private var dynamicType
     @Environment(AppSession.self) private var session
     @State private var progress: WatchProgressSummary?
     @State private var loadedIdentity: String?
     private var cacheKey: String { "watch-progress:\(item.id)" }
-    private var requestIdentity: String { "\(session.client?.identity.uuidString ?? ""):\(item.id):\(session.contentRevision)" }
+    private var requestIdentity: String { "\(session.client?.identity.uuidString ?? ""):\(item.id):\(item.progress.seconds):\(session.contentRevision)" }
     private var visibleProgress: WatchProgressSummary? {
         guard item.kind == .video, let clientID = session.client?.identity else { return nil }
         if loadedIdentity == requestIdentity { return progress }
@@ -19,7 +20,9 @@ struct WatchPosition: View {
     var body: some View {
         let progress = visibleProgress
         Group {
-            if barOnly {
+            if textOnly {
+                remaining
+            } else if barOnly {
                 Color.clear.frame(height: 6).overlay {
                     if let fraction = progress?.fraction {
                         ProgressView(value: fraction).tint(KinoTheme.signal)
@@ -47,12 +50,14 @@ struct WatchPosition: View {
             guard item.kind == .video, let client = session.client else { return }
             let identity = requestIdentity, revision = session.contentRevision.uuidString
             let clientID = client.identity
-            if session.resourceSnapshots.isFresh(for: cacheKey, clientID: clientID, as: WatchProgressSummary.self, refreshID: revision) { return }
+            if visibleProgress != nil, session.resourceSnapshots.isFresh(for: cacheKey, clientID: clientID, as: WatchProgressSummary.self, refreshID: revision) { return }
             do {
                 if let saved = try? await client.watchProgress(itemID: item.id, policy: .cached) {
                     try Task.checkCancellation()
                     guard requestIdentity == identity else { return }
                     session.resourceSnapshots.store(saved, for: cacheKey, clientID: clientID)
+                    self.progress = try? WatchProgressSummary(.object(["seconds": .number(item.progress.seconds), "duration": .number(saved.duration)]))
+                    loadedIdentity = identity
                 }
                 let hasSaved = session.resourceSnapshots.value(for: cacheKey, clientID: clientID, as: WatchProgressSummary.self) != nil
                 let next = try await client.watchProgress(itemID: item.id, policy: hasSaved ? .reload : .automatic)

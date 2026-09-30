@@ -3,6 +3,30 @@ import Testing
 @testable import KinosailPlayer
 
 struct CatalogCacheTests {
+    @Test func reusesValidatedPreferencesWithoutCachingAuthentication() async throws {
+        let data = try JSONEncoder().encode(MediaPreferences().json)
+        let fixture = try HTTPFixture(data: data, viewer: profile())
+        defer { fixture.remove() }
+        let path = "/api/v1/me/media-preferences"
+        let first = try await fixture.client.catalog(path, policy: .automatic, decode: MediaPreferences.init)
+        let saved = try await fixture.client.catalog(path, policy: .cached, decode: MediaPreferences.init)
+        #expect(first == saved)
+        #expect(fixture.requests.count == 1)
+        var edited = first
+        edited.wifiOnly = false
+        let editedData = try JSONEncoder().encode(edited.json)
+        FixtureURLProtocol.entries.withLock {
+            $0[fixture.host]?.routes[path] = .init(data: editedData, status: 200, headers: [:])
+        }
+        _ = try await fixture.client.saveMediaPreferences(edited)
+        let updated = try await fixture.client.catalog(path, policy: .cached, decode: MediaPreferences.init)
+        #expect(updated.wifiOnly == false)
+        #expect(fixture.requests.count == 2)
+        await #expect(throws: ClientError.self) { try await fixture.client.catalog("/api/v1/me/session", policy: .automatic) { $0 } }
+        #expect(fixture.requests.count == 2)
+        await fixture.client.close()
+    }
+
     @Test func persistsRealEpisodeAndShowArtworkVariants() async throws {
         let directory = cacheDirectory()
         defer { try? FileManager.default.removeItem(at: directory) }

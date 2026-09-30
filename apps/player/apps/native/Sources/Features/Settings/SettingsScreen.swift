@@ -11,38 +11,50 @@ struct SettingsScreen: View {
         Form {
             Section("Server & Viewer Profile") {
                 if let viewer = session.viewer {
-                    LabeledContent("Server", value: viewer.serverName)
-                    LabeledContent("Viewer Profile", value: viewer.name)
+                    Label {
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text(viewer.name).font(.headline).foregroundStyle(KinoTheme.text)
+                            Text(viewer.serverName).font(.subheadline).foregroundStyle(KinoTheme.muted)
+                        }
+                    } icon: {
+                        Image(systemName: "person.crop.circle").font(.title).foregroundStyle(KinoTheme.signal)
+                    }
+                    .padding(.vertical, 8)
+                    .accessibilityElement(children: .combine)
+                    .accessibilityLabel("Viewer Profile: \(viewer.name). Server: \(viewer.serverName)")
                 }
-                if let client = session.client { Text(client.server.url.absoluteString).font(.caption).foregroundStyle(.secondary) }
                 Button("Change Server", systemImage: "network") { session.showsSetup = true }
                 #if os(tvOS)
                 Text("Everyone using this Apple TV shares the connected Viewer Profile, including its library access and watch history.")
                     .font(.footnote).foregroundStyle(.secondary)
                 #endif
-                NavigationLink("Connect a TV", value: ScreenDestination.approval)
+                NavigationLink(value: ScreenDestination.approval) { Label("Connect a TV", systemImage: "tv") }
+                if let client = session.client {
+                    Text(client.server.url.absoluteString).font(.caption).foregroundStyle(KinoTheme.muted)
+                        .textSelection(.enabled).lineLimit(nil)
+                }
             }
-            Section("Supporter") { NavigationLink("Supporter collection and display") { SupporterScreen() } }
-            Section("Appearance") {
+            Section("Playback & library") {
+                NavigationLink(value: ScreenDestination.playbackPreferences) { Label("Playback", systemImage: "play.circle") }
                 #if os(iOS)
-                NavigationLink("Customize tabs", value: ScreenDestination.tabPreferences)
+                NavigationLink(value: ScreenDestination.offlinePreferences) { Label("Downloads", systemImage: "arrow.down.circle") }
+                NavigationLink(value: ScreenDestination.readerPreferences) { Label("Reader", systemImage: "book") }
+                #endif
+                NavigationLink(value: ScreenDestination.progressSync) { Label("Progress sync", systemImage: "arrow.triangle.2.circlepath") }
+            }
+            Section("Personalize") {
+                #if os(iOS)
+                NavigationLink(value: ScreenDestination.tabPreferences) { Label("Customize tabs", systemImage: "rectangle.3.group") }
                 #endif
                 #if os(tvOS)
                 Toggle("Show titles on Apple TV Home", isOn: $topShelf)
                 Text("Show Continue watching, My List and recent titles when Kinosail is selected in the top row. Titles and artwork are visible to anyone using this Apple TV.")
                     .font(.footnote).foregroundStyle(.secondary)
                 #endif
-            }
-            Section("Media") {
-                NavigationLink("Playback", value: ScreenDestination.playbackPreferences)
-                #if os(iOS)
-                NavigationLink("Downloads", value: ScreenDestination.offlinePreferences)
-                NavigationLink("Reader", value: ScreenDestination.readerPreferences)
-                #endif
-                NavigationLink("Progress sync", value: ScreenDestination.progressSync)
+                NavigationLink { SupporterScreen() } label: { Label("Supporter collection", systemImage: "sparkles") }
             }
             Section("About") {
-                NavigationLink("Made possible by") { ThanksScreen() }
+                NavigationLink { ThanksScreen() } label: { Label("Made possible by", systemImage: "heart") }
                 PrivacyPolicyLink()
             }
             Section {
@@ -57,7 +69,8 @@ struct SettingsScreen: View {
         .scrollContentBackground(.hidden)
         #endif
         .background(KinoTheme.background)
-        .configurationNavigationTitle("Settings")
+        .configurationNavigationTitle("Settings", large: true)
+        .task(id: session.client?.identity) { _ = try? await session.client?.mediaPreferences(policy: .automatic) }
         .tvOSConfigurationLayout(title: "Settings", symbol: "gearshape")
         .alert("Sign out of this device?", isPresented: $confirmsSignOut) {
             Button("Sign out", role: .destructive) {

@@ -2,10 +2,12 @@ import SwiftUI
 
 struct DownloadsScreen: View {
     @Environment(AppSession.self) private var session
+    @Environment(\.dynamicTypeSize) private var dynamicType
     #if os(iOS)
     @State private var failure: String?
     @State private var busy = false
     @State private var reset = false
+    @State private var removal: OfflineDownload?
     #endif
 
     var body: some View {
@@ -35,8 +37,10 @@ struct DownloadsScreen: View {
             }
             ForEach(session.downloads.downloads.filter { $0.state == .ready } + session.downloads.downloads.filter { $0.state != .ready }) { download in
                 HStack(alignment: .top, spacing: 16) {
-                    Artwork(path: download.item.poster, symbol: download.item.kind.symbol, ratio: download.item.isAudio ? 1 : 2 / 3, dimension: 800)
-                        .frame(width: 76).clipShape(.rect(cornerRadius: 10))
+                    if !dynamicType.isAccessibilitySize {
+                        Artwork(path: download.item.poster, symbol: download.item.kind.symbol, ratio: download.item.isAudio ? 1 : 2 / 3, dimension: 800)
+                            .frame(width: 76).clipShape(.rect(cornerRadius: 10))
+                    }
                     VStack(alignment: .leading, spacing: 10) {
                         Text(download.item.title).font(.headline)
                         Text(download.quality.title).font(.caption).foregroundStyle(.secondary)
@@ -48,6 +52,7 @@ struct DownloadsScreen: View {
                             if download.totalBytes > 0 {
                                 ProgressView(value: Double(download.receivedBytes), total: Double(download.totalBytes))
                                     .accessibilityLabel("Download progress")
+                                    .accessibilityValue("\(Int(Double(download.receivedBytes) / Double(download.totalBytes) * 100)) percent")
                                 Text("\(bytes(download.receivedBytes)) of \(bytes(download.totalBytes))").font(.caption.monospacedDigit()).foregroundStyle(.secondary)
                             }
                         }
@@ -55,17 +60,19 @@ struct DownloadsScreen: View {
                         HStack {
                             if [.paused, .failed].contains(download.state) {
                                 Button("Resume") { perform { try await session.downloads.resume(id: download.id) } }
+                                    .frame(minHeight: 44)
                                     .disabled(session.connection.unavailable)
                             } else if download.state != .ready && download.state != .verifying {
-                                Button("Pause") { perform { try await session.downloads.pause(id: download.id) } }
+                                Button("Pause") { perform { try await session.downloads.pause(id: download.id) } }.frame(minHeight: 44)
                             }
-                            Button("Remove", role: .destructive) { perform { try await session.downloads.remove(id: download.id) } }
-                        }.disabled(busy || session.downloads.busy)
+                            Button("Remove", role: .destructive) { removal = download }.frame(minHeight: 44)
+                        }.buttonStyle(.borderless).disabled(busy || session.downloads.busy)
                     }
                 }.padding(.vertical, 10)
             }
         }
         .navigationTitle("Downloads")
+        .scrollContentBackground(.hidden).background(KinoTheme.background)
         .toolbar { ToolbarItem(placement: .primaryAction) { NavigationLink(value: ScreenDestination.offlinePreferences) { Label("Download settings", systemImage: "gearshape") } } }
         .alert("Reset downloads?", isPresented: $reset) {
             Button("Remove all downloads", role: .destructive) { perform {
@@ -74,6 +81,10 @@ struct DownloadsScreen: View {
             } }
             Button("Cancel", role: .cancel) {}
         } message: { Text("This removes downloaded media for every Viewer Profile on this device. Your Server library stays available.") }
+        .alert("Remove download?", isPresented: Binding(get: { removal != nil }, set: { if !$0 { removal = nil } }), presenting: removal) { download in
+            Button("Remove download", role: .destructive) { perform { try await session.downloads.remove(id: download.id) } }
+            Button("Cancel", role: .cancel) {}
+        } message: { download in Text("Remove \(download.item.title) from this device? The title stays in your Server library.") }
         #else
         ContentUnavailableView("Download on iPhone or iPad", systemImage: "iphone", description: Text("Use Kinosail on your iPhone or iPad to save media for offline playback."))
         #endif
@@ -100,6 +111,11 @@ struct DownloadOptionsScreen: View {
     @State private var busy = false
     @State private var loaded = false
 
+    init(item: MediaItem) {
+        self.item = item
+        _quality = State(initialValue: item.isAudio ? .audio : .compatible)
+    }
+
     var body: some View {
         #if os(iOS)
         Form {
@@ -121,7 +137,7 @@ struct DownloadOptionsScreen: View {
                     }
                 }
             }
-            if !loaded && quality != .original {
+            if !loaded && options == nil && quality != .original {
                 Section("Audio") {
                     ForEach(0..<2) { index in SkeletonRow(kind: .form, status: index == 0 ? "Loading download options…" : nil) }
                 }
@@ -135,10 +151,12 @@ struct DownloadOptionsScreen: View {
             }
             Section {
                 Button(busy ? "Adding download…" : "Add to Downloads") { enqueue() }.disabled(busy || !loaded || quality != .original && item.kind == .video && options == nil)
+                    .buttonStyle(.borderedProminent).buttonBorderShape(.capsule).controlSize(.large)
+                    .tint(KinoTheme.signal).foregroundStyle(KinoTheme.signalInk)
                 Text("Downloads use your saved network and storage preferences.").font(.caption).foregroundStyle(.secondary)
             }
         }
-        .navigationTitle("Download")
+        .configurationNavigationTitle("Download")
         .toolbar { ToolbarItem(placement: .cancellationAction) { Button("Cancel") { dismiss() }.disabled(busy) } }
         .task(id: item.id) {
             quality = item.isAudio ? .audio : .compatible

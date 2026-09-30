@@ -10,6 +10,7 @@ struct ApprovalScreen: View {
     @State private var busy = false
     @State private var error: String?
     @State private var approved = false
+    @FocusState private var enteringCode: Bool
 
     var body: some View {
         Form {
@@ -34,16 +35,26 @@ struct ApprovalScreen: View {
                     TextField("Six-digit code", text: $code)
                         #if os(iOS)
                         .keyboardType(.numberPad)
+                        .textContentType(.oneTimeCode)
+                        .focused($enteringCode)
                         #endif
                         .onChange(of: code) { _, _ in error = nil }
                     Button(busy ? "Checking…" : "Review device") { Task { await review() } }
-                        .disabled(busy || code.isEmpty)
+                        .disabled(busy || (try? Input.code(code)) == nil)
                 }
             }
             if let error { Section { Text(error).foregroundStyle(.red) } }
         }
         .tvOSConfigurationLayout(title: "Connect a TV", symbol: "tv")
         .configurationNavigationTitle("Connect a TV")
+        #if os(iOS)
+        .toolbar {
+            ToolbarItemGroup(placement: .keyboard) {
+                Spacer()
+                Button("Done") { enteringCode = false }
+            }
+        }
+        #endif
         .onChange(of: session.client?.identity) { _, _ in
             approval = nil
             approvalIdentity = nil
@@ -57,6 +68,7 @@ struct ApprovalScreen: View {
     private func review() async {
         guard !busy, let client = session.client else { return }
         busy = true
+        enteringCode = false
         error = nil
         defer { busy = false }
         do {

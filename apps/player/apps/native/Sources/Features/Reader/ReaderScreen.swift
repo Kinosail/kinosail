@@ -114,7 +114,7 @@ struct ReaderScreen: View {
     private func load() async {
         let attempt = UUID(); generation = attempt
         failure = nil; notice = nil; book = nil; writer = nil; conflict = nil
-        guard let client = session.client, let scope = session.profileKey else { return }
+        guard let client = session.client, let scope = session.profileKey else { failure = AppSession.message(ClientError.unavailable); return }
         do {
             async let details = client.reader(itemID: itemID)
             async let remotePosition = client.readerPosition(itemID: itemID)

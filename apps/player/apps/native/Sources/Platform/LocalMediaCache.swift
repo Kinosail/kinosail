@@ -91,7 +91,7 @@ actor LocalMediaCache {
 
     func enqueueWrite(_ data: Data, key: String, kind: Kind, revision expectedRevision: UUID? = nil,
                       pagesRevision expectedPagesRevision: UUID? = nil) {
-        guard !closed, !closing, pendingWrites.count < 128, !data.isEmpty, data.count <= kind.maximum,
+        guard !Task.isCancelled, !closed, !closing, pendingWrites.count < 128, !data.isEmpty, data.count <= kind.maximum,
               expectedRevision == nil || expectedRevision == revision,
               expectedPagesRevision == nil || expectedPagesRevision == pagesRevision,
               let file = try? location(key, kind: kind) else { return }

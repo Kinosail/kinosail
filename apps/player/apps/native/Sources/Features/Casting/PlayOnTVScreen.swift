@@ -9,7 +9,7 @@ struct PlayOnTVScreen: View {
     @State private var scanned = false
     @State private var message: String?
     @State private var seekPosition = 0.0
-    @State private var isAudio = false
+    @State private var isAudio: Bool?
     #if os(tvOS)
     @Namespace private var castFocus
     #endif
@@ -19,12 +19,13 @@ struct PlayOnTVScreen: View {
             #if os(iOS)
             Section("AirPlay") {
                 HStack {
-                    Text("Choose an AirPlay \(isAudio ? "speaker" : "TV")")
+                    Text("Choose an AirPlay \(isAudio == true ? "speaker" : "TV")")
                     Spacer()
-                    AudioRoutePicker(video: !isAudio).frame(width: 48, height: 48).accessibilityLabel("Choose AirPlay output")
+                    AudioRoutePicker(video: isAudio != true).frame(width: 48, height: 48).accessibilityLabel("Choose AirPlay output")
                 }
                 Text("Choose a receiver, then play this title here. Screen Mirroring in Control Center also works with compatible TVs.").foregroundStyle(.secondary)
-                NavigationLink("Play on this device", value: ScreenDestination.playback(itemID))
+                NavigationLink("Play on this device", value: isAudio == true ? ScreenDestination.audio(itemID) : .playback(itemID))
+                    .disabled(isAudio == nil)
             }
             #endif
             if let cast = session.casting.session {
@@ -34,12 +35,19 @@ struct PlayOnTVScreen: View {
                         Text("\(status.state.rawValue.capitalized) · \(status.position.clock) / \(status.duration.clock)")
                         HStack {
                             Button("Play", systemImage: "play.fill") { perform { try await session.casting.command(.play) } }
+                                .frame(minHeight: 44)
                                 #if os(tvOS)
                                 .tvOSDefaultPlayFocus(in: castFocus, id: "cast.play.\(cast.id)")
                                 #endif
                             Button("Pause", systemImage: "pause.fill") { perform { try await session.casting.command(.pause) } }
+                                .frame(minHeight: 44)
                             Button("Stop", systemImage: "stop.fill") { perform { try await session.casting.command(.stop) } }
-                        }.disabled(session.casting.busy)
+                                .frame(minHeight: 44)
+                        }
+                        #if os(iOS)
+                        .buttonStyle(.borderless)
+                        #endif
+                        .controlSize(.large).disabled(session.casting.busy)
                         if cast.duration > 0 {
                             #if os(iOS)
                             Slider(value: $seekPosition, in: 0...cast.duration).accessibilityLabel("Receiver playback position")
@@ -72,7 +80,14 @@ struct PlayOnTVScreen: View {
         .focusScope(castFocus)
         #endif
         .onChange(of: session.casting.session?.id) { _, _ in seekPosition = session.casting.session?.position ?? 0 }
-        .task(id: itemID) { if let client = session.client, let item = try? await client.item(id: itemID) { isAudio = item.isAudio } }
+        .task(id: "\(session.profileKey ?? ""):\(itemID)") {
+            do {
+                guard let client = session.client else { throw ClientError.unavailable }
+                let item = try await client.item(id: itemID, policy: .automatic)
+                try Task.checkCancellation()
+                isAudio = item.isAudio
+            } catch is CancellationError {} catch { message = AppSession.message(error) }
+        }
     }
 
     private func scan() {
