@@ -13,5 +13,5 @@
   }
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", bind);
   else bind();
-  document.addEventListener("htmx:afterSwap", bind);
+  document.addEventListener("htmx:after:swap", bind);
 })();

@@ -120,5 +120,5 @@ function restoreMobileTabs(raw, legacy) {
     }
   }
   renderNavigation();
-  document.addEventListener("htmx:afterSettle", renderNavigation);
+  document.addEventListener("htmx:after:swap", renderNavigation);
 })();

@@ -68,7 +68,7 @@ func TestSupporterScriptUsesOneImmutableVersionAcrossPages(t *testing.T) {
 	handler, token := supporterServer(t, t.TempDir(), signer, upstream)
 	for _, path := range []string{"/", "/settings", "/supporter"} {
 		page := apiCall(t, handler, token, http.MethodGet, path, nil)
-		assertAPIBody(t, page, http.StatusOK, `/static/supporter.js?v=17`)
+		assertAPIBody(t, page, http.StatusOK, `/static/supporter.js?v=17-htmx4`)
 		if strings.Count(page.Body.String(), `/static/supporter.js?v=`) != 1 {
 			t.Errorf("page %q supporter script count = %d", path, strings.Count(page.Body.String(), `/static/supporter.js?v=`))
 		}
@@ -242,7 +242,7 @@ func TestSupporterInputValidationAndStatusPrivacy(t *testing.T) {
 func assertSupporterScriptRecognition(t *testing.T, handler http.Handler) {
 	t.Helper()
 	script := apiCall(t, handler, "", http.MethodGet, "/static/supporter.js", nil)
-	assertAPIBody(t, script, http.StatusOK, "Support Kinosail", "supporter-signature", "supporter-trio", "/static/supporter/badges/", "htmx:afterSwap", "supporter-edition-mark", "supporterShareFile", "navigator.share", "image/png")
+	assertAPIBody(t, script, http.StatusOK, "Support Kinosail", "supporter-signature", "supporter-trio", "/static/supporter/badges/", "htmx:after:swap", "supporter-edition-mark", "supporterShareFile", "navigator.share", "image/png")
 	for _, dismissal := range []string{"localStorage", "Dismiss", "/supporter/reminder"} {
 		if strings.Contains(script.Body.String(), dismissal) {
 			t.Fatalf("supporter script contains dismissal path %q", dismissal)

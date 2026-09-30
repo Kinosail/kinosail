@@ -9,7 +9,7 @@ test.describe("large offline transfers", () => {
 
   test("offline playback cleanup removes an unchanged copy with a missing later chunk", async ({ page }) => {
     await page.addInitScript(() => {
-      const worker = { scriptURL: new URL("/service-worker.js?v=54", location.href).href, state: "activated" };
+      const worker = { scriptURL: new URL("/service-worker.js?v=55", location.href).href, state: "activated" };
       Object.defineProperties(navigator.serviceWorker, {
         controller: { configurable: true, get: () => worker },
         getRegistration: { configurable: true, value: async () => ({ active: worker }) },
@@ -55,7 +55,7 @@ test.describe("large offline transfers", () => {
 
   test("explicit offline removal cancels a transfer across tabs without letting an old source delete its replacement", async ({ context, page }) => {
     await context.addInitScript(() => {
-      const worker = { scriptURL: new URL("/service-worker.js?v=54", location.href).href, state: "activated" };
+      const worker = { scriptURL: new URL("/service-worker.js?v=55", location.href).href, state: "activated" };
       Object.defineProperties(navigator.serviceWorker, {
         controller: { configurable: true, get: () => worker },
         getRegistration: { configurable: true, value: async () => ({ active: worker }) },
