@@ -1,0 +1,106 @@
+> Task :app:preBuild UP-TO-DATE
+> Task :app:preDebugBuild UP-TO-DATE
+> Task :app:generateDebugResources UP-TO-DATE
+> Task :app:packageDebugResources UP-TO-DATE
+> Task :watchcore:preBuild UP-TO-DATE
+> Task :watchcore:preDebugBuild UP-TO-DATE
+> Task :watchcore:processDebugNavigationResources UP-TO-DATE
+> Task :app:processDebugNavigationResources UP-TO-DATE
+> Task :app:parseDebugLocalResources UP-TO-DATE
+> Task :app:generateDebugRFile UP-TO-DATE
+> Task :watchcore:generateDebugResources UP-TO-DATE
+> Task :watchcore:packageDebugResources UP-TO-DATE
+> Task :watchcore:parseDebugLocalResources UP-TO-DATE
+> Task :watchcore:generateDebugRFile UP-TO-DATE
+> Task :watchcore:compileDebugKotlin UP-TO-DATE
+> Task :watchcore:javaPreCompileDebug UP-TO-DATE
+> Task :watchcore:compileDebugJavaWithJavac NO-SOURCE
+> Task :watchcore:bundleLibCompileToJarDebug UP-TO-DATE
+> Task :app:compileDebugKotlin UP-TO-DATE
+> Task :app:javaPreCompileDebug UP-TO-DATE
+> Task :app:compileDebugJavaWithJavac NO-SOURCE
+> Task :watchcore:writeDebugAarMetadata UP-TO-DATE
+> Task :app:checkDebugAarMetadata UP-TO-DATE
+> Task :app:mapDebugSourceSetPaths UP-TO-DATE
+> Task :app:compileDebugNavigationResources UP-TO-DATE
+> Task :app:mergeDebugResources UP-TO-DATE
+> Task :app:createDebugCompatibleScreenManifests UP-TO-DATE
+> Task :app:extractDeepLinksDebug UP-TO-DATE
+> Task :watchcore:extractDeepLinksDebug UP-TO-DATE
+> Task :watchcore:processDebugManifest UP-TO-DATE
+> Task :app:processDebugMainManifest UP-TO-DATE
+> Task :app:processDebugManifest UP-TO-DATE
+> Task :app:processDebugManifestForPackage UP-TO-DATE
+> Task :watchcore:mapDebugSourceSetPaths UP-TO-DATE
+> Task :watchcore:compileDebugLibraryResources UP-TO-DATE
+> Task :app:processDebugResources UP-TO-DATE
+> Task :app:bundleDebugClassesToCompileJar UP-TO-DATE
+> Task :app:preDebugUnitTestBuild UP-TO-DATE
+> Task :app:bundleDebugClassesToRuntimeJar
+> Task :app:javaPreCompileDebugUnitTest
+> Task :app:generateDebugAssets UP-TO-DATE
+> Task :watchcore:generateDebugAssets UP-TO-DATE
+> Task :watchcore:mergeDebugAssets UP-TO-DATE
+> Task :app:mergeDebugAssets UP-TO-DATE
+> Task :app:packageDebugUnitTestForUnitTest
+> Task :app:mergeDebugUnitTestManifest
+> Task :app:processDebugUnitTestManifest
+> Task :app:generateDebugUnitTestConfig
+> Task :app:processDebugJavaRes UP-TO-DATE
+> Task :watchcore:bundleLibRuntimeToJarDebug UP-TO-DATE
+> Task :watchcore:processDebugJavaRes UP-TO-DATE
+> Task :watchcore:preDebugUnitTestBuild UP-TO-DATE
+> Task :watchcore:generateDebugUnitTestStubRFile
+> Task :watchcore:compileDebugUnitTestKotlin
+> Task :watchcore:javaPreCompileDebugUnitTest
+> Task :watchcore:compileDebugUnitTestJavaWithJavac NO-SOURCE
+> Task :watchcore:processDebugUnitTestJavaRes
+> Task :watchcore:testDebugUnitTest
+> Task :wear:preBuild UP-TO-DATE
+> Task :wear:preDebugBuild UP-TO-DATE
+> Task :wear:generateDebugResources UP-TO-DATE
+> Task :wear:packageDebugResources UP-TO-DATE
+> Task :wear:processDebugNavigationResources UP-TO-DATE
+> Task :wear:parseDebugLocalResources UP-TO-DATE
+> Task :wear:generateDebugRFile UP-TO-DATE
+> Task :wear:compileDebugKotlin UP-TO-DATE
+> Task :wear:javaPreCompileDebug UP-TO-DATE
+> Task :wear:compileDebugJavaWithJavac NO-SOURCE
+> Task :wear:checkDebugAarMetadata UP-TO-DATE
+> Task :wear:mapDebugSourceSetPaths UP-TO-DATE
+> Task :wear:compileDebugNavigationResources UP-TO-DATE
+> Task :wear:mergeDebugResources UP-TO-DATE
+> Task :wear:createDebugCompatibleScreenManifests UP-TO-DATE
+> Task :wear:extractDeepLinksDebug UP-TO-DATE
+> Task :wear:processDebugMainManifest UP-TO-DATE
+> Task :wear:processDebugManifest UP-TO-DATE
+> Task :wear:processDebugManifestForPackage UP-TO-DATE
+> Task :wear:processDebugResources UP-TO-DATE
+> Task :wear:bundleDebugClassesToRuntimeJar
+> Task :wear:bundleDebugClassesToCompileJar
+> Task :wear:preDebugUnitTestBuild UP-TO-DATE
+> Task :wear:compileDebugUnitTestKotlin
+> Task :wear:javaPreCompileDebugUnitTest
+> Task :wear:compileDebugUnitTestJavaWithJavac NO-SOURCE
+> Task :wear:generateDebugAssets UP-TO-DATE
+> Task :wear:mergeDebugAssets UP-TO-DATE
+> Task :wear:packageDebugUnitTestForUnitTest
+> Task :wear:mergeDebugUnitTestManifest
+> Task :wear:processDebugUnitTestManifest
+> Task :wear:generateDebugUnitTestConfig
+> Task :wear:processDebugJavaRes UP-TO-DATE
+> Task :wear:processDebugUnitTestJavaRes
+
+> Task :app:compileDebugUnitTestKotlin
+w: file:///Users/mikeo/.codex/worktrees/all-app-polish/kinosail/apps/player/apps/android/app/src/test/java/com/kinosail/player/design/KinoThemeTest.kt:16:29 'fun createComposeRule(effectContext: CoroutineContext = ...): ComposeContentTestRule' is deprecated. Use `androidx.compose.ui.test.junit4.v2.createComposeRule` instead. The v2 APIs use StandardTestDispatcher instead of UnconfinedTestDispatcher, which aligns with standard coroutine behavior by queuing tasks rather than executing them immediately. Tests relying on immediate execution may require explicit synchronization. Please refer to the migration guide for more details.
+
+> Task :wear:testDebugUnitTest
+> Task :app:compileDebugUnitTestJavaWithJavac NO-SOURCE
+> Task :app:processDebugUnitTestJavaRes
+> Task :app:testDebugUnitTest
+
+[Incubating] Problems report is available at: file:///Users/mikeo/.codex/worktrees/all-app-polish/kinosail/apps/player/apps/android/build/reports/problems/problems-report.html
+
+BUILD SUCCESSFUL in 23s
+79 actionable tasks: 24 executed, 55 up-to-date
+Consider enabling configuration cache to speed up this build: https://docs.gradle.org/9.7.1/userguide/configuration_cache_enabling.html

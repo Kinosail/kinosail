@@ -1,0 +1,198 @@
+{
+  "revision": "c38bd126ccefbfec2d5c2e4c727bfe45eb4d3dc1",
+  "source_state": "committed production and test changes; evidence report not yet committed",
+  "date": "2026-09-30",
+  "environment": {
+    "host": "macOS ARM64",
+    "apple": "Xcode 27.0, iOS/tvOS/watchOS 27.0 simulators",
+    "iphone": "iPhone 18 Pro, 402x874 logical pixels",
+    "ipad": "iPad Pro 11-inch M5, 834x1210 logical pixels",
+    "apple_tv": "Apple TV 4K at 1080p, 1920x1080",
+    "android": "API 36 ARM64 Google APIs Pixel 7, emulator 37.1.11.0, JDK 17.0.20.1"
+  },
+  "data": "Synthetic Go API library with 14 titles and temporary Owner; SwiftUI fixture uses fictional loopback media. No production data.",
+  "commands": {
+    "android-unit": "JAVA_HOME=<JDK17> ANDROID_HOME=<SDK> ./gradlew :app:testDebugUnitTest :watchcore:testDebugUnitTest :wear:testDebugUnitTest :app:assembleDebug :app:assembleDebugAndroidTest --max-workers=2",
+    "android-instrumented": "adb -s emulator-5572 shell am instrument -w -r -e class <selected class> com.kinosail.player.dev.test/androidx.test.runner.AndroidJUnitRunner",
+    "apple-gallery": "TEST_RUNNER_KINOSAIL_POLISH_GALLERY=1 xcodebuild -project Kinosail.xcodeproj -scheme Kinosail-iOS -configuration Debug -destination platform=iOS Simulator,id=<task-device> -derivedDataPath .build/ios-simulator -resultBundlePath <task-result>.xcresult -only-testing:Kinosail-iOSTests/NativePreferencesUXTests CODE_SIGNING_ALLOWED=YES CODE_SIGN_IDENTITY=- test",
+    "apple-lifecycle": "Same Apple command with TEST_RUNNER_KINOSAIL_POLISH_GALLERY=lifecycle",
+    "tvos-focus": "xcodebuild -project Kinosail.xcodeproj -scheme Kinosail-tvOS -destination platform=tvOS Simulator,id=8D8C36D3-B5B6-4056-A411-6297A60A78AC -only-testing:Kinosail-tvOSTests/TVOSFocusTests -derivedDataPath .build/tvos-simulator CODE_SIGNING_ALLOWED=YES CODE_SIGN_IDENTITY=- test",
+    "changed-app": "make -C apps/player verify-changed"
+  },
+  "results": {
+    "android_unit": {
+      "app": 106,
+      "watchcore": 6,
+      "wear": 5,
+      "failures": 0
+    },
+    "android_instrumented": {
+      "setup_and_errors": 3,
+      "cast_chooser": 1,
+      "real_library_and_search": 1,
+      "failures": 0
+    },
+    "canonical_artwork_red": {
+      "tests": 18,
+      "expected_failures": 2
+    },
+    "real_library_red": {
+      "attempts": 2,
+      "failures": 2
+    },
+    "apple_gallery": {
+      "iphone": 37,
+      "ipad": 37
+    },
+    "apple_lifecycle": {
+      "iphone": 8,
+      "ipad": 8
+    },
+    "apple_ui_suite_final": "5 test functions passed in each final run",
+    "tvos_combined": "6 test functions; focus test had two failed expectations",
+    "tvos_focus_isolated": "1 passed",
+    "unverified": "Initial cached-progress timeout did not recur; device and deployment boundaries in report.md"
+  },
+  "artifacts": [
+    {
+      "path": "android-cast-chooser.log",
+      "sha256": "d09d62268cd3b1b464347ab7a2fa28cfe2ce41ce766e2f7c395c5fac843e8e1b"
+    },
+    {
+      "path": "android-episode-art-green.log",
+      "sha256": "641ef14d3bd51033b8927325cd0f12f35494ea0c7b09c6e7d11ba7140b4c677e"
+    },
+    {
+      "path": "android-episode-art-red.log",
+      "sha256": "3ebce0eb48eca26c5770cd385d2f2caf5278e45a67876cfd898fe89d0fec993b"
+    },
+    {
+      "path": "android-instrumented.log",
+      "sha256": "3b0df634ceaf2bcadda03edcb00b6569794d0800707838a54fdf56647703a31a"
+    },
+    {
+      "path": "android-live-green.log",
+      "sha256": "a3c0f810fe3aef78674c050f6da98b9416d8dcaca4ffdf4256515d57048e7ef8"
+    },
+    {
+      "path": "android-live-journey.log",
+      "sha256": "5deee96b46e90f82ffb4a7c683849f551bb81e52a379dd10dd645681c4e706c1"
+    },
+    {
+      "path": "android-live-repro.log",
+      "sha256": "5c4be78927a3c4a005c7bcb8b35dbec3f907c000659ea229a0b1a481a8d8f2a6"
+    },
+    {
+      "path": "android-unit.log",
+      "sha256": "1ad1b499421583ee048b8b2b75027e2896c813db98ff759ce0f0f59cc9a09537"
+    },
+    {
+      "path": "evidence/android-phone-library.png",
+      "sha256": "ae2de725cf11b5ad50c6ba8f820322db3302649203df48c46d9cad055646a172"
+    },
+    {
+      "path": "evidence/android-phone-search-empty.png",
+      "sha256": "64f988199f4666ce3415b97ce61ef095695fb8a30b9b53aca47353002fdaea7c"
+    },
+    {
+      "path": "evidence/ipad-gallery-1.png",
+      "sha256": "ab9c7d51de53c75b749c74d03a33e72674bbd12920773bdb8bdbb6d71e6c8fab"
+    },
+    {
+      "path": "evidence/ipad-gallery-2.png",
+      "sha256": "d80e06d8224f36591c8018b4bc8dbf87570791d100acd31204791b367732a138"
+    },
+    {
+      "path": "evidence/ipad-gallery-3.png",
+      "sha256": "cddbfb6497b39656af6d2ea0e62827ae7a0c0197426bd946774a68d199229426"
+    },
+    {
+      "path": "evidence/ipad-gallery-4.png",
+      "sha256": "49dc79b82eca14710933dcb4d78ca331e3b1ba84bab51bbce48bb3aa4d26b7c0"
+    },
+    {
+      "path": "evidence/ipad-gallery-5.png",
+      "sha256": "0520f5ae098ab0e528bee817f5acd028543ea73673c98529f8b08900a2e45190"
+    },
+    {
+      "path": "evidence/iphone-gallery-1.png",
+      "sha256": "b6dcd30d9332ae6c7df710cbf0d91f0b9529c72ddd8526c88dde708f9c4c7eed"
+    },
+    {
+      "path": "evidence/iphone-gallery-2.png",
+      "sha256": "0446476fe8e85fd532edac84dfd2685937b2d7b892116314d863f011edbb9be4"
+    },
+    {
+      "path": "evidence/iphone-gallery-3.png",
+      "sha256": "7c58567bbb6194652d28d0c2c7f39a6a597b22de3de85271612272e0e32f1ae3"
+    },
+    {
+      "path": "evidence/iphone-gallery-4.png",
+      "sha256": "6c3278995b70e745ab37e91ab1e1e3a121baed412027a49120698c25ddd9bce3"
+    },
+    {
+      "path": "evidence/iphone-gallery-5.png",
+      "sha256": "38b1b9fe6ea8dd0a34ec921634ff72cb2c6aeae3135298d6f3ba39031eb232fe"
+    },
+    {
+      "path": "evidence/native-ipad-lifecycle-contact.png",
+      "sha256": "362bf67a6a8df7cd2732095005480b48157327da79a5acec3eb61c599068e347"
+    },
+    {
+      "path": "evidence/native-lifecycle-contact.png",
+      "sha256": "164845dcedcbb4d0f9bca377c965a2a590109c875b7a6540f9c073cafbfdca1b"
+    },
+    {
+      "path": "evidence/native-tvos-home.png",
+      "sha256": "74b34569618d5064b9ef408992b576cf04dfee87162292a50686e9389afb6179"
+    },
+    {
+      "path": "evidence/native-watch-unpaired.png",
+      "sha256": "de6166c455871f6af9999d0ecd5dcb16339ed406943d4d8ca0c8b90cd6c7a314"
+    },
+    {
+      "path": "evidence/supporter-failed.png",
+      "sha256": "3966d29ab299341f71dbc26a59691ffe6ba72a771af8562263f6e5e722ef1638"
+    },
+    {
+      "path": "library-response.json",
+      "sha256": "6e2f2a1619c6a3edd7ed87bc0cff5199a776122ca819f02030eb1ac5e0a2f292"
+    },
+    {
+      "path": "native-gallery-ipad.log",
+      "sha256": "4ef70e8cb076259a96131cac88057a141e73975ecdbcaeb9d1f4ed2b51028999"
+    },
+    {
+      "path": "native-gallery-iphone-capture-fix.log",
+      "sha256": "d8f07af00db8aec04352ca73ac1cbcf3514a1aa842919010d39a8c80c8b20979"
+    },
+    {
+      "path": "native-gallery-iphone.log",
+      "sha256": "ed5ce09b11ba07f205833c9cccd3efa987b61dec15ed3236726c83c91e604a8f"
+    },
+    {
+      "path": "native-lifecycle-ipad.log",
+      "sha256": "2dd0dfbecec6b637e1377ad8b1b8963012c77686334a46481f1ad6c9738db774"
+    },
+    {
+      "path": "native-lifecycle-iphone.log",
+      "sha256": "676b1a0fcf0e90672fb5ff7b48dc70ff3b493cd489aadc5158b78db734eb12e5"
+    },
+    {
+      "path": "native-tvos-focus-isolated.log",
+      "sha256": "b370b278f26d6fa389ba8f6c37e553c1264f56e4830950430d892fac510d102d"
+    },
+    {
+      "path": "native-tvos-focused.log",
+      "sha256": "fdce0cd662fd8c75dbaa65311bd1fa8e3a39a38c4bd4abbf3d0386c86c698baf"
+    },
+    {
+      "path": "native-verify-changed.log",
+      "sha256": "f65d0c3f13a984f60d627e52eaf787c952d9f8fc883712168bc8aa8c0d77295c"
+    },
+    {
+      "path": "report.md",
+      "sha256": "72066c765d671da943b74e091ad2f998c26e0ab129e5d328fe6c8d88452b84ed"
+    }
+  ]
+}

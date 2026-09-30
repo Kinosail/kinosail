@@ -1,0 +1,64 @@
+◇ Test run started.
+↳ Testing Library Version: 2084
+↳ Target Platform: arm64-apple-ios17.0-simulator
+◇ Suite NativePreferencesUXTests started.
+◇ Test cachedHeroProgressIsPresentInTheFirstRenderedFrame() started.
+NATIVE_POLISH_RENDER home 834x1210
+NATIVE_POLISH_RENDER movies 834x1210
+NATIVE_POLISH_RENDER search 834x1210
+NATIVE_POLISH_RENDER movie 834x1210
+NATIVE_POLISH_RENDER episodes 834x1210
+NATIVE_POLISH_RENDER albums 834x1210
+NATIVE_POLISH_RENDER album 834x1210
+NATIVE_POLISH_RENDER collections 834x1210
+NATIVE_POLISH_RENDER collection 834x1210
+NATIVE_POLISH_RENDER settings 834x1210
+NATIVE_POLISH_RENDER playback-preferences 834x1210
+NATIVE_POLISH_RENDER download-preferences 834x1210
+NATIVE_POLISH_RENDER reader-preferences 834x1210
+NATIVE_POLISH_RENDER tabs 834x1210
+NATIVE_POLISH_RENDER supporter 834x1210
+NATIVE_POLISH_RENDER approval 834x1210
+NATIVE_POLISH_RENDER cast 834x1210
+NATIVE_POLISH_RENDER downloads-empty 834x1210
+NATIVE_POLISH_RENDER bookmarks-empty 834x1210
+NATIVE_POLISH_RENDER progress-sync 834x1210
+NATIVE_POLISH_RENDER reader 834x1210
+NATIVE_POLISH_RENDER photo 834x1210
+NATIVE_POLISH_RENDER episodes-large-text 834x1210
+NATIVE_POLISH_RENDER settings-large-text 834x1210
+NATIVE_POLISH_RENDER playback-preferences-large-text 834x1210
+NATIVE_POLISH_RENDER download-preferences-large-text 834x1210
+NATIVE_POLISH_RENDER reader-preferences-large-text 834x1210
+NATIVE_POLISH_RENDER tabs-large-text 834x1210
+NATIVE_POLISH_RENDER supporter-large-text 834x1210
+NATIVE_POLISH_RENDER supporter-pending 834x1210
+NATIVE_POLISH_RENDER supporter-failed 834x1210
+NATIVE_POLISH_RENDER supporter-empty 834x1210
+NATIVE_POLISH_RENDER preferences-failed 834x1210
+NATIVE_POLISH_RENDER reader-failed 834x1210
+NATIVE_POLISH_RENDER photo-failed 834x1210
+NATIVE_POLISH_RENDER bookmarks-failed 834x1210
+NATIVE_POLISH_RENDER sync-failed 834x1210
+✔ Test cachedHeroProgressIsPresentInTheFirstRenderedFrame() passed after 40.371 seconds.
+◇ Test changingADownloadToggleSavesWithoutAnotherButton() started.
+✔ Test changingADownloadToggleSavesWithoutAnotherButton() passed after 0.486 seconds.
+◇ Test visibleLibraryCompletesLoadingAcrossScenePhases(phase:) started.
+◇ Test case passing 1 argument phase → .active to visibleLibraryCompletesLoadingAcrossScenePhases(phase:) started.
+​◇ Test case passing 1 argument phase → .inactive to visibleLibraryCompletesLoadingAcrossScenePhases(phase:) started.
+​◇ Test case passing 1 argument phase → .background to visibleLibraryCompletesLoadingAcrossScenePhases(phase:) started.
+​✔ Test visibleLibraryCompletesLoadingAcrossScenePhases(phase:) with 3 test cases passed after 1.346 seconds.
+◇ Test visibleHomeCompletesLoadingAcrossScenePhases(phase:) started.
+◇ Test case passing 1 argument phase → .active to visibleHomeCompletesLoadingAcrossScenePhases(phase:) started.
+​◇ Test case passing 1 argument phase → .inactive to visibleHomeCompletesLoadingAcrossScenePhases(phase:) started.
+​◇ Test case passing 1 argument phase → .background to visibleHomeCompletesLoadingAcrossScenePhases(phase:) started.
+​✔ Test visibleHomeCompletesLoadingAcrossScenePhases(phase:) with 3 test cases passed after 1.279 seconds.
+◇ Test firstArtworkKeepsItsPositionWhenLoadingCompletes(library:) started.
+◇ Test case passing 1 argument library → true to firstArtworkKeepsItsPositionWhenLoadingCompletes(library:) started.
+NATIVE_ARTWORK_POSITIONS library=true pending=264.0 loaded=264.0
+​◇ Test case passing 1 argument library → false to firstArtworkKeepsItsPositionWhenLoadingCompletes(library:) started.
+NATIVE_ARTWORK_POSITIONS library=false pending=154.0 loaded=154.0
+​✔ Test firstArtworkKeepsItsPositionWhenLoadingCompletes(library:) with 2 test cases passed after 8.396 seconds.
+✔ Suite NativePreferencesUXTests passed after 51.882 seconds.
+✔ Test run with 5 tests in 1 suite passed after 51.883 seconds.
+** TEST SUCCEEDED **

@@ -1,0 +1,9 @@
+◇ Test run started.
+↳ Testing Library Version: 2084
+↳ Target Platform: arm64-apple-tvos17.0-simulator
+◇ Suite TVOSFocusTests started.
+◇ Test loadedPlayDoesNotTakeFocusFromNavigation() started.
+✔ Test loadedPlayDoesNotTakeFocusFromNavigation() passed after 0.543 seconds.
+✔ Suite TVOSFocusTests passed after 0.545 seconds.
+✔ Test run with 1 test in 1 suite passed after 0.545 seconds.
+** TEST SUCCEEDED **
