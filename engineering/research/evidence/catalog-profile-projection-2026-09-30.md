@@ -601,3 +601,8 @@ Debian's trackers for [CVE-2026-75804](https://security-tracker.debian.org/track
 
 
 After the two Containerfile checks, source caps, diff checks, repository tooling, and independent read-only review passed. Post-commit app verification at `1a507f4d90bfeddf25255d6417e7350c5f101bb7` again stopped at the same 112 shared lint findings: Player after 36.458 seconds and Subtitles after 19.499 seconds. Player reused its unchanged compilation and focused-test cache. Both passed caps and diff checks. Neither reached local container stages. The next hosted run must establish patched package versions, complete image scans, and runtime behavior.
+
+
+## Reconciliation with current main
+
+The task reconciled cleanly with `60d11e2054e31eac090af9ffed3ff85dd0b52c27` from PR #387. That main revision includes layout changes and the identical OpenSSL minimum. The final task diff therefore contains no Containerfile change. The measured catalog owner, HTTP benchmark, and corrected maintenance fixture retain their recorded hashes. Shared and Subtitles Go source did not change in reconciliation. Code Atlas regeneration, source caps, diff checks, and repository tooling passed. A fresh Player suite and required PR checks establish compatibility with the updated Player source; their current results are available through [PR #388](https://github.com/Kinosail/kinosail/pull/388).
