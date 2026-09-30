@@ -34,6 +34,10 @@ The contexts record revision, source hashes, command, fixture, environment, and 
 
 The branch merged current main through PR #392 before publication. That update changes only Apple playback/options and progress files. Both tested Android source hashes remain identical after reconciliation. Unchanged Android checks were not repeated. Fresh hosted CI verifies the reconciled branch.
 
+## Hosted gate repair
+
+[Initial PR CI](https://github.com/Kinosail/kinosail/actions/runs/36790424244) passed Android compilation and unit tests on Linux, but tooling rejected stale Code Atlas snapshots. The stale records are the two app `internal/server/player.go` files and shared `assets_performance_contract.go`, changed earlier on main. Both snapshots were regenerated. Only their data records changed. The complete local `make tooling-check` then passed with stable snapshot hashes. A fresh hosted run is required for the updated head.
+
 ## Boundaries
 
 These are Compose component tests and Robolectric native graphics captures on macOS, not emulator, physical-device, live API, or full-reader E2E proof. This batch did not rerun Android instrumentation on a device. It compiled that APK. Android TV and Wear have unit/build evidence; the book reader is reached through the mobile library route.

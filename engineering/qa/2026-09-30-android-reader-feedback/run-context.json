@@ -228,6 +228,10 @@
       "sha256": "79554caf9012e9913f44b69b4947b8c502ee6dd5ee80a6821a20b8d4b4e45d70"
     },
     {
+      "path": "initial-ci-checkpoint.json",
+      "sha256": "55fb49927c302dad3d43089248810991a79a298cb956aff8126c0fd140c73146"
+    },
+    {
       "path": "native-reader-baseline-context.json",
       "sha256": "cab6bd857d4942e9c67e9f248af79e6cf5a978cbfa4390b6663841db6ea77ce5"
     },
@@ -288,6 +292,14 @@
       "sha256": "0a80d73bec7b9b6e7b9d2ce70321f82551b3147102731e092df04d046a41f785"
     },
     {
+      "path": "native-reader-tooling-context.json",
+      "sha256": "3d3662ecc98150c6cd734926b5a63bfb91c23cd3a9f9d981a360278a9806a2e5"
+    },
+    {
+      "path": "native-reader-tooling-verified.log",
+      "sha256": "080475d8cc253547db552e81416446373f3b36e180c1e7033ff5727a8a39a234"
+    },
+    {
       "path": "native-reader-width-red-context.json",
       "sha256": "403ebf20d37cc04ccf86a1d037647c2eeb15580ea66f6efd0794f77e6771237b"
     },
@@ -301,7 +313,7 @@
     },
     {
       "path": "report.md",
-      "sha256": "21b837477eb3ce5232071c763520a8e2fa85ed5888d8593ecaf9665e764287c5"
+      "sha256": "bb2edc09550e36952de1f545e379fa130ff731bc1e8bb210cbd52206944ed135"
     }
   ],
   "reconciliation": {
@@ -311,5 +323,26 @@
     "upstreamSurface": "Apple playback options and progress persistence",
     "localRerun": "No Android source changed; original 123-test/build result remains bound by hashes",
     "hosted": "Fresh required CI pending"
+  },
+  "toolingRepair": {
+    "initialRun": 36790424244,
+    "failure": "stale architecture snapshot from earlier main Go changes",
+    "changedRecords": [
+      "apps/player/internal/server/player.go",
+      "apps/subtitles/internal/server/player.go",
+      "packages/servertest/assets_performance_contract.go"
+    ],
+    "localToolingExitCode": 0,
+    "snapshotSource": [
+      {
+        "path": "apps/player/docs/architecture-explorer/index.html",
+        "sha256": "0a9a3ddf80f637f67530d2a4d7e1de760ca6d734a50c7900439f001e61a0870d"
+      },
+      {
+        "path": "apps/subtitles/docs/architecture-explorer/index.html",
+        "sha256": "6209ee613f5c0f49bbb1f3ea1649134785a4f50be8a285ef6b2e35779ae9772a"
+      }
+    ],
+    "androidSourceUnchanged": true
   }
 }
