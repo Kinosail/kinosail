@@ -11,6 +11,9 @@ struct RetryState: View {
             Button("Try again", action: retry).buttonStyle(.bordered).buttonBorderShape(.capsule).tint(KinoTheme.secondaryControlTint).secondaryControlForeground()
         }
         .padding(32).frame(maxWidth: .infinity, minHeight: 220)
+        #if os(tvOS)
+        .focusSection()
+        #endif
     }
 }
 
