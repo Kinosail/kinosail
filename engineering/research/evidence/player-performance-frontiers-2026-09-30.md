@@ -56,6 +56,764 @@ Validation records:
 
 Hardware focus timing, Safari device performance, production networks, scan/download/transcode interference, artwork derivatives, and deployed first frame remain open. The mobile 10,000-item fixture also exposes existing count/Sort label crowding; that layout issue is outside this rendering patch.
 
+## Metadata search allocation and latency
+
+The shared catalog now normalizes each metadata field into request-local storage. It avoids joined metadata and credit strings. Short records use 512 bytes of stack scratch space; longer records reserve storage once and grow if Unicode decomposition needs more. There is no retained index or cache to invalidate. Matching order, ranking, accents, punctuation, field separators, and compatibility-character behavior stay unchanged.
+
+Matched handler measurements use the exact baseline and the final candidate. The table shows median time and allocated bytes per request. Web and simple API cases have five samples each; rich metadata cases have three.
+
+| Workload | Time, ms before → after | Reduction | Allocated MB before → after |
+| --- | --- | --- | --- |
+| LargeLibraryKnownTitleNavigation/search | 3.482 → 2.886 | 17.1% | 1.476 → 0.996 |
+| NativeCatalogNavigation/10000/search | 2.728 → 2.163 | 20.7% | 0.975 → 0.495 |
+| NativeCatalogNavigation/100000/search | 26.679 → 21.460 | 19.6% | 9.620 → 4.820 |
+| NativeCatalogMetadataSearch/short-ascii | 10.651 → 7.067 | 33.6% | 6.816 → 0.496 |
+| NativeCatalogMetadataSearch/long-ascii | 62.915 → 40.861 | 35.1% | 47.782 → 23.542 |
+| NativeCatalogMetadataSearch/late-unicode | 273.487 → 138.863 | 49.2% | 184.027 → 124.026 |
+
+The native API returns the same 316/321 response bytes. Rich metadata responses remain 631, 2501, and 2506 bytes. A 10,000-title simple API search removes 20,000 allocations; its count falls from 20,081 to 81. At 100,000 titles, allocated bytes fall by approximately 4.8 MB. The reverse original-source control stays near its original timing and allocation level.
+
+A compatibility-capital regression was caught before delivery. Lowercasing after NFKD would change matches for ℉ and 𝐀. The final implementation retains lowercase-before-decomposition behavior. Tests cover those values, every metadata field, cast and show cast, control/invalid bytes, repeated punctuation, field-spanning phrases, large records, and decomposition that exceeds the original capacity.
+
+These are shared-host handler measurements. They establish lower allocation traffic and lower median time in these synthetic workloads. They do not prove physical-device frames, production tail latency, or browser INP improvements. Sequential conditions and uncontrolled host activity limit causal precision. All matched samples and source bindings follow.
+
+```json
+{
+  "baseline_revision": "7d58ba78e61559ae9e10685e99c941dfbdd091ac",
+  "candidate_binding": "Baseline plus the source files bound by SHA-256 below; no cache or API schema change.",
+  "environment": {
+    "go": "go1.27.1",
+    "os": "macOS 27.0 (26A428)",
+    "arch": "darwin/arm64",
+    "cpu": "Apple M1 Pro",
+    "concurrency": "Go benchmark suffix -10; sequential conditions. No task-owned builds or tests overlapped the timed final runs. Other host activity is uncontrolled."
+  },
+  "fixture": {
+    "native_counts": [
+      10000,
+      100000
+    ],
+    "query": "Movie N-1",
+    "web_count": 10000,
+    "metadata_count": 10000,
+    "metadata_query": "Movie 9999",
+    "short_plot": "A quiet journey. repeated 10 times",
+    "long_plot": "A quiet journey. repeated 120 times",
+    "unicode_plot": "Long plot followed by Café",
+    "credits": "Alex North; Sam Reed/Captain; Morgan Vale/Guide",
+    "profile": "synthetic owner",
+    "network": "httptest real catalog/web HTTP handlers; no TLS, media, probe, transcode, or physical device"
+  },
+  "commands": [
+    "go test ./internal/server -run '^$' -bench '^BenchmarkLargeLibraryKnownTitleNavigation$/^search$' -benchtime=1s -count=5",
+    "go test ./internal/server -run '^$' -bench '^BenchmarkNativeCatalogNavigation$/./^search$' -benchtime=1s -count=5",
+    "go test ./internal/server -run '^$' -bench '^BenchmarkNativeCatalogMetadataSearch$' -benchtime=1s -count=3"
+  ],
+  "baseline_metadata_control": "The new benchmark file was compiled with the exact baseline search.go, then the candidate was restored before running the baseline binary. Newly added helpers are unused by that baseline. The original API binary was rerun for five reverse-control samples.",
+  "source_sha256": {
+    "packages/catalog/search.go": "b67d7546cb2e708d1b1ab24e8687621fd53f8c9cb80b67ad9f8c1261f3007e29",
+    "packages/catalog/search_metadata.go": "e92e2e727b8675358ae7c88b8198a01098538f2d702f5b15bef6069e4d03da6a",
+    "packages/catalog/search_metadata_test.go": "1f269a29f6fa6d5d4498d70cfc27e4e523c0dc8644e48b6f54e6ddedb1e824df",
+    "apps/player/internal/server/catalog_performance_benchmark_test.go": "ab836fa213ee3a56f71bdab4aa541c4aab7869919c2b5765cb4b9a8d282f8c34"
+  },
+  "baseline_search_sha256": "c78342cf4f3d077f75d14ba5c4bdc0f7fc5bcb22b7ce24722f025e86b575d5aa",
+  "samples": {
+    "web-search-before.log": {
+      "BenchmarkLargeLibraryKnownTitleNavigation/search-10": {
+        "ns_per_op": [
+          3526075,
+          3403750,
+          3489520,
+          3481621,
+          3471726
+        ],
+        "bytes_per_op": [
+          1476306,
+          1476260,
+          1476289,
+          1476291,
+          1476290
+        ],
+        "allocations_per_op": [
+          28961,
+          28961,
+          28961,
+          28961,
+          28961
+        ],
+        "response_bytes": []
+      }
+    },
+    "web-search-verified.log": {
+      "BenchmarkLargeLibraryKnownTitleNavigation/search-10": {
+        "ns_per_op": [
+          2918228,
+          2862527,
+          2900110,
+          2873701,
+          2885508
+        ],
+        "bytes_per_op": [
+          996270,
+          996247,
+          996248,
+          996247,
+          996235
+        ],
+        "allocations_per_op": [
+          8961,
+          8961,
+          8961,
+          8961,
+          8961
+        ],
+        "response_bytes": []
+      }
+    },
+    "api-search-before.log": {
+      "BenchmarkNativeCatalogNavigation/10000/search-10": {
+        "ns_per_op": [
+          2753240,
+          2722463,
+          2728222,
+          2721084,
+          2734309
+        ],
+        "bytes_per_op": [
+          974894,
+          974843,
+          974833,
+          974837,
+          974836
+        ],
+        "allocations_per_op": [
+          20081,
+          20081,
+          20081,
+          20081,
+          20081
+        ],
+        "response_bytes": [
+          316.0,
+          316.0,
+          316.0,
+          316.0,
+          316.0
+        ]
+      },
+      "BenchmarkNativeCatalogNavigation/100000/search-10": {
+        "ns_per_op": [
+          26891579,
+          26729765,
+          26637269,
+          26375397,
+          26679264
+        ],
+        "bytes_per_op": [
+          9620444,
+          9620404,
+          9620404,
+          9620444,
+          9620408
+        ],
+        "allocations_per_op": [
+          200082,
+          200081,
+          200081,
+          200082,
+          200081
+        ],
+        "response_bytes": [
+          321.0,
+          321.0,
+          321.0,
+          321.0,
+          321.0
+        ]
+      }
+    },
+    "api-search-verified.log": {
+      "BenchmarkNativeCatalogNavigation/10000/search-10": {
+        "ns_per_op": [
+          2166830,
+          2162500,
+          2162071,
+          2148634,
+          2180792
+        ],
+        "bytes_per_op": [
+          494860,
+          494816,
+          494821,
+          494821,
+          494819
+        ],
+        "allocations_per_op": [
+          81,
+          81,
+          81,
+          81,
+          81
+        ],
+        "response_bytes": [
+          316.0,
+          316.0,
+          316.0,
+          316.0,
+          316.0
+        ]
+      },
+      "BenchmarkNativeCatalogNavigation/100000/search-10": {
+        "ns_per_op": [
+          21721633,
+          21254314,
+          21460003,
+          21586713,
+          21229441
+        ],
+        "bytes_per_op": [
+          4820316,
+          4820289,
+          4820259,
+          4820342,
+          4820314
+        ],
+        "allocations_per_op": [
+          81,
+          81,
+          81,
+          81,
+          81
+        ],
+        "response_bytes": [
+          321.0,
+          321.0,
+          321.0,
+          321.0,
+          321.0
+        ]
+      }
+    },
+    "metadata-search-before.log": {
+      "BenchmarkNativeCatalogMetadataSearch/short-ascii-10": {
+        "ns_per_op": [
+          10731702,
+          10651017,
+          10513719
+        ],
+        "bytes_per_op": [
+          6816382,
+          6816147,
+          6816121
+        ],
+        "allocations_per_op": [
+          60087,
+          60084,
+          60084
+        ],
+        "response_bytes": [
+          631.0,
+          631.0,
+          631.0
+        ]
+      },
+      "BenchmarkNativeCatalogMetadataSearch/long-ascii-10": {
+        "ns_per_op": [
+          63027377,
+          62914726,
+          62673431
+        ],
+        "bytes_per_op": [
+          47782309,
+          47782018,
+          47781440
+        ],
+        "allocations_per_op": [
+          60087,
+          60087,
+          60085
+        ],
+        "response_bytes": [
+          2501.0,
+          2501.0,
+          2501.0
+        ]
+      },
+      "BenchmarkNativeCatalogMetadataSearch/late-unicode-10": {
+        "ns_per_op": [
+          273511260,
+          273487354,
+          272183271
+        ],
+        "bytes_per_op": [
+          184027490,
+          184026792,
+          184026808
+        ],
+        "allocations_per_op": [
+          200097,
+          200096,
+          200096
+        ],
+        "response_bytes": [
+          2506.0,
+          2506.0,
+          2506.0
+        ]
+      }
+    },
+    "metadata-search-verified.log": {
+      "BenchmarkNativeCatalogMetadataSearch/short-ascii-10": {
+        "ns_per_op": [
+          7069873,
+          7063791,
+          7067404
+        ],
+        "bytes_per_op": [
+          496039,
+          495888,
+          495887
+        ],
+        "allocations_per_op": [
+          85,
+          83,
+          83
+        ],
+        "response_bytes": [
+          631.0,
+          631.0,
+          631.0
+        ]
+      },
+      "BenchmarkNativeCatalogMetadataSearch/long-ascii-10": {
+        "ns_per_op": [
+          41615874,
+          40858789,
+          40861064
+        ],
+        "bytes_per_op": [
+          23541694,
+          23541695,
+          23541472
+        ],
+        "allocations_per_op": [
+          10086,
+          10086,
+          10086
+        ],
+        "response_bytes": [
+          2501.0,
+          2501.0,
+          2501.0
+        ]
+      },
+      "BenchmarkNativeCatalogMetadataSearch/late-unicode-10": {
+        "ns_per_op": [
+          139084411,
+          138863135,
+          136579766
+        ],
+        "bytes_per_op": [
+          124025980,
+          124026775,
+          124025243
+        ],
+        "allocations_per_op": [
+          60094,
+          60096,
+          60093
+        ],
+        "response_bytes": [
+          2506.0,
+          2506.0,
+          2506.0
+        ]
+      }
+    },
+    "api-search-reverse-control.log": {
+      "BenchmarkNativeCatalogNavigation/10000/search-10": {
+        "ns_per_op": [
+          2794504,
+          2719211,
+          2753220,
+          2736425,
+          2756796
+        ],
+        "bytes_per_op": [
+          974900,
+          974839,
+          974840,
+          974848,
+          974848
+        ],
+        "allocations_per_op": [
+          20081,
+          20081,
+          20081,
+          20081,
+          20081
+        ],
+        "response_bytes": [
+          316.0,
+          316.0,
+          316.0,
+          316.0,
+          316.0
+        ]
+      },
+      "BenchmarkNativeCatalogNavigation/100000/search-10": {
+        "ns_per_op": [
+          26442028,
+          26672352,
+          26847069,
+          27042501,
+          26577775
+        ],
+        "bytes_per_op": [
+          9620438,
+          9620480,
+          9620444,
+          9620479,
+          9620444
+        ],
+        "allocations_per_op": [
+          200082,
+          200082,
+          200082,
+          200082,
+          200082
+        ],
+        "response_bytes": [
+          321.0,
+          321.0,
+          321.0,
+          321.0,
+          321.0
+        ]
+      }
+    }
+  },
+  "logs_sha256": [
+    {
+      "file": "web-search-before.log",
+      "sha256": "2a63bb516cf9a2f1d01444e0de5b71a5a1f2e8a41e352685cb45b6b0c4a12f5b"
+    },
+    {
+      "file": "web-search-verified.log",
+      "sha256": "bcfe7912c6ce1788822c2c0dc99ba65cf31c8e7180bc789d5c2d0779fd2f79ff"
+    },
+    {
+      "file": "api-search-before.log",
+      "sha256": "4b493eb4ff36e3d13a497bc74beb8513d83954feac76b782fe9457869b471ee4"
+    },
+    {
+      "file": "api-search-verified.log",
+      "sha256": "f95691002279713df39be03752ad0abb6f6bd8a3cfbd12d5ff608ede0e5e345e"
+    },
+    {
+      "file": "metadata-search-before.log",
+      "sha256": "b05cc9f24fe168f77a8bb92451aa597b1df9c520cf5fd95b09afd72479fdba05"
+    },
+    {
+      "file": "metadata-search-verified.log",
+      "sha256": "f3874b6d4b727f5a56d432dbc414ee8b4320cfa192c6e41588b643c20cc78af3"
+    },
+    {
+      "file": "api-search-reverse-control.log",
+      "sha256": "43160ebcc7e88c83f3d623d8b58ff23bc56c08b438304f93a5f1f18d9f9317d2"
+    }
+  ],
+  "rejected_controls": {
+    "metadata-search-after.log": {
+      "BenchmarkNativeCatalogMetadataSearch/short-ascii-10": {
+        "ns_per_op": 7059159,
+        "bytes_per_op": 495902,
+        "allocations_per_op": 83,
+        "response_bytes": 631.0
+      },
+      "BenchmarkNativeCatalogMetadataSearch/long-ascii-10": {
+        "ns_per_op": 41444527,
+        "bytes_per_op": 23541475,
+        "allocations_per_op": 10086,
+        "response_bytes": 2501.0
+      },
+      "BenchmarkNativeCatalogMetadataSearch/late-unicode-10": {
+        "ns_per_op": 277224500,
+        "bytes_per_op": 184026804,
+        "allocations_per_op": 200096,
+        "response_bytes": 2506.0
+      }
+    },
+    "metadata-search-final.log": {
+      "BenchmarkNativeCatalogMetadataSearch/short-ascii-10": {
+        "ns_per_op": 7063705,
+        "bytes_per_op": 495918,
+        "allocations_per_op": 83,
+        "response_bytes": 631.0
+      },
+      "BenchmarkNativeCatalogMetadataSearch/long-ascii-10": {
+        "ns_per_op": 41095637,
+        "bytes_per_op": 23541218,
+        "allocations_per_op": 10085,
+        "response_bytes": 2501.0
+      },
+      "BenchmarkNativeCatalogMetadataSearch/late-unicode-10": {
+        "ns_per_op": 274121864,
+        "bytes_per_op": 153389046,
+        "allocations_per_op": 110101,
+        "response_bytes": 2506.0
+      }
+    },
+    "metadata-search-iterator.log": {
+      "BenchmarkNativeCatalogMetadataSearch/late-unicode-10": {
+        "ns_per_op": 327589615,
+        "bytes_per_op": 109148320,
+        "allocations_per_op": 170100,
+        "response_bytes": 2506.0
+      }
+    },
+    "metadata-search-fields.log": {
+      "BenchmarkNativeCatalogMetadataSearch/short-ascii-10": {
+        "ns_per_op": 8638852,
+        "bytes_per_op": 495930,
+        "allocations_per_op": 83,
+        "response_bytes": 631.0
+      },
+      "BenchmarkNativeCatalogMetadataSearch/long-ascii-10": {
+        "ns_per_op": 56452106,
+        "bytes_per_op": 23541626,
+        "allocations_per_op": 10086,
+        "response_bytes": 2501.0
+      },
+      "BenchmarkNativeCatalogMetadataSearch/late-unicode-10": {
+        "ns_per_op": 133027312,
+        "bytes_per_op": 124026759,
+        "allocations_per_op": 60096,
+        "response_bytes": 2506.0
+      }
+    },
+    "metadata-search-unicode-table-control.log": {
+      "BenchmarkNativeCatalogMetadataSearch/short-ascii-10": {
+        "ns_per_op": 7102462,
+        "bytes_per_op": 495887,
+        "allocations_per_op": 83,
+        "response_bytes": 631.0
+      },
+      "BenchmarkNativeCatalogMetadataSearch/long-ascii-10": {
+        "ns_per_op": 41843606,
+        "bytes_per_op": 23541694,
+        "allocations_per_op": 10086,
+        "response_bytes": 2501.0
+      },
+      "BenchmarkNativeCatalogMetadataSearch/late-unicode-10": {
+        "ns_per_op": 206364458,
+        "bytes_per_op": 124025968,
+        "allocations_per_op": 60094,
+        "response_bytes": 2506.0
+      }
+    }
+  },
+  "limits": [
+    "Descriptive medians, without randomized conditions or a confidence interval.",
+    "Handler benchmarks do not measure native presentation, browser interaction, production network, or user hardware.",
+    "A first combined benchmark expression matched no benchmarks and is excluded.",
+    "The earlier Unicode-table candidate is a control, not the final measured implementation."
+  ],
+  "rejected_controls_note": "Initial ASCII-only fallback, Unicode builder Grow, norm.Iter, pre-compatibility field prototype, and Unicode-table control respectively. Full logs and prototype sources remain private. The iterator reduced allocation but increased latency. The early field prototype failed compatibility-capital tests and was corrected. Unicode table checks per ASCII rune were removed from the final path."
+}
+```
+
+Metadata-search local validation:
+
+- `go -C packages test ./...`: passed.
+- `go -C packages test -race ./catalog`: passed.
+- `go -C apps/player test ./...`: passed, including the full server package.
+- `go -C apps/subtitles test ./...`: passed, including the full server package.
+- Changed-code `golangci-lint run --new-from-rev=7d58ba78e61559ae9e10685e99c941dfbdd091ac`: zero issues in shared packages and Player.
+- `make max-loc`, `make tooling-check`, and `git diff --check`: passed. Required Code Atlas snapshots were regenerated for both apps.
+- Independent review found the early compatibility-capital regression. It confirmed the final fix and separator invariant. Its focused tests passed before the final ASCII-within-Unicode delta; the full local suites above cover that final delta.
+
+Both required app `verify-changed` commands ran on the implementation bound by the source hashes above. Both passed source caps and diff checks. Player also passed its server compile and focused package stage. Both then stopped at the same 112 existing shared-package lint findings recorded in the earlier web phase. Later stages of those commands did not run. Full local Go suites and changed-code lint were run separately as listed above. This is a local verification limit; no gate was bypassed. The hosted secret scan initially classified two SHA-256 log fingerprints as generic API keys. Filenames and fingerprints now use separate fields. Only task-owned PR history was rewritten; measured production and benchmark source hashes remain identical. No scanner rule or ignore list changed.
+
+The earlier web rendering change merged through [PR #375](https://github.com/Kinosail/kinosail/pull/375). Its [main workflow](https://github.com/Kinosail/kinosail/actions/runs/36699462274) completed successfully, including production-image publication checks. That establishes hosted publication evidence; this phase has no new Nox revision, remote health, physical-device, or production first-frame proof.
+
+## Artwork dimension decode probe
+
+The production thumbnail method was measured in an optimized standalone macOS probe. The generated source is a 297,827-byte, 3200 × 3200 JPEG. Six batches alternate dimension order. Each batch reports 25 decodes, its median, and its observed p95. The headline result is the median of the six batch medians.
+
+A 400px output occupies 640,000 decoded bytes, versus 2,560,000 at 800px and 10,240,000 at 1600px. Median decode time is 3.954, 5.010, and 16.150 ms respectively. These values quantify this fixture's decode cost. They do not establish frame timing, quality on a focused TV card, or production network savings. No native artwork dimension changed.
+
+```json
+{
+  "encoded_bytes": 297827,
+  "fixture": "Generated 3200x3200 RGB block-pattern JPEG, quality 0.88",
+  "platform": "macOS host ImageIO; not iOS/tvOS frame timing",
+  "rows": [
+    {
+      "decoded_bytes": 640000,
+      "dimension": 400,
+      "median_ms": 3.93225,
+      "p95_ms": 4.291541,
+      "run": 0,
+      "samples": 25
+    },
+    {
+      "decoded_bytes": 2560000,
+      "dimension": 800,
+      "median_ms": 5.033041,
+      "p95_ms": 5.268916,
+      "run": 0,
+      "samples": 25
+    },
+    {
+      "decoded_bytes": 10240000,
+      "dimension": 1600,
+      "median_ms": 15.96525,
+      "p95_ms": 17.892291,
+      "run": 0,
+      "samples": 25
+    },
+    {
+      "decoded_bytes": 10240000,
+      "dimension": 1600,
+      "median_ms": 16.690792,
+      "p95_ms": 18.209792,
+      "run": 1,
+      "samples": 25
+    },
+    {
+      "decoded_bytes": 2560000,
+      "dimension": 800,
+      "median_ms": 5.095208,
+      "p95_ms": 5.395875,
+      "run": 1,
+      "samples": 25
+    },
+    {
+      "decoded_bytes": 640000,
+      "dimension": 400,
+      "median_ms": 4.097667,
+      "p95_ms": 5.108208,
+      "run": 1,
+      "samples": 25
+    },
+    {
+      "decoded_bytes": 640000,
+      "dimension": 400,
+      "median_ms": 4.006916,
+      "p95_ms": 4.701791,
+      "run": 2,
+      "samples": 25
+    },
+    {
+      "decoded_bytes": 2560000,
+      "dimension": 800,
+      "median_ms": 4.879791,
+      "p95_ms": 5.239166,
+      "run": 2,
+      "samples": 25
+    },
+    {
+      "decoded_bytes": 10240000,
+      "dimension": 1600,
+      "median_ms": 15.85975,
+      "p95_ms": 17.167916,
+      "run": 2,
+      "samples": 25
+    },
+    {
+      "decoded_bytes": 10240000,
+      "dimension": 1600,
+      "median_ms": 16.585667,
+      "p95_ms": 18.022333,
+      "run": 3,
+      "samples": 25
+    },
+    {
+      "decoded_bytes": 2560000,
+      "dimension": 800,
+      "median_ms": 5.038542,
+      "p95_ms": 5.285,
+      "run": 3,
+      "samples": 25
+    },
+    {
+      "decoded_bytes": 640000,
+      "dimension": 400,
+      "median_ms": 3.970583,
+      "p95_ms": 4.164208,
+      "run": 3,
+      "samples": 25
+    },
+    {
+      "decoded_bytes": 640000,
+      "dimension": 400,
+      "median_ms": 3.933583,
+      "p95_ms": 4.047875,
+      "run": 4,
+      "samples": 25
+    },
+    {
+      "decoded_bytes": 2560000,
+      "dimension": 800,
+      "median_ms": 4.89125,
+      "p95_ms": 5.072209,
+      "run": 4,
+      "samples": 25
+    },
+    {
+      "decoded_bytes": 10240000,
+      "dimension": 1600,
+      "median_ms": 16.331833,
+      "p95_ms": 17.519292,
+      "run": 4,
+      "samples": 25
+    },
+    {
+      "decoded_bytes": 10240000,
+      "dimension": 1600,
+      "median_ms": 15.968541,
+      "p95_ms": 17.188625,
+      "run": 5,
+      "samples": 25
+    },
+    {
+      "decoded_bytes": 2560000,
+      "dimension": 800,
+      "median_ms": 4.986042,
+      "p95_ms": 5.282875,
+      "run": 5,
+      "samples": 25
+    },
+    {
+      "decoded_bytes": 640000,
+      "dimension": 400,
+      "median_ms": 3.938334,
+      "p95_ms": 4.154542,
+      "run": 5,
+      "samples": 25
+    }
+  ],
+  "owner_method_sha256": "8f17ad3d041eb08deb09049a10293a97d39b1afd929be690ef58e9e8e93d36fc",
+  "source_sha256": {
+    "apps/player/apps/native/Sources/Platform/ArtworkLoader.swift": "2c71b58d54284ae8c68ad8d7265739cf0f334fde66b96f28c38090ebbb8608aa",
+    ".verification/artwork-size-profile/decode-benchmark.swift": "264ff295d0b7340ad47e2a9c317c1df8b8b93eaaf4214354ca977c622bb4e95d",
+    ".verification/artwork-size-profile/source.jpg": "29b3975cac9ae3e1e30a11643909c79a16859362927a303a4e9645ce5d15e22b"
+  },
+  "commands": [
+    "xcrun swiftc -O .verification/artwork-size-profile/decode-benchmark.swift -o .verification/artwork-size-profile/decode-benchmark",
+    ".verification/artwork-size-profile/decode-benchmark .verification/artwork-size-profile"
+  ],
+  "method": "Exact production decodedThumbnail method extracted into a standalone Swift probe. ClientError is an equivalent stub enum. Six batches alternate size order; each size has 25 decodes. Encoded data is held in memory. Each decoded image is validated for its requested square dimensions.",
+  "median_of_batch_medians_ms": {
+    "400": 3.9544585,
+    "800": 5.0095415,
+    "1600": 16.150187
+  },
+  "limits": "Synthetic RGB block pattern JPEG; macOS ImageIO only. No photographic quality, native UI, texture-upload, network, physical-device, or artwork production change is established. Raw probe and fixture remain in the private evidence directory."
+}
+```
+
 ## Earlier catalog and native measurements
 
 Synthetic data only. Source hashes bind the native results to the validated working tree. [Hosted verification](https://github.com/Kinosail/kinosail/pull/369/checks) is recorded independently.
