@@ -24,6 +24,8 @@ The change resets collation scratch space for each title and copies completed ke
 
 Five samples reduce allocated bytes from approximately 4.71 MB to 2.83 MB per browse: about 40%. Allocation counts change from 11,590 to 11,573. The response remains 25,319 bytes. Wall-clock samples overlap; this is a measured memory improvement, not proof of lower interaction latency. See the [raw evidence](evidence/player-performance-frontiers-2026-09-30.md).
 
+A separate known-title navigation benchmark still allocates about 1.88 MB and 28,962–28,964 objects for an exact-title search across 10,000 titles. Concurrent builds heavily affected wall time. Its raw samples are preserved as a follow-up baseline, without a before/after latency claim.
+
 ## Current primary-source research
 
 These findings are research inputs. Paper results are not Kinosail results.
@@ -67,4 +69,4 @@ The measurement record holds raw samples, fixture descriptions, commands, source
 
 Local verification passed the full Player, Subtitles, and shared Go suites, the catalog race check, source-file caps, and repository tooling checks. The reconciled tvOS simulator run passed 26 tests in five artwork suites. Its growth regression covers both 1600px replacement and 4096px replacement above the retention budget. The independent review findings have regression controls and are resolved. Changed-code Go lint reports zero issues; full local shared-package lint has existing findings outside this patch.
 
-No physical iPhone or Apple TV frame trace, deployed first-frame measurement, or production-network benchmark is established by this follow-up. Until device models are supplied, the working target is older supported Apple hardware. The goal remains active while these measurement and optimization opportunities remain unresolved.
+The paired iPhone 16 Pro Max and Apple TV 4K (third generation) are reachable through the local device tools. A read-only attempt to attach Instruments to the observed phone app process failed before recording. The TV app was not running. These probes establish no physical frame timing or verified build revision. Older supported hardware, deployed first-frame measurement, and production-network benchmarks still need evidence. The goal remains active while these measurement and optimization opportunities remain unresolved.

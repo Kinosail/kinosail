@@ -1,6 +1,6 @@
 # Performance frontiers: measurement record
 
-Synthetic data only. Source hashes bind the native results to the validated working tree. Hosted results are linked from the pull request after publication.
+Synthetic data only. Source hashes bind the native results to the validated working tree. [Hosted verification](https://github.com/Kinosail/kinosail/pull/369/checks) is recorded independently.
 
 ```json
 {
@@ -64,11 +64,14 @@ Synthetic data only. Source hashes bind the native results to the validated work
     "tooling": "make tooling-check passed",
     "native_final": "26 tests in five suites passed; refresh growth exercised 1600px and 4096px cases",
     "player_full": "go test ./... passed",
-    "apple_builds": "make -C apps/player client-check passed (iOS and tvOS simulator builds)",
-    "required_hosted_checks": "pending",
+    "apple_builds": "iOS and tvOS simulator builds passed again after reconciling main 0b0fda9f1c3030b80ecd09c099f5add64403c05f",
+    "required_hosted_checks": {
+      "url": "https://github.com/Kinosail/kinosail/pull/369/checks",
+      "note": "The pull request is the authoritative source for current hosted results; this measurement record does not pin a completion claim."
+    },
     "subtitles_full": "go test ./... passed",
     "changed_code_lint": "golangci-lint run --new-from-rev=9a45e9444613dbde5a277a8c7426919fcab97aa8: 0 issues",
-    "full_local_changed_gate": "Initial run stopped at 115 shared lint findings. Three task findings (test complexity and formatting) fixed; changed-code lint now passes. Full local shared lint remains a baseline limit."
+    "full_local_changed_gate": "Both Player and Subtitles verify-changed stop at 112 existing shared lint findings outside this patch. Three task findings were fixed; changed-code lint reports zero issues."
   },
   "boundaries": [
     "Physical iPhone and Apple TV frame timing",
@@ -93,6 +96,21 @@ Synthetic data only. Source hashes bind the native results to the validated work
     "packages/catalog/browse_sort.go": "d783d39f6a1ddbdd61b1335910288ad818dd561352479b9b03d740643aefcb9f",
     "packages/catalog/sort_storage_test.go": "7fb6a37b83d21d7e8a92ac4cb9dcb995b3e61e800e9a9a64d1981fb2ccfe9147"
   },
-  "formatting_note": "Collation measurement preceded gofumpt formatting. Go statements are unchanged; delivery hashes record the formatted source."
+  "formatting_note": "Collation measurement preceded gofumpt formatting. Go statements are unchanged; delivery hashes record the formatted source.",
+  "known_title_navigation": {
+    "command": "go test ./internal/server -run '^$' -bench '^BenchmarkLargeLibraryKnownTitleNavigation$' -benchtime=2s -count=3",
+    "result": "goos: darwin\ngoarch: arm64\npkg: github.com/MikeO7/kinosail-player/internal/server\ncpu: Apple M1 Pro\nBenchmarkLargeLibraryKnownTitleNavigation/search-10         \t      78\t  36211266 ns/op\t 1877917 B/op\t   28964 allocs/op\nBenchmarkLargeLibraryKnownTitleNavigation/search-10         \t     100\t  38964268 ns/op\t 1877753 B/op\t   28962 allocs/op\nBenchmarkLargeLibraryKnownTitleNavigation/search-10         \t     159\t  18520208 ns/op\t 1877731 B/op\t   28962 allocs/op\nBenchmarkLargeLibraryKnownTitleNavigation/letter-10         \t      19\t 125337099 ns/op\t 2831106 B/op\t   11588 allocs/op\nBenchmarkLargeLibraryKnownTitleNavigation/letter-10         \t      18\t 114844516 ns/op\t 2830856 B/op\t   11588 allocs/op\nBenchmarkLargeLibraryKnownTitleNavigation/letter-10         \t      44\t  61831955 ns/op\t 2830873 B/op\t   11588 allocs/op\nPASS\nok  \tgithub.com/MikeO7/kinosail-player/internal/server\t61.077s\n",
+    "note": "Concurrent host builds severely affect wall time. These are follow-up workload measurements, not a before/after speed comparison."
+  },
+  "physical_device_probe": {
+    "models": [
+      "iPhone 16 Pro Max",
+      "Apple TV 4K (third generation)"
+    ],
+    "read_only_inventory": "Paired devices responded to process inventory queries.",
+    "record_command": "xcrun xctrace record --template SwiftUI --device <private device identifier> --attach <observed app PID> --time-limit 30s --output <ignored private trace path> --no-prompt",
+    "record_result": "Exit 21: Instruments could not find the observed phone process. No trace was created. The TV app was not running.",
+    "boundary": "No installation, launch, termination, or interaction journey was performed. Installed source revision and physical frame timing remain unverified."
+  }
 }
 ```
