@@ -47,6 +47,8 @@ for app in APPS:
     if engineering.exists():
         raise SystemExit(f"{app} contains a redundant engineering snapshot")
     html = published.read_text(encoding="utf-8")
+    if f'<title>Kinosail {app.title()} Code Atlas</title>' not in html:
+        raise SystemExit(f"{app} Code Atlas needs a distinct product title")
     from importlib.util import module_from_spec, spec_from_file_location
 
     spec = spec_from_file_location("seo_check", REPO / "engineering/documentation/seo_check.py")

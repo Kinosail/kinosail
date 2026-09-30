@@ -9,6 +9,8 @@ last_reviewed: 2026-09-27
 
 Kinosail Subtitles is a free, self-hosted app that scans local movies and episodes, finds missing subtitles, and writes validated SRT or WebVTT sidecar files beside the videos. It runs independently from Kinosail Player. Optional Supporter badges do not unlock core features.
 
+[Compare Player and Subtitles]({{ site.root_baseurl | default: '' }}/products/) to choose one app or run both.
+
 <figure class="product-screenshot">
   <picture>
     <source media="(max-width: 600px)" srcset="{{ '/assets/images/subtitles-dashboard-mobile.webp' | relative_url }}" width="780" height="2480">
