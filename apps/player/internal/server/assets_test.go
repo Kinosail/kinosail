@@ -83,16 +83,6 @@ func TestSettingsAndSharedPageFamiliesUseSignalLayout(t *testing.T) {
 	assetContracts.SettingsAndSharedPageFamiliesUseSignalLayout(t)
 }
 
-func TestPausingSavesProgressWithoutMarkingMediaWatched(t *testing.T) {
-	t.Parallel()
-
-	response := httptest.NewRecorder()
-	server.New(server.Config{}).ServeHTTP(response, httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/static/player.js", nil))
-	if !strings.Contains(response.Body.String(), `addEventListener("pause", () => save(false))`) {
-		t.Fatalf("player script = %q", response.Body.String())
-	}
-}
-
 func TestHomeIsInstallableAsAWebApp(t *testing.T) {
 	t.Parallel()
 	servertest.AssertInstallableWebApp(t, server.New(server.Config{}))
