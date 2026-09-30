@@ -1,0 +1,228 @@
+{
+  "revision": "05da53145bc05235aa510fecc6392ec5928de061",
+  "sourceState": "Uncommitted final production and test changes with exact hashes below; no source changes during this run",
+  "command": "pnpm exec playwright test layout-audit-configuration.spec.ts layout-audit-library.spec.ts layout-audit-shell.spec.ts",
+  "testData": "Isolated Owner with TOTP; generated CC0 populated library; configuration saves affect isolated data only",
+  "testSourceHashes": {
+    "layout-audit-configuration.spec.ts": "657b54501b3e442a44cfff26f8fbd72af8177b2a1308e2db844994c11eea46be",
+    "layout-audit-library.spec.ts": "a742cae49761e317f01cc080751ed14a7ab4d07d92e3e550abdde4e7d506a292",
+    "layout-audit-shell.spec.ts": "7a2aee51257fbe49f50b358ba2872cdd1b221e48cb1a073ca4cc37287511a1d5"
+  },
+  "productionSourceHashes": {
+    "internal/server/static/settings.css": "4cf42e143c01f361c2e8808dd02248a5f61374fe38421eed94bd3763547b1cea",
+    "internal/server/album.go": "38b89b0b2e949825b6d8ba2d80c8446da2a1eedbc14b36e0f30cd454547fe23b",
+    "internal/server/navigation_shell.go": "e494b29af5912f95177c26635ec9d0475a295c4787c188c9519c9b0c0c2788af"
+  },
+  "environment": {
+    "OS": "macOS 27.0",
+    "architecture": "arm64",
+    "server": "https://127.0.0.1:39227",
+    "browsers": "Chromium, Firefox, WebKit; Playwright 1.63.0; pnpm 11.22.0",
+    "workers": 1
+  },
+  "startedAt": "2026-09-30T19:44:54.352457+00:00",
+  "exitCode": 0,
+  "finishedAt": "2026-09-30T19:59:26.373630+00:00",
+  "sourceCommit": "94c972af866a5c7639f5f3b5d9d8f895fccfef5e",
+  "finalResult": "54/54 passed; all three browsers; 14.2 minutes",
+  "checks": [
+    {
+      "command": "make -C apps/player test",
+      "result": "All packages passed; final server 443.793s; several packages cached"
+    },
+    {
+      "command": "make -C apps/player verify-changed",
+      "result": "Passed; Go compilation/focused tests, CSS lint, E2E discovery, file cap, diff check"
+    },
+    {
+      "command": "make max-loc",
+      "result": "Passed after final production changes"
+    },
+    {
+      "command": "make tooling-check",
+      "result": "Passed; tooling was unchanged by subsequent CSS and cache-key changes"
+    },
+    {
+      "command": "go test ./internal/server -run ^(TestApplicationShellRefreshesCachedStylesheetVersions|TestQuickConnectPageUsesSixDigitAutoSubmitControl|TestNavigationPagesRefreshCachedAssets)$ -count=1",
+      "result": "Three cache-key assertions failed before electric-40 was implemented; final full suite passed"
+    }
+  ],
+  "diagnosticRuns": [
+    {
+      "command": "playwright test layout-audit-configuration.spec.ts layout-audit-library.spec.ts layout-audit-shell.spec.ts --project=chromium",
+      "revision": "05da53145bc05235aa510fecc6392ec5928de061",
+      "result": "Original baseline 3 passed, 10 failed; later intermediate test variants 10/13, 1/3 and 2/3 passed. These diagnostics are not final verification."
+    },
+    {
+      "command": "playwright test layout-audit-shell.spec.ts --grep transcoder support --project=webkit",
+      "revision": "05da53145bc05235aa510fecc6392ec5928de061",
+      "result": "3px overflow reproduced twice with the strict assertion unchanged"
+    },
+    {
+      "command": "playwright test layout-audit-shell.spec.ts --grep transcoder support",
+      "result": "First minimum-width attempt: Chromium/Firefox passed, WebKit still failed. That unsuccessful production rule was removed."
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "evidence/baseline-refresh.log",
+      "sha256": "03eb3eb69396ef760d6a55f831ca5c77fb733de2a63d5f77f73afa50659f8050"
+    },
+    {
+      "path": "evidence/dropdown-after-320.png",
+      "sha256": "c44d97ce06cd0ccacb7342a6c0663a56e78198ccc47d757e435b77cbe9020abe"
+    },
+    {
+      "path": "evidence/dropdown-before-320.png",
+      "sha256": "cef900ddc012b5a041d85d5b4be5a680f2ad8f85c0a152d418f172431f3d47bf"
+    },
+    {
+      "path": "evidence/layout-audit-control-preview-context.json",
+      "sha256": "1f1ac6014b5b28f079e1cbc7510c1d7af54c3d2b639d4ac0bfc430ee0114e763"
+    },
+    {
+      "path": "evidence/layout-audit-control-preview.log",
+      "sha256": "de6165428680f7218620259cebd34ba0d0fc7cea6c02c89fc80d6a6b73d1ac42"
+    },
+    {
+      "path": "evidence/layout-audit-final-go-suite.log",
+      "sha256": "bb5926519cfec51944aa9f4aaed66028f290beda2c9bea4f35c0939dcefb2d63"
+    },
+    {
+      "path": "evidence/layout-audit-final-matrix-context.json",
+      "sha256": "53b68dc7a01efd951ce0ff134c08549f2744b4521348892e3bd8eead23742955"
+    },
+    {
+      "path": "evidence/layout-audit-final-matrix.log",
+      "sha256": "d2851e0a3e248850654a5867fae1b47d3e8358a5d300e7d18b3fed505610a78d"
+    },
+    {
+      "path": "evidence/layout-audit-final-max-loc.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "evidence/layout-audit-go-suite.log",
+      "sha256": "9cd0fb44e04a34d67c225ebff3803d5441a5f6a9c379e9bced189880707e608e"
+    },
+    {
+      "path": "evidence/layout-audit-grid-preview-context.json",
+      "sha256": "3ff6a7952ef99cfce16c3793e85734408414f9a8e7ec4dea9095942eadf38769"
+    },
+    {
+      "path": "evidence/layout-audit-grid-preview.log",
+      "sha256": "186355aa31bdbfbb479d6ec3e39f0ae05bacc800710a7f7e19de7941204c1916"
+    },
+    {
+      "path": "evidence/layout-audit-overflow-diagnostic-context.json",
+      "sha256": "eb13db64302af66b6309f5e384f656beb660fa0451d6f5b353702075f22d04c4"
+    },
+    {
+      "path": "evidence/layout-audit-overflow-diagnostic.log",
+      "sha256": "643ede6fb0c6dddf963bd90bae77dffe00eb7b07855c17bac9e72f53d9407117"
+    },
+    {
+      "path": "evidence/layout-audit-overflow-labels-context.json",
+      "sha256": "39fe80e0ff5f0e2a6b6eab3f16c1765ab0ceea25491771c043065ca4f5fca4b8"
+    },
+    {
+      "path": "evidence/layout-audit-overflow-labels.log",
+      "sha256": "03b6ae2ed6b25ccad446021bdfe74f6d01edcb6ed1ee61ed447fb6ae40a3ddee"
+    },
+    {
+      "path": "evidence/layout-audit-overflow-preview-context.json",
+      "sha256": "41da2fcdf2d93903c7f9b3f9f7c7634273637c6ba89195c147fefb595c2101c3"
+    },
+    {
+      "path": "evidence/layout-audit-overflow-preview.log",
+      "sha256": "6693742d7c061d43210d4ab1d80e161f6539e61566f1b428c947d03e49fe28d5"
+    },
+    {
+      "path": "evidence/layout-audit-refresh-first.log",
+      "sha256": "f899bad76961351ff40697daf6b51058f6133fb0b7fc01e42102c4ffa1570ed1"
+    },
+    {
+      "path": "evidence/layout-audit-refresh-focused-second.log",
+      "sha256": "c4e4fac98c0c30389444070ed92dcdbeeedece3b86a2f1100c3f9c64b70ea517"
+    },
+    {
+      "path": "evidence/layout-audit-refresh-focused.log",
+      "sha256": "553e55c3f30b9cb549527056118aec40b0f9ce1e3629dec0ca98d845166e8f35"
+    },
+    {
+      "path": "evidence/layout-audit-refresh-matrix-context.json",
+      "sha256": "8a1ff0e197ea2501f2ae233cdb216bffde935db6a7468516a52b68442aa06296"
+    },
+    {
+      "path": "evidence/layout-audit-refresh-matrix.log",
+      "sha256": "b4bf02cbd2ddb05ba0ce6ad817ec4c866596ab78d7f9487f74ae080ff23a1ee1"
+    },
+    {
+      "path": "evidence/layout-audit-refresh-tooling.log",
+      "sha256": "702f17b4db241953f6ebb2da3d221e0625c7560d8936ef7e8dad59e76d75cb2b"
+    },
+    {
+      "path": "evidence/layout-audit-style-cache-red.log",
+      "sha256": "61e91e293da711d82648644ad7e650b97080e8ccb2a546e15b2ba6e56786335a"
+    },
+    {
+      "path": "evidence/layout-audit-transcoder-green-context.json",
+      "sha256": "0481764fd84dddfad6b70520b896289b1be2e0e5ffa943dd189a9c226b446183"
+    },
+    {
+      "path": "evidence/layout-audit-transcoder-green.log",
+      "sha256": "c38d7c6ee560ee25e2c469aad5d7b57ab8c44e44a151cfa823727e04eea46447"
+    },
+    {
+      "path": "evidence/layout-audit-transcoder-webkit-red-context.json",
+      "sha256": "a907819a415aab5c58e1d5bacfad04960492f079a1b0f43849ed71754a8ed918"
+    },
+    {
+      "path": "evidence/layout-audit-transcoder-webkit-red.log",
+      "sha256": "360b550a087904c4233bc8e57fc069fbb340f89864ad2d290af65127f4726d62"
+    },
+    {
+      "path": "evidence/layout-audit-verify-changed.log",
+      "sha256": "b78b088ba1327ecd7386d2aa14cdd7507fab6182cd8a11c548c5ceabf496df13"
+    },
+    {
+      "path": "evidence/movies-phone.png",
+      "sha256": "e50a78ab5b2eb7d703a0fca4192869abc7e14164272d71c821f1c5a686aff8e5"
+    },
+    {
+      "path": "evidence/quick-connect-landscape-red.log",
+      "sha256": "17409ec608b7caeeffcc3f3f8514f5cef218e3b4756b915b317df9a4946b0a71"
+    },
+    {
+      "path": "evidence/quick-connect-landscape.png",
+      "sha256": "951ee4ff5acc07e16c365b348a430255b80bca3212b0ecd8dddc7c8280454774"
+    },
+    {
+      "path": "evidence/settings-desktop.png",
+      "sha256": "ec02372da29bf5bd0446cb0df967ccad12d1fd36cc78fffa7cad0c5dba8f4fb3"
+    },
+    {
+      "path": "evidence/settings-tablet.png",
+      "sha256": "0ffbcda989ce36aa46f88dc4faabdb418a3a6fc63749c2c409b78b12096693f7"
+    },
+    {
+      "path": "polish-control-preview.spec.ts.txt",
+      "sha256": "7a16c5bf60c9989195e88f26679aa5a96fbdd5dc24107545857295cf1cc5541a"
+    },
+    {
+      "path": "polish-grid-preview.spec.ts.txt",
+      "sha256": "23fc57387787d184c49d1f8af7247b764bd4372b4e1481948b338459bfb49701"
+    },
+    {
+      "path": "polish-overflow-diagnostic-labels.spec.ts.txt",
+      "sha256": "5c335a2987938e1fe22040655023cea434684d6db522573aea3d9c4d4c7d98a0"
+    },
+    {
+      "path": "polish-overflow-diagnostic-preview.spec.ts.txt",
+      "sha256": "8ea4487a157775d9ca3e4f172c413e56edc6c683e8c27b4384797bdc3074981f"
+    },
+    {
+      "path": "polish-overflow-diagnostic.spec.ts.txt",
+      "sha256": "05d12870c0f23151c43b6861db6ab03b0a4c6b0b5ae0fb7a85deeae20a03f7d3"
+    }
+  ]
+}
