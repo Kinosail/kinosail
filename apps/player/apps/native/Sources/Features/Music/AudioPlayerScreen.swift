@@ -81,7 +81,7 @@ struct AudioPlayerScreen: View {
                         HStack(spacing: AudioNowPlayingGeometry.transportSpacing) {
                             Button("Back 15 seconds", systemImage: "gobackward.15") { perform { try await session.player.seek(to: max(0, session.player.seconds - 15)) } }.labelStyle(.iconOnly).buttonStyle(.bordered).buttonBorderShape(.capsule).tint(KinoTheme.secondaryControlTint).secondaryControlForeground().controlSize(.large)
                             Button { session.player.togglePlayback() } label: {
-                                Label(session.player.isPlaying ? "Pause" : "Play", systemImage: session.player.isPlaying ? "pause.fill" : "play.fill")
+                                Label(session.player.isPlaying || session.player.buffering ? "Pause" : "Play", systemImage: session.player.isPlaying || session.player.buffering ? "pause.fill" : "play.fill")
                                     .labelStyle(.iconOnly)
                                     #if os(tvOS)
                                     .font(.system(size: 44, weight: .semibold))
@@ -268,7 +268,7 @@ struct MiniPlayer: View {
                         VStack(alignment: .leading) { Text(item.title).font(.headline).lineLimit(1); Text(item.artist).font(.caption).foregroundStyle(.secondary).lineLimit(1) }
                     }.frame(maxWidth: .infinity, alignment: .leading)
                 }.buttonStyle(.plain).accessibilityLabel("Now playing: \(item.title)")
-                Button(session.player.isPlaying ? "Pause" : "Play", systemImage: session.player.isPlaying ? "pause.fill" : "play.fill") { session.player.togglePlayback() }.labelStyle(.iconOnly).buttonStyle(.bordered).buttonBorderShape(.capsule).tint(KinoTheme.secondaryControlTint).secondaryControlForeground().controlSize(controlSize)
+                Button(session.player.isPlaying || session.player.buffering ? "Pause" : "Play", systemImage: session.player.isPlaying || session.player.buffering ? "pause.fill" : "play.fill") { session.player.togglePlayback() }.labelStyle(.iconOnly).buttonStyle(.bordered).buttonBorderShape(.capsule).tint(KinoTheme.secondaryControlTint).secondaryControlForeground().controlSize(controlSize)
                 Button("Stop", systemImage: "xmark") { session.player.stop(); session.contentRevision = UUID() }.labelStyle(.iconOnly).buttonStyle(.bordered).buttonBorderShape(.capsule).tint(KinoTheme.secondaryControlTint).secondaryControlForeground().controlSize(controlSize)
             }
             .padding(.horizontal, horizontalPadding).padding(.vertical, verticalPadding).background(.regularMaterial)
