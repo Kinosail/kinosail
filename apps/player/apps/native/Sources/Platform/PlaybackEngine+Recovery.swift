@@ -141,7 +141,7 @@ extension PlaybackEngine {
                             try await self.install(details: source, compatible: true, at: self.seconds, attempt: attempt)
                         } else { self.message = Self.playbackMessage(failure); return }
                         try self.check(attempt)
-                        if self.nativeIntent.playing.withLock({ $0 }) ?? self.wantsPlayback { self.player?.playImmediately(atRate: Float(self.preferences.rate)) }
+                        if self.nativeIntent.playing.withLock({ $0 }) ?? self.wantsPlayback { self.player?.play() }
                     } catch {
                         if self.generation == attempt, !(error is CancellationError) { self.message = Self.playbackMessage(error) }
                         return
