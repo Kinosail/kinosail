@@ -46,10 +46,12 @@ struct MediaLabelTests {
             "year": .string("2024"), "rating": .string("TV-14")
         ]), server: server)
         #expect(ratedEpisode.subtitle == "TV-14")
-        #expect(ratedEpisode.subtitleWithoutYear == "TV-14")
-        #expect(try MediaItem(ratedEpisode.json, server: server).subtitleWithoutYear == "TV-14")
+        #expect(ratedEpisode.subtitleWithoutYear.isEmpty)
+        #expect(try MediaItem(ratedEpisode.json, server: server).subtitleWithoutYear.isEmpty)
         for (kind, title, artist, rating, expected, withoutYear) in [
-            ("video", "1917", "", "PG-13", "2019 · PG-13", "PG-13"),
+            ("video", "1917", "", "PG-13", "2019 · PG-13", ""),
+            ("video", "Concert", "Artist", "PG-13", "Artist · 2019 · PG-13", "Artist"),
+            ("show", "Series", "", "TV-MA", "2019 · TV-MA", ""),
             ("audio", "Track", "Artist", "PG-13", "Artist · 2019 · PG-13", "Artist · PG-13"),
             ("video", "Movie", "", "", "2019", "")
         ] {
@@ -60,6 +62,8 @@ struct MediaLabelTests {
             #expect(item.title == title)
             #expect(item.subtitle == expected)
             #expect(item.subtitleWithoutYear == withoutYear)
+            #expect(item.rating == rating)
+            #expect(try MediaItem(item.json, server: server).rating == rating)
         }
     }
 
