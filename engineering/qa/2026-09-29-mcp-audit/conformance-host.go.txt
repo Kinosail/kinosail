@@ -1,0 +1,31 @@
+package mcpgateway
+
+import (
+	"net/http"
+	"net/http/httptest"
+	"os"
+	"testing"
+	"time"
+)
+
+// This local fixture supplies a test credential; it does not validate production login.
+func TestLocalConformanceAudit(t *testing.T) {
+	mux := auditGateway(t, &testAPI{respond: func(w http.ResponseWriter, _ *http.Request) {
+		writeJSON(w, map[string]any{"items": []any{}}, http.StatusOK)
+	}})
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		r.Header.Set("Authorization", "Bearer token")
+		mux.ServeHTTP(w, r)
+	}))
+	defer server.Close()
+	if err := os.WriteFile("/tmp/kinosail-mcp-conformance-url", []byte(server.URL+"/mcp"), 0600); err != nil {
+		t.Fatal(err)
+	}
+	for range 300 {
+		if _, err := os.Stat("/tmp/kinosail-mcp-conformance-done"); err == nil {
+			return
+		}
+		time.Sleep(time.Second)
+	}
+	t.Fatal("client timeout")
+}
