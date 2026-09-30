@@ -1,5 +1,62 @@
 # Performance frontiers: measurement record
 
+## Web rendering and delayed placeholders
+
+Measured September 30, 2026. Baseline source: `964a60c7e61df208dbb4ce704d68f06a8b08b412`. The compiled comparison includes the shared placeholder delay and navigation bundle refresh. No production network or physical-device gain is claimed.
+
+The real Go HTTP adapter served 10,000 synthetic video titles with local NFO metadata and 64 generated 600 × 900 JPEG posters. Each title uses a hard link to a generated local MP4. A private test holder injects the fixture Owner cookie. Real authentication middleware still executes; profile sign-in latency is excluded. There is no user media. FFmpeg, media probing, playback, and TLS are outside this fixture.
+
+Chromium 154 ran in an isolated browser context on the shared macOS host. Dark mode, no network throttling, and a 4× CPU slowdown were used for interaction comparisons. The mobile viewport was 390 × 844 at device pixel ratio 3. Desktop was 1440 × 900 at ratio 1. The slowdown is not a calibrated physical-phone or TV simulation.
+
+Trusted browser drag input selects letters on the actual title index. Each comparison contains six scrubs. DevTools reports one interaction per soft navigation. Their medians are descriptive lab statistics, not the field 75th percentile or a complete session INP score. Initial pages and static assets were warm. Artwork responses use `no-store`; later runs can still benefit from OS, decoder, and host warm-up.
+
+| Condition | Letters | Observed interaction samples, ms | Median, ms | Soft-navigation LCP samples, ms |
+| --- | --- | --- | --- | --- |
+| Original compiled app | B–G | 100, 76, 85, 82, 84, 84 | 84 | 233, 226, 226, 232, 234, 226 |
+| Browser prototype: postpone only the skeleton class by 120 ms | H–M | 51, 41, 42, 44, 43, 44 | 43.5 | 109, 116, 117, 119, 118, 119 |
+| Restore original class behavior in the same browser | N–S | 84, 86, 84, 77, 85, 77 | 84 | 234, 227, 234, 227, 235, 218 |
+| Compiled fix, restarted Go server, same generated files | B–G | 58, 43, 44, 43, 51, 49 | 46.5 | 142, 118, 111, 109, 117, 141 |
+
+All listed navigations measured CLS 0.00. The compiled median is about 45% lower than the first compiled control. This is one shared-host session with sequential conditions, not a randomized trial or a confidence interval. The reverse control supports the rendering diagnosis. A first isolated scrub measured 285 ms, including 268 ms presentation delay. The repeated controls did not reproduce that result; it is not included in the table.
+
+Separate observations:
+
+- A warm desktop reload at normal CPU rate measured LCP 237 ms and CLS 0.00. A later reload of the changed app at 4× CPU rate measured 344 ms and CLS 0.00. These conditions differ and are not a speed comparison.
+- Fifteen trusted End presses loaded 100 cards per page, followed by Home. The original app reached 1,600 cards and 5,222 DOM elements. DevTools reported observed interaction latency 52 ms and CLS 0.00 at 4× CPU rate. The trace includes idle gaps between automation calls.
+- The scroll trace reported 15 long tasks of 53–75 ms. Long Animation Frames entries attribute some work to the main bundle and subsequent rendering. Their durations exclude final presentation; they are not physical display hitch measurements. See the [API documentation](https://developer.chrome.com/docs/web-platform/long-animation-frames).
+- DevTools estimated 18 MB of image waste across that traversal. This is an optimization estimate, not measured saved traffic. Original 600-pixel images rendered at about 163 CSS pixels on desktop and 153 pixels at ratio 3 on mobile. Any responsive derivative must preserve visual quality, authorization, bounded decoding, and freshness.
+- Retained detached DOMParser and template image probes caused no observed image requests. No parser replacement was made on that unproven hypothesis.
+
+The implementation keeps immediate `aria-busy` and inert content. One timer belongs to each pending target state. It survives overlapping requests, clears on final completion, and checks target ownership and connection before displaying placeholders. Request dispatch, stale-response rejection, focus restoration, and error recovery remain in their existing owners. The 120 ms value is a local product choice; the [INP guide](https://web.dev/articles/optimize-inp) supports reducing avoidable event and presentation work, not this exact threshold.
+
+The test holder ran with `KINOSAIL_WEB_PERFORMANCE_FIXTURE=<private fixture root> go test ./internal/server -run '^TestHoldWebPerformanceFixture$' -count=1 -timeout=45m -v`. It was stopped through its owned stop file. Its source was copied into the ignored evidence directory and removed from the production checkout. The browser page was closed after recording.
+
+SHA-256 source bindings:
+
+| Input | SHA-256 |
+| --- | --- |
+| Baseline `packages/webassets/static/pwa.js` | `43e54cc125735b6e2a224873ce7b938faa2555fa96edace972cd6a4b6415a769` |
+| Compiled changed `packages/webassets/static/pwa.js` | `4ea43e5431973c9f6a6f7923248fcb63d7f0b401e44724539c0289b6ae1c0762` |
+| Synthetic generator | `f41d432cb36d8b7982c4ce25d8a4be1c9a1a2b30a44c3bf9a7ad9651aafecb4d` |
+| Private holder source | `56acbf08f024d0053fdc6ac03ca051b8121fb1446587446693e2356290e5c963` |
+| Fixture manifest | `ccba90d86a0f8602ab1de98e12d4e4f68f04118cc35f5e1c7034b1cc89a65f82` |
+| Final shared E2E helper | `2caaf5dbfa46b957f4cea88965608fd872a1e755e551a91abbb73c19393c9710` |
+
+Private evidence is retained under `.verification/web-render-profile`: generator, fixture manifest, holder source, DevTools summaries, Event Timing and Long Animation Frames entries, compiled comparison, and red regression artifacts. Explicit raw-trace file export was rejected by the DevTools workspace-root configuration. Managed trace analysis succeeded; no standalone raw trace export is claimed.
+
+Validation records:
+
+- Before the production fix, the delayed-placeholder E2E failed because the current library immediately acquired `request-skeleton`. Its trace and screenshot are retained separately.
+- Player and Subtitles each passed 72 expanded HTMX cases across Chromium, Firefox, and WebKit. Three overlap cases per app initially expected an older successful response to replace a newer failed request. The existing generation guard correctly preserved the original content. After correcting that test expectation, all six affected cases passed on recheck. This verifies 150 cases across both apps, including 390, 1440, and 1920 pixel pending, loaded, empty, and failed views; aborts; timeouts; fast completion; and overlaps.
+- Commands: `KINOSAIL_BROWSER_MATRIX=full pnpm test htmx-migration.spec.ts --workers=1`, then the same command with `--grep 'delays visual placeholders'` and separate output directories. Each E2E attaches revision, diff hash, browser, command, fixture description, and HTMX hash.
+- Focused Go navigation-bundle tests passed in both apps. Shared Go tests passed. Browser script lint reports zero errors and warnings. The UI detector reports no findings. Source-file caps passed.
+- The repository TypeScript type-policy checker stopped because TypeScript 7.0.2 exposes no `ScriptTarget.Latest` through the API the checker uses. This is an existing tooling compatibility limit; the dependency and checker were not changed.
+- Full app Go suites, root tooling checks, changed-app gates, and hosted delivery are recorded separately when complete.
+
+Hardware focus timing, Safari device performance, production networks, scan/download/transcode interference, artwork derivatives, and deployed first frame remain open. The mobile 10,000-item fixture also exposes existing count/Sort label crowding; that layout issue is outside this rendering patch.
+
+## Earlier catalog and native measurements
+
 Synthetic data only. Source hashes bind the native results to the validated working tree. [Hosted verification](https://github.com/Kinosail/kinosail/pull/369/checks) is recorded independently.
 
 ```json

@@ -50,7 +50,7 @@ func TestOfflinePagesUseTheCurrentNavigationBundle(t *testing.T) {
 	for _, path := range []string{"/", "/settings", "/offline-downloads"} {
 		response := httptest.NewRecorder()
 		handler.ServeHTTP(response, httptest.NewRequestWithContext(t.Context(), http.MethodGet, path, nil))
-		if response.Code != http.StatusOK || !strings.Contains(response.Body.String(), `main.kinosail.bundle.js?v=15`) {
+		if response.Code != http.StatusOK || !strings.Contains(response.Body.String(), `main.kinosail.bundle.js?v=16`) {
 			t.Fatalf("%s did not receive the current navigation bundle: status=%d", path, response.Code)
 		}
 	}

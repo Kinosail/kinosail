@@ -42,7 +42,45 @@ export function registerHtmxJourneys(app: "player" | "subtitles", test: typeof i
     expect(await page.locator("#main").evaluate(element => element.inert)).toBe(false);
   }
 
-  for (const width of [390, 1440]) {
+  test("HTMX delays visual placeholders while keeping pending content inert @smoke", async ({ page }, info) => {
+    await open(page);
+    await page.clock.install();
+    await page.clock.pauseAt(new Date());
+    let release!: () => void;
+    const held = new Promise<void>(resolve => { release = resolve; });
+    await page.route(`${origin}/first`, async route => { await held; await route.fulfill({ contentType: "text/html", body: content("Loaded") }); });
+    await page.getByRole("button", { name: "First" }).click();
+    await expect(page.locator("#main")).toHaveAttribute("aria-busy", "true");
+    expect(await page.locator("#main").evaluate(element => element.inert)).toBe(true);
+    await expect(page.locator("#main")).not.toHaveClass(/request-skeleton/);
+    await page.route(`${origin}/second`, route => route.fulfill({ status: 500, body: "Failed overlapping request" }));
+    const second = page.waitForResponse(`${origin}/second`);
+    await page.getByRole("button", { name: "Second" }).click();
+    await (await second).finished();
+    await page.clock.runFor(119);
+    await expect(page.locator("#main")).not.toHaveClass(/request-skeleton/);
+    await page.clock.runFor(1);
+    await expect(page.locator("#main")).toHaveClass(/request-skeleton/);
+    await page.screenshot({ caret: "initial", path: info.outputPath("delayed-pending.png") });
+    release();
+    await page.clock.resume();
+    await expect(page.locator("#main")).toContainText("Original");
+    await ready(page);
+  });
+
+  for (const status of [200, 500]) test(`HTMX clears a fast ${status} response before delayed placeholders appear @smoke`, async ({ page }) => {
+    await open(page);
+    await page.clock.install();
+    await page.clock.pauseAt(new Date());
+    await page.route(`${origin}/first`, route => route.fulfill({ status, contentType: "text/html", body: content("Loaded") }));
+    await page.getByRole("button", { name: "First" }).click();
+    await ready(page);
+    await page.clock.runFor(1000);
+    await ready(page);
+    await expect(page.locator("#main")).toContainText(status === 200 ? "Loaded" : "Original");
+  });
+
+  for (const width of [390, 1440, 1920]) {
     test(`HTMX replaces loaded and empty content after pending work at ${width}px @smoke`, async ({ page }, info) => {
       const errors: string[] = [];
       const collectError = (message: import("@playwright/test").ConsoleMessage) => { if (message.type() === "error") errors.push(message.text()); };
@@ -65,6 +103,7 @@ export function registerHtmxJourneys(app: "player" | "subtitles", test: typeof i
         const before = await page.locator("#main").boundingBox();
         await page.getByRole("button", { name: "First" }).click();
         await expect(page.locator("#main")).toHaveAttribute("aria-busy", "true");
+        await expect(page.locator("#main")).toHaveClass(/request-skeleton/);
         const pending = await page.locator("#main").boundingBox();
         for (const key of ["x", "y", "width", "height"] as const) expect(Math.abs(pending![key] - before![key])).toBeLessThanOrEqual(1);
         await capture(`${width}-${label}-pending.png`);
@@ -78,8 +117,9 @@ export function registerHtmxJourneys(app: "player" | "subtitles", test: typeof i
     });
   }
 
-  for (const failure of [400, 500, 204, "network", "abort", "timeout"] as const) {
-    test(`HTMX ${failure} leaves loaded content usable @smoke`, async ({ page }, info) => {
+  for (const width of [390, 1440, 1920]) for (const failure of [400, 500, 204, "network", "abort", "timeout"] as const) {
+    test(`HTMX ${failure} leaves loaded content usable at ${width}px @smoke`, async ({ page }, info) => {
+      await page.setViewportSize({ width, height: 900 });
       await open(page);
       let release!: () => void;
       const held = new Promise<void>(resolve => { release = resolve; });
@@ -91,6 +131,7 @@ export function registerHtmxJourneys(app: "player" | "subtitles", test: typeof i
       if (failure === "timeout") await page.evaluate(() => { (window as any).htmx.config.defaultTimeout = 1000; });
       await page.getByRole("button", { name: "First" }).click();
       await expect(page.locator("#main")).toHaveAttribute("aria-busy", "true");
+      await expect(page.locator("#main")).toHaveClass(/request-skeleton/);
       if (failure === "abort") await page.evaluate(() => { (window as any).htmx.trigger(document.querySelector('button[hx-get="/first"]'), "htmx:abort"); });
       if (failure !== "abort" && failure !== "timeout") release();
       await ready(page);
