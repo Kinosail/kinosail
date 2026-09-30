@@ -171,6 +171,8 @@ The next complete Linux WebKit run passed the fixed inspector cases, but the cle
 
 Browser jobs now allow thirty minutes for dependency installation, image startup and the unchanged full suite. An earlier twenty-minute Player WebKit job spent seventeen minutes installing dependencies and was cancelled only fifty-three seconds into the test step (`36754933827`, job `110022753859`). A later unchanged Subtitles rerun again spent over fourteen minutes installing dependencies. The test selection, assertions and `failOnFlakyTests` policy remain intact. CI contract tests passed 48 cases; actionlint and source caps passed (`browser-timeout-ci-contracts.log`, `browser-timeout-actionlint.log`, `browser-timeout-max-loc.log`).
 
+The next Linux WebKit run caught a cleanup checkbox interaction during smooth anchor scrolling. Its trace records the document moving from 1095px to 1117px between the click and the state check; the retry passed, and the flaky-test policy rejected the job. This file-operation journey now selects the existing reduced-motion preference before navigation. It retains native clicks, exact preview and subtitle counts, recovery assertions and the flaky-test policy. Normal-motion UI checks remain separate (`cleanup-motion-red-analysis.json`).
+
 ## Repeatable commands
 
 Run these from the repository root or the indicated app directory. Evidence artifacts record the isolated environment and result; synthetic credentials stay local.

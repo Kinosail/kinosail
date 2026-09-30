@@ -47,6 +47,7 @@ test("Owner hides other languages and English forced subtitles from a populated 
   }
   try {
     expect(await rescan()).toBe(200);
+    await page.emulateMedia({ reducedMotion: "reduce" });
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto("/settings#cleanup");
     await page.getByLabel("Enable subtitle language cleanup").check();
