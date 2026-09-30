@@ -67,7 +67,7 @@ struct PhotoScreen: View {
         #endif
         .task(id: "\(session.profileKey ?? ""):\(itemID):\(revision)") {
             image = nil; failure = nil
-            guard let client = session.client else { return }
+            guard let client = session.client else { failure = AppSession.message(ClientError.unavailable); return }
             do {
                 var displayedCache = false
                 if let saved = try? await client.item(id: itemID, policy: .cached), saved.kind == .photo, !saved.stream.isEmpty,

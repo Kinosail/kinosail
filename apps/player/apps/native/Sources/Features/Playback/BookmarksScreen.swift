@@ -42,10 +42,13 @@ struct BookmarksScreen: View {
                 HStack {
                     Button { select(bookmark) } label: {
                         VStack(alignment: .leading, spacing: 6) { Text(bookmark.title).font(.headline); Text(positionLabel(bookmark.position)).font(.caption).foregroundStyle(.secondary) }
-                    }.frame(maxWidth: .infinity, alignment: .leading).disabled(busy)
+                    }.frame(maxWidth: .infinity, minHeight: 44, alignment: .leading).disabled(busy)
                     Button("Delete bookmark", systemImage: "trash", role: .destructive) { mutate { client in try await client.removeBookmark(itemID: itemID, bookmarkID: bookmark.id) } }
-                        .labelStyle(.iconOnly).disabled(busy)
+                        .labelStyle(.iconOnly).frame(minWidth: 44, minHeight: 44).disabled(busy)
                 }
+                #if os(iOS)
+                .buttonStyle(.borderless)
+                #endif
             }
         }
         #if os(tvOS)
@@ -55,7 +58,7 @@ struct BookmarksScreen: View {
         .configurationNavigationTitle("Bookmarks")
         .navigationDestination(item: $destination) { DestinationScreen(destination: $0) }
         .task(id: "\(session.profileKey ?? ""):\(itemID):\(revision)") {
-            guard let client = session.client else { return }
+            guard let client = session.client else { message = AppSession.message(ClientError.unavailable); return }
             do { let next = try await client.bookmarks(itemID: itemID); try Task.checkCancellation(); bookmarks = next; loaded = true; message = nil }
             catch is CancellationError {} catch { message = AppSession.message(error) }
         }
@@ -147,7 +150,8 @@ struct ProgressSyncScreen: View {
         .task { await synchronize() }
     }
     private func synchronize() async {
-        guard let store = session.progress, let client = session.client, !busy else { return }
+        guard !busy else { return }
+        guard let store = session.progress, let client = session.client else { message = AppSession.message(ClientError.unavailable); return }
         busy = true
         message = nil
         defer { busy = false }

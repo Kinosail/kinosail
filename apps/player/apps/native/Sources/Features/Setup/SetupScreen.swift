@@ -23,6 +23,7 @@ struct SetupScreen: View {
                                 #if os(iOS)
                                 .keyboardType(.URL)
                                 .textContentType(.URL)
+                                .submitLabel(.go)
                                 #endif
                                 .accessibilityLabel("Server address")
                                 .onSubmit { connect() }
@@ -62,6 +63,8 @@ struct SetupScreen: View {
                         catch { scanError = AppSession.message(error) }
                     }
                     #if os(iOS)
+                    .scrollContentBackground(.hidden)
+                    .background(KinoTheme.background)
                     .frame(maxWidth: 600)
                     .frame(maxWidth: .infinity)
                     #endif
@@ -72,6 +75,7 @@ struct SetupScreen: View {
             .navigationTitle("")
             #else
             .navigationTitle("Connect")
+            .navigationBarTitleDisplayMode(.inline)
             #endif
             .toolbar {
                 if session.client != nil {
