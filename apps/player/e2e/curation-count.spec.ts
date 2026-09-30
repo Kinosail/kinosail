@@ -19,6 +19,7 @@ for (const kind of ["playlist", "Collection"]) {
 			await page.getByRole("button", { name: "Find", exact: true }).click();
 			await page.locator(".collection-results").getByRole("button", { name: "Add to", exact: true }).first().click();
 			await expect(count).toHaveText("1 item");
+			await count.scrollIntoViewIfNeeded();
 			await page.screenshot({ path: testInfo.outputPath("single-curation.png") });
 			await page.locator(".collection-results").getByRole("button", { name: "Add to", exact: true }).first().click();
 			await expect(count).toHaveText("2 items");
