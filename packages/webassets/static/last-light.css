@@ -56,7 +56,7 @@ body :is(a.card,.card>a,.curation-card,.collection-card):focus-visible{--card-hi
 body .card:hover .poster{transform:none}
 body :is(a.card,.card>a,.curation-card,.collection-card):is(:hover,:focus-visible) :is(.poster,.curation-poster,.collection-poster){transform:none;outline:3px solid var(--card-highlight);outline-offset:-3px}
 body :is(.curation-poster,.collection-poster){position:relative}
-body :is(.curation-card,.collection-card):is(:hover,:focus-visible) :is(.curation-poster,.collection-poster)::after{position:absolute;z-index:2;inset:0;outline:3px solid var(--card-highlight);outline-offset:-3px;border-radius:inherit;pointer-events:none;content:""}
+body :is(a.card,.card>a,.curation-card,.collection-card):is(:hover,:focus-visible) :is(.recent-stack,.curation-poster,.collection-poster)::after{position:absolute;z-index:2;inset:0;outline:3px solid var(--card-highlight);outline-offset:-3px;border-radius:inherit;pointer-events:none;content:""}
 body .curation-poster::before{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%)}
 body .curation-poster:has(>:nth-child(2)):not(:has(>:nth-child(3)))::before{top:75%}
 body .curation-poster:has(>:nth-child(3)):not(:has(>:nth-child(4)))::before{top:75%;left:75%}
