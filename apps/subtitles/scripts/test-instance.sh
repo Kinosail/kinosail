@@ -109,7 +109,7 @@ case "$action" in
   browser)
     fixture_dir="$KINOSAIL_TEST_ROOT/ui-fixtures"
     KINOSAIL_UI_FIXTURE_DIR="$fixture_dir" go test ./internal/server -run TestWriteUIStateFixtures -count=1
-    KINOSAIL_TEST_INSTANCE=1 KINOSAIL_UI_FIXTURE_DIR="$fixture_dir" KINOSAIL_TEST_TOTP_SECRET="$(<"$KINOSAIL_TEST_ROOT/totp-secret")" KINOSAIL_E2E_URL="$(url)" KINOSAIL_E2E_OUTPUT_DIR="$KINOSAIL_TEST_ROOT/playwright-results" pnpm --dir e2e test subtitle-dashboard.spec.ts subtitle-history.spec.ts test-instance.spec.ts subtitle-inspector-layout.spec.ts --workers="${KINOSAIL_E2E_WORKERS:-1}"
+    KINOSAIL_TEST_INSTANCE=1 KINOSAIL_UI_FIXTURE_DIR="$fixture_dir" KINOSAIL_TEST_TOTP_SECRET="$(<"$KINOSAIL_TEST_ROOT/totp-secret")" KINOSAIL_E2E_URL="$(url)" KINOSAIL_E2E_OUTPUT_DIR="$KINOSAIL_TEST_ROOT/playwright-results" pnpm --dir e2e test subtitle-dashboard.spec.ts subtitle-history.spec.ts test-instance.spec.ts subtitle-inspector-layout.spec.ts supporter-badge-layout.spec.ts --workers="${KINOSAIL_E2E_WORKERS:-1}"
     ;;
   playback)
     fixture_dir="$KINOSAIL_TEST_ROOT/ui-fixtures"

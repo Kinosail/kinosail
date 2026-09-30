@@ -27,7 +27,9 @@ for (const viewport of viewports) {
 		for (const state of states) {
 			const source = await readFile(join(directory!, `${state}.html`), "utf8");
 			const html = await page.evaluate(fixtureDocument, { source, css });
-			await page.setContent(html, { waitUntil: "domcontentloaded" });
+			await page.route("**/qa-state-fixture", route => route.fulfill({ contentType: "text/html", body: html }));
+			await page.goto("/qa-state-fixture", { waitUntil: "domcontentloaded" });
+			await page.unroute("**/qa-state-fixture");
 			await expect(page.locator("main")).toBeVisible();
 			const accessibility = (await new AxeBuilder({ page }).analyze()).violations.map(({ id }) => id);
 			const contract = await page.evaluate(() => {
