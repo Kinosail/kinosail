@@ -1,0 +1,51 @@
+{
+  "revision": "d37015b4cef6919cc114df539f6ad38d5fded756",
+  "command": [
+    "pnpm",
+    "exec",
+    "playwright",
+    "test",
+    "subtitle-history.spec.ts",
+    "subtitle-status.spec.ts"
+  ],
+  "cwd": "/Users/mikeo/.codex/worktrees/all-app-polish/kinosail/apps/subtitles/e2e",
+  "testData": "Fresh production-template history: eight change reasons, populated/empty/failed; synthetic status API pending, malformed and failed responses",
+  "environment": {
+    "platform": "Darwin",
+    "arch": "arm64",
+    "url": "https://127.0.0.1:39228",
+    "matrix": "chromium,firefox,webkit",
+    "workers": 1,
+    "video": "off"
+  },
+  "sourceSHA256": [
+    {
+      "path": "apps/subtitles/e2e/subtitle-history.spec.ts",
+      "sha256": "4426e42a7771d5cfda328c1b8a2ad1fba2df7ebf32fd4fcff2e2f346f645feb5"
+    },
+    {
+      "path": "apps/subtitles/e2e/subtitle-status.spec.ts",
+      "sha256": "c88c88af31f13fa2ed28a8cb0a669905c75e08475047e4543409cf80daca889d"
+    },
+    {
+      "path": "apps/subtitles/internal/server/static/subtitle-status.js",
+      "sha256": "6303a845151c4a3c7732de2c937f760f4dc2cc0305acf46eb806642687196a13"
+    },
+    {
+      "path": "apps/subtitles/.kinosail-test/ui-fixtures/subtitle-history-populated.html",
+      "sha256": "57a7a6ac88ce0eab206340e0a22ed6bdc1de2b08e104ed0a6a3d999427235880"
+    },
+    {
+      "path": "apps/subtitles/.kinosail-test/ui-fixtures/subtitle-history-empty.html",
+      "sha256": "28787752b6714058c1f74da3f3366268a4dcc9212e47f75e9ffbe43661ee5268"
+    },
+    {
+      "path": "apps/subtitles/.kinosail-test/ui-fixtures/subtitle-history-failed.html",
+      "sha256": "a4263e67b8f0b5e6689b588be6545642cdd2d20a0a81c366fc51dd34cefdac5d"
+    }
+  ],
+  "startedAt": "2026-09-30T20:42:22.282596+00:00",
+  "exitCode": 0,
+  "finishedAt": "2026-09-30T20:43:11.006284+00:00",
+  "sourceStable": true
+}

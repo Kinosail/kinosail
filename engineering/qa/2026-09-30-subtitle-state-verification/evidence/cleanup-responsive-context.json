@@ -1,0 +1,3364 @@
+{
+  "revision": "60d11e2054e31eac090af9ffed3ff85dd0b52c27",
+  "command": [
+    "pnpm",
+    "exec",
+    "playwright",
+    "test",
+    "subtitle-dashboard.spec.ts",
+    "--grep",
+    "language choices describe|Owner previews language cleanup"
+  ],
+  "cwd": "/Users/mikeo/.codex/worktrees/all-app-polish/kinosail/apps/subtitles/e2e",
+  "testData": "Isolated generated CC0 library; temporary Owner with TOTP; cleanup preview only, no confirmation or file hiding; en/es choices and forced-track keep; dark/light/forced colors",
+  "environment": {
+    "platform": "Darwin",
+    "arch": "arm64",
+    "url": "https://127.0.0.1:39228",
+    "matrix": "chromium,firefox,webkit",
+    "workers": 1,
+    "video": "off"
+  },
+  "sourceSHA256": [
+    {
+      "path": "apps/subtitles/e2e/subtitle-dashboard-helpers.ts",
+      "sha256": "b3a00aaceffab6c8a57ef6e8e3d4c9c407bc3ededab34f257007092704709735"
+    },
+    {
+      "path": "apps/subtitles/e2e/subtitle-dashboard-history-tests.ts",
+      "sha256": "b2722c5b6c3ceb444631c64e89937b3c89a2ac86aedebaeb5d466a3cd52ea452"
+    },
+    {
+      "path": "apps/subtitles/e2e/subtitle-dashboard-language-tests.ts",
+      "sha256": "02f312772b68fa9a3c1502216886ad26d011e422c408d006b35b3c831943cbd8"
+    },
+    {
+      "path": "apps/subtitles/e2e/subtitle-dashboard-layout-tests.ts",
+      "sha256": "1d6198faec5e371b098cef302a173951bd1f414e3fb7566dec476e227e4f12e3"
+    },
+    {
+      "path": "apps/subtitles/e2e/subtitle-dashboard-provider-tests.ts",
+      "sha256": "d9b51b605070ef1dc5a85f03049278cc7887546f608765f611f143120382046c"
+    },
+    {
+      "path": "apps/subtitles/e2e/subtitle-dashboard.spec.ts",
+      "sha256": "dee4a0a6c142d1c6d8e09234489f959d9b607db4005758f486d455b6d8dc46c1"
+    },
+    {
+      "path": "apps/subtitles/internal/server/access.go",
+      "sha256": "5c300b8af95b3f52d3087d73b2103921e6f787e6f4737d90e8db018243dcf122"
+    },
+    {
+      "path": "apps/subtitles/internal/server/accessibility_test.go",
+      "sha256": "600c0af51c5c0769eb2d31302a942e140c9f1d094d6ccfe282c8fa057af98f4e"
+    },
+    {
+      "path": "apps/subtitles/internal/server/account_boundary_test.go",
+      "sha256": "9a1f5366ae30d9c6a694a50350655f7886da814a857a03252602a363150c8497"
+    },
+    {
+      "path": "apps/subtitles/internal/server/adaptive_ladder.go",
+      "sha256": "9cf60924074a032c24f1eab6a64225372cb007f3b420cc22afdbf2790525dd5f"
+    },
+    {
+      "path": "apps/subtitles/internal/server/agent_playlist_api_test.go",
+      "sha256": "c268d173e37d884469a70cd125adb0db068f7adbfa59aa1fea2ff82633e4ed7f"
+    },
+    {
+      "path": "apps/subtitles/internal/server/album.go",
+      "sha256": "8c793041a50f7d43758db1ff1031db38cd95852e2b3523aac8eb5034823a4da2"
+    },
+    {
+      "path": "apps/subtitles/internal/server/album_test.go",
+      "sha256": "0385ccd64ec3c503a0ce65b43685ec591ad18126590f7f1d307f27d16e88a61f"
+    },
+    {
+      "path": "apps/subtitles/internal/server/api.go",
+      "sha256": "3392a22922ca5252acf06ad55015ac4876e834cb5d50dcfc4594b83fa5390520"
+    },
+    {
+      "path": "apps/subtitles/internal/server/api_admin.go",
+      "sha256": "f42fef735386e99a24b1265f382132c46cdc716202e4e98c2a2a852627d89915"
+    },
+    {
+      "path": "apps/subtitles/internal/server/api_admin_routes_test.go",
+      "sha256": "760d459dc552475e13eddbe253fc0f8dd637172365dd0f5b2d3f5c64d59b2d28"
+    },
+    {
+      "path": "apps/subtitles/internal/server/api_backup_test.go",
+      "sha256": "e2ba73292766369c4a65224688768824a25ded5d1ea3af981de98db216ebff2a"
+    },
+    {
+      "path": "apps/subtitles/internal/server/api_boundary_coverage_test.go",
+      "sha256": "30ecf1fb10c585132375ddf77dcee767d4c5c9d0b678241af942df742f1f2698"
+    },
+    {
+      "path": "apps/subtitles/internal/server/api_identity_fixture_test.go",
+      "sha256": "e47383a935dce3dd49578f3d0582fc314bcc3ee6572727e5ee6bd5abbe66dcca"
+    },
+    {
+      "path": "apps/subtitles/internal/server/api_identity_lifecycle_test.go",
+      "sha256": "8a792f4fe0ca1486e4d3cad745748f35c8da62f2f1272fe2c39de1a170da30c9"
+    },
+    {
+      "path": "apps/subtitles/internal/server/api_key_test.go",
+      "sha256": "f35b68e3fe569f380a0eec1c6ec0af83f43f2b82b258b4896b43a1aa0cc1ce6c"
+    },
+    {
+      "path": "apps/subtitles/internal/server/api_keys.go",
+      "sha256": "cb5997b28148fa56b403a123bccacd076ffc9f05549643dcf568000e133b62ed"
+    },
+    {
+      "path": "apps/subtitles/internal/server/api_keys_internal_test.go",
+      "sha256": "355b8030cfb74c857364170f7eec6d3c907cd51690e5f8b74966606b90343300"
+    },
+    {
+      "path": "apps/subtitles/internal/server/api_letter_test.go",
+      "sha256": "a8be3506ebe43fa0950eb94ea9c5f19beff562b27e6e0a6404e39947a2e03785"
+    },
+    {
+      "path": "apps/subtitles/internal/server/api_library_fixture_test.go",
+      "sha256": "670b9a09a9ed37faa77c483e5ee33fc8c9a59de0002da4b07ff921bde30ead9c"
+    },
+    {
+      "path": "apps/subtitles/internal/server/api_media.go",
+      "sha256": "57dee027468a6abe165404a4f50fdfa73db9021122b7abd33d089f4128e104a5"
+    },
+    {
+      "path": "apps/subtitles/internal/server/api_openapi.json",
+      "sha256": "1cd1debefedadce2d6d9c49150d2ec1352594df2856bd4a8aa7cf8914f0bf86b"
+    },
+    {
+      "path": "apps/subtitles/internal/server/api_openapi_test.go",
+      "sha256": "e27ed8fde23d937c9c7bba1a3232090baa0bdbe99ca88ca00ef700d3f4e45f88"
+    },
+    {
+      "path": "apps/subtitles/internal/server/api_owner_enrollment_test.go",
+      "sha256": "973811d1138262c34f36f2f3b286b7a048fcf9140ba6d164bf2a0ff5be828688"
+    },
+    {
+      "path": "apps/subtitles/internal/server/api_owner_invariants_test.go",
+      "sha256": "52272cf5d4fde15c62664120217d4b98127e797acc8a46f797f55ccc6d86cdc5"
+    },
+    {
+      "path": "apps/subtitles/internal/server/api_parity_test.go",
+      "sha256": "d7a93f1dd4668cb9fe1fa3a01714b7034fcbaa30c2fd01c5f8adfb751fda9341"
+    },
+    {
+      "path": "apps/subtitles/internal/server/api_playback_response.go",
+      "sha256": "a43a42d072b7762b84a1f2a757a24c286d1a97fe7ca883cd9b42bf0310f7a9b1"
+    },
+    {
+      "path": "apps/subtitles/internal/server/api_playback_routes_test.go",
+      "sha256": "fbf125ee96e75ad1f1bf072a5256b585a693a7e8fe5cb4b237451a057ee7f8d6"
+    },
+    {
+      "path": "apps/subtitles/internal/server/api_product.go",
+      "sha256": "f539224d2c8c0997e9b47e9a25a341cc512102d1c5f4ed378906e68cbc528168"
+    },
+    {
+      "path": "apps/subtitles/internal/server/api_remote.go",
+      "sha256": "181edb8d2764901f60cf3fb1bba1b61bd22adb2848bfd28093e2f2c063755b28"
+    },
+    {
+      "path": "apps/subtitles/internal/server/api_replaygain.go",
+      "sha256": "b2f4e0a822ac28d5515714b73fb5559847e91222c07b05ebc1050970c9af3523"
+    },
+    {
+      "path": "apps/subtitles/internal/server/api_security_test.go",
+      "sha256": "ecf945240dad42b3da6f876acd45258dea60ed660b00d30175c0be29e91ee1ed"
+    },
+    {
+      "path": "apps/subtitles/internal/server/api_semantic_failures_test.go",
+      "sha256": "63c21367d305c7bdd009f9dbf7f170e047f27987647f2ea5bf0a0b686a8af49e"
+    },
+    {
+      "path": "apps/subtitles/internal/server/api_settings.go",
+      "sha256": "4b5ef9ed7b6af23f39ba325fe5bd2f0ce9998126f268e9b29bf68dded7a013ba"
+    },
+    {
+      "path": "apps/subtitles/internal/server/api_subtitle_settings_test.go",
+      "sha256": "02c9fa0c7ade7d4762be6e2a5f2233a41aaf530b5b68a794d4633196574cbb64"
+    },
+    {
+      "path": "apps/subtitles/internal/server/api_test_helpers_test.go",
+      "sha256": "2c2ceafd7cd4e92d6d4689478ad396bfe3c8c4df5a5346941705b27e70f28de0"
+    },
+    {
+      "path": "apps/subtitles/internal/server/application_init.go",
+      "sha256": "4bb1e2ee4a13df13c181d437eff9762bba720f1f8beceb993183ea58dccfdf8c"
+    },
+    {
+      "path": "apps/subtitles/internal/server/application_requests.go",
+      "sha256": "339fc8054db9cdd4947211494b35beb0704dcfde07fe4b56695e96587a01b205"
+    },
+    {
+      "path": "apps/subtitles/internal/server/assets.go",
+      "sha256": "a0544ad2a66ba3b1d94cc9ecd922e20ec46b4d9dbbbf35ec1ecd884eb842d252"
+    },
+    {
+      "path": "apps/subtitles/internal/server/assets_performance_test.go",
+      "sha256": "5e7c9bcf289b7423d77f8ded6fa55072b23360ceda591df811b0e78a75455ba2"
+    },
+    {
+      "path": "apps/subtitles/internal/server/assets_test.go",
+      "sha256": "1548f1476c514242bab8b50d66957cb611139df3e44d699522d8d73d89312beb"
+    },
+    {
+      "path": "apps/subtitles/internal/server/audio_tracks_test.go",
+      "sha256": "d7cbc418e6fbb30832147e7682a36af8936ffd60c34ca87f0d99d5874b9c444f"
+    },
+    {
+      "path": "apps/subtitles/internal/server/audiobook_test.go",
+      "sha256": "ee380b9bba4090c1d32a76ff880b5c10f35d56e887a79f7d42f2bd2d6449425d"
+    },
+    {
+      "path": "apps/subtitles/internal/server/audit.go",
+      "sha256": "8d60113b3287115fbcea57272b90ecbb686dfb92ae78032d991468c13f529629"
+    },
+    {
+      "path": "apps/subtitles/internal/server/audit_classification.go",
+      "sha256": "8b373f18c7b087c4a472ae6db1baa6fef1681678d4489a0a536c4706b85d1188"
+    },
+    {
+      "path": "apps/subtitles/internal/server/audit_fixture_test.go",
+      "sha256": "4841a5eddfae6819f5ada4da97e1fdadcf17484dfdb621b4330c9d072875784a"
+    },
+    {
+      "path": "apps/subtitles/internal/server/audit_observability_fixture_test.go",
+      "sha256": "7dea6a67f01ffec8244e6f597f1c36bd419f4f8cc4923ffee97948caf4e8a7f2"
+    },
+    {
+      "path": "apps/subtitles/internal/server/audit_test.go",
+      "sha256": "2cbd5ca405076dc731a90e65f28ed2611ed95b1e5fac164dddba035d8ee1adfc"
+    },
+    {
+      "path": "apps/subtitles/internal/server/auth.go",
+      "sha256": "3723ff25ccf3100d613471bed3cc703bd7d2773afe415fb01d7d3479a9396a01"
+    },
+    {
+      "path": "apps/subtitles/internal/server/auth_all_routes_assertions_test.go",
+      "sha256": "3793b015c1951c759ddb03a2ea74c73bc7de668bf2461093940929e378980022"
+    },
+    {
+      "path": "apps/subtitles/internal/server/auth_all_routes_helpers_test.go",
+      "sha256": "c0e47b9028192eef37054c5740405fbd5efe19d85d79e64cbdc770632aebeb0c"
+    },
+    {
+      "path": "apps/subtitles/internal/server/auth_all_routes_test.go",
+      "sha256": "3b8d9ff2af70309327e88f98440f983a0103cbd35a8fb78614292772e2f25db7"
+    },
+    {
+      "path": "apps/subtitles/internal/server/auth_content_rating_test.go",
+      "sha256": "1d4f829f94c1896d181aa5c6b35eb2731def14d8204ff1a283dd7a0e5c262a38"
+    },
+    {
+      "path": "apps/subtitles/internal/server/auth_cookie_routes_test.go",
+      "sha256": "6077ea41dfba33aa32e3678c237fe303b2d0b2618505ce8345d3e2fa2c3e2bbf"
+    },
+    {
+      "path": "apps/subtitles/internal/server/auth_cross_origin_routes_test.go",
+      "sha256": "2cd25f3d8907b11d4d21a5564f5b27ae7e681f331d27981f16f6c5f33859f099"
+    },
+    {
+      "path": "apps/subtitles/internal/server/auth_federation.go",
+      "sha256": "2a4b73531e8f3d551b6ab714d0a7e2211c53a02521d62eacf470efeafa827d3f"
+    },
+    {
+      "path": "apps/subtitles/internal/server/auth_head_routes_test.go",
+      "sha256": "bcae486263894d1990cf18c9256cdd5df5f95f6685ea18e823474e65173ea532"
+    },
+    {
+      "path": "apps/subtitles/internal/server/auth_login.go",
+      "sha256": "122c5fc9f1f996534fd83a9bc0faa55e9e0f0e39423c481de48ccfab4b538f23"
+    },
+    {
+      "path": "apps/subtitles/internal/server/auth_login_error_test.go",
+      "sha256": "b65cf00ab3e0165eb977e55a08300c0587c6c4a0531e4d3877d331ba42102cca"
+    },
+    {
+      "path": "apps/subtitles/internal/server/auth_owner_contract_test.go",
+      "sha256": "22a724e18cccb7dea948fff958b404ac19f83ce78b3c48d84352a71d7b327e42"
+    },
+    {
+      "path": "apps/subtitles/internal/server/auth_policy_internal_test.go",
+      "sha256": "ebb2349f3fd006748c2b6f6d839944d117d6e6d60c2e1a98ad53d202f8145b62"
+    },
+    {
+      "path": "apps/subtitles/internal/server/auth_remote_routes.go",
+      "sha256": "e1fd9542640fcb072165a739829883113fa7d88d5ef7f62d23f1f51f2662bb74"
+    },
+    {
+      "path": "apps/subtitles/internal/server/auth_revoked_routes_test.go",
+      "sha256": "7210521a8ffc46c63e0eac1f7771ed8cac8026c3eee34af57a22995fddb780cb"
+    },
+    {
+      "path": "apps/subtitles/internal/server/auth_route_exercise_test.go",
+      "sha256": "e6632c539a8eb0a48646b608b7f58499625e2deb79d53d19567e278eba6ddae3"
+    },
+    {
+      "path": "apps/subtitles/internal/server/auth_route_fixture_binding_test.go",
+      "sha256": "f0c0b41f9a6bcaa83769a1d7268559a55ad99aa83241d693adaf3b130eac6021"
+    },
+    {
+      "path": "apps/subtitles/internal/server/auth_route_scope_binding_test.go",
+      "sha256": "a16adca49b9efdf5a4b2667174f1677ab4e5ea35afca74c30a167b523e20553f"
+    },
+    {
+      "path": "apps/subtitles/internal/server/auth_setup.go",
+      "sha256": "80cb45e89315e311c3439b0db6aa4ebe88ffa180f0ce6341318cb8837bdfaa8e"
+    },
+    {
+      "path": "apps/subtitles/internal/server/auth_stepup_internal_test.go",
+      "sha256": "f124076c6899ef6923796f4786aa5630eae7573125a8c15b36a307b613c7a76d"
+    },
+    {
+      "path": "apps/subtitles/internal/server/auth_test.go",
+      "sha256": "4245bf02236657ed2726602cce0a0726558a0b782c056a59d450e15fb205daef"
+    },
+    {
+      "path": "apps/subtitles/internal/server/auth_viewer_contract_test.go",
+      "sha256": "f410be83371a7660696ec7ff23b1d70019a727b459ef9f48968afece98259b23"
+    },
+    {
+      "path": "apps/subtitles/internal/server/automatic_skip_browser_test.go",
+      "sha256": "ba480e1c3005a3012f39d5484597dc77923e8cb0e65d7720c6ff91c52a6993a7"
+    },
+    {
+      "path": "apps/subtitles/internal/server/automatic_skip_fallback_test.go",
+      "sha256": "eda9fff806d2f24b319790bec19dbdb7e786ee484603c6b34a632dce91477536"
+    },
+    {
+      "path": "apps/subtitles/internal/server/automatic_skip_fixture_test.go",
+      "sha256": "773d603c6d1b8814566c0aad0df7de652848b83edd13afdb9c752a9e6ca0bb43"
+    },
+    {
+      "path": "apps/subtitles/internal/server/automatic_skip_progress_test.go",
+      "sha256": "88ce20c4b239c938e6ed0ed8d8f6ac46457246ee55486f0d92631c7f73bb47d3"
+    },
+    {
+      "path": "apps/subtitles/internal/server/automatic_skip_real_ffmpeg_test.go",
+      "sha256": "2b7eab0714bfe9d9b89f4e392106aa578978a8b5926504c6890e271a9262ea91"
+    },
+    {
+      "path": "apps/subtitles/internal/server/backup_manager.go",
+      "sha256": "80e31c2d33f110be1e7b718cfd97f2714cbd3bc1f5b01879c2559dedd431332d"
+    },
+    {
+      "path": "apps/subtitles/internal/server/backup_manager_internal_test.go",
+      "sha256": "cdaf08547e6f070c9dc261e00811af2d598228b5d174653f22bfacc165c0f737"
+    },
+    {
+      "path": "apps/subtitles/internal/server/beta_boundaries_internal_test.go",
+      "sha256": "fdf63978582573d0364284559097bdf3b01f94fb9200b3d2bb9f5d9108f2f614"
+    },
+    {
+      "path": "apps/subtitles/internal/server/book.go",
+      "sha256": "7b25fe4de318ed4ed554ce16c8da42a7e4afefdc6a97df1b9af9b9f0a1560464"
+    },
+    {
+      "path": "apps/subtitles/internal/server/books_test.go",
+      "sha256": "3837148ed43dc51bd34917ef92888981c22b6bf6ec7cb562985618aeafe9045c"
+    },
+    {
+      "path": "apps/subtitles/internal/server/branding_test.go",
+      "sha256": "1e35387b0d96804f3a6486397000702da4ab6ebdf74815b47bf61aee0e0c7149"
+    },
+    {
+      "path": "apps/subtitles/internal/server/browse.go",
+      "sha256": "a13ebeb8994d5e39e721c390a2f2e92f7ca2391b9065f9a35061a27ab60d8c2d"
+    },
+    {
+      "path": "apps/subtitles/internal/server/browse_letters_regression_test.go",
+      "sha256": "a6c3855efa98178784c90231c3473d6317ffab9ee611de32d2b215def4901281"
+    },
+    {
+      "path": "apps/subtitles/internal/server/browser_accessibility_process_test.go",
+      "sha256": "fcfeb58a212a5c68d704b78070e7361dc11a420263d569b2716d9631d5c97bb8"
+    },
+    {
+      "path": "apps/subtitles/internal/server/browser_accessibility_test.go",
+      "sha256": "51e24432b14095748a3c924f141423768ebda24f09cd3361b0aa58c09d957ee1"
+    },
+    {
+      "path": "apps/subtitles/internal/server/cache_file.go",
+      "sha256": "28310dfda4f00cd627aba109c505989989def889c5f90f83dcaaef1ad049e9a4"
+    },
+    {
+      "path": "apps/subtitles/internal/server/canonical_origin_navigation_test.go",
+      "sha256": "5f9d780b1c1b4c5ea87a69ec5a5e2fee1372d9c974426cf032a98eb2cd307772"
+    },
+    {
+      "path": "apps/subtitles/internal/server/cast_test.go",
+      "sha256": "1d5afd8e5060d5b70483c53537d257d4f6c1d0903f57a13973b5fb50a59e542a"
+    },
+    {
+      "path": "apps/subtitles/internal/server/chaptersdb.go",
+      "sha256": "78f865c6661f17eaa7f95eeeaf2f42acd899cfd6d0bd7959fc4399a1f5ba7426"
+    },
+    {
+      "path": "apps/subtitles/internal/server/cinema_asset_test.go",
+      "sha256": "ee72a26d3034d2c805e96d9146c77c7ff90017f840534e96086a1437e9f43ec6"
+    },
+    {
+      "path": "apps/subtitles/internal/server/collection.go",
+      "sha256": "1a352150beca96ade0ced3daaa2ffd2dda5346c73b02a0ac3d852f62af1c92b4"
+    },
+    {
+      "path": "apps/subtitles/internal/server/collection_summary.go",
+      "sha256": "b304045b7e6e753794761ff23eaebaeb6b07390b9a310234bd6721f30059f071"
+    },
+    {
+      "path": "apps/subtitles/internal/server/collection_summary_test.go",
+      "sha256": "edcae1294a07c099a1728ce0f6399796dc16f767d44bc228670dc7970d26d7b3"
+    },
+    {
+      "path": "apps/subtitles/internal/server/collection_test.go",
+      "sha256": "7e4c6b1bb17c605d4ae41859ecfd54fe429e6d999791dc1fc88e2efb131aeba9"
+    },
+    {
+      "path": "apps/subtitles/internal/server/collection_validation.go",
+      "sha256": "af961b3f31b9fed50ecf844df480c7801bdb44e7f3b92fbfd5b199403e30b683"
+    },
+    {
+      "path": "apps/subtitles/internal/server/configuration_test.go",
+      "sha256": "33647caee5ec2d18c66553eba9b085b7a1da221272bbaaed0ba697ce48496b5d"
+    },
+    {
+      "path": "apps/subtitles/internal/server/credentials_boundary_test.go",
+      "sha256": "4e3a32b07e6c61ee8e319b02f1967a7a0b45ab015a37148e8fbb0f35a3e4457a"
+    },
+    {
+      "path": "apps/subtitles/internal/server/csrf_adapter.go",
+      "sha256": "70e048e50fab77aaea402057de34e998d7032ffa9a020eb96448076d2b34d03c"
+    },
+    {
+      "path": "apps/subtitles/internal/server/csrf_internal_test.go",
+      "sha256": "60c1282721993bfe9d7a8ca84a0112e2602add0554fba6f82c57fcdb23f5142d"
+    },
+    {
+      "path": "apps/subtitles/internal/server/database.go",
+      "sha256": "f39d46982b4da889528a2ccfb47272b2a1e481a06ac8d9f0f022d97d1ff58c7b"
+    },
+    {
+      "path": "apps/subtitles/internal/server/device_session_test.go",
+      "sha256": "666ebe94d12a2c7d4d30580659c76e555ca9435fca00961e8afbba4b3670edac"
+    },
+    {
+      "path": "apps/subtitles/internal/server/direct_type_test.go",
+      "sha256": "e47830873762c6675092ecb8fe513c9aad43053d461c37f4a661c121805ebbcc"
+    },
+    {
+      "path": "apps/subtitles/internal/server/dlna.go",
+      "sha256": "83251da88a3f692340bbb3cc212a0bcfe637b925d829149f6c537f46e7527115"
+    },
+    {
+      "path": "apps/subtitles/internal/server/dlna_test.go",
+      "sha256": "0b624072f2c8c74c5be08a425dd2c738bf1947e3c79a68afbfe877f45d4c49d1"
+    },
+    {
+      "path": "apps/subtitles/internal/server/download_concurrency_test.go",
+      "sha256": "cc315825eed82be9d65326f4b2a3754785ba9f0e0c7751b9498f5d7abf7c5616"
+    },
+    {
+      "path": "apps/subtitles/internal/server/downloads.go",
+      "sha256": "adaace9c05f5ad3a2d93b69b174bca0f904c65989e576eba3992c5568629bc03"
+    },
+    {
+      "path": "apps/subtitles/internal/server/downloads_boundary_test.go",
+      "sha256": "55d7d80018135989fa32234e91ad5d80556d10eef8549093a9aad11b61205cb1"
+    },
+    {
+      "path": "apps/subtitles/internal/server/downloads_config.go",
+      "sha256": "408498d189ed208dcd94ecb7eba71c9c00f4c95b515a67179b30ae86c010650d"
+    },
+    {
+      "path": "apps/subtitles/internal/server/downloads_http.go",
+      "sha256": "ea1ec2f124b2869f232db30156bb7c3073d506ad9bfe6c802dfe786c05da52c7"
+    },
+    {
+      "path": "apps/subtitles/internal/server/downloads_player.go",
+      "sha256": "870a1200b32a627b13abde77e136d52793e9080535a82295aacdcd698d6ce694"
+    },
+    {
+      "path": "apps/subtitles/internal/server/downloads_transcoding.go",
+      "sha256": "3068f85e0d3b50b5d7cd48debfa4bdd70ef21fb9a9c7b8f3730f216829092278"
+    },
+    {
+      "path": "apps/subtitles/internal/server/downloads_types.go",
+      "sha256": "94f1641a6a671323e7af226c5eae53ebae9d0b743aa8ad6494c643ca3c234be5"
+    },
+    {
+      "path": "apps/subtitles/internal/server/durable_file_failures_test.go",
+      "sha256": "699b2c9e06dd57fc05f52a85755f799a7abfa024ea1a3c67e41521eedef82703"
+    },
+    {
+      "path": "apps/subtitles/internal/server/embedded_subtitle_extract.go",
+      "sha256": "960e4e736dfc67944e357fdbbde4e6a34fb05f5018c715e591a684afa17f72c8"
+    },
+    {
+      "path": "apps/subtitles/internal/server/embedded_subtitle_write.go",
+      "sha256": "02ec00ab3ab9a19c08ed88568551451b1b1117ae928282a2fccbb0e0cf23f47f"
+    },
+    {
+      "path": "apps/subtitles/internal/server/embedded_subtitles.go",
+      "sha256": "373b6b4e8cbb2f679378871872dd474de4a21095ed4c5e9d180fbdc5527ed3c5"
+    },
+    {
+      "path": "apps/subtitles/internal/server/embedded_subtitles_test.go",
+      "sha256": "31b29b86c224d20faeb69895edf0e3a2a2581015c3213e89984879eb0d52dfe5"
+    },
+    {
+      "path": "apps/subtitles/internal/server/english_copy_test.go",
+      "sha256": "25178be55a336585d4e442ea27152ba06af158f5d8126cfede85cd806141d7fb"
+    },
+    {
+      "path": "apps/subtitles/internal/server/error_page.go",
+      "sha256": "3c445a71ad860eed0aa8e58826f7d43697416862aceb4d76f36a3bf424d746d0"
+    },
+    {
+      "path": "apps/subtitles/internal/server/external_boundary_test.go",
+      "sha256": "302f406be3d0da70bb34012db32f7a3988248b5d7b5fbdb372abd48db72ce6b2"
+    },
+    {
+      "path": "apps/subtitles/internal/server/external_json.go",
+      "sha256": "b5a7a55962f96f74a76b46f7985903dfd892eead801093ed9cca9986fa8b5006"
+    },
+    {
+      "path": "apps/subtitles/internal/server/files.go",
+      "sha256": "d9822ea9dd491daea15e285640e1811e7fc5b75ebb694757a2fb32c98c081993"
+    },
+    {
+      "path": "apps/subtitles/internal/server/form_helpers.go",
+      "sha256": "45cc578664875d61ed95c61bcc835b924b43faea8a85c31e8ae1f06f16a680e2"
+    },
+    {
+      "path": "apps/subtitles/internal/server/gapless_test.go",
+      "sha256": "5cdd50dabceafff024a2f7d47fb2c0f67ec663460dbd9bfc2a1db0ddc0559c3a"
+    },
+    {
+      "path": "apps/subtitles/internal/server/hardware.go",
+      "sha256": "9554d3ac5de12ad50739a1d17cadebc4976cb5c3801dd04b4001aaea0340e3c3"
+    },
+    {
+      "path": "apps/subtitles/internal/server/hardware_capabilities_test.go",
+      "sha256": "eeb232d390da1d0ac15406e8b1778b0419d8dbb5fb1cdd13ef6a4adcd273e4a4"
+    },
+    {
+      "path": "apps/subtitles/internal/server/hardware_transcode_test.go",
+      "sha256": "40c39cc27c62621bdfed25b2986853d54adc6dc523d81cab00e8021e5e817b40"
+    },
+    {
+      "path": "apps/subtitles/internal/server/hls.go",
+      "sha256": "edceb6dc4d6ca900b6f38a05dfdce96635878c88ffaacff8ed6d15e982e20239"
+    },
+    {
+      "path": "apps/subtitles/internal/server/hls_delivery.go",
+      "sha256": "e1014fc6348b98a762d1123591ab171fbc7fab156fcdd802937725db37dfc8dc"
+    },
+    {
+      "path": "apps/subtitles/internal/server/hls_delivery_internal_test.go",
+      "sha256": "0aff426f5ae471aa249c2a61ad173572c25f9dc1ad0f2f20fc1d4a72839a2f17"
+    },
+    {
+      "path": "apps/subtitles/internal/server/hls_long_movie_test.go",
+      "sha256": "f015aab08aa6b385061158b16ac6898f0cec8d7b3d3a345b660c55429593cb8d"
+    },
+    {
+      "path": "apps/subtitles/internal/server/hls_observability.go",
+      "sha256": "4f4929e5456ba792a28d5c3b2cdd22868066b3d7eb640ebcacd387bb30146748"
+    },
+    {
+      "path": "apps/subtitles/internal/server/hls_observability_test.go",
+      "sha256": "2e4eafb6875b0428d8c908b2310cf74e2267d9fe4d79324ec7277be05569b2d9"
+    },
+    {
+      "path": "apps/subtitles/internal/server/hls_plan.go",
+      "sha256": "fecf0fc142d5342ef9bc9290579c85cfc3e177040d7f0662601c0885289f7452"
+    },
+    {
+      "path": "apps/subtitles/internal/server/hls_plan_delivery_test.go",
+      "sha256": "3c55e54352ae4909950d8703d9b58a3ede2a0b828103805fefd562b17285cd39"
+    },
+    {
+      "path": "apps/subtitles/internal/server/hls_playlist.go",
+      "sha256": "b4ff8cc6e2dea73db84936b8677160421dd25f43f653bfc8eade738c34576d32"
+    },
+    {
+      "path": "apps/subtitles/internal/server/hls_playlist_session.go",
+      "sha256": "1ee76927710602652a78c1d14db0da28d394fedd3652da383872e028034a53a1"
+    },
+    {
+      "path": "apps/subtitles/internal/server/hls_playlist_session_internal_test.go",
+      "sha256": "00c2fe91b5a1b0759536fb451be7b2a57f49893aa7892d325418ad37289466ed"
+    },
+    {
+      "path": "apps/subtitles/internal/server/hls_presentation.go",
+      "sha256": "a30345931eba6bfe8fdf816d8a53f905dd0bec8274f9e96f879153e8aee251a0"
+    },
+    {
+      "path": "apps/subtitles/internal/server/hls_projection_ready.go",
+      "sha256": "0b9c83ecd5effb3d0613f864105b726afdf998d665f02b82361839c57c53436d"
+    },
+    {
+      "path": "apps/subtitles/internal/server/hls_projection_ready_test.go",
+      "sha256": "da0412888f304b3cc2c94f97c65737eabd366e0b74adb5cf5adfdcbc804035d4"
+    },
+    {
+      "path": "apps/subtitles/internal/server/hls_ready.go",
+      "sha256": "10fe3857024266f5e684af5921d80a57bfee38b7a4fe10821a69912724ce23ab"
+    },
+    {
+      "path": "apps/subtitles/internal/server/hls_ready_test.go",
+      "sha256": "5f122c1599430f13a77a19eded08f6958f230b8d874a070ba914cad2a80174b4"
+    },
+    {
+      "path": "apps/subtitles/internal/server/hls_recovery.go",
+      "sha256": "d935f0e700af191c6e0570edda7281314ca9219b1f12ba330f4f605210b6d9f8"
+    },
+    {
+      "path": "apps/subtitles/internal/server/hls_scheduler_test.go",
+      "sha256": "578d91e2c0181367cc2e3267ed18194108bf739367f82af21ca80ff963af2065"
+    },
+    {
+      "path": "apps/subtitles/internal/server/hls_seek_test.go",
+      "sha256": "f0c09bc4e8370ca3691d57471523701203ff459c55adb177f2caa3face448734"
+    },
+    {
+      "path": "apps/subtitles/internal/server/hls_sessionless_test.go",
+      "sha256": "9601f4781f6e85949938e1095d520aa721b08979a78629fc3a552786251e3117"
+    },
+    {
+      "path": "apps/subtitles/internal/server/hls_variant.go",
+      "sha256": "aa95b4012f9af9abba6518f60da96429ed8c386f3036ce5f9e977d43841e8d8c"
+    },
+    {
+      "path": "apps/subtitles/internal/server/home.go",
+      "sha256": "ae00ea4bc4e89865b1052c9ecca788419235f9532342932b7bdf345c8e8f9961"
+    },
+    {
+      "path": "apps/subtitles/internal/server/home_assistant.go",
+      "sha256": "1c034948151e05558d9b575d7dbee48505a3849ecacb069880d0b32a3eb80306"
+    },
+    {
+      "path": "apps/subtitles/internal/server/home_assistant_oauth.go",
+      "sha256": "82daeb710c77949f6d9de351e76df4320287babad30f67e05f253cb7069e11a7"
+    },
+    {
+      "path": "apps/subtitles/internal/server/home_assistant_route_helpers_test.go",
+      "sha256": "e558918097453a69c7156c354d5d3e8f7617be73e725d0de2061d7ded7d41aba"
+    },
+    {
+      "path": "apps/subtitles/internal/server/home_assistant_test.go",
+      "sha256": "319e3093ff89079966adb25debf8d728a98a2a8da1b9f4e0588ebcc62d23d600"
+    },
+    {
+      "path": "apps/subtitles/internal/server/home_projection.go",
+      "sha256": "5e885dde0d20ee12a5b386b5669f3696f2d63ad02a774d7eecbe0f270c9579e2"
+    },
+    {
+      "path": "apps/subtitles/internal/server/identity_permissions_test.go",
+      "sha256": "69615520d329efc12a79f0c08e53699464fe6fe0a437a6fb70771f7abdfc938c"
+    },
+    {
+      "path": "apps/subtitles/internal/server/integration_helpers_internal_test.go",
+      "sha256": "a0b4f6aa149fd4975c978ca2ddf9ca3aa36f7217cd9d39d0be74c60208a8eee5"
+    },
+    {
+      "path": "apps/subtitles/internal/server/jellyfin.go",
+      "sha256": "f0bf5bcfb374f7413e87a179adf709beb5dd0011b750e236e97d702d4becfe4b"
+    },
+    {
+      "path": "apps/subtitles/internal/server/jellyfin_audit_internal_test.go",
+      "sha256": "c7c2f426fabbb40092f250ea274aa5aa0bb309a06e945d639de473d77267b799"
+    },
+    {
+      "path": "apps/subtitles/internal/server/jellyfin_bitrate.go",
+      "sha256": "8fe0ca04de83fea989b190cad1deabfed3fbf530c908e53259c8ba6fc406898a"
+    },
+    {
+      "path": "apps/subtitles/internal/server/jellyfin_bitrate_test.go",
+      "sha256": "291faa089e988e8b90145d31ff4decc6c83ebfd3ac496b5d7573ab080fdd640a"
+    },
+    {
+      "path": "apps/subtitles/internal/server/jellyfin_call_test.go",
+      "sha256": "e9e55d37cdc99985806ed21a6db225a8fe25350a35fca0ad3dac2faf79f68aac"
+    },
+    {
+      "path": "apps/subtitles/internal/server/jellyfin_delivery.go",
+      "sha256": "ddca4e1f93f5f285f3e0e8128a4ecf8a245d16292775704f5cc3227efcdf4034"
+    },
+    {
+      "path": "apps/subtitles/internal/server/jellyfin_download_immutability_test.go",
+      "sha256": "69ec2eecb7652d24c00bd27750dee7d1e69ed3b94567363881385c3c36400a6e"
+    },
+    {
+      "path": "apps/subtitles/internal/server/jellyfin_extended_test.go",
+      "sha256": "97c95eb69cb85aaca51bffbc60c302bcbaf596ac97567a6a6bb62d332fadcfa4"
+    },
+    {
+      "path": "apps/subtitles/internal/server/jellyfin_feed.go",
+      "sha256": "88ccd7e1ddec635b6f6003f3c4d95ea74b0171d9a3322c952c9609beec135a63"
+    },
+    {
+      "path": "apps/subtitles/internal/server/jellyfin_ids.go",
+      "sha256": "288b502bcedcbe3b0db6536f04faf210396ce5da02414fa5bda542a0cdc111a7"
+    },
+    {
+      "path": "apps/subtitles/internal/server/jellyfin_image_compat_test.go",
+      "sha256": "4fe76ff020267c7c525d43f4cdc5fd2196e4ae33f9ad5243e05f28b1cda42295"
+    },
+    {
+      "path": "apps/subtitles/internal/server/jellyfin_input_validation_test.go",
+      "sha256": "0d3c61ac95d88d3956972771f72fe69c8b26e8467f6c447a20d5592b36ce0519"
+    },
+    {
+      "path": "apps/subtitles/internal/server/jellyfin_ios_startup_test.go",
+      "sha256": "c151bf3155c33c9a3d881c55e01e20f6289c1c17967bdad9e4aef034e0d44254"
+    },
+    {
+      "path": "apps/subtitles/internal/server/jellyfin_items.go",
+      "sha256": "04b37a889f1944781a0f08a88f43e78f163feb2cd38eb354e6c362813c1041eb"
+    },
+    {
+      "path": "apps/subtitles/internal/server/jellyfin_markers.go",
+      "sha256": "e4e7ded3122892dcf9863253bb4227272b2e67fd812809a85d2bd4901f3d98e8"
+    },
+    {
+      "path": "apps/subtitles/internal/server/jellyfin_owner_session_fixture_test.go",
+      "sha256": "f1d93e4659871ec8b76e5fc68040585f703945c7980b4f8fe159ab2f3fd4432a"
+    },
+    {
+      "path": "apps/subtitles/internal/server/jellyfin_owner_session_test.go",
+      "sha256": "10cd3c567ba848fda409f1fca49cd9b52682f1f2a5a5a450217a343bfce9bf1a"
+    },
+    {
+      "path": "apps/subtitles/internal/server/jellyfin_playback.go",
+      "sha256": "66a6694a8973b68ffa76ff0cb8410465eac4cc694b8d375b5fd093b2841415e5"
+    },
+    {
+      "path": "apps/subtitles/internal/server/jellyfin_progress.go",
+      "sha256": "0b101de4ee5876c0445a45058b3f18510aeb788f1404592e173d83e839409bff"
+    },
+    {
+      "path": "apps/subtitles/internal/server/jellyfin_quick_connect_test.go",
+      "sha256": "15ddecc2d86589794df5380fea5b4a3a4f50c6fd87baf160e030f77d534f0b29"
+    },
+    {
+      "path": "apps/subtitles/internal/server/jellyfin_request.go",
+      "sha256": "c59c3ae4177ec4da58f7e0a6391dade617bcc69267cac488e6adb50d377307ee"
+    },
+    {
+      "path": "apps/subtitles/internal/server/jellyfin_request_internal_test.go",
+      "sha256": "b9599579a66ae160e82cfd31ba7ba082ebe840cc986884418161745ca324b0a5"
+    },
+    {
+      "path": "apps/subtitles/internal/server/jellyfin_seerr.go",
+      "sha256": "4730c5708d1dab28a36530da166be05103165272b256d56e1e4d6fa5126b1dca"
+    },
+    {
+      "path": "apps/subtitles/internal/server/jellyfin_seerr_test.go",
+      "sha256": "dfcebcba3d5d9e97373c378ec5a758251380fce2fa26a69041bdf398d9d53126"
+    },
+    {
+      "path": "apps/subtitles/internal/server/jellyfin_server_helpers_test.go",
+      "sha256": "a0a39677e52d399942fbffb4760682873b664a6a95f072e9fb3d03f0eb028ea8"
+    },
+    {
+      "path": "apps/subtitles/internal/server/jellyfin_settings_test.go",
+      "sha256": "181f6143874e8ade4ac70cd07fff93b4aae9036cb36bd4ec8e36641078e75cc0"
+    },
+    {
+      "path": "apps/subtitles/internal/server/jellyfin_swiftfin_test.go",
+      "sha256": "242b1e1a99febd7bb2044a633518c381207ac250ad60f4bd67d3ed359f22d73a"
+    },
+    {
+      "path": "apps/subtitles/internal/server/jellyfin_test.go",
+      "sha256": "0bb2cb522003341a60deb6cb1c59165c163af21c9d6e90c0af01c0e67dbb9c66"
+    },
+    {
+      "path": "apps/subtitles/internal/server/jellyfin_test_helpers_test.go",
+      "sha256": "67ff99ed922069600b9c6374ffff7c22f9a569f8f0d1e9b0af09ca135ca7b597"
+    },
+    {
+      "path": "apps/subtitles/internal/server/language_http.go",
+      "sha256": "fc0afb6c15210beff799313b5c03b0a28986bbb45cffe9e2fb748a1295351255"
+    },
+    {
+      "path": "apps/subtitles/internal/server/lean_back_test.go",
+      "sha256": "63cc3dd344481705ab2e8ab2ae927a44c20998cf08678bf5aabd12e7716b5011"
+    },
+    {
+      "path": "apps/subtitles/internal/server/library_api_clients_test.go",
+      "sha256": "98376941ed360727898ef0bfe8d139011dc9ae57fd16422ddc21a9b7881f2071"
+    },
+    {
+      "path": "apps/subtitles/internal/server/library_api_letters_test.go",
+      "sha256": "23eb0a37832c0e1a0f70ab353e281471091d10f01138a4ac9c3faf489b0adf43"
+    },
+    {
+      "path": "apps/subtitles/internal/server/library_api_pagination_test.go",
+      "sha256": "90b1e7b20637bd90c40e2ca9c36cc86a40c9c9bed75d4c53d35dbbe2fb213a5b"
+    },
+    {
+      "path": "apps/subtitles/internal/server/library_api_titles_test.go",
+      "sha256": "cd8fc0c93547b9537937590d3e6ef185b8473cd04887677bce2a5966bfcfaa20"
+    },
+    {
+      "path": "apps/subtitles/internal/server/library_benchmark_test.go",
+      "sha256": "b245af924568cddb72e53f20f49525074effa42d490052549e2f660a205bd93e"
+    },
+    {
+      "path": "apps/subtitles/internal/server/library_index_test.go",
+      "sha256": "6d4fc31b403f24cfcc5eae97734b00429fc2004656917b966372b81db9ebb8ab"
+    },
+    {
+      "path": "apps/subtitles/internal/server/library_views_test.go",
+      "sha256": "5873ec74ce9459c9ac53aa0d6ed1052cec677fcdd5dd9a73bea1896ec68d1947"
+    },
+    {
+      "path": "apps/subtitles/internal/server/lists.go",
+      "sha256": "f705080e85605403f605bcbb1bc0f70750d180b215b505c3fd03b6f8b347d767"
+    },
+    {
+      "path": "apps/subtitles/internal/server/lists_http.go",
+      "sha256": "92477cb8e446f291efad93b0bbb949e6b6fe9eb6e38d5778335ecdc7a33ea130"
+    },
+    {
+      "path": "apps/subtitles/internal/server/lists_state_internal_test.go",
+      "sha256": "029818211ef805625edad2f55dd1831708e05dead3ce2b807ffebf3b338e6d54"
+    },
+    {
+      "path": "apps/subtitles/internal/server/lists_validation_test.go",
+      "sha256": "79d3c7099a1af7d96eacdd660f82efeed7ab7f8dd1cf9edb2aca09adc0ab82bd"
+    },
+    {
+      "path": "apps/subtitles/internal/server/lists_viewing_import.go",
+      "sha256": "1166d10182919d5c0e3ebdd9e3d72c4447e67781f4bf342194369422cb108899"
+    },
+    {
+      "path": "apps/subtitles/internal/server/live_events.go",
+      "sha256": "877ff5de0a14137fa7d8fbd746f6767955202bf38e7b10f33ba0ee5e414e147b"
+    },
+    {
+      "path": "apps/subtitles/internal/server/live_events_test.go",
+      "sha256": "4136167ecdd4238040ddc8e4c82fdfe4ebc0a1e224e0f60fcc87b804ffa51c9b"
+    },
+    {
+      "path": "apps/subtitles/internal/server/locale.go",
+      "sha256": "3b4b8ab4f24217845740e23d51f797aba12e71e4c9c9e89b3aa959ea1b8abb78"
+    },
+    {
+      "path": "apps/subtitles/internal/server/locale_catalog_test.go",
+      "sha256": "cd4b0fe656de5c17fabc009b799f56b029bfaef59090bf9aee5c89633632d9c4"
+    },
+    {
+      "path": "apps/subtitles/internal/server/locale_expanded_fixture_test.go",
+      "sha256": "cf1ee3b2ad509dc9399262e0a352fe9903ef88926d7b7e634dcdb4012a325d0c"
+    },
+    {
+      "path": "apps/subtitles/internal/server/locale_expanded_test.go",
+      "sha256": "a45489037883ece7c25fde16ee1371b609a015bf80c045ab35eda0189e0e6c6f"
+    },
+    {
+      "path": "apps/subtitles/internal/server/locale_picker_test.go",
+      "sha256": "7c2eb21cad0698d5e89771309c1304314522c7c77f028091e9e1a1532cf560c0"
+    },
+    {
+      "path": "apps/subtitles/internal/server/locale_test.go",
+      "sha256": "9dea046f595bc5bcb12eff119a126a7b8de1caef80c827e01508cf0996b9cb72"
+    },
+    {
+      "path": "apps/subtitles/internal/server/locales/active.ab.json",
+      "sha256": "19de431f3c282594ea7a5ac3e4cb707fdc56247dcc1da204c6e406b10c75e368"
+    },
+    {
+      "path": "apps/subtitles/internal/server/locales/active.af.json",
+      "sha256": "19de431f3c282594ea7a5ac3e4cb707fdc56247dcc1da204c6e406b10c75e368"
+    },
+    {
+      "path": "apps/subtitles/internal/server/locales/active.ar.json",
+      "sha256": "e141ab5c084a63e75046b6af054175e816ae0767bd56c75cb579133cd676f08c"
+    },
+    {
+      "path": "apps/subtitles/internal/server/locales/active.as.json",
+      "sha256": "19de431f3c282594ea7a5ac3e4cb707fdc56247dcc1da204c6e406b10c75e368"
+    },
+    {
+      "path": "apps/subtitles/internal/server/locales/active.az.json",
+      "sha256": "19de431f3c282594ea7a5ac3e4cb707fdc56247dcc1da204c6e406b10c75e368"
+    },
+    {
+      "path": "apps/subtitles/internal/server/locales/active.be-BY.json",
+      "sha256": "19de431f3c282594ea7a5ac3e4cb707fdc56247dcc1da204c6e406b10c75e368"
+    },
+    {
+      "path": "apps/subtitles/internal/server/locales/active.bg-BG.json",
+      "sha256": "19de431f3c282594ea7a5ac3e4cb707fdc56247dcc1da204c6e406b10c75e368"
+    },
+    {
+      "path": "apps/subtitles/internal/server/locales/active.bn-BD.json",
+      "sha256": "19de431f3c282594ea7a5ac3e4cb707fdc56247dcc1da204c6e406b10c75e368"
+    },
+    {
+      "path": "apps/subtitles/internal/server/locales/active.bn.json",
+      "sha256": "19de431f3c282594ea7a5ac3e4cb707fdc56247dcc1da204c6e406b10c75e368"
+    },
+    {
+      "path": "apps/subtitles/internal/server/locales/active.br.json",
+      "sha256": "19de431f3c282594ea7a5ac3e4cb707fdc56247dcc1da204c6e406b10c75e368"
+    },
+    {
+      "path": "apps/subtitles/internal/server/locales/active.bs.json",
+      "sha256": "19de431f3c282594ea7a5ac3e4cb707fdc56247dcc1da204c6e406b10c75e368"
+    },
+    {
+      "path": "apps/subtitles/internal/server/locales/active.ca.json",
+      "sha256": "19de431f3c282594ea7a5ac3e4cb707fdc56247dcc1da204c6e406b10c75e368"
+    },
+    {
+      "path": "apps/subtitles/internal/server/locales/active.ch.json",
+      "sha256": "19de431f3c282594ea7a5ac3e4cb707fdc56247dcc1da204c6e406b10c75e368"
+    },
+    {
+      "path": "apps/subtitles/internal/server/locales/active.ckb.json",
+      "sha256": "19de431f3c282594ea7a5ac3e4cb707fdc56247dcc1da204c6e406b10c75e368"
+    },
+    {
+      "path": "apps/subtitles/internal/server/locales/active.cs.json",
+      "sha256": "19de431f3c282594ea7a5ac3e4cb707fdc56247dcc1da204c6e406b10c75e368"
+    },
+    {
+      "path": "apps/subtitles/internal/server/locales/active.cy.json",
+      "sha256": "19de431f3c282594ea7a5ac3e4cb707fdc56247dcc1da204c6e406b10c75e368"
+    },
+    {
+      "path": "apps/subtitles/internal/server/locales/active.da.json",
+      "sha256": "19de431f3c282594ea7a5ac3e4cb707fdc56247dcc1da204c6e406b10c75e368"
+    },
+    {
+      "path": "apps/subtitles/internal/server/locales/active.de.json",
+      "sha256": "abef69fdc7f25e985b896fe05365f6e29d763e263e67d2272a72eccca6e45904"
+    },
+    {
+      "path": "apps/subtitles/internal/server/locales/active.dv.json",
+      "sha256": "19de431f3c282594ea7a5ac3e4cb707fdc56247dcc1da204c6e406b10c75e368"
+    },
+    {
+      "path": "apps/subtitles/internal/server/locales/active.el.json",
+      "sha256": "19de431f3c282594ea7a5ac3e4cb707fdc56247dcc1da204c6e406b10c75e368"
+    },
+    {
+      "path": "apps/subtitles/internal/server/locales/active.en-GB.json",
+      "sha256": "a901763fcd8a2e6146db06da67f5a038140626d62ae4906219635fef01ed3c8e"
+    },
+    {
+      "path": "apps/subtitles/internal/server/locales/active.en-US.json",
+      "sha256": "a901763fcd8a2e6146db06da67f5a038140626d62ae4906219635fef01ed3c8e"
+    },
+    {
+      "path": "apps/subtitles/internal/server/locales/active.en.json",
+      "sha256": "5198a16c2ff8ca6608aead54a4f8b174ad4bc93a0a3c09b9b6c039fd2f10663f"
+    },
+    {
+      "path": "apps/subtitles/internal/server/locales/active.eo.json",
+      "sha256": "19de431f3c282594ea7a5ac3e4cb707fdc56247dcc1da204c6e406b10c75e368"
+    },
+    {
+      "path": "apps/subtitles/internal/server/locales/active.es-419.json",
+      "sha256": "19de431f3c282594ea7a5ac3e4cb707fdc56247dcc1da204c6e406b10c75e368"
+    },
+    {
+      "path": "apps/subtitles/internal/server/locales/active.es-AR.json",
+      "sha256": "19de431f3c282594ea7a5ac3e4cb707fdc56247dcc1da204c6e406b10c75e368"
+    },
+    {
+      "path": "apps/subtitles/internal/server/locales/active.es-DO.json",
+      "sha256": "19de431f3c282594ea7a5ac3e4cb707fdc56247dcc1da204c6e406b10c75e368"
+    },
+    {
+      "path": "apps/subtitles/internal/server/locales/active.es-MX.json",
+      "sha256": "19de431f3c282594ea7a5ac3e4cb707fdc56247dcc1da204c6e406b10c75e368"
+    },
+    {
+      "path": "apps/subtitles/internal/server/locales/active.es.json",
+      "sha256": "bcee21a480399ccb36f1dd1116e2c2293b2a8bdad893f6bebe2cdeb3f5ed2728"
+    },
+    {
+      "path": "apps/subtitles/internal/server/locales/active.et.json",
+      "sha256": "19de431f3c282594ea7a5ac3e4cb707fdc56247dcc1da204c6e406b10c75e368"
+    },
+    {
+      "path": "apps/subtitles/internal/server/locales/active.eu.json",
+      "sha256": "19de431f3c282594ea7a5ac3e4cb707fdc56247dcc1da204c6e406b10c75e368"
+    },
+    {
+      "path": "apps/subtitles/internal/server/locales/active.fa.json",
+      "sha256": "19de431f3c282594ea7a5ac3e4cb707fdc56247dcc1da204c6e406b10c75e368"
+    },
+    {
+      "path": "apps/subtitles/internal/server/locales/active.fi.json",
+      "sha256": "19de431f3c282594ea7a5ac3e4cb707fdc56247dcc1da204c6e406b10c75e368"
+    },
+    {
+      "path": "apps/subtitles/internal/server/locales/active.fil.json",
+      "sha256": "19de431f3c282594ea7a5ac3e4cb707fdc56247dcc1da204c6e406b10c75e368"
+    },
+    {
+      "path": "apps/subtitles/internal/server/locales/active.fo.json",
+      "sha256": "19de431f3c282594ea7a5ac3e4cb707fdc56247dcc1da204c6e406b10c75e368"
+    },
+    {
+      "path": "apps/subtitles/internal/server/locales/active.fr-CA.json",
+      "sha256": "19de431f3c282594ea7a5ac3e4cb707fdc56247dcc1da204c6e406b10c75e368"
+    },
+    {
+      "path": "apps/subtitles/internal/server/locales/active.fr.json",
+      "sha256": "7659a43d9b48a80af82ba2250b64a1b326813e55e2a0b3093c834fa4148cdbd0"
+    },
+    {
+      "path": "apps/subtitles/internal/server/locales/active.ga.json",
+      "sha256": "19de431f3c282594ea7a5ac3e4cb707fdc56247dcc1da204c6e406b10c75e368"
+    },
+    {
+      "path": "apps/subtitles/internal/server/locales/active.gl.json",
+      "sha256": "19de431f3c282594ea7a5ac3e4cb707fdc56247dcc1da204c6e406b10c75e368"
+    },
+    {
+      "path": "apps/subtitles/internal/server/locales/active.gsw.json",
+      "sha256": "19de431f3c282594ea7a5ac3e4cb707fdc56247dcc1da204c6e406b10c75e368"
+    },
+    {
+      "path": "apps/subtitles/internal/server/locales/active.gu.json",
+      "sha256": "19de431f3c282594ea7a5ac3e4cb707fdc56247dcc1da204c6e406b10c75e368"
+    },
+    {
+      "path": "apps/subtitles/internal/server/locales/active.he-IL.json",
+      "sha256": "19de431f3c282594ea7a5ac3e4cb707fdc56247dcc1da204c6e406b10c75e368"
+    },
+    {
+      "path": "apps/subtitles/internal/server/locales/active.he.json",
+      "sha256": "19de431f3c282594ea7a5ac3e4cb707fdc56247dcc1da204c6e406b10c75e368"
+    },
+    {
+      "path": "apps/subtitles/internal/server/locales/active.hi-IN.json",
+      "sha256": "19de431f3c282594ea7a5ac3e4cb707fdc56247dcc1da204c6e406b10c75e368"
+    },
+    {
+      "path": "apps/subtitles/internal/server/locales/active.hr.json",
+      "sha256": "19de431f3c282594ea7a5ac3e4cb707fdc56247dcc1da204c6e406b10c75e368"
+    },
+    {
+      "path": "apps/subtitles/internal/server/locales/active.ht.json",
+      "sha256": "19de431f3c282594ea7a5ac3e4cb707fdc56247dcc1da204c6e406b10c75e368"
+    },
+    {
+      "path": "apps/subtitles/internal/server/locales/active.hu.json",
+      "sha256": "19de431f3c282594ea7a5ac3e4cb707fdc56247dcc1da204c6e406b10c75e368"
+    },
+    {
+      "path": "apps/subtitles/internal/server/locales/active.hy.json",
+      "sha256": "19de431f3c282594ea7a5ac3e4cb707fdc56247dcc1da204c6e406b10c75e368"
+    },
+    {
+      "path": "apps/subtitles/internal/server/locales/active.id.json",
+      "sha256": "19de431f3c282594ea7a5ac3e4cb707fdc56247dcc1da204c6e406b10c75e368"
+    },
+    {
+      "path": "apps/subtitles/internal/server/locales/active.is-IS.json",
+      "sha256": "19de431f3c282594ea7a5ac3e4cb707fdc56247dcc1da204c6e406b10c75e368"
+    },
+    {
+      "path": "apps/subtitles/internal/server/locales/active.it.json",
+      "sha256": "d33872cbf0cfe56dfbfc5a233f57eaf57444852a661802e3367ce967c81dc888"
+    },
+    {
+      "path": "apps/subtitles/internal/server/locales/active.ja.json",
+      "sha256": "11150a1cd898827a6e674c4cc73e415b9632cc8dde0abae588abe067fa8baccd"
+    },
+    {
+      "path": "apps/subtitles/internal/server/locales/active.jbo.json",
+      "sha256": "19de431f3c282594ea7a5ac3e4cb707fdc56247dcc1da204c6e406b10c75e368"
+    },
+    {
+      "path": "apps/subtitles/internal/server/locales/active.ka.json",
+      "sha256": "19de431f3c282594ea7a5ac3e4cb707fdc56247dcc1da204c6e406b10c75e368"
+    },
+    {
+      "path": "apps/subtitles/internal/server/locales/active.kab.json",
+      "sha256": "19de431f3c282594ea7a5ac3e4cb707fdc56247dcc1da204c6e406b10c75e368"
+    },
+    {
+      "path": "apps/subtitles/internal/server/locales/active.kk.json",
+      "sha256": "19de431f3c282594ea7a5ac3e4cb707fdc56247dcc1da204c6e406b10c75e368"
+    },
+    {
+      "path": "apps/subtitles/internal/server/locales/active.kn.json",
+      "sha256": "19de431f3c282594ea7a5ac3e4cb707fdc56247dcc1da204c6e406b10c75e368"
+    },
+    {
+      "path": "apps/subtitles/internal/server/locales/active.ko.json",
+      "sha256": "7baa4eda392856af66915d92d6bd33eb045d0496019cebac2ad201a3c36a0b9c"
+    },
+    {
+      "path": "apps/subtitles/internal/server/locales/active.kw.json",
+      "sha256": "19de431f3c282594ea7a5ac3e4cb707fdc56247dcc1da204c6e406b10c75e368"
+    },
+    {
+      "path": "apps/subtitles/internal/server/locales/active.ky.json",
+      "sha256": "19de431f3c282594ea7a5ac3e4cb707fdc56247dcc1da204c6e406b10c75e368"
+    },
+    {
+      "path": "apps/subtitles/internal/server/locales/active.lb.json",
+      "sha256": "19de431f3c282594ea7a5ac3e4cb707fdc56247dcc1da204c6e406b10c75e368"
+    },
+    {
+      "path": "apps/subtitles/internal/server/locales/active.lt-LT.json",
+      "sha256": "19de431f3c282594ea7a5ac3e4cb707fdc56247dcc1da204c6e406b10c75e368"
+    },
+    {
+      "path": "apps/subtitles/internal/server/locales/active.lv.json",
+      "sha256": "19de431f3c282594ea7a5ac3e4cb707fdc56247dcc1da204c6e406b10c75e368"
+    },
+    {
+      "path": "apps/subtitles/internal/server/locales/active.mg.json",
+      "sha256": "19de431f3c282594ea7a5ac3e4cb707fdc56247dcc1da204c6e406b10c75e368"
+    },
+    {
+      "path": "apps/subtitles/internal/server/locales/active.mi.json",
+      "sha256": "19de431f3c282594ea7a5ac3e4cb707fdc56247dcc1da204c6e406b10c75e368"
+    },
+    {
+      "path": "apps/subtitles/internal/server/locales/active.mk.json",
+      "sha256": "19de431f3c282594ea7a5ac3e4cb707fdc56247dcc1da204c6e406b10c75e368"
+    },
+    {
+      "path": "apps/subtitles/internal/server/locales/active.ml.json",
+      "sha256": "19de431f3c282594ea7a5ac3e4cb707fdc56247dcc1da204c6e406b10c75e368"
+    },
+    {
+      "path": "apps/subtitles/internal/server/locales/active.mn.json",
+      "sha256": "19de431f3c282594ea7a5ac3e4cb707fdc56247dcc1da204c6e406b10c75e368"
+    },
+    {
+      "path": "apps/subtitles/internal/server/locales/active.mr.json",
+      "sha256": "19de431f3c282594ea7a5ac3e4cb707fdc56247dcc1da204c6e406b10c75e368"
+    },
+    {
+      "path": "apps/subtitles/internal/server/locales/active.ms.json",
+      "sha256": "19de431f3c282594ea7a5ac3e4cb707fdc56247dcc1da204c6e406b10c75e368"
+    },
+    {
+      "path": "apps/subtitles/internal/server/locales/active.mt.json",
+      "sha256": "19de431f3c282594ea7a5ac3e4cb707fdc56247dcc1da204c6e406b10c75e368"
+    },
+    {
+      "path": "apps/subtitles/internal/server/locales/active.my.json",
+      "sha256": "19de431f3c282594ea7a5ac3e4cb707fdc56247dcc1da204c6e406b10c75e368"
+    },
+    {
+      "path": "apps/subtitles/internal/server/locales/active.nb.json",
+      "sha256": "19de431f3c282594ea7a5ac3e4cb707fdc56247dcc1da204c6e406b10c75e368"
+    },
+    {
+      "path": "apps/subtitles/internal/server/locales/active.nds.json",
+      "sha256": "19de431f3c282594ea7a5ac3e4cb707fdc56247dcc1da204c6e406b10c75e368"
+    },
+    {
+      "path": "apps/subtitles/internal/server/locales/active.ne.json",
+      "sha256": "19de431f3c282594ea7a5ac3e4cb707fdc56247dcc1da204c6e406b10c75e368"
+    },
+    {
+      "path": "apps/subtitles/internal/server/locales/active.nl.json",
+      "sha256": "75922b5f45e5f33f4d6a7133f8763e46620735405be11503808ceaf1e6b76f19"
+    },
+    {
+      "path": "apps/subtitles/internal/server/locales/active.nn.json",
+      "sha256": "19de431f3c282594ea7a5ac3e4cb707fdc56247dcc1da204c6e406b10c75e368"
+    },
+    {
+      "path": "apps/subtitles/internal/server/locales/active.oc.json",
+      "sha256": "19de431f3c282594ea7a5ac3e4cb707fdc56247dcc1da204c6e406b10c75e368"
+    },
+    {
+      "path": "apps/subtitles/internal/server/locales/active.pa.json",
+      "sha256": "19de431f3c282594ea7a5ac3e4cb707fdc56247dcc1da204c6e406b10c75e368"
+    },
+    {
+      "path": "apps/subtitles/internal/server/locales/active.pl.json",
+      "sha256": "1a7f4cf1819082623fb8883fc4c83b57dc316534d08d98c7ddbda886c8e0a1bd"
+    },
+    {
+      "path": "apps/subtitles/internal/server/locales/active.pt-BR.json",
+      "sha256": "b4666c756dae2182bb9fcd6ea33637775f03f33d66b63d89e3124b208d52ede8"
+    },
+    {
+      "path": "apps/subtitles/internal/server/locales/active.pt-PT.json",
+      "sha256": "b4666c756dae2182bb9fcd6ea33637775f03f33d66b63d89e3124b208d52ede8"
+    },
+    {
+      "path": "apps/subtitles/internal/server/locales/active.pt.json",
+      "sha256": "19de431f3c282594ea7a5ac3e4cb707fdc56247dcc1da204c6e406b10c75e368"
+    },
+    {
+      "path": "apps/subtitles/internal/server/locales/active.ro.json",
+      "sha256": "19de431f3c282594ea7a5ac3e4cb707fdc56247dcc1da204c6e406b10c75e368"
+    },
+    {
+      "path": "apps/subtitles/internal/server/locales/active.ru.json",
+      "sha256": "706def2f5e13cfcbbed673b7ec7753b7d2fe335fe782a28434962bc087fd92e9"
+    },
+    {
+      "path": "apps/subtitles/internal/server/locales/active.si.json",
+      "sha256": "19de431f3c282594ea7a5ac3e4cb707fdc56247dcc1da204c6e406b10c75e368"
+    },
+    {
+      "path": "apps/subtitles/internal/server/locales/active.sk.json",
+      "sha256": "19de431f3c282594ea7a5ac3e4cb707fdc56247dcc1da204c6e406b10c75e368"
+    },
+    {
+      "path": "apps/subtitles/internal/server/locales/active.sl-SI.json",
+      "sha256": "19de431f3c282594ea7a5ac3e4cb707fdc56247dcc1da204c6e406b10c75e368"
+    },
+    {
+      "path": "apps/subtitles/internal/server/locales/active.so.json",
+      "sha256": "19de431f3c282594ea7a5ac3e4cb707fdc56247dcc1da204c6e406b10c75e368"
+    },
+    {
+      "path": "apps/subtitles/internal/server/locales/active.sq.json",
+      "sha256": "19de431f3c282594ea7a5ac3e4cb707fdc56247dcc1da204c6e406b10c75e368"
+    },
+    {
+      "path": "apps/subtitles/internal/server/locales/active.sr.json",
+      "sha256": "19de431f3c282594ea7a5ac3e4cb707fdc56247dcc1da204c6e406b10c75e368"
+    },
+    {
+      "path": "apps/subtitles/internal/server/locales/active.sv.json",
+      "sha256": "7c33221ad16ec43019109a4453c687b4f8673b44115e7e4a1ac06bda6f10bfe8"
+    },
+    {
+      "path": "apps/subtitles/internal/server/locales/active.sw.json",
+      "sha256": "19de431f3c282594ea7a5ac3e4cb707fdc56247dcc1da204c6e406b10c75e368"
+    },
+    {
+      "path": "apps/subtitles/internal/server/locales/active.ta.json",
+      "sha256": "19de431f3c282594ea7a5ac3e4cb707fdc56247dcc1da204c6e406b10c75e368"
+    },
+    {
+      "path": "apps/subtitles/internal/server/locales/active.te.json",
+      "sha256": "19de431f3c282594ea7a5ac3e4cb707fdc56247dcc1da204c6e406b10c75e368"
+    },
+    {
+      "path": "apps/subtitles/internal/server/locales/active.th.json",
+      "sha256": "19de431f3c282594ea7a5ac3e4cb707fdc56247dcc1da204c6e406b10c75e368"
+    },
+    {
+      "path": "apps/subtitles/internal/server/locales/active.tr.json",
+      "sha256": "73b44d2ee3bbecb153794fd1af941a9dbd16e26eaf318f29ae86f3ac2bd338d5"
+    },
+    {
+      "path": "apps/subtitles/internal/server/locales/active.ug.json",
+      "sha256": "19de431f3c282594ea7a5ac3e4cb707fdc56247dcc1da204c6e406b10c75e368"
+    },
+    {
+      "path": "apps/subtitles/internal/server/locales/active.uk.json",
+      "sha256": "e9d667039c6e834318729ebf090d9f3015ba7834e82a453f4b5dc56908d1e37d"
+    },
+    {
+      "path": "apps/subtitles/internal/server/locales/active.ur-PK.json",
+      "sha256": "19de431f3c282594ea7a5ac3e4cb707fdc56247dcc1da204c6e406b10c75e368"
+    },
+    {
+      "path": "apps/subtitles/internal/server/locales/active.uz.json",
+      "sha256": "19de431f3c282594ea7a5ac3e4cb707fdc56247dcc1da204c6e406b10c75e368"
+    },
+    {
+      "path": "apps/subtitles/internal/server/locales/active.vi.json",
+      "sha256": "19de431f3c282594ea7a5ac3e4cb707fdc56247dcc1da204c6e406b10c75e368"
+    },
+    {
+      "path": "apps/subtitles/internal/server/locales/active.zh-CN.json",
+      "sha256": "19de431f3c282594ea7a5ac3e4cb707fdc56247dcc1da204c6e406b10c75e368"
+    },
+    {
+      "path": "apps/subtitles/internal/server/locales/active.zh-HK.json",
+      "sha256": "19de431f3c282594ea7a5ac3e4cb707fdc56247dcc1da204c6e406b10c75e368"
+    },
+    {
+      "path": "apps/subtitles/internal/server/locales/active.zh-Hans.json",
+      "sha256": "a4edba8b28450500d4524f9f3eef978568c7192b427667f7a89cd34aec211f82"
+    },
+    {
+      "path": "apps/subtitles/internal/server/locales/active.zh-Hant.json",
+      "sha256": "4d7f84ecb1820eb4974ddd40680ef2636e415193545467b788327503f66f9c26"
+    },
+    {
+      "path": "apps/subtitles/internal/server/locales/active.zh-TW.json",
+      "sha256": "19de431f3c282594ea7a5ac3e4cb707fdc56247dcc1da204c6e406b10c75e368"
+    },
+    {
+      "path": "apps/subtitles/internal/server/locales/active.zu.json",
+      "sha256": "19de431f3c282594ea7a5ac3e4cb707fdc56247dcc1da204c6e406b10c75e368"
+    },
+    {
+      "path": "apps/subtitles/internal/server/locales/supporter.ar.json",
+      "sha256": "3ba8477c4e3db4718e150ffe857f600ae93f78510de0f5cfb343426cbf7518ce"
+    },
+    {
+      "path": "apps/subtitles/internal/server/locales/supporter.en.json",
+      "sha256": "c1e3195fbf95533988771053740c9b1019e1a71c1eb42853b34db290479583d7"
+    },
+    {
+      "path": "apps/subtitles/internal/server/locales/supporter.es.json",
+      "sha256": "2d26c406b2845a0cd901c7a09ddc61416cc41004abe3b0ff1ad373ddccc597b4"
+    },
+    {
+      "path": "apps/subtitles/internal/server/maintenance.go",
+      "sha256": "39dd6666dc63b8bab455869e66155fa33bf4c148493256a49456768150bbd28a"
+    },
+    {
+      "path": "apps/subtitles/internal/server/maintenance_test.go",
+      "sha256": "2dab9a61c5d24e1216f676fa9ece98c2eeab0dd429451f907e332881b00177cc"
+    },
+    {
+      "path": "apps/subtitles/internal/server/management_access.go",
+      "sha256": "4d9990ffa7de31fb95bae49389b1f78fea830a6e0350c76995d4bde97227634d"
+    },
+    {
+      "path": "apps/subtitles/internal/server/management_access_test.go",
+      "sha256": "613d82ea80f8cb7aaeacd3a68452b92646117da9e2189dab74bb6f2a50a90059"
+    },
+    {
+      "path": "apps/subtitles/internal/server/management_identity_test.go",
+      "sha256": "6db3c990d43c5daa0c2885c34f5e1ea9bfc5040d2968300bae7ce7868196ee4e"
+    },
+    {
+      "path": "apps/subtitles/internal/server/marker_admin.go",
+      "sha256": "2aa13a98c471258bb8be43a21eb27738604e3c36be45a6dbafa63c02e93772ce"
+    },
+    {
+      "path": "apps/subtitles/internal/server/marker_analysis_api_test.go",
+      "sha256": "a1e4db85ec2a2722064ebac7dd556d5e8ee9f96bc15c9aa25504810916e3e444"
+    },
+    {
+      "path": "apps/subtitles/internal/server/marker_analyzer.go",
+      "sha256": "0c1e9fb21702df366ee4c7f64093bd38d17643ef9c00688eabe84ec5dfdfd76f"
+    },
+    {
+      "path": "apps/subtitles/internal/server/masthead_contrast_test.go",
+      "sha256": "dd939569a5ac97ec7c38847f1f47038e934d5011df6371781b9462cbc9da80da"
+    },
+    {
+      "path": "apps/subtitles/internal/server/mcp.go",
+      "sha256": "ebb7daa61b06c1da3d595bca8baefefa07b84b080def0bc7595973a5ed5c2dee"
+    },
+    {
+      "path": "apps/subtitles/internal/server/mcp_builtin_oauth_flow_test.go",
+      "sha256": "87f985e06aed940b67b0e31313a311afa5c4dff555db2aef63f85dc37a8a71c4"
+    },
+    {
+      "path": "apps/subtitles/internal/server/mcp_connections.go",
+      "sha256": "81b3a31dc4425d9b4a45242e090ef11d806843d2c804e8ccdee4780c4daba78c"
+    },
+    {
+      "path": "apps/subtitles/internal/server/mcp_connections_authorize.go",
+      "sha256": "50e6cf647d692d1ad76d36638d9c924f81663f477a5329080c8287f385b9607d"
+    },
+    {
+      "path": "apps/subtitles/internal/server/mcp_connections_http.go",
+      "sha256": "bedd9266bbdcd9f1b6acbee791589249a45f5465e7c25d3f59267b36c12de228"
+    },
+    {
+      "path": "apps/subtitles/internal/server/mcp_connections_http_test.go",
+      "sha256": "1f89628aac7507b420cb25ee3139476fd498f938111ceb0cf668863dd256e7db"
+    },
+    {
+      "path": "apps/subtitles/internal/server/mcp_oauth_flow_test.go",
+      "sha256": "5a095af4676f7ede961c4c37734ab7215bb2926fc03368a7c4836102a8f713f9"
+    },
+    {
+      "path": "apps/subtitles/internal/server/mcp_policy_test.go",
+      "sha256": "5ad7e6b9831dd97458247487cbde12587b18512234a7f6fa85f086917f2f2919"
+    },
+    {
+      "path": "apps/subtitles/internal/server/mcp_route_policy.go",
+      "sha256": "44e4281a089febd4c3704e7e74d0d67dcf8920cba00a9e9616e96da78524e782"
+    },
+    {
+      "path": "apps/subtitles/internal/server/mcp_stdio.go",
+      "sha256": "c6809d6d992f642eb6ca22f1eaaaade58003534d4bbf28c298e01e4603f79d1d"
+    },
+    {
+      "path": "apps/subtitles/internal/server/mcp_stdio_test.go",
+      "sha256": "e6a719107fffff9ff2595d2d85a3b470addf1d47b39cffeee04b2dec36415d43"
+    },
+    {
+      "path": "apps/subtitles/internal/server/mcp_test.go",
+      "sha256": "ce94cd25ca31cd80e6e7d32f86a3da8276d54aec608a9b82f9b4c3d17f77b600"
+    },
+    {
+      "path": "apps/subtitles/internal/server/mcp_test_helpers_test.go",
+      "sha256": "10a4f6e748e2295e12870b24116d4be46b6503748c9ac125128d34e4bbe5112d"
+    },
+    {
+      "path": "apps/subtitles/internal/server/media_backdrop_test.go",
+      "sha256": "ffc6f33b4ab04d9b2aaf187ab27fa0c1465cfa12259158d1af9f77a202c9e75a"
+    },
+    {
+      "path": "apps/subtitles/internal/server/media_info_test.go",
+      "sha256": "b22c62a9355c1a6fb080a5d05ff8475162955f4d04f445c12d21a5222e6419e1"
+    },
+    {
+      "path": "apps/subtitles/internal/server/media_share_test.go",
+      "sha256": "93114d4668be61dbbed2dbf7b04f7dae9011d4921f4164a77be3f1647831eca5"
+    },
+    {
+      "path": "apps/subtitles/internal/server/media_shares.go",
+      "sha256": "68e8bfb061b409ecb828d3ea22ee5588ff38387ee715f493df40c1db9920cc72"
+    },
+    {
+      "path": "apps/subtitles/internal/server/media_shares_http.go",
+      "sha256": "477ad1103e2346a6adb88cd5139d38c2f93291e937f8b58deccd0a8db26c65c7"
+    },
+    {
+      "path": "apps/subtitles/internal/server/media_shares_internal_test.go",
+      "sha256": "2932fb9b44ec4ee9c5968274b46afc603b4c1d83f210b55349f6a7aee4e89ae7"
+    },
+    {
+      "path": "apps/subtitles/internal/server/media_types_test.go",
+      "sha256": "8aa5f7b28820f3dc0fb399fdbb1faa3a0cbd9bab883be7f10c1db0eb2c7c4afe"
+    },
+    {
+      "path": "apps/subtitles/internal/server/metadata_artwork.go",
+      "sha256": "b46b02f0c3f69711a15a664c233b2c0271dc4af2e6f266d8cecbb6aea57a5f1a"
+    },
+    {
+      "path": "apps/subtitles/internal/server/metadata_artwork_expiry_test.go",
+      "sha256": "c391d7500a3e866fc584474f40e7e3d8ee05a95a9111c049d4fdde0a34a4ba3d"
+    },
+    {
+      "path": "apps/subtitles/internal/server/metadata_bulk.go",
+      "sha256": "fc4b7215d593d9abe1bbf475f67076637663975866150dddd3df516cfd3255dc"
+    },
+    {
+      "path": "apps/subtitles/internal/server/metadata_bulk_test.go",
+      "sha256": "a46b0bf1327b460241da5a8ebff1b1c56b55d10f087b58f635fb1231931a7316"
+    },
+    {
+      "path": "apps/subtitles/internal/server/metadata_concurrency_test.go",
+      "sha256": "055c6509f55dc7a5ecbabc8369032893841b23c4769c2abbd9793cc529a5a98d"
+    },
+    {
+      "path": "apps/subtitles/internal/server/metadata_maintenance_test.go",
+      "sha256": "59fd219b968e2a7892a9972fc706cded979764002184446e8bd00682a2506e72"
+    },
+    {
+      "path": "apps/subtitles/internal/server/metadata_provider.go",
+      "sha256": "10a5ae0a0c3e413bfee7df860d082b5d6a7da9b7ed1b40a8e8219ec75f28264b"
+    },
+    {
+      "path": "apps/subtitles/internal/server/metadata_provider_test.go",
+      "sha256": "3e0e0eb5efbacf26067df710d81bdc00b8d349d36866f7039446497ec95a1cc7"
+    },
+    {
+      "path": "apps/subtitles/internal/server/metadata_provider_tmdb.go",
+      "sha256": "74b17a26fc34d23f7ce5b2a5cdf3687d9f02c03deb6d1a14bc9e967d2a97dc07"
+    },
+    {
+      "path": "apps/subtitles/internal/server/metadata_provider_tvmaze_http_test.go",
+      "sha256": "a9f26c7b16ccd9057faab62009e3bf73e569e9f3f66784af3dacaee695bb525b"
+    },
+    {
+      "path": "apps/subtitles/internal/server/metadata_provider_tvmaze_store.go",
+      "sha256": "49d564d3ce8f57e56c20748aa69d8cd1257e38a736a6e2d110ae0380b0ec312a"
+    },
+    {
+      "path": "apps/subtitles/internal/server/metadata_provider_tvmaze_test.go",
+      "sha256": "ec622e6c73820d199340ecf10739f40ac3816e8eb5ecae6579879df8cc6dcf23"
+    },
+    {
+      "path": "apps/subtitles/internal/server/metadata_provider_validation_test.go",
+      "sha256": "72c410a67a8c7c2fe754fdddef183150107844e58e7e1f52d38c949a30f9d0cf"
+    },
+    {
+      "path": "apps/subtitles/internal/server/metadata_show_artwork_test.go",
+      "sha256": "22332bf46ce1afeffa35fbaedb00bef9317072d693a1a84be791732b57f88263"
+    },
+    {
+      "path": "apps/subtitles/internal/server/metadata_show_identity_test.go",
+      "sha256": "ad8f312a133d1feedd29bf1ec3edaabe28e76feae7045e13b5b1a03c7fa37322"
+    },
+    {
+      "path": "apps/subtitles/internal/server/metadata_state_internal_test.go",
+      "sha256": "95efda827f77d6992eff7ef536d41e08686d4674403498723ee4a5676d415e34"
+    },
+    {
+      "path": "apps/subtitles/internal/server/metadata_test.go",
+      "sha256": "b698b417e5c2a33457d1d9da8b0f8a8ef1e20b13e9cf096b059cf571339adb4d"
+    },
+    {
+      "path": "apps/subtitles/internal/server/mfa.go",
+      "sha256": "3559cd7be61daf317a339a83aca381a4b5ce27db7f16c2f0cd6e66e9d85cae14"
+    },
+    {
+      "path": "apps/subtitles/internal/server/mfa_policy_contract_test.go",
+      "sha256": "360e87461deeefda1fac0cabf996e1f6126b7f06d213b8b89bdc60eb83bdf252"
+    },
+    {
+      "path": "apps/subtitles/internal/server/mfa_recovery_fixture_test.go",
+      "sha256": "cb10a72a13d4bbf1da82632b2c42b1c319e5d8f9f41adbe88941abfd9d9a6d24"
+    },
+    {
+      "path": "apps/subtitles/internal/server/mfa_signup_contract_test.go",
+      "sha256": "7b984c510365dbb7536b3a8805e0ed26e3c02dd6fb63b2532ad8a7775317fa7d"
+    },
+    {
+      "path": "apps/subtitles/internal/server/mfa_test.go",
+      "sha256": "3e0fbe523fc6736394d40361938523a8ae2239901d98ec408a6dcbe82fc02032"
+    },
+    {
+      "path": "apps/subtitles/internal/server/music_tags_test.go",
+      "sha256": "5670359f2e571cdea0ea9314546acc932521d15fcc95f1f063f668657173c14d"
+    },
+    {
+      "path": "apps/subtitles/internal/server/navigation.go",
+      "sha256": "a49028ccb8405e7039bf5beafee76069817d78e2aee2d2c363d8fad9264ac3da"
+    },
+    {
+      "path": "apps/subtitles/internal/server/navigation_pages_test.go",
+      "sha256": "c3d43b7f6e73ce9a8b116d2dd2b56175aae75ae79667fc5ae94756185f72206b"
+    },
+    {
+      "path": "apps/subtitles/internal/server/navigation_shell.go",
+      "sha256": "2bd4b23554aa5ce2d62901a10b969c6f03d753a38531f79f27f03697170a2d70"
+    },
+    {
+      "path": "apps/subtitles/internal/server/navigation_shell_internal_test.go",
+      "sha256": "87c9382779de3717168fa500779f548fcadc6547a3df88c59691eed0ef0380dc"
+    },
+    {
+      "path": "apps/subtitles/internal/server/navigation_test.go",
+      "sha256": "cd587251856f5245790707421ed93ff59fd8606e2207d0138778c69610f511e9"
+    },
+    {
+      "path": "apps/subtitles/internal/server/notification.go",
+      "sha256": "e31c05059b11575e9bffa51ccb7457d4cf0c0eb8e97890ac051165da703f2329"
+    },
+    {
+      "path": "apps/subtitles/internal/server/notification_test.go",
+      "sha256": "3a7b89ee3dd8361c1144af5f60ee03fa017b40a8467f468b3839e309ae62f4bc"
+    },
+    {
+      "path": "apps/subtitles/internal/server/observability.go",
+      "sha256": "1709ef3f20258cd25e574622d06bbdbfa76a66aa1719a4f10bce723141f146f1"
+    },
+    {
+      "path": "apps/subtitles/internal/server/observability_finish.go",
+      "sha256": "951c4ea87b9d5fc9a83886b96104a5ae532c7d1ec06193e31e593cca1cede24e"
+    },
+    {
+      "path": "apps/subtitles/internal/server/observability_test.go",
+      "sha256": "40bd5c0a7c9832d4f063b93f73642993003a1790cb792745a5a8f4069c2cf05c"
+    },
+    {
+      "path": "apps/subtitles/internal/server/offline_download_test.go",
+      "sha256": "969c9ad22f65972f69a43e9c3263a20a054dd8bec536a812d8d5d388b32affe1"
+    },
+    {
+      "path": "apps/subtitles/internal/server/oidc.go",
+      "sha256": "22c21b1a5b80a6f73a16209da4c592f2903344d42e38f607b8f719258af819af"
+    },
+    {
+      "path": "apps/subtitles/internal/server/oidc_callback_provider_test.go",
+      "sha256": "0b78190ed531377781c6a80206e4200d0c3413ab2a157b5a97756cec822888f0"
+    },
+    {
+      "path": "apps/subtitles/internal/server/oidc_callback_test.go",
+      "sha256": "8821d3637e5939c14ddba46f82462b657d4dca5aaee99ee0dc3a4b08a4fc8f0a"
+    },
+    {
+      "path": "apps/subtitles/internal/server/oidc_remote_test.go",
+      "sha256": "aae8236e60829b83b6e527fb7315a35e85c37bd43ec9b74db7797feaf79696ae"
+    },
+    {
+      "path": "apps/subtitles/internal/server/oidc_test.go",
+      "sha256": "764819f22d8f44ec15a61e834e563efcf133ededf5827e3a26c5e45b3653151a"
+    },
+    {
+      "path": "apps/subtitles/internal/server/opensubtitles_candidate.go",
+      "sha256": "765ebbab75f659fc3f7dec2c425d53ededc0e87e6021e226f51cd285dbe0b417"
+    },
+    {
+      "path": "apps/subtitles/internal/server/opensubtitles_hash.go",
+      "sha256": "53d5e7cad1081188506a37c441f2c17e4428048e63fcc7c811d9714686949f3d"
+    },
+    {
+      "path": "apps/subtitles/internal/server/opensubtitles_hash_internal_test.go",
+      "sha256": "4a2090feff94dba97615e57a664fd6d5e5f16e52cf86a12f9bcb1b15f2dc7e79"
+    },
+    {
+      "path": "apps/subtitles/internal/server/opensubtitles_provider.go",
+      "sha256": "78d08635afe946a9ece6ad3ffbe8d14406fd071dbb5da5c53bc39e01e6970fbc"
+    },
+    {
+      "path": "apps/subtitles/internal/server/opensubtitles_provider_internal_test.go",
+      "sha256": "73e3353df531a16413955c690d264d9db9a4b593ddb82fb34a4f7b5317a46628"
+    },
+    {
+      "path": "apps/subtitles/internal/server/operations.go",
+      "sha256": "ebb2d9e2f8cc36877ba9e4c19c8e889d643e1fb1cc45965de51fdb3973a67279"
+    },
+    {
+      "path": "apps/subtitles/internal/server/operations_test.go",
+      "sha256": "3bc569da066d9350cd920938f1a68f2def0eae9959af13c08ee1c2b41b43535f"
+    },
+    {
+      "path": "apps/subtitles/internal/server/passkey_account.go",
+      "sha256": "aef0d87ff260010966004c83bd80b5f5b7dfd229d8dad216421078896ba53e7d"
+    },
+    {
+      "path": "apps/subtitles/internal/server/passkey_account_test.go",
+      "sha256": "aec126706963ad76c793e987a7522658b7ddc6a96c5e1a89ca9ea62751331061"
+    },
+    {
+      "path": "apps/subtitles/internal/server/passkey_lifecycle_additional_internal_test.go",
+      "sha256": "110804eacf76f79bdbb148581d4eab632f561fbe35e6f913383a5963d2187acc"
+    },
+    {
+      "path": "apps/subtitles/internal/server/passkey_lifecycle_internal_test.go",
+      "sha256": "2d80965b0abd6542368b44ba559a47bffbd62b8d2db335424ead02775e62aa03"
+    },
+    {
+      "path": "apps/subtitles/internal/server/passkeys.go",
+      "sha256": "bdd94973090cd5d6e0e8e6ac186b3188e1c442826e48ff35da0a6e17797c1299"
+    },
+    {
+      "path": "apps/subtitles/internal/server/passkeys_store.go",
+      "sha256": "5bed2575ad88369b46130368d7173cb55f319660ab918b8f6b872850ec00aa57"
+    },
+    {
+      "path": "apps/subtitles/internal/server/passkeys_test.go",
+      "sha256": "82bebf9572ebb1886540067c980d93d7f5a76eab0efeed11512204e35310869a"
+    },
+    {
+      "path": "apps/subtitles/internal/server/password_manager.go",
+      "sha256": "574deb66b2f10c8a280c4e29a9f09181e6ca191ff5c94519abcf4ebe3d80bf3a"
+    },
+    {
+      "path": "apps/subtitles/internal/server/password_manager_test.go",
+      "sha256": "5fbcdbb7cba7179bd6c0d2429fc02ef755ecf8328fd63eeec1fda033a2df3518"
+    },
+    {
+      "path": "apps/subtitles/internal/server/performance_benchmark_test.go",
+      "sha256": "5a96281b5a6caf3c499bdb94e0505159a793918fadd55ad33c06f75b927e7a7a"
+    },
+    {
+      "path": "apps/subtitles/internal/server/permission_boundaries_test.go",
+      "sha256": "89c772c0c379831eb527961640f84766d3bf2ce6ca69e08a574b37bb76e985ca"
+    },
+    {
+      "path": "apps/subtitles/internal/server/playback_adapter_assertions_test.go",
+      "sha256": "1ee9f0127eeb883b26d646ecdf6edc3cabe15f43eca6202d34b37b04079d6a40"
+    },
+    {
+      "path": "apps/subtitles/internal/server/playback_adapters_test.go",
+      "sha256": "a13f7f39bd070f573085463e0a3119a02c08bd492f7bcff2c9f853621b59b160"
+    },
+    {
+      "path": "apps/subtitles/internal/server/playback_capabilities_test.go",
+      "sha256": "4d2985bc3212bb6d00779d5519067bad1f8e6339610f66c57da3592b4b9ad5fd"
+    },
+    {
+      "path": "apps/subtitles/internal/server/playback_http.go",
+      "sha256": "d9b3cb26e0bb9b22e24d97a824621b65b4b3eae0dabc1318dcf50fb71d56802b"
+    },
+    {
+      "path": "apps/subtitles/internal/server/playback_http_test.go",
+      "sha256": "e41bd7d8c5b018c94af14a974a4c7846de09cf4e168b1042e73a9e42be8a1ad1"
+    },
+    {
+      "path": "apps/subtitles/internal/server/playback_latency_test.go",
+      "sha256": "4c6d61a91e2396d8549005b6ace363df97f6bdd8676a284269b22697431b0658"
+    },
+    {
+      "path": "apps/subtitles/internal/server/playback_plan.go",
+      "sha256": "e5114501521f020587d7e9354ee279405b7c253d0f2f04d45b802710a829092a"
+    },
+    {
+      "path": "apps/subtitles/internal/server/playback_plan_test.go",
+      "sha256": "6a82d82a11b21f37736801f39d07709f61e5ab1734c0702cf488a283db08176d"
+    },
+    {
+      "path": "apps/subtitles/internal/server/playback_presentation_test.go",
+      "sha256": "8160beeb4452cdd83ebfb7a6324a4866d61370625801a27b23f3c70ca8461bb0"
+    },
+    {
+      "path": "apps/subtitles/internal/server/playback_qualities_test.go",
+      "sha256": "c4f6221e0e126ef14a1bb219e06df7de4f4473ecadc346cc2db51ee024e4f9d0"
+    },
+    {
+      "path": "apps/subtitles/internal/server/playback_timeline.go",
+      "sha256": "03ceb3090593ca03bb6e959f821c624498d9544392f6ae112b60c5c599ab8540"
+    },
+    {
+      "path": "apps/subtitles/internal/server/playback_timeline_fixture_test.go",
+      "sha256": "85728b13d7f1dd131a96a8e9a2b7f1027e49962aa020295222755b490d4bc83a"
+    },
+    {
+      "path": "apps/subtitles/internal/server/playback_timeline_test.go",
+      "sha256": "828083ebba8c748c5e8282dd6f859dfed7dcfe7438a537b4005cdc8c3b966ede"
+    },
+    {
+      "path": "apps/subtitles/internal/server/playback_trace.go",
+      "sha256": "f1d666dc07dfbe8e0ccc94b0df379fa8a7ee7dff0e5334a6bcdeef29fa867b4b"
+    },
+    {
+      "path": "apps/subtitles/internal/server/playback_trace_test.go",
+      "sha256": "d86827cdc5e467a8da95ed9984272b1056d4c583240cfe3ec339f2692bec8c53"
+    },
+    {
+      "path": "apps/subtitles/internal/server/player.go",
+      "sha256": "5ac2e61c071b58a857925eaa3549cc8199b1131b12853265795ce0fffa842fff"
+    },
+    {
+      "path": "apps/subtitles/internal/server/player_cast_icon_test.go",
+      "sha256": "fa913c1282deade2266a9c8283a999ca81e46bee4b70d54acefb60a199a7bf38"
+    },
+    {
+      "path": "apps/subtitles/internal/server/player_experience_test.go",
+      "sha256": "84848952ef724d7d0926259682c72e43a3f461f7bf7668e6166c36760faa4201"
+    },
+    {
+      "path": "apps/subtitles/internal/server/player_playback.go",
+      "sha256": "7ef45d1612a261d0191ffa3de456af42f295c6aff4acc228abda02b84df8fbcf"
+    },
+    {
+      "path": "apps/subtitles/internal/server/player_safari_test.go",
+      "sha256": "710faa29b96cdfe63217aa65c5556f0607c3ae7e348c35be77d35faf1b17e689"
+    },
+    {
+      "path": "apps/subtitles/internal/server/playlist.go",
+      "sha256": "d839ea2b669761edb222355838c76504362b14c504511fd339945222dcce5b0f"
+    },
+    {
+      "path": "apps/subtitles/internal/server/playlist_document.go",
+      "sha256": "6f39375571bf0887b48d82a0044ba20a9410f21e261fa71da1b5ddf1abc36fe3"
+    },
+    {
+      "path": "apps/subtitles/internal/server/playlist_document_templates.go",
+      "sha256": "3cec9a590510edaa4221c0b851eb0bf594d0bd7c014eac9c59aa86123722b394"
+    },
+    {
+      "path": "apps/subtitles/internal/server/playlist_features_test.go",
+      "sha256": "4554fa5ef72eb1584f2301a8c1bbd8a8599985c28a0fceb97acda5e0515c27b2"
+    },
+    {
+      "path": "apps/subtitles/internal/server/playlist_summary.go",
+      "sha256": "6ab0e4668c1e9f75142e8630fdb5515cf103bff1de0a25b8798ea826e9bd12b4"
+    },
+    {
+      "path": "apps/subtitles/internal/server/playlist_test.go",
+      "sha256": "aa578abe0ea1f592ba36a0f7d1ace02143980350a50ae63e834dc1452ee41188"
+    },
+    {
+      "path": "apps/subtitles/internal/server/probe.go",
+      "sha256": "c94cc73b573241b448ebbede8925ea3fba8a7fa24b91244082f711e6d7ed7204"
+    },
+    {
+      "path": "apps/subtitles/internal/server/probe_decorate.go",
+      "sha256": "f87b09752bc64b90440ab9befe35f70af8fee1b6c673c79f90d094f48e2d1ba4"
+    },
+    {
+      "path": "apps/subtitles/internal/server/probe_duration.go",
+      "sha256": "544b40965124a8133814ccfd8ea6db82efa1bc3a8318935d16294ba0a58d66a2"
+    },
+    {
+      "path": "apps/subtitles/internal/server/probe_enrichment.go",
+      "sha256": "c3cef40a175eec48ce71abee821d97cffd043647851b58b4b24e17ef131e89aa"
+    },
+    {
+      "path": "apps/subtitles/internal/server/probe_inspect.go",
+      "sha256": "1f38b042f5262fa0493ffa41d18c1861083885f9b386b34a66664468689e7403"
+    },
+    {
+      "path": "apps/subtitles/internal/server/profile_id_test.go",
+      "sha256": "c972d54f61720708314d975bc87181d4745687e740ccedf58f4ba4ee7b684b44"
+    },
+    {
+      "path": "apps/subtitles/internal/server/profile_progress_test.go",
+      "sha256": "ec35a1fab6c8f4e7dc5bb74aa5b424ac52b9527611d8c98c53bbae0bed6ad69e"
+    },
+    {
+      "path": "apps/subtitles/internal/server/profiles.go",
+      "sha256": "03713dbb21681cae52a4b3df678a025b4530430163431dfc2fe1f68ae4c1ec4e"
+    },
+    {
+      "path": "apps/subtitles/internal/server/profiles_access.go",
+      "sha256": "30abde8b89cba8f52d313ff176038feeacb2de4bfdce1533c57b52aa638239c3"
+    },
+    {
+      "path": "apps/subtitles/internal/server/profiles_credentials.go",
+      "sha256": "96bdd2f733581a5d4f8e9f9add089ff3fb090efe635ff2a4eb12c2d45611a696"
+    },
+    {
+      "path": "apps/subtitles/internal/server/profiles_federation.go",
+      "sha256": "388750ba4ca0ecae14b3b0ed783ca28bb068dd5361151463fbcf5fdc19d0e622"
+    },
+    {
+      "path": "apps/subtitles/internal/server/profiles_http.go",
+      "sha256": "a926b56d7ed540cd8d83a86392df6535d195db7e6076e135d00e905eeb8834e1"
+    },
+    {
+      "path": "apps/subtitles/internal/server/profiles_mfa.go",
+      "sha256": "29c29e6ed60efc2fce36f7486dbdcf14dc2a0b18d574f3fa666d3ccd5492b962"
+    },
+    {
+      "path": "apps/subtitles/internal/server/profiles_saml_linking_test.go",
+      "sha256": "c927cfec7c03194a7fe2120d9fbab5ec4a3babbf3dfd8a733efa0b23bf73e221"
+    },
+    {
+      "path": "apps/subtitles/internal/server/profiles_scim.go",
+      "sha256": "0fd138b50c9b32b4d57c5091485bd5c2ed743ac6b45769c2e3abdd9d0f5c801e"
+    },
+    {
+      "path": "apps/subtitles/internal/server/profiles_scim_test.go",
+      "sha256": "3c57efaa808246d532df0f8d48c27fe979ac0d177f4e0d6ba523cc778e3b80b8"
+    },
+    {
+      "path": "apps/subtitles/internal/server/profiles_storage.go",
+      "sha256": "68d01850ff87bf92a67a96eeda578a7d0c256b2899ae541aaeafc158103b4a54"
+    },
+    {
+      "path": "apps/subtitles/internal/server/profiles_storage_internal_test.go",
+      "sha256": "77c87038e6f860ba43f24d45a4c8eaa4aac995a8c01b3dd9f283ddf4e6d80796"
+    },
+    {
+      "path": "apps/subtitles/internal/server/progress.go",
+      "sha256": "6c552e17a000db28dddda9dfaa5500a1fd18764064707fb22c88667010298188"
+    },
+    {
+      "path": "apps/subtitles/internal/server/progress_concurrency_test.go",
+      "sha256": "e2e42afcf201394e002b009d82d8f62f1615e50608a2b59d337eac8bbeb29330"
+    },
+    {
+      "path": "apps/subtitles/internal/server/progress_input_validation_test.go",
+      "sha256": "6f2ac49543d3fc70e5b11d9409f10e1d2a60bb21baa1a2282a6e70f046084c52"
+    },
+    {
+      "path": "apps/subtitles/internal/server/progress_ordering_test.go",
+      "sha256": "263f0430984a20ec45d8cdb93a8f44e7cd5995feb9e1e8c7b1f0de267c49f310"
+    },
+    {
+      "path": "apps/subtitles/internal/server/progress_storage.go",
+      "sha256": "548c84fced0f0b6b671ff6779fb88d8249ed0f8216f1939829b92895f14395ed"
+    },
+    {
+      "path": "apps/subtitles/internal/server/provider_resilience_test.go",
+      "sha256": "cd5cf0ec40cec90cec34c32d19290ec984d22c586a516fbce9ea12304cb6ac8f"
+    },
+    {
+      "path": "apps/subtitles/internal/server/pwa_registration_test.go",
+      "sha256": "3d567e9a4c406c79a65316e397cb7a637a7a3dcf570412747c385af6c5a38647"
+    },
+    {
+      "path": "apps/subtitles/internal/server/qa_coverage_edges_test.go",
+      "sha256": "c00a7e7a5d8208ec9b36d3aebb1bbeaab90dc78bac1c4e74c31793fe6cc853d3"
+    },
+    {
+      "path": "apps/subtitles/internal/server/qa_permission_edges_test.go",
+      "sha256": "21c2bd7c8da30b49972064daaf008a525c17ac28465f94bf1c2bee8d7187d156"
+    },
+    {
+      "path": "apps/subtitles/internal/server/qa_update_edges_test.go",
+      "sha256": "ce04e66628a62c9bf304c09f5eeb730f1e7e0b11a1d9bccd4bf3b913130a76a3"
+    },
+    {
+      "path": "apps/subtitles/internal/server/quick_connect.go",
+      "sha256": "2d250c87ded555a5c8b3eef724cc1a231347acbc9d85047aff9c89ffaf3aa648"
+    },
+    {
+      "path": "apps/subtitles/internal/server/quick_connect_jellyfin.go",
+      "sha256": "d67bd1694b026c9acae188e51d0ed22d0b946e45a94bc36271939da2486a53cb"
+    },
+    {
+      "path": "apps/subtitles/internal/server/quick_connect_test.go",
+      "sha256": "220a75cb9a72cbc15766699c74f65e51c029037af75fcd157ff29ee79a7b7cb6"
+    },
+    {
+      "path": "apps/subtitles/internal/server/rate_limit_test.go",
+      "sha256": "f965006f7ccb7f13a22269f4ef59ef82eeb2354c8646c4afd6c48614769745d3"
+    },
+    {
+      "path": "apps/subtitles/internal/server/readability_test.go",
+      "sha256": "aa00aca76dc97263ae26ff43e11ab5276c0516b2ff26b0b0ff5d68635aebf693"
+    },
+    {
+      "path": "apps/subtitles/internal/server/reader.go",
+      "sha256": "ee0e49d9fc6b0a36e5ba98081b55f1ca821963551a6f0fa0f2891062d7ff2b2a"
+    },
+    {
+      "path": "apps/subtitles/internal/server/reader_archive.go",
+      "sha256": "5270592460973bf3a3d4e8346cbe6a02fec6a64e99f75adc92d69a62b32e2254"
+    },
+    {
+      "path": "apps/subtitles/internal/server/reader_boundary_test.go",
+      "sha256": "1b93b11b8fc3149523a4d1ca9dbd727f2cf40c569fff6a0883aebfa08dea5646"
+    },
+    {
+      "path": "apps/subtitles/internal/server/reader_progress_test.go",
+      "sha256": "dd2036da9cee2be25647169df544229d7fb4ba7d23b3b9245d30e48eb937114a"
+    },
+    {
+      "path": "apps/subtitles/internal/server/recent.go",
+      "sha256": "e8f612380a55d133c59ce70466cd1fce8f29d23b6154c9561215f31ab85e8167"
+    },
+    {
+      "path": "apps/subtitles/internal/server/recent_test.go",
+      "sha256": "986793be2cb26cfe2bd5f1dd0b620813d128749099ce5d0da947b2e5db902a53"
+    },
+    {
+      "path": "apps/subtitles/internal/server/remote_access_security_test.go",
+      "sha256": "d89667285b565bd7f92460fe942f6b5e409bd25a671210d1178d588c70e842ef"
+    },
+    {
+      "path": "apps/subtitles/internal/server/remote_browser_login_test.go",
+      "sha256": "04bfbfa84e66a73b8802afb6879f370bc1f1f591740a77af7d50c84999e6a24f"
+    },
+    {
+      "path": "apps/subtitles/internal/server/remote_local_navigation_test.go",
+      "sha256": "332ed8d02a97505cbb6ab5a71bf7332c4cc4a4a36ac516ecbe9fb2a2dacf57d2"
+    },
+    {
+      "path": "apps/subtitles/internal/server/remote_login.go",
+      "sha256": "5e2af5b8f61489c4f82e427f6653134810e97a78e7b72ac49574bcd5772ee7cc"
+    },
+    {
+      "path": "apps/subtitles/internal/server/remote_provisioning_boundary_test.go",
+      "sha256": "85f9d87f347b7145a2f26aeca763b49a277767f000495103a3b43b45a5d7e3da"
+    },
+    {
+      "path": "apps/subtitles/internal/server/remote_readiness.go",
+      "sha256": "5208ac6604701a05e744a164b533c71a414a0f5cfcb3bf71072c0593adbbc73d"
+    },
+    {
+      "path": "apps/subtitles/internal/server/remote_security_audit_internal_test.go",
+      "sha256": "69fd634b25f2ca8041fc6ab525c07cb249610aa8864fe5d6e8996eb057a54ec6"
+    },
+    {
+      "path": "apps/subtitles/internal/server/replaygain_test.go",
+      "sha256": "14494cf0a450637682b96ddd3e4f56143a495c01727ee72bd2ec4b4a043cfcd9"
+    },
+    {
+      "path": "apps/subtitles/internal/server/saml.go",
+      "sha256": "cda2fe2f17b4a9d226dd3232f8b6adfa0f32637a384da96c17674f6afb429957"
+    },
+    {
+      "path": "apps/subtitles/internal/server/saml_test.go",
+      "sha256": "ab9ea102dcf7bf54fa6cbc80c5fa11b3594033a6eafe89a044c74f2d93d54eac"
+    },
+    {
+      "path": "apps/subtitles/internal/server/scan_test.go",
+      "sha256": "9b25e15ab46948735352ada1b1a4fee6f8f45b826683d773eeadd0de61d52464"
+    },
+    {
+      "path": "apps/subtitles/internal/server/scim_adapter.go",
+      "sha256": "15606b8669beeec95f739dbd5f3014389c911312cc9296a18b133d37c8da1f64"
+    },
+    {
+      "path": "apps/subtitles/internal/server/scim_contract.go",
+      "sha256": "e9acb3558f249dffb0e219d4d7afbc6d4bd0692a9c41fcb7560ffe285113c646"
+    },
+    {
+      "path": "apps/subtitles/internal/server/scim_profile_projection.go",
+      "sha256": "23319d63102a02c67c6d7ee3bd77ad4e14307e6b82e440364930301a81fce572"
+    },
+    {
+      "path": "apps/subtitles/internal/server/scim_test_support_test.go",
+      "sha256": "72f70bb0359a263ca601a15f01092ed9d5de06895b575548b4609c3f4968ce46"
+    },
+    {
+      "path": "apps/subtitles/internal/server/search_test.go",
+      "sha256": "c06772e94c674001aed65efede7de05eff9085d2418ad1c1e13750cf2f779479"
+    },
+    {
+      "path": "apps/subtitles/internal/server/security.go",
+      "sha256": "2df7530768d9398d6a6bd17c6acd2df0cc92ca00aa1659887988fab3bb0fb191"
+    },
+    {
+      "path": "apps/subtitles/internal/server/security_fuzz_test.go",
+      "sha256": "e8340e17230394f5bff3ce99a1ac103b383a7be7d4fd2c0a409e6b1a46327cae"
+    },
+    {
+      "path": "apps/subtitles/internal/server/security_lifecycle_internal_test.go",
+      "sha256": "8542e53786cf84eb4c7a88d0cba031b5bddd4b59978fc48f39ad0217c1ae46fa"
+    },
+    {
+      "path": "apps/subtitles/internal/server/security_test.go",
+      "sha256": "3b39863068ffde9501f05bdca13f960b49b81f259d15ad83c341c2c4e88beff1"
+    },
+    {
+      "path": "apps/subtitles/internal/server/server.go",
+      "sha256": "8624ef6b3ccf04a55d836347a7946af773f960aaea7e9b9fc65d51401cd872b1"
+    },
+    {
+      "path": "apps/subtitles/internal/server/server_health.go",
+      "sha256": "9871afa70e03aa9391c5dfbc953cabbeb634c038cf2f2ccd2e2e702ff7d8dbc3"
+    },
+    {
+      "path": "apps/subtitles/internal/server/server_lifecycle_test.go",
+      "sha256": "592c8b645a49c3cb5430e2aeacfeed3f2ae50d334182c22dc53880912387a0bb"
+    },
+    {
+      "path": "apps/subtitles/internal/server/server_startup.go",
+      "sha256": "02d3f247ed14d629cdbb93d434a957567d0abe7921eb161257958c9aa3e101a1"
+    },
+    {
+      "path": "apps/subtitles/internal/server/server_test.go",
+      "sha256": "bf11de5bb78469e2203b1cfa0b2ba950a26c1405425f33f24500c3b6f94bf690"
+    },
+    {
+      "path": "apps/subtitles/internal/server/session_security_boundary_test.go",
+      "sha256": "385280978e4b54751caf852a357eac657cb0fd93860eba960daf2a803e811b6d"
+    },
+    {
+      "path": "apps/subtitles/internal/server/session_timeout_api_test.go",
+      "sha256": "bbc064bc31ee4419cda94dac2609911fe95a9b85816e1a2994e3d59a6c6b02bc"
+    },
+    {
+      "path": "apps/subtitles/internal/server/session_tokens.go",
+      "sha256": "2f68acc3497573cd8f97262665041637a4f7ae0db22fcb9b88a7b6b0a8aa418b"
+    },
+    {
+      "path": "apps/subtitles/internal/server/sessions.go",
+      "sha256": "4a415baa072c9aeac1dfb61dc38fae5c4cab9aad3f1f445ef186c2e54f6cefb1"
+    },
+    {
+      "path": "apps/subtitles/internal/server/sessions_admin.go",
+      "sha256": "2cccb413dac4ebe4a913de39eec1e5acef0e49059f62b631a0a6176dc4ef9752"
+    },
+    {
+      "path": "apps/subtitles/internal/server/sessions_internal_test.go",
+      "sha256": "5edda1c07bd4b1df25bb4dc8ba1ea3817b4a2384c0762e0f030146cf5566ae56"
+    },
+    {
+      "path": "apps/subtitles/internal/server/sessions_public_playback_test.go",
+      "sha256": "cd32e56b992c058c8a21bcc0bd52606ec3f5fea75a0504239828c4f0de033c05"
+    },
+    {
+      "path": "apps/subtitles/internal/server/settings.go",
+      "sha256": "985c6da523e7c85274a6871d75601fedf1def0154495bdc32cc67c656612473e"
+    },
+    {
+      "path": "apps/subtitles/internal/server/settings_actions.go",
+      "sha256": "4031ccc605d2002d0dbffc598ffc2e0a4a73484476007f9d841098d5c31edd8c"
+    },
+    {
+      "path": "apps/subtitles/internal/server/settings_audit.go",
+      "sha256": "2cb69c86088aed612a6c037907fd33df29943df922f8695768d1f7dfbcabcb5d"
+    },
+    {
+      "path": "apps/subtitles/internal/server/settings_auto_skip.go",
+      "sha256": "2d3befaa9db615cfb3ddf71862a9cc6822e481fe0bf27c1df12c2f22295bdb07"
+    },
+    {
+      "path": "apps/subtitles/internal/server/settings_backups.go",
+      "sha256": "107a4c461a7b227440c1d81832d874b03954dd1626202248001e5f6cbd7e3a04"
+    },
+    {
+      "path": "apps/subtitles/internal/server/settings_choices.go",
+      "sha256": "5de94d4a75f27e404e43742088a4cc4d9e8c752e1985bd9a353b91306e77993d"
+    },
+    {
+      "path": "apps/subtitles/internal/server/settings_configuration.go",
+      "sha256": "c60098750b9fb1a234e3e7987acfb1367daaee7fc6c7c16c8a9d9b95432f7d01"
+    },
+    {
+      "path": "apps/subtitles/internal/server/settings_configuration_api.go",
+      "sha256": "a251288cc2672a1ce2b20ede61aecc33d7b37f0e7bd59a71ec56568dba6b9fa2"
+    },
+    {
+      "path": "apps/subtitles/internal/server/settings_connection_http.go",
+      "sha256": "d077afb23431aca12a4f121c0682cd7a230b057dc766450e33f2ee5b5cf1061a"
+    },
+    {
+      "path": "apps/subtitles/internal/server/settings_dlna.go",
+      "sha256": "aa507bbdc8d67369326967dfb2c8a13292061f25b0cf35cb4f421014d47f3ec4"
+    },
+    {
+      "path": "apps/subtitles/internal/server/settings_dlna_configuration.go",
+      "sha256": "f6d1137d658b92eba69d43c7f07756fbb12ae932966abb502d0bdc4427d669bb"
+    },
+    {
+      "path": "apps/subtitles/internal/server/settings_dlna_http.go",
+      "sha256": "70d899a4798246c87fb8a74a23bb46c3344cb8bfd76b18d5f5ad4049bbfc4f9f"
+    },
+    {
+      "path": "apps/subtitles/internal/server/settings_dlna_token.go",
+      "sha256": "975b70dfe30a080c617b16679a064ec0a805884d72589d2afab9660a10f5f4b8"
+    },
+    {
+      "path": "apps/subtitles/internal/server/settings_http.go",
+      "sha256": "8c07440b43c3ddb78bed6d3ac75743f9895b937639a4a0423663f2e1799de30c"
+    },
+    {
+      "path": "apps/subtitles/internal/server/settings_jellyfin.go",
+      "sha256": "389dd6be9efa321f1884f53fac4a6ae7719e1752850a600612326f5bf7d48aa6"
+    },
+    {
+      "path": "apps/subtitles/internal/server/settings_jellyfin_id.go",
+      "sha256": "cd5789c75d098498bda886c93504e00ee780e682ac1eb205b3ee27d49764804b"
+    },
+    {
+      "path": "apps/subtitles/internal/server/settings_json.go",
+      "sha256": "cc2d51e6cb1ce750544119d6a5c7ba469719d3d7b4421d1ebde8c2c0c1afc0ae"
+    },
+    {
+      "path": "apps/subtitles/internal/server/settings_library.go",
+      "sha256": "652fecfbb146a30895bd76dd19f5702e3d116cb9bc7abcfd41c51f967a3494a7"
+    },
+    {
+      "path": "apps/subtitles/internal/server/settings_library_commit.go",
+      "sha256": "86361b249a290e18aac8326ba5d95864f49eac8ab75e063992b173e92de8d61d"
+    },
+    {
+      "path": "apps/subtitles/internal/server/settings_library_http.go",
+      "sha256": "faa504a13efe555d0095f9211b561a4e8f110741c7bebc0ef0c17c0a6c9e54ef"
+    },
+    {
+      "path": "apps/subtitles/internal/server/settings_library_operations.go",
+      "sha256": "c5a8a5faf5e735485d214f68bd6111fadfbaccd66dc4dba295b8d3b47e1d79c5"
+    },
+    {
+      "path": "apps/subtitles/internal/server/settings_library_state.go",
+      "sha256": "9deeeeb9b48c05e1541460b5460a04ea43777c9a728bcc61017e0911c6ba20ca"
+    },
+    {
+      "path": "apps/subtitles/internal/server/settings_library_test.go",
+      "sha256": "ece41b3f840197ba0762ec38d56a76b3f62bc21de8783416b6cc1d568f1b8227"
+    },
+    {
+      "path": "apps/subtitles/internal/server/settings_library_update.go",
+      "sha256": "067d362f9f4165232cae6f5db5812fbd72808c35d5d3141996881a063c5bb6cd"
+    },
+    {
+      "path": "apps/subtitles/internal/server/settings_logging_live_test.go",
+      "sha256": "0ed52ba84288e7eee94766a08e2266b9bf1d4adde05dc92c0b53919c232ad674"
+    },
+    {
+      "path": "apps/subtitles/internal/server/settings_oidc_configuration.go",
+      "sha256": "af4111d8cd0b821b44b7ec81a20d30d56e08fc47154225d5c36e6e6b0c2ecb6b"
+    },
+    {
+      "path": "apps/subtitles/internal/server/settings_oidc_http.go",
+      "sha256": "23f70d2b6bcc74477b74e34b1dadfa0e795235684b5a8ff0bbbfa0b6ac9757d9"
+    },
+    {
+      "path": "apps/subtitles/internal/server/settings_oidc_storage.go",
+      "sha256": "18e465feb77c323c075e8676217c25f45cc17644b55fdef8d2ee1c670f93637c"
+    },
+    {
+      "path": "apps/subtitles/internal/server/settings_opensubtitles_configuration.go",
+      "sha256": "9d30364ab28fa3289b1bc57fc1fbcb56badc77307636fa5e9660b19bb872b488"
+    },
+    {
+      "path": "apps/subtitles/internal/server/settings_opensubtitles_configuration_test.go",
+      "sha256": "e08902ae0087a0f346120d10522a147d580a2125212bf501a0f0d385b1aa139e"
+    },
+    {
+      "path": "apps/subtitles/internal/server/settings_order.go",
+      "sha256": "d2c9bb5d76128dfbbbc02189d6be174caf88951a1764aade1db5059f9e7ca8c7"
+    },
+    {
+      "path": "apps/subtitles/internal/server/settings_paths_internal_test.go",
+      "sha256": "d95021251b83e3a03a2cb74a61fcf3fa058cc92a56a05b365974418d0b1ca660"
+    },
+    {
+      "path": "apps/subtitles/internal/server/settings_persistence_internal_test.go",
+      "sha256": "aa3b89014763c34a6ce9aac9ee85fe2713aa4495fa940a43e28b1d0d22882ce2"
+    },
+    {
+      "path": "apps/subtitles/internal/server/settings_playback.go",
+      "sha256": "27be4129fe11ee520c0384f5e3db0db97ed96e58fde8553eefbfee0a49644f91"
+    },
+    {
+      "path": "apps/subtitles/internal/server/settings_playback_copy.go",
+      "sha256": "76bfeaf7a6dd0ff53a1330098fafd4f68f59546c147f5cf53b0014c8dbfd8158"
+    },
+    {
+      "path": "apps/subtitles/internal/server/settings_playback_defaults.go",
+      "sha256": "d245a159991c6a14da894affd60b8b48bb8a53dd74b43a1cd3453bb39faadd75"
+    },
+    {
+      "path": "apps/subtitles/internal/server/settings_playback_flags.go",
+      "sha256": "59aa4cc86add91b852f39f0ea0e28d4a8c1d42d61a06d46b30482c124a25b44b"
+    },
+    {
+      "path": "apps/subtitles/internal/server/settings_provider_live_test.go",
+      "sha256": "0199cc0aebdbaca79cb318e71bc73b9e29623a5c5fea80fd6809855a9e769334"
+    },
+    {
+      "path": "apps/subtitles/internal/server/settings_restart_status_test.go",
+      "sha256": "8844a37e5f5d726c7f829147b05c5c74810aba0449d484c2ae49a2d09e85cdfc"
+    },
+    {
+      "path": "apps/subtitles/internal/server/settings_routes.go",
+      "sha256": "ce1b955d0be6d121102e170492d1abd5f15d9e74cead85d414a19ba51f355e36"
+    },
+    {
+      "path": "apps/subtitles/internal/server/settings_saml_configuration.go",
+      "sha256": "4f50f1c8c54bb4e0e6123ae97ec96292e02c0668528eddf94a57d852925a87c3"
+    },
+    {
+      "path": "apps/subtitles/internal/server/settings_saml_configuration_test.go",
+      "sha256": "c26d1b12ffca64e762acdfab98ad0f29fcfb0a02ab6077d8ffacc97445c27092"
+    },
+    {
+      "path": "apps/subtitles/internal/server/settings_saml_http.go",
+      "sha256": "96510ff6fe68330987be1e96224ade0973881fb8d4a2fa7fd9b10b52213f7607"
+    },
+    {
+      "path": "apps/subtitles/internal/server/settings_saml_status.go",
+      "sha256": "376f1763d8b4ca567ba2262d9c62df210c39d1bce4173a6f546350d070b178fd"
+    },
+    {
+      "path": "apps/subtitles/internal/server/settings_saml_storage.go",
+      "sha256": "1dfd371849afdc47111307a24335b019f8661ce25afe7893a2434a8130018503"
+    },
+    {
+      "path": "apps/subtitles/internal/server/settings_saml_view.go",
+      "sha256": "5cb240e32b63cd49ab3755976c1664b1a47f926e4dc7d6fcdc9159ee8e9016c8"
+    },
+    {
+      "path": "apps/subtitles/internal/server/settings_scans.go",
+      "sha256": "93423341dcd28d9044385ffde01516c4598a238ac221b1f11fbd92e36dee68cf"
+    },
+    {
+      "path": "apps/subtitles/internal/server/settings_scim_configuration.go",
+      "sha256": "98461ad20af7dec65a595499fc6ebeedef91b0876146d34afa291c17d946a9cb"
+    },
+    {
+      "path": "apps/subtitles/internal/server/settings_scim_configuration_fixture_test.go",
+      "sha256": "e36344df90359dcc182a3d7756e5db79c64f692f3f40a9de179137afd6fe5433"
+    },
+    {
+      "path": "apps/subtitles/internal/server/settings_scim_configuration_test.go",
+      "sha256": "026d1fcf018c588d88c591a4bb1c19c9126c69d20b6687298f495ee0ca9d6875"
+    },
+    {
+      "path": "apps/subtitles/internal/server/settings_scim_contract.go",
+      "sha256": "28e84d76845c8b72fce8c81c69918677c53146887147885f1874dbf479959dc1"
+    },
+    {
+      "path": "apps/subtitles/internal/server/settings_scim_http.go",
+      "sha256": "6df85c008c2703629de3a0319d256ef96bef91c47f3abd1bbe6531f6c8463d6c"
+    },
+    {
+      "path": "apps/subtitles/internal/server/settings_scim_storage.go",
+      "sha256": "9783e038e0d51b51a6f3ba66eac05685ddd119fc67f0aa16157265ce8deca40d"
+    },
+    {
+      "path": "apps/subtitles/internal/server/settings_search.go",
+      "sha256": "0d046d274aa230b393ec8e07514e2127d45c823aeff1e2e1f5620a527d71b156"
+    },
+    {
+      "path": "apps/subtitles/internal/server/settings_search_test.go",
+      "sha256": "dde3676d2d5f9688cf25427ce57200fad75eaa965951df6d6b69ece3294bf2d0"
+    },
+    {
+      "path": "apps/subtitles/internal/server/settings_security_routes.go",
+      "sha256": "449f6b616ce9f3d8244bba32f9d39671b0c77732c004dc87b6981e1fa86cc82a"
+    },
+    {
+      "path": "apps/subtitles/internal/server/settings_sessions.go",
+      "sha256": "ca06cb655531b4c6f928a1726b660a5f9b905b057916d2a460099050772a3856"
+    },
+    {
+      "path": "apps/subtitles/internal/server/settings_state_internal_test.go",
+      "sha256": "c92ce79d6e6bc25ba513c8fbe497aa9445072bca0ef76ed5caad0530e83da254"
+    },
+    {
+      "path": "apps/subtitles/internal/server/settings_subsource_configuration.go",
+      "sha256": "6910326409a9fe776c4c838b6025058820566de3670ad94b663f592730750cde"
+    },
+    {
+      "path": "apps/subtitles/internal/server/settings_subsource_configuration_test.go",
+      "sha256": "593ae225b294d1af9dbe10b2e22b1312f7a7b88f0c4848d26f2337b378a93b95"
+    },
+    {
+      "path": "apps/subtitles/internal/server/settings_subtitles.go",
+      "sha256": "a93c7700a2a702334953a1935ae15220579915832f75921fca8de424425871f7"
+    },
+    {
+      "path": "apps/subtitles/internal/server/settings_subtitles_internal_test.go",
+      "sha256": "d8f6ec97c1eebe6494d3c2262a1880526952c373b29c2731a9782e96d419236f"
+    },
+    {
+      "path": "apps/subtitles/internal/server/settings_test.go",
+      "sha256": "22c2fac6f3216b5c4ea12f9d1c74e06c652668d125d29d01aa3a03a5ba030da2"
+    },
+    {
+      "path": "apps/subtitles/internal/server/settings_transcoder.go",
+      "sha256": "a5a27fa547cce037fd6614263b2b45d06f68e255a50c2bd7e91d9deda512b68f"
+    },
+    {
+      "path": "apps/subtitles/internal/server/settings_trusted_https.go",
+      "sha256": "81b84bcd61b0ef95c7b01de0f755bd041de4f127b828a676b91d60c3dd48af14"
+    },
+    {
+      "path": "apps/subtitles/internal/server/settings_updates.go",
+      "sha256": "45622d2500b3e69ec117f1e0abe39ae926608ae6fba5f52869b0bbc14fbf1d1a"
+    },
+    {
+      "path": "apps/subtitles/internal/server/setup_capability_test.go",
+      "sha256": "b7d5cb5895b1958f2d4a766f647adad0ffb7fe8f1eaf13e97868c08ac558c39f"
+    },
+    {
+      "path": "apps/subtitles/internal/server/shared_styles.go",
+      "sha256": "1013f013ed468f2283bf712279eb91eba27ce15d4da2288ce4f672df737d2a40"
+    },
+    {
+      "path": "apps/subtitles/internal/server/shortcuts_test.go",
+      "sha256": "aaa0229ffe0cc1ed0fa00327df6423226997d921a9a21e0b06dd428e84f3ad36"
+    },
+    {
+      "path": "apps/subtitles/internal/server/show.go",
+      "sha256": "ffc74c4faf53e2efaded51c8c3fbe4a028b5ca3b6d7faaeb75ddb7534f1fc0ff"
+    },
+    {
+      "path": "apps/subtitles/internal/server/shows_test.go",
+      "sha256": "c3795041ad87f41443f95504994aff7ac1cbccf9a6d0042059b425664fe174f9"
+    },
+    {
+      "path": "apps/subtitles/internal/server/sqlite_persistence_test.go",
+      "sha256": "a1b058b1ce3e1fe1446bd1017b78205ccf543d04bebacb44afdadec361488268"
+    },
+    {
+      "path": "apps/subtitles/internal/server/state.go",
+      "sha256": "1ae40f073b58cb530db960f03761d4ca0562ee73c42e2b8a79d70f3a70fd3c82"
+    },
+    {
+      "path": "apps/subtitles/internal/server/static/apple-touch-icon.png",
+      "sha256": "8019c3ddb31e850eaf55e110f0f44d5e4a2a42cfccab0446a26587add0ae939d"
+    },
+    {
+      "path": "apps/subtitles/internal/server/static/cinema-backdrop.jpg",
+      "sha256": "ab22f5e41072c4369745f11b0ef6761d6f36d2255f3feac5705c8a7ca9937a83"
+    },
+    {
+      "path": "apps/subtitles/internal/server/static/hls.min.js",
+      "sha256": "6cfad701a61fb8a99add5e84449e64661169b0652bf44ceb2a28465c8817b5f1"
+    },
+    {
+      "path": "apps/subtitles/internal/server/static/htmx.min.js",
+      "sha256": "e484d9171a9db30a39c8f16e3d709d4137f3211c659f8e6125816635033d593f"
+    },
+    {
+      "path": "apps/subtitles/internal/server/static/icon-192.png",
+      "sha256": "ff0a19fad5073a1b93c0df132d0a8ec82cd3824f4bd8cdfc87ba7ca5c8491efa"
+    },
+    {
+      "path": "apps/subtitles/internal/server/static/icon-512.png",
+      "sha256": "3111d2c936210367529b02c80e4babe8d7f8a865386e53b98e2675ced5af4659"
+    },
+    {
+      "path": "apps/subtitles/internal/server/static/icon-maskable-512.png",
+      "sha256": "cbc8403a752887fd435761d42a70dbf7e06e61f8bae30a7ef6fcd29d7a51612c"
+    },
+    {
+      "path": "apps/subtitles/internal/server/static/icon-maskable.svg",
+      "sha256": "3fc1e6e98e13ffaff1e78c1736228de91bbecf82e03d5a1729fa9f5e575b0b3d"
+    },
+    {
+      "path": "apps/subtitles/internal/server/static/icon.svg",
+      "sha256": "6a73058828809eea809a36b74b49a2fe15bebb0ddd57d70920562de30ad19227"
+    },
+    {
+      "path": "apps/subtitles/internal/server/static/manifest.webmanifest",
+      "sha256": "7e4f265d8f65f1576394eb6b93a86ce4301d1a4500b850d5f0b0f67a53261842"
+    },
+    {
+      "path": "apps/subtitles/internal/server/static/offline.html",
+      "sha256": "cf178b992dbfe3a9555f141efe69df8e6549fd526a55aaf126741e05bac12437"
+    },
+    {
+      "path": "apps/subtitles/internal/server/static/player_streaming_end.js",
+      "sha256": "2f38636272bd686fa73eaa8d64e5ad3008d3b95f8f9f90e3e7258a8c4c627492"
+    },
+    {
+      "path": "apps/subtitles/internal/server/static/player_streaming_start.js",
+      "sha256": "f7e24cdf264949b6cee0c82d58ebdc3ff5eebb36fca026115aa39ef5da5b44bc"
+    },
+    {
+      "path": "apps/subtitles/internal/server/static/service-worker.js",
+      "sha256": "5b567e0676bd04c3e1a010815e109b02599abba3a7df5ead6da80d6d799b7379"
+    },
+    {
+      "path": "apps/subtitles/internal/server/static/subtitle-dashboard.css",
+      "sha256": "0514d1e89d10a33a70937071b7286057b19530adf6c2a4592ac5b5ff0c9b1652"
+    },
+    {
+      "path": "apps/subtitles/internal/server/static/subtitle-inspector.css",
+      "sha256": "1a64bea27e5d08a977c9855e96dd12bc0588520da9e065484dff099e854e0f34"
+    },
+    {
+      "path": "apps/subtitles/internal/server/static/subtitle-inspector.js",
+      "sha256": "8c0240b3af4aa31a18051131810be678ff8cf7a15e03e5b99fb2be06fcaf9004"
+    },
+    {
+      "path": "apps/subtitles/internal/server/static/subtitle-status.js",
+      "sha256": "6303a845151c4a3c7732de2c937f760f4dc2cc0305acf46eb806642687196a13"
+    },
+    {
+      "path": "apps/subtitles/internal/server/static/subtitle-workspace.css",
+      "sha256": "2697cd8a0147783e5b92cbdf1e0bab5503c9df1ce017f8a8876cbf35f25a5477"
+    },
+    {
+      "path": "apps/subtitles/internal/server/static/supporter.css",
+      "sha256": "5f98b128fead44ee8560b2c938ccc7e092d4b44e05f2355d8b3ce0672b2a1821"
+    },
+    {
+      "path": "apps/subtitles/internal/server/static/supporter.js",
+      "sha256": "f1f3f89ab11fcb771c5e29504dc2c55c5319c3b63af0919cdb0ac69da256b903"
+    },
+    {
+      "path": "apps/subtitles/internal/server/static/supporter/badges/living-standard-1.svg",
+      "sha256": "daaf6704fd986d6cfe5d814804008c47200b0248a3a07fb8c177a9a6f6a90177"
+    },
+    {
+      "path": "apps/subtitles/internal/server/static/supporter/badges/living-standard-10.svg",
+      "sha256": "c1b069bc20736b3a53a59128bb781a3c780fffdd4da05aa019886c3a6fa1f8a6"
+    },
+    {
+      "path": "apps/subtitles/internal/server/static/supporter/badges/living-standard-2.svg",
+      "sha256": "412d3d30c1d385184fe3c87d8b184ec1783fee9a67b6ca07f67d04fac6f5490b"
+    },
+    {
+      "path": "apps/subtitles/internal/server/static/supporter/badges/living-standard-3.svg",
+      "sha256": "1097e4da7396ed876f0e23cabb8a96ebd0c9ccee58d8978baad28abccfff6c5f"
+    },
+    {
+      "path": "apps/subtitles/internal/server/static/supporter/badges/living-standard-4.svg",
+      "sha256": "62238357e2635ef911467dde4dd59f558b6439c12a581f09b87ff15f4882ac14"
+    },
+    {
+      "path": "apps/subtitles/internal/server/static/supporter/badges/living-standard-5.svg",
+      "sha256": "1d5947423d2471368493af00f02d8d845429dc92c7a5fc083f70204c9c2fbdff"
+    },
+    {
+      "path": "apps/subtitles/internal/server/static/supporter/badges/living-standard-6.svg",
+      "sha256": "e8a77f9a6be4a75cf0bf0644b763a23cd23c45a2ff5338517ec7c498ecdfdb5f"
+    },
+    {
+      "path": "apps/subtitles/internal/server/static/supporter/badges/living-standard-7.svg",
+      "sha256": "22c78100274d48d9eeb7cb5b370c0b298b1878fbdad7b1279b000bbf7eb1c318"
+    },
+    {
+      "path": "apps/subtitles/internal/server/static/supporter/badges/living-standard-8.svg",
+      "sha256": "2b8e9f763a1574291b83ca9117bb1e03efbba9d02a8742b4dafe1a9460824b97"
+    },
+    {
+      "path": "apps/subtitles/internal/server/static/supporter/badges/living-standard-9.svg",
+      "sha256": "9d8756a31e2f2eb20f07e72f79182c592fa273cc4ecd26a7930b094fc5c0233f"
+    },
+    {
+      "path": "apps/subtitles/internal/server/static/supporter/badges/patron-order-1.svg",
+      "sha256": "87977db5c17dc491fb2fc320b3231115bc3d1da18e059ec13a769e6c792a204d"
+    },
+    {
+      "path": "apps/subtitles/internal/server/static/supporter/badges/patron-order-10.svg",
+      "sha256": "a7fb58fe863f5d5ae0ec25bc889f00e4e8d0ab8c329d253dcef8ea671d3b33e7"
+    },
+    {
+      "path": "apps/subtitles/internal/server/static/supporter/badges/patron-order-2.svg",
+      "sha256": "f1126656fb9d847f3fdd285725a2c76c9cc11a5f58e2fecbfe226c567bfada14"
+    },
+    {
+      "path": "apps/subtitles/internal/server/static/supporter/badges/patron-order-3.svg",
+      "sha256": "f6ad1d640375a5bbcfe20fad140e400d3299309d124021eb3215ebed2a2dfdda"
+    },
+    {
+      "path": "apps/subtitles/internal/server/static/supporter/badges/patron-order-4.svg",
+      "sha256": "d5c7872c30b74c0424927c1341becf6db800a68d4cd9db2568be8d693c434758"
+    },
+    {
+      "path": "apps/subtitles/internal/server/static/supporter/badges/patron-order-5.svg",
+      "sha256": "ab20da26de155176241831322540046c13c66a9b01ebcf844bdeb7cea2b09053"
+    },
+    {
+      "path": "apps/subtitles/internal/server/static/supporter/badges/patron-order-6.svg",
+      "sha256": "77a5915ed9cee6143f31bc15b918fd07010830761660622bbb818f29b92793a2"
+    },
+    {
+      "path": "apps/subtitles/internal/server/static/supporter/badges/patron-order-7.svg",
+      "sha256": "1ae11187b9da8a439fa74bece52fa0ceff50f8d85589dc7a529287fb62796dbf"
+    },
+    {
+      "path": "apps/subtitles/internal/server/static/supporter/badges/patron-order-8.svg",
+      "sha256": "89b9b32854b2b1172ceefb883798afb43a558bdd867b89e3352accbb3e5be376"
+    },
+    {
+      "path": "apps/subtitles/internal/server/static/supporter/badges/patron-order-9.svg",
+      "sha256": "da27f841bc77264ab01ea4b026fd8916469599516e61737f8671a6c2903cb2c4"
+    },
+    {
+      "path": "apps/subtitles/internal/server/static/tmdb-logo.svg",
+      "sha256": "d537fb228cf3ded904ef09b136fe3fec72548ebc1fea3fbbd1ad9e36364db38b"
+    },
+    {
+      "path": "apps/subtitles/internal/server/subsource_candidate.go",
+      "sha256": "b7ad2f7ec603882faa3d12fa2e23dd20c972c1c7decb7497d36af33e7f9cd98c"
+    },
+    {
+      "path": "apps/subtitles/internal/server/subsource_provider.go",
+      "sha256": "acf79ae5c0ef3d1c3818ee22456ce427e237b6f00024c8a4216f529d60ea6520"
+    },
+    {
+      "path": "apps/subtitles/internal/server/subsource_provider_internal_test.go",
+      "sha256": "4d40bd0f26e041611aafb1009092792d8413ce8ec1caa9906b8a376bd7821a91"
+    },
+    {
+      "path": "apps/subtitles/internal/server/subtitle_adapter_test_helpers_test.go",
+      "sha256": "bb6f33553234edfbde01f77cafd9512a6aa5e5aea12ce0d30c7dd66d295ae1c7"
+    },
+    {
+      "path": "apps/subtitles/internal/server/subtitle_alignment.go",
+      "sha256": "d83430c35a646146f886505333a71389f0d5a1e89c4929657e68529e39f2bcb3"
+    },
+    {
+      "path": "apps/subtitles/internal/server/subtitle_archive_limits_test.go",
+      "sha256": "9a2007396f90b8f4df7ac93ea17762f9ff47a241dcd9ac4a41e8d6ed279544eb"
+    },
+    {
+      "path": "apps/subtitles/internal/server/subtitle_audio_http.go",
+      "sha256": "e6f3badc0831964f8c7f679e86f0fb2dc2c999678936df6fafa26060450a1d09"
+    },
+    {
+      "path": "apps/subtitles/internal/server/subtitle_automation.go",
+      "sha256": "3c3ca7df51473ab8fb42d43efcdcfe20a1dd3598ea22da492d2009f2b8168aec"
+    },
+    {
+      "path": "apps/subtitles/internal/server/subtitle_candidate.go",
+      "sha256": "5c74d91ad68608bc52935f211d2d7826adb2f17f10b23d80270c6386d27e0e15"
+    },
+    {
+      "path": "apps/subtitles/internal/server/subtitle_candidate_boundaries_internal_test.go",
+      "sha256": "116463679a47442cf97172654474747556e89c230559d7c0e7ddbb305dfc6a40"
+    },
+    {
+      "path": "apps/subtitles/internal/server/subtitle_candidate_collection.go",
+      "sha256": "0dd32eeafcb879e82843ed9340d8891302a8b1ecbc6fac041ba175c88d25ff6b"
+    },
+    {
+      "path": "apps/subtitles/internal/server/subtitle_candidate_internal_test.go",
+      "sha256": "bd5a3b1de9d227bb42ca8416b89bfe5a80b074a821b51761a761389d69c55a22"
+    },
+    {
+      "path": "apps/subtitles/internal/server/subtitle_clean.go",
+      "sha256": "6ddaa4228a4c5a5e9572b43bb08d6fd1f4c5a22a3a56e4b928dda2a977bbdbf2"
+    },
+    {
+      "path": "apps/subtitles/internal/server/subtitle_clean_internal_test.go",
+      "sha256": "4b56c31cd9dcb5bf9c2cf2d9d76a204ee298022dcb24dd8d28b4253560828f06"
+    },
+    {
+      "path": "apps/subtitles/internal/server/subtitle_cleanup.go",
+      "sha256": "10048da81dbb16180eec2fd5129fb207d89711f5665f75ad2da54643350810c6"
+    },
+    {
+      "path": "apps/subtitles/internal/server/subtitle_cleanup_api.go",
+      "sha256": "99d96652c940ea390dea07d69128b02cf2078ec0f4e84aef9ca657f1c7dfcd72"
+    },
+    {
+      "path": "apps/subtitles/internal/server/subtitle_cleanup_forced_all_test.go",
+      "sha256": "6f0d7e25905bf5db98ecdd3587ffe2be9fd27efed1cdbd333e8dee964ffc487d"
+    },
+    {
+      "path": "apps/subtitles/internal/server/subtitle_cleanup_http.go",
+      "sha256": "f4c2a50d4a776828aff67194f76e05f5deb1bb5933e1d3af312bd9d12315a030"
+    },
+    {
+      "path": "apps/subtitles/internal/server/subtitle_cleanup_route_test.go",
+      "sha256": "c4b4f80ea40cec34ecba93debcc679e514e0deb1ad0dcafa17ac91a1184e43ae"
+    },
+    {
+      "path": "apps/subtitles/internal/server/subtitle_cleanup_test.go",
+      "sha256": "1802955e501eb8c28f47c042bf0e31453b827ccb29fb959f3265d99782bb1cc3"
+    },
+    {
+      "path": "apps/subtitles/internal/server/subtitle_concurrency_test.go",
+      "sha256": "faf071b3d75dfc2f8107522ccb945ddfc4b3d278e85cc6b0e9a6315bc4755440"
+    },
+    {
+      "path": "apps/subtitles/internal/server/subtitle_conversion.go",
+      "sha256": "04739d4baa44239db73981705e12b574257accad9538a0a550996f20904a442b"
+    },
+    {
+      "path": "apps/subtitles/internal/server/subtitle_coverage.go",
+      "sha256": "d675522621beffab3b5e0c1517d32ae122ea283774569c5147f44f1af2aee3e7"
+    },
+    {
+      "path": "apps/subtitles/internal/server/subtitle_dashboard.go",
+      "sha256": "d50f37bcd5c7347408c3755dcce04efe20278b90648a59ea1bdf3358431c78c8"
+    },
+    {
+      "path": "apps/subtitles/internal/server/subtitle_dashboard.html",
+      "sha256": "ee7c38a961300fe70dcba63bb7711b81679284082129a02756d4f6d5010cf0af"
+    },
+    {
+      "path": "apps/subtitles/internal/server/subtitle_dashboard_item.html",
+      "sha256": "078db605c9258cf3b437638dc27669ebd458673af16d678b1a62932956384cd1"
+    },
+    {
+      "path": "apps/subtitles/internal/server/subtitle_dashboard_latency_test.go",
+      "sha256": "1b634ae23fecf36d64b7ce9402a84a0eefffd9cba444ba51d9b7256c14eb3bb2"
+    },
+    {
+      "path": "apps/subtitles/internal/server/subtitle_dashboard_pages_test.go",
+      "sha256": "9d1fa73d9c43374730883dc3eb84b7a89253af682187bda1dacbfc842978effd"
+    },
+    {
+      "path": "apps/subtitles/internal/server/subtitle_dashboard_projection.go",
+      "sha256": "a0a45bf735d8df9a7c757f75c6060f3e855ae7f58c3caf9ae2f84fe551687e2c"
+    },
+    {
+      "path": "apps/subtitles/internal/server/subtitle_dashboard_query.go",
+      "sha256": "be60dd5fd0e6a5a451d2c3b1cfdb39cf40b6c5d6df083725f3e9aa227d216e76"
+    },
+    {
+      "path": "apps/subtitles/internal/server/subtitle_dashboard_stream_test.go",
+      "sha256": "ee552642295f4e6c37ca2d60a35421010343671bd2cf6d97e0e44a34156a0fb7"
+    },
+    {
+      "path": "apps/subtitles/internal/server/subtitle_dashboard_template.go",
+      "sha256": "df6c5701b7392e1876293f89ca5cb69052dbfbccf18b0fbeec83455c52c6a149"
+    },
+    {
+      "path": "apps/subtitles/internal/server/subtitle_dashboard_test.go",
+      "sha256": "3a5d57648acf3c24b2337f82913ba2db0548ec1bde55203547f5562ca44dd71e"
+    },
+    {
+      "path": "apps/subtitles/internal/server/subtitle_document.go",
+      "sha256": "9d642a1cf49e351e643965df25731a73c432b88ce7bec449bc971079b8738ccd"
+    },
+    {
+      "path": "apps/subtitles/internal/server/subtitle_draft.go",
+      "sha256": "4fd4ed95cd62e991c32a2aead5398c37561c0be56db8a32bcec3fc2962742663"
+    },
+    {
+      "path": "apps/subtitles/internal/server/subtitle_draft_http.go",
+      "sha256": "9993191f2319d22e0df6259708927a5f4753b92d9971abf0bcc26ef5a691807d"
+    },
+    {
+      "path": "apps/subtitles/internal/server/subtitle_draft_internal_test.go",
+      "sha256": "bdab9a8ec8da77699f853d4066579054711cf73abaf328ac71443bb416825031"
+    },
+    {
+      "path": "apps/subtitles/internal/server/subtitle_draft_lifecycle_test.go",
+      "sha256": "713e6517ea5e574ed86bfdc4da19cc61a0c09b31b92685559bb6905c1ab6a9ec"
+    },
+    {
+      "path": "apps/subtitles/internal/server/subtitle_draft_tool.go",
+      "sha256": "7f926ae32e333c6bda4a505cc1e974e70bf5e69afdfeaab6e0d2e9637f803a7c"
+    },
+    {
+      "path": "apps/subtitles/internal/server/subtitle_draft_tool_test.go",
+      "sha256": "e410978ce45cee6cda3877c30826c5adde2227cb9100e093c0c7d07b3cf33179"
+    },
+    {
+      "path": "apps/subtitles/internal/server/subtitle_edit.go",
+      "sha256": "d66c3cc90ddef6855989e5f38902d7f80d529fb8dce6f6741438b2c618cc9401"
+    },
+    {
+      "path": "apps/subtitles/internal/server/subtitle_edit_json_test.go",
+      "sha256": "3ef0ff9207fe6e213078395ab1d4378fd5aa33dbe45716a9cbc56cc60632d186"
+    },
+    {
+      "path": "apps/subtitles/internal/server/subtitle_embedded.go",
+      "sha256": "b6c56584e628a88145d3465f3c4169dfe5af4c327e231776b78b7afa2ad022bd"
+    },
+    {
+      "path": "apps/subtitles/internal/server/subtitle_embedded_test.go",
+      "sha256": "0bc8ad03c0b4a49e1c530935ad78a1c6196bdee02aa1261327225bc31243ac7a"
+    },
+    {
+      "path": "apps/subtitles/internal/server/subtitle_encoding.go",
+      "sha256": "ca1ad79e0738a850376bc4d550992773df34a45edbb6e712548fe96f3f031bcf"
+    },
+    {
+      "path": "apps/subtitles/internal/server/subtitle_excellence_internal_test.go",
+      "sha256": "1dd3c4c7501987fe10e7139eef7762c1d109ea87c4f8d97413cb5bd03bd74f56"
+    },
+    {
+      "path": "apps/subtitles/internal/server/subtitle_facts.go",
+      "sha256": "acb67189a0e45ad0dbc3145512822d49f942c90bde1031009bd2418b2a3f81c7"
+    },
+    {
+      "path": "apps/subtitles/internal/server/subtitle_formats.go",
+      "sha256": "28c35b9cccfc80dd60c02966468b1b0afed76558697608b6fd804ca7a7987c2c"
+    },
+    {
+      "path": "apps/subtitles/internal/server/subtitle_generation_process_test.go",
+      "sha256": "55a3f67b369454dad9a1cddd61489ad234f13d3f62cf5180fc0d5d7e1aa7dfd4"
+    },
+    {
+      "path": "apps/subtitles/internal/server/subtitle_history.go",
+      "sha256": "de1f5eb508d42816d2fd076fcd3bc56b28de026eeb6fd0f4a4954bdf17841869"
+    },
+    {
+      "path": "apps/subtitles/internal/server/subtitle_history_evidence_test.go",
+      "sha256": "0ca601e09d35d2ec43453d8eb79e949a798a23af7e70b1ea0059a8d6aaa6dd07"
+    },
+    {
+      "path": "apps/subtitles/internal/server/subtitle_history_fixtures_test.go",
+      "sha256": "8f333c0f3b819a918e25838de70f707127cdd9e77b206810f1ce8fb44796feee"
+    },
+    {
+      "path": "apps/subtitles/internal/server/subtitle_history_ledger.go",
+      "sha256": "4695b2bde2fb1a60508653806610d3d6ce1d864777221d03f5ae5e046049c0e4"
+    },
+    {
+      "path": "apps/subtitles/internal/server/subtitle_history_test.go",
+      "sha256": "aeeda07a9bc2c478d948a2150fe0d4a257eb4b3df670ab9c4506dac1834fa955"
+    },
+    {
+      "path": "apps/subtitles/internal/server/subtitle_inspector.go",
+      "sha256": "46bb087acafe943b5345f82ed04c0203798992c3a635a336b8e68a9a5f2fe93f"
+    },
+    {
+      "path": "apps/subtitles/internal/server/subtitle_inspector_layout_fixture_test.go",
+      "sha256": "0bc52463a86b0a834c6b4a6669c5339e34c43b8149617d567ba2518fe4567507"
+    },
+    {
+      "path": "apps/subtitles/internal/server/subtitle_inspector_test.go",
+      "sha256": "4d37fd39e66ba7f81912eb5ece1683c22273714de1c7d7cbc95a44368ef76c74"
+    },
+    {
+      "path": "apps/subtitles/internal/server/subtitle_json.go",
+      "sha256": "ecfc08675a3a56cc1bcf43fa6192f34e8ebaf85c223ce262195f4f9fa8612aed"
+    },
+    {
+      "path": "apps/subtitles/internal/server/subtitle_language_provider_contract_test.go",
+      "sha256": "967dbf9bf5387997693d8dd80b2977b47e77264a03e1184fbdb5925e83907dbf"
+    },
+    {
+      "path": "apps/subtitles/internal/server/subtitle_ledger.go",
+      "sha256": "e01d2f3a5a314e609710baf51efbfcb31ed85d8a94cbe9dfbc06cd2b083c1bd2"
+    },
+    {
+      "path": "apps/subtitles/internal/server/subtitle_ledger_fixture_test.go",
+      "sha256": "539dedb1050ac9cd563b17e90f2bde4f9de5a16a37b109fdbdde9c90adba4e80"
+    },
+    {
+      "path": "apps/subtitles/internal/server/subtitle_ledger_lifecycle_internal_test.go",
+      "sha256": "f8908047f9ea7968c002915cca5007a62a320d0b98a6c595dc84ef15f50bfc27"
+    },
+    {
+      "path": "apps/subtitles/internal/server/subtitle_ledger_malformed_test.go",
+      "sha256": "8668eb90725f0f34bcb264cd73c4263e454c1462b3432f628bbee0bba733d86f"
+    },
+    {
+      "path": "apps/subtitles/internal/server/subtitle_legacy_test_helpers_test.go",
+      "sha256": "18df89fa4ed7a9c62ce8855af3d368abb6e2cd802d1b7153ddde3fef17625a27"
+    },
+    {
+      "path": "apps/subtitles/internal/server/subtitle_maintenance.go",
+      "sha256": "e949e412b9f496072cbf2cb196e279ca72cb767cd9f8bbd347cacf205d78b60b"
+    },
+    {
+      "path": "apps/subtitles/internal/server/subtitle_maintenance_benchmark_test.go",
+      "sha256": "c303241040e8dcdbecdb726b736c9b0744960eb0065093fb758e2fb1bccaf8d1"
+    },
+    {
+      "path": "apps/subtitles/internal/server/subtitle_maintenance_test.go",
+      "sha256": "21659fdc35a9edaa0169d7addebf6f92bc61fca8e40ea364f00c0880ae892bee"
+    },
+    {
+      "path": "apps/subtitles/internal/server/subtitle_mutations.go",
+      "sha256": "1e93b0f41e49c0bb2ccaad1e5ad21d94d6a5e726bc528447f3215fb976276e80"
+    },
+    {
+      "path": "apps/subtitles/internal/server/subtitle_mutations_test.go",
+      "sha256": "dbae877b4825abfcea0ed773c239ae467c156b82ddce97688682eafc7cb6ca93"
+    },
+    {
+      "path": "apps/subtitles/internal/server/subtitle_navigation.go",
+      "sha256": "2f80c4aafc4c6d61a7b8a2f55fee72d4a366a26fb50d72cee42f1d6cdf1d6ea8"
+    },
+    {
+      "path": "apps/subtitles/internal/server/subtitle_ocr.go",
+      "sha256": "425b596e9df0c4416732577a9e9255d8f5c74e200b3eccdb7189c5bbc20a08f9"
+    },
+    {
+      "path": "apps/subtitles/internal/server/subtitle_ocr_recognize.go",
+      "sha256": "c2419a37c07ebf62a620994c08e21ce5a469c7732ea85411441972670dd4369b"
+    },
+    {
+      "path": "apps/subtitles/internal/server/subtitle_onboarding.go",
+      "sha256": "330fab3df9b0d58d1a076565a1a1997ce5553e128ffad611b1f8ac47208471fd"
+    },
+    {
+      "path": "apps/subtitles/internal/server/subtitle_onboarding_test.go",
+      "sha256": "30404719256d6e9c7d03238f7f56206a2a0229ffe683e9befb0c55d455186297"
+    },
+    {
+      "path": "apps/subtitles/internal/server/subtitle_operations.go",
+      "sha256": "0918fdcd86f602bde617886109244874ef654d55499578d6582723e1ebfa847b"
+    },
+    {
+      "path": "apps/subtitles/internal/server/subtitle_original.go",
+      "sha256": "965a46d0b0400f48756c95903b9f2234cd677c9c3a738a124ee8122f248133a0"
+    },
+    {
+      "path": "apps/subtitles/internal/server/subtitle_overview_layout_test.go",
+      "sha256": "0354f06310c86f77d85848fa68e50d9e216d74e06348df9ec14ef9495c57a5c0"
+    },
+    {
+      "path": "apps/subtitles/internal/server/subtitle_performance_benchmark_test.go",
+      "sha256": "dd30931b0d7435111469d3344c1d855a72708f13b3def68c19eb876f3f94af7c"
+    },
+    {
+      "path": "apps/subtitles/internal/server/subtitle_picker_languages_test.go",
+      "sha256": "4c36ef372ff86459581af23f458414fa558d5b46144b6f17c8ff0e59ddb122f3"
+    },
+    {
+      "path": "apps/subtitles/internal/server/subtitle_plan.go",
+      "sha256": "6985f9aac68022b97217dad3e92ce615880c336a2f5437cbf775a5cdf1344bd9"
+    },
+    {
+      "path": "apps/subtitles/internal/server/subtitle_player_detection_test.go",
+      "sha256": "48d765915c84ed21f4c93d79e46d908bacf3f8a72335e21176250776f4a95117"
+    },
+    {
+      "path": "apps/subtitles/internal/server/subtitle_preference_test.go",
+      "sha256": "1db14443b84842b9dd4f7f3e7c2890c05cc0c07eaf0747842ed43723f51cdf17"
+    },
+    {
+      "path": "apps/subtitles/internal/server/subtitle_probe_facts_test.go",
+      "sha256": "3deb4be22e610e2649b738ca27478c6f629329722de0a45188a1952e603ee3b8"
+    },
+    {
+      "path": "apps/subtitles/internal/server/subtitle_provider.go",
+      "sha256": "f89160d8de022905bddbd09678356b943cadb66807cbb21de385e84539dc9a66"
+    },
+    {
+      "path": "apps/subtitles/internal/server/subtitle_provider_acquire_v1_internal_test.go",
+      "sha256": "ebbb75f90139ecb4f36023fbc9348d3969b214c31dee19593516ea5b9aea7038"
+    },
+    {
+      "path": "apps/subtitles/internal/server/subtitle_provider_files.go",
+      "sha256": "5df6f7031426be4e839dcbd0a1262ac70f7173581b1cbabb65ef7dee1d5ba3ef"
+    },
+    {
+      "path": "apps/subtitles/internal/server/subtitle_provider_health.go",
+      "sha256": "c71f82f1d9490e0a00c371eddafacdbf43f5677c7d0a80d6ab85094620d1ad3b"
+    },
+    {
+      "path": "apps/subtitles/internal/server/subtitle_provider_http.go",
+      "sha256": "d3fe29f0a90b9907408b6bd7dfe202192eab93c9b740bda278dc7c9dff10aac9"
+    },
+    {
+      "path": "apps/subtitles/internal/server/subtitle_provider_http_v1_internal_test.go",
+      "sha256": "21c2396cd2f15e6ba950b727cec83034416b3605743069fb1706ee4d81974a6b"
+    },
+    {
+      "path": "apps/subtitles/internal/server/subtitle_provider_languages.go",
+      "sha256": "71bcbe57302998a27450556c8de3615f88812fe372a27a2937d6b9fab9ede96f"
+    },
+    {
+      "path": "apps/subtitles/internal/server/subtitle_provider_resolution_internal_test.go",
+      "sha256": "8553978f23855f0b60c0b66f63dae1e4a257121aef7887e2484fdc5eff2739d9"
+    },
+    {
+      "path": "apps/subtitles/internal/server/subtitle_provider_test.go",
+      "sha256": "8122b29a1b370301fc65daff03a30a2f5c51a9743338a69e839cc7a7ecd2f4a6"
+    },
+    {
+      "path": "apps/subtitles/internal/server/subtitle_readiness.go",
+      "sha256": "5aaf78070e0b978b3b7db57fd6b352fe7182ee7f02f8c72237039830bc90dce7"
+    },
+    {
+      "path": "apps/subtitles/internal/server/subtitle_recovery.go",
+      "sha256": "26752dbc56befa8dbb38bb652f159c2579ec6939da14022d1303eebab38ceb4e"
+    },
+    {
+      "path": "apps/subtitles/internal/server/subtitle_recovery_adapter_test.go",
+      "sha256": "099f886dfbe3daf0b1d9bfb771d8ea2e0b49e2d0da89a8578576b99383e65358"
+    },
+    {
+      "path": "apps/subtitles/internal/server/subtitle_release.go",
+      "sha256": "d47223025c7f13256625382eec48fa4fc6be823bd82d253488a4bfc5a2731b4e"
+    },
+    {
+      "path": "apps/subtitles/internal/server/subtitle_review.go",
+      "sha256": "c7f3cebd0b0f51bc56829d0126fb7dfd8da30fe1a5a6b9792614a92322109b49"
+    },
+    {
+      "path": "apps/subtitles/internal/server/subtitle_review_http.go",
+      "sha256": "92945d0a9773034ff9e22eb9d297fade65210cd35695a4b32c04617466da1549"
+    },
+    {
+      "path": "apps/subtitles/internal/server/subtitle_review_operations_test.go",
+      "sha256": "c05470586c4d7c4f0de3597aa6a9a5288c9d4288cd62ef7eeaa47bc492d6a659"
+    },
+    {
+      "path": "apps/subtitles/internal/server/subtitle_review_source_test.go",
+      "sha256": "3110788f6181e5ea155cc3513de10a4fe3169097ef99fdb317a38e0413fd8af6"
+    },
+    {
+      "path": "apps/subtitles/internal/server/subtitle_save_failures_test.go",
+      "sha256": "72338391586aa686d22bd46f20902bc6d12b149e65695b110119c5677811a4be"
+    },
+    {
+      "path": "apps/subtitles/internal/server/subtitle_search_form_test.go",
+      "sha256": "1dc39b79bff023fccd834976d2de9cbe6a4ab914406a0e434bd106e6ecd91d7b"
+    },
+    {
+      "path": "apps/subtitles/internal/server/subtitle_search_retry.go",
+      "sha256": "db44d6bf082fbe7dc1120ac99330300f7b8e63c07828cc9d939822dfcabf40f2"
+    },
+    {
+      "path": "apps/subtitles/internal/server/subtitle_settings.go",
+      "sha256": "e2c70cde457ed2332d277c5ba557302068c04c64f385da575a0370fc0329f2c1"
+    },
+    {
+      "path": "apps/subtitles/internal/server/subtitle_sidecar_boundary_test.go",
+      "sha256": "1f4788be80d2a519d518001d0a6060bdc44d4c09bffdf19c12a92df11d11367d"
+    },
+    {
+      "path": "apps/subtitles/internal/server/subtitle_sidecar_file.go",
+      "sha256": "12d29981615d2f351dfc0287b2d557eb9259e2f7b4a90dd0aa5f6742300a79d1"
+    },
+    {
+      "path": "apps/subtitles/internal/server/subtitle_speech_cache.go",
+      "sha256": "52ce052759761aba3260804818a1d6c3e2b234ba14ca2027fe189cad193f1755"
+    },
+    {
+      "path": "apps/subtitles/internal/server/subtitle_subdl.go",
+      "sha256": "0f0475d4c1982c585590792984d4fefc541f3e2394407021d57fd65b3db93a45"
+    },
+    {
+      "path": "apps/subtitles/internal/server/subtitle_sync.go",
+      "sha256": "ad0906fb8294445c29ffe0c32b29fe7585a7799703de1af865f875bb31336ec9"
+    },
+    {
+      "path": "apps/subtitles/internal/server/subtitle_sync_behavior_internal_test.go",
+      "sha256": "6f32101a8cfc7b869e5653a2e5dac710c0ca09e32fe14dc78793b50afdb8372b"
+    },
+    {
+      "path": "apps/subtitles/internal/server/subtitle_sync_internal_test.go",
+      "sha256": "d59e5904af02dfb4d8fc4ba3e7911597b575e8c27d009188c6ef794ad673ff6f"
+    },
+    {
+      "path": "apps/subtitles/internal/server/subtitle_sync_piecewise.go",
+      "sha256": "0038759d487f0499df01877df681ee927c0b5d3227b52bca12bd00d7ea44cc8a"
+    },
+    {
+      "path": "apps/subtitles/internal/server/subtitle_sync_validation.go",
+      "sha256": "5cbcacb11055b03b065d37c1bd30ed6a347e7cc753b89d3fa386b911f3fb244c"
+    },
+    {
+      "path": "apps/subtitles/internal/server/subtitle_tracks_test.go",
+      "sha256": "7cd44cf7754609c3db4b00d276411017a4cb9033ff1ac0ba785900eaa02527ed"
+    },
+    {
+      "path": "apps/subtitles/internal/server/subtitle_transcription.go",
+      "sha256": "0d46032d00500abda94118fc4dcc869b4a03078cb6c393e4fc461fa74b0d1eda"
+    },
+    {
+      "path": "apps/subtitles/internal/server/subtitle_upgrade.go",
+      "sha256": "1917237c7d573f3b1a25301a49041c698cfaab030ef2421173af6e7f65dafb38"
+    },
+    {
+      "path": "apps/subtitles/internal/server/subtitle_upgrade_internal_test.go",
+      "sha256": "381393d795f620f5e81ccf3470b946471dfe0f2d2bc2b76ff48c78d7c5259194"
+    },
+    {
+      "path": "apps/subtitles/internal/server/subtitle_v1_boundaries_internal_test.go",
+      "sha256": "aa3b29c6fae2d0e9b0e035175202865796f083330be9ec5599a50327dae73fb4"
+    },
+    {
+      "path": "apps/subtitles/internal/server/subtitle_v1_coverage_internal_test.go",
+      "sha256": "837fcbd49e551776bfcde68846b5de5e417202ee71a41c2d4d8432f84acf3491"
+    },
+    {
+      "path": "apps/subtitles/internal/server/subtitle_v1_internal_test.go",
+      "sha256": "57080067e7d95687715ea1a97d3bf8d8a7298cc5d8f53f7b437779abb9cc43b8"
+    },
+    {
+      "path": "apps/subtitles/internal/server/supporter.go",
+      "sha256": "a6c2de8e540bba2f66b73f5038cb0fe82cd55843db24e2d1e4d1b2f6c96e30a3"
+    },
+    {
+      "path": "apps/subtitles/internal/server/supporter_artwork_test.go",
+      "sha256": "826b1e7d58d987b74d113c1382ea4a2349ba1b7272a3653d83278305e59d83ff"
+    },
+    {
+      "path": "apps/subtitles/internal/server/supporter_assets_internal_test.go",
+      "sha256": "c9729548ccfdf15fcecd1150d32e9fcb22284a56c8c1efe991368db7c1173d22"
+    },
+    {
+      "path": "apps/subtitles/internal/server/supporter_badges.go",
+      "sha256": "b362c2a6d1cebb44190d1b6b04b4552883b0f57e2f0f76430bb175f0ae0d4877"
+    },
+    {
+      "path": "apps/subtitles/internal/server/supporter_concurrency_test.go",
+      "sha256": "14bf42ff49d5e2f1d6072f3a51c354b70bd99ac916f9c40ea71ce265c97a307c"
+    },
+    {
+      "path": "apps/subtitles/internal/server/supporter_default_internal_test.go",
+      "sha256": "49b0fb712071be1ffccc69b189acc2f166c571f66bb18dc9e87d7b327a8e6add"
+    },
+    {
+      "path": "apps/subtitles/internal/server/supporter_http.go",
+      "sha256": "038db95886771dbc82386cf1481f001f152b07abe9fe37a26d47820d48417efb"
+    },
+    {
+      "path": "apps/subtitles/internal/server/supporter_http_test.go",
+      "sha256": "da477248421d74203fe26dfa79a9cafdf19572aeeada18002fa8c260506e4e34"
+    },
+    {
+      "path": "apps/subtitles/internal/server/supporter_share.go",
+      "sha256": "0668529152742956d5825b0694f6d2ee29768a9f68cbf1e2a334d6785cb30b87"
+    },
+    {
+      "path": "apps/subtitles/internal/server/supporter_share_internal_test.go",
+      "sha256": "a5f2adcd67a5d0f533d0ec655fc2458798549e05f581495161b5c06e5153f214"
+    },
+    {
+      "path": "apps/subtitles/internal/server/supporter_share_test.go",
+      "sha256": "8a07e2603f2e405e69388d208a2569e5ed5724a684080c8b6a6c043be73c0941"
+    },
+    {
+      "path": "apps/subtitles/internal/server/supporter_template.go",
+      "sha256": "fd521b80c4b3a456b82c7d0780f80b509f696dc1d03a6b73d6115536c0d12a90"
+    },
+    {
+      "path": "apps/subtitles/internal/server/supporter_test.go",
+      "sha256": "cf52d039a6042bbc82d2939d1e48d2aac4ab72383bf51532949a6b0da191d716"
+    },
+    {
+      "path": "apps/subtitles/internal/server/symlink_security_test.go",
+      "sha256": "daaa8cb1e6a83a225a7ef22d41254313be0fdbc9b0b86ebaf46016cf9ca74732"
+    },
+    {
+      "path": "apps/subtitles/internal/server/system_http.go",
+      "sha256": "559f3dedb54281e6a7dc47d40bd56498640628d913f75e7ea74c778058e8190f"
+    },
+    {
+      "path": "apps/subtitles/internal/server/timeline_test.go",
+      "sha256": "7209c271c010360265c870c5194e9d5df175a8361c3fdb7001f748830cef0eaf"
+    },
+    {
+      "path": "apps/subtitles/internal/server/transcode_test.go",
+      "sha256": "624f80909b2251d23cd234a70f20c49fe154a152cc0f0c8ffebaab87047d4864"
+    },
+    {
+      "path": "apps/subtitles/internal/server/transcoder.go",
+      "sha256": "6ab3a2278cc419ab0a62734b2803006ff60f868df1a0f713abf719cb1462982c"
+    },
+    {
+      "path": "apps/subtitles/internal/server/transcoder_backends_test.go",
+      "sha256": "217db803e7c053339d188ce71c52e29eaf1167ec6248e98c41f03506e344b53e"
+    },
+    {
+      "path": "apps/subtitles/internal/server/transcoder_check_test.go",
+      "sha256": "64a908c8e9d4f45a6bb936d05f6631df6655608a5f2a597247b9d7b6e9862ea9"
+    },
+    {
+      "path": "apps/subtitles/internal/server/transcoder_selection.go",
+      "sha256": "be3d862e6543d72118bdf28531dff8c0637da7bc6ef5ece93033c2a771d0517c"
+    },
+    {
+      "path": "apps/subtitles/internal/server/trickplay.go",
+      "sha256": "f1470171ac0e15c9de8ae7bb3bdd2403137b98f1bd525bd0a3b39d812ec2eca9"
+    },
+    {
+      "path": "apps/subtitles/internal/server/tripwire.go",
+      "sha256": "8fc7ee6b48bcd9e44ac0c0fd4cef2e3cfa0e47e327b71419adcd8bde23c469e7"
+    },
+    {
+      "path": "apps/subtitles/internal/server/trusted_https_fixture_test.go",
+      "sha256": "613c0f380350ee0861526710287b41f4f542b301dc1f6da9434c8dff495d233c"
+    },
+    {
+      "path": "apps/subtitles/internal/server/trusted_https_test.go",
+      "sha256": "d098f25e21a59e3a58df75ad3a8aa04bb3f5f604ac99f2a4c233d893d48b9ccc"
+    },
+    {
+      "path": "apps/subtitles/internal/server/trusted_proxy_policy_test.go",
+      "sha256": "1363330b08899fee76c44a5ae1aa202e4350a93710170d1f32e1154b134f6c06"
+    },
+    {
+      "path": "apps/subtitles/internal/server/ui_icons.go",
+      "sha256": "556cceeb2e0b1762c9f7aafcf6e507b3985ec1c2f716a88af4fbbdaa71b5444a"
+    },
+    {
+      "path": "apps/subtitles/internal/server/ui_icons_test.go",
+      "sha256": "8df5f23036d38051e65fb7b7d57103ed6e297cab6f37d5c9666031751ae179c6"
+    },
+    {
+      "path": "apps/subtitles/internal/server/ui_state_fixtures_test.go",
+      "sha256": "40cb0f59b4e8bb7aa0e2262ce78b09bba1499c4fa2711b8b36b3b459af8de758"
+    },
+    {
+      "path": "apps/subtitles/internal/server/update_settings_test.go",
+      "sha256": "2e19f89cf2a4f5971028166d0db67ee2561722952ba8b5cd3182f73bbefe7153"
+    },
+    {
+      "path": "apps/subtitles/internal/server/updates.go",
+      "sha256": "94cd04f18b23af00a4102c8157fd877367f8550086b138f4deb532c130595e70"
+    },
+    {
+      "path": "apps/subtitles/internal/server/updates_http.go",
+      "sha256": "473f1f47af4d515a4bbe9fb603bbf407321a8b9ac007bc39c7f94df58ea5c15d"
+    },
+    {
+      "path": "apps/subtitles/internal/server/updates_web_test.go",
+      "sha256": "eb523ca57f65e1ab8a1edbda2a3c1a8555738a87dd18e89afda490c4e9dd061e"
+    },
+    {
+      "path": "apps/subtitles/internal/server/video_codecs.go",
+      "sha256": "f3837814227727eb6c7bff0cb14d438fe2af27f4a6ba066f9beb5f0f83be72bd"
+    },
+    {
+      "path": "apps/subtitles/internal/server/viewing_import.go",
+      "sha256": "ed27646534e51987638e9d8f8861791542df4764f8f6899cb088ea8ff8d1004e"
+    },
+    {
+      "path": "apps/subtitles/internal/server/viewing_import_api_test.go",
+      "sha256": "54ab51973875e2c1bc9f70b4d3d2b836aa2ff94e3488ecfa51e6bd282341c394"
+    },
+    {
+      "path": "apps/subtitles/internal/server/viewing_import_http.go",
+      "sha256": "cb181a0c95e28de1ac1439f55859fead828eff80449e3bd8e663510570c97381"
+    },
+    {
+      "path": "apps/subtitles/internal/server/viewing_import_onboarding_test.go",
+      "sha256": "76e91af4f0f151a55021dd455cdbdf95f97ac92e87037851facb41cb9703b822"
+    },
+    {
+      "path": "apps/subtitles/internal/server/watch_together.go",
+      "sha256": "b87ffb5d4ba19d0a15e8cb4491022f9135e65c29fcd9ad4e086619f2558ca9d0"
+    },
+    {
+      "path": "apps/subtitles/internal/server/watch_together_test.go",
+      "sha256": "9cfa2f270c4e8d7652da0b1d369d6dfd5e923be69cba7837656d4071267a5711"
+    },
+    {
+      "path": "apps/subtitles/internal/server/watched_test.go",
+      "sha256": "cfa376d26a73882cb5d24130ab040e144d7181c96e84d909a29f65764290f1cf"
+    },
+    {
+      "path": "packages/webassets/.impeccable/surfaces/packages-webassets-static-last-light-css.md",
+      "sha256": "41dfbe06c670b052d1d5c3b5b9420391c1a6d3ed041e72c04d6fdb8176212c7b"
+    },
+    {
+      "path": "packages/webassets/artwork-palette.test.mjs",
+      "sha256": "e6f01a13d35a96a35cc44b0cde89ba3c25c55c71171fd652f769e0560bd26102"
+    },
+    {
+      "path": "packages/webassets/loading.test.mjs",
+      "sha256": "a971d17f59cf08db682da95cd0286dc05ab00dda0ce38f1519c8bdd274621f38"
+    },
+    {
+      "path": "packages/webassets/mobile-tabs.test.mjs",
+      "sha256": "23b8afe8843bbe3ff68580dba0b2af8ab400548a2c5d45904b2c511dd63db11c"
+    },
+    {
+      "path": "packages/webassets/navigation-menus.test.mjs",
+      "sha256": "1abed452091c16539604c0a11249742079d38187dfafe06e45bc9008d13797ff"
+    },
+    {
+      "path": "packages/webassets/offline-identity.test.mjs",
+      "sha256": "6ce52b40a3a7a47c3f90fadf86f0f2a81591d2e096032d047b626c28c4f99de6"
+    },
+    {
+      "path": "packages/webassets/offline-progress.test.mjs",
+      "sha256": "f4eb1157853cd036cedc4ad3ffd592135b989e336996d89f2ec21de857222bfc"
+    },
+    {
+      "path": "packages/webassets/passkeys-navigation.test.mjs",
+      "sha256": "4e4e6d3bc57edf5eda4c4d7531607f80e081c498f2ddadfec7b3cba9f5c644b6"
+    },
+    {
+      "path": "packages/webassets/player-loading.test.mjs",
+      "sha256": "7cd3653a2a16d353f5d2530e0d20239e64361d842adeee6a6f161242f734705a"
+    },
+    {
+      "path": "packages/webassets/player-tv.test.mjs",
+      "sha256": "7ca89dfb19be331c1d54ae83dc313018750e684611992e601210e007efbb5d1d"
+    },
+    {
+      "path": "packages/webassets/public-login.test.mjs",
+      "sha256": "eac6f7277f469db449183a2afbc04fda4e0e1aa105b74db16c268997e81eb595"
+    },
+    {
+      "path": "packages/webassets/static/appearance.js",
+      "sha256": "b2babdbe41c140f6b9c053601f759d6bc1a942635740fe8673c9470896975f49"
+    },
+    {
+      "path": "packages/webassets/static/artwork-palette.js",
+      "sha256": "5b777495a94d7fdf271ce3cec6ccf62458b415a6ce0da632603a391262fabdc4"
+    },
+    {
+      "path": "packages/webassets/static/downloads-integrity.js",
+      "sha256": "42ac4c2cd70eca69c974b23b38a1eca2ac93e4ec48a2fe24977e11166e32a6ff"
+    },
+    {
+      "path": "packages/webassets/static/downloads-progress.js",
+      "sha256": "f823d99eadeb16f1d6868b41bb86e4338c522c29457b831bcb64d10217960cca"
+    },
+    {
+      "path": "packages/webassets/static/downloads-storage.js",
+      "sha256": "7ae56a0430b6c4a10c424552769cb3d83934da484a501d1ba05405b07e5307db"
+    },
+    {
+      "path": "packages/webassets/static/downloads-transfer.js",
+      "sha256": "c5eb315bc8e1e5f7970688d96dd3a6a6a68d3fee3671a09156d0e73a87fe9d48"
+    },
+    {
+      "path": "packages/webassets/static/downloads-ui.js",
+      "sha256": "1dc721cc51a6e5cad00853a9ed65c1cf79317df3cc2940d8b517984fbb3079e3"
+    },
+    {
+      "path": "packages/webassets/static/downloads.js",
+      "sha256": "015b495ab750142b3afe30d803af06d8cbc6cf549491dfeb0d0a27a6da2ddf53"
+    },
+    {
+      "path": "packages/webassets/static/fonts/OFL-Manrope.txt",
+      "sha256": "e01b637272e0cbdfb240184dd98ea5cc671556d9894dae2668d92ab2c906787c"
+    },
+    {
+      "path": "packages/webassets/static/fonts/manrope.woff2",
+      "sha256": "d021a35e139087c179d032e509327fc2dfdbf2c33b6156d25143e004d939da87"
+    },
+    {
+      "path": "packages/webassets/static/last-light.css",
+      "sha256": "fe888b1f4cf5fb00d37038115e7db66011e9ad0c4c3474f05906038139f829bc"
+    },
+    {
+      "path": "packages/webassets/static/mobile-tabs.js",
+      "sha256": "e24daaf564c2bc9a92933e0cc425d4bcbe07b25d4fc30f2e8543844b9f5f87a7"
+    },
+    {
+      "path": "packages/webassets/static/offline-identity.js",
+      "sha256": "ae1a2cacfabe6471283151843e177d9ec4604c19423ad3b2ed88dd5260ebeb58"
+    },
+    {
+      "path": "packages/webassets/static/offline-media.js",
+      "sha256": "78617ca8afede4243cfb02db8119ee1ee38a1ded951623013cc037e61945c1b0"
+    },
+    {
+      "path": "packages/webassets/static/offline-profile.js",
+      "sha256": "4f9f751de19168517a9d3d9a189d412ad800c56068d37bba7b4c6cf176b2dcee"
+    },
+    {
+      "path": "packages/webassets/static/offline-runtime.js",
+      "sha256": "b421d24643fadc58f8ceff9c1024d0d33f548f19fd2bcaafd97042b413d631a4"
+    },
+    {
+      "path": "packages/webassets/static/passkeys.js",
+      "sha256": "26c4a399090af20756c7652a37f63b0fc5931ef1509cb197bd3b552656bc04e4"
+    },
+    {
+      "path": "packages/webassets/static/player-app.css",
+      "sha256": "788faa89b30f86f758b9e5a0d090ee9a846fb737e18086e10207d47203bfbeff"
+    },
+    {
+      "path": "packages/webassets/static/player-controls.js",
+      "sha256": "7d987a1e0df6bf375accacbe93a1944d97bef33d56c01377ccfb64211f3dd21c"
+    },
+    {
+      "path": "packages/webassets/static/player-core.js",
+      "sha256": "c8933de7b41c32c43ac223e616d994183c90ffdd5af02ec2c409b3b81a976e8a"
+    },
+    {
+      "path": "packages/webassets/static/player-devices.js",
+      "sha256": "67dcd0f9b639732a4ad593f2e7d0750bcbdc874a378aab980b1cce72f6b1da6b"
+    },
+    {
+      "path": "packages/webassets/static/player-presentation.js",
+      "sha256": "4fff5690cd0b9eca5e7fba133f0c768c8bd9d8da666920ca844186b0b480c0cb"
+    },
+    {
+      "path": "packages/webassets/static/player-progress.js",
+      "sha256": "cbacb65adcbd74e3b7d89bd9ccc53fd101eaff47af9a38ea62f4d22c5df312e3"
+    },
+    {
+      "path": "packages/webassets/static/player-stage.css",
+      "sha256": "0b760c37fb20a90d2dc7acdf9b0a04f8143ef3b5af3fcc4a21f53c523151c499"
+    },
+    {
+      "path": "packages/webassets/static/player-status.js",
+      "sha256": "78dffae170e292024d6706c1b6c4a450ce14642a4195a90677fa08f9489c3287"
+    },
+    {
+      "path": "packages/webassets/static/player-tv.js",
+      "sha256": "48a4b20011eda1110fa8e7684abeb99e828e7c72e06ee192a43078437bc8dda5"
+    },
+    {
+      "path": "packages/webassets/static/public-login.js",
+      "sha256": "8f74d78b1f940a573de504a8c29c2e8b49340d150b84bf8920272ca5d60c0bc7"
+    },
+    {
+      "path": "packages/webassets/static/pwa-navigation.js",
+      "sha256": "076b41044ccd8d0a79664bafa7ac1aea7f9e0efda192615dd2f791e49e63b202"
+    },
+    {
+      "path": "packages/webassets/static/pwa-settings.js",
+      "sha256": "dc2320737b805d30123057cd6090e6921de39c7a65e07b1d33a04b0be3724784"
+    },
+    {
+      "path": "packages/webassets/static/pwa.js",
+      "sha256": "4ea43e5431973c9f6a6f7923248fcb63d7f0b401e44724539c0289b6ae1c0762"
+    },
+    {
+      "path": "packages/webassets/static/restart-notice.css",
+      "sha256": "460b669ce25cb508fcf8e9cefb03f13c364f621d92e6cb5e6f6edda13d13af64"
+    },
+    {
+      "path": "packages/webassets/static/shortcuts.js",
+      "sha256": "8d5ae50d36a084f0b04a70276decd86481707cf283f5ceb15e5b16352176f67c"
+    },
+    {
+      "path": "packages/webassets/static/subtitles-app.css.patch",
+      "sha256": "759c4abdc710831bdd5820aab5ee5ef94caffceb0e00abe48d3e88a0ce2d971d"
+    },
+    {
+      "path": "packages/webassets/static/supporter.js",
+      "sha256": "60502e0e62af82f6b6c2df5b42874b72fbc01d49f03a31b79c275e9b9cfd6c11"
+    },
+    {
+      "path": "packages/webassets/static/theme.js",
+      "sha256": "889beced8881cd425ebeca0b745cfddf8c8f530268747de9d42b82bcce6dcb4f"
+    },
+    {
+      "path": "packages/webassets/static/watch-progress.js",
+      "sha256": "6e64f0de605f5d80f1f09b0cd8cdc06ee456f88bcaaeb3010fb7b5c570372a7f"
+    },
+    {
+      "path": "packages/webassets/styles.go",
+      "sha256": "0f38f0d520edba76d9af42d85972362493a53da7c40cb5ea32afec06088a2507"
+    },
+    {
+      "path": "packages/webassets/styles_test.go",
+      "sha256": "b35b8f7aa6e25adff680e3d871f33a96dd1461ced4321ec11914ec5ed5011277"
+    },
+    {
+      "path": "packages/webassets/theme.test.mjs",
+      "sha256": "8694bb5ed9946e30980874e55cd0dfe71cd575b7de7da62e68114ec837f57b90"
+    },
+    {
+      "path": "packages/webassets/watch-progress.test.mjs",
+      "sha256": "f6b92b188648fe65bb38420e659682e06a64c66705137f9eb71bc0e40ac80315"
+    },
+    {
+      "path": "packages/webassets/webassets.go",
+      "sha256": "ca6bd7e992239215a719e35b04e1101e5636d8a189806c878397a5853ae4134e"
+    }
+  ],
+  "startedAt": "2026-09-30T20:48:49.735782+00:00",
+  "exitCode": 0,
+  "finishedAt": "2026-09-30T20:49:24.178440+00:00",
+  "sourceStable": true
+}

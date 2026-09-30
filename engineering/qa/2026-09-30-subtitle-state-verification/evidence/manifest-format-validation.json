@@ -1,0 +1,7 @@
+{
+  "findingCount": 216,
+  "rule": "generic-api-key",
+  "validation": "Every flagged value exactly matched SHA256 of its repository source file. Manifests now use separate path and sha256 records, preserving every digest.",
+  "securityExceptionsAdded": 0,
+  "result": "The normalized evidence passed Gitleaks."
+}

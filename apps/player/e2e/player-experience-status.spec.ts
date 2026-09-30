@@ -113,6 +113,56 @@ test("canplay clears seeking when WebKit omits seeked", async ({ page }) => {
   await expect(status).toBeHidden();
 });
 
+for (const target of [45, 5]) test(`advancing playback clears seeking at ${target}s without completion events`, { tag: "@smoke" }, async ({ page }, testInfo) => {
+  await page.emulateMedia({ colorScheme: "dark" });
+  for (const path of ["../../../packages/webassets/static/player-app.css", "../../../packages/webassets/static/player-stage.css", "../internal/server/static/home.css"]) {
+    await page.addStyleTag({ content: await readFile(path, "utf8") });
+  }
+  const video = page.locator("video");
+  const status = page.locator("[data-player-status]");
+  await video.evaluate((element) => element.play());
+  await video.evaluate((element, position) => {
+    Object.defineProperty(element, "seeking", { configurable: true, writable: true, value: true });
+    element.currentTime = position;
+    element.dispatchEvent(new Event("seeking"));
+    element.dispatchEvent(new Event("timeupdate"));
+  }, target);
+  await expect(status).toContainText("Seeking…");
+  await expect(status).toBeVisible();
+  await expect(status).toHaveAttribute("aria-busy", "true");
+  for (const viewport of [{ width: 390, height: 844 }, { width: 1440, height: 900 }]) {
+    await page.setViewportSize(viewport);
+    await page.screenshot({ path: testInfo.outputPath(`${viewport.width}-pending-seek.png`) });
+  }
+
+  // A position update during the seek or while paused is not resumed playback.
+  await video.evaluate((element) => { element.currentTime += 0.1; element.dispatchEvent(new Event("timeupdate")); });
+  await expect(status).toBeVisible();
+  await page.evaluate(() => (window as Window & { setPaused: (value: boolean) => void }).setPaused(true));
+  await video.evaluate((element) => {
+    Object.defineProperty(element, "seeking", { configurable: true, writable: true, value: false });
+    element.currentTime += 0.1;
+    element.dispatchEvent(new Event("timeupdate"));
+  });
+  await expect(status).toBeVisible();
+  await page.evaluate(() => (window as Window & { setPaused: (value: boolean) => void }).setPaused(false));
+  await video.dispatchEvent("timeupdate");
+  await expect(status).toBeVisible();
+
+  await video.evaluate((element) => { element.currentTime += 0.25; element.dispatchEvent(new Event("timeupdate")); });
+  await expect(status).toBeHidden();
+  await expect(status).not.toHaveAttribute("aria-busy");
+  await expect(page.locator(".media-stage")).not.toHaveClass(/is-busy/);
+  await video.dispatchEvent("seeking");
+  await expect(status).toBeVisible();
+  await video.evaluate((element) => { element.currentTime += 0.25; element.dispatchEvent(new Event("timeupdate")); });
+  await expect(status).toBeHidden();
+  for (const viewport of [{ width: 390, height: 844 }, { width: 1440, height: 900 }]) {
+    await page.setViewportSize(viewport);
+    await page.screenshot({ path: testInfo.outputPath(`${viewport.width}-resumed-seek.png`) });
+  }
+});
+
 test("advancing video hides controls when WebKit omits playing", async ({ page }) => {
   const video = page.locator("video");
   await page.evaluate(() => (window as Window & { setPaused: (value: boolean) => void }).setPaused(false));

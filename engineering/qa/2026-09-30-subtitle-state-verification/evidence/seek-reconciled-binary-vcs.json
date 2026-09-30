@@ -1,0 +1,16 @@
+[
+  {
+    "app": "player",
+    "vcs": "git",
+    "vcs.revision": "dbcff58f2657310e0a87876556467b734bee0f73",
+    "vcs.time": "2026-09-30T22:05:24Z",
+    "vcs.modified": "false"
+  },
+  {
+    "app": "subtitles",
+    "vcs": "git",
+    "vcs.revision": "dbcff58f2657310e0a87876556467b734bee0f73",
+    "vcs.time": "2026-09-30T22:05:24Z",
+    "vcs.modified": "false"
+  }
+]
