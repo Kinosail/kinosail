@@ -1,4 +1,4 @@
-<meta name="robots" content="index,follow,max-image-preview:large">
+<meta name="robots" content="{% if page.search == false %}noindex,follow{% else %}index,follow,max-image-preview:large{% endif %}">
 <meta property="og:site_name" content="Kinosail">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="sitemap" type="application/xml" href="{{ '/sitemap.xml' | relative_url }}">
@@ -7,9 +7,9 @@
 {
   "@context": "https://schema.org",
   "@graph": [
-    {"@type":"Organization","@id":{{ '/#organization' | absolute_url | jsonify }},"name":"Kinosail","description":"Kinosail is the project behind Kinosail Player, a free, source-available media server and web player for personal libraries on your own hardware.","url":{{ '/' | absolute_url | jsonify }},"logo":{{ '/assets/images/kinosail-mark.svg' | absolute_url | jsonify }},"sameAs":["https://github.com/Kinosail"]},
+    {"@type":"Organization","@id":{{ '/#organization' | absolute_url | jsonify }},"name":"Kinosail","description":"Kinosail makes free, source-available apps for personal media on your own hardware: Kinosail Player for browsing and playback, and Kinosail Subtitles for subtitle automation.","url":{{ '/' | absolute_url | jsonify }},"logo":{{ '/assets/images/kinosail-mark.svg' | absolute_url | jsonify }},"sameAs":["https://github.com/Kinosail"]},
     {"@type":"WebSite","@id":{{ '/#website' | absolute_url | jsonify }},"name":"Kinosail","url":{{ '/' | absolute_url | jsonify }},"publisher":{"@id":{{ '/#organization' | absolute_url | jsonify }}}},
-    {"@type":"WebPage","@id":{{ page.url | absolute_url | jsonify }},"url":{{ page.url | absolute_url | jsonify }},"name":{{ page.title | jsonify }},"description":{{ page.description | default: site.description | jsonify }},"isPartOf":{"@id":{{ '/#website' | absolute_url | jsonify }}},"inLanguage":"en"}
+    {"@type":"WebPage","@id":{{ page.url | absolute_url | jsonify }},"url":{{ page.url | absolute_url | jsonify }},"name":{{ page.title | jsonify }},"description":{{ page.description | default: site.description | jsonify }},"isPartOf":{"@id":{{ '/#website' | absolute_url | jsonify }}},"inLanguage":"en"{% if page.url == '/' %},"mainEntity":{"@id":{{ '/#player' | absolute_url | jsonify }}}{% endif %}{% if page.url == '/products/' %},"about":[{"@id":{{ '/#player' | absolute_url | jsonify }}},{"@id":{{ '/subtitles/#subtitles' | absolute_url | jsonify }}}]{% endif %}}
     {% if page.section %},
     {"@type":"BreadcrumbList","itemListElement":[
       {"@type":"ListItem","position":1,"name":"Docs","item":{{ '/docs/' | absolute_url | jsonify }}}

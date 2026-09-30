@@ -6,6 +6,7 @@ import json
 import re
 from pathlib import Path
 import sys
+import xml.etree.ElementTree as ET
 from urllib.parse import unquote, urljoin, urlsplit
 
 
@@ -58,10 +59,12 @@ def check(root, base):
     robots = root / 'robots.txt'
     homepage = (root / 'index.html').read_text()
     canonical = re.search(r'<link rel="canonical" href="(https://[^/]+)', homepage)
+    public_origin = canonical.group(1) if canonical else ''
     expected_sitemap = f'Sitemap: {canonical.group(1)}{base}/sitemap.xml' if canonical else ''
     if not canonical or not robots.is_file() or expected_sitemap not in robots.read_text().splitlines():
         errors.append('robots.txt must name this build\'s sitemap')
     entries = []
+    public_urls = set()
     for index, product, prefix in (('search.json', 'Player', base),
                                    ('subtitles/search.json', 'Subtitles', base + '/subtitles')):
         product_entries = json.loads((root / index).read_text())
@@ -81,10 +84,22 @@ def check(root, base):
                 continue
             # The canonical origin is supplied by the build, including preview builds.
             source = document.read_text()
-            canonical = re.search(r'<link rel="canonical" href="(https://[^/]+)', source)
-            origin = canonical.group(1) if canonical else ''
-            errors.extend(f'{relative}: {error}' for error in validate(source, origin + entry['url']))
+            public_urls.add(public_origin + entry['url'])
+            errors.extend(f'{relative}: {error}' for error in validate(source, public_origin + entry['url']))
         entries.extend(product_entries)
+    if not base and public_origin == 'https://kinosail.com':
+        public_urls.update(public_origin + path for path in ('/architecture-explorer/', '/subtitles/architecture-explorer/'))
+    try:
+        sitemap = ET.parse(root / 'sitemap.xml').getroot()
+        namespace = '{http://www.sitemaps.org/schemas/sitemap/0.9}'
+        locations = [element.text for element in sitemap.findall(f'{namespace}url/{namespace}loc')]
+        if (sitemap.tag != namespace + 'urlset' or len(locations) != len(set(locations))
+                or set(locations) != public_urls or len(sitemap) != len(locations)
+                or any(element.tag != namespace + 'url' or len(element.findall(namespace + 'loc')) != 1
+                       for element in sitemap)):
+            errors.append('sitemap must contain every canonical public page exactly once and no other URLs')
+    except (ET.ParseError, OSError):
+        errors.append('sitemap must be valid XML')
     if len({entry['url'] for entry in entries}) != len(entries):
         errors.append('duplicate search URLs')
     if {'Player', 'Subtitles'} != {entry['product'] for entry in entries if isinstance(entry, dict) and isinstance(entry.get('product'), str)}:
