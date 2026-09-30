@@ -47,6 +47,7 @@ for (const width of [390, 1440]) {
 				`<a class="card" href="#target">${image.replace('<img ', '<img class="poster" ')}<h3>Movie</h3></a>`,
 				`<article class="card show-card"><a class="show-details" href="#target">${image.replace('<img ', '<img class="poster" ')}<h3>Show</h3></a><a class="show-play" href="#play">Play next</a></article>`,
 				`<article class="card"><a href="#target"><div class="poster art"></div><h3>Missing artwork</h3></a><form><button type="button">Remove</button></form></article>`,
+				...[["loaded", image], ["missing", '<span class="recent-stack-placeholder">TV</span>'], ["failed", image.replace(artwork, "data:image/png;base64,broken")]].map(([state, art]) => `<a class="card recent-card stacked" href="#target"><span class="poster recent-stack"><span class="recent-stack-layer" aria-hidden="true"></span><span class="recent-stack-layer" aria-hidden="true"></span>${art}<span class="recent-stack-count">3</span></span><h3>Stack ${state} artwork</h3><small>3 episodes stacked</small></a>`),
 				...[0, 1, 2, 3, 4].map(count => `<a class="curation-card" href="#target"><span class="curation-poster">${image.repeat(count)}</span><strong>Collection ${count}</strong><small>${count} items</small></a>`),
 				`<a class="collection-card" href="#target"><span class="collection-poster">${image.repeat(4)}</span><strong>Collection mosaic</strong></a>`,
 			];
@@ -64,6 +65,8 @@ for (const width of [390, 1440]) {
 				expect(await perimeter(page, poster, "--focus"), `${await link.textContent()} keyboard perimeter`).toEqual([true, true, true, true]);
 				await page.keyboard.press("Tab");
 			}
+			await page.locator(".stacked").first().click();
+			await expect(page).toHaveURL(/#target$/);
 			await page.evaluate(() => (document.activeElement as HTMLElement)?.blur());
 			await page.getByRole("button", { name: "Remove", exact: true }).hover();
 			expect(await perimeter(page, page.locator(".poster.art"), "--signal"), "Remove highlights its own action").toEqual([false, false, false, false]);
@@ -74,10 +77,10 @@ for (const width of [390, 1440]) {
 			await expect(page.locator(".curation-poster").nth(4)).toHaveCSS("outline-style", "solid");
 			await page.screenshot({ path: testInfo.outputPath("card-highlights-forced-colors.png"), fullPage: true });
 			await page.emulateMedia({ forcedColors: "none" });
-			await page.locator(".curation-card").nth(2).focus();
+			await page.locator(".stacked").first().focus();
 			await page.screenshot({ path: testInfo.outputPath("card-highlights.png"), fullPage: true });
 			const evidence = testInfo.outputPath("environment.json");
-			await writeFile(evidence, JSON.stringify({ width, theme, browser: testInfo.project.name, data: "synthetic 0–4 poster mosaics, nested and direct card links", command: "pnpm exec playwright test card-highlights.spec.ts", revision: process.env.KINOSAIL_TEST_REVISION ?? process.env.GITHUB_SHA, result: "passed" }, null, 2));
+			await writeFile(evidence, JSON.stringify({ width, theme, browser: testInfo.project.name, data: "synthetic 0–4 poster mosaics, nested and direct card links, episode stacks with loaded, missing, and failed artwork", command: "pnpm exec playwright test card-highlights.spec.ts", revision: process.env.KINOSAIL_TEST_REVISION ?? process.env.GITHUB_SHA, result: "passed" }, null, 2));
 			await testInfo.attach("environment.json", { path: evidence, contentType: "application/json" });
 		});
 	}
