@@ -34,20 +34,7 @@ func matchesNormalized(item library.Item, normalized string) bool {
 	if normalized == "" {
 		return false
 	}
-	var credits strings.Builder
-	for _, person := range item.Cast {
-		credits.WriteByte(' ')
-		credits.WriteString(person.Name)
-		credits.WriteByte(' ')
-		credits.WriteString(person.Role)
-	}
-	for _, person := range item.ShowCast {
-		credits.WriteByte(' ')
-		credits.WriteString(person.Name)
-		credits.WriteByte(' ')
-		credits.WriteString(person.Role)
-	}
-	return strings.Contains(searchText(item.Title+" "+item.Show+" "+item.Year+" "+item.Plot+" "+item.Genres+" "+item.Director+" "+item.Studio+" "+item.Artist+" "+item.Album+credits.String()), normalized)
+	return matchesMetadata(item, normalized)
 }
 
 // Sort orders Library items by the supported smart-list order.
@@ -118,11 +105,8 @@ func asciiSearchText(value string) string {
 	result.Grow(len(value))
 	space := true
 	for index := 0; index < len(value); index++ {
-		character := value[index]
-		if character >= 'A' && character <= 'Z' {
-			character += 'a' - 'A'
-		}
-		if character >= 'a' && character <= 'z' || character >= '0' && character <= '9' {
+		character := searchASCIIByte(value[index])
+		if character != ' ' {
 			result.WriteByte(character)
 			space = false
 		} else if !space {
