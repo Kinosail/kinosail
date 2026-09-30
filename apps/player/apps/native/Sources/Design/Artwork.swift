@@ -61,4 +61,3 @@ struct Artwork: View {
         fillsFrame ? .fill : .fit
     }
 }
-
