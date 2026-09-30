@@ -112,11 +112,11 @@ An optimized tvOS simulator experiment runs the production artwork loader throug
 
 Warm reuse changes the result. An 800px request with its exact decoded image cached takes 0.025 ms and returns the same object. Requesting 400px instead takes 4.985 ms and retains an additional image. Combined held pixels increase from 2.56 MB to 3.20 MB. A matching 400px cache hit is also fast, at 0.028 ms.
 
-Ordinary media cards use 800px at standard text sizes. The album grid, album detail, and full audio player use 1600px. A fixed MiniPlayer reduction could help a 1600px-only path while losing an 800px card hit. The experiment does not measure how often each path occurs in real navigation. The MiniPlayer setting remains unchanged.
+Non-landscape media cards use 800px at standard text sizes. Landscape and accessibility variants use 1600px. The album grid, album detail, and full audio player use 1600px. A fixed MiniPlayer reduction could help a 1600px-only path while losing an 800px card hit. The experiment does not measure how often each path occurs in real navigation. The MiniPlayer setting remains unchanged.
 
 [Apple’s latest SwiftUI session](https://developer.apple.com/videos/play/wwdc2026/269/) adds HTTP caching and configurable image sessions. Kinosail also needs decoded-size reuse, profile isolation, protected storage, freshness, and cancellation. Those contracts need verification before replacing its loader. [Apple’s performance lab](https://developer.apple.com/videos/play/wwdc2026/8003/) supports appropriate image sizes and narrower view updates; that guidance does not establish hardware gains here.
 
-The [native artwork record](evidence/native-artwork-loader-2026-09-30.md) contains all 1,500 timed samples, source hashes, a complete replay fixture, startup contamination controls, and exact verification limits. These loader measurements exclude SwiftUI rendering, GPU upload, image quality, physical frames, and real network latency. An adaptive policy remains a candidate for navigation-trace and quality measurements.
+The [native artwork record](evidence/native-artwork-loader-2026-09-30.md) contains all 1,500 timed samples, source hashes, a complete replay fixture, startup contamination controls, and exact verification limits. ImageIO logged pixel-buffer errors during the untimed 1600px seed loads; images returned and checks passed. The cause remains unknown. These loader measurements exclude SwiftUI rendering, GPU upload, image quality, physical frames, and real network latency. An adaptive policy remains a candidate for navigation-trace and quality measurements.
 
 ## Current primary-source research
 

@@ -29,7 +29,7 @@ Unique held bytes sum the returned image and the optional seed, counting identic
 
 ## Decision and remaining work
 
-The 48-point MiniPlayer requests 800px. Ordinary media cards and prefetch request 800px at standard text sizes. The album grid, album detail, and full audio player use the 1600px default. Requests only share decoded pixels when client identity, URL, and dimension match.
+The 48-point MiniPlayer requests 800px. Non-landscape media cards and prefetch request 800px at standard text sizes. Landscape and accessibility variants request 1600px. The album grid, album detail, and full audio player use the 1600px default. Requests only share decoded pixels when client identity, URL, and dimension match.
 
 A fixed MiniPlayer reduction would save pixels after a 1600px-only path. It would lose the 800px cache hit after a matching card path. The latter adds a decode and increases combined retained pixels from 2.56 MB to 3.20 MB. The experiment measures conditional paths, not their frequency in real navigation. Keep the current setting until that distribution and rendered quality are measured.
 
@@ -51,7 +51,7 @@ Album cover identity can also differ from the playing track. `OrganizeMusic` sel
 - The first eight-case run restored an old task-owned loopback session and issued background requests. Its samples remain diagnostic. A guarded test removed only the matching synthetic session. An isolated eight-case control and the final ten-case run passed afterward.
 - The final log has zero HTTP transport/load failure entries. That does not establish the absence of all background framework work.
 - An initial build command ran outside the native project, then a reused result path blocked the correction. A Release build also failed because testability was disabled. The final builds used explicit testability and succeeded. No failed build is counted as passing.
-- ImageIO logged a simulator RawCamera bundle warning. The JPEG fixture decoded correctly and all assertions passed.
+- ImageIO logged a simulator RawCamera bundle warning. It also logged 300 `CVPixelBufferCreate returned err -6680` entries for 1600 × 1600 RGBA images. That matches the number of untimed 1600px seed loads. The loader returned images and all assertions passed. The cause and physical-device behavior remain unknown. These simulator diagnostics limit interpretation of the 1600px path; they are not a failed test or hardware performance proof.
 
 Replay extraction matches the compiled harness byte-for-byte. All raw samples, source/result hashes, and local links validate. `make max-loc`, `make tooling-check`, and `git diff --check` pass. The CI selector reports no affected application surface for these three research Markdown files.
 
@@ -274,7 +274,15 @@ Local result bundles, failed attempts, logs, diagnostic samples, and the replay 
     }
   ],
   "finalRunBackgroundTransportFailureLogEntries": 0,
-  "finalRun": "One selected Swift Testing case passed; 60 batches, 25 calls each, 1500 timed calls."
+  "finalRun": "One selected Swift Testing case passed; 60 batches, 25 calls each, 1500 timed calls.",
+  "simulatorDecoderLog": {
+    "entries": 300,
+    "message": "CVPixelBufferCreate returned err -6680",
+    "width": 1600,
+    "height": 1600,
+    "pixelFormat": "RGBA",
+    "boundary": "1600px images are seed loads outside the timed 400/800px call. Images returned; assertions passed. Decoder cause and physical-device behavior remain unknown."
+  }
 }
 ```
 
