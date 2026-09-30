@@ -70,6 +70,8 @@ test("offline download stops before transfer when device storage is full", async
 
 test("offline removal binds immediately, blocks repeat submits, and resumes live updates after BFCache", async ({ page }) => {
   await page.addInitScript(() => {
+    // This lifecycle fixture has no device file; storage cleanup has separate journeys.
+    Object.defineProperty(navigator.storage, "getDirectory", { configurable: true, value: undefined });
     Object.defineProperty(navigator, "serviceWorker", {
       configurable: true,
       value: Object.assign(new EventTarget(), { controller: null, getRegistration: () => new Promise(() => {}) }),

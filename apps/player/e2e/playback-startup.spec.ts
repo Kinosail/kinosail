@@ -93,13 +93,20 @@ for (const source of ["direct", "compatible"]) test(`blocked autoplay leaves one
 	releaseMedia();
 	await expect(page.locator("[data-player-status]")).toBeHidden();
 	const readiness = await page.locator("video").evaluate((video: HTMLVideoElement) => {
-		let ahead = 0;
-		for (let index = 0; index < video.buffered.length; index++) if (video.buffered.start(index) <= video.currentTime && video.buffered.end(index) >= video.currentTime) ahead = video.buffered.end(index) - video.currentTime;
-		return { readyState: video.readyState, ahead, remaining: video.duration - video.currentTime, position: video.currentTime };
+		let ahead = 0, gap = Infinity;
+		for (let index = 0; index < video.buffered.length; index++) {
+			const start = video.buffered.start(index);
+			if (video.buffered.end(index) >= video.currentTime) {
+				gap = Math.min(gap, Math.max(0, start - video.currentTime));
+				ahead = Math.max(ahead, video.buffered.end(index) - Math.max(video.currentTime, start));
+			}
+		}
+		return { readyState: video.readyState, ahead, gap, remaining: video.duration - video.currentTime, position: video.currentTime };
 	});
 	// Paused WebKit can settle at HAVE_CURRENT_DATA after a buffered seek.
 	// Prove the required tap advances from the resume position below.
 	expect(readiness.readyState).toBeGreaterThanOrEqual(browserName === "webkit" ? 2 : 3);
+	expect(readiness.gap).toBeLessThanOrEqual(0.05);
 	expect(readiness.ahead).toBeGreaterThanOrEqual(Math.min(2, readiness.remaining));
 	await expect(page.locator(".player-center-control[data-player-toggle]")).toBeVisible();
 	await expect(page.getByRole("button", { name: "Play video" })).toHaveCount(0);

@@ -4,6 +4,27 @@ import { installPlayerExperienceFixture } from "./player-experience-fixture";
 
 installPlayerExperienceFixture();
 
+for (const scenario of [
+  { name: "a leading frame timestamp", start: 0.021402, end: 3, ready: 3, playable: true },
+  { name: "a large unbuffered gap", start: 0.5, end: 3, ready: 3, playable: false },
+  { name: "an insufficient buffer", start: 0.021402, end: 0.1, ready: 3, playable: false },
+  { name: "metadata without future data", start: 0.021402, end: 3, ready: 1, playable: false },
+]) test(`Safari startup handles ${scenario.name}`, async ({ page }) => {
+  await page.evaluate(({ start, end, ready }) => {
+    const context = window as Window & { setBufferedStart: (value: number) => void; setBufferedEnd: (value: number) => void; setReadyState: (value: number) => void };
+    const video = document.querySelector("video")!;
+    video.currentTime = 0;
+    video.dataset.start = "0";
+    context.setBufferedStart(start);
+    context.setBufferedEnd(end);
+    context.setReadyState(ready);
+  }, scenario);
+  await page.locator("video").dispatchEvent("loadstart");
+  await page.locator("video").dispatchEvent("canplay");
+  await expect(page.locator("[data-player-status]")).toBeVisible({ visible: !scenario.playable, timeout: 1000 });
+  await expect(page.locator(".player-center-control[data-player-toggle]")).toBeVisible({ visible: scenario.playable });
+});
+
 test("Safari startup preserves a pause requested before playback starts", async ({ page }) => {
   const video = page.locator("video");
   await page.evaluate(() => (window as Window & {setNetworkState: (value: number) => void}).setNetworkState(1));
