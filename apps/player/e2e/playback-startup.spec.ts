@@ -190,7 +190,11 @@ test("trusted source opening sets the first media time", async ({ page, browserN
 			if (!video) return;
 			observer.disconnect();
 			video.addEventListener("canplay", () => { (window as Window & { firstReadyMediaTime: number }).firstReadyMediaTime = video.currentTime; }, { once: true });
-			video.requestVideoFrameCallback((_, { mediaTime }) => { (window as Window & { firstPresentedMediaTime: number }).firstPresentedMediaTime = mediaTime; });
+			const presented = (_: number, { mediaTime }: VideoFrameCallbackMetadata) => {
+        if (video.closest(".media-stage")?.classList.contains("is-busy")) { video.requestVideoFrameCallback(presented); return; }
+        (window as Window & { firstPresentedMediaTime: number }).firstPresentedMediaTime = mediaTime;
+      };
+      video.requestVideoFrameCallback(presented);
 		});
 		observer.observe(document, { childList: true, subtree: true });
 	});

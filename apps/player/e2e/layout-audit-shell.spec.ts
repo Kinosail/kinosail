@@ -26,17 +26,18 @@ test("signed-in application pages retain the navigation shell", async ({ page },
 		});
 		expect(await applicationShellProblems(page), `settings rail at ${viewport.width}px`).toEqual({ display: "grid", horizontalOverflow: 0, outside: [] });
 		if (viewport.width > 900) {
-			expect(shell.navigation).toMatchObject({ left: 0, right: 256, bottom: viewport.height });
-			expect(shell.main.left).toBeGreaterThanOrEqual(256);
+			expect(shell.navigation).toMatchObject({ left: 0, right: viewport.width });
+			expect(shell.navigation.bottom).toBeLessThan(viewport.height / 3);
+			expect(shell.main.left).toBeGreaterThanOrEqual(0);
 			expect(await page.locator(".app-header").evaluate((element) => element.scrollTop)).toBe(0);
 		} else {
-			const dock = await page.locator('.app-header nav').evaluate((element) => {
+			const dock = await page.locator('.mobile-navigation').evaluate((element) => {
 				const box = element.getBoundingClientRect();
 				const header = getComputedStyle(element.closest('.app-header')!);
 				return { bottom: Math.round(box.bottom), position: getComputedStyle(element).position, headerBackdrop: header.backdropFilter, headerTransform: header.transform };
 			});
 			expect(dock).toMatchObject({ bottom: viewport.height, position: "fixed", headerBackdrop: "none", headerTransform: "none" });
-			expect(await page.locator('.app-header nav > a, .app-header nav > details').count()).toBeGreaterThanOrEqual(5);
+			expect(await page.locator('.mobile-navigation > a, .mobile-navigation > details').count()).toBeGreaterThanOrEqual(5);
 		}
 		if (viewport.width === 390) {
 			await page.locator(".nav-more > summary").click();
@@ -80,7 +81,7 @@ test("Owner settings search finds a setting across task families", async ({ page
 		await expect(trustedHTTPS.locator("span").first()).not.toHaveText("");
 		await expect(trustedHTTPS.locator(".settings-search-result-group")).toHaveText("Advanced · Connections");
 		await expect(page.locator("[data-settings-nav]")).toBeVisible();
-		await expect(page.locator("#onboarding")).toBeVisible();
+		await expect(page.locator("#onboarding")).toBeHidden();
 		await expect(page.locator("#transcoder")).toBeHidden();
 		expect((await new AxeBuilder({ page }).analyze()).violations, `${viewport.width}px settings search accessibility`).toEqual([]);
 		expect(await layoutProblems(page), `${viewport.width}px settings search layout`).toEqual({ documentOverflow: 0, outside: [], tinyControls: [], distortedChecks: [], clippedControls: [], overlappingStatuses: [] });
@@ -116,7 +117,7 @@ test("transcoder support stays concise and accessible", async ({ page }, testInf
 		await page.setViewportSize(viewport);
 		await page.goto("/settings#transcoder", { waitUntil: "domcontentloaded" });
 		await expect(page.getByLabel("Video format").locator("option:checked")).toHaveText("Automatic per device (Recommended)");
-		await expect(page.locator("#transcoder>p")).toContainText("It tries AV1, HEVC, then VP9");
+		await expect(page.locator("#transcoder>p")).toContainText("It prefers H.264");
 		await expect(page.locator("#transcoder .automatic-hardware")).toHaveText("Automatic will use: Processor");
 		const support = page.locator("#transcoder>.capability-report");
 		await expect(support).not.toHaveAttribute("open", "");

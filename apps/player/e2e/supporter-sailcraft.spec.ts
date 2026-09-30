@@ -27,7 +27,7 @@ test("Sailcraft honors remain readable in every supporter state", async ({ page 
       await page.setViewportSize({ width, height: 900 });
       await page.goto("/supporter", { waitUntil: "domcontentloaded" });
       await expect(page.getByRole("heading", { name: "A place in the story.", exact: true })).toBeVisible();
-      await expect(page.locator(".supporter-gallery .supporter-badge")).toHaveCount(20);
+      await expect(page.locator(".supporter-gallery .supporter-badge")).toHaveCount(30);
       await expect.poll(() => page.locator(".supporter-gallery img").evaluateAll((images) => images.every((image) => (image as HTMLImageElement).complete && (image as HTMLImageElement).naturalWidth > 0))).toBe(true);
       if (state === "empty") await expect(page.locator(".supporter-honor")).toHaveCount(0);
       else {
@@ -35,7 +35,7 @@ test("Sailcraft honors remain readable in every supporter state", async ({ page 
         await page.locator(".supporter-certificate-preview summary").first().click();
         await expect.poll(() => page.locator(".supporter-certificate-preview img").first().evaluate((image: HTMLImageElement) => image.naturalWidth)).toBeGreaterThan(0);
       }
-      if (state === "archived") await expect(page.locator(".supporter-honor-copy")).toContainText("stays in your archive");
+      if (state === "archived") await expect(page.locator(".supporter-honor-copy")).toContainText("stays in your collection");
       const geometry = await page.locator("main").evaluate((element) => {
         const bounds = element.getBoundingClientRect();
         const outside = [...element.querySelectorAll("*")].filter((child) => child.getBoundingClientRect().right > bounds.right + 1).map((child) => ({ tag: child.tagName, className: child.className, width: child.getBoundingClientRect().width, right: child.getBoundingClientRect().right }));
@@ -58,7 +58,7 @@ test("Contribution frequency shows all ten agreed amounts", async ({ page }) => 
   await page.goto("/supporter");
   const expected = [
     { label: "Monthly", amounts: [3, 5, 8, 12, 18, 25, 35, 45, 60, 75], period: "/month" },
-    { label: "Annual", amounts: [12, 40, 64, 96, 144, 200, 280, 360, 480, 600], period: "/year" },
+    { label: "Yearly", amounts: [12, 40, 64, 96, 144, 200, 280, 360, 480, 600], period: "/year" },
     { label: "One-time", amounts: [5, 15, 30, 60, 100, 150, 250, 400, 550, 750], period: " once" },
   ];
   await expect(page.locator(".supporter-contribute details")).toHaveCount(0);
@@ -67,30 +67,33 @@ test("Contribution frequency shows all ten agreed amounts", async ({ page }) => 
     await expect(page.locator("[data-supporter-family]:not([hidden]) .supporter-price:visible")).toHaveCount(10);
     await expect(page.locator("[data-supporter-family]:not([hidden]) .supporter-price")).toHaveText(plan.amounts.map((amount) => `$${amount}${plan.period}`));
     await expect(page.locator("[data-supporter-family]:not([hidden]) .supporter-price").last()).toBeVisible();
-    await expect(page.locator("[data-supporter-family]:not([hidden]) .supporter-badge").first()).toHaveAttribute("data-family", plan.label === "One-time" ? "patron-order" : "living-standard");
+    await expect(page.locator("[data-supporter-family]:not([hidden]) .supporter-badge").first()).toHaveAttribute("data-family", plan.label === "One-time" ? "one-time" : plan.label === "Yearly" ? "yearly" : "monthly");
   }
-  await expect(page.getByRole("link", { name: "Continue to support site" })).toHaveAttribute("rel", "external noreferrer");
+  await expect(page.getByRole("link", { name: "Continue to support" })).toHaveAttribute("rel", "external noreferrer");
 });
 
-test("Rank recognition follows saved display choice on desktop and mobile", async ({ page }) => {
-  await page.route("**/api/v1/supporter", (route) => route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ livingStandard: { family: "living-standard", rank: 8, name: "Admiral", active: true }, patronOrder: { family: "patron-order", rank: 6, name: "Lighthouse", active: true } }) }));
+test("Collected badges and hidden recognition work on desktop and mobile", async ({ page }) => {
+  let hidden = false;
+  await page.route("**/api/v1/supporter/collection", route => route.fulfill({ json: { display: hidden ? "hidden" : "automatic", badges: [
+    { family: "patron-order", edition: "one-time", rank: 6, name: "Lighthouse" },
+    { family: "living-standard", edition: "monthly", rank: 8, name: "Admiral" },
+    { family: "living-standard", rank: 8, name: "Legacy Admiral", archived: true },
+  ] } }));
   await login(page);
-  for (const [display, name, family] of [["automatic", "Admiral", "living-standard"], ["patron-order", "Lighthouse", "patron-order"], ["hidden", "Supporter", ""]]) {
-    await page.route("**/api/v1/supporter/display", (route) => route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ display }) }));
-    for (const width of [1440, 390]) {
-      await page.setViewportSize({ width, height: 900 });
-      await page.goto("/?view=movies");
-      if (width < 900) await page.locator(".nav-more > summary").click();
-      const link = page.locator(width < 900 ? ".nav-supporter" : ".nav-main-supporter");
-      await expect(link).toContainText(name);
-      if (family) await expect(link.locator("img")).toHaveAttribute("src", new RegExp(`${family}-\\d+-small\\.svg`));
-      else {
-        await expect(link.locator("img")).toHaveCount(0);
-        await expect(page.locator(".supporter-signature")).toBeHidden();
-        await expect(link).not.toHaveAttribute("aria-label");
-      }
+  for (hidden of [false, true]) for (const width of [1440, 390]) {
+    await page.setViewportSize({ width, height: 900 });
+    await page.goto("/?view=movies");
+    const link = page.locator(width > 900 ? ".header-actions .header-supporter" : ".mobile-supporter");
+    if (hidden) await expect(link).toBeHidden();
+    else {
+      await expect(link).toBeVisible();
+      await expect(link).toHaveAttribute("aria-label", "Your supporter collection");
+      await expect(link.locator("img")).toHaveCount(3);
+      await expect(link.locator("img").nth(0)).toHaveAttribute("alt", "Lighthouse · one-time");
+      await expect(link.locator("img").nth(1)).toHaveAttribute("alt", "Admiral · monthly");
+      await expect(link.locator("img").nth(2)).toHaveAttribute("alt", "Legacy Admiral · Legacy recurring · past support");
+      await expect.poll(() => link.locator("img").evaluateAll(images => images.every(image => (image as HTMLImageElement).naturalWidth > 0))).toBe(true);
     }
-    await page.unroute("**/api/v1/supporter/display");
   }
 });
 
@@ -106,15 +109,25 @@ test("Display settings persist through the web form and API", async ({ page }) =
     await route.fulfill({ response, contentType: "text/html", body: rendered });
   });
   await page.goto("/supporter");
-  await page.getByLabel("Badge shown in navigation").selectOption("hidden");
-  await page.getByRole("button", { name: "Save display choice" }).click();
-  await expect(page).toHaveURL(/\/supporter#recognition$/);
-  const saved = await page.request.get("/api/v1/supporter/display");
-  expect(await saved.json()).toEqual({ display: "hidden" });
-  await page.goto("/supporter");
-  await page.getByLabel("Badge shown in navigation").selectOption("automatic");
-  await page.getByRole("button", { name: "Save display choice" }).click();
-  await expect.poll(async () => (await (await page.request.get("/api/v1/supporter/display")).json()).display).toBe("automatic");
+  const setting = page.getByLabel("Show supporter badges around the app");
+  const original = (await (await page.request.get("/api/v1/supporter/display")).json()).display;
+  try {
+    await setting.uncheck();
+    await expect.poll(async () => (await (await page.request.get("/api/v1/supporter/display")).json()).display).toBe("hidden");
+    await expect(page.locator("[data-supporter-visibility-status]")).toContainText("Saved.");
+    await page.reload();
+    await expect(setting).not.toBeChecked();
+    await setting.check();
+    await expect.poll(async () => (await (await page.request.get("/api/v1/supporter/display")).json()).display).toBe("automatic");
+    await page.reload();
+    await expect(setting).toBeChecked();
+  } finally {
+    const status = await page.evaluate(async display => {
+      const csrf = document.querySelector<HTMLMetaElement>('meta[name="kinosail-csrf"]')!.content;
+      return (await fetch("/api/v1/supporter/display", { method: "PUT", headers: { "Content-Type": "application/json", "X-Kinosail-CSRF": csrf }, body: JSON.stringify({ display }) })).status;
+    }, original);
+    expect(status).toBe(200);
+  }
 });
 
 test("Honors support keyboard, light theme, reduced motion, and forced colors", async ({ page, browserName }, testInfo) => {
@@ -127,10 +140,10 @@ test("Honors support keyboard, light theme, reduced motion, and forced colors", 
   await page.goto("/supporter");
   await page.getByRole("button", { name: "Replay badge reveal" }).click();
   expect(await page.locator(".supporter-honor-art .supporter-badge").evaluate((art) => art.getAnimations().length)).toBe(0);
-  await page.getByLabel("Badge shown in navigation").focus();
-  await expect(page.getByLabel("Badge shown in navigation")).toBeFocused();
+  await page.getByLabel("Show supporter badges around the app").focus();
+  await expect(page.getByLabel("Show supporter badges around the app")).toBeFocused();
   await page.keyboard.press(browserName === "webkit" ? "Alt+Tab" : "Tab");
-  await expect(page.getByRole("button", { name: "Save display choice" })).toBeFocused();
+  expect(await page.evaluate(() => document.activeElement !== document.body && document.activeElement?.getClientRects().length! > 0)).toBe(true);
   await page.evaluate(() => localStorage.setItem("kinosail-theme", "light"));
   await page.reload();
   expect((await new AxeBuilder({ page }).include("main").analyze()).violations).toEqual([]);

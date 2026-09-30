@@ -4,6 +4,7 @@ import { configureLayoutAudit, login } from './layout-audit-helpers';
 type QRWindow = Window & { qrTest: { stopped: number; requests: number; release: () => void } };
 
 configureLayoutAudit();
+test.use({ serviceWorkers: "block" });
 test.beforeEach(async ({ page }) => {
   test.skip(process.env.KINOSAIL_TEST_INSTANCE !== '1', 'requires the populated test instance');
   await login(page);
@@ -44,6 +45,7 @@ for (const raw of ['', '12345', '1234567', '12a456', '１２３４５６', 'x'.r
     const posts: string[] = [];
     page.on('request', request => { if (request.method() === 'POST') posts.push(request.url()); });
     await page.getByRole('button', { name: 'Scan QR code', exact: true }).click();
+    await expect.poll(() => page.evaluate(() => (window as QRWindow).qrTest.requests)).toBe(1);
     await expect(page.locator('[data-qr-status]')).toContainText('connected to this Server');
     await expect(page).toHaveURL(/\/quick-connect$/);
     expect(posts).toEqual([]);

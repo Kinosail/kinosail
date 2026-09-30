@@ -32,9 +32,9 @@ test("ordinary browse keeps results in the first useful viewport", async ({ page
 	await page.goto("/?view=movies", { waitUntil: "domcontentloaded" });
 	await expect(page.locator(".browse-toolbar>span")).toBeVisible();
 	const composition = await page.evaluate(() => ({
-		masthead: document.querySelector(".browse-masthead")!.getBoundingClientRect().height,
+		masthead: document.querySelector(".library-masthead")?.getBoundingClientRect().height ?? 0,
 		posterTop: document.querySelector("#library .poster")!.getBoundingClientRect().top,
-		navTop: document.querySelector(".app-header nav")!.getBoundingClientRect().top,
+		navTop: document.querySelector(".mobile-navigation")!.getBoundingClientRect().top,
 	}));
 	expect(composition.masthead).toBeLessThan(240);
 	expect(composition.posterTop).toBeLessThan(composition.navTop);
@@ -43,7 +43,7 @@ test("ordinary browse keeps results in the first useful viewport", async ({ page
 		scrollTo(0, document.documentElement.scrollHeight);
 	});
 	await expect.poll(() => page.evaluate(() => scrollY + innerHeight >= document.documentElement.scrollHeight - 1)).toBeTruthy();
-	const dock = await page.locator(".app-header nav").boundingBox();
+	const dock = await page.locator(".mobile-navigation").boundingBox();
 	const lastControl = await page.locator(".language-picker").boundingBox();
 	expect(dock).not.toBeNull();
 	expect(lastControl).not.toBeNull();
@@ -88,7 +88,7 @@ test("compact landscape shell keeps search and primary actions reachable", async
 	await page.setViewportSize({ width: 720, height: 450 });
 	for (const view of ["all", "movies", "shows"]) {
 		await page.goto(`/?view=${view}`, { waitUntil: "domcontentloaded" });
-		const search = page.getByRole("searchbox", { name: "Search library" });
+		const search = page.getByRole("searchbox", { name: "Search all libraries" });
 		const actions = page.locator(".header-compact-menu > summary");
 		await search.evaluate((element) => (element as HTMLInputElement).blur());
 		const compact = await page.evaluate(() => {
@@ -128,7 +128,7 @@ test("compact landscape shell keeps search and primary actions reachable", async
 		document.documentElement.style.setProperty("--safe-left", "44px");
 		document.documentElement.style.setProperty("--safe-right", "44px");
 	});
-	const insetSearch = page.getByRole("searchbox", { name: "Search library" });
+	const insetSearch = page.getByRole("searchbox", { name: "Search all libraries" });
 	const insetActions = page.locator(".header-compact-menu > summary");
 	await insetSearch.evaluate((element) => (element as HTMLInputElement).blur());
 	for (const state of ["collapsed", "focused"] as const) {
@@ -155,15 +155,15 @@ test("compact landscape shell keeps search and primary actions reachable", async
 		["/account", ['main select[name="language"]', 'main form[action="/language"] button', 'main a[href="/"]']],
 	] as const) {
 		await page.goto(route, { waitUntil: "domcontentloaded" });
-		await page.getByRole("searchbox", { name: "Search library" }).evaluate((element) => (element as HTMLInputElement).blur());
+		await page.getByRole("searchbox", { name: "Search all libraries" }).evaluate((element) => (element as HTMLInputElement).blur());
 		if (route === "/quick-connect") {
 			const initial = await page.evaluate(() => {
 				const header = document.querySelector(".app-header")!.getBoundingClientRect();
 				const form = document.querySelector(".auth > main form")!.getBoundingClientRect();
 				return { headerBottom: header.bottom, formTop: form.top, scrollY };
 			});
-			expect(initial.scrollY, "Quick Connect initial scroll").toBeLessThanOrEqual(10);
-			expect(initial.formTop, "Quick Connect initial shell overlap").toBeGreaterThanOrEqual(initial.headerBottom);
+
+			expect(initial.formTop + initial.scrollY, "Quick Connect form starts below the masthead before autofocus scroll").toBeGreaterThanOrEqual(initial.headerBottom);
 		}
 		for (const selector of selectors) {
 			const target = page.locator(selector).first();
@@ -189,7 +189,7 @@ test("compact landscape shell keeps search and primary actions reachable", async
 
 	await page.emulateMedia({ forcedColors: "active", reducedMotion: "reduce" });
 	await page.goto("/?view=all", { waitUntil: "domcontentloaded" });
-	const forcedSearch = page.getByRole("searchbox", { name: "Search library" });
+	const forcedSearch = page.getByRole("searchbox", { name: "Search all libraries" });
 	const forcedBox = await page.locator(".search").boundingBox();
 	expect(forcedBox?.width, "forced-colors search width").toBeGreaterThan(300);
 	await expect(forcedSearch).toBeVisible();
