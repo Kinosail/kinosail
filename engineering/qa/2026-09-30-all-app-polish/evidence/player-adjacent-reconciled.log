@@ -1,0 +1,23 @@
+
+Running 15 tests using 1 worker
+
+(node:27654) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1/15] [chromium] › home-stack-layout.spec.ts:10:1 › Home media shelves wrap down the page without horizontal scrolling @smoke
+[2/15] [chromium] › shared-button-layout.spec.ts:9:3 › shared action buttons fit and remain operable at 320px, touch=false
+[3/15] [chromium] › shared-button-layout.spec.ts:9:3 › shared action buttons fit and remain operable at 320px, touch=true
+[4/15] [chromium] › shared-button-layout.spec.ts:9:3 › shared action buttons fit and remain operable at 390px, touch=false
+[5/15] [chromium] › shared-button-layout.spec.ts:9:3 › shared action buttons fit and remain operable at 390px, touch=true
+[6/15] [chromium] › shared-button-layout.spec.ts:9:3 › shared action buttons fit and remain operable at 768px, touch=false
+[7/15] [chromium] › shared-button-layout.spec.ts:9:3 › shared action buttons fit and remain operable at 768px, touch=true
+[8/15] [chromium] › shared-button-layout.spec.ts:9:3 › shared action buttons fit and remain operable at 900px, touch=false
+[9/15] [chromium] › shared-button-layout.spec.ts:9:3 › shared action buttons fit and remain operable at 900px, touch=true
+[10/15] [chromium] › shared-button-layout.spec.ts:9:3 › shared action buttons fit and remain operable at 1440px, touch=false
+[11/15] [chromium] › shared-button-layout.spec.ts:9:3 › shared action buttons fit and remain operable at 1440px, touch=true
+[12/15] [chromium] › skeleton-layout.spec.ts:12:5 › Player loading keeps poster Home geometry at 390px @smoke
+[13/15] [chromium] › skeleton-layout.spec.ts:12:5 › Player loading keeps backdrop Home geometry at 390px @smoke
+[14/15] [chromium] › skeleton-layout.spec.ts:12:5 › Player loading keeps poster Home geometry at 1440px @smoke
+[15/15] [chromium] › skeleton-layout.spec.ts:12:5 › Player loading keeps backdrop Home geometry at 1440px @smoke
+  15 passed (15.4s)
