@@ -57,7 +57,7 @@ func (connections *Connections) Revoke(id string) error {
 }
 
 func (connections *Connections) stateLocked() mcpConnectionState {
-	state := mcpConnectionState{Clients: make(map[string]mcpOAuthClient, len(connections.clients)), Grants: make(map[string]mcpOAuthGrant, len(connections.grants))}
+	state := mcpConnectionState{Clients: make(map[string]mcpOAuthClient, len(connections.clients)), Grants: make(map[string]mcpOAuthGrant, len(connections.grants)), Events: make(map[string]eventSubscription, len(connections.events))}
 	for id, client := range connections.clients {
 		client.RedirectURIs = append([]string(nil), client.RedirectURIs...)
 		state.Clients[id] = client
@@ -67,6 +67,9 @@ func (connections *Connections) stateLocked() mcpConnectionState {
 		grant.RefreshHistory = append([]string(nil), grant.RefreshHistory...)
 		state.Grants[id] = grant
 	}
+	for id, subscription := range connections.events {
+		state.Events[id] = subscription
+	}
 	return state
 }
 
@@ -74,7 +77,7 @@ func (connections *Connections) commitLocked(state mcpConnectionState) error {
 	if err := connections.store.Save(state); err != nil {
 		return err
 	}
-	connections.clients, connections.grants = state.Clients, state.Grants
+	connections.clients, connections.grants, connections.events = state.Clients, state.Grants, state.Events
 	return nil
 }
 
@@ -127,7 +130,7 @@ func secretHash(value string) string {
 }
 
 func validMCPConnectionState(state mcpConnectionState) bool {
-	if len(state.Clients) > mcpConnectionLimit || len(state.Grants) > mcpConnectionLimit {
+	if len(state.Clients) > mcpConnectionLimit || len(state.Grants) > mcpConnectionLimit || !validEventState(state.Events) {
 		return false
 	}
 	for _, grant := range state.Grants {

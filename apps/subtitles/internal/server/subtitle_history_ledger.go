@@ -85,6 +85,9 @@ func (ledger *subtitleLedger) storeHistory(key string, record subtitleRecord, ac
 		ledger.state.History = before
 		return err
 	}
+	if ledger.publish != nil {
+		ledger.publish()
+	}
 	return nil
 }
 

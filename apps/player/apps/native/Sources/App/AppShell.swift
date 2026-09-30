@@ -53,6 +53,7 @@ struct AppShell: View {
             .task { await session.restore() }
             .modifier(ConnectionMonitoring())
             .task(id: "\(session.client?.identity.uuidString ?? ""):\(session.restoring):\(scenePhase)") {
+                if scenePhase != .active { await session.artwork.stopPrefetch(); return }
                 guard scenePhase == .active, !session.restoring, let client = session.client else { return }
                 // Visible requests take priority over background catalog warmup.
                 do { try await Task.sleep(for: .milliseconds(100)) }
@@ -65,15 +66,24 @@ struct AppShell: View {
                 let landingTab = savedTabs.flatMap { try? PlayerTab.parse($0).first } ?? .home
                 let clientID = client.identity
                 let currentSession = session
+                let artwork = session.artwork
                 let contentRevision = session.contentRevision
                 await client.warmCatalog(mode: mode, landingTab: landingTab) { warmedMode, home, refreshed in
-                    await MainActor.run {
-                        guard currentSession.client?.identity == clientID, let profile = currentSession.profileKey else { return }
+                    let current = await MainActor.run {
+                        guard currentSession.client?.identity == clientID, let profile = currentSession.profileKey else { return false }
                         let key = "\(profile):\(warmedMode.rawValue)"
-                        if !refreshed, currentSession.resourceSnapshots.value(for: key, clientID: clientID, as: HomeSnapshot.self) != nil { return }
+                        if !refreshed, currentSession.resourceSnapshots.value(for: key, clientID: clientID, as: HomeSnapshot.self) != nil { return true }
                         currentSession.resourceSnapshots.store(home, for: key, clientID: clientID,
                                                                refreshID: refreshed && currentSession.contentRevision == contentRevision ? contentRevision.uuidString : nil)
+                        return true
                     }
+                    guard current else { return }
+                    let selection = HomeSelection(continueWatching: home.continueWatching, recent: home.recent, mode: warmedMode)
+                    if let featured = selection.featured {
+                        let path = featured.backdrop.isEmpty ? featured.poster : featured.backdrop
+                        if !path.isEmpty { try? await artwork.prefetch(paths: [path], client: client, dimension: 1600) }
+                    }
+                    try? await artwork.prefetch(paths: (home.continueWatching + home.recent).prefix(24).map(\.poster).filter { !$0.isEmpty }, client: client)
                 }
                 #endif
             }

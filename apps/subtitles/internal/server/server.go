@@ -190,6 +190,7 @@ func newApplication(config Config) http.Handler { //nolint:funlen,cyclop,gocogni
 	}
 	downloads := newDownloadManager(config.Lifecycle, config.CacheDir, config.FFmpeg, settings, workloads, probe)
 	events := wireLiveEvents(index, downloads, homeAssistant)
+	subtitles.ledger.setPublisher(func() { events.Publish("", "subtitles.updated", "/api/v1/subtitle-library") })
 	if downloads.Err() != nil {
 		return unavailableApplication(config, "download cache is unavailable")
 	}
@@ -242,6 +243,7 @@ func newApplication(config Config) http.Handler { //nolint:funlen,cyclop,gocogni
 	}
 	registerAPI(mux, apiServices{index, progress, lists, auth, settings, hls, probe, metadata, subtitles, rooms, backups, downloads, maintenance, viewingImports, agentConnections, config.InternetAccess, config.TrustedHTTPS, shares, quickConnect, supporter, updates, homeAssistant, config.AuthURL, events})
 	mcpAdapter := registerMCPWithConnections(mux, config.MCP, auth, apiRouting(mux), agentConnections)
+	mcpAdapter.ObserveEvents(config.Lifecycle, events)
 	startApplicationMCPHost(config, managedLifecycle, mcpAdapter, auth.profiles)
 	registerJellyfin(mux, settings, index, progress, lists, auth, quickConnect, probe, hls, downloads)
 	registerBrowsers(mux, index, progress, lists)

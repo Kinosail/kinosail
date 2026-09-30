@@ -103,11 +103,7 @@ func serveOffline(writer http.ResponseWriter, request *http.Request) {
 }
 
 func serveScript(content []byte) http.HandlerFunc {
-	return func(writer http.ResponseWriter, request *http.Request) {
-		writer.Header().Set("Content-Type", "text/javascript; charset=utf-8")
-		cacheStatic(writer, request)
-		_, _ = writer.Write(content)
-	}
+	return compressedAsset(content, "text/javascript; charset=utf-8")
 }
 
 var mainBundle = append(append([]byte(nil), pwaJS...), shortcutsJS...)
@@ -119,28 +115,12 @@ func serveServiceWorker(writer http.ResponseWriter, _ *http.Request) {
 	_, _ = writer.Write(serviceWorker)
 }
 
-func serveStyle(writer http.ResponseWriter, request *http.Request) {
-	writer.Header().Set("Content-Type", "text/css; charset=utf-8")
-	cacheStatic(writer, request)
-	_, _ = writer.Write(appCSS)
-	_, _ = writer.Write(webassets.LastLightCSS)
-	_, _ = writer.Write(supporterCSS)
-	_, _ = writer.Write(homeCSS)
-	_, _ = writer.Write(settingsCSS)
-}
+var serveStyle = compressedAsset(joinScripts(appCSS, webassets.LastLightCSS, supporterCSS, homeCSS, settingsCSS), "text/css; charset=utf-8")
 
-func serveSupporterStyle(writer http.ResponseWriter, request *http.Request) {
-	writer.Header().Set("Content-Type", "text/css; charset=utf-8")
-	cacheStatic(writer, request)
-	_, _ = writer.Write(supporterCSS)
-}
+var serveSupporterStyle = compressedAsset(supporterCSS, "text/css; charset=utf-8")
 
 func serveAsset(content []byte, contentType string) http.HandlerFunc {
-	return func(writer http.ResponseWriter, request *http.Request) {
-		writer.Header().Set("Content-Type", contentType)
-		cacheStatic(writer, request)
-		_, _ = writer.Write(content) //nolint:gosec // G705: every caller supplies embedded asset bytes, never reflected request content.
-	}
+	return compressedAsset(content, contentType)
 }
 
 func serveSupporterBadge(writer http.ResponseWriter, request *http.Request) {
@@ -154,7 +134,9 @@ func serveSupporterBadge(writer http.ResponseWriter, request *http.Request) {
 		http.NotFound(writer, request)
 		return
 	}
-	serveAsset(content, "image/svg+xml")(writer, request)
+	writer.Header().Set("Content-Type", "image/svg+xml")
+	cacheStatic(writer, request)
+	_, _ = writer.Write(content) //nolint:gosec // SVG bytes come only from the embedded badge assets.
 }
 
 func cacheStatic(writer http.ResponseWriter, request *http.Request) {

@@ -73,10 +73,11 @@ type ErrorWriter func(http.ResponseWriter, *http.Request, error, int)
 
 // GatewayConfig contains application adapters for one MCP gateway.
 type GatewayConfig struct {
-	OAuth      OAuthConfig
-	Principals PrincipalRepository
-	API        APIInvoker
-	Routes     RoutePolicy
+	OAuth          OAuthConfig
+	Principals     PrincipalRepository
+	API            APIInvoker
+	Routes         RoutePolicy
+	SubtitleEvents bool
 }
 
 func (config GatewayConfig) validate() error {
