@@ -1,0 +1,32 @@
+◇ Test run started.
+↳ Testing Library Version: 2084
+↳ Target Platform: arm64-apple-tvos17.0-simulator
+◇ Suite TVOSFocusTests started.
+◇ Suite PolishFixtureSeedTests started.
+◇ Suite TVOSQuickPlayTests started.
+◇ Suite TVTopBarTests started.
+◇ Test remotePlayOpensPlayableTitlesDirectly() started.
+◇ Test remotePlayLeavesNonPlayableCardsForSelection() started.
+◇ Test topControlsShareThePageBackground() started.
+◇ Test seedValidatedIsolatedSession() started.
+◇ Test loadedPlayDoesNotTakeFocusFromNavigation() started.
+✔ Test remotePlayLeavesNonPlayableCardsForSelection() passed after 0.001 seconds.
+✔ Test remotePlayOpensPlayableTitlesDirectly() passed after 0.001 seconds.
+✔ Suite TVOSQuickPlayTests passed after 0.003 seconds.
+✔ Test topControlsShareThePageBackground() passed after 0.426 seconds.
+◇ Test homeKeepsSearchAndSettingsWithoutLibraryMenu() started.
+✘ Test loadedPlayDoesNotTakeFocusFromNavigation() recorded an issue at TVOSFocusTests.swift:47:9: Expectation failed: probe.focused == .tab
+↳ probe.focused == .tab → false
+↳   probe.focused → nil
+↳     some → .tab
+✔ Test seedValidatedIsolatedSession() passed after 0.595 seconds.
+✔ Suite PolishFixtureSeedTests passed after 0.596 seconds.
+✘ Test loadedPlayDoesNotTakeFocusFromNavigation() recorded an issue at TVOSFocusTests.swift:50:9: Expectation failed: probe.focused == .tab
+↳ probe.focused == .tab → false
+↳   probe.focused → nil
+↳     some → .tab
+✘ Test loadedPlayDoesNotTakeFocusFromNavigation() failed after 0.872 seconds with 2 issues.
+✘ Suite TVOSFocusTests failed after 0.874 seconds with 2 issues.
+✔ Test homeKeepsSearchAndSettingsWithoutLibraryMenu() passed after 0.621 seconds.
+✔ Suite TVTopBarTests passed after 1.047 seconds.
+✘ Test run with 6 tests in 4 suites failed after 1.049 seconds with 2 issues.

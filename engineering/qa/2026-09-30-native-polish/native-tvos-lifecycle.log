@@ -1,0 +1,15 @@
+◇ Test run started.
+◇ Suite TVPolishGalleryTests started.
+◇ Test renderLibraryLifecycles() started.
+TV_POLISH_RENDER home-pending 1920x1080
+TV_POLISH_RENDER library-pending 1920x1080
+TV_POLISH_RENDER home-loaded 1920x1080
+TV_POLISH_RENDER library-loaded 1920x1080
+TV_POLISH_RENDER home-empty 1920x1080
+TV_POLISH_RENDER library-empty 1920x1080
+TV_POLISH_RENDER home-failed 1920x1080
+TV_POLISH_RENDER library-failed 1920x1080
+✔ Test renderLibraryLifecycles() passed after 8.028 seconds.
+✔ Suite TVPolishGalleryTests passed after 8.029 seconds.
+✔ Test run with 1 test in 1 suite passed after 8.029 seconds.
+** TEST SUCCEEDED **
