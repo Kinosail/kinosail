@@ -81,6 +81,7 @@ struct AlbumScreen: View {
     @State private var starting = false
     @State private var showsPlayer = false
     #if os(tvOS)
+    @State private var presentedWhileStarting = false
     @Namespace private var albumFocus
     #endif
 
@@ -147,7 +148,7 @@ struct AlbumScreen: View {
         #if os(tvOS)
         .focusScope(albumFocus)
         .onChange(of: session.player.loading) { _, loading in
-            if starting && loading { showsPlayer = true }
+            if starting && loading { presentedWhileStarting = true; showsPlayer = true }
         }
         #endif
         #if os(tvOS)
@@ -162,9 +163,20 @@ struct AlbumScreen: View {
     private func play(_ items: [MediaItem], at index: Int) {
         guard let client = session.client, let store = session.progress, !starting else { return }
         starting = true
+        #if os(tvOS)
+        presentedWhileStarting = false
+        #endif
         Task {
             defer { starting = false }
-            do { try await session.player.playQueue(items, at: index, client: client, store: store); showsPlayer = true; message = nil }
+            do {
+                try await session.player.playQueue(items, at: index, client: client, store: store)
+                #if os(tvOS)
+                if !presentedWhileStarting { showsPlayer = true }
+                #else
+                showsPlayer = true
+                #endif
+                message = nil
+            }
             catch { message = AppSession.message(error) }
         }
     }

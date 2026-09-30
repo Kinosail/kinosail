@@ -63,11 +63,12 @@ final class RemotePolishTests: RemoteTestCase {
         remote.press(.select)
         XCTAssertTrue(app.buttons["Back 15 seconds"].waitForExistence(timeout: 20))
         for _ in 0..<5 {
-            let focused = app.buttons.matching(NSPredicate(format: "hasFocus == true")).firstMatch
+            let focused = app.descendants(matching: .any).matching(NSPredicate(format: "hasFocus == true")).firstMatch
+            XCTAssertTrue(focused.waitForExistence(timeout: 5), "Focus should settle after the player transition")
             if focused.label == "Shuffle off" || focused.label == "Repeat: off" { break }
             remote.press(.down)
         }
-        let sleep = app.buttons["Sleep timer"]
+        let sleep = app.descendants(matching: .any).matching(NSPredicate(format: "label == 'Sleep timer'")).firstMatch
         XCTAssertTrue(sleep.exists)
         XCTAssertFalse(sleep.hasFocus)
         let frame = sleep.frame.insetBy(dx: 25, dy: 15)

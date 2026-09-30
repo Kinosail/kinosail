@@ -92,7 +92,7 @@ struct AudioPlayerScreen: View {
                             }
                                 .font(.largeTitle)
                                 #if os(tvOS)
-                                .buttonStyle(.card)
+                                .buttonStyle(.card).buttonBorderShape(.circle)
                                 #else
                                 .buttonStyle(.borderedProminent).buttonBorderShape(.capsule).tint(KinoTheme.signal).foregroundStyle(KinoTheme.signalInk)
                                 #endif
