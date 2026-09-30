@@ -109,6 +109,7 @@ struct MediaItem: Codable, Identifiable, Hashable, Sendable {
     }
 
     var subtitleWithoutYear: String {
+        if kind == .video || kind == .show { return "" }
         if !show.isEmpty { return rating }
         return [artist, rating].filter { !$0.isEmpty }.joined(separator: " · ")
     }
