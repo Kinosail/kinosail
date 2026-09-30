@@ -301,7 +301,15 @@
     },
     {
       "path": "report.md",
-      "sha256": "e99a2832c3f5e0ef5afafaa0c45a7ed2b25656b4d2bce1d87e2aa2d85a7e00e6"
+      "sha256": "21b837477eb3ce5232071c763520a8e2fa85ed5888d8593ecaf9665e764287c5"
     }
-  ]
+  ],
+  "reconciliation": {
+    "originMain": "74e18c46afbb06b35cf835ace8556deb89eb7cd0",
+    "mergeCommit": "309ccd4f4a8e2507307b9e4bc6d9de1292f231b3",
+    "androidSourceHashesUnchanged": true,
+    "upstreamSurface": "Apple playback options and progress persistence",
+    "localRerun": "No Android source changed; original 123-test/build result remains bound by hashes",
+    "hosted": "Fresh required CI pending"
+  }
 }

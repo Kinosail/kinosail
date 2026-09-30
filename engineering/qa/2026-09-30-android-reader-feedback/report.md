@@ -13,6 +13,8 @@ The change uses the existing `ReaderPageView`. No API, input validation, persist
 - Render audit: every captured semantics rectangle stays within its viewport. The final phone saving warning measures 11.42:1 against its rendered background. Both edge pixels use that background. Loaded-page pixels remain identical at all 3 sizes.
 - `make max-loc`, `git diff --check`, and the committed Player `verify-changed` gate passed. The changed-app gate selected file-cap and diff checks only.
 
+The contrast regression uses the [4.5:1 text threshold](https://www.w3.org/WAI/WCAG22/Understanding/contrast-minimum.html).
+
 The loading tests cover initial unknown counts, known-count pending work, success, subsequent pending work, terminal failure, unsupported format, and save failure. Existing polite error announcements remain covered. The gallery compares initial pending, known-count pending, loaded, failed, unsupported, and loaded-with-save-failure states. A settled empty document is rejected by the existing reader contract; the unavailable-format state has no placeholder or retry action.
 
 ## Repeat
@@ -27,6 +29,10 @@ Use the repository JDK 17 and Android SDK. Run from `apps/player/apps/android`:
 To repeat the gallery, copy `ReaderPolishGalleryTest.kt.txt` into the existing core test package as `ReaderPolishGalleryTest.kt`. Set `KINOSAIL_READER_CAPTURE_DIR` to a task-owned output directory. Select that class with `--tests`, then remove the temporary source. The archived test draws fictional page content and exercises the real themed reader component. It adds no production seam or dependency.
 
 The contexts record revision, source hashes, command, fixture, environment, and result. The source was tested before committing; `run-context.json` binds its unchanged hashes to the final source commit. Baseline production and regression source snapshots are included. Artifact hashes are verified before delivery.
+
+## Reconciliation
+
+The branch merged current main through PR #392 before publication. That update changes only Apple playback/options and progress files. Both tested Android source hashes remain identical after reconciliation. Unchanged Android checks were not repeated. Fresh hosted CI verifies the reconciled branch.
 
 ## Boundaries
 
