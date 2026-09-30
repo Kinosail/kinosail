@@ -55,7 +55,7 @@ printf '%s' '{"streams":[{"index":0,"codec_type":"video","codec_name":"hevc","pr
 	compatible := httptest.NewRecorder()
 	handler.ServeHTTP(compatible, httptest.NewRequestWithContext(t.Context(), http.MethodGet, delivery.MediaSources[0].TranscodingURL, nil))
 	used := readTestFile(t, arguments)
-	if compatible.Code != http.StatusOK || !strings.Contains(compatible.Body.String(), "#EXTM3U") || !strings.Contains(compatible.Body.String(), "1080p/index.m3u8?") || strings.Contains(compatible.Body.String(), "360p/index.m3u8?") || strings.Count(used, "-threads:v ") != 1 || !strings.Contains(used, "-threads:v "+strconv.Itoa(runtime.GOMAXPROCS(0))) || !strings.Contains(used, "-readrate_initial_burst 12 -readrate 1") || !strings.Contains(used, "-hls_time 2") || !strings.Contains(compatible.Body.String(), "api_key=") || !strings.Contains(compatible.Body.String(), "playSessionId=") {
+	if compatible.Code != http.StatusOK || !strings.Contains(compatible.Body.String(), "#EXTM3U") || !strings.Contains(compatible.Body.String(), "1080p/index.m3u8?") || strings.Contains(compatible.Body.String(), "360p/index.m3u8?") || strings.Count(used, "-threads:v ") != 1 || !strings.Contains(used, "-threads:v "+strconv.Itoa(runtime.GOMAXPROCS(0))) || strings.Contains(used, "-readrate") || !strings.Contains(used, "-hls_time 2") || !strings.Contains(compatible.Body.String(), "api_key=") || !strings.Contains(compatible.Body.String(), "playSessionId=") {
 		t.Fatalf("transcode delivery = %d %q", compatible.Code, compatible.Body.String())
 	}
 	assertRestartedJellyfinHLSChain(t, config, delivery.MediaSources[0].TranscodingURL)
