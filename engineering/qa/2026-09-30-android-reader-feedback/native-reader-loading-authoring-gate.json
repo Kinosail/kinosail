@@ -1,0 +1,15 @@
+{
+  "contract": "The actual shared Android reader surface exposes indeterminate progress while page imagery is pending, including when the document page count is already known. Success and failure remove pending feedback.",
+  "credibleRegression": "PDF and comic callers clear the bitmap before async rendering/loading while total remains positive; current ReaderPageView only shows progress for total zero.",
+  "primaryOwner": "Extend ReaderAccessibilityTest, which already renders the real shared Compose view. ReaderApi tests cover response/security contracts but do not observe pending visual or progress semantics.",
+  "productionSeam": "None. Direct shared UI rendering with existing pending/loaded/error props; no loading predicate or new injectable service.",
+  "failureModes": [
+    "pending with unknown count",
+    "pending with known count",
+    "loaded image must have no spinner",
+    "failed page must have no spinner and keep polite error feedback",
+    "format unavailable must have no spinner",
+    "save failure must preserve loaded content"
+  ],
+  "evidenceBoundary": "Robolectric UI semantics and, if supported, rendered captures; separate from emulator, physical-device, network and PDF decoder evidence."
+}

@@ -1,0 +1,27 @@
+Printing with useUnmergedTree = 'false'
+Node #89 at (l=0.0, t=0.0, r=844.0, b=390.0)px
+ |-Node #90 at (l=0.0, t=0.0, r=844.0, b=390.0)px
+   Shape = 'RectangleShape'
+    |-Node #93 at (l=16.0, t=28.0, r=695.0, b=52.0)px
+    | Text = '[The Lighthouse Atlas]'
+    | Actions = [ClearTextSubstitution, GetTextLayoutResult, SetTextSubstitution, ShowTextSubstitution]
+    |-Node #94 at (l=707.0, t=20.0, r=769.0, b=60.0)px
+    | Role = 'Button'
+    | Shape = 'RoundedCornerShape(topStart = CornerSize(size = 50.0%), topEnd = CornerSize(size = 50.0%), bottomEnd = CornerSize(size = 50.0%), bottomStart = CornerSize(size = 50.0%))'
+    | Text = '[Zoom]'
+    | [Disabled]
+    | Actions = [ClearTextSubstitution, GetTextLayoutResult, OnClick, SetTextSubstitution, ShowTextSubstitution]
+    | MergeDescendants = 'true'
+    |-Node #97 at (l=769.0, t=20.0, r=828.0, b=60.0)px
+    | Focused = 'false'
+    | Role = 'Button'
+    | Shape = 'RoundedCornerShape(topStart = CornerSize(size = 50.0%), topEnd = CornerSize(size = 50.0%), bottomEnd = CornerSize(size = 50.0%), bottomStart = CornerSize(size = 50.0%))'
+    | Text = '[Done]'
+    | Actions = [ClearTextSubstitution, GetTextLayoutResult, OnClick, RequestFocus, SetTextSubstitution, ShowTextSubstitution]
+    | MergeDescendants = 'true'
+    |-Node #100 at (l=16.0, t=350.0, r=828.0, b=374.0)px
+      Shape = 'RectangleShape'
+       |-Node #116 at (l=16.0, t=350.0, r=384.0, b=374.0)px
+         LiveRegion = 'Polite'
+         Text = '[This book format is not available on Android yet.]'
+         Actions = [ClearTextSubstitution, GetTextLayoutResult, SetTextSubstitution, ShowTextSubstitution]

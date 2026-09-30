@@ -1,0 +1,32 @@
+{
+  "revision": "8a488dda499e672478c0f9a9c4debabdbac94a9f",
+  "sourceState": "loading fix and inset warning background present; full-width feedback background unchanged",
+  "command": [
+    "./gradlew",
+    ":app:testDebugUnitTest",
+    "--tests",
+    "com.kinosail.player.core.ReaderAccessibilityTest.savingErrorRemainsReadableOverALightPage",
+    "--max-workers=2"
+  ],
+  "environment": {
+    "host": "macOS ARM64",
+    "java": "17.0.20.1",
+    "robolectricApi": 35,
+    "graphics": "NATIVE",
+    "size": "390x844dp xhdpi"
+  },
+  "data": "Synthetic white 600x900 page; sample warning background across viewport edges and text area",
+  "started": "2026-09-30T23:10:19.013770+00:00",
+  "artifacts": [
+    {
+      "path": "apps/player/apps/android/app/src/main/java/com/kinosail/player/core/ReaderPageView.kt",
+      "sha256": "5c8f63f1e23b3028041a5ee893bf091c3c8c8a44801aa1f3244310ed85837419"
+    },
+    {
+      "path": "apps/player/apps/android/app/src/test/java/com/kinosail/player/core/ReaderAccessibilityTest.kt",
+      "sha256": "f26d626f077bc665e85879b3591644f1cd6f64006e81a82ebd908c0f561767ae"
+    }
+  ],
+  "exitCode": 1,
+  "finished": "2026-09-30T23:10:37.712400+00:00"
+}

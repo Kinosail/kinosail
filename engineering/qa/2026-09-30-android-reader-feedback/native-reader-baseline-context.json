@@ -1,0 +1,30 @@
+{
+  "revision": "8a488dda499e672478c0f9a9c4debabdbac94a9f",
+  "command": [
+    "./gradlew",
+    ":app:testDebugUnitTest",
+    "--tests",
+    "com.kinosail.player.core.ReaderAccessibilityTest",
+    "--max-workers=2"
+  ],
+  "environment": {
+    "host": "macOS ARM64",
+    "java": "17.0.20.1",
+    "sdk": "/Users/mikeo/.cache/kinosail-android-sdk",
+    "robolectricApi": 35
+  },
+  "data": "Synthetic Example title, null/4x4 bitmap, known/unknown counts, pending-to-ready-to-pending-to-failed transitions, save failure, unsupported format",
+  "started": "2026-09-30T23:00:42.051133+00:00",
+  "artifacts": [
+    {
+      "path": "apps/player/apps/android/app/src/main/java/com/kinosail/player/core/ReaderPageView.kt",
+      "sha256": "02d1a17ad2d8db61d34fb83aca5694943464367e1e0c9bb0d24f0c318145ef89"
+    },
+    {
+      "path": "apps/player/apps/android/app/src/test/java/com/kinosail/player/core/ReaderAccessibilityTest.kt",
+      "sha256": "507bbb335208282dc7f0908e1992b6c840fac8e1b421aeb4e19a8ab4d8845f31"
+    }
+  ],
+  "exitCode": 1,
+  "finished": "2026-09-30T23:01:22.025165+00:00"
+}

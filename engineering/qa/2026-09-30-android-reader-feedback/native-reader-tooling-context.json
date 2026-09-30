@@ -1,0 +1,22 @@
+{
+  "revision": "7a60d7bef4f07ec331797a4da5ae6669e4d9ca62",
+  "command": [
+    "make",
+    "tooling-check"
+  ],
+  "sourceState": "regenerated architecture snapshots, Android source unchanged",
+  "started": "2026-09-30T23:24:12.333722+00:00",
+  "artifacts": [
+    {
+      "path": "apps/player/docs/architecture-explorer/index.html",
+      "sha256": "0a9a3ddf80f637f67530d2a4d7e1de760ca6d734a50c7900439f001e61a0870d"
+    },
+    {
+      "path": "apps/subtitles/docs/architecture-explorer/index.html",
+      "sha256": "6209ee613f5c0f49bbb1f3ea1649134785a4f50be8a285ef6b2e35779ae9772a"
+    }
+  ],
+  "exitCode": 0,
+  "finished": "2026-09-30T23:24:56.856349+00:00",
+  "sourceStable": true
+}
