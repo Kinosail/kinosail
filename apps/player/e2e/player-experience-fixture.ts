@@ -4,7 +4,7 @@ import { playerSource } from "./static-sources";
 
 export function installPlayerExperienceFixture() {
 test.beforeEach(async ({ page }, testInfo) => {
-  if (testInfo.title === "theater control gets out of the way during playback") await page.clock.install();
+  if (testInfo.title === "theater control gets out of the way during playback" || testInfo.title.includes("Safari startup")) await page.clock.install();
   const markup = `
     <meta charset="utf-8"><body class="player-page"><main class="player-shell"><div class="media-stage${testInfo.title.includes("blocked autoplay reveals Play") ? " is-busy" : ""}">
       <video id="player-media" data-title="Arrival" data-duration="100" data-start="20" data-progress="/progress/movie" data-playback-session="trace-session" data-playback-trace="https://127.0.0.1:38127/api/v1/items/movie/playback-events"${testInfo.title.includes("limited native fullscreen") || testInfo.title.includes("limited in-band") ? ' data-subtitle-picker-limited="true"' : ""}${testInfo.title.includes("retries requested autoplay") ? " autoplay" : ""}${testInfo.title.includes("resumed autoplay") ? " data-autoplay" : ""}>${testInfo.title.includes("limited in-band") ? '<track kind="subtitles" label="English" data-subtitle-source="/captions.vtt">' : ""}</video>
@@ -17,13 +17,18 @@ test.beforeEach(async ({ page }, testInfo) => {
   await page.route("https://127.0.0.1:38127/", (route) => route.fulfill({ contentType: "text/html; charset=utf-8", body: markup }));
   await page.route("**/api/v1/items/movie/playback-events", (route) => route.fulfill({ status: 204 }));
   await page.setContent(markup);
-  await page.evaluate((withInBand) => {
+  await page.evaluate(({withInBand, safariStartup}) => {
+    if (safariStartup) Object.defineProperty(navigator, "userAgent", {configurable: true, value: "Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 Mobile/15E148"});
     try { Object.defineProperty(window, "localStorage", { value: { getItem: () => null, setItem: () => {} } }); } catch {}
     let bufferedEnd = 60;
     let paused = true;
     let playFailure = "";
-    let readyState = 4;
+    let playPending = false;
+    let finishPlay = () => {};
+    let readyState = safariStartup ? 0 : 4;
+    let networkState = safariStartup ? 2 : 1;
     const video = document.querySelector("video")!;
+    if (safariStartup) Object.defineProperty(video, "currentSrc", {value: "https://127.0.0.1:38127/media/movie"});
     const trackEvents = new EventTarget();
     const makeTrack = () => {
       let mode = "disabled";
@@ -41,9 +46,10 @@ test.beforeEach(async ({ page }, testInfo) => {
       currentTime: { value: 20, writable: true },
       duration: { value: 100 },
       readyState: { get: () => readyState },
+      networkState: { get: () => networkState },
       load: { value() {} },
       paused: { get: () => paused, configurable: true },
-      play: { value: async () => { if (playFailure) throw new DOMException("", playFailure); paused = false; video.dispatchEvent(new Event("play")); video.dispatchEvent(new Event("playing")); } },
+      play: { value: async () => { if (playFailure) throw new DOMException("", playFailure); paused = false; video.dispatchEvent(new Event("play")); if (playPending) await new Promise<void>((resolve) => { finishPlay = resolve; }); video.dispatchEvent(new Event("playing")); } },
       pause: { value: () => { paused = true; video.dispatchEvent(new Event("pause")); } },
       volume: { value: 1, writable: true },
       muted: { value: false, writable: true },
@@ -53,10 +59,13 @@ test.beforeEach(async ({ page }, testInfo) => {
       setBufferedEnd: (value: number) => { bufferedEnd = value; },
       setPaused: (value: boolean) => { paused = value; },
       setPlayFailure: (value: string) => { playFailure = value; },
+      setPlayPending: (value: boolean) => { playPending = value; },
+      finishPlay: () => finishPlay(),
       setReadyState: (value: number) => { readyState = value; },
+      setNetworkState: (value: number) => { networkState = value; },
       textTrack,
     });
-  }, testInfo.title.includes("limited in-band"));
+  }, {withInBand: testInfo.title.includes("limited in-band"), safariStartup: testInfo.title.includes("Safari startup")});
   if (testInfo.title.includes("device playback") || testInfo.title.includes("AirPlay")) await page.evaluate((airplay) => {
     const video = document.querySelector("video")!;
     Object.defineProperty(video, "remote", {configurable: true, value: null});
