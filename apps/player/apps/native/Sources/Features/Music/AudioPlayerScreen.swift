@@ -45,7 +45,7 @@ struct AudioPlayerScreen: View {
         ScrollView {
             if let failure { RetryState(message: failure) { revision += 1 } }
             else if let message = session.player.message { RetryState(message: message) { revision += 1 } }
-            else if let item = session.player.currentItem, item.isAudio {
+            else if let item = session.player.currentItem, item.isAudio, session.player.player != nil {
                 nowPlayingLayout {
                     Artwork(path: item.artwork, symbol: "music.note", ratio: 1).frame(maxWidth: 440).clipShape(.rect(cornerRadius: 24))
                     VStack(spacing: 28) {

@@ -14,10 +14,10 @@ struct LoadingState: View {
                 line(width: 180, height: 28).accessibilityHidden(true)
                 if layout == .tvHome {
                     ScrollView(.horizontal) {
-                        HStack(alignment: .top, spacing: 18) { ForEach(0..<4) { _ in card(ratio: 16 / 9, showsProgress: true).frame(width: 390) } }
+                        HStack(alignment: .top, spacing: KinoTheme.shelfSpacing) { ForEach(0..<4) { _ in card(ratio: 16 / 9, showsProgress: true).frame(width: 390) } }
                         .padding(.horizontal, 24).padding(.vertical, 24)
                     }
-                    .scrollIndicators(.hidden).scrollDisabled(true).accessibilityHidden(true)
+                    .scrollIndicators(.hidden).scrollDisabled(true).accessibilityHidden(true).padding(.horizontal, -24)
                 } else {
                     LazyVGrid(columns: ResumeRows.columns(accessibility: dynamicType.isAccessibilitySize), alignment: .leading, spacing: 28) {
                         ForEach(0..<2) { _ in resumeRow }
@@ -26,7 +26,7 @@ struct LoadingState: View {
                 }
                 line(width: 130, height: 28).accessibilityHidden(true)
                 ScrollView(.horizontal) {
-                    HStack(spacing: 18) {
+                    HStack(spacing: KinoTheme.shelfSpacing) {
                         ForEach(0..<4) { _ in
                             HStack(spacing: 18) {
                                 RoundedRectangle(cornerRadius: 12).fill(KinoTheme.surface).frame(width: 60, height: 60)
@@ -38,13 +38,13 @@ struct LoadingState: View {
                     }
                     .padding(.horizontal, 24).padding(.vertical, 24)
                 }
-                .scrollIndicators(.hidden).scrollDisabled(true).accessibilityHidden(true)
+                .scrollIndicators(.hidden).scrollDisabled(true).accessibilityHidden(true).padding(.horizontal, -24)
                 line(width: 230, height: 28).accessibilityHidden(true)
                 ScrollView(.horizontal) {
-                    HStack(alignment: .top, spacing: 18) { ForEach(0..<4) { _ in card(ratio: layout == .tvHomeAudio ? 1 : 2 / 3).frame(width: 230) } }
+                    HStack(alignment: .top, spacing: KinoTheme.shelfSpacing) { ForEach(0..<4) { _ in card(ratio: layout == .tvHomeAudio ? 1 : 2 / 3).frame(width: 230) } }
                     .padding(.horizontal, 24).padding(.vertical, 24)
                 }
-                .scrollIndicators(.hidden).scrollDisabled(true).accessibilityHidden(true)
+                .scrollIndicators(.hidden).scrollDisabled(true).accessibilityHidden(true).padding(.horizontal, -24)
             }
             if layout == .home || layout == .homeAudio {
                 line(width: 180, height: 28).accessibilityHidden(true)
@@ -62,7 +62,7 @@ struct LoadingState: View {
                 VStack(alignment: .leading, spacing: 12) {
                     line(width: 200, height: 28)
                     ScrollView(.horizontal) {
-                        HStack(alignment: .top, spacing: 18) { ForEach(0..<4) { _ in card(ratio: 16 / 9, showsProgress: true).frame(width: continuationWidth) } }
+                        HStack(alignment: .top, spacing: KinoTheme.shelfSpacing) { ForEach(0..<4) { _ in card(ratio: 16 / 9, showsProgress: true).frame(width: continuationWidth) } }
                         .padding(.vertical, 24)
                     }.scrollIndicators(.hidden).scrollDisabled(true)
                 }.padding(.top, 12).accessibilityHidden(true)
@@ -98,7 +98,7 @@ struct LoadingState: View {
                 .accessibilityHidden(true)
                 line(width: 160, height: 28).accessibilityHidden(true)
                 ScrollView(.horizontal) {
-                    HStack(alignment: .top, spacing: 18) {
+                    HStack(alignment: .top, spacing: KinoTheme.shelfSpacing) {
                         ForEach(0..<3) { _ in card(ratio: 16 / 9).frame(width: 390) }
                     }
                     .padding(.horizontal, 24).padding(.vertical, 24)
@@ -106,7 +106,7 @@ struct LoadingState: View {
                 .scrollIndicators(.hidden).scrollDisabled(true).accessibilityHidden(true)
                 line(width: 120, height: 28).accessibilityHidden(true)
                 ScrollView(.horizontal) {
-                    HStack(alignment: .top, spacing: 18) { ForEach(0..<3) { _ in card(ratio: 2 / 3).frame(width: 230) } }
+                    HStack(alignment: .top, spacing: KinoTheme.shelfSpacing) { ForEach(0..<3) { _ in card(ratio: 2 / 3).frame(width: 230) } }
                         .padding(.horizontal, 24).padding(.vertical, 24)
                 }
                 .scrollIndicators(.hidden).scrollDisabled(true).accessibilityHidden(true)
@@ -209,7 +209,7 @@ struct LoadingState: View {
                 ForEach(0..<(layout == .shelf ? 1 : 2), id: \.self) { _ in
                     line(width: 180, height: 28).accessibilityHidden(true)
                     ScrollView(.horizontal) {
-                        HStack(alignment: .top, spacing: 18) { ForEach(0..<4) { _ in card(ratio: layout == .homeAudio ? 1 : 2 / 3).frame(width: shelfWidth) } }
+                        HStack(alignment: .top, spacing: KinoTheme.shelfSpacing) { ForEach(0..<4) { _ in card(ratio: layout == .homeAudio ? 1 : 2 / 3).frame(width: shelfWidth) } }
                         #if os(tvOS)
                         .padding(.horizontal, 24)
                         #endif

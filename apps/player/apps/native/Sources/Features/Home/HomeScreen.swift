@@ -99,12 +99,12 @@ struct HomeScreen: View {
             await session.client?.invalidateCatalog()
             session.contentRevision = UUID()
         }
-        .cinemaBackground()
         #if os(tvOS)
         .focusScope(homeFocus)
         .navigationTitle("")
         .navigationDestination(item: $quickPlay) { DestinationScreen(destination: $0) }
         #else
+        .cinemaBackground()
         .navigationTitle("Kinosail")
         #endif
         #if os(iOS)
@@ -216,7 +216,7 @@ private struct TVHomeBrowse: View {
         VStack(alignment: .leading, spacing: 16) {
             Text("Browse").font(.title2.bold()).accessibilityAddTraits(.isHeader)
             ScrollView(.horizontal) {
-                LazyHStack(alignment: .top, spacing: 18) {
+                LazyHStack(alignment: .top, spacing: KinoTheme.shelfSpacing) {
                     ForEach(tabs) { tab in
                         tile(title: tab.title, icon: icon(for: tab), systemIcon: tab == .library) { selectTab(tab) }
                     }
@@ -228,6 +228,7 @@ private struct TVHomeBrowse: View {
             .scrollIndicators(.hidden)
             .scrollTargetBehavior(.viewAligned)
             .scrollClipDisabled()
+            .padding(.horizontal, -24)
         }
         .focusSection()
     }
@@ -255,7 +256,7 @@ private struct TVHomeBrowse: View {
                 }
             }
         }
-        .buttonStyle(.plain)
+        .buttonStyle(.plain).focusEffectDisabled()
         .focused($focusedTitle, equals: title)
         .accessibilityLabel(title)
     }

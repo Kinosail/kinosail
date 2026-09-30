@@ -14,20 +14,19 @@ struct TVTopBar: View {
             .focused(focus, equals: .search)
             .buttonStyle(.plain)
             .foregroundStyle(focus.wrappedValue == .search ? KinoTheme.text : KinoTheme.muted)
-            .background(focus.wrappedValue == .search ? KinoTheme.raised : KinoTheme.surface, in: Capsule())
+            .background(focus.wrappedValue == .search ? KinoTheme.raised : .clear, in: Capsule())
             Spacer()
             Button { onSelect(.settings) } label: { Image(systemName: "gearshape").frame(width: 52, height: 52) }
                 .focused(focus, equals: .settings)
                 .buttonStyle(.plain)
                 .foregroundStyle(focus.wrappedValue == .settings ? KinoTheme.text : KinoTheme.muted)
-                .background(focus.wrappedValue == .settings ? KinoTheme.raised : KinoTheme.surface, in: RoundedRectangle(cornerRadius: 16))
+                .background(focus.wrappedValue == .settings ? KinoTheme.raised : .clear, in: RoundedRectangle(cornerRadius: 16))
                 .accessibilityLabel("Settings")
         }
         .font(.callout)
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(.horizontal, KinoTheme.contentPadding)
         .padding(.vertical, 12)
-        .background(KinoTheme.background)
         .focusSection()
     }
 }

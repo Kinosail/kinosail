@@ -58,6 +58,7 @@ struct PlayerTabs: View {
                                     changeMode: changeMode, selectTab: selectBrowseTab,
                                     focusTopBar: { topFocus = .search })
                 }
+                .cinemaBackground()
             }
             #else
             tabs

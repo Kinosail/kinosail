@@ -35,6 +35,14 @@ enum KinoTheme {
         #endif
     }
 
+    static var shelfSpacing: CGFloat {
+        #if os(tvOS)
+        40
+        #else
+        18
+        #endif
+    }
+
     private static func adaptive(dark: UInt32, light: UInt32, highDark: UInt32? = nil, highLight: UInt32? = nil) -> Color {
         Color(uiColor: UIColor { traits in
             let increased = traits.accessibilityContrast == .high
