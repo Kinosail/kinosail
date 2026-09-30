@@ -31,7 +31,10 @@ struct SettingsScreen: View {
                 NavigationLink(value: ScreenDestination.approval) { Label("Connect a TV", systemImage: "tv") }
                 if let client = session.client {
                     Text(client.server.url.absoluteString).font(.caption).foregroundStyle(KinoTheme.muted)
-                        .textSelection(.enabled).lineLimit(nil)
+                        .lineLimit(nil)
+                        #if os(iOS)
+                        .textSelection(.enabled)
+                        #endif
                 }
             }
             Section("Playback & library") {

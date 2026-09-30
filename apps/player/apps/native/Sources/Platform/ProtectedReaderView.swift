@@ -122,7 +122,7 @@ final class ProtectedReaderView: UIView, WKNavigationDelegate, UIScrollViewDeleg
                     guard bytes.count <= 8 * 1024 * 1024, let html = String(data: bytes, encoding: .utf8) else { throw ClientError.invalidResponse }
                     let colors = self.theme == .dark ? ("#121212", "#ececec") : self.theme == .sepia ? ("#f2e7cc", "#342b20") : ("#ffffff", "#202020")
                     let policy = "default-src 'none'; script-src 'none'; img-src kinoreader:; style-src kinoreader: 'unsafe-inline'; font-src kinoreader:; base-uri 'none'; form-action 'none'; frame-src 'none'; object-src 'none'; connect-src 'none'"
-                    let head = "<meta http-equiv=\"Content-Security-Policy\" content=\"\(policy)\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\"><style>html,body{background:\(colors.0)!important;color:\(colors.1)!important;font-size:\(self.fontSize)px!important;line-height:1.65!important;}body{padding:16px!important;}img,svg{max-width:100%!important;height:auto!important;}a{color:inherit;}</style>"
+                    let head = "<meta http-equiv=\"Content-Security-Policy\" content=\"\(policy)\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\"><style>html,body{background:\(colors.0)!important;color:\(colors.1)!important;font-size:\(self.fontSize)px!important;line-height:1.65!important;}body{padding:16px!important;max-width:68ch!important;margin:0 auto!important;}img,svg{max-width:100%!important;height:auto!important;}a{color:inherit;}</style>"
                     data = Data((head + html).utf8); mime = "text/html"
                 }
                 self.tasks[key] = nil

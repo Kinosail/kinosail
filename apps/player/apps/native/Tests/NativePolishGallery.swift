@@ -58,12 +58,13 @@ import WebKit
     }
 
     private static func render(_ screen: AnyView, name: String, scene: UIWindowScene, session: AppSession, wait: Double = 0.7) async throws {
+        let previous = scene.windows.first { $0.isKeyWindow }
         let window = UIWindow(windowScene: scene)
         window.rootViewController = UIHostingController(rootView: NavigationStack { screen }
             .environment(session).environment(\.scenePhase, .active)
             .tint(KinoTheme.signal).preferredColorScheme(.dark))
-        window.isHidden = false
-        defer { window.isHidden = true }
+        window.makeKeyAndVisible()
+        defer { window.isHidden = true; previous?.makeKey() }
         try await Task.sleep(for: .seconds(wait))
         if name == "reader" {
             let deadline = Date().addingTimeInterval(10)
@@ -72,6 +73,7 @@ import WebKit
                 try await Task.sleep(for: .milliseconds(50))
             }
             guard let web = descendants(window).compactMap({ $0 as? WKWebView }).first, web.url != nil, !web.isLoading else { throw ClientError.unavailable }
+            try await Task.sleep(for: .milliseconds(300))
         }
         window.layoutIfNeeded()
         // UIKit hierarchy capture omits the reader's out-of-process web layer.
