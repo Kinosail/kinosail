@@ -216,7 +216,7 @@ private struct TVHomeBrowse: View {
         VStack(alignment: .leading, spacing: 16) {
             Text("Browse").font(.title2.bold()).accessibilityAddTraits(.isHeader)
             ScrollView(.horizontal) {
-                LazyHStack(alignment: .top, spacing: KinoTheme.shelfSpacing) {
+                HStack(alignment: .top, spacing: KinoTheme.shelfSpacing) {
                     ForEach(tabs) { tab in
                         tile(title: tab.title, icon: icon(for: tab)) { selectTab(tab) }
                     }
