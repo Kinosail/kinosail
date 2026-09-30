@@ -79,6 +79,7 @@ struct CollectionScreen: View {
         .navigationTitle("")
         #else
         .navigationTitle(name)
+        .navigationBarTitleDisplayMode(.inline)
         #endif
         #if os(tvOS)
         .navigationDestination(item: $quickPlay) { DestinationScreen(destination: $0) }

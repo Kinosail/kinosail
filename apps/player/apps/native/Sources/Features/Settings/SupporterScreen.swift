@@ -3,6 +3,8 @@ import SwiftUI
 struct SupporterScreen: View {
     @Environment(AppSession.self) private var session
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.dynamicTypeSize) private var dynamicType
+    var showsDismiss = false
     #if os(tvOS)
     @Namespace private var supporterFocus
     #endif
@@ -29,14 +31,14 @@ struct SupporterScreen: View {
         #if os(tvOS)
         1100
         #else
-        nil
+        760
         #endif
     }
     private var pagePadding: CGFloat {
         #if os(tvOS)
         KinoTheme.contentPadding
         #else
-        32
+        KinoTheme.contentPadding
         #endif
     }
     var body: some View {
@@ -52,13 +54,13 @@ struct SupporterScreen: View {
                 if loading && collection == nil {
                     VStack(spacing: 24) {
                         ForEach(0..<3) { _ in
-                            HStack(spacing: 24) {
+                            badgeLayout {
                                 RoundedRectangle(cornerRadius: 12).fill(KinoTheme.surface).frame(width: badgeSize, height: badgeSize)
                                 VStack(alignment: .leading, spacing: 12) {
-                                    RoundedRectangle(cornerRadius: 4).fill(KinoTheme.raised).frame(width: 190, height: 20)
-                                    RoundedRectangle(cornerRadius: 4).fill(KinoTheme.raised).frame(width: 130, height: 16)
-                                    RoundedRectangle(cornerRadius: 4).fill(KinoTheme.raised).frame(width: 160, height: 14)
-                                }
+                                    RoundedRectangle(cornerRadius: 4).fill(KinoTheme.raised).frame(maxWidth: 190).frame(height: 20)
+                                    RoundedRectangle(cornerRadius: 4).fill(KinoTheme.raised).frame(maxWidth: 130).frame(height: 16)
+                                    RoundedRectangle(cornerRadius: 4).fill(KinoTheme.raised).frame(maxWidth: 160).frame(height: 14)
+                                }.frame(maxWidth: .infinity, alignment: .leading)
                             }.frame(maxWidth: .infinity, alignment: .leading)
                         }
                     }
@@ -66,8 +68,9 @@ struct SupporterScreen: View {
                 }
                 if let collection {
                     ForEach(collection.badges.filter { $0.edition != "legacy" }) { badge in
-                        HStack(spacing: 24) {
+                        badgeLayout {
                             Image(badge.artwork).resizable().scaledToFit().frame(width: badgeSize, height: badgeSize)
+                                .accessibilityHidden(true)
                             VStack(alignment: .leading) {
                                 Text(badge.title).font(.headline)
                                 Text(badge.name)
@@ -101,8 +104,14 @@ struct SupporterScreen: View {
         #else
         .background(KinoTheme.background)
         .navigationTitle("Supporter")
+        .navigationBarTitleDisplayMode(.inline)
+        .toolbar { if showsDismiss { ToolbarItem(placement: .cancellationAction) { Button("Done") { dismiss() } } } }
         #endif
         .task(id: session.supporterRevision) { await load() }
+    }
+    private var badgeLayout: AnyLayout {
+        dynamicType.isAccessibilitySize ? AnyLayout(VStackLayout(alignment: .leading, spacing: 16))
+                                       : AnyLayout(HStackLayout(alignment: .center, spacing: 20))
     }
     private func load() async {
         loading = true
@@ -145,7 +154,7 @@ struct SupporterToolbar: ViewModifier {
                 }
             }
         }
-        .sheet(isPresented: $showing, onDismiss: { Task { await load() } }) { NavigationStack { SupporterScreen() } }
+        .sheet(isPresented: $showing, onDismiss: { Task { await load() } }) { NavigationStack { SupporterScreen(showsDismiss: true) } }
         .task(id: session.supporterRevision) { await load() }
         .onChange(of: phase) { _, phase in if phase == .active { Task { await load() } } }
     }
