@@ -103,6 +103,7 @@ if (playerStatus) {
   player.addEventListener("seeking", () => {
     clearBufferingTimer();
     seeking = true;
+    playbackTime = player.currentTime;
     if (playbackPreparation) playbackPreparation.position = player.currentTime;
     showPlayerState("seeking", "Seeking…");
   });
@@ -117,7 +118,7 @@ if (playerStatus) {
     const advancing = player.currentTime > playbackTime;
     playbackTime = player.currentTime;
     if (playbackPreparation) return finishPreparation();
-    if (advancing && !seeking && !player.paused) { clearBufferingTimer(); hidePlayerState(); }
+    if (advancing && !player.seeking && !player.paused && !player.error) { seeking = false; clearBufferingTimer(); hidePlayerState(); }
   });
   for (const event of ["canplay", "playing"]) player.addEventListener(event, () => {
     clearBufferingTimer();
