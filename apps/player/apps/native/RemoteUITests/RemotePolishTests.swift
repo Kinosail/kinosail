@@ -73,10 +73,11 @@ final class RemotePolishTests: RemoteTestCase {
         XCTAssertFalse(sleep.hasFocus)
         let frame = sleep.frame.insetBy(dx: 25, dy: 15)
         let image = app.screenshot().image
+        let viewport = app.frame
         var lightSamples = 0
         for x in stride(from: frame.minX, through: frame.maxX, by: 3) {
             for y in stride(from: frame.minY, through: frame.maxY, by: 3) {
-                let color = pixel(image, x: x / app.frame.width, y: y / app.frame.height)
+                let color = pixel(image, x: x / viewport.width, y: y / viewport.height)
                 if color[0] > 220 && color[1] > 220 && color[2] > 220 { lightSamples += 1 }
             }
         }
