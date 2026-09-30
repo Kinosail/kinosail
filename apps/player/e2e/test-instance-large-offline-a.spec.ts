@@ -3,6 +3,7 @@ import { createHash } from "node:crypto";
 import { configureTestInstance, downloadsSource, firstPlayable, login, type OfflineClient } from "./test-instance-helpers";
 
 configureTestInstance();
+test.use({ serviceWorkers: "block" });
 
 test.describe("large offline transfers", () => {
 

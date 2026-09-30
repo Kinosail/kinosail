@@ -73,7 +73,7 @@ func TestOwnerCanCreateAndCurateCollection(t *testing.T) { //nolint:cyclop,funle
 	removed := collectionForm(t, handler, "/collection/Favorites/items/"+id, "included=false")
 	after := httptest.NewRecorder()
 	handler.ServeHTTP(after, httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/collection/Favorites", nil))
-	if removed.Code != http.StatusSeeOther || strings.Contains(after.Body.String(), `<h2>Dune</h2>`) || !strings.Contains(after.Body.String(), "1 items") {
+	if removed.Code != http.StatusSeeOther || strings.Contains(after.Body.String(), `<h2>Dune</h2>`) || !strings.Contains(after.Body.String(), "1 item") {
 		t.Fatalf("remove = %d, collection = %q", removed.Code, after.Body.String())
 	}
 }
