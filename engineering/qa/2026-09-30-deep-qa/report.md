@@ -1,6 +1,6 @@
 # Kinosail deep QA — September 30, 2026
 
-This audit fixed seven confirmed production defects and identified an eighth container security defect. Its updated images still require hosted scan verification. It does not establish that every product path or device is free of bugs.
+This audit identified eight confirmed defects and implemented corrections. The evidence below separates completed local checks from hosted image verification. It does not establish that every product path or device is free of bugs.
 
 ## Run record
 
@@ -103,7 +103,7 @@ Select labels now use block layout with the existing half-rem spacing. Checkbox 
 - Green: `inspector-layout-final-green.log` (fourteen Chromium checks), `inspector-layout-final-cross-browser.log` (twenty-eight Firefox/WebKit checks), and `inspector-final-go.log` (focused inspector HTTP and rejection tests).
 - The matrix checks both themes at 320, 390, 568, 720, 1024, 1440 and 1920px. It saves pending, loaded, empty and failed renders, checks video geometry, keyboard/navigation landmarks, accessibility at desktop/phone sizes, and no writes during review. Empty and failed states also assert no horizontal overflow. Browser artifacts now record their actual project name.
 
-### QA-008 — Production images retain vulnerable OpenSSL packages (high; fix awaiting hosted proof)
+### QA-008 — Production images retain vulnerable OpenSSL packages (high)
 
 Current-head container scans failed for both apps on amd64 and arm64. They reported six high-severity findings: CVE-2026-75804 and CVE-2026-84782 in `libssl3t64`, `openssl` and `openssl-provider-legacy`, installed at `3.5.7-1~deb13u2`.
 
@@ -112,7 +112,7 @@ Debian records `3.5.7-1~deb13u3` as fixed for both advisories: [QUIC flow contro
 Both runtime recipes now check all three minimum versions beside their existing libaom version check. Changing the installation layer also invalidates the older cached layer. Future builds fail if an insufficient package remains. The existing image scan and public production-path tests provide the behavioral verification; no new test mirrors the recipe text, and no advisory is ignored.
 
 - Red: required run `36765200869`, deep run `36765430447`, `final-ci-player-arm-container-failure.log` and `final-ci-subtitles-container-failure.log`.
-- Green: current-head amd64/arm64 image scans and production-path checks must pass before merge.
+- Acceptance: current-head amd64/arm64 image scans and public production-path checks must pass before merge. The final results are recorded in [PR #381](https://github.com/Kinosail/kinosail/pull/381).
 
 ## Verification
 
@@ -193,13 +193,13 @@ Apple runs used task-owned simulators, `xcodebuild test`, isolated DerivedData, 
 
 Upstream native QA evidence from PR #383 is retained in `engineering/qa/2026-09-30-native-polish/report.md`. It adds a confirmed Android canonical episode-artwork fix and terminal Apple Supporter error captures. Those results belong to that recorded native revision and are separate from this audit's earlier simulator totals. Catalog ordering from PR #384 was reconciled with generated snapshots; focused shared and app publication checks are rerun after that merge.
 
-## Remaining work
+## Verification boundaries
 
 - Reclaim storage with authorization, then run container startup/media/API checks and the supported populated browser matrix against exact images.
 - Complete longer Android reading, comic, full TV playback-control and paired Wear remote/heart-rate journeys, Apple TV remote and watchOS interaction journeys.
-- Repeat the broad browser matrices with adequate host resources and all required fixture directories. Masthead, cleanup and canonical-origin setup defects have focused passing evidence.
+- The completed local dashboard matrix passed 75 cases; the inspector matrix passed 42. The hosted complete matrices remain separate and must pass on the final source/image revision.
 - Exercise physical codecs, HDR, hardware acceleration, AirPlay, casting, PiP/background playback, long playback, and paid activation on suitable devices.
 - Finish required and manual deep GitHub checks, then record merged source ancestry, image publication, and any later deployment as separate evidence.
 - The first manual deep run caught stale generated architecture snapshots. Both were regenerated, and full local `make tooling-check` passed (`tooling-final.log`). The refreshed deep run exposed the lifecycle and fixture failures recorded above. A final deep run is required after their corrections.
 
-The requested deep QA goal remains active. Current source and image checks must pass before delivery. Local Podman storage and the device boundaries above remain explicit limits.
+This report captures pre-merge evidence. [PR #381](https://github.com/Kinosail/kinosail/pull/381) records the final hosted checks and delivery. Local Podman storage and the device boundaries above remain explicit limits.
