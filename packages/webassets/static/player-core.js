@@ -36,7 +36,7 @@ const playbackTrace = (event, detail = "", quality = "") => {
 let managedSeek = false;
 const setPlayerTime = (seconds) => { managedSeek = true; player.currentTime = seconds; };
 let playbackPreparation;
-let preparationPausePending = false;
+let preparationPausePending = 0;
 const requestPause = () => { playbackPreparation?.stop(); player.dispatchEvent(new CustomEvent("kinosail:playback-intent", {detail: {playing: false}})); player.pause(); };
 const requestPlay = (detail) => {
   playbackPreparation?.stop(false);

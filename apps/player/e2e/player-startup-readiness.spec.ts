@@ -189,3 +189,22 @@ test("Safari startup preserves a newer seek while preparing media", async ({ pag
   await expect(video).toHaveJSProperty("currentTime", 5);
   await expect(video).toHaveJSProperty("muted", false);
 });
+
+test("Safari startup prevents progress saves from overlapping queued pause events", async ({ page }) => {
+  const saves: string[] = [];
+  page.on("request", (request) => { if (request.url().includes("/progress/movie")) saves.push(request.url()); });
+  await page.evaluate(() => {
+    const context = window as Window & {setBufferedEnd: (value: number) => void; setReadyState: (value: number) => void};
+    const video = document.querySelector("video")!;
+    context.setBufferedEnd(20.1);
+    video.dispatchEvent(new Event("loadstart"));
+    video.dispatchEvent(new Event("loadstart"));
+    context.setReadyState(3);
+    context.setBufferedEnd(23);
+    video.dispatchEvent(new Event("progress"));
+  });
+  await page.waitForTimeout(100);
+  expect(saves).toEqual([]);
+  await expect(page.locator("video")).toHaveJSProperty("paused", true);
+  await expect(page.locator("video")).toHaveJSProperty("muted", false);
+});

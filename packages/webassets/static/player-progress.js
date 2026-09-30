@@ -43,7 +43,7 @@ const resumeFromSavedProgress = () => {
 if (player.readyState) resumeFromSavedProgress();
 else player.addEventListener("loadedmetadata", resumeFromSavedProgress, {once: true});
 player.addEventListener("pause", () => {
-  if (preparationPausePending) { preparationPausePending = false; return; }
+  if (preparationPausePending) { preparationPausePending--; return; }
   save(false);
 });
 document.addEventListener("visibilitychange", () => {

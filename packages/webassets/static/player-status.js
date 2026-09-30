@@ -53,7 +53,7 @@ if (playerStatus) {
     if (readyForPlay()) return revealPlayControl();
     const preparation = {muted: player.muted, position: player.currentTime || Number(player.dataset.start) || 0, stop: (restorePosition = true) => {
       if (playbackPreparation !== preparation) return;
-      preparationPausePending = !player.paused;
+      if (!player.paused) preparationPausePending++;
       player.pause();
       if (restorePosition && player.readyState && Math.abs(player.currentTime - preparation.position) >= 0.1) setPlayerTime(preparation.position);
       player.muted = preparation.muted;
