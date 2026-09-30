@@ -12,6 +12,6 @@ import (
 func TestAutomaticMetadataDoesNotRetriggerUnchangedProviderResults(t *testing.T) {
 	t.Parallel()
 	servertest.RunAutomaticMetadataFeedback(t, func(ctx context.Context, media, cache, provider string) http.Handler {
-		return server.New(server.Config{Lifecycle: ctx, MediaDir: media, DataDir: t.TempDir(), CacheDir: cache, Metadata: server.MetadataConfig{URL: provider, ImageURL: provider, Token: "token"}})
+		return server.New(server.Config{Lifecycle: ctx, MediaDir: media, DataDir: t.TempDir(), CacheDir: cache, Metadata: server.MetadataConfig{URL: provider, ImageURL: provider, Token: "token"}}) //nolint:contextcheck // Server Config carries the lifecycle context explicitly.
 	})
 }
