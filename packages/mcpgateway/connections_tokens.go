@@ -80,12 +80,16 @@ func (connections *Connections) refresh(writer http.ResponseWriter, request *htt
 	defer connections.mu.Unlock()
 	var grant mcpOAuthGrant
 	for _, candidate := range connections.grants {
+		if candidate.ClientID == clientID && slices.Contains(candidate.RefreshHistory, hash) {
+			connections.rejectRefreshFamily(writer, candidate.ID)
+			return
+		}
 		if candidate.RefreshHash == hash {
 			grant = candidate
 			break
 		}
 	}
-	if grant.ID == "" || grant.ClientID != clientID || connections.now().Unix() > grant.RefreshExpires {
+	if grant.ID == "" || grant.ClientID != clientID || connections.now().Unix() >= grant.RefreshExpires {
 		oauthError(writer, "invalid_grant", http.StatusBadRequest)
 		return
 	}
@@ -94,17 +98,22 @@ func (connections *Connections) refresh(writer http.ResponseWriter, request *htt
 		oauthError(writer, "invalid_grant", http.StatusBadRequest)
 		return
 	}
+	if len(grant.RefreshHistory) >= mcpRefreshHistoryLimit {
+		connections.rejectRefreshFamily(writer, grant.ID)
+		return
+	}
 	access, rotated := rand.Text(), rand.Text()
 	now := connections.now()
-	grant.AccessHash, grant.AccessExpires = secretHash(access), now.Add(mcpAccessLifetime).Unix()
-	grant.RefreshHash, grant.RefreshExpires = secretHash(rotated), now.Add(mcpRefreshLifetime).Unix()
+	grant.RefreshHistory = append(append([]string(nil), grant.RefreshHistory...), grant.RefreshHash)
+	grant.AccessHash, grant.AccessExpires = secretHash(access), min(now.Add(mcpAccessLifetime).Unix(), grant.RefreshExpires)
+	grant.RefreshHash = secretHash(rotated)
 	state := connections.stateLocked()
 	state.Grants[grant.ID] = grant
 	if connections.commitLocked(state) != nil {
 		oauthError(writer, "temporarily_unavailable", http.StatusServiceUnavailable)
 		return
 	}
-	writeMCPToken(writer, access, rotated, grant.Scopes)
+	writeMCPToken(writer, access, rotated, grant.Scopes, int(grant.AccessExpires-now.Unix()))
 }
 
 func onlyFormKeys(form url.Values, keys ...string) bool {
@@ -122,6 +131,7 @@ func (connections *Connections) issue(writer http.ResponseWriter, client mcpOAut
 	grant := mcpOAuthGrant{ID: rand.Text(), ClientID: client.ID, ClientName: client.Name, ProfileID: profile.ID, ProfileRevision: profile.Revision, Scopes: append([]string(nil), scopes...), CreatedAt: now.Unix(), AccessHash: secretHash(access), AccessExpires: now.Add(mcpAccessLifetime).Unix(), RefreshHash: secretHash(refresh), RefreshExpires: now.Add(mcpRefreshLifetime).Unix()}
 	connections.mu.Lock()
 	defer connections.mu.Unlock()
+	connections.pruneLocked()
 	if len(connections.grants) >= mcpConnectionLimit {
 		oauthError(writer, "temporarily_unavailable", http.StatusTooManyRequests)
 		return
@@ -132,12 +142,12 @@ func (connections *Connections) issue(writer http.ResponseWriter, client mcpOAut
 		oauthError(writer, "temporarily_unavailable", http.StatusServiceUnavailable)
 		return
 	}
-	writeMCPToken(writer, access, refresh, scopes)
+	writeMCPToken(writer, access, refresh, scopes, int(mcpAccessLifetime.Seconds()))
 }
 
-func writeMCPToken(writer http.ResponseWriter, access, refresh string, scopes []string) {
+func writeMCPToken(writer http.ResponseWriter, access, refresh string, scopes []string, expiresIn int) {
 	writer.Header().Set("Cache-Control", "no-store")
-	writeJSON(writer, map[string]any{"access_token": access, "token_type": "Bearer", "expires_in": int(mcpAccessLifetime.Seconds()), "refresh_token": refresh, "scope": strings.Join(scopes, " ")}, http.StatusOK)
+	writeJSON(writer, map[string]any{"access_token": access, "token_type": "Bearer", "expires_in": expiresIn, "refresh_token": refresh, "scope": strings.Join(scopes, " ")}, http.StatusOK)
 }
 
 // VerifyToken validates one built-in access token and records its last use.
@@ -146,7 +156,7 @@ func (connections *Connections) VerifyToken(_ context.Context, token string, req
 	connections.mu.Lock()
 	defer connections.mu.Unlock()
 	for id, grant := range connections.grants {
-		if grant.AccessHash != hash || now.Unix() > grant.AccessExpires {
+		if grant.AccessHash != hash || now.Unix() >= grant.AccessExpires {
 			continue
 		}
 		profile, found := connections.principals.ByID(grant.ProfileID)
@@ -186,6 +196,10 @@ func (connections *Connections) revokeToken(writer http.ResponseWriter, request 
 		if grant.ClientID == clientID && (grant.AccessHash == hash || grant.RefreshHash == hash) {
 			delete(state.Grants, id)
 		}
+	}
+	if len(state.Grants) == len(connections.grants) {
+		writer.WriteHeader(http.StatusOK)
+		return
 	}
 	if connections.commitLocked(state) != nil {
 		oauthError(writer, "temporarily_unavailable", http.StatusServiceUnavailable)

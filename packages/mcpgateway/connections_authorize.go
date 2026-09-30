@@ -46,8 +46,11 @@ func (connections *Connections) authorize(writer http.ResponseWriter, request *h
 }
 
 func (connections *Connections) authorizationRequest(request *http.Request, profile Principal) (mcpOAuthRequest, error) { //nolint:cyclop // OAuth parameters are validated together before pending state is created.
-	query := request.URL.Query()
-	if !onlyFormKeys(query, "response_type", "client_id", "redirect_uri", "code_challenge", "code_challenge_method", "resource", "state", "scope") {
+	if len(request.URL.RawQuery) > 16<<10 {
+		return mcpOAuthRequest{}, errors.New("authorization query is too large")
+	}
+	query, err := url.ParseQuery(request.URL.RawQuery)
+	if err != nil || !onlyFormKeys(query, "response_type", "client_id", "redirect_uri", "code_challenge", "code_challenge_method", "resource", "state", "scope") {
 		return mcpOAuthRequest{}, errors.New("invalid authorization request")
 	}
 	responseType, ok := oneValue(query, "response_type", 16)
@@ -58,7 +61,7 @@ func (connections *Connections) authorizationRequest(request *http.Request, prof
 	resource, resourceOK := oneValue(query, "resource", 2048)
 	state, stateOK := optionalValue(query, "state", 512)
 	scope, scopeOK := optionalValue(query, "scope", 256)
-	if !ok || !clientOK || !redirectOK || !challengeOK || !methodOK || !resourceOK || !stateOK || !scopeOK || responseType != "code" || method != "S256" || resource != connections.resource || !validPKCEValue(challenge) {
+	if !ok || !clientOK || !redirectOK || !challengeOK || !methodOK || !resourceOK || !stateOK || !scopeOK || responseType != "code" || method != "S256" || resource != connections.resource || !validPKCEChallenge(challenge) {
 		return mcpOAuthRequest{}, errors.New("invalid authorization request")
 	}
 	client, err := connections.clientFor(request.Context(), clientID)
@@ -109,8 +112,14 @@ func validPKCEValue(value string) bool {
 	if len(value) < 43 || len(value) > 128 {
 		return false
 	}
-	_, err := base64.RawURLEncoding.DecodeString(value)
-	return err == nil
+	return strings.IndexFunc(value, func(character rune) bool {
+		return !strings.ContainsRune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._~", character)
+	}) < 0
+}
+
+func validPKCEChallenge(value string) bool {
+	decoded, err := base64.RawURLEncoding.Strict().DecodeString(value)
+	return len(value) == 43 && err == nil && len(decoded) == 32
 }
 
 func (connections *Connections) clientFor(ctx context.Context, id string) (mcpOAuthClient, error) {
@@ -200,6 +209,12 @@ func (connections *Connections) approve(writer http.ResponseWriter, request *htt
 	pending.Scopes = scopes
 	code := rand.Text()
 	connections.mu.Lock()
+	connections.pruneLocked()
+	if len(connections.codes) >= mcpConnectionLimit {
+		connections.mu.Unlock()
+		oauthError(writer, "temporarily_unavailable", http.StatusTooManyRequests)
+		return
+	}
 	connections.codes[secretHash(code)] = mcpOAuthCode{mcpOAuthRequest: pending, Expires: connections.now().Add(mcpRequestLifetime).Unix()}
 	connections.mu.Unlock()
 	connections.redirectAuthorization(writer, request, pending, url.Values{"code": {code}})

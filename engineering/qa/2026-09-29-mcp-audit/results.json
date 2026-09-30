@@ -1,0 +1,32 @@
+{
+  "revision": "26c9dd0e0f0e75765fd973854e5eb8c3d1bcd3f7",
+  "runnerRevision": "7169291ec0b68eb370fddcd9947313ab0d5e4156",
+  "spec": "2026-07-28",
+  "environment": {
+    "os": "macOS 27.0 arm64",
+    "go": "1.27.1",
+    "node": "26.8.2",
+    "transport": "loopback httptest Streamable HTTP with synthetic bearer credential"
+  },
+  "scenarios": {
+    "caching": {
+      "SUCCESS": 4,
+      "FAILURE": 3,
+      "SKIPPED": 1
+    },
+    "dns-rebinding-protection": {
+      "SUCCESS": 2
+    },
+    "http-header-validation": {
+      "SUCCESS": 14
+    },
+    "server-stateless": {
+      "SUCCESS": 24,
+      "FAILURE": 4,
+      "SKIPPED": 2
+    },
+    "tools-list": {
+      "SUCCESS": 4
+    }
+  }
+}

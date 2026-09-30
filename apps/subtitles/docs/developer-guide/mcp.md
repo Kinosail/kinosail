@@ -2,7 +2,7 @@
 title: Connect an MCP client
 description: Connect trusted assistants to bounded subtitle operations.
 section: Build with Subtitles
-last_reviewed: 2026-09-15
+last_reviewed: 2026-09-29
 ---
 
 # Connect an MCP client
@@ -26,11 +26,17 @@ Use Podman when appropriate. Follow the Server's displayed command when multiple
 
 For HTTPS, copy the Server's resource URL, configure it in a client that supports Streamable HTTP and OAuth, and complete the approval flow. Use trusted HTTPS on a private administration connection. Bearer tokens belong in the Authorization header, never in URLs or prompts.
 
+Built-in OAuth approval lasts up to 30 days. Refresh tokens rotate after each use. Reusing an old refresh token revokes that connection.
+
+Kinosail limits `/mcp` to 120 requests per minute per network address. Tool calls share a limit of 120 per minute per Profile across HTTPS and host STDIO. If a limit is reached, wait one minute and retry.
+
 ## Subtitle tools and grants
 
 - `read_api` with `kinosail.read` can read the allowlisted `/api/v1/subtitle-library` inventory. The subtitle endpoint also requires an Owner Profile.
 - `manage_api` with `kinosail.manage` and an Owner Profile can invoke the allowlisted fetch, wanted-batch, maintenance, provider-test, inspect, draft, preview, apply, replacement, and restore operations.
 - `kinosail.write` covers personal library state; it does not substitute for the management grant needed to change subtitle files.
+
+Generic configuration changes require the browser settings. MCP blocks these mutations to protect identity settings and credentials.
 
 Only approved relative `/api/v1` paths are accepted. Discover the Server's tool schemas before calling them. Responses are bounded JSON. Subtitle export bytes, credentials, sessions, API-key management, and unrestricted filesystem paths are blocked from MCP.
 
