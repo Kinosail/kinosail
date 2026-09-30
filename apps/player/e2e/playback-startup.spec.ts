@@ -63,7 +63,7 @@ test("selecting a movie starts moving playback promptly", async ({ page }, testI
 	}
 });
 
-test("blocked autoplay leaves one Play control that starts the video", async ({ page, browserName }, testInfo) => {
+for (const source of ["direct", "compatible"]) test(`blocked autoplay leaves one Play control that starts ${source} video`, async ({ page, browserName }, testInfo) => {
 	await page.setViewportSize({ width: 390, height: 844 });
 	await page.addInitScript(() => {
 		Object.defineProperty(navigator, "userAgent", { configurable: true, value: "Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 Mobile/15E148" });
@@ -78,7 +78,7 @@ test("blocked autoplay leaves one Play control that starts the video", async ({ 
 		});
 		observer.observe(document, { childList: true, subtree: true });
 		HTMLMediaElement.prototype.play = function () {
-			return blocked ? Promise.reject(new DOMException("A tap is required", "NotAllowedError")) : nativePlay.call(this);
+			return blocked && !this.muted ? Promise.reject(new DOMException("A tap is required", "NotAllowedError")) : nativePlay.call(this);
 		};
 		(window as Window & { allowVideoPlay: () => void }).allowVideoPlay = () => { blocked = false; };
 	});
@@ -91,7 +91,10 @@ test("blocked autoplay leaves one Play control that starts the video", async ({ 
 	let releaseMedia: () => void = () => {};
 	const mediaReady = new Promise<void>((resolve) => { releaseMedia = resolve; });
 	await page.route("**/media/**", async (route) => { await mediaReady; await route.continue(); });
-	await page.getByRole("link", { name: /Example Movie/ }).click({ noWaitAfter: true });
+	await page.route("**/hls/**", async (route) => { await mediaReady; await route.continue(); });
+	const movie = page.getByRole("link", { name: /Example Movie/ });
+	if (source === "compatible") await page.goto(`${await movie.getAttribute("href")}?compatible=1`, { waitUntil: "domcontentloaded" });
+	else await movie.click({ noWaitAfter: true });
 	await expect(page).toHaveURL(/\/watch\/[a-f0-9]+$/);
 	await expect(page.locator("[data-player-status]")).toBeVisible();
 	await page.waitForTimeout(2_000);
@@ -115,6 +118,7 @@ test("blocked autoplay leaves one Play control that starts the video", async ({ 
 	await page.locator(".player-center-control[data-player-toggle]").click();
 	await expect.poll(() => page.locator("video").evaluate((video: HTMLVideoElement) => video.currentTime)).toBeGreaterThan(0.25);
 	await expect(page.locator("[data-player-status]")).toBeHidden();
+	await expect(page.locator("video")).toHaveJSProperty("muted", false);
 });
 
 test("restricted browser storage does not stop playback", async ({ page }) => {

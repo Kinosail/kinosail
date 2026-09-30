@@ -33,8 +33,13 @@ const playbackTrace = (event, detail = "", quality = "") => {
   playbackTraceQueue.push(JSON.stringify({session: playbackSession, event, sequence: ++playbackTraceSequence, elapsedMs: traceNumber(performance.now() - playbackTraceStarted), positionMs: traceNumber(player.currentTime * 1000), durationMs: traceNumber(player.duration * 1000), bufferedAheadMs: traceNumber(bufferedAhead() * 1000), readyState: player.readyState, networkState: player.networkState, paused: player.paused, method: playbackTraceMethod, detail: traceToken(detail), quality: traceToken(quality), visibility: document.visibilityState, errorCode: player.error?.code || 0, droppedFrames: frames?.droppedVideoFrames || 0, totalFrames: frames?.totalVideoFrames || 0}));
   if (["playing", "waiting", "stalled", "error", "hls-error", "play-rejected"].includes(event)) setTimeout(flushPlaybackTrace);
 };
-const requestPause = () => { player.dispatchEvent(new CustomEvent("kinosail:playback-intent", {detail: {playing: false}})); player.pause(); };
+let managedSeek = false;
+const setPlayerTime = (seconds) => { managedSeek = true; player.currentTime = seconds; };
+let playbackPreparation;
+let preparationPausePending = false;
+const requestPause = () => { playbackPreparation?.stop(); player.dispatchEvent(new CustomEvent("kinosail:playback-intent", {detail: {playing: false}})); player.pause(); };
 const requestPlay = (detail) => {
+  playbackPreparation?.stop(false);
   player.dispatchEvent(new CustomEvent("kinosail:playback-intent", {detail: {playing: true}}));
   playbackTrace("play-request", detail);
   const rejected = (error) => {
