@@ -315,6 +315,21 @@ Browser runs used an isolated local production binary. Simulator results establi
     "Full shared-package check stops at 111 pre-existing lint findings. Changed-code package lint passes.",
     "No physical iPhone or Apple TV frame/hitch trace.",
     "No end-to-end playback first-frame, cross-browser matrix, production network, or deployment performance proof."
-  ]
+  ],
+  "nativeReconciled": {
+    "revision": "9e5758073292187224e138f09cb48e51849a2cdf",
+    "includedMain": "24a9ffd4",
+    "environment": "tvOS 27 Simulator, Apple TV 1080p",
+    "tests": 23,
+    "suites": [
+      "ArtworkLoaderTests",
+      "ArtworkCancellationTests",
+      "ArtworkSharingTests",
+      "ArtworkPrefetchTests"
+    ],
+    "result": "passed",
+    "command": "xcodebuild -project Kinosail.xcodeproj -scheme Kinosail-tvOS -destination 'platform=tvOS Simulator,id=64468BFE-9114-4FBF-860B-79DF45F70011' -derivedDataPath .build/speed-tvos -jobs 4 -parallel-testing-enabled NO -only-testing:Kinosail-tvOSTests/ArtworkLoaderTests -only-testing:Kinosail-tvOSTests/ArtworkCancellationTests -only-testing:Kinosail-tvOSTests/ArtworkSharingTests -only-testing:Kinosail-tvOSTests/ArtworkPrefetchTests -resultBundlePath .verification/speed-artwork-reconciled.xcresult CODE_SIGNING_ALLOWED=YES CODE_SIGN_IDENTITY=- test",
+    "scope": "Correctness of cache/prefetch/sharing and last-consumer cancellation after including the native cache work. No physical-device frame timing."
+  }
 }
 ```

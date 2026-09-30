@@ -50,6 +50,8 @@ WWDC26 guidance is current, but the app must retain its supported deployment tar
 
 Source seams: native `Sources/Platform/ArtworkLoader.swift`, `LocalMediaCache.swift`, and `PlaybackCoordinator.swift`; `Sources/Services/CatalogAPI.swift`; `packages/catalog/letters.go`; `apps/player/internal/server/assets.go` and `performance_benchmark_test.go`. Native paths are relative to `apps/player/apps/native`. Verify constants when extending this work.
 
+During delivery, [PR #362](https://github.com/Kinosail/kinosail/pull/362) added bounded native artwork prefetch and shared encoded downloads across thumbnail sizes and views. The prefetch modifier limits each active view to 24 paths and keys work to client identity, paths, size, and scene activity. This is separate work included from newer main. Image sizing and physical-device frame timing remain profiling tasks.
+
 ## Measurements and verification
 
 Environment: macOS, Apple M1 Pro, arm64. Other builds ran on this host, so wall-clock benchmark timings are noisy. Allocation counts and response sizes are more stable.
@@ -59,7 +61,7 @@ Environment: macOS, Apple M1 Pro, arm64. Other builds ran on this host, so wall-
 | Baseline 10,000-title web browse, five 2-second samples | 17.62–33.09 ms/op; about 7,428,800 B/op; 41,590–41,591 allocations/op; 25,319 response bytes. |
 | Optimized 10,000-title browse, five 2-second samples | 8.62–13.08 ms/op; about 4,708,500 B/op; 11,590–11,591 allocations/op; the same 25,319 response bytes. Allocations fall about 72%; allocation bytes fall about 37%. Timing is host-dependent. |
 | Baseline CPU profile | Sorting consumes a material share of cumulative CPU; garbage collection is also prominent. This does not prove sorting is the physical-device UI bottleneck. |
-| Native artwork correctness on tvOS 27 Simulator | 16 tests passed across existing loader tests and the new cancellation regression. Includes shared pixel reuse, capacity release, profile separation, disk hits, invalid input, and cancellation of the network request when its last consumer leaves. |
+| Native artwork correctness on tvOS 27 Simulator | 23 tests passed across loader, cancellation, prefetch, and sharing suites after including newer native cache work. Includes shared pixel reuse, capacity release, profile separation, disk hits, invalid input, and cancellation of the network request when its last consumer leaves. |
 | Static compression regression | Failed against the starting implementation, then passed with compression. Checks gzip negotiation, exclusions, bounds, cache headers, MIME types, and identical decoded bytes. |
 | CSS transfer | 212,487 → 42,371 bytes: 80.1% fewer body bytes. |
 | Player JavaScript transfer | 107,554 → 27,040 bytes: 74.9% fewer body bytes. |
