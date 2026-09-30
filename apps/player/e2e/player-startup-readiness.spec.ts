@@ -102,7 +102,7 @@ for (const readyState of [1, 3]) test(`Safari startup keeps the required gesture
 
 for (const pauseDelivery of ["immediate", "queued pause"]) test(`Safari startup prepares muted media without a loading tap or progress save with ${pauseDelivery}`, async ({ page }, testInfo) => {
   const saves: string[] = [];
-  page.on("request", (request) => { if (request.url().includes("/progress/movie")) saves.push(request.url()); });
+  page.on("request", (request) => { if (request.url().includes("/progress/movie")) saves.push(request.postData() || ""); });
   await page.addStyleTag({ content: await readFile("../../../packages/webassets/static/player-stage.css", "utf8") });
   const video = page.locator("video");
   const status = page.locator("[data-player-status]");
@@ -140,6 +140,11 @@ for (const pauseDelivery of ["immediate", "queued pause"]) test(`Safari startup 
   // A stale preparation promise must not pause the user's playback.
   await page.evaluate(() => (window as Window & {finishPlay: () => void}).finishPlay());
   await expect(video).toHaveJSProperty("paused", false);
+  await page.evaluate(() => (window as Window & {advanceMediaTime: (value: number) => void}).advanceMediaTime(25));
+  await video.evaluate((element: HTMLVideoElement) => element.pause());
+  await expect.poll(() => saves.length).toBe(1);
+  expect(new URLSearchParams(saves[0]).get("seconds")).toBe("25");
+  expect(new URLSearchParams(saves[0]).has("watched")).toBe(false);
 });
 
 for (const networkState of [1, 2]) test(`Safari startup shows Play when even muted preparation is rejected at networkState ${networkState}`, async ({ page }) => {
