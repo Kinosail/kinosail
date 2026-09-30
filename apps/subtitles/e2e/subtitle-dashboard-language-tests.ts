@@ -22,7 +22,10 @@ test("Owner hides other languages and English forced subtitles from a populated 
   const forced = join(media, `${title}.en.forced.srt`);
   const addedEnglish = containerMedia ? undefined : join(media, `${title}.en.srt`);
   const spanishVTT = join(media, `${title}.es.vtt`);
-  const existingSpanish = await access(spanishVTT).then(() => readFile(spanishVTT), () => undefined);
+  const existingSpanish = await readFile(spanishVTT).catch((error: NodeJS.ErrnoException) => {
+    if (error.code !== "ENOENT") throw error;
+    return undefined;
+  });
   const hiddenFiles = [spanish, forced, ...(existingSpanish ? [spanishVTT] : [])];
   const rescan = () => page.evaluate(async () => {
     const csrf = document.querySelector<HTMLMetaElement>('meta[name="kinosail-csrf"]')?.content ?? "";
@@ -66,7 +69,10 @@ test("Owner hides other languages and English forced subtitles from a populated 
     await expect(page.locator("[data-subtitles] option")).toHaveCount(2);
   } finally {
     if (existingSpanish) {
-      await writeFile(spanishVTT, existingSpanish);
+      await writeFile(spanishVTT, existingSpanish, { flag: "wx" }).catch(async (error: NodeJS.ErrnoException) => {
+        if (error.code !== "EEXIST") throw error;
+        expect(await readFile(spanishVTT)).toEqual(existingSpanish);
+      });
       await unlink(`${spanishVTT}.hidden`).catch(() => {});
     }
     await Promise.all([spanish, forced, `${spanish}.hidden`, `${forced}.hidden`].map((path) => unlink(path).catch(() => {})));

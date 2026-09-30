@@ -108,16 +108,20 @@ The header now reserves the Support column and truncates the brand within the re
 | Android phone emulator | Four instrumentation checks passed; populated connection, home, search, detail and short movie playback observed | `android-phone-instrumentation.log`, `android-phone-extra-instrumentation-second.log`, saved XML and screenshots; API 36 read-only task overlay, debug app only |
 | Android TV emulator | One accessibility instrumentation check passed; populated pairing, home and D-pad scrolling observed | `android-tv-instrumentation.log`, `android-tv-loaded.png`, `android-tv-down.png`; playback was not proven |
 | Wear emulator | Two accessibility instrumentation checks passed; disconnected and scrolled empty views inspected | `android-wear-instrumentation.log`, saved API 36 renders; debug data cleared only inside the read-only task overlay |
-| Android reader and tablet runtime | Incomplete | Host disk and memory pressure interrupted reader/tablet capture; stale/null UI roots are excluded from evidence |
+| Android reader and tablet rendering | Fresh retry passed EPUB unsupported-state transitions twice; PDF rendered at tablet portrait and landscape sizes | `android-reader-retry-open.png`, repeated XML, `android-tablet-pdf-loaded.png`, `android-tablet-pdf-landscape.png`; phone AVD geometry override, not separate tablet hardware |
 | Containers | Blocked before build | Podman VM full; test-instance build failed creating a temporary builder directory |
 | Local changed-app gates | Both stopped at the full shared lint gate | `player-verify-changed.log`, `subtitles-verify-changed.log`; 113 repository-wide findings. No gate override was used |
 | Design detector | Two unchanged border-style findings retained | `badge-ui-lint.log`; owned recognition and error status use these accents |
+
+CodeQL identified a check/use race in the new optional VTT fixture helper. It now reads directly and restores with exclusive creation. An existing destination must still match the captured bytes. Both present-VTT and missing-VTT cleanup variants passed: `subtitles-cleanup-exclusive-green.log`, `subtitles-cleanup-missing-vtt-green.log`. Hosted rescanning remains required.
 
 The larger Subtitles follow-up (`subtitles-fixtures-final.log`) passed nine checks, timed out in the multi-width preferred-language check, skipped nineteen fixture-dependent cases, and did not run nineteen later cases. The earlier focused thirty-plus-one passing checks remain valid. This run is incomplete and its timeout is not confirmed as a product defect.
 
 The initial broad browser runs are diagnostic evidence, not passing suites. They included copied Player routes in Subtitles, stale numeric CSS expectations, already-initialized setup state, and connection failures during the metadata storm. Their raw logs are retained separately.
 
 The final follow-up run record is `followup-run-record.json`. Phone, TV and Wear AVDs used read-only overlays and were stopped after evidence capture. The existing release app and unrelated simulators were preserved. Android used a task-only HTTP loopback proxy to the host HTTPS server; this does not prove native certificate trust.
+
+The first Android reader attempt captured an app-unresponsive dialog during severe host memory pressure. A fresh emulator retry completed the transition twice; its captured ActivityManager/AndroidRuntime error log contains no app ANR or fatal markers. This observation is not treated as a confirmed product defect. Android EPUB reading remains unsupported by the current implementation; PDF rendering was verified.
 
 Native loaded, pending, empty, error, large-text, reader, photo, preference, approval, and casting views were inspected from populated captures. Some snapshots labelled `supporter-failed` were taken during request retries and still show pending geometry; they do not prove the terminal failure render. Physical interaction and media decoder behavior remain separate boundaries.
 
@@ -148,9 +152,10 @@ Apple runs used task-owned simulators, `xcodebuild test`, isolated DerivedData, 
 ## Remaining work
 
 - Reclaim storage with authorization, then run container startup/media/API checks and the supported populated browser matrix against exact images.
-- Complete remaining Android reader, tablet and TV playback journeys, paired Wear remote/heart-rate interaction, Apple TV remote and watchOS interaction journeys.
+- Complete longer Android reading, comic, TV playback and paired Wear remote/heart-rate journeys, Apple TV remote and watchOS interaction journeys.
 - Repeat the broad browser matrices with adequate host resources and all required fixture directories. Masthead, cleanup and canonical-origin setup defects have focused passing evidence.
 - Exercise physical codecs, HDR, hardware acceleration, AirPlay, casting, PiP/background playback, long playback, and paid activation on suitable devices.
-- Record required GitHub checks, merged source ancestry, image publication, and any later deployment as separate evidence.
+- Finish required and manual deep GitHub checks, then record merged source ancestry, image publication, and any later deployment as separate evidence.
+- The first manual deep run caught stale generated architecture snapshots. Both were regenerated, and full local `make tooling-check` passed (`tooling-final.log`). A refreshed deep run is in progress.
 
 The requested deep QA goal remains active. Container and Android runtime work await storage recovery; this report is a delivery checkpoint for verified fixes.
