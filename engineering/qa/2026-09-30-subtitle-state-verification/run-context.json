@@ -83,12 +83,36 @@
       "sha256": "db3986b43d536f577731b167adb1bac91d00a45d7391ca9872158e9a2d25d01b"
     },
     {
+      "path": "evidence/player-reconciled-build.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
       "path": "evidence/previous-main-complete.json",
       "sha256": "942e3733593e8fcb29758688b99e24c7965b726e5815deecfa331dcfaa7ae3ab"
     },
     {
       "path": "evidence/previous-runtime-pr-checkpoint.json",
       "sha256": "73593ecfc4111655de96db3588a2f04487817b56f5f5fb5d5d485fa0611c49a1"
+    },
+    {
+      "path": "evidence/reconciled-catalog-test.log",
+      "sha256": "a7b778c4376c7c37da46ebb53c7c398264954b17a6a242916b1871534ac87f9a"
+    },
+    {
+      "path": "evidence/reconciled-evidence-secrets.log",
+      "sha256": "ec65ee078f9e8d9a608e47a143855a998830187d3b7297980f94c02ed101a1cc"
+    },
+    {
+      "path": "evidence/reconciled-max-loc.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "evidence/reconciled-state-context.json",
+      "sha256": "35663daed2a03d33fceec4582ab956711caa1618a1a0e8302f10d5fb4bee82a6"
+    },
+    {
+      "path": "evidence/reconciled-state-matrix.log",
+      "sha256": "92f8a4c2ac0b917e871a92e3a60b73fda4375219c94c7a2aeaeb11ede4bace0f"
     },
     {
       "path": "evidence/review-asset-fixtures-current.log",
@@ -167,17 +191,23 @@
       "sha256": "8e5b6dfb17353f2582335246a49aed4b04e00745568e4afda5e1c79fdadc35f3"
     },
     {
-      "path": "gallery.html",
-      "sha256": "806c4d394bf458e43f552aaf98dfade3f982d710c2379d923e4cc7dc2c58b8d9"
-    },
-    {
-      "path": "report.md",
-      "sha256": "ca9353f52547020cfcbe4592ad06db5f72c15595a9aca7549b3bce6c9d7b332f"
+      "path": "evidence/subtitles-reconciled-build.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
     }
   ],
   "previousMainPublication": {
     "revision": "60d11e2054e31eac090af9ffed3ff85dd0b52c27",
     "runURL": "https://github.com/Kinosail/kinosail/actions/runs/36774578971",
     "conclusion": "success"
+  },
+  "reconciliation": {
+    "integratedMain": "199bbcfaea2f6ccc15da68ae48ab8cbaa58f55b4",
+    "sourceCommit": "2928156fac0cb3d79126e0467e89494eaf6fa37c",
+    "result": "36/36 repeated selected real-server checks passed; catalog package passed; both app binaries rebuilt",
+    "binarySHA256": "1235bf047d184731da38abc21256f692dcb9134f663597e53c436e6f5a9b5e73",
+    "sourceStable": true,
+    "originalPreserved": true,
+    "temporarySidecarAbsent": true,
+    "fixtureRerun": "History and status production templates were unchanged; their previous 36 passes were not repeated."
   }
 }

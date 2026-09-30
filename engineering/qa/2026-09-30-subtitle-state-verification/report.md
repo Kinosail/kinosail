@@ -22,6 +22,8 @@ The final review source hashes match commit `c1c78d999ca67c3311341be2b87b47d52f6
 
 The actual Go HTTPS Server used isolated data, generated CC0 media and a temporary Owner. Its served application CSS and inspector JavaScript/CSS match fresh current-source fixtures. The running binary's SHA256 is recorded. Its `go run` build information has no VCS revision, so this is asset and browser proof, not a container revision attestation. History and status tests route production templates and synthetic responses separately from the actual Server journeys.
 
+The branch was reconciled with main `199bbcfaea2f6ccc15da68ae48ab8cbaa58f55b4`, which changed shared catalog projections. Both application binaries were rebuilt from clean revision `2928156fac0cb3d79126e0467e89494eaf6fa37c`. The catalog package passed, and all 36 selected real-Server Subtitles checks passed again across the three engines. Source and binary hashes stayed stable. The original subtitle stayed unchanged, and the temporary sidecar was absent. Unchanged history and status templates did not require another fixture run. These repeated checks are separate from the 72 distinct final checks above.
+
 ## Reproduction and boundaries
 
 Regenerate the production fixtures with `TestWriteUIStateFixtures` and `TestWriteUIStateFixturesSubtitleInspector`. Use a populated local test instance, its TOTP secret and generated-media root. From `apps/subtitles/e2e`, run the recorded commands with `KINOSAIL_BROWSER_MATRIX=full` and one worker. Each batch's context records its command, data, environment, source hashes and result.
