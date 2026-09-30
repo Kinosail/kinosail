@@ -1,0 +1,38 @@
+
+Running 1 test using 1 worker
+
+(node:81998) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+{"width":320,"documentWidth":323,"bodyWidth":323,"formLabels":[{"text":"Automatic","width":290.796875,"scrollWidth":291,"display":"block","gap":"4.8px","children":[{"tag":"INPUT","name":"quality","width":290.796875,"minWidth":"0px","flex":"0 0 16.799999px"},{"tag":"SPAN","name":null,"width":290.796875,"minWidth":"0px","flex":"0 1 auto"}]},{"text":"Prefer speed","width":290.796875,"scrollWidth":291,"display":"block","gap":"4.8px","children":[{"tag":"INPUT","name":"quality","width":290.796875,"minWidth":"0px","flex":"0 0 16.799999px"},{"tag":"SPAN","name":null,"width":290.796875,"minWidth":"0px","flex":"0 1 auto"}]},{"text":"Prefer quality","width":290.796875,"scrollWidth":291,"display":"block","gap":"4.8px","children":[{"tag":"INPUT","name":"quality","width":290.796875,"minWidth":"0px","flex":"0 0 16.799999px"},{"tag":"SPAN","name":null,"width":290.796875,"minWidth":"0px","flex":"0 1 auto"}]},{"text":"Video format Automatic per device (Recommended)AVC / H.264HEVC / H.265AV1VP9","width":300.796875,"scrollWidth":313,"display":"grid","gap":"4.8px","children":[{"tag":"SELECT","name":"codec","width":300.796875,"minWidth":"auto","flex":"0 1 auto"}]},{"text":"Speed up with ProcessorAutomatic (Recommended)Apple graphics","width":300.796875,"scrollWidth":301,"display":"grid","gap":"4.8px","children":[{"tag":"SELECT","name":"accelerator","width":300.796875,"minWidth":"auto","flex":"0 1 auto"}]},{"text":"Improve HDR colors on non-HDR screens","width":300.796875,"scrollWidth":301,"display":"flex","gap":"12px","children":[{"tag":"INPUT","name":"toneMap","width":16.796875,"minWidth":"16.799999px","flex":"0 0 16.799999px"}]}],"elements":[{"tag":"HEADER","id":"","classes":"app-header","left":-1,"right":319,"width":320,"scrollWidth":320,"clientWidth":320,"overflowX":"visible","whiteSpace":"normal","minWidth":"0px"},{"tag":"LABEL","id":"","classes":"","left":15,"right":16,"width":1,"scrollWidth":45,"clientWidth":1,"overflowX":"hidden","whiteSpace":"normal","minWidth":"auto"},{"tag":"MAIN","id":"main","classes":"settings-shell","left":8.59375,"right":309.390625,"width":300.796875,"scrollWidth":313,"clientWidth":301,"overflowX":"visible","whiteSpace":"normal","minWidth":"0px"},{"tag":"NAV","id":"","classes":"settings-nav","left":8.59375,"right":309.390625,"width":300.796875,"scrollWidth":688,"clientWidth":301,"overflowX":"auto","whiteSpace":"nowrap","minWidth":"0px"},{"tag":"A","id":"","classes":"","left":285.609375,"right":397.484375,"width":111.875,"scrollWidth":112,"clientWidth":112,"overflowX":"visible","whiteSpace":"nowrap","minWidth":"auto"},{"tag":"A","id":"","classes":"","left":401.484375,"right":511.421875,"width":109.9375,"scrollWidth":110,"clientWidth":110,"overflowX":"visible","whiteSpace":"nowrap","minWidth":"auto"},{"tag":"A","id":"","classes":"","left":515.421875,"right":696.515625,"width":181.09375,"scrollWidth":181,"clientWidth":181,"overflowX":"visible","whiteSpace":"nowrap","minWidth":"auto"},{"tag":"DIV","id":"","classes":"settings-flow","left":8.59375,"right":309.390625,"width":300.796875,"scrollWidth":313,"clientWidth":301,"overflowX":"visible","whiteSpace":"normal","minWidth":"0px"},{"tag":"SECTION","id":"transcoder","classes":"","left":8.59375,"right":309.390625,"width":300.796875,"scrollWidth":313,"clientWidth":301,"overflowX":"visible","whiteSpace":"normal","minWidth":"auto"},{"tag":"FORM","id":"","classes":"","left":8.59375,"right":309.390625,"width":300.796875,"scrollWidth":313,"clientWidth":301,"overflowX":"visible","whiteSpace":"normal","minWidth":"0px"},{"tag":"FIELDSET","id":"","classes":"","left":8.59375,"right":309.390625,"width":300.796875,"scrollWidth":313,"clientWidth":301,"overflowX":"visible","whiteSpace":"normal","minWidth":"0px"},{"tag":"LABEL","id":"","classes":"","left":8.59375,"right":309.390625,"width":300.796875,"scrollWidth":313,"clientWidth":301,"overflowX":"visible","whiteSpace":"normal","minWidth":"auto"},{"tag":"SPAN","id":"","classes":"","left":8.59375,"right":14.71875,"width":6.125,"scrollWidth":10,"clientWidth":6,"overflowX":"visible","whiteSpace":"normal","minWidth":"0px"}]}
+  ✘  1 [webkit] › polish-overflow-diagnostic.spec.ts:6:1 › capture narrow WebKit hardware overflow (10.1s)
+
+
+  1) [webkit] › polish-overflow-diagnostic.spec.ts:6:1 › capture narrow WebKit hardware overflow ───
+
+    Error: page.addStyleTag: Refused to apply a stylesheet because its hash, its nonce, or 'unsafe-inline' does not appear in the style-src directive of the Content Security Policy.
+
+      32 | 	await testInfo.attach("overflow-geometry", { body: JSON.stringify(geometry, null, 2), contentType: "application/json" });
+      33 | 	console.log(JSON.stringify(geometry));
+    > 34 | 	const preview = await page.addStyleTag({ content: ".settings-shell .settings-flow select{min-width:0}" });
+         | 	                           ^
+      35 | 	const after = await page.locator('select[name="codec"]').evaluate(element => ({ documentWidth: document.documentElement.scrollWidth, viewportWidth: innerWidth, labelTrack: getComputedStyle(element.parentElement!).gridTemplateColumns, labelWidth: element.parentElement!.getBoundingClientRect().width, selectWidth: element.getBoundingClientRect().width }));
+      36 | 	console.log("MIN_WIDTH_PREVIEW", JSON.stringify(after));
+      37 | 	await preview.evaluate(element => element.remove());
+        at /Users/mikeo/.codex/worktrees/all-app-polish/kinosail/apps/player/e2e/polish-overflow-diagnostic.spec.ts:34:29
+
+    attachment #2: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../.kinosail-test/layout-audit-overflow-preview/polish-overflow-diagnostic-e1a4a-ow-WebKit-hardware-overflow-webkit/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../.kinosail-test/layout-audit-overflow-preview/polish-overflow-diagnostic-e1a4a-ow-WebKit-hardware-overflow-webkit/error-context.md
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../.kinosail-test/layout-audit-overflow-preview/polish-overflow-diagnostic-e1a4a-ow-WebKit-hardware-overflow-webkit/trace.zip
+    Usage:
+
+        pnpm exec playwright show-trace ../.kinosail-test/layout-audit-overflow-preview/polish-overflow-diagnostic-e1a4a-ow-WebKit-hardware-overflow-webkit/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    [webkit] › polish-overflow-diagnostic.spec.ts:6:1 › capture narrow WebKit hardware overflow ────

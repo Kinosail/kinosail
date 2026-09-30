@@ -1,0 +1,8 @@
+VERIFY 1 changed path(s) against origin/main
+PASS max-loc (1s)
+PASS diff-check (0s)
+FAIL container-native (0s); full log: /Users/mikeo/Documents/GitHub/kinosail/.git/kinosail-verify-logs/apps-subtitles/774518cd060f6f2033d753506ccab898a493bef4b44caf619574a58311c0d41f.log
+Error: mkdir /var/tmp/libpod_builder566787193: no space left on device
+container test failed at line 68
+make[1]: *** [container-test] Error 125
+make: *** [verify-changed] Error 1

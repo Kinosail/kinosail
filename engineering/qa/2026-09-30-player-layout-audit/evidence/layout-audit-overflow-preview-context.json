@@ -1,0 +1,14 @@
+{
+  "revision": "05da53145bc05235aa510fecc6392ec5928de061",
+  "command": "pnpm exec playwright test polish-overflow-diagnostic.spec.ts --project=webkit",
+  "testData": "Isolated Owner; candidate CSS temporarily injected then removed",
+  "sourceSha256": "8ea4487a157775d9ca3e4f172c413e56edc6c683e8c27b4384797bdc3074981f",
+  "environment": {
+    "server": "https://127.0.0.1:39227",
+    "browser": "WebKit Playwright 1.63.0",
+    "workers": 1
+  },
+  "startedAt": "2026-09-30T19:26:22.499240+00:00",
+  "exitCode": 1,
+  "finishedAt": "2026-09-30T19:26:45.058709+00:00"
+}

@@ -1,0 +1,52 @@
+
+Running 1 test using 1 worker
+
+(node:72754) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  1 [webkit] › layout-audit-shell.spec.ts:120:1 › transcoder support stays concise and accessible (22.0s)
+
+
+  1) [webkit] › layout-audit-shell.spec.ts:120:1 › transcoder support stays concise and accessible ─
+
+    Error: 320px open transcoder support
+
+    expect(received).toEqual(expected) // deep equality
+
+    - Expected  - 1
+    + Received  + 1
+
+      Object {
+        "clippedControls": Array [],
+        "distortedChecks": Array [],
+    -   "documentOverflow": 0,
+    +   "documentOverflow": 3,
+        "outside": Array [],
+        "overlappingStatuses": Array [],
+        "tinyControls": Array [],
+      }
+
+      143 | 		await expect(hardwareDetails.locator("..").getByText("FFmpeg option:", { exact: false })).toBeVisible();
+      144 | 		await expect(hardware.locator("details[open]")).toHaveCount(1);
+    > 145 | 		expect(await layoutProblems(page), `${viewport.width}px open transcoder support`).toEqual({ documentOverflow: 0, outside: [], tinyControls: [], distortedChecks: [], clippedControls: [], overlappingStatuses: [] });
+          | 		                                                                                  ^
+      146 | 		expect((await new AxeBuilder({ page }).analyze()).violations, `${viewport.width}px transcoder accessibility`).toEqual([]);
+      147 | 		await page.screenshot({ path: testInfo.outputPath(`${viewport.width}-transcoder-support-open.png`), fullPage: true });
+      148 | 		await hardwareDetails.click();
+        at /Users/mikeo/.codex/worktrees/all-app-polish/kinosail/apps/player/e2e/layout-audit-shell.spec.ts:145:85
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../.kinosail-test/layout-audit-transcoder-webkit-red/layout-audit-shell-transco-aed5d-tays-concise-and-accessible-webkit/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../.kinosail-test/layout-audit-transcoder-webkit-red/layout-audit-shell-transco-aed5d-tays-concise-and-accessible-webkit/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../.kinosail-test/layout-audit-transcoder-webkit-red/layout-audit-shell-transco-aed5d-tays-concise-and-accessible-webkit/trace.zip
+    Usage:
+
+        pnpm exec playwright show-trace ../.kinosail-test/layout-audit-transcoder-webkit-red/layout-audit-shell-transco-aed5d-tays-concise-and-accessible-webkit/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    [webkit] › layout-audit-shell.spec.ts:120:1 › transcoder support stays concise and accessible ──

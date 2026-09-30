@@ -1,0 +1,26 @@
+{
+  "revision": "05da53145bc05235aa510fecc6392ec5928de061",
+  "sourceState": "Uncommitted final production and test changes with exact hashes below; no source changes during this run",
+  "command": "pnpm exec playwright test layout-audit-configuration.spec.ts layout-audit-library.spec.ts layout-audit-shell.spec.ts",
+  "testData": "Isolated Owner with TOTP; generated CC0 populated library; configuration saves affect isolated data only",
+  "testSourceHashes": {
+    "layout-audit-configuration.spec.ts": "657b54501b3e442a44cfff26f8fbd72af8177b2a1308e2db844994c11eea46be",
+    "layout-audit-library.spec.ts": "a742cae49761e317f01cc080751ed14a7ab4d07d92e3e550abdde4e7d506a292",
+    "layout-audit-shell.spec.ts": "7a2aee51257fbe49f50b358ba2872cdd1b221e48cb1a073ca4cc37287511a1d5"
+  },
+  "productionSourceHashes": {
+    "internal/server/static/settings.css": "4cf42e143c01f361c2e8808dd02248a5f61374fe38421eed94bd3763547b1cea",
+    "internal/server/album.go": "38b89b0b2e949825b6d8ba2d80c8446da2a1eedbc14b36e0f30cd454547fe23b",
+    "internal/server/navigation_shell.go": "e494b29af5912f95177c26635ec9d0475a295c4787c188c9519c9b0c0c2788af"
+  },
+  "environment": {
+    "OS": "macOS 27.0",
+    "architecture": "arm64",
+    "server": "https://127.0.0.1:39227",
+    "browsers": "Chromium, Firefox, WebKit; Playwright 1.63.0; pnpm 11.22.0",
+    "workers": 1
+  },
+  "startedAt": "2026-09-30T19:44:54.352457+00:00",
+  "exitCode": 0,
+  "finishedAt": "2026-09-30T19:59:26.373630+00:00"
+}

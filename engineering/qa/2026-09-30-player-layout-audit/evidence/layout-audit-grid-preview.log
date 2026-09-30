@@ -1,0 +1,40 @@
+
+Running 1 test using 1 worker
+
+(node:129) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  1 [webkit] › polish-grid-preview.spec.ts:4:1 › measure WebKit settings label grid (5.9s)
+
+
+  1) [webkit] › polish-grid-preview.spec.ts:4:1 › measure WebKit settings label grid ───────────────
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: 320
+    Received: 323
+
+      14 |  });
+      15 |  const after = await measure();
+    > 16 |  expect(after.documentWidth).toBe(after.viewportWidth);
+         |                              ^
+      17 |  await page.screenshot({ path: testInfo.outputPath("320-preview.png") });
+      18 |  await page.evaluate(index => [...document.styleSheets].find(sheet => sheet.href?.includes("/static/app.css"))!.deleteRule(index), index);
+      19 |  const restored = await measure();
+        at /Users/mikeo/.codex/worktrees/all-app-polish/kinosail/apps/player/e2e/polish-grid-preview.spec.ts:16:30
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../.kinosail-test/layout-audit-grid-preview/polish-grid-preview-measure-WebKit-settings-label-grid-webkit/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../.kinosail-test/layout-audit-grid-preview/polish-grid-preview-measure-WebKit-settings-label-grid-webkit/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../.kinosail-test/layout-audit-grid-preview/polish-grid-preview-measure-WebKit-settings-label-grid-webkit/trace.zip
+    Usage:
+
+        pnpm exec playwright show-trace ../.kinosail-test/layout-audit-grid-preview/polish-grid-preview-measure-WebKit-settings-label-grid-webkit/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    [webkit] › polish-grid-preview.spec.ts:4:1 › measure WebKit settings label grid ────────────────
