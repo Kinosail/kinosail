@@ -140,7 +140,8 @@ test("Supporter populated archive never implies an active entitlement", async ({
 
 test("a stale login page redirects passkey sign-in to the canonical origin", async ({ page }) => {
   await page.addInitScript(() => Object.defineProperty(navigator, "credentials", { value: { get: async () => { throw new DOMException("no test passkey", "NotAllowedError"); } } }));
-  const canonical = new URL("https://localhost:38128");
+  const canonical = new URL(process.env.KINOSAIL_E2E_URL ?? "https://localhost:38128");
+  canonical.hostname = "localhost";
   const alternate = new URL(process.env.KINOSAIL_E2E_URL ?? "https://127.0.0.1:38128");
   alternate.hostname = "127.0.0.1";
   alternate.pathname = "/login";

@@ -22,6 +22,7 @@ test.beforeEach(async ({ page }, testInfo) => {
     if (safariStartup) Object.defineProperty(navigator, "userAgent", {configurable: true, value: "Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 Mobile/15E148"});
     try { Object.defineProperty(window, "localStorage", { value: { getItem: () => null, setItem: () => {} } }); } catch {}
     let bufferedEnd = 60;
+    let bufferedStart = 0;
     let currentTime = queuedSeeking ? 0 : 20;
     let paused = true;
     let playFailure = "";
@@ -48,7 +49,7 @@ test.beforeEach(async ({ page }, testInfo) => {
     const textTracks = Object.assign(withInBand ? [makeTrack(), document.querySelector("track")!.track] : [textTrack, makeTrack()], {addEventListener: trackEvents.addEventListener.bind(trackEvents)});
     if (!withInBand) document.querySelector("[data-subtitles]")!.insertAdjacentHTML("beforeend", '<option value="1">French</option>');
     Object.defineProperties(video, {
-      buffered: { get: () => ({ length: 1, start: () => 0, end: () => bufferedEnd }) },
+      buffered: { get: () => ({ length: 1, start: () => bufferedStart, end: () => bufferedEnd }) },
       currentTime: { get: () => currentTime, set: (value: number) => {
         currentTime = value;
         if (queuedSeeking) queueMicrotask(() => { video.dispatchEvent(new Event("seeking")); video.dispatchEvent(new Event("seeked")); });
@@ -66,6 +67,7 @@ test.beforeEach(async ({ page }, testInfo) => {
     });
     Object.assign(window, {
       setBufferedEnd: (value: number) => { bufferedEnd = value; },
+      setBufferedStart: (value: number) => { bufferedStart = value; },
       advanceMediaTime: (value: number) => { currentTime = value; },
       setPaused: (value: boolean) => { paused = value; },
       setPlayFailure: (value: string) => { playFailure = value; },

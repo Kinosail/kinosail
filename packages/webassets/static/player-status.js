@@ -69,7 +69,10 @@ if (playerStatus) {
     try { Promise.resolve(player.play()).catch(failed); } catch (error) { failed(error); }
   };
   const finishPreparation = () => {
-    if (playbackPreparation && readyForPlay()) playbackPreparation.stop();
+    if (playbackPreparation && readyForPlay()) {
+      needsGesture = false;
+      playbackPreparation.stop();
+    }
     if (!playbackPreparation) revealPlayControl();
   };
   player.addEventListener("kinosail:playback-intent", ({detail}) => {
@@ -121,6 +124,7 @@ if (playerStatus) {
     if (advancing && !player.seeking && !player.paused && !player.error) { seeking = false; clearBufferingTimer(); hidePlayerState(); }
   });
   for (const event of ["canplay", "playing"]) player.addEventListener(event, () => {
+    if (event === "playing" && player.paused) return;
     clearBufferingTimer();
     seeking = false;
     if (playbackPreparation) return finishPreparation();
@@ -130,6 +134,7 @@ if (playerStatus) {
   player.addEventListener("seeked", () => {
     clearBufferingTimer();
     seeking = false;
+    if (player.paused && needsGesture) return revealPlayControl();
     if (hasPlayed ? player.readyState >= HTMLMediaElement.HAVE_FUTURE_DATA : readyForPlay()) hidePlayerState();
     else showPlayerState("buffering", bufferedPercent() ? `Buffering · ${bufferedPercent()}% buffered` : "Buffering…");
   });

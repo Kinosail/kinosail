@@ -32,6 +32,13 @@ for (const width of [390, 1440]) {
 			let checked = 0;
 			for (const control of await controls.all()) {
 				if (!(await control.isEnabled())) continue;
+                // Closed native details may retain descendant boxes in WebKit.
+                if (!await control.evaluate(element => {
+                  for (let parent = element.parentElement; parent; parent = parent.parentElement) {
+                    if (parent instanceof HTMLDetailsElement && !parent.open && !parent.querySelector(":scope > summary")?.contains(element)) return false;
+                  }
+                  return true;
+                })) continue;
 				await control.focus();
 				const state = await control.evaluate(element => {
 					const style = getComputedStyle(element);
