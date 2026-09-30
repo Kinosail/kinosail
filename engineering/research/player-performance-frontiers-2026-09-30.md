@@ -104,7 +104,19 @@ A standalone optimized macOS ImageIO benchmark uses the production thumbnail met
 
 The 400px result uses 75% fewer decoded bytes and about 21% less decode time than 800px. This confirms the cost of unnecessary pixels in this fixture. It does not establish a native UI or network improvement. The source is a synthetic pattern, so it cannot establish photographic quality at focused TV size.
 
-The 48-point mini-player cover currently requests 800px. It is a concrete candidate for a smaller supported bucket. Shelf dimensions, display scale, focus enlargement, and accessibility sizes need separate checks. No artwork dimension changed in this phase.
+The 48-point MiniPlayer cover currently requests 800px. A native-loader follow-up compares cold, saved, and warm paths before changing that setting. Shelf dimensions, display scale, focus enlargement, and accessibility sizes still need separate checks.
+
+### A smaller image can lose a decoded cache hit
+
+An optimized tvOS simulator experiment runs the production artwork loader through ten controlled workloads. Cold 400px loads take about 10% less time than 800px loads through the URLProtocol transport fixture. Saved-image loads take about 11% less time. The smaller decoded image occupies 640,000 bytes instead of 2,560,000 bytes.
+
+Warm reuse changes the result. An 800px request with its exact decoded image cached takes 0.025 ms and returns the same object. Requesting 400px instead takes 4.985 ms and retains an additional image. Combined held pixels increase from 2.56 MB to 3.20 MB. A matching 400px cache hit is also fast, at 0.028 ms.
+
+Non-landscape media cards use 800px at standard text sizes. Landscape and accessibility variants use 1600px. The album grid, album detail, and full audio player use 1600px. A fixed MiniPlayer reduction could help a 1600px-only path while losing an 800px card hit. The experiment does not measure how often each path occurs in real navigation. The MiniPlayer setting remains unchanged.
+
+[Apple’s latest SwiftUI session](https://developer.apple.com/videos/play/wwdc2026/269/) adds HTTP caching and configurable image sessions. Kinosail also needs decoded-size reuse, profile isolation, protected storage, freshness, and cancellation. Those contracts need verification before replacing its loader. [Apple’s performance lab](https://developer.apple.com/videos/play/wwdc2026/8003/) supports appropriate image sizes and narrower view updates; that guidance does not establish hardware gains here.
+
+The [native artwork record](evidence/native-artwork-loader-2026-09-30.md) contains all 1,500 timed samples, source hashes, a complete replay fixture, startup contamination controls, and exact verification limits. ImageIO logged pixel-buffer errors during the untimed 1600px seed loads; images returned and checks passed. The cause remains unknown. These loader measurements exclude SwiftUI rendering, GPU upload, image quality, physical frames, and real network latency. An adaptive policy remains a candidate for navigation-trace and quality measurements.
 
 ## Current primary-source research
 

@@ -1772,3 +1772,9 @@ Synthetic data only. Source hashes bind the native results to the validated work
   }
 }
 ```
+
+## Native artwork size and decoded reuse follow-up
+
+Production source remains `05917f8f91c43ca30fba465cea10732a953aafe4`. The optimized tvOS simulator experiment passed one selected Swift Testing case with ten workloads and 1,500 timed calls. A guarded cleanup removed only a prior synthetic session; diagnostic startup-contaminated samples are preserved separately. No application source or artwork dimension changed.
+
+The [complete native artwork record](native-artwork-loader-2026-09-30.md) preserves every measured sample, source bindings, replay code, fixture behavior, failed setup attempts, and limits. A smaller cold decode does not imply a faster warm path. A fixed 400px MiniPlayer change remains unadopted pending navigation frequency and rendered-quality evidence.
