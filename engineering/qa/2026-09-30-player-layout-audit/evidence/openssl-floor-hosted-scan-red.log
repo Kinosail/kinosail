@@ -1,0 +1,12 @@
+2026-09-30T20:06:59.8917493Z #11 CACHED
+2026-09-30T20:06:59.8918088Z #12 CACHED
+2026-09-30T20:06:59.8919003Z #13 CACHED
+2026-09-30T20:06:59.8919737Z #14 CACHED
+2026-09-30T20:06:59.8920382Z #15 CACHED
+2026-09-30T20:08:55.0026642Z Total: 6 (HIGH: 6, CRITICAL: 0)
+2026-09-30T20:08:55.0034345Z │ libssl3t64              │ CVE-2026-75804 │ HIGH     │ fixed  │ 3.5.7-1~deb13u2   │ 3.5.7-1~deb13u3 │ openssl: OpenSSL: Denial of Service via unenforced QUIC      │
+2026-09-30T20:08:55.0039521Z │                         │ CVE-2026-84782 │          │        │                   │                 │ openssl: compat-openssl: openssl: Information disclosure via │
+2026-09-30T20:08:55.0044538Z │ openssl                 │ CVE-2026-75804 │          │        │                   │                 │ openssl: OpenSSL: Denial of Service via unenforced QUIC      │
+2026-09-30T20:08:55.0049268Z │                         │ CVE-2026-84782 │          │        │                   │                 │ openssl: compat-openssl: openssl: Information disclosure via │
+2026-09-30T20:08:55.0054502Z │ openssl-provider-legacy │ CVE-2026-75804 │          │        │                   │                 │ openssl: OpenSSL: Denial of Service via unenforced QUIC      │
+2026-09-30T20:08:55.0059180Z │                         │ CVE-2026-84782 │          │        │                   │                 │ openssl: compat-openssl: openssl: Information disclosure via │

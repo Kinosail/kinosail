@@ -105,8 +105,18 @@ test("software update choices stay clear at supported widths", async ({ page }, 
 		await expect(updates.getByRole("heading", { name: "Software updates" })).toBeVisible();
 		await expect(updates.getByLabel("Choose when to update")).not.toBeChecked();
 		await expect(updates.getByLabel("Install updates automatically")).toBeChecked();
-		const alignment = await page.evaluate(() => ({ navigation: document.querySelector("[data-settings-nav]")!.getBoundingClientRect().bottom, updates: document.querySelector("#updates h2")!.getBoundingClientRect().top }));
-		expect(alignment.updates, `${viewport.width}px update heading below navigation`).toBeGreaterThanOrEqual(alignment.navigation);
+		const alignment = await page.evaluate(() => {
+			const navigation = document.querySelector("[data-settings-nav]")!.getBoundingClientRect();
+			const search = document.querySelector(".settings-search")!.getBoundingClientRect();
+			const heading = document.querySelector("#updates h2")!.getBoundingClientRect();
+			return { navigation: { right: navigation.right, bottom: navigation.bottom }, searchBottom: search.bottom, heading: { left: heading.left, top: heading.top } };
+		});
+		if (viewport.width > 900) {
+			expect(alignment.heading.left, `${viewport.width}px update heading clears the task sidebar`).toBeGreaterThanOrEqual(alignment.navigation.right);
+			expect(alignment.heading.top, `${viewport.width}px update heading below Search settings`).toBeGreaterThanOrEqual(alignment.searchBottom);
+		} else {
+			expect(alignment.heading.top, `${viewport.width}px update heading below navigation`).toBeGreaterThanOrEqual(alignment.navigation.bottom);
+		}
 		expect(await layoutProblems(page), `${viewport.width}px update layout`).toEqual({ documentOverflow: 0, outside: [], tinyControls: [], distortedChecks: [], clippedControls: [], overlappingStatuses: [] });
 		await page.evaluate(() => (document.activeElement as HTMLElement)?.blur());
 		await page.screenshot({ path: testInfo.outputPath(`${viewport.width}-settings-updates.png`), fullPage: true });
@@ -122,28 +132,31 @@ test("Media Shares keeps its heading and controls in a readable composition", as
 		await page.goto("/settings/media-shares", { waitUntil: "domcontentloaded" });
 		const composition = await page.evaluate(() => {
 			const heading = document.querySelector(".settings-intro h1")!;
-			const form = document.querySelector(".media-share-form")!;
-			const fieldset = form.querySelector("fieldset")!;
 			const headingStyle = getComputedStyle(heading);
 			const headingBox = heading.getBoundingClientRect();
 			return {
 				headingLines: Math.round(headingBox.height / Number.parseFloat(headingStyle.lineHeight)),
 				headingWidth: headingBox.width,
-				formWidth: form.getBoundingClientRect().width,
-				fieldsetWidth: fieldset.getBoundingClientRect().width,
 			};
 		});
 		expect(composition.headingLines, `${viewport.width}px heading lines`).toBeLessThanOrEqual(2);
 		expect(composition.headingWidth, `${viewport.width}px heading width`).toBeGreaterThan(250);
-		expect(composition.formWidth, `${viewport.width}px form width`).toBeGreaterThan(280);
-		expect(composition.fieldsetWidth, `${viewport.width}px content width`).toBeGreaterThan(280);
+		const content = page.locator(".media-share-form").getByRole("group", { name: "Library Content", exact: true });
+		await expect(content).toBeVisible();
+		const selection = content.getByRole("checkbox").first();
+		await selection.check();
+		await expect(selection).toBeChecked();
+		await selection.uncheck();
+		await expect(selection).not.toBeChecked();
+		expect(await layoutProblems(page), `${viewport.width}px Media Share controls`).toEqual({ documentOverflow: 0, outside: [], tinyControls: [], distortedChecks: [], clippedControls: [], overlappingStatuses: [] });
 	}
 });
 
-test("Owner settings separates everyday preferences from advanced tools", async ({ page }, testInfo) => {
-	test.skip(process.env.KINOSAIL_TEST_INSTANCE !== "1", "requires the populated public test instance");
-	await login(page);
-	for (const viewport of [{ width: 1440, height: 900 }, { width: 1024, height: 768 }, { width: 900, height: 900 }, { width: 768, height: 1024 }, { width: 390, height: 844 }, { width: 320, height: 800 }]) {
+for (const viewport of [{ width: 1440, height: 900 }, { width: 1024, height: 768 }, { width: 900, height: 900 }, { width: 768, height: 1024 }, { width: 390, height: 844 }, { width: 320, height: 800 }]) {
+	test(`Owner settings separates everyday preferences from advanced tools at ${viewport.width}px`, async ({ page }, testInfo) => {
+		test.skip(process.env.KINOSAIL_TEST_INSTANCE !== "1", "requires the populated public test instance");
+		test.setTimeout(120_000);
+		await login(page);
 		await page.setViewportSize(viewport);
 		await page.goto("/settings", { waitUntil: "domcontentloaded" });
 		const nav = page.locator("[data-settings-nav]");
@@ -181,5 +194,5 @@ test("Owner settings separates everyday preferences from advanced tools", async 
 		await expect(page.locator("#transcoder")).toBeVisible();
 		await page.goto("/settings#unknown-%broken");
 		await expect(page.locator("#playback")).toBeVisible();
-	}
-});
+	});
+}

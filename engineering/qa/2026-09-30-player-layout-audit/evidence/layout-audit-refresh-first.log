@@ -1,0 +1,132 @@
+
+Running 13 tests using 1 worker
+
+(node:29004) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   1 [chromium] › layout-audit-configuration.spec.ts:7:1 › SCIM configuration stays usable at every supported width (8.6s)
+  ✓   2 [chromium] › layout-audit-configuration.spec.ts:40:1 › single sign-on configuration stays usable at every supported width (8.4s)
+  ✓   3 [chromium] › layout-audit-configuration.spec.ts:78:1 › SAML configuration stays usable at every supported width (7.0s)
+  ✓   4 [chromium] › layout-audit-configuration.spec.ts:97:1 › software update choices stay clear at supported widths (6.2s)
+  ✘   5 [chromium] › layout-audit-configuration.spec.ts:127:1 › Media Shares keeps its heading and controls in a readable composition (1.5s)
+(node:29516) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   6 [chromium] › layout-audit-configuration.spec.ts:153:1 › Owner settings separates everyday preferences from advanced tools (43.5s)
+  ✓   7 [chromium] › layout-audit-library.spec.ts:7:1 › browse shows artwork before scrolling on desktop and phone (2.1s)
+  ✓   8 [chromium] › layout-audit-library.spec.ts:28:1 › ordinary browse keeps results in the first useful viewport (904ms)
+  ✓   9 [chromium] › layout-audit-library.spec.ts:53:1 › mobile browse spacing holds across every media page (1.9s)
+  ✘  10 [chromium] › layout-audit-library.spec.ts:85:1 › compact landscape shell keeps search and primary actions reachable (1.0m)
+(node:30660) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  11 [chromium] › layout-audit-shell.spec.ts:7:1 › signed-in application pages retain the navigation shell (7.4s)
+  ✓  12 [chromium] › layout-audit-shell.spec.ts:75:1 › Owner settings search finds a setting across task families (4.6s)
+  ✘  13 [chromium] › layout-audit-shell.spec.ts:119:1 › transcoder support stays concise and accessible (11.0s)
+
+
+  1) [chromium] › layout-audit-configuration.spec.ts:127:1 › Media Shares keeps its heading and controls in a readable composition 
+
+    Error: 320px form width
+
+    expect(received).toBeGreaterThan(expected)
+
+    Expected: > 280
+    Received:   260.796875
+
+      146 | 		expect(composition.headingLines, `${viewport.width}px heading lines`).toBeLessThanOrEqual(2);
+      147 | 		expect(composition.headingWidth, `${viewport.width}px heading width`).toBeGreaterThan(250);
+    > 148 | 		expect(composition.formWidth, `${viewport.width}px form width`).toBeGreaterThan(280);
+          | 		                                                                ^
+      149 | 		expect(composition.fieldsetWidth, `${viewport.width}px content width`).toBeGreaterThan(280);
+      150 | 	}
+      151 | });
+        at /Users/mikeo/.codex/worktrees/all-app-polish/kinosail/apps/player/e2e/layout-audit-configuration.spec.ts:148:67
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../.kinosail-test/layout-audit-refresh-first/layout-audit-configuration-3f1e0-s-in-a-readable-composition-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../.kinosail-test/layout-audit-refresh-first/layout-audit-configuration-3f1e0-s-in-a-readable-composition-chromium/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../.kinosail-test/layout-audit-refresh-first/layout-audit-configuration-3f1e0-s-in-a-readable-composition-chromium/trace.zip
+    Usage:
+
+        pnpm exec playwright show-trace ../.kinosail-test/layout-audit-refresh-first/layout-audit-configuration-3f1e0-s-in-a-readable-composition-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2) [chromium] › layout-audit-library.spec.ts:85:1 › compact landscape shell keeps search and primary actions reachable 
+
+    Test timeout of 60000ms exceeded.
+
+    Error: locator.evaluate: Test timeout of 60000ms exceeded.
+    Call log:
+      - waiting for getByRole('searchbox', { name: 'Search library' })
+
+
+      156 | 	] as const) {
+      157 | 		await page.goto(route, { waitUntil: "domcontentloaded" });
+    > 158 | 		await page.getByRole("searchbox", { name: "Search library" }).evaluate((element) => (element as HTMLInputElement).blur());
+          | 		                                                              ^
+      159 | 		if (route === "/quick-connect") {
+      160 | 			const initial = await page.evaluate(() => {
+      161 | 				const header = document.querySelector(".app-header")!.getBoundingClientRect();
+        at /Users/mikeo/.codex/worktrees/all-app-polish/kinosail/apps/player/e2e/layout-audit-library.spec.ts:158:65
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../.kinosail-test/layout-audit-refresh-first/layout-audit-library-compa-4231f-d-primary-actions-reachable-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../.kinosail-test/layout-audit-refresh-first/layout-audit-library-compa-4231f-d-primary-actions-reachable-chromium/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../.kinosail-test/layout-audit-refresh-first/layout-audit-library-compa-4231f-d-primary-actions-reachable-chromium/trace.zip
+    Usage:
+
+        pnpm exec playwright show-trace ../.kinosail-test/layout-audit-refresh-first/layout-audit-library-compa-4231f-d-primary-actions-reachable-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  3) [chromium] › layout-audit-shell.spec.ts:119:1 › transcoder support stays concise and accessible 
+
+    Error: expect(locator).toHaveText(expected) failed
+
+    Locator:  locator('#transcoder .automatic-hardware')
+    Expected: "Automatic will use: Processor"
+    Received: "Automatic will use: Apple graphics"
+    Timeout:  10000ms
+
+    Call log:
+      - Expect "toHaveText" locator('#transcoder .automatic-hardware') with timeout 10000ms
+      - waiting for locator('#transcoder .automatic-hardware')
+        24 × locator resolved to <p class="automatic-hardware">…</p>
+           - unexpected value "Automatic will use: Apple graphics"
+
+
+      126 | 		await expect(page.locator("#transcoder>p")).toContainText("only when Kinosail must convert video");
+      127 | 		await expect(page.locator("#transcoder>p")).toContainText("encoding paths that passed a local HLS smoke check");
+    > 128 | 		await expect(page.locator("#transcoder .automatic-hardware")).toHaveText("Automatic will use: Processor");
+          | 		                                                              ^
+      129 | 		const support = page.locator("#transcoder>.capability-report");
+      130 | 		await expect(support).not.toHaveAttribute("open", "");
+      131 | 		await support.getByText("Video compatibility", { exact: true }).click();
+        at /Users/mikeo/.codex/worktrees/all-app-polish/kinosail/apps/player/e2e/layout-audit-shell.spec.ts:128:65
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../.kinosail-test/layout-audit-refresh-first/layout-audit-shell-transco-aed5d-tays-concise-and-accessible-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../.kinosail-test/layout-audit-refresh-first/layout-audit-shell-transco-aed5d-tays-concise-and-accessible-chromium/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../.kinosail-test/layout-audit-refresh-first/layout-audit-shell-transco-aed5d-tays-concise-and-accessible-chromium/trace.zip
+    Usage:
+
+        pnpm exec playwright show-trace ../.kinosail-test/layout-audit-refresh-first/layout-audit-shell-transco-aed5d-tays-concise-and-accessible-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  3 failed
+    [chromium] › layout-audit-configuration.spec.ts:127:1 › Media Shares keeps its heading and controls in a readable composition 
+    [chromium] › layout-audit-library.spec.ts:85:1 › compact landscape shell keeps search and primary actions reachable 
+    [chromium] › layout-audit-shell.spec.ts:119:1 › transcoder support stays concise and accessible 
+  10 passed (3.3m)

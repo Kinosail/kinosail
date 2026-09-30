@@ -1,0 +1,14 @@
+{
+  "revision": "05da53145bc05235aa510fecc6392ec5928de061",
+  "command": "pnpm exec playwright test polish-grid-preview.spec.ts --project=webkit",
+  "testData": "Isolated Owner; three CSSOM candidates inserted and removed; not production proof",
+  "sourceSha256": "7a16c5bf60c9989195e88f26679aa5a96fbdd5dc24107545857295cf1cc5541a",
+  "environment": {
+    "server": "https://127.0.0.1:39227",
+    "browser": "WebKit Playwright 1.63.0",
+    "workers": 1
+  },
+  "startedAt": "2026-09-30T19:40:58.362416+00:00",
+  "exitCode": 0,
+  "finishedAt": "2026-09-30T19:41:05.780480+00:00"
+}

@@ -1,0 +1,19 @@
+{
+  "revision": "05da53145bc05235aa510fecc6392ec5928de061",
+  "command": "pnpm exec playwright test layout-audit-configuration.spec.ts layout-audit-library.spec.ts layout-audit-shell.spec.ts",
+  "startedAt": "2026-09-30T18:54:15.156207+00:00",
+  "testData": "Isolated Owner with TOTP and generated CC0 populated library; no live library writes",
+  "environment": {
+    "server": "https://127.0.0.1:39227",
+    "browserMatrix": "Chromium, Firefox, WebKit",
+    "workers": 1,
+    "video": "off"
+  },
+  "testSourceHashes": {
+    "layout-audit-configuration.spec.ts": "3d9687bb2d3652fe733954d42fa721360c0264b9c85159f38b2a2467759f65dd",
+    "layout-audit-library.spec.ts": "a742cae49761e317f01cc080751ed14a7ab4d07d92e3e550abdde4e7d506a292",
+    "layout-audit-shell.spec.ts": "36a3d523fef9e02f50bfa6d2fb66fd88a15ee0e496d5fec648e3c92a58d09dfd"
+  },
+  "exitCode": 1,
+  "finishedAt": "2026-09-30T19:15:11.727085+00:00"
+}

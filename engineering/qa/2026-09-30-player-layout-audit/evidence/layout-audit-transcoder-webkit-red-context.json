@@ -1,0 +1,14 @@
+{
+  "revision": "05da53145bc05235aa510fecc6392ec5928de061",
+  "command": "pnpm exec playwright test layout-audit-shell.spec.ts --grep transcoder support --project=webkit",
+  "startedAt": "2026-09-30T19:17:41.571487+00:00",
+  "testData": "Isolated populated Owner; generated fixture; existing production CSS electric-39",
+  "environment": {
+    "server": "https://127.0.0.1:39227",
+    "browser": "WebKit Playwright 1.63.0",
+    "workers": 1
+  },
+  "testSourceSha256": "0a6afad68121e2f084432865179283d5cc8b7004dcf3f84420a9c61098a67eda",
+  "exitCode": 1,
+  "finishedAt": "2026-09-30T19:18:18.544276+00:00"
+}

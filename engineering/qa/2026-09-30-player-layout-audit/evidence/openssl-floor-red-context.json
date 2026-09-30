@@ -1,0 +1,13 @@
+{
+  "revision": "7d7ad7c1c266b179bd40acd2172201a75e4130c2",
+  "run": "36770224275",
+  "job": "110074490713",
+  "result": "Real final production image scan rejected six HIGH findings: OpenSSL source 3.5.7-1~deb13u2; fixed version 3.5.7-1~deb13u3. All four app/platform container jobs failed.",
+  "failurePaths": [
+    "Cached upgrade layer retains the vulnerable library",
+    "Package floor is missing, malformed, or older than fixed version: comparison must abort the build",
+    "Security repository cannot supply the fixed package: build must fail",
+    "Final runtime or dependencies retain a vulnerable OpenSSL package: final Trivy gate must fail"
+  ],
+  "plannedVerification": "Keep existing CRITICAL,HIGH Trivy policy; rebuild both apps for AMD64 and ARM64 and test production paths; do not rerun unchanged UI matrix."
+}
