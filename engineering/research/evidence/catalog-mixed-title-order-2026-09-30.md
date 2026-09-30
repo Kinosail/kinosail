@@ -151,7 +151,7 @@ The new partial-view and late-publication contracts passed on original productio
 
 Existing contracts preserve parser rejection before index loading or access, cancellation with profile locks released, and concurrent publication/readers. This change introduces no new input. Independent read-only production and artifact review found no material issue. It checked all 824 CSV samples and 73 reported median rows, but ran no tests or benchmarks itself.
 
-Source-bound full Go checks passed: shared packages (131.255 seconds), catalog race (28.965), Player (292.190), and Subtitles (168.066). Source remained stable through those runs. Shared changed-code lint passed. Player lint first found test-only complexity and conversion findings. An ordinary retry hit the shared linter lock; task-owned temporary/cache directories isolated it. Final local gates, post-commit checks, and hosted delivery are recorded separately below.
+Before the final count-helper extraction, source-bound full Go checks passed: shared packages (131.255 seconds), catalog race (28.965), Player (292.190), and Subtitles (168.066). Source remained stable through those runs. Shared changed-code lint passed. Player lint first found test-only complexity and conversion findings. An ordinary retry hit the shared linter lock; task-owned temporary/cache directories isolated it. Final local gates, post-commit checks, and hosted delivery are recorded separately below.
 
 ## Reproduction and source binding
 
@@ -168,7 +168,7 @@ go -C apps/player test -overlay ../../.verification/catalog-mixed/baseline-overl
 
 Run matching commands for the baseline. Repeat in reverse order. For each selected interleaved case, use its complete slash-separated name, two-second samples, and two samples per process. Original logs, source overlays, command ledgers, CPU profiles, rejected source, and raw verification outputs remain in the private `.verification/catalog-mixed` directory.
 
-The measured candidate binary predates only a successful-path-neutral cancellation branch repair and later benchmark lint comments. Public tests were extended after timing. Full suites use the repaired production source. Final source hashes below bind those differences explicitly. The first source-cap run found the expanded test file above 300 lines. The two new admission tests moved into index_intrinsic_order_test.go with byte-identical bodies; final catalog and race checks cover that split. The original cap failure remains recorded. The first tooling run then detected the snapshot made before this test-file move. Both snapshots were regenerated for the retry.
+The measured candidate binary predates a successful-path-neutral cancellation branch repair, later benchmark lint comments, and the final extraction of the cold Owner completeness loop into countTitleView. The extracted loop retains identical membership and 64-item cancellation checks. Warm hits do not call this helper. The paired timing tables identify the earlier measured binary; they are not new final-source latency measurements. Public tests were extended after timing. Full suites use the repaired production source. Final source hashes below bind those differences explicitly. The first source-cap run found the expanded test file above 300 lines. The two new admission tests moved into index_intrinsic_order_test.go with byte-identical bodies; final catalog and race checks cover that split. The original cap failure remains recorded. The first tooling run then detected the snapshot made before this test-file move. Both snapshots were regenerated for the retry.
 
 Measured source and binaries:
 
@@ -243,10 +243,10 @@ Final task-owned source:
 ```json
 {
   "packages/catalog/index.go": "ce9955e333e052c2b79d1e46a3069dec1cf4418168ea6962d9e4acb8d7d499a6",
-  "packages/catalog/index_order.go": "ed7ca0b2c16cc4a794937c229560319d04615f598419f929d9917c4548700823",
+  "packages/catalog/index_order.go": "83a9fc3f23025827108c28f1927ad0559251bdc637ff5ac4757debfa24153b11",
   "packages/catalog/index_order_test.go": "952b5164af47fb8d23ded0772fba794566a48afc4b2b305437600920a6529b81",
-  "apps/player/internal/server/catalog_mixed_benchmark_test.go": "633b1b0d85b6618f6413b5e8e6f5abe03567834ef7bc138433316ad1bb0e4e65",
-  "packages/catalog/index_intrinsic_order_test.go": "22579a94ec2f7c715145585e3e6c496cccffce12fb50cc0beb66be4ef6e3edab"
+  "packages/catalog/index_intrinsic_order_test.go": "22579a94ec2f7c715145585e3e6c496cccffce12fb50cc0beb66be4ef6e3edab",
+  "apps/player/internal/server/catalog_mixed_benchmark_test.go": "633b1b0d85b6618f6413b5e8e6f5abe03567834ef7bc138433316ad1bb0e4e65"
 }
 ```
 
@@ -254,4 +254,4 @@ The [Go garbage-collector guide](https://go.dev/doc/gc-guide) explains pointer r
 
 ## Delivery boundary
 
-Changed-code lint passed for shared packages, Player, and Subtitles. Both regenerated snapshots, the source cap, and repository tooling passed. Final catalog tests and race checks passed after the byte-identical test split. Reconciliation with origin/main `74e18c46afbb06b35cf835ace8556deb89eb7cd0` preserved all five task-owned Go source files byte-for-byte. Focused catalog/assets/HTTP checks passed in shared packages, Player, and Subtitles. Regenerated snapshot checks, source caps, and the final branch whitespace check also passed. These focused reconciliation checks do not replace the earlier full suites or certify unrelated native changes from main. Post-commit app checks and hosted delivery are pending. Nox revision, deployed load, first-frame latency, and physical UI timing remain unverified for this phase. The overall performance goal stays active.
+Changed-code lint passed for shared packages, Player, and Subtitles. Both regenerated snapshots, the source cap, and repository tooling passed. Final catalog tests and race checks passed after the byte-identical test split. Reconciliation with origin/main `74e18c46afbb06b35cf835ace8556deb89eb7cd0` preserved all five task-owned Go source files byte-for-byte. Focused catalog/assets/HTTP checks passed in shared packages, Player, and Subtitles. Regenerated snapshot checks, source caps, and the final branch whitespace check also passed. These focused reconciliation checks do not replace the earlier full suites or certify unrelated native changes from main. The first post-commit Player run passed compilation and failed only TestMCPStdioUsesSoleOwnerAndSharedAPI. Our task TMPDIR made the Unix socket path too long: an isolated control reproduces bind: invalid argument there, while the same test passes three times in a short task TMPDIR. The first Subtitles gate stopped at 113 full shared lint findings. One was the new coordinator complexity warning; the final count-helper extraction removes it. Existing unrelated findings remain separate. The final public catalog and race suites pass after extraction. A final-source, one-iteration benchmark preflight passes all 30 cases and matches every timed response hash. It is a behavior check, not a paired timing extension. Final production review found no issue and executed no checks separately. Full app retry and hosted delivery are pending. Nox revision, deployed load, first-frame latency, and physical UI timing remain unverified for this phase. The overall performance goal stays active.

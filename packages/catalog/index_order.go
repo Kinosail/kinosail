@@ -54,21 +54,26 @@ func (index *Index) BrowseLibrary(ctx context.Context, values url.Values, locale
 			if !owner {
 				return result, err
 			}
-			complete = 0
-			for position, item := range references {
-				if position%64 == 0 && ctx.Err() != nil {
-					break
-				}
-				if viewMatches(Candidate{Item: item}, key.view) {
-					complete++
-				}
-			}
+			complete = countTitleView(ctx, references, key.view)
 		}
 		if ctx.Err() == nil {
 			index.rememberTitleOrder(key, version, complete, result.references)
 		}
 	}
 	return result, err
+}
+
+func countTitleView(ctx context.Context, references []*library.Item, view string) int {
+	complete := 0
+	for position, item := range references {
+		if position%64 == 0 && ctx.Err() != nil {
+			break
+		}
+		if viewMatches(Candidate{Item: item}, view) {
+			complete++
+		}
+	}
+	return complete
 }
 
 func (index *Index) titleReferences(key titleOrderKey) ([]*library.Item, uint64, bool, error) {
