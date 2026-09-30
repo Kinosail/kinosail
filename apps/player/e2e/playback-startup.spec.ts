@@ -3,6 +3,7 @@ import type { Page } from "@playwright/test";
 import { createHash, createHmac } from "node:crypto";
 
 test.skip(!process.env.KINOSAIL_TEST_INSTANCE, "requires the populated test instance");
+test.use({ serviceWorkers: "block" });
 test.beforeEach(async ({ page }) => page.addInitScript(() => Object.defineProperty(PublicKeyCredential, "isConditionalMediationAvailable", { value: async () => false })));
 
 function totp(): string {
@@ -62,7 +63,7 @@ test("selecting a movie starts moving playback promptly", async ({ page }, testI
 	}
 });
 
-test("blocked autoplay leaves one Play control that starts the video", async ({ page }, testInfo) => {
+test("blocked autoplay leaves one Play control that starts the video", async ({ page, browserName }, testInfo) => {
 	await page.setViewportSize({ width: 390, height: 844 });
 	await page.addInitScript(() => {
 		Object.defineProperty(navigator, "userAgent", { configurable: true, value: "Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 Mobile/15E148" });
@@ -87,8 +88,26 @@ test("blocked autoplay leaves one Play control that starts the video", async ({ 
 	await page.getByLabel("Authentication or recovery code").fill(totp());
 	await page.getByRole("button", { name: "Sign in", exact: true }).click();
 	await page.goto("/?view=movies");
-	await page.getByRole("link", { name: /Example Movie/ }).click();
+	let releaseMedia: () => void = () => {};
+	const mediaReady = new Promise<void>((resolve) => { releaseMedia = resolve; });
+	await page.route("**/media/**", async (route) => { await mediaReady; await route.continue(); });
+	await page.getByRole("link", { name: /Example Movie/ }).click({ noWaitAfter: true });
+	await expect(page).toHaveURL(/\/watch\/[a-f0-9]+$/);
+	await expect(page.locator("[data-player-status]")).toBeVisible();
+	await page.waitForTimeout(2_000);
+	await expect(page.locator("[data-player-status]")).toBeVisible();
+	await expect(page.locator(".player-center-control[data-player-toggle]")).toBeHidden();
+	// WebKit waits for document.fonts.ready, which needs the held media load to finish.
+	if (browserName !== "webkit") await page.screenshot({ path: testInfo.outputPath("390-media-pending.png"), fullPage: true });
+	releaseMedia();
 	await expect(page.locator("[data-player-status]")).toBeHidden();
+	const readiness = await page.locator("video").evaluate((video: HTMLVideoElement) => {
+		let ahead = 0;
+		for (let index = 0; index < video.buffered.length; index++) if (video.buffered.start(index) <= video.currentTime && video.buffered.end(index) >= video.currentTime) ahead = video.buffered.end(index) - video.currentTime;
+		return { readyState: video.readyState, ahead, remaining: video.duration - video.currentTime };
+	});
+	expect(readiness.readyState).toBeGreaterThanOrEqual(3);
+	expect(readiness.ahead).toBeGreaterThanOrEqual(Math.min(2, readiness.remaining));
 	await expect(page.locator(".player-center-control[data-player-toggle]")).toBeVisible();
 	await expect(page.getByRole("button", { name: "Play video" })).toHaveCount(0);
 	await page.screenshot({ path: testInfo.outputPath("390-play-control.png"), fullPage: true });

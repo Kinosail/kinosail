@@ -35,19 +35,31 @@ if (playerStatus) {
   let playbackTime = player.currentTime;
   const clearBufferingTimer = () => { clearTimeout(bufferingTimer); bufferingTimer = undefined; };
   let hasPlayed = false;
+  let needsGesture = false;
+  const readyForPlay = () => player.readyState >= HTMLMediaElement.HAVE_FUTURE_DATA &&
+    bufferedAhead() >= Math.min(2, Number.isFinite(player.duration) ? Math.max(0, player.duration - player.currentTime) : 2);
   const revealPlayControl = () => {
-    if (player.paused && !player.error && !playerStatus.classList.contains("is-recovery")) hidePlayerState();
+    // iOS can suspend preloading until a real Play gesture. Keep that escape only
+    // after the browser rejects play, never while it is still fetching video.
+    const gestureRequired = needsGesture && player.networkState === HTMLMediaElement.NETWORK_IDLE;
+    if (player.paused && !player.error && (readyForPlay() || gestureRequired)) hidePlayerState();
   };
   const appleTouch = /iPhone|iPad|iPod/.test(navigator.userAgent) || navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1;
+  let gestureTimer;
+  let startupPaused = false;
+  player.addEventListener("kinosail:playback-intent", ({detail}) => { startupPaused = detail.playing === false; if (startupPaused) clearTimeout(gestureTimer); });
   const schedulePlayControl = () => {
     if (!appleTouch) return;
-    setTimeout(() => {
-      if (!hasPlayed && (player.currentSrc || player.getAttribute("src"))) revealPlayControl();
+    clearTimeout(gestureTimer);
+    gestureTimer = setTimeout(() => {
+      if (!startupPaused && !hasPlayed && player.paused && !player.error && player.networkState === HTMLMediaElement.NETWORK_IDLE &&
+        (player.currentSrc || player.getAttribute("src"))) requestPlay("startup-gesture-check").catch(() => {});
     }, 1500);
   };
-  player.addEventListener("kinosail:play-needs-gesture", revealPlayControl);
-  player.addEventListener("loadstart", () => { if (!seeking) showPlayerState("loading", "Loading video…"); schedulePlayControl(); });
+  player.addEventListener("kinosail:play-needs-gesture", () => { needsGesture = true; revealPlayControl(); });
+  player.addEventListener("loadstart", () => { hasPlayed = false; needsGesture = false; if (!seeking) showPlayerState("loading", "Loading video…"); schedulePlayControl(); });
   schedulePlayControl();
+  player.addEventListener("play", () => { if (!hasPlayed && !readyForPlay()) showPlayerState("loading", "Loading video…"); });
   player.addEventListener("waiting", () => {
     clearBufferingTimer();
     const waitingAt = player.currentTime;
@@ -70,7 +82,9 @@ if (playerStatus) {
   player.addEventListener("progress", () => {
     const percent = bufferedPercent();
     if (playerStatus.dataset.state === "buffering") playerMessage.textContent = percent ? `Buffering · ${percent}% buffered` : "Buffering…";
+    if (!hasPlayed) revealPlayControl();
   });
+  player.addEventListener("suspend", () => { if (!hasPlayed) { revealPlayControl(); if (!playerStatus.hidden) schedulePlayControl(); } });
   player.addEventListener("loadedmetadata", bufferedPercent);
   player.addEventListener("timeupdate", () => {
     const advancing = player.currentTime > playbackTime;
@@ -81,12 +95,12 @@ if (playerStatus) {
     clearBufferingTimer();
     seeking = false;
     if (event === "playing") hasPlayed = true;
-    hidePlayerState();
+    if (hasPlayed || readyForPlay()) hidePlayerState();
   });
   player.addEventListener("seeked", () => {
     clearBufferingTimer();
     seeking = false;
-    if (player.readyState >= 3) hidePlayerState();
+    if (hasPlayed ? player.readyState >= HTMLMediaElement.HAVE_FUTURE_DATA : readyForPlay()) hidePlayerState();
     else showPlayerState("buffering", bufferedPercent() ? `Buffering · ${bufferedPercent()}% buffered` : "Buffering…");
   });
   player.addEventListener("error", () => {
