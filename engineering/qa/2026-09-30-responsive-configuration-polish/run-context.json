@@ -1,0 +1,113 @@
+{
+  "sourceRevision": "1b7a24d773c63cb29c0ec28b4cdc94305295730a",
+  "sourceState": "Committed production change; verification began from the same working tree.",
+  "baseline": "Served Player stylesheet electric-38; responsive regressions reproduced before their production fixes.",
+  "environment": {
+    "OS": "27.0",
+    "architecture": "arm64",
+    "browser": "Playwright 1.63.0 Chromium, Firefox, WebKit",
+    "server": "Production Go entry point; task-owned HTTPS loopback server and storage"
+  },
+  "testData": "Isolated Owner with TOTP; generated CC0 library and fictional titles. Configuration writes used isolated data only.",
+  "runs": [
+    {
+      "command": "playwright test layout-audit-configuration.spec.ts --grep \"SCIM configuration\" --project=chromium",
+      "environment": "pre-fix stylesheet electric-38",
+      "result": "Failed for Search text contrast at 720px; 1.02:1 versus 4.5:1 required."
+    },
+    {
+      "command": "playwright test layout-audit-configuration.spec.ts --grep \"TMDB connection instructions\" --project=chromium",
+      "environment": "after contrast fix, before TMDB fix",
+      "result": "Failed: instruction right edge 749.64px in a 390px viewport."
+    },
+    {
+      "command": "playwright test layout-audit-configuration.spec.ts polish-shell.spec.ts --grep \"TMDB connection instructions|SCIM configuration|single sign-on configuration|SAML configuration|landscape search|administration uses\"",
+      "environment": "full browser matrix; one worker; isolated Owner",
+      "result": "18/18 passed."
+    },
+    {
+      "command": "playwright test polish-shell.spec.ts --grep \"TMDB connection instructions\"",
+      "environment": "full browser matrix; final smoke-test location",
+      "result": "3/3 passed."
+    },
+    {
+      "command": "make -C apps/player test",
+      "result": "All Player Go packages passed."
+    },
+    {
+      "command": "make -C apps/player test-instance-check",
+      "result": "Blocked: shared Podman VM has no free storage; retained error125."
+    },
+    {
+      "command": "go test ./mediaprobe -run ^TestEmbeddedViewerRetriesCanceledBackgroundOwner$ -count=30",
+      "environment": "macOS, existing tests and production code unchanged",
+      "result": "Passed; hosted Linux text-file-busy failure did not reproduce."
+    },
+    {
+      "command": "make -C apps/player verify-changed",
+      "result": "Passed: source cap, diff, compilation, focused Go tests, UI lint, E2E discovery."
+    },
+    {
+      "command": "make max-loc && make tooling-check",
+      "result": "Passed."
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "evidence/configuration-contrast-red.log",
+      "sha256": "94d71c2ec69d3650f70c961c6c5dd69739370505ee4adb2d125125a41d8154fa"
+    },
+    {
+      "path": "evidence/configuration-polish-container-instance.log",
+      "sha256": "1125e0c228e129ea2438add40b4e71c5b04f96bc1bf7457f2136989da5b5bd90"
+    },
+    {
+      "path": "evidence/configuration-polish-green.log",
+      "sha256": "e49e40e37e883f483fa8c94dffb9e35b47ad73d8825d1b1829cc82540116d28a"
+    },
+    {
+      "path": "evidence/configuration-polish-max-loc.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "evidence/configuration-polish-server-suite.log",
+      "sha256": "7ef6b4d463e4d165c0863e6e0b8b1931d445a3aa04b0022dba5f530882375e3b"
+    },
+    {
+      "path": "evidence/configuration-polish-tooling.log",
+      "sha256": "27f8564d60abe1ad61cdcd709858b2cf6c40b4a76ebf04acc34c0034103e0282"
+    },
+    {
+      "path": "evidence/configuration-polish-verify-changed.log",
+      "sha256": "f5e477423295a478226f4f2f33f0d07c14e735dc3723fc7d9f60db686580e14c"
+    },
+    {
+      "path": "evidence/native-main-fixture-repeats.log",
+      "sha256": "6de8285ec8b88a34398dcdf049c8f65f8a7a64a4d8253cf22ddd4be04e0b5175"
+    },
+    {
+      "path": "evidence/tmdb-after-1440.png",
+      "sha256": "be6a2f2105499b80feb9a5444de63bc3b68716a0f7d9228c70bebcaebede4229"
+    },
+    {
+      "path": "evidence/tmdb-after-320.png",
+      "sha256": "fa3d4130bd78695d335538caf4673be474e85d6e2c6d4d693282399032459729"
+    },
+    {
+      "path": "evidence/tmdb-after-390.png",
+      "sha256": "02ed1a514470d82f23da1135ad5b354c8019d008160bb10803f81943bbdedbad"
+    },
+    {
+      "path": "evidence/tmdb-before-390.png",
+      "sha256": "a1cb4611a0d7453c1f018a356122d4bc1226edc8787c80f9e83032cc6dc71e8b"
+    },
+    {
+      "path": "evidence/tmdb-instructions-red.log",
+      "sha256": "8f49c05c98037ce7697ab40c4f40c90279c042965900f049e6b858dde683a67f"
+    },
+    {
+      "path": "evidence/tmdb-smoke-green.log",
+      "sha256": "c494c9821c04d38e27bffeb2e3b702e416f8f782a2bc2591868329112fbb6750"
+    }
+  ]
+}
