@@ -4,6 +4,20 @@ import XCTest
 // Uses the populated loopback QA session. Keep screenshot attachments in the result bundle.
 final class RemotePolishTests: RemoteTestCase {
     @MainActor
+    func testPlayPauseStartsTheFocusedHomeTitle() {
+        let app = XCUIApplication(bundleIdentifier: "com.kinosail.player")
+        app.launch()
+        XCTAssertTrue(app.staticTexts["Continue watching"].waitForExistence(timeout: 15))
+        XCUIRemote.shared.press(.down)
+        XCUIRemote.shared.press(.playPause)
+        XCTAssertTrue(app.cells["Playback options"].waitForExistence(timeout: 20))
+        record("home quick play", app)
+        XCUIRemote.shared.press(.menu)
+        XCTAssertTrue(app.buttons["Search"].waitForExistence(timeout: 10))
+        record("home after quick play", app)
+    }
+
+    @MainActor
     func testFocusedContinueWatchingCardsKeepTheirNeighborsClear() {
         let app = XCUIApplication(bundleIdentifier: "com.kinosail.player")
         let remote = XCUIRemote.shared
@@ -61,7 +75,7 @@ final class RemotePolishTests: RemoteTestCase {
         var lightSamples = 0
         for x in stride(from: frame.minX, through: frame.maxX, by: 3) {
             for y in stride(from: frame.minY, through: frame.maxY, by: 3) {
-                let color = pixel(image, x: x / image.size.width, y: y / image.size.height)
+                let color = pixel(image, x: x / app.frame.width, y: y / app.frame.height)
                 if color[0] > 220 && color[1] > 220 && color[2] > 220 { lightSamples += 1 }
             }
         }
