@@ -169,6 +169,9 @@ func applySubtitleCleanup(index *libraryIndex, settings *settingsStore, language
 	defer func() {
 		if hidden > 0 {
 			index.RequestRefresh()
+			if provider := settings.subtitleProvider; provider != nil && provider.ledger != nil {
+				provider.ledger.publishChange()
+			}
 		}
 	}()
 	for _, file := range plan.Files {

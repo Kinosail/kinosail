@@ -94,6 +94,31 @@ Generic configuration changes require the browser settings. MCP blocks these mut
 
 The MCP adapter accepts relative `/api/v1` paths only. It rejects absolute URLs and operations outside the approved route set. Responses are JSON and are bounded before they return to the client.
 
+## Subscribe to updates
+
+Clients that support MCP Events can discover and manage signed webhook subscriptions.
+The Server advertises `events/list`, `events/subscribe`, and `events/unsubscribe`.
+
+| Event | Update |
+| --- | --- |
+| `library.updated` | The indexed media library changed. |
+| `download.updated` | A download owned by the connected Profile changed. |
+| `home-assistant.command` | A player command for the connected Profile changed. |
+
+Use a public HTTPS callback and a `whsec_` signing secret. The Server verifies the
+callback before saving a subscription. Notices contain the affected relative API
+resource path. An optional `resource` argument filters to one exact path.
+
+Subscriptions last at most 24 hours, with a one-minute minimum. Refresh before
+`refreshBefore` to continue delivery. Built-in connection revocation and Profile
+access changes stop delivery. External OAuth must return `client_id`; subscriptions
+expire with its access token. Provider revocation is detected on the next authenticated request.
+
+Cursors are null. Updates missed during downtime cannot be replayed. A refresh
+reports skipped notices with `truncated: true` and resumes suspended delivery.
+Use the [ChatGPT Events guide](https://developers.openai.com/plugins/build/mcp-events)
+to configure plugin monitoring. Adding an ordinary tool connection does not start monitoring.
+
 ## Try a read-only task first
 
 After adding the connection, run `codex mcp list`, open a new client session, and inspect its MCP tool list. Ask: “Find five unwatched science-fiction films in my Kinosail library. Do not change anything.” The client should use `search_media` or `recommendation_context` and return only media visible to the selected Profile.

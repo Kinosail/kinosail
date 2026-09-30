@@ -260,6 +260,7 @@ func newApplication(config Config) http.Handler { //nolint:funlen,cyclop,gocogni
 	registerMediaExperience(mux, experience, index, progress)
 	registerCasting(mux, auth, index, probe, hls, settings, config.AuthURL)
 	mcpAdapter := registerMCPWithConnections(mux, config.MCP, auth, apiRouting(mux), agentConnections)
+	mcpAdapter.ObserveEvents(config.Lifecycle, events)
 	startApplicationMCPHost(config, managedLifecycle, mcpAdapter, auth.profiles)
 	if managedLifecycle {
 		if err := serverdiscovery.Start(config.Lifecycle, settings.serverName(), config.AuthURL); err != nil {

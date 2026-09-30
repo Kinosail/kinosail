@@ -13,15 +13,23 @@ actor ArtworkLoader {
     }
     private var cache: [Key: Cached] = [:]
     private var pending: [Key: Pending] = [:]
+    private let downloads = ArtworkDownloads()
+    private let warmup = ArtworkWarmup()
     private var refreshing: [Key: UUID] = [:]
     private var refreshTasks: [Key: Task<Void, Never>] = [:]
     private var bytes = 0
     private var generation = UUID()
     private var active = 0
     private var activeBackground = 0
-    private var waiters: [(id: UUID, background: Bool, continuation: CheckedContinuation<Void, Error>)] = []
+    private var foreground: [String: Int] = [:]
+    private var waiters: [(id: UUID, key: String, background: Bool, continuation: CheckedContinuation<Bool, Error>)] = []
 
-    func image(path: String, client: ServerClient, dimension: Int = 1600) async throws -> CGImage {
+    func prefetch(paths: [String], client: ServerClient, dimension: Int = 800) async throws {
+        try await warmup.prefetch(paths: paths, client: client, dimension: dimension, loader: self)
+    }
+    func stopPrefetch() async { await warmup.clear() }
+
+    func image(path: String, client: ServerClient, dimension: Int = 1600, background: Bool = false) async throws -> CGImage {
         try Task.checkCancellation()
         guard [400, 500, 800, 1600, 4096].contains(dimension) else { throw ClientError.invalidInput("The artwork size is invalid.") }
         let url = try client.server.mediaURL(path)
@@ -35,6 +43,18 @@ actor ArtworkLoader {
                 scheduleRefresh(key: key, url: url, client: client, dimension: dimension)
             }
             return found.image
+        }
+        let networkKey = "\(client.identity):\(url.absoluteString)"
+        if !background {
+            foreground[networkKey, default: 0] += 1
+            for index in waiters.indices where waiters[index].key == networkKey { waiters[index].background = false }
+            drain()
+        }
+        defer {
+            if !background {
+                foreground[networkKey, default: 1] -= 1
+                if foreground[networkKey] == 0 { foreground[networkKey] = nil }
+            }
         }
         let attempt = generation
         let observer = UUID()
@@ -63,9 +83,7 @@ actor ArtworkLoader {
                     catch { await store?.remove(url.absoluteString, kind: .artwork) }
                 }
                 // Local hits must not queue behind slow network artwork requests.
-                try await self.acquire()
-                defer { self.release() }
-                let (data, type) = try await client.resource(url.absoluteString, maximum: 32 * 1024 * 1024)
+                let (data, type) = try await download(url: url, client: client, background: background)
                 guard type.hasPrefix("image/") else { throw ClientError.invalidResponse }
                 let image = try await Self.decode(data, dimension: dimension)
                 try Task.checkCancellation()
@@ -143,7 +161,7 @@ actor ArtworkLoader {
         return output as Data
     }
 
-    func clear() {
+    func clear() async {
         generation = UUID()
         for request in pending.values { request.task.cancel() }
         for task in refreshTasks.values { task.cancel() }
@@ -152,6 +170,8 @@ actor ArtworkLoader {
         refreshTasks = [:]
         cache = [:]
         bytes = 0
+        await warmup.clear()
+        await downloads.clear()
     }
 
     private func scheduleRefresh(key: Key, url: URL, client: ServerClient, dimension: Int) {
@@ -172,16 +192,15 @@ actor ArtworkLoader {
         }
         guard generation == attempt else { return }
         do {
-            try await acquire(background: true)
-            defer { release(background: true) }
             try Task.checkCancellation()
-            let (data, type) = try await client.resource(url.absoluteString, maximum: 32 * 1024 * 1024)
+            let (data, type) = try await download(url: url, client: client, background: true)
             guard type.hasPrefix("image/") else { throw ClientError.invalidResponse }
             let image = try await Self.decode(data, dimension: dimension)
             try Task.checkCancellation()
             guard generation == attempt else { return }
             let savedAt = Date()
-            let store = try await client.cacheStore()
+            let persist = URLComponents(url: url, resolvingAgainstBaseURL: false).map(ServerClient.cacheableMediaURL) == true
+            let store = persist ? try await client.cacheStore() : nil
             remember(image, key: key, saved: savedAt)
             if let store {
                 await store.enqueueWrite(data, key: url.absoluteString, kind: .artwork)
@@ -205,16 +224,25 @@ actor ArtworkLoader {
         bytes += cost
     }
 
-    private func acquire(background: Bool = false) async throws {
+    private func download(url: URL, client: ServerClient, background: Bool) async throws -> (Data, String) {
+        try await downloads.resource(path: url.absoluteString, clientID: client.identity) {
+            try await self.fetch(url: url, client: client, background: background)
+        }
+    }
+
+    private func fetch(url: URL, client: ServerClient, background: Bool) async throws -> (Data, String) {
+        let admittedBackground = try await acquire(key: "\(client.identity):\(url.absoluteString)", background: background)
+        defer { release(background: admittedBackground) }
+        try Task.checkCancellation()
+        return try await client.resource(url.absoluteString, maximum: 32 * 1024 * 1024)
+    }
+
+    private func acquire(key: String, background: Bool) async throws -> Bool {
         let id = UUID()
-        try await withTaskCancellationHandler {
-            try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
+        return try await withTaskCancellationHandler {
+            try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Bool, Error>) in
                 if Task.isCancelled { continuation.resume(throwing: CancellationError()) }
-                else if active < 4 && (!background || activeBackground < 2) {
-                    active += 1
-                    if background { activeBackground += 1 }
-                    continuation.resume()
-                } else { waiters.append((id, background, continuation)) }
+                else { waiters.append((id, key, background && foreground[key] == nil, continuation)); drain() }
             }
         } onCancel: { Task { await self.cancel(id) } }
     }
@@ -226,13 +254,16 @@ actor ArtworkLoader {
     private func release(background: Bool = false) {
         active -= 1
         if background { activeBackground -= 1 }
-        let next = waiters.firstIndex(where: { !$0.background }) ??
-            (activeBackground < 2 ? waiters.firstIndex(where: { $0.background }) : nil)
-        if let next {
+        drain()
+    }
+    private func drain() {
+        while active < 4 {
+            guard let next = waiters.firstIndex(where: { !$0.background }) ??
+                    (activeBackground < 2 ? waiters.firstIndex(where: { $0.background }) : nil) else { return }
             let waiter = waiters.remove(at: next)
             active += 1
             if waiter.background { activeBackground += 1 }
-            waiter.continuation.resume()
+            waiter.continuation.resume(returning: waiter.background)
         }
     }
 }
