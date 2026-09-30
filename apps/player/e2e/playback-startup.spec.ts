@@ -63,7 +63,7 @@ test("selecting a movie starts moving playback promptly", async ({ page }, testI
 	}
 });
 
-test("blocked autoplay leaves one Play control that starts the video", async ({ page }, testInfo) => {
+test("blocked autoplay leaves one Play control that starts the video", async ({ page, browserName }, testInfo) => {
 	await page.setViewportSize({ width: 390, height: 844 });
 	await page.addInitScript(() => {
 		Object.defineProperty(navigator, "userAgent", { configurable: true, value: "Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 Mobile/15E148" });
@@ -97,7 +97,8 @@ test("blocked autoplay leaves one Play control that starts the video", async ({ 
 	await page.waitForTimeout(2_000);
 	await expect(page.locator("[data-player-status]")).toBeVisible();
 	await expect(page.locator(".player-center-control[data-player-toggle]")).toBeHidden();
-	await page.screenshot({ path: testInfo.outputPath("390-media-pending.png"), fullPage: true });
+	// WebKit waits for document.fonts.ready, which needs the held media load to finish.
+	if (browserName !== "webkit") await page.screenshot({ path: testInfo.outputPath("390-media-pending.png"), fullPage: true });
 	releaseMedia();
 	await expect(page.locator("[data-player-status]")).toBeHidden();
 	const readiness = await page.locator("video").evaluate((video: HTMLVideoElement) => {
