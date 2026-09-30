@@ -1,0 +1,79 @@
+package com.kinosail.player.core
+
+import android.graphics.Bitmap
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.ui.semantics.LiveRegionMode
+import androidx.compose.ui.semantics.SemanticsProperties
+import androidx.compose.ui.test.SemanticsMatcher
+import androidx.compose.ui.test.assert
+import androidx.compose.ui.test.junit4.v2.createComposeRule
+import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.onNodeWithContentDescription
+import org.junit.Rule
+import org.junit.Test
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
+import org.robolectric.annotation.Config
+
+@RunWith(RobolectricTestRunner::class)
+@Config(sdk = [35])
+class ReaderAccessibilityTest {
+    @get:Rule val compose = createComposeRule()
+
+    @Test fun pendingPageWithKnownCountShowsLoading() {
+        compose.setContent { ReaderPageView("Example", null, 0, 2, null, null, {}, {}, {}, {}, {}) }
+        compose.onNode(SemanticsMatcher.keyIsDefined(SemanticsProperties.ProgressBarRangeInfo)).assertExists()
+    }
+
+    @Test fun loadingFollowsPageAvailabilityAndStopsOnFailure() {
+        val image = mutableStateOf<Bitmap?>(null)
+        val notice = mutableStateOf<String?>(null)
+        compose.setContent { ReaderPageView("Example", image.value, 0, 2, notice.value, null, {}, {}, {}, {}, {}) }
+        val loading = compose.onNode(SemanticsMatcher.keyIsDefined(SemanticsProperties.ProgressBarRangeInfo))
+        loading.assertExists()
+        compose.runOnIdle { image.value = Bitmap.createBitmap(4, 4, Bitmap.Config.ARGB_8888) }
+        compose.onNodeWithContentDescription("Example, page 1").assertExists()
+        loading.assertDoesNotExist()
+        compose.runOnIdle { image.value = null }
+        loading.assertExists()
+        compose.runOnIdle { notice.value = "Could not load this comic page." }
+        loading.assertDoesNotExist()
+        compose.onNodeWithText("Could not load this comic page.").assertExists()
+        compose.onNodeWithText("Try again").assertExists()
+    }
+
+    @Test fun unavailableFormatStopsLoadingWithoutOfferingPageRetry() {
+        compose.setContent {
+            ReaderPageView("Example", null, 0, 0, "This book format is not available on Android yet.",
+                null, {}, {}, {}, {}, {})
+        }
+        compose.onNodeWithText("This book format is not available on Android yet.").assertExists()
+        compose.onNodeWithText("Try again").assertDoesNotExist()
+        compose.onNode(SemanticsMatcher.keyIsDefined(SemanticsProperties.ProgressBarRangeInfo)).assertDoesNotExist()
+    }
+
+    @Test fun pendingPageBeforeCountLoadsShowsLoading() {
+        compose.setContent { ReaderPageView("Example", null, 0, 0, null, null, {}, {}, {}, {}, {}) }
+        compose.onNode(SemanticsMatcher.keyIsDefined(SemanticsProperties.ProgressBarRangeInfo)).assertExists()
+    }
+
+    @Test fun readyPageStopsLoadingAndPreservesItsImageDuringSaveFailure() {
+        val image = Bitmap.createBitmap(4, 4, Bitmap.Config.ARGB_8888)
+        compose.setContent { ReaderPageView("Example", image, 0, 2, null, "Reading position was not saved.", {}, {}, {}, {}, {}) }
+        compose.onNodeWithContentDescription("Example, page 1").assertExists()
+        compose.onNodeWithText("Reading position was not saved.").assertExists()
+        compose.onNode(SemanticsMatcher.keyIsDefined(SemanticsProperties.ProgressBarRangeInfo)).assertDoesNotExist()
+    }
+
+    @Test fun readingAndSavingErrorsAreAnnounced() {
+        compose.setContent {
+            ReaderPageView("Example", null, 0, 1, "Could not render this page.",
+                "Reading position was not saved.", {}, {}, {}, {}, {})
+        }
+
+        compose.onNode(SemanticsMatcher.keyIsDefined(SemanticsProperties.ProgressBarRangeInfo)).assertDoesNotExist()
+        val polite = SemanticsMatcher.expectValue(SemanticsProperties.LiveRegion, LiveRegionMode.Polite)
+        compose.onNodeWithText("Could not render this page.").assert(polite)
+        compose.onNodeWithText("Reading position was not saved.").assert(polite)
+    }
+}
