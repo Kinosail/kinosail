@@ -1,13 +1,15 @@
 #if os(iOS)
 import SwiftUI
 import UIKit
+import WebKit
 @testable import KinosailPlayer
 
 /// Render evidence accompanies the native control regression, using fictional
 /// library data served over loopback and the production SwiftUI screens.
 @MainActor enum NativePolishGallery {
     static func record(session: AppSession, fixture: PreferencesLoopbackFixture) async throws {
-        guard ProcessInfo.processInfo.environment["KINOSAIL_POLISH_GALLERY"] == "1",
+        let mode = ProcessInfo.processInfo.environment["KINOSAIL_POLISH_GALLERY"]
+        guard ["1", "confirm"].contains(mode),
               let scene = UIApplication.shared.connectedScenes.first as? UIWindowScene else { return }
         fixture.artwork = cover()
         fixture.landscape = cover(wide: true)
@@ -25,14 +27,15 @@ import UIKit
             ("settings", AnyView(SettingsScreen())), ("playback-preferences", AnyView(PlaybackPreferencesScreen())),
             ("download-preferences", AnyView(OfflinePreferencesScreen())), ("reader-preferences", AnyView(ReaderPreferencesScreen())),
             ("tabs", AnyView(TabPreferencesScreen())), ("supporter", AnyView(SupporterScreen())),
-            ("approval", AnyView(ApprovalScreen())), ("cast", AnyView(PlayOnTVScreen(itemID: "movie"))),
+            ("approval", AnyView(ApprovalScreen(showsDismiss: true))), ("cast", AnyView(PlayOnTVScreen(itemID: "movie"))),
             ("downloads-empty", AnyView(DownloadsScreen())), ("bookmarks-empty", AnyView(BookmarksScreen(itemID: "movie"))),
             ("progress-sync", AnyView(ProgressSyncScreen())),
             ("reader", AnyView(ReaderScreen(itemID: "book"))), ("photo", AnyView(PhotoScreen(itemID: "photo")))
         ]
-        for (name, screen) in screens {
+        for (name, screen) in screens where mode != "confirm" || ["reader", "approval", "cast"].contains(name) {
             try await render(screen, name: name, scene: scene, session: session)
         }
+        if mode == "confirm" { return }
         for (name, screen) in screens.filter({ ["settings", "playback-preferences", "download-preferences", "reader-preferences", "tabs", "supporter", "episodes"].contains($0.0) }) {
             try await render(AnyView(screen.environment(\.dynamicTypeSize, .accessibility3)), name: name + "-large-text", scene: scene, session: session)
         }
@@ -62,6 +65,14 @@ import UIKit
         window.isHidden = false
         defer { window.isHidden = true }
         try await Task.sleep(for: .seconds(wait))
+        if name == "reader" {
+            let deadline = Date().addingTimeInterval(10)
+            while Date() < deadline {
+                if let web = descendants(window).compactMap({ $0 as? WKWebView }).first, web.url != nil, !web.isLoading { break }
+                try await Task.sleep(for: .milliseconds(50))
+            }
+            guard let web = descendants(window).compactMap({ $0 as? WKWebView }).first, web.url != nil, !web.isLoading else { throw ClientError.unavailable }
+        }
         window.layoutIfNeeded()
         let image = UIGraphicsImageRenderer(bounds: window.bounds).image { _ in window.drawHierarchy(in: window.bounds, afterScreenUpdates: true) }
         let directory = FileManager.default.temporaryDirectory.appendingPathComponent("native-polish-evidence")
@@ -70,6 +81,8 @@ import UIKit
         try data.write(to: directory.appendingPathComponent(name + ".png"))
         print("NATIVE_POLISH_RENDER \(name) \(Int(window.bounds.width))x\(Int(window.bounds.height)) \(directory.path)")
     }
+
+    private static func descendants(_ view: UIView) -> [UIView] { [view] + view.subviews.flatMap(descendants) }
 
     private static func cover(wide: Bool = false) -> Data {
         let size = wide ? CGSize(width: 900, height: 506) : CGSize(width: 600, height: 900)

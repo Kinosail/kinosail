@@ -2,6 +2,7 @@ import SwiftUI
 
 struct ApprovalScreen: View {
     var initialCode = ""
+    var showsDismiss = false
     @Environment(AppSession.self) private var session
     @Environment(\.dismiss) private var dismiss
     @State private var code = ""
@@ -47,6 +48,9 @@ struct ApprovalScreen: View {
         }
         .tvOSConfigurationLayout(title: "Connect a TV", symbol: "tv")
         .configurationNavigationTitle("Connect a TV")
+        .toolbar {
+            if showsDismiss { ToolbarItem(placement: .cancellationAction) { Button("Close") { session.dismissApproval(); dismiss() } } }
+        }
         #if os(iOS)
         .toolbar {
             ToolbarItemGroup(placement: .keyboard) {

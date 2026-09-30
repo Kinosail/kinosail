@@ -26,6 +26,7 @@ final class ProtectedReaderView: UIView, WKNavigationDelegate, UIScrollViewDeleg
     private var lastReport = Date.distantPast
     private var fontSize = 20
     private var theme = ReaderTheme.light
+    private let loading = UIActivityIndicatorView(style: .large)
 
     func load(book: ReaderBook, page: ReaderBook.Page, offset: Double, fontSize: Int, theme: ReaderTheme, revision: UUID, client: ServerClient) {
         let key = "\(client.identity):\(page.resource):\(fontSize):\(theme):\(revision)"
@@ -34,6 +35,11 @@ final class ProtectedReaderView: UIView, WKNavigationDelegate, UIScrollViewDeleg
         close()
         identity = key; self.page = page; self.client = client; itemID = book.id
         self.fontSize = fontSize; self.theme = theme; initialOffset = offset; restoring = true; contentReady = false
+        backgroundColor = background
+        loading.color = theme == .dark ? .lightGray : .darkGray
+        loading.accessibilityLabel = "Loading page"
+        loading.isAccessibilityElement = true
+        loading.sizeToFit(); addSubview(loading); loading.startAnimating(); setNeedsLayout()
         let attempt = generation
         loader = ReaderResourceLoader()
         if book.kind == .pdf {
@@ -50,6 +56,7 @@ final class ProtectedReaderView: UIView, WKNavigationDelegate, UIScrollViewDeleg
                     view.document = document; view.autoresizingMask = [.flexibleWidth, .flexibleHeight]
                     view.backgroundColor = self.background
                     self.pdf = view; self.addSubview(view); self.contentReady = true
+                    self.loading.stopAnimating()
                     self.restorePosition()
                     self.observer = NotificationCenter.default.addObserver(forName: .PDFViewPageChanged, object: view, queue: .main) { [weak self, weak view] _ in
                         Task { @MainActor in
@@ -57,7 +64,7 @@ final class ProtectedReaderView: UIView, WKNavigationDelegate, UIScrollViewDeleg
                             self.onOffset(Double(document.index(for: current)) / Double(max(1, document.pageCount - 1)))
                         }
                     }
-                } catch is CancellationError {} catch { if self.generation == attempt { self.onFailure(AppSession.message(error)) } }
+                } catch is CancellationError {} catch { if self.generation == attempt { self.fail(AppSession.message(error)) } }
             }
             return
         }
@@ -69,21 +76,23 @@ final class ProtectedReaderView: UIView, WKNavigationDelegate, UIScrollViewDeleg
         let rules = #"[{"trigger":{"url-filter":".*"},"action":{"type":"block"}},{"trigger":{"url-filter":"^kinoreader://book/"},"action":{"type":"ignore-previous-rules"}}]"#
         WKContentRuleListStore.default().compileContentRuleList(forIdentifier: "KinosailSwiftReaderLocalOnly", encodedContentRuleList: rules) { [weak self] list, _ in
             guard let self, self.generation == attempt else { return }
-            guard let list else { self.onFailure("Could not open the reader securely. Reopen this book to try again."); return }
+            guard let list else { self.fail("Could not open the reader securely. Reopen this book to try again."); return }
             configuration.userContentController.add(list)
             let view = WKWebView(frame: self.bounds, configuration: configuration)
             view.navigationDelegate = self; view.scrollView.delegate = self
             view.autoresizingMask = [.flexibleWidth, .flexibleHeight]
             view.isOpaque = false; view.backgroundColor = self.background; view.scrollView.backgroundColor = self.background
             self.web = view; self.addSubview(view)
+            self.bringSubviewToFront(self.loading)
             self.sizeObserver = view.scrollView.observe(\.contentSize, options: [.new]) { [weak self] _, _ in Task { @MainActor in self?.restorePosition() } }
             do { view.load(URLRequest(url: try ReaderResourcePolicy.local(page.resource))) }
-            catch { self.onFailure(AppSession.message(error)) }
+            catch { self.fail(AppSession.message(error)) }
         }
     }
 
-    override func layoutSubviews() { super.layoutSubviews(); restorePosition() }
+    override func layoutSubviews() { super.layoutSubviews(); loading.center = CGPoint(x: bounds.midX, y: bounds.midY); restorePosition() }
     private var background: UIColor { theme == .dark ? UIColor(white: 0.07, alpha: 1) : theme == .sepia ? UIColor(red: 0.95, green: 0.91, blue: 0.80, alpha: 1) : .white }
+    private func fail(_ message: String) { loading.stopAnimating(); onFailure(message) }
     private func restorePosition() {
         guard restoring, contentReady, bounds.height > 0 else { return }
         if let pdf, let document = pdf.document, let page = document.page(at: Int((Double(max(0, document.pageCount - 1)) * initialOffset).rounded())) {
@@ -122,15 +131,15 @@ final class ProtectedReaderView: UIView, WKNavigationDelegate, UIScrollViewDeleg
             } catch is CancellationError {} catch {
                 guard let self, self.generation == attempt, self.tasks.removeValue(forKey: key) != nil else { return }
                 request.didFailWithError(error)
-                self.onFailure(AppSession.message(error))
+                self.fail(AppSession.message(error))
             }
         }
     }
     func stop(_ task: any WKURLSchemeTask) { tasks.removeValue(forKey: ObjectIdentifier(task))?.cancel() }
-    func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) { contentReady = true; restorePosition() }
-    func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: any Error) { if (error as NSError).code != NSURLErrorCancelled { onFailure("The chapter could not be displayed.") } }
-    func webView(_ webView: WKWebView, didFailProvisionalNavigation navigation: WKNavigation!, withError error: any Error) { if (error as NSError).code != NSURLErrorCancelled { onFailure("The chapter could not be opened.") } }
-    func webViewWebContentProcessDidTerminate(_ webView: WKWebView) { onFailure("The chapter stopped responding. Reopen it to continue reading.") }
+    func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) { guard webView === web else { return }; contentReady = true; loading.stopAnimating(); restorePosition() }
+    func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: any Error) { if webView === web, (error as NSError).code != NSURLErrorCancelled { fail("The chapter could not be displayed.") } }
+    func webView(_ webView: WKWebView, didFailProvisionalNavigation navigation: WKNavigation!, withError error: any Error) { if webView === web, (error as NSError).code != NSURLErrorCancelled { fail("The chapter could not be opened.") } }
+    func webViewWebContentProcessDidTerminate(_ webView: WKWebView) { if webView === web { fail("The chapter stopped responding. Reopen it to continue reading.") } }
     func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping @MainActor @Sendable (WKNavigationActionPolicy) -> Void) {
         guard let url = navigationAction.request.url, url.scheme == "kinoreader", url.host == "book", url.query == nil,
               let client, let path = URLComponents(url: url, resolvingAgainstBaseURL: false)?.percentEncodedPath,
@@ -156,6 +165,7 @@ final class ProtectedReaderView: UIView, WKNavigationDelegate, UIScrollViewDeleg
 
     func close() {
         generation = UUID(); identity = ""
+        loading.stopAnimating(); loading.removeFromSuperview()
         tasks.values.forEach { $0.cancel() }; tasks = [:]; fileTask?.cancel(); fileTask = nil
         if let observer { NotificationCenter.default.removeObserver(observer) }; observer = nil; sizeObserver = nil
         web?.stopLoading(); web?.navigationDelegate = nil; web?.scrollView.delegate = nil; web?.removeFromSuperview(); web = nil
