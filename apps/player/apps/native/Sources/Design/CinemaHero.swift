@@ -9,8 +9,6 @@ struct CinemaHero<Actions: View>: View {
     var prefersEpisodeStill = false
     @ViewBuilder let actions: () -> Actions
     @Environment(\.dynamicTypeSize) private var dynamicType
-    @Environment(AppSession.self) private var session
-    @State private var progress: WatchProgressSummary?
     #if os(tvOS)
     @ScaledMetric(relativeTo: .largeTitle) private var titleSize = 56.0
     #else
@@ -48,8 +46,7 @@ struct CinemaHero<Actions: View>: View {
                 }
                 if item.progress.seconds > 0 && !item.progress.watched {
                     if hasVideoArtwork {
-                        Text(progress?.remainingLabel ?? "Continue from \(item.progress.seconds.clock)")
-                            .font(.caption).foregroundStyle(KinoTheme.muted).monospacedDigit()
+                        WatchPosition(item: item, textOnly: true)
                     } else { WatchPosition(item: item) }
                 }
                 ViewThatFits(in: .horizontal) {
@@ -64,27 +61,12 @@ struct CinemaHero<Actions: View>: View {
         #if os(tvOS)
         .focusSection()
         #endif
-        .task(id: "\(session.profileKey ?? ""):\(item.id):\(session.contentRevision)") {
-            progress = nil
-            guard hasVideoArtwork, item.progress.seconds > 0, !item.progress.watched,
-                  let client = session.client else { return }
-            do {
-                let next = try await client.watchProgress(itemID: item.id)
-                try Task.checkCancellation()
-                progress = next
-            } catch { /* The saved position remains available when duration is unknown. */ }
-        }
     }
 
     @ViewBuilder private var posterProgress: some View {
-        if hasVideoArtwork, item.progress.seconds > 0, !item.progress.watched,
-           let fraction = progress?.fraction {
-            ProgressView(value: fraction).tint(KinoTheme.signal)
-                .progressViewStyle(.linear)
-                .background(.black.opacity(0.65), in: Capsule())
+        if hasVideoArtwork, item.progress.seconds > 0, !item.progress.watched {
+            WatchPosition(item: item, barOnly: true)
                 .padding(.horizontal, 12).padding(.bottom, 8)
-                .accessibilityLabel("Watch progress")
-                .accessibilityValue(progress?.remainingLabel ?? "")
         }
     }
 

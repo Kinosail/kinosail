@@ -9,6 +9,8 @@ struct PlaybackPreferencesScreen: View {
     @State private var busy = false
     @State private var overridden = false
     @State private var message: String?
+    @State private var failed = false
+    @State private var resetting = false
 
     var body: some View {
         Form {
@@ -35,7 +37,6 @@ struct PlaybackPreferencesScreen: View {
                                 .font(.footnote).foregroundStyle(KinoTheme.muted)
                         }
                     }
-                    if busy { Text("Saving preferences…").foregroundStyle(KinoTheme.muted) }
                 } header: {
                     Text("Audio enhancements")
                 } footer: {
@@ -51,7 +52,9 @@ struct PlaybackPreferencesScreen: View {
                         Button("Use profile defaults") { reset() }.disabled(busy || !overridden)
                     }
                 }
+                #if os(tvOS)
                 Section { Button(busy ? "Saving…" : "Save preferences") { save() }.disabled(busy || preferences == original) }
+                #endif
             } else if message == nil {
                 Section("Playback") {
                     ForEach(0..<3) { index in SkeletonRow(kind: .form, status: index == 0 ? "Loading preferences…" : nil) }
@@ -60,31 +63,43 @@ struct PlaybackPreferencesScreen: View {
                     ForEach(0..<2) { _ in SkeletonRow(kind: .form) }
                 }
             }
-            if let message { Section { Text(message).foregroundStyle(KinoTheme.muted); if !loaded { Button("Try again") { Task { await load() } } } } }
+            PreferenceFeedback(busy: busy, message: message, offersRetry: failed) { if loaded { save() } else { Task { await load() } } }
         }
         #if os(tvOS)
         .disabled(busy)
+        #else
+        .disabled(resetting)
         #endif
         .configurationNavigationTitle(itemID == nil ? "Playback preferences" : "This title’s preferences")
         .tvOSConfigurationLayout(title: itemID == nil ? "Playback preferences" : "This title’s preferences", symbol: "play.circle")
         .task(id: "\(session.profileKey ?? ""):\(itemID ?? "defaults")") { await load() }
         #if os(iOS)
-        .onChange(of: preferences.dialogueBoost) { _, _ in if loaded && preferences.dialogueBoost != original.dialogueBoost { save() } }
-        .onChange(of: preferences.nightMode) { _, _ in if loaded && preferences.nightMode != original.nightMode { save() } }
+        .onChange(of: preferences) { _, _ in if loaded && preferences != original { save() } }
         #endif
     }
     private func load() async {
-        guard let client = session.client else { return }
-        message = nil
+        message = nil; failed = false
+        guard let client = session.client else { message = AppSession.message(ClientError.unavailable); failed = true; return }
         do {
-            if let itemID { let value = try await client.playbackPreferences(itemID: itemID); try Task.checkCancellation(); preferences = value.playback; overridden = value.overridden }
-            else { let value = try await client.mediaPreferences(); try Task.checkCancellation(); preferences = value.playback }
-            original = preferences; loaded = true; message = nil
-        } catch is CancellationError {} catch { message = AppSession.message(error) }
+            if !loaded {
+                if let itemID, let value = try? await client.playbackPreferences(itemID: itemID, policy: .cached) {
+                    preferences = value.playback; original = preferences; overridden = value.overridden; loaded = true
+                } else if itemID == nil, let value = try? await client.mediaPreferences(policy: .cached) {
+                    preferences = value.playback; original = preferences; loaded = true
+                }
+            }
+            let next: PlaybackPreferences
+            if let itemID { let value = try await client.playbackPreferences(itemID: itemID, policy: .automatic); next = value.playback; overridden = value.overridden }
+            else { next = try await client.mediaPreferences(policy: .automatic).playback }
+            try Task.checkCancellation()
+            guard session.client?.identity == client.identity else { return }
+            if preferences == original { preferences = next; original = next }
+            loaded = true
+        } catch is CancellationError {} catch { message = AppSession.message(error); failed = true }
     }
     private func save() {
         guard let client = session.client, !busy else { return }
-        busy = true
+        busy = true; message = nil; failed = false
         let edited = preferences, baseline = original
         var withoutEffects = edited
         withoutEffects.dialogueBoost = baseline.dialogueBoost; withoutEffects.nightMode = baseline.nightMode
@@ -92,16 +107,15 @@ struct PlaybackPreferencesScreen: View {
         Task {
             defer {
                 busy = false
-                if preferences.dialogueBoost != edited.dialogueBoost || preferences.nightMode != edited.nightMode { save() }
+                if preferences != edited && preferences != original { save() }
             }
             do {
                 if let itemID {
                     let saved = try await client.savePlaybackPreferences(itemID: itemID, preferences: edited)
+                    guard session.client?.identity == client.identity else { return }
                     original = saved.playback; overridden = saved.overridden
                     if preferences == edited { preferences = saved.playback }
-                    message = "Preferences saved."
-                    if preferences.dialogueBoost == edited.dialogueBoost,
-                       preferences.nightMode == edited.nightMode, session.player.currentItem?.id == itemID {
+                    if preferences == original, session.player.currentItem?.id == itemID {
                         do { try await session.player.applyPreferences(saved.playback, preserveDeviceChoices: effectsOnly) }
                         catch { message = "Preferences saved on your Server, but current playback could not update. \(AppSession.message(error))" }
                     }
@@ -113,31 +127,31 @@ struct PlaybackPreferencesScreen: View {
                     if edited.dialogueBoost != baseline.dialogueBoost { value.playback.dialogueBoost = edited.dialogueBoost }
                     if edited.nightMode != baseline.nightMode { value.playback.nightMode = edited.nightMode }
                     let saved = try await client.saveMediaPreferences(value)
+                    guard session.client?.identity == client.identity else { return }
                     original = saved.playback
                     if preferences == edited { preferences = saved.playback }
-                    message = "Preferences saved."
                     #if os(iOS)
                     do { try await session.downloads.updatePreferences(saved) }
                     catch { message = "Preferences saved on your Server, but downloads could not update. \(AppSession.message(error))" }
                     #endif
-                    if preferences.dialogueBoost == edited.dialogueBoost,
-                       preferences.nightMode == edited.nightMode, let item = session.player.currentItem {
+                    if preferences == original, let item = session.player.currentItem {
                         do {
                             let current = try await client.playbackPreferences(itemID: item.id)
                             if !current.overridden { try await session.player.applyPreferences(current.playback, preserveDeviceChoices: effectsOnly) }
                         } catch { message = "Preferences saved on your Server, but current playback could not update. \(AppSession.message(error))" }
                     }
                 }
-            } catch { message = AppSession.message(error) }
+            } catch { message = "Changes weren’t saved. \(AppSession.message(error))"; failed = true }
         }
     }
     private func reset() {
         guard let itemID, let client = session.client, !busy else { return }
-        busy = true
+        busy = true; resetting = true; failed = false; message = nil
         Task {
-            defer { busy = false }
+            defer { busy = false; resetting = false }
             do {
                 let saved = try await client.resetPlaybackPreferences(itemID: itemID)
+                guard session.client?.identity == client.identity else { return }
                 preferences = saved.playback; original = preferences; overridden = false; message = "Using your profile defaults."
                 if session.player.currentItem?.id == itemID { try await session.player.applyPreferences(saved.playback) }
             } catch { message = AppSession.message(error) }
@@ -153,89 +167,6 @@ private struct LanguagePicker: View {
     var body: some View {
         Picker(title, selection: $selection) {
             ForEach(choices, id: \.self) { code in Text(code == "auto" ? "Automatic" : code == "off" ? "Off" : Locale.current.localizedString(forLanguageCode: code) ?? code).tag(code) }
-        }
-    }
-}
-
-struct OfflinePreferencesScreen: View {
-    @Environment(AppSession.self) private var session
-    @State private var preferences = MediaPreferences()
-    @State private var original = MediaPreferences()
-    @State private var loaded = false
-    @State private var busy = false
-    @State private var message: String?
-    @State private var clears = false
-
-    var body: some View {
-        Form {
-            if loaded {
-                Section("Connection & storage") {
-                    Toggle("Wi-Fi only", isOn: $preferences.wifiOnly)
-                    Picker("Storage limit", selection: $preferences.downloadLimitGiB) {
-                        ForEach(Array(Set([0, 5, 10, 20, 50, 100, 200, preferences.downloadLimitGiB])).sorted(), id: \.self) { value in Text(value == 0 ? "No limit" : "\(value) GB").tag(value) }
-                    }
-                }
-                Section("Episodes") {
-                    Picker("Automatically download next", selection: $preferences.autoDownloadNext) {
-                        ForEach(0...3, id: \.self) { count in Text(count == 0 ? "Off" : "\(count) episode\(count == 1 ? "" : "s")").tag(count) }
-                    }
-                    Toggle("Remove watched downloads", isOn: $preferences.removeWatched)
-                }
-                Section {
-                    Button(busy ? "Saving…" : "Save preferences") { save() }.disabled(busy || preferences == original)
-                    #if os(iOS)
-                    Button("Remove this profile’s downloads", role: .destructive) { clears = true }.disabled(busy || session.downloads.downloads.isEmpty)
-                    #endif
-                }
-            } else if message == nil {
-                Section("Connection & storage") {
-                    ForEach(0..<2) { index in SkeletonRow(kind: .form, status: index == 0 ? "Loading preferences…" : nil) }
-                }
-                Section("Episodes") {
-                    ForEach(0..<2) { _ in SkeletonRow(kind: .form) }
-                }
-            }
-            if let message {
-                Section {
-                    Text(message).foregroundStyle(KinoTheme.muted)
-                    if !loaded { Button("Try again") { Task { await load() } } }
-                }
-            }
-        }
-        .disabled(busy)
-        .configurationNavigationTitle("Download preferences")
-        .tvOSConfigurationLayout(title: "Download preferences", symbol: "arrow.down.circle")
-        .task { await load() }
-        .alert("Remove this profile’s downloads?", isPresented: $clears) {
-            #if os(iOS)
-            Button("Remove downloads", role: .destructive) { Task { do { try await session.downloads.clear(); message = "Downloads removed." } catch { message = AppSession.message(error) } } }
-            #endif
-            Button("Cancel", role: .cancel) {}
-        } message: { Text("This removes saved media for the current Viewer Profile from this device.") }
-    }
-    private func load() async {
-        guard let client = session.client else { return }
-        message = nil
-        do { let saved = try await client.mediaPreferences(); try Task.checkCancellation(); preferences = saved; original = saved; loaded = true; message = nil }
-        catch is CancellationError {} catch { message = AppSession.message(error) }
-    }
-    private func save() {
-        guard let client = session.client, !busy else { return }
-        busy = true
-        let edited = preferences
-        Task {
-            defer { busy = false }
-            do {
-                var value = try await client.mediaPreferences()
-                value.wifiOnly = edited.wifiOnly; value.downloadLimitGiB = edited.downloadLimitGiB
-                value.autoDownloadNext = edited.autoDownloadNext; value.removeWatched = edited.removeWatched
-                let saved = try await client.saveMediaPreferences(value)
-                preferences = saved; original = saved
-                #if os(iOS)
-                try await session.downloads.updatePreferences(saved)
-                #endif
-                message = "Preferences saved. New transfers use these settings."
-            } catch { message = AppSession.message(error) }
         }
     }
 }

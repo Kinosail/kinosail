@@ -4,12 +4,25 @@ struct WatchPosition: View {
     let item: MediaItem
     var compact = false
     var barOnly = false
+    var textOnly = false
     @Environment(\.dynamicTypeSize) private var dynamicType
     @Environment(AppSession.self) private var session
     @State private var progress: WatchProgressSummary?
+    @State private var loadedIdentity: String?
+    private var cacheKey: String { "watch-progress:\(item.id)" }
+    private var requestIdentity: String { "\(session.client?.identity.uuidString ?? ""):\(item.id):\(item.progress.seconds):\(session.contentRevision)" }
+    private var visibleProgress: WatchProgressSummary? {
+        guard item.kind == .video, let clientID = session.client?.identity else { return nil }
+        if loadedIdentity == requestIdentity { return progress }
+        guard let saved = session.resourceSnapshots.value(for: cacheKey, clientID: clientID, as: WatchProgressSummary.self) else { return nil }
+        return try? WatchProgressSummary(.object(["seconds": .number(item.progress.seconds), "duration": .number(saved.duration)]))
+    }
     var body: some View {
+        let progress = visibleProgress
         Group {
-            if barOnly {
+            if textOnly {
+                remaining
+            } else if barOnly {
                 Color.clear.frame(height: 6).overlay {
                     if let fraction = progress?.fraction {
                         ProgressView(value: fraction).tint(KinoTheme.signal)
@@ -33,18 +46,37 @@ struct WatchPosition: View {
                 }
             }
         }
-        .task(id: "\(session.profileKey ?? ""):\(item.id):\(session.contentRevision)") {
-            progress = nil
+        .task(id: requestIdentity) {
             guard item.kind == .video, let client = session.client else { return }
+            let identity = requestIdentity, revision = session.contentRevision.uuidString
+            let clientID = client.identity
+            if visibleProgress != nil, session.resourceSnapshots.isFresh(for: cacheKey, clientID: clientID, as: WatchProgressSummary.self, refreshID: revision) { return }
             do {
-                let next = try await client.watchProgress(itemID: item.id)
+                if let saved = try? await client.watchProgress(itemID: item.id, policy: .cached) {
+                    try Task.checkCancellation()
+                    guard requestIdentity == identity else { return }
+                    session.resourceSnapshots.store(saved, for: cacheKey, clientID: clientID)
+                    self.progress = try? WatchProgressSummary(.object(["seconds": .number(item.progress.seconds), "duration": .number(saved.duration)]))
+                    loadedIdentity = identity
+                }
+                let hasSaved = session.resourceSnapshots.value(for: cacheKey, clientID: clientID, as: WatchProgressSummary.self) != nil
+                let next = try await client.watchProgress(itemID: item.id, policy: hasSaved ? .reload : .automatic)
                 try Task.checkCancellation()
-                progress = next
-            } catch { /* Saved position remains useful when duration is unavailable. */ }
+                guard requestIdentity == identity else { return }
+                session.resourceSnapshots.store(next, for: cacheKey, clientID: clientID, refreshID: revision)
+                self.progress = next
+                loadedIdentity = identity
+            } catch {
+                if requestIdentity == identity, (error as? ClientError)?.discardsCachedContent == true {
+                    session.resourceSnapshots.remove(for: cacheKey, clientID: clientID, as: WatchProgressSummary.self)
+                    self.progress = nil
+                    loadedIdentity = identity
+                }
+            }
         }
     }
     private var remaining: some View {
-        Text(progress?.remainingLabel ?? "Continue from \(item.progress.seconds.clock)")
+        Text(visibleProgress?.remainingLabel ?? "Continue from \(item.progress.seconds.clock)")
             .font(.caption).foregroundStyle(KinoTheme.muted).monospacedDigit()
             .fixedSize(horizontal: !compact && !dynamicType.isAccessibilitySize, vertical: true)
             .layoutPriority(1)

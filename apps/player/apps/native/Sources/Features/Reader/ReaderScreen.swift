@@ -100,8 +100,15 @@ struct ReaderScreen: View {
                     .navigationTitle("Contents").toolbar { ToolbarItem(placement: .cancellationAction) { Button("Done") { showsContents = false } } }
             }
         }
-        .sheet(isPresented: $showsBookmarks) { NavigationStack { BookmarksScreen(itemID: itemID, readingPosition: position) { newPosition in position = newPosition; jump = UUID(); save() } } }
-        .sheet(isPresented: $showsPreferences, onDismiss: { Task { await reloadPreferences() } }) { NavigationStack { ReaderPreferencesScreen() } }
+        .sheet(isPresented: $showsBookmarks) {
+            NavigationStack {
+                BookmarksScreen(itemID: itemID, readingPosition: position) { newPosition in position = newPosition; jump = UUID(); save() }
+                    .toolbar { ToolbarItem(placement: .cancellationAction) { Button("Done") { showsBookmarks = false } } }
+            }
+        }
+        .sheet(isPresented: $showsPreferences, onDismiss: { Task { await reloadPreferences() } }) {
+            NavigationStack { ReaderPreferencesScreen().toolbar { ToolbarItem(placement: .cancellationAction) { Button("Done") { showsPreferences = false } } } }
+        }
         .task(id: "\(session.profileKey ?? ""):\(itemID):\(loadRevision)") { await load() }
         .onAppear { session.reading = true }
         .onDisappear { session.reading = false; save() }
@@ -114,7 +121,7 @@ struct ReaderScreen: View {
     private func load() async {
         let attempt = UUID(); generation = attempt
         failure = nil; notice = nil; book = nil; writer = nil; conflict = nil
-        guard let client = session.client, let scope = session.profileKey else { return }
+        guard let client = session.client, let scope = session.profileKey else { failure = AppSession.message(ClientError.unavailable); return }
         do {
             async let details = client.reader(itemID: itemID)
             async let remotePosition = client.readerPosition(itemID: itemID)
