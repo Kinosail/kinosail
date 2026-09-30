@@ -17,6 +17,7 @@ RUN apt-get update \
     && apt-get upgrade -y \
     && apt-get install -y --no-install-recommends ca-certificates libaom3 libarchive-tools libchromaprint-tools mesa-va-drivers mesa-vulkan-drivers socat tzdata wget \
     && dpkg --compare-versions "$(dpkg-query -W -f='${Version}' libaom3)" ge 3.12.1-1+deb13u1 \
+    && for package in libssl3t64 openssl openssl-provider-legacy; do dpkg --compare-versions "$(dpkg-query -W -f='${Version}' "$package")" ge '3.5.7-1~deb13u3' || exit 1; done \
     && arch="$(dpkg --print-architecture)" \
     && case "$arch" in \
       amd64) checksum=30d9957e80051dd45740d4d4509941fdf2babf5a29c79bee109310b31dae0f6f; apt-get install -y --no-install-recommends i965-va-driver intel-media-va-driver ;; \
