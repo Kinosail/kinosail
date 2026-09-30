@@ -7,7 +7,7 @@ This audit identified nine confirmed defects and implemented corrections. The ev
 - Scope: Player, Subtitles, shared Go packages, Apple clients, and Android clients. Dashboard is absent from current main.
 - Starting revision: `55c0b765c16eb68a403b1a8f4c76f8a71340bdad`.
 - Fix commit: `b6288a48`; reconciled source and final host binaries: `d95bf65a4d4b9f3cd9462ddf489bcbce8ee1bc1f`.
-- Reconciled upstream: `77494fdff25d5e97a6d1f8e87a0659eb31dc990a`, `2a62a537a` (UI polish and HLS speed fixes), `96818c5e5` (native artwork validation and catalog ordering), `05da53145` (responsive configuration contrast), `60d11e205` (Player layout audits and narrow WebKit settings), `199bbcfae` (catalog projection and maintenance-test fixture timing), `f28d32c36` (missing seek completion events), and `3c19d732e` (subtitle review-state evidence).
+- Reconciled upstream: `77494fdff25d5e97a6d1f8e87a0659eb31dc990a`, `2a62a537a` (UI polish and HLS speed fixes), `96818c5e5` (native artwork validation and catalog ordering), `05da53145` (responsive configuration contrast), `60d11e205` (Player layout audits and narrow WebKit settings), `199bbcfae` (catalog projection and maintenance-test fixture timing), `f28d32c36` (missing seek completion events), `3c19d732e` (subtitle review-state evidence), and `8a488dda4` (player script content hashes).
 - Second reconciled app binaries: `4b92154499531410a596ad2b2db705c9abeace7d`; final landscape header follow-up is recorded separately below.
 - Environment: macOS ARM64, Xcode 27, iOS 27, tvOS 27, installed Android API 36 images, repository-pinned Playwright 1.63.
 - Local evidence: `.verification/deep-qa-20260930/` in the task checkout. This directory is ignored and contains private disposable session state.
@@ -118,11 +118,12 @@ Both runtime recipes now check all three minimum versions beside their existing 
 
 The final seek-status merge changed the shared player bundle while watch pages retained Player version 95 and Subtitles version 57. Versioned scripts are cached as immutable for one year. Existing clients could retain the earlier code and miss the seek fix.
 
-Player now requests script version 96, and Subtitles requests version 58. Both public watch-page regressions first failed with the old URLs. They also verify that each new URL serves the script successfully with the existing immutable cache policy. Transcode fixtures use each app's new script version; playback policy remains unchanged.
+The first correction requested Player version 96 and Subtitles version 58, after both public watch-page regressions failed with the old URLs. Main then introduced content hashes for both player-script URLs in PR #391. The final reconciliation retains that solution and its public HTTP contract, which proves each URL matches the served script bytes and retains immutable caching. The focused playback fixtures accept these versioned URLs; playback policy remains unchanged.
 
 - Red: `player-seek-cache-red.log`, `subtitles-seek-cache-red.log`.
 - Failure modes and source identity: `seek-cache-failure-modes.json`.
 - Green: both app HTTP/cache checks passed; the eighteen seek-status browser checks passed across Chromium, Firefox and WebKit. Commands, source hashes and environment are recorded in `seek-cache-run-record.json`.
+- The content-hash reconciliation passed both apps' URL/cache, chapter and direct/compatible playback checks. Its source identity and commands are recorded in `reconciliation-8a-run-record.json`.
 - The reconciled browser regressions exercise missing and late seek events, pending and resumed overlays, paused playback, and phone/desktop geometry.
 
 ## Verification
