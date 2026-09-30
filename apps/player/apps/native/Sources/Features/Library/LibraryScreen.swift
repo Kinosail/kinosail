@@ -177,7 +177,6 @@ struct LibraryScreen: View {
         .onAppear { if searchMode && query.isEmpty { showsSearch = true } }
         #endif
         .task(id: "\(requestKey):\(session.contentRevision):\(scenePhase)") {
-            guard scenePhase == .active else { return }
             if loadedKey != requestKey, let saved = savedSnapshot {
                 items = saved.items; page = saved.page; loadedKey = requestKey; loadedRevision = saved.revision
             }

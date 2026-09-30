@@ -6,7 +6,7 @@ import UIKit
 @testable import KinosailPlayer
 
 final class PreferencesLoopbackFixture: @unchecked Sendable {
-    struct State { var preferences = MediaPreferences(); var saves = 0; var preferenceReads = 0; var populated = false; var fails = false; var delay = 0.0; var artwork = Data(); var landscape = Data() }
+    struct State { var preferences = MediaPreferences(); var saves = 0; var preferenceReads = 0; var libraryReads = 0; var populated = false; var fails = false; var delay = 0.0; var artwork = Data(); var landscape = Data() }
     let state = Mutex(State())
     let listener: NWListener
     let server: ServerAddress
@@ -14,6 +14,7 @@ final class PreferencesLoopbackFixture: @unchecked Sendable {
     var saves: Int { state.withLock { $0.saves } }
     var preferences: MediaPreferences { state.withLock { $0.preferences } }
     var preferenceReads: Int { state.withLock { $0.preferenceReads } }
+    var libraryReads: Int { state.withLock { $0.libraryReads } }
     var artwork: Data { get { state.withLock { $0.artwork } } set { state.withLock { $0.artwork = newValue } } }
     var landscape: Data { get { state.withLock { $0.landscape } } set { state.withLock { $0.landscape = newValue } } }
     var populated: Bool { get { state.withLock { $0.populated } } set { state.withLock { $0.populated = newValue } } }
@@ -92,6 +93,7 @@ final class PreferencesLoopbackFixture: @unchecked Sendable {
                 body = preferences.json
             }
             if path == "/api/v1/library" {
+                state.withLock { $0.libraryReads += 1 }
                 let query = URLComponents(string: String(request[1]))?.queryItems
                 let limit = query?.first { $0.name == "limit" }.flatMap { Int($0.value ?? "") } ?? 60
                 let view = query?.first { $0.name == "view" }?.value

@@ -96,6 +96,66 @@ struct NativePreferencesUXTests {
         try await restore(previous, keychain: keychain, session: session)
     }
 
+    @Test(arguments: [ScenePhase.active, .inactive, .background])
+    func visibleLibraryCompletesLoadingAcrossScenePhases(phase: ScenePhase) async throws {
+        let fixture = try await PreferencesLoopbackFixture()
+        fixture.populated = true
+        defer { fixture.listener.cancel() }
+        let keychain = SessionKeychain()
+        let previous = try await keychain.restore()
+        try await keychain.save(SavedSession(server: fixture.server, token: "isolated-test-token", viewer: fixture.viewer))
+        let session = AppSession()
+        await session.restore()
+        do {
+            let client = try #require(session.client)
+            let clientID = await client.identity
+            let window = try host(LibraryScreen(initialView: .shows).environment(\.scenePhase, phase), session: session)
+            defer { window.isHidden = true }
+            try await until("An appearing library must start its request, even during a scene transition") { fixture.libraryReads > 0 }
+            try await until("The loaded episode card must replace the placeholder") {
+                session.resourceSnapshots.value(for: "watch-progress:episode", clientID: clientID, as: WatchProgressSummary.self) != nil
+            }
+            let saved: LibrarySnapshot? = session.resourceSnapshots.value(for: LibrarySnapshot.key(view: .shows), clientID: clientID)
+            #expect(saved?.page.total == 1)
+            #expect(saved?.items.first?.id == "episode")
+            try snapshot(window, name: "library-\(phase)")
+        } catch {
+            try await restore(previous, keychain: keychain, session: session)
+            throw error
+        }
+        try await restore(previous, keychain: keychain, session: session)
+    }
+
+    @Test(arguments: [ScenePhase.active, .inactive, .background])
+    func visibleHomeCompletesLoadingAcrossScenePhases(phase: ScenePhase) async throws {
+        let fixture = try await PreferencesLoopbackFixture()
+        fixture.populated = true
+        defer { fixture.listener.cancel() }
+        let keychain = SessionKeychain()
+        let previous = try await keychain.restore()
+        try await keychain.save(SavedSession(server: fixture.server, token: "isolated-test-token", viewer: fixture.viewer))
+        let session = AppSession()
+        await session.restore()
+        do {
+            let client = try #require(session.client)
+            let clientID = await client.identity
+            let window = try host(HomeScreen(selectTab: { _ in }).environment(\.scenePhase, phase), session: session)
+            defer { window.isHidden = true }
+            try await until("An appearing Home must start its request, even during a scene transition") { fixture.libraryReads > 0 }
+            let key = "\(session.profileKey ?? ""):watch"
+            try await until("Home must replace its placeholder with the loaded library") {
+                session.resourceSnapshots.value(for: key, clientID: clientID, as: HomeSnapshot.self) != nil
+            }
+            let saved = try #require(session.resourceSnapshots.value(for: key, clientID: clientID, as: HomeSnapshot.self))
+            #expect(saved.recent.contains { $0.id == "movie" })
+            try snapshot(window, name: "home-\(phase)")
+        } catch {
+            try await restore(previous, keychain: keychain, session: session)
+            throw error
+        }
+        try await restore(previous, keychain: keychain, session: session)
+    }
+
     private func restore(_ previous: SavedSession?, keychain: SessionKeychain, session: AppSession) async throws {
         await session.client?.close()
         if let previous { try await keychain.save(previous) } else { try await keychain.clear() }

@@ -9,13 +9,29 @@ import WebKit
 @MainActor enum NativePolishGallery {
     static func record(session: AppSession, fixture: PreferencesLoopbackFixture) async throws {
         let mode = ProcessInfo.processInfo.environment["KINOSAIL_POLISH_GALLERY"]
-        guard ["1", "confirm"].contains(mode),
+        guard ["1", "confirm", "lifecycle"].contains(mode),
               let scene = UIApplication.shared.connectedScenes.first as? UIWindowScene else { return }
         fixture.artwork = cover()
         fixture.landscape = cover(wide: true)
         fixture.populated = true
         await session.client?.invalidateCatalog()
         session.resourceSnapshots.clear()
+        if mode == "lifecycle" {
+            let views: [(String, AnyView)] = [("home", AnyView(HomeScreen(selectTab: { _ in }))),
+                ("library", AnyView(LibraryScreen(initialView: .shows)))]
+            for (state, delay, populated, fails) in [("pending", 1.5, true, false), ("loaded", 0.0, true, false),
+                                                     ("empty", 0.0, false, false), ("failed", 0.0, true, true)] {
+                fixture.delay = delay; fixture.populated = populated; fixture.fails = fails
+                for (name, view) in views {
+                    await session.client?.invalidateCatalog()
+                    session.resourceSnapshots.clear()
+                    try await render(AnyView(view.environment(\.scenePhase, .inactive)), name: name + "-" + state,
+                                     scene: scene, session: session, wait: state == "pending" ? 0.2 : 0.7)
+                }
+            }
+            fixture.delay = 0; fixture.populated = true; fixture.fails = false
+            return
+        }
         let screens: [(String, AnyView)] = [
             ("home", AnyView(HomeScreen(selectTab: { _ in }))),
             ("movies", AnyView(LibraryScreen(initialView: .movies))),
