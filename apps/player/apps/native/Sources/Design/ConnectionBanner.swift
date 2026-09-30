@@ -14,6 +14,9 @@ struct ConnectionBanner: View {
             .padding(.vertical, 12)
             .frame(maxWidth: .infinity, alignment: .leading)
             .background(KinoTheme.surface)
+            #if os(tvOS)
+            .focusSection()
+            #endif
         }
     }
 
