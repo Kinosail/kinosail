@@ -51,30 +51,35 @@ func TestIndexedBrowsePreservesLocalePagesAndCurrentProfileState(t *testing.T) {
 		{ID: "e1", Title: "Episode 1", Show: "show", ShowPlot: "Plot", Kind: "video", Season: 1, Episode: 1},
 		{ID: "song", Title: "Song", Kind: "audio"},
 		{ID: "book", Title: "Élan", Kind: "book"},
+		{ID: "spoken", Title: "Narration", Kind: "audiobook"},
+		{ID: "photo", Title: "Sunset", Kind: "photo"},
 	}
 	index := catalog.NewMemoryIndex(items, true)
 	progress, listed := map[string]catalog.PlaybackState{}, map[string]bool{}
 	var pm sync.Mutex
 	var lm sync.RWMutex
-	profile, hidden := "owner", ""
+	profile, hidden := "guest", "a"
+	listed["guest:z"] = true
+	progress["guest:z"] = catalog.PlaybackState{Watched: true, Updated: time.Unix(100, 0)}
 	access := func() catalog.BrowseAccess {
 		return catalog.NewBrowseAccess(&pm, &lm, &progress, &listed, profile, profile == "owner", func(item library.Item) bool { return item.ID != hidden })
 	}
 	for pass := range 2 {
 		if pass == 1 {
-			profile, hidden = "guest", "a"
-			listed["guest:z"] = true
-			progress["guest:z"] = catalog.PlaybackState{Watched: true, Updated: time.Unix(100, 0)}
+			profile, hidden = "owner", ""
 		}
 		for _, locale := range []string{"en", "sv", "fr", "tr", "ja", "en"} {
 			for _, values := range []url.Values{
+				// Native entry routes must work before an all-title order exists.
+				{"view": {"movies"}},
+				{"view": {"music"}},
+				{"view": {"books"}},
+				{"view": {"audiobooks"}},
+				{"view": {"photos"}},
 				nil,
 				{"limit": {"2"}, "offset": {"2"}},
 				{"letter": {"A"}, "limit": {"1"}},
-				{"view": {"movies"}},
 				{"view": {"shows"}},
-				{"view": {"music"}},
-				{"view": {"books"}},
 				{"view": {"list"}},
 				{"view": {"unwatched"}},
 				{"view": {"history"}},
@@ -83,16 +88,20 @@ func TestIndexedBrowsePreservesLocalePagesAndCurrentProfileState(t *testing.T) {
 				{"q": {"Episode"}},
 			} {
 				want, wantErr := catalog.BrowseLibrary(t.Context(), values, locale, index.References, access)
-				got, gotErr := index.BrowseLibrary(t.Context(), values, locale, access)
-				if !reflect.DeepEqual(gotErr, wantErr) || !reflect.DeepEqual(got.AllItems(), want.AllItems()) ||
-					!reflect.DeepEqual(got.Items, want.Items) || !reflect.DeepEqual(got.Letters, want.Letters) ||
-					got.Total != want.Total || got.Offset != want.Offset || got.NextURL() != want.NextURL() || got.PreviousURL() != want.PreviousURL() {
-					t.Fatalf("pass=%d locale=%s values=%v got=%#v err=%v want=%#v err=%v", pass, locale, values, got, gotErr, want, wantErr)
+				// Read immediately again before other view keys can evict this order.
+				for repetition := range 2 {
+					got, gotErr := index.BrowseLibrary(t.Context(), values, locale, access)
+					if !reflect.DeepEqual(gotErr, wantErr) || !reflect.DeepEqual(got.AllItems(), want.AllItems()) ||
+						!reflect.DeepEqual(got.Items, want.Items) || !reflect.DeepEqual(got.Letters, want.Letters) ||
+						got.Total != want.Total || got.Offset != want.Offset || got.NextURL() != want.NextURL() || got.PreviousURL() != want.PreviousURL() {
+						t.Fatalf("pass=%d repetition=%d locale=%s values=%v got=%#v err=%v want=%#v err=%v", pass, repetition, locale, values, got, gotErr, want, wantErr)
+					}
 				}
 			}
 		}
 	}
 	// Repeated warm reads cannot cache current list or watched state.
+	profile, hidden = "guest", "a"
 	listed["guest:z"] = false
 	result, err := index.BrowseLibrary(t.Context(), url.Values{"view": {"list"}}, "en", access)
 	if err != nil || result.Total != 0 {
