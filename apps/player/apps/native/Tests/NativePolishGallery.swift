@@ -74,7 +74,21 @@ import WebKit
             guard let web = descendants(window).compactMap({ $0 as? WKWebView }).first, web.url != nil, !web.isLoading else { throw ClientError.unavailable }
         }
         window.layoutIfNeeded()
-        let image = UIGraphicsImageRenderer(bounds: window.bounds).image { _ in window.drawHierarchy(in: window.bounds, afterScreenUpdates: true) }
+        // UIKit hierarchy capture omits the reader's out-of-process web layer.
+        let web = name == "reader" ? descendants(window).compactMap { $0 as? WKWebView }.first : nil
+        let chapter: UIImage?
+        if let web {
+            chapter = try await withCheckedThrowingContinuation { continuation in
+                web.takeSnapshot(with: nil) { image, error in
+                    if let image { continuation.resume(returning: image) }
+                    else { continuation.resume(throwing: error ?? ClientError.invalidResponse) }
+                }
+            }
+        } else { chapter = nil }
+        let image = UIGraphicsImageRenderer(bounds: window.bounds).image { _ in
+            window.drawHierarchy(in: window.bounds, afterScreenUpdates: true)
+            if let web, let chapter { chapter.draw(in: web.convert(web.bounds, to: window)) }
+        }
         let directory = FileManager.default.temporaryDirectory.appendingPathComponent("native-polish-evidence")
         try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
         guard let data = image.pngData() else { throw ClientError.invalidResponse }
