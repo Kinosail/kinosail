@@ -10,22 +10,26 @@ import (
 	"golang.org/x/text/unicode/norm"
 )
 
+const metadataSearchScratchSize = 512
+
 // Normalize fields into local storage; field separators are normalization boundaries.
 func matchesMetadata(item library.Item, query string) bool {
-	fields := [...]string{item.Title, item.Show, item.Year, item.Plot, item.Genres, item.Director, item.Studio, item.Artist, item.Album}
-	size := len(fields)
-	for _, value := range fields {
-		size += len(value)
-	}
-	for _, people := range [][]library.Person{item.Cast, item.ShowCast} {
-		for _, person := range people {
-			size += len(person.Name) + len(person.Role) + 2
-		}
-	}
-	var storage [512]byte
+	fields := []string{item.Title, item.Show, item.Year, item.Plot, item.Genres, item.Director, item.Studio, item.Artist, item.Album}
+	size := metadataSearchSize(fields, item.Cast, item.ShowCast)
+	var storage [metadataSearchScratchSize]byte
 	text := storage[:0]
 	if size > len(storage) {
-		text = make([]byte, 0, size)
+		if len(fields[0]) < len(storage) && isASCII(fields[0]) {
+			text = appendASCIISearchField(text, fields[0])
+			if bytes.Contains(text, []byte(query)) {
+				return true
+			}
+			fields = fields[1:]
+		}
+		if matchesLiteralPrefix(fields, query) {
+			return true
+		}
+		text = append(make([]byte, 0, size), text...)
 	}
 	for _, value := range fields {
 		text = appendSearchField(text, value)
@@ -37,6 +41,34 @@ func matchesMetadata(item library.Item, query string) bool {
 		}
 	}
 	return bytes.Contains(text, []byte(query))
+}
+
+func metadataSearchSize(fields []string, cast, showCast []library.Person) int {
+	size := len(fields)
+	for _, value := range fields {
+		size += len(value)
+	}
+	for _, people := range [][]library.Person{cast, showCast} {
+		for _, person := range people {
+			size += len(person.Name) + len(person.Role) + 2
+		}
+	}
+	return size
+}
+
+// Lowercase ASCII letters, digits, and spaces survive field normalization unchanged.
+func matchesLiteralPrefix(fields []string, query string) bool {
+	for position := 0; position < len(query); position++ {
+		if searchASCIIByte(query[position]) != query[position] {
+			return false
+		}
+	}
+	for _, value := range fields {
+		if strings.Contains(value[:min(len(value), metadataSearchScratchSize)], query) {
+			return true
+		}
+	}
+	return false
 }
 
 func appendSearchField(text []byte, value string) []byte {
