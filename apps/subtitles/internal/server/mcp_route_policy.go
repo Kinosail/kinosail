@@ -29,7 +29,7 @@ var mcpManageRoutes = routeSet(
 	"POST /api/v1/metadata/bulk",
 	"PUT /api/v1/items/{id}/markers", "DELETE /api/v1/items/{id}/markers/{type}", "POST /api/v1/marker-analysis",
 	"POST /api/v1/collections", "DELETE /api/v1/collections/{name}", "PUT /api/v1/collections/{name}/items/{id}",
-	"PUT /api/v1/configuration/{key}", "DELETE /api/v1/configuration/{key}", "POST /api/v1/libraries", "DELETE /api/v1/libraries",
+	"POST /api/v1/libraries", "DELETE /api/v1/libraries",
 	"PUT /api/v1/settings/server", "PUT /api/v1/settings/navigation", "PUT /api/v1/settings/onboarding", "PUT /api/v1/settings/playback", "PUT /api/v1/settings/transcoder", "PUT /api/v1/settings/subtitles",
 	"PUT /api/v1/settings/scans", "PUT /api/v1/settings/dlna", "PUT /api/v1/settings/jellyfin", "PUT /api/v1/settings/trusted-https", "PUT /api/v1/settings/updates", "DELETE /api/v1/settings/trusted-https",
 	"POST /api/v1/transcoder/test", "POST /api/v1/tasks/{task}", "POST /api/v1/backups", "POST /api/v1/backups/verify",
@@ -38,6 +38,7 @@ var mcpManageRoutes = routeSet(
 )
 
 var mcpBlockedRoutes = routeSet(
+	"PUT /api/v1/configuration/{key}", "DELETE /api/v1/configuration/{key}",
 	"GET /api/v1/activity",
 	"POST /api/v1/subtitles/cleanup", "POST /api/v1/subtitles/cleanup/preview",
 	"DELETE /api/v1/management-access", "DELETE /api/v1/management-access/devices", "GET /api/v1/management-access", "POST /api/v1/management-access", "POST /api/v1/management-access/devices",

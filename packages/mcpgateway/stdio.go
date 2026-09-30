@@ -217,7 +217,11 @@ func serveMCPStdioConnection(ctx context.Context, connection net.Conn, adapter *
 	stdio := adapter.newServer(true, true)
 	stdio.AddReceivingMiddleware(func(next mcp.MethodHandler) mcp.MethodHandler {
 		return func(callContext context.Context, method string, request mcp.Request) (mcp.Result, error) {
-			return next(withStdioPrincipal(callContext, owner), method, request)
+			current, err := mcpStdioOwner(principals, owner.ID)
+			if err != nil || current.Revision != owner.Revision {
+				return nil, errors.New("MCP STDIO Owner authority changed; reconnect with an active Owner")
+			}
+			return next(withStdioPrincipal(callContext, current), method, request)
 		}
 	})
 	_ = stdio.Run(ctx, &mcp.IOTransport{Reader: &mcpSocketReader{Reader: reader, connection: connection}, Writer: connection})

@@ -2,7 +2,7 @@
 title: Connect an MCP client
 description: Connect an assistant to Kinosail through the Model Context Protocol.
 section: Build with Kinosail
-last_reviewed: 2026-09-20
+last_reviewed: 2026-09-29
 ---
 
 # Connect an MCP client
@@ -65,7 +65,7 @@ The client needs access to the Server’s management boundary over the local net
 
 When deployment-managed OAuth is configured, follow the identity provider registration shown by the Server instead of assuming built-in authorization.
 
-The Owner can revoke an HTTPS connection from **AI agent connections**. Access tokens expire, and refresh access is stored by the Server for the approved connection.
+The Owner can revoke an HTTPS connection from **AI agent connections**. Access tokens expire, and refresh access is stored by the Server for the approved connection. Built-in OAuth approval lasts up to 30 days. Refresh tokens rotate after each use. Reusing an old refresh token revokes that connection and requires approval again.
 
 ## Understand MCP grants
 
@@ -89,6 +89,8 @@ The MCP server provides these tools according to the grant:
 - `write_api` performs approved Viewer mutations;
 - `create_playlist` creates a Profile-owned playlist; and
 - `manage_api` performs approved Owner operations.
+
+Generic configuration changes require the browser settings. MCP blocks these mutations to protect identity settings and credentials.
 
 The MCP adapter accepts relative `/api/v1` paths only. It rejects absolute URLs and operations outside the approved route set. Responses are JSON and are bounded before they return to the client.
 
@@ -156,6 +158,8 @@ MCP may return a media path or playback plan through an approved read operation,
 ## Protocol and security
 
 The HTTPS endpoint is `POST /mcp` and uses stateless Streamable HTTP. Kinosail currently accepts MCP protocol version `2026-07-28`. `GET /mcp` and `DELETE /mcp` are not supported.
+
+Kinosail limits `/mcp` to 120 requests per minute per network address. Tool calls share a limit of 120 per minute per Profile across HTTPS and host STDIO. If a limit is reached, wait one minute and retry.
 
 Bearer tokens travel in the `Authorization` header. Do not put them in query strings. Kinosail validates the OAuth resource audience, Profile grant, token expiry, and request origin.
 

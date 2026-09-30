@@ -36,7 +36,7 @@ func (adapter *Gateway) verifyToken(ctx context.Context, token string, request *
 	check.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 	check.Header.Set("Accept", "application/json")
 	check.SetBasicAuth(adapter.config.ClientID, adapter.config.ClientSecret)
-	response, err := (&http.Client{Timeout: 10 * time.Second}).Do(check)
+	response, err := (&http.Client{Timeout: 10 * time.Second, CheckRedirect: func(*http.Request, []*http.Request) error { return http.ErrUseLastResponse }}).Do(check)
 	if err != nil {
 		return nil, err
 	}
@@ -51,7 +51,15 @@ func (adapter *Gateway) verifyToken(ctx context.Context, token string, request *
 		Sub    string          `json:"sub"`
 		Aud    json.RawMessage `json:"aud"`
 	}
-	if err := httpguard.DecodeJSON(response.Body, 1<<20, &result, false); err != nil {
+	var claims map[string]json.RawMessage
+	if err := httpguard.DecodeUniqueJSON(response.Body, 1<<20, &claims); err != nil {
+		return nil, err
+	}
+	data, err := json.Marshal(claims)
+	if err != nil {
+		return nil, err
+	}
+	if err := json.Unmarshal(data, &result); err != nil {
 		return nil, err
 	}
 	if !validMCPToken(result.Active, result.Exp, result.Sub, result.Scope, result.Aud, adapter.config.ResourceURL) {
