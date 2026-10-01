@@ -15,7 +15,9 @@ const traceToken = (value) => String(value || "").replace(/[^a-zA-Z0-9_.:-]/g, "
 const bufferedAhead = () => {
   const current = player.currentTime - playbackTimelineOffset;
   for (let index = 0; index < player.buffered.length; index++) {
-    if (player.buffered.start(index) <= current && player.buffered.end(index) >= current) return player.buffered.end(index) - current;
+    const start = player.buffered.start(index);
+    // HLS can place its first frame a few milliseconds after time zero.
+    if ((start <= current || current === 0 && start <= 0.05) && player.buffered.end(index) >= current) return player.buffered.end(index) - Math.max(current, start);
   }
   return 0;
 };

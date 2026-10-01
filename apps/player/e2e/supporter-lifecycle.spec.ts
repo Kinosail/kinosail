@@ -103,6 +103,27 @@ test("an older collection cannot overwrite recognition after a navigation swap",
   await page.screenshot({ path: testInfo.outputPath("newest-collection.png") });
 });
 
+test("newer nonempty recognition survives an older hidden collection", async ({ page }, testInfo) => {
+  await page.addScriptTag({ content: source });
+  await page.evaluate(() => document.dispatchEvent(new Event("htmx:after:swap")));
+  await expect.poll(() => page.evaluate(() => (window as SupporterWindow).requests.length)).toBe(2);
+  await page.evaluate(() => {
+    const context = window as SupporterWindow;
+    context.finishHeaders(1);
+    context.finishCollection(1, { badges: [{ rank: 2, edition: "monthly", family: "living-standard", name: "Crew" }], display: "automatic" });
+  });
+  await expect(page.locator(".header-supporter img")).toHaveAttribute("alt", "Crew · monthly");
+  await page.evaluate(() => {
+    const context = window as SupporterWindow;
+    context.finishHeaders(0);
+    context.finishCollection(0, { badges: [], display: "hidden" });
+  });
+  await expect(page.locator(".header-supporter")).toBeVisible();
+  await expect(page.locator(".header-supporter img")).toHaveAttribute("alt", "Crew · monthly");
+  expect(await page.evaluate(() => (window as SupporterWindow).signals[0]?.aborted)).toBe(true);
+  await page.screenshot({ path: testInfo.outputPath("nonempty-newest-collection.png") });
+});
+
 test("authentication pages never fetch supporter recognition", async ({ page }) => {
   await page.locator("body").evaluate((body) => body.classList.add("auth"));
   await page.addScriptTag({ content: source });

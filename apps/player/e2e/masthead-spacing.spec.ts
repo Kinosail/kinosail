@@ -29,7 +29,7 @@ async function prepareContinuedMovie(page: import("@playwright/test").Page) {
 	});
 }
 
-test("Home keeps featured resume and navigation reachable", async ({ page }, testInfo) => {
+test("Home keeps continued titles and navigation reachable", async ({ page }, testInfo) => {
 	await prepareContinuedMovie(page);
 	for (const viewport of [
 		{ width: 1920, height: 1080 }, { width: 1440, height: 900 },
@@ -38,10 +38,10 @@ test("Home keeps featured resume and navigation reachable", async ({ page }, tes
 	]) {
 		await page.setViewportSize(viewport);
 		await page.goto("/");
-		const feature = page.getByRole("region", { name: "Featured title" });
+		const feature = page.locator(".continue-shelf article").filter({ has: page.getByRole("heading", { name: "Example Movie", exact: true }) });
 		await expect(feature.getByRole("heading", { name: "Example Movie" })).toBeVisible();
 		await expect(feature.getByRole("progressbar", { name: "Watch progress" })).toBeVisible();
-		const resume = feature.getByRole("link", { name: "Resume", exact: true });
+		const resume = feature.getByRole("link", { name: /Example Movie/ });
 		await expect(resume).toHaveAttribute("href", /^\/watch\//);
 		await expect(feature.getByRole("link", { name: "View details" })).toHaveCount(0);
 		const removal = feature.getByRole("button", { name: /Remove Example Movie/ });
@@ -49,7 +49,7 @@ test("Home keeps featured resume and navigation reachable", async ({ page }, tes
 		const geometry = await page.evaluate(() => {
 			const nav = document.querySelector(".app-header nav")!.getBoundingClientRect();
 			const search = document.querySelector(".app-header .search")!.getBoundingClientRect();
-			const featured = document.querySelector(".home-feature")!.getBoundingClientRect();
+			const featured = document.querySelector(".continue-shelf")!.getBoundingClientRect();
 			const overlaps = nav.left < search.right && nav.right > search.left && nav.top < search.bottom && nav.bottom > search.top;
 			const clipped = [...document.querySelectorAll<HTMLElement>(".app-header nav > a, .app-header nav > details")]
 				.filter((element) => getComputedStyle(element).display !== "none")

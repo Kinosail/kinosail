@@ -37,7 +37,7 @@ test("Owner hides other languages and English forced subtitles from a populated 
   if (containerMedia) {
     // The container UID needs write access for Linux's protected no-overwrite hardlink move.
     const permissions = [];
-    for (const path of [spanish, forced]) {
+    for (const path of [spanish, forced, ...(addedEnglish ? [addedEnglish] : [])]) {
       const before = await stat(path);
       await chmod(path, 0o666);
       const after = await stat(path);

@@ -33,6 +33,7 @@ export async function login(page: Page, name = "Owner", password = "test-instanc
 	const code = page.getByLabel("Authentication or recovery code");
 	if (await code.count()) await code.fill(totp());
 	await page.getByRole("button", { name: "Sign in", exact: true }).click();
+  await page.waitForURL(url => url.pathname !== "/login");
 	if (await page.getByRole("link", { name: "Not now" }).isVisible()) await page.getByRole("link", { name: "Not now" }).click();
 }
 
@@ -136,7 +137,7 @@ export async function searchPlaceholderFits(page: Page, label: string) {
 	});
 }
 
-export async function expectSearchControl(page: Page, viewport: number, label = "Search library") {
+export async function expectSearchControl(page: Page, viewport: number, label = "Search all libraries") {
 	const search = page.getByRole("searchbox", { name: label });
 	await expect(search).toHaveAttribute("placeholder", label);
 	await expect.poll(async () => {

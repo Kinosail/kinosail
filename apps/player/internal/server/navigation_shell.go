@@ -95,7 +95,7 @@ func applicationShellView(pattern string) string {
 func injectApplicationShell(page, navigation []byte) []byte {
 	page = applicationShellCSSVersion(page)
 	if !bytes.Contains(page, []byte(`/static/supporter.js?v=`)) {
-		page = bytes.Replace(page, []byte("</body>"), []byte(`<script defer src="/static/supporter.js?v=18-htmx4"></script></body>`), 1)
+		page = bytes.Replace(page, []byte("</body>"), []byte(`<script defer src="/static/supporter.js?v=19-htmx4"></script></body>`), 1)
 	}
 	bodyStart := bytes.Index(page, []byte("<body"))
 	if bodyStart < 0 {
@@ -116,15 +116,8 @@ func injectApplicationShell(page, navigation []byte) []byte {
 	}
 	if mainStart := bytes.Index(page, []byte("<main")); mainStart >= 0 {
 		mainEnd := mainStart + bytes.IndexByte(page[mainStart:], '>')
-		if mainEnd >= mainStart {
-			attributes := ""
-			if !bytes.Contains(page[mainStart:mainEnd], []byte(` id="`)) {
-				attributes += ` id="main"`
-			}
-			if !bytes.Contains(page[mainStart:mainEnd], []byte(` tabindex="`)) {
-				attributes += ` tabindex="-1"`
-			}
-			page = append(append(append([]byte(nil), page[:mainStart+len("<main")]...), []byte(attributes)...), page[mainStart+len("<main"):]...)
+		if mainEnd >= mainStart && !bytes.Contains(page[mainStart:mainEnd], []byte(` id="`)) {
+			page = append(append(append([]byte(nil), page[:mainStart+len("<main")]...), []byte(` id="main"`)...), page[mainStart+len("<main"):]...)
 		}
 	}
 	insertAt := bodyEnd + 1
@@ -144,10 +137,10 @@ func applicationShellCSSVersion(page []byte) []byte {
 	if start := bytes.Index(page, []byte(`/static/app.css?v=`)); start >= 0 {
 		version := start + len(`/static/app.css?v=`)
 		if end := bytes.IndexByte(page[version:], '"'); end >= 0 {
-			if bytes.Equal(page[version:version+end], []byte("electric-41")) {
+			if bytes.Equal(page[version:version+end], []byte("electric-43")) {
 				return page
 			}
-			page = append(append(append([]byte(nil), page[:version]...), []byte("electric-41")...), page[version+end:]...)
+			page = append(append(append([]byte(nil), page[:version]...), []byte("electric-43")...), page[version+end:]...)
 		}
 	}
 	return page

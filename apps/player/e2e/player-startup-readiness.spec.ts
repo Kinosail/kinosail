@@ -4,6 +4,27 @@ import { installPlayerExperienceFixture } from "./player-experience-fixture";
 
 installPlayerExperienceFixture();
 
+for (const scenario of [
+  { name: "a leading frame timestamp", start: 0.021402, end: 3, ready: 3, playable: true },
+  { name: "a large unbuffered gap", start: 0.5, end: 3, ready: 3, playable: false },
+  { name: "an insufficient buffer", start: 0.021402, end: 0.1, ready: 3, playable: false },
+  { name: "metadata without future data", start: 0.021402, end: 3, ready: 1, playable: false },
+]) test(`Safari startup handles ${scenario.name}`, async ({ page }) => {
+  await page.evaluate(({ start, end, ready }) => {
+    const context = window as Window & { setBufferedStart: (value: number) => void; setBufferedEnd: (value: number) => void; setReadyState: (value: number) => void };
+    const video = document.querySelector("video")!;
+    video.currentTime = 0;
+    video.dataset.start = "0";
+    context.setBufferedStart(start);
+    context.setBufferedEnd(end);
+    context.setReadyState(ready);
+  }, scenario);
+  await page.locator("video").dispatchEvent("loadstart");
+  await page.locator("video").dispatchEvent("canplay");
+  await expect(page.locator("[data-player-status]")).toBeVisible({ visible: !scenario.playable, timeout: 1000 });
+  await expect(page.locator(".player-center-control[data-player-toggle]")).toBeVisible({ visible: scenario.playable });
+});
+
 test("Safari startup preserves a pause requested before playback starts", async ({ page }) => {
   const video = page.locator("video");
   await page.evaluate(() => (window as Window & {setNetworkState: (value: number) => void}).setNetworkState(1));
@@ -22,6 +43,35 @@ test("Safari startup accepts the remaining buffer near the end of a video", asyn
   });
   await page.locator("video").dispatchEvent("loadstart");
   await page.locator("video").dispatchEvent("progress");
+  await expect(page.locator("[data-player-status]")).toBeHidden();
+});
+
+test("Safari startup waits after preparation restores a position following blocked autoplay", async ({ page }) => {
+  const video = page.locator("video");
+  await page.evaluate(() => {
+    const context = window as Window & {setBufferedEnd: (value: number) => void; setPlayPending: (value: boolean) => void};
+    context.setBufferedEnd(20.1);
+    context.setPlayPending(true);
+  });
+  await video.dispatchEvent("loadstart");
+  await video.dispatchEvent("kinosail:play-needs-gesture");
+  await page.evaluate(() => {
+    const context = window as Window & {setBufferedEnd: (value: number) => void; setReadyState: (value: number) => void};
+    context.setBufferedEnd(23);
+    context.setReadyState(3);
+    const video = document.querySelector("video")!;
+    video.currentTime = 20.2;
+    video.addEventListener("pause", () => context.setReadyState(2), {once: true});
+  });
+  await video.dispatchEvent("progress");
+  await expect(video).toHaveJSProperty("currentTime", 20);
+  await expect(page.locator("[data-player-status]")).toBeVisible();
+  // WebKit can deliver the preparation's queued playing event after pause and seek.
+  await video.dispatchEvent("playing");
+  await expect(video).toHaveJSProperty("paused", true);
+  await expect(page.locator("[data-player-status]")).toBeVisible();
+  await page.evaluate(() => (window as Window & {setReadyState: (value: number) => void}).setReadyState(3));
+  await video.dispatchEvent("canplay");
   await expect(page.locator("[data-player-status]")).toBeHidden();
 });
 
@@ -80,6 +130,10 @@ for (const readyState of [1, 3]) test(`Safari startup keeps the required gesture
   }, readyState);
   await video.dispatchEvent("loadstart");
   await page.clock.runFor(2_000);
+  await expect(play).toBeVisible();
+  await expect(status).toBeHidden();
+  await video.dispatchEvent("seeking");
+  await video.dispatchEvent("seeked");
   await expect(play).toBeVisible();
   await expect(status).toBeHidden();
   await page.evaluate(() => {
