@@ -1,0 +1,21 @@
+{
+  "revision": "76739af6cb9581e797766e93854e7fe885a568f5",
+  "source": [
+    {
+      "path": "packages/identitycore/api_keys.go",
+      "sha256": "2ddd6ed0d7f26a9a8646951791bb36a06321cf287d928f6b3e8c414b7207545b"
+    },
+    {
+      "path": "packages/identitycore/api_keys_test.go",
+      "sha256": "6f856f703a6323fa71a28d08fb3132b1c2de76667c8c2a6c167a4ee31453b24e"
+    }
+  ],
+  "CI": {
+    "run": 36795589355,
+    "job": 110158199963,
+    "failure": "TestCloneAndFormatAPIKeys: Old Sep29 ordered before New Oct1"
+  },
+  "command": "go -C packages test ./identitycore -run Test(CloneAndFormatAPIKeys|APIKeyViewsOrdersCreationTimesAcrossDateLabels) -count=1",
+  "data": "fixed UTC creation instants across month, year, day and same-day time",
+  "result": "FAIL for fixed month boundary and all4 month/year/day/same-day regression cases"
+}

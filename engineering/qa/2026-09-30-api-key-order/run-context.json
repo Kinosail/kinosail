@@ -1,0 +1,127 @@
+{
+  "sourceCommit": "1c86e79365329844fe88c3a78631ef01c032841c",
+  "baselineCommit": "76739af6cb9581e797766e93854e7fe885a568f5",
+  "commands": {
+    "focused": "go -C packages test ./identitycore -run Test(CloneAndFormatAPIKeys|APIKeyViewsOrdersCreationTimesAcrossDateLabels) -count=1",
+    "shared": "go -C packages test ./...",
+    "player": "go -C apps/player test ./internal/server -run Test.*APIKey -count=1",
+    "subtitles": "go -C apps/subtitles test ./internal/server -run Test.*APIKey -count=1",
+    "changedLint": "cd packages && golangci-lint run --new-from-rev origin/main",
+    "tooling": "make tooling-check"
+  },
+  "environment": {
+    "host": "macOS ARM64",
+    "go": "1.27.1",
+    "golangci-lint": "2.13.2"
+  },
+  "results": {
+    "regression": "PASS after intended baseline failures",
+    "sharedTests": "PASS60 test-bearing packages",
+    "serverApiKeyTests": "PASS both apps",
+    "tooling": "PASS",
+    "changedCodeLint": "PASS",
+    "fullLocalVerifyChanged": "FAIL pre-existing112 shared lint findings"
+  },
+  "firstCI": {
+    "run": 36795589355,
+    "job": 110158199963,
+    "head": "76739af6cb9581e797766e93854e7fe885a568f5",
+    "failure": "date labels sorted alphabetically across the October boundary; production bug repaired"
+  },
+  "source": [
+    {
+      "path": "packages/identitycore/api_keys.go",
+      "sha256": "2eed1f6d20b75889602b2d073c72bb0e8a65c72f256de45123ac032942b13160"
+    },
+    {
+      "path": "packages/identitycore/api_keys_test.go",
+      "sha256": "6f856f703a6323fa71a28d08fb3132b1c2de76667c8c2a6c167a4ee31453b24e"
+    },
+    {
+      "path": "apps/player/docs/architecture-explorer/index.html",
+      "sha256": "7d4dfdaf46bc5b6294dd5d476dcf71518bfce95d5c6ffc25aa2de7ef4297f48f"
+    },
+    {
+      "path": "apps/subtitles/docs/architecture-explorer/index.html",
+      "sha256": "2d31ad73c59b9820bbaea7f7e7ce3e163dbee9d34ef60a88a71ef7b455c1d2fb"
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "api_keys.go.baseline.txt",
+      "sha256": "2ddd6ed0d7f26a9a8646951791bb36a06321cf287d928f6b3e8c414b7207545b"
+    },
+    {
+      "path": "api_keys_test.go.baseline.txt",
+      "sha256": "6f856f703a6323fa71a28d08fb3132b1c2de76667c8c2a6c167a4ee31453b24e"
+    },
+    {
+      "path": "authoring-gate.md",
+      "sha256": "8d0e82c98b52dc5a5c346451e2fd9b6ea835e3f8fdbfa90e5e175b3dfff693f9"
+    },
+    {
+      "path": "baseline-context.json",
+      "sha256": "a3c492f6872e7b51fc906ed1bb9b88bd44d999470c7123045e0f8fd9596bb344"
+    },
+    {
+      "path": "baseline.log",
+      "sha256": "79bac3a9c0faae4cfd4beb7defa57686a9a7b1108ed645458966f1747af4b967"
+    },
+    {
+      "path": "changed-package-lint-final.log",
+      "sha256": "e92606b0bf483111dff0a120c315ea165821348f31365020e2468a0059095c47"
+    },
+    {
+      "path": "changed-package-lint.log",
+      "sha256": "9c6b9e12b6b2a88acd31f1450579d7621d687a639b2813b947a1a2816e24d8ba"
+    },
+    {
+      "path": "ci-failure-excerpt.txt",
+      "sha256": "7ac540e09466c91c41572e17c3b4f43a642a8c35c5537a6d114c260e4d7030b0"
+    },
+    {
+      "path": "focused-green.log",
+      "sha256": "bbc98489dd501c890f81cd32d9421b21d1b0b43ceea1ccb1aef4ac16b4bae171"
+    },
+    {
+      "path": "generated-atlas-diff.json",
+      "sha256": "b1cc80dd7b230a0462b6b227f3d086fda1b1cb46509165a40900478763616c00"
+    },
+    {
+      "path": "max-loc.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "packages-tests.log",
+      "sha256": "a311436e3e73404d34d5efbd681833bba1c180b910c4447716d39cfd1b612140"
+    },
+    {
+      "path": "player-api-key-tests.log",
+      "sha256": "13f1f79a1a8983786eee25b712bebfd250e9ce0492955c4f8925502179311901"
+    },
+    {
+      "path": "player-verify-changed.log",
+      "sha256": "9c91ea0537a3e7d8ba7790911e1168de864eabf3d0f8527164a83f46190ef975"
+    },
+    {
+      "path": "report.md",
+      "sha256": "6187259a304e684bb356eef94e4135cd8846e1f9d87b4c7cd981788d8180e668"
+    },
+    {
+      "path": "shared-package-full-lint.log",
+      "sha256": "19bb0ddb8ae125cac7c7cb5d5bdb47200784c87da8f3a919ee494a8ba37243a1"
+    },
+    {
+      "path": "subtitles-api-key-tests.log",
+      "sha256": "765cfbc086d542b5e3dc4a237aff65cd9aec5416457f7d3e35e49edfff82b218"
+    },
+    {
+      "path": "subtitles-verify-changed.log",
+      "sha256": "88b529ecf18537b7c019e011876d596b40242615d9994d598e7287a9b508fa04"
+    },
+    {
+      "path": "tooling-check.log",
+      "sha256": "6b85d31a5f54e6da66584959efa20f3c708916c3f0a0d202c4d2bb39f57cfd48"
+    }
+  ]
+}
