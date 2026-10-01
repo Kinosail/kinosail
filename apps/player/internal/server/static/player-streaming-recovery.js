@@ -290,3 +290,4 @@ if (player.dataset.hls) {
   } else if (direct && !player.getAttribute("src")) player.src = player.dataset.direct;
 }
 if (player.readyState >= HTMLMediaElement.HAVE_CURRENT_DATA) showPlaybackMode(adaptiveActive, false);
+if (player.error && !adaptiveActive && !adaptiveStarting) recoverDirectFailure();

@@ -1,8 +1,8 @@
 import { Page } from "@playwright/test";
 import { playerSource } from "./static-sources";
 
-export async function startDirectPlayer(page: Page, options: { preloadHls?: boolean; directType?: string; directSupported?: boolean; safari?: boolean; compatibleMode?: string; compatibleLabel?: string; compatibleReason?: string; playbackPolicy?: string; playbackOverride?: boolean; initialSource?: boolean; savedPolicy?: string; initialHls?: boolean } = {}) {
-  const { preloadHls = true, directType = "video/mp4", directSupported = true, safari = false, compatibleMode = "remux", compatibleLabel = "Remux", compatibleReason = "Repackages the original video and audio without conversion.", playbackPolicy = "automatic", playbackOverride = false, initialSource = true, savedPolicy = "", initialHls = false } = options;
+export async function startDirectPlayer(page: Page, options: { preloadHls?: boolean; directType?: string; directSupported?: boolean; safari?: boolean; compatibleMode?: string; compatibleLabel?: string; compatibleReason?: string; playbackPolicy?: string; playbackOverride?: boolean; initialSource?: boolean; savedPolicy?: string; initialHls?: boolean; initialError?: number } = {}) {
+  const { preloadHls = true, directType = "video/mp4", directSupported = true, safari = false, compatibleMode = "remux", compatibleLabel = "Remux", compatibleReason = "Repackages the original video and audio without conversion.", playbackPolicy = "automatic", playbackOverride = false, initialSource = true, savedPolicy = "", initialHls = false, initialError = 0 } = options;
   if (savedPolicy) await page.addInitScript((policy) => localStorage.setItem("kinosail.playback-policy", policy), savedPolicy);
   await page.route("https://direct.test/", (route) => route.fulfill({ contentType: "text/html", body: `
     <body><div class="media-stage">
@@ -18,12 +18,13 @@ export async function startDirectPlayer(page: Page, options: { preloadHls?: bool
   ` }));
   await page.route("https://direct.test/movie.mp4", (route) => route.fulfill({ status: 206, contentType: "video/mp4", headers: { "Content-Range": "bytes 0-0/1" }, body: "x" }));
   await page.goto("https://direct.test/");
-  await page.evaluate(({ preload, directSupported, safari }) => {
+  await page.evaluate(({ preload, directSupported, safari, initialError }) => {
     if (safari) Object.defineProperty(navigator, "vendor", { configurable: true, value: "Apple Computer, Inc." });
     HTMLMediaElement.prototype.canPlayType = (type) => type === "application/vnd.apple.mpegurl" ? "" : directSupported ? "probably" : "";
     const media = document.querySelector("video")!;
     media.addEventListener("error", (event) => { if (event.isTrusted) event.stopImmediatePropagation(); }, true);
     Object.defineProperties(media, {
+      error: { configurable: true, value: initialError ? { code: initialError } : null },
       currentTime: { value: 42, writable: true },
       duration: { value: 120 },
       paused: { value: false },
@@ -50,7 +51,7 @@ export async function startDirectPlayer(page: Page, options: { preloadHls?: bool
       destroy() {}
     }
     Object.assign(window, { ...(preload ? { Hls: FakeHls } : {}), FakeHls });
-  }, { preload: preloadHls, directSupported, safari });
+  }, { preload: preloadHls, directSupported, safari, initialError });
   await page.addScriptTag({ content: playerSource });
 }
 
