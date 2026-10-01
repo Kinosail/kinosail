@@ -114,6 +114,15 @@ for (const source of ["direct", "compatible"]) for (const savedPosition of [0, 1
 	await expect(page.locator(".player-center-control[data-player-toggle]")).toBeVisible();
 	await expect(page.getByRole("button", { name: "Play video" })).toHaveCount(0);
 	await page.screenshot({ path: testInfo.outputPath("390-play-control.png"), fullPage: true });
+	await page.getByRole("button", { name: "Settings", exact: true }).click();
+	const speed = page.getByRole("combobox", { name: "Playback speed" });
+	await expect(speed).toBeVisible();
+	await speed.selectOption("1.5");
+	await expect(page.locator("video")).toHaveJSProperty("playbackRate", 1.5);
+	await expect(page.locator("video")).toHaveJSProperty("paused", true);
+	await page.screenshot({ path: testInfo.outputPath("390-playback-settings.png"), fullPage: true });
+	await speed.selectOption("1");
+	await page.getByRole("button", { name: "Close playback settings" }).click();
 	await page.evaluate(() => (window as Window & { allowVideoPlay: () => void }).allowVideoPlay());
 	await page.locator(".player-center-control[data-player-toggle]").click();
 	await expect.poll(() => page.locator("video").evaluate((video: HTMLVideoElement) => video.currentTime)).toBeGreaterThan(readiness.position + 0.25);
