@@ -21,7 +21,7 @@ struct HomeScreen: View {
                 return try await client.home(mode: homeMode, policy: policy)
             }) { home in
                 let selection = HomeSelection(continueWatching: home.continueWatching, recent: home.recent, mode: homeMode)
-                VStack(alignment: .leading, spacing: 32) {
+                LazyVStack(alignment: .leading, spacing: 32) {
                     #if os(tvOS)
                     if homeMode == .watch, !selection.tvWatchingRail.isEmpty {
                         MediaShelf(title: "Continue watching", items: selection.tvWatchingRail, landscape: true,
