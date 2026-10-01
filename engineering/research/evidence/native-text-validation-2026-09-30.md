@@ -254,4 +254,4 @@ import Foundation
 
 The post-commit Player gate passes max-loc, diff-check, and both native simulator builds in 59 seconds. Its first attempt is invalid: ENOSPC prevented shell check selection despite exit 0. The complete error log is retained. Only task-owned rebuildable compiler caches were removed; the unchanged-source retry passes. Native Products, source, profiles, logs, and xcresults remain. Default gitleaks scans the introduced commit and reports no leaks. Native copy validation passes.
 
-Main reconciliation includes `2f8f8e140` (the Android photo overlay PR). The measured native Core sources remain byte-identical. No native source or test conflict occurs. Hosted required checks and protected-main merge remain pending. The broader performance goal remains active.
+Main reconciliation includes `2f8f8e140` (the Android photo overlay PR). The measured native Core sources remain byte-identical. No native source or test conflict occurs. Current hosted checks and protected-main delivery are recorded in [PR #397](https://github.com/Kinosail/kinosail/pull/397). The broader performance goal remains active.
