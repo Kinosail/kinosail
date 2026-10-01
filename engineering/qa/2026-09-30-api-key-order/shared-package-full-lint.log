@@ -1,0 +1,354 @@
+packages/owneraccess/owneraccess.go:118:24: Function `startLocked` should pass the context parameter (contextcheck)
+		m.err = m.startLocked()
+		                     ^
+packages/owneraccess/runtime.go:218:27: Function `startLocked` should pass the context parameter (contextcheck)
+					m.err = m.startLocked()
+					                     ^
+packages/publicgateway/gateway.go:43:53: Function `CertificateClient->CertificateClient$2` should pass the context parameter (contextcheck)
+	server.TLSConfig.GetCertificate = CertificateClient(hostname, CertificatePath)
+	                                                   ^
+packages/backup/archive.go:131:1: calculated cyclomatic complexity for function readStateFileWith is 11, max is 10 (cyclop)
+func readStateFileWith(path string, maximum int, lstat func(string) (os.FileInfo, error), open func(string) (*os.File, error)) ([]byte, error) {
+^
+packages/catalog/collection_web.go:98:1: calculated cyclomatic complexity for function ManageItem is 11, max is 10 (cyclop)
+func (handlers CollectionWebHandlers) ManageItem(writer http.ResponseWriter, request *http.Request) {
+^
+packages/catalog/collection_web.go:212:1: calculated cyclomatic complexity for function validCollectionWebHandlersConfig is 12, max is 10 (cyclop)
+func validCollectionWebHandlersConfig(config CollectionWebHandlersConfig) bool {
+^
+packages/catalog/collection_web_test.go:40:1: calculated cyclomatic complexity for function TestCollectionWebHandlersRejectInvalidMutationsBeforeSideEffects is 13, max is 10 (cyclop)
+func TestCollectionWebHandlersRejectInvalidMutationsBeforeSideEffects(t *testing.T) {
+^
+packages/catalog/collection_web_test.go:84:1: calculated cyclomatic complexity for function TestCollectionWebHandlersCompleteMutationsAndFailures is 14, max is 10 (cyclop)
+func TestCollectionWebHandlersCompleteMutationsAndFailures(t *testing.T) {
+^
+packages/catalog/list_operations_test.go:134:1: calculated cyclomatic complexity for function TestCollectionOperationsPreserveMembershipExclusionsAndAtomicCommit is 15, max is 10 (cyclop)
+func TestCollectionOperationsPreserveMembershipExclusionsAndAtomicCommit(t *testing.T) {
+^
+packages/catalog/playlist_http.go:93:1: calculated cyclomatic complexity for function Order is 14, max is 10 (cyclop)
+func (handlers PlaylistHandlers) Order(writer http.ResponseWriter, request *http.Request) {
+^
+packages/catalog/playlist_http.go:127:1: calculated cyclomatic complexity for function ManageItem is 11, max is 10 (cyclop)
+func (handlers PlaylistHandlers) ManageItem(writer http.ResponseWriter, request *http.Request) {
+^
+packages/catalog/playlist_http.go:190:1: calculated cyclomatic complexity for function validPlaylistHandlersConfig is 11, max is 10 (cyclop)
+func validPlaylistHandlersConfig(config PlaylistHandlersConfig) bool {
+^
+packages/catalog/playlist_http_test.go:15:1: calculated cyclomatic complexity for function TestPlaylistHandlersProjectBrowseThroughPublicPage is 18, max is 10 (cyclop)
+func TestPlaylistHandlersProjectBrowseThroughPublicPage(t *testing.T) {
+^
+packages/catalog/playlist_http_test.go:40:1: calculated cyclomatic complexity for function TestPlaylistHandlersRejectBrowseAndMembershipInputBeforeSideEffects is 14, max is 10 (cyclop)
+func TestPlaylistHandlersRejectBrowseAndMembershipInputBeforeSideEffects(t *testing.T) {
+^
+packages/downloads/start.go:72:1: calculated cyclomatic complexity for function reserveJob is 16, max is 10 (cyclop)
+func (manager *Manager) reserveJob(job Job) (Job, *attempt, error) {
+^
+packages/httpguard/unique_json.go:16:1: calculated cyclomatic complexity for function DecodeUniqueJSON is 11, max is 10 (cyclop)
+func DecodeUniqueJSON(reader io.Reader, maximum int64, target any) error {
+^
+packages/identitycore/handlers.go:71:1: calculated cyclomatic complexity for function ownerHandler is 11, max is 10 (cyclop)
+func ownerHandler(next http.Handler, config OwnerConfig, sensitive bool) http.HandlerFunc {
+^
+packages/identitycore/management_session_test.go:12:1: calculated cyclomatic complexity for function TestManagementSessionCannotBeReplayedOnLANPublicOrAnotherDevice is 16, max is 10 (cyclop)
+func TestManagementSessionCannotBeReplayedOnLANPublicOrAnotherDevice(t *testing.T) {
+^
+packages/localization/catalog.go:186:1: calculated cyclomatic complexity for function replaceLocalizedPhrase is 11, max is 10 (cyclop)
+func replaceLocalizedPhrase(source, phrase, translated string) string {
+^
+packages/maintenance/concurrency_test.go:12:1: calculated cyclomatic complexity for function TestConcurrentMediaReadsPreventAllUpkeep is 13, max is 10 (cyclop)
+func TestConcurrentMediaReadsPreventAllUpkeep(t *testing.T) {
+^
+packages/markers/analyzer_coverage_test.go:12:1: calculated cyclomatic complexity for function TestAnalyzerGroupingAndUnavailableMediaBoundaries is 11, max is 10 (cyclop)
+func TestAnalyzerGroupingAndUnavailableMediaBoundaries(t *testing.T) {
+^
+packages/markers/analyzer_coverage_test.go:52:1: calculated cyclomatic complexity for function TestAnalyzerCreditsSkipsProtectedItemsAndStoresSuccess is 12, max is 10 (cyclop)
+func TestAnalyzerCreditsSkipsProtectedItemsAndStoresSuccess(t *testing.T) {
+^
+packages/markers/batch_regression_test.go:77:1: calculated cyclomatic complexity for function TestBatchPreservesOwnerEditsMadeDuringExtraction is 12, max is 10 (cyclop)
+func TestBatchPreservesOwnerEditsMadeDuringExtraction(t *testing.T) {
+^
+packages/mcpgateway/application_profile_state.go:29:1: calculated cyclomatic complexity for function NewProfilePrincipals is 12, max is 10 (cyclop)
+func NewProfilePrincipals(config ProfilePrincipalConfig) PrincipalRepository {
+^
+packages/mcpgateway/introspection.go:31:1: calculated cyclomatic complexity for function verifyToken is 11, max is 10 (cyclop)
+func (adapter *Gateway) verifyToken(ctx context.Context, token string, request *http.Request) (*mcpauth.TokenInfo, error) {
+^
+packages/owneraccess/dns.go:45:1: calculated cyclomatic complexity for function dnsReply is 18, max is 10 (cyclop)
+func dnsReply(ctx context.Context, packet []byte, hostname string, lookup func(context.Context, string, string) ([]net.IP, error)) []byte {
+^
+packages/owneraccess/dns_test.go:12:1: calculated cyclomatic complexity for function TestTunnelDNSPinsManagementNameWithoutForwardingIt is 12, max is 10 (cyclop)
+func TestTunnelDNSPinsManagementNameWithoutForwardingIt(t *testing.T) {
+^
+packages/owneraccess/http.go:67:1: calculated cyclomatic complexity for function formValue is 13, max is 10 (cyclop)
+func formValue(w http.ResponseWriter, r *http.Request, operation string) (string, error) {
+^
+packages/owneraccess/owneraccess.go:81:1: calculated cyclomatic complexity for function Open is 13, max is 10 (cyclop)
+func Open(config Config) (*Manager, error) {
+^
+packages/owneraccess/owneraccess.go:130:1: calculated cyclomatic complexity for function Enable is 11, max is 10 (cyclop)
+func (m *Manager) Enable(endpoint string) error {
+^
+packages/owneraccess/owneraccess.go:189:1: calculated cyclomatic complexity for function Pair is 14, max is 10 (cyclop)
+func (m *Manager) Pair(label, profileID string) (string, error) {
+^
+packages/owneraccess/owneraccess_test.go:54:1: calculated cyclomatic complexity for function TestManagementDefaultsOffAndInvalidInputHasNoEffects is 12, max is 10 (cyclop)
+func TestManagementDefaultsOffAndInvalidInputHasNoEffects(t *testing.T) {
+^
+packages/playback/client_constraints.go:186:1: calculated cyclomatic complexity for function validProfileValue is 16, max is 10 (cyclop)
+func validProfileValue(condition JellyfinProfileCondition) bool {
+^
+packages/playback/hls_source.go:41:1: calculated cyclomatic complexity for function SourceTranscoding is 15, max is 10 (cyclop)
+func SourceTranscoding(options transcodepolicy.Settings, facts MediaFacts, recipe HLSRecipe) transcodepolicy.Settings {
+^
+packages/publicgateway/certificate.go:27:1: calculated cyclomatic complexity for function CertificateHandler is 16, max is 10 (cyclop)
+func CertificateHandler(hostname string, get func(*tls.ClientHelloInfo) (*tls.Certificate, error)) http.Handler {
+^
+packages/publicgateway/gateway.go:97:1: calculated cyclomatic complexity for function validHostname is 15, max is 10 (cyclop)
+func validHostname(host string) bool {
+^
+packages/quickconnect/browser.go:44:1: calculated cyclomatic complexity for function PollBrowser is 12, max is 10 (cyclop)
+func (application *Application) PollBrowser(writer http.ResponseWriter, request *http.Request) {
+^
+packages/quickconnect/browser_test.go:125:1: calculated cyclomatic complexity for function TestBrowserQuickConnectRechecksEligibilityAndFailsClosed is 17, max is 10 (cyclop)
+func TestBrowserQuickConnectRechecksEligibilityAndFailsClosed(t *testing.T) {
+^
+packages/quickconnect/browser_test.go:165:1: calculated cyclomatic complexity for function TestBrowserQuickConnectCancellationReplacementAndLocalDenial is 11, max is 10 (cyclop)
+func TestBrowserQuickConnectCancellationReplacementAndLocalDenial(t *testing.T) {
+^
+packages/quickconnect/browser_test.go:225:1: calculated cyclomatic complexity for function TestBrowserQuickConnectRateLimitsCreationAndPolling is 12, max is 10 (cyclop)
+func TestBrowserQuickConnectRateLimitsCreationAndPolling(t *testing.T) {
+^
+packages/remoteaccess/readiness.go:29:1: calculated cyclomatic complexity for function SecurePublicReadiness is 13, max is 10 (cyclop)
+func SecurePublicReadiness(status Status, profiles []identitycore.Profile, profileErr error, now time.Time) Readiness {
+^
+packages/remoteaccess/setup_view_test.go:12:1: calculated cyclomatic complexity for function TestSetupViewRendersAccessibleRouterInstructions is 14, max is 10 (cyclop)
+func TestSetupViewRendersAccessibleRouterInstructions(t *testing.T) {
+^
+packages/transcodehardware/tonemap_test.go:60:1: calculated cyclomatic complexity for function TestToneMapFailureKeepsEncoderAndOtherFormats is 14, max is 10 (cyclop)
+func TestToneMapFailureKeepsEncoderAndOtherFormats(t *testing.T) {
+^
+packages/transcodehardware/verification.go:98:1: calculated cyclomatic complexity for function RecordCheck is 14, max is 10 (cyclop)
+func (capabilities Capabilities) RecordCheck(options transcodepolicy.Settings, result transcodepolicy.CheckResult) {
+^
+packages/transcodehardware/verification.go:245:1: calculated cyclomatic complexity for function backendDevice is 11, max is 10 (cyclop)
+func backendDevice(backend, device string) string {
+^
+packages/transcodepolicy/check.go:39:1: calculated cyclomatic complexity for function runCheck is 11, max is 10 (cyclop)
+func runCheck(ctx context.Context, ffmpeg string, options Settings, backend string, temporary func() (string, error), run func(context.Context, string, ...string) error) CheckResult {
+^
+packages/transcodepolicy/check.go:106:1: calculated cyclomatic complexity for function checkSetup is 17, max is 10 (cyclop)
+func checkSetup(ffmpeg string, options Settings) string {
+^
+packages/transcodepolicy/tonemap.go:43:1: calculated cyclomatic complexity for function hardwareToneMapFrames is 14, max is 10 (cyclop)
+func hardwareToneMapFrames(options Settings, width string) ([]string, string) {
+^
+packages/updatecontrol/checker.go:117:1: calculated cyclomatic complexity for function Check is 11, max is 10 (cyclop)
+func (checker *Checker) Check(ctx context.Context) Status {
+^
+packages/owneraccess/runtime.go:276:2: missing cases in switch of type http.ConnState: http.StateActive, http.StateIdle (exhaustive)
+	switch state {
+	^
+packages/publicgateway/gateway.go:127:2: missing cases in switch of type http.ConnState: http.StateActive, http.StateIdle (exhaustive)
+	switch state {
+	^
+packages/configurationcore/application_fields.go:12:6: Function 'CommonApplicationFields' is too long (66 > 60) (funlen)
+func CommonApplicationFields(listen, supportURL string) []ApplicationField {
+     ^
+packages/catalog/list_commit_limits_test.go:8:1: cognitive complexity 17 of func `TestListCommitRejectsStateThatCannotBeRestored` is high (> 15) (gocognit)
+func TestListCommitRejectsStateThatCannotBeRestored(t *testing.T) {
+^
+packages/downloads/manifest_test.go:80:1: cognitive complexity 17 of func `TestManifestAuthorizationAndSourceReplacement` is high (> 15) (gocognit)
+func TestManifestAuthorizationAndSourceReplacement(t *testing.T) { //nolint:cyclop // Authorization and replacement checks share one admitted download.
+^
+packages/federation/link_session_test.go:9:1: cognitive complexity 16 of func `TestLinkCallbacksRejectRevokedInitiatingSession` is high (> 15) (gocognit)
+func TestLinkCallbacksRejectRevokedInitiatingSession(t *testing.T) {
+^
+packages/federation/profiles.go:112:1: cognitive complexity 18 of func `(Profiles).link` is high (> 15) (gocognit)
+func (profiles Profiles[T]) link(protocol Protocol, id string, identity Identity, session string, requireSession bool) error {
+^
+packages/federation/saml_test.go:152:1: cognitive complexity 16 of func `TestSAMLFlowStartsAndCompletesSignedResponse` is high (> 15) (gocognit)
+func TestSAMLFlowStartsAndCompletesSignedResponse(t *testing.T) { //nolint:cyclop,funlen // One lifecycle proves provider, key, state, and assertion behavior.
+^
+packages/httpguard/unique_json.go:44:1: cognitive complexity 21 of func `uniqueValue` is high (> 15) (gocognit)
+func uniqueValue(d *json.Decoder, depth int) bool {
+^
+packages/identitycore/profile_scim.go:104:1: cognitive complexity 19 of func `(ProfileStore).UpdateSCIMProfile` is high (> 15) (gocognit)
+func (store ProfileStore) UpdateSCIMProfile(id string, input scim.ProfileInput, expected string) (Profile, error) { //nolint:cyclop // The score of 12 remains below the repository ceiling of 22 for one atomic update transaction.
+^
+packages/identitycore/profile_scim_identity_test.go:32:1: cognitive complexity 21 of func `TestSCIMIdentityChangeRevokesFederationAndSessionsAtomically` is high (> 15) (gocognit)
+func TestSCIMIdentityChangeRevokesFederationAndSessionsAtomically(t *testing.T) {
+^
+packages/markers/analyzer.go:217:1: cognitive complexity 18 of func `(*Analyzer).analyzeSeason` is high (> 15) (gocognit)
+func (analyzer *Analyzer) analyzeSeason(ctx context.Context, items []library.Item) error {
+^
+packages/markers/batch_regression_test.go:15:1: cognitive complexity 43 of func `TestFailedBatchPreservesPublishedMarkersAndRetries` is high (> 15) (gocognit)
+func TestFailedBatchPreservesPublishedMarkersAndRetries(t *testing.T) {
+^
+packages/markers/movie.go:10:1: cognitive complexity 18 of func `(*Analyzer).analyzeMovieOpenings` is high (> 15) (gocognit)
+func (analyzer *Analyzer) analyzeMovieOpenings(ctx context.Context, items []library.Item) error { //nolint:cyclop // Extraction, comparison, and consensus form one movie-library pass.
+^
+packages/mcpgateway/connections_store.go:84:1: cognitive complexity 16 of func `(*Connections).pruneLocked` is high (> 15) (gocognit)
+func (connections *Connections) pruneLocked() {
+^
+packages/owneraccess/http.go:30:1: cognitive complexity 16 of func `(HTTP).Change` is high (> 15) (gocognit)
+func (h HTTP) Change(operation string, api bool) http.HandlerFunc {
+^
+packages/owneraccess/owneraccess_test.go:106:1: cognitive complexity 31 of func `TestManagementTunnelBindsPeerRevokesLiveStreamAndPreservesPrivateBoundary` is high (> 15) (gocognit)
+func TestManagementTunnelBindsPeerRevokesLiveStreamAndPreservesPrivateBoundary(t *testing.T) {
+^
+packages/owneraccess/runtime.go:42:1: cognitive complexity 20 of func `(*Manager).startLocked` is high (> 15) (gocognit)
+func (m *Manager) startLocked() error {
+^
+packages/owneraccess/runtime.go:174:1: cognitive complexity 17 of func `(*Manager).expirePeers` is high (> 15) (gocognit)
+func (m *Manager) expirePeers(ctx context.Context, r *runtime) {
+^
+packages/playback/hls_recipe_test.go:61:1: cognitive complexity 16 of func `TestHLSRecipeCacheAndTimelineHelpers` is high (> 15) (gocognit)
+func TestHLSRecipeCacheAndTimelineHelpers(t *testing.T) { //nolint:cyclop // Related cache and timeline invariants share one table-driven contract test.
+^
+packages/playback/hls_recipe_test.go:101:1: cognitive complexity 17 of func `TestHLSFilterAndBitrateArguments` is high (> 15) (gocognit)
+func TestHLSFilterAndBitrateArguments(t *testing.T) { //nolint:cyclop // Related FFmpeg argument invariants share one focused contract test.
+^
+packages/publicgateway/certificate.go:64:1: cognitive complexity 16 of func `CertificateClient` is high (> 15) (gocognit)
+func CertificateClient(hostname, path string) func(*tls.ClientHelloInfo) (*tls.Certificate, error) {
+^
+packages/quickconnect/browser_test.go:32:1: cognitive complexity 21 of func `TestBrowserQuickConnectIssuesOnlyAnApprovedPublicCookie` is high (> 15) (gocognit)
+func TestBrowserQuickConnectIssuesOnlyAnApprovedPublicCookie(t *testing.T) {
+^
+packages/servertest/api_security.go:10:1: cognitive complexity 20 of func `APISecurityContract` is high (> 15) (gocognit)
+func APISecurityContract(t *testing.T, server func(*testing.T) (http.Handler, string)) {
+^
+packages/transcodepolicy/tonemap_test.go:13:1: cognitive complexity 32 of func `TestHardwareToneMapFramesPreserveSDRContract` is high (> 15) (gocognit)
+func TestHardwareToneMapFramesPreserveSDRContract(t *testing.T) {
+^
+packages/transcodepolicy/tonemap_test.go:60:1: cognitive complexity 47 of func `TestToneMapCheckRequiresHDRSourceAndSDROutput` is high (> 15) (gocognit)
+func TestToneMapCheckRequiresHDRSourceAndSDROutput(t *testing.T) {
+^
+packages/remoteaccess/http_test.go:22:22: unlambda: replace `func(t *testing.T) *Manager { return activeManager(t) }` with `activeManager` (gocritic)
+		{"revoke failure", func(t *testing.T) *Manager { return activeManager(t) }, func() error { return errors.New("revoke failed") }, http.StatusInternalServerError},
+		                   ^
+packages/remoteaccess/http_test.go:23:15: unlambda: replace `func(t *testing.T) *Manager { return activeManager(t) }` with `activeManager` (gocritic)
+		{"success", func(t *testing.T) *Manager { return activeManager(t) }, func() error { return nil }, http.StatusSeeOther},
+		            ^
+packages/identitycore/management_session.go:10:1: File is not properly formatted (gofumpt)
+type managementDeviceKey struct{}
+^
+packages/markers/batch_regression_test.go:167:1: File is not properly formatted (gofumpt)
+	analyzer.records[item.ID] = Record{Revision: mediaRevision(item), DetectorVersion: DetectorVersion - 1,
+^
+packages/owneraccess/runtime.go:232:1: File is not properly formatted (gofumpt)
+}
+^
+packages/publicgateway/gateway.go:23:1: File is not properly formatted (gofumpt)
+const Directory = "/public-transport"
+^
+packages/trustedhttps/tunnel_test.go:36:1: File is not properly formatted (gofumpt)
+		{"", testToken, "10.92.0.1"}, {"BAD DOMAIN", testToken, "10.92.0.1"},
+^
+packages/httpguard/csrf_template_test.go:16:32: G124: http.Cookie missing or has insecure Secure, HttpOnly, or SameSite attribute (gosec)
+	request.AddCookie(&http.Cookie{Name: "__Host-kinosail_session", Value: "session-secret"})
+	                              ^
+packages/owneraccess/owneraccess.go:283:15: G117: Marshaled struct field "PrivateKey" (JSON key "privateKey") matches secret pattern (gosec)
+	data, err := json.Marshal(value)
+	             ^
+packages/owneraccess/owneraccess_test.go:126:17: G705: XSS via taint analysis (gosec)
+		_, _ = w.Write([]byte(ProfileID(r)))
+		              ^
+packages/publicgateway/gateway.go:34:19: G102: Binds to all network interfaces (gosec)
+	listener, err := net.Listen("tcp", ":8443")
+	                 ^
+packages/publicgateway/gateway_test.go:27:14: G112: Potential Slowloris Attack because ReadHeaderTimeout is not configured in the http.Server (gosec)
+	backend := &http.Server{Handler: TLSMetadata(identitycore.Remote(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if !identitycore.RemoteRequest(r) || r.TLS == nil || r.Header.Get("X-Kinosail-Proxy-Token") != "" || r.Header.Get("X-Forwarded-For") != "" || r.RemoteAddr != "198.51.100.10:5000" || r.Header.Get("Authorization") != "Bearer viewer" {
+			t.Error("gateway boundary lost")
+		}
+		w.WriteHeader(http.StatusNoContent)
+	})))}
+packages/quickconnect/browser_test.go:102:75: G124: http.Cookie missing or has insecure Secure, HttpOnly, or SameSite attribute (gosec)
+		"duplicate cookie":     func(r *http.Request) { r.AddCookie(&http.Cookie{Name: browserCookieName, Value: "other"}) },
+		                                                                        ^
+packages/remoteaccess/gateway.go:65:12: G302: Expect file permissions to be 0600 or less (gosec)
+	if err := os.Chmod(publicgateway.Directory, 0o700); err != nil {
+	          ^
+packages/identitycore/management_session_test.go:17:47: net/http/httptest.NewRequest must not be called. use net/http/httptest.NewRequestWithContext (noctx)
+	r := WithManagementDevice(httptest.NewRequest("POST", "https://server.example/login", nil), "viewer", key)
+	                                             ^
+packages/identitycore/management_session_test.go:32:33: net/http/httptest.NewRequest must not be called. use net/http/httptest.NewRequestWithContext (noctx)
+		request := httptest.NewRequest("GET", "https://server.example/settings", nil)
+		                              ^
+packages/identitycore/management_session_test.go:62:184: net/http/httptest.NewRequest must not be called. use net/http/httptest.NewRequestWithContext (noctx)
+			OwnerSensitive(http.HandlerFunc(func(http.ResponseWriter, *http.Request) { called = true }), ownerConfig(record, true, false, false, recent, true)).ServeHTTP(w, httptest.NewRequest(method, "/api/v1/backup", nil))
+			                                                                                                                                                                                    ^
+packages/identitycore/network_boundary_test.go:15:28: net/http/httptest.NewRequest must not be called. use net/http/httptest.NewRequestWithContext (noctx)
+			r := httptest.NewRequest("GET", "https://server.example/settings", nil)
+			                        ^
+packages/identitycore/network_boundary_test.go:31:26: net/http/httptest.NewRequest must not be called. use net/http/httptest.NewRequestWithContext (noctx)
+	r := httptest.NewRequest("GET", "https://server.example", nil)
+	                        ^
+packages/owneraccess/owneraccess_test.go:153:29: (*net/http.Client).Get must not be called. use (*net/http.Client).Do(*http.Request) (noctx)
+	response, err := client.Get(config.Origin + "/settings")
+	                           ^
+packages/owneraccess/owneraccess_test.go:163:26: net/http/httptest.NewRequest must not be called. use net/http/httptest.NewRequestWithContext (noctx)
+	r := httptest.NewRequest("GET", config.Origin, nil)
+	                        ^
+packages/owneraccess/owneraccess_test.go:177:28: (*net/http.Client).Get must not be called. use (*net/http.Client).Do(*http.Request) (noctx)
+	response, err = client.Get(config.Origin + "/stream")
+	                          ^
+packages/publicgateway/gateway_test.go:23:29: net.Listen must not be called. use (*net.ListenConfig).Listen (noctx)
+	listener, err := net.Listen("unix", path)
+	                           ^
+packages/publicgateway/gateway_test.go:35:26: net/http/httptest.NewRequest must not be called. use net/http/httptest.NewRequestWithContext (noctx)
+	r := httptest.NewRequest("GET", "https://family.duckdns.org/api/v1/items", nil)
+	                        ^
+packages/publicgateway/gateway_test.go:53:28: net/http/httptest.NewRequest must not be called. use net/http/httptest.NewRequestWithContext (noctx)
+			r := httptest.NewRequest("GET", "https://family.duckdns.org/", nil)
+			                        ^
+packages/publicgateway/gateway_test.go:70:27: net/http/httptest.NewRequest must not be called. use net/http/httptest.NewRequestWithContext (noctx)
+		r := httptest.NewRequest("POST", "http://certificate/", strings.NewReader(raw))
+		                        ^
+packages/publicgateway/gateway_test.go:84:27: net/http/httptest.NewRequest must not be called. use net/http/httptest.NewRequestWithContext (noctx)
+		r := httptest.NewRequest("GET", "/", nil)
+		                        ^
+packages/remoteaccess/gateway.go:78:22: net.Listen must not be called. use (*net.ListenConfig).Listen (noctx)
+	l, err := net.Listen("unix", path)
+	                    ^
+packages/transcodepolicy/check_coordinator_test.go:40:32: net/http/httptest.NewRequest must not be called. use net/http/httptest.NewRequestWithContext (noctx)
+	request := httptest.NewRequest(http.MethodPost, "/settings/transcoder/test", nil)
+	                              ^
+packages/playback/jellyfin_session_limits_test.go:15:15: integer-format: fmt.Sprint can be replaced with faster strconv.Itoa (perfsprint)
+		store.Store(fmt.Sprint(i), session)
+		            ^
+packages/homeassistant/pairing.go:58:14: ST1005: error strings should not be capitalized (staticcheck)
+		return "", errors.New("Home Assistant pairing requires a current Owner")
+		           ^
+packages/homeassistant/player.go:75:15: ST1005: error strings should not be capitalized (staticcheck)
+		return nil, errors.New("Home Assistant player belongs to another Viewer Profile")
+		            ^
+packages/identitycore/session_requests.go:133:42: QF1008: could remove embedded field "Sessions" from selector (staticcheck)
+	if sessions.Sessions != nil && sessions.Sessions.valid() {
+	                                        ^
+packages/mcpgateway/application_profile_state.go:39:12: QF1001: could apply De Morgan's law (staticcheck)
+			return (!(profile.Owner || config.MFARequired()) || profile.Secured()) && profile.Allowed(config.PublicRequest(request), now)
+			        ^
+packages/owneraccess/dns.go:47:68: QF1008: could remove embedded field "Header" from selector (staticcheck)
+	if len(packet) > 1232 || request.Unpack(packet) != nil || request.Header.Response || request.Header.OpCode != 0 || len(request.Questions) != 1 || len(request.Answers) != 0 || len(request.Authorities) != 0 {
+	                                                                  ^
+packages/publicgateway/gateway.go:106:7: QF1001: could apply De Morgan's law (staticcheck)
+			if !(c >= 'a' && c <= 'z' || c >= '0' && c <= '9' || c == '-') {
+			   ^
+packages/owneraccess/owneraccess_test.go:120:18: "200" can be replaced by http.StatusOK (usestdlibvars)
+			w.WriteHeader(200)
+			              ^
+112 issues:
+* contextcheck: 3
+* cyclop: 46
+* exhaustive: 2
+* funlen: 1
+* gocognit: 23
+* gocritic: 2
+* gofumpt: 5
+* gosec: 7
+* noctx: 15
+* perfsprint: 1
+* staticcheck: 6
+* usestdlibvars: 1
+make[1]: *** [lint] Error 1

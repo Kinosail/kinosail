@@ -1,0 +1,34 @@
+Printing with useUnmergedTree = 'false'
+Node #27 at (l=0.0, t=0.0, r=780.0, b=1688.0)px
+ |-Node #28 at (l=0.0, t=0.0, r=780.0, b=1688.0)px
+   Shape = 'RectangleShape'
+    |-Node #29 at (l=32.0, t=32.0, r=748.0, b=440.0)px
+      Shape = 'RectangleShape'
+       |-Node #30 at (l=32.0, t=32.0, r=226.0, b=80.0)px
+       | Text = '[A light photo]'
+       | Actions = [ClearTextSubstitution, GetTextLayoutResult, SetTextSubstitution, ShowTextSubstitution]
+       |-Node #32 at (l=32.0, t=112.0, r=233.0, b=192.0)px
+       | Role = 'Button'
+       | Shape = 'RoundedCornerShape(topStart = CornerSize(size = 50.0%), topEnd = CornerSize(size = 50.0%), bottomEnd = CornerSize(size = 50.0%), bottomStart = CornerSize(size = 50.0%))'
+       | Text = '[Zoom in]'
+       | [Disabled]
+       | Actions = [ClearTextSubstitution, GetTextLayoutResult, OnClick, SetTextSubstitution, ShowTextSubstitution]
+       | MergeDescendants = 'true'
+       |-Node #35 at (l=257.0, t=112.0, r=420.0, b=192.0)px
+       | Focused = 'false'
+       | Role = 'Button'
+       | Shape = 'RoundedCornerShape(topStart = CornerSize(size = 50.0%), topEnd = CornerSize(size = 50.0%), bottomEnd = CornerSize(size = 50.0%), bottomStart = CornerSize(size = 50.0%))'
+       | Text = '[Done]'
+       | Actions = [ClearTextSubstitution, GetTextLayoutResult, OnClick, RequestFocus, SetTextSubstitution, ShowTextSubstitution]
+       | MergeDescendants = 'true'
+       |-Node #39 at (l=32.0, t=224.0, r=748.0, b=320.0)px
+       | LiveRegion = 'Polite'
+       | Text = '[Could not open the photo. Check your Server connection and try again.]'
+       | Actions = [ClearTextSubstitution, GetTextLayoutResult, SetTextSubstitution, ShowTextSubstitution]
+       |-Node #40 at (l=32.0, t=352.0, r=247.0, b=432.0)px
+         Focused = 'false'
+         Role = 'Button'
+         Shape = 'RoundedCornerShape(topStart = CornerSize(size = 50.0%), topEnd = CornerSize(size = 50.0%), bottomEnd = CornerSize(size = 50.0%), bottomStart = CornerSize(size = 50.0%))'
+         Text = '[Try again]'
+         Actions = [ClearTextSubstitution, GetTextLayoutResult, OnClick, RequestFocus, SetTextSubstitution, ShowTextSubstitution]
+         MergeDescendants = 'true'

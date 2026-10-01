@@ -105,7 +105,7 @@ internal fun PhotoScreen(item: CatalogItem, catalog: CatalogModel, tv: Boolean, 
                     .graphicsLayer(scaleX = zoom, scaleY = zoom,
                         translationX = offset.x, translationY = offset.y))
         }
-        Column(Modifier.fillMaxWidth().background(Color.Black).padding(if (tv) 40.dp else 16.dp),
+        Column(Modifier.fillMaxWidth().padding(if (tv) 40.dp else 16.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)) {
             Text(item.title, color = Color.White)
             Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {

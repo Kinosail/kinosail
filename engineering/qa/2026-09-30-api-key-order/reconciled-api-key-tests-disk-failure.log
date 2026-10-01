@@ -1,0 +1,4 @@
+# github.com/MikeO7/kinosail/packages/identitycore.test
+/opt/homebrew/Cellar/go/1.27.1/libexec/pkg/tool/darwin_arm64/link: mapping output file failed: no space left on device
+FAIL	github.com/MikeO7/kinosail/packages/identitycore [build failed]
+FAIL
