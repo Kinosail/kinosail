@@ -1,6 +1,6 @@
 # Kinosail deep QA — September 30, 2026
 
-This audit identified nine confirmed defects and implemented corrections. The evidence below separates completed local checks from hosted image verification. It does not establish that every product path or device is free of bugs.
+This audit identified ten confirmed defects and implemented corrections. The evidence below separates completed local checks from hosted image verification. It does not establish that every product path or device is free of bugs.
 
 ## Run record
 
@@ -125,6 +125,16 @@ The first correction requested Player version 96 and Subtitles version 58, after
 - Green: both app HTTP/cache checks passed; the eighteen seek-status browser checks passed across Chromium, Firefox and WebKit. Commands, source hashes and environment are recorded in `seek-cache-run-record.json`.
 - The content-hash reconciliation passed both apps' URL/cache, chapter and direct/compatible playback checks. Its source identity and commands are recorded in `reconciliation-8a-run-record.json`.
 - The reconciled browser regressions exercise missing and late seek events, pending and resumed overlays, paused playback, and phone/desktop geometry.
+
+### QA-010 — API keys sort by formatted date text (medium; fixed)
+
+Both required and deep checks failed at the UTC month boundary on `dccb0a51b`. The shared API-key view sorted the displayed date string. September entries therefore appeared before newer October entries. Year boundaries, single-digit days and creation times within one day also produced incorrect ordering.
+
+The view now sorts by the stored creation timestamp. Its existing stable ID ordering preserves deterministic ties. This changes one production line and introduces no new input or side effects.
+
+- Red: fixed-date tests failed before the correction for October 1, January 1 and September 10. Logs: `api-key-order-red.log`, `dccb-required-packages-failure.log` and `dccb-deep-packages-failure.log`.
+- Green: the complete identity package passed with the race detector (`api-key-order-green.log`), and the complete shared package suite passed (`api-key-order-packages.log`). The table covers month, year, day, within-day and equal-timestamp ordering. The existing copy-isolation and display-format checks also passed.
+- Source hashes, commands, environment and failure modes are recorded in `api-key-order-run-record.json`. Both apps use this shared view for their API-key settings.
 
 ## Verification
 
