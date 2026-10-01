@@ -99,7 +99,7 @@ func finalizePresentationPlaylists(root string, qualities []PlaybackQuality, sta
 func hlsSegmentArguments(mode, directory, playlist string, startNumber int) []string {
 	flags := "temp_file+independent_segments"
 	if mode == "remux" || mode == "audio-transcode" {
-		flags = "temp_file+split_by_time"
+		flags = "temp_file"
 	}
 	arguments := []string{"-f", "hls", "-hls_time", "2", "-hls_playlist_type", "event", "-hls_segment_type", "fmp4", "-hls_segment_options", "movflags=+frag_discont+skip_sidx", "-hls_flags", flags, "-hls_fmp4_init_filename", "init.mp4"}
 	if startNumber > 0 {
