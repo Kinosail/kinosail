@@ -79,6 +79,8 @@ The corrected remote regression passes again on the original and candidate sourc
 
 The native-copy generator check fails on both original and candidate Home sources. Expected generated keys add TMDB attribution and remove `Media`; Home's stack substitution changes no copy. This existing generated-copy drift is retained as a separate check failure. It is not reported as a passing check or repaired through unrelated translation churn.
 
+Reconciliation incorporates main's Android overlay change at `2d93bbf68be91746986c28d8d79c092b0343380f`. Native production and test source remain unchanged. The candidate Home hash still matches the counted experiment. Post-commit Player `verify-changed` passes source caps, whitespace, and its selected native-client build stage in 52 seconds. That stage builds Debug iOS and tvOS simulator clients. It does not run hosted browser journeys or physical-device tests. Default changed-commit gitleaks scanning reports no leaks.
+
 ## Failed measurement routes and limits
 
 An initial Instruments launch by bundle ID did not present the app or generate fixture traffic. Its trace is excluded. A confirmed `simctl launch` followed by process attachment produced 62 Time Profiler rows and zero potential-hang rows in a short recording. Attachment missed much of startup. Neither count establishes zero hitches or a cold CPU improvement.
