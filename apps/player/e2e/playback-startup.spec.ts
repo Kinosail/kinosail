@@ -130,6 +130,17 @@ for (const source of ["direct", "compatible"]) for (const savedPosition of [0, 1
 		await expect.poll(() => page.locator("video").evaluate((video: HTMLVideoElement) => video.currentTime), { timeout: 5_000 }).toBeGreaterThan(savedPosition + 0.5);
 		await expect(page.locator("[data-player-status]")).toBeHidden();
 		await page.screenshot({ path: testInfo.outputPath("390-resumed-after-seek.png"), fullPage: true });
+		// A paused seek outside this offset window loads another native stream.
+		// Its first playable sample can be later than the requested timestamp.
+		await page.locator("video").evaluate((video: HTMLVideoElement) => { video.pause(); video.currentTime = 0.3; });
+		await expect.poll(() => page.locator("video").evaluate((video: HTMLVideoElement) => video.currentSrc)).not.toBe(originalSource);
+		await expect(page.locator("[data-player-status]")).toBeHidden();
+		await expect(page.locator("video")).toHaveJSProperty("paused", true);
+		const seekPosition = await page.locator("video").evaluate((video: HTMLVideoElement) => video.currentTime);
+		await page.locator(".player-center-control[data-player-toggle]").click();
+		await expect.poll(() => page.locator("video").evaluate((video: HTMLVideoElement) => video.currentTime)).toBeGreaterThan(seekPosition + 0.25);
+		await expect(page.locator("[data-player-status]")).toBeHidden();
+		await page.screenshot({ path: testInfo.outputPath("390-resumed-after-far-seek.png"), fullPage: true });
 	}
 });
 

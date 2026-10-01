@@ -64,6 +64,10 @@ player.addEventListener("seeking", () => {
   }
 });
 const showReadyPlaybackMode = () => {
+  if (adaptiveActive && !hls && player.buffered.length) {
+    const start = player.buffered.start(0) + playbackTimelineOffset;
+    if (player.currentTime < start) setPlayerTime(start);
+  }
   if (directSeeking) directSeeking = false;
   clearRecovery();
   showPlaybackMode(adaptiveActive, false);
