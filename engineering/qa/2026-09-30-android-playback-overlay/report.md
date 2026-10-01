@@ -42,3 +42,7 @@ The full Gradle Android check passed 120 app tests. The 6 watchcore and 5 Wear r
 ## Remaining boundaries
 
 API 37, physical phone/tablet/TV, Cast devices, API 26+ Picture in Picture, TalkBack service behavior, signed store builds, long playback and deployment remain separate checks. The failed wide-layout run establishes no catalog defect. The TV activity attempt on the phone emulator stopped at Home navigation before playback. The shipped regression is limited to MobileActivity. No loaded TV runtime result is claimed. The unchanged empty library has no playback header; the existing unsupported-content accessibility test covers unavailable playback. Hosted CI and protected-main delivery are recorded separately after they finish.
+
+## Reconciled source
+
+The branch incorporates main `2d00b19a6b9502b6fd02149c8c13dd1f80e96410`. Upstream changed Swift validation and research evidence; the Android tree is unchanged. Source hashes still match all runtime evidence. The post-commit Player changed-app gate passed. Artifact secrets scans found no leaks. Protected hosted checks must finish before merge.
