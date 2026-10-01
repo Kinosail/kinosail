@@ -267,3 +267,30 @@ test("Safari startup prevents progress saves from overlapping queued pause event
   await expect(page.locator("video")).toHaveJSProperty("paused", true);
   await expect(page.locator("video")).toHaveJSProperty("muted", false);
 });
+
+for (const firstFrame of [20.021, 21.937]) test(`Safari startup restores playable media when its first frame is at ${firstFrame}`, async ({ page }) => {
+  const video = page.locator("video");
+  await page.evaluate(() => {
+    const context = window as Window & {setBufferedEnd: (value: number) => void; setPlayPending: (value: boolean) => void};
+    context.setBufferedEnd(20.1);
+    context.setPlayPending(true);
+  });
+  await video.dispatchEvent("loadstart");
+  await page.evaluate((start) => {
+    const context = window as Window & {setBufferedStart: (value: number) => void; setBufferedEnd: (value: number) => void; setReadyState: (value: number) => void; advanceMediaTime: (value: number) => void};
+    context.setBufferedStart(start);
+    context.setBufferedEnd(start + 3);
+    context.setReadyState(3);
+    context.advanceMediaTime(start + 0.2);
+  }, firstFrame);
+  await video.dispatchEvent("progress");
+  await expect(video).toHaveJSProperty("paused", true);
+  await expect(video).toHaveJSProperty("muted", false);
+  await expect(video).toHaveJSProperty("currentTime", firstFrame);
+  await expect(page.locator("[data-player-status]")).toBeHidden();
+  await expect(page.locator(".player-center-control[data-player-toggle]")).toBeVisible();
+  await page.evaluate(() => (window as Window & {setPlayPending: (value: boolean) => void}).setPlayPending(false));
+  await page.locator(".player-center-control[data-player-toggle]").click();
+  await expect(video).toHaveJSProperty("paused", false);
+  await expect(page.locator("[data-player-status]")).toBeHidden();
+});

@@ -55,7 +55,14 @@ if (playerStatus) {
       if (playbackPreparation !== preparation) return;
       if (!player.paused) preparationPausePending++;
       player.pause();
-      if (restorePosition && player.readyState && Math.abs(player.currentTime - preparation.position) >= 0.1) setPlayerTime(preparation.position);
+      let position = preparation.position;
+      // Copied HLS video can begin after the requested timestamp.
+      for (let index = 0; index < player.buffered.length; index++) {
+        const start = player.buffered.start(index) + playbackTimelineOffset;
+        const end = player.buffered.end(index) + playbackTimelineOffset;
+        if (start <= player.currentTime && end >= player.currentTime) { position = Math.max(position, start); break; }
+      }
+      if (restorePosition && player.readyState && Math.abs(player.currentTime - position) >= 0.1) setPlayerTime(position);
       player.muted = preparation.muted;
       playbackPreparation = undefined;
     }};
