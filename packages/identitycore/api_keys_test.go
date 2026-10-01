@@ -117,7 +117,7 @@ func TestParseAPIScopes(t *testing.T) {
 
 func TestCloneAndFormatAPIKeys(t *testing.T) { //nolint:cyclop // Assertions cover copy isolation and formatting.
 	t.Parallel()
-	now := time.Now().Truncate(time.Second)
+	now := time.Date(2026, time.October, 1, 12, 0, 0, 0, time.UTC)
 	keys := map[string]APIKey{
 		"new": {Name: "New", Scopes: []string{"write", "library"}, CreatedAt: now.Unix(), ExpiresAt: now.Add(24 * time.Hour).Unix(), LastUsed: now.Add(-time.Hour).Unix()},
 		"old": {Name: "Old", Scopes: []string{"admin"}, CreatedAt: now.Add(-48 * time.Hour).Unix(), Persistent: true},
@@ -140,5 +140,29 @@ func TestCloneAndFormatAPIKeys(t *testing.T) { //nolint:cyclop // Assertions cov
 	equal := APIKeyViews(map[string]APIKey{"b": {CreatedAt: now.Unix()}, "a": {CreatedAt: now.Unix()}})
 	if len(equal) != 2 || equal[0].ID != "a" || equal[1].ID != "b" {
 		t.Fatalf("equal-date key views = %#v", equal)
+	}
+}
+
+func TestAPIKeyViewsOrdersCreationTimesAcrossDateLabels(t *testing.T) {
+	t.Parallel()
+	for _, test := range []struct {
+		name         string
+		older, newer time.Time
+	}{
+		{"month", time.Date(2026, time.September, 29, 12, 0, 0, 0, time.UTC), time.Date(2026, time.October, 1, 12, 0, 0, 0, time.UTC)},
+		{"year", time.Date(2025, time.September, 20, 12, 0, 0, 0, time.UTC), time.Date(2026, time.February, 20, 12, 0, 0, 0, time.UTC)},
+		{"day", time.Date(2026, time.September, 9, 12, 0, 0, 0, time.UTC), time.Date(2026, time.September, 10, 12, 0, 0, 0, time.UTC)},
+		{"same day", time.Date(2026, time.September, 10, 12, 0, 0, 0, time.UTC), time.Date(2026, time.September, 10, 13, 0, 0, 0, time.UTC)},
+	} {
+		t.Run(test.name, func(t *testing.T) {
+			t.Parallel()
+			views := APIKeyViews(map[string]APIKey{
+				"a-older": {CreatedAt: test.older.Unix()},
+				"z-newer": {CreatedAt: test.newer.Unix()},
+			})
+			if len(views) != 2 || views[0].ID != "z-newer" || views[1].ID != "a-older" {
+				t.Fatalf("API keys are not newest first: %#v", views)
+			}
+		})
 	}
 }
