@@ -15,7 +15,7 @@ final class TVPlayerInputTests: XCTestCase {
         var closed = 0
         presentation.close = { closed += 1 }
         for _ in 0..<2 {
-            XCTAssertFalse(presentation.controller.delegate?.playerViewControllerShouldDismiss?(presentation.controller) ?? true)
+            presentation.requestClose()
         }
         XCTAssertEqual(closed, 0, "Remote input must return before the player view is removed")
         try await Task.sleep(for: .milliseconds(50))
@@ -30,8 +30,9 @@ final class TVPlayerInputTests: XCTestCase {
         try await Task.sleep(for: .milliseconds(50))
         XCTAssertEqual(closed, 0)
 
-        XCTAssertFalse(presentation.controller.delegate?.playerViewControllerShouldDismiss?(presentation.controller) ?? true)
+        presentation.requestClose()
         presentation.clear()
+        presentation.close = { closed += 1 }
         try await Task.sleep(for: .milliseconds(50))
         XCTAssertEqual(closed, 0, "Session cleanup must cancel an already queued dismissal")
     }

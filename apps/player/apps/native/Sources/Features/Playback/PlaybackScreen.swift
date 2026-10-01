@@ -60,6 +60,7 @@ struct PlaybackScreen: View {
                                  options: { showsTools = true }, seekPreview: { showsSeekPreview = true },
                                  close: { closePlayback() },
                                  restore: { session.showsVideoPlayer = true })
+                    .onExitCommand { session.player.presentation.requestClose() }
                     .background(.black)
                     #if os(tvOS)
                     .ignoresSafeArea()
