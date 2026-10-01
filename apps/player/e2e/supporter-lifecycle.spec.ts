@@ -5,61 +5,123 @@ const source = await readStaticSource([
   "../../../packages/webassets/static/supporter.js",
   "../internal/server/static/supporter.js",
 ]);
-
-type Collection = { badges: { rank: number; edition: string; family: string; name: string }[]; display: string };
+type Collection = { badges: unknown[]; display: string };
 type SupporterWindow = Window & {
   requests: string[];
-  signals: (AbortSignal | undefined)[];
-  finish: ((collection: Collection) => void)[];
+  signals: Array<AbortSignal | undefined>;
+  finishHeaders: (index: number) => void;
+  finishCollection: (index: number, collection: Collection) => void;
 };
-const hidden: Collection = { badges: [], display: "hidden" };
-const visible: Collection = { badges: [{ rank: 2, edition: "monthly", family: "living-standard", name: "Crew" }], display: "automatic" };
 
 test.beforeEach(async ({ page }) => {
-  await page.setContent('<body><header><a class="header-supporter" href="/supporter">Support Kinosail</a></header><main class="library-shell"></main></body>');
+  await page.setContent('<body><main class="library-shell"><a class="header-supporter" href="/supporter">Support Kinosail</a><input type="checkbox" data-supporter-visibility disabled></main></body>');
   await page.evaluate(() => {
     const context = window as SupporterWindow;
     context.requests = [];
     context.signals = [];
-    context.finish = [];
+    const headers: Array<() => void> = [];
+    const bodies: Array<(collection: Collection) => void> = [];
+    context.finishHeaders = (index) => headers[index]();
+    context.finishCollection = (index, collection) => bodies[index](collection);
     window.fetch = (async (input: string, options: RequestInit) => {
+      const index = context.requests.length;
       context.requests.push(input);
       context.signals.push(options.signal as AbortSignal | undefined);
-      return { ok: true, json: () => new Promise((resolve) => context.finish.push(resolve)) } as Response;
+      const body = new Promise<Collection>((resolve) => { bodies[index] = resolve; });
+      return new Promise<Response>((resolve) => {
+        headers[index] = () => resolve({ ok: true, json: () => body } as Response);
+      });
     }) as typeof fetch;
   });
 });
 
-test("supporter recognition applies the display preference from the current collection", async ({ page }) => {
+test("supporter collection applies its display preference in one request", async ({ page }, testInfo) => {
   await page.addScriptTag({ content: source });
-  await page.evaluate((collection) => (window as SupporterWindow).finish[0](collection), hidden);
+  await page.evaluate(() => {
+    const context = window as SupporterWindow;
+    context.finishHeaders(0);
+    context.finishCollection(0, { badges: [], display: "hidden" });
+  });
   await expect(page.locator(".header-supporter")).toBeHidden();
+  await expect(page.locator("[data-supporter-visibility]")).toBeEnabled();
   expect(await page.evaluate(() => (window as SupporterWindow).requests)).toEqual(["/api/v1/supporter/collection"]);
+  await page.screenshot({ path: testInfo.outputPath("collection-loaded.png") });
 });
 
-test("leaving aborts collection recognition and back restoration ignores the old response", async ({ page }) => {
+test("leaving during response headers cancels recognition and back restores a fresh collection", async ({ page }, testInfo) => {
   await page.addScriptTag({ content: source });
-  await page.evaluate(() => window.dispatchEvent(new PageTransitionEvent("pagehide", { persisted: true })));
-  expect(await page.evaluate(() => (window as SupporterWindow).signals[0]?.aborted ?? false)).toBe(true);
+  await page.evaluate(() => {
+    window.dispatchEvent(new PageTransitionEvent("pagehide", { persisted: true }));
+    const context = window as SupporterWindow;
+    context.finishHeaders(0);
+    context.finishCollection(0, { badges: [], display: "hidden" });
+  });
+  await expect(page.locator(".header-supporter")).toBeVisible();
+  expect(await page.evaluate(() => (window as SupporterWindow).signals[0]?.aborted)).toBe(true);
   await page.evaluate(() => window.dispatchEvent(new PageTransitionEvent("pageshow", { persisted: true })));
-  await expect.poll(() => page.evaluate(() => (window as SupporterWindow).finish.length)).toBe(2);
-  await page.evaluate((collection) => (window as SupporterWindow).finish[1](collection), hidden);
+  await expect.poll(() => page.evaluate(() => (window as SupporterWindow).requests.length)).toBe(2);
+  await page.evaluate(() => {
+    const context = window as SupporterWindow;
+    context.finishHeaders(1);
+    context.finishCollection(1, { badges: [], display: "hidden" });
+  });
   await expect(page.locator(".header-supporter")).toBeHidden();
-  await page.evaluate((collection) => (window as SupporterWindow).finish[0](collection), visible);
-  await expect(page.locator(".header-supporter")).toBeHidden();
-  await expect(page.locator(".header-supporter img")).toHaveCount(0);
+  expect(await page.evaluate(() => (window as SupporterWindow).signals[1]?.aborted)).toBe(false);
+  await page.screenshot({ path: testInfo.outputPath("back-restored.png") });
 });
 
-test("a later collection refresh wins when the older response finishes last", async ({ page }) => {
+test("leaving during the collection body prevents stale display changes", async ({ page }, testInfo) => {
+  await page.addScriptTag({ content: source });
+  await page.evaluate(() => (window as SupporterWindow).finishHeaders(0));
+  await page.evaluate(() => {
+    window.dispatchEvent(new PageTransitionEvent("pagehide"));
+    (window as SupporterWindow).finishCollection(0, { badges: [], display: "hidden" });
+  });
+  await expect(page.locator(".header-supporter")).toBeVisible();
+  await expect(page.locator("[data-supporter-visibility]")).toBeDisabled();
+  expect(await page.evaluate(() => (window as SupporterWindow).signals[0]?.aborted)).toBe(true);
+  await page.screenshot({ path: testInfo.outputPath("left-before-body.png") });
+});
+
+test("an older collection cannot overwrite recognition after a navigation swap", async ({ page }, testInfo) => {
   await page.addScriptTag({ content: source });
   await page.evaluate(() => document.dispatchEvent(new Event("htmx:after:swap")));
-  await expect.poll(() => page.evaluate(() => (window as SupporterWindow).finish.length)).toBe(2);
-  expect(await page.evaluate(() => (window as SupporterWindow).signals[0]?.aborted ?? false)).toBe(true);
-  await page.evaluate((collection) => (window as SupporterWindow).finish[1](collection), visible);
+  await expect.poll(() => page.evaluate(() => (window as SupporterWindow).requests.length)).toBe(2);
+  await page.evaluate(() => {
+    const context = window as SupporterWindow;
+    context.finishHeaders(1);
+    context.finishCollection(1, { badges: [], display: "hidden" });
+  });
+  await expect(page.locator(".header-supporter")).toBeHidden();
+  await page.evaluate(() => {
+    const context = window as SupporterWindow;
+    context.finishHeaders(0);
+    context.finishCollection(0, { badges: [], display: "automatic" });
+  });
+  await expect(page.locator(".header-supporter")).toBeHidden();
+  expect(await page.evaluate(() => (window as SupporterWindow).signals[0]?.aborted)).toBe(true);
+  await page.screenshot({ path: testInfo.outputPath("newest-collection.png") });
+});
+
+test("newer nonempty recognition survives an older hidden collection", async ({ page }, testInfo) => {
+  await page.addScriptTag({ content: source });
+  await page.evaluate(() => document.dispatchEvent(new Event("htmx:after:swap")));
+  await expect.poll(() => page.evaluate(() => (window as SupporterWindow).requests.length)).toBe(2);
+  await page.evaluate(() => {
+    const context = window as SupporterWindow;
+    context.finishHeaders(1);
+    context.finishCollection(1, { badges: [{ rank: 2, edition: "monthly", family: "living-standard", name: "Crew" }], display: "automatic" });
+  });
   await expect(page.locator(".header-supporter img")).toHaveAttribute("alt", "Crew · monthly");
-  await page.evaluate((collection) => (window as SupporterWindow).finish[0](collection), hidden);
+  await page.evaluate(() => {
+    const context = window as SupporterWindow;
+    context.finishHeaders(0);
+    context.finishCollection(0, { badges: [], display: "hidden" });
+  });
   await expect(page.locator(".header-supporter")).toBeVisible();
   await expect(page.locator(".header-supporter img")).toHaveAttribute("alt", "Crew · monthly");
+  expect(await page.evaluate(() => (window as SupporterWindow).signals[0]?.aborted)).toBe(true);
+  await page.screenshot({ path: testInfo.outputPath("nonempty-newest-collection.png") });
 });
 
 test("authentication pages never fetch supporter recognition", async ({ page }) => {

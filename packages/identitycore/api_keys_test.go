@@ -117,7 +117,7 @@ func TestParseAPIScopes(t *testing.T) {
 
 func TestCloneAndFormatAPIKeys(t *testing.T) { //nolint:cyclop // Assertions cover copy isolation and formatting.
 	t.Parallel()
-	now := time.Now().Truncate(time.Second)
+	now := time.Date(2026, time.October, 1, 12, 0, 0, 0, time.UTC)
 	keys := map[string]APIKey{
 		"new": {Name: "New", Scopes: []string{"write", "library"}, CreatedAt: now.Unix(), ExpiresAt: now.Add(24 * time.Hour).Unix(), LastUsed: now.Add(-time.Hour).Unix()},
 		"old": {Name: "Old", Scopes: []string{"admin"}, CreatedAt: now.Add(-48 * time.Hour).Unix(), Persistent: true},
@@ -143,32 +143,30 @@ func TestCloneAndFormatAPIKeys(t *testing.T) { //nolint:cyclop // Assertions cov
 	}
 }
 
-func TestAPIKeyViewsNewestFirstAcrossDateBoundaries(t *testing.T) {
+func TestAPIKeyViewsOrdersCreationTimestampsAcrossDateBoundaries(t *testing.T) {
 	t.Parallel()
-	for _, test := range []struct {
-		name, older, newer string
-	}{
-		{"day", "2026-09-09 12:00", "2026-09-10 12:00"},
-		{"month", "2026-09-30 12:00", "2026-10-01 12:00"},
-		{"year", "2026-12-31 12:00", "2027-01-01 12:00"},
-		{"same day", "2026-09-30 12:00", "2026-09-30 13:00"},
+	for _, current := range []time.Time{
+		time.Date(2026, time.October, 1, 12, 0, 0, 0, time.UTC),
+		time.Date(2027, time.January, 1, 12, 0, 0, 0, time.UTC),
+		time.Date(2026, time.September, 10, 12, 0, 0, 0, time.UTC),
 	} {
-		t.Run(test.name, func(t *testing.T) {
+		t.Run(current.Format(time.RFC3339), func(t *testing.T) {
 			t.Parallel()
-			older, err := time.ParseInLocation("2006-01-02 15:04", test.older, time.Local)
-			if err != nil {
-				t.Fatal(err)
+			keys := map[string]APIKey{
+				"a-older": {CreatedAt: current.Add(-48 * time.Hour).Unix()},
+				"z-newer": {CreatedAt: current.Unix()},
+				"a-tie":   {CreatedAt: current.Add(-time.Hour).Unix()},
+				"z-tie":   {CreatedAt: current.Add(-time.Hour).Unix()},
 			}
-			newer, err := time.ParseInLocation("2006-01-02 15:04", test.newer, time.Local)
-			if err != nil {
-				t.Fatal(err)
+			views := APIKeyViews(keys)
+			want := []string{"z-newer", "a-tie", "z-tie", "a-older"}
+			if len(views) != len(want) {
+				t.Fatalf("views = %#v", views)
 			}
-			views := APIKeyViews(map[string]APIKey{
-				"a-older": {CreatedAt: older.Unix()},
-				"z-newer": {CreatedAt: newer.Unix()},
-			})
-			if len(views) != 2 || views[0].ID != "z-newer" || views[1].ID != "a-older" {
-				t.Fatalf("newest-first views = %#v", views)
+			for index, id := range want {
+				if views[index].ID != id {
+					t.Fatalf("creation order = %#v; want %v", views, want)
+				}
 			}
 		})
 	}
