@@ -142,3 +142,34 @@ func TestCloneAndFormatAPIKeys(t *testing.T) { //nolint:cyclop // Assertions cov
 		t.Fatalf("equal-date key views = %#v", equal)
 	}
 }
+
+func TestAPIKeyViewsNewestFirstAcrossDateBoundaries(t *testing.T) {
+	t.Parallel()
+	for _, test := range []struct {
+		name, older, newer string
+	}{
+		{"day", "2026-09-09 12:00", "2026-09-10 12:00"},
+		{"month", "2026-09-30 12:00", "2026-10-01 12:00"},
+		{"year", "2026-12-31 12:00", "2027-01-01 12:00"},
+		{"same day", "2026-09-30 12:00", "2026-09-30 13:00"},
+	} {
+		t.Run(test.name, func(t *testing.T) {
+			t.Parallel()
+			older, err := time.ParseInLocation("2006-01-02 15:04", test.older, time.Local)
+			if err != nil {
+				t.Fatal(err)
+			}
+			newer, err := time.ParseInLocation("2006-01-02 15:04", test.newer, time.Local)
+			if err != nil {
+				t.Fatal(err)
+			}
+			views := APIKeyViews(map[string]APIKey{
+				"a-older": {CreatedAt: older.Unix()},
+				"z-newer": {CreatedAt: newer.Unix()},
+			})
+			if len(views) != 2 || views[0].ID != "z-newer" || views[1].ID != "a-older" {
+				t.Fatalf("newest-first views = %#v", views)
+			}
+		})
+	}
+}

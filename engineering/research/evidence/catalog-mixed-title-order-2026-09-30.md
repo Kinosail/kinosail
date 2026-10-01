@@ -256,7 +256,7 @@ The [Go garbage-collector guide](https://go.dev/doc/gc-guide) explains pointer r
 
 Changed-code lint passed for shared packages, Player, and Subtitles. Both regenerated snapshots, the source cap, and repository tooling passed. The test-file split preserves both new test bodies byte-for-byte.
 
-Reconciliation with origin/main `74e18c46afbb06b35cf835ace8556deb89eb7cd0` preserved all five task-owned Go files. The later merge of `b28ccfebefca59744241c24821c83a09249f9919` conflicted only in two generated snapshots. Regeneration preserves both tasks. Focused shared catalog/assets and both-app HTTP checks passed before the final key helper extraction. These checks do not certify unrelated native changes from main.
+Reconciliation with origin/main `74e18c46afbb06b35cf835ace8556deb89eb7cd0` preserved all five task-owned Go files. The later merge of `1c0ddabe68724556390971409ccb9bbd50ae75e6` includes launch-readiness main `b28ccfebefca59744241c24821c83a09249f9919` and the native reader polish. It conflicted only in two generated snapshots. Regeneration preserves both tasks. Focused shared catalog/assets and both-app HTTP checks passed before the final key helper extraction. These checks do not certify unrelated native changes from main.
 
 The first post-commit Player run passed compilation and failed only TestMCPStdioUsesSoleOwnerAndSharedAPI. Our long TMPDIR exceeded the Unix socket path limit. The isolated control reproduces bind: invalid argument there. The same test passes three times in a short task TMPDIR. The short-path retry passed the full Player server suite in 278 seconds, then stopped at shared lint.
 
@@ -264,4 +264,14 @@ Full lint first exposed cognitive complexity, then cyclomatic complexity on the 
 
 The actual final source passes public catalog tests and race checks. A newly compiled binary passes all 30 one-iteration benchmark cases. Their response hashes match all 824 timed samples. The first comparison script omitted a case-name prefix and failed after both benchmark commands passed. The corrected parser checks saved output without rerunning or changing data. This preflight verifies behavior; the paired timing tables remain bound to their earlier binary.
 
-Independent source review found no issue in either helper and ran no checks separately. Final post-commit checks and hosted delivery remain pending in PR #394. Nox revision, deployed load, first-frame latency, and physical UI timing remain unverified for this phase. The overall performance goal stays active.
+Independent source review found no issue in either helper and ran no checks separately. The reconciled post-commit Player gate passed its full server suite in 313 seconds, then stopped at 112 shared lint findings. Subtitles stopped at the same lint stage. Later gate stages did not run. Hosted delivery remains pending in PR #394. Nox revision, deployed load, first-frame latency, and physical UI timing remain unverified for this phase. The overall performance goal stays active.
+
+## Inherited date-ordering CI failure
+
+The first reconciled hosted run failed TestCloneAndFormatAPIKeys as UTC crossed into October 1. APIKeyViews sorted the formatted Created date as text. Sep 29 incorrectly preceded Oct 1. This is an inherited production bug, not a reason to weaken the check.
+
+A deterministic public regression fails on original source for day, month, and same-day ordering. It also covers year rollover. A one-line comparator repair uses original CreatedAt timestamps. Stable sorting retains ascending ID order for equal timestamps. Formatting and caller-owned maps remain unchanged. Both app adapters retain their read locks. Independent source review found no issue and ran no checks.
+
+This ancillary repair fixes settings/API chronology. It is not evidence of catalog or UI speed gains. The failed hosted run and test-first regression remain recorded privately. Repaired-source verification passes: identity (3.660 seconds), identity/catalog race (12.250), Player API-key checks (33.911), Subtitles API-key checks (24.792), and the full shared suite (46.223). Changed-code shared lint, regenerated snapshot checks, source caps, and whitespace checks pass. All five catalog/preflight source hashes remain identical after this ancillary repair. Both-app post-commit retries and hosted results remain pending on the repaired revision.
+
+The duplicate API repair fingerprint block was removed from this note because the secret detector interpreted adjacent API-key filenames and hashes as credentials. Both values exactly match source SHA-256 fingerprints. They remain in the private validation records. The default secret-scanner configuration is unchanged.

@@ -125,6 +125,6 @@ func APIKeyViews(keys map[string]APIKey) []APIKeyView {
 		}
 		result = append(result, APIKeyView{ID: id, Name: key.Name, Scopes: strings.Join(key.Scopes, ", "), Created: time.Unix(key.CreatedAt, 0).Local().Format("Jan 2, 2006"), Expires: expires, LastUsed: lastUsed})
 	}
-	sort.SliceStable(result, func(left, right int) bool { return result[left].Created > result[right].Created })
+	sort.SliceStable(result, func(left, right int) bool { return keys[result[left].ID].CreatedAt > keys[result[right].ID].CreatedAt })
 	return result
 }
