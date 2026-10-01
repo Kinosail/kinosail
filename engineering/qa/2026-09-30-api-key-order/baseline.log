@@ -1,0 +1,14 @@
+--- FAIL: TestCloneAndFormatAPIKeys (0.00s)
+    api_keys_test.go:135: formatted keys = []identitycore.APIKeyView{identitycore.APIKeyView{ID:"old", Name:"Old", Scopes:"admin", Created:"Sep 29, 2026", Expires:"Never", LastUsed:""}, identitycore.APIKeyView{ID:"new", Name:"New", Scopes:"write, library", Created:"Oct 1, 2026", Expires:"Oct 2, 2026", LastUsed:"Oct 1, 2026"}}
+--- FAIL: TestAPIKeyViewsOrdersCreationTimesAcrossDateLabels (0.00s)
+    --- FAIL: TestAPIKeyViewsOrdersCreationTimesAcrossDateLabels/month (0.00s)
+        api_keys_test.go:164: API keys are not newest first: []identitycore.APIKeyView{identitycore.APIKeyView{ID:"a-older", Name:"", Scopes:"", Created:"Sep 29, 2026", Expires:"Never", LastUsed:""}, identitycore.APIKeyView{ID:"z-newer", Name:"", Scopes:"", Created:"Oct 1, 2026", Expires:"Never", LastUsed:""}}
+    --- FAIL: TestAPIKeyViewsOrdersCreationTimesAcrossDateLabels/day (0.00s)
+        api_keys_test.go:164: API keys are not newest first: []identitycore.APIKeyView{identitycore.APIKeyView{ID:"a-older", Name:"", Scopes:"", Created:"Sep 9, 2026", Expires:"Never", LastUsed:""}, identitycore.APIKeyView{ID:"z-newer", Name:"", Scopes:"", Created:"Sep 10, 2026", Expires:"Never", LastUsed:""}}
+    --- FAIL: TestAPIKeyViewsOrdersCreationTimesAcrossDateLabels/year (0.00s)
+        api_keys_test.go:164: API keys are not newest first: []identitycore.APIKeyView{identitycore.APIKeyView{ID:"a-older", Name:"", Scopes:"", Created:"Sep 20, 2025", Expires:"Never", LastUsed:""}, identitycore.APIKeyView{ID:"z-newer", Name:"", Scopes:"", Created:"Feb 20, 2026", Expires:"Never", LastUsed:""}}
+    --- FAIL: TestAPIKeyViewsOrdersCreationTimesAcrossDateLabels/same_day (0.00s)
+        api_keys_test.go:164: API keys are not newest first: []identitycore.APIKeyView{identitycore.APIKeyView{ID:"a-older", Name:"", Scopes:"", Created:"Sep 10, 2026", Expires:"Never", LastUsed:""}, identitycore.APIKeyView{ID:"z-newer", Name:"", Scopes:"", Created:"Sep 10, 2026", Expires:"Never", LastUsed:""}}
+FAIL
+FAIL	github.com/MikeO7/kinosail/packages/identitycore	0.399s
+FAIL

@@ -1,0 +1,5 @@
+2026-10-01T00:20:57.9652854Z --- FAIL: TestCloneAndFormatAPIKeys (0.00s)
+2026-10-01T00:20:57.9654490Z     api_keys_test.go:135: formatted keys = []identitycore.APIKeyView{identitycore.APIKeyView{ID:"old", Name:"Old", Scopes:"admin", Created:"Sep 29, 2026", Expires:"Never", LastUsed:""}, identitycore.APIKeyView{ID:"new", Name:"New", Scopes:"write, library", Created:"Oct 1, 2026", Expires:"Oct 2, 2026", LastUsed:"Sep 30, 2026"}}
+2026-10-01T00:20:57.9682829Z FAIL
+2026-10-01T00:20:57.9693557Z FAIL	github.com/MikeO7/kinosail/packages/identitycore	0.155s
+2026-10-01T00:20:57.9694116Z ok  	github.com/MikeO7/kinosail/packages/isobmff	0.003s

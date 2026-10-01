@@ -1,0 +1,27 @@
+Printing with useUnmergedTree = 'false'
+Node #84 at (l=0.0, t=0.0, r=780.0, b=1688.0)px
+ |-Node #85 at (l=0.0, t=0.0, r=780.0, b=1688.0)px
+   Shape = 'RectangleShape'
+    |-Node #86 at (l=32.0, t=32.0, r=748.0, b=272.0)px
+      Shape = 'RectangleShape'
+       |-Node #87 at (l=32.0, t=32.0, r=226.0, b=80.0)px
+       | Text = '[A light photo]'
+       | Actions = [ClearTextSubstitution, GetTextLayoutResult, SetTextSubstitution, ShowTextSubstitution]
+       |-Node #89 at (l=32.0, t=112.0, r=233.0, b=192.0)px
+       | Role = 'Button'
+       | Shape = 'RoundedCornerShape(topStart = CornerSize(size = 50.0%), topEnd = CornerSize(size = 50.0%), bottomEnd = CornerSize(size = 50.0%), bottomStart = CornerSize(size = 50.0%))'
+       | Text = '[Zoom in]'
+       | [Disabled]
+       | Actions = [ClearTextSubstitution, GetTextLayoutResult, OnClick, SetTextSubstitution, ShowTextSubstitution]
+       | MergeDescendants = 'true'
+       |-Node #92 at (l=257.0, t=112.0, r=420.0, b=192.0)px
+       | Focused = 'false'
+       | Role = 'Button'
+       | Shape = 'RoundedCornerShape(topStart = CornerSize(size = 50.0%), topEnd = CornerSize(size = 50.0%), bottomEnd = CornerSize(size = 50.0%), bottomStart = CornerSize(size = 50.0%))'
+       | Text = '[Done]'
+       | Actions = [ClearTextSubstitution, GetTextLayoutResult, OnClick, RequestFocus, SetTextSubstitution, ShowTextSubstitution]
+       | MergeDescendants = 'true'
+       |-Node #96 at (l=32.0, t=224.0, r=569.0, b=272.0)px
+         LiveRegion = 'Polite'
+         Text = '[This Viewer cannot open the photo.]'
+         Actions = [ClearTextSubstitution, GetTextLayoutResult, SetTextSubstitution, ShowTextSubstitution]

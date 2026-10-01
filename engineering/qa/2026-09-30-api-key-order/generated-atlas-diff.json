@@ -1,0 +1,36 @@
+{
+  "player": [
+    {
+      "path": "snapshot/summary/loc",
+      "before": 80376,
+      "after": 80378
+    },
+    {
+      "path": "snapshot/packages/27/loc",
+      "before": 2981,
+      "after": 2983
+    },
+    {
+      "path": "snapshot/packages/27/files/1/loc",
+      "before": 121,
+      "after": 123
+    }
+  ],
+  "subtitles": [
+    {
+      "path": "snapshot/summary/loc",
+      "before": 86461,
+      "after": 86463
+    },
+    {
+      "path": "snapshot/packages/29/loc",
+      "before": 2981,
+      "after": 2983
+    },
+    {
+      "path": "snapshot/packages/29/files/1/loc",
+      "before": 121,
+      "after": 123
+    }
+  ]
+}
