@@ -1,0 +1,113 @@
+Printing with useUnmergedTree = 'false'
+Node #334 at (l=0.0, t=0.0, r=1080.0, b=1920.0)px
+ |-Node #612 at (l=0.0, t=0.0, r=1080.0, b=1920.0)px
+   Shape = 'RectangleShape'
+    |-Node #623 at (l=0.0, t=0.0, r=1080.0, b=1920.0)px
+    | MergeDescendants = 'true'
+    |-Node #614 at (l=21.0, t=93.0, r=1059.0, b=361.0)px
+      Shape = 'RectangleShape'
+       |-Node #615 at (l=21.0, t=93.0, r=1059.0, b=125.0)px
+       | Text = '[Native portrait contrast 01a0f2ab]'
+       | Actions = [ClearTextSubstitution, GetTextLayoutResult, SetTextSubstitution, ShowTextSubstitution]
+       |-Node #616 at (l=21.0, t=141.0, r=1059.0, b=203.0)px
+       | HorizontalScrollAxisRange = 'ScrollAxisRange(value=0.0, maxValue=0.0, reverseScrolling=false)'
+       | IsTraversalGroup = 'true'
+       | Shape = 'androidx.compose.foundation.HorizontalScrollableClipShape@b07958'
+       | Actions = [ScrollBy, ScrollByOffset]
+       |  |-Node #622 at (l=21.0, t=141.0, r=84.0, b=203.0)px
+       |  | MergeDescendants = 'true'
+       |  |-Node #624 at (l=100.0, t=146.0, r=208.0, b=198.0)px
+       |  | Focused = 'false'
+       |  | Role = 'Button'
+       |  | Shape = 'RoundedCornerShape(topStart = CornerSize(size = 50.0%), topEnd = CornerSize(size = 50.0%), bottomEnd = CornerSize(size = 50.0%), bottomStart = CornerSize(size = 50.0%))'
+       |  | Text = '[Speed 1×]'
+       |  | Actions = [ClearTextSubstitution, GetTextLayoutResult, OnClick, RequestFocus, SetTextSubstitution, ShowTextSubstitution]
+       |  | MergeDescendants = 'true'
+       |  |-Node #627 at (l=224.0, t=146.0, r=353.0, b=198.0)px
+       |  | Focused = 'false'
+       |  | Role = 'Button'
+       |  | Shape = 'RoundedCornerShape(topStart = CornerSize(size = 50.0%), topEnd = CornerSize(size = 50.0%), bottomEnd = CornerSize(size = 50.0%), bottomStart = CornerSize(size = 50.0%))'
+       |  | Text = '[Captions on]'
+       |  | Actions = [ClearTextSubstitution, GetTextLayoutResult, OnClick, RequestFocus, SetTextSubstitution, ShowTextSubstitution]
+       |  | MergeDescendants = 'true'
+       |  |-Node #617 at (l=369.0, t=146.0, r=444.0, b=198.0)px
+       |    Focused = 'false'
+       |    Role = 'Button'
+       |    Shape = 'RoundedCornerShape(topStart = CornerSize(size = 50.0%), topEnd = CornerSize(size = 50.0%), bottomEnd = CornerSize(size = 50.0%), bottomStart = CornerSize(size = 50.0%))'
+       |    Text = '[Done]'
+       |    Actions = [ClearTextSubstitution, GetTextLayoutResult, OnClick, RequestFocus, SetTextSubstitution, ShowTextSubstitution]
+       |    MergeDescendants = 'true'
+       |-Node #630 at (l=37.0, t=235.0, r=1043.0, b=345.0)px
+         Shape = 'RectangleShape'
+          |-Node #631 at (l=37.0, t=235.0, r=191.0, b=267.0)px
+          | Text = '[Playback speed]'
+          | Actions = [ClearTextSubstitution, GetTextLayoutResult, SetTextSubstitution, ShowTextSubstitution]
+          |-Node #632 at (l=37.0, t=283.0, r=951.0, b=345.0)px
+            CollectionInfo = 'CollectionInfo(rowCount=1, columnCount=9)'
+            HorizontalScrollAxisRange = 'ScrollAxisRange(value=0.0, maxValue=0.0, reverseScrolling=false)'
+            IsTraversalGroup = 'true'
+            Shape = 'androidx.compose.foundation.HorizontalScrollableClipShape@b07958'
+            Actions = [GetScrollViewportLength, IndexForKey, ScrollBy, ScrollByOffset, ScrollToIndex]
+             |-Node #634 at (l=37.0, t=288.0, r=112.0, b=340.0)px
+             | Focused = 'false'
+             | Role = 'Button'
+             | Shape = 'RoundedCornerShape(topStart = CornerSize(size = 50.0%), topEnd = CornerSize(size = 50.0%), bottomEnd = CornerSize(size = 50.0%), bottomStart = CornerSize(size = 50.0%))'
+             | Text = '[0.5×]'
+             | Actions = [ClearTextSubstitution, GetTextLayoutResult, OnClick, RequestFocus, SetTextSubstitution, ShowTextSubstitution]
+             | MergeDescendants = 'true'
+             |-Node #638 at (l=128.0, t=288.0, r=206.0, b=340.0)px
+             | Focused = 'false'
+             | Role = 'Button'
+             | Shape = 'RoundedCornerShape(topStart = CornerSize(size = 50.0%), topEnd = CornerSize(size = 50.0%), bottomEnd = CornerSize(size = 50.0%), bottomStart = CornerSize(size = 50.0%))'
+             | Text = '[0.75×]'
+             | Actions = [ClearTextSubstitution, GetTextLayoutResult, OnClick, RequestFocus, SetTextSubstitution, ShowTextSubstitution]
+             | MergeDescendants = 'true'
+             |-Node #642 at (l=222.0, t=288.0, r=399.0, b=340.0)px
+             | Focused = 'false'
+             | Role = 'Button'
+             | Shape = 'RoundedCornerShape(topStart = CornerSize(size = 50.0%), topEnd = CornerSize(size = 50.0%), bottomEnd = CornerSize(size = 50.0%), bottomStart = CornerSize(size = 50.0%))'
+             | Text = '[Normal · Selected]'
+             | Actions = [ClearTextSubstitution, GetTextLayoutResult, OnClick, RequestFocus, SetTextSubstitution, ShowTextSubstitution]
+             | MergeDescendants = 'true'
+             |-Node #646 at (l=415.0, t=288.0, r=493.0, b=340.0)px
+             | Focused = 'false'
+             | Role = 'Button'
+             | Shape = 'RoundedCornerShape(topStart = CornerSize(size = 50.0%), topEnd = CornerSize(size = 50.0%), bottomEnd = CornerSize(size = 50.0%), bottomStart = CornerSize(size = 50.0%))'
+             | Text = '[1.25×]'
+             | Actions = [ClearTextSubstitution, GetTextLayoutResult, OnClick, RequestFocus, SetTextSubstitution, ShowTextSubstitution]
+             | MergeDescendants = 'true'
+             |-Node #650 at (l=509.0, t=288.0, r=584.0, b=340.0)px
+             | Focused = 'false'
+             | Role = 'Button'
+             | Shape = 'RoundedCornerShape(topStart = CornerSize(size = 50.0%), topEnd = CornerSize(size = 50.0%), bottomEnd = CornerSize(size = 50.0%), bottomStart = CornerSize(size = 50.0%))'
+             | Text = '[1.5×]'
+             | Actions = [ClearTextSubstitution, GetTextLayoutResult, OnClick, RequestFocus, SetTextSubstitution, ShowTextSubstitution]
+             | MergeDescendants = 'true'
+             |-Node #654 at (l=600.0, t=288.0, r=678.0, b=340.0)px
+             | Focused = 'false'
+             | Role = 'Button'
+             | Shape = 'RoundedCornerShape(topStart = CornerSize(size = 50.0%), topEnd = CornerSize(size = 50.0%), bottomEnd = CornerSize(size = 50.0%), bottomStart = CornerSize(size = 50.0%))'
+             | Text = '[1.75×]'
+             | Actions = [ClearTextSubstitution, GetTextLayoutResult, OnClick, RequestFocus, SetTextSubstitution, ShowTextSubstitution]
+             | MergeDescendants = 'true'
+             |-Node #658 at (l=694.0, t=288.0, r=769.0, b=340.0)px
+             | Focused = 'false'
+             | Role = 'Button'
+             | Shape = 'RoundedCornerShape(topStart = CornerSize(size = 50.0%), topEnd = CornerSize(size = 50.0%), bottomEnd = CornerSize(size = 50.0%), bottomStart = CornerSize(size = 50.0%))'
+             | Text = '[2×]'
+             | Actions = [ClearTextSubstitution, GetTextLayoutResult, OnClick, RequestFocus, SetTextSubstitution, ShowTextSubstitution]
+             | MergeDescendants = 'true'
+             |-Node #662 at (l=785.0, t=288.0, r=860.0, b=340.0)px
+             | Focused = 'false'
+             | Role = 'Button'
+             | Shape = 'RoundedCornerShape(topStart = CornerSize(size = 50.0%), topEnd = CornerSize(size = 50.0%), bottomEnd = CornerSize(size = 50.0%), bottomStart = CornerSize(size = 50.0%))'
+             | Text = '[2.5×]'
+             | Actions = [ClearTextSubstitution, GetTextLayoutResult, OnClick, RequestFocus, SetTextSubstitution, ShowTextSubstitution]
+             | MergeDescendants = 'true'
+             |-Node #666 at (l=876.0, t=288.0, r=951.0, b=340.0)px
+               Focused = 'false'
+               Role = 'Button'
+               Shape = 'RoundedCornerShape(topStart = CornerSize(size = 50.0%), topEnd = CornerSize(size = 50.0%), bottomEnd = CornerSize(size = 50.0%), bottomStart = CornerSize(size = 50.0%))'
+               Text = '[3×]'
+               Actions = [ClearTextSubstitution, GetTextLayoutResult, OnClick, RequestFocus, SetTextSubstitution, ShowTextSubstitution]
+               MergeDescendants = 'true'

@@ -1,0 +1,92 @@
+{
+  "revision": "e5763c67e28ebfb275899837af35a8bf83497d49",
+  "command": [
+    "/Users/mikeo/.cache/kinosail-android-sdk/platform-tools/adb",
+    "-s",
+    "emulator-5564",
+    "shell",
+    "am",
+    "instrument",
+    "-w",
+    "-r",
+    "-e",
+    "class",
+    "com.kinosail.player.mobile.LivePlaybackOverlayTest#decodedLightVideoKeepsItsTitleAndActionsReadable",
+    "com.kinosail.player.dev.test/androidx.test.runner.AndroidJUnitRunner"
+  ],
+  "environment": "Task-owned API 23 emulator; generated title on isolated actual Server",
+  "cases": [
+    {
+      "case": "unsafe-capture",
+      "rejectedBeforeActions": true,
+      "generatedProgressUnchanged": true,
+      "result": "PASS"
+    },
+    {
+      "case": "unknown-field",
+      "rejectedBeforeActions": true,
+      "generatedProgressUnchanged": true,
+      "result": "PASS"
+    },
+    {
+      "case": "wrong-title",
+      "rejectedBeforeActions": true,
+      "generatedProgressUnchanged": true,
+      "result": "PASS"
+    },
+    {
+      "case": "wrong-host",
+      "rejectedBeforeActions": true,
+      "generatedProgressUnchanged": true,
+      "result": "PASS"
+    },
+    {
+      "case": "string-version",
+      "rejectedBeforeActions": true,
+      "generatedProgressUnchanged": true,
+      "result": "PASS"
+    },
+    {
+      "case": "conflicting-orientation",
+      "rejectedBeforeActions": true,
+      "generatedProgressUnchanged": true,
+      "result": "PASS"
+    },
+    {
+      "case": "missing-title",
+      "rejectedBeforeActions": true,
+      "generatedProgressUnchanged": true,
+      "result": "PASS"
+    },
+    {
+      "case": "oversized-token",
+      "rejectedBeforeActions": true,
+      "generatedProgressUnchanged": true,
+      "result": "PASS"
+    },
+    {
+      "case": "duplicate-version",
+      "rejectedBeforeActions": true,
+      "generatedProgressUnchanged": true,
+      "result": "PASS"
+    },
+    {
+      "case": "malformed",
+      "rejectedBeforeActions": true,
+      "generatedProgressUnchanged": true,
+      "result": "PASS"
+    },
+    {
+      "case": "oversized-file",
+      "rejectedBeforeActions": true,
+      "generatedProgressUnchanged": true,
+      "result": "PASS"
+    }
+  ],
+  "recordedAt": "2026-10-01T03:19:30.777195+00:00",
+  "APKSHA256": {
+    "apps/player/apps/android/app/build/outputs/apk/debug/app-debug.apk": "2daf566e3853008c838d774aa4ee484c980569a29c28d23247b6a41b474dff6a",
+    "apps/player/apps/android/app/build/outputs/apk/androidTest/debug/app-debug-androidTest.apk": "5385aa9ff08ccd70376ebb4490a88482c102136be93c976502dab01b9f502aa1"
+  },
+  "data": "Private synthetic seed; generated portrait title; invalid fixture inputs; authoritative progress compared before and after"
+}

@@ -1,0 +1,26 @@
+import { execFileSync } from "node:child_process";
+import { expect, test } from "@playwright/test";
+import { configureLayoutAudit, login } from "./layout-audit-helpers";
+
+configureLayoutAudit();
+test("index generated native light-video fixtures through the Owner API", async ({ page }, info) => {
+  await login(page);
+  const csrf = await page.locator('meta[name="kinosail-csrf"]').getAttribute("content");
+  const response = await page.context().request.post("/api/v1/tasks/scan", {
+    headers: { "X-Kinosail-CSRF": csrf!, Origin: new URL(page.url()).origin },
+  });
+  expect(response.ok()).toBe(true);
+  const catalog = async () => (await page.context().request.get("/api/v1/library?q=01a0f2ab&limit=24")).json();
+  await expect.poll(async () => (await catalog()).items.length).toBe(2);
+  const items = (await catalog()).items;
+  expect(items.map((item: { title: string }) => item.title).sort()).toEqual([
+    "Native landscape contrast 01a0f2ab", "Native portrait contrast 01a0f2ab",
+  ]);
+  await info.attach("run-context", { contentType: "application/json", body: JSON.stringify({
+    revision: execFileSync("git", ["rev-parse", "HEAD"], { encoding: "utf8" }).trim(),
+    command: "playwright test native-video-bootstrap.disposable.spec.ts",
+    data: "Generated white AVC MP4 files, captions and NFO in the isolated goal library",
+    environment: { browser: info.project.name, URL: "https://127.0.0.1:39227" },
+    result: "Owner scan completed; both public catalog items present",
+  }) });
+});
