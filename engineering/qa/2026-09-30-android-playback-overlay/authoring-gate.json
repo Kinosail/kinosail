@@ -14,5 +14,12 @@
     "phone/tablet landscape and TV activity where runtime permits",
     "pending and failed media response, retry"
   ],
-  "existingSourceOwner": "apps/player/apps/android/app/src/main/java/com/kinosail/player/core/PlaybackScreen.kt"
+  "existingSourceOwner": "apps/player/apps/android/app/src/main/java/com/kinosail/player/core/PlaybackScreen.kt",
+  "fixtureInputContract": {
+    "observable": "Invalid private seeds are rejected before native app actions or progress writes",
+    "credibleRegression": "Unsafe capture paths and non-fixture title selection reached actions",
+    "coverageGap": "UI contrast assertions cannot validate operator seed admission",
+    "owner": "Instrumentation seed entry plus authoritative Server progress snapshots",
+    "productionSeam": "None"
+  }
 }

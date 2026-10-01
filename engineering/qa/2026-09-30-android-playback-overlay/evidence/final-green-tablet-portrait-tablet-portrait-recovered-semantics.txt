@@ -2,7 +2,7 @@ Printing with useUnmergedTree = 'false'
 Node #1 at (l=0.0, t=0.0, r=1080.0, b=1920.0)px
  |-Node #286 at (l=0.0, t=0.0, r=1080.0, b=1920.0)px
    Shape = 'RectangleShape'
-    |-Node #297 at (l=0.0, t=0.0, r=1080.0, b=1920.0)px
+    |-Node #296 at (l=0.0, t=0.0, r=1080.0, b=1920.0)px
     | MergeDescendants = 'true'
     |-Node #288 at (l=21.0, t=93.0, r=1059.0, b=203.0)px
       Shape = 'RectangleShape'
@@ -12,9 +12,9 @@ Node #1 at (l=0.0, t=0.0, r=1080.0, b=1920.0)px
        |-Node #290 at (l=21.0, t=141.0, r=1059.0, b=203.0)px
          HorizontalScrollAxisRange = 'ScrollAxisRange(value=0.0, maxValue=0.0, reverseScrolling=false)'
          IsTraversalGroup = 'true'
-         Shape = 'androidx.compose.foundation.HorizontalScrollableClipShape@4fcc579'
+         Shape = 'androidx.compose.foundation.HorizontalScrollableClipShape@b07958'
          Actions = [ScrollBy, ScrollByOffset]
-          |-Node #296 at (l=21.0, t=141.0, r=83.0, b=203.0)px
+          |-Node #297 at (l=21.0, t=141.0, r=83.0, b=203.0)px
           | MergeDescendants = 'true'
           |-Node #298 at (l=99.0, t=146.0, r=207.0, b=198.0)px
           | Focused = 'false'

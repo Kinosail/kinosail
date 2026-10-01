@@ -46,3 +46,7 @@ API 37, physical phone/tablet/TV, Cast devices, API 26+ Picture in Picture, Talk
 ## Reconciled source
 
 The branch incorporates main `2d00b19a6b9502b6fd02149c8c13dd1f80e96410`. Upstream changed Swift validation and research evidence; the Android tree is unchanged. Source hashes still match all runtime evidence. The post-commit Player changed-app gate passed. Artifact secrets scans found no leaks. Protected hosted checks must finish before merge.
+
+## Fixture input guard
+
+Before the guard, an unsafe capture prefix was accepted and generated-title progress changed. The saved negative control failed. The test now parses strict JSON and rejects missing, unknown, malformed, duplicate, oversized and conflicting seed inputs before any application action. It accepts only the isolated emulator bridge, the two generated titles and a bounded filename prefix. Eleven negative controls pass with authoritative generated-title progress unchanged. All eight valid mobile journeys pass again with this exact test source. The app production code is unchanged by this fixture guard.

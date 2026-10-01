@@ -33,10 +33,12 @@ import com.kinosail.player.core.SavedSession
 import com.kinosail.player.core.ServerAddress
 import com.kinosail.player.core.ServerApi
 import com.kinosail.player.core.SessionStore
+import com.kinosail.player.core.StrictJson
 import com.kinosail.player.core.WatchProgress
 import java.io.File
 import java.net.HttpURLConnection
 import java.net.URL
+import java.net.URI
 import java.util.UUID
 import kotlin.math.pow
 import org.json.JSONObject
@@ -95,9 +97,23 @@ class LivePlaybackOverlayTest {
         val context = instrumentation.targetContext
         val seed = File(context.filesDir, "video-overlay-seed.json")
         assumeTrue("Requires an isolated Server, generated white video and private session seed", seed.exists())
-        assertTrue(seed.length() in 1..16384)
-        val json = JSONObject(seed.readText())
-        assertEquals(1, json.getInt("version"))
+        require(seed.length() in 1..16384) { "Invalid video overlay seed." }
+        val json = try { JSONObject(StrictJson.parse(seed.readText()).toString()) }
+            catch (_: Exception) { throw IllegalArgumentException("Invalid video overlay seed.") }
+        val fields = json.keys().asSequence().toSet()
+        require(fields.containsAll(setOf("version", "server", "token", "title")) &&
+            fields.all { it in setOf("version", "server", "token", "title", "capture", "landscape") } &&
+            json.get("version") == 1 && listOf("server", "token", "title").all { json.get(it) is String } &&
+            (!json.has("capture") || json.get("capture") is String) &&
+            (!json.has("landscape") || json.get("landscape") is Boolean)) { "Invalid video overlay seed." }
+        val address = try { URI(json.getString("server")) }
+            catch (_: Exception) { throw IllegalArgumentException("Invalid video overlay seed.") }
+        require(address.scheme == "http" && address.host == "10.0.2.2" && address.port == 39231 &&
+            address.rawQuery == null && address.rawFragment == null && address.userInfo == null &&
+            address.path.isNullOrEmpty() && json.getString("token").toByteArray().size in 1..512 &&
+            json.getString("token").none(Char::isISOControl) &&
+            json.getString("title") in setOf("Native portrait contrast 01a0f2ab", "Native landscape contrast 01a0f2ab") &&
+            json.optString("capture", "phone").matches(Regex("[a-z0-9-]{1,80}"))) { "Invalid video overlay seed." }
         val server = ServerAddress(json.getString("server"))
         val token = json.getString("token")
         val title = json.getString("title")

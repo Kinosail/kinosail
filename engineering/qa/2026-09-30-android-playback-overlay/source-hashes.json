@@ -1,4 +1,4 @@
 {
   "apps/player/apps/android/app/src/main/java/com/kinosail/player/core/PlaybackScreen.kt": "3c8cae7400bef4e8af46cc06a50807a0ee75ec47795ca896ba9c6a0194be09c3",
-  "apps/player/apps/android/app/src/androidTest/java/com/kinosail/player/mobile/LivePlaybackOverlayTest.kt": "00f8d3b2d1a49c78c213827396eb9db1f7b873c25d7c1e9d5f2e4b32b5dc911f"
+  "apps/player/apps/android/app/src/androidTest/java/com/kinosail/player/mobile/LivePlaybackOverlayTest.kt": "dc890220a26578c316ca351f8c349fd5e6b5f9210b693c60caae033d14d28373"
 }
