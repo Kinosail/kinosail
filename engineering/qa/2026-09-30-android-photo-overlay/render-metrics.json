@@ -1,0 +1,44 @@
+[
+  {
+    "case": "phone",
+    "width": 780,
+    "height": 1688,
+    "titleContrast": 21.0,
+    "lowerHalfPixelsUnchanged": true
+  },
+  {
+    "case": "tablet",
+    "width": 834,
+    "height": 1210,
+    "titleContrast": 21.0,
+    "lowerHalfPixelsUnchanged": true
+  },
+  {
+    "case": "landscape",
+    "width": 844,
+    "height": 390,
+    "titleContrast": 21.0,
+    "lowerHalfPixelsUnchanged": true
+  },
+  {
+    "case": "tablet-landscape",
+    "width": 1210,
+    "height": 834,
+    "titleContrast": 21.0,
+    "lowerHalfPixelsUnchanged": true
+  },
+  {
+    "case": "tv",
+    "width": 960,
+    "height": 540,
+    "titleContrast": 21.0,
+    "lowerHalfPixelsUnchanged": true
+  },
+  {
+    "case": "phone-large-text",
+    "width": 780,
+    "height": 1688,
+    "titleContrast": 21.0,
+    "lowerHalfPixelsUnchanged": true
+  }
+]

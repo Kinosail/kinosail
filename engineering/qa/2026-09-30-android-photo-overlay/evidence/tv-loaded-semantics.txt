@@ -1,0 +1,29 @@
+Printing with useUnmergedTree = 'false'
+Node #97 at (l=0.0, t=0.0, r=960.0, b=540.0)px
+ |-Node #98 at (l=0.0, t=0.0, r=960.0, b=540.0)px
+   Shape = 'RectangleShape'
+    |-Node #111 at (l=0.0, t=0.0, r=960.0, b=540.0)px
+    | ContentDescription = '[A light photo]'
+    | Focused = 'false'
+    | Role = 'Image'
+    | Shape = 'RectangleShape'
+    | Actions = [RequestFocus]
+    |-Node #99 at (l=40.0, t=40.0, r=920.0, b=108.0)px
+      Shape = 'RectangleShape'
+       |-Node #100 at (l=40.0, t=40.0, r=119.0, b=56.0)px
+       | Text = '[A light photo]'
+       | Actions = [ClearTextSubstitution, GetTextLayoutResult, SetTextSubstitution, ShowTextSubstitution]
+       |-Node #106 at (l=137.0, t=68.0, r=204.0, b=108.0)px
+       | Focused = 'false'
+       | Role = 'Button'
+       | Shape = 'RoundedCornerShape(topStart = CornerSize(size = 50.0%), topEnd = CornerSize(size = 50.0%), bottomEnd = CornerSize(size = 50.0%), bottomStart = CornerSize(size = 50.0%))'
+       | Text = '[Done]'
+       | Actions = [ClearTextSubstitution, GetTextLayoutResult, OnClick, OnLongClick, RequestFocus, SetTextSubstitution, ShowTextSubstitution]
+       | MergeDescendants = 'true'
+       |-Node #102 at (l=40.0, t=68.0, r=125.0, b=108.0)px
+         Focused = 'true'
+         Role = 'Button'
+         Shape = 'RoundedCornerShape(topStart = CornerSize(size = 50.0%), topEnd = CornerSize(size = 50.0%), bottomEnd = CornerSize(size = 50.0%), bottomStart = CornerSize(size = 50.0%))'
+         Text = '[Zoom in]'
+         Actions = [ClearTextSubstitution, GetTextLayoutResult, OnClick, OnLongClick, RequestFocus, SetTextSubstitution, ShowTextSubstitution]
+         MergeDescendants = 'true'

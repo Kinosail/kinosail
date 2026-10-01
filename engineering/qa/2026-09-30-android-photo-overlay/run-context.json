@@ -1,0 +1,325 @@
+{
+  "results": {
+    "app": {
+      "tests": 120,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "watchcore": {
+      "tests": 6,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "wear": {
+      "tests": 5,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    }
+  },
+  "source": [
+    {
+      "path": "apps/player/apps/android/app/src/main/java/com/kinosail/player/core/PhotoScreen.kt",
+      "sha256": "fc4ad92eff2d4992e5815bdd70581d242e5267c4677c1a5f3b69e4b843f65ad1"
+    },
+    {
+      "path": "apps/player/apps/android/app/src/test/java/com/kinosail/player/core/PhotoScreenTest.kt",
+      "sha256": "66b076c4de74f85b3f25b5a682581d729509a4a76737ef139583febfdf5dfe9a"
+    }
+  ],
+  "baseCommit": "1c0ddabe68724556390971409ccb9bbd50ae75e6",
+  "command": [
+    "./gradlew",
+    ":app:testDebugUnitTest",
+    ":watchcore:testDebugUnitTest",
+    ":wear:testDebugUnitTest",
+    ":app:assembleDebug",
+    ":wear:assembleDebug",
+    ":app:assembleDebugAndroidTest",
+    "--max-workers=2"
+  ],
+  "sourceCommit": "2726828a615e7e3d7e2e2a490eb2bd4412adbd31",
+  "environment": {
+    "host": "macOS ARM64",
+    "jdk": "17.0.20.1",
+    "robolectric": "4.17",
+    "androidApi": 35,
+    "graphics": "NATIVE",
+    "deviceAttached": false
+  },
+  "data": "Synthetic white PNG matched to each rendered viewport, synthetic saved session, real loopback HTTP; no production data",
+  "focusedCommand": [
+    "./gradlew",
+    ":app:testDebugUnitTest",
+    "--tests",
+    "com.kinosail.player.core.PhotoScreenTest",
+    "--max-workers=2"
+  ],
+  "renderedCases": [
+    {
+      "case": "phone",
+      "width": 780,
+      "height": 1688,
+      "titleContrast": 21.0,
+      "lowerHalfPixelsUnchanged": true
+    },
+    {
+      "case": "tablet",
+      "width": 834,
+      "height": 1210,
+      "titleContrast": 21.0,
+      "lowerHalfPixelsUnchanged": true
+    },
+    {
+      "case": "landscape",
+      "width": 844,
+      "height": 390,
+      "titleContrast": 21.0,
+      "lowerHalfPixelsUnchanged": true
+    },
+    {
+      "case": "tablet-landscape",
+      "width": 1210,
+      "height": 834,
+      "titleContrast": 21.0,
+      "lowerHalfPixelsUnchanged": true
+    },
+    {
+      "case": "tv",
+      "width": 960,
+      "height": 540,
+      "titleContrast": 21.0,
+      "lowerHalfPixelsUnchanged": true
+    },
+    {
+      "case": "phone-large-text",
+      "width": 780,
+      "height": 1688,
+      "titleContrast": 21.0,
+      "lowerHalfPixelsUnchanged": true
+    }
+  ],
+  "boundaries": [
+    "JVM AndroidKeyStore fixture supplies only key lookup; device key protection is not tested",
+    "Compose native graphics component rendering, not emulator or physical Android hardware",
+    "No live Kinosail Server, Android accessibility service, touch gesture, release/store, Nox, cast or physical device certification"
+  ],
+  "artifacts": [
+    {
+      "path": "PhotoScreen.baseline.kt.txt",
+      "sha256": "c285e33cb3b39c814662dc70e517d4788a5994af0680d98c626e0f010b760c8f"
+    },
+    {
+      "path": "PhotoScreenTest.baseline-final.kt.txt",
+      "sha256": "0866ad450ad5d6ebda1219c294bf25394ed250affaf41b311cca7203814fe015"
+    },
+    {
+      "path": "artifact-secrets.log",
+      "sha256": "539e244677cf167c9bd4cbbadabfe734b3f958f159d2e458e34ef4708251036d"
+    },
+    {
+      "path": "authoring-gate.md",
+      "sha256": "551752b0d7bf19de7e6e4ba8b2e037d4fdf0943298fb81e3a0b6ae6fbca93ddb"
+    },
+    {
+      "path": "baseline-final-context.json",
+      "sha256": "41aee9c335e2b20711e5ac808b7d9112e179d584fe06abde7ca19a444a68f41b"
+    },
+    {
+      "path": "baseline-final.log",
+      "sha256": "969cbe8bc2ab7ea3195efb889620f30a6686b22d1b957d29138ce85651c3c6c1"
+    },
+    {
+      "path": "baseline-final.xml",
+      "sha256": "50215e654fec540fadaea1f0e98dedb33e6891b7d5bce42384d574c41a9ce65d"
+    },
+    {
+      "path": "evidence/before-light-photo.png",
+      "sha256": "07b4c0deff10088b5c47f9d9a3f604798729b520985f7d0d2b53f2c58bbe6b21"
+    },
+    {
+      "path": "evidence/landscape-loaded-semantics.txt",
+      "sha256": "8059f976e3ee5fe71991638467b99957efa88ba8f37812e2ecd3dc214ac4b2d2"
+    },
+    {
+      "path": "evidence/landscape-loaded.png",
+      "sha256": "8747038cadb0eb77e67bf228f1d4e08601ba2440e89953c66b5257918d127e30"
+    },
+    {
+      "path": "evidence/landscape-zoomed-semantics.txt",
+      "sha256": "65ed0f9c1de834b1f0cd99969653d48f079f2911870678a0fb868964cf0bd0c5"
+    },
+    {
+      "path": "evidence/landscape-zoomed.png",
+      "sha256": "b798996a2d3a8270158817e50a6ff117cb48d7d24737ad1ee86d8e433bf3d298"
+    },
+    {
+      "path": "evidence/phone-failed-semantics.txt",
+      "sha256": "b8855727e452d555d45c6e25cc8170b192e8a79461ebc1a12f6f32523aec67ed"
+    },
+    {
+      "path": "evidence/phone-failed.png",
+      "sha256": "1dfd60a94a70b0ba6f19a390ff01c1c4f856b8445633a55affaefc5ae84776e7"
+    },
+    {
+      "path": "evidence/phone-large-text-loaded-semantics.txt",
+      "sha256": "cfaf0984c1f2fd73fad294b7cf1f176bbd88c39f964eda3dec8aab6d96bf026f"
+    },
+    {
+      "path": "evidence/phone-large-text-loaded.png",
+      "sha256": "49413fbe664d22352e68bc1c9305b8ec73e26d5142f933aee96adc15b659cc67"
+    },
+    {
+      "path": "evidence/phone-large-text-zoomed-semantics.txt",
+      "sha256": "518dee3fcae7317488167c2e3c572925b037ae948a47f50eb63e0dfbfff4ecd0"
+    },
+    {
+      "path": "evidence/phone-large-text-zoomed.png",
+      "sha256": "21ad6d2a20a8354ab40eb9013fb6e80842837b90de4ce7dc6f5853a3f895b62e"
+    },
+    {
+      "path": "evidence/phone-loaded-semantics.txt",
+      "sha256": "71560957527890a91b9bd95b01fceb52f24aca41234bc535cf46e7caf57e39de"
+    },
+    {
+      "path": "evidence/phone-loaded.png",
+      "sha256": "7192e00b4b779e9ec0cd951ebb185eef765b6017db153a422621b0516a863bf7"
+    },
+    {
+      "path": "evidence/phone-pending-semantics.txt",
+      "sha256": "42988eef46452d6c36c7735035bb448380a40ee5f500a9f179a596f2c51dabe8"
+    },
+    {
+      "path": "evidence/phone-pending.png",
+      "sha256": "94593266c20b638f0affc29b8c77177fc1919d1275888d4edf186193fedb8914"
+    },
+    {
+      "path": "evidence/phone-permission-denied-semantics.txt",
+      "sha256": "c42a2ae32fade276895ff5dd7f8608ebbae304d3d6d59e6b88b61b473c3e8538"
+    },
+    {
+      "path": "evidence/phone-permission-denied.png",
+      "sha256": "6fb7c06003c3c0f541c01118eb06a4fb3cbecbc4f5704cad1c307fa1ef2652e3"
+    },
+    {
+      "path": "evidence/phone-recovered-semantics.txt",
+      "sha256": "2b720c402b06aa5fd4d7173a1cc940ebee28a95febaf58a0bad009efd66c0e20"
+    },
+    {
+      "path": "evidence/phone-recovered.png",
+      "sha256": "7192e00b4b779e9ec0cd951ebb185eef765b6017db153a422621b0516a863bf7"
+    },
+    {
+      "path": "evidence/phone-retry-pending-semantics.txt",
+      "sha256": "c78efd783c38748096527496f38de432db3d5aa1ef3b9e9a6d1354265db268d0"
+    },
+    {
+      "path": "evidence/phone-retry-pending.png",
+      "sha256": "94593266c20b638f0affc29b8c77177fc1919d1275888d4edf186193fedb8914"
+    },
+    {
+      "path": "evidence/phone-zoomed-semantics.txt",
+      "sha256": "ee36366dc438aa623f15090b5f81d47049812f0612e10dce0b245034c02ce597"
+    },
+    {
+      "path": "evidence/phone-zoomed.png",
+      "sha256": "cb92a0b1a98139fb8d6861fddb8d36695f93e9e66d2f0f2c92ab32cecf7d625c"
+    },
+    {
+      "path": "evidence/tablet-landscape-loaded-semantics.txt",
+      "sha256": "9b924e118caded541ca55567e333742ba41c17ae9c34a4e8ae32855692f6285f"
+    },
+    {
+      "path": "evidence/tablet-landscape-loaded.png",
+      "sha256": "82709f0a2389b0d8bcbc745c6576c817102964a11684b11b5fd9c6b1758bccd2"
+    },
+    {
+      "path": "evidence/tablet-landscape-zoomed-semantics.txt",
+      "sha256": "9fa5465053e79d3007dc8562b75f5868ac0798cdbc4208cd4259900f0d809b4c"
+    },
+    {
+      "path": "evidence/tablet-landscape-zoomed.png",
+      "sha256": "f346549305ac6a9707883fb11f155fee330ebd6b789671be50d8870029e587e0"
+    },
+    {
+      "path": "evidence/tablet-loaded-semantics.txt",
+      "sha256": "b5bde2bf295034bcc9709d7320fd4efc7a06ae8b6ce41a20b6185fcd9b863e2a"
+    },
+    {
+      "path": "evidence/tablet-loaded.png",
+      "sha256": "66a8d9de9aa4d13acf636c4912f17926bd5a1e07169d778fa421beeb989ef9a9"
+    },
+    {
+      "path": "evidence/tablet-zoomed-semantics.txt",
+      "sha256": "ff85eba69d764d21a5b5952c019c032ede55e011079fe71cba8b4263ac6da9e8"
+    },
+    {
+      "path": "evidence/tablet-zoomed.png",
+      "sha256": "73c2d3709b861643cf382412d5a2a90597af14e6d689fdeb381ea03c32a54983"
+    },
+    {
+      "path": "evidence/tv-loaded-semantics.txt",
+      "sha256": "75919df93011f24aa353ef778a52482398c6e2aaf712d793efb8ff2bb7a5636c"
+    },
+    {
+      "path": "evidence/tv-loaded.png",
+      "sha256": "5734b034d6b716a4e254eeeaeedbc80b3b50c1d925b9381c9f14b5383dbe5825"
+    },
+    {
+      "path": "evidence/tv-zoomed-semantics.txt",
+      "sha256": "f7a01a48298b41e1951fe5640189af2cf19c7aa35714042eebb83606ec6520ff"
+    },
+    {
+      "path": "evidence/tv-zoomed.png",
+      "sha256": "c8c672fa0defd12687f4dfa2eb044085cade1559228182d511f1b1edd1a16556"
+    },
+    {
+      "path": "final-photo-tests.xml",
+      "sha256": "e84d6fa7a43c6904b63f33524780d4b4ec339bea30e68ebd3e1dfb91f6a7ca08"
+    },
+    {
+      "path": "first-green-tv-touch-fixture-failure.xml",
+      "sha256": "5df6acb7111aebb3901d2540699f4a65d9fcf1be120b6b38b418eca99321d72e"
+    },
+    {
+      "path": "focused-final.log",
+      "sha256": "d39b0ea45fad33b8e2f264e1c2aeccb42fde8e8c4c2c9ada6311db51aadf6f63"
+    },
+    {
+      "path": "full-android.log",
+      "sha256": "57d03b0d31254c3dd167404dc4c87ae82be4e30d38a20d22ff9e9b52e9cbd8b3"
+    },
+    {
+      "path": "gallery.html",
+      "sha256": "036d1b9b182c98a7399295a9b37b10d1fcac3b5137603133fa9ffa5cbeefe3b8"
+    },
+    {
+      "path": "max-loc.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "render-metrics.json",
+      "sha256": "9d936fbc8249bbd3fe928234c994d499b4363cace262bdcaf2766eb3afc100c8"
+    },
+    {
+      "path": "report.md",
+      "sha256": "3ec428e8a3a47708b66407e3ea34ed29802601f932bb3b8ba54f8d166484d31c"
+    },
+    {
+      "path": "tv-fixture-correction.md",
+      "sha256": "613d099946cbaa3eb0bc051af78f0d750f664fb49e273f51e9a97884413ba845"
+    },
+    {
+      "path": "verify-changed.log",
+      "sha256": "00db9a1acdf827f2ef46c9860dbd2502d9442430ee7d5beefcf8198d33366487"
+    }
+  ],
+  "localGates": {
+    "max-loc": "PASS",
+    "diff-check": "PASS",
+    "player verify-changed": "PASS source-file cap and diff checks",
+    "artifact gitleaks": "PASS"
+  }
+}
