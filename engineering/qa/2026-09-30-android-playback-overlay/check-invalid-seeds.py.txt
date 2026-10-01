@@ -1,0 +1,26 @@
+from pathlib import Path
+import subprocess,json,urllib.request,urllib.parse,sys,datetime
+ROOT=Path(__file__).resolve().parents[4];OUT=Path(__file__).resolve().parent
+D=['/Users/mikeo/.cache/kinosail-android-sdk/platform-tools/adb','-s','emulator-5564']
+assert 'Kinosail-Playback-01a0f2ab-API23' in subprocess.check_output(D+['emu','avd','name'],text=True)
+seed=json.loads((OUT/'seed-private.json').read_text());seed={k:v for k,v in seed.items() if k in {'version','server','token','title','capture','landscape'}}
+seed.update(capture='invalid-seed-check',landscape=False)
+def snapshot():
+ req=urllib.request.Request('http://127.0.0.1:39231/api/v1/library?q='+urllib.parse.quote(seed['title'])+'&limit=24',headers={'Authorization':'Bearer '+seed['token']})
+ data=json.load(urllib.request.urlopen(req));item=data['items'][0]
+ return item.get('progress',{})
+cases={'unsafe-capture':dict(seed,capture='../escape-probe'),'unknown-field':dict(seed,unknown=True),'wrong-title':dict(seed,title='Example real title'),'wrong-host':dict(seed,server='http://example.test:39231'),'string-version':dict(seed,version='1'),'conflicting-orientation':dict(seed,landscape='true'),'missing-title':{k:v for k,v in seed.items() if k!='title'},'oversized-token':dict(seed,token='x'*513),'duplicate-version':json.dumps(seed).replace('"version": 1', '"version": 1, "version": 1'),'malformed':'{','oversized-file':' '*16385}
+if sys.argv[1]=='red':cases={k:v for k,v in cases.items() if k=='unsafe-capture'}
+results=[]
+for name,value in cases.items():
+ subprocess.run(D+['shell','am','force-stop','com.kinosail.player.dev'],check=True)
+ before=snapshot();temp=OUT/'invalid-seed-private.json';temp.write_text(value if isinstance(value,str) else json.dumps(value));temp.chmod(0o600)
+ subprocess.run(D+['push',str(temp),'/data/local/tmp/video-overlay-seed.json'],check=True,stdout=subprocess.DEVNULL)
+ subprocess.run(D+['shell','run-as','com.kinosail.player.dev','cp','/data/local/tmp/video-overlay-seed.json','files/video-overlay-seed.json'],check=True)
+ command=D+['shell','am','instrument','-w','-r','-e','class','com.kinosail.player.mobile.LivePlaybackOverlayTest#decodedLightVideoKeepsItsTitleAndActionsReadable','com.kinosail.player.dev.test/androidx.test.runner.AndroidJUnitRunner']
+ log=OUT/(sys.argv[1]+'-invalid-'+name+'.log')
+ with log.open('wb') as output:subprocess.run(command,stdout=output,stderr=subprocess.STDOUT,check=True,timeout=100)
+ after=snapshot();rejected='Invalid video overlay seed.' in log.read_text() and 'FAILURES!!!' in log.read_text()
+ result={'case':name,'rejectedBeforeActions':rejected,'generatedProgressUnchanged':before==after,'result':'PASS' if rejected and before==after else 'FAIL'}
+ results.append(result);print(result,flush=True)
+(OUT/(sys.argv[1]+'-invalid-seed-results.json')).write_text(json.dumps({'revision':subprocess.check_output(['git','rev-parse','HEAD'],cwd=ROOT,text=True).strip(),'command':command,'environment':'Task-owned API 23 emulator; generated title on isolated actual Server','cases':results,'recordedAt':datetime.datetime.now(datetime.timezone.utc).isoformat()},indent=2)+'\n')
