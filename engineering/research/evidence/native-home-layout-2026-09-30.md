@@ -87,7 +87,7 @@ An initial Instruments launch by bundle ID did not present the app or generate f
 
 A private TV `XCTApplicationLaunchMetric(waitUntilResponsive: true)` probe compiled and passed. Its exported metrics were `[]`. This is missing evidence, not zero launch time. See [Apple's metric documentation](https://developer.apple.com/documentation/xctest/xctapplicationlaunchmetric) for the intended measurement surface. Earlier hitch probes also emitted no usable hitch metric; see [their record](tvos-hitch-metric-2026-09-30.md).
 
-The first phone landscape attachment captured a transition. A stricter probe then incorrectly assumed screenshot pixel dimensions must rotate; its expectation timed out while the accessibility window reported 874 × 402 points. A follow-up draft used an unavailable `XCUIDevice.screenshot` member and failed compilation. These probe failures are retained. The corrected capture uses the SDK's `XCUIScreen` surface and waits for landscape window geometry. It passes, and its inspected full-screen attachment is 2048 × 942 pixels. Returning to portrait also preserves the populated hero and continuation content.
+The first phone landscape attachment captured a transition. A stricter probe then incorrectly assumed screenshot pixel dimensions must rotate; its expectation timed out while the accessibility window reported 874 × 402 points. A follow-up draft used an unavailable `XCUIDevice.screenshot` member and failed compilation. These probe failures are retained. The corrected capture uses the SDK's `XCUIScreen` surface and waits for landscape window geometry. It passes, and its inspected full-screen attachment shows the settled 874 × 402-point landscape window. Returning to portrait also preserves the populated hero and continuation content.
 
 The physical Apple TV was offline at the current read-only inventory. The paired phone was reachable but had no Kinosail process. No physical app installation or launch was performed. Device input-to-frame latency, hitches, memory pressure, energy, production networking, iPad behavior, and playback interference remain unmeasured in this experiment.
 
@@ -120,3 +120,7 @@ xcodebuild -project apps/player/apps/native/Kinosail.xcodeproj \
 ```
 
 Retained manifests bind the actual revision, command, fixture, environment, and result. Required hosted checks, protected-main ancestry, native distribution, deployment, and physical-device proof remain separate delivery facts. The broader performance goal remains active.
+
+## Protected-main delivery
+
+[PR #400](https://github.com/Kinosail/kinosail/pull/400) merged with a merge commit at `162f7c88766646ad71743105168abbd5a85d2c23`. Its selected [hosted run](https://github.com/Kinosail/kinosail/actions/runs/36814935883) passed repository, security, and native Swift compilation checks. Unrelated Go, Android, browser, and container-publication jobs were skipped. Fetched ancestry confirms source commit `151c00aa7` is included in main. Native distribution, deployment, and physical-device timing remain unverified here.
