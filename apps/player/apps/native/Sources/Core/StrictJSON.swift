@@ -1,4 +1,5 @@
 import Foundation
+import Synchronization
 
 /// Bounded JSON with duplicate-key detection before domain decoding.
 enum StrictJSON {
@@ -109,6 +110,12 @@ extension Dictionary where Key == String, Value == JSONValue {
 }
 
 extension Input {
+    private static let dateParsers = Mutex({
+        let fractional = ISO8601DateFormatter()
+        fractional.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+        return (fractional, ISO8601DateFormatter())
+    }())
+
     static func hex(_ value: String, count: Int) throws -> String {
         guard value.utf8.count == count, value.utf8.allSatisfy({ (48...57).contains($0) || (97...102).contains($0) }) else {
             throw ClientError.invalidInput("The requested identifier is invalid.")
@@ -138,9 +145,9 @@ extension Input {
         guard value.utf8.count <= 40,
               value.range(of: "\\A[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(\\.[0-9]{1,9})?(Z|[+-](?:[01][0-9]|2[0-3]):[0-5][0-9])\\z", options: .regularExpression) != nil
         else { throw ClientError.invalidResponse }
-        let parser = ISO8601DateFormatter()
-        parser.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
-        guard let date = parser.date(from: value) ?? ISO8601DateFormatter().date(from: value) else { throw ClientError.invalidResponse }
-        return date
+        return try dateParsers.withLock { parsers in
+            guard let date = parsers.0.date(from: value) ?? parsers.1.date(from: value) else { throw ClientError.invalidResponse }
+            return date
+        }
     }
 }

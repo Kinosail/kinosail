@@ -177,11 +177,19 @@ These findings are research inputs. Paper results are not Kinosail results.
 
 Native catalog and caption decoding rebuilt a Unicode character set for every text scalar. Both callers now reuse the identical immutable set. Required fields, Unicode controls, newline exceptions, byte bounds, and persisted-page validation remain guarded.
 
-Matched optimized host controls reduce complete catalog decoding and validation by about 62–70% when public response timestamps are included. A 60-item ASCII page changes from 170.239 to 52.173 ms; the reverse control takes 166.841 ms. Lean fixtures without timestamps improve 93–95%. Parsing 100 synthetic captions changes from 55.682 to 2.809 ms. These are preparation costs, not measured UI frames. Timestamp validation remains a measured follow-up target.
+Matched optimized host controls reduce complete catalog decoding and validation by about 62–70% when public response timestamps are included. A 60-item ASCII page changes from 170.239 to 52.173 ms; the reverse control takes 166.841 ms. Lean fixtures without timestamps improve 93–95%. Parsing 100 synthetic captions changes from 55.682 to 2.809 ms. These are preparation costs, not measured UI frames. This phase isolates timestamp validation for the cache experiment below.
 
 The [native validation record](evidence/native-text-validation-2026-09-30.md) retains all 666 catalog and caption samples, source bindings, reproducible drivers, rejected preliminary measurements, and verification limits. The baseline new tests pass before the production edit. The full Release tvOS suite passes 267 tests, and Release iOS simulator compilation passes. The next UI investigation still needs input, observation, artwork, and presentation traces.
 
 The record also evaluates [Swift's experimental New Codable work](https://forums.swift.org/t/new-codable-prototype-available-for-feedback/85186) and [Blaze's compiled JSON Schema research](https://arxiv.org/html/2503.02770v1). Neither reported benchmark justifies adopting a new parser without Kinosail-specific validation and full-pipeline proof.
+
+### Reuse configured native timestamp parsers
+
+Native catalog validation created formatters for every `added` and `progress.updated` value. Two configured ISO8601DateFormatter instances now remain inside one private Mutex. Bounds, syntax checks, parser order, precision, and errors remain the same. Only Date values leave the lock; timestamp strings are not cached.
+
+Fresh optimized original/candidate/original controls reduce complete timestamped decoding and validation by 65–70%. A 60-item ASCII network page changes from 57.020 to 18.529 ms, with a 53.115 ms reverse control. Workloads with 1, 2, 4, and 8 concurrent callers also improve despite serialized parsing. These are host preparation measurements, with no physical frame claim.
+
+Apple's newer format-style API is not a behavior-preserving replacement in the local probe: fractional precision and leap-second acceptance differ. The [timestamp record](evidence/native-timestamp-validation-2026-09-30.md) links primary sources and retains all 396 completed samples, source bindings, failed drafts, and reproducible drivers. Timestamp tests precede the production edit. The full Release tvOS suite passes 271 tests; the corrected cache rejection suite passes 12. Physical-device latency, lock fairness, and UI presentation remain unmeasured.
 
 ## Choices that require evidence first
 

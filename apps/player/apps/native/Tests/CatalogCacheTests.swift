@@ -205,14 +205,25 @@ struct CatalogCacheTests {
         await fixture.client.close()
     }
 
-    @Test(arguments: [#"\u0000"#, #"\u0009"#, #"\u0080"#, #"\u200b"#, #"\u202e"#])
-    func rejectedTextCannotReplaceSavedCatalog(_ escapedControl: String) async throws {
+    @Test(arguments: [("title", #""before\u0000after""#), ("title", #""before\u0009after""#),
+                      ("title", #""before\u0080after""#), ("title", #""before\u200bafter""#),
+                      ("title", #""before\u202eafter""#), ("added", #""""#), ("added", "true"),
+                      ("added", #""2026-09-30T23:59:60Z""#), ("added", #""2026-09-30T13:45:10+24:00""#),
+                      ("added", #""2026-09-30T13:45:10.1234567890Z""#),
+                      ("progress", #"{"updated":"2026-09-30T23:59:60Z"}"#), ("progress", #"{"updated":0}"#)])
+    func rejectedFieldsCannotReplaceSavedCatalog(_ key: String, _ raw: String) async throws {
         let directory = cacheDirectory()
         defer { try? FileManager.default.removeItem(at: directory) }
         let fixture = try HTTPFixture(body: library(), viewer: profile(), cacheDirectory: directory)
         defer { fixture.remove() }
         _ = try await fixture.client.library(policy: .automatic)
-        setLibrary(fixture, body: library(title: "before" + escapedControl + "after"))
+        let body: String
+        switch key {
+        case "title": body = library().replacingOccurrences(of: "\"title\":\"Movie\"", with: "\"title\":\(raw)")
+        case "progress": body = library().replacingOccurrences(of: "\"progress\":{}", with: "\"progress\":\(raw)")
+        default: body = library().replacingOccurrences(of: "\"progress\":{}", with: "\"progress\":{},\"\(key)\":\(raw)")
+        }
+        setLibrary(fixture, body: body)
         await #expect(throws: ClientError.self) { try await fixture.client.library(policy: .reload) }
         await fixture.client.close()
         let reopened = try await ServerClient(server: fixture.client.server, viewer: profile(),
