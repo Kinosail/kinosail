@@ -43,7 +43,7 @@
 .family-purchase{display:inline-flex;min-height:48px;align-items:center;padding:.7rem 1rem;border:1px solid var(--line-strong);border-radius:10px;font-weight:780}
 .family-living-standard .family-purchase{border-color:var(--signal);background:var(--signal);color:var(--signal-ink)}
 .badge-gallery{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));margin:0;padding:0;border-bottom:1px solid var(--line);list-style:none}
-.badge-level{display:grid;min-width:0;align-content:start;justify-items:start;padding:1rem .9rem 1.35rem;border-top:1px solid var(--line);border-right:1px solid var(--line)}
+.badge-level{display:grid;grid-template-columns:minmax(0,1fr);min-width:0;align-content:start;justify-items:start;padding:1rem .9rem 1.35rem;border-top:1px solid var(--line);border-right:1px solid var(--line)}
 .badge-level:nth-child(5n){border-right:0}
 .badge-sigil{width:min(100%,10rem);margin:auto;overflow:visible}
 .badge-outline{fill:var(--surface-2);stroke:var(--line-strong);stroke-width:4;stroke-linejoin:round}

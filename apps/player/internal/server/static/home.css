@@ -233,7 +233,7 @@ body .app-header .web-beta-badge{display:inline-flex;flex:none;align-items:cente
 }
 @media(max-width:900px) and (max-height:600px){
   body.library-page.auth main:has(.quick-connect-code) .brand-mark{display:none}
-  body .app-header{grid-template-columns:minmax(0,auto) minmax(0,1fr);padding-right:calc(8rem + var(--safe-right))}
+  body .app-header{grid-template-columns:minmax(0,1fr) auto;padding-right:calc(8rem + var(--safe-right))}
   body .app-header>.brand-lockup{max-width:100%}
   body .app-header>.mobile-supporter{grid-column:2;grid-row:1;justify-self:start;white-space:normal;line-height:1.15}
   body .app-header:has(.search:focus-within)>.mobile-supporter{visibility:hidden}
