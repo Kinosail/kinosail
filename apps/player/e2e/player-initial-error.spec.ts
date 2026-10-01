@@ -3,7 +3,7 @@ import { startDirectPlayer } from "./player-direct-fallback-fixture";
 
 const instances = (page: Page) => page.evaluate(() => (window as Window & { FakeHls: { instances: number } }).FakeHls.instances);
 
-test("a direct format error before script initialization still offers video conversion", async ({ page }) => {
+test("a direct format error before script initialization still offers video conversion", { tag: "@smoke" }, async ({ page }) => {
   await startDirectPlayer(page, { initialError: 4, compatibleMode: "transcode" });
   const action = page.locator("[data-player-status] [data-player-fallback]");
   await expect(action).toHaveText("Start video transcode");
