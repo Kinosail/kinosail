@@ -2,7 +2,7 @@
 
 Repeated catalog decoding rebuilt a Unicode character set for each scalar in every validated text field. Native caption decoding did the same. Both callers now reuse one immutable set in `Input`. The set expression and acceptance rules remain identical.
 
-This removes 93–95% of decode-and-validation time in the matched synthetic catalog workloads below. It does not establish input-to-frame latency, physical TV smoothness, or deployed performance.
+This removes about 62–70% of decode-and-validation time in matched timestamped catalog workloads. Valid lean fixtures without timestamps improve 93–95%. It does not establish input-to-frame latency, physical TV smoothness, or deployed performance.
 
 ## Experiment and source
 
@@ -52,6 +52,53 @@ The caption control compiles real `SubtitleDocument.swift` with the same origina
 | 100 | 55.682 | 2.809 | 59.570 |
 
 These gains concern caption preparation. They do not measure timed subtitle display or playback frames.
+
+## Production-shaped timestamp control
+
+Inspection of `packages/catalogapi/projection.go` shows `added` in the public ClientItem. `packages/catalog/progress.go` also emits `updated` in progress. The original valid fixtures omit these optional native fields, so their 93–95% result must not stand in for a current production page.
+
+A supplemental matched control adds `added: 2026-09-29T12:34:56Z` and `progress.updated: 2026-09-30T13:45:10.123456789Z` to every item. It retains the other fields, encoding variants, binaries, rounds, warmup, iteration counts, and whole-tree checks. Original/final/original runs remain serial. All three runs complete with 108 samples and identical consumed checksums. These timestamps exercise both whole-second and nine-digit fractional date validation.
+
+Median milliseconds per page, including strict decoding and domain validation:
+
+| Dated fixture | Original before | Final | Original after | Reduction versus before |
+| --- | ---: | ---: | ---: | ---: |
+| 36-ascii-network | 101.691 | 31.528 | 99.584 | 69.0% |
+| 36-ascii-cached | 101.419 | 31.330 | 100.824 | 69.1% |
+| 36-utf8-network | 87.450 | 31.183 | 87.834 | 64.3% |
+| 36-utf8-cached | 86.542 | 32.535 | 89.247 | 62.4% |
+| 36-escaped-network | 90.556 | 33.177 | 89.685 | 63.4% |
+| 36-escaped-cached | 87.757 | 31.574 | 88.644 | 64.0% |
+| 60-ascii-network | 170.239 | 52.173 | 166.841 | 69.4% |
+| 60-ascii-cached | 173.384 | 51.793 | 165.085 | 70.1% |
+| 60-utf8-network | 145.115 | 52.233 | 145.794 | 64.0% |
+| 60-utf8-cached | 146.093 | 53.009 | 147.147 | 63.7% |
+| 60-escaped-network | 145.865 | 52.260 | 143.914 | 64.2% |
+| 60-escaped-cached | 145.952 | 52.168 | 149.198 | 64.3% |
+| 200-ascii-network | 560.334 | 176.008 | 553.759 | 68.6% |
+| 200-ascii-cached | 562.320 | 178.904 | 565.633 | 68.2% |
+| 200-utf8-network | 491.393 | 177.940 | 500.117 | 63.8% |
+| 200-utf8-cached | 499.667 | 174.137 | 495.249 | 65.1% |
+| 200-escaped-network | 488.608 | 173.576 | 500.256 | 64.5% |
+| 200-escaped-cached | 487.685 | 177.862 | 487.081 | 63.5% |
+
+The 60-item ASCII dated case improves from 170.239 to 52.173 ms, with a 166.841 ms reverse control. Across dated cases, reductions are about 62–70%. Adding timestamps increases final 60-item ASCII preparation from 5.649 to 52.173 ms. That isolates a remaining field-validation cost; it does not by itself prove which date-parser operation dominates. `Input.date` constructs a fractional ISO8601DateFormatter, then another formatter if that parse fails. Profile this path next. Any replacement must preserve bounds, timezone and fractional handling, strict errors, persisted contracts, and concurrency safety.
+
+Dated fixtures are regenerated from the original generator with this bounded transformation:
+
+```python
+for p in root.glob('*.json'):
+    if p.stem not in [f'{n}-{e}' for n in (36, 60, 200) for e in ('ascii', 'utf8', 'escaped')]:
+        continue
+    page = json.loads(p.read_text())
+    for item in page['items']:
+        item['added'] = '2026-09-29T12:34:56Z'
+        item['progress']['updated'] = '2026-09-30T13:45:10.123456789Z'
+    (root / 'dated' / p.name).write_text(json.dumps(
+        page, ensure_ascii=p.stem.endswith('escaped'), separators=(',', ':')))
+```
+
+Run the same original/final/original binaries with `.verification/native-interaction/dated 3 2`. Dated fixture and output SHA-256 values are retained in `dated-manifest.json`. The fixture directory must exist first.
 
 ## Primary-source research
 
@@ -141,6 +188,50 @@ Caption samples, nanoseconds per decode:
 | final | 100 | 2792597.3333333335 / 3160958.3333333335 / 2809222.0 |
 | after | 10 | 6208000.0 / 6222555.666666667 / 5631861.0 |
 | after | 100 | 59569833.333333336 / 60995041.666666664 / 58868708.333333336 |
+
+
+## Complete dated timed samples
+
+Nanoseconds per decode, rounds 0 / 1 / 2. All 324 dated samples are retained here, in addition to the 342 original catalog and caption samples.
+
+| Dated fixture | Operation | Original before | Final | Original after |
+| --- | --- | --- | --- | --- |
+| 36-ascii-network | json | 1549479.5 / 1526500.0 / 1455333.0 | 1481625.0 / 1493500.0 / 1513021.0 | 1521604.5 / 1441062.5 / 1560187.5 |
+| 36-ascii-network | library | 100619792.0 / 107694104.5 / 101691187.5 | 31527562.5 / 31351250.0 / 33419521.0 | 99859937.5 / 99584021.0 / 98624229.0 |
+| 36-ascii-cached | json | 1521812.5 / 1539979.0 / 1466645.5 | 1507833.5 / 1486562.5 / 1506291.5 | 1551458.5 / 1511479.5 / 1461812.5 |
+| 36-ascii-cached | library | 102409437.5 / 101418666.5 / 98689145.5 | 31154354.0 / 31330083.0 / 32390104.5 | 101064500.0 / 100824250.0 / 96401396.0 |
+| 36-utf8-network | json | 1615562.5 / 1574125.0 / 1553937.5 | 1544437.5 / 1525437.5 / 1527229.0 | 1505354.0 / 1517312.5 / 1479979.0 |
+| 36-utf8-network | library | 88022312.5 / 87450041.5 / 85523917.0 | 31183458.5 / 30940167.0 / 32673416.5 | 90403395.5 / 87833771.0 / 83945708.5 |
+| 36-utf8-cached | json | 1492625.0 / 1496958.0 / 1586042.0 | 1558979.5 / 1555937.5 / 1529354.0 | 1493791.5 / 1585208.0 / 1639416.5 |
+| 36-utf8-cached | library | 88159958.0 / 86541541.5 / 86238083.0 | 32548042.0 / 31372583.0 / 32534854.0 | 89247479.5 / 95989895.5 / 83386500.0 |
+| 36-escaped-network | json | 1582666.5 / 1487542.0 / 1616083.5 | 1549520.5 / 1492875.0 / 1520583.0 | 1541146.0 / 1492292.0 / 1504125.0 |
+| 36-escaped-network | library | 90556312.5 / 91947937.5 / 86346583.0 | 37374000.0 / 31425104.5 / 33176708.5 | 89685145.5 / 96952125.0 / 87128270.5 |
+| 36-escaped-cached | json | 1575020.5 / 1600666.5 / 1507354.0 | 1576854.0 / 1554646.0 / 1637521.0 | 1615854.0 / 1488937.5 / 1575375.0 |
+| 36-escaped-cached | library | 88689479.5 / 85861229.0 / 87756729.5 | 31792333.5 / 31264771.0 / 31573708.5 | 88644021.0 / 97194708.0 / 87410375.0 |
+| 60-ascii-network | json | 2596896.0 / 2499521.0 / 2605021.0 | 2559979.5 / 2415479.5 / 2454916.5 | 2431312.5 / 2636104.0 / 2446104.0 |
+| 60-ascii-network | library | 170238583.5 / 170873646.0 / 168015625.0 | 52594812.5 / 52172541.5 / 52075687.5 | 166840646.0 / 168646792.0 / 162402083.0 |
+| 60-ascii-cached | json | 2531041.5 / 2509687.5 / 2584395.5 | 2465000.0 / 2577750.0 / 2534021.0 | 2557666.5 / 2519979.0 / 2601104.0 |
+| 60-ascii-cached | library | 173383896.0 / 168670770.5 / 175545687.5 | 51793229.5 / 51741333.5 / 53037166.5 | 165085458.0 / 167917729.0 / 164570854.0 |
+| 60-utf8-network | json | 2727354.0 / 2451875.0 / 2652437.5 | 2440354.0 / 2520708.5 / 2471896.0 | 2502667.0 / 2444041.5 / 2551937.5 |
+| 60-utf8-network | library | 149747666.5 / 144376937.5 / 145115187.5 | 51788562.5 / 52232854.0 / 57692396.0 | 144845667.0 / 153081541.5 / 145793792.0 |
+| 60-utf8-cached | json | 2540229.0 / 2618437.5 / 2676541.5 | 2472000.0 / 2662437.5 / 2652875.0 | 2654541.5 / 2716791.5 / 2480062.5 |
+| 60-utf8-cached | library | 151279271.0 / 145948562.5 / 146092937.5 | 53009375.0 / 53079729.0 / 52750292.0 | 152101937.5 / 147146875.0 / 143112500.0 |
+| 60-escaped-network | json | 2623833.0 / 2507645.5 / 2662333.5 | 2554896.0 / 2681958.5 / 2637104.0 | 2647458.5 / 2608729.0 / 2525791.5 |
+| 60-escaped-network | library | 148104292.0 / 145865021.0 / 143028333.5 | 52570395.5 / 52260458.0 / 51773500.0 | 143913792.0 / 150439625.0 / 138702229.0 |
+| 60-escaped-cached | json | 2659812.5 / 2588583.5 / 2694937.5 | 2588437.5 / 2645021.0 / 2674291.5 | 2691750.0 / 2526958.0 / 2504979.5 |
+| 60-escaped-cached | library | 148479770.5 / 145952292.0 / 144953187.5 | 53863833.5 / 51702500.0 / 52167770.5 | 149198000.0 / 151763146.0 / 139407354.0 |
+| 200-ascii-network | json | 8346625.0 / 8448208.5 / 8291417.0 | 8283104.5 / 8331312.5 / 8337042.0 | 8405896.0 / 8204521.0 / 8149667.0 |
+| 200-ascii-network | library | 563288791.5 / 556773250.0 / 560334416.5 | 176008125.0 / 178312750.0 / 174257875.0 | 553758750.0 / 568818833.0 / 544163250.0 |
+| 200-ascii-cached | json | 8469583.5 / 8472083.5 / 8530646.0 | 8263729.5 / 8427750.0 / 8557145.5 | 8335291.5 / 8433000.0 / 8444229.0 |
+| 200-ascii-cached | library | 568236583.5 / 559458687.5 / 562319854.0 | 179020521.0 / 178904270.5 / 173148729.0 | 568329250.0 / 565632979.0 / 537772104.0 |
+| 200-utf8-network | json | 8558125.0 / 8723604.5 / 8457062.5 | 8428500.0 / 8432271.0 / 8431271.0 | 8388958.5 / 8433250.0 / 8495854.0 |
+| 200-utf8-network | library | 501380833.0 / 482642520.5 / 491393417.0 | 188355541.5 / 174204854.0 / 177939562.5 | 511733208.5 / 500116937.5 / 476364687.5 |
+| 200-utf8-cached | json | 8633916.5 / 8597812.5 / 8798458.5 | 8565812.5 / 8553146.0 / 8586020.5 | 8744729.5 / 8792187.5 / 8470354.0 |
+| 200-utf8-cached | library | 518119500.0 / 499667250.0 / 496493437.5 | 172627062.5 / 175501146.0 / 174136958.0 | 495248520.5 / 491126417.0 / 521001083.5 |
+| 200-escaped-network | json | 8466583.5 / 8436417.0 / 8433875.0 | 8366583.0 / 8388979.0 / 8509437.5 | 8447646.0 / 8467625.0 / 9358687.5 |
+| 200-escaped-network | library | 489048541.5 / 488607520.5 / 483883896.0 | 172746333.0 / 173938375.0 / 173576396.0 | 500255729.5 / 504602292.0 / 489672687.5 |
+| 200-escaped-cached | json | 8617021.0 / 8473937.5 / 8739645.5 | 8468958.5 / 15912500.0 / 8573375.0 | 8742396.0 / 8228875.0 / 8488937.5 |
+| 200-escaped-cached | library | 493169729.0 / 487685396.0 / 487161833.5 | 179462021.0 / 173194083.0 / 177862125.0 | 490442729.0 / 480332104.0 / 487081229.0 |
 
 ## Reproduction
 
