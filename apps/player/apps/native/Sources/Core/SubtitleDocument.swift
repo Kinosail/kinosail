@@ -67,7 +67,7 @@ struct SubtitleDocument: Sendable {
         var text = block.dropFirst(timingIndex + 1).joined(separator: "\n")
         text = text.replacingOccurrences(of: "<[^>]{0,512}>", with: "", options: .regularExpression)
         for (entity, value) in [("&lt;", "<"), ("&gt;", ">"), ("&nbsp;", " "), ("&lrm;", "\u{200e}"), ("&rlm;", "\u{200f}"), ("&quot;", "\""), ("&apos;", "'"), ("&amp;", "&")] { text = text.replacingOccurrences(of: entity, with: value) }
-        guard text.utf8.count <= 4096, !text.unicodeScalars.contains(where: { CharacterSet.controlCharacters.subtracting(.newlines).contains($0) }) else { throw ClientError.invalidResponse }
+        guard text.utf8.count <= 4096, !text.unicodeScalars.contains(where: { Input.disallowedTextControls.contains($0) }) else { throw ClientError.invalidResponse }
         return Cue(start: start, end: end, text: text)
     }
 
