@@ -3,6 +3,24 @@ import Testing
 @testable import KinosailPlayer
 
 struct ContractTests {
+    @Test(arguments: ["", "Plain text", "Étoiles 日本語 🌌 é", "line\nline", "line\r\nline",
+                      "line\u{b}line", "line\u{c}line", "line\u{85}line", "line\u{2028}line", "line\u{2029}line"])
+    func preservesValidatedResponseText(_ text: String) throws {
+        #expect(try ["value": JSONValue.string(text)].text("value") == text)
+    }
+
+    @Test(arguments: ["\u{0}", "\t", "\u{1f}", "\u{7f}", "\u{80}", "\u{9f}", "\u{200b}", "\u{202e}", "\u{feff}"])
+    func rejectsResponseTextControls(_ control: String) {
+        #expect(throws: ClientError.self) { try ["value": JSONValue.string("before" + control + "after")].text("value") }
+    }
+
+    @Test func boundsResponseTextWithoutCoercion() {
+        #expect(throws: ClientError.self) { try ["value": JSONValue.string("é")].text("value", max: 1) }
+        #expect(throws: ClientError.self) { try ["value": JSONValue.string(" \n")].text("value", required: true) }
+        #expect(throws: ClientError.self) { try [String: JSONValue]().text("value", required: true) }
+        #expect(throws: ClientError.self) { try ["value": JSONValue.number(1)].text("value") }
+    }
+
     @Test(arguments: [
         "", "ftp://server.local", "http://example.com", "https://user:secret@example.com",
         "https://example.com/library", "https://example.com?token=secret", "https://example.com#fragment",
