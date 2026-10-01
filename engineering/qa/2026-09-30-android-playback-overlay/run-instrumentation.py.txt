@@ -1,0 +1,27 @@
+from pathlib import Path
+import subprocess, json, sys, hashlib, datetime, re, shutil
+ROOT=Path(__file__).resolve().parents[4]
+OUT=Path(__file__).resolve().parent
+ADB="/Users/mikeo/.cache/kinosail-android-sdk/platform-tools/adb"
+DEVICE="emulator-5564"
+label=sys.argv[1]
+klass=sys.argv[2] if len(sys.argv)>2 else "com.kinosail.player.mobile.LivePlaybackOverlayTest"
+assert re.fullmatch(r"[a-z0-9-]+",label)
+assert "Kinosail-Playback-01a0f2ab-API23" in subprocess.check_output([ADB,"-s",DEVICE,"emu","avd","name"],text=True)
+command=[ADB,"-s",DEVICE,"shell","am","instrument","-w","-r","-e","class",klass,"com.kinosail.player.dev.test/androidx.test.runner.AndroidJUnitRunner"]
+context={"revision":subprocess.check_output(["git","rev-parse","HEAD"],cwd=ROOT,text=True).strip(),"pendingProductionDiffSHA256":hashlib.sha256(subprocess.check_output(["git","diff","--","apps/player/apps/android/app/src/main/java/com/kinosail/player/core/PlaybackScreen.kt"],cwd=ROOT)).hexdigest(),"device":{"serial":DEVICE,"AVD":"Kinosail-Playback-01a0f2ab-API23","SDK":23,"size":subprocess.check_output([ADB,"-s",DEVICE,"shell","wm","size"],text=True).strip(),"density":subprocess.check_output([ADB,"-s",DEVICE,"shell","wm","density"],text=True).strip(),"fontScale":subprocess.check_output([ADB,"-s",DEVICE,"shell","settings","get","system","font_scale"],text=True).strip()},"fixture":"Generated white AVC plus SRT/NFO; actual isolated Go Server via loopback HTTP bridge; synthetic private session", "command":command,"startedAt":datetime.datetime.now(datetime.timezone.utc).isoformat(),"APKSHA256":{}}
+for relative in ["apps/player/apps/android/app/build/outputs/apk/debug/app-debug.apk","apps/player/apps/android/app/build/outputs/apk/androidTest/debug/app-debug-androidTest.apk"]:
+ context["APKSHA256"][relative]=hashlib.sha256((ROOT/relative).read_bytes()).hexdigest()
+log=OUT/(label+".log")
+with log.open("wb") as output:
+ result=subprocess.run(command,stdout=output,stderr=subprocess.STDOUT,timeout=180)
+context.update(commandExitCode=result.returncode,finishedAt=datetime.datetime.now(datetime.timezone.utc).isoformat())
+value=log.read_text()
+context["result"]="PASS" if re.search(r"OK \(\d+ tests?\)",value) and "FAILURES!!!" not in value else "FAIL"
+files=subprocess.check_output([ADB,"-s",DEVICE,"shell","run-as","com.kinosail.player.dev","ls","files/video-overlay"],text=True)
+for name in files.splitlines():
+ if re.fullmatch(r"[a-z0-9-]+(?:\.png|-semantics\.txt)",name):
+  with (OUT/(label+"-"+name)).open("wb") as target:
+   subprocess.run([ADB,"-s",DEVICE,"exec-out","run-as","com.kinosail.player.dev","cat","files/video-overlay/"+name],stdout=target,check=True)
+(OUT/(label+"-context.json")).write_text(json.dumps(context,indent=2)+"\n")
+print(json.dumps({"label":label,"result":context["result"],"log":str(log)},indent=2))

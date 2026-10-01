@@ -1,0 +1,14 @@
+{
+  "revision": "2f8f8e1401718a543a5ccd58ad6bae29c42390b5",
+  "command": [
+    "pnpm",
+    "exec",
+    "playwright",
+    "test",
+    "native-video-bootstrap.disposable.spec.ts"
+  ],
+  "startedAt": "2026-10-01T02:18:19.281628+00:00",
+  "data": "Generated white 360x640 and 640x360 AVC files, plain captions and NFO; actual isolated Go Server",
+  "exitCode": 0,
+  "finishedAt": "2026-10-01T02:18:34.437041+00:00"
+}

@@ -1,0 +1,20 @@
+{
+  "app": {
+    "tests": 120,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "watchcore": {
+    "tests": 6,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "wear": {
+    "tests": 5,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  }
+}

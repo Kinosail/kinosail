@@ -1,0 +1,56 @@
+INSTRUMENTATION_STATUS: numtests=1
+INSTRUMENTATION_STATUS: stream=
+com.kinosail.player.mobile.LivePlaybackOverlayTest:
+INSTRUMENTATION_STATUS: id=AndroidJUnitRunner
+INSTRUMENTATION_STATUS: test=decodedLightVideoKeepsItsTitleAndActionsReadable
+INSTRUMENTATION_STATUS: class=com.kinosail.player.mobile.LivePlaybackOverlayTest
+INSTRUMENTATION_STATUS: current=1
+INSTRUMENTATION_STATUS_CODE: 1
+INSTRUMENTATION_STATUS: numtests=1
+INSTRUMENTATION_STATUS: stream=
+Error in decodedLightVideoKeepsItsTitleAndActionsReadable(com.kinosail.player.mobile.LivePlaybackOverlayTest):
+androidx.compose.ui.test.ComposeTimeoutException: Condition still not satisfied after 30000 ms
+	at androidx.compose.ui.test.AndroidComposeUiTestEnvironment$AndroidComposeUiTestImpl.waitUntil(ComposeUiTest.android.kt:901)
+	at androidx.compose.ui.test.junit4.AndroidComposeTestRule.waitUntil(AndroidComposeTestRule.android.kt:500)
+	at com.kinosail.player.mobile.LivePlaybackOverlayTest.awaitLightFrame(LivePlaybackOverlayTest.kt:162)
+	at com.kinosail.player.mobile.LivePlaybackOverlayTest.decodedLightVideoKeepsItsTitleAndActionsReadable$lambda$0(LivePlaybackOverlayTest.kt:51)
+	at com.kinosail.player.mobile.LivePlaybackOverlayTest$$ExternalSyntheticLambda9.invoke(D8$$SyntheticClass:0)
+	at com.kinosail.player.mobile.LivePlaybackOverlayTest.journey(LivePlaybackOverlayTest.kt:138)
+	at com.kinosail.player.mobile.LivePlaybackOverlayTest.journey$default(LivePlaybackOverlayTest.kt:88)
+	at com.kinosail.player.mobile.LivePlaybackOverlayTest.decodedLightVideoKeepsItsTitleAndActionsReadable(LivePlaybackOverlayTest.kt:50)
+
+INSTRUMENTATION_STATUS: id=AndroidJUnitRunner
+INSTRUMENTATION_STATUS: test=decodedLightVideoKeepsItsTitleAndActionsReadable
+INSTRUMENTATION_STATUS: class=com.kinosail.player.mobile.LivePlaybackOverlayTest
+INSTRUMENTATION_STATUS: stack=androidx.compose.ui.test.ComposeTimeoutException: Condition still not satisfied after 30000 ms
+	at androidx.compose.ui.test.AndroidComposeUiTestEnvironment$AndroidComposeUiTestImpl.waitUntil(ComposeUiTest.android.kt:901)
+	at androidx.compose.ui.test.junit4.AndroidComposeTestRule.waitUntil(AndroidComposeTestRule.android.kt:500)
+	at com.kinosail.player.mobile.LivePlaybackOverlayTest.awaitLightFrame(LivePlaybackOverlayTest.kt:162)
+	at com.kinosail.player.mobile.LivePlaybackOverlayTest.decodedLightVideoKeepsItsTitleAndActionsReadable$lambda$0(LivePlaybackOverlayTest.kt:51)
+	at com.kinosail.player.mobile.LivePlaybackOverlayTest$$ExternalSyntheticLambda9.invoke(D8$$SyntheticClass:0)
+	at com.kinosail.player.mobile.LivePlaybackOverlayTest.journey(LivePlaybackOverlayTest.kt:138)
+	at com.kinosail.player.mobile.LivePlaybackOverlayTest.journey$default(LivePlaybackOverlayTest.kt:88)
+	at com.kinosail.player.mobile.LivePlaybackOverlayTest.decodedLightVideoKeepsItsTitleAndActionsReadable(LivePlaybackOverlayTest.kt:50)
+
+INSTRUMENTATION_STATUS: current=1
+INSTRUMENTATION_STATUS_CODE: -2
+INSTRUMENTATION_RESULT: stream=
+
+Time: 32.896
+There was 1 failure:
+1) decodedLightVideoKeepsItsTitleAndActionsReadable(com.kinosail.player.mobile.LivePlaybackOverlayTest)
+androidx.compose.ui.test.ComposeTimeoutException: Condition still not satisfied after 30000 ms
+	at androidx.compose.ui.test.AndroidComposeUiTestEnvironment$AndroidComposeUiTestImpl.waitUntil(ComposeUiTest.android.kt:901)
+	at androidx.compose.ui.test.junit4.AndroidComposeTestRule.waitUntil(AndroidComposeTestRule.android.kt:500)
+	at com.kinosail.player.mobile.LivePlaybackOverlayTest.awaitLightFrame(LivePlaybackOverlayTest.kt:162)
+	at com.kinosail.player.mobile.LivePlaybackOverlayTest.decodedLightVideoKeepsItsTitleAndActionsReadable$lambda$0(LivePlaybackOverlayTest.kt:51)
+	at com.kinosail.player.mobile.LivePlaybackOverlayTest$$ExternalSyntheticLambda9.invoke(D8$$SyntheticClass:0)
+	at com.kinosail.player.mobile.LivePlaybackOverlayTest.journey(LivePlaybackOverlayTest.kt:138)
+	at com.kinosail.player.mobile.LivePlaybackOverlayTest.journey$default(LivePlaybackOverlayTest.kt:88)
+	at com.kinosail.player.mobile.LivePlaybackOverlayTest.decodedLightVideoKeepsItsTitleAndActionsReadable(LivePlaybackOverlayTest.kt:50)
+
+FAILURES!!!
+Tests run: 1,  Failures: 1
+
+
+INSTRUMENTATION_CODE: -1

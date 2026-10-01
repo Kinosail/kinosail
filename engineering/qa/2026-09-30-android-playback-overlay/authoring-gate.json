@@ -1,0 +1,18 @@
+{
+  "recordedAt": "2026-10-01T02:16:49.731508+00:00",
+  "baselineRevision": "2f8f8e1401718a543a5ccd58ad6bae29c42390b5",
+  "observableContract": "Native video title and enabled action labels remain readable over a real decoded light video frame, including after the Media3 controller hides; actions and recovery remain usable",
+  "credibleRegression": "Transparent Compose header keeps white/title and Electric action text over bright video even when native controls hide",
+  "coverageGap": "PlaybackContentAccessibilityTest exercises unsupported book/error content and never starts a real decoder; PhotoScreenTest observes bitmaps on JVM and cannot establish video compositor pixels",
+  "primaryOwner": "Instrumented MobileActivity journey with encrypted real SessionStore, catalog and playback APIs, ExoPlayer and compositor screenshot",
+  "productionSeam": "None. Use existing public client/session APIs and synthetic media on the isolated actual Go Server",
+  "inputChanges": "No new production input. UI presentation only if runtime reproduction confirms it",
+  "plannedStates": [
+    "loaded light portrait, controls present and hidden",
+    "actual speed and captions selection",
+    "dismissal back to detail",
+    "phone/tablet landscape and TV activity where runtime permits",
+    "pending and failed media response, retry"
+  ],
+  "existingSourceOwner": "apps/player/apps/android/app/src/main/java/com/kinosail/player/core/PlaybackScreen.kt"
+}
