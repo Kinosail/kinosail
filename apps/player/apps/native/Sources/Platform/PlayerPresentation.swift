@@ -19,6 +19,7 @@ final class PlayerPresentation: NSObject, AVPlayerViewControllerDelegate {
     @ObservationIgnored let controller = AVPlayerViewController()
     @ObservationIgnored var showOptions: (() -> Void)?
     @ObservationIgnored var showSeekPreview: (() -> Void)?
+    @ObservationIgnored var close: (() -> Void)?
     #endif
     @ObservationIgnored var visible = false
     @ObservationIgnored var showingOptions = false
@@ -88,6 +89,7 @@ final class PlayerPresentation: NSObject, AVPlayerViewControllerDelegate {
         controller.allowedSubtitleOptionLanguages = nil
         showOptions = nil
         showSeekPreview = nil
+        close = nil
         #endif
         readyForDisplay = false
         pictureInPicture = false
@@ -97,6 +99,17 @@ final class PlayerPresentation: NSObject, AVPlayerViewControllerDelegate {
     }
 
     #if os(tvOS)
+    func playerViewControllerShouldDismiss(_ playerViewController: AVPlayerViewController) -> Bool {
+        guard playerViewController === controller else { return false }
+        // Finish AVKit's remote event before removing its responder hierarchy.
+        Task { @MainActor [weak self] in
+            let close = self?.close
+            self?.close = nil
+            close?()
+        }
+        return false
+    }
+
     func limitSubtitleLanguages(to language: String?) {
         controller.allowedSubtitleOptionLanguages = language.map { [$0] }
     }
