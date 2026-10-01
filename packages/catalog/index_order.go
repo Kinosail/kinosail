@@ -28,13 +28,10 @@ func (index *Index) BrowseLibrary(ctx context.Context, values url.Values, locale
 	var owner bool
 	var ordered bool
 	result, err := browseLibrary(ctx, values, locale, func(browse Browse) ([]*library.Item, bool, error) {
-		if browse.query != "" || normalizeSort(browse.order) != "title" || browse.view == "history" || len(locale) > 64 {
+		key = browseTitleOrderKey(&browse, locale)
+		if key.locale == "" {
 			items, err := index.References()
 			return items, false, err
-		}
-		key = titleOrderKey{locale: language.Make(locale).String(), view: browse.view}
-		if !oneOf(key.view, "movies", "music", "audiobooks", "books", "photos") {
-			key.view = "all"
 		}
 		items, captured, cached, err := index.titleReferences(key)
 		version, ordered, references = captured, cached, items
@@ -61,6 +58,17 @@ func (index *Index) BrowseLibrary(ctx context.Context, values url.Values, locale
 		}
 	}
 	return result, err
+}
+
+func browseTitleOrderKey(browse *Browse, locale string) titleOrderKey {
+	if browse.query != "" || normalizeSort(browse.order) != "title" || browse.view == "history" || len(locale) > 64 {
+		return titleOrderKey{}
+	}
+	key := titleOrderKey{locale: language.Make(locale).String(), view: browse.view}
+	if !oneOf(key.view, "movies", "music", "audiobooks", "books", "photos") {
+		key.view = "all"
+	}
+	return key
 }
 
 func countTitleView(ctx context.Context, references []*library.Item, view string) int {

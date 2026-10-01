@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { test as connectionTest } from "./test-instance-network";
 import { configureTestInstance, login, openLibrarySection } from "./test-instance-helpers";
 
 configureTestInstance();
@@ -169,7 +170,7 @@ test("show episodes expose their 16:9 still artwork", async ({ page }, testInfo)
 	}
 });
 
-test("beta UI surfaces stay reachable and expose only working controls", async ({ page }, testInfo) => {
+connectionTest("beta UI surfaces stay reachable and expose only working controls", async ({ page, connection }, testInfo) => {
   const errors: string[] = [];
   let offline = false;
   await page.setViewportSize({ width: 390, height: 844 });
@@ -231,12 +232,8 @@ test("beta UI surfaces stay reachable and expose only working controls", async (
   await page.getByRole("link", { name: /Example Movie · 720p/ }).click();
   await expect(page.locator("video")).toHaveAttribute("src", /\/offline-media\//);
   offline = true;
-  await page.context().setOffline(true);
-  try {
-    await page.reload({ waitUntil: "domcontentloaded" });
-    await expect(page.locator("video")).toHaveAttribute("src", /\/offline-media\//, { timeout: 15_000 });
-  } finally {
-    await page.context().setOffline(false);
-  }
+  await connection.disconnect();
+  await page.reload({ waitUntil: "domcontentloaded" });
+  await expect(page.locator("video")).toHaveAttribute("src", /\/offline-media\//, { timeout: 15_000 });
   expect(errors.filter((error) => !error.includes("blob:http://") && !error.includes("Applying inline style violates") && !(testInfo.project.name === "firefox" && error.includes("NS_BINDING_ABORTED")))).toEqual([]);
 });

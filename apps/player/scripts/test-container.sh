@@ -83,6 +83,8 @@ else
   [[ "$("$engine" image inspect --format '{{index .Config.Labels "org.opencontainers.image.revision"}}' "$image")" == "$revision" ]]
 fi
 create_state_volumes
+# shellcheck disable=SC2016 # The container shell expands these variables.
+"$engine" "${run[@]}" --rm --entrypoint sh "$image" -c 'for package in libssl3t64 openssl openssl-provider-legacy; do dpkg --compare-versions "$(dpkg-query -W "$package" | cut -f2)" ge "3.5.7-1~deb13u3" || exit 1; done'
 "$engine" "${run[@]}" --rm --entrypoint fpcalc "$image" -version >/dev/null
 fingerprint="$("$engine" "${run[@]}" --rm --entrypoint sh "$image" -c 'ffmpeg -hide_banner -loglevel error -f lavfi -i sine=frequency=440:duration=15 /tmp/fingerprint.wav && fpcalc -json /tmp/fingerprint.wav')"
 python3 -c 'import json, sys; result = json.load(sys.stdin); assert result["duration"] == 15 and isinstance(result["fingerprint"], str) and result["fingerprint"]' <<<"$fingerprint"

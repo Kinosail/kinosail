@@ -1,0 +1,377 @@
+{
+  "sourceCommit": "397e2e096a927e6f30143bc03d1fd6290bf7b0ac",
+  "baselineCommit": "8a488dda499e672478c0f9a9c4debabdbac94a9f",
+  "date": "2026-09-30",
+  "sourceVerifiedAgainstRun": true,
+  "source": [
+    {
+      "path": "apps/player/apps/android/app/src/main/java/com/kinosail/player/core/ReaderPageView.kt",
+      "sha256": "2a10e3256975073e0ed3a276f997f9a1adc6e109481e2b38cd778309a29eb5e4"
+    },
+    {
+      "path": "apps/player/apps/android/app/src/test/java/com/kinosail/player/core/ReaderAccessibilityTest.kt",
+      "sha256": "f26d626f077bc665e85879b3591644f1cd6f64006e81a82ebd908c0f561767ae"
+    }
+  ],
+  "environment": {
+    "host": "macOS ARM64",
+    "java": "17.0.20.1",
+    "sdk": "/Users/mikeo/.cache/kinosail-android-sdk",
+    "robolectricApi": 35
+  },
+  "commands": {
+    "finalFull": [
+      "./gradlew",
+      ":app:testDebugUnitTest",
+      ":watchcore:testDebugUnitTest",
+      ":wear:testDebugUnitTest",
+      ":app:assembleDebug",
+      ":wear:assembleDebug",
+      ":app:assembleDebugAndroidTest",
+      "--max-workers=2"
+    ],
+    "gallery": [
+      "./gradlew",
+      ":app:testDebugUnitTest",
+      "--tests",
+      "com.kinosail.player.core.ReaderAccessibilityTest",
+      "--tests",
+      "com.kinosail.player.core.ReaderPolishGalleryTest",
+      "--max-workers=2"
+    ]
+  },
+  "results": {
+    "app": {
+      "tests": 112,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "watchcore": {
+      "tests": 6,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "wear": {
+      "tests": 5,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    }
+  },
+  "data": "Synthetic null/white/drawn bitmap pages and controlled notices; no production data",
+  "boundaries": "Robolectric component rendering; no emulator, physical device, live API, signed release, store, or deployment claim",
+  "artifacts": [
+    {
+      "path": "ReaderAccessibilityTest.baseline.kt.txt",
+      "sha256": "507bbb335208282dc7f0908e1992b6c840fac8e1b421aeb4e19a8ab4d8845f31"
+    },
+    {
+      "path": "ReaderPageView.baseline.kt.txt",
+      "sha256": "02d1a17ad2d8db61d34fb83aca5694943464367e1e0c9bb0d24f0c318145ef89"
+    },
+    {
+      "path": "ReaderPolishGalleryTest.kt.txt",
+      "sha256": "9c002a57f694a02c1670bde88b0740d120ee2e62bf73d3a84dfd8021cec1a5d3"
+    },
+    {
+      "path": "evidence/landscape-failed-semantics.txt",
+      "sha256": "888891422e5513a4fa70e2c7cb11360f4f936e14c0e16d3916f36da132cdcd90"
+    },
+    {
+      "path": "evidence/landscape-failed.png",
+      "sha256": "3875f8c2de6f005fee2c4c548603c311a69e65ab9d05bd7f4ea107f7417e02c5"
+    },
+    {
+      "path": "evidence/landscape-initial-semantics.txt",
+      "sha256": "b7a7094f127cccdf34f2bad486df3f3861a6ea8573df527558a45823b9005146"
+    },
+    {
+      "path": "evidence/landscape-initial.png",
+      "sha256": "194618048df78a3032a50ae192eb9a81fbadbcf62ab6855336a7eaaaa405aa1e"
+    },
+    {
+      "path": "evidence/landscape-loaded-semantics.txt",
+      "sha256": "b331202b0eb8bdbe7eb03caf2573e1be3c7d4b6f4f2e7eb7ae261bb2a7fbfdb6"
+    },
+    {
+      "path": "evidence/landscape-loaded.png",
+      "sha256": "ef6338d00a58acc0267d0a12145ed73f3560735c5a9fce60dd522472a10cd9d9"
+    },
+    {
+      "path": "evidence/landscape-page-pending-semantics.txt",
+      "sha256": "a2a37809bbd9295403809ec65d3b4c80b37c6a463ddd69d520347471f19d13ce"
+    },
+    {
+      "path": "evidence/landscape-page-pending.png",
+      "sha256": "81c555c81963b12999172a0ca9aee6b2e2c2a52a2fc02a1da7072e937d656ab4"
+    },
+    {
+      "path": "evidence/landscape-save-failed-semantics.txt",
+      "sha256": "9cf2dc3e335e151007cc9b7c4d91da12537444063947c6073b3c5dd626168f78"
+    },
+    {
+      "path": "evidence/landscape-save-failed.png",
+      "sha256": "9dd420fbc035a5dc285cedf950170092d3baf11fb85def851e611858da75cf43"
+    },
+    {
+      "path": "evidence/landscape-unsupported-semantics.txt",
+      "sha256": "eb82e852901ecc93cea619753f0bb48c9d8b2707f39357d20fff482ed1da974d"
+    },
+    {
+      "path": "evidence/landscape-unsupported.png",
+      "sha256": "53465061139240b3c09fe3e027bb5e6af7a3d4056cdc3b2431745fefd7223426"
+    },
+    {
+      "path": "evidence/phone-failed-semantics.txt",
+      "sha256": "80a68ac1c3b68d43cc2df80bf5299fc7ecc4b5dce3e19b9bcc1118ba188618c4"
+    },
+    {
+      "path": "evidence/phone-failed.png",
+      "sha256": "06eff1148ec097a7694ff8d775b1d9f40b5a65015f9a026d00a9eca5f6baad8d"
+    },
+    {
+      "path": "evidence/phone-initial-semantics.txt",
+      "sha256": "82476dd7c504c0ec56e6aa864922805d50d6f7e05f60fbedde07e120ed338555"
+    },
+    {
+      "path": "evidence/phone-initial.png",
+      "sha256": "68932f580971c083ccf53330cabfae42cbfbd1ac40a50d8d7ab3dc382294aa33"
+    },
+    {
+      "path": "evidence/phone-loaded-semantics.txt",
+      "sha256": "b55aac0244fac7c6a357bacd55078d6d0827428f15e2028dcfca6980c1f3e04d"
+    },
+    {
+      "path": "evidence/phone-loaded.png",
+      "sha256": "06d8252db7128a97464ae9619521f586336155e4904e084fa070dede2afaea5f"
+    },
+    {
+      "path": "evidence/phone-page-pending-semantics.txt",
+      "sha256": "aa97be15541d4ab1f1b46a1dea52bc1f6d91d231f92b08f5dfe65808ce4fbd60"
+    },
+    {
+      "path": "evidence/phone-page-pending.png",
+      "sha256": "1ea97c6cbdf2795676c752657842aa4f82500a5b5a12a25d00494bdeaea816f4"
+    },
+    {
+      "path": "evidence/phone-save-failed-before.png",
+      "sha256": "9d4196cde66875c2bd359113f7c13fb6b1af372cc90d3fed19f53d6be4135a40"
+    },
+    {
+      "path": "evidence/phone-save-failed-semantics.txt",
+      "sha256": "b804f2cc1164d35caa8c75d98c5f1e28b662f8326f7c0c5c86959aea86e32337"
+    },
+    {
+      "path": "evidence/phone-save-failed.png",
+      "sha256": "e5b0d8d5375987c3c128d5d88bcb4ddc7d3dcb877f6ca627abe2c6414e8c00f9"
+    },
+    {
+      "path": "evidence/phone-unsupported-semantics.txt",
+      "sha256": "789a731cc95fe61fc79cfd28f39604001523f03c6b9f9c4d0fc4e82b25b39f52"
+    },
+    {
+      "path": "evidence/phone-unsupported.png",
+      "sha256": "cf7b1bee882605ae6cb589cecfef8012f16cd0193bcc34978032cde109398c68"
+    },
+    {
+      "path": "evidence/tablet-failed-semantics.txt",
+      "sha256": "8daec5bfedf3ca8e7a1c78f4fd5901863a8d4a07d84843b9cb78f6f494398024"
+    },
+    {
+      "path": "evidence/tablet-failed.png",
+      "sha256": "6b6f5fc35896006632ff072ee77119392d4babbd137a6d46e7e8fd4b174f1b2b"
+    },
+    {
+      "path": "evidence/tablet-initial-semantics.txt",
+      "sha256": "f924e47d5ccfb0b0c111ac9be83dd9c5a894e78b9eea594cbfc0ddcc084b3444"
+    },
+    {
+      "path": "evidence/tablet-initial.png",
+      "sha256": "d8cbd57617626e3c9bc896c6da34ff7e460ef87885dd4d78e6e10f019ac5297a"
+    },
+    {
+      "path": "evidence/tablet-loaded-semantics.txt",
+      "sha256": "661755d22954d49ec409961e1182c20e33a80a12adf7444f127ca1474775eb5a"
+    },
+    {
+      "path": "evidence/tablet-loaded.png",
+      "sha256": "4f7138e057d39867bde3c17aa46893483335129bb669b3c7060df92b919ce31c"
+    },
+    {
+      "path": "evidence/tablet-page-pending-semantics.txt",
+      "sha256": "d64bf2a0d2f7774ee94199dd2d3a56258cb4970f473206fb48c20e13dda64fcb"
+    },
+    {
+      "path": "evidence/tablet-page-pending.png",
+      "sha256": "89a9ae852797f479705672c096dbfb5ff4985534652273175c733a4e4f9365b0"
+    },
+    {
+      "path": "evidence/tablet-save-failed-semantics.txt",
+      "sha256": "b3e292f05fcf9643d3071f3742e39a8f0ee6452d2d92dacc12b2429062202787"
+    },
+    {
+      "path": "evidence/tablet-save-failed.png",
+      "sha256": "853335e8228ca2993c611305f171b2ce9ef81077114fbda9e8457ebb625aab90"
+    },
+    {
+      "path": "evidence/tablet-unsupported-semantics.txt",
+      "sha256": "c6a14b1d9ac09ba11455d3862cdbb9f7e57a83cfc358163d9bf499c0ffc8ff25"
+    },
+    {
+      "path": "evidence/tablet-unsupported.png",
+      "sha256": "bf6255cfae994b9b0c6eca89245c9d3d315e24434f5cd5065c9d31adb12e47cf"
+    },
+    {
+      "path": "gallery.html",
+      "sha256": "79554caf9012e9913f44b69b4947b8c502ee6dd5ee80a6821a20b8d4b4e45d70"
+    },
+    {
+      "path": "initial-ci-checkpoint.json",
+      "sha256": "55fb49927c302dad3d43089248810991a79a298cb956aff8126c0fd140c73146"
+    },
+    {
+      "path": "native-reader-baseline-context.json",
+      "sha256": "cab6bd857d4942e9c67e9f248af79e6cf5a978cbfa4390b6663841db6ea77ce5"
+    },
+    {
+      "path": "native-reader-baseline-results.xml",
+      "sha256": "9235ec74b3b08b3460e8aa0fd36b69616870db28e92b327ad200ae97f66d9fe7"
+    },
+    {
+      "path": "native-reader-baseline.log",
+      "sha256": "fa13b4a08566b568e2c51958f3b390c9b43a74a23e03d3caca5b1e548a6a61d4"
+    },
+    {
+      "path": "native-reader-contrast-red-context.json",
+      "sha256": "86a7294e73e78f397eb11a9cf5ea34fc4d91f08523a3a655d34fcbaaf231b52c"
+    },
+    {
+      "path": "native-reader-contrast-red-results.xml",
+      "sha256": "daf89b3120cabe70092581b0302126bcb4a17ddb683aa52de6fffa7f74775458"
+    },
+    {
+      "path": "native-reader-contrast-red.log",
+      "sha256": "dabcf62911e5b610f2b09bd60d796f39ca707380ef0a758bee68b93d309d8b9f"
+    },
+    {
+      "path": "native-reader-final-TEST-com.kinosail.player.core.ReaderAccessibilityTest.xml",
+      "sha256": "78968d45e5196a63c98149283b95c81338bbf8421078ed0a07b65d89cabd840f"
+    },
+    {
+      "path": "native-reader-final-TEST-com.kinosail.player.core.ReaderPolishGalleryTest.xml",
+      "sha256": "205ad2bc4466aacb4727818e361c32b27807759955b7f6336dea936b371cbb63"
+    },
+    {
+      "path": "native-reader-final-full-context.json",
+      "sha256": "d3b8cc6eac685b7ddb3b70e96c0e2a004c5a570a166677e4d0b01c8302812352"
+    },
+    {
+      "path": "native-reader-final-full.log",
+      "sha256": "137dc2475429d7801ca8039703657fa056abea4eeb966897f61190893d92fdf8"
+    },
+    {
+      "path": "native-reader-final-gallery-context.json",
+      "sha256": "ad15c99e26aa2349c24ea71389bbed103124913d364f8357f3e029a595516a75"
+    },
+    {
+      "path": "native-reader-final-gallery.log",
+      "sha256": "016d5dd29c9ec91b055983425ab66aaea2516561618f94b9a82ed66db5ebeef6"
+    },
+    {
+      "path": "native-reader-full-TEST-com.kinosail.player.core.ReaderAccessibilityTest.xml",
+      "sha256": "c0020c5ff398eb586418cf67f322f9992851c40d159ae3e80ffc84ae437658ec"
+    },
+    {
+      "path": "native-reader-launch-tooling-context.json",
+      "sha256": "fd454f17433538881734df79298f1b69fd80f3fa73aa3a9585b5de6b9c6b1ebf"
+    },
+    {
+      "path": "native-reader-launch-tooling.log",
+      "sha256": "f91533ccc964dd6a31f1a0cddd6e12cdfc0188a1d6ca854242c8b5fa87bc4966"
+    },
+    {
+      "path": "native-reader-loading-authoring-gate.json",
+      "sha256": "b34df502eaa9a3e0eb76511d0688afe17911deddfacb6ee2b2d075356caebd55"
+    },
+    {
+      "path": "native-reader-render-audit.json",
+      "sha256": "0a80d73bec7b9b6e7b9d2ce70321f82551b3147102731e092df04d046a41f785"
+    },
+    {
+      "path": "native-reader-tooling-context.json",
+      "sha256": "3d3662ecc98150c6cd734926b5a63bfb91c23cd3a9f9d981a360278a9806a2e5"
+    },
+    {
+      "path": "native-reader-tooling-verified.log",
+      "sha256": "080475d8cc253547db552e81416446373f3b36e180c1e7033ff5727a8a39a234"
+    },
+    {
+      "path": "native-reader-width-red-context.json",
+      "sha256": "403ebf20d37cc04ccf86a1d037647c2eeb15580ea66f6efd0794f77e6771237b"
+    },
+    {
+      "path": "native-reader-width-red-results.xml",
+      "sha256": "ec7186fb8cdfbce577c3c531784fbd156a26b9c57ba1830034daee1eb5c3a30e"
+    },
+    {
+      "path": "native-reader-width-red.log",
+      "sha256": "5c00e569168a273d38b135e7804e635a9888cf59177fa9ee41922ca4de83c205"
+    },
+    {
+      "path": "report.md",
+      "sha256": "cf3cb924175b1a1dfcb631af9e2b95ea2bf5ca37b873a84f6f4e866b91188e71"
+    }
+  ],
+  "reconciliation": {
+    "originMain": "74e18c46afbb06b35cf835ace8556deb89eb7cd0",
+    "mergeCommit": "309ccd4f4a8e2507307b9e4bc6d9de1292f231b3",
+    "androidSourceHashesUnchanged": true,
+    "upstreamSurface": "Apple playback options and progress persistence",
+    "localRerun": "No Android source changed; original 123-test/build result remains bound by hashes",
+    "hosted": "Fresh required CI pending"
+  },
+  "toolingRepair": {
+    "initialRun": 36790424244,
+    "failure": "stale architecture snapshot from earlier main Go changes",
+    "changedRecords": [
+      "apps/player/internal/server/player.go",
+      "apps/subtitles/internal/server/player.go",
+      "packages/servertest/assets_performance_contract.go"
+    ],
+    "localToolingExitCode": 0,
+    "snapshotSource": [
+      {
+        "path": "apps/player/docs/architecture-explorer/index.html",
+        "sha256": "0a9a3ddf80f637f67530d2a4d7e1de760ca6d734a50c7900439f001e61a0870d"
+      },
+      {
+        "path": "apps/subtitles/docs/architecture-explorer/index.html",
+        "sha256": "6209ee613f5c0f49bbb1f3ea1649134785a4f50be8a285ef6b2e35779ae9772a"
+      }
+    ],
+    "androidSourceUnchanged": true
+  },
+  "launchReconciliation": {
+    "originMain": "b28ccfebefca59744241c24821c83a09249f9919",
+    "mergeCommit": "ab8421e176a620742374d7a2bcb26c821329e4d6",
+    "androidSourceHashesUnchanged": true,
+    "conflicts": [
+      "apps/player/docs/architecture-explorer/index.html",
+      "apps/subtitles/docs/architecture-explorer/index.html"
+    ],
+    "resolution": "regenerated from combined source; byte-identical to current main",
+    "localToolingExitCode": 0,
+    "snapshotSource": [
+      {
+        "path": "apps/player/docs/architecture-explorer/index.html",
+        "sha256": "fe7abc1e52fcbb1abcdd11b49bb43dd933e0415809c18027a2f1a1f6ac57de88"
+      },
+      {
+        "path": "apps/subtitles/docs/architecture-explorer/index.html",
+        "sha256": "713c73f247331ef8192d43438ca5efe2529bad9b6156ff531aef1a5c6383b616"
+      }
+    ]
+  }
+}

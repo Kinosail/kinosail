@@ -1,0 +1,22 @@
+{
+  "revision": "ab8421e176a620742374d7a2bcb26c821329e4d6",
+  "command": [
+    "make",
+    "tooling-check"
+  ],
+  "sourceState": "main PR #386 launch fixes reconciled; conflict snapshots regenerated to match main; Android hashes unchanged",
+  "started": "2026-09-30T23:29:57.070561+00:00",
+  "artifacts": [
+    {
+      "path": "apps/player/docs/architecture-explorer/index.html",
+      "sha256": "fe7abc1e52fcbb1abcdd11b49bb43dd933e0415809c18027a2f1a1f6ac57de88"
+    },
+    {
+      "path": "apps/subtitles/docs/architecture-explorer/index.html",
+      "sha256": "713c73f247331ef8192d43438ca5efe2529bad9b6156ff531aef1a5c6383b616"
+    }
+  ],
+  "exitCode": 0,
+  "finished": "2026-09-30T23:30:40.193129+00:00",
+  "sourceStable": true
+}

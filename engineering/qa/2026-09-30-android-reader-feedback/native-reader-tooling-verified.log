@@ -1,0 +1,143 @@
+................................................
+----------------------------------------------------------------------
+Ran 48 tests in 1.594s
+
+OK
+Newer main changes affect this app; retain the current production tags.
+Newer main changes affect this app; retain the current production tags.
+Newer main changes affect this app; retain the current production tags.
+.....
+----------------------------------------------------------------------
+Ran 5 tests in 0.368s
+
+OK
+source tool integrity failures stop before extraction or execution
+image scan arguments validated before scans and evidence writes
+.....
+----------------------------------------------------------------------
+Ran 5 tests in 0.004s
+
+OK
+ok  	kinosail.local/quality/metrics	(cached)
+renewed lease for /Users/mikeo/.codex/worktrees/all-app-polish/kinosail
+........
+----------------------------------------------------------------------
+Ran 8 tests in 6.328s
+
+OK
+..
+----------------------------------------------------------------------
+Ran 2 tests in 1.271s
+
+OK
+.....
+----------------------------------------------------------------------
+Ran 5 tests in 6.472s
+
+OK
+Go line limit tests passed
+.........
+----------------------------------------------------------------------
+Ran 9 tests in 9.944s
+
+OK
+.
+----------------------------------------------------------------------
+Ran 1 test in 0.110s
+
+OK
+Go coverage input tests passed
+Already up to date
+Done in 23ms using pnpm v11.22.0
+✔ lint follows the production Go bundle order and shared scopes (933.978333ms)
+✔ bundle discovery rejects circular dependency (3.388875ms)
+✔ bundle discovery rejects unsupported append (3.228542ms)
+✔ browser globals and module imports work without native dependencies (2.503542ms)
+✔ rejects private console output (3.517625ms)
+✔ rejects undeclared globals (2.344291ms)
+✔ rejects duplicate keys (2.013958ms)
+✔ rejects unresolved imports (10.951583ms)
+✔ rejects legacy declarations (2.724375ms)
+✔ rejects invalid typeof (1.978667ms)
+✔ only complete JavaScript scopes are linted and CSS is not JavaScript (2.819167ms)
+ℹ tests 11
+ℹ suites 0
+ℹ pass 11
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 987.749333
+✔ resolves final browser scope and excludes CSS compositions (5.753666ms)
+✔ rejects unresolved dependencies (3.255209ms)
+✔ rejects mixed CSS and JavaScript (2.890917ms)
+✔ rejects circular composition even without a root bundle (3.359ms)
+ℹ tests 4
+ℹ suites 0
+ℹ pass 4
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 88.9905
+✔ CodeQL receives the exact complete script served by the Go bundle (14.924333ms)
+✔ rejects missing source before writing output (10.451792ms)
+✔ rejects directory instead of source before writing output (8.9125ms)
+✔ rejects oversized source before writing output (8.7595ms)
+✔ rejects invalid UTF-8 before writing output (9.394833ms)
+✔ rejects invalid combined syntax before writing output (11.803541ms)
+✔ rejects missing required fragment before writing output (6.52925ms)
+✔ rejects unknown dependency before writing output (8.578083ms)
+✔ rejects too many fragments before writing output (9.032917ms)
+✔ rejects source outside repository before writing output (7.694ms)
+ℹ tests 10
+ℹ suites 0
+ℹ pass 10
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 172.9155
+.
+----------------------------------------------------------------------
+Ran 1 test in 0.740s
+
+OK
+checked /Users/mikeo/.codex/worktrees/all-app-polish/kinosail/apps/player/docs/architecture-explorer/index.html
+checked /Users/mikeo/.codex/worktrees/all-app-polish/kinosail/apps/subtitles/docs/architecture-explorer/index.html
+Architecture explorer tests passed
+Nox deployment 0123456789abcdef0123456789abcdef01234567 is not an ancestor of main aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+Waiting for successful main CI at 0123456789abcdef0123456789abcdef01234567
+Waiting for successful main CI at 0123456789abcdef0123456789abcdef01234567
+Waiting for successful main CI at 0123456789abcdef0123456789abcdef01234567
+Waiting for successful main CI at 0123456789abcdef0123456789abcdef01234567
+jq: parse error: Unfinished JSON term at EOF at line 2, column 0
+Waiting for successful main CI at 0123456789abcdef0123456789abcdef01234567
+No verified player production image for 0123456789abcdef0123456789abcdef01234567
+Nox deployment 0123456789abcdef0123456789abcdef01234567 is no longer current main (aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa)
+Nox deployment input and scan-gate tests passed
+Nox image build failed; log: /var/folders/39/bvv1ssmd5l7fc4610c5nh5j80000gn/T//kinosail-player-nox-build-0123456789ab.log
+compiler error
+Nox remote deployment tests passed
+Nox auto-deploy install tests passed
+.....usage: deploy [-h] --team TEAM --iphone IPHONE --tv TV [--install]
+deploy: error: the following arguments are required: --team, --iphone, --tv
+usage: deploy [-h] --team TEAM --iphone IPHONE --tv TV [--install]
+deploy: error: unrecognized arguments: --unexpected
+usage: deploy [-h] --team TEAM --iphone IPHONE --tv TV [--install]
+deploy: error: team must be ten uppercase alphanumeric characters; devices must differ
+usage: deploy [-h] --team TEAM --iphone IPHONE --tv TV [--install]
+deploy: error: team must be ten uppercase alphanumeric characters; devices must differ
+usage: deploy [-h] --team TEAM --iphone IPHONE --tv TV [--install]
+deploy: error: team must be ten uppercase alphanumeric characters; devices must differ
+usage: deploy [-h] --team TEAM --iphone IPHONE --tv TV [--install]
+deploy: error: argument --iphone: expected a paired CoreDevice UUID or Apple device identifier
+usage: deploy [-h] --team TEAM --iphone IPHONE --tv TV [--install]
+deploy: error: team must be ten uppercase alphanumeric characters; devices must differ
+.....iphone: Swift scaffold is build-only; installed device app is unchanged
+..
+----------------------------------------------------------------------
+Ran 12 tests in 0.050s
+
+OK
+validated four CI, app, publication, and version-release workflows

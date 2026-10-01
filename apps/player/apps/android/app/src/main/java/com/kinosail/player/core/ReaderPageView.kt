@@ -59,8 +59,8 @@ internal fun ReaderPageView(title: String, bitmap: Bitmap?, page: Int, total: In
                             translationX = pan.x, translationY = pan.y))
             }
         }
-        Column(Modifier.fillMaxSize().padding(16.dp), verticalArrangement = Arrangement.SpaceBetween) {
-            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween,
+        Column(Modifier.fillMaxSize().padding(vertical = 16.dp), verticalArrangement = Arrangement.SpaceBetween) {
+            Row(Modifier.fillMaxWidth().padding(horizontal = 16.dp), horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically) {
                 Text(title, style = MaterialTheme.typography.titleMedium,
                     color = MaterialTheme.colorScheme.onBackground,
@@ -69,8 +69,9 @@ internal fun ReaderPageView(title: String, bitmap: Bitmap?, page: Int, total: In
                     enabled = bitmap != null) { Text(if (zoom > 1f) "Fit" else "Zoom") }
                 TextButton(onClick = close) { Text(interfaceText("Done")) }
             }
-            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                if (total == 0 && notice == null) CircularProgressIndicator()
+            Column(Modifier.fillMaxWidth().background(MaterialTheme.colorScheme.background).padding(horizontal = 16.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                if (bitmap == null && notice == null) CircularProgressIndicator()
                 notice?.let {
                     Text(it, color = MaterialTheme.colorScheme.error,
                         modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite })

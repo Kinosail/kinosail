@@ -48,8 +48,8 @@ func TestProbePlatformDefaultsEachMissingField(t *testing.T) {
 }
 
 func TestProbeDiscoversPortableBackendsAndCodecs(t *testing.T) { //nolint:cyclop // One probe must expose coherent backend and codec evidence.
-	t.Parallel()
 	ffmpeg := fakeFFmpeg(t, "libx264 libx265 libsvtav1 libvpx-vp9 libvvenc h264_qsv hevc_qsv av1_qsv vp9_qsv qsv h264_v4l2m2m hevc_v4l2m2m h264_mf hevc_mf av1_mf")
+	t.Parallel()
 	video := filepath.Join(t.TempDir(), "video11")
 	linux := probe(context.Background(), ProbeOptions{Application: "Kinosail Player", FFmpeg: ffmpeg, Devices: []string{video}, Enabled: true, GOOS: "linux", GOARCH: "arm64"}, func(string) bool { return true }, func() string { return "" })
 	if backend := linux.Backend("v4l2m2m"); !backend.Usable || backend.Device != video || backend.Status != "Ready to test" {
@@ -95,8 +95,8 @@ func TestPortableBackendDeviceRequirements(t *testing.T) {
 }
 
 func TestProbeRequiresCompleteAccessibleHardware(t *testing.T) {
-	t.Parallel()
 	ffmpeg := fakeFFmpeg(t, "libx264 h264_qsv qsv h264_rkmpp rkmpp")
+	t.Parallel()
 	render := "/dev/dri/renderD128"
 	options := ProbeOptions{Application: "Kinosail Player", FFmpeg: ffmpeg, Devices: []string{render}, Enabled: true, GOOS: "linux", GOARCH: "amd64"}
 	denied := probe(context.Background(), options, func(string) bool { return false }, func() string { return "" })
@@ -116,7 +116,6 @@ func TestProbeRequiresCompleteAccessibleHardware(t *testing.T) {
 }
 
 func TestProbeSoftwareStatesAndDefaults(t *testing.T) {
-	t.Parallel()
 	states := []struct {
 		options ProbeOptions
 		status  string
@@ -127,6 +126,7 @@ func TestProbeSoftwareStatesAndDefaults(t *testing.T) {
 		{ProbeOptions{Application: "Kinosail Player", Enabled: true, FFmpeg: fakeFFmpeg(t, "libx264rgb")}, "FFmpeg update needed"},
 		{ProbeOptions{Application: "Kinosail Player", Enabled: true, FFmpeg: fakeFFmpeg(t, "libx264")}, "Ready"},
 	}
+	t.Parallel()
 	for _, test := range states {
 		capabilities := probe(context.Background(), test.options, func(string) bool { return false }, func() string { return "" })
 		if got := capabilities.Backend("none").Status; got != test.status {
@@ -200,6 +200,18 @@ func TestDeviceDiscoveryAndBoundedProbeOutput(t *testing.T) { //nolint:cyclop //
 	}
 }
 
+func TestFFmpegCapabilitiesBoundsProcessOutput(t *testing.T) {
+	ffmpeg := fakeFFmpeg(t, strings.Repeat(" ", 256<<10)+"h264_v4l2m2m")
+	t.Parallel()
+	output, err := ffmpegCapabilities(t.Context(), ffmpeg, "-encoders")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(output) > (256<<10)+len("\nstderr-capability\n") || strings.Contains(output, "h264_v4l2m2m") {
+		t.Fatalf("probe retained output beyond its limit: %d bytes", len(output))
+	}
+}
+
 func TestLinuxHardwarePlatformChecksBothLocations(t *testing.T) {
 	t.Parallel()
 	_ = linuxHardwarePlatform()
@@ -239,6 +251,7 @@ func TestDeviceKindsRejectLookalikes(t *testing.T) {
 
 func fakeFFmpeg(t *testing.T, capabilities string) string {
 	t.Helper()
+	// Write before t.Parallel: forked probes can briefly inherit writable descriptors.
 	path := filepath.Join(t.TempDir(), "ffmpeg")
 	script := "#!/bin/sh\nprintf '%s\\n' '" + capabilities + "'\nprintf 'stderr-capability\\n' >&2\n"
 	if err := os.WriteFile(path, []byte(script), 0o700); err != nil { //nolint:gosec // Test fixture must be executable.

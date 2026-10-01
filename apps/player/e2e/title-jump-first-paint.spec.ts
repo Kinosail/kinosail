@@ -46,11 +46,18 @@ test("populated mobile library keeps the compact title jump while navigation loa
     await route.continue();
   });
 
-  await page.goto("/?view=movies", { waitUntil: "commit" });
-  await expect(page.getByRole("button", { name: "Jump to title" })).toBeVisible();
-  await expect(page.locator("[data-title-jump-index]")).toBeHidden();
-  await page.screenshot({ path: testInfo.outputPath("mobile-title-jump-before-navigation.png") });
-  releaseNavigation();
+  try {
+    await page.goto("/?view=movies", { waitUntil: "commit" });
+    await expect(page.getByRole("button", { name: "Jump to title" })).toBeVisible();
+    await expect(page.locator("[data-title-jump-index]")).toBeHidden();
+    await testInfo.attach("first-paint-before-navigation", { body: JSON.stringify({
+      navigationHeld: true, compactControlVisible: true, expandedIndexHidden: true,
+      viewport: page.viewportSize(), revision: process.env.KINOSAIL_TEST_REVISION,
+    }), contentType: "application/json" });
+  } finally {
+    // Screenshots wait for fonts; their readiness depends on deferred scripts.
+    releaseNavigation();
+  }
   await page.waitForLoadState("domcontentloaded");
   await page.getByRole("button", { name: "Jump to title" }).click();
   await expect(page.getByRole("dialog", { name: "Jump to title" })).toBeVisible();

@@ -1,0 +1,32 @@
+{
+  "revision": "8a488dda499e672478c0f9a9c4debabdbac94a9f",
+  "sourceState": "loading fix present, contrast background unchanged",
+  "command": [
+    "./gradlew",
+    ":app:testDebugUnitTest",
+    "--tests",
+    "com.kinosail.player.core.ReaderAccessibilityTest.savingErrorRemainsReadableOverALightPage",
+    "--max-workers=2"
+  ],
+  "environment": {
+    "host": "macOS ARM64",
+    "java": "17.0.20.1",
+    "robolectricApi": 35,
+    "graphics": "NATIVE",
+    "size": "390x844dp xhdpi"
+  },
+  "data": "Synthetic all-white 600x900 page and saving error; measure error foreground contrast against actually rendered background",
+  "started": "2026-09-30T23:06:28.448572+00:00",
+  "artifacts": [
+    {
+      "path": "apps/player/apps/android/app/src/main/java/com/kinosail/player/core/ReaderPageView.kt",
+      "sha256": "b54e5ee36353e063fc775166448a1c8b91b897a73f001351f6d4407c5dc61007"
+    },
+    {
+      "path": "apps/player/apps/android/app/src/test/java/com/kinosail/player/core/ReaderAccessibilityTest.kt",
+      "sha256": "b30fdf450631f5249e60ad792cd3eef460bc3d5ee2df9ea3cb9770d8c9639609"
+    }
+  ],
+  "exitCode": 1,
+  "finished": "2026-09-30T23:06:46.348764+00:00"
+}

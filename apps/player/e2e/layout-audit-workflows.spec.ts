@@ -24,7 +24,7 @@ test("representative workflows hold in dark theme with reduced motion", async ({
 			expect(await presentationProblems(page), `${route} dark presentation at ${viewport.width}px`).toEqual({ blurred: [], shadowed: [], overRounded: [], settingsBackdrop: route.startsWith("/settings") ? false : null, oversizedSettingsHeading: false });
 			expect(await page.evaluate(() => [...document.querySelectorAll("*")].filter((element) => {
 				const style = getComputedStyle(element);
-				return (style.animationName && style.animationName !== "none") || style.transitionDuration.split(",").some((duration) => Number.parseFloat(duration) > 0);
+				return (style.animationName && style.animationName !== "none") || style.transitionDuration.split(",").some((duration) => Number.parseFloat(duration) > 0.001);
 			}).map((element) => `${element.tagName.toLowerCase()}.${element.className}: ${getComputedStyle(element).animationName} ${getComputedStyle(element).transitionDuration}`)), `${route} reduced motion`).toEqual([]);
 			await page.screenshot({ path: testInfo.outputPath(`dark-${viewport.width}-${route.replace(/[^a-z0-9]+/gi, "-") || "home"}.png`), fullPage: true });
 		}

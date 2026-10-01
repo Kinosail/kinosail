@@ -73,7 +73,7 @@ test("double-clicking a compact menu shortcut starts one navigation", async ({ p
 
 	const actions = page.locator("details.nav-more");
 	await actions.locator("summary").click();
-	const shortcut = actions.locator(".nav-more-menu a[href^='/?view=']").first();
+	const shortcut = actions.locator(".nav-more-menu a[href^='/?view=']:not([href='/?view=list']):visible").first();
 	await expect(shortcut).toBeVisible();
 	const targetHref = await shortcut.getAttribute("href");
 	if (!targetHref) throw new Error("Library shortcut target is missing");
@@ -83,7 +83,7 @@ test("double-clicking a compact menu shortcut starts one navigation", async ({ p
 		if (request.isNavigationRequest() && request.resourceType() === "document") documentRequests.push(new URL(request.url()).pathname + new URL(request.url()).search);
 	});
 	await page.evaluate(() => {
-		const link = document.querySelector(".nav-more-menu a[href^='/?view=']");
+		const link = [...document.querySelectorAll(".nav-more-menu a[href^='/?view=']:not([href='/?view=list'])")].find(link => link.getClientRects().length && getComputedStyle(link).display !== "none");
 		if (!(link instanceof HTMLAnchorElement)) throw new Error("Library shortcut is missing");
 		link.click();
 		link.click();

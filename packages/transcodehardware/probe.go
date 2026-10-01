@@ -150,17 +150,19 @@ func ffmpegCapabilities(ctx context.Context, ffmpeg, argument string) (string, e
 }
 
 type cappedBuffer struct {
-	bytes.Buffer
+	content   bytes.Buffer
 	remaining int
 }
 
 func (buffer *cappedBuffer) Write(value []byte) (int, error) {
 	size := len(value)
 	value = value[:min(len(value), buffer.remaining)]
-	_, _ = buffer.Buffer.Write(value)
+	_, _ = buffer.content.Write(value)
 	buffer.remaining -= len(value)
 	return size, nil
 }
+
+func (buffer *cappedBuffer) String() string { return buffer.content.String() }
 
 func canOpenHardwareDevice(path string) bool {
 	device, err := os.OpenFile(path, os.O_RDWR, 0) //nolint:gosec // Paths are fixed GPU device nodes or explicit installation configuration.

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.kinosail.player.core.ReaderPolishGalleryTest" tests="3" skipped="0" failures="0" errors="0" timestamp="2026-09-30T23:11:53.277Z" hostname="MikeOs-MacBook-Pro.local" time="1.912">
+  <properties/>
+  <testcase name="tablet" classname="com.kinosail.player.core.ReaderPolishGalleryTest" time="0.785"/>
+  <testcase name="phone" classname="com.kinosail.player.core.ReaderPolishGalleryTest" time="0.785"/>
+  <testcase name="landscape" classname="com.kinosail.player.core.ReaderPolishGalleryTest" time="0.331"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>
