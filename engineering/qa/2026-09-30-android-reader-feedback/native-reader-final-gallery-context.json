@@ -1,0 +1,59 @@
+{
+  "revision": "8a488dda499e672478c0f9a9c4debabdbac94a9f",
+  "sourceState": "uncommitted reader loading and full-width warning background fix, test-first regressions",
+  "command": [
+    "./gradlew",
+    ":app:testDebugUnitTest",
+    "--tests",
+    "com.kinosail.player.core.ReaderAccessibilityTest",
+    "--tests",
+    "com.kinosail.player.core.ReaderPolishGalleryTest",
+    "--max-workers=2"
+  ],
+  "environment": {
+    "host": "macOS ARM64",
+    "java": "17.0.20.1",
+    "robolectricApi": 35,
+    "graphics": "NATIVE"
+  },
+  "data": "Synthetic title and drawn 600x900 page at phone/tablet/landscape; white page warning contrast regression across both viewport edges and text area",
+  "started": "2026-09-30T23:11:25.564400+00:00",
+  "artifacts": [
+    {
+      "path": "apps/player/apps/android/app/src/main/java/com/kinosail/player/core/ReaderPageView.kt",
+      "sha256": "2a10e3256975073e0ed3a276f997f9a1adc6e109481e2b38cd778309a29eb5e4"
+    },
+    {
+      "path": "apps/player/apps/android/app/src/test/java/com/kinosail/player/core/ReaderAccessibilityTest.kt",
+      "sha256": "f26d626f077bc665e85879b3591644f1cd6f64006e81a82ebd908c0f561767ae"
+    },
+    {
+      "path": "apps/player/apps/android/app/src/test/java/com/kinosail/player/core/ReaderPolishGalleryTest.kt",
+      "sha256": "9c002a57f694a02c1670bde88b0740d120ee2e62bf73d3a84dfd8021cec1a5d3"
+    }
+  ],
+  "exitCode": 0,
+  "finished": "2026-09-30T23:11:56.140937+00:00",
+  "results": [
+    {
+      "name": "com.kinosail.player.core.ReaderPolishGalleryTest",
+      "tests": "3",
+      "skipped": "0",
+      "failures": "0",
+      "errors": "0",
+      "timestamp": "2026-09-30T23:11:53.277Z",
+      "hostname": "MikeOs-MacBook-Pro.local",
+      "time": "1.912"
+    },
+    {
+      "name": "com.kinosail.player.core.ReaderAccessibilityTest",
+      "tests": "7",
+      "skipped": "0",
+      "failures": "0",
+      "errors": "0",
+      "timestamp": "2026-09-30T23:11:35.270Z",
+      "hostname": "MikeOs-MacBook-Pro.local",
+      "time": "17.995"
+    }
+  ]
+}
