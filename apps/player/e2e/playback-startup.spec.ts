@@ -48,7 +48,7 @@ test("selecting a movie starts moving playback promptly", async ({ page }, testI
 	}
 });
 
-for (const source of ["direct", "compatible"]) for (const savedPosition of [0, 1]) test(`blocked autoplay leaves one Play control that starts ${source} video from ${savedPosition ? "saved progress" : "the beginning"}`, async ({ page, browserName }, testInfo) => {
+for (const source of ["direct", "compatible"]) for (const savedPosition of [0, 1]) test(`blocked autoplay leaves one Play control that starts ${source} video from ${savedPosition ? "saved progress" : "the beginning"}`, { tag: source === "compatible" && savedPosition ? ["@smoke"] : [] }, async ({ page, browserName }, testInfo) => {
 	await page.setViewportSize({ width: 390, height: 844 });
 	// Exercise WebKit's native HLS adapter, as mobile Safari does for automatic compatibility.
 	if (browserName === "webkit") await page.route("**/static/hls.min.js*", (route) => route.fulfill({ contentType: "application/javascript", body: "" }));
