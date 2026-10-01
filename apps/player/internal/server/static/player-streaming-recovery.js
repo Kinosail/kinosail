@@ -41,6 +41,12 @@ player.addEventListener("seeking", () => {
   if (!adaptiveActive || !fullDuration || adaptiveSeekSwitch) return;
   if (!hls) {
     const target = player.currentTime;
+    const mediaTarget = target - playbackTimelineOffset;
+    for (const ranges of [player.seekable, player.buffered]) {
+      for (let index = 0; index < ranges.length; index++) {
+        if (mediaTarget >= ranges.start(index) && mediaTarget <= ranges.end(index)) return;
+      }
+    }
     if (streamOffset(target) !== playbackTimelineOffset) {
       adaptiveSeekSwitch = true;
       adaptiveActive = false;

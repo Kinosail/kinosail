@@ -122,8 +122,10 @@ for (const source of ["direct", "compatible"]) for (const savedPosition of [0, 1
 	if (source === "compatible" && savedPosition && browserName === "webkit") {
 		// Safari preparation also restores the start of the loaded native HLS window.
 		// Use real media seeking and decoding so a frozen application timeline is observable.
-		await page.locator("video").evaluate((video: HTMLVideoElement) => { video.pause(); video.currentTime = Number(video.dataset.start); });
+		const originalSource = await page.locator("video").evaluate((video: HTMLVideoElement) => video.currentSrc);
+		await page.locator("video").evaluate((video: HTMLVideoElement) => { video.pause(); video.currentTime = Number(video.dataset.start) + 0.5; });
 		await expect.poll(() => page.locator("video").evaluate((video: HTMLVideoElement) => video.seeking)).toBe(false);
+		await expect(page.locator("video")).toHaveJSProperty("currentSrc", originalSource);
 		await page.locator(".player-center-control[data-player-toggle]").click();
 		await expect.poll(() => page.locator("video").evaluate((video: HTMLVideoElement) => video.currentTime), { timeout: 5_000 }).toBeGreaterThan(savedPosition + 0.5);
 		await expect(page.locator("[data-player-status]")).toBeHidden();
