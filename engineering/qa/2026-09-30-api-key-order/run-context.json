@@ -104,8 +104,52 @@
       "sha256": "9c91ea0537a3e7d8ba7790911e1168de864eabf3d0f8527164a83f46190ef975"
     },
     {
+      "path": "reconciled-api-key-tests-disk-failure.log",
+      "sha256": "3201db6a9e8de5d556fc91805d47ab7a0d2e2ee333a65af1e89e9dd52d1b70a1"
+    },
+    {
+      "path": "reconciled-api-key-tests.log",
+      "sha256": "d91721b321c135bbf5659bfb215c5eafa66c89700c49f36967d4f36a9f73f3a6"
+    },
+    {
+      "path": "reconciled-catalog-tests.log",
+      "sha256": "9a3e90b23272447a79675491c3f00c2297e22cb048403b1b6f6b3db6575dc5b0"
+    },
+    {
+      "path": "reconciled-packages-tests.log",
+      "sha256": "fe55e1b009a7e7d80f3a220952a71d1d4cf8b8d10f153c13d998af051736257e"
+    },
+    {
+      "path": "reconciled-player-verify-latest.log",
+      "sha256": "54c95e2a64c7855c5beb87841dedae868527f625259fb9d697e95d73da1c6eb8"
+    },
+    {
+      "path": "reconciled-player-verify.log",
+      "sha256": "54c95e2a64c7855c5beb87841dedae868527f625259fb9d697e95d73da1c6eb8"
+    },
+    {
+      "path": "reconciled-subtitles-verify-latest.log",
+      "sha256": "40868b4afe48cabfb4a5eb46cf6118f1e8566a591f15867976878e23217fe840"
+    },
+    {
+      "path": "reconciled-subtitles-verify.log",
+      "sha256": "40868b4afe48cabfb4a5eb46cf6118f1e8566a591f15867976878e23217fe840"
+    },
+    {
+      "path": "reconciled-tooling-latest.log",
+      "sha256": "2f19dc3ea032440804458ad269a7658f97a1da054495d96f23723dd7a200b988"
+    },
+    {
+      "path": "reconciled-tooling.log",
+      "sha256": "a99234c09855175e48316ed4eed11be7423febeb609123d86fefe8101cf9dbc3"
+    },
+    {
+      "path": "reconciliation.json",
+      "sha256": "db54de4b9bb530325305b92adb9c752978c3622a63416564d7ae0bd0cde8a8e7"
+    },
+    {
       "path": "report.md",
-      "sha256": "6187259a304e684bb356eef94e4135cd8846e1f9d87b4c7cd981788d8180e668"
+      "sha256": "9d0b23a8da84080facd8b79f6e81164606d152e73fe7b3a2d1a43f7ee02a98ca"
     },
     {
       "path": "shared-package-full-lint.log",
@@ -123,5 +167,7 @@
       "path": "tooling-check.log",
       "sha256": "6b85d31a5f54e6da66584959efa20f3c708916c3f0a0d202c4d2bb39f57cfd48"
     }
-  ]
+  ],
+  "reconciledMain": "f1e7139ca5b38b7db57280adc2c02059b9d3ef34",
+  "reconciledHead": "4fb500aedcefb45fcd9a5297e35f4f3e6dadfdcd"
 }

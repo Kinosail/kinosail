@@ -305,7 +305,7 @@
     },
     {
       "path": "report.md",
-      "sha256": "3ec428e8a3a47708b66407e3ea34ed29802601f932bb3b8ba54f8d166484d31c"
+      "sha256": "d7757e3ae2830c345f4a036e66f9e920c8ad6224b0ead7d77c25091e1313e48c"
     },
     {
       "path": "tv-fixture-correction.md",
@@ -321,5 +321,7 @@
     "diff-check": "PASS",
     "player verify-changed": "PASS source-file cap and diff checks",
     "artifact gitleaks": "PASS"
-  }
+  },
+  "reconciledMain": "f1e7139ca5b38b7db57280adc2c02059b9d3ef34",
+  "reconciledHead": "4fb500aedcefb45fcd9a5297e35f4f3e6dadfdcd"
 }

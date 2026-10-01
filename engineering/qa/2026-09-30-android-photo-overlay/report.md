@@ -38,3 +38,7 @@ The first repaired run passed contrast but failed TV zoom because the test used 
 These are Robolectric native graphics renders of the real client flow against a synthetic HTTP fixture. They are not emulator screenshots, live Server integration, physical-device, TalkBack-service, gesture, frame-rate or signed-store evidence. No Android device was attached and the host had about 1 GB free. The unchanged empty library route is outside this photo-screen test. Missing photo permission verifies the screen's unavailable-content state.
 
 The black backdrop occupies the existing overlay area. It improves legibility while covering that portion of the photo. The underlying photo layout and zoom logic are unchanged.
+
+## Reconciled main
+
+The branch incorporates main `f1e7139ca5b38b7db57280adc2c02059b9d3ef34`. Android source and test hashes remain unchanged, so the 131-test and build evidence still applies. API-key sorting and shared test coverage match the already-merged upstream change. Both current changed-app gates, shared package tests, the latest catalog tests and root tooling pass. Fresh hosted CI is required on the reconciled review head.
