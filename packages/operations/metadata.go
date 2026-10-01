@@ -5,6 +5,8 @@ import (
 	"errors"
 	"fmt"
 	"maps"
+	"reflect"
+	"slices"
 	"sync"
 
 	"github.com/MikeO7/kinosail/packages/library"
@@ -145,7 +147,16 @@ func fetchMetadataGroup(ctx context.Context, config MetadataRefresh, group []lib
 	showArtwork, showBackdrop, backdropChecked := "", "", false
 	var downloadErr error
 	for position, item := range group {
-		record, err := config.Download(ctx, results[position])
+		var missingImages []string
+		for _, image := range results[position].Images {
+			if !metadata.RegularFile(image.Target) {
+				missingImages = append(missingImages, image.Target)
+			}
+		}
+		record, err := results[position].Record, error(nil)
+		if previous, found := config.Record(item.ID); !found || len(missingImages) > 0 || !reflect.DeepEqual(previous, record) {
+			record, err = config.Download(ctx, results[position])
+		}
 		if err != nil {
 			downloadErr = err
 		}
@@ -158,9 +169,22 @@ func fetchMetadataGroup(ctx context.Context, config MetadataRefresh, group []lib
 			record.ShowBackdrop = showBackdrop
 			record.BackdropChecked = backdropChecked
 		}
+		if previous, found := config.Record(item.ID); found && reflect.DeepEqual(previous, record) && metadataApplied(item, record) && !slices.ContainsFunc(missingImages, metadata.RegularFile) {
+			continue
+		}
 		updates[item.ID] = record
 	}
 	return updates, downloadErr
+}
+
+func metadataApplied(item library.Item, record metadata.Record) bool {
+	items := metadata.ApplyRecords([]library.Item{item}, map[string]metadata.Record{item.ID: record}, func(path string) string {
+		if metadata.RegularFile(path) {
+			return path
+		}
+		return ""
+	})
+	return reflect.DeepEqual(item, items[0])
 }
 
 func needsMetadata(item library.Item, record metadata.Record, found, configured bool) bool {

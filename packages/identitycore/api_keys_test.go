@@ -143,25 +143,30 @@ func TestCloneAndFormatAPIKeys(t *testing.T) { //nolint:cyclop // Assertions cov
 	}
 }
 
-func TestAPIKeyViewsOrdersCreationTimesAcrossDateLabels(t *testing.T) {
+func TestAPIKeyViewsOrdersCreationTimestampsAcrossDateBoundaries(t *testing.T) {
 	t.Parallel()
-	for _, test := range []struct {
-		name         string
-		older, newer time.Time
-	}{
-		{"month", time.Date(2026, time.September, 29, 12, 0, 0, 0, time.UTC), time.Date(2026, time.October, 1, 12, 0, 0, 0, time.UTC)},
-		{"year", time.Date(2025, time.September, 20, 12, 0, 0, 0, time.UTC), time.Date(2026, time.February, 20, 12, 0, 0, 0, time.UTC)},
-		{"day", time.Date(2026, time.September, 9, 12, 0, 0, 0, time.UTC), time.Date(2026, time.September, 10, 12, 0, 0, 0, time.UTC)},
-		{"same day", time.Date(2026, time.September, 10, 12, 0, 0, 0, time.UTC), time.Date(2026, time.September, 10, 13, 0, 0, 0, time.UTC)},
+	for _, current := range []time.Time{
+		time.Date(2026, time.October, 1, 12, 0, 0, 0, time.UTC),
+		time.Date(2027, time.January, 1, 12, 0, 0, 0, time.UTC),
+		time.Date(2026, time.September, 10, 12, 0, 0, 0, time.UTC),
 	} {
-		t.Run(test.name, func(t *testing.T) {
+		t.Run(current.Format(time.RFC3339), func(t *testing.T) {
 			t.Parallel()
-			views := APIKeyViews(map[string]APIKey{
-				"a-older": {CreatedAt: test.older.Unix()},
-				"z-newer": {CreatedAt: test.newer.Unix()},
-			})
-			if len(views) != 2 || views[0].ID != "z-newer" || views[1].ID != "a-older" {
-				t.Fatalf("API keys are not newest first: %#v", views)
+			keys := map[string]APIKey{
+				"a-older": {CreatedAt: current.Add(-48 * time.Hour).Unix()},
+				"z-newer": {CreatedAt: current.Unix()},
+				"a-tie":   {CreatedAt: current.Add(-time.Hour).Unix()},
+				"z-tie":   {CreatedAt: current.Add(-time.Hour).Unix()},
+			}
+			views := APIKeyViews(keys)
+			want := []string{"z-newer", "a-tie", "z-tie", "a-older"}
+			if len(views) != len(want) {
+				t.Fatalf("views = %#v", views)
+			}
+			for index, id := range want {
+				if views[index].ID != id {
+					t.Fatalf("creation order = %#v; want %v", views, want)
+				}
 			}
 		})
 	}
