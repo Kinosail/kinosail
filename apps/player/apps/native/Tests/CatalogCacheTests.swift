@@ -205,6 +205,23 @@ struct CatalogCacheTests {
         await fixture.client.close()
     }
 
+    @Test(arguments: [#"\u0000"#, #"\u0009"#, #"\u0080"#, #"\u200b"#, #"\u202e"#])
+    func rejectedTextCannotReplaceSavedCatalog(_ escapedControl: String) async throws {
+        let directory = cacheDirectory()
+        defer { try? FileManager.default.removeItem(at: directory) }
+        let fixture = try HTTPFixture(body: library(), viewer: profile(), cacheDirectory: directory)
+        defer { fixture.remove() }
+        _ = try await fixture.client.library(policy: .automatic)
+        setLibrary(fixture, body: library(title: "before" + escapedControl + "after"))
+        await #expect(throws: ClientError.self) { try await fixture.client.library(policy: .reload) }
+        await fixture.client.close()
+        let reopened = try await ServerClient(server: fixture.client.server, viewer: profile(),
+            protocolClasses: [FixtureURLProtocol.self], cacheDirectory: directory)
+        #expect(try await reopened.library(policy: .cached).items.first?.title == "Movie")
+        #expect(fixture.requests.count == 2)
+        await reopened.close()
+    }
+
     private func setLibrary(_ fixture: HTTPFixture, body: String, status: Int = 200) {
         FixtureURLProtocol.entries.withLock {
             $0[fixture.host]?.routes["/api/v1/library"] = .init(data: Data(body.utf8), status: status, headers: [:])

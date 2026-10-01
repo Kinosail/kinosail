@@ -53,4 +53,10 @@ struct CastingSubtitleTests {
         }
         #expect(throws: ClientError.self) { try SubtitleDocument(data: Data(repeating: 65, count: 2 * 1024 * 1024 + 1)) }
     }
+
+    @Test(arguments: ["\t", "\u{7f}", "\u{80}", "\u{9f}", "\u{200b}", "\u{202e}", "\u{feff}"])
+    func rejectsCaptionControls(_ control: String) {
+        let raw = "WEBVTT\n\n00:00.000 --> 00:01.000\nbefore" + control + "after"
+        #expect(throws: ClientError.self) { try SubtitleDocument(data: Data(raw.utf8)) }
+    }
 }

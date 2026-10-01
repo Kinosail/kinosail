@@ -76,7 +76,7 @@ extension Dictionary where Key == String, Value == JSONValue {
         }
         guard case .string(let value) = raw, value.utf8.count <= max,
               !required || !value.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty,
-              !value.unicodeScalars.contains(where: { CharacterSet.controlCharacters.subtracting(.newlines).contains($0) })
+              !value.unicodeScalars.contains(where: { Input.disallowedTextControls.contains($0) })
         else { throw ClientError.invalidResponse }
         return value
     }
@@ -103,6 +103,8 @@ extension Dictionary where Key == String, Value == JSONValue {
 }
 
 enum Input {
+    static let disallowedTextControls = CharacterSet.controlCharacters.subtracting(.newlines)
+
     static func text(_ value: String, max: Int, label: String, empty: Bool = false) throws -> String {
         let normalized = value.trimmingCharacters(in: .whitespacesAndNewlines)
         guard value.utf8.count <= max, empty || !normalized.isEmpty,
