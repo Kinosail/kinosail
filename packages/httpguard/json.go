@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"net/url"
 	"slices"
+	"unicode/utf8"
 )
 
 // RequiredValue returns one non-empty bounded form value.
@@ -50,13 +51,21 @@ func FormEncoded(request *http.Request) bool {
 	return err == nil && mediaType == "application/x-www-form-urlencoded"
 }
 
-// DecodeJSON decodes one bounded external JSON document.
+// DecodeJSON decodes one bounded, unambiguous external JSON document.
 func DecodeJSON(reader io.Reader, maximum int64, target any, strict bool) error {
 	data, err := io.ReadAll(io.LimitReader(reader, maximum+1))
 	if err != nil || int64(len(data)) > maximum {
 		return errors.New("external JSON response is too large")
 	}
 	decoder := json.NewDecoder(bytes.NewReader(data))
+	decoder.UseNumber()
+	if !utf8.Valid(data) || !uniqueValue(decoder, 0) {
+		return errors.New("external JSON response is invalid")
+	}
+	if _, err = decoder.Token(); !errors.Is(err, io.EOF) {
+		return errors.New("external JSON response is invalid")
+	}
+	decoder = json.NewDecoder(bytes.NewReader(data))
 	if strict {
 		decoder.DisallowUnknownFields()
 	}

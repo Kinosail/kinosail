@@ -19,6 +19,50 @@ func TestDecodeJSONAcceptsOneBoundedDocument(t *testing.T) {
 	}
 }
 
+func TestDecodeJSONRejectsAmbiguityBeforeDecoding(t *testing.T) {
+	t.Parallel()
+	for name, body := range map[string]string{
+		"duplicate":       `{"setting":false,"setting":true}`,
+		"case alias":      `{"setting":false,"Setting":true}`,
+		"escaped alias":   `{"setting":false,"\u0073etting":true}`,
+		"Unicode alias":   `{"setting":false,"ſetting":true}`,
+		"nested array":    `{"setting":true,"extra":[{"value":0,"VALUE":1}]}`,
+		"invalid UTF-8":   "{\"setting\":true,\"extra\":\"\xff\"}",
+		"excessive depth": `{"setting":true,"extra":` + strings.Repeat("[", 33) + "0" + strings.Repeat("]", 33) + "}",
+	} {
+		t.Run(name, func(t *testing.T) {
+			for _, strict := range []bool{false, true} {
+				var target struct {
+					Setting bool `json:"setting"`
+				}
+				if DecodeJSON(strings.NewReader(body), 1024, &target, strict) == nil || target.Setting {
+					t.Fatalf("invalid document decoded: strict=%t setting=%t", strict, target.Setting)
+				}
+			}
+		})
+	}
+}
+
+func TestDecodeJSONPreservesExternalShapesAndMetadata(t *testing.T) {
+	t.Parallel()
+	for _, body := range []string{
+		`null`, `true`, `42`, `"value"`, `[]`, `[1,{"unknown":true}]`,
+		`{"productionType":"retail","unknown":{"value":3}}`,
+		`{"é":1,"e\u0301":2,"ß":3,"ss":4}`,
+	} {
+		var target any
+		if err := DecodeJSON(strings.NewReader(body), 1024, &target, false); err != nil {
+			t.Fatalf("supported external document rejected: %s: %v", body, err)
+		}
+	}
+	var candidate struct {
+		ProductionType string `json:"productionType"`
+	}
+	if err := DecodeJSON(strings.NewReader(`{"productionType":"retail","unknown":{"value":3}}`), 1024, &candidate, false); err != nil || candidate.ProductionType != "retail" {
+		t.Fatalf("unknown metadata changed known fields: %#v: %v", candidate, err)
+	}
+}
+
 func TestDecodeRequestJSONAcceptsOneStrictObject(t *testing.T) {
 	t.Parallel()
 	request := httptest.NewRequestWithContext(t.Context(), http.MethodPost, "/", strings.NewReader(`{"ok":true}`))
