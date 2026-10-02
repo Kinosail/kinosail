@@ -43,6 +43,15 @@ func logTrace(request *http.Request, event TraceEvent) {
 	if event.Event == "error" {
 		level = slog.LevelWarn
 	}
+	// Retain named failures from known controls; arbitrary diagnostic text can contain credentials.
+	detail := ""
+	parts := strings.Split(event.Detail, ":")
+	if event.Event == "error" && len(parts) == 3 && parts[0] == "fullscreen" && parts[2] == "playback-retained" && oneOf(parts[1], "NotAllowedError", "InvalidStateError", "NotSupportedError", "TypeError", "Error") {
+		detail = event.Detail
+	}
+	if event.Event == "play-rejected" && len(parts) == 2 && oneOf(parts[0], "control", "autoplay-canplay", "keyboard", "media-element", "watch-room", "media-session", "queue-advance", "resume-progress", "home-assistant", "source-change", "offline-source") && oneOf(parts[1], "NotAllowedError", "NotSupportedError", "AbortError", "InvalidStateError", "TypeError", "Error") {
+		detail = event.Detail
+	}
 	text := func(value string) string { return strings.ReplaceAll(strings.ReplaceAll(value, "\r", ""), "\n", "") }
 	slog.LogAttrs(request.Context(), level, "playback trace",
 		slog.String("playback_session", text(event.Session)), slog.String("event", text(event.Event)),
@@ -50,8 +59,8 @@ func logTrace(request *http.Request, event TraceEvent) {
 		slog.Int64("position_ms", event.PositionMS), slog.Int64("duration_ms", event.DurationMS),
 		slog.Int64("buffered_ahead_ms", event.BufferedAheadMS), slog.Int("ready_state", event.ReadyState),
 		slog.Int("network_state", event.NetworkState), slog.Bool("paused", event.Paused),
-		slog.String("method", text(event.Method)), slog.String("detail", text(event.Detail)),
-		slog.String("quality", text(event.Quality)), slog.String("visibility", text(event.Visibility)),
+		slog.String("method", text(event.Method)), slog.String("detail", detail),
+		slog.String("visibility", text(event.Visibility)),
 		slog.Int("error_code", event.ErrorCode), slog.Int64("dropped_frames", event.DroppedFrames),
 		slog.Int64("total_frames", event.TotalFrames))
 }
