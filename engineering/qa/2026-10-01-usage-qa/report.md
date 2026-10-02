@@ -237,13 +237,21 @@ The regression failed before the repair and both affected package suites passed 
 
 The [Unicode repair PR](https://github.com/Kinosail/kinosail/pull/431) merged after required checks passed. Its first hosted shared-package run failed `TestProbeDurationRunsAndLoadsBoundedResults` with a zero duration. That unrelated check passed 100 local repetitions, and the failed hosted job passed on one retry. The original failure is retained in `pr431-packages.log`; no media-probe repair or explanation of that failure is claimed.
 
-### QA-012 — Ambiguous provider JSON overrides a rejected production type (repaired locally)
+### QA-012 — Ambiguous provider JSON overrides a rejected production type (repaired)
 
 Actual loopback provider responses supplied `productionType:machine` followed by a duplicate, case alias, or escaped identical key with `retail`. All three responses installed a subtitle and retained an original, acquisition record, and history entry. The machine-only control rejected acquisition without downloading. Retail and retail with unknown metadata installed exact bytes. Existing validation saw only the final decoded value.
 
 The shared external decoder now checks unambiguous keys, valid UTF-8, bounded nesting, and a single complete document before typed decoding. It reuses the existing key comparison and nesting policy. Unknown provider metadata and supported scalar, null, array, and object shapes remain accepted. Unicode-equivalent aliases fail before destination mutation. This stricter policy also applies to unknown nested objects; distinct composed/decomposed and full-fold map keys remain distinct.
 
 Both parser and actual acquisition regressions failed before repair. All shared-package, Player, and Subtitles Go suites passed afterward, along with relevant provider checks, changed-code lint, and root tooling. Independent review found no actionable finding. Both local app `verify-changed` attempts stopped on the same 114 existing full-package lint findings outside this change. `external-json-repair-evidence.json` records the source hashes, red and green commands, and scope. Rejected responses cause no download, sidecar, original, acquisition record, or acquisition-history write; existing search and provider-health bookkeeping remains allowed. External provider service behavior and Owner authentication were not exercised.
+
+### QA-013 — Invalid SubSource candidate blocks valid fallback (repaired locally)
+
+A complete HTTP 200 response containing an invalid ZIP marked SubSource unavailable for about one minute. The acquisition loop then skipped a valid, lower-ranked candidate. CRC failure, a fully transferred truncated ZIP, wrong or ambiguous episode members, and a body above four MiB each reproduced this behavior. The lower-ranked candidate installed exact bytes when returned alone.
+
+The adapter now records availability after the bounded HTTP read and treats ZIP/member rejection as a candidate failure. A private overflow error distinguishes a complete bounded prefix from a transport or non-200 failure. The four-MiB bound remains enforced. HTTP 429, 503, and incomplete HTTP transfers still stop further provider requests. A reachable provider can report connected even when an individual candidate is unusable; acquisition still rejects that content.
+
+The final regression checks real loopback requests and persisted effects. Five fallback cases failed before repair; all nine cases passed afterward. Before the valid second download, no sidecar, original, acquisition record, or history entry exists. Successful fallback creates exactly one byte-preserved sidecar and original, one record, and one history entry. Focused existing provider checks and the complete Subtitles Go suite passed. `provider-fallback-repair-evidence.json` retains commands, source hashes, data, environment, and results. Live SubSource behavior and deployment were not exercised.
 
 ### QA-008 — Hosted Subtitles WebKit disclosure does not open (unverified)
 

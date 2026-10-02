@@ -12,6 +12,8 @@ import (
 	"strings"
 )
 
+var errSubtitleDownloadTooLarge = errors.New("subtitle download is invalid")
+
 func (provider *subtitleProvider) json(ctx context.Context, endpoint string, target any) error {
 	if err := provider.health.before("SubDL"); err != nil {
 		return err
@@ -77,8 +79,11 @@ func (provider *subtitleProvider) download(ctx context.Context, link string) ([]
 
 func readSubtitle(response *http.Response) ([]byte, error) {
 	data, err := io.ReadAll(io.LimitReader(response.Body, (4<<20)+1))
-	if err != nil || len(data) > 4<<20 || response.StatusCode != http.StatusOK {
+	if err != nil || response.StatusCode != http.StatusOK {
 		return nil, errors.New("subtitle download is invalid")
+	}
+	if len(data) > 4<<20 {
+		return nil, errSubtitleDownloadTooLarge
 	}
 	return data, nil
 }
