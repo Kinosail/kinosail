@@ -18,7 +18,8 @@
     func remove(_ scope: String, key: String) async throws { try await engine.remove(scope, key: key) }
     func close() async { await engine.close() }
     func reset() async throws { try await engine.reset() }
-    func lock() async { await engine.lock() }
+    func lock(ifCurrent revision: UUID? = nil) async { await engine.lock(ifCurrent: revision) }
+    func authorizationRevision() async -> UUID { await engine.authorizationRevision() }
     func resume(_ scope: String, key: String, wifiOnly: Bool, quota: Int64) async throws {
       try await engine.resume(scope, key: key, wifiOnly: wifiOnly, quota: quota)
     }
@@ -26,8 +27,8 @@
     func check(_ scope: String, key: String) async throws { try await engine.check(scope, key: key) }
     func setPlayback(_ active: Bool) { engine.setPlayback(active) }
     func backgroundCompletion(_ completion: @escaping @MainActor @Sendable () -> Void) { engine.backgroundCompletion(completion) }
-    func authorize(_ access: DownloadAuthorization, wifiOnly: Bool? = nil, quota: Int64 = 0) async throws {
-      try await engine.authorize(access, wifiOnly: wifiOnly, quota: quota)
+    func authorize(_ access: DownloadAuthorization, wifiOnly: Bool? = nil, quota: Int64 = 0, ifCurrent revision: UUID? = nil) async throws {
+      try await engine.authorize(access, wifiOnly: wifiOnly, quota: quota, ifCurrent: revision)
     }
     func updatePolicy(scope: String, wifiOnly: Bool, quota: Int64) async throws {
       try await engine.updatePolicy(scope: scope, wifiOnly: wifiOnly, quota: quota)
@@ -61,6 +62,7 @@
     private var eventsFinished = false
     private var completion: (@MainActor @Sendable () -> Void)?
     var authorization: DownloadAuthorization?
+    var authorizationVersion = UUID()
     let store: DownloadJournalStore
     private let configuration: URLSessionConfiguration
 
@@ -174,9 +176,17 @@
       await withCheckedContinuation { continuation in queue.async { [self] in session.invalidateAndCancel(); continuation.resume() } }
     }
 
-    func lock() async {
+    func authorizationRevision() async -> UUID {
+      await withCheckedContinuation { continuation in
+        queue.async { [self] in continuation.resume(returning: authorizationVersion) }
+      }
+    }
+
+    func lock(ifCurrent revision: UUID? = nil) async {
       await withCheckedContinuation { continuation in
         queue.async { [self] in
+          if let revision, revision != authorizationVersion { continuation.resume(); return }
+          authorizationVersion = UUID()
           authorization = nil
           for id in Array(jobs.keys) { cancel(id) }
           for id in Array(plans.keys) { cancelPlan(id) }
