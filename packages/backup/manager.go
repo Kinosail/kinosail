@@ -126,7 +126,7 @@ func (manager *Manager) WriteNow() error {
 	err := manager.writeLocked()
 	if err == nil {
 		manager.lastSuccess = time.Now().UTC()
-		err = manager.verifyLocked()
+		manager.lastVerify, manager.lastError = manager.lastSuccess, ""
 	}
 	if err != nil {
 		manager.lastError = err.Error()
@@ -155,6 +155,12 @@ func (manager *Manager) writeLocked() error { //nolint:cyclop,gocognit // Archiv
 	if temporary != nil {
 		if err == nil {
 			err = temporary.Sync()
+		}
+		if err == nil {
+			_, err = temporary.Seek(0, io.SeekStart)
+		}
+		if err == nil {
+			err = manager.verifyAuto(temporary, manager.key)
 		}
 		if closeErr := temporary.Close(); err == nil {
 			err = closeErr

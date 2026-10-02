@@ -14,6 +14,7 @@ var encryptedMagic = []byte("KINOSAIL-BACKUP-1\n")
 
 const (
 	maxArchiveSize    = 40 << 20
+	encryptedOverhead = len("KINOSAIL-BACKUP-1\n") + 16 + 12 + 16
 	maxPassphraseSize = 4096
 )
 

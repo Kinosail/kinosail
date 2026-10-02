@@ -9,6 +9,8 @@
   const base = `/api/v1/subtitle-library/${encodeURIComponent(root.dataset.id)}`;
   let draft, draftID = "", draftWordCount = 0, draftPoll, wordObserver, cueObserver;
   let review, prepared, revision = 0, page = 0, busy = false;
+  let draftRevision = 0, draftFailures = 0, pageActive = true;
+  const lockedControls = new Map();
   const tracks = { current: video.addTextTrack("subtitles", "Current"), proposed: video.addTextTrack("subtitles", "Proposed") };
   const element = (tag, text, className) => { const node = document.createElement(tag); if (text !== undefined) node.textContent = text; if (className) node.className = className; return node; };
   const time = (seconds) => `${Math.floor(seconds / 60)}:${(seconds % 60).toFixed(3).padStart(6, "0")}`;
@@ -17,11 +19,16 @@
     const response = await fetch(base + path, { credentials: "same-origin", ...options });
     if (response.status === 204) return null;
     const result = await response.json();
-    if (!response.ok) { const error = new Error(typeof result.error === "string" ? result.error : "The request could not be completed. Reload and try again."); error.stepUpRequired = result.stepUpRequired; throw error; }
+    if (!response.ok) { const error = new Error(typeof result.error === "string" ? result.error : "The request could not be completed. Reload and try again."); error.stepUpRequired = result.stepUpRequired; error.status = response.status; throw error; }
     return result;
   }
-  function invalidate() { revision++; prepared = undefined; apply.disabled = true; }
-  function setBusy(value) { busy = value; form.querySelector('button[type="submit"]').disabled = value; apply.disabled = value || !prepared; }
+  function invalidate() { revision++; prepared = undefined; apply.disabled = true; status.removeAttribute("aria-busy"); }
+  function setBusy(value, lockInputs = false) {
+    if (lockInputs) for (const control of form.querySelectorAll("input, select, textarea, button")) { lockedControls.set(control, control.disabled); control.disabled = true; }
+    if (!value) { for (const [control, disabled] of lockedControls) control.disabled = disabled; lockedControls.clear(); }
+    busy = value; form.querySelector('button[type="submit"]').disabled = value; apply.disabled = value || !prepared;
+    document.getElementById("restore-subtitle").disabled = value;
+  }
   function showError(error) { status.textContent = error.message || "The subtitle could not be loaded."; if (error.stepUpRequired) { const link = element("a", " Sign in again, then retry here."); link.href = `/login?next=${encodeURIComponent(location.pathname + location.search)}`; link.target = "_blank"; link.rel = "noopener"; status.append(link); } }
   function renderTrack(name, document) {
     const track = tracks[name];
@@ -88,6 +95,7 @@
     const ticket = ++revision; status.textContent = "Loading subtitle details…"; status.setAttribute("aria-busy", "true"); apply.disabled = true; prepared = undefined;
     let result;
     try { result = await request(`/inspect?language=${encodeURIComponent(form.elements.language.value)}`); }
+    catch (error) { if (ticket === revision) throw error; return; }
     finally { if (ticket === revision) status.removeAttribute("aria-busy"); }
     if (ticket !== revision) return;
     review = result; form.elements.role.value = review.role === "captions" ? "captions" : "translation"; page = 0; render(); status.textContent = review.current ? "Current subtitle loaded. Preview a change before saving." : "Choose a subtitle file to begin.";
@@ -117,15 +125,22 @@
   form.elements.offset.addEventListener("input", () => { if (Number(form.elements.offset.value) !== 0) { form.elements.automaticSync.checked = false; document.getElementById("subtitle-anchors").replaceChildren(); } });
   form.elements.automaticSync.addEventListener("change", () => { if (form.elements.automaticSync.checked) { form.elements.offset.value = "0"; document.getElementById("subtitle-anchors").replaceChildren(); } });
   form.elements.file.addEventListener("change", () => { draftID = ""; form.elements.text.value = ""; form.elements.role.value = "translation"; });
-  form.elements.language.addEventListener("change", () => { draftID = ""; form.elements.text.value = ""; load().catch(showError); loadDraft().catch(showError); });
+  form.elements.language.addEventListener("change", () => {
+    draft = undefined; draftID = ""; draftFailures = 0; form.elements.text.value = ""; wordObserver?.disconnect();
+    document.getElementById("draft-status").textContent = "Loading draft details…";
+    document.getElementById("start-draft").disabled = true;
+    for (const id of ["cancel-draft", "review-draft", "draft-confidence", "more-draft-words"]) document.getElementById(id).hidden = true;
+    document.getElementById("draft-words").replaceChildren(); document.getElementById("draft-words-status").textContent = "";
+    load().catch(showError); loadDraft().catch(showError);
+  });
   form.addEventListener("submit", async event => {
-    event.preventDefault(); if (busy || !review) return;
+    event.preventDefault(); if (busy || !review || review.language !== form.elements.language.value) return;
     invalidate(); const ticket = revision; setBusy(true); status.textContent = "Preparing your preview. Audio synchronization can take several minutes.";
     try { const values = await input(); const result = await request("/preview", values); if (ticket !== revision) return; review = result; prepared = values; page = 0; render(); status.textContent = "Preview ready. Compare the text and timing, then save when satisfied."; }
-    catch (error) { showError(error); } finally { setBusy(false); }
+    catch (error) { if (ticket === revision) showError(error); } finally { setBusy(false); }
   });
   apply.addEventListener("click", async () => {
-    if (busy || !prepared) return; setBusy(true); status.textContent = "Saving subtitle and recovery copy…";
+    if (busy || !prepared) return; setBusy(true, true); status.textContent = "Saving subtitle and recovery copy…";
     try { review = await request("/apply", prepared); invalidate(); form.elements.file.value = ""; draftID = ""; form.elements.text.value = ""; render(); status.textContent = "Subtitle saved. Your edit is protected from automatic upgrades."; } catch (error) { invalidate(); showError(error); } finally { setBusy(false); }
   });
   document.getElementById("add-anchor").addEventListener("click", () => {
@@ -139,7 +154,7 @@
   document.getElementById("show-flagged").addEventListener("change", () => { page = 0; renderCues(); });
   document.getElementById("previous-cues").addEventListener("click", () => { page--; renderCues(); });
   document.getElementById("next-cues").addEventListener("click", () => { page++; renderCues(); });
-  document.getElementById("restore-subtitle").addEventListener("click", async () => { if (busy) return; setBusy(true); try { await request("/restore", { language: review.language }); await load(); status.textContent = "Previous subtitle restored."; } catch (error) { showError(error); } finally { setBusy(false); } });
+  document.getElementById("restore-subtitle").addEventListener("click", async () => { if (busy || !review || review.language !== form.elements.language.value) return; setBusy(true, true); try { await request("/restore", { language: review.language }); await load(); status.textContent = "Previous subtitle restored."; } catch (error) { showError(error); } finally { setBusy(false); } });
   document.getElementById("analyze-speech").addEventListener("click", async event => {
     const button = event.currentTarget; button.disabled = true; const summary = document.getElementById("speech-summary"); summary.textContent = "Analyzing audio locally. This can take several minutes.";
     try {
@@ -155,9 +170,22 @@
   video.addEventListener("error", () => { document.getElementById("video-help").prepend(document.createTextNode("This video cannot play directly in this browser. ")); }, { once: true });
   async function loadDraft() {
     clearTimeout(draftPoll);
-    const language = form.elements.language.value;
-    const result = await request(`/draft?language=${encodeURIComponent(language)}`);
-    if (language !== form.elements.language.value) return;
+    if (!pageActive) return;
+    const ticket = ++draftRevision, language = form.elements.language.value;
+    const current = () => pageActive && ticket === draftRevision && language === form.elements.language.value;
+    let result;
+    try { result = await request(`/draft?language=${encodeURIComponent(language)}`); }
+    catch (error) {
+      if (!current()) return;
+      const retry = !error.status || error.status === 429 || error.status >= 500;
+      const delay = Math.min(30000, 5000 * 2 ** Math.min(draftFailures++, 3));
+      document.getElementById("draft-status").textContent = retry ? `Draft progress is unavailable. Retrying in ${delay / 1000} seconds…` : error.message;
+      if (retry) draftPoll = setTimeout(loadDraft, delay);
+      else if (error.stepUpRequired) showError(error);
+      return;
+    }
+    if (!current()) return;
+    draftFailures = 0;
     draft = result; draftWordCount = 0; wordObserver?.disconnect();
     document.getElementById("draft-status").textContent = draft.message;
     const running = draft.state === "running" || draft.state === "canceling";
@@ -166,7 +194,7 @@
     document.getElementById("review-draft").hidden = draft.state !== "ready";
     document.getElementById("draft-confidence").hidden = draft.state !== "ready";
     document.getElementById("draft-words").replaceChildren(); renderDraftWords();
-    if (running) draftPoll = setTimeout(() => loadDraft().catch(error => { document.getElementById("draft-status").textContent = error.message; }), 5000);
+    if (running) draftPoll = setTimeout(loadDraft, 5000);
   }
   function renderDraftWords() {
     const words = draft?.words || [], container = document.getElementById("draft-words");
@@ -197,10 +225,11 @@
     try { await request("/draft", { language: draft.language, method: draft.method, action: "cancel", draftId: draft.id }); await loadDraft(); } catch (error) { showError(error); }
   });
   document.getElementById("review-draft").addEventListener("click", () => {
-    if (draft?.state !== "ready" || busy) return;
+    if (draft?.state !== "ready" || draft.language !== form.elements.language.value || busy) return;
     draftID = draft.id; form.elements.role.value = "translation"; form.elements.text.value = ""; form.elements.file.value = ""; form.elements.encoding.value = "auto"; form.elements.offset.value = "0"; form.elements.automaticSync.checked = false; document.getElementById("subtitle-anchors").replaceChildren(); invalidate(); form.requestSubmit();
   });
-  window.addEventListener("pagehide", () => clearTimeout(draftPoll));
+  window.addEventListener("pagehide", () => { pageActive = false; draftRevision++; clearTimeout(draftPoll); wordObserver?.disconnect(); });
+  window.addEventListener("pageshow", () => { if (!pageActive) { pageActive = true; loadDraft().catch(showError); } });
   load().catch(showError);
   loadDraft().catch(showError);
 })();
