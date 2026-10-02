@@ -9,6 +9,7 @@ import android.view.KeyEvent
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.v2.createEmptyComposeRule
 import androidx.compose.ui.test.junit4.accessibility.enableAccessibilityChecks
+import androidx.compose.ui.test.junit4.accessibility.disableAccessibilityChecks
 import androidx.test.core.app.ActivityScenario
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
@@ -43,7 +44,7 @@ class NativeParityJourneyTest {
             compose.onAllNodesWithText("Movies")[0].performScrollTo().performClick()
             waitText("New Film")
             compose.onNodeWithText("New Film").performClick()
-        } else compose.onNodeWithText("Details").performClick()
+        } else compose.onNodeWithText("Details").performScrollTo().performClick()
         waitText("Add to My List")
         capture("detail")
         compose.onNodeWithText("Add to My List").performScrollTo().performClick()
@@ -59,8 +60,11 @@ class NativeParityJourneyTest {
             compose.onNodeWithText("Add Listen").performScrollTo().performClick()
             compose.onNodeWithText("Done").performScrollTo().performClick()
             compose.onNodeWithText("Listen").performClick()
-            waitText("Recently added music")
+            waitText("Listening")
             capture("listen")
+            compose.onAllNodes(hasScrollAction())[0].performScrollToIndex(2)
+            waitText("Recently added music")
+            capture("listen-shelf")
             assertEquals(listOf("home", "shows", "search", "listen"), PersonalTabs(context).load(fixture.viewer))
         }
     }
@@ -76,6 +80,7 @@ class NativeParityJourneyTest {
         compose.onNodeWithText("Try again").performClick()
         waitText("Media added to your Server will appear here.")
         assertEquals(0, compose.onAllNodesWithContentDescription("Loading library").fetchSemanticsNodes().size)
+        if (!tv) compose.onAllNodes(hasScrollAction())[0].performScrollToIndex(2)
         capture("empty")
         fixture.mode = "ready"
         if (tv) {
@@ -92,7 +97,7 @@ class NativeParityJourneyTest {
     @Test fun playbackChromeHidesTogetherAndReturnsWithInput() = journey { fixture ->
         waitText(if (tv) "Continue watching" else "Watching")
         if (tv) compose.onNodeWithText("Continuing Film").performClick()
-        else compose.onNodeWithText("Resume").performClick()
+        else compose.onNodeWithText("Resume").performScrollTo().performClick()
         waitText("Speed 1×")
         Thread.sleep(6000)
         capture("playback-before-hide-check")
@@ -105,6 +110,34 @@ class NativeParityJourneyTest {
         capture("playback-controls")
         instrumentation.sendKeyDownUpSync(KeyEvent.KEYCODE_BACK)
         waitText(if (tv) "Continue watching" else "Watching")
+    }
+
+    @Test fun seasonsKeepPendingFailedEmptyAndLoadedLayoutsDistinct() = journey { fixture ->
+        waitText(if (tv) "Continue watching" else "Watching")
+        fixture.showMode = "pending"
+        if (tv) compose.onNodeWithText("TV Shows").performScrollTo().performClick()
+        else compose.onNodeWithText("TV Shows").performClick()
+        waitText("Fixture Series")
+        compose.onNodeWithText("Fixture Series").performClick()
+        compose.waitUntil(20_000) { compose.onAllNodesWithContentDescription("Loading library").fetchSemanticsNodes().isNotEmpty() }
+        capture("show-pending")
+        fixture.showMode = "failed"
+        waitText("Could not load this show. Try again.")
+        capture("show-failed")
+        fixture.showMode = "empty"
+        compose.onNodeWithText("Try again").performClick()
+        waitText("This show has no available episodes.")
+        capture("show-empty")
+        instrumentation.sendKeyDownUpSync(KeyEvent.KEYCODE_BACK)
+        fixture.showMode = "ready"
+        waitText("Fixture Series")
+        compose.onNodeWithText("Fixture Series").performClick()
+        waitText("Resume · S1 E1")
+        capture("show-loaded")
+        compose.onAllNodes(hasScrollAction())[0].performScrollToIndex(if (tv) 2 else 3)
+        compose.onNodeWithText("Season 2").performClick()
+        waitText("S2 E1 · Second episode")
+        capture("show-season-two")
     }
 
     private fun journey(mode: String = "ready", check: (ParityFixture) -> Unit) {
@@ -131,6 +164,7 @@ class NativeParityJourneyTest {
         if (!tv && !name.startsWith("playback")) {
             compose.enableAccessibilityChecks()
             compose.onRoot().tryPerformAccessibilityChecks()
+            compose.disableAccessibilityChecks()
         }
         instrumentation.getUiAutomation(android.app.UiAutomation.FLAG_DONT_USE_ACCESSIBILITY).takeScreenshot().let { bitmap ->
             File(directory, "$prefix-$name.png").outputStream().use { bitmap.compress(Bitmap.CompressFormat.PNG, 100, it) }
@@ -145,10 +179,15 @@ private class ParityFixture(@Volatile var mode: String) : AutoCloseable {
     val port get() = server.localPort
     private val workers = Executors.newCachedThreadPool()
     private val running = AtomicBoolean(true)
+    @Volatile var showMode = "ready"
     @Volatile var listWrites = 0
     private var listed = false
     private val movie = item("film", "Continuing Film", progress = 90)
     private val newMovie = item("new-film", "New Film")
+    private val series = item("0123456789abcdef", "Fixture Series", kind = "show")
+        .replace("\"genres\"", "\"showId\":\"0123456789abcdef\",\"genres\"")
+    private val episodes = listOf(item("episode-one", "First episode", progress = 12), item("episode-two", "Second episode"))
+        .mapIndexed { index, item -> item.replace("\"genres\"", "\"showId\":\"0123456789abcdef\",\"season\":${index+1},\"episode\":1,\"genres\"") }
     private val song = item("song", "Night Drive", kind = "music", progress = 45)
     init {
         workers.execute {
@@ -184,6 +223,7 @@ private class ParityFixture(@Volatile var mode: String) : AutoCloseable {
                                     val items = if (mode == "empty") emptyList() else when (view) {
                                         "history" -> listOf(movie, song)
                                         "movies" -> listOf(newMovie, movie)
+                                        "shows" -> listOf(series)
                                         "music" -> listOf(song)
                                         "list" -> if (listed) listOf(movie) else emptyList()
                                         "all" -> listOf(movie, newMovie, song)
@@ -191,6 +231,11 @@ private class ParityFixture(@Volatile var mode: String) : AutoCloseable {
                                     }
                                     """{"items":[${items.joinToString(",")}],"total":${items.size},"offset":0,"limit":${query["limit"] ?: "24"},"view":"$view","sort":"${query["sort"] ?: "title"}","query":"${query["q"] ?: ""}"}""".toByteArray()
                                 }
+                            }
+                            path == "/api/v1/shows/0123456789abcdef" -> {
+                                while (showMode == "pending" && running.get()) Thread.sleep(20)
+                                if (showMode == "failed") { code = 503; "{}".toByteArray() }
+                                else """{"id":"0123456789abcdef","title":"Fixture Series","year":"2026","plot":"A synthetic series.","episodes":[${if (showMode == "empty") "" else episodes.joinToString(",")}]}""".toByteArray()
                             }
                             path.startsWith("/api/v1/items/") && path.endsWith("/list") -> {
                                 listed = JSONObject(requestBody).getBoolean("listed"); listWrites++
