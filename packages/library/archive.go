@@ -96,7 +96,8 @@ func ReadArchiveAsset(ctx context.Context, item Item, name string) ([]byte, erro
 		if !found {
 			return nil, errors.New("archive entry not found")
 		}
-		return archiveCommand(ctx, archiveAssetLimit, "-xOf", item.Path, "--", name)
+		pattern := strings.NewReplacer("*", "\\*", "?", "\\?", "[", "\\[", "]", "\\]", "^", "\\^", "$", "\\$").Replace(name)
+		return archiveCommand(ctx, archiveAssetLimit, "-xnOf", item.Path, "--", pattern)
 	}
 	archive, err := zip.OpenReader(item.Path)
 	if err != nil {
