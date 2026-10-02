@@ -72,6 +72,11 @@ Available host disk space increased from approximately 13 GiB to 21 GiB. This do
 | Native playback and saved-file journeys after progress repair | 2 passed against the actual Go Server | `ios-live-media-moving-green.json` |
 | Complete iOS suite after progress repair | 282 passed, 1 skipped, 0 failed | `ios-progress-full-green.json`; `ios-progress-full-summary.json` |
 | Complete tvOS suite after progress repair | 273 passed, 0 skipped, 0 failed | `tvos-progress-full-green.json`; `tvos-progress-full-summary.json` |
+| Player worker, storage, transfer, startup, seek, and recovery boundaries | 177 passed across three engines | `player-browser-boundaries.json` |
+| Actual Hls.js watch-to-library navigation | 2 WebKit runs passed; 6 transitions | `player-browser-real-hls-nav-ready.json` |
+| Actual native Dialog Boost and Night Mode HLS | 1 function with 2 argument cases passed | `native-hls-evidence.json`; `ios-real-hls-effects-known-state-fixed.xcresult` |
+| Actual tvOS remote browse/navigation | 1 passed; 25 retained screenshots | `tvos-real-remote-navigation.json`; `tvos-real-remote-navigation.xcresult` |
+| Subtitles trusted HTTPS disclosure reproduction | 2 WebKit runs passed | `subtitles-browser-trusted-repro.json` |
 
 The playback matrix combines real synthetic-media journeys with controlled browser media and transport failure scenarios. It covers Direct First, blocked autoplay, resume, seeking, duration, quality, speed, buffering, and recovery. This is not a physical-device or codec certification.
 
@@ -121,6 +126,10 @@ This differs from QA-002. The first deep run passed that WebKit journey. No cons
 
 A fresh local Server completed setup and reached playback, then failed an earlier assertion expecting a Continue watching heading. The page instead rendered Arrival as its featured resume title. This local run did not reproduce the hosted HLS console failure. Its separate UI/test-contract observation remains under investigation.
 
+The [third deep run](https://github.com/Kinosail/kinosail/actions/runs/36967414781), at `a35214404d95eb968b8e0c39fe09c1d4ade5f3f8`, retained its failure trace after QA-006. The trace places the HLS errors around watch-page navigation and cancelled requests. This timing does not establish a Server CORS rejection or a lifecycle defect. Production already destroys streaming on `pagehide` and guards recovery callbacks after destruction.
+
+Two local repetitions exercised the actual Go Server and Hls.js, with three watch-to-library transitions per repetition. Both passed with playlist and media-segment requests, a moving video clock, and no HLS page errors. The probe disabled only native HLS capability reporting to select Hls.js on macOS WebKit. This does not reproduce or clear the hosted Linux WebKit observation. An earlier probe ran before the Server was reachable and is excluded from coverage.
+
 ### QA-005 — Apple progress updates are rejected by the Server (confirmed and repaired)
 
 Actual iOS playback advanced, decoded a video frame, and sought successfully, but the Server rejected progress updates with HTTP 400. Both independent probe runs failed to observe a persisted position. Phase diagnostics isolated the failure to persistence; the moving clock and decoded-frame checks passed.
@@ -143,7 +152,7 @@ The failed WebKit job in QA-004 reported that its upload path contained no files
 
 The upload step now includes both directories. A regression executes each launcher's actual browser command with a recording `pnpm` function, creates representative failure evidence at the resulting path, and checks that the workflow's upload roots cover it. Before the change, all three Player engines failed and Subtitles passed. Afterward, all six app/engine combinations passed within the complete 49-test CI contract suite. `actionlint` also passed.
 
-The retained records are `browser-artifact-red`, `browser-artifact-ci-contracts`, and `browser-artifact-actionlint`. No browser error was ignored or required gate weakened. Actual hosted failure-artifact upload after this repair remains a separate verification boundary.
+The retained records are `browser-artifact-red`, `browser-artifact-ci-contracts`, and `browser-artifact-actionlint`. No browser error was ignored or required gate weakened. The third deep run successfully uploaded its [Player WebKit failure artifact](https://github.com/Kinosail/kinosail/actions/runs/36967414781/artifacts/11210517627), containing 18,514,440 bytes. Its downloaded trace and network records were inspected locally. Actual hosted failure-artifact upload is now verified.
 
 PR #416's first package job failed while executing its temporary FFmpeg test script with `text file busy`. The script writer already closes and atomically renames its file. The failed package and aggregate checks passed on one retry; the original log is retained as `browser-artifact-packages-failed.log`. No source repair or universal absence of this intermittent environment failure is claimed.
 
@@ -161,16 +170,25 @@ An actual Quick Connect approval issued a new device token for the owned tvOS si
 
 The watchOS companion simulator build passed as `watchos-simulator-build`. No Watch runtime, HealthKit, phone pairing, physical Apple TV, or physical remote proof is claimed.
 
+The existing tvOS remote navigation journey passed against the actual Go Server. It exercised Search, Settings, Movies, Shows, Music, Audiobooks, Photos, and return-focus paths. Its result bundle retains 25 screenshots; populated launch and Movies renders were inspected. This remains simulator remote input.
+
+The actual iOS HLS probe passed both Dialog Boost and Night Mode after resetting authoritative progress to zero before each case. Each case required an HLS source, an advancing AVPlayer clock, a decoded frame, a seek, and a persisted Server position. Original preference overrides were restored. The earlier uncontrolled-position run failed its Dialog Boost frame deadline while Night Mode passed. No product cause is asserted. A prior interrupted run and a harness compilation failure are excluded from coverage. These runs do not measure decoded PCM or establish subjective audio quality. The final source hash, fixture state, command, and result are in `native-hls-evidence.json`.
+
+### QA-008 — Hosted Subtitles WebKit disclosure does not open (unverified)
+
+The third deep run failed the trusted HTTPS guidance journey: after clicking How trusted HTTPS works, its explanatory text remained hidden. Chromium and Firefox passed that check. The retained WebKit trace records layout instability and scrolling before the click. This does not identify a product cause. Two local WebKit repetitions passed with the original assertion unchanged. No repair, retry-based exclusion, or fully green hosted deep run is claimed.
+
 ## Verification boundaries
 
 - Source tests: both app suites and 60 shared packages passed.
 - Populated Subtitles browser batch: all 177 checks passed across three engines.
 - Populated Player library/account batch: one unverified Chromium stall; 77 other checks passed. Both fresh stall repetitions passed.
 - Player playback/recovery matrix: all 228 checks passed across three engines, within the controlled-fixture boundary above.
+- Player worker/storage/transfer/startup/seek/recovery boundary batch: all 177 checks passed across three engines. Controlled browser transports and media states remain separate from actual Server playback.
 - Native simulator suites after repair: iOS 282 passed and one skipped; tvOS 273 passed. Live probes additionally establish decoded playback, saved progress, verified transfer, disconnected-Server local playback, seek, pending-position persistence and reconnect synchronization, and local removal against the actual Go Server on loopback HTTP. The tvOS remote playback journey passed three cycles; watchOS simulator compilation passed.
 - Physical devices, real receivers, external subtitle providers, and purchases: not run.
 - Production containers: blocked by Podman VM storage exhaustion.
-- Hosted CI: the first deep run passed both app suites, all six browser jobs, native Swift/Android compilation, and all four production-container builds. Its stale tooling snapshot failure was repaired through merged PR #413. The next deep run passed tooling but failed the Player WebKit happy-path console assertion described in QA-004. Full current-main deep CI is not claimed green.
+- Hosted CI: the first deep run passed both app suites, all six browser jobs, native Swift/Android compilation, and all four production-container builds. Its stale tooling snapshot failure was repaired through merged PR #413. The next deep run passed tooling but failed the Player WebKit happy-path console assertion described in QA-004. The third run retained the Player failure artifact and failed both WebKit jobs, as recorded in QA-004 and QA-008. Other third-run jobs passed; publication was skipped after the aggregate gate failed. Full current-main deep CI is not claimed green.
 - Container publication, Nox deployment, and public TLS: not verified by this audit.
 
 Confirmed defects will receive a failing regression before a production fix. Verified chunks will be delivered through protected-main pull requests with merge commits.
