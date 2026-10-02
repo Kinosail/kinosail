@@ -50,7 +50,7 @@ func logTrace(request *http.Request, event TraceEvent) {
 		slog.Int64("position_ms", event.PositionMS), slog.Int64("duration_ms", event.DurationMS),
 		slog.Int64("buffered_ahead_ms", event.BufferedAheadMS), slog.Int("ready_state", event.ReadyState),
 		slog.Int("network_state", event.NetworkState), slog.Bool("paused", event.Paused),
-		slog.String("method", text(event.Method)), slog.String("detail", safeTraceDetail(event)),
+		slog.String("method", text(event.Method)), slog.String("detail", text(safeTraceDetail(event))),
 		slog.String("visibility", text(event.Visibility)),
 		slog.Int("error_code", event.ErrorCode), slog.Int64("dropped_frames", event.DroppedFrames),
 		slog.Int64("total_frames", event.TotalFrames))
