@@ -68,6 +68,10 @@ Available host disk space increased from approximately 13 GiB to 21 GiB. This do
 | Native client against the actual Go Server | 3 passed, 0 skipped, 0 failed | `ios-live-contract-summary.json`; `ios-live-contract-shows-corrected.xcresult` |
 | Player skip-link repair | 6 cases passed across three engines, phone and desktop, with 24 route checks | `player-browser-skip-final-green.json` |
 | Player complete Go suite after focus repair | Passed: 5 packages | `player-focus-suite.json` |
+| Native progress transport regression | Failed for the intended extra request field before repair; passed afterward, with 10 argument cases | `ios-progress-transport-red-body.json`; `ios-progress-and-live-green.json` |
+| Native playback and saved-file journeys after progress repair | 2 passed against the actual Go Server | `ios-live-media-moving-green.json` |
+| Complete iOS suite after progress repair | 282 passed, 1 skipped, 0 failed | `ios-progress-full-green.json`; `ios-progress-full-summary.json` |
+| Complete tvOS suite after progress repair | 273 passed, 0 skipped, 0 failed | `tvos-progress-full-green.json`; `tvos-progress-full-summary.json` |
 
 The playback matrix combines real synthetic-media journeys with controlled browser media and transport failure scenarios. It covers Direct First, blocked autoplay, resume, seeking, duration, quality, speed, buffering, and recovery. This is not a physical-device or codec certification.
 
@@ -115,13 +119,29 @@ The [current-main deep run](https://github.com/Kinosail/kinosail/actions/runs/36
 
 This differs from QA-002. The first deep run passed that WebKit journey. No console-error exclusion or product repair has been applied without identifying the cause. A local attempt against the already modified shared fixture could not reach the required initial recent-content state and does not reproduce the hosted observation.
 
+A fresh local Server completed setup and reached playback, then failed an earlier assertion expecting a Continue watching heading. The page instead rendered Arrival as its featured resume title. This local run did not reproduce the hosted HLS console failure. Its separate UI/test-contract observation remains under investigation.
+
+### QA-005 — Apple progress updates are rejected by the Server (confirmed and repaired)
+
+Actual iOS playback advanced, decoded a video frame, and sought successfully, but the Server rejected progress updates with HTTP 400. Both independent probe runs failed to observe a persisted position. Phase diagnostics isolated the failure to persistence; the moving clock and decoded-frame checks passed.
+
+The Swift client sent its local `dismissed` flag in both progress snapshots. The authoritative Server `mediaProgressSnapshot` accepts only `seconds`, `watched`, `session`, and `revision`. Strict decoding rejected the extra field before saving state.
+
+The client now serializes those four fields for synchronization. Its local JSON representation still retains dismissal state. Both progress and expected snapshots pass their existing validation before HTTP. No Server schema or validation was weakened.
+
+The new transport regression failed before the production change because both snapshots contained `dismissed`, for both true and false local values. Its eight negative argument cases prove missing required values, malformed controls, excessive lengths, invalid positions, and invalid revisions are rejected without a network request. Unknown fields and malformed persisted JSON retain existing native contract coverage.
+
+After the repair, the transport regression passed. The real iOS journey advanced from its initial position, decoded a frame, sought to six seconds, and observed a saved Server position. A second journey completed and verified a real download, played the saved file with an advancing clock, sought, and removed it. The complete iOS suite then passed 282 tests with one skipped case; tvOS passed 273 with none skipped. The focused Swift Testing suites report test functions separately from their argument cases; the transport suite contains two functions and ten cases.
+
+Evidence includes the before/after result bundles, the disposable probe source, source hashes, and `native-progress-repair-receipt.json`. A preliminary single-method selector selected zero tests and is explicitly excluded from passing coverage. The saved-file journey proves use of a local file; the Server remained reachable during that run, so a disconnected-device journey is not yet claimed.
+
 ## Verification boundaries
 
 - Source tests: both app suites and 60 shared packages passed.
 - Populated Subtitles browser batch: all 177 checks passed across three engines.
 - Populated Player library/account batch: one unverified Chromium stall; 77 other checks passed. Both fresh stall repetitions passed.
 - Player playback/recovery matrix: all 228 checks passed across three engines, within the controlled-fixture boundary above.
-- Native simulator suites: iOS and tvOS passed within the boundaries above; one iOS check skipped.
+- Native simulator suites after repair: iOS 282 passed and one skipped; tvOS 273 passed. The live iOS probes additionally establish decoded playback, saved progress, verified transfer, local-file playback, seek, and local removal against the actual Go Server on loopback HTTP.
 - Physical devices, real receivers, external subtitle providers, and purchases: not run.
 - Production containers: blocked by Podman VM storage exhaustion.
 - Hosted CI: the first deep run passed both app suites, all six browser jobs, native Swift/Android compilation, and all four production-container builds. Its stale tooling snapshot failure was repaired through merged PR #413. The next deep run passed tooling but failed the Player WebKit happy-path console assertion described in QA-004. Full current-main deep CI is not claimed green.

@@ -19,7 +19,7 @@ extension ServerClient {
         let baseline = try expected.validated(required: false)
         let token = try Input.text(playbackToken, max: 8192, label: "playback token", empty: true)
         let response = try await request("/api/v1/items/\(Input.id(itemID))/progress/sync", method: .put,
-                                         body: .object(["progress": valid.json, "expected": baseline.json, "playbackToken": .string(token)]), expected: [200, 409])
+                                         body: .object(["progress": valid.synchronizationJSON, "expected": baseline.synchronizationJSON, "playbackToken": .string(token)]), expected: [200, 409])
         if response.status == 409 {
             let value = try response.body.object(allowing: ["error", "progress"])
             _ = try value.text("error", max: 512)
