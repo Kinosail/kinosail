@@ -29,6 +29,20 @@ func AssertNewInstallationCreatesOwnerProfile(t *testing.T, fixture LibraryAPIFi
 	if response.Code != http.StatusOK {
 		t.Fatalf("owner home after restart = %d", response.Code)
 	}
+	assertOneYearBrowserSessionAfterRestart(t, fixture, handler, ownerCookie, dataDir)
+	handler = fixture.NewHandler("", dataDir, true)
+	request = httptest.NewRequestWithContext(t.Context(), http.MethodPost, "/login", strings.NewReader("name=Mike&password=correct+horse+battery+staple"))
+	request.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+	response = httptest.NewRecorder()
+	handler.ServeHTTP(response, request)
+	profiles := fixture.StoredState(t, dataDir, "profiles.json")
+	if response.Code != http.StatusUnauthorized || !strings.Contains(response.Body.String(), "authenticator app") || strings.Contains(string(profiles), "correct horse") {
+		t.Fatalf("login = %d %q, profiles = %q", response.Code, response.Body.String(), profiles)
+	}
+}
+
+func assertOneYearBrowserSessionAfterRestart(t *testing.T, fixture LibraryAPIFixture, handler http.Handler, ownerCookie *http.Cookie, dataDir string) {
+	t.Helper()
 	AssertAPIBody(t, APICall(t, handler, ownerCookie.Value, http.MethodPut, "/api/v1/settings/session-timeouts", map[string]any{"inactiveHours": 8760, "absoluteHours": 8760}), http.StatusOK, `"status":"saved"`)
 	var enrolled []struct{ TOTPSecret string }
 	if err := json.Unmarshal(fixture.StoredState(t, dataDir, "profiles.json"), &enrolled); err != nil || len(enrolled) != 1 {
@@ -39,21 +53,12 @@ func AssertNewInstallationCreatesOwnerProfile(t *testing.T, fixture LibraryAPIFi
 		t.Fatalf("one-year browser cookie lifetime = %d, expiry = %v", ownerCookie.MaxAge, ownerCookie.Expires)
 	}
 	handler = fixture.NewHandler("", dataDir, true)
-	request = httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/", nil)
+	request := httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/", nil)
 	request.AddCookie(ownerCookie)
-	response = httptest.NewRecorder()
+	response := httptest.NewRecorder()
 	handler.ServeHTTP(response, request)
 	if response.Code != http.StatusOK {
 		t.Fatalf("one-year browser session after restart = %d", response.Code)
-	}
-	handler = fixture.NewHandler("", dataDir, true)
-	request = httptest.NewRequestWithContext(t.Context(), http.MethodPost, "/login", strings.NewReader("name=Mike&password=correct+horse+battery+staple"))
-	request.Header.Set("Content-Type", "application/x-www-form-urlencoded")
-	response = httptest.NewRecorder()
-	handler.ServeHTTP(response, request)
-	profiles := fixture.StoredState(t, dataDir, "profiles.json")
-	if response.Code != http.StatusUnauthorized || !strings.Contains(response.Body.String(), "authenticator app") || strings.Contains(string(profiles), "correct horse") {
-		t.Fatalf("login = %d %q, profiles = %q", response.Code, response.Body.String(), profiles)
 	}
 }
 
