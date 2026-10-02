@@ -1,0 +1,122 @@
+Printing with useUnmergedTree = 'false'
+Node #405 at (l=0.0, t=0.0, r=1920.0, b=1080.0)px
+ |-Node #413 at (l=0.0, t=0.0, r=1920.0, b=1080.0)px
+   Shape = 'RectangleShape'
+    |-Node #414 at (l=0.0, t=0.0, r=1920.0, b=1080.0)px
+    | Shape = 'RectangleShape'
+    |-Node #415 at (l=0.0, t=0.0, r=1920.0, b=1080.0)px
+      CollectionInfo = 'CollectionInfo(rowCount=10, columnCount=1)'
+      IsTraversalGroup = 'true'
+      Shape = 'androidx.compose.foundation.VerticalScrollableClipShape@4d53535'
+      VerticalScrollAxisRange = 'ScrollAxisRange(value=1016.0, maxValue=1116.0, reverseScrolling=false)'
+      Actions = [GetScrollViewportLength, IndexForKey, ScrollBy, ScrollByOffset, ScrollToIndex]
+       |-Node #517 at (l=96.0, t=-420.0, r=459.0, b=-364.0)px
+       | Text = '[Continue watching]'
+       | [Heading]
+       | Actions = [ClearTextSubstitution, GetTextLayoutResult, SetTextSubstitution, ShowTextSubstitution]
+       |-Node #518 at (l=96.0, t=-340.0, r=784.0, b=164.0)px
+       | CollectionInfo = 'CollectionInfo(rowCount=1, columnCount=1)'
+       | HorizontalScrollAxisRange = 'ScrollAxisRange(value=0.0, maxValue=0.0, reverseScrolling=false)'
+       | IsTraversalGroup = 'true'
+       | Shape = 'androidx.compose.foundation.HorizontalScrollableClipShape@87d7f45'
+       | Actions = [GetScrollViewportLength, IndexForKey, ScrollBy, ScrollByOffset, ScrollToIndex]
+       |  |-Node #520 at (l=120.0, t=-316.0, r=760.0, b=140.0)px
+       |    ContentDescription = '[Continuing Film]'
+       |    Focused = 'false'
+       |    Shape = 'RoundedCornerShape(topStart = CornerSize(size = 8.0.dp), topEnd = CornerSize(size = 8.0.dp), bottomEnd = CornerSize(size = 8.0.dp), bottomStart = CornerSize(size = 8.0.dp))'
+       |    Text = '[Resume at 1:30, Continuing Film]'
+       |    Actions = [ClearTextSubstitution, GetTextLayoutResult, OnClick, OnLongClick, RequestFocus, SetTextSubstitution, ShowTextSubstitution]
+       |    MergeDescendants = 'true'
+       |-Node #472 at (l=96.0, t=228.0, r=375.0, b=284.0)px
+       | Text = '[Browse library]'
+       | [Heading]
+       | Actions = [ClearTextSubstitution, GetTextLayoutResult, SetTextSubstitution, ShowTextSubstitution]
+       |-Node #473 at (l=96.0, t=308.0, r=1329.0, b=420.0)px
+       | CollectionInfo = 'CollectionInfo(rowCount=1, columnCount=6)'
+       | HorizontalScrollAxisRange = 'ScrollAxisRange(value=0.0, maxValue=0.0, reverseScrolling=false)'
+       | IsTraversalGroup = 'true'
+       | Shape = 'androidx.compose.foundation.HorizontalScrollableClipShape@87d7f45'
+       | Actions = [GetScrollViewportLength, IndexForKey, ScrollBy, ScrollByOffset, ScrollToIndex]
+       |  |-Node #487 at (l=112.0, t=324.0, r=268.0, b=404.0)px
+       |  | Focused = 'false'
+       |  | Role = 'Button'
+       |  | Shape = 'RoundedCornerShape(topStart = CornerSize(size = 50.0%), topEnd = CornerSize(size = 50.0%), bottomEnd = CornerSize(size = 50.0%), bottomStart = CornerSize(size = 50.0%))'
+       |  | Text = '[Movies]'
+       |  | Actions = [ClearTextSubstitution, GetTextLayoutResult, OnClick, OnLongClick, RequestFocus, SetTextSubstitution, ShowTextSubstitution]
+       |  | MergeDescendants = 'true'
+       |  |-Node #497 at (l=533.0, t=324.0, r=675.0, b=404.0)px
+       |  | Focused = 'false'
+       |  | Role = 'Button'
+       |  | Shape = 'RoundedCornerShape(topStart = CornerSize(size = 50.0%), topEnd = CornerSize(size = 50.0%), bottomEnd = CornerSize(size = 50.0%), bottomStart = CornerSize(size = 50.0%))'
+       |  | Text = '[Music]'
+       |  | Actions = [ClearTextSubstitution, GetTextLayoutResult, OnClick, OnLongClick, RequestFocus, SetTextSubstitution, ShowTextSubstitution]
+       |  | MergeDescendants = 'true'
+       |  |-Node #502 at (l=711.0, t=324.0, r=929.0, b=404.0)px
+       |  | Focused = 'false'
+       |  | Role = 'Button'
+       |  | Shape = 'RoundedCornerShape(topStart = CornerSize(size = 50.0%), topEnd = CornerSize(size = 50.0%), bottomEnd = CornerSize(size = 50.0%), bottomStart = CornerSize(size = 50.0%))'
+       |  | Text = '[Audiobooks]'
+       |  | Actions = [ClearTextSubstitution, GetTextLayoutResult, OnClick, OnLongClick, RequestFocus, SetTextSubstitution, ShowTextSubstitution]
+       |  | MergeDescendants = 'true'
+       |  |-Node #507 at (l=965.0, t=324.0, r=1120.0, b=404.0)px
+       |  | Focused = 'false'
+       |  | Role = 'Button'
+       |  | Shape = 'RoundedCornerShape(topStart = CornerSize(size = 50.0%), topEnd = CornerSize(size = 50.0%), bottomEnd = CornerSize(size = 50.0%), bottomStart = CornerSize(size = 50.0%))'
+       |  | Text = '[Photos]'
+       |  | Actions = [ClearTextSubstitution, GetTextLayoutResult, OnClick, OnLongClick, RequestFocus, SetTextSubstitution, ShowTextSubstitution]
+       |  | MergeDescendants = 'true'
+       |  |-Node #512 at (l=1156.0, t=324.0, r=1313.0, b=404.0)px
+       |  | Focused = 'false'
+       |  | Role = 'Button'
+       |  | Shape = 'RoundedCornerShape(topStart = CornerSize(size = 50.0%), topEnd = CornerSize(size = 50.0%), bottomEnd = CornerSize(size = 50.0%), bottomStart = CornerSize(size = 50.0%))'
+       |  | Text = '[My List]'
+       |  | Actions = [ClearTextSubstitution, GetTextLayoutResult, OnClick, OnLongClick, RequestFocus, SetTextSubstitution, ShowTextSubstitution]
+       |  | MergeDescendants = 'true'
+       |  |-Node #492 at (l=304.0, t=324.0, r=497.0, b=404.0)px
+       |    Focused = 'true'
+       |    Role = 'Button'
+       |    Shape = 'RoundedCornerShape(topStart = CornerSize(size = 50.0%), topEnd = CornerSize(size = 50.0%), bottomEnd = CornerSize(size = 50.0%), bottomStart = CornerSize(size = 50.0%))'
+       |    Text = '[TV Shows]'
+       |    Actions = [ClearTextSubstitution, GetTextLayoutResult, OnClick, OnLongClick, RequestFocus, SetTextSubstitution, ShowTextSubstitution]
+       |    MergeDescendants = 'true'
+       |-Node #531 at (l=96.0, t=484.0, r=548.0, b=540.0)px
+       | Text = '[Recently added movies]'
+       | [Heading]
+       | Actions = [ClearTextSubstitution, GetTextLayoutResult, SetTextSubstitution, ShowTextSubstitution]
+       |-Node #532 at (l=96.0, t=564.0, r=980.0, b=1308.0)px
+       | CollectionInfo = 'CollectionInfo(rowCount=1, columnCount=2)'
+       | HorizontalScrollAxisRange = 'ScrollAxisRange(value=0.0, maxValue=0.0, reverseScrolling=false)'
+       | IsTraversalGroup = 'true'
+       | Shape = 'androidx.compose.foundation.HorizontalScrollableClipShape@87d7f45'
+       | Actions = [GetScrollViewportLength, IndexForKey, ScrollBy, ScrollByOffset, ScrollToIndex]
+       |  |-Node #534 at (l=120.0, t=588.0, r=520.0, b=1284.0)px
+       |  | ContentDescription = '[New Film]'
+       |  | Focused = 'false'
+       |  | Shape = 'RoundedCornerShape(topStart = CornerSize(size = 8.0.dp), topEnd = CornerSize(size = 8.0.dp), bottomEnd = CornerSize(size = 8.0.dp), bottomStart = CornerSize(size = 8.0.dp))'
+       |  | Text = '[New Film]'
+       |  | Actions = [ClearTextSubstitution, GetTextLayoutResult, OnClick, OnLongClick, RequestFocus, SetTextSubstitution, ShowTextSubstitution]
+       |  | MergeDescendants = 'true'
+       |  |-Node #542 at (l=556.0, t=588.0, r=956.0, b=1284.0)px
+       |    ContentDescription = '[Continuing Film]'
+       |    Focused = 'false'
+       |    Shape = 'RoundedCornerShape(topStart = CornerSize(size = 8.0.dp), topEnd = CornerSize(size = 8.0.dp), bottomEnd = CornerSize(size = 8.0.dp), bottomStart = CornerSize(size = 8.0.dp))'
+       |    Text = '[Resume at 1:30, Continuing Film]'
+       |    Actions = [ClearTextSubstitution, GetTextLayoutResult, OnClick, OnLongClick, RequestFocus, SetTextSubstitution, ShowTextSubstitution]
+       |    MergeDescendants = 'true'
+       |-Node #553 at (l=0.0, t=0.0, r=504.0, b=56.0)px
+       | Text = '[Recently added TV shows]'
+       | [Heading]
+       | Actions = [ClearTextSubstitution, GetTextLayoutResult, SetTextSubstitution, ShowTextSubstitution]
+       |-Node #554 at (l=0.0, t=0.0, r=448.0, b=744.0)px
+         CollectionInfo = 'CollectionInfo(rowCount=1, columnCount=1)'
+         HorizontalScrollAxisRange = 'ScrollAxisRange(value=0.0, maxValue=0.0, reverseScrolling=false)'
+         IsTraversalGroup = 'true'
+         Shape = 'androidx.compose.foundation.HorizontalScrollableClipShape@87d7f45'
+         Actions = [GetScrollViewportLength, IndexForKey, ScrollBy, ScrollByOffset, ScrollToIndex]
+          |-Node #556 at (l=0.0, t=0.0, r=400.0, b=696.0)px
+            ContentDescription = '[Fixture Series]'
+            Focused = 'false'
+            Shape = 'RoundedCornerShape(topStart = CornerSize(size = 8.0.dp), topEnd = CornerSize(size = 8.0.dp), bottomEnd = CornerSize(size = 8.0.dp), bottomStart = CornerSize(size = 8.0.dp))'
+            Text = '[Fixture Series]'
+            Actions = [ClearTextSubstitution, GetTextLayoutResult, OnClick, OnLongClick, RequestFocus, SetTextSubstitution, ShowTextSubstitution]
+            MergeDescendants = 'true'

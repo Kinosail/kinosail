@@ -1,211 +1,141 @@
 package com.kinosail.player.core
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxWithConstraints
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.safeDrawingPadding
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.produceState
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
-import androidx.compose.runtime.withFrameNanos
-import androidx.compose.ui.Alignment
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.graphics.asImageBitmap
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.LiveRegionMode
-import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.kinosail.player.R
 import com.kinosail.player.design.KinoColor
 import com.kinosail.player.design.SailBackdrop
 
 @Composable
-internal fun HomeScreen(viewer: Viewer, catalog: CatalogModel, tv: Boolean, nowPlaying: CatalogItem?, browse: () -> Unit,
-                        open: (CatalogItem) -> Unit, play: (CatalogItem) -> Unit) {
+internal fun HomeScreen(viewer: Viewer, catalog: CatalogModel, tv: Boolean, nowPlaying: CatalogItem?,
+                        browse: (String) -> Unit, open: (CatalogItem) -> Unit, play: (CatalogItem) -> Unit,
+                        listening: Boolean = false, settings: () -> Unit = {}) {
     val model: HomeModel = viewModel()
-    val state = model.state
-    val featured = state.featured
-    val playFocus = remember { FocusRequester() }
-    var showThanks by remember { mutableStateOf(false) }
-    var showNotices by remember { mutableStateOf(false) }
-    val context = LocalContext.current
+    val state = model.state.copy(listening = listening)
     LaunchedEffect(viewer.serverId, viewer.id) { model.open(viewer) }
     DisposableEffect(Unit) { onDispose { model.reset() } }
-    LaunchedEffect(featured?.id, tv) {
-        if (tv && featured != null) { withFrameNanos { }; playFocus.requestFocus() }
-    }
-    BoxWithConstraints(Modifier.fillMaxSize().background(KinoColor.background)) {
-        val wideTouch = !tv && maxWidth >= 600.dp
-        val heroWidth = if (tv) 140 else if (wideTouch) (maxWidth.value / 4).toInt().coerceIn(240, 320) else 120
+    Box(Modifier.fillMaxSize().background(KinoColor.background)) {
         SailBackdrop()
-        Column(Modifier.fillMaxSize().safeDrawingPadding().padding(if (tv) 56.dp else 20.dp),
-            verticalArrangement = Arrangement.spacedBy(if (tv) 24.dp else 16.dp)) {
-            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically) {
-                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    Text("Kinosail", style = MaterialTheme.typography.titleLarge, color = KinoColor.text)
-                    Text(interfaceText("For you"), style = if (tv) MaterialTheme.typography.displayLarge
-                        else MaterialTheme.typography.headlineLarge,
-                        color = KinoColor.text)
-                    Text(viewer.name, color = KinoColor.muted)
-                }
-                Column(horizontalAlignment = Alignment.End) {
+        LazyColumn(Modifier.fillMaxSize(), contentPadding = PaddingValues(if (tv) 48.dp else 20.dp),
+            verticalArrangement = Arrangement.spacedBy(32.dp)) {
+            item {
+                FlowRow(horizontalArrangement = Arrangement.spacedBy(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Text(if (listening) interfaceText("Listen") else "Kinosail",
+                        style = if (tv) MaterialTheme.typography.headlineLarge else MaterialTheme.typography.titleLarge,
+                        color = KinoColor.text, modifier = Modifier.weight(1f))
                     if (tv) {
-                        androidx.tv.material3.Button(onClick = browse) {
-                            androidx.tv.material3.Text(interfaceText("Browse library"))
+                        androidx.tv.material3.Button(onClick = { browse(if (listening) "home" else "listen") }) {
+                            androidx.tv.material3.Text(interfaceText(if (listening) "Watch" else "Listen"))
                         }
-                        androidx.tv.material3.Button(onClick = { showThanks = !showThanks }) {
-                            androidx.tv.material3.Text("Made possible by")
-                        }
-                    } else {
-                        TextButton(onClick = browse) { Text(interfaceText("Library")) }
-                        TextButton(onClick = { showThanks = !showThanks }) { Text("Thanks") }
-                    }
+                        androidx.tv.material3.Button(onClick = { browse("search") }) { androidx.tv.material3.Text(interfaceText("Search")) }
+                        androidx.tv.material3.Button(onClick = settings) { androidx.tv.material3.Text(interfaceText("Settings")) }
+                    } else TextButton(onClick = { browse("list") }) { Text(interfaceText("My List")) }
                 }
             }
-            if (nowPlaying != null) {
-                val label = "Now playing · ${nowPlaying.title}"
-                if (tv) androidx.tv.material3.Button(onClick = { play(nowPlaying) }) {
-                    androidx.tv.material3.Text(label)
-                } else androidx.compose.material3.Button(onClick = { play(nowPlaying) },
-                    modifier = Modifier.fillMaxWidth()) { Text(label) }
+            if (nowPlaying != null) item {
+                HomeAction("Now playing · ${nowPlaying.title}", tv) { play(nowPlaying) }
             }
-            LazyColumn(Modifier.weight(1f), contentPadding = PaddingValues(bottom = 24.dp),
-                verticalArrangement = Arrangement.spacedBy(if (tv) 24.dp else 16.dp)) {
-                if (showThanks) item {
-                    Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                        Text("Made possible by", style = MaterialTheme.typography.headlineMedium, color = KinoColor.text)
-                        Text("Thank you to the people behind Jetpack Compose, Media3, and the Android libraries that bring Kinosail to this device. FFmpeg and Jellyfin FFmpeg power media tools on your Server.", color = KinoColor.text)
-                        Image(painter = painterResource(R.drawable.tmdb_logo), contentDescription = "TMDB", modifier = Modifier.width(80.dp))
-                        Text("This product uses the TMDB API but is not endorsed or certified by TMDB.", color = KinoColor.muted)
-                        if (tv) androidx.tv.material3.Button(onClick = { showNotices = !showNotices }) {
-                            androidx.tv.material3.Text("Third-party notices")
-                        } else TextButton(onClick = { showNotices = !showNotices }) { Text("Third-party notices") }
-                        if (showNotices) {
-                            val notices = remember(context) { runCatching { context.assets.open("THIRD_PARTY_NOTICES.md").bufferedReader().use { it.readText() } }.getOrNull() }
-                            Text(notices ?: "Notices could not be opened. Reinstall Kinosail and try again.", color = KinoColor.muted)
-                        }
-                    }
+            if (state.loading && state.featured == null) item { LibraryLoading(home = true, tv = tv) }
+            state.notice?.let { notice -> item {
+                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Text(notice, color = KinoColor.text, modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite })
+                    HomeAction(interfaceText("Try again"), tv, model::retry)
                 }
-                if (state.loading) item { CircularProgressIndicator(color = KinoColor.signal) }
-                state.notice?.let { notice -> item {
-                    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                        Text(notice, color = KinoColor.text,
-                            modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite })
-                        if (tv) androidx.tv.material3.Button(onClick = model::retry) {
-                            androidx.tv.material3.Text(interfaceText("Try again"))
-                        } else TextButton(onClick = model::retry) { Text(interfaceText("Try again")) }
-                    }
-                } }
-                if (featured != null) item {
-                    Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(if (tv) 32.dp else 16.dp),
-                        verticalAlignment = Alignment.CenterVertically) {
-                        HomeArtwork(featured, catalog, heroWidth)
-                        Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                            Text(featured.title, style = if (tv || wideTouch) MaterialTheme.typography.headlineLarge
-                                else MaterialTheme.typography.titleLarge,
-                                color = KinoColor.text)
-                            val label = if (featured.progress.seconds > 0 && !featured.progress.watched) "Resume" else "Play"
-                            if (tv) {
-                                androidx.tv.material3.Button(onClick = { play(featured) },
-                                    modifier = Modifier.focusRequester(playFocus)) {
-                                    androidx.tv.material3.Text(label)
-                                }
-                                androidx.tv.material3.Button(onClick = { open(featured) }) {
-                                    androidx.tv.material3.Text(interfaceText("Details"))
-                                }
-                            } else {
-                                androidx.compose.material3.Button(onClick = { play(featured) }) { Text(label) }
-                                TextButton(onClick = { open(featured) }) { Text(interfaceText("Details")) }
+            } }
+            if (tv && state.tvWatchingRail.isNotEmpty()) item {
+                HomeShelf(if (listening) "Continue listening" else "Continue watching", state.tvWatchingRail,
+                    catalog, tv, landscape = true, open = play)
+            }
+            if (!tv) state.featured?.let { featured -> item {
+                Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                    Text(interfaceText(if (featured.progress.seconds > 0) if (listening) "Listening" else "Watching" else "For you"),
+                        style = MaterialTheme.typography.titleLarge, color = KinoColor.text)
+                    MediaHero(featured.copy(plot = ""), catalog, tv = false) {
+                        FlowRow(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                            HomeAction(interfaceText(featured.playLabel), false) {
+                                if (featured.kind == "show") open(featured) else play(featured)
                             }
+                            OutlinedButton(onClick = { open(featured) }) { Text(interfaceText("Details")) }
                         }
                     }
                 }
-                if (state.watchShelf.isNotEmpty()) item {
-                    HomeShelf("Continue watching", state.watchShelf, catalog, tv, wideTouch, open)
-                }
-                if (state.recentShelf.isNotEmpty()) item {
-                    HomeShelf("Recently added", state.recentShelf, catalog, tv, wideTouch, open)
-                }
-                if (!state.loading && state.notice == null && state.continueWatching.isEmpty() &&
-                    state.recent.isEmpty()) item {
-                    Text(interfaceText("Media added to your Server will appear here."), color = KinoColor.muted)
-                }
+            } }
+            if (!tv && state.watchShelf.isNotEmpty()) item {
+                HomeShelf(if (listening) "Continue listening" else "Continue watching", state.watchShelf,
+                    catalog, tv, landscape = true, open = play)
             }
+            if (tv) item { BrowseLinks(browse, tv, listening) }
+            val shelves = if (listening) listOf("Recently added music" to state.recentShelf.filter { it.kind == "music" },
+                "Recently added audiobooks" to state.recentShelf.filter { it.kind == "audiobook" })
+            else listOf("Recently added movies" to state.movies, "Recently added TV shows" to state.shows,
+                "Unwatched TV shows" to state.unwatchedShows, "Unwatched movies" to state.unwatchedMovies)
+            shelves.filter { it.second.isNotEmpty() }.forEach { (title, items) -> item {
+                HomeShelf(title, items, catalog, tv, open = open)
+            } }
+            if (!listening && state.movieGenres.isNotEmpty()) {
+                item { Text(interfaceText("Movie genres"), style = MaterialTheme.typography.headlineMedium, color = KinoColor.text) }
+                state.movieGenres.forEach { (genre, movies) -> item { HomeShelf(genre, movies, catalog, tv, open = open) } }
+            }
+            if (!state.loading && state.notice == null && state.featured == null) item {
+                Text(interfaceText(if (listening) "Add music or audiobooks to your Server to see them here."
+                    else "Media added to your Server will appear here."), color = KinoColor.muted)
+            }
+            if (!tv) item { BrowseLinks(browse, tv, listening) }
         }
     }
 }
 
 @Composable
-private fun HomeShelf(title: String, items: List<CatalogItem>, catalog: CatalogModel, tv: Boolean, wideTouch: Boolean,
-                      open: (CatalogItem) -> Unit) {
+private fun BrowseLinks(browse: (String) -> Unit, tv: Boolean, listening: Boolean) {
     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-        Text(interfaceText(title), style = MaterialTheme.typography.titleLarge, color = KinoColor.text)
-        LazyRow(horizontalArrangement = Arrangement.spacedBy(if (tv) 20.dp else if (wideTouch) 16.dp else 12.dp)) {
-            items(items, key = CatalogItem::id) { item ->
-                if (tv) androidx.tv.material3.Card(onClick = { open(item) },
-                    modifier = Modifier.width(200.dp).semantics { contentDescription = item.title }) {
-                    Column {
-                        HomeArtwork(item, catalog, 200)
-                        androidx.tv.material3.Text(item.title, maxLines = 2, modifier = Modifier.padding(8.dp))
-                    }
-                } else androidx.compose.material3.Card(onClick = { open(item) },
-                    modifier = Modifier.width(if (wideTouch) 190.dp else 144.dp)
-                        .semantics { contentDescription = item.title },
-                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)) {
-                    Column {
-                        HomeArtwork(item, catalog, if (wideTouch) 190 else 144)
-                        Text(item.title, maxLines = 2, modifier = Modifier.padding(8.dp))
-                    }
-                }
-            }
+        Text(interfaceText("Browse library"), style = MaterialTheme.typography.titleLarge, color = KinoColor.text,
+            modifier = Modifier.semantics { heading() })
+        val views = if (listening) LIBRARY_VIEWS.filter { it.first in setOf("music", "audiobooks") }
+            else LIBRARY_VIEWS.filter { it.first in setOf("movies", "shows", "music", "audiobooks", "photos", "list") }
+        LazyRow(horizontalArrangement = Arrangement.spacedBy(18.dp), contentPadding = PaddingValues(8.dp)) {
+            items(views, key = { it.first }) { (view, title) -> HomeAction(interfaceText(title), tv) { browse(view) } }
         }
     }
 }
 
 @Composable
-private fun HomeArtwork(item: CatalogItem, catalog: CatalogModel, width: Int) {
-    val bitmap by produceState<android.graphics.Bitmap?>(null, item.artwork, catalog, width) {
-        value = catalog.artwork(item.artwork, 400)
-    }
-    Box(Modifier.width(width.dp).aspectRatio(2f / 3f)
-        .background(KinoColor.raised),
-        contentAlignment = Alignment.Center) {
-        Text(item.title.firstOrNull()?.uppercase() ?: "K",
-            color = KinoColor.signal,
-            style = MaterialTheme.typography.displayMedium, modifier = Modifier.clearAndSetSemantics { })
-        bitmap?.let { Image(it.asImageBitmap(), contentDescription = null,
-            contentScale = ContentScale.Crop, modifier = Modifier.fillMaxSize()) }
+private fun HomeAction(label: String, tv: Boolean, onClick: () -> Unit) {
+    if (tv) androidx.tv.material3.Button(onClick = onClick) { androidx.tv.material3.Text(label) }
+    else Button(onClick = onClick) { Text(label) }
+}
+
+@Composable
+private fun HomeShelf(title: String, items: List<CatalogItem>, catalog: CatalogModel, tv: Boolean,
+                      landscape: Boolean = false, open: (CatalogItem) -> Unit) {
+    Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+        Text(interfaceText(title), style = MaterialTheme.typography.titleLarge, color = KinoColor.text,
+            modifier = Modifier.semantics { heading() })
+        LazyRow(horizontalArrangement = Arrangement.spacedBy(18.dp), contentPadding = PaddingValues(12.dp)) {
+            items(items, key = CatalogItem::id) { item ->
+                val width = if (landscape) if (tv) 320.dp else 240.dp else if (tv) 200.dp else 144.dp
+                val body: @Composable () -> Unit = {
+                    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                        MediaArtwork(item, catalog, Modifier.fillMaxWidth(), landscape)
+                        Text(item.title, style = MaterialTheme.typography.titleMedium, color = KinoColor.text,
+                            modifier = Modifier.padding(8.dp), maxLines = if (androidx.compose.ui.platform.LocalDensity.current.fontScale >= 1.5f) Int.MAX_VALUE else 2)
+                    }
+                }
+                if (tv) androidx.tv.material3.Card(onClick = { open(item) }, modifier = Modifier.width(width).semantics { contentDescription = item.title }, content = { body() })
+                else Card(onClick = { open(item) }, modifier = Modifier.width(width).semantics { contentDescription = item.title },
+                    colors = CardDefaults.cardColors(containerColor = KinoColor.surface), content = { body() })
+            }
+        }
     }
 }

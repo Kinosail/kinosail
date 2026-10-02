@@ -10,7 +10,7 @@ import kotlinx.serialization.json.longOrNull
 import kotlinx.serialization.json.put
 
 data class WatchProgress(val seconds: Double = 0.0, val watched: Boolean = false,
-                         val session: String = "", val revision: Long = 0) {
+                         val session: String = "", val revision: Long = 0, val dismissed: Boolean = false) {
     fun validated(required: Boolean = false): WatchProgress {
         require(seconds.isFinite() && seconds in 0.0..31_536_000.0 &&
             session.toByteArray().size <= 128 && session.none(Char::isISOControl) &&
@@ -60,8 +60,7 @@ data class WatchProgress(val seconds: Double = 0.0, val watched: Boolean = false
                 require(primitive != null && primitive.isString && primitive.content.length <= 40 &&
                     primitive.content.matches(Regex("\\d{4}-\\d{2}-\\d{2}T[^\\s]{1,30}"))) { "Invalid watch progress." }
             }
-            flag("dismissed")
-            return WatchProgress(number("seconds"), flag("watched"), session, revision).validated()
+            return WatchProgress(number("seconds"), flag("watched"), session, revision, flag("dismissed")).validated()
         }
     }
 }

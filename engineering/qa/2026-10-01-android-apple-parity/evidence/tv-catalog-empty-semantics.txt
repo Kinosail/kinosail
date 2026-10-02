@@ -1,0 +1,39 @@
+Printing with useUnmergedTree = 'false'
+Node #1 at (l=0.0, t=0.0, r=1920.0, b=1080.0)px
+ |-Node #160 at (l=0.0, t=0.0, r=1920.0, b=1080.0)px
+   Shape = 'RectangleShape'
+    |-Node #161 at (l=0.0, t=0.0, r=1920.0, b=1080.0)px
+    | Shape = 'RectangleShape'
+    |-Node #164 at (l=96.0, t=96.0, r=1239.0, b=171.0)px
+    | Text = '[Movies]'
+    | Actions = [ClearTextSubstitution, GetTextLayoutResult, SetTextSubstitution, ShowTextSubstitution]
+    |-Node #169 at (l=1460.0, t=96.0, r=1614.0, b=176.0)px
+    | Focused = 'false'
+    | Role = 'Button'
+    | Shape = 'RoundedCornerShape(topStart = CornerSize(size = 50.0%), topEnd = CornerSize(size = 50.0%), bottomEnd = CornerSize(size = 50.0%), bottomStart = CornerSize(size = 50.0%))'
+    | Text = '[Search]'
+    | Actions = [ClearTextSubstitution, GetTextLayoutResult, OnClick, OnLongClick, RequestFocus, SetTextSubstitution, ShowTextSubstitution]
+    | MergeDescendants = 'true'
+    |-Node #173 at (l=1654.0, t=96.0, r=1824.0, b=176.0)px
+    | Focused = 'false'
+    | Role = 'Button'
+    | Shape = 'RoundedCornerShape(topStart = CornerSize(size = 50.0%), topEnd = CornerSize(size = 50.0%), bottomEnd = CornerSize(size = 50.0%), bottomStart = CornerSize(size = 50.0%))'
+    | Text = '[Settings]'
+    | Actions = [ClearTextSubstitution, GetTextLayoutResult, OnClick, OnLongClick, RequestFocus, SetTextSubstitution, ShowTextSubstitution]
+    | MergeDescendants = 'true'
+    |-Node #165 at (l=1279.0, t=96.0, r=1420.0, b=176.0)px
+    | Focused = 'true'
+    | Role = 'Button'
+    | Shape = 'RoundedCornerShape(topStart = CornerSize(size = 50.0%), topEnd = CornerSize(size = 50.0%), bottomEnd = CornerSize(size = 50.0%), bottomStart = CornerSize(size = 50.0%))'
+    | Text = '[Home]'
+    | Actions = [ClearTextSubstitution, GetTextLayoutResult, OnClick, OnLongClick, RequestFocus, SetTextSubstitution, ShowTextSubstitution]
+    | MergeDescendants = 'true'
+    |-Node #215 at (l=96.0, t=224.0, r=495.0, b=262.0)px
+    | Text = '[Nothing in your library yet.]'
+    | Actions = [ClearTextSubstitution, GetTextLayoutResult, SetTextSubstitution, ShowTextSubstitution]
+    |-Node #179 at (l=96.0, t=310.0, r=144.0, b=984.0)px
+      CollectionInfo = 'CollectionInfo(rowCount=-1, columnCount=-1)'
+      IsTraversalGroup = 'true'
+      Shape = 'androidx.compose.foundation.VerticalScrollableClipShape@4d53535'
+      VerticalScrollAxisRange = 'ScrollAxisRange(value=0.0, maxValue=0.0, reverseScrolling=false)'
+      Actions = [GetScrollViewportLength, IndexForKey, ScrollBy, ScrollByOffset, ScrollToIndex]

@@ -1,6 +1,7 @@
 package com.kinosail.player.wear
 
 import androidx.compose.foundation.Canvas
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -37,13 +38,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.wear.compose.foundation.pager.HorizontalPager
+import androidx.wear.compose.foundation.pager.VerticalPager
 import androidx.wear.compose.foundation.pager.rememberPagerState
 import androidx.wear.compose.material3.AppScaffold
 import androidx.wear.compose.material3.Button
 import androidx.wear.compose.material3.ButtonDefaults
 import androidx.wear.compose.material3.ColorScheme
-import androidx.wear.compose.material3.HorizontalPagerScaffold
+import androidx.wear.compose.material3.VerticalPagerScaffold
 import androidx.wear.compose.material3.MaterialTheme
 import androidx.wear.compose.material3.Text
 import com.kinosail.player.wear.R
@@ -76,8 +77,8 @@ internal fun WatchApp(
         background = ink, onBackground = Color(0xFFF6F8F2), onSurface = Color(0xFFF6F8F2),
         surfaceContainer = raised, onSurfaceVariant = muted)) {
         AppScaffold {
-            HorizontalPagerScaffold(pagerState = pager) {
-                HorizontalPager(state = pager) { page ->
+            VerticalPagerScaffold(pagerState = pager) {
+                VerticalPager(state = pager) { page ->
                     if (page == 0) RemotePage(remote, timeline, heartMessage, onStartHeart) {
                         scope.launch { pager.animateScrollToPage(1) }
                     }
@@ -94,6 +95,12 @@ private fun RemotePage(
     onStartHeart: (WatchPlayer) -> Unit, onHeartPage: () -> Unit,
 ) {
     var choosing by remember { mutableStateOf(false) }
+    var seeking by remember { mutableStateOf<WatchPlayer?>(null) }
+    BackHandler(seeking != null) { seeking = null }
+    if (seeking != null) {
+        SeekPage(requireNotNull(seeking), remote) { seeking = null }
+        return
+    }
     var showingThanks by remember { mutableStateOf(false) }
     var showingNotices by remember { mutableStateOf(false) }
     val context = LocalContext.current
@@ -129,10 +136,12 @@ private fun RemotePage(
             }
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
                 Control("−15", interfaceText("Back 15 seconds"), !remote.busy) { remote.command("backward") }
-                Control(if (player.playing) "Ⅱ" else "▶", interfaceText(if (player.playing) "Pause" else "Play"), !remote.busy,
+                Control(if (player.playing) "pause" else "play", interfaceText(if (player.playing) "Pause" else "Play"), !remote.busy,
                     primary = true) { remote.command(if (player.playing) "pause" else "play") }
                 Control("+30", interfaceText("Forward 30 seconds"), !remote.busy) { remote.command("forward") }
             }
+            if (player.duration > 0) Button(onClick = { seeking = player }, modifier = Modifier.fillMaxWidth(),
+                label = { Text(interfaceText("Go to time")) })
             if (!player.audio && player.duration > 0 && timeline?.tracking != true) {
                 Button(onClick = { onStartHeart(player) }, modifier = Modifier.fillMaxWidth(),
                     label = { Text(interfaceText("Start heart graph")) })
@@ -180,7 +189,11 @@ private fun Control(label: String, description: String, enabled: Boolean, primar
         colors = ButtonDefaults.buttonColors(containerColor = if (primary) signal else raised,
             contentColor = if (primary) ink else Color.White),
         modifier = Modifier.size(48.dp).semantics { contentDescription = description },
-        label = { Text(label, fontWeight = FontWeight.Bold) })
+        label = {
+            if (label in setOf("play", "pause")) Image(painterResource(if (label == "play") R.drawable.remote_play else R.drawable.remote_pause),
+                contentDescription = null, modifier = Modifier.size(22.dp))
+            else Text(label, fontWeight = FontWeight.Bold)
+        })
 }
 
 @Composable
@@ -244,4 +257,26 @@ private fun clock(seconds: Double): String {
     val value = seconds.coerceAtLeast(0.0).toLong()
     return if (value >= 3600) "%d:%02d:%02d".format(value / 3600, value / 60 % 60, value % 60)
         else "%d:%02d".format(value / 60, value % 60)
+}
+
+@Composable
+private fun SeekPage(player: WatchPlayer, remote: WearRemoteSession, close: () -> Unit) {
+    var position by remember(player.id, player.itemId) { mutableStateOf(player.position) }
+    val scope = rememberCoroutineScope()
+    Column(Modifier.fillMaxSize().background(ink).verticalScroll(rememberScrollState())
+        .padding(horizontal = 22.dp, vertical = 36.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        Text(interfaceText("Go to time"), color = signal, fontWeight = FontWeight.Bold)
+        Text(player.title, maxLines = 2)
+        Text("${clock(position)} / ${clock(player.duration)}", fontSize = 18.sp)
+        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            Button(onClick = { position = (position - 15).coerceAtLeast(0.0) }, enabled = position > 0,
+                modifier = Modifier.weight(1f).semantics { contentDescription = "15 seconds earlier" }, label = { Text("−15") })
+            Button(onClick = { position = (position + 15).coerceAtMost(player.duration) }, enabled = position < player.duration,
+                modifier = Modifier.weight(1f).semantics { contentDescription = "15 seconds later" }, label = { Text("+15") })
+        }
+        Button(onClick = { scope.launch { remote.seek(player, position); close() } }, enabled = !remote.busy &&
+            remote.selected?.id == player.id && remote.selected?.itemId == player.itemId,
+            modifier = Modifier.fillMaxWidth(), label = { Text(interfaceText("Seek")) })
+        Button(onClick = close, modifier = Modifier.fillMaxWidth(), label = { Text(interfaceText("Back")) })
+    }
 }

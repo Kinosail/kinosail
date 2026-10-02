@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.kinosail.player.core.MediaUriPolicyTest" tests="3" skipped="0" failures="0" errors="0" timestamp="2026-10-02T06:27:01.536Z" hostname="MikeOs-MacBook-Pro.local" time="0.001">
+  <properties/>
+  <testcase name="rejectsInvalidItemIdBeforeUsingThePolicy" classname="com.kinosail.player.core.MediaUriPolicyTest" time="0.0"/>
+  <testcase name="permitsOnlyThisItemsDirectAndHlsResourcesOnTheServerOrigin" classname="com.kinosail.player.core.MediaUriPolicyTest" time="0.001"/>
+  <testcase name="rejectsOtherOriginsAndPathEscapes" classname="com.kinosail.player.core.MediaUriPolicyTest" time="0.0"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

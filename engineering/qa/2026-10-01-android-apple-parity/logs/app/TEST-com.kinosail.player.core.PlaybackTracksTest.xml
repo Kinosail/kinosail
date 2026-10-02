@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.kinosail.player.core.PlaybackTracksTest" tests="3" skipped="0" failures="0" errors="0" timestamp="2026-10-02T06:27:09.179Z" hostname="MikeOs-MacBook-Pro.local" time="0.037">
+  <properties/>
+  <testcase name="limitsEmbeddedMenuToPreferredRegularAndForcedTracks" classname="com.kinosail.player.core.PlaybackTracksTest" time="0.018"/>
+  <testcase name="listsSupportedAudioAndCaptionsWithCurrentSelection" classname="com.kinosail.player.core.PlaybackTracksTest" time="0.009"/>
+  <testcase name="boundsUntrustedTrackLabelsAndClearsPreviousMedia" classname="com.kinosail.player.core.PlaybackTracksTest" time="0.008"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

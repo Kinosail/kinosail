@@ -1,0 +1,127 @@
+Printing with useUnmergedTree = 'false'
+Node #286 at (l=0.0, t=0.0, r=2424.0, b=1080.0)px
+ |-Node #294 at (l=142.0, t=137.0, r=2424.0, b=1017.0)px
+   Shape = 'RectangleShape'
+    |-Node #298 at (l=142.0, t=137.0, r=2424.0, b=807.0)px
+    | Shape = 'RectangleShape'
+    |  |-Node #299 at (l=142.0, t=137.0, r=2424.0, b=807.0)px
+    |  | Shape = 'RectangleShape'
+    |  |-Node #300 at (l=142.0, t=137.0, r=2424.0, b=807.0)px
+    |    CollectionInfo = 'CollectionInfo(rowCount=3, columnCount=1)'
+    |    IsTraversalGroup = 'true'
+    |    Shape = 'androidx.compose.foundation.VerticalScrollableClipShape@fbf7a55'
+    |    VerticalScrollAxisRange = 'ScrollAxisRange(value=0.0, maxValue=100.0, reverseScrolling=false)'
+    |    Actions = [GetScrollViewportLength, IndexForKey, ScrollBy, ScrollByOffset, ScrollToIndex]
+    |     |-Node #351 at (l=195.0, t=190.0, r=2103.0, b=274.0)px
+    |     | Text = '[Kinosail]'
+    |     | Actions = [ClearTextSubstitution, GetTextLayoutResult, SetTextSubstitution, ShowTextSubstitution]
+    |     |-Node #352 at (l=2145.0, t=197.0, r=2371.0, b=310.0)px
+    |     | Focused = 'false'
+    |     | Role = 'Button'
+    |     | Shape = 'RoundedCornerShape(topStart = CornerSize(size = 50.0%), topEnd = CornerSize(size = 50.0%), bottomEnd = CornerSize(size = 50.0%), bottomStart = CornerSize(size = 50.0%))'
+    |     | Text = '[My List]'
+    |     | Actions = [ClearTextSubstitution, GetTextLayoutResult, OnClick, RequestFocus, SetTextSubstitution, ShowTextSubstitution]
+    |     | MergeDescendants = 'true'
+    |     |-Node #413 at (l=195.0, t=400.0, r=1115.0, b=480.0)px
+    |     | LiveRegion = 'Polite'
+    |     | Text = '[Could not load your home. Try again.]'
+    |     | Actions = [ClearTextSubstitution, GetTextLayoutResult, SetTextSubstitution, ShowTextSubstitution]
+    |     |-Node #414 at (l=195.0, t=508.0, r=526.0, b=621.0)px
+    |     | Focused = 'false'
+    |     | Role = 'Button'
+    |     | Shape = 'RoundedCornerShape(topStart = CornerSize(size = 50.0%), topEnd = CornerSize(size = 50.0%), bottomEnd = CornerSize(size = 50.0%), bottomStart = CornerSize(size = 50.0%))'
+    |     | Text = '[Try again]'
+    |     | Actions = [ClearTextSubstitution, GetTextLayoutResult, OnClick, RequestFocus, SetTextSubstitution, ShowTextSubstitution]
+    |     | MergeDescendants = 'true'
+    |     |-Node #418 at (l=195.0, t=711.0, r=606.0, b=795.0)px
+    |     | Text = '[Browse library]'
+    |     | [Heading]
+    |     | Actions = [ClearTextSubstitution, GetTextLayoutResult, SetTextSubstitution, ShowTextSubstitution]
+    |     |-Node #419 at (l=195.0, t=827.0, r=2335.0, b=995.0)px
+    |       CollectionInfo = 'CollectionInfo(rowCount=1, columnCount=6)'
+    |       HorizontalScrollAxisRange = 'ScrollAxisRange(value=0.0, maxValue=0.0, reverseScrolling=false)'
+    |       IsTraversalGroup = 'true'
+    |       Shape = 'androidx.compose.foundation.HorizontalScrollableClipShape@a48fec8'
+    |       Actions = [GetScrollViewportLength, IndexForKey, ScrollBy, ScrollByOffset, ScrollToIndex]
+    |        |-Node #420 at (l=216.0, t=855.0, r=503.0, b=968.0)px
+    |        | Focused = 'false'
+    |        | Role = 'Button'
+    |        | Shape = 'RoundedCornerShape(topStart = CornerSize(size = 50.0%), topEnd = CornerSize(size = 50.0%), bottomEnd = CornerSize(size = 50.0%), bottomStart = CornerSize(size = 50.0%))'
+    |        | Text = '[Movies]'
+    |        | Actions = [ClearTextSubstitution, GetTextLayoutResult, OnClick, RequestFocus, SetTextSubstitution, ShowTextSubstitution]
+    |        | MergeDescendants = 'true'
+    |        |-Node #423 at (l=550.0, t=855.0, r=900.0, b=968.0)px
+    |        | Focused = 'false'
+    |        | Role = 'Button'
+    |        | Shape = 'RoundedCornerShape(topStart = CornerSize(size = 50.0%), topEnd = CornerSize(size = 50.0%), bottomEnd = CornerSize(size = 50.0%), bottomStart = CornerSize(size = 50.0%))'
+    |        | Text = '[TV Shows]'
+    |        | Actions = [ClearTextSubstitution, GetTextLayoutResult, OnClick, RequestFocus, SetTextSubstitution, ShowTextSubstitution]
+    |        | MergeDescendants = 'true'
+    |        |-Node #426 at (l=947.0, t=855.0, r=1209.0, b=968.0)px
+    |        | Focused = 'false'
+    |        | Role = 'Button'
+    |        | Shape = 'RoundedCornerShape(topStart = CornerSize(size = 50.0%), topEnd = CornerSize(size = 50.0%), bottomEnd = CornerSize(size = 50.0%), bottomStart = CornerSize(size = 50.0%))'
+    |        | Text = '[Music]'
+    |        | Actions = [ClearTextSubstitution, GetTextLayoutResult, OnClick, RequestFocus, SetTextSubstitution, ShowTextSubstitution]
+    |        | MergeDescendants = 'true'
+    |        |-Node #429 at (l=1256.0, t=855.0, r=1648.0, b=968.0)px
+    |        | Focused = 'false'
+    |        | Role = 'Button'
+    |        | Shape = 'RoundedCornerShape(topStart = CornerSize(size = 50.0%), topEnd = CornerSize(size = 50.0%), bottomEnd = CornerSize(size = 50.0%), bottomStart = CornerSize(size = 50.0%))'
+    |        | Text = '[Audiobooks]'
+    |        | Actions = [ClearTextSubstitution, GetTextLayoutResult, OnClick, RequestFocus, SetTextSubstitution, ShowTextSubstitution]
+    |        | MergeDescendants = 'true'
+    |        |-Node #432 at (l=1695.0, t=855.0, r=1979.0, b=968.0)px
+    |        | Focused = 'false'
+    |        | Role = 'Button'
+    |        | Shape = 'RoundedCornerShape(topStart = CornerSize(size = 50.0%), topEnd = CornerSize(size = 50.0%), bottomEnd = CornerSize(size = 50.0%), bottomStart = CornerSize(size = 50.0%))'
+    |        | Text = '[Photos]'
+    |        | Actions = [ClearTextSubstitution, GetTextLayoutResult, OnClick, RequestFocus, SetTextSubstitution, ShowTextSubstitution]
+    |        | MergeDescendants = 'true'
+    |        |-Node #435 at (l=2026.0, t=855.0, r=2314.0, b=968.0)px
+    |          Focused = 'false'
+    |          Role = 'Button'
+    |          Shape = 'RoundedCornerShape(topStart = CornerSize(size = 50.0%), topEnd = CornerSize(size = 50.0%), bottomEnd = CornerSize(size = 50.0%), bottomStart = CornerSize(size = 50.0%))'
+    |          Text = '[My List]'
+    |          Actions = [ClearTextSubstitution, GetTextLayoutResult, OnClick, RequestFocus, SetTextSubstitution, ShowTextSubstitution]
+    |          MergeDescendants = 'true'
+    |-Node #301 at (l=142.0, t=807.0, r=2424.0, b=1017.0)px
+      IsContainer = 'true'
+      Shape = 'RectangleShape'
+       |-Node #302 at (l=142.0, t=807.0, r=2424.0, b=1017.0)px
+         [SelectableGroup]
+          |-Node #303 at (l=142.0, t=807.0, r=581.0, b=1017.0)px
+          | Focused = 'false'
+          | Role = 'Tab'
+          | Selected = 'true'
+          | Text = '[Home]'
+          | Actions = [ClearTextSubstitution, GetTextLayoutResult, OnClick, RequestFocus, SetTextSubstitution, ShowTextSubstitution]
+          | MergeDescendants = 'true'
+          |-Node #312 at (l=602.0, t=807.0, r=1041.0, b=1017.0)px
+          | Focused = 'false'
+          | Role = 'Tab'
+          | Selected = 'false'
+          | Text = '[TV Shows]'
+          | Actions = [ClearTextSubstitution, GetTextLayoutResult, OnClick, RequestFocus, SetTextSubstitution, ShowTextSubstitution]
+          | MergeDescendants = 'true'
+          |-Node #321 at (l=1062.0, t=807.0, r=1502.0, b=1017.0)px
+          | Focused = 'false'
+          | Role = 'Tab'
+          | Selected = 'false'
+          | Text = '[Movies]'
+          | Actions = [ClearTextSubstitution, GetTextLayoutResult, OnClick, RequestFocus, SetTextSubstitution, ShowTextSubstitution]
+          | MergeDescendants = 'true'
+          |-Node #330 at (l=1523.0, t=807.0, r=1963.0, b=1017.0)px
+          | Focused = 'false'
+          | Role = 'Tab'
+          | Selected = 'false'
+          | Text = '[Search]'
+          | Actions = [ClearTextSubstitution, GetTextLayoutResult, OnClick, RequestFocus, SetTextSubstitution, ShowTextSubstitution]
+          | MergeDescendants = 'true'
+          |-Node #339 at (l=1984.0, t=807.0, r=2424.0, b=1017.0)px
+            Focused = 'false'
+            Role = 'Tab'
+            Selected = 'false'
+            Text = '[More]'
+            Actions = [ClearTextSubstitution, GetTextLayoutResult, OnClick, RequestFocus, SetTextSubstitution, ShowTextSubstitution]
+            MergeDescendants = 'true'

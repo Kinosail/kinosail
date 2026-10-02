@@ -1,0 +1,99 @@
+Printing with useUnmergedTree = 'false'
+Node #795 at (l=0.0, t=0.0, r=1920.0, b=1080.0)px
+ |-Node #803 at (l=0.0, t=0.0, r=1920.0, b=1080.0)px
+   Shape = 'RectangleShape'
+    |-Node #804 at (l=0.0, t=0.0, r=1920.0, b=1080.0)px
+    | Shape = 'RectangleShape'
+    |-Node #805 at (l=0.0, t=0.0, r=1920.0, b=1080.0)px
+      CollectionInfo = 'CollectionInfo(rowCount=3, columnCount=1)'
+      IsTraversalGroup = 'true'
+      Shape = 'androidx.compose.foundation.VerticalScrollableClipShape@4d53535'
+      VerticalScrollAxisRange = 'ScrollAxisRange(value=0.0, maxValue=0.0, reverseScrolling=false)'
+      Actions = [GetScrollViewportLength, IndexForKey, ScrollBy, ScrollByOffset, ScrollToIndex]
+       |-Node #809 at (l=96.0, t=96.0, r=1261.0, b=176.0)px
+       | Text = '[Kinosail]'
+       | Actions = [ClearTextSubstitution, GetTextLayoutResult, SetTextSubstitution, ShowTextSubstitution]
+       |-Node #810 at (l=1293.0, t=96.0, r=1436.0, b=176.0)px
+       | Focused = 'false'
+       | Role = 'Button'
+       | Shape = 'RoundedCornerShape(topStart = CornerSize(size = 50.0%), topEnd = CornerSize(size = 50.0%), bottomEnd = CornerSize(size = 50.0%), bottomStart = CornerSize(size = 50.0%))'
+       | Text = '[Listen]'
+       | Actions = [ClearTextSubstitution, GetTextLayoutResult, OnClick, OnLongClick, RequestFocus, SetTextSubstitution, ShowTextSubstitution]
+       | MergeDescendants = 'true'
+       |-Node #814 at (l=1468.0, t=96.0, r=1622.0, b=176.0)px
+       | Focused = 'false'
+       | Role = 'Button'
+       | Shape = 'RoundedCornerShape(topStart = CornerSize(size = 50.0%), topEnd = CornerSize(size = 50.0%), bottomEnd = CornerSize(size = 50.0%), bottomStart = CornerSize(size = 50.0%))'
+       | Text = '[Search]'
+       | Actions = [ClearTextSubstitution, GetTextLayoutResult, OnClick, OnLongClick, RequestFocus, SetTextSubstitution, ShowTextSubstitution]
+       | MergeDescendants = 'true'
+       |-Node #818 at (l=1654.0, t=96.0, r=1824.0, b=176.0)px
+       | Focused = 'false'
+       | Role = 'Button'
+       | Shape = 'RoundedCornerShape(topStart = CornerSize(size = 50.0%), topEnd = CornerSize(size = 50.0%), bottomEnd = CornerSize(size = 50.0%), bottomStart = CornerSize(size = 50.0%))'
+       | Text = '[Settings]'
+       | Actions = [ClearTextSubstitution, GetTextLayoutResult, OnClick, OnLongClick, RequestFocus, SetTextSubstitution, ShowTextSubstitution]
+       | MergeDescendants = 'true'
+       |-Node #907 at (l=96.0, t=240.0, r=549.0, b=273.0)px
+       | LiveRegion = 'Polite'
+       | Text = '[Could not load your home. Try again.]'
+       | Actions = [ClearTextSubstitution, GetTextLayoutResult, SetTextSubstitution, ShowTextSubstitution]
+       |-Node #908 at (l=96.0, t=289.0, r=279.0, b=369.0)px
+       | Focused = 'false'
+       | Role = 'Button'
+       | Shape = 'RoundedCornerShape(topStart = CornerSize(size = 50.0%), topEnd = CornerSize(size = 50.0%), bottomEnd = CornerSize(size = 50.0%), bottomStart = CornerSize(size = 50.0%))'
+       | Text = '[Try again]'
+       | Actions = [ClearTextSubstitution, GetTextLayoutResult, OnClick, OnLongClick, RequestFocus, SetTextSubstitution, ShowTextSubstitution]
+       | MergeDescendants = 'true'
+       |-Node #862 at (l=96.0, t=433.0, r=375.0, b=489.0)px
+       | Text = '[Browse library]'
+       | [Heading]
+       | Actions = [ClearTextSubstitution, GetTextLayoutResult, SetTextSubstitution, ShowTextSubstitution]
+       |-Node #863 at (l=96.0, t=513.0, r=1329.0, b=625.0)px
+         CollectionInfo = 'CollectionInfo(rowCount=1, columnCount=6)'
+         HorizontalScrollAxisRange = 'ScrollAxisRange(value=0.0, maxValue=0.0, reverseScrolling=false)'
+         IsTraversalGroup = 'true'
+         Shape = 'androidx.compose.foundation.HorizontalScrollableClipShape@87d7f45'
+         Actions = [GetScrollViewportLength, IndexForKey, ScrollBy, ScrollByOffset, ScrollToIndex]
+          |-Node #877 at (l=112.0, t=529.0, r=268.0, b=609.0)px
+          | Focused = 'false'
+          | Role = 'Button'
+          | Shape = 'RoundedCornerShape(topStart = CornerSize(size = 50.0%), topEnd = CornerSize(size = 50.0%), bottomEnd = CornerSize(size = 50.0%), bottomStart = CornerSize(size = 50.0%))'
+          | Text = '[Movies]'
+          | Actions = [ClearTextSubstitution, GetTextLayoutResult, OnClick, OnLongClick, RequestFocus, SetTextSubstitution, ShowTextSubstitution]
+          | MergeDescendants = 'true'
+          |-Node #882 at (l=304.0, t=529.0, r=497.0, b=609.0)px
+          | Focused = 'false'
+          | Role = 'Button'
+          | Shape = 'RoundedCornerShape(topStart = CornerSize(size = 50.0%), topEnd = CornerSize(size = 50.0%), bottomEnd = CornerSize(size = 50.0%), bottomStart = CornerSize(size = 50.0%))'
+          | Text = '[TV Shows]'
+          | Actions = [ClearTextSubstitution, GetTextLayoutResult, OnClick, OnLongClick, RequestFocus, SetTextSubstitution, ShowTextSubstitution]
+          | MergeDescendants = 'true'
+          |-Node #887 at (l=533.0, t=529.0, r=675.0, b=609.0)px
+          | Focused = 'false'
+          | Role = 'Button'
+          | Shape = 'RoundedCornerShape(topStart = CornerSize(size = 50.0%), topEnd = CornerSize(size = 50.0%), bottomEnd = CornerSize(size = 50.0%), bottomStart = CornerSize(size = 50.0%))'
+          | Text = '[Music]'
+          | Actions = [ClearTextSubstitution, GetTextLayoutResult, OnClick, OnLongClick, RequestFocus, SetTextSubstitution, ShowTextSubstitution]
+          | MergeDescendants = 'true'
+          |-Node #892 at (l=711.0, t=529.0, r=929.0, b=609.0)px
+          | Focused = 'false'
+          | Role = 'Button'
+          | Shape = 'RoundedCornerShape(topStart = CornerSize(size = 50.0%), topEnd = CornerSize(size = 50.0%), bottomEnd = CornerSize(size = 50.0%), bottomStart = CornerSize(size = 50.0%))'
+          | Text = '[Audiobooks]'
+          | Actions = [ClearTextSubstitution, GetTextLayoutResult, OnClick, OnLongClick, RequestFocus, SetTextSubstitution, ShowTextSubstitution]
+          | MergeDescendants = 'true'
+          |-Node #897 at (l=965.0, t=529.0, r=1120.0, b=609.0)px
+          | Focused = 'false'
+          | Role = 'Button'
+          | Shape = 'RoundedCornerShape(topStart = CornerSize(size = 50.0%), topEnd = CornerSize(size = 50.0%), bottomEnd = CornerSize(size = 50.0%), bottomStart = CornerSize(size = 50.0%))'
+          | Text = '[Photos]'
+          | Actions = [ClearTextSubstitution, GetTextLayoutResult, OnClick, OnLongClick, RequestFocus, SetTextSubstitution, ShowTextSubstitution]
+          | MergeDescendants = 'true'
+          |-Node #902 at (l=1156.0, t=529.0, r=1313.0, b=609.0)px
+            Focused = 'false'
+            Role = 'Button'
+            Shape = 'RoundedCornerShape(topStart = CornerSize(size = 50.0%), topEnd = CornerSize(size = 50.0%), bottomEnd = CornerSize(size = 50.0%), bottomStart = CornerSize(size = 50.0%))'
+            Text = '[My List]'
+            Actions = [ClearTextSubstitution, GetTextLayoutResult, OnClick, OnLongClick, RequestFocus, SetTextSubstitution, ShowTextSubstitution]
+            MergeDescendants = 'true'
