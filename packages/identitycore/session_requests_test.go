@@ -135,8 +135,17 @@ func TestRequestSessionsIssueCookiesAfterPersistence(t *testing.T) { //nolint:cy
 			if fixture.writes != 1 || len(cookies) != 1 || cookies[0].Name != "__Host-kinosail_session" || cookies[0].Value != "token" || !cookies[0].Secure || !cookies[0].HttpOnly || cookies[0].SameSite != http.SameSiteStrictMode || !state.Browser {
 				t.Fatalf("%s cookie=%#v state=%#v writes=%d", name, cookies, state, fixture.writes)
 			}
-			if public := name == "public"; (state.Channel == "public") != public || (cookies[0].MaxAge > 0) != public {
+			if public := name == "public"; (state.Channel == "public") != public {
 				t.Fatalf("%s public state=%#v cookie=%#v", name, state, cookies[0])
+			}
+			lifetime := 12 * time.Hour
+			if name == "public" {
+				lifetime = 8 * time.Hour
+			} else if cookies[0].Expires.Unix() != state.ExpiresAt {
+				t.Fatalf("%s cookie expiry = %v, server expiry = %d", name, cookies[0].Expires, state.ExpiresAt)
+			}
+			if cookies[0].MaxAge != int(lifetime/time.Second) {
+				t.Fatalf("%s cookie lifetime = %d, want %s", name, cookies[0].MaxAge, lifetime)
 			}
 			if strong := name != "browser"; (state.StrongAt > 0) != strong {
 				t.Fatalf("%s strong state=%#v", name, state)
@@ -155,6 +164,28 @@ func TestRequestSessionsIssueCookiesAfterPersistence(t *testing.T) { //nolint:cy
 	}
 	if err := requestSessionFixture(newSessionFixture()).SignIn(response, nil, "viewer"); !errors.Is(err, ErrInvalidConfig) {
 		t.Fatalf("nil request = %v", err)
+	}
+}
+
+func TestBrowserCookieUsesConfiguredAbsoluteLifetime(t *testing.T) {
+	t.Parallel()
+	for _, lifetime := range []time.Duration{4 * time.Hour, 365 * 24 * time.Hour} {
+		t.Run(lifetime.String(), func(t *testing.T) {
+			fixture := newSessionFixture()
+			core := fixture.sessions(func(config *SessionConfig) {
+				config.Timeouts = func() (time.Duration, time.Duration) { return time.Hour, lifetime }
+			})
+			sessions := NewRequestSessions(core.config, func(request *http.Request) string { return SessionToken(request, nil) })
+			response := httptest.NewRecorder()
+			request := httptest.NewRequestWithContext(t.Context(), http.MethodPost, "/login", nil)
+			if err := sessions.SignInStrong(response, request, "viewer"); err != nil {
+				t.Fatal(err)
+			}
+			cookie := response.Result().Cookies()[0]
+			if cookie.MaxAge != int(lifetime/time.Second) || !cookie.Expires.Equal(fixture.now.Add(lifetime)) {
+				t.Fatalf("cookie lifetime = %d, expiry = %v, want %s from %v", cookie.MaxAge, cookie.Expires, lifetime, fixture.now)
+			}
+		})
 	}
 }
 
