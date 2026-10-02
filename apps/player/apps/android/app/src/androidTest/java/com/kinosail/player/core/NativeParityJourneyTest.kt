@@ -6,6 +6,7 @@ import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
 import android.view.KeyEvent
+import androidx.compose.ui.semantics.SemanticsActions
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.v2.createEmptyComposeRule
 import androidx.compose.ui.test.junit4.accessibility.enableAccessibilityChecks
@@ -41,25 +42,25 @@ class NativeParityJourneyTest {
             instrumentation.sendKeyDownUpSync(KeyEvent.KEYCODE_DPAD_RIGHT)
             instrumentation.sendKeyDownUpSync(KeyEvent.KEYCODE_DPAD_DOWN)
             capture("home-focus")
-            compose.onAllNodesWithText("Movies")[0].performScrollTo().performClick()
+            compose.onAllNodesWithText("Movies")[0].performScrollTo().activate()
             waitText("New Film")
-            compose.onNodeWithText("New Film").performClick()
-        } else compose.onNodeWithText("Details").performScrollTo().performClick()
+            compose.onNodeWithText("New Film").activate()
+        } else compose.onNodeWithText("Details").performScrollTo().activate()
         waitText("Add to My List")
         capture("detail")
-        compose.onNodeWithText("Add to My List").performScrollTo().performClick()
+        compose.onNodeWithText("Add to My List").performScrollTo().activate()
         waitText("Remove from My List")
         assertEquals(1, fixture.listWrites)
         instrumentation.sendKeyDownUpSync(KeyEvent.KEYCODE_BACK)
         waitText(if (tv) "Movies" else "Watching")
-        if (tv) compose.onNodeWithText("Home").performClick()
-        else compose.onNodeWithText("More").performClick()
+        if (tv) compose.onNodeWithText("Home").activate()
+        else compose.onNodeWithText("More").activate()
         if (!tv) {
-            compose.onNodeWithText("Customize tabs").performScrollTo().performClick()
-            compose.onNodeWithText("Remove Movies").performScrollTo().performClick()
-            compose.onNodeWithText("Add Listen").performScrollTo().performClick()
-            compose.onNodeWithText("Done").performScrollTo().performClick()
-            compose.onNodeWithText("Listen").performClick()
+            compose.onNodeWithText("Customize tabs").performScrollTo().activate()
+            compose.onNodeWithText("Remove Movies").performScrollTo().activate()
+            compose.onNodeWithText("Add Listen").performScrollTo().activate()
+            compose.onNodeWithText("Done").performScrollTo().activate()
+            compose.onNodeWithText("Listen").activate()
             waitText("Listening")
             capture("listen")
             compose.onAllNodes(hasScrollAction())[0].performScrollToIndex(2)
@@ -77,18 +78,18 @@ class NativeParityJourneyTest {
         assertEquals(0, compose.onAllNodesWithContentDescription("Loading library").fetchSemanticsNodes().size)
         capture("failed")
         fixture.mode = "empty"
-        compose.onNodeWithText("Try again").performClick()
+        compose.onNodeWithText("Try again").activate()
         waitText("Media added to your Server will appear here.")
         assertEquals(0, compose.onAllNodesWithContentDescription("Loading library").fetchSemanticsNodes().size)
         if (!tv) compose.onAllNodes(hasScrollAction())[0].performScrollToIndex(2)
         capture("empty")
         fixture.mode = "ready"
         if (tv) {
-            compose.onNodeWithText("Movies").performScrollTo().performClick()
-            compose.onNodeWithText("Home").performClick()
+            compose.onNodeWithText("Movies").performScrollTo().activate()
+            compose.onNodeWithText("Home").activate()
         } else {
-            compose.onNodeWithText("Search").performClick()
-            compose.onNodeWithText("Home").performClick()
+            compose.onNodeWithText("Search").activate()
+            compose.onNodeWithText("Home").activate()
         }
         waitText(if (tv) "Continue watching" else "Watching")
         capture("recovered")
@@ -96,8 +97,8 @@ class NativeParityJourneyTest {
 
     @Test fun playbackChromeHidesTogetherAndReturnsWithInput() = journey { fixture ->
         waitText(if (tv) "Continue watching" else "Watching")
-        if (tv) compose.onNodeWithText("Continuing Film").performClick()
-        else compose.onNodeWithText("Resume").performScrollTo().performClick()
+        if (tv) compose.onAllNodesWithContentDescription("Continuing Film")[0].activate()
+        else compose.onNodeWithText("Resume").performScrollTo().activate()
         waitText("Speed 1×")
         Thread.sleep(6000)
         capture("playback-before-hide-check")
@@ -115,27 +116,27 @@ class NativeParityJourneyTest {
     @Test fun seasonsKeepPendingFailedEmptyAndLoadedLayoutsDistinct() = journey { fixture ->
         waitText(if (tv) "Continue watching" else "Watching")
         fixture.showMode = "pending"
-        if (tv) compose.onNodeWithText("TV Shows").performScrollTo().performClick()
-        else compose.onNodeWithText("TV Shows").performClick()
+        if (tv) compose.onNodeWithText("TV Shows").performScrollTo().activate()
+        else compose.onNodeWithText("TV Shows").activate()
         waitText("Fixture Series")
-        compose.onNodeWithText("Fixture Series").performClick()
+        compose.onNodeWithText("Fixture Series").activate()
         compose.waitUntil(20_000) { compose.onAllNodesWithContentDescription("Loading library").fetchSemanticsNodes().isNotEmpty() }
         capture("show-pending")
         fixture.showMode = "failed"
         waitText("Could not load this show. Try again.")
         capture("show-failed")
         fixture.showMode = "empty"
-        compose.onNodeWithText("Try again").performClick()
+        compose.onNodeWithText("Try again").activate()
         waitText("This show has no available episodes.")
         capture("show-empty")
         instrumentation.sendKeyDownUpSync(KeyEvent.KEYCODE_BACK)
         fixture.showMode = "ready"
         waitText("Fixture Series")
-        compose.onNodeWithText("Fixture Series").performClick()
+        compose.onNodeWithText("Fixture Series").activate()
         waitText("Resume · S1 E1")
         capture("show-loaded")
         compose.onAllNodes(hasScrollAction())[0].performScrollToIndex(if (tv) 2 else 3)
-        compose.onNodeWithText("Season 2").performClick()
+        compose.onNodeWithText("Season 2").activate()
         waitText("S2 E1 · Second episode")
         capture("show-season-two")
     }
@@ -143,24 +144,34 @@ class NativeParityJourneyTest {
     @Test fun catalogGridKeepsPendingFailedEmptyAndLoadedStatesDistinct() = journey { fixture ->
         waitText(if (tv) "Continue watching" else "Watching")
         fixture.mode = "pending"
-        if (tv) compose.onNodeWithText("Movies").performScrollTo().performClick()
-        else compose.onNodeWithText("Movies").performClick()
+        if (tv) compose.onNodeWithText("Movies").performScrollTo().activate()
+        else compose.onNodeWithText("Movies").activate()
         compose.waitUntil(20_000) { compose.onAllNodesWithContentDescription("Loading library").fetchSemanticsNodes().isNotEmpty() }
         capture("catalog-pending")
         fixture.mode = "failed"
         waitText("Could not load your library. Try again.")
         capture("catalog-failed")
         fixture.mode = "empty"
-        compose.onNodeWithText("Try again").performClick()
+        compose.onNodeWithText("Try again").activate()
         waitText("Nothing in your library yet.")
         capture("catalog-empty")
         fixture.mode = "ready"
-        compose.onNodeWithText("Home").performClick()
+        compose.onNodeWithText("Home").activate()
         waitText(if (tv) "Continue watching" else "Watching")
-        if (tv) compose.onNodeWithText("Movies").performScrollTo().performClick()
-        else compose.onNodeWithText("Movies").performClick()
+        if (tv) compose.onNodeWithText("Movies").performScrollTo().activate()
+        else compose.onNodeWithText("Movies").activate()
         waitText("New Film")
         capture("catalog-loaded")
+    }
+
+    private fun SemanticsNodeInteraction.activate() {
+        if (tv) {
+            performSemanticsAction(SemanticsActions.RequestFocus) { it() }
+            compose.waitForIdle()
+            assertIsFocused()
+            instrumentation.sendKeyDownUpSync(KeyEvent.KEYCODE_DPAD_CENTER)
+            compose.waitForIdle()
+        } else performClick()
     }
 
     private fun journey(mode: String = "ready", check: (ParityFixture) -> Unit) {
