@@ -1,10 +1,12 @@
 package servertest
 
 import (
+	"encoding/json"
 	"net/http"
 	"net/http/httptest"
 	"strings"
 	"testing"
+	"time"
 )
 
 // AssertNewInstallationCreatesOwnerProfile preserves the original real-handler authentication regression.
@@ -27,6 +29,23 @@ func AssertNewInstallationCreatesOwnerProfile(t *testing.T, fixture LibraryAPIFi
 	if response.Code != http.StatusOK {
 		t.Fatalf("owner home after restart = %d", response.Code)
 	}
+	AssertAPIBody(t, APICall(t, handler, ownerCookie.Value, http.MethodPut, "/api/v1/settings/session-timeouts", map[string]any{"inactiveHours": 8760, "absoluteHours": 8760}), http.StatusOK, `"status":"saved"`)
+	var enrolled []struct{ TOTPSecret string }
+	if err := json.Unmarshal(fixture.StoredState(t, dataDir, "profiles.json"), &enrolled); err != nil || len(enrolled) != 1 {
+		t.Fatalf("owner enrollment = %v, count = %d", err, len(enrolled))
+	}
+	ownerCookie = fixture.SignIn(t, handler, "/login", "name=Mike&password=correct+horse+battery+staple&code="+TestTOTP(t, enrolled[0].TOTPSecret, time.Now()))
+	if ownerCookie.MaxAge != 365*24*60*60 || time.Until(ownerCookie.Expires) < 365*24*time.Hour-time.Minute {
+		t.Fatalf("one-year browser cookie lifetime = %d, expiry = %v", ownerCookie.MaxAge, ownerCookie.Expires)
+	}
+	handler = fixture.NewHandler("", dataDir, true)
+	request = httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/", nil)
+	request.AddCookie(ownerCookie)
+	response = httptest.NewRecorder()
+	handler.ServeHTTP(response, request)
+	if response.Code != http.StatusOK {
+		t.Fatalf("one-year browser session after restart = %d", response.Code)
+	}
 	handler = fixture.NewHandler("", dataDir, true)
 	request = httptest.NewRequestWithContext(t.Context(), http.MethodPost, "/login", strings.NewReader("name=Mike&password=correct+horse+battery+staple"))
 	request.Header.Set("Content-Type", "application/x-www-form-urlencoded")
@@ -42,11 +61,13 @@ func AssertNewInstallationCreatesOwnerProfile(t *testing.T, fixture LibraryAPIFi
 func AssertViewerCanSignOut(t *testing.T, fixture LibraryAPIFixture) {
 	t.Parallel()
 
-	handler := fixture.NewHandler("", t.TempDir(), true)
+	dataDir := t.TempDir()
+	handler := fixture.NewHandler("", dataDir, true)
 	cookie := fixture.SignIn(t, handler, "/setup", "name=Owner&password=owner-password")
 	request := httptest.NewRequestWithContext(t.Context(), http.MethodPost, "/logout", nil)
 	request.AddCookie(cookie)
 	handler.ServeHTTP(httptest.NewRecorder(), request)
+	handler = fixture.NewHandler("", dataDir, true)
 	request = httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/", nil)
 	request.AddCookie(cookie)
 	response := httptest.NewRecorder()
