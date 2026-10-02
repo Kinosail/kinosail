@@ -1,4 +1,5 @@
 import { expect, type Page, type TestInfo } from "@playwright/test";
+import { verifyAuthenticatedDirectRetryWidths } from "./direct-retry-journey";
 import { expectAccessible, openQuickConnect, openSettings, signOut, totp, type HappyPathState } from "./happy-path-helpers";
 
 export async function completeHappyPath(page: Page, testInfo: TestInfo, { capture, errors, passkeyCreated }: HappyPathState) {
@@ -117,6 +118,8 @@ export async function completeHappyPath(page: Page, testInfo: TestInfo, { captur
   await page.getByRole("link", { name: "Library", exact: true }).click();
   await expect(page.getByRole("heading", { name: "My List" })).toBeVisible();
   await expect(page.getByRole("link", { name: /\bResume\b/ })).toHaveCount(0);
+  // Retry playback persists fixture progress; run after the original empty-Resume assertion.
+  if (testInfo.project.name === "chromium") await verifyAuthenticatedDirectRetryWidths(page, testInfo);
   await page.setViewportSize({ width: 390, height: 844 });
   await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
 	await expectAccessible(page, capture);

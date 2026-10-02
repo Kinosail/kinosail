@@ -288,7 +288,7 @@ if (player.dataset.hls) {
     // The server has already confirmed that the audio needs conversion, so do not wait for a
     // media error that may never arrive before starting the audio-only compatible rendition.
     startAdaptive(false);
-  } else if (direct && !player.getAttribute("src")) player.src = player.dataset.direct;
+  } else if (direct && !player.getAttribute("src")) player.src = direct;
 }
 if (player.readyState >= HTMLMediaElement.HAVE_CURRENT_DATA) showPlaybackMode(adaptiveActive, false);
 if (player.error && !adaptiveActive && !adaptiveStarting) recoverDirectFailure();
