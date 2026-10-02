@@ -135,13 +135,22 @@ func epubSpine(item library.Item) []readerPage { //nolint:cyclop // EPUB contain
 	}
 	manifest := make(map[string]epubManifestItem, len(pkg.Manifest))
 	for _, entry := range pkg.Manifest {
+		if _, duplicate := manifest[entry.ID]; entry.ID == "" || duplicate {
+			return nil
+		}
 		manifest[entry.ID] = entry
 	}
 	pages := make([]readerPage, 0, len(pkg.Spine))
 	for position, reference := range pkg.Spine {
-		entry := manifest[reference.ID]
+		entry, found := manifest[reference.ID]
+		if !found {
+			return nil
+		}
 		name := library.CleanArchivePath(path.Join(path.Dir(opfPath), entry.Href))
-		if entry.Href != "" && (entry.Type == "application/xhtml+xml" || entry.Type == "text/html") {
+		if entry.Type == "application/xhtml+xml" || entry.Type == "text/html" {
+			if entry.Href == "" || strings.HasPrefix(entry.Href, "/") || name == "" {
+				return nil
+			}
 			pages = append(pages, readerPage{Title: "Chapter " + strconv.Itoa(position+1), URL: archiveURL(item.ID, name)})
 		}
 	}
