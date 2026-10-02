@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.kinosail.player.core.SessionStoreTest" tests="2" skipped="0" failures="0" errors="0" timestamp="2026-10-02T06:27:10.738Z" hostname="MikeOs-MacBook-Pro.local" time="0.034">
+  <properties/>
+  <testcase name="lastVerifiedViewerSurvivesRestartAndInvalidViewerCannotReplaceIt" classname="com.kinosail.player.core.SessionStoreTest" time="0.016"/>
+  <testcase name="cachedCatalogIsScopedAndRejectedSnapshotsDoNotReplaceGoodContent" classname="com.kinosail.player.core.SessionStoreTest" time="0.016"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

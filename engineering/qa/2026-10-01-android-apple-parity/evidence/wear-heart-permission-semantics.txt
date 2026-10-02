@@ -1,0 +1,39 @@
+Printing with useUnmergedTree = 'false'
+Node #1 at (l=0.0, t=0.0, r=384.0, b=384.0)px
+ |-Node #2 at (l=0.0, t=0.0, r=384.0, b=384.0)px
+   Shape = 'RectangleShape'
+    |-Node #3 at (l=0.0, t=0.0, r=384.0, b=384.0)px
+       |-Node #5 at (l=0.0, t=0.0, r=384.0, b=384.0)px
+       | CollectionInfo = 'CollectionInfo(rowCount=1, columnCount=1)'
+       | Focused = 'true'
+       | IsTraversalGroup = 'true'
+       | Shape = 'androidx.compose.foundation.VerticalScrollableClipShape@2a0d80d'
+       | VerticalScrollAxisRange = 'ScrollAxisRange(value=0.0, maxValue=0.0, reverseScrolling=false)'
+       | Actions = [GetScrollViewportLength, IndexForKey, PageDown, PageUp, RequestFocus, ScrollBy, ScrollByOffset, ScrollToIndex]
+       |  |-Node #13 at (l=0.0, t=0.0, r=384.0, b=384.0)px
+       |    IsTraversalGroup = 'true'
+       |    Shape = 'RectangleShape'
+       |    VerticalScrollAxisRange = 'ScrollAxisRange(value=0.0, maxValue=80.0, reverseScrolling=false)'
+       |    Actions = [ScrollBy, ScrollByOffset]
+       |     |-Node #14 at (l=44.0, t=72.0, r=158.0, b=108.0)px
+       |     | Text = '[KINOSAIL]'
+       |     | Actions = [ClearTextSubstitution, GetTextLayoutResult, SetTextSubstitution, ShowTextSubstitution]
+       |     |-Node #15 at (l=44.0, t=116.0, r=293.0, b=156.0)px
+       |     | LiveRegion = 'Polite'
+       |     | Text = '[Connect phone]'
+       |     | Actions = [ClearTextSubstitution, GetTextLayoutResult, SetTextSubstitution, ShowTextSubstitution]
+       |     |-Node #16 at (l=44.0, t=164.0, r=277.0, b=200.0)px
+       |     | Text = '[Pair Android phone.]'
+       |     | Actions = [ClearTextSubstitution, GetTextLayoutResult, SetTextSubstitution, ShowTextSubstitution]
+       |     |-Node #17 at (l=44.0, t=208.0, r=340.0, b=280.0)px
+       |     | LiveRegion = 'Polite'
+       |     | Text = '[Allow heart rate access to make a graph.]'
+       |     | Actions = [ClearTextSubstitution, GetTextLayoutResult, SetTextSubstitution, ShowTextSubstitution]
+       |     |-Node #18 at (l=44.0, t=288.0, r=340.0, b=392.0)px
+       |       Focused = 'false'
+       |       Role = 'Button'
+       |       Shape = 'RoundedCornerShape(topStart = CornerSize(size = 26.0.dp), topEnd = CornerSize(size = 26.0.dp), bottomEnd = CornerSize(size = 26.0.dp), bottomStart = CornerSize(size = 26.0.dp))'
+       |       Text = '[Made possible by]'
+       |       Actions = [ClearTextSubstitution, GetTextLayoutResult, OnClick, RequestFocus, SetTextSubstitution, ShowTextSubstitution]
+       |       MergeDescendants = 'true'
+       |-Node #10 at (l=232.99998, t=45.000023, r=315.0, b=81.00002)px

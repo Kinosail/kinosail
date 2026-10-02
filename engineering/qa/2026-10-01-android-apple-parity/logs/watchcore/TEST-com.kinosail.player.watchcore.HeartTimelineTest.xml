@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.kinosail.player.watchcore.HeartTimelineTest" tests="3" skipped="0" failures="0" errors="0" timestamp="2026-10-02T05:34:00.955Z" hostname="MikeOs-MacBook-Pro.local" time="0.083">
+  <properties/>
+  <testcase name="rejectsInvalidSamplesAndEndsOnTitleChange" classname="com.kinosail.player.watchcore.HeartTimelineTest" time="0.043"/>
+  <testcase name="mapsReadingsToMovieTimeAndPreservesGaps" classname="com.kinosail.player.watchcore.HeartTimelineTest" time="0.002"/>
+  <testcase name="persistedTimelineIsBoundedAndValidated" classname="com.kinosail.player.watchcore.HeartTimelineTest" time="0.036"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

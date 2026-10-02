@@ -1,0 +1,103 @@
+Printing with useUnmergedTree = 'false'
+Node #1 at (l=0.0, t=0.0, r=2400.0, b=1080.0)px
+ |-Node #9 at (l=142.0, t=137.0, r=2400.0, b=1017.0)px
+   Shape = 'RectangleShape'
+    |-Node #443 at (l=142.0, t=137.0, r=2400.0, b=807.0)px
+    | Shape = 'RectangleShape'
+    |  |-Node #444 at (l=142.0, t=137.0, r=2400.0, b=807.0)px
+    |  | Shape = 'RectangleShape'
+    |  |-Node #445 at (l=142.0, t=137.0, r=2400.0, b=807.0)px
+    |    CollectionInfo = 'CollectionInfo(rowCount=4, columnCount=1)'
+    |    IsTraversalGroup = 'true'
+    |    Shape = 'androidx.compose.foundation.VerticalScrollableClipShape@630cdb5'
+    |    VerticalScrollAxisRange = 'ScrollAxisRange(value=1000.0, maxValue=1100.0, reverseScrolling=false)'
+    |    Actions = [GetScrollViewportLength, IndexForKey, ScrollBy, ScrollByOffset, ScrollToIndex]
+    |     |-Node #487 at (l=195.0, t=-567.0, r=460.0, b=-483.0)px
+    |     | Text = '[Listening]'
+    |     | Actions = [ClearTextSubstitution, GetTextLayoutResult, SetTextSubstitution, ShowTextSubstitution]
+    |     |-Node #491 at (l=195.0, t=-451.0, r=1185.0, b=106.0)px
+    |     | Shape = 'RoundedCornerShape(topStart = CornerSize(size = 12.0.dp), topEnd = CornerSize(size = 12.0.dp), bottomEnd = CornerSize(size = 12.0.dp), bottomStart = CornerSize(size = 12.0.dp))'
+    |     |  |-Node #492 at (l=648.0, t=-242.0, r=732.0, b=-103.0)px
+    |     |  | ClearAndSetSemantics = 'true'
+    |     |  |-Node #506 at (l=195.0, t=-451.0, r=1185.0, b=106.0)px
+    |     |    Shape = 'RectangleShape'
+    |     |-Node #495 at (l=1269.0, t=-416.0, r=1679.0, b=-311.0)px
+    |     | Text = '[Night Drive]'
+    |     | Actions = [ClearTextSubstitution, GetTextLayoutResult, SetTextSubstitution, ShowTextSubstitution]
+    |     |-Node #496 at (l=1269.0, t=-279.0, r=2022.0, b=-199.0)px
+    |     | Text = '[2026 · PG · Drama · Adventure]'
+    |     | Actions = [ClearTextSubstitution, GetTextLayoutResult, SetTextSubstitution, ShowTextSubstitution]
+    |     |-Node #497 at (l=1269.0, t=-167.0, r=1659.0, b=-87.0)px
+    |     | Text = '[Resume at 0:45]'
+    |     | Actions = [ClearTextSubstitution, GetTextLayoutResult, SetTextSubstitution, ShowTextSubstitution]
+    |     |-Node #500 at (l=1269.0, t=-48.0, r=1576.0, b=65.0)px
+    |     | Focused = 'false'
+    |     | Role = 'Button'
+    |     | Shape = 'RoundedCornerShape(topStart = CornerSize(size = 50.0%), topEnd = CornerSize(size = 50.0%), bottomEnd = CornerSize(size = 50.0%), bottomStart = CornerSize(size = 50.0%))'
+    |     | Text = '[Resume]'
+    |     | Actions = [ClearTextSubstitution, GetTextLayoutResult, OnClick, RequestFocus, SetTextSubstitution, ShowTextSubstitution]
+    |     | MergeDescendants = 'true'
+    |     |-Node #503 at (l=1608.0, t=-48.0, r=1887.0, b=65.0)px
+    |     | Focused = 'false'
+    |     | Role = 'Button'
+    |     | Shape = 'RoundedCornerShape(topStart = CornerSize(size = 50.0%), topEnd = CornerSize(size = 50.0%), bottomEnd = CornerSize(size = 50.0%), bottomStart = CornerSize(size = 50.0%))'
+    |     | Text = '[Details]'
+    |     | Actions = [ClearTextSubstitution, GetTextLayoutResult, OnClick, RequestFocus, SetTextSubstitution, ShowTextSubstitution]
+    |     | MergeDescendants = 'true'
+    |     |-Node #508 at (l=195.0, t=190.0, r=830.0, b=274.0)px
+    |     | Text = '[Recently added music]'
+    |     | [Heading]
+    |     | Actions = [ClearTextSubstitution, GetTextLayoutResult, SetTextSubstitution, ShowTextSubstitution]
+    |     |-Node #509 at (l=195.0, t=306.0, r=637.0, b=891.0)px
+    |       CollectionInfo = 'CollectionInfo(rowCount=1, columnCount=1)'
+    |       HorizontalScrollAxisRange = 'ScrollAxisRange(value=0.0, maxValue=0.0, reverseScrolling=false)'
+    |       IsTraversalGroup = 'true'
+    |       Shape = 'androidx.compose.foundation.HorizontalScrollableClipShape@662ed8d'
+    |       Actions = [GetScrollViewportLength, IndexForKey, ScrollBy, ScrollByOffset, ScrollToIndex]
+    |        |-Node #511 at (l=227.0, t=338.0, r=605.0, b=859.0)px
+    |          ContentDescription = '[Night Drive]'
+    |          Focused = 'false'
+    |          Shape = 'RoundedCornerShape(topStart = CornerSize(size = 12.0.dp), topEnd = CornerSize(size = 12.0.dp), bottomEnd = CornerSize(size = 12.0.dp), bottomStart = CornerSize(size = 12.0.dp))'
+    |          Text = '[Resume at 0:45, Night Drive]'
+    |          Actions = [ClearTextSubstitution, GetTextLayoutResult, OnClick, RequestFocus, SetTextSubstitution, ShowTextSubstitution]
+    |          MergeDescendants = 'true'
+    |-Node #16 at (l=142.0, t=807.0, r=2400.0, b=1017.0)px
+      IsContainer = 'true'
+      Shape = 'RectangleShape'
+       |-Node #17 at (l=142.0, t=807.0, r=2400.0, b=1017.0)px
+         [SelectableGroup]
+          |-Node #18 at (l=142.0, t=807.0, r=576.0, b=1017.0)px
+          | Focused = 'false'
+          | Role = 'Tab'
+          | Selected = 'false'
+          | Text = '[Home]'
+          | Actions = [ClearTextSubstitution, GetTextLayoutResult, OnClick, RequestFocus, SetTextSubstitution, ShowTextSubstitution]
+          | MergeDescendants = 'true'
+          |-Node #27 at (l=597.0, t=807.0, r=1032.0, b=1017.0)px
+          | Focused = 'false'
+          | Role = 'Tab'
+          | Selected = 'false'
+          | Text = '[TV Shows]'
+          | Actions = [ClearTextSubstitution, GetTextLayoutResult, OnClick, RequestFocus, SetTextSubstitution, ShowTextSubstitution]
+          | MergeDescendants = 'true'
+          |-Node #36 at (l=1053.0, t=807.0, r=1488.0, b=1017.0)px
+          | Focused = 'false'
+          | Role = 'Tab'
+          | Selected = 'false'
+          | Text = '[Search]'
+          | Actions = [ClearTextSubstitution, GetTextLayoutResult, OnClick, RequestFocus, SetTextSubstitution, ShowTextSubstitution]
+          | MergeDescendants = 'true'
+          |-Node #45 at (l=1509.0, t=807.0, r=1944.0, b=1017.0)px
+          | Focused = 'false'
+          | Role = 'Tab'
+          | Selected = 'true'
+          | Text = '[Listen]'
+          | Actions = [ClearTextSubstitution, GetTextLayoutResult, OnClick, RequestFocus, SetTextSubstitution, ShowTextSubstitution]
+          | MergeDescendants = 'true'
+          |-Node #400 at (l=1965.0, t=807.0, r=2400.0, b=1017.0)px
+            Focused = 'false'
+            Role = 'Tab'
+            Selected = 'false'
+            Text = '[More]'
+            Actions = [ClearTextSubstitution, GetTextLayoutResult, OnClick, RequestFocus, SetTextSubstitution, ShowTextSubstitution]
+            MergeDescendants = 'true'
