@@ -1,11 +1,10 @@
 import { readFile } from "node:fs/promises";
 import { test } from "@playwright/test";
 import { playerSource } from "./static-sources";
-
-export function installPlayerExperienceFixture() {
+export function installPlayerExperienceFixture(native = false) {
 test.beforeEach(async ({ page }, testInfo) => {
   if (testInfo.title === "theater control gets out of the way during playback" || testInfo.title.includes("Safari startup")) await page.clock.install();
-  const markup = `
+  let markup = `
     <meta charset="utf-8"><body class="player-page"><main class="player-shell"><div class="media-stage${testInfo.title.includes("blocked autoplay reveals Play") ? " is-busy" : ""}">
       <video id="player-media" data-title="Arrival" data-duration="100" data-start="${testInfo.title.includes("automatic skips") ? "0" : "20"}"${testInfo.title.includes("automatic skips") ? ' data-auto-skip="intro"' : ""} data-progress="/progress/movie" data-playback-session="trace-session" data-playback-trace="https://127.0.0.1:38127/api/v1/items/movie/playback-events"${testInfo.title.includes("limited native fullscreen") || testInfo.title.includes("limited in-band") ? ' data-subtitle-picker-limited="true"' : ""}${testInfo.title.includes("retries requested autoplay") ? " autoplay" : ""}${testInfo.title.includes("resumed autoplay") ? " data-autoplay" : ""}>${testInfo.title.includes("limited in-band") ? '<track kind="subtitles" label="English" data-subtitle-source="/captions.vtt">' : ""}</video>
       <div class="player-stage-toolbar"><strong>Arrival</strong>${testInfo.title.includes("device playback") || testInfo.title.includes("remote playback") || testInfo.title.includes("AirPlay") ? '<div class="player-stage-actions"><button hidden class="quiet" type="button" aria-label="Play on device" data-cast>Play on device</button><span role="status" aria-live="polite" data-cast-state>Available devices use a direct connection to this Server.</span></div>' : ""}</div>
@@ -14,6 +13,13 @@ test.beforeEach(async ({ page }, testInfo) => {
       <div class="player-buffer" role="status" aria-live="polite" data-player-status><span class="buffer-skeleton" aria-hidden="true"></span><span data-player-message>Loading video…</span><button type="button" data-player-fallback hidden>Try again</button><progress hidden max="100" value="0" aria-label="Video buffered" data-buffered>0%</progress></div>
     ${testInfo.title.includes("automatic skips") ? '<button hidden data-marker="intro" data-start="0" data-seek="10">Skip intro</button>' : ""}</div><details class="chapters"><summary><span>Chapters</span><small>15</small></summary><ol class="chapter-list"><li><button type="button" data-chapter data-start="0" data-end="60" data-seek="0"><span>First contact</span><time>0:00</time></button></li><li><button type="button" data-chapter data-start="60" data-end="100" data-seek="60"><span>The answer</span><time>1:00</time></button></li></ol></details></main></body>
   `;
+  if (native) {
+    markup = markup.replace('<video id="player-media"', '<video controls data-native-controls id="player-media"');
+    markup = markup.replace('<strong>Arrival</strong>', '<strong>Arrival</strong><button type="button" aria-label="Settings" aria-controls="player-settings" aria-expanded="false" data-player-settings>Settings</button><button type="button" aria-label="Enter fullscreen" data-player-fullscreen>Fullscreen</button>');
+    const start = markup.indexOf('<div class="player-controls"');
+    const end = markup.indexOf('<div class="player-settings"', start);
+    markup = markup.slice(0, start) + `<div class="player-controls player-native-controls" data-player-controls hidden><button class="player-center-control" type="button" aria-label="Play" data-player-toggle><span data-play-icon></span></button></div>` + markup.slice(end);
+  }
   await page.route("https://127.0.0.1:38127/", (route) => route.fulfill({ contentType: "text/html; charset=utf-8", body: markup }));
   await page.route("**/api/v1/items/movie/playback-events", (route) => route.fulfill({ status: 204 }));
   if (testInfo.title.includes("progress save")) await page.goto("https://127.0.0.1:38127/");
@@ -237,6 +243,12 @@ test.beforeEach(async ({ page }, testInfo) => {
     openPlaybackSettings: "Abrir ajustes.",
   }));
   await page.addStyleTag({ content: await readFile("../../../packages/webassets/static/player-app.css", "utf8") });
+  if (native) await page.addStyleTag({content: (await Promise.all([readFile("../../../packages/webassets/static/last-light.css", "utf8"), readFile("../internal/server/static/home.css", "utf8")])).join("\n")});
+  if (native && testInfo.title.includes("unsupported fullscreen")) await page.evaluate(() => {
+    Object.defineProperty(document, "fullscreenEnabled", {configurable: true, value: false});
+    Object.defineProperty(document.querySelector("video"), "webkitEnterFullscreen", {configurable: true, value: undefined});
+  });
+  if (native && testInfo.title.includes("touch native playback")) await page.evaluate(() => Object.defineProperty(navigator, "maxTouchPoints", {configurable: true, value: 1}));
   const playerScript = playerSource;
   if (testInfo.title.includes("native fullscreen fallback")) await page.evaluate(() => {
     Object.defineProperty(document, "fullscreenEnabled", {configurable: true, value: false});
@@ -285,5 +297,4 @@ test.beforeEach(async ({ page }, testInfo) => {
     : "";
   await page.addScriptTag({ content: `${availabilityFixture}\n${hlsFixture}\n${playerScript}` });
 });
-
 }
