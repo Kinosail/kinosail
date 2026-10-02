@@ -117,7 +117,7 @@ func TestManagementTunnelBindsPeerRevokesLiveStreamAndPreservesPrivateBoundary(t
 			t.Error("device binding missing")
 		}
 		if r.URL.Path == "/stream" {
-			w.WriteHeader(200)
+			w.WriteHeader(http.StatusOK)
 			_, _ = w.Write([]byte("ready"))
 			w.(http.Flusher).Flush()
 			<-r.Context().Done()
@@ -160,7 +160,7 @@ func TestManagementTunnelBindsPeerRevokesLiveStreamAndPreservesPrivateBoundary(t
 		t.Fatalf("management = %q %v", body, err)
 	}
 	// Altering an HTTP header on the LAN never produces a paired-device context.
-	r := httptest.NewRequest("GET", config.Origin, nil)
+	r := httptest.NewRequestWithContext(t.Context(), "GET", config.Origin, nil)
 	r.Header.Set("X-Kinosail-Owner-Device", "owner")
 	if ProfileID(r) != "" {
 		t.Fatal("header established identity")

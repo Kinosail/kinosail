@@ -32,7 +32,7 @@ func TestGatewayForwardsOnlyToPublicSocketAndStripsProxyCredentials(t *testing.T
 	})))}
 	go func() { _ = backend.Serve(listener) }()
 	t.Cleanup(func() { _ = backend.Close() })
-	r := httptest.NewRequest("GET", "https://family.duckdns.org/api/v1/items", nil)
+	r := httptest.NewRequestWithContext(t.Context(), "GET", "https://family.duckdns.org/api/v1/items", nil)
 	r.URL.Scheme = ""
 	r.URL.Host = ""
 	r.RemoteAddr = "198.51.100.10:5000"
@@ -50,7 +50,7 @@ func TestGatewayForwardsOnlyToPublicSocketAndStripsProxyCredentials(t *testing.T
 func TestGatewayRejectsWrongHostPlaintextOversizeAndTransferEncoding(t *testing.T) {
 	for name, mutate := range map[string]func(*http.Request){"host": func(r *http.Request) { r.Host = "other.example" }, "plaintext": func(r *http.Request) { r.TLS = nil }, "large": func(r *http.Request) { r.ContentLength = 1<<20 + 1 }, "chunked": func(r *http.Request) { r.TransferEncoding = []string{"chunked"} }, "connect": func(r *http.Request) { r.Method = http.MethodConnect }, "absolute": func(r *http.Request) { r.URL.Host = "other.example"; r.URL.Scheme = "http" }} {
 		t.Run(name, func(t *testing.T) {
-			r := httptest.NewRequest("GET", "https://family.duckdns.org/", nil)
+			r := httptest.NewRequestWithContext(t.Context(), "GET", "https://family.duckdns.org/", nil)
 			r.URL.Scheme = ""
 			r.URL.Host = ""
 			mutate(r)
@@ -67,7 +67,7 @@ func TestCertificateRPCRejectsInvalidInputBeforeIssuance(t *testing.T) {
 	for _, raw := range []string{`{}`, `null`, `{"name":"other.example"}`, `{"name":"family.duckdns.org","name":"family.duckdns.org"}`, `{"name":"family.duckdns.org","acme":"true"}`, `{"name":"family.duckdns.org","key":"owner"}`, strings.Repeat(" ", 1025)} {
 		called := false
 		handler := CertificateHandler("family.duckdns.org", func(*tls.ClientHelloInfo) (*tls.Certificate, error) { called = true; return nil, nil })
-		r := httptest.NewRequest("POST", "http://certificate/", strings.NewReader(raw))
+		r := httptest.NewRequestWithContext(t.Context(), "POST", "http://certificate/", strings.NewReader(raw))
 		r.Header.Set("Content-Type", "application/json")
 		w := httptest.NewRecorder()
 		handler.ServeHTTP(w, r)
@@ -81,7 +81,7 @@ func TestGatewayMetadataRejectsMalformedPeerBeforeApplication(t *testing.T) {
 	for _, address := range []string{"", "127.0.0.1", "host.example:10", "127.0.0.1:0", "127.0.0.1:65536", "127.0.0.1:010", "127.0.0.1:bad", strings.Repeat("x", 257)} {
 		called := false
 		handler := TLSMetadata(http.HandlerFunc(func(http.ResponseWriter, *http.Request) { called = true }))
-		r := httptest.NewRequest("GET", "/", nil)
+		r := httptest.NewRequestWithContext(t.Context(), "GET", "/", nil)
 		r.Header.Set(ClientAddressHeader, address)
 		w := httptest.NewRecorder()
 		handler.ServeHTTP(w, r)
