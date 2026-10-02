@@ -1,0 +1,23 @@
+
+Running 12 tests using 1 worker
+
+(node:96363) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   1 [chromium] › layout-audit-configuration.spec.ts:7:1 › SCIM configuration stays usable at every supported width (10.8s)
+  ✓   2 [chromium] › polish-shell.spec.ts:21:1 › administration uses a plain canvas while dark media browsing retains CinemaSail @smoke (3.3s)
+  ✓   3 [chromium] › polish-shell.spec.ts:35:1 › landscape search stays reachable before and after focus on signed-in pages @smoke (2.3s)
+  ✓   4 [chromium] › polish-shell.spec.ts:70:1 › TMDB connection instructions remain readable without horizontal scrolling @smoke (1.5s)
+(node:96957) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   5 [firefox] › layout-audit-configuration.spec.ts:7:1 › SCIM configuration stays usable at every supported width (14.3s)
+  ✓   6 [firefox] › polish-shell.spec.ts:21:1 › administration uses a plain canvas while dark media browsing retains CinemaSail @smoke (5.3s)
+  ✓   7 [firefox] › polish-shell.spec.ts:35:1 › landscape search stays reachable before and after focus on signed-in pages @smoke (2.1s)
+  ✓   8 [firefox] › polish-shell.spec.ts:70:1 › TMDB connection instructions remain readable without horizontal scrolling @smoke (2.0s)
+(node:97826) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   9 [webkit] › layout-audit-configuration.spec.ts:7:1 › SCIM configuration stays usable at every supported width (8.9s)
+  ✓  10 [webkit] › polish-shell.spec.ts:21:1 › administration uses a plain canvas while dark media browsing retains CinemaSail @smoke (2.4s)
+  ✓  11 [webkit] › polish-shell.spec.ts:35:1 › landscape search stays reachable before and after focus on signed-in pages @smoke (2.2s)
+  ✓  12 [webkit] › polish-shell.spec.ts:70:1 › TMDB connection instructions remain readable without horizontal scrolling @smoke (1.8s)
+
+  12 passed (1.2m)

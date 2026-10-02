@@ -1,0 +1,83 @@
+package com.kinosail.player.core
+
+import android.graphics.Bitmap
+import android.graphics.Canvas
+import android.graphics.Color
+import android.graphics.Paint
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.ui.graphics.asAndroidBitmap
+import androidx.compose.ui.semantics.SemanticsProperties
+import androidx.compose.ui.test.SemanticsMatcher
+import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.captureToImage
+import androidx.compose.ui.test.junit4.v2.createComposeRule
+import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.onRoot
+import androidx.compose.ui.test.printToString
+import com.kinosail.player.design.KinoTheme
+import java.io.File
+import org.junit.Rule
+import org.junit.Test
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
+import org.robolectric.annotation.Config
+import org.robolectric.annotation.GraphicsMode
+
+@RunWith(RobolectricTestRunner::class)
+@Config(sdk = [35])
+@GraphicsMode(GraphicsMode.Mode.NATIVE)
+class ReaderPolishGalleryTest {
+    @get:Rule val compose = createComposeRule()
+
+    @Test @Config(qualifiers = "w390dp-h844dp-xhdpi") fun phone() = gallery("phone")
+    @Test @Config(qualifiers = "w834dp-h1210dp-mdpi") fun tablet() = gallery("tablet")
+    @Test @Config(qualifiers = "w844dp-h390dp-mdpi") fun landscape() = gallery("landscape")
+
+    private fun gallery(viewport: String) {
+        val bitmap = mutableStateOf<Bitmap?>(null)
+        val total = mutableStateOf(0)
+        val notice = mutableStateOf<String?>(null)
+        val saving = mutableStateOf<String?>(null)
+        compose.setContent {
+            KinoTheme { ReaderPageView("The Lighthouse Atlas", bitmap.value, 0, total.value,
+                notice.value, saving.value, {}, {}, {}, {}, {}) }
+        }
+        capture(viewport, "initial", true)
+        compose.runOnIdle { total.value = 3 }
+        capture(viewport, "page-pending", true)
+        compose.runOnIdle { bitmap.value = pageImage() }
+        capture(viewport, "loaded", false)
+        compose.runOnIdle { saving.value = "Reading position was not saved." }
+        capture(viewport, "save-failed", false)
+        compose.runOnIdle { bitmap.value = null; saving.value = null; notice.value = "Could not load this comic page." }
+        capture(viewport, "failed", false)
+        compose.runOnIdle { total.value = 0; notice.value = "This book format is not available on Android yet." }
+        capture(viewport, "unsupported", false)
+    }
+
+    private fun capture(viewport: String, state: String, pending: Boolean) {
+        compose.onNodeWithText("The Lighthouse Atlas").assertIsDisplayed()
+        compose.onNodeWithText("Done").assertIsDisplayed()
+        val loading = compose.onNode(SemanticsMatcher.keyIsDefined(SemanticsProperties.ProgressBarRangeInfo))
+        if (pending) loading.assertIsDisplayed() else loading.assertDoesNotExist()
+        val output = File(requireNotNull(System.getenv("KINOSAIL_READER_CAPTURE_DIR")))
+        output.mkdirs()
+        File(output, "$viewport-$state-semantics.txt").writeText(compose.onRoot().printToString())
+        val capture = compose.onRoot().captureToImage().asAndroidBitmap()
+        File(output, "$viewport-$state.png").outputStream().use { capture.compress(Bitmap.CompressFormat.PNG, 100, it) }
+    }
+
+    private fun pageImage(): Bitmap {
+        val page = Bitmap.createBitmap(600, 900, Bitmap.Config.ARGB_8888)
+        val canvas = Canvas(page)
+        canvas.drawColor(Color.rgb(245, 240, 225))
+        val paint = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = Color.rgb(27, 43, 33); textSize = 40f }
+        canvas.drawText("The Lighthouse Atlas", 45f, 100f, paint)
+        paint.textSize = 22f
+        canvas.drawText("Chapter 1: Along the coast", 45f, 155f, paint)
+        paint.color = Color.rgb(65, 85, 75)
+        paint.strokeWidth = 3f
+        for (line in 0..13) canvas.drawLine(45f, 220f + line * 40, 525f - (line % 3) * 30, 220f + line * 40, paint)
+        return page
+    }
+}

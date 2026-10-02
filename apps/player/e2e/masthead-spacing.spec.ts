@@ -12,9 +12,15 @@ async function prepareContinuedMovie(page: import("@playwright/test").Page) {
 		const csrf = document.querySelector<HTMLMetaElement>('meta[name="kinosail-csrf"]')!.content;
 		const response = await fetch("/api/v1/library?view=all");
 		if (!response.ok) throw new Error(`library failed: ${response.status}`);
-		const catalog = await response.json() as { items: Array<{ id: string; title: string }> };
+		const catalog = await response.json() as { items: Array<{ id: string; title: string; progress?: { seconds?: number } }> };
 		const item = catalog.items.find((candidate) => candidate.title === "Example Movie");
 		if (!item) throw new Error("Example Movie fixture is missing");
+		for (const previous of catalog.items.filter((candidate) => candidate.id !== item.id && (candidate.progress?.seconds ?? 0) > 0)) {
+			const dismissed = await fetch(`/api/v1/items/${previous.id}/continue-watching`, {
+				method: "DELETE", headers: { "X-Kinosail-CSRF": csrf },
+			});
+			if (!dismissed.ok) throw new Error(`reset continued fixture failed: ${dismissed.status}`);
+		}
 		const saved = await fetch(`/api/v1/items/${item.id}/progress`, {
 			method: "PUT", headers: { "Content-Type": "application/json", "X-Kinosail-CSRF": csrf },
 			body: JSON.stringify({ seconds: 1, watched: false }),
@@ -23,7 +29,7 @@ async function prepareContinuedMovie(page: import("@playwright/test").Page) {
 	});
 }
 
-test("Home keeps featured resume and navigation reachable", async ({ page }, testInfo) => {
+test("Home keeps continued titles and navigation reachable", async ({ page }, testInfo) => {
 	await prepareContinuedMovie(page);
 	for (const viewport of [
 		{ width: 1920, height: 1080 }, { width: 1440, height: 900 },
@@ -32,10 +38,10 @@ test("Home keeps featured resume and navigation reachable", async ({ page }, tes
 	]) {
 		await page.setViewportSize(viewport);
 		await page.goto("/");
-		const feature = page.getByRole("region", { name: "Featured title" });
+		const feature = page.locator(".continue-shelf article").filter({ has: page.getByRole("heading", { name: "Example Movie", exact: true }) });
 		await expect(feature.getByRole("heading", { name: "Example Movie" })).toBeVisible();
 		await expect(feature.getByRole("progressbar", { name: "Watch progress" })).toBeVisible();
-		const resume = feature.getByRole("link", { name: "Resume", exact: true });
+		const resume = feature.getByRole("link", { name: /Example Movie/ });
 		await expect(resume).toHaveAttribute("href", /^\/watch\//);
 		await expect(feature.getByRole("link", { name: "View details" })).toHaveCount(0);
 		const removal = feature.getByRole("button", { name: /Remove Example Movie/ });
@@ -43,7 +49,7 @@ test("Home keeps featured resume and navigation reachable", async ({ page }, tes
 		const geometry = await page.evaluate(() => {
 			const nav = document.querySelector(".app-header nav")!.getBoundingClientRect();
 			const search = document.querySelector(".app-header .search")!.getBoundingClientRect();
-			const featured = document.querySelector(".home-feature")!.getBoundingClientRect();
+			const featured = document.querySelector(".continue-shelf")!.getBoundingClientRect();
 			const overlaps = nav.left < search.right && nav.right > search.left && nav.top < search.bottom && nav.bottom > search.top;
 			const clipped = [...document.querySelectorAll<HTMLElement>(".app-header nav > a, .app-header nav > details")]
 				.filter((element) => getComputedStyle(element).display !== "none")

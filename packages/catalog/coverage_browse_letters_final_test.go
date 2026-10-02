@@ -18,7 +18,9 @@ func TestCoverageBrowseTitleOrderMatchesUniqueLetterBuckets(t *testing.T) {
 		{ID: "plain", Title: "Cruella"},
 		{ID: "beta-a", Title: "Beta"},
 	}
-	sortReferences(items, "title", "", "en")
+	if err := sortReferences(t.Context(), items, "title", "", "en"); err != nil {
+		t.Fatal(err)
+	}
 	if got, want := itemIDs(items), []string{"number", "beta-a", "beta-b", "plain", "quoted"}; !reflect.DeepEqual(got, want) {
 		t.Fatalf("title order = %v, want %v", got, want)
 	}
@@ -67,7 +69,7 @@ func TestCoverageHistorySortAndBrowseApplyKeepInputsStable(t *testing.T) {
 	candidates := []Candidate{{Item: &items[1]}, {Item: nil}, {Item: &items[2]}}
 	beforeCandidates := append([]Candidate(nil), candidates...)
 	beforeItems := append([]library.Item(nil), items...)
-	result, err := browse.Apply(candidates)
+	result, err := browse.Apply(t.Context(), candidates)
 	if err != nil || result.Limit != 2 || result.Total != 2 || !reflect.DeepEqual(itemValueIDs(result.Items), []string{"a", "b"}) {
 		t.Fatalf("browse result = %#v, error=%v", result, err)
 	}
@@ -110,7 +112,9 @@ func assertSearchRanks(t *testing.T, tests []struct {
 		}
 		references[len(tests)-1-index] = &library.Item{ID: test.title, Title: test.title}
 	}
-	sortReferences(references, "title", "cafe", "fr")
+	if err := sortReferences(t.Context(), references, "title", "cafe", "fr"); err != nil {
+		t.Fatal(err)
+	}
 	for index, item := range references {
 		if item.Title != tests[index].title {
 			t.Fatalf("ranked order %d = %q, want %q", index, item.Title, tests[index].title)

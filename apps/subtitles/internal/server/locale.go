@@ -83,8 +83,8 @@ type localizedTemplate = *localization.TemplateSet
 
 func newLocalizedTemplate(name, source string) *localization.TemplateSet {
 	source = stylesheetURL.ReplaceAllString(source, "/static/app.css?v="+applicationCSSVersion)
-	source = strings.ReplaceAll(source, `/static/main.kinosail.bundle.js?v=7`, `/static/main.kinosail.bundle.js?v=15`)
-	return localization.NewTemplateSet(name, source, "15", localeCatalog, supportedLanguages, httpguard.CSRFTemplateSource, httpguard.CSRFParseFuncs(uiIcon), localeTemplateRuntime)
+	source = strings.ReplaceAll(source, `/static/main.kinosail.bundle.js?v=7-htmx4`, `/static/main.kinosail.bundle.js?v=16-htmx4`)
+	return localization.NewTemplateSet(name, source, "16-htmx4", localeCatalog, supportedLanguages, httpguard.CSRFTemplateSource, httpguard.CSRFParseFuncs(uiIcon), localeTemplateRuntime)
 }
 
 func localized(next http.Handler) http.Handler {

@@ -1,0 +1,442 @@
+{
+  "revision": "8a488dda499e672478c0f9a9c4debabdbac94a9f",
+  "sourceState": "final reader feedback fix with test-first regressions; temporary gallery source archived and removed",
+  "command": [
+    "./gradlew",
+    ":app:testDebugUnitTest",
+    ":watchcore:testDebugUnitTest",
+    ":wear:testDebugUnitTest",
+    ":app:assembleDebug",
+    ":wear:assembleDebug",
+    ":app:assembleDebugAndroidTest",
+    "--max-workers=2"
+  ],
+  "environment": {
+    "host": "macOS ARM64",
+    "java": "17.0.20.1",
+    "sdk": "/Users/mikeo/.cache/kinosail-android-sdk",
+    "robolectricApi": 35
+  },
+  "data": "Repository Android unit fixtures; mobile/TV and Wear debug APK compilation, instrumentation APK compilation only",
+  "started": "2026-09-30T23:12:34.309794+00:00",
+  "artifacts": [
+    {
+      "path": "apps/player/apps/android/app/src/main/java/com/kinosail/player/core/ReaderPageView.kt",
+      "sha256": "2a10e3256975073e0ed3a276f997f9a1adc6e109481e2b38cd778309a29eb5e4"
+    },
+    {
+      "path": "apps/player/apps/android/app/src/test/java/com/kinosail/player/core/ReaderAccessibilityTest.kt",
+      "sha256": "f26d626f077bc665e85879b3591644f1cd6f64006e81a82ebd908c0f561767ae"
+    }
+  ],
+  "exitCode": 0,
+  "finished": "2026-09-30T23:13:03.282310+00:00",
+  "results": [
+    {
+      "module": "app",
+      "name": "com.kinosail.player.core.AttributionTest",
+      "tests": "1",
+      "skipped": "0",
+      "failures": "0",
+      "errors": "0",
+      "timestamp": "2026-09-30T23:12:36.428Z",
+      "hostname": "MikeOs-MacBook-Pro.local",
+      "time": "5.849"
+    },
+    {
+      "module": "app",
+      "name": "com.kinosail.player.core.MediaUriPolicyTest",
+      "tests": "3",
+      "skipped": "0",
+      "failures": "0",
+      "errors": "0",
+      "timestamp": "2026-09-30T23:12:45.556Z",
+      "hostname": "MikeOs-MacBook-Pro.local",
+      "time": "0.003"
+    },
+    {
+      "module": "app",
+      "name": "com.kinosail.player.core.PlaybackTracksTest",
+      "tests": "3",
+      "skipped": "0",
+      "failures": "0",
+      "errors": "0",
+      "timestamp": "2026-09-30T23:12:48.291Z",
+      "hostname": "MikeOs-MacBook-Pro.local",
+      "time": "0.057"
+    },
+    {
+      "module": "app",
+      "name": "com.kinosail.player.core.InterfaceLocalizationTest",
+      "tests": "4",
+      "skipped": "0",
+      "failures": "0",
+      "errors": "0",
+      "timestamp": "2026-09-30T23:12:44.788Z",
+      "hostname": "MikeOs-MacBook-Pro.local",
+      "time": "0.761"
+    },
+    {
+      "module": "app",
+      "name": "com.kinosail.player.core.RemotePlayersApiTest",
+      "tests": "4",
+      "skipped": "0",
+      "failures": "0",
+      "errors": "0",
+      "timestamp": "2026-09-30T23:12:54.629Z",
+      "hostname": "MikeOs-MacBook-Pro.local",
+      "time": "0.005"
+    },
+    {
+      "module": "app",
+      "name": "com.kinosail.player.core.ServerApiTest",
+      "tests": "9",
+      "skipped": "0",
+      "failures": "0",
+      "errors": "0",
+      "timestamp": "2026-09-30T23:12:54.638Z",
+      "hostname": "MikeOs-MacBook-Pro.local",
+      "time": "1.104"
+    },
+    {
+      "module": "app",
+      "name": "com.kinosail.player.core.MediaTimelineTest",
+      "tests": "2",
+      "skipped": "0",
+      "failures": "0",
+      "errors": "0",
+      "timestamp": "2026-09-30T23:12:45.550Z",
+      "hostname": "MikeOs-MacBook-Pro.local",
+      "time": "0.005"
+    },
+    {
+      "module": "app",
+      "name": "com.kinosail.player.core.ArtworkClientTest",
+      "tests": "5",
+      "skipped": "0",
+      "failures": "0",
+      "errors": "0",
+      "timestamp": "2026-09-30T23:12:36.237Z",
+      "hostname": "MikeOs-MacBook-Pro.local",
+      "time": "0.045"
+    },
+    {
+      "module": "app",
+      "name": "com.kinosail.player.tv.TvDetailLayoutTest",
+      "tests": "1",
+      "skipped": "0",
+      "failures": "0",
+      "errors": "0",
+      "timestamp": "2026-09-30T23:13:00.268Z",
+      "hostname": "MikeOs-MacBook-Pro.local",
+      "time": "0.08"
+    },
+    {
+      "module": "app",
+      "name": "com.kinosail.player.core.AudioPlaybackServiceTest",
+      "tests": "1",
+      "skipped": "0",
+      "failures": "0",
+      "errors": "0",
+      "timestamp": "2026-09-30T23:12:42.279Z",
+      "hostname": "MikeOs-MacBook-Pro.local",
+      "time": "0.308"
+    },
+    {
+      "module": "app",
+      "name": "com.kinosail.player.core.SessionStoreTest",
+      "tests": "2",
+      "skipped": "0",
+      "failures": "0",
+      "errors": "0",
+      "timestamp": "2026-09-30T23:12:55.750Z",
+      "hostname": "MikeOs-MacBook-Pro.local",
+      "time": "0.051"
+    },
+    {
+      "module": "app",
+      "name": "com.kinosail.player.core.CatalogEmptyMessageTest",
+      "tests": "2",
+      "skipped": "0",
+      "failures": "0",
+      "errors": "0",
+      "timestamp": "2026-09-30T23:12:44.780Z",
+      "hostname": "MikeOs-MacBook-Pro.local",
+      "time": "0.002"
+    },
+    {
+      "module": "app",
+      "name": "com.kinosail.player.core.ShowApiTest",
+      "tests": "3",
+      "skipped": "0",
+      "failures": "0",
+      "errors": "0",
+      "timestamp": "2026-09-30T23:12:55.804Z",
+      "hostname": "MikeOs-MacBook-Pro.local",
+      "time": "0.009"
+    },
+    {
+      "module": "app",
+      "name": "com.kinosail.player.mobile.MobileActivityTest",
+      "tests": "3",
+      "skipped": "0",
+      "failures": "0",
+      "errors": "0",
+      "timestamp": "2026-09-30T23:12:55.861Z",
+      "hostname": "MikeOs-MacBook-Pro.local",
+      "time": "4.401"
+    },
+    {
+      "module": "app",
+      "name": "com.kinosail.player.core.ServerProbeTest",
+      "tests": "4",
+      "skipped": "0",
+      "failures": "0",
+      "errors": "0",
+      "timestamp": "2026-09-30T23:12:55.746Z",
+      "hostname": "MikeOs-MacBook-Pro.local",
+      "time": "0.002"
+    },
+    {
+      "module": "app",
+      "name": "com.kinosail.player.core.PlaybackApiTest",
+      "tests": "8",
+      "skipped": "0",
+      "failures": "0",
+      "errors": "0",
+      "timestamp": "2026-09-30T23:12:48.101Z",
+      "hostname": "MikeOs-MacBook-Pro.local",
+      "time": "0.088"
+    },
+    {
+      "module": "app",
+      "name": "com.kinosail.player.core.ProgressApiTest",
+      "tests": "4",
+      "skipped": "0",
+      "failures": "0",
+      "errors": "0",
+      "timestamp": "2026-09-30T23:12:48.352Z",
+      "hostname": "MikeOs-MacBook-Pro.local",
+      "time": "0.005"
+    },
+    {
+      "module": "app",
+      "name": "com.kinosail.player.core.PhotoClientTest",
+      "tests": "4",
+      "skipped": "0",
+      "failures": "0",
+      "errors": "0",
+      "timestamp": "2026-09-30T23:12:45.562Z",
+      "hostname": "MikeOs-MacBook-Pro.local",
+      "time": "0.162"
+    },
+    {
+      "module": "app",
+      "name": "com.kinosail.player.core.PlaybackPreferencesApiTest",
+      "tests": "4",
+      "skipped": "0",
+      "failures": "0",
+      "errors": "0",
+      "timestamp": "2026-09-30T23:12:48.193Z",
+      "hostname": "MikeOs-MacBook-Pro.local",
+      "time": "0.009"
+    },
+    {
+      "module": "app",
+      "name": "com.kinosail.player.core.CastApiTest",
+      "tests": "3",
+      "skipped": "0",
+      "failures": "0",
+      "errors": "0",
+      "timestamp": "2026-09-30T23:12:42.592Z",
+      "hostname": "MikeOs-MacBook-Pro.local",
+      "time": "0.14"
+    },
+    {
+      "module": "app",
+      "name": "com.kinosail.player.core.PlaybackRecoveryTest",
+      "tests": "1",
+      "skipped": "0",
+      "failures": "0",
+      "errors": "0",
+      "timestamp": "2026-09-30T23:12:48.206Z",
+      "hostname": "MikeOs-MacBook-Pro.local",
+      "time": "0.029"
+    },
+    {
+      "module": "app",
+      "name": "com.kinosail.player.core.ProgressJournalTest",
+      "tests": "4",
+      "skipped": "0",
+      "failures": "0",
+      "errors": "0",
+      "timestamp": "2026-09-30T23:12:48.360Z",
+      "hostname": "MikeOs-MacBook-Pro.local",
+      "time": "0.008"
+    },
+    {
+      "module": "app",
+      "name": "com.kinosail.player.core.PlaybackAccessibilityTest",
+      "tests": "1",
+      "skipped": "0",
+      "failures": "0",
+      "errors": "0",
+      "timestamp": "2026-09-30T23:12:45.731Z",
+      "hostname": "MikeOs-MacBook-Pro.local",
+      "time": "2.366"
+    },
+    {
+      "module": "app",
+      "name": "com.kinosail.player.core.PlaybackSpeedTest",
+      "tests": "2",
+      "skipped": "0",
+      "failures": "0",
+      "errors": "0",
+      "timestamp": "2026-09-30T23:12:48.237Z",
+      "hostname": "MikeOs-MacBook-Pro.local",
+      "time": "0.051"
+    },
+    {
+      "module": "app",
+      "name": "com.kinosail.player.core.CastButtonThemeTest",
+      "tests": "1",
+      "skipped": "0",
+      "failures": "0",
+      "errors": "0",
+      "timestamp": "2026-09-30T23:12:42.734Z",
+      "hostname": "MikeOs-MacBook-Pro.local",
+      "time": "0.709"
+    },
+    {
+      "module": "app",
+      "name": "com.kinosail.player.core.ReaderAccessibilityTest",
+      "tests": "7",
+      "skipped": "0",
+      "failures": "0",
+      "errors": "0",
+      "timestamp": "2026-09-30T23:12:48.375Z",
+      "hostname": "MikeOs-MacBook-Pro.local",
+      "time": "6.195"
+    },
+    {
+      "module": "app",
+      "name": "com.kinosail.player.core.CatalogApiTest",
+      "tests": "13",
+      "skipped": "0",
+      "failures": "0",
+      "errors": "0",
+      "timestamp": "2026-09-30T23:12:43.451Z",
+      "hostname": "MikeOs-MacBook-Pro.local",
+      "time": "1.328"
+    },
+    {
+      "module": "app",
+      "name": "com.kinosail.player.core.ReaderApiTest",
+      "tests": "9",
+      "skipped": "0",
+      "failures": "0",
+      "errors": "0",
+      "timestamp": "2026-09-30T23:12:54.574Z",
+      "hostname": "MikeOs-MacBook-Pro.local",
+      "time": "0.049"
+    },
+    {
+      "module": "app",
+      "name": "com.kinosail.player.core.HomeStateTest",
+      "tests": "3",
+      "skipped": "0",
+      "failures": "0",
+      "errors": "0",
+      "timestamp": "2026-09-30T23:12:44.783Z",
+      "hostname": "MikeOs-MacBook-Pro.local",
+      "time": "0.003"
+    },
+    {
+      "module": "app",
+      "name": "com.kinosail.player.design.KinoThemeTest",
+      "tests": "1",
+      "skipped": "0",
+      "failures": "0",
+      "errors": "0",
+      "timestamp": "2026-09-30T23:12:55.815Z",
+      "hostname": "MikeOs-MacBook-Pro.local",
+      "time": "0.037"
+    },
+    {
+      "module": "watchcore",
+      "name": "com.kinosail.player.watchcore.WatchWireTest",
+      "tests": "3",
+      "skipped": "0",
+      "failures": "0",
+      "errors": "0",
+      "timestamp": "2026-09-30T16:34:55.567Z",
+      "hostname": "MikeOs-MacBook-Pro.local",
+      "time": "0.012"
+    },
+    {
+      "module": "watchcore",
+      "name": "com.kinosail.player.watchcore.HeartTimelineTest",
+      "tests": "3",
+      "skipped": "0",
+      "failures": "0",
+      "errors": "0",
+      "timestamp": "2026-09-30T16:34:55.478Z",
+      "hostname": "MikeOs-MacBook-Pro.local",
+      "time": "0.087"
+    },
+    {
+      "module": "wear",
+      "name": "com.kinosail.player.wear.AttributionTest",
+      "tests": "1",
+      "skipped": "0",
+      "failures": "0",
+      "errors": "0",
+      "timestamp": "2026-09-30T16:34:57.422Z",
+      "hostname": "MikeOs-MacBook-Pro.local",
+      "time": "4.805"
+    },
+    {
+      "module": "wear",
+      "name": "com.kinosail.player.wear.HeartStoreTest",
+      "tests": "2",
+      "skipped": "0",
+      "failures": "0",
+      "errors": "0",
+      "timestamp": "2026-09-30T16:35:02.231Z",
+      "hostname": "MikeOs-MacBook-Pro.local",
+      "time": "0.194"
+    },
+    {
+      "module": "wear",
+      "name": "com.kinosail.player.wear.InterfaceLocalizationTest",
+      "tests": "2",
+      "skipped": "0",
+      "failures": "0",
+      "errors": "0",
+      "timestamp": "2026-09-30T16:35:02.427Z",
+      "hostname": "MikeOs-MacBook-Pro.local",
+      "time": "0.052"
+    }
+  ],
+  "summary": {
+    "app": {
+      "tests": 112,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "watchcore": {
+      "tests": 6,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "wear": {
+      "tests": 5,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    }
+  },
+  "sourceStable": true
+}

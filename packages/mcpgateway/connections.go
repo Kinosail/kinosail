@@ -13,10 +13,11 @@ import (
 )
 
 const (
-	mcpAccessLifetime  = time.Hour
-	mcpRefreshLifetime = 30 * 24 * time.Hour
-	mcpRequestLifetime = 10 * time.Minute
-	mcpConnectionLimit = 128
+	mcpAccessLifetime      = time.Hour
+	mcpRefreshLifetime     = 30 * 24 * time.Hour
+	mcpRequestLifetime     = 10 * time.Minute
+	mcpConnectionLimit     = 128
+	mcpRefreshHistoryLimit = 1024
 )
 
 // Connections owns built-in OAuth clients, grants, and one-use credentials.
@@ -31,6 +32,7 @@ type Connections struct {
 	sessionKey func(string) string
 	clients    map[string]mcpOAuthClient
 	grants     map[string]mcpOAuthGrant
+	events     map[string]eventSubscription
 	pending    map[string]mcpOAuthRequest
 	codes      map[string]mcpOAuthCode
 	err        error
@@ -38,11 +40,13 @@ type Connections struct {
 	client     *http.Client
 	external   bool
 	register   httpguard.Limiter
+	requests   httpguard.Limiter
 }
 
 type mcpConnectionState struct {
-	Clients map[string]mcpOAuthClient `json:"clients"`
-	Grants  map[string]mcpOAuthGrant  `json:"grants"`
+	Clients map[string]mcpOAuthClient    `json:"clients"`
+	Grants  map[string]mcpOAuthGrant     `json:"grants"`
+	Events  map[string]eventSubscription `json:"events,omitempty"`
 }
 
 type mcpOAuthClient struct {
@@ -54,6 +58,7 @@ type mcpOAuthClient struct {
 }
 
 type mcpOAuthGrant struct {
+	RefreshHistory  []string `json:"refreshHistory,omitempty"`
 	ProfileRevision uint64   `json:"profileRevision"`
 	ID              string   `json:"id"`
 	ClientID        string   `json:"clientId"`
@@ -124,7 +129,7 @@ func NewConnections(config ConnectionConfig) *Connections { //nolint:contextchec
 	}
 	connections := &Connections{
 		issuer: issuer, resource: resource, principals: config.Principals, store: config.Store, error: config.Error, approval: config.Approval, sessionKey: config.SessionKey,
-		clients: make(map[string]mcpOAuthClient), grants: make(map[string]mcpOAuthGrant),
+		clients: make(map[string]mcpOAuthClient), grants: make(map[string]mcpOAuthGrant), events: make(map[string]eventSubscription),
 		pending: make(map[string]mcpOAuthRequest), codes: make(map[string]mcpOAuthCode), now: time.Now, client: publicMetadataHTTPClient(10 * time.Second),
 	}
 	if config.Principals == nil || config.Store == nil || config.Error == nil || config.Approval == nil || config.SessionKey == nil || !validMCPIssuer(issuer) {
@@ -145,11 +150,18 @@ func (connections *Connections) loadState() {
 	if !found {
 		return
 	}
+	if !validMCPConnectionState(state) {
+		connections.err = errors.New("agent connection state is invalid")
+		return
+	}
 	if state.Clients != nil {
 		connections.clients = state.Clients
 	}
 	if state.Grants != nil {
 		connections.grants = state.Grants
+	}
+	if state.Events != nil {
+		connections.events = state.Events
 	}
 }
 
@@ -166,8 +178,8 @@ func (connections *Connections) RegisterOAuth(mux *http.ServeMux) {
 	mux.HandleFunc("POST /oauth/register", connections.registerClient)
 	mux.HandleFunc("GET /oauth/authorize", connections.authorize)
 	mux.HandleFunc("POST /oauth/authorize", connections.authorize)
-	mux.HandleFunc("POST /oauth/token", connections.token)
-	mux.HandleFunc("POST /oauth/revoke", connections.revokeToken)
+	mux.Handle("POST /oauth/token", limitMCPRequests(&connections.requests, http.HandlerFunc(connections.token)))
+	mux.Handle("POST /oauth/revoke", limitMCPRequests(&connections.requests, http.HandlerFunc(connections.revokeToken)))
 }
 
 func (connections *Connections) metadata(writer http.ResponseWriter, _ *http.Request) {

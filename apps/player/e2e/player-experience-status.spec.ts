@@ -31,18 +31,27 @@ test("traces a rejected Safari play request", async ({ page }) => {
 });
 
 test("reports honest loading and buffering progress", async ({ page }) => {
+  await page.addStyleTag({ content: await readFile("../../../packages/webassets/static/player-app.css", "utf8") });
+  await page.addStyleTag({ content: await readFile("../../../packages/webassets/static/player-stage.css", "utf8") });
+  await page.addStyleTag({ content: await readFile("../internal/server/static/home.css", "utf8") });
   const status = page.locator("[data-player-status]");
+  const spinner = status.locator(".buffer-skeleton");
   const buffered = page.locator("[data-buffered]");
   await page.locator("video").evaluate((element) => element.play());
   await page.locator("video").dispatchEvent("loadstart");
   await expect(status).toContainText("Loading video…");
+  await expect(spinner).toBeVisible();
+  await expect(spinner).toHaveCSS("border-top-style", "solid");
+  await expect(spinner).toHaveCSS("border-radius", "50%");
+  await expect(spinner).toHaveCSS("animation-name", "player-buffer-spin");
   await expect(buffered).toBeHidden();
   await expect(buffered).toHaveAttribute("aria-valuetext", "60% buffered");
 
   await page.locator("video").dispatchEvent("waiting");
   await page.waitForTimeout(600);
   await expect(status).toContainText("Buffering · 60% buffered");
-  await expect(buffered).toBeVisible();
+  await expect(spinner).toBeVisible();
+  await expect(buffered).toBeHidden();
   await expect(page.locator(".media-stage")).toHaveClass(/is-busy/);
   await page.evaluate(() => (window as Window & { setBufferedEnd: (value: number) => void }).setBufferedEnd(78));
   await page.locator("video").dispatchEvent("progress");
@@ -57,6 +66,10 @@ test("reports honest loading and buffering progress", async ({ page }) => {
   await expect(buffered).toBeHidden();
   await page.locator("video").dispatchEvent("seeked");
   await expect(status).toBeHidden();
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.locator("video").dispatchEvent("loadstart");
+  await expect(spinner).toBeVisible();
+  await expect(spinner).toHaveCSS("animation-name", "none");
 });
 
 test("records one private trace across playback events", async ({ page }) => {
@@ -100,6 +113,56 @@ test("canplay clears seeking when WebKit omits seeked", async ({ page }) => {
   await expect(status).toBeHidden();
 });
 
+for (const target of [45, 5]) test(`advancing playback clears seeking at ${target}s without completion events`, { tag: "@smoke" }, async ({ page }, testInfo) => {
+  await page.emulateMedia({ colorScheme: "dark" });
+  for (const path of ["../../../packages/webassets/static/player-app.css", "../../../packages/webassets/static/player-stage.css", "../internal/server/static/home.css"]) {
+    await page.addStyleTag({ content: await readFile(path, "utf8") });
+  }
+  const video = page.locator("video");
+  const status = page.locator("[data-player-status]");
+  await video.evaluate((element) => element.play());
+  await video.evaluate((element, position) => {
+    Object.defineProperty(element, "seeking", { configurable: true, writable: true, value: true });
+    element.currentTime = position;
+    element.dispatchEvent(new Event("seeking"));
+    element.dispatchEvent(new Event("timeupdate"));
+  }, target);
+  await expect(status).toContainText("Seeking…");
+  await expect(status).toBeVisible();
+  await expect(status).toHaveAttribute("aria-busy", "true");
+  for (const viewport of [{ width: 390, height: 844 }, { width: 1440, height: 900 }]) {
+    await page.setViewportSize(viewport);
+    await page.screenshot({ path: testInfo.outputPath(`${viewport.width}-pending-seek.png`) });
+  }
+
+  // A position update during the seek or while paused is not resumed playback.
+  await video.evaluate((element) => { element.currentTime += 0.1; element.dispatchEvent(new Event("timeupdate")); });
+  await expect(status).toBeVisible();
+  await page.evaluate(() => (window as Window & { setPaused: (value: boolean) => void }).setPaused(true));
+  await video.evaluate((element) => {
+    Object.defineProperty(element, "seeking", { configurable: true, writable: true, value: false });
+    element.currentTime += 0.1;
+    element.dispatchEvent(new Event("timeupdate"));
+  });
+  await expect(status).toBeVisible();
+  await page.evaluate(() => (window as Window & { setPaused: (value: boolean) => void }).setPaused(false));
+  await video.dispatchEvent("timeupdate");
+  await expect(status).toBeVisible();
+
+  await video.evaluate((element) => { element.currentTime += 0.25; element.dispatchEvent(new Event("timeupdate")); });
+  await expect(status).toBeHidden();
+  await expect(status).not.toHaveAttribute("aria-busy");
+  await expect(page.locator(".media-stage")).not.toHaveClass(/is-busy/);
+  await video.dispatchEvent("seeking");
+  await expect(status).toBeVisible();
+  await video.evaluate((element) => { element.currentTime += 0.25; element.dispatchEvent(new Event("timeupdate")); });
+  await expect(status).toBeHidden();
+  for (const viewport of [{ width: 390, height: 844 }, { width: 1440, height: 900 }]) {
+    await page.setViewportSize(viewport);
+    await page.screenshot({ path: testInfo.outputPath(`${viewport.width}-resumed-seek.png`) });
+  }
+});
+
 test("advancing video hides controls when WebKit omits playing", async ({ page }) => {
   const video = page.locator("video");
   await page.evaluate(() => (window as Window & { setPaused: (value: boolean) => void }).setPaused(false));
@@ -112,7 +175,7 @@ test("advancing video hides controls when WebKit omits playing", async ({ page }
 test("does not obstruct playable video when the network stalls", async ({ page }) => {
   const video = page.locator("video");
   const status = page.locator("[data-player-status]");
-  await video.dispatchEvent("playing");
+  await video.evaluate((element) => element.play());
   await expect(status).toBeHidden();
 
   await video.dispatchEvent("stalled");

@@ -22,10 +22,10 @@ for (const width of [390, 1440]) {
         <section class="home-shelf continue-shelf"><header><h2>Continue watching</h2></header><div class="grid rail resume-grid">
           <article class="card resume-card"><a class="resume-link"><img class="poster" src="${image}" width="400" height="600" alt=""><h3>Example movie</h3><small>1 hour left</small><span class="resume-action">Play</span></a></article>
         </div></section>
-        <section class="home-shelf"><header><h2>Recently added</h2></header><div class="grid rail"><a class="card"><img class="poster" src="${image}" width="400" height="600" alt=""><h2>Another movie</h2></a></div></section>
+        <section class="home-shelf"><header><h2>Recently added</h2></header><div class="grid rail"><a class="card"><img class="poster" src="${image}" width="400" height="600" alt=""><h2>Another movie</h2></a><a class="card recent-card stacked"><span class="poster recent-stack"><span class="recent-stack-layer"></span><span class="recent-stack-layer"></span><img src="${image}" width="400" height="600" alt=""><span class="recent-stack-count">3</span></span><h2>Example show</h2></a></div></section>
       </main></body></html>`);
       for (const content of styles) await page.addStyleTag({ content });
-      const selectors = [".home-feature", ".home-feature > img", ".resume-card", ".resume-link .poster", ".home-shelf .card:not(.resume-card)"];
+      const selectors = [".home-feature", ".home-feature > img", ".resume-card", ".resume-link .poster", ".home-shelf .card:not(.resume-card):not(.stacked)", ".recent-stack"];
       const boxes = await Promise.all(selectors.map(selector => page.locator(selector).boundingBox()));
       await page.locator("#main").evaluate(main => main.classList.add("request-skeleton"));
       if (artwork === "poster") await page.screenshot({ path: testInfo.outputPath(`${width}-pending.png`), fullPage: true });
@@ -36,6 +36,7 @@ for (const width of [390, 1440]) {
       }
       await expect(page.locator(".home-feature > img")).toHaveCSS("visibility", "hidden");
       await expect(page.locator(".resume-link .poster")).toHaveCSS("visibility", "hidden");
+      await expect(page.locator(".recent-stack")).toHaveCSS("visibility", "hidden");
       await expect(page.locator(".home-feature .button").first()).toHaveCSS("color", "rgba(0, 0, 0, 0)");
       await expect(page.locator(".home-feature h2")).toHaveCSS("animation-name", "skeleton-shimmer");
       await expect(page.locator(".home-feature .button").first()).toHaveCSS("animation-name", "skeleton-shimmer");
@@ -45,6 +46,7 @@ for (const width of [390, 1440]) {
       expect(await page.locator(".home-feature").evaluate(feature => getComputedStyle(feature, "::before").animationName)).toBe("none");
       await page.locator("#main").evaluate(main => main.classList.remove("request-skeleton"));
       await expect(page.locator(".home-feature > img")).toHaveCSS("visibility", "visible");
+      await expect(page.locator(".recent-stack")).toHaveCSS("visibility", "visible");
       if (artwork === "poster") await page.screenshot({ path: testInfo.outputPath(`${width}-loaded.png`), fullPage: true });
     });
   }

@@ -16,7 +16,7 @@ if ("serviceWorker" in navigator && window.isSecureContext) {
     return registration;
   };
   navigator.serviceWorker.addEventListener("controllerchange", () => identify({active: navigator.serviceWorker.controller}));
-  navigator.serviceWorker.register("/service-worker.js?v=54").then(identify).then(() => navigator.serviceWorker.ready).then(identify).catch(() => {});
+  navigator.serviceWorker.register("/service-worker.js?v=55").then(identify).then(() => navigator.serviceWorker.ready).then(identify).catch(() => {});
 }
 if (appleMobile && !standalone && installs.length) {
   for (const install of installs) {
@@ -95,44 +95,45 @@ let mainRequestGeneration = 0;
 const mainRequests = new WeakMap();
 const loadingRequests = new WeakMap();
 const loadingTargets = new WeakMap();
-document.body.addEventListener("htmx:beforeRequest", ({ detail }) => {
-  const target = detail?.target;
-  if (!target || !detail.xhr) return;
+document.body.addEventListener("htmx:before:request", ({ detail }) => {
+  const ctx = detail?.ctx, target = ctx?.target;
+  if (!target) return;
   let state = loadingTargets.get(target);
   if (!state) {
     state = { count: 0, busy: target.getAttribute("aria-busy"), inert: target.inert };
     loadingTargets.set(target, state);
     target.setAttribute("aria-busy", "true");
     if (!target.matches("button, input, select, textarea")) {
-      target.classList.add("request-skeleton");
       target.inert = true;
+      state.skeleton = window.setTimeout(() => {
+        if (target.isConnected && loadingTargets.get(target) === state) target.classList.add("request-skeleton");
+      }, 120);
     }
   }
   state.count++;
-  loadingRequests.set(detail.xhr, target);
+  loadingRequests.set(ctx, target);
 });
 function finishLoadingRequest({ detail }) {
-  const target = loadingRequests.get(detail?.xhr);
+  const target = loadingRequests.get(detail?.ctx);
   if (!target) return;
-  loadingRequests.delete(detail.xhr);
+  loadingRequests.delete(detail.ctx);
   const state = loadingTargets.get(target);
   if (--state.count) return;
+  window.clearTimeout(state.skeleton);
   target.classList.remove("request-skeleton");
   target.inert = state.inert;
   if (state.busy === null) target.removeAttribute("aria-busy");
   else target.setAttribute("aria-busy", state.busy);
   loadingTargets.delete(target);
 }
-for (const event of ["htmx:afterRequest", "htmx:sendError", "htmx:timeout", "htmx:sendAbort"]) {
-  document.body.addEventListener(event, finishLoadingRequest);
-}
+document.body.addEventListener("htmx:finally:request", finishLoadingRequest);
 
-document.body.addEventListener("htmx:beforeRequest", (event) => {
-  if (event.detail?.target?.id === "main") mainRequests.set(event.detail.xhr, ++mainRequestGeneration);
+document.body.addEventListener("htmx:before:request", (event) => {
+  if (event.detail?.ctx?.target?.id === "main") mainRequests.set(event.detail.ctx, ++mainRequestGeneration);
 });
-document.body.addEventListener("htmx:beforeSwap", (event) => {
-  const generation = mainRequests.get(event.detail?.xhr);
-  if (generation && generation !== mainRequestGeneration) event.detail.shouldSwap = false;
+document.body.addEventListener("htmx:after:request", (event) => {
+  const generation = mainRequests.get(event.detail?.ctx);
+  if (generation && generation !== mainRequestGeneration) event.preventDefault();
 });
 function motionAllowed() {
   return !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -272,16 +273,12 @@ function bindTitleJump() {
 }
 
 bindTitleJump();
-document.body.addEventListener("htmx:afterSwap", (event) => {
-  if (event.detail?.target?.id === "main") animateMotion(event.detail.target, "motion-enter");
+document.body.addEventListener("htmx:after:swap", (event) => {
+  if (event.detail?.ctx?.target?.id === "main") animateMotion(document.getElementById("main"), "motion-enter");
   bindInfiniteLibrary();
   bindTitleJump();
 });
-document.body.addEventListener("htmx:historyRestore", () => {
-  bindInfiniteLibrary();
-  bindTitleJump();
-});
-document.body.addEventListener("htmx:afterSettle", () => {
+document.body.addEventListener("htmx:after:swap", () => {
   const active = document.querySelector('[data-title-jump-index] [aria-current="true"]');
   if (!active) return;
   const first = document.querySelector("#library a.card");

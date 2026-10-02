@@ -1,0 +1,189 @@
+{
+  "run": 36790424244,
+  "headSha": "7a60d7bef4f07ec331797a4da5ae6669e4d9ca62",
+  "status": "queued",
+  "conclusion": "",
+  "url": "https://github.com/Kinosail/kinosail/actions/runs/36790424244",
+  "checks": [
+    {
+      "name": "Repository policy",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "name": "Changed-commit secret scan",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "name": "Select affected components",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "name": "Swift code scanning",
+      "status": "completed",
+      "conclusion": "skipped"
+    },
+    {
+      "name": "Deep quality metrics",
+      "status": "completed",
+      "conclusion": "skipped"
+    },
+    {
+      "name": "web",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "name": "Supply chain security",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "name": "docs",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "name": "tooling",
+      "status": "completed",
+      "conclusion": "failure"
+    },
+    {
+      "name": "packages",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "name": "CodeQL (go)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "name": "CodeQL (java-kotlin)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "name": "CodeQL (javascript-typescript)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "name": "CodeQL (actions)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "name": "CodeQL (python)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "name": "player / Player Swift compilation",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "name": "player / player Go vulnerabilities",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "name": "player / Player Android compilation",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "name": "player / player production container (linux/amd64)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "name": "player / player Go tests",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "name": "player / player populated browser (chromium)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "name": "subtitles / subtitles Go tests",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "name": "subtitles / subtitles lint and module contract",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "name": "player / player lint and module contract",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "name": "subtitles / subtitles populated browser (chromium)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "name": "player / player installer and local pipeline",
+      "status": "in_progress",
+      "conclusion": ""
+    },
+    {
+      "name": "subtitles / subtitles Go vulnerabilities",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "name": "player / player production container (linux/arm64)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "name": "subtitles / subtitles installer and local pipeline",
+      "status": "in_progress",
+      "conclusion": ""
+    },
+    {
+      "name": "subtitles / subtitles production container (linux/amd64)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "name": "subtitles / subtitles production container (linux/arm64)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "name": "subtitles / Player Android compilation",
+      "status": "completed",
+      "conclusion": "skipped"
+    },
+    {
+      "name": "subtitles / Player Swift compilation",
+      "status": "completed",
+      "conclusion": "skipped"
+    },
+    {
+      "name": "Repository checks",
+      "status": "completed",
+      "conclusion": "failure"
+    },
+    {
+      "name": "CodeQL findings policy",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "name": "Security checks",
+      "status": "queued",
+      "conclusion": ""
+    }
+  ]
+}

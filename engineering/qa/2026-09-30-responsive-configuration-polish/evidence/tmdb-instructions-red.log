@@ -1,0 +1,42 @@
+
+Running 1 test using 1 worker
+
+(node:70035) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  1 [chromium] › layout-audit-configuration.spec.ts:7:1 › TMDB connection instructions remain readable without horizontal scrolling (1.2s)
+
+
+  1) [chromium] › layout-audit-configuration.spec.ts:7:1 › TMDB connection instructions remain readable without horizontal scrolling 
+
+    Error: 390px instruction right edge
+
+    expect(received).toBeLessThanOrEqual(expected)
+
+    Expected: <= 390
+    Received:    749.640625
+
+      18 | 			expect(box).not.toBeNull();
+      19 | 			expect(box!.x, `${viewport.width}px instruction left edge`).toBeGreaterThanOrEqual(0);
+    > 20 | 			expect(box!.x + box!.width, `${viewport.width}px instruction right edge`).toBeLessThanOrEqual(viewport.width);
+         | 			                                                                          ^
+      21 | 		}
+      22 | 		const requestAccess = section.getByRole("link", { name: "Request API access", exact: true });
+      23 | 		await requestAccess.focus();
+        at [task checkout]/apps/player/e2e/layout-audit-configuration.spec.ts:20:78
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../.kinosail-test/tmdb-instructions-red/layout-audit-configuration-13a37-ithout-horizontal-scrolling-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../.kinosail-test/tmdb-instructions-red/layout-audit-configuration-13a37-ithout-horizontal-scrolling-chromium/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../.kinosail-test/tmdb-instructions-red/layout-audit-configuration-13a37-ithout-horizontal-scrolling-chromium/trace.zip
+    Usage:
+
+        pnpm exec playwright show-trace ../.kinosail-test/tmdb-instructions-red/layout-audit-configuration-13a37-ithout-horizontal-scrolling-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    [chromium] › layout-audit-configuration.spec.ts:7:1 › TMDB connection instructions remain readable without horizontal scrolling 

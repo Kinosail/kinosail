@@ -18,6 +18,10 @@ func TestVersionedStaticAssetsUseImmutableCaching(t *testing.T) {
 	assetContracts.VersionedStaticAssetsUseImmutableCaching(t)
 }
 
+func TestPlayerScriptURLTracksServedContents(t *testing.T) {
+	assetContracts.PlayerScriptURLTracksServedContents(t)
+}
+
 func TestVersionedApplicationStylesheetIncludesSupporterStyles(t *testing.T) {
 	t.Parallel()
 	supporter, err := os.ReadFile("static/supporter.css")

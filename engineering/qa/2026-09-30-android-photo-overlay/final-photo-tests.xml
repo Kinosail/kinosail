@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.kinosail.player.core.PhotoScreenTest" tests="8" skipped="0" failures="0" errors="0" timestamp="2026-10-01T00:14:40.177Z" hostname="MikeOs-MacBook-Pro.local" time="13.369">
+  <properties/>
+  <testcase name="titleRemainsReadableOverLoadedLightPhoto" classname="com.kinosail.player.core.PhotoScreenTest" time="9.378"/>
+  <testcase name="largerTextAndLongPhotoTitleRemainReadable" classname="com.kinosail.player.core.PhotoScreenTest" time="0.701"/>
+  <testcase name="failedFetchRetriesWithTruthfulPendingFeedback" classname="com.kinosail.player.core.PhotoScreenTest" time="0.878"/>
+  <testcase name="landscapeTabletPhotoTitleRemainsReadable" classname="com.kinosail.player.core.PhotoScreenTest" time="0.517"/>
+  <testcase name="landscapePhotoTitleRemainsReadable" classname="com.kinosail.player.core.PhotoScreenTest" time="0.285"/>
+  <testcase name="tabletPhotoTitleRemainsReadable" classname="com.kinosail.player.core.PhotoScreenTest" time="0.516"/>
+  <testcase name="viewerWithoutPhotoPermissionHasNoRetryOrMediaRequest" classname="com.kinosail.player.core.PhotoScreenTest" time="0.342"/>
+  <testcase name="tvPhotoTitleAndRemoteFocusRemainAvailable" classname="com.kinosail.player.core.PhotoScreenTest" time="0.671"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

@@ -2,7 +2,7 @@
 title: Connect an MCP client
 description: Connect trusted assistants to bounded subtitle operations.
 section: Build with Subtitles
-last_reviewed: 2026-09-15
+last_reviewed: 2026-09-29
 ---
 
 # Connect an MCP client
@@ -26,11 +26,17 @@ Use Podman when appropriate. Follow the Server's displayed command when multiple
 
 For HTTPS, copy the Server's resource URL, configure it in a client that supports Streamable HTTP and OAuth, and complete the approval flow. Use trusted HTTPS on a private administration connection. Bearer tokens belong in the Authorization header, never in URLs or prompts.
 
+Built-in OAuth approval lasts up to 30 days. Refresh tokens rotate after each use. Reusing an old refresh token revokes that connection.
+
+Kinosail limits `/mcp` to 120 requests per minute per network address. Tool calls share a limit of 120 per minute per Profile across HTTPS and host STDIO. If a limit is reached, wait one minute and retry.
+
 ## Subtitle tools and grants
 
 - `read_api` with `kinosail.read` can read the allowlisted `/api/v1/subtitle-library` inventory. The subtitle endpoint also requires an Owner Profile.
 - `manage_api` with `kinosail.manage` and an Owner Profile can invoke the allowlisted fetch, wanted-batch, maintenance, provider-test, inspect, draft, preview, apply, replacement, and restore operations.
 - `kinosail.write` covers personal library state; it does not substitute for the management grant needed to change subtitle files.
+
+Generic configuration changes require the browser settings. MCP blocks these mutations to protect identity settings and credentials.
 
 Only approved relative `/api/v1` paths are accepted. Discover the Server's tool schemas before calling them. Responses are bounded JSON. Subtitle export bytes, credentials, sessions, API-key management, and unrestricted filesystem paths are blocked from MCP.
 
@@ -39,3 +45,29 @@ An Owner management connection can call `manage_api` with `{"method":"GET","path
 Begin with inventory and a single explicitly requested operation. Confirm the item, language, and intended replacement before approving a mutation. Provider quotas, input validation, Owner policy, and sidecar protection apply just as they do to HTTP and web requests.
 
 See the [HTTP API reference]({{ '/reference/api/' | relative_url }}) for routes and payloads. Source of truth: `internal/server/mcp_route_policy.go` and the connection details returned by your installed Server.
+
+## Subscribe to updates
+
+Clients that support MCP Events can discover and manage signed webhook subscriptions.
+The Server advertises `events/list`, `events/subscribe`, and `events/unsubscribe`.
+
+| Event | Update |
+| --- | --- |
+| `library.updated` | The indexed media library changed. |
+| `download.updated` | A download owned by the connected Profile changed. |
+| `home-assistant.command` | A player command for the connected Profile changed. |
+| `subtitles.updated` | Acquisition, edit, replacement, or Hide state changed. Requires an Owner and management access. |
+
+Use a public HTTPS callback and a `whsec_` signing secret. The Server verifies the
+callback before saving a subscription. Notices contain the affected relative API
+resource path. An optional `resource` argument filters to one exact path.
+
+Subscriptions last at most 24 hours, with a one-minute minimum. Refresh before
+`refreshBefore` to continue delivery. Built-in connection revocation and Profile
+access changes stop delivery. External OAuth must return `client_id`; subscriptions
+expire with its access token. Provider revocation is detected on the next authenticated request.
+
+Cursors are null. Updates missed during downtime cannot be replayed. A refresh
+reports skipped notices with `truncated: true` and resumes suspended delivery.
+Use the [ChatGPT Events guide](https://developers.openai.com/plugins/build/mcp-events)
+to configure plugin monitoring. Adding an ordinary tool connection does not start monitoring.

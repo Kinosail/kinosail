@@ -71,6 +71,7 @@ struct ShowScreen: View {
         .navigationTitle("")
         #else
         .navigationTitle("Seasons & episodes")
+        .navigationBarTitleDisplayMode(.inline)
         #endif
         #if os(tvOS)
         .onChange(of: showID) { _, _ in selectedSeason = nil }
@@ -111,7 +112,7 @@ struct ShowScreen: View {
                 KinoTheme.surface
                 if !show.backdrop.isEmpty && contrast != .increased && !reduceTransparency {
                     GeometryReader { geometry in
-                        Artwork(path: show.backdrop, ratio: 16 / 9, dimension: 1920,
+                        Artwork(path: show.backdrop, ratio: 16 / 9, dimension: 1600,
                                 fillsFrame: true, isBackdrop: true, canvasSize: geometry.size)
                     }
                     LinearGradient(colors: [.black.opacity(0.88), .black.opacity(0.38), .clear],

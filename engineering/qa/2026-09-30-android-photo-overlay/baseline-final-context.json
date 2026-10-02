@@ -1,0 +1,9 @@
+{
+  "revision": "1c0ddabe68724556390971409ccb9bbd50ae75e6",
+  "ownerSha256": "c285e33cb3b39c814662dc70e517d4788a5994af0680d98c626e0f010b760c8f",
+  "testSha256": "0866ad450ad5d6ebda1219c294bf25394ed250affaf41b311cca7203814fe015",
+  "environment": "macOS ARM64 Java17 Robolectric API35 Native graphics; synthetic loopback HTTP photo/session; no attached Android device",
+  "command": "JAVA_HOME=<jdk17> ANDROID_HOME=<sdk> ./gradlew :app:testDebugUnitTest --tests com.kinosail.player.core.PhotoScreenTest --max-workers=2",
+  "data": "Generated white PNG matched each viewport. Phone/tablet both orientations, TV and1.3x font long title; loopback public client flow.",
+  "result": "8 tests: 6 intended title contrast failures1.0; recovery and permission state tests PASS"
+}

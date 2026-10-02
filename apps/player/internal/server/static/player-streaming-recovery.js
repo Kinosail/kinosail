@@ -41,6 +41,12 @@ player.addEventListener("seeking", () => {
   if (!adaptiveActive || !fullDuration || adaptiveSeekSwitch) return;
   if (!hls) {
     const target = player.currentTime;
+    const mediaTarget = target - playbackTimelineOffset;
+    for (const ranges of [player.seekable, player.buffered]) {
+      for (let index = 0; index < ranges.length; index++) {
+        if (mediaTarget >= ranges.start(index) && mediaTarget <= ranges.end(index)) return;
+      }
+    }
     if (streamOffset(target) !== playbackTimelineOffset) {
       adaptiveSeekSwitch = true;
       adaptiveActive = false;
@@ -58,6 +64,10 @@ player.addEventListener("seeking", () => {
   }
 });
 const showReadyPlaybackMode = () => {
+  if (adaptiveActive && !hls && player.buffered.length) {
+    const start = player.buffered.start(0) + playbackTimelineOffset;
+    if (player.currentTime < start) setPlayerTime(start);
+  }
   if (directSeeking) directSeeking = false;
   clearRecovery();
   showPlaybackMode(adaptiveActive, false);
@@ -65,6 +75,8 @@ const showReadyPlaybackMode = () => {
 player.addEventListener("canplay", showReadyPlaybackMode);
 player.addEventListener("playing", showReadyPlaybackMode);
 let bufferingRecoveryTimer, bufferingPosition, bufferingRecoveryGeneration, bufferingRecoveryHls, bufferingRecoverySource, bufferingRetryAt = -Infinity;
+let playbackHasStarted = false;
+player.addEventListener("playing", () => { playbackHasStarted = true; });
 const clearBufferingRecovery = () => { clearTimeout(bufferingRecoveryTimer); bufferingRecoveryTimer = undefined; };
 const retryStalledPlayback = (position = player.currentTime) => {
   clearRecovery();
@@ -73,7 +85,7 @@ const retryStalledPlayback = (position = player.currentTime) => {
   resumeAfterSourceChange(true, true, position);
   player.load();
 };
-const watchBuffering = (position = player.currentTime) => {
+const watchBuffering = (position = player.currentTime, startedAt = performance.now()) => {
   clearBufferingRecovery();
   bufferingPosition = position;
   const generation = adaptiveGeneration;
@@ -87,6 +99,10 @@ const watchBuffering = (position = player.currentTime) => {
     if (destroyed || player.seeking || player.error || generation !== adaptiveGeneration || hls !== activeHls ||
       (player.currentSrc || player.src) !== source || player.currentTime > position + 0.1 ||
       player.paused && !pendingResume?.playing && !networkWantsPlay) return;
+    if (adaptiveActive && !hls && !playbackHasStarted && player.networkState === HTMLMediaElement.NETWORK_LOADING) {
+      if (performance.now() - startedAt < 90000) return watchBuffering(position, startedAt);
+      return showFailure("Playback has not advanced. Your position is saved.", "Retry playback", retryStalledPlayback);
+    }
     if (performance.now() - bufferingRetryAt >= 30000) {
       bufferingRetryAt = performance.now();
       playbackTrace("buffering-retry", adaptiveActive ? "compatible" : "direct");
@@ -278,3 +294,4 @@ if (player.dataset.hls) {
   } else if (direct && !player.getAttribute("src")) player.src = player.dataset.direct;
 }
 if (player.readyState >= HTMLMediaElement.HAVE_CURRENT_DATA) showPlaybackMode(adaptiveActive, false);
+if (player.error && !adaptiveActive && !adaptiveStarting) recoverDirectFailure();

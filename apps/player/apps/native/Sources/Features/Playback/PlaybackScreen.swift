@@ -51,12 +51,16 @@ struct PlaybackScreen: View {
             #if os(iOS)
             TouchPlaybackView(failure: failure, retry: { revision += 1 }, close: { if let onClose { onClose() } else { dismiss() } })
             #else
-            if let failure { RetryState(message: failure) { revision += 1 } }
-            else if let message = session.player.message, !session.player.recoveringNetwork { RetryState(message: message) { revision += 1 } }
+            if let failure { RetryState(message: failure) { revision += 1 }.onExitCommand { closePlayback() } }
+            else if let message = session.player.message, !session.player.recoveringNetwork {
+                RetryState(message: message) { revision += 1 }.onExitCommand { closePlayback() }
+            }
             else if let player = session.player.player {
                 NativePlayerView(player: player, presentation: session.player.presentation,
                                  options: { showsTools = true }, seekPreview: { showsSeekPreview = true },
+                                 close: { closePlayback() },
                                  restore: { session.showsVideoPlayer = true })
+                    .onExitCommand { session.player.presentation.requestClose() }
                     .background(.black)
                     #if os(tvOS)
                     .ignoresSafeArea()
@@ -69,17 +73,17 @@ struct PlaybackScreen: View {
                     Text("Opening video…").foregroundStyle(.white)
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .onExitCommand { closePlayback() }
             }
             #endif
         }
         .navigationTitle(session.player.currentItem?.title ?? "Playback")
         .toolbar(.hidden, for: .navigationBar, .tabBar)
         #if os(tvOS)
-        .onExitCommand { if let onClose { onClose() } else { dismiss() } }
-        #endif
-        .sheet(isPresented: $showsTools) { NavigationStack { PlaybackToolsScreen() } }
-        #if os(tvOS)
+        .fullScreenCover(isPresented: $showsTools) { NavigationStack { PlaybackToolsScreen() } }
         .sheet(isPresented: $showsSeekPreview) { TVSeekPreviewScreen() }
+        #else
+        .sheet(isPresented: $showsTools) { NavigationStack { PlaybackToolsScreen() } }
         #endif
         .task(id: "\(itemID):\(revision)") {
             failure = nil
@@ -98,6 +102,8 @@ struct PlaybackScreen: View {
                session.player.currentItem?.kind == .video { session.player.stop(); session.contentRevision = UUID() }
         }
     }
+
+    private func closePlayback() { if let onClose { onClose() } else { dismiss() } }
 }
 
 #if os(tvOS)
@@ -106,12 +112,14 @@ struct NativePlayerView: UIViewControllerRepresentable {
     let presentation: PlayerPresentation
     let options: () -> Void
     let seekPreview: () -> Void
+    let close: () -> Void
     let restore: () -> Void
 
     func makeUIViewController(context: Context) -> AVPlayerViewController {
         presentation.restore = restore
         presentation.showOptions = options
         presentation.showSeekPreview = seekPreview
+        presentation.close = close
         presentation.controller.player = player
         presentation.appeared()
         return presentation.controller
@@ -120,11 +128,13 @@ struct NativePlayerView: UIViewControllerRepresentable {
         presentation.restore = restore
         presentation.showOptions = options
         presentation.showSeekPreview = seekPreview
+        presentation.close = close
         if controller.player !== player { controller.player = player }
     }
     func makeCoordinator() -> PlayerPresentation { presentation }
     static func dismantleUIViewController(_ controller: AVPlayerViewController, coordinator: PlayerPresentation) {
         coordinator.visible = false
+        coordinator.close = nil
         if !coordinator.pictureInPicture { controller.player = nil }
     }
 }

@@ -52,7 +52,7 @@ func TestApplicationShellRouteBoundary(t *testing.T) {
 func TestApplicationShellRefreshesCachedStylesheetVersions(t *testing.T) {
 	for _, version := range []string{"72", "80", "81", "82", "83", "84", "85", "91", "93", "94", "impeccable-1", "electric-1", "electric-4", "electric-18"} {
 		page := []byte(`<link rel="stylesheet" href="/static/app.css?v=` + version + `">`)
-		want := []byte(`<link rel="stylesheet" href="/static/app.css?v=electric-34">`)
+		want := []byte(`<link rel="stylesheet" href="/static/app.css?v=electric-43">`)
 		if actual := applicationShellCSSVersion(page); !bytes.Equal(actual, want) {
 			t.Fatalf("stylesheet %s was not refreshed: %s", version, actual)
 		}
@@ -60,10 +60,20 @@ func TestApplicationShellRefreshesCachedStylesheetVersions(t *testing.T) {
 }
 
 func TestApplicationShellLoadsRecognitionOnce(t *testing.T) {
-	for _, existing := range []string{"", `<script defer src="/static/supporter.js?v=17"></script>`} {
+	for _, existing := range []string{"", `<script defer src="/static/supporter.js?v=19-htmx4"></script>`} {
 		page := injectApplicationShell([]byte(`<html><body><main>Account</main>`+existing+`</body></html>`), nil)
-		if bytes.Count(page, []byte(`/static/supporter.js?v=17`)) != 1 {
+		if bytes.Count(page, []byte(`/static/supporter.js?v=19-htmx4`)) != 1 {
 			t.Fatalf("recognition script missing or duplicated: %s", page)
+		}
+	}
+}
+
+func TestApplicationShellMainTarget(t *testing.T) {
+	// Attribute suffixes must not hide the missing target; existing IDs must survive.
+	for _, main := range []string{`<main>`, `<main data-palette-id="art">`, `<main class="detail-shell" data-palette-id="art">`, `<main id="main" data-palette-id="art">`} {
+		page := injectApplicationShell([]byte(`<html><body>`+main+`<section id="seasons">Episodes</section></main></body></html>`), nil)
+		if bytes.Count(page, []byte(` id="main"`)) != 1 || !bytes.Contains(page, []byte(`href="#main"`)) {
+			t.Errorf("main target missing or duplicated for %s: %s", main, page)
 		}
 	}
 }

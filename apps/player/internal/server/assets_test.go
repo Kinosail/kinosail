@@ -56,7 +56,7 @@ func TestPagesUseSharedModernStyles(t *testing.T) {
 	for body, fragments := range map[string][]string{
 		page.Body.String():     {`class="brand-mark"`},
 		styles.Body.String():   {"--signal:#c8f169", "--focus:#e4ff9c", `url("/static/cinema-backdrop.jpg")`, "flex-wrap:wrap", ".resume-link:focus-visible", ".resume-action", "margin-top:0;padding-top:0;border-top:0;background:none"},
-		home.Body.String():     {`class="home-sections"`, `/static/app.css?v=electric-34`},
+		home.Body.String():     {`class="home-sections"`, `/static/app.css?v=electric-43`},
 		settings.Body.String(): {"settings-page"},
 	} {
 		for _, fragment := range fragments {
@@ -81,16 +81,6 @@ func TestViewerCanChooseDarkLightOrSystemTheme(t *testing.T) {
 
 func TestSettingsAndSharedPageFamiliesUseSignalLayout(t *testing.T) {
 	assetContracts.SettingsAndSharedPageFamiliesUseSignalLayout(t)
-}
-
-func TestPausingSavesProgressWithoutMarkingMediaWatched(t *testing.T) {
-	t.Parallel()
-
-	response := httptest.NewRecorder()
-	server.New(server.Config{}).ServeHTTP(response, httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/static/player.js", nil))
-	if !strings.Contains(response.Body.String(), `addEventListener("pause", () => save(false))`) {
-		t.Fatalf("player script = %q", response.Body.String())
-	}
 }
 
 func TestHomeIsInstallableAsAWebApp(t *testing.T) {

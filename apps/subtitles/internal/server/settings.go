@@ -67,7 +67,7 @@ func (store *settingsStore) changeInstallationSettings(change func(*installation
 }
 
 func newSettingsStore(mediaRoot, dataDir, dlnaURL string, stateDB *database.Store, configured ...configuration.Snapshot) *settingsStore {
-	store := &settingsStore{mediaRoot: mediaRoot, dlnaURL: dlnaURL, value: installationSettings{Name: "Kinosail", Libraries: []string{"."}, RequireMFA: true, UpdateChecks: true, Navigation: sharednavigation.Default()}, persist: statePersistence(stateDB)}
+	store := &settingsStore{mediaRoot: mediaRoot, dlnaURL: dlnaURL, value: installationSettings{Name: "Kinosail", Libraries: []string{"."}, RequireMFA: true, UpdateChecks: true, SubtitlePickerLimited: true, PickerKeepForced: true, Navigation: sharednavigation.Default()}, persist: statePersistence(stateDB)}
 	if len(configured) > 0 {
 		store.config = configured[0]
 	}

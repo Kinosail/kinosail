@@ -4,20 +4,26 @@ import { configureLayoutAudit, login } from './layout-audit-helpers';
 type QRWindow = Window & { qrTest: { stopped: number; requests: number; release: () => void } };
 
 configureLayoutAudit();
+test.use({ serviceWorkers: "block" });
 test.beforeEach(async ({ page }) => {
   test.skip(process.env.KINOSAIL_TEST_INSTANCE !== '1', 'requires the populated test instance');
   await login(page);
 });
 
 async function camera(page: Page, raw: string, options = { denied: false, pending: false }) {
+  let stopped = 0;
+  await page.exposeFunction("recordQRTrackStop", () => { stopped++; });
   await page.addInitScript(({ raw, options }) => {
     const state = { stopped: 0, requests: 0, release: () => {} };
     Object.assign(window, { qrTest: state });
-    Object.defineProperty(navigator.mediaDevices, 'getUserMedia', { value: async () => {
+    Object.defineProperty(Object.getPrototypeOf(navigator.mediaDevices), 'getUserMedia', { configurable: true, value: async () => {
       state.requests++;
       if (options.denied) throw new DOMException('denied', 'NotAllowedError');
       if (options.pending) await new Promise<void>(resolve => { state.release = resolve; });
-      return { getTracks: () => [{ stop: () => { state.stopped++; } }] };
+      return { getTracks: () => [{ stop: () => {
+        state.stopped++;
+        void (window as Window & { recordQRTrackStop: () => Promise<void> }).recordQRTrackStop();
+      } }] };
     } });
     Object.defineProperty(HTMLMediaElement.prototype, 'srcObject', { set() {}, get() { return null; } });
     Object.defineProperty(HTMLMediaElement.prototype, 'readyState', { get: () => 2 });
@@ -31,6 +37,7 @@ async function camera(page: Page, raw: string, options = { denied: false, pendin
     contentType: 'text/javascript', body: 'window.jsQR = () => ({data: window.qrRaw});',
   }));
   await page.goto('/quick-connect');
+  return () => stopped;
 }
 
 for (const raw of ['', '12345', '1234567', '12a456', '１２３４５６', 'x'.repeat(2049),
@@ -44,6 +51,7 @@ for (const raw of ['', '12345', '1234567', '12a456', '１２３４５６', 'x'.r
     const posts: string[] = [];
     page.on('request', request => { if (request.method() === 'POST') posts.push(request.url()); });
     await page.getByRole('button', { name: 'Scan QR code', exact: true }).click();
+    await expect.poll(() => page.evaluate(() => (window as QRWindow).qrTest.requests)).toBe(1);
     await expect(page.locator('[data-qr-status]')).toContainText('connected to this Server');
     await expect(page).toHaveURL(/\/quick-connect$/);
     expect(posts).toEqual([]);
@@ -55,15 +63,16 @@ for (const raw of ['', '12345', '1234567', '12a456', '１２３４５６', 'x'.r
 for (const raw of ['123456', 'SAME/connect?code=123456', 'SAME/quick-connect?code=123456']) {
   test(`scan opens confirmation without approving: ${raw}`, async ({ page }) => {
     const origin = new URL(page.url()).origin;
-    await camera(page, raw.replace('SAME', origin));
+    const stopped = await camera(page, raw.replace('SAME', origin));
     let posted = false;
     page.on('request', request => { if (request.method() === 'POST') posted = true; });
     await page.route('**/quick-connect?code=123456', async route => {
-      expect(await page.evaluate(() => (window as QRWindow).qrTest.stopped)).toBe(1);
+      await expect.poll(stopped).toBe(1);
       await route.fulfill({ body: 'Confirmation requested' });
     });
     await page.getByRole('button', { name: 'Scan QR code', exact: true }).click();
     await expect(page).toHaveURL(/\/quick-connect\?code=123456$/);
+    await expect.poll(stopped).toBe(1);
     expect(posted).toBe(false);
   });
 }

@@ -114,7 +114,7 @@ func (manager *hlsManager) prepare(ctx context.Context, item library.Item, recip
 	if recipe.subtitlePath != "" {
 		options.Cache += ":subtitle=" + sourceVersion(recipe.subtitlePath)
 	}
-	options.Cache += ":" + sourceVersion(item.Path) + ":" + recipe.token() + ":hls=11"
+	options.Cache += ":" + sourceVersion(item.Path) + ":" + recipe.token() + ":hls=13"
 	if cacheFresh(playlist, item.Path, options.Cache) || seekCacheFresh(filepath.Dir(playlist), item.Path, options.Cache) {
 		return nil
 	}
@@ -228,8 +228,6 @@ func (manager *hlsManager) encodeVariant(ctx context.Context, item library.Item,
 	}
 	if recipe.mode == "transcode" {
 		arguments = append(arguments, input...)
-	} else {
-		arguments = append(arguments, "-readrate_initial_burst", "16", "-readrate", "1")
 	}
 	if start > 0 {
 		arguments = append(arguments, "-ss", ffmpegSeconds(start))

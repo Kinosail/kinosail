@@ -57,14 +57,18 @@ func (connections *Connections) Revoke(id string) error {
 }
 
 func (connections *Connections) stateLocked() mcpConnectionState {
-	state := mcpConnectionState{Clients: make(map[string]mcpOAuthClient, len(connections.clients)), Grants: make(map[string]mcpOAuthGrant, len(connections.grants))}
+	state := mcpConnectionState{Clients: make(map[string]mcpOAuthClient, len(connections.clients)), Grants: make(map[string]mcpOAuthGrant, len(connections.grants)), Events: make(map[string]eventSubscription, len(connections.events))}
 	for id, client := range connections.clients {
 		client.RedirectURIs = append([]string(nil), client.RedirectURIs...)
 		state.Clients[id] = client
 	}
 	for id, grant := range connections.grants {
 		grant.Scopes = append([]string(nil), grant.Scopes...)
+		grant.RefreshHistory = append([]string(nil), grant.RefreshHistory...)
 		state.Grants[id] = grant
+	}
+	for id, subscription := range connections.events {
+		state.Events[id] = subscription
 	}
 	return state
 }
@@ -73,27 +77,71 @@ func (connections *Connections) commitLocked(state mcpConnectionState) error {
 	if err := connections.store.Save(state); err != nil {
 		return err
 	}
-	connections.clients, connections.grants = state.Clients, state.Grants
+	connections.clients, connections.grants, connections.events = state.Clients, state.Grants, state.Events
 	return nil
 }
 
 func (connections *Connections) pruneLocked() {
 	now := connections.now().Unix()
+	activeClients := make(map[string]bool)
+	for id, grant := range connections.grants {
+		if max(grant.AccessExpires, grant.RefreshExpires) <= now {
+			delete(connections.grants, id)
+		} else {
+			activeClients[grant.ClientID] = true
+		}
+	}
 	for id, pending := range connections.pending {
 		if now > pending.Expires {
 			delete(connections.pending, id)
+		} else {
+			activeClients[pending.Client.ID] = true
 		}
 	}
 	for id, code := range connections.codes {
 		if now > code.Expires {
 			delete(connections.codes, id)
+		} else {
+			activeClients[code.Client.ID] = true
 		}
 	}
+	for id, client := range connections.clients {
+		if client.CreatedAt > 0 && client.CreatedAt <= now-int64((24*time.Hour).Seconds()) && !activeClients[id] {
+			delete(connections.clients, id)
+		}
+	}
+}
+
+// Caller holds mu; a replay invalidates the entire connection, even if storage fails.
+func (connections *Connections) rejectRefreshFamily(writer http.ResponseWriter, id string) {
+	state := connections.stateLocked()
+	delete(state.Grants, id)
+	if connections.commitLocked(state) != nil {
+		delete(connections.grants, id)
+		oauthError(writer, "temporarily_unavailable", http.StatusServiceUnavailable)
+		return
+	}
+	oauthError(writer, "invalid_grant", http.StatusBadRequest)
 }
 
 func secretHash(value string) string {
 	hash := sha256.Sum256([]byte(value))
 	return hex.EncodeToString(hash[:])
+}
+
+func validMCPConnectionState(state mcpConnectionState) bool {
+	if len(state.Clients) > mcpConnectionLimit || len(state.Grants) > mcpConnectionLimit || !validEventState(state.Events) {
+		return false
+	}
+	for _, grant := range state.Grants {
+		if len(grant.RefreshHistory) > mcpRefreshHistoryLimit || !allUnique(grant.RefreshHistory) || !every(grant.RefreshHistory, func(hash string) bool {
+			decoded, err := hex.DecodeString(hash)
+			return err == nil && len(decoded) == sha256.Size && hex.EncodeToString(decoded) == hash
+		}) {
+			return false
+		}
+	}
+	return true
 }
 
 func oauthError(writer http.ResponseWriter, code string, status int) {

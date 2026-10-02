@@ -14,8 +14,11 @@ const traceNumber = (value) => Number.isFinite(value) && value >= 0 ? Math.min(3
 const traceToken = (value) => String(value || "").replace(/[^a-zA-Z0-9_.:-]/g, "_").slice(0, 64);
 const bufferedAhead = () => {
   const current = player.currentTime - playbackTimelineOffset;
+  const rounding = Number.EPSILON * Math.max(1, playbackTimelineOffset);
   for (let index = 0; index < player.buffered.length; index++) {
-    if (player.buffered.start(index) <= current && player.buffered.end(index) >= current) return player.buffered.end(index) - current;
+    const start = player.buffered.start(index);
+    // HLS can place its first frame a few milliseconds after time zero.
+    if ((start <= current + rounding || current === 0 && start <= 0.05) && player.buffered.end(index) >= current) return player.buffered.end(index) - Math.max(current, start);
   }
   return 0;
 };
@@ -33,8 +36,13 @@ const playbackTrace = (event, detail = "", quality = "") => {
   playbackTraceQueue.push(JSON.stringify({session: playbackSession, event, sequence: ++playbackTraceSequence, elapsedMs: traceNumber(performance.now() - playbackTraceStarted), positionMs: traceNumber(player.currentTime * 1000), durationMs: traceNumber(player.duration * 1000), bufferedAheadMs: traceNumber(bufferedAhead() * 1000), readyState: player.readyState, networkState: player.networkState, paused: player.paused, method: playbackTraceMethod, detail: traceToken(detail), quality: traceToken(quality), visibility: document.visibilityState, errorCode: player.error?.code || 0, droppedFrames: frames?.droppedVideoFrames || 0, totalFrames: frames?.totalVideoFrames || 0}));
   if (["playing", "waiting", "stalled", "error", "hls-error", "play-rejected"].includes(event)) setTimeout(flushPlaybackTrace);
 };
-const requestPause = () => { player.dispatchEvent(new CustomEvent("kinosail:playback-intent", {detail: {playing: false}})); player.pause(); };
+let managedSeek = false;
+const setPlayerTime = (seconds) => { managedSeek = true; player.currentTime = seconds; };
+let playbackPreparation;
+let preparationPausePending = 0;
+const requestPause = () => { playbackPreparation?.stop(); player.dispatchEvent(new CustomEvent("kinosail:playback-intent", {detail: {playing: false}})); player.pause(); };
 const requestPlay = (detail) => {
+  playbackPreparation?.stop(false);
   player.dispatchEvent(new CustomEvent("kinosail:playback-intent", {detail: {playing: true}}));
   playbackTrace("play-request", detail);
   const rejected = (error) => {

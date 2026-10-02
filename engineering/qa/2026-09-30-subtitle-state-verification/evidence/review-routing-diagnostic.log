@@ -1,0 +1,55 @@
+
+Running 2 tests using 1 worker
+
+(node:87265) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+{"serviceWorkers":"allow","result":"failed","controlled":true,"status":"Current subtitle loaded. Preview a change before saving.","busy":null}
+  ✘  1 [webkit] › subtitle-defaults-tests.ts:8:3 › review routing allow › review starts with sync and cleanup and keeps manual timing exclusive @smoke (11.5s)
+(node:88090) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+{"serviceWorkers":"block","result":"passed","controlled":false,"status":"Choose a subtitle file to begin.","busy":null}
+  ✓  2 [webkit] › subtitle-defaults-tests.ts:8:3 › review routing block › review starts with sync and cleanup and keeps manual timing exclusive @smoke (8.8s)
+
+
+  1) [webkit] › subtitle-defaults-tests.ts:8:3 › review routing allow › review starts with sync and cleanup and keeps manual timing exclusive @smoke 
+
+    Error: expect(locator).toHaveAttribute(expected) failed
+
+    Locator:  locator('#inspector-status')
+    Expected: "true"
+    Received: ""
+    Timeout:  10000ms
+
+    Call log:
+      - Expect "toHaveAttribute" locator('#inspector-status') with timeout 10000ms
+      - waiting for locator('#inspector-status')
+        24 × locator resolved to <p role="status" aria-live="polite" id="inspector-status">Current subtitle loaded. Preview a change before …</p>
+           - unexpected value "null"
+
+
+      32 |       const sync = page.getByRole("checkbox", { name: "Synchronize against the video's main dialogue" });
+      33 |       await expect(sync).toBeChecked();
+    > 34 |       await expect(page.locator("#inspector-status")).toHaveAttribute("aria-busy", "true");
+         |                                                       ^
+      35 |       await expect(page.getByRole("button", { name: "Save reviewed subtitle" })).toBeDisabled();
+      36 |       await capture("pending");
+      37 |       release();
+        at /Users/mikeo/.codex/worktrees/all-app-polish/kinosail/apps/subtitles/e2e/subtitle-defaults-tests.ts:34:55
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../.kinosail-test/review-routing-diagnostic/subtitle-review-routing.di-8391b-eps-manual-timing-exclusive-webkit/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../.kinosail-test/review-routing-diagnostic/subtitle-review-routing.di-8391b-eps-manual-timing-exclusive-webkit/error-context.md
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../.kinosail-test/review-routing-diagnostic/subtitle-review-routing.di-8391b-eps-manual-timing-exclusive-webkit/trace.zip
+    Usage:
+
+        pnpm exec playwright show-trace ../.kinosail-test/review-routing-diagnostic/subtitle-review-routing.di-8391b-eps-manual-timing-exclusive-webkit/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    [webkit] › subtitle-defaults-tests.ts:8:3 › review routing allow › review starts with sync and cleanup and keeps manual timing exclusive @smoke 
+  1 passed (21.9s)

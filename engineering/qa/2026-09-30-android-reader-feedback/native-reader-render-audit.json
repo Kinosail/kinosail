@@ -1,0 +1,211 @@
+{
+  "renders": [
+    {
+      "path": "landscape-failed.png",
+      "size": [
+        844,
+        390
+      ],
+      "nodes": 11,
+      "outside": []
+    },
+    {
+      "path": "landscape-initial.png",
+      "size": [
+        844,
+        390
+      ],
+      "nodes": 7,
+      "outside": []
+    },
+    {
+      "path": "landscape-loaded.png",
+      "size": [
+        844,
+        390
+      ],
+      "nodes": 11,
+      "outside": []
+    },
+    {
+      "path": "landscape-page-pending.png",
+      "size": [
+        844,
+        390
+      ],
+      "nodes": 10,
+      "outside": []
+    },
+    {
+      "path": "landscape-save-failed.png",
+      "size": [
+        844,
+        390
+      ],
+      "nodes": 13,
+      "outside": []
+    },
+    {
+      "path": "landscape-unsupported.png",
+      "size": [
+        844,
+        390
+      ],
+      "nodes": 7,
+      "outside": []
+    },
+    {
+      "path": "phone-failed.png",
+      "size": [
+        780,
+        1688
+      ],
+      "nodes": 11,
+      "outside": []
+    },
+    {
+      "path": "phone-initial.png",
+      "size": [
+        780,
+        1688
+      ],
+      "nodes": 7,
+      "outside": []
+    },
+    {
+      "path": "phone-loaded.png",
+      "size": [
+        780,
+        1688
+      ],
+      "nodes": 11,
+      "outside": []
+    },
+    {
+      "path": "phone-page-pending.png",
+      "size": [
+        780,
+        1688
+      ],
+      "nodes": 10,
+      "outside": []
+    },
+    {
+      "path": "phone-save-failed.png",
+      "size": [
+        780,
+        1688
+      ],
+      "nodes": 13,
+      "outside": []
+    },
+    {
+      "path": "phone-unsupported.png",
+      "size": [
+        780,
+        1688
+      ],
+      "nodes": 7,
+      "outside": []
+    },
+    {
+      "path": "tablet-failed.png",
+      "size": [
+        834,
+        1210
+      ],
+      "nodes": 11,
+      "outside": []
+    },
+    {
+      "path": "tablet-initial.png",
+      "size": [
+        834,
+        1210
+      ],
+      "nodes": 7,
+      "outside": []
+    },
+    {
+      "path": "tablet-loaded.png",
+      "size": [
+        834,
+        1210
+      ],
+      "nodes": 11,
+      "outside": []
+    },
+    {
+      "path": "tablet-page-pending.png",
+      "size": [
+        834,
+        1210
+      ],
+      "nodes": 10,
+      "outside": []
+    },
+    {
+      "path": "tablet-save-failed.png",
+      "size": [
+        834,
+        1210
+      ],
+      "nodes": 13,
+      "outside": []
+    },
+    {
+      "path": "tablet-unsupported.png",
+      "size": [
+        834,
+        1210
+      ],
+      "nodes": 7,
+      "outside": []
+    }
+  ],
+  "warning": {
+    "background": [
+      11,
+      13,
+      11
+    ],
+    "ink": [
+      242,
+      184,
+      181
+    ],
+    "contrast": 11.423486214485536,
+    "sampleBounds": [
+      32.0,
+      1384.0,
+      523.0,
+      1432.0
+    ],
+    "edgeBackgrounds": [
+      [
+        11,
+        13,
+        11
+      ],
+      [
+        11,
+        13,
+        11
+      ]
+    ]
+  },
+  "loadedPreservation": [
+    {
+      "viewport": "phone",
+      "pixelsIdentical": true
+    },
+    {
+      "viewport": "tablet",
+      "pixelsIdentical": true
+    },
+    {
+      "viewport": "landscape",
+      "pixelsIdentical": true
+    }
+  ]
+}

@@ -1,0 +1,3 @@
+The first reconciled full Player test run failed during cleanup:
+TestConfiguredProviderAutomaticallyEnrichesMediaAddedLater: TempDir RemoveAll cleanup: directory not empty.
+The test assertions completed. Three isolated repetitions and the next full run passed. No production or test cleanup behavior was changed.

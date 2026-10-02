@@ -3,6 +3,7 @@ import { createHash } from "node:crypto";
 import { configureTestInstance, downloadsSource, firstPlayable, login, type OfflineClient } from "./test-instance-helpers";
 
 configureTestInstance();
+test.use({ serviceWorkers: "block" });
 
 test.describe("large offline transfers", () => {
 
@@ -15,7 +16,7 @@ test.describe("large offline transfers", () => {
     await route.fulfill({ contentType: "text/javascript", body: instrumented });
   });
   await page.addInitScript(() => {
-    const worker = { scriptURL: new URL("/service-worker.js?v=54", location.href).href, state: "activated" };
+    const worker = { scriptURL: new URL("/service-worker.js?v=55", location.href).href, state: "activated" };
     Object.defineProperties(navigator.serviceWorker, {
       controller: { configurable: true, get: () => worker },
       getRegistration: { configurable: true, value: async () => ({ active: worker }) },
@@ -112,7 +113,7 @@ test.describe("large offline transfers", () => {
   test("offline download rejects a mismatched manifest before storage changes", async ({ page }) => {
     await page.route((url) => url.pathname === "/static/downloads.js", (route) => route.fulfill({ contentType: "text/javascript", body: downloadsSource }));
     await page.addInitScript(() => {
-      const worker = { scriptURL: new URL("/service-worker.js?v=54", location.href).href, state: "activated" };
+      const worker = { scriptURL: new URL("/service-worker.js?v=55", location.href).href, state: "activated" };
       Object.defineProperties(navigator.serviceWorker, {
         controller: { configurable: true, get: () => worker },
         getRegistration: { configurable: true, value: async () => ({ active: worker }) },

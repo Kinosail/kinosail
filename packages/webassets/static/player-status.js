@@ -35,19 +35,67 @@ if (playerStatus) {
   let playbackTime = player.currentTime;
   const clearBufferingTimer = () => { clearTimeout(bufferingTimer); bufferingTimer = undefined; };
   let hasPlayed = false;
+  let needsGesture = false;
+  const readyForPlay = () => player.readyState >= HTMLMediaElement.HAVE_FUTURE_DATA &&
+    bufferedAhead() >= Math.min(2, Number.isFinite(player.duration) ? Math.max(0, player.duration - player.currentTime) : 2);
   const revealPlayControl = () => {
-    if (player.paused && !player.error && !playerStatus.classList.contains("is-recovery")) hidePlayerState();
+    if (player.paused && !player.error && (readyForPlay() || needsGesture)) hidePlayerState();
   };
   const appleTouch = /iPhone|iPad|iPod/.test(navigator.userAgent) || navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1;
-  const schedulePlayControl = () => {
-    if (!appleTouch) return;
-    setTimeout(() => {
-      if (!hasPlayed && (player.currentSrc || player.getAttribute("src"))) revealPlayControl();
-    }, 1500);
+  let startupPaused = false;
+  let startupFinished = false;
+  const preparePlayback = () => {
+    if (!appleTouch || player.tagName !== "VIDEO" || player.dataset.room || startupPaused || startupFinished || hasPlayed || playbackPreparation || !player.paused || player.error ||
+      !(player.currentSrc || player.getAttribute("src"))) return;
+    // Muted inline playback lets Safari fetch media before the viewer's Play tap.
+    player.autoplay = false;
+    delete player.dataset.autoplay;
+    if (readyForPlay()) return revealPlayControl();
+    const preparation = {muted: player.muted, position: player.currentTime || Number(player.dataset.start) || 0, stop: (restorePosition = true) => {
+      if (playbackPreparation !== preparation) return;
+      if (!player.paused) preparationPausePending++;
+      player.pause();
+      let position = preparation.position;
+      // Copied HLS video can begin after the requested timestamp.
+      for (let index = 0; index < player.buffered.length; index++) {
+        const start = player.buffered.start(index) + playbackTimelineOffset;
+        const end = player.buffered.end(index) + playbackTimelineOffset;
+        if (start <= player.currentTime && end >= player.currentTime) { position = Math.max(position, start); break; }
+      }
+      if (restorePosition && player.readyState && Math.abs(player.currentTime - position) >= 0.1) setPlayerTime(position);
+      player.muted = preparation.muted;
+      playbackPreparation = undefined;
+    }};
+    playbackPreparation = preparation;
+    player.muted = true;
+    const failed = (error) => {
+      if (playbackPreparation !== preparation) return;
+      preparation.stop();
+      if (error?.name === "NotAllowedError") { needsGesture = true; revealPlayControl(); }
+    };
+    try { Promise.resolve(player.play()).catch(failed); } catch (error) { failed(error); }
   };
-  player.addEventListener("kinosail:play-needs-gesture", revealPlayControl);
-  player.addEventListener("loadstart", () => { if (!seeking) showPlayerState("loading", "Loading video…"); schedulePlayControl(); });
-  schedulePlayControl();
+  const finishPreparation = () => {
+    if (playbackPreparation && readyForPlay()) {
+      needsGesture = false;
+      playbackPreparation.stop();
+    }
+    if (!playbackPreparation) revealPlayControl();
+  };
+  player.addEventListener("kinosail:playback-intent", ({detail}) => {
+    startupFinished = true;
+    startupPaused = detail.playing === false;
+    if (startupPaused) playbackPreparation?.stop();
+  });
+  player.addEventListener("kinosail:play-needs-gesture", () => { needsGesture = true; revealPlayControl(); });
+  player.addEventListener("loadstart", () => {
+    playbackPreparation?.stop(false);
+    hasPlayed = false; needsGesture = false;
+    if (!seeking) showPlayerState("loading", "Loading video…");
+    preparePlayback();
+  });
+  preparePlayback();
+  player.addEventListener("play", () => { if (!hasPlayed && !readyForPlay()) showPlayerState("loading", "Loading video…"); });
   player.addEventListener("waiting", () => {
     clearBufferingTimer();
     const waitingAt = player.currentTime;
@@ -65,34 +113,43 @@ if (playerStatus) {
   player.addEventListener("seeking", () => {
     clearBufferingTimer();
     seeking = true;
+    playbackTime = player.currentTime;
+    if (playbackPreparation) playbackPreparation.position = player.currentTime;
     showPlayerState("seeking", "Seeking…");
   });
   player.addEventListener("progress", () => {
     const percent = bufferedPercent();
     if (playerStatus.dataset.state === "buffering") playerMessage.textContent = percent ? `Buffering · ${percent}% buffered` : "Buffering…";
+    if (!hasPlayed) finishPreparation();
   });
+  player.addEventListener("suspend", () => { if (!hasPlayed) { finishPreparation(); preparePlayback(); } });
   player.addEventListener("loadedmetadata", bufferedPercent);
   player.addEventListener("timeupdate", () => {
     const advancing = player.currentTime > playbackTime;
     playbackTime = player.currentTime;
-    if (advancing && !seeking && !player.paused) { clearBufferingTimer(); hidePlayerState(); }
+    if (playbackPreparation) return finishPreparation();
+    if (advancing && !player.seeking && !player.paused && !player.error) { seeking = false; clearBufferingTimer(); hidePlayerState(); }
   });
   for (const event of ["canplay", "playing"]) player.addEventListener(event, () => {
+    if (event === "playing" && player.paused) return;
     clearBufferingTimer();
     seeking = false;
+    if (playbackPreparation) return finishPreparation();
     if (event === "playing") hasPlayed = true;
-    hidePlayerState();
+    if (hasPlayed || readyForPlay()) hidePlayerState();
   });
   player.addEventListener("seeked", () => {
     clearBufferingTimer();
     seeking = false;
-    if (player.readyState >= 3) hidePlayerState();
+    if (player.paused && needsGesture) return revealPlayControl();
+    if (hasPlayed ? player.readyState >= HTMLMediaElement.HAVE_FUTURE_DATA : readyForPlay()) hidePlayerState();
     else showPlayerState("buffering", bufferedPercent() ? `Buffering · ${bufferedPercent()}% buffered` : "Buffering…");
   });
   player.addEventListener("error", () => {
+    playbackPreparation?.stop();
     clearBufferingTimer();
     if (!playerStatus.classList.contains("is-recovery")) showPlayerState("error", "Playback unavailable");
   });
   bufferedPercent();
-  if (!player.paused && player.readyState >= HTMLMediaElement.HAVE_CURRENT_DATA) hidePlayerState();
+  if (!playbackPreparation && !player.paused && player.readyState >= HTMLMediaElement.HAVE_CURRENT_DATA) hidePlayerState();
 }

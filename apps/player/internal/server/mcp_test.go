@@ -13,7 +13,7 @@ import (
 
 func TestMCPModernOAuthAndAPIDrivenTools(t *testing.T) { //nolint:cyclop,funlen,gocognit // One fixture proves the complete MCP boundary.
 	scope, audience := mcpReadScope, "http://localhost/mcp"
-	libraryCalls, playlistCalls := 0, 0
+	libraryCalls, playlistCalls, configurationCalls := 0, 0, 0
 	issuer := httptest.NewServer(http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
 		if request.Method != http.MethodPost || request.URL.Path != "/introspect" {
 			http.NotFound(writer, request)
@@ -79,6 +79,12 @@ func TestMCPModernOAuthAndAPIDrivenTools(t *testing.T) { //nolint:cyclop,funlen,
 	mux.Handle("PUT /api/v1/profiles/{id}/password", authentication.owner(http.HandlerFunc(func(writer http.ResponseWriter, _ *http.Request) {
 		writeJSON(writer, map[string]string{"status": "changed"}, http.StatusOK)
 	})))
+	for _, method := range []string{"PUT", "DELETE"} {
+		mux.HandleFunc(method+" /api/v1/configuration/{key}", func(writer http.ResponseWriter, _ *http.Request) {
+			configurationCalls++
+			writeJSON(writer, map[string]bool{"ok": true}, http.StatusOK)
+		})
+	}
 	config := MCPConfig{ResourceURL: audience, AuthorizationServer: issuer.URL, IntrospectionURL: issuer.URL + "/introspect", ClientID: "resource", ClientSecret: "secret"}
 	registerMCPWithConnections(mux, config, authentication, apiRouting(mux), nil)
 
@@ -220,6 +226,15 @@ func TestMCPModernOAuthAndAPIDrivenTools(t *testing.T) { //nolint:cyclop,funlen,
 		response = mcpRequest(t, mux, "tools/call", "access-token", map[string]any{"name": "manage_api", "arguments": map[string]any{"method": "PUT", "path": "/api/v1/profiles/viewer/password", "body": map[string]string{"password": "unsafe"}}})
 		if response.Code != http.StatusOK || !strings.Contains(response.Body.String(), "API operation is not available through MCP") {
 			t.Fatalf("identity management = %d %q", response.Code, response.Body.String())
+		}
+	})
+
+	t.Run("configuration cannot change authority", func(t *testing.T) {
+		for _, method := range []string{"PUT", "DELETE"} {
+			response := mcpRequest(t, mux, "tools/call", "access-token", map[string]any{"name": "manage_api", "arguments": map[string]any{"method": method, "path": "/api/v1/configuration/integrations.scim", "body": map[string]any{"token": "attacker-known-credential"}}})
+			if response.Code != http.StatusOK || !strings.Contains(response.Body.String(), `"isError":true`) || configurationCalls != 0 {
+				t.Fatalf("authority changed through MCP: %s calls=%d", response.Body.String(), configurationCalls)
+			}
 		}
 	})
 

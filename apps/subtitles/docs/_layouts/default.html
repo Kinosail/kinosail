@@ -16,7 +16,7 @@
     <script>document.documentElement.classList.add('js');try{const t=localStorage.getItem('kinosail-docs-theme');if(t==='light'||t==='dark')document.documentElement.dataset.theme=t}catch{}</script>
     <script defer src="{{ '/assets/js/docs.js' | relative_url }}"></script>
     <script>addEventListener('DOMContentLoaded',()=>document.querySelector('.skip-link')?.addEventListener('click',()=>requestAnimationFrame(()=>document.querySelector('#main-content')?.focus())))</script>
-    <title>{{ page.title }} · {{ site.title }}</title>
+    <title>{{ page.title }}{% unless page.url == '/' %} · {{ site.title }}{% endunless %}</title>
   </head>
   <body>
     <a class="skip-link" href="#main-content">Skip to content</a>

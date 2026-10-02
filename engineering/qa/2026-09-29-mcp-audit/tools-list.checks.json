@@ -1,0 +1,125 @@
+[
+  {
+    "id": "tools-list",
+    "name": "ToolsList",
+    "description": "Server lists available tools with valid structure",
+    "status": "SUCCESS",
+    "timestamp": "2026-09-30T03:20:06.841Z",
+    "specReferences": [
+      {
+        "id": "MCP-Tools-List",
+        "url": "https://modelcontextprotocol.io/specification/2025-06-18/server/tools#listing-tools"
+      }
+    ],
+    "details": {
+      "toolCount": 6,
+      "tools": [
+        "create_playlist",
+        "manage_api",
+        "read_api",
+        "recommendation_context",
+        "search_media",
+        "write_api"
+      ]
+    }
+  },
+  {
+    "id": "tools-name-format",
+    "name": "ToolsNameFormat",
+    "description": "Tool names SHOULD be 1-128 characters and match ^[A-Za-z0-9_.-]+$",
+    "specReferences": [
+      {
+        "id": "MCP-Tool-Names",
+        "url": "https://modelcontextprotocol.io/specification/2025-11-25/server/tools#tool-names"
+      },
+      {
+        "id": "MCP-Tool-Names-Draft",
+        "url": "https://modelcontextprotocol.io/specification/draft/server/tools#tool-names"
+      },
+      {
+        "id": "SEP-986-History",
+        "url": "https://github.com/modelcontextprotocol/modelcontextprotocol/issues/986"
+      },
+      {
+        "id": "SEP-986-Spec-Integration",
+        "url": "https://github.com/modelcontextprotocol/modelcontextprotocol/pull/1603"
+      }
+    ],
+    "timestamp": "2026-09-30T03:20:06.841Z",
+    "status": "SUCCESS",
+    "details": {
+      "toolCount": 6,
+      "results": {
+        "create_playlist": "valid",
+        "manage_api": "valid",
+        "read_api": "valid",
+        "recommendation_context": "valid",
+        "search_media": "valid",
+        "write_api": "valid"
+      }
+    }
+  },
+  {
+    "id": "tools-list-deterministic-order",
+    "name": "ToolsListDeterministicOrder",
+    "description": "Consecutive tools/list requests return the same tools in the same order",
+    "specReferences": [
+      {
+        "id": "MCP-Tools-Deterministic-Order",
+        "url": "https://modelcontextprotocol.io/specification/2026-07-28/server/tools#capabilities"
+      }
+    ],
+    "source": {
+      "introducedIn": "2026-07-28"
+    },
+    "timestamp": "2026-09-30T03:20:06.859Z",
+    "status": "SUCCESS",
+    "details": {
+      "toolCount": 6,
+      "probes": 3,
+      "orders": [
+        [
+          "create_playlist",
+          "manage_api",
+          "read_api",
+          "recommendation_context",
+          "search_media",
+          "write_api"
+        ],
+        [
+          "create_playlist",
+          "manage_api",
+          "read_api",
+          "recommendation_context",
+          "search_media",
+          "write_api"
+        ],
+        [
+          "create_playlist",
+          "manage_api",
+          "read_api",
+          "recommendation_context",
+          "search_media",
+          "write_api"
+        ]
+      ]
+    }
+  },
+  {
+    "id": "wire-schema-valid",
+    "name": "WireSchemaValid",
+    "description": "Every JSON-RPC message the implementation sent is valid per the spec JSON schema for the negotiated spec version",
+    "status": "SUCCESS",
+    "timestamp": "2026-09-30T03:20:06.859Z",
+    "specReferences": [
+      {
+        "id": "MCP-Schema",
+        "url": "https://github.com/modelcontextprotocol/modelcontextprotocol/blob/main/schema/draft/schema.json"
+      }
+    ],
+    "details": {
+      "messagesValidated": 6,
+      "violations": []
+    }
+  }
+]

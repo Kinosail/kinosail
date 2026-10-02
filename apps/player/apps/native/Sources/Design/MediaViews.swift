@@ -1,67 +1,5 @@
 import SwiftUI
 
-struct Artwork: View {
-    let path: String
-    var symbol = "film"
-    var ratio: CGFloat = 2 / 3
-    var dimension = 1600
-    var fillsFrame = false
-    var isBackdrop = false
-    var canvasSize: CGSize? = nil
-    @Environment(AppSession.self) private var session
-    @Environment(\.accessibilityReduceMotion) private var reduceMotion
-    @State private var image: UIImage?
-    @State private var imageIdentity = UUID()
-    @State private var loadedProfileKey: String?
-    @State private var loading = true
-    @State private var generation = UUID()
-
-    var body: some View {
-        canvas
-            .overlay {
-                if let image {
-                    Image(uiImage: image).resizable()
-                        .aspectRatio(contentMode: Self.contentMode(fillsFrame: fillsFrame))
-                        .id(imageIdentity).transition(.opacity)
-                }
-                else if !isBackdrop { Rectangle().fill(KinoTheme.surface).overlay { if !loading { Image(systemName: symbol).font(.largeTitle).foregroundStyle(KinoTheme.muted) } } }
-            }
-            .clipped()
-            .accessibilityHidden(true)
-            .task(id: "\(session.profileKey ?? ""):\(path):\(dimension)") {
-                let attempt = UUID()
-                generation = attempt
-                if !isBackdrop || loadedProfileKey != session.profileKey || path.isEmpty { image = nil }
-                loadedProfileKey = session.profileKey
-                loading = !path.isEmpty
-                defer { if generation == attempt { loading = false } }
-                guard !path.isEmpty, let client = session.client else { return }
-                do {
-                    let decoded = try await session.artwork.image(path: path, client: client, dimension: dimension)
-                    try Task.checkCancellation()
-                    guard generation == attempt else { return }
-                    withAnimation(isBackdrop && !reduceMotion ? .easeInOut(duration: 0.45) : nil) {
-                        image = UIImage(cgImage: decoded)
-                        imageIdentity = UUID()
-                    }
-                } catch {
-                    if generation == attempt && !Task.isCancelled { image = nil }
-                }
-            }
-    }
-    @ViewBuilder private var canvas: some View {
-        if let canvasSize {
-            Color.clear.frame(width: canvasSize.width, height: canvasSize.height)
-        } else {
-            Color.clear.aspectRatio(ratio, contentMode: .fit)
-        }
-    }
-
-    static func contentMode(fillsFrame: Bool) -> ContentMode {
-        fillsFrame ? .fill : .fit
-    }
-}
-
 struct MediaCard: View {
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     #if os(tvOS)
@@ -82,13 +20,11 @@ struct MediaCard: View {
     var body: some View {
         NavigationLink(value: resumesPlayback ? item.playingDestination : item.destination(inShows: opensShow)) {
             VStack(alignment: .leading, spacing: 10) {
-                let usesBackdrop = landscape && item.landscapeArtwork == item.backdrop && !item.backdrop.isEmpty
                 Artwork(path: landscape ? item.landscapeArtwork : item.poster,
                         symbol: item.kind.symbol, ratio: landscape ? 16 / 9 : item.isAudio ? 1 : 2 / 3,
                         dimension: landscape || dynamicTypeSize.isAccessibilitySize ? 1600 : 800,
-                        fillsFrame: landscape && item.kind == .photo,
-                        isBackdrop: usesBackdrop)
-                    .background(landscape && !usesBackdrop ? KinoTheme.surface : .clear)
+                        fillsFrame: landscape && item.kind == .photo)
+                    .background(KinoTheme.surface)
                     .overlay(alignment: .topTrailing) {
                         if item.isUnwatched {
                             UnwatchedCorner().fill(KinoTheme.signal).frame(width: 32, height: 32)
@@ -102,17 +38,11 @@ struct MediaCard: View {
                         }
                     }
                     .clipShape(.rect(cornerRadius: 12))
-                    #if os(tvOS)
-                    .overlay {
-                        if focused {
-                            RoundedRectangle(cornerRadius: 12).strokeBorder(KinoTheme.text, lineWidth: 4)
-                        }
-                    }
-                    #endif
                 VStack(alignment: .leading, spacing: 8) {
                     Text(item.title).font(.headline).foregroundStyle(KinoTheme.text)
                         .mediaLineLimit(2, accessibility: dynamicTypeSize.isAccessibilitySize)
                         .frame(maxWidth: .infinity, alignment: .leading)
+                        .frame(minHeight: KinoTheme.mediaTitleHeight, alignment: .topLeading)
                     let subtitle = item.kind == .video || item.kind == .show ? item.subtitleWithoutYear : item.subtitle
                     if !subtitle.isEmpty {
                         Text(subtitle).font(.caption).foregroundStyle(KinoTheme.muted)
@@ -132,14 +62,16 @@ struct MediaCard: View {
             .frame(maxWidth: .infinity, alignment: .topLeading)
             .contentShape(.rect)
         }
-        .buttonStyle(.plain)
         #if os(tvOS)
+        .buttonStyle(.borderless)
         .focused($focused)
         .onChange(of: focused) { _, value in if value { onFocus?(item) } }
         .onPlayPauseCommand(perform: quickPlayAction)
         .accessibilityHint(item.kind == .photo ? "Select to view photo."
                            : onQuickPlay != nil && TVOSQuickPlay.destination(for: item) != nil
                            ? "Select for details, or press Play/Pause to play." : "Select for details.")
+        #else
+        .buttonStyle(.plain)
         #endif
         .accessibilityElement(children: .combine)
         .accessibilityValue(item.isUnwatched ? (item.progress.seconds > 0 ? "Unwatched, continue from \(item.progress.seconds.clock)" : "Unwatched")
@@ -171,9 +103,10 @@ struct MediaGrid: View {
     var opensShows = false
     var body: some View {
         LazyVGrid(columns: Self.columns(landscape: landscape, accessibility: dynamicTypeSize.isAccessibilitySize), alignment: .leading, spacing: 28) {
-            ForEach(items) { item in
+            ForEach(Array(items.enumerated()), id: \.element.id) { index, item in
                 MediaCard(item: item, landscape: landscape, onFocus: onFocus, onQuickPlay: onQuickPlay,
                           opensShow: opensShows)
+                    .prefetchArtwork(Array(items.dropFirst(index + 1).prefix(8)), landscape: landscape)
                     #if os(tvOS)
                     .prefersDefaultFocus(requestFirstCardFocus && item.id == items.first?.id, in: gridFocus)
                     #endif
@@ -184,12 +117,13 @@ struct MediaGrid: View {
         .focusSection()
         .focusScope(gridFocus)
         #endif
+        .prefetchArtwork(items, landscape: landscape)
     }
     static func columns(landscape: Bool, accessibility: Bool) -> [GridItem] {
         if accessibility { return [GridItem(.flexible(), alignment: .top)] }
         #if os(tvOS)
         let minimum: CGFloat = landscape ? 360 : 230
-        let spacing: CGFloat = 20
+        let spacing: CGFloat = 32
         #else
         let minimum: CGFloat = landscape ? 280 : 96
         let spacing: CGFloat = landscape ? 20 : 12
@@ -228,9 +162,12 @@ struct MediaShelf: View {
                 }
             }
             ScrollView(.horizontal) {
-                LazyHStack(alignment: .top, spacing: 18) {
-                    ForEach(items) { item in MediaCard(item: item, landscape: landscape, resumesPlayback: resumesPlayback,
-                                                       onQuickPlay: onQuickPlay, opensShow: opensShows).frame(width: width) }
+                LazyHStack(alignment: .top, spacing: KinoTheme.shelfSpacing) {
+                    ForEach(Array(items.enumerated()), id: \.element.id) { index, item in
+                        MediaCard(item: item, landscape: landscape, resumesPlayback: resumesPlayback,
+                                  onQuickPlay: onQuickPlay, opensShow: opensShows).frame(width: width)
+                            .prefetchArtwork(Array(items.dropFirst(index + 1).prefix(8)), landscape: landscape)
+                    }
                 }
                 #if os(tvOS)
                 .padding(.horizontal, 24)
@@ -242,6 +179,7 @@ struct MediaShelf: View {
             .scrollTargetBehavior(.viewAligned)
             #if os(tvOS)
             .scrollClipDisabled()
+            .padding(.horizontal, -24)
             #endif
             #if os(iOS)
             .scrollBounceBehavior(.basedOnSize, axes: .vertical)
@@ -251,6 +189,7 @@ struct MediaShelf: View {
         #if os(tvOS)
         .focusSection()
         #endif
+        .prefetchArtwork(items, landscape: landscape)
     }
     private var width: CGFloat {
         #if os(tvOS)

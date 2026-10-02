@@ -4,26 +4,38 @@ import { playerSource } from "./static-sources";
 
 export function installPlayerExperienceFixture() {
 test.beforeEach(async ({ page }, testInfo) => {
-  if (testInfo.title === "theater control gets out of the way during playback") await page.clock.install();
+  if (testInfo.title === "theater control gets out of the way during playback" || testInfo.title.includes("Safari startup")) await page.clock.install();
   const markup = `
     <meta charset="utf-8"><body class="player-page"><main class="player-shell"><div class="media-stage${testInfo.title.includes("blocked autoplay reveals Play") ? " is-busy" : ""}">
-      <video id="player-media" data-title="Arrival" data-duration="100" data-start="20" data-progress="/progress/movie" data-playback-session="trace-session" data-playback-trace="https://127.0.0.1:38127/api/v1/items/movie/playback-events"${testInfo.title.includes("limited native fullscreen") || testInfo.title.includes("limited in-band") ? ' data-subtitle-picker-limited="true"' : ""}${testInfo.title.includes("retries requested autoplay") ? " autoplay" : ""}${testInfo.title.includes("resumed autoplay") ? " data-autoplay" : ""}>${testInfo.title.includes("limited in-band") ? '<track kind="subtitles" label="English" data-subtitle-source="/captions.vtt">' : ""}</video>
+      <video id="player-media" data-title="Arrival" data-duration="100" data-start="${testInfo.title.includes("automatic skips") ? "0" : "20"}"${testInfo.title.includes("automatic skips") ? ' data-auto-skip="intro"' : ""} data-progress="/progress/movie" data-playback-session="trace-session" data-playback-trace="https://127.0.0.1:38127/api/v1/items/movie/playback-events"${testInfo.title.includes("limited native fullscreen") || testInfo.title.includes("limited in-band") ? ' data-subtitle-picker-limited="true"' : ""}${testInfo.title.includes("retries requested autoplay") ? " autoplay" : ""}${testInfo.title.includes("resumed autoplay") ? " data-autoplay" : ""}>${testInfo.title.includes("limited in-band") ? '<track kind="subtitles" label="English" data-subtitle-source="/captions.vtt">' : ""}</video>
       <div class="player-stage-toolbar"><strong>Arrival</strong>${testInfo.title.includes("device playback") || testInfo.title.includes("remote playback") || testInfo.title.includes("AirPlay") ? '<div class="player-stage-actions"><button hidden class="quiet" type="button" aria-label="Play on device" data-cast>Play on device</button><span role="status" aria-live="polite" data-cast-state>Available devices use a direct connection to this Server.</span></div>' : ""}</div>
       <div class="player-controls" data-player-controls hidden><button class="player-center-control" type="button" aria-label="Play" data-player-toggle><span data-play-icon></span></button><button class="player-center-control seek-back" type="button" aria-label="Go back 10 seconds" data-player-back>10</button><button class="player-center-control seek-forward" type="button" aria-label="Go forward 10 seconds" data-player-forward>10</button><div class="player-control-dock"><label class="player-scrubber"><span class="sr-only">Seek</span><span class="player-seek-preview" data-seek-preview hidden><span data-seek-frame></span><span data-preview-time>0:00</span></span><input type="range" min="0" max="100" value="0" data-player-seek data-trickplay="/trickplay/movie/{second}"></label><div class="player-control-row"><button type="button" aria-label="Play" data-player-toggle><span data-play-icon></span></button><button type="button" aria-label="Go back 10 seconds" data-player-back>−10</button><button type="button" aria-label="Go forward 10 seconds" data-player-forward>+10</button><button type="button" aria-label="Mute" data-player-mute><span>·</span></button><label class="player-volume"><span class="sr-only">Volume</span><input type="range" min="0" max="1" value="1" step=".05" data-player-volume></label><output data-player-time></output><span class="player-control-spacer"></span><button type="button" aria-label="Subtitles" data-player-captions>CC</button><button type="button" aria-label="Settings" aria-controls="player-settings" aria-expanded="false" data-player-settings><span>·</span></button><button type="button" aria-label="Theater" aria-pressed="false" data-theater><span data-theater-label>▭</span></button><button type="button" aria-label="Enter fullscreen" data-player-fullscreen><span>·</span></button></div></div></div>
       <div class="player-settings" id="player-settings" hidden><button type="button" data-player-settings-close>Close</button><label>Subtitles <select data-subtitles><option value="off">Off</option><option value="0">English</option></select></label></div>
-      <div class="player-buffer" role="status" aria-live="polite" data-player-status><span data-player-message>Loading video…</span><button type="button" data-player-fallback hidden>Try again</button><progress hidden max="100" value="0" aria-label="Video buffered" data-buffered>0%</progress></div>
-    </div><details class="chapters"><summary><span>Chapters</span><small>15</small></summary><ol class="chapter-list"><li><button type="button" data-chapter data-start="0" data-end="60" data-seek="0"><span>First contact</span><time>0:00</time></button></li><li><button type="button" data-chapter data-start="60" data-end="100" data-seek="60"><span>The answer</span><time>1:00</time></button></li></ol></details></main></body>
+      <div class="player-buffer" role="status" aria-live="polite" data-player-status><span class="buffer-skeleton" aria-hidden="true"></span><span data-player-message>Loading video…</span><button type="button" data-player-fallback hidden>Try again</button><progress hidden max="100" value="0" aria-label="Video buffered" data-buffered>0%</progress></div>
+    ${testInfo.title.includes("automatic skips") ? '<button hidden data-marker="intro" data-start="0" data-seek="10">Skip intro</button>' : ""}</div><details class="chapters"><summary><span>Chapters</span><small>15</small></summary><ol class="chapter-list"><li><button type="button" data-chapter data-start="0" data-end="60" data-seek="0"><span>First contact</span><time>0:00</time></button></li><li><button type="button" data-chapter data-start="60" data-end="100" data-seek="60"><span>The answer</span><time>1:00</time></button></li></ol></details></main></body>
   `;
   await page.route("https://127.0.0.1:38127/", (route) => route.fulfill({ contentType: "text/html; charset=utf-8", body: markup }));
   await page.route("**/api/v1/items/movie/playback-events", (route) => route.fulfill({ status: 204 }));
-  await page.setContent(markup);
-  await page.evaluate((withInBand) => {
+  if (testInfo.title.includes("progress save")) await page.goto("https://127.0.0.1:38127/");
+  else await page.setContent(markup);
+  await page.evaluate(({withInBand, safariStartup, queuedPause, queuedSeeking}) => {
+    if (safariStartup) Object.defineProperty(navigator, "userAgent", {configurable: true, value: "Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 Mobile/15E148"});
     try { Object.defineProperty(window, "localStorage", { value: { getItem: () => null, setItem: () => {} } }); } catch {}
     let bufferedEnd = 60;
+    let bufferedStart = 0;
+    let currentTime = queuedSeeking ? 0 : 20;
     let paused = true;
     let playFailure = "";
-    let readyState = 4;
+    let playPending = false;
+    let finishPlay = () => {};
+    let readyState = safariStartup ? 0 : 4;
+    let networkState = safariStartup ? 2 : 1;
     const video = document.querySelector("video")!;
+    if (safariStartup) {
+      let sourceLoaded = false;
+      Object.defineProperty(video, "currentSrc", {get: () => sourceLoaded ? "https://127.0.0.1:38127/media/movie" : ""});
+      video.addEventListener("loadstart", () => { sourceLoaded = true; });
+    }
     const trackEvents = new EventTarget();
     const makeTrack = () => {
       let mode = "disabled";
@@ -37,26 +49,35 @@ test.beforeEach(async ({ page }, testInfo) => {
     const textTracks = Object.assign(withInBand ? [makeTrack(), document.querySelector("track")!.track] : [textTrack, makeTrack()], {addEventListener: trackEvents.addEventListener.bind(trackEvents)});
     if (!withInBand) document.querySelector("[data-subtitles]")!.insertAdjacentHTML("beforeend", '<option value="1">French</option>');
     Object.defineProperties(video, {
-      buffered: { get: () => ({ length: 1, start: () => 0, end: () => bufferedEnd }) },
-      currentTime: { value: 20, writable: true },
+      buffered: { get: () => ({ length: 1, start: () => bufferedStart, end: () => bufferedEnd }) },
+      currentTime: { get: () => currentTime, set: (value: number) => {
+        currentTime = value;
+        if (queuedSeeking) queueMicrotask(() => { video.dispatchEvent(new Event("seeking")); video.dispatchEvent(new Event("seeked")); });
+      } },
       duration: { value: 100 },
       readyState: { get: () => readyState },
+      networkState: { get: () => networkState },
       load: { value() {} },
       paused: { get: () => paused, configurable: true },
-      play: { value: async () => { if (playFailure) throw new DOMException("", playFailure); paused = false; video.dispatchEvent(new Event("play")); video.dispatchEvent(new Event("playing")); } },
-      pause: { value: () => { paused = true; video.dispatchEvent(new Event("pause")); } },
+      play: { value: async () => { if (playFailure) throw new DOMException("", playFailure); paused = false; video.dispatchEvent(new Event("play")); if (playPending) await new Promise<void>((resolve) => { finishPlay = resolve; }); video.dispatchEvent(new Event("playing")); } },
+      pause: { value: () => { paused = true; if (queuedPause) queueMicrotask(() => video.dispatchEvent(new Event("pause"))); else video.dispatchEvent(new Event("pause")); } },
       volume: { value: 1, writable: true },
       muted: { value: false, writable: true },
       textTracks: { value: textTracks },
     });
     Object.assign(window, {
       setBufferedEnd: (value: number) => { bufferedEnd = value; },
+      setBufferedStart: (value: number) => { bufferedStart = value; },
+      advanceMediaTime: (value: number) => { currentTime = value; },
       setPaused: (value: boolean) => { paused = value; },
       setPlayFailure: (value: string) => { playFailure = value; },
+      setPlayPending: (value: boolean) => { playPending = value; },
+      finishPlay: () => finishPlay(),
       setReadyState: (value: number) => { readyState = value; },
+      setNetworkState: (value: number) => { networkState = value; },
       textTrack,
     });
-  }, testInfo.title.includes("limited in-band"));
+  }, {withInBand: testInfo.title.includes("limited in-band"), safariStartup: testInfo.title.includes("Safari startup"), queuedPause: testInfo.title.includes("queued pause"), queuedSeeking: testInfo.title.includes("queued seeking")});
   if (testInfo.title.includes("device playback") || testInfo.title.includes("AirPlay")) await page.evaluate((airplay) => {
     const video = document.querySelector("video")!;
     Object.defineProperty(video, "remote", {configurable: true, value: null});

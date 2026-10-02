@@ -30,7 +30,7 @@ func TestPlannedHLSLoadingDoesNotRepeatPlaybackEnrichment(t *testing.T) {
 			directory := filepath.Join(manager.cache, key)
 			switch operation {
 			case "playlist":
-				identity := options.Cache + ":" + sourceVersion(item.Path) + ":" + recipe.token() + ":hls=11"
+				identity := options.Cache + ":" + sourceVersion(item.Path) + ":" + recipe.token() + ":hls=13"
 				writeHLSLoadingFile(t, filepath.Join(directory, "index.m3u8"), "#EXTM3U\n#KINOSAIL-TRANSCODER:"+identity+"\n#EXT-X-STREAM-INF:BANDWIDTH=1000000\n1080p/index.m3u8\n")
 				writeHLSLoadingFile(t, filepath.Join(directory, ".seekable"), identity)
 				err = manager.prepare(t.Context(), item, recipe)

@@ -185,7 +185,7 @@ func (manager *hlsManager) seekSettings(item library.Item, recipe hlsRecipe, dir
 	if recipe.subtitlePath != "" {
 		options.Cache += ":subtitle=" + sourceVersion(recipe.subtitlePath)
 	}
-	options.Cache += ":" + sourceVersion(item.Path) + ":" + recipe.token() + ":hls=11"
+	options.Cache += ":" + sourceVersion(item.Path) + ":" + recipe.token() + ":hls=13"
 	master, readErr := os.ReadFile(filepath.Join(directory, "index.m3u8"))
 	if readErr != nil || !strings.Contains(string(master), "#KINOSAIL-TRANSCODER:"+options.Cache+"\n") {
 		return transcodeSettings{}, errors.New("playback settings changed; start a new compatible stream")

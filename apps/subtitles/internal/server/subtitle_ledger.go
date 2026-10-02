@@ -14,7 +14,7 @@ import (
 )
 
 const (
-	subtitleLedgerVersion       = 3
+	subtitleLedgerVersion       = 4
 	subtitleLedgerLimit         = 100000
 	subtitleLedgerSizeLimit     = 4 << 20
 	subDLAutomaticDownloadLimit = 40
@@ -62,10 +62,26 @@ type subtitleLedgerState struct {
 }
 
 type subtitleLedger struct {
-	mu    sync.Mutex
-	path  string
-	state subtitleLedgerState
-	err   error
+	mu      sync.Mutex
+	path    string
+	state   subtitleLedgerState
+	err     error
+	publish func()
+}
+
+func (ledger *subtitleLedger) setPublisher(publish func()) {
+	ledger.mu.Lock()
+	defer ledger.mu.Unlock()
+	ledger.publish = publish
+}
+
+func (ledger *subtitleLedger) publishChange() {
+	ledger.mu.Lock()
+	publish := ledger.publish
+	ledger.mu.Unlock()
+	if publish != nil {
+		publish()
+	}
 }
 
 func newSubtitleLedger(dataDir string) *subtitleLedger {
@@ -110,7 +126,7 @@ func (ledger *subtitleLedger) load() error { //nolint:cyclop // One bounded load
 }
 
 func validSubtitleLedgerState(state subtitleLedgerState) bool { //nolint:cyclop // Persisted state requires explicit validation of every map key and record.
-	if state.Version < 1 || state.Version > subtitleLedgerVersion || len(state.Records) > subtitleLedgerLimit || len(state.Searches) > subtitleLedgerLimit || len(state.History) > subtitleHistoryLimit || state.Version < subtitleLedgerVersion && len(state.History) > 0 || state.SubDLDownloads < 0 || state.SubDLDownloads > subDLAutomaticDownloadLimit {
+	if state.Version < 1 || state.Version > subtitleLedgerVersion || len(state.Records) > subtitleLedgerLimit || len(state.Searches) > subtitleLedgerLimit || len(state.History) > subtitleHistoryLimit || state.Version < 3 && len(state.History) > 0 || state.SubDLDownloads < 0 || state.SubDLDownloads > subDLAutomaticDownloadLimit {
 		return false
 	}
 	for _, event := range state.History {

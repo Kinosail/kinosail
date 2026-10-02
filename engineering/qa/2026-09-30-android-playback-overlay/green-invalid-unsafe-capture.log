@@ -1,0 +1,41 @@
+INSTRUMENTATION_STATUS: numtests=1
+INSTRUMENTATION_STATUS: stream=
+com.kinosail.player.mobile.LivePlaybackOverlayTest:
+INSTRUMENTATION_STATUS: id=AndroidJUnitRunner
+INSTRUMENTATION_STATUS: test=decodedLightVideoKeepsItsTitleAndActionsReadable
+INSTRUMENTATION_STATUS: class=com.kinosail.player.mobile.LivePlaybackOverlayTest
+INSTRUMENTATION_STATUS: current=1
+INSTRUMENTATION_STATUS_CODE: 1
+INSTRUMENTATION_STATUS: numtests=1
+INSTRUMENTATION_STATUS: stream=
+Error in decodedLightVideoKeepsItsTitleAndActionsReadable(com.kinosail.player.mobile.LivePlaybackOverlayTest):
+java.lang.IllegalArgumentException: Invalid video overlay seed.
+	at com.kinosail.player.mobile.LivePlaybackOverlayTest.journey(LivePlaybackOverlayTest.kt:111)
+	at com.kinosail.player.mobile.LivePlaybackOverlayTest.journey$default(LivePlaybackOverlayTest.kt:95)
+	at com.kinosail.player.mobile.LivePlaybackOverlayTest.decodedLightVideoKeepsItsTitleAndActionsReadable(LivePlaybackOverlayTest.kt:57)
+
+INSTRUMENTATION_STATUS: id=AndroidJUnitRunner
+INSTRUMENTATION_STATUS: test=decodedLightVideoKeepsItsTitleAndActionsReadable
+INSTRUMENTATION_STATUS: class=com.kinosail.player.mobile.LivePlaybackOverlayTest
+INSTRUMENTATION_STATUS: stack=java.lang.IllegalArgumentException: Invalid video overlay seed.
+	at com.kinosail.player.mobile.LivePlaybackOverlayTest.journey(LivePlaybackOverlayTest.kt:111)
+	at com.kinosail.player.mobile.LivePlaybackOverlayTest.journey$default(LivePlaybackOverlayTest.kt:95)
+	at com.kinosail.player.mobile.LivePlaybackOverlayTest.decodedLightVideoKeepsItsTitleAndActionsReadable(LivePlaybackOverlayTest.kt:57)
+
+INSTRUMENTATION_STATUS: current=1
+INSTRUMENTATION_STATUS_CODE: -2
+INSTRUMENTATION_RESULT: stream=
+
+Time: 0.056
+There was 1 failure:
+1) decodedLightVideoKeepsItsTitleAndActionsReadable(com.kinosail.player.mobile.LivePlaybackOverlayTest)
+java.lang.IllegalArgumentException: Invalid video overlay seed.
+	at com.kinosail.player.mobile.LivePlaybackOverlayTest.journey(LivePlaybackOverlayTest.kt:111)
+	at com.kinosail.player.mobile.LivePlaybackOverlayTest.journey$default(LivePlaybackOverlayTest.kt:95)
+	at com.kinosail.player.mobile.LivePlaybackOverlayTest.decodedLightVideoKeepsItsTitleAndActionsReadable(LivePlaybackOverlayTest.kt:57)
+
+FAILURES!!!
+Tests run: 1,  Failures: 1
+
+
+INSTRUMENTATION_CODE: -1

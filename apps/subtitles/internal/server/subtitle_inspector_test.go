@@ -33,6 +33,20 @@ func subtitleInspectorFixture(t *testing.T, subtitle string) (http.Handler, stri
 	return handler, "/api/v1/subtitle-library/" + inventory.Items[0].ID, target
 }
 
+func TestSubtitleInspectorStylesheetUsesFreshImmutableURL(t *testing.T) {
+	t.Parallel()
+	handler, base, _ := subtitleInspectorFixture(t, "")
+	id := strings.TrimPrefix(base, "/api/v1/subtitle-library/")
+	page := requestApp(t, handler, http.MethodGet, "/subtitles/inspect/"+id+"?language=en", "")
+	if page.Code != http.StatusOK || !strings.Contains(page.Body.String(), "/static/subtitle-inspector.css?v=5") {
+		t.Fatalf("inspector did not request stylesheet version 5: status %d", page.Code)
+	}
+	style := requestApp(t, handler, http.MethodGet, "/static/subtitle-inspector.css?v=5", "")
+	if style.Code != http.StatusOK || style.Header().Get("Cache-Control") != "public, max-age=31536000, immutable" {
+		t.Fatalf("inspector stylesheet = %d %q", style.Code, style.Header().Get("Cache-Control"))
+	}
+}
+
 func TestSubtitleInspectorImportsWithPreviewOriginalAndRecovery(t *testing.T) {
 	original := "[Script Info]\n[Events]\nFormat: Start, End, Text\nDialogue: 0:00:01.00,0:00:03.00,Hello world\n"
 	handler, base, target := subtitleInspectorFixture(t, "")

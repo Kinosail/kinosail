@@ -234,6 +234,7 @@ def main() -> None:
   <meta name="twitter:image" content="{image}">"""
     output = (
         template.replace("__KINOSAIL_ARCHITECTURE_STYLES__", TEMPLATE_STYLES.read_text(encoding="utf-8").rstrip("\n"))
+        .replace("__KINOSAIL_ARCHITECTURE_TITLE__", f"Kinosail {APP.title()} Code Atlas")
         .replace("__KINOSAIL_ARCHITECTURE_SOCIAL__", social)
         .replace("__KINOSAIL_ARCHITECTURE_DATA__", data)
         .replace("__KINOSAIL_ARCHITECTURE_SCRIPT__", TEMPLATE_SCRIPT.read_text(encoding="utf-8").rstrip("\n"))

@@ -1,0 +1,25 @@
+from pathlib import Path
+import subprocess,json,sys,shutil
+ROOT=Path(__file__).resolve().parents[4]
+OUT=Path(__file__).resolve().parent
+ADB="/Users/mikeo/.cache/kinosail-android-sdk/platform-tools/adb"
+D=[ADB,"-s","emulator-5564"]
+assert "Kinosail-Playback-01a0f2ab-API23" in subprocess.check_output(D+["emu","avd","name"],text=True)
+profiles=[("phone-portrait",480,False,"portrait"),("phone-landscape",480,False,"landscape"),("tablet-portrait",208,False,"portrait"),("tablet-landscape",208,False,"landscape")]
+for name,density,tv,video in profiles:
+ subprocess.run(D+["shell","am","force-stop","com.kinosail.player.dev"],check=True)
+ subprocess.run(D+["shell","wm","size","reset"],check=True)
+ subprocess.run(D+["shell","settings","put","system","accelerometer_rotation","0"],check=True)
+ subprocess.run(D+["shell","settings","put","system","user_rotation","0"],check=True)
+ subprocess.run(D+["shell","wm","density",str(density)],check=True)
+ seed=json.loads((OUT/"seed-private.json").read_text())
+ seed.update(capture=name,landscape=video=="landscape",title="Native "+video+" contrast 01a0f2ab")
+ temp=OUT/"profile-seed-private.json"
+ temp.write_text(json.dumps(seed));temp.chmod(0o600)
+ subprocess.run(D+["push",str(temp),"/data/local/tmp/video-overlay-seed.json"],check=True,stdout=subprocess.DEVNULL)
+ subprocess.run(D+["shell","run-as","com.kinosail.player.dev","cp","/data/local/tmp/video-overlay-seed.json","files/video-overlay-seed.json"],check=True)
+ subprocess.run(D+["shell","run-as","com.kinosail.player.dev","rm","-rf","files/video-overlay"],check=True)
+ subprocess.run([sys.executable,str(OUT/"run-instrumentation.py"),"final-green-"+name],check=True)
+ result=json.loads((OUT/("final-green-"+name+"-context.json")).read_text())["result"]
+ print(json.dumps({"profile":name,"result":result}),flush=True)
+ if result!="PASS": break

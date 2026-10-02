@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/MikeO7/kinosail/packages/httpguard"
+	"github.com/MikeO7/kinosail/packages/identitycore"
 	mcpauth "github.com/modelcontextprotocol/go-sdk/auth"
 )
 
@@ -36,7 +37,7 @@ func (adapter *Gateway) verifyToken(ctx context.Context, token string, request *
 	check.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 	check.Header.Set("Accept", "application/json")
 	check.SetBasicAuth(adapter.config.ClientID, adapter.config.ClientSecret)
-	response, err := (&http.Client{Timeout: 10 * time.Second}).Do(check)
+	response, err := (&http.Client{Timeout: 10 * time.Second, CheckRedirect: func(*http.Request, []*http.Request) error { return http.ErrUseLastResponse }}).Do(check)
 	if err != nil {
 		return nil, err
 	}
@@ -45,16 +46,25 @@ func (adapter *Gateway) verifyToken(ctx context.Context, token string, request *
 		return nil, fmt.Errorf("OAuth token introspection failed with status %d", response.StatusCode)
 	}
 	var result struct {
-		Active bool            `json:"active"`
-		Scope  string          `json:"scope"`
-		Exp    int64           `json:"exp"`
-		Sub    string          `json:"sub"`
-		Aud    json.RawMessage `json:"aud"`
+		Active   bool            `json:"active"`
+		Scope    string          `json:"scope"`
+		Exp      int64           `json:"exp"`
+		Sub      string          `json:"sub"`
+		Aud      json.RawMessage `json:"aud"`
+		ClientID string          `json:"client_id"`
 	}
-	if err := httpguard.DecodeJSON(response.Body, 1<<20, &result, false); err != nil {
+	var claims map[string]json.RawMessage
+	if err := httpguard.DecodeUniqueJSON(response.Body, 1<<20, &claims); err != nil {
 		return nil, err
 	}
-	if !validMCPToken(result.Active, result.Exp, result.Sub, result.Scope, result.Aud, adapter.config.ResourceURL) {
+	data, err := json.Marshal(claims)
+	if err != nil {
+		return nil, err
+	}
+	if err := json.Unmarshal(data, &result); err != nil {
+		return nil, err
+	}
+	if !validMCPToken(result.Active, result.Exp, result.Sub, result.Scope, result.Aud, adapter.config.ResourceURL) || !validEventClientID(result.ClientID) {
 		return nil, mcpauth.ErrInvalidToken
 	}
 	profile, found := adapter.principals.ByOIDC(adapter.config.AuthorizationServer, result.Sub)
@@ -62,7 +72,7 @@ func (adapter *Gateway) verifyToken(ctx context.Context, token string, request *
 		return nil, mcpauth.ErrInvalidToken
 	}
 	adapter.principals.Attribute(request, profile)
-	return &mcpauth.TokenInfo{Scopes: strings.Fields(result.Scope), Expiration: time.Unix(result.Exp, 0), UserID: profile.ID}, nil
+	return &mcpauth.TokenInfo{Scopes: strings.Fields(result.Scope), Expiration: time.Unix(result.Exp, 0), UserID: profile.ID, Extra: map[string]any{"eventClient": result.ClientID, "eventRemote": identitycore.RemoteRequest(request)}}, nil
 }
 
 func validMCPToken(active bool, expiration int64, subject, scope string, audience json.RawMessage, resource string) bool {

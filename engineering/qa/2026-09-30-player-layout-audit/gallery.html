@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Player responsive layout audit</title>
+<style>
+body{margin:0;padding:24px;background:#0b0d0b;color:#edf2e9;font:16px/1.5 system-ui,sans-serif}main{max-width:1100px;margin:auto}a{color:#c4ff47}h1{font-size:28px}p{max-width:70ch}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,280px),1fr));gap:24px}figure{margin:0 0 24px}img{display:block;width:100%;height:auto;border:1px solid #3b4437}figcaption{margin:12px 0;color:#c6cec0}
+</style>
+<main>
+<h1>Player responsive layout audit</h1>
+<p>Populated renders with synthetic library data. The settings dropdown fix keeps long selected text inside the control. Other captures document the current navigation and refreshed browser checks. Select a capture to view it at full size.</p>
+<p><a href="report.md">Audit report</a> · <a href="run-context.json">Commands and evidence hashes</a></p>
+<div class="grid">
+<figure><a href="evidence/dropdown-before-320.png"><img src="evidence/dropdown-before-320.png" alt="Before the final rule: video-conversion settings in a 320px WebKit viewport with 3px of horizontal page overflow."></a><figcaption>Before · 320px WebKit · full viewport · 323px document width</figcaption></figure>
+<figure><a href="evidence/dropdown-after-320.png"><img src="evidence/dropdown-after-320.png" alt="After the final rule: the selected video-format text stays inside its dropdown. Conversion choices, hardware, and HDR settings remain usable."></a><figcaption>After · 320px WebKit · form section · 320px document width</figcaption></figure>
+</div>
+<figure><a href="evidence/settings-desktop.png"><img src="evidence/settings-desktop.png" alt="Desktop settings below the utility header, beside a grouped library sidebar and a separate settings task list."></a><figcaption>1440px · Desktop settings</figcaption></figure>
+<figure><a href="evidence/settings-tablet.png"><img src="evidence/settings-tablet.png" alt="Settings with horizontal library navigation at an intermediate tablet width."></a><figcaption>1024px · Intermediate navigation</figcaption></figure>
+<div class="grid">
+<figure><a href="evidence/movies-phone.png"><img src="evidence/movies-phone.png" alt="Four synthetic movies in a phone grid with library Search above and fixed navigation below."></a><figcaption>390px · Populated Movies · generated artwork and missing-art fallback</figcaption></figure>
+<figure><a href="evidence/quick-connect-landscape.png"><img src="evidence/quick-connect-landscape.png" alt="Quick Connect code inputs, Authorize device, and Cancel visible between the landscape header and bottom navigation."></a><figcaption>720 × 450px · Quick Connect after scrolling to primary actions</figcaption></figure>
+</div>
+</main>
+</html>

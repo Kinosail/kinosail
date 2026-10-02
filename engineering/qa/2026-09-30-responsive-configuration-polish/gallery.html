@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Player configuration polish evidence</title>
+<style>
+body{margin:0;padding:24px;background:#0b0d0b;color:#edf2e9;font:16px/1.5 system-ui,sans-serif}main{max-width:1100px;margin:auto}a{color:#c4ff47}h1{font-size:28px}p{max-width:70ch}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,280px),1fr));gap:24px}figure{margin:0}img{display:block;width:100%;height:auto;border:1px solid #3b4437}figcaption{margin:12px 0;color:#c6cec0}
+</style>
+<main>
+<h1>Readable setup instructions on phones</h1>
+<p>The before capture shows the full 390px viewport. The after captures show the TMDB section with all three instructions visible. The highlighted link has keyboard focus.</p>
+<p><a href="report.md">Audit report</a> · <a href="run-context.json">Commands and evidence hashes</a></p>
+<div class="grid">
+<figure><img src="evidence/tmdb-before-390.png" alt="Before: only the first TMDB instruction fits; later instructions continue horizontally outside the phone screen."><figcaption>Before · 390px · full viewport</figcaption></figure>
+<figure><img src="evidence/tmdb-after-390.png" alt="After: all three TMDB instructions wrap within the phone screen."><figcaption>After · 390px · TMDB section</figcaption></figure>
+<figure><img src="evidence/tmdb-after-320.png" alt="After: all three TMDB instructions remain readable at 320 pixels wide."><figcaption>After · 320px · TMDB section</figcaption></figure>
+</div>
+<figure><img src="evidence/tmdb-after-1440.png" alt="TMDB instructions in a normal ordered list on desktop."><figcaption>After · 1440px · TMDB section</figcaption></figure>
+</main>
+</html>

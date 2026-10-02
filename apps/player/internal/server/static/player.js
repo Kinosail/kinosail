@@ -9,6 +9,8 @@ if (!Object.hasOwn(player, "currentTime") && mediaTime && mediaDuration) Object.
   }},
   duration: {configurable: true, get: () => { const value = mediaDuration.get.call(player); return Number.isFinite(value) ? value + playbackTimelineOffset : value; }},
 });
+// Resume reporting the decoder's time once the requested native HLS seek completes.
+player.addEventListener("seeked", () => { playbackTimelineSeek = undefined; });
 const direct = player.dataset.direct;
 let stream = player.dataset.hls || player.dataset.adaptive;
 const expectedDuration = Number(player.dataset.duration);

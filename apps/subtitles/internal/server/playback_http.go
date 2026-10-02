@@ -43,7 +43,7 @@ func playbackSubtitles(item library.Item, media probeResult, provider *subtitleP
 		tracks = append(tracks, subtitleTrack{Label: strings.ToUpper(track.Language) + " · " + subtitleRoleLabel(track.Role), Source: fmt.Sprintf("/subtitle/%s/embedded/%d", item.ID, track.SourceIndex), Default: track.Default, Language: track.Language, Role: track.Role, Kind: kind, Forced: track.Forced, Embedded: true})
 	}
 	for index, path := range item.Subtitles {
-		_, tagged := subtitleTrackLanguage(path, strings.TrimSuffix(item.Path, filepath.Ext(item.Path)), nil)
+		_, tagged := subtitleTrackLanguage(path, strings.TrimSuffix(item.Path, filepath.Ext(item.Path)), languages)
 		role := subtitleRoleFromPath(path)
 		tracks = append(tracks, subtitleTrack{Label: subtitleLabel(item.Path, path), Source: fmt.Sprintf("/subtitle/%s/%d", item.ID, index), Default: index == 0, Language: tagged, Role: role, Forced: role == "forced"})
 	}

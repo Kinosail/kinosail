@@ -14,8 +14,8 @@ img{display:block;max-width:100%;height:auto}
 .brand{display:inline-flex;align-items:center;gap:12px;font-weight:800;font-size:23px;text-decoration:none;letter-spacing:-.7px}
 .masthead nav,.footer nav{display:flex;gap:24px;flex-wrap:wrap}
 .masthead nav a{display:inline-flex;align-items:center;min-height:44px;font-size:14px;font-weight:650;text-decoration:none}
-.masthead nav .docs-primary{color:var(--lime);font-weight:800;text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:6px}
-.masthead nav .docs-primary:hover{color:#d6ff89}
+.masthead nav .source-primary{color:var(--lime);font-weight:800;text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:6px}
+.masthead nav .source-primary:hover{color:#d6ff89}
 .hero{padding-top:76px;text-align:center}
 h1,h2,h3,p{margin-top:0}
 h1{font-size:clamp(48px,6.8vw,94px);line-height:1.02;letter-spacing:-.03em;font-weight:750;margin-bottom:30px}

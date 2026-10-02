@@ -1,6 +1,6 @@
 import AxeBuilder from "@axe-core/playwright";
 import { expect, test } from "@playwright/test";
-import { access, unlink, writeFile } from "node:fs/promises";
+import { access, chmod, readFile, stat, unlink, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 import { compactViewports, expectNoHorizontalOverflow, expectSkipLinkOffscreen, initiallyOccludedTargets, occludedTargets, setSubtitleLanguages, supportedViewports } from "./subtitle-dashboard-helpers";
 
@@ -21,6 +21,12 @@ test("Owner hides other languages and English forced subtitles from a populated 
   const spanish = join(media, `${title}.es.srt`);
   const forced = join(media, `${title}.en.forced.srt`);
   const addedEnglish = containerMedia ? undefined : join(media, `${title}.en.srt`);
+  const spanishVTT = join(media, `${title}.es.vtt`);
+  const existingSpanish = await readFile(spanishVTT).catch((error: NodeJS.ErrnoException) => {
+    if (error.code !== "ENOENT") throw error;
+    return undefined;
+  });
+  const hiddenFiles = [spanish, forced, ...(existingSpanish ? [spanishVTT] : [])];
   const rescan = () => page.evaluate(async () => {
     const csrf = document.querySelector<HTMLMetaElement>('meta[name="kinosail-csrf"]')?.content ?? "";
     return (await fetch("/scan", { method: "POST", headers: { "X-Kinosail-CSRF": csrf } })).status;
@@ -28,26 +34,39 @@ test("Owner hides other languages and English forced subtitles from a populated 
   await writeFile(spanish, "1\n00:00:01,000 --> 00:00:02,000\nHola\n");
   await writeFile(forced, "1\n00:00:01,000 --> 00:00:02,000\nSigns\n");
   if (addedEnglish) await writeFile(addedEnglish, "1\n00:00:01,000 --> 00:00:02,000\nHello\n");
+  if (containerMedia) {
+    // The container UID needs write access for Linux's protected no-overwrite hardlink move.
+    const permissions = [];
+    for (const path of [spanish, forced, ...(addedEnglish ? [addedEnglish] : [])]) {
+      const before = await stat(path);
+      await chmod(path, 0o666);
+      const after = await stat(path);
+      permissions.push({ uid: before.uid, gid: before.gid, before: before.mode & 0o777, after: after.mode & 0o777 });
+    }
+    await testInfo.attach("cleanup-fixture-permissions.json", { body: JSON.stringify(permissions), contentType: "application/json" });
+  }
   try {
     expect(await rescan()).toBe(200);
+    await page.emulateMedia({ reducedMotion: "reduce" });
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto("/settings#cleanup");
     await page.getByLabel("Enable subtitle language cleanup").check();
     await page.getByLabel("Languages to keep").selectOption(["en"]);
     await page.getByLabel("Forced subtitles in every language").selectOption("hide");
     await page.getByRole("button", { name: "Preview files to hide" }).click();
-    await expect(page.getByRole("heading", { name: "2 subtitle files to hide" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: `${hiddenFiles.length} subtitle files to hide` })).toBeVisible();
     await expect(page.getByText(`${title}.es.srt`)).toBeVisible();
     await expect(page.getByText(`${title}.en.forced.srt`)).toBeVisible();
     await expectNoHorizontalOverflow(page);
     await page.screenshot({ path: testInfo.outputPath("390-populated-subtitle-cleanup-preview.png"), fullPage: true });
-    await page.getByRole("button", { name: "Hide 2 subtitle files" }).click();
+    await page.getByRole("button", { name: `Hide ${hiddenFiles.length} subtitle files` }).click();
     await expect(page.getByRole("heading", { name: "Subtitle cleanup complete" })).toBeVisible();
-    await expect(page.getByText("en is now your preferred language. Hidden 2 subtitle files.")).toBeVisible();
-    await expect(access(spanish)).rejects.toMatchObject({ code: "ENOENT" });
-    await expect(access(forced)).rejects.toMatchObject({ code: "ENOENT" });
-    await access(`${spanish}.hidden`);
-    await access(`${forced}.hidden`);
+    await expect(page.getByText(`en is now your preferred language. Hidden ${hiddenFiles.length} subtitle files.`)).toBeVisible();
+    for (const file of hiddenFiles) {
+      await expect(access(file)).rejects.toMatchObject({ code: "ENOENT" });
+      await access(`${file}.hidden`);
+    }
+    if (existingSpanish) expect(await readFile(`${spanishVTT}.hidden`)).toEqual(existingSpanish);
     await access(join(media, kept));
     const library = await page.evaluate(async () => {
       const response = await fetch("/api/v1/library?view=movies");
@@ -58,9 +77,16 @@ test("Owner hides other languages and English forced subtitles from a populated 
     const movie = items.items?.find((item) => item.title === title);
     expect(movie?.id, `${title} is in the playable library`).toBeTruthy();
     await page.goto(`/watch/${movie!.id}`);
-    await page.getByRole("button", { name: "Settings", exact: true }).click();
+    await page.getByRole("button", { name: /^Playback method: .*Open playback settings\.$/ }).click();
     await expect(page.locator("[data-subtitles] option")).toHaveCount(2);
   } finally {
+    if (existingSpanish) {
+      await writeFile(spanishVTT, existingSpanish, { flag: "wx" }).catch(async (error: NodeJS.ErrnoException) => {
+        if (error.code !== "EEXIST") throw error;
+        expect(await readFile(spanishVTT)).toEqual(existingSpanish);
+      });
+      await unlink(`${spanishVTT}.hidden`).catch(() => {});
+    }
     await Promise.all([spanish, forced, `${spanish}.hidden`, `${forced}.hidden`].map((path) => unlink(path).catch(() => {})));
     if (addedEnglish) await unlink(addedEnglish).catch(() => {});
     await rescan().catch(() => {});

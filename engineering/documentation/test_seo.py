@@ -10,7 +10,10 @@ class SearchMetadataTest(unittest.TestCase):
             graph.append({'@type': 'BreadcrumbList', 'itemListElement': breadcrumbs})
         data = {'@context': 'https://schema.org', '@graph': graph}
         image = 'https://example.org/assets/share.png'
-        return (f'<link rel="canonical" href="{url}"><meta name="description" content="Media library">'
+        return (f'<title>Media library</title><meta name="robots" content="index,follow,max-image-preview:large">'
+                f'<meta property="og:url" content="{url}"><meta property="og:title" content="Media library">'
+                '<meta property="og:description" content="Media library">'
+                f'<link rel="canonical" href="{url}"><meta name="description" content="Media library">'
                 f'<meta property="og:image" content="{image}"><meta property="og:image:type" content="image/png">'
                 '<meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">'
                 '<meta property="og:image:alt" content="Kinosail Player Docs sail mark">'
@@ -36,6 +39,21 @@ class SearchMetadataTest(unittest.TestCase):
                        valid.replace('content="Kinosail Player Docs sail mark"', 'content=""'),
                        valid.replace('content="summary_large_image"', 'content="summary"'),
                        valid.replace('<meta name="twitter:image" content="https://example.org/assets/share.png">', '')):
+            with self.subTest(source=source):
+                self.assertTrue(validate(source, 'https://example.org/kinosail/'))
+
+    def test_indexable_pages_require_title_preview_and_matching_social_url(self):
+        valid = self.fixture()
+        for source in (valid.replace('<title>Media library</title>', ''),
+                       valid.replace('<title>Media library</title>', '<title></title>'),
+                       valid + '<title>Other title</title>',
+                       valid.replace('index,follow,max-image-preview:large', 'noindex,follow'),
+                       valid.replace('index,follow,max-image-preview:large', 'index,follow,nosnippet'),
+                       valid.replace('<meta property="og:url" content="https://example.org/kinosail/">', ''),
+                       valid.replace('<meta property="og:url" content="https://example.org/kinosail/">',
+                                     '<meta property="og:url" content="https://example.org/other/">'),
+                       valid.replace('<meta property="og:description" content="Media library">',
+                                     '<meta property="og:description" content="Other product">')):
             with self.subTest(source=source):
                 self.assertTrue(validate(source, 'https://example.org/kinosail/'))
 

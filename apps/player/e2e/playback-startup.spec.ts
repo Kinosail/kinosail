@@ -1,20 +1,11 @@
 import { expect, test } from "@playwright/test";
 import type { Page } from "@playwright/test";
-import { createHash, createHmac } from "node:crypto";
+import { createHash } from "node:crypto";
+import { login } from "./test-instance-helpers";
 
 test.skip(!process.env.KINOSAIL_TEST_INSTANCE, "requires the populated test instance");
+test.use({ serviceWorkers: "block" });
 test.beforeEach(async ({ page }) => page.addInitScript(() => Object.defineProperty(PublicKeyCredential, "isConditionalMediationAvailable", { value: async () => false })));
-
-function totp(): string {
-	const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567";
-	const bits = [...(process.env.KINOSAIL_TEST_TOTP_SECRET ?? "")].map((character) => alphabet.indexOf(character).toString(2).padStart(5, "0")).join("");
-	const secret = Buffer.from(bits.match(/.{8}/g)?.map((byte) => Number.parseInt(byte, 2)) ?? []);
-	const counter = Buffer.alloc(8);
-	counter.writeBigUInt64BE(BigInt(Math.floor(Date.now() / 30_000)));
-	const digest = createHmac("sha1", secret).update(counter).digest();
-	const offset = digest[19] & 15;
-	return ((digest.readUInt32BE(offset) & 0x7fffffff) % 1_000_000).toString().padStart(6, "0");
-}
 
 async function instrumentMedia(page: Page) {
 	await page.addInitScript(() => {
@@ -29,12 +20,7 @@ async function instrumentMedia(page: Page) {
 
 test("selecting a movie starts moving playback promptly", async ({ page }, testInfo) => {
 	await instrumentMedia(page);
-	await page.goto("/login");
-	await page.getByLabel("Name").fill("Owner");
-	await page.getByLabel("Password", { exact: true }).fill("test-instance-password");
-	await page.getByLabel("Authentication or recovery code").fill(totp());
-	await page.getByRole("button", { name: "Sign in", exact: true }).click();
-	if (await page.getByRole("link", { name: "Not now" }).isVisible()) await page.getByRole("link", { name: "Not now" }).click();
+	await login(page);
 	await page.getByRole("link", { name: "Movies", exact: true }).click();
 
 	const started = Date.now();
@@ -62,8 +48,10 @@ test("selecting a movie starts moving playback promptly", async ({ page }, testI
 	}
 });
 
-test("blocked autoplay leaves one Play control that starts the video", async ({ page }, testInfo) => {
+for (const source of ["direct", "compatible"]) for (const savedPosition of [0, 1]) test(`blocked autoplay leaves one Play control that starts ${source} video from ${savedPosition ? "saved progress" : "the beginning"}`, { tag: source === "compatible" && savedPosition ? ["@smoke"] : [] }, async ({ page, browserName }, testInfo) => {
 	await page.setViewportSize({ width: 390, height: 844 });
+	// Exercise WebKit's native HLS adapter, as mobile Safari does for automatic compatibility.
+	if (browserName === "webkit") await page.route("**/static/hls.min.js*", (route) => route.fulfill({ contentType: "application/javascript", body: "" }));
 	await page.addInitScript(() => {
 		Object.defineProperty(navigator, "userAgent", { configurable: true, value: "Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 Mobile/15E148" });
 		const nativePlay = HTMLMediaElement.prototype.play;
@@ -77,37 +65,99 @@ test("blocked autoplay leaves one Play control that starts the video", async ({ 
 		});
 		observer.observe(document, { childList: true, subtree: true });
 		HTMLMediaElement.prototype.play = function () {
-			return blocked ? Promise.reject(new DOMException("A tap is required", "NotAllowedError")) : nativePlay.call(this);
+			return blocked && !this.muted ? Promise.reject(new DOMException("A tap is required", "NotAllowedError")) : nativePlay.call(this);
 		};
 		(window as Window & { allowVideoPlay: () => void }).allowVideoPlay = () => { blocked = false; };
 	});
-	await page.goto("/login");
-	await page.getByLabel("Name").fill("Owner");
-	await page.getByLabel("Password", { exact: true }).fill("test-instance-password");
-	await page.getByLabel("Authentication or recovery code").fill(totp());
-	await page.getByRole("button", { name: "Sign in", exact: true }).click();
+	await login(page);
 	await page.goto("/?view=movies");
-	await page.getByRole("link", { name: /Example Movie/ }).click();
+	let releaseMedia: () => void = () => {};
+	const mediaReady = new Promise<void>((resolve) => { releaseMedia = resolve; });
+	await page.route("**/media/**", async (route) => { await mediaReady; await route.continue(); });
+	await page.route("**/hls/**", async (route) => { await mediaReady; await route.continue(); });
+	const movie = page.getByRole("link", { name: /Example Movie/ });
+  const watch = (await movie.getAttribute("href"))!;
+  await page.evaluate(async ({ id, seconds }) => {
+    const csrf = document.querySelector<HTMLMetaElement>('meta[name="kinosail-csrf"]')!.content;
+    const response = await fetch(`/api/v1/items/${id}/progress`, { method: "PUT",
+      headers: { "Content-Type": "application/json", "X-Kinosail-CSRF": csrf }, body: JSON.stringify({ seconds, watched: false }) });
+    if (!response.ok) throw new Error(`reset isolated movie progress: ${response.status}`);
+  }, { id: watch.split("/").at(-1)!, seconds: savedPosition });
+	if (source === "compatible") await page.goto(`${await movie.getAttribute("href")}?compatible=1`, { waitUntil: "domcontentloaded" });
+	else await movie.click({ noWaitAfter: true });
+	await expect(page).toHaveURL(/\/watch\/[a-f0-9]+(?:\?compatible=1)?$/);
+	await expect(page.locator("[data-player-status]")).toBeVisible();
+	await page.waitForTimeout(2_000);
+	await expect(page.locator("[data-player-status]")).toBeVisible();
+	await expect(page.locator(".player-center-control[data-player-toggle]")).toBeHidden();
+	// WebKit waits for document.fonts.ready, which needs the held media load to finish.
+	if (browserName !== "webkit") await page.screenshot({ path: testInfo.outputPath("390-media-pending.png"), fullPage: true });
+	releaseMedia();
 	await expect(page.locator("[data-player-status]")).toBeHidden();
+	const readiness = await page.locator("video").evaluate((video: HTMLVideoElement) => {
+		const mediaTime = Object.getOwnPropertyDescriptor(HTMLMediaElement.prototype, "currentTime")!.get!.call(video) as number;
+		let ahead = 0, gap = Infinity;
+		for (let index = 0; index < video.buffered.length; index++) {
+			const start = video.buffered.start(index);
+			if (video.buffered.end(index) >= mediaTime) {
+				gap = Math.min(gap, Math.max(0, start - mediaTime));
+				ahead = Math.max(ahead, video.buffered.end(index) - Math.max(mediaTime, start));
+			}
+		}
+		return { readyState: video.readyState, ahead, gap, remaining: video.duration - video.currentTime, position: video.currentTime };
+	});
+	// Paused WebKit can settle at HAVE_CURRENT_DATA after a buffered seek.
+	// Prove the required tap advances from the resume position below.
+	expect(readiness.readyState).toBeGreaterThanOrEqual(browserName === "webkit" ? 2 : 3);
+	expect(readiness.gap).toBeLessThanOrEqual(0.05);
+	expect(readiness.ahead).toBeGreaterThanOrEqual(Math.min(2, readiness.remaining));
 	await expect(page.locator(".player-center-control[data-player-toggle]")).toBeVisible();
 	await expect(page.getByRole("button", { name: "Play video" })).toHaveCount(0);
 	await page.screenshot({ path: testInfo.outputPath("390-play-control.png"), fullPage: true });
+	await page.getByRole("button", { name: "Settings", exact: true }).click();
+	const speed = page.getByRole("combobox", { name: "Playback speed" });
+	await expect(speed).toBeVisible();
+	await speed.selectOption("1.5");
+	await expect(page.locator("video")).toHaveJSProperty("playbackRate", 1.5);
+	await expect(page.locator("video")).toHaveJSProperty("paused", true);
+	await page.screenshot({ path: testInfo.outputPath("390-playback-settings.png"), fullPage: true });
+	await speed.selectOption("1");
+	await page.getByRole("button", { name: "Close playback settings" }).click();
 	await page.evaluate(() => (window as Window & { allowVideoPlay: () => void }).allowVideoPlay());
 	await page.locator(".player-center-control[data-player-toggle]").click();
-	await expect.poll(() => page.locator("video").evaluate((video: HTMLVideoElement) => video.currentTime)).toBeGreaterThan(0.25);
+	await expect.poll(() => page.locator("video").evaluate((video: HTMLVideoElement) => video.currentTime)).toBeGreaterThan(readiness.position + 0.25);
 	await expect(page.locator("[data-player-status]")).toBeHidden();
+	await expect(page.locator("video")).toHaveJSProperty("muted", false);
+	if (source === "compatible" && savedPosition && browserName === "webkit") {
+		// Safari preparation also restores the start of the loaded native HLS window.
+		// Use real media seeking and decoding so a frozen application timeline is observable.
+		const originalSource = await page.locator("video").evaluate((video: HTMLVideoElement) => video.currentSrc);
+		await page.locator("video").evaluate((video: HTMLVideoElement) => { video.pause(); video.currentTime = Number(video.dataset.start) + 0.5; });
+		await expect.poll(() => page.locator("video").evaluate((video: HTMLVideoElement) => video.seeking)).toBe(false);
+		await expect(page.locator("video")).toHaveJSProperty("currentSrc", originalSource);
+		await page.locator(".player-center-control[data-player-toggle]").click();
+		await expect.poll(() => page.locator("video").evaluate((video: HTMLVideoElement) => video.currentTime), { timeout: 5_000 }).toBeGreaterThan(savedPosition + 0.5);
+		await expect(page.locator("[data-player-status]")).toBeHidden();
+		await page.screenshot({ path: testInfo.outputPath("390-resumed-after-seek.png"), fullPage: true });
+		// A paused seek outside this offset window loads another native stream.
+		// Its first playable sample can be later than the requested timestamp.
+		await page.locator("video").evaluate((video: HTMLVideoElement) => { video.pause(); video.currentTime = 0.3; });
+		await expect.poll(() => page.locator("video").evaluate((video: HTMLVideoElement) => video.currentSrc)).not.toBe(originalSource);
+		await expect(page.locator("[data-player-status]")).toBeHidden();
+		await expect(page.locator("video")).toHaveJSProperty("paused", true);
+		const seekPosition = await page.locator("video").evaluate((video: HTMLVideoElement) => video.currentTime);
+		await page.locator(".player-center-control[data-player-toggle]").click();
+		await expect.poll(() => page.locator("video").evaluate((video: HTMLVideoElement) => video.currentTime)).toBeGreaterThan(seekPosition + 0.25);
+		await expect(page.locator("[data-player-status]")).toBeHidden();
+		await page.screenshot({ path: testInfo.outputPath("390-resumed-after-far-seek.png"), fullPage: true });
+	}
 });
 
 test("restricted browser storage does not stop playback", async ({ page }) => {
 	await page.addInitScript(() => Object.defineProperty(window, "localStorage", { configurable: true, get: () => { throw new DOMException("blocked", "SecurityError"); } }));
 	const errors: string[] = [];
 	page.on("pageerror", (error) => errors.push(error.message));
-	await page.goto("/login");
-	await page.getByLabel("Name").fill("Owner");
-	await page.getByLabel("Password", { exact: true }).fill("test-instance-password");
-	await page.getByLabel("Authentication or recovery code").fill(totp());
-	await page.getByRole("button", { name: "Sign in", exact: true }).click();
-	if (await page.getByRole("link", { name: "Not now" }).isVisible()) await page.getByRole("link", { name: "Not now" }).click();
+	await login(page);
 	await page.getByRole("link", { name: "Movies", exact: true }).click();
 	await page.getByRole("link", { name: /Example Movie/ }).click();
 	const video = page.locator("video");
@@ -116,12 +166,7 @@ test("restricted browser storage does not stop playback", async ({ page }) => {
 });
 
 test("failed progress save does not stop playback flow", async ({ page }) => {
-	await page.goto("/login");
-	await page.getByLabel("Name").fill("Owner");
-	await page.getByLabel("Password", { exact: true }).fill("test-instance-password");
-	await page.getByLabel("Authentication or recovery code").fill(totp());
-	await page.getByRole("button", { name: "Sign in", exact: true }).click();
-	if (await page.getByRole("link", { name: "Not now" }).isVisible()) await page.getByRole("link", { name: "Not now" }).click();
+	await login(page);
 	await page.getByRole("link", { name: "Movies", exact: true }).click();
 	await page.getByRole("link", { name: /Example Movie/ }).click();
 	await page.route("**/progress/**", (route) => route.abort());
@@ -137,12 +182,7 @@ test("selecting compatibility playback starts without a second play click", asyn
 		Object.defineProperty(Object.getPrototypeOf(navigator), "mediaCapabilities", { configurable: true, get: () => ({ decodingInfo: async () => ({ supported: true, smooth: true, powerEfficient: true }) }) });
 	});
 	await instrumentMedia(page);
-	await page.goto("/login");
-	await page.getByLabel("Name").fill("Owner");
-	await page.getByLabel("Password", { exact: true }).fill("test-instance-password");
-	await page.getByLabel("Authentication or recovery code").fill(totp());
-	await page.getByRole("button", { name: "Sign in", exact: true }).click();
-	if (await page.getByRole("link", { name: "Not now" }).isVisible()) await page.getByRole("link", { name: "Not now" }).click();
+	await login(page);
 	await page.getByRole("link", { name: "Movies", exact: true }).click();
 	await page.getByRole("link", { name: /Example Movie/ }).click();
 
@@ -167,16 +207,15 @@ test("trusted source opening sets the first media time", async ({ page, browserN
 			if (!video) return;
 			observer.disconnect();
 			video.addEventListener("canplay", () => { (window as Window & { firstReadyMediaTime: number }).firstReadyMediaTime = video.currentTime; }, { once: true });
-			video.requestVideoFrameCallback((_, { mediaTime }) => { (window as Window & { firstPresentedMediaTime: number }).firstPresentedMediaTime = mediaTime; });
+			const presented = (_: number, { mediaTime }: VideoFrameCallbackMetadata) => {
+        if (video.closest(".media-stage")?.classList.contains("is-busy")) { video.requestVideoFrameCallback(presented); return; }
+        (window as Window & { firstPresentedMediaTime: number }).firstPresentedMediaTime = mediaTime;
+      };
+      video.requestVideoFrameCallback(presented);
 		});
 		observer.observe(document, { childList: true, subtree: true });
 	});
-	await page.goto("/login");
-	await page.getByLabel("Name").fill("Owner");
-	await page.getByLabel("Password", { exact: true }).fill("test-instance-password");
-	await page.getByLabel("Authentication or recovery code").fill(totp());
-	await page.getByRole("button", { name: "Sign in", exact: true }).click();
-	if (await page.getByRole("link", { name: "Not now" }).isVisible()) await page.getByRole("link", { name: "Not now" }).click();
+	await login(page);
 	await expect(page.locator('meta[name="kinosail-csrf"]')).toHaveAttribute("content", /.+/);
 	const state = await page.evaluate(async () => {
 		const csrf = document.querySelector<HTMLMetaElement>('meta[name="kinosail-csrf"]')?.content ?? "";

@@ -12,32 +12,35 @@ import (
 
 // Index owns the concurrency, refresh, and lookup rules for one Library catalog.
 type Index struct {
-	mu              sync.RWMutex
-	refreshMu       sync.Mutex
-	roots           []ScanRoot
-	cache           string
-	items           []library.Item
-	byID            map[string]int
-	err             error
-	ready           bool
-	scanned         time.Time
-	interval        time.Duration
-	defaultInterval time.Duration
-	reschedule      chan struct{}
-	refreshes       chan struct{}
-	acquire         func(context.Context) (func(), error)
-	decorate        func([]library.Item) []library.Item
-	analyzers       []func([]library.Item)
-	watching        bool
-	watchErr        error
-	watchChange     chan struct{}
-	watchDebounce   time.Duration
-	watchStability  time.Duration
-	watchRetry      time.Duration
-	pollInterval    time.Duration
-	watch           func(context.Context) error
-	openWatcher     func() (*fsnotify.Watcher, error)
-	snapshot        func(map[string]struct{}) (map[string]fileStamp, error)
+	mu                sync.RWMutex
+	refreshMu         sync.Mutex
+	roots             []ScanRoot
+	cache             string
+	items             []library.Item
+	titleOrders       map[titleOrderKey]*titleOrder
+	titleOrderUse     uint64
+	titleOrderVersion uint64
+	byID              map[string]int
+	err               error
+	ready             bool
+	scanned           time.Time
+	interval          time.Duration
+	defaultInterval   time.Duration
+	reschedule        chan struct{}
+	refreshes         chan struct{}
+	acquire           func(context.Context) (func(), error)
+	decorate          func([]library.Item) []library.Item
+	analyzers         []func([]library.Item)
+	watching          bool
+	watchErr          error
+	watchChange       chan struct{}
+	watchDebounce     time.Duration
+	watchStability    time.Duration
+	watchRetry        time.Duration
+	pollInterval      time.Duration
+	watch             func(context.Context) error
+	openWatcher       func() (*fsnotify.Watcher, error)
+	snapshot          func(map[string]struct{}) (map[string]fileStamp, error)
 }
 
 // NewIndex builds an index and performs its initial scan synchronously.
@@ -213,5 +216,5 @@ func (index *Index) Find(id string) (library.Item, bool) {
 }
 
 func (index *Index) storage() IndexStorage {
-	return IndexStorage{Mutex: &index.mu, Items: &index.items, ByID: &index.byID, Err: &index.err, Ready: &index.ready, Scanned: &index.scanned, Decorator: &index.decorate, Analyzers: &index.analyzers}
+	return IndexStorage{Mutex: &index.mu, Items: &index.items, ByID: &index.byID, Err: &index.err, Ready: &index.ready, Scanned: &index.scanned, Decorator: &index.decorate, Analyzers: &index.analyzers, published: func() { index.titleOrders = nil; index.titleOrderVersion++ }}
 }

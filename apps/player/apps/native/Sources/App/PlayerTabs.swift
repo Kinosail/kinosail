@@ -58,6 +58,7 @@ struct PlayerTabs: View {
                                     changeMode: changeMode, selectTab: selectBrowseTab,
                                     focusTopBar: { topFocus = .search })
                 }
+                .cinemaBackground()
             }
             #else
             tabs
@@ -173,7 +174,8 @@ struct PlayerTabs: View {
                 #endif
                 .toolbar {
                     #if os(iOS)
-                    if tab != .home {
+                    if tab != .home && tab != .more && tab != .settings && tab != .downloads,
+                       paths[tab]?.isEmpty ?? true {
                         ToolbarItem(placement: .topBarTrailing) {
                             Button(mode.other.title) { changeMode(mode.other) }
                                 .accessibilityLabel("Switch to \(mode.other.title) mode")

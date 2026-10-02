@@ -1,0 +1,35 @@
+{
+  "revision": "2f8f8e1401718a543a5ccd58ad6bae29c42390b5",
+  "pendingProductionDiffSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "device": {
+    "serial": "emulator-5564",
+    "AVD": "Kinosail-Playback-01a0f2ab-API23",
+    "SDK": 23,
+    "size": "Physical size: 1080x1920",
+    "density": "Physical density: 480",
+    "fontScale": "null"
+  },
+  "fixture": "Generated white AVC plus SRT/NFO; actual isolated Go Server via loopback HTTP bridge; synthetic private session",
+  "command": [
+    "/Users/mikeo/.cache/kinosail-android-sdk/platform-tools/adb",
+    "-s",
+    "emulator-5564",
+    "shell",
+    "am",
+    "instrument",
+    "-w",
+    "-r",
+    "-e",
+    "class",
+    "com.kinosail.player.mobile.LivePlaybackOverlayTest#decodedLightVideoKeepsItsTitleAndActionsReadable",
+    "com.kinosail.player.dev.test/androidx.test.runner.AndroidJUnitRunner"
+  ],
+  "startedAt": "2026-10-01T02:58:44.785019+00:00",
+  "APKSHA256": {
+    "apps/player/apps/android/app/build/outputs/apk/debug/app-debug.apk": "93d9e6ac218b4283eb572e61b95263e7f8e64db2278b099e213b48c8f0b305f7",
+    "apps/player/apps/android/app/build/outputs/apk/androidTest/debug/app-debug-androidTest.apk": "5721960b0955844ca28cd56c1c6192b0d2b0da67f1203e22d998e65a66b19a44"
+  },
+  "commandExitCode": 0,
+  "finishedAt": "2026-10-01T02:58:47.986298+00:00",
+  "result": "FAIL"
+}

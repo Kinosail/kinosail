@@ -2,6 +2,7 @@ package catalog
 
 import (
 	"bytes"
+	"context"
 	"fmt"
 	"net/url"
 	"sort"
@@ -13,20 +14,30 @@ import (
 	"golang.org/x/text/language"
 )
 
-func sortReferences(items []*library.Item, order, query, locale string) { //nolint:cyclop,gocognit // All sort precedence stays explicit and deterministic.
+func sortReferences(ctx context.Context, items []*library.Item, order, query, locale string) error { //nolint:cyclop,gocognit // All sort precedence stays explicit and deterministic.
+	if err := ctx.Err(); err != nil {
+		return err
+	}
 	order = normalizeSort(order)
 	titles := collate.New(language.Make(locale))
 	if order == "title" && query == "" {
-		sortTitles(items, titles)
-		return
+		return sortTitles(ctx, items, titles)
 	}
 	var ranks map[*library.Item]int
 	if query != "" {
 		normalized := searchText(query)
 		ranks = make(map[*library.Item]int, len(items))
-		for _, item := range items {
+		for position, item := range items {
+			if position%64 == 0 {
+				if err := ctx.Err(); err != nil {
+					return err
+				}
+			}
 			ranks[item] = searchRankNormalized(*item, normalized)
 		}
+	}
+	if err := ctx.Err(); err != nil {
+		return err
 	}
 	sort.Slice(items, func(left, right int) bool {
 		if query != "" {
@@ -44,13 +55,27 @@ func sortReferences(items []*library.Item, order, query, locale string) { //noli
 		comparison := titles.CompareString(sortTitle(*items[left]), sortTitle(*items[right]))
 		return comparison < 0 || comparison == 0 && items[left].ID < items[right].ID
 	})
+	return ctx.Err()
 }
 
-func sortTitles(items []*library.Item, titles *collate.Collator) {
+func sortTitles(ctx context.Context, items []*library.Item, titles *collate.Collator) error {
 	var buffer collate.Buffer
+	keys := make([]byte, 0, len(items)*64)
 	keyed := make([]sortReference, len(items))
 	for position, item := range items {
-		keyed[position] = sortReference{item, titles.KeyFromString(&buffer, sortKey(*item))}
+		if position%64 == 0 {
+			if err := ctx.Err(); err != nil {
+				return err
+			}
+		}
+		// Reuse collation scratch space; keep independent keys in compact storage.
+		buffer.Reset()
+		start := len(keys)
+		keys = append(keys, titles.KeyFromString(&buffer, sortKey(*item))...)
+		keyed[position] = sortReference{item, keys[start:]}
+	}
+	if err := ctx.Err(); err != nil {
+		return err
 	}
 	sort.Slice(keyed, func(left, right int) bool {
 		comparison := bytes.Compare(keyed[left].key, keyed[right].key)
@@ -59,6 +84,7 @@ func sortTitles(items []*library.Item, titles *collate.Collator) {
 	for position := range items {
 		items[position] = keyed[position].item
 	}
+	return ctx.Err()
 }
 
 func normalizeSort(order string) string {

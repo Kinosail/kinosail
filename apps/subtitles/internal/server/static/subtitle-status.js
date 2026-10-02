@@ -16,8 +16,8 @@
       const value = Number(element.textContent);
       if (Number.isSafeInteger(value) && value >= 0) element.textContent = number.format(value);
     });
-    document.querySelectorAll("time:not([datetime])").forEach(element => {
-      const value = element.textContent.trim();
+    document.querySelectorAll("time").forEach(element => {
+      const value = element.dateTime || element.textContent.trim();
       const date = new Date(value);
       if (!Number.isNaN(date.getTime())) {
         element.dateTime = value;

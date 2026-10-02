@@ -1,6 +1,7 @@
 package catalog
 
 import (
+	"context"
 	"fmt"
 	"sort"
 
@@ -8,13 +9,37 @@ import (
 )
 
 // Apply selects, orders, groups, and pages Viewer-visible candidates.
-func (browse Browse) Apply(candidates []Candidate) (Result, error) {
-	selected := browseCandidates(candidates, browse.view, browse.query)
+func (browse Browse) Apply(ctx context.Context, candidates []Candidate) (Result, error) {
+	if err := ctx.Err(); err != nil {
+		return Result{}, err
+	}
+	return browse.apply(ctx, append([]Candidate(nil), candidates...))
+}
+
+// apply owns its candidate storage and can compact it after releasing profile locks.
+func (browse Browse) apply(ctx context.Context, candidates []Candidate) (Result, error) {
+	selected, err := browseCandidates(ctx, candidates, browse.view, browse.query)
+	if err != nil {
+		return Result{}, err
+	}
 	if browse.view == "history" {
 		sortHistory(selected)
 	}
-	items := browseReferences(selected, browse)
+	if err := ctx.Err(); err != nil {
+		return Result{}, err
+	}
+	return browse.applyItems(ctx, candidateReferences(selected))
+}
+
+func (browse Browse) applyItems(ctx context.Context, references []*library.Item) (Result, error) {
+	items, err := browseReferences(ctx, references, browse)
+	if err != nil {
+		return Result{}, err
+	}
 	letters := browseLetterGroups(items, browse)
+	if err := ctx.Err(); err != nil {
+		return Result{}, err
+	}
 	pageStart, pageEnd, offset, err := browse.pageWindow(items, letters)
 	if err != nil {
 		return Result{}, err
@@ -24,15 +49,20 @@ func (browse Browse) Apply(candidates []Candidate) (Result, error) {
 	return result, nil
 }
 
-func browseCandidates(candidates []Candidate, view, query string) []Candidate {
-	selected := make([]Candidate, 0, len(candidates))
+func browseCandidates(ctx context.Context, candidates []Candidate, view, query string) ([]Candidate, error) {
+	selected := candidates[:0]
 	normalized := searchText(query)
-	for _, candidate := range candidates {
+	for position, candidate := range candidates {
+		if position%64 == 0 {
+			if err := ctx.Err(); err != nil {
+				return nil, err
+			}
+		}
 		if candidate.Item != nil && viewMatches(candidate, view) && (query == "" || matchesNormalized(*candidate.Item, normalized)) {
 			selected = append(selected, candidate)
 		}
 	}
-	return selected
+	return selected, ctx.Err()
 }
 
 func sortHistory(selected []Candidate) {
@@ -41,14 +71,22 @@ func sortHistory(selected []Candidate) {
 	})
 }
 
-func browseReferences(selected []Candidate, browse Browse) []*library.Item {
-	items := candidateReferences(selected)
-	sortReferences(items, browse.order, browse.query, browse.locale)
+func browseReferences(ctx context.Context, items []*library.Item, browse Browse) ([]*library.Item, error) {
+	if err := ctx.Err(); err != nil {
+		return nil, err
+	}
+	if !browse.titleOrdered {
+		if err := sortReferences(ctx, items, browse.order, browse.query, browse.locale); err != nil {
+			return nil, err
+		}
+	}
 	if browse.view == "shows" {
 		items = showReferences(items)
-		sortReferences(items, browse.order, browse.query, browse.locale)
+		if err := sortReferences(ctx, items, browse.order, browse.query, browse.locale); err != nil {
+			return nil, err
+		}
 	}
-	return items
+	return items, nil
 }
 
 func browseLetterGroups(items []*library.Item, browse Browse) []Letter {
@@ -91,25 +129,99 @@ func browsePage(items []*library.Item, offset, pageEnd, limit int) []library.Ite
 	return result
 }
 
-func itemCandidates(items []*library.Item, visible func(library.Item) bool, state func(string) (bool, PlaybackState)) []Candidate {
+func itemCandidates(ctx context.Context, items []*library.Item, visible func(library.Item) bool, state func(string) (bool, PlaybackState)) ([]Candidate, error) {
+	if err := ctx.Err(); err != nil {
+		return nil, err
+	}
 	candidates := make([]Candidate, 0, len(items))
-	for _, item := range items {
+	for position, item := range items {
+		if position%64 == 0 {
+			if err := ctx.Err(); err != nil {
+				return nil, err
+			}
+		}
 		if item != nil && visible(*item) {
 			listed, progress := state(item.ID)
 			candidates = append(candidates, Candidate{Item: item, Listed: listed, Watched: progress.Watched, Updated: progress.Updated})
 		}
 	}
-	return candidates
+	return candidates, ctx.Err()
 }
 
 // ApplyAccess reads one consistent app-owned Viewer state snapshot.
-func (browse Browse) ApplyAccess(items []*library.Item, access BrowseAccess) (Result, error) {
+func (browse Browse) ApplyAccess(ctx context.Context, items []*library.Item, access BrowseAccess) (Result, error) {
+	if err := ctx.Err(); err != nil {
+		return Result{}, err
+	}
 	access.ProgressMutex.Lock()
 	access.ListMutex.RLock()
-	candidates := itemCandidates(items, access.Visible, func(id string) (bool, PlaybackState) {
-		return (*access.Listed)[access.ProfileID+":"+id], ProfileProgress(*access.Progress, access.ProfileID, access.Owner, id)
-	})
+	var references []*library.Item
+	var candidates []Candidate
+	var err error
+	if browse.view == "history" {
+		candidates, err = itemCandidates(ctx, items, access.Visible, func(id string) (bool, PlaybackState) {
+			return false, ProfileProgress(*access.Progress, access.ProfileID, access.Owner, id)
+		})
+	} else {
+		references, err = browse.accessItems(ctx, items, access)
+	}
 	access.ListMutex.RUnlock()
 	access.ProgressMutex.Unlock()
-	return browse.Apply(candidates)
+	if err != nil {
+		return Result{}, err
+	}
+	if browse.view == "history" {
+		return browse.apply(ctx, candidates)
+	}
+	references, err = searchReferences(ctx, references, browse.query)
+	if err != nil {
+		return Result{}, err
+	}
+	return browse.applyItems(ctx, references)
+}
+
+// accessItems owns selected references and reads only state used by the view.
+func (browse Browse) accessItems(ctx context.Context, items []*library.Item, access BrowseAccess) ([]*library.Item, error) {
+	selected := make([]*library.Item, 0, len(items))
+	for position, item := range items {
+		if position%64 == 0 {
+			if err := ctx.Err(); err != nil {
+				return nil, err
+			}
+		}
+		if item == nil || !access.Visible(*item) {
+			continue
+		}
+		candidate := Candidate{Item: item}
+		switch browse.view {
+		case "list":
+			candidate.Listed = (*access.Listed)[access.ProfileID+":"+item.ID]
+		case "unwatched":
+			candidate.Watched = ProfileProgress(*access.Progress, access.ProfileID, access.Owner, item.ID).Watched
+		}
+		if viewMatches(candidate, browse.view) {
+			selected = append(selected, item)
+		}
+	}
+	return selected, ctx.Err()
+}
+
+// searchReferences compacts owned storage after releasing profile locks.
+func searchReferences(ctx context.Context, items []*library.Item, query string) ([]*library.Item, error) {
+	if query == "" {
+		return items, ctx.Err()
+	}
+	selected := items[:0]
+	normalized := searchText(query)
+	for position, item := range items {
+		if position%64 == 0 {
+			if err := ctx.Err(); err != nil {
+				return nil, err
+			}
+		}
+		if matchesNormalized(*item, normalized) {
+			selected = append(selected, item)
+		}
+	}
+	return selected, ctx.Err()
 }

@@ -70,6 +70,8 @@ test("offline download stops before transfer when device storage is full", async
 
 test("offline removal binds immediately, blocks repeat submits, and resumes live updates after BFCache", async ({ page }) => {
   await page.addInitScript(() => {
+    // This lifecycle fixture has no device file; storage cleanup has separate journeys.
+    Object.defineProperty(navigator.storage, "getDirectory", { configurable: true, value: undefined });
     Object.defineProperty(navigator, "serviceWorker", {
       configurable: true,
       value: Object.assign(new EventTarget(), { controller: null, getRegistration: () => new Promise(() => {}) }),
@@ -129,7 +131,7 @@ test("offline removal binds immediately, blocks repeat submits, and resumes live
 
 test("offline surfaces replace pending text when IndexedDB initialization fails", async ({ page }) => {
   await page.addInitScript(() => {
-    const worker = { scriptURL: new URL("/service-worker.js?v=54", location.href).href, state: "activated" };
+    const worker = { scriptURL: new URL("/service-worker.js?v=55", location.href).href, state: "activated" };
     Object.defineProperties(navigator.serviceWorker, {
       controller: { configurable: true, get: () => worker },
       getRegistration: { configurable: true, value: async () => ({ active: worker }) },
@@ -163,7 +165,7 @@ test("offline surfaces replace pending text when IndexedDB initialization fails"
 
 test("offline writes fail closed before local changes without Web Locks", async ({ page }) => {
   await page.addInitScript(() => {
-    const worker = { scriptURL: new URL("/service-worker.js?v=54", location.href).href, state: "activated" };
+    const worker = { scriptURL: new URL("/service-worker.js?v=55", location.href).href, state: "activated" };
     Object.defineProperties(navigator.serviceWorker, {
       controller: { configurable: true, get: () => worker },
       getRegistration: { configurable: true, value: async () => ({ active: worker }) },

@@ -4,7 +4,7 @@ import json
 from urllib.parse import urlsplit
 
 SOCIAL_KEYS = ('og:image', 'og:image:type', 'og:image:width', 'og:image:height',
-               'og:image:alt', 'twitter:image', 'twitter:card')
+               'og:image:alt', 'twitter:image', 'twitter:card', 'og:url', 'og:title', 'og:description')
 
 
 class SearchMetadata(HTMLParser):
@@ -12,6 +12,9 @@ class SearchMetadata(HTMLParser):
         super().__init__()
         self.canonicals = []
         self.descriptions = []
+        self.titles = []
+        self.title = None
+        self.robots = []
         self.social = {}
         self.blocks = []
         self.current = None
@@ -26,6 +29,10 @@ class SearchMetadata(HTMLParser):
             self.canonicals.append(attrs.get('href', ''))
         if tag == 'meta' and attrs.get('name') == 'description':
             self.descriptions.append(attrs.get('content', ''))
+        if tag == 'meta' and attrs.get('name') == 'robots':
+            self.robots.append(attrs.get('content', ''))
+        if tag == 'title':
+            self.title = ''
         if tag == 'meta':
             key = attrs.get('property') or attrs.get('name')
             if key in SOCIAL_KEYS:
@@ -34,10 +41,15 @@ class SearchMetadata(HTMLParser):
             self.current = ''
 
     def handle_data(self, data):
+        if self.title is not None:
+            self.title += data
         if self.current is not None:
             self.current += data
 
     def handle_endtag(self, tag):
+        if tag == 'title' and self.title is not None:
+            self.titles.append(self.title)
+            self.title = None
         if tag == 'script' and self.current is not None:
             self.blocks.append(self.current)
             self.current = None
@@ -50,9 +62,18 @@ def validate(source, expected):
         errors.append('canonical must match the public page URL exactly once')
     if len(page.descriptions) != 1 or not page.descriptions[0].strip():
         errors.append('one nonempty description required')
+    if len(page.titles) != 1 or not page.titles[0].strip():
+        errors.append('one nonempty title required')
+    directives = {item.strip().lower() for value in page.robots for item in value.split(',')}
+    if len(page.robots) != 1 or not {'index', 'follow'} <= directives or directives & {'noindex', 'nofollow', 'nosnippet', 'none', 'max-snippet:0'}:
+        errors.append('public pages must allow indexing and snippets')
     for key in SOCIAL_KEYS:
         if len(page.social.get(key, [])) != 1 or not page.social[key][0].strip():
             errors.append(f'one nonempty {key} required')
+    if page.social.get('og:url') != [expected]:
+        errors.append('Open Graph URL must match canonical')
+    if page.social.get('og:description') != page.descriptions:
+        errors.append('Open Graph description must match page description')
     image = page.social.get('og:image', [''])[0]
     try:
         parsed = urlsplit(image)

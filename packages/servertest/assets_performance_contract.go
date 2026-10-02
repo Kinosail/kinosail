@@ -1,14 +1,48 @@
 package servertest
 
 import (
+	"crypto/sha256"
 	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"os"
 	"path/filepath"
+	"regexp"
 	"strings"
 	"testing"
 )
+
+// PlayerScriptURLTracksServedContents prevents immutable browser caches from retaining old playback code.
+func (fixture AssetsFixture) PlayerScriptURLTracksServedContents(t *testing.T) {
+	t.Helper()
+	t.Parallel()
+	media := t.TempDir()
+	if err := os.WriteFile(filepath.Join(media, "Arrival.mp4"), nil, 0o600); err != nil {
+		t.Fatal(err)
+	}
+	handler := fixture.NewHandler(media, "", false)
+	home := httptest.NewRecorder()
+	handler.ServeHTTP(home, httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/", nil))
+	item := regexp.MustCompile(`/(?:watch|item)/([a-f0-9]+)`).FindStringSubmatch(home.Body.String())
+	if home.Code != http.StatusOK || len(item) != 2 {
+		t.Fatalf("library did not expose the test video: status %d", home.Code)
+	}
+	page := httptest.NewRecorder()
+	handler.ServeHTTP(page, httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/watch/"+item[1], nil))
+	script := regexp.MustCompile(`src="(/static/player\.js\?v=[^"]+)"`).FindStringSubmatch(page.Body.String())
+	if page.Code != http.StatusOK || len(script) != 2 {
+		t.Fatalf("watch page did not expose a versioned player script: status %d", page.Code)
+	}
+	response := httptest.NewRecorder()
+	handler.ServeHTTP(response, httptest.NewRequestWithContext(t.Context(), http.MethodGet, script[1], nil))
+	if response.Code != http.StatusOK || response.Header().Get("Cache-Control") != "public, max-age=31536000, immutable" || response.Body.Len() == 0 {
+		t.Fatalf("player script = status %d, cache %q, bytes %d", response.Code, response.Header().Get("Cache-Control"), response.Body.Len())
+	}
+	want := fmt.Sprintf("/static/player.js?v=%x", sha256.Sum256(response.Body.Bytes()))
+	if script[1] != want {
+		t.Fatalf("player script URL = %q; want served content hash URL %q", script[1], want)
+	}
+}
 
 // LibraryPrioritizesVisibleArtworkWithoutLayoutShift preserves the shared app's asset performance contract.
 func (fixture AssetsFixture) LibraryPrioritizesVisibleArtworkWithoutLayoutShift(t *testing.T) {

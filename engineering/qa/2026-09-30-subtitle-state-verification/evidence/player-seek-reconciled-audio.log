@@ -1,0 +1,14 @@
+
+Running 3 tests using 1 worker
+
+(node:69711) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  1 [chromium] › test-instance-production.spec.ts:46:1 › saved video Compatibility keeps real music and audiobook playback on their pages (3.7s)
+(node:69865) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  2 [firefox] › test-instance-production.spec.ts:46:1 › saved video Compatibility keeps real music and audiobook playback on their pages (5.1s)
+(node:69903) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  3 [webkit] › test-instance-production.spec.ts:46:1 › saved video Compatibility keeps real music and audiobook playback on their pages (5.1s)
+
+  3 passed (29.0s)

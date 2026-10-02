@@ -1,0 +1,30 @@
+{
+  "revision": "2f8f8e1401718a543a5ccd58ad6bae29c42390b5",
+  "sourceState": "test first; PlaybackScreen production owner unchanged",
+  "APKSHA256": {
+    "apps/player/apps/android/app/build/outputs/apk/debug/app-debug.apk": "497059f13b1c90c4aa9f1af2dd2501d609363558e7246db70844c3c3bfbd5de6",
+    "apps/player/apps/android/app/build/outputs/apk/androidTest/debug/app-debug-androidTest.apk": "aae4f23c6200526aecfa33a696af532027573522a766bf7268441bd628959fd2"
+  },
+  "SDK": 23,
+  "AVD": "Kinosail-Playback-01a0f2ab-API23",
+  "data": "Generated white portrait AVC, captions/NFO on actual isolated Go Server; private synthetic session",
+  "startedAt": "2026-10-01T02:30:52.132931+00:00",
+  "command": [
+    "/Users/mikeo/.cache/kinosail-android-sdk/platform-tools/adb",
+    "-s",
+    "emulator-5564",
+    "shell",
+    "am",
+    "instrument",
+    "-w",
+    "-r",
+    "-e",
+    "class",
+    "com.kinosail.player.mobile.LivePlaybackOverlayTest",
+    "com.kinosail.player.dev.test/androidx.test.runner.AndroidJUnitRunner"
+  ],
+  "commandExitCode": 0,
+  "result": "FAIL",
+  "finishedAt": "2026-10-01T02:30:55.017087+00:00",
+  "repeat": "Second unchanged known-state reproduction"
+}

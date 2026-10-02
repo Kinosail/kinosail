@@ -37,7 +37,7 @@ func (adapter *Gateway) manageAPI(ctx context.Context, _ *mcp.CallToolRequest, i
 		return nil, mcpAPIOutput{}, errors.New("GET management requests must not include a body")
 	}
 	output, err := adapter.callAPI(ctx, method, input.Path, input.Body, ManageAccess)
-	return nil, output, err
+	return mcpToolResult(output), output, err
 }
 
 func (adapter *Gateway) searchMedia(ctx context.Context, _ *mcp.CallToolRequest, input mcpMediaInput) (*mcp.CallToolResult, mcpAPIOutput, error) {
@@ -46,7 +46,7 @@ func (adapter *Gateway) searchMedia(ctx context.Context, _ *mcp.CallToolRequest,
 		return nil, mcpAPIOutput{}, err
 	}
 	output, err := adapter.callAPI(ctx, http.MethodGet, path, nil, ReadAccess)
-	return nil, limitMCPItems(output, limit), err
+	return mcpToolResult(output), limitMCPItems(output, limit), err
 }
 
 func (adapter *Gateway) recommendationContext(ctx context.Context, _ *mcp.CallToolRequest, input mcpMediaInput) (*mcp.CallToolResult, mcpRecommendationOutput, error) {
@@ -62,12 +62,20 @@ func (adapter *Gateway) recommendationContext(ctx context.Context, _ *mcp.CallTo
 		return nil, mcpRecommendationOutput{}, err
 	}
 	candidates, err := adapter.callAPI(ctx, http.MethodGet, path, nil, ReadAccess)
-	return nil, mcpRecommendationOutput{limitMCPItems(history, limit), limitMCPItems(candidates, limit)}, err
+	return mcpToolResult(history, candidates), mcpRecommendationOutput{limitMCPItems(history, limit), limitMCPItems(candidates, limit)}, err
 }
 
 func (adapter *Gateway) createPlaylist(ctx context.Context, _ *mcp.CallToolRequest, input mcpPlaylistInput) (*mcp.CallToolResult, mcpAPIOutput, error) {
 	output, err := adapter.callAPI(ctx, http.MethodPost, "/api/v1/playlists", input, WriteAccess)
-	return nil, output, err
+	return mcpToolResult(output), output, err
+}
+
+func mcpToolResult(outputs ...mcpAPIOutput) *mcp.CallToolResult {
+	result := &mcp.CallToolResult{}
+	for _, output := range outputs {
+		result.IsError = result.IsError || output.Status >= http.StatusBadRequest
+	}
+	return result
 }
 
 func mcpMediaPath(input mcpMediaInput) (string, int, error) {

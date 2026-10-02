@@ -2,7 +2,7 @@
 title: Connect an MCP client
 description: Connect an assistant to Kinosail through the Model Context Protocol.
 section: Build with Kinosail
-last_reviewed: 2026-09-20
+last_reviewed: 2026-09-29
 ---
 
 # Connect an MCP client
@@ -65,7 +65,7 @@ The client needs access to the Server’s management boundary over the local net
 
 When deployment-managed OAuth is configured, follow the identity provider registration shown by the Server instead of assuming built-in authorization.
 
-The Owner can revoke an HTTPS connection from **AI agent connections**. Access tokens expire, and refresh access is stored by the Server for the approved connection.
+The Owner can revoke an HTTPS connection from **AI agent connections**. Access tokens expire, and refresh access is stored by the Server for the approved connection. Built-in OAuth approval lasts up to 30 days. Refresh tokens rotate after each use. Reusing an old refresh token revokes that connection and requires approval again.
 
 ## Understand MCP grants
 
@@ -90,7 +90,34 @@ The MCP server provides these tools according to the grant:
 - `create_playlist` creates a Profile-owned playlist; and
 - `manage_api` performs approved Owner operations.
 
+Generic configuration changes require the browser settings. MCP blocks these mutations to protect identity settings and credentials.
+
 The MCP adapter accepts relative `/api/v1` paths only. It rejects absolute URLs and operations outside the approved route set. Responses are JSON and are bounded before they return to the client.
+
+## Subscribe to updates
+
+Clients that support MCP Events can discover and manage signed webhook subscriptions.
+The Server advertises `events/list`, `events/subscribe`, and `events/unsubscribe`.
+
+| Event | Update |
+| --- | --- |
+| `library.updated` | The indexed media library changed. |
+| `download.updated` | A download owned by the connected Profile changed. |
+| `home-assistant.command` | A player command for the connected Profile changed. |
+
+Use a public HTTPS callback and a `whsec_` signing secret. The Server verifies the
+callback before saving a subscription. Notices contain the affected relative API
+resource path. An optional `resource` argument filters to one exact path.
+
+Subscriptions last at most 24 hours, with a one-minute minimum. Refresh before
+`refreshBefore` to continue delivery. Built-in connection revocation and Profile
+access changes stop delivery. External OAuth must return `client_id`; subscriptions
+expire with its access token. Provider revocation is detected on the next authenticated request.
+
+Cursors are null. Updates missed during downtime cannot be replayed. A refresh
+reports skipped notices with `truncated: true` and resumes suspended delivery.
+Use the [ChatGPT Events guide](https://developers.openai.com/plugins/build/mcp-events)
+to configure plugin monitoring. Adding an ordinary tool connection does not start monitoring.
 
 ## Try a read-only task first
 
@@ -156,6 +183,8 @@ MCP may return a media path or playback plan through an approved read operation,
 ## Protocol and security
 
 The HTTPS endpoint is `POST /mcp` and uses stateless Streamable HTTP. Kinosail currently accepts MCP protocol version `2026-07-28`. `GET /mcp` and `DELETE /mcp` are not supported.
+
+Kinosail limits `/mcp` to 120 requests per minute per network address. Tool calls share a limit of 120 per minute per Profile across HTTPS and host STDIO. If a limit is reached, wait one minute and retry.
 
 Bearer tokens travel in the `Authorization` header. Do not put them in query strings. Kinosail validates the OAuth resource audience, Profile grant, token expiry, and request origin.
 

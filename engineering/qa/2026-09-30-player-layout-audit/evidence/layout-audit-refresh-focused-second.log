@@ -1,0 +1,47 @@
+
+Running 3 tests using 1 worker
+
+(node:38244) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  1 [chromium] › layout-audit-configuration.spec.ts:127:1 › Media Shares keeps its heading and controls in a readable composition (1.9s)
+  ✘  2 [chromium] › layout-audit-library.spec.ts:85:1 › compact landscape shell keeps search and primary actions reachable (1.7s)
+(node:38376) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  3 [chromium] › layout-audit-shell.spec.ts:119:1 › transcoder support stays concise and accessible (9.5s)
+
+
+  1) [chromium] › layout-audit-library.spec.ts:85:1 › compact landscape shell keeps search and primary actions reachable 
+
+    Error: Quick Connect initial shell overlap
+
+    expect(received).toBeGreaterThanOrEqual(expected)
+
+    Expected: >= 74.578125
+    Received:    73.578125
+
+      165 | 				return { headerBottom: header.bottom, formTop: form.top, dockTop: dock.top, digits: digits.map(box => ({ top: box.top, bottom: box.bottom })) };
+      166 | 			});
+    > 167 | 			expect(initial.formTop, "Quick Connect initial shell overlap").toBeGreaterThanOrEqual(initial.headerBottom);
+          | 			                                                               ^
+      168 | 			expect(initial.digits).toHaveLength(6);
+      169 | 			for (const digit of initial.digits) {
+      170 | 				expect(digit.top, "Quick Connect code clears the header").toBeGreaterThanOrEqual(initial.headerBottom);
+        at /Users/mikeo/.codex/worktrees/all-app-polish/kinosail/apps/player/e2e/layout-audit-library.spec.ts:167:67
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../.kinosail-test/layout-audit-refresh-focused-second/layout-audit-library-compa-4231f-d-primary-actions-reachable-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../.kinosail-test/layout-audit-refresh-focused-second/layout-audit-library-compa-4231f-d-primary-actions-reachable-chromium/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../.kinosail-test/layout-audit-refresh-focused-second/layout-audit-library-compa-4231f-d-primary-actions-reachable-chromium/trace.zip
+    Usage:
+
+        pnpm exec playwright show-trace ../.kinosail-test/layout-audit-refresh-focused-second/layout-audit-library-compa-4231f-d-primary-actions-reachable-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    [chromium] › layout-audit-library.spec.ts:85:1 › compact landscape shell keeps search and primary actions reachable 
+  2 passed (35.8s)

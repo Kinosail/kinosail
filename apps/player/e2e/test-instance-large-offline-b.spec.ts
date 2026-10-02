@@ -3,44 +3,20 @@ import { createHash } from "node:crypto";
 import { configureTestInstance, downloadsSource, firstPlayable, login } from "./test-instance-helpers";
 
 configureTestInstance();
+test.use({ serviceWorkers: "block" });
 
 test.describe("large offline transfers", () => {
 
   test("offline resume does not count an orphaned OPFS write twice against quota", async ({ page }) => {
     await page.route((url) => url.pathname === "/static/downloads.js", (route) => route.fulfill({ contentType: "text/javascript", body: downloadsSource.replace("const chunkSize = 8 * 1024 * 1024;", "const chunkSize = 16;") }));
     await page.addInitScript(() => {
-      const worker = { scriptURL: new URL("/service-worker.js?v=54", location.href).href, state: "activated" };
+      const worker = { scriptURL: new URL("/service-worker.js?v=55", location.href).href, state: "activated" };
       Object.defineProperties(navigator.serviceWorker, {
         controller: { configurable: true, get: () => worker },
         getRegistration: { configurable: true, value: async () => ({ active: worker }) },
       });
-      Object.assign(window, { __offlineFile: new Uint8Array(16).fill(1) });
-      const root = {
-        getFileHandle: async () => ({
-          createWritable: async () => ({
-            close: async () => {},
-            truncate: async (size: number) => {
-              const current = (window as typeof window & { __offlineFile: Uint8Array }).__offlineFile;
-              const replacement = new Uint8Array(size);
-              replacement.set(current.subarray(0, size));
-              (window as typeof window & { __offlineFile: Uint8Array }).__offlineFile = replacement;
-            },
-            write: async ({ data, position }: { data: ArrayBuffer; position: number }) => {
-              const current = (window as typeof window & { __offlineFile: Uint8Array }).__offlineFile;
-              const incoming = new Uint8Array(data);
-              const replacement = new Uint8Array(Math.max(current.length, position + incoming.length));
-              replacement.set(current);
-              replacement.set(incoming, position);
-              (window as typeof window & { __offlineFile: Uint8Array }).__offlineFile = replacement;
-            },
-          }),
-          getFile: async () => new File([(window as typeof window & { __offlineFile: Uint8Array }).__offlineFile], "offline.mp4"),
-        }),
-        removeEntry: async () => { (window as typeof window & { __offlineFile: Uint8Array }).__offlineFile = new Uint8Array(); },
-      };
       Object.defineProperties(navigator.storage, {
         estimate: { configurable: true, value: async () => ({ quota: 100, usage: 80 }) },
-        getDirectory: { configurable: true, value: async () => root },
         persist: { configurable: true, value: async () => true },
       });
     });
@@ -77,6 +53,28 @@ test.describe("large offline transfers", () => {
         headers: { "Content-Digest": `sha-256=:${createHash("sha256").update(body).digest("base64")}:`, "Content-Range": `bytes ${start}-${end}/${media.length}` },
       });
     });
+    const supportsOPFS = await page.evaluate(async (id) => {
+      // Match the production writer's worker API; Window createWritable is not portable.
+      const scope = async (jobID: string) => {
+        if (typeof FileSystemFileHandle === "undefined" || !FileSystemFileHandle.prototype.createSyncAccessHandle) return self.postMessage({ supported: false });
+        try {
+          const file = await (await navigator.storage.getDirectory()).getFileHandle(jobID, { create: true });
+          const writer = await file.createSyncAccessHandle();
+          try { writer.write(new Uint8Array(16).fill(1)); writer.flush(); }
+          finally { writer.close(); }
+          self.postMessage({ supported: true });
+        } catch (error) { self.postMessage({ error: String(error) }); }
+      };
+      const url = URL.createObjectURL(new Blob([`(${scope.toString()})(${JSON.stringify(id)})`], { type: "text/javascript" }));
+      const worker = new Worker(url);
+      try {
+        return await new Promise<boolean>((resolve, reject) => {
+          worker.onmessage = ({ data }) => data.error ? reject(new Error(data.error)) : resolve(data.supported);
+          worker.onerror = reject;
+        });
+      } finally { worker.terminate(); URL.revokeObjectURL(url); }
+    }, jobID!);
+    test.skip(!supportsOPFS, "This engine lacks the OPFS sync writer; IndexedDB quota resume is covered separately.");
     await page.evaluate(({ id, itemID, profileID, quality, sha256, size, title }) => new Promise<void>((resolve, reject) => {
       const request = indexedDB.open("kinosail-offline-v1", 4);
       request.onsuccess = () => {
@@ -90,15 +88,15 @@ test.describe("large offline transfers", () => {
     }), { id: jobID!, itemID: itemID!, profileID: profileID!, quality: quality!, sha256, size: media.length, title: title! });
 
     await button.click();
-    await expect(page.getByText("Ready offline on this device", { exact: true })).toBeVisible({ timeout: 20_000 });
+    await expect(page.getByText("Saved and verified. Play to check compatibility.", { exact: true })).toBeVisible({ timeout: 20_000 });
     expect(ranges).toEqual([16, 16, 1]);
-    expect(await page.evaluate(() => (window as typeof window & { __offlineFile: Uint8Array }).__offlineFile.length)).toBe(media.length);
+    expect(await page.evaluate(async (id) => (await (await (await navigator.storage.getDirectory()).getFileHandle(id)).getFile()).size, jobID!)).toBe(media.length);
   });
 
   test("offline resume accounts for replaced IndexedDB chunks near quota", async ({ page }) => {
     await page.route((url) => url.pathname === "/static/downloads.js", (route) => route.fulfill({ contentType: "text/javascript", body: downloadsSource.replace("const chunkSize = 8 * 1024 * 1024;", "const chunkSize = 16;") }));
     await page.addInitScript(() => {
-      const worker = { scriptURL: new URL("/service-worker.js?v=54", location.href).href, state: "activated" };
+      const worker = { scriptURL: new URL("/service-worker.js?v=55", location.href).href, state: "activated" };
       Object.defineProperties(navigator.serviceWorker, {
         controller: { configurable: true, get: () => worker },
         getRegistration: { configurable: true, value: async () => ({ active: worker }) },
@@ -156,7 +154,7 @@ test.describe("large offline transfers", () => {
     }), { id: jobID!, itemID: itemID!, profileID: profileID!, quality: quality!, sha256, size: media.length, title: title! });
 
     await button.click();
-    await expect(page.getByText("Ready offline on this device", { exact: true })).toBeVisible({ timeout: 20_000 });
+    await expect(page.getByText("Saved and verified. Play to check compatibility.", { exact: true })).toBeVisible({ timeout: 20_000 });
     expect(ranges).toEqual([16, 16, 1]);
   });
 

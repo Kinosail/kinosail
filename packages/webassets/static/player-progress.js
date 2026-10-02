@@ -1,5 +1,5 @@
 let progressRevision = 0;
-const save = (watched) => player.dataset.castActive === "true" ? Promise.resolve() : player.dataset.offline === "true" ? window.KinosailOfflineMedia?.saveProgress(player, watched) : fetch(player.dataset.progress, {
+const save = (watched) => playbackPreparation || player.dataset.castActive === "true" ? Promise.resolve() : player.dataset.offline === "true" ? window.KinosailOfflineMedia?.saveProgress(player, watched) : fetch(player.dataset.progress, {
   method: "POST",
   headers: {"Content-Type": "application/x-www-form-urlencoded", ...(csrf ? {"X-Kinosail-CSRF": csrf} : {})},
   body: new URLSearchParams({seconds: watched ? 0 : player.currentTime, session: playbackSession, revision: ++progressRevision, ...(watched ? {watched: true} : {})}),
@@ -42,7 +42,10 @@ const resumeFromSavedProgress = () => {
 };
 if (player.readyState) resumeFromSavedProgress();
 else player.addEventListener("loadedmetadata", resumeFromSavedProgress, {once: true});
-player.addEventListener("pause", () => save(false));
+player.addEventListener("pause", () => {
+  if (preparationPausePending) { preparationPausePending--; return; }
+  save(false);
+});
 document.addEventListener("visibilitychange", () => {
   if (document.visibilityState === "hidden") {
     if (player.readyState >= HTMLMediaElement.HAVE_METADATA && !player.ended) save(false);
@@ -50,6 +53,7 @@ document.addEventListener("visibilitychange", () => {
   }
 });
 player.addEventListener("ended", async () => {
+  if (playbackPreparation) return;
   if (player.dataset.castActive === "true") return;
 	const saved = save(true);
 	const advanced = player.dataset.queue && advanceQueue();
@@ -73,7 +77,7 @@ if (player.dataset.homeAssistant === "true") {
       headers: {"Content-Type": "application/json", ...(csrf ? {"X-Kinosail-CSRF": csrf} : {})},
       body: JSON.stringify({
         name: `Kinosail on ${navigator.userAgentData?.platform || navigator.platform || "web"}`,
-        state: player.ended ? "idle" : player.paused ? "paused" : player.readyState < 3 ? "buffering" : "playing",
+        state: playbackPreparation ? "buffering" : player.ended ? "idle" : player.paused ? "paused" : player.readyState < 3 ? "buffering" : "playing",
         title: player.dataset.title || "",
         itemId: player.dataset.progress?.split("/").at(-1)?.split("?")[0] || "",
         position: Number.isFinite(player.currentTime) ? player.currentTime : 0,

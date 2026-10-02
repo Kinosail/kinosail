@@ -1,0 +1,19 @@
+{
+  "revision": "05da53145bc05235aa510fecc6392ec5928de061",
+  "command": "pnpm exec playwright test layout-audit-shell.spec.ts --grep transcoder support",
+  "testData": "Isolated Owner; generated populated library; rebuilt production server with electric-40",
+  "testSourceSha256": "0a6afad68121e2f084432865179283d5cc8b7004dcf3f84420a9c61098a67eda",
+  "productionSourceHashes": {
+    "internal/server/static/settings.css": "73bfbcc4c689f91b9a556c441a4a1b923eae4a01e66b9a74ccca83e8c6fa4a10",
+    "internal/server/album.go": "38b89b0b2e949825b6d8ba2d80c8446da2a1eedbc14b36e0f30cd454547fe23b",
+    "internal/server/navigation_shell.go": "e494b29af5912f95177c26635ec9d0475a295c4787c188c9519c9b0c0c2788af"
+  },
+  "environment": {
+    "server": "https://127.0.0.1:39227",
+    "browsers": "Chromium, Firefox, WebKit; Playwright 1.63.0",
+    "workers": 1
+  },
+  "startedAt": "2026-09-30T19:31:48.863780+00:00",
+  "exitCode": 1,
+  "finishedAt": "2026-09-30T19:32:45.164366+00:00"
+}
