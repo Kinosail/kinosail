@@ -219,15 +219,12 @@ const recoverDirectFailure = async (code = player.error?.code || 0, verifySource
   const retryNetwork = () => scheduleNetworkRetry(() => useOriginal(networkWantsPlay, pendingResume?.seconds ?? networkPosition), () => { networkRetryCount = 0; useOriginal(true, pendingResume?.seconds ?? networkPosition); });
   if (code === MediaError.MEDIA_ERR_NETWORK) return retryNetwork();
   if (playbackPolicy === "direct-only") return showFailure("Direct Play only is selected. Kinosail Player did not fall back.", "Retry Direct Play", retryDirect);
-  const label = player.dataset.compatibilityLabel || "Compatibility";
-  const action = player.dataset.compatibilityMode === "transcode" ? "Start video transcode" : `Use ${label}`;
-  if (code !== MediaError.MEDIA_ERR_DECODE && code !== MediaError.MEDIA_ERR_SRC_NOT_SUPPORTED) return showFailure("Playback stopped without a confirmed format problem. Try playing the original file again.", action, useCompatibleFallback);
+  if (code !== MediaError.MEDIA_ERR_DECODE && code !== MediaError.MEDIA_ERR_SRC_NOT_SUPPORTED) return showFailure("Playback stopped without a confirmed format problem. Try playing the original file again.", "Retry playback", retryDirect);
   if (verifySource) {
     const reachable = await directIsReachable();
     if (destroyed || generation !== adaptiveGeneration || player.dataset.offline === "true" || (player.currentSrc || player.src) !== failedSource) return;
     if (!reachable) return retryNetwork();
   }
-  if (player.dataset.compatibilityMode === "transcode") return showFailure(`${player.dataset.compatibilityDescription || "This device cannot play the original video."} Start video transcoding?`, action, useCompatibleFallback);
   useCompatibleFallback();
 };
 player.addEventListener("error", () => recoverDirectFailure());
