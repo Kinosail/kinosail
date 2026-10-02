@@ -93,12 +93,13 @@ test("Original quality applies only to the current playback", async ({ page }) =
   await expect.poll(() => page.evaluate(() => localStorage.getItem("kinosail.playback-policy-v2"))).toBeNull();
 });
 
-test("Direct First still asks before video conversion when Safari rejects the original container", async ({ page }) => {
+test("Direct First prepares video conversion when Safari rejects the original container", async ({ page }) => {
   await startDirectPlayer(page, { directType: "video/x-matroska", directSupported: false, safari: true, compatibleMode: "transcode", compatibleLabel: "Transcoding video", compatibleReason: "This device cannot decode the original video." });
 
-  await expect.poll(() => page.evaluate(() => (window as Window & { FakeHls: { instances: number } }).FakeHls.instances)).toBe(0);
-  await expect(page.locator("[data-playback-recovery]")).toBeVisible();
-  await expect(page.locator("[data-player-status] [data-player-fallback]")).toHaveText("Start video transcode");
+  await expect.poll(() => page.evaluate(() => (window as Window & { FakeHls: { instances: number } }).FakeHls.instances)).toBe(1);
+  await expect(page.locator("[data-playback-recovery]")).toBeHidden();
+  await expect(page.locator("[data-player-status] [data-player-fallback]")).toBeHidden();
+  await expect(page.locator("[data-playback-mode-status]")).toHaveText("Transcoding video");
 });
 
 test("Direct Play only still tries a container that Safari rejects", async ({ page }) => {
@@ -125,15 +126,36 @@ test("Direct First remuxes only after a direct decode error", async ({ page }) =
   await expect(page.locator('[data-playback-mode] input[value="direct-first"]')).toBeChecked();
 });
 
-test("Direct First asks before video transcoding", async ({ page }) => {
+for (const code of [3, 4]) test(`Direct First prepares video conversion automatically after format error ${code}`, async ({ page }) => {
   await startDirectPlayer(page, { compatibleMode: "transcode", compatibleLabel: "Transcoding video", compatibleReason: "This device cannot decode the original video." });
 
-  await failDirect(page, 4);
-  await expect.poll(() => page.evaluate(() => (window as Window & { FakeHls: { instances: number } }).FakeHls.instances)).toBe(0);
-  await expect(page.locator("[data-playback-recovery]")).toBeVisible();
-  await expect(page.locator("[data-player-status] [data-player-fallback]")).toHaveText("Start video transcode");
-  await page.locator("[data-player-status] [data-player-fallback]").click();
+  await failDirect(page, code);
   await expect.poll(() => page.evaluate(() => (window as Window & { FakeHls: { instances: number } }).FakeHls.instances)).toBe(1);
+  await expect(page.locator("[data-playback-recovery]")).toBeHidden();
+  await expect(page.locator("[data-player-status] [data-player-fallback]")).toBeHidden();
+  await expect(page.locator("video")).toHaveJSProperty("currentTime", 42);
+  await expect(page.locator('[data-playback-mode] input[value="direct-first"]')).toBeChecked();
+});
+
+test("an unconfirmed format failure retries Direct Play instead of offering video conversion", async ({ page }) => {
+  await startDirectPlayer(page, { compatibleMode: "transcode" });
+  await failDirect(page, 0);
+  const action = page.locator("[data-player-status] [data-player-fallback]");
+  await expect(action).toHaveText("Retry playback");
+  await action.click();
+  await expect.poll(() => page.evaluate(() => (window as Window & { directLoads?: number }).directLoads)).toBe(1);
+  expect(await page.evaluate(() => (window as Window & { FakeHls: { instances: number } }).FakeHls.instances)).toBe(0);
+});
+
+test("a format error on an unreachable original retries the connection without conversion", async ({ page }) => {
+  await startDirectPlayer(page, { compatibleMode: "transcode" });
+  await page.route("https://direct.test/movie.mp4", route => route.fulfill({ status: 503, body: "unavailable" }));
+  await page.clock.install();
+  await failDirect(page, 4);
+  await expect(page.locator("[data-player-status]")).toContainText("Connection interrupted. Reconnecting…");
+  await page.clock.fastForward(5000);
+  await expect.poll(() => page.evaluate(() => (window as Window & { directLoads?: number }).directLoads)).toBe(1);
+  expect(await page.evaluate(() => (window as Window & { FakeHls: { instances: number } }).FakeHls.instances)).toBe(0);
 });
 
 test("network errors retry the original source with retained position and a bounded budget", async ({ page }) => {

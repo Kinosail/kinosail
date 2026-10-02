@@ -141,7 +141,7 @@ test("player stays accessible in alternate display modes", async ({ page }, test
 	});
 });
 
-test("player explains and recovers from a required video transcode", async ({ page }, testInfo) => {
+test("player explains an unconfirmed failure and offers a direct retry", async ({ page }, testInfo) => {
 	test.skip(process.env.KINOSAIL_TEST_INSTANCE !== "1", "requires the populated public test instance");
 	await login(page);
 	await page.goto("/?view=movies");
@@ -156,13 +156,13 @@ test("player explains and recovers from a required video transcode", async ({ pa
 			video.dataset.compatibilityDescription = "This device cannot decode the original video.";
 			Object.defineProperty(video, "error", {
 				configurable: true,
-				value: { code: 4 },
+				value: { code: 0 },
 			});
 			video.dispatchEvent(new Event("error"));
 		});
 		const method = page.locator("[data-playback-mode-status]");
 		await expect(method).toHaveText("Direct Play stopped");
-		await expect(page.locator("[data-player-status] [data-player-fallback]")).toHaveText("Start video transcode");
+		await expect(page.locator("[data-player-status] [data-player-fallback]")).toHaveText("Retry playback");
 		expect((await new AxeBuilder({ page }).analyze()).violations, `${viewport.width}px recovery accessibility`).toEqual([]);
 		expect(await layoutProblems(page), `${viewport.width}px recovery overlay`).toEqual({
 			documentOverflow: 0,
@@ -181,7 +181,7 @@ test("player explains and recovers from a required video transcode", async ({ pa
 		await expect(page.locator("[data-playback-recovery]")).toBeVisible();
 		expect((await page.locator(".player-settings").boundingBox())?.height).toBeGreaterThanOrEqual(200);
 		await expect(page.locator("[data-player-status]")).toBeHidden();
-		await expect(page.locator("[data-playback-recovery] [data-player-fallback]")).toHaveText("Start video transcode");
+		await expect(page.locator("[data-playback-recovery] [data-player-fallback]")).toHaveText("Retry playback");
 		const recoveryColors = await page.locator("[data-playback-recovery] [data-player-fallback]").evaluate((button) => {
 			const style = getComputedStyle(button);
 			return { color: style.color, background: style.backgroundColor };
@@ -217,7 +217,7 @@ test("player explains and recovers from a required video transcode", async ({ pa
 		video.dataset.compatibilityDescription = "This device cannot decode the original video.";
 		Object.defineProperty(video, "error", {
 			configurable: true,
-			value: { code: 4 },
+			value: { code: 0 },
 		});
 		video.dispatchEvent(new Event("error"));
 	});

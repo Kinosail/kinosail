@@ -84,7 +84,7 @@ export async function completeHappyPath(page: Page, testInfo: TestInfo, { captur
   if (await removeFromList.isVisible()) await removeFromList.click();
   const video = page.locator("video");
   await expect(video).toBeVisible();
-  await page.getByRole("button", { name: "Start video transcode", exact: true }).click();
+  await expect(page.locator("[data-player-status] [data-player-fallback]")).toBeHidden();
   await video.evaluate(async (element: HTMLVideoElement) => {
     if (element.readyState < HTMLMediaElement.HAVE_METADATA) {
       await new Promise<void>((resolve, reject) => {
