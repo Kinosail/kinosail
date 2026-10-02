@@ -135,6 +135,14 @@ After the repair, the transport regression passed. The real iOS journey advanced
 
 Evidence includes the before/after result bundles, the disposable probe source, source hashes, and `native-progress-repair-receipt.json`. A preliminary single-method selector selected zero tests and is explicitly excluded from passing coverage. The saved-file journey proves use of a local file; the Server remained reachable during that run, so a disconnected-device journey is not yet claimed.
 
+### QA-006 — Hosted Player browser failures lose their evidence (confirmed and repaired)
+
+The failed WebKit job in QA-004 reported that its upload path contained no files. The run retained Docker build records but no browser failure artifact. Player's launcher appends the browser project to the configured output directory; the workflow uploaded only the unsuffixed directory. Subtitles uses the unsuffixed directory.
+
+The upload step now includes both directories. A regression executes each launcher's actual browser command with a recording `pnpm` function, creates representative failure evidence at the resulting path, and checks that the workflow's upload roots cover it. Before the change, all three Player engines failed and Subtitles passed. Afterward, all six app/engine combinations passed within the complete 49-test CI contract suite. `actionlint` also passed.
+
+The retained records are `browser-artifact-red`, `browser-artifact-ci-contracts`, and `browser-artifact-actionlint`. No browser error was ignored or required gate weakened. Actual hosted failure-artifact upload after this repair remains a separate verification boundary.
+
 ## Verification boundaries
 
 - Source tests: both app suites and 60 shared packages passed.
