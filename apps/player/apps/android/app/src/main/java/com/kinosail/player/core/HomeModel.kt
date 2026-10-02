@@ -17,13 +17,24 @@ import kotlinx.coroutines.withContext
 
 data class HomeState(val continueWatching: List<CatalogItem> = emptyList(),
                      val recent: List<CatalogItem> = emptyList(), val loading: Boolean = false,
-                     val notice: String? = null) {
-    val featured: CatalogItem? get() = continueWatching.firstOrNull { it.kind in PLAYABLE_KINDS }
-        ?: recent.firstOrNull { it.kind in PLAYABLE_KINDS }
-    val watchShelf: List<CatalogItem> get() = continueWatching.filterNot { it.id == featured?.id }.take(12)
-    val recentShelf: List<CatalogItem> get() = recent.filterNot { it.id == featured?.id }.take(24)
-
-    private companion object { val PLAYABLE_KINDS = setOf("video", "music", "audiobook") }
+                     val notice: String? = null, val listening: Boolean = false) {
+    private fun includes(item: CatalogItem) = if (listening) item.kind in setOf("music", "audiobook")
+        else item.kind in setOf("video", "show")
+    private val continuation get() = continueWatching.filter {
+        includes(it) && !it.progress.watched && !it.progress.dismissed && it.progress.seconds > 0
+    }
+    val featured: CatalogItem? get() = continuation.firstOrNull() ?: recent.firstOrNull(::includes)
+    val watchShelf get() = continuation.filterNot { it.id == featured?.id }.take(15)
+    val tvWatchingRail get() = continuation.take(15)
+    val recentShelf get() = recent.filter(::includes)
+    val movies get() = recent.filter { it.kind == "video" && it.showId.isEmpty() }
+    val shows get() = recent.filter { it.kind == "show" || it.kind == "video" && it.showId.isNotEmpty() }
+    val unwatchedMovies get() = movies.filterNot { it.progress.watched }
+    val unwatchedShows get() = shows.filterNot { it.progress.watched }
+    val movieGenres get() = movies.flatMap { movie ->
+        movie.genres.split(" · ").map(String::trim).filter(String::isNotEmpty).distinct().map { it to movie }
+    }.groupBy({ it.first }, { it.second }).toList()
+        .sortedWith(compareByDescending<Pair<String, List<CatalogItem>>> { it.second.size }.thenBy { it.first }).take(4)
 }
 
 class HomeModel(application: Application) : AndroidViewModel(application) {
@@ -64,15 +75,20 @@ class HomeModel(application: Application) : AndroidViewModel(application) {
             }
             val (history, recent) = coroutineScope {
                 val api = CatalogApi(saved.server)
-                val history = async(Dispatchers.IO) { api.list(saved.token, viewer.id, view = "history") }
-                val recent = async(Dispatchers.IO) { api.list(saved.token, viewer.id, sort = "added") }
-                history.await() to recent.await()
+                val history = async(Dispatchers.IO) { api.list(saved.token, viewer.id, view = "history", limit = 200) }
+                val categories = listOf("movies", "shows", "music", "audiobooks")
+                val added = categories.map { view -> async(Dispatchers.IO) {
+                    api.list(saved.token, viewer.id, view = view, sort = "added", limit = 36)
+                } }
+                history.await() to added.map { it.await() }
             }
             if (attempt == generation) {
-                state = HomeState(history.items, recent.items)
+                state = HomeState(history.items, recent.flatMap { it.items }.distinctBy(CatalogItem::id))
                 withContext(Dispatchers.IO) {
-                    runCatching { sessions.saveCatalog(saved.server, viewer, "home-history", history) }
-                    runCatching { sessions.saveCatalog(saved.server, viewer, "home-recent", recent) }
+                    runCatching { sessions.saveCatalog(saved.server, viewer, "home-history",
+                        history) }
+                    runCatching { sessions.saveCatalog(saved.server, viewer, "home-recent",
+                        CatalogPage(state.recent, state.recent.size, 0, 200)) }
                 }
             }
         } catch (error: CancellationException) { throw error } catch (error: ServerHttpException) {

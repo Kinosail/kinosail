@@ -13,7 +13,7 @@ class ArtworkClient(
     private val open: (URL) -> HttpURLConnection = { it.openConnection() as HttpURLConnection },
 ) {
     fun bytes(path: String, token: String, viewerId: String): ByteArray {
-        require(path.matches(CatalogApi.ARTWORK) &&
+        require((path.matches(CatalogApi.ARTWORK) || path.matches(CatalogApi.BACKDROP)) &&
             viewerId.matches(Regex("[A-Za-z0-9_-]{1,128}"))) { "Invalid artwork request." }
         return read(path, token, viewerId, MAX_BYTES)
     }

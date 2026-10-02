@@ -40,6 +40,18 @@ internal class WearRemoteSession(private val context: Context) {
         try { exchange(request) } finally { busy = false }
     }
 
+    suspend fun seek(player: WatchPlayer, position: Double) {
+        val request = player.seekRequest(position)
+        val current = selected
+        if (busy || current?.id != player.id || current.itemId != player.itemId || !current.active ||
+            position > current.duration) {
+            message = "Selected title changed. Return to the remote and try again."
+            return
+        }
+        busy = true
+        try { exchange(request) } finally { busy = false }
+    }
+
     private suspend fun exchange(request: WatchRequest) {
         try {
             val reply = withTimeout(8_000) {
