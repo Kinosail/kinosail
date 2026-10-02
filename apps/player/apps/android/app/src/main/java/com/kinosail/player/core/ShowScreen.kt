@@ -38,7 +38,7 @@ internal fun ShowScreen(showId: String, viewer: Viewer, catalog: CatalogModel, t
                 if (tv) androidx.tv.material3.Button(onClick = close) { androidx.tv.material3.Text(interfaceText("Back to Library")) }
                 else TextButton(onClick = close) { Text(interfaceText("Back")) }
             }
-            if (state.loading && detail == null) item { LibraryLoading(home = true, tv = tv) }
+            if (state.loading && detail == null) item { LibraryLoading(home = true, tv = tv, show = true) }
             state.notice?.let { notice -> item {
                 Text(notice, color = KinoColor.text, modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite })
                 if (tv) androidx.tv.material3.Button(onClick = model::retry) { androidx.tv.material3.Text(interfaceText("Try again")) }

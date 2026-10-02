@@ -32,4 +32,20 @@ class PersonalTabsTest {
         assertThrows(IllegalArgumentException::class.java) { store.save(viewer.copy(id = ""), listOf("home")) }
         assertEquals(listOf("home"), store.load(viewer))
     }
+    @Test fun invalidPersistedChoicesFallBackWithoutRewritingTheStore() {
+        val store = PersonalTabs(context)
+        store.save(viewer, listOf("home"))
+        val preferences = context.getSharedPreferences("kinosail_tabs", Context.MODE_PRIVATE)
+        val key = preferences.all.keys.single()
+        preferences.edit().putInt(key, 42).commit()
+        assertEquals(PersonalTabs.defaults, store.load(viewer))
+        assertEquals(42, preferences.getInt(key, 0))
+        listOf("", "home,,shows", "unknown", "home,home", "x".repeat(129)).forEach { raw ->
+            preferences.edit().putString(key, raw).commit()
+            assertEquals(PersonalTabs.defaults, store.load(viewer))
+            assertEquals(raw, preferences.getString(key, null))
+        }
+        assertThrows(IllegalArgumentException::class.java) { store.load(viewer.copy(id = "")) }
+    }
+
 }

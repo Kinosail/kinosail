@@ -140,6 +140,29 @@ class NativeParityJourneyTest {
         capture("show-season-two")
     }
 
+    @Test fun catalogGridKeepsPendingFailedEmptyAndLoadedStatesDistinct() = journey { fixture ->
+        waitText(if (tv) "Continue watching" else "Watching")
+        fixture.mode = "pending"
+        if (tv) compose.onNodeWithText("Movies").performScrollTo().performClick()
+        else compose.onNodeWithText("Movies").performClick()
+        compose.waitUntil(20_000) { compose.onAllNodesWithContentDescription("Loading library").fetchSemanticsNodes().isNotEmpty() }
+        capture("catalog-pending")
+        fixture.mode = "failed"
+        waitText("Could not load your library. Try again.")
+        capture("catalog-failed")
+        fixture.mode = "empty"
+        compose.onNodeWithText("Try again").performClick()
+        waitText("Nothing in your library yet.")
+        capture("catalog-empty")
+        fixture.mode = "ready"
+        compose.onNodeWithText("Home").performClick()
+        waitText(if (tv) "Continue watching" else "Watching")
+        if (tv) compose.onNodeWithText("Movies").performScrollTo().performClick()
+        else compose.onNodeWithText("Movies").performClick()
+        waitText("New Film")
+        capture("catalog-loaded")
+    }
+
     private fun journey(mode: String = "ready", check: (ParityFixture) -> Unit) {
         instrumentation.getUiAutomation(android.app.UiAutomation.FLAG_DONT_USE_ACCESSIBILITY)
         ParityFixture(mode).use { fixture ->
@@ -147,7 +170,8 @@ class NativeParityJourneyTest {
             context.getSharedPreferences("kinosail_tabs", 0).edit().clear().commit()
             SessionStore(context).save(SavedSession(ServerAddress("http://127.0.0.1:${fixture.port}"), "synthetic-token", fixture.viewer))
             val intent = Intent(context, if (tv) TvActivity::class.java else MobileActivity::class.java)
-            ActivityScenario.launch<android.app.Activity>(intent).use { check(fixture) }
+            try { ActivityScenario.launch<android.app.Activity>(intent).use { check(fixture) } }
+            finally { SessionStore(context).clear() }
         }
     }
     private fun waitText(text: String) {

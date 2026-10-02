@@ -6,7 +6,9 @@ import java.security.MessageDigest
 internal class PersonalTabs(context: Context) {
     private val preferences = context.getSharedPreferences("kinosail_tabs", Context.MODE_PRIVATE)
     fun load(viewer: Viewer): List<String> {
-        val saved = preferences.getString(key(viewer), null) ?: return defaults
+        val preferenceKey = key(viewer)
+        val saved = try { preferences.getString(preferenceKey, null) }
+            catch (_: ClassCastException) { null } ?: return defaults
         if (saved.length > 128) return defaults
         return saved.split(',').takeIf(::valid) ?: defaults
     }

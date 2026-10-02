@@ -109,7 +109,7 @@ internal fun MobileLibrary(connection: ConnectionModel, viewer: Viewer) {
                     state.notice?.let { Text(it, color = MaterialTheme.colorScheme.error,
                         modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite }) }
                     if (state.notice != null) TextButton(onClick = catalog::retry) { Text(interfaceText("Try again")) }
-                    if (state.loading && state.items.isEmpty()) LibraryLoading()
+                    if (state.loading && state.items.isEmpty()) LibraryLoading(view = state.view)
                     else if (state.items.isEmpty() && state.notice == null) Text(interfaceText(catalogEmptyMessage(state.view, catalog.hasActiveSearch)),
                         color = MaterialTheme.colorScheme.onSurfaceVariant)
                     LazyVerticalGrid(GridCells.Adaptive(if (state.view == "photos") 240.dp else 144.dp),

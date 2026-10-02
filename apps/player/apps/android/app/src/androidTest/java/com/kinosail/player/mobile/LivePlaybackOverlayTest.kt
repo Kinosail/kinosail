@@ -16,6 +16,8 @@ import androidx.compose.ui.test.onAllNodesWithContentDescription
 import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.hasText
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performSemanticsAction
@@ -143,11 +145,11 @@ class LivePlaybackOverlayTest {
         try {
             setMedia(json, mode)
             ActivityScenario.launch(MobileActivity::class.java).use { scenario ->
-                waitForText("Library")
-                compose.onNodeWithText("Library").performClick()
+                waitForText("Search")
+                compose.onNodeWithText("Search").performClick()
                 waitForText("Search library")
                 compose.onNodeWithText("Search library").performTextInput(title)
-                compose.onNodeWithText("Search", useUnmergedTree = true).performClick()
+                compose.onNode(hasText("Search") and SemanticsMatcher.expectValue(SemanticsProperties.Role, Role.Button)).performClick()
                 compose.waitUntil(30_000) {
                     compose.onAllNodesWithContentDescription(title).fetchSemanticsNodes().isNotEmpty()
                 }

@@ -101,7 +101,7 @@ internal fun TvLibrary(connection: ConnectionModel, viewer: Viewer) {
                 }
                 state.notice?.let { Text(it, color = KinoColor.text, modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite }) }
                 if (state.notice != null) Button(onClick = catalog::retry) { Text(interfaceText("Try again")) }
-                if (state.loading && state.items.isEmpty()) LibraryLoading(tv = true)
+                if (state.loading && state.items.isEmpty()) LibraryLoading(tv = true, view = state.view)
                 else if (state.items.isEmpty() && state.notice == null) Text(interfaceText(catalogEmptyMessage(state.view, catalog.hasActiveSearch)), color = KinoColor.muted)
                 LazyVerticalGrid(GridCells.Adaptive(if (state.view == "photos") 280.dp else 160.dp),
                     modifier = Modifier.weight(1f), state = grid, contentPadding = PaddingValues(12.dp),
