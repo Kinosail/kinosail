@@ -4,11 +4,13 @@ import { playerSource } from "./static-sources";
 for (const scenario of [
   { name: "first frame after a paused far seek @smoke", mode: "native", start: 0.083, position: 0, count: 1 },
   { name: "a later first keyframe", mode: "native", start: 2, position: 0, count: 1 },
+  { name: "a fractional frame after an hour-long seek @smoke", mode: "native", start: 0.083, position: 0, count: 1, target: 5005.9 },
   { name: "a position already inside the buffer", mode: "native", start: 0, position: 0.5, count: 1 },
   { name: "no buffered frames yet", mode: "native", start: 0, position: 0, count: 0 },
   { name: "direct playback", mode: "direct", start: 0.083, position: 0, count: 1 },
   { name: "MediaSource playback", mode: "mse", start: 0.083, position: 0, count: 1 },
 ]) test(`native seek readiness preserves pause with ${scenario.name}`, async ({ page }) => {
+  const target = "target" in scenario ? scenario.target! : 10.3;
   await page.setContent(`<html><head><base href="https://127.0.0.1:38127/"></head><body>
     <div class="media-stage"><video data-duration="7200" data-start="120" ${scenario.mode === "direct" ? 'data-direct="/media/movie"' : 'data-hls="/hls/movie/p/a-a0-s0-none-t0-b0/index.m3u8"'}></video>
       <div data-player-status><span class="buffer-skeleton"></span><span data-player-message>Loading video…</span><progress data-buffered max="100"></progress></div>
@@ -61,29 +63,38 @@ for (const scenario of [
   const video = page.locator("video"), status = page.locator("[data-player-status]");
   if (scenario.mode === "native") await expect(video).toHaveAttribute("data-load-calls", "1");
   await video.dispatchEvent("canplay");
-  await video.evaluate(async (media) => {
+  await video.evaluate(async (media, target) => {
     await media.play();
     media.dispatchEvent(new CustomEvent("kinosail:playback-intent", { detail: { playing: false } }));
     media.pause();
     (window as Window & {setDecoder: (state: {ready: number}) => void}).setDecoder({ready: 0});
-    media.currentTime = 10.3;
+    media.currentTime = target;
     media.dispatchEvent(new Event("seeking"));
-  });
+  }, target);
   if (scenario.mode === "native") await expect(video).toHaveAttribute("data-load-calls", "2");
   const source = await video.evaluate((media) => media.src);
   await video.evaluate((media, state) => {
     (window as Window & {setDecoder: (state: {time: number; start: number; count: number; ready: number}) => void}).setDecoder({ ...state, ready: 4 });
     media.dispatchEvent(new Event("loadstart"));
     media.dispatchEvent(new Event("loadedmetadata"));
-    media.dispatchEvent(new Event("canplay"));
   }, { time: scenario.position, start: scenario.start, count: scenario.count });
+  if ("target" in scenario) {
+    // A real gap must remain pending until native readiness moves into the range.
+    await video.evaluate((media) => {
+      (window as Window & {setDecoder: (state: {time: number}) => void}).setDecoder({time: 0.083 - 0.000001});
+      media.dispatchEvent(new Event("progress"));
+    });
+    await expect(status).toBeVisible();
+    await video.evaluate(() => (window as Window & {setDecoder: (state: {time: number}) => void}).setDecoder({time: 0}));
+  }
+  await video.dispatchEvent("canplay");
 
   const nativeReady = scenario.mode === "native" && scenario.count > 0;
   if (nativeReady) await expect(status).toBeHidden();
   else await expect(status).toBeVisible();
   await expect(video).toHaveJSProperty("paused", true);
   await expect.poll(() => video.evaluate((media) => media.currentTime)).toBeCloseTo(
-    scenario.mode === "native" ? 10.3 + Math.max(scenario.position, scenario.count ? scenario.start : 0) : 0,
+    scenario.mode === "native" ? target + Math.max(scenario.position, scenario.count ? scenario.start : 0) : 0,
     6,
   );
   await expect.poll(() => video.evaluate((media) => media.src)).toBe(source);
