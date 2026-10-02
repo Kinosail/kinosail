@@ -82,6 +82,7 @@ Available host disk space increased from approximately 13 GiB to 21 GiB. This do
 | Actual native PDF, EPUB, and comic documents | 1 function with 3 argument cases passed; populated renders inspected | `native-reader-evidence.json`; `ios-real-reader-documents-rendered.xcresult` |
 | Actual native EPUB active-content and external-resource isolation | 1 passed; reachable control fetched 1 image; protected chapter fetched 0 external resources | `native-reader-isolation-evidence.json`; `ios-real-reader-isolation-corrected.xcresult` |
 | Actual native reader failure and reload | 1 function with 6 cases passed; real 404 and revoked-token 303 resources, with native API 401 control | `native-reader-failure-recovery-evidence.json`; `ios-real-reader-failure-recovery-corrected.xcresult` |
+| Actual Server audio effect PCM | 4 modes passed on the single advertised 540p rendition; equal conversion paths and exact preference restoration | `actual-hls-pcm-controlled-evidence.json`; `actual-hls-pcm-controlled-identity.json` |
 
 The authorization fuzzer exercises public approval, revocation, and consumption operations using an in-memory Quick Connect broker. It rejects Owner and weak-session approvals and prevents revoked grants from issuing sessions. The persisted-state fuzzer requires valid media-share state to remain valid after pruning. Neither is an HTTP journey or a complete validation audit.
 
@@ -151,6 +152,8 @@ The existing onboarding journey now records media state in retained traces at `p
 
 Fresh local Chromium, Firefox, and WebKit journeys passed as `player-fresh-happy-chromium-18`, `player-fresh-happy-firefox-19`, and `player-fresh-happy-webkit-17`. WebKit and Firefox traces show media readiness resetting to zero and playback pausing after registered cleanup handlers. Chromium's passing trace contains no observer messages. These macOS direct-playback observations do not establish Linux Hls.js cleanup. An initial microtask observer ran before cleanup and was corrected; its apparent after-handler state is excluded. `playback-lifecycle-diagnostic-evidence.json` records the pending source hash, commands, fixture, traces, and this boundary. The hosted error remains unresolved.
 
+The [sixth deep run](https://github.com/Kinosail/kinosail/actions/runs/36978489755) at `da2dd733ae47bb1b74857aa8e7d143fc4df3e247` retained the new observations in its [WebKit artifact](https://github.com/Kinosail/kinosail/actions/runs/36978489755/artifacts/11214946529). Four HLS access-control errors occurred after the Library click began and before that document's `pagehide` capture. The later registered-handler observation shows paused playback and zero readiness. This narrows the timing to navigation before `pagehide`; it does not establish a Server CORS rejection or prove a repair. All three Subtitles browser jobs and Player Chromium and Firefox passed. Player WebKit and its aggregate checks failed; other executed jobs passed, and publication was skipped. `deep-sixth-evidence.json` records the exact revision, job results, trace hash, and timings. Full deep CI remains failed.
+
 ### QA-005 — Apple progress updates are rejected by the Server (confirmed and repaired)
 
 Actual iOS playback advanced, decoded a video frame, and sought successfully, but the Server rejected progress updates with HTTP 400. Both independent probe runs failed to observe a persisted position. Phase diagnostics isolated the failure to persistence; the moving clock and decoded-frame checks passed.
@@ -204,6 +207,17 @@ The result bundle contains one passed test, no skips, and no failures. The initi
 A further native reader journey passed six argument cases: missing resources and revoked sessions for PDF, EPUB, and comic. Real missing resources returned HTTP 404. Each separate Quick Connect token resolved its Viewer before sign-out and received HTTP 401 from the native API afterward. The protected web resource then returned HTTP 303 to sign-in; the native HTTP layer refused the redirect. The reader stopped its pending indicator, reported failure without exposing the Owner token, closed its document, and loaded the original document successfully on retry. No original book or Owner credential was changed.
 
 The result bundle reports one test function with six cases and no issues. The first attempt expected HTTP 401 from the web resource and recorded three expectation failures; its observed HTTP 303 matches the Server's web-route contract. That preliminary run is excluded from passing coverage. `native-reader-failure-recovery-evidence.json` records source and binary hashes, command, controlled metadata, and per-case results. The disposable probe was removed. This covers the actual simulator component and HTTP resource boundary, not the complete Reader screen or a physical device.
+
+A separate actual Go Server delivered a six-second MPEG-4 video with a quiet 1600 Hz mono tone. Each preference mode required video conversion, so plain and enhanced outputs used the same H.264/AAC path. The served source bytes matched the generated fixture hash. The fixture advertised one 540p rendition. Each mode decoded 96,000 finite mono samples from seconds two through four at 48 kHz, with peaks below clipping.
+
+| Mode | Decoded RMS | Ratio to plain | Peak |
+| --- | ---: | ---: | ---: |
+| Plain | 0.017642 | 1.00 | 0.025060 |
+| Dialog Boost | 0.030615 | 1.74 | 0.043516 |
+| Night Mode | 0.163133 | 9.25 | 0.230092 |
+| Both | 0.212388 | 12.04 | 0.300902 |
+
+All four modes passed. Original inherited preferences were restored exactly, and the owned Server process stopped. The running Go binary is the initial task baseline; its audio filter and Server enhancement sources are unchanged through the tested main revision. The initial comparison remuxed plain AAC but reencoded effects, so its small Dialog Boost difference is excluded from filter proof. Two controlled attempts assumed a filename title that the metadata stub renamed; the final probe verified source identity instead. `actual-hls-pcm-controlled-evidence.json` records fixture generation, source and binary hashes, API requests, local playlists, PCM hashes, commands, results, and cleanup. This proves this mono tone and single rendition, not multichannel mixing, subjective speech clarity, or physical speaker output.
 
 ### QA-008 — Hosted Subtitles WebKit disclosure does not open (unverified)
 
