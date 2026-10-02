@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.kinosail.player.core.PlaybackAccessibilityTest" tests="1" skipped="0" failures="0" errors="0" timestamp="2026-10-02T06:27:08.271Z" hostname="MikeOs-MacBook-Pro.local" time="0.824">
+  <properties/>
+  <testcase name="playbackFailureHasPoliteAnnouncement" classname="com.kinosail.player.core.PlaybackAccessibilityTest" time="0.822"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

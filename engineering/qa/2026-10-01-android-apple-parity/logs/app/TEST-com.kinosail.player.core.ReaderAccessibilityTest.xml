@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.kinosail.player.core.ReaderAccessibilityTest" tests="7" skipped="0" failures="0" errors="0" timestamp="2026-10-02T06:27:09.231Z" hostname="MikeOs-MacBook-Pro.local" time="0.35">
+  <properties/>
+  <testcase name="pendingPageBeforeCountLoadsShowsLoading" classname="com.kinosail.player.core.ReaderAccessibilityTest" time="0.077"/>
+  <testcase name="loadingFollowsPageAvailabilityAndStopsOnFailure" classname="com.kinosail.player.core.ReaderAccessibilityTest" time="0.07"/>
+  <testcase name="readyPageStopsLoadingAndPreservesItsImageDuringSaveFailure" classname="com.kinosail.player.core.ReaderAccessibilityTest" time="0.041"/>
+  <testcase name="unavailableFormatStopsLoadingWithoutOfferingPageRetry" classname="com.kinosail.player.core.ReaderAccessibilityTest" time="0.033"/>
+  <testcase name="pendingPageWithKnownCountShowsLoading" classname="com.kinosail.player.core.ReaderAccessibilityTest" time="0.033"/>
+  <testcase name="readingAndSavingErrorsAreAnnounced" classname="com.kinosail.player.core.ReaderAccessibilityTest" time="0.039"/>
+  <testcase name="savingErrorRemainsReadableOverALightPage" classname="com.kinosail.player.core.ReaderAccessibilityTest" time="0.053"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

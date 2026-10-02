@@ -1,0 +1,68 @@
+Printing with useUnmergedTree = 'false'
+Node #1 at (l=0.0, t=0.0, r=2424.0, b=1080.0)px
+ |-Node #9 at (l=142.0, t=137.0, r=2424.0, b=1017.0)px
+   Shape = 'RectangleShape'
+    |-Node #148 at (l=142.0, t=137.0, r=2424.0, b=807.0)px
+    | Shape = 'RectangleShape'
+    |  |-Node #149 at (l=142.0, t=137.0, r=2424.0, b=807.0)px
+    |  | Shape = 'RectangleShape'
+    |  |-Node #151 at (l=195.0, t=190.0, r=465.0, b=295.0)px
+    |  | Text = '[Movies]'
+    |  | Actions = [ClearTextSubstitution, GetTextLayoutResult, SetTextSubstitution, ShowTextSubstitution]
+    |  |-Node #172 at (l=195.0, t=337.0, r=932.0, b=400.0)px
+    |  | LiveRegion = 'Polite'
+    |  | Text = '[Could not load your library. Try again.]'
+    |  | Actions = [ClearTextSubstitution, GetTextLayoutResult, SetTextSubstitution, ShowTextSubstitution]
+    |  |-Node #173 at (l=195.0, t=453.0, r=411.0, b=558.0)px
+    |  | Focused = 'false'
+    |  | Role = 'Button'
+    |  | Shape = 'RoundedCornerShape(topStart = CornerSize(size = 50.0%), topEnd = CornerSize(size = 50.0%), bottomEnd = CornerSize(size = 50.0%), bottomStart = CornerSize(size = 50.0%))'
+    |  | Text = '[Try again]'
+    |  | Actions = [ClearTextSubstitution, GetTextLayoutResult, OnClick, RequestFocus, SetTextSubstitution, ShowTextSubstitution]
+    |  | MergeDescendants = 'true'
+    |  |-Node #154 at (l=195.0, t=610.0, r=195.0, b=754.0)px
+    |    CollectionInfo = 'CollectionInfo(rowCount=-1, columnCount=-1)'
+    |    IsTraversalGroup = 'true'
+    |    Shape = 'androidx.compose.foundation.VerticalScrollableClipShape@cdce85e'
+    |    VerticalScrollAxisRange = 'ScrollAxisRange(value=0.0, maxValue=0.0, reverseScrolling=false)'
+    |    Actions = [GetScrollViewportLength, IndexForKey, ScrollBy, ScrollByOffset, ScrollToIndex]
+    |-Node #16 at (l=142.0, t=807.0, r=2424.0, b=1017.0)px
+      IsContainer = 'true'
+      Shape = 'RectangleShape'
+       |-Node #17 at (l=142.0, t=807.0, r=2424.0, b=1017.0)px
+         [SelectableGroup]
+          |-Node #18 at (l=142.0, t=807.0, r=581.0, b=1017.0)px
+          | Focused = 'false'
+          | Role = 'Tab'
+          | Selected = 'false'
+          | Text = '[Home]'
+          | Actions = [ClearTextSubstitution, GetTextLayoutResult, OnClick, RequestFocus, SetTextSubstitution, ShowTextSubstitution]
+          | MergeDescendants = 'true'
+          |-Node #27 at (l=602.0, t=807.0, r=1041.0, b=1017.0)px
+          | Focused = 'false'
+          | Role = 'Tab'
+          | Selected = 'false'
+          | Text = '[TV Shows]'
+          | Actions = [ClearTextSubstitution, GetTextLayoutResult, OnClick, RequestFocus, SetTextSubstitution, ShowTextSubstitution]
+          | MergeDescendants = 'true'
+          |-Node #36 at (l=1062.0, t=807.0, r=1502.0, b=1017.0)px
+          | Focused = 'false'
+          | Role = 'Tab'
+          | Selected = 'true'
+          | Text = '[Movies]'
+          | Actions = [ClearTextSubstitution, GetTextLayoutResult, OnClick, RequestFocus, SetTextSubstitution, ShowTextSubstitution]
+          | MergeDescendants = 'true'
+          |-Node #45 at (l=1523.0, t=807.0, r=1963.0, b=1017.0)px
+          | Focused = 'false'
+          | Role = 'Tab'
+          | Selected = 'false'
+          | Text = '[Search]'
+          | Actions = [ClearTextSubstitution, GetTextLayoutResult, OnClick, RequestFocus, SetTextSubstitution, ShowTextSubstitution]
+          | MergeDescendants = 'true'
+          |-Node #54 at (l=1984.0, t=807.0, r=2424.0, b=1017.0)px
+            Focused = 'false'
+            Role = 'Tab'
+            Selected = 'false'
+            Text = '[More]'
+            Actions = [ClearTextSubstitution, GetTextLayoutResult, OnClick, RequestFocus, SetTextSubstitution, ShowTextSubstitution]
+            MergeDescendants = 'true'

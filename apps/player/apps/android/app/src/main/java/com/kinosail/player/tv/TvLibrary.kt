@@ -1,229 +1,121 @@
 package com.kinosail.player.tv
 
-import com.kinosail.player.core.interfaceText
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.safeDrawingPadding
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.grid.GridItemSpan
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.itemsIndexed
-import androidx.compose.foundation.lazy.grid.rememberLazyGridState
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.grid.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
-import androidx.compose.runtime.produceState
-import androidx.compose.runtime.snapshotFlow
-import androidx.compose.runtime.withFrameNanos
-import androidx.compose.ui.Alignment
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.asImageBitmap
-import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
-import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.semantics.selected
-import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.focus.focusProperties
 import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.tv.material3.Button
-import androidx.tv.material3.Card
-import androidx.tv.material3.MaterialTheme
-import androidx.tv.material3.Text
-import com.kinosail.player.core.CatalogItem
-import com.kinosail.player.core.CatalogModel
-import com.kinosail.player.core.catalogEmptyMessage
-import com.kinosail.player.core.AudioPlaybackService
-import com.kinosail.player.core.ConnectionModel
-import com.kinosail.player.core.HomeScreen
-import com.kinosail.player.core.LIBRARY_VIEWS
-import com.kinosail.player.core.PlaybackScreen
-import com.kinosail.player.core.PhotoScreen
-import com.kinosail.player.core.ShowScreen
-import com.kinosail.player.core.Viewer
+import androidx.tv.material3.*
+import com.kinosail.player.core.*
 import com.kinosail.player.design.KinoColor
 import com.kinosail.player.design.SailBackdrop
-import kotlinx.coroutines.flow.collect
 
 @Composable
 internal fun TvLibrary(connection: ConnectionModel, viewer: Viewer) {
     val catalog: CatalogModel = viewModel()
     val state = catalog.state
     val nowPlaying = AudioPlaybackService.nowPlayingFor(viewer)
-    var home by remember { mutableStateOf(true) }
+    var destination by remember { mutableStateOf("home") }
     var playingItem by remember { mutableStateOf<CatalogItem?>(null) }
     var photoItem by remember { mutableStateOf<CatalogItem?>(null) }
-    var searchEditing by remember { mutableStateOf(false) }
-    val keyboard = LocalSoftwareKeyboardController.current
-    val submitSearch = {
-        searchEditing = false
-        catalog.search()
-        keyboard?.hide()
-        Unit
-    }
-    val cardFocus = remember { FocusRequester() }
-    val searchFocus = remember { FocusRequester() }
-    val searchEditFocus = remember { FocusRequester() }
-    val showsFocus = remember { FocusRequester() }
     val detailFocus = remember { FocusRequester() }
-    val gridState = rememberLazyGridState()
+    val grid = rememberLazyGridState()
+    val keyboard = LocalSoftwareKeyboardController.current
+    val navigate: (String) -> Unit = { chosen ->
+        catalog.closeDetail(); destination = chosen
+        if (chosen !in setOf("home", "listen", "settings")) catalog.changeView(if (chosen == "search") "all" else chosen)
+    }
     LaunchedEffect(viewer.serverId, viewer.id) { catalog.open(viewer) }
-    LaunchedEffect(gridState, home, state.selected, state.items.size, state.total, state.loading, state.notice) {
-        if (!home && state.selected == null && !state.loading && state.notice == null && state.items.size < state.total) {
-            snapshotFlow { gridState.layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: -1 }.collect { last ->
-                if (last >= state.items.size - 10) catalog.loadMore()
+    LaunchedEffect(destination, state.loading) {
+        if (!state.loading && destination !in setOf("home", "listen", "settings"))
+            catalog.changeView(if (destination == "search") "all" else destination)
+    }
+    LaunchedEffect(grid, destination, state.selected, state.items.size, state.loading, state.notice) {
+        if (destination !in setOf("home", "listen", "settings") && state.selected == null && !state.loading &&
+            state.notice == null && state.items.size < state.total) {
+            snapshotFlow { grid.layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: -1 }.collect { last ->
+                if (last >= state.items.size - 8) catalog.loadMore()
             }
         }
     }
     DisposableEffect(Unit) { onDispose { catalog.reset() } }
     BackHandler(state.selected != null && playingItem == null && photoItem == null) { catalog.closeDetail() }
-    BackHandler(!home && state.selected == null && playingItem == null && photoItem == null) { home = true }
-    BackHandler(searchEditing) { searchEditing = false; keyboard?.hide() }
-    LaunchedEffect(searchEditing) {
-        if (searchEditing) {
-            withFrameNanos { }
-            searchEditFocus.requestFocus()
-            keyboard?.show()
-        }
-    }
-    LaunchedEffect(state.items.isNotEmpty(), state.selected, playingItem, state.view, home) {
-        if (home && state.selected == null || playingItem != null ||
-            state.selected?.showId?.isNotEmpty() == true) return@LaunchedEffect
-        if (state.selected != null) detailFocus.requestFocus()
-        else if (state.items.isNotEmpty()) cardFocus.requestFocus()
-        else searchFocus.requestFocus()
-    }
+    BackHandler(destination != "home" && state.selected == null && playingItem == null && photoItem == null) { destination = "home" }
     if (playingItem != null) {
-        PlaybackScreen(requireNotNull(playingItem), viewer, tv = true, close = { playingItem = null },
-            onNext = { playingItem = it })
-        return
+        PlaybackScreen(requireNotNull(playingItem), viewer, true, close = { playingItem = null }, onNext = { playingItem = it }); return
     }
-    if (photoItem != null) {
-        PhotoScreen(requireNotNull(photoItem), catalog, tv = true, close = { photoItem = null })
-        return
-    }
+    if (photoItem != null) { PhotoScreen(requireNotNull(photoItem), catalog, true) { photoItem = null }; return }
     if (state.selected?.showId?.isNotEmpty() == true) {
-        ShowScreen(state.selected.showId, viewer, catalog, tv = true, catalog::closeDetail) {
-            playingItem = it
-        }
-        return
+        ShowScreen(state.selected.showId, viewer, catalog, true, catalog::closeDetail) { playingItem = it }; return
     }
-    if (home && state.selected == null) {
-        HomeScreen(viewer, catalog, tv = true, nowPlaying = nowPlaying, browse = { home = false },
-            open = catalog::selectHomeItem, play = { playingItem = it })
-        return
+    if (destination in setOf("home", "listen") && state.selected == null) {
+        HomeScreen(viewer, catalog, true, nowPlaying, navigate, catalog::selectHomeItem, play = { playingItem = it },
+            listening = destination == "listen", settings = { navigate("settings") }); return
     }
-    Box(Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)) {
+    LaunchedEffect(state.selected?.id) {
+        if (state.selected != null) { withFrameNanos { }; detailFocus.requestFocus() }
+    }
+    Box(Modifier.fillMaxSize().background(KinoColor.background)) {
         SailBackdrop()
-        Column(Modifier.fillMaxSize().safeDrawingPadding().padding(56.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)) {
-            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically) {
-                Text("Kinosail", style = MaterialTheme.typography.headlineLarge,
-                    color = MaterialTheme.colorScheme.onBackground)
-                Button(onClick = connection::signOut, enabled = !connection.busy) { Text(interfaceText("Sign out")) }
-            }
-            if (nowPlaying != null) Button(onClick = { playingItem = nowPlaying }) {
-                Text("Now playing · ${nowPlaying.title}")
+        Column(Modifier.fillMaxSize().safeDrawingPadding().padding(48.dp), verticalArrangement = Arrangement.spacedBy(24.dp)) {
+            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(20.dp)) {
+                Text(if (state.selected != null) "Kinosail" else if (destination == "settings") interfaceText("Settings")
+                    else interfaceText(if (destination == "search") "Search" else LIBRARY_VIEWS.first { it.first == destination }.second),
+                    style = MaterialTheme.typography.headlineLarge, color = KinoColor.text, modifier = Modifier.weight(1f))
+                Button(onClick = { navigate("home") }) { Text(interfaceText("Home")) }
+                if (destination != "search") Button(onClick = { navigate("search") }) { Text(interfaceText("Search")) }
+                if (destination != "settings") Button(onClick = { navigate("settings") }) { Text(interfaceText("Settings")) }
             }
             if (state.selected != null) {
-                TvDetail(state.selected, catalog, Modifier.focusRequester(detailFocus),
-                    play = { playingItem = state.selected }, viewPhoto = { photoItem = state.selected })
+                TvDetail(state.selected, catalog, Modifier.focusRequester(detailFocus), play = { playingItem = state.selected },
+                    viewPhoto = { photoItem = state.selected })
+            } else if (destination == "settings") {
+                TvSettings(viewer, connection::signOut)
             } else {
-                Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.Bottom) {
-                    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                        Text(interfaceText(if (state.view == "all") "Library" else LIBRARY_VIEWS.first { it.first == state.view }.second),
-                            style = MaterialTheme.typography.displayMedium,
-                            color = MaterialTheme.colorScheme.onBackground)
-                        Text("${viewer.name} · ${viewer.server}", style = MaterialTheme.typography.titleLarge,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant)
-                    }
-                    Button(onClick = { home = true }) { Text(interfaceText("Home")) }
+                if (destination == "search") Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+                    OutlinedTextField(catalog.searchInput, onValueChange = { if (it.length <= 512) catalog.searchInput = it },
+                        label = { androidx.compose.material3.Text(interfaceText("Search library")) }, singleLine = true,
+                        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
+                        keyboardActions = KeyboardActions(onSearch = { catalog.search(); keyboard?.hide() }),
+                        colors = OutlinedTextFieldDefaults.colors(focusedTextColor = KinoColor.text, unfocusedTextColor = KinoColor.text,
+                            focusedLabelColor = KinoColor.signal, unfocusedLabelColor = KinoColor.muted,
+                            focusedBorderColor = KinoColor.signal, unfocusedBorderColor = KinoColor.muted), modifier = Modifier.weight(1f))
+                    Button(onClick = { catalog.search(); keyboard?.hide() }) { Text(interfaceText("Search")) }
                 }
-                LazyRow(horizontalArrangement = Arrangement.spacedBy(16.dp),
-                    modifier = Modifier.fillMaxWidth()) {
-                    items(LIBRARY_VIEWS, key = { it.first }) { (view, label) ->
-                        Button(onClick = { catalog.changeView(view) },
-                            modifier = (if (view == "shows") Modifier.focusRequester(showsFocus) else Modifier)
-                                .semantics { selected = state.view == view }) {
-                            Text(interfaceText(label))
-                        }
-                    }
-                }
-                Row(horizontalArrangement = Arrangement.spacedBy(16.dp), verticalAlignment = Alignment.CenterVertically) {
-                    if (searchEditing) {
-                        OutlinedTextField(value = catalog.searchInput,
-                            onValueChange = { if (it.length <= 512) catalog.searchInput = it },
-                            label = { androidx.compose.material3.Text(interfaceText("Search library")) },
-                            singleLine = true, keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
-                            keyboardActions = KeyboardActions(onSearch = { submitSearch() }),
-                            colors = OutlinedTextFieldDefaults.colors(
-                                focusedTextColor = KinoColor.text, unfocusedTextColor = KinoColor.text,
-                                focusedLabelColor = KinoColor.signal, unfocusedLabelColor = KinoColor.muted,
-                                focusedBorderColor = KinoColor.signal, unfocusedBorderColor = KinoColor.muted),
-                            modifier = Modifier.width(650.dp).focusRequester(searchEditFocus))
-                        Button(onClick = submitSearch) { Text(interfaceText("Search")) }
-                    } else Button(onClick = { searchEditing = true },
-                        modifier = Modifier.focusRequester(searchFocus).focusProperties { up = showsFocus }) {
-                        Text(if (catalog.searchInput.isEmpty()) "Search library" else "Search: ${catalog.searchInput}")
-                    }
-                }
-                state.notice?.let { Text(it, color = MaterialTheme.colorScheme.error,
-                    modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite }) }
+                state.notice?.let { Text(it, color = KinoColor.text, modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite }) }
                 if (state.notice != null) Button(onClick = catalog::retry) { Text(interfaceText("Try again")) }
-                if (state.items.isEmpty() && !state.loading && state.notice == null) {
-                    Text(interfaceText(catalogEmptyMessage(state.view, catalog.hasActiveSearch)),
-                        style = MaterialTheme.typography.titleLarge,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant)
-                }
-                LazyVerticalGrid(columns = GridCells.Fixed(5), modifier = Modifier.weight(1f), state = gridState,
-                    horizontalArrangement = Arrangement.spacedBy(20.dp),
-                    verticalArrangement = Arrangement.spacedBy(20.dp),
-                    contentPadding = PaddingValues(bottom = 28.dp)) {
-                    itemsIndexed(state.items, key = { _, item -> item.id }) { index, item ->
-                        Card(onClick = { catalog.select(item) }, modifier = (if (index == 0) Modifier.focusRequester(cardFocus)
-                            else Modifier).fillMaxWidth().semantics { contentDescription = item.title }) {
-                            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                                TvPoster(item, catalog, Modifier.fillMaxWidth())
-                                Text(item.title, maxLines = 2, overflow = TextOverflow.Ellipsis,
-                                    modifier = Modifier.padding(8.dp),
-                                    color = MaterialTheme.colorScheme.onBackground)
+                if (state.loading && state.items.isEmpty()) LibraryLoading(tv = true, view = state.view)
+                else if (state.items.isEmpty() && state.notice == null) Text(interfaceText(catalogEmptyMessage(state.view, catalog.hasActiveSearch)), color = KinoColor.muted)
+                LazyVerticalGrid(GridCells.Adaptive(if (state.view == "photos") 280.dp else 160.dp),
+                    modifier = Modifier.weight(1f), state = grid, contentPadding = PaddingValues(12.dp),
+                    horizontalArrangement = Arrangement.spacedBy(20.dp), verticalArrangement = Arrangement.spacedBy(28.dp)) {
+                    items(state.items, key = CatalogItem::id) { item ->
+                        Card(onClick = { catalog.select(item) }, modifier = Modifier.fillMaxWidth().semantics { contentDescription = item.title }) {
+                            Column {
+                                MediaArtwork(item, catalog, Modifier.fillMaxWidth())
+                                Text(item.title, maxLines = 2, modifier = Modifier.padding(8.dp), color = KinoColor.text)
                             }
                         }
                     }
                     if (state.loading && state.items.isNotEmpty()) item(span = { GridItemSpan(maxLineSpan) }) {
-                        Text(interfaceText("Loading more…"), color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        Text(interfaceText("Loading more…"), color = KinoColor.muted)
                     }
                 }
             }
@@ -233,67 +125,49 @@ internal fun TvLibrary(connection: ConnectionModel, viewer: Viewer) {
 
 @Composable
 internal fun TvDetail(item: CatalogItem, catalog: CatalogModel, firstModifier: Modifier,
-                     play: () -> Unit, viewPhoto: () -> Unit) {
-    val playable = item.kind in setOf("video", "music", "audiobook")
-    val viewablePhoto = item.kind == "photo" && item.stream.isNotEmpty()
-    Row(Modifier.fillMaxWidth().verticalScroll(rememberScrollState()),
-        horizontalArrangement = Arrangement.spacedBy(32.dp)) {
-        TvPoster(item, catalog, Modifier.width(260.dp), ratio = 2f / 3f, dimension = 800)
-        Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(16.dp)) {
-            Text(item.title, style = MaterialTheme.typography.displayMedium,
-                color = MaterialTheme.colorScheme.onBackground)
-            Text(listOf(item.kind.replaceFirstChar(Char::uppercaseChar), item.year).filter(String::isNotEmpty)
-                .joinToString(" · "), style = MaterialTheme.typography.titleLarge,
-                color = MaterialTheme.colorScheme.onSurfaceVariant)
-            if (item.plot.isNotEmpty()) Text(item.plot, style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.onBackground)
+                      play: () -> Unit, viewPhoto: () -> Unit) {
+    Column(Modifier.fillMaxWidth().verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(16.dp)) {
+        MediaHero(item, catalog, tv = true) {
             Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-                if (playable) {
-                    Button(onClick = play, modifier = firstModifier) {
-                        Text(interfaceText(if (item.progress.seconds > 0 && !item.progress.watched) "Resume" else "Play"))
-                    }
-                } else if (item.kind == "photo") {
-                    Button(onClick = viewPhoto, enabled = viewablePhoto,
-                        modifier = if (viewablePhoto) firstModifier else Modifier) {
-                        Text(interfaceText("View photo"))
-                    }
+                if (item.kind in setOf("video", "music", "audiobook")) Button(onClick = play, modifier = firstModifier) {
+                    Text(interfaceText(item.playLabel))
+                } else if (item.kind == "photo") Button(onClick = viewPhoto, enabled = item.stream.isNotEmpty(), modifier = firstModifier) {
+                    Text(interfaceText("View photo"))
                 }
-                Button(onClick = catalog::closeDetail,
-                    modifier = if (!playable && !viewablePhoto) firstModifier else Modifier) {
-                    Text(interfaceText("Back"))
-                }
-                catalog.state.listed?.let { listed ->
-                    Button(onClick = { catalog.setListed(!listed) }, enabled = !catalog.state.listBusy) {
-                        Text(interfaceText(if (listed) "Remove from My List" else "Add to My List"))
-                    }
+                Button(onClick = catalog::closeDetail) { Text(interfaceText("Back")) }
+            }
+            catalog.state.listed?.let { listed ->
+                Button(onClick = { catalog.setListed(!listed) }, enabled = !catalog.state.listBusy) {
+                    Text(interfaceText(if (listed) "Remove from My List" else "Add to My List"))
                 }
             }
-            if (item.kind == "photo" && item.stream.isEmpty()) Text(
-                interfaceText("Photo viewing is unavailable for this Viewer."),
-                color = MaterialTheme.colorScheme.onSurfaceVariant)
-            if (item.kind == "book") Text(interfaceText("Read this book on an Android phone or tablet."),
-                color = MaterialTheme.colorScheme.onSurfaceVariant)
-            if (catalog.state.listBusy && catalog.state.listed == null) Text(interfaceText("Loading My List status…"))
-            catalog.state.detailNotice?.let { notice ->
-                Text(notice, color = MaterialTheme.colorScheme.error,
-                    modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite })
-                if (catalog.state.listed == null) Button(onClick = catalog::retryDetail) { Text(interfaceText("Try again")) }
-            }
+        }
+        if (item.kind == "book") Text(interfaceText("Read this book on an Android phone or tablet."), color = KinoColor.muted)
+        if (item.kind == "photo" && item.stream.isEmpty()) Text(interfaceText("Photo viewing is unavailable for this Viewer."), color = KinoColor.muted)
+        if (catalog.state.listBusy && catalog.state.listed == null) Text(interfaceText("Loading My List status…"), color = KinoColor.muted)
+        catalog.state.detailNotice?.let {
+            Text(it, color = KinoColor.text, modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite })
+            if (catalog.state.listed == null) Button(onClick = catalog::retryDetail) { Text(interfaceText("Try again")) }
         }
     }
 }
 
 @Composable
-private fun TvPoster(item: CatalogItem, catalog: CatalogModel, modifier: Modifier = Modifier,
-                     ratio: Float = 16f / 9f, dimension: Int = 400) {
-    val image = produceState<android.graphics.Bitmap?>(null, item.artwork, catalog, dimension) {
-        value = catalog.artwork(item.artwork, dimension)
-    }.value
-    Box(modifier.aspectRatio(ratio).background(KinoColor.raised), contentAlignment = Alignment.Center) {
-        Text(item.title.firstOrNull()?.uppercase() ?: "K", style = MaterialTheme.typography.displayLarge,
-            modifier = Modifier.clearAndSetSemantics { },
-            color = KinoColor.signal)
-        image?.let { Image(it.asImageBitmap(), contentDescription = null,
-            contentScale = ContentScale.Crop, modifier = Modifier.fillMaxSize()) }
+private fun TvSettings(viewer: Viewer, signOut: () -> Unit) {
+    var thanks by remember { mutableStateOf(false) }
+    var notices by remember { mutableStateOf(false) }
+    val context = androidx.compose.ui.platform.LocalContext.current
+    Column(Modifier.fillMaxWidth().verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(16.dp)) {
+        Text(viewer.name, style = MaterialTheme.typography.titleLarge, color = KinoColor.text)
+        Text(viewer.server, color = KinoColor.muted)
+        Button(onClick = { thanks = !thanks }) { Text("Made possible by") }
+        if (thanks) {
+            Text("Thank you to the people behind Jetpack Compose, Media3, and the Android libraries that bring Kinosail to this device. FFmpeg and Jellyfin FFmpeg power media tools on your Server.", color = KinoColor.text)
+            Text("This product uses the TMDB API but is not endorsed or certified by TMDB.", color = KinoColor.muted)
+            Button(onClick = { notices = !notices }) { Text("Third-party notices") }
+            if (notices) Text(remember { runCatching { context.assets.open("THIRD_PARTY_NOTICES.md").bufferedReader().use { it.readText() } }
+                .getOrDefault("Notices could not be opened. Reinstall Kinosail and try again.") }, color = KinoColor.text)
+        }
+        Button(onClick = signOut) { Text(interfaceText("Sign out")) }
     }
 }

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.kinosail.player.core.CatalogApiTest" tests="13" skipped="0" failures="0" errors="0" timestamp="2026-10-02T06:26:59.714Z" hostname="MikeOs-MacBook-Pro.local" time="1.118">
+  <properties/>
+  <testcase name="loadsHomeShelvesWithValidatedViewAndSort" classname="com.kinosail.player.core.CatalogApiTest" time="0.095"/>
+  <testcase name="acceptsTheLastPartialPageAtTheRequestedOffset" classname="com.kinosail.player.core.CatalogApiTest" time="0.024"/>
+  <testcase name="rejectsInvalidInputsBeforeOpeningAConnection" classname="com.kinosail.player.core.CatalogApiTest" time="0.019"/>
+  <testcase name="listsAViewerScopedPageAndEncodesSearch" classname="com.kinosail.player.core.CatalogApiTest" time="0.016"/>
+  <testcase name="browsesShowsAndRejectsInvalidViewOrShowMetadata" classname="com.kinosail.player.core.CatalogApiTest" time="0.024"/>
+  <testcase name="browsesEachMediaCategoryAndRejectsUnknownViewsBeforeNetwork" classname="com.kinosail.player.core.CatalogApiTest" time="0.018"/>
+  <testcase name="acceptsOnlyTheItemsOwnBoundedMediaPath" classname="com.kinosail.player.core.CatalogApiTest" time="0.016"/>
+  <testcase name="rejectsRedirectAndOversizedResponses" classname="com.kinosail.player.core.CatalogApiTest" time="0.029"/>
+  <testcase name="acceptsCanonicalEpisodeArtworkInLibraryPages" classname="com.kinosail.player.core.CatalogApiTest" time="0.015"/>
+  <testcase name="loadsTheValidatedNextItemForTheSameViewer" classname="com.kinosail.player.core.CatalogApiTest" time="0.02"/>
+  <testcase name="browsesMyListAndSavesViewerScopedMembership" classname="com.kinosail.player.core.CatalogApiTest" time="0.017"/>
+  <testcase name="rejectsMalformedUnknownAndConflictingPages" classname="com.kinosail.player.core.CatalogApiTest" time="0.8"/>
+  <testcase name="parsesResumePositionAndRejectsInvalidProgress" classname="com.kinosail.player.core.CatalogApiTest" time="0.019"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

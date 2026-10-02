@@ -1,0 +1,458 @@
+{
+  "sourceRevision": "39ef73fbac32b3d23c1415c1883b9f4fec08eb35",
+  "productionRevision": "3755d45be5bf5ab1bf4a1b3492ea50608e96949c",
+  "environment": {
+    "host": "macOS 27.0 (26A428), Apple ARM64",
+    "java": "Homebrew OpenJDK 17",
+    "compileSdk": 37,
+    "targetSdk": 36,
+    "runtimeApi": 36,
+    "emulator": "37.1.11, SwiftShader, ARM64",
+    "phone": "1080x2424, 420 dpi, portrait, font scale 1.0",
+    "landscape": "phone landscape, font scale 1.3; early full journey used 1080x2400",
+    "tablet": "resized phone emulator 1600x2560, 320 dpi, landscape, font scale 1.3",
+    "tv": "Android TV image, 1920x1080, 320 dpi",
+    "wear": "Wear signed image, round 384x384, 320 dpi"
+  },
+  "data": {
+    "kind": "synthetic on-device HTTP fixture and generated artwork",
+    "fixture": "NativeParityJourneyTest.kt",
+    "viewer": "Alex",
+    "media": "20-second generated H.264/AAC test pattern",
+    "videoSha256": "3fbad14bbd0fd51bd1a314f3a91c62136395b42a7ed8ee586c426d0a324f2dc4"
+  },
+  "unitTests": {
+    "app": {
+      "tests": 131,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "watchcore": {
+      "tests": 8,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "wear": {
+      "tests": 5,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    }
+  },
+  "artifacts": {
+    "app/build/outputs/apk/debug/app-debug.apk": "a25d2a09c793a97ca28161c784f16953fab3a8ca1c2ae20c3685ed1ac11b488d",
+    "app/build/outputs/apk/androidTest/debug/app-debug-androidTest.apk": "e9255ae57c9c519655e5d8f8234f38e7f23e0dbfb914ee4e34e901258e9d47b8",
+    "wear/build/outputs/apk/debug/wear-debug.apk": "3def7e51b53168346266121e5c0da7c3614d27684fe93e2572f5a00e9ac21de6",
+    "wear/build/outputs/apk/androidTest/debug/wear-debug-androidTest.apk": "fc3351538f6183128494fa942fcdf8ed4e0130ff568c58ea920f169eaba91f19",
+    "app/build/outputs/bundle/release/app-release.aab": "9bb0733a0421496d02c92df62e8115846b408b1dec46106b2adf89f739b61a85",
+    "wear/build/outputs/bundle/release/wear-release.aab": "9722de5513ae5daff5ab5182a9c60e62f9aeb2729f946e9c9a227e2c82763eda"
+  },
+  "screens": {
+    "landscape-catalog-empty.png": {
+      "sha256": "cb87be0f8a3ea81d5dc465b4cd8fc1c59be5fef33feddd2092d7e82f916fa379",
+      "width": 2424,
+      "height": 1080
+    },
+    "landscape-catalog-failed.png": {
+      "sha256": "1049cf910cfe3c024ea6e0c1e24d7f98f83f300bfc8219708ae46307412b06ee",
+      "width": 2424,
+      "height": 1080
+    },
+    "landscape-catalog-loaded.png": {
+      "sha256": "1a33a5cd962b6e8575b46b4b2f9f37cfe2f0386189b408bb3eb2eff60632e1f4",
+      "width": 2424,
+      "height": 1080
+    },
+    "landscape-catalog-pending.png": {
+      "sha256": "345437b46333db6ac47d456cceb6e713b33934f48b599889ef982f3b28cc627b",
+      "width": 2424,
+      "height": 1080
+    },
+    "landscape-detail.png": {
+      "sha256": "1ae2e4a5c5d90fbad150c678a93c4b899ba2d01882d42b33ad39b6c0a6bb6ca3",
+      "width": 2400,
+      "height": 1080
+    },
+    "landscape-empty.png": {
+      "sha256": "f101587f543a0c915c76f6e6d7e2ecc39d8ca6b642229109f2bcee106125599d",
+      "width": 2424,
+      "height": 1080
+    },
+    "landscape-failed.png": {
+      "sha256": "156affd9460722931e0a229432b148ce110898214e6bfcd5868483c131e44902",
+      "width": 2424,
+      "height": 1080
+    },
+    "landscape-home.png": {
+      "sha256": "4de33ea7f7d1d53c554be7a8c2e1bc30942f816ff8563b066e20a0e9b3ecc3ce",
+      "width": 2400,
+      "height": 1080
+    },
+    "landscape-listen-shelf.png": {
+      "sha256": "684da2d96652f0f2d1e30eee00bd168528d2e06093fb6ed09a5d59bd38ab8094",
+      "width": 2400,
+      "height": 1080
+    },
+    "landscape-listen.png": {
+      "sha256": "1c706eb7650f6ec47c78fe1b16560d5339acb648fe804ecac7d4acfb9656018d",
+      "width": 2400,
+      "height": 1080
+    },
+    "landscape-pending.png": {
+      "sha256": "2e179600edd75aa9c9d421073f347973c447c5a8c41f054f25de188675639aaf",
+      "width": 2424,
+      "height": 1080
+    },
+    "landscape-playback-controls.png": {
+      "sha256": "95de0299cdf480ad42d80065aa0f1b012657f05d73cc8eecf5b63bb736429e90",
+      "width": 2400,
+      "height": 1080
+    },
+    "landscape-playback-hidden.png": {
+      "sha256": "3461a8898b19ef21c0d6686ad2793acd215a9099e69acaf5f9ccb7b5ff86c836",
+      "width": 2400,
+      "height": 1080
+    },
+    "landscape-recovered.png": {
+      "sha256": "1177a4f98db3df7bed4a2891e878d67155dd8e94246d88d087d1fc371e19d64f",
+      "width": 2424,
+      "height": 1080
+    },
+    "landscape-show-empty.png": {
+      "sha256": "e4385484cc7402be31bba91293102870e1922a2e82cad145220d7107b82ff687",
+      "width": 2424,
+      "height": 1080
+    },
+    "landscape-show-failed.png": {
+      "sha256": "b0b40c2c43987568cd40ca5346ec8f84cddb615c49c5411ec687d7a1ac30c981",
+      "width": 2424,
+      "height": 1080
+    },
+    "landscape-show-loaded.png": {
+      "sha256": "16108a0ca952502a317654393914e8bc661c9cc9ebc3eb6c2423ebbeae3b2a0f",
+      "width": 2424,
+      "height": 1080
+    },
+    "landscape-show-pending.png": {
+      "sha256": "ada7e8e1e51da01a611bb2d9a50525ab19356c92ecb474aed275b22ffc9eff0d",
+      "width": 2424,
+      "height": 1080
+    },
+    "landscape-show-season-two.png": {
+      "sha256": "2d361c2b74fc59ee9459d0c2f5ccac79fc86c99596c0d301ef83c2e21894b905",
+      "width": 2424,
+      "height": 1080
+    },
+    "phone-catalog-empty.png": {
+      "sha256": "1b3e0404f32f8b5e0ad2bb1ef1d3a6f77829dcb35b4c2e850f0929ac6210c6ed",
+      "width": 2424,
+      "height": 1080
+    },
+    "phone-catalog-failed.png": {
+      "sha256": "fe40c5f8d3b9d61caadb9946f744e7c93c952ecf38cfc872c82035df5b30a717",
+      "width": 2424,
+      "height": 1080
+    },
+    "phone-catalog-loaded.png": {
+      "sha256": "4f1b2d708e79ba90a6060049856c5a3f26bc046f1d3c9c2d4e4e83038c374044",
+      "width": 2424,
+      "height": 1080
+    },
+    "phone-catalog-pending.png": {
+      "sha256": "14762ecc800f99f6f90f44d6995aac865117b538bbe9c4f5eca1a263f2478d32",
+      "width": 2424,
+      "height": 1080
+    },
+    "phone-detail.png": {
+      "sha256": "391c5e9f499da52a3fc2ee29f6ac641e22521881ee226789403ddf853bdd5dc9",
+      "width": 2424,
+      "height": 1080
+    },
+    "phone-empty.png": {
+      "sha256": "bd8cc8589683361b29c1efd56127a8b16c4d04eaf28ddbafd36dcdabc7b1d1f8",
+      "width": 2424,
+      "height": 1080
+    },
+    "phone-failed.png": {
+      "sha256": "8d74227731bb40f220304eebb849b88775d8c9100053473697bd2f7ca05fe048",
+      "width": 2424,
+      "height": 1080
+    },
+    "phone-home.png": {
+      "sha256": "e51357b3c99ec658752049976de6386ced8819247f6415613a208ba559a57fbf",
+      "width": 2424,
+      "height": 1080
+    },
+    "phone-listen-shelf.png": {
+      "sha256": "c35e9a1ccc22c816397abace7c21f6ce3fbec3b2dbf465f12926811c2c539a72",
+      "width": 2424,
+      "height": 1080
+    },
+    "phone-listen.png": {
+      "sha256": "f95eea49a47c921d7bab92580759556a38612aba1954b6e138bab723a8851eb5",
+      "width": 2424,
+      "height": 1080
+    },
+    "phone-pending.png": {
+      "sha256": "e6706e523a82f4e65b1bac37c30d5236fa78ca34cafd21eabb28f124a4951226",
+      "width": 2424,
+      "height": 1080
+    },
+    "phone-playback-controls.png": {
+      "sha256": "035be0a648fb58239f3b98896fbe55a43086909c9bbc9cf52faa0d7f882d62d4",
+      "width": 2424,
+      "height": 1080
+    },
+    "phone-playback-hidden.png": {
+      "sha256": "8ca7af990f01ad5074d05e2ccfa9e593ab4c152858a808be264a919020f55087",
+      "width": 2424,
+      "height": 1080
+    },
+    "phone-recovered.png": {
+      "sha256": "0732f4931af8f1e64256529d0ec4472eb97b7e49ce858664ea444849a7210f47",
+      "width": 2424,
+      "height": 1080
+    },
+    "phone-show-empty.png": {
+      "sha256": "834ac34063230cab68721b658ca7a350fc546ddd49ac7e1d0e26ccd056ec9853",
+      "width": 2424,
+      "height": 1080
+    },
+    "phone-show-failed.png": {
+      "sha256": "7fda03ae86a5bb2bfdcbf9c021da1e78391b01855833d104a61b4c38b81ac312",
+      "width": 2424,
+      "height": 1080
+    },
+    "phone-show-loaded.png": {
+      "sha256": "cdb3c71669a3e842dc81ec81b795771b222d17f8b3e4110f5ed37bc654bed53a",
+      "width": 2424,
+      "height": 1080
+    },
+    "phone-show-pending.png": {
+      "sha256": "1167f07885650e9425d493bb1e716a176094056f21294a7bace8578cef445744",
+      "width": 2424,
+      "height": 1080
+    },
+    "phone-show-season-two.png": {
+      "sha256": "c419f80d00c83afe3800589abd782791397e6b9f1216335a56b67137710a3938",
+      "width": 2424,
+      "height": 1080
+    },
+    "tablet-catalog-empty.png": {
+      "sha256": "f459e7cd3c13e59285d1da84b020b2697aa9c80b116a47fd1015700d6299d59e",
+      "width": 2560,
+      "height": 1600
+    },
+    "tablet-catalog-failed.png": {
+      "sha256": "c228f4a24037a415721f343018c034a28a2cb3a53d7025f6de4fefb3a306df2f",
+      "width": 2560,
+      "height": 1600
+    },
+    "tablet-catalog-loaded.png": {
+      "sha256": "728392aa552f0357bd2c812f55eaef54bfc26bf721033f7ec45e76b5ab90d255",
+      "width": 2560,
+      "height": 1600
+    },
+    "tablet-catalog-pending.png": {
+      "sha256": "f2f12915514bb59c54c0e227600119d0e41ae698f4cd3bfa6d60ccbd8680c8eb",
+      "width": 2560,
+      "height": 1600
+    },
+    "tablet-detail.png": {
+      "sha256": "c06518f7321d43d599b16766dfb0c3393debb654e9d718b4e4d632dc41052824",
+      "width": 2560,
+      "height": 1600
+    },
+    "tablet-empty.png": {
+      "sha256": "3306609ee15fe7d3b1a82213929a53ff18ef2a005aa7a5557f636d4b021f7f94",
+      "width": 2560,
+      "height": 1600
+    },
+    "tablet-failed.png": {
+      "sha256": "6df794e397b7afac207edf1f206c13ff749199cdfbd150402f5b242b44104fdc",
+      "width": 2560,
+      "height": 1600
+    },
+    "tablet-home.png": {
+      "sha256": "8848161d8911aab973ba75ff816ad1306f4ad849f5229726d6399505cb9b2ef8",
+      "width": 2560,
+      "height": 1600
+    },
+    "tablet-listen-shelf.png": {
+      "sha256": "60ef36052f7db083d8c6c17e7958e6135ef0d267d9326b393215778d0da32757",
+      "width": 2560,
+      "height": 1600
+    },
+    "tablet-listen.png": {
+      "sha256": "ed9dee8ae35936c304c8e881d3523477c8f654a1e722a3adc218ecac4b9caac0",
+      "width": 2560,
+      "height": 1600
+    },
+    "tablet-pending.png": {
+      "sha256": "08a186d96b8422e21d18de9f68820a93b1df10df6dc8523ece9a4cf4064b51af",
+      "width": 2560,
+      "height": 1600
+    },
+    "tablet-playback-controls.png": {
+      "sha256": "33d0e6af4d8d26bc744300da647e49ee859000c2c0fb1918547b488c6b28e077",
+      "width": 2560,
+      "height": 1600
+    },
+    "tablet-playback-hidden.png": {
+      "sha256": "d3fcbedb48fb0fbe3ed915821f1fa7576689001f5f13ef6c2c8b1e394bf36c9f",
+      "width": 2560,
+      "height": 1600
+    },
+    "tablet-recovered.png": {
+      "sha256": "6187bdda0d8b4f1e0338df07ae9aed9fba28e1d98de1afb01ac3b052931a1611",
+      "width": 2560,
+      "height": 1600
+    },
+    "tablet-show-empty.png": {
+      "sha256": "a5dbb9128f67249877095a79453f807612264f67ab5bbf1ba2abb709afa2632a",
+      "width": 2560,
+      "height": 1600
+    },
+    "tablet-show-failed.png": {
+      "sha256": "ac68d8190a65a4b4d601944480321526a3603cfadf351a89b75519b703642d7c",
+      "width": 2560,
+      "height": 1600
+    },
+    "tablet-show-loaded.png": {
+      "sha256": "9fb40e9fe777daedba3be17f2c63a79756cf92bd65464c41ed3c0be018717a65",
+      "width": 2560,
+      "height": 1600
+    },
+    "tablet-show-pending.png": {
+      "sha256": "723eed9969ebabc3fd7aad1c0de04a6b5b7bffabd34ccf8077545c625917e198",
+      "width": 2560,
+      "height": 1600
+    },
+    "tablet-show-season-two.png": {
+      "sha256": "da6e73083e9ccd76d3a04bf71ca91ef3f5858afff494bdb31459f038c90f73eb",
+      "width": 2560,
+      "height": 1600
+    },
+    "tv-catalog-empty.png": {
+      "sha256": "7497a6d243cc3d996a41bd8e3115384e88975a0c1b0c872c04a7800efec62f0c",
+      "width": 1920,
+      "height": 1080
+    },
+    "tv-catalog-failed.png": {
+      "sha256": "7a16f94d29e295e28f3ed4e7c33feb92bac8ef7e211e42c82ec064a095bb023d",
+      "width": 1920,
+      "height": 1080
+    },
+    "tv-catalog-loaded.png": {
+      "sha256": "9f64b7c4149373d264ce0888e0bc09fdc60fd4274e2a54a2a916643d94be39cb",
+      "width": 1920,
+      "height": 1080
+    },
+    "tv-catalog-pending.png": {
+      "sha256": "3d1eb60b22bcc97677a12d49b84e87ab94de1c0196661554bb0625305d328895",
+      "width": 1920,
+      "height": 1080
+    },
+    "tv-detail.png": {
+      "sha256": "8acd2100c5c29ba8d0303c29ebd3c35a1da469b0e59d344fc4f12f0120069e0b",
+      "width": 1920,
+      "height": 1080
+    },
+    "tv-empty.png": {
+      "sha256": "769869b266c7b4802e807059566dcbc8104ee07c4add5e493bbdf11030cc3a89",
+      "width": 1920,
+      "height": 1080
+    },
+    "tv-failed.png": {
+      "sha256": "8d3f0c998d0e1f349d72d433fe875014973ca0bc0999ccd5706ae28d6617adee",
+      "width": 1920,
+      "height": 1080
+    },
+    "tv-home-focus.png": {
+      "sha256": "933cfdd7725f8048605f8342574c486ec9bdae83187391cbd1b8e7bc86390cca",
+      "width": 1920,
+      "height": 1080
+    },
+    "tv-home.png": {
+      "sha256": "5cfaecd059d1de691bc47510257c841b499a9864840c48dd9b7b377c88a4ab85",
+      "width": 1920,
+      "height": 1080
+    },
+    "tv-pending.png": {
+      "sha256": "da5502dea1f888083fc282d049a56ec7986019279478d92ca938b00ebf0b463a",
+      "width": 1920,
+      "height": 1080
+    },
+    "tv-playback-controls.png": {
+      "sha256": "73f7f0bd56a66ba63174f50a36321c0c1c40f36d544ac0d77f3d505fa4d4d8da",
+      "width": 1920,
+      "height": 1080
+    },
+    "tv-playback-hidden.png": {
+      "sha256": "55f6261266e0a4fb37d621873faf10c61a58ad3e16c042d55276a2b05281e3a3",
+      "width": 1920,
+      "height": 1080
+    },
+    "tv-recovered.png": {
+      "sha256": "5cfaecd059d1de691bc47510257c841b499a9864840c48dd9b7b377c88a4ab85",
+      "width": 1920,
+      "height": 1080
+    },
+    "tv-show-empty.png": {
+      "sha256": "a9b65b87ab1215279b5af695bdb6c729500525a9c8c3d69e700861b3da343ccd",
+      "width": 1920,
+      "height": 1080
+    },
+    "tv-show-failed.png": {
+      "sha256": "72b78f00bce8a71749cffe71b5a7b36b84df0ef11f55413e513e2b94c7132d83",
+      "width": 1920,
+      "height": 1080
+    },
+    "tv-show-loaded.png": {
+      "sha256": "bdbf627c61ac1cca024661fd3bd06c84696948cbeffe07de22a697e6c35424f2",
+      "width": 1920,
+      "height": 1080
+    },
+    "tv-show-pending.png": {
+      "sha256": "b4f5ddf80ecded12531e1f240df03d13e4ad89b012ee960d447e2d8c461be25a",
+      "width": 1920,
+      "height": 1080
+    },
+    "tv-show-season-two.png": {
+      "sha256": "85fdf1a5f1b0d777c8bbe7f81bb7cf2123fc97e11ac2527790bdf71a62de1e0f",
+      "width": 1920,
+      "height": 1080
+    },
+    "wear-heart-permission.png": {
+      "sha256": "d76eb942a4c77eab38dc671a9d1af94d1ee8cfacde856b3ee236711e30b246f2",
+      "width": 384,
+      "height": 384
+    },
+    "wear-unpaired.png": {
+      "sha256": "6aaec51e6619fc25f4946528f6af6802ff43b4072f3f08c1197fe9f38ebfb476",
+      "width": 384,
+      "height": 384
+    }
+  },
+  "commands": {
+    "gradle": "gradlew -p apps/player/apps/android :app:assembleDebug :app:assembleDebugAndroidTest :app:testDebugUnitTest :watchcore:testDebugUnitTest :wear:testDebugUnitTest :app:lintDebug :wear:lintDebug :app:bundleRelease :wear:bundleRelease",
+    "phone": "adb -s emulator-5580 shell am instrument -w -r -e class com.kinosail.player.core.NativeParityJourneyTest -e capture phone com.kinosail.player.dev.test/androidx.test.runner.AndroidJUnitRunner",
+    "tv": "adb -s emulator-5582 shell am instrument -w -r -e class com.kinosail.player.core.NativeParityJourneyTest -e tv true -e capture tv com.kinosail.player.dev.test/androidx.test.runner.AndroidJUnitRunner",
+    "wear": "adb -s emulator-5584 shell am instrument -w -r -e class com.kinosail.player.wear.WearAccessibilityTest com.kinosail.player.dev.test/androidx.test.runner.AndroidJUnitRunner"
+  },
+  "results": {
+    "phoneFull": {
+      "passed": 10,
+      "skippedLiveServer": 2
+    },
+    "phoneFinalParity": 5,
+    "tvFinalParity": 5,
+    "tabletFull": 4,
+    "landscapeFull": 4,
+    "tabletFinalStates": 3,
+    "landscapeFinalStates": 3,
+    "wear": 2
+  }
+}
