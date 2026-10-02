@@ -2,8 +2,8 @@ package server
 
 import (
 	"context"
-	"fmt"
 	"path/filepath"
+	"regexp"
 	"sort"
 	"strconv"
 	"strings"
@@ -213,9 +213,20 @@ func validSubSourceSubtitleRating(subtitle subSourceSubtitle) bool {
 	return subtitle.Rating.Good >= 0 && subtitle.Rating.Bad >= 0 && subtitle.Rating.Total >= subtitle.Rating.Good+subtitle.Rating.Bad
 }
 
+// Capture malformed suffixes and episode continuations instead of accepting their numeric prefix.
+var subSourceEpisodePattern = regexp.MustCompile(`[sS]([0-9]+)[eE]([0-9]+)` +
+	`([\p{L}\p{N}\p{M}]*(?:[^\p{L}\p{N}\p{M}]+[eE][0-9]+|\s*[-+]\s*[0-9]+(?:$|[^\p{L}\p{N}\p{M}]))?)`)
+
 func subSourceEpisodeName(name string, season, episode int) bool {
-	name = strings.ToLower(strings.NewReplacer(".", " ", "_", " ", "-", " ").Replace(name))
-	return strings.Contains(name, strings.ToLower(fmt.Sprintf("s%02de%02d", season, episode))) || strings.Contains(name, strings.ToLower(fmt.Sprintf("s%de%d", season, episode)))
+	matches := subSourceEpisodePattern.FindAllStringSubmatch(name, -1)
+	for _, match := range matches {
+		foundSeason, seasonErr := strconv.Atoi(match[1])
+		foundEpisode, episodeErr := strconv.Atoi(match[2])
+		if seasonErr != nil || episodeErr != nil || foundSeason != season || foundEpisode != episode || match[3] != "" {
+			return false
+		}
+	}
+	return len(matches) > 0
 }
 
 func subSourceLanguage(language string) (string, bool) {
