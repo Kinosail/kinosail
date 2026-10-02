@@ -51,7 +51,9 @@ func (service *Service) write(writer io.Writer, dataDir, version string, include
 		return err
 	}
 	names := files
+	maximum := maxArchiveSize
 	if includeSecrets {
+		maximum -= encryptedOverhead
 		names = append(append([]string(nil), files...), secretFiles...)
 	}
 	contents := make(map[string][]byte, len(names))
@@ -73,10 +75,6 @@ func (service *Service) write(writer io.Writer, dataDir, version string, include
 	}
 	if len(written) == 0 {
 		return errors.New("no configuration state to back up")
-	}
-	maximum := maxArchiveSize
-	if includeSecrets {
-		maximum -= encryptedOverhead
 	}
 	return writeArchiveLimit(writer, version, contents, written, maximum)
 }
