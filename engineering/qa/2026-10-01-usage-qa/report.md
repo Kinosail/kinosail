@@ -245,13 +245,25 @@ The shared external decoder now checks unambiguous keys, valid UTF-8, bounded ne
 
 Both parser and actual acquisition regressions failed before repair. All shared-package, Player, and Subtitles Go suites passed afterward, along with relevant provider checks, changed-code lint, and root tooling. Independent review found no actionable finding. Both local app `verify-changed` attempts stopped on the same 114 existing full-package lint findings outside this change. `external-json-repair-evidence.json` records the source hashes, red and green commands, and scope. Rejected responses cause no download, sidecar, original, acquisition record, or acquisition-history write; existing search and provider-health bookkeeping remains allowed. External provider service behavior and Owner authentication were not exercised.
 
-### QA-013 — Invalid SubSource candidate blocks valid fallback (repaired locally)
+### QA-013 — Invalid SubSource candidate blocks valid fallback (repaired)
 
 A complete HTTP 200 response containing an invalid ZIP marked SubSource unavailable for about one minute. The acquisition loop then skipped a valid, lower-ranked candidate. CRC failure, a fully transferred truncated ZIP, wrong or ambiguous episode members, and a body above four MiB each reproduced this behavior. The lower-ranked candidate installed exact bytes when returned alone.
 
 The adapter now records availability after the bounded HTTP read and treats ZIP/member rejection as a candidate failure. A private overflow error distinguishes a complete bounded prefix from a transport or non-200 failure. The four-MiB bound remains enforced. HTTP 429, 503, and incomplete HTTP transfers still stop further provider requests. A reachable provider can report connected even when an individual candidate is unusable; acquisition still rejects that content.
 
 The final regression checks real loopback requests and persisted effects. Five fallback cases failed before repair; all nine cases passed afterward. Before the valid second download, no sidecar, original, acquisition record, or history entry exists. Successful fallback creates exactly one byte-preserved sidecar and original, one record, and one history entry. Focused existing provider checks and the complete Subtitles Go suite passed. `provider-fallback-repair-evidence.json` retains commands, source hashes, data, environment, and results. Live SubSource behavior and deployment were not exercised.
+
+The [fallback repair PR](https://github.com/Kinosail/kinosail/pull/433) merged after required hosted checks passed. Fetched ancestry proves the reviewed source commit is included in remote main.
+
+### QA-014 — Ambiguous playback diagnostics and credential text in logs (repaired locally)
+
+The loopback playback trace endpoint accepted duplicate or case-aliased error codes. A later zero replaced an invalid five before validation. Arbitrary diagnostic detail and quality strings could also enter structured logs. Synthetic markers reproduced both findings; an Authorization header marker did not enter these trace logs. These paths predate the fullscreen logging change.
+
+The endpoint now uses the shared strict, bounded JSON decoder before session or log effects. It omits arbitrary detail and quality. Five exact fullscreen error names remain at warning level. Eleven current Play triggers retain six fixed error names. Unknown triggers, names, extra components, and unrelated event types do not retain detail. Numeric diagnostics and session correlation remain available. Free HLS and rendition text is omitted; outer request logging and session validation remain separate contracts.
+
+Five of nine initial loopback cases failed before repair and all passed afterward. The first complete Player run caught a task-caused loss of `control:NotAllowedError`; the repair was extended after nine new positive cases failed. Two additional streaming triggers failed before inclusion. The final seventeen-case grammar matrix also covers unknown and conflicting forms. Focused trace checks, complete shared and Player Go suites, changed-code lint, and root tooling passed. Initial post-commit app checks found 115 full shared-package lint findings: 114 existing findings and one task-caused complexity finding. The unchanged detail grammar was extracted into a helper, removing that new finding without suppression. Both final app checks stopped on the remaining 114 existing shared-package findings, outside the repair. Subtitles was compiled; its complete local suite was not rerun for this trace-only change. `trace-privacy-repair-evidence.json` retains source hashes, commands, controls, and results. No current deployed-handler, Owner-authentication, physical-device, or universal log-redaction proof is claimed.
+
+The first hosted diagnostics run failed an unchanged temporary FFmpeg trickplay fixture with `text file busy`. That test passed 100 local macOS repetitions; the Linux cause is not established. CodeQL also flagged the detail log flow after extraction. The existing CR/LF sanitizer was restored around the allowlisted detail at the logging boundary, with no suppression. Focused trace checks, complete shared and Player Go suites, changed-code lint, and root tooling passed on that source. Required hosted checks remain pending.
 
 ### QA-008 — Hosted Subtitles WebKit disclosure does not open (unverified)
 
