@@ -219,13 +219,21 @@ A separate actual Go Server delivered a six-second MPEG-4 video with a quiet 160
 
 All four modes passed. Original inherited preferences were restored exactly, and the owned Server process stopped. The running Go binary is the initial task baseline; its audio filter and Server enhancement sources are unchanged through the tested main revision. The initial comparison remuxed plain AAC but reencoded effects, so its small Dialog Boost difference is excluded from filter proof. Two controlled attempts assumed a filename title that the metadata stub renamed; the final probe verified source identity instead. `actual-hls-pcm-controlled-evidence.json` records fixture generation, source and binary hashes, API requests, local playlists, PCM hashes, commands, results, and cleanup. This proves this mono tone and single rendition, not multichannel mixing, subjective speech clarity, or physical speaker output.
 
-### QA-010 — SubSource accepts a longer episode number (repaired locally)
+### QA-010 — SubSource accepts a longer episode number (repaired)
 
 A real loopback SubSource provider returned `Show.S1E20.srt` for requested S01E02. Both a single release and a season ZIP installed the wrong dialogue. The same acquisition operation also accepted S01E020, S1E200, and combined or conflicting episode names. The substring matcher did not compare complete numeric identities.
 
 The repair parses complete season and episode numbers at the shared provider-selection and ZIP-member boundary. It rejects mismatched, overflowing, combined, or conflicting identities. Exact padded, unpadded, case-insensitive, and attached-show names remain supported. Equal alternative identities and ordinary quality/year suffixes remain supported. Unicode suffixes and episode ranges fail closed. Existing release and ZIP size bounds apply before matching.
 
 The retained regression exercises actual HTTP search and ZIP download responses, sidecar installation, originals, and persisted acquisition state. On the original source, 42 of the final 75 cases failed by installing wrong content; all 75 cases and existing SubSource checks passed after the repair. Independent review found no remaining actionable finding in this scoped change. Rejected single releases caused zero downloads. Season archives required one bounded download, then rejected the member without a sidecar, original, managed record, or added-history event. Existing failed-search bookkeeping remains allowed. `subtitles-episode-repair-evidence.json` records source hashes, commands, controls, and results. External SubSource service behavior and Owner authentication were not tested by this probe.
+
+### QA-011 — Unicode JSON aliases bypass duplicate-field rejection (repaired locally)
+
+The actual media-share creation handler accepted `maxDevices:0` followed by `maxDeviceſ:1`, returned HTTP 201, and persisted a share. The escaped and reversed long-s aliases also passed. The valid control created one share; an ASCII duplicate returned HTTP 400 without persistence. These were isolated loopback and application-handler probes. Owner authentication was not exercised, and no authentication bypass is claimed.
+
+The shared decoder now compares each key using Unicode simple-fold equivalence, then preserves the existing lowercase duplicate policy. It computes the comparison once and leaves the original JSON and final unknown-field decoder unchanged. Literal, escaped, and reversed aliases return HTTP 400 with no share persistence. Existing recursive decoder cases cover nested long-s/final-sigma aliases. Unambiguous map keys retain their original spelling, including distinct composed/decomposed and full-fold forms.
+
+The regression failed before the repair and both affected package suites passed afterward. The complete shared-package Go suite passed. An independent enumeration checked all 1,112,064 Unicode scalar values for decoder-fold equivalence, preservation of existing lowercase collisions, and idempotence; the largest orbit contains four runes. `unicode-json-repair-evidence.json` retains commands, source hashes, controls, and the enumeration packet. A preliminary negative matrix reused one store and contaminated later no-write assertions; the corrected matrix isolates each case and supersedes that run.
 
 ### QA-008 — Hosted Subtitles WebKit disclosure does not open (unverified)
 
