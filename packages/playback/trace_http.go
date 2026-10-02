@@ -4,6 +4,7 @@ import (
 	"errors"
 	"log/slog"
 	"net/http"
+	"strings"
 
 	"github.com/MikeO7/kinosail/packages/apihttp"
 )
@@ -38,5 +39,19 @@ func TraceHTTP(config TraceHTTPConfig) http.HandlerFunc {
 }
 
 func logTrace(request *http.Request, event TraceEvent) {
-	slog.InfoContext(request.Context(), "playback trace", "playback_session", event.Session, "event", event.Event, "sequence", event.Sequence, "elapsed_ms", event.ElapsedMS, "position_ms", event.PositionMS, "duration_ms", event.DurationMS, "buffered_ahead_ms", event.BufferedAheadMS, "ready_state", event.ReadyState, "network_state", event.NetworkState, "paused", event.Paused, "method", event.Method, "detail", event.Detail, "quality", event.Quality, "visibility", event.Visibility, "error_code", event.ErrorCode, "dropped_frames", event.DroppedFrames, "total_frames", event.TotalFrames)
+	level := slog.LevelInfo
+	if event.Event == "error" {
+		level = slog.LevelWarn
+	}
+	text := func(value string) string { return strings.ReplaceAll(strings.ReplaceAll(value, "\r", ""), "\n", "") }
+	slog.LogAttrs(request.Context(), level, "playback trace",
+		slog.String("playback_session", text(event.Session)), slog.String("event", text(event.Event)),
+		slog.Int64("sequence", event.Sequence), slog.Int64("elapsed_ms", event.ElapsedMS),
+		slog.Int64("position_ms", event.PositionMS), slog.Int64("duration_ms", event.DurationMS),
+		slog.Int64("buffered_ahead_ms", event.BufferedAheadMS), slog.Int("ready_state", event.ReadyState),
+		slog.Int("network_state", event.NetworkState), slog.Bool("paused", event.Paused),
+		slog.String("method", text(event.Method)), slog.String("detail", text(event.Detail)),
+		slog.String("quality", text(event.Quality)), slog.String("visibility", text(event.Visibility)),
+		slog.Int("error_code", event.ErrorCode), slog.Int64("dropped_frames", event.DroppedFrames),
+		slog.Int64("total_frames", event.TotalFrames))
 }

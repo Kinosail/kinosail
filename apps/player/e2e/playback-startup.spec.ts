@@ -43,7 +43,7 @@ test("selecting a movie starts moving playback promptly", async ({ page }, testI
 	expect(new Set(frames).size).toBeGreaterThan(1);
 	for (const viewport of [{ width: 1440, height: 900 }, { width: 1024, height: 768 }, { width: 720, height: 450 }, { width: 390, height: 844 }, { width: 320, height: 800 }]) {
 		await page.setViewportSize(viewport);
-		await expect(page.locator("[data-player-controls]")).toHaveClass(/is-idle/);
+		await expect(page.locator("[data-player-controls]")).toBeHidden();
 		await page.screenshot({ path: testInfo.outputPath(`${viewport.width}-playing-player.png`), fullPage: true });
 	}
 });

@@ -51,10 +51,16 @@ const setSettings = (open) => {
   if (!settingsPanel || !settingsButton) return;
   settingsPanel.hidden = !open;
   settingsButton.setAttribute("aria-expanded", String(open));
-  settingsPanel.closest(".media-stage")?.classList.toggle("has-settings", open);
+  settingsPanel.closest(".media-stage,.player-native-options")?.classList.toggle("has-settings", open);
   if (open) settingsPanel.querySelector("input:not([type=hidden]),select,button")?.focus();
 };
 settingsButton?.addEventListener("click", () => setSettings(settingsPanel.hidden));
+document.addEventListener("keydown", (event) => {
+  if (event.defaultPrevented || event.key !== "Escape" || settingsPanel?.hidden !== false || document.querySelector("dialog[open]")) return;
+  event.preventDefault();
+  setSettings(false);
+  settingsButton?.focus();
+});
 document.querySelector("[data-player-settings-close]")?.addEventListener("click", () => { setSettings(false); settingsButton.focus(); });
 const limitedSubtitleTracks = player.dataset.subtitlePickerLimited === "true" ? [...player.querySelectorAll("track[data-subtitle-source]")].map((element) => element.track) : null;
 if (limitedSubtitleTracks) {

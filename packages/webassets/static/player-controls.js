@@ -14,6 +14,13 @@ const formatTime = (seconds) => {
 };
 if (controls && player.tagName === "VIDEO") {
   const stage = player.closest(".media-stage");
+  const nativeControls = player.hasAttribute("data-native-controls");
+  if (nativeControls) {
+    const options = document.createElement("div");
+    options.className = "player-native-options";
+    stage.after(options);
+    options.append(stage.querySelector(".player-stage-toolbar"), settingsPanel);
+  }
   stage.tabIndex = 0;
   stage.setAttribute("role", "region");
   stage.setAttribute("aria-label", "Video player");
@@ -30,7 +37,12 @@ if (controls && player.tagName === "VIDEO") {
     feedback.hidden = false;
     feedbackTimer = setTimeout(() => { feedback.hidden = true; }, 8000);
   };
-  const seek = controls.querySelector("[data-player-seek]");
+  const reportFullscreenFailure = (error) => {
+    const failure = ["NotAllowedError", "InvalidStateError", "NotSupportedError", "TypeError"].includes(error?.name) ? error.name : "Error";
+    playbackTrace("error", `fullscreen:${failure}:playback-retained`);
+    reportControlFailure("Fullscreen could not open. Try again using the video's fullscreen control.");
+  };
+  const seek = document.querySelector("[data-player-seek]");
   const seekPreview = controls.querySelector("[data-seek-preview]");
   const previewFrame = seekPreview?.querySelector("[data-seek-frame]");
   const previewImage = previewFrame ? new Image() : null;
@@ -62,7 +74,7 @@ if (controls && player.tagName === "VIDEO") {
   previewImage?.addEventListener("load", () => { previewImage.hidden = false; });
   previewImage?.addEventListener("error", () => { previewImage.hidden = true; });
   const volume = controls.querySelector("[data-player-volume]");
-  const time = controls.querySelector("[data-player-time]");
+  const time = document.querySelector("[data-player-time]");
   const mute = controls.querySelector("[data-player-mute]");
   const captions = controls.querySelector("[data-player-captions]");
   if (settingsPanel) {
@@ -89,7 +101,7 @@ if (controls && player.tagName === "VIDEO") {
     if (footer) footer.before(label);
     else settingsPanel.append(label);
   }
-  const pictureInPicture = controls.querySelector("[data-player-pip]");
+  const pictureInPicture = document.querySelector("[data-player-pip]");
   const standardPictureInPicture = document.pictureInPictureEnabled === true && typeof player.requestPictureInPicture === "function";
   const webkitPictureInPicture = typeof player.webkitSetPresentationMode === "function" && typeof player.webkitSupportsPresentationMode === "function" && player.webkitSupportsPresentationMode("picture-in-picture");
   const pictureInPictureSupported = standardPictureInPicture || webkitPictureInPicture;
@@ -108,13 +120,23 @@ if (controls && player.tagName === "VIDEO") {
     else player.webkitSetPresentationMode?.("picture-in-picture");
   };
   let scrubPosition;
-  const syncControls = () => {
-    const duration = Number.isFinite(player.duration) ? player.duration : Number(player.dataset.duration) || 0;
+  let nativeStarted = !player.paused && !playbackPreparation;
+  const syncControls = (event) => {
+    if (nativeControls) {
+      if (event?.type === "playing" && !playbackPreparation) nativeStarted = true;
+      controls.hidden = nativeStarted || !player.paused || Boolean(player.error);
+      const timeline = settingsPanel?.querySelector("[data-native-timeline]");
+      const compatible = ["remux", "audio-transcode", "transcode", "native-hls"].includes(playbackTraceMethod);
+      if (timeline) timeline.hidden = !compatible;
+      if (!seek || !compatible) return;
+    }
+    const duration = nativeControls ? Number(seek.max) : Number.isFinite(player.duration) ? player.duration : Number(player.dataset.duration) || 0;
     seek.max = duration || 100;
     seek.value = Math.min(scrubPosition ?? player.currentTime ?? 0, duration || 100);
     seek.style.setProperty("--player-progress", `${duration ? seek.value / duration * 100 : 0}%`);
     time.textContent = `${formatTime(scrubPosition ?? player.currentTime)} / ${formatTime(duration)}`;
     seek.setAttribute("aria-valuetext", `${formatTime(Number(seek.value))} of ${formatTime(duration)}`);
+    if (nativeControls) return;
     controls.querySelectorAll("[data-player-toggle]").forEach((button) => {
       button.setAttribute("aria-label", player.paused ? "Play" : "Pause");
       button.classList.toggle("is-paused", !player.paused);
@@ -124,46 +146,50 @@ if (controls && player.tagName === "VIDEO") {
     volume.value = player.muted ? 0 : player.volume;
   };
   controls.hidden = false;
-  player.controls = false;
-  controls.querySelectorAll("[data-player-toggle]").forEach((button) => button.addEventListener("click", () => player.paused ? requestPlay("control").catch(() => {}) : requestPause()));
+  player.controls = nativeControls;
+  controls.querySelectorAll("[data-player-toggle]").forEach((button) => button.addEventListener("click", () => {
+    if (!player.paused && !nativeControls) return requestPause();
+    requestPlay("control").catch(() => {});
+    if (nativeControls && navigator.maxTouchPoints > 0) enterFullscreen().catch(reportFullscreenFailure);
+  }));
   controls.querySelectorAll("[data-player-back]").forEach((button) => button.addEventListener("click", () => { player.currentTime = Math.max(0, player.currentTime - 10); }));
   controls.querySelectorAll("[data-player-forward]").forEach((button) => button.addEventListener("click", () => { player.currentTime = Math.min(player.duration || Infinity, player.currentTime + 10); }));
-  seek.addEventListener("input", () => { scrubPosition = Number(seek.value); syncControls(); showSeekPreview(scrubPosition); });
-  seek.addEventListener("pointermove", (event) => {
+  seek?.addEventListener("input", () => { scrubPosition = Number(seek.value); syncControls(); showSeekPreview(scrubPosition); });
+  seek?.addEventListener("pointermove", (event) => {
     const bounds = seek.getBoundingClientRect();
     if (bounds.width > 0) showSeekPreview(Number(seek.max) * (event.clientX - bounds.left) / bounds.width);
   });
-  seek.addEventListener("pointerleave", () => { if (scrubPosition === undefined) hideSeekPreview(); });
-  seek.addEventListener("focus", () => showSeekPreview(Number(seek.value)));
-  seek.addEventListener("change", () => {
+  seek?.addEventListener("pointerleave", () => { if (scrubPosition === undefined) hideSeekPreview(); });
+  seek?.addEventListener("focus", () => showSeekPreview(Number(seek.value)));
+  seek?.addEventListener("change", () => {
     const position = Number(seek.value);
     scrubPosition = undefined;
     if (Number.isFinite(position) && position >= 0 && position <= Number(seek.max)) player.currentTime = position;
     syncControls();
     hideSeekPreview();
   });
-  for (const event of ["pointercancel", "blur"]) seek.addEventListener(event, () => { scrubPosition = undefined; syncControls(); hideSeekPreview(); });
-  volume.addEventListener("input", () => { player.muted = false; player.volume = Number(volume.value); syncControls(); });
-  mute.addEventListener("click", () => { player.muted = !player.muted; syncControls(); });
+  for (const event of ["pointercancel", "blur"]) seek?.addEventListener(event, () => { scrubPosition = undefined; syncControls(); hideSeekPreview(); });
+  volume?.addEventListener("input", () => { player.muted = false; player.volume = Number(volume.value); syncControls(); });
+  mute?.addEventListener("click", () => { player.muted = !player.muted; syncControls(); });
   const subtitleSelect = document.querySelector("[data-subtitles]");
   const selectableTracks = player.dataset.subtitlePickerLimited === "true" ? [...player.querySelectorAll("track[data-subtitle-source]")].map((element) => element.track) : null;
   const visibleTracks = () => selectableTracks || [...player.textTracks];
   let lastSubtitle = subtitleSelect?.value !== "off" ? subtitleSelect?.value : "0";
   const syncSubtitles = () => {
     const available = Boolean(subtitleSelect && subtitleSelect.options.length > 1);
-    captions.disabled = !available;
-    captions.title = available ? "Toggle subtitles" : "No subtitles available";
-    captions.setAttribute("aria-label", available ? "Subtitles" : "No subtitles available");
+    if (captions) captions.disabled = !available;
+    if (captions) captions.title = available ? "Toggle subtitles" : "No subtitles available";
+    captions?.setAttribute("aria-label", available ? "Subtitles" : "No subtitles available");
     const index = visibleTracks().findIndex((track) => track.mode === "showing");
     const selected = index < 0 ? "off" : String(index);
     if (subtitleSelect && [...subtitleSelect.options].some((option) => option.value === selected)) subtitleSelect.value = selected;
     if (index >= 0) lastSubtitle = selected;
-    captions.setAttribute("aria-pressed", String(index >= 0));
+    captions?.setAttribute("aria-pressed", String(index >= 0));
   };
   player.textTracks?.addEventListener?.("change", syncSubtitles);
   if (subtitleSelect) new MutationObserver(syncSubtitles).observe(subtitleSelect, { childList: true });
   syncSubtitles();
-  captions.addEventListener("click", () => {
+  captions?.addEventListener("click", () => {
     const select = document.querySelector("[data-subtitles]");
     if (!select || select.options.length < 2) return;
     select.value = visibleTracks().some((track) => track.mode === "showing") ? "off" : lastSubtitle || "0";
@@ -172,19 +198,20 @@ if (controls && player.tagName === "VIDEO") {
   });
   const fullscreen = document.querySelector("[data-player-fullscreen]");
   const nativeFullscreenAllowed = player.dataset.subtitlePickerLimited !== "true";
-  const fullscreenSupported = Boolean((document.fullscreenEnabled && stage.requestFullscreen) || (nativeFullscreenAllowed && player.webkitEnterFullscreen));
+  const fullscreenTarget = nativeControls ? player : stage;
+  const fullscreenSupported = Boolean((document.fullscreenEnabled && fullscreenTarget.requestFullscreen) || (nativeFullscreenAllowed && player.webkitEnterFullscreen));
   if (fullscreen) {
     fullscreen.hidden = !fullscreenSupported && !nativeFullscreenAllowed;
     fullscreen.disabled = !fullscreenSupported;
     fullscreen.title = fullscreenSupported ? "Fullscreen" : nativeFullscreenAllowed ? "Fullscreen is unavailable in this browser" : "Fullscreen is unavailable while subtitle choices are limited. Use Theater mode.";
   }
-  fullscreen?.addEventListener("click", async () => {
-    try {
-      if (document.fullscreenElement) await document.exitFullscreen();
-      else if (document.fullscreenEnabled && stage.requestFullscreen) await stage.requestFullscreen();
-      else if (nativeFullscreenAllowed && player.webkitEnterFullscreen) player.webkitEnterFullscreen();
-    } catch (_) { reportControlFailure("Fullscreen could not open. Try again, or use Theater mode."); }
-  });
+  const enterFullscreen = async () => {
+    if (document.fullscreenElement) await document.exitFullscreen();
+    else if (nativeFullscreenAllowed && player.webkitEnterFullscreen && nativeControls) player.webkitEnterFullscreen();
+    else if (document.fullscreenEnabled && fullscreenTarget.requestFullscreen) await fullscreenTarget.requestFullscreen();
+    else if (nativeFullscreenAllowed && player.webkitEnterFullscreen) player.webkitEnterFullscreen();
+  };
+  fullscreen?.addEventListener("click", () => enterFullscreen().catch(reportFullscreenFailure));
   pictureInPicture?.addEventListener("click", () => togglePictureInPicture().catch(() => reportControlFailure("Picture-in-Picture could not open. Start the video, then try again.")));
   document.addEventListener("keydown", (event) => {
     if (event.defaultPrevented || event.metaKey || event.ctrlKey || event.altKey || event.shiftKey ||
@@ -205,13 +232,19 @@ if (controls && player.tagName === "VIDEO") {
   });
   if (settingsPanel) {
     const help = document.createElement("p");
-    help.textContent = "Keyboard: Space or K to play/pause, left/right arrows to seek 10 seconds, T for Theater, Esc to close.";
+    help.textContent = `Keyboard: Space or K to play/pause, left/right arrows to seek 10 seconds, ${nativeControls ? "" : "T for Theater, "}Esc to close.`;
     settingsPanel.append(help);
   }
   for (const event of ["enterpictureinpicture", "leavepictureinpicture", "webkitpresentationmodechanged"]) player.addEventListener(event, syncPictureInPicture);
   syncPictureInPicture();
-  player.addEventListener("click", () => player.paused ? requestPlay("media-element").catch(() => {}) : requestPause());
-  for (const event of ["loadedmetadata", "durationchange", "timeupdate", "play", "pause", "volumechange"]) player.addEventListener(event, syncControls);
+  let pictureTouchedAt = -Infinity;
+  if (!nativeControls) player.addEventListener("touchend", () => { pictureTouchedAt = performance.now(); }, {passive: true});
+  if (!nativeControls) player.addEventListener("click", (event) => {
+    if (event.pointerType === "touch" || performance.now() - pictureTouchedAt < 1000) return;
+    if (player.paused) requestPlay("media-element").catch(() => {});
+    else requestPause();
+  });
+  for (const event of ["loadedmetadata", "durationchange", "timeupdate", "play", "playing", "pause", "volumechange", "error"]) player.addEventListener(event, syncControls);
   document.addEventListener("fullscreenchange", () => {
     const button = document.querySelector("[data-player-fullscreen]");
     button?.setAttribute("aria-label", document.fullscreenElement ? "Exit fullscreen" : "Enter fullscreen");
