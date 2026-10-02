@@ -28,7 +28,7 @@ export async function verifyDirectRetry(page: Page, info: TestInfo, browserName:
   const receipt = {revision: process.env.KINOSAIL_TEST_REVISION ?? process.env.GITHUB_SHA, binarySHA256: process.env.KINOSAIL_TEST_BINARY_SHA256,
     command: process.env.KINOSAIL_TEST_COMMAND ?? `pnpm --dir e2e test${process.env.KINOSAIL_BROWSER_SMOKE === "1" ? " --grep=@smoke" : ""}`,
     environment: {browserName, browserVersion: page.context().browser()?.version(), node: process.version, platform: process.platform, viewport, baseURL: info.project.use.baseURL},
-    data: "Existing authenticated watch path; public ?direct=1 override; exactly one induced media HTTP 500",
+    data: "Existing public watch path and current Viewer state; ?direct=1 override; exactly one induced media HTTP 500",
     console: [] as {type: string; text: string}[], pageErrors: [] as string[],
     requests: [] as {kind: string; at: number; path: string; sourceSHA256: string; status?: number}[],
     states: {} as Record<string, MediaState>, routeEvents: [] as {phase: string; at: number; path: string; result: string}[], failedRequests: 0, retryRequests: 0,
@@ -158,7 +158,7 @@ export async function verifyDirectRetry(page: Page, info: TestInfo, browserName:
   }
 }
 
-// Existing smoke Owner initialization supplies authentication; this creates no profile.
+// Reuse the current Viewer state after setup; this creates no profile.
 export async function verifyAuthenticatedDirectRetryWidths(authenticatedPage: Page, info: TestInfo) {
   const browser = authenticatedPage.context().browser();
   if (!browser) throw new Error("direct retry needs the existing test browser");
