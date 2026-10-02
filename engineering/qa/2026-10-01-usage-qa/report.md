@@ -77,6 +77,12 @@ Available host disk space increased from approximately 13 GiB to 21 GiB. This do
 | Actual native Dialog Boost and Night Mode HLS | 1 function with 2 argument cases passed | `native-hls-evidence.json`; `ios-real-hls-effects-known-state-fixed.xcresult` |
 | Actual tvOS remote browse/navigation | 1 passed; 25 retained screenshots | `tvos-real-remote-navigation.json`; `tvos-real-remote-navigation.xcresult` |
 | Subtitles trusted HTTPS disclosure reproduction | 2 WebKit runs passed | `subtitles-browser-trusted-repro.json` |
+| Player remote authorization sequence fuzzing | Passed: 671 executions in the 30-second fuzz window | `player-authorization-fuzz.json` |
+| Subtitles persisted media-share state fuzzing | Passed: 83,428 executions in the 30-second fuzz window | `subtitles-share-state-fuzz.json` |
+
+The authorization fuzzer exercises public approval, revocation, and consumption operations using an in-memory Quick Connect broker. It rejects Owner and weak-session approvals and prevents revoked grants from issuing sessions. The persisted-state fuzzer requires valid media-share state to remain valid after pruning. Neither is an HTTP journey or a complete validation audit.
+
+While this batch ran, PR #418 independently changed persistent browser-cookie lifetime. This task reconciled with that main revision and reran `packages/identitycore` and `packages/servertest`; both passed as `session-reconciliation`. The [fourth deep run](https://github.com/Kinosail/kinosail/actions/runs/36970986771) started at the subsequent evidence merge, `59661fab987baaf27097578c122da84b0b49c3b6`. Its outcome remains pending.
 
 The playback matrix combines real synthetic-media journeys with controlled browser media and transport failure scenarios. It covers Direct First, blocked autoplay, resume, seeking, duration, quality, speed, buffering, and recovery. This is not a physical-device or codec certification.
 
