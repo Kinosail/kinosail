@@ -65,12 +65,7 @@ func newSubtitleProvider(config SubtitleConfig, cache, data string, index *libra
 	provider := &subtitleProvider{config: config, cache: cache, index: index, settings: settings, sync: newSubtitleSynchronizer(ffmpeg), open: newOpenSubtitlesProvider(config.OpenSubtitles), subsource: newSubSourceProvider(config.SubSource), ledger: newSubtitleLedger(data), health: health}
 	provider.open.health, provider.subsource.health = health, health
 	provider.client = localIntegrationHTTPClient(15 * time.Second)
-	provider.client.CheckRedirect = func(request *http.Request, _ []*http.Request) error {
-		if !provider.allowed(request.URL.String()) {
-			return http.ErrUseLastResponse
-		}
-		return nil
-	}
+	provider.client.CheckRedirect = subtitleProviderRedirect(provider.allowed)
 	return provider
 }
 
@@ -92,12 +87,7 @@ func (provider *subtitleProvider) replaceConfig(config SubtitleConfig) {
 	next := &subtitleProvider{config: config, cache: provider.cache, index: provider.index, settings: provider.settings, sync: provider.sync, open: newOpenSubtitlesProvider(config.OpenSubtitles), subsource: newSubSourceProvider(config.SubSource), ledger: provider.ledger, health: provider.health}
 	next.open.health, next.subsource.health = provider.health, provider.health
 	next.client = localIntegrationHTTPClient(15 * time.Second)
-	next.client.CheckRedirect = func(request *http.Request, _ []*http.Request) error {
-		if !next.allowed(request.URL.String()) {
-			return http.ErrUseLastResponse
-		}
-		return nil
-	}
+	next.client.CheckRedirect = subtitleProviderRedirect(next.allowed)
 	provider.current.Store(next)
 	if config.URL != previous.URL || config.APIKey != previous.APIKey {
 		provider.health.reset("SubDL")
