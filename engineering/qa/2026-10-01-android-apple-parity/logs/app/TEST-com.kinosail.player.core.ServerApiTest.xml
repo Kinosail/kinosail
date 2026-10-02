@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.kinosail.player.core.ServerApiTest" tests="9" skipped="0" failures="0" errors="0" timestamp="2026-10-02T06:27:09.622Z" hostname="MikeOs-MacBook-Pro.local" time="1.11">
+  <properties/>
+  <testcase name="failedRequestLogKeepsCorrelationAndOmitsCredentials" classname="com.kinosail.player.core.ServerApiTest" time="0.773"/>
+  <testcase name="unrestrictedViewerAcceptsNullLibrariesButRejectsMalformedRestrictions" classname="com.kinosail.player.core.ServerApiTest" time="0.009"/>
+  <testcase name="startsAndPollsTheServerContract" classname="com.kinosail.player.core.ServerApiTest" time="0.009"/>
+  <testcase name="temporaryReadFailureRetriesButMutationsAndAuthorizationFailuresDoNot" classname="com.kinosail.player.core.ServerApiTest" time="0.264"/>
+  <testcase name="redirectsOversizedBodiesAndUnknownViewerFieldsAreRejected" classname="com.kinosail.player.core.ServerApiTest" time="0.01"/>
+  <testcase name="viewerAndSignOutRequireAnOriginBoundBearerToken" classname="com.kinosail.player.core.ServerApiTest" time="0.008"/>
+  <testcase name="invalidInputsNeverOpenAConnection" classname="com.kinosail.player.core.ServerApiTest" time="0.018"/>
+  <testcase name="diagnosticOperationExcludesMediaIDsAndQueries" classname="com.kinosail.player.core.ServerApiTest" time="0.008"/>
+  <testcase name="malformedMissingUnknownAndConflictingResponsesAreRejected" classname="com.kinosail.player.core.ServerApiTest" time="0.009"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

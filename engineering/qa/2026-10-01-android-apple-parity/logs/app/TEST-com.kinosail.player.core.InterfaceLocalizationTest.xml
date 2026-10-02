@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.kinosail.player.core.InterfaceLocalizationTest" tests="4" skipped="0" failures="0" errors="0" timestamp="2026-10-02T06:27:00.892Z" hostname="MikeOs-MacBook-Pro.local" time="0.64">
+  <properties/>
+  <testcase name="emptyLocaleListFallsBackWithoutCrashing" classname="com.kinosail.player.core.InterfaceLocalizationTest" time="0.013"/>
+  <testcase name="navigationUsesSharedTranslations" classname="com.kinosail.player.core.InterfaceLocalizationTest" time="0.016"/>
+  <testcase name="unsupportedLanguageFallsBackToEnglish" classname="com.kinosail.player.core.InterfaceLocalizationTest" time="0.012"/>
+  <testcase name="olderPhonesUseTheirConfiguredLanguage" classname="com.kinosail.player.core.InterfaceLocalizationTest" time="0.529"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

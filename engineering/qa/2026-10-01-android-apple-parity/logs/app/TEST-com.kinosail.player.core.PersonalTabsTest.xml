@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.kinosail.player.core.PersonalTabsTest" tests="3" skipped="0" failures="0" errors="0" timestamp="2026-10-02T06:27:01.541Z" hostname="MikeOs-MacBook-Pro.local" time="0.056">
+  <properties/>
+  <testcase name="rejectsMissingUnknownDuplicateOversizedAndMalformedTabsWithoutChangingSavedChoices" classname="com.kinosail.player.core.PersonalTabsTest" time="0.023"/>
+  <testcase name="persistsOneToFourUniqueTabsPerServerAndViewer" classname="com.kinosail.player.core.PersonalTabsTest" time="0.012"/>
+  <testcase name="invalidPersistedChoicesFallBackWithoutRewritingTheStore" classname="com.kinosail.player.core.PersonalTabsTest" time="0.018"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

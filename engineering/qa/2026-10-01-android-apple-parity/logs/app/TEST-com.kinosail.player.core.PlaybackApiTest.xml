@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.kinosail.player.core.PlaybackApiTest" tests="8" skipped="0" failures="0" errors="0" timestamp="2026-10-02T06:27:09.097Z" hostname="MikeOs-MacBook-Pro.local" time="0.018">
+  <properties/>
+  <testcase name="acceptsPreferredSubtitlePolicyAndRejectsMalformedPolicy" classname="com.kinosail.player.core.PlaybackApiTest" time="0.005"/>
+  <testcase name="rejectsInvalidInputsBeforeNetwork" classname="com.kinosail.player.core.PlaybackApiTest" time="0.0"/>
+  <testcase name="rejectsRedirectWrongContentTypeAndOversizedPlan" classname="com.kinosail.player.core.PlaybackApiTest" time="0.002"/>
+  <testcase name="rejectsMalformedConflictingAndExternalPlans" classname="com.kinosail.player.core.PlaybackApiTest" time="0.007"/>
+  <testcase name="fetchesViewerScopedPlanAndSources" classname="com.kinosail.player.core.PlaybackApiTest" time="0.001"/>
+  <testcase name="mapsCompatibleOmissionsToCanonicalProgress" classname="com.kinosail.player.core.PlaybackApiTest" time="0.0"/>
+  <testcase name="aNewTitleMayOmitZeroStartAndUnusedProgressToken" classname="com.kinosail.player.core.PlaybackApiTest" time="0.001"/>
+  <testcase name="validatesViewerScopedWebVttTracksBeforePlayback" classname="com.kinosail.player.core.PlaybackApiTest" time="0.002"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>
