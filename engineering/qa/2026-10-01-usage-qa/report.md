@@ -84,6 +84,8 @@ The authorization fuzzer exercises public approval, revocation, and consumption 
 
 While this batch ran, PR #418 independently changed persistent browser-cookie lifetime. This task reconciled with that main revision and reran `packages/identitycore` and `packages/servertest`; both passed as `session-reconciliation`. The [fourth deep run](https://github.com/Kinosail/kinosail/actions/runs/36970986771) started at the subsequent evidence merge, `59661fab987baaf27097578c122da84b0b49c3b6`. Its outcome remains pending.
 
+That fourth run completed with failures in tooling and Player's Chromium and WebKit jobs. All three Subtitles browser jobs and Player Firefox passed. The new stale snapshots were repaired through PR #421. A [fifth deep run](https://github.com/Kinosail/kinosail/actions/runs/36972039705) started on its merge, `1a47860f1668fd33664f9e1a9c9ba74e29d8c499`; its result remains pending.
+
 The playback matrix combines real synthetic-media journeys with controlled browser media and transport failure scenarios. It covers Direct First, blocked autoplay, resume, seeking, duration, quality, speed, buffering, and recovery. This is not a physical-device or codec certification.
 
 The initial native suites used dedicated iPhone 18 Pro and Apple TV 4K simulators on iOS/tvOS 27.0. They include their own loopback and rendering fixtures. The iOS skipped case remains outside passing coverage.
@@ -187,6 +189,14 @@ The actual iOS HLS probe passed both Dialog Boost and Night Mode after resetting
 ### QA-008 — Hosted Subtitles WebKit disclosure does not open (unverified)
 
 The third deep run failed the trusted HTTPS guidance journey: after clicking How trusted HTTPS works, its explanatory text remained hidden. Chromium and Firefox passed that check. The retained WebKit trace records layout instability and scrolling before the click. This does not identify a product cause. Two local WebKit repetitions passed with the original assertion unchanged. No repair, retry-based exclusion, or fully green hosted deep run is claimed.
+
+The fourth hosted Subtitles WebKit job passed with that assertion unchanged. This observation remains unverified; passing repetitions do not erase the retained failure.
+
+### QA-009 — Hosted Chromium native HLS stops after its first moving frame (under investigation)
+
+The fourth deep run failed the onboarding journey before its explicit playback action because Retry playback remained visible. Its [retained failure artifact](https://github.com/Kinosail/kinosail/actions/runs/36970986771/artifacts/11211827312) was downloaded and inspected. Player's Chromium job reported 310 passed checks, one failed, and 238 skipped cases.
+
+The playback events show the unsupported direct source selecting native HLS, receiving metadata, presenting frames, and advancing to 113 milliseconds. It then reported media error code 4 and offered retry. Playlist requests returned HTTP 200; initialization and segment requests returned HTTP 206. The master correctly advertised video-only H.264 variants. This is an initial native-HLS interruption, separate from QA-002's disconnected saved-file stall. The trace does not establish a malformed stream, decoder defect, or recovery cause. No product repair or browser-error exclusion is claimed. Records are `deep-fourth-chromium.log` and `hosted-fourth-chromium`.
 
 ## Verification boundaries
 
