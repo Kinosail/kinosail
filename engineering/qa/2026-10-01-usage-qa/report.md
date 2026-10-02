@@ -61,10 +61,23 @@ Available host disk space increased from approximately 13 GiB to 21 GiB. This do
 | Player offline playback reproduction | 2 fresh Chromium runs passed | `player-browser-offline-repro.json`; `player-browser-offline-repro-playwright.json` |
 | Player playback and recovery matrix | 228 passed across Chromium, Firefox, and WebKit | `player-browser-playback.json`; `player-browser-playback-playwright.json` |
 | Root `make tooling-check` after snapshot repair | Passed | `tooling-green.json` |
+| Origin-parser fuzzing | Passed: 131,234 executions in the 30-second fuzz window | `player-origin-fuzz.json` |
+| Remote-boundary parser fuzzing | Passed: 110,817 executions in the 30-second fuzz window | `player-remote-boundary-fuzz.json` |
+| Backup restore confinement fuzzing | Passed: 49,724 executions in the 30-second fuzz window | `restore-boundary-fuzz.json` |
+| Player storage, authentication, controls, and layout matrix | 297 passed; 3 fixture failures; 3 confirmed focus failures | `player-browser-storage-auth.json` |
+| Native client against the actual Go Server | 3 passed, 0 skipped, 0 failed | `ios-live-contract-summary.json`; `ios-live-contract-shows-corrected.xcresult` |
+| Player skip-link repair | 6 cases passed across three engines, phone and desktop, with 24 route checks | `player-browser-skip-final-green.json` |
+| Player complete Go suite after focus repair | Passed: 5 packages | `player-focus-suite.json` |
 
 The playback matrix combines real synthetic-media journeys with controlled browser media and transport failure scenarios. It covers Direct First, blocked autoplay, resume, seeking, duration, quality, speed, buffering, and recovery. This is not a physical-device or codec certification.
 
-The native suites used dedicated iPhone 18 Pro and Apple TV 4K simulators on iOS/tvOS 27.0. They include their own loopback and rendering fixtures. They do not establish an authenticated live Server journey, physical touch, or Siri Remote behavior. The iOS skipped case remains outside passing coverage.
+The initial native suites used dedicated iPhone 18 Pro and Apple TV 4K simulators on iOS/tvOS 27.0. They include their own loopback and rendering fixtures. The iOS skipped case remains outside passing coverage.
+
+A later disposable iOS probe exercised production `ServerClient` against a separate fresh Go Server on loopback HTTP, with its own Owner and confirmed MFA. Three journeys passed: real catalog/detail/playback/reader/download-identity response decoding; saved preferences and four rejected writes with unchanged persisted state; and Quick Connect approval, token use, sign-out, and subsequent HTTP 401. HTTP playback descriptors were decoded; this probe does not prove AVPlayer rendered frames. It does not prove TLS, physical touch, or Siri Remote behavior.
+
+The probe source, SHA-256 receipt, server binary hash, and private fixture launcher are retained in the evidence root. The temporary probe was removed from the test target after execution. Initial harness corrections addressed Swift actor access, the video-only download-track operation, and the distinction between an episode ID and its Show ID. Those incomplete runs remain recorded. They are not product findings.
+
+The storage/authentication batch used the baseline production binary. An environment override made Server name intentionally read-only, causing three settings-test failures. Removing that override restored all three settings checks. Its other three failures confirmed QA-003. The subsequent HTMX matrix passed all 75 controlled pending, loaded, empty, failure, and stale-response checks across three engines. An early expanded focus test incorrectly assumed Downloads used `#main`; it correctly uses `#downloads`. That assumption was corrected before the final six-case focus run.
 
 Production sources did not change between baseline `75ebf1d`, report commit `680781773`, and its merge `895f627b4`. Browser servers retain the fresh baseline binaries. Native and source runs record the report revision; the initial two manifests captured the revision at completion. Later manifests capture it at launch. This distinction does not change the tested production sources.
 
@@ -88,6 +101,20 @@ One Chromium download journey stopped near 0.099 seconds after the network disco
 
 The same journey passed in the initial Chromium batch, in Firefox and WebKit, and twice in fresh Chromium repetitions after the failure. The saved trace and screenshot remain under `player-browser-corrected-results/test-instance-production-a-16c56-ter-the-network-disconnects-chromium`. The observation has not reproduced twice from a known state, so no product fix or passing full Player batch is claimed.
 
+### QA-003 — Skip to content changes the URL without moving keyboard focus (confirmed and repaired)
+
+The existing Show keyboard journey failed in Chromium, Firefox, and WebKit. Two fresh Chromium repetitions also failed. The shell supplied the skip-link target but left its `main` element unable to receive focus. The URL acquired `#main` while focus stayed outside the content.
+
+The shell now adds `tabindex="-1"` when missing. It preserves existing IDs and tabindex values. The expanded browser regression checks actual keyboard activation and focused landmarks on Show, Account, Settings, and Downloads pages at 390 and 1440 pixels. Downloads retains its required `#downloads` target. Both widths failed on the baseline before the repair; all six final cases passed across three engines afterward. Populated screenshots are retained with the run.
+
+Focused shell/navigation Go checks, the complete Player Go suite, the regenerated Player Code Atlas contract, the source cap, and diff checks passed. There is no layout, copy, API, or asynchronous-state change.
+
+### QA-004 — Hosted WebKit HLS access-control console errors (under investigation)
+
+The [current-main deep run](https://github.com/Kinosail/kinosail/actions/runs/36961451633) at `eb6d7995d8f1d9edbc6b05acf3e33a3484e2f06f` passed tooling after QA-001, but its WebKit onboarding journey recorded HLS playlist, initialization, and segment access-control console errors. The journey reached moving playback before its final console-error assertion failed. The log remains in `deep-corrected-failed.log`.
+
+This differs from QA-002. The first deep run passed that WebKit journey. No console-error exclusion or product repair has been applied without identifying the cause. A local attempt against the already modified shared fixture could not reach the required initial recent-content state and does not reproduce the hosted observation.
+
 ## Verification boundaries
 
 - Source tests: both app suites and 60 shared packages passed.
@@ -97,7 +124,7 @@ The same journey passed in the initial Chromium batch, in Firefox and WebKit, an
 - Native simulator suites: iOS and tvOS passed within the boundaries above; one iOS check skipped.
 - Physical devices, real receivers, external subtitle providers, and purchases: not run.
 - Production containers: blocked by Podman VM storage exhaustion.
-- Deep hosted CI: running; tooling snapshot failure reproduced and repaired locally. Other hosted outcomes remain pending.
+- Hosted CI: the first deep run passed both app suites, all six browser jobs, native Swift/Android compilation, and all four production-container builds. Its stale tooling snapshot failure was repaired through merged PR #413. The next deep run passed tooling but failed the Player WebKit happy-path console assertion described in QA-004. Full current-main deep CI is not claimed green.
 - Container publication, Nox deployment, and public TLS: not verified by this audit.
 
 Confirmed defects will receive a failing regression before a production fix. Verified chunks will be delivered through protected-main pull requests with merge commits.
