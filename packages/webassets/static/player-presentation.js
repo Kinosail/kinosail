@@ -84,7 +84,7 @@ if (theaterButton) {
     theaterToolbar.hidden = false;
     controls?.classList.remove("is-idle");
     if (mediaStage.classList.contains("is-playing") && !mediaStage.classList.contains("has-settings")) theaterIdle = setTimeout(() => {
-      if (!mediaStage.contains(document.activeElement)) {
+      if (!mediaStage.contains(document.activeElement) || !document.activeElement.matches(":focus-visible")) {
         theaterToolbar.hidden = true;
         controls?.classList.add("is-idle");
       }
@@ -101,11 +101,16 @@ if (theaterButton) {
   player.addEventListener("playing", () => setTheaterPlaying(true));
   player.addEventListener("timeupdate", () => { if (!player.paused && player.currentTime > 0 && !mediaStage.classList.contains("is-playing")) setTheaterPlaying(true); });
   for (const event of ["pause", "ended", "error"]) player.addEventListener(event, () => setTheaterPlaying(false));
-  mediaStage.addEventListener("pointermove", revealTheater);
-  mediaStage.addEventListener("pointerdown", revealTheater);
+  for (const type of ["pointermove", "pointerdown"]) mediaStage.addEventListener(type, (event) => {
+    if (event.pointerType !== "touch" || !controls?.classList.contains("is-idle")) revealTheater();
+  });
+  player.addEventListener("touchend", (event) => {
+    // Reveal after the touch so Safari cannot retarget it to the hidden timeline.
+    if (controls?.classList.contains("is-idle")) event.preventDefault();
+    revealTheater();
+  }, {passive: false});
   mediaStage.addEventListener("focusin", revealTheater);
-  theaterButton.addEventListener("focus", () => { clearTimeout(theaterIdle); theaterToolbar.hidden = false; });
-  theaterButton.addEventListener("blur", revealTheater);
+  mediaStage.addEventListener("focusout", revealTheater);
   theaterButton.addEventListener("click", () => { theaterButton.focus(); setTheater(!document.body.classList.contains("player-theater")); });
   document.addEventListener("keydown", (event) => {
     if (event.defaultPrevented || document.querySelector("dialog[open]")) return;
