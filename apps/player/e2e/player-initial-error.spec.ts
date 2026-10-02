@@ -3,14 +3,12 @@ import { startDirectPlayer } from "./player-direct-fallback-fixture";
 
 const instances = (page: Page) => page.evaluate(() => (window as Window & { FakeHls: { instances: number } }).FakeHls.instances);
 
-test("a direct format error before script initialization still offers video conversion", { tag: "@smoke" }, async ({ page }) => {
+test("a direct format error before script initialization prepares video conversion automatically", { tag: "@smoke" }, async ({ page }) => {
   await startDirectPlayer(page, { initialError: 4, compatibleMode: "transcode" });
   const action = page.locator("[data-player-status] [data-player-fallback]");
-  await expect(action).toHaveText("Start video transcode");
-  await expect(action).toBeVisible();
-  expect(await instances(page)).toBe(0);
-  await action.click();
   await expect.poll(() => instances(page)).toBe(1);
+  await expect(action).toBeHidden();
+  await expect(page.locator("[data-playback-recovery]")).toBeHidden();
 });
 
 for (const code of [3, 4]) {
