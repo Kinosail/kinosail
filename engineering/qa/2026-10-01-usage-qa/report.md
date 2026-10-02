@@ -130,6 +130,8 @@ The [third deep run](https://github.com/Kinosail/kinosail/actions/runs/369674147
 
 Two local repetitions exercised the actual Go Server and Hls.js, with three watch-to-library transitions per repetition. Both passed with playlist and media-segment requests, a moving video clock, and no HLS page errors. The probe disabled only native HLS capability reporting to select Hls.js on macOS WebKit. This does not reproduce or clear the hosted Linux WebKit observation. An earlier probe ran before the Server was reachable and is excluded from coverage.
 
+Two further repetitions included pause, My List form submission, watched-state form submission, and Library navigation in each of three cycles. Both passed without HLS page errors. `hls-navigation-evidence.json` records the final probe hash and run receipt. A preliminary command used the wrong working-directory prefix and did not update the probe; that run adds no form-navigation coverage.
+
 ### QA-005 — Apple progress updates are rejected by the Server (confirmed and repaired)
 
 Actual iOS playback advanced, decoded a video frame, and sought successfully, but the Server rejected progress updates with HTTP 400. Both independent probe runs failed to observe a persisted position. Phase diagnostics isolated the failure to persistence; the moving clock and decoded-frame checks passed.
