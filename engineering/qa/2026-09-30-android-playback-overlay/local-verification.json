@@ -1,0 +1,19 @@
+{
+  "recordedAt": "2026-10-01T03:08:51.336667+00:00",
+  "sourceCommit": "09c683890",
+  "reconciledMain": "2d00b19a6b9502b6fd02149c8c13dd1f80e96410",
+  "testedBase": "2f8f8e1401718a543a5ccd58ad6bae29c42390b5",
+  "testedNativeSourceMatches": true,
+  "upstreamAndroidTreeUnchanged": true,
+  "realServerEmulatorJourneys": 8,
+  "existingContentAccessibilityTests": 2,
+  "appTestsFresh": 120,
+  "unchangedSiblingCachedResults": {
+    "watchcore": 6,
+    "wear": 5
+  },
+  "maxLoc": "PASS",
+  "changedAppGate": "PASS",
+  "artifactSecrets": "PASS",
+  "productionChange": "One existing header background modifier; no new inputs"
+}

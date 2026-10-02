@@ -1,0 +1,35 @@
+{
+  "head": "4fb500aedcefb45fcd9a5297e35f4f3e6dadfdcd",
+  "capturedMain": "f1e7139ca5b38b7db57280adc2c02059b9d3ef34",
+  "earlierMain": "6ce161669ef9730dfa897123c2040375317561bf",
+  "mergeResolution": "Retain main timestamp comparator and broader shared regression table; remove duplicate local table. All4 conflict files match captured main byte-for-byte.",
+  "checks": {
+    "sharedPackageTests": "PASS with -p=1",
+    "currentSharedApiKeyTests": "PASS",
+    "latestMainCatalogTests": "PASS",
+    "player verify-changed": "PASS cap+diff,2paths",
+    "subtitles verify-changed": "PASS cap+diff,0paths",
+    "root tooling": "PASS",
+    "Android": "source+test hashes unchanged;131tests/builds retained"
+  },
+  "initialFailure": "Go linking failed from disk exhaustion before tests executed. Retry passed after verified private backup and reset of task-owned Apple simulator.",
+  "source": [
+    {
+      "path": "packages/identitycore/api_keys.go",
+      "sha256": "5fbb835a3009e9a8e81740ab23765f90de17b0e969a2f959c8b98bfb578c1cec"
+    },
+    {
+      "path": "packages/identitycore/api_keys_test.go",
+      "sha256": "132dca4819efa68f70d50d2b5ebc7a26989fa98be3276d377220c821c3d4baff"
+    },
+    {
+      "path": "apps/player/docs/architecture-explorer/index.html",
+      "sha256": "2659328054467634aa463da56d5469bd343bfae3ea684f040b6c618e34e67dbe"
+    },
+    {
+      "path": "apps/subtitles/docs/architecture-explorer/index.html",
+      "sha256": "e9bbc29e65aa0873db5818fbce7c36556a8078766bde589b23d4286af2af123c"
+    }
+  ],
+  "recordedAt": "2026-10-01T01:15:22.161215+00:00"
+}

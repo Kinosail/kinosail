@@ -129,7 +129,7 @@ internal fun PlaybackScreen(item: CatalogItem, viewer: Viewer, tv: Boolean, clos
         )
         if (!inPip) Column(Modifier.fillMaxSize().safeDrawingPadding().padding(if (tv) 40.dp else 16.dp),
             verticalArrangement = Arrangement.SpaceBetween) {
-            Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+            Column(Modifier.background(Color.Black), verticalArrangement = Arrangement.spacedBy(12.dp)) {
                 Text(item.title, color = Color.White, modifier = Modifier.fillMaxWidth(), maxLines = 1,
                     overflow = TextOverflow.Ellipsis)
                 Row(Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()),

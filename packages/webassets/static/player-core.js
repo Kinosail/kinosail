@@ -14,10 +14,11 @@ const traceNumber = (value) => Number.isFinite(value) && value >= 0 ? Math.min(3
 const traceToken = (value) => String(value || "").replace(/[^a-zA-Z0-9_.:-]/g, "_").slice(0, 64);
 const bufferedAhead = () => {
   const current = player.currentTime - playbackTimelineOffset;
+  const rounding = Number.EPSILON * Math.max(1, playbackTimelineOffset);
   for (let index = 0; index < player.buffered.length; index++) {
     const start = player.buffered.start(index);
     // HLS can place its first frame a few milliseconds after time zero.
-    if ((start <= current || current === 0 && start <= 0.05) && player.buffered.end(index) >= current) return player.buffered.end(index) - Math.max(current, start);
+    if ((start <= current + rounding || current === 0 && start <= 0.05) && player.buffered.end(index) >= current) return player.buffered.end(index) - Math.max(current, start);
   }
   return 0;
 };

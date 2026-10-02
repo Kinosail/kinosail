@@ -1,0 +1,1 @@
+The first green run fixed title contrast in all6 rendered configurations, but TV zoom failed because the test used touch performClick on a remote-owned TV button. PhotoScreen TV interaction consumes DPAD_CENTER. Correct the test to send actual Compose key events and verify image/Zoom focus. No production interaction change is justified by this harness error.

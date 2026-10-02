@@ -41,6 +41,12 @@ player.addEventListener("seeking", () => {
   if (!adaptiveActive || !fullDuration || adaptiveSeekSwitch) return;
   if (!hls) {
     const target = player.currentTime;
+    const mediaTarget = target - playbackTimelineOffset;
+    for (const ranges of [player.seekable, player.buffered]) {
+      for (let index = 0; index < ranges.length; index++) {
+        if (mediaTarget >= ranges.start(index) && mediaTarget <= ranges.end(index)) return;
+      }
+    }
     if (streamOffset(target) !== playbackTimelineOffset) {
       adaptiveSeekSwitch = true;
       adaptiveActive = false;
@@ -58,6 +64,10 @@ player.addEventListener("seeking", () => {
   }
 });
 const showReadyPlaybackMode = () => {
+  if (adaptiveActive && !hls && player.buffered.length) {
+    const start = player.buffered.start(0) + playbackTimelineOffset;
+    if (player.currentTime < start) setPlayerTime(start);
+  }
   if (directSeeking) directSeeking = false;
   clearRecovery();
   showPlaybackMode(adaptiveActive, false);
@@ -284,3 +294,4 @@ if (player.dataset.hls) {
   } else if (direct && !player.getAttribute("src")) player.src = player.dataset.direct;
 }
 if (player.readyState >= HTMLMediaElement.HAVE_CURRENT_DATA) showPlaybackMode(adaptiveActive, false);
+if (player.error && !adaptiveActive && !adaptiveStarting) recoverDirectFailure();

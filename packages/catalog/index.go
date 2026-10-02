@@ -17,7 +17,7 @@ type Index struct {
 	roots             []ScanRoot
 	cache             string
 	items             []library.Item
-	titleOrders       map[string]*titleOrder
+	titleOrders       map[titleOrderKey]*titleOrder
 	titleOrderUse     uint64
 	titleOrderVersion uint64
 	byID              map[string]int

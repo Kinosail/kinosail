@@ -85,7 +85,7 @@ if (controls && player.tagName === "VIDEO") {
       if (rates.includes(player.playbackRate)) rate.value = String(player.playbackRate);
     });
     label.append(title, rate);
-    const footer = settingsPanel.querySelector("p");
+    const footer = settingsPanel.querySelector(":scope > p");
     if (footer) footer.before(label);
     else settingsPanel.append(label);
   }

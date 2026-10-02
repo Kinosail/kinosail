@@ -1,0 +1,106 @@
+{
+  "generatedAt": "2026-10-01T02:16:50.398709+00:00",
+  "origin": "Generated white frames and plain caption; no personal media",
+  "fixtures": [
+    {
+      "title": "Native portrait contrast 01a0f2ab",
+      "dimensions": "360x640",
+      "duration": 120,
+      "command": [
+        "/opt/homebrew/bin/ffmpeg",
+        "-nostdin",
+        "-hide_banner",
+        "-loglevel",
+        "error",
+        "-f",
+        "lavfi",
+        "-i",
+        "color=c=white:s=360x640:r=24",
+        "-t",
+        "120",
+        "-c:v",
+        "libx264",
+        "-preset",
+        "ultrafast",
+        "-crf",
+        "23",
+        "-pix_fmt",
+        "yuv420p",
+        "-profile:v",
+        "baseline",
+        "-level",
+        "3.0",
+        "-movflags",
+        "+faststart",
+        "/Users/mikeo/.codex/worktrees/all-app-polish/kinosail/apps/player/.kinosail-test/host/media/Movies/Native portrait contrast 01a0f2ab.mp4"
+      ],
+      "paths": [
+        {
+          "path": "apps/player/.kinosail-test/host/media/Movies/Native portrait contrast 01a0f2ab.mp4",
+          "sha256": "507ff669647ce0eda1f8965341a52fbb9a7bc9fe3a4b0fea4efa3933777a50c2",
+          "bytes": 53073
+        },
+        {
+          "path": "apps/player/.kinosail-test/host/media/Movies/Native portrait contrast 01a0f2ab.nfo",
+          "sha256": "ea046cb2a530f287adf8f1cca1847d590e3a46a23fb6b5956fefc84e119e475a",
+          "bytes": 81
+        },
+        {
+          "path": "apps/player/.kinosail-test/host/media/Movies/Native portrait contrast 01a0f2ab.en.srt",
+          "sha256": "10fe841b0206f899210d2518b706fc75333277a65d0ace588b42cfdf42610c49",
+          "bytes": 56
+        }
+      ]
+    },
+    {
+      "title": "Native landscape contrast 01a0f2ab",
+      "dimensions": "640x360",
+      "duration": 120,
+      "command": [
+        "/opt/homebrew/bin/ffmpeg",
+        "-nostdin",
+        "-hide_banner",
+        "-loglevel",
+        "error",
+        "-f",
+        "lavfi",
+        "-i",
+        "color=c=white:s=640x360:r=24",
+        "-t",
+        "120",
+        "-c:v",
+        "libx264",
+        "-preset",
+        "ultrafast",
+        "-crf",
+        "23",
+        "-pix_fmt",
+        "yuv420p",
+        "-profile:v",
+        "baseline",
+        "-level",
+        "3.0",
+        "-movflags",
+        "+faststart",
+        "/Users/mikeo/.codex/worktrees/all-app-polish/kinosail/apps/player/.kinosail-test/host/media/Movies/Native landscape contrast 01a0f2ab.mp4"
+      ],
+      "paths": [
+        {
+          "path": "apps/player/.kinosail-test/host/media/Movies/Native landscape contrast 01a0f2ab.mp4",
+          "sha256": "eff9cad30c6f413905540ca3967fd320d65bdfec56b0990e9a088c8b3799f2e1",
+          "bytes": 53127
+        },
+        {
+          "path": "apps/player/.kinosail-test/host/media/Movies/Native landscape contrast 01a0f2ab.nfo",
+          "sha256": "0988f4f557bf36a50523ef0c155a5a32fd640388b922d2edb56b4bd061df7825",
+          "bytes": 82
+        },
+        {
+          "path": "apps/player/.kinosail-test/host/media/Movies/Native landscape contrast 01a0f2ab.en.srt",
+          "sha256": "10fe841b0206f899210d2518b706fc75333277a65d0ace588b42cfdf42610c49",
+          "bytes": 56
+        }
+      ]
+    }
+  ]
+}

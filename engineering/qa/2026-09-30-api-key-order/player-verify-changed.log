@@ -1,0 +1,65 @@
+VERIFY 3 changed path(s) against origin/main
+PASS max-loc (0s)
+PASS diff-check (0s)
+FAIL shared-packages (67s); full log: /Users/mikeo/Documents/GitHub/kinosail/.git/kinosail-verify-logs/apps-player/16f27412842c0b73111e9282b91fac20486badbb0b9fb98993b20eedf5500441.log
+	                          ^
+packages/publicgateway/gateway_test.go:23:29: net.Listen must not be called. use (*net.ListenConfig).Listen (noctx)
+	listener, err := net.Listen("unix", path)
+	                           ^
+packages/publicgateway/gateway_test.go:35:26: net/http/httptest.NewRequest must not be called. use net/http/httptest.NewRequestWithContext (noctx)
+	r := httptest.NewRequest("GET", "https://family.duckdns.org/api/v1/items", nil)
+	                        ^
+packages/publicgateway/gateway_test.go:53:28: net/http/httptest.NewRequest must not be called. use net/http/httptest.NewRequestWithContext (noctx)
+			r := httptest.NewRequest("GET", "https://family.duckdns.org/", nil)
+			                        ^
+packages/publicgateway/gateway_test.go:70:27: net/http/httptest.NewRequest must not be called. use net/http/httptest.NewRequestWithContext (noctx)
+		r := httptest.NewRequest("POST", "http://certificate/", strings.NewReader(raw))
+		                        ^
+packages/publicgateway/gateway_test.go:84:27: net/http/httptest.NewRequest must not be called. use net/http/httptest.NewRequestWithContext (noctx)
+		r := httptest.NewRequest("GET", "/", nil)
+		                        ^
+packages/remoteaccess/gateway.go:78:22: net.Listen must not be called. use (*net.ListenConfig).Listen (noctx)
+	l, err := net.Listen("unix", path)
+	                    ^
+packages/transcodepolicy/check_coordinator_test.go:40:32: net/http/httptest.NewRequest must not be called. use net/http/httptest.NewRequestWithContext (noctx)
+	request := httptest.NewRequest(http.MethodPost, "/settings/transcoder/test", nil)
+	                              ^
+packages/playback/jellyfin_session_limits_test.go:15:15: integer-format: fmt.Sprint can be replaced with faster strconv.Itoa (perfsprint)
+		store.Store(fmt.Sprint(i), session)
+		            ^
+packages/homeassistant/pairing.go:58:14: ST1005: error strings should not be capitalized (staticcheck)
+		return "", errors.New("Home Assistant pairing requires a current Owner")
+		           ^
+packages/homeassistant/player.go:75:15: ST1005: error strings should not be capitalized (staticcheck)
+		return nil, errors.New("Home Assistant player belongs to another Viewer Profile")
+		            ^
+packages/identitycore/session_requests.go:133:42: QF1008: could remove embedded field "Sessions" from selector (staticcheck)
+	if sessions.Sessions != nil && sessions.Sessions.valid() {
+	                                        ^
+packages/mcpgateway/application_profile_state.go:39:12: QF1001: could apply De Morgan's law (staticcheck)
+			return (!(profile.Owner || config.MFARequired()) || profile.Secured()) && profile.Allowed(config.PublicRequest(request), now)
+			        ^
+packages/owneraccess/dns.go:47:68: QF1008: could remove embedded field "Header" from selector (staticcheck)
+	if len(packet) > 1232 || request.Unpack(packet) != nil || request.Header.Response || request.Header.OpCode != 0 || len(request.Questions) != 1 || len(request.Answers) != 0 || len(request.Authorities) != 0 {
+	                                                                  ^
+packages/publicgateway/gateway.go:106:7: QF1001: could apply De Morgan's law (staticcheck)
+			if !(c >= 'a' && c <= 'z' || c >= '0' && c <= '9' || c == '-') {
+			   ^
+packages/owneraccess/owneraccess_test.go:120:18: "200" can be replaced by http.StatusOK (usestdlibvars)
+			w.WriteHeader(200)
+			              ^
+112 issues:
+* contextcheck: 3
+* cyclop: 46
+* exhaustive: 2
+* funlen: 1
+* gocognit: 23
+* gocritic: 2
+* gofumpt: 5
+* gosec: 7
+* noctx: 15
+* perfsprint: 1
+* staticcheck: 6
+* usestdlibvars: 1
+make[1]: *** [lint] Error 1
+make: *** [verify-changed] Error 1
