@@ -61,6 +61,14 @@ class BuildInputsTest(unittest.TestCase):
                     self.assertEqual('<loc>https://kinosail.com/architecture-explorer/</loc>'
                                      in (args.output / 'sitemap.xml').read_text(), name == 'production')
                     homepage = (args.output / 'index.html').read_text()
+                    hero = homepage.split('<section class="hero wrap">', 1)[1].split('</section>', 1)[0]
+                    self.assertIn('free, source-available media server', hero)
+                    self.assertIn('<a class="button" href="https://github.com/Kinosail/kinosail">View source on GitHub</a>', hero)
+                    hero_links = LinkText(hero).links
+                    self.assertEqual(hero_links[0], ['https://github.com/Kinosail/kinosail', 'View source on GitHub'])
+                    self.assertIn([f'{prefix}/docs/', 'Read the docs'], hero_links)
+                    self.assertIn([f'{prefix}/quickstart/', 'Get started with Docker'], hero_links)
+                    self.assertIn(['#inside', 'See the Player'], hero_links)
                     for app_name in ('player', 'subtitles'):
                         self.assertEqual(
                             (args.output / f'assets/install/{app_name}.yaml').read_bytes(),
