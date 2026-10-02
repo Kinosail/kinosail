@@ -110,6 +110,8 @@ The existing `python3 scripts/tooling/test-architecture-explorer.py` reproduced 
 
 The same regression check then passed, including its invalid-input and no-side-effect checks. No generator or production behavior changed. `architecture-red.json` and `architecture-green.json` retain the control runs. The complete root tooling suite, `make max-loc`, `git diff --check`, and Player's post-commit `make verify-changed` passed before publication of the repair. The affected-app check selected only the generated documentation path and ran its source cap and diff checks; it did not rerun the app suite.
 
+The fourth deep run found another stale snapshot after the independently merged persistent-sign-in change. The local contract reproduced the failure at `63c42ce00563db25b267ac9b2584fd89fa5eeb9a`. Regenerating both app snapshots changed only metadata for `identitycore` and `servertest`: four production lines, 25 test lines, and one test symbol. Package and source-file counts stayed unchanged. The same contract then passed, including invalid-input/no-write checks. Records are `architecture-second-red` and `architecture-second-green`.
+
 ### QA-002 — One offline playback stall (unverified)
 
 One Chromium download journey stopped near 0.099 seconds after the network disconnected. The saved file was verified, its range probe returned the expected HTTP 206 and two bytes, and the offline video reached a usable ready state. The assertion requiring moving playback failed.
