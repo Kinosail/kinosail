@@ -135,6 +135,8 @@ After the repair, the transport regression passed. The real iOS journey advanced
 
 Evidence includes the before/after result bundles, the disposable probe source, source hashes, and `native-progress-repair-receipt.json`. A preliminary single-method selector selected zero tests and is explicitly excluded from passing coverage. The saved-file journey proves use of a local file; the Server remained reachable during that run, so a disconnected-device journey is not yet claimed.
 
+A subsequent isolated iOS journey shut down its exact task-owned Go Server process after downloading and verifying the file. The authenticated client reported the Server unavailable. Local playback advanced, decoded a frame, and sought to four seconds. The pending position survived a new `ProgressSyncStore` instance. Local download removal worked while the Server was still unavailable. After restarting the same Server state, the pending position synchronized without conflict and the authoritative API returned the saved position. The result bundle reports one passed test, zero skipped, and zero failed. This proves a disconnected Server process on loopback, not a physical network-interface toggle. Evidence is in `native-offline-evidence.json`, `native-offline-control-receipt.json`, and `ios-live-disconnected.xcresult`.
+
 ### QA-006 — Hosted Player browser failures lose their evidence (confirmed and repaired)
 
 The failed WebKit job in QA-004 reported that its upload path contained no files. The run retained Docker build records but no browser failure artifact. Player's launcher appends the browser project to the configured output directory; the workflow uploaded only the unsuffixed directory. Subtitles uses the unsuffixed directory.
@@ -143,13 +145,29 @@ The upload step now includes both directories. A regression executes each launch
 
 The retained records are `browser-artifact-red`, `browser-artifact-ci-contracts`, and `browser-artifact-actionlint`. No browser error was ignored or required gate weakened. Actual hosted failure-artifact upload after this repair remains a separate verification boundary.
 
+PR #416's first package job failed while executing its temporary FFmpeg test script with `text file busy`. The script writer already closes and atomically renames its file. The failed package and aggregate checks passed on one retry; the original log is retained as `browser-artifact-packages-failed.log`. No source repair or universal absence of this intermittent environment failure is claimed.
+
+### QA-007 — The onboarding journey assumes a resume shelf that the approved home design omits (confirmed and repaired)
+
+Two fresh WebKit runs failed because the journey required a Continue watching heading after saving Arrival's position. The populated page correctly showed Arrival as a featured resume title with its saved position and removal action. `DESIGN.md` and the existing compact-home contract require omission of an empty shelf when that title is the only resume item.
+
+The journey now requires a Resume link to the exact watch route, then verifies that no Resume link remains after marking the title watched. This covers both the featured title and the fallback resume row without requiring a particular shelf. The final fresh Chromium, Firefox, and WebKit journeys passed with all existing accessibility, playback, account, backup, installation, offline-shell, and console checks still enabled. Records are `player-fresh-happy-chromium-8`, `player-fresh-happy-firefox-6`, and `player-fresh-happy-webkit-9`.
+
+An initial exact-name Resume assertion missed the fallback row's full accessible name; it was corrected before delivery. Chromium's first local attempt could not reach localhost, and an IP-origin attempt reached the intentional canonical localhost passkey redirect without sharing its origin-bound cookie. The final Chromium fixture bound IPv6 loopback and used localhost throughout. Those preliminary runs are excluded from product regressions and passing coverage. The hosted HLS observation in QA-004 remains separate.
+
+### Additional native runtime evidence
+
+An actual Quick Connect approval issued a new device token for the owned tvOS simulator. The production Keychain and `AppSession` restored its Viewer Profile against the actual Go Server. The existing remote playback crash journey then passed three playback cycles, including options presentation, held seeking in both directions, pause/resume, and return to the movie detail screen. `tvos-live-session.xcresult` and `tvos-real-remote-playback.xcresult` each contain one passed test with no skips or failures; retained screenshots are attached to the latter.
+
+The watchOS companion simulator build passed as `watchos-simulator-build`. No Watch runtime, HealthKit, phone pairing, physical Apple TV, or physical remote proof is claimed.
+
 ## Verification boundaries
 
 - Source tests: both app suites and 60 shared packages passed.
 - Populated Subtitles browser batch: all 177 checks passed across three engines.
 - Populated Player library/account batch: one unverified Chromium stall; 77 other checks passed. Both fresh stall repetitions passed.
 - Player playback/recovery matrix: all 228 checks passed across three engines, within the controlled-fixture boundary above.
-- Native simulator suites after repair: iOS 282 passed and one skipped; tvOS 273 passed. The live iOS probes additionally establish decoded playback, saved progress, verified transfer, local-file playback, seek, and local removal against the actual Go Server on loopback HTTP.
+- Native simulator suites after repair: iOS 282 passed and one skipped; tvOS 273 passed. Live probes additionally establish decoded playback, saved progress, verified transfer, disconnected-Server local playback, seek, pending-position persistence and reconnect synchronization, and local removal against the actual Go Server on loopback HTTP. The tvOS remote playback journey passed three cycles; watchOS simulator compilation passed.
 - Physical devices, real receivers, external subtitle providers, and purchases: not run.
 - Production containers: blocked by Podman VM storage exhaustion.
 - Hosted CI: the first deep run passed both app suites, all six browser jobs, native Swift/Android compilation, and all four production-container builds. Its stale tooling snapshot failure was repaired through merged PR #413. The next deep run passed tooling but failed the Player WebKit happy-path console assertion described in QA-004. Full current-main deep CI is not claimed green.
