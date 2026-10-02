@@ -34,12 +34,7 @@ func newSubSourceProvider(config SubSourceConfig) *subSourceProvider {
 		config.URL = "https://api.subsource.net/api/v1"
 	}
 	provider := &subSourceProvider{config: config, client: localIntegrationHTTPClient(15 * time.Second), health: newSubtitleProviderHealthRegistry()}
-	provider.client.CheckRedirect = func(request *http.Request, _ []*http.Request) error {
-		if !provider.allowed(request.URL.String()) {
-			return http.ErrUseLastResponse
-		}
-		return nil
-	}
+	provider.client.CheckRedirect = subtitleProviderRedirect(provider.allowed)
 	return provider
 }
 
