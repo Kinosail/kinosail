@@ -90,6 +90,10 @@ func (sessions *RequestSessions) signIn(writer http.ResponseWriter, request *htt
 	cookie := SessionCookie(token)
 	if public {
 		cookie = PublicSessionCookie(token, time.Now())
+	} else {
+		_, absolute := sessions.config.Timeouts()
+		cookie.MaxAge = int(absolute / time.Second)
+		cookie.Expires = sessions.config.Now().Add(absolute)
 	}
 	http.SetCookie(writer, cookie)
 	return nil
