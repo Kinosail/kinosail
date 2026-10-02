@@ -1,5 +1,9 @@
 const player = document.querySelector("video,audio");
 if (!player) throw new Error("playable media element is missing");
+if (player.hasAttribute("data-native-controls") && navigator.maxTouchPoints > 0) {
+  player.autoplay = false;
+  delete player.dataset.autoplay;
+}
 const playerStorage = {
   get: (key) => { try { return localStorage.getItem(key) || ""; } catch (_) { return ""; } },
   set: (key, value) => { try { localStorage.setItem(key, value); } catch (_) {} },
