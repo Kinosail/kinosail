@@ -120,9 +120,15 @@ test("rejected Picture-in-Picture requests report recovery instead of silence", 
  await expect(page.getByText('Picture-in-Picture could not open. Start the video, then try again.')).toBeVisible();
 });
 
-test("touching the custom picture reveals controls without pausing", async ({page}) => {
-  await page.getByRole("button", {name: "Play", exact: true}).first().click();
-  const video = page.locator("video");
-  await video.evaluate(media => media.dispatchEvent(new PointerEvent("click", {bubbles: true, pointerType: "touch"})));
-  await expect(video).toHaveJSProperty("paused", false);
+test.describe("custom touch controls", () => {
+  test.use({hasTouch: true, viewport: {width: 390, height: 844}});
+  test("touching the custom picture reveals controls without pausing", async ({page}) => {
+    await page.getByRole("button", {name: "Play", exact: true}).first().click();
+    const video = page.locator("video");
+    await video.evaluate(media => media.addEventListener("click", () => Object.assign(window, {pictureTapped: true}), {once: true}));
+    const picture = await video.boundingBox();
+    await page.touchscreen.tap(picture!.x + picture!.width * 0.1, picture!.y + picture!.height * 0.35);
+    expect(await page.evaluate(() => (window as Window & {pictureTapped?: boolean}).pictureTapped)).toBe(true);
+    await expect(video).toHaveJSProperty("paused", false);
+  });
 });

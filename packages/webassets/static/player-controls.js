@@ -237,8 +237,10 @@ if (controls && player.tagName === "VIDEO") {
   }
   for (const event of ["enterpictureinpicture", "leavepictureinpicture", "webkitpresentationmodechanged"]) player.addEventListener(event, syncPictureInPicture);
   syncPictureInPicture();
+  let pictureTouchedAt = -Infinity;
+  if (!nativeControls) player.addEventListener("touchend", () => { pictureTouchedAt = performance.now(); }, {passive: true});
   if (!nativeControls) player.addEventListener("click", (event) => {
-    if (event.pointerType === "touch") return;
+    if (event.pointerType === "touch" || performance.now() - pictureTouchedAt < 1000) return;
     if (player.paused) requestPlay("media-element").catch(() => {});
     else requestPause();
   });
