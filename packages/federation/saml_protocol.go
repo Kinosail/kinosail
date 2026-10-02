@@ -89,8 +89,8 @@ func formEncoded(request *http.Request) bool {
 }
 
 func samlHTTPClient() *http.Client {
-	return &http.Client{Timeout: 10 * time.Second, CheckRedirect: func(request *http.Request, _ []*http.Request) error {
-		if !TrustedURL(request.URL) {
+	return &http.Client{Timeout: 10 * time.Second, CheckRedirect: func(request *http.Request, via []*http.Request) error {
+		if len(via) >= 10 || !boundedURLText(request.URL.String()) || !TrustedURL(request.URL) {
 			return ErrProviderUnavailable
 		}
 		return nil
