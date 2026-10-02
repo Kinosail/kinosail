@@ -79,6 +79,7 @@ export async function completeHappyPath(page: Page, testInfo: TestInfo, { captur
   await expect(page).toHaveURL(/\/watch\/[a-f0-9]+$/);
 
   await expect(page.getByRole("heading", { name: "Arrival" })).toBeVisible();
+	const watchPath = new URL(page.url()).pathname;
 	await expectAccessible(page, capture);
   const removeFromList = page.getByRole("button", { name: "Remove from My List" });
   if (await removeFromList.isVisible()) await removeFromList.click();
@@ -101,7 +102,7 @@ export async function completeHappyPath(page: Page, testInfo: TestInfo, { captur
   await progress;
   await page.getByRole("button", { name: "Add to My List" }).click();
   await page.getByRole("link", { name: "Library", exact: true }).click();
-  await expect(page.getByRole("heading", { name: "Continue watching" })).toBeVisible();
+  await expect(page.getByRole("link", { name: /\bResume\b/ })).toHaveAttribute("href", watchPath);
   await expect(page.getByRole("heading", { name: "My List" })).toBeVisible();
 
   if (passkeyCreated) {
@@ -115,7 +116,7 @@ export async function completeHappyPath(page: Page, testInfo: TestInfo, { captur
   await expect(page.getByRole("button", { name: "Mark unwatched" })).toBeVisible();
   await page.getByRole("link", { name: "Library", exact: true }).click();
   await expect(page.getByRole("heading", { name: "My List" })).toBeVisible();
-  await expect(page.getByRole("heading", { name: "Continue watching" })).toHaveCount(0);
+  await expect(page.getByRole("link", { name: /\bResume\b/ })).toHaveCount(0);
   await page.setViewportSize({ width: 390, height: 844 });
   await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
 	await expectAccessible(page, capture);
