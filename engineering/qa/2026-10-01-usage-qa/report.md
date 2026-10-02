@@ -146,6 +146,10 @@ Two local repetitions exercised the actual Go Server and Hls.js, with three watc
 
 Two further repetitions included pause, My List form submission, watched-state form submission, and Library navigation in each of three cycles. Both passed without HLS page errors. `hls-navigation-evidence.json` records the final probe hash and run receipt. A preliminary command used the wrong working-directory prefix and did not update the probe; that run adds no form-navigation coverage.
 
+The existing onboarding journey now records media state in retained traces at `pagehide` capture and in a listener registered after initial load. It records a bounded source path or scheme, readiness, network state, position, paused state, visibility, and Picture in Picture state. Origins and query strings are omitted. Production playback and all console-error assertions remain unchanged.
+
+Fresh local Chromium, Firefox, and WebKit journeys passed as `player-fresh-happy-chromium-18`, `player-fresh-happy-firefox-19`, and `player-fresh-happy-webkit-17`. WebKit and Firefox traces show media readiness resetting to zero and playback pausing after registered cleanup handlers. Chromium's passing trace contains no observer messages. These macOS direct-playback observations do not establish Linux Hls.js cleanup. An initial microtask observer ran before cleanup and was corrected; its apparent after-handler state is excluded. `playback-lifecycle-diagnostic-evidence.json` records the pending source hash, commands, fixture, traces, and this boundary. The hosted error remains unresolved.
+
 ### QA-005 — Apple progress updates are rejected by the Server (confirmed and repaired)
 
 Actual iOS playback advanced, decoded a video frame, and sought successfully, but the Server rejected progress updates with HTTP 400. Both independent probe runs failed to observe a persisted position. Phase diagnostics isolated the failure to persistence; the moving clock and decoded-frame checks passed.
