@@ -2,7 +2,7 @@
 
 ## Scope and run record
 
-The user requested useful QA work to use the remaining weekly Codex allowance before midnight in America/Denver. The initial live meter showed 87% used and 13% remaining. The goal is active. Exact consumption depends on the session; this report does not promise an exact completion time.
+The user requested useful QA work to use the remaining weekly Codex allowance before midnight in America/Denver. The initial live meter showed 87% used and 13% remaining. The midnight target was missed, and useful QA continued on October 2. At 06:46 Denver time, the live meter showed 91% used and 9% remaining. Credits and the available reset were untouched.
 
 - Baseline revision: `75ebf1d57bba483e443d288378256d6bd6ec8fe2`.
 - Host: macOS ARM64; Go 1.27.1; Xcode 27.0.
@@ -227,13 +227,23 @@ The repair parses complete season and episode numbers at the shared provider-sel
 
 The retained regression exercises actual HTTP search and ZIP download responses, sidecar installation, originals, and persisted acquisition state. On the original source, 42 of the final 75 cases failed by installing wrong content; all 75 cases and existing SubSource checks passed after the repair. Independent review found no remaining actionable finding in this scoped change. Rejected single releases caused zero downloads. Season archives required one bounded download, then rejected the member without a sidecar, original, managed record, or added-history event. Existing failed-search bookkeeping remains allowed. `subtitles-episode-repair-evidence.json` records source hashes, commands, controls, and results. External SubSource service behavior and Owner authentication were not tested by this probe.
 
-### QA-011 — Unicode JSON aliases bypass duplicate-field rejection (repaired locally)
+### QA-011 — Unicode JSON aliases bypass duplicate-field rejection (repaired)
 
 The actual media-share creation handler accepted `maxDevices:0` followed by `maxDeviceſ:1`, returned HTTP 201, and persisted a share. The escaped and reversed long-s aliases also passed. The valid control created one share; an ASCII duplicate returned HTTP 400 without persistence. These were isolated loopback and application-handler probes. Owner authentication was not exercised, and no authentication bypass is claimed.
 
 The shared decoder now compares each key using Unicode simple-fold equivalence, then preserves the existing lowercase duplicate policy. It computes the comparison once and leaves the original JSON and final unknown-field decoder unchanged. Literal, escaped, and reversed aliases return HTTP 400 with no share persistence. Existing recursive decoder cases cover nested long-s/final-sigma aliases. Unambiguous map keys retain their original spelling, including distinct composed/decomposed and full-fold forms.
 
 The regression failed before the repair and both affected package suites passed afterward. Complete shared-package, Player, and Subtitles Go suites passed. Changed-code lint passed. Both local app `verify-changed` attempts stopped on 114 existing full-package lint findings outside this change; these attempts did not pass. An independent enumeration checked all 1,112,064 Unicode scalar values for decoder-fold equivalence, preservation of existing lowercase collisions, and idempotence; the largest orbit contains four runes. `unicode-json-repair-evidence.json` retains commands, source hashes, controls, and the enumeration packet. A preliminary negative matrix reused one store and contaminated later no-write assertions; the corrected matrix isolates each case and supersedes that run.
+
+The [Unicode repair PR](https://github.com/Kinosail/kinosail/pull/431) merged after required checks passed. Its first hosted shared-package run failed `TestProbeDurationRunsAndLoadsBoundedResults` with a zero duration. That unrelated check passed 100 local repetitions, and the failed hosted job passed on one retry. The original failure is retained in `pr431-packages.log`; no media-probe repair or explanation of that failure is claimed.
+
+### QA-012 — Ambiguous provider JSON overrides a rejected production type (repaired locally)
+
+Actual loopback provider responses supplied `productionType:machine` followed by a duplicate, case alias, or escaped identical key with `retail`. All three responses installed a subtitle and retained an original, acquisition record, and history entry. The machine-only control rejected acquisition without downloading. Retail and retail with unknown metadata installed exact bytes. Existing validation saw only the final decoded value.
+
+The shared external decoder now checks unambiguous keys, valid UTF-8, bounded nesting, and a single complete document before typed decoding. It reuses the existing key comparison and nesting policy. Unknown provider metadata and supported scalar, null, array, and object shapes remain accepted. Unicode-equivalent aliases fail before destination mutation. This stricter policy also applies to unknown nested objects; distinct composed/decomposed and full-fold map keys remain distinct.
+
+Both parser and actual acquisition regressions failed before repair. All shared-package, Player, and Subtitles Go suites passed afterward, along with relevant provider checks, changed-code lint, and root tooling. Independent review found no actionable finding. Both local app `verify-changed` attempts stopped on the same 114 existing full-package lint findings outside this change. `external-json-repair-evidence.json` records the source hashes, red and green commands, and scope. Rejected responses cause no download, sidecar, original, acquisition record, or acquisition-history write; existing search and provider-health bookkeeping remains allowed. External provider service behavior and Owner authentication were not exercised.
 
 ### QA-008 — Hosted Subtitles WebKit disclosure does not open (unverified)
 
