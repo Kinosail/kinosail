@@ -53,8 +53,10 @@ test("touch Play enters native fullscreen in the same gesture without pausing", 
 });
 
 test("rejected fullscreen leaves playback usable", async ({page}) => {
-  const warnings: Promise<unknown[]>[] = [];
-  page.on("console", message => { if (message.type() === "warning") warnings.push(Promise.all(message.args().map(argument => argument.jsonValue()))); });
+  const failures: unknown[] = [];
+  page.on("request", request => {
+    if (request.url().endsWith("/playback-events") && request.method() === "POST" && request.postDataJSON().event === "error") failures.push(request.postDataJSON());
+  });
   await page.evaluate(() => {
     Object.defineProperty(document.querySelector("video"), "webkitEnterFullscreen", {configurable: true, value: undefined});
     Object.defineProperty(document.querySelector("video"), "requestFullscreen", {configurable: true, value: () => Promise.reject(new DOMException("private-token https://private.invalid/movie", "NotAllowedError"))});
@@ -62,10 +64,11 @@ test("rejected fullscreen leaves playback usable", async ({page}) => {
   });
   await page.getByRole("button", {name: "Enter fullscreen"}).click();
   await expect(page.getByRole("status").filter({hasText: /Fullscreen could not open/})).toBeVisible();
-  await expect.poll(() => warnings.length).toBeGreaterThan(0);
-  const diagnostics = JSON.stringify(await Promise.all(warnings));
+  await expect.poll(() => failures.length).toBe(1);
+  const diagnostics = JSON.stringify(failures);
   expect(diagnostics).toContain("trace-session");
   expect(diagnostics).toContain("NotAllowedError");
+  expect(diagnostics).toContain("playback-retained");
   expect(diagnostics).not.toMatch(/private-token|private.invalid/);
   await page.getByRole("button", {name: "Play", exact: true}).click();
   await expect(page.locator("video")).toHaveJSProperty("paused", false);

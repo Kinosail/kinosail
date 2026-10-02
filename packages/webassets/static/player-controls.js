@@ -39,7 +39,7 @@ if (controls && player.tagName === "VIDEO") {
   };
   const reportFullscreenFailure = (error) => {
     const failure = ["NotAllowedError", "InvalidStateError", "NotSupportedError", "TypeError"].includes(error?.name) ? error.name : "Error";
-    console.warn("Kinosail fullscreen request failed", {playback_session: traceToken(playbackSession), failure, outcome: "playback-retained"});
+    playbackTrace("error", `fullscreen:${failure}:playback-retained`);
     reportControlFailure("Fullscreen could not open. Try again using the video's fullscreen control.");
   };
   const seek = document.querySelector("[data-player-seek]");
@@ -126,10 +126,11 @@ if (controls && player.tagName === "VIDEO") {
       if (event?.type === "playing" && !playbackPreparation) nativeStarted = true;
       controls.hidden = nativeStarted || !player.paused || Boolean(player.error);
       const timeline = settingsPanel?.querySelector("[data-native-timeline]");
-      if (timeline) timeline.hidden = !adaptiveActive;
-      if (!seek || !adaptiveActive) return;
+      const compatible = ["remux", "audio-transcode", "transcode", "native-hls"].includes(playbackTraceMethod);
+      if (timeline) timeline.hidden = !compatible;
+      if (!seek || !compatible) return;
     }
-    const duration = nativeControls ? fullDuration : Number.isFinite(player.duration) ? player.duration : Number(player.dataset.duration) || 0;
+    const duration = nativeControls ? Number(seek.max) : Number.isFinite(player.duration) ? player.duration : Number(player.dataset.duration) || 0;
     seek.max = duration || 100;
     seek.value = Math.min(scrubPosition ?? player.currentTime ?? 0, duration || 100);
     seek.style.setProperty("--player-progress", `${duration ? seek.value / duration * 100 : 0}%`);

@@ -28,8 +28,29 @@ func TestTraceHTTPValidatesAndRecordsPlayerEvent(t *testing.T) {
 			setSession = session
 		},
 	})(response, request)
-	if response.Code != http.StatusNoContent || setSession != "session" || !strings.Contains(logs.String(), `"msg":"playback trace"`) || !strings.Contains(logs.String(), `"event":"playing"`) {
+	if response.Code != http.StatusNoContent || setSession != "session" || !strings.Contains(logs.String(), `"level":"INFO"`) || !strings.Contains(logs.String(), `"msg":"playback trace"`) || !strings.Contains(logs.String(), `"event":"playing"`) {
 		t.Fatalf("response = %d; session = %q; log = %s", response.Code, setSession, logs.String())
+	}
+}
+
+func TestTraceHTTPRecordsFullscreenFailureAtWarningLevel(t *testing.T) {
+	var logs bytes.Buffer
+	previous := slog.Default()
+	slog.SetDefault(slog.New(slog.NewJSONHandler(&logs, nil)))
+	t.Cleanup(func() { slog.SetDefault(previous) })
+	response := httptest.NewRecorder()
+	TraceHTTP(TraceHTTPConfig{
+		Visible:      func(*http.Request, string) bool { return true },
+		ValidSession: func(value string) bool { return value == "session" },
+		SetSession:   func(*http.Request, string) {},
+	})(response, traceRequest(t, `{"session":"session","event":"error","sequence":1,"detail":"fullscreen:NotAllowedError:playback-retained"}`))
+	if response.Code != http.StatusNoContent {
+		t.Fatalf("status = %d", response.Code)
+	}
+	for _, field := range []string{`"level":"WARN"`, `"playback_session":"session"`, `"detail":"fullscreen:NotAllowedError:playback-retained"`} {
+		if !strings.Contains(logs.String(), field) {
+			t.Fatalf("missing %s in %s", field, logs.String())
+		}
 	}
 }
 

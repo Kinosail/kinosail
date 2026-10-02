@@ -38,5 +38,9 @@ func TraceHTTP(config TraceHTTPConfig) http.HandlerFunc {
 }
 
 func logTrace(request *http.Request, event TraceEvent) {
-	slog.InfoContext(request.Context(), "playback trace", "playback_session", event.Session, "event", event.Event, "sequence", event.Sequence, "elapsed_ms", event.ElapsedMS, "position_ms", event.PositionMS, "duration_ms", event.DurationMS, "buffered_ahead_ms", event.BufferedAheadMS, "ready_state", event.ReadyState, "network_state", event.NetworkState, "paused", event.Paused, "method", event.Method, "detail", event.Detail, "quality", event.Quality, "visibility", event.Visibility, "error_code", event.ErrorCode, "dropped_frames", event.DroppedFrames, "total_frames", event.TotalFrames)
+	level := slog.LevelInfo
+	if event.Event == "error" {
+		level = slog.LevelWarn
+	}
+	slog.Log(request.Context(), level, "playback trace", "playback_session", event.Session, "event", event.Event, "sequence", event.Sequence, "elapsed_ms", event.ElapsedMS, "position_ms", event.PositionMS, "duration_ms", event.DurationMS, "buffered_ahead_ms", event.BufferedAheadMS, "ready_state", event.ReadyState, "network_state", event.NetworkState, "paused", event.Paused, "method", event.Method, "detail", event.Detail, "quality", event.Quality, "visibility", event.Visibility, "error_code", event.ErrorCode, "dropped_frames", event.DroppedFrames, "total_frames", event.TotalFrames)
 }

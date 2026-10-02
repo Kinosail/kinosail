@@ -22,7 +22,7 @@ test.beforeEach(async ({ page }, testInfo) => {
   }
   await page.route("https://127.0.0.1:38127/", (route) => route.fulfill({ contentType: "text/html; charset=utf-8", body: markup }));
   await page.route("**/api/v1/items/movie/playback-events", (route) => route.fulfill({ status: 204 }));
-  if (testInfo.title.includes("progress save")) await page.goto("https://127.0.0.1:38127/");
+  if (testInfo.title.includes("progress save") || testInfo.title.includes("rejected fullscreen")) await page.goto("https://127.0.0.1:38127/");
   else await page.setContent(markup);
   await page.evaluate(({withInBand, safariStartup, queuedPause, queuedSeeking}) => {
     if (safariStartup) Object.defineProperty(navigator, "userAgent", {configurable: true, value: "Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 Mobile/15E148"});
