@@ -115,3 +115,69 @@ test("switching language hides the previous draft and cannot discard newer corre
   view.respond(view.requests.at(-1), view.draft("ready")); await flush();
   expect(view.node("review-draft").hidden).toBe(false);
 });
+
+for (const action of ["start", "cancel"]) {
+  test(`late ${action} failure cannot replace another language's preview status`, { tag: "@smoke" }, async () => {
+    const view = inspectorFixture(); await view.ready(action === "cancel" ? "running" : "idle");
+    const button = view.node(action + "-draft"), pending = button.listeners.click({ currentTarget: button }), old = view.requests.at(-1);
+    view.changeLanguage("fr"); view.respond(view.requests.at(-2), view.review("fr", "FR current")); view.respond(view.requests.at(-1), view.draft()); await flush(); await view.preview();
+    const status = view.node("inspector-status").textContent;
+    old.reject(new Error("Old English draft action failed")); await pending;
+    expect(view.node("inspector-status").textContent).toBe(status);
+    expect(view.node("apply-subtitle").disabled).toBe(false);
+  });
+}
+
+test("late draft start success preserves the new language's reviewed correction", { tag: "@smoke" }, async () => {
+  const view = inspectorFixture(); await view.ready();
+  const button = view.node("start-draft"), pending = button.listeners.click({ currentTarget: button }), old = view.requests.at(-1);
+  view.changeLanguage("fr"); view.respond(view.requests.at(-2), view.review("fr", "FR current")); view.respond(view.requests.at(-1), view.draft()); await flush();
+  view.form.elements.text.value = "Reviewed French correction"; await view.preview();
+  const requestCount = view.requests.length;
+  view.respond(old, view.draft("running")); await flush();
+  if (view.requests.length > requestCount) view.respond(view.requests.at(-1), view.draft());
+  await pending;
+  expect(view.node("apply-subtitle").disabled).toBe(false);
+  expect(view.form.elements.text.value).toBe("Reviewed French correction");
+  expect(view.requests).toHaveLength(requestCount);
+});
+
+for (const action of ["start", "cancel"]) {
+  test(`pagehide ignores a pending draft ${action} failure`, { tag: "@smoke" }, async () => {
+    const view = inspectorFixture(); await view.ready(action === "cancel" ? "running" : "idle");
+    const button = view.node(action + "-draft"), pending = button.listeners.click({ currentTarget: button }), old = view.requests.at(-1);
+    const status = view.node("inspector-status").textContent;
+    view.events.pagehide(); old.reject(new Error("Expired hidden-page action")); await pending;
+    expect(view.node("inspector-status").textContent).toBe(status);
+    expect(view.timers.size).toBe(0);
+  });
+}
+
+test("an obsolete start completion cannot enable Generate during a newer start", { tag: "@smoke" }, async () => {
+  const view = inspectorFixture(); await view.ready();
+  const button = view.node("start-draft"), oldPending = button.listeners.click({ currentTarget: button }), old = view.requests.at(-1);
+  view.changeLanguage("fr"); view.respond(view.requests.at(-2), view.review("fr", "FR current")); view.respond(view.requests.at(-1), view.draft()); await flush();
+  const pending = button.listeners.click({ currentTarget: button }), current = view.requests.at(-1);
+  old.reject(new Error("Old start failed")); await oldPending;
+  expect(button.disabled).toBe(true);
+  view.respond(current, view.draft("running")); await flush(); view.respond(view.requests.at(-1), view.draft("running")); await pending;
+  expect(button.disabled).toBe(true);
+  expect(view.timers.size).toBe(1);
+});
+
+test("a draft start settling after pageshow reconciles an earlier idle observation", { tag: "@smoke" }, async () => {
+  const view = inspectorFixture(); await view.ready();
+  const button = view.node("start-draft"), pending = button.listeners.click({ currentTarget: button }), start = view.requests.at(-1);
+  view.events.pagehide(); view.events.pageshow();
+  view.respond(view.requests.at(-1), view.draft()); await flush();
+  expect(button.disabled).toBe(true);
+  await view.preview();
+  const count = view.requests.length;
+  view.respond(start, view.draft("running")); await flush();
+  expect(view.requests.length).toBe(count + 1);
+  view.respond(view.requests.at(-1), view.draft("running")); await pending;
+  expect(view.node("draft-status").textContent).toBe("running");
+  expect(button.disabled).toBe(true);
+  expect(view.node("apply-subtitle").disabled).toBe(false);
+  expect(view.timers.size).toBe(1);
+});

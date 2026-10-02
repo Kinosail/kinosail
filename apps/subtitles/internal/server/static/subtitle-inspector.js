@@ -9,7 +9,7 @@
   const base = `/api/v1/subtitle-library/${encodeURIComponent(root.dataset.id)}`;
   let draft, draftID = "", draftWordCount = 0, draftPoll, wordObserver, cueObserver;
   let review, prepared, revision = 0, page = 0, busy = false;
-  let draftRevision = 0, draftFailures = 0, pageActive = true;
+  let draftRevision = 0, draftActionRevision = 0, draftFailures = 0, pageActive = true, pendingDraftAction;
   const lockedControls = new Map();
   const tracks = { current: video.addTextTrack("subtitles", "Current"), proposed: video.addTextTrack("subtitles", "Proposed") };
   const element = (tag, text, className) => { const node = document.createElement(tag); if (text !== undefined) node.textContent = text; if (className) node.className = className; return node; };
@@ -126,7 +126,7 @@
   form.elements.automaticSync.addEventListener("change", () => { if (form.elements.automaticSync.checked) { form.elements.offset.value = "0"; document.getElementById("subtitle-anchors").replaceChildren(); } });
   form.elements.file.addEventListener("change", () => { draftID = ""; form.elements.text.value = ""; form.elements.role.value = "translation"; });
   form.elements.language.addEventListener("change", () => {
-    draft = undefined; draftID = ""; draftFailures = 0; form.elements.text.value = ""; wordObserver?.disconnect();
+    draftActionRevision++; draft = undefined; draftID = ""; draftFailures = 0; form.elements.text.value = ""; wordObserver?.disconnect();
     document.getElementById("draft-status").textContent = "Loading draft details…";
     document.getElementById("start-draft").disabled = true;
     for (const id of ["cancel-draft", "review-draft", "draft-confidence", "more-draft-words"]) document.getElementById(id).hidden = true;
@@ -189,7 +189,7 @@
     draft = result; draftWordCount = 0; wordObserver?.disconnect();
     document.getElementById("draft-status").textContent = draft.message;
     const running = draft.state === "running" || draft.state === "canceling";
-    document.getElementById("start-draft").disabled = running;
+    document.getElementById("start-draft").disabled = running || pendingDraftAction?.language === language;
     document.getElementById("cancel-draft").hidden = !running;
     document.getElementById("review-draft").hidden = draft.state !== "ready";
     document.getElementById("draft-confidence").hidden = draft.state !== "ready";
@@ -215,20 +215,27 @@
     }
   }
   document.getElementById("more-draft-words").addEventListener("click", renderDraftWords);
+  const currentDraftAction = action => pageActive && action.ticket === draftActionRevision;
+  async function finishDraftAction(action) {
+    if (pendingDraftAction === action) pendingDraftAction = undefined;
+    if (pageActive && action.language === form.elements.language.value && !pendingDraftAction) await loadDraft();
+  }
   document.getElementById("start-draft").addEventListener("click", async event => {
-    const button = event.currentTarget; button.disabled = true;
-    try { await request("/draft", { language: form.elements.language.value, method: document.getElementById("draft-method").value, action: "start" }); draftID = ""; invalidate(); await loadDraft(); }
-    catch (error) { showError(error); } finally { button.disabled = draft?.state === "running" || draft?.state === "canceling"; }
+    const action = { ticket: ++draftActionRevision, language: form.elements.language.value }; pendingDraftAction = action; event.currentTarget.disabled = true;
+    try { await request("/draft", { language: action.language, method: document.getElementById("draft-method").value, action: "start" }); if (currentDraftAction(action)) { draftID = ""; invalidate(); } }
+    catch (error) { if (currentDraftAction(action)) showError(error); } finally { await finishDraftAction(action); }
   });
   document.getElementById("cancel-draft").addEventListener("click", async () => {
-    if (!draft?.id) return;
-    try { await request("/draft", { language: draft.language, method: draft.method, action: "cancel", draftId: draft.id }); await loadDraft(); } catch (error) { showError(error); }
+    if (!draft?.id || draft.language !== form.elements.language.value) return;
+    const action = { ticket: ++draftActionRevision, language: draft.language }; pendingDraftAction = action;
+    try { await request("/draft", { language: action.language, method: draft.method, action: "cancel", draftId: draft.id }); }
+    catch (error) { if (currentDraftAction(action)) showError(error); } finally { await finishDraftAction(action); }
   });
   document.getElementById("review-draft").addEventListener("click", () => {
     if (draft?.state !== "ready" || draft.language !== form.elements.language.value || busy) return;
     draftID = draft.id; form.elements.role.value = "translation"; form.elements.text.value = ""; form.elements.file.value = ""; form.elements.encoding.value = "auto"; form.elements.offset.value = "0"; form.elements.automaticSync.checked = false; document.getElementById("subtitle-anchors").replaceChildren(); invalidate(); form.requestSubmit();
   });
-  window.addEventListener("pagehide", () => { pageActive = false; draftRevision++; clearTimeout(draftPoll); wordObserver?.disconnect(); });
+  window.addEventListener("pagehide", () => { pageActive = false; draftRevision++; draftActionRevision++; clearTimeout(draftPoll); wordObserver?.disconnect(); });
   window.addEventListener("pageshow", () => { if (!pageActive) { pageActive = true; loadDraft().catch(showError); } });
   load().catch(showError);
   loadDraft().catch(showError);
