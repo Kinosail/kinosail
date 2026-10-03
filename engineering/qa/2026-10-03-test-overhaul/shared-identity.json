@@ -20,15 +20,15 @@
     "declarations": 1900,
     "decisions": {
       "R": 1350,
-      "D": 64,
+      "D": 67,
       "F": 47,
       "C": 23,
-      "unreviewed": 416
+      "unreviewed": 413
     },
-    "removed_declarations": 64,
-    "removed_test_lines": 1138,
-    "final_declarations": 1836,
-    "final_test_lines": 65337,
+    "removed_declarations": 67,
+    "removed_test_lines": 1183,
+    "final_declarations": 1833,
+    "final_test_lines": 65292,
     "removed_support_helpers": 6,
     "removed_support_files": 3,
     "removed_support_lines": 141
@@ -62803,9 +62803,9 @@
       "owner_group": "playback",
       "body_sha256": "a75422991087aa91a9c5c068049cb9e36d4cb55182634308530389b3e7677120",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "D",
+      "audit_status": "reviewed",
+      "risk": "Both assertions use an incomplete #EXTM3U-only target: no initialization/segment or transcoder/stream tag. They remain false without the symlink guard, so the named rejection is not isolated.",
       "validation_command": "cd packages && go test ./playback",
       "baseline_event": {
         "Time": "2026-10-03T10:35:29.227298-06:00",
@@ -62813,6 +62813,60 @@
         "Package": "github.com/MikeO7/kinosail/packages/playback",
         "Test": "TestVariantReadyRejectsFreshSymlink",
         "Elapsed": 0.01
+      },
+      "credible_failure": "Both assertions use an incomplete #EXTM3U-only target: no initialization/segment or transcoder/stream tag. They remain false without the symlink guard, so the named rejection is not isolated.",
+      "auditor": "/root",
+      "production_owner": [
+        "packages/playback/trickplay.go",
+        "packages/playback/video_geometry.go",
+        "packages/playback/hls_ready.go",
+        "packages/playback/hls_encoder.go",
+        "packages/playback/timeline.go",
+        "packages/playback/subtitles.go",
+        "packages/playback/trickplay_registration.go",
+        "packages/playback/hls_duration.go",
+        "packages/playback/plan.go",
+        "packages/playback/trace.go",
+        "packages/playback/watch_progress.go",
+        "packages/playback/display_capabilities.go",
+        "packages/playback/client_constraints.go",
+        "packages/playback/hls_delivery.go",
+        "packages/playback/subtitle_delivery.go",
+        "packages/playback/hls_source.go",
+        "packages/playback/http.go",
+        "packages/playback/hls_audio_effects.go",
+        "packages/playback/qualities.go",
+        "packages/playback/hls_filters.go",
+        "packages/playback/hls_paths.go",
+        "packages/playback/model.go",
+        "packages/playback/hls_recipe.go",
+        "packages/playback/jellyfin_bitrate.go",
+        "packages/playback/jellyfin.go",
+        "packages/playback/trace_http.go",
+        "packages/playback/jellyfin_session_store.go",
+        "packages/playback/hls_diagnostic.go",
+        "packages/playback/hls_playlist.go",
+        "packages/playback/hls_cache.go",
+        "packages/playback/file_delivery.go"
+      ],
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+        "PR449 fe85fbbbeb8e7e396135454a49161ccc3218e638 updates HLS startup floor: new app realFFmpeg/publicHTTP cached-master regression explicitly preserved."
+      ],
+      "callers": [
+        "apps/{player,subtitles}/internal/server/{playback,hls,playback_trace,files,trickplay,api_product,settings_http/settings_routes}.go",
+        "packages/transcodehardware/selection_store.go::CheckCoordinator and probe.go::Codecs"
+      ],
+      "gap": "Real populated Player happy/DirectRetry and Apple MP4/AAC journeys prove playable ordinary source with HTTP APIs; they do not inject corrupt/partial/cache filesystem state, arbitrary client/Jellyfin profiles, GPU/device/HDR frame paths, omission markers, malicious caption/trace input, concurrency or permissions. Exported/template/Apple media API fixtures intercept backend responses and are not genuine E2E. MP4 sample-description fixtures are not playable media; shell and pixel callbacks prove their observed contract only.",
+      "remaining_coverage": "TestHLSPlaylistRejectsIncompleteAndUnsafeInputs: real ReadHLSPlaylist leaf symlink and oversized input; TestHLSPlaylistLifecycle valid rendition positive. Candidate supplies no otherwise-valid variant/master, so unique VariantReady trust claim was never proved.",
+      "execution_claim": "Recorded baseline terminal event only for this package slice. Populated clean6c9781 real Server runs are complementary evidence, not package fault controls.",
+      "implementation_status": "declaration removed; existing important keeper assertions unchanged; candidate validation awaits serial root run",
+      "reason": "Both assertions use an incomplete #EXTM3U-only target: no initialization/segment or transcoder/stream tag. They remain false without the symlink guard, so the named rejection is not isolated.",
+      "independent_removal_review": {
+        "reviewer": "/root/subtitles_shared/shared_identity",
+        "status": "approved after complete candidate bodies, actual named keeper assertions and relevant production/callers read; no naming-only or fixture-E2E equivalence",
+        "source_packet": "/tmp/kinosail-playback-policy-audit.json",
+        "source_packet_sha256": "1f8975cafd01e8f937147096a49d69251bfdfcf2f6a881e037c2e773fdd0e634"
       }
     },
     {
@@ -65704,9 +65758,9 @@
       "owner_group": "playback",
       "body_sha256": "29256ca36a996ba5611f6d7ad97f111ff7fbcf0f703233cc3a0619ce31b65cbb",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "D",
+      "audit_status": "reviewed",
+      "risk": "Empty static callback config has no production app call; both apiPlaybackTrace constructors bind all three callbacks unconditionally.",
       "validation_command": "cd packages && go test ./playback",
       "baseline_event": {
         "Time": "2026-10-03T10:35:29.84026-06:00",
@@ -65714,6 +65768,60 @@
         "Package": "github.com/MikeO7/kinosail/packages/playback",
         "Test": "TestTraceHTTPFailsClosedWithoutBindings",
         "Elapsed": 0
+      },
+      "credible_failure": "Empty static callback config has no production app call; both apiPlaybackTrace constructors bind all three callbacks unconditionally.",
+      "auditor": "/root",
+      "production_owner": [
+        "packages/playback/trickplay.go",
+        "packages/playback/video_geometry.go",
+        "packages/playback/hls_ready.go",
+        "packages/playback/hls_encoder.go",
+        "packages/playback/timeline.go",
+        "packages/playback/subtitles.go",
+        "packages/playback/trickplay_registration.go",
+        "packages/playback/hls_duration.go",
+        "packages/playback/plan.go",
+        "packages/playback/trace.go",
+        "packages/playback/watch_progress.go",
+        "packages/playback/display_capabilities.go",
+        "packages/playback/client_constraints.go",
+        "packages/playback/hls_delivery.go",
+        "packages/playback/subtitle_delivery.go",
+        "packages/playback/hls_source.go",
+        "packages/playback/http.go",
+        "packages/playback/hls_audio_effects.go",
+        "packages/playback/qualities.go",
+        "packages/playback/hls_filters.go",
+        "packages/playback/hls_paths.go",
+        "packages/playback/model.go",
+        "packages/playback/hls_recipe.go",
+        "packages/playback/jellyfin_bitrate.go",
+        "packages/playback/jellyfin.go",
+        "packages/playback/trace_http.go",
+        "packages/playback/jellyfin_session_store.go",
+        "packages/playback/hls_diagnostic.go",
+        "packages/playback/hls_playlist.go",
+        "packages/playback/hls_cache.go",
+        "packages/playback/file_delivery.go"
+      ],
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+        "PR449 fe85fbbbeb8e7e396135454a49161ccc3218e638 updates HLS startup floor: new app realFFmpeg/publicHTTP cached-master regression explicitly preserved."
+      ],
+      "callers": [
+        "apps/{player,subtitles}/internal/server/{playback,hls,playback_trace,files,trickplay,api_product,settings_http/settings_routes}.go",
+        "packages/transcodehardware/selection_store.go::CheckCoordinator and probe.go::Codecs"
+      ],
+      "gap": "Real populated Player happy/DirectRetry and Apple MP4/AAC journeys prove playable ordinary source with HTTP APIs; they do not inject corrupt/partial/cache filesystem state, arbitrary client/Jellyfin profiles, GPU/device/HDR frame paths, omission markers, malicious caption/trace input, concurrency or permissions. Exported/template/Apple media API fixtures intercept backend responses and are not genuine E2E. MP4 sample-description fixtures are not playable media; shell and pixel callbacks prove their observed contract only.",
+      "remaining_coverage": "apps/{player,subtitles}/internal/server/playback_trace.go apiPlaybackTrace statically supplies Visible/ValidSession/SetSession. Retained TraceHTTP rejection/privacy/accepted-event matrices and actual app route tests verify runtime behavior.",
+      "execution_claim": "Recorded baseline terminal event only for this package slice. Populated clean6c9781 real Server runs are complementary evidence, not package fault controls.",
+      "implementation_status": "declaration removed; existing important keeper assertions unchanged; candidate validation awaits serial root run",
+      "reason": "Empty static callback config has no production app call; both apiPlaybackTrace constructors bind all three callbacks unconditionally.",
+      "independent_removal_review": {
+        "reviewer": "/root/subtitles_shared/shared_identity",
+        "status": "approved after complete candidate bodies, actual named keeper assertions and relevant production/callers read; no naming-only or fixture-E2E equivalence",
+        "source_packet": "/tmp/kinosail-playback-policy-audit.json",
+        "source_packet_sha256": "1f8975cafd01e8f937147096a49d69251bfdfcf2f6a881e037c2e773fdd0e634"
       }
     },
     {
@@ -81900,9 +82008,9 @@
       "owner_group": "transcodepolicy",
       "body_sha256": "3c532d74c6550a0a4ce7b24e43aa8d5084e4640fc73127eb4c958996de640e1f",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "D",
+      "audit_status": "reviewed",
+      "risk": "Bare callback/303 redirect replay duplicates actual Owner web/API check that runs bound shell fixture, verifies exact redirect and reads persisted result.",
       "validation_command": "cd packages && go test ./transcodepolicy",
       "baseline_event": {
         "Time": "2026-10-03T10:35:32.245568-06:00",
@@ -81910,6 +82018,39 @@
         "Package": "github.com/MikeO7/kinosail/packages/transcodepolicy",
         "Test": "TestCheckHandlerRunsAndRedirects",
         "Elapsed": 0
+      },
+      "credible_failure": "Bare callback/303 redirect replay duplicates actual Owner web/API check that runs bound shell fixture, verifies exact redirect and reads persisted result.",
+      "auditor": "/root",
+      "production_owner": [
+        "packages/transcodepolicy/check_tonemap.go",
+        "packages/transcodepolicy/check.go",
+        "packages/transcodepolicy/codecs.go",
+        "packages/transcodepolicy/arguments.go",
+        "packages/transcodepolicy/tonemap.go",
+        "packages/transcodepolicy/frames.go",
+        "packages/transcodepolicy/capabilities.go",
+        "packages/transcodepolicy/check_source.go",
+        "packages/transcodepolicy/check_coordinator.go",
+        "packages/transcodepolicy/check_http.go"
+      ],
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+        "PR449 fe85fbbbeb8e7e396135454a49161ccc3218e638 updates HLS startup floor: new app realFFmpeg/publicHTTP cached-master regression explicitly preserved."
+      ],
+      "callers": [
+        "apps/{player,subtitles}/internal/server/{playback,hls,playback_trace,files,trickplay,api_product,settings_http/settings_routes}.go",
+        "packages/transcodehardware/selection_store.go::CheckCoordinator and probe.go::Codecs"
+      ],
+      "gap": "Real populated Player happy/DirectRetry and Apple MP4/AAC journeys prove playable ordinary source with HTTP APIs; they do not inject corrupt/partial/cache filesystem state, arbitrary client/Jellyfin profiles, GPU/device/HDR frame paths, omission markers, malicious caption/trace input, concurrency or permissions. Exported/template/Apple media API fixtures intercept backend responses and are not genuine E2E. MP4 sample-description fixtures are not playable media; shell and pixel callbacks prove their observed contract only.",
+      "remaining_coverage": "apps/player/internal/server/transcoder_check_test.go TestOwnerCanRunLocalTranscoderCheckThroughWebAndAPI POST real app /settings/transcoder/test asserts303 and/settings#transcoder, then settings/API persisted result. This is an HTTP+shell/MP4-description fixture, not real FFmpeg or browser E2E.",
+      "execution_claim": "Recorded baseline terminal event only for this package slice. Populated clean6c9781 real Server runs are complementary evidence, not package fault controls.",
+      "implementation_status": "declaration removed; existing important keeper assertions unchanged; candidate validation awaits serial root run",
+      "reason": "Bare callback/303 redirect replay duplicates actual Owner web/API check that runs bound shell fixture, verifies exact redirect and reads persisted result.",
+      "independent_removal_review": {
+        "reviewer": "/root/subtitles_shared/shared_identity",
+        "status": "approved after complete candidate bodies, actual named keeper assertions and relevant production/callers read; no naming-only or fixture-E2E equivalence",
+        "source_packet": "/tmp/kinosail-playback-policy-audit.json",
+        "source_packet_sha256": "1f8975cafd01e8f937147096a49d69251bfdfcf2f6a881e037c2e773fdd0e634"
       }
     },
     {
