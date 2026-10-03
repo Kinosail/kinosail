@@ -11,7 +11,7 @@ Only version-controlled tests and their proven unused helpers were removed.
 
 | Baseline scope | Audited declarations or runtime cases | Removed | Baseline retained |
 | --- | ---: | ---: | ---: |
-| Player Go | 837 | 63 | 774 |
+| Player Go | 837 | 64 | 773 |
 | Subtitles Go | 954 | 73 | 881 |
 | Shared Go packages | 1,900 | 102 | 1,798 |
 | Player browser fixtures | 233 | 3 | 230 |
@@ -20,7 +20,7 @@ Only version-controlled tests and their proven unused helpers were removed.
 | Android | 158 | 1 | 157 |
 | Swift isolated and native UI journeys | 327 | 0 | 327 |
 | Tooling | 193 | 2 | 191 |
-| **Total** | **4,807** | **248** | **4,559** |
+| **Total** | **4,807** | **249** | **4,558** |
 
 Go totals include Test, Benchmark and Fuzz declarations. Browser counts include
 expanded runtime cases; these are not interchangeable suite-size measurements.
@@ -67,6 +67,10 @@ standalone SVG serialization detail are not claimed as browser assertions.
 The two Player settings searches must execute on fresh prepared-Owner state;
 a smoke tag alone previously selected them but allowed them to skip.
 Their required result check rejects skips, failed attempts and missing tests.
+Both real searches passed on the first attempt in run37152840238; all163
+checksum members in the downloaded Player artifact verified. The source-fragment
+wrapper was removed only after that proof and independent review. See
+`player-settings-real-keeper-receipt.json` for exact results and limitations.
 
 ## Reproduce the audit
 
