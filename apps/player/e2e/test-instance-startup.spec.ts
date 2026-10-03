@@ -1,6 +1,7 @@
 import {expect, test} from '@playwright/test';
 import {readFile, writeFile, readdir, stat, utimes} from 'node:fs/promises';
 import {createHash} from 'node:crypto';
+import {execFileSync} from 'node:child_process';
 import {join} from 'node:path';
 import {totp} from './happy-path-helpers';
 
@@ -74,17 +75,24 @@ test('bounded startup preparation preserves the exact stream and playback priori
     };
     page.on('response', response);
     const started = Date.now();
-    await page.goto(`/watch/${id(name)}?compatible=1`);
+    const link = page.locator(`a[href="/watch/${id(name)}"]:visible`).first();
+    if (await link.count()) await link.click();
+    else await page.goto(`/watch/${id(name)}`);
     const video = page.locator('video');
     await expect.poll(() => page.evaluate(() => (window as unknown as {startupFrames: number[]}).startupFrames.length)).toBeGreaterThan(0);
-    const firstMovingMs = await page.evaluate(() => (window as unknown as {startupFrames: number[]}).startupFrames[0]);
+    const frame = await page.evaluate(() => {
+      const navigationMS = (window as unknown as {startupFrames: number[]}).startupFrames[0];
+      return {navigationMS, epochMS: performance.timeOrigin + navigationMS};
+    });
+    const firstMovingMs = frame.epochMS - started;
     expect(await video.evaluate(media => media.error?.code || 0)).toBe(0);
     page.off('response', response);
-    return {firstMovingMs, wallMs: Date.now() - started, cache: responses, position: await video.evaluate(media => media.currentTime)};
+    return {firstMovingMs, navigationFirstMovingMs: frame.navigationMS, wallMs: Date.now() - started, cache: responses, position: await video.evaluate(media => media.currentTime)};
   }
   for (const name of ['Cold', 'Warm']) {
     expect((await page.request.put(`/api/v1/items/${id(name)}/progress`, {headers, data: {seconds: 12.3}})).ok()).toBe(true);
   }
+  await page.evaluate(() => localStorage.setItem('kinosail.playback-policy-v2', 'compatible'));
   const cold = await moving('Cold');
   receipts.push({name: 'cold', ...cold});
   await page.locator('video').evaluate(media => media.pause());
@@ -143,6 +151,10 @@ test('bounded startup preparation preserves the exact stream and playback priori
   expect((await prepare('Compete', source(await plan('Compete')))).status()).toBe(202);
   await page.waitForTimeout(1500);
   expect((await readdir(join(run, 'cache'))).some(value => value.startsWith(id('Compete')))).toBe(false);
+  const competePlan = await plan('Compete');
+  expect((await prepare('Compete', source(competePlan, 20))).status()).toBe(202);
+  expect((await prepare('Compete', source(competePlan, 30))).status()).toBe(202);
+  expect((await prepare('Compete', source(competePlan, 40))).status()).toBe(429);
   expect((await page.request.delete(`/api/v1/items/${id('Compete')}/playback-prepare`, {headers})).status()).toBe(204);
   await page.locator('video').evaluate(media => media.pause());
   await page.goto('/?q=Invalidation');
@@ -193,6 +205,22 @@ test('bounded startup preparation preserves the exact stream and playback priori
   expect(await (await prepare('Invalidation', burnSource)).json()).toMatchObject({state: 'queued'});
   await expect.poll(async () => (await prepare('Invalidation', burnSource)).json(), {timeout: 30_000}).toMatchObject({state: 'ready'});
   expect(await readBurnVersion()).not.toBe(settingsVersion);
+  // Decode across the prepared eight seconds using the original init and lazy segments.
+  const master = await page.request.get(burnSource);
+  expect(master.ok()).toBe(true);
+  const rendition = (await master.text()).split('\n').find(line => line.endsWith('/index.m3u8'))!;
+  const base = burnSource.replace('index.m3u8', rendition.replace('index.m3u8', ''));
+  const fragments = [];
+  for (const file of ['init.mp4', ...Array.from({length: 6}, (_, index) => `segment-${String(index).padStart(5, '0')}.m4s`)]) {
+    const response = await page.request.get(base + file);
+    expect(response.ok()).toBe(true);
+    fragments.push(await response.body());
+  }
+  const spanning = info.outputPath('synthetic-original-init-spanning-window.mp4');
+  await writeFile(spanning, Buffer.concat(fragments));
+  const decode = execFileSync('ffmpeg', ['-nostdin', '-v', 'error', '-threads', '2', '-i', spanning, '-f', 'null', '-'], {encoding: 'utf8'});
+  expect(decode).toBe('');
+  expect(await initHashes('Invalidation', transcodeToken)).toEqual(await initHashes('Invalidation', transcodeToken));
   const resources = JSON.parse(await readFile(join(run, 'resources.json'), 'utf8'));
   expect(resources.peakSpeculativeFFmpeg).toBeLessThanOrEqual(1);
   expect(resources.peakFFmpeg).toBeLessThanOrEqual(2);
