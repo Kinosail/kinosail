@@ -8,6 +8,17 @@ WORKFLOWS = ROOT / '.github/workflows'
 
 
 class WorkflowSecurityTests(unittest.TestCase):
+    def test_startup_boundary_has_hosted_public_interface_evidence(self):
+        app = (WORKFLOWS / 'app.yml').read_text()
+        self.assertIn('name: Verify bounded startup and request boundary', app)
+        self.assertIn("if: inputs.app == 'player' && matrix.engine == 'chromium'", app)
+        self.assertIn('run: python3 apps/player/scripts/test-startup-local.py', app)
+        self.assertIn('KINOSAIL_STARTUP_BROWSER_CHANNEL: chromium', app)
+        self.assertIn('name: player-startup-boundary-evidence', app)
+        self.assertIn('.verification/startup/*/receipt.json', app)
+        self.assertIn('.verification/startup/*/results/**/startup-measurements.json', app)
+        self.assertNotIn('.verification/startup/**\n', app)
+
     def test_ci_cannot_silently_bypass_checks(self):
         self.assertFalse((ROOT / '.gates-disabled').exists())
         ci = (WORKFLOWS / 'ci.yml').read_text()

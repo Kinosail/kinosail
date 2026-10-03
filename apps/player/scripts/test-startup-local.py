@@ -3,6 +3,7 @@
 import hashlib
 import json
 import os
+import platform
 from pathlib import Path
 import socket
 import subprocess
@@ -95,7 +96,7 @@ finally:
         'command': 'python3 apps/player/scripts/test-startup-local.py', 'build': build, 'browser': browser,
         'baseline': env.get('KINOSAIL_STARTUP_BASELINE') == '1', 'mediaCommands': [hdr, direct],
         'fixtureMetadata': metadata, 'binarySHA256': checksum(binary),
-        'environment': 'macOS ARM64 Chrome; serial Go build; supported HTTP loopback; synthetic media',
+        'environment': f'{platform.system()} {platform.machine()} {env.get("KINOSAIL_STARTUP_BROWSER_CHANNEL", "chrome")}; serial Go build; supported HTTP loopback; synthetic media',
         'boundary': '720p HEVC Main 10 PQ/EAC3 is codec-representative, not movie/Nox workload-equivalent. No device or production proof.',
         'mediaSHA256': {p.name: checksum(p) for p in media.iterdir()}}, indent=2) + '\n')
     (run / 'SHA256SUMS').write_text(''.join(f'{checksum(p)}  {p.relative_to(run)}\n' for p in sorted(run.rglob('*'))

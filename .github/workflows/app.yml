@@ -235,6 +235,32 @@ jobs:
           KINOSAIL_TEST_IMAGE: localhost/kinosail-${{ inputs.app }}:${{ github.sha }}
           KINOSAIL_TEST_IMAGE_READY: "1"
         run: ./scripts/test-container.sh
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e
+        if: inputs.app == 'player' && matrix.engine == 'chromium'
+        with:
+          go-version-file: apps/player/go.mod
+          cache-dependency-path: "**/go.sum"
+      - name: Install startup fixture codecs
+        if: inputs.app == 'player' && matrix.engine == 'chromium'
+        run: sudo apt-get update && sudo apt-get install -y ffmpeg
+      - name: Verify bounded startup and request boundary
+        if: inputs.app == 'player' && matrix.engine == 'chromium'
+        env:
+          GOMAXPROCS: "4"
+          KINOSAIL_STARTUP_BROWSER_CHANNEL: chromium
+        run: python3 apps/player/scripts/test-startup-local.py
+      - name: Keep safe startup evidence
+        if: always() && inputs.app == 'player' && matrix.engine == 'chromium'
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: player-startup-boundary-evidence
+          path: |
+            .verification/startup/*/receipt.json
+            .verification/startup/*/resources.json
+            .verification/startup/*/SHA256SUMS
+            .verification/startup/*/results/**/startup-measurements.json
+          retention-days: 7
+          if-no-files-found: error
       - name: Keep Player fullscreen evidence
         if: always() && inputs.app == 'player'
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a

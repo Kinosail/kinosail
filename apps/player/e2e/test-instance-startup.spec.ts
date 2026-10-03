@@ -140,6 +140,15 @@ test('bounded startup preparation preserves the exact stream and playback priori
   await page.goto('/?q=Direct');
   expect((await prepare('Direct', `/media/${id('Direct')}`)).status()).toBe(202);
   const beforeRejected = (await readdir(join(run, 'cache'))).sort();
+  const enumSources = [
+    ...['', 'auto', 'vvc', 'av2', 'unknown', 'HEVC', 'hevc/../', 'hevc\\..\\', 'hevc%2f..', 'hevc\u0000', 'hevc\n', 'ｈｅｖｃ'].map(codec => `/hls/${id('Warm')}/p/t-a0-s0-none-t0-b0-c${codec}/index.m3u8`),
+    ...['', 'NONE', 'unknown', 'external/../', 'external\\..\\', 'external%2f..', 'external\u0000', 'external\n', 'ｅｘｔｅｒｎａｌ'].map(burn => `/hls/${id('Warm')}/p/t-a0-s0-${burn}-t0-b0/index.m3u8`),
+  ];
+  for (const bad of enumSources) {
+    expect((await prepare('Warm', bad)).status()).toBe(400);
+  }
+  expect((await readdir(join(run, 'cache'))).sort()).toEqual(beforeRejected);
+  await record({name: 'untrusted-recipe-enums', rejected: enumSources.length, status: 400, cacheInventoryUnchanged: true});
   for (const bad of ['https://evil.example/a', `/hls/${id('Cold')}/p/bad/index.m3u8`, warmSource + '?token=secret', warmSource.replace('-o12300', '-o999999999')]) {
     expect((await prepare('Warm', bad)).status()).toBe(400);
   }
