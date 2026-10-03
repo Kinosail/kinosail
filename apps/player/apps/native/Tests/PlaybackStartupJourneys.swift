@@ -73,6 +73,23 @@ struct PlaybackStartupJourneys {
         await fixture.client.close(purgeCache: true)
         engine.stop()
     }
+    @Test func backgroundPreparationCannotSupersedeActiveStartup() async throws {
+        let fixture = try await PlaybackStartupFixture()
+        fixture.delayed = true; fixture.denied = false
+        defer { fixture.close() }
+        let folder = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+        defer { try? FileManager.default.removeItem(at: folder) }
+        let store = try await ProgressSyncStore(scope: fixture.client.profileScope(), directory: folder)
+        let engine = PlaybackEngine()
+        let foreground = Task { try await engine.play(fixture.item("a"), client: fixture.client, store: store) }
+        try await wait { fixture.count("/api/v1/items/a/playback") == 1 }
+        try? await engine.prepare(fixture.item("b"), client: fixture.client)
+        #expect(fixture.count("/api/v1/items/b/playback") == 0)
+        foreground.cancel()
+        await fixture.client.close(purgeCache: true)
+        _ = await foreground.result
+        engine.stop()
+    }
     @Test func latePreparationCannotClearNewerSameTitle() async throws {
         let fixture = try await PlaybackStartupFixture()
         fixture.delayed = true; fixture.denied = false
