@@ -85,6 +85,10 @@ func (manager *hlsManager) prepareStartupWindow(ctx context.Context, item librar
 	defer ticker.Stop()
 	lastSizeCheck := time.Time{}
 	for {
+		if preparation.adopted.Load() {
+			slog.InfoContext(ctx, "HLS startup preparation", "request_id", requestActivityID(ctx), "state", "adopted", "duration_ms", time.Since(started).Milliseconds())
+			return
+		}
 		if manager.startupWindowReady(item, recipe) {
 			slog.InfoContext(ctx, "HLS startup preparation", "request_id", requestActivityID(ctx), "state", "ready", "duration_ms", time.Since(started).Milliseconds())
 			return
