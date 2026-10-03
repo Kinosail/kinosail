@@ -7,7 +7,7 @@ import (
 	"github.com/MikeO7/kinosail/packages/servertest"
 )
 
-const reviewedRouteInventorySHA256 = "3a0c5af7dd78f79c461ef03af7eec76422dfab13afa64923ec7830572cc2f43e"
+const reviewedRouteInventorySHA256 = "6c575040fad77d13d2a48597b4a690d7101a190b0cb54255fd346086ca88e5fb"
 
 var explicitlyAnonymousRoutes = routeSet(
 	"GET /static/public-login.js", "POST /auth/quick-connect", "POST /auth/quick-connect/token", "POST /auth/quick-connect/cancel",
@@ -114,6 +114,7 @@ var expectedWriteScopeRoutes = routeSet(
 )
 
 var expectedStreamScopeRoutes = routeSet(
+	"POST /api/v1/items/{id}/playback-prepare", "DELETE /api/v1/items/{id}/playback-prepare",
 	"GET /api/v1/remote-players", "PUT /api/v1/remote-players/{id}", "POST /api/v1/remote-players/{id}/commands",
 	"POST /api/v1/items/{id}/cast", "POST /api/v1/cast/devices/scan", "GET /api/v1/cast/config", "GET /api/v1/cast/sessions/{id}", "POST /api/v1/cast/sessions/{id}/commands", "DELETE /api/v1/cast/sessions/{id}",
 	"GET /media/{id}", "GET /hls/{id}/{file...}", "GET /hls/{id}/audio/{track}/{file...}",
@@ -136,7 +137,7 @@ var sessionOnlyAPIRoutes = routeSet(
 )
 
 func TestEveryRegisteredRouteHasReviewedAnonymousAccess(t *testing.T) {
-	authRoutesContract().ReviewedAnonymousAccess(t, 478, reviewedRouteInventorySHA256, func(t *testing.T, data string) http.Handler {
+	authRoutesContract().ReviewedAnonymousAccess(t, 480, reviewedRouteInventorySHA256, func(t *testing.T, data string) http.Handler {
 		return New(Config{DataDir: data, RequireAuth: true, Configuration: jellyfinRouteConfiguration(t, data)})
 	})
 }

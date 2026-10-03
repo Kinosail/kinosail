@@ -11,6 +11,7 @@ import (
 
 // TraceHTTPConfig binds app-owned visibility and session state to trace delivery.
 type TraceHTTPConfig struct {
+	Observe      func(*http.Request, TraceEvent)
 	Visible      func(*http.Request, string) bool
 	ValidSession func(string) bool
 	SetSession   func(*http.Request, string)
@@ -34,6 +35,9 @@ func TraceHTTP(config TraceHTTPConfig) http.HandlerFunc {
 		}
 		config.SetSession(request, event.Session)
 		logTrace(request, event)
+		if config.Observe != nil {
+			config.Observe(request, event)
+		}
 		writer.WriteHeader(http.StatusNoContent)
 	}
 }

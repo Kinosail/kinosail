@@ -20,6 +20,7 @@ final class PlayerPresentation: NSObject, AVPlayerViewControllerDelegate {
     @ObservationIgnored var showOptions: (() -> Void)?
     @ObservationIgnored var showSeekPreview: (() -> Void)?
     @ObservationIgnored var close: (() -> Void)?
+    @ObservationIgnored var userNavigated: ((AVPlayer, Double) -> Void)?
     @ObservationIgnored private var closing: Task<Void, Never>?
     #endif
     @ObservationIgnored var visible = false
@@ -91,6 +92,7 @@ final class PlayerPresentation: NSObject, AVPlayerViewControllerDelegate {
         showOptions = nil
         showSeekPreview = nil
         close = nil
+        userNavigated = nil
         closing?.cancel()
         closing = nil
         #endif
@@ -102,6 +104,14 @@ final class PlayerPresentation: NSObject, AVPlayerViewControllerDelegate {
     }
 
     #if os(tvOS)
+    func playerViewController(_ playerViewController: AVPlayerViewController,
+                              timeToSeekAfterUserNavigatedFrom oldTime: CMTime, to targetTime: CMTime) -> CMTime {
+        if playerViewController === controller, let player = controller.player {
+            userNavigated?(player, targetTime.seconds)
+        }
+        return targetTime
+    }
+
     func playerViewControllerShouldDismiss(_ playerViewController: AVPlayerViewController) -> Bool {
         guard playerViewController === controller else { return false }
         requestClose()

@@ -193,6 +193,7 @@ func newApplication(config Config) http.Handler { //nolint:funlen,cyclop,gocogni
 	auth.audit.SetSnapshot(settings.auditSnapshot)
 	management := newOwnerAccess(config, auth)
 	hls := newHLS(config.Lifecycle, config.CacheDir, config.FFmpeg, index, probe, settings, workloads)
+	hls.startup = newStartupPreparation(hls, auth, config.TranscodeCacheLimit)
 	frames := newTrickplay(config.CacheDir, config.FFmpeg, index)
 	backups := newBackupManager(lifecycle, config.DataDir, config.BackupDir, config.BackupKey, config.BackupInterval, config.BackupRetention, workloads)
 	maintenance := newMaintenanceManager(lifecycle, hls, backups, metadata, markers, config.MaintenanceInterval, config.TranscodeCacheLimit)
@@ -269,7 +270,7 @@ func newApplication(config Config) http.Handler { //nolint:funlen,cyclop,gocogni
 	}
 	registerJellyfin(mux, settings, index, progress, lists, auth, quickConnect, probe, hls, downloads)
 	registerBrowsers(mux, index, progress, lists)
-	registerFiles(mux, index, probe, workloads)
+	registerFiles(mux, index, probe, workloads, hls.startup)
 	downloads.registerWeb(mux, index)
 	mux.Handle("POST /scan", auth.owner(catalog.RescanHandler(index.Index, localizedError)))
 	mux.HandleFunc("GET /{$}", showHome(index, progress, lists, settings, updates, legacyMetadata.Active() || metadata.configured()))
