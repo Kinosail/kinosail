@@ -50,7 +50,7 @@ for name in ['Beta.mkv', 'Gamma.mkv']:
 with socket.socket() as sock:
     sock.bind(('127.0.0.1', 0))
     port = sock.getsockname()[1]
-url = f'http://127.0.0.1:{port}'
+url = f'http://localhost:{port}'
 environment = dict(os.environ, KINOSAIL_LISTEN=f'127.0.0.1:{port}',
     KINOSAIL_AUTH_URL=url, KINOSAIL_TLS_ENABLED='false', KINOSAIL_DATA_DIR=str(state / 'config'),
     KINOSAIL_MEDIA_DIR=str(state / 'media'), KINOSAIL_CACHE_DIR=str(state / 'cache'),
