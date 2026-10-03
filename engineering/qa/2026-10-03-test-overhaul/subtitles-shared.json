@@ -6,12 +6,12 @@
   "files": 379,
   "declarations": 954,
   "test_loc": 28832,
-  "reviewed": 280,
-  "pending": 674,
+  "reviewed": 298,
+  "pending": 656,
   "decisions": {
-    "R": 232,
+    "R": 248,
     "D": 40,
-    "F": 8,
+    "F": 10,
     "C": 0
   },
   "verification": [
@@ -10588,119 +10588,166 @@
       "line": 10,
       "test": "TestPasskeyAccountRendersHonestUsageStatesAndCompactRemoval",
       "baseline_file_sha256": "aec126706963ad76c793e987a7522658b7ddc6a96c5e1a89ca9ea62751331061",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Actual account template must distinguish tracked usage, backed-up/device-bound credentials, clone warning and legacy unknown usage. A cloned credential warning can disappear independently of browser happy-path first-passkey enrollment.",
+      "production_owner": "passkey_account.go accountView and account data passkey summaries",
+      "non_test_callers": "GET /account render",
+      "remaining_proof": [
+        {
+          "kind": "isolated_app_handler_store_or_template_contract",
+          "reference": "apps/subtitles/internal/server/passkey_account_test.go:TestPasskeyAccountRendersHonestUsageStatesAndCompactRemoval"
+        }
+      ],
+      "coverage_gap": "Existing genuine browser flows do not exercise this hostile credential, revocation, account-policy, storage aliasing or legacy/clone credential state. Config:false handler fixtures compose common auth/identity routes also used by SubtitleApp:true, but do not prove normal CLI dashboard journeys. No equivalence is claimed for browser screenshots or callback fixtures.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retain distinct security/identity/state boundary; assertions unchanged. Names corrected only for F rows.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/passkey_lifecycle_additional_internal_test.go",
       "line": 13,
       "test": "TestPasskeyStoreLifecycleRejectsAmbiguousCredentialChanges",
       "baseline_file_sha256": "110804eacf76f79bdbb148581d4eab632f561fbe35e6f913383a5963d2187acc",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "App storage rejects nil/missing-profile/duplicate/discoverable wrong user/unknown update; counter 9 and usage update survive detached credential snapshots. App accessor binding can regress independently of shared primitives.",
+      "production_owner": "passkeys_store.go ProfileStore adapter; passkeys.ProfileStore; credentials Clone/Validate/Update",
+      "non_test_callers": "WebAuthn registration/login credential storage and discoverable lookup",
+      "remaining_proof": [
+        {
+          "kind": "isolated_app_handler_store_or_template_contract",
+          "reference": "apps/subtitles/internal/server/passkey_lifecycle_additional_internal_test.go:TestPasskeyStoreLifecycleRejectsAmbiguousCredentialChanges"
+        }
+      ],
+      "coverage_gap": "Existing genuine browser flows do not exercise this hostile credential, revocation, account-policy, storage aliasing or legacy/clone credential state. Config:false handler fixtures compose common auth/identity routes also used by SubtitleApp:true, but do not prove normal CLI dashboard journeys. No equivalence is claimed for browser screenshots or callback fixtures.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retain distinct security/identity/state boundary; assertions unchanged. Names corrected only for F rows.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/passkey_lifecycle_additional_internal_test.go",
       "line": 63,
       "test": "TestPasskeyManagementResponsesAreRedactedAndStable",
       "baseline_file_sha256": "110804eacf76f79bdbb148581d4eab632f561fbe35e6f913383a5963d2187acc",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Actual listAPI must serialize redacted inventory and configured/signCount/usage state, while malformed/missing/conflict/storage failures map to 400/404/409/500; raw credential data and inappropriate success statuses are security contract failures.",
+      "production_owner": "passkey_account.go listAPI; passkeys.go passkeyRemovalStatus; passkeys inventory",
+      "non_test_callers": "GET /api/v1/passkeys and account passkey handlers",
+      "remaining_proof": [
+        {
+          "kind": "isolated_app_handler_store_or_template_contract",
+          "reference": "apps/subtitles/internal/server/passkey_lifecycle_additional_internal_test.go:TestPasskeyManagementResponsesAreRedactedAndStable"
+        }
+      ],
+      "coverage_gap": "Existing genuine browser flows do not exercise this hostile credential, revocation, account-policy, storage aliasing or legacy/clone credential state. Config:false handler fixtures compose common auth/identity routes also used by SubtitleApp:true, but do not prove normal CLI dashboard journeys. No equivalence is claimed for browser screenshots or callback fixtures.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retain distinct security/identity/state boundary; assertions unchanged. Names corrected only for F rows.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/passkey_lifecycle_internal_test.go",
       "line": 14,
       "test": "TestPasskeyInventoryRedactsCredentialMaterialAndRemovalIsFailClosed",
       "baseline_file_sha256": "2d80965b0abd6542368b44ba559a47bffbd62b8d2db335424ead02775e62aa03",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "App passkey inventory exposes hashed identifiers and safe flags/count only; malformed/uppercase/oversize/nonhex/missing identifiers leave inventory intact, valid removal succeeds.",
+      "production_owner": "passkeys_store.go ProfileStore binding; passkeys.Inventory/ValidateID/Remove",
+      "non_test_callers": "account inventory and API/web passkey removal",
+      "remaining_proof": [
+        {
+          "kind": "isolated_app_handler_store_or_template_contract",
+          "reference": "apps/subtitles/internal/server/passkey_lifecycle_internal_test.go:TestPasskeyInventoryRedactsCredentialMaterialAndRemovalIsFailClosed"
+        }
+      ],
+      "coverage_gap": "Existing genuine browser flows do not exercise this hostile credential, revocation, account-policy, storage aliasing or legacy/clone credential state. Config:false handler fixtures compose common auth/identity routes also used by SubtitleApp:true, but do not prove normal CLI dashboard journeys. No equivalence is claimed for browser screenshots or callback fixtures.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retain distinct security/identity/state boundary; assertions unchanged. Names corrected only for F rows.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/passkey_lifecycle_internal_test.go",
       "line": 50,
       "test": "TestOwnerCannotRemoveOnlyStrongFactor",
       "baseline_file_sha256": "2d80965b0abd6542368b44ba559a47bffbd62b8d2db335424ead02775e62aa03",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "App profile binding must forbid removing the sole Owner passkey without another factor; otherwise it disables mandatory strong Owner access.",
+      "production_owner": "passkeys_store.go binding; passkeys.ProfileStore.Remove factor policy",
+      "non_test_callers": "API/web passkey removal through profileStore",
+      "remaining_proof": [
+        {
+          "kind": "isolated_app_handler_store_or_template_contract",
+          "reference": "apps/subtitles/internal/server/passkey_lifecycle_internal_test.go:TestOwnerCannotRemoveOnlyStrongFactor"
+        }
+      ],
+      "coverage_gap": "Existing genuine browser flows do not exercise this hostile credential, revocation, account-policy, storage aliasing or legacy/clone credential state. Config:false handler fixtures compose common auth/identity routes also used by SubtitleApp:true, but do not prove normal CLI dashboard journeys. No equivalence is claimed for browser screenshots or callback fixtures.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retain distinct security/identity/state boundary; assertions unchanged. Names corrected only for F rows.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/passkey_lifecycle_internal_test.go",
       "line": 66,
       "test": "TestPasskeyRemovalRequiresRecentStrongAuthentication",
       "baseline_file_sha256": "2d80965b0abd6542368b44ba559a47bffbd62b8d2db335424ead02775e62aa03",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "F",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Useful current assertions: no-token profile context denies removal, fresh strong session accepts API/web removals, malformed uppercase identifier returns 400 without mutation. Existing fixture does not seed an expired StrongAt or a valid weak session.",
+      "production_owner": "passkeys.go removeAPI/removeWeb; profileStore.recentlyAuthenticated delegates configured identitycore session module",
+      "non_test_callers": "API DELETE /api/v1/passkeys/{id}; POST /account/passkeys/remove",
+      "remaining_proof": [
+        {
+          "kind": "isolated_app_handler_store_or_template_contract",
+          "reference": "apps/subtitles/internal/server/passkey_lifecycle_internal_test.go:TestPasskeyRemovalRequiresSessionAndValidIdentifier"
+        }
+      ],
+      "coverage_gap": "Existing genuine browser flows do not exercise this hostile credential, revocation, account-policy, storage aliasing or legacy/clone credential state. Config:false handler fixtures compose common auth/identity routes also used by SubtitleApp:true, but do not prove normal CLI dashboard journeys. No equivalence is claimed for browser screenshots or callback fixtures. Useful current assertions: no-token profile context denies removal, fresh strong session accepts API/web removals, malformed uppercase identifier returns 400 without mutation. Existing fixture does not seed an expired StrongAt or a valid weak session.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retain distinct security/identity/state boundary; assertions unchanged. Names corrected only for F rows.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server",
+      "final_test": "TestPasskeyRemovalRequiresSessionAndValidIdentifier",
+      "failure_analysis": [
+        "A valid weak session might remove a passkey if strong-auth enforcement is accidentally removed.",
+        "A session with stale StrongAt might remove a passkey if recency enforcement is removed.",
+        "Current no-token check and fresh strong success do not exercise either failure; preserve existing effective access/identifier assertions and rename without introducing new isolated assertions."
+      ]
     },
     {
       "file": "apps/subtitles/internal/server/passkey_lifecycle_internal_test.go",
       "line": 122,
       "test": "TestPasskeyCloneWarningCreatesSecuritySignalWithoutAutomaticRevocation",
       "baseline_file_sha256": "2d80965b0abd6542368b44ba559a47bffbd62b8d2db335424ead02775e62aa03",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "F",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Useful current assertion: app audit adapter records passkey.risk warning for the actor when called directly. The helper has no profile/session store and cannot prove login branch invocation or absence of automatic revocation.",
+      "production_owner": "audit.go auditStore.passkeyRisk -> auditjournal.Tracker.PasskeyRisk",
+      "non_test_callers": "passkeys.go completePasskeyLogin verified clone-warning login branch",
+      "remaining_proof": [
+        {
+          "kind": "isolated_app_handler_store_or_template_contract",
+          "reference": "apps/subtitles/internal/server/passkey_lifecycle_internal_test.go:TestPasskeyCloneWarningCreatesSecuritySignal"
+        }
+      ],
+      "coverage_gap": "Existing genuine browser flows do not exercise this hostile credential, revocation, account-policy, storage aliasing or legacy/clone credential state. Config:false handler fixtures compose common auth/identity routes also used by SubtitleApp:true, but do not prove normal CLI dashboard journeys. No equivalence is claimed for browser screenshots or callback fixtures. Useful current assertion: app audit adapter records passkey.risk warning for the actor when called directly. The helper has no profile/session store and cannot prove login branch invocation or absence of automatic revocation.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retain distinct security/identity/state boundary; assertions unchanged. Names corrected only for F rows.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server",
+      "final_test": "TestPasskeyCloneWarningCreatesSecuritySignal",
+      "failure_analysis": [
+        "The app verified-login clone-warning branch might omit the risk event despite this direct callback probe passing.",
+        "An accidental profile/session revocation on cloned-login could happen while direct audit callback still passes; no profile/session fixture exists here.",
+        "Preserve direct app audit binding warning/actor contract and rename to match its measured behavior; full login/revocation cases remain an honest gap."
+      ]
     },
     {
       "file": "apps/subtitles/internal/server/passkeys_test.go",
@@ -11973,17 +12020,22 @@
       "line": 9,
       "test": "TestProfileSnapshotsDoNotAliasStoredIdentityState",
       "baseline_file_sha256": "77c87038e6f860ba43f24d45a4c8eaa4aac995a8c01b3dd9f283ddf4e6d80796",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Mutating list/byID snapshots of libraries, emails, recovery secrets, passkey credential bytes and usage must not mutate stored security state; accessor aliasing enables corruption/races without persistence or locks.",
+      "production_owner": "profiles.go list/byID profileModule; identitycore.CloneProfiles/FindProfile/CloneProfile",
+      "non_test_callers": "all app profile readers including auth/session/MFA/WebAuthn projections",
+      "remaining_proof": [
+        {
+          "kind": "isolated_app_handler_store_or_template_contract",
+          "reference": "apps/subtitles/internal/server/profiles_storage_internal_test.go:TestProfileSnapshotsDoNotAliasStoredIdentityState"
+        }
+      ],
+      "coverage_gap": "Existing genuine browser flows do not exercise this hostile credential, revocation, account-policy, storage aliasing or legacy/clone credential state. Config:false handler fixtures compose common auth/identity routes also used by SubtitleApp:true, but do not prove normal CLI dashboard journeys. No equivalence is claimed for browser screenshots or callback fixtures.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retain distinct security/identity/state boundary; assertions unchanged. Names corrected only for F rows.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/progress_concurrency_test.go",
@@ -13345,51 +13397,66 @@
       "line": 12,
       "test": "TestFederationLinkRejectsRevokedOriginalAppSession",
       "baseline_file_sha256": "8542e53786cf84eb4c7a88d0cba031b5bddd4b59978fc48f39ad0217c1ae46fa",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Federation link validates the original app session even if another session is valid: revoked original rejects without linked identity, fresh original succeeds. Shared callback wiring is app-specific.",
+      "production_owner": "profiles_federation.go federatedProfiles SessionActive; federation.Profiles.LinkForSession",
+      "non_test_callers": "federated identity linking flow through federationWebHooks",
+      "remaining_proof": [
+        {
+          "kind": "isolated_app_handler_store_or_template_contract",
+          "reference": "apps/subtitles/internal/server/security_lifecycle_internal_test.go:TestFederationLinkRejectsRevokedOriginalAppSession"
+        }
+      ],
+      "coverage_gap": "Existing genuine browser flows do not exercise this hostile credential, revocation, account-policy, storage aliasing or legacy/clone credential state. Config:false handler fixtures compose common auth/identity routes also used by SubtitleApp:true, but do not prove normal CLI dashboard journeys. No equivalence is claimed for browser screenshots or callback fixtures.",
+      "history": "62393eeb5019643102e20ca7e019b4ad1d941a73 Fix identity lifecycle and delegated session authority",
+      "risk": "Retain distinct security/identity/state boundary; assertions unchanged. Names corrected only for F rows.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/security_lifecycle_internal_test.go",
       "line": 41,
       "test": "TestPasswordResetInvalidatesPreviouslyApprovedLocalGrant",
       "baseline_file_sha256": "8542e53786cf84eb4c7a88d0cba031b5bddd4b59978fc48f39ad0217c1ae46fa",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "A grant approved against an old profile revision must fail after password reset and mint no app session; otherwise delayed approval resurrects revoked credentials.",
+      "production_owner": "profileStore.resetPassword and CreateLocalGrant/revision check",
+      "non_test_callers": "QuickConnect/local approval session creation",
+      "remaining_proof": [
+        {
+          "kind": "isolated_app_handler_store_or_template_contract",
+          "reference": "apps/subtitles/internal/server/security_lifecycle_internal_test.go:TestPasswordResetInvalidatesPreviouslyApprovedLocalGrant"
+        }
+      ],
+      "coverage_gap": "Existing genuine browser flows do not exercise this hostile credential, revocation, account-policy, storage aliasing or legacy/clone credential state. Config:false handler fixtures compose common auth/identity routes also used by SubtitleApp:true, but do not prove normal CLI dashboard journeys. No equivalence is claimed for browser screenshots or callback fixtures.",
+      "history": "62393eeb5019643102e20ca7e019b4ad1d941a73 Fix identity lifecycle and delegated session authority",
+      "risk": "Retain distinct security/identity/state boundary; assertions unchanged. Names corrected only for F rows.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/security_lifecycle_internal_test.go",
       "line": 61,
       "test": "TestFederatedSignInCanEnrollAFirstFactor",
       "baseline_file_sha256": "8542e53786cf84eb4c7a88d0cba031b5bddd4b59978fc48f39ad0217c1ae46fa",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "App federation SignIn hook must issue a strong session that allows first MFA enrollment with RecentlyAuthenticated; otherwise newly federated Owners cannot secure their account.",
+      "production_owner": "profiles_federation.go federationWebHooks.SignIn; MFA enrollment recentlyAuthenticated callback",
+      "non_test_callers": "federated identity SignIn hook and account MFA handlers",
+      "remaining_proof": [
+        {
+          "kind": "isolated_app_handler_store_or_template_contract",
+          "reference": "apps/subtitles/internal/server/security_lifecycle_internal_test.go:TestFederatedSignInCanEnrollAFirstFactor"
+        }
+      ],
+      "coverage_gap": "Existing genuine browser flows do not exercise this hostile credential, revocation, account-policy, storage aliasing or legacy/clone credential state. Config:false handler fixtures compose common auth/identity routes also used by SubtitleApp:true, but do not prove normal CLI dashboard journeys. No equivalence is claimed for browser screenshots or callback fixtures.",
+      "history": "62393eeb5019643102e20ca7e019b4ad1d941a73 Fix identity lifecycle and delegated session authority",
+      "risk": "Retain distinct security/identity/state boundary; assertions unchanged. Names corrected only for F rows.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/security_test.go",
@@ -13891,119 +13958,154 @@
       "line": 14,
       "test": "TestInvalidExplicitCredentialsDoNotFallBackToAValidCookie",
       "baseline_file_sha256": "385280978e4b54751caf852a357eac657cb0fd93860eba960daf2a803e811b6d",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Invalid explicitly supplied Bearer, X-Api-Key, X-Emby-Token and MediaBrowser credentials must deny despite a valid Owner cookie; otherwise attacker-chosen credentials silently inherit privileged ambient identity.",
+      "production_owner": "authentication.viewer; authenticate explicit transport priority; token/session lookup",
+      "non_test_callers": "auth middleware on all registered app/API/Jellyfin paths",
+      "remaining_proof": [
+        {
+          "kind": "isolated_app_handler_store_or_template_contract",
+          "reference": "apps/subtitles/internal/server/session_security_boundary_test.go:TestInvalidExplicitCredentialsDoNotFallBackToAValidCookie"
+        }
+      ],
+      "coverage_gap": "Existing genuine browser flows do not exercise this hostile credential, revocation, account-policy, storage aliasing or legacy/clone credential state. Config:false handler fixtures compose common auth/identity routes also used by SubtitleApp:true, but do not prove normal CLI dashboard journeys. No equivalence is claimed for browser screenshots or callback fixtures.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retain distinct security/identity/state boundary; assertions unchanged. Names corrected only for F rows.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/session_security_boundary_test.go",
       "line": 41,
       "test": "TestExplicitCredentialsTakePrecedenceOverAnotherProfilesCookie",
       "baseline_file_sha256": "385280978e4b54751caf852a357eac657cb0fd93860eba960daf2a803e811b6d",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "A valid Viewer explicit credential must win over another profile's Owner cookie; test observes Viewer identity and lack of Owner authority.",
+      "production_owner": "authentication.viewer; explicit token resolution",
+      "non_test_callers": "auth middleware on all registered app/API/Jellyfin paths",
+      "remaining_proof": [
+        {
+          "kind": "isolated_app_handler_store_or_template_contract",
+          "reference": "apps/subtitles/internal/server/session_security_boundary_test.go:TestExplicitCredentialsTakePrecedenceOverAnotherProfilesCookie"
+        }
+      ],
+      "coverage_gap": "Existing genuine browser flows do not exercise this hostile credential, revocation, account-policy, storage aliasing or legacy/clone credential state. Config:false handler fixtures compose common auth/identity routes also used by SubtitleApp:true, but do not prove normal CLI dashboard journeys. No equivalence is claimed for browser screenshots or callback fixtures.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retain distinct security/identity/state boundary; assertions unchanged. Names corrected only for F rows.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/session_security_boundary_test.go",
       "line": 72,
       "test": "TestQueryCredentialsCannotAuthorizeJellyfinRequests",
       "baseline_file_sha256": "385280978e4b54751caf852a357eac657cb0fd93860eba960daf2a803e811b6d",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Six Jellyfin POST routes and a HEAD route must reject valid tokens in query strings instead of creating ambient authenticated authority through URLs.",
+      "production_owner": "authentication.viewer; jellyfin compatibility transport policy",
+      "non_test_callers": "registered Jellyfin core/QuickConnect routes behind app middleware",
+      "remaining_proof": [
+        {
+          "kind": "isolated_app_handler_store_or_template_contract",
+          "reference": "apps/subtitles/internal/server/session_security_boundary_test.go:TestQueryCredentialsCannotAuthorizeJellyfinRequests"
+        }
+      ],
+      "coverage_gap": "Existing genuine browser flows do not exercise this hostile credential, revocation, account-policy, storage aliasing or legacy/clone credential state. Config:false handler fixtures compose common auth/identity routes also used by SubtitleApp:true, but do not prove normal CLI dashboard journeys. No equivalence is claimed for browser screenshots or callback fixtures.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retain distinct security/identity/state boundary; assertions unchanged. Names corrected only for F rows.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/session_security_boundary_test.go",
       "line": 99,
       "test": "TestPasswordLoginRotatesAnUntrustedBrowserSession",
       "baseline_file_sha256": "385280978e4b54751caf852a357eac657cb0fd93860eba960daf2a803e811b6d",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Password login must mint a new valid token and reject the attacker-fixed cookie value; session fixation is missed by ordinary successful login E2E.",
+      "production_owner": "login handler; profileStore.createSession; browser session cookie issuance",
+      "non_test_callers": "POST /login",
+      "remaining_proof": [
+        {
+          "kind": "isolated_app_handler_store_or_template_contract",
+          "reference": "apps/subtitles/internal/server/session_security_boundary_test.go:TestPasswordLoginRotatesAnUntrustedBrowserSession"
+        }
+      ],
+      "coverage_gap": "Existing genuine browser flows do not exercise this hostile credential, revocation, account-policy, storage aliasing or legacy/clone credential state. Config:false handler fixtures compose common auth/identity routes also used by SubtitleApp:true, but do not prove normal CLI dashboard journeys. No equivalence is claimed for browser screenshots or callback fixtures.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retain distinct security/identity/state boundary; assertions unchanged. Names corrected only for F rows.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/session_security_boundary_test.go",
       "line": 124,
       "test": "TestPasswordResetImmediatelyRevokesActiveSessions",
       "baseline_file_sha256": "385280978e4b54751caf852a357eac657cb0fd93860eba960daf2a803e811b6d",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "After Owner resets Viewer password, an already issued Viewer Bearer must return 401 while the new password logs in; revision-based revocation must reach actual API auth.",
+      "production_owner": "profileStore.resetPassword; session revision validation; API profile password handler",
+      "non_test_callers": "POST /api/v1/profiles/{id}/password and authenticated API middleware",
+      "remaining_proof": [
+        {
+          "kind": "isolated_app_handler_store_or_template_contract",
+          "reference": "apps/subtitles/internal/server/session_security_boundary_test.go:TestPasswordResetImmediatelyRevokesActiveSessions"
+        }
+      ],
+      "coverage_gap": "Existing genuine browser flows do not exercise this hostile credential, revocation, account-policy, storage aliasing or legacy/clone credential state. Config:false handler fixtures compose common auth/identity routes also used by SubtitleApp:true, but do not prove normal CLI dashboard journeys. No equivalence is claimed for browser screenshots or callback fixtures.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retain distinct security/identity/state boundary; assertions unchanged. Names corrected only for F rows.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/session_security_boundary_test.go",
       "line": 151,
       "test": "TestCredentialRateLimitSpansWebAPIAndJellyfin",
       "baseline_file_sha256": "385280978e4b54751caf852a357eac657cb0fd93860eba960daf2a803e811b6d",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Eleven invalid same-account attempts alternate web, native API and Jellyfin; ten fail credentials and the eleventh is 429 with Retry-After 60. Separate adapter limiters would allow protocol hopping.",
+      "production_owner": "authentication.allowCredentialLogin; jellyfincompat.Identity.PasswordLogin; web/API login wiring",
+      "non_test_callers": "POST /login, /api/v1/auth/login and /Users/AuthenticateByName",
+      "remaining_proof": [
+        {
+          "kind": "isolated_app_handler_store_or_template_contract",
+          "reference": "apps/subtitles/internal/server/session_security_boundary_test.go:TestCredentialRateLimitSpansWebAPIAndJellyfin"
+        }
+      ],
+      "coverage_gap": "Existing genuine browser flows do not exercise this hostile credential, revocation, account-policy, storage aliasing or legacy/clone credential state. Config:false handler fixtures compose common auth/identity routes also used by SubtitleApp:true, but do not prove normal CLI dashboard journeys. No equivalence is claimed for browser screenshots or callback fixtures.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retain distinct security/identity/state boundary; assertions unchanged. Names corrected only for F rows.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/session_timeout_api_test.go",
       "line": 10,
       "test": "TestOwnerCanCustomizeSessionTimeoutsThroughAPIAndWeb",
       "baseline_file_sha256": "bbc064bc31ee4419cda94dac2609911fe95a9b85816e1a2994e3d59a6c6b02bc",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Actual API and settings HTML expose 0.25/8 defaults and valid 0.25/8760 then 24/168 selections; web 48-hour idle and NaN are rejected without changing persisted timeout policy.",
+      "production_owner": "settings_sessions.go validation/persistence; apiSettings; showSettings",
+      "non_test_callers": "session settings API/web handlers and profileStore session expiry callback",
+      "remaining_proof": [
+        {
+          "kind": "isolated_app_handler_store_or_template_contract",
+          "reference": "apps/subtitles/internal/server/session_timeout_api_test.go:TestOwnerCanCustomizeSessionTimeoutsThroughAPIAndWeb"
+        }
+      ],
+      "coverage_gap": "Existing genuine browser flows do not exercise this hostile credential, revocation, account-policy, storage aliasing or legacy/clone credential state. Config:false handler fixtures compose common auth/identity routes also used by SubtitleApp:true, but do not prove normal CLI dashboard journeys. No equivalence is claimed for browser screenshots or callback fixtures.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retain distinct security/identity/state boundary; assertions unchanged. Names corrected only for F rows.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/sessions_internal_test.go",
