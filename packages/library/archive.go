@@ -58,7 +58,7 @@ func archiveEntries(ctx context.Context, item Item) []string {
 	if err != nil {
 		return nil
 	}
-	entries := strings.Split(strings.TrimSpace(string(data)), "\n")
+	entries := strings.Split(strings.TrimSuffix(string(data), "\n"), "\n")
 	return uniqueArchiveEntries(entries)
 }
 
