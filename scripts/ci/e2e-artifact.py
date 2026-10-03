@@ -99,6 +99,19 @@ def main():
     except (OSError, KeyboardInterrupt) as error:
         receipt["executionError"] = type(error).__name__
     finally:
+        receipt["commandExitCode"] = result
+        receipt["finalRevision"] = capture(["git", "rev-parse", "HEAD"])
+        receipt["finalSourceStatus"] = capture(["git", "status", "--porcelain", "--untracked-files=normal"])
+        final_patch = subprocess.run(["git", "diff", "HEAD", "--binary"], capture_output=True, check=True)
+        receipt["finalTrackedPatchSHA256"] = hashlib.sha256(final_patch.stdout).hexdigest()
+        receipt["sourceUnchanged"] = (
+            receipt["finalRevision"].get("stdout") == receipt["revision"]
+            and receipt["finalSourceStatus"] == status
+            and receipt["finalTrackedPatchSHA256"] == receipt["trackedPatchSHA256"])
+        receipt["exactRevisionProof"] = receipt["sourceUnchanged"] and not status.get("stdout")
+        if not receipt["sourceUnchanged"]:
+            receipt["verificationError"] = "Source changed during the command; start revision is not certified."
+            result = result or 1
         receipt["finishedUTC"] = datetime.now(timezone.utc).isoformat()
         receipt["exitCode"] = result
         receipt["result"] = "passed" if result == 0 else "failed"

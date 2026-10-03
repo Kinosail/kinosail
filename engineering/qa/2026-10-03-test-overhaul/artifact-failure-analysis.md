@@ -11,7 +11,8 @@ it does not add isolated tests or replace any required gate.
   directory and direct browser output into that directory.
 - Source can differ from the named revision. Record the checked-out SHA and
   tracked/untracked source status, plus the patch checksum when dirty. Do not
-  describe a dirty run as proof of an unchanged SHA.
+  describe a dirty run as proof of an unchanged SHA. Compare source status,
+  revision, and patch hash after the command; reject changes during the run.
 - A container can differ from the checkout. Record image ID and its revision
   label separately; CI builds the tested image from the checked-out source.
 - A run can select only smoke journeys, skip tests, or use response fixtures.

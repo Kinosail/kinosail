@@ -177,7 +177,15 @@ jobs:
           CONTAINER_ENGINE: docker
           KINOSAIL_TEST_IMAGE: localhost/kinosail-${{ inputs.app }}:${{ github.sha }}
           KINOSAIL_TEST_IMAGE_READY: "1"
-        run: ./scripts/test-container.sh
+        run: python3 ../../scripts/ci/e2e-artifact.py --output "${{ runner.temp }}/${{ inputs.app }}-${{ matrix.runner }}-system-e2e-artifact" -- ./scripts/test-container.sh
+      - name: Keep verifiable system E2E artifact
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: ${{ inputs.app }}-${{ matrix.runner }}-system-e2e-${{ github.sha }}
+          path: ${{ runner.temp }}/${{ inputs.app }}-${{ matrix.runner }}-system-e2e-artifact
+          retention-days: 30
+          if-no-files-found: error
   browser:
     name: ${{ inputs.app }} populated browser (${{ matrix.engine }})
     if: fromJSON(inputs.plan)[inputs.app]
