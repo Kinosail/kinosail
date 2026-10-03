@@ -81,7 +81,7 @@ if (theaterButton && !appleNativePlayback) {
   let theaterIdle;
   const hideTheater = () => {
     clearTimeout(theaterIdle);
-    theaterToolbar.hidden = true;
+    theaterToolbar.hidden = document.body.classList.contains("player-theater") || Boolean(document.fullscreenElement);
     controls?.classList.add("is-idle");
   };
   const revealTheater = () => {
@@ -98,7 +98,7 @@ if (theaterButton && !appleNativePlayback) {
     playing = playing && !player.paused && !playbackPreparation;
     mediaStage.classList.toggle("is-playing", playing);
     clearTimeout(theaterIdle);
-    theaterToolbar.hidden = playing && !mediaStage.classList.contains("has-settings");
+    theaterToolbar.hidden = playing && !mediaStage.classList.contains("has-settings") && (document.body.classList.contains("player-theater") || Boolean(document.fullscreenElement));
     controls?.classList.toggle("is-idle", playing && !mediaStage.classList.contains("has-settings"));
     if (playing) revealTheater();
   };

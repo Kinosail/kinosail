@@ -122,7 +122,7 @@ Success, warning, danger and information keep their existing semantic colors and
 
 ## Typography
 
-Manrope is the self-hosted variable web family (weights 200–800), served at `/static/manrope.woff2?v=1` with `font-display: swap`. Its source and license live in `packages/webassets/static/fonts/`. Compact negative tracking and balanced wrapping belong to headings; body copy and controls use normal tracking. Supporting counts and time values use tabular numerals.
+Manrope is the self-hosted variable web family (weights 200–800), served at `/static/manrope.woff2?v=1` with `font-display: optional`. Its source and license live in `packages/webassets/static/fonts/`. Compact negative tracking and balanced wrapping belong to headings; body copy and controls use normal tracking. Supporting counts and time values use tabular numerals.
 
 The frontmatter records reused roles from the current cascade. Apple clients have a separate rounded system-type contract; do not export fixed web sizes into native controls.
 

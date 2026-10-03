@@ -50,8 +50,14 @@ if (settingsNav && settingsFlow) {
     const level = selected?.dataset.settingsLevel;
     const description = settingsFlow.querySelector("[data-settings-description]");
     if (description) {
-      description.textContent = selected?.dataset.settingsDescription || "";
-      description.hidden = !description.textContent;
+      const initialDescriptions = description.querySelectorAll("[data-settings-description-category]");
+      if (initialDescriptions.length) {
+        for (const copy of initialDescriptions) copy.hidden = copy.dataset.settingsDescriptionCategory !== group;
+        description.hidden = false;
+      } else {
+        description.textContent = selected?.dataset.settingsDescription || "";
+        description.hidden = !description.textContent;
+      }
     }
     for (const link of levelLinks) {
       if (link.dataset.settingsLevel === level) link.setAttribute("aria-current", "page");
@@ -67,6 +73,9 @@ if (settingsNav && settingsFlow) {
       if (link.dataset.settingsGroup === group) link.setAttribute("aria-current", "page");
       else link.removeAttribute("aria-current");
     }
+    // The initial CSS projection already shows the native fragment's category.
+    // Switch to interactive visibility only after the same projection is applied.
+    if (organized) settingsFlow.closest(".settings-shell").setAttribute("data-settings-ready", "");
   };
   const searchSettings = () => {
     const query = normalize((settingsSearchInput?.value || "").slice(0, 160));

@@ -19,6 +19,9 @@ func (data *PlayerData) ApplyMedia(media mediaprobe.Result) {
 }
 
 func (data *PlayerData) Finalize(request *http.Request) {
+	userAgent := request.UserAgent()
+	data.AppleNativeControls = strings.Contains(userAgent, "iPhone") || strings.Contains(userAgent, "iPad") || strings.Contains(userAgent, "iPod")
+	data.NativeControls = data.NativeControls || data.AppleNativeControls
 	data.DeferDirect = data.AdaptiveSource != "" && AppleWebKitClient(request.UserAgent()) && strings.Contains(data.DirectType, "matroska")
 	data.Source, data.DirectSource, data.AdaptiveSource = SessionURL(data.Source, data.PlaybackSession), SessionURL(data.DirectSource, data.PlaybackSession), SessionURL(data.AdaptiveSource, data.PlaybackSession)
 	method, reason := data.Plan.Mode, data.Plan.Reason

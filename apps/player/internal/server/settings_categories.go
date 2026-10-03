@@ -74,7 +74,13 @@ func categorizeSettingsPage(page string) string {
 	page = page[:start] + nav.String() + page[start+end+len(`</nav>`):]
 	page = strings.Replace(page, `/static/main.kinosail.bundle.js?v=12-htmx4`, `/static/main.kinosail.bundle.js?v=settings-3-htmx4`, 1)
 	page = strings.Replace(page, "Everyday preferences in General. Server tools and configuration in Advanced.", "Make Kinosail feel right for your household.", 1)
-	return strings.Replace(page, `<div class="settings-flow" data-settings-flow>`, `<div class="settings-flow" data-settings-flow><p class="settings-category-description" data-settings-description hidden></p>`, 1)
+	var descriptions strings.Builder
+	descriptions.WriteString(`<p class="settings-category-description" data-settings-description>`)
+	for _, entry := range settingsCategories {
+		descriptions.WriteString(`<span data-settings-description-category="` + entry.id + `">` + html.EscapeString(settingsCategoryDescriptions[entry.id]) + `</span>`)
+	}
+	descriptions.WriteString(`</p>`)
+	return strings.Replace(page, `<div class="settings-flow" data-settings-flow>`, `<div class="settings-flow" data-settings-flow>`+descriptions.String(), 1)
 }
 
 func settingsCategoryFor(heading string) string {

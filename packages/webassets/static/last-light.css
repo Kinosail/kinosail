@@ -1,5 +1,5 @@
 /* Kinosail Electric: shared semantic roles, typography, controls and states. */
-@font-face{font-family:Manrope;src:url('/static/manrope.woff2?v=1') format('woff2');font-style:normal;font-weight:200 800;font-display:swap}
+@font-face{font-family:Manrope;src:url('/static/manrope.woff2?v=1') format('woff2');font-style:normal;font-weight:200 800;font-display:optional}
 :root{
   color-scheme:dark;
   --bg:#0b0d0b;--surface:#151914;--surface-2:#20271e;--surface-3:#2c3428;
@@ -163,3 +163,16 @@ body .tmdb-credit img{display:block;width:80px;height:auto}
 /* Keep foreground posters visible at their source ratio; only cinematic backdrops may fill and crop. */
 body :is(img.poster,.poster img,.card img,.hero-poster){height:auto;object-fit:contain}
 body :is(.curation-poster>img,.collection-poster>img){object-fit:contain}
+
+/* Capability discovery keeps the control row's geometry. */
+.player-optional-action{display:inline-flex;flex:0 0 44px;min-width:44px;min-height:44px;align-items:center;justify-content:center}
+.player-stage-actions{min-width:44px;min-height:44px}
+.player-native-controls .player-control-dock{display:none}
+/* Native controls start in their final location below the reserved picture. */
+.player-native-options{position:relative;margin-bottom:1rem}
+.player-native-options>.player-stage-toolbar{position:relative;inset:auto;flex-wrap:wrap;gap:.5rem;padding:.5rem 0;background:var(--bg);color:var(--text)}
+.player-native-options>.player-stage-toolbar>strong{display:none}
+.player-native-options>.player-stage-toolbar button{min-height:44px;background:transparent;color:var(--text);border-color:var(--line)}
+.player-native-options>.player-stage-toolbar .player-mode-status{margin-left:0;margin-right:auto;max-width:100%}
+.player-native-options>.player-settings{position:static;max-height:none;overflow:visible;margin-top:.5rem;background:var(--overlay);color:var(--text)}
+.player-page .media-stage.has-settings:has(+.player-native-options){margin-bottom:1rem}

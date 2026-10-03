@@ -30,6 +30,8 @@ type PlayerData struct { //nolint:recvcheck // Templates need a value receiver f
 	FileSize                 string
 	DefaultSubtitles         bool
 	SubtitlePickerLimited    bool
+	NativeControls           bool
+	AppleNativeControls      bool
 	Tracks                   []SubtitleTrack
 	Playlists                []PlaylistOption
 	MediaDetails             string
