@@ -148,8 +148,9 @@ func parseRecipeCodec(parts []string) ([]string, string, error) {
 	if len(parts) <= 6 || !strings.HasPrefix(parts[6], "c") {
 		return parts, "", nil
 	}
-	codec := strings.TrimPrefix(parts[6], "c")
-	if codec == "" || codec == "auto" || !transcodepolicy.ValidCodec(codec) {
+	// Return a server-owned catalog value, never a request string used in a cache path.
+	codec := map[string]string{"h264": "h264", "hevc": "hevc", "av1": "av1", "vp9": "vp9"}[strings.TrimPrefix(parts[6], "c")]
+	if codec == "" {
 		return nil, "", errors.New("invalid codec")
 	}
 	return append(parts[:6], parts[7:]...), codec, nil
@@ -164,12 +165,10 @@ func parseRecipeFields(parts []string, codec string, maximumBitrate int64) (HLSR
 	subtitle, subtitleErr := prefixedInt(parts[2], "s")
 	toneMap, toneErr := prefixedInt(parts[4], "t")
 	bitrate, bitrateErr := prefixedInt64(parts[5], "b")
-	burn := parts[3]
-	if audioErr != nil || subtitleErr != nil || toneErr != nil || bitrateErr != nil || audio < 0 || audio > 31 || subtitle < 0 || subtitle > 255 || !oneOf(burn, "none", "text", "image", "external") || toneMap < 0 || toneMap > 1 || bitrate < 0 || bitrate > maximumBitrate {
+	// Cache tokens contain only these canonical burn values after this boundary.
+	burn, validBurn := map[string]string{"none": "", "text": "text", "image": "image", "external": "external"}[parts[3]]
+	if audioErr != nil || subtitleErr != nil || toneErr != nil || bitrateErr != nil || audio < 0 || audio > 31 || subtitle < 0 || subtitle > 255 || !validBurn || toneMap < 0 || toneMap > 1 || bitrate < 0 || bitrate > maximumBitrate {
 		return HLSRecipe{}, errors.New("invalid fields")
-	}
-	if burn == "none" {
-		burn = ""
 	}
 	return HLSRecipe{Mode: mode, Burn: burn, Codec: codec, Audio: audio, Subtitle: subtitle, ToneMap: toneMap == 1, MaxBitrate: bitrate}, nil
 }

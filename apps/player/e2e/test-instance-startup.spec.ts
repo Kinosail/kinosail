@@ -77,8 +77,10 @@ test('bounded startup preparation preserves the exact stream and playback priori
       });
     });
     const responses: string[] = [];
+    const requestStates: {kind: string, status: number}[] = [];
     const response = (value: import('@playwright/test').Response) => {
       const url = new URL(value.url());
+      if (url.pathname.endsWith('/playback') || url.pathname.startsWith('/hls/')) requestStates.push({kind: url.pathname.endsWith('/playback') ? 'plan' : url.pathname.endsWith('index.m3u8') ? 'playlist' : 'fragment', status: value.status()});
       if (url.pathname.endsWith('/playback')) negotiatedQuery = url.search;
       if (url.pathname.endsWith('/index.m3u8') && value.headers()['x-kinosail-startup-cache']) responses.push(value.headers()['x-kinosail-startup-cache']);
     };
@@ -88,7 +90,19 @@ test('bounded startup preparation preserves the exact stream and playback priori
     await expect(link).toBeVisible();
     await link.click();
     const video = page.locator('video');
-    await expect.poll(() => page.evaluate(() => (window as unknown as {startupFrames: number[]}).startupFrames.length)).toBeGreaterThan(0);
+    try {
+      await expect.poll(() => page.evaluate(() => (window as unknown as {startupFrames: number[]}).startupFrames.length)).toBeGreaterThan(0);
+    } catch (error) {
+      const readiness = await page.evaluate(() => {
+        const media = document.querySelector('video');
+        return {readyState: media?.readyState, networkState: media?.networkState, errorCode: media?.error?.code,
+          paused: media?.paused, position: media?.currentTime, hlsSource: media?.currentSrc.includes('/hls/') || media?.currentSrc.startsWith('blob:'),
+          hevcMSE: window.MediaSource?.isTypeSupported('video/mp4; codecs="hvc1.1.6.L123.B0"'),
+          h264MSE: window.MediaSource?.isTypeSupported('video/mp4; codecs="avc1.4d4028"')};
+      });
+      await record({name: 'moving-frame-failure', title: name, ...readiness, requestStates: requestStates.slice(-16)});
+      throw error;
+    }
     const frame = await page.evaluate(() => {
       const navigationMS = (window as unknown as {startupFrames: number[]}).startupFrames[0];
       return {navigationMS, epochMS: performance.timeOrigin + navigationMS};
@@ -140,6 +154,15 @@ test('bounded startup preparation preserves the exact stream and playback priori
   await page.goto('/?q=Direct');
   expect((await prepare('Direct', `/media/${id('Direct')}`)).status()).toBe(202);
   const beforeRejected = (await readdir(join(run, 'cache'))).sort();
+  const enumSources = [
+    ...['', 'auto', 'vvc', 'av2', 'unknown', 'HEVC', 'hevc/../', 'hevc\\..\\', 'hevc%2f..', 'hevc\u0000', 'hevc\n', 'ｈｅｖｃ'].map(codec => `/hls/${id('Warm')}/p/t-a0-s0-none-t0-b0-c${codec}/index.m3u8`),
+    ...['', 'NONE', 'unknown', 'external/../', 'external\\..\\', 'external%2f..', 'external\u0000', 'external\n', 'ｅｘｔｅｒｎａｌ'].map(burn => `/hls/${id('Warm')}/p/t-a0-s0-${burn}-t0-b0/index.m3u8`),
+  ];
+  for (const bad of enumSources) {
+    expect((await prepare('Warm', bad)).status()).toBe(400);
+  }
+  expect((await readdir(join(run, 'cache'))).sort()).toEqual(beforeRejected);
+  await record({name: 'untrusted-recipe-enums', rejected: enumSources.length, status: 400, cacheInventoryUnchanged: true});
   for (const bad of ['https://evil.example/a', `/hls/${id('Cold')}/p/bad/index.m3u8`, warmSource + '?token=secret', warmSource.replace('-o12300', '-o999999999')]) {
     expect((await prepare('Warm', bad)).status()).toBe(400);
   }
