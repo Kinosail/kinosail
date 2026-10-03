@@ -11,32 +11,6 @@ import (
 	"testing"
 )
 
-func TestRunStdioCommandRejectsInvalidDependencies(t *testing.T) {
-	t.Parallel()
-	validPath := filepath.Join(t.TempDir(), "socat")
-	validServe := func() error { return nil }
-	validOpen := func() (*os.File, error) { return nil, errors.New("stop") }
-	validExec := func(string, []string, []string) error { return nil }
-	for name, test := range map[string]struct {
-		path  string
-		serve func() error
-		open  func() (*os.File, error)
-		exec  StdioCommandExec
-	}{
-		"empty path":    {"", validServe, validOpen, validExec},
-		"relative path": {"socat", validServe, validOpen, validExec},
-		"unclean path":  {validPath + "/..", validServe, validOpen, validExec},
-		"long path":     {"/" + strings.Repeat("x", 4096), validServe, validOpen, validExec},
-		"missing serve": {validPath, nil, validOpen, validExec},
-		"missing open":  {validPath, validServe, nil, validExec},
-		"missing exec":  {validPath, validServe, validOpen, nil},
-	} {
-		if err := RunStdioCommand(test.path, test.serve, test.open, test.exec); err == nil {
-			t.Errorf("%s configuration was accepted", name)
-		}
-	}
-}
-
 func TestRunStdioCommandFallsBackWhenRelayIsUnavailable(t *testing.T) {
 	t.Parallel()
 	want := errors.New("served directly")

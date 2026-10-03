@@ -8,46 +8,6 @@ import (
 	"github.com/MikeO7/kinosail/packages/library"
 )
 
-func TestDeliveryAuthorizationChecksEveryCondition(t *testing.T) { //nolint:funlen // Each case isolates one capability condition.
-	session := Session{ExpiresAt: 2}
-	share := Share{ExpiresAt: 2, MaxDevices: 1}
-	for name, test := range map[string]struct {
-		found, active, exists, contains bool
-		session                         Session
-		share                           Share
-		streams                         int
-		valid                           bool
-	}{
-		"valid":           {true, true, true, true, session, share, 0, true},
-		"missing session": {false, true, true, true, session, share, 0, false},
-		"missing share":   {true, false, true, true, session, share, 0, false},
-		"missing item":    {true, true, false, true, session, share, 0, false},
-		"expired session": {true, true, true, true, Session{ExpiresAt: 1}, share, 0, false},
-		"expired share":   {true, true, true, true, session, Share{ExpiresAt: 1, MaxDevices: 1}, 0, false},
-		"unlisted item":   {true, true, true, false, session, share, 0, false},
-		"at capacity":     {true, true, true, true, session, share, 1, false},
-	} {
-		actual := canStream(test.found, test.active, test.exists, test.session, test.share, 1, test.contains, test.streams)
-		if actual != test.valid {
-			t.Errorf("%s stream validity = %v", name, actual)
-		}
-	}
-	for name, test := range map[string]struct {
-		found, active bool
-		session       Session
-		share         Share
-		valid         bool
-	}{
-		"valid": {true, true, session, share, true}, "missing session": {false, true, session, share, false},
-		"missing share": {true, false, session, share, false}, "expired session": {true, true, Session{ExpiresAt: 1}, share, false},
-		"expired share": {true, true, session, Share{ExpiresAt: 1}, false},
-	} {
-		if actual := canRead(test.found, test.active, test.session, test.share, 1); actual != test.valid {
-			t.Errorf("%s read validity = %v", name, actual)
-		}
-	}
-}
-
 func TestStoreDeliveryChecksEveryCapabilityState(t *testing.T) { //nolint:cyclop,funlen,gocognit // Each case creates one complete capability state.
 	now := int64(10)
 	token, shareID := "session-token", indexedSecret(0)

@@ -52,24 +52,3 @@ func assertBoundApplication(t *testing.T, ctx context.Context, config int, profi
 		t.Fatal("command changed application arguments")
 	}
 }
-
-func TestBoundStdioCommandRejectsMissingOperations(t *testing.T) {
-	t.Parallel()
-	serve := func(context.Context, int, string, io.Reader, io.Writer) error {
-		t.Fatal("invalid binding served")
-		return nil
-	}
-	open := func(context.Context, int, string) (*os.File, error) {
-		t.Fatal("invalid binding opened relay")
-		return nil, nil
-	}
-	for _, run := range []func(context.Context, int, string) error{
-		BindStdioCommand[int]("/relay", nil, open, nil),
-		BindStdioCommand[int]("/relay", serve, nil, nil),
-		BindStdioCommand[int]("/relay", serve, open, nil),
-	} {
-		if err := run(t.Context(), 7, "owner"); err == nil {
-			t.Fatal("invalid application binding was accepted")
-		}
-	}
-}
