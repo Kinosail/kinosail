@@ -15,26 +15,31 @@ func TestHLSRecipeEnumCacheIdentity(t *testing.T) {
 			continue
 		}
 		for _, burn := range []string{"none", "text", "image", "external"} {
-			token := "t-a1-s7-" + burn + "-t1-b4000000-c" + codec.ID + "-o12300"
-			recipe, err := ParseHLSRecipe(token, policy)
-			if err != nil || recipe.Codec != codec.ID || recipe.Offset != 12.3 {
-				t.Fatalf("catalog recipe %q = %#v, %v", token, recipe, err)
-			}
-			wantBurn := burn
-			if wantBurn == "none" {
-				wantBurn = ""
-			}
-			if recipe.Burn != wantBurn {
-				t.Fatalf("burn mode %q = %q", burn, recipe.Burn)
-			}
-			canonical := token
-			if codec.ID == "h264" {
-				canonical = strings.Replace(token, "-ch264", "", 1)
-			}
-			if recipe.Token() != canonical || HLSRecipeKey("0123456789abcdef", recipe) != "0123456789abcdef-plan-"+canonical {
-				t.Fatalf("cache identity changed for %q", token)
-			}
+			checkRecipeEnumIdentity(t, codec.ID, burn, policy)
 		}
+	}
+}
+
+func checkRecipeEnumIdentity(t *testing.T, codec, burn string, policy HLSRecipePolicy) {
+	t.Helper()
+	token := "t-a1-s7-" + burn + "-t1-b4000000-c" + codec + "-o12300"
+	recipe, err := ParseHLSRecipe(token, policy)
+	if err != nil || recipe.Codec != codec || recipe.Offset != 12.3 {
+		t.Fatalf("catalog recipe %q = %#v, %v", token, recipe, err)
+	}
+	wantBurn := burn
+	if wantBurn == "none" {
+		wantBurn = ""
+	}
+	if recipe.Burn != wantBurn {
+		t.Fatalf("burn mode %q = %q", burn, recipe.Burn)
+	}
+	canonical := token
+	if codec == "h264" {
+		canonical = strings.Replace(token, "-ch264", "", 1)
+	}
+	if recipe.Token() != canonical || HLSRecipeKey("0123456789abcdef", recipe) != "0123456789abcdef-plan-"+canonical {
+		t.Fatalf("cache identity changed for %q", token)
 	}
 }
 
