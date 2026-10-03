@@ -36,6 +36,7 @@ var mcpManageRoutes = routeSet(
 )
 
 var mcpBlockedRoutes = routeSet(
+	"POST /api/v1/items/{id}/playback-prepare", "DELETE /api/v1/items/{id}/playback-prepare",
 	"PUT /api/v1/configuration/{key}", "DELETE /api/v1/configuration/{key}",
 	"GET /api/v1/activity",
 	"GET /api/v1/remote-players", "PUT /api/v1/remote-players/{id}", "POST /api/v1/remote-players/{id}/commands",

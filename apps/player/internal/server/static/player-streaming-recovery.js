@@ -263,8 +263,8 @@ playbackModeStatus?.addEventListener("click", () => document.querySelector("[dat
 const directType = player.dataset.directType;
 const directSupport = directType ? player.canPlayType(directType) : "unknown";
 playbackTrace("capability", directSupport || "none", `${navigator.vendor || "unknown"}:${directType || "unknown"}`);
-const directTypeUnsupported = directType && navigator.vendor.includes("Apple") && /^video\/(x-)?matroska(?:;|$)/i.test(directType);
-const knownAudioIncompatibility = playbackPolicy === "direct-first" && player.dataset.compatibilityMode === "audio-transcode";
+const directTypeUnsupported = codecCapabilities.appleMatroska(directType);
+const knownAudioIncompatibility = codecCapabilities.audioIncompatible(playbackPolicy, player.dataset.compatibilityMode);
 if (player.dataset.hls) {
   if (knownAudioIncompatibility) {
     // A pre-planned compatible playlist is already available when the server knows the
