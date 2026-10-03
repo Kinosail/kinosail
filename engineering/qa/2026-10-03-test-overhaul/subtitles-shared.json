@@ -6,11 +6,11 @@
   "files": 379,
   "declarations": 954,
   "test_loc": 28832,
-  "reviewed": 155,
-  "pending": 799,
+  "reviewed": 193,
+  "pending": 761,
   "decisions": {
-    "R": 122,
-    "D": 32,
+    "R": 154,
+    "D": 38,
     "F": 1,
     "C": 0
   },
@@ -3150,51 +3150,102 @@
       "line": 10,
       "test": "TestStepUpReturnsToKnownOwnerPage",
       "baseline_file_sha256": "f124076c6899ef6923796f4786aa5630eae7573125a8c15b36a307b613c7a76d",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "D",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Pure stepUpLoginPath var alias repeats three paths already included in the broader canonical matrix; real backup step-up browser flow preserves app wiring.",
+      "production_owner": "packages/identitycore/{redirects,session_http}.go; app auth_login.go var aliases/delegating safeLoginReturn; session_tokens.go cleanDeviceName; sessions.go cookie alias",
+      "non_test_callers": "App login/account/settings step-up, quickconnect.application device-name callback, and browser sign-in/out; deleted declaration itself has no app configuration/state seam",
+      "remaining_proof": [
+        {
+          "kind": "isolated_primary_owner",
+          "reference": "packages/identitycore/redirects_test.go:TestStepUpLoginPathReturnsToKnownOwnerPage"
+        },
+        {
+          "kind": "isolated_application_handler",
+          "reference": "apps/subtitles/internal/server/passkeys_test.go:TestPasswordLoginOffersPasskeyWithConfiguredStateAndSafeReturn"
+        },
+        {
+          "kind": "isolated_application_handler",
+          "reference": "apps/subtitles/internal/server/session_cookie_isolation_test.go:TestBrowserSessionCookieIsolatedFromSiblingApp"
+        },
+        {
+          "kind": "genuine_populated_e2e",
+          "reference": "apps/subtitles/e2e/happy-path.spec.ts:backup step-up redirects and passkey return"
+        }
+      ],
+      "coverage_gap": "No E2E equivalence claimed for hostile-return full matrix, cookie flags or device-name normalization; those exact isolated canonical owner proofs remain, with app cookie/login and named-device seams retained. Backup step-up successful path is genuinely exercised by populated E2E.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Low shared-owner replay removal; no runtime or policy change.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -count=1 ./internal/server; GOCACHE=/tmp/kinosail-testing-go-cache go -C packages test -count=1 ./identitycore ./passkeys ./quickconnect"
     },
     {
       "file": "apps/subtitles/internal/server/auth_stepup_internal_test.go",
       "line": 25,
       "test": "TestLoginReturnRejectsExternalAndAmbiguousTargets",
       "baseline_file_sha256": "f124076c6899ef6923796f4786aa5630eae7573125a8c15b36a307b613c7a76d",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "D",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Private safeLoginReturn only delegates to shared SafeLoginReturn; canonical matrix preserves every rejected case plus encoded-path/fragment boundaries; retained actual password login rejects encoded external next.",
+      "production_owner": "packages/identitycore/{redirects,session_http}.go; app auth_login.go var aliases/delegating safeLoginReturn; session_tokens.go cleanDeviceName; sessions.go cookie alias",
+      "non_test_callers": "App login/account/settings step-up, quickconnect.application device-name callback, and browser sign-in/out; deleted declaration itself has no app configuration/state seam",
+      "remaining_proof": [
+        {
+          "kind": "isolated_primary_owner",
+          "reference": "packages/identitycore/redirects_test.go:TestSafeLoginReturnRejectsExternalAndAmbiguousTargets"
+        },
+        {
+          "kind": "isolated_application_handler",
+          "reference": "apps/subtitles/internal/server/passkeys_test.go:TestPasswordLoginOffersPasskeyWithConfiguredStateAndSafeReturn"
+        },
+        {
+          "kind": "isolated_application_handler",
+          "reference": "apps/subtitles/internal/server/session_cookie_isolation_test.go:TestBrowserSessionCookieIsolatedFromSiblingApp"
+        },
+        {
+          "kind": "genuine_populated_e2e",
+          "reference": "apps/subtitles/e2e/happy-path.spec.ts:backup step-up redirects and passkey return"
+        }
+      ],
+      "coverage_gap": "No E2E equivalence claimed for hostile-return full matrix, cookie flags or device-name normalization; those exact isolated canonical owner proofs remain, with app cookie/login and named-device seams retained. Backup step-up successful path is genuinely exercised by populated E2E.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Low shared-owner replay removal; no runtime or policy change.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -count=1 ./internal/server; GOCACHE=/tmp/kinosail-testing-go-cache go -C packages test -count=1 ./identitycore ./passkeys ./quickconnect"
     },
     {
       "file": "apps/subtitles/internal/server/auth_stepup_internal_test.go",
       "line": 36,
       "test": "TestPasskeyOfferPathKeepsTheValidatedLoginDestination",
       "baseline_file_sha256": "f124076c6899ef6923796f4786aa5630eae7573125a8c15b36a307b613c7a76d",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "D",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Pure passkeyOfferPath var alias repeats exact query-escape expectation; retained actual password login follows the escaped offer and safely returns to the library.",
+      "production_owner": "packages/identitycore/{redirects,session_http}.go; app auth_login.go var aliases/delegating safeLoginReturn; session_tokens.go cleanDeviceName; sessions.go cookie alias",
+      "non_test_callers": "App login/account/settings step-up, quickconnect.application device-name callback, and browser sign-in/out; deleted declaration itself has no app configuration/state seam",
+      "remaining_proof": [
+        {
+          "kind": "isolated_primary_owner",
+          "reference": "packages/identitycore/redirects_test.go:TestPasskeyOfferPathEscapesValidatedDestination"
+        },
+        {
+          "kind": "isolated_application_handler",
+          "reference": "apps/subtitles/internal/server/passkeys_test.go:TestPasswordLoginOffersPasskeyWithConfiguredStateAndSafeReturn"
+        },
+        {
+          "kind": "isolated_application_handler",
+          "reference": "apps/subtitles/internal/server/session_cookie_isolation_test.go:TestBrowserSessionCookieIsolatedFromSiblingApp"
+        },
+        {
+          "kind": "genuine_populated_e2e",
+          "reference": "apps/subtitles/e2e/happy-path.spec.ts:backup step-up redirects and passkey return"
+        }
+      ],
+      "coverage_gap": "No E2E equivalence claimed for hostile-return full matrix, cookie flags or device-name normalization; those exact isolated canonical owner proofs remain, with app cookie/login and named-device seams retained. Backup step-up successful path is genuinely exercised by populated E2E.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Low shared-owner replay removal; no runtime or policy change.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -count=1 ./internal/server; GOCACHE=/tmp/kinosail-testing-go-cache go -C packages test -count=1 ./identitycore ./passkeys ./quickconnect"
     },
     {
       "file": "apps/subtitles/internal/server/auth_test.go",
@@ -3995,34 +4046,44 @@
       "line": 9,
       "test": "TestCSRFContract",
       "baseline_file_sha256": "60c1282721993bfe9d7a8ca84a0112e2602add0554fba6f82c57fcdb23f5142d",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "App security/template binding must deny absent/wrong session-bound CSRF before handler side effects, allow reads, strip validated transport fields and inject matching hidden/meta tokens.",
+      "production_owner": "app security.go; locale.go:newLocalizedTemplate; httpguard/csrf.go; localization/template*.go",
+      "non_test_callers": "Server New registers actual authentication/settings/API/passkey/public login handlers; session/profile stores bind callbacks used by those handlers",
+      "remaining_proof": [
+        {
+          "kind": "isolated_application_handler_or_policy",
+          "reference": "apps/subtitles/internal/server/csrf_internal_test.go:TestCSRFContract"
+        }
+      ],
+      "coverage_gap": "Current populated apps/subtitles/e2e/happy-path.spec.ts exercises successful local Owner setup, passkey/password sign-in, fresh backup step-up and second Owner MFA. It does not inject persistence failure, session aging/revision, hostile origins/query tokens, limiter overflow, restart, sibling-cookie collision or malformed protocol. This test uses real app stores/httptest handlers or explicit app callbacks, not a started-process E2E. Fuzzer baseline runs seeds only; arbitrary mutation fuzz campaigns remain unrun.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retained concrete security, durability, protocol or compatibility exception; no new isolated test added.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -count=1 ./internal/server; GOCACHE=/tmp/kinosail-testing-go-cache go -C packages test -count=1 ./identitycore ./passkeys ./quickconnect"
     },
     {
       "file": "apps/subtitles/internal/server/device_session_test.go",
       "line": 15,
       "test": "TestNamedDeviceSessionsAreHashedVisibleAndRevocable",
       "baseline_file_sha256": "666ebe94d12a2c7d4d30580659c76e555ca9435fca00961e8afbba4b3670edac",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Actual API/MFA sign-in must persist hashed token, render the named device, and deny a formerly valid Bearer session after settings revoke.",
+      "production_owner": "app api.go:apiSessionConfig; sessions.go; sessions_admin.go; identitycore/api_session.go",
+      "non_test_callers": "Server New registers actual authentication/settings/API/passkey/public login handlers; session/profile stores bind callbacks used by those handlers",
+      "remaining_proof": [
+        {
+          "kind": "isolated_application_handler_or_policy",
+          "reference": "apps/subtitles/internal/server/device_session_test.go:TestNamedDeviceSessionsAreHashedVisibleAndRevocable"
+        }
+      ],
+      "coverage_gap": "Current populated apps/subtitles/e2e/happy-path.spec.ts exercises successful local Owner setup, passkey/password sign-in, fresh backup step-up and second Owner MFA. It does not inject persistence failure, session aging/revision, hostile origins/query tokens, limiter overflow, restart, sibling-cookie collision or malformed protocol. This test uses real app stores/httptest handlers or explicit app callbacks, not a started-process E2E. Fuzzer baseline runs seeds only; arbitrary mutation fuzz campaigns remain unrun.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retained concrete security, durability, protocol or compatibility exception; no new isolated test added.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -count=1 ./internal/server; GOCACHE=/tmp/kinosail-testing-go-cache go -C packages test -count=1 ./identitycore ./passkeys ./quickconnect"
     },
     {
       "file": "apps/subtitles/internal/server/direct_type_test.go",
@@ -8019,153 +8080,198 @@
       "line": 17,
       "test": "TestPasskeyCeremoniesAreLocalAndServerSide",
       "baseline_file_sha256": "73c4d7c770d55d462eea03ba505723ae54aec06aa82edb1c4a19c9b8f80fba0b",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "App RP/user-verification and ceremony cookie name/path/flags must be correct, challenge stays server-side, invalid registration body cannot commit and must distinguish valid ceremony from expiration. Normal signed E2E does not inspect those protocol constraints.",
+      "production_owner": "app passkeys.go:newPasskeyAuth,beginRegistration,finishRegistration; passkeys/profile_flow.go",
+      "non_test_callers": "Server New registers actual authentication/settings/API/passkey/public login handlers; session/profile stores bind callbacks used by those handlers",
+      "remaining_proof": [
+        {
+          "kind": "isolated_application_handler_or_policy",
+          "reference": "apps/subtitles/internal/server/passkeys_test.go:TestPasskeyCeremoniesAreLocalAndServerSide"
+        }
+      ],
+      "coverage_gap": "Current populated apps/subtitles/e2e/happy-path.spec.ts exercises successful local Owner setup, passkey/password sign-in, fresh backup step-up and second Owner MFA. It does not inject persistence failure, session aging/revision, hostile origins/query tokens, limiter overflow, restart, sibling-cookie collision or malformed protocol. This test uses real app stores/httptest handlers or explicit app callbacks, not a started-process E2E. Fuzzer baseline runs seeds only; arbitrary mutation fuzz campaigns remain unrun.",
+      "history": "c731f92be24df235fdd0c21bd55b9c4e6669b5e2 Isolate Player and Subtitles browser sign-in cookies",
+      "risk": "Retained concrete security, durability, protocol or compatibility exception; no new isolated test added.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -count=1 ./internal/server; GOCACHE=/tmp/kinosail-testing-go-cache go -C packages test -count=1 ./identitycore ./passkeys ./quickconnect"
     },
     {
       "file": "apps/subtitles/internal/server/passkeys_test.go",
       "line": 69,
       "test": "TestPasskeyLoginBeginIsPublic",
       "baseline_file_sha256": "73c4d7c770d55d462eea03ba505723ae54aec06aa82edb1c4a19c9b8f80fba0b",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Unauthenticated discovery route must stay reachable with required verification and correct RP; route inventory checks classification rather than this public protocol response.",
+      "production_owner": "app passkeys.go:register; auth_remote_routes.go; passkeys/profile_flow.go",
+      "non_test_callers": "Server New registers actual authentication/settings/API/passkey/public login handlers; session/profile stores bind callbacks used by those handlers",
+      "remaining_proof": [
+        {
+          "kind": "isolated_application_handler_or_policy",
+          "reference": "apps/subtitles/internal/server/passkeys_test.go:TestPasskeyLoginBeginIsPublic"
+        }
+      ],
+      "coverage_gap": "Current populated apps/subtitles/e2e/happy-path.spec.ts exercises successful local Owner setup, passkey/password sign-in, fresh backup step-up and second Owner MFA. It does not inject persistence failure, session aging/revision, hostile origins/query tokens, limiter overflow, restart, sibling-cookie collision or malformed protocol. This test uses real app stores/httptest handlers or explicit app callbacks, not a started-process E2E. Fuzzer baseline runs seeds only; arbitrary mutation fuzz campaigns remain unrun.",
+      "history": "c731f92be24df235fdd0c21bd55b9c4e6669b5e2 Isolate Player and Subtitles browser sign-in cookies",
+      "risk": "Retained concrete security, durability, protocol or compatibility exception; no new isolated test added.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -count=1 ./internal/server; GOCACHE=/tmp/kinosail-testing-go-cache go -C packages test -count=1 ./identitycore ./passkeys ./quickconnect"
     },
     {
       "file": "apps/subtitles/internal/server/passkeys_test.go",
       "line": 74,
       "test": "TestPasskeyLoginIgnoresStaleSameOriginSessionCookie",
       "baseline_file_sha256": "73c4d7c770d55d462eea03ba505723ae54aec06aa82edb1c4a19c9b8f80fba0b",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "A stale cookie must not block the public login ceremony at both/auth and/api routes; real browser happy path does not start with a stale cookie.",
+      "production_owner": "app security.go,auth_remote_routes.go; passkeys.go:register",
+      "non_test_callers": "Server New registers actual authentication/settings/API/passkey/public login handlers; session/profile stores bind callbacks used by those handlers",
+      "remaining_proof": [
+        {
+          "kind": "isolated_application_handler_or_policy",
+          "reference": "apps/subtitles/internal/server/passkeys_test.go:TestPasskeyLoginIgnoresStaleSameOriginSessionCookie"
+        }
+      ],
+      "coverage_gap": "Current populated apps/subtitles/e2e/happy-path.spec.ts exercises successful local Owner setup, passkey/password sign-in, fresh backup step-up and second Owner MFA. It does not inject persistence failure, session aging/revision, hostile origins/query tokens, limiter overflow, restart, sibling-cookie collision or malformed protocol. This test uses real app stores/httptest handlers or explicit app callbacks, not a started-process E2E. Fuzzer baseline runs seeds only; arbitrary mutation fuzz campaigns remain unrun.",
+      "history": "c731f92be24df235fdd0c21bd55b9c4e6669b5e2 Isolate Player and Subtitles browser sign-in cookies",
+      "risk": "Retained concrete security, durability, protocol or compatibility exception; no new isolated test added.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -count=1 ./internal/server; GOCACHE=/tmp/kinosail-testing-go-cache go -C packages test -count=1 ./identitycore ./passkeys ./quickconnect"
     },
     {
       "file": "apps/subtitles/internal/server/passkeys_test.go",
       "line": 80,
       "test": "TestPasskeyBeginRedirectsToConfiguredOrigin",
       "baseline_file_sha256": "73c4d7c770d55d462eea03ba505723ae54aec06aa82edb1c4a19c9b8f80fba0b",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Alternate TLS allowlisted IP host must not mint passkey ceremony state; reject421 with canonical account Location and no cookies.",
+      "production_owner": "app passkeys.go:newPasskeyAuth; configuration.Load; passkeys/profile_flow.go:requireOrigin",
+      "non_test_callers": "Server New registers actual authentication/settings/API/passkey/public login handlers; session/profile stores bind callbacks used by those handlers",
+      "remaining_proof": [
+        {
+          "kind": "isolated_application_handler_or_policy",
+          "reference": "apps/subtitles/internal/server/passkeys_test.go:TestPasskeyBeginRedirectsToConfiguredOrigin"
+        }
+      ],
+      "coverage_gap": "Current populated apps/subtitles/e2e/happy-path.spec.ts exercises successful local Owner setup, passkey/password sign-in, fresh backup step-up and second Owner MFA. It does not inject persistence failure, session aging/revision, hostile origins/query tokens, limiter overflow, restart, sibling-cookie collision or malformed protocol. This test uses real app stores/httptest handlers or explicit app callbacks, not a started-process E2E. Fuzzer baseline runs seeds only; arbitrary mutation fuzz campaigns remain unrun.",
+      "history": "c731f92be24df235fdd0c21bd55b9c4e6669b5e2 Isolate Player and Subtitles browser sign-in cookies",
+      "risk": "Retained concrete security, durability, protocol or compatibility exception; no new isolated test added.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -count=1 ./internal/server; GOCACHE=/tmp/kinosail-testing-go-cache go -C packages test -count=1 ./identitycore ./passkeys ./quickconnect"
     },
     {
       "file": "apps/subtitles/internal/server/passkeys_test.go",
       "line": 91,
       "test": "TestPasskeyLoginIsAvailableFromSignInPage",
       "baseline_file_sha256": "73c4d7c770d55d462eea03ba505723ae54aec06aa82edb1c4a19c9b8f80fba0b",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Rendered step-up sign-in must bind /settings/backups next destination and expose passkey-first actions before password fallback. Genuine happy-path backup step-up proves the destination and passkey action, but not ordering or password fallback markup; keep distinct binding guard.",
+      "production_owner": "app auth_login.go:loginPage; passkeys.go; servertest/passkey_login.go",
+      "non_test_callers": "Server New registers actual authentication/settings/API/passkey/public login handlers; session/profile stores bind callbacks used by those handlers",
+      "remaining_proof": [
+        {
+          "kind": "isolated_application_handler_or_policy",
+          "reference": "apps/subtitles/internal/server/passkeys_test.go:TestPasskeyLoginIsAvailableFromSignInPage"
+        }
+      ],
+      "coverage_gap": "Current populated apps/subtitles/e2e/happy-path.spec.ts exercises successful local Owner setup, passkey/password sign-in, fresh backup step-up and second Owner MFA. It does not inject persistence failure, session aging/revision, hostile origins/query tokens, limiter overflow, restart, sibling-cookie collision or malformed protocol. This test uses real app stores/httptest handlers or explicit app callbacks, not a started-process E2E. Fuzzer baseline runs seeds only; arbitrary mutation fuzz campaigns remain unrun.",
+      "history": "c731f92be24df235fdd0c21bd55b9c4e6669b5e2 Isolate Player and Subtitles browser sign-in cookies",
+      "risk": "Retained concrete security, durability, protocol or compatibility exception; no new isolated test added.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -count=1 ./internal/server; GOCACHE=/tmp/kinosail-testing-go-cache go -C packages test -count=1 ./identitycore ./passkeys ./quickconnect"
     },
     {
       "file": "apps/subtitles/internal/server/passkeys_test.go",
       "line": 96,
       "test": "TestPasswordLoginOffersPasskeyWithConfiguredStateAndSafeReturn",
       "baseline_file_sha256": "73c4d7c770d55d462eea03ba505723ae54aec06aa82edb1c4a19c9b8f80fba0b",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Actual configured/unconfigured password login must offer the correct inventory state, preserve escaped local return, expose API configured flag, reject invalid/duplicate/oversized offers without inventory mutation, and reject encoded external step-up redirect.",
+      "production_owner": "app auth_login.go:login; passkey_account.go; api.go:apiSessionConfig; identitycore/redirects.go",
+      "non_test_callers": "Server New registers actual authentication/settings/API/passkey/public login handlers; session/profile stores bind callbacks used by those handlers",
+      "remaining_proof": [
+        {
+          "kind": "isolated_application_handler_or_policy",
+          "reference": "apps/subtitles/internal/server/passkeys_test.go:TestPasswordLoginOffersPasskeyWithConfiguredStateAndSafeReturn"
+        }
+      ],
+      "coverage_gap": "Current populated apps/subtitles/e2e/happy-path.spec.ts exercises successful local Owner setup, passkey/password sign-in, fresh backup step-up and second Owner MFA. It does not inject persistence failure, session aging/revision, hostile origins/query tokens, limiter overflow, restart, sibling-cookie collision or malformed protocol. This test uses real app stores/httptest handlers or explicit app callbacks, not a started-process E2E. Fuzzer baseline runs seeds only; arbitrary mutation fuzz campaigns remain unrun.",
+      "history": "c731f92be24df235fdd0c21bd55b9c4e6669b5e2 Isolate Player and Subtitles browser sign-in cookies",
+      "risk": "Retained concrete security, durability, protocol or compatibility exception; no new isolated test added.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -count=1 ./internal/server; GOCACHE=/tmp/kinosail-testing-go-cache go -C packages test -count=1 ./identitycore ./passkeys ./quickconnect"
     },
     {
       "file": "apps/subtitles/internal/server/passkeys_test.go",
       "line": 175,
       "test": "TestPasskeyLoginBeginUsesLoginRateLimit",
       "baseline_file_sha256": "73c4d7c770d55d462eea03ba505723ae54aec06aa82edb1c4a19c9b8f80fba0b",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Eleventh ceremony request from one address must return429/Retry-After60; successful browser passkey traffic never exceeds limiter.",
+      "production_owner": "app passkeys.go:register; auth_rate_limit.go",
+      "non_test_callers": "Server New registers actual authentication/settings/API/passkey/public login handlers; session/profile stores bind callbacks used by those handlers",
+      "remaining_proof": [
+        {
+          "kind": "isolated_application_handler_or_policy",
+          "reference": "apps/subtitles/internal/server/passkeys_test.go:TestPasskeyLoginBeginUsesLoginRateLimit"
+        }
+      ],
+      "coverage_gap": "Current populated apps/subtitles/e2e/happy-path.spec.ts exercises successful local Owner setup, passkey/password sign-in, fresh backup step-up and second Owner MFA. It does not inject persistence failure, session aging/revision, hostile origins/query tokens, limiter overflow, restart, sibling-cookie collision or malformed protocol. This test uses real app stores/httptest handlers or explicit app callbacks, not a started-process E2E. Fuzzer baseline runs seeds only; arbitrary mutation fuzz campaigns remain unrun.",
+      "history": "c731f92be24df235fdd0c21bd55b9c4e6669b5e2 Isolate Player and Subtitles browser sign-in cookies",
+      "risk": "Retained concrete security, durability, protocol or compatibility exception; no new isolated test added.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -count=1 ./internal/server; GOCACHE=/tmp/kinosail-testing-go-cache go -C packages test -count=1 ./identitycore ./passkeys ./quickconnect"
     },
     {
       "file": "apps/subtitles/internal/server/passkeys_test.go",
       "line": 190,
       "test": "TestInvalidAuthURLDisablesOnlyPasskeys",
       "baseline_file_sha256": "73c4d7c770d55d462eea03ba505723ae54aec06aa82edb1c4a19c9b8f80fba0b",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Invalid configured auth origin must fail passkeys503 while retaining password setup, rather than disabling all local access.",
+      "production_owner": "app passkeys.go:newPasskeyAuth,beginLogin; auth_setup.go",
+      "non_test_callers": "Server New registers actual authentication/settings/API/passkey/public login handlers; session/profile stores bind callbacks used by those handlers",
+      "remaining_proof": [
+        {
+          "kind": "isolated_application_handler_or_policy",
+          "reference": "apps/subtitles/internal/server/passkeys_test.go:TestInvalidAuthURLDisablesOnlyPasskeys"
+        }
+      ],
+      "coverage_gap": "Current populated apps/subtitles/e2e/happy-path.spec.ts exercises successful local Owner setup, passkey/password sign-in, fresh backup step-up and second Owner MFA. It does not inject persistence failure, session aging/revision, hostile origins/query tokens, limiter overflow, restart, sibling-cookie collision or malformed protocol. This test uses real app stores/httptest handlers or explicit app callbacks, not a started-process E2E. Fuzzer baseline runs seeds only; arbitrary mutation fuzz campaigns remain unrun.",
+      "history": "c731f92be24df235fdd0c21bd55b9c4e6669b5e2 Isolate Player and Subtitles browser sign-in cookies",
+      "risk": "Retained concrete security, durability, protocol or compatibility exception; no new isolated test added.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -count=1 ./internal/server; GOCACHE=/tmp/kinosail-testing-go-cache go -C packages test -count=1 ./identitycore ./passkeys ./quickconnect"
     },
     {
       "file": "apps/subtitles/internal/server/passkeys_test.go",
       "line": 203,
       "test": "TestPasskeyCredentialPersistsAndUpdates",
       "baseline_file_sha256": "73c4d7c770d55d462eea03ba505723ae54aec06aa82edb1c4a19c9b8f80fba0b",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "App save/credential/usage callbacks must durably persist sign counter7 and tracked last-used metadata across store restart; browser process does not restart here.",
+      "production_owner": "app passkeys_store.go; profiles_storage.go; passkeys/profile_store.go",
+      "non_test_callers": "Server New registers actual authentication/settings/API/passkey/public login handlers; session/profile stores bind callbacks used by those handlers",
+      "remaining_proof": [
+        {
+          "kind": "isolated_application_handler_or_policy",
+          "reference": "apps/subtitles/internal/server/passkeys_test.go:TestPasskeyCredentialPersistsAndUpdates"
+        }
+      ],
+      "coverage_gap": "Current populated apps/subtitles/e2e/happy-path.spec.ts exercises successful local Owner setup, passkey/password sign-in, fresh backup step-up and second Owner MFA. It does not inject persistence failure, session aging/revision, hostile origins/query tokens, limiter overflow, restart, sibling-cookie collision or malformed protocol. This test uses real app stores/httptest handlers or explicit app callbacks, not a started-process E2E. Fuzzer baseline runs seeds only; arbitrary mutation fuzz campaigns remain unrun.",
+      "history": "c731f92be24df235fdd0c21bd55b9c4e6669b5e2 Isolate Player and Subtitles browser sign-in cookies",
+      "risk": "Retained concrete security, durability, protocol or compatibility exception; no new isolated test added.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -count=1 ./internal/server; GOCACHE=/tmp/kinosail-testing-go-cache go -C packages test -count=1 ./identitycore ./passkeys ./quickconnect"
     },
     {
       "file": "apps/subtitles/internal/server/password_manager_test.go",
@@ -10210,17 +10316,22 @@
       "line": 14,
       "test": "TestPublicBrowserQuickConnectEndToEndBoundary",
       "baseline_file_sha256": "04df1f1667c6678087de1340a1a1065e87bfecd53a290c99dff2702c44647e59",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Public-listener context must hide password login, reject external next, deny public Owner/weak/public approvals, allow local strong Viewer approval, mint bounded8-hour cookie and deny admin; policy revocation must deny old cookie.",
+      "production_owner": "app remote_login.go; quick_connect.go:application; identitycore/redirects.go; quickconnect/browser*.go",
+      "non_test_callers": "Server New registers actual authentication/settings/API/passkey/public login handlers; session/profile stores bind callbacks used by those handlers",
+      "remaining_proof": [
+        {
+          "kind": "isolated_application_handler_or_policy",
+          "reference": "apps/subtitles/internal/server/remote_browser_login_test.go:TestPublicBrowserQuickConnectEndToEndBoundary"
+        }
+      ],
+      "coverage_gap": "Current populated apps/subtitles/e2e/happy-path.spec.ts exercises successful local Owner setup, passkey/password sign-in, fresh backup step-up and second Owner MFA. It does not inject persistence failure, session aging/revision, hostile origins/query tokens, limiter overflow, restart, sibling-cookie collision or malformed protocol. This test uses real app stores/httptest handlers or explicit app callbacks, not a started-process E2E. Fuzzer baseline runs seeds only; arbitrary mutation fuzz campaigns remain unrun.",
+      "history": "c731f92be24df235fdd0c21bd55b9c4e6669b5e2 Isolate Player and Subtitles browser sign-in cookies",
+      "risk": "Retained concrete security, durability, protocol or compatibility exception; no new isolated test added.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -count=1 ./internal/server; GOCACHE=/tmp/kinosail-testing-go-cache go -C packages test -count=1 ./identitycore ./passkeys ./quickconnect"
     },
     {
       "file": "apps/subtitles/internal/server/remote_local_navigation_test.go",
@@ -10482,68 +10593,88 @@
       "line": 19,
       "test": "FuzzRemoteBoundaryParsers",
       "baseline_file_sha256": "e8340e17230394f5bff3ce99a1ac103b383a7be7d4fd2c0a409e6b1a46327cae",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Malformed attacker-controlled IP/range bytes must not crash app-bound parser calls. This fuzzer discards return values; it proves crash robustness only, not correct SSRF/range rejection.",
+      "production_owner": "app network.go:allowedOutboundIP; httpguard.ValidPublicRange; mediashares.ValidSingleByteRange",
+      "non_test_callers": "Server New registers actual authentication/settings/API/passkey/public login handlers; session/profile stores bind callbacks used by those handlers",
+      "remaining_proof": [
+        {
+          "kind": "app_callback_fuzzer_seed_run",
+          "reference": "apps/subtitles/internal/server/security_fuzz_test.go:FuzzRemoteBoundaryParsers"
+        }
+      ],
+      "coverage_gap": "Current populated apps/subtitles/e2e/happy-path.spec.ts exercises successful local Owner setup, passkey/password sign-in, fresh backup step-up and second Owner MFA. It does not inject persistence failure, session aging/revision, hostile origins/query tokens, limiter overflow, restart, sibling-cookie collision or malformed protocol. This test uses real app stores/httptest handlers or explicit app callbacks, not a started-process E2E. Fuzzer baseline runs seeds only; arbitrary mutation fuzz campaigns remain unrun.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retained concrete security, durability, protocol or compatibility exception; no new isolated test added.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -count=1 ./internal/server; GOCACHE=/tmp/kinosail-testing-go-cache go -C packages test -count=1 ./identitycore ./passkeys ./quickconnect"
     },
     {
       "file": "apps/subtitles/internal/server/security_fuzz_test.go",
       "line": 23,
       "test": "FuzzExactBrowserOrigin",
       "baseline_file_sha256": "e8340e17230394f5bff3ce99a1ac103b383a7be7d4fd2c0a409e6b1a46327cae",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Arbitrary Host/Origin values must not crash the app-bound browser-origin predicate. Return value is discarded, so this is crash robustness only; separate rejection matrices retain semantic security proof.",
+      "production_owner": "app security.go:unsafeCrossOrigin; identitycore/http.go",
+      "non_test_callers": "Server New registers actual authentication/settings/API/passkey/public login handlers; session/profile stores bind callbacks used by those handlers",
+      "remaining_proof": [
+        {
+          "kind": "app_callback_fuzzer_seed_run",
+          "reference": "apps/subtitles/internal/server/security_fuzz_test.go:FuzzExactBrowserOrigin"
+        }
+      ],
+      "coverage_gap": "Current populated apps/subtitles/e2e/happy-path.spec.ts exercises successful local Owner setup, passkey/password sign-in, fresh backup step-up and second Owner MFA. It does not inject persistence failure, session aging/revision, hostile origins/query tokens, limiter overflow, restart, sibling-cookie collision or malformed protocol. This test uses real app stores/httptest handlers or explicit app callbacks, not a started-process E2E. Fuzzer baseline runs seeds only; arbitrary mutation fuzz campaigns remain unrun.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retained concrete security, durability, protocol or compatibility exception; no new isolated test added.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -count=1 ./internal/server; GOCACHE=/tmp/kinosail-testing-go-cache go -C packages test -count=1 ./identitycore ./passkeys ./quickconnect"
     },
     {
       "file": "apps/subtitles/internal/server/security_fuzz_test.go",
       "line": 27,
       "test": "FuzzPersistedMediaShareState",
       "baseline_file_sha256": "e8340e17230394f5bff3ce99a1ac103b383a7be7d4fd2c0a409e6b1a46327cae",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "D",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Subtitles wrapper exactly replays pure shared JSON ValidState\u2192Prune\u2192ValidState invariant fuzzer, with identical seeds and no app callback. Player retains this shared invariant fuzzer; Subtitles composition is not exercised by the removed declaration.",
+      "production_owner": "packages/mediashares/state.go:ValidState,Prune; packages/servertest/security_fuzz_boundaries.go:PersistedMediaShareState",
+      "non_test_callers": "mediashares Store persistence/read/pruning; the fuzzer uses no app-owned profile/network/broker state",
+      "remaining_proof": [
+        {
+          "kind": "isolated_shared_invariant_fuzzer_hosted_by_player",
+          "reference": "apps/player/internal/server/security_fuzz_test.go:FuzzPersistedMediaShareState"
+        }
+      ],
+      "coverage_gap": "No genuine E2E covers arbitrary persisted JSON pruning invariant. Existing Player declaration retains exactly the same invariant and seed corpus; baseline executes seeds only. Mutation fuzz campaigns remain unrun. Other three Subtitles security fuzzers remain because they call app-owned network/origin/broker callbacks.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Low exact shared invariant replay removal; Player owner explicitly confirmed keeper during independent coordination.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -count=1 ./internal/server; GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/security_fuzz_test.go",
       "line": 31,
       "test": "FuzzRemoteAuthorizationStateMachine",
       "baseline_file_sha256": "e8340e17230394f5bff3ce99a1ac103b383a7be7d4fd2c0a409e6b1a46327cae",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "App broker/profile binding must never allow Owner or weak public approval and must never mint a session from a pending remote grant after revocation, across action sequences.",
+      "production_owner": "app quick_connect.go:application,newQuickConnect; profiles.go; quickconnect/application*.go",
+      "non_test_callers": "Server New registers actual authentication/settings/API/passkey/public login handlers; session/profile stores bind callbacks used by those handlers",
+      "remaining_proof": [
+        {
+          "kind": "app_callback_fuzzer_seed_run",
+          "reference": "apps/subtitles/internal/server/security_fuzz_test.go:FuzzRemoteAuthorizationStateMachine"
+        }
+      ],
+      "coverage_gap": "Current populated apps/subtitles/e2e/happy-path.spec.ts exercises successful local Owner setup, passkey/password sign-in, fresh backup step-up and second Owner MFA. It does not inject persistence failure, session aging/revision, hostile origins/query tokens, limiter overflow, restart, sibling-cookie collision or malformed protocol. This test uses real app stores/httptest handlers or explicit app callbacks, not a started-process E2E. Fuzzer baseline runs seeds only; arbitrary mutation fuzz campaigns remain unrun.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retained concrete security, durability, protocol or compatibility exception; no new isolated test added.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -count=1 ./internal/server; GOCACHE=/tmp/kinosail-testing-go-cache go -C packages test -count=1 ./identitycore ./passkeys ./quickconnect"
     },
     {
       "file": "apps/subtitles/internal/server/security_lifecycle_internal_test.go",
@@ -10601,51 +10732,66 @@
       "line": 14,
       "test": "TestHTTPSecurityContract",
       "baseline_file_sha256": "3b39863068ffde9501f05bdca13f960b49b81f259d15ad83c341c2c4e88beff1",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "App composition must enforce trusted proxy vs spoofed headers, host/port allowlist, exact browser Origin, automatic CSP/isolation/cache headers and2MiB body denial.10 fixture subcases retain hostile requests absent from normal browser navigation.",
+      "production_owner": "app server.go:New,security.go; configuration.Load; identitycore/proxy.go,http.go",
+      "non_test_callers": "Server New registers actual authentication/settings/API/passkey/public login handlers; session/profile stores bind callbacks used by those handlers",
+      "remaining_proof": [
+        {
+          "kind": "isolated_application_handler_or_policy",
+          "reference": "apps/subtitles/internal/server/security_test.go:TestHTTPSecurityContract"
+        }
+      ],
+      "coverage_gap": "Current populated apps/subtitles/e2e/happy-path.spec.ts exercises successful local Owner setup, passkey/password sign-in, fresh backup step-up and second Owner MFA. It does not inject persistence failure, session aging/revision, hostile origins/query tokens, limiter overflow, restart, sibling-cookie collision or malformed protocol. This test uses real app stores/httptest handlers or explicit app callbacks, not a started-process E2E. Fuzzer baseline runs seeds only; arbitrary mutation fuzz campaigns remain unrun.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retained concrete security, durability, protocol or compatibility exception; no new isolated test added.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -count=1 ./internal/server; GOCACHE=/tmp/kinosail-testing-go-cache go -C packages test -count=1 ./identitycore ./passkeys ./quickconnect"
     },
     {
       "file": "apps/subtitles/internal/server/security_test.go",
       "line": 20,
       "test": "TestSessionTokensAreNeverAcceptedInQueryStrings",
       "baseline_file_sha256": "3b39863068ffde9501f05bdca13f960b49b81f259d15ad83c341c2c4e88beff1",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Both app API and Jellyfin query credentials must be rejected even when token is valid; explicit X-Emby-Token must still authenticate.",
+      "production_owner": "app session_tokens.go:sessionToken; auth.go; jellyfin_auth.go; identitycore/session_http.go",
+      "non_test_callers": "Server New registers actual authentication/settings/API/passkey/public login handlers; session/profile stores bind callbacks used by those handlers",
+      "remaining_proof": [
+        {
+          "kind": "isolated_application_handler_or_policy",
+          "reference": "apps/subtitles/internal/server/security_test.go:TestSessionTokensAreNeverAcceptedInQueryStrings"
+        }
+      ],
+      "coverage_gap": "Current populated apps/subtitles/e2e/happy-path.spec.ts exercises successful local Owner setup, passkey/password sign-in, fresh backup step-up and second Owner MFA. It does not inject persistence failure, session aging/revision, hostile origins/query tokens, limiter overflow, restart, sibling-cookie collision or malformed protocol. This test uses real app stores/httptest handlers or explicit app callbacks, not a started-process E2E. Fuzzer baseline runs seeds only; arbitrary mutation fuzz campaigns remain unrun.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retained concrete security, durability, protocol or compatibility exception; no new isolated test added.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -count=1 ./internal/server; GOCACHE=/tmp/kinosail-testing-go-cache go -C packages test -count=1 ./identitycore ./passkeys ./quickconnect"
     },
     {
       "file": "apps/subtitles/internal/server/security_test.go",
       "line": 25,
       "test": "TestSameOriginChangesAreAcceptedWhenFetchSiteIsStale",
       "baseline_file_sha256": "3b39863068ffde9501f05bdca13f960b49b81f259d15ad83c341c2c4e88beff1",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Exact valid Origin must permit setup when Sec-Fetch-Site is stale cross-site; normal browser metadata does not prove this compatibility boundary.",
+      "production_owner": "app security.go; identitycore/http.go:UnsafeCrossOrigin",
+      "non_test_callers": "Server New registers actual authentication/settings/API/passkey/public login handlers; session/profile stores bind callbacks used by those handlers",
+      "remaining_proof": [
+        {
+          "kind": "isolated_application_handler_or_policy",
+          "reference": "apps/subtitles/internal/server/security_test.go:TestSameOriginChangesAreAcceptedWhenFetchSiteIsStale"
+        }
+      ],
+      "coverage_gap": "Current populated apps/subtitles/e2e/happy-path.spec.ts exercises successful local Owner setup, passkey/password sign-in, fresh backup step-up and second Owner MFA. It does not inject persistence failure, session aging/revision, hostile origins/query tokens, limiter overflow, restart, sibling-cookie collision or malformed protocol. This test uses real app stores/httptest handlers or explicit app callbacks, not a started-process E2E. Fuzzer baseline runs seeds only; arbitrary mutation fuzz campaigns remain unrun.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retained concrete security, durability, protocol or compatibility exception; no new isolated test added.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -count=1 ./internal/server; GOCACHE=/tmp/kinosail-testing-go-cache go -C packages test -count=1 ./identitycore ./passkeys ./quickconnect"
     },
     {
       "file": "apps/subtitles/internal/server/server_lifecycle_test.go",
@@ -10958,51 +11104,66 @@
       "line": 9,
       "test": "TestBrowserSessionCookieIsolatedFromSiblingApp",
       "baseline_file_sha256": "ef8ef9b97e311a53ec9b1af0335a35c62845b9f2f4056100c7716026760f069d",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "App login cookie must have its own name, Secure/HttpOnly/Strict/host-bound/persistent flags; logout must preserve sibling cookie and revoke copied own token; missing/wrong CSRF cannot mutate.",
+      "production_owner": "app server.go:New; auth_login.go; identitycore/session_cookie_migration.go; httpguard/session_cookie.go",
+      "non_test_callers": "Server New registers actual authentication/settings/API/passkey/public login handlers; session/profile stores bind callbacks used by those handlers",
+      "remaining_proof": [
+        {
+          "kind": "isolated_application_handler_or_policy",
+          "reference": "apps/subtitles/internal/server/session_cookie_isolation_test.go:TestBrowserSessionCookieIsolatedFromSiblingApp"
+        }
+      ],
+      "coverage_gap": "Current populated apps/subtitles/e2e/happy-path.spec.ts exercises successful local Owner setup, passkey/password sign-in, fresh backup step-up and second Owner MFA. It does not inject persistence failure, session aging/revision, hostile origins/query tokens, limiter overflow, restart, sibling-cookie collision or malformed protocol. This test uses real app stores/httptest handlers or explicit app callbacks, not a started-process E2E. Fuzzer baseline runs seeds only; arbitrary mutation fuzz campaigns remain unrun.",
+      "history": "c731f92be24df235fdd0c21bd55b9c4e6669b5e2 Isolate Player and Subtitles browser sign-in cookies",
+      "risk": "Retained concrete security, durability, protocol or compatibility exception; no new isolated test added.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -count=1 ./internal/server; GOCACHE=/tmp/kinosail-testing-go-cache go -C packages test -count=1 ./identitycore ./passkeys ./quickconnect"
     },
     {
       "file": "apps/subtitles/internal/server/session_cookie_isolation_test.go",
       "line": 15,
       "test": "TestPasskeyLoginCookiesIsolatedFromSiblingApp",
       "baseline_file_sha256": "ef8ef9b97e311a53ec9b1af0335a35c62845b9f2f4056100c7716026760f069d",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Real signed passkey login must use Subtitles ceremony/session cookies and preserve sibling ceremony state while expiring app/legacy state appropriately. E2E uses one app and does not simulate sibling cookies.",
+      "production_owner": "app passkeys.go:newPasskeyAuth; identitycore/session_cookie_migration.go; passkeys/profile_flow.go",
+      "non_test_callers": "Server New registers actual authentication/settings/API/passkey/public login handlers; session/profile stores bind callbacks used by those handlers",
+      "remaining_proof": [
+        {
+          "kind": "isolated_application_handler_or_policy",
+          "reference": "apps/subtitles/internal/server/session_cookie_isolation_test.go:TestPasskeyLoginCookiesIsolatedFromSiblingApp"
+        }
+      ],
+      "coverage_gap": "Current populated apps/subtitles/e2e/happy-path.spec.ts exercises successful local Owner setup, passkey/password sign-in, fresh backup step-up and second Owner MFA. It does not inject persistence failure, session aging/revision, hostile origins/query tokens, limiter overflow, restart, sibling-cookie collision or malformed protocol. This test uses real app stores/httptest handlers or explicit app callbacks, not a started-process E2E. Fuzzer baseline runs seeds only; arbitrary mutation fuzz campaigns remain unrun.",
+      "history": "c731f92be24df235fdd0c21bd55b9c4e6669b5e2 Isolate Player and Subtitles browser sign-in cookies",
+      "risk": "Retained concrete security, durability, protocol or compatibility exception; no new isolated test added.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -count=1 ./internal/server; GOCACHE=/tmp/kinosail-testing-go-cache go -C packages test -count=1 ./identitycore ./passkeys ./quickconnect"
     },
     {
       "file": "apps/subtitles/internal/server/session_cookie_isolation_test.go",
       "line": 21,
       "test": "TestLegacyCookieMigratesThroughValidatedAppSession",
       "baseline_file_sha256": "ef8ef9b97e311a53ec9b1af0335a35c62845b9f2f4056100c7716026760f069d",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "A validated legacy session must migrate without extending expiry/changing token; invalid/revoked selected app cookie must not fall back to otherwise valid legacy cookie.",
+      "production_owner": "app sessions.go:sessionModule; identitycore/session_cookie_migration.go",
+      "non_test_callers": "Server New registers actual authentication/settings/API/passkey/public login handlers; session/profile stores bind callbacks used by those handlers",
+      "remaining_proof": [
+        {
+          "kind": "isolated_application_handler_or_policy",
+          "reference": "apps/subtitles/internal/server/session_cookie_isolation_test.go:TestLegacyCookieMigratesThroughValidatedAppSession"
+        }
+      ],
+      "coverage_gap": "Current populated apps/subtitles/e2e/happy-path.spec.ts exercises successful local Owner setup, passkey/password sign-in, fresh backup step-up and second Owner MFA. It does not inject persistence failure, session aging/revision, hostile origins/query tokens, limiter overflow, restart, sibling-cookie collision or malformed protocol. This test uses real app stores/httptest handlers or explicit app callbacks, not a started-process E2E. Fuzzer baseline runs seeds only; arbitrary mutation fuzz campaigns remain unrun.",
+      "history": "c731f92be24df235fdd0c21bd55b9c4e6669b5e2 Isolate Player and Subtitles browser sign-in cookies",
+      "risk": "Retained concrete security, durability, protocol or compatibility exception; no new isolated test added.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -count=1 ./internal/server; GOCACHE=/tmp/kinosail-testing-go-cache go -C packages test -count=1 ./identitycore ./passkeys ./quickconnect"
     },
     {
       "file": "apps/subtitles/internal/server/session_security_boundary_test.go",
@@ -11128,221 +11289,310 @@
       "line": 15,
       "test": "TestCleanDeviceNameNormalizesBrowserAgentsAndBoundsOtherNames",
       "baseline_file_sha256": "5edda1c07bd4b1df25bb4dc8ba1ea3817b4a2384c0762e0f030146cf5566ae56",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "D",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Private cleanDeviceName delegates only to shared CleanDeviceName; canonical matrix has identical browser precedence, trim/empty defaults and80-byte bound. Retained named-device app test proves actual label/token/revocation wiring.",
+      "production_owner": "packages/identitycore/{redirects,session_http}.go; app auth_login.go var aliases/delegating safeLoginReturn; session_tokens.go cleanDeviceName; sessions.go cookie alias",
+      "non_test_callers": "App login/account/settings step-up, quickconnect.application device-name callback, and browser sign-in/out; deleted declaration itself has no app configuration/state seam",
+      "remaining_proof": [
+        {
+          "kind": "isolated_primary_owner",
+          "reference": "packages/identitycore/session_http_test.go:TestSessionNormalizationNamesAndCookies"
+        },
+        {
+          "kind": "isolated_application_handler",
+          "reference": "apps/subtitles/internal/server/passkeys_test.go:TestPasswordLoginOffersPasskeyWithConfiguredStateAndSafeReturn"
+        },
+        {
+          "kind": "isolated_application_handler",
+          "reference": "apps/subtitles/internal/server/session_cookie_isolation_test.go:TestBrowserSessionCookieIsolatedFromSiblingApp"
+        },
+        {
+          "kind": "genuine_populated_e2e",
+          "reference": "apps/subtitles/e2e/happy-path.spec.ts:backup step-up redirects and passkey return"
+        }
+      ],
+      "coverage_gap": "No E2E equivalence claimed for hostile-return full matrix, cookie flags or device-name normalization; those exact isolated canonical owner proofs remain, with app cookie/login and named-device seams retained. Backup step-up successful path is genuinely exercised by populated E2E.",
+      "history": "878dc2a63d62880e6d3a5aa395ce25dd40919539 Remove retired artifacts and unused code",
+      "risk": "Low shared-owner replay removal; no runtime or policy change.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -count=1 ./internal/server; GOCACHE=/tmp/kinosail-testing-go-cache go -C packages test -count=1 ./identitycore ./passkeys ./quickconnect"
     },
     {
       "file": "apps/subtitles/internal/server/sessions_internal_test.go",
       "line": 31,
       "test": "TestOutboundNetworkRejectsLinkLocalMetadataAddresses",
       "baseline_file_sha256": "5edda1c07bd4b1df25bb4dc8ba1ea3817b4a2384c0762e0f030146cf5566ae56",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "SSRF app callback must reject metadata/link-local/private/CGNAT/IPv4-mapped-private addresses; changing the adapter to integration-network policy would admit private targets while shared primary remains green.",
+      "production_owner": "identitycore/network.go; app network.go:allowedOutboundIP and hardenedClient",
+      "non_test_callers": "Server New registers actual authentication/settings/API/passkey/public login handlers; session/profile stores bind callbacks used by those handlers",
+      "remaining_proof": [
+        {
+          "kind": "isolated_application_handler_or_policy",
+          "reference": "apps/subtitles/internal/server/sessions_internal_test.go:TestOutboundNetworkRejectsLinkLocalMetadataAddresses"
+        }
+      ],
+      "coverage_gap": "Current populated apps/subtitles/e2e/happy-path.spec.ts exercises successful local Owner setup, passkey/password sign-in, fresh backup step-up and second Owner MFA. It does not inject persistence failure, session aging/revision, hostile origins/query tokens, limiter overflow, restart, sibling-cookie collision or malformed protocol. This test uses real app stores/httptest handlers or explicit app callbacks, not a started-process E2E. Fuzzer baseline runs seeds only; arbitrary mutation fuzz campaigns remain unrun.",
+      "history": "878dc2a63d62880e6d3a5aa395ce25dd40919539 Remove retired artifacts and unused code",
+      "risk": "Retained concrete security, durability, protocol or compatibility exception; no new isolated test added.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -count=1 ./internal/server; GOCACHE=/tmp/kinosail-testing-go-cache go -C packages test -count=1 ./identitycore ./passkeys ./quickconnect"
     },
     {
       "file": "apps/subtitles/internal/server/sessions_internal_test.go",
       "line": 42,
       "test": "TestPublicOutboundResolutionRejectsMixedAndEmptyAnswers",
       "baseline_file_sha256": "5edda1c07bd4b1df25bb4dc8ba1ea3817b4a2384c0762e0f030146cf5566ae56",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "DNS answers containing any loopback/private address or no addresses must fail closed through the app callback; public IPv4+IPv6 remains usable.",
+      "production_owner": "app network.go:allowedOutboundIP; identitycore/network.go:AllowedResolvedAddress",
+      "non_test_callers": "Server New registers actual authentication/settings/API/passkey/public login handlers; session/profile stores bind callbacks used by those handlers",
+      "remaining_proof": [
+        {
+          "kind": "isolated_application_handler_or_policy",
+          "reference": "apps/subtitles/internal/server/sessions_internal_test.go:TestPublicOutboundResolutionRejectsMixedAndEmptyAnswers"
+        }
+      ],
+      "coverage_gap": "Current populated apps/subtitles/e2e/happy-path.spec.ts exercises successful local Owner setup, passkey/password sign-in, fresh backup step-up and second Owner MFA. It does not inject persistence failure, session aging/revision, hostile origins/query tokens, limiter overflow, restart, sibling-cookie collision or malformed protocol. This test uses real app stores/httptest handlers or explicit app callbacks, not a started-process E2E. Fuzzer baseline runs seeds only; arbitrary mutation fuzz campaigns remain unrun.",
+      "history": "878dc2a63d62880e6d3a5aa395ce25dd40919539 Remove retired artifacts and unused code",
+      "risk": "Retained concrete security, durability, protocol or compatibility exception; no new isolated test added.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -count=1 ./internal/server; GOCACHE=/tmp/kinosail-testing-go-cache go -C packages test -count=1 ./identitycore ./passkeys ./quickconnect"
     },
     {
       "file": "apps/subtitles/internal/server/sessions_internal_test.go",
       "line": 47,
       "test": "TestBrowserSessionsHaveIdleAndAbsoluteTimeouts",
       "baseline_file_sha256": "5edda1c07bd4b1df25bb4dc8ba1ea3817b4a2384c0762e0f030146cf5566ae56",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "App session configuration must bound browser lifetime and reject a session with LastSeen older than the default idle timeout.",
+      "production_owner": "app sessions.go:sessionModule,createSessionKind,profile; identitycore/sessions*.go",
+      "non_test_callers": "Server New registers actual authentication/settings/API/passkey/public login handlers; session/profile stores bind callbacks used by those handlers",
+      "remaining_proof": [
+        {
+          "kind": "isolated_application_handler_or_policy",
+          "reference": "apps/subtitles/internal/server/sessions_internal_test.go:TestBrowserSessionsHaveIdleAndAbsoluteTimeouts"
+        }
+      ],
+      "coverage_gap": "Current populated apps/subtitles/e2e/happy-path.spec.ts exercises successful local Owner setup, passkey/password sign-in, fresh backup step-up and second Owner MFA. It does not inject persistence failure, session aging/revision, hostile origins/query tokens, limiter overflow, restart, sibling-cookie collision or malformed protocol. This test uses real app stores/httptest handlers or explicit app callbacks, not a started-process E2E. Fuzzer baseline runs seeds only; arbitrary mutation fuzz campaigns remain unrun.",
+      "history": "878dc2a63d62880e6d3a5aa395ce25dd40919539 Remove retired artifacts and unused code",
+      "risk": "Retained concrete security, durability, protocol or compatibility exception; no new isolated test added.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -count=1 ./internal/server; GOCACHE=/tmp/kinosail-testing-go-cache go -C packages test -count=1 ./identitycore ./passkeys ./quickconnect"
     },
     {
       "file": "apps/subtitles/internal/server/sessions_internal_test.go",
       "line": 71,
       "test": "TestBrowserSessionsUseCustomizedIdleAndAbsoluteTimeouts",
       "baseline_file_sha256": "5edda1c07bd4b1df25bb4dc8ba1ea3817b4a2384c0762e0f030146cf5566ae56",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Configured168-hour absolute/24-hour idle values must reach app session expiry, and expired sessions must disappear from active/device inventory.",
+      "production_owner": "app settings_sessions.go:setSessionTimeouts; sessions.go:sessionModule; identitycore/sessions*.go",
+      "non_test_callers": "Server New registers actual authentication/settings/API/passkey/public login handlers; session/profile stores bind callbacks used by those handlers",
+      "remaining_proof": [
+        {
+          "kind": "isolated_application_handler_or_policy",
+          "reference": "apps/subtitles/internal/server/sessions_internal_test.go:TestBrowserSessionsUseCustomizedIdleAndAbsoluteTimeouts"
+        }
+      ],
+      "coverage_gap": "Current populated apps/subtitles/e2e/happy-path.spec.ts exercises successful local Owner setup, passkey/password sign-in, fresh backup step-up and second Owner MFA. It does not inject persistence failure, session aging/revision, hostile origins/query tokens, limiter overflow, restart, sibling-cookie collision or malformed protocol. This test uses real app stores/httptest handlers or explicit app callbacks, not a started-process E2E. Fuzzer baseline runs seeds only; arbitrary mutation fuzz campaigns remain unrun.",
+      "history": "878dc2a63d62880e6d3a5aa395ce25dd40919539 Remove retired artifacts and unused code",
+      "risk": "Retained concrete security, durability, protocol or compatibility exception; no new isolated test added.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -count=1 ./internal/server; GOCACHE=/tmp/kinosail-testing-go-cache go -C packages test -count=1 ./identitycore ./passkeys ./quickconnect"
     },
     {
       "file": "apps/subtitles/internal/server/sessions_internal_test.go",
       "line": 103,
       "test": "TestSessionTimeoutValidationHasNoSideEffects",
       "baseline_file_sha256": "5edda1c07bd4b1df25bb4dc8ba1ea3817b4a2384c0762e0f030146cf5566ae56",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Invalid nonfinite, negative, out-of-order and out-of-bounds timeout pairs must not change stored timeout configuration. Actual browser journey does not submit those rejected values.",
+      "production_owner": "app settings_sessions.go:setSessionTimeouts,sessionTimeouts",
+      "non_test_callers": "Server New registers actual authentication/settings/API/passkey/public login handlers; session/profile stores bind callbacks used by those handlers",
+      "remaining_proof": [
+        {
+          "kind": "isolated_application_handler_or_policy",
+          "reference": "apps/subtitles/internal/server/sessions_internal_test.go:TestSessionTimeoutValidationHasNoSideEffects"
+        }
+      ],
+      "coverage_gap": "Current populated apps/subtitles/e2e/happy-path.spec.ts exercises successful local Owner setup, passkey/password sign-in, fresh backup step-up and second Owner MFA. It does not inject persistence failure, session aging/revision, hostile origins/query tokens, limiter overflow, restart, sibling-cookie collision or malformed protocol. This test uses real app stores/httptest handlers or explicit app callbacks, not a started-process E2E. Fuzzer baseline runs seeds only; arbitrary mutation fuzz campaigns remain unrun.",
+      "history": "878dc2a63d62880e6d3a5aa395ce25dd40919539 Remove retired artifacts and unused code",
+      "risk": "Retained concrete security, durability, protocol or compatibility exception; no new isolated test added.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -count=1 ./internal/server; GOCACHE=/tmp/kinosail-testing-go-cache go -C packages test -count=1 ./identitycore ./passkeys ./quickconnect"
     },
     {
       "file": "apps/subtitles/internal/server/sessions_internal_test.go",
       "line": 109,
       "test": "TestSensitiveActionsRequireRecentHumanAuthentication",
       "baseline_file_sha256": "5edda1c07bd4b1df25bb4dc8ba1ea3817b4a2384c0762e0f030146cf5566ae56",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "A human session must lose step-up eligibility after10 minutes; successful fresh browser step-up does not exercise stale StrongAt denial.",
+      "production_owner": "app sessions.go:recentlyAuthenticated,createStrongSession; identitycore/session_requests.go",
+      "non_test_callers": "Server New registers actual authentication/settings/API/passkey/public login handlers; session/profile stores bind callbacks used by those handlers",
+      "remaining_proof": [
+        {
+          "kind": "isolated_application_handler_or_policy",
+          "reference": "apps/subtitles/internal/server/sessions_internal_test.go:TestSensitiveActionsRequireRecentHumanAuthentication"
+        }
+      ],
+      "coverage_gap": "Current populated apps/subtitles/e2e/happy-path.spec.ts exercises successful local Owner setup, passkey/password sign-in, fresh backup step-up and second Owner MFA. It does not inject persistence failure, session aging/revision, hostile origins/query tokens, limiter overflow, restart, sibling-cookie collision or malformed protocol. This test uses real app stores/httptest handlers or explicit app callbacks, not a started-process E2E. Fuzzer baseline runs seeds only; arbitrary mutation fuzz campaigns remain unrun.",
+      "history": "878dc2a63d62880e6d3a5aa395ce25dd40919539 Remove retired artifacts and unused code",
+      "risk": "Retained concrete security, durability, protocol or compatibility exception; no new isolated test added.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -count=1 ./internal/server; GOCACHE=/tmp/kinosail-testing-go-cache go -C packages test -count=1 ./identitycore ./passkeys ./quickconnect"
     },
     {
       "file": "apps/subtitles/internal/server/sessions_internal_test.go",
       "line": 132,
       "test": "TestPublicSessionsAreStrongShortLivedAndBounded",
       "baseline_file_sha256": "5edda1c07bd4b1df25bb4dc8ba1ea3817b4a2384c0762e0f030146cf5566ae56",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "App public profile conversion must create strong public-channel sessions capped at8 hours and10 active sessions; cookie must retain the public lifetime and secure flags.",
+      "production_owner": "app sessions.go:sessionModule,publicSessionCookie; identitycore/sessions.go,session_http.go",
+      "non_test_callers": "Server New registers actual authentication/settings/API/passkey/public login handlers; session/profile stores bind callbacks used by those handlers",
+      "remaining_proof": [
+        {
+          "kind": "isolated_application_handler_or_policy",
+          "reference": "apps/subtitles/internal/server/sessions_internal_test.go:TestPublicSessionsAreStrongShortLivedAndBounded"
+        }
+      ],
+      "coverage_gap": "Current populated apps/subtitles/e2e/happy-path.spec.ts exercises successful local Owner setup, passkey/password sign-in, fresh backup step-up and second Owner MFA. It does not inject persistence failure, session aging/revision, hostile origins/query tokens, limiter overflow, restart, sibling-cookie collision or malformed protocol. This test uses real app stores/httptest handlers or explicit app callbacks, not a started-process E2E. Fuzzer baseline runs seeds only; arbitrary mutation fuzz campaigns remain unrun.",
+      "history": "878dc2a63d62880e6d3a5aa395ce25dd40919539 Remove retired artifacts and unused code",
+      "risk": "Retained concrete security, durability, protocol or compatibility exception; no new isolated test added.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -count=1 ./internal/server; GOCACHE=/tmp/kinosail-testing-go-cache go -C packages test -count=1 ./identitycore ./passkeys ./quickconnect"
     },
     {
       "file": "apps/subtitles/internal/server/sessions_internal_test.go",
       "line": 158,
       "test": "TestBrowserSessionCookiesAreAlwaysHostBoundAndSecure",
       "baseline_file_sha256": "5edda1c07bd4b1df25bb4dc8ba1ea3817b4a2384c0762e0f030146cf5566ae56",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "D",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Pure sessionCookie var alias repeats the canonical secure host-bound cookie flags; real app cookie-isolation test retains own-cookie flags and login/logout wiring.",
+      "production_owner": "packages/identitycore/{redirects,session_http}.go; app auth_login.go var aliases/delegating safeLoginReturn; session_tokens.go cleanDeviceName; sessions.go cookie alias",
+      "non_test_callers": "App login/account/settings step-up, quickconnect.application device-name callback, and browser sign-in/out; deleted declaration itself has no app configuration/state seam",
+      "remaining_proof": [
+        {
+          "kind": "isolated_primary_owner",
+          "reference": "packages/identitycore/session_http_test.go:TestSessionNormalizationNamesAndCookies"
+        },
+        {
+          "kind": "isolated_application_handler",
+          "reference": "apps/subtitles/internal/server/passkeys_test.go:TestPasswordLoginOffersPasskeyWithConfiguredStateAndSafeReturn"
+        },
+        {
+          "kind": "isolated_application_handler",
+          "reference": "apps/subtitles/internal/server/session_cookie_isolation_test.go:TestBrowserSessionCookieIsolatedFromSiblingApp"
+        },
+        {
+          "kind": "genuine_populated_e2e",
+          "reference": "apps/subtitles/e2e/happy-path.spec.ts:backup step-up redirects and passkey return"
+        }
+      ],
+      "coverage_gap": "No E2E equivalence claimed for hostile-return full matrix, cookie flags or device-name normalization; those exact isolated canonical owner proofs remain, with app cookie/login and named-device seams retained. Backup step-up successful path is genuinely exercised by populated E2E.",
+      "history": "878dc2a63d62880e6d3a5aa395ce25dd40919539 Remove retired artifacts and unused code",
+      "risk": "Low shared-owner replay removal; no runtime or policy change.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -count=1 ./internal/server; GOCACHE=/tmp/kinosail-testing-go-cache go -C packages test -count=1 ./identitycore ./passkeys ./quickconnect"
     },
     {
       "file": "apps/subtitles/internal/server/sessions_internal_test.go",
       "line": 165,
       "test": "TestPublicSessionCannotSurviveProfilePolicyRevision",
       "baseline_file_sha256": "5edda1c07bd4b1df25bb4dc8ba1ea3817b4a2384c0762e0f030146cf5566ae56",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Changing app viewer policy must invalidate a revision-bound public cookie rather than keep obsolete access.",
+      "production_owner": "app profiles_access.go:setProfile; sessions.go:sessionProfiles; identitycore/session_requests.go",
+      "non_test_callers": "Server New registers actual authentication/settings/API/passkey/public login handlers; session/profile stores bind callbacks used by those handlers",
+      "remaining_proof": [
+        {
+          "kind": "isolated_application_handler_or_policy",
+          "reference": "apps/subtitles/internal/server/sessions_internal_test.go:TestPublicSessionCannotSurviveProfilePolicyRevision"
+        }
+      ],
+      "coverage_gap": "Current populated apps/subtitles/e2e/happy-path.spec.ts exercises successful local Owner setup, passkey/password sign-in, fresh backup step-up and second Owner MFA. It does not inject persistence failure, session aging/revision, hostile origins/query tokens, limiter overflow, restart, sibling-cookie collision or malformed protocol. This test uses real app stores/httptest handlers or explicit app callbacks, not a started-process E2E. Fuzzer baseline runs seeds only; arbitrary mutation fuzz campaigns remain unrun.",
+      "history": "878dc2a63d62880e6d3a5aa395ce25dd40919539 Remove retired artifacts and unused code",
+      "risk": "Retained concrete security, durability, protocol or compatibility exception; no new isolated test added.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -count=1 ./internal/server; GOCACHE=/tmp/kinosail-testing-go-cache go -C packages test -count=1 ./identitycore ./passkeys ./quickconnect"
     },
     {
       "file": "apps/subtitles/internal/server/sessions_internal_test.go",
       "line": 187,
       "test": "TestSessionCreationRejectsInactiveAndInvalidPublicProfiles",
       "baseline_file_sha256": "5edda1c07bd4b1df25bb4dc8ba1ea3817b4a2384c0762e0f030146cf5566ae56",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Disabled/deleted/local-only/unsecured/Owner profiles must not receive public sessions, and denial must leave session state unchanged; disabled local session creation also denied.",
+      "production_owner": "app sessions.go:sessionProfiles; identitycore/session_requests.go",
+      "non_test_callers": "Server New registers actual authentication/settings/API/passkey/public login handlers; session/profile stores bind callbacks used by those handlers",
+      "remaining_proof": [
+        {
+          "kind": "isolated_application_handler_or_policy",
+          "reference": "apps/subtitles/internal/server/sessions_internal_test.go:TestSessionCreationRejectsInactiveAndInvalidPublicProfiles"
+        }
+      ],
+      "coverage_gap": "Current populated apps/subtitles/e2e/happy-path.spec.ts exercises successful local Owner setup, passkey/password sign-in, fresh backup step-up and second Owner MFA. It does not inject persistence failure, session aging/revision, hostile origins/query tokens, limiter overflow, restart, sibling-cookie collision or malformed protocol. This test uses real app stores/httptest handlers or explicit app callbacks, not a started-process E2E. Fuzzer baseline runs seeds only; arbitrary mutation fuzz campaigns remain unrun.",
+      "history": "878dc2a63d62880e6d3a5aa395ce25dd40919539 Remove retired artifacts and unused code",
+      "risk": "Retained concrete security, durability, protocol or compatibility exception; no new isolated test added.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -count=1 ./internal/server; GOCACHE=/tmp/kinosail-testing-go-cache go -C packages test -count=1 ./identitycore ./passkeys ./quickconnect"
     },
     {
       "file": "apps/subtitles/internal/server/sessions_internal_test.go",
       "line": 211,
       "test": "TestProfilePolicyChangeDoesNotPersistBeforeSessionRevocation",
       "baseline_file_sha256": "5edda1c07bd4b1df25bb4dc8ba1ea3817b4a2384c0762e0f030146cf5566ae56",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Injected sessions.json persistence failure must prevent policy success, revision mutation, and in-memory revocation; browser normal storage cannot exercise this atomic security failure.",
+      "production_owner": "app profiles_access.go:setProfile; profiles_storage.go:saveRelated; identitycore/profile_store.go",
+      "non_test_callers": "Server New registers actual authentication/settings/API/passkey/public login handlers; session/profile stores bind callbacks used by those handlers",
+      "remaining_proof": [
+        {
+          "kind": "isolated_application_handler_or_policy",
+          "reference": "apps/subtitles/internal/server/sessions_internal_test.go:TestProfilePolicyChangeDoesNotPersistBeforeSessionRevocation"
+        }
+      ],
+      "coverage_gap": "Current populated apps/subtitles/e2e/happy-path.spec.ts exercises successful local Owner setup, passkey/password sign-in, fresh backup step-up and second Owner MFA. It does not inject persistence failure, session aging/revision, hostile origins/query tokens, limiter overflow, restart, sibling-cookie collision or malformed protocol. This test uses real app stores/httptest handlers or explicit app callbacks, not a started-process E2E. Fuzzer baseline runs seeds only; arbitrary mutation fuzz campaigns remain unrun.",
+      "history": "878dc2a63d62880e6d3a5aa395ce25dd40919539 Remove retired artifacts and unused code",
+      "risk": "Retained concrete security, durability, protocol or compatibility exception; no new isolated test added.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -count=1 ./internal/server; GOCACHE=/tmp/kinosail-testing-go-cache go -C packages test -count=1 ./identitycore ./passkeys ./quickconnect"
     },
     {
       "file": "apps/subtitles/internal/server/sessions_internal_test.go",
       "line": 240,
       "test": "TestFactorChangesRevokePublicSessions",
       "baseline_file_sha256": "5edda1c07bd4b1df25bb4dc8ba1ea3817b4a2384c0762e0f030146cf5566ae56",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Enabling/disabling MFA must increment app profile revision and revoke public sessions while preserving local sessions.",
+      "production_owner": "app profiles_mfa.go; profiles_storage.go:saveRelated; identitycore/factor_transaction.go",
+      "non_test_callers": "Server New registers actual authentication/settings/API/passkey/public login handlers; session/profile stores bind callbacks used by those handlers",
+      "remaining_proof": [
+        {
+          "kind": "isolated_application_handler_or_policy",
+          "reference": "apps/subtitles/internal/server/sessions_internal_test.go:TestFactorChangesRevokePublicSessions"
+        }
+      ],
+      "coverage_gap": "Current populated apps/subtitles/e2e/happy-path.spec.ts exercises successful local Owner setup, passkey/password sign-in, fresh backup step-up and second Owner MFA. It does not inject persistence failure, session aging/revision, hostile origins/query tokens, limiter overflow, restart, sibling-cookie collision or malformed protocol. This test uses real app stores/httptest handlers or explicit app callbacks, not a started-process E2E. Fuzzer baseline runs seeds only; arbitrary mutation fuzz campaigns remain unrun.",
+      "history": "878dc2a63d62880e6d3a5aa395ce25dd40919539 Remove retired artifacts and unused code",
+      "risk": "Retained concrete security, durability, protocol or compatibility exception; no new isolated test added.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -count=1 ./internal/server; GOCACHE=/tmp/kinosail-testing-go-cache go -C packages test -count=1 ./identitycore ./passkeys ./quickconnect"
     },
     {
       "file": "apps/subtitles/internal/server/sessions_public_playback_test.go",
