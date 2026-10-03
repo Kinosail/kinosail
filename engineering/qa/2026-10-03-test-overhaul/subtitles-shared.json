@@ -16216,7 +16216,8 @@
       "supplemental_reviewer": "frontend_native",
       "fuzz_seed_events": [],
       "failure_analysis_before_edit": "engineering/qa/2026-10-03-test-overhaul/subtitles-pipeline-failure-analysis.md",
-      "repair_status": "analysis recorded; existing declaration remains unchanged pending repair/validation"
+      "repair_status": "Repaired existing declaration: canonical en and admitted page metadata, positive valid candidate before each rejection, valid50 positive/51 negative. Validation pending.",
+      "failure_analysis_commit": "02d0627"
     },
     {
       "file": "apps/subtitles/internal/server/subsource_provider_internal_test.go",
@@ -19485,7 +19486,9 @@
       "supplemental_reviewer": "frontend_native",
       "fuzz_seed_events": [],
       "failure_analysis_before_edit": "engineering/qa/2026-10-03-test-overhaul/subtitles-pipeline-failure-analysis.md",
-      "repair_status": "analysis recorded; existing declaration remains unchanged pending repair/validation"
+      "repair_status": "Renamed existing declaration to actual extraction coverage; competing provider priority remains unproven. Validation pending.",
+      "final_test": "TestSubtitleAppExtractsPreferredEmbeddedText",
+      "failure_analysis_commit": "02d0627"
     },
     {
       "file": "apps/subtitles/internal/server/subtitle_embedded_test.go",
@@ -19837,7 +19840,8 @@
       "supplemental_reviewer": "frontend_native",
       "fuzz_seed_events": [],
       "failure_analysis_before_edit": "engineering/qa/2026-10-03-test-overhaul/subtitles-pipeline-failure-analysis.md",
-      "repair_status": "analysis recorded; existing declaration remains unchanged pending repair/validation"
+      "repair_status": "Repaired existing declaration: exact spoken URL and both repeated dialogue texts asserted in addition to count/duplicate boundary. Validation pending.",
+      "failure_analysis_commit": "02d0627"
     },
     {
       "file": "apps/subtitles/internal/server/subtitle_excellence_internal_test.go",
@@ -22494,7 +22498,9 @@
       "supplemental_reviewer": "frontend_native",
       "fuzz_seed_events": [],
       "failure_analysis_before_edit": "engineering/qa/2026-10-03-test-overhaul/subtitles-pipeline-failure-analysis.md",
-      "repair_status": "analysis recorded; existing declaration remains unchanged pending repair/validation"
+      "repair_status": "Renamed existing declaration to actual source projection; exact explanation remains gap; original export proven separately. Validation pending.",
+      "final_test": "TestSubtitleReviewProjectsMatchingHistorySources",
+      "failure_analysis_commit": "02d0627"
     },
     {
       "file": "apps/subtitles/internal/server/subtitle_review_operations_test.go",
@@ -23269,7 +23275,8 @@
       "supplemental_reviewer": "frontend_native",
       "fuzz_seed_events": [],
       "failure_analysis_before_edit": "engineering/qa/2026-10-03-test-overhaul/subtitles-pipeline-failure-analysis.md",
-      "repair_status": "analysis recorded; existing declaration remains unchanged pending repair/validation"
+      "repair_status": "Repaired existing declaration: real synthetic seven-second correction control, exact errSubtitleTimingMismatch on Preserve, aligned bytes/evidence accepted unchanged. Validation pending.",
+      "failure_analysis_commit": "02d0627"
     },
     {
       "file": "apps/subtitles/internal/server/subtitle_sync_behavior_internal_test.go",
