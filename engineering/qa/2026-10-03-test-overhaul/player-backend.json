@@ -6239,11 +6239,11 @@
       "end_line": 40,
       "sha256": "9ac7c5b78c213632826d703164f6bf80a2180b4916a60321b7e4eb3b6633329c",
       "path": "apps/player/internal/configuration/oidc_validation_internal_test.go",
-      "decision": "D",
+      "decision": "R",
       "review_status": "semantic_review_complete",
-      "reason": "Thin private wrapper replays shared validation.ValidRemoteToken length/punctuation; shared primary-owner grammar covers min/max, bad Unicode, punctuation and exact boundary values more completely.",
-      "category": "nonserver_boundary_reviewed_by_tooling",
-      "credible_failure": "Thin private wrapper replays shared validation.ValidRemoteToken length/punctuation; shared primary-owner grammar covers min/max, bad Unicode, punctuation and exact boundary values more completely.",
+      "reason": "Independent reviewer found the colon rejection case missing from the canonical token matrix; preserving it catches accidental ASCII 0..z acceptance.",
+      "category": "security_boundary_unique_negative_control",
+      "credible_failure": "A permissive ASCII range accepts colon in an otherwise valid remote credential. The existing shared matrix does not independently exercise colon.",
       "production_owner": [
         "apps/player/internal/configuration/remote.go:validRemoteToken; packages/validation/validation.go:ValidRemoteToken"
       ],
@@ -6255,19 +6255,19 @@
       "remaining_proof": [
         "packages/validation/validation_test.go:TestRemoteTokenValidation; Player TestSharedConfigurationContract/SecureRemoteAccessConfigurationIsCompleteAndStrict"
       ],
-      "coverage_limit": "Keep actual Load remote configuration/redaction contract and shared token matrix. No live DNS provider E2E claimed.",
+      "coverage_limit": "Retained colon grammar case. Browser journeys do not exercise invalid remote-provider credentials; canonical tests are complementary, not equivalent.",
       "history": [
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
-      "production_or_support_deletion_unlocked": "None; removes only this audited existing test declaration. Shared primary-owner and real CLI process keepers remain.",
-      "risk": "No independent important assertion lost; remaining gap explicitly stated.",
+      "production_or_support_deletion_unlocked": "None; retain original declaration.",
+      "risk": "Deletion would remove a unique punctuation security case.",
       "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./cmd/kinosail ./internal/backup ./internal/configuration ./internal/database",
       "baseline_result": "pass (parent exact-base JSON event; no new execution by this read-only reviewer)",
       "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
       "reviewer": "tooling owner after root read-only scope transfer",
-      "removal_status": "implemented_in_tooling_owner_checkout_after_parent_transfer",
-      "review_provenance": "Read-only semantic audit by /root/tooling; evidence commit d9ac360ff6fbb3da46a08fbb3919c1dedf7ee071, subsequent implementation owned by tooling. No server rows overwritten.",
-      "implementation_status": "Transferred source edit to tooling owner; integration pending in root."
+      "removal_status": "restored_exact_baseline_by_tooling_after_independent_review",
+      "review_provenance": "Read-only semantic audit by /root/tooling; evidence commit d9ac360ff6fbb3da46a08fbb3919c1dedf7ee071, subsequent implementation owned by tooling. No server rows overwritten.; independent frontend reviewer identified colon gap; tooling restoration 4c92c2354, root integration31f405ca3.",
+      "implementation_status": "Root integrated restoration 31f405ca3 from tooling 4c92c2354; child does not edit transferred nonserver source."
     },
     {
       "name": "TestSAMLMetadataConfigurationRequiresTrustedBoundedURL",
@@ -7291,22 +7291,36 @@
       "sha256": "c3d34ba27b1786193076d87d5073ab1aeaee7bcd83ec5573b0a28b70d09d7315",
       "path": "apps/player/internal/server/api_keys_internal_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "Actual Player API-key resolution accepts an expired bearer key or fails to record LastUsed; creation omits an expiry bound.",
+      "category": "important_boundary_retained",
+      "credible_failure": "Actual Player API-key resolution accepts an expired bearer key or fails to record LastUsed; creation omits an expiry bound.",
+      "production_owner": [
+        "apps/player/internal/server/api_keys.go:createAPIKey/commitAPIKey",
+        "apps/player/internal/server/profiles_token.go:profile/refreshAPIKey/recordTokenUse",
+        "packages/identitycore/api_keys.go:IssueAPIKey"
+      ],
+      "non_test_callers": [
+        "API auth middleware calls profile; Owner key creation uses createAPIKey then real app persistence."
+      ],
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_app_boundary",
+          "path": "apps/player/internal/server/api_keys_internal_test.go",
+          "scenario": "TestAPIKeysExpireAndTrackUse"
+        }
+      ],
+      "coverage_limit": "Genuine automation/HA happy paths do not inject expired key metadata. Issuance ceiling is90days while production currently issues30days; test does not enforce exact30days or write-failure rollback.",
       "history": [
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
-      "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "production_or_support_deletion_unlocked": "None; retained existing regression guard. No isolated tests added.",
+      "risk": "Important security or concurrency failure is not covered by the existing genuine E2E input.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./internal/server",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "review_provenance": "Player owner read full test, participating production functions/callbacks, relevant shared owners/callers, recorded history and populated browser journeys; no child Go/E2E execution.",
+      "history_interpretation": "Initial committed regression guard; later recorded history preserves this observable boundary. Sessions878dc2a63 only replaced public-session forwarding calls with sessionModule().CreateStrongPublic; no assertion change."
     },
     {
       "name": "TestNumericTitleJumpIsSharedByAPIAndWeb",
@@ -9074,22 +9088,40 @@
       "sha256": "f5a951ed9cc9d7e0a918c669feb1577e149851594cbc3b9022db3f047ec150cb",
       "path": "apps/player/internal/server/auth_content_rating_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "Actual app route wiring bypasses rating visibility: a family Viewer can discover/watch/read media or HLS for an R-rated item after Owner permission update.",
+      "category": "important_boundary_retained",
+      "credible_failure": "Actual app route wiring bypasses rating visibility: a family Viewer can discover/watch/read media or HLS for an R-rated item after Owner permission update.",
+      "production_owner": [
+        "apps/player/internal/server/server.go:newApplication",
+        "apps/player/internal/server/access.go:visibleLibrary/visibleItem",
+        "apps/player/internal/server/profiles_http.go:setViewerPermissions",
+        "apps/player/internal/server/player.go:watch",
+        "apps/player/internal/server/files.go:serveFile",
+        "packages/identitycore/library_access.go",
+        "packages/library/access.go:Policy/Allows"
+      ],
+      "non_test_callers": [
+        "Authenticated home, watch, media and HLS routes use currentViewer and the same app visibility policy."
+      ],
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_app_boundary",
+          "path": "apps/player/internal/server/auth_content_rating_test.go",
+          "scenario": "TestViewerContentRatingAppliesToBrowseAndMediaRoutes"
+        }
+      ],
+      "coverage_limit": "Existing real browser playback uses Owner fixtures and does not try restricted Viewer direct routes. This handler integration fixture uses invalid media bytes, so it proves access denial, not decoded playback.",
       "history": [
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
-      "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "production_or_support_deletion_unlocked": "None; retained existing regression guard. No isolated tests added.",
+      "risk": "Important app boundary failure is not covered by the existing genuine E2E input.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./internal/server",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "review_provenance": "Player owner read full test, participating production functions/callbacks, relevant shared owners/callers, recorded history and populated browser journeys; no child Go/E2E execution.",
+      "history_interpretation": "Initial committed regression guard; later recorded history preserves this observable boundary. Sessions878dc2a63 only replaced public-session forwarding calls with sessionModule().CreateStrongPublic; no assertion change."
     },
     {
       "name": "TestEveryProtectedRouteEnforcesBrowserSessionRolesAndRevocation",
@@ -9601,22 +9633,36 @@
       "sha256": "706ffc31f49c5d77d37a1e94a01cdf7402495d116bae8bbe6509f261147edc4d",
       "path": "apps/player/internal/server/auth_stepup_internal_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "Actual password login switches to weak SignIn or loses the returned cookie binding, so fresh step-up authentication fails the sensitive-action recent-auth predicate.",
+      "category": "important_boundary_retained",
+      "credible_failure": "Actual password login switches to weak SignIn or loses the returned cookie binding, so fresh step-up authentication fails the sensitive-action recent-auth predicate.",
+      "production_owner": [
+        "apps/player/internal/server/auth_login.go:login",
+        "apps/player/internal/server/sessions.go:signInStrong/recentlyAuthenticated",
+        "packages/identitycore/session_requests.go"
+      ],
+      "non_test_callers": [
+        "POST /login binds auth.login; Owner/MFA/passkey handlers consume recent authentication."
+      ],
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_app_boundary",
+          "path": "apps/player/internal/server/auth_stepup_internal_test.go",
+          "scenario": "TestPasswordLoginCreatesRecentAuthentication"
+        }
+      ],
+      "coverage_limit": "Genuine first-install/login journeys provide complementary happy-path flow coverage; this app handler checks recent-auth state directly. No stale-auth deadline or MFA branch is asserted here.",
       "history": [
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
-      "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "production_or_support_deletion_unlocked": "None; retained existing regression guard. No isolated tests added.",
+      "risk": "Important security or concurrency failure is not covered by the existing genuine E2E input.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./internal/server",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "review_provenance": "Player owner read full test, participating production functions/callbacks, relevant shared owners/callers, recorded history and populated browser journeys; no child Go/E2E execution.",
+      "history_interpretation": "Initial committed regression guard; later recorded history preserves this observable boundary. Sessions878dc2a63 only replaced public-session forwarding calls with sessionModule().CreateStrongPublic; no assertion change."
     },
     {
       "name": "TestOwnerSetupCreatesRecentAuthentication",
@@ -9625,22 +9671,37 @@
       "sha256": "bacdc3161ea06c2d2dd8282d9c7fe337a130a9f4f9bd8e84e8a09bd20ac141a7",
       "path": "apps/player/internal/server/auth_stepup_internal_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "First-owner setup creates a weak session or the issued cookie cannot bind recent human authentication for subsequent onboarding operations.",
+      "category": "important_boundary_retained",
+      "credible_failure": "First-owner setup creates a weak session or the issued cookie cannot bind recent human authentication for subsequent onboarding operations.",
+      "production_owner": [
+        "apps/player/internal/server/auth_login.go:setup",
+        "apps/player/internal/server/auth_setup.go:createFirstOwner/commitFirstOwner",
+        "apps/player/internal/server/auth_state.go:persistSettingsAnd",
+        "apps/player/internal/server/sessions.go:signInStrong/recentlyAuthenticated"
+      ],
+      "non_test_callers": [
+        "POST /setup creates first Owner; trusted-HTTPS onboarding consumes recent-auth state."
+      ],
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_app_boundary",
+          "path": "apps/player/internal/server/auth_stepup_internal_test.go",
+          "scenario": "TestOwnerSetupCreatesRecentAuthentication"
+        }
+      ],
+      "coverage_limit": "Fresh-install E2E covers a longer MFA/setup flow; this fixture specifically uses setup without TOTP and tests the issued-cookie recent-auth predicate. Persistence failure and stale sessions are protected elsewhere.",
       "history": [
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
-      "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "production_or_support_deletion_unlocked": "None; retained existing regression guard. No isolated tests added.",
+      "risk": "Important security or concurrency failure is not covered by the existing genuine E2E input.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./internal/server",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "review_provenance": "Player owner read full test, participating production functions/callbacks, relevant shared owners/callers, recorded history and populated browser journeys; no child Go/E2E execution.",
+      "history_interpretation": "Initial committed regression guard; later recorded history preserves this observable boundary. Sessions878dc2a63 only replaced public-session forwarding calls with sessionModule().CreateStrongPublic; no assertion change."
     },
     {
       "name": "TestNewInstallationCreatesOwnerProfile",
@@ -22204,23 +22265,40 @@
       "end_line": 32,
       "sha256": "ab8e8996dce82bc2502ff8272df4e4a5436ef1d757f40e14837aa2232503bdc2",
       "path": "apps/player/internal/server/rate_limit_test.go",
-      "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "decision": "F",
+      "review_status": "semantic_review_complete",
+      "reason": "Credential success fails to reset the exhausted normalized account counter, locking out subsequent valid logins even from a different address.",
+      "category": "important_boundary_retained_with_assertion_limit",
+      "credible_failure": "Credential success fails to reset the exhausted normalized account counter, locking out subsequent valid logins even from a different address.",
+      "production_owner": [
+        "apps/player/internal/server/auth_login.go:allowCredentialLogin/credentialLoginSucceeded",
+        "apps/player/internal/server/tripwire.go:publicRequestLimits",
+        "apps/player/internal/server/security.go:Remote/publicInternetRequest/security assembly",
+        "packages/httpguard/public_http.go:LimitPublicRequests",
+        "packages/httpguard/public.go:PublicCapacity",
+        "packages/httpguard/limiter.go"
+      ],
+      "non_test_callers": [
+        "Password web/API login paths call allowCredentialLogin and credentialLoginSucceeded."
+      ],
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_app_boundary",
+          "path": "apps/player/internal/server/rate_limit_test.go",
+          "scenario": "TestCredentialLoginSuccessResetsOnlyThatAccount"
+        }
+      ],
+      "coverage_limit": "Genuine browser sign-in does not first exhaust the ten-attempt account limiter. Name overpromises account isolation: no second exhausted account or exhausted IP control exists, so the test does not prove other counters remain intact. Keep observable account reset without adding tests.",
       "history": [
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
-      "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "production_or_support_deletion_unlocked": "None; retained existing regression guard. No isolated tests added.",
+      "risk": "Important security or concurrency failure is not covered by the existing genuine E2E input.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./internal/server",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "review_provenance": "Player owner read full test, participating production functions/callbacks, relevant shared owners/callers, recorded history and populated browser journeys; no child Go/E2E execution.",
+      "history_interpretation": "Initial committed regression guard; later recorded history preserves this observable boundary. Sessions878dc2a63 only replaced public-session forwarding calls with sessionModule().CreateStrongPublic; no assertion change."
     },
     {
       "name": "TestPublicRequestsHavePerSourceConcurrencyBoundWithoutChangingLAN",
@@ -22228,23 +22306,40 @@
       "end_line": 77,
       "sha256": "f458f79ccad814746951b1f2eafa50ceed03d909fbc5d4185ff2e300e08d5e1c",
       "path": "apps/player/internal/server/rate_limit_test.go",
-      "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "decision": "F",
+      "review_status": "semantic_review_complete",
+      "reason": "Seventeenth concurrent request from the same normalized public source enters the application instead of receiving503 and Retry-After1.",
+      "category": "important_boundary_retained_with_assertion_limit",
+      "credible_failure": "Seventeenth concurrent request from the same normalized public source enters the application instead of receiving503 and Retry-After1.",
+      "production_owner": [
+        "apps/player/internal/server/auth_login.go:allowCredentialLogin/credentialLoginSucceeded",
+        "apps/player/internal/server/tripwire.go:publicRequestLimits",
+        "apps/player/internal/server/security.go:Remote/publicInternetRequest/security assembly",
+        "packages/httpguard/public_http.go:LimitPublicRequests",
+        "packages/httpguard/public.go:PublicCapacity",
+        "packages/httpguard/limiter.go"
+      ],
+      "non_test_callers": [
+        "Server security assembly wraps handlers in publicRequestLimits; Remote marks public context."
+      ],
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_app_boundary",
+          "path": "apps/player/internal/server/rate_limit_test.go",
+          "scenario": "TestPublicRequestsHavePerSourceConcurrencyBoundWithoutChangingLAN"
+        }
+      ],
+      "coverage_limit": "Existing genuine E2E uses ordinary sequential requests and does not force16 in-flight requests. Public concurrent bound is actually exercised. LAN requests run sequentially, so they do not independently prove absence of a LAN concurrency bound; source-prefix/global limits and post-release capacity recovery are not asserted.",
       "history": [
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
-      "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "production_or_support_deletion_unlocked": "None; retained existing regression guard. No isolated tests added.",
+      "risk": "Important security or concurrency failure is not covered by the existing genuine E2E input.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./internal/server",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "review_provenance": "Player owner read full test, participating production functions/callbacks, relevant shared owners/callers, recorded history and populated browser journeys; no child Go/E2E execution.",
+      "history_interpretation": "Initial committed regression guard; later recorded history preserves this observable boundary. Sessions878dc2a63 only replaced public-session forwarding calls with sessionModule().CreateStrongPublic; no assertion change."
     },
     {
       "name": "TestPublicGetAndHeadRejectRequestBodiesBeforeHandlerSideEffects",
@@ -22253,22 +22348,39 @@
       "sha256": "b46b3c32e7483711a29277267f0c710eeeca9f1dc83281233a7ac36d46733cbf",
       "path": "apps/player/internal/server/rate_limit_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "Public GET/HEAD with a nonempty body reaches the app handler or receives a success response, permitting ambiguous request semantics and side effects.",
+      "category": "important_boundary_retained",
+      "credible_failure": "Public GET/HEAD with a nonempty body reaches the app handler or receives a success response, permitting ambiguous request semantics and side effects.",
+      "production_owner": [
+        "apps/player/internal/server/auth_login.go:allowCredentialLogin/credentialLoginSucceeded",
+        "apps/player/internal/server/tripwire.go:publicRequestLimits",
+        "apps/player/internal/server/security.go:Remote/publicInternetRequest/security assembly",
+        "packages/httpguard/public_http.go:LimitPublicRequests",
+        "packages/httpguard/public.go:PublicCapacity",
+        "packages/httpguard/limiter.go"
+      ],
+      "non_test_callers": [
+        "Remote public listener -> publicRequestLimits -> actual app routes."
+      ],
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_app_boundary",
+          "path": "apps/player/internal/server/rate_limit_test.go",
+          "scenario": "TestPublicGetAndHeadRejectRequestBodiesBeforeHandlerSideEffects"
+        }
+      ],
+      "coverage_limit": "Genuine browser GET/HEAD requests have no body. Shared body guard tests alone do not prove app public-context binding; this retained fixture observes app handler not called.",
       "history": [
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
-      "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "production_or_support_deletion_unlocked": "None; retained existing regression guard. No isolated tests added.",
+      "risk": "Important security or concurrency failure is not covered by the existing genuine E2E input.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./internal/server",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "review_provenance": "Player owner read full test, participating production functions/callbacks, relevant shared owners/callers, recorded history and populated browser journeys; no child Go/E2E execution.",
+      "history_interpretation": "Initial committed regression guard; later recorded history preserves this observable boundary. Sessions878dc2a63 only replaced public-session forwarding calls with sessionModule().CreateStrongPublic; no assertion change."
     },
     {
       "name": "TestSharedTextStatesKeepReadableContrast",
@@ -24581,23 +24693,41 @@
       "sha256": "939f47c292f7a0dfe28a87da06a9c2b6f32b3bc2cce87a43b942055ebb01fe18",
       "path": "apps/player/internal/server/sessions_internal_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "Private IPv6 fc00::1 or IPv4-mapped ::ffff:10.0.0.2 becomes permitted outbound, exposing local network targets. Canonical policy table covers several address classes but omits these two representations.",
+      "category": "important_boundary_retained",
+      "credible_failure": "Private IPv6 fc00::1 or IPv4-mapped ::ffff:10.0.0.2 becomes permitted outbound, exposing local network targets. Canonical policy table covers several address classes but omits these two representations.",
+      "production_owner": [
+        "apps/player/internal/server/session_tokens.go:allowedOutboundIP",
+        "packages/identitycore/network.go:AllowedOutboundIP/AllowedResolvedAddress"
+      ],
+      "non_test_callers": [
+        "Settings/integration remote HTTP clients use outboundHTTPClient and the app allowedOutboundIP forwarding policy."
+      ],
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_security_matrix",
+          "path": "apps/player/internal/server/sessions_internal_test.go",
+          "scenario": "TestOutboundNetworkRejectsLinkLocalMetadataAddresses"
+        },
+        {
+          "kind": "complementary_canonical_isolated_matrix",
+          "path": "packages/identitycore/network_test.go",
+          "scenario": "TestAddressPolicies"
+        }
+      ],
+      "coverage_limit": "Populated browser tests do not inject SSRF address representations. Retain unique IPv6 private and mapped-private controls despite the forwarding shape.",
       "history": [
         "878dc2a63d62880e6d3a5aa395ce25dd40919539 Remove retired artifacts and unused code",
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
-      "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "production_or_support_deletion_unlocked": "None; retained existing regression guard. No isolated tests added.",
+      "risk": "Important security or concurrency failure is not covered by the existing genuine E2E input.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./internal/server",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "review_provenance": "Player owner read full test, participating production functions/callbacks, relevant shared owners/callers, recorded history and populated browser journeys; no child Go/E2E execution.",
+      "history_interpretation": "Initial committed regression guard; later recorded history preserves this observable boundary. Sessions878dc2a63 only replaced public-session forwarding calls with sessionModule().CreateStrongPublic; no assertion change."
     },
     {
       "name": "TestPublicOutboundResolutionRejectsMixedAndEmptyAnswers",
@@ -24606,23 +24736,37 @@
       "sha256": "9ddb784cb65574de992dded14412bf74150771e6415c6be19264cdbf4bab46b5",
       "path": "apps/player/internal/server/sessions_internal_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "DNS answer containing a private member is accepted, or an allowed dual-stack result rejects IPv6/returns the wrong first target. Empty/mixed-loopback is also covered canonically, but mixed-private and allowed dual-stack answer shape remain distinct inputs.",
+      "category": "important_boundary_retained",
+      "credible_failure": "DNS answer containing a private member is accepted, or an allowed dual-stack result rejects IPv6/returns the wrong first target. Empty/mixed-loopback is also covered canonically, but mixed-private and allowed dual-stack answer shape remain distinct inputs.",
+      "production_owner": [
+        "apps/player/internal/server/session_tokens.go:allowedOutboundIP",
+        "packages/identitycore/network.go:AllowedOutboundIP/AllowedResolvedAddress",
+        "packages/servertest/session_boundaries.go:PublicOutboundResolutionRejectsMixedAndEmptyAnswers"
+      ],
+      "non_test_callers": [
+        "identitycore.OutboundHTTPClient DialContext validates all resolved addresses before dialing integrations."
+      ],
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_app_boundary",
+          "path": "apps/player/internal/server/sessions_internal_test.go",
+          "scenario": "TestPublicOutboundResolutionRejectsMixedAndEmptyAnswers"
+        }
+      ],
+      "coverage_limit": "This is a shared fixture helper called with the actual app policy alias, not browser E2E or a real DNS-rebinding exercise. Retained combined private-member and dual-stack inputs are absent from the canonical AllowedResolvedAddress test.",
       "history": [
         "878dc2a63d62880e6d3a5aa395ce25dd40919539 Remove retired artifacts and unused code",
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
-      "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "production_or_support_deletion_unlocked": "None; retained existing regression guard. No isolated tests added.",
+      "risk": "Important security or concurrency failure is not covered by the existing genuine E2E input.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./internal/server",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "review_provenance": "Player owner read full test, participating production functions/callbacks, relevant shared owners/callers, recorded history and populated browser journeys; no child Go/E2E execution.",
+      "history_interpretation": "Initial committed regression guard; later recorded history preserves this observable boundary. Sessions878dc2a63 only replaced public-session forwarding calls with sessionModule().CreateStrongPublic; no assertion change."
     },
     {
       "name": "TestBrowserSessionsHaveIdleAndAbsoluteTimeouts",
@@ -24631,23 +24775,38 @@
       "sha256": "941a60d806b4a6cdb88db64348599acad21dda27db79ad691287e830ffb6336f",
       "path": "apps/player/internal/server/sessions_internal_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "Player session creation omits Browser/time bounds or app profile token lookup accepts an idle browser session after the configured default inactivity limit.",
+      "category": "important_boundary_retained",
+      "credible_failure": "Player session creation omits Browser/time bounds or app profile token lookup accepts an idle browser session after the configured default inactivity limit.",
+      "production_owner": [
+        "apps/player/internal/server/sessions.go:sessionModule/sessionProfiles",
+        "apps/player/internal/server/profiles_token.go:profile/sessionExpired/validProfileToken",
+        "packages/identitycore/sessions.go",
+        "packages/identitycore/session_requests.go"
+      ],
+      "non_test_callers": [
+        "auth.login/setup -> signInStrong; authentication middleware -> profile; device session APIs -> session admin."
+      ],
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_app_boundary",
+          "path": "apps/player/internal/server/sessions_internal_test.go",
+          "scenario": "TestBrowserSessionsHaveIdleAndAbsoluteTimeouts"
+        }
+      ],
+      "coverage_limit": "Fresh authenticated browser journeys do not age LastSeen or assert the default absolute ceiling. Absolute bound is checked on issued state; the test does not advance through absolute expiry.",
       "history": [
         "878dc2a63d62880e6d3a5aa395ce25dd40919539 Remove retired artifacts and unused code",
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
-      "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "production_or_support_deletion_unlocked": "None; retained existing regression guard. No isolated tests added.",
+      "risk": "Important security or concurrency failure is not covered by the existing genuine E2E input.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./internal/server",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "review_provenance": "Player owner read full test, participating production functions/callbacks, relevant shared owners/callers, recorded history and populated browser journeys; no child Go/E2E execution.",
+      "history_interpretation": "Initial committed regression guard; later recorded history preserves this observable boundary. Sessions878dc2a63 only replaced public-session forwarding calls with sessionModule().CreateStrongPublic; no assertion change."
     },
     {
       "name": "TestBrowserSessionsUseCustomizedIdleAndAbsoluteTimeouts",
@@ -24656,23 +24815,40 @@
       "sha256": "5e363b7e7e9e64788002686edbb47020b02cc9daa74eb00e92cffd1b4491dbee",
       "path": "apps/player/internal/server/sessions_internal_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "App settings Timeouts callback is ignored: custom browser inactivity accepts a25-hour idle session or expired sessions remain in app active-device views.",
+      "category": "important_boundary_retained",
+      "credible_failure": "App settings Timeouts callback is ignored: custom browser inactivity accepts a25-hour idle session or expired sessions remain in app active-device views.",
+      "production_owner": [
+        "apps/player/internal/server/sessions.go:sessionModule/sessionProfiles",
+        "apps/player/internal/server/profiles_token.go:profile/sessionExpired/validProfileToken",
+        "packages/identitycore/sessions.go",
+        "packages/identitycore/session_requests.go",
+        "apps/player/internal/server/settings_sessions.go:sessionTimeouts/setSessionTimeouts",
+        "packages/identitycore/sessions_admin.go"
+      ],
+      "non_test_callers": [
+        "newApplication wires profiles.sessionTimeouts=settings.sessionTimeouts; browser auth/profile and device-management readers use it."
+      ],
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_app_boundary",
+          "path": "apps/player/internal/server/sessions_internal_test.go",
+          "scenario": "TestBrowserSessionsUseCustomizedIdleAndAbsoluteTimeouts"
+        }
+      ],
+      "coverage_limit": "Genuine browser settings flows do not simulate elapsed25hours. The test asserts lifetime no greater than168hours, not an exact168-hour lifetime.",
       "history": [
         "878dc2a63d62880e6d3a5aa395ce25dd40919539 Remove retired artifacts and unused code",
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
-      "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "production_or_support_deletion_unlocked": "None; retained existing regression guard. No isolated tests added.",
+      "risk": "Important security or concurrency failure is not covered by the existing genuine E2E input.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./internal/server",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "review_provenance": "Player owner read full test, participating production functions/callbacks, relevant shared owners/callers, recorded history and populated browser journeys; no child Go/E2E execution.",
+      "history_interpretation": "Initial committed regression guard; later recorded history preserves this observable boundary. Sessions878dc2a63 only replaced public-session forwarding calls with sessionModule().CreateStrongPublic; no assertion change."
     },
     {
       "name": "TestSessionTimeoutValidationHasNoSideEffects",
@@ -24681,23 +24857,36 @@
       "sha256": "37cfa4ebd047513a018582364c8561ca3b6ff0e829263875619cbde89457756d",
       "path": "apps/player/internal/server/sessions_internal_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "Invalid inactive/absolute hour combinations update app settings or admit a lifetime outside bounds.",
+      "category": "important_boundary_retained",
+      "credible_failure": "Invalid inactive/absolute hour combinations update app settings or admit a lifetime outside bounds.",
+      "production_owner": [
+        "apps/player/internal/server/settings_sessions.go:setSessionTimeouts/validSessionTimeouts",
+        "packages/servertest/session_boundaries.go:SessionTimeoutValidationHasNoSideEffects"
+      ],
+      "non_test_callers": [
+        "POST /settings/session-timeouts and PUT /api/v1/settings/session-timeouts bind app settings setters."
+      ],
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_app_boundary",
+          "path": "apps/player/internal/server/sessions_internal_test.go",
+          "scenario": "TestSessionTimeoutValidationHasNoSideEffects"
+        }
+      ],
+      "coverage_limit": "Browser journeys use valid settings; fixture rejects6 invalid pairs and verifies read values unchanged. NaN/Inf and storage-write failure are not injected by this declaration.",
       "history": [
         "878dc2a63d62880e6d3a5aa395ce25dd40919539 Remove retired artifacts and unused code",
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
-      "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "production_or_support_deletion_unlocked": "None; retained existing regression guard. No isolated tests added.",
+      "risk": "Important security or concurrency failure is not covered by the existing genuine E2E input.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./internal/server",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "review_provenance": "Player owner read full test, participating production functions/callbacks, relevant shared owners/callers, recorded history and populated browser journeys; no child Go/E2E execution.",
+      "history_interpretation": "Initial committed regression guard; later recorded history preserves this observable boundary. Sessions878dc2a63 only replaced public-session forwarding calls with sessionModule().CreateStrongPublic; no assertion change."
     },
     {
       "name": "TestSensitiveActionsRequireRecentHumanAuthentication",
@@ -24706,23 +24895,38 @@
       "sha256": "ec9ff4508522726e245590cc7a028a01511815fd96b577b71e977ff8ddfd9805",
       "path": "apps/player/internal/server/sessions_internal_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "Player recent-auth request binding accepts an11-minute-old StrongAt when a sensitive action requires10minutes, or fails to recognize freshly issued strong sessions.",
+      "category": "important_boundary_retained",
+      "credible_failure": "Player recent-auth request binding accepts an11-minute-old StrongAt when a sensitive action requires10minutes, or fails to recognize freshly issued strong sessions.",
+      "production_owner": [
+        "apps/player/internal/server/sessions.go:sessionModule/sessionProfiles",
+        "apps/player/internal/server/profiles_token.go:profile/sessionExpired/validProfileToken",
+        "packages/identitycore/sessions.go",
+        "packages/identitycore/session_requests.go"
+      ],
+      "non_test_callers": [
+        "Owner sensitive actions, MFA and passkey registration invoke profiles.recentlyAuthenticated."
+      ],
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_app_boundary",
+          "path": "apps/player/internal/server/sessions_internal_test.go",
+          "scenario": "TestSensitiveActionsRequireRecentHumanAuthentication"
+        }
+      ],
+      "coverage_limit": "First-install/sign-in E2E exercise fresh human authentication; they do not advance StrongAt past the sensitive-action deadline.",
       "history": [
         "878dc2a63d62880e6d3a5aa395ce25dd40919539 Remove retired artifacts and unused code",
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
-      "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "production_or_support_deletion_unlocked": "None; retained existing regression guard. No isolated tests added.",
+      "risk": "Important security or concurrency failure is not covered by the existing genuine E2E input.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./internal/server",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "review_provenance": "Player owner read full test, participating production functions/callbacks, relevant shared owners/callers, recorded history and populated browser journeys; no child Go/E2E execution.",
+      "history_interpretation": "Initial committed regression guard; later recorded history preserves this observable boundary. Sessions878dc2a63 only replaced public-session forwarding calls with sessionModule().CreateStrongPublic; no assertion change."
     },
     {
       "name": "TestPublicSessionsAreStrongShortLivedAndBounded",
@@ -24731,23 +24935,39 @@
       "sha256": "9f318ced25d0fd7a7bb13358c15a58ef01de27d096b1eede039e55590a6cfc70",
       "path": "apps/player/internal/server/sessions_internal_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "App session profile projection drops public policy/session-kind metadata, admits an eleventh active public session, or issues a weak/long-lived public session/cookie.",
+      "category": "important_boundary_retained",
+      "credible_failure": "App session profile projection drops public policy/session-kind metadata, admits an eleventh active public session, or issues a weak/long-lived public session/cookie.",
+      "production_owner": [
+        "apps/player/internal/server/sessions.go:sessionModule/sessionProfiles",
+        "apps/player/internal/server/profiles_token.go:profile/sessionExpired/validProfileToken",
+        "packages/identitycore/sessions.go",
+        "packages/identitycore/session_requests.go",
+        "packages/identitycore/session_http.go:PublicSessionCookie"
+      ],
+      "non_test_callers": [
+        "Public passkey/QuickConnect login uses signInStrongPublic and public profile projection."
+      ],
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_app_boundary",
+          "path": "apps/player/internal/server/sessions_internal_test.go",
+          "scenario": "TestPublicSessionsAreStrongShortLivedAndBounded"
+        }
+      ],
+      "coverage_limit": "Genuine browser journeys do not create11 public sessions or check all public cookie/lifetime properties. This fixture uses ten sessions and an eight-hour ceiling; it does not age real browsers.",
       "history": [
         "878dc2a63d62880e6d3a5aa395ce25dd40919539 Remove retired artifacts and unused code",
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
-      "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "production_or_support_deletion_unlocked": "None; retained existing regression guard. No isolated tests added.",
+      "risk": "Important security or concurrency failure is not covered by the existing genuine E2E input.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./internal/server",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "review_provenance": "Player owner read full test, participating production functions/callbacks, relevant shared owners/callers, recorded history and populated browser journeys; no child Go/E2E execution.",
+      "history_interpretation": "Initial committed regression guard; later recorded history preserves this observable boundary. Sessions878dc2a63 only replaced public-session forwarding calls with sessionModule().CreateStrongPublic; no assertion change."
     },
     {
       "name": "TestBrowserSessionCookiesAreAlwaysHostBoundAndSecure",
@@ -24799,23 +25019,40 @@
       "sha256": "859a3575b6822546d08b792c20578372cb183d53d640a9ca7ec9d750662a1e2a",
       "path": "apps/player/internal/server/sessions_internal_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "Player token resolution accepts a public session created under a superseded profile revision after a rating/library policy change.",
+      "category": "important_boundary_retained",
+      "credible_failure": "Player token resolution accepts a public session created under a superseded profile revision after a rating/library policy change.",
+      "production_owner": [
+        "apps/player/internal/server/sessions.go:sessionModule/sessionProfiles",
+        "apps/player/internal/server/profiles_token.go:profile/sessionExpired/validProfileToken",
+        "packages/identitycore/sessions.go",
+        "packages/identitycore/session_requests.go",
+        "apps/player/internal/server/profiles.go:setProfile",
+        "packages/identitycore/profile_store.go:SetProfile"
+      ],
+      "non_test_callers": [
+        "Owner permission settings/API mutate policy; authentication middleware reads app profile token and revision."
+      ],
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_app_boundary",
+          "path": "apps/player/internal/server/sessions_internal_test.go",
+          "scenario": "TestPublicSessionCannotSurviveProfilePolicyRevision"
+        }
+      ],
+      "coverage_limit": "Browser journeys do not keep a public cookie across an Owner policy revision. Shared session manager cannot prove app profileForToken revision enforcement.",
       "history": [
         "878dc2a63d62880e6d3a5aa395ce25dd40919539 Remove retired artifacts and unused code",
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
-      "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "production_or_support_deletion_unlocked": "None; retained existing regression guard. No isolated tests added.",
+      "risk": "Important security or concurrency failure is not covered by the existing genuine E2E input.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./internal/server",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "review_provenance": "Player owner read full test, participating production functions/callbacks, relevant shared owners/callers, recorded history and populated browser journeys; no child Go/E2E execution.",
+      "history_interpretation": "Initial committed regression guard; later recorded history preserves this observable boundary. Sessions878dc2a63 only replaced public-session forwarding calls with sessionModule().CreateStrongPublic; no assertion change."
     },
     {
       "name": "TestSessionCreationRejectsInactiveAndInvalidPublicProfiles",
@@ -24824,23 +25061,38 @@
       "sha256": "01b981fb216f9a90906d934d980d8079260e2d12220447c4b43544a8349860ce",
       "path": "apps/player/internal/server/sessions_internal_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "App SessionProfile projection loses Disabled/SCIMDeleted/Owner/Remote/Secured flags and creates local/public session capabilities for an ineligible profile.",
+      "category": "important_boundary_retained",
+      "credible_failure": "App SessionProfile projection loses Disabled/SCIMDeleted/Owner/Remote/Secured flags and creates local/public session capabilities for an ineligible profile.",
+      "production_owner": [
+        "apps/player/internal/server/sessions.go:sessionModule/sessionProfiles",
+        "apps/player/internal/server/profiles_token.go:profile/sessionExpired/validProfileToken",
+        "packages/identitycore/sessions.go",
+        "packages/identitycore/session_requests.go"
+      ],
+      "non_test_callers": [
+        "Public sign-in and local authentication/session APIs project app profile fields before creating sessions."
+      ],
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_app_boundary",
+          "path": "apps/player/internal/server/sessions_internal_test.go",
+          "scenario": "TestSessionCreationRejectsInactiveAndInvalidPublicProfiles"
+        }
+      ],
+      "coverage_limit": "Fresh-owner E2E does not exercise five invalid public-profile combinations or disabled local issuance; fixture asserts no session mutation on rejection.",
       "history": [
         "878dc2a63d62880e6d3a5aa395ce25dd40919539 Remove retired artifacts and unused code",
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
-      "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "production_or_support_deletion_unlocked": "None; retained existing regression guard. No isolated tests added.",
+      "risk": "Important security or concurrency failure is not covered by the existing genuine E2E input.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./internal/server",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "review_provenance": "Player owner read full test, participating production functions/callbacks, relevant shared owners/callers, recorded history and populated browser journeys; no child Go/E2E execution.",
+      "history_interpretation": "Initial committed regression guard; later recorded history preserves this observable boundary. Sessions878dc2a63 only replaced public-session forwarding calls with sessionModule().CreateStrongPublic; no assertion change."
     },
     {
       "name": "TestProfilePolicyChangeDoesNotPersistBeforeSessionRevocation",
@@ -24848,24 +25100,40 @@
       "end_line": 236,
       "sha256": "4fb7d3ade7385b097a37d0a0e3906102f4d33e455e5613012fcfbb7ee766895f",
       "path": "apps/player/internal/server/sessions_internal_test.go",
-      "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "decision": "D",
+      "review_status": "candidate_evidence_complete",
+      "reason": "One-line Player setProfile adapter replays the canonical ProfileStore.SetProfile session-persistence rollback; retained shared transaction keeper covers the same failure plus keys/profile failure paths.",
+      "category": "direct_shared_owner_replay",
+      "credible_failure": "SetProfile commits new revision/Remote policy or removes in-memory sessions when session persistence fails. Canonical TestProfileStoreSetProfileTransactions already fails for the same observable rollback regression.",
+      "production_owner": [
+        "apps/player/internal/server/profiles.go:setProfile",
+        "apps/player/internal/server/profiles_storage.go:profileModule/profilePersistence",
+        "packages/identitycore/profile_store.go:SetProfile/commitProfilePolicy",
+        "packages/identitycore/profile.go:ProfilePersistence.SaveRelated"
+      ],
+      "non_test_callers": [
+        "Owner Viewer-permissions settings/API call setProfile; shared ProfileStore commits the policy."
+      ],
+      "remaining_proof": [
+        {
+          "kind": "retained_canonical_isolated_transaction_keeper",
+          "path": "packages/identitycore/profile_store_transaction_test.go",
+          "scenario": "TestProfileStoreSetProfileTransactions",
+          "assertion_mapping": "Forced sessions/keys/profiles persistence error returns error, preserves prior revision and both public/local sessions. Then successful change advances revision and removes public while retaining local. Player removed fixture adds no app-specific callback logic."
+        }
+      ],
+      "coverage_limit": "No browser E2E persistence-failure equivalence claimed. Canonical isolation is retained because rollback/order failure injection is important and genuine E2E does not force it.",
       "history": [
         "878dc2a63d62880e6d3a5aa395ce25dd40919539 Remove retired artifacts and unused code",
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
-      "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "production_or_support_deletion_unlocked": "Remove one29-line declaration including its separator and now-unused errors import (30 test LOC total); production profile adapters remain used.",
+      "risk": "Low; exact shared owner transaction replay, canonical keeper independently confirmed retained R by shared identity auditor.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./internal/server; root shared identitycore suite",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "history_interpretation": "Introduced initial commit. Later878dc2a63 changed other public-session helper calls, not this unchanged rollback replay.",
+      "review_provenance": "Full Player fixture, shared owner, persistence/callers and canonical transaction test read. Shared identity owner independently confirmed keeper preservation."
     },
     {
       "name": "TestFactorChangesRevokePublicSessions",
@@ -24874,23 +25142,37 @@
       "sha256": "cc77dc59938fa5b8b5f336abf01f0581fb280ad17a57bd717c1f1ebf95bb1dd2",
       "path": "apps/player/internal/server/sessions_internal_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "App factor projection/apply or persistence binding updates MFA without advancing Revision/removing public sessions, or inadvertently drops local sessions.",
+      "category": "important_boundary_retained",
+      "credible_failure": "App factor projection/apply or persistence binding updates MFA without advancing Revision/removing public sessions, or inadvertently drops local sessions.",
+      "production_owner": [
+        "apps/player/internal/server/profiles_mfa.go:factorTransaction/factorProfile/applyFactorProfile/enableMFA/disableMFA",
+        "packages/identitycore/factor_transaction.go",
+        "apps/player/internal/server/profiles_storage.go:saveRelated"
+      ],
+      "non_test_callers": [
+        "MFA confirmation/disable request adapters bind the actual app FactorTransaction callbacks."
+      ],
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_app_boundary",
+          "path": "apps/player/internal/server/sessions_internal_test.go",
+          "scenario": "TestFactorChangesRevokePublicSessions"
+        }
+      ],
+      "coverage_limit": "First-install E2E confirms enrollment but does not hold public and local sessions while factors change. Canonical generic factor tests cannot prove these app projection callbacks.",
       "history": [
         "878dc2a63d62880e6d3a5aa395ce25dd40919539 Remove retired artifacts and unused code",
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
-      "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "production_or_support_deletion_unlocked": "None; retained existing regression guard. No isolated tests added.",
+      "risk": "Important security or concurrency failure is not covered by the existing genuine E2E input.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./internal/server",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "review_provenance": "Player owner read full test, participating production functions/callbacks, relevant shared owners/callers, recorded history and populated browser journeys; no child Go/E2E execution.",
+      "history_interpretation": "Initial committed regression guard; later recorded history preserves this observable boundary. Sessions878dc2a63 only replaced public-session forwarding calls with sessionModule().CreateStrongPublic; no assertion change."
     },
     {
       "name": "TestPublicPlaybackCannotReuseLANSessionCapability",
@@ -24899,22 +25181,36 @@
       "sha256": "be93fc68cf127b79bd8a69f6e67bb1627020d9cded0222e5030f5eb072739e35",
       "path": "apps/player/internal/server/sessions_playback_internal_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "A valid unexpired LAN Jellyfin play-session capability authorizes playback on the public listener after app public-context/session projection regresses.",
+      "category": "important_boundary_retained",
+      "credible_failure": "A valid unexpired LAN Jellyfin play-session capability authorizes playback on the public listener after app public-context/session projection regresses.",
+      "production_owner": [
+        "apps/player/internal/server/jellyfin_delivery.go:deliveryModule",
+        "packages/jellyfincompat/delivery_session.go:PlaySession",
+        "packages/playback/hls_delivery.go:AuthorizeJellyfinPlaySession"
+      ],
+      "non_test_callers": [
+        "Jellyfin video/HLS/segment delivery passes app publicInternetRequest and loaded play session to shared authorization."
+      ],
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_app_boundary",
+          "path": "apps/player/internal/server/sessions_playback_internal_test.go",
+          "scenario": "TestPublicPlaybackCannotReuseLANSessionCapability"
+        }
+      ],
+      "coverage_limit": "Populated E2E plays same-channel sessions; it does not replay a LAN playSessionId on Remote. Fixture has a valid matching item and future expiry; denial is the public-versus-LAN boundary, not unrelated revision guard.",
       "history": [
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
-      "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "production_or_support_deletion_unlocked": "None; retained existing regression guard. No isolated tests added.",
+      "risk": "Important security or concurrency failure is not covered by the existing genuine E2E input.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./internal/server",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "review_provenance": "Player owner read full test, participating production functions/callbacks, relevant shared owners/callers, recorded history and populated browser journeys; no child Go/E2E execution.",
+      "history_interpretation": "Initial committed regression guard; later recorded history preserves this observable boundary. Sessions878dc2a63 only replaced public-session forwarding calls with sessionModule().CreateStrongPublic; no assertion change."
     },
     {
       "name": "TestLibrarySettingsRegression",
@@ -27784,6 +28080,7 @@
     "TestPlayerNegotiatesCodecSupportBeforeStartingAdaptivePlayback",
     "TestPlayerUsesCastIconForDevicePlayback",
     "TestProductionUITemplatesAvoidMixedGlyphIcons",
+    "TestProfilePolicyChangeDoesNotPersistBeforeSessionRevocation",
     "TestProfileSnapshotsDoNotAliasStoredIdentityState",
     "TestStepUpReturnsToKnownOwnerPage",
     "TestUIIconSetIsCompleteAndLocal",
@@ -27809,12 +28106,13 @@
     "TestPlayerNegotiatesCodecSupportBeforeStartingAdaptivePlayback",
     "TestPlayerUsesCastIconForDevicePlayback",
     "TestProductionUITemplatesAvoidMixedGlyphIcons",
+    "TestProfilePolicyChangeDoesNotPersistBeforeSessionRevocation",
     "TestProfileSnapshotsDoNotAliasStoredIdentityState",
     "TestStepUpReturnsToKnownOwnerPage",
     "TestUIIconSetIsCompleteAndLocal",
     "TestVersionedApplicationStylesheetIncludesSupporterStyles"
   ],
-  "removal_count": 22,
+  "removal_count": 23,
   "verification": [
     {
       "command": "gofmt -w <five touched retained Go files>",
@@ -27835,6 +28133,10 @@
     {
       "command": "gofmt -w apps/player/internal/server/sessions_internal_test.go; git diff --check",
       "result": "passed; shared identity replay batch; Go/E2E root serial validation pending."
+    },
+    {
+      "command": "gofmt -w apps/player/internal/server/sessions_internal_test.go; git diff --check",
+      "result": "passed; profile rollback replay consolidation; root Go/E2E validation pending, no child builds."
     }
   ],
   "retention_examples": [
@@ -27847,9 +28149,9 @@
     "TestConfigurationTransactionRejectsSemanticallyInvalidRecoveryWithoutSideEffects"
   ],
   "review_summary": {
-    "semantic_review_complete": 122,
-    "candidate_evidence_complete": 22,
-    "inventory_only_retained_pending_semantic_review": 690,
+    "semantic_review_complete": 140,
+    "candidate_evidence_complete": 23,
+    "inventory_only_retained_pending_semantic_review": 671,
     "test_and_boundary_review_pending_full_owner": 3
   }
 }
