@@ -1,0 +1,215 @@
+{
+  "schema": "kinosail-independent-public-timeouts-source-reconciliation-v1",
+  "reviewer": "frontend_native",
+  "source_sha": "fcd139b979fb532ab40ebcf200627945757a85af",
+  "actual_upstream_sha": "9d1b158e1a49fd523fb61a3603faafcfa45c1aeb",
+  "actual_upstream_is_ancestor": true,
+  "previous_review_source_sha": "645fda9c7230d62cdf3eee68a0d1664879794b44",
+  "previous_receipt_sha256": "77abe3b7cb1d3a5868acaf4f9548aca2a6ae0d37f91dd01534b77202387aa9ad",
+  "outcome": "Approve three retained assertion updates and actual-main source preservation. No source-review blocker; runtime and CI remain separate.",
+  "assertion_updates": [
+    {
+      "file": "apps/player/internal/server/auth_all_routes_test.go",
+      "name": "TestEveryRegisteredRouteHasReviewedAnonymousAccess",
+      "previous_body_sha256": "d34cf4e74f98ac174a8f2cc3a26bc60ded87400a7cbdaa2c0ced1e5bfb8440b4",
+      "current_body_sha256": "422ca8d22b9ce16a8b5af644196ac2d6ac247a6036533f87adf257e1543cbeb8",
+      "current_file_sha256": "b693ec35c909604fbe4ce5a7a8201b2f229959d94e9fe3ba9321526ac377b27a",
+      "equals_actual_main": true
+    },
+    {
+      "file": "apps/subtitles/internal/server/auth_all_routes_test.go",
+      "name": "TestEveryRegisteredRouteHasReviewedAnonymousAccess",
+      "previous_body_sha256": "08a85f38eeeb2df78e9f8c240317d2a7c333fdfbacad89418a1c1fcc6bc420ec",
+      "current_body_sha256": "5c78216810b763bd0806b6e1f8eda35abe8a788f56c71cbf9b1f6109516e8ce3",
+      "current_file_sha256": "7e77222d61021ef6fa4c2bcfb94f3a0f3bb75a0fe2a2727c41c7ae25c0a67a2b",
+      "equals_actual_main": true
+    },
+    {
+      "file": "packages/identitycore/sessions_test.go",
+      "name": "TestActivePublicAndSessionCopies",
+      "previous_body_sha256": "b1dcab0331c1542387761d9026a57a48982756fe3e7b9a6c68d00a830d056381",
+      "current_body_sha256": "20f96b02dc2ef5b4a1e287056c40adf0dea2e8227b4e3b708eb6762a7fc29061",
+      "current_file_sha256": "f478f089d4c5874ac35d1cf7098126fa44ab0df15d145f76170640dfd4d810ea",
+      "equals_actual_main": true
+    }
+  ],
+  "route_contract_review": {
+    "Player": "Exact route count480 to484; SHA256 inventory pin updated.",
+    "Subtitles": "Exact route count464 to468; SHA256 inventory pin updated.",
+    "four_added_patterns": [
+      "PUT /api/v1/settings/public-session-timeouts",
+      "DELETE /api/v1/settings/public-session-timeouts",
+      "POST /settings/public-session-timeouts",
+      "POST /settings/public-session-timeouts/reset"
+    ],
+    "production_binding": "Both APIs registered through Owner wrapper; both form routes through auth.owner. Owner-only expected sets and MCP admin classification include these exact patterns. Shared ReviewedAnonymousAccess still compares count/digest and exercises every actual route. Role/scope/invalid/revoked-session siblings remain intact.",
+    "limit": "Inventory digest execution was not recomputed by running Go; source is identical to actual main and runtime validation remains required."
+  },
+  "active_public_contract_review": {
+    "delta": "Only activePublic call adds DefaultSessionInactive and DefaultSessionAbsolute arguments.",
+    "preserved": "Eligible/expired/private/other public count remains expected1; clone deletion cannot mutate original; WithoutProfile all/public-only filters retain exact map assertions.",
+    "owner": "activePublic now uses channel/profile filter plus SessionExpired, rather than only ExpiresAt; original fixtures are non-browser, so timeout arguments do not alter their original expiry/count contract.",
+    "honest_gap": "This existing declaration does not by itself test browser inactivity/absolute or pinned-ceiling behavior. New live browser admission/boundary/transition journeys cover those separate scenarios in source; no passing execution claimed."
+  },
+  "upstream_preservation": {
+    "upstream_changed_files": 56,
+    "byte_identical_changed_files": 54,
+    "aggregate_file_hash_map_sha256": "c84f2a96d12744558b2d9b6fb25dfc3f6dff0482ce846e1f6dcff5b2e3fd0545",
+    "hash_map_algorithm": "git diff --name-only <actual-main>^1 <actual-main>, in Git lexical order; keep files whose exact reviewed/current blob equals upstream; encode [{file,sha256}] using json.dumps(sort_keys=True,separators=(comma,colon)) plus newline UTF-8; SHA256 that byte sequence.",
+    "only_different_changed_files": [
+      "apps/player/docs/architecture-explorer/index.html",
+      "apps/subtitles/docs/architecture-explorer/index.html"
+    ],
+    "difference_boundary": "Two architecture explorer snapshots regenerated offline after audit deletions; all actual timeout source/tests/docs/runner/failure-analysis files preserved byte-for-byte."
+  },
+  "focused_source_hashes": [
+    {
+      "file": "apps/player/e2e/session-timeouts.spec.ts",
+      "sha256": "b7f9470c3a960456df2f951cf82d650fa417c6f909e6fd574ee44fe7d3b0f808",
+      "equals_actual_main": true
+    },
+    {
+      "file": "apps/subtitles/e2e/session-timeouts.spec.ts",
+      "sha256": "da57b1023ad6f30ec6e52383c21b09cae3ad5198864ef6a1443881a3429681b6",
+      "equals_actual_main": true
+    },
+    {
+      "file": "scripts/testing/test-public-timeouts-local.py",
+      "sha256": "c239edfe759de221caca9e37131e90c826fd8fa09faf3ad8029071441f4f24e1",
+      "equals_actual_main": true
+    },
+    {
+      "file": "scripts/testing/public-timeouts-local.mjs",
+      "sha256": "18f1331eda03f632ae26b369e40d7b08f125ab44a88700924746e46a50538d4b",
+      "equals_actual_main": true
+    },
+    {
+      "file": "scripts/testing/public-timeouts-journeys.mjs",
+      "sha256": "c775f4a750b183b753785d9a439291991f9002f4acf8c6a3a31f62eafe7ac783",
+      "equals_actual_main": true
+    },
+    {
+      "file": "scripts/testing/public-timeouts-fixture.py",
+      "sha256": "45f7e87c460ef6bd950901b988a3e71c1b3e9dc2a090aaf20fce88a69548dc3e",
+      "equals_actual_main": true
+    },
+    {
+      "file": "engineering/qa/public-session-timeouts/failure-analysis.md",
+      "sha256": "339c5f8c73efb9b5a80b787d15a5df8d5ce2b2152fde40023730ec6af7011e95",
+      "equals_actual_main": true
+    },
+    {
+      "file": "packages/identitycore/sessions_admin.go",
+      "sha256": "dc47f8166ff708ce52f572811c022c57e83506382ba55d0572653660a5c90786",
+      "equals_actual_main": true
+    },
+    {
+      "file": "packages/identitycore/session_timeouts.go",
+      "sha256": "808fce8e7aa71911bde64946f9d39ad71dc3f76491487989d55fa48a08ea4096",
+      "equals_actual_main": true
+    },
+    {
+      "file": "packages/servertest/auth_routes.go",
+      "sha256": "d661f19ae81897c266fd64057d897e5e3efa3915d1ce67685f823c628149f74b",
+      "equals_actual_main": true
+    }
+  ],
+  "baseline_removal_integrity_delta": {
+    "original_removals": 249,
+    "new_Go_declarations": 0,
+    "previous_Go_current_declarations": 3456,
+    "current_Go_declarations": 3456,
+    "only_changed_Go_test_files": [
+      "apps/player/internal/server/auth_all_routes_test.go",
+      "apps/subtitles/internal/server/auth_all_routes_test.go",
+      "packages/identitycore/sessions_test.go"
+    ],
+    "all_existing_Go_declaration_names_unchanged": true,
+    "only_three_existing_Go_bodies_changed": true,
+    "result": "Previous645 physical249-D/no-R-F-missing/all64-Go-C-retained checkpoint carries forward because only these three existing Go bodies changed and no declaration was added/removed; non-Go changed tests are only the two existing timeout UI specs with unchanged title. No broad inventory rerun.",
+    "old_loading_file_still_absent": true,
+    "PR455_layout914": "Still future/unmerged and excluded from this actual-main source receipt."
+  },
+  "browser_and_artifact_review": {
+    "retained_UI_specs": "Both existing populated Owner specs retain private defaults/option text, responsive geometry, Axe and screenshots; new scoping disambiguates private/public labels and adds public defaults/heading. These UI specs do not themselves Save changed values.",
+    "new_native_harness_boundary": "Actual native Player and Subtitles binaries over supported loopback HTTP, real Chromium/browser HTTP/API/form flows and SQLite persistence. Owners/Viewers are disposable; WebAuthn is virtual. Timestamp aging and SQLite write-error injection occur only while the disposable Server is stopped, followed by restart and real request assertions. This is live Server integration with explicitly seeded boundaries, not exported-template or setContent proof.",
+    "source_scenarios": [
+      "independent private/public real form/API Save and restart",
+      "Viewer/public/stale Owner/CSRF/input denials",
+      "idle/absolute/persisted-expiry before/at boundary",
+      "tighten/raise, pinned ceilings and no resurrection",
+      "ten idle-expired sessions release admission capacity",
+      "SQLite settings/session rollback and concurrent MFA/timeout Save",
+      "legacy effective public limits",
+      "reset and actual old-binary downgrade/re-upgrade with unrelated data and revocation preservation"
+    ],
+    "receipt_support": "Runner records SHA/diff digest/selection/environment/browser version, commands, binary revision and hashes, runner hashes, safe projections, screenshots and named results; wrapper creates SHA256SUMS. Optional binary reuse requires clean recorded provenance and unchanged relevant sources.",
+    "limitations": [
+      "No build, product test or browser execution in this review; no downloaded result/checksum/trace proof.",
+      "Standalone runner is opt-in; no normal workflow reference found. Player test-instance.sh explicitly selects existing UI spec; test flags must be enabled and no skipped result may count as proof.",
+      "Full claimed timeout proof requires selection both/full; app-only and ui-only executions are narrower despite passed result.",
+      "Clock boundaries are seeded stopped-state fixtures rather than observing elapsed years. Virtual WebAuthn/native Chromium do not prove physical passkeys, Safari, TLS or containers.",
+      "Receipt/source preservation does not establish arbitrary input/no-side-effect semantics beyond actual asserted fields; per-row named results are not Playwright JSON declaration inventory."
+    ],
+    "TLS_hardening": "New native runner uses ignoreHTTPSErrors:false and no bypass launch flags; root Player/Subtitles global config remains hardened."
+  },
+  "failure_analysis": "Actual main failure-analysis.md is preserved; enumerates authorization, validation, channel isolation, cookie/migration/admission agreement, no resurrection, tightening, transaction/concurrency/restart, public strong-auth age, revocation/security and rollback boundaries, with planned live Server proof.",
+  "reproduce_source_only": [
+    [
+      "git",
+      "diff",
+      "--numstat",
+      "645fda9c7230d62cdf3eee68a0d1664879794b44",
+      "fcd139b979fb532ab40ebcf200627945757a85af",
+      "--",
+      "*_test.go"
+    ],
+    [
+      "git",
+      "diff",
+      "645fda9c7230d62cdf3eee68a0d1664879794b44",
+      "fcd139b979fb532ab40ebcf200627945757a85af",
+      "--",
+      "apps/player/internal/server/auth_all_routes_test.go",
+      "apps/subtitles/internal/server/auth_all_routes_test.go",
+      "packages/identitycore/sessions_test.go"
+    ],
+    [
+      "git",
+      "diff",
+      "--name-only",
+      "9d1b158e1a49fd523fb61a3603faafcfa45c1aeb^1",
+      "9d1b158e1a49fd523fb61a3603faafcfa45c1aeb"
+    ],
+    [
+      "git",
+      "diff",
+      "--name-only",
+      "9d1b158e1a49fd523fb61a3603faafcfa45c1aeb",
+      "fcd139b979fb532ab40ebcf200627945757a85af",
+      "--",
+      "apps/player/e2e/session-timeouts.spec.ts",
+      "apps/subtitles/e2e/session-timeouts.spec.ts",
+      "scripts/testing/test-public-timeouts-local.py",
+      "scripts/testing/public-timeouts-local.mjs",
+      "scripts/testing/public-timeouts-journeys.mjs",
+      "scripts/testing/public-timeouts-fixture.py",
+      "engineering/qa/public-session-timeouts/failure-analysis.md",
+      "packages/identitycore/sessions_admin.go",
+      "packages/identitycore/session_timeouts.go",
+      "packages/servertest/auth_routes.go"
+    ],
+    [
+      "git",
+      "merge-base",
+      "--is-ancestor",
+      "9d1b158e1a49fd523fb61a3603faafcfa45c1aeb",
+      "fcd139b979fb532ab40ebcf200627945757a85af"
+    ]
+  ],
+  "limits": [
+    "Source-only Git/Python review; no builds, browser suites, downloads, cleanup, deployments or process changes.",
+    "Commit held while the shared metadata owner window remains active. Root/owner ledgers and provenance are not edited.",
+    "No repeated full retained-body or inventory blobs are written or committed."
+  ]
+}
