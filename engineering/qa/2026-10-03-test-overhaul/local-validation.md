@@ -1,8 +1,10 @@
 # Local validation receipts
 
-The semantic audit is in progress. Inventory-only rows are not retention verdicts.
+The semantic audit covers every baseline declaration in the owner ledgers.
+Inventory-only rows are not retention verdicts.
 Per-declaration ledgers identify exact baseline bodies, production callers,
 retained proofs, failure boundaries and limits of existing E2E coverage.
+See `audit.md` for consolidated counts, retained exceptions and reproduction.
 
 ## Reproduce populated browser proof
 

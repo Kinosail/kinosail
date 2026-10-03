@@ -1,7 +1,6 @@
 package viewing
 
 import (
-	"context"
 	"errors"
 	"net/http"
 	"net/http/httptest"
