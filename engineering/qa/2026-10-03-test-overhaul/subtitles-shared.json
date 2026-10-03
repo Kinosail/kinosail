@@ -6,11 +6,11 @@
   "files": 379,
   "declarations": 954,
   "test_loc": 28832,
-  "reviewed": 321,
-  "pending": 633,
+  "reviewed": 342,
+  "pending": 612,
   "decisions": {
-    "R": 268,
-    "D": 41,
+    "R": 288,
+    "D": 42,
     "F": 12,
     "C": 0
   },
@@ -4602,34 +4602,44 @@
       "line": 10,
       "test": "TestEnglishBrowserErrorsUseHumanCopy",
       "baseline_file_sha256": "25178be55a336585d4e442ea27152ba06af158f5d8126cfede85cd806141d7fb",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "App browser invalid credentials for en/en-US/en-GB must401 with understandable translated English and no technical message/session cookie write; app-owned translations can regress independently of shared catalog logic.",
+      "production_owner": "apps/subtitles/internal/server/locale.go loadLocalization/automaticLanguage/preferredLanguage/selectLanguage/localizedError/newLocalizedTemplate; language_http.go; app-owned locales/*.json; packages/localization/{languages,catalog,template}.go",
+      "non_test_callers": "localized app middleware and all translated app templates; GET/POST /language, PUT /api/v1/me/language, GET me API projection.",
+      "remaining_proof": [
+        {
+          "kind": "isolated_actual_app_catalog_handler_template_contract",
+          "reference": "apps/subtitles/internal/server/english_copy_test.go:TestEnglishBrowserErrorsUseHumanCopy"
+        }
+      ],
+      "coverage_gap": "Existing browser layout-audit-entry-tests: sign in keeps the language preference in one calm composition opens Arabic only at320px and asserts geometry/screenshots, not catalog placeholders, translated labels, API errors, selection/cookie reset or redirect/CSRF. Config:false classic root fixtures remain isolated integration and do not establish normal SubtitleApp:true dashboard proof; auth/language/API owners are common to both modes.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retain important app-owned language data/selection/security/API contract; no assertions changed.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/english_copy_test.go",
       "line": 27,
       "test": "TestEnglishCopyPreservesAPIErrorContract",
       "baseline_file_sha256": "25178be55a336585d4e442ea27152ba06af158f5d8126cfede85cd806141d7fb",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "App /api/v1/session failure must retain machine invalid-credentials contract rather than browser human copy, and never set session cookies; path distinction is app code.",
+      "production_owner": "apps/subtitles/internal/server/locale.go loadLocalization/automaticLanguage/preferredLanguage/selectLanguage/localizedError/newLocalizedTemplate; language_http.go; app-owned locales/*.json; packages/localization/{languages,catalog,template}.go",
+      "non_test_callers": "localized app middleware and all translated app templates; GET/POST /language, PUT /api/v1/me/language, GET me API projection.",
+      "remaining_proof": [
+        {
+          "kind": "isolated_actual_app_catalog_handler_template_contract",
+          "reference": "apps/subtitles/internal/server/english_copy_test.go:TestEnglishCopyPreservesAPIErrorContract"
+        }
+      ],
+      "coverage_gap": "Existing browser layout-audit-entry-tests: sign in keeps the language preference in one calm composition opens Arabic only at320px and asserts geometry/screenshots, not catalog placeholders, translated labels, API errors, selection/cookie reset or redirect/CSRF. Config:false classic root fixtures remain isolated integration and do not establish normal SubtitleApp:true dashboard proof; auth/language/API owners are common to both modes.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retain important app-owned language data/selection/security/API contract; no assertions changed.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/external_boundary_test.go",
@@ -6791,323 +6801,419 @@
       "line": 10,
       "test": "TestLocaleCatalogsAreComplete",
       "baseline_file_sha256": "cd4b0fe656de5c17fabc009b799f56b029bfaef59090bf9aee5c89633632d9c4",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Every app-embedded active catalog must match English message IDs/cardinality, have nonempty values and preserve ordered template placeholders; selected browser screenshots cannot detect catalog-wide broken interpolation.",
+      "production_owner": "apps/subtitles/internal/server/locale.go loadLocalization/automaticLanguage/preferredLanguage/selectLanguage/localizedError/newLocalizedTemplate; language_http.go; app-owned locales/*.json; packages/localization/{languages,catalog,template}.go",
+      "non_test_callers": "localized app middleware and all translated app templates; GET/POST /language, PUT /api/v1/me/language, GET me API projection.",
+      "remaining_proof": [
+        {
+          "kind": "isolated_actual_app_catalog_handler_template_contract",
+          "reference": "apps/subtitles/internal/server/locale_catalog_test.go:TestLocaleCatalogsAreComplete"
+        }
+      ],
+      "coverage_gap": "Existing browser layout-audit-entry-tests: sign in keeps the language preference in one calm composition opens Arabic only at320px and asserts geometry/screenshots, not catalog placeholders, translated labels, API errors, selection/cookie reset or redirect/CSRF. Config:false classic root fixtures remain isolated integration and do not establish normal SubtitleApp:true dashboard proof; auth/language/API owners are common to both modes.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retain important app-owned language data/selection/security/API contract; no assertions changed.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/locale_catalog_test.go",
       "line": 15,
       "test": "TestSupporterLocaleCatalogsCoverEnglishSpanishAndArabic",
       "baseline_file_sha256": "cd4b0fe656de5c17fabc009b799f56b029bfaef59090bf9aee5c89633632d9c4",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "App-owned Spanish and Arabic supporter files must cover every English supporter ID with nonempty translation; shared synthetic localization package cannot prove embedded app data completeness.",
+      "production_owner": "apps/subtitles/internal/server/locale.go loadLocalization/automaticLanguage/preferredLanguage/selectLanguage/localizedError/newLocalizedTemplate; language_http.go; app-owned locales/*.json; packages/localization/{languages,catalog,template}.go",
+      "non_test_callers": "localized app middleware and all translated app templates; GET/POST /language, PUT /api/v1/me/language, GET me API projection.",
+      "remaining_proof": [
+        {
+          "kind": "isolated_actual_app_catalog_handler_template_contract",
+          "reference": "apps/subtitles/internal/server/locale_catalog_test.go:TestSupporterLocaleCatalogsCoverEnglishSpanishAndArabic"
+        }
+      ],
+      "coverage_gap": "Existing browser layout-audit-entry-tests: sign in keeps the language preference in one calm composition opens Arabic only at320px and asserts geometry/screenshots, not catalog placeholders, translated labels, API errors, selection/cookie reset or redirect/CSRF. Config:false classic root fixtures remain isolated integration and do not establish normal SubtitleApp:true dashboard proof; auth/language/API owners are common to both modes.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retain important app-owned language data/selection/security/API contract; no assertions changed.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/locale_catalog_test.go",
       "line": 30,
       "test": "TestSupportedLanguageCoverageIncludesJellyfinLocaleSet",
       "baseline_file_sha256": "cd4b0fe656de5c17fabc009b799f56b029bfaef59090bf9aee5c89633632d9c4",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "D",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "App supportedLanguages is a direct localization.SupportedLanguages value; this helper only asserts>=106, unique tags and ltr/rtl direction, repeated by canonical shared test with ordering/name/Arabic checks.",
+      "production_owner": "apps/subtitles/internal/server/locale.go loadLocalization/automaticLanguage/preferredLanguage/selectLanguage/localizedError/newLocalizedTemplate; language_http.go; app-owned locales/*.json; packages/localization/{languages,catalog,template}.go",
+      "non_test_callers": "localized app middleware and all translated app templates; GET/POST /language, PUT /api/v1/me/language, GET me API projection.",
+      "remaining_proof": [
+        {
+          "kind": "retained_canonical_shared_supported_language_invariants",
+          "reference": "packages/localization/localization_test.go:TestSupportedLanguagesUsePlayerOrderAndDirections",
+          "assertions": "same>=106,unique tag,ltr/rtl plus order en/es,nonempty names and ArabicRTL"
+        }
+      ],
+      "coverage_gap": "No genuine E2E equivalence claimed; canonical source-owner invariant test retains the entire repeated matrix. App-owned catalog, actual picker/login/API/CSRF tests remain.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Low: pure shared data-owner replay; no app callback, external catalog or response is exercised.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/locale_expanded_test.go",
       "line": 5,
       "test": "TestInvalidLanguageSelectionHasNoSideEffects",
       "baseline_file_sha256": "a45489037883ece7c25fde16ee1371b609a015bf80c045ab35eda0189e0e6c6f",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Invalid API/web language must400 without writing cookies; previous Spanish cookie retains Spanish API me value. Actual app selection adapters and cookie preference cannot silently change state on rejection.",
+      "production_owner": "apps/subtitles/internal/server/locale.go loadLocalization/automaticLanguage/preferredLanguage/selectLanguage/localizedError/newLocalizedTemplate; language_http.go; app-owned locales/*.json; packages/localization/{languages,catalog,template}.go",
+      "non_test_callers": "localized app middleware and all translated app templates; GET/POST /language, PUT /api/v1/me/language, GET me API projection.",
+      "remaining_proof": [
+        {
+          "kind": "isolated_actual_app_catalog_handler_template_contract",
+          "reference": "apps/subtitles/internal/server/locale_expanded_test.go:TestInvalidLanguageSelectionHasNoSideEffects"
+        }
+      ],
+      "coverage_gap": "Existing browser layout-audit-entry-tests: sign in keeps the language preference in one calm composition opens Arabic only at320px and asserts geometry/screenshots, not catalog placeholders, translated labels, API errors, selection/cookie reset or redirect/CSRF. Config:false classic root fixtures remain isolated integration and do not establish normal SubtitleApp:true dashboard proof; auth/language/API owners are common to both modes.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retain important app-owned language data/selection/security/API contract; no assertions changed.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/locale_expanded_test.go",
       "line": 9,
       "test": "TestExpandedLanguageTagsPreserveRegionalAndRTLSemantics",
       "baseline_file_sha256": "a45489037883ece7c25fde16ee1371b609a015bf80c045ab35eda0189e0e6c6f",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Actual Accept-Language hi-IN/zh-CN/ckb/ur-PK must keep exact regional tag, Content-Language, HTMLlang/direction and picker option; broad language-base assertions alone miss these regressions.",
+      "production_owner": "apps/subtitles/internal/server/locale.go loadLocalization/automaticLanguage/preferredLanguage/selectLanguage/localizedError/newLocalizedTemplate; language_http.go; app-owned locales/*.json; packages/localization/{languages,catalog,template}.go",
+      "non_test_callers": "localized app middleware and all translated app templates; GET/POST /language, PUT /api/v1/me/language, GET me API projection.",
+      "remaining_proof": [
+        {
+          "kind": "isolated_actual_app_catalog_handler_template_contract",
+          "reference": "apps/subtitles/internal/server/locale_expanded_test.go:TestExpandedLanguageTagsPreserveRegionalAndRTLSemantics"
+        }
+      ],
+      "coverage_gap": "Existing browser layout-audit-entry-tests: sign in keeps the language preference in one calm composition opens Arabic only at320px and asserts geometry/screenshots, not catalog placeholders, translated labels, API errors, selection/cookie reset or redirect/CSRF. Config:false classic root fixtures remain isolated integration and do not establish normal SubtitleApp:true dashboard proof; auth/language/API owners are common to both modes.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retain important app-owned language data/selection/security/API contract; no assertions changed.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/locale_expanded_test.go",
       "line": 13,
       "test": "TestLanguagePickerOffersEveryLocaleOnTheHomePage",
       "baseline_file_sha256": "a45489037883ece7c25fde16ee1371b609a015bf80c045ab35eda0189e0e6c6f",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "App full language page and classic root compact picker must have equal option counts plus hi-IN/ckb and link; the shared synthetic picker test does not prove app root binding parity.",
+      "production_owner": "apps/subtitles/internal/server/locale.go loadLocalization/automaticLanguage/preferredLanguage/selectLanguage/localizedError/newLocalizedTemplate; language_http.go; app-owned locales/*.json; packages/localization/{languages,catalog,template}.go",
+      "non_test_callers": "localized app middleware and all translated app templates; GET/POST /language, PUT /api/v1/me/language, GET me API projection.",
+      "remaining_proof": [
+        {
+          "kind": "isolated_actual_app_catalog_handler_template_contract",
+          "reference": "apps/subtitles/internal/server/locale_expanded_test.go:TestLanguagePickerOffersEveryLocaleOnTheHomePage"
+        }
+      ],
+      "coverage_gap": "Existing browser layout-audit-entry-tests: sign in keeps the language preference in one calm composition opens Arabic only at320px and asserts geometry/screenshots, not catalog placeholders, translated labels, API errors, selection/cookie reset or redirect/CSRF. Config:false classic root fixtures remain isolated integration and do not establish normal SubtitleApp:true dashboard proof; auth/language/API owners are common to both modes.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retain important app-owned language data/selection/security/API contract; no assertions changed.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/locale_picker_test.go",
       "line": 9,
       "test": "TestLanguagePickerShowsEverySupportedLocale",
       "baseline_file_sha256": "7c2eb21cad0698d5e89771309c1304314522c7c77f028091e9e1a1532cf560c0",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Actual /language must render every canonical native name/tag exactly once plus selected auto; source catalog or synthetic engine tests do not prove app route/render wiring.",
+      "production_owner": "apps/subtitles/internal/server/locale.go loadLocalization/automaticLanguage/preferredLanguage/selectLanguage/localizedError/newLocalizedTemplate; language_http.go; app-owned locales/*.json; packages/localization/{languages,catalog,template}.go",
+      "non_test_callers": "localized app middleware and all translated app templates; GET/POST /language, PUT /api/v1/me/language, GET me API projection.",
+      "remaining_proof": [
+        {
+          "kind": "isolated_actual_app_catalog_handler_template_contract",
+          "reference": "apps/subtitles/internal/server/locale_picker_test.go:TestLanguagePickerShowsEverySupportedLocale"
+        }
+      ],
+      "coverage_gap": "Existing browser layout-audit-entry-tests: sign in keeps the language preference in one calm composition opens Arabic only at320px and asserts geometry/screenshots, not catalog placeholders, translated labels, API errors, selection/cookie reset or redirect/CSRF. Config:false classic root fixtures remain isolated integration and do not establish normal SubtitleApp:true dashboard proof; auth/language/API owners are common to both modes.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retain important app-owned language data/selection/security/API contract; no assertions changed.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/locale_picker_test.go",
       "line": 14,
       "test": "TestAutomaticDetectionCoversEverySupportedLanguage",
       "baseline_file_sha256": "7c2eb21cad0698d5e89771309c1304314522c7c77f028091e9e1a1532cf560c0",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Every advertised Accept-Language must retain requested language base and actual login Content-Language/HTMLlang plus auto selection; expected exact tag comes from same app automaticLanguage, so exact regional fallback independently covered by ExpandedLanguageTags table.",
+      "production_owner": "apps/subtitles/internal/server/locale.go loadLocalization/automaticLanguage/preferredLanguage/selectLanguage/localizedError/newLocalizedTemplate; language_http.go; app-owned locales/*.json; packages/localization/{languages,catalog,template}.go",
+      "non_test_callers": "localized app middleware and all translated app templates; GET/POST /language, PUT /api/v1/me/language, GET me API projection.",
+      "remaining_proof": [
+        {
+          "kind": "isolated_actual_app_catalog_handler_template_contract",
+          "reference": "apps/subtitles/internal/server/locale_picker_test.go:TestAutomaticDetectionCoversEverySupportedLanguage"
+        }
+      ],
+      "coverage_gap": "Existing browser layout-audit-entry-tests: sign in keeps the language preference in one calm composition opens Arabic only at320px and asserts geometry/screenshots, not catalog placeholders, translated labels, API errors, selection/cookie reset or redirect/CSRF. Config:false classic root fixtures remain isolated integration and do not establish normal SubtitleApp:true dashboard proof; auth/language/API owners are common to both modes.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retain important app-owned language data/selection/security/API contract; no assertions changed.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/locale_test.go",
       "line": 9,
       "test": "TestWebSurfacesCanUseSpanish",
       "baseline_file_sha256": "9dea046f595bc5bcb12eff119a126a7b8de1caef80c827e01508cf0996b9cb72",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "App-owned home/account/settings/backups chrome, ARIA labels and command labels render Spanish with cookie-selected language; dynamic provider brand is not incorrectly translated and safety/status controls remain readable.",
+      "production_owner": "apps/subtitles/internal/server/locale.go loadLocalization/automaticLanguage/preferredLanguage/selectLanguage/localizedError/newLocalizedTemplate; language_http.go; app-owned locales/*.json; packages/localization/{languages,catalog,template}.go",
+      "non_test_callers": "localized app middleware and all translated app templates; GET/POST /language, PUT /api/v1/me/language, GET me API projection.",
+      "remaining_proof": [
+        {
+          "kind": "isolated_actual_app_catalog_handler_template_contract",
+          "reference": "apps/subtitles/internal/server/locale_test.go:TestWebSurfacesCanUseSpanish"
+        }
+      ],
+      "coverage_gap": "Existing browser layout-audit-entry-tests: sign in keeps the language preference in one calm composition opens Arabic only at320px and asserts geometry/screenshots, not catalog placeholders, translated labels, API errors, selection/cookie reset or redirect/CSRF. Config:false classic root fixtures remain isolated integration and do not establish normal SubtitleApp:true dashboard proof; auth/language/API owners are common to both modes.",
+      "history": "ab3bcda8953d28d058fcbd9361a00378c1e0518c Restore enabled quality gates and current browser contracts",
+      "risk": "Retain important app-owned language data/selection/security/API contract; no assertions changed.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/locale_test.go",
       "line": 13,
       "test": "TestLocalizationDoesNotTranslateLibraryContent",
       "baseline_file_sha256": "9dea046f595bc5bcb12eff119a126a7b8de1caef80c827e01508cf0996b9cb72",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "App template must translate static Home navigation to Inicio while media title Home stays exact; dynamic media data must not pass through source translation.",
+      "production_owner": "apps/subtitles/internal/server/locale.go loadLocalization/automaticLanguage/preferredLanguage/selectLanguage/localizedError/newLocalizedTemplate; language_http.go; app-owned locales/*.json; packages/localization/{languages,catalog,template}.go",
+      "non_test_callers": "localized app middleware and all translated app templates; GET/POST /language, PUT /api/v1/me/language, GET me API projection.",
+      "remaining_proof": [
+        {
+          "kind": "isolated_actual_app_catalog_handler_template_contract",
+          "reference": "apps/subtitles/internal/server/locale_test.go:TestLocalizationDoesNotTranslateLibraryContent"
+        }
+      ],
+      "coverage_gap": "Existing browser layout-audit-entry-tests: sign in keeps the language preference in one calm composition opens Arabic only at320px and asserts geometry/screenshots, not catalog placeholders, translated labels, API errors, selection/cookie reset or redirect/CSRF. Config:false classic root fixtures remain isolated integration and do not establish normal SubtitleApp:true dashboard proof; auth/language/API owners are common to both modes.",
+      "history": "ab3bcda8953d28d058fcbd9361a00378c1e0518c Restore enabled quality gates and current browser contracts",
+      "risk": "Retain important app-owned language data/selection/security/API contract; no assertions changed.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/locale_test.go",
       "line": 17,
       "test": "TestLocalizedPlayerUsesCatalogedPlaybackMode",
       "baseline_file_sha256": "9dea046f595bc5bcb12eff119a126a7b8de1caef80c827e01508cf0996b9cb72",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "App player Spanish compatibility label must be cataloged and not hybrid Directa First/Reproducci\u00f3n policy text; live E2E does not choose Spanish playback.",
+      "production_owner": "apps/subtitles/internal/server/locale.go loadLocalization/automaticLanguage/preferredLanguage/selectLanguage/localizedError/newLocalizedTemplate; language_http.go; app-owned locales/*.json; packages/localization/{languages,catalog,template}.go",
+      "non_test_callers": "localized app middleware and all translated app templates; GET/POST /language, PUT /api/v1/me/language, GET me API projection.",
+      "remaining_proof": [
+        {
+          "kind": "isolated_actual_app_catalog_handler_template_contract",
+          "reference": "apps/subtitles/internal/server/locale_test.go:TestLocalizedPlayerUsesCatalogedPlaybackMode"
+        }
+      ],
+      "coverage_gap": "Existing browser layout-audit-entry-tests: sign in keeps the language preference in one calm composition opens Arabic only at320px and asserts geometry/screenshots, not catalog placeholders, translated labels, API errors, selection/cookie reset or redirect/CSRF. Config:false classic root fixtures remain isolated integration and do not establish normal SubtitleApp:true dashboard proof; auth/language/API owners are common to both modes.",
+      "history": "ab3bcda8953d28d058fcbd9361a00378c1e0518c Restore enabled quality gates and current browser contracts",
+      "risk": "Retain important app-owned language data/selection/security/API contract; no assertions changed.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/locale_test.go",
       "line": 21,
       "test": "TestSetupAndLoginCanUseSpanish",
       "baseline_file_sha256": "9dea046f595bc5bcb12eff119a126a7b8de1caef80c827e01508cf0996b9cb72",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "App setup and login templates render selected Spanish document language, sign-in subtitle and passkey label; initial setup/auth have separate app templates from generic catalog tests. Existing mixed Owner-account phrase assertion does not prove complete fluent translation.",
+      "production_owner": "apps/subtitles/internal/server/locale.go loadLocalization/automaticLanguage/preferredLanguage/selectLanguage/localizedError/newLocalizedTemplate; language_http.go; app-owned locales/*.json; packages/localization/{languages,catalog,template}.go",
+      "non_test_callers": "localized app middleware and all translated app templates; GET/POST /language, PUT /api/v1/me/language, GET me API projection.",
+      "remaining_proof": [
+        {
+          "kind": "isolated_actual_app_catalog_handler_template_contract",
+          "reference": "apps/subtitles/internal/server/locale_test.go:TestSetupAndLoginCanUseSpanish"
+        }
+      ],
+      "coverage_gap": "Existing browser layout-audit-entry-tests: sign in keeps the language preference in one calm composition opens Arabic only at320px and asserts geometry/screenshots, not catalog placeholders, translated labels, API errors, selection/cookie reset or redirect/CSRF. Config:false classic root fixtures remain isolated integration and do not establish normal SubtitleApp:true dashboard proof; auth/language/API owners are common to both modes.",
+      "history": "ab3bcda8953d28d058fcbd9361a00378c1e0518c Restore enabled quality gates and current browser contracts",
+      "risk": "Retain important app-owned language data/selection/security/API contract; no assertions changed.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/locale_test.go",
       "line": 23,
       "test": "TestWebFailuresUseTheSelectedLanguage",
       "baseline_file_sha256": "9dea046f595bc5bcb12eff119a126a7b8de1caef80c827e01508cf0996b9cb72",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Actual Spanish invalid credentials/settings/playlist/progress/watch-together/OIDC unavailable errors must preserve statuses, Content-Language and localized error document/message; happy success screenshots miss failure adapters.",
+      "production_owner": "apps/subtitles/internal/server/locale.go loadLocalization/automaticLanguage/preferredLanguage/selectLanguage/localizedError/newLocalizedTemplate; language_http.go; app-owned locales/*.json; packages/localization/{languages,catalog,template}.go",
+      "non_test_callers": "localized app middleware and all translated app templates; GET/POST /language, PUT /api/v1/me/language, GET me API projection.",
+      "remaining_proof": [
+        {
+          "kind": "isolated_actual_app_catalog_handler_template_contract",
+          "reference": "apps/subtitles/internal/server/locale_test.go:TestWebFailuresUseTheSelectedLanguage"
+        }
+      ],
+      "coverage_gap": "Existing browser layout-audit-entry-tests: sign in keeps the language preference in one calm composition opens Arabic only at320px and asserts geometry/screenshots, not catalog placeholders, translated labels, API errors, selection/cookie reset or redirect/CSRF. Config:false classic root fixtures remain isolated integration and do not establish normal SubtitleApp:true dashboard proof; auth/language/API owners are common to both modes.",
+      "history": "ab3bcda8953d28d058fcbd9361a00378c1e0518c Restore enabled quality gates and current browser contracts",
+      "risk": "Retain important app-owned language data/selection/security/API contract; no assertions changed.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/locale_test.go",
       "line": 27,
       "test": "TestLanguagePreferenceIsAvailableThroughAPI",
       "baseline_file_sha256": "9dea046f595bc5bcb12eff119a126a7b8de1caef80c827e01508cf0996b9cb72",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Actual API language PUT emits Spanish cookie, cookie-backed me view shows Spanish plus expanded Arabic/hi-IN/ckb catalog, invalid xx rejects400; API wire catalog is not covered by browser picker geometry.",
+      "production_owner": "apps/subtitles/internal/server/locale.go loadLocalization/automaticLanguage/preferredLanguage/selectLanguage/localizedError/newLocalizedTemplate; language_http.go; app-owned locales/*.json; packages/localization/{languages,catalog,template}.go",
+      "non_test_callers": "localized app middleware and all translated app templates; GET/POST /language, PUT /api/v1/me/language, GET me API projection.",
+      "remaining_proof": [
+        {
+          "kind": "isolated_actual_app_catalog_handler_template_contract",
+          "reference": "apps/subtitles/internal/server/locale_test.go:TestLanguagePreferenceIsAvailableThroughAPI"
+        }
+      ],
+      "coverage_gap": "Existing browser layout-audit-entry-tests: sign in keeps the language preference in one calm composition opens Arabic only at320px and asserts geometry/screenshots, not catalog placeholders, translated labels, API errors, selection/cookie reset or redirect/CSRF. Config:false classic root fixtures remain isolated integration and do not establish normal SubtitleApp:true dashboard proof; auth/language/API owners are common to both modes.",
+      "history": "ab3bcda8953d28d058fcbd9361a00378c1e0518c Restore enabled quality gates and current browser contracts",
+      "risk": "Retain important app-owned language data/selection/security/API contract; no assertions changed.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/locale_test.go",
       "line": 31,
       "test": "TestBrowserLanguageIsMatchedAndCanReturnToAutomatic",
       "baseline_file_sha256": "9dea046f595bc5bcb12eff119a126a7b8de1caef80c827e01508cf0996b9cb72",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Actual API Accept-Language weighted fr-CA/es/en resolves fr auto; de-DE selection writes de cookie; auto reset expires cookie and reports auto/en instead of persisting old choice.",
+      "production_owner": "apps/subtitles/internal/server/locale.go loadLocalization/automaticLanguage/preferredLanguage/selectLanguage/localizedError/newLocalizedTemplate; language_http.go; app-owned locales/*.json; packages/localization/{languages,catalog,template}.go",
+      "non_test_callers": "localized app middleware and all translated app templates; GET/POST /language, PUT /api/v1/me/language, GET me API projection.",
+      "remaining_proof": [
+        {
+          "kind": "isolated_actual_app_catalog_handler_template_contract",
+          "reference": "apps/subtitles/internal/server/locale_test.go:TestBrowserLanguageIsMatchedAndCanReturnToAutomatic"
+        }
+      ],
+      "coverage_gap": "Existing browser layout-audit-entry-tests: sign in keeps the language preference in one calm composition opens Arabic only at320px and asserts geometry/screenshots, not catalog placeholders, translated labels, API errors, selection/cookie reset or redirect/CSRF. Config:false classic root fixtures remain isolated integration and do not establish normal SubtitleApp:true dashboard proof; auth/language/API owners are common to both modes.",
+      "history": "ab3bcda8953d28d058fcbd9361a00378c1e0518c Restore enabled quality gates and current browser contracts",
+      "risk": "Retain important app-owned language data/selection/security/API contract; no assertions changed.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/locale_test.go",
       "line": 35,
       "test": "TestLanguageSelectorIsAvailableBeforeSignInAndSupportsRTL",
       "baseline_file_sha256": "9dea046f595bc5bcb12eff119a126a7b8de1caef80c827e01508cf0996b9cb72",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Unauthenticated actual login must render German translated form/ARIA and selected auto, Arabic RTL translated sign-in; browser Arabic geometry test does not assert text/direction/availability contract.",
+      "production_owner": "apps/subtitles/internal/server/locale.go loadLocalization/automaticLanguage/preferredLanguage/selectLanguage/localizedError/newLocalizedTemplate; language_http.go; app-owned locales/*.json; packages/localization/{languages,catalog,template}.go",
+      "non_test_callers": "localized app middleware and all translated app templates; GET/POST /language, PUT /api/v1/me/language, GET me API projection.",
+      "remaining_proof": [
+        {
+          "kind": "isolated_actual_app_catalog_handler_template_contract",
+          "reference": "apps/subtitles/internal/server/locale_test.go:TestLanguageSelectorIsAvailableBeforeSignInAndSupportsRTL"
+        }
+      ],
+      "coverage_gap": "Existing browser layout-audit-entry-tests: sign in keeps the language preference in one calm composition opens Arabic only at320px and asserts geometry/screenshots, not catalog placeholders, translated labels, API errors, selection/cookie reset or redirect/CSRF. Config:false classic root fixtures remain isolated integration and do not establish normal SubtitleApp:true dashboard proof; auth/language/API owners are common to both modes.",
+      "history": "ab3bcda8953d28d058fcbd9361a00378c1e0518c Restore enabled quality gates and current browser contracts",
+      "risk": "Retain important app-owned language data/selection/security/API contract; no assertions changed.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/locale_test.go",
       "line": 39,
       "test": "TestSupportedLanguagesRenderTheLoginSurface",
       "baseline_file_sha256": "9dea046f595bc5bcb12eff119a126a7b8de1caef80c827e01508cf0996b9cb72",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "18 maintained translated catalogs must render correct sign-in text, actual HTMLlang/direction and selected option. Canonical shared engine uses synthetic languages and cannot catch app missing translations.",
+      "production_owner": "apps/subtitles/internal/server/locale.go loadLocalization/automaticLanguage/preferredLanguage/selectLanguage/localizedError/newLocalizedTemplate; language_http.go; app-owned locales/*.json; packages/localization/{languages,catalog,template}.go",
+      "non_test_callers": "localized app middleware and all translated app templates; GET/POST /language, PUT /api/v1/me/language, GET me API projection.",
+      "remaining_proof": [
+        {
+          "kind": "isolated_actual_app_catalog_handler_template_contract",
+          "reference": "apps/subtitles/internal/server/locale_test.go:TestSupportedLanguagesRenderTheLoginSurface"
+        }
+      ],
+      "coverage_gap": "Existing browser layout-audit-entry-tests: sign in keeps the language preference in one calm composition opens Arabic only at320px and asserts geometry/screenshots, not catalog placeholders, translated labels, API errors, selection/cookie reset or redirect/CSRF. Config:false classic root fixtures remain isolated integration and do not establish normal SubtitleApp:true dashboard proof; auth/language/API owners are common to both modes.",
+      "history": "ab3bcda8953d28d058fcbd9361a00378c1e0518c Restore enabled quality gates and current browser contracts",
+      "risk": "Retain important app-owned language data/selection/security/API contract; no assertions changed.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/locale_test.go",
       "line": 43,
       "test": "TestWebLanguageSelectionUsesTheSharedPreferenceOperation",
       "baseline_file_sha256": "9dea046f595bc5bcb12eff119a126a7b8de1caef80c827e01508cf0996b9cb72",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Actual web selection writes pt-PT cookie and same-host settings query redirect, subsequent login selects saved choice, external Referer redirectsroot rather than attacker host.",
+      "production_owner": "apps/subtitles/internal/server/locale.go loadLocalization/automaticLanguage/preferredLanguage/selectLanguage/localizedError/newLocalizedTemplate; language_http.go; app-owned locales/*.json; packages/localization/{languages,catalog,template}.go",
+      "non_test_callers": "localized app middleware and all translated app templates; GET/POST /language, PUT /api/v1/me/language, GET me API projection.",
+      "remaining_proof": [
+        {
+          "kind": "isolated_actual_app_catalog_handler_template_contract",
+          "reference": "apps/subtitles/internal/server/locale_test.go:TestWebLanguageSelectionUsesTheSharedPreferenceOperation"
+        }
+      ],
+      "coverage_gap": "Existing browser layout-audit-entry-tests: sign in keeps the language preference in one calm composition opens Arabic only at320px and asserts geometry/screenshots, not catalog placeholders, translated labels, API errors, selection/cookie reset or redirect/CSRF. Config:false classic root fixtures remain isolated integration and do not establish normal SubtitleApp:true dashboard proof; auth/language/API owners are common to both modes.",
+      "history": "ab3bcda8953d28d058fcbd9361a00378c1e0518c Restore enabled quality gates and current browser contracts",
+      "risk": "Retain important app-owned language data/selection/security/API contract; no assertions changed.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/locale_test.go",
       "line": 47,
       "test": "TestAuthenticatedLanguagePickerCarriesCSRFToken",
       "baseline_file_sha256": "9dea046f595bc5bcb12eff119a126a7b8de1caef80c827e01508cf0996b9cb72",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Actual signed-in root/settings picker receives nonempty session CSRF token and submitting it with browser UA/origin/cookie succeeds303; generic CSRF primitive does not prove localized dynamic template binding.",
+      "production_owner": "apps/subtitles/internal/server/locale.go loadLocalization/automaticLanguage/preferredLanguage/selectLanguage/localizedError/newLocalizedTemplate; language_http.go; app-owned locales/*.json; packages/localization/{languages,catalog,template}.go",
+      "non_test_callers": "localized app middleware and all translated app templates; GET/POST /language, PUT /api/v1/me/language, GET me API projection.",
+      "remaining_proof": [
+        {
+          "kind": "isolated_actual_app_catalog_handler_template_contract",
+          "reference": "apps/subtitles/internal/server/locale_test.go:TestAuthenticatedLanguagePickerCarriesCSRFToken"
+        }
+      ],
+      "coverage_gap": "Existing browser layout-audit-entry-tests: sign in keeps the language preference in one calm composition opens Arabic only at320px and asserts geometry/screenshots, not catalog placeholders, translated labels, API errors, selection/cookie reset or redirect/CSRF. Config:false classic root fixtures remain isolated integration and do not establish normal SubtitleApp:true dashboard proof; auth/language/API owners are common to both modes.",
+      "history": "ab3bcda8953d28d058fcbd9361a00378c1e0518c Restore enabled quality gates and current browser contracts",
+      "risk": "Retain important app-owned language data/selection/security/API contract; no assertions changed.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/maintenance_test.go",

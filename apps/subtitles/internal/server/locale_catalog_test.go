@@ -27,11 +27,6 @@ func TestSupporterLocaleCatalogsCoverEnglishSpanishAndArabic(t *testing.T) {
 	}
 }
 
-func TestSupportedLanguageCoverageIncludesJellyfinLocaleSet(t *testing.T) {
-	t.Parallel()
-	servertest.SupportedLanguageCoverageIncludesJellyfinLocaleSet(t, testSupportedLocales())
-}
-
 func readTestCatalog(t *testing.T, tag string) map[string]string {
 	t.Helper()
 	return readNamedTestCatalog(t, "active."+tag+".json")
