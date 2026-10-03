@@ -71,6 +71,7 @@ export async function verifyDirectRetry(page: Page, info: TestInfo, browserName:
     ownedRouteInstalled = true;
     await page.goto(watch, {waitUntil: "domcontentloaded"});
     await requested;
+    await expect(page.locator("[data-player-status]")).toHaveAttribute("aria-busy", "true");
     receipt.states.pending = await mediaState(video);
     await expect(video).toHaveAttribute("data-playback-policy", "direct");
     receipt.renderedSourceShape = await video.evaluate(media => Object.fromEntries(["data-direct", "data-adaptive", "data-hls"].map(name => [name, media.hasAttribute(name)])));

@@ -122,13 +122,12 @@ test("rejected Picture-in-Picture requests report recovery instead of silence", 
 
 test.describe("custom touch controls", () => {
   test.use({hasTouch: true, viewport: {width: 390, height: 844}});
-  test("touching the custom picture reveals controls without pausing", async ({page}) => {
+  test("touching the inline picture hides controls without pausing", async ({page}) => {
     await page.getByRole("button", {name: "Play", exact: true}).first().click();
     const video = page.locator("video");
-    await video.evaluate(media => media.addEventListener("click", () => Object.assign(window, {pictureTapped: true}), {once: true}));
     const picture = await video.boundingBox();
     await page.touchscreen.tap(picture!.x + picture!.width * 0.1, picture!.y + picture!.height * 0.35);
-    expect(await page.evaluate(() => (window as Window & {pictureTapped?: boolean}).pictureTapped)).toBe(true);
+    await expect(page.locator("[data-player-controls]")).toHaveCSS("opacity", "0", {timeout: 500});
     await expect(video).toHaveJSProperty("paused", false);
   });
 });

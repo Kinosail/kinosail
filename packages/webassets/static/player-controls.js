@@ -197,19 +197,20 @@ if (controls && player.tagName === "VIDEO") {
     syncSubtitles();
   });
   const fullscreen = document.querySelector("[data-player-fullscreen]");
-  const nativeFullscreenAllowed = player.dataset.subtitlePickerLimited !== "true";
   const fullscreenTarget = nativeControls ? player : stage;
-  const fullscreenSupported = Boolean((document.fullscreenEnabled && fullscreenTarget.requestFullscreen) || (nativeFullscreenAllowed && player.webkitEnterFullscreen));
+  const elementFullscreen = document.fullscreenEnabled && fullscreenTarget.requestFullscreen;
+  const fullscreenSupported = Boolean(elementFullscreen || player.webkitEnterFullscreen);
   if (fullscreen) {
-    fullscreen.hidden = !fullscreenSupported && !nativeFullscreenAllowed;
     fullscreen.disabled = !fullscreenSupported;
-    fullscreen.title = fullscreenSupported ? "Fullscreen" : nativeFullscreenAllowed ? "Fullscreen is unavailable in this browser" : "Fullscreen is unavailable while subtitle choices are limited. Use Theater mode.";
+    fullscreen.title = !fullscreenSupported ? "Fullscreen is unavailable in this browser"
+      : !elementFullscreen && player.dataset.subtitlePickerLimited === "true" ? "Fullscreen uses Safari’s native player and subtitle menu" : "Fullscreen";
   }
   const enterFullscreen = async () => {
     if (document.fullscreenElement) await document.exitFullscreen();
-    else if (nativeFullscreenAllowed && player.webkitEnterFullscreen && nativeControls) player.webkitEnterFullscreen();
-    else if (document.fullscreenEnabled && fullscreenTarget.requestFullscreen) await fullscreenTarget.requestFullscreen();
-    else if (nativeFullscreenAllowed && player.webkitEnterFullscreen) player.webkitEnterFullscreen();
+    else if (player.webkitDisplayingFullscreen) player.webkitExitFullscreen?.();
+    else if (player.webkitEnterFullscreen && nativeControls) player.webkitEnterFullscreen();
+    else if (document.fullscreenEnabled && fullscreenTarget.requestFullscreen) await fullscreenTarget.requestFullscreen({navigationUI: "hide"});
+    else if (player.webkitEnterFullscreen) player.webkitEnterFullscreen();
   };
   fullscreen?.addEventListener("click", () => enterFullscreen().catch(reportFullscreenFailure));
   pictureInPicture?.addEventListener("click", () => togglePictureInPicture().catch(() => reportControlFailure("Picture-in-Picture could not open. Start the video, then try again.")));
@@ -245,9 +246,8 @@ if (controls && player.tagName === "VIDEO") {
     else requestPause();
   });
   for (const event of ["loadedmetadata", "durationchange", "timeupdate", "play", "playing", "pause", "volumechange", "error"]) player.addEventListener(event, syncControls);
-  document.addEventListener("fullscreenchange", () => {
-    const button = document.querySelector("[data-player-fullscreen]");
-    button?.setAttribute("aria-label", document.fullscreenElement ? "Exit fullscreen" : "Enter fullscreen");
-  });
+  const syncFullscreen = () => fullscreen?.setAttribute("aria-label", document.fullscreenElement || player.webkitDisplayingFullscreen ? "Exit fullscreen" : "Enter fullscreen");
+  document.addEventListener("fullscreenchange", syncFullscreen);
+  for (const event of ["webkitbeginfullscreen", "webkitendfullscreen"]) player.addEventListener(event, syncFullscreen);
   syncControls();
 }
