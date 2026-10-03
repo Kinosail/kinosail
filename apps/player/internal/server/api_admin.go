@@ -70,6 +70,8 @@ func registerAdminAPI(mux *http.ServeMux, api apiServices) { //nolint:funlen // 
 	owner("PUT /api/v1/settings/onboarding", settingsops.SaveOnboardingAPI(api.settings.setOnboardingPending, readJSON, writeJSON, apiError))
 	owner("PUT /api/v1/settings/mfa", apiMFARequirement(api.auth))
 	owner("PUT /api/v1/settings/session-timeouts", apiSessionTimeouts(api.settings))
+	owner("PUT /api/v1/settings/public-session-timeouts", apiSessionTimeouts(api.settings, true))
+	owner("DELETE /api/v1/settings/public-session-timeouts", resetPublicSessionTimeouts(api.settings, true))
 	owner("PUT /api/v1/settings/playback", apiSetting(func(input apiSettingInput) error {
 		return api.settings.setPlayback(input.Mode, input.Autoplay, input.Subtitles, input.AutoSkip)
 	}))

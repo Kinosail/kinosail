@@ -59,7 +59,7 @@ var mcpBlockedRoutes = routeSet(
 	"POST /api/v1/remote-access/kill",
 	"POST /api/v1/session", "POST /api/v1/setup", "POST /api/v1/supporter/activate",
 	"POST /api/v1/home-assistant/pair", "POST /api/v1/home-assistant/pairings", "POST /api/v1/home-assistant/playback/{id}", "POST /api/v1/home-assistant/players/{id}/commands", "POST /api/v1/home-assistant/token",
-	"PUT /api/v1/home-assistant/players/{id}", "PUT /api/v1/me/mfa", "PUT /api/v1/profiles/{id}", "PUT /api/v1/profiles/{id}/password", "PUT /api/v1/settings/home-assistant", "PUT /api/v1/settings/mfa", "PUT /api/v1/settings/session-timeouts",
+	"PUT /api/v1/home-assistant/players/{id}", "PUT /api/v1/me/mfa", "PUT /api/v1/profiles/{id}", "PUT /api/v1/profiles/{id}/password", "PUT /api/v1/settings/home-assistant", "PUT /api/v1/settings/mfa", "PUT /api/v1/settings/session-timeouts", "PUT /api/v1/settings/public-session-timeouts", "DELETE /api/v1/settings/public-session-timeouts",
 )
 
 type mcpRoutePolicy struct{}

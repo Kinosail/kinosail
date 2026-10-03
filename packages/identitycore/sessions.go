@@ -31,6 +31,7 @@ type Session struct {
 	Name             string `json:"name,omitempty"`
 	CreatedAt        int64  `json:"createdAt,omitempty"`
 	LastSeen         int64  `json:"lastSeen,omitempty"`
+	InactiveSeconds  int64  `json:"inactiveSeconds,omitempty"`
 	Browser          bool   `json:"browser,omitempty"`
 	StrongAt         int64  `json:"strongAt,omitempty"`
 	Channel          string `json:"channel,omitempty"`
@@ -52,14 +53,16 @@ type SessionProfile struct {
 }
 
 type SessionConfig struct {
-	Mutex    *sync.RWMutex
-	Values   *map[string]Session
-	File     string
-	Persist  func(string, any) error
-	Profiles func() []SessionProfile
-	Timeouts func() (time.Duration, time.Duration)
-	Now      func() time.Time
-	NewToken func() string
+	Mutex          *sync.RWMutex
+	Values         *map[string]Session
+	File           string
+	Persist        func(string, any) error
+	Profiles       func() []SessionProfile
+	Timeouts       func() (time.Duration, time.Duration)
+	PublicTimeouts func() (time.Duration, time.Duration)
+	PublicLifetime func() time.Duration
+	Now            func() time.Time
+	NewToken       func() string
 }
 
 type Sessions struct{ config SessionConfig }
@@ -154,7 +157,8 @@ func (sessions *Sessions) create(profileID, name string, browser, strong bool, c
 	if err := validateSessionAuthority(profile, channel, revision, deviceKey); err != nil {
 		return "", err
 	}
-	if channel == "public" && activePublic(*sessions.config.Values, profileID, now.Unix()) >= publicSessionLimit {
+	publicInactive, publicAbsolute := sessions.TimeoutsFor(Session{Channel: "public"})
+	if channel == "public" && activePublic(*sessions.config.Values, profileID, now.Unix(), publicInactive, publicAbsolute) >= publicSessionLimit {
 		return "", ErrPublicLimit
 	}
 	expires := now.Add(30 * 24 * time.Hour)
@@ -163,7 +167,11 @@ func (sessions *Sessions) create(profileID, name string, browser, strong bool, c
 		expires = now.Add(absolute)
 	}
 	if channel == "public" {
-		expires = now.Add(8 * time.Hour)
+		lifetime := 8 * time.Hour
+		if sessions.config.PublicLifetime != nil {
+			lifetime = sessions.config.PublicLifetime()
+		}
+		expires = now.Add(lifetime)
 	}
 	strongAt := int64(0)
 	if strong {
@@ -174,7 +182,8 @@ func (sessions *Sessions) create(profileID, name string, browser, strong bool, c
 		return "", ErrSessionToken
 	}
 	values := CloneSessions(*sessions.config.Values)
-	values[SessionKey(token)] = Session{ManagementDevice: deviceKey, ProfileID: profileID, ExpiresAt: expires.Unix(), Name: CleanDeviceName(name), CreatedAt: now.Unix(), LastSeen: now.Unix(), Browser: browser, StrongAt: strongAt, Channel: channel, ProfileRevision: profile.Revision}
+	inactive, _ := sessions.TimeoutsFor(Session{Channel: channel})
+	values[SessionKey(token)] = Session{InactiveSeconds: browserInactiveSeconds(browser, inactive), ManagementDevice: deviceKey, ProfileID: profileID, ExpiresAt: expires.Unix(), Name: CleanDeviceName(name), CreatedAt: now.Unix(), LastSeen: now.Unix(), Browser: browser, StrongAt: strongAt, Channel: channel, ProfileRevision: profile.Revision}
 	if err := sessions.config.Persist(sessions.config.File, values); err != nil {
 		return "", err
 	}
@@ -239,11 +248,11 @@ func (sessions *Sessions) Active() int {
 		return 0
 	}
 	now := sessions.config.Now().Unix()
-	inactive, absolute := sessions.config.Timeouts()
 	sessions.config.Mutex.RLock()
 	defer sessions.config.Mutex.RUnlock()
 	count := 0
 	for _, session := range *sessions.config.Values {
+		inactive, absolute := sessions.TimeoutsFor(session)
 		if !SessionExpired(session, now, inactive, absolute) {
 			count++
 		}

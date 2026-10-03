@@ -11,7 +11,6 @@ func (sessions *Sessions) Devices() []Device {
 		return []Device{}
 	}
 	now := sessions.config.Now().Unix()
-	inactive, absolute := sessions.config.Timeouts()
 	sessions.config.Mutex.RLock()
 	defer sessions.config.Mutex.RUnlock()
 	names := make(map[string]string)
@@ -20,6 +19,7 @@ func (sessions *Sessions) Devices() []Device {
 	}
 	devices := make([]Device, 0, len(*sessions.config.Values))
 	for id, session := range *sessions.config.Values {
+		inactive, absolute := sessions.TimeoutsFor(session)
 		if !SessionExpired(session, now, inactive, absolute) {
 			name := names[session.ProfileID]
 			if name == "" {
@@ -83,10 +83,10 @@ func findSessionProfile(profiles []SessionProfile, id string) (SessionProfile, b
 	return SessionProfile{}, false
 }
 
-func activePublic(sessions map[string]Session, profileID string, now int64) int {
+func activePublic(sessions map[string]Session, profileID string, now int64, inactive, absolute time.Duration) int {
 	count := 0
 	for _, session := range sessions {
-		if session.ProfileID == profileID && session.Channel == "public" && session.ExpiresAt > now {
+		if session.ProfileID == profileID && session.Channel == "public" && !SessionExpired(session, now, inactive, absolute) {
 			count++
 		}
 	}
@@ -100,7 +100,11 @@ func SessionExpired(session Session, now int64, inactive, absolute time.Duration
 	if !session.Browser {
 		return false
 	}
-	if session.LastSeen+int64(inactive/time.Second) <= now {
+	seconds := int64(inactive / time.Second)
+	if session.InactiveSeconds > 0 {
+		seconds = min(seconds, session.InactiveSeconds)
+	}
+	if session.LastSeen+seconds <= now {
 		return true
 	}
 	return session.CreatedAt+int64(absolute/time.Second) <= now

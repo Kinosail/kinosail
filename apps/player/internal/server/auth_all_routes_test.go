@@ -7,7 +7,7 @@ import (
 	"github.com/MikeO7/kinosail/packages/servertest"
 )
 
-const reviewedRouteInventorySHA256 = "6c575040fad77d13d2a48597b4a690d7101a190b0cb54255fd346086ca88e5fb"
+const reviewedRouteInventorySHA256 = "4f8c435d828e289d0c0cbb924ef8e64b54073ebc49d0efbfe92aee47b22422d0"
 
 var explicitlyAnonymousRoutes = routeSet(
 	"GET /static/public-login.js", "POST /auth/quick-connect", "POST /auth/quick-connect/token", "POST /auth/quick-connect/cancel",
@@ -83,7 +83,7 @@ var ownerOnlyRoutes = routeSet(
 	"POST /home-assistant/authorize", "POST /settings/home-assistant", "POST /settings/home-assistant/pair", "POST /onboarding/home-assistant",
 	"POST /settings/libraries", "POST /settings/libraries/remove", "POST /settings/marker-analysis", "POST /settings/playback",
 	"POST /settings/mfa",
-	"POST /settings/session-timeouts",
+	"POST /settings/session-timeouts", "POST /settings/public-session-timeouts", "POST /settings/public-session-timeouts/reset",
 	"POST /settings/media-shares", "POST /settings/media-shares/{id}/revoke", "POST /settings/onboarding",
 	"POST /settings/profiles", "POST /settings/profiles/password", "POST /settings/profiles/permissions", "POST /settings/profiles/remove",
 	"POST /settings/remote/enable", "POST /settings/remote/kill",
@@ -94,7 +94,7 @@ var ownerOnlyRoutes = routeSet(
 	"POST /settings/viewing-imports/apply", "POST /settings/viewing-imports/preview", "POST /settings/viewing-syncs", "POST /settings/viewing-syncs/remove", "POST /settings/viewing-syncs/run",
 	"PUT /api/v1/collections/{name}/items/{id}", "PUT /api/v1/configuration/{key}", "PUT /api/v1/items/{id}/markers", "PUT /api/v1/items/{id}/metadata",
 	"PUT /api/v1/profiles/{id}", "PUT /api/v1/profiles/{id}/password", "PUT /api/v1/settings/dlna",
-	"PUT /api/v1/settings/home-assistant", "PUT /api/v1/settings/jellyfin", "PUT /api/v1/settings/mfa", "PUT /api/v1/settings/navigation", "PUT /api/v1/settings/onboarding", "PUT /api/v1/settings/playback", "PUT /api/v1/settings/scans", "PUT /api/v1/settings/server", "PUT /api/v1/settings/session-timeouts", "PUT /api/v1/settings/subtitles", "PUT /api/v1/settings/subtitle-picker", "PUT /api/v1/settings/transcoder", "PUT /api/v1/settings/trusted-https", "PUT /api/v1/settings/updates",
+	"PUT /api/v1/settings/home-assistant", "PUT /api/v1/settings/jellyfin", "PUT /api/v1/settings/mfa", "PUT /api/v1/settings/navigation", "PUT /api/v1/settings/onboarding", "PUT /api/v1/settings/playback", "PUT /api/v1/settings/scans", "PUT /api/v1/settings/server", "PUT /api/v1/settings/session-timeouts", "PUT /api/v1/settings/public-session-timeouts", "DELETE /api/v1/settings/public-session-timeouts", "PUT /api/v1/settings/subtitles", "PUT /api/v1/settings/subtitle-picker", "PUT /api/v1/settings/transcoder", "PUT /api/v1/settings/trusted-https", "PUT /api/v1/settings/updates",
 )
 
 var expectedLibraryScopeRoutes = routeSet(
@@ -137,7 +137,7 @@ var sessionOnlyAPIRoutes = routeSet(
 )
 
 func TestEveryRegisteredRouteHasReviewedAnonymousAccess(t *testing.T) {
-	authRoutesContract().ReviewedAnonymousAccess(t, 480, reviewedRouteInventorySHA256, func(t *testing.T, data string) http.Handler {
+	authRoutesContract().ReviewedAnonymousAccess(t, 484, reviewedRouteInventorySHA256, func(t *testing.T, data string) http.Handler {
 		return New(Config{DataDir: data, RequireAuth: true, Configuration: jellyfinRouteConfiguration(t, data)})
 	})
 }

@@ -44,6 +44,7 @@ func (store *profileStore) sessionModule() *identitycore.RequestSessions {
 	config := identitycore.SessionConfig{
 		Mutex: &store.mu, Values: &store.sessions, File: store.sessionFile, Persist: store.persist,
 		Profiles: store.sessionProfiles, Timeouts: store.sessionTimeouts,
+		PublicTimeouts: store.publicSessionTimeouts, PublicLifetime: store.publicSessionLifetime,
 	}
 	return identitycore.NewRequestSessions(config, sessionToken)
 }

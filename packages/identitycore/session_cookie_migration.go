@@ -18,11 +18,11 @@ func (sessions *RequestSessions) MigrateBrowserCookie(writer http.ResponseWriter
 		return
 	}
 	now := sessions.config.Now()
-	inactive, absolute := sessions.config.Timeouts()
-	session, valid := sessions.migrationSession(request, cookie.Value, now.Unix(), inactive, absolute)
+	session, valid := sessions.migrationSession(request, cookie.Value, now.Unix())
 	if !valid {
 		return
 	}
+	_, absolute := sessions.TimeoutsFor(session)
 	expires := min(session.ExpiresAt, session.CreatedAt+int64(absolute/time.Second))
 	migrated := SessionCookie(cookie.Value, request) //nolint:gosec // SessionCookie always sets Secure, HttpOnly, and Strict SameSite.
 	migrated.Expires, migrated.MaxAge = time.Unix(expires, 0), int(expires-now.Unix())
@@ -40,10 +40,11 @@ func (sessions *RequestSessions) selectedLegacyCookie(request *http.Request) *ht
 	return cookie
 }
 
-func (sessions *RequestSessions) migrationSession(request *http.Request, token string, now int64, inactive, absolute time.Duration) (Session, bool) {
+func (sessions *RequestSessions) migrationSession(request *http.Request, token string, now int64) (Session, bool) {
 	sessions.config.Mutex.RLock()
 	defer sessions.config.Mutex.RUnlock()
 	session, found := (*sessions.config.Values)[SessionKey(token)]
+	inactive, absolute := sessions.TimeoutsFor(session)
 	if !found || !session.Browser || !SessionMatchesRequest(session, request) || SessionExpired(session, now, inactive, absolute) {
 		return session, false
 	}

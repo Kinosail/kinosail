@@ -38,10 +38,13 @@ test("Owner can understand and customize automatic sign-out", async ({ page }, t
 		await page.goto("/settings", { waitUntil: "domcontentloaded" });
 		const section = page.locator("#session-timeouts");
 		await expect(section).toBeVisible();
-		await expect(section.getByLabel("After inactivity")).toHaveValue("0.25");
-		await expect(section.getByLabel("Always after")).toHaveValue("8");
-		await expect(section.getByLabel("After inactivity").locator("option")).toHaveText(["15 minutes (recommended)", "1 hour", "8 hours", "1 day", "3 days", "7 days", "30 days", "90 days", "1 year"]);
-		await expect(section.getByLabel("Always after").locator("option")).toHaveText(["4 hours", "8 hours (recommended)", "1 day", "7 days", "30 days", "90 days", "1 year"]);
+		await expect(section.locator('[data-timeout-access="private"]').getByLabel("After inactivity")).toHaveValue("0.25");
+		await expect(section.locator('[data-timeout-access="private"]').getByLabel("Always after")).toHaveValue("8");
+		await expect(section.locator('[data-timeout-access="public"]').getByLabel("After inactivity")).toHaveValue("0.25");
+		await expect(section.locator('[data-timeout-access="public"]').getByLabel("Always after")).toHaveValue("8");
+		await expect(section.getByRole("heading", { name: "Public access", exact: true })).toBeVisible();
+		await expect(section.locator('[data-timeout-access="private"]').getByLabel("After inactivity").locator("option")).toHaveText(["15 minutes (recommended)", "1 hour", "8 hours", "1 day", "3 days", "7 days", "30 days", "90 days", "1 year"]);
+		await expect(section.locator('[data-timeout-access="private"]').getByLabel("Always after").locator("option")).toHaveText(["4 hours", "8 hours (recommended)", "1 day", "7 days", "30 days", "90 days", "1 year"]);
 		expect((await new AxeBuilder({ page }).include("#session-timeouts").analyze()).violations).toEqual([]);
 		expect(await section.evaluate((element) => ({ fitsViewport: element.getBoundingClientRect().right <= document.documentElement.clientWidth + 1, noOverflow: element.scrollWidth <= element.clientWidth + 1 }))).toEqual({ fitsViewport: true, noOverflow: true });
 		if (viewport.width === 1440 || viewport.width === 390) await page.screenshot({ path: testInfo.outputPath(`session-timeouts-${viewport.width}.png`), fullPage: true });
