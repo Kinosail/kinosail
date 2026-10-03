@@ -1,0 +1,155 @@
+{
+  "schema": "kinosail-retained-body-inventory-v1",
+  "reviewer": "frontend_native",
+  "source_sha": "d16e13722258a8f72c3736585146e07ed2519392",
+  "baseline_sha": "876b771a7dd0aef5e65957fcee87add0312535e8",
+  "retained_declarations_compared": 3453,
+  "decision_counts": {
+    "R": 3214,
+    "F": 174,
+    "C": 65
+  },
+  "changed_retained_bodies": [
+    {
+      "file": "apps/player/internal/server/auth_all_routes_test.go",
+      "name": "TestEveryRegisteredRouteHasReviewedAnonymousAccess",
+      "current_name": "TestEveryRegisteredRouteHasReviewedAnonymousAccess",
+      "decision": "R",
+      "baseline_body_sha256": "a003582b185610b5d5185a5f8b188e969a1d76edc6108d9332784254ca32a901",
+      "current_body_sha256": "d34cf4e74f98ac174a8f2cc3a26bc60ded87400a7cbdaa2c0ced1e5bfb8440b4",
+      "diff_after_explicit_name_normalization": "--- 876b771a7dd0aef5e65957fcee87add0312535e8:apps/player/internal/server/auth_all_routes_test.go\n+++ d16e13722258a8f72c3736585146e07ed2519392:apps/player/internal/server/auth_all_routes_test.go\n@@ -1,5 +1,5 @@\n func TestEveryRegisteredRouteHasReviewedAnonymousAccess(t *testing.T) {\n-\tauthRoutesContract().ReviewedAnonymousAccess(t, 478, reviewedRouteInventorySHA256, func(t *testing.T, data string) http.Handler {\n+\tauthRoutesContract().ReviewedAnonymousAccess(t, 480, reviewedRouteInventorySHA256, func(t *testing.T, data string) http.Handler {\n \t\treturn New(Config{DataDir: data, RequireAuth: true, Configuration: jellyfinRouteConfiguration(t, data)})\n \t})\n }"
+    },
+    {
+      "file": "apps/player/internal/server/passkeys_test.go",
+      "name": "TestPasskeyCeremoniesAreLocalAndServerSide",
+      "current_name": "TestPasskeyCeremoniesAreLocalAndServerSide",
+      "decision": "R",
+      "baseline_body_sha256": "ee007905172fbfd1cd1379a31aa77b4a9c924491c8b506ba377799261ec8da63",
+      "current_body_sha256": "6b1611c424a5ec60c0c2b59df03d9fecd4b446c740d2e12541352d35db8a97c3",
+      "diff_after_explicit_name_normalization": "--- 876b771a7dd0aef5e65957fcee87add0312535e8:apps/player/internal/server/passkeys_test.go\n+++ d16e13722258a8f72c3736585146e07ed2519392:apps/player/internal/server/passkeys_test.go\n@@ -8,7 +8,7 @@\n \trequest.Host = \"localhost:8080\"\n \trequest.AddCookie(owner)\n \thandler.ServeHTTP(account, request)\n-\tif account.Code != http.StatusOK || !strings.Contains(account.Body.String(), \"Add a passkey\") || !strings.Contains(account.Body.String(), \"Add one directly on another device\") || !strings.Contains(account.Body.String(), \"/static/app.css?v=electric-44\") || !strings.Contains(account.Body.String(), \"/static/passkeys.js?v=15\") {\n+\tif account.Code != http.StatusOK || !strings.Contains(account.Body.String(), \"Add a passkey\") || !strings.Contains(account.Body.String(), \"Add one directly on another device\") || !strings.Contains(account.Body.String(), \"/static/app.css?v=electric-44\") || !strings.Contains(account.Body.String(), \"/static/passkeys.js?v=16\") {\n \t\tt.Fatalf(\"account = %d %q\", account.Code, account.Body.String())\n \t}\n \tprompt := httptest.NewRecorder()"
+    },
+    {
+      "file": "apps/player/internal/server/passkeys_test.go",
+      "name": "TestPasskeyLoginIsAvailableFromSignInPage",
+      "current_name": "TestPasskeyLoginIsAvailableFromSignInPage",
+      "decision": "R",
+      "baseline_body_sha256": "50517b7255330a578e6f9345d822cd95a8843cb7fab4ae1b5ae9fcfad8469ddb",
+      "current_body_sha256": "67388e987b0acc25de2b6790f56400592dee8355d4c10a119a13afc5dc0bb7c6",
+      "diff_after_explicit_name_normalization": "--- 876b771a7dd0aef5e65957fcee87add0312535e8:apps/player/internal/server/passkeys_test.go\n+++ d16e13722258a8f72c3736585146e07ed2519392:apps/player/internal/server/passkeys_test.go\n@@ -1,4 +1,4 @@\n func TestPasskeyLoginIsAvailableFromSignInPage(t *testing.T) {\n \tt.Parallel()\n-\tservertest.PasskeyLoginIsAvailableFromSignInPage(t, New(Config{DataDir: t.TempDir(), RequireAuth: true}), \"/static/passkeys.js?v=15\")\n+\tservertest.PasskeyLoginIsAvailableFromSignInPage(t, New(Config{DataDir: t.TempDir(), RequireAuth: true}), \"/static/passkeys.js?v=16\")\n }"
+    },
+    {
+      "file": "apps/player/internal/server/trusted_https_test.go",
+      "name": "TestTrustedHTTPSWizardDefaultsToDuckDNSAndSupportsDeSEC",
+      "current_name": "TestTrustedHTTPSWizardDefaultsToDuckDNSAndSupportsDeSEC",
+      "decision": "R",
+      "baseline_body_sha256": "9defcec32b0cf94068abcff8c214b23f1b996ac94a1a0c5abd489512c71a6f1f",
+      "current_body_sha256": "d5f10d9e6844b3cd9c03b3bd8e32433fb15b3f81b9837391027813083033b54b",
+      "diff_after_explicit_name_normalization": "--- 876b771a7dd0aef5e65957fcee87add0312535e8:apps/player/internal/server/trusted_https_test.go\n+++ d16e13722258a8f72c3736585146e07ed2519392:apps/player/internal/server/trusted_https_test.go\n@@ -8,7 +8,7 @@\n \thandler := server.New(server.Config{DataDir: directory, RequireAuth: true, Configuration: configured})\n \towner := signInTestProfile(t, handler, \"/setup\", \"name=Owner&password=owner-password\")\n \tpage := requestWithCookie(t, handler, http.MethodGet, \"/onboarding/connection\", \"\", owner)\n-\tassertAPIBody(t, page, http.StatusOK, \"Trusted HTTPS\", \"DuckDNS \u00b7 Easiest\", \"deSEC \u00b7 More privacy\", `name=\"provider\"`, `value=\"duckdns\" checked`, `placeholder=\"myhome\"`, `placeholder=\"192.168.1.10 or server.nox\"`, \"Enter a private IPv4 address or a local hostname\", \"Example pair:\", \"myhome.duckdns.org\", \"myhome-subtitles.duckdns.org\", \"no router port forwarding is needed\", \"default <code>38127</code>\", \"Public remote access is a separate feature\", \"TCP <code>443</code>\", \"You need:\", \"private LAN IPv4 address\", \"outbound internet access\", \"temporary DNS TXT record\", \"without connecting through your router\", \"renews the certificate automatically\", \"serves the certificate on this app's LAN port\", \"password and MFA\", \"No certificate install\", \"Test updates this hostname to the LAN address above\", \"Test DNS connection\", `data-trusted-https-test-status`, `/static/theme.js?v=electric-1`, `/static/app.css?v=electric-44`)\n+\tassertAPIBody(t, page, http.StatusOK, \"Trusted HTTPS\", \"DuckDNS \u00b7 Easiest\", \"deSEC \u00b7 More privacy\", `name=\"provider\"`, `value=\"duckdns\" checked`, `placeholder=\"myhome\"`, `placeholder=\"192.168.1.10 or server.nox\"`, \"Enter a private IPv4 address or a local hostname\", \"Example pair:\", \"myhome.duckdns.org\", \"myhome-subtitles.duckdns.org\", \"no router port forwarding is needed\", \"default <code>38127</code>\", \"Public remote access is a separate feature\", \"TCP <code>443</code>\", \"You need:\", \"private LAN IPv4 address\", \"outbound internet access\", \"temporary DNS TXT record\", \"without connecting through your router\", \"renews the certificate automatically\", \"serves the certificate on this app's LAN port\", \"password and MFA\", \"No certificate install\", \"Test updates this hostname to the LAN address above\", \"Test DNS connection\", `data-trusted-https-test-status`, `/static/theme.js?v=`, `/static/app.css?v=electric-44`)\n \tscript := httptest.NewRecorder()\n \thandler.ServeHTTP(script, httptest.NewRequestWithContext(t.Context(), http.MethodGet, \"/static/theme.js\", nil))\n \tassertAPIBody(t, script, http.StatusOK, `request(\"/api/v1/settings/trusted-https/validate\"`, `request(\"/api/v1/settings/trusted-https/test\"`, `request(\"/api/v1/settings/trusted-https\", \"PUT\")`, \"Checking these details\", \"Nothing was saved\")"
+    },
+    {
+      "file": "apps/subtitles/internal/server/passkey_lifecycle_internal_test.go",
+      "name": "TestPasskeyRemovalRequiresRecentStrongAuthentication",
+      "current_name": "TestPasskeyRemovalRequiresSessionAndValidIdentifier",
+      "decision": "F",
+      "baseline_body_sha256": "ac7f48c36398e01e4790a20b6455cdc86f52e6a74b2989c491a7710e719c9cd1",
+      "current_body_sha256": "40833973dbcda7e9566b0c43958a4530c2af4a3a28fffbb14eaf21ae885bc271",
+      "diff_after_explicit_name_normalization": "--- 876b771a7dd0aef5e65957fcee87add0312535e8:apps/subtitles/internal/server/passkey_lifecycle_internal_test.go\n+++ d16e13722258a8f72c3736585146e07ed2519392:apps/subtitles/internal/server/passkey_lifecycle_internal_test.go\n@@ -1,4 +1,4 @@\n-func TestPasskeyRemovalRequiresRecentStrongAuthentication(t *testing.T) { //nolint:cyclop,funlen // One security lifecycle proves stale, weak, invalid, and valid removal attempts.\n+func TestPasskeyRemovalRequiresRecentStrongAuthentication(t *testing.T) { //nolint:cyclop,funlen // One lifecycle checks missing-session, malformed-identifier, and valid removals.\n \tt.Parallel()\n \tstore := newProfileStore(t.TempDir())\n \tprofile, _ := newProfile(\"Viewer\", \"viewer-password\", false)"
+    },
+    {
+      "file": "apps/subtitles/internal/server/passkeys_test.go",
+      "name": "TestPasskeyCeremoniesAreLocalAndServerSide",
+      "current_name": "TestPasskeyCeremoniesAreLocalAndServerSide",
+      "decision": "R",
+      "baseline_body_sha256": "a1c41697c16b29c93fd998e82e5390abda5278b22cfcbb7c9facd458f3796466",
+      "current_body_sha256": "950624f0610cc3ca2539f1ba8bf698b354ef03532c3fcb5486826cc33025e1d8",
+      "diff_after_explicit_name_normalization": "--- 876b771a7dd0aef5e65957fcee87add0312535e8:apps/subtitles/internal/server/passkeys_test.go\n+++ d16e13722258a8f72c3736585146e07ed2519392:apps/subtitles/internal/server/passkeys_test.go\n@@ -8,7 +8,7 @@\n \trequest.Host = \"localhost:8080\"\n \trequest.AddCookie(owner)\n \thandler.ServeHTTP(account, request)\n-\tif account.Code != http.StatusOK || !strings.Contains(account.Body.String(), \"Add a passkey\") || !strings.Contains(account.Body.String(), \"Add one directly on another device\") || !strings.Contains(account.Body.String(), \"/static/app.css?v=cinema-11\") || !strings.Contains(account.Body.String(), \"/static/passkeys.js?v=15\") {\n+\tif account.Code != http.StatusOK || !strings.Contains(account.Body.String(), \"Add a passkey\") || !strings.Contains(account.Body.String(), \"Add one directly on another device\") || !strings.Contains(account.Body.String(), \"/static/app.css?v=cinema-11\") || !strings.Contains(account.Body.String(), \"/static/passkeys.js?v=16\") {\n \t\tt.Fatalf(\"account = %d %q\", account.Code, account.Body.String())\n \t}\n \tprompt := httptest.NewRecorder()"
+    },
+    {
+      "file": "apps/subtitles/internal/server/passkeys_test.go",
+      "name": "TestPasskeyLoginIsAvailableFromSignInPage",
+      "current_name": "TestPasskeyLoginIsAvailableFromSignInPage",
+      "decision": "R",
+      "baseline_body_sha256": "50517b7255330a578e6f9345d822cd95a8843cb7fab4ae1b5ae9fcfad8469ddb",
+      "current_body_sha256": "67388e987b0acc25de2b6790f56400592dee8355d4c10a119a13afc5dc0bb7c6",
+      "diff_after_explicit_name_normalization": "--- 876b771a7dd0aef5e65957fcee87add0312535e8:apps/subtitles/internal/server/passkeys_test.go\n+++ d16e13722258a8f72c3736585146e07ed2519392:apps/subtitles/internal/server/passkeys_test.go\n@@ -1,4 +1,4 @@\n func TestPasskeyLoginIsAvailableFromSignInPage(t *testing.T) {\n \tt.Parallel()\n-\tservertest.PasskeyLoginIsAvailableFromSignInPage(t, New(Config{DataDir: t.TempDir(), RequireAuth: true}), \"/static/passkeys.js?v=15\")\n+\tservertest.PasskeyLoginIsAvailableFromSignInPage(t, New(Config{DataDir: t.TempDir(), RequireAuth: true}), \"/static/passkeys.js?v=16\")\n }"
+    },
+    {
+      "file": "apps/subtitles/internal/server/remote_access_security_test.go",
+      "name": "TestOwnerKillSwitchFailsPublicAccessClosedAndPersists",
+      "current_name": "TestOwnerCanPersistAndResetPublicKillSwitch",
+      "decision": "F",
+      "baseline_body_sha256": "824db12d2664c215f409223ac4ba7fbbaea1fa7d4bc603549383dc806b856003",
+      "current_body_sha256": "8727f785e655f4dcfa435b2f810987c07a1696cc5bd38e03281eecfdc125b79a",
+      "diff_after_explicit_name_normalization": "--- 876b771a7dd0aef5e65957fcee87add0312535e8:apps/subtitles/internal/server/remote_access_security_test.go\n+++ d16e13722258a8f72c3736585146e07ed2519392:apps/subtitles/internal/server/remote_access_security_test.go\n@@ -1,4 +1,4 @@\n-func TestOwnerKillSwitchFailsPublicAccessClosedAndPersists(t *testing.T) { //nolint:cyclop // One scenario proves immediate, local-safe, persistent kill behavior.\n+func TestOwnerKillSwitchFailsPublicAccessClosedAndPersists(t *testing.T) { //nolint:cyclop // One scenario checks API state, local recovery, persistence, and reset.\n \tt.Parallel()\n \tdataDir := t.TempDir()\n \tconfig := remoteaccess.Config{Enabled: true, PublicHTTPS: true, Domain: \"family-media\", Token: strings.Repeat(\"k\", 32), Listen: \"127.0.0.1:8443\", DataDir: dataDir}"
+    },
+    {
+      "file": "apps/subtitles/internal/server/remote_security_audit_internal_test.go",
+      "name": "TestRemoteSecurityMutationsHaveStableAuditActions",
+      "current_name": "TestRemoteSecurityMutationsHaveStableAuditActions",
+      "decision": "C",
+      "baseline_body_sha256": "01b70ad26d20a042019a14b3ae201bc100c57fda18287d5d3bfd7356a2cfcb23",
+      "current_body_sha256": "7b71403a41556a9b510ef65f75754f53fb5dcf5b2f9ed6062db7118f878b9e32",
+      "diff_after_explicit_name_normalization": "--- 876b771a7dd0aef5e65957fcee87add0312535e8:apps/subtitles/internal/server/remote_security_audit_internal_test.go\n+++ d16e13722258a8f72c3736585146e07ed2519392:apps/subtitles/internal/server/remote_security_audit_internal_test.go\n@@ -1,12 +1,8 @@\n func TestRemoteSecurityMutationsHaveStableAuditActions(t *testing.T) {\n \tt.Parallel()\n \tfor name, test := range map[string]struct{ method, path, action string }{\n-\t\t\"kill\":         {http.MethodPost, \"/api/v1/remote-access/kill\", \"remote-access.killed\"},\n-\t\t\"reset\":        {http.MethodDelete, \"/api/v1/remote-access/kill\", \"remote-access.reset\"},\n-\t\t\"share create\": {http.MethodPost, \"/api/v1/media-shares\", \"media-share.created\"},\n-\t\t\"share claim\":  {http.MethodPost, \"/api/v1/media-shares/claim\", \"media-share.claimed\"},\n-\t\t\"share revoke\": {http.MethodDelete, \"/api/v1/media-shares/id\", \"media-share.revoked\"},\n-\t\t\"web kill\":     {http.MethodPost, \"/settings/remote/kill\", \"remote-access.killed\"},\n+\t\t\"share claim\": {http.MethodPost, \"/api/v1/media-shares/claim\", \"media-share.claimed\"},\n+\t\t\"web kill\":    {http.MethodPost, \"/settings/remote/kill\", \"remote-access.killed\"},\n \t} {\n \t\tt.Run(name, func(t *testing.T) {\n \t\t\trequest := httptest.NewRequestWithContext(t.Context(), test.method, test.path, nil)"
+    },
+    {
+      "file": "apps/subtitles/internal/server/subsource_provider_internal_test.go",
+      "name": "TestSubSourceRejectsUnsafeOrAmbiguousResults",
+      "current_name": "TestSubSourceRejectsUnsafeOrAmbiguousResults",
+      "decision": "F",
+      "baseline_body_sha256": "22ab0c82a1b8eddcd5cad11cc5a4f35735c160e3ed56ec3c112e2d02f80de6c5",
+      "current_body_sha256": "5f265978e5188c11a3a1dd6169fded4fa963904e950a1c4ef4918623f35bfaa4",
+      "diff_after_explicit_name_normalization": "--- 876b771a7dd0aef5e65957fcee87add0312535e8:apps/subtitles/internal/server/subsource_provider_internal_test.go\n+++ d16e13722258a8f72c3736585146e07ed2519392:apps/subtitles/internal/server/subsource_provider_internal_test.go\n@@ -14,18 +14,30 @@\n \t\t\"too many archive files\": func(value *subSourceSubtitle) { value.Files = 101 },\n \t} {\n \t\tt.Run(name, func(t *testing.T) {\n-\t\t\tcandidate := valid\n-\t\t\tmutate(&candidate)\n-\t\t\tresponse := subSourceSubtitleResponse{Success: true, Data: []subSourceSubtitle{candidate}}\n+\t\t\tresponse := subSourceSubtitleResponse{Success: true, Data: []subSourceSubtitle{valid}}\n+\t\t\tresponse.Pagination.Page, response.Pagination.Pages = 1, 1\n \t\t\tresponse.Pagination.Limit, response.Pagination.Total = 50, 1\n-\t\t\tif got := rankSubSourceCandidates(item, movie, \"english\", response); len(got) != 0 {\n+\t\t\tif got := rankSubSourceCandidates(item, movie, \"en\", response); len(got) != 1 || got[0].ID != valid.SubtitleID {\n+\t\t\t\tt.Fatalf(\"valid candidate control produced %#v\", got)\n+\t\t\t}\n+\t\t\tmutate(&response.Data[0])\n+\t\t\tif got := rankSubSourceCandidates(item, movie, \"en\", response); len(got) != 0 {\n \t\t\t\tt.Fatalf(\"unsafe result produced %d candidates\", len(got))\n \t\t\t}\n \t\t})\n \t}\n-\tresponse := subSourceSubtitleResponse{Success: true, Data: make([]subSourceSubtitle, 51)}\n-\tresponse.Pagination.Limit, response.Pagination.Total = 100, 51\n-\tif got := rankSubSourceCandidates(item, movie, \"english\", response); got != nil {\n+\tresponse := subSourceSubtitleResponse{Success: true, Data: make([]subSourceSubtitle, 50)}\n+\tfor index := range response.Data {\n+\t\tresponse.Data[index] = valid\n+\t}\n+\tresponse.Pagination.Page, response.Pagination.Pages = 1, 1\n+\tresponse.Pagination.Limit, response.Pagination.Total = 100, 50\n+\tif got := rankSubSourceCandidates(item, movie, \"en\", response); len(got) == 0 {\n+\t\tt.Fatal(\"maximum-sized valid provider result was rejected\")\n+\t}\n+\tresponse.Data = append(response.Data, valid)\n+\tresponse.Pagination.Total = 51\n+\tif got := rankSubSourceCandidates(item, movie, \"en\", response); got != nil {\n \t\tt.Fatal(\"oversized provider result was accepted\")\n \t}\n }"
+    },
+    {
+      "file": "apps/subtitles/internal/server/subtitle_excellence_internal_test.go",
+      "name": "TestSubtitleCleanupPreservesSpokenURLsAndRepeatedDialogue",
+      "current_name": "TestSubtitleCleanupPreservesSpokenURLsAndRepeatedDialogue",
+      "decision": "F",
+      "baseline_body_sha256": "996b278cbd2e270beed82a3f3c50d9b7f2249930bc1a3b4605219d14f481b5c8",
+      "current_body_sha256": "08165914f61ba4172a786517e0844fd5a6dd82b73d4927da7a07803b7b2bb1d8",
+      "diff_after_explicit_name_normalization": "--- 876b771a7dd0aef5e65957fcee87add0312535e8:apps/subtitles/internal/server/subtitle_excellence_internal_test.go\n+++ d16e13722258a8f72c3736585146e07ed2519392:apps/subtitles/internal/server/subtitle_excellence_internal_test.go\n@@ -4,4 +4,9 @@\n \tif err != nil || len(cleaned.Cues) != 3 || cleaned.Duplicates != 0 {\n \t\tt.Fatalf(\"dialogue changed: %#v, %v\", cleaned, err)\n \t}\n+\tfor index, text := range []string{\"Visit https://example.test now.\", \"Wait!\", \"Wait!\"} {\n+\t\tif cleaned.Cues[index].Text != text {\n+\t\t\tt.Fatalf(\"spoken text changed: cue %d = %q, want %q\", index, cleaned.Cues[index].Text, text)\n+\t\t}\n+\t}\n }"
+    },
+    {
+      "file": "apps/subtitles/internal/server/subtitle_sync_behavior_internal_test.go",
+      "name": "TestSynchronizeCandidateRejectsPreservedSubtitle",
+      "current_name": "TestSynchronizeCandidateRejectsPreservedSubtitle",
+      "decision": "F",
+      "baseline_body_sha256": "f7cb1bba926776ac1ee3ba13fdbc3161cbd786e1f7adde95ddce1ab9efdf6877",
+      "current_body_sha256": "636ad4441140a4aff7245523aedbc292e1ae40a6803c962e51838e2cfe8e2285",
+      "diff_after_explicit_name_normalization": "--- 876b771a7dd0aef5e65957fcee87add0312535e8:apps/subtitles/internal/server/subtitle_sync_behavior_internal_test.go\n+++ d16e13722258a8f72c3736585146e07ed2519392:apps/subtitles/internal/server/subtitle_sync_behavior_internal_test.go\n@@ -1,7 +1,21 @@\n func TestSynchronizeCandidateRejectsPreservedSubtitle(t *testing.T) {\n \tt.Parallel()\n-\tattempt := &subtitleCandidateAttempt{provider: &subtitleProvider{sync: newSubtitleSynchronizer(\"\")}}\n-\tif _, err := attempt.synchronizeCandidate(cleanedSubtitle{}, subtitleDownloadCandidate{Preserve: true}); err == nil {\n-\t\tt.Fatal(\"preserved subtitle was synchronized\")\n+\tcues := syntheticSubtitleCues()\n+\tinput, err := subtitleDocument(cues, 0)\n+\tif err != nil {\n+\t\tt.Fatal(err)\n+\t}\n+\tattempt := &subtitleCandidateAttempt{audio: syntheticSpeech(cues, 1, 7*time.Second)}\n+\tcorrected, err := attempt.synchronizeCandidate(input, subtitleDownloadCandidate{})\n+\tif err != nil || bytes.Equal(corrected.Data, input.Data) || len(corrected.Cues) != len(cues) || absDuration(corrected.Cues[0].Start-cues[0].Start-7*time.Second) > 300*time.Millisecond {\n+\t\tt.Fatalf(\"non-preserved correction control = %#v, error %v\", corrected.Cues, err)\n+\t}\n+\tif _, err = attempt.synchronizeCandidate(input, subtitleDownloadCandidate{Preserve: true}); !errors.Is(err, errSubtitleTimingMismatch) {\n+\t\tt.Fatalf(\"preserved timing mismatch = %v\", err)\n+\t}\n+\tattempt.audio = syntheticSpeech(cues, 1, 0)\n+\taligned, err := attempt.synchronizeCandidate(input, subtitleDownloadCandidate{Preserve: true})\n+\tif err != nil || !bytes.Equal(aligned.Data, input.Data) || aligned.TimingEvidence != \"audio\" {\n+\t\tt.Fatalf(\"aligned preserved control changed bytes or evidence: %#v, error %v\", aligned, err)\n \t}\n }"
+    },
+    {
+      "file": "packages/watchrooms/http_test.go",
+      "name": "TestHTTPWebSocketPreservesLeaderAndValidationRules",
+      "current_name": "TestHTTPWebSocketPreservesLeaderAndValidationRules",
+      "decision": "F",
+      "baseline_body_sha256": "d58b78303306cf092562fef3036d85abecbdc77a8766046dc7cd783ea4372124",
+      "current_body_sha256": "577dd250831cc8918ebef94a6a776460dba19046511203b464b346284b14a8e6",
+      "diff_after_explicit_name_normalization": "--- 876b771a7dd0aef5e65957fcee87add0312535e8:packages/watchrooms/http_test.go\n+++ d16e13722258a8f72c3736585146e07ed2519392:packages/watchrooms/http_test.go\n@@ -36,9 +36,5 @@\n \tif err := wsjson.Write(t.Context(), leader, Event{Action: \"observe\", Drift: -1}); err != nil {\n \t\tt.Fatal(err)\n \t}\n-\tctx, cancel := context.WithTimeout(t.Context(), time.Second)\n-\tdefer cancel()\n-\tif err := wsjson.Read(ctx, leader, &Event{}); err == nil {\n-\t\tt.Fatal(\"invalid drift retained connection\")\n-\t}\n+\tassertHTTPConnectionClosed(t, leader)\n }"
+    },
+    {
+      "file": "packages/watchrooms/http_test.go",
+      "name": "TestHTTPJoinAndAccessFailuresCloseConnections",
+      "current_name": "TestHTTPJoinAndAccessFailuresCloseConnections",
+      "decision": "F",
+      "baseline_body_sha256": "177d8df3f2d332e09bdf1002ef40aedc143e70412c9a79b2c6ff9942b83674a9",
+      "current_body_sha256": "bf0aecd34395638c164e0ddf27a0e8142b82843bf68ade23c0e4ce132f0ef1f6",
+      "diff_after_explicit_name_normalization": "--- 876b771a7dd0aef5e65957fcee87add0312535e8:packages/watchrooms/http_test.go\n+++ d16e13722258a8f72c3736585146e07ed2519392:packages/watchrooms/http_test.go\n@@ -13,12 +13,7 @@\n \tt.Cleanup(accessServer.Close)\n \tdenied := dialHTTPRoom(t, accessServer.URL, roomID, \"leader\", \"true\")\n \treadHTTPEvent(t, denied)\n-\tctx, cancel := context.WithTimeout(t.Context(), 2*time.Second)\n-\tdefer cancel()\n-\tif err := wsjson.Read(ctx, denied, &Event{}); err == nil {\n-\t\tt.Fatal(\"revoked viewer retained connection\")\n-\t}\n-\t_ = denied.CloseNow()\n+\tassertHTTPConnectionClosed(t, denied)\n \n \tvar views atomic.Int64\n \tconfig := httpConfig(harness.rooms, harness.index)\n@@ -29,8 +24,5 @@\n \tvisibilityServer := httptest.NewServer(mux)\n \tt.Cleanup(visibilityServer.Close)\n \tclosed := dialHTTPRoom(t, visibilityServer.URL, roomID, \"leader\", \"\")\n-\tif err := wsjson.Read(t.Context(), closed, &Event{}); err == nil {\n-\t\tt.Fatal(\"visibility loss retained connection\")\n-\t}\n-\t_ = closed.CloseNow()\n+\tassertHTTPConnectionClosed(t, closed)\n }"
+    }
+  ],
+  "body_extraction_gaps": [],
+  "failure_analysis": [
+    "Physical name presence alone could hide removed assertions; compare retained declaration bodies.",
+    "Honest renames could create false loss reports; normalize only the ledger's explicit renamed_to declaration header.",
+    "Braces in comments, quoted strings or raw fixtures and one-line functions could create false differences; scan lexical states.",
+    "Changes need manual semantic review; this script does not automatically classify assertion equivalence."
+  ],
+  "limits": [
+    "No builds or runtime/E2E equivalence claim.",
+    "Compares baseline ledger Go declarations only; new upstream declarations appear in the physical inventory."
+  ],
+  "reproduce": {
+    "command": "python3 retained-go-bodies.py d16e13722258a8f72c3736585146e07ed2519392 --repo <checkout> --output <receipt.json>",
+    "generator_sha256": "2240453680463e089fbd22dcc92e596a768240bc78ab0b7af898cc24b2279b02"
+  }
+}
