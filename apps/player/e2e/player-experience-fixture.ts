@@ -2,7 +2,7 @@ import { readFile } from "node:fs/promises";
 import { test } from "@playwright/test";
 import { playerSource } from "./static-sources";
 import { installAppleFullscreenApi, nativePlayerMarkup } from "./player-apple-fixture";
-export function installPlayerExperienceFixture(native = false, apple = false, appleDevice: "iPhone" | "iPad" = "iPhone") {
+export function installPlayerExperienceFixture(native = false, apple = false, appleDevice: "iPhone" | "iPad" = "iPhone", beforeSource?: (page: import("@playwright/test").Page, title: string) => Promise<void>) {
 test.beforeEach(async ({ page }, testInfo) => {
   if (testInfo.title === "theater control gets out of the way during playback" || testInfo.title.includes("Safari startup")) await page.clock.install();
   let markup = `
@@ -292,6 +292,7 @@ test.beforeEach(async ({ page }, testInfo) => {
   const availabilityFixture = testInfo.title.includes("without the availability constructor")
     ? 'Object.defineProperty(window, "WebKitPlaybackTargetAvailabilityEvent", {configurable: true, value: undefined});'
     : "";
+  await beforeSource?.(page, testInfo.title);
   await page.addScriptTag({ content: `${availabilityFixture}\n${hlsFixture}\n${playerScript}` });
 });
 }

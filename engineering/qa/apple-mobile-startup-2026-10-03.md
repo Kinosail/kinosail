@@ -41,3 +41,16 @@ Follow-up browser evidence:
   changes require a new artifact; this run does not prove physical Safari.
 - Further QA uses supported loopback HTTP with TLS disabled and strict browser
   error settings. There are no certificate bypass flags in the Apple runner.
+
+CI and retained-fixture failures, recorded before harness repairs:
+
+- CI Arrival was generated as Matroska stdout. The captured full file has no
+  duration, including when ffprobe reads it from a seekable file. Chrome parsed
+  the new master and decoded five frames, then reported media error 4 at 848 ms
+  while receiving a one-segment unfinished EVENT playlist. No HTTP error or
+  mismatched codec was found. This does not identify Chromium's exact rejection.
+- Write the same 12-second 1280×720 FFV1 fixture to a finalized regular file
+  before copying it out. Keep the existing happy-path assertion and media codec.
+- The retained touch-native test installs its simulated fullscreen API after
+  script startup, while production capabilities are captured during startup.
+  Install that API before the script; retain the same gesture and pause checks.
