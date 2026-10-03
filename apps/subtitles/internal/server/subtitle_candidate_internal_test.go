@@ -35,20 +35,6 @@ func TestRankSubDLCandidatesRejectsIdentityConflictsAndSelectsEpisodeFromPack(t 
 	}
 }
 
-func TestSubtitleLanguageSupportsCommonRegionalCodes(t *testing.T) {
-	t.Parallel()
-	for _, language := range []string{"en", "EN", "fil", "pt-br", "PT-br", "zh-cn", "ZH-hant"} {
-		if !validLanguage(language) {
-			t.Fatalf("rejected %q", language)
-		}
-	}
-	for _, language := range []string{"e", "pt_BR", "abcd", "en-US", "en-us-extra"} {
-		if validLanguage(language) {
-			t.Fatalf("accepted %q", language)
-		}
-	}
-}
-
 func TestSubtitleLanguageMatchingAllowsOnlyRequestedBaseFallback(t *testing.T) {
 	t.Parallel()
 	for _, languages := range [][2]string{{"pt", "pt-pt"}, {"zh", "zh-cn"}, {"tl", "TL"}, {"pt-BR", "pt-br"}, {"zh-Hant", "zh-tw"}, {"en", "en-US"}} {

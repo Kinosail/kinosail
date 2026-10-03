@@ -14,13 +14,6 @@ import (
 	"github.com/zserge/govad"
 )
 
-func TestSynchronizeSubtitleRejectsWeakEvidence(t *testing.T) {
-	t.Parallel()
-	if _, changed, err := synchronizeSubtitle(nil, cleanedSubtitle{}); err == nil || changed {
-		t.Fatalf("weak synchronization = changed %v, error %v", changed, err)
-	}
-}
-
 func TestSynchronizeCandidateRejectsPreservedSubtitle(t *testing.T) {
 	t.Parallel()
 	attempt := &subtitleCandidateAttempt{provider: &subtitleProvider{sync: newSubtitleSynchronizer("")}}

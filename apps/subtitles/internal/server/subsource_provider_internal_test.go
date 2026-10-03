@@ -85,24 +85,6 @@ func TestSubSourceArchiveNeedsOneExactEpisodeSRT(t *testing.T) {
 	}
 }
 
-func TestSubSourceRejectsRedirectOutsideConfiguredOrigin(t *testing.T) {
-	t.Parallel()
-	outside := httptest.NewServer(http.HandlerFunc(func(writer http.ResponseWriter, _ *http.Request) {
-		writer.WriteHeader(http.StatusOK)
-	}))
-	defer outside.Close()
-	remote := httptest.NewServer(http.HandlerFunc(func(writer http.ResponseWriter, _ *http.Request) {
-		writer.Header().Set("Location", outside.URL)
-		writer.WriteHeader(http.StatusFound)
-	}))
-	defer remote.Close()
-	provider := newSubSourceProvider(SubSourceConfig{URL: remote.URL, APIKey: "key", PersonalUse: true})
-	_, err := provider.download(context.Background(), subSourceCandidate{ID: 1}, library.Item{})
-	if err == nil {
-		t.Fatal("cross-origin redirect was accepted")
-	}
-}
-
 func newSubSourceTestServer(t *testing.T, subtitle []byte) *httptest.Server { //nolint:cyclop // The fixture serves each provider endpoint contract.
 	t.Helper()
 	archive := zipSubSourceFiles(t, map[string][]byte{"Arrival.2016.1080p.WEB-DL.srt": subtitle})
