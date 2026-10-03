@@ -2,7 +2,7 @@ import { readFile } from "node:fs/promises";
 import { test } from "@playwright/test";
 import { playerSource } from "./static-sources";
 import { installAppleFullscreenApi, nativePlayerMarkup } from "./player-apple-fixture";
-export function installPlayerExperienceFixture(native = false, apple = false) {
+export function installPlayerExperienceFixture(native = false, apple = false, appleDevice: "iPhone" | "iPad" = "iPhone") {
 test.beforeEach(async ({ page }, testInfo) => {
   if (testInfo.title === "theater control gets out of the way during playback" || testInfo.title.includes("Safari startup")) await page.clock.install();
   let markup = `
@@ -19,9 +19,9 @@ test.beforeEach(async ({ page }, testInfo) => {
   await page.route("**/api/v1/items/movie/playback-events", (route) => route.fulfill({ status: 204 }));
   if (testInfo.title.includes("progress save") || testInfo.title.includes("rejected fullscreen")) await page.goto("https://127.0.0.1:38127/");
   else await page.setContent(markup);
-  if (apple) await installAppleFullscreenApi(page);
+  if (apple) await installAppleFullscreenApi(page, appleDevice);
   await page.evaluate(({withInBand, safariStartup, queuedPause, queuedSeeking, apple}) => {
-    if (safariStartup || apple) Object.defineProperty(navigator, "userAgent", {configurable: true, value: "Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 Mobile/15E148"});
+    if (safariStartup) Object.defineProperty(navigator, "userAgent", {configurable: true, value: "Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 Mobile/15E148"});
     try { Object.defineProperty(window, "localStorage", { value: { getItem: () => null, setItem: () => {} } }); } catch {}
     let bufferedEnd = 60;
     let bufferedStart = 0;

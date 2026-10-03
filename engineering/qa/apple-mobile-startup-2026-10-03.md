@@ -25,3 +25,19 @@ Verification layers: retain existing startup/fullscreen regressions; add isolate
 gesture/readiness/failure tests first; run a real local Server with synthetic
 media and record build/media hashes, timings, command, revision and artifacts.
 Physical iPhone Safari is a separate boundary, never inferred from those runs.
+
+Follow-up browser evidence:
+
+- Independent review found missing theater controls, rejected Play leaving native
+  fullscreen open, and saved seeks hiding the launcher. Assertions failed first,
+  then passed after the fixes.
+- iPad does not share iPhone's automatic fullscreen presentation. Cold iPad Play
+  now loads metadata and asks for a fresh Play gesture. Keyboard requests outside
+  Apple presentation stay paused without emitting a playing intent. Both
+  failure paths reproduced before their production changes.
+- The disposable native Go Server journey passed real HTTP media decoding, seek,
+  captions, recovery and repeated loads at revision `8e1564e`; startup measured
+  1034 ms and 1800 ms. The Apple fullscreen API was simulated. Final source
+  changes require a new artifact; this run does not prove physical Safari.
+- Further QA uses supported loopback HTTP with TLS disabled and strict browser
+  error settings. There are no certificate bypass flags in the Apple runner.

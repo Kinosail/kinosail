@@ -1,5 +1,6 @@
 const player = document.querySelector("video,audio");
 if (!player) throw new Error("playable media element is missing");
+const applePhone = /iPhone|iPod/.test(navigator.userAgent);
 const appleTouch = /iPhone|iPad|iPod/.test(navigator.userAgent) || navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1;
 const appleNativePlayback = player.tagName === "VIDEO" && appleTouch && typeof player.webkitEnterFullscreen === "function";
 let applePlaybackRequested = false;
@@ -56,16 +57,20 @@ let playbackPreparation;
 let preparationPausePending = 0;
 const requestPause = () => { playbackPreparation?.stop(); applePlaybackRequested = false; player.dispatchEvent(new CustomEvent("kinosail:playback-intent", {detail: {playing: false}})); player.pause(); };
 const requestPlay = (detail) => {
-  playbackPreparation?.stop(false);
-  if (appleNativePlayback) { applePlaybackRequested = true; player.controls = true; }
-  player.dispatchEvent(new CustomEvent("kinosail:playback-intent", {detail: {playing: true}}));
   playbackTrace("play-request", detail);
   const rejected = (error) => {
     playbackTrace("play-rejected", `${detail}:${error?.name || "Error"}`);
+    if (appleNativePlayback) { applePlaybackRequested = false; player.controls = false; }
     if (error?.name === "NotAllowedError") player.dispatchEvent(new Event("kinosail:play-needs-gesture"));
     throw error;
   };
-  try { return Promise.resolve(player.play()).catch(rejected); } catch (error) { return Promise.reject(error).catch(rejected); }
+  try {
+    if (appleNativePlayback && !applePhone && !player.webkitDisplayingFullscreen && detail !== "apple-play") throw new DOMException("Apple playback needs Play", "NotAllowedError");
+    playbackPreparation?.stop(false);
+    if (appleNativePlayback) { applePlaybackRequested = true; player.controls = true; }
+    player.dispatchEvent(new CustomEvent("kinosail:playback-intent", {detail: {playing: true}}));
+    return Promise.resolve(player.play()).catch(rejected);
+  } catch (error) { return Promise.reject(error).catch(rejected); }
 };
 const playbackURLBase = location.origin === "null" ? "https://kinosail.invalid/" : location.href;
 const withPlaybackSession = (source) => {

@@ -29,3 +29,20 @@ The confirmed defect is an unfinished master claiming tiny intro-segment bandwid
 Add a public HTTP integration regression first, with a real FFmpeg-generated synthetic MPEG-4 fixture containing a black intro and subsequent moving picture. A real FFmpeg adapter reads at a bounded pace so the first response is an unfinished presentation. Assert startup bandwidth against the playback API's planned target. Replace only the temporary fixture's master bandwidth fields with the observed stale values and add the normal seek-cache marker; then request the public HLS master repeatedly. Assert corrected fields, preserved rendition metadata, and unchanged media-segment identity. Finish the encoder and assert completed bandwidth describes the measured output.
 
 This is synthetic HTTP integration evidence, not live playback, Safari decoding, or physical-device proof. No Nox state is changed and no library movie bytes leave Nox. Existing format, speed, random-access, audio, and cache regressions remain separate retained evidence.
+
+## Result and repeat recipe
+
+The regression failed before production changes: initial average/peak were 8,080 bits/s against a 493,000 bits/s plan; three retained-cache requests remained at 1 bit/s. After the change, startup average/peak are 493,000 / 542,300 bits/s. Three cached requests preserve rendition metadata, first-fragment identity, and encoder invocation count. The completed master returns measured average/peak of 180,056 / 286,056 bits/s, and the delivered first fragment decodes successfully.
+
+Unfinished playlists use their planned bitrate as a floor while retaining higher measured peaks. New masters carry a bandwidth-policy marker. Old cached video-transcode masters are repaired once from their existing rendition list, without changing fragments or starting encoding. The marker bounds future cache reads and prevents repeated segment scans. Completed publication continues to use measured bandwidth.
+
+Repeat from the repository root:
+
+```sh
+cd apps/player
+GOCACHE=/tmp/kinosail-apple-go-cache GOMAXPROCS=4 go test -p 1 ./internal/server -run '^TestRealBlackIntroHLSBandwidthSurvivesCachedMasterReuse$' -count=1 -v
+```
+
+The final shared playback suite, source-file cap, and whitespace checks pass. Retained HLS, seek, cache, cold-probe, and real copied-fragment decode checks pass. The retained scheduler fixture requires three rendition slots: `GOMAXPROCS=4` passes all cases; `GOMAXPROCS=2` or `3` reduces those slots and cannot meet the fixture's existing 540p-to-1080p expectation. The fixture was preserved.
+
+Exact commands, base revision, environment, file hashes, observations, and verification boundaries are recorded in `apple-hls-bandwidth-http-evidence-2026-10-03.json`. Parent-owned CI, PR review, merge, deployment, and physical iPhone verification remain separate.

@@ -2,17 +2,19 @@ import {writeFile} from "node:fs/promises";
 import {expect, test} from "@playwright/test";
 import {installPlayerExperienceFixture} from "./player-experience-fixture";
 
+test.afterEach(async ({browserName}, info) => {
+  const path = info.outputPath("apple-launch-receipt.json");
+  await writeFile(path, JSON.stringify({revision: process.env.KINOSAIL_TEST_REVISION || process.env.GITHUB_SHA,
+    command: "node node_modules/@playwright/test/cli.js test player-apple-launch.spec.ts --workers=1",
+    environment: browserName, data: "Isolated media state; simulated Apple fullscreen API",
+    result: info.status, boundary: "Does not prove physical iPhone fullscreen or media transport"}, null, 2));
+  await info.attach("apple-launch-receipt", {path, contentType: "application/json"});
+});
+
 test.describe("Apple launch policy @smoke", () => {
   test.use({hasTouch: true, viewport: {width: 390, height: 844}, ignoreHTTPSErrors: false});
   installPlayerExperienceFixture(false, true);
-  test.afterEach(async ({browserName}, info) => {
-    const path = info.outputPath("apple-launch-receipt.json");
-    await writeFile(path, JSON.stringify({revision: process.env.KINOSAIL_TEST_REVISION || process.env.GITHUB_SHA,
-      command: "node node_modules/@playwright/test/cli.js test player-apple-launch.spec.ts --workers=1",
-      environment: browserName, data: "Isolated media state; simulated Apple fullscreen API",
-      result: info.status, boundary: "Does not prove physical iPhone fullscreen or media transport"}, null, 2));
-    await info.attach("apple-launch-receipt", {path, contentType: "application/json"});
-  });
+
 
   test("cold metadata never hides Play or starts muted preparation", async ({page}) => {
     const video = page.locator("video");
@@ -89,5 +91,37 @@ test.describe("Apple launch policy @smoke", () => {
     await expect(page.getByRole("button", {name: "Play", exact: true})).toBeVisible();
     await expect(page.locator(".player-control-feedback")).toBeVisible();
     await expect(page.locator(".player-control-feedback")).not.toContainText("private media detail");
+  });
+});
+
+test.describe("iPad native launch policy", () => {
+  test.use({hasTouch: true, ignoreHTTPSErrors: false});
+  installPlayerExperienceFixture(false, true, "iPad");
+  test("cold iPad waits for a fresh Play gesture instead of starting inline", async ({page}) => {
+    const video = page.locator("video");
+    await page.evaluate(() => (window as Window & {setReadyState: (value: number) => void}).setReadyState(0));
+    await video.dispatchEvent("loadstart");
+    await page.getByRole("button", {name: "Play", exact: true}).tap();
+    await expect(video).toHaveJSProperty("paused", true);
+    await expect(page.locator(".player-control-feedback")).toContainText("Tap Play again when ready");
+    await page.evaluate(() => (window as Window & {setReadyState: (value: number) => void}).setReadyState(1));
+    await video.dispatchEvent("loadedmetadata");
+    await expect(video).toHaveJSProperty("paused", true);
+    await page.getByRole("button", {name: "Play", exact: true}).tap();
+    await expect(video).toHaveJSProperty("webkitDisplayingFullscreen", true);
+    await expect(video).toHaveJSProperty("paused", false);
+  });
+  test("iPad keyboard playback outside Apple presentation stays paused", async ({page}) => {
+    await page.locator("video").evaluate(media => {
+      (window as Window & {playIntents: boolean[]}).playIntents = [];
+      media.addEventListener("kinosail:playback-intent", event => {
+        (window as Window & {playIntents: boolean[]}).playIntents.push((event as CustomEvent).detail.playing);
+      });
+    });
+    await page.locator(".media-stage").focus();
+    await page.keyboard.press("k");
+    expect(await page.evaluate(() => (window as Window & {playIntents: boolean[]}).playIntents)).not.toContain(true);
+    await expect(page.locator("video")).toHaveJSProperty("paused", true);
+    await expect(page.getByRole("button", {name: "Play", exact: true})).toBeVisible();
   });
 });

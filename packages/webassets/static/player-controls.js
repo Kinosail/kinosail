@@ -166,6 +166,11 @@ if (controls && player.tagName === "VIDEO") {
   player.controls = nativeControls && !appleNativePlayback;
   controls.querySelectorAll("[data-player-toggle]").forEach((button) => button.addEventListener("click", () => {
     if (appleNativePlayback) {
+      if (!applePhone && player.readyState < HTMLMediaElement.HAVE_METADATA) {
+        player.load();
+        reportControlFailure("Video is preparing. Tap Play again when ready.");
+        return;
+      }
       try {
         // Before metadata, play without playsinline lets iPhone open Apple when ready.
         // Never retry fullscreen from a readiness callback without a fresh gesture.
