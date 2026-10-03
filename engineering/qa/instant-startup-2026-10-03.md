@@ -90,6 +90,19 @@ https://github.com/Kinosail/kinosail/actions/runs/37150196496
 This includes Player/Subtitles Go, populated Chromium, production container, lint and security checks.
 Task-related CodeQL path findings were repaired with rooted cache access; the findings policy passed.
 
+The final evidence-only CI run exposed an existing Subtitles passkey fixture's exact `MaxAge == 28800` expectation.
+The correct production behavior subtracts persistence time from the committed expiry, including a crossed second.
+The existing signed-login fixture now checks request-interval expiry and remaining-lifetime bounds while retaining cookie security attributes.
+Both apps passed 25 focused signed-login journeys after this test-only repair.
+The existing deterministic identitycore second-boundary test passed and verifies exact equality to persisted expiry.
+No production authentication behavior changed. Safe numerical cookie diagnostics are retained on failure.
+Local repeated runs did not capture a shortened `MaxAge`; the failed hosted request crossed the second boundary.
+
+The local `verify-changed` invocation passed cap, diff and server compilation, then failed two scheduler assertions at `GOMAXPROCS=2`.
+Unchanged encoding-capacity logic publishes one rendition at that bound, while both fixtures require two renditions.
+The existing scheduler contract passed with `GOMAXPROCS=4` in 6.2 seconds without code or fixture changes.
+The complete local gate remains reported failed; hosted CI supplies the full-suite checks.
+
 The host FFmpeg lacks the subtitles filter, so burn-in subtitle-version invalidation was explicitly not run.
 Ordinary external caption rendering passed. Physical Apple devices, Nox, production networks,
 long completed caches, full-size 4K movie workloads, and permission revocation during queued work remain separate verification boundaries.
