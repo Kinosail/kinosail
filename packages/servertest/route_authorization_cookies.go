@@ -18,7 +18,7 @@ func PostRouteLoginCookie(t *testing.T, handler http.Handler, form url.Values, r
 	response := httptest.NewRecorder()
 	handler.ServeHTTP(response, request)
 	for _, cookie := range response.Result().Cookies() {
-		if cookie.Name == "__Host-kinosail_session" && cookie.Value != "" {
+		if IsBrowserSessionCookie(cookie) && cookie.Value != "" {
 			return cookie
 		}
 	}

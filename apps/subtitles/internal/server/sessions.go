@@ -109,8 +109,8 @@ func (store *profileStore) signIn(writer http.ResponseWriter, request *http.Requ
 	return store.sessionModule().SignIn(writer, request, id)
 }
 
-func publicSessionCookie(token string) *http.Cookie {
-	return identitycore.PublicSessionCookie(token, time.Now())
+func publicSessionCookie(token string, requests ...*http.Request) *http.Cookie {
+	return identitycore.PublicSessionCookie(token, time.Now(), requests...)
 }
 
 func withoutPublicProfileSessions(sessions map[string]viewerSession, profileID string) map[string]viewerSession {

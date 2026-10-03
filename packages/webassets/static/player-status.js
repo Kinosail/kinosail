@@ -151,6 +151,8 @@ if (playerStatus) {
     if (!playerStatus.classList.contains("is-recovery")) showPlayerState("error", "Playback unavailable");
   });
   bufferedPercent();
+  // Parser-started media can emit loadstart before this deferred script runs.
+  if (!player.error && player.networkState === HTMLMediaElement.NETWORK_LOADING && player.readyState === HTMLMediaElement.HAVE_NOTHING) showPlayerState("loading", "Loading video…");
   if (player.hasAttribute("data-native-controls")) revealPlayControl();
   if (!playbackPreparation && !player.paused && player.readyState >= HTMLMediaElement.HAVE_CURRENT_DATA) hidePlayerState();
 }

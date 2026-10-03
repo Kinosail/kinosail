@@ -123,7 +123,7 @@ func assertOIDCProvisionedSession(t *testing.T, fixture OIDCFixture, callback *h
 	}
 	var linked bool
 	for _, cookie := range callback.Result().Cookies() {
-		linked = linked || cookie.Name == "__Host-kinosail_session" && cookie.Value != ""
+		linked = linked || IsBrowserSessionCookie(cookie) && cookie.Value != ""
 	}
 	if !linked || !strings.Contains(string(fixture.StoredState(t, dataDir, "profiles.json")), `"oidcSubject":"directory-1"`) {
 		t.Fatalf("SCIM/OIDC session cookies=%v profiles=%q", callback.Result().Cookies(), fixture.StoredState(t, dataDir, "profiles.json"))

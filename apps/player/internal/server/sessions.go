@@ -26,7 +26,7 @@ func (store *profileStore) sessionModule() *identitycore.RequestSessions {
 	return identitycore.NewRequestSessions(identitycore.SessionConfig{
 		Mutex: &store.mu, Values: &store.sessions, File: store.sessionFile, Persist: store.persist,
 		Profiles: store.sessionProfiles, Timeouts: store.sessionTimeouts,
-	}, sessionToken)
+	}, sessionToken, sessionTokenSource)
 }
 
 func (store *profileStore) sessionProfiles() []identitycore.SessionProfile {
@@ -105,10 +105,12 @@ func (store *profileStore) revokePublicSessions() error {
 	return nil
 }
 
-func sessionCookie(token string) *http.Cookie { return identitycore.SessionCookie(token) }
+func sessionCookie(token string, requests ...*http.Request) *http.Cookie {
+	return identitycore.SessionCookie(token, requests...)
+}
 
-func publicSessionCookie(token string) *http.Cookie {
-	return identitycore.PublicSessionCookie(token, time.Now())
+func publicSessionCookie(token string, requests ...*http.Request) *http.Cookie {
+	return identitycore.PublicSessionCookie(token, time.Now(), requests...)
 }
 
 func (store *profileStore) signOut(request *http.Request) error {

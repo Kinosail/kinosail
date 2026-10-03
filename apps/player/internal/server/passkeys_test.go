@@ -45,7 +45,7 @@ func TestPasskeyCeremoniesAreLocalAndServerSide(t *testing.T) {
 	if begin.Code != http.StatusOK || !strings.Contains(begin.Body.String(), `"rp":{"name":"Kinosail","id":"localhost"}`) || !strings.Contains(begin.Body.String(), `"userVerification":"required"`) || len(cookies) != 1 {
 		t.Fatalf("begin = %d, cookies = %#v, body = %q", begin.Code, cookies, begin.Body.String())
 	}
-	if cookies[0].Name != "kinosail_passkey" || !cookies[0].HttpOnly || cookies[0].SameSite != http.SameSiteStrictMode {
+	if cookies[0].Name != "kinosail_player_passkey" || !cookies[0].HttpOnly || cookies[0].SameSite != http.SameSiteStrictMode {
 		t.Fatalf("passkey cookie = %#v", cookies[0])
 	}
 	if cookies[0].Path != "/api/v1/passkeys/" {

@@ -47,7 +47,7 @@ var (
 )
 
 func newPasskeyAuth(rawURL string, profiles *profileStore) *passkeyAuth {
-	engine, err := sharedpasskeys.New(sharedpasskeys.Config{URL: rawURL, DefaultURL: "http://localhost:38128", DisplayName: "Kinosail", CookieName: "kinosail_passkey"})
+	engine, err := sharedpasskeys.New(sharedpasskeys.Config{URL: rawURL, DefaultURL: "http://localhost:38128", DisplayName: "Kinosail", CookieName: "kinosail_subtitles_passkey"})
 	origin, redirectPages := "", false
 	if engine != nil {
 		origin, redirectPages = engine.Origin().String(), engine.Origin().RedirectPages()

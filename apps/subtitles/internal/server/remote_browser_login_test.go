@@ -74,7 +74,7 @@ func TestPublicBrowserQuickConnectEndToEndBoundary(t *testing.T) {
 	}
 	var session *http.Cookie
 	for _, cookie := range connected.Result().Cookies() {
-		if cookie.Name == "__Host-kinosail_session" {
+		if cookie.Name == "__Host-kinosail_subtitles_session" {
 			session = cookie
 		}
 	}
