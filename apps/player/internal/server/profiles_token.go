@@ -76,7 +76,7 @@ func (store *profileStore) recordTokenUse(key string, session viewerSession, ses
 }
 
 func (store *profileStore) sessionExpired(session viewerSession, now int64) bool {
-	inactive, absolute := store.sessionTimeouts()
+	inactive, absolute := store.sessionModule().TimeoutsFor(session)
 	return identitycore.SessionExpired(session, now, inactive, absolute)
 }
 

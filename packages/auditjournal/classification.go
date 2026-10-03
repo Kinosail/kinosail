@@ -58,6 +58,7 @@ func staticAuditAction(request *http.Request, overrides map[string]string) strin
 	actions := map[string]string{
 		"/setup": "owner.created", "/api/v1/setup": "owner.created", "/login": "session.created", "/logout": "session.ended", "/login/oidc/callback": "sso.session",
 		"/settings/server": "settings.server.updated", "/api/v1/settings/server": "settings.server.updated", "/settings/navigation": "settings.navigation.updated", "/api/v1/settings/navigation": "settings.navigation.updated", "/settings/mfa": "settings.mfa.updated", "/api/v1/settings/mfa": "settings.mfa.updated",
+		"/settings/public-session-timeouts": "settings.public-session-timeouts.updated", "/api/v1/settings/public-session-timeouts": "settings.public-session-timeouts.updated",
 		"/settings/session-timeouts": "settings.session-timeouts.updated", "/api/v1/settings/session-timeouts": "settings.session-timeouts.updated",
 		"/api/v1/updates":    "update.requested",
 		"/settings/playback": "settings.playback.updated", "/api/v1/settings/playback": "settings.playback.updated",

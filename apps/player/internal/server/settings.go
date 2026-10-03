@@ -25,29 +25,8 @@ type (
 	navigationPreference = sharednavigation.Preference
 )
 
-type installationSettings struct {
-	Name                  string   `json:"name"`
-	Libraries             []string `json:"libraries"`
-	RequireMFA            bool     `json:"requireMfa"`
-	SessionInactiveHours  float64  `json:"sessionInactiveHours,omitempty"`
-	SessionAbsoluteHours  float64  `json:"sessionAbsoluteHours,omitempty"`
-	JellyfinCompatibility bool     `json:"jellyfinCompatibility"`
-	HomeAssistant         bool     `json:"homeAssistant,omitempty"`
-	JellyfinID            string   `json:"jellyfinId,omitempty"`
-	settingsops.Playback
-	transcodehardware.Selection
-	SubtitleLanguage      string          `json:"subtitleLanguage,omitempty"`
-	SubtitlePickerLimited bool            `json:"subtitlePickerLimited,omitempty"`
-	ScanFrequency         string          `json:"scanFrequency,omitempty"`
-	DLNAToken             string          `json:"dlnaToken,omitempty"`
-	Navigation            []string        `json:"navigation"`
-	OnboardingPending     bool            `json:"onboardingPending,omitempty"`
-	UpdateChecks          bool            `json:"updateChecks"`
-	SupporterDisplay      string          `json:"supporterDisplay,omitempty"`
-	Supporter             *supporterState `json:"supporter,omitempty"`
-}
-
 type settingsStore struct {
+	profiles          *profileStore
 	mu                sync.RWMutex
 	file              string
 	mediaRoot         string
@@ -102,6 +81,10 @@ func newSettingsStore(mediaRoot, dataDir, dlnaURL string, stateDB *database.Stor
 			saved.Name = "Kinosail"
 		}
 		store.value = saved
+	}
+	if (store.value.PublicSessionInactiveHours != 0 || store.value.PublicSessionAbsoluteHours != 0) && !validSessionTimeouts(store.value.PublicSessionInactiveHours, store.value.PublicSessionAbsoluteHours) {
+		store.err = errSessionTimeoutsInvalid
+		return store
 	}
 	if sharednavigation.Validate(store.value.Navigation) != nil {
 		store.value.Navigation = sharednavigation.Default()
