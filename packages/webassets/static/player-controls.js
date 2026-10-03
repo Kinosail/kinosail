@@ -14,7 +14,19 @@ const formatTime = (seconds) => {
 };
 if (controls && player.tagName === "VIDEO") {
   const stage = player.closest(".media-stage");
-  const nativeControls = player.hasAttribute("data-native-controls");
+  const nativeControls = appleNativePlayback || player.hasAttribute("data-native-controls");
+  if (appleNativePlayback) {
+    controls.classList.add("player-native-controls");
+    const toolbar = stage.querySelector(".player-stage-toolbar");
+    if (settingsButton && !toolbar.contains(settingsButton)) toolbar.append(settingsButton);
+    for (const child of controls.children) if (!child.matches(".player-center-control[data-player-toggle]")) child.hidden = true;
+    if (theaterButton) theaterButton.hidden = true;
+    player.addEventListener("webkitendfullscreen", () => {
+      requestPause();
+      player.controls = false;
+      controls.hidden = Boolean(player.error);
+    });
+  }
   if (nativeControls) {
     const options = document.createElement("div");
     options.className = "player-native-options";
@@ -39,8 +51,13 @@ if (controls && player.tagName === "VIDEO") {
   };
   const reportFullscreenFailure = (error) => {
     const failure = ["NotAllowedError", "InvalidStateError", "NotSupportedError", "TypeError"].includes(error?.name) ? error.name : "Error";
-    playbackTrace("error", `fullscreen:${failure}:playback-retained`);
-    reportControlFailure("Fullscreen could not open. Try again using the video's fullscreen control.");
+    playbackTrace("error", `fullscreen:${failure}:${appleNativePlayback ? "paused-for-retry" : "playback-retained"}`);
+    reportControlFailure(appleNativePlayback ? "Apple playback could not open. Try Play again." : "Fullscreen could not open. Try again using the video's fullscreen control.");
+  };
+  const restoreAppleLauncher = () => {
+    requestPause();
+    player.controls = false;
+    try { if (player.webkitDisplayingFullscreen) player.webkitExitFullscreen?.(); } catch (error) { reportFullscreenFailure(error); }
   };
   const seek = document.querySelector("[data-player-seek]");
   const seekPreview = controls.querySelector("[data-seek-preview]");
@@ -124,7 +141,7 @@ if (controls && player.tagName === "VIDEO") {
   const syncControls = (event) => {
     if (nativeControls) {
       if (event?.type === "playing" && !playbackPreparation) nativeStarted = true;
-      controls.hidden = nativeStarted || !player.paused || Boolean(player.error);
+      controls.hidden = (!appleNativePlayback && nativeStarted) || !player.paused || Boolean(player.error);
       const timeline = settingsPanel?.querySelector("[data-native-timeline]");
       const compatible = ["remux", "audio-transcode", "transcode", "native-hls"].includes(playbackTraceMethod);
       if (timeline) timeline.hidden = !compatible;
@@ -146,8 +163,22 @@ if (controls && player.tagName === "VIDEO") {
     volume.value = player.muted ? 0 : player.volume;
   };
   controls.hidden = false;
-  player.controls = nativeControls;
+  player.controls = nativeControls && !appleNativePlayback;
   controls.querySelectorAll("[data-player-toggle]").forEach((button) => button.addEventListener("click", () => {
+    if (appleNativePlayback) {
+      if (!applePhone && player.readyState < HTMLMediaElement.HAVE_METADATA) {
+        player.load();
+        reportControlFailure("Video is preparing. Tap Play again when ready.");
+        return;
+      }
+      try {
+        // Before metadata, play without playsinline lets iPhone open Apple when ready.
+        // Never retry fullscreen from a readiness callback without a fresh gesture.
+        if (!player.webkitDisplayingFullscreen && player.readyState >= HTMLMediaElement.HAVE_METADATA) player.webkitEnterFullscreen();
+        requestPlay("apple-play").catch(() => { restoreAppleLauncher(); reportControlFailure("Playback could not start. Try Play again."); });
+      } catch (error) { restoreAppleLauncher(); reportFullscreenFailure(error); }
+      return;
+    }
     if (!player.paused && !nativeControls) return requestPause();
     requestPlay("control").catch(() => {});
     if (navigator.maxTouchPoints > 0 && !document.fullscreenElement && !player.webkitDisplayingFullscreen) enterFullscreen().catch(reportFullscreenFailure);

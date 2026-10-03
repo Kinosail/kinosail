@@ -75,7 +75,7 @@ document.querySelector("[data-subtitles]")?.addEventListener("change", ({target}
   if (selected) selected.mode = "showing";
   document.querySelector("[data-player-captions]")?.setAttribute("aria-pressed", String(target.value !== "off"));
 });
-if (theaterButton) {
+if (theaterButton && !appleNativePlayback) {
   const mediaStage = theaterButton.closest(".media-stage");
   const theaterToolbar = mediaStage.querySelector(".player-stage-toolbar");
   let theaterIdle;
