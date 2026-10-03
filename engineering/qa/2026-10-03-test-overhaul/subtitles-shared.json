@@ -105,7 +105,12 @@
       "credible_failure": "Writes a version-only YAML file but asserts only paths.data from KINOSAIL_DATA_DIR; would pass if default YAML discovery were deleted.",
       "production_owner": "apps/subtitles/cmd/kinosail/main.go:loadConfigurationPath",
       "non_test_callers": "main/appcli.Execute -> loadConfiguration; config command loads explicit path",
-      "remaining_proof": [],
+      "remaining_proof": [
+        {
+          "kind": "documented_gap_without_equivalence_claim",
+          "reference": "Default YAML auto-discovery has no meaningful assertion in this test and no demonstrated true E2E coverage. Gap recorded; removed declaration cannot catch that bug. Public explicit-YAML loading remains covered by ConfigurationCommandValidatesAndSummarizesSources."
+        }
+      ],
       "coverage_gap": "Default YAML auto-discovery has no meaningful assertion in this test and no demonstrated true E2E coverage. Gap recorded; removed declaration cannot catch that bug. Public explicit-YAML loading remains covered by ConfigurationCommandValidatesAndSummarizesSources.",
       "history": "148cf8317def71e026d111f05ce7e802612e983c Remove legacy viewer WireGuard access",
       "risk": "Low; stronger exact remaining proof or assertion shown vacuous. No production or shared support edits.",
@@ -1888,7 +1893,7 @@
       "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
       "credible_failure": "Actual onboarding endpoint rejects omitted enabled or unknown fields without changing initial pending=true.",
-      "production_owner": "apps/subtitles/internal/server/api_admin.go; packages/settings/preferences.go; packages/servertest/api_admin.go",
+      "production_owner": "apps/subtitles/internal/server/api_admin.go; packages/settings/http.go; packages/servertest/api_admin.go",
       "non_test_callers": "Real New constructs state/auth/probe/adapters and registerAPI installs public handlers; shared API fixtures bind actual app callbacks, not manufactured responses.",
       "remaining_proof": [
         {
@@ -3084,7 +3089,12 @@
       "credible_failure": "Changes to three CSS selector strings.",
       "production_owner": "apps/subtitles/internal/server/assets.go; packages/servertest/assets*_contract.go; packages/webassets/static/{player-app.css,pwa*.js,theme.js}",
       "non_test_callers": "newApplication registers /static/app.css, /static/main.kinosail.bundle.js and templates include them; real browser render/load paths.",
-      "remaining_proof": [],
+      "remaining_proof": [
+        {
+          "kind": "documented_gap_without_equivalence_claim",
+          "reference": "No genuine browser assertion proves three-versus-four collection poster quadrant rendering. Test never renders a poster; source-selector presence can pass while layout is wrong."
+        }
+      ],
       "coverage_gap": "No genuine browser assertion proves three-versus-four collection poster quadrant rendering. Test never renders a poster; source-selector presence can pass while layout is wrong.",
       "history": "52fc46756 Initial commit; later app source updates do not add independent behavioral proof.",
       "risk": "Low: no unique behavioral assertion removed.",
@@ -3183,7 +3193,12 @@
       "credible_failure": "Changes to exact SVG path coordinates and CSS dimension string.",
       "production_owner": "apps/subtitles/internal/server/assets.go; packages/servertest/assets*_contract.go; packages/webassets/static/{player-app.css,pwa*.js,theme.js}",
       "non_test_callers": "newApplication registers /static/app.css, /static/main.kinosail.bundle.js and templates include them; real browser render/load paths.",
-      "remaining_proof": [],
+      "remaining_proof": [
+        {
+          "kind": "documented_gap_without_equivalence_claim",
+          "reference": "Screenshots may support manual logo review but are not an automated pixel comparison. Exact outline coordinates are implementation artwork, not behavior."
+        }
+      ],
       "coverage_gap": "Screenshots may support manual logo review but are not an automated pixel comparison. Exact outline coordinates are implementation artwork, not behavior.",
       "history": "52fc46756 Initial commit; later app source updates do not add independent behavioral proof.",
       "risk": "Low: no unique behavioral assertion removed.",
@@ -43312,7 +43327,12 @@
       "credible_failure": "Changes to copied icon-name inventory or generated class/attribute text.",
       "production_owner": "apps/subtitles/internal/server/{assets.go,ui_icons.go,server.go,password_manager.go}; packages/servertest/{ui_icons.go,shortcuts.go,password_manager.go,accessibility.go}",
       "non_test_callers": "newApplication registers /static/app.css, /static/main.kinosail.bundle.js and templates include them; real browser render/load paths.",
-      "remaining_proof": [],
+      "remaining_proof": [
+        {
+          "kind": "documented_gap_without_equivalence_claim",
+          "reference": "No full icon visual inventory E2E exists. Test mirrors a fixed allowlist and renderer output rather than showing icons paint or controls work."
+        }
+      ],
       "coverage_gap": "No full icon visual inventory E2E exists. Test mirrors a fixed allowlist and renderer output rather than showing icons paint or controls work.",
       "history": "52fc46756 Initial commit; later app source updates do not add independent behavioral proof.",
       "risk": "Low: no unique behavioral assertion removed.",
@@ -43329,7 +43349,12 @@
       "credible_failure": "Any Unicode glyph appearing in any production Go file.",
       "production_owner": "apps/subtitles/internal/server/{assets.go,ui_icons.go,server.go,password_manager.go}; packages/servertest/{ui_icons.go,shortcuts.go,password_manager.go,accessibility.go}",
       "non_test_callers": "newApplication registers /static/app.css, /static/main.kinosail.bundle.js and templates include them; real browser render/load paths.",
-      "remaining_proof": [],
+      "remaining_proof": [
+        {
+          "kind": "documented_gap_without_equivalence_claim",
+          "reference": "No behavior is exercised; aesthetic source-glyph ban is not retained as a correctness test."
+        }
+      ],
       "coverage_gap": "No behavior is exercised; aesthetic source-glyph ban is not retained as a correctness test.",
       "history": "52fc46756 Initial commit; later app source updates do not add independent behavioral proof.",
       "risk": "Low: no unique behavioral assertion removed.",
