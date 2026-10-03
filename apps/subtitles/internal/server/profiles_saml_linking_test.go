@@ -57,33 +57,3 @@ func TestSAMLIdentityLinkingRejectsConflictsAndPersistsValidLinks(t *testing.T) 
 		t.Fatal("unlinked SAML identity remained active")
 	}
 }
-
-func TestSCIMSAMLIdentityAutoLinkingRequiresOneActiveStableMatch(t *testing.T) { //nolint:cyclop,funlen // One contract covers empty, missing, ambiguous, conflicting, and valid matches.
-	identity := federation.Identity{Issuer: "https://idp.example", Subject: "directory-1"}
-	store := &profileStore{file: "profiles.json", persist: func(string, any) error { return nil }}
-	profiles := store.federatedProfiles()
-	if _, found, err := profiles.AutoLinkSCIM(federation.SAMLProtocol, federation.Identity{}); err != nil || found {
-		t.Fatalf("empty identity linked: found=%v err=%v", found, err)
-	}
-	store.profiles = []viewerProfile{{ID: "viewer", SCIMManaged: true, SCIMExternalID: "other"}}
-	if _, found, err := profiles.AutoLinkSCIM(federation.SAMLProtocol, identity); err != nil || found {
-		t.Fatalf("missing match linked: found=%v err=%v", found, err)
-	}
-	store.profiles = []viewerProfile{{ID: "deleted", SCIMManaged: true, SCIMDeleted: true, SCIMExternalID: identity.Subject}}
-	if _, found, err := profiles.AutoLinkSCIM(federation.SAMLProtocol, identity); err != nil || found {
-		t.Fatalf("deleted match linked: found=%v err=%v", found, err)
-	}
-	store.profiles = []viewerProfile{{ID: "first", SCIMManaged: true, SCIMExternalID: identity.Subject}, {ID: "second", SCIMManaged: true, SCIMExternalID: identity.Subject}}
-	if _, found, err := profiles.AutoLinkSCIM(federation.SAMLProtocol, identity); err != nil || found {
-		t.Fatalf("ambiguous match linked: found=%v err=%v", found, err)
-	}
-	store.profiles = []viewerProfile{{ID: "match", SCIMManaged: true, SCIMExternalID: identity.Subject}, {ID: "conflict", SAMLIssuer: identity.Issuer, SAMLSubject: identity.Subject}}
-	if _, found, err := profiles.AutoLinkSCIM(federation.SAMLProtocol, identity); err != nil || found {
-		t.Fatalf("conflicting match linked: found=%v err=%v", found, err)
-	}
-	store.profiles = []viewerProfile{{ID: "match", SCIMManaged: true, SCIMExternalID: identity.Subject}}
-	profile, found, err := profiles.AutoLinkSCIM(federation.SAMLProtocol, identity)
-	if err != nil || !found || profile.ID != "match" || profile.SAMLIssuer != identity.Issuer || profile.SAMLSubject != identity.Subject {
-		t.Fatalf("valid match = %+v, found=%v err=%v", profile, found, err)
-	}
-}

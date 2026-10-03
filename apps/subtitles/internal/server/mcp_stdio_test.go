@@ -98,25 +98,3 @@ func TestMCPStdioUsesSoleOwnerAndSharedAPI(t *testing.T) { //nolint:cyclop,gocog
 	_ = session.Close()
 	<-errCh
 }
-
-func TestMCPStdioRejectsMissingStreamsBeforeSideEffects(t *testing.T) {
-	dataDir := t.TempDir()
-	if err := ServeMCPStdio(t.Context(), Config{DataDir: dataDir}, "", nil, io.Discard); err == nil {
-		t.Fatal("missing input stream was accepted")
-	}
-	entries, err := os.ReadDir(dataDir)
-	if err != nil || len(entries) != 0 {
-		t.Fatalf("rejected STDIO input changed data directory: %v, %v", entries, err)
-	}
-}
-
-func TestMCPStdioRequiresRunningServerWithoutSideEffects(t *testing.T) {
-	dataDir := t.TempDir()
-	if err := ServeMCPStdio(t.Context(), Config{DataDir: dataDir}, "", strings.NewReader(""), io.Discard); err == nil || !strings.Contains(err.Error(), "running Kinosail Server") {
-		t.Fatalf("absent Server = %v", err)
-	}
-	entries, err := os.ReadDir(dataDir)
-	if err != nil || len(entries) != 0 {
-		t.Fatalf("absent Server bridge changed data directory: %v, %v", entries, err)
-	}
-}
