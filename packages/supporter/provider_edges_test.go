@@ -1,7 +1,6 @@
 package supporter
 
 import (
-	"context"
 	"encoding/json"
 	"errors"
 	"io"
