@@ -9,8 +9,8 @@
   "reviewed": 68,
   "pending": 886,
   "decisions": {
-    "R": 40,
-    "D": 28,
+    "R": 43,
+    "D": 25,
     "F": 0,
     "C": 0
   },
@@ -7725,16 +7725,16 @@
       "line": 17,
       "test": "TestPasskeyLoginSupportsPasswordManagerAutofill",
       "baseline_file_sha256": "5fbcdbb7cba7179bd6c0d2429fc02ef755ecf8328fd63eeec1fda033a2df3518",
-      "decision": "D",
+      "decision": "R",
       "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": "Changes to five exact passkeys.js code strings including private conditionalLogin identifier.",
+      "credible_failure": "Shipped passkey client loses conditional discoverable login or abort during competing manual login; native autofill fails or concurrent ceremonies conflict.",
       "production_owner": "apps/subtitles/internal/server/{assets.go,ui_icons.go,server.go,password_manager.go}; packages/servertest/{ui_icons.go,shortcuts.go,password_manager.go,accessibility.go}",
       "non_test_callers": "newApplication registers /static/app.css, /static/main.kinosail.bundle.js and templates include them; real browser render/load paths.",
       "remaining_proof": [],
       "coverage_gap": "No genuine conditional-autofill failure/abort E2E exists; current passkey E2E disables conditional mediation. This grep permits reordered/unreachable snippets and is not evidence of correct lifecycle.",
       "history": "52fc46756 Initial commit; later app source updates do not add independent behavioral proof.",
-      "risk": "Low: no unique behavioral assertion removed.",
+      "risk": "Retained conservative failure/platform guard: existing real E2E lacks this path. Source-presence assertion is weak, but removing it currently loses independent regression protection.",
       "validation_command": "cd apps/subtitles && go test ./internal/server ./internal/configuration ./internal/settingsstate ./internal/subtitlelanguage ./internal/database ./internal/backup ./cmd/kinosail"
     },
     {
@@ -7766,16 +7766,16 @@
       "line": 25,
       "test": "TestCopyControlsReportClipboardFallback",
       "baseline_file_sha256": "5fbcdbb7cba7179bd6c0d2429fc02ef755ecf8328fd63eeec1fda033a2df3518",
-      "decision": "D",
+      "decision": "R",
       "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": "Changes to seven theme.js strings.",
+      "credible_failure": "Shipped secret-copy controls lose fallback instructions/selection when clipboard access is denied.",
       "production_owner": "apps/subtitles/internal/server/{assets.go,ui_icons.go,server.go,password_manager.go}; packages/servertest/{ui_icons.go,shortcuts.go,password_manager.go,accessibility.go}",
       "non_test_callers": "newApplication registers /static/app.css, /static/main.kinosail.bundle.js and templates include them; real browser render/load paths.",
       "remaining_proof": [],
       "coverage_gap": "No genuine clipboard-denial E2E exists. Source strings can pass with unreachable fallback and no copy occurs.",
       "history": "52fc46756 Initial commit; later app source updates do not add independent behavioral proof.",
-      "risk": "Low: no unique behavioral assertion removed.",
+      "risk": "Retained conservative failure/platform guard: existing real E2E lacks this path. Source-presence assertion is weak, but removing it currently loses independent regression protection.",
       "validation_command": "cd apps/subtitles && go test ./internal/server ./internal/configuration ./internal/settingsstate ./internal/subtitlelanguage ./internal/database ./internal/backup ./cmd/kinosail"
     },
     {
@@ -8878,10 +8878,10 @@
       "line": 12,
       "test": "TestPWAHandlesServiceWorkerRegistrationFailure",
       "baseline_file_sha256": "3d567e9a4c406c79a65316e397cb7a637a7a3dcf570412747c385af6c5a38647",
-      "decision": "D",
+      "decision": "R",
       "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": "Changes to exact register call and catch syntax.",
+      "credible_failure": "Service-worker registration rejection lacks a handler and causes a browser unhandled promise error.",
       "production_owner": "apps/subtitles/internal/server/{assets.go,ui_icons.go,server.go,password_manager.go}; packages/servertest/{ui_icons.go,shortcuts.go,password_manager.go,accessibility.go}",
       "non_test_callers": "newApplication registers /static/app.css, /static/main.kinosail.bundle.js and templates include them; real browser render/load paths.",
       "remaining_proof": [
@@ -8894,7 +8894,7 @@
       ],
       "coverage_gap": "No genuine failure-injected registration E2E; source syntax does not prove promise failures are handled at runtime.",
       "history": "52fc46756 Initial commit; later app source updates do not add independent behavioral proof.",
-      "risk": "Low: no unique behavioral assertion removed.",
+      "risk": "Retained conservative failure/platform guard: existing real E2E lacks this path. Source-presence assertion is weak, but removing it currently loses independent regression protection.",
       "validation_command": "cd apps/subtitles && go test ./internal/server ./internal/configuration ./internal/settingsstate ./internal/subtitlelanguage ./internal/database ./internal/backup ./cmd/kinosail"
     },
     {
