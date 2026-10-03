@@ -19,9 +19,9 @@
     "baseline_test_lines": 66475,
     "declarations": 1900,
     "decisions": {
-      "R": 73,
+      "R": 124,
       "D": 8,
-      "unreviewed": 1819
+      "unreviewed": 1768
     },
     "removed_declarations": 8,
     "removed_test_lines": 136,
@@ -201,6 +201,94 @@
         "packages/transcodehardware/verification.go"
       ],
       "e2e": "Populated HLS playback uses actual initialization media. It is complementary to retained process-backed fake-FFmpeg/platform tests and injected verified-operation failures; no exhaustive physical GPU claim."
+    },
+    "credentials": {
+      "owners": [
+        "packages/credentials/credentials.go"
+      ],
+      "dependencies": [
+        "golang.org/x/crypto@v0.57.0/argon2/argon2.go:IDKey/deriveKey bounds and memory cost",
+        "crypto/rand.Read",
+        "encoding/base64",
+        "compress/gzip"
+      ],
+      "callers": [
+        "packages/identitycore/profile.go",
+        "packages/identitycore/profile_store.go",
+        "packages/identitycore/viewer_onboarding_http.go",
+        "apps/player/internal/server/auth_setup.go",
+        "apps/player/internal/server/profiles_credentials.go",
+        "apps/subtitles/internal/server/auth_setup.go",
+        "apps/subtitles/internal/server/profiles_credentials.go"
+      ],
+      "e2e": "Genuine populated apps/player/e2e/ui-happy-paths.spec.ts:Owner can create and revoke an API key and manage a Viewer Profile and both apps test-instance.spec.ts MFA enrollment create current valid credentials; these do not inject malformed PHC, legacy hash, dictionary, or entropy failures. Password reveal/browser fixtures prove UI behavior only."
+    },
+    "settings": {
+      "owners": [
+        "packages/settings/configuration.go",
+        "packages/settings/dlna.go",
+        "packages/settings/http.go",
+        "packages/settings/library.go",
+        "packages/settings/preferences.go"
+      ],
+      "dependencies": [
+        "packages/httpguard/json.go:DecodeForm",
+        "packages/identitycore/api_keys.go:ParseAPIScopes",
+        "packages/markers/markers.go:NormalizeAutoSkip/Types",
+        "packages/dlna/dlna.go:ValidURL"
+      ],
+      "callers": [
+        "apps/player/internal/server/settings_actions.go",
+        "apps/player/internal/server/settings_configuration.go",
+        "apps/player/internal/server/settings_playback.go",
+        "apps/player/internal/server/settings_scans.go",
+        "apps/player/internal/server/settings_library_operations.go",
+        "apps/player/internal/server/settings_dlna_configuration.go",
+        "apps/player/internal/server/settings.go",
+        "apps/player/internal/server/api_admin.go",
+        "apps/subtitles/internal/server/settings_routes.go",
+        "apps/subtitles/internal/server/settings_actions.go"
+      ],
+      "e2e": "Genuine populated ui-happy-paths API-key/profile flow proves valid settings issuance, and test-instance.spec.ts subtitle picker flow changes a distinct preference. These do not exhaust generic managed fields, failure injection, path/symlink escapes, malformed forms, or save/apply ordering. Browser player/settings fixtures independently provide their own HTML and responses."
+    },
+    "documentdb": {
+      "owners": [
+        "packages/documentdb/config.go",
+        "packages/documentdb/dependencies.go",
+        "packages/documentdb/documentdb.go",
+        "packages/documentdb/entries.go",
+        "packages/documentdb/entry_encoding.go",
+        "packages/documentdb/initialize.go"
+      ],
+      "dependencies": [
+        "database/sql transaction/QueryContext and ExecContext boundary",
+        "github.com/ncruces/go-sqlite3/driver registered in documentdb.go",
+        "github.com/DATA-DOG/go-sqlmock injected query/transaction failure assertions"
+      ],
+      "callers": [
+        "apps/player/internal/database/database.go",
+        "apps/subtitles/internal/database/database.go",
+        "packages/catalog/progress_request_store.go",
+        "packages/backup/archive.go:Service.readDocuments"
+      ],
+      "e2e": "Genuine populated library/playlist/profile and playback journeys exercise successful durable state indirectly. apps/player/e2e/playback-startup.spec.ts:failed progress save does not stop playback flow aborts the browser route; it does not induce SQLite rollback. Offline browser progress tests use separate IndexedDB fixtures. No equivalence claimed for migration corruption, atomic multi-document/entry bounds, or concurrent export revisions."
+    },
+    "servertransport": {
+      "owners": [
+        "packages/servertransport/server.go:CheckHealth"
+      ],
+      "dependencies": [
+        "net.SplitHostPort",
+        "net/http request+client",
+        "net/url.Parse",
+        "crypto/tls TLS1.3 client policy"
+      ],
+      "callers": [
+        "packages/appcli/application.go",
+        "apps/player/cmd/kinosail",
+        "apps/subtitles/cmd/kinosail"
+      ],
+      "e2e": "Browser app journeys require a running server but do not prove CLI loopback health protocol/error handling. App-local direct CheckHealth replay is redundant with TestCheckHealthCoversProtocolsAndInputFailures; app process healthcheck ownership remains independently tested."
     }
   },
   "test_support_inventory": {
@@ -14069,9 +14157,9 @@
       "owner_group": "credentials",
       "body_sha256": "9e6b1b51c9bbd148fc4938f1793b5afe71846b21d2c11c40cc0a42c22e3c9809",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Preserved concrete boundary or failure-injection coverage; no new isolated test added.",
       "validation_command": "cd packages && go test ./credentials",
       "baseline_event": {
         "Time": "2026-10-03T10:35:26.341484-06:00",
@@ -14079,7 +14167,26 @@
         "Package": "github.com/MikeO7/kinosail/packages/credentials",
         "Test": "TestLoadCommonPasswordsRejectsInvalidSources",
         "Elapsed": 0
-      }
+      },
+      "credible_failure": "Fail closed on corrupt base64/gzip/CRC or incomplete common-password sources instead of silently disabling the weak-password guard.",
+      "remaining_coverage": "This declaration remains an isolated owner boundary proof. Actual browser coverage is complementary; see group E2E limits.",
+      "gap": "Genuine populated apps/player/e2e/ui-happy-paths.spec.ts:Owner can create and revoke an API key and manage a Viewer Profile and both apps test-instance.spec.ts MFA enrollment create current valid credentials; these do not inject malformed PHC, legacy hash, dictionary, or entropy failures. Password reveal/browser fixtures prove UI behavior only.",
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "callers": [
+        "packages/identitycore/profile.go",
+        "packages/identitycore/profile_store.go",
+        "packages/identitycore/viewer_onboarding_http.go",
+        "apps/player/internal/server/auth_setup.go",
+        "apps/player/internal/server/profiles_credentials.go",
+        "apps/subtitles/internal/server/auth_setup.go",
+        "apps/subtitles/internal/server/profiles_credentials.go"
+      ],
+      "production_owner": [
+        "packages/credentials/credentials.go"
+      ],
+      "unlocked_deletion": "None."
     },
     {
       "file": "packages/credentials/credentials_edges_test.go",
@@ -14089,9 +14196,9 @@
       "owner_group": "credentials",
       "body_sha256": "658a5d6d4bd2e06d5d6c8ecaa80422ff4f6e648e2551bdedc88a62993c6031d6",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Preserved concrete boundary or failure-injection coverage; no new isolated test added.",
       "validation_command": "cd packages && go test ./credentials",
       "baseline_event": {
         "Time": "2026-10-03T10:35:26.341507-06:00",
@@ -14099,7 +14206,26 @@
         "Package": "github.com/MikeO7/kinosail/packages/credentials",
         "Test": "TestHashReportsRandomSourceFailure",
         "Elapsed": 0
-      }
+      },
+      "credible_failure": "Return no credential when injected entropy acquisition fails; browser tests cannot induce this OS dependency failure.",
+      "remaining_coverage": "This declaration remains an isolated owner boundary proof. Actual browser coverage is complementary; see group E2E limits.",
+      "gap": "Genuine populated apps/player/e2e/ui-happy-paths.spec.ts:Owner can create and revoke an API key and manage a Viewer Profile and both apps test-instance.spec.ts MFA enrollment create current valid credentials; these do not inject malformed PHC, legacy hash, dictionary, or entropy failures. Password reveal/browser fixtures prove UI behavior only.",
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "callers": [
+        "packages/identitycore/profile.go",
+        "packages/identitycore/profile_store.go",
+        "packages/identitycore/viewer_onboarding_http.go",
+        "apps/player/internal/server/auth_setup.go",
+        "apps/player/internal/server/profiles_credentials.go",
+        "apps/subtitles/internal/server/auth_setup.go",
+        "apps/subtitles/internal/server/profiles_credentials.go"
+      ],
+      "production_owner": [
+        "packages/credentials/credentials.go"
+      ],
+      "unlocked_deletion": "None."
     },
     {
       "file": "packages/credentials/credentials_test.go",
@@ -14109,9 +14235,9 @@
       "owner_group": "credentials",
       "body_sha256": "548bc7c4f882937174d73a3fed917e1ecce2734595972cc539f6d50976289f4b",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Preserved concrete boundary or failure-injection coverage; no new isolated test added.",
       "validation_command": "cd packages && go test ./credentials",
       "baseline_event": {
         "Time": "2026-10-03T10:35:26.385405-06:00",
@@ -14119,7 +14245,27 @@
         "Package": "github.com/MikeO7/kinosail/packages/credentials",
         "Test": "TestPolicyRejectsInvalidPasswords",
         "Elapsed": 0
-      }
+      },
+      "credible_failure": "Reject empty, short, oversized, and normalized common passwords before hashing. Normal E2E profile creation does not cover the password grammar and common-password catalog.",
+      "remaining_coverage": "This declaration remains an isolated owner boundary proof. Actual browser coverage is complementary; see group E2E limits.",
+      "gap": "Genuine populated apps/player/e2e/ui-happy-paths.spec.ts:Owner can create and revoke an API key and manage a Viewer Profile and both apps test-instance.spec.ts MFA enrollment create current valid credentials; these do not inject malformed PHC, legacy hash, dictionary, or entropy failures. Password reveal/browser fixtures prove UI behavior only.",
+      "history": [
+        "8dbd0930e9f5fbac6abcdaf439b4656a8c724ceb test(credentials): remove duplicate internal coverage probes",
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "callers": [
+        "packages/identitycore/profile.go",
+        "packages/identitycore/profile_store.go",
+        "packages/identitycore/viewer_onboarding_http.go",
+        "apps/player/internal/server/auth_setup.go",
+        "apps/player/internal/server/profiles_credentials.go",
+        "apps/subtitles/internal/server/auth_setup.go",
+        "apps/subtitles/internal/server/profiles_credentials.go"
+      ],
+      "production_owner": [
+        "packages/credentials/credentials.go"
+      ],
+      "unlocked_deletion": "None."
     },
     {
       "file": "packages/credentials/credentials_test.go",
@@ -14129,9 +14275,9 @@
       "owner_group": "credentials",
       "body_sha256": "a49adc4ac4cea449f9da017e4e1e06b83e1f68184f1ec62510242f140adc7939",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Preserved concrete boundary or failure-injection coverage; no new isolated test added.",
       "validation_command": "cd packages && go test ./credentials",
       "baseline_event": {
         "Time": "2026-10-03T10:35:26.460688-06:00",
@@ -14139,7 +14285,27 @@
         "Package": "github.com/MikeO7/kinosail/packages/credentials",
         "Test": "TestCurrentCredentialRoundTrip",
         "Elapsed": 0.12
-      }
+      },
+      "credible_failure": "Keep issued Argon2id PHC parameters at the bounded current policy and reject the wrong password; E2E login success does not inspect cost or PHC output.",
+      "remaining_coverage": "This declaration remains an isolated owner boundary proof. Actual browser coverage is complementary; see group E2E limits.",
+      "gap": "Genuine populated apps/player/e2e/ui-happy-paths.spec.ts:Owner can create and revoke an API key and manage a Viewer Profile and both apps test-instance.spec.ts MFA enrollment create current valid credentials; these do not inject malformed PHC, legacy hash, dictionary, or entropy failures. Password reveal/browser fixtures prove UI behavior only.",
+      "history": [
+        "8dbd0930e9f5fbac6abcdaf439b4656a8c724ceb test(credentials): remove duplicate internal coverage probes",
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "callers": [
+        "packages/identitycore/profile.go",
+        "packages/identitycore/profile_store.go",
+        "packages/identitycore/viewer_onboarding_http.go",
+        "apps/player/internal/server/auth_setup.go",
+        "apps/player/internal/server/profiles_credentials.go",
+        "apps/subtitles/internal/server/auth_setup.go",
+        "apps/subtitles/internal/server/profiles_credentials.go"
+      ],
+      "production_owner": [
+        "packages/credentials/credentials.go"
+      ],
+      "unlocked_deletion": "None."
     },
     {
       "file": "packages/credentials/credentials_test.go",
@@ -14149,9 +14315,9 @@
       "owner_group": "credentials",
       "body_sha256": "b79d0bcb4d0f804c028a45c98a0d27932264ba4383b15b59aea0d53e2645374b",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Preserved concrete boundary or failure-injection coverage; no new isolated test added.",
       "validation_command": "cd packages && go test ./credentials",
       "baseline_event": {
         "Time": "2026-10-03T10:35:26.458304-06:00",
@@ -14159,7 +14325,27 @@
         "Package": "github.com/MikeO7/kinosail/packages/credentials",
         "Test": "TestStrictPHCParsingRejectsMalformedAndOversizedCredentials",
         "Elapsed": 0.05
-      }
+      },
+      "credible_failure": "Reject altered scheme/version/cost/order, noncanonical salt/hash encodings, malformed separators, and oversized inputs before expensive Argon2 allocation or verification.",
+      "remaining_coverage": "This declaration remains an isolated owner boundary proof. Actual browser coverage is complementary; see group E2E limits.",
+      "gap": "Genuine populated apps/player/e2e/ui-happy-paths.spec.ts:Owner can create and revoke an API key and manage a Viewer Profile and both apps test-instance.spec.ts MFA enrollment create current valid credentials; these do not inject malformed PHC, legacy hash, dictionary, or entropy failures. Password reveal/browser fixtures prove UI behavior only.",
+      "history": [
+        "8dbd0930e9f5fbac6abcdaf439b4656a8c724ceb test(credentials): remove duplicate internal coverage probes",
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "callers": [
+        "packages/identitycore/profile.go",
+        "packages/identitycore/profile_store.go",
+        "packages/identitycore/viewer_onboarding_http.go",
+        "apps/player/internal/server/auth_setup.go",
+        "apps/player/internal/server/profiles_credentials.go",
+        "apps/subtitles/internal/server/auth_setup.go",
+        "apps/subtitles/internal/server/profiles_credentials.go"
+      ],
+      "production_owner": [
+        "packages/credentials/credentials.go"
+      ],
+      "unlocked_deletion": "None."
     },
     {
       "file": "packages/credentials/credentials_test.go",
@@ -14169,9 +14355,9 @@
       "owner_group": "credentials",
       "body_sha256": "b85bbfaddcb98a2d497b194305446e0c523dfab16a74ee50772f0b29215d73a7",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Preserved concrete boundary or failure-injection coverage; no new isolated test added.",
       "validation_command": "cd packages && go test ./credentials",
       "baseline_event": {
         "Time": "2026-10-03T10:35:26.463429-06:00",
@@ -14179,7 +14365,27 @@
         "Package": "github.com/MikeO7/kinosail/packages/credentials",
         "Test": "TestLegacyCredentialsRemainVerifiable",
         "Elapsed": 0.12
-      }
+      },
+      "credible_failure": "Accept independently derived legacy salt.hash credentials while rejecting wrong passwords and malformed legacy input; populated E2E uses current credentials.",
+      "remaining_coverage": "This declaration remains an isolated owner boundary proof. Actual browser coverage is complementary; see group E2E limits.",
+      "gap": "Genuine populated apps/player/e2e/ui-happy-paths.spec.ts:Owner can create and revoke an API key and manage a Viewer Profile and both apps test-instance.spec.ts MFA enrollment create current valid credentials; these do not inject malformed PHC, legacy hash, dictionary, or entropy failures. Password reveal/browser fixtures prove UI behavior only.",
+      "history": [
+        "8dbd0930e9f5fbac6abcdaf439b4656a8c724ceb test(credentials): remove duplicate internal coverage probes",
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "callers": [
+        "packages/identitycore/profile.go",
+        "packages/identitycore/profile_store.go",
+        "packages/identitycore/viewer_onboarding_http.go",
+        "apps/player/internal/server/auth_setup.go",
+        "apps/player/internal/server/profiles_credentials.go",
+        "apps/subtitles/internal/server/auth_setup.go",
+        "apps/subtitles/internal/server/profiles_credentials.go"
+      ],
+      "production_owner": [
+        "packages/credentials/credentials.go"
+      ],
+      "unlocked_deletion": "None."
     },
     {
       "file": "packages/dlna/dlna_test.go",
@@ -14399,9 +14605,9 @@
       "owner_group": "documentdb",
       "body_sha256": "e6a3ef5538da0d891f571a40910a392f4d76eb80c876f083b6aaa7ada44e9872",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Preserved concrete boundary or failure-injection coverage; no new isolated test added.",
       "validation_command": "cd packages && go test ./documentdb",
       "baseline_event": {
         "Time": "2026-10-03T10:35:26.852434-06:00",
@@ -14409,7 +14615,28 @@
         "Package": "github.com/MikeO7/kinosail/packages/documentdb",
         "Test": "TestRejectedSaveBoundariesKeepPriorDocuments",
         "Elapsed": 0.35
-      }
+      },
+      "credible_failure": "Accept the exact 16MiB boundary, then preserve prior documents across oversized, semantic-invalid, overcardinality, and canceled write attempts.",
+      "remaining_coverage": "This declaration remains an isolated owner boundary proof. Actual browser coverage is complementary; see group E2E limits.",
+      "gap": "Genuine populated library/playlist/profile and playback journeys exercise successful durable state indirectly. apps/player/e2e/playback-startup.spec.ts:failed progress save does not stop playback flow aborts the browser route; it does not induce SQLite rollback. Offline browser progress tests use separate IndexedDB fixtures. No equivalence claimed for migration corruption, atomic multi-document/entry bounds, or concurrent export revisions.",
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "callers": [
+        "apps/player/internal/database/database.go",
+        "apps/subtitles/internal/database/database.go",
+        "packages/catalog/progress_request_store.go",
+        "packages/backup/archive.go:Service.readDocuments"
+      ],
+      "production_owner": [
+        "packages/documentdb/config.go",
+        "packages/documentdb/dependencies.go",
+        "packages/documentdb/documentdb.go",
+        "packages/documentdb/entries.go",
+        "packages/documentdb/entry_encoding.go",
+        "packages/documentdb/initialize.go"
+      ],
+      "unlocked_deletion": "None."
     },
     {
       "file": "packages/documentdb/concurrency_test.go",
@@ -14419,9 +14646,9 @@
       "owner_group": "documentdb",
       "body_sha256": "06d37ab74f8b20112238a91f8ba31162f09ec41e949fad0910adb450bb3c5ef4",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Preserved concrete boundary or failure-injection coverage; no new isolated test added.",
       "validation_command": "cd packages && go test ./documentdb",
       "baseline_event": {
         "Time": "2026-10-03T10:35:26.932849-06:00",
@@ -14429,7 +14656,28 @@
         "Package": "github.com/MikeO7/kinosail/packages/documentdb",
         "Test": "TestConcurrentExportsObserveOnlyAtomicBatchRevisions",
         "Elapsed": 0.08
-      }
+      },
+      "credible_failure": "Eight concurrent real database readers must never export mixed settings/profile revisions during 40 batch commits, preserving consistent backup snapshots.",
+      "remaining_coverage": "This declaration remains an isolated owner boundary proof. Actual browser coverage is complementary; see group E2E limits.",
+      "gap": "Genuine populated library/playlist/profile and playback journeys exercise successful durable state indirectly. apps/player/e2e/playback-startup.spec.ts:failed progress save does not stop playback flow aborts the browser route; it does not induce SQLite rollback. Offline browser progress tests use separate IndexedDB fixtures. No equivalence claimed for migration corruption, atomic multi-document/entry bounds, or concurrent export revisions.",
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "callers": [
+        "apps/player/internal/database/database.go",
+        "apps/subtitles/internal/database/database.go",
+        "packages/catalog/progress_request_store.go",
+        "packages/backup/archive.go:Service.readDocuments"
+      ],
+      "production_owner": [
+        "packages/documentdb/config.go",
+        "packages/documentdb/dependencies.go",
+        "packages/documentdb/documentdb.go",
+        "packages/documentdb/entries.go",
+        "packages/documentdb/entry_encoding.go",
+        "packages/documentdb/initialize.go"
+      ],
+      "unlocked_deletion": "None."
     },
     {
       "file": "packages/documentdb/documentdb_test.go",
@@ -14439,9 +14687,9 @@
       "owner_group": "documentdb",
       "body_sha256": "b6768393fbf2fef917b95dd7d27895e09877e15e4fb7e333813d72c2f23da9f0",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Preserved concrete boundary or failure-injection coverage; no new isolated test added.",
       "validation_command": "cd packages && go test ./documentdb",
       "baseline_event": {
         "Time": "2026-10-03T10:35:26.94571-06:00",
@@ -14449,7 +14697,28 @@
         "Package": "github.com/MikeO7/kinosail/packages/documentdb",
         "Test": "TestStoreLifecycleAndLegacyMigration",
         "Elapsed": 0.01
-      }
+      },
+      "credible_failure": "Load migrated legacy settings, delete the legacy file only after import, enforce private database mode 0600, and save/export a real two-document batch; invalid mutation of an exported buffer must not corrupt the stored JSON.",
+      "remaining_coverage": "This declaration remains an isolated owner boundary proof. Actual browser coverage is complementary; see group E2E limits.",
+      "gap": "Genuine populated library/playlist/profile and playback journeys exercise successful durable state indirectly. apps/player/e2e/playback-startup.spec.ts:failed progress save does not stop playback flow aborts the browser route; it does not induce SQLite rollback. Offline browser progress tests use separate IndexedDB fixtures. No equivalence claimed for migration corruption, atomic multi-document/entry bounds, or concurrent export revisions.",
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "callers": [
+        "apps/player/internal/database/database.go",
+        "apps/subtitles/internal/database/database.go",
+        "packages/catalog/progress_request_store.go",
+        "packages/backup/archive.go:Service.readDocuments"
+      ],
+      "production_owner": [
+        "packages/documentdb/config.go",
+        "packages/documentdb/dependencies.go",
+        "packages/documentdb/documentdb.go",
+        "packages/documentdb/entries.go",
+        "packages/documentdb/entry_encoding.go",
+        "packages/documentdb/initialize.go"
+      ],
+      "unlocked_deletion": "None."
     },
     {
       "file": "packages/documentdb/documentdb_test.go",
@@ -14459,9 +14728,9 @@
       "owner_group": "documentdb",
       "body_sha256": "502bfc12e42b0954a57b48ca7de5a557fe68543755dabaa7487258d003cbfe74",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Preserved concrete boundary or failure-injection coverage; no new isolated test added.",
       "validation_command": "cd packages && go test ./documentdb",
       "baseline_event": {
         "Time": "2026-10-03T10:35:26.952488-06:00",
@@ -14469,7 +14738,28 @@
         "Package": "github.com/MikeO7/kinosail/packages/documentdb",
         "Test": "TestOpenRejectsInvalidConfigBeforeSideEffects",
         "Elapsed": 0.01
-      }
+      },
+      "credible_failure": "Reject traversal, duplicate/retired clashes, unknown suffix, oversized vocabulary, and malformed document names before creating a storage directory.",
+      "remaining_coverage": "This declaration remains an isolated owner boundary proof. Actual browser coverage is complementary; see group E2E limits.",
+      "gap": "Genuine populated library/playlist/profile and playback journeys exercise successful durable state indirectly. apps/player/e2e/playback-startup.spec.ts:failed progress save does not stop playback flow aborts the browser route; it does not induce SQLite rollback. Offline browser progress tests use separate IndexedDB fixtures. No equivalence claimed for migration corruption, atomic multi-document/entry bounds, or concurrent export revisions.",
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "callers": [
+        "apps/player/internal/database/database.go",
+        "apps/subtitles/internal/database/database.go",
+        "packages/catalog/progress_request_store.go",
+        "packages/backup/archive.go:Service.readDocuments"
+      ],
+      "production_owner": [
+        "packages/documentdb/config.go",
+        "packages/documentdb/dependencies.go",
+        "packages/documentdb/documentdb.go",
+        "packages/documentdb/entries.go",
+        "packages/documentdb/entry_encoding.go",
+        "packages/documentdb/initialize.go"
+      ],
+      "unlocked_deletion": "None."
     },
     {
       "file": "packages/documentdb/documentdb_test.go",
@@ -14479,9 +14769,9 @@
       "owner_group": "documentdb",
       "body_sha256": "c5382e2dd73410c1c27721cc3d63e768f3306d49730f8dad8d2f8e23ddeba5b5",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Preserved concrete boundary or failure-injection coverage; no new isolated test added.",
       "validation_command": "cd packages && go test ./documentdb",
       "baseline_event": {
         "Time": "2026-10-03T10:35:26.95251-06:00",
@@ -14489,7 +14779,28 @@
         "Package": "github.com/MikeO7/kinosail/packages/documentdb",
         "Test": "TestPlayerConfigReturnsIndependentDocuments",
         "Elapsed": 0
-      }
+      },
+      "credible_failure": "Prevent callers mutating one returned document vocabulary from changing subsequent app configurations and hence allowed persistence names.",
+      "remaining_coverage": "This declaration remains an isolated owner boundary proof. Actual browser coverage is complementary; see group E2E limits.",
+      "gap": "Genuine populated library/playlist/profile and playback journeys exercise successful durable state indirectly. apps/player/e2e/playback-startup.spec.ts:failed progress save does not stop playback flow aborts the browser route; it does not induce SQLite rollback. Offline browser progress tests use separate IndexedDB fixtures. No equivalence claimed for migration corruption, atomic multi-document/entry bounds, or concurrent export revisions.",
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "callers": [
+        "apps/player/internal/database/database.go",
+        "apps/subtitles/internal/database/database.go",
+        "packages/catalog/progress_request_store.go",
+        "packages/backup/archive.go:Service.readDocuments"
+      ],
+      "production_owner": [
+        "packages/documentdb/config.go",
+        "packages/documentdb/dependencies.go",
+        "packages/documentdb/documentdb.go",
+        "packages/documentdb/entries.go",
+        "packages/documentdb/entry_encoding.go",
+        "packages/documentdb/initialize.go"
+      ],
+      "unlocked_deletion": "None."
     },
     {
       "file": "packages/documentdb/documentdb_test.go",
@@ -14499,9 +14810,9 @@
       "owner_group": "documentdb",
       "body_sha256": "28d2d78b659e219b1baa9410a03753ccb315b004076b5782e45eb5ab0108e873",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Preserved concrete boundary or failure-injection coverage; no new isolated test added.",
       "validation_command": "cd packages && go test ./documentdb",
       "baseline_event": {
         "Time": "2026-10-03T10:35:26.957725-06:00",
@@ -14509,7 +14820,28 @@
         "Package": "github.com/MikeO7/kinosail/packages/documentdb",
         "Test": "TestOpenRejectsInvalidLegacyStateWithoutSideEffects",
         "Elapsed": 0
-      }
+      },
+      "credible_failure": "Reject malformed, semantic-invalid, oversized, or symlinked legacy files while retaining source files and avoiding new database side effects.",
+      "remaining_coverage": "This declaration remains an isolated owner boundary proof. Actual browser coverage is complementary; see group E2E limits.",
+      "gap": "Genuine populated library/playlist/profile and playback journeys exercise successful durable state indirectly. apps/player/e2e/playback-startup.spec.ts:failed progress save does not stop playback flow aborts the browser route; it does not induce SQLite rollback. Offline browser progress tests use separate IndexedDB fixtures. No equivalence claimed for migration corruption, atomic multi-document/entry bounds, or concurrent export revisions.",
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "callers": [
+        "apps/player/internal/database/database.go",
+        "apps/subtitles/internal/database/database.go",
+        "packages/catalog/progress_request_store.go",
+        "packages/backup/archive.go:Service.readDocuments"
+      ],
+      "production_owner": [
+        "packages/documentdb/config.go",
+        "packages/documentdb/dependencies.go",
+        "packages/documentdb/documentdb.go",
+        "packages/documentdb/entries.go",
+        "packages/documentdb/entry_encoding.go",
+        "packages/documentdb/initialize.go"
+      ],
+      "unlocked_deletion": "None."
     },
     {
       "file": "packages/documentdb/documentdb_test.go",
@@ -14519,9 +14851,9 @@
       "owner_group": "documentdb",
       "body_sha256": "51314858fdf49d08b0912e369b1a599fff76f8e4b52406c60f38db10f19e9162",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Preserved concrete boundary or failure-injection coverage; no new isolated test added.",
       "validation_command": "cd packages && go test ./documentdb",
       "baseline_event": {
         "Time": "2026-10-03T10:35:26.971907-06:00",
@@ -14529,7 +14861,28 @@
         "Package": "github.com/MikeO7/kinosail/packages/documentdb",
         "Test": "TestOpenRejectsInvalidDatabaseState",
         "Elapsed": 0.01
-      }
+      },
+      "credible_failure": "Reject directory, corrupt database, unsupported future schema, and missing state table instead of silently treating invalid durable storage as empty.",
+      "remaining_coverage": "This declaration remains an isolated owner boundary proof. Actual browser coverage is complementary; see group E2E limits.",
+      "gap": "Genuine populated library/playlist/profile and playback journeys exercise successful durable state indirectly. apps/player/e2e/playback-startup.spec.ts:failed progress save does not stop playback flow aborts the browser route; it does not induce SQLite rollback. Offline browser progress tests use separate IndexedDB fixtures. No equivalence claimed for migration corruption, atomic multi-document/entry bounds, or concurrent export revisions.",
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "callers": [
+        "apps/player/internal/database/database.go",
+        "apps/subtitles/internal/database/database.go",
+        "packages/catalog/progress_request_store.go",
+        "packages/backup/archive.go:Service.readDocuments"
+      ],
+      "production_owner": [
+        "packages/documentdb/config.go",
+        "packages/documentdb/dependencies.go",
+        "packages/documentdb/documentdb.go",
+        "packages/documentdb/entries.go",
+        "packages/documentdb/entry_encoding.go",
+        "packages/documentdb/initialize.go"
+      ],
+      "unlocked_deletion": "None."
     },
     {
       "file": "packages/documentdb/documentdb_test.go",
@@ -14539,9 +14892,9 @@
       "owner_group": "documentdb",
       "body_sha256": "0930b23835c81543ced1329a9ac062fc318f675a225a52c3b7cc26c6792badd1",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Preserved concrete boundary or failure-injection coverage; no new isolated test added.",
       "validation_command": "cd packages && go test ./documentdb",
       "baseline_event": {
         "Time": "2026-10-03T10:35:26.980899-06:00",
@@ -14549,7 +14902,28 @@
         "Package": "github.com/MikeO7/kinosail/packages/documentdb",
         "Test": "TestStoreRejectsInvalidOperationsWithoutWriting",
         "Elapsed": 0.01
-      }
+      },
+      "credible_failure": "Reject unknown/unmarshalable documents, nil context, and mixed invalid batches before writing any durable state; invalid reads/exports must fail.",
+      "remaining_coverage": "This declaration remains an isolated owner boundary proof. Actual browser coverage is complementary; see group E2E limits.",
+      "gap": "Genuine populated library/playlist/profile and playback journeys exercise successful durable state indirectly. apps/player/e2e/playback-startup.spec.ts:failed progress save does not stop playback flow aborts the browser route; it does not induce SQLite rollback. Offline browser progress tests use separate IndexedDB fixtures. No equivalence claimed for migration corruption, atomic multi-document/entry bounds, or concurrent export revisions.",
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "callers": [
+        "apps/player/internal/database/database.go",
+        "apps/subtitles/internal/database/database.go",
+        "packages/catalog/progress_request_store.go",
+        "packages/backup/archive.go:Service.readDocuments"
+      ],
+      "production_owner": [
+        "packages/documentdb/config.go",
+        "packages/documentdb/dependencies.go",
+        "packages/documentdb/documentdb.go",
+        "packages/documentdb/entries.go",
+        "packages/documentdb/entry_encoding.go",
+        "packages/documentdb/initialize.go"
+      ],
+      "unlocked_deletion": "None."
     },
     {
       "file": "packages/documentdb/documentdb_test.go",
@@ -14559,9 +14933,9 @@
       "owner_group": "documentdb",
       "body_sha256": "8ea5f3733a998dd87a8b588684fe6486c0e55a13f5339cd14812cf50be6ef118",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Preserved concrete boundary or failure-injection coverage; no new isolated test added.",
       "validation_command": "cd packages && go test ./documentdb",
       "baseline_event": {
         "Time": "2026-10-03T10:35:27.001604-06:00",
@@ -14569,7 +14943,28 @@
         "Package": "github.com/MikeO7/kinosail/packages/documentdb",
         "Test": "TestBatchRollbackAndPersistedValidation",
         "Elapsed": 0.02
-      }
+      },
+      "credible_failure": "A real SQLite abort trigger on the second batch document must roll back the first; subsequently corrupted persisted JSON must fail Load and Export.",
+      "remaining_coverage": "This declaration remains an isolated owner boundary proof. Actual browser coverage is complementary; see group E2E limits.",
+      "gap": "Genuine populated library/playlist/profile and playback journeys exercise successful durable state indirectly. apps/player/e2e/playback-startup.spec.ts:failed progress save does not stop playback flow aborts the browser route; it does not induce SQLite rollback. Offline browser progress tests use separate IndexedDB fixtures. No equivalence claimed for migration corruption, atomic multi-document/entry bounds, or concurrent export revisions.",
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "callers": [
+        "apps/player/internal/database/database.go",
+        "apps/subtitles/internal/database/database.go",
+        "packages/catalog/progress_request_store.go",
+        "packages/backup/archive.go:Service.readDocuments"
+      ],
+      "production_owner": [
+        "packages/documentdb/config.go",
+        "packages/documentdb/dependencies.go",
+        "packages/documentdb/documentdb.go",
+        "packages/documentdb/entries.go",
+        "packages/documentdb/entry_encoding.go",
+        "packages/documentdb/initialize.go"
+      ],
+      "unlocked_deletion": "None."
     },
     {
       "file": "packages/documentdb/documentdb_test.go",
@@ -14579,9 +14974,9 @@
       "owner_group": "documentdb",
       "body_sha256": "fce3f79f70ca13c0622543907c5894eae5d9190ac439526a724939ef9e8c9df2",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Preserved concrete boundary or failure-injection coverage; no new isolated test added.",
       "validation_command": "cd packages && go test ./documentdb",
       "baseline_event": {
         "Time": "2026-10-03T10:35:27.0127-06:00",
@@ -14589,7 +14984,28 @@
         "Package": "github.com/MikeO7/kinosail/packages/documentdb",
         "Test": "TestValidationBeforeMigrationPreventsCleanup",
         "Elapsed": 0.01
-      }
+      },
+      "credible_failure": "Validate semantic-invalid active state before retired-document cleanup, retaining retired durable rows when startup fails.",
+      "remaining_coverage": "This declaration remains an isolated owner boundary proof. Actual browser coverage is complementary; see group E2E limits.",
+      "gap": "Genuine populated library/playlist/profile and playback journeys exercise successful durable state indirectly. apps/player/e2e/playback-startup.spec.ts:failed progress save does not stop playback flow aborts the browser route; it does not induce SQLite rollback. Offline browser progress tests use separate IndexedDB fixtures. No equivalence claimed for migration corruption, atomic multi-document/entry bounds, or concurrent export revisions.",
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "callers": [
+        "apps/player/internal/database/database.go",
+        "apps/subtitles/internal/database/database.go",
+        "packages/catalog/progress_request_store.go",
+        "packages/backup/archive.go:Service.readDocuments"
+      ],
+      "production_owner": [
+        "packages/documentdb/config.go",
+        "packages/documentdb/dependencies.go",
+        "packages/documentdb/documentdb.go",
+        "packages/documentdb/entries.go",
+        "packages/documentdb/entry_encoding.go",
+        "packages/documentdb/initialize.go"
+      ],
+      "unlocked_deletion": "None."
     },
     {
       "file": "packages/documentdb/documentdb_test.go",
@@ -14599,9 +15015,9 @@
       "owner_group": "documentdb",
       "body_sha256": "53cddb75bc6ffdde17ca625817e4699fa65468232d51ef289d18f913ba4808c3",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Preserved concrete boundary or failure-injection coverage; no new isolated test added.",
       "validation_command": "cd packages && go test ./documentdb",
       "baseline_event": {
         "Time": "2026-10-03T10:35:27.013103-06:00",
@@ -14609,7 +15025,28 @@
         "Package": "github.com/MikeO7/kinosail/packages/documentdb",
         "Test": "TestNilStoreAndEmptyDirectoryAreNoOps",
         "Elapsed": 0
-      }
+      },
+      "credible_failure": "Support the documented no-storage mode without nil receiver panics or persistence side effects; explicit nil contexts still fail rather than starting work.",
+      "remaining_coverage": "This declaration remains an isolated owner boundary proof. Actual browser coverage is complementary; see group E2E limits.",
+      "gap": "Genuine populated library/playlist/profile and playback journeys exercise successful durable state indirectly. apps/player/e2e/playback-startup.spec.ts:failed progress save does not stop playback flow aborts the browser route; it does not induce SQLite rollback. Offline browser progress tests use separate IndexedDB fixtures. No equivalence claimed for migration corruption, atomic multi-document/entry bounds, or concurrent export revisions.",
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "callers": [
+        "apps/player/internal/database/database.go",
+        "apps/subtitles/internal/database/database.go",
+        "packages/catalog/progress_request_store.go",
+        "packages/backup/archive.go:Service.readDocuments"
+      ],
+      "production_owner": [
+        "packages/documentdb/config.go",
+        "packages/documentdb/dependencies.go",
+        "packages/documentdb/documentdb.go",
+        "packages/documentdb/entries.go",
+        "packages/documentdb/entry_encoding.go",
+        "packages/documentdb/initialize.go"
+      ],
+      "unlocked_deletion": "None."
     },
     {
       "file": "packages/documentdb/entries_test.go",
@@ -14619,9 +15056,9 @@
       "owner_group": "documentdb",
       "body_sha256": "165cfb24633147a38bc48b301fb54b43f26610af0ffcacccc714ab5e91b4dda6",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Preserved concrete boundary or failure-injection coverage; no new isolated test added.",
       "validation_command": "cd packages && go test ./documentdb",
       "baseline_event": {
         "Time": "2026-10-03T10:35:27.020129-06:00",
@@ -14629,7 +15066,28 @@
         "Package": "github.com/MikeO7/kinosail/packages/documentdb",
         "Test": "TestSchemaOneProgressUpgradeAndReopen",
         "Elapsed": 0.01
-      }
+      },
+      "credible_failure": "Upgrade schema1 progress into record mode, retain old progress, persist a new entry, and preserve both after reopening the real database.",
+      "remaining_coverage": "This declaration remains an isolated owner boundary proof. Actual browser coverage is complementary; see group E2E limits.",
+      "gap": "Genuine populated library/playlist/profile and playback journeys exercise successful durable state indirectly. apps/player/e2e/playback-startup.spec.ts:failed progress save does not stop playback flow aborts the browser route; it does not induce SQLite rollback. Offline browser progress tests use separate IndexedDB fixtures. No equivalence claimed for migration corruption, atomic multi-document/entry bounds, or concurrent export revisions.",
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "callers": [
+        "apps/player/internal/database/database.go",
+        "apps/subtitles/internal/database/database.go",
+        "packages/catalog/progress_request_store.go",
+        "packages/backup/archive.go:Service.readDocuments"
+      ],
+      "production_owner": [
+        "packages/documentdb/config.go",
+        "packages/documentdb/dependencies.go",
+        "packages/documentdb/documentdb.go",
+        "packages/documentdb/entries.go",
+        "packages/documentdb/entry_encoding.go",
+        "packages/documentdb/initialize.go"
+      ],
+      "unlocked_deletion": "None."
     },
     {
       "file": "packages/documentdb/entries_test.go",
@@ -14639,9 +15097,9 @@
       "owner_group": "documentdb",
       "body_sha256": "e89531538bdf0c34697af4787b6fb6568880c23cae6c55be4d299f756f6524c4",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Preserved concrete boundary or failure-injection coverage; no new isolated test added.",
       "validation_command": "cd packages && go test ./documentdb",
       "baseline_event": {
         "Time": "2026-10-03T10:35:27.027516-06:00",
@@ -14649,7 +15107,28 @@
         "Package": "github.com/MikeO7/kinosail/packages/documentdb",
         "Test": "TestEntryValidationPrecedesRetiredCleanup",
         "Elapsed": 0.01
-      }
+      },
+      "credible_failure": "Reject corrupt aggregate entry counters before retired cleanup, preserving prior rows when migration validation fails.",
+      "remaining_coverage": "This declaration remains an isolated owner boundary proof. Actual browser coverage is complementary; see group E2E limits.",
+      "gap": "Genuine populated library/playlist/profile and playback journeys exercise successful durable state indirectly. apps/player/e2e/playback-startup.spec.ts:failed progress save does not stop playback flow aborts the browser route; it does not induce SQLite rollback. Offline browser progress tests use separate IndexedDB fixtures. No equivalence claimed for migration corruption, atomic multi-document/entry bounds, or concurrent export revisions.",
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "callers": [
+        "apps/player/internal/database/database.go",
+        "apps/subtitles/internal/database/database.go",
+        "packages/catalog/progress_request_store.go",
+        "packages/backup/archive.go:Service.readDocuments"
+      ],
+      "production_owner": [
+        "packages/documentdb/config.go",
+        "packages/documentdb/dependencies.go",
+        "packages/documentdb/documentdb.go",
+        "packages/documentdb/entries.go",
+        "packages/documentdb/entry_encoding.go",
+        "packages/documentdb/initialize.go"
+      ],
+      "unlocked_deletion": "None."
     },
     {
       "file": "packages/documentdb/entries_test.go",
@@ -14659,9 +15138,9 @@
       "owner_group": "documentdb",
       "body_sha256": "69e2a10ababa74442569b07f4a99d4997cd456293ef25d6d2f52569c0dd60e4a",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Preserved concrete boundary or failure-injection coverage; no new isolated test added.",
       "validation_command": "cd packages && go test ./documentdb",
       "baseline_event": {
         "Time": "2026-10-03T10:35:27.041912-06:00",
@@ -14669,7 +15148,28 @@
         "Package": "github.com/MikeO7/kinosail/packages/documentdb",
         "Test": "TestAmbiguousEntryMigrationHasNoSideEffects",
         "Elapsed": 0.01
-      }
+      },
+      "credible_failure": "Reject duplicate or Unicode-equivalent keys, nested duplicate fields, and invalid UTF8 without enabling record mode or deleting the original document.",
+      "remaining_coverage": "This declaration remains an isolated owner boundary proof. Actual browser coverage is complementary; see group E2E limits.",
+      "gap": "Genuine populated library/playlist/profile and playback journeys exercise successful durable state indirectly. apps/player/e2e/playback-startup.spec.ts:failed progress save does not stop playback flow aborts the browser route; it does not induce SQLite rollback. Offline browser progress tests use separate IndexedDB fixtures. No equivalence claimed for migration corruption, atomic multi-document/entry bounds, or concurrent export revisions.",
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "callers": [
+        "apps/player/internal/database/database.go",
+        "apps/subtitles/internal/database/database.go",
+        "packages/catalog/progress_request_store.go",
+        "packages/backup/archive.go:Service.readDocuments"
+      ],
+      "production_owner": [
+        "packages/documentdb/config.go",
+        "packages/documentdb/dependencies.go",
+        "packages/documentdb/documentdb.go",
+        "packages/documentdb/entries.go",
+        "packages/documentdb/entry_encoding.go",
+        "packages/documentdb/initialize.go"
+      ],
+      "unlocked_deletion": "None."
     },
     {
       "file": "packages/documentdb/entries_test.go",
@@ -14679,9 +15179,9 @@
       "owner_group": "documentdb",
       "body_sha256": "fbd8a877f673aed2652caeb8192507ef59af7873a2026150c4ae93f7ae53cdaf",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Preserved concrete boundary or failure-injection coverage; no new isolated test added.",
       "validation_command": "cd packages && go test ./documentdb",
       "baseline_event": {
         "Time": "2026-10-03T10:35:27.048306-06:00",
@@ -14689,7 +15189,28 @@
         "Package": "github.com/MikeO7/kinosail/packages/documentdb",
         "Test": "TestEntriesPreserveWholeDocumentAndBackupContract",
         "Elapsed": 0.01
-      }
+      },
+      "credible_failure": "Individual progress updates must retain other entries; logical Load/Export and a replacement batch must agree and remain durable after reopen.",
+      "remaining_coverage": "This declaration remains an isolated owner boundary proof. Actual browser coverage is complementary; see group E2E limits.",
+      "gap": "Genuine populated library/playlist/profile and playback journeys exercise successful durable state indirectly. apps/player/e2e/playback-startup.spec.ts:failed progress save does not stop playback flow aborts the browser route; it does not induce SQLite rollback. Offline browser progress tests use separate IndexedDB fixtures. No equivalence claimed for migration corruption, atomic multi-document/entry bounds, or concurrent export revisions.",
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "callers": [
+        "apps/player/internal/database/database.go",
+        "apps/subtitles/internal/database/database.go",
+        "packages/catalog/progress_request_store.go",
+        "packages/backup/archive.go:Service.readDocuments"
+      ],
+      "production_owner": [
+        "packages/documentdb/config.go",
+        "packages/documentdb/dependencies.go",
+        "packages/documentdb/documentdb.go",
+        "packages/documentdb/entries.go",
+        "packages/documentdb/entry_encoding.go",
+        "packages/documentdb/initialize.go"
+      ],
+      "unlocked_deletion": "None."
     },
     {
       "file": "packages/documentdb/entries_test.go",
@@ -14699,9 +15220,9 @@
       "owner_group": "documentdb",
       "body_sha256": "f5947e030a9b9fc6251c8e6a41e637cb0c92d280709ec67ece3fea0a2a728045",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Preserved concrete boundary or failure-injection coverage; no new isolated test added.",
       "validation_command": "cd packages && go test ./documentdb",
       "baseline_event": {
         "Time": "2026-10-03T10:35:27.156696-06:00",
@@ -14709,7 +15230,28 @@
         "Package": "github.com/MikeO7/kinosail/packages/documentdb",
         "Test": "TestRejectedEntriesDoNotChangeDurableState",
         "Elapsed": 0.11
-      }
+      },
+      "credible_failure": "Invalid UTF8/empty/long keys, unknown documents, oversized values, and bad mixed batches must leave the prior progress entry unchanged.",
+      "remaining_coverage": "This declaration remains an isolated owner boundary proof. Actual browser coverage is complementary; see group E2E limits.",
+      "gap": "Genuine populated library/playlist/profile and playback journeys exercise successful durable state indirectly. apps/player/e2e/playback-startup.spec.ts:failed progress save does not stop playback flow aborts the browser route; it does not induce SQLite rollback. Offline browser progress tests use separate IndexedDB fixtures. No equivalence claimed for migration corruption, atomic multi-document/entry bounds, or concurrent export revisions.",
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "callers": [
+        "apps/player/internal/database/database.go",
+        "apps/subtitles/internal/database/database.go",
+        "packages/catalog/progress_request_store.go",
+        "packages/backup/archive.go:Service.readDocuments"
+      ],
+      "production_owner": [
+        "packages/documentdb/config.go",
+        "packages/documentdb/dependencies.go",
+        "packages/documentdb/documentdb.go",
+        "packages/documentdb/entries.go",
+        "packages/documentdb/entry_encoding.go",
+        "packages/documentdb/initialize.go"
+      ],
+      "unlocked_deletion": "None."
     },
     {
       "file": "packages/documentdb/entries_test.go",
@@ -14719,9 +15261,9 @@
       "owner_group": "documentdb",
       "body_sha256": "2b27ffc0aef92aa1cd38b870e85b29556ad115113d7a5cd1bbf7b269799fa33b",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Preserved concrete boundary or failure-injection coverage; no new isolated test added.",
       "validation_command": "cd packages && go test ./documentdb",
       "baseline_event": {
         "Time": "2026-10-03T10:35:27.343915-06:00",
@@ -14729,7 +15271,28 @@
         "Package": "github.com/MikeO7/kinosail/packages/documentdb",
         "Test": "TestEntryAggregateLimitRollsBackBothTables",
         "Elapsed": 0.19
-      }
+      },
+      "credible_failure": "An update exceeding the 16MiB aggregate must roll back record and metadata writes, preserving the first large entry and valid counters.",
+      "remaining_coverage": "This declaration remains an isolated owner boundary proof. Actual browser coverage is complementary; see group E2E limits.",
+      "gap": "Genuine populated library/playlist/profile and playback journeys exercise successful durable state indirectly. apps/player/e2e/playback-startup.spec.ts:failed progress save does not stop playback flow aborts the browser route; it does not induce SQLite rollback. Offline browser progress tests use separate IndexedDB fixtures. No equivalence claimed for migration corruption, atomic multi-document/entry bounds, or concurrent export revisions.",
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "callers": [
+        "apps/player/internal/database/database.go",
+        "apps/subtitles/internal/database/database.go",
+        "packages/catalog/progress_request_store.go",
+        "packages/backup/archive.go:Service.readDocuments"
+      ],
+      "production_owner": [
+        "packages/documentdb/config.go",
+        "packages/documentdb/dependencies.go",
+        "packages/documentdb/documentdb.go",
+        "packages/documentdb/entries.go",
+        "packages/documentdb/entry_encoding.go",
+        "packages/documentdb/initialize.go"
+      ],
+      "unlocked_deletion": "None."
     },
     {
       "file": "packages/documentdb/entries_test.go",
@@ -14739,9 +15302,9 @@
       "owner_group": "documentdb",
       "body_sha256": "782f35372f83fa363f97e1423d55975fb82f73da9d78c722246ce33d5671eae7",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Preserved concrete boundary or failure-injection coverage; no new isolated test added.",
       "validation_command": "cd packages && go test ./documentdb",
       "baseline_event": {
         "Time": "2026-10-03T10:35:27.348434-06:00",
@@ -14749,7 +15312,28 @@
         "Package": "github.com/MikeO7/kinosail/packages/documentdb",
         "Test": "TestEntryMigrationAcceptsEmptyLegacyProgress",
         "Elapsed": 0
-      }
+      },
+      "credible_failure": "Accept null legacy progress as an empty entry map so a previously empty installation can migrate and write its first progress record.",
+      "remaining_coverage": "This declaration remains an isolated owner boundary proof. Actual browser coverage is complementary; see group E2E limits.",
+      "gap": "Genuine populated library/playlist/profile and playback journeys exercise successful durable state indirectly. apps/player/e2e/playback-startup.spec.ts:failed progress save does not stop playback flow aborts the browser route; it does not induce SQLite rollback. Offline browser progress tests use separate IndexedDB fixtures. No equivalence claimed for migration corruption, atomic multi-document/entry bounds, or concurrent export revisions.",
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "callers": [
+        "apps/player/internal/database/database.go",
+        "apps/subtitles/internal/database/database.go",
+        "packages/catalog/progress_request_store.go",
+        "packages/backup/archive.go:Service.readDocuments"
+      ],
+      "production_owner": [
+        "packages/documentdb/config.go",
+        "packages/documentdb/dependencies.go",
+        "packages/documentdb/documentdb.go",
+        "packages/documentdb/entries.go",
+        "packages/documentdb/entry_encoding.go",
+        "packages/documentdb/initialize.go"
+      ],
+      "unlocked_deletion": "None."
     },
     {
       "file": "packages/documentdb/failures_test.go",
@@ -14759,9 +15343,9 @@
       "owner_group": "documentdb",
       "body_sha256": "dfb8226e62060f1810b1026ff7844d89ce596821e2467307006de2be735b01ee",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Preserved concrete boundary or failure-injection coverage; no new isolated test added.",
       "validation_command": "cd packages && go test ./documentdb",
       "baseline_event": {
         "Time": "2026-10-03T10:35:27.364555-06:00",
@@ -14769,7 +15353,28 @@
         "Package": "github.com/MikeO7/kinosail/packages/documentdb",
         "Test": "TestOpenContextSurfacesDependencyFailures",
         "Elapsed": 0.02
-      }
+      },
+      "credible_failure": "Surface injected mkdir/stat/open/chmod/legacy-remove failures without publishing an initialized Store; E2E cannot deterministically induce these OS failures.",
+      "remaining_coverage": "This declaration remains an isolated owner boundary proof. Actual browser coverage is complementary; see group E2E limits.",
+      "gap": "Genuine populated library/playlist/profile and playback journeys exercise successful durable state indirectly. apps/player/e2e/playback-startup.spec.ts:failed progress save does not stop playback flow aborts the browser route; it does not induce SQLite rollback. Offline browser progress tests use separate IndexedDB fixtures. No equivalence claimed for migration corruption, atomic multi-document/entry bounds, or concurrent export revisions.",
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "callers": [
+        "apps/player/internal/database/database.go",
+        "apps/subtitles/internal/database/database.go",
+        "packages/catalog/progress_request_store.go",
+        "packages/backup/archive.go:Service.readDocuments"
+      ],
+      "production_owner": [
+        "packages/documentdb/config.go",
+        "packages/documentdb/dependencies.go",
+        "packages/documentdb/documentdb.go",
+        "packages/documentdb/entries.go",
+        "packages/documentdb/entry_encoding.go",
+        "packages/documentdb/initialize.go"
+      ],
+      "unlocked_deletion": "None."
     },
     {
       "file": "packages/documentdb/failures_test.go",
@@ -14779,9 +15384,9 @@
       "owner_group": "documentdb",
       "body_sha256": "916fba464efeeffc77361949e243e7c23a69a091a0e97b0e1f378857c05cce21",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Preserved concrete boundary or failure-injection coverage; no new isolated test added.",
       "validation_command": "cd packages && go test ./documentdb",
       "baseline_event": {
         "Time": "2026-10-03T10:35:27.375073-06:00",
@@ -14789,7 +15394,28 @@
         "Package": "github.com/MikeO7/kinosail/packages/documentdb",
         "Test": "TestOpenContextCoversConnectionAndExportPolicies",
         "Elapsed": 0.01
-      }
+      },
+      "credible_failure": "Reject a reopened database containing an unknown durable document at the complete startup/export boundary.",
+      "remaining_coverage": "This declaration remains an isolated owner boundary proof. Actual browser coverage is complementary; see group E2E limits.",
+      "gap": "Genuine populated library/playlist/profile and playback journeys exercise successful durable state indirectly. apps/player/e2e/playback-startup.spec.ts:failed progress save does not stop playback flow aborts the browser route; it does not induce SQLite rollback. Offline browser progress tests use separate IndexedDB fixtures. No equivalence claimed for migration corruption, atomic multi-document/entry bounds, or concurrent export revisions.",
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "callers": [
+        "apps/player/internal/database/database.go",
+        "apps/subtitles/internal/database/database.go",
+        "packages/catalog/progress_request_store.go",
+        "packages/backup/archive.go:Service.readDocuments"
+      ],
+      "production_owner": [
+        "packages/documentdb/config.go",
+        "packages/documentdb/dependencies.go",
+        "packages/documentdb/documentdb.go",
+        "packages/documentdb/entries.go",
+        "packages/documentdb/entry_encoding.go",
+        "packages/documentdb/initialize.go"
+      ],
+      "unlocked_deletion": "None."
     },
     {
       "file": "packages/documentdb/failures_test.go",
@@ -14799,9 +15425,9 @@
       "owner_group": "documentdb",
       "body_sha256": "0fc05ab3403685c3d3b4e933c7c5d918d185dbd08d3d14d66d12b9dfc424194e",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Preserved concrete boundary or failure-injection coverage; no new isolated test added.",
       "validation_command": "cd packages && go test ./documentdb",
       "baseline_event": {
         "Time": "2026-10-03T10:35:27.385118-06:00",
@@ -14809,7 +15435,28 @@
         "Package": "github.com/MikeO7/kinosail/packages/documentdb",
         "Test": "TestStoreSurfacesDecodeFailuresAndMissingDocuments",
         "Elapsed": 0.01
-      }
+      },
+      "credible_failure": "Distinguish absent documents from present-but-incompatible decoded data rather than silently replacing damaged or wrong-type state.",
+      "remaining_coverage": "This declaration remains an isolated owner boundary proof. Actual browser coverage is complementary; see group E2E limits.",
+      "gap": "Genuine populated library/playlist/profile and playback journeys exercise successful durable state indirectly. apps/player/e2e/playback-startup.spec.ts:failed progress save does not stop playback flow aborts the browser route; it does not induce SQLite rollback. Offline browser progress tests use separate IndexedDB fixtures. No equivalence claimed for migration corruption, atomic multi-document/entry bounds, or concurrent export revisions.",
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "callers": [
+        "apps/player/internal/database/database.go",
+        "apps/subtitles/internal/database/database.go",
+        "packages/catalog/progress_request_store.go",
+        "packages/backup/archive.go:Service.readDocuments"
+      ],
+      "production_owner": [
+        "packages/documentdb/config.go",
+        "packages/documentdb/dependencies.go",
+        "packages/documentdb/documentdb.go",
+        "packages/documentdb/entries.go",
+        "packages/documentdb/entry_encoding.go",
+        "packages/documentdb/initialize.go"
+      ],
+      "unlocked_deletion": "None."
     },
     {
       "file": "packages/documentdb/failures_test.go",
@@ -14819,9 +15466,9 @@
       "owner_group": "documentdb",
       "body_sha256": "92dc4e0af4f26ee039639edb157a707b36322fb61aa31c6aebcb7a66da1bf6ed",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Preserved concrete boundary or failure-injection coverage; no new isolated test added.",
       "validation_command": "cd packages && go test ./documentdb",
       "baseline_event": {
         "Time": "2026-10-03T10:35:27.392549-06:00",
@@ -14829,7 +15476,28 @@
         "Package": "github.com/MikeO7/kinosail/packages/documentdb",
         "Test": "TestStoreSurfacesClosedDatabaseErrors",
         "Elapsed": 0.01
-      }
+      },
+      "credible_failure": "Propagate real closed-database errors from Load, Save, and Export rather than treating data as absent or writes as successful.",
+      "remaining_coverage": "This declaration remains an isolated owner boundary proof. Actual browser coverage is complementary; see group E2E limits.",
+      "gap": "Genuine populated library/playlist/profile and playback journeys exercise successful durable state indirectly. apps/player/e2e/playback-startup.spec.ts:failed progress save does not stop playback flow aborts the browser route; it does not induce SQLite rollback. Offline browser progress tests use separate IndexedDB fixtures. No equivalence claimed for migration corruption, atomic multi-document/entry bounds, or concurrent export revisions.",
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "callers": [
+        "apps/player/internal/database/database.go",
+        "apps/subtitles/internal/database/database.go",
+        "packages/catalog/progress_request_store.go",
+        "packages/backup/archive.go:Service.readDocuments"
+      ],
+      "production_owner": [
+        "packages/documentdb/config.go",
+        "packages/documentdb/dependencies.go",
+        "packages/documentdb/documentdb.go",
+        "packages/documentdb/entries.go",
+        "packages/documentdb/entry_encoding.go",
+        "packages/documentdb/initialize.go"
+      ],
+      "unlocked_deletion": "None."
     },
     {
       "file": "packages/documentdb/failures_test.go",
@@ -14839,9 +15507,9 @@
       "owner_group": "documentdb",
       "body_sha256": "2b35714a1466125852785136b4a2646a44f49056f25b3926b667ff3b586da5c8",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Preserved concrete boundary or failure-injection coverage; no new isolated test added.",
       "validation_command": "cd packages && go test ./documentdb",
       "baseline_event": {
         "Time": "2026-10-03T10:35:27.392719-06:00",
@@ -14849,7 +15517,28 @@
         "Package": "github.com/MikeO7/kinosail/packages/documentdb",
         "Test": "TestValidateExistingSurfacesDatabaseFailures",
         "Elapsed": 0
-      }
+      },
+      "credible_failure": "Propagate injected query, scan, and row-stream errors during pre-migration validation; successful browser startup does not exercise these database failures.",
+      "remaining_coverage": "This declaration remains an isolated owner boundary proof. Actual browser coverage is complementary; see group E2E limits.",
+      "gap": "Genuine populated library/playlist/profile and playback journeys exercise successful durable state indirectly. apps/player/e2e/playback-startup.spec.ts:failed progress save does not stop playback flow aborts the browser route; it does not induce SQLite rollback. Offline browser progress tests use separate IndexedDB fixtures. No equivalence claimed for migration corruption, atomic multi-document/entry bounds, or concurrent export revisions.",
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "callers": [
+        "apps/player/internal/database/database.go",
+        "apps/subtitles/internal/database/database.go",
+        "packages/catalog/progress_request_store.go",
+        "packages/backup/archive.go:Service.readDocuments"
+      ],
+      "production_owner": [
+        "packages/documentdb/config.go",
+        "packages/documentdb/dependencies.go",
+        "packages/documentdb/documentdb.go",
+        "packages/documentdb/entries.go",
+        "packages/documentdb/entry_encoding.go",
+        "packages/documentdb/initialize.go"
+      ],
+      "unlocked_deletion": "None."
     },
     {
       "file": "packages/documentdb/failures_test.go",
@@ -14859,9 +15548,9 @@
       "owner_group": "documentdb",
       "body_sha256": "2f79cc0232a10dcf88428cd4a68923180b7b56b94414cd98b3f23289556c4c17",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Preserved concrete boundary or failure-injection coverage; no new isolated test added.",
       "validation_command": "cd packages && go test ./documentdb",
       "baseline_event": {
         "Time": "2026-10-03T10:35:27.39344-06:00",
@@ -14869,7 +15558,28 @@
         "Package": "github.com/MikeO7/kinosail/packages/documentdb",
         "Test": "TestInitializeSurfacesDatabaseFailures",
         "Elapsed": 0
-      }
+      },
+      "credible_failure": "Propagate injected schema/version/PRAGMA/integrity/begin failures and roll back failed retired cleanup or import rather than publishing partial startup state.",
+      "remaining_coverage": "This declaration remains an isolated owner boundary proof. Actual browser coverage is complementary; see group E2E limits.",
+      "gap": "Genuine populated library/playlist/profile and playback journeys exercise successful durable state indirectly. apps/player/e2e/playback-startup.spec.ts:failed progress save does not stop playback flow aborts the browser route; it does not induce SQLite rollback. Offline browser progress tests use separate IndexedDB fixtures. No equivalence claimed for migration corruption, atomic multi-document/entry bounds, or concurrent export revisions.",
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "callers": [
+        "apps/player/internal/database/database.go",
+        "apps/subtitles/internal/database/database.go",
+        "packages/catalog/progress_request_store.go",
+        "packages/backup/archive.go:Service.readDocuments"
+      ],
+      "production_owner": [
+        "packages/documentdb/config.go",
+        "packages/documentdb/dependencies.go",
+        "packages/documentdb/documentdb.go",
+        "packages/documentdb/entries.go",
+        "packages/documentdb/entry_encoding.go",
+        "packages/documentdb/initialize.go"
+      ],
+      "unlocked_deletion": "None."
     },
     {
       "file": "packages/documentdb/migration_test.go",
@@ -14879,9 +15589,9 @@
       "owner_group": "documentdb",
       "body_sha256": "2b7753e1f91bcea00768dfea02f02bcf40fa2751fb1c3eaa80e7cc5bb1d61d32",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Preserved concrete boundary or failure-injection coverage; no new isolated test added.",
       "validation_command": "cd packages && go test ./documentdb",
       "baseline_event": {
         "Time": "2026-10-03T10:35:27.410435-06:00",
@@ -14889,7 +15599,28 @@
         "Package": "github.com/MikeO7/kinosail/packages/documentdb",
         "Test": "TestOpenRemovesRetiredDocuments",
         "Elapsed": 0.02
-      }
+      },
+      "credible_failure": "Remove known retired durable documents on successful real startup; browser workflows do not preseed retired storage rows.",
+      "remaining_coverage": "This declaration remains an isolated owner boundary proof. Actual browser coverage is complementary; see group E2E limits.",
+      "gap": "Genuine populated library/playlist/profile and playback journeys exercise successful durable state indirectly. apps/player/e2e/playback-startup.spec.ts:failed progress save does not stop playback flow aborts the browser route; it does not induce SQLite rollback. Offline browser progress tests use separate IndexedDB fixtures. No equivalence claimed for migration corruption, atomic multi-document/entry bounds, or concurrent export revisions.",
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "callers": [
+        "apps/player/internal/database/database.go",
+        "apps/subtitles/internal/database/database.go",
+        "packages/catalog/progress_request_store.go",
+        "packages/backup/archive.go:Service.readDocuments"
+      ],
+      "production_owner": [
+        "packages/documentdb/config.go",
+        "packages/documentdb/dependencies.go",
+        "packages/documentdb/documentdb.go",
+        "packages/documentdb/entries.go",
+        "packages/documentdb/entry_encoding.go",
+        "packages/documentdb/initialize.go"
+      ],
+      "unlocked_deletion": "None."
     },
     {
       "file": "packages/downloads/access_test.go",
@@ -39795,9 +40526,9 @@
       "owner_group": "servertransport",
       "body_sha256": "b224c72f5dfd375e3f7d3936ef155c7bd826ad0963e05ca2ba9477d0a6cd549a",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Preserved concrete boundary or failure-injection coverage; no new isolated test added.",
       "validation_command": "cd packages && go test ./servertransport",
       "baseline_event": {
         "Time": "2026-10-03T10:35:32.32501-06:00",
@@ -39805,7 +40536,22 @@
         "Package": "github.com/MikeO7/kinosail/packages/servertransport",
         "Test": "TestCheckHealthCoversProtocolsAndInputFailures",
         "Elapsed": 0
-      }
+      },
+      "credible_failure": "Use the canonical Host and actual HTTP/TLS1.3 loopback health requests; reject non-200 responses, malformed listen/auth URL, invalid URL construction, and unreachable listeners.",
+      "remaining_coverage": "This declaration remains an isolated owner boundary proof. Actual browser coverage is complementary; see group E2E limits.",
+      "gap": "Browser app journeys require a running server but do not prove CLI loopback health protocol/error handling. App-local direct CheckHealth replay is redundant with TestCheckHealthCoversProtocolsAndInputFailures; app process healthcheck ownership remains independently tested.",
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "callers": [
+        "packages/appcli/application.go",
+        "apps/player/cmd/kinosail",
+        "apps/subtitles/cmd/kinosail"
+      ],
+      "production_owner": [
+        "packages/servertransport/server.go:CheckHealth"
+      ],
+      "unlocked_deletion": "None."
     },
     {
       "file": "packages/servertransport/tls_edges_test.go",
@@ -40075,9 +40821,9 @@
       "owner_group": "settings",
       "body_sha256": "58d9eb2fe5c8861af4741eee696071e45ddc09fcbaf2d74d5c3837ec7dc7935c",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Preserved concrete boundary or failure-injection coverage; no new isolated test added.",
       "validation_command": "cd packages && go test ./settings",
       "baseline_event": {
         "Time": "2026-10-03T10:35:32.285463-06:00",
@@ -40085,7 +40831,33 @@
         "Package": "github.com/MikeO7/kinosail/packages/settings",
         "Test": "TestConfigurationStoreChangeLifecycle",
         "Elapsed": 0
-      }
+      },
+      "credible_failure": "Keep managed, unknown, data-directory, dedicated-operation, and nonrestart fields out of the generic restart writer; failed Set/Delete must not update live configuration.",
+      "remaining_coverage": "This declaration remains an isolated owner boundary proof. Actual browser coverage is complementary; see group E2E limits.",
+      "gap": "Genuine populated ui-happy-paths API-key/profile flow proves valid settings issuance, and test-instance.spec.ts subtitle picker flow changes a distinct preference. These do not exhaust generic managed fields, failure injection, path/symlink escapes, malformed forms, or save/apply ordering. Browser player/settings fixtures independently provide their own HTML and responses.",
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "callers": [
+        "apps/player/internal/server/settings_actions.go",
+        "apps/player/internal/server/settings_configuration.go",
+        "apps/player/internal/server/settings_playback.go",
+        "apps/player/internal/server/settings_scans.go",
+        "apps/player/internal/server/settings_library_operations.go",
+        "apps/player/internal/server/settings_dlna_configuration.go",
+        "apps/player/internal/server/settings.go",
+        "apps/player/internal/server/api_admin.go",
+        "apps/subtitles/internal/server/settings_routes.go",
+        "apps/subtitles/internal/server/settings_actions.go"
+      ],
+      "production_owner": [
+        "packages/settings/configuration.go",
+        "packages/settings/dlna.go",
+        "packages/settings/http.go",
+        "packages/settings/library.go",
+        "packages/settings/preferences.go"
+      ],
+      "unlocked_deletion": "None."
     },
     {
       "file": "packages/settings/configuration_test.go",
@@ -40095,9 +40867,9 @@
       "owner_group": "settings",
       "body_sha256": "093f3bdfb0f06e7955729cdc9c6a5d9f176ac9ec0f4c7d9bf33e042f8ad7ba16",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Preserved concrete boundary or failure-injection coverage; no new isolated test added.",
       "validation_command": "cd packages && go test ./settings",
       "baseline_event": {
         "Time": "2026-10-03T10:35:32.285639-06:00",
@@ -40105,7 +40877,33 @@
         "Package": "github.com/MikeO7/kinosail/packages/settings",
         "Test": "TestParseConfigurationForm",
         "Elapsed": 0
-      }
+      },
+      "credible_failure": "Require one bounded key/value with strict URL-encoded media type, no query/extra/duplicate fields, and distinct reset semantics at 128-byte key and 16KiB value boundaries.",
+      "remaining_coverage": "This declaration remains an isolated owner boundary proof. Actual browser coverage is complementary; see group E2E limits.",
+      "gap": "Genuine populated ui-happy-paths API-key/profile flow proves valid settings issuance, and test-instance.spec.ts subtitle picker flow changes a distinct preference. These do not exhaust generic managed fields, failure injection, path/symlink escapes, malformed forms, or save/apply ordering. Browser player/settings fixtures independently provide their own HTML and responses.",
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "callers": [
+        "apps/player/internal/server/settings_actions.go",
+        "apps/player/internal/server/settings_configuration.go",
+        "apps/player/internal/server/settings_playback.go",
+        "apps/player/internal/server/settings_scans.go",
+        "apps/player/internal/server/settings_library_operations.go",
+        "apps/player/internal/server/settings_dlna_configuration.go",
+        "apps/player/internal/server/settings.go",
+        "apps/player/internal/server/api_admin.go",
+        "apps/subtitles/internal/server/settings_routes.go",
+        "apps/subtitles/internal/server/settings_actions.go"
+      ],
+      "production_owner": [
+        "packages/settings/configuration.go",
+        "packages/settings/dlna.go",
+        "packages/settings/http.go",
+        "packages/settings/library.go",
+        "packages/settings/preferences.go"
+      ],
+      "unlocked_deletion": "None."
     },
     {
       "file": "packages/settings/dlna_test.go",
@@ -40115,9 +40913,9 @@
       "owner_group": "settings",
       "body_sha256": "2a0e0ab5fc1e31400eec73bd16585b14d006444a6a981a65970287597fab546a",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Preserved concrete boundary or failure-injection coverage; no new isolated test added.",
       "validation_command": "cd packages && go test ./settings",
       "baseline_event": {
         "Time": "2026-10-03T10:35:32.284962-06:00",
@@ -40125,7 +40923,33 @@
         "Package": "github.com/MikeO7/kinosail/packages/settings",
         "Test": "TestDLNATokenAndLabelPolicy",
         "Elapsed": 0
-      }
+      },
+      "credible_failure": "Clear a token when deployment disables DLNA, preserve externally unmanaged/current tokens, and require a valid local advertised URL before generating access; label assertions are incidental to the token authorization boundary.",
+      "remaining_coverage": "This declaration remains an isolated owner boundary proof. Actual browser coverage is complementary; see group E2E limits.",
+      "gap": "Genuine populated ui-happy-paths API-key/profile flow proves valid settings issuance, and test-instance.spec.ts subtitle picker flow changes a distinct preference. These do not exhaust generic managed fields, failure injection, path/symlink escapes, malformed forms, or save/apply ordering. Browser player/settings fixtures independently provide their own HTML and responses.",
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "callers": [
+        "apps/player/internal/server/settings_actions.go",
+        "apps/player/internal/server/settings_configuration.go",
+        "apps/player/internal/server/settings_playback.go",
+        "apps/player/internal/server/settings_scans.go",
+        "apps/player/internal/server/settings_library_operations.go",
+        "apps/player/internal/server/settings_dlna_configuration.go",
+        "apps/player/internal/server/settings.go",
+        "apps/player/internal/server/api_admin.go",
+        "apps/subtitles/internal/server/settings_routes.go",
+        "apps/subtitles/internal/server/settings_actions.go"
+      ],
+      "production_owner": [
+        "packages/settings/configuration.go",
+        "packages/settings/dlna.go",
+        "packages/settings/http.go",
+        "packages/settings/library.go",
+        "packages/settings/preferences.go"
+      ],
+      "unlocked_deletion": "None."
     },
     {
       "file": "packages/settings/dlna_test.go",
@@ -40135,9 +40959,9 @@
       "owner_group": "settings",
       "body_sha256": "28b53ebb86d92905c150fea7f24008ff0bde83b5bb471052207e2885e03e21c2",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Preserved concrete boundary or failure-injection coverage; no new isolated test added.",
       "validation_command": "cd packages && go test ./settings",
       "baseline_event": {
         "Time": "2026-10-03T10:35:32.285025-06:00",
@@ -40145,7 +40969,33 @@
         "Package": "github.com/MikeO7/kinosail/packages/settings",
         "Test": "TestSaveDLNAValidatesAndAppliesChoice",
         "Elapsed": 0
-      }
+      },
+      "credible_failure": "Reject unknown, repeated, and invalid enabled form values without calling the change adapter; surface failed persistence and apply explicit enable/disable choices.",
+      "remaining_coverage": "This declaration remains an isolated owner boundary proof. Actual browser coverage is complementary; see group E2E limits.",
+      "gap": "Genuine populated ui-happy-paths API-key/profile flow proves valid settings issuance, and test-instance.spec.ts subtitle picker flow changes a distinct preference. These do not exhaust generic managed fields, failure injection, path/symlink escapes, malformed forms, or save/apply ordering. Browser player/settings fixtures independently provide their own HTML and responses.",
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "callers": [
+        "apps/player/internal/server/settings_actions.go",
+        "apps/player/internal/server/settings_configuration.go",
+        "apps/player/internal/server/settings_playback.go",
+        "apps/player/internal/server/settings_scans.go",
+        "apps/player/internal/server/settings_library_operations.go",
+        "apps/player/internal/server/settings_dlna_configuration.go",
+        "apps/player/internal/server/settings.go",
+        "apps/player/internal/server/api_admin.go",
+        "apps/subtitles/internal/server/settings_routes.go",
+        "apps/subtitles/internal/server/settings_actions.go"
+      ],
+      "production_owner": [
+        "packages/settings/configuration.go",
+        "packages/settings/dlna.go",
+        "packages/settings/http.go",
+        "packages/settings/library.go",
+        "packages/settings/preferences.go"
+      ],
+      "unlocked_deletion": "None."
     },
     {
       "file": "packages/settings/http_test.go",
@@ -40155,9 +41005,9 @@
       "owner_group": "settings",
       "body_sha256": "a27f368fe931edecb8669d3360f43bc1ad2f27685094b1b7229e09430f55307f",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Preserved concrete boundary or failure-injection coverage; no new isolated test added.",
       "validation_command": "cd packages && go test ./settings",
       "baseline_event": {
         "Time": "2026-10-03T10:35:32.285621-06:00",
@@ -40165,7 +41015,33 @@
         "Package": "github.com/MikeO7/kinosail/packages/settings",
         "Test": "TestSavePlaybackResultPaths",
         "Elapsed": 0
-      }
+      },
+      "credible_failure": "Reject query, media-type, extra/repeated/over-limit field, and invalid autoplay inputs before applying playback settings; error adapter failures cannot become a success redirect.",
+      "remaining_coverage": "This declaration remains an isolated owner boundary proof. Actual browser coverage is complementary; see group E2E limits.",
+      "gap": "Genuine populated ui-happy-paths API-key/profile flow proves valid settings issuance, and test-instance.spec.ts subtitle picker flow changes a distinct preference. These do not exhaust generic managed fields, failure injection, path/symlink escapes, malformed forms, or save/apply ordering. Browser player/settings fixtures independently provide their own HTML and responses.",
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "callers": [
+        "apps/player/internal/server/settings_actions.go",
+        "apps/player/internal/server/settings_configuration.go",
+        "apps/player/internal/server/settings_playback.go",
+        "apps/player/internal/server/settings_scans.go",
+        "apps/player/internal/server/settings_library_operations.go",
+        "apps/player/internal/server/settings_dlna_configuration.go",
+        "apps/player/internal/server/settings.go",
+        "apps/player/internal/server/api_admin.go",
+        "apps/subtitles/internal/server/settings_routes.go",
+        "apps/subtitles/internal/server/settings_actions.go"
+      ],
+      "production_owner": [
+        "packages/settings/configuration.go",
+        "packages/settings/dlna.go",
+        "packages/settings/http.go",
+        "packages/settings/library.go",
+        "packages/settings/preferences.go"
+      ],
+      "unlocked_deletion": "None."
     },
     {
       "file": "packages/settings/http_test.go",
@@ -40175,9 +41051,9 @@
       "owner_group": "settings",
       "body_sha256": "10f7025e2d49b4d7cb4ab4beb2a793649e8b8688d300fb0c569f3e6c94de0f3d",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Preserved concrete boundary or failure-injection coverage; no new isolated test added.",
       "validation_command": "cd packages && go test ./settings",
       "baseline_event": {
         "Time": "2026-10-03T10:35:32.285426-06:00",
@@ -40185,7 +41061,33 @@
         "Package": "github.com/MikeO7/kinosail/packages/settings",
         "Test": "TestSaveOnboardingAPIResultPaths",
         "Elapsed": 0
-      }
+      },
+      "credible_failure": "Require the enabled JSON field and surface an injected save failure before sending a saved response; normal browser setup supplies valid data.",
+      "remaining_coverage": "This declaration remains an isolated owner boundary proof. Actual browser coverage is complementary; see group E2E limits.",
+      "gap": "Genuine populated ui-happy-paths API-key/profile flow proves valid settings issuance, and test-instance.spec.ts subtitle picker flow changes a distinct preference. These do not exhaust generic managed fields, failure injection, path/symlink escapes, malformed forms, or save/apply ordering. Browser player/settings fixtures independently provide their own HTML and responses.",
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "callers": [
+        "apps/player/internal/server/settings_actions.go",
+        "apps/player/internal/server/settings_configuration.go",
+        "apps/player/internal/server/settings_playback.go",
+        "apps/player/internal/server/settings_scans.go",
+        "apps/player/internal/server/settings_library_operations.go",
+        "apps/player/internal/server/settings_dlna_configuration.go",
+        "apps/player/internal/server/settings.go",
+        "apps/player/internal/server/api_admin.go",
+        "apps/subtitles/internal/server/settings_routes.go",
+        "apps/subtitles/internal/server/settings_actions.go"
+      ],
+      "production_owner": [
+        "packages/settings/configuration.go",
+        "packages/settings/dlna.go",
+        "packages/settings/http.go",
+        "packages/settings/library.go",
+        "packages/settings/preferences.go"
+      ],
+      "unlocked_deletion": "None."
     },
     {
       "file": "packages/settings/http_test.go",
@@ -40195,9 +41097,9 @@
       "owner_group": "settings",
       "body_sha256": "b471e8a4f1438d85e46091283de713910b3be924117229c0802d892443c9a731",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Preserved concrete boundary or failure-injection coverage; no new isolated test added.",
       "validation_command": "cd packages && go test ./settings",
       "baseline_event": {
         "Time": "2026-10-03T10:35:32.28466-06:00",
@@ -40205,7 +41107,33 @@
         "Package": "github.com/MikeO7/kinosail/packages/settings",
         "Test": "TestSaveScanFrequencyResultPaths",
         "Elapsed": 0
-      }
+      },
+      "credible_failure": "Do not apply the live scan scheduler after decoding or persistence failure; on success use the persisted requested schedule before redirect.",
+      "remaining_coverage": "This declaration remains an isolated owner boundary proof. Actual browser coverage is complementary; see group E2E limits.",
+      "gap": "Genuine populated ui-happy-paths API-key/profile flow proves valid settings issuance, and test-instance.spec.ts subtitle picker flow changes a distinct preference. These do not exhaust generic managed fields, failure injection, path/symlink escapes, malformed forms, or save/apply ordering. Browser player/settings fixtures independently provide their own HTML and responses.",
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "callers": [
+        "apps/player/internal/server/settings_actions.go",
+        "apps/player/internal/server/settings_configuration.go",
+        "apps/player/internal/server/settings_playback.go",
+        "apps/player/internal/server/settings_scans.go",
+        "apps/player/internal/server/settings_library_operations.go",
+        "apps/player/internal/server/settings_dlna_configuration.go",
+        "apps/player/internal/server/settings.go",
+        "apps/player/internal/server/api_admin.go",
+        "apps/subtitles/internal/server/settings_routes.go",
+        "apps/subtitles/internal/server/settings_actions.go"
+      ],
+      "production_owner": [
+        "packages/settings/configuration.go",
+        "packages/settings/dlna.go",
+        "packages/settings/http.go",
+        "packages/settings/library.go",
+        "packages/settings/preferences.go"
+      ],
+      "unlocked_deletion": "None."
     },
     {
       "file": "packages/settings/http_test.go",
@@ -40215,9 +41143,9 @@
       "owner_group": "settings",
       "body_sha256": "6ac1a047a36dea7eb3a691129eb3192146fa2a412a511b201ec7ef79aec08dd3",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Preserved concrete boundary or failure-injection coverage; no new isolated test added.",
       "validation_command": "cd packages && go test ./settings",
       "baseline_event": {
         "Time": "2026-10-03T10:35:32.285082-06:00",
@@ -40225,7 +41153,33 @@
         "Package": "github.com/MikeO7/kinosail/packages/settings",
         "Test": "TestCreateAPIKeyResultPaths",
         "Elapsed": 0
-      }
+      },
+      "credible_failure": "Reject malformed, repeated, oversized-name, empty/invalid-scope form input before key issuance; preserve private no-store one-time secret output and error paths.",
+      "remaining_coverage": "This declaration remains an isolated owner boundary proof. Actual browser coverage is complementary; see group E2E limits.",
+      "gap": "Genuine populated ui-happy-paths API-key/profile flow proves valid settings issuance, and test-instance.spec.ts subtitle picker flow changes a distinct preference. These do not exhaust generic managed fields, failure injection, path/symlink escapes, malformed forms, or save/apply ordering. Browser player/settings fixtures independently provide their own HTML and responses.",
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "callers": [
+        "apps/player/internal/server/settings_actions.go",
+        "apps/player/internal/server/settings_configuration.go",
+        "apps/player/internal/server/settings_playback.go",
+        "apps/player/internal/server/settings_scans.go",
+        "apps/player/internal/server/settings_library_operations.go",
+        "apps/player/internal/server/settings_dlna_configuration.go",
+        "apps/player/internal/server/settings.go",
+        "apps/player/internal/server/api_admin.go",
+        "apps/subtitles/internal/server/settings_routes.go",
+        "apps/subtitles/internal/server/settings_actions.go"
+      ],
+      "production_owner": [
+        "packages/settings/configuration.go",
+        "packages/settings/dlna.go",
+        "packages/settings/http.go",
+        "packages/settings/library.go",
+        "packages/settings/preferences.go"
+      ],
+      "unlocked_deletion": "None."
     },
     {
       "file": "packages/settings/http_test.go",
@@ -40235,9 +41189,9 @@
       "owner_group": "settings",
       "body_sha256": "68bbf0aef9b63613d3960688fe0144a65a4ce2e612872849f6ebc3bbcceb5300",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Preserved concrete boundary or failure-injection coverage; no new isolated test added.",
       "validation_command": "cd packages && go test ./settings",
       "baseline_event": {
         "Time": "2026-10-03T10:35:32.284683-06:00",
@@ -40245,7 +41199,33 @@
         "Package": "github.com/MikeO7/kinosail/packages/settings",
         "Test": "TestDownloadBackupResultPaths",
         "Elapsed": 0
-      }
+      },
+      "credible_failure": "Do not invoke archive generation when storage is unavailable; return 503 on injected archive failure instead of sending a partial successful download, with successful download transport contract preserved.",
+      "remaining_coverage": "This declaration remains an isolated owner boundary proof. Actual browser coverage is complementary; see group E2E limits.",
+      "gap": "Genuine populated ui-happy-paths API-key/profile flow proves valid settings issuance, and test-instance.spec.ts subtitle picker flow changes a distinct preference. These do not exhaust generic managed fields, failure injection, path/symlink escapes, malformed forms, or save/apply ordering. Browser player/settings fixtures independently provide their own HTML and responses.",
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "callers": [
+        "apps/player/internal/server/settings_actions.go",
+        "apps/player/internal/server/settings_configuration.go",
+        "apps/player/internal/server/settings_playback.go",
+        "apps/player/internal/server/settings_scans.go",
+        "apps/player/internal/server/settings_library_operations.go",
+        "apps/player/internal/server/settings_dlna_configuration.go",
+        "apps/player/internal/server/settings.go",
+        "apps/player/internal/server/api_admin.go",
+        "apps/subtitles/internal/server/settings_routes.go",
+        "apps/subtitles/internal/server/settings_actions.go"
+      ],
+      "production_owner": [
+        "packages/settings/configuration.go",
+        "packages/settings/dlna.go",
+        "packages/settings/http.go",
+        "packages/settings/library.go",
+        "packages/settings/preferences.go"
+      ],
+      "unlocked_deletion": "None."
     },
     {
       "file": "packages/settings/http_test.go",
@@ -40255,9 +41235,9 @@
       "owner_group": "settings",
       "body_sha256": "ddc0e80556ba8da845d12b2dc2a68fe0d479592d09de0dbf4b45d24521b2e9ae",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Preserved concrete boundary or failure-injection coverage; no new isolated test added.",
       "validation_command": "cd packages && go test ./settings",
       "baseline_event": {
         "Time": "2026-10-03T10:35:32.284149-06:00",
@@ -40265,7 +41245,33 @@
         "Package": "github.com/MikeO7/kinosail/packages/settings",
         "Test": "TestBackupPageAndVerificationHandlers",
         "Elapsed": 0
-      }
+      },
+      "credible_failure": "Surface injected backup status-rendering and verification failures as errors instead of reporting success; only successful verification may redirect.",
+      "remaining_coverage": "This declaration remains an isolated owner boundary proof. Actual browser coverage is complementary; see group E2E limits.",
+      "gap": "Genuine populated ui-happy-paths API-key/profile flow proves valid settings issuance, and test-instance.spec.ts subtitle picker flow changes a distinct preference. These do not exhaust generic managed fields, failure injection, path/symlink escapes, malformed forms, or save/apply ordering. Browser player/settings fixtures independently provide their own HTML and responses.",
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "callers": [
+        "apps/player/internal/server/settings_actions.go",
+        "apps/player/internal/server/settings_configuration.go",
+        "apps/player/internal/server/settings_playback.go",
+        "apps/player/internal/server/settings_scans.go",
+        "apps/player/internal/server/settings_library_operations.go",
+        "apps/player/internal/server/settings_dlna_configuration.go",
+        "apps/player/internal/server/settings.go",
+        "apps/player/internal/server/api_admin.go",
+        "apps/subtitles/internal/server/settings_routes.go",
+        "apps/subtitles/internal/server/settings_actions.go"
+      ],
+      "production_owner": [
+        "packages/settings/configuration.go",
+        "packages/settings/dlna.go",
+        "packages/settings/http.go",
+        "packages/settings/library.go",
+        "packages/settings/preferences.go"
+      ],
+      "unlocked_deletion": "None."
     },
     {
       "file": "packages/settings/http_test.go",
@@ -40275,9 +41281,9 @@
       "owner_group": "settings",
       "body_sha256": "062c923b19e16f9e3c3ff46f6cca189e217c88729c07d214b342760ab0141186",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Preserved concrete boundary or failure-injection coverage; no new isolated test added.",
       "validation_command": "cd packages && go test ./settings",
       "baseline_event": {
         "Time": "2026-10-03T10:35:32.283264-06:00",
@@ -40285,7 +41291,33 @@
         "Package": "github.com/MikeO7/kinosail/packages/settings",
         "Test": "TestDecodeFormEnvelope",
         "Elapsed": 0
-      }
+      },
+      "credible_failure": "Accept a valid media-type charset while rejecting malformed content types, query, unknown/repeated values, and oversized bodies at the shared HTTP form boundary.",
+      "remaining_coverage": "This declaration remains an isolated owner boundary proof. Actual browser coverage is complementary; see group E2E limits.",
+      "gap": "Genuine populated ui-happy-paths API-key/profile flow proves valid settings issuance, and test-instance.spec.ts subtitle picker flow changes a distinct preference. These do not exhaust generic managed fields, failure injection, path/symlink escapes, malformed forms, or save/apply ordering. Browser player/settings fixtures independently provide their own HTML and responses.",
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "callers": [
+        "apps/player/internal/server/settings_actions.go",
+        "apps/player/internal/server/settings_configuration.go",
+        "apps/player/internal/server/settings_playback.go",
+        "apps/player/internal/server/settings_scans.go",
+        "apps/player/internal/server/settings_library_operations.go",
+        "apps/player/internal/server/settings_dlna_configuration.go",
+        "apps/player/internal/server/settings.go",
+        "apps/player/internal/server/api_admin.go",
+        "apps/subtitles/internal/server/settings_routes.go",
+        "apps/subtitles/internal/server/settings_actions.go"
+      ],
+      "production_owner": [
+        "packages/settings/configuration.go",
+        "packages/settings/dlna.go",
+        "packages/settings/http.go",
+        "packages/settings/library.go",
+        "packages/settings/preferences.go"
+      ],
+      "unlocked_deletion": "None."
     },
     {
       "file": "packages/settings/library_test.go",
@@ -40295,9 +41327,9 @@
       "owner_group": "settings",
       "body_sha256": "1eefd2656c6e2a8d6ada6ef772945be240db85abb6339b881b6e1e2221663a29",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Preserved concrete boundary or failure-injection coverage; no new isolated test added.",
       "validation_command": "cd packages && go test ./settings",
       "baseline_event": {
         "Time": "2026-10-03T10:35:32.28597-06:00",
@@ -40305,7 +41337,33 @@
         "Package": "github.com/MikeO7/kinosail/packages/settings",
         "Test": "TestLibraryFoldersResolveAndProjectRoots",
         "Elapsed": 0
-      }
+      },
+      "credible_failure": "Resolve symlinked configured roots to their canonical location and ignore missing paths, preserving safe root projection.",
+      "remaining_coverage": "This declaration remains an isolated owner boundary proof. Actual browser coverage is complementary; see group E2E limits.",
+      "gap": "Genuine populated ui-happy-paths API-key/profile flow proves valid settings issuance, and test-instance.spec.ts subtitle picker flow changes a distinct preference. These do not exhaust generic managed fields, failure injection, path/symlink escapes, malformed forms, or save/apply ordering. Browser player/settings fixtures independently provide their own HTML and responses.",
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "callers": [
+        "apps/player/internal/server/settings_actions.go",
+        "apps/player/internal/server/settings_configuration.go",
+        "apps/player/internal/server/settings_playback.go",
+        "apps/player/internal/server/settings_scans.go",
+        "apps/player/internal/server/settings_library_operations.go",
+        "apps/player/internal/server/settings_dlna_configuration.go",
+        "apps/player/internal/server/settings.go",
+        "apps/player/internal/server/api_admin.go",
+        "apps/subtitles/internal/server/settings_routes.go",
+        "apps/subtitles/internal/server/settings_actions.go"
+      ],
+      "production_owner": [
+        "packages/settings/configuration.go",
+        "packages/settings/dlna.go",
+        "packages/settings/http.go",
+        "packages/settings/library.go",
+        "packages/settings/preferences.go"
+      ],
+      "unlocked_deletion": "None."
     },
     {
       "file": "packages/settings/library_test.go",
@@ -40315,9 +41373,9 @@
       "owner_group": "settings",
       "body_sha256": "ab47948b8fdf003c364029e98375f9dfb1fea2cfdd9bab87e831a7f48ca91eb2",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Preserved concrete boundary or failure-injection coverage; no new isolated test added.",
       "validation_command": "cd packages && go test ./settings",
       "baseline_event": {
         "Time": "2026-10-03T10:35:32.286163-06:00",
@@ -40325,7 +41383,33 @@
         "Package": "github.com/MikeO7/kinosail/packages/settings",
         "Test": "TestLibraryFoldersAddIsValidatedAndAtomic",
         "Elapsed": 0
-      }
+      },
+      "credible_failure": "Reject duplicate/parent/child or externally managed roots and keep prior settings after injected save failure; browser library journeys use preconfigured roots.",
+      "remaining_coverage": "This declaration remains an isolated owner boundary proof. Actual browser coverage is complementary; see group E2E limits.",
+      "gap": "Genuine populated ui-happy-paths API-key/profile flow proves valid settings issuance, and test-instance.spec.ts subtitle picker flow changes a distinct preference. These do not exhaust generic managed fields, failure injection, path/symlink escapes, malformed forms, or save/apply ordering. Browser player/settings fixtures independently provide their own HTML and responses.",
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "callers": [
+        "apps/player/internal/server/settings_actions.go",
+        "apps/player/internal/server/settings_configuration.go",
+        "apps/player/internal/server/settings_playback.go",
+        "apps/player/internal/server/settings_scans.go",
+        "apps/player/internal/server/settings_library_operations.go",
+        "apps/player/internal/server/settings_dlna_configuration.go",
+        "apps/player/internal/server/settings.go",
+        "apps/player/internal/server/api_admin.go",
+        "apps/subtitles/internal/server/settings_routes.go",
+        "apps/subtitles/internal/server/settings_actions.go"
+      ],
+      "production_owner": [
+        "packages/settings/configuration.go",
+        "packages/settings/dlna.go",
+        "packages/settings/http.go",
+        "packages/settings/library.go",
+        "packages/settings/preferences.go"
+      ],
+      "unlocked_deletion": "None."
     },
     {
       "file": "packages/settings/library_test.go",
@@ -40335,9 +41419,9 @@
       "owner_group": "settings",
       "body_sha256": "ed3a0f499a442086cf0fdcee3abd237b56d77412aec765f6e5307c68ec99010b",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Preserved concrete boundary or failure-injection coverage; no new isolated test added.",
       "validation_command": "cd packages && go test ./settings",
       "baseline_event": {
         "Time": "2026-10-03T10:35:32.286548-06:00",
@@ -40345,7 +41429,33 @@
         "Package": "github.com/MikeO7/kinosail/packages/settings",
         "Test": "TestLibraryFoldersRemoveIsValidatedAndAtomic",
         "Elapsed": 0
-      }
+      },
+      "credible_failure": "Reject absent, managed, and traversal removal inputs while committing only a valid requested root removal.",
+      "remaining_coverage": "This declaration remains an isolated owner boundary proof. Actual browser coverage is complementary; see group E2E limits.",
+      "gap": "Genuine populated ui-happy-paths API-key/profile flow proves valid settings issuance, and test-instance.spec.ts subtitle picker flow changes a distinct preference. These do not exhaust generic managed fields, failure injection, path/symlink escapes, malformed forms, or save/apply ordering. Browser player/settings fixtures independently provide their own HTML and responses.",
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "callers": [
+        "apps/player/internal/server/settings_actions.go",
+        "apps/player/internal/server/settings_configuration.go",
+        "apps/player/internal/server/settings_playback.go",
+        "apps/player/internal/server/settings_scans.go",
+        "apps/player/internal/server/settings_library_operations.go",
+        "apps/player/internal/server/settings_dlna_configuration.go",
+        "apps/player/internal/server/settings.go",
+        "apps/player/internal/server/api_admin.go",
+        "apps/subtitles/internal/server/settings_routes.go",
+        "apps/subtitles/internal/server/settings_actions.go"
+      ],
+      "production_owner": [
+        "packages/settings/configuration.go",
+        "packages/settings/dlna.go",
+        "packages/settings/http.go",
+        "packages/settings/library.go",
+        "packages/settings/preferences.go"
+      ],
+      "unlocked_deletion": "None."
     },
     {
       "file": "packages/settings/library_test.go",
@@ -40355,9 +41465,9 @@
       "owner_group": "settings",
       "body_sha256": "59720760e7fc9d1233d2131346e67f10ca4555e4386931126df76fd18677fbb3",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Preserved concrete boundary or failure-injection coverage; no new isolated test added.",
       "validation_command": "cd packages && go test ./settings",
       "baseline_event": {
         "Time": "2026-10-03T10:35:32.286006-06:00",
@@ -40365,7 +41475,33 @@
         "Package": "github.com/MikeO7/kinosail/packages/settings",
         "Test": "TestLibraryFolderPathValidation",
         "Elapsed": 0
-      }
+      },
+      "credible_failure": "Reject absolute/traversing/NUL/oversized paths, files, missing directories, and symlink escape from the media root before configuration mutation.",
+      "remaining_coverage": "This declaration remains an isolated owner boundary proof. Actual browser coverage is complementary; see group E2E limits.",
+      "gap": "Genuine populated ui-happy-paths API-key/profile flow proves valid settings issuance, and test-instance.spec.ts subtitle picker flow changes a distinct preference. These do not exhaust generic managed fields, failure injection, path/symlink escapes, malformed forms, or save/apply ordering. Browser player/settings fixtures independently provide their own HTML and responses.",
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "callers": [
+        "apps/player/internal/server/settings_actions.go",
+        "apps/player/internal/server/settings_configuration.go",
+        "apps/player/internal/server/settings_playback.go",
+        "apps/player/internal/server/settings_scans.go",
+        "apps/player/internal/server/settings_library_operations.go",
+        "apps/player/internal/server/settings_dlna_configuration.go",
+        "apps/player/internal/server/settings.go",
+        "apps/player/internal/server/api_admin.go",
+        "apps/subtitles/internal/server/settings_routes.go",
+        "apps/subtitles/internal/server/settings_actions.go"
+      ],
+      "production_owner": [
+        "packages/settings/configuration.go",
+        "packages/settings/dlna.go",
+        "packages/settings/http.go",
+        "packages/settings/library.go",
+        "packages/settings/preferences.go"
+      ],
+      "unlocked_deletion": "None."
     },
     {
       "file": "packages/settings/preferences_test.go",
@@ -40375,9 +41511,9 @@
       "owner_group": "settings",
       "body_sha256": "b8e73588a65fa66e47afec0d000cff55f9ef44e808fc6edd7dc07290e39b2f80",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Preserved concrete boundary or failure-injection coverage; no new isolated test added.",
       "validation_command": "cd packages && go test ./settings",
       "baseline_event": {
         "Time": "2026-10-03T10:35:32.285797-06:00",
@@ -40385,7 +41521,33 @@
         "Package": "github.com/MikeO7/kinosail/packages/settings",
         "Test": "TestChangePlaybackValidationAndEffects",
         "Elapsed": 0
-      }
+      },
+      "credible_failure": "Check externally managed settings and invalid mode/subtitle/marker values before persistence; propagate save failure and normalize selected markers without losing an omitted optional list.",
+      "remaining_coverage": "This declaration remains an isolated owner boundary proof. Actual browser coverage is complementary; see group E2E limits.",
+      "gap": "Genuine populated ui-happy-paths API-key/profile flow proves valid settings issuance, and test-instance.spec.ts subtitle picker flow changes a distinct preference. These do not exhaust generic managed fields, failure injection, path/symlink escapes, malformed forms, or save/apply ordering. Browser player/settings fixtures independently provide their own HTML and responses.",
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "callers": [
+        "apps/player/internal/server/settings_actions.go",
+        "apps/player/internal/server/settings_configuration.go",
+        "apps/player/internal/server/settings_playback.go",
+        "apps/player/internal/server/settings_scans.go",
+        "apps/player/internal/server/settings_library_operations.go",
+        "apps/player/internal/server/settings_dlna_configuration.go",
+        "apps/player/internal/server/settings.go",
+        "apps/player/internal/server/api_admin.go",
+        "apps/subtitles/internal/server/settings_routes.go",
+        "apps/subtitles/internal/server/settings_actions.go"
+      ],
+      "production_owner": [
+        "packages/settings/configuration.go",
+        "packages/settings/dlna.go",
+        "packages/settings/http.go",
+        "packages/settings/library.go",
+        "packages/settings/preferences.go"
+      ],
+      "unlocked_deletion": "None."
     },
     {
       "file": "packages/settings/preferences_test.go",
@@ -40395,9 +41557,9 @@
       "owner_group": "settings",
       "body_sha256": "76a8ee3308632846c7f72d510b89f266d1199a77cea018a875de7a4ef7b449d2",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Preserved concrete boundary or failure-injection coverage; no new isolated test added.",
       "validation_command": "cd packages && go test ./settings",
       "baseline_event": {
         "Time": "2026-10-03T10:35:32.283216-06:00",
@@ -40405,7 +41567,33 @@
         "Package": "github.com/MikeO7/kinosail/packages/settings",
         "Test": "TestPersistAndRead",
         "Elapsed": 0
-      }
+      },
+      "credible_failure": "Commit the copied live settings only after persistence succeeds; injected save error must leave the old value visible to readers.",
+      "remaining_coverage": "This declaration remains an isolated owner boundary proof. Actual browser coverage is complementary; see group E2E limits.",
+      "gap": "Genuine populated ui-happy-paths API-key/profile flow proves valid settings issuance, and test-instance.spec.ts subtitle picker flow changes a distinct preference. These do not exhaust generic managed fields, failure injection, path/symlink escapes, malformed forms, or save/apply ordering. Browser player/settings fixtures independently provide their own HTML and responses.",
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "callers": [
+        "apps/player/internal/server/settings_actions.go",
+        "apps/player/internal/server/settings_configuration.go",
+        "apps/player/internal/server/settings_playback.go",
+        "apps/player/internal/server/settings_scans.go",
+        "apps/player/internal/server/settings_library_operations.go",
+        "apps/player/internal/server/settings_dlna_configuration.go",
+        "apps/player/internal/server/settings.go",
+        "apps/player/internal/server/api_admin.go",
+        "apps/subtitles/internal/server/settings_routes.go",
+        "apps/subtitles/internal/server/settings_actions.go"
+      ],
+      "production_owner": [
+        "packages/settings/configuration.go",
+        "packages/settings/dlna.go",
+        "packages/settings/http.go",
+        "packages/settings/library.go",
+        "packages/settings/preferences.go"
+      ],
+      "unlocked_deletion": "None."
     },
     {
       "file": "packages/settings/preferences_test.go",
@@ -40415,9 +41603,9 @@
       "owner_group": "settings",
       "body_sha256": "c45ac97c9d27da49cea610f6238deb121fa57a9bef52d384e08b571814b4b9e6",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Preserved concrete boundary or failure-injection coverage; no new isolated test added.",
       "validation_command": "cd packages && go test ./settings",
       "baseline_event": {
         "Time": "2026-10-03T10:35:32.283406-06:00",
@@ -40425,7 +41613,33 @@
         "Package": "github.com/MikeO7/kinosail/packages/settings",
         "Test": "TestPlaybackAndScanDefaults",
         "Elapsed": 0
-      }
+      },
+      "credible_failure": "Keep detached marker defaults and distinguish an omitted marker field from an explicit empty selection during API Merge, preventing accidental reenable or loss of skip preferences.",
+      "remaining_coverage": "This declaration remains an isolated owner boundary proof. Actual browser coverage is complementary; see group E2E limits.",
+      "gap": "Genuine populated ui-happy-paths API-key/profile flow proves valid settings issuance, and test-instance.spec.ts subtitle picker flow changes a distinct preference. These do not exhaust generic managed fields, failure injection, path/symlink escapes, malformed forms, or save/apply ordering. Browser player/settings fixtures independently provide their own HTML and responses.",
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "callers": [
+        "apps/player/internal/server/settings_actions.go",
+        "apps/player/internal/server/settings_configuration.go",
+        "apps/player/internal/server/settings_playback.go",
+        "apps/player/internal/server/settings_scans.go",
+        "apps/player/internal/server/settings_library_operations.go",
+        "apps/player/internal/server/settings_dlna_configuration.go",
+        "apps/player/internal/server/settings.go",
+        "apps/player/internal/server/api_admin.go",
+        "apps/subtitles/internal/server/settings_routes.go",
+        "apps/subtitles/internal/server/settings_actions.go"
+      ],
+      "production_owner": [
+        "packages/settings/configuration.go",
+        "packages/settings/dlna.go",
+        "packages/settings/http.go",
+        "packages/settings/library.go",
+        "packages/settings/preferences.go"
+      ],
+      "unlocked_deletion": "None."
     },
     {
       "file": "packages/settings/preferences_test.go",
@@ -40435,9 +41649,9 @@
       "owner_group": "settings",
       "body_sha256": "108d79dcac3b849d0dfb0823d58ccbb56a53e34b8959b434038f49c866572cfd",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Preserved concrete boundary or failure-injection coverage; no new isolated test added.",
       "validation_command": "cd packages && go test ./settings",
       "baseline_event": {
         "Time": "2026-10-03T10:35:32.283355-06:00",
@@ -40445,7 +41659,33 @@
         "Package": "github.com/MikeO7/kinosail/packages/settings",
         "Test": "TestChangeScanFrequencyValidationAndEffects",
         "Elapsed": 0
-      }
+      },
+      "credible_failure": "Reject externally managed or unsupported frequencies before persistence; propagate failed writes and preserve every supported frequency including off.",
+      "remaining_coverage": "This declaration remains an isolated owner boundary proof. Actual browser coverage is complementary; see group E2E limits.",
+      "gap": "Genuine populated ui-happy-paths API-key/profile flow proves valid settings issuance, and test-instance.spec.ts subtitle picker flow changes a distinct preference. These do not exhaust generic managed fields, failure injection, path/symlink escapes, malformed forms, or save/apply ordering. Browser player/settings fixtures independently provide their own HTML and responses.",
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "callers": [
+        "apps/player/internal/server/settings_actions.go",
+        "apps/player/internal/server/settings_configuration.go",
+        "apps/player/internal/server/settings_playback.go",
+        "apps/player/internal/server/settings_scans.go",
+        "apps/player/internal/server/settings_library_operations.go",
+        "apps/player/internal/server/settings_dlna_configuration.go",
+        "apps/player/internal/server/settings.go",
+        "apps/player/internal/server/api_admin.go",
+        "apps/subtitles/internal/server/settings_routes.go",
+        "apps/subtitles/internal/server/settings_actions.go"
+      ],
+      "production_owner": [
+        "packages/settings/configuration.go",
+        "packages/settings/dlna.go",
+        "packages/settings/http.go",
+        "packages/settings/library.go",
+        "packages/settings/preferences.go"
+      ],
+      "unlocked_deletion": "None."
     },
     {
       "file": "packages/supporter/certificate_edges_test.go",
@@ -47347,5 +48587,16 @@
       "baseline_event": null,
       "baseline_not_run_reason": "Benchmark is not run by go test without -bench."
     }
-  ]
+  ],
+  "continued_review": {
+    "retained_exceptions_added": 51,
+    "new_removals": 0,
+    "scope": [
+      "credentials",
+      "settings",
+      "documentdb",
+      "servertransport:CheckHealth"
+    ],
+    "tests_executed_by_this_agent": false
+  }
 }
