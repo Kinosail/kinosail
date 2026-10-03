@@ -15159,24 +15159,43 @@
       "end_line": 49,
       "sha256": "1eb022b9f2e7ecedb773ce8dc3f84f295b0f2432b31e90e83f1a83d137527345",
       "path": "apps/player/internal/server/gapless_test.go",
-      "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "decision": "F",
+      "review_status": "semantic_review_complete",
+      "reason": "Actual album song must expose queue API and audio dataset plus escape ampersand artist/quoted album safely, preserving shared player queue entry.",
+      "category": "important_app_owned_boundary",
+      "credible_failure": "Actual album song must expose queue API and audio dataset plus escape ampersand artist/quoted album safely, preserving shared player queue entry.",
+      "production_owner": [
+        "apps/player/internal/server/player.go:buildPlayerData/playerTemplate",
+        "apps/player/internal/server/player_playback.go:applyPlayback",
+        "apps/player/internal/server/api_product.go:apiPlaybackInfo",
+        "packages/playerweb/player_projection.go:ApplyMedia",
+        "packages/mediaprobe/cache.go:Inspect",
+        "packages/mediaprobe/probe.go:complete",
+        "packages/mediaprobe/decorate.go:Decorate",
+        "packages/catalogapi/media_http_read.go:AudioQueue",
+        "packages/catalogapi/browse_http.go:album",
+        "apps/player/internal/server/api_replaygain.go",
+        "packages/mediaprobe/replaygain.go",
+        "packages/playerweb/player_template.go"
+      ],
+      "non_test_callers": [
+        "actual registered watch/item playback/album/audio-queue APIs -> app probe/projection/settings callbacks"
+      ],
+      "remaining_proof": [
+        "Retain this important observable boundary; ordinary genuine browser happy-paths and source-shared unit keepers do not establish its full app-specific condition."
+      ],
+      "coverage_limit": "Genuine one-track opening does not assert album later-track queue API/dataset or untrusted quoted tag escaping.",
       "history": [
         "54ae6adaebe09cfc7bfa4483eed782cb33b9ae51 Support audio receivers in device playback picker",
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
       "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "risk": "Important failure/data loss/security or media-delivery boundary existing genuine E2E misses.",
+      "validation_command": "Root full Player Go suite; FFmpeg/Chromium tool-dependent cases require installed runtime. Child executes no builds/tests.",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "test_limit": "No actual gapless playback or queue advancement; source advanceQueue fragment and both title presence only. Track filenames align with track order.",
+      "review_provenance": "Complete declaration/helper and tested owner methods read; actual entry/caller and original body hash/history inspected; precise genuine-versus-routed browser coverage compared."
     },
     {
       "name": "TestHardwareCapabilitiesDriveAutomaticSelectionAndVisibleFallback",
@@ -26177,22 +26196,41 @@
       "sha256": "fea8f2122f114824ee4a1ccd7662a68a90344403bf891d141e6fe0fc98de32ef",
       "path": "apps/player/internal/server/music_tags_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "Actual unknown.mp3 with embedded title/artist/album/genre must decorate catalog before API/web organization rather than only file-derived labels.",
+      "category": "important_app_owned_boundary",
+      "credible_failure": "Actual unknown.mp3 with embedded title/artist/album/genre must decorate catalog before API/web organization rather than only file-derived labels.",
+      "production_owner": [
+        "apps/player/internal/server/player.go:buildPlayerData/playerTemplate",
+        "apps/player/internal/server/player_playback.go:applyPlayback",
+        "apps/player/internal/server/api_product.go:apiPlaybackInfo",
+        "packages/playerweb/player_projection.go:ApplyMedia",
+        "packages/mediaprobe/cache.go:Inspect",
+        "packages/mediaprobe/probe.go:complete",
+        "packages/mediaprobe/decorate.go:Decorate",
+        "packages/catalogapi/media_http_read.go:AudioQueue",
+        "packages/catalogapi/browse_http.go:album",
+        "apps/player/internal/server/api_replaygain.go",
+        "packages/mediaprobe/replaygain.go",
+        "packages/playerweb/player_template.go"
+      ],
+      "non_test_callers": [
+        "actual registered watch/item playback/album/audio-queue APIs -> app probe/projection/settings callbacks"
+      ],
+      "remaining_proof": [
+        "Retain this important observable boundary; ordinary genuine browser happy-paths and source-shared unit keepers do not establish its full app-specific condition."
+      ],
+      "coverage_limit": "Genuine generated music metadata comes with normal fixtures, not deliberately unknown filename with only embedded tags.",
       "history": [
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
       "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "risk": "Important failure/data loss/security or media-delivery boundary existing genuine E2E misses.",
+      "validation_command": "Root full Player Go suite; FFmpeg/Chromium tool-dependent cases require installed runtime. Child executes no builds/tests.",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "test_limit": "Title/artist/album/genre tested; track/disc fields supplied but not explicitly asserted.",
+      "review_provenance": "Complete declaration/helper and tested owner methods read; actual entry/caller and original body hash/history inspected; precise genuine-versus-routed browser coverage compared."
     },
     {
       "name": "TestOwnerCanReachNavigationEditorFromMainBar",
@@ -30411,24 +30449,44 @@
       "sha256": "71b055716c66cf0aa5a3a2252a369ad53229ebbea2164c458d760258754565c2",
       "path": "apps/player/internal/server/playback_adapters_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "Actual HEVC HDR/EAC3 media must remain direct on capable Jellyfin profile, transform on H264/AAC profile, expose correct Player protocol field, source/session/auth-query HLS children, survive restart, deny unauthenticated children and reject malformed plans without extra cache entries.",
+      "category": "important_app_owned_boundary",
+      "credible_failure": "Actual HEVC HDR/EAC3 media must remain direct on capable Jellyfin profile, transform on H264/AAC profile, expose correct Player protocol field, source/session/auth-query HLS children, survive restart, deny unauthenticated children and reject malformed plans without extra cache entries.",
+      "production_owner": [
+        "apps/player/internal/server/player.go:buildPlayerData/playerTemplate",
+        "apps/player/internal/server/player_playback.go:applyPlayback",
+        "apps/player/internal/server/api_product.go:apiPlaybackInfo",
+        "packages/playerweb/player_projection.go:ApplyMedia",
+        "packages/mediaprobe/cache.go:Inspect",
+        "packages/mediaprobe/probe.go:complete",
+        "packages/mediaprobe/decorate.go:Decorate",
+        "packages/catalogapi/media_http_read.go:AudioQueue",
+        "packages/catalogapi/browse_http.go:album",
+        "apps/player/internal/server/jellyfin_playback.go",
+        "apps/player/internal/server/jellyfin_delivery.go",
+        "packages/jellyfincompat/playback_http.go:PlaybackInfo",
+        "packages/jellyfincompat/delivery_http.go:Stream/serveExplicitHLS/serveSessionHLS"
+      ],
+      "non_test_callers": [
+        "actual app versioned playback, watch, Jellyfin PlaybackInfo/Videos/source/HLS child routes -> bound callbacks"
+      ],
+      "remaining_proof": [
+        "Retain this important observable boundary; ordinary genuine browser happy-paths and source-shared unit keepers do not establish its full app-specific condition."
+      ],
+      "coverage_limit": "Genuine bundled-browser generated H264 playback does not create HDR Jellyfin client capabilities or compare authenticated child chaining after app restart.",
       "history": [
         "7e6cc93dc8c82fcd3d37e3d46e310b8c8580fbf6 Remove real-time throttling from on-demand HLS",
         "dc3d51b0e9778452cea1e9c40198ac1ff70a6618 Fix Apple HLS fragment media type",
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
       "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "risk": "Important failure/data loss/security or media-delivery boundary existing genuine E2E misses.",
+      "validation_command": "Root full Player Go suite; FFmpeg/Chromium tool-dependent cases require installed runtime. Child executes no builds/tests.",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "test_limit": "Scripted encode; cache rejection assertion compares only directory counts, not every file byte.",
+      "review_provenance": "Complete declaration/helper and tested owner methods read; actual entry/caller and original body hash/history inspected; precise genuine-versus-routed browser coverage compared."
     },
     {
       "name": "TestAutomaticPlaybackStartsDirectWithAdaptiveFallback",
@@ -31721,25 +31779,44 @@
       "end_line": 46,
       "sha256": "bb26d6d2a40cf9e867e8873e296ab4b15c9e2fe00488785babdb6976aa902142",
       "path": "apps/player/internal/server/player_experience_test.go",
-      "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "decision": "F",
+      "review_status": "semantic_review_complete",
+      "reason": "Actual app must project poster/no-probe compatible policy, native controls, content-rating accessible label and custom settings/fallback/actions while keeping player before details and loading separate from method status.",
+      "category": "important_app_owned_boundary",
+      "credible_failure": "Actual app must project poster/no-probe compatible policy, native controls, content-rating accessible label and custom settings/fallback/actions while keeping player before details and loading separate from method status.",
+      "production_owner": [
+        "apps/player/internal/server/player.go:buildPlayerData/playerTemplate",
+        "apps/player/internal/server/player_playback.go:applyPlayback",
+        "apps/player/internal/server/api_product.go:apiPlaybackInfo",
+        "packages/playerweb/player_projection.go:ApplyMedia",
+        "packages/mediaprobe/cache.go:Inspect",
+        "packages/mediaprobe/probe.go:complete",
+        "packages/mediaprobe/decorate.go:Decorate",
+        "packages/catalogapi/media_http_read.go:AudioQueue",
+        "packages/catalogapi/browse_http.go:album",
+        "apps/player/internal/server/api_replaygain.go",
+        "packages/mediaprobe/replaygain.go",
+        "packages/playerweb/player_template.go"
+      ],
+      "non_test_callers": [
+        "actual registered watch/item playback/album/audio-queue APIs -> app probe/projection/settings callbacks"
+      ],
+      "remaining_proof": [
+        "Retain this important observable boundary; ordinary genuine browser happy-paths and source-shared unit keepers do not establish its full app-specific condition."
+      ],
+      "coverage_limit": "Genuine browser native-controls assertion covers normal generated video, but source templates differ under no-probe/transcode fallback and metadata-rating; fixture player runtime markup is supplied independently.",
       "history": [
         "452ba7564c2f2c1a6c0fbaa01532007104694ee1 Use native browser controls for video playback",
         "98e3474c61d868cafc82fcfe819458d003deaa9e Use the existing Play control for blocked autoplay",
         "08d1146b01b1067c8563bc231c6a64795ab81883 Hide native subtitle choices when picker is limited"
       ],
       "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "risk": "Important failure/data loss/security or media-delivery boundary existing genuine E2E misses.",
+      "validation_command": "Root full Player Go suite; FFmpeg/Chromium tool-dependent cases require installed runtime. Child executes no builds/tests.",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "test_limit": "Mostly fragments/layout source guard; no actual browser interaction/execution asserted.",
+      "review_provenance": "Complete declaration/helper and tested owner methods read; actual entry/caller and original body hash/history inspected; precise genuine-versus-routed browser coverage compared."
     },
     {
       "name": "TestVideoPlayerPresentsPictureInPictureControl",
@@ -31747,25 +31824,44 @@
       "end_line": 52,
       "sha256": "e3cc6567517a895df44c11e3a4beb4c0812f228f741a3c7d08332b06d88ef9e0",
       "path": "apps/player/internal/server/player_experience_test.go",
-      "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "decision": "F",
+      "review_status": "semantic_review_complete",
+      "reason": "Actual app local template must expose shared PiP insertion and icon; changing app input needle can lose insertion even if shared transform test remains green.",
+      "category": "important_app_owned_boundary",
+      "credible_failure": "Actual app local template must expose shared PiP insertion and icon; changing app input needle can lose insertion even if shared transform test remains green.",
+      "production_owner": [
+        "apps/player/internal/server/player.go:buildPlayerData/playerTemplate",
+        "apps/player/internal/server/player_playback.go:applyPlayback",
+        "apps/player/internal/server/api_product.go:apiPlaybackInfo",
+        "packages/playerweb/player_projection.go:ApplyMedia",
+        "packages/mediaprobe/cache.go:Inspect",
+        "packages/mediaprobe/probe.go:complete",
+        "packages/mediaprobe/decorate.go:Decorate",
+        "packages/catalogapi/media_http_read.go:AudioQueue",
+        "packages/catalogapi/browse_http.go:album",
+        "apps/player/internal/server/api_replaygain.go",
+        "packages/mediaprobe/replaygain.go",
+        "packages/playerweb/player_template.go"
+      ],
+      "non_test_callers": [
+        "actual registered watch/item playback/album/audio-queue APIs -> app probe/projection/settings callbacks"
+      ],
+      "remaining_proof": [
+        "Retain this important observable boundary; ordinary genuine browser happy-paths and source-shared unit keepers do not establish its full app-specific condition."
+      ],
+      "coverage_limit": "No genuine populated-browser PiP assertion found; synthetic runtime fixture controls do not prove app template insertion.",
       "history": [
         "452ba7564c2f2c1a6c0fbaa01532007104694ee1 Use native browser controls for video playback",
         "98e3474c61d868cafc82fcfe819458d003deaa9e Use the existing Play control for blocked autoplay",
         "08d1146b01b1067c8563bc231c6a64795ab81883 Hide native subtitle choices when picker is limited"
       ],
       "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "risk": "Important failure/data loss/security or media-delivery boundary existing genuine E2E misses.",
+      "validation_command": "Root full Player Go suite; FFmpeg/Chromium tool-dependent cases require installed runtime. Child executes no builds/tests.",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "test_limit": "Two fragments only, no actual PiP platform/runtime operation proof.",
+      "review_provenance": "Complete declaration/helper and tested owner methods read; actual entry/caller and original body hash/history inspected; precise genuine-versus-routed browser coverage compared."
     },
     {
       "name": "TestDirectPlayerDoesNotRestartTheSourceSelectedByHTML",
@@ -36258,22 +36354,41 @@
       "sha256": "92834da8e48f55b6840f0a2110c6c55f1a5814dbf2bb5ad95ead0b1a238b7777",
       "path": "apps/player/internal/server/replaygain_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "Actual app FFprobe ReplayGain track-7.23/album-8.1 must survive API nullable gain and web dataset projection.",
+      "category": "important_app_owned_boundary",
+      "credible_failure": "Actual app FFprobe ReplayGain track-7.23/album-8.1 must survive API nullable gain and web dataset projection.",
+      "production_owner": [
+        "apps/player/internal/server/player.go:buildPlayerData/playerTemplate",
+        "apps/player/internal/server/player_playback.go:applyPlayback",
+        "apps/player/internal/server/api_product.go:apiPlaybackInfo",
+        "packages/playerweb/player_projection.go:ApplyMedia",
+        "packages/mediaprobe/cache.go:Inspect",
+        "packages/mediaprobe/probe.go:complete",
+        "packages/mediaprobe/decorate.go:Decorate",
+        "packages/catalogapi/media_http_read.go:AudioQueue",
+        "packages/catalogapi/browse_http.go:album",
+        "apps/player/internal/server/api_replaygain.go",
+        "packages/mediaprobe/replaygain.go",
+        "packages/playerweb/player_template.go"
+      ],
+      "non_test_callers": [
+        "actual registered watch/item playback/album/audio-queue APIs -> app probe/projection/settings callbacks"
+      ],
+      "remaining_proof": [
+        "Retain this important observable boundary; ordinary genuine browser happy-paths and source-shared unit keepers do not establish its full app-specific condition."
+      ],
+      "coverage_limit": "Genuine generated music track does not include deliberate standard ReplayGain tags or compare API to web values.",
       "history": [
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
       "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "risk": "Important failure/data loss/security or media-delivery boundary existing genuine E2E misses.",
+      "validation_command": "Root full Player Go suite; FFmpeg/Chromium tool-dependent cases require installed runtime. Child executes no builds/tests.",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "test_limit": "No audible level/application proof; scripted probe.",
+      "review_provenance": "Complete declaration/helper and tested owner methods read; actual entry/caller and original body hash/history inspected; precise genuine-versus-routed browser coverage compared."
     },
     {
       "name": "TestMusicPlaybackUsesR128WhenReplayGainIsInvalid",
@@ -36282,22 +36397,41 @@
       "sha256": "ac3b2ebfb36b6a6b7221befdeb3c4499aa2a588c2862926d1943dfb3590e4d86",
       "path": "apps/player/internal/server/replaygain_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "Actual app must fall back malformed ReplayGain track to R128-1024\u2192-4dB and omit invalid500dB/NaN album instead of expose unsafe gain.",
+      "category": "important_app_owned_boundary",
+      "credible_failure": "Actual app must fall back malformed ReplayGain track to R128-1024\u2192-4dB and omit invalid500dB/NaN album instead of expose unsafe gain.",
+      "production_owner": [
+        "apps/player/internal/server/player.go:buildPlayerData/playerTemplate",
+        "apps/player/internal/server/player_playback.go:applyPlayback",
+        "apps/player/internal/server/api_product.go:apiPlaybackInfo",
+        "packages/playerweb/player_projection.go:ApplyMedia",
+        "packages/mediaprobe/cache.go:Inspect",
+        "packages/mediaprobe/probe.go:complete",
+        "packages/mediaprobe/decorate.go:Decorate",
+        "packages/catalogapi/media_http_read.go:AudioQueue",
+        "packages/catalogapi/browse_http.go:album",
+        "apps/player/internal/server/api_replaygain.go",
+        "packages/mediaprobe/replaygain.go",
+        "packages/playerweb/player_template.go"
+      ],
+      "non_test_callers": [
+        "actual registered watch/item playback/album/audio-queue APIs -> app probe/projection/settings callbacks"
+      ],
+      "remaining_proof": [
+        "Retain this important observable boundary; ordinary genuine browser happy-paths and source-shared unit keepers do not establish its full app-specific condition."
+      ],
+      "coverage_limit": "Browser normal song does not inject invalid standard/R128 tag combinations.",
       "history": [
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
       "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "risk": "Important failure/data loss/security or media-delivery boundary existing genuine E2E misses.",
+      "validation_command": "Root full Player Go suite; FFmpeg/Chromium tool-dependent cases require installed runtime. Child executes no builds/tests.",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "test_limit": "API output only; no web/audio output claim.",
+      "review_provenance": "Complete declaration/helper and tested owner methods read; actual entry/caller and original body hash/history inspected; precise genuine-versus-routed browser coverage compared."
     },
     {
       "name": "TestSAMLPublishesMetadataAndStartsProviderLogin",
@@ -42140,25 +42274,38 @@
       "end_line": 53,
       "sha256": "adc72c605376c2c042095d95b3cabb156951a331edc5c13a547459f15adfd713",
       "path": "apps/player/internal/server/timeline_test.go",
-      "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "decision": "F",
+      "review_status": "semantic_review_complete",
+      "reason": "Actual app source timeline must project three exact chapter seeks, intro/credits client markers/default skips, correct native controls and primary actions before chapters with script trickplay/ARIA hook.",
+      "category": "important_app_owned_boundary",
+      "credible_failure": "Actual app source timeline must project three exact chapter seeks, intro/credits client markers/default skips, correct native controls and primary actions before chapters with script trickplay/ARIA hook.",
+      "production_owner": [
+        "apps/player/internal/server/player.go:buildPlayerData",
+        "apps/player/internal/server/chaptersdb.go:newChapterProvider",
+        "apps/player/internal/server/probe_enrichment.go",
+        "packages/metadata/chapters.go:Chapters",
+        "apps/player/internal/server/files.go:trickplay",
+        "packages/playback/trickplay.go"
+      ],
+      "non_test_callers": [
+        "actual app GET watch/playback/trickplay -> probe enrichment and bounded frame generation"
+      ],
+      "remaining_proof": [
+        "Retain this important observable boundary; ordinary genuine browser happy-paths and source-shared unit keepers do not establish its full app-specific condition."
+      ],
+      "coverage_limit": "Genuine marker editor verifies creation/removal, but no660s embedded source chapter timing/seek/skip projection; supplied browser fixture does not certify actual app HTML.",
       "history": [
         "98972d7c073d77314c41503002ea27708ce9d69b Fix mobile player control targets and touch auto-hide",
         "452ba7564c2f2c1a6c0fbaa01532007104694ee1 Use native browser controls for video playback",
         "38335baa6ffccddbe8cc0ac1fdf37424100a8192 Reconcile launch fixes and retain QA lifecycle and cache regressions"
       ],
       "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "risk": "Important failure/data loss/security or media-delivery boundary existing genuine E2E misses.",
+      "validation_command": "Root full Player Go suite; FFmpeg/Chromium tool-dependent cases require installed runtime. Child executes no builds/tests.",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "test_limit": "Mixed actual projection and JS fragments; no runtime chapter click/client skip or trickplay interaction proof.",
+      "review_provenance": "Complete declaration/helper and tested owner methods read; actual entry/caller and original body hash/history inspected; precise genuine-versus-routed browser coverage compared."
     },
     {
       "name": "TestChaptersDBFallbackSharesChapterDataWithWebAndAPI",
@@ -42167,24 +42314,37 @@
       "sha256": "8627e9cd2483d8e69f78394732726be0d713ba9418e8d0688654d766a731e9b0",
       "path": "apps/player/internal/server/timeline_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "Actual scanned episode with TVDB123 and no local chapters must bind configured chapter provider and return Cold open/The case in web and API.",
+      "category": "important_app_owned_boundary",
+      "credible_failure": "Actual scanned episode with TVDB123 and no local chapters must bind configured chapter provider and return Cold open/The case in web and API.",
+      "production_owner": [
+        "apps/player/internal/server/player.go:buildPlayerData",
+        "apps/player/internal/server/chaptersdb.go:newChapterProvider",
+        "apps/player/internal/server/probe_enrichment.go",
+        "packages/metadata/chapters.go:Chapters",
+        "apps/player/internal/server/files.go:trickplay",
+        "packages/playback/trickplay.go"
+      ],
+      "non_test_callers": [
+        "actual app GET watch/playback/trickplay -> probe enrichment and bounded frame generation"
+      ],
+      "remaining_proof": [
+        "Retain this important observable boundary; ordinary genuine browser happy-paths and source-shared unit keepers do not establish its full app-specific condition."
+      ],
+      "coverage_limit": "Genuine local TMDB fixture journey does not connect external ChaptersDB fallback.",
       "history": [
         "98972d7c073d77314c41503002ea27708ce9d69b Fix mobile player control targets and touch auto-hide",
         "452ba7564c2f2c1a6c0fbaa01532007104694ee1 Use native browser controls for video playback",
         "38335baa6ffccddbe8cc0ac1fdf37424100a8192 Reconcile launch fixes and retain QA lifecycle and cache regressions"
       ],
       "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "risk": "Important failure/data loss/security or media-delivery boundary existing genuine E2E misses.",
+      "validation_command": "Root full Player Go suite; FFmpeg/Chromium tool-dependent cases require installed runtime. Child executes no builds/tests.",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "test_limit": "Only positive titles; provider failure/cache/trust guarded elsewhere.",
+      "review_provenance": "Complete declaration/helper and tested owner methods read; actual entry/caller and original body hash/history inspected; precise genuine-versus-routed browser coverage compared."
     },
     {
       "name": "TestViewerCanRequestBoundedTrickplayFrame",
@@ -42193,24 +42353,37 @@
       "sha256": "86ca74d1ff464f4211ca01a8227812b05a6ece6553addf1116f54b8862ea4c35",
       "path": "apps/player/internal/server/timeline_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "Actual requested frame27 must quantize FFmpeg seek20 and deliver exactJPEG-type sentinel; unbounded999999 must404.",
+      "category": "important_app_owned_boundary",
+      "credible_failure": "Actual requested frame27 must quantize FFmpeg seek20 and deliver exactJPEG-type sentinel; unbounded999999 must404.",
+      "production_owner": [
+        "apps/player/internal/server/player.go:buildPlayerData",
+        "apps/player/internal/server/chaptersdb.go:newChapterProvider",
+        "apps/player/internal/server/probe_enrichment.go",
+        "packages/metadata/chapters.go:Chapters",
+        "apps/player/internal/server/files.go:trickplay",
+        "packages/playback/trickplay.go"
+      ],
+      "non_test_callers": [
+        "actual app GET watch/playback/trickplay -> probe enrichment and bounded frame generation"
+      ],
+      "remaining_proof": [
+        "Retain this important observable boundary; ordinary genuine browser happy-paths and source-shared unit keepers do not establish its full app-specific condition."
+      ],
+      "coverage_limit": "Browser supplied seek preview tests bypass app encoder admission/quantization, generated normal playback does not inject extreme frame request.",
       "history": [
         "98972d7c073d77314c41503002ea27708ce9d69b Fix mobile player control targets and touch auto-hide",
         "452ba7564c2f2c1a6c0fbaa01532007104694ee1 Use native browser controls for video playback",
         "38335baa6ffccddbe8cc0ac1fdf37424100a8192 Reconcile launch fixes and retain QA lifecycle and cache regressions"
       ],
       "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "risk": "Important failure/data loss/security or media-delivery boundary existing genuine E2E misses.",
+      "validation_command": "Root full Player Go suite; FFmpeg/Chromium tool-dependent cases require installed runtime. Child executes no builds/tests.",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "test_limit": "Dummy JPEG bytes; no image decode or no-encoder count for rejected request.",
+      "review_provenance": "Complete declaration/helper and tested owner methods read; actual entry/caller and original body hash/history inspected; precise genuine-versus-routed browser coverage compared."
     },
     {
       "name": "TestUnsupportedContainerDefaultsToDirectPlaybackWithCompatibleFallback",
@@ -43743,9 +43916,9 @@
     "TestConfigurationTransactionRejectsSemanticallyInvalidRecoveryWithoutSideEffects"
   ],
   "review_summary": {
-    "semantic_review_complete": 583,
+    "semantic_review_complete": 593,
     "candidate_evidence_complete": 35,
-    "inventory_only_retained_pending_semantic_review": 215,
+    "inventory_only_retained_pending_semantic_review": 205,
     "test_and_boundary_review_pending_full_owner": 4
   }
 }
