@@ -9,8 +9,8 @@
   "declaration_count": 50,
   "file_count": 23,
   "counts": {
-    "R": 44,
-    "D": 6
+    "R": 45,
+    "D": 5
   },
   "review_mode": "Completed semantic review and parent-authorized five test removals in separate tooling checkout. No production/support edits, new isolated tests or new test execution; parent owns serial affected-package validation.",
   "basis": "All fifty actual test bodies read, including actual commandtest/configurationtest/servertest helper dispatch and production app/schema/storage/transport/adapters; explicit endpoint/secret/migration/rollback/cancellation boundaries contrasted with actual container/browser assertions. Naming is not the decision rule.",
@@ -1572,11 +1572,11 @@
       "end_line": 40,
       "sha256": "9ac7c5b78c213632826d703164f6bf80a2180b4916a60321b7e4eb3b6633329c",
       "path": "apps/player/internal/configuration/oidc_validation_internal_test.go",
-      "decision": "D",
+      "decision": "R",
       "review_status": "semantic_review_complete",
-      "reason": "Thin private wrapper replays shared validation.ValidRemoteToken length/punctuation; shared primary-owner grammar covers min/max, bad Unicode, punctuation and exact boundary values more completely.",
-      "category": "pending",
-      "credible_failure": "Thin private wrapper replays shared validation.ValidRemoteToken length/punctuation; shared primary-owner grammar covers min/max, bad Unicode, punctuation and exact boundary values more completely.",
+      "reason": "Independent reviewer found unique ASCII colon rejection. Canonical shared table rejects exclamation and Unicode only; a widened ASCII range could accept colon yet pass primary matrix. Existing test restores this trusted credential grammar boundary.",
+      "category": "retained_credential_grammar_boundary",
+      "credible_failure": "Independent reviewer found unique ASCII colon rejection. Canonical shared table rejects exclamation and Unicode only; a widened ASCII range could accept colon yet pass primary matrix. Existing test restores this trusted credential grammar boundary.",
       "production_owner": [
         "apps/player/internal/configuration/remote.go:validRemoteToken; packages/validation/validation.go:ValidRemoteToken"
       ],
@@ -1586,19 +1586,22 @@
         "apps/player/internal/server/settings_{scim,oidc,saml}_storage.go bind respective atomic configuration methods"
       ],
       "remaining_proof": [
-        "packages/validation/validation_test.go:TestRemoteTokenValidation; Player TestSharedConfigurationContract/SecureRemoteAccessConfigurationIsCompleteAndStrict"
+        "This exact restored baseline test covers colon. Shared TestRemoteTokenValidation covers other punctuation/Unicode and boundary length."
       ],
-      "coverage_limit": "Keep actual Load remote configuration/redaction contract and shared token matrix. No live DNS provider E2E claimed.",
+      "coverage_limit": "Real E2E does not assert malformed remote-token grammar.",
       "history": [
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
-      "production_or_support_deletion_unlocked": "None; removes only this audited existing test declaration. Shared primary-owner and real CLI process keepers remain.",
-      "risk": "No independent important assertion lost; remaining gap explicitly stated.",
+      "production_or_support_deletion_unlocked": "None; this declaration is retained.",
+      "risk": "Retain important trusted credential colon boundary; real E2E omits malformed credentials.",
       "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./cmd/kinosail ./internal/backup ./internal/configuration ./internal/database",
       "baseline_result": "pass (parent exact-base JSON event; no new execution by this read-only reviewer)",
       "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
       "reviewer": "tooling owner after root read-only scope transfer",
-      "removal_status": "implemented_in_tooling_owner_checkout_after_parent_transfer"
+      "removal_status": "restored_after_independent_review",
+      "audit_status": "evidence_complete",
+      "implementation": "Restored exact baseline declaration after independent review; no new isolated declaration.",
+      "review_resolution": "Frontend independent review of3298e906; original test restored in follow-up commit."
     },
     {
       "name": "TestSAMLMetadataConfigurationRequiresTrustedBoundedURL",
@@ -2040,8 +2043,7 @@
     "TestLoadConfigurationFindsDefaultFile",
     "TestHealthCheckCoversHTTPHTTPSAndCanonicalHost",
     "TestConfiguredMCPServerUsesOnlyTheDataDirectory",
-    "TestValidOIDCURLAllowsOnlyTrustedEndpointForms",
-    "TestValidRemoteTokenRejectsWrongLengthAndCharacters"
+    "TestValidOIDCURLAllowsOnlyTrustedEndpointForms"
   ],
   "verification": [
     {
