@@ -67,7 +67,38 @@
     }
   },
   "e2e_artifact": "Parent-owned integrated revision/run artifact is required before delivery; this ledger contains coverage mapping, not executed E2E proof.",
-  "failure_analysis_first": "No new isolated tests, production code, or replacement assertions added in this batch.",
+  "failure_analysis_first": {
+    "prior_batches": "No new isolated tests, production code, or replacement assertions added in this batch.",
+    "watchrooms_socket_closure": {
+      "written_before_assertion_changes": true,
+      "scope": "Existing Watch Together HTTP closure assertions only; no new test declarations or production repair.",
+      "owners": [
+        "packages/watchrooms/http.go:join/connect/writeEvents/monitorAccess",
+        "packages/watchrooms/watchrooms.go:active/Update/Close"
+      ],
+      "dependency_source_read": [
+        "github.com/coder/websocket@v1.8.15/wsjson/wsjson.go:Read can fail on malformedJSON and closes the client itself",
+        "github.com/coder/websocket@v1.8.15/read.go:finishRead maps deadline/cancellation to context errors",
+        "github.com/coder/websocket@v1.8.15/close.go:CloseStatus distinguishes close frames; CloseNow ends transport without handshake"
+      ],
+      "failure_modes": [
+        "After current media becomes invisible, the periodic authorization monitor could leave an idle socket alive indefinitely.",
+        "An expired room or invalid drift message could leave its socket and subscription active.",
+        "Revoked session or Viewer authority could be ignored by the periodic monitor.",
+        "A hidden media event or denied-event reply could bypass current media authorization and leak a well-formed event.",
+        "An event write failure could retain subscription capacity instead of draining/closing it.",
+        "A test read deadline/cancellation could close the client itself and masquerade as server-initiated closure.",
+        "A malformedJSON/data frame could make wsjson.Read fail and masquerade as peer closure.",
+        "A legitimate normal close frame or abrupt EOF from CloseNow could be incorrectly rejected by an overly narrow assertion.",
+        "A valid event received instead of closure must fail; a timeout must fail even if the library tears down the connection afterward."
+      ],
+      "existing_proof_and_gap": "Public genuine Player test-instance-offline.spec.ts two-browser room test proves valid seek propagation/reconnect/metrics, but never expires or revokes a live room. Existing delivery tests detect a well-formed hidden event; idle closure assertions accept context deadline and are not proof of timely peer closure.",
+      "planned_existing_assertion_repair": "Use raw WebSocket Read to avoid treating JSON decoding failure as closure, require an actual close frame or transport EOF/closed error before the bounded context expires, and reuse the same assertion for invalid drift and revoked-access reads.",
+      "control": "Disable only monitorAccess media-visibility predicate in a recorded dirty mutant. Run original TestHTTPAccessMonitorClosesInvisibleRoom (expected false pass), apply existing assertion repair, rerun same mutant (expected red), restore owner exactly and run entire watchrooms package (expected green).",
+      "execution_authority": "Root explicitly authorized this bounded serial focused watchrooms run with shared warmGOCACHE on2026-10-03; no broader Go builds/containers.",
+      "execution_status": "not_run_before_this_failure_analysis_commit"
+    }
+  },
   "owner_groups": {
     "apihttp": {
       "owners": [
