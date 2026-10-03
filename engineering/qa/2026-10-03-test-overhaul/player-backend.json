@@ -20041,23 +20041,44 @@
       "end_line": 23,
       "sha256": "d18f5ac1b3440152cc8d54cb82382b6ad9e3a1d6ecfd3d0c7a94299d1c4b685f",
       "path": "apps/player/internal/server/password_manager_test.go",
-      "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "decision": "D",
+      "review_status": "candidate_evidence_complete",
+      "reason": "Five fragments in shared Passkeys bytes are replayed unchanged by retained Subtitles declaration; no app callback or distinct binding assertion.",
+      "category": "provider_local_replay_of_shared_asset_guard",
+      "credible_failure": "Guard fails if shared conditional-mediation offer, abort-controller presence or login replacement fragments disappear. It does not execute cancellation or concurrency.",
+      "production_owner": [
+        "packages/webassets/static/passkeys.js:offerConditionalLogin/login/manual-login click",
+        "apps/player/internal/server/assets.go:passkeysJS = webassets.Passkeys",
+        "packages/servertest/password_manager.go:PasskeyLoginSupportsPasswordManagerAutofill"
+      ],
+      "non_test_callers": [
+        "Player and Subtitles serve exact webassets.Passkeys bytes as passkeysJS; browser login/account surfaces run shared script."
+      ],
+      "remaining_proof": [
+        {
+          "kind": "retained_identical_shared_source_guard",
+          "path": "apps/subtitles/internal/server/password_manager_test.go",
+          "scenario": "TestPasskeyLoginSupportsPasswordManagerAutofill",
+          "mapping": "Exact same helper and same webassets.Passkeys bytes; all five asserted fragments survive at the canonical remaining replay."
+        },
+        {
+          "kind": "routed_browser_fixture_only",
+          "path": "apps/player/e2e/passkeys.spec.ts",
+          "scenario": "passkey sign-in accepts conditional autofill without a manual click",
+          "mapping": "Executes shared script with supplied HTML/routes/fake credentials; supplemental conditional offer/redirect proof only."
+        }
+      ],
+      "coverage_limit": "No genuine E2E of conditional-mediation cancellation/concurrent ceremonies claimed. Routed fake navigator.credentials.get ignores AbortSignal, and genuine first-install disables conditional mediation. Retained Subtitles source guard pins fragments without proving that runtime concurrency.",
       "history": [
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
-      "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "production_or_support_deletion_unlocked": "Delete only Player declaration; shared servertest helper remains called by retained Subtitles guard. No production code changes.",
+      "risk": "Low; exact guard survives at confirmed retained Subtitles owner; browser limits explicitly recorded.",
+      "validation_command": "Root full Player and Subtitles Go suites plus named real-server clipboard journey; no child builds.",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "removal_status": "implemented",
+      "review_provenance": "Full declaration/helper/tested shared JS functions, asset bindings, callers, file history, routed passkeys fixtures and genuine API key browser journey read; Subtitles owner confirms keeper preserved. No source-only claim of browser failure equivalence."
     },
     {
       "name": "TestPasswordFieldsOfferAccessibleRevealControls",
@@ -20097,23 +20118,62 @@
       "end_line": 31,
       "sha256": "62d31aad1134673cd73932ed33c5b9d106baf0398682a50c9aa9fcd260d131fd",
       "path": "apps/player/internal/server/password_manager_test.go",
-      "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "decision": "D",
+      "review_status": "candidate_evidence_complete",
+      "reason": "Seven shared Theme source fragments replay retained Subtitles guard. Genuine actual Go app key journey additionally exercises success/rejection and full-key selection; custom-message lookup remains protected by the retained source guard.",
+      "category": "provider_local_replay_of_shared_asset_guard",
+      "credible_failure": "Loss of clipboard writeText, rejection select-all fallback or custom status lookup is detected by the retained combination. This Player helper itself only checks source fragments.",
+      "production_owner": [
+        "packages/webassets/static/theme.js:bindCopyControls",
+        "apps/player/internal/server/assets.go:themeJS joins webassets.Theme, ArtworkPalette, WatchProgress",
+        "packages/servertest/password_manager.go:CopyControlsReportClipboardFallback"
+      ],
+      "non_test_callers": [
+        "Player and Subtitles serve the same composed themeJS; actual generated API key HTML supplies data-copy-target and localized status elements."
+      ],
+      "remaining_proof": [
+        {
+          "kind": "retained_identical_shared_source_guard",
+          "path": "apps/subtitles/internal/server/password_manager_test.go",
+          "scenario": "TestCopyControlsReportClipboardFallback",
+          "mapping": "Exact same helper/composed Theme bytes preserve all seven fragments, especially custom data-copy-success/data-copy-fallback lookups."
+        },
+        {
+          "kind": "genuine_actual_Go_server_browser_E2E_with_failure_injection",
+          "path": "apps/player/e2e/ui-happy-paths.spec.ts",
+          "scenario": "Owner can create and revoke an API key and manage a Viewer Profile",
+          "mapping": "Actual created key is copied with injected clipboard success; rejection selects the whole actual key and displays fallback status. English custom texts equal default literals, so this does not independently exercise translated override lookup."
+        }
+      ],
+      "coverage_limit": "Retained shared source guard is still required for localized/custom status element lookup. No non-English runtime clipboard equivalence claimed; browser overrides clipboard only, while all app HTML/API/session composition remains actual Go Server.",
       "history": [
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
-      "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "production_or_support_deletion_unlocked": "Delete only Player declaration; shared servertest helper remains called by retained Subtitles guard. No production code changes.",
+      "risk": "Low; exact guard survives at confirmed retained Subtitles owner; browser limits explicitly recorded.",
+      "validation_command": "Root full Player and Subtitles Go suites plus named real-server clipboard journey; no child builds.",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "removal_status": "implemented",
+      "review_provenance": "Full declaration/helper/tested shared JS functions, asset bindings, callers, file history, routed passkeys fixtures and genuine API key browser journey read; Subtitles owner confirms keeper preserved. No source-only claim of browser failure equivalence.",
+      "e2e_execution_evidence": {
+        "revision": "6c9781e2605dc947c4c09e07bb6edfcc8911d42c",
+        "artifact": ".verification/test-overhaul/player-ui-http-6c9781/manifest.json",
+        "result": "passed; exactRevisionProof true; clean supported local HTTP actual Go Server",
+        "command": [
+          "python3",
+          "engineering/qa/2026-10-03-test-overhaul/run-populated-local-e2e.py",
+          "/Users/mikeo/Documents/Codex/2026-10-03/task/kinosail",
+          "player",
+          "player-ui-http-state-6c9781",
+          "ui-happy-paths.spec.ts",
+          "title-jump-first-paint.spec.ts",
+          "--grep",
+          "Dark is the default|populated mobile library|Owner can create and revoke an API key|Quick Connect"
+        ],
+        "results_sha256": "1cf72b7752d3a80ab0eb76f09f2f646ea08d464a2660b3750d7709ea3ea67f9b",
+        "execution_owner": "root; no execution in child checkout"
+      }
     },
     {
       "name": "TestDisclosureLinksOpenAndFocusTheirTarget",
@@ -20121,23 +20181,32 @@
       "end_line": 35,
       "sha256": "2a5ac550176071f1aa4b1d95e135fa2339a96e949a5d2a4321e4d02bee04e4cb",
       "path": "apps/player/internal/server/password_manager_test.go",
-      "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "decision": "F",
+      "review_status": "semantic_review_complete",
+      "reason": "Sole retained caller guards shared disclosure handling used by trusted-HTTPS setup links; genuine journeys open ordinary details but do not exercise data-open-disclosure history/focus behavior.",
+      "category": "sole_shared_disclosure_policy_guard_with_runtime_gap",
+      "credible_failure": "Dropping hash-target disclosure opening or explicit clicked link interception/open/focus/scroll strands the linked Trusted HTTPS setup details. Eight source fragments guard that policy independently of current browser journeys.",
+      "production_owner": [
+        "packages/webassets/static/theme.js:bindDisclosureControls",
+        "apps/player/internal/server/settings_connection_http.go:jellyfinOnboardingHTML",
+        "packages/servertest/password_manager.go:DisclosureLinksOpenAndFocusTheirTarget"
+      ],
+      "non_test_callers": [
+        "Shared theme runs bindDisclosureControls on rendered pages; Jellyfin optional onboarding links to settings disclosure with data-open-disclosure."
+      ],
+      "remaining_proof": [
+        "Retain this sole declaration/helper; Subtitles owner corrected that no corresponding Subtitles declaration exists."
+      ],
+      "coverage_limit": "Source fragment presence does not prove actual event ordering, decoded hash open, modifier clicks or history/focus/scroll. Genuine Jellyfin setup Enter opens ordinary details, not this link. No runtime E2E equivalence claimed.",
       "history": [
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
-      "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "production_or_support_deletion_unlocked": "None; sole canonical guard remains.",
+      "risk": "Retained functional navigation/focus policy with explicit weak-assertion limit.",
+      "validation_command": "Root full Player Go suite and populated setup/settings journeys; no child execution.",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "review_provenance": "Full declaration/helper and bindDisclosureControls read; production data-open-disclosure caller and shared composition inspected; frontend owner reports no runtime history/focus keeper; Subtitles confirms absence of duplicate."
     },
     {
       "name": "TestLargeLibraryWebResponseIsBounded",
@@ -21052,7 +21121,7 @@
         "packages/playback/model.go:Timeline.SourceTime/PresentationTime"
       ],
       "non_test_callers": [
-        "Player jellyfin_progress.go:jellyfinPlaybackSourceTime and player_playback.go automatic-skip planning/progress use the shared timeline implementation; alias remains used by real Jellyfin progress flow."
+        "Player jellyfin_progress.go uses automaticSkipTimeline for playback/progress source-time conversion; player_playback.go invokes shared automatic-skip planning. Alias remains used by the real Jellyfin progress flow."
       ],
       "remaining_proof": [
         {
@@ -21097,7 +21166,7 @@
         "packages/playback/model.go:Timeline.SourceTime/PresentationTime"
       ],
       "non_test_callers": [
-        "Player jellyfin_progress.go:jellyfinPlaybackSourceTime and player_playback.go automatic-skip planning/progress use the shared timeline implementation; alias remains used by real Jellyfin progress flow."
+        "Player jellyfin_progress.go uses automaticSkipTimeline for playback/progress source-time conversion; player_playback.go invokes shared automatic-skip planning. Alias remains used by the real Jellyfin progress flow."
       ],
       "remaining_proof": [
         {
@@ -21500,7 +21569,7 @@
       "production_owner": [
         "apps/player/internal/server/hls_plan.go:plannedHLSFile/hlsPolicy",
         "packages/playback/hls_recipe.go:PlannedHLSFile/ParseHLSRecipe",
-        "apps/player/internal/server/jellyfin_bitrate.go:maxJellyfinStreamingBitrate"
+        "apps/player/internal/server/jellyfin_request.go:maxJellyfinStreamingBitrate"
       ],
       "non_test_callers": [
         "Player actual watch/API/Jellyfin/HLS selection invokes shared media/timeline policy and app projection; HLS rendition/input generation calls videoArguments. Pure fixture tests call shared functions directly and are identified as such."
@@ -29215,6 +29284,7 @@
     "TestBrandUsesFoldedPlayLogo",
     "TestBrowserSessionCookiesAreAlwaysHostBoundAndSecure",
     "TestCleanDeviceNameNormalizesBrowserAgentsAndBoundsOtherNames",
+    "TestCopyControlsReportClipboardFallback",
     "TestDesktopRailSeparatesUtilitiesFromAccount",
     "TestDirectPlayerDoesNotRestartTheSourceSelectedByHTML",
     "TestHardwareSupportAcceptsAutomaticAndKnownBackends",
@@ -29225,6 +29295,7 @@
     "TestOfflinePagesUseTheCurrentNavigationBundle",
     "TestPWAHandlesServiceWorkerRegistrationFailure",
     "TestPagesUseSharedModernStyles",
+    "TestPasskeyLoginSupportsPasswordManagerAutofill",
     "TestPasskeyOfferPathKeepsTheValidatedLoginDestination",
     "TestPasswordFieldsOfferAccessibleRevealControls",
     "TestPlayerDatabaseAdapterUsesConfiguredDocuments",
@@ -29248,6 +29319,7 @@
     "TestBrandUsesFoldedPlayLogo",
     "TestBrowserSessionCookiesAreAlwaysHostBoundAndSecure",
     "TestCleanDeviceNameNormalizesBrowserAgentsAndBoundsOtherNames",
+    "TestCopyControlsReportClipboardFallback",
     "TestDesktopRailSeparatesUtilitiesFromAccount",
     "TestDirectPlayerDoesNotRestartTheSourceSelectedByHTML",
     "TestHardwareSupportAcceptsAutomaticAndKnownBackends",
@@ -29258,6 +29330,7 @@
     "TestOfflinePagesUseTheCurrentNavigationBundle",
     "TestPWAHandlesServiceWorkerRegistrationFailure",
     "TestPagesUseSharedModernStyles",
+    "TestPasskeyLoginSupportsPasswordManagerAutofill",
     "TestPasskeyOfferPathKeepsTheValidatedLoginDestination",
     "TestPasswordFieldsOfferAccessibleRevealControls",
     "TestPlayerDatabaseAdapterUsesConfiguredDocuments",
@@ -29273,7 +29346,7 @@
     "TestViewerCanOpenHome",
     "TestViewerCanSearchLibrary"
   ],
-  "removal_count": 30,
+  "removal_count": 32,
   "verification": [
     {
       "command": "gofmt -w <five touched retained Go files>",
@@ -29314,6 +29387,26 @@
     {
       "command": "gofmt -w apps/player/internal/server/playback_timeline_test.go; git diff --check",
       "result": "passed; direct timeline replay batch; root executes Go/E2E."
+    },
+    {
+      "genuine_clipboard_browser_evidence": {
+        "revision": "6c9781e2605dc947c4c09e07bb6edfcc8911d42c",
+        "artifact": ".verification/test-overhaul/player-ui-http-6c9781/manifest.json",
+        "result": "passed; exactRevisionProof true; clean supported local HTTP actual Go Server",
+        "command": [
+          "python3",
+          "engineering/qa/2026-10-03-test-overhaul/run-populated-local-e2e.py",
+          "/Users/mikeo/Documents/Codex/2026-10-03/task/kinosail",
+          "player",
+          "player-ui-http-state-6c9781",
+          "ui-happy-paths.spec.ts",
+          "title-jump-first-paint.spec.ts",
+          "--grep",
+          "Dark is the default|populated mobile library|Owner can create and revoke an API key|Quick Connect"
+        ],
+        "results_sha256": "1cf72b7752d3a80ab0eb76f09f2f646ea08d464a2660b3750d7709ea3ea67f9b",
+        "execution_owner": "root; no execution in child checkout"
+      }
     }
   ],
   "retention_examples": [
@@ -29329,6 +29422,12 @@
     "semantic_review_complete": 199,
     "candidate_evidence_complete": 30,
     "inventory_only_retained_pending_semantic_review": 604,
-    "test_and_boundary_review_pending_full_owner": 4
+    "test_and_boundary_review_pending_full_owner": 4,
+    "status_counts": {
+      "semantic_review_complete": 200,
+      "candidate_evidence_complete": 32,
+      "inventory_only_retained_pending_semantic_review": 601,
+      "test_and_boundary_review_pending_full_owner": 4
+    }
   }
 }
