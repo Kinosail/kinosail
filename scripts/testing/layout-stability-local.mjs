@@ -40,7 +40,7 @@ function cls(shifts) {
   return maximum;
 }
 const boxesChanged=(a,b)=>a.filter(first=>{const last=b.find(v=>v.id===first.id);return last&&["x","documentY","width","height"].some(key=>Math.abs(first[key]-last[key])>1);});
-const inspect = () => ({ready: document.querySelector(".settings-shell")?.hasAttribute("data-settings-ready"), category: document.documentElement.dataset.settingsCategory, scrollY,
+const inspect = () => ({rootFontSize: getComputedStyle(document.documentElement).fontSize, rootScale:document.documentElement.style.fontSize, ready: document.querySelector(".settings-shell")?.hasAttribute("data-settings-ready"), category: document.documentElement.dataset.settingsCategory, scrollY,
   sections: [...document.querySelectorAll(".settings-flow>section")].filter(n=>n.getBoundingClientRect().height).map(n=>({id:n.id,category:n.dataset.settingsCategory,heading:n.querySelector("h2")?.textContent})),
   nativeOptions: document.querySelectorAll(".player-native-options").length, settingsButtons: document.querySelectorAll("[data-player-settings]").length});
 function observe() {
@@ -95,7 +95,7 @@ try {
     // Delay real response bytes, without substituting mock markup or media.
     await page.route("**/*", async route => {
       const request = route.request(), url = new URL(request.url());
-      if (url.pathname.endsWith(".woff2") || url.pathname.includes("main.kinosail.bundle") || request.resourceType() === "image") {
+      if (url.pathname.endsWith(".woff2") || (url.pathname.endsWith(".js")&&!url.pathname.endsWith("/theme.js")) || /\/api\/v1\/subtitle-library\/[^/]+\/inspect/.test(url.pathname) || request.resourceType() === "image") {
         const response = await route.fetch();
         await new Promise(resolve => setTimeout(resolve, 1200));
         await route.fulfill({response});
@@ -126,7 +126,7 @@ try {
     const moved=boxesChanged(initialBoxes,audit.frames.at(-1)?.boxes||[]);
     const finalState=await page.evaluate(inspect);
     const categoryStable=!initialState.category||JSON.stringify(initialState.sections)===JSON.stringify(finalState.sections);
-    reports.push({viewport,path,variant,status:response.status(),unexpected,aggregateUnexpected,identifiedDOMCLS,unattributedCLS,moved,categoryStable,initialState,finalState,...audit});
+    reports.push({viewport,path,variant,scaleApplied:!scale||finalState.rootScale===scale,status:response.status(),unexpected,aggregateUnexpected,identifiedDOMCLS,unattributedCLS,moved,categoryStable,initialState,finalState,...audit});
     console.log(JSON.stringify({viewport: viewport.width, path, unexpected, overflow: audit.overflow,
       sources: audit.shifts.flatMap(shift => shift.sources.map(source => source.node))}));
     if (engine === "chromium") {
@@ -147,9 +147,9 @@ try {
   }
   if(process.env.KINOSAIL_LAYOUT_FLOWS)flows=await measureFlows(browser,{baseURL,storageState:auth});
 } finally {
-  await writeFile(join(run, "measurements.json"), JSON.stringify({revision: process.env.KINOSAIL_TEST_REVISION, app, engine,
+  await writeFile(join(run, "measurements.json"), JSON.stringify({revision: process.env.KINOSAIL_TEST_REVISION, app, engine,browserVersion:browser.version(),
     result: "measurement", command: "python3 scripts/testing/test-layout-stability-local.py", data: "Synthetic media and account; delayed real font/bundle/image responses", reports,flows}, null, 2));
   await browser.close();
 }
-if (process.env.KINOSAIL_LAYOUT_ENFORCE && reports.some(report => report.identifiedDOMCLS > 0.001 || report.overflow > 1 || !report.categoryStable || report.moved.length>0)) process.exitCode = 1;
+if (process.env.KINOSAIL_LAYOUT_ENFORCE && reports.some(report => report.identifiedDOMCLS > 0.001 || report.overflow > 1 || !report.categoryStable || !report.scaleApplied || report.moved.length>0)) process.exitCode = 1;
 if(flows.some(f=>f.pendingStable===false||f.focusRetained===false||f.settled?.inert||f.settled?.skeleton||f.stable===false||f.overflow>1))process.exitCode=1;
