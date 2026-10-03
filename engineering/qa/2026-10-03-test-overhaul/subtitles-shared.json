@@ -44900,5 +44900,73 @@
     "new_test_declarations": 0,
     "candidate_suite_status": "unrun after final edits; root serial validation owns fresh integrated source",
     "verify_command": "python3 engineering/qa/2026-10-03-test-overhaul/controls/verify-subtitles-dispositions.py"
+  },
+  "upstream_preservation_appendix": {
+    "pinned_main_sha": "e8eca5f762822b239cf322065a915c87482fb8b0",
+    "audit_base_sha": "876b771a7dd0aef5e65957fcee87add0312535e8",
+    "merged_prs": [
+      449,
+      450,
+      451
+    ],
+    "original_baseline_declarations": 954,
+    "subtitles_go_added_declarations": [],
+    "subtitles_go_changed_declarations": [
+      {
+        "file": "apps/subtitles/internal/server/passkeys_test.go",
+        "name": "TestPasskeyCeremoniesAreLocalAndServerSide",
+        "change_kind": "existing_declaration_updated_by_upstream",
+        "decision": "R",
+        "baseline_body_sha256": "a1c41697c16b29c93fd998e82e5390abda5278b22cfcbb7c9facd458f3796466",
+        "upstream_body_sha256": "950624f0610cc3ca2539f1ba8bf698b354ef03532c3fcb5486826cc33025e1d8",
+        "upstream_file_sha256": "d180c917183db21d7e873f9083e4cdad6a4bf55b2cabad9a8a9012b9df934c74",
+        "review_status": "reviewed upstream change outside original baseline954 accounting",
+        "credible_failure": "Account/sign-in ceremony must request current passkey script v16; old v15 would omit new browser-session probe/credential-prompt ordering while account route can still render. Actual app New and account/signin routing remain in the retained test.",
+        "coverage_limit": "Literal asset version does not prove recovery. Upstream session-resume.spec.ts routes synthetic HTML/API; genuine test-instance-session-persistence closes/reopens a tab in the same browser context against the isolated populated Server, without server/browser restart. Shared clock injection checks persisted cookie lifetime. No run claimed here."
+      },
+      {
+        "file": "apps/subtitles/internal/server/passkeys_test.go",
+        "name": "TestPasskeyLoginIsAvailableFromSignInPage",
+        "change_kind": "existing_declaration_updated_by_upstream",
+        "decision": "R",
+        "baseline_body_sha256": "50517b7255330a578e6f9345d822cd95a8843cb7fab4ae1b5ae9fcfad8469ddb",
+        "upstream_body_sha256": "67388e987b0acc25de2b6790f56400592dee8355d4c10a119a13afc5dc0bb7c6",
+        "upstream_file_sha256": "d180c917183db21d7e873f9083e4cdad6a4bf55b2cabad9a8a9012b9df934c74",
+        "review_status": "reviewed upstream change outside original baseline954 accounting",
+        "credible_failure": "Account/sign-in ceremony must request current passkey script v16; old v15 would omit new browser-session probe/credential-prompt ordering while account route can still render. Actual app New and account/signin routing remain in the retained test.",
+        "coverage_limit": "Literal asset version does not prove recovery. Upstream session-resume.spec.ts routes synthetic HTML/API; genuine test-instance-session-persistence closes/reopens a tab in the same browser context against the isolated populated Server, without server/browser restart. Shared clock injection checks persisted cookie lifetime. No run claimed here."
+      }
+    ],
+    "baseline_decisions_unchanged": true,
+    "new_isolated_tests_added_by_overhaul": 0,
+    "upstream_regressions_outside_this_scope": [
+      {
+        "file": "packages/identitycore/session_cookie_issuance_boundary_test.go",
+        "name": "TestCookieIssuancePreservesPersistedExpiryAcrossSecondBoundary",
+        "decision": "R",
+        "reviewed_contract": "Persist callback advances controlled clock one second; local/public/public-grant cookie Expires and remaining MaxAge must equal committed session state rather than extending lifetime after disk write. Important exact expiry boundary ordinary E2E misses.",
+        "body_sha256": "175cedd1a344d6a7f438fd432e5b6fb35469bc5f34d42745ddcdb9d3e404e03e"
+      },
+      {
+        "file": "apps/player/internal/server/hls_bandwidth_delivery_test.go",
+        "name": "TestRealBlackIntroHLSBandwidthSurvivesCachedMasterReuse",
+        "decision": "R",
+        "reviewed_contract": "Real FFmpeg synthetic black-intro source and public TCP HTTP exercise unfinished bitrate floor, repair stale cached master three times without reencoding/changing fragments, completed measured bandwidth and decoding delivered first fragment. No physical Apple/Safari proof.",
+        "body_sha256": "22179b202a6f61d4133768112922ae7b5daca8c6646c7ac2d2f87a4fc1a5c001"
+      }
+    ],
+    "validation_status": "Read-only source review/hash/inventory, no builds or new test execution.",
+    "browser_sources_preserved": [
+      {
+        "file": "apps/subtitles/e2e/session-resume.spec.ts",
+        "classification": "browser fixture with route-fulfilled HTML and API",
+        "contract": "Exact shared passkeys.js session check ordering, explicit stepup/switch and denied/network/unsafe return cases; no genuine server session coverage."
+      },
+      {
+        "file": "apps/subtitles/e2e/test-instance-session-persistence.spec.ts",
+        "classification": "genuine browser plus isolated populated application Server",
+        "contract": "Same browser context closes signed-in tab then opens new tab at saved login URL; real /api/v1/me accepts session, no ordinary passkey begin, explicit stepup remains available. No server restart, browser restart or new context."
+      }
+    ]
   }
 }
