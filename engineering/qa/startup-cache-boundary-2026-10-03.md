@@ -79,3 +79,13 @@ Its new Linux synthetic-media journey failed before recording the first moving f
 Safe artifact `11286087030` retains the failing receipt and resources, but intentionally excludes raw browser logs and authentication traces.
 Add bounded failure locations and video readiness/capability facts to those safe receipts before retrying the hosted journey.
 Keep all acceptance assertions and security gates unchanged; do not claim media acceptance from the passing populated suite.
+
+Diagnostic artifact `11285667513` narrows the Linux failure to Cold playback's first moving-frame wait at line 92.
+Video readiness is zero, the HLS source is selected, and H.264 MSE support is true (HEVC support is false).
+This is insufficient evidence for replacing the browser. Add numeric HTTP request states and fixed-category encoder diagnostics to the safe receipt; keep raw logs, errors, and paths private.
+
+The hosted package log confirms FFmpeg `7:6.1.1-3ubuntu5`; production pins Jellyfin FFmpeg `8.1.2-5`.
+The cold Linux browser negotiates H.264 conversion of the HDR fixture. Its metadata-removal filter names `DOVI_RPU_BUFFER` and `DOVI_METADATA` are absent from [FFmpeg 6.1's sidedata options](https://raw.githubusercontent.com/FFmpeg/FFmpeg/n6.1/libavfilter/f_sidedata.c).
+Align hosted QA with the production-supported FFmpeg version rather than changing the production filter or media assertions.
+Use the official Noble asset with release SHA256 `b4e72894ad26c809ed0104805f5415a97be75212b9fcf9d60b89ad25bb3d43e3`, [published by Jellyfin](https://github.com/jellyfin/jellyfin-ffmpeg/releases/expanded_assets/v8.1.2-5).
+Record encoder versions in the safe receipt. Exact-source hosted acceptance is still required to confirm this diagnosis and exercise the previously unavailable burn-in invalidation path.

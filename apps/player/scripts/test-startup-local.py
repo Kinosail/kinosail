@@ -74,6 +74,32 @@ def browser_failures():
             visit(suite.get('suites', []))
     visit(data.get('suites', []))
     return {'reportPresent': True, 'stats': data.get('stats'), 'failures': failures}
+def encoder_diagnostics():
+    log = run / 'server.log'
+    if not log.exists():
+        return {}
+    events = {}
+    categories = set()
+    patterns = {'filter-output': 'Failed to configure output pad', 'resource-unavailable': 'Resource temporarily unavailable',
+        'encoder-initialization': 'Error initializing', 'encoder-opening': 'Error opening encoder',
+        'unknown-encoder': 'Unknown encoder', 'missing-filter': 'No such filter', 'filter-network': 'Error reinitializing filters',
+        'conversion-failed': 'Conversion failed', 'unsupported-option': 'Unrecognized option', 'permission': 'Permission denied'}
+    allowed = {'HLS transcode started', 'HLS transcode failed', 'HLS transcode completed', 'HLS segment preparation failed', 'HLS segment unavailable'}
+    for line in log.read_text().splitlines():
+        try:
+            entry = json.loads(line)
+        except json.JSONDecodeError:
+            continue
+        if entry.get('msg') not in allowed:
+            continue
+        event = entry['msg']
+        events[event] = events.get(event, 0) + 1
+        detail = str(entry.get('error', ''))
+        categories.update(category for category, pattern in patterns.items() if pattern.lower() in detail.lower())
+        for kind in ['MASTERING_DISPLAY_METADATA', 'CONTENT_LIGHT_LEVEL', 'DYNAMIC_HDR_PLUS', 'DOVI_RPU_BUFFER', 'DOVI_METADATA']:
+            if kind in detail and any(marker in detail.lower() for marker in ['undefined', 'invalid', 'parse', 'not found']):
+                categories.add('unsupported-hdr-side-data-' + kind.lower())
+    return {'events': events, 'errorCategories': sorted(categories)}
 def sample_resources(pid):
     while not stop_samples.wait(0.2):
         rows = subprocess.check_output(['ps', '-axo', 'pid=,ppid=,pcpu=,rss=,args='], text=True).splitlines()
@@ -112,8 +138,9 @@ finally:
     metadata = json.loads(subprocess.check_output(['ffprobe', '-v', 'error', '-show_streams', '-show_format', '-of', 'json', str(media / 'Cold.mkv')]))
     metadata.get('format', {}).pop('filename', None)
     (run / 'receipt.json').write_text(json.dumps({'revision': env['KINOSAIL_TEST_REVISION'], 'result': result,
-        'workingDiffSHA256': working_diff, 'resources': resource, 'browserResults': browser_failures(),
+        'workingDiffSHA256': working_diff, 'resources': resource, 'browserResults': browser_failures(), 'encoderDiagnostics': encoder_diagnostics(),
         'command': 'python3 apps/player/scripts/test-startup-local.py', 'build': build, 'browser': browser,
+        'encoderVersions': {tool: subprocess.check_output([tool, '-version'], text=True).splitlines()[0] for tool in ['ffmpeg', 'ffprobe']},
         'baseline': env.get('KINOSAIL_STARTUP_BASELINE') == '1', 'mediaCommands': [hdr, direct],
         'fixtureMetadata': metadata, 'binarySHA256': checksum(binary),
         'environment': f'{platform.system()} {platform.machine()} {env.get("KINOSAIL_STARTUP_BROWSER_CHANNEL", "chrome")}; serial Go build; supported HTTP loopback; synthetic media',

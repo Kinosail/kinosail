@@ -77,8 +77,10 @@ test('bounded startup preparation preserves the exact stream and playback priori
       });
     });
     const responses: string[] = [];
+    const requestStates: {kind: string, status: number}[] = [];
     const response = (value: import('@playwright/test').Response) => {
       const url = new URL(value.url());
+      if (url.pathname.endsWith('/playback') || url.pathname.startsWith('/hls/')) requestStates.push({kind: url.pathname.endsWith('/playback') ? 'plan' : url.pathname.endsWith('index.m3u8') ? 'playlist' : 'fragment', status: value.status()});
       if (url.pathname.endsWith('/playback')) negotiatedQuery = url.search;
       if (url.pathname.endsWith('/index.m3u8') && value.headers()['x-kinosail-startup-cache']) responses.push(value.headers()['x-kinosail-startup-cache']);
     };
@@ -98,7 +100,7 @@ test('bounded startup preparation preserves the exact stream and playback priori
           hevcMSE: window.MediaSource?.isTypeSupported('video/mp4; codecs="hvc1.1.6.L123.B0"'),
           h264MSE: window.MediaSource?.isTypeSupported('video/mp4; codecs="avc1.4d4028"')};
       });
-      await record({name: 'moving-frame-failure', title: name, ...readiness});
+      await record({name: 'moving-frame-failure', title: name, ...readiness, requestStates: requestStates.slice(-16)});
       throw error;
     }
     const frame = await page.evaluate(() => {
