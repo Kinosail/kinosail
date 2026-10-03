@@ -66,6 +66,59 @@ test("hidden controls cannot seek or pause when a touch reveals them", async ({p
   await expect(page.locator("video")).toHaveJSProperty("currentTime", 20);
 });
 
+for (const viewport of [{width: 390, height: 844}, {width: 844, height: 390}]) {
+  test(`blank-area taps toggle controls without changing playback at ${viewport.width}x${viewport.height} @smoke`, async ({page}, testInfo) => {
+    await page.setViewportSize(viewport);
+    await page.getByRole("button", {name: "Theater", exact: true}).tap();
+    const video = page.locator("video");
+    const controls = page.locator("[data-player-controls]");
+    await page.locator(".player-center-control[data-player-toggle]").tap();
+    // Cover the picture, title, and empty transport-row space, not just <video>.
+    for (const target of [video, page.locator(".player-stage-toolbar strong"), page.locator("[data-player-time]")]) {
+      const box = await target.boundingBox();
+      const point = {x: box!.x + box!.width * .1, y: box!.y + box!.height * .2};
+      await page.touchscreen.tap(point.x, point.y);
+      await expect(controls).toBeHidden({timeout: 500});
+      await expect(page.locator(".player-stage-toolbar")).toBeHidden();
+      await page.clock.fastForward(500);
+      await expect(video).toHaveJSProperty("paused", false);
+      await expect(video).toHaveJSProperty("currentTime", 20);
+      await page.touchscreen.tap(point.x, point.y);
+      await expect(controls).toBeVisible({timeout: 500});
+      await expect(video).toHaveJSProperty("paused", false);
+      await expect(video).toHaveJSProperty("currentTime", 20);
+    }
+    await page.getByRole("button", {name: "Go forward 10 seconds"}).first().tap();
+    await expect(controls).toBeVisible();
+    await expect(video).toHaveJSProperty("currentTime", 30);
+    await page.getByRole("button", {name: "Settings", exact: true}).tap();
+    await page.getByRole("combobox", {name: "Playback speed"}).selectOption("1.5");
+    await expect(page.locator(".player-settings")).toBeVisible();
+    await expect(video).toHaveJSProperty("playbackRate", 1.5);
+    await page.screenshot({path: testInfo.outputPath("tap-controls-settings.png")});
+  });
+}
+
+test("scroll gestures and pending or failed playback do not dismiss controls", async ({page}) => {
+  const video = page.locator("video");
+  const controls = page.locator("[data-player-controls]");
+  const tap = async (move = 0) => {
+    await video.dispatchEvent("touchstart", {touches: [{identifier: 1, clientX: 20, clientY: 20}]});
+    await video.dispatchEvent("touchend", {touches: [], changedTouches: [{identifier: 1, clientX: 20, clientY: 20 + move}]});
+  };
+  await video.evaluate(media => media.play());
+  await tap(50);
+  await expect(controls).toBeVisible();
+  await page.evaluate(() => (window as Window & {setReadyState: (value: number) => void}).setReadyState(1));
+  await video.dispatchEvent("loadstart");
+  await tap();
+  await expect(page.locator("[data-player-status]")).toBeVisible();
+  await video.evaluate(media => Object.defineProperty(media, "error", {value: {code: 0}}));
+  await video.dispatchEvent("error");
+  await tap();
+  await expect(page.getByRole("button", {name: "Retry Direct Play"})).toBeVisible();
+});
+
 test("touch theater controls hide after settings close and reappear on pause", async ({page}, testInfo) => {
   await page.setViewportSize({width: 844, height: 390});
   await page.getByRole("button", {name: "Theater", exact: true}).tap();
