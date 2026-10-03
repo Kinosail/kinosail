@@ -19,16 +19,16 @@
     "baseline_test_lines": 66475,
     "declarations": 1900,
     "decisions": {
-      "R": 1350,
-      "D": 75,
+      "R": 1374,
+      "D": 76,
       "F": 47,
       "C": 23,
-      "unreviewed": 405
+      "unreviewed": 380
     },
-    "removed_declarations": 75,
-    "removed_test_lines": 1318,
-    "final_declarations": 1825,
-    "final_test_lines": 65157,
+    "removed_declarations": 76,
+    "removed_test_lines": 1347,
+    "final_declarations": 1824,
+    "final_test_lines": 65128,
     "removed_support_helpers": 6,
     "removed_support_files": 3,
     "removed_support_lines": 141
@@ -31228,9 +31228,9 @@
       "owner_group": "homeassistant",
       "body_sha256": "073a987676445ec258e0c77507dfe5506ec6f875401163cb75ba5ef6a24974d3",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Retained concrete authorization/lifecycle/protocol boundary not covered by genuine browser; removed direct replay has honest reachable-ID gap.",
       "validation_command": "cd packages && go test ./homeassistant",
       "baseline_event": {
         "Time": "2026-10-03T10:35:26.792661-06:00",
@@ -31238,7 +31238,29 @@
         "Package": "github.com/MikeO7/kinosail/packages/homeassistant",
         "Test": "TestPairingReloadsCurrentOwnerBeforeIssuingKey",
         "Elapsed": 0
-      }
+      },
+      "credible_failure": "Demoted Owner must not issue a key from an old pairing offer.",
+      "remaining_coverage": "Creates offer then demotes profile; rejects token and proves CreateKey calls0.",
+      "production_owner": [
+        "packages/homeassistant/integration.go",
+        "packages/homeassistant/http.go",
+        "packages/homeassistant/oauth.go",
+        "packages/homeassistant/pairing.go",
+        "packages/homeassistant/player.go",
+        "packages/homeassistant/discovery.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/home_assistant.go::newHomeAssistant binds settings/profile/key/library/safety adapters",
+        "apps/subtitles/internal/server/home_assistant.go::newHomeAssistant same complete adapters",
+        "apps/player/internal/server/api.go::Register with auth.owner",
+        "apps/{player,subtitles}/internal/server/application_requests.go::Gate"
+      ],
+      "history": [
+        "1f1a81b743fae2a8571fd60ec27a2eb1bea3f465 Recheck media authority and bound offline and subtitle work"
+      ],
+      "gap": "Actual apps/{player,subtitles}/e2e/home-assistant.spec.ts enables/disables real settings, checks probe404/200, creates8digit manual code and views OAuthapproval; it never approves/exchanges token, performs mDNS, injects persistence/entropy failure, retries/replays/expiry/capacity/tamper or another profile. Actual Player test-instance-production authenticated video reports current item throughPUT/GET but no control commands. Shared HTTP adapters use injected callbacks and are not genuine app E2E.",
+      "auditor": "/root/subtitles_shared/shared_identity",
+      "source_read_evidence": "All25 full test bodies/local helpers, all6production owners1008LOC, complete two app integration bindings, full Player HomeAssistant browser journey and Subtitles semantic diff, realproduction report body and file history read. No candidate execution."
     },
     {
       "file": "packages/homeassistant/authority_test.go",
@@ -31248,9 +31270,9 @@
       "owner_group": "homeassistant",
       "body_sha256": "c02c14236d45d83c8331b144e0756d6cab92dad7f38afff4d4a3b5405fd4d6eb",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Retained concrete authorization/lifecycle/protocol boundary not covered by genuine browser; removed direct replay has honest reachable-ID gap.",
       "validation_command": "cd packages && go test ./homeassistant",
       "baseline_event": {
         "Time": "2026-10-03T10:35:26.792708-06:00",
@@ -31258,7 +31280,29 @@
         "Package": "github.com/MikeO7/kinosail/packages/homeassistant",
         "Test": "TestPlayerCannotConsumeAnotherProfilesCommand",
         "Elapsed": 0
-      }
+      },
+      "credible_failure": "Another profile must not steal receiver identity or consume queued commands.",
+      "remaining_coverage": "Second profile fails, original profile remains and still consumes exact pause command.",
+      "production_owner": [
+        "packages/homeassistant/integration.go",
+        "packages/homeassistant/http.go",
+        "packages/homeassistant/oauth.go",
+        "packages/homeassistant/pairing.go",
+        "packages/homeassistant/player.go",
+        "packages/homeassistant/discovery.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/home_assistant.go::newHomeAssistant binds settings/profile/key/library/safety adapters",
+        "apps/subtitles/internal/server/home_assistant.go::newHomeAssistant same complete adapters",
+        "apps/player/internal/server/api.go::Register with auth.owner",
+        "apps/{player,subtitles}/internal/server/application_requests.go::Gate"
+      ],
+      "history": [
+        "1f1a81b743fae2a8571fd60ec27a2eb1bea3f465 Recheck media authority and bound offline and subtitle work"
+      ],
+      "gap": "Actual apps/{player,subtitles}/e2e/home-assistant.spec.ts enables/disables real settings, checks probe404/200, creates8digit manual code and views OAuthapproval; it never approves/exchanges token, performs mDNS, injects persistence/entropy failure, retries/replays/expiry/capacity/tamper or another profile. Actual Player test-instance-production authenticated video reports current item throughPUT/GET but no control commands. Shared HTTP adapters use injected callbacks and are not genuine app E2E.",
+      "auditor": "/root/subtitles_shared/shared_identity",
+      "source_read_evidence": "All25 full test bodies/local helpers, all6production owners1008LOC, complete two app integration bindings, full Player HomeAssistant browser journey and Subtitles semantic diff, realproduction report body and file history read. No candidate execution."
     },
     {
       "file": "packages/homeassistant/discovery_test.go",
@@ -31268,9 +31312,9 @@
       "owner_group": "homeassistant",
       "body_sha256": "d6dcd8ab9a4716ccf6d8afbbcbc407e4031dbe1ed769c6eb425d303a2808a50c",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Retained concrete authorization/lifecycle/protocol boundary not covered by genuine browser; removed direct replay has honest reachable-ID gap.",
       "validation_command": "cd packages && go test ./homeassistant",
       "baseline_event": {
         "Time": "2026-10-03T10:35:26.793169-06:00",
@@ -31278,7 +31322,30 @@
         "Package": "github.com/MikeO7/kinosail/packages/homeassistant",
         "Test": "TestDiscovery",
         "Elapsed": 0
-      }
+      },
+      "credible_failure": "Wrong advertised address/verify_ssl state or unclosed lifecycle leaves unreachable/insecure or stale Home Assistant discovery.",
+      "remaining_coverage": "Exact port/id/version/TLS/trust TXT, loopback/longURL omission, cancellation shutdown and advertisement error omission. Injected advertisement adapter, not real DNS-SD packet proof.",
+      "production_owner": [
+        "packages/homeassistant/integration.go",
+        "packages/homeassistant/http.go",
+        "packages/homeassistant/oauth.go",
+        "packages/homeassistant/pairing.go",
+        "packages/homeassistant/player.go",
+        "packages/homeassistant/discovery.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/home_assistant.go::newHomeAssistant binds settings/profile/key/library/safety adapters",
+        "apps/subtitles/internal/server/home_assistant.go::newHomeAssistant same complete adapters",
+        "apps/player/internal/server/api.go::Register with auth.owner",
+        "apps/{player,subtitles}/internal/server/application_requests.go::Gate"
+      ],
+      "history": [
+        "58c7db72d9b22c0193b8c5c00b5648c55b075c40 Remove duplicate package contracts and frozen asset snapshots",
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "gap": "Actual apps/{player,subtitles}/e2e/home-assistant.spec.ts enables/disables real settings, checks probe404/200, creates8digit manual code and views OAuthapproval; it never approves/exchanges token, performs mDNS, injects persistence/entropy failure, retries/replays/expiry/capacity/tamper or another profile. Actual Player test-instance-production authenticated video reports current item throughPUT/GET but no control commands. Shared HTTP adapters use injected callbacks and are not genuine app E2E.",
+      "auditor": "/root/subtitles_shared/shared_identity",
+      "source_read_evidence": "All25 full test bodies/local helpers, all6production owners1008LOC, complete two app integration bindings, full Player HomeAssistant browser journey and Subtitles semantic diff, realproduction report body and file history read. No candidate execution."
     },
     {
       "file": "packages/homeassistant/discovery_validation_test.go",
@@ -31288,9 +31355,9 @@
       "owner_group": "homeassistant",
       "body_sha256": "7169ac7994823188e7607529b04196a5964354d2a6df8b00a47777e75fde6135",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Retained concrete authorization/lifecycle/protocol boundary not covered by genuine browser; removed direct replay has honest reachable-ID gap.",
       "validation_command": "cd packages && go test ./homeassistant",
       "baseline_event": {
         "Time": "2026-10-03T10:35:26.793309-06:00",
@@ -31298,7 +31365,29 @@
         "Package": "github.com/MikeO7/kinosail/packages/homeassistant",
         "Test": "TestAdvertisementRejectsInvalidRecordsBeforeOpeningSockets",
         "Elapsed": 0
-      }
+      },
+      "credible_failure": "Invalid DNS-SD name/port/TXT can publish unsafe credentials, overflow entries or misrepresent TLS trust.",
+      "remaining_coverage": "Public advertiseHomeAssistant rejects malformed name/port/id/duplicate/unknown/control/URL/userinfo/oversized matrix. No live multicast positive or packet/socket count asserted; real zero-conf response not E2E.",
+      "production_owner": [
+        "packages/homeassistant/integration.go",
+        "packages/homeassistant/http.go",
+        "packages/homeassistant/oauth.go",
+        "packages/homeassistant/pairing.go",
+        "packages/homeassistant/player.go",
+        "packages/homeassistant/discovery.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/home_assistant.go::newHomeAssistant binds settings/profile/key/library/safety adapters",
+        "apps/subtitles/internal/server/home_assistant.go::newHomeAssistant same complete adapters",
+        "apps/player/internal/server/api.go::Register with auth.owner",
+        "apps/{player,subtitles}/internal/server/application_requests.go::Gate"
+      ],
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "gap": "Actual apps/{player,subtitles}/e2e/home-assistant.spec.ts enables/disables real settings, checks probe404/200, creates8digit manual code and views OAuthapproval; it never approves/exchanges token, performs mDNS, injects persistence/entropy failure, retries/replays/expiry/capacity/tamper or another profile. Actual Player test-instance-production authenticated video reports current item throughPUT/GET but no control commands. Shared HTTP adapters use injected callbacks and are not genuine app E2E.",
+      "auditor": "/root/subtitles_shared/shared_identity",
+      "source_read_evidence": "All25 full test bodies/local helpers, all6production owners1008LOC, complete two app integration bindings, full Player HomeAssistant browser journey and Subtitles semantic diff, realproduction report body and file history read. No candidate execution."
     },
     {
       "file": "packages/homeassistant/discovery_validation_test.go",
@@ -31308,9 +31397,9 @@
       "owner_group": "homeassistant",
       "body_sha256": "68a14b50f2cc7f9d7fbbc4b28ab9aab461b821d309393f6cb9e29f906f830a72",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Retained concrete authorization/lifecycle/protocol boundary not covered by genuine browser; removed direct replay has honest reachable-ID gap.",
       "validation_command": "cd packages && go test ./homeassistant",
       "baseline_event": {
         "Time": "2026-10-03T10:35:26.793387-06:00",
@@ -31318,7 +31407,29 @@
         "Package": "github.com/MikeO7/kinosail/packages/homeassistant",
         "Test": "TestAdvertisementAcceptsBoundaryRecords",
         "Elapsed": 0
-      }
+      },
+      "credible_failure": "Valid maximal UTF8 DNS-SD/TXT and port boundaries must not disable discovery.",
+      "remaining_coverage": "Accepted1/65535ports,63byteUTF8 names,252byteID and HTTP/HTTPS trust combinations. Parser-level positive, not actual multicast integration.",
+      "production_owner": [
+        "packages/homeassistant/integration.go",
+        "packages/homeassistant/http.go",
+        "packages/homeassistant/oauth.go",
+        "packages/homeassistant/pairing.go",
+        "packages/homeassistant/player.go",
+        "packages/homeassistant/discovery.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/home_assistant.go::newHomeAssistant binds settings/profile/key/library/safety adapters",
+        "apps/subtitles/internal/server/home_assistant.go::newHomeAssistant same complete adapters",
+        "apps/player/internal/server/api.go::Register with auth.owner",
+        "apps/{player,subtitles}/internal/server/application_requests.go::Gate"
+      ],
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "gap": "Actual apps/{player,subtitles}/e2e/home-assistant.spec.ts enables/disables real settings, checks probe404/200, creates8digit manual code and views OAuthapproval; it never approves/exchanges token, performs mDNS, injects persistence/entropy failure, retries/replays/expiry/capacity/tamper or another profile. Actual Player test-instance-production authenticated video reports current item throughPUT/GET but no control commands. Shared HTTP adapters use injected callbacks and are not genuine app E2E.",
+      "auditor": "/root/subtitles_shared/shared_identity",
+      "source_read_evidence": "All25 full test bodies/local helpers, all6production owners1008LOC, complete two app integration bindings, full Player HomeAssistant browser journey and Subtitles semantic diff, realproduction report body and file history read. No candidate execution."
     },
     {
       "file": "packages/homeassistant/homeassistant_test.go",
@@ -31328,9 +31439,9 @@
       "owner_group": "homeassistant",
       "body_sha256": "58551ba5ae66c3b773ac4426efcf58a2030d2e9d6e7a468cda2071e439f86434",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Retained concrete authorization/lifecycle/protocol boundary not covered by genuine browser; removed direct replay has honest reachable-ID gap.",
       "validation_command": "cd packages && go test ./homeassistant",
       "baseline_event": {
         "Time": "2026-10-03T10:35:26.793457-06:00",
@@ -31338,7 +31449,29 @@
         "Package": "github.com/MikeO7/kinosail/packages/homeassistant",
         "Test": "TestLifecycleAndSettings",
         "Elapsed": 0
-      }
+      },
+      "credible_failure": "Entropy or revocation failure must not start an insecure integration; failed disable/save must not publish state, and successful disable clears all grants/players.",
+      "remaining_coverage": "Short entropy, startup revoke failure, revoke-before-save, failed save preserves enabled, successful clears pairs/players/OAuth requests/codes. Publisher pointer echo supplementary.",
+      "production_owner": [
+        "packages/homeassistant/integration.go",
+        "packages/homeassistant/http.go",
+        "packages/homeassistant/oauth.go",
+        "packages/homeassistant/pairing.go",
+        "packages/homeassistant/player.go",
+        "packages/homeassistant/discovery.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/home_assistant.go::newHomeAssistant binds settings/profile/key/library/safety adapters",
+        "apps/subtitles/internal/server/home_assistant.go::newHomeAssistant same complete adapters",
+        "apps/player/internal/server/api.go::Register with auth.owner",
+        "apps/{player,subtitles}/internal/server/application_requests.go::Gate"
+      ],
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "gap": "Actual apps/{player,subtitles}/e2e/home-assistant.spec.ts enables/disables real settings, checks probe404/200, creates8digit manual code and views OAuthapproval; it never approves/exchanges token, performs mDNS, injects persistence/entropy failure, retries/replays/expiry/capacity/tamper or another profile. Actual Player test-instance-production authenticated video reports current item throughPUT/GET but no control commands. Shared HTTP adapters use injected callbacks and are not genuine app E2E.",
+      "auditor": "/root/subtitles_shared/shared_identity",
+      "source_read_evidence": "All25 full test bodies/local helpers, all6production owners1008LOC, complete two app integration bindings, full Player HomeAssistant browser journey and Subtitles semantic diff, realproduction report body and file history read. No candidate execution."
     },
     {
       "file": "packages/homeassistant/homeassistant_test.go",
@@ -31348,9 +31481,9 @@
       "owner_group": "homeassistant",
       "body_sha256": "0d63d7a547851704f5a75c03e523e1cd49c5cca1fb07492d0cc8bccbb44c6f50",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Retained concrete authorization/lifecycle/protocol boundary not covered by genuine browser; removed direct replay has honest reachable-ID gap.",
       "validation_command": "cd packages && go test ./homeassistant",
       "baseline_event": {
         "Time": "2026-10-03T10:35:26.793873-06:00",
@@ -31358,7 +31491,29 @@
         "Package": "github.com/MikeO7/kinosail/packages/homeassistant",
         "Test": "TestGateAndSettingsHTTP",
         "Elapsed": 0
-      }
+      },
+      "credible_failure": "Disabled authorization routes or malformed setting input must not bypass feature gate or alter state.",
+      "remaining_coverage": "API/web gate disabled/other route positives; JSONmissing/extra, savefailure, strictform values, success exact303destination.",
+      "production_owner": [
+        "packages/homeassistant/integration.go",
+        "packages/homeassistant/http.go",
+        "packages/homeassistant/oauth.go",
+        "packages/homeassistant/pairing.go",
+        "packages/homeassistant/player.go",
+        "packages/homeassistant/discovery.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/home_assistant.go::newHomeAssistant binds settings/profile/key/library/safety adapters",
+        "apps/subtitles/internal/server/home_assistant.go::newHomeAssistant same complete adapters",
+        "apps/player/internal/server/api.go::Register with auth.owner",
+        "apps/{player,subtitles}/internal/server/application_requests.go::Gate"
+      ],
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "gap": "Actual apps/{player,subtitles}/e2e/home-assistant.spec.ts enables/disables real settings, checks probe404/200, creates8digit manual code and views OAuthapproval; it never approves/exchanges token, performs mDNS, injects persistence/entropy failure, retries/replays/expiry/capacity/tamper or another profile. Actual Player test-instance-production authenticated video reports current item throughPUT/GET but no control commands. Shared HTTP adapters use injected callbacks and are not genuine app E2E.",
+      "auditor": "/root/subtitles_shared/shared_identity",
+      "source_read_evidence": "All25 full test bodies/local helpers, all6production owners1008LOC, complete two app integration bindings, full Player HomeAssistant browser journey and Subtitles semantic diff, realproduction report body and file history read. No candidate execution."
     },
     {
       "file": "packages/homeassistant/http_test.go",
@@ -31368,9 +31523,9 @@
       "owner_group": "homeassistant",
       "body_sha256": "7954034a7578c6f163e716d5f7dbdf33096c767d847ba525fa856afd8d430c6f",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Retained concrete authorization/lifecycle/protocol boundary not covered by genuine browser; removed direct replay has honest reachable-ID gap.",
       "validation_command": "cd packages && go test ./homeassistant",
       "baseline_event": {
         "Time": "2026-10-03T10:35:26.795551-06:00",
@@ -31378,7 +31533,29 @@
         "Package": "github.com/MikeO7/kinosail/packages/homeassistant",
         "Test": "TestRegisteredPairingAndMediaHTTP",
         "Elapsed": 0
-      }
+      },
+      "credible_failure": "Route wiring, failed browse or unsupported MIME fallback must not break actual pair/library/playback responses.",
+      "remaining_coverage": "Registered mux probe ID, pair token, invalid input/offer, browse failure, missing playback and video/octet fallback signed URL. Dependency fixture, not real app/browser.",
+      "production_owner": [
+        "packages/homeassistant/integration.go",
+        "packages/homeassistant/http.go",
+        "packages/homeassistant/oauth.go",
+        "packages/homeassistant/pairing.go",
+        "packages/homeassistant/player.go",
+        "packages/homeassistant/discovery.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/home_assistant.go::newHomeAssistant binds settings/profile/key/library/safety adapters",
+        "apps/subtitles/internal/server/home_assistant.go::newHomeAssistant same complete adapters",
+        "apps/player/internal/server/api.go::Register with auth.owner",
+        "apps/{player,subtitles}/internal/server/application_requests.go::Gate"
+      ],
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "gap": "Actual apps/{player,subtitles}/e2e/home-assistant.spec.ts enables/disables real settings, checks probe404/200, creates8digit manual code and views OAuthapproval; it never approves/exchanges token, performs mDNS, injects persistence/entropy failure, retries/replays/expiry/capacity/tamper or another profile. Actual Player test-instance-production authenticated video reports current item throughPUT/GET but no control commands. Shared HTTP adapters use injected callbacks and are not genuine app E2E.",
+      "auditor": "/root/subtitles_shared/shared_identity",
+      "source_read_evidence": "All25 full test bodies/local helpers, all6production owners1008LOC, complete two app integration bindings, full Player HomeAssistant browser journey and Subtitles semantic diff, realproduction report body and file history read. No candidate execution."
     },
     {
       "file": "packages/homeassistant/http_test.go",
@@ -31388,9 +31565,9 @@
       "owner_group": "homeassistant",
       "body_sha256": "ea2d2e5da45d95f182741e90b8f5e7ae98db0fe1450d272de40adfca2ffeca30",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Retained concrete authorization/lifecycle/protocol boundary not covered by genuine browser; removed direct replay has honest reachable-ID gap.",
       "validation_command": "cd packages && go test ./homeassistant",
       "baseline_event": {
         "Time": "2026-10-03T10:35:26.820911-06:00",
@@ -31398,7 +31575,29 @@
         "Package": "github.com/MikeO7/kinosail/packages/homeassistant",
         "Test": "TestRegisteredPlayerHTTP",
         "Elapsed": 0.02
-      }
+      },
+      "credible_failure": "Registered player endpoints must enforce parser size/state and consume correct queued commands.",
+      "remaining_coverage": "Actual mux valid update/command/poll; malformed/oversizedbody preservesregistrycount, invalidstate/action/missing receiver.",
+      "production_owner": [
+        "packages/homeassistant/integration.go",
+        "packages/homeassistant/http.go",
+        "packages/homeassistant/oauth.go",
+        "packages/homeassistant/pairing.go",
+        "packages/homeassistant/player.go",
+        "packages/homeassistant/discovery.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/home_assistant.go::newHomeAssistant binds settings/profile/key/library/safety adapters",
+        "apps/subtitles/internal/server/home_assistant.go::newHomeAssistant same complete adapters",
+        "apps/player/internal/server/api.go::Register with auth.owner",
+        "apps/{player,subtitles}/internal/server/application_requests.go::Gate"
+      ],
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "gap": "Actual apps/{player,subtitles}/e2e/home-assistant.spec.ts enables/disables real settings, checks probe404/200, creates8digit manual code and views OAuthapproval; it never approves/exchanges token, performs mDNS, injects persistence/entropy failure, retries/replays/expiry/capacity/tamper or another profile. Actual Player test-instance-production authenticated video reports current item throughPUT/GET but no control commands. Shared HTTP adapters use injected callbacks and are not genuine app E2E.",
+      "auditor": "/root/subtitles_shared/shared_identity",
+      "source_read_evidence": "All25 full test bodies/local helpers, all6production owners1008LOC, complete two app integration bindings, full Player HomeAssistant browser journey and Subtitles semantic diff, realproduction report body and file history read. No candidate execution."
     },
     {
       "file": "packages/homeassistant/http_test.go",
@@ -31408,9 +31607,9 @@
       "owner_group": "homeassistant",
       "body_sha256": "daad1d501e69ccfda97a44d5515a547d3d4355c77f5079f1112458bcd879bb7a",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Retained concrete authorization/lifecycle/protocol boundary not covered by genuine browser; removed direct replay has honest reachable-ID gap.",
       "validation_command": "cd packages && go test ./homeassistant",
       "baseline_event": {
         "Time": "2026-10-03T10:35:26.82094-06:00",
@@ -31418,7 +31617,29 @@
         "Package": "github.com/MikeO7/kinosail/packages/homeassistant",
         "Test": "TestRegisteredOAuthAccessAndAvailabilityHTTP",
         "Elapsed": 0
-      }
+      },
+      "credible_failure": "Wrong profile/API key scope must not gain control; disabled integration hides API independently of Owner authorize middleware.",
+      "remaining_coverage": "Registered invalid token/authorize/media routes, Viewer403, home-assistant scopedkey200, disabled404.",
+      "production_owner": [
+        "packages/homeassistant/integration.go",
+        "packages/homeassistant/http.go",
+        "packages/homeassistant/oauth.go",
+        "packages/homeassistant/pairing.go",
+        "packages/homeassistant/player.go",
+        "packages/homeassistant/discovery.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/home_assistant.go::newHomeAssistant binds settings/profile/key/library/safety adapters",
+        "apps/subtitles/internal/server/home_assistant.go::newHomeAssistant same complete adapters",
+        "apps/player/internal/server/api.go::Register with auth.owner",
+        "apps/{player,subtitles}/internal/server/application_requests.go::Gate"
+      ],
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "gap": "Actual apps/{player,subtitles}/e2e/home-assistant.spec.ts enables/disables real settings, checks probe404/200, creates8digit manual code and views OAuthapproval; it never approves/exchanges token, performs mDNS, injects persistence/entropy failure, retries/replays/expiry/capacity/tamper or another profile. Actual Player test-instance-production authenticated video reports current item throughPUT/GET but no control commands. Shared HTTP adapters use injected callbacks and are not genuine app E2E.",
+      "auditor": "/root/subtitles_shared/shared_identity",
+      "source_read_evidence": "All25 full test bodies/local helpers, all6production owners1008LOC, complete two app integration bindings, full Player HomeAssistant browser journey and Subtitles semantic diff, realproduction report body and file history read. No candidate execution."
     },
     {
       "file": "packages/homeassistant/http_test.go",
@@ -31428,9 +31649,9 @@
       "owner_group": "homeassistant",
       "body_sha256": "fd37af8d7e313dc572396465d24b8190c8853bbd484790534f9dfd0d58d54981",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Retained concrete authorization/lifecycle/protocol boundary not covered by genuine browser; removed direct replay has honest reachable-ID gap.",
       "validation_command": "cd packages && go test ./homeassistant",
       "baseline_event": {
         "Time": "2026-10-03T10:35:26.821059-06:00",
@@ -31438,7 +31659,29 @@
         "Package": "github.com/MikeO7/kinosail/packages/homeassistant",
         "Test": "TestHTTPErrorBranches",
         "Elapsed": 0
-      }
+      },
+      "credible_failure": "Entropy/key creation and full player registry failures must be mapped to observable HTTP rejection rather than fake success.",
+      "remaining_coverage": "Injected entropy503, invalidpair400, max64player429 and CreateKeyerror400 from actual protocol methods.",
+      "production_owner": [
+        "packages/homeassistant/integration.go",
+        "packages/homeassistant/http.go",
+        "packages/homeassistant/oauth.go",
+        "packages/homeassistant/pairing.go",
+        "packages/homeassistant/player.go",
+        "packages/homeassistant/discovery.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/home_assistant.go::newHomeAssistant binds settings/profile/key/library/safety adapters",
+        "apps/subtitles/internal/server/home_assistant.go::newHomeAssistant same complete adapters",
+        "apps/player/internal/server/api.go::Register with auth.owner",
+        "apps/{player,subtitles}/internal/server/application_requests.go::Gate"
+      ],
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "gap": "Actual apps/{player,subtitles}/e2e/home-assistant.spec.ts enables/disables real settings, checks probe404/200, creates8digit manual code and views OAuthapproval; it never approves/exchanges token, performs mDNS, injects persistence/entropy failure, retries/replays/expiry/capacity/tamper or another profile. Actual Player test-instance-production authenticated video reports current item throughPUT/GET but no control commands. Shared HTTP adapters use injected callbacks and are not genuine app E2E.",
+      "auditor": "/root/subtitles_shared/shared_identity",
+      "source_read_evidence": "All25 full test bodies/local helpers, all6production owners1008LOC, complete two app integration bindings, full Player HomeAssistant browser journey and Subtitles semantic diff, realproduction report body and file history read. No candidate execution."
     },
     {
       "file": "packages/homeassistant/media_test.go",
@@ -31448,9 +31691,9 @@
       "owner_group": "homeassistant",
       "body_sha256": "2d10f9dc920c511f582031f8a4de8e0097c5acc51647b1e1c73e1946908fce5f",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Retained concrete authorization/lifecycle/protocol boundary not covered by genuine browser; removed direct replay has honest reachable-ID gap.",
       "validation_command": "cd packages && go test ./homeassistant",
       "baseline_event": {
         "Time": "2026-10-03T10:35:26.822823-06:00",
@@ -31458,7 +31701,29 @@
         "Package": "github.com/MikeO7/kinosail/packages/homeassistant",
         "Test": "TestMediaHTTP",
         "Elapsed": 0
-      }
+      },
+      "credible_failure": "Tampered/unbounded signed media URL or unsafe indexed path must not deliver private content.",
+      "remaining_coverage": "Actual filesystembody positive, acceptedexpiryedges, bad signature/expiry/extraquery404, validtoken unsafe path404.",
+      "production_owner": [
+        "packages/homeassistant/integration.go",
+        "packages/homeassistant/http.go",
+        "packages/homeassistant/oauth.go",
+        "packages/homeassistant/pairing.go",
+        "packages/homeassistant/player.go",
+        "packages/homeassistant/discovery.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/home_assistant.go::newHomeAssistant binds settings/profile/key/library/safety adapters",
+        "apps/subtitles/internal/server/home_assistant.go::newHomeAssistant same complete adapters",
+        "apps/player/internal/server/api.go::Register with auth.owner",
+        "apps/{player,subtitles}/internal/server/application_requests.go::Gate"
+      ],
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "gap": "Actual apps/{player,subtitles}/e2e/home-assistant.spec.ts enables/disables real settings, checks probe404/200, creates8digit manual code and views OAuthapproval; it never approves/exchanges token, performs mDNS, injects persistence/entropy failure, retries/replays/expiry/capacity/tamper or another profile. Actual Player test-instance-production authenticated video reports current item throughPUT/GET but no control commands. Shared HTTP adapters use injected callbacks and are not genuine app E2E.",
+      "auditor": "/root/subtitles_shared/shared_identity",
+      "source_read_evidence": "All25 full test bodies/local helpers, all6production owners1008LOC, complete two app integration bindings, full Player HomeAssistant browser journey and Subtitles semantic diff, realproduction report body and file history read. No candidate execution."
     },
     {
       "file": "packages/homeassistant/media_test.go",
@@ -31468,9 +31733,9 @@
       "owner_group": "homeassistant",
       "body_sha256": "ee42b48a43bb09acf1d767eba102eafcbb6bfd386f714b53e3ebd4692937d41d",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Retained concrete authorization/lifecycle/protocol boundary not covered by genuine browser; removed direct replay has honest reachable-ID gap.",
       "validation_command": "cd packages && go test ./homeassistant",
       "baseline_event": {
         "Time": "2026-10-03T10:35:26.823113-06:00",
@@ -31478,7 +31743,29 @@
         "Package": "github.com/MikeO7/kinosail/packages/homeassistant",
         "Test": "TestValueAndProtocolHelpers",
         "Elapsed": 0
-      }
+      },
+      "credible_failure": "Accepted128character PKCE and form charset may regress external Home Assistant OAuth clients while browser64character journey passes.",
+      "remaining_coverage": "Exact accepted43/128URL-safePKCE, rejectsinvalidencoding; MIMEform charset accepted. Digit/enum/hash echoes supplementary and duplicated by real protocol keepers.",
+      "production_owner": [
+        "packages/homeassistant/integration.go",
+        "packages/homeassistant/http.go",
+        "packages/homeassistant/oauth.go",
+        "packages/homeassistant/pairing.go",
+        "packages/homeassistant/player.go",
+        "packages/homeassistant/discovery.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/home_assistant.go::newHomeAssistant binds settings/profile/key/library/safety adapters",
+        "apps/subtitles/internal/server/home_assistant.go::newHomeAssistant same complete adapters",
+        "apps/player/internal/server/api.go::Register with auth.owner",
+        "apps/{player,subtitles}/internal/server/application_requests.go::Gate"
+      ],
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "gap": "Actual apps/{player,subtitles}/e2e/home-assistant.spec.ts enables/disables real settings, checks probe404/200, creates8digit manual code and views OAuthapproval; it never approves/exchanges token, performs mDNS, injects persistence/entropy failure, retries/replays/expiry/capacity/tamper or another profile. Actual Player test-instance-production authenticated video reports current item throughPUT/GET but no control commands. Shared HTTP adapters use injected callbacks and are not genuine app E2E.",
+      "auditor": "/root/subtitles_shared/shared_identity",
+      "source_read_evidence": "All25 full test bodies/local helpers, all6production owners1008LOC, complete two app integration bindings, full Player HomeAssistant browser journey and Subtitles semantic diff, realproduction report body and file history read. No candidate execution."
     },
     {
       "file": "packages/homeassistant/media_test.go",
@@ -31488,9 +31775,9 @@
       "owner_group": "homeassistant",
       "body_sha256": "1096fa0a1b50a4d14023ec7b26a57c5ebe6528a9de729487b9cc83206cade2eb",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Retained concrete authorization/lifecycle/protocol boundary not covered by genuine browser; removed direct replay has honest reachable-ID gap.",
       "validation_command": "cd packages && go test ./homeassistant",
       "baseline_event": {
         "Time": "2026-10-03T10:35:26.823279-06:00",
@@ -31498,7 +31785,29 @@
         "Package": "github.com/MikeO7/kinosail/packages/homeassistant",
         "Test": "TestHTTPErrorHelpers",
         "Elapsed": 0
-      }
+      },
+      "credible_failure": "Removing credential response no-store from shared writeJSON would permit caching Home Assistant token responses.",
+      "remaining_coverage": "oauthError asserts no-store/status/errorbody through shared writeJSON; actual token endpoint and browser do not assert cache header. apiNotFound status echo supplementary.",
+      "production_owner": [
+        "packages/homeassistant/integration.go",
+        "packages/homeassistant/http.go",
+        "packages/homeassistant/oauth.go",
+        "packages/homeassistant/pairing.go",
+        "packages/homeassistant/player.go",
+        "packages/homeassistant/discovery.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/home_assistant.go::newHomeAssistant binds settings/profile/key/library/safety adapters",
+        "apps/subtitles/internal/server/home_assistant.go::newHomeAssistant same complete adapters",
+        "apps/player/internal/server/api.go::Register with auth.owner",
+        "apps/{player,subtitles}/internal/server/application_requests.go::Gate"
+      ],
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "gap": "Actual apps/{player,subtitles}/e2e/home-assistant.spec.ts enables/disables real settings, checks probe404/200, creates8digit manual code and views OAuthapproval; it never approves/exchanges token, performs mDNS, injects persistence/entropy failure, retries/replays/expiry/capacity/tamper or another profile. Actual Player test-instance-production authenticated video reports current item throughPUT/GET but no control commands. Shared HTTP adapters use injected callbacks and are not genuine app E2E.",
+      "auditor": "/root/subtitles_shared/shared_identity",
+      "source_read_evidence": "All25 full test bodies/local helpers, all6production owners1008LOC, complete two app integration bindings, full Player HomeAssistant browser journey and Subtitles semantic diff, realproduction report body and file history read. No candidate execution."
     },
     {
       "file": "packages/homeassistant/oauth_test.go",
@@ -31508,9 +31817,9 @@
       "owner_group": "homeassistant",
       "body_sha256": "7d2d1601d33e4a6d00070984785e0552c1cb2a2f6e064f50f5b57fce3022e748",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Retained concrete authorization/lifecycle/protocol boundary not covered by genuine browser; removed direct replay has honest reachable-ID gap.",
       "validation_command": "cd packages && go test ./homeassistant",
       "baseline_event": {
         "Time": "2026-10-03T10:35:26.823352-06:00",
@@ -31518,7 +31827,29 @@
         "Package": "github.com/MikeO7/kinosail/packages/homeassistant",
         "Test": "TestAuthorizationValidation",
         "Elapsed": 0
-      }
+      },
+      "credible_failure": "Unsafe redirect, wrongclient/Owner/PKCE method must not store a grant for arbitrary destinations.",
+      "remaining_coverage": "Authorization query mutation matrix plus validredirect/control/userinfo/query/fragment/scheme and2048boundary.",
+      "production_owner": [
+        "packages/homeassistant/integration.go",
+        "packages/homeassistant/http.go",
+        "packages/homeassistant/oauth.go",
+        "packages/homeassistant/pairing.go",
+        "packages/homeassistant/player.go",
+        "packages/homeassistant/discovery.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/home_assistant.go::newHomeAssistant binds settings/profile/key/library/safety adapters",
+        "apps/subtitles/internal/server/home_assistant.go::newHomeAssistant same complete adapters",
+        "apps/player/internal/server/api.go::Register with auth.owner",
+        "apps/{player,subtitles}/internal/server/application_requests.go::Gate"
+      ],
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "gap": "Actual apps/{player,subtitles}/e2e/home-assistant.spec.ts enables/disables real settings, checks probe404/200, creates8digit manual code and views OAuthapproval; it never approves/exchanges token, performs mDNS, injects persistence/entropy failure, retries/replays/expiry/capacity/tamper or another profile. Actual Player test-instance-production authenticated video reports current item throughPUT/GET but no control commands. Shared HTTP adapters use injected callbacks and are not genuine app E2E.",
+      "auditor": "/root/subtitles_shared/shared_identity",
+      "source_read_evidence": "All25 full test bodies/local helpers, all6production owners1008LOC, complete two app integration bindings, full Player HomeAssistant browser journey and Subtitles semantic diff, realproduction report body and file history read. No candidate execution."
     },
     {
       "file": "packages/homeassistant/oauth_test.go",
@@ -31528,9 +31859,9 @@
       "owner_group": "homeassistant",
       "body_sha256": "33c04a73a0e60f4ba9bbc1ee374b64beaf5a8a31a96f74f564403aa1ba15dab5",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Retained concrete authorization/lifecycle/protocol boundary not covered by genuine browser; removed direct replay has honest reachable-ID gap.",
       "validation_command": "cd packages && go test ./homeassistant",
       "baseline_event": {
         "Time": "2026-10-03T10:35:26.823399-06:00",
@@ -31538,7 +31869,29 @@
         "Package": "github.com/MikeO7/kinosail/packages/homeassistant",
         "Test": "TestAuthorizeHTTP",
         "Elapsed": 0
-      }
+      },
+      "credible_failure": "Grant request capacity and secret-page caching must remain bounded even when approval renderer returns failure.",
+      "remaining_coverage": "No-storeexact view/requeststorage, missingquery400, max32requests429, POSTvalidation. Renderererror explicitlyignored and nohandlingprotectionclaimed.",
+      "production_owner": [
+        "packages/homeassistant/integration.go",
+        "packages/homeassistant/http.go",
+        "packages/homeassistant/oauth.go",
+        "packages/homeassistant/pairing.go",
+        "packages/homeassistant/player.go",
+        "packages/homeassistant/discovery.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/home_assistant.go::newHomeAssistant binds settings/profile/key/library/safety adapters",
+        "apps/subtitles/internal/server/home_assistant.go::newHomeAssistant same complete adapters",
+        "apps/player/internal/server/api.go::Register with auth.owner",
+        "apps/{player,subtitles}/internal/server/application_requests.go::Gate"
+      ],
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "gap": "Actual apps/{player,subtitles}/e2e/home-assistant.spec.ts enables/disables real settings, checks probe404/200, creates8digit manual code and views OAuthapproval; it never approves/exchanges token, performs mDNS, injects persistence/entropy failure, retries/replays/expiry/capacity/tamper or another profile. Actual Player test-instance-production authenticated video reports current item throughPUT/GET but no control commands. Shared HTTP adapters use injected callbacks and are not genuine app E2E.",
+      "auditor": "/root/subtitles_shared/shared_identity",
+      "source_read_evidence": "All25 full test bodies/local helpers, all6production owners1008LOC, complete two app integration bindings, full Player HomeAssistant browser journey and Subtitles semantic diff, realproduction report body and file history read. No candidate execution."
     },
     {
       "file": "packages/homeassistant/oauth_test.go",
@@ -31548,9 +31901,9 @@
       "owner_group": "homeassistant",
       "body_sha256": "f575f721cffd9accb16bd884591952dda10c667573ca02256670921a251dec6e",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Retained concrete authorization/lifecycle/protocol boundary not covered by genuine browser; removed direct replay has honest reachable-ID gap.",
       "validation_command": "cd packages && go test ./homeassistant",
       "baseline_event": {
         "Time": "2026-10-03T10:35:26.823484-06:00",
@@ -31558,7 +31911,29 @@
         "Package": "github.com/MikeO7/kinosail/packages/homeassistant",
         "Test": "TestApproveAuthorizationHTTP",
         "Elapsed": 0
-      }
+      },
+      "credible_failure": "Unknown/denied/nonOwner grants must not issue a code or lose state, and code storage must be bounded.",
+      "remaining_coverage": "Invalid/missingrequestanddecision400, nonOwner400, deny302state/error, allow302code and max32code429.",
+      "production_owner": [
+        "packages/homeassistant/integration.go",
+        "packages/homeassistant/http.go",
+        "packages/homeassistant/oauth.go",
+        "packages/homeassistant/pairing.go",
+        "packages/homeassistant/player.go",
+        "packages/homeassistant/discovery.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/home_assistant.go::newHomeAssistant binds settings/profile/key/library/safety adapters",
+        "apps/subtitles/internal/server/home_assistant.go::newHomeAssistant same complete adapters",
+        "apps/player/internal/server/api.go::Register with auth.owner",
+        "apps/{player,subtitles}/internal/server/application_requests.go::Gate"
+      ],
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "gap": "Actual apps/{player,subtitles}/e2e/home-assistant.spec.ts enables/disables real settings, checks probe404/200, creates8digit manual code and views OAuthapproval; it never approves/exchanges token, performs mDNS, injects persistence/entropy failure, retries/replays/expiry/capacity/tamper or another profile. Actual Player test-instance-production authenticated video reports current item throughPUT/GET but no control commands. Shared HTTP adapters use injected callbacks and are not genuine app E2E.",
+      "auditor": "/root/subtitles_shared/shared_identity",
+      "source_read_evidence": "All25 full test bodies/local helpers, all6production owners1008LOC, complete two app integration bindings, full Player HomeAssistant browser journey and Subtitles semantic diff, realproduction report body and file history read. No candidate execution."
     },
     {
       "file": "packages/homeassistant/oauth_test.go",
@@ -31568,9 +31943,9 @@
       "owner_group": "homeassistant",
       "body_sha256": "227865c677e40f3408e193fffbd26208886c5baa423eb353a2ccee7050be591f",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Retained concrete authorization/lifecycle/protocol boundary not covered by genuine browser; removed direct replay has honest reachable-ID gap.",
       "validation_command": "cd packages && go test ./homeassistant",
       "baseline_event": {
         "Time": "2026-10-03T10:35:26.823514-06:00",
@@ -31578,7 +31953,29 @@
         "Package": "github.com/MikeO7/kinosail/packages/homeassistant",
         "Test": "TestTokenExchange",
         "Elapsed": 0
-      }
+      },
+      "credible_failure": "OAuth replay, removed/demoted identity, bad grant envelope and storage failure must not issue durable authorization.",
+      "remaining_coverage": "Envelope/client/grant/redirect/verifier matrix, current profile checks, CreateKey503, success token and replay400. No explicit mismatched same-valid-length verifier control; no concurrency claim.",
+      "production_owner": [
+        "packages/homeassistant/integration.go",
+        "packages/homeassistant/http.go",
+        "packages/homeassistant/oauth.go",
+        "packages/homeassistant/pairing.go",
+        "packages/homeassistant/player.go",
+        "packages/homeassistant/discovery.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/home_assistant.go::newHomeAssistant binds settings/profile/key/library/safety adapters",
+        "apps/subtitles/internal/server/home_assistant.go::newHomeAssistant same complete adapters",
+        "apps/player/internal/server/api.go::Register with auth.owner",
+        "apps/{player,subtitles}/internal/server/application_requests.go::Gate"
+      ],
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "gap": "Actual apps/{player,subtitles}/e2e/home-assistant.spec.ts enables/disables real settings, checks probe404/200, creates8digit manual code and views OAuthapproval; it never approves/exchanges token, performs mDNS, injects persistence/entropy failure, retries/replays/expiry/capacity/tamper or another profile. Actual Player test-instance-production authenticated video reports current item throughPUT/GET but no control commands. Shared HTTP adapters use injected callbacks and are not genuine app E2E.",
+      "auditor": "/root/subtitles_shared/shared_identity",
+      "source_read_evidence": "All25 full test bodies/local helpers, all6production owners1008LOC, complete two app integration bindings, full Player HomeAssistant browser journey and Subtitles semantic diff, realproduction report body and file history read. No candidate execution."
     },
     {
       "file": "packages/homeassistant/oauth_test.go",
@@ -31588,9 +31985,9 @@
       "owner_group": "homeassistant",
       "body_sha256": "bcbb997d3f96c9d19b1ed05e63697c23b6a2cf66810120eeec2cd978fc8d9fc0",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Retained concrete authorization/lifecycle/protocol boundary not covered by genuine browser; removed direct replay has honest reachable-ID gap.",
       "validation_command": "cd packages && go test ./homeassistant",
       "baseline_event": {
         "Time": "2026-10-03T10:35:26.823533-06:00",
@@ -31598,7 +31995,29 @@
         "Package": "github.com/MikeO7/kinosail/packages/homeassistant",
         "Test": "TestOAuthPruning",
         "Elapsed": 0
-      }
+      },
+      "credible_failure": "Expired OAuth state must release bounded registry while active state remains.",
+      "remaining_coverage": "Expired and active entries in both request/code maps; exact now boundary pruning. Scalar cardinality does not independently assert which key survived, but parser owners removeexpired notarbitrary and actual lifecycle capacity relies on it.",
+      "production_owner": [
+        "packages/homeassistant/integration.go",
+        "packages/homeassistant/http.go",
+        "packages/homeassistant/oauth.go",
+        "packages/homeassistant/pairing.go",
+        "packages/homeassistant/player.go",
+        "packages/homeassistant/discovery.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/home_assistant.go::newHomeAssistant binds settings/profile/key/library/safety adapters",
+        "apps/subtitles/internal/server/home_assistant.go::newHomeAssistant same complete adapters",
+        "apps/player/internal/server/api.go::Register with auth.owner",
+        "apps/{player,subtitles}/internal/server/application_requests.go::Gate"
+      ],
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "gap": "Actual apps/{player,subtitles}/e2e/home-assistant.spec.ts enables/disables real settings, checks probe404/200, creates8digit manual code and views OAuthapproval; it never approves/exchanges token, performs mDNS, injects persistence/entropy failure, retries/replays/expiry/capacity/tamper or another profile. Actual Player test-instance-production authenticated video reports current item throughPUT/GET but no control commands. Shared HTTP adapters use injected callbacks and are not genuine app E2E.",
+      "auditor": "/root/subtitles_shared/shared_identity",
+      "source_read_evidence": "All25 full test bodies/local helpers, all6production owners1008LOC, complete two app integration bindings, full Player HomeAssistant browser journey and Subtitles semantic diff, realproduction report body and file history read. No candidate execution."
     },
     {
       "file": "packages/homeassistant/pairing_player_test.go",
@@ -31608,9 +32027,9 @@
       "owner_group": "homeassistant",
       "body_sha256": "5f9c2e9eb0454cb833a32709577f87ce3c84b3d340e6073d49262d3301335671",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Retained concrete authorization/lifecycle/protocol boundary not covered by genuine browser; removed direct replay has honest reachable-ID gap.",
       "validation_command": "cd packages && go test ./homeassistant",
       "baseline_event": {
         "Time": "2026-10-03T10:35:26.823567-06:00",
@@ -31618,7 +32037,29 @@
         "Package": "github.com/MikeO7/kinosail/packages/homeassistant",
         "Test": "TestPairing",
         "Elapsed": 0
-      }
+      },
+      "credible_failure": "Pairing replay, collision exhaustion, capacity or entropy failure must not issue extra keys.",
+      "remaining_coverage": "One-use issuance/replay counts, expired pruning/max32, collision8attempt failure, CreateKey failure and malformed/name boundaries.",
+      "production_owner": [
+        "packages/homeassistant/integration.go",
+        "packages/homeassistant/http.go",
+        "packages/homeassistant/oauth.go",
+        "packages/homeassistant/pairing.go",
+        "packages/homeassistant/player.go",
+        "packages/homeassistant/discovery.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/home_assistant.go::newHomeAssistant binds settings/profile/key/library/safety adapters",
+        "apps/subtitles/internal/server/home_assistant.go::newHomeAssistant same complete adapters",
+        "apps/player/internal/server/api.go::Register with auth.owner",
+        "apps/{player,subtitles}/internal/server/application_requests.go::Gate"
+      ],
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "gap": "Actual apps/{player,subtitles}/e2e/home-assistant.spec.ts enables/disables real settings, checks probe404/200, creates8digit manual code and views OAuthapproval; it never approves/exchanges token, performs mDNS, injects persistence/entropy failure, retries/replays/expiry/capacity/tamper or another profile. Actual Player test-instance-production authenticated video reports current item throughPUT/GET but no control commands. Shared HTTP adapters use injected callbacks and are not genuine app E2E.",
+      "auditor": "/root/subtitles_shared/shared_identity",
+      "source_read_evidence": "All25 full test bodies/local helpers, all6production owners1008LOC, complete two app integration bindings, full Player HomeAssistant browser journey and Subtitles semantic diff, realproduction report body and file history read. No candidate execution."
     },
     {
       "file": "packages/homeassistant/pairing_player_test.go",
@@ -31628,9 +32069,9 @@
       "owner_group": "homeassistant",
       "body_sha256": "3187426aa917783f6cdee60f60b15ea3d4335e9afd39081ff2e979a00ca9ef6b",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Retained concrete authorization/lifecycle/protocol boundary not covered by genuine browser; removed direct replay has honest reachable-ID gap.",
       "validation_command": "cd packages && go test ./homeassistant",
       "baseline_event": {
         "Time": "2026-10-03T10:35:26.823586-06:00",
@@ -31638,7 +32079,29 @@
         "Package": "github.com/MikeO7/kinosail/packages/homeassistant",
         "Test": "TestPairingPage",
         "Elapsed": 0
-      }
+      },
+      "credible_failure": "Entropy/render failure must return correct unavailable/error instead of offering unusable pairing code, and code must not cache.",
+      "remaining_coverage": "Disabled404, no-store exact code, entropy503 and renderer500. Browser only creates/render ordinary code.",
+      "production_owner": [
+        "packages/homeassistant/integration.go",
+        "packages/homeassistant/http.go",
+        "packages/homeassistant/oauth.go",
+        "packages/homeassistant/pairing.go",
+        "packages/homeassistant/player.go",
+        "packages/homeassistant/discovery.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/home_assistant.go::newHomeAssistant binds settings/profile/key/library/safety adapters",
+        "apps/subtitles/internal/server/home_assistant.go::newHomeAssistant same complete adapters",
+        "apps/player/internal/server/api.go::Register with auth.owner",
+        "apps/{player,subtitles}/internal/server/application_requests.go::Gate"
+      ],
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "gap": "Actual apps/{player,subtitles}/e2e/home-assistant.spec.ts enables/disables real settings, checks probe404/200, creates8digit manual code and views OAuthapproval; it never approves/exchanges token, performs mDNS, injects persistence/entropy failure, retries/replays/expiry/capacity/tamper or another profile. Actual Player test-instance-production authenticated video reports current item throughPUT/GET but no control commands. Shared HTTP adapters use injected callbacks and are not genuine app E2E.",
+      "auditor": "/root/subtitles_shared/shared_identity",
+      "source_read_evidence": "All25 full test bodies/local helpers, all6production owners1008LOC, complete two app integration bindings, full Player HomeAssistant browser journey and Subtitles semantic diff, realproduction report body and file history read. No candidate execution."
     },
     {
       "file": "packages/homeassistant/pairing_player_test.go",
@@ -31648,9 +32111,9 @@
       "owner_group": "homeassistant",
       "body_sha256": "b90ec1eac506cda3c63b9f34750d5d6123e36f43748a3062c446407bcdbeebf2",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Retained concrete authorization/lifecycle/protocol boundary not covered by genuine browser; removed direct replay has honest reachable-ID gap.",
       "validation_command": "cd packages && go test ./homeassistant",
       "baseline_event": {
         "Time": "2026-10-03T10:35:26.823625-06:00",
@@ -31658,7 +32121,29 @@
         "Package": "github.com/MikeO7/kinosail/packages/homeassistant",
         "Test": "TestPlayerAndCommandLifecycle",
         "Elapsed": 0
-      }
+      },
+      "credible_failure": "Commands must publish to the right profile and consume once; expired players must lose control authority with exactTTL boundary.",
+      "remaining_coverage": "Exact event profile/type/resource, queued pause consumption, missing/expired/boundary IDs, nilpublisher command acceptance.",
+      "production_owner": [
+        "packages/homeassistant/integration.go",
+        "packages/homeassistant/http.go",
+        "packages/homeassistant/oauth.go",
+        "packages/homeassistant/pairing.go",
+        "packages/homeassistant/player.go",
+        "packages/homeassistant/discovery.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/home_assistant.go::newHomeAssistant binds settings/profile/key/library/safety adapters",
+        "apps/subtitles/internal/server/home_assistant.go::newHomeAssistant same complete adapters",
+        "apps/player/internal/server/api.go::Register with auth.owner",
+        "apps/{player,subtitles}/internal/server/application_requests.go::Gate"
+      ],
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "gap": "Actual apps/{player,subtitles}/e2e/home-assistant.spec.ts enables/disables real settings, checks probe404/200, creates8digit manual code and views OAuthapproval; it never approves/exchanges token, performs mDNS, injects persistence/entropy failure, retries/replays/expiry/capacity/tamper or another profile. Actual Player test-instance-production authenticated video reports current item throughPUT/GET but no control commands. Shared HTTP adapters use injected callbacks and are not genuine app E2E.",
+      "auditor": "/root/subtitles_shared/shared_identity",
+      "source_read_evidence": "All25 full test bodies/local helpers, all6production owners1008LOC, complete two app integration bindings, full Player HomeAssistant browser journey and Subtitles semantic diff, realproduction report body and file history read. No candidate execution."
     },
     {
       "file": "packages/homeassistant/pairing_player_test.go",
@@ -31668,9 +32153,9 @@
       "owner_group": "homeassistant",
       "body_sha256": "a6817c1ceab641c9d3f6bb3b42420cde63ebbc1bbbcf8ba4ccfb497aec4997bc",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Retained concrete authorization/lifecycle/protocol boundary not covered by genuine browser; removed direct replay has honest reachable-ID gap.",
       "validation_command": "cd packages && go test ./homeassistant",
       "baseline_event": {
         "Time": "2026-10-03T10:35:26.823652-06:00",
@@ -31678,7 +32163,29 @@
         "Package": "github.com/MikeO7/kinosail/packages/homeassistant",
         "Test": "TestPlayerValidationBoundaries",
         "Elapsed": 0
-      }
+      },
+      "credible_failure": "Malformed/nonfinite playback state or unknown/unbounded commands must not poison memory or control unavailable media.",
+      "remaining_coverage": "State/text/numeric matrix with acceptedmax fields, command action/seek/volume/item membership bounds.",
+      "production_owner": [
+        "packages/homeassistant/integration.go",
+        "packages/homeassistant/http.go",
+        "packages/homeassistant/oauth.go",
+        "packages/homeassistant/pairing.go",
+        "packages/homeassistant/player.go",
+        "packages/homeassistant/discovery.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/home_assistant.go::newHomeAssistant binds settings/profile/key/library/safety adapters",
+        "apps/subtitles/internal/server/home_assistant.go::newHomeAssistant same complete adapters",
+        "apps/player/internal/server/api.go::Register with auth.owner",
+        "apps/{player,subtitles}/internal/server/application_requests.go::Gate"
+      ],
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "gap": "Actual apps/{player,subtitles}/e2e/home-assistant.spec.ts enables/disables real settings, checks probe404/200, creates8digit manual code and views OAuthapproval; it never approves/exchanges token, performs mDNS, injects persistence/entropy failure, retries/replays/expiry/capacity/tamper or another profile. Actual Player test-instance-production authenticated video reports current item throughPUT/GET but no control commands. Shared HTTP adapters use injected callbacks and are not genuine app E2E.",
+      "auditor": "/root/subtitles_shared/shared_identity",
+      "source_read_evidence": "All25 full test bodies/local helpers, all6production owners1008LOC, complete two app integration bindings, full Player HomeAssistant browser journey and Subtitles semantic diff, realproduction report body and file history read. No candidate execution."
     },
     {
       "file": "packages/homeassistant/pairing_player_test.go",
@@ -31688,9 +32195,9 @@
       "owner_group": "homeassistant",
       "body_sha256": "8332f32b6690107ec3b9f123a69b831d99c365f2e7ddf8a40f269574b32f6725",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Retained concrete authorization/lifecycle/protocol boundary not covered by genuine browser; removed direct replay has honest reachable-ID gap.",
       "validation_command": "cd packages && go test ./homeassistant",
       "baseline_event": {
         "Time": "2026-10-03T10:35:26.823695-06:00",
@@ -31698,7 +32205,29 @@
         "Package": "github.com/MikeO7/kinosail/packages/homeassistant",
         "Test": "TestPlayerCapacityAndPruning",
         "Elapsed": 0
-      }
+      },
+      "credible_failure": "Excess players can exhaust registry; expiry pruning must retain the exact30second boundary.",
+      "remaining_coverage": "Max64full registry rejects new; old pruned and exactTTL boundary observed retained.",
+      "production_owner": [
+        "packages/homeassistant/integration.go",
+        "packages/homeassistant/http.go",
+        "packages/homeassistant/oauth.go",
+        "packages/homeassistant/pairing.go",
+        "packages/homeassistant/player.go",
+        "packages/homeassistant/discovery.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/home_assistant.go::newHomeAssistant binds settings/profile/key/library/safety adapters",
+        "apps/subtitles/internal/server/home_assistant.go::newHomeAssistant same complete adapters",
+        "apps/player/internal/server/api.go::Register with auth.owner",
+        "apps/{player,subtitles}/internal/server/application_requests.go::Gate"
+      ],
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "gap": "Actual apps/{player,subtitles}/e2e/home-assistant.spec.ts enables/disables real settings, checks probe404/200, creates8digit manual code and views OAuthapproval; it never approves/exchanges token, performs mDNS, injects persistence/entropy failure, retries/replays/expiry/capacity/tamper or another profile. Actual Player test-instance-production authenticated video reports current item throughPUT/GET but no control commands. Shared HTTP adapters use injected callbacks and are not genuine app E2E.",
+      "auditor": "/root/subtitles_shared/shared_identity",
+      "source_read_evidence": "All25 full test bodies/local helpers, all6production owners1008LOC, complete two app integration bindings, full Player HomeAssistant browser journey and Subtitles semantic diff, realproduction report body and file history read. No candidate execution."
     },
     {
       "file": "packages/homeassistant/pairing_player_test.go",
@@ -31708,9 +32237,9 @@
       "owner_group": "homeassistant",
       "body_sha256": "33f9a5830397960da476cba1327ceda248e3ece988f10b0d6228d3bb87253ff3",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "D",
+      "audit_status": "reviewed",
+      "risk": "Retained concrete authorization/lifecycle/protocol boundary not covered by genuine browser; removed direct replay has honest reachable-ID gap.",
       "validation_command": "cd packages && go test ./homeassistant",
       "baseline_event": {
         "Time": "2026-10-03T10:35:26.823722-06:00",
@@ -31718,7 +32247,34 @@
         "Package": "github.com/MikeO7/kinosail/packages/homeassistant",
         "Test": "TestPlayerHTTPValidation",
         "Elapsed": 0
-      }
+      },
+      "credible_failure": "Manually injected slash path and direct method success replay do not add reachable route behavior.",
+      "remaining_coverage": "TestRegisteredPlayerHTTP performs exact successful PUT\u2192pause command POST\u2192PUT consumption through actual registered mux plus malformed/oversized/state/action paths. Candidate bad/id is manually SetPathValue; registered {id} has one segment. Honest gap: reachable malformed single-segment ID such as dot is not proved by removed slash control.",
+      "production_owner": [
+        "packages/homeassistant/integration.go",
+        "packages/homeassistant/http.go",
+        "packages/homeassistant/oauth.go",
+        "packages/homeassistant/pairing.go",
+        "packages/homeassistant/player.go",
+        "packages/homeassistant/discovery.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/home_assistant.go::newHomeAssistant binds settings/profile/key/library/safety adapters",
+        "apps/subtitles/internal/server/home_assistant.go::newHomeAssistant same complete adapters",
+        "apps/player/internal/server/api.go::Register with auth.owner",
+        "apps/{player,subtitles}/internal/server/application_requests.go::Gate"
+      ],
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "gap": "Actual apps/{player,subtitles}/e2e/home-assistant.spec.ts enables/disables real settings, checks probe404/200, creates8digit manual code and views OAuthapproval; it never approves/exchanges token, performs mDNS, injects persistence/entropy failure, retries/replays/expiry/capacity/tamper or another profile. Actual Player test-instance-production authenticated video reports current item throughPUT/GET but no control commands. Shared HTTP adapters use injected callbacks and are not genuine app E2E.",
+      "auditor": "/root/subtitles_shared/shared_identity",
+      "source_read_evidence": "All25 full test bodies/local helpers, all6production owners1008LOC, complete two app integration bindings, full Player HomeAssistant browser journey and Subtitles semantic diff, realproduction report body and file history read. No candidate execution.",
+      "independent_removal_review": {
+        "reviewer": "/root/subtitles_shared/shared_identity",
+        "status": "Exact stronger registered mux keeper read; public path has single segment."
+      },
+      "implementation_status": "declaration removed; candidate validation awaits root serial run"
     },
     {
       "file": "packages/httpguard/csrf_anonymous_test.go",
