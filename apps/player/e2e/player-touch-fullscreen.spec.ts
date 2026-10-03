@@ -2,8 +2,8 @@ import {readFile, writeFile} from "node:fs/promises";
 import {expect, test} from "@playwright/test";
 import {installPlayerExperienceFixture} from "./player-experience-fixture";
 
-test.use({hasTouch: true});
-test.describe.configure({tag: "@smoke"});
+test.describe("touch fullscreen @smoke", () => {
+test.use({hasTouch: true, ignoreHTTPSErrors: false});
 installPlayerExperienceFixture();
 
 test.afterEach(async ({browserName}, testInfo) => {
@@ -30,9 +30,15 @@ test("limited native fullscreen fallback uses touch Play and preserves fullscree
     });
   });
   const video = page.locator("video");
+  await page.evaluate(() => (window as Window & {setPlayPending: (value: boolean) => void}).setPlayPending(true));
   await page.getByRole("button", {name: "Play", exact: true}).first().tap();
   await expect(video).toHaveJSProperty("webkitDisplayingFullscreen", true);
   await expect(video).toHaveJSProperty("paused", false);
+  await page.evaluate(() => {
+    const state = window as Window & {finishPlay: () => void; setPlayPending: (value: boolean) => void};
+    state.finishPlay();
+    state.setPlayPending(false);
+  });
   await page.getByRole("button", {name: "Pause", exact: true}).first().tap();
   await expect(video).toHaveJSProperty("paused", true);
   await page.getByRole("button", {name: "Play", exact: true}).first().tap();
@@ -42,6 +48,19 @@ test("limited native fullscreen fallback uses touch Play and preserves fullscree
   await expect(video).toHaveJSProperty("webkitDisplayingFullscreen", false);
   await expect(video).toHaveJSProperty("paused", false);
   await expect(page.locator("[data-subtitles]")).toHaveValue("off");
+});
+
+test("limited native fullscreen fallback rejection after touch Play retains inline playback", async ({page}) => {
+  await page.locator("video").evaluate(video => Object.defineProperty(video, "webkitEnterFullscreen", {
+    configurable: true, value: () => { throw new DOMException("denied", "NotAllowedError"); },
+  }));
+  await page.getByRole("button", {name: "Play", exact: true}).first().tap();
+  await expect(page.getByRole("status").filter({hasText: /Fullscreen could not open/})).toBeVisible();
+  await expect(page.locator("video")).toHaveJSProperty("paused", false);
+  await expect(page.locator("video")).toHaveJSProperty("currentTime", 20);
+  await expect(page.locator("[data-subtitles]")).toHaveValue("off");
+  await page.getByRole("button", {name: "Pause", exact: true}).first().tap();
+  await expect(page.locator("video")).toHaveJSProperty("paused", true);
 });
 
 test("touch custom playback waits for Play despite resumed autoplay", async ({page}) => {
@@ -87,3 +106,5 @@ for (const viewport of [{width: 390, height: 844}, {width: 844, height: 390}, {w
     await expect.poll(() => page.evaluate(() => document.fullscreenElement)).toBeNull();
   });
 }
+
+});
