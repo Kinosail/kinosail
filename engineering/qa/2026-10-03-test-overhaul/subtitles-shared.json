@@ -6,12 +6,12 @@
   "files": 379,
   "declarations": 954,
   "test_loc": 28832,
-  "reviewed": 535,
-  "pending": 419,
+  "reviewed": 594,
+  "pending": 360,
   "decisions": {
-    "R": 459,
-    "D": 55,
-    "F": 20,
+    "R": 513,
+    "D": 59,
+    "F": 21,
     "C": 1
   },
   "verification": [
@@ -36,6 +36,14 @@
         "pass": 820,
         "skip": 4
       }
+    },
+    {
+      "sha": "6c9781e2605dc947c4c09e07bb6edfcc8911d42c",
+      "command": "Parent strictHTTP real Subtitles server driver; exact command/environment/source/build receipt in artifact manifest",
+      "exit_code": 0,
+      "artifact": ".verification/test-overhaul/subtitles-ui-http-6c9781",
+      "source": "parent root executed and reported17passed31.7s",
+      "boundary": "Three genuine real-CLI-server journeys: review/defaults/manualtiming, admin/plaincanvas, history clear/empty/responsive. Fourteen exported-template layout fixtures are isolated browser fixtures, not genuine E2E."
     }
   ],
   "ci_routing": "All Subtitles .go test changes select Subtitles quick Go; internal/server also selects populated browser suites. Shared package changes select both apps. Required checks unchanged.",
@@ -2693,26 +2701,24 @@
       "decision": "D",
       "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": "Changes to JS local variable/source text or exact radio markup.",
+      "credible_failure": "Shared Theme source guards blocked/invalid localStorage fallback and matchMedia system-change registration; normal theme UI now genuine runtime verified.",
       "production_owner": "apps/subtitles/internal/server/assets.go; packages/servertest/assets*_contract.go; packages/webassets/static/{player-app.css,pwa*.js,theme.js}",
       "non_test_callers": "newApplication registers /static/app.css, /static/main.kinosail.bundle.js and templates include them; real browser render/load paths.",
       "remaining_proof": [
         {
-          "kind": "genuine_populated_browser_journey",
-          "file": "apps/subtitles/e2e/password-reveal.spec.ts",
-          "scenario": "passwords can be shown and hidden without changing their value; responsive settings and forced colors",
-          "result": "unrun"
+          "kind": "canonical_shared_source_guard",
+          "reference": "apps/player/internal/server/assets_test.go::TestViewerCanChooseDarkLightOrSystemTheme",
+          "result": "Retained F by Player; same shared AssetsFixture/Theme helper, no source callback difference."
         },
         {
           "kind": "genuine_populated_browser_journey",
-          "file": "apps/subtitles/e2e/test-instance.spec.ts",
-          "scenario": "populated Owner settings/theme journey",
-          "result": "unrun"
+          "reference": "root Player normal dark/light/system persistence run at6c9781",
+          "result": "pass; root receipt, no malformed-storage equivalence"
         }
       ],
-      "coverage_gap": "Genuine browser theme setting is exercised; malformed storage/error fallback cases are not proven by this source grep.",
+      "coverage_gap": "Blocked/invalid storage and matchMedia-change runtime not verified by ordinary normal-theme browser journey; retained Player F shared source guard is sole independent policy probe. Removed Subtitles helper is exact replay.",
       "history": "52fc46756 Initial commit; later app source updates do not add independent behavioral proof.",
-      "risk": "Low: no unique behavioral assertion removed.",
+      "risk": "Low only with retained exact Player canonical source guard; normal E2E alone is insufficient.",
       "validation_command": "cd apps/subtitles && go test ./internal/server ./internal/configuration ./internal/settingsstate ./internal/subtitlelanguage ./internal/database ./internal/backup ./cmd/kinosail"
     },
     {
@@ -2790,17 +2796,22 @@
       "line": 17,
       "test": "TestViewerCanSelectEmbeddedAudioTrack",
       "baseline_file_sha256": "d7cbc418e6fbb30832147e7682a36af8936ffd60c34ca87f0d99d5874b9c444f",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Actual selectedSpanishAC3 track1 is reflected in web label, recipe a1 and FFmpeg map0:a:1? with video copy across legacy/planned routes.",
+      "production_owner": "apps/subtitles/internal/server/player_playback.go; apps/subtitles/internal/server/hls_plan.go; apps/subtitles/internal/server/hls.go",
+      "non_test_callers": "App New registers actual watch/API/Jellyfin/HLS/settings handlers and uses planner/probe/settings state; pure direct aliases invoke shared owner only as explicitly recorded.",
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_owner_contract",
+          "reference": "apps/subtitles/internal/server/audio_tracks_test.go::TestViewerCanSelectEmbeddedAudioTrack"
+        }
+      ],
+      "coverage_gap": "Scripted process and metadata; real current clip has no alternate audio, so no audio-selection E2E equivalence.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retain concrete important app/protocol/cache/privacy/media risk missing from existing genuine E2E",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/audiobook_test.go",
@@ -3541,153 +3552,198 @@
       "line": 5,
       "test": "TestBundledPlayerKeepsDirectTimelineAndClientSkip",
       "baseline_file_sha256": "ba480e1c3005a3012f39d5484597dc77923e8cb0e65d7720c6ff91c52a6993a7",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Actual app direct template keeps source60s/intro, original sidecar12..14 and progress15\u2192stored15\u2192resume15 instead of accidental shortened timeline.",
+      "production_owner": "apps/subtitles/internal/server/playback_timeline.go; apps/subtitles/internal/server/api_media.go; apps/subtitles/internal/server/jellyfin_progress.go; apps/subtitles/internal/server/jellyfin_playback.go; packages/servertest/automatic_skip_*.go; packages/playback/subtitle_delivery.go",
+      "non_test_callers": "App New registers actual watch/API/Jellyfin/HLS/settings handlers and uses planner/probe/settings state; pure direct aliases invoke shared owner only as explicitly recorded.",
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_owner_contract",
+          "reference": "apps/subtitles/internal/server/automatic_skip_browser_test.go::TestBundledPlayerKeepsDirectTimelineAndClientSkip"
+        }
+      ],
+      "coverage_gap": "Name client-skip not browser execution; concrete direct/time/progress wiring is exercised. Existing marker browser starts0..1, not interior10..20.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retain concrete important app/protocol/cache/privacy/media risk missing from existing genuine E2E",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/automatic_skip_fallback_test.go",
       "line": 5,
       "test": "TestAutomaticPlaybackKeepsDirectTimelineAndOffersCompatibleFallback",
       "baseline_file_sha256": "eda9fff806d2f24b319790bec19dbdb7e786ee484603c6b34a632dce91477536",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Actual API direct60 vsJellyfin shortened50/compatible URLs and suppressed autoeligible segments; disabling skip exposes original trusted marker and direct source.",
+      "production_owner": "apps/subtitles/internal/server/playback_timeline.go; apps/subtitles/internal/server/api_media.go; apps/subtitles/internal/server/jellyfin_progress.go; apps/subtitles/internal/server/jellyfin_playback.go; packages/servertest/automatic_skip_*.go; packages/playback/subtitle_delivery.go",
+      "non_test_callers": "App New registers actual watch/API/Jellyfin/HLS/settings handlers and uses planner/probe/settings state; pure direct aliases invoke shared owner only as explicitly recorded.",
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_owner_contract",
+          "reference": "apps/subtitles/internal/server/automatic_skip_fallback_test.go::TestAutomaticPlaybackKeepsDirectTimelineAndOffersCompatibleFallback"
+        }
+      ],
+      "coverage_gap": "Actual app policy+Jellyfin auth/profile bound, scripted media. Real web browser does not query Jellyfin adapter protocol/segment suppression.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retain concrete important app/protocol/cache/privacy/media risk missing from existing genuine E2E",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/automatic_skip_fallback_test.go",
       "line": 9,
       "test": "TestServerAutomaticSkipRenditionRemovesConfiguredRanges",
       "baseline_file_sha256": "eda9fff806d2f24b319790bec19dbdb7e786ee484603c6b34a632dce91477536",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Actual compatibility routes start one shared encode with audio select10..20 and video concat-copy; cache reuse across generic/planned URL observed.",
+      "production_owner": "apps/subtitles/internal/server/playback_timeline.go; apps/subtitles/internal/server/api_media.go; apps/subtitles/internal/server/jellyfin_progress.go; apps/subtitles/internal/server/jellyfin_playback.go; packages/servertest/automatic_skip_*.go; packages/playback/subtitle_delivery.go",
+      "non_test_callers": "App New registers actual watch/API/Jellyfin/HLS/settings handlers and uses planner/probe/settings state; pure direct aliases invoke shared owner only as explicitly recorded.",
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_owner_contract",
+          "reference": "apps/subtitles/internal/server/automatic_skip_fallback_test.go::TestServerAutomaticSkipRenditionRemovesConfiguredRanges"
+        }
+      ],
+      "coverage_gap": "Fixture does not prove frames actually removed; opt-in real test supplies codec/frame proof separately when enabled.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retain concrete important app/protocol/cache/privacy/media risk missing from existing genuine E2E",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/automatic_skip_fallback_test.go",
       "line": 13,
       "test": "TestAutomaticSkipUsesExactTranscodeAwayFromRandomAccessPoints",
       "baseline_file_sha256": "eda9fff806d2f24b319790bec19dbdb7e786ee484603c6b34a632dce91477536",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Moving keyframe10\u21928 changes actual plan to50s exacttranscode and FFmpeg vf select instead of concat-copy.",
+      "production_owner": "apps/subtitles/internal/server/playback_timeline.go; apps/subtitles/internal/server/api_media.go; apps/subtitles/internal/server/jellyfin_progress.go; apps/subtitles/internal/server/jellyfin_playback.go; packages/servertest/automatic_skip_*.go; packages/playback/subtitle_delivery.go",
+      "non_test_callers": "App New registers actual watch/API/Jellyfin/HLS/settings handlers and uses planner/probe/settings state; pure direct aliases invoke shared owner only as explicitly recorded.",
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_owner_contract",
+          "reference": "apps/subtitles/internal/server/automatic_skip_fallback_test.go::TestAutomaticSkipUsesExactTranscodeAwayFromRandomAccessPoints"
+        }
+      ],
+      "coverage_gap": "Scripted keyframe/process facts; no real decoder execution here. Live clip does not vary keyframe boundary.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retain concrete important app/protocol/cache/privacy/media risk missing from existing genuine E2E",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/automatic_skip_progress_test.go",
       "line": 5,
       "test": "TestServerAutomaticSkipMapsPlaybackProgressBackToSourceTime",
       "baseline_file_sha256": "88ce20c4b239c938e6ed0ed8d8f6ac46457246ee55486f0d92631c7f73bb47d3",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Jellyfin short15s progress persists source25s while Jellyfin user view remains presentation15s.",
+      "production_owner": "apps/subtitles/internal/server/playback_timeline.go; apps/subtitles/internal/server/api_media.go; apps/subtitles/internal/server/jellyfin_progress.go; apps/subtitles/internal/server/jellyfin_playback.go; packages/servertest/automatic_skip_*.go; packages/playback/subtitle_delivery.go",
+      "non_test_callers": "App New registers actual watch/API/Jellyfin/HLS/settings handlers and uses planner/probe/settings state; pure direct aliases invoke shared owner only as explicitly recorded.",
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_owner_contract",
+          "reference": "apps/subtitles/internal/server/automatic_skip_progress_test.go::TestServerAutomaticSkipMapsPlaybackProgressBackToSourceTime"
+        }
+      ],
+      "coverage_gap": "Own app PlaySessionID/sourcePositionTicks/progress binding; actual browser source timeline does not exercise this protocol mapping.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retain concrete important app/protocol/cache/privacy/media risk missing from existing genuine E2E",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/automatic_skip_progress_test.go",
       "line": 9,
       "test": "TestVersionedPlaybackMapsProgressBackToSourceTime",
       "baseline_file_sha256": "88ce20c4b239c938e6ed0ed8d8f6ac46457246ee55486f0d92631c7f73bb47d3",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Versioned compatible progress15+recipe token persists source25; invalid token rejects400.",
+      "production_owner": "apps/subtitles/internal/server/playback_timeline.go; apps/subtitles/internal/server/api_media.go; apps/subtitles/internal/server/jellyfin_progress.go; apps/subtitles/internal/server/jellyfin_playback.go; packages/servertest/automatic_skip_*.go; packages/playback/subtitle_delivery.go",
+      "non_test_callers": "App New registers actual watch/API/Jellyfin/HLS/settings handlers and uses planner/probe/settings state; pure direct aliases invoke shared owner only as explicitly recorded.",
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_owner_contract",
+          "reference": "apps/subtitles/internal/server/automatic_skip_progress_test.go::TestVersionedPlaybackMapsProgressBackToSourceTime"
+        }
+      ],
+      "coverage_gap": "Own API token\u2192timeline binding retained; default source-time browser resume is distinct.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retain concrete important app/protocol/cache/privacy/media risk missing from existing genuine E2E",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/automatic_skip_progress_test.go",
       "line": 13,
       "test": "TestServerAutomaticSkipKeepsSubtitleCuesOnTheShortenedTimeline",
       "baseline_file_sha256": "88ce20c4b239c938e6ed0ed8d8f6ac46457246ee55486f0d92631c7f73bb47d3",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Actual Jellyfin delivery drops cue inside omitted intro and maps retained22..24 cue to12..14 with readable text.",
+      "production_owner": "apps/subtitles/internal/server/playback_timeline.go; apps/subtitles/internal/server/api_media.go; apps/subtitles/internal/server/jellyfin_progress.go; apps/subtitles/internal/server/jellyfin_playback.go; packages/servertest/automatic_skip_*.go; packages/playback/subtitle_delivery.go",
+      "non_test_callers": "App New registers actual watch/API/Jellyfin/HLS/settings handlers and uses planner/probe/settings state; pure direct aliases invoke shared owner only as explicitly recorded.",
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_owner_contract",
+          "reference": "apps/subtitles/internal/server/automatic_skip_progress_test.go::TestServerAutomaticSkipKeepsSubtitleCuesOnTheShortenedTimeline"
+        }
+      ],
+      "coverage_gap": "Fixture has app-specific query unescapingfalse; actual server subtitle mapping reached, not FFmpeg subtitle decode. Genuine current review uses original source cues.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retain concrete important app/protocol/cache/privacy/media risk missing from existing genuine E2E",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/automatic_skip_real_ffmpeg_test.go",
       "line": 5,
       "test": "TestRealFFmpegAutomaticSkipServesFutureSegments",
       "baseline_file_sha256": "2b7eab0714bfe9d9b89f4e392106aa578978a8b5926504c6890e271a9262ea91",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "skip (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Opt-in real generated30s chapter media reaches actual server HLS; projected future segment initially absent becomes nonempty200, projected count matches finalized expected8 segments.",
+      "production_owner": "packages/servertest/automatic_skip_real*.go; apps/subtitles/internal/server/hls.go; apps/subtitles/internal/server/hls_plan.go",
+      "non_test_callers": "App New registers actual watch/API/Jellyfin/HLS/settings handlers and uses planner/probe/settings state; pure direct aliases invoke shared owner only as explicitly recorded.",
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_owner_contract",
+          "reference": "apps/subtitles/internal/server/automatic_skip_real_ffmpeg_test.go::TestRealFFmpegAutomaticSkipServesFutureSegments"
+        }
+      ],
+      "coverage_gap": "Baseline skipped because KINOSAIL_REAL_FFMPEG/FFPROBE unset; no default pass or genuine E2E artifact claimed. Requires container-reachablehost/media and explicit binaries.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retain concrete important app/protocol/cache/privacy/media risk missing from existing genuine E2E",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/automatic_skip_real_ffmpeg_test.go",
       "line": 9,
       "test": "TestRealFFmpegAutomaticSkipCopiesPlayableVideo",
       "baseline_file_sha256": "2b7eab0714bfe9d9b89f4e392106aa578978a8b5926504c6890e271a9262ea91",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "skip (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Opt-in real30s media with10..20 omission must probe20\u00b1.1s H264 ConstrainedBaseline/AAC and decode exactly480 retained frames through actual HTTPserver.",
+      "production_owner": "packages/servertest/automatic_skip_real*.go; apps/subtitles/internal/server/hls.go; apps/subtitles/internal/server/hls_plan.go",
+      "non_test_callers": "App New registers actual watch/API/Jellyfin/HLS/settings handlers and uses planner/probe/settings state; pure direct aliases invoke shared owner only as explicitly recorded.",
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_owner_contract",
+          "reference": "apps/subtitles/internal/server/automatic_skip_real_ffmpeg_test.go::TestRealFFmpegAutomaticSkipCopiesPlayableVideo"
+        }
+      ],
+      "coverage_gap": "Baseline skipped, no executed codec/frame evidence this audit. Retain important direct dependency boundary absent normal short E2E.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retain concrete important app/protocol/cache/privacy/media risk missing from existing genuine E2E",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/backup_manager_internal_test.go",
@@ -4485,17 +4541,22 @@
       "line": 5,
       "test": "TestDirectTypeOnlyClaimsCodecParametersSupportedByProbeFacts",
       "baseline_file_sha256": "e47830873762c6675092ecb8fe513c9aad43053d461c37f4a661c121805ebbcc",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "App maps H264 profile+level/AAC/AC3, VP9/AV1+Opus WebM,AV1 AAC andMKV conservatively; unknownHEVC/EAC3 orTrueHD cannot fabricate supported codec params.",
+      "production_owner": "apps/subtitles/internal/server/player_playback.go",
+      "non_test_callers": "App New registers actual watch/API/Jellyfin/HLS/settings handlers and uses planner/probe/settings state; pure direct aliases invoke shared owner only as explicitly recorded.",
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_owner_contract",
+          "reference": "apps/subtitles/internal/server/direct_type_test.go::TestDirectTypeOnlyClaimsCodecParametersSupportedByProbeFacts"
+        }
+      ],
+      "coverage_gap": "Genuine supplied normal video does not reach codec/container unknown/truthful matrix; browser synthetic directType cannot prove Go mapping.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retain concrete important app/protocol/cache/privacy/media risk missing from existing genuine E2E",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/dlna_test.go",
@@ -4633,17 +4694,22 @@
       "line": 9,
       "test": "TestEmbeddedTextCaptionsAreSemanticAndExtractedThroughEveryAdapter",
       "baseline_file_sha256": "31b29b86c224d20faeb69895edf0e3a2a2581015c3213e89984879eb0d52dfe5",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Actual API/web/Jellyfin captions expose hearing-impaired role, app label and signed delivery; embedded source3 extraction passes exact-map and fixture Door closes bytes.",
+      "production_owner": "apps/subtitles/internal/server/player.go; apps/subtitles/internal/server/api_product.go; apps/subtitles/internal/server/jellyfin_playback.go; packages/playback/subtitle_delivery.go; packages/servertest/embedded_subtitles.go",
+      "non_test_callers": "App New registers actual watch/API/Jellyfin/HLS/settings handlers and uses planner/probe/settings state; pure direct aliases invoke shared owner only as explicitly recorded.",
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_owner_contract",
+          "reference": "apps/subtitles/internal/server/embedded_subtitles_test.go::TestEmbeddedTextCaptionsAreSemanticAndExtractedThroughEveryAdapter"
+        }
+      ],
+      "coverage_gap": "Shared fixture binds actual Subtitles/auth/resolver and app-specific captions label; script does not prove real binary or readable rendered caption pixels.",
+      "history": "cbf7ce4cfba482959e96b0c4b88ad807c2863ed9 Clarify Player subtitle track names",
+      "risk": "Retain concrete important app/protocol/cache/privacy/media risk missing from existing genuine E2E",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/english_copy_test.go",
@@ -4745,425 +4811,551 @@
       "line": 15,
       "test": "TestAlbumPlaybackExposesGaplessQueueThroughAPIAndWeb",
       "baseline_file_sha256": "5cdd50dabceafff024a2f7d47fb2c0f67ec663460dbd9bfc2a1db0ddc0559c3a",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Actual two-NFO-track album queue API has First/Second and media links; watch projects queue URL. Source advanceQueue fragment is only an auxiliary guard.",
+      "production_owner": "apps/subtitles/internal/server/api_product.go; apps/subtitles/internal/server/player.go; packages/catalogapi",
+      "non_test_callers": "App New registers actual watch/API/Jellyfin/HLS/settings handlers and uses planner/probe/settings state; pure direct aliases invoke shared owner only as explicitly recorded.",
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_owner_contract",
+          "reference": "apps/subtitles/internal/server/gapless_test.go::TestAlbumPlaybackExposesGaplessQueueThroughAPIAndWeb"
+        }
+      ],
+      "coverage_gap": "No actual audio overlap/gaplessness shown by handler/source test. Genuine video playback omits album/audio queue; preserve useful queue API/projection.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retain concrete important app/protocol/cache/privacy/media risk missing from existing genuine E2E",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/hardware_capabilities_test.go",
       "line": 5,
       "test": "TestHardwareCapabilitiesDriveAutomaticSelectionAndVisibleFallback",
       "baseline_file_sha256": "eeb232d390da1d0ac15406e8b1778b0419d8dbb5fb1cdd13ef6a4adcd273e4a4",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Actual app discovers syntheticQSV evidence then selects HEVC/QSV auto, advertises hvc1, commands hevc_qsv without unrequested hardwaredecode, projects onlyLinux hardware/settings and actionable unsupported states.",
+      "production_owner": "apps/subtitles/internal/server/settings_transcoder.go; apps/subtitles/internal/server/transcoder_selection.go; apps/subtitles/internal/server/hls.go; packages/transcodehardware; packages/servertest/hardware_capabilities.go",
+      "non_test_callers": "App New registers actual watch/API/Jellyfin/HLS/settings handlers and uses planner/probe/settings state; pure direct aliases invoke shared owner only as explicitly recorded.",
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_owner_contract",
+          "reference": "apps/subtitles/internal/server/hardware_capabilities_test.go::TestHardwareCapabilitiesDriveAutomaticSelectionAndVisibleFallback"
+        }
+      ],
+      "coverage_gap": "Scripted encoder/hwaccel/smoke outputs are fixture evidence, not GPU or genuine E2E; app discovery/settings/delivery binding has unique risk.",
+      "history": "aeeba0ee4e9d87dec55d59c800da7d857b43596e Restore playback and management contract coverage",
+      "risk": "Retain concrete important app/protocol/cache/privacy/media risk missing from existing genuine E2E",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/hardware_transcode_test.go",
       "line": 18,
       "test": "TestHardwareTranscodingContract",
       "baseline_file_sha256": "40c39cc27c62621bdfed25b2986853d54adc6dc523d81cab00e8021e5e817b40",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Six actual app cases: owner VAAPI HDR tone-map command/settings plus process stop; unknown codec/backend rejection without settings mutation; incompatible persisteddefault repairsauto; managed unsupported override fails503.",
+      "production_owner": "apps/subtitles/internal/server/settings_transcoder.go; apps/subtitles/internal/server/settings.go; apps/subtitles/internal/server/transcoder_selection.go; packages/transcodehardware/selection_store.go; packages/servertest/hardware_transcode.go",
+      "non_test_callers": "App New registers actual watch/API/Jellyfin/HLS/settings handlers and uses planner/probe/settings state; pure direct aliases invoke shared owner only as explicitly recorded.",
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_owner_contract",
+          "reference": "apps/subtitles/internal/server/hardware_transcode_test.go::TestHardwareTranscodingContract"
+        }
+      ],
+      "coverage_gap": "Shared fixture invokes actual configuration/storage/server factories. Browser owner happy path misses process lifetime, platform migration and managed fail-closed settings; no real hardware pixels.",
+      "history": "aeeba0ee4e9d87dec55d59c800da7d857b43596e Restore playback and management contract coverage",
+      "risk": "Retain concrete important app/protocol/cache/privacy/media risk missing from existing genuine E2E",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/hls_delivery_internal_test.go",
       "line": 15,
       "test": "TestHLSDeliveryRejectsCacheKeySymlinkEscape",
       "baseline_file_sha256": "0aff426f5ae471aa249c2a61ad173572c25f9dc1ad0f2f20fc1d4a72839a2f17",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "App cache-key directory symlink cannot serve outside segment bytes; response404. ",
+      "production_owner": "apps/subtitles/internal/server/hls_delivery.go; apps/subtitles/internal/server/hls_plan.go",
+      "non_test_callers": "App New registers actual watch/API/Jellyfin/HLS/settings handlers and uses planner/probe/settings state; pure direct aliases invoke shared owner only as explicitly recorded.",
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_owner_contract",
+          "reference": "apps/subtitles/internal/server/hls_delivery_internal_test.go::TestHLSDeliveryRejectsCacheKeySymlinkEscape"
+        }
+      ],
+      "coverage_gap": "Shared ReadHLSPlaylist leaf guard does not exercise app os.OpenRoot segment delivery.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retain concrete important app/protocol/cache/privacy/media risk missing from existing genuine E2E",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/hls_delivery_internal_test.go",
       "line": 35,
       "test": "TestHLSPlaylistReaderRejectsSymlinkAndOversizedCacheFiles",
       "baseline_file_sha256": "0aff426f5ae471aa249c2a61ad173572c25f9dc1ad0f2f20fc1d4a72839a2f17",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "D",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Direct shared ReadHLSPlaylist leaf-symlink and1MiB+1 rejection repeats canonical same inputs; no app-owned wrapper invoked.",
+      "production_owner": "packages/playback/hls_paths.go",
+      "non_test_callers": "App New registers actual watch/API/Jellyfin/HLS/settings handlers and uses planner/probe/settings state; pure direct aliases invoke shared owner only as explicitly recorded.",
+      "remaining_proof": [
+        {
+          "kind": "exact_canonical_shared_keeper",
+          "reference": "packages/playback/hls_storage_test.go::TestHLSPlaylistRejectsIncompleteAndUnsafeInputs; packages/playback/hls_path_edges_test.go::TestReadHLSPlaylistCoversEveryFilesystemFailure retained by root shared93 audit. No E2E equivalence claimed."
+        }
+      ],
+      "coverage_gap": "packages/playback/hls_storage_test.go::TestHLSPlaylistRejectsIncompleteAndUnsafeInputs; packages/playback/hls_path_edges_test.go::TestReadHLSPlaylistCoversEveryFilesystemFailure retained by root shared93 audit. No E2E equivalence claimed.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Low: identical shared owner replay; canonical keeper verified",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/hls_delivery_internal_test.go",
       "line": 57,
       "test": "TestHLSPlaylistReaderRejectsIntermediateDirectoryEscape",
       "baseline_file_sha256": "0aff426f5ae471aa249c2a61ad173572c25f9dc1ad0f2f20fc1d4a72839a2f17",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Shared reader rejects intermediate recipe-directory symlink instead of reading external index bytes.",
+      "production_owner": "packages/playback/hls_paths.go",
+      "non_test_callers": "App New registers actual watch/API/Jellyfin/HLS/settings handlers and uses planner/probe/settings state; pure direct aliases invoke shared owner only as explicitly recorded.",
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_owner_contract",
+          "reference": "apps/subtitles/internal/server/hls_delivery_internal_test.go::TestHLSPlaylistReaderRejectsIntermediateDirectoryEscape"
+        }
+      ],
+      "coverage_gap": "Canonical leaf symlink case misses intermediate directory escape; retain sole exact boundary pending consolidation.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retain concrete important app/protocol/cache/privacy/media risk missing from existing genuine E2E",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/hls_long_movie_test.go",
       "line": 13,
       "test": "TestSessionlessHLSKeeps170MinuteMovieWithinManifestBounds",
       "baseline_file_sha256": "f015aab08aa6b385061158b16ac6898f0cec8d7b3d3a345b660c55429593cb8d",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "170-minute app4sec growing/completed playlists project2550 VOD segments inside input/output bounds without rewriting encoder files.",
+      "production_owner": "apps/subtitles/internal/server/hls_playlist_session.go; apps/subtitles/internal/server/hls_projection_ready.go; apps/subtitles/internal/server/hls_delivery.go; packages/playback/{hls_delivery.go,hls_duration.go,hls_playlist.go}",
+      "non_test_callers": "App New registers actual watch/API/Jellyfin/HLS/settings handlers and uses planner/probe/settings state; pure direct aliases invoke shared owner only as explicitly recorded.",
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_owner_contract",
+          "reference": "apps/subtitles/internal/server/hls_long_movie_test.go::TestSessionlessHLSKeeps170MinuteMovieWithinManifestBounds"
+        }
+      ],
+      "coverage_gap": "Genuine short populated clip does not test long-movie size/cadence. App cadence differs Player2sec keeper.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retain concrete important app/protocol/cache/privacy/media risk missing from existing genuine E2E",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/hls_observability_test.go",
       "line": 18,
       "test": "TestHLSDiagnosticErrorBoundsAndRedactsPrivatePaths",
       "baseline_file_sha256": "2e4eafb6875b0428d8c908b2310cf74e2267d9fe4d79324ec7277be05569b2d9",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "LAST8KiB includes appended private media and cache paths; both arguments and basename must be redacted, public error stable and detail bounded.",
+      "production_owner": "packages/playback/hls_diagnostic.go; apps/subtitles/internal/server/hls_observability.go",
+      "non_test_callers": "App New registers actual watch/API/Jellyfin/HLS/settings handlers and uses planner/probe/settings state; pure direct aliases invoke shared owner only as explicitly recorded.",
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_owner_contract",
+          "reference": "apps/subtitles/internal/server/hls_observability_test.go::TestHLSDiagnosticErrorBoundsAndRedactsPrivatePaths"
+        }
+      ],
+      "coverage_gap": "Canonical process redaction keeper supplies one private argument; this direct shared wrapper preserves two-argument boundary. Tail truncation does NOT hide appended path.",
+      "history": "aeeba0ee4e9d87dec55d59c800da7d857b43596e Restore playback and management contract coverage",
+      "risk": "Retain concrete important app/protocol/cache/privacy/media risk missing from existing genuine E2E",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/hls_observability_test.go",
       "line": 28,
       "test": "TestHLSDiagnosticPreservesCauseAndKeepsOnlyRecentOutput",
       "baseline_file_sha256": "2e4eafb6875b0428d8c908b2310cf74e2267d9fe4d79324ec7277be05569b2d9",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "F",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "errors.Is preserves root cause and write acknowledges limit+1 while stored bytes exactly bounded to8KiB.",
+      "production_owner": "packages/playback/hls_diagnostic.go; packages/servertest/hls_diagnostic.go; apps/subtitles/internal/server/hls_observability.go",
+      "non_test_callers": "App New registers actual watch/API/Jellyfin/HLS/settings handlers and uses planner/probe/settings state; pure direct aliases invoke shared owner only as explicitly recorded.",
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_owner_contract",
+          "reference": "apps/subtitles/internal/server/hls_observability_test.go::TestHLSDiagnosticPreservesCauseAndKeepsOnlyRecentOutput"
+        }
+      ],
+      "coverage_gap": "All repeated x bytes cannot distinguish oldest-vs-newest window. Cause/size/write-count remain useful; preserve unchanged with honest tail assertion gap.",
+      "history": "aeeba0ee4e9d87dec55d59c800da7d857b43596e Restore playback and management contract coverage",
+      "risk": "Retain concrete important app/protocol/cache/privacy/media risk missing from existing genuine E2E",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server",
+      "repair_status": "Concrete cause and bounds assertions retained; recent-vs-old tail gap documented. No assertion edits or new test."
     },
     {
       "file": "apps/subtitles/internal/server/hls_observability_test.go",
       "line": 34,
       "test": "TestHLSFailureIsCorrelatedAndPrivate",
       "baseline_file_sha256": "2e4eafb6875b0428d8c908b2310cf74e2267d9fe4d79324ec7277be05569b2d9",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Actual app FFmpeg failure returns503; JSON log correlates request/session/route, records failure, leaks no media path/title/id to response or log.",
+      "production_owner": "apps/subtitles/internal/server/hls.go; apps/subtitles/internal/server/hls_observability.go; apps/subtitles/internal/server/observability.go",
+      "non_test_callers": "App New registers actual watch/API/Jellyfin/HLS/settings handlers and uses planner/probe/settings state; pure direct aliases invoke shared owner only as explicitly recorded.",
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_owner_contract",
+          "reference": "apps/subtitles/internal/server/hls_observability_test.go::TestHLSFailureIsCorrelatedAndPrivate"
+        }
+      ],
+      "coverage_gap": "Script exits1 at real app process boundary. Genuine successful playback does not inject process stderr privacy failure.",
+      "history": "aeeba0ee4e9d87dec55d59c800da7d857b43596e Restore playback and management contract coverage",
+      "risk": "Retain concrete important app/protocol/cache/privacy/media risk missing from existing genuine E2E",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/hls_plan_delivery_test.go",
       "line": 17,
       "test": "TestPlannedHLSDeliversTheTransformationChosenByPlaybackPlanning",
       "baseline_file_sha256": "3c55e54352ae4909950d8703d9b58a3ede2a0b828103805fefd562b17285cd39",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Actual app cropped remux/copy, TrueHD audio conversion and HDR+PGS tone-map/burn branches produce commands and truthful tier consistent with planner; copy split_by_time differs independent encode. ",
+      "production_owner": "apps/subtitles/internal/server/hls_plan.go; apps/subtitles/internal/server/hls.go; packages/playback/plan.go",
+      "non_test_callers": "App New registers actual watch/API/Jellyfin/HLS/settings handlers and uses planner/probe/settings state; pure direct aliases invoke shared owner only as explicitly recorded.",
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_owner_contract",
+          "reference": "apps/subtitles/internal/server/hls_plan_delivery_test.go::TestPlannedHLSDeliversTheTransformationChosenByPlaybackPlanning"
+        }
+      ],
+      "coverage_gap": "Three scripted FFprobe/FFmpeg scenarios verify command/published shape, not real burned pixels/HDR or device decoding. Fixed hls7 cache literal also refactor-sensitive.",
+      "history": "aeeba0ee4e9d87dec55d59c800da7d857b43596e Restore playback and management contract coverage",
+      "risk": "Retain concrete important app/protocol/cache/privacy/media risk missing from existing genuine E2E",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/hls_playlist_session_internal_test.go",
       "line": 12,
       "test": "TestEventPlaylistStartsAtItsFirstReadySegment",
       "baseline_file_sha256": "00c2fe91b5a1b0759536fb451be7b2a57f49893aa7892d325418ad37289466ed",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Actual app session rewriter adds precise TIME-OFFSET=0 startup to ready EVENT and session-bound references.",
+      "production_owner": "apps/subtitles/internal/server/hls_playlist_session.go; apps/subtitles/internal/server/hls_projection_ready.go; apps/subtitles/internal/server/hls_delivery.go; packages/playback/{hls_delivery.go,hls_duration.go,hls_playlist.go}",
+      "non_test_callers": "App New registers actual watch/API/Jellyfin/HLS/settings handlers and uses planner/probe/settings state; pure direct aliases invoke shared owner only as explicitly recorded.",
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_owner_contract",
+          "reference": "apps/subtitles/internal/server/hls_playlist_session_internal_test.go::TestEventPlaylistStartsAtItsFirstReadySegment"
+        }
+      ],
+      "coverage_gap": "Real browser motion is not exact EVENT-start/session-child manifest assertion.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retain concrete important app/protocol/cache/privacy/media risk missing from existing genuine E2E",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/hls_playlist_session_internal_test.go",
       "line": 24,
       "test": "TestSessionPlaylistRejectsUnsafeOrExcessiveMediaReferences",
       "baseline_file_sha256": "00c2fe91b5a1b0759536fb451be7b2a57f49893aa7892d325418ad37289466ed",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Absolute/tag absolute/unquoted/spaced/trailing junk/traversal and >4096 URI/>16k blank line matrices reject503 without exposing outside-cache bytes.",
+      "production_owner": "apps/subtitles/internal/server/hls_playlist_session.go; apps/subtitles/internal/server/hls_projection_ready.go; apps/subtitles/internal/server/hls_delivery.go; packages/playback/{hls_delivery.go,hls_duration.go,hls_playlist.go}",
+      "non_test_callers": "App New registers actual watch/API/Jellyfin/HLS/settings handlers and uses planner/probe/settings state; pure direct aliases invoke shared owner only as explicitly recorded.",
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_owner_contract",
+          "reference": "apps/subtitles/internal/server/hls_playlist_session_internal_test.go::TestSessionPlaylistRejectsUnsafeOrExcessiveMediaReferences"
+        }
+      ],
+      "coverage_gap": "Browser valid manifest never injects hostile cached references; security boundary retained.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retain concrete important app/protocol/cache/privacy/media risk missing from existing genuine E2E",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/hls_playlist_session_internal_test.go",
       "line": 55,
       "test": "TestSessionlessPlaylistStillRejectsUnsafeMediaReference",
       "baseline_file_sha256": "00c2fe91b5a1b0759536fb451be7b2a57f49893aa7892d325418ad37289466ed",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Actual sessionless serving rejects outside-cache media reference503 and leaks no forbidden bytes.",
+      "production_owner": "apps/subtitles/internal/server/hls_playlist_session.go; apps/subtitles/internal/server/hls_projection_ready.go; apps/subtitles/internal/server/hls_delivery.go; packages/playback/{hls_delivery.go,hls_duration.go,hls_playlist.go}",
+      "non_test_callers": "App New registers actual watch/API/Jellyfin/HLS/settings handlers and uses planner/probe/settings state; pure direct aliases invoke shared owner only as explicitly recorded.",
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_owner_contract",
+          "reference": "apps/subtitles/internal/server/hls_playlist_session_internal_test.go::TestSessionlessPlaylistStillRejectsUnsafeMediaReference"
+        }
+      ],
+      "coverage_gap": "Canonical parser tests miss actual app sessionless rewrite/serving binding.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retain concrete important app/protocol/cache/privacy/media risk missing from existing genuine E2E",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/hls_playlist_session_internal_test.go",
       "line": 73,
       "test": "TestSessionPlaylistRejectsOversizedManifest",
       "baseline_file_sha256": "00c2fe91b5a1b0759536fb451be7b2a57f49893aa7892d325418ad37289466ed",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Actual session-bound app returns503 for cached manifest >1MiB without emitting oversized body.",
+      "production_owner": "apps/subtitles/internal/server/hls_playlist_session.go; apps/subtitles/internal/server/hls_projection_ready.go; apps/subtitles/internal/server/hls_delivery.go; packages/playback/{hls_delivery.go,hls_duration.go,hls_playlist.go}",
+      "non_test_callers": "App New registers actual watch/API/Jellyfin/HLS/settings handlers and uses planner/probe/settings state; pure direct aliases invoke shared owner only as explicitly recorded.",
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_owner_contract",
+          "reference": "apps/subtitles/internal/server/hls_playlist_session_internal_test.go::TestSessionPlaylistRejectsOversizedManifest"
+        }
+      ],
+      "coverage_gap": "Canonical bounded reader rejects file but does not prove app response/fallback wiring.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retain concrete important app/protocol/cache/privacy/media risk missing from existing genuine E2E",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/hls_projection_ready_test.go",
       "line": 18,
       "test": "TestHLSDeliveryWaitsForAtomicProjectionReadinessBeforeCompletion",
       "baseline_file_sha256": "da0412888f304b3cc2c94f97c65737eabd366e0b74adb5cf5adfdcbc804035d4",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Bootstrap tiny segments cannot be prematurely projected; response waits for atomic ready4sec cadence and returns5 VOD segments while encoder EVENT cache remains unchanged.",
+      "production_owner": "apps/subtitles/internal/server/hls_playlist_session.go; apps/subtitles/internal/server/hls_projection_ready.go; apps/subtitles/internal/server/hls_delivery.go; packages/playback/{hls_delivery.go,hls_duration.go,hls_playlist.go}",
+      "non_test_callers": "App New registers actual watch/API/Jellyfin/HLS/settings handlers and uses planner/probe/settings state; pure direct aliases invoke shared owner only as explicitly recorded.",
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_owner_contract",
+          "reference": "apps/subtitles/internal/server/hls_projection_ready_test.go::TestHLSDeliveryWaitsForAtomicProjectionReadinessBeforeCompletion"
+        }
+      ],
+      "coverage_gap": "Real app private manager/filesystem fixture, not browser or real encoder; normal ready sample misses atomic replacement race.",
+      "history": "aeeba0ee4e9d87dec55d59c800da7d857b43596e Restore playback and management contract coverage",
+      "risk": "Retain concrete important app/protocol/cache/privacy/media risk missing from existing genuine E2E",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/hls_projection_ready_test.go",
       "line": 49,
       "test": "TestHLSDeliveryProjectionRejectsUnreadyAndUnsafeManifests",
       "baseline_file_sha256": "da0412888f304b3cc2c94f97c65737eabd366e0b74adb5cf5adfdcbc804035d4",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "75ms deadline, traversal reference and1MiB overflow produce503 and unchanged cache.",
+      "production_owner": "apps/subtitles/internal/server/hls_playlist_session.go; apps/subtitles/internal/server/hls_projection_ready.go; apps/subtitles/internal/server/hls_delivery.go; packages/playback/{hls_delivery.go,hls_duration.go,hls_playlist.go}",
+      "non_test_callers": "App New registers actual watch/API/Jellyfin/HLS/settings handlers and uses planner/probe/settings state; pure direct aliases invoke shared owner only as explicitly recorded.",
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_owner_contract",
+          "reference": "apps/subtitles/internal/server/hls_projection_ready_test.go::TestHLSDeliveryProjectionRejectsUnreadyAndUnsafeManifests"
+        }
+      ],
+      "coverage_gap": "Live completed ordinary manifest does not inject invalid/unready bounded projection.",
+      "history": "aeeba0ee4e9d87dec55d59c800da7d857b43596e Restore playback and management contract coverage",
+      "risk": "Retain concrete important app/protocol/cache/privacy/media risk missing from existing genuine E2E",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/hls_ready_test.go",
       "line": 16,
       "test": "TestHLSDeliveryWaitsOnlyForPublishedActiveSegments",
       "baseline_file_sha256": "5f122c1599430f13a77a19eded08f6958f230b8d874a070ba914cad2a80174b4",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "App serveRecipe waits for advertised active future segment and returns its eventual bytes.",
+      "production_owner": "apps/subtitles/internal/server/hls_delivery.go; apps/subtitles/internal/server/hls_ready.go; apps/subtitles/internal/server/hls.go",
+      "non_test_callers": "App New registers actual watch/API/Jellyfin/HLS/settings handlers and uses planner/probe/settings state; pure direct aliases invoke shared owner only as explicitly recorded.",
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_owner_contract",
+          "reference": "apps/subtitles/internal/server/hls_ready_test.go::TestHLSDeliveryWaitsOnlyForPublishedActiveSegments"
+        }
+      ],
+      "coverage_gap": "Actual file creation after25ms; real browser current sample lacks deterministic not-yet-created advertised segment.",
+      "history": "aeeba0ee4e9d87dec55d59c800da7d857b43596e Restore playback and management contract coverage",
+      "risk": "Retain concrete important app/protocol/cache/privacy/media risk missing from existing genuine E2E",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/hls_ready_test.go",
       "line": 34,
       "test": "TestHLSDeliveryUnknownInactiveAndCanceledSegmentsStayBounded",
       "baseline_file_sha256": "5f122c1599430f13a77a19eded08f6958f230b8d874a070ba914cad2a80174b4",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Unknown99999/missing init, inactive encoder and cancelled request return bounded404 without creating missing cache files.",
+      "production_owner": "apps/subtitles/internal/server/hls_delivery.go; apps/subtitles/internal/server/hls_ready.go; apps/subtitles/internal/server/hls.go",
+      "non_test_callers": "App New registers actual watch/API/Jellyfin/HLS/settings handlers and uses planner/probe/settings state; pure direct aliases invoke shared owner only as explicitly recorded.",
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_owner_contract",
+          "reference": "apps/subtitles/internal/server/hls_ready_test.go::TestHLSDeliveryUnknownInactiveAndCanceledSegmentsStayBounded"
+        }
+      ],
+      "coverage_gap": "Browser HTTP failure routing does not reach app cancellation/readiness and cache no-write branches.",
+      "history": "aeeba0ee4e9d87dec55d59c800da7d857b43596e Restore playback and management contract coverage",
+      "risk": "Retain concrete important app/protocol/cache/privacy/media risk missing from existing genuine E2E",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/hls_ready_test.go",
       "line": 64,
       "test": "TestInvalidPlaybackSessionUsesOnlyPublishedManifestSegments",
       "baseline_file_sha256": "5f122c1599430f13a77a19eded08f6958f230b8d874a070ba914cad2a80174b4",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Invalid session fallback serves only published segment0, rejects unpublished segment1 and preserves source manifest bytes.",
+      "production_owner": "apps/subtitles/internal/server/hls_delivery.go; apps/subtitles/internal/server/hls_ready.go; apps/subtitles/internal/server/hls.go",
+      "non_test_callers": "App New registers actual watch/API/Jellyfin/HLS/settings handlers and uses planner/probe/settings state; pure direct aliases invoke shared owner only as explicitly recorded.",
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_owner_contract",
+          "reference": "apps/subtitles/internal/server/hls_ready_test.go::TestInvalidPlaybackSessionUsesOnlyPublishedManifestSegments"
+        }
+      ],
+      "coverage_gap": "Genuine authorized playback never injects malformed session plus unmaterialized segment.",
+      "history": "aeeba0ee4e9d87dec55d59c800da7d857b43596e Restore playback and management contract coverage",
+      "risk": "Retain concrete important app/protocol/cache/privacy/media risk missing from existing genuine E2E",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/hls_scheduler_test.go",
       "line": 10,
       "test": "TestHLSSchedulerContract",
       "baseline_file_sha256": "578d91e2c0181367cc2e3267ed18194108bf739367f82af21ca80ff963af2065",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Actual New binding serializes adaptive work under held FFmpeg budget, waits for full stable master and falls back from hardware process failure to software delivery.",
+      "production_owner": "apps/subtitles/internal/server/hls.go; apps/subtitles/internal/server/hls_plan.go; packages/servertest/{transcode.go,transcode_recovery.go,transcode_ladder.go,hls_scheduler.go,hls_seek.go}",
+      "non_test_callers": "App New registers actual watch/API/Jellyfin/HLS/settings handlers and uses planner/probe/settings state; pure direct aliases invoke shared owner only as explicitly recorded.",
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_owner_contract",
+          "reference": "apps/subtitles/internal/server/hls_scheduler_test.go::TestHLSSchedulerContract"
+        }
+      ],
+      "coverage_gap": "Three scripted subcases guard scheduler/app binding, not genuine hardware success. Browser normal stream does not force budget contention or VAAPI failure.",
+      "history": "ab3bcda8953d28d058fcbd9361a00378c1e0518c Restore enabled quality gates and current browser contracts",
+      "risk": "Retain concrete important app/protocol/cache/privacy/media risk missing from existing genuine E2E",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/hls_seek_test.go",
       "line": 5,
       "test": "TestCompatiblePlaybackGeneratesAnAlignedSeekableSuffix",
       "baseline_file_sha256": "f0c09bc4e8370ca3691d57471523701203ff459c55adb177f2caa3face448734",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Actual Subtitles start=2940000ms route aligns to2940s, creates seekable suffix and isolates cache recipe from source timeline.",
+      "production_owner": "apps/subtitles/internal/server/hls.go; apps/subtitles/internal/server/hls_plan.go; packages/servertest/{transcode.go,transcode_recovery.go,transcode_ladder.go,hls_scheduler.go,hls_seek.go}",
+      "non_test_callers": "App New registers actual watch/API/Jellyfin/HLS/settings handlers and uses planner/probe/settings state; pure direct aliases invoke shared owner only as explicitly recorded.",
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_owner_contract",
+          "reference": "apps/subtitles/internal/server/hls_seek_test.go::TestCompatiblePlaybackGeneratesAnAlignedSeekableSuffix"
+        }
+      ],
+      "coverage_gap": "Player uses different seek alignment value; genuine short clip network recovery does not exercise this long aligned offset/cache matrix.",
+      "history": "ab3bcda8953d28d058fcbd9361a00378c1e0518c Restore enabled quality gates and current browser contracts",
+      "risk": "Retain concrete important app/protocol/cache/privacy/media risk missing from existing genuine E2E",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/hls_seek_test.go",
       "line": 9,
       "test": "TestCompatiblePlaybackRejectsInvalidSeekOffsetsWithoutEncoding",
       "baseline_file_sha256": "f0c09bc4e8370ca3691d57471523701203ff459c55adb177f2caa3face448734",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Actual route rejects negative, excessive, malformed or conflicting seek offsets before starting FFmpeg or altering cache.",
+      "production_owner": "apps/subtitles/internal/server/hls.go; apps/subtitles/internal/server/hls_plan.go; packages/servertest/{transcode.go,transcode_recovery.go,transcode_ladder.go,hls_scheduler.go,hls_seek.go}",
+      "non_test_callers": "App New registers actual watch/API/Jellyfin/HLS/settings handlers and uses planner/probe/settings state; pure direct aliases invoke shared owner only as explicitly recorded.",
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_owner_contract",
+          "reference": "apps/subtitles/internal/server/hls_seek_test.go::TestCompatiblePlaybackRejectsInvalidSeekOffsetsWithoutEncoding"
+        }
+      ],
+      "coverage_gap": "Normal browser seeks do not send hostile offset matrix or observe process/cache effects.",
+      "history": "ab3bcda8953d28d058fcbd9361a00378c1e0518c Restore enabled quality gates and current browser contracts",
+      "risk": "Retain concrete important app/protocol/cache/privacy/media risk missing from existing genuine E2E",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/hls_sessionless_test.go",
       "line": 13,
       "test": "TestSessionlessHLSPlaylist",
       "baseline_file_sha256": "9601f4781f6e85949938e1095d520aa721b08979a78629fc3a552786251e3117",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Actual app serve callback projects valid known8s growing manifest, preserves finalized discontinuity and rejects unknown/negative/NaN/7-day durations or missing/invalid cadence without cache mutation.",
+      "production_owner": "apps/subtitles/internal/server/hls_playlist_session.go; apps/subtitles/internal/server/hls_projection_ready.go; apps/subtitles/internal/server/hls_delivery.go; packages/playback/{hls_delivery.go,hls_duration.go,hls_playlist.go}",
+      "non_test_callers": "App New registers actual watch/API/Jellyfin/HLS/settings handlers and uses planner/probe/settings state; pure direct aliases invoke shared owner only as explicitly recorded.",
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_owner_contract",
+          "reference": "apps/subtitles/internal/server/hls_sessionless_test.go::TestSessionlessHLSPlaylist"
+        }
+      ],
+      "coverage_gap": "Shared fixture binds actual local delivery policy; synthetic files are not genuine E2E. Player cadence differs.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retain concrete important app/protocol/cache/privacy/media risk missing from existing genuine E2E",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/hls_sessionless_test.go",
       "line": 25,
       "test": "TestSessionlessHLSProjectionRetainsOutputBoundsAndInvalidSessionFallback",
       "baseline_file_sha256": "9601f4781f6e85949938e1095d520aa721b08979a78629fc3a552786251e3117",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "20000s projection over4096 media refs returns503 without cache writes; invalid session falls back to original EVENT200.",
+      "production_owner": "apps/subtitles/internal/server/hls_playlist_session.go; apps/subtitles/internal/server/hls_projection_ready.go; apps/subtitles/internal/server/hls_delivery.go; packages/playback/{hls_delivery.go,hls_duration.go,hls_playlist.go}",
+      "non_test_callers": "App New registers actual watch/API/Jellyfin/HLS/settings handlers and uses planner/probe/settings state; pure direct aliases invoke shared owner only as explicitly recorded.",
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_owner_contract",
+          "reference": "apps/subtitles/internal/server/hls_sessionless_test.go::TestSessionlessHLSProjectionRetainsOutputBoundsAndInvalidSessionFallback"
+        }
+      ],
+      "coverage_gap": "Normal browser session/duration does not exercise excessive projection or invalid-session fallback.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retain concrete important app/protocol/cache/privacy/media risk missing from existing genuine E2E",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/home_assistant_test.go",
@@ -11467,11 +11659,17 @@
       "decision": "R",
       "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": "Shipped secret-copy controls lose fallback instructions/selection when clipboard access is denied.",
+      "credible_failure": "Shared Theme copy control loses custom data-copy-success/data-copy-fallback localized override attributes; English genuine API-key copy/rejection would still pass.",
       "production_owner": "apps/subtitles/internal/server/{assets.go,ui_icons.go,server.go,password_manager.go}; packages/servertest/{ui_icons.go,shortcuts.go,password_manager.go,accessibility.go}",
       "non_test_callers": "newApplication registers /static/app.css, /static/main.kinosail.bundle.js and templates include them; real browser render/load paths.",
-      "remaining_proof": [],
-      "coverage_gap": "No genuine clipboard-denial E2E exists. Source strings can pass with unreachable fallback and no copy occurs.",
+      "remaining_proof": [
+        {
+          "kind": "genuine_populated_browser_journey",
+          "reference": "apps/player/e2e/ui-happy-paths.spec.ts::Owner can create and revoke an API key and manage a Viewer Profile",
+          "result": "source reviewed; clipboard success/rejection on real created API key; execution status delegated to root"
+        }
+      ],
+      "coverage_gap": "English success/rejection executes selection and default message with one injected browser API. No runtime non-English/custom-message branch; retained cheapest shared source guard catches removal of those attribute reads, but not unreachable code.",
       "history": "52fc46756 Initial commit; later app source updates do not add independent behavioral proof.",
       "risk": "Retained conservative failure/platform guard: existing real E2E lacks this path. Source-presence assertion is weak, but removing it currently loses independent regression protection.",
       "validation_command": "cd apps/subtitles && go test ./internal/server ./internal/configuration ./internal/settingsstate ./internal/subtitlelanguage ./internal/database ./internal/backup ./cmd/kinosail"
@@ -11749,85 +11947,110 @@
       "line": 10,
       "test": "TestRequestedPlaybackCapabilitiesPreserveValidatedDisplayHints",
       "baseline_file_sha256": "4d2985bc3212bb6d00779d5519067bad1f8e6339610f66c57da3592b4b9ad5fd",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Real app request adapter maps HDR=sdr,hdr10,channels6,videoH264/audioAAC through validation into planner capabilities.",
+      "production_owner": "apps/subtitles/internal/server/playback_http.go; apps/subtitles/internal/server/api_product.go; packages/playback/subtitles.go",
+      "non_test_callers": "App New registers actual watch/API/Jellyfin/HLS/settings handlers and uses planner/probe/settings state; pure direct aliases invoke shared owner only as explicitly recorded.",
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_owner_contract",
+          "reference": "apps/subtitles/internal/server/playback_capabilities_test.go::TestRequestedPlaybackCapabilitiesPreserveValidatedDisplayHints"
+        }
+      ],
+      "coverage_gap": "Shared parsers alone miss app forwarding; current actual E2E lacks alternate display/channel request matrix.",
+      "history": "aeeba0ee4e9d87dec55d59c800da7d857b43596e Restore playback and management contract coverage",
+      "risk": "Retain concrete important app/protocol/cache/privacy/media risk missing from existing genuine E2E",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/playback_http_test.go",
       "line": 9,
       "test": "TestPlaybackSubtitlesOwnsDefaultSelection",
       "baseline_file_sha256": "e41bd7d8c5b018c94af14a974a4c7846de09cf4e168b1042e73a9e42be8a1ad1",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Actual app subtitle projection selects exactly preferred externalEN over embeddedFR; disabling subtitles removes both defaults.",
+      "production_owner": "apps/subtitles/internal/server/playback_http.go; apps/subtitles/internal/server/api_product.go; packages/playback/subtitles.go",
+      "non_test_callers": "App New registers actual watch/API/Jellyfin/HLS/settings handlers and uses planner/probe/settings state; pure direct aliases invoke shared owner only as explicitly recorded.",
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_owner_contract",
+          "reference": "apps/subtitles/internal/server/playback_http_test.go::TestPlaybackSubtitlesOwnsDefaultSelection"
+        }
+      ],
+      "coverage_gap": "Live defaultEN2cue journey lacks multilingual embedded-vs-external/off projection.",
+      "history": "c6c5842b1f88405325bc4a59c03eb3b25bf163a3 Hide unselected forced subtitles from playback choices",
+      "risk": "Retain concrete important app/protocol/cache/privacy/media risk missing from existing genuine E2E",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/playback_http_test.go",
       "line": 25,
       "test": "TestPlaybackSubtitlesChoosesOnePreferredTrackPerLanguage",
       "baseline_file_sha256": "e41bd7d8c5b018c94af14a974a4c7846de09cf4e168b1042e73a9e42be8a1ad1",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Standard vsSDH selects embedded translation3 vscaptions4 among forced/external duplicates, exactly one default.",
+      "production_owner": "apps/subtitles/internal/server/playback_http.go; apps/subtitles/internal/server/api_product.go; packages/playback/subtitles.go",
+      "non_test_callers": "App New registers actual watch/API/Jellyfin/HLS/settings handlers and uses planner/probe/settings state; pure direct aliases invoke shared owner only as explicitly recorded.",
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_owner_contract",
+          "reference": "apps/subtitles/internal/server/playback_http_test.go::TestPlaybackSubtitlesChoosesOnePreferredTrackPerLanguage"
+        }
+      ],
+      "coverage_gap": "Genuine current subtitle clip has no embedded/captions/forced competing tracks.",
+      "history": "c6c5842b1f88405325bc4a59c03eb3b25bf163a3 Hide unselected forced subtitles from playback choices",
+      "risk": "Retain concrete important app/protocol/cache/privacy/media risk missing from existing genuine E2E",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/playback_http_test.go",
       "line": 48,
       "test": "TestLimitedPickerDefaultsToFirstAvailablePreferredLanguage",
       "baseline_file_sha256": "e41bd7d8c5b018c94af14a974a4c7846de09cf4e168b1042e73a9e42be8a1ad1",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Preferred order EN thenFR controls picker default; forcedEN retained forcedDE excluded; unavailableES falls backFR; off removes all defaults.",
+      "production_owner": "apps/subtitles/internal/server/playback_http.go; apps/subtitles/internal/server/api_product.go; packages/playback/subtitles.go",
+      "non_test_callers": "App New registers actual watch/API/Jellyfin/HLS/settings handlers and uses planner/probe/settings state; pure direct aliases invoke shared owner only as explicitly recorded.",
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_owner_contract",
+          "reference": "apps/subtitles/internal/server/playback_http_test.go::TestLimitedPickerDefaultsToFirstAvailablePreferredLanguage"
+        }
+      ],
+      "coverage_gap": "Live defaults journey covers ordinary English toggle, not all ordering/forced/unavailable-language cases.",
+      "history": "c6c5842b1f88405325bc4a59c03eb3b25bf163a3 Hide unselected forced subtitles from playback choices",
+      "risk": "Retain concrete important app/protocol/cache/privacy/media risk missing from existing genuine E2E",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/playback_latency_test.go",
       "line": 16,
       "test": "TestPlaybackAdaptersBoundColdRandomAccessProbe",
       "baseline_file_sha256": "4c6d61a91e2396d8549005b6ace363df97f6bdd8676a284269b22697431b0658",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Actual API/web cold marker probe completes<1sec and includes read_intervals; fake probe delays unbounded show_frames2sec.",
+      "production_owner": "apps/subtitles/internal/server/observability.go; apps/subtitles/internal/server/api_product.go; apps/subtitles/internal/server/player_playback.go; packages/playback/{trace.go,trace_http.go}; packages/mediaprobe",
+      "non_test_callers": "App New registers actual watch/API/Jellyfin/HLS/settings handlers and uses planner/probe/settings state; pure direct aliases invoke shared owner only as explicitly recorded.",
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_owner_contract",
+          "reference": "apps/subtitles/internal/server/playback_latency_test.go::TestPlaybackAdaptersBoundColdRandomAccessProbe"
+        }
+      ],
+      "coverage_gap": "Normal browser2sec moving frame sample has warm/short media and cannot force bounded random-access command admission.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retain concrete important app/protocol/cache/privacy/media risk missing from existing genuine E2E",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/playback_plan_test.go",
@@ -11888,17 +12111,22 @@
       "line": 9,
       "test": "TestPlaybackPresentationNamesEveryTransformPrecisely",
       "baseline_file_sha256": "8160beeb4452cdd83ebfb7a6324a4866d61370625801a27b23f3c70ca8461bb0",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Actual local app presentation names/description distinguish direct/remux/audio-only/video/bitrate reasons accurately.",
+      "production_owner": "apps/subtitles/internal/server/player_playback.go; packages/servertest/playback_presentation_contract.go",
+      "non_test_callers": "App New registers actual watch/API/Jellyfin/HLS/settings handlers and uses planner/probe/settings state; pure direct aliases invoke shared owner only as explicitly recorded.",
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_owner_contract",
+          "reference": "apps/subtitles/internal/server/playback_presentation_test.go::TestPlaybackPresentationNamesEveryTransformPrecisely"
+        }
+      ],
+      "coverage_gap": "Shared fixture invokes actual local callback; no genuine E2E for every transformation reason. Exact user-facing labels survive internal renaming.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retain concrete important app/protocol/cache/privacy/media risk missing from existing genuine E2E",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/playback_qualities_test.go",
@@ -12201,51 +12429,66 @@
       "line": 20,
       "test": "TestPlaybackTraceCorrelatesBrowserAndMediaWithoutPrivateData",
       "baseline_file_sha256": "d86827cdc5e467a8da95ed9984272b1056d4c583240cfe3ec339f2692bec8c53",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Actual app watch session propagates to trace and one-byte range request; logs plan/trace/ranges/byte count with same session and no path/title/id/URL.",
+      "production_owner": "apps/subtitles/internal/server/observability.go; apps/subtitles/internal/server/api_product.go; apps/subtitles/internal/server/player_playback.go; packages/playback/{trace.go,trace_http.go}; packages/mediaprobe",
+      "non_test_callers": "App New registers actual watch/API/Jellyfin/HLS/settings handlers and uses planner/probe/settings state; pure direct aliases invoke shared owner only as explicitly recorded.",
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_owner_contract",
+          "reference": "apps/subtitles/internal/server/playback_trace_test.go::TestPlaybackTraceCorrelatesBrowserAndMediaWithoutPrivateData"
+        }
+      ],
+      "coverage_gap": "Browser motion screenshots do not assert app structured logging or private data absence.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retain concrete important app/protocol/cache/privacy/media risk missing from existing genuine E2E",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/playback_trace_test.go",
       "line": 59,
       "test": "TestPlaybackTraceRejectsInvalidInputWithoutLogging",
       "baseline_file_sha256": "d86827cdc5e467a8da95ed9984272b1056d4c583240cfe3ec339f2692bec8c53",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Six invalid trace requests reach actual app API and reject400 without playback trace logging.",
+      "production_owner": "apps/subtitles/internal/server/observability.go; apps/subtitles/internal/server/api_product.go; apps/subtitles/internal/server/player_playback.go; packages/playback/{trace.go,trace_http.go}; packages/mediaprobe",
+      "non_test_callers": "App New registers actual watch/API/Jellyfin/HLS/settings handlers and uses planner/probe/settings state; pure direct aliases invoke shared owner only as explicitly recorded.",
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_owner_contract",
+          "reference": "apps/subtitles/internal/server/playback_trace_test.go::TestPlaybackTraceRejectsInvalidInputWithoutLogging"
+        }
+      ],
+      "coverage_gap": "Shared TraceHTTP unit guards do not prove app validPlaybackSession and visible-item bindings.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retain concrete important app/protocol/cache/privacy/media risk missing from existing genuine E2E",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/playback_trace_test.go",
       "line": 66,
       "test": "TestDisplayedFramePlaybackTraceEventsAreAccepted",
       "baseline_file_sha256": "d86827cdc5e467a8da95ed9984272b1056d4c583240cfe3ec339f2692bec8c53",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Shared trace allowlist accepts capability-direct/first-frame/frame-after-seek using real app8..64 ASCII session validator.",
+      "production_owner": "apps/subtitles/internal/server/observability.go; apps/subtitles/internal/server/api_product.go; apps/subtitles/internal/server/player_playback.go; packages/playback/{trace.go,trace_http.go}; packages/mediaprobe",
+      "non_test_callers": "App New registers actual watch/API/Jellyfin/HLS/settings handlers and uses planner/probe/settings state; pure direct aliases invoke shared owner only as explicitly recorded.",
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_owner_contract",
+          "reference": "apps/subtitles/internal/server/playback_trace_test.go::TestDisplayedFramePlaybackTraceEventsAreAccepted"
+        }
+      ],
+      "coverage_gap": "Canonical moving-frame keeper tests different first-moving-frame event and fake validator; live browser receipts do not assert all three event admissions.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retain concrete important app/protocol/cache/privacy/media risk missing from existing genuine E2E",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/player_cast_icon_test.go",
@@ -13797,34 +14040,44 @@
       "line": 14,
       "test": "TestMusicPlaybackExposesReplayGainMetadataThroughAPIAndWeb",
       "baseline_file_sha256": "14494cf0a450637682b96ddd3e4f56143a495c01727ee72bd2ec4b4a043cfcd9",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Scripted probe tags -7.23/-8.10dB survive actual app API floats and web gain attributes.",
+      "production_owner": "apps/subtitles/internal/server/probe_inspect.go; apps/subtitles/internal/server/api_product.go; apps/subtitles/internal/server/player.go; packages/mediaprobe/replaygain.go",
+      "non_test_callers": "App New registers actual watch/API/Jellyfin/HLS/settings handlers and uses planner/probe/settings state; pure direct aliases invoke shared owner only as explicitly recorded.",
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_owner_contract",
+          "reference": "apps/subtitles/internal/server/replaygain_test.go::TestMusicPlaybackExposesReplayGainMetadataThroughAPIAndWeb"
+        }
+      ],
+      "coverage_gap": "Canonical parser misses both app adapter forwarding fields; no genuine audio gain playback fixture.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retain concrete important app/protocol/cache/privacy/media risk missing from existing genuine E2E",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/replaygain_test.go",
       "line": 57,
       "test": "TestMusicPlaybackUsesR128WhenReplayGainIsInvalid",
       "baseline_file_sha256": "14494cf0a450637682b96ddd3e4f56143a495c01727ee72bd2ec4b4a043cfcd9",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Invalid track gain falls backR128-1024\u2192-4dB; invalid500dB/nan album never enters API.",
+      "production_owner": "apps/subtitles/internal/server/probe_inspect.go; apps/subtitles/internal/server/api_product.go; apps/subtitles/internal/server/player.go; packages/mediaprobe/replaygain.go",
+      "non_test_callers": "App New registers actual watch/API/Jellyfin/HLS/settings handlers and uses planner/probe/settings state; pure direct aliases invoke shared owner only as explicitly recorded.",
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_owner_contract",
+          "reference": "apps/subtitles/internal/server/replaygain_test.go::TestMusicPlaybackUsesR128WhenReplayGainIsInvalid"
+        }
+      ],
+      "coverage_gap": "Actual app probe-to-API boundary retained; browser video lacks untrusted gain metadata. Not actual audible loudness.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retain concrete important app/protocol/cache/privacy/media risk missing from existing genuine E2E",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/saml_test.go",
@@ -20507,6 +20760,11 @@
         {
           "kind": "isolated_pipeline_keeper_or_explicit_browser_source_mapping",
           "reference": "Genuine subtitle-dashboard-history-tests Subtitle history has clear empty and responsive states navigates actual route at1440/390/320, asserts both headings, History aria-current, Find subtitles link and screenshots. This child reviewed source only; final root live proof still required. Populated history route mock is not substituted for genuine keeper."
+        },
+        {
+          "kind": "genuine_populated_browser_journey",
+          "reference": "apps/subtitles/e2e/subtitle-dashboard-history-tests.ts::history clear/empty/responsive",
+          "result": "pass at6c9781e2605dc947c4c09e07bb6edfcc8911d42c; root .verification/test-overhaul/subtitles-ui-http-6c9781"
         }
       ],
       "coverage_gap": "Genuine subtitle-dashboard-history-tests Subtitle history has clear empty and responsive states navigates actual route at1440/390/320, asserts both headings, History aria-current, Find subtitles link and screenshots. This child reviewed source only; final root live proof still required. Populated history route mock is not substituted for genuine keeper.",
@@ -26149,187 +26407,242 @@
       "line": 17,
       "test": "TestUnsupportedContainerDefaultsToDirectPlaybackWithCompatibleFallback",
       "baseline_file_sha256": "eb1a8974d8d18a7deeb981ec008c4d6bba6a9dea98f0f205aefd1984e45a4477",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Actual New handler gives Matroska direct source/truthful type and compatible HLS fallback; Safari UA keeps direct in data-direct instead of eager src.",
+      "production_owner": "apps/subtitles/internal/server/hls.go; apps/subtitles/internal/server/hls_plan.go; packages/servertest/{transcode.go,transcode_recovery.go,transcode_ladder.go,hls_scheduler.go,hls_seek.go}",
+      "non_test_callers": "App New registers actual watch/API/Jellyfin/HLS/settings handlers and uses planner/probe/settings state; pure direct aliases invoke shared owner only as explicitly recorded.",
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_owner_contract",
+          "reference": "apps/subtitles/internal/server/transcode_test.go::TestUnsupportedContainerDefaultsToDirectPlaybackWithCompatibleFallback"
+        }
+      ],
+      "coverage_gap": "Scripted FFprobe/FFmpeg and source fragment are not Safari decoding. Genuine browser normal MP4 does not cover MKV app projection.",
+      "history": "d434c849a9fc1e16f948efa057344364bb107727 Version Player script URLs from their served contents",
+      "risk": "Retain concrete important app/protocol/cache/privacy/media risk missing from existing genuine E2E",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/transcode_test.go",
       "line": 21,
       "test": "TestUnsupportedCodecInMP4DefaultsToDirectPlaybackWithCompatibleFallback",
       "baseline_file_sha256": "eb1a8974d8d18a7deeb981ec008c4d6bba6a9dea98f0f205aefd1984e45a4477",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "HEVC/EAC3 MP4 actual handler retains original and compatible fallback without falsely claiming supported direct codec parameters.",
+      "production_owner": "apps/subtitles/internal/server/hls.go; apps/subtitles/internal/server/hls_plan.go; packages/servertest/{transcode.go,transcode_recovery.go,transcode_ladder.go,hls_scheduler.go,hls_seek.go}",
+      "non_test_callers": "App New registers actual watch/API/Jellyfin/HLS/settings handlers and uses planner/probe/settings state; pure direct aliases invoke shared owner only as explicitly recorded.",
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_owner_contract",
+          "reference": "apps/subtitles/internal/server/transcode_test.go::TestUnsupportedCodecInMP4DefaultsToDirectPlaybackWithCompatibleFallback"
+        }
+      ],
+      "coverage_gap": "Browser fixture supplies directType; normal live H264 sample does not prove this unsupported-codec Go projection.",
+      "history": "d434c849a9fc1e16f948efa057344364bb107727 Version Player script URLs from their served contents",
+      "risk": "Retain concrete important app/protocol/cache/privacy/media risk missing from existing genuine E2E",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/transcode_test.go",
       "line": 25,
       "test": "TestViewerCanRequestSeekableCompatiblePlaylist",
       "baseline_file_sha256": "eb1a8974d8d18a7deeb981ec008c4d6bba6a9dea98f0f205aefd1984e45a4477",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Actual compatible route publishes complete seekable VOD/ENDLIST instead of old EVENT cache.",
+      "production_owner": "apps/subtitles/internal/server/hls.go; apps/subtitles/internal/server/hls_plan.go; packages/servertest/{transcode.go,transcode_recovery.go,transcode_ladder.go,hls_scheduler.go,hls_seek.go}",
+      "non_test_callers": "App New registers actual watch/API/Jellyfin/HLS/settings handlers and uses planner/probe/settings state; pure direct aliases invoke shared owner only as explicitly recorded.",
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_owner_contract",
+          "reference": "apps/subtitles/internal/server/transcode_test.go::TestViewerCanRequestSeekableCompatiblePlaylist"
+        }
+      ],
+      "coverage_gap": "Fake process produces fixture bytes; no real decoder or long seek demonstration.",
+      "history": "d434c849a9fc1e16f948efa057344364bb107727 Version Player script URLs from their served contents",
+      "risk": "Retain concrete important app/protocol/cache/privacy/media risk missing from existing genuine E2E",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/transcode_test.go",
       "line": 29,
       "test": "TestInterruptedCompatibleCacheIsRegeneratedAfterServerRestart",
       "baseline_file_sha256": "eb1a8974d8d18a7deeb981ec008c4d6bba6a9dea98f0f205aefd1984e45a4477",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Restart detects interrupted EVENT/malformed/lookalike VOD/missing or unsafe initialization/segments and regenerates usable master rather than serving corrupt cache.",
+      "production_owner": "apps/subtitles/internal/server/hls.go; apps/subtitles/internal/server/hls_plan.go; packages/servertest/{transcode.go,transcode_recovery.go,transcode_ladder.go,hls_scheduler.go,hls_seek.go}",
+      "non_test_callers": "App New registers actual watch/API/Jellyfin/HLS/settings handlers and uses planner/probe/settings state; pure direct aliases invoke shared owner only as explicitly recorded.",
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_owner_contract",
+          "reference": "apps/subtitles/internal/server/transcode_test.go::TestInterruptedCompatibleCacheIsRegeneratedAfterServerRestart"
+        }
+      ],
+      "coverage_gap": "Genuine network disappearance journey keeps same server/cache; does not inject persisted cache corruption or restart.",
+      "history": "d434c849a9fc1e16f948efa057344364bb107727 Version Player script URLs from their served contents",
+      "risk": "Retain concrete important app/protocol/cache/privacy/media risk missing from existing genuine E2E",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/transcode_test.go",
       "line": 33,
       "test": "TestAdaptiveHLSPublishesACompleteTruthfulLadder",
       "baseline_file_sha256": "eb1a8974d8d18a7deeb981ec008c4d6bba6a9dea98f0f205aefd1984e45a4477",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Actual HLS command and published master agree with synthetic MP4 initialization codec, dimensions, frame rate and bandwidth; prescribed keyframe/HLS/thread settings and full ladder must survive.",
+      "production_owner": "apps/subtitles/internal/server/hls.go; apps/subtitles/internal/server/hls_plan.go; packages/servertest/{transcode.go,transcode_recovery.go,transcode_ladder.go,hls_scheduler.go,hls_seek.go}",
+      "non_test_callers": "App New registers actual watch/API/Jellyfin/HLS/settings handlers and uses planner/probe/settings state; pure direct aliases invoke shared owner only as explicitly recorded.",
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_owner_contract",
+          "reference": "apps/subtitles/internal/server/transcode_test.go::TestAdaptiveHLSPublishesACompleteTruthfulLadder"
+        }
+      ],
+      "coverage_gap": "Synthetic init/segments are not encoder execution; normal live quality selection misses command policy and advertised-vs-produced matrix.",
+      "history": "d434c849a9fc1e16f948efa057344364bb107727 Version Player script URLs from their served contents",
+      "risk": "Retain concrete important app/protocol/cache/privacy/media risk missing from existing genuine E2E",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/transcode_test.go",
       "line": 37,
       "test": "TestAdaptiveHLSDoesNotAdvertiseOrEncodeAbsentAudio",
       "baseline_file_sha256": "eb1a8974d8d18a7deeb981ec008c4d6bba6a9dea98f0f205aefd1984e45a4477",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Silent HEVC app route omits audio encoding and MP4A advertisement; prevents nonexistent stream mapping/failure.",
+      "production_owner": "apps/subtitles/internal/server/hls.go; apps/subtitles/internal/server/hls_plan.go; packages/servertest/{transcode.go,transcode_recovery.go,transcode_ladder.go,hls_scheduler.go,hls_seek.go}",
+      "non_test_callers": "App New registers actual watch/API/Jellyfin/HLS/settings handlers and uses planner/probe/settings state; pure direct aliases invoke shared owner only as explicitly recorded.",
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_owner_contract",
+          "reference": "apps/subtitles/internal/server/transcode_test.go::TestAdaptiveHLSDoesNotAdvertiseOrEncodeAbsentAudio"
+        }
+      ],
+      "coverage_gap": "Live no-audio Subtitles review media does not exercise this HEVC HLS command/manifest projection.",
+      "history": "d434c849a9fc1e16f948efa057344364bb107727 Version Player script URLs from their served contents",
+      "risk": "Retain concrete important app/protocol/cache/privacy/media risk missing from existing genuine E2E",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/transcoder_backends_test.go",
       "line": 9,
       "test": "TestEveryHardwareBackendHasAnFFmpegRecipe",
       "baseline_file_sha256": "217db803e7c053339d188ce71c52e29eaf1167ec6248e98c41f03506e344b53e",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "D",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Exact shared default HardwareDecode:false eight-backend recipes and absence of unrequested -hwaccel.",
+      "production_owner": "apps/subtitles/internal/server/transcoder.go; packages/transcodepolicy/{arguments.go,frames.go}; packages/servertest/transcoder_backends.go",
+      "non_test_callers": "App New registers actual watch/API/Jellyfin/HLS/settings handlers and uses planner/probe/settings state; pure direct aliases invoke shared owner only as explicitly recorded.",
+      "remaining_proof": [
+        {
+          "kind": "exact_canonical_shared_keeper",
+          "reference": "apps/player/internal/server/transcoder_backends_test.go::TestEveryHardwareBackendHasAnFFmpegRecipe retained canonical R confirmed Player23e54ffea; both local wrappers return transcodepolicy.VideoArguments(options,width) with no app policy. Canonical package HardwareDecode:true tests alone are not equivalent."
+        }
+      ],
+      "coverage_gap": "apps/player/internal/server/transcoder_backends_test.go::TestEveryHardwareBackendHasAnFFmpegRecipe retained canonical R confirmed Player23e54ffea; both local wrappers return transcodepolicy.VideoArguments(options,width) with no app policy. Canonical package HardwareDecode:true tests alone are not equivalent.",
+      "history": "ab3bcda8953d28d058fcbd9361a00378c1e0518c Restore enabled quality gates and current browser contracts",
+      "risk": "Low: identical shared owner replay; canonical keeper verified",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/transcoder_backends_test.go",
       "line": 12,
       "test": "TestRKMPPToneMappingUsesSoftwareDecodeAndFilterBeforeHardwareEncode",
       "baseline_file_sha256": "217db803e7c053339d188ce71c52e29eaf1167ec6248e98c41f03506e344b53e",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "D",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Exact shared RKMPP software tone map+hardware encode including CQP/qp_init22 and forbidden drm_prime/scale_rkrga.",
+      "production_owner": "apps/subtitles/internal/server/transcoder.go; packages/transcodepolicy/{arguments.go,frames.go}; packages/servertest/transcoder_backends.go",
+      "non_test_callers": "App New registers actual watch/API/Jellyfin/HLS/settings handlers and uses planner/probe/settings state; pure direct aliases invoke shared owner only as explicitly recorded.",
+      "remaining_proof": [
+        {
+          "kind": "exact_canonical_shared_keeper",
+          "reference": "apps/player/internal/server/transcoder_backends_test.go::TestRKMPPToneMappingUsesSoftwareDecodeAndFilterBeforeHardwareEncode retained canonical R confirmed Player23e54ffea; both local wrappers return transcodepolicy.VideoArguments(options,width) with no app policy. Canonical package HardwareDecode:true tests alone are not equivalent."
+        }
+      ],
+      "coverage_gap": "apps/player/internal/server/transcoder_backends_test.go::TestRKMPPToneMappingUsesSoftwareDecodeAndFilterBeforeHardwareEncode retained canonical R confirmed Player23e54ffea; both local wrappers return transcodepolicy.VideoArguments(options,width) with no app policy. Canonical package HardwareDecode:true tests alone are not equivalent.",
+      "history": "ab3bcda8953d28d058fcbd9361a00378c1e0518c Restore enabled quality gates and current browser contracts",
+      "risk": "Low: identical shared owner replay; canonical keeper verified",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/transcoder_backends_test.go",
       "line": 15,
       "test": "TestIntelBackendsUseTheDetectedRenderDevice",
       "baseline_file_sha256": "217db803e7c053339d188ce71c52e29eaf1167ec6248e98c41f03506e344b53e",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "D",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Exact shared defaultfalse QSV/VAAPI input includes selected renderD129.",
+      "production_owner": "apps/subtitles/internal/server/transcoder.go; packages/transcodepolicy/{arguments.go,frames.go}; packages/servertest/transcoder_backends.go",
+      "non_test_callers": "App New registers actual watch/API/Jellyfin/HLS/settings handlers and uses planner/probe/settings state; pure direct aliases invoke shared owner only as explicitly recorded.",
+      "remaining_proof": [
+        {
+          "kind": "exact_canonical_shared_keeper",
+          "reference": "apps/player/internal/server/transcoder_backends_test.go::TestIntelBackendsUseTheDetectedRenderDevice retained canonical R confirmed Player23e54ffea; both local wrappers return transcodepolicy.VideoArguments(options,width) with no app policy. Canonical package HardwareDecode:true tests alone are not equivalent."
+        }
+      ],
+      "coverage_gap": "apps/player/internal/server/transcoder_backends_test.go::TestIntelBackendsUseTheDetectedRenderDevice retained canonical R confirmed Player23e54ffea; both local wrappers return transcodepolicy.VideoArguments(options,width) with no app policy. Canonical package HardwareDecode:true tests alone are not equivalent.",
+      "history": "ab3bcda8953d28d058fcbd9361a00378c1e0518c Restore enabled quality gates and current browser contracts",
+      "risk": "Low: identical shared owner replay; canonical keeper verified",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/transcoder_check_test.go",
       "line": 16,
       "test": "TestOwnerCanRunLocalTranscoderCheckThroughWebAndAPI",
       "baseline_file_sha256": "64a908c8e9d4f45a6bb936d05f6631df6655608a5f2a597247b9d7b6e9862ea9",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Actual owner-only web/API check changes pending\u2192passed, blocks anon401/Viewer403, runs explicit testsrc2/libx264/aac/scale and does not rerun on quality save.",
+      "production_owner": "apps/subtitles/internal/server/api_admin.go; apps/subtitles/internal/server/settings_routes.go; apps/subtitles/internal/server/settings_http.go; packages/transcodepolicy/check*.go; packages/transcodehardware/selection_store.go",
+      "non_test_callers": "App New registers actual watch/API/Jellyfin/HLS/settings handlers and uses planner/probe/settings state; pure direct aliases invoke shared owner only as explicitly recorded.",
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_owner_contract",
+          "reference": "apps/subtitles/internal/server/transcoder_check_test.go::TestOwnerCanRunLocalTranscoderCheckThroughWebAndAPI"
+        }
+      ],
+      "coverage_gap": "Synthetic MP4 initialization and shell command contract, not actual encoder/decode. Actual auth/settings state adapter is not shared unit equivalence.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retain concrete important app/protocol/cache/privacy/media risk missing from existing genuine E2E",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/transcoder_check_test.go",
       "line": 68,
       "test": "TestLocalTranscoderCheckReturnsActionableFailure",
       "baseline_file_sha256": "64a908c8e9d4f45a6bb936d05f6631df6655608a5f2a597247b9d7b6e9862ea9",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Actual owner check FFmpeg source success then encode failure produces503/failed encode actionablemessage and stable settings projection.",
+      "production_owner": "apps/subtitles/internal/server/api_admin.go; apps/subtitles/internal/server/settings_routes.go; apps/subtitles/internal/server/settings_http.go; packages/transcodepolicy/check*.go; packages/transcodehardware/selection_store.go",
+      "non_test_callers": "App New registers actual watch/API/Jellyfin/HLS/settings handlers and uses planner/probe/settings state; pure direct aliases invoke shared owner only as explicitly recorded.",
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_owner_contract",
+          "reference": "apps/subtitles/internal/server/transcoder_check_test.go::TestLocalTranscoderCheckReturnsActionableFailure"
+        }
+      ],
+      "coverage_gap": "Script fails encode explicitly; genuine successful normal stream does not test check error API/retained diagnostic state.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retain concrete important app/protocol/cache/privacy/media risk missing from existing genuine E2E",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/trusted_https_test.go",
