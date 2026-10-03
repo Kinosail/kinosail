@@ -70,6 +70,90 @@ test("touch custom playback waits for Play despite resumed autoplay", async ({pa
   await expect(page.locator("video")).toHaveJSProperty("paused", false);
 });
 
+test("limited native fullscreen preserves limited in-band choices when both fullscreen APIs are available", async ({page}) => {
+  await page.locator("video").evaluate(video => {
+    let fullscreen = false;
+    Object.assign(window, {nativeCalls: [], containerCalls: 0});
+    Object.defineProperties(video, {
+      webkitDisplayingFullscreen: {get: () => fullscreen},
+      webkitEnterFullscreen: {configurable: true, value: () => {
+        (window as Window & {nativeCalls: boolean[]}).nativeCalls.push(navigator.userActivation.isActive);
+        fullscreen = true;
+        video.dispatchEvent(new Event("webkitbeginfullscreen"));
+      }},
+      webkitExitFullscreen: {value: () => { fullscreen = false; video.dispatchEvent(new Event("webkitendfullscreen")); }},
+    });
+    Object.defineProperty(video.closest(".media-stage"), "requestFullscreen", {value: async () => {
+      (window as Window & {containerCalls: number}).containerCalls++;
+    }});
+    video.playsInline = true;
+  });
+  const video = page.locator("video");
+  await page.getByRole("button", {name: "Settings", exact: true}).tap();
+  await page.locator("[data-subtitles]").selectOption("0");
+  await page.locator("[data-player-settings-close]").tap();
+  await expect(page.getByRole("button", {name: "Enter fullscreen"})).toHaveAttribute("title", /native player and subtitle menu/);
+  await page.getByRole("button", {name: "Play", exact: true}).first().tap();
+  await expect(video).toHaveJSProperty("webkitDisplayingFullscreen", true);
+  await expect(video).toHaveJSProperty("playsInline", true);
+  await page.getByRole("button", {name: "Pause", exact: true}).first().tap();
+  await page.getByRole("button", {name: "Play", exact: true}).first().tap();
+  expect(await page.evaluate(() => (window as Window & {nativeCalls: boolean[]}).nativeCalls)).toEqual([true]);
+  await page.getByRole("button", {name: "Exit fullscreen"}).tap();
+  await expect(video).toHaveJSProperty("webkitDisplayingFullscreen", false);
+  await expect(video).toHaveJSProperty("paused", false);
+  await page.getByRole("button", {name: "Pause", exact: true}).first().tap();
+  await page.getByRole("button", {name: "Play", exact: true}).first().tap();
+  expect(await page.evaluate(() => (window as Window & {nativeCalls: boolean[]}).nativeCalls)).toEqual([true, true]);
+  expect(await page.evaluate(() => (window as Window & {containerCalls: number}).containerCalls)).toBe(0);
+  await expect(video).toHaveAttribute("data-subtitle-picker-limited", "true");
+  await expect(page.locator("[data-subtitles]")).toHaveValue("0");
+  expect(await video.evaluate(media => media.querySelector("track")!.track.mode)).toBe("showing");
+  expect(await video.evaluate(media => media.textTracks[0].mode)).toBe("disabled");
+});
+
+test.describe("non-touch custom controls", () => {
+  test.use({hasTouch: false});
+  test("limited native fullscreen keeps the container when both fullscreen APIs are available", async ({page, browserName}) => {
+    test.skip(browserName !== "chromium", "The real container fullscreen assertion uses Chromium.");
+    await page.getByRole("button", {name: "Play", exact: true}).first().click();
+    await page.getByRole("button", {name: "Enter fullscreen"}).click();
+    await expect.poll(() => page.evaluate(() => document.fullscreenElement?.classList.contains("media-stage"))).toBe(true);
+    expect(await page.evaluate(() => (window as Window & {nativeFullscreenCalls?: number}).nativeFullscreenCalls || 0)).toBe(0);
+    await expect(page.locator("video")).toHaveJSProperty("paused", false);
+    await page.getByRole("button", {name: "Exit fullscreen"}).click();
+    await expect.poll(() => page.evaluate(() => document.fullscreenElement)).toBeNull();
+  });
+});
+
+test("limited native fullscreen readiness failure with both fullscreen APIs waits for a fresh gesture", async ({page}) => {
+  await page.locator("video").evaluate(video => {
+    Object.assign(window, {nativeCalls: [], containerCalls: 0});
+    Object.defineProperty(video, "webkitEnterFullscreen", {configurable: true, value: () => {
+      (window as Window & {nativeCalls: boolean[]}).nativeCalls.push(navigator.userActivation.isActive);
+      if (!video.readyState) throw new DOMException("private media detail", "InvalidStateError");
+      Object.defineProperty(video, "webkitDisplayingFullscreen", {value: true});
+      video.dispatchEvent(new Event("webkitbeginfullscreen"));
+    }});
+    Object.defineProperty(video.closest(".media-stage"), "requestFullscreen", {value: async () => {
+      (window as Window & {containerCalls: number}).containerCalls++;
+    }});
+  });
+  await page.evaluate(() => (window as Window & {setReadyState: (value: number) => void}).setReadyState(0));
+  await page.getByRole("button", {name: "Play", exact: true}).first().tap();
+  await expect(page.getByRole("status").filter({hasText: /Fullscreen could not open/})).toBeVisible();
+  await expect(page.locator("video")).toHaveJSProperty("paused", false);
+  await expect(page.locator(".player-control-feedback")).not.toContainText("private media detail");
+  await page.evaluate(() => (window as Window & {setReadyState: (value: number) => void}).setReadyState(4));
+  await page.locator("video").dispatchEvent("loadedmetadata");
+  await page.locator("video").dispatchEvent("canplay");
+  expect(await page.evaluate(() => (window as Window & {nativeCalls: boolean[]}).nativeCalls)).toEqual([true]);
+  await page.getByRole("button", {name: "Enter fullscreen"}).tap();
+  await expect(page.locator("video")).toHaveJSProperty("webkitDisplayingFullscreen", true);
+  expect(await page.evaluate(() => (window as Window & {nativeCalls: boolean[]}).nativeCalls)).toEqual([true, true]);
+  expect(await page.evaluate(() => (window as Window & {containerCalls: number}).containerCalls)).toBe(0);
+});
+
 for (const viewport of [{width: 390, height: 844}, {width: 844, height: 390}, {width: 1440, height: 900}, {width: 1920, height: 1080}]) {
   test(`touch fullscreen fills the viewport and keeps stable media states at ${viewport.width}x${viewport.height}`, async ({page, browserName}, testInfo) => {
     test.skip(browserName !== "chromium", "Real element fullscreen is verified in Chromium; iPhone native UI needs a device.");
