@@ -6,12 +6,12 @@
   "files": 379,
   "declarations": 954,
   "test_loc": 28832,
-  "reviewed": 138,
-  "pending": 816,
+  "reviewed": 140,
+  "pending": 814,
   "decisions": {
     "R": 108,
-    "D": 30,
-    "F": 0,
+    "D": 31,
+    "F": 1,
     "C": 0
   },
   "verification": [
@@ -4003,34 +4003,46 @@
       "line": 16,
       "test": "TestOfflineDownloadsReserveCapacityForPlayback",
       "baseline_file_sha256": "cc315825eed82be9d65326f4b2a3754785ba9f0e0c7751b9498f5d7abf7c5616",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "F",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "App download configuration not invoking configured FFmpeg, or a regression starting more than one encoder while first command is blocked, fails the observed start count. Original name incorrectly promised playback capacity reservation.",
+      "production_owner": "apps/subtitles/internal/server/downloads.go:newDownloadManager; downloads_config.go:downloadConfiguration; packages/downloads/{manager,start}.go",
+      "non_test_callers": "server.go:newApplication constructs downloadManager; downloads.Manager.Start/List are promoted with no app override; downloadQueueCapacity has only removed test callers",
+      "remaining_proof": [
+        {
+          "kind": "isolated_real_command_fixture",
+          "reference": "apps/subtitles/internal/server/download_concurrency_test.go:TestOfflineDownloadsStartOnlyOneEncoderWhileWorkIsPending"
+        }
+      ],
+      "coverage_gap": "The shared Manager has one serial worker; BackgroundCapacity is always1 for HeavyCapacity<=3. This test cannot catch Background changed to Playback or prove interactive capacity remains usable. Keep actual blocked-command contract and rename without adding assertions; governor/class gap remains explicitly open.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Rename only; preserve original assertions/fixture and correct claimed protection. No new isolated test or production behavior is added.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -count=1 ./internal/server; GOCACHE=/tmp/kinosail-testing-go-cache go -C packages test -count=1 ./downloads",
+      "final_test": "TestOfflineDownloadsStartOnlyOneEncoderWhileWorkIsPending",
+      "failure_analysis": "Existing isolated fixture failures: configured executable never starts, more than one launch while first blocked, queued tasks fail to drain after release. This assertion proves observed start count1, not governor class or playback co-reservation. No new isolated testing code written."
     },
     {
       "file": "apps/subtitles/internal/server/download_concurrency_test.go",
       "line": 53,
       "test": "TestOfflineDownloadQueueRejectsOverflowBeforeCreatingAJob",
       "baseline_file_sha256": "cc315825eed82be9d65326f4b2a3754785ba9f0e0c7751b9498f5d7abf7c5616",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "D",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Queue admitting a34th audio job would create extra durable jobs; identical34-attempt/1-rejection/33-job contract already tested at shared Manager owner. App wrapper introduces no queue policy, capacity is direct alias and Start/List promoted.",
+      "production_owner": "apps/subtitles/internal/server/downloads.go:newDownloadManager; downloads_config.go:downloadConfiguration; packages/downloads/{manager,start}.go",
+      "non_test_callers": "server.go:newApplication constructs downloadManager; downloads.Manager.Start/List are promoted with no app override; downloadQueueCapacity has only removed test callers",
+      "remaining_proof": [
+        {
+          "kind": "isolated_primary_owner",
+          "reference": "packages/downloads/manager_test.go:TestQueueRejectsOverflowBeforeCreatingAJob"
+        }
+      ],
+      "coverage_gap": "No genuine E2E fills offline queue. Shared primary exact keeper, not browser coverage, preserves all assertions. App Background governor class is independent and was never proven by this queue test.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Low; exact primary queue contract retained. Remove now-unused const alias downloadQueueCapacity (1 production LOC).",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -count=1 ./internal/server; GOCACHE=/tmp/kinosail-testing-go-cache go -C packages test -count=1 ./downloads"
     },
     {
       "file": "apps/subtitles/internal/server/downloads_boundary_test.go",
