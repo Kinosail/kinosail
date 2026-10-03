@@ -8121,25 +8121,62 @@
       "end_line": 26,
       "sha256": "22da2cb1425c356bae9cdcdd7039e01bf06d75e45d677f07501e83298ac4d93f",
       "path": "apps/player/internal/server/assets_test.go",
-      "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "decision": "D",
+      "review_status": "candidate_evidence_complete",
+      "reason": "Shared fixture asserts exact CSS recipes and class inventories; old16rem desktop rail declarations remain in bundle even though later Player home.css overrides them with a horizontal header. Source presence is a weak guard for the effective layout; real browser navigation/geometry and app configuration keepers retain the observable contract.",
+      "category": "source_css_recipe_inventory_superseded_by_browser_behavior",
+      "credible_failure": "Could catch removal of a copied literal CSS rule/class despite unchanged computed behavior, or a missing navigation/sign-out hook. Actual populated E2E tests catch user-visible navigation/action visibility, target size, clipping and overflow failures; configured-navigation tests catch app destination projection/order.",
+      "production_owner": [
+        "apps/player/internal/server/server.go:appHeader/appMobileMore",
+        "apps/player/internal/server/assets.go:serveStyle",
+        "apps/player/internal/server/navigation_shell.go:navigationController/withApplicationShell",
+        "apps/player/internal/server/home_projection.go:Shell",
+        "apps/player/internal/server/static/home.css:later desktop header overrides",
+        "packages/webassets/static/player-app.css:earlier navigation recipes",
+        "packages/navigation/navigation.go:Links/Controller"
+      ],
+      "non_test_callers": [
+        "Home and application-shell pages render appHeader; static CSS composition appends home.css after shared player-app rules; authenticated Owner/Viewer context populates action/profile groups."
+      ],
+      "remaining_proof": [
+        {
+          "kind": "genuine_populated_browser_E2E",
+          "path": "apps/player/e2e/test-instance.spec.ts",
+          "scenario": "Owner can edit Main navigation from desktop and compact layouts; Mobile More menu prioritizes personal tabs",
+          "mapping": "Real Go pages across1440/1101/1024/720/390/320 widths; main navigation visibility/current state, actual navigation edit action, overflow visibility and More account/action/personal ordering."
+        },
+        {
+          "kind": "genuine_populated_browser_E2E",
+          "path": "apps/player/e2e/layout-audit-navigation.spec.ts",
+          "scenario": "Owner actions remain reachable on desktop and phone; Viewer navigation exposes connection and account actions without Owner tools; desktop library navigation remains reachable in its own scroll region",
+          "mapping": "Actual controls are visible, focusable,>=44px and usable with no horizontal overflow; distinct Owner/Viewer tools enforced."
+        },
+        {
+          "kind": "genuine_populated_browser_E2E",
+          "path": "apps/player/e2e/masthead-spacing.spec.ts",
+          "scenario": "Home keeps continued titles and navigation reachable",
+          "mapping": "Checks actual navigation/search overlap, clipping and page width across1920/1440/1024/901/900/390/320."
+        },
+        {
+          "kind": "retained_isolated_app_navigation_configuration_keeper",
+          "path": "apps/player/internal/server/navigation_test.go",
+          "scenario": "TestOwnerCanCustomizeLibraryNavigationThroughAPIAndWeb; TestDesktopSidebarGroupsConfiguredDestinationsAndKeepsTopSupport",
+          "mapping": "Actual app destination visibility/order/active-state and API/form persistence projection, complementing browser navigation."
+        }
+      ],
+      "coverage_limit": "Exact CSS declarations/class grouping/grid recipe are intentionally not preserved as independent behavior contracts. E2E covers the visible navigation/action outcomes, not every source fragment or an unauthenticated no-JS music-page More.active literal. No fixture/browser equivalence is claimed; original fixtures do not compute CSS or interact with navigation.",
       "history": [
         "98972d7c073d77314c41503002ea27708ce9d69b Fix mobile player control targets and touch auto-hide",
         "38335baa6ffccddbe8cc0ac1fdf37424100a8192 Reconcile launch fixes and retain QA lifecycle and cache regressions",
         "104c7a78665230b7503639dc928b9580272d3e6b Keep Safari gesture recovery usable after queued media events"
       ],
-      "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "production_or_support_deletion_unlocked": "Remove one4-line wrapper each. Shared fixture helper can be removed by shared owner after any Subtitles replay is handled; existing AssetsFixture remains needed.",
+      "risk": "Low with real navigation journeys and independent app customization keepers; review missing unique assertion before integration.",
+      "validation_command": "Root Player Go suite; KINOSAIL_TEST_INSTANCE=1 populated Chromium test-instance.spec.ts navigation and layout-audit-navigation/masthead/layout-library; root repeatable artifact harness",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "history_interpretation": "Helper contract introduced in initial commit. Player home.css later overrides legacy desktop rail declarations without removing shared rules, demonstrating why source-presence inventory is not an effective layout oracle.",
+      "review_provenance": "Player owner read full test+servertest helper, appHeader/mobile markup, asset/style assembly, home shell/nav controller and actual override selectors, overlapping configured-navigation helper and relevant populated browser tests. Child does not execute Go/E2E."
     },
     {
       "name": "TestPrimaryPagesExposeTheInstallExperience",
@@ -8199,25 +8236,62 @@
       "end_line": 38,
       "sha256": "04469b0015caeca688b0adc3b44446a5f883ae2fdc234319cc1d84c997314287",
       "path": "apps/player/internal/server/assets_test.go",
-      "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "decision": "D",
+      "review_status": "candidate_evidence_complete",
+      "reason": "Shared fixture asserts exact CSS recipes and class inventories; old16rem desktop rail declarations remain in bundle even though later Player home.css overrides them with a horizontal header. Source presence is a weak guard for the effective layout; real browser navigation/geometry and app configuration keepers retain the observable contract.",
+      "category": "source_css_recipe_inventory_superseded_by_browser_behavior",
+      "credible_failure": "Could catch removal of a copied literal CSS rule/class despite unchanged computed behavior, or a missing navigation/sign-out hook. Actual populated E2E tests catch user-visible navigation/action visibility, target size, clipping and overflow failures; configured-navigation tests catch app destination projection/order.",
+      "production_owner": [
+        "apps/player/internal/server/server.go:appHeader/appMobileMore",
+        "apps/player/internal/server/assets.go:serveStyle",
+        "apps/player/internal/server/navigation_shell.go:navigationController/withApplicationShell",
+        "apps/player/internal/server/home_projection.go:Shell",
+        "apps/player/internal/server/static/home.css:later desktop header overrides",
+        "packages/webassets/static/player-app.css:earlier navigation recipes",
+        "packages/navigation/navigation.go:Links/Controller"
+      ],
+      "non_test_callers": [
+        "Home and application-shell pages render appHeader; static CSS composition appends home.css after shared player-app rules; authenticated Owner/Viewer context populates action/profile groups."
+      ],
+      "remaining_proof": [
+        {
+          "kind": "genuine_populated_browser_E2E",
+          "path": "apps/player/e2e/test-instance.spec.ts",
+          "scenario": "Owner can edit Main navigation from desktop and compact layouts; Mobile More menu prioritizes personal tabs",
+          "mapping": "Real Go pages across1440/1101/1024/720/390/320 widths; main navigation visibility/current state, actual navigation edit action, overflow visibility and More account/action/personal ordering."
+        },
+        {
+          "kind": "genuine_populated_browser_E2E",
+          "path": "apps/player/e2e/layout-audit-navigation.spec.ts",
+          "scenario": "Owner actions remain reachable on desktop and phone; Viewer navigation exposes connection and account actions without Owner tools; desktop library navigation remains reachable in its own scroll region",
+          "mapping": "Actual controls are visible, focusable,>=44px and usable with no horizontal overflow; distinct Owner/Viewer tools enforced."
+        },
+        {
+          "kind": "genuine_populated_browser_E2E",
+          "path": "apps/player/e2e/masthead-spacing.spec.ts",
+          "scenario": "Home keeps continued titles and navigation reachable",
+          "mapping": "Checks actual navigation/search overlap, clipping and page width across1920/1440/1024/901/900/390/320."
+        },
+        {
+          "kind": "retained_isolated_app_navigation_configuration_keeper",
+          "path": "apps/player/internal/server/navigation_test.go",
+          "scenario": "TestOwnerCanCustomizeLibraryNavigationThroughAPIAndWeb; TestDesktopSidebarGroupsConfiguredDestinationsAndKeepsTopSupport",
+          "mapping": "Actual app destination visibility/order/active-state and API/form persistence projection, complementing browser navigation."
+        }
+      ],
+      "coverage_limit": "Exact CSS declarations/class grouping/grid recipe are intentionally not preserved as independent behavior contracts. E2E covers the visible navigation/action outcomes, not every source fragment or an unauthenticated no-JS music-page More.active literal. No fixture/browser equivalence is claimed; original fixtures do not compute CSS or interact with navigation.",
       "history": [
         "98972d7c073d77314c41503002ea27708ce9d69b Fix mobile player control targets and touch auto-hide",
         "38335baa6ffccddbe8cc0ac1fdf37424100a8192 Reconcile launch fixes and retain QA lifecycle and cache regressions",
         "104c7a78665230b7503639dc928b9580272d3e6b Keep Safari gesture recovery usable after queued media events"
       ],
-      "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "production_or_support_deletion_unlocked": "Remove one4-line wrapper each. Shared fixture helper can be removed by shared owner after any Subtitles replay is handled; existing AssetsFixture remains needed.",
+      "risk": "Low with real navigation journeys and independent app customization keepers; review missing unique assertion before integration.",
+      "validation_command": "Root Player Go suite; KINOSAIL_TEST_INSTANCE=1 populated Chromium test-instance.spec.ts navigation and layout-audit-navigation/masthead/layout-library; root repeatable artifact harness",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "history_interpretation": "Helper contract introduced in initial commit. Player home.css later overrides legacy desktop rail declarations without removing shared rules, demonstrating why source-presence inventory is not an effective layout oracle.",
+      "review_provenance": "Player owner read full test+servertest helper, appHeader/mobile markup, asset/style assembly, home shell/nav controller and actual override selectors, overlapping configured-navigation helper and relevant populated browser tests. Child does not execute Go/E2E."
     },
     {
       "name": "TestPagesUseSharedModernStyles",
@@ -18521,24 +18595,41 @@
       "sha256": "b096595b21dd67a9d0fca737deb1e6c98910088e0799c9d5ce19afbda249ee44",
       "path": "apps/player/internal/server/navigation_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "Actual app navigation settings API/form wiring fails to persist chosen destinations/order, omits hidden choices or loses the settings.navigation.updated audit event.",
+      "category": "app_navigation_boundary_retained",
+      "credible_failure": "Actual app navigation settings API/form wiring fails to persist chosen destinations/order, omits hidden choices or loses the settings.navigation.updated audit event.",
+      "production_owner": [
+        "apps/player/internal/server/navigation.go:settings.navigation/setNavigation/sidebarGroups",
+        "apps/player/internal/server/navigation_shell.go:navigationController",
+        "apps/player/internal/server/server.go:appHeader",
+        "packages/navigation/navigation.go",
+        "apps/player/internal/server/locale.go"
+      ],
+      "non_test_callers": [
+        "API settings/navigation and POST /settings/navigation bind actual app settings persistence; home/app shell project request view/Owner/localized destination groups."
+      ],
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_app_navigation_boundary",
+          "path": "apps/player/internal/server/navigation_test.go",
+          "scenario": "TestOwnerCanCustomizeLibraryNavigationThroughAPIAndWeb",
+          "helper": "packages/servertest/navigation_customization.go"
+        }
+      ],
+      "coverage_limit": "Genuine browser editor journey opens controls but does not fully mutate this specific ordered selection or assert the audit event.",
       "history": [
         "8e0d70ce91504926667596b5661105491eb8e837 Fix narrow French search and WebKit inspector overflow",
         "2c08d90156356d3b72ede8381ad19ff51d564c82 feat(player): group wide desktop navigation in sidebar",
         "ab3bcda8953d28d058fcbd9361a00378c1e0518c Restore enabled quality gates and current browser contracts"
       ],
-      "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "production_or_support_deletion_unlocked": "None; retain existing declaration without adding isolated tests.",
+      "risk": "Retains a distinct app settings/projection boundary or explicit unique assertion pending final review.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./internal/server",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "history_interpretation": "Original observable navigation contract; recorded app changes preserve actual configured state/markup policy.",
+      "review_provenance": "Full test/helper and navigation owner/callers/history/browser comparison read by Player owner; no child builds."
     },
     {
       "name": "TestNavigationValidationRejectsInvalidValuesWithoutSideEffects",
@@ -18547,24 +18638,41 @@
       "sha256": "8fa0d6d19cb8e3b175397c4e8959ae7d897f2869c6026d6180e780d51c9d99fe",
       "path": "apps/player/internal/server/navigation_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "Unknown/duplicate/empty/oversized navigation or malformed web movement mutates existing settings instead of rejecting with400.",
+      "category": "app_navigation_boundary_retained",
+      "credible_failure": "Unknown/duplicate/empty/oversized navigation or malformed web movement mutates existing settings instead of rejecting with400.",
+      "production_owner": [
+        "apps/player/internal/server/navigation.go:settings.navigation/setNavigation/sidebarGroups",
+        "apps/player/internal/server/navigation_shell.go:navigationController",
+        "apps/player/internal/server/server.go:appHeader",
+        "packages/navigation/navigation.go",
+        "apps/player/internal/server/locale.go"
+      ],
+      "non_test_callers": [
+        "API settings/navigation and POST /settings/navigation bind actual app settings persistence; home/app shell project request view/Owner/localized destination groups."
+      ],
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_app_navigation_boundary",
+          "path": "apps/player/internal/server/navigation_test.go",
+          "scenario": "TestNavigationValidationRejectsInvalidValuesWithoutSideEffects",
+          "helper": "packages/servertest/navigation_customization.go"
+        }
+      ],
+      "coverage_limit": "Real browser editor submits normal UI inputs; helper tests four invalid API lists and five invalid form cases and checks stored list unchanged.",
       "history": [
         "8e0d70ce91504926667596b5661105491eb8e837 Fix narrow French search and WebKit inspector overflow",
         "2c08d90156356d3b72ede8381ad19ff51d564c82 feat(player): group wide desktop navigation in sidebar",
         "ab3bcda8953d28d058fcbd9361a00378c1e0518c Restore enabled quality gates and current browser contracts"
       ],
-      "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "production_or_support_deletion_unlocked": "None; retain existing declaration without adding isolated tests.",
+      "risk": "Retains a distinct app settings/projection boundary or explicit unique assertion pending final review.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./internal/server",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "history_interpretation": "Original observable navigation contract; recorded app changes preserve actual configured state/markup policy.",
+      "review_provenance": "Full test/helper and navigation owner/callers/history/browser comparison read by Player owner; no child builds."
     },
     {
       "name": "TestCustomizedNavigationPersistsAcrossRestart",
@@ -18572,25 +18680,42 @@
       "end_line": 26,
       "sha256": "a9aeb890e5fdbaf46ab59182b8c5c43576c4b71fd7e8abcc00bbf7ca00842b9f",
       "path": "apps/player/internal/server/navigation_test.go",
-      "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "decision": "F",
+      "review_status": "semantic_review_complete",
+      "reason": "Saved app navigation order/hidden choices disappear after constructing a fresh handler using the same data directory.",
+      "category": "app_navigation_boundary_retained_with_assertion_limit",
+      "credible_failure": "Saved app navigation order/hidden choices disappear after constructing a fresh handler using the same data directory.",
+      "production_owner": [
+        "apps/player/internal/server/navigation.go:settings.navigation/setNavigation/sidebarGroups",
+        "apps/player/internal/server/navigation_shell.go:navigationController",
+        "apps/player/internal/server/server.go:appHeader",
+        "packages/navigation/navigation.go",
+        "apps/player/internal/server/locale.go"
+      ],
+      "non_test_callers": [
+        "API settings/navigation and POST /settings/navigation bind actual app settings persistence; home/app shell project request view/Owner/localized destination groups."
+      ],
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_app_navigation_boundary",
+          "path": "apps/player/internal/server/navigation_test.go",
+          "scenario": "TestCustomizedNavigationPersistsAcrossRestart",
+          "helper": "packages/servertest/navigation_customization.go"
+        }
+      ],
+      "coverage_limit": "Actual reconstructed handler/durable settings boundary; live browser journeys do not restart the process. Index comparisons alone can miss the first Home link absent(-1), so this fixture does not independently prove every requested link exists.",
       "history": [
         "8e0d70ce91504926667596b5661105491eb8e837 Fix narrow French search and WebKit inspector overflow",
         "2c08d90156356d3b72ede8381ad19ff51d564c82 feat(player): group wide desktop navigation in sidebar",
         "ab3bcda8953d28d058fcbd9361a00378c1e0518c Restore enabled quality gates and current browser contracts"
       ],
-      "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "production_or_support_deletion_unlocked": "None; retain existing declaration without adding isolated tests.",
+      "risk": "Retains a distinct app settings/projection boundary or explicit unique assertion pending final review.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./internal/server",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "history_interpretation": "Original observable navigation contract; recorded app changes preserve actual configured state/markup policy.",
+      "review_provenance": "Full test/helper and navigation owner/callers/history/browser comparison read by Player owner; no child builds."
     },
     {
       "name": "TestQuickConnectUsesJellyfinProductNameInNavigation",
@@ -18599,24 +18724,41 @@
       "sha256": "f2037c4eb9c33834ed54a2eaafa51134f598c192c678e9be2ddcb4c123624964",
       "path": "apps/player/internal/server/navigation_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "Actual app navigation changes Quick Connect to ambiguous Connect, breaking the public product vocabulary.",
+      "category": "app_navigation_boundary_retained",
+      "credible_failure": "Actual app navigation changes Quick Connect to ambiguous Connect, breaking the public product vocabulary.",
+      "production_owner": [
+        "apps/player/internal/server/navigation.go:settings.navigation/setNavigation/sidebarGroups",
+        "apps/player/internal/server/navigation_shell.go:navigationController",
+        "apps/player/internal/server/server.go:appHeader",
+        "packages/navigation/navigation.go",
+        "apps/player/internal/server/locale.go"
+      ],
+      "non_test_callers": [
+        "API settings/navigation and POST /settings/navigation bind actual app settings persistence; home/app shell project request view/Owner/localized destination groups."
+      ],
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_app_navigation_boundary",
+          "path": "apps/player/internal/server/navigation_test.go",
+          "scenario": "TestQuickConnectUsesJellyfinProductNameInNavigation",
+          "helper": "app-owned assertion"
+        }
+      ],
+      "coverage_limit": "Genuine Owner/Viewer navigation journeys also assert Quick Connect action label; retain conservatively until final independent removal review checks all no-auth/default Owner label assumptions.",
       "history": [
         "8e0d70ce91504926667596b5661105491eb8e837 Fix narrow French search and WebKit inspector overflow",
         "2c08d90156356d3b72ede8381ad19ff51d564c82 feat(player): group wide desktop navigation in sidebar",
         "ab3bcda8953d28d058fcbd9361a00378c1e0518c Restore enabled quality gates and current browser contracts"
       ],
-      "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "production_or_support_deletion_unlocked": "None; retain existing declaration without adding isolated tests.",
+      "risk": "Retains a distinct app settings/projection boundary or explicit unique assertion pending final review.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./internal/server",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "history_interpretation": "Original observable navigation contract; recorded app changes preserve actual configured state/markup policy.",
+      "review_provenance": "Full test/helper and navigation owner/callers/history/browser comparison read by Player owner; no child builds."
     },
     {
       "name": "TestLibrarySearchUsesLocalizedAccessibleCopy",
@@ -18625,24 +18767,41 @@
       "sha256": "d44ad98882dca7783b8ece0182f8bd0db59a3a22d8c3e1b19b4d5272a8cef1ec",
       "path": "apps/player/internal/server/navigation_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "French app search source loses the actual localized label/aria/placeholder tuple or leaks the previous untranslated Find something text.",
+      "category": "app_navigation_boundary_retained",
+      "credible_failure": "French app search source loses the actual localized label/aria/placeholder tuple or leaks the previous untranslated Find something text.",
+      "production_owner": [
+        "apps/player/internal/server/navigation.go:settings.navigation/setNavigation/sidebarGroups",
+        "apps/player/internal/server/navigation_shell.go:navigationController",
+        "apps/player/internal/server/server.go:appHeader",
+        "packages/navigation/navigation.go",
+        "apps/player/internal/server/locale.go"
+      ],
+      "non_test_callers": [
+        "API settings/navigation and POST /settings/navigation bind actual app settings persistence; home/app shell project request view/Owner/localized destination groups."
+      ],
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_app_navigation_boundary",
+          "path": "apps/player/internal/server/navigation_test.go",
+          "scenario": "TestLibrarySearchUsesLocalizedAccessibleCopy",
+          "helper": "app-owned assertion"
+        }
+      ],
+      "coverage_limit": "Genuine French search journey covers aria/placeholder readability and input usage; this retained app fixture additionally guards the explicit label and absence of legacy copy.",
       "history": [
         "8e0d70ce91504926667596b5661105491eb8e837 Fix narrow French search and WebKit inspector overflow",
         "2c08d90156356d3b72ede8381ad19ff51d564c82 feat(player): group wide desktop navigation in sidebar",
         "ab3bcda8953d28d058fcbd9361a00378c1e0518c Restore enabled quality gates and current browser contracts"
       ],
-      "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "production_or_support_deletion_unlocked": "None; retain existing declaration without adding isolated tests.",
+      "risk": "Retains a distinct app settings/projection boundary or explicit unique assertion pending final review.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./internal/server",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "history_interpretation": "Original observable navigation contract; recorded app changes preserve actual configured state/markup policy.",
+      "review_provenance": "Full test/helper and navigation owner/callers/history/browser comparison read by Player owner; no child builds."
     },
     {
       "name": "TestDesktopSidebarGroupsConfiguredDestinationsAndKeepsTopSupport",
@@ -18651,24 +18810,41 @@
       "sha256": "78b4570d95100a398545265c5146044a8f73e5da5a410e57b55343c3c99f53e9",
       "path": "apps/player/internal/server/navigation_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "App sidebar grouping drops configured destination group/order/active state or exposes a hidden Shows link; French group localization or top support action disappears.",
+      "category": "app_navigation_boundary_retained",
+      "credible_failure": "App sidebar grouping drops configured destination group/order/active state or exposes a hidden Shows link; French group localization or top support action disappears.",
+      "production_owner": [
+        "apps/player/internal/server/navigation.go:settings.navigation/setNavigation/sidebarGroups",
+        "apps/player/internal/server/navigation_shell.go:navigationController",
+        "apps/player/internal/server/server.go:appHeader",
+        "packages/navigation/navigation.go",
+        "apps/player/internal/server/locale.go"
+      ],
+      "non_test_callers": [
+        "API settings/navigation and POST /settings/navigation bind actual app settings persistence; home/app shell project request view/Owner/localized destination groups."
+      ],
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_app_navigation_boundary",
+          "path": "apps/player/internal/server/navigation_test.go",
+          "scenario": "TestDesktopSidebarGroupsConfiguredDestinationsAndKeepsTopSupport",
+          "helper": "app-owned assertion"
+        }
+      ],
+      "coverage_limit": "Genuine browser editor verifies default group headings, not this custom history/books/list/movies selection and French group labels.",
       "history": [
         "8e0d70ce91504926667596b5661105491eb8e837 Fix narrow French search and WebKit inspector overflow",
         "2c08d90156356d3b72ede8381ad19ff51d564c82 feat(player): group wide desktop navigation in sidebar",
         "ab3bcda8953d28d058fcbd9361a00378c1e0518c Restore enabled quality gates and current browser contracts"
       ],
-      "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "production_or_support_deletion_unlocked": "None; retain existing declaration without adding isolated tests.",
+      "risk": "Retains a distinct app settings/projection boundary or explicit unique assertion pending final review.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./internal/server",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "history_interpretation": "Original observable navigation contract; recorded app changes preserve actual configured state/markup policy.",
+      "review_provenance": "Full test/helper and navigation owner/callers/history/browser comparison read by Player owner; no child builds."
     },
     {
       "name": "TestWebhookReceivesRedactedAdministrativeEvents",
@@ -28442,8 +28618,10 @@
     "TestBrandUsesFoldedPlayLogo",
     "TestBrowserSessionCookiesAreAlwaysHostBoundAndSecure",
     "TestCleanDeviceNameNormalizesBrowserAgentsAndBoundsOtherNames",
+    "TestDesktopRailSeparatesUtilitiesFromAccount",
     "TestDirectPlayerDoesNotRestartTheSourceSelectedByHTML",
     "TestHardwareSupportAcceptsAutomaticAndKnownBackends",
+    "TestLibraryNavigationKeepsEveryDestinationInMainWithCompactOverflow",
     "TestLoginReturnRejectsExternalAndAmbiguousTargets",
     "TestNavigationPagesRefreshCachedAssets",
     "TestOfflineDownloadQueueRejectsOverflowBeforeCreatingAJob",
@@ -28469,8 +28647,10 @@
     "TestBrandUsesFoldedPlayLogo",
     "TestBrowserSessionCookiesAreAlwaysHostBoundAndSecure",
     "TestCleanDeviceNameNormalizesBrowserAgentsAndBoundsOtherNames",
+    "TestDesktopRailSeparatesUtilitiesFromAccount",
     "TestDirectPlayerDoesNotRestartTheSourceSelectedByHTML",
     "TestHardwareSupportAcceptsAutomaticAndKnownBackends",
+    "TestLibraryNavigationKeepsEveryDestinationInMainWithCompactOverflow",
     "TestLoginReturnRejectsExternalAndAmbiguousTargets",
     "TestNavigationPagesRefreshCachedAssets",
     "TestOfflineDownloadQueueRejectsOverflowBeforeCreatingAJob",
@@ -28490,7 +28670,7 @@
     "TestUIIconSetIsCompleteAndLocal",
     "TestVersionedApplicationStylesheetIncludesSupporterStyles"
   ],
-  "removal_count": 24,
+  "removal_count": 26,
   "verification": [
     {
       "command": "gofmt -w <five touched retained Go files>",
@@ -28519,6 +28699,10 @@
     {
       "command": "gofmt -w apps/player/internal/server/locale_catalog_test.go; git diff --check",
       "result": "passed; locale inventory replay consolidated; candidate execution delegated root, no child builds."
+    },
+    {
+      "command": "gofmt -w apps/player/internal/server/assets_test.go; git diff --check",
+      "result": "passed; navigation CSS recipe inventory batch; execution delegated root."
     }
   ],
   "retention_examples": [
@@ -28531,9 +28715,9 @@
     "TestConfigurationTransactionRejectsSemanticallyInvalidRecoveryWithoutSideEffects"
   ],
   "review_summary": {
-    "semantic_review_complete": 160,
-    "candidate_evidence_complete": 24,
-    "inventory_only_retained_pending_semantic_review": 649,
+    "semantic_review_complete": 166,
+    "candidate_evidence_complete": 26,
+    "inventory_only_retained_pending_semantic_review": 641,
     "test_and_boundary_review_pending_full_owner": 4
   }
 }

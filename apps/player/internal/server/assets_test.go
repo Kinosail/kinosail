@@ -21,20 +21,12 @@ func TestHomeHasSelfHostedFrontendAssets(t *testing.T) {
 	assetContracts.HomeHasSelfHostedFrontendAssets(t)
 }
 
-func TestLibraryNavigationKeepsEveryDestinationInMainWithCompactOverflow(t *testing.T) {
-	assetContracts.LibraryNavigationKeepsEveryDestinationInMainWithCompactOverflow(t)
-}
-
 func TestPrimaryPagesExposeTheInstallExperience(t *testing.T) { //nolint:cyclop // The shared install contract checks each primary page explicitly.
 	assetContracts.PrimaryPagesExposeTheInstallExperience(t)
 }
 
 func TestLibraryExposesDiscoverableCommandsAndInputParity(t *testing.T) {
 	assetContracts.LibraryExposesDiscoverableCommandsAndInputParity(t)
-}
-
-func TestDesktopRailSeparatesUtilitiesFromAccount(t *testing.T) {
-	assetContracts.DesktopRailSeparatesUtilitiesFromAccount(t)
 }
 
 func TestViewerCanChooseDarkLightOrSystemTheme(t *testing.T) {
