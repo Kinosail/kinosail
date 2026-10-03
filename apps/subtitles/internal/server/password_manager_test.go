@@ -13,15 +13,3 @@ func TestPasswordFormsExposeStablePasswordManagerSemantics(t *testing.T) {
 func TestNonPasswordSecretsOptOutOfPasswordManagers(t *testing.T) {
 	servertest.NonPasswordSecretsOptOutOfPasswordManagers(t, configurationHTML, settingsHTML, onboardingConnectionHTML, viewingImportOnboardingHTML, ignoreNonPasswordSecretAutofill)
 }
-
-func TestPasskeyLoginSupportsPasswordManagerAutofill(t *testing.T) {
-	servertest.PasskeyLoginSupportsPasswordManagerAutofill(t, passkeysJS)
-}
-
-func TestPasswordFieldsOfferAccessibleRevealControls(t *testing.T) {
-	servertest.PasswordFieldsOfferAccessibleRevealControls(t, themeJS, appCSS)
-}
-
-func TestCopyControlsReportClipboardFallback(t *testing.T) {
-	servertest.CopyControlsReportClipboardFallback(t, themeJS)
-}

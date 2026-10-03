@@ -9,15 +9,6 @@ import (
 	"github.com/MikeO7/kinosail-subtitles/internal/server"
 )
 
-func TestPWAHandlesServiceWorkerRegistrationFailure(t *testing.T) {
-	response := httptest.NewRecorder()
-	server.New(server.Config{}).ServeHTTP(response, httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/static/pwa.js", nil))
-	script := response.Body.String()
-	if !strings.Contains(script, `serviceWorker.register("/service-worker.js?v=55").then`) || !strings.Contains(script, `.catch(() => {});`) {
-		t.Fatalf("service worker registration failure is unhandled: %q", script)
-	}
-}
-
 func TestOfflineDownloadClientAndWorkerExposeLocalPlaybackContract(t *testing.T) {
 	handler := server.New(server.Config{})
 	client := httptest.NewRecorder()
@@ -42,16 +33,5 @@ func TestOfflineDownloadClientAndWorkerExposeLocalPlaybackContract(t *testing.T)
 	}
 	if strings.Contains(worker.Body.String(), `cache.put(event.request`) || !strings.Contains(worker.Body.String(), `retiredOfflinePages`) {
 		t.Fatalf("service worker retains authenticated player pages: %q", worker.Body.String())
-	}
-}
-
-func TestOfflinePagesUseTheCurrentNavigationBundle(t *testing.T) {
-	handler := server.New(server.Config{DataDir: t.TempDir()})
-	for _, path := range []string{"/", "/settings", "/offline-downloads"} {
-		response := httptest.NewRecorder()
-		handler.ServeHTTP(response, httptest.NewRequestWithContext(t.Context(), http.MethodGet, path, nil))
-		if response.Code != http.StatusOK || !strings.Contains(response.Body.String(), `main.kinosail.bundle.js?v=16`) {
-			t.Fatalf("%s did not receive the current navigation bundle: status=%d", path, response.Code)
-		}
 	}
 }

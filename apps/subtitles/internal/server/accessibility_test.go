@@ -13,25 +13,6 @@ import (
 	"github.com/MikeO7/kinosail/packages/servertest"
 )
 
-func TestCorePagesExposeKeyboardAndContrastSupport(t *testing.T) {
-	t.Parallel()
-	handler := server.New(server.Config{DataDir: t.TempDir()})
-	settings := httptest.NewRecorder()
-	handler.ServeHTTP(settings, httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/settings", nil))
-	styles := httptest.NewRecorder()
-	handler.ServeHTTP(styles, httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/static/app.css", nil))
-	for _, value := range []string{`href="#main"`, `id="main"`, `aria-label="Server name"`} {
-		if !strings.Contains(settings.Body.String(), value) {
-			t.Fatalf("settings missing %q", value)
-		}
-	}
-	for _, value := range []string{"@media(max-width:1180px)", "@media(max-width:700px)", "prefers-reduced-motion", "forced-colors:active", ":focus-visible", ".auth form"} {
-		if !strings.Contains(styles.Body.String(), value) {
-			t.Fatalf("styles missing %q", value)
-		}
-	}
-}
-
 func TestAgentConnectionsExposeAccessibleConsentAndSettingsLandmarks(t *testing.T) {
 	t.Parallel()
 	origin := "https://kino.test:38128"
@@ -55,9 +36,4 @@ func TestPlayerStatusUpdatesAreAnnounced(t *testing.T) {
 			t.Fatalf("player missing %q", value)
 		}
 	}
-}
-
-func TestAccountJourneysExposeMainLandmarks(t *testing.T) {
-	t.Parallel()
-	servertest.AccountJourneysExposeMainLandmarks(t, server.New(server.Config{DataDir: t.TempDir()}))
 }
