@@ -19,16 +19,17 @@
     "baseline_test_lines": 66475,
     "declarations": 1900,
     "decisions": {
-      "R": 124,
-      "D": 8,
-      "unreviewed": 1768
+      "R": 163,
+      "D": 10,
+      "unreviewed": 1727
     },
-    "removed_declarations": 8,
-    "removed_test_lines": 136,
-    "final_declarations": 1892,
-    "final_test_lines": 66339,
-    "removed_support_helpers": 4,
-    "removed_support_files": 1
+    "removed_declarations": 10,
+    "removed_test_lines": 188,
+    "final_declarations": 1890,
+    "final_test_lines": 66287,
+    "removed_support_helpers": 5,
+    "removed_support_files": 2,
+    "removed_support_lines": 116
   },
   "focused_validation_command": "cd packages && go test ./apihttp ./validation ./hlsmanifest ./transcodepolicy ./transcodehardware",
   "validation_results": {
@@ -57,7 +58,7 @@
     "candidate": "not_run_parent_serializes",
     "format": {
       "status": "passed",
-      "command": "gofmt -w packages/validation/validation_test.go packages/hlsmanifest/vod_test.go packages/transcodepolicy/policy_edges_test.go packages/transcodehardware/capabilities_test.go packages/transcodehardware/probe_test.go"
+      "command": "gofmt -w packages/validation/validation_test.go packages/hlsmanifest/vod_test.go packages/transcodepolicy/policy_edges_test.go packages/transcodehardware/capabilities_test.go packages/transcodehardware/probe_test.go; gofmt -w packages/servertest/assets.go packages/servertest/password_manager.go packages/operations/metadata_test.go packages/operations/system_http_test.go"
     },
     "git_diff_check": {
       "status": "passed",
@@ -291,6 +292,51 @@
         "apps/subtitles/cmd/kinosail"
       ],
       "e2e": "Browser app journeys require a running server but do not prove CLI loopback health protocol/error handling. App-local direct CheckHealth replay is redundant with TestCheckHealthCoversProtocolsAndInputFailures; app process healthcheck ownership remains independently tested."
+    },
+    "operations": {
+      "owners": [
+        "packages/operations/binding.go",
+        "packages/operations/model.go",
+        "packages/operations/http.go",
+        "packages/operations/system_http.go",
+        "packages/operations/metadata.go",
+        "packages/operations/failure_log.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/operations.go",
+        "apps/subtitles/internal/server/operations.go",
+        "apps/player/internal/server/system_http.go",
+        "apps/subtitles/internal/server/system_http.go",
+        "apps/player/internal/server/audit.go",
+        "apps/subtitles/internal/server/audit.go",
+        "apps/player/internal/server/api_admin.go",
+        "apps/subtitles/internal/server/api_admin.go"
+      ],
+      "dependencies": [
+        "packages/metadata/record.go:Valid/RegularFile/ApplyRecords",
+        "packages/metadata/tvmaze.go:TVMazeEligible",
+        "packages/catalog/index.go:Refresh/Status",
+        "packages/catalog/watch.go:Monitoring",
+        "packages/playback/hls_cache.go:Stats/Clear",
+        "packages/maintenance/maintenance.go:Run"
+      ],
+      "e2e": "Genuine populated Player test-instance-library.spec.ts metadata task exercises real complete app adapters and artwork; Player layout-audit-library.spec.ts checks rendered System diagnostic/metric links. Subtitles happy-path.spec.ts visits System and performs actual backup+verification in Chromium. These do not inject metadata provider/storage/cancellation failures, saturate worker bounds, assert complete Prometheus/diagnostic wire fields, or test retry-feedback state. No backend proof inferred from player browser-control fixtures."
+    },
+    "serverdiscovery": {
+      "owners": [
+        "packages/serverdiscovery/discovery.go",
+        "packages/serverdiscovery/aliases.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/server.go:serverdiscovery.Start",
+        "apps/player/internal/server/security.go:serverdiscovery.LocalAliases"
+      ],
+      "dependencies": [
+        "github.com/libp2p/zeroconf/v2/server.go:Register and Shutdown lifecycle",
+        "net.InterfaceAddrs",
+        "os.Hostname"
+      ],
+      "e2e": "Browser E2E reaches an explicit server URL. No browser journey discovers LAN NSD/Bonjour multicast or independently exercises allowed-host expansion for network-interface inventories. Android unit discovery fixtures are not actual network E2E; no equivalence claimed."
     }
   },
   "test_support_inventory": {
@@ -548,6 +594,23 @@
         },
         "remaining_coverage": "App owner ledgers map their removed wrappers to browser verification; this support cleanup removes no independently executable Test/Benchmark/Fuzz declaration. AssertInstallableWebApp and all other still-used helpers remain.",
         "gap": "Local isolated shared checkout still has baseline app wrappers; validation must run after integrating app-removal commits before this support commit. No production seam removed."
+      },
+      {
+        "file": "packages/servertest/shortcuts.go",
+        "name": "ApplicationPagesExposeSharedKeyboardShortcuts",
+        "decision": "D",
+        "audit_status": "reviewed",
+        "baseline_body_sha256": "4aca27e1a5792e245af5aab35b96bdcc482713b189eb8f4ce69bcf614830668e",
+        "credible_failure": "Source-fragment shortcut helper has no remaining app or package callers after both wrappers were removed by app owners.",
+        "caller_evidence": {
+          "checkout": "/Users/mikeo/Documents/Codex/2026-10-03/task/kinosail",
+          "sha": "34541d0c311bc9ac19140e77a8c2551bd27cceb8",
+          "working_tree": "clean",
+          "command": "rg -n '\\bApplicationPagesExposeSharedKeyboardShortcuts\\(' --glob '*.go'",
+          "result": "Only packages/servertest/shortcuts.go:11 definition remains. Player wrapper deletionc6f7e1f49 is integrated; Subtitles wrapper already removed."
+        },
+        "remaining_coverage": "App ledgers map removed wrappers to actual browser keyboard behavior; this support removal deletes no independently executable Test/Benchmark/Fuzz declaration.",
+        "gap": "Validate after integrated app-removal commits; isolated shared checkout retains baseline app wrappers and cannot compile those old callers without integration."
       }
     ],
     "unreviewed_preserved": "All other support inventory is preserved without complete semantic classification; removals are restricted to helpers with no integrated app callers."
@@ -32634,9 +32697,9 @@
       "owner_group": "operations",
       "body_sha256": "09cbc350f1286fbec90848f71581a0b924a89276755c1000179f609482667848",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Preserve the observed boundary or failure-injection assertion; no new isolated test.",
       "validation_command": "cd packages && go test ./operations",
       "baseline_event": {
         "Time": "2026-10-03T10:35:27.972532-06:00",
@@ -32644,7 +32707,32 @@
         "Package": "github.com/MikeO7/kinosail/packages/operations",
         "Test": "TestBindingOwnsRegistrationAndTaskWiring",
         "Elapsed": 0
-      }
+      },
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "production_owner": [
+        "packages/operations/binding.go",
+        "packages/operations/model.go",
+        "packages/operations/http.go",
+        "packages/operations/system_http.go",
+        "packages/operations/metadata.go",
+        "packages/operations/failure_log.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/operations.go",
+        "apps/subtitles/internal/server/operations.go",
+        "apps/player/internal/server/system_http.go",
+        "apps/subtitles/internal/server/system_http.go",
+        "apps/player/internal/server/audit.go",
+        "apps/subtitles/internal/server/audit.go",
+        "apps/player/internal/server/api_admin.go",
+        "apps/subtitles/internal/server/api_admin.go"
+      ],
+      "credible_failure": "Actual catalog/cache/maintenance owners remain lazy until their requested task; all shared routes remain owner-wrapped and a selected task reaches only its correct bound operation.",
+      "remaining_coverage": "Retained isolated primary-owner proof for this important distinct failure; complementary actual E2E coverage is described in owner_groups.",
+      "gap": "Genuine populated Player test-instance-library.spec.ts metadata task exercises real complete app adapters and artwork; Player layout-audit-library.spec.ts checks rendered System diagnostic/metric links. Subtitles happy-path.spec.ts visits System and performs actual backup+verification in Chromium. These do not inject metadata provider/storage/cancellation failures, saturate worker bounds, assert complete Prometheus/diagnostic wire fields, or test retry-feedback state. No backend proof inferred from player browser-control fixtures.",
+      "unlocked_deletion": "None."
     },
     {
       "file": "packages/operations/binding_test.go",
@@ -32654,9 +32742,9 @@
       "owner_group": "operations",
       "body_sha256": "9f004a05a8b0b347dec4ac79085ecea00ead14bd3af030a3d04a735805a1331b",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Preserve the observed boundary or failure-injection assertion; no new isolated test.",
       "validation_command": "cd packages && go test ./operations",
       "baseline_event": {
         "Time": "2026-10-03T10:35:27.973111-06:00",
@@ -32664,7 +32752,32 @@
         "Package": "github.com/MikeO7/kinosail/packages/operations",
         "Test": "TestBindingPreservesTaskErrorsWithoutLaterSideEffects",
         "Elapsed": 0
-      }
+      },
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "production_owner": [
+        "packages/operations/binding.go",
+        "packages/operations/model.go",
+        "packages/operations/http.go",
+        "packages/operations/system_http.go",
+        "packages/operations/metadata.go",
+        "packages/operations/failure_log.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/operations.go",
+        "apps/subtitles/internal/server/operations.go",
+        "apps/player/internal/server/system_http.go",
+        "apps/subtitles/internal/server/system_http.go",
+        "apps/player/internal/server/audit.go",
+        "apps/subtitles/internal/server/audit.go",
+        "apps/player/internal/server/api_admin.go",
+        "apps/subtitles/internal/server/api_admin.go"
+      ],
+      "credible_failure": "Injected scan/metadata/maintenance errors and a busy transcode cache must propagate without invoking unrelated later tasks.",
+      "remaining_coverage": "Retained isolated primary-owner proof for this important distinct failure; complementary actual E2E coverage is described in owner_groups.",
+      "gap": "Genuine populated Player test-instance-library.spec.ts metadata task exercises real complete app adapters and artwork; Player layout-audit-library.spec.ts checks rendered System diagnostic/metric links. Subtitles happy-path.spec.ts visits System and performs actual backup+verification in Chromium. These do not inject metadata provider/storage/cancellation failures, saturate worker bounds, assert complete Prometheus/diagnostic wire fields, or test retry-feedback state. No backend proof inferred from player browser-control fixtures.",
+      "unlocked_deletion": "None."
     },
     {
       "file": "packages/operations/binding_test.go",
@@ -32674,9 +32787,9 @@
       "owner_group": "operations",
       "body_sha256": "1a851c829e4cdaa0e5578ec157d25cb14356132710989a6b5b2b612ecdbc1766",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Preserve the observed boundary or failure-injection assertion; no new isolated test.",
       "validation_command": "cd packages && go test ./operations",
       "baseline_event": {
         "Time": "2026-10-03T10:35:27.973012-06:00",
@@ -32684,7 +32797,32 @@
         "Package": "github.com/MikeO7/kinosail/packages/operations",
         "Test": "TestBindingProjectsEveryMetric",
         "Elapsed": 0
-      }
+      },
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "production_owner": [
+        "packages/operations/binding.go",
+        "packages/operations/model.go",
+        "packages/operations/http.go",
+        "packages/operations/system_http.go",
+        "packages/operations/metadata.go",
+        "packages/operations/failure_log.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/operations.go",
+        "apps/subtitles/internal/server/operations.go",
+        "apps/player/internal/server/system_http.go",
+        "apps/subtitles/internal/server/system_http.go",
+        "apps/player/internal/server/audit.go",
+        "apps/subtitles/internal/server/audit.go",
+        "apps/player/internal/server/api_admin.go",
+        "apps/subtitles/internal/server/api_admin.go"
+      ],
+      "credible_failure": "Keep the complete scheduler, liveevent/watchroom, viewing, and audit pressure metrics mapped to the correct counters; an index failure must report unhealthy.",
+      "remaining_coverage": "Retained isolated primary-owner proof for this important distinct failure; complementary actual E2E coverage is described in owner_groups.",
+      "gap": "Genuine populated Player test-instance-library.spec.ts metadata task exercises real complete app adapters and artwork; Player layout-audit-library.spec.ts checks rendered System diagnostic/metric links. Subtitles happy-path.spec.ts visits System and performs actual backup+verification in Chromium. These do not inject metadata provider/storage/cancellation failures, saturate worker bounds, assert complete Prometheus/diagnostic wire fields, or test retry-feedback state. No backend proof inferred from player browser-control fixtures.",
+      "unlocked_deletion": "None."
     },
     {
       "file": "packages/operations/binding_test.go",
@@ -32694,9 +32832,9 @@
       "owner_group": "operations",
       "body_sha256": "4b87692c90b6892a124cab28a557fca3da6635a7880ac5de6343e517d312044f",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Preserve the observed boundary or failure-injection assertion; no new isolated test.",
       "validation_command": "cd packages && go test ./operations",
       "baseline_event": {
         "Time": "2026-10-03T10:35:27.973045-06:00",
@@ -32704,7 +32842,32 @@
         "Package": "github.com/MikeO7/kinosail/packages/operations",
         "Test": "TestBindingProjectsDiagnosticsAtRequestTime",
         "Elapsed": 0
-      }
+      },
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "production_owner": [
+        "packages/operations/binding.go",
+        "packages/operations/model.go",
+        "packages/operations/http.go",
+        "packages/operations/system_http.go",
+        "packages/operations/metadata.go",
+        "packages/operations/failure_log.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/operations.go",
+        "apps/subtitles/internal/server/operations.go",
+        "apps/player/internal/server/system_http.go",
+        "apps/subtitles/internal/server/system_http.go",
+        "apps/player/internal/server/audit.go",
+        "apps/subtitles/internal/server/audit.go",
+        "apps/player/internal/server/api_admin.go",
+        "apps/subtitles/internal/server/api_admin.go"
+      ],
+      "credible_failure": "Do not report healthy when the cache or scan fails; preserve complete process identity/settings/counters and downloadable diagnostic delivery from current owner state.",
+      "remaining_coverage": "Retained isolated primary-owner proof for this important distinct failure; complementary actual E2E coverage is described in owner_groups.",
+      "gap": "Genuine populated Player test-instance-library.spec.ts metadata task exercises real complete app adapters and artwork; Player layout-audit-library.spec.ts checks rendered System diagnostic/metric links. Subtitles happy-path.spec.ts visits System and performs actual backup+verification in Chromium. These do not inject metadata provider/storage/cancellation failures, saturate worker bounds, assert complete Prometheus/diagnostic wire fields, or test retry-feedback state. No backend proof inferred from player browser-control fixtures.",
+      "unlocked_deletion": "None."
     },
     {
       "file": "packages/operations/failure_log_test.go",
@@ -32714,9 +32877,9 @@
       "owner_group": "operations",
       "body_sha256": "0cc0e65dfa625d87afdfe47f37317101804ab877748b16dc9080654b957f98c8",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Preserve the observed boundary or failure-injection assertion; no new isolated test.",
       "validation_command": "cd packages && go test ./operations",
       "baseline_event": {
         "Time": "2026-10-03T10:35:27.971306-06:00",
@@ -32724,7 +32887,33 @@
         "Package": "github.com/MikeO7/kinosail/packages/operations",
         "Test": "TestFailureLogBoundsAndRedactsUntrustedRequestValues",
         "Elapsed": 0
-      }
+      },
+      "history": [
+        "82d01e3f259ec07e9a376e82fe3189f7b570ae84 Satisfy diagnostic log lint limits",
+        "f6b6216a1fcc7bdd5838029cc6ca2b41917ac9d9 Add safe correlated failure diagnostics for clients and MCP"
+      ],
+      "production_owner": [
+        "packages/operations/binding.go",
+        "packages/operations/model.go",
+        "packages/operations/http.go",
+        "packages/operations/system_http.go",
+        "packages/operations/metadata.go",
+        "packages/operations/failure_log.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/operations.go",
+        "apps/subtitles/internal/server/operations.go",
+        "apps/player/internal/server/system_http.go",
+        "apps/subtitles/internal/server/system_http.go",
+        "apps/player/internal/server/audit.go",
+        "apps/subtitles/internal/server/audit.go",
+        "apps/player/internal/server/api_admin.go",
+        "apps/subtitles/internal/server/api_admin.go"
+      ],
+      "credible_failure": "Keep private media titles, query capabilities, forged methods, and invalid request IDs out of Owner diagnostic failure events.",
+      "remaining_coverage": "Retained isolated primary-owner proof for this important distinct failure; complementary actual E2E coverage is described in owner_groups.",
+      "gap": "Genuine populated Player test-instance-library.spec.ts metadata task exercises real complete app adapters and artwork; Player layout-audit-library.spec.ts checks rendered System diagnostic/metric links. Subtitles happy-path.spec.ts visits System and performs actual backup+verification in Chromium. These do not inject metadata provider/storage/cancellation failures, saturate worker bounds, assert complete Prometheus/diagnostic wire fields, or test retry-feedback state. No backend proof inferred from player browser-control fixtures.",
+      "unlocked_deletion": "None."
     },
     {
       "file": "packages/operations/failure_log_test.go",
@@ -32734,9 +32923,9 @@
       "owner_group": "operations",
       "body_sha256": "3bf812c66a0e2afcb504460919707c7a708f7a6d3b401b47203ea5f2f44e0bd5",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Preserve the observed boundary or failure-injection assertion; no new isolated test.",
       "validation_command": "cd packages && go test ./operations",
       "baseline_event": {
         "Time": "2026-10-03T10:35:27.971284-06:00",
@@ -32744,7 +32933,33 @@
         "Package": "github.com/MikeO7/kinosail/packages/operations",
         "Test": "TestFailureLogKeepsOnlyFiftyNewestEvents",
         "Elapsed": 0
-      }
+      },
+      "history": [
+        "82d01e3f259ec07e9a376e82fe3189f7b570ae84 Satisfy diagnostic log lint limits",
+        "f6b6216a1fcc7bdd5838029cc6ca2b41917ac9d9 Add safe correlated failure diagnostics for clients and MCP"
+      ],
+      "production_owner": [
+        "packages/operations/binding.go",
+        "packages/operations/model.go",
+        "packages/operations/http.go",
+        "packages/operations/system_http.go",
+        "packages/operations/metadata.go",
+        "packages/operations/failure_log.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/operations.go",
+        "apps/subtitles/internal/server/operations.go",
+        "apps/player/internal/server/system_http.go",
+        "apps/subtitles/internal/server/system_http.go",
+        "apps/player/internal/server/audit.go",
+        "apps/subtitles/internal/server/audit.go",
+        "apps/player/internal/server/api_admin.go",
+        "apps/subtitles/internal/server/api_admin.go"
+      ],
+      "credible_failure": "Keep failure-event retention bounded at 50 and newest first, avoiding unbounded memory growth and lost newest diagnostics under repeated failures.",
+      "remaining_coverage": "Retained isolated primary-owner proof for this important distinct failure; complementary actual E2E coverage is described in owner_groups.",
+      "gap": "Genuine populated Player test-instance-library.spec.ts metadata task exercises real complete app adapters and artwork; Player layout-audit-library.spec.ts checks rendered System diagnostic/metric links. Subtitles happy-path.spec.ts visits System and performs actual backup+verification in Chromium. These do not inject metadata provider/storage/cancellation failures, saturate worker bounds, assert complete Prometheus/diagnostic wire fields, or test retry-feedback state. No backend proof inferred from player browser-control fixtures.",
+      "unlocked_deletion": "None."
     },
     {
       "file": "packages/operations/http_test.go",
@@ -32754,9 +32969,9 @@
       "owner_group": "operations",
       "body_sha256": "28306e9603ba40a08e0ad4ddfc05330206744b61e0b4eedd785544bbf9127645",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Preserve the observed boundary or failure-injection assertion; no new isolated test.",
       "validation_command": "cd packages && go test ./operations",
       "baseline_event": {
         "Time": "2026-10-03T10:35:27.972579-06:00",
@@ -32764,7 +32979,32 @@
         "Package": "github.com/MikeO7/kinosail/packages/operations",
         "Test": "TestRegisterWebServesPlayerOperationalContract",
         "Elapsed": 0
-      }
+      },
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "production_owner": [
+        "packages/operations/binding.go",
+        "packages/operations/model.go",
+        "packages/operations/http.go",
+        "packages/operations/system_http.go",
+        "packages/operations/metadata.go",
+        "packages/operations/failure_log.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/operations.go",
+        "apps/subtitles/internal/server/operations.go",
+        "apps/player/internal/server/system_http.go",
+        "apps/subtitles/internal/server/system_http.go",
+        "apps/player/internal/server/audit.go",
+        "apps/subtitles/internal/server/audit.go",
+        "apps/player/internal/server/api_admin.go",
+        "apps/subtitles/internal/server/api_admin.go"
+      ],
+      "credible_failure": "Preserve the shared five owner-protected routes, selected task callbacks, and successful task redirect Location /settings. Binding registration overlaps but does not assert Location.",
+      "remaining_coverage": "Retained isolated primary-owner proof for this important distinct failure; complementary actual E2E coverage is described in owner_groups.",
+      "gap": "Genuine populated Player test-instance-library.spec.ts metadata task exercises real complete app adapters and artwork; Player layout-audit-library.spec.ts checks rendered System diagnostic/metric links. Subtitles happy-path.spec.ts visits System and performs actual backup+verification in Chromium. These do not inject metadata provider/storage/cancellation failures, saturate worker bounds, assert complete Prometheus/diagnostic wire fields, or test retry-feedback state. No backend proof inferred from player browser-control fixtures.",
+      "unlocked_deletion": "None."
     },
     {
       "file": "packages/operations/http_test.go",
@@ -32774,9 +33014,9 @@
       "owner_group": "operations",
       "body_sha256": "09903477c4fa5e8bc4bccc6a46bd2764eda79f13db483368843b324add665c3a",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Preserve the observed boundary or failure-injection assertion; no new isolated test.",
       "validation_command": "cd packages && go test ./operations",
       "baseline_event": {
         "Time": "2026-10-03T10:35:27.972549-06:00",
@@ -32784,7 +33024,32 @@
         "Package": "github.com/MikeO7/kinosail/packages/operations",
         "Test": "TestTaskHandlersTranslateFailuresAndSelections",
         "Elapsed": 0
-      }
+      },
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "production_owner": [
+        "packages/operations/binding.go",
+        "packages/operations/model.go",
+        "packages/operations/http.go",
+        "packages/operations/system_http.go",
+        "packages/operations/metadata.go",
+        "packages/operations/failure_log.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/operations.go",
+        "apps/subtitles/internal/server/operations.go",
+        "apps/player/internal/server/system_http.go",
+        "apps/subtitles/internal/server/system_http.go",
+        "apps/player/internal/server/audit.go",
+        "apps/subtitles/internal/server/audit.go",
+        "apps/player/internal/server/api_admin.go",
+        "apps/subtitles/internal/server/api_admin.go"
+      ],
+      "credible_failure": "An injected task failure must use 502 rather than report successful completion; unknown names cannot run a task and all four API selections route independently.",
+      "remaining_coverage": "Retained isolated primary-owner proof for this important distinct failure; complementary actual E2E coverage is described in owner_groups.",
+      "gap": "Genuine populated Player test-instance-library.spec.ts metadata task exercises real complete app adapters and artwork; Player layout-audit-library.spec.ts checks rendered System diagnostic/metric links. Subtitles happy-path.spec.ts visits System and performs actual backup+verification in Chromium. These do not inject metadata provider/storage/cancellation failures, saturate worker bounds, assert complete Prometheus/diagnostic wire fields, or test retry-feedback state. No backend proof inferred from player browser-control fixtures.",
+      "unlocked_deletion": "None."
     },
     {
       "file": "packages/operations/http_test.go",
@@ -32794,9 +33059,9 @@
       "owner_group": "operations",
       "body_sha256": "229c1836d77b5af7d9243d105f8f997ab05b4667cc6e0b5600e62bd1d93338ad",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Preserve the observed boundary or failure-injection assertion; no new isolated test.",
       "validation_command": "cd packages && go test ./operations",
       "baseline_event": {
         "Time": "2026-10-03T10:35:27.973656-06:00",
@@ -32804,7 +33069,32 @@
         "Package": "github.com/MikeO7/kinosail/packages/operations",
         "Test": "TestMetricsHandlerWritesEveryPlayerMetric",
         "Elapsed": 0
-      }
+      },
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "production_owner": [
+        "packages/operations/binding.go",
+        "packages/operations/model.go",
+        "packages/operations/http.go",
+        "packages/operations/system_http.go",
+        "packages/operations/metadata.go",
+        "packages/operations/failure_log.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/operations.go",
+        "apps/subtitles/internal/server/operations.go",
+        "apps/player/internal/server/system_http.go",
+        "apps/subtitles/internal/server/system_http.go",
+        "apps/player/internal/server/audit.go",
+        "apps/subtitles/internal/server/audit.go",
+        "apps/player/internal/server/api_admin.go",
+        "apps/subtitles/internal/server/api_admin.go"
+      ],
+      "credible_failure": "Preserve stable Prometheus wire metric names/labels/values and false health/monitoring values for deployed consumers; browser screenshots do not validate this wire vocabulary.",
+      "remaining_coverage": "Retained isolated primary-owner proof for this important distinct failure; complementary actual E2E coverage is described in owner_groups.",
+      "gap": "Genuine populated Player test-instance-library.spec.ts metadata task exercises real complete app adapters and artwork; Player layout-audit-library.spec.ts checks rendered System diagnostic/metric links. Subtitles happy-path.spec.ts visits System and performs actual backup+verification in Chromium. These do not inject metadata provider/storage/cancellation failures, saturate worker bounds, assert complete Prometheus/diagnostic wire fields, or test retry-feedback state. No backend proof inferred from player browser-control fixtures.",
+      "unlocked_deletion": "None."
     },
     {
       "file": "packages/operations/http_test.go",
@@ -32814,9 +33104,9 @@
       "owner_group": "operations",
       "body_sha256": "8fe7be94dbc2b36d82fdfa4a3394af798e93d67c3583cf14724a19ef04febdef",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Preserve the observed boundary or failure-injection assertion; no new isolated test.",
       "validation_command": "cd packages && go test ./operations",
       "baseline_event": {
         "Time": "2026-10-03T10:35:27.973085-06:00",
@@ -32824,7 +33114,32 @@
         "Package": "github.com/MikeO7/kinosail/packages/operations",
         "Test": "TestDiagnosticsHandlerWritesDownloadHeadersAndJSON",
         "Elapsed": 0
-      }
+      },
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "production_owner": [
+        "packages/operations/binding.go",
+        "packages/operations/model.go",
+        "packages/operations/http.go",
+        "packages/operations/system_http.go",
+        "packages/operations/metadata.go",
+        "packages/operations/failure_log.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/operations.go",
+        "apps/subtitles/internal/server/operations.go",
+        "apps/player/internal/server/system_http.go",
+        "apps/subtitles/internal/server/system_http.go",
+        "apps/player/internal/server/audit.go",
+        "apps/subtitles/internal/server/audit.go",
+        "apps/player/internal/server/api_admin.go",
+        "apps/subtitles/internal/server/api_admin.go"
+      ],
+      "credible_failure": "Preserve the downloadable application/json diagnostic wire vocabulary and headers; browser System links alone do not prove the response format.",
+      "remaining_coverage": "Retained isolated primary-owner proof for this important distinct failure; complementary actual E2E coverage is described in owner_groups.",
+      "gap": "Genuine populated Player test-instance-library.spec.ts metadata task exercises real complete app adapters and artwork; Player layout-audit-library.spec.ts checks rendered System diagnostic/metric links. Subtitles happy-path.spec.ts visits System and performs actual backup+verification in Chromium. These do not inject metadata provider/storage/cancellation failures, saturate worker bounds, assert complete Prometheus/diagnostic wire fields, or test retry-feedback state. No backend proof inferred from player browser-control fixtures.",
+      "unlocked_deletion": "None."
     },
     {
       "file": "packages/operations/metadata_concurrency_test.go",
@@ -32834,9 +33149,9 @@
       "owner_group": "operations",
       "body_sha256": "da4b675347dcc97c6343935f2491cf6d19ba1545ff669782ee7d14c5ba08f28e",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Preserve the observed boundary or failure-injection assertion; no new isolated test.",
       "validation_command": "cd packages && go test ./operations",
       "baseline_event": {
         "Time": "2026-10-03T10:35:27.966834-06:00",
@@ -32844,7 +33159,32 @@
         "Package": "github.com/MikeO7/kinosail/packages/operations",
         "Test": "TestRefreshMetadataBoundsConcurrencyAndStopsOnCancellation",
         "Elapsed": 0
-      }
+      },
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "production_owner": [
+        "packages/operations/binding.go",
+        "packages/operations/model.go",
+        "packages/operations/http.go",
+        "packages/operations/system_http.go",
+        "packages/operations/metadata.go",
+        "packages/operations/failure_log.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/operations.go",
+        "apps/subtitles/internal/server/operations.go",
+        "apps/player/internal/server/system_http.go",
+        "apps/subtitles/internal/server/system_http.go",
+        "apps/player/internal/server/audit.go",
+        "apps/subtitles/internal/server/audit.go",
+        "apps/player/internal/server/api_admin.go",
+        "apps/subtitles/internal/server/api_admin.go"
+      ],
+      "credible_failure": "Start only the bounded four provider workers, stop launching after cancellation, drain active workers, and return context cancellation.",
+      "remaining_coverage": "Retained isolated primary-owner proof for this important distinct failure; complementary actual E2E coverage is described in owner_groups.",
+      "gap": "Genuine populated Player test-instance-library.spec.ts metadata task exercises real complete app adapters and artwork; Player layout-audit-library.spec.ts checks rendered System diagnostic/metric links. Subtitles happy-path.spec.ts visits System and performs actual backup+verification in Chromium. These do not inject metadata provider/storage/cancellation failures, saturate worker bounds, assert complete Prometheus/diagnostic wire fields, or test retry-feedback state. No backend proof inferred from player browser-control fixtures.",
+      "unlocked_deletion": "None."
     },
     {
       "file": "packages/operations/metadata_concurrency_test.go",
@@ -32854,9 +33194,9 @@
       "owner_group": "operations",
       "body_sha256": "2decb1dfa00665f339ffbc60cbf55e4f86b57f1055bc02eb10e02b58621fbd85",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Preserve the observed boundary or failure-injection assertion; no new isolated test.",
       "validation_command": "cd packages && go test ./operations",
       "baseline_event": {
         "Time": "2026-10-03T10:35:27.980772-06:00",
@@ -32864,7 +33204,32 @@
         "Package": "github.com/MikeO7/kinosail/packages/operations",
         "Test": "TestRefreshMetadataNeverExceedsWorkerLimit",
         "Elapsed": 0.01
-      }
+      },
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "production_owner": [
+        "packages/operations/binding.go",
+        "packages/operations/model.go",
+        "packages/operations/http.go",
+        "packages/operations/system_http.go",
+        "packages/operations/metadata.go",
+        "packages/operations/failure_log.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/operations.go",
+        "apps/subtitles/internal/server/operations.go",
+        "apps/player/internal/server/system_http.go",
+        "apps/subtitles/internal/server/system_http.go",
+        "apps/player/internal/server/audit.go",
+        "apps/subtitles/internal/server/audit.go",
+        "apps/player/internal/server/api_admin.go",
+        "apps/subtitles/internal/server/api_admin.go"
+      ],
+      "credible_failure": "Across more independent groups than slots, useful parallel provider work must never exceed the four-worker limit.",
+      "remaining_coverage": "Retained isolated primary-owner proof for this important distinct failure; complementary actual E2E coverage is described in owner_groups.",
+      "gap": "Genuine populated Player test-instance-library.spec.ts metadata task exercises real complete app adapters and artwork; Player layout-audit-library.spec.ts checks rendered System diagnostic/metric links. Subtitles happy-path.spec.ts visits System and performs actual backup+verification in Chromium. These do not inject metadata provider/storage/cancellation failures, saturate worker bounds, assert complete Prometheus/diagnostic wire fields, or test retry-feedback state. No backend proof inferred from player browser-control fixtures.",
+      "unlocked_deletion": "None."
     },
     {
       "file": "packages/operations/metadata_rating_test.go",
@@ -32874,9 +33239,9 @@
       "owner_group": "operations",
       "body_sha256": "77f6e4b32e2305c3829e6f6d9f1e388bb476d894485dd8e304af82753a94bd81",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Preserve the observed boundary or failure-injection assertion; no new isolated test.",
       "validation_command": "cd packages && go test ./operations",
       "baseline_event": {
         "Time": "2026-10-03T10:35:27.974786-06:00",
@@ -32884,7 +33249,32 @@
         "Package": "github.com/MikeO7/kinosail/packages/operations",
         "Test": "TestRefreshMetadataChecksExistingMoviesForMissingCertificationOnce",
         "Elapsed": 0
-      }
+      },
+      "history": [
+        "2698dabce6e0be9226289fd78960ac46573f0045 fix(player): recover blocked autoplay and show movie ratings"
+      ],
+      "production_owner": [
+        "packages/operations/binding.go",
+        "packages/operations/model.go",
+        "packages/operations/http.go",
+        "packages/operations/system_http.go",
+        "packages/operations/metadata.go",
+        "packages/operations/failure_log.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/operations.go",
+        "apps/subtitles/internal/server/operations.go",
+        "apps/player/internal/server/system_http.go",
+        "apps/subtitles/internal/server/system_http.go",
+        "apps/player/internal/server/audit.go",
+        "apps/subtitles/internal/server/audit.go",
+        "apps/player/internal/server/api_admin.go",
+        "apps/subtitles/internal/server/api_admin.go"
+      ],
+      "credible_failure": "Backfill missing movie certifications once without refetching already checked or already rated records.",
+      "remaining_coverage": "Retained isolated primary-owner proof for this important distinct failure; complementary actual E2E coverage is described in owner_groups.",
+      "gap": "Genuine populated Player test-instance-library.spec.ts metadata task exercises real complete app adapters and artwork; Player layout-audit-library.spec.ts checks rendered System diagnostic/metric links. Subtitles happy-path.spec.ts visits System and performs actual backup+verification in Chromium. These do not inject metadata provider/storage/cancellation failures, saturate worker bounds, assert complete Prometheus/diagnostic wire fields, or test retry-feedback state. No backend proof inferred from player browser-control fixtures.",
+      "unlocked_deletion": "None."
     },
     {
       "file": "packages/operations/metadata_test.go",
@@ -32894,9 +33284,9 @@
       "owner_group": "operations",
       "body_sha256": "8bcfa1391e223c338e0628ff89df16588574d682c183ae78857ea770b7a4f9a5",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Preserve the observed boundary or failure-injection assertion; no new isolated test.",
       "validation_command": "cd packages && go test ./operations",
       "baseline_event": {
         "Time": "2026-10-03T10:35:27.971125-06:00",
@@ -32904,7 +33294,34 @@
         "Package": "github.com/MikeO7/kinosail/packages/operations",
         "Test": "TestRefreshMetadataGroupsEpisodesAndReusesValidRecords",
         "Elapsed": 0
-      }
+      },
+      "history": [
+        "2698dabce6e0be9226289fd78960ac46573f0045 fix(player): recover blocked autoplay and show movie ratings",
+        "b0522e6b81d435b96282c14d969832e4b4f0a346 Use genuine landscape artwork on Apple TV Home",
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "production_owner": [
+        "packages/operations/binding.go",
+        "packages/operations/model.go",
+        "packages/operations/http.go",
+        "packages/operations/system_http.go",
+        "packages/operations/metadata.go",
+        "packages/operations/failure_log.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/operations.go",
+        "apps/subtitles/internal/server/operations.go",
+        "apps/player/internal/server/system_http.go",
+        "apps/subtitles/internal/server/system_http.go",
+        "apps/player/internal/server/audit.go",
+        "apps/subtitles/internal/server/audit.go",
+        "apps/player/internal/server/api_admin.go",
+        "apps/subtitles/internal/server/api_admin.go"
+      ],
+      "credible_failure": "Resolve one show group, preserve valid per-episode data, and share the first downloaded show artwork/backdrop/provider identity across episodes.",
+      "remaining_coverage": "Retained isolated primary-owner proof for this important distinct failure; complementary actual E2E coverage is described in owner_groups.",
+      "gap": "Genuine populated Player test-instance-library.spec.ts metadata task exercises real complete app adapters and artwork; Player layout-audit-library.spec.ts checks rendered System diagnostic/metric links. Subtitles happy-path.spec.ts visits System and performs actual backup+verification in Chromium. These do not inject metadata provider/storage/cancellation failures, saturate worker bounds, assert complete Prometheus/diagnostic wire fields, or test retry-feedback state. No backend proof inferred from player browser-control fixtures.",
+      "unlocked_deletion": "None."
     },
     {
       "file": "packages/operations/metadata_test.go",
@@ -32914,9 +33331,9 @@
       "owner_group": "operations",
       "body_sha256": "5e1f90ac75e02da4b4a9814e8c79896f693d1111120ae885551346f1568f024a",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Preserve the observed boundary or failure-injection assertion; no new isolated test.",
       "validation_command": "cd packages && go test ./operations",
       "baseline_event": {
         "Time": "2026-10-03T10:35:27.974748-06:00",
@@ -32924,7 +33341,34 @@
         "Package": "github.com/MikeO7/kinosail/packages/operations",
         "Test": "TestRefreshMetadataSelectsOnlyEligibleMissingVideo",
         "Elapsed": 0
-      }
+      },
+      "history": [
+        "2698dabce6e0be9226289fd78960ac46573f0045 fix(player): recover blocked autoplay and show movie ratings",
+        "b0522e6b81d435b96282c14d969832e4b4f0a346 Use genuine landscape artwork on Apple TV Home",
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "production_owner": [
+        "packages/operations/binding.go",
+        "packages/operations/model.go",
+        "packages/operations/http.go",
+        "packages/operations/system_http.go",
+        "packages/operations/metadata.go",
+        "packages/operations/failure_log.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/operations.go",
+        "apps/subtitles/internal/server/operations.go",
+        "apps/player/internal/server/system_http.go",
+        "apps/subtitles/internal/server/system_http.go",
+        "apps/player/internal/server/audit.go",
+        "apps/subtitles/internal/server/audit.go",
+        "apps/player/internal/server/api_admin.go",
+        "apps/subtitles/internal/server/api_admin.go"
+      ],
+      "credible_failure": "Never overwrite Owner metadata or repeatedly download existing artwork; without paid provider configuration request only eligible TVMaze episodes.",
+      "remaining_coverage": "Retained isolated primary-owner proof for this important distinct failure; complementary actual E2E coverage is described in owner_groups.",
+      "gap": "Genuine populated Player test-instance-library.spec.ts metadata task exercises real complete app adapters and artwork; Player layout-audit-library.spec.ts checks rendered System diagnostic/metric links. Subtitles happy-path.spec.ts visits System and performs actual backup+verification in Chromium. These do not inject metadata provider/storage/cancellation failures, saturate worker bounds, assert complete Prometheus/diagnostic wire fields, or test retry-feedback state. No backend proof inferred from player browser-control fixtures.",
+      "unlocked_deletion": "None."
     },
     {
       "file": "packages/operations/metadata_test.go",
@@ -32934,9 +33378,9 @@
       "owner_group": "operations",
       "body_sha256": "a5ab6f92111971182c650b0d2479278e4df6cf88001db0f425c3bc4f980f2662",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Preserve the observed boundary or failure-injection assertion; no new isolated test.",
       "validation_command": "cd packages && go test ./operations",
       "baseline_event": {
         "Time": "2026-10-03T10:35:27.97251-06:00",
@@ -32944,7 +33388,34 @@
         "Package": "github.com/MikeO7/kinosail/packages/operations",
         "Test": "TestRefreshMetadataPreservesPartialSuccessAndFailureOrder",
         "Elapsed": 0
-      }
+      },
+      "history": [
+        "2698dabce6e0be9226289fd78960ac46573f0045 fix(player): recover blocked autoplay and show movie ratings",
+        "b0522e6b81d435b96282c14d969832e4b4f0a346 Use genuine landscape artwork on Apple TV Home",
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "production_owner": [
+        "packages/operations/binding.go",
+        "packages/operations/model.go",
+        "packages/operations/http.go",
+        "packages/operations/system_http.go",
+        "packages/operations/metadata.go",
+        "packages/operations/failure_log.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/operations.go",
+        "apps/subtitles/internal/server/operations.go",
+        "apps/player/internal/server/system_http.go",
+        "apps/subtitles/internal/server/system_http.go",
+        "apps/player/internal/server/audit.go",
+        "apps/subtitles/internal/server/audit.go",
+        "apps/player/internal/server/api_admin.go",
+        "apps/subtitles/internal/server/api_admin.go"
+      ],
+      "credible_failure": "Persist usable partial provider results, report download failures, and never refresh the live index after an injected failed metadata store.",
+      "remaining_coverage": "Retained isolated primary-owner proof for this important distinct failure; complementary actual E2E coverage is described in owner_groups.",
+      "gap": "Genuine populated Player test-instance-library.spec.ts metadata task exercises real complete app adapters and artwork; Player layout-audit-library.spec.ts checks rendered System diagnostic/metric links. Subtitles happy-path.spec.ts visits System and performs actual backup+verification in Chromium. These do not inject metadata provider/storage/cancellation failures, saturate worker bounds, assert complete Prometheus/diagnostic wire fields, or test retry-feedback state. No backend proof inferred from player browser-control fixtures.",
+      "unlocked_deletion": "None."
     },
     {
       "file": "packages/operations/metadata_test.go",
@@ -32954,9 +33425,9 @@
       "owner_group": "operations",
       "body_sha256": "2a3f77ffbee18b0873de15f144155b2bc93b727943b80c32378b9ed89a01dc91",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Preserve the observed boundary or failure-injection assertion; no new isolated test.",
       "validation_command": "cd packages && go test ./operations",
       "baseline_event": {
         "Time": "2026-10-03T10:35:27.971058-06:00",
@@ -32964,7 +33435,34 @@
         "Package": "github.com/MikeO7/kinosail/packages/operations",
         "Test": "TestRefreshMetadataReturnsNoWorkWithoutSideEffects",
         "Elapsed": 0
-      }
+      },
+      "history": [
+        "2698dabce6e0be9226289fd78960ac46573f0045 fix(player): recover blocked autoplay and show movie ratings",
+        "b0522e6b81d435b96282c14d969832e4b4f0a346 Use genuine landscape artwork on Apple TV Home",
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "production_owner": [
+        "packages/operations/binding.go",
+        "packages/operations/model.go",
+        "packages/operations/http.go",
+        "packages/operations/system_http.go",
+        "packages/operations/metadata.go",
+        "packages/operations/failure_log.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/operations.go",
+        "apps/subtitles/internal/server/operations.go",
+        "apps/player/internal/server/system_http.go",
+        "apps/subtitles/internal/server/system_http.go",
+        "apps/player/internal/server/audit.go",
+        "apps/subtitles/internal/server/audit.go",
+        "apps/player/internal/server/api_admin.go",
+        "apps/subtitles/internal/server/api_admin.go"
+      ],
+      "credible_failure": "A nonvideo-only installation must not write an empty metadata batch or trigger index refresh feedback when no item is eligible.",
+      "remaining_coverage": "Retained isolated primary-owner proof for this important distinct failure; complementary actual E2E coverage is described in owner_groups.",
+      "gap": "Genuine populated Player test-instance-library.spec.ts metadata task exercises real complete app adapters and artwork; Player layout-audit-library.spec.ts checks rendered System diagnostic/metric links. Subtitles happy-path.spec.ts visits System and performs actual backup+verification in Chromium. These do not inject metadata provider/storage/cancellation failures, saturate worker bounds, assert complete Prometheus/diagnostic wire fields, or test retry-feedback state. No backend proof inferred from player browser-control fixtures.",
+      "unlocked_deletion": "None."
     },
     {
       "file": "packages/operations/metadata_test.go",
@@ -32974,9 +33472,9 @@
       "owner_group": "operations",
       "body_sha256": "2fbe262d42386da89c89bb2f0d39a7b42b77e4e7a928726c0963215b3430f26f",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "D",
+      "audit_status": "reviewed",
+      "risk": "Normal configured app callback wiring remains verified through actual server journeys; intentionally malformed static adapter construction no longer pinned.",
       "validation_command": "cd packages && go test ./operations",
       "baseline_event": {
         "Time": "2026-10-03T10:35:27.970812-06:00",
@@ -32984,7 +33482,40 @@
         "Package": "github.com/MikeO7/kinosail/packages/operations",
         "Test": "TestRefreshMetadataRejectsIncompleteDependenciesWithoutSideEffects",
         "Elapsed": 0
-      }
+      },
+      "history": [
+        "2698dabce6e0be9226289fd78960ac46573f0045 fix(player): recover blocked autoplay and show movie ratings",
+        "b0522e6b81d435b96282c14d969832e4b4f0a346 Use genuine landscape artwork on Apple TV Home",
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "production_owner": [
+        "packages/operations/binding.go",
+        "packages/operations/model.go",
+        "packages/operations/http.go",
+        "packages/operations/system_http.go",
+        "packages/operations/metadata.go",
+        "packages/operations/failure_log.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/operations.go",
+        "apps/subtitles/internal/server/operations.go",
+        "apps/player/internal/server/system_http.go",
+        "apps/subtitles/internal/server/system_http.go",
+        "apps/player/internal/server/audit.go",
+        "apps/subtitles/internal/server/audit.go",
+        "apps/player/internal/server/api_admin.go",
+        "apps/subtitles/internal/server/api_admin.go"
+      ],
+      "credible_failure": "Rejects intentionally incomplete static constructor dependencies or nil context with a prescribed panic/error, without exercising a reachable runtime failure.",
+      "reason": "Only nulls statically bound callbacks or supplies nil context and requires an exact guard error. Both app metadataRefresh builders supply complete bound methods; production request/lifecycle contexts are nonnil. Real metadata task journeys cover the actual adapter wiring; actual provider/storage/cancellation failures remain independently protected.",
+      "remaining_coverage": [
+        "packages/operations/metadata_test.go:TestRefreshMetadataPreservesPartialSuccessAndFailureOrder",
+        "packages/operations/metadata_concurrency_test.go:TestRefreshMetadataBoundsConcurrencyAndStopsOnCancellation",
+        "packages/operations/metadata_test.go:TestRefreshMetadataDiscardsCompletedWorkAfterCancellation",
+        "apps/player/e2e/test-instance-library.spec.ts:media artwork keeps its intended ratio in the populated library"
+      ],
+      "gap": "No E2E equivalence for deliberately nil method values or nil contexts. Missing-callback guard and exact error-copy enforcement under programmer misuse are intentionally no longer pinned; runtime dependencies still have failure-injection tests.",
+      "unlocked_deletion": "No production seam or shared fixture helper removed."
     },
     {
       "file": "packages/operations/metadata_test.go",
@@ -32994,9 +33525,9 @@
       "owner_group": "operations",
       "body_sha256": "5e0375648a4fbb5e2e6691221c0bfc81e265540d5f752c8041122b5578efd72b",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Preserve the observed boundary or failure-injection assertion; no new isolated test.",
       "validation_command": "cd packages && go test ./operations",
       "baseline_event": {
         "Time": "2026-10-03T10:35:27.97078-06:00",
@@ -33004,7 +33535,34 @@
         "Package": "github.com/MikeO7/kinosail/packages/operations",
         "Test": "TestRefreshMetadataResolvesMissingEpisodeAndReportsGroupFailure",
         "Elapsed": 0
-      }
+      },
+      "history": [
+        "2698dabce6e0be9226289fd78960ac46573f0045 fix(player): recover blocked autoplay and show movie ratings",
+        "b0522e6b81d435b96282c14d969832e4b4f0a346 Use genuine landscape artwork on Apple TV Home",
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "production_owner": [
+        "packages/operations/binding.go",
+        "packages/operations/model.go",
+        "packages/operations/http.go",
+        "packages/operations/system_http.go",
+        "packages/operations/metadata.go",
+        "packages/operations/failure_log.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/operations.go",
+        "apps/subtitles/internal/server/operations.go",
+        "apps/player/internal/server/system_http.go",
+        "apps/subtitles/internal/server/system_http.go",
+        "apps/player/internal/server/audit.go",
+        "apps/subtitles/internal/server/audit.go",
+        "apps/player/internal/server/api_admin.go",
+        "apps/subtitles/internal/server/api_admin.go"
+      ],
+      "credible_failure": "An invalid saved episode must be resolved; a failed episode provider call must reject the complete grouped show update before persistence.",
+      "remaining_coverage": "Retained isolated primary-owner proof for this important distinct failure; complementary actual E2E coverage is described in owner_groups.",
+      "gap": "Genuine populated Player test-instance-library.spec.ts metadata task exercises real complete app adapters and artwork; Player layout-audit-library.spec.ts checks rendered System diagnostic/metric links. Subtitles happy-path.spec.ts visits System and performs actual backup+verification in Chromium. These do not inject metadata provider/storage/cancellation failures, saturate worker bounds, assert complete Prometheus/diagnostic wire fields, or test retry-feedback state. No backend proof inferred from player browser-control fixtures.",
+      "unlocked_deletion": "None."
     },
     {
       "file": "packages/operations/metadata_test.go",
@@ -33014,9 +33572,9 @@
       "owner_group": "operations",
       "body_sha256": "b70396037dcbb50205cb1eefe4151908a316d0c4cb69074a0f75733eb510ec43",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Preserve the observed boundary or failure-injection assertion; no new isolated test.",
       "validation_command": "cd packages && go test ./operations",
       "baseline_event": {
         "Time": "2026-10-03T10:35:27.97111-06:00",
@@ -33024,7 +33582,34 @@
         "Package": "github.com/MikeO7/kinosail/packages/operations",
         "Test": "TestRefreshMetadataCountsFailuresAcrossIndependentGroups",
         "Elapsed": 0
-      }
+      },
+      "history": [
+        "2698dabce6e0be9226289fd78960ac46573f0045 fix(player): recover blocked autoplay and show movie ratings",
+        "b0522e6b81d435b96282c14d969832e4b4f0a346 Use genuine landscape artwork on Apple TV Home",
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "production_owner": [
+        "packages/operations/binding.go",
+        "packages/operations/model.go",
+        "packages/operations/http.go",
+        "packages/operations/system_http.go",
+        "packages/operations/metadata.go",
+        "packages/operations/failure_log.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/operations.go",
+        "apps/subtitles/internal/server/operations.go",
+        "apps/player/internal/server/system_http.go",
+        "apps/subtitles/internal/server/system_http.go",
+        "apps/player/internal/server/audit.go",
+        "apps/subtitles/internal/server/audit.go",
+        "apps/player/internal/server/api_admin.go",
+        "apps/subtitles/internal/server/api_admin.go"
+      ],
+      "credible_failure": "Account for failures from multiple independently scheduled provider groups so Owner task result reports the full failed item count.",
+      "remaining_coverage": "Retained isolated primary-owner proof for this important distinct failure; complementary actual E2E coverage is described in owner_groups.",
+      "gap": "Genuine populated Player test-instance-library.spec.ts metadata task exercises real complete app adapters and artwork; Player layout-audit-library.spec.ts checks rendered System diagnostic/metric links. Subtitles happy-path.spec.ts visits System and performs actual backup+verification in Chromium. These do not inject metadata provider/storage/cancellation failures, saturate worker bounds, assert complete Prometheus/diagnostic wire fields, or test retry-feedback state. No backend proof inferred from player browser-control fixtures.",
+      "unlocked_deletion": "None."
     },
     {
       "file": "packages/operations/metadata_test.go",
@@ -33034,9 +33619,9 @@
       "owner_group": "operations",
       "body_sha256": "4d3ab9beb763ecc86e22a3646fa67988b4f60e5ca60f9679aefc50afd9332c3d",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Preserve the observed boundary or failure-injection assertion; no new isolated test.",
       "validation_command": "cd packages && go test ./operations",
       "baseline_event": {
         "Time": "2026-10-03T10:35:27.974774-06:00",
@@ -33044,7 +33629,34 @@
         "Package": "github.com/MikeO7/kinosail/packages/operations",
         "Test": "TestRefreshMetadataDiscardsCompletedWorkAfterCancellation",
         "Elapsed": 0
-      }
+      },
+      "history": [
+        "2698dabce6e0be9226289fd78960ac46573f0045 fix(player): recover blocked autoplay and show movie ratings",
+        "b0522e6b81d435b96282c14d969832e4b4f0a346 Use genuine landscape artwork on Apple TV Home",
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "production_owner": [
+        "packages/operations/binding.go",
+        "packages/operations/model.go",
+        "packages/operations/http.go",
+        "packages/operations/system_http.go",
+        "packages/operations/metadata.go",
+        "packages/operations/failure_log.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/operations.go",
+        "apps/subtitles/internal/server/operations.go",
+        "apps/player/internal/server/system_http.go",
+        "apps/subtitles/internal/server/system_http.go",
+        "apps/player/internal/server/audit.go",
+        "apps/subtitles/internal/server/audit.go",
+        "apps/player/internal/server/api_admin.go",
+        "apps/subtitles/internal/server/api_admin.go"
+      ],
+      "credible_failure": "Do not persist a provider result that completed after the refresh context was canceled.",
+      "remaining_coverage": "Retained isolated primary-owner proof for this important distinct failure; complementary actual E2E coverage is described in owner_groups.",
+      "gap": "Genuine populated Player test-instance-library.spec.ts metadata task exercises real complete app adapters and artwork; Player layout-audit-library.spec.ts checks rendered System diagnostic/metric links. Subtitles happy-path.spec.ts visits System and performs actual backup+verification in Chromium. These do not inject metadata provider/storage/cancellation failures, saturate worker bounds, assert complete Prometheus/diagnostic wire fields, or test retry-feedback state. No backend proof inferred from player browser-control fixtures.",
+      "unlocked_deletion": "None."
     },
     {
       "file": "packages/operations/metadata_test.go",
@@ -33054,9 +33666,9 @@
       "owner_group": "operations",
       "body_sha256": "42d470fe7b66d30f0e075a0118b8a7b8fdf7f44afd513446a735a8f4848d69f8",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Preserve the observed boundary or failure-injection assertion; no new isolated test.",
       "validation_command": "cd packages && go test ./operations",
       "baseline_event": {
         "Time": "2026-10-03T10:35:27.967737-06:00",
@@ -33064,7 +33676,34 @@
         "Package": "github.com/MikeO7/kinosail/packages/operations",
         "Test": "TestMissingMetadataBackfillsCastOnceAndPreservesOwner",
         "Elapsed": 0
-      }
+      },
+      "history": [
+        "2698dabce6e0be9226289fd78960ac46573f0045 fix(player): recover blocked autoplay and show movie ratings",
+        "b0522e6b81d435b96282c14d969832e4b4f0a346 Use genuine landscape artwork on Apple TV Home",
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "production_owner": [
+        "packages/operations/binding.go",
+        "packages/operations/model.go",
+        "packages/operations/http.go",
+        "packages/operations/system_http.go",
+        "packages/operations/metadata.go",
+        "packages/operations/failure_log.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/operations.go",
+        "apps/subtitles/internal/server/operations.go",
+        "apps/player/internal/server/system_http.go",
+        "apps/subtitles/internal/server/system_http.go",
+        "apps/player/internal/server/audit.go",
+        "apps/subtitles/internal/server/audit.go",
+        "apps/player/internal/server/api_admin.go",
+        "apps/subtitles/internal/server/api_admin.go"
+      ],
+      "credible_failure": "Retry an older incomplete automatic metadata record while excluding complete and Owner-controlled records.",
+      "remaining_coverage": "Retained isolated primary-owner proof for this important distinct failure; complementary actual E2E coverage is described in owner_groups.",
+      "gap": "Genuine populated Player test-instance-library.spec.ts metadata task exercises real complete app adapters and artwork; Player layout-audit-library.spec.ts checks rendered System diagnostic/metric links. Subtitles happy-path.spec.ts visits System and performs actual backup+verification in Chromium. These do not inject metadata provider/storage/cancellation failures, saturate worker bounds, assert complete Prometheus/diagnostic wire fields, or test retry-feedback state. No backend proof inferred from player browser-control fixtures.",
+      "unlocked_deletion": "None."
     },
     {
       "file": "packages/operations/metadata_test.go",
@@ -33074,9 +33713,9 @@
       "owner_group": "operations",
       "body_sha256": "7ba2707b3cf459091ff2d32ab8fb8fb4eee1eff898cb9c74b1a7b45bf053a7f1",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Preserve the observed boundary or failure-injection assertion; no new isolated test.",
       "validation_command": "cd packages && go test ./operations",
       "baseline_event": {
         "Time": "2026-10-03T10:35:27.968097-06:00",
@@ -33084,7 +33723,34 @@
         "Package": "github.com/MikeO7/kinosail/packages/operations",
         "Test": "TestMissingBackdropFileIsRetried",
         "Elapsed": 0
-      }
+      },
+      "history": [
+        "2698dabce6e0be9226289fd78960ac46573f0045 fix(player): recover blocked autoplay and show movie ratings",
+        "b0522e6b81d435b96282c14d969832e4b4f0a346 Use genuine landscape artwork on Apple TV Home",
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "production_owner": [
+        "packages/operations/binding.go",
+        "packages/operations/model.go",
+        "packages/operations/http.go",
+        "packages/operations/system_http.go",
+        "packages/operations/metadata.go",
+        "packages/operations/failure_log.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/operations.go",
+        "apps/subtitles/internal/server/operations.go",
+        "apps/player/internal/server/system_http.go",
+        "apps/subtitles/internal/server/system_http.go",
+        "apps/player/internal/server/audit.go",
+        "apps/subtitles/internal/server/audit.go",
+        "apps/player/internal/server/api_admin.go",
+        "apps/subtitles/internal/server/api_admin.go"
+      ],
+      "credible_failure": "A checked backdrop whose cached file disappeared must remain eligible for refresh rather than losing artwork permanently.",
+      "remaining_coverage": "Retained isolated primary-owner proof for this important distinct failure; complementary actual E2E coverage is described in owner_groups.",
+      "gap": "Genuine populated Player test-instance-library.spec.ts metadata task exercises real complete app adapters and artwork; Player layout-audit-library.spec.ts checks rendered System diagnostic/metric links. Subtitles happy-path.spec.ts visits System and performs actual backup+verification in Chromium. These do not inject metadata provider/storage/cancellation failures, saturate worker bounds, assert complete Prometheus/diagnostic wire fields, or test retry-feedback state. No backend proof inferred from player browser-control fixtures.",
+      "unlocked_deletion": "None."
     },
     {
       "file": "packages/operations/metadata_test.go",
@@ -33094,9 +33760,9 @@
       "owner_group": "operations",
       "body_sha256": "623ca3254557f0f8a6234a6e48c5f74268d63c592585c232b9492b1358c558a1",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Preserve the observed boundary or failure-injection assertion; no new isolated test.",
       "validation_command": "cd packages && go test ./operations",
       "baseline_event": {
         "Time": "2026-10-03T10:35:27.968268-06:00",
@@ -33104,7 +33770,34 @@
         "Package": "github.com/MikeO7/kinosail/packages/operations",
         "Test": "TestShowBackdropDownloadFailureKeepsEveryEpisodeRetryable",
         "Elapsed": 0
-      }
+      },
+      "history": [
+        "2698dabce6e0be9226289fd78960ac46573f0045 fix(player): recover blocked autoplay and show movie ratings",
+        "b0522e6b81d435b96282c14d969832e4b4f0a346 Use genuine landscape artwork on Apple TV Home",
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "production_owner": [
+        "packages/operations/binding.go",
+        "packages/operations/model.go",
+        "packages/operations/http.go",
+        "packages/operations/system_http.go",
+        "packages/operations/metadata.go",
+        "packages/operations/failure_log.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/operations.go",
+        "apps/subtitles/internal/server/operations.go",
+        "apps/player/internal/server/system_http.go",
+        "apps/subtitles/internal/server/system_http.go",
+        "apps/player/internal/server/audit.go",
+        "apps/subtitles/internal/server/audit.go",
+        "apps/player/internal/server/api_admin.go",
+        "apps/subtitles/internal/server/api_admin.go"
+      ],
+      "credible_failure": "A failed shared show backdrop download must clear checked/path state consistently for every episode so later refresh can recover.",
+      "remaining_coverage": "Retained isolated primary-owner proof for this important distinct failure; complementary actual E2E coverage is described in owner_groups.",
+      "gap": "Genuine populated Player test-instance-library.spec.ts metadata task exercises real complete app adapters and artwork; Player layout-audit-library.spec.ts checks rendered System diagnostic/metric links. Subtitles happy-path.spec.ts visits System and performs actual backup+verification in Chromium. These do not inject metadata provider/storage/cancellation failures, saturate worker bounds, assert complete Prometheus/diagnostic wire fields, or test retry-feedback state. No backend proof inferred from player browser-control fixtures.",
+      "unlocked_deletion": "None."
     },
     {
       "file": "packages/operations/metadata_unchanged_test.go",
@@ -33114,9 +33807,9 @@
       "owner_group": "operations",
       "body_sha256": "160dfaf94372111665a64cf3adfda727e8b86fc61aa100b6a1991cfc32bc0278",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Preserve the observed boundary or failure-injection assertion; no new isolated test.",
       "validation_command": "cd packages && go test ./operations",
       "baseline_event": {
         "Time": "2026-10-03T10:35:27.980643-06:00",
@@ -33124,7 +33817,32 @@
         "Package": "github.com/MikeO7/kinosail/packages/operations",
         "Test": "TestRefreshMetadataDoesNotRepublishUnchangedProviderResults",
         "Elapsed": 0
-      }
+      },
+      "history": [
+        "b6288a481debfbfd52ff1b2085d6b190f5ec6d04 Stop metadata retry feedback and contain failed badge artwork"
+      ],
+      "production_owner": [
+        "packages/operations/binding.go",
+        "packages/operations/model.go",
+        "packages/operations/http.go",
+        "packages/operations/system_http.go",
+        "packages/operations/metadata.go",
+        "packages/operations/failure_log.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/operations.go",
+        "apps/subtitles/internal/server/operations.go",
+        "apps/player/internal/server/system_http.go",
+        "apps/subtitles/internal/server/system_http.go",
+        "apps/player/internal/server/audit.go",
+        "apps/subtitles/internal/server/audit.go",
+        "apps/player/internal/server/api_admin.go",
+        "apps/subtitles/internal/server/api_admin.go"
+      ],
+      "credible_failure": "Stop the historical metadata/index retry feedback loop for unchanged results, publish repaired artwork once, and keep failed artwork retryable without empty publication.",
+      "remaining_coverage": "Retained isolated primary-owner proof for this important distinct failure; complementary actual E2E coverage is described in owner_groups.",
+      "gap": "Genuine populated Player test-instance-library.spec.ts metadata task exercises real complete app adapters and artwork; Player layout-audit-library.spec.ts checks rendered System diagnostic/metric links. Subtitles happy-path.spec.ts visits System and performs actual backup+verification in Chromium. These do not inject metadata provider/storage/cancellation failures, saturate worker bounds, assert complete Prometheus/diagnostic wire fields, or test retry-feedback state. No backend proof inferred from player browser-control fixtures.",
+      "unlocked_deletion": "None."
     },
     {
       "file": "packages/operations/metadata_unchanged_test.go",
@@ -33134,9 +33852,9 @@
       "owner_group": "operations",
       "body_sha256": "9f360ec7a292ea5e951e2b3c9d5b855046eec5ef92dc7e91713e95036b4f63c1",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Preserve the observed boundary or failure-injection assertion; no new isolated test.",
       "validation_command": "cd packages && go test ./operations",
       "baseline_event": {
         "Time": "2026-10-03T10:35:27.97123-06:00",
@@ -33144,7 +33862,32 @@
         "Package": "github.com/MikeO7/kinosail/packages/operations",
         "Test": "TestRefreshMetadataPublishesUnchangedRecordMissingFromIndex",
         "Elapsed": 0
-      }
+      },
+      "history": [
+        "b6288a481debfbfd52ff1b2085d6b190f5ec6d04 Stop metadata retry feedback and contain failed badge artwork"
+      ],
+      "production_owner": [
+        "packages/operations/binding.go",
+        "packages/operations/model.go",
+        "packages/operations/http.go",
+        "packages/operations/system_http.go",
+        "packages/operations/metadata.go",
+        "packages/operations/failure_log.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/operations.go",
+        "apps/subtitles/internal/server/operations.go",
+        "apps/player/internal/server/system_http.go",
+        "apps/subtitles/internal/server/system_http.go",
+        "apps/player/internal/server/audit.go",
+        "apps/subtitles/internal/server/audit.go",
+        "apps/player/internal/server/api_admin.go",
+        "apps/subtitles/internal/server/api_admin.go"
+      ],
+      "credible_failure": "When persisted metadata exists but has not been applied to the index, publish it even if provider data is unchanged.",
+      "remaining_coverage": "Retained isolated primary-owner proof for this important distinct failure; complementary actual E2E coverage is described in owner_groups.",
+      "gap": "Genuine populated Player test-instance-library.spec.ts metadata task exercises real complete app adapters and artwork; Player layout-audit-library.spec.ts checks rendered System diagnostic/metric links. Subtitles happy-path.spec.ts visits System and performs actual backup+verification in Chromium. These do not inject metadata provider/storage/cancellation failures, saturate worker bounds, assert complete Prometheus/diagnostic wire fields, or test retry-feedback state. No backend proof inferred from player browser-control fixtures.",
+      "unlocked_deletion": "None."
     },
     {
       "file": "packages/operations/metadata_unchanged_test.go",
@@ -33154,9 +33897,9 @@
       "owner_group": "operations",
       "body_sha256": "d248558bbb1d4a3ccce371936f082b6bb7ed6e892a59cdc3e6ace5ac148085c0",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Preserve the observed boundary or failure-injection assertion; no new isolated test.",
       "validation_command": "cd packages && go test ./operations",
       "baseline_event": {
         "Time": "2026-10-03T10:35:27.971089-06:00",
@@ -33164,7 +33907,32 @@
         "Package": "github.com/MikeO7/kinosail/packages/operations",
         "Test": "TestRefreshMetadataPublishesItsResultWhenConcurrentStoreChanges",
         "Elapsed": 0
-      }
+      },
+      "history": [
+        "b6288a481debfbfd52ff1b2085d6b190f5ec6d04 Stop metadata retry feedback and contain failed badge artwork"
+      ],
+      "production_owner": [
+        "packages/operations/binding.go",
+        "packages/operations/model.go",
+        "packages/operations/http.go",
+        "packages/operations/system_http.go",
+        "packages/operations/metadata.go",
+        "packages/operations/failure_log.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/operations.go",
+        "apps/subtitles/internal/server/operations.go",
+        "apps/player/internal/server/system_http.go",
+        "apps/subtitles/internal/server/system_http.go",
+        "apps/player/internal/server/audit.go",
+        "apps/subtitles/internal/server/audit.go",
+        "apps/player/internal/server/api_admin.go",
+        "apps/subtitles/internal/server/api_admin.go"
+      ],
+      "credible_failure": "If another refresh stores the same result before publishing its index, still publish this result rather than leaving the index stale.",
+      "remaining_coverage": "Retained isolated primary-owner proof for this important distinct failure; complementary actual E2E coverage is described in owner_groups.",
+      "gap": "Genuine populated Player test-instance-library.spec.ts metadata task exercises real complete app adapters and artwork; Player layout-audit-library.spec.ts checks rendered System diagnostic/metric links. Subtitles happy-path.spec.ts visits System and performs actual backup+verification in Chromium. These do not inject metadata provider/storage/cancellation failures, saturate worker bounds, assert complete Prometheus/diagnostic wire fields, or test retry-feedback state. No backend proof inferred from player browser-control fixtures.",
+      "unlocked_deletion": "None."
     },
     {
       "file": "packages/operations/model_test.go",
@@ -33174,9 +33942,9 @@
       "owner_group": "operations",
       "body_sha256": "e4d7b8e2fff0f33e266e83750baa5358194d0a4b258a51b7b20dc3d50b4328df",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Preserve the observed boundary or failure-injection assertion; no new isolated test.",
       "validation_command": "cd packages && go test ./operations",
       "baseline_event": {
         "Time": "2026-10-03T10:35:27.970747-06:00",
@@ -33184,7 +33952,32 @@
         "Package": "github.com/MikeO7/kinosail/packages/operations",
         "Test": "TestBuildDiagnosticReportUsesSafeSnapshot",
         "Elapsed": 0
-      }
+      },
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "production_owner": [
+        "packages/operations/binding.go",
+        "packages/operations/model.go",
+        "packages/operations/http.go",
+        "packages/operations/system_http.go",
+        "packages/operations/metadata.go",
+        "packages/operations/failure_log.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/operations.go",
+        "apps/subtitles/internal/server/operations.go",
+        "apps/player/internal/server/system_http.go",
+        "apps/subtitles/internal/server/system_http.go",
+        "apps/player/internal/server/audit.go",
+        "apps/subtitles/internal/server/audit.go",
+        "apps/player/internal/server/api_admin.go",
+        "apps/subtitles/internal/server/api_admin.go"
+      ],
+      "credible_failure": "Serialize diagnostic timestamps in UTC and truncate fractional uptime consistently while retaining each supplied health/activity field.",
+      "remaining_coverage": "Retained isolated primary-owner proof for this important distinct failure; complementary actual E2E coverage is described in owner_groups.",
+      "gap": "Genuine populated Player test-instance-library.spec.ts metadata task exercises real complete app adapters and artwork; Player layout-audit-library.spec.ts checks rendered System diagnostic/metric links. Subtitles happy-path.spec.ts visits System and performs actual backup+verification in Chromium. These do not inject metadata provider/storage/cancellation failures, saturate worker bounds, assert complete Prometheus/diagnostic wire fields, or test retry-feedback state. No backend proof inferred from player browser-control fixtures.",
+      "unlocked_deletion": "None."
     },
     {
       "file": "packages/operations/model_test.go",
@@ -33194,9 +33987,9 @@
       "owner_group": "operations",
       "body_sha256": "cdf9dc66d42e5a959b0676e71947f59e4539546839da043a05e3b6ddc94373ea",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Preserve the observed boundary or failure-injection assertion; no new isolated test.",
       "validation_command": "cd packages && go test ./operations",
       "baseline_event": {
         "Time": "2026-10-03T10:35:27.970731-06:00",
@@ -33204,7 +33997,32 @@
         "Package": "github.com/MikeO7/kinosail/packages/operations",
         "Test": "TestBuildDiagnosticReportReportsPolling",
         "Elapsed": 0
-      }
+      },
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "production_owner": [
+        "packages/operations/binding.go",
+        "packages/operations/model.go",
+        "packages/operations/http.go",
+        "packages/operations/system_http.go",
+        "packages/operations/metadata.go",
+        "packages/operations/failure_log.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/operations.go",
+        "apps/subtitles/internal/server/operations.go",
+        "apps/player/internal/server/system_http.go",
+        "apps/subtitles/internal/server/system_http.go",
+        "apps/player/internal/server/audit.go",
+        "apps/subtitles/internal/server/audit.go",
+        "apps/player/internal/server/api_admin.go",
+        "apps/subtitles/internal/server/api_admin.go"
+      ],
+      "credible_failure": "Report polling when filesystem monitoring is unavailable; current browser journeys do not assert both monitoring modes.",
+      "remaining_coverage": "Retained isolated primary-owner proof for this important distinct failure; complementary actual E2E coverage is described in owner_groups.",
+      "gap": "Genuine populated Player test-instance-library.spec.ts metadata task exercises real complete app adapters and artwork; Player layout-audit-library.spec.ts checks rendered System diagnostic/metric links. Subtitles happy-path.spec.ts visits System and performs actual backup+verification in Chromium. These do not inject metadata provider/storage/cancellation failures, saturate worker bounds, assert complete Prometheus/diagnostic wire fields, or test retry-feedback state. No backend proof inferred from player browser-control fixtures.",
+      "unlocked_deletion": "None."
     },
     {
       "file": "packages/operations/system_http_test.go",
@@ -33214,9 +34032,9 @@
       "owner_group": "operations",
       "body_sha256": "e3fd568c45e64ddba66a2a07a93f1d82081870f73e1c2d92e3a95430136bf180",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Preserve the observed boundary or failure-injection assertion; no new isolated test.",
       "validation_command": "cd packages && go test ./operations",
       "baseline_event": {
         "Time": "2026-10-03T10:35:27.968899-06:00",
@@ -33224,7 +34042,32 @@
         "Package": "github.com/MikeO7/kinosail/packages/operations",
         "Test": "TestSystemHandlerReadsFreshSnapshotsAndPreservesRenderErrors",
         "Elapsed": 0
-      }
+      },
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "production_owner": [
+        "packages/operations/binding.go",
+        "packages/operations/model.go",
+        "packages/operations/http.go",
+        "packages/operations/system_http.go",
+        "packages/operations/metadata.go",
+        "packages/operations/failure_log.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/operations.go",
+        "apps/subtitles/internal/server/operations.go",
+        "apps/player/internal/server/system_http.go",
+        "apps/subtitles/internal/server/system_http.go",
+        "apps/player/internal/server/audit.go",
+        "apps/subtitles/internal/server/audit.go",
+        "apps/player/internal/server/api_admin.go",
+        "apps/subtitles/internal/server/api_admin.go"
+      ],
+      "credible_failure": "Read each app snapshot anew on every System request rather than caching logs/playback/diagnostics in the constructor. The supplied render failure is executed but log emission is not independently asserted.",
+      "remaining_coverage": "Retained isolated primary-owner proof for this important distinct failure; complementary actual E2E coverage is described in owner_groups.",
+      "gap": "Genuine populated Player test-instance-library.spec.ts metadata task exercises real complete app adapters and artwork; Player layout-audit-library.spec.ts checks rendered System diagnostic/metric links. Subtitles happy-path.spec.ts visits System and performs actual backup+verification in Chromium. These do not inject metadata provider/storage/cancellation failures, saturate worker bounds, assert complete Prometheus/diagnostic wire fields, or test retry-feedback state. No backend proof inferred from player browser-control fixtures.",
+      "unlocked_deletion": "None."
     },
     {
       "file": "packages/operations/system_http_test.go",
@@ -33234,9 +34077,9 @@
       "owner_group": "operations",
       "body_sha256": "af3d76e88fe0c952c7da92aacdb65a86ccc190807970c4175a193a82964c598a",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "D",
+      "audit_status": "reviewed",
+      "risk": "Normal configured app callback wiring remains verified through actual server journeys; intentionally malformed static adapter construction no longer pinned.",
       "validation_command": "cd packages && go test ./operations",
       "baseline_event": {
         "Time": "2026-10-03T10:35:27.969224-06:00",
@@ -33244,7 +34087,38 @@
         "Package": "github.com/MikeO7/kinosail/packages/operations",
         "Test": "TestSystemHandlerRejectsMissingDependenciesBeforeReads",
         "Elapsed": 0
-      }
+      },
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "production_owner": [
+        "packages/operations/binding.go",
+        "packages/operations/model.go",
+        "packages/operations/http.go",
+        "packages/operations/system_http.go",
+        "packages/operations/metadata.go",
+        "packages/operations/failure_log.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/operations.go",
+        "apps/subtitles/internal/server/operations.go",
+        "apps/player/internal/server/system_http.go",
+        "apps/subtitles/internal/server/system_http.go",
+        "apps/player/internal/server/audit.go",
+        "apps/subtitles/internal/server/audit.go",
+        "apps/player/internal/server/api_admin.go",
+        "apps/subtitles/internal/server/api_admin.go"
+      ],
+      "credible_failure": "Rejects intentionally incomplete static constructor dependencies or nil context with a prescribed panic/error, without exercising a reachable runtime failure.",
+      "reason": "Only requires a panic when a constructor is supplied intentionally nil static callbacks or view. Both app callers construct every callback and a global parsed template; no runtime configuration or external input can omit these fields. Actual System route journeys expose broken real wiring.",
+      "remaining_coverage": [
+        "packages/operations/system_http_test.go:TestSystemHandlerReadsFreshSnapshotsAndPreservesRenderErrors",
+        "packages/operations/system_http_test.go:TestSystemViewBrandingAndValidation",
+        "apps/player/e2e/layout-audit-library.spec.ts:/settings/system diagnostics+metrics target checks",
+        "apps/subtitles/e2e/happy-path.spec.ts:Owner can set up, create a passkey, find, play, resume, curate, install, and sign back in"
+      ],
+      "gap": "No equivalence claimed for deliberately invalid constructor input. Early-versus-request-time panic under programmer misuse is no distinct important production failure for the complete static app wiring.",
+      "unlocked_deletion": "No production seam or shared fixture helper removed."
     },
     {
       "file": "packages/operations/system_http_test.go",
@@ -33254,9 +34128,9 @@
       "owner_group": "operations",
       "body_sha256": "7e26950baab473ee775300423d2ab4803bb2f4e0b07d75341bc7c31a27072ba0",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Preserve the observed boundary or failure-injection assertion; no new isolated test.",
       "validation_command": "cd packages && go test ./operations",
       "baseline_event": {
         "Time": "2026-10-03T10:35:27.970672-06:00",
@@ -33264,7 +34138,32 @@
         "Package": "github.com/MikeO7/kinosail/packages/operations",
         "Test": "TestSystemViewBrandingAndValidation",
         "Elapsed": 0
-      }
+      },
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "production_owner": [
+        "packages/operations/binding.go",
+        "packages/operations/model.go",
+        "packages/operations/http.go",
+        "packages/operations/system_http.go",
+        "packages/operations/metadata.go",
+        "packages/operations/failure_log.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/operations.go",
+        "apps/subtitles/internal/server/operations.go",
+        "apps/player/internal/server/system_http.go",
+        "apps/subtitles/internal/server/system_http.go",
+        "apps/player/internal/server/audit.go",
+        "apps/subtitles/internal/server/audit.go",
+        "apps/player/internal/server/api_admin.go",
+        "apps/subtitles/internal/server/api_admin.go"
+      ],
+      "credible_failure": "Preserve product-specific System title and safe icon/theme/style substitutions for both apps; rendered diagnostic-links journeys do not assert every product/asset substitution. Invalid static-brand inputs are incidental.",
+      "remaining_coverage": "Retained isolated primary-owner proof for this important distinct failure; complementary actual E2E coverage is described in owner_groups.",
+      "gap": "Genuine populated Player test-instance-library.spec.ts metadata task exercises real complete app adapters and artwork; Player layout-audit-library.spec.ts checks rendered System diagnostic/metric links. Subtitles happy-path.spec.ts visits System and performs actual backup+verification in Chromium. These do not inject metadata provider/storage/cancellation failures, saturate worker bounds, assert complete Prometheus/diagnostic wire fields, or test retry-feedback state. No backend proof inferred from player browser-control fixtures.",
+      "unlocked_deletion": "None."
     },
     {
       "file": "packages/owneraccess/dns_runtime_test.go",
@@ -40199,9 +41098,9 @@
       "owner_group": "serverdiscovery",
       "body_sha256": "48510787285f053c1795d822976eb9160da7dc2e57d02821821168c5fc6187ba",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Preserve the observed boundary or failure-injection assertion; no new isolated test.",
       "validation_command": "cd packages && go test ./serverdiscovery",
       "baseline_event": {
         "Time": "2026-10-03T10:35:31.081183-06:00",
@@ -40209,7 +41108,22 @@
         "Package": "github.com/MikeO7/kinosail/packages/serverdiscovery",
         "Test": "TestLocalAliasesUseOnlyOwnPrivateAddressesAndExpectedPort",
         "Elapsed": 0
-      }
+      },
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "production_owner": [
+        "packages/serverdiscovery/discovery.go",
+        "packages/serverdiscovery/aliases.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/server.go:serverdiscovery.Start",
+        "apps/player/internal/server/security.go:serverdiscovery.LocalAliases"
+      ],
+      "credible_failure": "Expand the Host allowlist only for own private IPv4/ULA addresses at the configured port, excluding loopback/public/unspecified/scoped-linklocal/duplicate/invalid entries.",
+      "remaining_coverage": "Retained isolated primary-owner proof for this important distinct failure; complementary actual E2E coverage is described in owner_groups.",
+      "gap": "Browser E2E reaches an explicit server URL. No browser journey discovers LAN NSD/Bonjour multicast or independently exercises allowed-host expansion for network-interface inventories. Android unit discovery fixtures are not actual network E2E; no equivalence claimed.",
+      "unlocked_deletion": "None."
     },
     {
       "file": "packages/serverdiscovery/aliases_test.go",
@@ -40219,9 +41133,9 @@
       "owner_group": "serverdiscovery",
       "body_sha256": "88055e25bd406672ce7f96f96f80b97e299b884976d25db26891ef9dcc961795",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Preserve the observed boundary or failure-injection assertion; no new isolated test.",
       "validation_command": "cd packages && go test ./serverdiscovery",
       "baseline_event": {
         "Time": "2026-10-03T10:35:31.081227-06:00",
@@ -40229,7 +41143,22 @@
         "Package": "github.com/MikeO7/kinosail/packages/serverdiscovery",
         "Test": "TestLocalAliasesHandleImplicitPortsAndBoundCardinality",
         "Elapsed": 0
-      }
+      },
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "production_owner": [
+        "packages/serverdiscovery/discovery.go",
+        "packages/serverdiscovery/aliases.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/server.go:serverdiscovery.Start",
+        "apps/player/internal/server/security.go:serverdiscovery.LocalAliases"
+      ],
+      "credible_failure": "Support implicit HTTP/HTTPS host aliases while bounding eligible network addresses and rejecting oversized interface inventory expansion.",
+      "remaining_coverage": "Retained isolated primary-owner proof for this important distinct failure; complementary actual E2E coverage is described in owner_groups.",
+      "gap": "Browser E2E reaches an explicit server URL. No browser journey discovers LAN NSD/Bonjour multicast or independently exercises allowed-host expansion for network-interface inventories. Android unit discovery fixtures are not actual network E2E; no equivalence claimed.",
+      "unlocked_deletion": "None."
     },
     {
       "file": "packages/serverdiscovery/discovery_test.go",
@@ -40239,9 +41168,9 @@
       "owner_group": "serverdiscovery",
       "body_sha256": "8abc95809e6f4684fd517833edaab67de5297c1884de89163064c1abb5a88408",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Preserve the observed boundary or failure-injection assertion; no new isolated test.",
       "validation_command": "cd packages && go test ./serverdiscovery",
       "baseline_event": {
         "Time": "2026-10-03T10:35:31.081256-06:00",
@@ -40249,7 +41178,22 @@
         "Package": "github.com/MikeO7/kinosail/packages/serverdiscovery",
         "Test": "TestAdvertisementLifecycle",
         "Elapsed": 0
-      }
+      },
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "production_owner": [
+        "packages/serverdiscovery/discovery.go",
+        "packages/serverdiscovery/aliases.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/server.go:serverdiscovery.Start",
+        "apps/player/internal/server/security.go:serverdiscovery.LocalAliases"
+      ],
+      "credible_failure": "Register the validated local discovery name/endpoint and withdraw the advertisement on lifecycle cancellation.",
+      "remaining_coverage": "Retained isolated primary-owner proof for this important distinct failure; complementary actual E2E coverage is described in owner_groups.",
+      "gap": "Browser E2E reaches an explicit server URL. No browser journey discovers LAN NSD/Bonjour multicast or independently exercises allowed-host expansion for network-interface inventories. Android unit discovery fixtures are not actual network E2E; no equivalence claimed.",
+      "unlocked_deletion": "None."
     },
     {
       "file": "packages/serverdiscovery/discovery_test.go",
@@ -40259,9 +41203,9 @@
       "owner_group": "serverdiscovery",
       "body_sha256": "25c867bce0d68807e6659e82b85f23d854c76a8b6aaf2286f52f891878a41950",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Preserve the observed boundary or failure-injection assertion; no new isolated test.",
       "validation_command": "cd packages && go test ./serverdiscovery",
       "baseline_event": {
         "Time": "2026-10-03T10:35:31.081695-06:00",
@@ -40269,7 +41213,22 @@
         "Package": "github.com/MikeO7/kinosail/packages/serverdiscovery",
         "Test": "TestInvalidAdvertisementHasNoNetworkSideEffects",
         "Elapsed": 0
-      }
+      },
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "production_owner": [
+        "packages/serverdiscovery/discovery.go",
+        "packages/serverdiscovery/aliases.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/server.go:serverdiscovery.Start",
+        "apps/player/internal/server/security.go:serverdiscovery.LocalAliases"
+      ],
+      "credible_failure": "Reject credential-bearing, malformed, public-insecure, unspecified, overlong, or control-character discovery inputs before opening multicast sockets.",
+      "remaining_coverage": "Retained isolated primary-owner proof for this important distinct failure; complementary actual E2E coverage is described in owner_groups.",
+      "gap": "Browser E2E reaches an explicit server URL. No browser journey discovers LAN NSD/Bonjour multicast or independently exercises allowed-host expansion for network-interface inventories. Android unit discovery fixtures are not actual network E2E; no equivalence claimed.",
+      "unlocked_deletion": "None."
     },
     {
       "file": "packages/serverdiscovery/discovery_test.go",
@@ -40279,9 +41238,9 @@
       "owner_group": "serverdiscovery",
       "body_sha256": "15eeeebe400867dfc51f73b1f4aef8f3a049b9e8c1d61de4234347475bf7c515",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Preserve the observed boundary or failure-injection assertion; no new isolated test.",
       "validation_command": "cd packages && go test ./serverdiscovery",
       "baseline_event": {
         "Time": "2026-10-03T10:35:31.081718-06:00",
@@ -40289,7 +41248,22 @@
         "Package": "github.com/MikeO7/kinosail/packages/serverdiscovery",
         "Test": "TestLoopbackUsesBonjourHostAndPreservesTLS",
         "Elapsed": 0
-      }
+      },
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "production_owner": [
+        "packages/serverdiscovery/discovery.go",
+        "packages/serverdiscovery/aliases.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/server.go:serverdiscovery.Start",
+        "apps/player/internal/server/security.go:serverdiscovery.LocalAliases"
+      ],
+      "credible_failure": "Advertise the discoverable Bonjour host instead of an unusable client-loopback URL, retaining configured HTTPS and explicit private endpoint URLs.",
+      "remaining_coverage": "Retained isolated primary-owner proof for this important distinct failure; complementary actual E2E coverage is described in owner_groups.",
+      "gap": "Browser E2E reaches an explicit server URL. No browser journey discovers LAN NSD/Bonjour multicast or independently exercises allowed-host expansion for network-interface inventories. Android unit discovery fixtures are not actual network E2E; no equivalence claimed.",
+      "unlocked_deletion": "None."
     },
     {
       "file": "packages/serverdiscovery/discovery_test.go",
@@ -40299,9 +41273,9 @@
       "owner_group": "serverdiscovery",
       "body_sha256": "0cd261708cbbb0caffa79b76fa18c4b0d96b574deb974684b0c0ccbcfaafa9a6",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Preserve the observed boundary or failure-injection assertion; no new isolated test.",
       "validation_command": "cd packages && go test ./serverdiscovery",
       "baseline_event": {
         "Time": "2026-10-03T10:35:31.081737-06:00",
@@ -40309,7 +41283,22 @@
         "Package": "github.com/MikeO7/kinosail/packages/serverdiscovery",
         "Test": "TestMissingOrCanceledLifecycleAndRegistrationFailure",
         "Elapsed": 0
-      }
+      },
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "production_owner": [
+        "packages/serverdiscovery/discovery.go",
+        "packages/serverdiscovery/aliases.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/server.go:serverdiscovery.Start",
+        "apps/player/internal/server/security.go:serverdiscovery.LocalAliases"
+      ],
+      "credible_failure": "Do not register without a cancellable live lifecycle, and propagate multicast registration failure rather than claiming discovery is active.",
+      "remaining_coverage": "Retained isolated primary-owner proof for this important distinct failure; complementary actual E2E coverage is described in owner_groups.",
+      "gap": "Browser E2E reaches an explicit server URL. No browser journey discovers LAN NSD/Bonjour multicast or independently exercises allowed-host expansion for network-interface inventories. Android unit discovery fixtures are not actual network E2E; no equivalence claimed.",
+      "unlocked_deletion": "None."
     },
     {
       "file": "packages/serverdiscovery/discovery_test.go",
@@ -40319,9 +41308,9 @@
       "owner_group": "serverdiscovery",
       "body_sha256": "b03e5ff66b7423f52012a4586870267159728a7e6a4f5ae4d92ab65b352477fb",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Preserve the observed boundary or failure-injection assertion; no new isolated test.",
       "validation_command": "cd packages && go test ./serverdiscovery",
       "baseline_event": {
         "Time": "2026-10-03T10:35:31.081752-06:00",
@@ -40329,7 +41318,22 @@
         "Package": "github.com/MikeO7/kinosail/packages/serverdiscovery",
         "Test": "TestLoopbackAliasIsNarrowAndValidated",
         "Elapsed": 0
-      }
+      },
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "production_owner": [
+        "packages/serverdiscovery/discovery.go",
+        "packages/serverdiscovery/aliases.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/server.go:serverdiscovery.Start",
+        "apps/player/internal/server/security.go:serverdiscovery.LocalAliases"
+      ],
+      "credible_failure": "Allow only a validated machine-name alias for a loopback configured origin; never expand public or private configured origins into unrelated hosts.",
+      "remaining_coverage": "Retained isolated primary-owner proof for this important distinct failure; complementary actual E2E coverage is described in owner_groups.",
+      "gap": "Browser E2E reaches an explicit server URL. No browser journey discovers LAN NSD/Bonjour multicast or independently exercises allowed-host expansion for network-interface inventories. Android unit discovery fixtures are not actual network E2E; no equivalence claimed.",
+      "unlocked_deletion": "None."
     },
     {
       "file": "packages/serverdiscovery/public_boundaries_test.go",
@@ -40339,9 +41343,9 @@
       "owner_group": "serverdiscovery",
       "body_sha256": "104c4c265eb069df5ff30b9ee1f3174432dbf9a0d844d416cc12230c5d27c567",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Preserve the observed boundary or failure-injection assertion; no new isolated test.",
       "validation_command": "cd packages && go test ./serverdiscovery",
       "baseline_event": {
         "Time": "2026-10-03T10:35:31.081803-06:00",
@@ -40349,7 +41353,22 @@
         "Package": "github.com/MikeO7/kinosail/packages/serverdiscovery",
         "Test": "TestDiscoveryPublicBoundaryRejectsWithoutAdvertising",
         "Elapsed": 0
-      }
+      },
+      "history": [
+        "375ce3b1e97e37ea9c88cbad262f2644eb4b4582 Stabilize hosted tooling and expand runtime regression coverage"
+      ],
+      "production_owner": [
+        "packages/serverdiscovery/discovery.go",
+        "packages/serverdiscovery/aliases.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/server.go:serverdiscovery.Start",
+        "apps/player/internal/server/security.go:serverdiscovery.LocalAliases"
+      ],
+      "credible_failure": "Public entry points remain side-effect-free for canceled/invalid requests and reject a total hostname above 253 bytes, distinct from private label-size tests.",
+      "remaining_coverage": "Retained isolated primary-owner proof for this important distinct failure; complementary actual E2E coverage is described in owner_groups.",
+      "gap": "Browser E2E reaches an explicit server URL. No browser journey discovers LAN NSD/Bonjour multicast or independently exercises allowed-host expansion for network-interface inventories. Android unit discovery fixtures are not actual network E2E; no equivalence claimed.",
+      "unlocked_deletion": "None."
     },
     {
       "file": "packages/serverdiscovery/public_boundaries_test.go",
@@ -40359,9 +41378,9 @@
       "owner_group": "serverdiscovery",
       "body_sha256": "ea1b2acc5818dee02bebbc237a4751d8b6a62abdc88d25411b2ed152b6a0f909",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Preserve the observed boundary or failure-injection assertion; no new isolated test.",
       "validation_command": "cd packages && go test ./serverdiscovery",
       "baseline_event": {
         "Time": "2026-10-03T10:35:31.081826-06:00",
@@ -40369,7 +41388,22 @@
         "Package": "github.com/MikeO7/kinosail/packages/serverdiscovery",
         "Test": "TestLocalAliasesReflectOnlyValidatedMachineName",
         "Elapsed": 0
-      }
+      },
+      "history": [
+        "375ce3b1e97e37ea9c88cbad262f2644eb4b4582 Stabilize hosted tooling and expand runtime regression coverage"
+      ],
+      "production_owner": [
+        "packages/serverdiscovery/discovery.go",
+        "packages/serverdiscovery/aliases.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/server.go:serverdiscovery.Start",
+        "apps/player/internal/server/security.go:serverdiscovery.LocalAliases"
+      ],
+      "credible_failure": "Public machine-name aliases must agree with validated hostname/port; implicit HTTPS IPv6 aliases must remain bracketed at the default port.",
+      "remaining_coverage": "Retained isolated primary-owner proof for this important distinct failure; complementary actual E2E coverage is described in owner_groups.",
+      "gap": "Browser E2E reaches an explicit server URL. No browser journey discovers LAN NSD/Bonjour multicast or independently exercises allowed-host expansion for network-interface inventories. Android unit discovery fixtures are not actual network E2E; no equivalence claimed.",
+      "unlocked_deletion": "None."
     },
     {
       "file": "packages/servertest/automatic_skip_constructor_test.go",
@@ -48670,6 +49704,12 @@
       "documentdb",
       "servertransport:CheckHealth"
     ],
-    "tests_executed_by_this_agent": false
+    "tests_executed_by_this_agent": false,
+    "additional_complete_groups": [
+      "operations",
+      "serverdiscovery"
+    ],
+    "additional_reviewed_declarations": 41,
+    "additional_removals": 2
   }
 }
