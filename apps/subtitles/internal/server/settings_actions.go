@@ -22,7 +22,7 @@ func saveMFARequirement(auth *authentication) http.HandlerFunc {
 			return
 		}
 		if revoked {
-			cookie := sessionCookie("") //nolint:gosec // sessionCookie always sets Secure, HttpOnly, and Strict SameSite.
+			cookie := sessionCookie("", request) //nolint:gosec // sessionCookie always sets Secure, HttpOnly, and Strict SameSite.
 			cookie.MaxAge = -1
 			http.SetCookie(writer, cookie)
 			http.Redirect(writer, request, "/login", http.StatusSeeOther)
