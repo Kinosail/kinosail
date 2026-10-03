@@ -20,15 +20,15 @@
     "declarations": 1900,
     "decisions": {
       "R": 1149,
-      "D": 56,
+      "D": 64,
       "F": 42,
-      "unreviewed": 640,
+      "unreviewed": 632,
       "C": 13
     },
-    "removed_declarations": 56,
-    "removed_test_lines": 1006,
-    "final_declarations": 1844,
-    "final_test_lines": 65469,
+    "removed_declarations": 64,
+    "removed_test_lines": 1138,
+    "final_declarations": 1836,
+    "final_test_lines": 65337,
     "removed_support_helpers": 6,
     "removed_support_files": 3,
     "removed_support_lines": 141
@@ -42475,17 +42475,68 @@
       "owner_group": "markers",
       "body_sha256": "298c3462130ef1f97a8443055c752ab058ed4b0890608a4f8f938f2078389de9",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
-      "validation_command": "cd packages && go test ./markers",
+      "decision": "D",
+      "audit_status": "reviewed",
+      "risk": "Deletion is proposed only with the named remaining owner proof or demonstrated non-detection; final keeper execution and independent owner review required.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C packages test -count=1 ./markers -run '^TestAdminFormSaveAndRemoveLifecycle$'",
       "baseline_event": {
         "Time": "2026-10-03T10:35:28.073232-06:00",
         "Action": "pass",
         "Package": "github.com/MikeO7/kinosail/packages/markers",
         "Test": "TestAdminFormSaveAndRemoveLifecycle",
         "Elapsed": 0
-      }
+      },
+      "end_line": 28,
+      "credible_failure": "Positive form save/delete checks 303 watch redirect and one-to-zero marker count through registered shared routes.",
+      "remaining_proof_or_gap": "Genuine Player test-instance-playback Owner can inspect, update, and remove a skip marker saves recap, reloads four viewports, updates exact 1..2 to 1.5..2.5, then removes and asserts absence. Real app TestAPIParityContract/OwnerCanManagePlaybackMarkersThroughAPI also asserts exact 303 watch redirects and playback marker values before/after registered form update/remove. Shared TestAdminRoutesManageMarkersAndQueueAnalysis retains distinct JSON API status/source and analysis routes. Browser source reviewed but not executed by child; real app fixture is not browser E2E; root final receipt required.",
+      "production_owners": [
+        "packages/markers/admin.go",
+        "packages/markers/store.go"
+      ],
+      "non_test_callers": [
+        "apps/player/internal/server/server.go:New constructs markerlogic.NewAnalyzer with shared stateDB, actual probe and bounded workload acquisition; Schedule is guarded by Lifecycle",
+        "apps/subtitles/internal/server/server.go:New constructs the same shared marker owner and guarded library observer",
+        "apps/player/internal/server/marker_admin.go:registered shared Admin operation adapters and playback marker projection",
+        "apps/subtitles/internal/server/marker_admin.go:registered shared Admin operation adapters and playback marker projection",
+        "packages/settings/preferences.go:shared preference normalization invokes NormalizeAutoSkip"
+      ],
+      "source_file_sha256": "4793d0be37da7b9ef38ae5f26711da34023d199016ece342f1bdc44e5f62bff3",
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "helpers": [
+        "packages/markers/admin_coverage_test.go:complete file-local helper and table bodies read"
+      ],
+      "assertion_inventory": [
+        "if response.Code != http.StatusSeeOther || response.Header().Get(\"Location\") != \"/watch/movie\" || len(analyzer.Markers(item, nil)) != 1 {",
+        "t.Fatalf(\"form save = %d %q, markers %#v\", response.Code, response.Header().Get(\"Location\"), analyzer.Markers(item, nil))",
+        "if response.Code != http.StatusSeeOther || response.Header().Get(\"Location\") != \"/watch/movie\" || len(analyzer.Markers(item, nil)) != 0 {",
+        "t.Fatalf(\"form remove = %d %q, markers %#v\", response.Code, response.Header().Get(\"Location\"), analyzer.Markers(item, nil))"
+      ],
+      "table_case_names": [],
+      "new_tests_added": false,
+      "production_or_support_deletion_unlocked": "No edits or dead-code deletion in this read-only handoff",
+      "production_owner": [
+        "packages/markers/admin.go",
+        "packages/markers/store.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/server.go:New constructs markerlogic.NewAnalyzer with shared stateDB, actual probe and bounded workload acquisition; Schedule is guarded by Lifecycle",
+        "apps/subtitles/internal/server/server.go:New constructs the same shared marker owner and guarded library observer",
+        "apps/player/internal/server/marker_admin.go:registered shared Admin operation adapters and playback marker projection",
+        "apps/subtitles/internal/server/marker_admin.go:registered shared Admin operation adapters and playback marker projection",
+        "packages/settings/preferences.go:shared preference normalization invokes NormalizeAutoSkip"
+      ],
+      "remaining_coverage": "Genuine apps/player/e2e/test-instance-playback.spec.ts::Owner can inspect, update, and remove a skip marker exercises real initial save, exact ranged form values after reload, update then immediate correct media editor, and removal. packages/servertest/api_parity_scenarios.go::ownerCanManagePlaybackMarkersThroughAPI retains registered form303 and actual marker state/projection; it DOES NOT assert Location header.",
+      "gap": "Exact 303 Location header byte equality /watch/movie is no longer directly asserted by this package declaration. Real browser update then immediate correct media editor/exact item form distinguishes wrong landing; isolated real app parity verifies303 and actual state but cannot prove Location. Intro enum remains covered by shared JSON owner; genuine editor exercises recap, not every type.",
+      "reason": "Positive form save/delete checks 303 watch redirect and one-to-zero marker count through registered shared routes.",
+      "independent_removal_review": {
+        "reviewer": "/root/subtitles_shared/shared_identity",
+        "status": "approved after complete candidate bodies, actual named keeper assertions and relevant production/callers read; no naming-only or fixture-E2E equivalence",
+        "source_packet": "/tmp/kinosail-markers-viewing-audit.json",
+        "source_packet_sha256": "bdb2a5af67c746d91e9e044dc74710cb54a4dc00b048cc12ab65e0d99146ce41"
+      },
+      "implementation_status": "declaration removed; existing important keeper assertions unchanged; candidate validation awaits serial root run"
     },
     {
       "file": "packages/markers/admin_coverage_test.go",
@@ -42559,17 +42610,68 @@
       "owner_group": "markers",
       "body_sha256": "de95667e86811876c457029c2e3692700be889df6389c1703bf44f8f352bac1f",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
-      "validation_command": "cd packages && go test ./markers",
+      "decision": "D",
+      "audit_status": "reviewed",
+      "risk": "Deletion is proposed only with the named remaining owner proof or demonstrated non-detection; final keeper execution and independent owner review required.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C packages test -count=1 ./markers -run '^TestAdminMarkerFormHelperBoundaries$'",
       "baseline_event": {
         "Time": "2026-10-03T10:35:28.074675-06:00",
         "Action": "pass",
         "Package": "github.com/MikeO7/kinosail/packages/markers",
         "Test": "TestAdminMarkerFormHelperBoundaries",
         "Elapsed": 0
-      }
+      },
+      "end_line": 75,
+      "credible_failure": "Private onlyMarkerFormKeys missing key and markerNumber absent key replay strict form checks with no side effects or transport.",
+      "remaining_proof_or_gap": "TestAdminRoutesRejectInvalidInputWithoutSideEffects submits missing end, extra field, invalid number, duplicate and long type through actual routes; readManualMarker uses the same required-key predicate and markerNumber. TestAdminRemoveRejectsEveryBoundaryWithoutMutation guards required removal type.",
+      "production_owners": [
+        "packages/markers/admin.go",
+        "packages/markers/store.go"
+      ],
+      "non_test_callers": [
+        "apps/player/internal/server/server.go:New constructs markerlogic.NewAnalyzer with shared stateDB, actual probe and bounded workload acquisition; Schedule is guarded by Lifecycle",
+        "apps/subtitles/internal/server/server.go:New constructs the same shared marker owner and guarded library observer",
+        "apps/player/internal/server/marker_admin.go:registered shared Admin operation adapters and playback marker projection",
+        "apps/subtitles/internal/server/marker_admin.go:registered shared Admin operation adapters and playback marker projection",
+        "packages/settings/preferences.go:shared preference normalization invokes NormalizeAutoSkip"
+      ],
+      "source_file_sha256": "4793d0be37da7b9ef38ae5f26711da34023d199016ece342f1bdc44e5f62bff3",
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "helpers": [
+        "packages/markers/admin_coverage_test.go:complete file-local helper and table bodies read"
+      ],
+      "assertion_inventory": [
+        "if onlyMarkerFormKeys(url.Values{\"type\": {\"intro\"}, \"wrong\": {\"1\"}}, \"type\", \"start\") {",
+        "t.Fatal(\"missing required form key was accepted\")",
+        "if number, ok := markerNumber(url.Values{}, \"start\"); ok || number != 0 {",
+        "t.Fatalf(\"missing marker number = %v, %v\", number, ok)"
+      ],
+      "table_case_names": [],
+      "new_tests_added": false,
+      "production_or_support_deletion_unlocked": "No edits or dead-code deletion in this read-only handoff",
+      "production_owner": [
+        "packages/markers/admin.go",
+        "packages/markers/store.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/server.go:New constructs markerlogic.NewAnalyzer with shared stateDB, actual probe and bounded workload acquisition; Schedule is guarded by Lifecycle",
+        "apps/subtitles/internal/server/server.go:New constructs the same shared marker owner and guarded library observer",
+        "apps/player/internal/server/marker_admin.go:registered shared Admin operation adapters and playback marker projection",
+        "apps/subtitles/internal/server/marker_admin.go:registered shared Admin operation adapters and playback marker projection",
+        "packages/settings/preferences.go:shared preference normalization invokes NormalizeAutoSkip"
+      ],
+      "remaining_coverage": "TestAdminRoutesRejectInvalidInputWithoutSideEffects submits missing end, extra field, invalid number, duplicate and long type through actual routes; readManualMarker uses the same required-key predicate and markerNumber. TestAdminRemoveRejectsEveryBoundaryWithoutMutation guards required removal type.",
+      "gap": "Private same-cardinality wrong required key and absent-number zero value lose direct assertion. Actual public parser also requires each type/start/end value, so missing required key still fails downstream even if onlyMarkerFormKeys key-name loop is omitted; no independently important public mutation failure identified.",
+      "reason": "Private onlyMarkerFormKeys missing key and markerNumber absent key replay strict form checks with no side effects or transport.",
+      "independent_removal_review": {
+        "reviewer": "/root/subtitles_shared/shared_identity",
+        "status": "approved after complete candidate bodies, actual named keeper assertions and relevant production/callers read; no naming-only or fixture-E2E equivalence",
+        "source_packet": "/tmp/kinosail-markers-viewing-audit.json",
+        "source_packet_sha256": "bdb2a5af67c746d91e9e044dc74710cb54a4dc00b048cc12ab65e0d99146ce41"
+      },
+      "implementation_status": "declaration removed; existing important keeper assertions unchanged; candidate validation awaits serial root run"
     },
     {
       "file": "packages/markers/admin_persistence_test.go",
@@ -42861,17 +42963,66 @@
       "owner_group": "markers",
       "body_sha256": "705ce78bd6359306b57e34e8f140f4a2e273c19903b1a7229854eb7d33a35d32",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
-      "validation_command": "cd packages && go test ./markers",
+      "decision": "D",
+      "audit_status": "reviewed",
+      "risk": "Deletion is proposed only with the named remaining owner proof or demonstrated non-detection; final keeper execution and independent owner review required.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C packages test -count=1 ./markers -run '^TestMarkerFormHelpers$'",
       "baseline_event": {
         "Time": "2026-10-03T10:35:28.074483-06:00",
         "Action": "pass",
         "Package": "github.com/MikeO7/kinosail/packages/markers",
         "Test": "TestMarkerFormHelpers",
         "Elapsed": 0
-      }
+      },
+      "end_line": 148,
+      "credible_failure": "Private expected form-key cardinality replay adds no transport/storage boundary.",
+      "remaining_proof_or_gap": "Actual registered TestAdminRoutesRejectInvalidInputWithoutSideEffects proves valid key parsing indirectly and missing/extra fields400; form lifecycle is covered by genuine marker editor.",
+      "production_owners": [
+        "packages/markers/admin.go",
+        "packages/markers/store.go"
+      ],
+      "non_test_callers": [
+        "apps/player/internal/server/server.go:New constructs markerlogic.NewAnalyzer with shared stateDB, actual probe and bounded workload acquisition; Schedule is guarded by Lifecycle",
+        "apps/subtitles/internal/server/server.go:New constructs the same shared marker owner and guarded library observer",
+        "apps/player/internal/server/marker_admin.go:registered shared Admin operation adapters and playback marker projection",
+        "apps/subtitles/internal/server/marker_admin.go:registered shared Admin operation adapters and playback marker projection",
+        "packages/settings/preferences.go:shared preference normalization invokes NormalizeAutoSkip"
+      ],
+      "source_file_sha256": "77cbe23ba61b1e1ee1c1fe52e05d4e57c3965c78aced6c75b356f2d0e571ab01",
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "helpers": [
+        "packages/markers/admin_test.go:complete file-local helper and table bodies read"
+      ],
+      "assertion_inventory": [
+        "if !onlyMarkerFormKeys(form, \"type\", \"start\", \"end\") || onlyMarkerFormKeys(form, \"type\") {",
+        "t.Fatal(\"form key validation mismatch\")"
+      ],
+      "table_case_names": [],
+      "new_tests_added": false,
+      "production_or_support_deletion_unlocked": "No edits or dead-code deletion in this read-only handoff",
+      "production_owner": [
+        "packages/markers/admin.go",
+        "packages/markers/store.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/server.go:New constructs markerlogic.NewAnalyzer with shared stateDB, actual probe and bounded workload acquisition; Schedule is guarded by Lifecycle",
+        "apps/subtitles/internal/server/server.go:New constructs the same shared marker owner and guarded library observer",
+        "apps/player/internal/server/marker_admin.go:registered shared Admin operation adapters and playback marker projection",
+        "apps/subtitles/internal/server/marker_admin.go:registered shared Admin operation adapters and playback marker projection",
+        "packages/settings/preferences.go:shared preference normalization invokes NormalizeAutoSkip"
+      ],
+      "remaining_coverage": "Actual registered TestAdminRoutesRejectInvalidInputWithoutSideEffects proves valid key parsing indirectly and missing/extra fields400; form lifecycle is covered by genuine marker editor.",
+      "gap": "Actual registered TestAdminRoutesRejectInvalidInputWithoutSideEffects proves valid key parsing indirectly and missing/extra fields400; form lifecycle is covered by genuine marker editor.",
+      "reason": "Private expected form-key cardinality replay adds no transport/storage boundary.",
+      "independent_removal_review": {
+        "reviewer": "/root/subtitles_shared/shared_identity",
+        "status": "approved after complete candidate bodies, actual named keeper assertions and relevant production/callers read; no naming-only or fixture-E2E equivalence",
+        "source_packet": "/tmp/kinosail-markers-viewing-audit.json",
+        "source_packet_sha256": "bdb2a5af67c746d91e9e044dc74710cb54a4dc00b048cc12ab65e0d99146ce41"
+      },
+      "implementation_status": "declaration removed; existing important keeper assertions unchanged; candidate validation awaits serial root run"
     },
     {
       "file": "packages/markers/analyzer_coverage_test.go",
@@ -44654,17 +44805,82 @@
       "owner_group": "markers",
       "body_sha256": "352b7386f6167c00eae15b95d7d9fc6bbf8f5a7f3712c87dfbf2d8218a0b410d",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
-      "validation_command": "cd packages && go test ./markers",
+      "decision": "D",
+      "audit_status": "reviewed",
+      "risk": "Deletion is proposed only with the named remaining owner proof or demonstrated non-detection; final keeper execution and independent owner review required.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C packages test -count=1 ./markers -run '^TestFailedGroupDoesNotBlockOtherLibraries$'",
       "baseline_event": {
         "Time": "2026-10-03T10:35:27.892815-06:00",
         "Action": "pass",
         "Package": "github.com/MikeO7/kinosail/packages/markers",
         "Test": "TestFailedGroupDoesNotBlockOtherLibraries",
         "Elapsed": 0
-      }
+      },
+      "end_line": 217,
+      "credible_failure": "One failed movie library and one short successful library preserve successful DetectorVersion while returning error.",
+      "remaining_proof_or_gap": "TestMarkerBatchFailureStillPublishesOtherGroups exercises same analyzeBatch group-isolation owner, asserts failed group absent, exactly one good record and reload persistence. Its successful 100-second item completes actual credits extractor, a stronger case than 50-second no-extraction here.",
+      "production_owners": [
+        "packages/markers/analyzer.go",
+        "packages/markers/analyzer_batch.go",
+        "packages/markers/analyzer_job.go",
+        "packages/markers/analyzer_pair.go",
+        "packages/markers/analyzer_runtime.go",
+        "packages/markers/store.go",
+        "packages/markers/movie.go"
+      ],
+      "non_test_callers": [
+        "apps/player/internal/server/server.go:New constructs markerlogic.NewAnalyzer with shared stateDB, actual probe and bounded workload acquisition; Schedule is guarded by Lifecycle",
+        "apps/subtitles/internal/server/server.go:New constructs the same shared marker owner and guarded library observer",
+        "apps/player/internal/server/marker_admin.go:registered shared Admin operation adapters and playback marker projection",
+        "apps/subtitles/internal/server/marker_admin.go:registered shared Admin operation adapters and playback marker projection",
+        "packages/settings/preferences.go:shared preference normalization invokes NormalizeAutoSkip"
+      ],
+      "source_file_sha256": "f9de0de8fff341a5c158cead3f497b02ae6cc0f498ed1b6184bb4eb067ba8381",
+      "history": [
+        "6d8392372f3e551512038604ce83ea28eab907e7 Resolve mechanical Go lint findings without changing behavior",
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "helpers": [
+        "packages/markers/batch_regression_test.go:complete file-local helper and table bodies read"
+      ],
+      "assertion_inventory": [
+        "if item.ID == items[0].ID {",
+        "if err := analyzer.analyzeBatch(t.Context(), items); err == nil {",
+        "t.Fatal(\"failed group was not reported\")",
+        "if _, found := analyzer.records[items[0].ID]; found {",
+        "t.Fatal(\"failed group published results\")",
+        "if record := analyzer.records[items[1].ID]; record.DetectorVersion != DetectorVersion {",
+        "t.Fatal(\"unrelated library did not finish\")"
+      ],
+      "table_case_names": [],
+      "new_tests_added": false,
+      "production_or_support_deletion_unlocked": "No edits or dead-code deletion in this read-only handoff",
+      "production_owner": [
+        "packages/markers/analyzer.go",
+        "packages/markers/analyzer_batch.go",
+        "packages/markers/analyzer_job.go",
+        "packages/markers/analyzer_pair.go",
+        "packages/markers/analyzer_runtime.go",
+        "packages/markers/store.go",
+        "packages/markers/movie.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/server.go:New constructs markerlogic.NewAnalyzer with shared stateDB, actual probe and bounded workload acquisition; Schedule is guarded by Lifecycle",
+        "apps/subtitles/internal/server/server.go:New constructs the same shared marker owner and guarded library observer",
+        "apps/player/internal/server/marker_admin.go:registered shared Admin operation adapters and playback marker projection",
+        "apps/subtitles/internal/server/marker_admin.go:registered shared Admin operation adapters and playback marker projection",
+        "packages/settings/preferences.go:shared preference normalization invokes NormalizeAutoSkip"
+      ],
+      "remaining_coverage": "TestMarkerBatchFailureStillPublishesOtherGroups exercises same analyzeBatch group-isolation owner, asserts failed group absent, exactly one good record and reload persistence. Its successful 100-second item completes actual credits extractor, a stronger case than 50-second no-extraction here.",
+      "gap": "TestMarkerBatchFailureStillPublishesOtherGroups exercises same analyzeBatch group-isolation owner, asserts failed group absent, exactly one good record and reload persistence. Its successful 100-second item completes actual credits extractor, a stronger case than 50-second no-extraction here.",
+      "reason": "One failed movie library and one short successful library preserve successful DetectorVersion while returning error.",
+      "independent_removal_review": {
+        "reviewer": "/root/subtitles_shared/shared_identity",
+        "status": "approved after complete candidate bodies, actual named keeper assertions and relevant production/callers read; no naming-only or fixture-E2E equivalence",
+        "source_packet": "/tmp/kinosail-markers-viewing-audit.json",
+        "source_packet_sha256": "bdb2a5af67c746d91e9e044dc74710cb54a4dc00b048cc12ab65e0d99146ce41"
+      },
+      "implementation_status": "declaration removed; existing important keeper assertions unchanged; candidate validation awaits serial root run"
     },
     {
       "file": "packages/markers/batch_regression_test.go",
@@ -45601,17 +45817,64 @@
       "owner_group": "markers",
       "body_sha256": "6f2a82b8f7cea8f29c6e29cac37f78719a4aee56ceef51f197d93609befb2231",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
-      "validation_command": "cd packages && go test ./markers",
+      "decision": "D",
+      "audit_status": "reviewed",
+      "risk": "Deletion is proposed only with the named remaining owner proof or demonstrated non-detection; final keeper execution and independent owner review required.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C packages test -count=1 ./markers -run '^TestDetectPlaybackMarkersIgnoresOrdinaryChapters$'",
       "baseline_event": {
         "Time": "2026-10-03T10:35:28.074532-06:00",
         "Action": "pass",
         "Package": "github.com/MikeO7/kinosail/packages/markers",
         "Test": "TestDetectPlaybackMarkersIgnoresOrdinaryChapters",
         "Elapsed": 0
-      }
+      },
+      "end_line": 38,
+      "credible_failure": "All three ordinary titles have zero Start/End and are rejected by invalid ranges even if label matching is broken; no meaningful classification control.",
+      "remaining_proof_or_gap": "TestChapterDetectionAbstainsFromStoryAndAmbiguousLabels uses admitted 10..40 ranges and proves conservative labeling; TestChapterDetectionAcceptsOnlyBoundedValidRanges owns zero/invalid range admission. The exact three ordinary strings are not keeper literals; they add no effective label guard here.",
+      "production_owners": [
+        "packages/markers/markers.go"
+      ],
+      "non_test_callers": [
+        "apps/player/internal/server/server.go:New constructs markerlogic.NewAnalyzer with shared stateDB, actual probe and bounded workload acquisition; Schedule is guarded by Lifecycle",
+        "apps/subtitles/internal/server/server.go:New constructs the same shared marker owner and guarded library observer",
+        "apps/player/internal/server/marker_admin.go:registered shared Admin operation adapters and playback marker projection",
+        "apps/subtitles/internal/server/marker_admin.go:registered shared Admin operation adapters and playback marker projection",
+        "packages/settings/preferences.go:shared preference normalization invokes NormalizeAutoSkip"
+      ],
+      "source_file_sha256": "ccf07e76c3bc6c94818031d9c94a4b2f1c964ffb37abc94857c010e2fa3f4ebd",
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "helpers": [
+        "packages/markers/markers_test.go:complete file-local helper and table bodies read"
+      ],
+      "assertion_inventory": [
+        "if got := DetectPlaybackMarkers(chapters); len(got) != 0 {",
+        "t.Fatalf(\"markers = %#v\", got)"
+      ],
+      "table_case_names": [],
+      "new_tests_added": false,
+      "production_or_support_deletion_unlocked": "No edits or dead-code deletion in this read-only handoff",
+      "production_owner": [
+        "packages/markers/markers.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/server.go:New constructs markerlogic.NewAnalyzer with shared stateDB, actual probe and bounded workload acquisition; Schedule is guarded by Lifecycle",
+        "apps/subtitles/internal/server/server.go:New constructs the same shared marker owner and guarded library observer",
+        "apps/player/internal/server/marker_admin.go:registered shared Admin operation adapters and playback marker projection",
+        "apps/subtitles/internal/server/marker_admin.go:registered shared Admin operation adapters and playback marker projection",
+        "packages/settings/preferences.go:shared preference normalization invokes NormalizeAutoSkip"
+      ],
+      "remaining_coverage": "TestChapterDetectionAbstainsFromStoryAndAmbiguousLabels uses admitted 10..40 ranges and proves conservative labeling; TestChapterDetectionAcceptsOnlyBoundedValidRanges owns zero/invalid range admission. The exact three ordinary strings are not keeper literals; they add no effective label guard here.",
+      "gap": "TestChapterDetectionAbstainsFromStoryAndAmbiguousLabels uses admitted 10..40 ranges and proves conservative labeling; TestChapterDetectionAcceptsOnlyBoundedValidRanges owns zero/invalid range admission. The exact three ordinary strings are not keeper literals; they add no effective label guard here.",
+      "reason": "All three ordinary titles have zero Start/End and are rejected by invalid ranges even if label matching is broken; no meaningful classification control.",
+      "independent_removal_review": {
+        "reviewer": "/root/subtitles_shared/shared_identity",
+        "status": "approved after complete candidate bodies, actual named keeper assertions and relevant production/callers read; no naming-only or fixture-E2E equivalence",
+        "source_packet": "/tmp/kinosail-markers-viewing-audit.json",
+        "source_packet_sha256": "bdb2a5af67c746d91e9e044dc74710cb54a4dc00b048cc12ab65e0d99146ce41"
+      },
+      "implementation_status": "declaration removed; existing important keeper assertions unchanged; candidate validation awaits serial root run"
     },
     {
       "file": "packages/markers/markers_test.go",
@@ -46299,17 +46562,66 @@
       "owner_group": "markers",
       "body_sha256": "bfd1642db2320d69f388c2ed2dc21a30b039b3131afc739c452b230f075b9cbc",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
-      "validation_command": "cd packages && go test ./markers",
+      "decision": "D",
+      "audit_status": "reviewed",
+      "risk": "Deletion is proposed only with the named remaining owner proof or demonstrated non-detection; final keeper execution and independent owner review required.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C packages test -count=1 ./markers -run '^TestScheduleRejectsMissingAdapters$'",
       "baseline_event": {
         "Time": "2026-10-03T10:35:28.072845-06:00",
         "Action": "pass",
         "Package": "github.com/MikeO7/kinosail/packages/markers",
         "Test": "TestScheduleRejectsMissingAdapters",
         "Elapsed": 0
-      }
+      },
+      "end_line": 73,
+      "credible_failure": "Nil context/observer/probe tests static missing adapters that production callers always supply; it does not exercise a resource that changes at runtime.",
+      "remaining_proof_or_gap": "Both app server.New functions call Schedule with a guarded non-nil Lifecycle, index.AddAnalyzer and markerProbe(probe) real closures. TestScheduleRunsChangedAnalysisAndReportsStatus owns actual adapter registration. No independent shipping missing-adapter risk established.",
+      "production_owners": [
+        "packages/markers/analyzer.go",
+        "packages/markers/analyzer_runtime.go"
+      ],
+      "non_test_callers": [
+        "apps/player/internal/server/server.go:New constructs markerlogic.NewAnalyzer with shared stateDB, actual probe and bounded workload acquisition; Schedule is guarded by Lifecycle",
+        "apps/subtitles/internal/server/server.go:New constructs the same shared marker owner and guarded library observer",
+        "apps/player/internal/server/marker_admin.go:registered shared Admin operation adapters and playback marker projection",
+        "apps/subtitles/internal/server/marker_admin.go:registered shared Admin operation adapters and playback marker projection",
+        "packages/settings/preferences.go:shared preference normalization invokes NormalizeAutoSkip"
+      ],
+      "source_file_sha256": "3018b3cdb23ed8e72d10afa53ab20734b223839b9aa001916cf9c6e528116801",
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "helpers": [
+        "packages/markers/schedule_test.go:complete file-local helper and table bodies read"
+      ],
+      "assertion_inventory": [
+        "analyzer.Schedule(nil, func(func([]library.Item)) { t.Fatal(\"observer called\") }, func(context.Context, library.Item) Media { return Media{} }) //nolint:staticcheck // Explicitly proves nil is rejected.",
+        "analyzer.Schedule(t.Context(), func(func([]library.Item)) { t.Fatal(\"observer called\") }, nil)"
+      ],
+      "table_case_names": [],
+      "new_tests_added": false,
+      "production_or_support_deletion_unlocked": "No edits or dead-code deletion in this read-only handoff",
+      "production_owner": [
+        "packages/markers/analyzer.go",
+        "packages/markers/analyzer_runtime.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/server.go:New constructs markerlogic.NewAnalyzer with shared stateDB, actual probe and bounded workload acquisition; Schedule is guarded by Lifecycle",
+        "apps/subtitles/internal/server/server.go:New constructs the same shared marker owner and guarded library observer",
+        "apps/player/internal/server/marker_admin.go:registered shared Admin operation adapters and playback marker projection",
+        "apps/subtitles/internal/server/marker_admin.go:registered shared Admin operation adapters and playback marker projection",
+        "packages/settings/preferences.go:shared preference normalization invokes NormalizeAutoSkip"
+      ],
+      "remaining_coverage": "Both app server.New functions call Schedule with a guarded non-nil Lifecycle, index.AddAnalyzer and markerProbe(probe) real closures. TestScheduleRunsChangedAnalysisAndReportsStatus owns actual adapter registration. No independent shipping missing-adapter risk established.",
+      "gap": "Both app server.New functions call Schedule with a guarded non-nil Lifecycle, index.AddAnalyzer and markerProbe(probe) real closures. TestScheduleRunsChangedAnalysisAndReportsStatus owns actual adapter registration. No independent shipping missing-adapter risk established.",
+      "reason": "Nil context/observer/probe tests static missing adapters that production callers always supply; it does not exercise a resource that changes at runtime.",
+      "independent_removal_review": {
+        "reviewer": "/root/subtitles_shared/shared_identity",
+        "status": "approved after complete candidate bodies, actual named keeper assertions and relevant production/callers read; no naming-only or fixture-E2E equivalence",
+        "source_packet": "/tmp/kinosail-markers-viewing-audit.json",
+        "source_packet_sha256": "bdb2a5af67c746d91e9e044dc74710cb54a4dc00b048cc12ab65e0d99146ce41"
+      },
+      "implementation_status": "declaration removed; existing important keeper assertions unchanged; candidate validation awaits serial root run"
     },
     {
       "file": "packages/markers/state_coverage_test.go",
@@ -46319,17 +46631,70 @@
       "owner_group": "markers",
       "body_sha256": "2a8f71004f4634f6c1e910ac7804d3a948c6d4e051feed000807c69f53fd9ffa",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
-      "validation_command": "cd packages && go test ./markers",
+      "decision": "D",
+      "audit_status": "reviewed",
+      "risk": "Deletion is proposed only with the named remaining owner proof or demonstrated non-detection; final keeper execution and independent owner review required.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C packages test -count=1 ./markers -run '^TestMarkerStateValidFile$'",
       "baseline_event": {
         "Time": "2026-10-03T10:35:28.077592-06:00",
         "Action": "pass",
         "Package": "github.com/MikeO7/kinosail/packages/markers",
         "Test": "TestMarkerStateValidFile",
         "Elapsed": 0
-      }
+      },
+      "end_line": 62,
+      "credible_failure": "Generic loadState(nil) decodes arbitrary value ok, replaying positive decoder behavior outside the actual marker schema.",
+      "remaining_proof_or_gap": "TestMarkerAnalyzerRequiresSeasonConsensusAndPersistsResults reloads a real marker file and asserts two markers; TestOwnerRemovalSuppressesDetectedMarkerAcrossRestart reloads suppression. TestSaveMarkerStateSuccessAndDeterministicFailures plus documentdb/httpguard canonical decoders remain. No live equivalence claimed.",
+      "production_owners": [
+        "packages/markers/state.go",
+        "packages/markers/store.go",
+        "packages/markers/analyzer.go"
+      ],
+      "non_test_callers": [
+        "apps/player/internal/server/server.go:New constructs markerlogic.NewAnalyzer with shared stateDB, actual probe and bounded workload acquisition; Schedule is guarded by Lifecycle",
+        "apps/subtitles/internal/server/server.go:New constructs the same shared marker owner and guarded library observer",
+        "apps/player/internal/server/marker_admin.go:registered shared Admin operation adapters and playback marker projection",
+        "apps/subtitles/internal/server/marker_admin.go:registered shared Admin operation adapters and playback marker projection",
+        "packages/settings/preferences.go:shared preference normalization invokes NormalizeAutoSkip"
+      ],
+      "source_file_sha256": "bd700ae748d747bf4566161d9a84160c354ee7c517b508c30d958219bc9a8752",
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "helpers": [
+        "packages/markers/state_coverage_test.go:complete file-local helper and table bodies read"
+      ],
+      "assertion_inventory": [
+        "if err := os.WriteFile(validPath, []byte(`{\"value\":\"ok\"}`), 0o600); err != nil {",
+        "t.Fatal(err)",
+        "if found, err := loadState(nil, validPath, &value); err != nil || !found || value[\"value\"] != \"ok\" {",
+        "t.Fatalf(\"valid state = %#v, %v, %v\", value, found, err)"
+      ],
+      "table_case_names": [],
+      "new_tests_added": false,
+      "production_or_support_deletion_unlocked": "No edits or dead-code deletion in this read-only handoff",
+      "production_owner": [
+        "packages/markers/state.go",
+        "packages/markers/store.go",
+        "packages/markers/analyzer.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/server.go:New constructs markerlogic.NewAnalyzer with shared stateDB, actual probe and bounded workload acquisition; Schedule is guarded by Lifecycle",
+        "apps/subtitles/internal/server/server.go:New constructs the same shared marker owner and guarded library observer",
+        "apps/player/internal/server/marker_admin.go:registered shared Admin operation adapters and playback marker projection",
+        "apps/subtitles/internal/server/marker_admin.go:registered shared Admin operation adapters and playback marker projection",
+        "packages/settings/preferences.go:shared preference normalization invokes NormalizeAutoSkip"
+      ],
+      "remaining_coverage": "TestMarkerAnalyzerRequiresSeasonConsensusAndPersistsResults reloads a real marker file and asserts two markers; TestOwnerRemovalSuppressesDetectedMarkerAcrossRestart reloads suppression. TestSaveMarkerStateSuccessAndDeterministicFailures plus documentdb/httpguard canonical decoders remain. No live equivalence claimed.",
+      "gap": "TestMarkerAnalyzerRequiresSeasonConsensusAndPersistsResults reloads a real marker file and asserts two markers; TestOwnerRemovalSuppressesDetectedMarkerAcrossRestart reloads suppression. TestSaveMarkerStateSuccessAndDeterministicFailures plus documentdb/httpguard canonical decoders remain. No live equivalence claimed.",
+      "reason": "Generic loadState(nil) decodes arbitrary value ok, replaying positive decoder behavior outside the actual marker schema.",
+      "independent_removal_review": {
+        "reviewer": "/root/subtitles_shared/shared_identity",
+        "status": "approved after complete candidate bodies, actual named keeper assertions and relevant production/callers read; no naming-only or fixture-E2E equivalence",
+        "source_packet": "/tmp/kinosail-markers-viewing-audit.json",
+        "source_packet_sha256": "bdb2a5af67c746d91e9e044dc74710cb54a4dc00b048cc12ab65e0d99146ce41"
+      },
+      "implementation_status": "declaration removed; existing important keeper assertions unchanged; candidate validation awaits serial root run"
     },
     {
       "file": "packages/markers/state_coverage_test.go",
@@ -79400,17 +79765,70 @@
       "owner_group": "viewing",
       "body_sha256": "8ca5792ffbd9d02726363ff86aff82bfb8f2c1a40d7da0088017f90b44e20574",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
-      "validation_command": "cd packages && go test ./viewing",
+      "decision": "D",
+      "audit_status": "reviewed",
+      "risk": "Deletion is proposed only with the named remaining owner proof or demonstrated non-detection; final keeper execution and independent owner review required.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C packages test -count=1 ./viewing -run '^TestManagerRestoresAndSchedulesDurableState$'",
       "baseline_event": {
         "Time": "2026-10-03T10:35:32.919329-06:00",
         "Action": "pass",
         "Package": "github.com/MikeO7/kinosail/packages/viewing",
         "Test": "TestManagerRestoresAndSchedulesDurableState",
         "Elapsed": 0
-      }
+      },
+      "end_line": 146,
+      "credible_failure": "Only actual assertion beyond empty fresh constructor is RunDue deleting expired preview; scheduler construction/cancel is assertion-free and empty reload contains no durable sync.",
+      "remaining_proof_or_gap": "TestPreviewStoreBoundsWorkAndConsumesOnlySuccessfulApplies and TestPreviewStoreCoversFullCanceledAndTimerPaths own expiry including generation and timer. RunDue calls engine.Store.ExpireLocked directly. TestManagerLoadErrorAndScheduleTimer owns meaningful constructor disk admission/canonicalization; TestDueSyncWorkersAreBounded owns actual scheduler dispatch. No claimed live migration equivalent.",
+      "production_owners": [
+        "packages/viewing/manager.go",
+        "packages/viewing/manager_sync.go",
+        "packages/viewing/manager_schedule.go",
+        "packages/viewing/preview_store.go"
+      ],
+      "non_test_callers": [
+        "apps/player/internal/server/viewing_import.go:newViewingImportManager constructs NewProgressStorage(progress.Storage(), progress.Database()), CommitStore and NewManager",
+        "apps/subtitles/internal/server/viewing_import.go:newViewingImportManager constructs same shared manager with actual catalog/profile/list storage adapters",
+        "apps/player/internal/server/viewing_import_http.go:RegisterHTTP owner middleware and Web/API handlers invoke Preview/Apply/CreateSync/RunSync/DeleteSync",
+        "apps/subtitles/internal/server/viewing_import_http.go:same public operation adapters, separately registered in Subtitles server.New"
+      ],
+      "source_file_sha256": "4461ee4c5e722f37c3da00a32e41582dfbaa9fac71117a333862b3a47b5061c7",
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "helpers": [
+        "packages/viewing/manager_test.go:complete file-local helper and table bodies read"
+      ],
+      "assertion_inventory": [
+        "if len(manager.previews) != 0 {",
+        "t.Fatal(\"expired preview remained\")",
+        "if manager.loadErr != nil || len(manager.Syncs()) != 0 {",
+        "t.Fatalf(\"restored=%#v error=%v\", manager.Syncs(), manager.loadErr)"
+      ],
+      "table_case_names": [],
+      "new_tests_added": false,
+      "production_or_support_deletion_unlocked": "No edits or dead-code deletion in this read-only handoff",
+      "production_owner": [
+        "packages/viewing/manager.go",
+        "packages/viewing/manager_sync.go",
+        "packages/viewing/manager_schedule.go",
+        "packages/viewing/preview_store.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/viewing_import.go:newViewingImportManager constructs NewProgressStorage(progress.Storage(), progress.Database()), CommitStore and NewManager",
+        "apps/subtitles/internal/server/viewing_import.go:newViewingImportManager constructs same shared manager with actual catalog/profile/list storage adapters",
+        "apps/player/internal/server/viewing_import_http.go:RegisterHTTP owner middleware and Web/API handlers invoke Preview/Apply/CreateSync/RunSync/DeleteSync",
+        "apps/subtitles/internal/server/viewing_import_http.go:same public operation adapters, separately registered in Subtitles server.New"
+      ],
+      "remaining_coverage": "TestPreviewStoreBoundsWorkAndConsumesOnlySuccessfulApplies and TestPreviewStoreCoversFullCanceledAndTimerPaths own expiry including generation and timer. RunDue calls engine.Store.ExpireLocked directly. TestManagerLoadErrorAndScheduleTimer owns meaningful constructor disk admission/canonicalization; TestDueSyncWorkersAreBounded owns actual scheduler dispatch. No claimed live migration equivalent.",
+      "gap": "TestPreviewStoreBoundsWorkAndConsumesOnlySuccessfulApplies and TestPreviewStoreCoversFullCanceledAndTimerPaths own expiry including generation and timer. RunDue calls engine.Store.ExpireLocked directly. TestManagerLoadErrorAndScheduleTimer owns meaningful constructor disk admission/canonicalization; TestDueSyncWorkersAreBounded owns actual scheduler dispatch. No claimed live migration equivalent.",
+      "reason": "Only actual assertion beyond empty fresh constructor is RunDue deleting expired preview; scheduler construction/cancel is assertion-free and empty reload contains no durable sync.",
+      "independent_removal_review": {
+        "reviewer": "/root/subtitles_shared/shared_identity",
+        "status": "approved after complete candidate bodies, actual named keeper assertions and relevant production/callers read; no naming-only or fixture-E2E equivalence",
+        "source_packet": "/tmp/kinosail-markers-viewing-audit.json",
+        "source_packet_sha256": "bdb2a5af67c746d91e9e044dc74710cb54a4dc00b048cc12ab65e0d99146ce41"
+      },
+      "implementation_status": "declaration removed; existing important keeper assertions unchanged; candidate validation awaits serial root run"
     },
     {
       "file": "packages/viewing/manager_test.go",

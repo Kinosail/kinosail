@@ -195,27 +195,6 @@ func TestGroupingDoesNotCountDuplicateItemsAsConsensus(t *testing.T) {
 	}
 }
 
-func TestFailedGroupDoesNotBlockOtherLibraries(t *testing.T) {
-	items := movieItems(2)
-	items[1].Library = "Other"
-	analyzer := NewAnalyzer(Config{})
-	analyzer.SetProbe(func(_ context.Context, item library.Item) Media {
-		if item.ID == items[0].ID {
-			return Media{}
-		}
-		return Media{Duration: 50}
-	})
-	if err := analyzer.analyzeBatch(t.Context(), items); err == nil {
-		t.Fatal("failed group was not reported")
-	}
-	if _, found := analyzer.records[items[0].ID]; found {
-		t.Fatal("failed group published results")
-	}
-	if record := analyzer.records[items[1].ID]; record.DetectorVersion != DetectorVersion {
-		t.Fatal("unrelated library did not finish")
-	}
-}
-
 func TestFingerprintExtractionOwnsDeadlineAndRespectsCancellation(t *testing.T) {
 	calls := 0
 	check := func(ctx context.Context) {

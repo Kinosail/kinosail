@@ -65,13 +65,6 @@ func TestEnqueueKeepsOnlyTheNewestPendingBatch(t *testing.T) {
 	}
 }
 
-func TestScheduleRejectsMissingAdapters(t *testing.T) {
-	analyzer := NewAnalyzer(Config{})
-	analyzer.Schedule(nil, func(func([]library.Item)) { t.Fatal("observer called") }, func(context.Context, library.Item) Media { return Media{} }) //nolint:staticcheck // Explicitly proves nil is rejected.
-	analyzer.Schedule(t.Context(), nil, func(context.Context, library.Item) Media { return Media{} })
-	analyzer.Schedule(t.Context(), func(func([]library.Item)) { t.Fatal("observer called") }, nil)
-}
-
 func waitForMarkerState(t *testing.T, analyzer *Analyzer, want string) {
 	t.Helper()
 	deadline := time.Now().Add(2 * time.Second)
