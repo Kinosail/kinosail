@@ -39,7 +39,7 @@ function cls(shifts) {
   for(const e of shifts){if(e.time-last>1000||e.time-start>5000){sum=0;start=e.time;}sum+=e.value;maximum=Math.max(maximum,sum);last=e.time;}
   return maximum;
 }
-const boxesChanged=(a,b)=>a.filter(first=>{const last=b.find(v=>v.id===first.id);return last&&["x","documentY","width","height"].some(key=>Math.abs(first[key]-last[key])>1);});
+const boxesChanged=(a,b)=>a.filter(first=>{const last=b.find(v=>v.id===first.id);return last&&["x",first.pinned&&last.pinned?"y":"documentY","width","height"].some(key=>Math.abs(first[key]-last[key])>1);});
 const inspect = () => ({rootFontSize: getComputedStyle(document.documentElement).fontSize, rootScale:document.documentElement.style.fontSize, ready: document.querySelector(".settings-shell")?.hasAttribute("data-settings-ready"), category: document.documentElement.dataset.settingsCategory, scrollY,
   sections: [...document.querySelectorAll(".settings-flow>section")].filter(n=>n.getBoundingClientRect().height).map(n=>({id:n.id,category:n.dataset.settingsCategory,heading:n.querySelector("h2")?.textContent})),
   nativeOptions: document.querySelectorAll(".player-native-options").length, settingsButtons: document.querySelectorAll("[data-player-settings]").length});
@@ -59,7 +59,7 @@ function observe() {
     if (time - last > 80) {
       last = time;
       const boxes = [...document.querySelectorAll(".app-header, main, h1, h2, .card, .home-feature, .media-stage, .player-stage-toolbar, .settings-nav, .settings-flow, .settings-category-description, button")].slice(0, 60)
-        .filter(node => node.getBoundingClientRect().height > 0 && (!node.checkVisibility || node.checkVisibility()) && ![...document.querySelectorAll("details:not([open])")].some(d=>d.contains(node)&&!d.querySelector(":scope>summary")?.contains(node))).map(node => ({id: identify(node), documentY: node.getBoundingClientRect().y + scrollY, node: label(node), aria: node.getAttribute("aria-label"), text: node.textContent.trim().slice(0, 45), ...node.getBoundingClientRect().toJSON()}));
+        .filter(node => node.getBoundingClientRect().height > 0 && (!node.checkVisibility || node.checkVisibility()) && ![...document.querySelectorAll("details:not([open])")].some(d=>d.contains(node)&&!d.querySelector(":scope>summary")?.contains(node))).map(node => ({pinned: (()=>{for(let n=node;n;n=n.parentElement)if(["fixed","sticky"].includes(getComputedStyle(n).position))return true;return false;})(), id: identify(node), documentY: node.getBoundingClientRect().y + scrollY, node: label(node), aria: node.getAttribute("aria-label"), text: node.textContent.trim().slice(0, 45), ...node.getBoundingClientRect().toJSON()}));
       window.layoutAudit.frames.push({time, scrollY, boxes});
     }
     if (time < 8000) requestAnimationFrame(sample);
@@ -71,19 +71,20 @@ const viewports = process.env.KINOSAIL_LAYOUT_QUICK ? [{width: 390, height: 844}
 let routes = ["/login", "/", "/?view=movies", "/settings", "/settings#access", "/account", `/watch/${item.id}?playback=direct`, "/?view=movies&q=no-synthetic-match", "/item/missing-layout-probe"];
 if(app==="player")routes.push(`/item/${item.id}`);
 else {const sub=await pageRequestLibrary(); if(sub)routes.push(`/subtitles/inspect/${sub}?language=en`);}
-async function pageRequestLibrary(){const c=await browser.newContext({baseURL, storageState:auth});try{const r=await c.request.get("/api/v1/subtitle-library");const d=await r.json();return d.items?.find(i=>i.title==="Layout Example")?.id;}finally{await c.close();}}
+async function pageRequestLibrary(){const c=await browser.newContext({baseURL, storageState:auth});try{const r=await c.request.get("/api/v1/subtitle-library?view=library");const d=await r.json();return (d.items?.find(i=>i.title==="Layout Example")||d.items?.[0])?.id;}finally{await c.close();}}
 if(process.env.KINOSAIL_LAYOUT_PATHS)routes=process.env.KINOSAIL_LAYOUT_PATHS.split(",");
 const cases=viewports.flatMap(viewport=>routes.map(path=>({viewport,path,variant:"default"})));
 if(process.env.KINOSAIL_LAYOUT_VARIANTS)for(const path of ["/settings#access",`/watch/${item.id}?playback=direct`]){
   cases.push({viewport:{width:390,height:844},path,variant:"text-200",scale:"200%"});
   cases.push({viewport:{width:390,height:844},path,variant:"motion",motion:"no-preference"});
 }
+if(process.env.KINOSAIL_LAYOUT_VARIANTS)for(const path of ["/settings#%61ccess","/settings#%E0%A4%A"])cases.push({viewport:{width:390,height:844},path,variant:"fragment"});
 if(process.env.KINOSAIL_LAYOUT_APPLE_SHIM)cases.push({viewport:{width:768,height:1024},path:`/watch/${item.id}?playback=direct`,variant:"desktop-UA-iPad-shim",apple:true});
 try {
   for (const {viewport,path,variant,scale,motion,apple} of cases) {
     const context = await browser.newContext({baseURL, storageState: path === "/login" ? undefined : auth,
       viewport, ignoreHTTPSErrors: false, reducedMotion: motion||"reduce"});
-    if(scale)await context.addInitScript(scale=>{document.documentElement.style.fontSize=scale;},scale);
+    if(scale)await context.addInitScript(scale=>{const apply=()=>{if(!document.documentElement)return false;document.documentElement.style.fontSize=scale;return true;};if(!apply()){const observer=new MutationObserver(()=>{if(apply())observer.disconnect();});observer.observe(document,{childList:true});}},scale);
     if(apple)await context.addInitScript(()=>{
       Object.defineProperty(navigator,"platform",{value:"MacIntel"});Object.defineProperty(navigator,"maxTouchPoints",{value:5});
       HTMLVideoElement.prototype.webkitEnterFullscreen=function(){this.dispatchEvent(new Event("webkitbeginfullscreen"));};
@@ -145,7 +146,7 @@ try {
     if(traced)await context.tracing.stop({path:join(run,name+"-trace.zip")});
     await context.close();
   }
-  if(process.env.KINOSAIL_LAYOUT_FLOWS)flows=await measureFlows(browser,{baseURL,storageState:auth});
+  if(process.env.KINOSAIL_LAYOUT_FLOWS)flows=await measureFlows(browser,{baseURL,storageState:auth},`/watch/${item.id}?playback=direct`);
 } finally {
   await writeFile(join(run, "measurements.json"), JSON.stringify({revision: process.env.KINOSAIL_TEST_REVISION, app, engine,browserVersion:browser.version(),
     result: "measurement", command: "python3 scripts/testing/test-layout-stability-local.py", data: "Synthetic media and account; delayed real font/bundle/image responses", reports,flows}, null, 2));

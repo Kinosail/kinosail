@@ -1,6 +1,7 @@
 package server
 
 import (
+	"bytes"
 	"encoding/json"
 	"regexp"
 	"strings"
@@ -8,7 +9,7 @@ import (
 
 // The existing synchronous theme asset projects the bookmarked category before
 // body paint. Derive its anchors from the same catalog as the rendered sections.
-func settingsInitialJS() []byte {
+func prepareSettingsInitial(source []byte) []byte {
 	anchors := make(map[string]string)
 	levels := make(map[string]string)
 	slugPattern := regexp.MustCompile(`[^a-z0-9]+`)
@@ -25,5 +26,8 @@ func settingsInitialJS() []byte {
 	}
 	anchorJSON, _ := json.Marshal(anchors)
 	levelJSON, _ := json.Marshal(levels)
-	return []byte(`if(location.pathname==="/settings"){(()=>{const anchors=` + string(anchorJSON) + `,levels=` + string(levelJSON) + `;let hash="";try{hash=decodeURIComponent(location.hash.slice(1));}catch{}const category=anchors[hash]||"playback";document.documentElement.dataset.settingsCategory=category;document.documentElement.dataset.settingsLevel=levels[category];if(hash)document.addEventListener("readystatechange",()=>{const target=document.getElementById(hash);if(!target)return;for(let ancestor=target;ancestor;ancestor=ancestor.parentElement)if(ancestor instanceof HTMLDetailsElement)ancestor.open=true;target.scrollIntoView({block:"start"});},{once:true});})();}`)
+	anchorString, _ := json.Marshal(string(anchorJSON))
+	levelString, _ := json.Marshal(string(levelJSON))
+	source = bytes.ReplaceAll(source, []byte(`"KINOSAIL_SETTINGS_ANCHORS"`), anchorString)
+	return bytes.ReplaceAll(source, []byte(`"KINOSAIL_SETTINGS_LEVELS"`), levelString)
 }

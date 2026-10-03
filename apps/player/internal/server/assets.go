@@ -33,6 +33,8 @@ var (
 	supporterCSS []byte
 	//go:embed static/settings.css
 	settingsCSS []byte
+	//go:embed static/settings-initial.js
+	settingsInitialSource []byte
 	//go:embed static/home.css
 	homeCSS []byte
 	//go:embed static/connect.js
@@ -82,7 +84,8 @@ var (
 	pwaNavigationJS     = webassets.PWANavigation
 	pwaSettingsJS       = webassets.PWASettings
 	shortcutsJS         = webassets.Shortcuts
-	themeJS             = joinScripts(webassets.Theme, webassets.ArtworkPalette, webassets.WatchProgress, playbackCapabilitiesJS, startupPreparationJS, settingsInitialJS())
+	settingsInitialJS   = prepareSettingsInitial(settingsInitialSource)
+	themeJS             = joinScripts(webassets.Theme, webassets.ArtworkPalette, webassets.WatchProgress, playbackCapabilitiesJS, startupPreparationJS, settingsInitialJS)
 	supporterJS         = joinScripts(webassets.Supporter, supporterAppJS, supporterPlansJS)
 	playerJS            = joinScripts(playbackCapabilitiesJS, playerSharedJS, playerSubtitlesJS, playerCoreJS, playerStreamingAdaptiveJS, playerStreamingRecoveryJS, playerStreamingOfflineJS, playerControlsJS, playerDevicesJS, webassets.PlayerTV, playerProgressJS)
 	downloadsJS         = joinScripts(webassets.OfflineIdentity, webassets.OfflineRuntime, downloadsCoreJS, webassets.DownloadsStorage, downloadsTransferJS, webassets.DownloadsProgress, downloadsUIJS)

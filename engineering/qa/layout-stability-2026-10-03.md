@@ -39,3 +39,7 @@ KINOSAIL_LAYOUT_ENFORCE=1 KINOSAIL_LAYOUT_FLOWS=1 KINOSAIL_LAYOUT_VARIANTS=1 KIN
 Chrome is the default. Set `KINOSAIL_LAYOUT_BROWSER=webkit` or `firefox` for those engines. `KINOSAIL_LAYOUT_QUICK=1` selects 390/1440; omit it for 320/390/844/768/1024/1440/1920. Receipts record exact switches and source drift. The desktop-UA iPad capability shim is synthetic and does not establish physical-device or Safari proof.
 
 Final matrix and artifact references will be appended after the frozen-source runs. No production origin, Nox, live playback, manual deployment, TLS bypass, or container/image operation is part of this verification.
+
+## Transition failure analysis
+
+An encoded fragment can select Connections during initial projection, then switch to Playback when deferred code reads the raw fragment. Malformed escapes must retain a safe default. A theater/fullscreen idle timer can leave the normal in-flow toolbar hidden after exit. A later pointer event then restores its height. Measure both transitions with real server pages before changing their behavior.

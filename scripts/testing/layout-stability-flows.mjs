@@ -1,5 +1,5 @@
 // Real HTMX bodies; only the explicitly labelled transport failure is injected.
-export async function measureFlows(browser, options) {
+export async function measureFlows(browser, options, watchPath) {
   const results = [];
   for (const viewport of [{width:390,height:844},{width:1440,height:900}]) {
     const context = await browser.newContext({...options,viewport,ignoreHTTPSErrors:false,reducedMotion:"reduce"});
@@ -38,5 +38,23 @@ export async function measureFlows(browser, options) {
       stable:JSON.stringify(resizeBefore)===JSON.stringify(resizeAfter),overflow:await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth)});
     await context.close();
   }
+  const context = await browser.newContext({...options,viewport:{width:390,height:844},ignoreHTTPSErrors:false,reducedMotion:"reduce"});
+  const page = await context.newPage();
+  await page.goto(watchPath);
+  const theater = page.locator("[data-theater]");
+  if (await theater.isVisible()) {
+    await page.locator("video").evaluate(video=>{video.loop=true;});
+    if(await page.locator("video").evaluate(video=>video.paused))await page.getByRole("button",{name:"Play",exact:true}).first().click();
+    await theater.click();
+    await page.mouse.move(0,0);await page.waitForTimeout(2700);
+    const hiddenAfterIdle=await page.locator(".player-stage-toolbar").evaluate(n=>n.hidden);
+    await page.keyboard.press("Escape");await page.waitForTimeout(100);
+    const visibleAfterExit=await page.locator(".player-stage-toolbar").isVisible();
+    const before=await page.locator(".media-stage").boundingBox();
+    const stage=await page.locator(".media-stage").boundingBox();await page.mouse.move(stage.x+15,stage.y+15);await page.waitForTimeout(200);
+    const after=await page.locator(".media-stage").boundingBox();
+    results.push({flow:"theater-idle-exit",hiddenAfterIdle,visibleAfterExit,before,after,stable:hiddenAfterIdle&&visibleAfterExit&&JSON.stringify(before)===JSON.stringify(after)});
+  } else results.push({flow:"theater-idle-exit",result:"native control mode has no Theater"});
+  await context.close();
   return results;
 }

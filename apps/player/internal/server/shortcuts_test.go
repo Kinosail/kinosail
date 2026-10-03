@@ -7,5 +7,5 @@ import (
 )
 
 func TestApplicationPagesExposeSharedKeyboardShortcuts(t *testing.T) {
-	servertest.ApplicationPagesExposeSharedKeyboardShortcuts(t, settingsSearchHandler, "32", `!activeMenu?.contains(event.target)`)
+	servertest.ApplicationPagesExposeSharedKeyboardShortcuts(t, settingsSearchHandler, "33", `!activeMenu?.contains(event.target)`)
 }
