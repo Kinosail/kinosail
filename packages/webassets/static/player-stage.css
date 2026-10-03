@@ -38,3 +38,4 @@
 .player-page .media-stage:fullscreen>video{width:100%;height:100%;max-height:none;object-fit:contain}
 .media-stage:fullscreen .player-stage-toolbar{padding-top:max(.8rem,env(safe-area-inset-top));padding-inline:max(.8rem,env(safe-area-inset-left)) max(.8rem,env(safe-area-inset-right))}
 .media-stage:fullscreen .player-control-dock{padding-inline:max(.8rem,env(safe-area-inset-left)) max(.8rem,env(safe-area-inset-right))}
+.media-stage:fullscreen.has-settings .player-settings{top:auto;right:max(.6rem,env(safe-area-inset-right));bottom:calc(4.3rem + env(safe-area-inset-bottom));left:auto;width:min(22rem,calc(100% - 1.2rem));max-height:calc(100% - 8rem - env(safe-area-inset-bottom));overflow-y:auto}
