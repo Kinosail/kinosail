@@ -6,12 +6,12 @@
   "files": 379,
   "declarations": 954,
   "test_loc": 28832,
-  "reviewed": 298,
-  "pending": 656,
+  "reviewed": 321,
+  "pending": 633,
   "decisions": {
-    "R": 248,
-    "D": 40,
-    "F": 10,
+    "R": 268,
+    "D": 41,
+    "F": 12,
     "C": 0
   },
   "verification": [
@@ -3685,51 +3685,80 @@
       "line": 24,
       "test": "TestStrongPublicSessionAndPasskeyViewAreIsolated",
       "baseline_file_sha256": "fdf63978582573d0364284559097bdf3b01f94fb9200b3d2bb9f5d9108f2f614",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "F",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "App strong-public sign-in creates one generic __Host-kinosail_session secure Strict cookie; direct shared CloneAll returns expected credential bytes. No returned-slice mutation exists, so passkey isolation is unproven here; real app HTTP cookie-name isolation remains in retained session_cookie_isolation tests.",
+      "production_owner": "apps/subtitles/internal/server/{auth,auth_remote_routes,security,tripwire,quick_connect,jellyfin_delivery,passkeys,api_remote,application_init}.go; packages/{identitycore,passkeys,httpguard,remoteaccess,jellyfincompat,playback,dlna}",
+      "non_test_callers": "Registered app transport/auth/API/web routes; dedicated Remote public listener, trusted proxy path and startup disableInternetForBrokenProfiles callback.",
+      "remaining_proof": [
+        {
+          "kind": "isolated_actual_app_handler_store_adapter_contract",
+          "reference": "apps/subtitles/internal/server/beta_boundaries_internal_test.go:TestStrongPublicSessionCookieAndPasskeyInventoryShape"
+        }
+      ],
+      "coverage_gap": "No genuine E2E exercises these hostile public ingress, forwarding, canonical-origin, credential/permission revocation or protocol states. httptest and direct callbacks remain isolated integration fixtures; Config:false handler graphs do not establish genuine SubtitleApp:true CLI dashboard proof. App strong-public sign-in creates one generic __Host-kinosail_session secure Strict cookie; direct shared CloneAll returns expected credential bytes. No returned-slice mutation exists, so passkey isolation is unproven here; real app HTTP cookie-name isolation remains in retained session_cookie_isolation tests.",
+      "history": "0c5276ff266da231d1eb32bedc967e360b398d82 Resume public access without restarting Server",
+      "risk": "Retain concrete app security/protocol/state failure; assertions unchanged except removal of declared D replay.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server",
+      "final_test": "TestStrongPublicSessionCookieAndPasskeyInventoryShape",
+      "failure_analysis": [
+        "Returning aliased credential bytes from CloneAll would pass because no returned-byte mutation is performed.",
+        "Direct app strong-public sign-in cookie attributes are tested, but app HTTP configured cookie names and isolation are proved by separate retained session_cookie_isolation tests.",
+        "Rename to measured cookie/inventory shape; retain existing assertions and report clone isolation gap."
+      ]
     },
     {
       "file": "apps/subtitles/internal/server/beta_boundaries_internal_test.go",
       "line": 48,
       "test": "TestRemoteAccessWebKillAndReset",
       "baseline_file_sha256": "fdf63978582573d0364284559097bdf3b01f94fb9200b3d2bb9f5d9108f2f614",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "D",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Direct calls to shared KillHTTP/ResetKillHTTP at an unregistered /settings/remote-access/kill URL assert303 and killed/starting only. App revoke callback has no active artifacts, so test cannot prove revocation or actual route wiring.",
+      "production_owner": "apps/subtitles/internal/server/{auth,auth_remote_routes,security,tripwire,quick_connect,jellyfin_delivery,passkeys,api_remote,application_init}.go; packages/{identitycore,passkeys,httpguard,remoteaccess,jellyfincompat,playback,dlna}",
+      "non_test_callers": "Registered app transport/auth/API/web routes; dedicated Remote public listener, trusted proxy path and startup disableInternetForBrokenProfiles callback.",
+      "remaining_proof": [
+        {
+          "kind": "retained_canonical_shared_handler_contract",
+          "reference": "packages/remoteaccess/http_test.go:TestKillHTTPResultPaths + TestResetKillHTTPResultPaths"
+        },
+        {
+          "kind": "retained_actual_app_API_and_durable_manager_contract",
+          "reference": "apps/subtitles/internal/server/remote_access_security_test.go:TestOwnerCanPersistAndResetPublicKillSwitch"
+        },
+        {
+          "kind": "retained_app_active_authorization_revocation_contract",
+          "reference": "apps/subtitles/internal/server/media_shares_internal_test.go:TestKillSwitchRevokesEveryPublicAuthorizationArtifact"
+        }
+      ],
+      "coverage_gap": "No E2E equivalence claimed. Canonical handler303/state behavior and actual active app revocation protection retained. This direct-call fixture never proved actual web route registration or revocation of populated artifacts.",
+      "history": "0c5276ff266da231d1eb32bedc967e360b398d82 Resume public access without restarting Server",
+      "risk": "Low: remove shared imported-handler happy-path replay with same stronger handler and active app state keepers.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/beta_boundaries_internal_test.go",
       "line": 75,
       "test": "TestDLNADiscoveryBoundaries",
       "baseline_file_sha256": "fdf63978582573d0364284559097bdf3b01f94fb9200b3d2bb9f5d9108f2f614",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "SSDP must emit exact MediaServer:1 ST, path capability LOCATION and no token? URL; audio/photo/video map expected classes. Canonical shared Class/LOCATION table misses exact ST/no-query guard, no genuine E2E uses a real DLNA client.",
+      "production_owner": "apps/subtitles/internal/server/{auth,auth_remote_routes,security,tripwire,quick_connect,jellyfin_delivery,passkeys,api_remote,application_init}.go; packages/{identitycore,passkeys,httpguard,remoteaccess,jellyfincompat,playback,dlna}",
+      "non_test_callers": "Registered app transport/auth/API/web routes; dedicated Remote public listener, trusted proxy path and startup disableInternetForBrokenProfiles callback.",
+      "remaining_proof": [
+        {
+          "kind": "isolated_actual_app_handler_store_adapter_contract",
+          "reference": "apps/subtitles/internal/server/beta_boundaries_internal_test.go:TestDLNADiscoveryBoundaries"
+        }
+      ],
+      "coverage_gap": "No genuine E2E exercises these hostile public ingress, forwarding, canonical-origin, credential/permission revocation or protocol states. httptest and direct callbacks remain isolated integration fixtures; Config:false handler graphs do not establish genuine SubtitleApp:true CLI dashboard proof.",
+      "history": "0c5276ff266da231d1eb32bedc967e360b398d82 Resume public access without restarting Server",
+      "risk": "Retain concrete app security/protocol/state failure; assertions unchanged except removal of declared D replay.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/books_test.go",
@@ -3974,102 +4003,132 @@
       "line": 14,
       "test": "TestBrowserPageRedirectsAliasToConfiguredOrigin",
       "baseline_file_sha256": "5f9d780b1c1b4c5ea87a69ec5a5e2fee1372d9c974426cf032a98eb2cd307772",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Configured TLS alias browser GET must redirect to exact configured passkey origin instead of creating an origin mismatch; actual loaded configuration and app transport are exercised.",
+      "production_owner": "apps/subtitles/internal/server/{auth,auth_remote_routes,security,tripwire,quick_connect,jellyfin_delivery,passkeys,api_remote,application_init}.go; packages/{identitycore,passkeys,httpguard,remoteaccess,jellyfincompat,playback,dlna}",
+      "non_test_callers": "Registered app transport/auth/API/web routes; dedicated Remote public listener, trusted proxy path and startup disableInternetForBrokenProfiles callback.",
+      "remaining_proof": [
+        {
+          "kind": "isolated_actual_app_handler_store_adapter_contract",
+          "reference": "apps/subtitles/internal/server/canonical_origin_navigation_test.go:TestBrowserPageRedirectsAliasToConfiguredOrigin"
+        }
+      ],
+      "coverage_gap": "No genuine E2E exercises these hostile public ingress, forwarding, canonical-origin, credential/permission revocation or protocol states. httptest and direct callbacks remain isolated integration fixtures; Config:false handler graphs do not establish genuine SubtitleApp:true CLI dashboard proof.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retain concrete app security/protocol/state failure; assertions unchanged except removal of declared D replay.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/canonical_origin_navigation_test.go",
       "line": 34,
       "test": "TestBrowserPageRedirectPreservesNavigationAndCompatibility",
       "baseline_file_sha256": "5f9d780b1c1b4c5ea87a69ec5a5e2fee1372d9c974426cf032a98eb2cd307772",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Actual alias browser redirect preserves bounded next query, HEAD and insecure canonical navigation; API/Jellyfin stay auth responses, oversized query strips and remote setup remains404 without redirect.",
+      "production_owner": "apps/subtitles/internal/server/{auth,auth_remote_routes,security,tripwire,quick_connect,jellyfin_delivery,passkeys,api_remote,application_init}.go; packages/{identitycore,passkeys,httpguard,remoteaccess,jellyfincompat,playback,dlna}",
+      "non_test_callers": "Registered app transport/auth/API/web routes; dedicated Remote public listener, trusted proxy path and startup disableInternetForBrokenProfiles callback.",
+      "remaining_proof": [
+        {
+          "kind": "isolated_actual_app_handler_store_adapter_contract",
+          "reference": "apps/subtitles/internal/server/canonical_origin_navigation_test.go:TestBrowserPageRedirectPreservesNavigationAndCompatibility"
+        }
+      ],
+      "coverage_gap": "No genuine E2E exercises these hostile public ingress, forwarding, canonical-origin, credential/permission revocation or protocol states. httptest and direct callbacks remain isolated integration fixtures; Config:false handler graphs do not establish genuine SubtitleApp:true CLI dashboard proof.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retain concrete app security/protocol/state failure; assertions unchanged except removal of declared D replay.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/canonical_origin_navigation_test.go",
       "line": 90,
       "test": "TestBrowserPageRedirectDisablesLoopbackOrigins",
       "baseline_file_sha256": "5f9d780b1c1b4c5ea87a69ec5a5e2fee1372d9c974426cf032a98eb2cd307772",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Actual app configured localhost/IPv4/IPv6 loopback origins must leave the setup page usable without canonical redirect loops.",
+      "production_owner": "apps/subtitles/internal/server/{auth,auth_remote_routes,security,tripwire,quick_connect,jellyfin_delivery,passkeys,api_remote,application_init}.go; packages/{identitycore,passkeys,httpguard,remoteaccess,jellyfincompat,playback,dlna}",
+      "non_test_callers": "Registered app transport/auth/API/web routes; dedicated Remote public listener, trusted proxy path and startup disableInternetForBrokenProfiles callback.",
+      "remaining_proof": [
+        {
+          "kind": "isolated_actual_app_handler_store_adapter_contract",
+          "reference": "apps/subtitles/internal/server/canonical_origin_navigation_test.go:TestBrowserPageRedirectDisablesLoopbackOrigins"
+        }
+      ],
+      "coverage_gap": "No genuine E2E exercises these hostile public ingress, forwarding, canonical-origin, credential/permission revocation or protocol states. httptest and direct callbacks remain isolated integration fixtures; Config:false handler graphs do not establish genuine SubtitleApp:true CLI dashboard proof.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retain concrete app security/protocol/state failure; assertions unchanged except removal of declared D replay.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/canonical_origin_navigation_test.go",
       "line": 105,
       "test": "TestBrowserPageRedirectPrecedesStorageFailure",
       "baseline_file_sha256": "5f9d780b1c1b4c5ea87a69ec5a5e2fee1372d9c974426cf032a98eb2cd307772",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Injected unavailable profile store must still allow canonical-origin redirect before the protected handler or503 error; a remote recovery user otherwise cannot reach the correct browser origin.",
+      "production_owner": "apps/subtitles/internal/server/{auth,auth_remote_routes,security,tripwire,quick_connect,jellyfin_delivery,passkeys,api_remote,application_init}.go; packages/{identitycore,passkeys,httpguard,remoteaccess,jellyfincompat,playback,dlna}",
+      "non_test_callers": "Registered app transport/auth/API/web routes; dedicated Remote public listener, trusted proxy path and startup disableInternetForBrokenProfiles callback.",
+      "remaining_proof": [
+        {
+          "kind": "isolated_actual_app_handler_store_adapter_contract",
+          "reference": "apps/subtitles/internal/server/canonical_origin_navigation_test.go:TestBrowserPageRedirectPrecedesStorageFailure"
+        }
+      ],
+      "coverage_gap": "No genuine E2E exercises these hostile public ingress, forwarding, canonical-origin, credential/permission revocation or protocol states. httptest and direct callbacks remain isolated integration fixtures; Config:false handler graphs do not establish genuine SubtitleApp:true CLI dashboard proof.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retain concrete app security/protocol/state failure; assertions unchanged except removal of declared D replay.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/canonical_origin_navigation_test.go",
       "line": 116,
       "test": "TestBrowserPageRedirectSanitizesUnsafePaths",
       "baseline_file_sha256": "5f9d780b1c1b4c5ea87a69ec5a5e2fee1372d9c974426cf032a98eb2cd307772",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Actual app engine/config/secure-request flags must sanitize scheme-relative and2049-byte destination paths to canonical root; canonical shared table covers scheme-relative and oversized query, not this exact oversized-path assertion.",
+      "production_owner": "apps/subtitles/internal/server/{auth,auth_remote_routes,security,tripwire,quick_connect,jellyfin_delivery,passkeys,api_remote,application_init}.go; packages/{identitycore,passkeys,httpguard,remoteaccess,jellyfincompat,playback,dlna}",
+      "non_test_callers": "Registered app transport/auth/API/web routes; dedicated Remote public listener, trusted proxy path and startup disableInternetForBrokenProfiles callback.",
+      "remaining_proof": [
+        {
+          "kind": "isolated_actual_app_handler_store_adapter_contract",
+          "reference": "apps/subtitles/internal/server/canonical_origin_navigation_test.go:TestBrowserPageRedirectSanitizesUnsafePaths"
+        }
+      ],
+      "coverage_gap": "No genuine E2E exercises these hostile public ingress, forwarding, canonical-origin, credential/permission revocation or protocol states. httptest and direct callbacks remain isolated integration fixtures; Config:false handler graphs do not establish genuine SubtitleApp:true CLI dashboard proof.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retain concrete app security/protocol/state failure; assertions unchanged except removal of declared D replay.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/canonical_origin_navigation_test.go",
       "line": 124,
       "test": "TestBrowserPagePostsRedirectBeforeSideEffects",
       "baseline_file_sha256": "5f9d780b1c1b4c5ea87a69ec5a5e2fee1372d9c974426cf032a98eb2cd307772",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Alias browser setup POST must303 to canonical setup without any cookie or Owner creation; canonical setup remains200 afterward.",
+      "production_owner": "apps/subtitles/internal/server/{auth,auth_remote_routes,security,tripwire,quick_connect,jellyfin_delivery,passkeys,api_remote,application_init}.go; packages/{identitycore,passkeys,httpguard,remoteaccess,jellyfincompat,playback,dlna}",
+      "non_test_callers": "Registered app transport/auth/API/web routes; dedicated Remote public listener, trusted proxy path and startup disableInternetForBrokenProfiles callback.",
+      "remaining_proof": [
+        {
+          "kind": "isolated_actual_app_handler_store_adapter_contract",
+          "reference": "apps/subtitles/internal/server/canonical_origin_navigation_test.go:TestBrowserPagePostsRedirectBeforeSideEffects"
+        }
+      ],
+      "coverage_gap": "No genuine E2E exercises these hostile public ingress, forwarding, canonical-origin, credential/permission revocation or protocol states. httptest and direct callbacks remain isolated integration fixtures; Config:false handler graphs do not establish genuine SubtitleApp:true CLI dashboard proof.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retain concrete app security/protocol/state failure; assertions unchanged except removal of declared D replay.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/cast_test.go",
@@ -7548,17 +7607,22 @@
       "line": 21,
       "test": "TestKillSwitchRevokesEveryPublicAuthorizationArtifact",
       "baseline_file_sha256": "2932fb9b44ec4ee9c5968274b46afc603b4c1d83f210b55349f6a7aee4e89ae7",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "App revokePublicAuthorization must remove public session/quick grant/share and public WebAuthn ceremony while preserving local ceremony, and advance remote profile revision. Fixtures contain active artifacts so omitted callbacks are detectable.",
+      "production_owner": "apps/subtitles/internal/server/{auth,auth_remote_routes,security,tripwire,quick_connect,jellyfin_delivery,passkeys,api_remote,application_init}.go; packages/{identitycore,passkeys,httpguard,remoteaccess,jellyfincompat,playback,dlna}",
+      "non_test_callers": "Registered app transport/auth/API/web routes; dedicated Remote public listener, trusted proxy path and startup disableInternetForBrokenProfiles callback.",
+      "remaining_proof": [
+        {
+          "kind": "isolated_actual_app_handler_store_adapter_contract",
+          "reference": "apps/subtitles/internal/server/media_shares_internal_test.go:TestKillSwitchRevokesEveryPublicAuthorizationArtifact"
+        }
+      ],
+      "coverage_gap": "No genuine E2E exercises these hostile public ingress, forwarding, canonical-origin, credential/permission revocation or protocol states. httptest and direct callbacks remain isolated integration fixtures; Config:false handler graphs do not establish genuine SubtitleApp:true CLI dashboard proof.",
+      "history": "878dc2a63d62880e6d3a5aa395ce25dd40919539 Remove retired artifacts and unused code",
+      "risk": "Retain concrete app security/protocol/state failure; assertions unchanged except removal of declared D replay.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/media_types_test.go",
@@ -12879,153 +12943,203 @@
       "line": 18,
       "test": "TestPublicInternetListenerDeniesSetupOwnersAndUnsecuredPasswordLogin",
       "baseline_file_sha256": "d89667285b565bd7f92460fe942f6b5e409bd25a671210d1178d588c70e842ef",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Actual Remote app rejects local Owner settings403, public setup404 and unsecured Viewer password login403; dedicated listener context must reach auth policy.",
+      "production_owner": "apps/subtitles/internal/server/{auth,auth_remote_routes,security,tripwire,quick_connect,jellyfin_delivery,passkeys,api_remote,application_init}.go; packages/{identitycore,passkeys,httpguard,remoteaccess,jellyfincompat,playback,dlna}",
+      "non_test_callers": "Registered app transport/auth/API/web routes; dedicated Remote public listener, trusted proxy path and startup disableInternetForBrokenProfiles callback.",
+      "remaining_proof": [
+        {
+          "kind": "isolated_actual_app_handler_store_adapter_contract",
+          "reference": "apps/subtitles/internal/server/remote_access_security_test.go:TestPublicInternetListenerDeniesSetupOwnersAndUnsecuredPasswordLogin"
+        }
+      ],
+      "coverage_gap": "No genuine E2E exercises these hostile public ingress, forwarding, canonical-origin, credential/permission revocation or protocol states. httptest and direct callbacks remain isolated integration fixtures; Config:false handler graphs do not establish genuine SubtitleApp:true CLI dashboard proof.",
+      "history": "0c5276ff266da231d1eb32bedc967e360b398d82 Resume public access without restarting Server",
+      "risk": "Retain concrete app security/protocol/state failure; assertions unchanged except removal of declared D replay.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/remote_access_security_test.go",
       "line": 39,
       "test": "TestPublicPasskeyOriginKeepsExplicitLANAliasesAvailable",
       "baseline_file_sha256": "d89667285b565bd7f92460fe942f6b5e409bd25a671210d1178d588c70e842ef",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "With public AuthURL, explicitly configured hostname/IP LAN aliases still render local login200; transport hostname and page redirect policy must compose without trapping LAN recovery.",
+      "production_owner": "apps/subtitles/internal/server/{auth,auth_remote_routes,security,tripwire,quick_connect,jellyfin_delivery,passkeys,api_remote,application_init}.go; packages/{identitycore,passkeys,httpguard,remoteaccess,jellyfincompat,playback,dlna}",
+      "non_test_callers": "Registered app transport/auth/API/web routes; dedicated Remote public listener, trusted proxy path and startup disableInternetForBrokenProfiles callback.",
+      "remaining_proof": [
+        {
+          "kind": "isolated_actual_app_handler_store_adapter_contract",
+          "reference": "apps/subtitles/internal/server/remote_access_security_test.go:TestPublicPasskeyOriginKeepsExplicitLANAliasesAvailable"
+        }
+      ],
+      "coverage_gap": "No genuine E2E exercises these hostile public ingress, forwarding, canonical-origin, credential/permission revocation or protocol states. httptest and direct callbacks remain isolated integration fixtures; Config:false handler graphs do not establish genuine SubtitleApp:true CLI dashboard proof.",
+      "history": "0c5276ff266da231d1eb32bedc967e360b398d82 Resume public access without restarting Server",
+      "risk": "Retain concrete app security/protocol/state failure; assertions unchanged except removal of declared D replay.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/remote_access_security_test.go",
       "line": 59,
       "test": "TestPublicQuickConnectCannotInheritOwnerAccess",
       "baseline_file_sha256": "d89667285b565bd7f92460fe942f6b5e409bd25a671210d1178d588c70e842ef",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "An Owner session cannot approve a connection created on public ingress; actual API handler must not mint remote Owner authority.",
+      "production_owner": "apps/subtitles/internal/server/{auth,auth_remote_routes,security,tripwire,quick_connect,jellyfin_delivery,passkeys,api_remote,application_init}.go; packages/{identitycore,passkeys,httpguard,remoteaccess,jellyfincompat,playback,dlna}",
+      "non_test_callers": "Registered app transport/auth/API/web routes; dedicated Remote public listener, trusted proxy path and startup disableInternetForBrokenProfiles callback.",
+      "remaining_proof": [
+        {
+          "kind": "isolated_actual_app_handler_store_adapter_contract",
+          "reference": "apps/subtitles/internal/server/remote_access_security_test.go:TestPublicQuickConnectCannotInheritOwnerAccess"
+        }
+      ],
+      "coverage_gap": "No genuine E2E exercises these hostile public ingress, forwarding, canonical-origin, credential/permission revocation or protocol states. httptest and direct callbacks remain isolated integration fixtures; Config:false handler graphs do not establish genuine SubtitleApp:true CLI dashboard proof.",
+      "history": "0c5276ff266da231d1eb32bedc967e360b398d82 Resume public access without restarting Server",
+      "risk": "Retain concrete app security/protocol/state failure; assertions unchanged except removal of declared D replay.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/remote_access_security_test.go",
       "line": 77,
       "test": "TestPublicInternetListenerAllowsOnlyRemoteEnabledViewers",
       "baseline_file_sha256": "d89667285b565bd7f92460fe942f6b5e409bd25a671210d1178d588c70e842ef",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Actual app rejects password-only, local-only and even locally strengthened sessions at public ingress; spoofed X-Kinosail-Remote cannot deny local access.",
+      "production_owner": "apps/subtitles/internal/server/{auth,auth_remote_routes,security,tripwire,quick_connect,jellyfin_delivery,passkeys,api_remote,application_init}.go; packages/{identitycore,passkeys,httpguard,remoteaccess,jellyfincompat,playback,dlna}",
+      "non_test_callers": "Registered app transport/auth/API/web routes; dedicated Remote public listener, trusted proxy path and startup disableInternetForBrokenProfiles callback.",
+      "remaining_proof": [
+        {
+          "kind": "isolated_actual_app_handler_store_adapter_contract",
+          "reference": "apps/subtitles/internal/server/remote_access_security_test.go:TestPublicInternetListenerAllowsOnlyRemoteEnabledViewers"
+        }
+      ],
+      "coverage_gap": "No genuine E2E exercises these hostile public ingress, forwarding, canonical-origin, credential/permission revocation or protocol states. httptest and direct callbacks remain isolated integration fixtures; Config:false handler graphs do not establish genuine SubtitleApp:true CLI dashboard proof.",
+      "history": "0c5276ff266da231d1eb32bedc967e360b398d82 Resume public access without restarting Server",
+      "risk": "Retain concrete app security/protocol/state failure; assertions unchanged except removal of declared D replay.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/remote_access_security_test.go",
       "line": 110,
       "test": "TestPublicQuickConnectRequiresStrongRemoteEnabledViewer",
       "baseline_file_sha256": "d89667285b565bd7f92460fe942f6b5e409bd25a671210d1178d588c70e842ef",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Public approval requires locally strong remote-enabled Viewer; approval itself is unavailable on public ingress. Consumed public session can browse but account/MFA/OpenAPI/OAuth/DLNA remain404, and changed remote permissions immediately revoke token401.",
+      "production_owner": "apps/subtitles/internal/server/{auth,auth_remote_routes,security,tripwire,quick_connect,jellyfin_delivery,passkeys,api_remote,application_init}.go; packages/{identitycore,passkeys,httpguard,remoteaccess,jellyfincompat,playback,dlna}",
+      "non_test_callers": "Registered app transport/auth/API/web routes; dedicated Remote public listener, trusted proxy path and startup disableInternetForBrokenProfiles callback.",
+      "remaining_proof": [
+        {
+          "kind": "isolated_actual_app_handler_store_adapter_contract",
+          "reference": "apps/subtitles/internal/server/remote_access_security_test.go:TestPublicQuickConnectRequiresStrongRemoteEnabledViewer"
+        }
+      ],
+      "coverage_gap": "No genuine E2E exercises these hostile public ingress, forwarding, canonical-origin, credential/permission revocation or protocol states. httptest and direct callbacks remain isolated integration fixtures; Config:false handler graphs do not establish genuine SubtitleApp:true CLI dashboard proof.",
+      "history": "0c5276ff266da231d1eb32bedc967e360b398d82 Resume public access without restarting Server",
+      "risk": "Retain concrete app security/protocol/state failure; assertions unchanged except removal of declared D replay.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/remote_access_security_test.go",
       "line": 166,
       "test": "TestPublicTripwireQuarantinesScannerWithoutStoppingLocalAccess",
       "baseline_file_sha256": "d89667285b565bd7f92460fe942f6b5e409bd25a671210d1178d588c70e842ef",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Three scanner probes from one true source with changing spoofed X-Forwarded-For must quarantine source429/Retry-After, preserve local Owner access200 and render Owner warning. App proxy/tripwire/audit/template wiring can regress independently of shared counters.",
+      "production_owner": "apps/subtitles/internal/server/{auth,auth_remote_routes,security,tripwire,quick_connect,jellyfin_delivery,passkeys,api_remote,application_init}.go; packages/{identitycore,passkeys,httpguard,remoteaccess,jellyfincompat,playback,dlna}",
+      "non_test_callers": "Registered app transport/auth/API/web routes; dedicated Remote public listener, trusted proxy path and startup disableInternetForBrokenProfiles callback.",
+      "remaining_proof": [
+        {
+          "kind": "isolated_actual_app_handler_store_adapter_contract",
+          "reference": "apps/subtitles/internal/server/remote_access_security_test.go:TestPublicTripwireQuarantinesScannerWithoutStoppingLocalAccess"
+        }
+      ],
+      "coverage_gap": "No genuine E2E exercises these hostile public ingress, forwarding, canonical-origin, credential/permission revocation or protocol states. httptest and direct callbacks remain isolated integration fixtures; Config:false handler graphs do not establish genuine SubtitleApp:true CLI dashboard proof.",
+      "history": "0c5276ff266da231d1eb32bedc967e360b398d82 Resume public access without restarting Server",
+      "risk": "Retain concrete app security/protocol/state failure; assertions unchanged except removal of declared D replay.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/remote_access_security_test.go",
       "line": 197,
       "test": "TestOwnerKillSwitchFailsPublicAccessClosedAndPersists",
       "baseline_file_sha256": "d89667285b565bd7f92460fe942f6b5e409bd25a671210d1178d588c70e842ef",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "F",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Actual Owner API kill204 sets manager killed, preserves local Owner access, renders reset control and persists disabled marker across a manager restart; DELETE reset204 changes starting and deletes marker. No real listener or postkill public request is exercised.",
+      "production_owner": "apps/subtitles/internal/server/{auth,auth_remote_routes,security,tripwire,quick_connect,jellyfin_delivery,passkeys,api_remote,application_init}.go; packages/{identitycore,passkeys,httpguard,remoteaccess,jellyfincompat,playback,dlna}",
+      "non_test_callers": "Registered app transport/auth/API/web routes; dedicated Remote public listener, trusted proxy path and startup disableInternetForBrokenProfiles callback.",
+      "remaining_proof": [
+        {
+          "kind": "isolated_actual_app_handler_store_adapter_contract",
+          "reference": "apps/subtitles/internal/server/remote_access_security_test.go:TestOwnerCanPersistAndResetPublicKillSwitch"
+        }
+      ],
+      "coverage_gap": "No genuine E2E exercises these hostile public ingress, forwarding, canonical-origin, credential/permission revocation or protocol states. httptest and direct callbacks remain isolated integration fixtures; Config:false handler graphs do not establish genuine SubtitleApp:true CLI dashboard proof. Actual Owner API kill204 sets manager killed, preserves local Owner access, renders reset control and persists disabled marker across a manager restart; DELETE reset204 changes starting and deletes marker. No real listener or postkill public request is exercised.",
+      "history": "0c5276ff266da231d1eb32bedc967e360b398d82 Resume public access without restarting Server",
+      "risk": "Retain concrete app security/protocol/state failure; assertions unchanged except removal of declared D replay.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server",
+      "final_test": "TestOwnerCanPersistAndResetPublicKillSwitch",
+      "failure_analysis": [
+        "The actual public listener might fail to close despite manager killed status; this fixture creates no bound listener or public stream.",
+        "API-to-manager state, durable marker, manager reopen, reset deletion and local recovery assertions remain useful; rename to this measured contract without new isolated assertions."
+      ]
     },
     {
       "file": "apps/subtitles/internal/server/remote_access_security_test.go",
       "line": 231,
       "test": "TestPublicHTTPSFailsClosedWhenAuthorizationStateCannotLoad",
       "baseline_file_sha256": "d89667285b565bd7f92460fe942f6b5e409bd25a671210d1178d588c70e842ef",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Blocked DataDir profile state must return503 and kill the configured public manager at app startup instead of running public access without loaded authority.",
+      "production_owner": "apps/subtitles/internal/server/{auth,auth_remote_routes,security,tripwire,quick_connect,jellyfin_delivery,passkeys,api_remote,application_init}.go; packages/{identitycore,passkeys,httpguard,remoteaccess,jellyfincompat,playback,dlna}",
+      "non_test_callers": "Registered app transport/auth/API/web routes; dedicated Remote public listener, trusted proxy path and startup disableInternetForBrokenProfiles callback.",
+      "remaining_proof": [
+        {
+          "kind": "isolated_actual_app_handler_store_adapter_contract",
+          "reference": "apps/subtitles/internal/server/remote_access_security_test.go:TestPublicHTTPSFailsClosedWhenAuthorizationStateCannotLoad"
+        }
+      ],
+      "coverage_gap": "No genuine E2E exercises these hostile public ingress, forwarding, canonical-origin, credential/permission revocation or protocol states. httptest and direct callbacks remain isolated integration fixtures; Config:false handler graphs do not establish genuine SubtitleApp:true CLI dashboard proof.",
+      "history": "0c5276ff266da231d1eb32bedc967e360b398d82 Resume public access without restarting Server",
+      "risk": "Retain concrete app security/protocol/state failure; assertions unchanged except removal of declared D replay.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/remote_access_security_test.go",
       "line": 247,
       "test": "TestPublicRangeRequestsRejectAmbiguousAndOverflowingValues",
       "baseline_file_sha256": "d89667285b565bd7f92460fe942f6b5e409bd25a671210d1178d588c70e842ef",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Actual Remote app must416 reject multirange, uint64 overflow, wrong unit and empty suffix before resource/auth lookup, while LAN missing-media response does not inherit public416 policy.",
+      "production_owner": "apps/subtitles/internal/server/{auth,auth_remote_routes,security,tripwire,quick_connect,jellyfin_delivery,passkeys,api_remote,application_init}.go; packages/{identitycore,passkeys,httpguard,remoteaccess,jellyfincompat,playback,dlna}",
+      "non_test_callers": "Registered app transport/auth/API/web routes; dedicated Remote public listener, trusted proxy path and startup disableInternetForBrokenProfiles callback.",
+      "remaining_proof": [
+        {
+          "kind": "isolated_actual_app_handler_store_adapter_contract",
+          "reference": "apps/subtitles/internal/server/remote_access_security_test.go:TestPublicRangeRequestsRejectAmbiguousAndOverflowingValues"
+        }
+      ],
+      "coverage_gap": "No genuine E2E exercises these hostile public ingress, forwarding, canonical-origin, credential/permission revocation or protocol states. httptest and direct callbacks remain isolated integration fixtures; Config:false handler graphs do not establish genuine SubtitleApp:true CLI dashboard proof.",
+      "history": "0c5276ff266da231d1eb32bedc967e360b398d82 Resume public access without restarting Server",
+      "risk": "Retain concrete app security/protocol/state failure; assertions unchanged except removal of declared D replay.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/remote_browser_login_test.go",
@@ -13054,34 +13168,44 @@
       "line": 14,
       "test": "TestPublicHTTPSKeepsLANBrowserRecoveryLocal",
       "baseline_file_sha256": "332ed8d02a97505cbb6ab5a71bf7332c4cc4a4a36ac516ecbe9fb2a2dacf57d2",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "With enabled public manager/AuthURL and explicit LAN alias, local browser GET/HEAD settings must redirect to local setup; public setup404; wrong-origin LAN WebAuthn ceremony421 and no cookie. Page navigation relaxation must not relax ceremony exact origin.",
+      "production_owner": "apps/subtitles/internal/server/{auth,auth_remote_routes,security,tripwire,quick_connect,jellyfin_delivery,passkeys,api_remote,application_init}.go; packages/{identitycore,passkeys,httpguard,remoteaccess,jellyfincompat,playback,dlna}",
+      "non_test_callers": "Registered app transport/auth/API/web routes; dedicated Remote public listener, trusted proxy path and startup disableInternetForBrokenProfiles callback.",
+      "remaining_proof": [
+        {
+          "kind": "isolated_actual_app_handler_store_adapter_contract",
+          "reference": "apps/subtitles/internal/server/remote_local_navigation_test.go:TestPublicHTTPSKeepsLANBrowserRecoveryLocal"
+        }
+      ],
+      "coverage_gap": "No genuine E2E exercises these hostile public ingress, forwarding, canonical-origin, credential/permission revocation or protocol states. httptest and direct callbacks remain isolated integration fixtures; Config:false handler graphs do not establish genuine SubtitleApp:true CLI dashboard proof.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retain concrete app security/protocol/state failure; assertions unchanged except removal of declared D replay.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/remote_provisioning_boundary_test.go",
       "line": 16,
       "test": "TestPublicListenerBlocksProvisioningEvenWithValidCredentials",
       "baseline_file_sha256": "85f9d87f347b7145a2f26aeca763b49a277767f000495103a3b43b45a5d7e3da",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Every registered SCIM route and GET->HEAD remains404 on public ingress for absent/invalid/valid SCIM credentials and spoofed loopback forwarding; local directory unchanged after all mutation probes. Successful local provisioning is positive control.",
+      "production_owner": "apps/subtitles/internal/server/{auth,auth_remote_routes,security,tripwire,quick_connect,jellyfin_delivery,passkeys,api_remote,application_init}.go; packages/{identitycore,passkeys,httpguard,remoteaccess,jellyfincompat,playback,dlna}",
+      "non_test_callers": "Registered app transport/auth/API/web routes; dedicated Remote public listener, trusted proxy path and startup disableInternetForBrokenProfiles callback.",
+      "remaining_proof": [
+        {
+          "kind": "isolated_actual_app_handler_store_adapter_contract",
+          "reference": "apps/subtitles/internal/server/remote_provisioning_boundary_test.go:TestPublicListenerBlocksProvisioningEvenWithValidCredentials"
+        }
+      ],
+      "coverage_gap": "No genuine E2E exercises these hostile public ingress, forwarding, canonical-origin, credential/permission revocation or protocol states. httptest and direct callbacks remain isolated integration fixtures; Config:false handler graphs do not establish genuine SubtitleApp:true CLI dashboard proof.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retain concrete app security/protocol/state failure; assertions unchanged except removal of declared D replay.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/remote_security_audit_internal_test.go",
@@ -14422,17 +14546,22 @@
       "line": 10,
       "test": "TestPublicPlaybackCannotReuseLANSessionCapability",
       "baseline_file_sha256": "cd32e56b992c058c8a21bcc0bd52606ec3f5fea75a0504239828c4f0de033c05",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "App Jellyfin delivery module must reject a present unexpired local play-session capability when Remote context is public; removing Public callback/match would authorize it. Local session intentionally avoids profile-revision callback, so this is a meaningful public-match negative.",
+      "production_owner": "apps/subtitles/internal/server/{auth,auth_remote_routes,security,tripwire,quick_connect,jellyfin_delivery,passkeys,api_remote,application_init}.go; packages/{identitycore,passkeys,httpguard,remoteaccess,jellyfincompat,playback,dlna}",
+      "non_test_callers": "Registered app transport/auth/API/web routes; dedicated Remote public listener, trusted proxy path and startup disableInternetForBrokenProfiles callback.",
+      "remaining_proof": [
+        {
+          "kind": "isolated_actual_app_handler_store_adapter_contract",
+          "reference": "apps/subtitles/internal/server/sessions_public_playback_test.go:TestPublicPlaybackCannotReuseLANSessionCapability"
+        }
+      ],
+      "coverage_gap": "No genuine E2E exercises these hostile public ingress, forwarding, canonical-origin, credential/permission revocation or protocol states. httptest and direct callbacks remain isolated integration fixtures; Config:false handler graphs do not establish genuine SubtitleApp:true CLI dashboard proof.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retain concrete app security/protocol/state failure; assertions unchanged except removal of declared D replay.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/settings_library_test.go",
@@ -19547,17 +19676,22 @@
       "line": 13,
       "test": "TestTrustedProxyUsesPublicInternetPolicy",
       "baseline_file_sha256": "1363330b08899fee76c44a5ae1aa202e4350a93710170d1f32e1154b134f6c06",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Configured trusted proxy capability must mark actual setup API/web inaccessible404 and Owner/API-key access403; remote Viewer password login403. Dedicated Remote helper alone cannot prove trusted proxy integration.",
+      "production_owner": "apps/subtitles/internal/server/{auth,auth_remote_routes,security,tripwire,quick_connect,jellyfin_delivery,passkeys,api_remote,application_init}.go; packages/{identitycore,passkeys,httpguard,remoteaccess,jellyfincompat,playback,dlna}",
+      "non_test_callers": "Registered app transport/auth/API/web routes; dedicated Remote public listener, trusted proxy path and startup disableInternetForBrokenProfiles callback.",
+      "remaining_proof": [
+        {
+          "kind": "isolated_actual_app_handler_store_adapter_contract",
+          "reference": "apps/subtitles/internal/server/trusted_proxy_policy_test.go:TestTrustedProxyUsesPublicInternetPolicy"
+        }
+      ],
+      "coverage_gap": "No genuine E2E exercises these hostile public ingress, forwarding, canonical-origin, credential/permission revocation or protocol states. httptest and direct callbacks remain isolated integration fixtures; Config:false handler graphs do not establish genuine SubtitleApp:true CLI dashboard proof.",
+      "history": "d3d9cf3fe920adb391410c1af1d6a40be18c3c2c Add dependency thanks across active apps and remove retired Dashboard references",
+      "risk": "Retain concrete app security/protocol/state failure; assertions unchanged except removal of declared D replay.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/ui_icons_test.go",
