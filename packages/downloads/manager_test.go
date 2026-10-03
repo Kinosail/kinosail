@@ -11,7 +11,6 @@ import (
 	"time"
 
 	"github.com/MikeO7/kinosail/packages/library"
-	"github.com/MikeO7/kinosail/packages/playback"
 	"github.com/MikeO7/kinosail/packages/transcodepolicy"
 )
 
