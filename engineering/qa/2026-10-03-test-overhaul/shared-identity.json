@@ -19,9 +19,9 @@
     "baseline_test_lines": 66475,
     "declarations": 1900,
     "decisions": {
-      "R": 163,
+      "R": 173,
       "D": 10,
-      "unreviewed": 1727
+      "unreviewed": 1717
     },
     "removed_declarations": 10,
     "removed_test_lines": 188,
@@ -29,7 +29,7 @@
     "final_test_lines": 66287,
     "removed_support_helpers": 5,
     "removed_support_files": 2,
-    "removed_support_lines": 116
+    "removed_support_lines": 113
   },
   "focused_validation_command": "cd packages && go test ./apihttp ./validation ./hlsmanifest ./transcodepolicy ./transcodehardware",
   "validation_results": {
@@ -337,6 +337,45 @@
         "os.Hostname"
       ],
       "e2e": "Browser E2E reaches an explicit server URL. No browser journey discovers LAN NSD/Bonjour multicast or independently exercises allowed-host expansion for network-interface inventories. Android unit discovery fixtures are not actual network E2E; no equivalence claimed."
+    },
+    "home": {
+      "owners": [
+        "packages/home/handler.go",
+        "packages/home/model.go",
+        "packages/home/personal.go",
+        "packages/home/projection.go",
+        "packages/home/destinations.go",
+        "packages/home/recent.go"
+      ],
+      "dependencies": [
+        "packages/library/organization.go:Organize/OrganizeMusic",
+        "packages/catalog/search.go:Media",
+        "packages/catalog/collection_summary.go:CountLabel"
+      ],
+      "callers": [
+        "apps/player/internal/server/home.go",
+        "apps/player/internal/server/home_projection.go",
+        "apps/player/internal/server/recent.go",
+        "apps/subtitles/internal/server/home.go",
+        "apps/subtitles/internal/server/recent.go"
+      ],
+      "e2e": "Genuine populated test-instance-library.spec.ts traverses every media category and checks stacked recent show artwork; ui-happy-paths creates actual curation state. Those do not test malformed/repeated fragment headers, missing per-episode artwork, equal Added timestamps, mutable history callbacks, or empty-category counts. BenchmarkRecentlyAddedLargeLibrary is unrun in the default baseline and has no automated ns/op or allocation threshold; it remains a manually invoked measurement tool rather than executed E2E proof."
+    },
+    "identitycore": {
+      "reviewed_scope": "Only redirects.go and its three declarations are reviewed in this group; other identitycore declarations remain explicit unreviewed inventory.",
+      "owners": [
+        "packages/identitycore/redirects.go"
+      ],
+      "dependencies": [
+        "net/url.Parse",
+        "url.QueryEscape",
+        "HTTP request URL origin parsing"
+      ],
+      "callers": [
+        "apps/player/internal/server/auth_login.go",
+        "apps/subtitles/internal/server/auth_login.go"
+      ],
+      "e2e": "Genuine setup/login and Subtitles happy-path backup step-up flows exercise valid local return paths. No browser journey covers the external/encoded slash/backslash/oversized redirect matrix. App direct aliases/replay tests are redundant with these canonical security owner tests; keep the canonical declarations."
     }
   },
   "test_support_inventory": {
@@ -18897,9 +18936,9 @@
       "owner_group": "home",
       "body_sha256": "d71a707fe18ff94a758c8737c82131119be3a1ea3ad9634507959b40ba7bc67b",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Retain the observed distinct failure or bounded projection; no new isolated tests added.",
       "validation_command": "cd packages && go test ./home",
       "baseline_event": {
         "Time": "2026-10-03T10:35:26.68001-06:00",
@@ -18907,7 +18946,30 @@
         "Package": "github.com/MikeO7/kinosail/packages/home",
         "Test": "TestHandlerBuildsCompleteLandingPage",
         "Elapsed": 0
-      }
+      },
+      "credible_failure": "Keep a complete landing projection across mixed movie/show/audio/album/audiobook/book/photo input with personal state and correct cache Vary header. Populated E2E covers rendering but does not assert the full projection and Vary response contract.",
+      "remaining_coverage": "This canonical isolated owner declaration remains; complementary genuine app journeys and explicit limits appear in owner_groups.",
+      "gap": "Genuine populated test-instance-library.spec.ts traverses every media category and checks stacked recent show artwork; ui-happy-paths creates actual curation state. Those do not test malformed/repeated fragment headers, missing per-episode artwork, equal Added timestamps, mutable history callbacks, or empty-category counts. BenchmarkRecentlyAddedLargeLibrary is unrun in the default baseline and has no automated ns/op or allocation threshold; it remains a manually invoked measurement tool rather than executed E2E proof.",
+      "history": [
+        "a69c5d2157d8ec4bd8e79326af29c435c35233d2 Stop obsolete catalog work after request cancellation",
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "callers": [
+        "apps/player/internal/server/home.go",
+        "apps/player/internal/server/home_projection.go",
+        "apps/player/internal/server/recent.go",
+        "apps/subtitles/internal/server/home.go",
+        "apps/subtitles/internal/server/recent.go"
+      ],
+      "production_owner": [
+        "packages/home/handler.go",
+        "packages/home/model.go",
+        "packages/home/personal.go",
+        "packages/home/projection.go",
+        "packages/home/destinations.go",
+        "packages/home/recent.go"
+      ],
+      "unlocked_deletion": "None."
     },
     {
       "file": "packages/home/handler_test.go",
@@ -18917,9 +18979,9 @@
       "owner_group": "home",
       "body_sha256": "459ed90a4a16c75196bb02fd19235bc2a88274dfd5075bd52a61b8ab9a9578a6",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Retain the observed distinct failure or bounded projection; no new isolated tests added.",
       "validation_command": "cd packages && go test ./home",
       "baseline_event": {
         "Time": "2026-10-03T10:35:26.681497-06:00",
@@ -18927,7 +18989,30 @@
         "Package": "github.com/MikeO7/kinosail/packages/home",
         "Test": "TestHandlerPreservesFragmentAndErrorBoundaries",
         "Elapsed": 0
-      }
+      },
+      "credible_failure": "Reject malformed/repeated fragment headers and browse errors before any render, keep failure status distinctions, and avoid expensive personal state for fragments/nonlanding views.",
+      "remaining_coverage": "This canonical isolated owner declaration remains; complementary genuine app journeys and explicit limits appear in owner_groups.",
+      "gap": "Genuine populated test-instance-library.spec.ts traverses every media category and checks stacked recent show artwork; ui-happy-paths creates actual curation state. Those do not test malformed/repeated fragment headers, missing per-episode artwork, equal Added timestamps, mutable history callbacks, or empty-category counts. BenchmarkRecentlyAddedLargeLibrary is unrun in the default baseline and has no automated ns/op or allocation threshold; it remains a manually invoked measurement tool rather than executed E2E proof.",
+      "history": [
+        "a69c5d2157d8ec4bd8e79326af29c435c35233d2 Stop obsolete catalog work after request cancellation",
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "callers": [
+        "apps/player/internal/server/home.go",
+        "apps/player/internal/server/home_projection.go",
+        "apps/player/internal/server/recent.go",
+        "apps/subtitles/internal/server/home.go",
+        "apps/subtitles/internal/server/recent.go"
+      ],
+      "production_owner": [
+        "packages/home/handler.go",
+        "packages/home/model.go",
+        "packages/home/personal.go",
+        "packages/home/projection.go",
+        "packages/home/destinations.go",
+        "packages/home/recent.go"
+      ],
+      "unlocked_deletion": "None."
     },
     {
       "file": "packages/home/personal_test.go",
@@ -18937,9 +19022,9 @@
       "owner_group": "home",
       "body_sha256": "798b6a224a119a7ae123ad375bc48a8c2b01426bc570476a2bf1728280a7206f",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Retain the observed distinct failure or bounded projection; no new isolated tests added.",
       "validation_command": "cd packages && go test ./home",
       "baseline_event": {
         "Time": "2026-10-03T10:35:26.68154-06:00",
@@ -18947,7 +19032,29 @@
         "Package": "github.com/MikeO7/kinosail/packages/home",
         "Test": "TestPersonalBuildsPlayerProjectionWithoutAliasingItems",
         "Elapsed": 0
-      }
+      },
+      "credible_failure": "A history callback may reorder/mutate its working slice; keep its copy separate so subsequent home/library state cannot be corrupted by one viewer history projection.",
+      "remaining_coverage": "This canonical isolated owner declaration remains; complementary genuine app journeys and explicit limits appear in owner_groups.",
+      "gap": "Genuine populated test-instance-library.spec.ts traverses every media category and checks stacked recent show artwork; ui-happy-paths creates actual curation state. Those do not test malformed/repeated fragment headers, missing per-episode artwork, equal Added timestamps, mutable history callbacks, or empty-category counts. BenchmarkRecentlyAddedLargeLibrary is unrun in the default baseline and has no automated ns/op or allocation threshold; it remains a manually invoked measurement tool rather than executed E2E proof.",
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "callers": [
+        "apps/player/internal/server/home.go",
+        "apps/player/internal/server/home_projection.go",
+        "apps/player/internal/server/recent.go",
+        "apps/subtitles/internal/server/home.go",
+        "apps/subtitles/internal/server/recent.go"
+      ],
+      "production_owner": [
+        "packages/home/handler.go",
+        "packages/home/model.go",
+        "packages/home/personal.go",
+        "packages/home/projection.go",
+        "packages/home/destinations.go",
+        "packages/home/recent.go"
+      ],
+      "unlocked_deletion": "None."
     },
     {
       "file": "packages/home/projection_test.go",
@@ -18957,9 +19064,9 @@
       "owner_group": "home",
       "body_sha256": "93b50f4a2cc15f76cf6eb1428e4253ba137699c35f37f4fb96128404d479252a",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Retain the observed distinct failure or bounded projection; no new isolated tests added.",
       "validation_command": "cd packages && go test ./home",
       "baseline_event": {
         "Time": "2026-10-03T10:35:26.681588-06:00",
@@ -18967,7 +19074,30 @@
         "Package": "github.com/MikeO7/kinosail/packages/home",
         "Test": "TestProjectionHelpers",
         "Elapsed": 0
-      }
+      },
+      "credible_failure": "Preserve show artwork fallback for an episode without its own asset and strip search-only query state; direct fragment assertions overlap the retained handler boundary but fallback is distinct.",
+      "remaining_coverage": "This canonical isolated owner declaration remains; complementary genuine app journeys and explicit limits appear in owner_groups.",
+      "gap": "Genuine populated test-instance-library.spec.ts traverses every media category and checks stacked recent show artwork; ui-happy-paths creates actual curation state. Those do not test malformed/repeated fragment headers, missing per-episode artwork, equal Added timestamps, mutable history callbacks, or empty-category counts. BenchmarkRecentlyAddedLargeLibrary is unrun in the default baseline and has no automated ns/op or allocation threshold; it remains a manually invoked measurement tool rather than executed E2E proof.",
+      "history": [
+        "4923bc0e648c1002bff09e40e388e0441eb10cdd Sort recent home items by pointer",
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "callers": [
+        "apps/player/internal/server/home.go",
+        "apps/player/internal/server/home_projection.go",
+        "apps/player/internal/server/recent.go",
+        "apps/subtitles/internal/server/home.go",
+        "apps/subtitles/internal/server/recent.go"
+      ],
+      "production_owner": [
+        "packages/home/handler.go",
+        "packages/home/model.go",
+        "packages/home/personal.go",
+        "packages/home/projection.go",
+        "packages/home/destinations.go",
+        "packages/home/recent.go"
+      ],
+      "unlocked_deletion": "None."
     },
     {
       "file": "packages/home/projection_test.go",
@@ -18977,9 +19107,9 @@
       "owner_group": "home",
       "body_sha256": "1f92663412b10a084d2bad440b04cdaba55040aadfc05979a1b3d774fcb1bbdd",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Retain the observed distinct failure or bounded projection; no new isolated tests added.",
       "validation_command": "cd packages && go test ./home",
       "baseline_event": {
         "Time": "2026-10-03T10:35:26.68164-06:00",
@@ -18987,7 +19117,30 @@
         "Package": "github.com/MikeO7/kinosail/packages/home",
         "Test": "TestDestinationProjection",
         "Elapsed": 0
-      }
+      },
+      "credible_failure": "Hide empty home categories and apply correct singular/plural counts across every media/curation kind; populated browser fixtures do not cover an empty library.",
+      "remaining_coverage": "This canonical isolated owner declaration remains; complementary genuine app journeys and explicit limits appear in owner_groups.",
+      "gap": "Genuine populated test-instance-library.spec.ts traverses every media category and checks stacked recent show artwork; ui-happy-paths creates actual curation state. Those do not test malformed/repeated fragment headers, missing per-episode artwork, equal Added timestamps, mutable history callbacks, or empty-category counts. BenchmarkRecentlyAddedLargeLibrary is unrun in the default baseline and has no automated ns/op or allocation threshold; it remains a manually invoked measurement tool rather than executed E2E proof.",
+      "history": [
+        "4923bc0e648c1002bff09e40e388e0441eb10cdd Sort recent home items by pointer",
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "callers": [
+        "apps/player/internal/server/home.go",
+        "apps/player/internal/server/home_projection.go",
+        "apps/player/internal/server/recent.go",
+        "apps/subtitles/internal/server/home.go",
+        "apps/subtitles/internal/server/recent.go"
+      ],
+      "production_owner": [
+        "packages/home/handler.go",
+        "packages/home/model.go",
+        "packages/home/personal.go",
+        "packages/home/projection.go",
+        "packages/home/destinations.go",
+        "packages/home/recent.go"
+      ],
+      "unlocked_deletion": "None."
     },
     {
       "file": "packages/home/projection_test.go",
@@ -18997,9 +19150,9 @@
       "owner_group": "home",
       "body_sha256": "b3fa70e223566fb58440362553db13ff56d28e692248b4f1c77b9a062e0bfe22",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Retain the observed distinct failure or bounded projection; no new isolated tests added.",
       "validation_command": "cd packages && go test ./home",
       "baseline_event": {
         "Time": "2026-10-03T10:35:26.681677-06:00",
@@ -19007,7 +19160,30 @@
         "Package": "github.com/MikeO7/kinosail/packages/home",
         "Test": "TestRecentShelfProjection",
         "Elapsed": 0
-      }
+      },
+      "credible_failure": "Preserve stable equal-time recent order without mutating caller input, cap the shelf, group episodes, and retain missing optional metadata variants absent from populated browser data.",
+      "remaining_coverage": "This canonical isolated owner declaration remains; complementary genuine app journeys and explicit limits appear in owner_groups.",
+      "gap": "Genuine populated test-instance-library.spec.ts traverses every media category and checks stacked recent show artwork; ui-happy-paths creates actual curation state. Those do not test malformed/repeated fragment headers, missing per-episode artwork, equal Added timestamps, mutable history callbacks, or empty-category counts. BenchmarkRecentlyAddedLargeLibrary is unrun in the default baseline and has no automated ns/op or allocation threshold; it remains a manually invoked measurement tool rather than executed E2E proof.",
+      "history": [
+        "4923bc0e648c1002bff09e40e388e0441eb10cdd Sort recent home items by pointer",
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "callers": [
+        "apps/player/internal/server/home.go",
+        "apps/player/internal/server/home_projection.go",
+        "apps/player/internal/server/recent.go",
+        "apps/subtitles/internal/server/home.go",
+        "apps/subtitles/internal/server/recent.go"
+      ],
+      "production_owner": [
+        "packages/home/handler.go",
+        "packages/home/model.go",
+        "packages/home/personal.go",
+        "packages/home/projection.go",
+        "packages/home/destinations.go",
+        "packages/home/recent.go"
+      ],
+      "unlocked_deletion": "None."
     },
     {
       "file": "packages/home/recent_benchmark_test.go",
@@ -19017,12 +19193,34 @@
       "owner_group": "home",
       "body_sha256": "9dc4080f3a9664502989c43b1b4366f311cdd66e36b8691fc3049b27ce2c5ef7",
       "baseline_result": "not_run",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
-      "validation_command": "cd packages && go test ./home",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Manual timing/allocation tool retained from a historical large-library memory fix; default go test does not invoke it and no automatic performance budget is asserted.",
+      "validation_command": "cd packages && go test ./home -run ^$ -bench ^BenchmarkRecentlyAddedLargeLibrary$ -benchmem -count=5",
       "baseline_event": null,
-      "baseline_not_run_reason": "Benchmark is not run by go test without -bench."
+      "baseline_not_run_reason": "Benchmark is not run by go test without -bench.",
+      "credible_failure": "Retain the repeatable 10,000-item allocation/timing probe introduced with the real pointer-sort memory improvement. It can reveal large backend projection regressions that ordinary populated E2E cannot attribute; only its bounded12-card assertion is automatic when explicitly invoked.",
+      "remaining_coverage": "This canonical isolated owner declaration remains; complementary genuine app journeys and explicit limits appear in owner_groups.",
+      "gap": "Genuine populated test-instance-library.spec.ts traverses every media category and checks stacked recent show artwork; ui-happy-paths creates actual curation state. Those do not test malformed/repeated fragment headers, missing per-episode artwork, equal Added timestamps, mutable history callbacks, or empty-category counts. BenchmarkRecentlyAddedLargeLibrary is unrun in the default baseline and has no automated ns/op or allocation threshold; it remains a manually invoked measurement tool rather than executed E2E proof.",
+      "history": [
+        "4923bc0e648c1002bff09e40e388e0441eb10cdd Sort recent home items by pointer"
+      ],
+      "callers": [
+        "apps/player/internal/server/home.go",
+        "apps/player/internal/server/home_projection.go",
+        "apps/player/internal/server/recent.go",
+        "apps/subtitles/internal/server/home.go",
+        "apps/subtitles/internal/server/recent.go"
+      ],
+      "production_owner": [
+        "packages/home/handler.go",
+        "packages/home/model.go",
+        "packages/home/personal.go",
+        "packages/home/projection.go",
+        "packages/home/destinations.go",
+        "packages/home/recent.go"
+      ],
+      "unlocked_deletion": "None."
     },
     {
       "file": "packages/homeassistant/authority_test.go",
@@ -22332,9 +22530,9 @@
       "owner_group": "identitycore",
       "body_sha256": "ce2d689bf517cce65ec8a4ff74882ec17cd678365d4d9dd0a6f324f0cd06a187",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Retain the observed distinct failure or bounded projection; no new isolated tests added.",
       "validation_command": "cd packages && go test ./identitycore",
       "baseline_event": {
         "Time": "2026-10-03T10:35:27.607384-06:00",
@@ -22342,7 +22540,23 @@
         "Package": "github.com/MikeO7/kinosail/packages/identitycore",
         "Test": "TestStepUpLoginPathReturnsToKnownOwnerPage",
         "Elapsed": 0
-      }
+      },
+      "credible_failure": "Map high-impact settings/management/backup/account mutations back to known local step-up destinations rather than retaining arbitrary request paths.",
+      "remaining_coverage": "This canonical isolated owner declaration remains; complementary genuine app journeys and explicit limits appear in owner_groups.",
+      "gap": "Genuine setup/login and Subtitles happy-path backup step-up flows exercise valid local return paths. No browser journey covers the external/encoded slash/backslash/oversized redirect matrix. App direct aliases/replay tests are redundant with these canonical security owner tests; keep the canonical declarations.",
+      "history": [
+        "3701a5eaf9c4f9bf0186796e748253ca05afbe6a Validate login redirects for CodeQL gate (#96)",
+        "2a65d92dff12ad3283f81f883685298e5b7217fb Cover gateway boundaries and expose container relay failures",
+        "07bf071d59173e98e85987bbfe0c3cff08bf94e9 Fix initial hosted CI regressions and CodeQL Go extraction"
+      ],
+      "callers": [
+        "apps/player/internal/server/auth_login.go",
+        "apps/subtitles/internal/server/auth_login.go"
+      ],
+      "production_owner": [
+        "packages/identitycore/redirects.go"
+      ],
+      "unlocked_deletion": "None."
     },
     {
       "file": "packages/identitycore/redirects_test.go",
@@ -22352,9 +22566,9 @@
       "owner_group": "identitycore",
       "body_sha256": "1f740b42dfd8ace7b45d8a2ff43208c30e73b7d62bfb660dd6f1851a8b5f09f0",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Retain the observed distinct failure or bounded projection; no new isolated tests added.",
       "validation_command": "cd packages && go test ./identitycore",
       "baseline_event": {
         "Time": "2026-10-03T10:35:27.607415-06:00",
@@ -22362,7 +22576,23 @@
         "Package": "github.com/MikeO7/kinosail/packages/identitycore",
         "Test": "TestSafeLoginReturnRejectsExternalAndAmbiguousTargets",
         "Elapsed": 0
-      }
+      },
+      "credible_failure": "Reject absolute/external, slash/backslash-encoded and fragment-obscured/oversized redirect destinations while retaining safe escaped same-origin paths and queries.",
+      "remaining_coverage": "This canonical isolated owner declaration remains; complementary genuine app journeys and explicit limits appear in owner_groups.",
+      "gap": "Genuine setup/login and Subtitles happy-path backup step-up flows exercise valid local return paths. No browser journey covers the external/encoded slash/backslash/oversized redirect matrix. App direct aliases/replay tests are redundant with these canonical security owner tests; keep the canonical declarations.",
+      "history": [
+        "3701a5eaf9c4f9bf0186796e748253ca05afbe6a Validate login redirects for CodeQL gate (#96)",
+        "2a65d92dff12ad3283f81f883685298e5b7217fb Cover gateway boundaries and expose container relay failures",
+        "07bf071d59173e98e85987bbfe0c3cff08bf94e9 Fix initial hosted CI regressions and CodeQL Go extraction"
+      ],
+      "callers": [
+        "apps/player/internal/server/auth_login.go",
+        "apps/subtitles/internal/server/auth_login.go"
+      ],
+      "production_owner": [
+        "packages/identitycore/redirects.go"
+      ],
+      "unlocked_deletion": "None."
     },
     {
       "file": "packages/identitycore/redirects_test.go",
@@ -22372,9 +22602,9 @@
       "owner_group": "identitycore",
       "body_sha256": "7b4be929c63a798ceef51b0b0f8db6717f488f9a2b65ff5e68949b74cb8b9404",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Retain the observed distinct failure or bounded projection; no new isolated tests added.",
       "validation_command": "cd packages && go test ./identitycore",
       "baseline_event": {
         "Time": "2026-10-03T10:35:27.607432-06:00",
@@ -22382,7 +22612,23 @@
         "Package": "github.com/MikeO7/kinosail/packages/identitycore",
         "Test": "TestPasskeyOfferPathEscapesValidatedDestination",
         "Elapsed": 0
-      }
+      },
+      "credible_failure": "Escape a validated local destination as one next query parameter so its own query cannot overwrite passkey-offer parameters.",
+      "remaining_coverage": "This canonical isolated owner declaration remains; complementary genuine app journeys and explicit limits appear in owner_groups.",
+      "gap": "Genuine setup/login and Subtitles happy-path backup step-up flows exercise valid local return paths. No browser journey covers the external/encoded slash/backslash/oversized redirect matrix. App direct aliases/replay tests are redundant with these canonical security owner tests; keep the canonical declarations.",
+      "history": [
+        "3701a5eaf9c4f9bf0186796e748253ca05afbe6a Validate login redirects for CodeQL gate (#96)",
+        "2a65d92dff12ad3283f81f883685298e5b7217fb Cover gateway boundaries and expose container relay failures",
+        "07bf071d59173e98e85987bbfe0c3cff08bf94e9 Fix initial hosted CI regressions and CodeQL Go extraction"
+      ],
+      "callers": [
+        "apps/player/internal/server/auth_login.go",
+        "apps/subtitles/internal/server/auth_login.go"
+      ],
+      "production_owner": [
+        "packages/identitycore/redirects.go"
+      ],
+      "unlocked_deletion": "None."
     },
     {
       "file": "packages/identitycore/session_cookie_migration_test.go",
@@ -49707,9 +49953,11 @@
     "tests_executed_by_this_agent": false,
     "additional_complete_groups": [
       "operations",
-      "serverdiscovery"
+      "serverdiscovery",
+      "home"
     ],
     "additional_reviewed_declarations": 41,
-    "additional_removals": 2
+    "additional_removals": 2,
+    "additional_subset": "identitycore redirects.go only"
   }
 }
