@@ -21147,23 +21147,48 @@
       "end_line": 33,
       "sha256": "adcabbba4e924c3df5cce2d786fbe7f3a9cedd7beb5560ac033e6f96a90325c6",
       "path": "apps/player/internal/server/profiles_storage_internal_test.go",
-      "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "decision": "D",
+      "review_status": "candidate_evidence_complete",
+      "reason": "Pure forwarding replay of the shared profile snapshot copy invariant. Canonical CloneProfiles test mutates every replayed nested field plus scopes, AAGUID and attestation; canonical Find and List/ByID owner tests preserve detached lookup/store behavior.",
+      "category": "direct_shared_owner_replay",
+      "credible_failure": "The shared deep-copy/name/cookie invariant could regress, but this forwarding replay has no independent app-owned policy; retained canonical tests catch that same important failure.",
+      "production_owner": [
+        "apps/player/internal/server/profiles_storage.go:list/byID/profileModule",
+        "packages/identitycore/profile_store.go:List/ByID",
+        "packages/identitycore/profile.go:CloneProfiles/FindProfile",
+        "packages/passkeys/credentials.go:Clone"
+      ],
+      "non_test_callers": [
+        "Settings/profile/federation/passkey state readers use detached shared ProfileStore snapshots via direct one-line list/byID adapters."
+      ],
+      "remaining_proof": [
+        {
+          "kind": "retained_canonical_isolated_keeper",
+          "path": "packages/identitycore/profile_test.go",
+          "scenario": "TestCloneProfilesDetachesMutableState"
+        },
+        {
+          "kind": "retained_canonical_isolated_keeper",
+          "path": "packages/identitycore/profile_test.go",
+          "scenario": "TestFindAndFederateProfile"
+        },
+        {
+          "kind": "retained_canonical_isolated_keeper",
+          "path": "packages/identitycore/profile_store_transaction_test.go",
+          "scenario": "TestProfileStoreRemoveAndSnapshots"
+        }
+      ],
+      "coverage_limit": "Genuine E2E does not establish detached mutable copies, arbitrary device-name or all cookie attributes. Removal consolidates identical owner proof at retained shared isolated tests, not a browser coverage equivalence claim.",
       "history": [
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
-      "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "production_or_support_deletion_unlocked": "Delete entire42LOC test file including mustProfileByID, whose only caller was removed test.",
+      "risk": "Low; direct shared forwarders and stronger exact canonical keepers. Shared identity auditor confirmed all3 profile keepers remain R.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./internal/server; go -C packages/identitycore test ./...",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "review_provenance": "Player owner read complete test/production/callers/helpers/canonical tests; shared identity owner separately confirmed keeper survival.",
+      "history_interpretation": "Introduced in initial commit;878dc2a63 subsequently changed other session declarations to call shared public-session owner, not these removed name/cookie functions. Pure replays survived prior owner extraction."
     },
     {
       "name": "TestRejectedProgressCannotEmitPlaybackAudit",
@@ -24517,24 +24542,37 @@
       "end_line": 29,
       "sha256": "49c0c1ffcd60145216d7806b96194c56fae7e0325f696a336a4ac3e9a55bd247",
       "path": "apps/player/internal/server/sessions_internal_test.go",
-      "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "decision": "D",
+      "review_status": "candidate_evidence_complete",
+      "reason": "Direct one-line CleanDeviceName replay; canonical names table covers same browser precedence, trimming/default and80-byte ceiling, including exact80 and81-byte controls. No app policy or request adapter participates.",
+      "category": "direct_shared_owner_replay",
+      "credible_failure": "The shared deep-copy/name/cookie invariant could regress, but this forwarding replay has no independent app-owned policy; retained canonical tests catch that same important failure.",
+      "production_owner": [
+        "apps/player/internal/server/session_tokens.go:cleanDeviceName",
+        "packages/identitycore/session_http.go:CleanDeviceName"
+      ],
+      "non_test_callers": [
+        "QuickConnect adapter receives cleanDeviceName; session core also calls canonical CleanDeviceName."
+      ],
+      "remaining_proof": [
+        {
+          "kind": "retained_canonical_isolated_keeper",
+          "path": "packages/identitycore/session_http_test.go",
+          "scenario": "TestSessionNormalizationNamesAndCookies"
+        }
+      ],
+      "coverage_limit": "Genuine E2E does not establish detached mutable copies, arbitrary device-name or all cookie attributes. Removal consolidates identical owner proof at retained shared isolated tests, not a browser coverage equivalence claim.",
       "history": [
         "878dc2a63d62880e6d3a5aa395ce25dd40919539 Remove retired artifacts and unused code",
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
-      "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "production_or_support_deletion_unlocked": "None; production QuickConnect/session helper callers remain.",
+      "risk": "Low; direct shared forwarders and stronger exact canonical keepers. Shared identity auditor confirmed all3 profile keepers remain R.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./internal/server; go -C packages/identitycore test ./...",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "review_provenance": "Player owner read complete test/production/callers/helpers/canonical tests; shared identity owner separately confirmed keeper survival.",
+      "history_interpretation": "Introduced in initial commit;878dc2a63 subsequently changed other session declarations to call shared public-session owner, not these removed name/cookie functions. Pure replays survived prior owner extraction."
     },
     {
       "name": "TestOutboundNetworkRejectsLinkLocalMetadataAddresses",
@@ -24717,24 +24755,42 @@
       "end_line": 161,
       "sha256": "64e19295863395d8fc995a090a685178e48502ddf7920249a43cbd048e09f1ba",
       "path": "apps/player/internal/server/sessions_internal_test.go",
-      "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "decision": "D",
+      "review_status": "candidate_evidence_complete",
+      "reason": "Direct shared SessionCookie replay of canonical standard-cookie name/Secure/HttpOnly/path/Strict attributes. Shared owner tests additionally check value/MaxAge; retained Player actual-handler sibling isolation checks app-scoped composition.",
+      "category": "direct_shared_owner_replay",
+      "credible_failure": "The shared deep-copy/name/cookie invariant could regress, but this forwarding replay has no independent app-owned policy; retained canonical tests catch that same important failure.",
+      "production_owner": [
+        "apps/player/internal/server/sessions.go:sessionCookie",
+        "packages/identitycore/session_http.go:SessionCookie"
+      ],
+      "non_test_callers": [
+        "Authentication/logout/session browser transport use sessionCookie forwarding to shared SessionCookie."
+      ],
+      "remaining_proof": [
+        {
+          "kind": "retained_canonical_isolated_keeper",
+          "path": "packages/identitycore/session_http_test.go",
+          "scenario": "TestSessionNormalizationNamesAndCookies"
+        },
+        {
+          "kind": "retained_canonical_isolated_keeper",
+          "path": "apps/player/internal/server/session_cookie_isolation_test.go",
+          "scenario": "TestBrowserSessionCookieIsolatedFromSiblingApp"
+        }
+      ],
+      "coverage_limit": "Genuine E2E does not establish detached mutable copies, arbitrary device-name or all cookie attributes. Removal consolidates identical owner proof at retained shared isolated tests, not a browser coverage equivalence claim.",
       "history": [
         "878dc2a63d62880e6d3a5aa395ce25dd40919539 Remove retired artifacts and unused code",
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
-      "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "production_or_support_deletion_unlocked": "None; cookie alias remains used by actual login/logout paths.",
+      "risk": "Low; direct shared forwarders and stronger exact canonical keepers. Shared identity auditor confirmed all3 profile keepers remain R.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./internal/server; go -C packages/identitycore test ./...",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "review_provenance": "Player owner read complete test/production/callers/helpers/canonical tests; shared identity owner separately confirmed keeper survival.",
+      "history_interpretation": "Introduced in initial commit;878dc2a63 subsequently changed other session declarations to call shared public-session owner, not these removed name/cookie functions. Pure replays survived prior owner extraction."
     },
     {
       "name": "TestPublicSessionCannotSurviveProfilePolicyRevision",
@@ -27712,6 +27768,8 @@
   "proposed_removals": [
     "TestApplicationPagesExposeSharedKeyboardShortcuts",
     "TestBrandUsesFoldedPlayLogo",
+    "TestBrowserSessionCookiesAreAlwaysHostBoundAndSecure",
+    "TestCleanDeviceNameNormalizesBrowserAgentsAndBoundsOtherNames",
     "TestDirectPlayerDoesNotRestartTheSourceSelectedByHTML",
     "TestHardwareSupportAcceptsAutomaticAndKnownBackends",
     "TestLoginReturnRejectsExternalAndAmbiguousTargets",
@@ -27726,6 +27784,7 @@
     "TestPlayerNegotiatesCodecSupportBeforeStartingAdaptivePlayback",
     "TestPlayerUsesCastIconForDevicePlayback",
     "TestProductionUITemplatesAvoidMixedGlyphIcons",
+    "TestProfileSnapshotsDoNotAliasStoredIdentityState",
     "TestStepUpReturnsToKnownOwnerPage",
     "TestUIIconSetIsCompleteAndLocal",
     "TestVersionedApplicationStylesheetIncludesSupporterStyles"
@@ -27734,6 +27793,8 @@
   "implemented_removals": [
     "TestApplicationPagesExposeSharedKeyboardShortcuts",
     "TestBrandUsesFoldedPlayLogo",
+    "TestBrowserSessionCookiesAreAlwaysHostBoundAndSecure",
+    "TestCleanDeviceNameNormalizesBrowserAgentsAndBoundsOtherNames",
     "TestDirectPlayerDoesNotRestartTheSourceSelectedByHTML",
     "TestHardwareSupportAcceptsAutomaticAndKnownBackends",
     "TestLoginReturnRejectsExternalAndAmbiguousTargets",
@@ -27748,11 +27809,12 @@
     "TestPlayerNegotiatesCodecSupportBeforeStartingAdaptivePlayback",
     "TestPlayerUsesCastIconForDevicePlayback",
     "TestProductionUITemplatesAvoidMixedGlyphIcons",
+    "TestProfileSnapshotsDoNotAliasStoredIdentityState",
     "TestStepUpReturnsToKnownOwnerPage",
     "TestUIIconSetIsCompleteAndLocal",
     "TestVersionedApplicationStylesheetIncludesSupporterStyles"
   ],
-  "removal_count": 19,
+  "removal_count": 22,
   "verification": [
     {
       "command": "gofmt -w <five touched retained Go files>",
@@ -27769,6 +27831,10 @@
     {
       "command": "gofmt -w apps/player/internal/server/download_concurrency_test.go apps/player/internal/server/downloads_types.go; git diff --check",
       "result": "passed; second batch; no child Go/E2E execution"
+    },
+    {
+      "command": "gofmt -w apps/player/internal/server/sessions_internal_test.go; git diff --check",
+      "result": "passed; shared identity replay batch; Go/E2E root serial validation pending."
     }
   ],
   "retention_examples": [
@@ -27782,8 +27848,8 @@
   ],
   "review_summary": {
     "semantic_review_complete": 122,
-    "candidate_evidence_complete": 19,
-    "inventory_only_retained_pending_semantic_review": 693,
+    "candidate_evidence_complete": 22,
+    "inventory_only_retained_pending_semantic_review": 690,
     "test_and_boundary_review_pending_full_owner": 3
   }
 }
