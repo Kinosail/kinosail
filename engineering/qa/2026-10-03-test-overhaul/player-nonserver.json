@@ -12,7 +12,7 @@
     "R": 44,
     "D": 6
   },
-  "review_mode": "Read-only semantic review; no tests or production sources edited and no new isolated tests added. Baseline/runtime evidence inherited from parent at pinned source.",
+  "review_mode": "Completed semantic review and parent-authorized five test removals in separate tooling checkout. No production/support edits, new isolated tests or new test execution; parent owns serial affected-package validation.",
   "basis": "All fifty actual test bodies read, including actual commandtest/configurationtest/servertest helper dispatch and production app/schema/storage/transport/adapters; explicit endpoint/secret/migration/rollback/cancellation boundaries contrasted with actual container/browser assertions. Naming is not the decision rule.",
   "files": [
     {
@@ -302,13 +302,13 @@
         "148cf8317def71e026d111f05ce7e802612e983c Remove legacy viewer WireGuard access",
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
-      "production_or_support_deletion_unlocked": "None; evidence-only handoff. Existing database test removed by Player owner; other candidates require owner implementation.",
+      "production_or_support_deletion_unlocked": "None; removes only this audited existing test declaration. Shared primary-owner and real CLI process keepers remain.",
       "risk": "No independent important assertion lost; remaining gap explicitly stated.",
       "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./cmd/kinosail ./internal/backup ./internal/configuration ./internal/database",
       "baseline_result": "pass (parent exact-base JSON event; no new execution by this read-only reviewer)",
       "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
       "reviewer": "tooling owner after root read-only scope transfer",
-      "removal_status": "recommendation_only_read_only_slice"
+      "removal_status": "implemented_in_tooling_owner_checkout_after_parent_transfer"
     },
     {
       "name": "TestHealthcheckUsesConfiguredAuthHost",
@@ -475,13 +475,13 @@
       "history": [
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
-      "production_or_support_deletion_unlocked": "None; evidence-only handoff. Existing database test removed by Player owner; other candidates require owner implementation.",
+      "production_or_support_deletion_unlocked": "None; removes only this audited existing test declaration. Shared primary-owner and real CLI process keepers remain.",
       "risk": "No independent important assertion lost; remaining gap explicitly stated.",
       "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./cmd/kinosail ./internal/backup ./internal/configuration ./internal/database",
       "baseline_result": "pass (parent exact-base JSON event; no new execution by this read-only reviewer)",
       "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
       "reviewer": "tooling owner after root read-only scope transfer",
-      "removal_status": "recommendation_only_read_only_slice"
+      "removal_status": "implemented_in_tooling_owner_checkout_after_parent_transfer"
     },
     {
       "name": "TestConfiguredMCPServerUsesOnlyTheDataDirectory",
@@ -507,13 +507,13 @@
       "history": [
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
-      "production_or_support_deletion_unlocked": "None; evidence-only handoff. Existing database test removed by Player owner; other candidates require owner implementation.",
+      "production_or_support_deletion_unlocked": "None; removes only this audited existing test declaration. Shared primary-owner and real CLI process keepers remain.",
       "risk": "No independent important assertion lost; remaining gap explicitly stated.",
       "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./cmd/kinosail ./internal/backup ./internal/configuration ./internal/database",
       "baseline_result": "pass (parent exact-base JSON event; no new execution by this read-only reviewer)",
       "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
       "reviewer": "tooling owner after root read-only scope transfer",
-      "removal_status": "recommendation_only_read_only_slice"
+      "removal_status": "implemented_in_tooling_owner_checkout_after_parent_transfer"
     },
     {
       "name": "TestCommandLineServesCompatibleHTTPSByDefault",
@@ -1558,13 +1558,13 @@
       "history": [
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
-      "production_or_support_deletion_unlocked": "None; evidence-only handoff. Existing database test removed by Player owner; other candidates require owner implementation.",
+      "production_or_support_deletion_unlocked": "None; removes only this audited existing test declaration. Shared primary-owner and real CLI process keepers remain.",
       "risk": "No independent important assertion lost; remaining gap explicitly stated.",
       "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./cmd/kinosail ./internal/backup ./internal/configuration ./internal/database",
       "baseline_result": "pass (parent exact-base JSON event; no new execution by this read-only reviewer)",
       "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
       "reviewer": "tooling owner after root read-only scope transfer",
-      "removal_status": "recommendation_only_read_only_slice"
+      "removal_status": "implemented_in_tooling_owner_checkout_after_parent_transfer"
     },
     {
       "name": "TestValidRemoteTokenRejectsWrongLengthAndCharacters",
@@ -1592,13 +1592,13 @@
       "history": [
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
-      "production_or_support_deletion_unlocked": "None; evidence-only handoff. Existing database test removed by Player owner; other candidates require owner implementation.",
+      "production_or_support_deletion_unlocked": "None; removes only this audited existing test declaration. Shared primary-owner and real CLI process keepers remain.",
       "risk": "No independent important assertion lost; remaining gap explicitly stated.",
       "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./cmd/kinosail ./internal/backup ./internal/configuration ./internal/database",
       "baseline_result": "pass (parent exact-base JSON event; no new execution by this read-only reviewer)",
       "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
       "reviewer": "tooling owner after root read-only scope transfer",
-      "removal_status": "recommendation_only_read_only_slice"
+      "removal_status": "implemented_in_tooling_owner_checkout_after_parent_transfer"
     },
     {
       "name": "TestSAMLMetadataConfigurationRequiresTrustedBoundedURL",
@@ -2020,14 +2020,7 @@
     "Process TLS/CLI tests execute real main with FFmpeg discovery stub and disposable data; they are not populated-browser proof.",
     "TestCLIContract and TestSharedConfigurationContract each group many existing subtests; retained boundary descriptions identify important subcases and do not endorse all contained branch-only cases as independently useful.",
     "Default YAML discovery with meaningful content has a coverage gap; removed empty-file test would not catch lost discovery.",
-    "Five additional D rows are evidence-complete recommendations, not implemented by this reviewer."
-  ],
-  "recommended_new_removals": [
-    "TestLoadConfigurationFindsDefaultFile",
-    "TestHealthCheckCoversHTTPHTTPSAndCanonicalHost",
-    "TestConfiguredMCPServerUsesOnlyTheDataDirectory",
-    "TestValidOIDCURLAllowsOnlyTrustedEndpointForms",
-    "TestValidRemoteTokenRejectsWrongLengthAndCharacters"
+    "Five additional D rows implemented after explicit parent transfer; root integrates and runs serial affected packages. Existing database D belongs to Player owner."
   ],
   "read_dependencies": [
     "packages/commandtest/{cli,entrypoint,configuration,healthcheck,mcp,transport,stdio_binding_unix,update,backup}.go",
@@ -2042,5 +2035,30 @@
     "packages/validation/validation_test.go",
     "packages/servertransport/{server,server_test}.go",
     "packages/backup/{command,behavior_test}.go"
+  ],
+  "implemented_new_removals": [
+    "TestLoadConfigurationFindsDefaultFile",
+    "TestHealthCheckCoversHTTPHTTPSAndCanonicalHost",
+    "TestConfiguredMCPServerUsesOnlyTheDataDirectory",
+    "TestValidOIDCURLAllowsOnlyTrustedEndpointForms",
+    "TestValidRemoteTokenRejectsWrongLengthAndCharacters"
+  ],
+  "verification": [
+    {
+      "command": "gofmt -w apps/player/cmd/kinosail/coverage_edges_test.go",
+      "result": "passed"
+    },
+    {
+      "command": "git diff --check",
+      "result": "passed"
+    },
+    {
+      "command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./cmd/kinosail ./internal/configuration",
+      "result": "not run here; parent serial validation owns execution"
+    },
+    {
+      "command": "GOCACHE=/tmp/kinosail-testing-go-cache make -C apps/player verify-changed BASE=876b771a7dd0aef5e65957fcee87add0312535e8",
+      "result": "run after integration source commit; parent serial validation owns execution"
+    }
   ]
 }
