@@ -21,3 +21,15 @@ assert_container_test_headers() {
   grep -qi "^content-security-policy: default-src 'self'" <<<"$headers"
   grep -qi '^x-content-type-options: nosniff' <<<"$headers"
 }
+
+expect_status() {
+  local expected="$1"
+  shift
+  local actual
+  local response_file="${media_dir:?container media directory is required}/security-response"
+  actual="$(curl --silent --insecure --output "$response_file" --write-out '%{http_code}' "$@")"
+  if [[ "$actual" != "$expected" ]]; then
+    echo "expected HTTP $expected, got $actual: $(cat "$response_file")" >&2
+    return 1
+  fi
+}

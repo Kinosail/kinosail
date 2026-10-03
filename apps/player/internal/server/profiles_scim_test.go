@@ -3,7 +3,6 @@ package server
 import (
 	"strings"
 	"testing"
-	"time"
 
 	"github.com/MikeO7/kinosail/packages/federation"
 )

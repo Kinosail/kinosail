@@ -69,6 +69,8 @@ def main():
                      "scripts/generate-test-media.sh", "scripts/test-container.sh"):
             path = root / "apps" / app / name
             receipt["inputs"][str(path.relative_to(root))] = digest(path)
+    for name in ("scripts/ci/run-populated-settings.py", "scripts/ci/test-container-transport.sh"):
+        receipt["inputs"][name] = digest(root / name)
     image = os.environ.get("KINOSAIL_TEST_IMAGE")
     engine = os.environ.get("CONTAINER_ENGINE", "docker")
     if image and engine in ("docker", "podman"):

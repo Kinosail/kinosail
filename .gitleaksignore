@@ -29,3 +29,26 @@ fea67ad8dcc24748213f8b589bac75ab8d997bf9:packages/identitycore/factor_transactio
 
 # Audit prose lists malformed-policy cases; "unknown/empty/duplicate/invalid" is not a credential.
 a2666703aca057aa4c72f597450bd90b455d6038:engineering/qa/2026-10-03-test-overhaul/subtitles-shared.json:generic-api-key:17461
+
+# Independently verified baseline source-file SHA256 digests in the historical audit packet.
+e1772de2b093e398b73e19dffff2858c7ff00472:engineering/qa/2026-10-03-test-overhaul/player-operations-tooling.json:generic-api-key:15137
+e1772de2b093e398b73e19dffff2858c7ff00472:engineering/qa/2026-10-03-test-overhaul/player-operations-tooling.json:generic-api-key:15138
+e1772de2b093e398b73e19dffff2858c7ff00472:engineering/qa/2026-10-03-test-overhaul/player-operations-tooling.json:generic-api-key:15139
+e1772de2b093e398b73e19dffff2858c7ff00472:engineering/qa/2026-10-03-test-overhaul/player-operations-tooling.json:generic-api-key:15140
+e1772de2b093e398b73e19dffff2858c7ff00472:engineering/qa/2026-10-03-test-overhaul/player-operations-tooling.json:generic-api-key:15141
+e1772de2b093e398b73e19dffff2858c7ff00472:engineering/qa/2026-10-03-test-overhaul/player-operations-tooling.json:generic-api-key:15142
+e1772de2b093e398b73e19dffff2858c7ff00472:engineering/qa/2026-10-03-test-overhaul/player-operations-tooling.json:generic-api-key:15146
+e1772de2b093e398b73e19dffff2858c7ff00472:engineering/qa/2026-10-03-test-overhaul/player-operations-tooling.json:generic-api-key:15147
+e1772de2b093e398b73e19dffff2858c7ff00472:engineering/qa/2026-10-03-test-overhaul/player-operations-tooling.json:generic-api-key:15191
+e1772de2b093e398b73e19dffff2858c7ff00472:engineering/qa/2026-10-03-test-overhaul/player-operations-tooling.json:generic-api-key:15203
+e1772de2b093e398b73e19dffff2858c7ff00472:engineering/qa/2026-10-03-test-overhaul/player-operations-tooling.json:generic-api-key:15206
+e1772de2b093e398b73e19dffff2858c7ff00472:engineering/qa/2026-10-03-test-overhaul/player-operations-tooling.json:generic-api-key:15242
+e1772de2b093e398b73e19dffff2858c7ff00472:engineering/qa/2026-10-03-test-overhaul/player-operations-tooling.json:generic-api-key:15288
+e1772de2b093e398b73e19dffff2858c7ff00472:engineering/qa/2026-10-03-test-overhaul/player-operations-tooling.json:generic-api-key:15292
+e1772de2b093e398b73e19dffff2858c7ff00472:engineering/qa/2026-10-03-test-overhaul/player-operations-tooling.json:generic-api-key:15293
+e1772de2b093e398b73e19dffff2858c7ff00472:engineering/qa/2026-10-03-test-overhaul/player-operations-tooling.json:generic-api-key:15310
+e1772de2b093e398b73e19dffff2858c7ff00472:engineering/qa/2026-10-03-test-overhaul/player-operations-tooling.json:generic-api-key:15346
+e1772de2b093e398b73e19dffff2858c7ff00472:engineering/qa/2026-10-03-test-overhaul/player-operations-tooling.json:generic-api-key:15359
+e1772de2b093e398b73e19dffff2858c7ff00472:engineering/qa/2026-10-03-test-overhaul/player-operations-tooling.json:generic-api-key:15364
+e1772de2b093e398b73e19dffff2858c7ff00472:engineering/qa/2026-10-03-test-overhaul/player-operations-tooling.json:generic-api-key:15365
+e1772de2b093e398b73e19dffff2858c7ff00472:engineering/qa/2026-10-03-test-overhaul/player-operations-tooling.json:generic-api-key:15366

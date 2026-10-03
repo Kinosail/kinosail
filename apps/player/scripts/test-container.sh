@@ -190,17 +190,6 @@ start_fresh_server() {
   start_server "$fixed_port"
 }
 
-expect_status() {
-  local expected="$1"
-  shift
-  local actual
-  actual="$(curl --silent --insecure --output "$media_dir/security-response" --write-out '%{http_code}' "$@")"
-  if [[ "$actual" != "$expected" ]]; then
-    echo "expected HTTP $expected, got $actual: $(cat "$media_dir/security-response")" >&2
-    return 1
-  fi
-}
-
 start_server
 port="${url##*:}"
 "$engine" rm --force "$container" >/dev/null
@@ -221,6 +210,11 @@ if [[ "${KINOSAIL_BROWSER_TEST:-}" == "1" ]]; then
   while IFS= read -r project; do
     start_fresh_server "$port"
     KINOSAIL_BROWSER_PROJECT="$project" KINOSAIL_E2E_URL="$url" KINOSAIL_E2E_OUTPUT_DIR="${KINOSAIL_E2E_OUTPUT_DIR:-$media_dir/playwright-results}-$project" pnpm --dir e2e test "${browser_args[@]}"
+    # Prepared-Owner journeys need fresh state after the installation journey.
+    start_fresh_server "$port"
+    KINOSAIL_BROWSER_PROJECT="$project" python3 "$repo/scripts/ci/run-populated-settings.py" \
+      --url "$url" --output "${KINOSAIL_E2E_ARTIFACT_DIR:-$media_dir/playwright-artifact}/settings-$project" \
+      -- pnpm --dir e2e test settings-discovery.spec.ts layout-audit-shell.spec.ts --grep=@smoke --workers=1
   done <<< "$browser_projects"
   exit
 fi

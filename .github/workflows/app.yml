@@ -186,6 +186,7 @@ jobs:
           path: ${{ runner.temp }}/${{ inputs.app }}-${{ matrix.runner }}-system-e2e-artifact
           retention-days: 30
           if-no-files-found: error
+          include-hidden-files: true
   browser:
     name: ${{ inputs.app }} populated browser (${{ matrix.engine }})
     if: fromJSON(inputs.plan)[inputs.app]
@@ -251,6 +252,7 @@ jobs:
           path: ${{ runner.temp }}/${{ inputs.app }}-${{ matrix.engine }}-e2e-artifact
           retention-days: 30
           if-no-files-found: error
+          include-hidden-files: true
 
   required:
     name: ${{ inputs.app }} suite complete

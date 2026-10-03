@@ -963,9 +963,9 @@
       "path": "apps/player/internal/server/api_letter_test.go",
       "decision": "R",
       "review_status": "evidence_complete",
-      "reason": "App request locale/letter mapping may place \u00c5ngstr\u00f6m in a separate English bucket or return wrong item order/count.",
+      "reason": "App request locale/letter mapping may place Ångström in a separate English bucket or return wrong item order/count.",
       "category": "app-boundary",
-      "credible_failure": "App request locale/letter mapping may place \u00c5ngstr\u00f6m in a separate English bucket or return wrong item order/count.",
+      "credible_failure": "App request locale/letter mapping may place Ångström in a separate English bucket or return wrong item order/count.",
       "production_owner": [
         "apps/player/internal/server/server.go",
         "apps/player/internal/server/home.go",
@@ -979,7 +979,7 @@
         "API library -> preferredLanguage -> BrowseLibrary"
       ],
       "remaining_proof": "Genuine app happy-path-setup.ts:124-160 exercises desktop/mobile title filtering, active-letter toggle, keyboard focus, back navigation and interrupted requests. Parent actual passed happy-path receipt at8613c7beb executes that helper. title-jump-first-paint.spec.ts:13 supplies intercepted HTML (fixture); :38 is a genuine populated Go-app page with main bundle held. Browser happy path also performs valid progress/curation, but does not block persistence, mutate returned maps, race atomic writers or inject malformed durable state.",
-      "coverage_limit": "Actual API lang=en/letter=a checks2 items exact Alpha/\u00c5ngstr\u00f6m and A count2/B bucket. Browser journey lacks accented titles or locale-switch bucket assertions.",
+      "coverage_limit": "Actual API lang=en/letter=a checks2 items exact Alpha/Ångström and A count2/B bucket. Browser journey lacks accented titles or locale-switch bucket assertions.",
       "history": [
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
@@ -1002,7 +1002,7 @@
         "API library -> preferredLanguage -> BrowseLibrary"
       ],
       "remaining_coverage": "Genuine app happy-path-setup.ts:124-160 exercises desktop/mobile title filtering, active-letter toggle, keyboard focus, back navigation and interrupted requests. Parent actual passed happy-path receipt at8613c7beb executes that helper. title-jump-first-paint.spec.ts:13 supplies intercepted HTML (fixture); :38 is a genuine populated Go-app page with main bundle held. Browser happy path also performs valid progress/curation, but does not block persistence, mutate returned maps, race atomic writers or inject malformed durable state.",
-      "coverage_gap": "Actual API lang=en/letter=a checks2 items exact Alpha/\u00c5ngstr\u00f6m and A count2/B bucket. Browser journey lacks accented titles or locale-switch bucket assertions.",
+      "coverage_gap": "Actual API lang=en/letter=a checks2 items exact Alpha/Ångström and A count2/B bucket. Browser journey lacks accented titles or locale-switch bucket assertions.",
       "reviewer": "/root/tooling",
       "body_helpers_and_owner_read": true,
       "file": "apps/player/internal/server/api_letter_test.go",
@@ -1441,9 +1441,9 @@
       "path": "apps/player/internal/server/api_owner_invariants_test.go",
       "decision": "R",
       "review_status": "evidence_complete",
-      "reason": "Profile deletion may permit deleting the last Owner or fail to revoke another removed Owner\u2019s existing sessions/API keys.",
+      "reason": "Profile deletion may permit deleting the last Owner or fail to revoke another removed Owner’s existing sessions/API keys.",
       "category": "app-boundary",
-      "credible_failure": "Profile deletion may permit deleting the last Owner or fail to revoke another removed Owner\u2019s existing sessions/API keys.",
+      "credible_failure": "Profile deletion may permit deleting the last Owner or fail to revoke another removed Owner’s existing sessions/API keys.",
       "production_owner": [
         "apps/player/internal/server/api_admin.go",
         "apps/player/internal/server/api.go",
@@ -1762,7 +1762,7 @@
         "registerProductAPI GET /api/v1/items/{id}/playback -> requestedPlaybackCapabilities before visibleItem/probe.inspect -> MediaFacts -> DecideWithAutomaticSkip(PreferCompatibleAudio=true) -> API sources/qualities; registerPlayer watch -> applyPlayback -> same plan/recipe"
       ],
       "remaining_proof": "Genuine test-instance-playback.spec.ts uses actual generated media/Go app for native seek/readiness and adaptive Auto/360p/Original choices. It does not prove a HEVC client matrix, alternate TrueHD/AC3 source choice, exact1080p source-frame-rate/bitrate ladder or malformed-hint pre-probe order. player-codec-detection.spec.ts intercepts playback API and substitutes capabilities/FakeHls; player-quality.spec.ts uses setContent+FakeHls cropped1920x804, so cannot prove backend source normalization. player-audio-policy.spec.ts fulfills synthetic audio/queue and stubs media playback. Sources fully inspected; no browser/Go execution by reviewer.",
-      "coverage_limit": "Actual authenticated Go app/tempSQLite and fake ffprobe2audioAAC/AC3 returns ENG\u00b7AAC default path and SPA\u00b7AC3/audio/1 exactsource. Probe stream indexes omitted, so ordinal projection rather than explicit nonconsecutive source-index mapping is covered. No HLS request, real audio decoding or browser alternate selection.",
+      "coverage_limit": "Actual authenticated Go app/tempSQLite and fake ffprobe2audioAAC/AC3 returns ENG·AAC default path and SPA·AC3/audio/1 exactsource. Probe stream indexes omitted, so ordinal projection rather than explicit nonconsecutive source-index mapping is covered. No HLS request, real audio decoding or browser alternate selection.",
       "history": [
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
@@ -1802,7 +1802,7 @@
         "registerProductAPI GET /api/v1/items/{id}/playback -> requestedPlaybackCapabilities before visibleItem/probe.inspect -> MediaFacts -> DecideWithAutomaticSkip(PreferCompatibleAudio=true) -> API sources/qualities; registerPlayer watch -> applyPlayback -> same plan/recipe"
       ],
       "remaining_coverage": "Genuine test-instance-playback.spec.ts uses actual generated media/Go app for native seek/readiness and adaptive Auto/360p/Original choices. It does not prove a HEVC client matrix, alternate TrueHD/AC3 source choice, exact1080p source-frame-rate/bitrate ladder or malformed-hint pre-probe order. player-codec-detection.spec.ts intercepts playback API and substitutes capabilities/FakeHls; player-quality.spec.ts uses setContent+FakeHls cropped1920x804, so cannot prove backend source normalization. player-audio-policy.spec.ts fulfills synthetic audio/queue and stubs media playback. Sources fully inspected; no browser/Go execution by reviewer.",
-      "coverage_gap": "Actual authenticated Go app/tempSQLite and fake ffprobe2audioAAC/AC3 returns ENG\u00b7AAC default path and SPA\u00b7AC3/audio/1 exactsource. Probe stream indexes omitted, so ordinal projection rather than explicit nonconsecutive source-index mapping is covered. No HLS request, real audio decoding or browser alternate selection.",
+      "coverage_gap": "Actual authenticated Go app/tempSQLite and fake ffprobe2audioAAC/AC3 returns ENG·AAC default path and SPA·AC3/audio/1 exactsource. Probe stream indexes omitted, so ordinal projection rather than explicit nonconsecutive source-index mapping is covered. No HLS request, real audio decoding or browser alternate selection.",
       "reviewer": "/root/tooling",
       "body_helpers_and_owner_read": true,
       "file": "apps/player/internal/server/api_playback_routes_test.go",
@@ -2965,7 +2965,7 @@
       "non_test_callers": [
         "registerSettings /settings/remote/kill -> KillHTTP with revokePublicAuthorization; direct test bypasses actual route/auth"
       ],
-      "remaining_proof": "packages/remoteaccess/http_test.go TestKillHTTPResultPaths/TestResetKillHTTPResultPaths retain status+redirect/error translations; reset_kill_test.go TestResetKillIsStrictAndRemovesOnlyTheKillMarker retains killed->starting and marker deletion; TestRevokeAuthorizationJoinsDurableFailures retains callback/error joining. App remote_access_security_test.go TestOwnerKillSwitchFailsPublicAccessClosedAndPersists uses actual registered route/public-session kill+restart. All are controlled integration fixtures; no equivalent browser public-ingress E2E.",
+      "remaining_proof": "packages/remoteaccess/http_test.go TestKillHTTPResultPaths/TestResetKillHTTPResultPaths retain status+redirect/error translations; packages/remoteaccess/recovery_test.go TestResetRequiresStopAndRestartsCurrentManager retains stopped/reset/restart state; actual app reset keeper separately asserts marker deletion; TestRevokeAuthorizationJoinsDurableFailures retains callback/error joining. App remote_access_security_test.go TestOwnerKillSwitchFailsPublicAccessClosedAndPersists uses actual registered route/public-session kill+restart. All are controlled integration fixtures; no equivalent browser public-ingress E2E.",
       "coverage_limit": "Direct test request is /settings/remote-access/kill whereas production registration is /settings/remote/kill; it cannot catch app registration/auth regression. No sessions, passkey challenges, QuickConnect tokens or share grants exist to verify revocation here.",
       "history": [
         "0c5276ff266da231d1eb32bedc967e360b398d82 Resume public access without restarting Server",
@@ -2985,7 +2985,7 @@
       "production_callers": [
         "registerSettings /settings/remote/kill -> KillHTTP with revokePublicAuthorization; direct test bypasses actual route/auth"
       ],
-      "remaining_coverage": "packages/remoteaccess/http_test.go TestKillHTTPResultPaths/TestResetKillHTTPResultPaths retain status+redirect/error translations; reset_kill_test.go TestResetKillIsStrictAndRemovesOnlyTheKillMarker retains killed->starting and marker deletion; TestRevokeAuthorizationJoinsDurableFailures retains callback/error joining. App remote_access_security_test.go TestOwnerKillSwitchFailsPublicAccessClosedAndPersists uses actual registered route/public-session kill+restart. All are controlled integration fixtures; no equivalent browser public-ingress E2E.",
+      "remaining_coverage": "packages/remoteaccess/http_test.go TestKillHTTPResultPaths/TestResetKillHTTPResultPaths retain status+redirect/error translations; packages/remoteaccess/recovery_test.go TestResetRequiresStopAndRestartsCurrentManager retains stopped/reset/restart state; actual app reset keeper separately asserts marker deletion; TestRevokeAuthorizationJoinsDurableFailures retains callback/error joining. App remote_access_security_test.go TestOwnerKillSwitchFailsPublicAccessClosedAndPersists uses actual registered route/public-session kill+restart. All are controlled integration fixtures; no equivalent browser public-ingress E2E.",
       "coverage_gap": "Direct test request is /settings/remote-access/kill whereas production registration is /settings/remote/kill; it cannot catch app registration/auth regression. No sessions, passkey challenges, QuickConnect tokens or share grants exist to verify revocation here.",
       "reviewer": "/root/tooling",
       "body_helpers_and_owner_read": true,
@@ -9917,7 +9917,7 @@
       "non_test_callers": [
         "showHome -> checked update status and currentViewer Owner policy"
       ],
-      "remaining_proof": "Real actual app home rendering after mock source v1.1/v1.0 Check; Owner contains Settings\u00b7Update, Viewer explicitly excludes. Genuine browser update layout has default no available fake release.",
+      "remaining_proof": "Real actual app home rendering after mock source v1.1/v1.0 Check; Owner contains Settings·Update, Viewer explicitly excludes. Genuine browser update layout has default no available fake release.",
       "coverage_limit": "Role context is injected rather than authenticated full request; release source is controlled, no external GitHub. Unique state/role HTML binding, not just canonical checker state.",
       "history": [
         "cb848a17a9d460e1dfe1e3d901e79410d1485054 Remove duplicate and unreachable test coverage",
@@ -9939,7 +9939,7 @@
       "production_callers": [
         "showHome -> checked update status and currentViewer Owner policy"
       ],
-      "remaining_coverage": "Real actual app home rendering after mock source v1.1/v1.0 Check; Owner contains Settings\u00b7Update, Viewer explicitly excludes. Genuine browser update layout has default no available fake release.",
+      "remaining_coverage": "Real actual app home rendering after mock source v1.1/v1.0 Check; Owner contains Settings·Update, Viewer explicitly excludes. Genuine browser update layout has default no available fake release.",
       "coverage_gap": "Role context is injected rather than authenticated full request; release source is controlled, no external GitHub. Unique state/role HTML binding, not just canonical checker state.",
       "reviewer": "/root/tooling",
       "body_helpers_and_owner_read": true,
@@ -15128,282 +15128,1104 @@
     ],
     "note": "Root original baseline receipt independently parsed; no new execution by tooling."
   },
-  "source_owner_hashes": {
-    "apps/player/internal/backup/backup.go": "3b8bd5de41bf2b96cde0e47398e3e669bc5dac146e2731252c5a47dee8d8d8ed",
-    "apps/player/internal/configuration/mutation.go": "8f69abff7621db077a54d844ab053ceab067b9c483392094472aeb9d864286a4",
-    "apps/player/internal/configuration/snapshot.go": "cd03f71bc67011c0c3d3875331cbf48c896c607d02f003f474fe280752b35213",
-    "apps/player/internal/configuration/trusted_https.go": "3a6f0a9d9b83aec16ad7867992b186c45ffc9deb2246bfe6a82471d00117c07a",
-    "apps/player/internal/server/actor.go": "2c3bb3fcbc90cf64f4ffa3ce72c382b1ee0e3f4e17b1e3a17993c0cb452266fd",
-    "apps/player/internal/server/api.go": "7b4467b92ee2b9d7701cd2a612a8d468619c7ea323585179fc6cf9b9cb8b9070",
-    "apps/player/internal/server/api_admin.go": "ae51f23f1318a9227b2bddf57a89c3fc8860f3146d58fe9673ce66924b421099",
-    "apps/player/internal/server/api_keys.go": "5463021a1ea395cda93f5b2d4660e53aa73ccf5965791163895e9353205533a3",
-    "apps/player/internal/server/api_openapi.json": "8e390c1a40675cc4d9ba1cf4635c1885abc120a698e64f805548c44efe664508",
-    "apps/player/internal/server/api_product.go": "69d45436a7c360154d1ecc7f87978930a92d8925d52965ab506b66ca120d368d",
-    "apps/player/internal/server/api_remote.go": "181edb8d2764901f60cf3fb1bba1b61bd22adb2848bfd28093e2f2c063755b28",
-    "apps/player/internal/server/application_init.go": "c73d16fcdecf50b247b53bc3bce972d37a1a27e3cc1c9423e01a6482f14e373e",
-    "apps/player/internal/server/assets.go": "f8b595c65ca9369db964299c12a9e149a276fb3ba8356658a52e6c4380aeb460",
-    "apps/player/internal/server/audit.go": "8d60113b3287115fbcea57272b90ecbb686dfb92ae78032d991468c13f529629",
-    "apps/player/internal/server/auth.go": "12ad5e6036361295918e3f92a5efe2452b7334d40af1a085b9de394bc09ed42f",
-    "apps/player/internal/server/auth_remote_routes.go": "870fd61b022d1fb5a327d977fdaae42f4889ceebbbf225e3366123a7fb1802bf",
-    "apps/player/internal/server/backup_manager.go": "6e5e659570202995727019ab5fb3f385a3ff83eaf9a5ffeff756fdb263e5a98c",
-    "apps/player/internal/server/browse.go": "a13ebeb8994d5e39e721c390a2f2e92f7ca2391b9065f9a35061a27ab60d8c2d",
-    "apps/player/internal/server/cache_file.go": "66e521bd9e690f01af7de6d91ec8c9ce35e19616da191a3f09bb4601ed21efa3",
-    "apps/player/internal/server/collection.go": "be25688630a10451c23690846bda1b218217359ef1465d342c8e73e50d1873f5",
-    "apps/player/internal/server/database.go": "b47891177a704b358004ea32c6a45b96c4041b099affa3e2090574718f9a3625",
-    "apps/player/internal/server/dlna.go": "83251da88a3f692340bbb3cc212a0bcfe637b925d829149f6c537f46e7527115",
-    "apps/player/internal/server/downloads.go": "e6ee3d293002467f7efdee538e65d36b0b0a371deddba09996d0187f7aa1bf77",
-    "apps/player/internal/server/external_json.go": "b5a7a55962f96f74a76b46f7985903dfd892eead801093ed9cca9986fa8b5006",
-    "apps/player/internal/server/hardware.go": "0f50e6d9d38881b351a810d62322b024049608f7f566b0e8bad88ca8f3d10ef8",
-    "apps/player/internal/server/hls.go": "1857ba4fe16f248ab86ff2917403595adcf28b584c9df62d52b019a9ea9c2dea",
-    "apps/player/internal/server/hls_plan.go": "5fd624d3a31117e0741d2f47859d077a1f91e85a48d98e3496be83472c52399d",
-    "apps/player/internal/server/home.go": "ae00ea4bc4e89865b1052c9ecca788419235f9532342932b7bdf345c8e8f9961",
-    "apps/player/internal/server/home_assistant.go": "c385cc6f3036682181a157ac7267e9fe972e940f59a71101474e44d5ad4605e6",
-    "apps/player/internal/server/jellyfin_playback.go": "a2695a2156921c4950a1bd86b98d9e24529725b94e41030668358111a1b61242",
-    "apps/player/internal/server/lists.go": "75c25821b041d7f37b9a3525f1cbc034c3867db2c0fb47a0b4c7628fa9aae406",
-    "apps/player/internal/server/maintenance.go": "39dd6666dc63b8bab455869e66155fa33bf4c148493256a49456768150bbd28a",
-    "apps/player/internal/server/mcp.go": "6599b44ff27a7917ffce7011b6a50c1ad4ea331711d319f8755e2e5eac3c9936",
-    "apps/player/internal/server/mcp_connections.go": "8dab960bdd96caacfe2d40edb01aa4f50254eb31bafa3fe3a68ed0f191bfa098",
-    "apps/player/internal/server/mcp_connections_authorize.go": "dd7bc5d3c9ca757546fa0d50de11bb8445343d1c480b26119160899ef3db9f40",
-    "apps/player/internal/server/mcp_connections_http.go": "68dcd9081daae0d8c22b643b2da6d7d3bb6e217716afa6bbcc4bae951a75cf1f",
-    "apps/player/internal/server/mcp_route_policy.go": "e6f6918b3075bb6ac674cc23fa84b39bd96a0807623482685073c4b8335a7a9b",
-    "apps/player/internal/server/mcp_stdio.go": "c6809d6d992f642eb6ca22f1eaaaade58003534d4bbf28c298e01e4603f79d1d",
-    "apps/player/internal/server/metadata_artwork.go": "b46b02f0c3f69711a15a664c233b2c0271dc4af2e6f266d8cecbb6aea57a5f1a",
-    "apps/player/internal/server/metadata_bulk.go": "8c96d2d30ac32cfc0b83723fe637c233ee30ab19a314edee7bcc4fdba2746564",
-    "apps/player/internal/server/metadata_provider.go": "092f201cc4b5fbde1de23f02a1da98d5e86da05c9247eeded96031f049c0b613",
-    "apps/player/internal/server/metadata_provider_tmdb.go": "f541fb3038b4358096e47935bfbd534db5193b03b839cce81eed2941e1c1db89",
-    "apps/player/internal/server/navigation_shell.go": "79559a75ec02638409426b6da8f0d0bb174101d1fd99e288ad2e1c20c70fd330",
-    "apps/player/internal/server/notification.go": "e31c05059b11575e9bffa51ccb7457d4cf0c0eb8e97890ac051165da703f2329",
-    "apps/player/internal/server/observability.go": "09456eb8ab431e8f6c9f633f0a494b971ac447023677cadf63e63a9db69922b6",
-    "apps/player/internal/server/observability_context.go": "b1b54e49dc60ea547582293c20746bc93359a9c52ba15d2838395ef7158c4d4c",
-    "apps/player/internal/server/oidc.go": "27fa5dec3a8acaeb4a48e72782b74764dd657d48096ef33a90190013100f8a8a",
-    "apps/player/internal/server/operations.go": "f8f3759875f9ac5a718462d29a73c210c0acc06dab9ac36cffb2ab929fdc3260",
-    "apps/player/internal/server/playback_http.go": "8f0bd22a0307db65951c8ed0363f3e8610196dee53fd789bcacfa6b3e0639149",
-    "apps/player/internal/server/playback_plan.go": "bd0a4694f23227b437fbfbe864835741c4310a5d70c45e4f6c3c128e455060b2",
-    "apps/player/internal/server/playback_timeline.go": "fd19e2c2302b608ff620cdf465259543aa8e85cf75a573758a25934b538c9bdc",
-    "apps/player/internal/server/player.go": "fd89cfdcf72e68068e635cf3b5f1c98ef3e3a9697d7446808c7b3e6b4a866e0f",
-    "apps/player/internal/server/player_playback.go": "d6e8dd96b3cdfffdae72e50a149d5cb1c11765701c889bf51cb03257cbab3ab8",
-    "apps/player/internal/server/probe.go": "c94cc73b573241b448ebbede8925ea3fba8a7fa24b91244082f711e6d7ed7204",
-    "apps/player/internal/server/probe_enrichment.go": "c3cef40a175eec48ce71abee821d97cffd043647851b58b4b24e17ef131e89aa",
-    "apps/player/internal/server/probe_inspect.go": "5117f9030cffb117fc69ec504408baac621bab499d8ef8d2ed56492ad493a961",
-    "apps/player/internal/server/profiles.go": "78caaca0b831d36b9a6f5c26467427171e8ca80afc528ef6879dc9a6f155dd3f",
-    "apps/player/internal/server/profiles_http.go": "4cc0cb686af99bacce7028c7f00abe1e7686dba8097b2649f074c82a90755991",
-    "apps/player/internal/server/profiles_storage.go": "68d01850ff87bf92a67a96eeda578a7d0c256b2899ae541aaeafc158103b4a54",
-    "apps/player/internal/server/profiles_token.go": "bc4b2a7b44a52dc36316395ad17c6cdc89505341f5b6a0fded3bfba37e0ea38d",
-    "apps/player/internal/server/progress.go": "97ef8f71b1e093ff2a0d53eda7702442d5e3a6752505c017b2d6e40cd3019345",
-    "apps/player/internal/server/remote_login.go": "308998732cae35d2d6f401009a9179184a11f8147b14109279f872b4f425518a",
-    "apps/player/internal/server/scim_adapter.go": "15606b8669beeec95f739dbd5f3014389c911312cc9296a18b133d37c8da1f64",
-    "apps/player/internal/server/security.go": "c812000aac81ad4a9182aadc0e899b64864e0817dd4db4b8cd10fb964d976d34",
-    "apps/player/internal/server/server.go": "e793d497405e2b2e14a5139208c69ecfaaa6b7a81c3083a2649aa7f86bf40efd",
-    "apps/player/internal/server/server_health.go": "9871afa70e03aa9391c5dfbc953cabbeb634c038cf2f2ccd2e2e702ff7d8dbc3",
-    "apps/player/internal/server/server_startup.go": "02d3f247ed14d629cdbb93d434a957567d0abe7921eb161257958c9aa3e101a1",
-    "apps/player/internal/server/sessions.go": "e834682e74b426b6cac3829e00411cc99fd15b97d069cd72773c8e3d1aa1b37a",
-    "apps/player/internal/server/settings.go": "01048923d8996e95fad572356149ff9afe9b5ac8f13740ce91e7932045ceb8e7",
-    "apps/player/internal/server/settings_actions.go": "83b61482527811efbd819c88d5705da796c2c250924789c5f1b68bd3f1b4fddb",
-    "apps/player/internal/server/settings_configuration.go": "5101d73aed043f7d264ba0a1dcb5f60019c14700fc27266135f69e287b7b5536",
-    "apps/player/internal/server/settings_configuration_api.go": "650ea70383d39a46234eddd854445d61a1f6f61a6d1d8c1b4b092c66a55a7db9",
-    "apps/player/internal/server/settings_connection_http.go": "56fa0e82cd9a8c23325005bb17ddde4e4d3627ebe185fcca5b6dc62683b6422a",
-    "apps/player/internal/server/settings_dlna_http.go": "70d899a4798246c87fb8a74a23bb46c3344cb8bfd76b18d5f5ad4049bbfc4f9f",
-    "apps/player/internal/server/settings_dlna_token.go": "975b70dfe30a080c617b16679a064ec0a805884d72589d2afab9660a10f5f4b8",
-    "apps/player/internal/server/settings_http.go": "8be3becd44d99c36aa68e438edce2e6c638fdc5e9c17a7720300c6a40df425a9",
-    "apps/player/internal/server/settings_library.go": "652fecfbb146a30895bd76dd19f5702e3d116cb9bc7abcfd41c51f967a3494a7",
-    "apps/player/internal/server/settings_library_commit.go": "86361b249a290e18aac8326ba5d95864f49eac8ab75e063992b173e92de8d61d",
-    "apps/player/internal/server/settings_library_http.go": "e1cc0ed3a7825c214519bffbf3b43d180bfe699f206a6f5875e1ba35aadf59a3",
-    "apps/player/internal/server/settings_library_operations.go": "c5a8a5faf5e735485d214f68bd6111fadfbaccd66dc4dba295b8d3b47e1d79c5",
-    "apps/player/internal/server/settings_library_state.go": "9deeeeb9b48c05e1541460b5460a04ea43777c9a728bcc61017e0911c6ba20ca",
-    "apps/player/internal/server/settings_library_update.go": "067d362f9f4165232cae6f5db5812fbd72808c35d5d3141996881a063c5bb6cd",
-    "apps/player/internal/server/settings_saml_configuration.go": "4f50f1c8c54bb4e0e6123ae97ec96292e02c0668528eddf94a57d852925a87c3",
-    "apps/player/internal/server/settings_saml_http.go": "96510ff6fe68330987be1e96224ade0973881fb8d4a2fa7fd9b10b52213f7607",
-    "apps/player/internal/server/settings_saml_status.go": "79b2e46e869137236f09fbec694a383dc192aa199435f3c2c8f223142f2389ac",
-    "apps/player/internal/server/settings_saml_storage.go": "0b04cafa254ba4729ccd977cf2d9e10b31e53fb7212ff6a2f7b82b30d2e6a742",
-    "apps/player/internal/server/settings_saml_view.go": "5cb240e32b63cd49ab3755976c1664b1a47f926e4dc7d6fcdc9159ee8e9016c8",
-    "apps/player/internal/server/settings_scans.go": "93423341dcd28d9044385ffde01516c4598a238ac221b1f11fbd92e36dee68cf",
-    "apps/player/internal/server/settings_scim_configuration.go": "98461ad20af7dec65a595499fc6ebeedef91b0876146d34afa291c17d946a9cb",
-    "apps/player/internal/server/settings_scim_contract.go": "28e84d76845c8b72fce8c81c69918677c53146887147885f1874dbf479959dc1",
-    "apps/player/internal/server/settings_scim_http.go": "6df85c008c2703629de3a0319d256ef96bef91c47f3abd1bbe6531f6c8463d6c",
-    "apps/player/internal/server/settings_scim_storage.go": "1deb70929164cfe8200e881ef4404803f28334445d26f11bcd11be71fb4f7402",
-    "apps/player/internal/server/settings_tmdb_configuration.go": "6b76c221b4386843d4ccfb2737467ad472aa26b4435d8a9ac9007b696e6acbdd",
-    "apps/player/internal/server/settings_trusted_https.go": "796e0ebf1fdde763a8229a8e6313e9dac4bbc7b8873e439a913dd7859c1cb643",
-    "apps/player/internal/server/settings_trusted_https_http.go": "46e853b1aa7d41a77be020a15e82758f61975dc4d455e1afac869e850dc3784f",
-    "apps/player/internal/server/show.go": "2edf91b5be578efd74118e8dfdc8e5f5ab12f065f2f05c1664466b2f2f57f2a0",
-    "apps/player/internal/server/state.go": "1a256340559830ecfeb5410f6059e0a7c1153282e608ab629b16b1bd36f6e647",
-    "apps/player/internal/server/static/supporter-plans.js": "6ca731f33893eedbcf26af3e41aec25d974f2163ea180c86614e4bec09aca8c9",
-    "apps/player/internal/server/static/supporter.js": "dc8e9d330fd6ea1ccd999b8120c5c4c0f44521a24119698a7a2c38e7edea5486",
-    "apps/player/internal/server/supporter.go": "af1991ed0257ef9e38b74470be4a3c87565a33b72f031c6655fd04e823c65a7e",
-    "apps/player/internal/server/supporter_certificate.go": "ce239c9940b93b0892d60c730728bc67ac3fbbb217ec1992f0236cb4229619b0",
-    "apps/player/internal/server/supporter_collection.go": "ced21e47f8752372832c94e92a81deee33c21d1ca7f9ceaf78e4f44716ae447c",
-    "apps/player/internal/server/supporter_display.go": "5c365d9a25c5e5590027ccb28466d57f6af409c7c4428f4703f32ea8a13a31d9",
-    "apps/player/internal/server/supporter_editions.go": "e3d0d2615b01dff392a00c397181e0e62228b43ff7cd622d787c9ea27bde2773",
-    "apps/player/internal/server/supporter_http.go": "a0b4439ff103edb3d5cc052a23d3050d14c6552b62d23b5992a024f48b126869",
-    "apps/player/internal/server/supporter_template.go": "9ad9f9acafab434f3aff11e5c0647b41e05af7f4b978df6db2076552ff8963fc",
-    "apps/player/internal/server/system_http.go": "da973f1228bf022fed082914b4ce7c4a12647ce31fb84ddcecd6615270a81409",
-    "apps/player/internal/server/transcoder_selection.go": "be3d862e6543d72118bdf28531dff8c0637da7bc6ef5ece93033c2a771d0517c",
-    "apps/player/internal/server/updates.go": "8c532629cc7aba3b9778b69130c628cc7dcc7a0e44539b892a29c2b1e0f4d64b",
-    "apps/player/internal/server/updates_http.go": "473f1f47af4d515a4bbe9fb603bbf407321a8b9ac007bc39c7f94df58ea5c15d",
-    "packages/apihttp/api.go": "f05490fe07b39658ea4980bd42bc2d9536cea2066ec1de7b04d3eaa08b6c3773",
-    "packages/apihttp/save.go": "0cf12bc6792200e5f2c62129cc17a1a5e6648919c278edfec555392419e8346c",
-    "packages/appcli/application.go": "450a5f252f7db3bd73631958b4f0892d7d73d10701a22df518a1d84b294b8559",
-    "packages/appcli/command.go": "7fe17d09c2136709b4372191cc9ff941f94e3aafd29d15ca9c34c81d9f4f8f6f",
-    "packages/auditjournal/classification.go": "a8c7e742f88f108735ac7ef6a2066221fdf81fad7ff3e1f63bc775c8c56e4d71",
-    "packages/auditjournal/classification_dynamic.go": "9dea89a2ed12a2a54eb921dab72ef93205840f7f0818db29d7be83bb3ea6be0a",
-    "packages/auditjournal/http.go": "2fea7f4d00924bdd34cff1d0df029705130a8beeb8d3eef38d8b94be925c5a5b",
-    "packages/auditjournal/http_views.go": "5f8c44d5b53f293b5c0b4aac25a6bce4f0fc6eaebdccdc6005190ca3d00351a6",
-    "packages/auditjournal/journal.go": "2643e269a86dbfb63d230ac346f48efabef15caa2c945f1a523750860df7c924",
-    "packages/auditjournal/load.go": "be4c2e510db4bb9852070c2a68ae8e5acb57052e27971cda9464a30b3feb3119",
-    "packages/auditjournal/notification.go": "b44b7ff8a585c86fa7750fdf012a951fce4d9618f200080676d706adf291a704",
-    "packages/auditjournal/storage.go": "67bb5502cbf59425e0f17370dac0e394215c4338adb54a86c7b7e72f1d0ca4d5",
-    "packages/backup/encrypted.go": "438b36c94301adebb021fd8e039bbed9f50c2acc70aaa0bdf8bb5213e5367965",
-    "packages/backup/manager.go": "b3c37c779d8b9dd4a61d5af210beb34ed29aaa4d03f244fa05a2c01cfb97a4a8",
-    "packages/backup/manager_write.go": "9ad68403ca31e310dbb55cb6b1f9140e04f4d6e2a0edd182e40051f9a48ba4ec",
-    "packages/catalog/browse.go": "5f32935c388ddc040fa4069ce352e1b50bad55d329fa5978b0ff9796ee2575af",
-    "packages/catalog/collection_operations.go": "238480419f85098edcdbd78c85b5f93b5e7e11aa5127ce56cd805fd2d94e18ba",
-    "packages/catalog/collection_summary.go": "9572f7ef3572cde4e09e231714a89016d2bfd877bfdfcc8ef0a7a0828e1a0e08",
-    "packages/catalog/collections_http.go": "8882b3b93abd04e344e40785e65c5ccf2e9359cfc157ef60ecb081e946f84cbb",
-    "packages/catalog/index.go": "ce9955e333e052c2b79d1e46a3069dec1cf4418168ea6962d9e4acb8d7d499a6",
-    "packages/catalog/index_order.go": "7831e51ab5a5d886335b05f360df95f3879ee59b569d68a9fbc958e25fafbea1",
-    "packages/catalog/list_operations.go": "deb05696fb2162cd572aee8f5c940d9dc0b0837b0f759b0028232aed3616ecb1",
-    "packages/catalog/lists.go": "8d2084e310367ecb904ce3b46309de095a60d138483769705c84fa07724eb517",
-    "packages/catalog/progress.go": "230cdb3df22e861de420cfd32a624a34adbcfc4990c021d86cf3208495ac7b48",
-    "packages/catalog/progress_change.go": "d9fcb85059e5d212f98b24f21c1b7d3e472e3e43a4403a9426aa5125e83237d1",
-    "packages/catalog/progress_request_store.go": "9ef6b1f13dfa797a738ac6381d1f0f571cd219026673cd82d0c3adbcc8a36ea9",
-    "packages/catalog/scan.go": "d90c8275262ff8a0161543beec5ac74c8a6c9f54de06fcfdc0985b4aecf0c0e6",
-    "packages/catalog/watch.go": "7544aced4e4857703fccb88751d5a5e0fb80e84d2001cc6c4668de5ac032b76d",
-    "packages/catalog/watch_events.go": "17790d6e528ff90d73957052c5d93e1aa1ee491549cd7c6d47551dd9a3e45cf7",
-    "packages/catalogapi/actor.go": "a05534c8b14d8c6a4d35c37144a45030f424762fbd346631c4a89e53b20ca8ee",
-    "packages/catalogapi/progress_store.go": "5038d46c2443d616bf80ed7e55a9e734e86860944f9c6e4d60062d65b7c31807",
-    "packages/catalogapi/projection.go": "9ac3bafc847618b27f1d26ab43a31284883daf429c660c14f5a979f624c94d5d",
-    "packages/configurationcore/trusted_https.go": "afd8a5b4c6a160562fb62c8dd55be58ded3cce5f2e2e613abb9a8aca0c74c31d",
-    "packages/dlna/dlna.go": "58ef8e5563092a15f3d64f90096cba9e16468867932ef9700fbc7a8ebff5f05f",
-    "packages/documentdb/documentdb.go": "a87bfb12de18a8cf214b0e90a0a827673a3eaa5f41fbe15f214122df4b83b3e3",
-    "packages/downloads/state.go": "86f638d5d432990f0f60bd28f2aadf50e0e6053b5090c9a4e6c74e989570bc88",
-    "packages/federation/configuration/configuration.go": "0706052dba443e484cd38d9b596d9d12fefd1299f94fdedfa2226d52f71aed7c",
-    "packages/federation/configuration/configuration_html.go": "d4b00082dc18210280a85f5870266f72f66a9eb931d5c5d80c5693f85ac688d0",
-    "packages/federation/oidc.go": "0cd13c4f0bc0c7326c5e415ff10810af4d67586e1497d7aad01e3dc0adfe589a",
-    "packages/federation/oidc_http.go": "a8f7f15ed9aae03eb539488e7e9f657f93073422402b63f2b7569448058aaa89",
-    "packages/federation/settings.go": "8677891096355c24ec0bcf7f23d15c8aa246c0bbbfd08097e3502d108170d30b",
-    "packages/home/handler.go": "4a866d2ef6736cd3aa25c264ba3112ff438f070d7f134a0525d9ba5d2669b824",
-    "packages/home/projection.go": "1c43989d44f5c7b523a3d72268e0c429111df8f8e401f38b0924c864aae424f4",
-    "packages/homeassistant/discovery.go": "7f03f7f0e056c248fc1c06069343243d4a644106afd1882457b77268a138b7a6",
-    "packages/homeassistant/http.go": "803124e3a4b4f54b3105dc09d6bc90f524f8bb0626eee0bfc561453e03be059a",
-    "packages/homeassistant/integration.go": "a77a8b85a5daceda142900390bb8146c7af33a5328bc072e86d86a71a56ce2b0",
-    "packages/homeassistant/oauth.go": "43e332c6bdae7438c00e27b206ce6def986fc31393ddf13602173a4012f5a14e",
-    "packages/homeassistant/pairing.go": "db24ae5b68654cd80a84e094dab0e4df880a9caac61124b6347238d06bed9d75",
-    "packages/homeassistant/player.go": "9cd2867052ccf2b6a3dfb240c3c9542c3e3ee77dabaae70f5a6b18ef7cc64374",
-    "packages/httpguard/json.go": "3bcbe81d3bf0332daced48b75e340695881927428e764b5bb36b57e6fccd58c7",
-    "packages/identitycore/access.go": "ed87edc366e503d38f9935b1f7017c7e5fb73fbd8eeffcc8158de21fc11525de",
-    "packages/identitycore/api_keys.go": "5fbb835a3009e9a8e81740ab23765f90de17b0e969a2f959c8b98bfb578c1cec",
-    "packages/identitycore/profile.go": "3265ddca470c7a66044813adaf752ec45e14a766993205f768f8e3d2ce8e8c91",
-    "packages/identitycore/profile_store.go": "a066c727250040c940c55ee2253ef9382c447ea02e6bc3fa26d71939a8c7e8c4",
-    "packages/identitycore/public_routes.go": "e35b202340d5880a2f02b71ac06b633d04e9d408002eff55fdb63c6a35881802",
-    "packages/identitycore/session_requests.go": "e45923f7f385b713108afcba99a978f8ced573ff57be45994986b3bd5d7423d2",
-    "packages/jellyfincompat/delivery_http.go": "0550fbe2efdf82edb98deeb1d2b3d1e6d4aaf777ca7086570853ef9d3f3dd2f8",
-    "packages/library/metadata.go": "205d5ef78ac6ac6472408b202d9a89bcce8a1cfdbecf7f0e9fd01e1f853c403a",
-    "packages/maintenance/maintenance.go": "e57d9c9fa5f18b29bf5438492301ccfcd9ff601f30e9fb92229c4d4363bc2000",
-    "packages/maintenance/status.go": "4763cce7c4ad4f50529ab1d237c4c298153b50329446f07f14fc9da42ca1e074",
-    "packages/mcpgateway/application.go": "a6c5a5c0353fa3148eb86153bf501f57e655b1563d790b1f37691339cc20e9f9",
-    "packages/mcpgateway/application_connections_projection.go": "cd7ad415793dd457b1c30c591d6b5f3bbe65a608b9006de873cdb4731fc98676",
-    "packages/mcpgateway/application_profile_state.go": "04d6c2d7e01629219a84e691618327c78cc34deee2e649b9ccc99ba97e77dc9a",
-    "packages/mcpgateway/application_state.go": "89c8fbef62b5ed2ce534b29a67d2aeea0a7c614982138a0c025e7efd5c503e0b",
-    "packages/mcpgateway/connections.go": "e078ace06d4ab3cb2953dc06fa8f88e49636262326a40cd9ee67f1e152eb7bd1",
-    "packages/mcpgateway/connections_authorize.go": "183930ef4ba2b2841a66c1114795e4e7c4ca68ff44c77a3b5eb82455612ea109",
-    "packages/mcpgateway/connections_registration.go": "16abfe5666fa62f4d894f2da31f10d378f9251e75596830e86e65595cc751822",
-    "packages/mcpgateway/connections_store.go": "76456685645c83b79f5b8d814471d9180ba0879865b0834d8da3188b1ac4b6a9",
-    "packages/mcpgateway/connections_tokens.go": "cd019f220304f2c3de4b10ede772611c2ec314f6d8b1bd139d769e292953573b",
-    "packages/mcpgateway/gateway.go": "2d07f9ad36b1c7d8f304e899336b54669187c8283cb1f1dd560e50081bde2db8",
-    "packages/mcpgateway/helpers.go": "c9090d7ae4f2628e4d4af22586573ccd506e51579bc6d4e02a0171f1b7aba08f",
-    "packages/mcpgateway/introspection.go": "95752619a4ede1764fd4e48f2e13fbc5a9808a39c89f451849aaf1ef6068d902",
-    "packages/mcpgateway/protocol.go": "607adc14a28fa652e2a7da829a7a9f1496a35ed5abb5a8ec0ea03ef1f0c3b7a4",
-    "packages/mcpgateway/recorder.go": "8bafebea0951aaec9dff598dfd071bc9b976feff465ba95a4ef321d9413cb4b5",
-    "packages/mcpgateway/stdio.go": "872d89f144eb58cc2729c7ca85c0392c1159deed925ea77349f053e964b6f44b",
-    "packages/mcpgateway/stdio_binding_unix.go": "e10bdec9a336e7e11cf518beb378c64df5a7f8ddfa2ca9c7d7e0845adacbb526",
-    "packages/mcpgateway/stdio_command_unix.go": "2fbac346189d157db4df9662028fd41aa7a059c545e043ee6952a0bc702c45c6",
-    "packages/mcpgateway/tools.go": "285584d7fedf36719fd77af4359f762f4720af222007b86a3e20008c82811252",
-    "packages/mcpgateway/types.go": "22f5f499bea81ee616375a5e80e12deec169cfab63a6342626756c95b28659b8",
-    "packages/mediaprobe/cache.go": "1b7ad4fc85bccd01e24a6d02c0a712a43316008a1715987ddb7f7b4f6aa9ef6b",
-    "packages/mediaprobe/command.go": "29946e532809b800ae840898501afb0a70f13b379586e543687f2985a030ff89",
-    "packages/mediaprobe/facts.go": "303fc592b29a39d320a5c4cdc33e59c0815368764341f3da029dbea8d39de50c",
-    "packages/mediaprobe/parse.go": "24ec8808ec707f7f607e35f83d95f48ea4b592566341f5d366321d79ef4d6df8",
-    "packages/mediaprobe/probe.go": "4838829c8540096c42548c0a239648e57950a84c7c6009cbaae69a5459360044",
-    "packages/metadata/artwork_cache.go": "d54e66c4e1738a5607aa1238ca5bc5c425b8548d14e2d6b38eb87fbc80024987",
-    "packages/metadata/bulk_editor.go": "936dcbaa5aabbf9b72391ea72d0f4a9e0080d6e463160f431bc947bef0f44e4f",
-    "packages/metadata/bulk_editor_http.go": "d01d197ec7831709b0efcc12c6c0e8a41bd5011c04e25dd6658ac34ddf3c4674",
-    "packages/metadata/config.go": "3debc1f742f820f7c62c638f140ac8f4f90bd5c5f72550d651e4b220c5695df4",
-    "packages/metadata/network.go": "806c734fdc98a229d709095fc930dc226d2f4347da5a0f13d021c3bbd2ce5ded",
-    "packages/metadata/provider_http.go": "d61c5e0d2b3c5b7e96e4565dcf6368f2f0f30f1572ce1c443c31ac8cd0eab8a3",
-    "packages/metadata/record.go": "32878a828e9fc526781afd077f58bdf57af641024fe3c22e5babbb34a9e686e3",
-    "packages/metadata/refresh_http.go": "f0f9ae6987edceda1a7894ba8eb6dd6cd809f1cb4cc300c1f142a0668bdd2c9e",
-    "packages/metadata/schedule.go": "f29850fda2bccd29279b1488ebe093f59e8ebd09351cf2e4ebe897ded42d9367",
-    "packages/metadata/tmdb.go": "c40d66e0e52dcd616ebad38c709a75c2210466389828bf3cfd9668ff55487f0e",
-    "packages/metadata/tmdb_cache.go": "97a2cdd8425d60c0e0bb83d67d973d1f11ef78bedb6f26805abbab050713b43f",
-    "packages/metadata/tmdb_details.go": "616fedef068420db229238f805da5fdd221cdaaeff8019d6f5eb5b1ff6e150c6",
-    "packages/metadata/tmdb_fetch.go": "04cc0ae79856469870a3ca2cc613cc610ef895372bc28db32338bd1019f69d81",
-    "packages/metadata/tmdb_search.go": "a380bd0856deaeaa2cbe0543300f88cd0fc4bc5c8e28ee2497803e4b48f2cd3d",
-    "packages/metadata/tvmaze.go": "d74343266bb6010a61812e85b5ae1413610904364deffd121750c12c63dedfca",
-    "packages/operations/binding.go": "61569a46008b50d7b3418cb95be296d552caeaae5c2ac2de9b2184204e8cad50",
-    "packages/operations/http.go": "a7a5957b999b460ede6d1ba3caaada8f8bc1135c43d58f0a10d35d894b993f70",
-    "packages/operations/metadata.go": "daaef8c42bb6154a60bb821cfd06020daef111b0d2579b9e1b033eca35116bd1",
-    "packages/operations/model.go": "b17b8020322e764e214ffa219eb21bc981769db29a77fcc5a6ac8a25b666ce4b",
-    "packages/operations/system_http.go": "14384f886124d87a1eadd44848808b4c9ba22fbb43a944c1ca9e7da536c9befd",
-    "packages/passkeys/credentials.go": "2ed4c25b2597c3c3494e6d3785ac9d6db1fc97eceb1282c6274a924acce0e2ce",
-    "packages/playback/client_constraints.go": "b327d532c37eb99a6fe57f76de488749dcdcf8c05ef1b49f446470c32e0975d5",
-    "packages/playback/display_capabilities.go": "2ce7c23ab747032ecfc4de7df6ab641d4f33601906954371e073c518c9efaabc",
-    "packages/playback/hls_cache.go": "36e33c4b742f655aca19a6e694cfbc9c7d2324f4b3c9b84fce31f6cf35fbb89f",
-    "packages/playback/hls_paths.go": "2a3e682881ec8de808eae302497b3df443fd5de4d263f5c82027afb12be5d909",
-    "packages/playback/hls_recipe.go": "7909064b7e3360f33a0f546378a08e646eb23ee4db5544660903d27e01a05a4c",
-    "packages/playback/http.go": "265ebf64f672b3459a015b5eb9a9575b1dda1a2ab751184392ad4159b88f50b2",
-    "packages/playback/model.go": "cf350c1718fc3c1084278e0ab6797e3ff410c3f0b69f7be3e32934a64d8814f4",
-    "packages/playback/plan.go": "781272642cfe5755f206af94d6e2f433e116218ab2936fe62050d69e3ca65f0b",
-    "packages/playback/qualities.go": "9302d2d619da6ae7d08108e2ed5f8a20a393ea043d23eced8967dd73c89ea2c5",
-    "packages/playback/video_geometry.go": "c1ac738ff5f0ddb4f124379b100efc696b1d0fa467a35dc882b1a93701afe6e6",
-    "packages/privatefile/privatefile.go": "b2a5a92d0e91bf4509c6d5fb9d5bd3b6fcf8b44231ed9e68c3b820e6145659d6",
-    "packages/remoteaccess/http.go": "a0adb97b3c2ddb55dbdb5cc0bbc8c286a300865908536631c07297a3405e4f93",
-    "packages/remoteaccess/remoteaccess.go": "e2f6454a1edcbb3f32905d7618576e51dd54d78f84677637f23bb7eb5aaa9f4d",
-    "packages/routeinventory/inventory.go": "37455b18d1ee34081741a257c019d5e98e1286dca2d586e60493e9705821cd12",
-    "packages/scim/app/configuration.go": "118c258c74fc5819841897e5650a2281ae7d897bf1e8143b679ea63e643f9e30",
-    "packages/scim/routes.go": "eacaa37e061f370b2a1ce0e736ae46c5ec2e37f50c33f73f0e8014b1c4eb6b7d",
-    "packages/scim/scim.go": "d5b3ee2afad4ea893d91da8c5b4692d516582a7a0d0ae0aa9d313ad703b4ea4d",
-    "packages/servertest/api_boundaries.go": "29647532afa8f0de64d8cd1badd7b904fd95dd1d1a6519111c15db6e1e9a614b",
-    "packages/servertest/api_parity_lifecycle.go": "9af2ae0ffffb245de73aa30eab244eaa6e660be643e1fb3b65f6182a6d818726",
-    "packages/servertest/api_parity_scenarios.go": "46c42ea6ace46775f457219581a5cba9a42d1871cf1ac0f5f1a403648d5fbf01",
-    "packages/servertest/durable_file_failures.go": "8d1215ce3952d5eecc1b5f5b16bae447d71f9b785364c63241568745269ab293",
-    "packages/servertest/mcp_policy.go": "a7af844321e548b9d37a859f39c8a6bf6bc70007faab678e372b4fe00f46e347",
-    "packages/servertest/metadata_legacy_contract.go": "7b4a1e2224b0583cc5efdf86306cfb2b61370e8f968fc3ba186d8dd257aef928",
-    "packages/servertest/metadata_local_contract.go": "01f6a0bc8ded7c660507e355a8de02d14afee79124ae5992d7ac5f1ac13b1e90",
-    "packages/servertest/metadata_provider.go": "8c234f57eb3de72696807fb6590e7b2fb026a5ef8c4d0b28eb03782c181cfdc4",
-    "packages/servertest/metadata_provider_fixture.go": "57c584e450e483aa6136eddf7157cf87e2b8424fce5c7535df75c05287ad4c3e",
-    "packages/servertest/metadata_store.go": "ddbd251c291319b49802ce0d0b6c4d00dff01bc10f2e40ff0a18c6e724742ced",
-    "packages/servertest/metadata_tmdb_contract.go": "232e914aefdf7c278058a7e93e91e7b89872944277752766c0bd7892f7a5d489",
-    "packages/settings/configuration.go": "390e6b761d50ddc596fbc74ada71f940af9533b54289db0a3d87b8b83bcc5f97",
-    "packages/settings/dlna.go": "01a85ce5cb84f2ef6895f6f5805024dc7d9ad1efa5579f616441bf3e04125e14",
-    "packages/settings/http.go": "31fdf2810fbaa25083123f3c9d1191f5e32a227b6eab2532e6e84e1b7594e93c",
-    "packages/settings/library.go": "6cc3c1667bc69ebc9b589e58a8a3a40b1876a2f1fb06e9b50eac31ef16e5f3cc",
-    "packages/settings/preferences.go": "8019a46bc393eeb9408ebadaa71a76f991cc99ff3ef86abba8ce81ee6c7883de",
-    "packages/supporter/certificate.go": "c843d0b0f24e2e708b8b7e45df4d3087e84bbaceb1a26681117bd8c0424f38d4",
-    "packages/supporter/editions.go": "21b9ccd4dc74a334634e58def05ceb864f229478b702a1eb64ab76fd7b1e0697",
-    "packages/supporter/input.go": "022d298efcdf79da10dc79ceccccc1d275a69c558938d4fe805656ce56d47c37",
-    "packages/supporter/json.go": "2c11de30280592f17d472113a5686837ae09634d77dd19eb140562b672d7db2b",
-    "packages/supporter/legacy.go": "a703f6dc24dabd58289dd3316594dfbfabb51b608cfc36055b5a6e0373aec601",
-    "packages/supporter/model.go": "387bb32c496bd69cfbf7b54d0bc0fb8b3e6931cb2dfffe2e293695d0ca122715",
-    "packages/supporter/provider.go": "66af9f178294b9df21e78e26ec742fd38bb1e523bf5a2b32b70076c7bd8adbcf",
-    "packages/supporter/service.go": "9e39c3d764147a20c36db2ac17f022e6eaa31d6b9decf20def83db29f0234561",
-    "packages/supporter/state.go": "2f3993a7516a4a9414d83394faa564d016f27469bbe4a7f9f69d238d69aa1747",
-    "packages/supporter/status.go": "c0670d418212a1692170dc27d42d8e1d1d30a93a7a28ae9aab86bbcfa6d06b15",
-    "packages/supporter/validation.go": "591a81bbcd049d142cf4c7ef8d7e23394de7b5beece308ff53b8afcf726b91de",
-    "packages/transcodehardware/backends.go": "ad53f5b49f501e68d6f773a8f72fce5869d52dbbfe2ae4eb7d80bb2dfb4574bb",
-    "packages/transcodehardware/capabilities.go": "c917774911fbd410b56d1f3bdea2f8494b0193613facd9c105a803156158a261",
-    "packages/transcodehardware/probe.go": "def030116c54172e8887111155f4235a741367fffaddd64c168e5c51bc2fdedb",
-    "packages/transcodehardware/selection_store.go": "5b0a22e74a57ea6693cc082fe1962530e2e34344eed9cbd3cb4cea7d6359d394",
-    "packages/transcodehardware/settings.go": "e767419c393ae929cbbc9cd7e5267412ece40d914817ad1954309b8e28283e95",
-    "packages/transcodehardware/verification.go": "fc4f60ef293d2ce64332824d1b44ae5ebadb92676eed1c0be6d8c83102e505f4",
-    "packages/transcodehardware/verification_formats.go": "a9b0a57e74fb29b4426bfddf11579d602776b9d18b9ba223bd75ef11a5344832",
-    "packages/trustedhttps/config.go": "fa8fd3ed4bb6eddd8bca2724b4252a7988264100225b94216e582bd9f122ee6c",
-    "packages/trustedhttps/form.go": "19d694bf7eed08021c9fca88cb40c1f871d6bdc144345129b6a7a4df7f80a867",
-    "packages/updatecontrol/checker.go": "1c4da9753ac255ac3b2e5421867df45751f454996cd7816574accde0213af435",
-    "packages/updatecontrol/control.go": "28930bedccb776b85457895bb7934b11c1ef0f9a7da2c925cce00254ff01873e",
-    "packages/updatecontrol/http.go": "51df9aa627a34096f24787a9a3b96aaa77a266c973ca904470afb41f497c7729",
-    "packages/updatecontrol/policy.go": "debba41466a569164811d8dea9b0084addf3d583d96307feb0413881a08d6faf",
-    "packages/updatecontrol/release.go": "5b395c02201f7ad052c03ee7dde474330aa48e92ea0645071bc8eca95c45dead",
-    "packages/webassets/static/pwa.js": "4ea43e5431973c9f6a6f7923248fcb63d7f0b401e44724539c0289b6ae1c0762"
-  },
+  "source_owner_hashes": [
+    {
+      "path": "apps/player/internal/backup/backup.go",
+      "sha256": "3b8bd5de41bf2b96cde0e47398e3e669bc5dac146e2731252c5a47dee8d8d8ed"
+    },
+    {
+      "path": "apps/player/internal/configuration/mutation.go",
+      "sha256": "8f69abff7621db077a54d844ab053ceab067b9c483392094472aeb9d864286a4"
+    },
+    {
+      "path": "apps/player/internal/configuration/snapshot.go",
+      "sha256": "cd03f71bc67011c0c3d3875331cbf48c896c607d02f003f474fe280752b35213"
+    },
+    {
+      "path": "apps/player/internal/configuration/trusted_https.go",
+      "sha256": "3a6f0a9d9b83aec16ad7867992b186c45ffc9deb2246bfe6a82471d00117c07a"
+    },
+    {
+      "path": "apps/player/internal/server/actor.go",
+      "sha256": "2c3bb3fcbc90cf64f4ffa3ce72c382b1ee0e3f4e17b1e3a17993c0cb452266fd"
+    },
+    {
+      "path": "apps/player/internal/server/api.go",
+      "sha256": "7b4467b92ee2b9d7701cd2a612a8d468619c7ea323585179fc6cf9b9cb8b9070"
+    },
+    {
+      "path": "apps/player/internal/server/api_admin.go",
+      "sha256": "ae51f23f1318a9227b2bddf57a89c3fc8860f3146d58fe9673ce66924b421099"
+    },
+    {
+      "path": "apps/player/internal/server/api_keys.go",
+      "sha256": "5463021a1ea395cda93f5b2d4660e53aa73ccf5965791163895e9353205533a3"
+    },
+    {
+      "path": "apps/player/internal/server/api_openapi.json",
+      "sha256": "8e390c1a40675cc4d9ba1cf4635c1885abc120a698e64f805548c44efe664508"
+    },
+    {
+      "path": "apps/player/internal/server/api_product.go",
+      "sha256": "69d45436a7c360154d1ecc7f87978930a92d8925d52965ab506b66ca120d368d"
+    },
+    {
+      "path": "apps/player/internal/server/api_remote.go",
+      "sha256": "181edb8d2764901f60cf3fb1bba1b61bd22adb2848bfd28093e2f2c063755b28"
+    },
+    {
+      "path": "apps/player/internal/server/application_init.go",
+      "sha256": "c73d16fcdecf50b247b53bc3bce972d37a1a27e3cc1c9423e01a6482f14e373e"
+    },
+    {
+      "path": "apps/player/internal/server/assets.go",
+      "sha256": "f8b595c65ca9369db964299c12a9e149a276fb3ba8356658a52e6c4380aeb460"
+    },
+    {
+      "path": "apps/player/internal/server/audit.go",
+      "sha256": "8d60113b3287115fbcea57272b90ecbb686dfb92ae78032d991468c13f529629"
+    },
+    {
+      "path": "apps/player/internal/server/auth.go",
+      "sha256": "12ad5e6036361295918e3f92a5efe2452b7334d40af1a085b9de394bc09ed42f"
+    },
+    {
+      "path": "apps/player/internal/server/auth_remote_routes.go",
+      "sha256": "870fd61b022d1fb5a327d977fdaae42f4889ceebbbf225e3366123a7fb1802bf"
+    },
+    {
+      "path": "apps/player/internal/server/backup_manager.go",
+      "sha256": "6e5e659570202995727019ab5fb3f385a3ff83eaf9a5ffeff756fdb263e5a98c"
+    },
+    {
+      "path": "apps/player/internal/server/browse.go",
+      "sha256": "a13ebeb8994d5e39e721c390a2f2e92f7ca2391b9065f9a35061a27ab60d8c2d"
+    },
+    {
+      "path": "apps/player/internal/server/cache_file.go",
+      "sha256": "66e521bd9e690f01af7de6d91ec8c9ce35e19616da191a3f09bb4601ed21efa3"
+    },
+    {
+      "path": "apps/player/internal/server/collection.go",
+      "sha256": "be25688630a10451c23690846bda1b218217359ef1465d342c8e73e50d1873f5"
+    },
+    {
+      "path": "apps/player/internal/server/database.go",
+      "sha256": "b47891177a704b358004ea32c6a45b96c4041b099affa3e2090574718f9a3625"
+    },
+    {
+      "path": "apps/player/internal/server/dlna.go",
+      "sha256": "83251da88a3f692340bbb3cc212a0bcfe637b925d829149f6c537f46e7527115"
+    },
+    {
+      "path": "apps/player/internal/server/downloads.go",
+      "sha256": "e6ee3d293002467f7efdee538e65d36b0b0a371deddba09996d0187f7aa1bf77"
+    },
+    {
+      "path": "apps/player/internal/server/external_json.go",
+      "sha256": "b5a7a55962f96f74a76b46f7985903dfd892eead801093ed9cca9986fa8b5006"
+    },
+    {
+      "path": "apps/player/internal/server/hardware.go",
+      "sha256": "0f50e6d9d38881b351a810d62322b024049608f7f566b0e8bad88ca8f3d10ef8"
+    },
+    {
+      "path": "apps/player/internal/server/hls.go",
+      "sha256": "1857ba4fe16f248ab86ff2917403595adcf28b584c9df62d52b019a9ea9c2dea"
+    },
+    {
+      "path": "apps/player/internal/server/hls_plan.go",
+      "sha256": "5fd624d3a31117e0741d2f47859d077a1f91e85a48d98e3496be83472c52399d"
+    },
+    {
+      "path": "apps/player/internal/server/home.go",
+      "sha256": "ae00ea4bc4e89865b1052c9ecca788419235f9532342932b7bdf345c8e8f9961"
+    },
+    {
+      "path": "apps/player/internal/server/home_assistant.go",
+      "sha256": "c385cc6f3036682181a157ac7267e9fe972e940f59a71101474e44d5ad4605e6"
+    },
+    {
+      "path": "apps/player/internal/server/jellyfin_playback.go",
+      "sha256": "a2695a2156921c4950a1bd86b98d9e24529725b94e41030668358111a1b61242"
+    },
+    {
+      "path": "apps/player/internal/server/lists.go",
+      "sha256": "75c25821b041d7f37b9a3525f1cbc034c3867db2c0fb47a0b4c7628fa9aae406"
+    },
+    {
+      "path": "apps/player/internal/server/maintenance.go",
+      "sha256": "39dd6666dc63b8bab455869e66155fa33bf4c148493256a49456768150bbd28a"
+    },
+    {
+      "path": "apps/player/internal/server/mcp.go",
+      "sha256": "6599b44ff27a7917ffce7011b6a50c1ad4ea331711d319f8755e2e5eac3c9936"
+    },
+    {
+      "path": "apps/player/internal/server/mcp_connections.go",
+      "sha256": "8dab960bdd96caacfe2d40edb01aa4f50254eb31bafa3fe3a68ed0f191bfa098"
+    },
+    {
+      "path": "apps/player/internal/server/mcp_connections_authorize.go",
+      "sha256": "dd7bc5d3c9ca757546fa0d50de11bb8445343d1c480b26119160899ef3db9f40"
+    },
+    {
+      "path": "apps/player/internal/server/mcp_connections_http.go",
+      "sha256": "68dcd9081daae0d8c22b643b2da6d7d3bb6e217716afa6bbcc4bae951a75cf1f"
+    },
+    {
+      "path": "apps/player/internal/server/mcp_route_policy.go",
+      "sha256": "e6f6918b3075bb6ac674cc23fa84b39bd96a0807623482685073c4b8335a7a9b"
+    },
+    {
+      "path": "apps/player/internal/server/mcp_stdio.go",
+      "sha256": "c6809d6d992f642eb6ca22f1eaaaade58003534d4bbf28c298e01e4603f79d1d"
+    },
+    {
+      "path": "apps/player/internal/server/metadata_artwork.go",
+      "sha256": "b46b02f0c3f69711a15a664c233b2c0271dc4af2e6f266d8cecbb6aea57a5f1a"
+    },
+    {
+      "path": "apps/player/internal/server/metadata_bulk.go",
+      "sha256": "8c96d2d30ac32cfc0b83723fe637c233ee30ab19a314edee7bcc4fdba2746564"
+    },
+    {
+      "path": "apps/player/internal/server/metadata_provider.go",
+      "sha256": "092f201cc4b5fbde1de23f02a1da98d5e86da05c9247eeded96031f049c0b613"
+    },
+    {
+      "path": "apps/player/internal/server/metadata_provider_tmdb.go",
+      "sha256": "f541fb3038b4358096e47935bfbd534db5193b03b839cce81eed2941e1c1db89"
+    },
+    {
+      "path": "apps/player/internal/server/navigation_shell.go",
+      "sha256": "79559a75ec02638409426b6da8f0d0bb174101d1fd99e288ad2e1c20c70fd330"
+    },
+    {
+      "path": "apps/player/internal/server/notification.go",
+      "sha256": "e31c05059b11575e9bffa51ccb7457d4cf0c0eb8e97890ac051165da703f2329"
+    },
+    {
+      "path": "apps/player/internal/server/observability.go",
+      "sha256": "09456eb8ab431e8f6c9f633f0a494b971ac447023677cadf63e63a9db69922b6"
+    },
+    {
+      "path": "apps/player/internal/server/observability_context.go",
+      "sha256": "b1b54e49dc60ea547582293c20746bc93359a9c52ba15d2838395ef7158c4d4c"
+    },
+    {
+      "path": "apps/player/internal/server/oidc.go",
+      "sha256": "27fa5dec3a8acaeb4a48e72782b74764dd657d48096ef33a90190013100f8a8a"
+    },
+    {
+      "path": "apps/player/internal/server/operations.go",
+      "sha256": "f8f3759875f9ac5a718462d29a73c210c0acc06dab9ac36cffb2ab929fdc3260"
+    },
+    {
+      "path": "apps/player/internal/server/playback_http.go",
+      "sha256": "8f0bd22a0307db65951c8ed0363f3e8610196dee53fd789bcacfa6b3e0639149"
+    },
+    {
+      "path": "apps/player/internal/server/playback_plan.go",
+      "sha256": "bd0a4694f23227b437fbfbe864835741c4310a5d70c45e4f6c3c128e455060b2"
+    },
+    {
+      "path": "apps/player/internal/server/playback_timeline.go",
+      "sha256": "fd19e2c2302b608ff620cdf465259543aa8e85cf75a573758a25934b538c9bdc"
+    },
+    {
+      "path": "apps/player/internal/server/player.go",
+      "sha256": "fd89cfdcf72e68068e635cf3b5f1c98ef3e3a9697d7446808c7b3e6b4a866e0f"
+    },
+    {
+      "path": "apps/player/internal/server/player_playback.go",
+      "sha256": "d6e8dd96b3cdfffdae72e50a149d5cb1c11765701c889bf51cb03257cbab3ab8"
+    },
+    {
+      "path": "apps/player/internal/server/probe.go",
+      "sha256": "c94cc73b573241b448ebbede8925ea3fba8a7fa24b91244082f711e6d7ed7204"
+    },
+    {
+      "path": "apps/player/internal/server/probe_enrichment.go",
+      "sha256": "c3cef40a175eec48ce71abee821d97cffd043647851b58b4b24e17ef131e89aa"
+    },
+    {
+      "path": "apps/player/internal/server/probe_inspect.go",
+      "sha256": "5117f9030cffb117fc69ec504408baac621bab499d8ef8d2ed56492ad493a961"
+    },
+    {
+      "path": "apps/player/internal/server/profiles.go",
+      "sha256": "78caaca0b831d36b9a6f5c26467427171e8ca80afc528ef6879dc9a6f155dd3f"
+    },
+    {
+      "path": "apps/player/internal/server/profiles_http.go",
+      "sha256": "4cc0cb686af99bacce7028c7f00abe1e7686dba8097b2649f074c82a90755991"
+    },
+    {
+      "path": "apps/player/internal/server/profiles_storage.go",
+      "sha256": "68d01850ff87bf92a67a96eeda578a7d0c256b2899ae541aaeafc158103b4a54"
+    },
+    {
+      "path": "apps/player/internal/server/profiles_token.go",
+      "sha256": "bc4b2a7b44a52dc36316395ad17c6cdc89505341f5b6a0fded3bfba37e0ea38d"
+    },
+    {
+      "path": "apps/player/internal/server/progress.go",
+      "sha256": "97ef8f71b1e093ff2a0d53eda7702442d5e3a6752505c017b2d6e40cd3019345"
+    },
+    {
+      "path": "apps/player/internal/server/remote_login.go",
+      "sha256": "308998732cae35d2d6f401009a9179184a11f8147b14109279f872b4f425518a"
+    },
+    {
+      "path": "apps/player/internal/server/scim_adapter.go",
+      "sha256": "15606b8669beeec95f739dbd5f3014389c911312cc9296a18b133d37c8da1f64"
+    },
+    {
+      "path": "apps/player/internal/server/security.go",
+      "sha256": "c812000aac81ad4a9182aadc0e899b64864e0817dd4db4b8cd10fb964d976d34"
+    },
+    {
+      "path": "apps/player/internal/server/server.go",
+      "sha256": "e793d497405e2b2e14a5139208c69ecfaaa6b7a81c3083a2649aa7f86bf40efd"
+    },
+    {
+      "path": "apps/player/internal/server/server_health.go",
+      "sha256": "9871afa70e03aa9391c5dfbc953cabbeb634c038cf2f2ccd2e2e702ff7d8dbc3"
+    },
+    {
+      "path": "apps/player/internal/server/server_startup.go",
+      "sha256": "02d3f247ed14d629cdbb93d434a957567d0abe7921eb161257958c9aa3e101a1"
+    },
+    {
+      "path": "apps/player/internal/server/sessions.go",
+      "sha256": "e834682e74b426b6cac3829e00411cc99fd15b97d069cd72773c8e3d1aa1b37a"
+    },
+    {
+      "path": "apps/player/internal/server/settings.go",
+      "sha256": "01048923d8996e95fad572356149ff9afe9b5ac8f13740ce91e7932045ceb8e7"
+    },
+    {
+      "path": "apps/player/internal/server/settings_actions.go",
+      "sha256": "83b61482527811efbd819c88d5705da796c2c250924789c5f1b68bd3f1b4fddb"
+    },
+    {
+      "path": "apps/player/internal/server/settings_configuration.go",
+      "sha256": "5101d73aed043f7d264ba0a1dcb5f60019c14700fc27266135f69e287b7b5536"
+    },
+    {
+      "path": "apps/player/internal/server/settings_configuration_api.go",
+      "sha256": "650ea70383d39a46234eddd854445d61a1f6f61a6d1d8c1b4b092c66a55a7db9"
+    },
+    {
+      "path": "apps/player/internal/server/settings_connection_http.go",
+      "sha256": "56fa0e82cd9a8c23325005bb17ddde4e4d3627ebe185fcca5b6dc62683b6422a"
+    },
+    {
+      "path": "apps/player/internal/server/settings_dlna_http.go",
+      "sha256": "70d899a4798246c87fb8a74a23bb46c3344cb8bfd76b18d5f5ad4049bbfc4f9f"
+    },
+    {
+      "path": "apps/player/internal/server/settings_dlna_token.go",
+      "sha256": "975b70dfe30a080c617b16679a064ec0a805884d72589d2afab9660a10f5f4b8"
+    },
+    {
+      "path": "apps/player/internal/server/settings_http.go",
+      "sha256": "8be3becd44d99c36aa68e438edce2e6c638fdc5e9c17a7720300c6a40df425a9"
+    },
+    {
+      "path": "apps/player/internal/server/settings_library.go",
+      "sha256": "652fecfbb146a30895bd76dd19f5702e3d116cb9bc7abcfd41c51f967a3494a7"
+    },
+    {
+      "path": "apps/player/internal/server/settings_library_commit.go",
+      "sha256": "86361b249a290e18aac8326ba5d95864f49eac8ab75e063992b173e92de8d61d"
+    },
+    {
+      "path": "apps/player/internal/server/settings_library_http.go",
+      "sha256": "e1cc0ed3a7825c214519bffbf3b43d180bfe699f206a6f5875e1ba35aadf59a3"
+    },
+    {
+      "path": "apps/player/internal/server/settings_library_operations.go",
+      "sha256": "c5a8a5faf5e735485d214f68bd6111fadfbaccd66dc4dba295b8d3b47e1d79c5"
+    },
+    {
+      "path": "apps/player/internal/server/settings_library_state.go",
+      "sha256": "9deeeeb9b48c05e1541460b5460a04ea43777c9a728bcc61017e0911c6ba20ca"
+    },
+    {
+      "path": "apps/player/internal/server/settings_library_update.go",
+      "sha256": "067d362f9f4165232cae6f5db5812fbd72808c35d5d3141996881a063c5bb6cd"
+    },
+    {
+      "path": "apps/player/internal/server/settings_saml_configuration.go",
+      "sha256": "4f50f1c8c54bb4e0e6123ae97ec96292e02c0668528eddf94a57d852925a87c3"
+    },
+    {
+      "path": "apps/player/internal/server/settings_saml_http.go",
+      "sha256": "96510ff6fe68330987be1e96224ade0973881fb8d4a2fa7fd9b10b52213f7607"
+    },
+    {
+      "path": "apps/player/internal/server/settings_saml_status.go",
+      "sha256": "79b2e46e869137236f09fbec694a383dc192aa199435f3c2c8f223142f2389ac"
+    },
+    {
+      "path": "apps/player/internal/server/settings_saml_storage.go",
+      "sha256": "0b04cafa254ba4729ccd977cf2d9e10b31e53fb7212ff6a2f7b82b30d2e6a742"
+    },
+    {
+      "path": "apps/player/internal/server/settings_saml_view.go",
+      "sha256": "5cb240e32b63cd49ab3755976c1664b1a47f926e4dc7d6fcdc9159ee8e9016c8"
+    },
+    {
+      "path": "apps/player/internal/server/settings_scans.go",
+      "sha256": "93423341dcd28d9044385ffde01516c4598a238ac221b1f11fbd92e36dee68cf"
+    },
+    {
+      "path": "apps/player/internal/server/settings_scim_configuration.go",
+      "sha256": "98461ad20af7dec65a595499fc6ebeedef91b0876146d34afa291c17d946a9cb"
+    },
+    {
+      "path": "apps/player/internal/server/settings_scim_contract.go",
+      "sha256": "28e84d76845c8b72fce8c81c69918677c53146887147885f1874dbf479959dc1"
+    },
+    {
+      "path": "apps/player/internal/server/settings_scim_http.go",
+      "sha256": "6df85c008c2703629de3a0319d256ef96bef91c47f3abd1bbe6531f6c8463d6c"
+    },
+    {
+      "path": "apps/player/internal/server/settings_scim_storage.go",
+      "sha256": "1deb70929164cfe8200e881ef4404803f28334445d26f11bcd11be71fb4f7402"
+    },
+    {
+      "path": "apps/player/internal/server/settings_tmdb_configuration.go",
+      "sha256": "6b76c221b4386843d4ccfb2737467ad472aa26b4435d8a9ac9007b696e6acbdd"
+    },
+    {
+      "path": "apps/player/internal/server/settings_trusted_https.go",
+      "sha256": "796e0ebf1fdde763a8229a8e6313e9dac4bbc7b8873e439a913dd7859c1cb643"
+    },
+    {
+      "path": "apps/player/internal/server/settings_trusted_https_http.go",
+      "sha256": "46e853b1aa7d41a77be020a15e82758f61975dc4d455e1afac869e850dc3784f"
+    },
+    {
+      "path": "apps/player/internal/server/show.go",
+      "sha256": "2edf91b5be578efd74118e8dfdc8e5f5ab12f065f2f05c1664466b2f2f57f2a0"
+    },
+    {
+      "path": "apps/player/internal/server/state.go",
+      "sha256": "1a256340559830ecfeb5410f6059e0a7c1153282e608ab629b16b1bd36f6e647"
+    },
+    {
+      "path": "apps/player/internal/server/static/supporter-plans.js",
+      "sha256": "6ca731f33893eedbcf26af3e41aec25d974f2163ea180c86614e4bec09aca8c9"
+    },
+    {
+      "path": "apps/player/internal/server/static/supporter.js",
+      "sha256": "dc8e9d330fd6ea1ccd999b8120c5c4c0f44521a24119698a7a2c38e7edea5486"
+    },
+    {
+      "path": "apps/player/internal/server/supporter.go",
+      "sha256": "af1991ed0257ef9e38b74470be4a3c87565a33b72f031c6655fd04e823c65a7e"
+    },
+    {
+      "path": "apps/player/internal/server/supporter_certificate.go",
+      "sha256": "ce239c9940b93b0892d60c730728bc67ac3fbbb217ec1992f0236cb4229619b0"
+    },
+    {
+      "path": "apps/player/internal/server/supporter_collection.go",
+      "sha256": "ced21e47f8752372832c94e92a81deee33c21d1ca7f9ceaf78e4f44716ae447c"
+    },
+    {
+      "path": "apps/player/internal/server/supporter_display.go",
+      "sha256": "5c365d9a25c5e5590027ccb28466d57f6af409c7c4428f4703f32ea8a13a31d9"
+    },
+    {
+      "path": "apps/player/internal/server/supporter_editions.go",
+      "sha256": "e3d0d2615b01dff392a00c397181e0e62228b43ff7cd622d787c9ea27bde2773"
+    },
+    {
+      "path": "apps/player/internal/server/supporter_http.go",
+      "sha256": "a0b4439ff103edb3d5cc052a23d3050d14c6552b62d23b5992a024f48b126869"
+    },
+    {
+      "path": "apps/player/internal/server/supporter_template.go",
+      "sha256": "9ad9f9acafab434f3aff11e5c0647b41e05af7f4b978df6db2076552ff8963fc"
+    },
+    {
+      "path": "apps/player/internal/server/system_http.go",
+      "sha256": "da973f1228bf022fed082914b4ce7c4a12647ce31fb84ddcecd6615270a81409"
+    },
+    {
+      "path": "apps/player/internal/server/transcoder_selection.go",
+      "sha256": "be3d862e6543d72118bdf28531dff8c0637da7bc6ef5ece93033c2a771d0517c"
+    },
+    {
+      "path": "apps/player/internal/server/updates.go",
+      "sha256": "8c532629cc7aba3b9778b69130c628cc7dcc7a0e44539b892a29c2b1e0f4d64b"
+    },
+    {
+      "path": "apps/player/internal/server/updates_http.go",
+      "sha256": "473f1f47af4d515a4bbe9fb603bbf407321a8b9ac007bc39c7f94df58ea5c15d"
+    },
+    {
+      "path": "packages/apihttp/api.go",
+      "sha256": "f05490fe07b39658ea4980bd42bc2d9536cea2066ec1de7b04d3eaa08b6c3773"
+    },
+    {
+      "path": "packages/apihttp/save.go",
+      "sha256": "0cf12bc6792200e5f2c62129cc17a1a5e6648919c278edfec555392419e8346c"
+    },
+    {
+      "path": "packages/appcli/application.go",
+      "sha256": "450a5f252f7db3bd73631958b4f0892d7d73d10701a22df518a1d84b294b8559"
+    },
+    {
+      "path": "packages/appcli/command.go",
+      "sha256": "7fe17d09c2136709b4372191cc9ff941f94e3aafd29d15ca9c34c81d9f4f8f6f"
+    },
+    {
+      "path": "packages/auditjournal/classification.go",
+      "sha256": "a8c7e742f88f108735ac7ef6a2066221fdf81fad7ff3e1f63bc775c8c56e4d71"
+    },
+    {
+      "path": "packages/auditjournal/classification_dynamic.go",
+      "sha256": "9dea89a2ed12a2a54eb921dab72ef93205840f7f0818db29d7be83bb3ea6be0a"
+    },
+    {
+      "path": "packages/auditjournal/http.go",
+      "sha256": "2fea7f4d00924bdd34cff1d0df029705130a8beeb8d3eef38d8b94be925c5a5b"
+    },
+    {
+      "path": "packages/auditjournal/http_views.go",
+      "sha256": "5f8c44d5b53f293b5c0b4aac25a6bce4f0fc6eaebdccdc6005190ca3d00351a6"
+    },
+    {
+      "path": "packages/auditjournal/journal.go",
+      "sha256": "2643e269a86dbfb63d230ac346f48efabef15caa2c945f1a523750860df7c924"
+    },
+    {
+      "path": "packages/auditjournal/load.go",
+      "sha256": "be4c2e510db4bb9852070c2a68ae8e5acb57052e27971cda9464a30b3feb3119"
+    },
+    {
+      "path": "packages/auditjournal/notification.go",
+      "sha256": "b44b7ff8a585c86fa7750fdf012a951fce4d9618f200080676d706adf291a704"
+    },
+    {
+      "path": "packages/auditjournal/storage.go",
+      "sha256": "67bb5502cbf59425e0f17370dac0e394215c4338adb54a86c7b7e72f1d0ca4d5"
+    },
+    {
+      "path": "packages/backup/encrypted.go",
+      "sha256": "438b36c94301adebb021fd8e039bbed9f50c2acc70aaa0bdf8bb5213e5367965"
+    },
+    {
+      "path": "packages/backup/manager.go",
+      "sha256": "b3c37c779d8b9dd4a61d5af210beb34ed29aaa4d03f244fa05a2c01cfb97a4a8"
+    },
+    {
+      "path": "packages/backup/manager_write.go",
+      "sha256": "9ad68403ca31e310dbb55cb6b1f9140e04f4d6e2a0edd182e40051f9a48ba4ec"
+    },
+    {
+      "path": "packages/catalog/browse.go",
+      "sha256": "5f32935c388ddc040fa4069ce352e1b50bad55d329fa5978b0ff9796ee2575af"
+    },
+    {
+      "path": "packages/catalog/collection_operations.go",
+      "sha256": "238480419f85098edcdbd78c85b5f93b5e7e11aa5127ce56cd805fd2d94e18ba"
+    },
+    {
+      "path": "packages/catalog/collection_summary.go",
+      "sha256": "9572f7ef3572cde4e09e231714a89016d2bfd877bfdfcc8ef0a7a0828e1a0e08"
+    },
+    {
+      "path": "packages/catalog/collections_http.go",
+      "sha256": "8882b3b93abd04e344e40785e65c5ccf2e9359cfc157ef60ecb081e946f84cbb"
+    },
+    {
+      "path": "packages/catalog/index.go",
+      "sha256": "ce9955e333e052c2b79d1e46a3069dec1cf4418168ea6962d9e4acb8d7d499a6"
+    },
+    {
+      "path": "packages/catalog/index_order.go",
+      "sha256": "7831e51ab5a5d886335b05f360df95f3879ee59b569d68a9fbc958e25fafbea1"
+    },
+    {
+      "path": "packages/catalog/list_operations.go",
+      "sha256": "deb05696fb2162cd572aee8f5c940d9dc0b0837b0f759b0028232aed3616ecb1"
+    },
+    {
+      "path": "packages/catalog/lists.go",
+      "sha256": "8d2084e310367ecb904ce3b46309de095a60d138483769705c84fa07724eb517"
+    },
+    {
+      "path": "packages/catalog/progress.go",
+      "sha256": "230cdb3df22e861de420cfd32a624a34adbcfc4990c021d86cf3208495ac7b48"
+    },
+    {
+      "path": "packages/catalog/progress_change.go",
+      "sha256": "d9fcb85059e5d212f98b24f21c1b7d3e472e3e43a4403a9426aa5125e83237d1"
+    },
+    {
+      "path": "packages/catalog/progress_request_store.go",
+      "sha256": "9ef6b1f13dfa797a738ac6381d1f0f571cd219026673cd82d0c3adbcc8a36ea9"
+    },
+    {
+      "path": "packages/catalog/scan.go",
+      "sha256": "d90c8275262ff8a0161543beec5ac74c8a6c9f54de06fcfdc0985b4aecf0c0e6"
+    },
+    {
+      "path": "packages/catalog/watch.go",
+      "sha256": "7544aced4e4857703fccb88751d5a5e0fb80e84d2001cc6c4668de5ac032b76d"
+    },
+    {
+      "path": "packages/catalog/watch_events.go",
+      "sha256": "17790d6e528ff90d73957052c5d93e1aa1ee491549cd7c6d47551dd9a3e45cf7"
+    },
+    {
+      "path": "packages/catalogapi/actor.go",
+      "sha256": "a05534c8b14d8c6a4d35c37144a45030f424762fbd346631c4a89e53b20ca8ee"
+    },
+    {
+      "path": "packages/catalogapi/progress_store.go",
+      "sha256": "5038d46c2443d616bf80ed7e55a9e734e86860944f9c6e4d60062d65b7c31807"
+    },
+    {
+      "path": "packages/catalogapi/projection.go",
+      "sha256": "9ac3bafc847618b27f1d26ab43a31284883daf429c660c14f5a979f624c94d5d"
+    },
+    {
+      "path": "packages/configurationcore/trusted_https.go",
+      "sha256": "afd8a5b4c6a160562fb62c8dd55be58ded3cce5f2e2e613abb9a8aca0c74c31d"
+    },
+    {
+      "path": "packages/dlna/dlna.go",
+      "sha256": "58ef8e5563092a15f3d64f90096cba9e16468867932ef9700fbc7a8ebff5f05f"
+    },
+    {
+      "path": "packages/documentdb/documentdb.go",
+      "sha256": "a87bfb12de18a8cf214b0e90a0a827673a3eaa5f41fbe15f214122df4b83b3e3"
+    },
+    {
+      "path": "packages/downloads/state.go",
+      "sha256": "86f638d5d432990f0f60bd28f2aadf50e0e6053b5090c9a4e6c74e989570bc88"
+    },
+    {
+      "path": "packages/federation/configuration/configuration.go",
+      "sha256": "0706052dba443e484cd38d9b596d9d12fefd1299f94fdedfa2226d52f71aed7c"
+    },
+    {
+      "path": "packages/federation/configuration/configuration_html.go",
+      "sha256": "d4b00082dc18210280a85f5870266f72f66a9eb931d5c5d80c5693f85ac688d0"
+    },
+    {
+      "path": "packages/federation/oidc.go",
+      "sha256": "0cd13c4f0bc0c7326c5e415ff10810af4d67586e1497d7aad01e3dc0adfe589a"
+    },
+    {
+      "path": "packages/federation/oidc_http.go",
+      "sha256": "a8f7f15ed9aae03eb539488e7e9f657f93073422402b63f2b7569448058aaa89"
+    },
+    {
+      "path": "packages/federation/settings.go",
+      "sha256": "8677891096355c24ec0bcf7f23d15c8aa246c0bbbfd08097e3502d108170d30b"
+    },
+    {
+      "path": "packages/home/handler.go",
+      "sha256": "4a866d2ef6736cd3aa25c264ba3112ff438f070d7f134a0525d9ba5d2669b824"
+    },
+    {
+      "path": "packages/home/projection.go",
+      "sha256": "1c43989d44f5c7b523a3d72268e0c429111df8f8e401f38b0924c864aae424f4"
+    },
+    {
+      "path": "packages/homeassistant/discovery.go",
+      "sha256": "7f03f7f0e056c248fc1c06069343243d4a644106afd1882457b77268a138b7a6"
+    },
+    {
+      "path": "packages/homeassistant/http.go",
+      "sha256": "803124e3a4b4f54b3105dc09d6bc90f524f8bb0626eee0bfc561453e03be059a"
+    },
+    {
+      "path": "packages/homeassistant/integration.go",
+      "sha256": "a77a8b85a5daceda142900390bb8146c7af33a5328bc072e86d86a71a56ce2b0"
+    },
+    {
+      "path": "packages/homeassistant/oauth.go",
+      "sha256": "43e332c6bdae7438c00e27b206ce6def986fc31393ddf13602173a4012f5a14e"
+    },
+    {
+      "path": "packages/homeassistant/pairing.go",
+      "sha256": "db24ae5b68654cd80a84e094dab0e4df880a9caac61124b6347238d06bed9d75"
+    },
+    {
+      "path": "packages/homeassistant/player.go",
+      "sha256": "9cd2867052ccf2b6a3dfb240c3c9542c3e3ee77dabaae70f5a6b18ef7cc64374"
+    },
+    {
+      "path": "packages/httpguard/json.go",
+      "sha256": "3bcbe81d3bf0332daced48b75e340695881927428e764b5bb36b57e6fccd58c7"
+    },
+    {
+      "path": "packages/identitycore/access.go",
+      "sha256": "ed87edc366e503d38f9935b1f7017c7e5fb73fbd8eeffcc8158de21fc11525de"
+    },
+    {
+      "path": "packages/identitycore/api_keys.go",
+      "sha256": "5fbb835a3009e9a8e81740ab23765f90de17b0e969a2f959c8b98bfb578c1cec"
+    },
+    {
+      "path": "packages/identitycore/profile.go",
+      "sha256": "3265ddca470c7a66044813adaf752ec45e14a766993205f768f8e3d2ce8e8c91"
+    },
+    {
+      "path": "packages/identitycore/profile_store.go",
+      "sha256": "a066c727250040c940c55ee2253ef9382c447ea02e6bc3fa26d71939a8c7e8c4"
+    },
+    {
+      "path": "packages/identitycore/public_routes.go",
+      "sha256": "e35b202340d5880a2f02b71ac06b633d04e9d408002eff55fdb63c6a35881802"
+    },
+    {
+      "path": "packages/identitycore/session_requests.go",
+      "sha256": "e45923f7f385b713108afcba99a978f8ced573ff57be45994986b3bd5d7423d2"
+    },
+    {
+      "path": "packages/jellyfincompat/delivery_http.go",
+      "sha256": "0550fbe2efdf82edb98deeb1d2b3d1e6d4aaf777ca7086570853ef9d3f3dd2f8"
+    },
+    {
+      "path": "packages/library/metadata.go",
+      "sha256": "205d5ef78ac6ac6472408b202d9a89bcce8a1cfdbecf7f0e9fd01e1f853c403a"
+    },
+    {
+      "path": "packages/maintenance/maintenance.go",
+      "sha256": "e57d9c9fa5f18b29bf5438492301ccfcd9ff601f30e9fb92229c4d4363bc2000"
+    },
+    {
+      "path": "packages/maintenance/status.go",
+      "sha256": "4763cce7c4ad4f50529ab1d237c4c298153b50329446f07f14fc9da42ca1e074"
+    },
+    {
+      "path": "packages/mcpgateway/application.go",
+      "sha256": "a6c5a5c0353fa3148eb86153bf501f57e655b1563d790b1f37691339cc20e9f9"
+    },
+    {
+      "path": "packages/mcpgateway/application_connections_projection.go",
+      "sha256": "cd7ad415793dd457b1c30c591d6b5f3bbe65a608b9006de873cdb4731fc98676"
+    },
+    {
+      "path": "packages/mcpgateway/application_profile_state.go",
+      "sha256": "04d6c2d7e01629219a84e691618327c78cc34deee2e649b9ccc99ba97e77dc9a"
+    },
+    {
+      "path": "packages/mcpgateway/application_state.go",
+      "sha256": "89c8fbef62b5ed2ce534b29a67d2aeea0a7c614982138a0c025e7efd5c503e0b"
+    },
+    {
+      "path": "packages/mcpgateway/connections.go",
+      "sha256": "e078ace06d4ab3cb2953dc06fa8f88e49636262326a40cd9ee67f1e152eb7bd1"
+    },
+    {
+      "path": "packages/mcpgateway/connections_authorize.go",
+      "sha256": "183930ef4ba2b2841a66c1114795e4e7c4ca68ff44c77a3b5eb82455612ea109"
+    },
+    {
+      "path": "packages/mcpgateway/connections_registration.go",
+      "sha256": "16abfe5666fa62f4d894f2da31f10d378f9251e75596830e86e65595cc751822"
+    },
+    {
+      "path": "packages/mcpgateway/connections_store.go",
+      "sha256": "76456685645c83b79f5b8d814471d9180ba0879865b0834d8da3188b1ac4b6a9"
+    },
+    {
+      "path": "packages/mcpgateway/connections_tokens.go",
+      "sha256": "cd019f220304f2c3de4b10ede772611c2ec314f6d8b1bd139d769e292953573b"
+    },
+    {
+      "path": "packages/mcpgateway/gateway.go",
+      "sha256": "2d07f9ad36b1c7d8f304e899336b54669187c8283cb1f1dd560e50081bde2db8"
+    },
+    {
+      "path": "packages/mcpgateway/helpers.go",
+      "sha256": "c9090d7ae4f2628e4d4af22586573ccd506e51579bc6d4e02a0171f1b7aba08f"
+    },
+    {
+      "path": "packages/mcpgateway/introspection.go",
+      "sha256": "95752619a4ede1764fd4e48f2e13fbc5a9808a39c89f451849aaf1ef6068d902"
+    },
+    {
+      "path": "packages/mcpgateway/protocol.go",
+      "sha256": "607adc14a28fa652e2a7da829a7a9f1496a35ed5abb5a8ec0ea03ef1f0c3b7a4"
+    },
+    {
+      "path": "packages/mcpgateway/recorder.go",
+      "sha256": "8bafebea0951aaec9dff598dfd071bc9b976feff465ba95a4ef321d9413cb4b5"
+    },
+    {
+      "path": "packages/mcpgateway/stdio.go",
+      "sha256": "872d89f144eb58cc2729c7ca85c0392c1159deed925ea77349f053e964b6f44b"
+    },
+    {
+      "path": "packages/mcpgateway/stdio_binding_unix.go",
+      "sha256": "e10bdec9a336e7e11cf518beb378c64df5a7f8ddfa2ca9c7d7e0845adacbb526"
+    },
+    {
+      "path": "packages/mcpgateway/stdio_command_unix.go",
+      "sha256": "2fbac346189d157db4df9662028fd41aa7a059c545e043ee6952a0bc702c45c6"
+    },
+    {
+      "path": "packages/mcpgateway/tools.go",
+      "sha256": "285584d7fedf36719fd77af4359f762f4720af222007b86a3e20008c82811252"
+    },
+    {
+      "path": "packages/mcpgateway/types.go",
+      "sha256": "22f5f499bea81ee616375a5e80e12deec169cfab63a6342626756c95b28659b8"
+    },
+    {
+      "path": "packages/mediaprobe/cache.go",
+      "sha256": "1b7ad4fc85bccd01e24a6d02c0a712a43316008a1715987ddb7f7b4f6aa9ef6b"
+    },
+    {
+      "path": "packages/mediaprobe/command.go",
+      "sha256": "29946e532809b800ae840898501afb0a70f13b379586e543687f2985a030ff89"
+    },
+    {
+      "path": "packages/mediaprobe/facts.go",
+      "sha256": "303fc592b29a39d320a5c4cdc33e59c0815368764341f3da029dbea8d39de50c"
+    },
+    {
+      "path": "packages/mediaprobe/parse.go",
+      "sha256": "24ec8808ec707f7f607e35f83d95f48ea4b592566341f5d366321d79ef4d6df8"
+    },
+    {
+      "path": "packages/mediaprobe/probe.go",
+      "sha256": "4838829c8540096c42548c0a239648e57950a84c7c6009cbaae69a5459360044"
+    },
+    {
+      "path": "packages/metadata/artwork_cache.go",
+      "sha256": "d54e66c4e1738a5607aa1238ca5bc5c425b8548d14e2d6b38eb87fbc80024987"
+    },
+    {
+      "path": "packages/metadata/bulk_editor.go",
+      "sha256": "936dcbaa5aabbf9b72391ea72d0f4a9e0080d6e463160f431bc947bef0f44e4f"
+    },
+    {
+      "path": "packages/metadata/bulk_editor_http.go",
+      "sha256": "d01d197ec7831709b0efcc12c6c0e8a41bd5011c04e25dd6658ac34ddf3c4674"
+    },
+    {
+      "path": "packages/metadata/config.go",
+      "sha256": "3debc1f742f820f7c62c638f140ac8f4f90bd5c5f72550d651e4b220c5695df4"
+    },
+    {
+      "path": "packages/metadata/network.go",
+      "sha256": "806c734fdc98a229d709095fc930dc226d2f4347da5a0f13d021c3bbd2ce5ded"
+    },
+    {
+      "path": "packages/metadata/provider_http.go",
+      "sha256": "d61c5e0d2b3c5b7e96e4565dcf6368f2f0f30f1572ce1c443c31ac8cd0eab8a3"
+    },
+    {
+      "path": "packages/metadata/record.go",
+      "sha256": "32878a828e9fc526781afd077f58bdf57af641024fe3c22e5babbb34a9e686e3"
+    },
+    {
+      "path": "packages/metadata/refresh_http.go",
+      "sha256": "f0f9ae6987edceda1a7894ba8eb6dd6cd809f1cb4cc300c1f142a0668bdd2c9e"
+    },
+    {
+      "path": "packages/metadata/schedule.go",
+      "sha256": "f29850fda2bccd29279b1488ebe093f59e8ebd09351cf2e4ebe897ded42d9367"
+    },
+    {
+      "path": "packages/metadata/tmdb.go",
+      "sha256": "c40d66e0e52dcd616ebad38c709a75c2210466389828bf3cfd9668ff55487f0e"
+    },
+    {
+      "path": "packages/metadata/tmdb_cache.go",
+      "sha256": "97a2cdd8425d60c0e0bb83d67d973d1f11ef78bedb6f26805abbab050713b43f"
+    },
+    {
+      "path": "packages/metadata/tmdb_details.go",
+      "sha256": "616fedef068420db229238f805da5fdd221cdaaeff8019d6f5eb5b1ff6e150c6"
+    },
+    {
+      "path": "packages/metadata/tmdb_fetch.go",
+      "sha256": "04cc0ae79856469870a3ca2cc613cc610ef895372bc28db32338bd1019f69d81"
+    },
+    {
+      "path": "packages/metadata/tmdb_search.go",
+      "sha256": "a380bd0856deaeaa2cbe0543300f88cd0fc4bc5c8e28ee2497803e4b48f2cd3d"
+    },
+    {
+      "path": "packages/metadata/tvmaze.go",
+      "sha256": "d74343266bb6010a61812e85b5ae1413610904364deffd121750c12c63dedfca"
+    },
+    {
+      "path": "packages/operations/binding.go",
+      "sha256": "61569a46008b50d7b3418cb95be296d552caeaae5c2ac2de9b2184204e8cad50"
+    },
+    {
+      "path": "packages/operations/http.go",
+      "sha256": "a7a5957b999b460ede6d1ba3caaada8f8bc1135c43d58f0a10d35d894b993f70"
+    },
+    {
+      "path": "packages/operations/metadata.go",
+      "sha256": "daaef8c42bb6154a60bb821cfd06020daef111b0d2579b9e1b033eca35116bd1"
+    },
+    {
+      "path": "packages/operations/model.go",
+      "sha256": "b17b8020322e764e214ffa219eb21bc981769db29a77fcc5a6ac8a25b666ce4b"
+    },
+    {
+      "path": "packages/operations/system_http.go",
+      "sha256": "14384f886124d87a1eadd44848808b4c9ba22fbb43a944c1ca9e7da536c9befd"
+    },
+    {
+      "path": "packages/passkeys/credentials.go",
+      "sha256": "2ed4c25b2597c3c3494e6d3785ac9d6db1fc97eceb1282c6274a924acce0e2ce"
+    },
+    {
+      "path": "packages/playback/client_constraints.go",
+      "sha256": "b327d532c37eb99a6fe57f76de488749dcdcf8c05ef1b49f446470c32e0975d5"
+    },
+    {
+      "path": "packages/playback/display_capabilities.go",
+      "sha256": "2ce7c23ab747032ecfc4de7df6ab641d4f33601906954371e073c518c9efaabc"
+    },
+    {
+      "path": "packages/playback/hls_cache.go",
+      "sha256": "36e33c4b742f655aca19a6e694cfbc9c7d2324f4b3c9b84fce31f6cf35fbb89f"
+    },
+    {
+      "path": "packages/playback/hls_paths.go",
+      "sha256": "2a3e682881ec8de808eae302497b3df443fd5de4d263f5c82027afb12be5d909"
+    },
+    {
+      "path": "packages/playback/hls_recipe.go",
+      "sha256": "7909064b7e3360f33a0f546378a08e646eb23ee4db5544660903d27e01a05a4c"
+    },
+    {
+      "path": "packages/playback/http.go",
+      "sha256": "265ebf64f672b3459a015b5eb9a9575b1dda1a2ab751184392ad4159b88f50b2"
+    },
+    {
+      "path": "packages/playback/model.go",
+      "sha256": "cf350c1718fc3c1084278e0ab6797e3ff410c3f0b69f7be3e32934a64d8814f4"
+    },
+    {
+      "path": "packages/playback/plan.go",
+      "sha256": "781272642cfe5755f206af94d6e2f433e116218ab2936fe62050d69e3ca65f0b"
+    },
+    {
+      "path": "packages/playback/qualities.go",
+      "sha256": "9302d2d619da6ae7d08108e2ed5f8a20a393ea043d23eced8967dd73c89ea2c5"
+    },
+    {
+      "path": "packages/playback/video_geometry.go",
+      "sha256": "c1ac738ff5f0ddb4f124379b100efc696b1d0fa467a35dc882b1a93701afe6e6"
+    },
+    {
+      "path": "packages/privatefile/privatefile.go",
+      "sha256": "b2a5a92d0e91bf4509c6d5fb9d5bd3b6fcf8b44231ed9e68c3b820e6145659d6"
+    },
+    {
+      "path": "packages/remoteaccess/http.go",
+      "sha256": "a0adb97b3c2ddb55dbdb5cc0bbc8c286a300865908536631c07297a3405e4f93"
+    },
+    {
+      "path": "packages/remoteaccess/remoteaccess.go",
+      "sha256": "e2f6454a1edcbb3f32905d7618576e51dd54d78f84677637f23bb7eb5aaa9f4d"
+    },
+    {
+      "path": "packages/routeinventory/inventory.go",
+      "sha256": "37455b18d1ee34081741a257c019d5e98e1286dca2d586e60493e9705821cd12"
+    },
+    {
+      "path": "packages/scim/app/configuration.go",
+      "sha256": "118c258c74fc5819841897e5650a2281ae7d897bf1e8143b679ea63e643f9e30"
+    },
+    {
+      "path": "packages/scim/routes.go",
+      "sha256": "eacaa37e061f370b2a1ce0e736ae46c5ec2e37f50c33f73f0e8014b1c4eb6b7d"
+    },
+    {
+      "path": "packages/scim/scim.go",
+      "sha256": "d5b3ee2afad4ea893d91da8c5b4692d516582a7a0d0ae0aa9d313ad703b4ea4d"
+    },
+    {
+      "path": "packages/servertest/api_boundaries.go",
+      "sha256": "29647532afa8f0de64d8cd1badd7b904fd95dd1d1a6519111c15db6e1e9a614b"
+    },
+    {
+      "path": "packages/servertest/api_parity_lifecycle.go",
+      "sha256": "9af2ae0ffffb245de73aa30eab244eaa6e660be643e1fb3b65f6182a6d818726"
+    },
+    {
+      "path": "packages/servertest/api_parity_scenarios.go",
+      "sha256": "46c42ea6ace46775f457219581a5cba9a42d1871cf1ac0f5f1a403648d5fbf01"
+    },
+    {
+      "path": "packages/servertest/durable_file_failures.go",
+      "sha256": "8d1215ce3952d5eecc1b5f5b16bae447d71f9b785364c63241568745269ab293"
+    },
+    {
+      "path": "packages/servertest/mcp_policy.go",
+      "sha256": "a7af844321e548b9d37a859f39c8a6bf6bc70007faab678e372b4fe00f46e347"
+    },
+    {
+      "path": "packages/servertest/metadata_legacy_contract.go",
+      "sha256": "7b4a1e2224b0583cc5efdf86306cfb2b61370e8f968fc3ba186d8dd257aef928"
+    },
+    {
+      "path": "packages/servertest/metadata_local_contract.go",
+      "sha256": "01f6a0bc8ded7c660507e355a8de02d14afee79124ae5992d7ac5f1ac13b1e90"
+    },
+    {
+      "path": "packages/servertest/metadata_provider.go",
+      "sha256": "8c234f57eb3de72696807fb6590e7b2fb026a5ef8c4d0b28eb03782c181cfdc4"
+    },
+    {
+      "path": "packages/servertest/metadata_provider_fixture.go",
+      "sha256": "57c584e450e483aa6136eddf7157cf87e2b8424fce5c7535df75c05287ad4c3e"
+    },
+    {
+      "path": "packages/servertest/metadata_store.go",
+      "sha256": "ddbd251c291319b49802ce0d0b6c4d00dff01bc10f2e40ff0a18c6e724742ced"
+    },
+    {
+      "path": "packages/servertest/metadata_tmdb_contract.go",
+      "sha256": "232e914aefdf7c278058a7e93e91e7b89872944277752766c0bd7892f7a5d489"
+    },
+    {
+      "path": "packages/settings/configuration.go",
+      "sha256": "390e6b761d50ddc596fbc74ada71f940af9533b54289db0a3d87b8b83bcc5f97"
+    },
+    {
+      "path": "packages/settings/dlna.go",
+      "sha256": "01a85ce5cb84f2ef6895f6f5805024dc7d9ad1efa5579f616441bf3e04125e14"
+    },
+    {
+      "path": "packages/settings/http.go",
+      "sha256": "31fdf2810fbaa25083123f3c9d1191f5e32a227b6eab2532e6e84e1b7594e93c"
+    },
+    {
+      "path": "packages/settings/library.go",
+      "sha256": "6cc3c1667bc69ebc9b589e58a8a3a40b1876a2f1fb06e9b50eac31ef16e5f3cc"
+    },
+    {
+      "path": "packages/settings/preferences.go",
+      "sha256": "8019a46bc393eeb9408ebadaa71a76f991cc99ff3ef86abba8ce81ee6c7883de"
+    },
+    {
+      "path": "packages/supporter/certificate.go",
+      "sha256": "c843d0b0f24e2e708b8b7e45df4d3087e84bbaceb1a26681117bd8c0424f38d4"
+    },
+    {
+      "path": "packages/supporter/editions.go",
+      "sha256": "21b9ccd4dc74a334634e58def05ceb864f229478b702a1eb64ab76fd7b1e0697"
+    },
+    {
+      "path": "packages/supporter/input.go",
+      "sha256": "022d298efcdf79da10dc79ceccccc1d275a69c558938d4fe805656ce56d47c37"
+    },
+    {
+      "path": "packages/supporter/json.go",
+      "sha256": "2c11de30280592f17d472113a5686837ae09634d77dd19eb140562b672d7db2b"
+    },
+    {
+      "path": "packages/supporter/legacy.go",
+      "sha256": "a703f6dc24dabd58289dd3316594dfbfabb51b608cfc36055b5a6e0373aec601"
+    },
+    {
+      "path": "packages/supporter/model.go",
+      "sha256": "387bb32c496bd69cfbf7b54d0bc0fb8b3e6931cb2dfffe2e293695d0ca122715"
+    },
+    {
+      "path": "packages/supporter/provider.go",
+      "sha256": "66af9f178294b9df21e78e26ec742fd38bb1e523bf5a2b32b70076c7bd8adbcf"
+    },
+    {
+      "path": "packages/supporter/service.go",
+      "sha256": "9e39c3d764147a20c36db2ac17f022e6eaa31d6b9decf20def83db29f0234561"
+    },
+    {
+      "path": "packages/supporter/state.go",
+      "sha256": "2f3993a7516a4a9414d83394faa564d016f27469bbe4a7f9f69d238d69aa1747"
+    },
+    {
+      "path": "packages/supporter/status.go",
+      "sha256": "c0670d418212a1692170dc27d42d8e1d1d30a93a7a28ae9aab86bbcfa6d06b15"
+    },
+    {
+      "path": "packages/supporter/validation.go",
+      "sha256": "591a81bbcd049d142cf4c7ef8d7e23394de7b5beece308ff53b8afcf726b91de"
+    },
+    {
+      "path": "packages/transcodehardware/backends.go",
+      "sha256": "ad53f5b49f501e68d6f773a8f72fce5869d52dbbfe2ae4eb7d80bb2dfb4574bb"
+    },
+    {
+      "path": "packages/transcodehardware/capabilities.go",
+      "sha256": "c917774911fbd410b56d1f3bdea2f8494b0193613facd9c105a803156158a261"
+    },
+    {
+      "path": "packages/transcodehardware/probe.go",
+      "sha256": "def030116c54172e8887111155f4235a741367fffaddd64c168e5c51bc2fdedb"
+    },
+    {
+      "path": "packages/transcodehardware/selection_store.go",
+      "sha256": "5b0a22e74a57ea6693cc082fe1962530e2e34344eed9cbd3cb4cea7d6359d394"
+    },
+    {
+      "path": "packages/transcodehardware/settings.go",
+      "sha256": "e767419c393ae929cbbc9cd7e5267412ece40d914817ad1954309b8e28283e95"
+    },
+    {
+      "path": "packages/transcodehardware/verification.go",
+      "sha256": "fc4f60ef293d2ce64332824d1b44ae5ebadb92676eed1c0be6d8c83102e505f4"
+    },
+    {
+      "path": "packages/transcodehardware/verification_formats.go",
+      "sha256": "a9b0a57e74fb29b4426bfddf11579d602776b9d18b9ba223bd75ef11a5344832"
+    },
+    {
+      "path": "packages/trustedhttps/config.go",
+      "sha256": "fa8fd3ed4bb6eddd8bca2724b4252a7988264100225b94216e582bd9f122ee6c"
+    },
+    {
+      "path": "packages/trustedhttps/form.go",
+      "sha256": "19d694bf7eed08021c9fca88cb40c1f871d6bdc144345129b6a7a4df7f80a867"
+    },
+    {
+      "path": "packages/updatecontrol/checker.go",
+      "sha256": "1c4da9753ac255ac3b2e5421867df45751f454996cd7816574accde0213af435"
+    },
+    {
+      "path": "packages/updatecontrol/control.go",
+      "sha256": "28930bedccb776b85457895bb7934b11c1ef0f9a7da2c925cce00254ff01873e"
+    },
+    {
+      "path": "packages/updatecontrol/http.go",
+      "sha256": "51df9aa627a34096f24787a9a3b96aaa77a266c973ca904470afb41f497c7729"
+    },
+    {
+      "path": "packages/updatecontrol/policy.go",
+      "sha256": "debba41466a569164811d8dea9b0084addf3d583d96307feb0413881a08d6faf"
+    },
+    {
+      "path": "packages/updatecontrol/release.go",
+      "sha256": "5b395c02201f7ad052c03ee7dde474330aa48e92ea0645071bc8eca95c45dead"
+    },
+    {
+      "path": "packages/webassets/static/pwa.js",
+      "sha256": "4ea43e5431973c9f6a6f7923248fcb63d7f0b401e44724539c0289b6ae1c0762"
+    }
+  ],
   "source_test_files": {
     "apps/player/internal/server/actor_internal_test.go": {
       "baseline_sha256": "4e84380c26191dcc2f3d1781ce8731a194c79e2db9bf8c42c6963e29efd09170",
@@ -15951,5 +16773,10 @@
         "TestOwnerUpdatePreferenceHasWebAndAPIParity"
       ]
     }
+  },
+  "format_reconciliation": {
+    "original_packet_git_commit": "e1772de2b093e398b73e19dffff2858c7ff00472",
+    "original_packet_sha256": "e9611880cd8011ead95a40ba204708af06c784ebf88a167d3424b0a7b62cca00",
+    "change": "Separate path and SHA256 fields so API/auth filenames do not resemble assigned credentials; all274 original source hashes remain identical. Correct one stale reset keeper reference after full body comparison."
   }
 }

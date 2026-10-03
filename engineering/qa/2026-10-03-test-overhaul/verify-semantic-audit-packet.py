@@ -75,7 +75,11 @@ def verify_slice(checkout,packet,d):
    assert row['body_helpers_and_owner_read'] is True,identity
    assert row['baseline_status']==row['baseline_terminal_event']['Action'],identity
    terminal[row['baseline_status']]+=1
- for path,checksum in d['source_owner_hashes'].items():
+ owner_hashes=d['source_owner_hashes']
+ if isinstance(owner_hashes,list):
+  original_count=len(owner_hashes);owner_hashes={row['path']:row['sha256'] for row in owner_hashes}
+  assert len(owner_hashes)==original_count,'Duplicate source-owner path in audit packet'
+ for path,checksum in owner_hashes.items():
   content=subprocess.check_output(['git','show',f'{base}:{path}'],cwd=checkout)
   assert hashlib.sha256(content).hexdigest()==checksum,path
  assert len(identities)==d['completed']==d['counts']['completed']==len(d['tests'])
@@ -88,7 +92,7 @@ def verify_slice(checkout,packet,d):
   path=Path(artifact['path']);present=path.is_file();ok=None
   if present:ok=hashlib.sha256(path.read_bytes()).hexdigest()==artifact['sha256'];assert ok,path
   receipts.append({'path':str(path),'present':present,'checksum_matches':ok})
- return {'verification':'passed','baseline_sha':base,'declaration_count':len(identities),'test_file_count':len(d['source_test_files']),'source_owner_files_verified':len(d['source_owner_hashes']),'decisions':counts,'baseline_terminal_statuses':dict(terminal),'baseline_receipts':receipts,'packet_sha256':hashlib.sha256(packet.read_bytes()).hexdigest(),'execution':'Read-only assigned-declaration/body/owner/receipt checksum validation. No Go or E2E execution.'}
+ return {'verification':'passed','baseline_sha':base,'declaration_count':len(identities),'test_file_count':len(d['source_test_files']),'source_owner_files_verified':len(owner_hashes),'decisions':counts,'baseline_terminal_statuses':dict(terminal),'baseline_receipts':receipts,'packet_sha256':hashlib.sha256(packet.read_bytes()).hexdigest(),'execution':'Read-only assigned-declaration/body/owner/receipt checksum validation. No Go or E2E execution.'}
 
 if __name__=='__main__':
  p=argparse.ArgumentParser();p.add_argument('--checkout',type=Path,required=True);p.add_argument('--packet',type=Path,required=True);a=p.parse_args();print(json.dumps(verify(a.checkout,a.packet),indent=2))
