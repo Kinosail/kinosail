@@ -6,12 +6,12 @@
   "files": 379,
   "declarations": 954,
   "test_loc": 28832,
-  "reviewed": 763,
-  "pending": 191,
+  "reviewed": 792,
+  "pending": 162,
   "decisions": {
-    "R": 667,
-    "D": 63,
-    "F": 32,
+    "R": 692,
+    "D": 64,
+    "F": 35,
     "C": 1
   },
   "verification": [
@@ -3114,17 +3114,23 @@
       "line": 14,
       "test": "TestAudiobooksHaveDedicatedResumableChapterExperience",
       "baseline_file_sha256": "ee380b9bba4090c1d32a76ff880b5c10f35d56e887a79f7d42f2bd2d6449425d",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "F",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Real fake-FFprobe twochapter M4B appears in API+audiobook view and player supplies chapter/speed/sleep/progress controls.",
+      "production_owner": "apps/subtitles/internal/server/player.go; apps/subtitles/internal/server/probe.go; packages/playerweb/player_projection.go",
+      "non_test_callers": "New composition root binds catalog Index scan/watch, app-visible browse/currentViewer callbacks, home localized template, player/resource/API route registration and real durable store factories.",
+      "remaining_proof": [
+        {
+          "kind": "retained_actual_app_projection_or_lifecycle_boundary",
+          "reference": "apps/subtitles/internal/server/audiobook_test.go::TestAudiobooksHaveDedicatedResumableChapterExperience"
+        }
+      ],
+      "coverage_gap": "No actual audiobook/browser current-time or sleep timer elapsed proof; name overstates resumable behavior. Important app chapter projection/control availability remains distinct; static selector snippets do not prove execution.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retain concrete app feature/admission/projection boundary or reproducible performance diagnostic; no genuine E2E equivalence claimed",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server",
+      "repair_status": "Important existing contract retained; exact assertion limitation documented; no isolated addition or repair made."
     },
     {
       "file": "apps/subtitles/internal/server/audit_test.go",
@@ -4330,17 +4336,22 @@
       "line": 14,
       "test": "TestLetterJumpBucketsStayUniqueWithPunctuatedTitles",
       "baseline_file_sha256": "a6c3855efa98178784c90231c3473d6317ffab9ee611de32d2b215def4901281",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Actual web+API punctuation/apostrophe/numeric titles produce exact#ABCMT distinct buckets and selectedMtoggle URL/count/ARIA aftertoolbar.",
+      "production_owner": "apps/subtitles/internal/server/browse.go; apps/subtitles/internal/server/server.go; packages/catalog",
+      "non_test_callers": "New composition root binds catalog Index scan/watch, app-visible browse/currentViewer callbacks, home localized template, player/resource/API route registration and real durable store factories.",
+      "remaining_proof": [
+        {
+          "kind": "retained_actual_app_projection_or_lifecycle_boundary",
+          "reference": "apps/subtitles/internal/server/browse_letters_regression_test.go::TestLetterJumpBucketsStayUniqueWithPunctuatedTitles"
+        }
+      ],
+      "coverage_gap": "Genuine B/Ghappy selection misses duplicate bucket punctuation and exact selected toggle projection. Two real app adapters must agree; no source-only policy replay.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retain concrete app feature/admission/projection boundary or reproducible performance diagnostic; no genuine E2E equivalence claimed",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/browser_accessibility_test.go",
@@ -6355,17 +6366,22 @@
       "line": 5,
       "test": "TestLeanBackPlaybackDefaultsAreOnAndCanBeDisabled",
       "baseline_file_sha256": "63cc3dd344481705ab2e8ab2ae927a44c20998cf08678bf5aabd12e7716b5011",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Actual twoepisode app defaults/Spanish stable form names/autonext, web disabled setting and fresh-server persisted-off projection.",
+      "production_owner": "apps/subtitles/internal/server/player.go; apps/subtitles/internal/server/settings_playback.go; packages/servertest/lean_back.go",
+      "non_test_callers": "New composition root binds catalog Index scan/watch, app-visible browse/currentViewer callbacks, home localized template, player/resource/API route registration and real durable store factories.",
+      "remaining_proof": [
+        {
+          "kind": "retained_actual_app_projection_or_lifecycle_boundary",
+          "reference": "apps/subtitles/internal/server/lean_back_test.go::TestLeanBackPlaybackDefaultsAreOnAndCanBeDisabled"
+        }
+      ],
+      "coverage_gap": "Pure shared default policy cannot guard app field forwarding, identity/routing and persistence restart. Player has independent actual callback; no genuine current Subtitles episode/default-off browser receipt.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retain concrete app feature/admission/projection boundary or reproducible performance diagnostic; no genuine E2E equivalence claimed",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/library_api_clients_test.go",
@@ -8142,68 +8158,88 @@
       "line": 15,
       "test": "TestMovieUsesItsLandscapeArtworkAsTheBackdrop",
       "baseline_file_sha256": "ffc6f33b4ab04d9b2aaf187ab27fa0c1465cfa12259158d1af9f77a202c9e75a",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Actual movie fanart wins overposter bytes in backdropGET, watch classes/url and external API backdrop field.",
+      "production_owner": "apps/subtitles/internal/server/files.go; apps/subtitles/internal/server/player.go; packages/playback/library_http.go",
+      "non_test_callers": "New composition root binds catalog Index scan/watch, app-visible browse/currentViewer callbacks, home localized template, player/resource/API route registration and real durable store factories.",
+      "remaining_proof": [
+        {
+          "kind": "retained_actual_app_projection_or_lifecycle_boundary",
+          "reference": "apps/subtitles/internal/server/media_backdrop_test.go::TestMovieUsesItsLandscapeArtworkAsTheBackdrop"
+        }
+      ],
+      "coverage_gap": "Generic artwork path helper tests do not prove app index/projection/route bindings. Ordinary screenshots/placeholder movie cannot compare fanart versus poster actual resource bytes.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retain concrete app feature/admission/projection boundary or reproducible performance diagnostic; no genuine E2E equivalence claimed",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/media_backdrop_test.go",
       "line": 49,
       "test": "TestShowUsesItsLandscapeArtworkAsTheBackdrop",
       "baseline_file_sha256": "ffc6f33b4ab04d9b2aaf187ab27fa0c1465cfa12259158d1af9f77a202c9e75a",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Actual show fanart resource resolves via ArtworkID while ShowID web/APIhero carries correct landscapeURL.",
+      "production_owner": "apps/subtitles/internal/server/files.go; apps/subtitles/internal/server/show.go; packages/catalogapi",
+      "non_test_callers": "New composition root binds catalog Index scan/watch, app-visible browse/currentViewer callbacks, home localized template, player/resource/API route registration and real durable store factories.",
+      "remaining_proof": [
+        {
+          "kind": "retained_actual_app_projection_or_lifecycle_boundary",
+          "reference": "apps/subtitles/internal/server/media_backdrop_test.go::TestShowUsesItsLandscapeArtworkAsTheBackdrop"
+        }
+      ],
+      "coverage_gap": "Distinct showID/artworkID forwarding protects broken-show backgrounds. No genuine live show fanart receipt.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retain concrete app feature/admission/projection boundary or reproducible performance diagnostic; no genuine E2E equivalence claimed",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/media_backdrop_test.go",
       "line": 88,
       "test": "TestBackdropFallsBackToPosterAndMissingArtworkStaysPlain",
       "baseline_file_sha256": "ffc6f33b4ab04d9b2aaf187ab27fa0c1465cfa12259158d1af9f77a202c9e75a",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Real app no-fanart uses exactposter bytes; missing-art returns404 and omits has-media-backdrop class.",
+      "production_owner": "apps/subtitles/internal/server/files.go; apps/subtitles/internal/server/player.go; packages/playback",
+      "non_test_callers": "New composition root binds catalog Index scan/watch, app-visible browse/currentViewer callbacks, home localized template, player/resource/API route registration and real durable store factories.",
+      "remaining_proof": [
+        {
+          "kind": "retained_actual_app_projection_or_lifecycle_boundary",
+          "reference": "apps/subtitles/internal/server/media_backdrop_test.go::TestBackdropFallsBackToPosterAndMissingArtworkStaysPlain"
+        }
+      ],
+      "coverage_gap": "Actual conditional app view/route gate, no genuine receipt compares both missing and poster-only branches.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retain concrete app feature/admission/projection boundary or reproducible performance diagnostic; no genuine E2E equivalence claimed",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/media_info_test.go",
       "line": 15,
       "test": "TestPlayerShowsMediaInformation",
       "baseline_file_sha256": "b22c62a9355c1a6fb080a5d05ff8475162955f4d04f445c12d21a5222e6419e1",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Real5byteMP4 fixture renders Media-information container and size5B in app player.",
+      "production_owner": "apps/subtitles/internal/server/player.go; packages/playerweb/player_data.go",
+      "non_test_callers": "New composition root binds catalog Index scan/watch, app-visible browse/currentViewer callbacks, home localized template, player/resource/API route registration and real durable store factories.",
+      "remaining_proof": [
+        {
+          "kind": "retained_actual_app_projection_or_lifecycle_boundary",
+          "reference": "apps/subtitles/internal/server/media_info_test.go::TestPlayerShowsMediaInformation"
+        }
+      ],
+      "coverage_gap": "Shared formatter alone cannot catch lost app FileSize/Container delivery. Current true Subtitles review receipt does not render media player information; small independent public projection.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retain concrete app feature/admission/projection boundary or reproducible performance diagnostic; no genuine E2E equivalence claimed",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/media_share_test.go",
@@ -8300,17 +8336,22 @@
       "line": 9,
       "test": "TestViewerCanBrowseAndOpenMusicAndPhotos",
       "baseline_file_sha256": "8aa5f7b28820f3dc0fb399fdbb1faa3a0cbd9bab883be7f10c1db0eb2c7c4afe",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Actual app music/photo scan and album metadata produce two distinct watch routes, audio+photo players, albumtitle and photo omission of player.js.",
+      "production_owner": "apps/subtitles/internal/server/server.go; apps/subtitles/internal/server/player.go; apps/subtitles/internal/server/album.go; packages/servertest/media_types.go",
+      "non_test_callers": "New composition root binds catalog Index scan/watch, app-visible browse/currentViewer callbacks, home localized template, player/resource/API route registration and real durable store factories.",
+      "remaining_proof": [
+        {
+          "kind": "retained_actual_app_projection_or_lifecycle_boundary",
+          "reference": "apps/subtitles/internal/server/media_types_test.go::TestViewerCanBrowseAndOpenMusicAndPhotos"
+        }
+      ],
+      "coverage_gap": "Shared callback uses actual NewHandler; generic media type policy cannot catch app render/routes/script gating. Genuine review video has no music/photo.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retain concrete app feature/admission/projection boundary or reproducible performance diagnostic; no genuine E2E equivalence claimed",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/metadata_artwork_expiry_test.go",
@@ -12325,102 +12366,132 @@
       "line": 21,
       "test": "TestLargeLibraryWebResponseIsBounded",
       "baseline_file_sha256": "5a96281b5a6caf3c499bdb94e0505159a793918fadd55ad33c06f75b927e7a7a",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Actual app home10Kmovies produces exactly100watchlinks, below26000bytes and offset100 nextlink.",
+      "production_owner": "apps/subtitles/internal/server/home.go; apps/subtitles/internal/server/server.go; packages/home/handler.go; packages/catalog",
+      "non_test_callers": "New composition root binds catalog Index scan/watch, app-visible browse/currentViewer callbacks, home localized template, player/resource/API route registration and real durable store factories.",
+      "remaining_proof": [
+        {
+          "kind": "retained_actual_app_projection_or_lifecycle_boundary",
+          "reference": "apps/subtitles/internal/server/performance_benchmark_test.go::TestLargeLibraryWebResponseIsBounded"
+        }
+      ],
+      "coverage_gap": "Concrete response size/page cardinality performance budget; real small library/screenshots would miss unbounded projection and excessiveHTML. Memory index is fixture, not scan/browser.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retain concrete app feature/admission/projection boundary or reproducible performance diagnostic; no genuine E2E equivalence claimed",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/performance_benchmark_test.go",
       "line": 31,
       "test": "TestLargeLetterBucketRemainsBoundedAndPageable",
       "baseline_file_sha256": "5a96281b5a6caf3c499bdb94e0505159a793918fadd55ad33c06f75b927e7a7a",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Actual10Ksameletter home limits both first andnext pages100links and preserves exactletterM/limit100/offset100 URL.",
+      "production_owner": "apps/subtitles/internal/server/home.go; packages/catalog",
+      "non_test_callers": "New composition root binds catalog Index scan/watch, app-visible browse/currentViewer callbacks, home localized template, player/resource/API route registration and real durable store factories.",
+      "remaining_proof": [
+        {
+          "kind": "retained_actual_app_projection_or_lifecycle_boundary",
+          "reference": "apps/subtitles/internal/server/performance_benchmark_test.go::TestLargeLetterBucketRemainsBoundedAndPageable"
+        }
+      ],
+      "coverage_gap": "General firstpage size keeper lacks active bucket/nextpage callback. Real tiny B/G catalog cannot expose unboundedletterbucket.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retain concrete app feature/admission/projection boundary or reproducible performance diagnostic; no genuine E2E equivalence claimed",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/performance_benchmark_test.go",
       "line": 47,
       "test": "BenchmarkLargeLibraryBrowse",
       "baseline_file_sha256": "5a96281b5a6caf3c499bdb94e0505159a793918fadd55ad33c06f75b927e7a7a",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "unrun (no baseline terminal JSON event; benchmarks not requested by Go command)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "10K actual app home allocs/time/response-byte metric exposes excessive repeated server work through reproducible benchmark comparison.",
+      "production_owner": "apps/subtitles/internal/server/home.go; apps/subtitles/internal/server/progress.go; apps/subtitles/internal/database; packages/catalog",
+      "non_test_callers": "New composition root binds catalog Index scan/watch, app-visible browse/currentViewer callbacks, home localized template, player/resource/API route registration and real durable store factories.",
+      "remaining_proof": [
+        {
+          "kind": "diagnostic_performance_instrument",
+          "reference": "apps/subtitles/internal/server/performance_benchmark_test.go::BenchmarkLargeLibraryBrowse"
+        }
+      ],
+      "coverage_gap": "Diagnostic benchmark exception: no automatic latency/allocation failurethreshold, baseline unrun and no candidate performance claim. Existing engineering/research/evidence/catalog-title-order-2026-09-30.md demonstrates reviewed repeated benchmark comparison artifact; run -run=^$ -bench=<name> -benchmem -count=5 for comparable serial measurements. End-to-end UI smallfixture misses10Kcost.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retain concrete app feature/admission/projection boundary or reproducible performance diagnostic; no genuine E2E equivalence claimed",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -run=^$ -bench=^BenchmarkLargeLibraryBrowse$ -benchmem -count=5 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/performance_benchmark_test.go",
       "line": 62,
       "test": "BenchmarkLargeLibraryKnownTitleNavigation",
       "baseline_file_sha256": "5a96281b5a6caf3c499bdb94e0505159a793918fadd55ad33c06f75b927e7a7a",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "unrun (no baseline terminal JSON event; benchmarks not requested by Go command)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "10K app searchknownMovie9999 andletterM request allocations/time compare two production navigation paths.",
+      "production_owner": "apps/subtitles/internal/server/home.go; apps/subtitles/internal/server/progress.go; apps/subtitles/internal/database; packages/catalog",
+      "non_test_callers": "New composition root binds catalog Index scan/watch, app-visible browse/currentViewer callbacks, home localized template, player/resource/API route registration and real durable store factories.",
+      "remaining_proof": [
+        {
+          "kind": "diagnostic_performance_instrument",
+          "reference": "apps/subtitles/internal/server/performance_benchmark_test.go::BenchmarkLargeLibraryKnownTitleNavigation"
+        }
+      ],
+      "coverage_gap": "Diagnostic benchmark exception: no automatic latency/allocation failurethreshold, baseline unrun and no candidate performance claim. Existing engineering/research/evidence/catalog-title-order-2026-09-30.md demonstrates reviewed repeated benchmark comparison artifact; run -run=^$ -bench=<name> -benchmem -count=5 for comparable serial measurements. End-to-end UI smallfixture misses10Kcost.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retain concrete app feature/admission/projection boundary or reproducible performance diagnostic; no genuine E2E equivalence claimed",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -run=^$ -bench=^BenchmarkLargeLibraryKnownTitleNavigation$ -benchmem -count=5 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/performance_benchmark_test.go",
       "line": 90,
       "test": "BenchmarkSaveProgressJSON10K",
       "baseline_file_sha256": "5a96281b5a6caf3c499bdb94e0505159a793918fadd55ad33c06f75b927e7a7a",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "unrun (no baseline terminal JSON event; benchmarks not requested by Go command)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Actual app10KwholeJSON durable store update cost measures whole-document persistence risk.",
+      "production_owner": "apps/subtitles/internal/server/home.go; apps/subtitles/internal/server/progress.go; apps/subtitles/internal/database; packages/catalog",
+      "non_test_callers": "New composition root binds catalog Index scan/watch, app-visible browse/currentViewer callbacks, home localized template, player/resource/API route registration and real durable store factories.",
+      "remaining_proof": [
+        {
+          "kind": "diagnostic_performance_instrument",
+          "reference": "apps/subtitles/internal/server/performance_benchmark_test.go::BenchmarkSaveProgressJSON10K"
+        }
+      ],
+      "coverage_gap": "Diagnostic benchmark exception: no automatic latency/allocation failurethreshold, baseline unrun and no candidate performance claim. Existing engineering/research/evidence/catalog-title-order-2026-09-30.md demonstrates reviewed repeated benchmark comparison artifact; run -run=^$ -bench=<name> -benchmem -count=5 for comparable serial measurements. End-to-end UI smallfixture misses10Kcost.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retain concrete app feature/admission/projection boundary or reproducible performance diagnostic; no genuine E2E equivalence claimed",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -run=^$ -bench=^BenchmarkSaveProgressJSON10K$ -benchmem -count=5 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/performance_benchmark_test.go",
       "line": 108,
       "test": "BenchmarkSaveProgress10K",
       "baseline_file_sha256": "5a96281b5a6caf3c499bdb94e0505159a793918fadd55ad33c06f75b927e7a7a",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "unrun (no baseline terminal JSON event; benchmarks not requested by Go command)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Actual app10KSQLite entry store update cost measures bounded durable path against JSON strategy.",
+      "production_owner": "apps/subtitles/internal/server/home.go; apps/subtitles/internal/server/progress.go; apps/subtitles/internal/database; packages/catalog",
+      "non_test_callers": "New composition root binds catalog Index scan/watch, app-visible browse/currentViewer callbacks, home localized template, player/resource/API route registration and real durable store factories.",
+      "remaining_proof": [
+        {
+          "kind": "diagnostic_performance_instrument",
+          "reference": "apps/subtitles/internal/server/performance_benchmark_test.go::BenchmarkSaveProgress10K"
+        }
+      ],
+      "coverage_gap": "Diagnostic benchmark exception: no automatic latency/allocation failurethreshold, baseline unrun and no candidate performance claim. Existing engineering/research/evidence/catalog-title-order-2026-09-30.md demonstrates reviewed repeated benchmark comparison artifact; run -run=^$ -bench=<name> -benchmem -count=5 for comparable serial measurements. End-to-end UI smallfixture misses10Kcost.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retain concrete app feature/admission/projection boundary or reproducible performance diagnostic; no genuine E2E equivalence claimed",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -run=^$ -bench=^BenchmarkSaveProgress10K$ -benchmem -count=5 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/permission_boundaries_test.go",
@@ -14495,7 +14566,7 @@
       "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
       "credible_failure": "Real populated home sets exactly firsttwo recent images fetchpriorityhigh and third loadinglazy.",
-      "production_owner": "apps/subtitles/internal/server/home.go; packages/home/recent.go; packages/playerweb/home.go",
+      "production_owner": "apps/subtitles/internal/server/home.go; packages/home/recent.go; apps/subtitles/internal/server/server.go",
       "non_test_callers": "New constructs app index/list/progress/auth factories; registerPlayer and registerAPI bind visible-item/currentViewer state to web/API writes, homeSource.Personal to rendered shelves.",
       "remaining_proof": [
         {
@@ -14517,7 +14588,7 @@
       "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
       "credible_failure": "Actual NFO show metadata reuses poster and strips provider token from rendered recent episode title.",
-      "production_owner": "apps/subtitles/internal/server/home.go; apps/subtitles/internal/server/artwork.go; packages/home/projection.go; packages/library",
+      "production_owner": "apps/subtitles/internal/server/home.go; apps/subtitles/internal/server/files.go; packages/home/projection.go; packages/library",
       "non_test_callers": "New constructs app index/list/progress/auth factories; registerPlayer and registerAPI bind visible-item/currentViewer state to web/API writes, homeSource.Personal to rendered shelves.",
       "remaining_proof": [
         {
@@ -14539,7 +14610,7 @@
       "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
       "credible_failure": "Two actual episodes render one show-stack count/title, reuse available first-episode artwork, and GETart returns actualposter.",
-      "production_owner": "apps/subtitles/internal/server/home.go; apps/subtitles/internal/server/artwork.go; packages/home/{projection.go,recent.go}",
+      "production_owner": "apps/subtitles/internal/server/home.go; apps/subtitles/internal/server/files.go; packages/home/{projection.go,recent.go}",
       "non_test_callers": "New constructs app index/list/progress/auth factories; registerPlayer and registerAPI bind visible-item/currentViewer state to web/API writes, homeSource.Personal to rendered shelves.",
       "remaining_proof": [
         {
@@ -15001,119 +15072,156 @@
       "line": 15,
       "test": "TestLibraryRefreshesOnSchedule",
       "baseline_file_sha256": "9b25e15ab46948735352ada1b1a4fee6f8f45b826683d773eeadd0de61d52464",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "F",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Actual app lifecycle eventually refreshes visible title after configured5ms scheduling.",
+      "production_owner": "apps/subtitles/internal/server/server.go; packages/catalog/{index.go,watch.go}",
+      "non_test_callers": "New composition root binds catalog Index scan/watch, app-visible browse/currentViewer callbacks, home localized template, player/resource/API route registration and real durable store factories.",
+      "remaining_proof": [
+        {
+          "kind": "retained_actual_app_projection_or_lifecycle_boundary",
+          "reference": "apps/subtitles/internal/server/scan_test.go::TestLibraryRefreshesOnSchedule"
+        }
+      ],
+      "coverage_gap": "Watcher startup reconciliation also requestsrefresh; this immediate-write test can pass with scheduled timer removed. Retain app eventual lifecycle refresh contract but schedule-only claim needs isolated startup control or disabled watch.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retain concrete app feature/admission/projection boundary or reproducible performance diagnostic; no genuine E2E equivalence claimed",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server",
+      "repair_status": "Important existing contract retained; exact assertion limitation documented; no isolated addition or repair made."
     },
     {
       "file": "apps/subtitles/internal/server/scan_test.go",
       "line": 34,
       "test": "TestLibraryAutomaticallyDetectsNewNestedMediaForWebAndAPI",
       "baseline_file_sha256": "9b25e15ab46948735352ada1b1a4fee6f8f45b826683d773eeadd0de61d52464",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Actual nested newlycreated Season directory/episode is eventually visible in both exact webshow and API episode title without hourtimer.",
+      "production_owner": "apps/subtitles/internal/server/server.go; packages/catalog/{watch.go,watch_events.go}",
+      "non_test_callers": "New composition root binds catalog Index scan/watch, app-visible browse/currentViewer callbacks, home localized template, player/resource/API route registration and real durable store factories.",
+      "remaining_proof": [
+        {
+          "kind": "retained_actual_app_projection_or_lifecycle_boundary",
+          "reference": "apps/subtitles/internal/server/scan_test.go::TestLibraryAutomaticallyDetectsNewNestedMediaForWebAndAPI"
+        }
+      ],
+      "coverage_gap": "Real fsnotify and app projection exercised, not genuine browser. Shared watcher tests do not prove app lifecycle/d\u00e9cor registration; eightsecond bound may depend host.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retain concrete app feature/admission/projection boundary or reproducible performance diagnostic; no genuine E2E equivalence claimed",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/scan_test.go",
       "line": 62,
       "test": "TestLibraryMonitoringWorksWithoutScheduledScans",
       "baseline_file_sha256": "9b25e15ab46948735352ada1b1a4fee6f8f45b826683d773eeadd0de61d52464",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Actual app zero-schedule still registers root and discovers newDune within8s.",
+      "production_owner": "apps/subtitles/internal/server/server.go; packages/catalog/watch.go",
+      "non_test_callers": "New composition root binds catalog Index scan/watch, app-visible browse/currentViewer callbacks, home localized template, player/resource/API route registration and real durable store factories.",
+      "remaining_proof": [
+        {
+          "kind": "retained_actual_app_projection_or_lifecycle_boundary",
+          "reference": "apps/subtitles/internal/server/scan_test.go::TestLibraryMonitoringWorksWithoutScheduledScans"
+        }
+      ],
+      "coverage_gap": "No genuine test copies media after boot with schedulingdisabled.100mswait assumes startup complete rather than observable readiness; real filesystem feature still distinct.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retain concrete app feature/admission/projection boundary or reproducible performance diagnostic; no genuine E2E equivalence claimed",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/scan_test.go",
       "line": 75,
       "test": "TestLibraryWaitsForCopyToSettle",
       "baseline_file_sha256": "9b25e15ab46948735352ada1b1a4fee6f8f45b826683d773eeadd0de61d52464",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Open actual media file afterfirstchunk stays unpublished at2.5s and finalchunk+close eventually publishes.",
+      "production_owner": "apps/subtitles/internal/server/server.go; packages/catalog/watch.go",
+      "non_test_callers": "New composition root binds catalog Index scan/watch, app-visible browse/currentViewer callbacks, home localized template, player/resource/API route registration and real durable store factories.",
+      "remaining_proof": [
+        {
+          "kind": "retained_actual_app_projection_or_lifecycle_boundary",
+          "reference": "apps/subtitles/internal/server/scan_test.go::TestLibraryWaitsForCopyToSettle"
+        }
+      ],
+      "coverage_gap": "Failure-sensitive real growing-file admission. Shared watcher injected maps do not prove actual OS event/composition plumbing; browser fixture starts with complete files.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retain concrete app feature/admission/projection boundary or reproducible performance diagnostic; no genuine E2E equivalence claimed",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/scan_test.go",
       "line": 103,
       "test": "TestFailedScanKeepsLastKnownGoodLibrary",
       "baseline_file_sha256": "9b25e15ab46948735352ada1b1a4fee6f8f45b826683d773eeadd0de61d52464",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "After root directory deletion, actual manual task returns502 and lastknownHeat remains visible.",
+      "production_owner": "apps/subtitles/internal/server/settings_tasks.go; packages/catalog/{scan.go,index.go}",
+      "non_test_callers": "New composition root binds catalog Index scan/watch, app-visible browse/currentViewer callbacks, home localized template, player/resource/API route registration and real durable store factories.",
+      "remaining_proof": [
+        {
+          "kind": "retained_actual_app_projection_or_lifecycle_boundary",
+          "reference": "apps/subtitles/internal/server/scan_test.go::TestFailedScanKeepsLastKnownGoodLibrary"
+        }
+      ],
+      "coverage_gap": "Important catalog loss prevention app error/status/projection wiring. Happy E2E never removes mounted media root.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retain concrete app feature/admission/projection boundary or reproducible performance diagnostic; no genuine E2E equivalence claimed",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/scan_test.go",
       "line": 124,
       "test": "TestOwnerCanDisableSafetyScansWithoutDisablingAutoDetection",
       "baseline_file_sha256": "9b25e15ab46948735352ada1b1a4fee6f8f45b826683d773eeadd0de61d52464",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Actual webfrequencyoff persists throughrestart while filesystemnewDune remains detected.",
+      "production_owner": "apps/subtitles/internal/server/settings_library_http.go; apps/subtitles/internal/server/server.go; packages/catalog/index.go",
+      "non_test_callers": "New composition root binds catalog Index scan/watch, app-visible browse/currentViewer callbacks, home localized template, player/resource/API route registration and real durable store factories.",
+      "remaining_proof": [
+        {
+          "kind": "retained_actual_app_projection_or_lifecycle_boundary",
+          "reference": "apps/subtitles/internal/server/scan_test.go::TestOwnerCanDisableSafetyScansWithoutDisablingAutoDetection"
+        }
+      ],
+      "coverage_gap": "Real API/UIstatus tests do not prove watcher remains active when disabling timer and settings survivesrestart.8sdeadline/startup race limits independent exact timer stateproof.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retain concrete app feature/admission/projection boundary or reproducible performance diagnostic; no genuine E2E equivalence claimed",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/search_test.go",
       "line": 10,
       "test": "TestLiveSearchReplacesLibraryRegion",
       "baseline_file_sha256": "c06772e94c674001aed65efede7de05eff9085d2418ad1c1e13750cf2f779479",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "F",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Actual home markup supplies outerHTML replacement and polite live result status.",
+      "production_owner": "apps/subtitles/internal/server/server.go; packages/servertest/live_search.go",
+      "non_test_callers": "New composition root binds catalog Index scan/watch, app-visible browse/currentViewer callbacks, home localized template, player/resource/API route registration and real durable store factories.",
+      "remaining_proof": [
+        {
+          "kind": "retained_actual_app_projection_or_lifecycle_boundary",
+          "reference": "apps/subtitles/internal/server/search_test.go::TestLiveSearchReplacesLibraryRegion"
+        }
+      ],
+      "coverage_gap": "Despite name, only two rendered fragments are checked; no HTMX request/DOM replacement or announcement execution. Genuine happy-path live search exists but current actual CLI root differs and source-only role guard is remaining app accessibility contract.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retain concrete app feature/admission/projection boundary or reproducible performance diagnostic; no genuine E2E equivalence claimed",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server",
+      "repair_status": "Important existing contract retained; exact assertion limitation documented; no isolated addition or repair made."
     },
     {
       "file": "apps/subtitles/internal/server/security_fuzz_test.go",
@@ -15428,51 +15536,70 @@
       "line": 17,
       "test": "TestViewerCanOpenHome",
       "baseline_file_sha256": "bf11de5bb78469e2203b1cfa0b2ba950a26c1405425f33f24500c3b6f94bf690",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "D",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Bare GET HTTP200 and Kinosail substring replay basic startup/render availability.",
+      "production_owner": "apps/subtitles/internal/server/server.go",
+      "non_test_callers": "New composition root binds catalog Index scan/watch, app-visible browse/currentViewer callbacks, home localized template, player/resource/API route registration and real durable store factories.",
+      "remaining_proof": [
+        {
+          "kind": "genuine_http_cli_browser_receipt",
+          "reference": ".verification/test-overhaul/subtitles-ui-http-6c9781 (source6c9781e2605dc947c4c09e07bb6edfcc8911d42c;3actual journeys)"
+        },
+        {
+          "kind": "retained_app_shell_contract",
+          "reference": "apps/subtitles/internal/server/assets_test.go::TestHomeIsInstallableAsAWebApp"
+        }
+      ],
+      "coverage_gap": "No distinct transport behavior beyond ordinary HTTP GET. Actual native CLI HTTP/browser receipt exercises real initialized server/page rendering; other retained app home/template contracts cover compatibility root.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Basic render smoke superseded",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/server_test.go",
       "line": 45,
       "test": "TestViewerCanOpenPlayer",
       "baseline_file_sha256": "bf11de5bb78469e2203b1cfa0b2ba950a26c1405425f33f24500c3b6f94bf690",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Actual scan/watch route renders video with dedicated player shell and no Main-navigation.",
+      "production_owner": "apps/subtitles/internal/server/server.go; apps/subtitles/internal/server/player.go",
+      "non_test_callers": "New composition root binds catalog Index scan/watch, app-visible browse/currentViewer callbacks, home localized template, player/resource/API route registration and real durable store factories.",
+      "remaining_proof": [
+        {
+          "kind": "retained_actual_app_projection_or_lifecycle_boundary",
+          "reference": "apps/subtitles/internal/server/server_test.go::TestViewerCanOpenPlayer"
+        }
+      ],
+      "coverage_gap": "Other larger player tests prove controls but do not assert absence of disruptive main navigation. Genuine current Subtitles review/dashboard receipt does not open its compatibility media player.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retain concrete app feature/admission/projection boundary or reproducible performance diagnostic; no genuine E2E equivalence claimed",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/server_test.go",
       "line": 67,
       "test": "TestUnknownPlayerStartsDirectWithCompatibleFallback",
       "baseline_file_sha256": "bf11de5bb78469e2203b1cfa0b2ba950a26c1405425f33f24500c3b6f94bf690",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Unknown media evidence produces direct src plus adaptive and direct fallback fields and served browser negotiation.",
+      "production_owner": "apps/subtitles/internal/server/player.go; apps/subtitles/internal/server/player_playback.go; apps/subtitles/internal/server/playback_http.go",
+      "non_test_callers": "New composition root binds catalog Index scan/watch, app-visible browse/currentViewer callbacks, home localized template, player/resource/API route registration and real durable store factories.",
+      "remaining_proof": [
+        {
+          "kind": "retained_actual_app_projection_or_lifecycle_boundary",
+          "reference": "apps/subtitles/internal/server/server_test.go::TestUnknownPlayerStartsDirectWithCompatibleFallback"
+        }
+      ],
+      "coverage_gap": "Planner fixture pure unknown-facts plan is separate from app HTML delivery. Genuine clip ffprobe supplies known codec and does not exercise missing evidence; source canPlayType does not prove runtime recovery.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retain concrete app feature/admission/projection boundary or reproducible performance diagnostic; no genuine E2E equivalence claimed",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/server_test.go",
@@ -15574,34 +15701,44 @@
       "line": 177,
       "test": "TestViewerCanResumePlayback",
       "baseline_file_sha256": "bf11de5bb78469e2203b1cfa0b2ba950a26c1405425f33f24500c3b6f94bf690",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Accepted real web form42seconds projects into actual watch HTML data-start42.",
+      "production_owner": "apps/subtitles/internal/server/player.go; apps/subtitles/internal/server/progress.go",
+      "non_test_callers": "New composition root binds catalog Index scan/watch, app-visible browse/currentViewer callbacks, home localized template, player/resource/API route registration and real durable store factories.",
+      "remaining_proof": [
+        {
+          "kind": "retained_actual_app_projection_or_lifecycle_boundary",
+          "reference": "apps/subtitles/internal/server/server_test.go::TestViewerCanResumePlayback"
+        }
+      ],
+      "coverage_gap": "TrustedOpeningOffset keeper sends versioned JSON API, not valid web form; web oversized-session keeper is only a negative control. This positive real web\u2192viewer progress\u2192player mapping remains independent.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retain concrete app feature/admission/projection boundary or reproducible performance diagnostic; no genuine E2E equivalence claimed",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/server_test.go",
       "line": 199,
       "test": "TestViewerCanFindContinuedMedia",
       "baseline_file_sha256": "bf11de5bb78469e2203b1cfa0b2ba950a26c1405425f33f24500c3b6f94bf690",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Actual accepted web progress60 maps into home Continue shelf and human Resume-at1m label.",
+      "production_owner": "apps/subtitles/internal/server/home.go; apps/subtitles/internal/server/progress.go; apps/subtitles/internal/server/server.go",
+      "non_test_callers": "New composition root binds catalog Index scan/watch, app-visible browse/currentViewer callbacks, home localized template, player/resource/API route registration and real durable store factories.",
+      "remaining_proof": [
+        {
+          "kind": "retained_actual_app_projection_or_lifecycle_boundary",
+          "reference": "apps/subtitles/internal/server/server_test.go::TestViewerCanFindContinuedMedia"
+        }
+      ],
+      "coverage_gap": "Current executed true CLI dashboard receipt has no classic Continue shelf. API dismiss keeper proves history/no-loss but does not assert positive web save plus exact one-minute home presentation.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retain concrete app feature/admission/projection boundary or reproducible performance diagnostic; no genuine E2E equivalence claimed",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/server_test.go",
@@ -15652,51 +15789,66 @@
       "line": 245,
       "test": "TestViewerCanBrowseScannedLibrary",
       "baseline_file_sha256": "bf11de5bb78469e2203b1cfa0b2ba950a26c1405425f33f24500c3b6f94bf690",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Dot-delimited scanned filename The.Matrix becomes visible The Matrix through app composition-root decorator and home renderer.",
+      "production_owner": "apps/subtitles/internal/server/server.go; packages/library; apps/subtitles/internal/server/home.go",
+      "non_test_callers": "New composition root binds catalog Index scan/watch, app-visible browse/currentViewer callbacks, home localized template, player/resource/API route registration and real durable store factories.",
+      "remaining_proof": [
+        {
+          "kind": "retained_actual_app_projection_or_lifecycle_boundary",
+          "reference": "apps/subtitles/internal/server/server_test.go::TestViewerCanBrowseScannedLibrary"
+        }
+      ],
+      "coverage_gap": "NFO fixtures override title and cannot prove undecorated filename mapping. Actual review Arrival is plain title; shared library parsing lacks app decoration/render forwarding risk.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retain concrete app feature/admission/projection boundary or reproducible performance diagnostic; no genuine E2E equivalence claimed",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/server_test.go",
       "line": 261,
       "test": "TestViewerCanSearchLibrary",
       "baseline_file_sha256": "bf11de5bb78469e2203b1cfa0b2ba950a26c1405425f33f24500c3b6f94bf690",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Real classic browse with Arrival query includesArrival and excludesTheMatrix.",
+      "production_owner": "apps/subtitles/internal/server/browse.go; apps/subtitles/internal/server/home.go; packages/catalog",
+      "non_test_callers": "New composition root binds catalog Index scan/watch, app-visible browse/currentViewer callbacks, home localized template, player/resource/API route registration and real durable store factories.",
+      "remaining_proof": [
+        {
+          "kind": "retained_actual_app_projection_or_lifecycle_boundary",
+          "reference": "apps/subtitles/internal/server/server_test.go::TestViewerCanSearchLibrary"
+        }
+      ],
+      "coverage_gap": "Retained richer-metadata search only checks positive result/fields and has oneitem, not nonmatching exclusion. Current actual CLI dashboard query follows a different parser/renderer.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retain concrete app feature/admission/projection boundary or reproducible performance diagnostic; no genuine E2E equivalence claimed",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/server_test.go",
       "line": 280,
       "test": "TestOwnerCanManuallySyncLibrary",
       "baseline_file_sha256": "bf11de5bb78469e2203b1cfa0b2ba950a26c1405425f33f24500c3b6f94bf690",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "App web Sync action is exposed, returns303 and newly written Dune appears on subsequent home.",
+      "production_owner": "apps/subtitles/internal/server/server.go; apps/subtitles/internal/server/settings_tasks.go; packages/catalog/index.go",
+      "non_test_callers": "New composition root binds catalog Index scan/watch, app-visible browse/currentViewer callbacks, home localized template, player/resource/API route registration and real durable store factories.",
+      "remaining_proof": [
+        {
+          "kind": "retained_actual_app_projection_or_lifecycle_boundary",
+          "reference": "apps/subtitles/internal/server/server_test.go::TestOwnerCanManuallySyncLibrary"
+        }
+      ],
+      "coverage_gap": "Failed scan/unauthorized keepers lack successful web /scan submission. Actual CLI root uses dashboard scan action; no exact compatibility Sync /scan browser receipt.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retain concrete app feature/admission/projection boundary or reproducible performance diagnostic; no genuine E2E equivalence claimed",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/session_cookie_isolation_test.go",

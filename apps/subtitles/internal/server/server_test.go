@@ -1,7 +1,6 @@
 package server_test
 
 import (
-	"io"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
@@ -13,34 +12,6 @@ import (
 
 	"github.com/MikeO7/kinosail-subtitles/internal/server"
 )
-
-func TestViewerCanOpenHome(t *testing.T) {
-	t.Parallel()
-
-	testServer := httptest.NewServer(server.New(server.Config{}))
-	t.Cleanup(testServer.Close)
-
-	request, err := http.NewRequestWithContext(t.Context(), http.MethodGet, testServer.URL, nil)
-	if err != nil {
-		t.Fatal(err)
-	}
-	response, err := http.DefaultClient.Do(request)
-	if err != nil {
-		t.Fatal(err)
-	}
-	t.Cleanup(func() {
-		if err := response.Body.Close(); err != nil {
-			t.Error(err)
-		}
-	})
-	body, err := io.ReadAll(response.Body)
-	if err != nil {
-		t.Fatal(err)
-	}
-	if response.StatusCode != http.StatusOK || !strings.Contains(string(body), "Kinosail") {
-		t.Fatalf("home = %d %q", response.StatusCode, body)
-	}
-}
 
 func TestViewerCanOpenPlayer(t *testing.T) {
 	t.Parallel()
