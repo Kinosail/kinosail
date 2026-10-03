@@ -6,7 +6,7 @@
   ],
   "base_sha": "876b771a7dd0aef5e65957fcee87add0312535e8",
   "branch": "codex/test-overhaul-player-backend",
-  "audit_status": "in_progress",
+  "audit_status": "semantic_complete_validation_pending",
   "baseline": {
     "test_file_count": 351,
     "test_lines": 25795,
@@ -5136,9 +5136,9 @@
         "apps/player/cmd/kinosail/main.go:main -> appcli.Execute with app-bound command/configuration/server/MCP functions; production binary and container health/update/recovery entrypoints"
       ],
       "remaining_proof": [
-        "Player TestCLIContract/TestMCPStdioCommandConnectsAsSoleOwner; packages/commandtest/mcp.go:MCPOwner"
+        "apps/player/cmd/kinosail/main_test.go::TestCLIContract/TestMCPStdioCommandConnectsAsSoleOwner; packages/commandtest/cli.go::CLI.Run and packages/commandtest/mcp.go::MCPOwner; apps/player/cmd/kinosail/main_test.go::TestCommandLineHelperProcess"
       ],
-      "coverage_limit": "Retained TestCLIContract/MCPOwner goes through main/serveConfiguredMCP/current configuredMCPServerConfig and real transport socket; stronger process boundary, not browser E2E.",
+      "coverage_limit": "The retained CLI.Run subtest constructs the actual configured HTTP owner server and starts the current test binary with mcp-stdio, reaching main/serveConfiguredMCP/configuredMCPServerConfig and a real private socket/official SDK tools list. The canonical subtest is not a standalone declaration and is not browser E2E.",
       "history": [
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
@@ -7260,22 +7260,90 @@
       "sha256": "62d5a72a797d24737ccf1d716104ba298fadd469688a7257ed4a8db434e9b518",
       "path": "apps/player/internal/server/agent_playlist_api_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "Registered batch creation preserves explicit episode/movie order, rejects unavailable IDs and bounded 201-item/257-byte inputs before publishing rejected names. Losing route validation or ordered create would silently alter agent queues or publish excessive input.",
+      "category": "important_missed_failure",
+      "credible_failure": "Registered batch creation preserves explicit episode/movie order, rejects unavailable IDs and bounded 201-item/257-byte inputs before publishing rejected names. Losing route validation or ordered create would silently alter agent queues or publish excessive input.",
+      "production_owner": [
+        "apps/player/internal/server/api.go",
+        "apps/player/internal/server/playlist_document.go",
+        "apps/player/internal/server/lists.go",
+        "apps/player/internal/server/player.go"
+      ],
+      "non_test_callers": [
+        "apps/player/internal/server/api.go",
+        "apps/player/internal/server/playlist_document.go",
+        "apps/player/internal/server/lists.go",
+        "apps/player/internal/server/player.go"
+      ],
+      "remaining_proof": "genuine instant-show-play creates2 IDs but checks statuses/layout rather than queue order/rejected input; UI curation happy journey has valid single membership only. Shared validation cannot prove actual registered batch adapter/profile binding.",
+      "coverage_limit": "Read-only source comparison and parent baseline. No child fresh Go/browser/native build. Genuine browser proof distinguished from isolated/shared fixtures; fresh exact-SHA keeper receipts remain root responsibility. AgentCanCreateOrderedPlaylist uses real MFA Owner/API server; actual created read has exactly2 IDs and exact order. Too many/Long ID absent from final listing; Unsafe absence is not asserted. Dummy media does not prove playback.",
       "history": [
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
-      "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "production_or_support_deletion_unlocked": "None for retained declarations.",
+      "risk": "Retained important failure with explicit assertion limits; no new isolated tests.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./internal/server -run '^TestAgentCanCreateAnOrderedPlaylistInOneAPICall$'",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "baseline_file_sha256": "c268d173e37d884469a70cd125adb0db068f7adbfa59aa1fea2ff82633e4ed7f",
+      "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8",
+      "owner_source_matches_baseline": true,
+      "assertion_review_and_limits": "AgentCanCreateOrderedPlaylist uses real MFA Owner/API server; actual created read has exactly2 IDs and exact order. Too many/Long ID absent from final listing; Unsafe absence is not asserted. Dummy media does not prove playback.",
+      "helper_and_primary_receipts": [
+        {
+          "file": "packages/servertest/agent_playlist.go",
+          "baseline_sha256": "6b6f8d5b346e74ea71a2987cc1c9fc6321a0fa013360e08b7a2a7d0b4350ece4",
+          "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+        },
+        {
+          "file": "packages/servertest/api_helpers.go",
+          "baseline_sha256": "6aa0343bc5bd683d04e73d77ddca75697cc71366c10c9e19f65a974879c4415c",
+          "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+        },
+        {
+          "file": "packages/catalogapi/playlist_document.go",
+          "baseline_sha256": "b7e38e896960571d09af1ee73587f503e31b54dd20646733430866613e9897e8",
+          "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+        },
+        {
+          "file": "packages/catalogapi/media_http.go",
+          "baseline_sha256": "b92b469d465fbfeaa58f63c0383383277b6184375a267bca511fb0dd0529316e",
+          "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+        },
+        {
+          "file": "packages/catalogapi/media_http_read.go",
+          "baseline_sha256": "f6a04c539a345408b77244589eeb77ccf55c2ad3b6cfcbe6c1761c23b2b79a33",
+          "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+        },
+        {
+          "file": "packages/catalogapi/media_http_write.go",
+          "baseline_sha256": "34c34ef20b7820d8e6d38ba06a5273e3c62a9949d4f5d25f6bdece008a3a3d6c",
+          "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+        }
+      ],
+      "verified_history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "baseline_events": [
+        {
+          "Time": "2026-10-03T10:29:50.505234-06:00",
+          "Action": "pass",
+          "Package": "github.com/MikeO7/kinosail-player/internal/server",
+          "Test": "TestAgentCanCreateAnOrderedPlaylistInOneAPICall",
+          "Elapsed": 0.5
+        }
+      ],
+      "test_edits": false,
+      "new_isolated_tests_added": false,
+      "review_provenance": {
+        "reviewer": "/root/frontend_native",
+        "packet": "engineering/qa/2026-10-03-test-overhaul/player-final-frontend.json",
+        "packet_sha256": "e30207b08936b22d815a26a4b3c8a7192672f094eac24059d2587fb16dfe85ef",
+        "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8",
+        "reviewed_integration_sha": "066091ef6a260e5fbfdedaea783fb2e13022647a",
+        "import_original_body_sha256_verified": true
+      }
     },
     {
       "name": "TestViewerCanBrowseAlbumTracksInOrder",
@@ -15366,24 +15434,77 @@
       "sha256": "044fad1216035b7f3cff8d45305f4bdaf8dedffcab9db8be4c821eaf215ab2e9",
       "path": "apps/player/internal/server/collection_summary_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "Extracted actual Home curation-card template must use escaped public Path for slash-containing imported metadata; switching template binding to raw Name breaks access to valid imported collections while simple-name E2E remains green.",
+      "category": "important_missed_failure",
+      "credible_failure": "Extracted actual Home curation-card template must use escaped public Path for slash-containing imported metadata; switching template binding to raw Name breaks access to valid imported collections while simple-name E2E remains green.",
+      "production_owner": [
+        "apps/player/internal/server/server.go",
+        "apps/player/internal/server/home.go",
+        "apps/player/internal/server/collection_summary.go"
+      ],
+      "non_test_callers": [
+        "apps/player/internal/server/server.go",
+        "apps/player/internal/server/home.go",
+        "apps/player/internal/server/collection_summary.go"
+      ],
+      "remaining_proof": "ui-happy-paths and populated collection routes use Example Collection/simple names; no browser journey uses slash imported name. Retain actual fragment binding with its stated scope.",
+      "coverage_limit": "Read-only source comparison and parent baseline. No child fresh Go/browser/native build. Genuine browser proof distinguished from isolated/shared fixtures; fresh exact-SHA keeper receipts remain root responsibility. Compiles only actual extracted first card fragment with actual CSRF/icon functions; no full Home/default-card render or actual request to that href. Shared Path and encoded API tests validate builder/router, not this app HTML binding.",
       "history": [
         "aeeba0ee4e9d87dec55d59c800da7d857b43596e Restore playback and management contract coverage",
         "3061af1cd083cfc5848d42c038b478d5e573142b Restore static gates and offline regression contracts",
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
-      "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "production_or_support_deletion_unlocked": "None for retained declarations.",
+      "risk": "Retained important failure with explicit assertion limits; no new isolated tests.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./internal/server -run '^TestCollectionCardEscapesMetadataNameAsOneRouteSegment$'",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "baseline_file_sha256": "c3babcc74427c702942d0b5505c655d835b98297ad3c1b47f6ecc00e6f0092cd",
+      "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8",
+      "owner_source_matches_baseline": true,
+      "assertion_review_and_limits": "Compiles only actual extracted first card fragment with actual CSRF/icon functions; no full Home/default-card render or actual request to that href. Shared Path and encoded API tests validate builder/router, not this app HTML binding.",
+      "helper_and_primary_receipts": [
+        {
+          "file": "packages/catalog/collection_summary.go",
+          "baseline_sha256": "9572f7ef3572cde4e09e231714a89016d2bfd877bfdfcc8ef0a7a0828e1a0e08",
+          "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+        },
+        {
+          "file": "packages/catalog/collection_names_test.go",
+          "baseline_sha256": "86fdbaeab7dda608e5618135434ed8f8cc5f5417f57b9924c992d8faf8945bc3",
+          "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+        },
+        {
+          "file": "packages/catalog/collection_mutation_edges_test.go",
+          "baseline_sha256": "fcf280e550816330ea00eb86ea13e810a1534d1952c80a60037e60b3817f5e15",
+          "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+        }
+      ],
+      "verified_history": [
+        "aeeba0ee4e9d87dec55d59c800da7d857b43596e Restore playback and management contract coverage",
+        "3061af1cd083cfc5848d42c038b478d5e573142b Restore static gates and offline regression contracts",
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "baseline_events": [
+        {
+          "Time": "2026-10-03T10:29:55.642524-06:00",
+          "Action": "pass",
+          "Package": "github.com/MikeO7/kinosail-player/internal/server",
+          "Test": "TestCollectionCardEscapesMetadataNameAsOneRouteSegment",
+          "Elapsed": 0
+        }
+      ],
+      "test_edits": false,
+      "new_isolated_tests_added": false,
+      "review_provenance": {
+        "reviewer": "/root/frontend_native",
+        "packet": "engineering/qa/2026-10-03-test-overhaul/player-final-frontend.json",
+        "packet_sha256": "e30207b08936b22d815a26a4b3c8a7192672f094eac24059d2587fb16dfe85ef",
+        "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8",
+        "reviewed_integration_sha": "066091ef6a260e5fbfdedaea783fb2e13022647a",
+        "import_original_body_sha256_verified": true
+      }
     },
     {
       "name": "TestCollectionSummariesSeparateDefaultAndCustomSources",
@@ -15391,25 +15512,92 @@
       "end_line": 38,
       "sha256": "2974d025171784f17b440bd3f1db72c596d3b439c55096e2caaa90878c2b085f",
       "path": "apps/player/internal/server/collection_summary_test.go",
-      "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "decision": "D",
+      "review_status": "candidate_evidence_complete",
+      "reason": "Source/count/JSON/artwork and excluded default behavior would fail shared canonical collection projection/read/exclusion matrices; this in-memory adapter adds no independent persistence/auth/concurrency assertion.",
+      "category": "duplicate_or_preempted",
+      "credible_failure": "Source/count/JSON/artwork and excluded default behavior would fail shared canonical collection projection/read/exclusion matrices; this in-memory adapter adds no independent persistence/auth/concurrency assertion.",
+      "production_owner": [
+        "apps/player/internal/server/collection.go",
+        "apps/player/internal/server/collection_summary.go",
+        "apps/player/internal/server/lists.go",
+        "apps/player/internal/server/home.go"
+      ],
+      "non_test_callers": [
+        "apps/player/internal/server/collection.go",
+        "apps/player/internal/server/collection_summary.go",
+        "apps/player/internal/server/lists.go",
+        "apps/player/internal/server/home.go"
+      ],
+      "remaining_proof": "Keep TestCollectionReadsKeepDefaultsExclusionsAndCustomMembers, TestCollectionSummariesPreserveProjectionAndSearch, TestCollectionSummarySearchAndJSON and actual TestOwnerCanCreateAndCurateCollection. Genuine ui-happy-paths checks populated default/custom groups and curation-count zero/one/two counts. Shared projection is isolated proof; browser does not prove excluded-default JSON case. No full E2E equivalence claim.",
+      "coverage_limit": "Read-only source comparison and parent baseline. No child fresh Go/browser/native build. Genuine browser proof distinguished from isolated/shared fixtures; fresh exact-SHA keeper receipts remain root responsibility. CollectionSources builds2 fabricated items, creates Custom Set, removes default member, and checks custom/default labels counts/art ID/JSON. Actual wrappers lock and call same storage fields; app lifecycle below exercises actual storage construction/persistence.",
       "history": [
         "aeeba0ee4e9d87dec55d59c800da7d857b43596e Restore playback and management contract coverage",
         "3061af1cd083cfc5848d42c038b478d5e573142b Restore static gates and offline regression contracts",
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
-      "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "production_or_support_deletion_unlocked": "None in production. Shared helpers remain under shared-owner authority pending all-caller verification.",
+      "risk": "low; redundant or independently ineffective invocation; named canonical and actual app keepers remain",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C packages test -count=1 ./catalog -run 'TestCollectionReadsKeepDefaultsExclusionsAndCustomMembers|TestCollectionSummariesPreserveProjectionAndSearch|TestCollectionSummarySearchAndJSON'; GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -count=1 ./internal/server -run '^TestOwnerCanCreateAndCurateCollection$'",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "baseline_file_sha256": "c3babcc74427c702942d0b5505c655d835b98297ad3c1b47f6ecc00e6f0092cd",
+      "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8",
+      "owner_source_matches_baseline": true,
+      "assertion_review_and_limits": "CollectionSources builds2 fabricated items, creates Custom Set, removes default member, and checks custom/default labels counts/art ID/JSON. Actual wrappers lock and call same storage fields; app lifecycle below exercises actual storage construction/persistence.",
+      "helper_and_primary_receipts": [
+        {
+          "file": "packages/servertest/collection_sources.go",
+          "baseline_sha256": "d3b62756638923cfdb40413cc41c778c1cb0aa48fc3049c2015cf31f31a7a34a",
+          "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+        },
+        {
+          "file": "packages/catalog/collection_read_test.go",
+          "baseline_sha256": "84abbd7d063445f25a66d495b5de5aa28a8b5399059942277e99ed763c2cbbd8",
+          "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+        },
+        {
+          "file": "packages/catalog/collection_mutation_edges_test.go",
+          "baseline_sha256": "fcf280e550816330ea00eb86ea13e810a1534d1952c80a60037e60b3817f5e15",
+          "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+        },
+        {
+          "file": "packages/catalog/collection_summary.go",
+          "baseline_sha256": "9572f7ef3572cde4e09e231714a89016d2bfd877bfdfcc8ef0a7a0828e1a0e08",
+          "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+        }
+      ],
+      "verified_history": [
+        "aeeba0ee4e9d87dec55d59c800da7d857b43596e Restore playback and management contract coverage",
+        "3061af1cd083cfc5848d42c038b478d5e573142b Restore static gates and offline regression contracts",
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "baseline_events": [
+        {
+          "Time": "2026-10-03T10:29:55.659791-06:00",
+          "Action": "pass",
+          "Package": "github.com/MikeO7/kinosail-player/internal/server",
+          "Test": "TestCollectionSummariesSeparateDefaultAndCustomSources",
+          "Elapsed": 0
+        }
+      ],
+      "test_edits": false,
+      "new_isolated_tests_added": false,
+      "review_provenance": {
+        "reviewer": "/root/frontend_native",
+        "packet": "engineering/qa/2026-10-03-test-overhaul/player-final-frontend.json",
+        "packet_sha256": "e30207b08936b22d815a26a4b3c8a7192672f094eac24059d2587fb16dfe85ef",
+        "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8",
+        "reviewed_integration_sha": "066091ef6a260e5fbfdedaea783fb2e13022647a",
+        "import_original_body_sha256_verified": true
+      },
+      "independent_review": {
+        "reviewer": "/root",
+        "reviewed_integration_sha": "e1772de2b",
+        "result": "Approved after full candidate/helper/production adapter/keeper comparison. Shared isolated owners and actual app bindings are retained; no full E2E equivalence claim."
+      },
+      "implementation_result": "Exact original declaration removed; root serial complete Go/shared/E2E validation pending.",
+      "implemented": true
     },
     {
       "name": "TestOwnerCanCreateAndCurateCollection",
@@ -15418,23 +15606,79 @@
       "sha256": "47adaba1eb32aba7b790c633a846fe3621a63a00248b3d060b1d45cf99a2c40c",
       "path": "apps/player/internal/server/collection_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "Actual app route/template/SQLite binding persists mixed book+video collection over server reconstruction and rejects ambiguous memberships without state changes; book-specific mapping or persistence failure can miss valid video-only browser journey.",
+      "category": "important_missed_failure",
+      "credible_failure": "Actual app route/template/SQLite binding persists mixed book+video collection over server reconstruction and rejects ambiguous memberships without state changes; book-specific mapping or persistence failure can miss valid video-only browser journey.",
+      "production_owner": [
+        "apps/player/internal/server/collection.go",
+        "apps/player/internal/server/lists.go",
+        "apps/player/internal/server/home.go",
+        "apps/player/internal/server/player.go",
+        "apps/player/internal/server/book.go"
+      ],
+      "non_test_callers": [
+        "apps/player/internal/server/collection.go",
+        "apps/player/internal/server/lists.go",
+        "apps/player/internal/server/home.go",
+        "apps/player/internal/server/player.go",
+        "apps/player/internal/server/book.go"
+      ],
+      "remaining_proof": "genuine ui-happy-paths and curation-count cover valid video create/add/remove/delete and real browser controls/counts. No E2E server restart + mixed book membership, and no negative-form no-write matrix. Retain important integration boundaries.",
+      "coverage_limit": "Read-only source comparison and parent baseline. No child fresh Go/browser/native build. Genuine browser proof distinguished from isolated/shared fixtures; fresh exact-SHA keeper receipts remain root responsibility. Actual New handlers and8 negative POST forms; zero items before valid add,2 items after restart, remove video retains1. Actual book+player membership projections checked. Dummy EPub/video and CSS source recipes do not prove reader/playback/layout; source literal subchecks incidental.",
       "history": [
         "71538432ebe9000e777c1ac70f1629f7e24a016d Fix curation item counts and repair populated browser QA",
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
-      "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "production_or_support_deletion_unlocked": "None for retained declarations.",
+      "risk": "Retained important failure with explicit assertion limits; no new isolated tests.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./internal/server -run '^TestOwnerCanCreateAndCurateCollection$'",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "baseline_file_sha256": "96ef3eb9c01a0c503110871d0801b25aae965a0c47842725a7a0267e70c7c727",
+      "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8",
+      "owner_source_matches_baseline": true,
+      "assertion_review_and_limits": "Actual New handlers and8 negative POST forms; zero items before valid add,2 items after restart, remove video retains1. Actual book+player membership projections checked. Dummy EPub/video and CSS source recipes do not prove reader/playback/layout; source literal subchecks incidental.",
+      "helper_and_primary_receipts": [
+        {
+          "file": "packages/catalog/collection_web.go",
+          "baseline_sha256": "273655b7ae0b87d0ab5cc4b13bf52e8d183f8c595811b4e5f66a6112ffce6bda",
+          "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+        },
+        {
+          "file": "packages/catalog/list_operations.go",
+          "baseline_sha256": "deb05696fb2162cd572aee8f5c940d9dc0b0837b0f759b0028232aed3616ecb1",
+          "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+        },
+        {
+          "file": "packages/playerweb/curation_template.go",
+          "baseline_sha256": "dbc4b6deac5e025007705126d769db475e3d614b225b2f2087a042ab1c15af54",
+          "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+        }
+      ],
+      "verified_history": [
+        "71538432ebe9000e777c1ac70f1629f7e24a016d Fix curation item counts and repair populated browser QA",
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "baseline_events": [
+        {
+          "Time": "2026-10-03T10:29:44.962359-06:00",
+          "Action": "pass",
+          "Package": "github.com/MikeO7/kinosail-player/internal/server",
+          "Test": "TestOwnerCanCreateAndCurateCollection",
+          "Elapsed": 0.77
+        }
+      ],
+      "test_edits": false,
+      "new_isolated_tests_added": false,
+      "review_provenance": {
+        "reviewer": "/root/frontend_native",
+        "packet": "engineering/qa/2026-10-03-test-overhaul/player-final-frontend.json",
+        "packet_sha256": "e30207b08936b22d815a26a4b3c8a7192672f094eac24059d2587fb16dfe85ef",
+        "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8",
+        "reviewed_integration_sha": "066091ef6a260e5fbfdedaea783fb2e13022647a",
+        "import_original_body_sha256_verified": true
+      }
     },
     {
       "name": "TestCollectionSearchRejectsAmbiguousInput",
@@ -15443,23 +15687,68 @@
       "sha256": "71fc812e8a7fae29ddcdbf5ba76c36d8956eceddfabcde217bb7b3881b119adb",
       "path": "apps/player/internal/server/collection_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "Registered actual Collection GET must reject unknown key, duplicate query and201-byte query rather than accepting conflicting/unbounded search inputs. E2E uses valid search only.",
+      "category": "important_missed_failure",
+      "credible_failure": "Registered actual Collection GET must reject unknown key, duplicate query and201-byte query rather than accepting conflicting/unbounded search inputs. E2E uses valid search only.",
+      "production_owner": [
+        "apps/player/internal/server/collection.go",
+        "apps/player/internal/server/player.go"
+      ],
+      "non_test_callers": [
+        "apps/player/internal/server/collection.go",
+        "apps/player/internal/server/player.go"
+      ],
+      "remaining_proof": "genuine curation-count valid Find query and UI curation do not send unknown/duplicate/oversized GET. Shared CollectionWebHandlersProjectBrowseThroughPublicPage has an unknown query case but fake render/index and no actual app mux.",
+      "coverage_limit": "Read-only source comparison and parent baseline. No child fresh Go/browser/native build. Genuine browser proof distinguished from isolated/shared fixtures; fresh exact-SHA keeper receipts remain root responsibility. Creates actual collection and verifies303 before3 exact400 responses; no mutation-counter assertion needed for read-only endpoint. Shared ParseCurationQuery tests protect parser, not registration of this app Browse validation path.",
       "history": [
         "71538432ebe9000e777c1ac70f1629f7e24a016d Fix curation item counts and repair populated browser QA",
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
-      "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "production_or_support_deletion_unlocked": "None for retained declarations.",
+      "risk": "Retained important failure with explicit assertion limits; no new isolated tests.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./internal/server -run '^TestCollectionSearchRejectsAmbiguousInput$'",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "baseline_file_sha256": "96ef3eb9c01a0c503110871d0801b25aae965a0c47842725a7a0267e70c7c727",
+      "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8",
+      "owner_source_matches_baseline": true,
+      "assertion_review_and_limits": "Creates actual collection and verifies303 before3 exact400 responses; no mutation-counter assertion needed for read-only endpoint. Shared ParseCurationQuery tests protect parser, not registration of this app Browse validation path.",
+      "helper_and_primary_receipts": [
+        {
+          "file": "packages/catalog/collection_web.go",
+          "baseline_sha256": "273655b7ae0b87d0ab5cc4b13bf52e8d183f8c595811b4e5f66a6112ffce6bda",
+          "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+        },
+        {
+          "file": "packages/catalog/validation.go",
+          "baseline_sha256": "82073ca9f56d80368fdafb98224e10984a8a6847b20816c8b805fd18d532f0dc",
+          "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+        }
+      ],
+      "verified_history": [
+        "71538432ebe9000e777c1ac70f1629f7e24a016d Fix curation item counts and repair populated browser QA",
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "baseline_events": [
+        {
+          "Time": "2026-10-03T10:29:44.382126-06:00",
+          "Action": "pass",
+          "Package": "github.com/MikeO7/kinosail-player/internal/server",
+          "Test": "TestCollectionSearchRejectsAmbiguousInput",
+          "Elapsed": 0.23
+        }
+      ],
+      "test_edits": false,
+      "new_isolated_tests_added": false,
+      "review_provenance": {
+        "reviewer": "/root/frontend_native",
+        "packet": "engineering/qa/2026-10-03-test-overhaul/player-final-frontend.json",
+        "packet_sha256": "e30207b08936b22d815a26a4b3c8a7192672f094eac24059d2587fb16dfe85ef",
+        "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8",
+        "reviewed_integration_sha": "066091ef6a260e5fbfdedaea783fb2e13022647a",
+        "import_original_body_sha256_verified": true
+      }
     },
     {
       "name": "TestConfigurationHTTPContract",
@@ -15468,24 +15757,76 @@
       "sha256": "ef7ac6c738e2abcaa5ec71b0db663071e3e35dd7bbd01b3847cc1455b9233b51",
       "path": "apps/player/internal/server/configuration_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "Actual Player configuration adapters must keep environment-managed settings immutable, hide deployment/OIDC/SCIM secrets, preserve blank OIDC secret, reject invalid/partial changes without writes, and reload saved restart values/TLS preference. Miswiring app configuration policy remains missed by layout browser journeys.",
+      "category": "important_missed_failure",
+      "credible_failure": "Actual Player configuration adapters must keep environment-managed settings immutable, hide deployment/OIDC/SCIM secrets, preserve blank OIDC secret, reject invalid/partial changes without writes, and reload saved restart values/TLS preference. Miswiring app configuration policy remains missed by layout browser journeys.",
+      "production_owner": [
+        "apps/player/internal/server/settings_configuration.go",
+        "apps/player/internal/server/settings_configuration_api.go",
+        "apps/player/internal/server/settings_oidc_configuration.go",
+        "apps/player/internal/server/settings_scim_configuration.go",
+        "apps/player/internal/server/settings_tmdb_configuration.go"
+      ],
+      "non_test_callers": [
+        "apps/player/internal/server/settings_configuration.go",
+        "apps/player/internal/server/settings_configuration_api.go",
+        "apps/player/internal/server/settings_oidc_configuration.go",
+        "apps/player/internal/server/settings_scim_configuration.go",
+        "apps/player/internal/server/settings_tmdb_configuration.go"
+      ],
+      "remaining_proof": "layout-audit-configuration browser journeys assert SCIM/OIDC/SAML usability/valid updates; no environment-managed immutable deployment matrix or invalid-operation no-write/reload parity. Shared settings storage tests are isolated injected callbacks, no full app adapter proof.",
+      "coverage_limit": "Read-only source comparison and parent baseline. No child fresh Go/browser/native build. Genuine browser proof distinguished from isolated/shared fixtures; fresh exact-SHA keeper receipts remain root responsibility. Six Run subtests invoke real Player Load/New/MFA web/API callbacks; External settings compare values after rejection; OIDC web/API roundtrip/reload/reset, file absence on invalid, managed secret nonrendering. Standalone predicate is weak about individual editability but other security/persistence checks remain important. HTTPS preference test changes stored operator setting only; no TLS bypass performed.",
       "history": [
         "aeeba0ee4e9d87dec55d59c800da7d857b43596e Restore playback and management contract coverage",
         "3061af1cd083cfc5848d42c038b478d5e573142b Restore static gates and offline regression contracts",
         "5ffb4e0d3eb315ccf7643b2782a495716677fc67 Restore security and subtitle regressions and simplify validation paths"
       ],
-      "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "production_or_support_deletion_unlocked": "None for retained declarations.",
+      "risk": "Retained important failure with explicit assertion limits; no new isolated tests.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./internal/server -run '^TestConfigurationHTTPContract$'",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "baseline_file_sha256": "334ad45e1419a365b4dc5ddfc97ce748fac9db924dffb2dd45980f64bcbfab8d",
+      "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8",
+      "owner_source_matches_baseline": true,
+      "assertion_review_and_limits": "Six Run subtests invoke real Player Load/New/MFA web/API callbacks; External settings compare values after rejection; OIDC web/API roundtrip/reload/reset, file absence on invalid, managed secret nonrendering. Standalone predicate is weak about individual editability but other security/persistence checks remain important. HTTPS preference test changes stored operator setting only; no TLS bypass performed.",
+      "helper_and_primary_receipts": [
+        {
+          "file": "packages/servertest/configuration_http.go",
+          "baseline_sha256": "0715d13a3440d8ff6775b01c82058d54d330e34bb4b32ca79dbbc062edd72a1b",
+          "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+        },
+        {
+          "file": "packages/settings/configuration.go",
+          "baseline_sha256": "390e6b761d50ddc596fbc74ada71f940af9533b54289db0a3d87b8b83bcc5f97",
+          "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+        }
+      ],
+      "verified_history": [
+        "aeeba0ee4e9d87dec55d59c800da7d857b43596e Restore playback and management contract coverage",
+        "3061af1cd083cfc5848d42c038b478d5e573142b Restore static gates and offline regression contracts",
+        "5ffb4e0d3eb315ccf7643b2782a495716677fc67 Restore security and subtitle regressions and simplify validation paths"
+      ],
+      "baseline_events": [
+        {
+          "Time": "2026-10-03T10:29:02.492247-06:00",
+          "Action": "pass",
+          "Package": "github.com/MikeO7/kinosail-player/internal/server",
+          "Test": "TestConfigurationHTTPContract",
+          "Elapsed": 0
+        }
+      ],
+      "test_edits": false,
+      "new_isolated_tests_added": false,
+      "review_provenance": {
+        "reviewer": "/root/frontend_native",
+        "packet": "engineering/qa/2026-10-03-test-overhaul/player-final-frontend.json",
+        "packet_sha256": "e30207b08936b22d815a26a4b3c8a7192672f094eac24059d2587fb16dfe85ef",
+        "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8",
+        "reviewed_integration_sha": "066091ef6a260e5fbfdedaea783fb2e13022647a",
+        "import_original_body_sha256_verified": true
+      }
     },
     {
       "name": "TestUnsafePasswordsAreRejectedWithoutAccountSideEffects",
@@ -21744,22 +22085,72 @@
       "sha256": "7de2d955c9f6df04d07aca33a5bf839dc3d41f9b541cf1e4495880169430f257",
       "path": "apps/player/internal/server/live_events_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "Actual composed app middleware must retain http.Flusher/streaming response capability and deliver immediate SSE retry line with no-store; a wrapping middleware buffering/disabling flush breaks live updates while ordinary HTTP and shared hub tests remain green.",
+      "category": "important_missed_failure",
+      "credible_failure": "Actual composed app middleware must retain http.Flusher/streaming response capability and deliver immediate SSE retry line with no-store; a wrapping middleware buffering/disabling flush breaks live updates while ordinary HTTP and shared hub tests remain green.",
+      "production_owner": [
+        "apps/player/internal/server/live_events.go",
+        "apps/player/internal/server/api.go",
+        "apps/player/internal/server/server.go",
+        "apps/player/internal/server/security.go",
+        "apps/player/internal/server/observability.go"
+      ],
+      "non_test_callers": [
+        "apps/player/internal/server/live_events.go",
+        "apps/player/internal/server/api.go",
+        "apps/player/internal/server/server.go",
+        "apps/player/internal/server/security.go",
+        "apps/player/internal/server/observability.go"
+      ],
+      "remaining_proof": "No genuine Player journey asserts actual SSE retry line through whole middleware. Offline lifecycle browser spec replaces EventSource; it is a fixture and cannot replace this proof.",
+      "coverage_limit": "Read-only source comparison and parent baseline. No child fresh Go/browser/native build. Genuine browser proof distinguished from isolated/shared fixtures; fresh exact-SHA keeper receipts remain root responsibility. Real TCP httptest server, authenticated Owner,2-second bounded first-line read and actual invalid Last-Event-ID400. Does not test app publishers, heartbeat or subsequent revocation; shared liveevents tests cover those isolated.",
       "history": [
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
-      "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "production_or_support_deletion_unlocked": "None for retained declarations.",
+      "risk": "Retained important failure with explicit assertion limits; no new isolated tests.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./internal/server -run '^TestLiveEventAPIStreamsThroughTheServerMiddleware$'",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "baseline_file_sha256": "72edc9f3d61136720cd38ac55d5f9cb8ee41e4a683e34233b5a8323f34069734",
+      "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8",
+      "owner_source_matches_baseline": true,
+      "assertion_review_and_limits": "Real TCP httptest server, authenticated Owner,2-second bounded first-line read and actual invalid Last-Event-ID400. Does not test app publishers, heartbeat or subsequent revocation; shared liveevents tests cover those isolated.",
+      "helper_and_primary_receipts": [
+        {
+          "file": "packages/liveevents/http.go",
+          "baseline_sha256": "d295c6b084af0c230f2a2ebcfeff1d4d0353b79b7ad61680c1b859642e49e380",
+          "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+        },
+        {
+          "file": "packages/liveevents/http_test.go",
+          "baseline_sha256": "57f9d4bcd6ceea12a923ba9f7afb78fbaf53d0972a0b65f18cf4539b6e62adbc",
+          "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+        }
+      ],
+      "verified_history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "baseline_events": [
+        {
+          "Time": "2026-10-03T10:29:22.839809-06:00",
+          "Action": "pass",
+          "Package": "github.com/MikeO7/kinosail-player/internal/server",
+          "Test": "TestLiveEventAPIStreamsThroughTheServerMiddleware",
+          "Elapsed": 0.14
+        }
+      ],
+      "test_edits": false,
+      "new_isolated_tests_added": false,
+      "review_provenance": {
+        "reviewer": "/root/frontend_native",
+        "packet": "engineering/qa/2026-10-03-test-overhaul/player-final-frontend.json",
+        "packet_sha256": "e30207b08936b22d815a26a4b3c8a7192672f094eac24059d2587fb16dfe85ef",
+        "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8",
+        "reviewed_integration_sha": "066091ef6a260e5fbfdedaea783fb2e13022647a",
+        "import_original_body_sha256_verified": true
+      }
     },
     {
       "name": "TestLocalDiscoveryHostKeepsExplicitAllowlist",
@@ -23360,23 +23751,76 @@
       "end_line": 18,
       "sha256": "df5a954f7483d4451197354729a82d09758c2131992d157ae805cdd7e9efba07",
       "path": "apps/player/internal/server/marker_analysis_api_test.go",
-      "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "decision": "D",
+      "review_status": "candidate_evidence_complete",
+      "reason": "Only response integer>0. Canonical registered marker Admin test asserts exact current DetectorVersion and full status/queue workflow; actual app200/owner gate keepers preserve wiring. No independent injection/state boundary in this declaration.",
+      "category": "duplicate_or_preempted",
+      "credible_failure": "Only response integer>0. Canonical registered marker Admin test asserts exact current DetectorVersion and full status/queue workflow; actual app200/owner gate keepers preserve wiring. No independent injection/state boundary in this declaration.",
+      "production_owner": [
+        "apps/player/internal/server/marker_admin.go",
+        "apps/player/internal/server/settings_http.go",
+        "apps/player/internal/server/api.go"
+      ],
+      "non_test_callers": [
+        "apps/player/internal/server/marker_admin.go",
+        "apps/player/internal/server/settings_http.go",
+        "apps/player/internal/server/api.go"
+      ],
+      "remaining_proof": "Keep TestAdminRoutesManageMarkersAndQueueAnalysis exact version and TestVersionedAPIReadModelsAreReachableThroughOwnerSession marker endpoint, auth_all_routes owner boundary. No genuine E2E asserts version; relies explicitly on stronger shared isolated primary plus real app route keeper, not browser equivalence.",
+      "coverage_limit": "Read-only source comparison and parent baseline. No child fresh Go/browser/native build. Genuine browser proof distinguished from isolated/shared fixtures; fresh exact-SHA keeper receipts remain root responsibility. Real API Owner parses detectorVersion; drops if missing or0, but does not establish exact revision/current analyzer state. Actual registerMarkerAdmin binds unmodified shared Admin JSON; wrong route admission/status covered separately.",
       "history": [
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
-      "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "production_or_support_deletion_unlocked": "None in production. Shared helpers remain under shared-owner authority pending all-caller verification.",
+      "risk": "low; redundant or independently ineffective invocation; named canonical and actual app keepers remain",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C packages test -count=1 ./markers -run '^TestAdminRoutesManageMarkersAndQueueAnalysis$'; GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -count=1 ./internal/server -run 'TestVersionedAPIReadModelsAreReachableThroughOwnerSession|TestEveryProtectedRouteEnforcesOwnerAndViewerRoles'",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "baseline_file_sha256": "a1e4db85ec2a2722064ebac7dd556d5e8ee9f96bc15c9aa25504810916e3e444",
+      "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8",
+      "owner_source_matches_baseline": true,
+      "assertion_review_and_limits": "Real API Owner parses detectorVersion; drops if missing or0, but does not establish exact revision/current analyzer state. Actual registerMarkerAdmin binds unmodified shared Admin JSON; wrong route admission/status covered separately.",
+      "helper_and_primary_receipts": [
+        {
+          "file": "packages/markers/admin.go",
+          "baseline_sha256": "3743522c964625625a9625e51cc0fb382316e2e1f2c36a95d02f397565906295",
+          "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+        },
+        {
+          "file": "packages/markers/admin_test.go",
+          "baseline_sha256": "77cbe23ba61b1e1ee1c1fe52e05d4e57c3965c78aced6c75b356f2d0e571ab01",
+          "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+        }
+      ],
+      "verified_history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "baseline_events": [
+        {
+          "Time": "2026-10-03T10:29:40.783795-06:00",
+          "Action": "pass",
+          "Package": "github.com/MikeO7/kinosail-player/internal/server",
+          "Test": "TestMarkerAnalysisReportsDetectorVersion",
+          "Elapsed": 0.27
+        }
+      ],
+      "test_edits": false,
+      "new_isolated_tests_added": false,
+      "review_provenance": {
+        "reviewer": "/root/frontend_native",
+        "packet": "engineering/qa/2026-10-03-test-overhaul/player-final-frontend.json",
+        "packet_sha256": "e30207b08936b22d815a26a4b3c8a7192672f094eac24059d2587fb16dfe85ef",
+        "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8",
+        "reviewed_integration_sha": "066091ef6a260e5fbfdedaea783fb2e13022647a",
+        "import_original_body_sha256_verified": true
+      },
+      "independent_review": {
+        "reviewer": "/root",
+        "reviewed_integration_sha": "e1772de2b",
+        "result": "Approved after full candidate/helper/production adapter/keeper comparison. Shared isolated owners and actual app bindings are retained; no full E2E equivalence claim."
+      },
+      "implementation_result": "Exact original declaration removed; root serial complete Go/shared/E2E validation pending.",
+      "implemented": true
     },
     {
       "name": "TestLibraryMastheadEyebrowStaysAboveContrastWash",
@@ -34877,22 +35321,72 @@
       "sha256": "9645128f4cbe4a7b4875a3cf1a637cbf1422ab48c6962a6f6b77fb7ae1ee3aa0",
       "path": "apps/player/internal/server/playback_trace_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "Actual watch HTML/session URL, trace POST and media range request must share correlation without logging private file/title/item ID/source URL. App observability and rendered URL miswiring or sensitive logging would miss pure trace logger tests and browser playback.",
+      "category": "important_missed_failure",
+      "credible_failure": "Actual watch HTML/session URL, trace POST and media range request must share correlation without logging private file/title/item ID/source URL. App observability and rendered URL miswiring or sensitive logging would miss pure trace logger tests and browser playback.",
+      "production_owner": [
+        "apps/player/internal/server/playback_trace.go",
+        "apps/player/internal/server/observability.go",
+        "apps/player/internal/server/observability_context.go",
+        "apps/player/internal/server/player.go",
+        "apps/player/internal/server/server.go"
+      ],
+      "non_test_callers": [
+        "apps/player/internal/server/playback_trace.go",
+        "apps/player/internal/server/observability.go",
+        "apps/player/internal/server/observability_context.go",
+        "apps/player/internal/server/player.go",
+        "apps/player/internal/server/server.go"
+      ],
+      "remaining_proof": "player-experience-status and player-frame-trace capture requests from synthetic video/routes, no actual Go logger/media correlation. Genuine playback exercises media but no private-log assertion.",
+      "coverage_limit": "Read-only source comparison and parent baseline. No child fresh Go/browser/native build. Genuine browser proof distinguished from isolated/shared fixtures; fresh exact-SHA keeper receipts remain root responsibility. Captures actual global slog DEBUG; watch actual generated session equals source query, POST204, Range206 one byte, at least3 session log occurrences and planned/trace/range facts; compares path/title/id/URL absence. Dummy5-byte media/no decoder.",
       "history": [
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
-      "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "production_or_support_deletion_unlocked": "None for retained declarations.",
+      "risk": "Retained important failure with explicit assertion limits; no new isolated tests.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./internal/server -run '^TestPlaybackTraceCorrelatesBrowserAndMediaWithoutPrivateData$'",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "baseline_file_sha256": "ecaf2e961c8503c28efe57be6af3582e253aa33f956c9681b9879b05f8d63954",
+      "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8",
+      "owner_source_matches_baseline": true,
+      "assertion_review_and_limits": "Captures actual global slog DEBUG; watch actual generated session equals source query, POST204, Range206 one byte, at least3 session log occurrences and planned/trace/range facts; compares path/title/id/URL absence. Dummy5-byte media/no decoder.",
+      "helper_and_primary_receipts": [
+        {
+          "file": "packages/playback/trace_http.go",
+          "baseline_sha256": "9bf6edfc4ad05b7e45b0dbe633452a034cc99da2bad97febddef09818112f657",
+          "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+        },
+        {
+          "file": "packages/playback/file_delivery.go",
+          "baseline_sha256": "16d86d7101827d23d8b947bf59372df2d5f3741212e743ddf3af8eb2b7bd3510",
+          "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+        }
+      ],
+      "verified_history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "baseline_events": [
+        {
+          "Time": "2026-10-03T10:28:28.543371-06:00",
+          "Action": "pass",
+          "Package": "github.com/MikeO7/kinosail-player/internal/server",
+          "Test": "TestPlaybackTraceCorrelatesBrowserAndMediaWithoutPrivateData",
+          "Elapsed": 0.02
+        }
+      ],
+      "test_edits": false,
+      "new_isolated_tests_added": false,
+      "review_provenance": {
+        "reviewer": "/root/frontend_native",
+        "packet": "engineering/qa/2026-10-03-test-overhaul/player-final-frontend.json",
+        "packet_sha256": "e30207b08936b22d815a26a4b3c8a7192672f094eac24059d2587fb16dfe85ef",
+        "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8",
+        "reviewed_integration_sha": "066091ef6a260e5fbfdedaea783fb2e13022647a",
+        "import_original_body_sha256_verified": true
+      }
     },
     {
       "name": "TestPlaybackTraceRejectsInvalidInputWithoutLogging",
@@ -34900,23 +35394,91 @@
       "end_line": 62,
       "sha256": "c18aee77c296bb7d9a1d80cf355a883b1fd2fb8e8b62375bf67b80b9c8db6239",
       "path": "apps/player/internal/server/playback_trace_test.go",
-      "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "decision": "D",
+      "review_status": "candidate_evidence_complete",
+      "reason": "All six named malformed payloads omit required sequence. Removing an individual named session/event/state/detail guard still leaves sequence-zero rejection; the unknown-field decoder can reject before validation. Thus this fixture does not independently guard its named failures. Stronger valid-sequence shared reader/privacy matrices and actual app positive correlation remain.",
+      "category": "duplicate_or_preempted",
+      "credible_failure": "All six named malformed payloads omit required sequence. Removing an individual named session/event/state/detail guard still leaves sequence-zero rejection; the unknown-field decoder can reject before validation. Thus this fixture does not independently guard its named failures. Stronger valid-sequence shared reader/privacy matrices and actual app positive correlation remain.",
+      "production_owner": [
+        "apps/player/internal/server/playback_trace.go",
+        "apps/player/internal/server/api.go",
+        "apps/player/internal/server/observability_context.go"
+      ],
+      "non_test_callers": [
+        "apps/player/internal/server/playback_trace.go",
+        "apps/player/internal/server/api.go",
+        "apps/player/internal/server/observability_context.go"
+      ],
+      "remaining_proof": "Keep TestTraceReaderRejectsBeforeCallerSideEffects (valid seq1 then unknown event/state/field), TestTraceHTTPRejectsLogInjectionWithoutEffects (valid seq1 baseline +24 field attacks, no logs or session effects), TestTraceHTTPDiagnosticsRejectAmbiguityAndProtectLogPrivacy (actual shared TCP/seq1). Actual app TestPlaybackTraceCorrelatesBrowserAndMediaWithoutPrivateData guards bindings. No genuine backend trace rejection browser journey and no equivalence claim.",
+      "coverage_limit": "Read-only source comparison and parent baseline. No child fresh Go/browser/native build. Genuine browser proof distinguished from isolated/shared fixtures; fresh exact-SHA keeper receipts remain root responsibility. Every payload deserializes Sequence=0. Invalid session and unknown event are checked before sequence in ValidTrace; unknown-field input is rejected by DecodeUniqueJSON first. The reason for removal is independent ineffectiveness of individual named-guard controls, not a claim every input first fails at the sequence guard. Checks 400 and absence of the playback-trace message only. Actual app positive trace uses sequence 4; existing actual API malformed-body matrix also retains route decode.",
       "history": [
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
-      "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "production_or_support_deletion_unlocked": "None in production. Shared helpers remain under shared-owner authority pending all-caller verification.",
+      "risk": "low; redundant or independently ineffective invocation; named canonical and actual app keepers remain",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C packages test -count=1 ./playback -run 'TestTraceReaderRejectsBeforeCallerSideEffects|TestTraceHTTPRejectsLogInjectionWithoutEffects|TestTraceHTTPDiagnosticsRejectAmbiguityAndProtectLogPrivacy'; GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -count=1 ./internal/server -run 'TestPlaybackTraceCorrelatesBrowserAndMediaWithoutPrivateData|TestVersionedAPIRejectsMalformedMutationBodies'",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "baseline_file_sha256": "ecaf2e961c8503c28efe57be6af3582e253aa33f956c9681b9879b05f8d63954",
+      "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8",
+      "owner_source_matches_baseline": true,
+      "assertion_review_and_limits": "Every payload deserializes Sequence=0. Invalid session and unknown event are checked before sequence in ValidTrace; unknown-field input is rejected by DecodeUniqueJSON first. The reason for removal is independent ineffectiveness of individual named-guard controls, not a claim every input first fails at the sequence guard. Checks 400 and absence of the playback-trace message only. Actual app positive trace uses sequence 4; existing actual API malformed-body matrix also retains route decode.",
+      "helper_and_primary_receipts": [
+        {
+          "file": "packages/servertest/playback_trace.go",
+          "baseline_sha256": "64d2d99d91459d894abab98e2844e7a506d5c2d73236c6c20c1778a941bf8028",
+          "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+        },
+        {
+          "file": "packages/playback/trace.go",
+          "baseline_sha256": "cd0b1565f7aee5e140927976c84aa295a72c9591a365ce20fc3e47ee946603e4",
+          "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+        },
+        {
+          "file": "packages/playback/trace_http_test.go",
+          "baseline_sha256": "4c451454103722c3199a12e8206564b91fa0cd81523b949b930208021b5f8c2b",
+          "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+        },
+        {
+          "file": "packages/playback/protocol_test.go",
+          "baseline_sha256": "6370aa4e3111ffab47816e1dc4e6497dd54dcd88dbdab0a7b2726f8020290949",
+          "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+        },
+        {
+          "file": "packages/playback/trace_diagnostics_http_test.go",
+          "baseline_sha256": "e487f3d4fb1fd5b454e75037cf2692fc4c340bfee9cada4ab2e011b9398b7978",
+          "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+        }
+      ],
+      "verified_history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "baseline_events": [
+        {
+          "Time": "2026-10-03T10:28:28.56943-06:00",
+          "Action": "pass",
+          "Package": "github.com/MikeO7/kinosail-player/internal/server",
+          "Test": "TestPlaybackTraceRejectsInvalidInputWithoutLogging",
+          "Elapsed": 0.02
+        }
+      ],
+      "test_edits": false,
+      "new_isolated_tests_added": false,
+      "review_provenance": {
+        "reviewer": "/root/frontend_native",
+        "packet": "engineering/qa/2026-10-03-test-overhaul/player-final-frontend.json",
+        "packet_sha256": "e30207b08936b22d815a26a4b3c8a7192672f094eac24059d2587fb16dfe85ef",
+        "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8",
+        "reviewed_integration_sha": "066091ef6a260e5fbfdedaea783fb2e13022647a",
+        "import_original_body_sha256_verified": true
+      },
+      "independent_review": {
+        "reviewer": "/root",
+        "reviewed_integration_sha": "e1772de2b",
+        "result": "Approved after full candidate/helper/production adapter/keeper comparison. Shared isolated owners and actual app bindings are retained; no full E2E equivalence claim."
+      },
+      "implementation_result": "Exact original declaration removed; root serial complete Go/shared/E2E validation pending.",
+      "implemented": true
     },
     {
       "name": "TestDisplayedFramePlaybackTraceEventsAreAccepted",
@@ -34925,22 +35487,73 @@
       "sha256": "63790f6dbd1f8ecc9ba5022fb658fda87430865b04083d0f145b7cca6556e862",
       "path": "apps/player/internal/server/playback_trace_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "Backend allowlist must accept capability-direct,first-frame,frame-after-seek diagnostics that browser emits. Removing one name drops repeatable first-frame/seek evidence while video playback itself and moving-frame-only shared test can pass.",
+      "category": "important_missed_failure",
+      "credible_failure": "Backend allowlist must accept capability-direct,first-frame,frame-after-seek diagnostics that browser emits. Removing one name drops repeatable first-frame/seek evidence while video playback itself and moving-frame-only shared test can pass.",
+      "production_owner": [
+        "apps/player/internal/server/playback_trace.go",
+        "apps/player/internal/server/observability_context.go",
+        "apps/player/internal/server/api.go"
+      ],
+      "non_test_callers": [
+        "apps/player/internal/server/playback_trace.go",
+        "apps/player/internal/server/observability_context.go",
+        "apps/player/internal/server/api.go"
+      ],
+      "remaining_proof": "player-frame-trace uses intercepted synthetic https://trace.test/events returning204 and does not reach backend validator. TestTraceAcceptsMovingFrameEvidence covers first-moving-frame only; actual genuine playback does not assert backend accepts all3 distinct diagnostic events.",
+      "coverage_limit": "Read-only source comparison and parent baseline. No child fresh Go/browser/native build. Genuine browser proof distinguished from isolated/shared fixtures; fresh exact-SHA keeper receipts remain root responsibility. Direct canonical playback.ValidTrace positive sequence1 using actual app validPlaybackSession; alias has no logic, but no remaining canonical exact positive enumeration for these3 events found. Pure accepted-value contract, not rendered/backend delivery proof.",
       "history": [
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
-      "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "production_or_support_deletion_unlocked": "None for retained declarations.",
+      "risk": "Retained important failure with explicit assertion limits; no new isolated tests.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./internal/server -run '^TestDisplayedFramePlaybackTraceEventsAreAccepted$'",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "baseline_file_sha256": "ecaf2e961c8503c28efe57be6af3582e253aa33f956c9681b9879b05f8d63954",
+      "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8",
+      "owner_source_matches_baseline": true,
+      "assertion_review_and_limits": "Direct canonical playback.ValidTrace positive sequence1 using actual app validPlaybackSession; alias has no logic, but no remaining canonical exact positive enumeration for these3 events found. Pure accepted-value contract, not rendered/backend delivery proof.",
+      "helper_and_primary_receipts": [
+        {
+          "file": "packages/playback/trace.go",
+          "baseline_sha256": "cd0b1565f7aee5e140927976c84aa295a72c9591a365ce20fc3e47ee946603e4",
+          "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+        },
+        {
+          "file": "packages/playback/trace_http_test.go",
+          "baseline_sha256": "4c451454103722c3199a12e8206564b91fa0cd81523b949b930208021b5f8c2b",
+          "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+        },
+        {
+          "file": "packages/webassets/static/player-core.js",
+          "baseline_sha256": "17da3a54d2d4006f5a8e6c3b72d5666edee16d4c8efcf42a20bdbe67d0295b5a",
+          "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+        }
+      ],
+      "verified_history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "baseline_events": [
+        {
+          "Time": "2026-10-03T10:29:50.895561-06:00",
+          "Action": "pass",
+          "Package": "github.com/MikeO7/kinosail-player/internal/server",
+          "Test": "TestDisplayedFramePlaybackTraceEventsAreAccepted",
+          "Elapsed": 0
+        }
+      ],
+      "test_edits": false,
+      "new_isolated_tests_added": false,
+      "review_provenance": {
+        "reviewer": "/root/frontend_native",
+        "packet": "engineering/qa/2026-10-03-test-overhaul/player-final-frontend.json",
+        "packet_sha256": "e30207b08936b22d815a26a4b3c8a7192672f094eac24059d2587fb16dfe85ef",
+        "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8",
+        "reviewed_integration_sha": "066091ef6a260e5fbfdedaea783fb2e13022647a",
+        "import_original_body_sha256_verified": true
+      }
     },
     {
       "name": "TestPlayerUsesCastIconForDevicePlayback",
@@ -35143,22 +35756,82 @@
       "sha256": "a7d7c337b5539596d2be1e41b2439c0d01f128838dbf3fcb3733952e74260730",
       "path": "apps/player/internal/server/playlist_features_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "Real Player API/web/store/session reconstruction must preserve manual order, dynamic rules and audio+audiobook policy; smart playlists must not expose manual membership mutation in player. App rule/wiring/reload failure remains missed by simple video curation E2E.",
+      "category": "important_missed_failure",
+      "credible_failure": "Real Player API/web/store/session reconstruction must preserve manual order, dynamic rules and audio+audiobook policy; smart playlists must not expose manual membership mutation in player. App rule/wiring/reload failure remains missed by simple video curation E2E.",
+      "production_owner": [
+        "apps/player/internal/server/playlist.go",
+        "apps/player/internal/server/lists.go",
+        "apps/player/internal/server/playlist_document.go",
+        "apps/player/internal/server/player.go",
+        "apps/player/internal/server/api.go"
+      ],
+      "non_test_callers": [
+        "apps/player/internal/server/playlist.go",
+        "apps/player/internal/server/lists.go",
+        "apps/player/internal/server/playlist_document.go",
+        "apps/player/internal/server/player.go",
+        "apps/player/internal/server/api.go"
+      ],
+      "remaining_proof": "test-instance-library creates valid smart-video query but no restart/manual order/audio+audiobook rule matrix. Shared canonical state/rules tests do not prove actual app load/session/template binding.",
+      "coverage_limit": "Read-only source comparison and parent baseline. No child fresh Go/browser/native build. Genuine browser proof distinguished from isolated/shared fixtures; fresh exact-SHA keeper receipts remain root responsibility. 4 dummy media; MFA Owner; API create/membership/order/smart rules checked status then restart actual persisted session; first manual title Zodiac,len2; Arrival smart inclusion and validJSON (does not assert excludes Zodiac); actual player manual membership/smart absence; web audio smart includes Ambient+Ancillary.",
       "history": [
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
-      "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "production_or_support_deletion_unlocked": "None for retained declarations.",
+      "risk": "Retained important failure with explicit assertion limits; no new isolated tests.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./internal/server -run '^TestPlaylistsSupportPersistentOrderAndDynamicRules$'",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "baseline_file_sha256": "487b4292a7b79246cdbb5f77027e9e29e8533738d1c9b08f0e88a7b0b5150633",
+      "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8",
+      "owner_source_matches_baseline": true,
+      "assertion_review_and_limits": "4 dummy media; MFA Owner; API create/membership/order/smart rules checked status then restart actual persisted session; first manual title Zodiac,len2; Arrival smart inclusion and validJSON (does not assert excludes Zodiac); actual player manual membership/smart absence; web audio smart includes Ambient+Ancillary.",
+      "helper_and_primary_receipts": [
+        {
+          "file": "packages/catalog/list_read.go",
+          "baseline_sha256": "b10fad7b58f42245c6bb2167741eeb75312b6e911f85be8ea65bb1fd03d9cf79",
+          "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+        },
+        {
+          "file": "packages/catalog/list_operations.go",
+          "baseline_sha256": "deb05696fb2162cd572aee8f5c940d9dc0b0837b0f759b0028232aed3616ecb1",
+          "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+        },
+        {
+          "file": "packages/catalogapi/playlist_document.go",
+          "baseline_sha256": "b7e38e896960571d09af1ee73587f503e31b54dd20646733430866613e9897e8",
+          "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+        },
+        {
+          "file": "packages/catalog/playlist_http.go",
+          "baseline_sha256": "e8f73bb16995f9b18125326f02a8191f975fc0a1b813c0453711027823eb1cba",
+          "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+        }
+      ],
+      "verified_history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "baseline_events": [
+        {
+          "Time": "2026-10-03T10:29:56.629357-06:00",
+          "Action": "pass",
+          "Package": "github.com/MikeO7/kinosail-player/internal/server",
+          "Test": "TestPlaylistsSupportPersistentOrderAndDynamicRules",
+          "Elapsed": 0.62
+        }
+      ],
+      "test_edits": false,
+      "new_isolated_tests_added": false,
+      "review_provenance": {
+        "reviewer": "/root/frontend_native",
+        "packet": "engineering/qa/2026-10-03-test-overhaul/player-final-frontend.json",
+        "packet_sha256": "e30207b08936b22d815a26a4b3c8a7192672f094eac24059d2587fb16dfe85ef",
+        "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8",
+        "reviewed_integration_sha": "066091ef6a260e5fbfdedaea783fb2e13022647a",
+        "import_original_body_sha256_verified": true
+      }
     },
     {
       "name": "TestPlaylistDocumentsRoundTripThroughVersionedAPI",
@@ -35167,22 +35840,78 @@
       "sha256": "77591afcbbdd7655da5d69f6c678adf486d7def873f3dd48231f2919dffca5a9",
       "path": "apps/player/internal/server/playlist_features_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "Actual API portable versioned export must preserve full ID order and download MIME/filename; invalid format/unavailable imports must not publish partial playlist. Router/export/validation projection defects evade UI basic curation journeys.",
+      "category": "important_missed_failure",
+      "credible_failure": "Actual API portable versioned export must preserve full ID order and download MIME/filename; invalid format/unavailable imports must not publish partial playlist. Router/export/validation projection defects evade UI basic curation journeys.",
+      "production_owner": [
+        "apps/player/internal/server/playlist_document.go",
+        "apps/player/internal/server/lists.go",
+        "apps/player/internal/server/api.go"
+      ],
+      "non_test_callers": [
+        "apps/player/internal/server/playlist_document.go",
+        "apps/player/internal/server/lists.go",
+        "apps/player/internal/server/api.go"
+      ],
+      "remaining_proof": "No genuine Player E2E import/export document journey found. Shared document tests validate isolated decode/create/export; actual headers and registered API no-side-effect boundary distinct.",
+      "coverage_limit": "Read-only source comparison and parent baseline. No child fresh Go/browser/native build. Genuine browser proof distinguished from isolated/shared fixtures; fresh exact-SHA keeper receipts remain root responsibility. Creates2ID source; exact format/version/name/deep IDs export; imports renamed document and checks firstID plus relative index (second absence weakness); rejection format/missingIDs and Rejected absent. No restart in this declaration despite name.",
       "history": [
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
-      "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "production_or_support_deletion_unlocked": "None for retained declarations.",
+      "risk": "Retained important failure with explicit assertion limits; no new isolated tests.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./internal/server -run '^TestPlaylistDocumentsRoundTripThroughVersionedAPI$'",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "baseline_file_sha256": "487b4292a7b79246cdbb5f77027e9e29e8533738d1c9b08f0e88a7b0b5150633",
+      "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8",
+      "owner_source_matches_baseline": true,
+      "assertion_review_and_limits": "Creates2ID source; exact format/version/name/deep IDs export; imports renamed document and checks firstID plus relative index (second absence weakness); rejection format/missingIDs and Rejected absent. No restart in this declaration despite name.",
+      "helper_and_primary_receipts": [
+        {
+          "file": "packages/catalogapi/playlist_document.go",
+          "baseline_sha256": "b7e38e896960571d09af1ee73587f503e31b54dd20646733430866613e9897e8",
+          "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+        },
+        {
+          "file": "packages/catalogapi/media_http.go",
+          "baseline_sha256": "b92b469d465fbfeaa58f63c0383383277b6184375a267bca511fb0dd0529316e",
+          "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+        },
+        {
+          "file": "packages/catalogapi/media_http_read.go",
+          "baseline_sha256": "f6a04c539a345408b77244589eeb77ccf55c2ad3b6cfcbe6c1761c23b2b79a33",
+          "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+        },
+        {
+          "file": "packages/catalogapi/media_http_write.go",
+          "baseline_sha256": "34c34ef20b7820d8e6d38ba06a5273e3c62a9949d4f5d25f6bdece008a3a3d6c",
+          "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+        }
+      ],
+      "verified_history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "baseline_events": [
+        {
+          "Time": "2026-10-03T10:29:56.322113-06:00",
+          "Action": "pass",
+          "Package": "github.com/MikeO7/kinosail-player/internal/server",
+          "Test": "TestPlaylistDocumentsRoundTripThroughVersionedAPI",
+          "Elapsed": 0.38
+        }
+      ],
+      "test_edits": false,
+      "new_isolated_tests_added": false,
+      "review_provenance": {
+        "reviewer": "/root/frontend_native",
+        "packet": "engineering/qa/2026-10-03-test-overhaul/player-final-frontend.json",
+        "packet_sha256": "e30207b08936b22d815a26a4b3c8a7192672f094eac24059d2587fb16dfe85ef",
+        "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8",
+        "reviewed_integration_sha": "066091ef6a260e5fbfdedaea783fb2e13022647a",
+        "import_original_body_sha256_verified": true
+      }
     },
     {
       "name": "TestPlaylistDocumentsAreReachableThroughWebAdapter",
@@ -35191,22 +35920,68 @@
       "sha256": "b81668bcaf211c826c9542adea17522aa8f59a17a8d05cdba6a450bbf98cae0b",
       "path": "apps/player/internal/server/playlist_features_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "Actual browser-form document import must use JSON document field and reject unavailable IDs without creating a playlist; actual detail must offer export endpoint. A web-only adapter bypass can pass API document test.",
+      "category": "important_missed_failure",
+      "credible_failure": "Actual browser-form document import must use JSON document field and reject unavailable IDs without creating a playlist; actual detail must offer export endpoint. A web-only adapter bypass can pass API document test.",
+      "production_owner": [
+        "apps/player/internal/server/playlist_document.go",
+        "apps/player/internal/server/playlist_document_templates.go",
+        "apps/player/internal/server/player.go"
+      ],
+      "non_test_callers": [
+        "apps/player/internal/server/playlist_document.go",
+        "apps/player/internal/server/playlist_document_templates.go",
+        "apps/player/internal/server/player.go"
+      ],
+      "remaining_proof": "Genuine ui-happy-paths posts name/new membership only. No browser imported JSON document or export-link/download proof. Keep actual registered form admission binding.",
+      "coverage_limit": "Read-only source comparison and parent baseline. No child fresh Go/browser/native build. Genuine browser proof distinguished from isolated/shared fixtures; fresh exact-SHA keeper receipts remain root responsibility. Authenticated bearer httptest form, sourceID;303 location, actual Import playlist/document field and Export playlist/format; malformed semantic missing-ID import400 plus name absent. Not a browser file download/real user selection.",
       "history": [
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
-      "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "production_or_support_deletion_unlocked": "None for retained declarations.",
+      "risk": "Retained important failure with explicit assertion limits; no new isolated tests.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./internal/server -run '^TestPlaylistDocumentsAreReachableThroughWebAdapter$'",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "baseline_file_sha256": "487b4292a7b79246cdbb5f77027e9e29e8533738d1c9b08f0e88a7b0b5150633",
+      "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8",
+      "owner_source_matches_baseline": true,
+      "assertion_review_and_limits": "Authenticated bearer httptest form, sourceID;303 location, actual Import playlist/document field and Export playlist/format; malformed semantic missing-ID import400 plus name absent. Not a browser file download/real user selection.",
+      "helper_and_primary_receipts": [
+        {
+          "file": "packages/catalogapi/playlist_document.go",
+          "baseline_sha256": "b7e38e896960571d09af1ee73587f503e31b54dd20646733430866613e9897e8",
+          "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+        },
+        {
+          "file": "packages/catalog/lists.go",
+          "baseline_sha256": "8d2084e310367ecb904ce3b46309de095a60d138483769705c84fa07724eb517",
+          "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+        }
+      ],
+      "verified_history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "baseline_events": [
+        {
+          "Time": "2026-10-03T10:29:56.20793-06:00",
+          "Action": "pass",
+          "Package": "github.com/MikeO7/kinosail-player/internal/server",
+          "Test": "TestPlaylistDocumentsAreReachableThroughWebAdapter",
+          "Elapsed": 0.33
+        }
+      ],
+      "test_edits": false,
+      "new_isolated_tests_added": false,
+      "review_provenance": {
+        "reviewer": "/root/frontend_native",
+        "packet": "engineering/qa/2026-10-03-test-overhaul/player-final-frontend.json",
+        "packet_sha256": "e30207b08936b22d815a26a4b3c8a7192672f094eac24059d2587fb16dfe85ef",
+        "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8",
+        "reviewed_integration_sha": "066091ef6a260e5fbfdedaea783fb2e13022647a",
+        "import_original_body_sha256_verified": true
+      }
     },
     {
       "name": "TestPlaylistSummariesDescribeRulesAndArtwork",
@@ -35214,23 +35989,81 @@
       "end_line": 31,
       "sha256": "63522e2642e75701404d0ee9cf7f38c87a2e37c39479c61221dbe379c55338f0",
       "path": "apps/player/internal/server/playlist_summary_test.go",
-      "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "decision": "D",
+      "review_status": "candidate_evidence_complete",
+      "reason": "Simple3 synthetic storage summaries/rule/artwork/query checks duplicate canonical public summary+smart-rule primary; app wrapper only locks, currentViewer.ID and identical storage. No own failure injection or actual app render/persistence.",
+      "category": "duplicate_or_preempted",
+      "credible_failure": "Simple3 synthetic storage summaries/rule/artwork/query checks duplicate canonical public summary+smart-rule primary; app wrapper only locks, currentViewer.ID and identical storage. No own failure injection or actual app render/persistence.",
+      "production_owner": [
+        "apps/player/internal/server/playlist_summary.go",
+        "apps/player/internal/server/lists.go",
+        "apps/player/internal/server/home.go"
+      ],
+      "non_test_callers": [
+        "apps/player/internal/server/playlist_summary.go",
+        "apps/player/internal/server/lists.go",
+        "apps/player/internal/server/home.go"
+      ],
+      "remaining_proof": "Keep TestPlaylistSummariesPreserveModeRulesAndPreview and TestSmartPlaylistUsesCanonicalSearchKindsAndSort. Actual TestPlaylistsSupportPersistentOrderAndDynamicRules and app persistent lists retain bindings; genuine actual smart/curation cards used, not assertion-for-assertion equivalent summary JSON. Canonical summary already asserts matching \"Alpha\" \u00b7 video with the same punctuation; fixture spelling differs without distinct behavior.",
+      "coverage_limit": "Read-only source comparison and parent baseline. No child fresh Go/browser/native build. Genuine browser proof distinguished from isolated/shared fixtures; fresh exact-SHA keeper receipts remain root responsibility. Manual artwork/2preview,Everything Smart All media,Drama matching arrival/video count1,missing query0. Canonical summary checks five-member preview truncation+art/showArt+profile exclusion/fullModeRules and canonical smart kind/query count match matrices.",
       "history": [
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
-      "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "production_or_support_deletion_unlocked": "Removed same-file assertPlaylistSummaryRules test-only helper after rg confirmed its sole caller was the deleted declaration. No production changes.",
+      "risk": "low; redundant or independently ineffective invocation; named canonical and actual app keepers remain",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C packages test -count=1 ./catalog -run 'TestPlaylistSummariesPreserveModeRulesAndPreview|TestSmartPlaylistUsesCanonicalSearchKindsAndSort'; GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -count=1 ./internal/server -run '^TestPlaylistsSupportPersistentOrderAndDynamicRules$'",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "baseline_file_sha256": "266ca819b37139f003770962d286a49d497ec415dcab5a971ebee320e10b1a13",
+      "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8",
+      "owner_source_matches_baseline": true,
+      "assertion_review_and_limits": "Manual artwork/2preview,Everything Smart All media,Drama matching arrival/video count1,missing query0. Canonical summary checks five-member preview truncation+art/showArt+profile exclusion/fullModeRules and canonical smart kind/query count match matrices.",
+      "helper_and_primary_receipts": [
+        {
+          "file": "packages/catalog/collection_read_test.go",
+          "baseline_sha256": "84abbd7d063445f25a66d495b5de5aa28a8b5399059942277e99ed763c2cbbd8",
+          "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+        },
+        {
+          "file": "packages/catalog/list_read_test.go",
+          "baseline_sha256": "b0c68183b0722f38d3c453519a19534f2ad4d9e4fb2fedc1b7d2019a80e413c5",
+          "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+        },
+        {
+          "file": "packages/catalog/playlist_summary.go",
+          "baseline_sha256": "645d1346becd99b161e05aa4ea00e1baffe8211df1a4a3abe50adca50a22cffb",
+          "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+        }
+      ],
+      "verified_history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "baseline_events": [
+        {
+          "Time": "2026-10-03T10:29:50.895516-06:00",
+          "Action": "pass",
+          "Package": "github.com/MikeO7/kinosail-player/internal/server",
+          "Test": "TestPlaylistSummariesDescribeRulesAndArtwork",
+          "Elapsed": 0.01
+        }
+      ],
+      "test_edits": false,
+      "new_isolated_tests_added": false,
+      "review_provenance": {
+        "reviewer": "/root/frontend_native",
+        "packet": "engineering/qa/2026-10-03-test-overhaul/player-final-frontend.json",
+        "packet_sha256": "e30207b08936b22d815a26a4b3c8a7192672f094eac24059d2587fb16dfe85ef",
+        "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8",
+        "reviewed_integration_sha": "066091ef6a260e5fbfdedaea783fb2e13022647a",
+        "import_original_body_sha256_verified": true
+      },
+      "independent_review": {
+        "reviewer": "/root",
+        "reviewed_integration_sha": "e1772de2b",
+        "result": "Approved after full candidate/helper/production adapter/keeper comparison. Shared isolated owners and actual app bindings are retained; no full E2E equivalence claim."
+      },
+      "implementation_result": "Exact original declaration removed; root serial complete Go/shared/E2E validation pending.",
+      "implemented": true
     },
     {
       "name": "TestViewerCanCreateAndUsePersistentPlaylist",
@@ -35239,22 +36072,75 @@
       "sha256": "adc030ca6d2c950706e5c0a8ab13f3e65799e1d9f5171dbdeeab6876561398cf",
       "path": "apps/player/internal/server/playlist_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "Actual registered web membership/form validation and server reconstruction must retain playlist state and redirect search position; invalid form must not change initially empty list; explicit remove accepts legitimate _csrf transport token. Wrong form binding/persistence missed by valid browser path or isolated primary.",
+      "category": "important_missed_failure",
+      "credible_failure": "Actual registered web membership/form validation and server reconstruction must retain playlist state and redirect search position; invalid form must not change initially empty list; explicit remove accepts legitimate _csrf transport token. Wrong form binding/persistence missed by valid browser path or isolated primary.",
+      "production_owner": [
+        "apps/player/internal/server/playlist.go",
+        "apps/player/internal/server/player.go",
+        "apps/player/internal/server/lists.go",
+        "apps/player/internal/server/playlist_document.go"
+      ],
+      "non_test_callers": [
+        "apps/player/internal/server/playlist.go",
+        "apps/player/internal/server/player.go",
+        "apps/player/internal/server/lists.go",
+        "apps/player/internal/server/playlist_document.go"
+      ],
+      "remaining_proof": "Genuine curation happy and counts cover valid actualbrowser create/add/remove/delete and accessible controls but no server reconstruction or invalid ambiguous/_csrf matrix. Shared fixture validates core mutations with fake callbacks.",
+      "coverage_limit": "Read-only source comparison and parent baseline. No child fresh Go/browser/native build. Genuine browser proof distinguished from isolated/shared fixtures; fresh exact-SHA keeper receipts remain root responsibility. Real New no RequireAuth implicit Owner;8 invalid forms actual status400+0 items then add/reconstruct/actual player removal control; valid remove with transporttoken sees empty. Dummy media/no restart session auth here.",
       "history": [
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
-      "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "production_or_support_deletion_unlocked": "None for retained declarations.",
+      "risk": "Retained important failure with explicit assertion limits; no new isolated tests.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./internal/server -run '^TestViewerCanCreateAndUsePersistentPlaylist$'",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "baseline_file_sha256": "17194544eac3c53c73de420934003283ff5c1d05733fe5c16b623ba4f844291f",
+      "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8",
+      "owner_source_matches_baseline": true,
+      "assertion_review_and_limits": "Real New no RequireAuth implicit Owner;8 invalid forms actual status400+0 items then add/reconstruct/actual player removal control; valid remove with transporttoken sees empty. Dummy media/no restart session auth here.",
+      "helper_and_primary_receipts": [
+        {
+          "file": "packages/catalog/playlist_http.go",
+          "baseline_sha256": "e8f73bb16995f9b18125326f02a8191f975fc0a1b813c0453711027823eb1cba",
+          "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+        },
+        {
+          "file": "packages/catalogapi/playlist_document.go",
+          "baseline_sha256": "b7e38e896960571d09af1ee73587f503e31b54dd20646733430866613e9897e8",
+          "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+        },
+        {
+          "file": "packages/catalog/validation.go",
+          "baseline_sha256": "82073ca9f56d80368fdafb98224e10984a8a6847b20816c8b805fd18d532f0dc",
+          "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+        }
+      ],
+      "verified_history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "baseline_events": [
+        {
+          "Time": "2026-10-03T10:29:56.352665-06:00",
+          "Action": "pass",
+          "Package": "github.com/MikeO7/kinosail-player/internal/server",
+          "Test": "TestViewerCanCreateAndUsePersistentPlaylist",
+          "Elapsed": 0.52
+        }
+      ],
+      "test_edits": false,
+      "new_isolated_tests_added": false,
+      "review_provenance": {
+        "reviewer": "/root/frontend_native",
+        "packet": "engineering/qa/2026-10-03-test-overhaul/player-final-frontend.json",
+        "packet_sha256": "e30207b08936b22d815a26a4b3c8a7192672f094eac24059d2587fb16dfe85ef",
+        "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8",
+        "reviewed_integration_sha": "066091ef6a260e5fbfdedaea783fb2e13022647a",
+        "import_original_body_sha256_verified": true
+      }
     },
     {
       "name": "TestViewerCanReorderPlaylistWithoutDragging",
@@ -35262,23 +36148,69 @@
       "end_line": 96,
       "sha256": "42b75fa6cc7a98d0b26ed871ce91517f6a57bb08150cba27f5d947a09adce0ee",
       "path": "apps/player/internal/server/playlist_test.go",
-      "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "decision": "F",
+      "review_status": "semantic_review_complete",
+      "reason": "Actual web reorder form must bind signed direction/id and reject missing/duplicate/unknown/oversized forms; no browser E2E actually reorders stored playlist. Retain current integration guard but ordering proof is incomplete.",
+      "category": "retained_incomplete_proof",
+      "credible_failure": "Actual web reorder form must bind signed direction/id and reject missing/duplicate/unknown/oversized forms; no browser E2E actually reorders stored playlist. Retain current integration guard but ordering proof is incomplete.",
+      "production_owner": [
+        "apps/player/internal/server/playlist.go",
+        "apps/player/internal/server/lists.go",
+        "apps/player/internal/server/player.go"
+      ],
+      "non_test_callers": [
+        "apps/player/internal/server/playlist.go",
+        "apps/player/internal/server/lists.go",
+        "apps/player/internal/server/player.go"
+      ],
+      "remaining_proof": "Shared TestPlaylistHandlersValidateOrderBeforeMutation asserts exact IDs+savedViewer/name callbacks with injected storage, cannot prove actual app wiring/reload. instant-show-play measures reorder row geometry, never clicks Move. Gap: exact nonnegative parsed IDs/order + before/after no-state-change required before calling full ordering protection.",
+      "coverage_limit": "Read-only source comparison and parent baseline. No child fresh Go/browser/native build. Genuine browser proof distinguished from isolated/shared fixtures; fresh exact-SHA keeper receipts remain root responsibility. Real3title actualapi enumeration/membership, generated move labels, up303 and6invalid400. Relative strings.Index comparisons can pass if both titles absent(-1), responses/order parsed status not asserted, after-invalid order predicate also does not prove all members unchanged. No new test added.",
       "history": [
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
-      "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "production_or_support_deletion_unlocked": "None for retained declarations.",
+      "risk": "Retained important failure with explicit assertion limits; no new isolated tests.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./internal/server -run '^TestViewerCanReorderPlaylistWithoutDragging$'",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "baseline_file_sha256": "17194544eac3c53c73de420934003283ff5c1d05733fe5c16b623ba4f844291f",
+      "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8",
+      "owner_source_matches_baseline": true,
+      "assertion_review_and_limits": "Real3title actualapi enumeration/membership, generated move labels, up303 and6invalid400. Relative strings.Index comparisons can pass if both titles absent(-1), responses/order parsed status not asserted, after-invalid order predicate also does not prove all members unchanged. No new test added.",
+      "helper_and_primary_receipts": [
+        {
+          "file": "packages/catalog/playlist_http.go",
+          "baseline_sha256": "e8f73bb16995f9b18125326f02a8191f975fc0a1b813c0453711027823eb1cba",
+          "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+        },
+        {
+          "file": "packages/catalog/playlist_http_test.go",
+          "baseline_sha256": "328b8a77d04dc16b72ab48fd2a40e3cd6bef6bb8e3ee7de748f27d2640b24607",
+          "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+        }
+      ],
+      "verified_history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "baseline_events": [
+        {
+          "Time": "2026-10-03T10:29:56.157513-06:00",
+          "Action": "pass",
+          "Package": "github.com/MikeO7/kinosail-player/internal/server",
+          "Test": "TestViewerCanReorderPlaylistWithoutDragging",
+          "Elapsed": 0.35
+        }
+      ],
+      "test_edits": false,
+      "new_isolated_tests_added": false,
+      "review_provenance": {
+        "reviewer": "/root/frontend_native",
+        "packet": "engineering/qa/2026-10-03-test-overhaul/player-final-frontend.json",
+        "packet_sha256": "e30207b08936b22d815a26a4b3c8a7192672f094eac24059d2587fb16dfe85ef",
+        "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8",
+        "reviewed_integration_sha": "066091ef6a260e5fbfdedaea783fb2e13022647a",
+        "import_original_body_sha256_verified": true
+      }
     },
     {
       "name": "TestViewerProfilesKeepSeparatePlaybackProgress",
@@ -35286,23 +36218,71 @@
       "end_line": 48,
       "sha256": "28f6250375fdf73fcda890aebeea2660eddf439196b4373a2bc31223d17b427f",
       "path": "apps/player/internal/server/profile_progress_test.go",
-      "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "decision": "F",
+      "review_status": "semantic_review_complete",
+      "reason": "Prevent one viewer inheriting another viewer resume data in actual authenticated web app; genuine browser happy path uses one Owner history, no cross-profile privacy assertion. Retain with unverified seed gap.",
+      "category": "retained_incomplete_proof",
+      "credible_failure": "Prevent one viewer inheriting another viewer resume data in actual authenticated web app; genuine browser happy path uses one Owner history, no cross-profile privacy assertion. Retain with unverified seed gap.",
+      "production_owner": [
+        "apps/player/internal/server/progress.go",
+        "apps/player/internal/server/auth.go",
+        "apps/player/internal/server/player.go",
+        "apps/player/internal/server/home.go"
+      ],
+      "non_test_callers": [
+        "apps/player/internal/server/progress.go",
+        "apps/player/internal/server/auth.go",
+        "apps/player/internal/server/player.go",
+        "apps/player/internal/server/home.go"
+      ],
+      "remaining_proof": "Shared canonical viewer isolation checks existing populated states but app auth/currentViewer binding distinct. Gap: establish successful Owner progress+positive shelf before Sam absence; no new isolated test without failure analysis first.",
+      "coverage_limit": "Read-only source comparison and parent baseline. No child fresh Go/browser/native build. Genuine browser proof distinguished from isolated/shared fixtures; fresh exact-SHA keeper receipts remain root responsibility. CreatesSam, Owner homeID, sends seconds60, Sam sign-in then no Continue watching. Owner progress POST status/state/positive Owner shelf not checked; ignored seed can pass negative assertion. Sign-in helper verifies realcookie+MFA; no browser decoder.",
       "history": [
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
-      "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "production_or_support_deletion_unlocked": "None for retained declarations.",
+      "risk": "Retained important failure with explicit assertion limits; no new isolated tests.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./internal/server -run '^TestViewerProfilesKeepSeparatePlaybackProgress$'",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "baseline_file_sha256": "9d35b91558c52e9b84519d65a94eda4bcf9d8782c395f99e5cdf6442c73b5060",
+      "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8",
+      "owner_source_matches_baseline": true,
+      "assertion_review_and_limits": "CreatesSam, Owner homeID, sends seconds60, Sam sign-in then no Continue watching. Owner progress POST status/state/positive Owner shelf not checked; ignored seed can pass negative assertion. Sign-in helper verifies realcookie+MFA; no browser decoder.",
+      "helper_and_primary_receipts": [
+        {
+          "file": "packages/catalog/progress_projection.go",
+          "baseline_sha256": "0d3882b4b48ab538fe45517dce58adae7058261b8e78349f61a63b5849598098",
+          "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+        },
+        {
+          "file": "packages/catalogapi/progress_store.go",
+          "baseline_sha256": "5038d46c2443d616bf80ed7e55a9e734e86860944f9c6e4d60062d65b7c31807",
+          "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+        }
+      ],
+      "verified_history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "baseline_events": [
+        {
+          "Time": "2026-10-03T10:29:56.35226-06:00",
+          "Action": "pass",
+          "Package": "github.com/MikeO7/kinosail-player/internal/server",
+          "Test": "TestViewerProfilesKeepSeparatePlaybackProgress",
+          "Elapsed": 0.54
+        }
+      ],
+      "test_edits": false,
+      "new_isolated_tests_added": false,
+      "review_provenance": {
+        "reviewer": "/root/frontend_native",
+        "packet": "engineering/qa/2026-10-03-test-overhaul/player-final-frontend.json",
+        "packet_sha256": "e30207b08936b22d815a26a4b3c8a7192672f094eac24059d2587fb16dfe85ef",
+        "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8",
+        "reviewed_integration_sha": "066091ef6a260e5fbfdedaea783fb2e13022647a",
+        "import_original_body_sha256_verified": true
+      }
     },
     {
       "name": "TestViewerProfilesKeepSeparatePersistentLists",
@@ -35311,22 +36291,72 @@
       "sha256": "476b1e94d02c415e7cfaafdb9ab8ef95fc3111bb6dbdac4ff244c3110cad7621",
       "path": "apps/player/internal/server/profile_progress_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "Actual profile-specific list mutation/session+SQLite reconstruction must keep Owner personal shelf and hide it from Sam; wrong currentViewer binding or lost persistence leaks/loses lists while single-profile E2E passes.",
+      "category": "important_missed_failure",
+      "credible_failure": "Actual profile-specific list mutation/session+SQLite reconstruction must keep Owner personal shelf and hide it from Sam; wrong currentViewer binding or lost persistence leaks/loses lists while single-profile E2E passes.",
+      "production_owner": [
+        "apps/player/internal/server/lists.go",
+        "apps/player/internal/server/auth.go",
+        "apps/player/internal/server/home.go",
+        "apps/player/internal/server/player.go",
+        "apps/player/internal/server/database.go"
+      ],
+      "non_test_callers": [
+        "apps/player/internal/server/lists.go",
+        "apps/player/internal/server/auth.go",
+        "apps/player/internal/server/home.go",
+        "apps/player/internal/server/player.go",
+        "apps/player/internal/server/database.go"
+      ],
+      "remaining_proof": "genuine happy-path persists MyList in sameOwner context and relogin; no second profile comparing after server restart. Shared scoped list storage tests cannot prove actualcookie/context mapping.",
+      "coverage_limit": "Read-only source comparison and parent baseline. No child fresh Go/browser/native build. Genuine browser proof distinguished from isolated/shared fixtures; fresh exact-SHA keeper receipts remain root responsibility. Owner writeslist true; reconstructed authenticated app returns Owner My List heading true and Samfalse. Positive Owner assertion validates seed unlike progress sibling; no exact item-content assertion.",
       "history": [
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
-      "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "production_or_support_deletion_unlocked": "None for retained declarations.",
+      "risk": "Retained important failure with explicit assertion limits; no new isolated tests.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./internal/server -run '^TestViewerProfilesKeepSeparatePersistentLists$'",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "baseline_file_sha256": "9d35b91558c52e9b84519d65a94eda4bcf9d8782c395f99e5cdf6442c73b5060",
+      "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8",
+      "owner_source_matches_baseline": true,
+      "assertion_review_and_limits": "Owner writeslist true; reconstructed authenticated app returns Owner My List heading true and Samfalse. Positive Owner assertion validates seed unlike progress sibling; no exact item-content assertion.",
+      "helper_and_primary_receipts": [
+        {
+          "file": "packages/catalogapi/progress_store.go",
+          "baseline_sha256": "5038d46c2443d616bf80ed7e55a9e734e86860944f9c6e4d60062d65b7c31807",
+          "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+        },
+        {
+          "file": "packages/catalog/list_operations.go",
+          "baseline_sha256": "deb05696fb2162cd572aee8f5c940d9dc0b0837b0f759b0028232aed3616ecb1",
+          "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+        }
+      ],
+      "verified_history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "baseline_events": [
+        {
+          "Time": "2026-10-03T10:29:40.280222-06:00",
+          "Action": "pass",
+          "Package": "github.com/MikeO7/kinosail-player/internal/server",
+          "Test": "TestViewerProfilesKeepSeparatePersistentLists",
+          "Elapsed": 0.54
+        }
+      ],
+      "test_edits": false,
+      "new_isolated_tests_added": false,
+      "review_provenance": {
+        "reviewer": "/root/frontend_native",
+        "packet": "engineering/qa/2026-10-03-test-overhaul/player-final-frontend.json",
+        "packet_sha256": "e30207b08936b22d815a26a4b3c8a7192672f094eac24059d2587fb16dfe85ef",
+        "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8",
+        "reviewed_integration_sha": "066091ef6a260e5fbfdedaea783fb2e13022647a",
+        "import_original_body_sha256_verified": true
+      }
     },
     {
       "name": "TestViewerCanDismissContinueWatchingWithoutDeletingHistory",
@@ -35335,22 +36365,70 @@
       "sha256": "e897d4e12e39f8ecfcfb7acc2d11eb76d0c962faf863ac846e2cb3d24abf6ecf",
       "path": "apps/player/internal/server/profile_progress_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "Actual API and web dismiss must remove Home resume while preserving recorded history, then new progress can reexpose item before subsequent web dismiss. Deleting history rather than dismissing loses user data while Home disappearance passes.",
+      "category": "important_missed_failure",
+      "credible_failure": "Actual API and web dismiss must remove Home resume while preserving recorded history, then new progress can reexpose item before subsequent web dismiss. Deleting history rather than dismissing loses user data while Home disappearance passes.",
+      "production_owner": [
+        "apps/player/internal/server/progress.go",
+        "apps/player/internal/server/player.go",
+        "apps/player/internal/server/home.go",
+        "apps/player/internal/server/api.go"
+      ],
+      "non_test_callers": [
+        "apps/player/internal/server/progress.go",
+        "apps/player/internal/server/player.go",
+        "apps/player/internal/server/home.go",
+        "apps/player/internal/server/api.go"
+      ],
+      "remaining_proof": "masthead-spacing removes priorresumes throughAPI as setup but never asserts history preserved. Genuine happy-path watched removes Resume, distinct behavior. Shared stores flags in isolation, no actual web/API/history/render path parity.",
+      "coverage_limit": "Read-only source comparison and parent baseline. No child fresh Go/browser/native build. Genuine browser proof distinguished from isolated/shared fixtures; fresh exact-SHA keeper receipts remain root responsibility. API progress61, actualEnglish/Spanish labels,APIdelete204,newprogress,statuschecked,web303; finalhistoryArrival/seconds61 andHomeabsence,historypagecontains. Does not inspect state immediately after first API delete separately but shared Dismiss storesflag.",
       "history": [
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
-      "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "production_or_support_deletion_unlocked": "None for retained declarations.",
+      "risk": "Retained important failure with explicit assertion limits; no new isolated tests.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./internal/server -run '^TestViewerCanDismissContinueWatchingWithoutDeletingHistory$'",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "baseline_file_sha256": "9d35b91558c52e9b84519d65a94eda4bcf9d8782c395f99e5cdf6442c73b5060",
+      "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8",
+      "owner_source_matches_baseline": true,
+      "assertion_review_and_limits": "API progress61, actualEnglish/Spanish labels,APIdelete204,newprogress,statuschecked,web303; finalhistoryArrival/seconds61 andHomeabsence,historypagecontains. Does not inspect state immediately after first API delete separately but shared Dismiss storesflag.",
+      "helper_and_primary_receipts": [
+        {
+          "file": "packages/catalog/progress_request_store.go",
+          "baseline_sha256": "9ef6b1f13dfa797a738ac6381d1f0f571cd219026673cd82d0c3adbcc8a36ea9",
+          "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+        },
+        {
+          "file": "packages/catalogapi/progress_store.go",
+          "baseline_sha256": "5038d46c2443d616bf80ed7e55a9e734e86860944f9c6e4d60062d65b7c31807",
+          "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+        }
+      ],
+      "verified_history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "baseline_events": [
+        {
+          "Time": "2026-10-03T10:29:55.811429-06:00",
+          "Action": "pass",
+          "Package": "github.com/MikeO7/kinosail-player/internal/server",
+          "Test": "TestViewerCanDismissContinueWatchingWithoutDeletingHistory",
+          "Elapsed": 0.39
+        }
+      ],
+      "test_edits": false,
+      "new_isolated_tests_added": false,
+      "review_provenance": {
+        "reviewer": "/root/frontend_native",
+        "packet": "engineering/qa/2026-10-03-test-overhaul/player-final-frontend.json",
+        "packet_sha256": "e30207b08936b22d815a26a4b3c8a7192672f094eac24059d2587fb16dfe85ef",
+        "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8",
+        "reviewed_integration_sha": "066091ef6a260e5fbfdedaea783fb2e13022647a",
+        "import_original_body_sha256_verified": true
+      }
     },
     {
       "name": "TestSAMLIdentityLinkingRejectsConflictsAndPersistsValidLinks",
@@ -35656,22 +36734,73 @@
       "sha256": "b12fac8fc8c0690738a66f87e575e57fa9d6d3d57baa973954e613ea55f44fd3",
       "path": "apps/player/internal/server/progress_audit_internal_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "Stale progress+watched true must not emit additional playback lifecycle journal entries or rewind committed state. API state-only rejection and pure ProgressAudit calculations miss an unconditional actual auditor call in RequestProgressStore wiring.",
+      "category": "important_missed_failure",
+      "credible_failure": "Stale progress+watched true must not emit additional playback lifecycle journal entries or rewind committed state. API state-only rejection and pure ProgressAudit calculations miss an unconditional actual auditor call in RequestProgressStore wiring.",
+      "production_owner": [
+        "apps/player/internal/server/progress.go",
+        "apps/player/internal/server/audit.go",
+        "apps/player/internal/server/server.go"
+      ],
+      "non_test_callers": [
+        "apps/player/internal/server/progress.go",
+        "apps/player/internal/server/audit.go",
+        "apps/player/internal/server/server.go"
+      ],
+      "remaining_proof": "Shared TestProgressRevisionRejectsChangesWithoutPersistenceOrAudit exercises pure ProgressAudit; RequestProgressStoreAuditsAcceptedTransitions covers valid events, not stale no-journal side effect. Genuine browser has no stale/reordered audit observation.",
+      "coverage_limit": "Read-only source comparison and parent baseline. No child fresh Go/browser/native build. Genuine browser proof distinguished from isolated/shared fixtures; fresh exact-SHA keeper receipts remain root responsibility. Actual app constructor helpers RequestProgressStore + real auditjournal HTTPTracker; initial accepted120/rev2 yields exactly1 Query, stale10/watchedtrue/rev1 returnsnotaccepted and exactly1 plus120. No full app HTTP request/mux used.",
       "history": [
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
-      "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "production_or_support_deletion_unlocked": "None for retained declarations.",
+      "risk": "Retained important failure with explicit assertion limits; no new isolated tests.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./internal/server -run '^TestRejectedProgressCannotEmitPlaybackAudit$'",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "baseline_file_sha256": "52d23a65168ce7877cd6fc750c5ad713964d8828242c1268c2f6df725e6ae058",
+      "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8",
+      "owner_source_matches_baseline": true,
+      "assertion_review_and_limits": "Actual app constructor helpers RequestProgressStore + real auditjournal HTTPTracker; initial accepted120/rev2 yields exactly1 Query, stale10/watchedtrue/rev1 returnsnotaccepted and exactly1 plus120. No full app HTTP request/mux used.",
+      "helper_and_primary_receipts": [
+        {
+          "file": "packages/catalog/progress_request_store.go",
+          "baseline_sha256": "9ef6b1f13dfa797a738ac6381d1f0f571cd219026673cd82d0c3adbcc8a36ea9",
+          "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+        },
+        {
+          "file": "packages/catalog/progress_change.go",
+          "baseline_sha256": "d9fcb85059e5d212f98b24f21c1b7d3e472e3e43a4403a9426aa5125e83237d1",
+          "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+        },
+        {
+          "file": "packages/auditjournal/http.go",
+          "baseline_sha256": "2fea7f4d00924bdd34cff1d0df029705130a8beeb8d3eef38d8b94be925c5a5b",
+          "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+        }
+      ],
+      "verified_history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "baseline_events": [
+        {
+          "Time": "2026-10-03T10:28:28.569831-06:00",
+          "Action": "pass",
+          "Package": "github.com/MikeO7/kinosail-player/internal/server",
+          "Test": "TestRejectedProgressCannotEmitPlaybackAudit",
+          "Elapsed": 0
+        }
+      ],
+      "test_edits": false,
+      "new_isolated_tests_added": false,
+      "review_provenance": {
+        "reviewer": "/root/frontend_native",
+        "packet": "engineering/qa/2026-10-03-test-overhaul/player-final-frontend.json",
+        "packet_sha256": "e30207b08936b22d815a26a4b3c8a7192672f094eac24059d2587fb16dfe85ef",
+        "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8",
+        "reviewed_integration_sha": "066091ef6a260e5fbfdedaea783fb2e13022647a",
+        "import_original_body_sha256_verified": true
+      }
     },
     {
       "name": "TestProgressReadsRemainResponsiveAndCommittedWhileStateIsPersisted",
@@ -35717,22 +36846,68 @@
       "sha256": "c80c4e8c47d4fab3e3be138a598abb0084891ae402da0b8ce98cf5241e3e8676",
       "path": "apps/player/internal/server/progress_input_validation_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "Actual authenticated /progress form must reject129-byte session through configured status mapping; accepting it can publish unbounded state or weaken optimistic playback ordering. Genuine valid progress only.",
+      "category": "important_missed_failure",
+      "credible_failure": "Actual authenticated /progress form must reject129-byte session through configured status mapping; accepting it can publish unbounded state or weaken optimistic playback ordering. Genuine valid progress only.",
+      "production_owner": [
+        "apps/player/internal/server/progress.go",
+        "apps/player/internal/server/player.go",
+        "apps/player/internal/server/api.go"
+      ],
+      "non_test_callers": [
+        "apps/player/internal/server/progress.go",
+        "apps/player/internal/server/player.go",
+        "apps/player/internal/server/api.go"
+      ],
+      "remaining_proof": "TestProgressHTTPSaveRejectsInvalidInput does not include oversized session; canonical ProgressRevisionRejectsChangesWithoutPersistenceOrAudit includes129withstub persistence. No actual browser invalid session boundary.",
+      "coverage_limit": "Read-only source comparison and parent baseline. No child fresh Go/browser/native build. Genuine browser proof distinguished from isolated/shared fixtures; fresh exact-SHA keeper receipts remain root responsibility. RealMFAOwner,realindexedID,seconds42/revision1otherwisevalid,session129,exact400. Does not assert no-write/reload itself. Shared store rejects bound and playback API body tests coverJSON, not this web registration/status adapter.",
       "history": [
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
-      "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "production_or_support_deletion_unlocked": "None for retained declarations.",
+      "risk": "Retained important failure with explicit assertion limits; no new isolated tests.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./internal/server -run '^TestWebProgressRejectsOversizedSession$'",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "baseline_file_sha256": "4c5ba0facfbdb903dfa274aab115b64a3d75fde0a228fbed53d3453aa86d71b9",
+      "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8",
+      "owner_source_matches_baseline": true,
+      "assertion_review_and_limits": "RealMFAOwner,realindexedID,seconds42/revision1otherwisevalid,session129,exact400. Does not assert no-write/reload itself. Shared store rejects bound and playback API body tests coverJSON, not this web registration/status adapter.",
+      "helper_and_primary_receipts": [
+        {
+          "file": "packages/catalog/progress_http.go",
+          "baseline_sha256": "54255e3a3eda77b30f8bb9f0b7c6fe32e06e32b8b0e3bce95ad6cae722eaa217",
+          "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+        },
+        {
+          "file": "packages/catalog/progress_change.go",
+          "baseline_sha256": "d9fcb85059e5d212f98b24f21c1b7d3e472e3e43a4403a9426aa5125e83237d1",
+          "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+        }
+      ],
+      "verified_history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "baseline_events": [
+        {
+          "Time": "2026-10-03T10:29:55.636897-06:00",
+          "Action": "pass",
+          "Package": "github.com/MikeO7/kinosail-player/internal/server",
+          "Test": "TestWebProgressRejectsOversizedSession",
+          "Elapsed": 0.29
+        }
+      ],
+      "test_edits": false,
+      "new_isolated_tests_added": false,
+      "review_provenance": {
+        "reviewer": "/root/frontend_native",
+        "packet": "engineering/qa/2026-10-03-test-overhaul/player-final-frontend.json",
+        "packet_sha256": "e30207b08936b22d815a26a4b3c8a7192672f094eac24059d2587fb16dfe85ef",
+        "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8",
+        "reviewed_integration_sha": "066091ef6a260e5fbfdedaea783fb2e13022647a",
+        "import_original_body_sha256_verified": true
+      }
     },
     {
       "name": "TestProgressRejectsStaleEventsWithinAPlaybackSession",
@@ -42054,9 +43229,15 @@
         },
         {
           "kind": "retained_canonical_isolated_search_normalization",
-          "path": "packages/catalog/search_sort_test.go",
-          "scenario": "TestSearchTextNormalizesASCIIAndUnicodeMetadata; TestSearchSortingPreservesRelevanceAndTieBreaks",
-          "mapping": "Shared query/title normalization including mixed-case ASCII and Unicode casefold remains independently asserted."
+          "path": "packages/catalog/coverage_browse_letters_final_test.go",
+          "scenario": "TestCoverageSearchUnicodeRankingAndFilterIsolation",
+          "mapping": "Exact Unicode ranking, punctuation/case/decomposition normalization and detached filtered items are retained at the canonical catalogue owner."
+        },
+        {
+          "kind": "retained_canonical_isolated_search_normalization",
+          "path": "packages/catalog/search_metadata_test.go",
+          "scenario": "TestMetadataSearchNormalizesEveryUnicodeField",
+          "mapping": "Each title/show/year/plot/genre/director/studio/artist/album/cast field independently matches CAFE for Caf\u00e9 and rejects an extra missing term."
         }
       ],
       "coverage_limit": "No browser search equivalence is asserted. Stronger keeper is an actual Go-handler fixture. Existing query normalization owner guards lowercase input; Home uses the same browse operation for this default view and movies view.",
@@ -44734,22 +45915,72 @@
       "sha256": "f4d5cd3896a75f680fcb1ffbbd0daa122e7e51363aee3ccd122695eb792a12d1",
       "path": "apps/player/internal/server/sqlite_persistence_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "App construction must route all mutable session/progress/list state into SQLite rather than leaking legacy JSON, retain0600 database and restore session+history+lists after server reinitialization. Shared documentdb cannot prove all app stores wired toDB.",
+      "category": "important_missed_failure",
+      "credible_failure": "App construction must route all mutable session/progress/list state into SQLite rather than leaking legacy JSON, retain0600 database and restore session+history+lists after server reinitialization. Shared documentdb cannot prove all app stores wired toDB.",
+      "production_owner": [
+        "apps/player/internal/server/database.go",
+        "apps/player/internal/server/server.go",
+        "apps/player/internal/server/lists.go",
+        "apps/player/internal/server/progress.go",
+        "apps/player/internal/server/auth.go"
+      ],
+      "non_test_callers": [
+        "apps/player/internal/server/database.go",
+        "apps/player/internal/server/server.go",
+        "apps/player/internal/server/lists.go",
+        "apps/player/internal/server/progress.go",
+        "apps/player/internal/server/auth.go"
+      ],
+      "remaining_proof": "Genuine server browser reload does not reconstruct backend/check filesystem SQLite-only/permissions. Shared database migrations/injected transaction tests complement app path. Retain no legacy sensitive-state files boundary.",
+      "coverage_limit": "Read-only source comparison and parent baseline. No child fresh Go/browser/native build. Genuine browser proof distinguished from isolated/shared fixtures; fresh exact-SHA keeper receipts remain root responsibility. ActualOwnerMFA,APIprogress42,webplaylist,member toggles,create/deleteTemporary then every database.Documents path absent and actualDBpermission0600; newapphistory42/Favorites. Does not assert deleted Temporary remainsabsent after restart or memberships survive exactly.",
       "history": [
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
-      "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "production_or_support_deletion_unlocked": "None for retained declarations.",
+      "risk": "Retained important failure with explicit assertion limits; no new isolated tests.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./internal/server -run '^TestVersionedAPIAndWebPersistStateOnlyInSQLite$'",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "baseline_file_sha256": "d72a64e19f084e5889a893dd8bbf1d64c7d3034666512a32e7269712c7daf147",
+      "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8",
+      "owner_source_matches_baseline": true,
+      "assertion_review_and_limits": "ActualOwnerMFA,APIprogress42,webplaylist,member toggles,create/deleteTemporary then every database.Documents path absent and actualDBpermission0600; newapphistory42/Favorites. Does not assert deleted Temporary remainsabsent after restart or memberships survive exactly.",
+      "helper_and_primary_receipts": [
+        {
+          "file": "packages/documentdb/documentdb.go",
+          "baseline_sha256": "a87bfb12de18a8cf214b0e90a0a827673a3eaa5f41fbe15f214122df4b83b3e3",
+          "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+        },
+        {
+          "file": "packages/catalogapi/progress_store.go",
+          "baseline_sha256": "5038d46c2443d616bf80ed7e55a9e734e86860944f9c6e4d60062d65b7c31807",
+          "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+        }
+      ],
+      "verified_history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "baseline_events": [
+        {
+          "Time": "2026-10-03T10:29:34.100087-06:00",
+          "Action": "pass",
+          "Package": "github.com/MikeO7/kinosail-player/internal/server",
+          "Test": "TestVersionedAPIAndWebPersistStateOnlyInSQLite",
+          "Elapsed": 0.17
+        }
+      ],
+      "test_edits": false,
+      "new_isolated_tests_added": false,
+      "review_provenance": {
+        "reviewer": "/root/frontend_native",
+        "packet": "engineering/qa/2026-10-03-test-overhaul/player-final-frontend.json",
+        "packet_sha256": "e30207b08936b22d815a26a4b3c8a7192672f094eac24059d2587fb16dfe85ef",
+        "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8",
+        "reviewed_integration_sha": "066091ef6a260e5fbfdedaea783fb2e13022647a",
+        "import_original_body_sha256_verified": true
+      }
     },
     {
       "name": "TestPreferredSubtitleLanguageAndPickerLimitAcrossWebAndAPI",
@@ -49711,22 +50942,70 @@
       "sha256": "c0542c090aafd6530f0573d673e12bafdc0b4cadec62015c5822cf9882d04c4e",
       "path": "apps/player/internal/server/watch_together_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "Actual authenticated room/socket adapters must deny nonleader control, sync monotonically versioned/effective state, restore changed media to reconnecting viewer, close alreadyconnected deleted profile and expire room. Failure to reauthorize allows revoked users continued access; browser normal reconnect misses revocation/expiry.",
+      "category": "important_missed_failure",
+      "credible_failure": "Actual authenticated room/socket adapters must deny nonleader control, sync monotonically versioned/effective state, restore changed media to reconnecting viewer, close alreadyconnected deleted profile and expire room. Failure to reauthorize allows revoked users continued access; browser normal reconnect misses revocation/expiry.",
+      "production_owner": [
+        "apps/player/internal/server/watch_together.go",
+        "apps/player/internal/server/player.go",
+        "apps/player/internal/server/auth.go",
+        "apps/player/internal/server/server.go"
+      ],
+      "non_test_callers": [
+        "apps/player/internal/server/watch_together.go",
+        "apps/player/internal/server/player.go",
+        "apps/player/internal/server/auth.go",
+        "apps/player/internal/server/server.go"
+      ],
+      "remaining_proof": "genuine test-instance-offline two browser clients synchronize/reconnect uses realbackend but no participant command denial, leader mediachange, profiledelete socket close,TTL test. Shared watchrooms isolation usesinjected profile authorization rather than actualauthrevocation adapter.",
+      "coverage_limit": "Read-only source comparison and parent baseline. No child fresh Go/browser/native build. Genuine browser proof distinguished from isolated/shared fixtures; fresh exact-SHA keeper receipts remain root responsibility. RealTCPWebSocket TwoProfiles actualcookieMFA, invalid initialposition400,leaderpage,participantdenied,leaderplay42/Revision/effectiveAt,changeMedia,disconnect/reconnectsamechangedmedia,actualprofiledelete+wsreaderror,1.1sTTLexpiry404. Dummyvideo/noactualdecoder/syncaccuracy.",
       "history": [
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
-      "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "production_or_support_deletion_unlocked": "None for retained declarations.",
+      "risk": "Retained important failure with explicit assertion limits; no new isolated tests.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./internal/server -run '^TestWatchTogetherEnforcesLeaderSyncAndExpiry$'",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "baseline_file_sha256": "edd3a65a9874dc5cc0a3721dc9bb16e80629f41111c91c364d484429e049e8fd",
+      "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8",
+      "owner_source_matches_baseline": true,
+      "assertion_review_and_limits": "RealTCPWebSocket TwoProfiles actualcookieMFA, invalid initialposition400,leaderpage,participantdenied,leaderplay42/Revision/effectiveAt,changeMedia,disconnect/reconnectsamechangedmedia,actualprofiledelete+wsreaderror,1.1sTTLexpiry404. Dummyvideo/noactualdecoder/syncaccuracy.",
+      "helper_and_primary_receipts": [
+        {
+          "file": "packages/watchrooms/http.go",
+          "baseline_sha256": "97126834cd02cdfeab145a59da24935a327a190b24db0781de938a916074fc00",
+          "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+        },
+        {
+          "file": "packages/watchrooms/watchrooms.go",
+          "baseline_sha256": "5740fe4d0ba2413e1ffb79233310a614fda26da2b8197d4c08b927a88970c62f",
+          "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+        }
+      ],
+      "verified_history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "baseline_events": [
+        {
+          "Time": "2026-10-03T10:29:55.878473-06:00",
+          "Action": "pass",
+          "Package": "github.com/MikeO7/kinosail-player/internal/server",
+          "Test": "TestWatchTogetherEnforcesLeaderSyncAndExpiry",
+          "Elapsed": 2.43
+        }
+      ],
+      "test_edits": false,
+      "new_isolated_tests_added": false,
+      "review_provenance": {
+        "reviewer": "/root/frontend_native",
+        "packet": "engineering/qa/2026-10-03-test-overhaul/player-final-frontend.json",
+        "packet_sha256": "e30207b08936b22d815a26a4b3c8a7192672f094eac24059d2587fb16dfe85ef",
+        "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8",
+        "reviewed_integration_sha": "066091ef6a260e5fbfdedaea783fb2e13022647a",
+        "import_original_body_sha256_verified": true
+      }
     },
     {
       "name": "TestWatchTogetherPlayerConnectsAndReconnectsThroughTheRoomAPI",
@@ -49734,23 +51013,69 @@
       "end_line": 100,
       "sha256": "f8355de842fa2aec5f2a235874996fcaf025a38f7057221deb9d88d4b5725b00",
       "path": "apps/player/internal/server/watch_together_test.go",
-      "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "decision": "F",
+      "review_status": "semantic_review_complete",
+      "reason": "Served client needs automatic delayed reconnect after unexpected socket closure, leader play/media bindings and effectiveAt correction. Genuine two-client journey only reloads viewer to reconnect, so deleting the automatic retry timer can leave that journey green. Retain existing coarse guard with explicit runtime gap.",
+      "category": "retained_incomplete_proof",
+      "credible_failure": "Served client needs automatic delayed reconnect after unexpected socket closure, leader play/media bindings and effectiveAt correction. Genuine two-client journey only reloads viewer to reconnect, so deleting the automatic retry timer can leave that journey green. Retain existing coarse guard with explicit runtime gap.",
+      "production_owner": [
+        "apps/player/internal/server/watch_together.go",
+        "apps/player/internal/server/player.go",
+        "apps/player/internal/server/server.go"
+      ],
+      "non_test_callers": [
+        "apps/player/internal/server/watch_together.go",
+        "apps/player/internal/server/player.go",
+        "apps/player/internal/server/server.go"
+      ],
+      "remaining_proof": "Genuine test-instance-offline.spec.ts:two browser clients synchronize and reconnect in one Watch Together room uses actual backend and seek/reload/metrics. Reload starts a fresh JS client; it does not force unexpected socket close and wait for setTimeout reconnect. Backend TestWatchTogetherEnforcesLeaderSyncAndExpiry retains leader play/media/reconnect/revocation/TTL but never executes frontend timer. Do not claim genuine automatic-retry equivalence.",
+      "coverage_limit": "Read-only source comparison and parent baseline. No child fresh Go/browser/native build. Genuine browser proof distinguished from isolated/shared fixtures; fresh exact-SHA keeper receipts remain root responsibility. Actual served static JS checks8 implementation tokens. It catches deletion of retry/play/media wiring but cannot prove timer executes, delay/backoff, scheduling, close cleanup, or functions are reachable. No new isolated test added.",
       "history": [
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
-      "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "production_or_support_deletion_unlocked": "None for retained declarations.",
+      "risk": "Retained important failure with explicit assertion limits; no new isolated tests.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./internal/server -run '^TestWatchTogetherPlayerConnectsAndReconnectsThroughTheRoomAPI$'",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "baseline_file_sha256": "edd3a65a9874dc5cc0a3721dc9bb16e80629f41111c91c364d484429e049e8fd",
+      "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8",
+      "owner_source_matches_baseline": true,
+      "assertion_review_and_limits": "Actual served static JS checks8 implementation tokens. It catches deletion of retry/play/media wiring but cannot prove timer executes, delay/backoff, scheduling, close cleanup, or functions are reachable. No new isolated test added.",
+      "helper_and_primary_receipts": [
+        {
+          "file": "packages/webassets/static/player-devices.js",
+          "baseline_sha256": "67dcd0f9b639732a4ad593f2e7d0750bcbdc874a378aab980b1cce72f6b1da6b",
+          "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+        },
+        {
+          "file": "packages/watchrooms/http.go",
+          "baseline_sha256": "97126834cd02cdfeab145a59da24935a327a190b24db0781de938a916074fc00",
+          "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+        }
+      ],
+      "verified_history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "baseline_events": [
+        {
+          "Time": "2026-10-03T10:29:53.465285-06:00",
+          "Action": "pass",
+          "Package": "github.com/MikeO7/kinosail-player/internal/server",
+          "Test": "TestWatchTogetherPlayerConnectsAndReconnectsThroughTheRoomAPI",
+          "Elapsed": 0.03
+        }
+      ],
+      "test_edits": false,
+      "new_isolated_tests_added": false,
+      "review_provenance": {
+        "reviewer": "/root/frontend_native",
+        "packet": "engineering/qa/2026-10-03-test-overhaul/player-final-frontend.json",
+        "packet_sha256": "e30207b08936b22d815a26a4b3c8a7192672f094eac24059d2587fb16dfe85ef",
+        "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8",
+        "reviewed_integration_sha": "066091ef6a260e5fbfdedaea783fb2e13022647a",
+        "import_original_body_sha256_verified": true
+      }
     },
     {
       "name": "TestWatchTogetherRejectsInvalidDriftWithoutMetricSideEffect",
@@ -49759,22 +51084,68 @@
       "sha256": "4600df1274988debb1e33c387b9a81df511c8b8600b7efd4d8951dcc41a9a1bf",
       "path": "apps/player/internal/server/watch_together_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "Actual WebSocket observe invalidnegative drift must closeconnection and avoid incrementing real app metrics. InjectedRooms validation can missHTTPadapter metrics effect/actualsocket lifetime; browser journey sendsvalidobservations only.",
+      "category": "important_missed_failure",
+      "credible_failure": "Actual WebSocket observe invalidnegative drift must closeconnection and avoid incrementing real app metrics. InjectedRooms validation can missHTTPadapter metrics effect/actualsocket lifetime; browser journey sendsvalidobservations only.",
+      "production_owner": [
+        "apps/player/internal/server/watch_together.go",
+        "apps/player/internal/server/operations.go",
+        "apps/player/internal/server/server.go"
+      ],
+      "non_test_callers": [
+        "apps/player/internal/server/watch_together.go",
+        "apps/player/internal/server/operations.go",
+        "apps/player/internal/server/server.go"
+      ],
+      "remaining_proof": "Shared WatchRooms validation tests protect negative/infinite handling inisolation; genuine test-instance-offline asserts positive drift counter/reconnects only, not negative socketinput/no-countereffect. Retain anddisclosereaderrorclosurelimitation.",
+      "coverage_limit": "Read-only source comparison and parent baseline. No child fresh Go/browser/native build. Genuine browser proof distinguished from isolated/shared fixtures; fresh exact-SHA keeper receipts remain root responsibility. ActualindexedMovie+MFAOwner,realroom/socketinitialevent thenobserve-1;bounded wsjsonReadmusterror, actualmetricscontains exactdriftobservations0. Readerrorcouldtimeoutwithoutactualclose so assertion narrower than closeclaim; still zerometric guardactualapp.",
       "history": [
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
-      "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "production_or_support_deletion_unlocked": "None for retained declarations.",
+      "risk": "Retained important failure with explicit assertion limits; no new isolated tests.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./internal/server -run '^TestWatchTogetherRejectsInvalidDriftWithoutMetricSideEffect$'",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "baseline_file_sha256": "edd3a65a9874dc5cc0a3721dc9bb16e80629f41111c91c364d484429e049e8fd",
+      "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8",
+      "owner_source_matches_baseline": true,
+      "assertion_review_and_limits": "ActualindexedMovie+MFAOwner,realroom/socketinitialevent thenobserve-1;bounded wsjsonReadmusterror, actualmetricscontains exactdriftobservations0. Readerrorcouldtimeoutwithoutactualclose so assertion narrower than closeclaim; still zerometric guardactualapp.",
+      "helper_and_primary_receipts": [
+        {
+          "file": "packages/watchrooms/http.go",
+          "baseline_sha256": "97126834cd02cdfeab145a59da24935a327a190b24db0781de938a916074fc00",
+          "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+        },
+        {
+          "file": "packages/watchrooms/watchrooms.go",
+          "baseline_sha256": "5740fe4d0ba2413e1ffb79233310a614fda26da2b8197d4c08b927a88970c62f",
+          "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+        }
+      ],
+      "verified_history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "baseline_events": [
+        {
+          "Time": "2026-10-03T10:29:39.594336-06:00",
+          "Action": "pass",
+          "Package": "github.com/MikeO7/kinosail-player/internal/server",
+          "Test": "TestWatchTogetherRejectsInvalidDriftWithoutMetricSideEffect",
+          "Elapsed": 0.1
+        }
+      ],
+      "test_edits": false,
+      "new_isolated_tests_added": false,
+      "review_provenance": {
+        "reviewer": "/root/frontend_native",
+        "packet": "engineering/qa/2026-10-03-test-overhaul/player-final-frontend.json",
+        "packet_sha256": "e30207b08936b22d815a26a4b3c8a7192672f094eac24059d2587fb16dfe85ef",
+        "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8",
+        "reviewed_integration_sha": "066091ef6a260e5fbfdedaea783fb2e13022647a",
+        "import_original_body_sha256_verified": true
+      }
     },
     {
       "name": "TestViewerCanMarkMediaWatched",
@@ -49783,22 +51154,68 @@
       "sha256": "cbdc98ee6efe9207d12d3d0e5e0b522a5e1fc3c3f45aaa2a533ba2a5617b6bbf",
       "path": "apps/player/internal/server/watched_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "Actual web watched route must persist flag and reconstruct actual player as Mark unwatched; loss of durable watched flag while live-memory browser navigation works remainsmissed.",
+      "category": "important_missed_failure",
+      "credible_failure": "Actual web watched route must persist flag and reconstruct actual player as Mark unwatched; loss of durable watched flag while live-memory browser navigation works remainsmissed.",
+      "production_owner": [
+        "apps/player/internal/server/player.go",
+        "apps/player/internal/server/progress.go",
+        "apps/player/internal/server/database.go"
+      ],
+      "non_test_callers": [
+        "apps/player/internal/server/player.go",
+        "apps/player/internal/server/progress.go",
+        "apps/player/internal/server/database.go"
+      ],
+      "remaining_proof": "genuine happy-path complete clicksMarkwatched and seesMarkunwatched/nofutureResume but doesnotrestartGo backend. Shared SaveWatched usesinjectedprogresspersistence, notactualappdatabaseprojection.",
+      "coverage_limit": "Read-only source comparison and parent baseline. No child fresh Go/browser/native build. Genuine browser proof distinguished from isolated/shared fixtures; fresh exact-SHA keeper receipts remain root responsibility. RealindexedHeat,POSTwatchedtrue implicitOwner then newapp sameSQLite directory watchcontainsMarkunwatched. POSTstatusunchecked but resultingpositiveactualcontrol validatesseed; dummyvideo/nobrowserdecoder.",
       "history": [
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
-      "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "production_or_support_deletion_unlocked": "None for retained declarations.",
+      "risk": "Retained important failure with explicit assertion limits; no new isolated tests.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./internal/server -run '^TestViewerCanMarkMediaWatched$'",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "baseline_file_sha256": "4adbbdcb6658bf3ef380a42fb629f6b2a5362c02600b1ae055eb030befca7880",
+      "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8",
+      "owner_source_matches_baseline": true,
+      "assertion_review_and_limits": "RealindexedHeat,POSTwatchedtrue implicitOwner then newapp sameSQLite directory watchcontainsMarkunwatched. POSTstatusunchecked but resultingpositiveactualcontrol validatesseed; dummyvideo/nobrowserdecoder.",
+      "helper_and_primary_receipts": [
+        {
+          "file": "packages/catalog/progress_http.go",
+          "baseline_sha256": "54255e3a3eda77b30f8bb9f0b7c6fe32e06e32b8b0e3bce95ad6cae722eaa217",
+          "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+        },
+        {
+          "file": "packages/catalog/progress_request_store.go",
+          "baseline_sha256": "9ef6b1f13dfa797a738ac6381d1f0f571cd219026673cd82d0c3adbcc8a36ea9",
+          "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+        }
+      ],
+      "verified_history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "baseline_events": [
+        {
+          "Time": "2026-10-03T10:29:53.889848-06:00",
+          "Action": "pass",
+          "Package": "github.com/MikeO7/kinosail-player/internal/server",
+          "Test": "TestViewerCanMarkMediaWatched",
+          "Elapsed": 0.51
+        }
+      ],
+      "test_edits": false,
+      "new_isolated_tests_added": false,
+      "review_provenance": {
+        "reviewer": "/root/frontend_native",
+        "packet": "engineering/qa/2026-10-03-test-overhaul/player-final-frontend.json",
+        "packet_sha256": "e30207b08936b22d815a26a4b3c8a7192672f094eac24059d2587fb16dfe85ef",
+        "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8",
+        "reviewed_integration_sha": "066091ef6a260e5fbfdedaea783fb2e13022647a",
+        "import_original_body_sha256_verified": true
+      }
     },
     {
       "name": "TestViewerCanFilterTheirUnwatchedMedia",
@@ -49807,22 +51224,70 @@
       "sha256": "570b7d31decbbaee4b4d15c5baac58a50d79c5775c5c22aed13b0a83243dfd31",
       "path": "apps/player/internal/server/watched_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "Actual Unwatched browse must exclude watchedHeat while retainingunwatchedArrival and correctresetlink; wrongappfilter wiring leaves alreadywatchedtitles in focusedview though ordinaryplayback/watchbuttonjourney passes.",
+      "category": "important_missed_failure",
+      "credible_failure": "Actual Unwatched browse must exclude watchedHeat while retainingunwatchedArrival and correctresetlink; wrongappfilter wiring leaves alreadywatchedtitles in focusedview though ordinaryplayback/watchbuttonjourney passes.",
+      "production_owner": [
+        "apps/player/internal/server/home.go",
+        "apps/player/internal/server/browse.go",
+        "apps/player/internal/server/player.go",
+        "apps/player/internal/server/progress.go"
+      ],
+      "non_test_callers": [
+        "apps/player/internal/server/home.go",
+        "apps/player/internal/server/browse.go",
+        "apps/player/internal/server/player.go",
+        "apps/player/internal/server/progress.go"
+      ],
+      "remaining_proof": "test-instance-library/focus-audit visitunwatched route butdo notseedandassertwatched-vs-unwatchedmembership. Genuine happy-path testsResume disappearance afterwatched, notfocusedUnwatched filter. Retainactualappbrowseprojection.",
+      "coverage_limit": "Read-only source comparison and parent baseline. No child fresh Go/browser/native build. Genuine browser proof distinguished from isolated/shared fixtures; fresh exact-SHA keeper receipts remain root responsibility. 2 indexednilmedia; selectHeatbyquery,POSTwatchedtrue then actualunwatched view:Heatabsent/Arrivalpresent/alllinkpresent. NoPOSTstatuschecked butpositivecontrastvalidatesflagprojection.",
       "history": [
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
-      "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "production_or_support_deletion_unlocked": "None for retained declarations.",
+      "risk": "Retained important failure with explicit assertion limits; no new isolated tests.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./internal/server -run '^TestViewerCanFilterTheirUnwatchedMedia$'",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "baseline_file_sha256": "4adbbdcb6658bf3ef380a42fb629f6b2a5362c02600b1ae055eb030befca7880",
+      "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8",
+      "owner_source_matches_baseline": true,
+      "assertion_review_and_limits": "2 indexednilmedia; selectHeatbyquery,POSTwatchedtrue then actualunwatched view:Heatabsent/Arrivalpresent/alllinkpresent. NoPOSTstatuschecked butpositivecontrastvalidatesflagprojection.",
+      "helper_and_primary_receipts": [
+        {
+          "file": "packages/catalog/browse.go",
+          "baseline_sha256": "5f32935c388ddc040fa4069ce352e1b50bad55d329fa5978b0ff9796ee2575af",
+          "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+        },
+        {
+          "file": "packages/catalog/catalog_test.go",
+          "baseline_sha256": "f69043b262f82e8b9fb69c9a0bb9c6ffa4629febb7db1aebe61cd94e46a1f6dc",
+          "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+        }
+      ],
+      "verified_history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "baseline_events": [
+        {
+          "Time": "2026-10-03T10:29:53.712287-06:00",
+          "Action": "pass",
+          "Package": "github.com/MikeO7/kinosail-player/internal/server",
+          "Test": "TestViewerCanFilterTheirUnwatchedMedia",
+          "Elapsed": 0.33
+        }
+      ],
+      "test_edits": false,
+      "new_isolated_tests_added": false,
+      "review_provenance": {
+        "reviewer": "/root/frontend_native",
+        "packet": "engineering/qa/2026-10-03-test-overhaul/player-final-frontend.json",
+        "packet_sha256": "e30207b08936b22d815a26a4b3c8a7192672f094eac24059d2587fb16dfe85ef",
+        "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8",
+        "reviewed_integration_sha": "066091ef6a260e5fbfdedaea783fb2e13022647a",
+        "import_original_body_sha256_verified": true
+      }
     },
     {
       "name": "TestOwnerFormsRejectAmbiguousFieldsWithoutSideEffects",
@@ -50000,6 +51465,7 @@
     "TestBrandUsesFoldedPlayLogo",
     "TestBrowserSessionCookiesAreAlwaysHostBoundAndSecure",
     "TestCleanDeviceNameNormalizesBrowserAgentsAndBoundsOtherNames",
+    "TestCollectionSummariesSeparateDefaultAndCustomSources",
     "TestCopyControlsReportClipboardFallback",
     "TestDLNALabelExplainsUnconfiguredAndConfiguredStates",
     "TestDefaultMFADoesNotBlockOpenInitialServer",
@@ -50016,6 +51482,7 @@
     "TestLetterJumpWebSupportsProgressiveMobileNavigation",
     "TestLibraryNavigationKeepsEveryDestinationInMainWithCompactOverflow",
     "TestLoginReturnRejectsExternalAndAmbiguousTargets",
+    "TestMarkerAnalysisReportsDetectorVersion",
     "TestMobileMoreMenuPlacesLibraryAfterSecondaryActions",
     "TestNavigationPagesRefreshCachedAssets",
     "TestOfflineDownloadQueueRejectsOverflowBeforeCreatingAJob",
@@ -50026,9 +51493,11 @@
     "TestPasskeyOfferPathKeepsTheValidatedLoginDestination",
     "TestPasswordFieldsOfferAccessibleRevealControls",
     "TestPersistedListAndProgressValidationIsBounded",
+    "TestPlaybackTraceRejectsInvalidInputWithoutLogging",
     "TestPlayerDatabaseAdapterUsesConfiguredDocuments",
     "TestPlayerNegotiatesCodecSupportBeforeStartingAdaptivePlayback",
     "TestPlayerUsesCastIconForDevicePlayback",
+    "TestPlaylistSummariesDescribeRulesAndArtwork",
     "TestPreviewThreeEditionSupporter",
     "TestProductionUITemplatesAvoidMixedGlyphIcons",
     "TestProfilePolicyChangeDoesNotPersistBeforeSessionRevocation",
@@ -50049,7 +51518,7 @@
     "TestWaitForHLSFileFollowsThePublishedVODTimeline",
     "TestWebBetaBadgeAppearsInSharedBrowserHeader"
   ],
-  "semantic_audit_complete": false,
+  "semantic_audit_complete": true,
   "implemented_removals": [
     "TestAPIKeyPermissionsHonorScopeAndRouteClassification",
     "TestApplicationPagesExposeSharedKeyboardShortcuts",
@@ -50058,6 +51527,7 @@
     "TestBrandUsesFoldedPlayLogo",
     "TestBrowserSessionCookiesAreAlwaysHostBoundAndSecure",
     "TestCleanDeviceNameNormalizesBrowserAgentsAndBoundsOtherNames",
+    "TestCollectionSummariesSeparateDefaultAndCustomSources",
     "TestCopyControlsReportClipboardFallback",
     "TestDLNALabelExplainsUnconfiguredAndConfiguredStates",
     "TestDefaultMFADoesNotBlockOpenInitialServer",
@@ -50074,6 +51544,7 @@
     "TestLetterJumpWebSupportsProgressiveMobileNavigation",
     "TestLibraryNavigationKeepsEveryDestinationInMainWithCompactOverflow",
     "TestLoginReturnRejectsExternalAndAmbiguousTargets",
+    "TestMarkerAnalysisReportsDetectorVersion",
     "TestMobileMoreMenuPlacesLibraryAfterSecondaryActions",
     "TestNavigationPagesRefreshCachedAssets",
     "TestOfflineDownloadQueueRejectsOverflowBeforeCreatingAJob",
@@ -50084,9 +51555,11 @@
     "TestPasskeyOfferPathKeepsTheValidatedLoginDestination",
     "TestPasswordFieldsOfferAccessibleRevealControls",
     "TestPersistedListAndProgressValidationIsBounded",
+    "TestPlaybackTraceRejectsInvalidInputWithoutLogging",
     "TestPlayerDatabaseAdapterUsesConfiguredDocuments",
     "TestPlayerNegotiatesCodecSupportBeforeStartingAdaptivePlayback",
     "TestPlayerUsesCastIconForDevicePlayback",
+    "TestPlaylistSummariesDescribeRulesAndArtwork",
     "TestPreviewThreeEditionSupporter",
     "TestProductionUITemplatesAvoidMixedGlyphIcons",
     "TestProfilePolicyChangeDoesNotPersistBeforeSessionRevocation",
@@ -50107,7 +51580,7 @@
     "TestWaitForHLSFileFollowsThePublishedVODTimeline",
     "TestWebBetaBadgeAppearsInSharedBrowserHeader"
   ],
-  "removal_count": 55,
+  "removal_count": 59,
   "verification": [
     {
       "command": "gofmt -w <five touched retained Go files>",
@@ -50176,6 +51649,24 @@
       "scope_manifest": "/tmp/player-tooling-security-slice.json",
       "body_sha256_matches": true,
       "durable_security_audit_commit": "b87f9d77534d78cae6643777a635d572624b97ff"
+    },
+    {
+      "read_only_final_frontend_packet_sha256": "e30207b08936b22d815a26a4b3c8a7192672f094eac24059d2587fb16dfe85ef",
+      "declarations": 28,
+      "decisions": {
+        "R": 21,
+        "D": 4,
+        "F": 3
+      },
+      "reviewer": "/root/frontend_native",
+      "body_sha256_matches": true,
+      "independent_four_removals_reviewer": "/root",
+      "root_reviewed_integration_sha": "e1772de2b",
+      "candidate_execution": "not_run_by_child; root coordinates exact-final-SHA validation"
+    },
+    {
+      "command": "gofmt -w apps/player/internal/server/collection_summary_test.go apps/player/internal/server/playback_trace_test.go; git diff --check",
+      "result": "passed; no child Go/browser build"
     }
   ],
   "retention_examples": [
@@ -50188,8 +51679,196 @@
     "TestConfigurationTransactionRejectsSemanticallyInvalidRecoveryWithoutSideEffects"
   ],
   "review_summary": {
-    "semantic_review_complete": 754,
-    "candidate_evidence_complete": 55,
-    "inventory_only_retained_pending_semantic_review": 28
+    "semantic_review_complete": 778,
+    "candidate_evidence_complete": 59
+  },
+  "upstream_reconciliation": {
+    "reviewed_upstream_main_sha": "e8eca5f762822b239cf322065a915c87482fb8b0",
+    "comparison_base_sha": "876b771a7dd0aef5e65957fcee87add0312535e8",
+    "declaration_count": 3,
+    "new_declarations": 1,
+    "changed_existing_declarations": 2,
+    "removed_upstream_declarations": 0,
+    "semantic_review_complete": true,
+    "rows": [
+      {
+        "path": "apps/player/internal/server/hls_bandwidth_delivery_test.go",
+        "name": "TestRealBlackIntroHLSBandwidthSurvivesCachedMasterReuse",
+        "line": 26,
+        "end_line": 145,
+        "sha256": "22179b202a6f61d4133768112922ae7b5daca8c6646c7ac2d2f87a4fc1a5c001",
+        "file_sha256": "6e91e117060039137b2916d13e8a87ee257f65ca2e1dae92cdee0f58afe34df6",
+        "change": "added_upstream_449",
+        "introduced_commit": "8e1564e15",
+        "decision": "R",
+        "review_status": "semantic_review_complete",
+        "category": "real_media_HTTP_cache_lifecycle_regression",
+        "credible_failure": "An unfinished black-intro master under-advertises planned demand; or a stale retained seekable master remains BANDWIDTH=1, gets reencoded, changes segment bytes/mtime, or changes rendition/codec/cache identity during repair. Actual HTTP+paced real FFmpeg exercises publication, three retained-cache requests, final measured master and decoding delivered first fragment.",
+        "production_owner": [
+          "apps/player/internal/server/hls.go:hlsManager.prepare",
+          "apps/player/internal/server/hls_cached_master.go:refreshCachedVideoHLSMaster/cachedVideoHLSQualities",
+          "packages/playback/hls_playlist.go:WriteMaster/masterVariant/VariantBandwidth"
+        ],
+        "non_test_callers": [
+          "server.New -> registered item playback API -> compatible HLS master -> hlsManager.prepare -> refreshCachedVideoHLSMaster for completed/seekable cache -> atomic WriteMaster; real encoder completion publishes final measured master"
+        ],
+        "remaining_proof": [
+          {
+            "kind": "retained_actual_media_HTTP_integration",
+            "path": "apps/player/internal/server/hls_bandwidth_delivery_test.go",
+            "scenario": "TestRealBlackIntroHLSBandwidthSurvivesCachedMasterReuse",
+            "mapping": "Genuine ordinary browser playback does not deliberately corrupt a retained master or compare FFmpeg call count and actual first-segment stability. Keep this important new upstream regression."
+          }
+        ],
+        "coverage_limit": "Real generated MPEG4 black-intro media, loopback HTTP and actual FFmpeg decode are integration proof, not Safari/physical-device E2E. FFmpeg/FFprobe absence skips. Final bitrate expectation uses production playback.VariantBandwidth, so it is not an independent oracle for that arithmetic; unfinished planned floor is independently target-based. Shared numeric policy tests retain arithmetic controls. No child execution, red-green control or final receipt claimed.",
+        "history": [
+          "8e1564e15197006365d5b0187663d5d664fa8e4f Use explicit Apple playback and correct unfinished HLS bandwidth"
+        ],
+        "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./internal/server -run '^TestRealBlackIntroHLSBandwidthSurvivesCachedMasterReuse$'",
+        "baseline_result": "not_in_original_baseline; final upstream-reconciled execution pending root",
+        "source_receipts": [
+          {
+            "path": "apps/player/internal/server/hls_bandwidth_delivery_test.go",
+            "revision": "e8eca5f762822b239cf322065a915c87482fb8b0",
+            "sha256": "6e91e117060039137b2916d13e8a87ee257f65ca2e1dae92cdee0f58afe34df6"
+          },
+          {
+            "path": "apps/player/internal/server/hls_cached_master.go",
+            "revision": "e8eca5f762822b239cf322065a915c87482fb8b0",
+            "sha256": "ce8cfaf9c6ef29549c797fd34165b3e1cb8a6efbdd082a8da942c2bcdc7fd75c"
+          },
+          {
+            "path": "apps/player/internal/server/hls.go",
+            "revision": "e8eca5f762822b239cf322065a915c87482fb8b0",
+            "sha256": "50de5bb6c9ced1a1d57bbf990f03a1c811fb8508bbc1bb76f0aec6919bf3f4ca"
+          },
+          {
+            "path": "packages/playback/hls_playlist.go",
+            "revision": "e8eca5f762822b239cf322065a915c87482fb8b0",
+            "sha256": "b36bd5709e82a738f60adce24d0d9b73fae2470cffd43bb0b4163e91f982ccc6"
+          },
+          {
+            "path": "apps/player/internal/server/audio_formats_test.go",
+            "revision": "e8eca5f762822b239cf322065a915c87482fb8b0",
+            "sha256": "1b68495964871ac3a40e2220c1792732da5e0cc01a497951fd087f8b3b59b84e"
+          },
+          {
+            "path": "apps/player/internal/server/hls_speed_test.go",
+            "revision": "e8eca5f762822b239cf322065a915c87482fb8b0",
+            "sha256": "0b618774823e66d9850d042ed570b2475353cabe0c4b4991f9e55ef3e2111fac"
+          }
+        ],
+        "risk": "Important actual retained-cache media delivery regression; preserve complete test."
+      },
+      {
+        "path": "apps/player/internal/server/passkeys_test.go",
+        "name": "TestPasskeyCeremoniesAreLocalAndServerSide",
+        "line": 17,
+        "end_line": 67,
+        "sha256": "6b1611c424a5ec60c0c2b59df03d9fecd4b446c740d2e12541352d35db8a97c3",
+        "file_sha256": "143799239fee42a34fa79cde23361629663e1068fe6ccde49cf88588ac6908ff",
+        "change": "updated_upstream_451",
+        "introduced_change_commit": "db665ed7a",
+        "original_body_sha256": "ee007905172fbfd1cd1379a31aa77b4a9c924491c8b506ba377799261ec8da63",
+        "decision": "R",
+        "review_status": "semantic_review_complete",
+        "category": "upstream_bundle_reconciliation_preserved",
+        "credible_failure": "Actual app RP origin/local user-verification policy, Owner setup mandatory protection and ceremony-cookie scope/HttpOnly/SameSite/server-side challenge handling remain distinct important security boundaries; preserve updated served passkeys.js version 16 assertion.",
+        "production_owner": [
+          "apps/player/internal/server/passkeys.go",
+          "packages/identitycore/passkeys.go"
+        ],
+        "non_test_callers": [
+          "server.New -> auth/session guard -> account or login route -> app-local template and shared identity ceremony handlers"
+        ],
+        "remaining_proof": [
+          "Retain complete existing declaration and helper with upstream v15-to-v16 literal reconciliation. Genuine virtual-authenticator first-install is complementary and does not imply every cookie/step-up return assertion."
+        ],
+        "coverage_limit": "No real authenticator in this Go declaration. Finish sends malformed {} and distinguishes invalid from expired; it does not prove successful registration or challenge entropy. Exact bundle number is incidental within the retained multi-assertion security keeper. Baseline pass belongs original v15 body; changed upstream body execution pending root.",
+        "history": [
+          "db665ed7a47660971e3d0e50617b072a94421552 Resume accepted browser sessions before offering a passkey",
+          "c731f92be24df235fdd0c21bd55b9c4e6669b5e2 Isolate Player and Subtitles browser sign-in cookies",
+          "98972d7c073d77314c41503002ea27708ce9d69b Fix mobile player control targets and touch auto-hide"
+        ],
+        "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./internal/server -run '^TestPasskeyCeremoniesAreLocalAndServerSide$'",
+        "baseline_result": "original_base_body_pass; updated_body_not_run_by_child",
+        "source_receipts": [
+          {
+            "path": "apps/player/internal/server/passkeys_test.go",
+            "revision": "e8eca5f762822b239cf322065a915c87482fb8b0",
+            "sha256": "143799239fee42a34fa79cde23361629663e1068fe6ccde49cf88588ac6908ff"
+          },
+          {
+            "path": "apps/player/internal/server/passkeys.go",
+            "revision": "e8eca5f762822b239cf322065a915c87482fb8b0",
+            "sha256": "541abfa2324385dd3ed22e765df1bd2b4a264c3c954eb58a26cdc98c103dd4d7"
+          }
+        ],
+        "risk": "Preserve existing app-specific contract; no new or altered isolated assertion in overhaul."
+      },
+      {
+        "path": "apps/player/internal/server/passkeys_test.go",
+        "name": "TestPasskeyLoginIsAvailableFromSignInPage",
+        "line": 91,
+        "end_line": 94,
+        "sha256": "67388e987b0acc25de2b6790f56400592dee8355d4c10a119a13afc5dc0bb7c6",
+        "file_sha256": "143799239fee42a34fa79cde23361629663e1068fe6ccde49cf88588ac6908ff",
+        "change": "updated_upstream_451",
+        "introduced_change_commit": "db665ed7a",
+        "original_body_sha256": "50517b7255330a578e6f9345d822cd95a8843cb7fab4ae1b5ae9fcfad8469ddb",
+        "decision": "R",
+        "review_status": "semantic_review_complete",
+        "category": "upstream_bundle_reconciliation_preserved",
+        "credible_failure": "Actual unauthenticated step-up login page must retain safe /settings/backups return target, passkey controls/status and current script inclusion; pure shared asset and browser first-install completion do not independently guard this app-owned template/return binding.",
+        "production_owner": [
+          "apps/player/internal/server/auth_login.go",
+          "packages/servertest/passkey_login.go"
+        ],
+        "non_test_callers": [
+          "server.New -> auth/session guard -> account or login route -> app-local template and shared identity ceremony handlers"
+        ],
+        "remaining_proof": [
+          "Retain complete existing declaration and helper with upstream v15-to-v16 literal reconciliation. Genuine virtual-authenticator first-install is complementary and does not imply every cookie/step-up return assertion."
+        ],
+        "coverage_limit": "Shared helper executes actual local handler and asserts rendered strings/control ordering; no JavaScript/WebAuthn execution. Keep the app binding guard with its explicit limitation and updated v16 bundle. Baseline pass belongs original v15 body; changed upstream body execution pending root.",
+        "history": [
+          "db665ed7a47660971e3d0e50617b072a94421552 Resume accepted browser sessions before offering a passkey",
+          "c731f92be24df235fdd0c21bd55b9c4e6669b5e2 Isolate Player and Subtitles browser sign-in cookies",
+          "98972d7c073d77314c41503002ea27708ce9d69b Fix mobile player control targets and touch auto-hide"
+        ],
+        "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./internal/server -run '^TestPasskeyLoginIsAvailableFromSignInPage$'",
+        "baseline_result": "original_base_body_pass; updated_body_not_run_by_child",
+        "source_receipts": [
+          {
+            "path": "apps/player/internal/server/passkeys_test.go",
+            "revision": "e8eca5f762822b239cf322065a915c87482fb8b0",
+            "sha256": "143799239fee42a34fa79cde23361629663e1068fe6ccde49cf88588ac6908ff"
+          },
+          {
+            "path": "apps/player/internal/server/auth_login.go",
+            "revision": "e8eca5f762822b239cf322065a915c87482fb8b0",
+            "sha256": "d2d7d2c4f1ac6b4b7ec75ccb7ae0699198e006c3ff6af01e077671e61fc3bc7c"
+          },
+          {
+            "path": "packages/servertest/passkey_login.go",
+            "revision": "e8eca5f762822b239cf322065a915c87482fb8b0",
+            "sha256": "fcc0bde4628a3f9ef2996174d0205935ec1d3b76d93b95eb2b5260a0faebe2ba"
+          }
+        ],
+        "risk": "Preserve existing app-specific contract; no new or altered isolated assertion in overhaul."
+      }
+    ],
+    "notes": [
+      "Original 837 ledger hashes remain pinned to base; these rows are a separate appendix so upstream test preservation is reproducible.",
+      "Upstream 450 added packages/identitycore::TestCookieIssuancePreservesPersistedExpiryAcrossSecondBoundary, owned and audited by the shared identity reviewer; no Player declaration named TestPasskeyCookieTracksIssuedSessionLifetime exists.",
+      "No upstream 452 ref is included in this reviewed main snapshot; recompare if main changes before merge.",
+      "All new/changed Player assertions are preserved. Root owns exact-final-SHA Go/FFmpeg/browser execution and evidence; no child builds."
+    ]
+  },
+  "decision_summary": {
+    "R": 716,
+    "D": 63,
+    "F": 57,
+    "C": 1
   }
 }
