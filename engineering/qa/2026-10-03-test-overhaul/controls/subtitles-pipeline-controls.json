@@ -1,0 +1,317 @@
+{
+  "schema": 1,
+  "sha": "60cccadf0822252caba3365f4bf6c0eab1ce14b2",
+  "failure_analysis_commit": "02d0627",
+  "old_test_source_sha": "ac422466174f6b925b3553b085851af7a91d71e1",
+  "command": [
+    "python3",
+    "/Users/mikeo/Documents/Codex/2026-10-03/task/subtitles-shared/engineering/qa/2026-10-03-test-overhaul/controls/run-subtitles-pipeline-controls.py",
+    "--repo",
+    "/Users/mikeo/Documents/Codex/2026-10-03/task/subtitles-shared",
+    "--output",
+    "/Users/mikeo/Documents/Codex/2026-10-03/task/subtitles-shared/.verification/test-overhaul/pipeline-controls-60cccadf0"
+  ],
+  "environment": {
+    "platform": "macOS-27.0-arm64-arm-64bit-Mach-O",
+    "machine": "arm64",
+    "python": "3.14.7",
+    "GOCACHE": "/tmp/kinosail-testing-go-cache",
+    "go_version": "go version go1.27.1 darwin/arm64",
+    "go_env": {
+      "CGO_ENABLED": "1",
+      "GOARCH": "arm64",
+      "GOMOD": "/Users/mikeo/Documents/Codex/2026-10-03/task/subtitles-shared/apps/subtitles/go.mod",
+      "GOOS": "darwin",
+      "GOVERSION": "go1.27.1"
+    }
+  },
+  "boundary": "Existing isolated deterministic provider/timing controls; not genuine E2E or real speech extraction. Production guard mutations are transient and restored byte for byte.",
+  "source_checksums": {
+    "apps/subtitles/internal/server/subsource_candidate.go": "e20df5e4d8882133a17458769a9e5669a3f5899eb75a5d008af75188d546c34c",
+    "apps/subtitles/internal/server/subsource_provider_internal_test.go": "d129215ec06d890c44615940bf418c0196afd0d5996e79c8f4ad178604675852",
+    "apps/subtitles/internal/server/subtitle_sync_piecewise.go": "0038759d487f0499df01877df681ee927c0b5d3227b52bca12bd00d7ea44cc8a",
+    "apps/subtitles/internal/server/subtitle_sync_behavior_internal_test.go": "7a452337d648b66a6efe244ed2c13aef69cbcab913202a552a388051513ba4c1"
+  },
+  "source_restored_exactly": true,
+  "runner_sha256": "bc5cafce4eda0bbc2cba55e95c69f79998793b398fefa454907b0ad291b872e3",
+  "artifact_directory": "/Users/mikeo/Documents/Codex/2026-10-03/task/subtitles-shared/.verification/test-overhaul/pipeline-controls-60cccadf0",
+  "artifact_checksums": {
+    "restored-full-package-localhost.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "candidate-old.patch": "861423d342ced29db5b3d2226fe63baa30b5c851fefe1fa8b7604cd63f2ac893",
+    "candidate-old.jsonl": "a33f7ca3a223e3ac85ef36aebc87173041b51895b14e987fd14de2252608d7ee",
+    "response-limit-old.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "preserve-old.jsonl": "c57721874172e0e64076e841749b43004d08ded56e80f90cad95a40563d8c194",
+    "response-limit-repaired.jsonl": "d7a28afe5a3e189a185d18ad56d7b4267ff4156c362fda87127056a675febc8b",
+    "response-limit-repaired.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "response-limit-repaired.patch": "bc500b6e5fb40fa5be9f7ba4e026b0021135c907c2b64f2878e6b4e39765893e",
+    "restored-full-package.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "preserve-old.patch": "478f068cde4ef116e824df3968f9985a972795ac5a85c2a3829c4850dc860498",
+    "response-limit-old.jsonl": "365c4968d04e434cd8e2cdab952976b9749b1261b9098f8b7083622533479841",
+    "candidate-repaired.jsonl": "3e4c4f10baa2881afb132587825f7e01e047e0323eb0bb93e10200f3eb6b1d2e",
+    "candidate-repaired.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "preserve-repaired.patch": "b14d11d574d74a86d5ee2b19a244323a86901981a8b43e8d7e46f04b566c1e2d",
+    "response-limit-old.patch": "d6c07eecccb31879ee3a4ae683e50ba09a13da43f02d9a3748745d0af8b7ea50",
+    "preserve-repaired.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "candidate-repaired.patch": "9615c466ff3c039a2b80ad2565433d1ed22779c0b5ee49d3f0392a0fea7f7e3c",
+    "preserve-repaired.jsonl": "236fd6ea9b9996126e4b43d1b41371dd293327067bfff030592d87186873c6e9",
+    "manifest.json": "57bfab215c070635c7228452d7731fd94284715516adc2a12bded508eea5a08f",
+    "restored-full-package-localhost.jsonl": "ce4dc2b2a359845ba93494d601f9a0a8863d3b53dddc13bcdcb58edabd482940",
+    "candidate-old.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "restored-full-package.patch": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "restored-full-package.jsonl": "017181bfbc8752871387d328437d66ade8e7be76b96c581d73605cfed865740b",
+    "preserve-old.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "sandbox_failure": "Original restored full-package phase blocked at MCP httptest listener: bind tcp6 [::1]:0 operation not permitted. This was environment restriction, preserved in logs; no assertion removed.",
+  "phase_reproduction": "Run runner from recorded SHA with localhost sockets permitted. Exact old test source ac4224661 retained in Git; runner transient patches are deterministic and recorded. Original sandbox failure is a separate environment event.",
+  "results_summary": {
+    "pass": 820,
+    "skip": 4
+  },
+  "phases": [
+    {
+      "phase": "candidate-old",
+      "sha": "60cccadf0822252caba3365f4bf6c0eab1ce14b2",
+      "cwd": "/Users/mikeo/Documents/Codex/2026-10-03/task/subtitles-shared/apps/subtitles",
+      "command": [
+        "go",
+        "test",
+        "-json",
+        "-count=1",
+        "-run",
+        "^TestSubSourceRejectsUnsafeOrAmbiguousResults$",
+        "./internal/server"
+      ],
+      "environment": {
+        "GOCACHE": "/tmp/kinosail-testing-go-cache"
+      },
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "seconds": 12.504,
+      "files": {
+        "apps/subtitles/internal/server/subsource_candidate.go": "261e1e8959b0e2253c25fe7bde9a999b1deed2ef9fa6f85ac101f00a80c9dc97",
+        "apps/subtitles/internal/server/subsource_provider_internal_test.go": "0f4cb732117369fb88b9f3fa600f3c6e7b1c50726ece70e1dcc7fff389d768a3",
+        "apps/subtitles/internal/server/subtitle_sync_piecewise.go": "0038759d487f0499df01877df681ee927c0b5d3227b52bca12bd00d7ea44cc8a",
+        "apps/subtitles/internal/server/subtitle_sync_behavior_internal_test.go": "7a452337d648b66a6efe244ed2c13aef69cbcab913202a552a388051513ba4c1"
+      },
+      "patch_sha256": "861423d342ced29db5b3d2226fe63baa30b5c851fefe1fa8b7604cd63f2ac893",
+      "logs": [
+        "candidate-old.jsonl",
+        "candidate-old.stderr",
+        "candidate-old.patch"
+      ]
+    },
+    {
+      "phase": "candidate-repaired",
+      "sha": "60cccadf0822252caba3365f4bf6c0eab1ce14b2",
+      "cwd": "/Users/mikeo/Documents/Codex/2026-10-03/task/subtitles-shared/apps/subtitles",
+      "command": [
+        "go",
+        "test",
+        "-json",
+        "-count=1",
+        "-run",
+        "^TestSubSourceRejectsUnsafeOrAmbiguousResults$",
+        "./internal/server"
+      ],
+      "environment": {
+        "GOCACHE": "/tmp/kinosail-testing-go-cache"
+      },
+      "exit_code": 1,
+      "expected_exit_code": 1,
+      "seconds": 9.658,
+      "files": {
+        "apps/subtitles/internal/server/subsource_candidate.go": "261e1e8959b0e2253c25fe7bde9a999b1deed2ef9fa6f85ac101f00a80c9dc97",
+        "apps/subtitles/internal/server/subsource_provider_internal_test.go": "d129215ec06d890c44615940bf418c0196afd0d5996e79c8f4ad178604675852",
+        "apps/subtitles/internal/server/subtitle_sync_piecewise.go": "0038759d487f0499df01877df681ee927c0b5d3227b52bca12bd00d7ea44cc8a",
+        "apps/subtitles/internal/server/subtitle_sync_behavior_internal_test.go": "7a452337d648b66a6efe244ed2c13aef69cbcab913202a552a388051513ba4c1"
+      },
+      "patch_sha256": "9615c466ff3c039a2b80ad2565433d1ed22779c0b5ee49d3f0392a0fea7f7e3c",
+      "logs": [
+        "candidate-repaired.jsonl",
+        "candidate-repaired.stderr",
+        "candidate-repaired.patch"
+      ]
+    },
+    {
+      "phase": "response-limit-old",
+      "sha": "60cccadf0822252caba3365f4bf6c0eab1ce14b2",
+      "cwd": "/Users/mikeo/Documents/Codex/2026-10-03/task/subtitles-shared/apps/subtitles",
+      "command": [
+        "go",
+        "test",
+        "-json",
+        "-count=1",
+        "-run",
+        "^TestSubSourceRejectsUnsafeOrAmbiguousResults$",
+        "./internal/server"
+      ],
+      "environment": {
+        "GOCACHE": "/tmp/kinosail-testing-go-cache"
+      },
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "seconds": 9.519,
+      "files": {
+        "apps/subtitles/internal/server/subsource_candidate.go": "3eeec5afa53145bd9cad1bf2695db3527fc3e24327b475c7e63e33ac763d31fa",
+        "apps/subtitles/internal/server/subsource_provider_internal_test.go": "0f4cb732117369fb88b9f3fa600f3c6e7b1c50726ece70e1dcc7fff389d768a3",
+        "apps/subtitles/internal/server/subtitle_sync_piecewise.go": "0038759d487f0499df01877df681ee927c0b5d3227b52bca12bd00d7ea44cc8a",
+        "apps/subtitles/internal/server/subtitle_sync_behavior_internal_test.go": "7a452337d648b66a6efe244ed2c13aef69cbcab913202a552a388051513ba4c1"
+      },
+      "patch_sha256": "d6c07eecccb31879ee3a4ae683e50ba09a13da43f02d9a3748745d0af8b7ea50",
+      "logs": [
+        "response-limit-old.jsonl",
+        "response-limit-old.stderr",
+        "response-limit-old.patch"
+      ]
+    },
+    {
+      "phase": "response-limit-repaired",
+      "sha": "60cccadf0822252caba3365f4bf6c0eab1ce14b2",
+      "cwd": "/Users/mikeo/Documents/Codex/2026-10-03/task/subtitles-shared/apps/subtitles",
+      "command": [
+        "go",
+        "test",
+        "-json",
+        "-count=1",
+        "-run",
+        "^TestSubSourceRejectsUnsafeOrAmbiguousResults$",
+        "./internal/server"
+      ],
+      "environment": {
+        "GOCACHE": "/tmp/kinosail-testing-go-cache"
+      },
+      "exit_code": 1,
+      "expected_exit_code": 1,
+      "seconds": 9.506,
+      "files": {
+        "apps/subtitles/internal/server/subsource_candidate.go": "3eeec5afa53145bd9cad1bf2695db3527fc3e24327b475c7e63e33ac763d31fa",
+        "apps/subtitles/internal/server/subsource_provider_internal_test.go": "d129215ec06d890c44615940bf418c0196afd0d5996e79c8f4ad178604675852",
+        "apps/subtitles/internal/server/subtitle_sync_piecewise.go": "0038759d487f0499df01877df681ee927c0b5d3227b52bca12bd00d7ea44cc8a",
+        "apps/subtitles/internal/server/subtitle_sync_behavior_internal_test.go": "7a452337d648b66a6efe244ed2c13aef69cbcab913202a552a388051513ba4c1"
+      },
+      "patch_sha256": "bc500b6e5fb40fa5be9f7ba4e026b0021135c907c2b64f2878e6b4e39765893e",
+      "logs": [
+        "response-limit-repaired.jsonl",
+        "response-limit-repaired.stderr",
+        "response-limit-repaired.patch"
+      ]
+    },
+    {
+      "phase": "preserve-old",
+      "sha": "60cccadf0822252caba3365f4bf6c0eab1ce14b2",
+      "cwd": "/Users/mikeo/Documents/Codex/2026-10-03/task/subtitles-shared/apps/subtitles",
+      "command": [
+        "go",
+        "test",
+        "-json",
+        "-count=1",
+        "-run",
+        "^TestSynchronizeCandidateRejectsPreservedSubtitle$",
+        "./internal/server"
+      ],
+      "environment": {
+        "GOCACHE": "/tmp/kinosail-testing-go-cache"
+      },
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "seconds": 9.454,
+      "files": {
+        "apps/subtitles/internal/server/subsource_candidate.go": "e20df5e4d8882133a17458769a9e5669a3f5899eb75a5d008af75188d546c34c",
+        "apps/subtitles/internal/server/subsource_provider_internal_test.go": "d129215ec06d890c44615940bf418c0196afd0d5996e79c8f4ad178604675852",
+        "apps/subtitles/internal/server/subtitle_sync_piecewise.go": "eb3c433e4a7614e6f3a2d480a93b8a15644245cfdc2326df561d199820c8490b",
+        "apps/subtitles/internal/server/subtitle_sync_behavior_internal_test.go": "906a67f521f949606770bbb8c1743328af9febb5c2f82f8a0238c2e54d3ff662"
+      },
+      "patch_sha256": "478f068cde4ef116e824df3968f9985a972795ac5a85c2a3829c4850dc860498",
+      "logs": [
+        "preserve-old.jsonl",
+        "preserve-old.stderr",
+        "preserve-old.patch"
+      ]
+    },
+    {
+      "phase": "preserve-repaired",
+      "sha": "60cccadf0822252caba3365f4bf6c0eab1ce14b2",
+      "cwd": "/Users/mikeo/Documents/Codex/2026-10-03/task/subtitles-shared/apps/subtitles",
+      "command": [
+        "go",
+        "test",
+        "-json",
+        "-count=1",
+        "-run",
+        "^TestSynchronizeCandidateRejectsPreservedSubtitle$",
+        "./internal/server"
+      ],
+      "environment": {
+        "GOCACHE": "/tmp/kinosail-testing-go-cache"
+      },
+      "exit_code": 1,
+      "expected_exit_code": 1,
+      "seconds": 9.506,
+      "files": {
+        "apps/subtitles/internal/server/subsource_candidate.go": "e20df5e4d8882133a17458769a9e5669a3f5899eb75a5d008af75188d546c34c",
+        "apps/subtitles/internal/server/subsource_provider_internal_test.go": "d129215ec06d890c44615940bf418c0196afd0d5996e79c8f4ad178604675852",
+        "apps/subtitles/internal/server/subtitle_sync_piecewise.go": "eb3c433e4a7614e6f3a2d480a93b8a15644245cfdc2326df561d199820c8490b",
+        "apps/subtitles/internal/server/subtitle_sync_behavior_internal_test.go": "7a452337d648b66a6efe244ed2c13aef69cbcab913202a552a388051513ba4c1"
+      },
+      "patch_sha256": "b14d11d574d74a86d5ee2b19a244323a86901981a8b43e8d7e46f04b566c1e2d",
+      "logs": [
+        "preserve-repaired.jsonl",
+        "preserve-repaired.stderr",
+        "preserve-repaired.patch"
+      ]
+    },
+    {
+      "phase": "restored-full-package",
+      "sha": "60cccadf0822252caba3365f4bf6c0eab1ce14b2",
+      "cwd": "/Users/mikeo/Documents/Codex/2026-10-03/task/subtitles-shared/apps/subtitles",
+      "command": [
+        "go",
+        "test",
+        "-json",
+        "-count=1",
+        "./internal/server"
+      ],
+      "environment": {
+        "GOCACHE": "/tmp/kinosail-testing-go-cache"
+      },
+      "exit_code": 1,
+      "expected_exit_code": 0,
+      "seconds": 38.269,
+      "files": {
+        "apps/subtitles/internal/server/subsource_candidate.go": "e20df5e4d8882133a17458769a9e5669a3f5899eb75a5d008af75188d546c34c",
+        "apps/subtitles/internal/server/subsource_provider_internal_test.go": "d129215ec06d890c44615940bf418c0196afd0d5996e79c8f4ad178604675852",
+        "apps/subtitles/internal/server/subtitle_sync_piecewise.go": "0038759d487f0499df01877df681ee927c0b5d3227b52bca12bd00d7ea44cc8a",
+        "apps/subtitles/internal/server/subtitle_sync_behavior_internal_test.go": "7a452337d648b66a6efe244ed2c13aef69cbcab913202a552a388051513ba4c1"
+      },
+      "patch_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "logs": [
+        "restored-full-package.jsonl",
+        "restored-full-package.stderr",
+        "restored-full-package.patch"
+      ]
+    },
+    {
+      "phase": "restored-full-package-localhost",
+      "sha": "60cccadf0822252caba3365f4bf6c0eab1ce14b2",
+      "cwd": "/Users/mikeo/Documents/Codex/2026-10-03/task/subtitles-shared",
+      "command": [
+        "go",
+        "-C",
+        "apps/subtitles",
+        "test",
+        "-json",
+        "-count=1",
+        "./internal/server"
+      ],
+      "environment": {
+        "GOCACHE": "/tmp/kinosail-testing-go-cache"
+      },
+      "permission": "require_escalated granted to allow httptest localhost sockets after sandbox bind denial",
+      "exit_code": 0,
+      "logs": [
+        "restored-full-package-localhost.jsonl",
+        "restored-full-package-localhost.stderr"
+      ]
+    }
+  ]
+}

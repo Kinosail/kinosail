@@ -23,6 +23,19 @@
       "stderr": "/Users/mikeo/Documents/Codex/2026-10-03/task/kinosail/.verification/test-overhaul/baseline/subtitles-go.stderr",
       "source": "parent root agent executed; this audit owner did not rerun",
       "boundary": "Integration checkout HEAD exact base; only AGENTS/E2E artifact edits, all Go sources exact baseline."
+    },
+    {
+      "sha": "60cccadf0822252caba3365f4bf6c0eab1ce14b2",
+      "command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server",
+      "exit_code": 0,
+      "log": "/Users/mikeo/Documents/Codex/2026-10-03/task/subtitles-shared/.verification/test-overhaul/pipeline-controls-60cccadf0/restored-full-package-localhost.jsonl",
+      "stderr": "/Users/mikeo/Documents/Codex/2026-10-03/task/subtitles-shared/.verification/test-overhaul/pipeline-controls-60cccadf0/restored-full-package-localhost.stderr",
+      "boundary": "Full server package at committed repaired source, escalated localhost permission; guards restored byte for byte. Isolated tests, not E2E.",
+      "control_artifact": "engineering/qa/2026-10-03-test-overhaul/controls/subtitles-pipeline-controls.json",
+      "result_summary": {
+        "pass": 820,
+        "skip": 4
+      }
     }
   ],
   "ci_routing": "All Subtitles .go test changes select Subtitles quick Go; internal/server also selects populated browser suites. Shared package changes select both apps. Required checks unchanged.",
@@ -16148,7 +16161,7 @@
           "reference": "Repair required: validSubSourcePagination demands Page>=1 and Pages>=1. Supply admitted pagination and an independently accepted positive candidate before evaluating each mutation. Episode/machine have stronger acquisition keepers; several other candidate guards are not proven by this table. No edits or tests added here."
         }
       ],
-      "coverage_gap": "Repair required: validSubSourcePagination demands Page>=1 and Pages>=1. Supply admitted pagination and an independently accepted positive candidate before evaluating each mutation. Episode/machine have stronger acquisition keepers; several other candidate guards are not proven by this table. No edits or tests added here. Repair must use canonical requested language en plus admitted pagination; a positive candidate control must pass independently before every negative mutation.",
+      "coverage_gap": "Original false-control repaired after committed failure analysis. Deterministic isolated boundary validated by compiled mutation; no genuine E2E provider attack/audio extraction equivalent asserted.",
       "history": [
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
@@ -16216,8 +16229,9 @@
       "supplemental_reviewer": "frontend_native",
       "fuzz_seed_events": [],
       "failure_analysis_before_edit": "engineering/qa/2026-10-03-test-overhaul/subtitles-pipeline-failure-analysis.md",
-      "repair_status": "Repaired existing declaration: canonical en and admitted page metadata, positive valid candidate before each rejection, valid50 positive/51 negative. Validation pending.",
-      "failure_analysis_commit": "02d0627"
+      "repair_status": "Repaired existing declaration: canonical en and admitted page metadata, positive valid candidate before each rejection, valid50 positive/51 negative. Compiled original false-pass/repaired red/restored full-package green. Guard-specific mutant output proves intended failure.",
+      "failure_analysis_commit": "02d0627",
+      "control_artifact": "engineering/qa/2026-10-03-test-overhaul/controls/subtitles-pipeline-controls.json"
     },
     {
       "file": "apps/subtitles/internal/server/subsource_provider_internal_test.go",
@@ -19486,7 +19500,7 @@
       "supplemental_reviewer": "frontend_native",
       "fuzz_seed_events": [],
       "failure_analysis_before_edit": "engineering/qa/2026-10-03-test-overhaul/subtitles-pipeline-failure-analysis.md",
-      "repair_status": "Renamed existing declaration to actual extraction coverage; competing provider priority remains unproven. Validation pending.",
+      "repair_status": "Renamed existing declaration to actual extraction coverage; competing provider priority remains unproven. Restored full-package passed; no additional mutation or real FFmpeg/browser proof claimed.",
       "final_test": "TestSubtitleAppExtractsPreferredEmbeddedText",
       "failure_analysis_commit": "02d0627"
     },
@@ -19840,7 +19854,7 @@
       "supplemental_reviewer": "frontend_native",
       "fuzz_seed_events": [],
       "failure_analysis_before_edit": "engineering/qa/2026-10-03-test-overhaul/subtitles-pipeline-failure-analysis.md",
-      "repair_status": "Repaired existing declaration: exact spoken URL and both repeated dialogue texts asserted in addition to count/duplicate boundary. Validation pending.",
+      "repair_status": "Repaired existing declaration: exact spoken URL and both repeated dialogue texts asserted in addition to count/duplicate boundary. Restored full-package passed; no additional mutation or real FFmpeg/browser proof claimed.",
       "failure_analysis_commit": "02d0627"
     },
     {
@@ -22498,7 +22512,7 @@
       "supplemental_reviewer": "frontend_native",
       "fuzz_seed_events": [],
       "failure_analysis_before_edit": "engineering/qa/2026-10-03-test-overhaul/subtitles-pipeline-failure-analysis.md",
-      "repair_status": "Renamed existing declaration to actual source projection; exact explanation remains gap; original export proven separately. Validation pending.",
+      "repair_status": "Renamed existing declaration to actual source projection; exact explanation remains gap; original export proven separately. Restored full-package passed; no additional mutation or real FFmpeg/browser proof claimed.",
       "final_test": "TestSubtitleReviewProjectsMatchingHistorySources",
       "failure_analysis_commit": "02d0627"
     },
@@ -23244,7 +23258,7 @@
           "reference": "Removing Preserve+changed branch leaves test green because unavailable speech analysis errors first. Repair existing declaration by supplying admitted cues and preloaded confident shifted speech/positive unchanged control after first-written failure analysis. SubSource no-audio acquisition protects exact raw bytes but not this audio mismatch boundary."
         }
       ],
-      "coverage_gap": "Removing Preserve+changed branch leaves test green because unavailable speech analysis errors first. Repair existing declaration by supplying admitted cues and preloaded confident shifted speech/positive unchanged control after first-written failure analysis. SubSource no-audio acquisition protects exact raw bytes but not this audio mismatch boundary.",
+      "coverage_gap": "Original false-control repaired after committed failure analysis. Deterministic isolated boundary validated by compiled mutation; no genuine E2E provider attack/audio extraction equivalent asserted.",
       "history": [
         "878dc2a63d62880e6d3a5aa395ce25dd40919539 Remove retired artifacts and unused code",
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
@@ -23275,8 +23289,9 @@
       "supplemental_reviewer": "frontend_native",
       "fuzz_seed_events": [],
       "failure_analysis_before_edit": "engineering/qa/2026-10-03-test-overhaul/subtitles-pipeline-failure-analysis.md",
-      "repair_status": "Repaired existing declaration: real synthetic seven-second correction control, exact errSubtitleTimingMismatch on Preserve, aligned bytes/evidence accepted unchanged. Validation pending.",
-      "failure_analysis_commit": "02d0627"
+      "repair_status": "Repaired existing declaration: real synthetic seven-second correction control, exact errSubtitleTimingMismatch on Preserve, aligned bytes/evidence accepted unchanged. Compiled original false-pass/repaired red/restored full-package green. Guard-specific mutant output proves intended failure.",
+      "failure_analysis_commit": "02d0627",
+      "control_artifact": "engineering/qa/2026-10-03-test-overhaul/controls/subtitles-pipeline-controls.json"
     },
     {
       "file": "apps/subtitles/internal/server/subtitle_sync_behavior_internal_test.go",
