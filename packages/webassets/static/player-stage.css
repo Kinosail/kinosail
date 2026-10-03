@@ -32,3 +32,9 @@
 .wizard-form{display:flex;flex-direction:column}.wizard-form .wizard-fields{order:1}.wizard-form>.wizard-check{order:2}.wizard-form>.wizard-actions{order:3}.wizard-form>.wizard-update,.wizard-form>.wizard-update-disclosure{order:4}.wizard-form>.wizard-callout{order:5}
 .onboarding-first-value{border-top:2px solid var(--signal)!important}.onboarding-ready-label,.onboarding-optional-label{display:block;margin-bottom:.45rem;color:var(--signal);font-size:.68rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase}.onboarding-optional-label{color:var(--muted)}.onboarding-optional{background:color-mix(in srgb,var(--surface-2) 28%,transparent)!important}.onboarding-actions{display:flex;flex-wrap:wrap;gap:.4rem}.onboarding-actions .mode{margin:0!important}
 @media(max-width:700px){.wizard-progress a,.wizard-progress>span{flex:1;justify-content:center;padding-inline:.45rem}.onboarding-actions{align-items:stretch;flex-direction:column}.onboarding-actions .mode{width:100%}}
+
+/* Browser fullscreen must fill the screen, independent of inline/theater geometry. */
+.player-page .media-stage:fullscreen:has(>video){width:100%;height:100%;max-width:none;max-height:none;aspect-ratio:auto;margin:0;border:0;border-radius:0;background:#000}
+.player-page .media-stage:fullscreen>video{width:100%;height:100%;max-height:none;object-fit:contain}
+.media-stage:fullscreen .player-stage-toolbar{padding-top:max(.8rem,env(safe-area-inset-top));padding-inline:max(.8rem,env(safe-area-inset-left)) max(.8rem,env(safe-area-inset-right))}
+.media-stage:fullscreen .player-control-dock{padding-inline:max(.8rem,env(safe-area-inset-left)) max(.8rem,env(safe-area-inset-right))}

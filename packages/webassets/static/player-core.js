@@ -1,6 +1,7 @@
 const player = document.querySelector("video,audio");
 if (!player) throw new Error("playable media element is missing");
-if (player.hasAttribute("data-native-controls") && navigator.maxTouchPoints > 0) {
+// Keep the first touch Play gesture available for browser fullscreen in either control mode.
+if (player.tagName === "VIDEO" && navigator.maxTouchPoints > 0) {
   player.autoplay = false;
   delete player.dataset.autoplay;
 }
