@@ -15,6 +15,6 @@ usage: deploy [-h] --team TEAM --iphone IPHONE --tv TV [--install]
 deploy: error: team must be ten uppercase alphanumeric characters; devices must differ
 .......
 ----------------------------------------------------------------------
-Ran 12 tests in 0.040s
+Ran 12 tests in 0.038s
 
 OK

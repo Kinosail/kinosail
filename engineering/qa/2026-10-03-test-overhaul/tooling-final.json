@@ -1,10 +1,10 @@
 {
-  "revision": "876b771a7dd0aef5e65957fcee87add0312535e8",
+  "revision": "be66ecd12aa392ec53e4540fbeab4a9ac8e01b1c",
   "phase": "final",
   "platform": "macOS-27.0-arm64-arm-64bit-Mach-O",
   "machine": "arm64",
   "python": "3.14.7 (main, Aug  5 2026, 10:29:49) [Clang 21.0.0 (clang-2100.1.1.101)]",
-  "working_changes": " M apps/player/scripts/test-native-builds.sh\n D apps/player/scripts/test-native-contract.sh\n M apps/subtitles/scripts/test-native-builds.sh\n D apps/subtitles/scripts/test-native-contract.sh\n M scripts/ci/test_runtime_contracts.py\n M scripts/tooling/test-build-apple.py\n M scripts/tooling/test-script-lint.mjs\n?? engineering/qa/2026-10-03-test-overhaul/\n?? scripts/quality/node_modules\n",
+  "working_changes": " M engineering/qa/2026-10-03-test-overhaul/tooling-final/apps_player_scripts_test-package-installer.py.log\n M engineering/qa/2026-10-03-test-overhaul/tooling-final/scripts_ci_prepare-codeql-js.test.mjs.log\n M engineering/qa/2026-10-03-test-overhaul/tooling-final/scripts_ci_test_all.py.log\n M engineering/qa/2026-10-03-test-overhaul/tooling-final/scripts_quality_browser-script-bundles.test.mjs.log\n M engineering/qa/2026-10-03-test-overhaul/tooling-final/scripts_quality_test_check_halstead.py.log\n M engineering/qa/2026-10-03-test-overhaul/tooling-final/scripts_quality_test_dependency_integrity.py.log\n M engineering/qa/2026-10-03-test-overhaul/tooling-final/scripts_tooling_test-build-apple.py.log\n M engineering/qa/2026-10-03-test-overhaul/tooling-final/scripts_tooling_test-container-context-input.py.log\n M engineering/qa/2026-10-03-test-overhaul/tooling-final/scripts_tooling_test-deploy-apple-devices.py.log\n M engineering/qa/2026-10-03-test-overhaul/tooling-final/scripts_tooling_test-file-loc.py.log\n M engineering/qa/2026-10-03-test-overhaul/tooling-final/scripts_tooling_test-gates-paused.py.log\n M engineering/qa/2026-10-03-test-overhaul/tooling-final/scripts_tooling_test-platform-install-kits.py.log\n M engineering/qa/2026-10-03-test-overhaul/tooling-final/scripts_tooling_test-pre-push-environment.py.log\n M engineering/qa/2026-10-03-test-overhaul/tooling-final/scripts_tooling_test-script-lint.mjs.log\n M engineering/qa/2026-10-03-test-overhaul/tooling-final/scripts_tooling_test-verify-deleted-e2e.py.log\n M engineering/qa/2026-10-03-test-overhaul/tooling-final/scripts_tooling_test-worktree-guard.py.log\n?? scripts/quality/node_modules\n",
   "runtime_workflow": {
     "path": "/Users/mikeo/Documents/Codex/2026-10-03/task/kinosail/.github/workflows/app.yml",
     "sha256": "ba3a6018c34dafb6a63ad2b1f12c0df83ace69a3f113b8ccdf95db0f64a7ea56"
@@ -25,9 +25,9 @@
       ],
       "status": "pass",
       "exit_code": 0,
-      "duration_seconds": 1.521,
+      "duration_seconds": 1.426,
       "log": "engineering/qa/2026-10-03-test-overhaul/tooling-final/scripts_ci_test_all.py.log",
-      "log_sha256": "3d7e18de2581c8505e53c97320624049a593d033c3b517cb76c6cee4727f0470"
+      "log_sha256": "db01b11299ced0b4c705d3b83de92e199e403a24a1b2bbb2a07f3c33f2f2c83a"
     },
     {
       "file": "scripts/quality/test_check_duplicates.py",
@@ -49,9 +49,9 @@
       ],
       "status": "pass",
       "exit_code": 0,
-      "duration_seconds": 0.099,
+      "duration_seconds": 0.094,
       "log": "engineering/qa/2026-10-03-test-overhaul/tooling-final/scripts_quality_test_check_halstead.py.log",
-      "log_sha256": "e73c3805f810fdcf3d0167ced7085c48306c9482a952ffb710551d230cdb3e51"
+      "log_sha256": "af55efa5c3ceb122f8184c380aa405d3f3b4e7e0c1e892773d0eff31d0645c8a"
     },
     {
       "file": "scripts/quality/test_dependency_integrity.py",
@@ -63,7 +63,7 @@
       "exit_code": 0,
       "duration_seconds": 0.094,
       "log": "engineering/qa/2026-10-03-test-overhaul/tooling-final/scripts_quality_test_dependency_integrity.py.log",
-      "log_sha256": "0f7e4b97443e54aca647179972594d13bb587afcbf151fab8228148587ea844a"
+      "log_sha256": "baf49b59538192f3e136ca0404cac516ecb8dd2fe5ba1416604056f3080fa49c"
     },
     {
       "file": "scripts/tooling/test-architecture-explorer.py",
@@ -73,7 +73,7 @@
       ],
       "status": "pass",
       "exit_code": 0,
-      "duration_seconds": 1.921,
+      "duration_seconds": 2.064,
       "log": "engineering/qa/2026-10-03-test-overhaul/tooling-final/scripts_tooling_test-architecture-explorer.py.log",
       "log_sha256": "8c37a24d9ead1ffef2682a129e4ffd498d424648875702bcd383ef4f9097a678"
     },
@@ -85,9 +85,9 @@
       ],
       "status": "pass",
       "exit_code": 0,
-      "duration_seconds": 0.151,
+      "duration_seconds": 0.15,
       "log": "engineering/qa/2026-10-03-test-overhaul/tooling-final/scripts_tooling_test-build-apple.py.log",
-      "log_sha256": "784370af250e947b7e00f3720bd8d1cdf6e4b952f3e6de22256dce821df66d1d"
+      "log_sha256": "b8d9665ed8fe4e06979a49d9064784afbf9c22614a78c6930f1275017e32fa34"
     },
     {
       "file": "scripts/tooling/test-container-context-input.py",
@@ -97,9 +97,9 @@
       ],
       "status": "pass",
       "exit_code": 0,
-      "duration_seconds": 0.15,
+      "duration_seconds": 0.152,
       "log": "engineering/qa/2026-10-03-test-overhaul/tooling-final/scripts_tooling_test-container-context-input.py.log",
-      "log_sha256": "b8d9665ed8fe4e06979a49d9064784afbf9c22614a78c6930f1275017e32fa34"
+      "log_sha256": "524730683b6b7c42385583c65df292c2c1aaaf92e86e40a041fe759bef547df1"
     },
     {
       "file": "scripts/tooling/test-deploy-apple-devices.py",
@@ -109,9 +109,9 @@
       ],
       "status": "pass",
       "exit_code": 0,
-      "duration_seconds": 0.137,
+      "duration_seconds": 0.131,
       "log": "engineering/qa/2026-10-03-test-overhaul/tooling-final/scripts_tooling_test-deploy-apple-devices.py.log",
-      "log_sha256": "91e14f4f1b422dd0e98b4153b3f958c042527fb51f98cf77dd3446c135786611"
+      "log_sha256": "e84f5e34a80ed9f84dfdb6560db84f9919d55fb4ffb344172b4941adc1ab7be1"
     },
     {
       "file": "scripts/tooling/test-file-loc.py",
@@ -121,9 +121,9 @@
       ],
       "status": "pass",
       "exit_code": 0,
-      "duration_seconds": 8.595,
+      "duration_seconds": 8.707,
       "log": "engineering/qa/2026-10-03-test-overhaul/tooling-final/scripts_tooling_test-file-loc.py.log",
-      "log_sha256": "06b72a511d38ddd14969d3864bf3acb79ef53eaf40d2e145aa91774253ebe4af"
+      "log_sha256": "b9762eb1396e804e32b316aa1a0e8fbe68532af07a5988d2dbed7932195b9ef2"
     },
     {
       "file": "scripts/tooling/test-gates-paused.py",
@@ -133,9 +133,9 @@
       ],
       "status": "pass",
       "exit_code": 0,
-      "duration_seconds": 6.989,
+      "duration_seconds": 7.915,
       "log": "engineering/qa/2026-10-03-test-overhaul/tooling-final/scripts_tooling_test-gates-paused.py.log",
-      "log_sha256": "d100b90ea4a04ac9381006b6371cc4677f94cc41140ebf55188a20c8dcf63c99"
+      "log_sha256": "1318bb48de9b5cba36b1e4ea17f2bc6200c505e54701a508ae4bf1423a9c0fd6"
     },
     {
       "file": "scripts/tooling/test-platform-install-kits.py",
@@ -145,9 +145,9 @@
       ],
       "status": "pass",
       "exit_code": 0,
-      "duration_seconds": 0.391,
+      "duration_seconds": 0.4,
       "log": "engineering/qa/2026-10-03-test-overhaul/tooling-final/scripts_tooling_test-platform-install-kits.py.log",
-      "log_sha256": "d74f9c24b987fff60e7b362c83336b7f654b48dd7a45cc12a1ea49749d33cb86"
+      "log_sha256": "19c07ace533bfbc1259dc6c1489a160b85aab81fcd14f3bee2ebed11faf90f65"
     },
     {
       "file": "scripts/tooling/test-pre-push-environment.py",
@@ -157,9 +157,9 @@
       ],
       "status": "pass",
       "exit_code": 0,
-      "duration_seconds": 1.251,
+      "duration_seconds": 1.262,
       "log": "engineering/qa/2026-10-03-test-overhaul/tooling-final/scripts_tooling_test-pre-push-environment.py.log",
-      "log_sha256": "d817a3cf7829b2b580b512a0e9af0baaeb16afced5c1ff85d9d65e1cd6891d08"
+      "log_sha256": "55a78315dd9eb1afa2b79183f8ab825316d56322db95b94f59201a1404d52e65"
     },
     {
       "file": "scripts/tooling/test-verify-deleted-e2e.py",
@@ -169,9 +169,9 @@
       ],
       "status": "pass",
       "exit_code": 0,
-      "duration_seconds": 0.577,
+      "duration_seconds": 0.655,
       "log": "engineering/qa/2026-10-03-test-overhaul/tooling-final/scripts_tooling_test-verify-deleted-e2e.py.log",
-      "log_sha256": "6573c7df3eab812c6938b26f486a9f88517d4838d36b9fcb8b323b07045e3c9d"
+      "log_sha256": "fa9a20fc6cee27d7eee932bb3a85d98cefb2bb2b3415368c1d0b77464408636d"
     },
     {
       "file": "scripts/tooling/test-worktree-guard.py",
@@ -181,9 +181,9 @@
       ],
       "status": "pass",
       "exit_code": 0,
-      "duration_seconds": 5.515,
+      "duration_seconds": 5.797,
       "log": "engineering/qa/2026-10-03-test-overhaul/tooling-final/scripts_tooling_test-worktree-guard.py.log",
-      "log_sha256": "cd3fac287f35524935b96b9efdcc4e894fb010e94eac496200b57b499f3734c0"
+      "log_sha256": "e88e16eb56337fffab2c60b2474c690d1f552c34af4ac6d04e1e4b110d92cd21"
     },
     {
       "file": "scripts/quality/browser-script-bundles.test.mjs",
@@ -194,9 +194,9 @@
       ],
       "status": "pass",
       "exit_code": 0,
-      "duration_seconds": 0.123,
+      "duration_seconds": 0.132,
       "log": "engineering/qa/2026-10-03-test-overhaul/tooling-final/scripts_quality_browser-script-bundles.test.mjs.log",
-      "log_sha256": "06d954d1c54302d5a25fc17671894152ea0ffc6726a9a167e6af81ae176aa3a6"
+      "log_sha256": "18c562d6242f0a181d8340a471497c4d6f00a6a6b99c954af4d1984b2a15f598"
     },
     {
       "file": "scripts/ci/prepare-codeql-js.test.mjs",
@@ -207,9 +207,9 @@
       ],
       "status": "pass",
       "exit_code": 0,
-      "duration_seconds": 0.187,
+      "duration_seconds": 0.276,
       "log": "engineering/qa/2026-10-03-test-overhaul/tooling-final/scripts_ci_prepare-codeql-js.test.mjs.log",
-      "log_sha256": "fbf08af216da16e693028f2257b85d6b1e48283c415a713f6150968b0d9b38ff"
+      "log_sha256": "88c490e0962d4c352b6f26416a58154e5d7c346a8b1fa3e2511693e0b03e594a"
     },
     {
       "file": "scripts/tooling/test-script-lint.mjs",
@@ -220,9 +220,9 @@
       ],
       "status": "pass",
       "exit_code": 0,
-      "duration_seconds": 0.892,
+      "duration_seconds": 1.366,
       "log": "engineering/qa/2026-10-03-test-overhaul/tooling-final/scripts_tooling_test-script-lint.mjs.log",
-      "log_sha256": "1124c42fb3ee1757309fcdee940fe192b7de87181d2c87324569f5125c8fed6d"
+      "log_sha256": "edb189eb8b31b9c58c5f2ae0e24c7cf73dbe1723dcc9b199a5e2c993466940ca"
     },
     {
       "file": "scripts/tooling/test-check-go-loc.sh",
@@ -232,7 +232,7 @@
       ],
       "status": "pass",
       "exit_code": 0,
-      "duration_seconds": 0.65,
+      "duration_seconds": 0.845,
       "log": "engineering/qa/2026-10-03-test-overhaul/tooling-final/scripts_tooling_test-check-go-loc.sh.log",
       "log_sha256": "c7443858cd7c52986a165e2e98d2a20fc745a41e4629958e2d8f8afbb111b09e"
     },
@@ -256,7 +256,7 @@
       ],
       "status": "pass",
       "exit_code": 0,
-      "duration_seconds": 0.076,
+      "duration_seconds": 0.094,
       "log": "engineering/qa/2026-10-03-test-overhaul/tooling-final/scripts_tooling_test-quality-controls.sh.log",
       "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
     },
@@ -268,7 +268,7 @@
       ],
       "status": "pass",
       "exit_code": 0,
-      "duration_seconds": 0.442,
+      "duration_seconds": 0.505,
       "log": "engineering/qa/2026-10-03-test-overhaul/tooling-final/scripts_tooling_test-scan-deployment-image.sh.log",
       "log_sha256": "80deb800dd7aeb3465495bc7ffe0542371d117c8d27e5f256583c7c4c5b9ca75"
     },
@@ -280,7 +280,7 @@
       ],
       "status": "pass",
       "exit_code": 0,
-      "duration_seconds": 0.546,
+      "duration_seconds": 0.499,
       "log": "engineering/qa/2026-10-03-test-overhaul/tooling-final/scripts_tooling_test-source-tools.sh.log",
       "log_sha256": "fd2652b6fcf1a9e127658bc31296a49121c648b8944e6e60c436cb4830605157"
     },
@@ -292,7 +292,7 @@
       ],
       "status": "pass",
       "exit_code": 0,
-      "duration_seconds": 2.695,
+      "duration_seconds": 2.934,
       "log": "engineering/qa/2026-10-03-test-overhaul/tooling-final/scripts_tooling_test-deploy-nox-app.sh.log",
       "log_sha256": "ecb3a0f27eb9dbd6b28cc5d5ee245fb4c141dfbc246639ab59d621e8a0873b28"
     },
@@ -304,7 +304,7 @@
       ],
       "status": "pass",
       "exit_code": 0,
-      "duration_seconds": 0.416,
+      "duration_seconds": 0.427,
       "log": "engineering/qa/2026-10-03-test-overhaul/tooling-final/scripts_tooling_test-deploy-nox-remote.sh.log",
       "log_sha256": "8e4f781556f018cbd05a4d656cc6378b133e25bb56b7b0b960d5fb2b295f4e95"
     },
@@ -316,7 +316,7 @@
       ],
       "status": "pass",
       "exit_code": 0,
-      "duration_seconds": 2.586,
+      "duration_seconds": 2.54,
       "log": "engineering/qa/2026-10-03-test-overhaul/tooling-final/scripts_tooling_test-nox-autodeploy.sh.log",
       "log_sha256": "769628cff6f0b33e1da87a2c0447803c3c08e9d172f55c0278e498c01213e12c"
     },
@@ -328,7 +328,7 @@
       ],
       "status": "pass",
       "exit_code": 0,
-      "duration_seconds": 6.695,
+      "duration_seconds": 6.725,
       "log": "engineering/qa/2026-10-03-test-overhaul/tooling-final/apps_player_scripts_test-installer.sh.log",
       "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
     },
@@ -340,7 +340,7 @@
       ],
       "status": "pass",
       "exit_code": 0,
-      "duration_seconds": 1.76,
+      "duration_seconds": 1.762,
       "log": "engineering/qa/2026-10-03-test-overhaul/tooling-final/apps_player_scripts_test-remote-setup.sh.log",
       "log_sha256": "1248f5c79f6a16f0596d5d107bec958171c4a45ef765d239bde3f7b61da18f53"
     },
@@ -352,7 +352,7 @@
       ],
       "status": "pass",
       "exit_code": 0,
-      "duration_seconds": 1.03,
+      "duration_seconds": 1.002,
       "log": "engineering/qa/2026-10-03-test-overhaul/tooling-final/apps_player_scripts_test-deploy-nox.sh.log",
       "log_sha256": "a4ad7db1aa1790dcc17483f5d46ef4806ab2a4c510c414d79be9ff76c5e99a70"
     },
@@ -364,7 +364,7 @@
       ],
       "status": "pass",
       "exit_code": 0,
-      "duration_seconds": 0.46,
+      "duration_seconds": 0.472,
       "log": "engineering/qa/2026-10-03-test-overhaul/tooling-final/apps_player_scripts_test-verify-changed.sh.log",
       "log_sha256": "b4c94588e968f54ea06273c829d86d6d72d37a6f1415050731575868131d62de"
     },
@@ -389,7 +389,7 @@
       ],
       "status": "pass",
       "exit_code": 0,
-      "duration_seconds": 4.888,
+      "duration_seconds": 4.747,
       "log": "engineering/qa/2026-10-03-test-overhaul/tooling-final/apps_subtitles_scripts_test-installer.sh.log",
       "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
     },
@@ -401,7 +401,7 @@
       ],
       "status": "pass",
       "exit_code": 0,
-      "duration_seconds": 1.591,
+      "duration_seconds": 1.654,
       "log": "engineering/qa/2026-10-03-test-overhaul/tooling-final/apps_subtitles_scripts_test-remote-setup.sh.log",
       "log_sha256": "1248f5c79f6a16f0596d5d107bec958171c4a45ef765d239bde3f7b61da18f53"
     },
@@ -413,7 +413,7 @@
       ],
       "status": "pass",
       "exit_code": 0,
-      "duration_seconds": 0.771,
+      "duration_seconds": 0.804,
       "log": "engineering/qa/2026-10-03-test-overhaul/tooling-final/apps_subtitles_scripts_test-deploy-nox.sh.log",
       "log_sha256": "b81366c02de9e3bceea33f76a5894feba52c662d7f24c2dfa20926ccc85f0d6f"
     },
@@ -425,7 +425,7 @@
       ],
       "status": "pass",
       "exit_code": 0,
-      "duration_seconds": 0.434,
+      "duration_seconds": 0.435,
       "log": "engineering/qa/2026-10-03-test-overhaul/tooling-final/apps_subtitles_scripts_test-verify-changed.sh.log",
       "log_sha256": "b4c94588e968f54ea06273c829d86d6d72d37a6f1415050731575868131d62de"
     },
@@ -438,7 +438,7 @@
       ],
       "status": "pass",
       "exit_code": 0,
-      "duration_seconds": 0.032,
+      "duration_seconds": 0.033,
       "log": "engineering/qa/2026-10-03-test-overhaul/tooling-final/apps_subtitles_scripts_test-native-contract.py.log",
       "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
     },
@@ -450,9 +450,9 @@
       ],
       "status": "pass",
       "exit_code": 0,
-      "duration_seconds": 0.122,
+      "duration_seconds": 0.135,
       "log": "engineering/qa/2026-10-03-test-overhaul/tooling-final/apps_player_scripts_test-package-installer.py.log",
-      "log_sha256": "0a58d3990661a3c542e14cb13eac9b6cfdc84839224fa42096b69e5cfb64d6c6"
+      "log_sha256": "cd1c1e7d2c5823eb5da5b749f842ec3bf06a5bef107803266c24d7309d3d9fe8"
     },
     {
       "file": "apps/player/scripts/test_media_server_benchmark.py",
@@ -462,7 +462,7 @@
       ],
       "status": "pass",
       "exit_code": 0,
-      "duration_seconds": 0.129,
+      "duration_seconds": 0.131,
       "log": "engineering/qa/2026-10-03-test-overhaul/tooling-final/apps_player_scripts_test_media_server_benchmark.py.log",
       "log_sha256": "46c74e95e49409273cff5b0d474bb3f780e57977a4af5da2071b99cd4731838f"
     },
@@ -474,7 +474,7 @@
       ],
       "status": "pass",
       "exit_code": 0,
-      "duration_seconds": 0.062,
+      "duration_seconds": 0.065,
       "log": "engineering/qa/2026-10-03-test-overhaul/tooling-final/apps_player_scripts_test_summarize_playback.py.log",
       "log_sha256": "af55efa5c3ceb122f8184c380aa405d3f3b4e7e0c1e892773d0eff31d0645c8a"
     }

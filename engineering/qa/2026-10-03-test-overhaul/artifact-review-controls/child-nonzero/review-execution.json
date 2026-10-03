@@ -1,0 +1,26 @@
+{
+  "command": [
+    "/opt/homebrew/opt/python@3.14/bin/python3.14",
+    "scripts/ci/e2e-artifact.py",
+    "--output",
+    "/Users/mikeo/Documents/Codex/2026-10-03/task/tooling-audit/engineering/qa/2026-10-03-test-overhaul/artifact-review-controls/child-nonzero",
+    "--",
+    "/opt/homebrew/opt/python@3.14/bin/python3.14",
+    "-c",
+    "print(\"review control: intentional child failure\"); raise SystemExit(7)"
+  ],
+  "cwd": "/tmp/kinosail-artifact-review-20261003",
+  "exitCode": 7,
+  "stdout": "review control: intentional child failure\n",
+  "stderr": "",
+  "checksumCommand": [
+    "shasum",
+    "-a",
+    "256",
+    "-c",
+    "SHA256SUMS"
+  ],
+  "checksumExitCode": 0,
+  "checksumStdout": "command.log: OK\nmanifest.json: OK\n",
+  "checksumStderr": ""
+}

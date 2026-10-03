@@ -52,6 +52,6 @@ test_publication_gates_ignore_skipped_unselected_jobs (test_workflows.WorkflowSe
 test_release_requires_main_quality_and_security_before_promotion (test_workflows.WorkflowSecurityTests.test_release_requires_main_quality_and_security_before_promotion) ... ok
 
 ----------------------------------------------------------------------
-Ran 49 tests in 1.403s
+Ran 49 tests in 1.323s
 
 OK

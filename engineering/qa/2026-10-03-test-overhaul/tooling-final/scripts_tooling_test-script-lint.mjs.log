@@ -1,13 +1,13 @@
-✔ lint follows the production Go bundle order and shared scopes (662.362458ms)
-✔ bundle discovery rejects unsupported append (3.308875ms)
-✔ browser globals and module imports work without native dependencies (1.569667ms)
-✔ rejects private console output (1.05925ms)
-✔ rejects undeclared globals (0.940917ms)
-✔ rejects duplicate keys (1.271042ms)
-✔ rejects unresolved imports (11.976208ms)
-✔ rejects legacy declarations (1.85575ms)
-✔ rejects invalid typeof (1.098083ms)
-✔ only complete JavaScript scopes are linted and CSS is not JavaScript (2.911209ms)
+✔ lint follows the production Go bundle order and shared scopes (1001.733084ms)
+✔ bundle discovery rejects unsupported append (4.163209ms)
+✔ browser globals and module imports work without native dependencies (5.447041ms)
+✔ rejects private console output (1.475958ms)
+✔ rejects undeclared globals (1.244916ms)
+✔ rejects duplicate keys (1.249417ms)
+✔ rejects unresolved imports (19.429667ms)
+✔ rejects legacy declarations (2.271791ms)
+✔ rejects invalid typeof (1.503375ms)
+✔ only complete JavaScript scopes are linted and CSS is not JavaScript (5.503292ms)
 ℹ tests 10
 ℹ suites 0
 ℹ pass 10
@@ -15,4 +15,4 @@
 ℹ cancelled 0
 ℹ skipped 0
 ℹ todo 0
-ℹ duration_ms 842.532333
+ℹ duration_ms 1308.075125
