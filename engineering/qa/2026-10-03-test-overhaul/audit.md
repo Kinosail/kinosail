@@ -105,6 +105,9 @@ must exist, including Playwright's hidden `.last-run.json` files. Earlier run
 archive incomplete. The uploader repair includes hidden files only inside
 disposable synthetic evidence directories. The prepared settings run has its
 own HTML, JSON and result directory so it cannot erase the first report.
+`ci-system-cache-proof-70c.json` separately verifies four subsequent system
+archives with clean unchanged source after the scanner cache repair. Their
+passing jobs do not imply overall CI success: CodeQL policy remained blocked.
 
 `local-validation.md` and `populated-http-receipts.json` provide a native Go
 Server/FFmpeg reproduction route without containers. Local historical proof is

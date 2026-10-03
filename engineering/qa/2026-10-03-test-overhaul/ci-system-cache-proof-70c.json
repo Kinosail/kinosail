@@ -1,0 +1,540 @@
+{
+  "workflowRun": 37154949396,
+  "prHead": "70c1eb151d3dd9d5963aaa6198b04194a3585992",
+  "overallConclusion": "CodeQL policy failure remains; these four system jobs independently passed",
+  "cacheRepairVerified": true,
+  "systemArchives": [
+    {
+      "artifactId": 11285915535,
+      "artifactURL": "https://github.com/Kinosail/kinosail/actions/runs/37154949396/artifacts/11285915535",
+      "name": "subtitles-ubuntu-24.04-arm-system-e2e-0b5bd7d29a9dcf2993b3889f026bdade446be8e0",
+      "zipSHA256": "d9e4c94f16405daa5575d15cce37ba8e04cd9d5f2959e7806a1d8a917a20698a",
+      "checksumMembers": [
+        {
+          "path": "command.log",
+          "sha256": "864f6f1df3fc8b893fa1734dea02a6eb63d3e5639cad63d0cbc9f0624d596c53"
+        },
+        {
+          "path": "manifest.json",
+          "sha256": "19ef528235d8977a74526e6b183a12cf13dda84a2dde030e2bddae4d57925958"
+        }
+      ],
+      "manifest": {
+        "schemaVersion": 1,
+        "revision": "0b5bd7d29a9dcf2993b3889f026bdade446be8e0",
+        "sourceStatus": {
+          "command": [
+            "git",
+            "status",
+            "--porcelain",
+            "--untracked-files=normal"
+          ],
+          "exitCode": 0,
+          "stdout": "",
+          "stderr": ""
+        },
+        "trackedPatchSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "command": [
+          "./scripts/test-container.sh"
+        ],
+        "workingDirectory": "apps/subtitles",
+        "startedUTC": "2026-10-03T21:26:21.154513+00:00",
+        "environment": {
+          "CI": "true",
+          "CONTAINER_ENGINE": "docker",
+          "KINOSAIL_TEST_IMAGE": "localhost/kinosail-subtitles:0b5bd7d29a9dcf2993b3889f026bdade446be8e0",
+          "KINOSAIL_TEST_IMAGE_READY": "1"
+        },
+        "platform": {
+          "system": "Linux",
+          "release": "6.17.0-1022-azure",
+          "machine": "aarch64",
+          "python": "3.12.3"
+        },
+        "tools": [
+          {
+            "command": [
+              "go",
+              "version"
+            ],
+            "exitCode": 0,
+            "stdout": "go version go1.27.0 linux/arm64",
+            "stderr": "go: downloading go1.27.0 (linux/arm64)"
+          },
+          {
+            "command": [
+              "node",
+              "--version"
+            ],
+            "exitCode": 0,
+            "stdout": "v22.23.3",
+            "stderr": ""
+          },
+          {
+            "command": [
+              "pnpm",
+              "--version"
+            ],
+            "error": "FileNotFoundError"
+          }
+        ],
+        "inputs": {
+          "apps/player/e2e/pnpm-lock.yaml": "b3151e08c2af7e480d7f6f5aeafb2a230e92c9dd5aaf18dfcd787ee71c8ba655",
+          "apps/player/e2e/playwright.config.ts": "628d3a62d9b3e2fba1bc43f3cd58979acadf22c083e3559c73c4f750a97cc0b3",
+          "apps/player/scripts/generate-test-media.sh": "6e1ee7f3746d2cbd5ca23263fd67e2460fcde882a76b1a3cc354b64585e7b34f",
+          "apps/player/scripts/test-container.sh": "cccac572df1a37fbea72cdff6aa68547a8d9e41cd628fdf3ce836f246b12175a",
+          "apps/subtitles/e2e/pnpm-lock.yaml": "b3151e08c2af7e480d7f6f5aeafb2a230e92c9dd5aaf18dfcd787ee71c8ba655",
+          "apps/subtitles/e2e/playwright.config.ts": "3faad3cedaaeab4ba50aa78926da3076d8fadcd2aa3752806a4dbb7088d144a2",
+          "apps/subtitles/scripts/generate-test-media.sh": "39a4cb408586b5084b2b03c391bfd5678c7e3ea5d4737674e4b1caa8e309a1e2",
+          "apps/subtitles/scripts/test-container.sh": "54109ed54933c79656580d7628207ee837f94e2089c66d318cb6e72499a60107",
+          "scripts/ci/run-populated-settings.py": "1887445160faaeb569dfa5df9544c3ec7c6395a5d1c43e1c65b3883271091366",
+          "scripts/ci/test-container-transport.sh": "8da7af2267fd117b259fb70983fba0b76d036c7de2415f9f68e6f4707dbbb13c"
+        },
+        "testData": "Disposable generated media and UI fixtures; see hashed generators and command log.",
+        "container": {
+          "command": [
+            "docker",
+            "image",
+            "inspect",
+            "--format",
+            "{{.Id}} {{index .Config.Labels \"org.opencontainers.image.revision\"}}",
+            "localhost/kinosail-subtitles:0b5bd7d29a9dcf2993b3889f026bdade446be8e0"
+          ],
+          "exitCode": 0,
+          "stdout": "sha256:168cfeafee3eac0eb5cf3c2b555b98c672ccf6f01b953b5c21a7f9b0de1c39c8 0b5bd7d29a9dcf2993b3889f026bdade446be8e0",
+          "stderr": ""
+        },
+        "commandExitCode": 0,
+        "finalRevision": {
+          "command": [
+            "git",
+            "rev-parse",
+            "HEAD"
+          ],
+          "exitCode": 0,
+          "stdout": "0b5bd7d29a9dcf2993b3889f026bdade446be8e0",
+          "stderr": ""
+        },
+        "finalSourceStatus": {
+          "command": [
+            "git",
+            "status",
+            "--porcelain",
+            "--untracked-files=normal"
+          ],
+          "exitCode": 0,
+          "stdout": "",
+          "stderr": ""
+        },
+        "finalTrackedPatchSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "sourceUnchanged": true,
+        "exactRevisionProof": true,
+        "finishedUTC": "2026-10-03T21:27:15.057293+00:00",
+        "exitCode": 0,
+        "result": "passed",
+        "evidence": {
+          "command.log": "864f6f1df3fc8b893fa1734dea02a6eb63d3e5639cad63d0cbc9f0624d596c53"
+        }
+      }
+    },
+    {
+      "artifactId": 11285855513,
+      "artifactURL": "https://github.com/Kinosail/kinosail/actions/runs/37154949396/artifacts/11285855513",
+      "name": "player-ubuntu-24.04-system-e2e-0b5bd7d29a9dcf2993b3889f026bdade446be8e0",
+      "zipSHA256": "3d2a37a64a9d499e16127722de2bcc5620cb4ee2987930a274e8ba459b78169e",
+      "checksumMembers": [
+        {
+          "path": "command.log",
+          "sha256": "30db4fc84d14fb1a7a7493c9e33156e517df50dbf94066b3728c5b3725e5310e"
+        },
+        {
+          "path": "manifest.json",
+          "sha256": "9443f774a148f69b1acfa79cabe76f97556b60cb72ffb5a6dabd49b82eafe67d"
+        }
+      ],
+      "manifest": {
+        "schemaVersion": 1,
+        "revision": "0b5bd7d29a9dcf2993b3889f026bdade446be8e0",
+        "sourceStatus": {
+          "command": [
+            "git",
+            "status",
+            "--porcelain",
+            "--untracked-files=normal"
+          ],
+          "exitCode": 0,
+          "stdout": "",
+          "stderr": ""
+        },
+        "trackedPatchSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "command": [
+          "./scripts/test-container.sh"
+        ],
+        "workingDirectory": "apps/player",
+        "startedUTC": "2026-10-03T21:24:38.210076+00:00",
+        "environment": {
+          "CI": "true",
+          "CONTAINER_ENGINE": "docker",
+          "KINOSAIL_TEST_IMAGE": "localhost/kinosail-player:0b5bd7d29a9dcf2993b3889f026bdade446be8e0",
+          "KINOSAIL_TEST_IMAGE_READY": "1"
+        },
+        "platform": {
+          "system": "Linux",
+          "release": "6.17.0-1022-azure",
+          "machine": "x86_64",
+          "python": "3.12.3"
+        },
+        "tools": [
+          {
+            "command": [
+              "go",
+              "version"
+            ],
+            "exitCode": 0,
+            "stdout": "go version go1.27.0 linux/amd64",
+            "stderr": "go: downloading go1.27.0 (linux/amd64)"
+          },
+          {
+            "command": [
+              "node",
+              "--version"
+            ],
+            "exitCode": 0,
+            "stdout": "v22.23.3",
+            "stderr": ""
+          },
+          {
+            "command": [
+              "pnpm",
+              "--version"
+            ],
+            "error": "FileNotFoundError"
+          }
+        ],
+        "inputs": {
+          "apps/player/e2e/pnpm-lock.yaml": "b3151e08c2af7e480d7f6f5aeafb2a230e92c9dd5aaf18dfcd787ee71c8ba655",
+          "apps/player/e2e/playwright.config.ts": "628d3a62d9b3e2fba1bc43f3cd58979acadf22c083e3559c73c4f750a97cc0b3",
+          "apps/player/scripts/generate-test-media.sh": "6e1ee7f3746d2cbd5ca23263fd67e2460fcde882a76b1a3cc354b64585e7b34f",
+          "apps/player/scripts/test-container.sh": "cccac572df1a37fbea72cdff6aa68547a8d9e41cd628fdf3ce836f246b12175a",
+          "apps/subtitles/e2e/pnpm-lock.yaml": "b3151e08c2af7e480d7f6f5aeafb2a230e92c9dd5aaf18dfcd787ee71c8ba655",
+          "apps/subtitles/e2e/playwright.config.ts": "3faad3cedaaeab4ba50aa78926da3076d8fadcd2aa3752806a4dbb7088d144a2",
+          "apps/subtitles/scripts/generate-test-media.sh": "39a4cb408586b5084b2b03c391bfd5678c7e3ea5d4737674e4b1caa8e309a1e2",
+          "apps/subtitles/scripts/test-container.sh": "54109ed54933c79656580d7628207ee837f94e2089c66d318cb6e72499a60107",
+          "scripts/ci/run-populated-settings.py": "1887445160faaeb569dfa5df9544c3ec7c6395a5d1c43e1c65b3883271091366",
+          "scripts/ci/test-container-transport.sh": "8da7af2267fd117b259fb70983fba0b76d036c7de2415f9f68e6f4707dbbb13c"
+        },
+        "testData": "Disposable generated media and UI fixtures; see hashed generators and command log.",
+        "container": {
+          "command": [
+            "docker",
+            "image",
+            "inspect",
+            "--format",
+            "{{.Id}} {{index .Config.Labels \"org.opencontainers.image.revision\"}}",
+            "localhost/kinosail-player:0b5bd7d29a9dcf2993b3889f026bdade446be8e0"
+          ],
+          "exitCode": 0,
+          "stdout": "sha256:a779a3810f4bdf698051f8f31ddd5186ef25580bb860ef6378485c51a9771f33 0b5bd7d29a9dcf2993b3889f026bdade446be8e0",
+          "stderr": ""
+        },
+        "commandExitCode": 0,
+        "finalRevision": {
+          "command": [
+            "git",
+            "rev-parse",
+            "HEAD"
+          ],
+          "exitCode": 0,
+          "stdout": "0b5bd7d29a9dcf2993b3889f026bdade446be8e0",
+          "stderr": ""
+        },
+        "finalSourceStatus": {
+          "command": [
+            "git",
+            "status",
+            "--porcelain",
+            "--untracked-files=normal"
+          ],
+          "exitCode": 0,
+          "stdout": "",
+          "stderr": ""
+        },
+        "finalTrackedPatchSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "sourceUnchanged": true,
+        "exactRevisionProof": true,
+        "finishedUTC": "2026-10-03T21:25:39.283470+00:00",
+        "exitCode": 0,
+        "result": "passed",
+        "evidence": {
+          "command.log": "30db4fc84d14fb1a7a7493c9e33156e517df50dbf94066b3728c5b3725e5310e"
+        }
+      }
+    },
+    {
+      "artifactId": 11285671136,
+      "artifactURL": "https://github.com/Kinosail/kinosail/actions/runs/37154949396/artifacts/11285671136",
+      "name": "player-ubuntu-24.04-arm-system-e2e-0b5bd7d29a9dcf2993b3889f026bdade446be8e0",
+      "zipSHA256": "e62b7a5cd7ff67e44ddb71bc8c0cf16f0f843feead42390a7ed5103b9b0483d0",
+      "checksumMembers": [
+        {
+          "path": "command.log",
+          "sha256": "864f6f1df3fc8b893fa1734dea02a6eb63d3e5639cad63d0cbc9f0624d596c53"
+        },
+        {
+          "path": "manifest.json",
+          "sha256": "7c02fcaf5e3d2a17ea4cc79345239ed81278b2d25090aab8b54e692466efaaeb"
+        }
+      ],
+      "manifest": {
+        "schemaVersion": 1,
+        "revision": "0b5bd7d29a9dcf2993b3889f026bdade446be8e0",
+        "sourceStatus": {
+          "command": [
+            "git",
+            "status",
+            "--porcelain",
+            "--untracked-files=normal"
+          ],
+          "exitCode": 0,
+          "stdout": "",
+          "stderr": ""
+        },
+        "trackedPatchSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "command": [
+          "./scripts/test-container.sh"
+        ],
+        "workingDirectory": "apps/player",
+        "startedUTC": "2026-10-03T21:26:05.012232+00:00",
+        "environment": {
+          "CI": "true",
+          "CONTAINER_ENGINE": "docker",
+          "KINOSAIL_TEST_IMAGE": "localhost/kinosail-player:0b5bd7d29a9dcf2993b3889f026bdade446be8e0",
+          "KINOSAIL_TEST_IMAGE_READY": "1"
+        },
+        "platform": {
+          "system": "Linux",
+          "release": "6.17.0-1022-azure",
+          "machine": "aarch64",
+          "python": "3.12.3"
+        },
+        "tools": [
+          {
+            "command": [
+              "go",
+              "version"
+            ],
+            "exitCode": 0,
+            "stdout": "go version go1.27.0 linux/arm64",
+            "stderr": "go: downloading go1.27.0 (linux/arm64)"
+          },
+          {
+            "command": [
+              "node",
+              "--version"
+            ],
+            "exitCode": 0,
+            "stdout": "v22.23.3",
+            "stderr": ""
+          },
+          {
+            "command": [
+              "pnpm",
+              "--version"
+            ],
+            "error": "FileNotFoundError"
+          }
+        ],
+        "inputs": {
+          "apps/player/e2e/pnpm-lock.yaml": "b3151e08c2af7e480d7f6f5aeafb2a230e92c9dd5aaf18dfcd787ee71c8ba655",
+          "apps/player/e2e/playwright.config.ts": "628d3a62d9b3e2fba1bc43f3cd58979acadf22c083e3559c73c4f750a97cc0b3",
+          "apps/player/scripts/generate-test-media.sh": "6e1ee7f3746d2cbd5ca23263fd67e2460fcde882a76b1a3cc354b64585e7b34f",
+          "apps/player/scripts/test-container.sh": "cccac572df1a37fbea72cdff6aa68547a8d9e41cd628fdf3ce836f246b12175a",
+          "apps/subtitles/e2e/pnpm-lock.yaml": "b3151e08c2af7e480d7f6f5aeafb2a230e92c9dd5aaf18dfcd787ee71c8ba655",
+          "apps/subtitles/e2e/playwright.config.ts": "3faad3cedaaeab4ba50aa78926da3076d8fadcd2aa3752806a4dbb7088d144a2",
+          "apps/subtitles/scripts/generate-test-media.sh": "39a4cb408586b5084b2b03c391bfd5678c7e3ea5d4737674e4b1caa8e309a1e2",
+          "apps/subtitles/scripts/test-container.sh": "54109ed54933c79656580d7628207ee837f94e2089c66d318cb6e72499a60107",
+          "scripts/ci/run-populated-settings.py": "1887445160faaeb569dfa5df9544c3ec7c6395a5d1c43e1c65b3883271091366",
+          "scripts/ci/test-container-transport.sh": "8da7af2267fd117b259fb70983fba0b76d036c7de2415f9f68e6f4707dbbb13c"
+        },
+        "testData": "Disposable generated media and UI fixtures; see hashed generators and command log.",
+        "container": {
+          "command": [
+            "docker",
+            "image",
+            "inspect",
+            "--format",
+            "{{.Id}} {{index .Config.Labels \"org.opencontainers.image.revision\"}}",
+            "localhost/kinosail-player:0b5bd7d29a9dcf2993b3889f026bdade446be8e0"
+          ],
+          "exitCode": 0,
+          "stdout": "sha256:9ce2ae21139d84e8864ff888bcbc2eb07633d849d67000f2d6f4fc96b031340b 0b5bd7d29a9dcf2993b3889f026bdade446be8e0",
+          "stderr": ""
+        },
+        "commandExitCode": 0,
+        "finalRevision": {
+          "command": [
+            "git",
+            "rev-parse",
+            "HEAD"
+          ],
+          "exitCode": 0,
+          "stdout": "0b5bd7d29a9dcf2993b3889f026bdade446be8e0",
+          "stderr": ""
+        },
+        "finalSourceStatus": {
+          "command": [
+            "git",
+            "status",
+            "--porcelain",
+            "--untracked-files=normal"
+          ],
+          "exitCode": 0,
+          "stdout": "",
+          "stderr": ""
+        },
+        "finalTrackedPatchSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "sourceUnchanged": true,
+        "exactRevisionProof": true,
+        "finishedUTC": "2026-10-03T21:26:51.607490+00:00",
+        "exitCode": 0,
+        "result": "passed",
+        "evidence": {
+          "command.log": "864f6f1df3fc8b893fa1734dea02a6eb63d3e5639cad63d0cbc9f0624d596c53"
+        }
+      }
+    },
+    {
+      "artifactId": 11285204150,
+      "artifactURL": "https://github.com/Kinosail/kinosail/actions/runs/37154949396/artifacts/11285204150",
+      "name": "subtitles-ubuntu-24.04-system-e2e-0b5bd7d29a9dcf2993b3889f026bdade446be8e0",
+      "zipSHA256": "fd3722ff6d85cfc930d842a3c945661c18f74d54c491ea3d43887693bdec8d3f",
+      "checksumMembers": [
+        {
+          "path": "command.log",
+          "sha256": "30db4fc84d14fb1a7a7493c9e33156e517df50dbf94066b3728c5b3725e5310e"
+        },
+        {
+          "path": "manifest.json",
+          "sha256": "8593ce54f3a4e6dc9ece6bda7224eee8730566080d33de3f4c1523db30536520"
+        }
+      ],
+      "manifest": {
+        "schemaVersion": 1,
+        "revision": "0b5bd7d29a9dcf2993b3889f026bdade446be8e0",
+        "sourceStatus": {
+          "command": [
+            "git",
+            "status",
+            "--porcelain",
+            "--untracked-files=normal"
+          ],
+          "exitCode": 0,
+          "stdout": "",
+          "stderr": ""
+        },
+        "trackedPatchSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "command": [
+          "./scripts/test-container.sh"
+        ],
+        "workingDirectory": "apps/subtitles",
+        "startedUTC": "2026-10-03T21:25:40.228912+00:00",
+        "environment": {
+          "CI": "true",
+          "CONTAINER_ENGINE": "docker",
+          "KINOSAIL_TEST_IMAGE": "localhost/kinosail-subtitles:0b5bd7d29a9dcf2993b3889f026bdade446be8e0",
+          "KINOSAIL_TEST_IMAGE_READY": "1"
+        },
+        "platform": {
+          "system": "Linux",
+          "release": "6.17.0-1022-azure",
+          "machine": "x86_64",
+          "python": "3.12.3"
+        },
+        "tools": [
+          {
+            "command": [
+              "go",
+              "version"
+            ],
+            "exitCode": 0,
+            "stdout": "go version go1.27.0 linux/amd64",
+            "stderr": "go: downloading go1.27.0 (linux/amd64)"
+          },
+          {
+            "command": [
+              "node",
+              "--version"
+            ],
+            "exitCode": 0,
+            "stdout": "v22.23.3",
+            "stderr": ""
+          },
+          {
+            "command": [
+              "pnpm",
+              "--version"
+            ],
+            "error": "FileNotFoundError"
+          }
+        ],
+        "inputs": {
+          "apps/player/e2e/pnpm-lock.yaml": "b3151e08c2af7e480d7f6f5aeafb2a230e92c9dd5aaf18dfcd787ee71c8ba655",
+          "apps/player/e2e/playwright.config.ts": "628d3a62d9b3e2fba1bc43f3cd58979acadf22c083e3559c73c4f750a97cc0b3",
+          "apps/player/scripts/generate-test-media.sh": "6e1ee7f3746d2cbd5ca23263fd67e2460fcde882a76b1a3cc354b64585e7b34f",
+          "apps/player/scripts/test-container.sh": "cccac572df1a37fbea72cdff6aa68547a8d9e41cd628fdf3ce836f246b12175a",
+          "apps/subtitles/e2e/pnpm-lock.yaml": "b3151e08c2af7e480d7f6f5aeafb2a230e92c9dd5aaf18dfcd787ee71c8ba655",
+          "apps/subtitles/e2e/playwright.config.ts": "3faad3cedaaeab4ba50aa78926da3076d8fadcd2aa3752806a4dbb7088d144a2",
+          "apps/subtitles/scripts/generate-test-media.sh": "39a4cb408586b5084b2b03c391bfd5678c7e3ea5d4737674e4b1caa8e309a1e2",
+          "apps/subtitles/scripts/test-container.sh": "54109ed54933c79656580d7628207ee837f94e2089c66d318cb6e72499a60107",
+          "scripts/ci/run-populated-settings.py": "1887445160faaeb569dfa5df9544c3ec7c6395a5d1c43e1c65b3883271091366",
+          "scripts/ci/test-container-transport.sh": "8da7af2267fd117b259fb70983fba0b76d036c7de2415f9f68e6f4707dbbb13c"
+        },
+        "testData": "Disposable generated media and UI fixtures; see hashed generators and command log.",
+        "container": {
+          "command": [
+            "docker",
+            "image",
+            "inspect",
+            "--format",
+            "{{.Id}} {{index .Config.Labels \"org.opencontainers.image.revision\"}}",
+            "localhost/kinosail-subtitles:0b5bd7d29a9dcf2993b3889f026bdade446be8e0"
+          ],
+          "exitCode": 0,
+          "stdout": "sha256:47564e41af4ace8eff7d778ad9dba6c8432c242803098d2eec50aa76c8af0a68 0b5bd7d29a9dcf2993b3889f026bdade446be8e0",
+          "stderr": ""
+        },
+        "commandExitCode": 0,
+        "finalRevision": {
+          "command": [
+            "git",
+            "rev-parse",
+            "HEAD"
+          ],
+          "exitCode": 0,
+          "stdout": "0b5bd7d29a9dcf2993b3889f026bdade446be8e0",
+          "stderr": ""
+        },
+        "finalSourceStatus": {
+          "command": [
+            "git",
+            "status",
+            "--porcelain",
+            "--untracked-files=normal"
+          ],
+          "exitCode": 0,
+          "stdout": "",
+          "stderr": ""
+        },
+        "finalTrackedPatchSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "sourceUnchanged": true,
+        "exactRevisionProof": true,
+        "finishedUTC": "2026-10-03T21:26:51.834088+00:00",
+        "exitCode": 0,
+        "result": "passed",
+        "evidence": {
+          "command.log": "30db4fc84d14fb1a7a7493c9e33156e517df50dbf94066b3728c5b3725e5310e"
+        }
+      }
+    }
+  ]
+}

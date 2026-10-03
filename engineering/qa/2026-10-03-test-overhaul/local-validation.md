@@ -50,6 +50,15 @@ scanner severity, failure exit status and recorder dirty-source checks remain.
 That overall run failed the CodeQL findings policy; individual passing jobs
 and checksum-complete archives do not establish overall required-check success.
 
+Subsequent run37154949396 tested PR head
+`70c1eb151d3dd9d5963aaa6198b04194a3585992` as merge revision
+`0b5bd7d29a9dcf2993b3889f026bdade446be8e0`. All four downloaded system archives
+record empty source status, unchanged source, exactRevisionProof:true and exit0.
+Every member checksum verified. `ci-system-cache-proof-70c.json` records the
+artifact links, archive/member hashes and original manifests. This confirms the
+cache repair without relaxing the recorder's source check. That overall run
+still failed CodeQL findings policy and Security checks; it is not a green PR.
+
 `local-player-e2e-complete` passed the real Player happy journey at
 `8613c7beb`; `player-theme-firstpaint-initial` passed two populated journeys at
 `f0af87c08`. Those earlier browser runs had `ignoreHTTPSErrors=true`,
