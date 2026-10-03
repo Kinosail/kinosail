@@ -79,6 +79,7 @@ jobs:
           path: |
             .verification/layout/*/receipt.json
             .verification/layout/*/*/measurements.json
+            .verification/layout/*/*/failure.json
             .verification/layout/*/*/*.png
             .verification/layout-fixtures/results.json
           include-hidden-files: true

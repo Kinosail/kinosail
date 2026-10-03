@@ -9,10 +9,10 @@ workflows="$repo/.github/workflows"
 fail() { printf 'workflow validation failed: %s\n' "$*" >&2; exit 1; }
 require() { grep -Fq -- "$2" "$1" || fail "$(basename "$1") must contain $2"; }
 
-for name in ci app publish release; do
+for name in ci app publish release layout-stability; do
   [[ -f "$workflows/$name.yml" ]] || fail "missing $name.yml"
 done
-[[ "$(find "$workflows" -maxdepth 1 -name '*.yml' -type f | wc -l | tr -d ' ')" == 4 ]] ||
+[[ "$(find "$workflows" -maxdepth 1 -name '*.yml' -type f | wc -l | tr -d ' ')" == 5 ]] ||
   fail 'unexpected workflow file'
 [[ -f "$repo/.github/dependabot.yml" ]] || fail 'missing Dependabot configuration'
 [[ -f "$repo/.github/pull_request_template.md" ]] || fail 'missing pull request template'
@@ -63,4 +63,7 @@ require "$release" 'COSIGN_REPOSITORY: ghcr.io/kinosail/kinosail-signatures'
 require "$release" 'push-to-registry: false'
 require "$release" 'gh release create "$RELEASE_TAG"'
 
-printf 'validated four CI, app, publication, and version-release workflows\n'
+require "$workflows/layout-stability.yml" 'contents: read'
+require "$workflows/layout-stability.yml" 'runs-on: ubuntu-24.04'
+require "$workflows/layout-stability.yml" 'run: python3 scripts/testing/test-layout-stability-local.py'
+printf 'validated CI, app, publication, version-release, and layout-evidence workflows\n'

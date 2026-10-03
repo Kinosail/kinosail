@@ -1,6 +1,6 @@
 // Real HTMX bodies; only the explicitly labelled transport failure is injected.
-export async function measureFlows(browser, options, watchPath, inspectorPath) {
-  const results = [];
+export async function measureFlows(browser, options, watchPath, inspectorPath, results = [], probe = {}) {
+  probe.stage = "HTMX-search";
   for (const viewport of [{width:390,height:844},{width:1440,height:900}]) {
     const context = await browser.newContext({...options,viewport,ignoreHTTPSErrors:false,reducedMotion:"reduce"});
     const page = await context.newPage();
@@ -39,8 +39,10 @@ export async function measureFlows(browser, options, watchPath, inspectorPath) {
     await context.close();
   }
   const context = await browser.newContext({...options,viewport:{width:390,height:844},ignoreHTTPSErrors:false,reducedMotion:"reduce"});
+  probe.stage = "theater-idle-exit";
   const page = await context.newPage();
   await page.goto(watchPath);
+  probe.media = await page.locator("video").evaluate(video=>({readyState:video.readyState,errorCode:video.error?.code,mp4:video.canPlayType('video/mp4; codecs="avc1.42E01E"')}));
   const theater = page.locator("[data-theater]");
   if (await theater.isVisible()) {
     await page.locator("video").evaluate(video=>{video.loop=true;});
@@ -57,6 +59,7 @@ export async function measureFlows(browser, options, watchPath, inspectorPath) {
   } else results.push({flow:"theater-idle-exit",result:"native control mode has no Theater"});
   await context.close();
   if(inspectorPath){
+    probe.stage = "inspector-refresh-failure-retry";
     const context=await browser.newContext({...options,viewport:{width:390,height:844},ignoreHTTPSErrors:false,reducedMotion:"reduce"});
     const page=await context.newPage();
     await page.route("**/inspect?*",async route=>{if(route.request().resourceType()==="fetch"){await new Promise(r=>setTimeout(r,900));await route.abort("failed");}else await route.continue();});
@@ -67,6 +70,7 @@ export async function measureFlows(browser, options, watchPath, inspectorPath) {
     results.push({flow:"inspector-refresh-failure-retry",injectedFailure:true,before,after,pendingDisabled,failedDisabled,busy,qualityRows,retryCompleted:true,stable:pendingDisabled&&failedDisabled&&!busy&&qualityRows>0&&JSON.stringify(before)===JSON.stringify(after)});
     await context.close();
     const editing=await browser.newContext({...options,viewport:{width:390,height:844},ignoreHTTPSErrors:false,reducedMotion:"reduce"});
+    probe.stage = "inspector-edit-during-refresh";
     const editor=await editing.newPage();
     await editor.route("**/inspect?*",async route=>{if(route.request().resourceType()==="fetch"){const response=await route.fetch();await new Promise(r=>setTimeout(r,900));await route.fulfill({response});}else await route.continue();});
     await editor.goto(inspectorPath,{waitUntil:"commit"});

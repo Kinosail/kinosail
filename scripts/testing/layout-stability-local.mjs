@@ -8,9 +8,24 @@ const {chromium, webkit, firefox} = require("@playwright/test");
 const AxeBuilder = require("@axe-core/playwright").default;
 const baseURL = process.env.KINOSAIL_E2E_URL, app = process.env.KINOSAIL_LAYOUT_APP, run = process.env.KINOSAIL_LAYOUT_RUN;
 const engine = process.env.KINOSAIL_LAYOUT_BROWSER || "chromium";
-const browser = await ({chromium, webkit, firefox}[engine]).launch(engine === "chromium" && process.platform === "darwin" ? {channel: "chrome"} : {});
-const context = await browser.newContext({baseURL, ignoreHTTPSErrors: false, reducedMotion: "reduce"});
-const page = await context.newPage();
+let phase = "browser-launch", activePage, browser, authContext;
+const loginResponses = [];
+const reports = [], flows = [], flowProbe = {stage: "not-started"};
+process.once("uncaughtException", async error => {
+  const failure = {app, engine, stage: phase, flowStage: flowProbe.stage,
+    errorClass: ["TimeoutError", "TypeError", "ReferenceError", "SyntaxError"].includes(error.name) ? error.name : "Error",
+    completedCases: reports.length, completedFlows: flows.length, media: flowProbe.media, loginResponses,
+    authCookieCount: phase.startsWith("login") && authContext ? await authContext.cookies().then(c=>c.length).catch(()=>undefined) : undefined,
+    pageState: activePage ? (new URL(activePage.url()).pathname === "/login" ? "login" : "other") : "not-created"};
+  await writeFile(join(run, "failure.json"), JSON.stringify(failure, null, 2));
+  await browser?.close();
+  process.exit(1);
+});
+browser = await ({chromium, webkit, firefox}[engine]).launch(engine === "chromium" && process.platform === "darwin" ? {channel: "chrome"} : {});
+const context = authContext = await browser.newContext({baseURL, ignoreHTTPSErrors: false, reducedMotion: "reduce"});
+const page = activePage = await context.newPage();
+page.on("response", response => {if(response.request().method()==="POST"&&new URL(response.url()).pathname==="/login")loginResponses.push(response.status());});
+phase = "login-page";
 await page.goto("/login");
 await page.getByLabel("Name", {exact: true}).fill("Owner");
 await page.getByLabel("Password", {exact: true}).fill("synthetic-layout-password");
@@ -21,20 +36,22 @@ const digest = createHmac("sha1", secret).update(counter).digest(), offset = dig
 const factor = page.getByLabel(/Authentication or recovery code|6-digit code/);
 const code = String((digest.readUInt32BE(offset) & 0x7fffffff) % 1000000).padStart(6, "0");
 if (await factor.isVisible()) await factor.fill(code);
+phase = "login-submit";
 await page.getByRole("button", {name: "Sign in", exact: true}).click();
 if (app === "subtitles" && new URL(page.url()).pathname === "/login" && await factor.isVisible()) {
   await factor.fill(code);
   await page.getByRole("button", {name: "Sign in", exact: true}).click();
 }
+phase = "login-redirect";
 await page.waitForURL(url => url.pathname !== "/login");
 if (await page.getByRole("link", {name: "Not now"}).isVisible()) await page.getByRole("link", {name: "Not now"}).click();
+phase = "library-request";
 const response = await page.request.get("/api/v1/library");
 const data = await response.json();
 const item = data.items.find(candidate => candidate.title === "Layout Example") || data.items[0];
 const auth = await context.storageState();
+const navProfile = app === "player" ? await page.locator("[data-mobile-tabs]").getAttribute("data-nav-profile") : undefined;
 await context.close();
-const reports = [];
-let flows = [];
 function cls(shifts) {
   let maximum=0, sum=0, start=0, last=0;
   for(const e of shifts){if(e.time-last>1000||e.time-start>5000){sum=0;start=e.time;}sum+=e.value;maximum=Math.max(maximum,sum);last=e.time;}
@@ -43,7 +60,8 @@ function cls(shifts) {
 const boxesChanged=(a,b)=>a.filter(first=>{const last=b.find(v=>v.id===first.id);return last&&["x",first.pinned&&last.pinned?"y":"documentY","width","height"].some(key=>Math.abs(first[key]-last[key])>1);});
 const inspect = () => ({rootFontSize: getComputedStyle(document.documentElement).fontSize, rootScale:document.documentElement.style.fontSize, ready: document.querySelector(".settings-shell")?.hasAttribute("data-settings-ready"), category: document.documentElement.dataset.settingsCategory, scrollY,
   sections: [...document.querySelectorAll(".settings-flow>section")].filter(n=>n.getBoundingClientRect().height).map(n=>({id:n.id,category:n.dataset.settingsCategory,heading:n.querySelector("h2")?.textContent})),
-  nativeOptions: document.querySelectorAll(".player-native-options").length, settingsButtons: document.querySelectorAll("[data-player-settings]").length});
+  nativeOptions: document.querySelectorAll(".player-native-options").length, settingsButtons: document.querySelectorAll("[data-player-settings]").length,
+  overflowNodes: [...document.querySelectorAll("body *")].filter(n => {const r=n.getBoundingClientRect();return r.height>0&&r.right>innerWidth+1&&(!n.checkVisibility||n.checkVisibility());}).slice(0,20).map(n=>({node:n.id||n.className||n.tagName,rect:n.getBoundingClientRect().toJSON(),minWidth:getComputedStyle(n).minWidth,whiteSpace:getComputedStyle(n).whiteSpace}))});
 function observe() {
   const ids = new WeakMap(); let nextID = 0;
   const identify = node => {if(!ids.has(node))ids.set(node, ++nextID);return ids.get(node);};
@@ -59,7 +77,7 @@ function observe() {
   const sample = time => {
     if (time - last > 80) {
       last = time;
-      const boxes = [...document.querySelectorAll(".app-header, main, h1, h2, .card, .home-feature, .media-stage, .player-stage-toolbar, .settings-nav, .settings-flow, .settings-category-description, button")].slice(0, 60)
+      const boxes = [...document.querySelectorAll(".app-header, .mobile-navigation, .subtitle-dashboard .app-header nav, main, h1, h2, .card, .home-feature, .media-stage, .player-stage-toolbar, .player-optional-action, .settings-nav, .settings-flow, .settings-category-description, button")].slice(0, 60)
         .filter(node => node.getBoundingClientRect().height > 0 && (!node.checkVisibility || node.checkVisibility()) && ![...document.querySelectorAll("details:not([open])")].some(d=>d.contains(node)&&!d.querySelector(":scope>summary")?.contains(node))).map(node => ({pinned: (()=>{for(let n=node;n;n=n.parentElement)if(["fixed","sticky"].includes(getComputedStyle(n).position))return true;return false;})(), id: identify(node), documentY: node.getBoundingClientRect().y + scrollY, node: label(node), aria: node.getAttribute("aria-label"), text: node.textContent.trim().slice(0, 45), ...node.getBoundingClientRect().toJSON()}));
       window.layoutAudit.frames.push({time, scrollY, boxes});
     }
@@ -80,12 +98,15 @@ if(process.env.KINOSAIL_LAYOUT_VARIANTS)for(const path of [app==="player"?"/sett
   cases.push({viewport:{width:390,height:844},path,variant:"motion",motion:"no-preference"});
 }
 if(process.env.KINOSAIL_LAYOUT_VARIANTS)for(const path of ["/settings#%61ccess","/settings#%E0%A4%A"])cases.push({viewport:{width:390,height:844},path,variant:"fragment"});
+if(process.env.KINOSAIL_LAYOUT_VARIANTS&&app==="player")cases.push({viewport:{width:390,height:844},path:"/settings#access",variant:"saved-mobile-tabs",scale:"200%",savedTabs:true});
 if(process.env.KINOSAIL_LAYOUT_APPLE_SHIM)cases.push({viewport:{width:768,height:1024},path:`/watch/${item.id}?playback=direct`,variant:"desktop-UA-iPad-shim",apple:true});
 try {
-  for (const {viewport,path,variant,scale,motion,apple} of cases) {
+  for (const {viewport,path,variant,scale,motion,apple,savedTabs} of cases) {
+    phase = "measure-case";
     const context = await browser.newContext({baseURL, storageState: path === "/login" ? undefined : auth,
       viewport, ignoreHTTPSErrors: false, reducedMotion: motion||"reduce"});
     if(scale)await context.addInitScript(scale=>{const apply=()=>{if(!document.documentElement)return false;document.documentElement.style.fontSize=scale;return true;};if(!apply()){const observer=new MutationObserver(()=>{if(apply())observer.disconnect();});observer.observe(document,{childList:true});}},scale);
+    if(savedTabs)await context.addInitScript(profile=>localStorage.setItem(`kinosail:tabs:v2:${profile}`,'["audiobooks","list","history"]'),navProfile);
     if(apple)await context.addInitScript(()=>{
       Object.defineProperty(navigator,"platform",{value:"MacIntel"});Object.defineProperty(navigator,"maxTouchPoints",{value:5});
       HTMLVideoElement.prototype.webkitEnterFullscreen=function(){this.dispatchEvent(new Event("webkitbeginfullscreen"));};
@@ -93,7 +114,7 @@ try {
     const traced=viewport.width===390&&(path==="/settings#access"||path.startsWith("/watch/"));
     if(traced)await context.tracing.start({screenshots:true,snapshots:true});
     await context.addInitScript(observe);
-    const page = await context.newPage();
+    const page = activePage = await context.newPage();
     // Delay real response bytes, without substituting mock markup or media.
     await page.route("**/*", async route => {
       const request = route.request(), url = new URL(request.url());
@@ -148,7 +169,7 @@ try {
     if(traced)await context.tracing.stop({path:join(run,name+"-trace.zip")});
     await context.close();
   }
-  if(process.env.KINOSAIL_LAYOUT_FLOWS)flows=await measureFlows(browser,{baseURL,storageState:auth},`/watch/${item.id}?playback=direct`,routes.find(path=>path.startsWith("/subtitles/inspect/")));
+  if(process.env.KINOSAIL_LAYOUT_FLOWS){phase="measure-flows";await measureFlows(browser,{baseURL,storageState:auth},`/watch/${item.id}?playback=direct`,routes.find(path=>path.startsWith("/subtitles/inspect/")),flows,flowProbe);}
 } finally {
   await writeFile(join(run, "measurements.json"), JSON.stringify({revision: process.env.KINOSAIL_TEST_REVISION, app, engine,browserVersion:browser.version(),
     result: "measurement", command: "python3 scripts/testing/test-layout-stability-local.py", data: "Synthetic media and account; delayed real font/bundle/image responses", reports,flows}, null, 2));

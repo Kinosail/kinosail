@@ -1,53 +1,48 @@
-import { readFileSync } from "node:fs";
-import vm from "node:vm";
+import { execFileSync } from "node:child_process";
+import { readFile } from "node:fs/promises";
 import { expect, test } from "@playwright/test";
 
-const source = readFileSync(new URL("../internal/server/static/subtitle-inspector.js", import.meta.url), "utf8");
-const loadSource = source.slice(source.indexOf("  async function load() {"), source.indexOf("  async function input() {"));
+const fixtureDir = process.env.KINOSAIL_UI_FIXTURE_DIR;
+const revision = process.env.KINOSAIL_TEST_REVISION ?? execFileSync("git", ["rev-parse", "HEAD"], { encoding: "utf8" }).trim();
+test.skip(!fixtureDir, "requires server-rendered subtitle inspector fixtures");
+test.use({ viewport: { width: 390, height: 844 }, ignoreHTTPSErrors: false });
 
-test("container smoke suite includes inspector race regressions", { tag: "@smoke" }, () => {
-  const script = readFileSync(new URL("../scripts/test-container.sh", import.meta.url), "utf8");
-  const selectedFiles = script.match(/browser_args=\(([^)]*)\)/)?.[1].split(/\s+/);
-  expect(selectedFiles).toContain("subtitle-inspector-races.spec.ts");
-});
-
-function fixture() {
-  const attributes = new Map<string, string>();
-  const classes = new Set<string>();
-  const status = {
-    textContent: "Previous result",
-    classList: { contains: (name: string) => classes.has(name), add: (name: string) => classes.add(name), remove: (name: string) => classes.delete(name) },
-    setAttribute: (name: string, value: string) => attributes.set(name, value),
-    removeAttribute: (name: string) => attributes.delete(name),
-  };
-  let resolveRequest!: (value: object) => void;
-  let rejectRequest!: (error: Error) => void;
-  const context = vm.createContext({
-    status, apply: { disabled: false }, form: { elements: { language: { value: "en" }, role: { value: "" } } },
-    request: () => new Promise((resolve, reject) => { resolveRequest = resolve; rejectRequest = reject; }),
-    render: () => {},
+for (const failed of [false, true]) {
+  test(`known inspector content stays stable during a ${failed ? "failed" : "successful"} refresh`, { tag: "@smoke" }, async ({ page }, testInfo) => {
+    const source = await readFile(`${fixtureDir}/subtitle-inspector.html`, "utf8");
+    const review = JSON.parse(await readFile(`${fixtureDir}/subtitle-inspector.json`, "utf8"));
+    let release!: () => void;
+    const pending = new Promise<void>(resolve => { release = resolve; });
+    await page.route("http://inspector.test/**", async route => {
+      const path = new URL(route.request().url()).pathname;
+      if (path.endsWith("/inspect")) {
+        await pending;
+        return route.fulfill(failed ? { status: 503, json: { error: "Subtitle details are unavailable. Reload and try again." } } : { json: review });
+      }
+      if (path.endsWith("/draft")) return route.fulfill({ json: { state: "idle", words: [] } });
+      if (["/static/app.css", "/static/subtitle-inspector.css", "/static/subtitle-inspector.js"].includes(path)) {
+        return route.fulfill({ contentType: path.endsWith("css") ? "text/css" : "text/javascript", body: await readFile(`${fixtureDir}/${path.split("/").pop()}`, "utf8") });
+      }
+      if (path.startsWith("/static/") || path.startsWith("/media/")) return route.fulfill({ body: "" });
+      return route.fulfill({ contentType: "text/html", body: source });
+    });
+    await page.goto("http://inspector.test/subtitles/inspect/fixture");
+    const status = page.locator("#inspector-status"), workspace = page.locator(".subtitle-inspector-workspace");
+    const file = page.locator('input[type="file"]'), preview = page.locator('#subtitle-edit-form button[type="submit"]');
+    await expect(status).toHaveAttribute("aria-busy", "true");
+    await expect(file).toBeDisabled();
+    await expect(preview).toBeDisabled();
+    await expect(page.locator(".subtitle-cue-row")).toHaveCount(2);
+    const before = await workspace.boundingBox();
+    await page.screenshot({ path: testInfo.outputPath("pending.png") });
+    release();
+    await expect(status).not.toHaveAttribute("aria-busy", "true");
+    await expect(file).toBeEnabled();
+    if (failed) await expect(preview).toBeDisabled(); else await expect(preview).toBeEnabled();
+    await expect(page.locator(".subtitle-cue-row")).toHaveCount(2);
+    await expect(status).toHaveText(failed ? "Subtitle details are unavailable. Reload and try again." : "Current subtitle loaded. Preview a change before saving.");
+    expect(await workspace.boundingBox()).toEqual(before);
+    await page.screenshot({ path: testInfo.outputPath("settled.png") });
+    await testInfo.attach("verification-context", { contentType: "application/json", body: JSON.stringify({ revision, command: "playwright test subtitle-inspector-loading.spec.ts", data: "Server-rendered Arrival review, two installed cues; synthetic delayed API and labelled 503", environment: testInfo.project.name, failed, before, after: await workspace.boundingBox(), result: testInfo.status }) });
   });
-  vm.runInContext(`let revision = 0, prepared, review, page; ${loadSource}; globalThis.loadUnderTest = load;`, context);
-  return { status, attributes, classes, context, resolve: (value: object) => resolveRequest(value), reject: (error: Error) => rejectRequest(error) };
 }
-
-test("inspector status stays one line while details load and settles after success", { tag: "@smoke" }, async () => {
-  const view = fixture();
-  const pending = (view.context as { loadUnderTest: () => Promise<void> }).loadUnderTest();
-  expect(view.status.textContent).toBe("Loading subtitle details…");
-  expect(view.attributes.get("aria-busy")).toBe("true");
-  expect(view.classes.has("request-skeleton")).toBe(false);
-  view.resolve({ current: null, role: "translation" });
-  await pending;
-  expect(view.attributes.has("aria-busy")).toBe(false);
-  expect(view.status.textContent).toBe("Choose a subtitle file to begin.");
-});
-
-test("inspector clears busy state after a failed request", { tag: "@smoke" }, async () => {
-  const view = fixture();
-  const pending = (view.context as { loadUnderTest: () => Promise<void> }).loadUnderTest();
-  view.reject(new Error("unavailable"));
-  await pending.then(() => { throw new Error("Request unexpectedly succeeded"); }, error => expect(error.message).toBe("unavailable"));
-  expect(view.attributes.has("aria-busy")).toBe(false);
-  expect(view.classes.has("request-skeleton")).toBe(false);
-});

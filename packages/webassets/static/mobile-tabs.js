@@ -20,9 +20,7 @@ function restoreMobileTabs(raw, legacy) {
   }
   return [...mobileTabDefaults];
 }
-(() => {
-  const nav = document.querySelector("[data-mobile-tabs]");
-  if (!nav) return;
+function initializeMobileTabs(nav) {
   const profile = nav.dataset.navProfile;
   if (!profile || profile.length > 128 || !/^[a-zA-Z0-9_-]+$/.test(profile)) return;
   const key = `kinosail:tabs:v2:${profile}`;
@@ -48,12 +46,12 @@ function restoreMobileTabs(raw, legacy) {
   const actions = document.createElement("footer"); actions.append(reset, done);
   dialog.append(heading, copy, choices, status, actions); document.body.append(dialog);
   let returnFocus;
-  for (const action of [customize, ...document.querySelectorAll("[data-customize-tabs]")]) {
-    action.addEventListener("click", () => {
-      returnFocus = action === customize ? more.querySelector("summary") : action;
-      more.open = false; renderChoices(); dialog.showModal();
-    });
-  }
+  const openEditor = action => {
+    returnFocus = action === customize ? more.querySelector("summary") : action;
+    more.open = false; renderChoices(); dialog.showModal();
+  };
+  customize.addEventListener("click", () => openEditor(customize));
+  document.addEventListener("click", event => {const action = event.target.closest?.("[data-customize-tabs]"); if (action) openEditor(action);});
   dialog.addEventListener("close", () => returnFocus?.focus());
   menu.append(group, customize);
   const title = id => mobileTabCatalog.find(item => item[0] === id)[1];
@@ -121,4 +119,20 @@ function restoreMobileTabs(raw, legacy) {
   }
   renderNavigation();
   document.addEventListener("htmx:after:swap", renderNavigation);
+}
+// Theme runs while HTML parses. Wait only for the complete navigation subtree,
+// so saved/default tab labels and wrapping are present at the first paint.
+(() => {
+  let initialized = false;
+  const initialize = () => {
+    const nav = document.querySelector("[data-mobile-tabs]");
+    if (initialized || !nav || !(nav.nextElementSibling || nav.closest("header")?.nextElementSibling || document.readyState !== "loading")) return;
+    initialized = true; initializeMobileTabs(nav); observer?.disconnect();
+  };
+  let observer;
+  initialize();
+  if (!initialized && typeof MutationObserver !== "undefined") {
+    observer = new MutationObserver(initialize); observer.observe(document, {subtree: true, childList: true});
+    document.addEventListener("DOMContentLoaded", () => {initialize(); observer.disconnect();}, {once: true});
+  }
 })();

@@ -3,14 +3,17 @@ package server
 import (
 	"fmt"
 	"math"
+	"strconv"
 	"strings"
 )
 
 type inspectorQualityRow struct{ Name, Value string }
+
 type inspectorCueColumn struct {
 	Label, Timing, Warnings string
 	Cue                     *subtitleReviewCue
 }
+
 type inspectorInitialView struct {
 	Quality []inspectorQualityRow
 	Cues    [][2]inspectorCueColumn
@@ -33,8 +36,8 @@ func initialInspector(review subtitleReview) inspectorInitialView {
 		quality := document.Quality
 		view.Quality = []inspectorQualityRow{
 			{"Source", review.Source}, {"Identity evidence", review.MatchEvidence}, {"Installed role", role},
-			{"Cues", fmt.Sprint(quality.CueCount)}, {"Reading above 20 characters/sec", fmt.Sprint(quality.FastCues)},
-			{"Overlapping cues", fmt.Sprint(quality.Overlaps)}, {"Lines above 42 characters", fmt.Sprint(quality.LongLines)},
+			{"Cues", strconv.Itoa(quality.CueCount)}, {"Reading above 20 characters/sec", strconv.Itoa(quality.FastCues)},
+			{"Overlapping cues", strconv.Itoa(quality.Overlaps)}, {"Lines above 42 characters", strconv.Itoa(quality.LongLines)},
 			{"Timing evidence", quality.Timing}, {"Completeness", quality.Completeness},
 		}
 	}

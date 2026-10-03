@@ -74,7 +74,7 @@
   .subtitle-brand-name{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
   .subtitle-brand-name small,.subtitle-dashboard .supporter-long{display:none}
   .subtitle-dashboard .app-header nav{position:fixed;inset:auto 0 0;z-index:60;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));justify-content:stretch;gap:.4rem;width:100%;padding:.4rem .75rem max(.4rem,env(safe-area-inset-bottom));border-top:1px solid var(--line);background:var(--surface)}
-  .subtitle-dashboard .app-header nav a{justify-content:center;padding:.6rem;font-size:.85rem;min-height:48px}
+  .subtitle-dashboard .app-header nav a{justify-content:center;min-width:0;white-space:normal;overflow-wrap:anywhere;padding:.6rem;font-size:.85rem;min-height:48px}
   .subtitle-dashboard .subtitle-header-settings{flex:none}
   .subtitle-dashboard .subtitle-header-settings .header-link{padding:.6rem .5rem}
   .subtitle-dashboard>.subtitle-main{padding-top:1.5rem;padding-bottom:7rem}

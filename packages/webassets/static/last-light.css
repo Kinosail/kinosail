@@ -165,7 +165,8 @@ body :is(img.poster,.poster img,.card img,.hero-poster){height:auto;object-fit:c
 body :is(.curation-poster>img,.collection-poster>img){object-fit:contain}
 
 /* Capability discovery keeps the control row's geometry. */
-.player-optional-action{display:inline-flex;flex:0 0 44px;min-width:44px;min-height:44px;align-items:center;justify-content:center}
+.player-optional-action{display:inline-flex;flex:0 0 44px;min-width:44px;min-height:max(44px,calc(2.125rem + 2px));align-items:center;justify-content:center}
+@media(max-width:700px){.player-optional-action{min-height:max(44px,calc(2.025rem + 2px))}}
 .player-stage-actions{min-width:44px;min-height:44px}
 .player-native-controls .player-control-dock{display:none}
 /* Native controls start in their final location below the reserved picture. */
@@ -176,3 +177,5 @@ body :is(.curation-poster>img,.collection-poster>img){object-fit:contain}
 .player-native-options>.player-stage-toolbar .player-mode-status{margin-left:0;margin-right:auto;max-width:100%}
 .player-native-options>.player-settings{position:static;max-height:none;overflow:visible;margin-top:.5rem;background:var(--overlay);color:var(--text)}
 .player-page .media-stage.has-settings:has(+.player-native-options){margin-bottom:1rem}
+/* Enlarged text wraps within the available picture/title width. */
+.player-shell .title-block h1{overflow-wrap:anywhere;min-width:0}

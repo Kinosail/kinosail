@@ -49,3 +49,11 @@ An encoded fragment can select Connections during initial projection, then switc
 The native inspector already computes a subtitle Review before rendering HTML. Empty quality and cue containers grow after a delayed duplicate API request. Initial known review content must render with the HTML, using escaped values and the same first 40 cues as the interactive view. Preserve no-subtitle content, warnings, pagination, track choice, and later edits. Test request failure and recovery without removing the existing review. Native Subtitles bookmarks also wait for deferred scripts before scrolling; align the first paint to the requested fragment, including closed disclosures and malformed-escape safety.
 
 A source review also found that editing during an inspector refresh invalidates its response and can leave Preview unavailable. Lock only form inputs while that real refresh is pending, using the existing busy-state restoration. Preserve outer operation locks, recover on errors, and re-enable edits after the response. The native browser flow checks this actual pending state before choosing a synthetic local file.
+
+## Hosted enlarged-text failure analysis
+
+At d42ef0e77, native Chromium measured a 10.8px Player toolbar growth when PiP became available at 200% root text size. The 44px empty slot does not account for the scaled icon and button padding. Reserve those intrinsic dimensions with relative units. A personalized mobile tab replacement also grew the dock by 24px; project the saved/default destinations while parsing HTML, retaining the full More menu until the interactive editor initializes.
+
+Firefox screenshots show Subtitles' large watch title exceeding its container and mobile bottom-navigation labels overlapping at 200%. Allow words and labels to wrap inside their real grid cells, without clipping content. Add overflow offender rectangles to the real-server reports before selecting any further fixes. Chromium's same-size Subtitles cases passed, so retain cross-engine proof rather than inferring equivalence.
+
+The first hosted WebKit run exited before measurements. Add a bounded stage/error-class artifact, excluding raw error messages, URLs, cookies, tokens, and process logs. Preserve partial flow results on failure. Diagnose authentication/transport before choosing an HTTP or trusted-TLS harness; verification must remain enabled.
