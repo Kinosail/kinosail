@@ -20,15 +20,15 @@
     "declarations": 1900,
     "decisions": {
       "R": 1035,
-      "D": 45,
+      "D": 47,
       "F": 34,
-      "unreviewed": 773,
+      "unreviewed": 771,
       "C": 13
     },
-    "removed_declarations": 45,
-    "removed_test_lines": 809,
-    "final_declarations": 1855,
-    "final_test_lines": 65666,
+    "removed_declarations": 47,
+    "removed_test_lines": 846,
+    "final_declarations": 1853,
+    "final_test_lines": 65629,
     "removed_support_helpers": 6,
     "removed_support_files": 3,
     "removed_support_lines": 141
@@ -22143,16 +22143,99 @@
       "owner_group": "downloads",
       "body_sha256": "a651f3061246adfe27a916ad764adfbcbcb7b56e28e1ce67e2f63070835c6c74",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
-      "validation_command": "cd packages && go test ./downloads",
+      "decision": "D",
+      "audit_status": "reviewed",
+      "risk": "Only omitted constructor callbacks are tested. Both production downloadAccess callers statically supply currentViewer and a visibleItem closure, so these nil bindings cannot arise from request input. No separate runtime access policy is proved; TestRequestAccessAppliesPlayerDownloadPolicy and current-visibility HTTP test remain.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C packages test -json -count=1 ./downloads",
       "baseline_event": {
         "Time": "2026-10-03T10:35:26.610704-06:00",
         "Action": "pass",
         "Package": "github.com/MikeO7/kinosail/packages/downloads",
         "Test": "TestRequestAccessFailsClosedWithoutBindings",
         "Elapsed": 0
+      },
+      "credible_failure": "Only omitted constructor callbacks are tested. Both production downloadAccess callers statically supply currentViewer and a visibleItem closure, so these nil bindings cannot arise from request input. No separate runtime access policy is proved; TestRequestAccessAppliesPlayerDownloadPolicy and current-visibility HTTP test remain.",
+      "production_owner": [
+        "packages/downloads/access.go",
+        "packages/downloads/api.go",
+        "packages/downloads/delivery.go",
+        "packages/downloads/manager.go",
+        "packages/downloads/start.go",
+        "packages/downloads/state.go",
+        "packages/downloads/manifest.go",
+        "packages/downloads/tracks.go",
+        "packages/downloads/web.go",
+        "packages/downloads/transcoding.go",
+        "packages/downloads/video_encoding.go"
+      ],
+      "production_owner_paths": [
+        "packages/downloads/access.go",
+        "packages/downloads/api.go",
+        "packages/downloads/delivery.go",
+        "packages/downloads/manager.go",
+        "packages/downloads/start.go",
+        "packages/downloads/state.go",
+        "packages/downloads/manifest.go",
+        "packages/downloads/tracks.go",
+        "packages/downloads/web.go",
+        "packages/downloads/transcoding.go",
+        "packages/downloads/video_encoding.go"
+      ],
+      "production_callers": [
+        "apps/player/internal/server/downloads.go",
+        "apps/player/internal/server/downloads_config.go",
+        "apps/player/internal/server/downloads_http.go",
+        "apps/player/internal/server/downloads_transcoding.go",
+        "apps/subtitles/internal/server/downloads.go",
+        "apps/subtitles/internal/server/downloads_config.go",
+        "apps/subtitles/internal/server/downloads_http.go",
+        "apps/subtitles/internal/server/downloads_transcoding.go",
+        "packages/jellyfincompat/delivery_http.go:DeliveryHTTP.serveDownload"
+      ],
+      "remaining_coverage": "packages/downloads/access_test.go:12:TestRequestAccessAppliesPlayerDownloadPolicy; packages/downloads/current_access_test.go:12:TestPreparedDownloadsRecheckCurrentItemVisibility",
+      "coverage_gap": "Synthetic missing callbacks and private default/guard branch assertions are retired; no genuine E2E equivalence claimed. Production caller wiring is static and preserved.",
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "source_file_sha256": "2b678c11334cda1c773f59017c25690cd7b477446a2a63a41385907bef2dd9d1",
+      "declaration_identity": "876b771a7dd0aef5e65957fcee87add0312535e8:packages/downloads/access_test.go:48:TestRequestAccessFailsClosedWithoutBindings",
+      "execution_claim": "Existing exact-baseline terminal event only; reviewer ran no Go/browser tests.",
+      "implementation_status": "declaration removed; existing important keeper assertions unchanged; candidate validation awaits serial root run",
+      "baseline_history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "remaining_isolated_keepers": [
+        {
+          "file": "packages/downloads/access_test.go",
+          "line": 12,
+          "name": "TestRequestAccessAppliesPlayerDownloadPolicy",
+          "body_sha256": "9be89153fc61ff365b2fbdd830d36f77463ab3ce71fc8e672c749ae331f85e05"
+        },
+        {
+          "file": "packages/downloads/current_access_test.go",
+          "line": 12,
+          "name": "TestPreparedDownloadsRecheckCurrentItemVisibility",
+          "body_sha256": "6393c389a1e551f03bed35ca2f78db9b7671eb45f8f7de46316216ffd49b841e"
+        }
+      ],
+      "callers": [
+        "apps/player/internal/server/downloads.go",
+        "apps/player/internal/server/downloads_config.go",
+        "apps/player/internal/server/downloads_http.go",
+        "apps/player/internal/server/downloads_transcoding.go",
+        "apps/subtitles/internal/server/downloads.go",
+        "apps/subtitles/internal/server/downloads_config.go",
+        "apps/subtitles/internal/server/downloads_http.go",
+        "apps/subtitles/internal/server/downloads_transcoding.go",
+        "packages/jellyfincompat/delivery_http.go:DeliveryHTTP.serveDownload"
+      ],
+      "gap": "Synthetic missing callbacks and private default/guard branch assertions are retired; no genuine E2E equivalence claimed. Production caller wiring is static and preserved.",
+      "reason": "Only omitted constructor callbacks are tested. Both production downloadAccess callers statically supply currentViewer and a visibleItem closure, so these nil bindings cannot arise from request input. No separate runtime access policy is proved; TestRequestAccessAppliesPlayerDownloadPolicy and current-visibility HTTP test remain.",
+      "independent_removal_review": {
+        "reviewer": "/root/subtitles_shared/shared_identity",
+        "status": "approved after complete candidate bodies, actual named keeper assertions and relevant production/callers read; no naming-only or fixture-E2E equivalence",
+        "source_packet": "/tmp/kinosail-downloads-audit.json",
+        "source_packet_sha256": "30f16f6b68f44427b2d05696cbcd4114a80322978c0eb22f060c947cdb697683"
       }
     },
     {
@@ -23851,16 +23934,107 @@
       "owner_group": "downloads",
       "body_sha256": "db5071b9204e37a791397aed63b2275e76d8a9dbb018ccd6654050462a9d5d74",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
-      "validation_command": "cd packages && go test ./downloads",
+      "decision": "D",
+      "audit_status": "reviewed",
+      "risk": "Bare private manager defaults, disabled private save and private invalid-save/missing-callback guards replay helper branches. Actual app Config always supplies settings and saveJSON. Public Start invalid input/persistence failure and actual New failed-job recovery keep the same validation/persistence rejection contracts; no separate important runtime default is exercised.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C packages test -json -count=1 ./downloads",
       "baseline_event": {
         "Time": "2026-10-03T10:35:26.835112-06:00",
         "Action": "pass",
         "Package": "github.com/MikeO7/kinosail/packages/downloads",
         "Test": "TestManagerDefaultsAndSaveValidation",
         "Elapsed": 0
+      },
+      "credible_failure": "Bare private manager defaults, disabled private save and private invalid-save/missing-callback guards replay helper branches. Actual app Config always supplies settings and saveJSON. Public Start invalid input/persistence failure and actual New failed-job recovery keep the same validation/persistence rejection contracts; no separate important runtime default is exercised.",
+      "production_owner": [
+        "packages/downloads/access.go",
+        "packages/downloads/api.go",
+        "packages/downloads/delivery.go",
+        "packages/downloads/manager.go",
+        "packages/downloads/start.go",
+        "packages/downloads/state.go",
+        "packages/downloads/manifest.go",
+        "packages/downloads/tracks.go",
+        "packages/downloads/web.go",
+        "packages/downloads/transcoding.go",
+        "packages/downloads/video_encoding.go"
+      ],
+      "production_owner_paths": [
+        "packages/downloads/access.go",
+        "packages/downloads/api.go",
+        "packages/downloads/delivery.go",
+        "packages/downloads/manager.go",
+        "packages/downloads/start.go",
+        "packages/downloads/state.go",
+        "packages/downloads/manifest.go",
+        "packages/downloads/tracks.go",
+        "packages/downloads/web.go",
+        "packages/downloads/transcoding.go",
+        "packages/downloads/video_encoding.go"
+      ],
+      "production_callers": [
+        "apps/player/internal/server/downloads.go",
+        "apps/player/internal/server/downloads_config.go",
+        "apps/player/internal/server/downloads_http.go",
+        "apps/player/internal/server/downloads_transcoding.go",
+        "apps/subtitles/internal/server/downloads.go",
+        "apps/subtitles/internal/server/downloads_config.go",
+        "apps/subtitles/internal/server/downloads_http.go",
+        "apps/subtitles/internal/server/downloads_transcoding.go",
+        "packages/jellyfincompat/delivery_http.go:DeliveryHTTP.serveDownload"
+      ],
+      "remaining_coverage": "packages/downloads/manager_test.go:63:TestStartRejectsInvalidOrUnavailableRequests; packages/downloads/manager_test.go:86:TestStartPreservesMemoryWhenPersistenceFails; packages/downloads/state_edges_test.go:20:TestLoadAndReadJobsReportStorageFailures",
+      "coverage_gap": "Synthetic missing callbacks and private default/guard branch assertions are retired; no genuine E2E equivalence claimed. Production caller wiring is static and preserved.",
+      "history": [
+        "878dc2a63d62880e6d3a5aa395ce25dd40919539 Remove retired artifacts and unused code",
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "source_file_sha256": "2babca739a69e047448d805c11c2af4f77a486a9e7d4510afb6fa2152c62e0e1",
+      "declaration_identity": "876b771a7dd0aef5e65957fcee87add0312535e8:packages/downloads/manager_edges_test.go:108:TestManagerDefaultsAndSaveValidation",
+      "execution_claim": "Existing exact-baseline terminal event only; reviewer ran no Go/browser tests.",
+      "implementation_status": "declaration removed; existing important keeper assertions unchanged; candidate validation awaits serial root run",
+      "baseline_history": [
+        "878dc2a63d62880e6d3a5aa395ce25dd40919539 Remove retired artifacts and unused code",
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "remaining_isolated_keepers": [
+        {
+          "file": "packages/downloads/manager_test.go",
+          "line": 63,
+          "name": "TestStartRejectsInvalidOrUnavailableRequests",
+          "body_sha256": "e5094b53b3b60a7a71f0a517d287e9dc8abc52a43a065f9873d373e033076544"
+        },
+        {
+          "file": "packages/downloads/manager_test.go",
+          "line": 86,
+          "name": "TestStartPreservesMemoryWhenPersistenceFails",
+          "body_sha256": "304b8c1e7deee4559ac40931f3f07930d5862405e87fe799d223c11246a80e6b"
+        },
+        {
+          "file": "packages/downloads/state_edges_test.go",
+          "line": 20,
+          "name": "TestLoadAndReadJobsReportStorageFailures",
+          "body_sha256": "0355b0ec50ea2b2bd981732ab1fcadbd975453bd91d9cbff17783ce3237847e6"
+        }
+      ],
+      "callers": [
+        "apps/player/internal/server/downloads.go",
+        "apps/player/internal/server/downloads_config.go",
+        "apps/player/internal/server/downloads_http.go",
+        "apps/player/internal/server/downloads_transcoding.go",
+        "apps/subtitles/internal/server/downloads.go",
+        "apps/subtitles/internal/server/downloads_config.go",
+        "apps/subtitles/internal/server/downloads_http.go",
+        "apps/subtitles/internal/server/downloads_transcoding.go",
+        "packages/jellyfincompat/delivery_http.go:DeliveryHTTP.serveDownload"
+      ],
+      "gap": "Synthetic missing callbacks and private default/guard branch assertions are retired; no genuine E2E equivalence claimed. Production caller wiring is static and preserved.",
+      "reason": "Bare private manager defaults, disabled private save and private invalid-save/missing-callback guards replay helper branches. Actual app Config always supplies settings and saveJSON. Public Start invalid input/persistence failure and actual New failed-job recovery keep the same validation/persistence rejection contracts; no separate important runtime default is exercised.",
+      "independent_removal_review": {
+        "reviewer": "/root/subtitles_shared/shared_identity",
+        "status": "approved after complete candidate bodies, actual named keeper assertions and relevant production/callers read; no naming-only or fixture-E2E equivalence",
+        "source_packet": "/tmp/kinosail-downloads-audit.json",
+        "source_packet_sha256": "30f16f6b68f44427b2d05696cbcd4114a80322978c0eb22f060c947cdb697683"
       }
     },
     {
