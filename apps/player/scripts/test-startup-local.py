@@ -3,6 +3,7 @@
 import hashlib
 import json
 import os
+import platform
 from pathlib import Path
 import socket
 import subprocess
@@ -53,6 +54,52 @@ browser = ['node', 'node_modules/@playwright/test/cli.js', 'test', 'test-instanc
 result = None
 stop_samples = threading.Event()
 resource = {'samples': 0, 'peakFFmpeg': 0, 'peakSpeculativeFFmpeg': 0, 'peakCPUPercent': 0, 'peakRSSKiB': 0}
+def browser_failures():
+    report = run / 'results.json'
+    if not report.exists():
+        return {'reportPresent': False}
+    data = json.loads(report.read_text())
+    failures = []
+    def visit(suites):
+        for suite in suites:
+            for spec in suite.get('specs', []):
+                for test in spec.get('tests', []):
+                    for attempt in test.get('results', []):
+                        if attempt.get('status') in {'failed', 'timedOut', 'interrupted'}:
+                            failures.append({'status': attempt['status'], 'durationMS': attempt.get('duration'),
+                                'locations': [{'file': Path(error.get('location', {}).get('file', spec.get('file', ''))).name,
+                                    'line': error.get('location', {}).get('line', spec.get('line')),
+                                    'column': error.get('location', {}).get('column', spec.get('column'))}
+                                    for error in attempt.get('errors', [])]})
+            visit(suite.get('suites', []))
+    visit(data.get('suites', []))
+    return {'reportPresent': True, 'stats': data.get('stats'), 'failures': failures}
+def encoder_diagnostics():
+    log = run / 'server.log'
+    if not log.exists():
+        return {}
+    events = {}
+    categories = set()
+    patterns = {'filter-output': 'Failed to configure output pad', 'resource-unavailable': 'Resource temporarily unavailable',
+        'encoder-initialization': 'Error initializing', 'encoder-opening': 'Error opening encoder',
+        'unknown-encoder': 'Unknown encoder', 'missing-filter': 'No such filter', 'filter-network': 'Error reinitializing filters',
+        'conversion-failed': 'Conversion failed', 'unsupported-option': 'Unrecognized option', 'permission': 'Permission denied'}
+    allowed = {'HLS transcode started', 'HLS transcode failed', 'HLS transcode completed', 'HLS segment preparation failed', 'HLS segment unavailable'}
+    for line in log.read_text().splitlines():
+        try:
+            entry = json.loads(line)
+        except json.JSONDecodeError:
+            continue
+        if entry.get('msg') not in allowed:
+            continue
+        event = entry['msg']
+        events[event] = events.get(event, 0) + 1
+        detail = str(entry.get('error', ''))
+        categories.update(category for category, pattern in patterns.items() if pattern.lower() in detail.lower())
+        for kind in ['MASTERING_DISPLAY_METADATA', 'CONTENT_LIGHT_LEVEL', 'DYNAMIC_HDR_PLUS', 'DOVI_RPU_BUFFER', 'DOVI_METADATA']:
+            if kind in detail and any(marker in detail.lower() for marker in ['undefined', 'invalid', 'parse', 'not found']):
+                categories.add('unsupported-hdr-side-data-' + kind.lower())
+    return {'events': events, 'errorCategories': sorted(categories)}
 def sample_resources(pid):
     while not stop_samples.wait(0.2):
         rows = subprocess.check_output(['ps', '-axo', 'pid=,ppid=,pcpu=,rss=,args='], text=True).splitlines()
@@ -91,11 +138,12 @@ finally:
     metadata = json.loads(subprocess.check_output(['ffprobe', '-v', 'error', '-show_streams', '-show_format', '-of', 'json', str(media / 'Cold.mkv')]))
     metadata.get('format', {}).pop('filename', None)
     (run / 'receipt.json').write_text(json.dumps({'revision': env['KINOSAIL_TEST_REVISION'], 'result': result,
-        'workingDiffSHA256': working_diff, 'resources': resource,
+        'workingDiffSHA256': working_diff, 'resources': resource, 'browserResults': browser_failures(), 'encoderDiagnostics': encoder_diagnostics(),
         'command': 'python3 apps/player/scripts/test-startup-local.py', 'build': build, 'browser': browser,
+        'encoderVersions': {tool: subprocess.check_output([tool, '-version'], text=True).splitlines()[0] for tool in ['ffmpeg', 'ffprobe']},
         'baseline': env.get('KINOSAIL_STARTUP_BASELINE') == '1', 'mediaCommands': [hdr, direct],
         'fixtureMetadata': metadata, 'binarySHA256': checksum(binary),
-        'environment': 'macOS ARM64 Chrome; serial Go build; supported HTTP loopback; synthetic media',
+        'environment': f'{platform.system()} {platform.machine()} {env.get("KINOSAIL_STARTUP_BROWSER_CHANNEL", "chrome")}; serial Go build; supported HTTP loopback; synthetic media',
         'boundary': '720p HEVC Main 10 PQ/EAC3 is codec-representative, not movie/Nox workload-equivalent. No device or production proof.',
         'mediaSHA256': {p.name: checksum(p) for p in media.iterdir()}}, indent=2) + '\n')
     (run / 'SHA256SUMS').write_text(''.join(f'{checksum(p)}  {p.relative_to(run)}\n' for p in sorted(run.rglob('*'))

@@ -2,11 +2,12 @@
   let generation = 0;
   let timer;
   let controller;
+  let signingOut = false;
   const prepared = new Set();
   const active = new Set();
   const idFor = (link) => /^\/watch\/([a-f0-9]{16})$/.exec(link?.getAttribute("href") || "")?.[1];
   const headers = () => ({"Content-Type": "application/json", "X-Kinosail-CSRF": document.querySelector('meta[name="kinosail-csrf"]')?.content || ""});
-  const eligible = () => !document.hidden && !document.querySelector("video,audio") && navigator.onLine && !navigator.connection?.saveData;
+  const eligible = () => !signingOut && !document.hidden && !document.querySelector("video,audio") && navigator.onLine && !navigator.connection?.saveData;
   async function boundedJSON(response) {
     if (!response.ok || !response.body) return;
     const reader = response.body.getReader();
@@ -82,11 +83,11 @@
       finally { clearTimeout(expire); }
     }, 600);
   }
-  function cancel() {
+  function cancel(notify = true) {
     generation++;
     clearTimeout(timer);
     controller?.abort();
-    for (const id of active) fetch(`/api/v1/items/${id}/playback-prepare`, {method: "DELETE", headers: headers(), credentials: "same-origin", keepalive: true, redirect: "error"}).catch(() => {});
+    if (notify) for (const id of active) fetch(`/api/v1/items/${id}/playback-prepare`, {method: "DELETE", headers: headers(), credentials: "same-origin", keepalive: true, redirect: "error"}).catch(() => {});
     active.clear();
     prepared.clear();
   }
@@ -100,6 +101,15 @@
     if (id) schedule([id]);
   }, {passive: true});
   document.addEventListener("visibilitychange", () => { if (document.hidden) cancel(); else bind(); });
+  document.addEventListener("submit", ({target}) => {
+    if (!(target instanceof HTMLFormElement)) return;
+    const action = new URL(target.action, location.href);
+    if (action.origin !== location.origin || action.pathname !== "/logout") return;
+    // A fresh document recovers after a failed logout, cancelled submit, or retry.
+    signingOut = true;
+    cancel(false);
+  }, true);
+  window.addEventListener("pageshow", ({persisted}) => { if (persisted && signingOut) location.reload(); });
   window.addEventListener("pagehide", cancel);
   document.addEventListener("htmx:before:swap", () => { cancel(); prepared.clear(); });
   document.addEventListener("htmx:after:swap", bind);
