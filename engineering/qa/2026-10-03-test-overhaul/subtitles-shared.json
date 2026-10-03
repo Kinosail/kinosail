@@ -6,10 +6,10 @@
   "files": 379,
   "declarations": 954,
   "test_loc": 28832,
-  "reviewed": 751,
-  "pending": 203,
+  "reviewed": 763,
+  "pending": 191,
   "decisions": {
-    "R": 655,
+    "R": 667,
     "D": 63,
     "F": 32,
     "C": 1
@@ -14132,204 +14132,336 @@
       "line": 11,
       "test": "TestReaderRejectsDuplicateArchiveResourcesThroughHTTP",
       "baseline_file_sha256": "f463192e40efcf287f29eb491c065fc2112af382c33bf1290a4354aebfba9ff1",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Ordered duplicate CBZ/CBT/EPUB resources, differing/identical bytes and forged oversized ZIP directory sizes, must return exact canonical404 at metadata+asset routes while archive/sentinel SHA/bytes remain unchanged.",
+      "production_owner": "apps/subtitles/internal/server/{reader.go,reader_archive.go,api_product.go,progress.go}; packages/library/archive.go; packages/catalog/progress_request_store.go",
+      "non_test_callers": "New\u2192registerReader/registerAPI\u2192browseReader/readerFor/serveReaderAsset/apiReaderProgress; app visibleItem and currentViewer state bindings, production EPUB manifests and actual archive processes.",
+      "remaining_proof": [
+        {
+          "kind": "retained_actual_app_security_or_data_boundary",
+          "reference": "apps/subtitles/internal/server/reader_archive_trust_http_test.go::TestReaderRejectsDuplicateArchiveResourcesThroughHTTP"
+        }
+      ],
+      "coverage_gap": "Real app New/router/index/reader metadata and resource guards are exercised with actual ZIP/TAR bytes, API/web projections and app persistence. Shared archive helpers cannot catch reader EPUB manifest policy or HTTP/header/status binding. Existing populated beta media layout only opens a reader and checks layout/Axe, not hostile archive, exact content, or rejected-write durability; current executed genuine review journey has no book. CBT cases use real bsdtar when available; no7z proof.",
+      "history": "f8ea65c09c372b6d20f5ea111d6420e59b288b12 Reject ambiguous Reader archives and malformed EPUB spines",
+      "risk": "Retain security/resource-trust and no-data-loss exception absent equivalent genuine E2E",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server",
+      "helpers_read": [
+        "apps/subtitles/internal/server/reader_archive_trust_fixture_test.go",
+        "apps/subtitles/internal/server/reader_boundary_test.go::apiItemsByTitle",
+        "packages/library/archive.go"
+      ],
+      "shared_counterpart_review": "packages/library/archive_test.go full read: listing/bounds/traversal/process helpers guard shared extraction, not application EPUB+HTTP persistence boundary."
     },
     {
       "file": "apps/subtitles/internal/server/reader_archive_trust_http_test.go",
       "line": 56,
       "test": "TestReaderRejectsDuplicateEPUBManifestIDsThroughHTTP",
       "baseline_file_sha256": "f463192e40efcf287f29eb491c065fc2112af382c33bf1290a4354aebfba9ff1",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Duplicate manifest IDs in both orders fail reader metadata while unambiguous exact named assets still return independent first/last chapter bytes.",
+      "production_owner": "apps/subtitles/internal/server/{reader.go,reader_archive.go,api_product.go,progress.go}; packages/library/archive.go; packages/catalog/progress_request_store.go",
+      "non_test_callers": "New\u2192registerReader/registerAPI\u2192browseReader/readerFor/serveReaderAsset/apiReaderProgress; app visibleItem and currentViewer state bindings, production EPUB manifests and actual archive processes.",
+      "remaining_proof": [
+        {
+          "kind": "retained_actual_app_security_or_data_boundary",
+          "reference": "apps/subtitles/internal/server/reader_archive_trust_http_test.go::TestReaderRejectsDuplicateEPUBManifestIDsThroughHTTP"
+        }
+      ],
+      "coverage_gap": "Real app New/router/index/reader metadata and resource guards are exercised with actual ZIP/TAR bytes, API/web projections and app persistence. Shared archive helpers cannot catch reader EPUB manifest policy or HTTP/header/status binding. Existing populated beta media layout only opens a reader and checks layout/Axe, not hostile archive, exact content, or rejected-write durability; current executed genuine review journey has no book. CBT cases use real bsdtar when available; no7z proof.",
+      "history": "f8ea65c09c372b6d20f5ea111d6420e59b288b12 Reject ambiguous Reader archives and malformed EPUB spines",
+      "risk": "Retain security/resource-trust and no-data-loss exception absent equivalent genuine E2E",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server",
+      "helpers_read": [
+        "apps/subtitles/internal/server/reader_archive_trust_fixture_test.go",
+        "apps/subtitles/internal/server/reader_boundary_test.go::apiItemsByTitle",
+        "packages/library/archive.go"
+      ],
+      "shared_counterpart_review": "packages/library/archive_test.go full read: listing/bounds/traversal/process helpers guard shared extraction, not application EPUB+HTTP persistence boundary."
     },
     {
       "file": "apps/subtitles/internal/server/reader_archive_trust_http_test.go",
       "line": 75,
       "test": "TestReaderRejectsRootEscapingEPUBSpinesThroughHTTP",
       "baseline_file_sha256": "f463192e40efcf287f29eb491c065fc2112af382c33bf1290a4354aebfba9ff1",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Escaping-only and mixed valid/escaping spines fail whole reader, traversal asset never exposes outside sentinel, valid direct asset still works.",
+      "production_owner": "apps/subtitles/internal/server/{reader.go,reader_archive.go,api_product.go,progress.go}; packages/library/archive.go; packages/catalog/progress_request_store.go",
+      "non_test_callers": "New\u2192registerReader/registerAPI\u2192browseReader/readerFor/serveReaderAsset/apiReaderProgress; app visibleItem and currentViewer state bindings, production EPUB manifests and actual archive processes.",
+      "remaining_proof": [
+        {
+          "kind": "retained_actual_app_security_or_data_boundary",
+          "reference": "apps/subtitles/internal/server/reader_archive_trust_http_test.go::TestReaderRejectsRootEscapingEPUBSpinesThroughHTTP"
+        }
+      ],
+      "coverage_gap": "Real app New/router/index/reader metadata and resource guards are exercised with actual ZIP/TAR bytes, API/web projections and app persistence. Shared archive helpers cannot catch reader EPUB manifest policy or HTTP/header/status binding. Existing populated beta media layout only opens a reader and checks layout/Axe, not hostile archive, exact content, or rejected-write durability; current executed genuine review journey has no book. CBT cases use real bsdtar when available; no7z proof.",
+      "history": "f8ea65c09c372b6d20f5ea111d6420e59b288b12 Reject ambiguous Reader archives and malformed EPUB spines",
+      "risk": "Retain security/resource-trust and no-data-loss exception absent equivalent genuine E2E",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server",
+      "helpers_read": [
+        "apps/subtitles/internal/server/reader_archive_trust_fixture_test.go",
+        "apps/subtitles/internal/server/reader_boundary_test.go::apiItemsByTitle",
+        "packages/library/archive.go"
+      ],
+      "shared_counterpart_review": "packages/library/archive_test.go full read: listing/bounds/traversal/process helpers guard shared extraction, not application EPUB+HTTP persistence boundary."
     },
     {
       "file": "apps/subtitles/internal/server/reader_archive_trust_http_test.go",
       "line": 94,
       "test": "TestReaderRejectsMalformedEPUBMetadataThroughHTTP",
       "baseline_file_sha256": "f463192e40efcf287f29eb491c065fc2112af382c33bf1290a4354aebfba9ff1",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Nine missing/empty/unknown manifest/reference/href and absolute/backslash href cases fail whole reader with exact404, positive ordinary chapter bytes still served.",
+      "production_owner": "apps/subtitles/internal/server/{reader.go,reader_archive.go,api_product.go,progress.go}; packages/library/archive.go; packages/catalog/progress_request_store.go",
+      "non_test_callers": "New\u2192registerReader/registerAPI\u2192browseReader/readerFor/serveReaderAsset/apiReaderProgress; app visibleItem and currentViewer state bindings, production EPUB manifests and actual archive processes.",
+      "remaining_proof": [
+        {
+          "kind": "retained_actual_app_security_or_data_boundary",
+          "reference": "apps/subtitles/internal/server/reader_archive_trust_http_test.go::TestReaderRejectsMalformedEPUBMetadataThroughHTTP"
+        }
+      ],
+      "coverage_gap": "Real app New/router/index/reader metadata and resource guards are exercised with actual ZIP/TAR bytes, API/web projections and app persistence. Shared archive helpers cannot catch reader EPUB manifest policy or HTTP/header/status binding. Existing populated beta media layout only opens a reader and checks layout/Axe, not hostile archive, exact content, or rejected-write durability; current executed genuine review journey has no book. CBT cases use real bsdtar when available; no7z proof.",
+      "history": "f8ea65c09c372b6d20f5ea111d6420e59b288b12 Reject ambiguous Reader archives and malformed EPUB spines",
+      "risk": "Retain security/resource-trust and no-data-loss exception absent equivalent genuine E2E",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server",
+      "helpers_read": [
+        "apps/subtitles/internal/server/reader_archive_trust_fixture_test.go",
+        "apps/subtitles/internal/server/reader_boundary_test.go::apiItemsByTitle",
+        "packages/library/archive.go"
+      ],
+      "shared_counterpart_review": "packages/library/archive_test.go full read: listing/bounds/traversal/process helpers guard shared extraction, not application EPUB+HTTP persistence boundary."
     },
     {
       "file": "apps/subtitles/internal/server/reader_archive_trust_http_test.go",
       "line": 121,
       "test": "TestReaderPreservesUnsupportedEPUBMediaTypeBehavior",
       "baseline_file_sha256": "f463192e40efcf287f29eb491c065fc2112af382c33bf1290a4354aebfba9ff1",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Unsupported image spine entry must be skipped while XHTML chapter remains sole sequential page; both exact chapter and direct image assets stay readable with protected headers.",
+      "production_owner": "apps/subtitles/internal/server/{reader.go,reader_archive.go,api_product.go,progress.go}; packages/library/archive.go; packages/catalog/progress_request_store.go",
+      "non_test_callers": "New\u2192registerReader/registerAPI\u2192browseReader/readerFor/serveReaderAsset/apiReaderProgress; app visibleItem and currentViewer state bindings, production EPUB manifests and actual archive processes.",
+      "remaining_proof": [
+        {
+          "kind": "retained_actual_app_security_or_data_boundary",
+          "reference": "apps/subtitles/internal/server/reader_archive_trust_http_test.go::TestReaderPreservesUnsupportedEPUBMediaTypeBehavior"
+        }
+      ],
+      "coverage_gap": "Real app New/router/index/reader metadata and resource guards are exercised with actual ZIP/TAR bytes, API/web projections and app persistence. Shared archive helpers cannot catch reader EPUB manifest policy or HTTP/header/status binding. Existing populated beta media layout only opens a reader and checks layout/Axe, not hostile archive, exact content, or rejected-write durability; current executed genuine review journey has no book. CBT cases use real bsdtar when available; no7z proof.",
+      "history": "f8ea65c09c372b6d20f5ea111d6420e59b288b12 Reject ambiguous Reader archives and malformed EPUB spines",
+      "risk": "Retain security/resource-trust and no-data-loss exception absent equivalent genuine E2E",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server",
+      "helpers_read": [
+        "apps/subtitles/internal/server/reader_archive_trust_fixture_test.go",
+        "apps/subtitles/internal/server/reader_boundary_test.go::apiItemsByTitle",
+        "packages/library/archive.go"
+      ],
+      "shared_counterpart_review": "packages/library/archive_test.go full read: listing/bounds/traversal/process helpers guard shared extraction, not application EPUB+HTTP persistence boundary."
     },
     {
       "file": "apps/subtitles/internal/server/reader_archive_trust_http_test.go",
       "line": 144,
       "test": "TestReaderPreservesDistinctPagesAndRelativeEPUBChaptersThroughHTTP",
       "baseline_file_sha256": "f463192e40efcf287f29eb491c065fc2112af382c33bf1290a4354aebfba9ff1",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Distinct comic colors, case-distinct EPUB IDs/paths and parent-relative-but-inside-root chapter survive with exact ID/kind/count/number/title/URL and resource bytes.",
+      "production_owner": "apps/subtitles/internal/server/{reader.go,reader_archive.go,api_product.go,progress.go}; packages/library/archive.go; packages/catalog/progress_request_store.go",
+      "non_test_callers": "New\u2192registerReader/registerAPI\u2192browseReader/readerFor/serveReaderAsset/apiReaderProgress; app visibleItem and currentViewer state bindings, production EPUB manifests and actual archive processes.",
+      "remaining_proof": [
+        {
+          "kind": "retained_actual_app_security_or_data_boundary",
+          "reference": "apps/subtitles/internal/server/reader_archive_trust_http_test.go::TestReaderPreservesDistinctPagesAndRelativeEPUBChaptersThroughHTTP"
+        }
+      ],
+      "coverage_gap": "Real app New/router/index/reader metadata and resource guards are exercised with actual ZIP/TAR bytes, API/web projections and app persistence. Shared archive helpers cannot catch reader EPUB manifest policy or HTTP/header/status binding. Existing populated beta media layout only opens a reader and checks layout/Axe, not hostile archive, exact content, or rejected-write durability; current executed genuine review journey has no book. CBT cases use real bsdtar when available; no7z proof.",
+      "history": "f8ea65c09c372b6d20f5ea111d6420e59b288b12 Reject ambiguous Reader archives and malformed EPUB spines",
+      "risk": "Retain security/resource-trust and no-data-loss exception absent equivalent genuine E2E",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server",
+      "helpers_read": [
+        "apps/subtitles/internal/server/reader_archive_trust_fixture_test.go",
+        "apps/subtitles/internal/server/reader_boundary_test.go::apiItemsByTitle",
+        "packages/library/archive.go"
+      ],
+      "shared_counterpart_review": "packages/library/archive_test.go full read: listing/bounds/traversal/process helpers guard shared extraction, not application EPUB+HTTP persistence boundary."
     },
     {
       "file": "apps/subtitles/internal/server/reader_archive_trust_http_test.go",
       "line": 187,
       "test": "TestReaderPreservesSameBasenamesInDistinctComicFolders",
       "baseline_file_sha256": "f463192e40efcf287f29eb491c065fc2112af382c33bf1290a4354aebfba9ff1",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "CBZ+actual TAR/bsdtar CBT keep both folder-qualified same-basename pages, unique sequential URLs and exact differently colored bytes without source changes.",
+      "production_owner": "apps/subtitles/internal/server/{reader.go,reader_archive.go,api_product.go,progress.go}; packages/library/archive.go; packages/catalog/progress_request_store.go",
+      "non_test_callers": "New\u2192registerReader/registerAPI\u2192browseReader/readerFor/serveReaderAsset/apiReaderProgress; app visibleItem and currentViewer state bindings, production EPUB manifests and actual archive processes.",
+      "remaining_proof": [
+        {
+          "kind": "retained_actual_app_security_or_data_boundary",
+          "reference": "apps/subtitles/internal/server/reader_archive_trust_http_test.go::TestReaderPreservesSameBasenamesInDistinctComicFolders"
+        }
+      ],
+      "coverage_gap": "Real app New/router/index/reader metadata and resource guards are exercised with actual ZIP/TAR bytes, API/web projections and app persistence. Shared archive helpers cannot catch reader EPUB manifest policy or HTTP/header/status binding. Existing populated beta media layout only opens a reader and checks layout/Axe, not hostile archive, exact content, or rejected-write durability; current executed genuine review journey has no book. CBT cases use real bsdtar when available; no7z proof.",
+      "history": "f8ea65c09c372b6d20f5ea111d6420e59b288b12 Reject ambiguous Reader archives and malformed EPUB spines",
+      "risk": "Retain security/resource-trust and no-data-loss exception absent equivalent genuine E2E",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server",
+      "helpers_read": [
+        "apps/subtitles/internal/server/reader_archive_trust_fixture_test.go",
+        "apps/subtitles/internal/server/reader_boundary_test.go::apiItemsByTitle",
+        "packages/library/archive.go"
+      ],
+      "shared_counterpart_review": "packages/library/archive_test.go full read: listing/bounds/traversal/process helpers guard shared extraction, not application EPUB+HTTP persistence boundary."
     },
     {
       "file": "apps/subtitles/internal/server/reader_archive_trust_http_test.go",
       "line": 225,
       "test": "TestReaderRejectsCBTDuplicatesBeyondMetadataWindow",
       "baseline_file_sha256": "f463192e40efcf287f29eb491c065fc2112af382c33bf1290a4354aebfba9ff1",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "10001-entry actual CBT includes late duplicate of first page: metadata+asset must reject; unique late page instead preserves first10000-window metadata and denies late asset with exact sentinel-safe404.",
+      "production_owner": "apps/subtitles/internal/server/{reader.go,reader_archive.go,api_product.go,progress.go}; packages/library/archive.go; packages/catalog/progress_request_store.go",
+      "non_test_callers": "New\u2192registerReader/registerAPI\u2192browseReader/readerFor/serveReaderAsset/apiReaderProgress; app visibleItem and currentViewer state bindings, production EPUB manifests and actual archive processes.",
+      "remaining_proof": [
+        {
+          "kind": "retained_actual_app_security_or_data_boundary",
+          "reference": "apps/subtitles/internal/server/reader_archive_trust_http_test.go::TestReaderRejectsCBTDuplicatesBeyondMetadataWindow"
+        }
+      ],
+      "coverage_gap": "Real app New/router/index/reader metadata and resource guards are exercised with actual ZIP/TAR bytes, API/web projections and app persistence. Shared archive helpers cannot catch reader EPUB manifest policy or HTTP/header/status binding. Existing populated beta media layout only opens a reader and checks layout/Axe, not hostile archive, exact content, or rejected-write durability; current executed genuine review journey has no book. CBT cases use real bsdtar when available; no7z proof.",
+      "history": "f8ea65c09c372b6d20f5ea111d6420e59b288b12 Reject ambiguous Reader archives and malformed EPUB spines",
+      "risk": "Retain security/resource-trust and no-data-loss exception absent equivalent genuine E2E",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server",
+      "helpers_read": [
+        "apps/subtitles/internal/server/reader_archive_trust_fixture_test.go",
+        "apps/subtitles/internal/server/reader_boundary_test.go::apiItemsByTitle",
+        "packages/library/archive.go"
+      ],
+      "shared_counterpart_review": "packages/library/archive_test.go full read: listing/bounds/traversal/process helpers guard shared extraction, not application EPUB+HTTP persistence boundary."
     },
     {
       "file": "apps/subtitles/internal/server/reader_archive_trust_http_test.go",
       "line": 265,
       "test": "TestReaderRejectsMalformedProgressWithoutPersisting",
       "baseline_file_sha256": "f463192e40efcf287f29eb491c065fc2112af382c33bf1290a4354aebfba9ff1",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Actual invalid root-escaping reader cannot save progress: exact API404 and generic item progress bytes unchanged after fresh server. Valid two-chapter positive control saves page1 and fresh server reports it.",
+      "production_owner": "apps/subtitles/internal/server/{reader.go,reader_archive.go,api_product.go,progress.go}; packages/library/archive.go; packages/catalog/progress_request_store.go",
+      "non_test_callers": "New\u2192registerReader/registerAPI\u2192browseReader/readerFor/serveReaderAsset/apiReaderProgress; app visibleItem and currentViewer state bindings, production EPUB manifests and actual archive processes.",
+      "remaining_proof": [
+        {
+          "kind": "retained_actual_app_security_or_data_boundary",
+          "reference": "apps/subtitles/internal/server/reader_archive_trust_http_test.go::TestReaderRejectsMalformedProgressWithoutPersisting"
+        }
+      ],
+      "coverage_gap": "Real app New/router/index/reader metadata and resource guards are exercised with actual ZIP/TAR bytes, API/web projections and app persistence. Shared archive helpers cannot catch reader EPUB manifest policy or HTTP/header/status binding. Existing populated beta media layout only opens a reader and checks layout/Axe, not hostile archive, exact content, or rejected-write durability; current executed genuine review journey has no book. CBT cases use real bsdtar when available; no7z proof.",
+      "history": "f8ea65c09c372b6d20f5ea111d6420e59b288b12 Reject ambiguous Reader archives and malformed EPUB spines",
+      "risk": "Retain security/resource-trust and no-data-loss exception absent equivalent genuine E2E",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server",
+      "helpers_read": [
+        "apps/subtitles/internal/server/reader_archive_trust_fixture_test.go",
+        "apps/subtitles/internal/server/reader_boundary_test.go::apiItemsByTitle",
+        "packages/library/archive.go"
+      ],
+      "shared_counterpart_review": "packages/library/archive_test.go full read: listing/bounds/traversal/process helpers guard shared extraction, not application EPUB+HTTP persistence boundary."
     },
     {
       "file": "apps/subtitles/internal/server/reader_boundary_test.go",
       "line": 13,
       "test": "TestReaderRejectsMalformedAndEmptyBookArchives",
       "baseline_file_sha256": "1b93b11b8fc3149523a4d1ca9dbd727f2cf40c569fff6a0883aebfa08dea5646",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Eleven broken/empty/traversing comic and malformed/missing container/package/spine EPUB fixtures return actual API404 instead of usable reader.",
+      "production_owner": "apps/subtitles/internal/server/{reader.go,reader_archive.go,api_product.go,progress.go}; packages/library/archive.go; packages/catalog/progress_request_store.go",
+      "non_test_callers": "New\u2192registerReader/registerAPI\u2192browseReader/readerFor/serveReaderAsset/apiReaderProgress; app visibleItem and currentViewer state bindings, production EPUB manifests and actual archive processes.",
+      "remaining_proof": [
+        {
+          "kind": "retained_actual_app_security_or_data_boundary",
+          "reference": "apps/subtitles/internal/server/reader_boundary_test.go::TestReaderRejectsMalformedAndEmptyBookArchives"
+        }
+      ],
+      "coverage_gap": "Real app New/router/index/reader metadata and resource guards are exercised with actual ZIP/TAR bytes, API/web projections and app persistence. Shared archive helpers cannot catch reader EPUB manifest policy or HTTP/header/status binding. Existing populated beta media layout only opens a reader and checks layout/Axe, not hostile archive, exact content, or rejected-write durability; current executed genuine review journey has no book. CBT cases use real bsdtar when available; no7z proof.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retain security/resource-trust and no-data-loss exception absent equivalent genuine E2E",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server",
+      "helpers_read": [
+        "apps/subtitles/internal/server/reader_archive_trust_fixture_test.go",
+        "apps/subtitles/internal/server/reader_boundary_test.go::apiItemsByTitle",
+        "packages/library/archive.go"
+      ],
+      "shared_counterpart_review": "packages/library/archive_test.go full read: listing/bounds/traversal/process helpers guard shared extraction, not application EPUB+HTTP persistence boundary."
     },
     {
       "file": "apps/subtitles/internal/server/reader_boundary_test.go",
       "line": 42,
       "test": "TestReaderServesOnlyValidatedBookFilesAndAssets",
       "baseline_file_sha256": "1b93b11b8fc3149523a4d1ca9dbd727f2cf40c569fff6a0883aebfa08dea5646",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Actual PDF-only file endpoint and exact EPUB asset routing reject unsupported/file/missing/traversal requests and retain SAMEORIGIN/frame-ancestors embedding policy.",
+      "production_owner": "apps/subtitles/internal/server/{reader.go,reader_archive.go,api_product.go,progress.go}; packages/library/archive.go; packages/catalog/progress_request_store.go",
+      "non_test_callers": "New\u2192registerReader/registerAPI\u2192browseReader/readerFor/serveReaderAsset/apiReaderProgress; app visibleItem and currentViewer state bindings, production EPUB manifests and actual archive processes.",
+      "remaining_proof": [
+        {
+          "kind": "retained_actual_app_security_or_data_boundary",
+          "reference": "apps/subtitles/internal/server/reader_boundary_test.go::TestReaderServesOnlyValidatedBookFilesAndAssets"
+        }
+      ],
+      "coverage_gap": "Real app New/router/index/reader metadata and resource guards are exercised with actual ZIP/TAR bytes, API/web projections and app persistence. Shared archive helpers cannot catch reader EPUB manifest policy or HTTP/header/status binding. Existing populated beta media layout only opens a reader and checks layout/Axe, not hostile archive, exact content, or rejected-write durability; current executed genuine review journey has no book. CBT cases use real bsdtar when available; no7z proof. PDF fixture is only a header and tests container/routing/embedding admission, not complete PDF parsing; source bytes/no-symlink are guarded separately.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retain security/resource-trust and no-data-loss exception absent equivalent genuine E2E",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server",
+      "helpers_read": [
+        "apps/subtitles/internal/server/reader_archive_trust_fixture_test.go",
+        "apps/subtitles/internal/server/reader_boundary_test.go::apiItemsByTitle",
+        "packages/library/archive.go"
+      ],
+      "shared_counterpart_review": "packages/library/archive_test.go full read: listing/bounds/traversal/process helpers guard shared extraction, not application EPUB+HTTP persistence boundary."
     },
     {
       "file": "apps/subtitles/internal/server/reader_progress_test.go",
       "line": 13,
       "test": "TestEPUBReaderPersistsChapterProgressThroughAPIAndWeb",
       "baseline_file_sha256": "dd2036da9cee2be25647169df544229d7fb4ba7d23b3b9245d30e48eb937114a",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Actual two-chapter reader rejects malformed/unknown/missing/out-ofrange page input, API selects2, real web form selects1 and iframe/aria-current agrees without old chapter selection.",
+      "production_owner": "apps/subtitles/internal/server/{reader.go,reader_archive.go,api_product.go,progress.go}; packages/library/archive.go; packages/catalog/progress_request_store.go",
+      "non_test_callers": "New\u2192registerReader/registerAPI\u2192browseReader/readerFor/serveReaderAsset/apiReaderProgress; app visibleItem and currentViewer state bindings, production EPUB manifests and actual archive processes.",
+      "remaining_proof": [
+        {
+          "kind": "retained_actual_app_security_or_data_boundary",
+          "reference": "apps/subtitles/internal/server/reader_progress_test.go::TestEPUBReaderPersistsChapterProgressThroughAPIAndWeb"
+        }
+      ],
+      "coverage_gap": "Real app New/router/index/reader metadata and resource guards are exercised with actual ZIP/TAR bytes, API/web projections and app persistence. Shared archive helpers cannot catch reader EPUB manifest policy or HTTP/header/status binding. Existing populated beta media layout only opens a reader and checks layout/Axe, not hostile archive, exact content, or rejected-write durability; current executed genuine review journey has no book. CBT cases use real bsdtar when available; no7z proof. Same-process chapter changes do not alone prove restart; TestReaderRejectsMalformedProgressWithoutPersisting supplies accepted and rejected fresh-server control.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retain security/resource-trust and no-data-loss exception absent equivalent genuine E2E",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server",
+      "helpers_read": [
+        "apps/subtitles/internal/server/reader_archive_trust_fixture_test.go",
+        "apps/subtitles/internal/server/reader_boundary_test.go::apiItemsByTitle",
+        "packages/library/archive.go"
+      ],
+      "shared_counterpart_review": "packages/library/archive_test.go full read: listing/bounds/traversal/process helpers guard shared extraction, not application EPUB+HTTP persistence boundary."
     },
     {
       "file": "apps/subtitles/internal/server/recent_test.go",
