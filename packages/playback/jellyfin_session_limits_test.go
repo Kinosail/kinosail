@@ -2,6 +2,7 @@ package playback
 
 import (
 	"fmt"
+	"strconv"
 	"sync"
 	"testing"
 	"time"
@@ -12,7 +13,7 @@ func TestJellyfinSessionsAreBoundedUnderConcurrentCreation(t *testing.T) {
 	session := testJellyfinSession{item: "movie", profile: "viewer", expires: now.Add(time.Hour)}
 	var store sync.Map
 	for i := range maximumJellyfinSessions - 1 {
-		store.Store(fmt.Sprint(i), session)
+		store.Store(strconv.Itoa(i), session)
 	}
 	var calls sync.WaitGroup
 	for i := range 10 {

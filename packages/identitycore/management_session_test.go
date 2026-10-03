@@ -14,7 +14,7 @@ func TestManagementSessionCannotBeReplayedOnLANPublicOrAnotherDevice(t *testing.
 	fixture.profiles[0].Owner = true
 	sessions := requestSessionFixture(fixture)
 	key := base64.StdEncoding.EncodeToString([]byte(strings.Repeat("k", 32)))
-	r := WithManagementDevice(httptest.NewRequest("POST", "https://server.example/login", nil), "viewer", key)
+	r := WithManagementDevice(httptest.NewRequestWithContext(t.Context(), "POST", "https://server.example/login", nil), "viewer", key)
 	w := httptest.NewRecorder()
 	if err := sessions.SignInStrong(w, r, "viewer"); err != nil {
 		t.Fatal(err)
@@ -29,7 +29,7 @@ func TestManagementSessionCannotBeReplayedOnLANPublicOrAnotherDevice(t *testing.
 		t.Fatal("session did not bind atomically")
 	}
 	for _, kind := range []string{"LAN", "public", "other-device", "other-owner"} {
-		request := httptest.NewRequest("GET", "https://server.example/settings", nil)
+		request := httptest.NewRequestWithContext(t.Context(), "GET", "https://server.example/settings", nil)
 		request.AddCookie(cookies[0])
 		switch kind {
 		case "public":
@@ -59,7 +59,7 @@ func TestSensitiveOwnerReadsRequireFreshAuthentication(t *testing.T) {
 			called := false
 			record := &recordedResponse{}
 			w := httptest.NewRecorder()
-			OwnerSensitive(http.HandlerFunc(func(http.ResponseWriter, *http.Request) { called = true }), ownerConfig(record, true, false, false, recent, true)).ServeHTTP(w, httptest.NewRequest(method, "/api/v1/backup", nil))
+			OwnerSensitive(http.HandlerFunc(func(http.ResponseWriter, *http.Request) { called = true }), ownerConfig(record, true, false, false, recent, true)).ServeHTTP(w, httptest.NewRequestWithContext(t.Context(), method, "/api/v1/backup", nil))
 			if called != recent || !recent && w.Code != http.StatusForbidden {
 				t.Fatalf("%s recent=%v status=%d", method, recent, w.Code)
 			}

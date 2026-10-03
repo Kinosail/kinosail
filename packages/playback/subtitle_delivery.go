@@ -113,17 +113,19 @@ func readSubtitle(path string) ([]byte, error) {
 }
 
 func normalizeSubtitle(data []byte, vtt bool) []byte {
-	lines := strings.Split(strings.ReplaceAll(string(data), "\r\n", "\n"), "\n")
+	lines := strings.Split(normalizeSubtitleNewlines(data), "\n")
 	for index, line := range lines {
-		if strings.Contains(line, " --> ") {
-			lines[index] = strings.ReplaceAll(line, ",", ".")
+		if fields := subtitleTimingFields(line); fields != nil {
+			fields[0] = strings.ReplaceAll(fields[0], ",", ".")
+			fields[2] = strings.ReplaceAll(fields[2], ",", ".")
+			lines[index] = strings.Join(fields, " ")
 		}
 	}
-	data = []byte(strings.Join(lines, "\n"))
+	text := strings.Join(lines, "\n")
 	if !vtt {
-		data = append([]byte("WEBVTT\n\n"), data...)
+		text = "WEBVTT\n\n" + text
 	}
-	return data
+	return []byte(text)
 }
 
 func setSubtitleHeaders(writer http.ResponseWriter) {

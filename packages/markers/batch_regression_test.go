@@ -164,8 +164,10 @@ func TestUnchangedScanDoesNotCompleteRunningAnalysis(t *testing.T) {
 func TestStaleGeneratedMarkersWaitForReanalysisAndOwnerEditsDoNotMarkComplete(t *testing.T) {
 	item := movieItems(1)[0]
 	analyzer := NewAnalyzer(Config{})
-	analyzer.records[item.ID] = Record{Revision: mediaRevision(item), DetectorVersion: DetectorVersion - 1,
-		Markers: []Marker{{Type: "intro", Label: "Intro", Start: 1, End: 30, Source: "fingerprint"}}}
+	analyzer.records[item.ID] = Record{
+		Revision: mediaRevision(item), DetectorVersion: DetectorVersion - 1,
+		Markers: []Marker{{Type: "intro", Label: "Intro", Start: 1, End: 30, Source: "fingerprint"}},
+	}
 	if got := analyzer.Markers(item, nil); len(got) != 0 {
 		t.Fatalf("stale auto-skip exposed: %#v", got)
 	}

@@ -21,14 +21,20 @@ function fixture(appleTouch = false) {
     removeAttribute: name => attrs.delete(name),
   };
   const player = {
-    currentTime: 12, duration: 120, paused: false, readyState: 0, dataset: {}, currentSrc: '/movie',
-    buffered: { length: 1, end: () => 24 },
+    currentTime: 12, duration: 120, paused: appleTouch, readyState: 0, dataset: {}, currentSrc: '/movie', tagName: 'VIDEO',
+    play() { const error = new Error('A user gesture is required'); error.name = 'NotAllowedError'; return Promise.reject(error); },
+    pause() { this.paused = true; },
+    buffered: { length: 1, start: () => 0, end: () => 24 },
+    hasAttribute: () => false,
     addEventListener(name, handler) { listeners.set(name, handler); },
   };
   const message = { textContent: '' };
   const source = readFileSync(new URL('./static/player-status.js', import.meta.url), 'utf8');
   vm.runInNewContext(source, {
     player, playerStatus: status, playerMessage: message,
+    playbackPreparation: undefined, preparationPausePending: 0, playbackTimelineOffset: 0,
+    bufferedAhead: () => Math.max(0, player.buffered.end(0) - player.currentTime),
+    setPlayerTime: time => { player.currentTime = time; },
     navigator: { userAgent: appleTouch ? 'iPhone' : '', platform: '', maxTouchPoints: 0 },
     bufferedProgress: { setAttribute() {} }, HTMLMediaElement: { HAVE_CURRENT_DATA: 2, HAVE_FUTURE_DATA: 3 },
     setTimeout(handler) { timers.add(handler); return handler; },
@@ -92,9 +98,10 @@ test('blocked autoplay and canplay keep the existing Play control available', ()
   assert.equal(f.status.hidden, true);
 });
 
-test('an iPhone startup delay exposes Play while media remains paused', () => {
+test('blocked iPhone startup preparation exposes Play while media remains paused', async () => {
   const f = fixture(true);
-  f.player.paused = true;
+  await new Promise(resolve => setImmediate(resolve));
+  assert.equal(f.player.paused, true);
   f.flush();
   assert.equal(f.status.hidden, true);
   assert.equal(f.classes.has('is-busy'), false);
