@@ -15032,22 +15032,39 @@
       "sha256": "27db827e5201922ed2e0251fe8be81fd034e7fec7a220bb63ee8e08f4520faa3",
       "path": "apps/player/internal/server/locale_catalog_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "An embedded Player locale omits an English message, supplies an empty value or alters ordered template/interpolation placeholders, causing missing or broken localized controls at runtime.",
+      "category": "app_localization_contract_retained",
+      "credible_failure": "An embedded Player locale omits an English message, supplies an empty value or alters ordered template/interpolation placeholders, causing missing or broken localized controls at runtime.",
+      "production_owner": [
+        "apps/player/internal/server/locale.go:loadLocalization/preferredLanguage/automaticLanguage/selectLanguage/saveWebLanguage/apiLanguage/newLocalizedTemplate",
+        "apps/player/internal/server/language_http.go:showLanguage",
+        "packages/localization/catalog.go:Catalog/TranslateSource/PickerHTML",
+        "packages/localization/template.go:TemplateRuntime",
+        "packages/localization/languages.go"
+      ],
+      "non_test_callers": [
+        "Server registers GET/POST /language; registerProductAPI binds PUT /api/v1/me/language and GET /api/v1/me projection; localized app templates bind request headers/cookies/catalog and CSRF callbacks."
+      ],
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_app_or_data_contract",
+          "path": "apps/player/internal/server/locale_catalog_test.go",
+          "scenario": "TestLocaleCatalogsAreComplete",
+          "helper": "packages/servertest/locale_catalog.go"
+        }
+      ],
+      "coverage_limit": "Existing genuine browser masthead/layout-navigation journeys exercise German/French home geometry, not this locale input matrix. Shared httptest fixtures call actual Player handlers/callbacks but are isolated integration tests, not genuine browser E2E. App-owned catalog data contract; shared localization synthetic fixtures cannot verify the Player embedded messages. No linguistic correctness guarantee.",
       "history": [
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
-      "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "production_or_support_deletion_unlocked": "None; no isolated tests added.",
+      "risk": "Important locale/data/security boundary absent from existing genuine E2E inputs.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./internal/server",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "review_provenance": "Player owner read complete test/helper, locale/catalog/template/language owners, app routes/callbacks and pertinent history. go-i18n v2.6.1 LocalizeConfig/Localizer and x/text v0.42.0 Matcher types inspected. No child build run.",
+      "history_interpretation": "Recorded original contract preserved; app locale embedding/cookie/request callbacks remain production callers."
     },
     {
       "name": "TestNewInteractiveCopyHasTranslations",
@@ -15056,22 +15073,39 @@
       "sha256": "414224cd4118344d281870f18785b6c362b01733700073ee20c85c22fb3b4dc5",
       "path": "apps/player/internal/server/locale_catalog_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "Maintained translated catalogs leave security/offline verification/error/clipboard/playback messages unchanged in English, losing localization for newly interactive controls.",
+      "category": "app_localization_contract_retained",
+      "credible_failure": "Maintained translated catalogs leave security/offline verification/error/clipboard/playback messages unchanged in English, losing localization for newly interactive controls.",
+      "production_owner": [
+        "apps/player/internal/server/locale.go:loadLocalization/preferredLanguage/automaticLanguage/selectLanguage/saveWebLanguage/apiLanguage/newLocalizedTemplate",
+        "apps/player/internal/server/language_http.go:showLanguage",
+        "packages/localization/catalog.go:Catalog/TranslateSource/PickerHTML",
+        "packages/localization/template.go:TemplateRuntime",
+        "packages/localization/languages.go"
+      ],
+      "non_test_callers": [
+        "Server registers GET/POST /language; registerProductAPI binds PUT /api/v1/me/language and GET /api/v1/me projection; localized app templates bind request headers/cookies/catalog and CSRF callbacks."
+      ],
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_app_or_data_contract",
+          "path": "apps/player/internal/server/locale_catalog_test.go",
+          "scenario": "TestNewInteractiveCopyHasTranslations",
+          "helper": "apps/player/internal/server/locale_catalog_test.go"
+        }
+      ],
+      "coverage_limit": "Existing genuine browser masthead/layout-navigation journeys exercise German/French home geometry, not this locale input matrix. Shared httptest fixtures call actual Player handlers/callbacks but are isolated integration tests, not genuine browser E2E. Specific21-message table across maintained non-English locales; unchanged text check, not linguistic quality or all strings.",
       "history": [
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
-      "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "production_or_support_deletion_unlocked": "None; no isolated tests added.",
+      "risk": "Important locale/data/security boundary absent from existing genuine E2E inputs.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./internal/server",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "review_provenance": "Player owner read complete test/helper, locale/catalog/template/language owners, app routes/callbacks and pertinent history. go-i18n v2.6.1 LocalizeConfig/Localizer and x/text v0.42.0 Matcher types inspected. No child build run.",
+      "history_interpretation": "Recorded original contract preserved; app locale embedding/cookie/request callbacks remain production callers."
     },
     {
       "name": "TestSupportedLanguageCoverageIncludesJellyfinLocaleSet",
@@ -15079,23 +15113,38 @@
       "end_line": 40,
       "sha256": "bd64574d0ca034fbf2f9b88290b83c00cc316554a3581560d9b2948b500f174f",
       "path": "apps/player/internal/server/locale_catalog_test.go",
-      "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "decision": "D",
+      "review_status": "candidate_evidence_complete",
+      "reason": "Count/unique/valid-direction assertions replay the aliased shared SupportedLanguages inventory; canonical owner covers all three plus order/native names/Arabic direction.",
+      "category": "direct_shared_inventory_replay",
+      "credible_failure": "SupportedLanguages returns fewer106 entries, duplicate tags or invalid direction; canonical TestSupportedLanguagesUsePlayerOrderAndDirections already detects each independently.",
+      "production_owner": [
+        "apps/player/internal/server/locale.go:supportedLanguages alias",
+        "apps/player/internal/server/locale_catalog_test.go:testSupportedLocales projection",
+        "packages/localization/languages.go:SupportedLanguages"
+      ],
+      "non_test_callers": [
+        "Server registers GET/POST /language; registerProductAPI binds PUT /api/v1/me/language and GET /api/v1/me projection; localized app templates bind request headers/cookies/catalog and CSRF callbacks."
+      ],
+      "remaining_proof": [
+        {
+          "kind": "retained_canonical_isolated_keeper",
+          "path": "packages/localization/localization_test.go",
+          "scenario": "TestSupportedLanguagesUsePlayerOrderAndDirections",
+          "assertion_mapping": "Same>=106/unique/directions; adds en/es ordering, nonempty names and Arabic RTL. Player projection only copies Tag and Direction."
+        }
+      ],
+      "coverage_limit": "No genuine E2E locale-inventory equivalence. App-owned catalogs and actual HTTP preference/matching/picker/CSRF guards remain.",
       "history": [
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
-      "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "production_or_support_deletion_unlocked": "Remove only5-line declaration including separator; generic servertest helper handled separately by its owner after Subtitles callers are audited.",
+      "risk": "Low; pure projection replay with stronger canonical keeper independently confirmed retained by shared owner.",
+      "validation_command": "Root Player Go suite and shared localization package suite",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "history_interpretation": "Initial committed shared inventory projection; no app-specific locale policy under test.",
+      "review_provenance": "Full test/projection/helper, localization owner and canonical keeper read; shared identity owner confirmed canonical R."
     },
     {
       "name": "TestTranslatedCatalogsLocalizeAuthenticationCode",
@@ -15104,22 +15153,39 @@
       "sha256": "6d7e212b9adefc35b1432643ca9a20446c17feacb1175d355c867e4618d518c7",
       "path": "apps/player/internal/server/locale_catalog_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "A maintained Player catalog lacks or leaves authentication/recovery-code labels in English, making authentication prompts inconsistent outside English.",
+      "category": "app_localization_contract_retained",
+      "credible_failure": "A maintained Player catalog lacks or leaves authentication/recovery-code labels in English, making authentication prompts inconsistent outside English.",
+      "production_owner": [
+        "apps/player/internal/server/locale.go:loadLocalization/preferredLanguage/automaticLanguage/selectLanguage/saveWebLanguage/apiLanguage/newLocalizedTemplate",
+        "apps/player/internal/server/language_http.go:showLanguage",
+        "packages/localization/catalog.go:Catalog/TranslateSource/PickerHTML",
+        "packages/localization/template.go:TemplateRuntime",
+        "packages/localization/languages.go"
+      ],
+      "non_test_callers": [
+        "Server registers GET/POST /language; registerProductAPI binds PUT /api/v1/me/language and GET /api/v1/me projection; localized app templates bind request headers/cookies/catalog and CSRF callbacks."
+      ],
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_app_or_data_contract",
+          "path": "apps/player/internal/server/locale_catalog_test.go",
+          "scenario": "TestTranslatedCatalogsLocalizeAuthenticationCode",
+          "helper": "apps/player/internal/server/locale_catalog_test.go"
+        }
+      ],
+      "coverage_limit": "Existing genuine browser masthead/layout-navigation journeys exercise German/French home geometry, not this locale input matrix. Shared httptest fixtures call actual Player handlers/callbacks but are isolated integration tests, not genuine browser E2E. Independent English-source presence and all maintained non-English translation controls. No real authenticator verification asserted.",
       "history": [
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
-      "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "production_or_support_deletion_unlocked": "None; no isolated tests added.",
+      "risk": "Important locale/data/security boundary absent from existing genuine E2E inputs.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./internal/server",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "review_provenance": "Player owner read complete test/helper, locale/catalog/template/language owners, app routes/callbacks and pertinent history. go-i18n v2.6.1 LocalizeConfig/Localizer and x/text v0.42.0 Matcher types inspected. No child build run.",
+      "history_interpretation": "Recorded original contract preserved; app locale embedding/cookie/request callbacks remain production callers."
     },
     {
       "name": "TestInvalidLanguageSelectionHasNoSideEffects",
@@ -15128,22 +15194,39 @@
       "sha256": "8ca8f57054fd34e02d1124dbca05e77cce0364ece7a931fb1851d48ec78edc18",
       "path": "apps/player/internal/server/locale_expanded_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "Invalid API/web locale overwrites or clears an existing Spanish selection cookie, or returns success despite invalid input.",
+      "category": "app_localization_contract_retained",
+      "credible_failure": "Invalid API/web locale overwrites or clears an existing Spanish selection cookie, or returns success despite invalid input.",
+      "production_owner": [
+        "apps/player/internal/server/locale.go:loadLocalization/preferredLanguage/automaticLanguage/selectLanguage/saveWebLanguage/apiLanguage/newLocalizedTemplate",
+        "apps/player/internal/server/language_http.go:showLanguage",
+        "packages/localization/catalog.go:Catalog/TranslateSource/PickerHTML",
+        "packages/localization/template.go:TemplateRuntime",
+        "packages/localization/languages.go"
+      ],
+      "non_test_callers": [
+        "Server registers GET/POST /language; registerProductAPI binds PUT /api/v1/me/language and GET /api/v1/me projection; localized app templates bind request headers/cookies/catalog and CSRF callbacks."
+      ],
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_app_or_data_contract",
+          "path": "apps/player/internal/server/locale_expanded_test.go",
+          "scenario": "TestInvalidLanguageSelectionHasNoSideEffects",
+          "helper": "packages/servertest/locale_web.go"
+        }
+      ],
+      "coverage_limit": "Existing genuine browser masthead/layout-navigation journeys exercise German/French home geometry, not this locale input matrix. Shared httptest fixtures call actual Player handlers/callbacks but are isolated integration tests, not genuine browser E2E. Checks invalid xx response/no Set-Cookie and me-state remains Spanish with original cookie. Does not simulate browser cookie storage.",
       "history": [
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
-      "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "production_or_support_deletion_unlocked": "None; no isolated tests added.",
+      "risk": "Important locale/data/security boundary absent from existing genuine E2E inputs.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./internal/server",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "review_provenance": "Player owner read complete test/helper, locale/catalog/template/language owners, app routes/callbacks and pertinent history. go-i18n v2.6.1 LocalizeConfig/Localizer and x/text v0.42.0 Matcher types inspected. No child build run.",
+      "history_interpretation": "Recorded original contract preserved; app locale embedding/cookie/request callbacks remain production callers."
     },
     {
       "name": "TestExpandedLanguageTagsPreserveRegionalAndRTLSemantics",
@@ -15152,22 +15235,39 @@
       "sha256": "9d48968f59cb1d41f37098531c6fe16561a388ddd2bc2949334e8244a39ed47b",
       "path": "apps/player/internal/server/locale_expanded_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "Exact regional Accept-Language tags hi-IN/zh-CN/ckb/ur-PK collapse incorrectly or lose RTL direction/picker option in actual login rendering.",
+      "category": "app_localization_contract_retained",
+      "credible_failure": "Exact regional Accept-Language tags hi-IN/zh-CN/ckb/ur-PK collapse incorrectly or lose RTL direction/picker option in actual login rendering.",
+      "production_owner": [
+        "apps/player/internal/server/locale.go:loadLocalization/preferredLanguage/automaticLanguage/selectLanguage/saveWebLanguage/apiLanguage/newLocalizedTemplate",
+        "apps/player/internal/server/language_http.go:showLanguage",
+        "packages/localization/catalog.go:Catalog/TranslateSource/PickerHTML",
+        "packages/localization/template.go:TemplateRuntime",
+        "packages/localization/languages.go"
+      ],
+      "non_test_callers": [
+        "Server registers GET/POST /language; registerProductAPI binds PUT /api/v1/me/language and GET /api/v1/me projection; localized app templates bind request headers/cookies/catalog and CSRF callbacks."
+      ],
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_app_or_data_contract",
+          "path": "apps/player/internal/server/locale_expanded_test.go",
+          "scenario": "TestExpandedLanguageTagsPreserveRegionalAndRTLSemantics",
+          "helper": "packages/servertest/locale_web.go"
+        }
+      ],
+      "coverage_limit": "Existing genuine browser masthead/layout-navigation journeys exercise German/French home geometry, not this locale input matrix. Shared httptest fixtures call actual Player handlers/callbacks but are isolated integration tests, not genuine browser E2E. Four exact tags have independent expected values; many advertised untranslated locales intentionally use English catalog fallback.",
       "history": [
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
-      "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "production_or_support_deletion_unlocked": "None; no isolated tests added.",
+      "risk": "Important locale/data/security boundary absent from existing genuine E2E inputs.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./internal/server",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "review_provenance": "Player owner read complete test/helper, locale/catalog/template/language owners, app routes/callbacks and pertinent history. go-i18n v2.6.1 LocalizeConfig/Localizer and x/text v0.42.0 Matcher types inspected. No child build run.",
+      "history_interpretation": "Recorded original contract preserved; app locale embedding/cookie/request callbacks remain production callers."
     },
     {
       "name": "TestLanguagePickerOffersEveryLocaleOnTheHomePage",
@@ -15176,22 +15276,39 @@
       "sha256": "4f811b9e85e5674367f156cb2bfe0ddec06976546fbe9624a8211008d96da509",
       "path": "apps/player/internal/server/locale_expanded_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "Compact app home picker loses locale options compared with the full picker or omits the /language recovery link, making locales unavailable on home.",
+      "category": "app_localization_contract_retained",
+      "credible_failure": "Compact app home picker loses locale options compared with the full picker or omits the /language recovery link, making locales unavailable on home.",
+      "production_owner": [
+        "apps/player/internal/server/locale.go:loadLocalization/preferredLanguage/automaticLanguage/selectLanguage/saveWebLanguage/apiLanguage/newLocalizedTemplate",
+        "apps/player/internal/server/language_http.go:showLanguage",
+        "packages/localization/catalog.go:Catalog/TranslateSource/PickerHTML",
+        "packages/localization/template.go:TemplateRuntime",
+        "packages/localization/languages.go"
+      ],
+      "non_test_callers": [
+        "Server registers GET/POST /language; registerProductAPI binds PUT /api/v1/me/language and GET /api/v1/me projection; localized app templates bind request headers/cookies/catalog and CSRF callbacks."
+      ],
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_app_or_data_contract",
+          "path": "apps/player/internal/server/locale_expanded_test.go",
+          "scenario": "TestLanguagePickerOffersEveryLocaleOnTheHomePage",
+          "helper": "packages/servertest/locale_web.go"
+        }
+      ],
+      "coverage_limit": "Existing genuine browser masthead/layout-navigation journeys exercise German/French home geometry, not this locale input matrix. Shared httptest fixtures call actual Player handlers/callbacks but are isolated integration tests, not genuine browser E2E. Count compares full and compact rendered options and explicitly checks hi-IN/ckb on full picker; does not independently verify every option text, covered by LanguagePickerShowsEverySupportedLocale.",
       "history": [
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
-      "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "production_or_support_deletion_unlocked": "None; no isolated tests added.",
+      "risk": "Important locale/data/security boundary absent from existing genuine E2E inputs.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./internal/server",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "review_provenance": "Player owner read complete test/helper, locale/catalog/template/language owners, app routes/callbacks and pertinent history. go-i18n v2.6.1 LocalizeConfig/Localizer and x/text v0.42.0 Matcher types inspected. No child build run.",
+      "history_interpretation": "Recorded original contract preserved; app locale embedding/cookie/request callbacks remain production callers."
     },
     {
       "name": "TestLanguagePickerShowsEverySupportedLocale",
@@ -15200,24 +15317,41 @@
       "sha256": "30c89a485f52ed5986237cd6028264652ce987180f4e4afe5b5a131b20d90041",
       "path": "apps/player/internal/server/locale_picker_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "Real language page drops advertised options/native names or default Automatic selection while the canonical language inventory itself remains valid.",
+      "category": "app_localization_contract_retained",
+      "credible_failure": "Real language page drops advertised options/native names or default Automatic selection while the canonical language inventory itself remains valid.",
+      "production_owner": [
+        "apps/player/internal/server/locale.go:loadLocalization/preferredLanguage/automaticLanguage/selectLanguage/saveWebLanguage/apiLanguage/newLocalizedTemplate",
+        "apps/player/internal/server/language_http.go:showLanguage",
+        "packages/localization/catalog.go:Catalog/TranslateSource/PickerHTML",
+        "packages/localization/template.go:TemplateRuntime",
+        "packages/localization/languages.go"
+      ],
+      "non_test_callers": [
+        "Server registers GET/POST /language; registerProductAPI binds PUT /api/v1/me/language and GET /api/v1/me projection; localized app templates bind request headers/cookies/catalog and CSRF callbacks."
+      ],
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_app_or_data_contract",
+          "path": "apps/player/internal/server/locale_picker_test.go",
+          "scenario": "TestLanguagePickerShowsEverySupportedLocale",
+          "helper": "packages/servertest/locale_picker.go"
+        }
+      ],
+      "coverage_limit": "Existing genuine browser masthead/layout-navigation journeys exercise German/French home geometry, not this locale input matrix. Shared httptest fixtures call actual Player handlers/callbacks but are isolated integration tests, not genuine browser E2E. Expected option names are read from the canonical supported list; this detects renderer omissions, not erroneous locale names in that same source. Canonical names/order test is complementary.",
       "history": [
         "999f4ee2c56a53cc20061e924597d7ea3cbe1236 Open movies directly in Player and clamp card titles",
         "63932950f57382d2f268a8affefdab7b03b5dfc9 Refresh stylesheet cache version across Player pages",
         "ed4d647f563880ff1a2b89b629005669f7911cc6 Align loading placeholders across player surfaces"
       ],
-      "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "production_or_support_deletion_unlocked": "None; no isolated tests added.",
+      "risk": "Important locale/data/security boundary absent from existing genuine E2E inputs.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./internal/server",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "review_provenance": "Player owner read complete test/helper, locale/catalog/template/language owners, app routes/callbacks and pertinent history. go-i18n v2.6.1 LocalizeConfig/Localizer and x/text v0.42.0 Matcher types inspected. No child build run.",
+      "history_interpretation": "Recorded original contract preserved; app locale embedding/cookie/request callbacks remain production callers."
     },
     {
       "name": "TestLanguagePickerTemplatesUseCurrentStylesheet",
@@ -15225,25 +15359,46 @@
       "end_line": 41,
       "sha256": "0fbc4f5e0d7862f2f78d7d95aa67864cad497660c5cd919dcf9ad0b2ae46ee88",
       "path": "apps/player/internal/server/locale_picker_test.go",
-      "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
+      "decision": "F",
+      "review_status": "test_and_boundary_review_pending_full_owner",
+      "reason": "Seven source templates preserve unique languagePicker hooks, but source stylesheet version assertions pin obsolete skeleton/media-titles recipes that newLocalizedTemplate upgrades to electric-44.",
       "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "credible_failure": "Removing languagePicker from account/setup/passkey-prompt source can remove the locale selection control on those views; existing runtime picker tests do not visit every view.",
+      "production_owner": [
+        "apps/player/internal/server/locale.go:loadLocalization/preferredLanguage/automaticLanguage/selectLanguage/saveWebLanguage/apiLanguage/newLocalizedTemplate",
+        "apps/player/internal/server/language_http.go:showLanguage",
+        "packages/localization/catalog.go:Catalog/TranslateSource/PickerHTML",
+        "packages/localization/template.go:TemplateRuntime",
+        "packages/localization/languages.go",
+        "apps/player/internal/server/navigation_shell.go:applicationShellCSSVersion"
+      ],
+      "non_test_callers": [
+        "Server registers GET/POST /language; registerProductAPI binds PUT /api/v1/me/language and GET /api/v1/me projection; localized app templates bind request headers/cookies/catalog and CSRF callbacks."
+      ],
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_runtime_partial_keeper",
+          "path": "apps/player/internal/server/locale_test.go",
+          "scenario": "TestAuthenticatedLanguagePickerCarriesCSRFToken/TestLanguageSelectorIsAvailableBeforeSignInAndSupportsRTL"
+        },
+        {
+          "kind": "retained_isolated_runtime_style_keeper",
+          "path": "apps/player/internal/server/navigation_shell_internal_test.go",
+          "scenario": "TestApplicationShellRefreshesCachedStylesheetVersions"
+        }
+      ],
+      "coverage_limit": "Test/helper and locale/version-upgrade owners reviewed; not all seven full template owner families reviewed yet. Retain conservatively pending complete owner comparison. Source version pinning does not independently prove delivered stylesheet version.",
       "history": [
         "999f4ee2c56a53cc20061e924597d7ea3cbe1236 Open movies directly in Player and clamp card titles",
         "63932950f57382d2f268a8affefdab7b03b5dfc9 Refresh stylesheet cache version across Player pages",
         "ed4d647f563880ff1a2b89b629005669f7911cc6 Align loading placeholders across player surfaces"
       ],
       "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
+      "risk": "Unique template-picker guard may remain; semantic owner audit pending.",
       "validation_command": "cd apps/player && make test; make test-instance-check",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "history_interpretation": "63932950f and999f4ee2c changed expected source tokens after visual recipe changes; runtime upgrade remains electric-44. Do not infer completeness from naming."
     },
     {
       "name": "TestAutomaticDetectionCoversEverySupportedLanguage",
@@ -15251,25 +15406,42 @@
       "end_line": 46,
       "sha256": "42fc7028b9d1511f141724f508ec01efd07103f84bf338267ad527e767337142",
       "path": "apps/player/internal/server/locale_picker_test.go",
-      "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "decision": "F",
+      "review_status": "semantic_review_complete",
+      "reason": "A supported language family is misdetected or actual app login no longer uses the detected language/header/automatic option for that family.",
+      "category": "app_localization_contract_retained_with_assertion_limit",
+      "credible_failure": "A supported language family is misdetected or actual app login no longer uses the detected language/header/automatic option for that family.",
+      "production_owner": [
+        "apps/player/internal/server/locale.go:loadLocalization/preferredLanguage/automaticLanguage/selectLanguage/saveWebLanguage/apiLanguage/newLocalizedTemplate",
+        "apps/player/internal/server/language_http.go:showLanguage",
+        "packages/localization/catalog.go:Catalog/TranslateSource/PickerHTML",
+        "packages/localization/template.go:TemplateRuntime",
+        "packages/localization/languages.go"
+      ],
+      "non_test_callers": [
+        "Server registers GET/POST /language; registerProductAPI binds PUT /api/v1/me/language and GET /api/v1/me projection; localized app templates bind request headers/cookies/catalog and CSRF callbacks."
+      ],
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_app_or_data_contract",
+          "path": "apps/player/internal/server/locale_picker_test.go",
+          "scenario": "TestAutomaticDetectionCoversEverySupportedLanguage",
+          "helper": "packages/servertest/locale_picker.go"
+        }
+      ],
+      "coverage_limit": "Existing genuine browser masthead/layout-navigation journeys exercise German/French home geometry, not this locale input matrix. Shared httptest fixtures call actual Player handlers/callbacks but are isolated integration tests, not genuine browser E2E. Expected exact tag is generated by automaticLanguage, so this does not independently prove exact regional/fallback policy. Independent base-language equality and real response binding remain useful; exact regional cases have another keeper.",
       "history": [
         "999f4ee2c56a53cc20061e924597d7ea3cbe1236 Open movies directly in Player and clamp card titles",
         "63932950f57382d2f268a8affefdab7b03b5dfc9 Refresh stylesheet cache version across Player pages",
         "ed4d647f563880ff1a2b89b629005669f7911cc6 Align loading placeholders across player surfaces"
       ],
-      "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "production_or_support_deletion_unlocked": "None; no isolated tests added.",
+      "risk": "Important locale/data/security boundary absent from existing genuine E2E inputs.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./internal/server",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "review_provenance": "Player owner read complete test/helper, locale/catalog/template/language owners, app routes/callbacks and pertinent history. go-i18n v2.6.1 LocalizeConfig/Localizer and x/text v0.42.0 Matcher types inspected. No child build run.",
+      "history_interpretation": "Recorded original contract preserved; app locale embedding/cookie/request callbacks remain production callers."
     },
     {
       "name": "TestWebSurfacesCanUseSpanish",
@@ -15278,23 +15450,40 @@
       "sha256": "57b628a6e478dd9ffd7f26ee643dee2b570de8a0c3a08cb3d566518ac0db547d",
       "path": "apps/player/internal/server/locale_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "Actual Player Spanish catalog/template/navigation composition leaves home actions, account sign-out, settings/security/backup controls untranslated or ignores the selected-language cookie.",
+      "category": "app_localization_contract_retained",
+      "credible_failure": "Actual Player Spanish catalog/template/navigation composition leaves home actions, account sign-out, settings/security/backup controls untranslated or ignores the selected-language cookie.",
+      "production_owner": [
+        "apps/player/internal/server/locale.go:loadLocalization/preferredLanguage/automaticLanguage/selectLanguage/saveWebLanguage/apiLanguage/newLocalizedTemplate",
+        "apps/player/internal/server/language_http.go:showLanguage",
+        "packages/localization/catalog.go:Catalog/TranslateSource/PickerHTML",
+        "packages/localization/template.go:TemplateRuntime",
+        "packages/localization/languages.go"
+      ],
+      "non_test_callers": [
+        "Server registers GET/POST /language; registerProductAPI binds PUT /api/v1/me/language and GET /api/v1/me projection; localized app templates bind request headers/cookies/catalog and CSRF callbacks."
+      ],
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_app_or_data_contract",
+          "path": "apps/player/internal/server/locale_test.go",
+          "scenario": "TestWebSurfacesCanUseSpanish",
+          "helper": "packages/servertest/locale_spanish_web.go"
+        }
+      ],
+      "coverage_limit": "Existing genuine browser masthead/layout-navigation journeys exercise German/French home geometry, not this locale input matrix. Shared httptest fixtures call actual Player handlers/callbacks but are isolated integration tests, not genuine browser E2E. Only specified chrome/accessible labels and pages are asserted; no full semantic translation quality or decoded media proof.",
       "history": [
         "ab3bcda8953d28d058fcbd9361a00378c1e0518c Restore enabled quality gates and current browser contracts",
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
-      "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "production_or_support_deletion_unlocked": "None; no isolated tests added.",
+      "risk": "Important locale/data/security boundary absent from existing genuine E2E inputs.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./internal/server",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "review_provenance": "Player owner read complete test/helper, locale/catalog/template/language owners, app routes/callbacks and pertinent history. go-i18n v2.6.1 LocalizeConfig/Localizer and x/text v0.42.0 Matcher types inspected. No child build run.",
+      "history_interpretation": "Initial test/locale contract; ab3bcda895 added the explicit Spanish security-protection marker, preserving actual app copy behavior."
     },
     {
       "name": "TestLocalizationDoesNotTranslateLibraryContent",
@@ -15303,23 +15492,40 @@
       "sha256": "af7cc9d6021cf77a7b03d8d94f7fe1a06d4e189df3ecf36376d5d2c933ffed92",
       "path": "apps/player/internal/server/locale_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "Template localization changes a dynamic title named Home to Inicio instead of translating only static chrome, corrupting the visible catalog title.",
+      "category": "app_localization_contract_retained",
+      "credible_failure": "Template localization changes a dynamic title named Home to Inicio instead of translating only static chrome, corrupting the visible catalog title.",
+      "production_owner": [
+        "apps/player/internal/server/locale.go:loadLocalization/preferredLanguage/automaticLanguage/selectLanguage/saveWebLanguage/apiLanguage/newLocalizedTemplate",
+        "apps/player/internal/server/language_http.go:showLanguage",
+        "packages/localization/catalog.go:Catalog/TranslateSource/PickerHTML",
+        "packages/localization/template.go:TemplateRuntime",
+        "packages/localization/languages.go"
+      ],
+      "non_test_callers": [
+        "Server registers GET/POST /language; registerProductAPI binds PUT /api/v1/me/language and GET /api/v1/me projection; localized app templates bind request headers/cookies/catalog and CSRF callbacks."
+      ],
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_app_or_data_contract",
+          "path": "apps/player/internal/server/locale_test.go",
+          "scenario": "TestLocalizationDoesNotTranslateLibraryContent",
+          "helper": "packages/servertest/locale_spanish_media.go"
+        }
+      ],
+      "coverage_limit": "Existing genuine browser masthead/layout-navigation journeys exercise German/French home geometry, not this locale input matrix. Shared httptest fixtures call actual Player handlers/callbacks but are isolated integration tests, not genuine browser E2E. Uses a temporary invalid media file; asserts real scanned title/chrome rendering, not video playback.",
       "history": [
         "ab3bcda8953d28d058fcbd9361a00378c1e0518c Restore enabled quality gates and current browser contracts",
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
-      "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "production_or_support_deletion_unlocked": "None; no isolated tests added.",
+      "risk": "Important locale/data/security boundary absent from existing genuine E2E inputs.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./internal/server",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "review_provenance": "Player owner read complete test/helper, locale/catalog/template/language owners, app routes/callbacks and pertinent history. go-i18n v2.6.1 LocalizeConfig/Localizer and x/text v0.42.0 Matcher types inspected. No child build run.",
+      "history_interpretation": "Recorded original contract preserved; app locale embedding/cookie/request callbacks remain production callers."
     },
     {
       "name": "TestLocalizedPlayerUsesCatalogedPlaybackMode",
@@ -15328,23 +15534,40 @@
       "sha256": "bcbe005552b161d3040de25dd895f8ef79b0f6e8184830e0735ba2ca46869926",
       "path": "apps/player/internal/server/locale_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "Player mode labels are partially translated into invalid mixed phrases such as Directa First or Reproducci\u00f3n policy; app playback catalog wiring loses the Compatibilidad label.",
+      "category": "app_localization_contract_retained",
+      "credible_failure": "Player mode labels are partially translated into invalid mixed phrases such as Directa First or Reproducci\u00f3n policy; app playback catalog wiring loses the Compatibilidad label.",
+      "production_owner": [
+        "apps/player/internal/server/locale.go:loadLocalization/preferredLanguage/automaticLanguage/selectLanguage/saveWebLanguage/apiLanguage/newLocalizedTemplate",
+        "apps/player/internal/server/language_http.go:showLanguage",
+        "packages/localization/catalog.go:Catalog/TranslateSource/PickerHTML",
+        "packages/localization/template.go:TemplateRuntime",
+        "packages/localization/languages.go"
+      ],
+      "non_test_callers": [
+        "Server registers GET/POST /language; registerProductAPI binds PUT /api/v1/me/language and GET /api/v1/me projection; localized app templates bind request headers/cookies/catalog and CSRF callbacks."
+      ],
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_app_or_data_contract",
+          "path": "apps/player/internal/server/locale_test.go",
+          "scenario": "TestLocalizedPlayerUsesCatalogedPlaybackMode",
+          "helper": "packages/servertest/locale_spanish_media.go"
+        }
+      ],
+      "coverage_limit": "Existing genuine browser masthead/layout-navigation journeys exercise German/French home geometry, not this locale input matrix. Shared httptest fixtures call actual Player handlers/callbacks but are isolated integration tests, not genuine browser E2E. Unknown-media fixture renders mode choice; does not exercise runtime negotiation or decode.",
       "history": [
         "ab3bcda8953d28d058fcbd9361a00378c1e0518c Restore enabled quality gates and current browser contracts",
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
-      "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "production_or_support_deletion_unlocked": "None; no isolated tests added.",
+      "risk": "Important locale/data/security boundary absent from existing genuine E2E inputs.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./internal/server",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "review_provenance": "Player owner read complete test/helper, locale/catalog/template/language owners, app routes/callbacks and pertinent history. go-i18n v2.6.1 LocalizeConfig/Localizer and x/text v0.42.0 Matcher types inspected. No child build run.",
+      "history_interpretation": "Recorded original contract preserved; app locale embedding/cookie/request callbacks remain production callers."
     },
     {
       "name": "TestSetupAndLoginCanUseSpanish",
@@ -15352,24 +15575,41 @@
       "end_line": 25,
       "sha256": "276ab6fc5aba80c2cded7a18653074096c4f57bc2087b2f61cd9d87492fa173b",
       "path": "apps/player/internal/server/locale_test.go",
-      "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "decision": "F",
+      "review_status": "semantic_review_complete",
+      "reason": "Unauthenticated Player setup/login bypass the translated app catalogs, leaving the Spanish login/passkey action missing.",
+      "category": "app_localization_contract_retained_with_assertion_limit",
+      "credible_failure": "Unauthenticated Player setup/login bypass the translated app catalogs, leaving the Spanish login/passkey action missing.",
+      "production_owner": [
+        "apps/player/internal/server/locale.go:loadLocalization/preferredLanguage/automaticLanguage/selectLanguage/saveWebLanguage/apiLanguage/newLocalizedTemplate",
+        "apps/player/internal/server/language_http.go:showLanguage",
+        "packages/localization/catalog.go:Catalog/TranslateSource/PickerHTML",
+        "packages/localization/template.go:TemplateRuntime",
+        "packages/localization/languages.go"
+      ],
+      "non_test_callers": [
+        "Server registers GET/POST /language; registerProductAPI binds PUT /api/v1/me/language and GET /api/v1/me projection; localized app templates bind request headers/cookies/catalog and CSRF callbacks."
+      ],
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_app_or_data_contract",
+          "path": "apps/player/internal/server/locale_test.go",
+          "scenario": "TestSetupAndLoginCanUseSpanish",
+          "helper": "packages/servertest/locale_spanish_web.go"
+        }
+      ],
+      "coverage_limit": "Existing genuine browser masthead/layout-navigation journeys exercise German/French home geometry, not this locale input matrix. Shared httptest fixtures call actual Player handlers/callbacks but are isolated integration tests, not genuine browser E2E. The setup assertion accepts the legacy mixed phrase Propietario account; it demonstrates selected-language rendering, not fully translated prose.",
       "history": [
         "ab3bcda8953d28d058fcbd9361a00378c1e0518c Restore enabled quality gates and current browser contracts",
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
-      "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "production_or_support_deletion_unlocked": "None; no isolated tests added.",
+      "risk": "Important locale/data/security boundary absent from existing genuine E2E inputs.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./internal/server",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "review_provenance": "Player owner read complete test/helper, locale/catalog/template/language owners, app routes/callbacks and pertinent history. go-i18n v2.6.1 LocalizeConfig/Localizer and x/text v0.42.0 Matcher types inspected. No child build run.",
+      "history_interpretation": "Recorded original contract preserved; app locale embedding/cookie/request callbacks remain production callers."
     },
     {
       "name": "TestArabicLoginLocalizesTheRecoveryCodeLabel",
@@ -15378,23 +15618,40 @@
       "sha256": "0c0ee1a88e3e45254dd743784e12d7e575ffb2f0d18ae0a87bd62b962e2f534f",
       "path": "apps/player/internal/server/locale_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "The Arabic login control loses RTL/document language or displays the English authentication/recovery-code label, making the factor entry ambiguous.",
+      "category": "app_localization_contract_retained",
+      "credible_failure": "The Arabic login control loses RTL/document language or displays the English authentication/recovery-code label, making the factor entry ambiguous.",
+      "production_owner": [
+        "apps/player/internal/server/locale.go:loadLocalization/preferredLanguage/automaticLanguage/selectLanguage/saveWebLanguage/apiLanguage/newLocalizedTemplate",
+        "apps/player/internal/server/language_http.go:showLanguage",
+        "packages/localization/catalog.go:Catalog/TranslateSource/PickerHTML",
+        "packages/localization/template.go:TemplateRuntime",
+        "packages/localization/languages.go"
+      ],
+      "non_test_callers": [
+        "Server registers GET/POST /language; registerProductAPI binds PUT /api/v1/me/language and GET /api/v1/me projection; localized app templates bind request headers/cookies/catalog and CSRF callbacks."
+      ],
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_app_or_data_contract",
+          "path": "apps/player/internal/server/locale_test.go",
+          "scenario": "TestArabicLoginLocalizesTheRecoveryCodeLabel",
+          "helper": "apps/player/internal/server/locale_test.go"
+        }
+      ],
+      "coverage_limit": "Existing genuine browser masthead/layout-navigation journeys exercise German/French home geometry, not this locale input matrix. Shared httptest fixtures call actual Player handlers/callbacks but are isolated integration tests, not genuine browser E2E. Only Arabic login recovery label and language direction are asserted; actual code verification is covered separately.",
       "history": [
         "ab3bcda8953d28d058fcbd9361a00378c1e0518c Restore enabled quality gates and current browser contracts",
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
-      "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "production_or_support_deletion_unlocked": "None; no isolated tests added.",
+      "risk": "Important locale/data/security boundary absent from existing genuine E2E inputs.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./internal/server",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "review_provenance": "Player owner read complete test/helper, locale/catalog/template/language owners, app routes/callbacks and pertinent history. go-i18n v2.6.1 LocalizeConfig/Localizer and x/text v0.42.0 Matcher types inspected. No child build run.",
+      "history_interpretation": "Recorded original contract preserved; app locale embedding/cookie/request callbacks remain production callers."
     },
     {
       "name": "TestWebFailuresUseTheSelectedLanguage",
@@ -15403,23 +15660,40 @@
       "sha256": "59aef4932692685bf80ad3e4a17d5e1bfbaa6990a55f4b9f80036799ee8f14b8",
       "path": "apps/player/internal/server/locale_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "Invalid credentials or settings/playlist/progress/watch-together/SSO paths return untranslated or wrongly labeled error responses despite the request locale.",
+      "category": "app_localization_contract_retained",
+      "credible_failure": "Invalid credentials or settings/playlist/progress/watch-together/SSO paths return untranslated or wrongly labeled error responses despite the request locale.",
+      "production_owner": [
+        "apps/player/internal/server/locale.go:loadLocalization/preferredLanguage/automaticLanguage/selectLanguage/saveWebLanguage/apiLanguage/newLocalizedTemplate",
+        "apps/player/internal/server/language_http.go:showLanguage",
+        "packages/localization/catalog.go:Catalog/TranslateSource/PickerHTML",
+        "packages/localization/template.go:TemplateRuntime",
+        "packages/localization/languages.go"
+      ],
+      "non_test_callers": [
+        "Server registers GET/POST /language; registerProductAPI binds PUT /api/v1/me/language and GET /api/v1/me projection; localized app templates bind request headers/cookies/catalog and CSRF callbacks."
+      ],
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_app_or_data_contract",
+          "path": "apps/player/internal/server/locale_test.go",
+          "scenario": "TestWebFailuresUseTheSelectedLanguage",
+          "helper": "packages/servertest/locale_preference_failures.go"
+        }
+      ],
+      "coverage_limit": "Existing genuine browser masthead/layout-navigation journeys exercise German/French home geometry, not this locale input matrix. Shared httptest fixtures call actual Player handlers/callbacks but are isolated integration tests, not genuine browser E2E. Checks six invalid/unavailable paths against status, Content-Language and selected phrases; no assertion about every other app error.",
       "history": [
         "ab3bcda8953d28d058fcbd9361a00378c1e0518c Restore enabled quality gates and current browser contracts",
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
-      "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "production_or_support_deletion_unlocked": "None; no isolated tests added.",
+      "risk": "Important locale/data/security boundary absent from existing genuine E2E inputs.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./internal/server",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "review_provenance": "Player owner read complete test/helper, locale/catalog/template/language owners, app routes/callbacks and pertinent history. go-i18n v2.6.1 LocalizeConfig/Localizer and x/text v0.42.0 Matcher types inspected. No child build run.",
+      "history_interpretation": "Recorded original contract preserved; app locale embedding/cookie/request callbacks remain production callers."
     },
     {
       "name": "TestLanguagePreferenceIsAvailableThroughAPI",
@@ -15428,23 +15702,40 @@
       "sha256": "08b17db5567e5c857719868da29f232642f7bfbbf7569fd7d805c418fb09281e",
       "path": "apps/player/internal/server/locale_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "Language API stops issuing the selection cookie or me-state ignores it, omits advertised locales/directions, or accepts invalid xx.",
+      "category": "app_localization_contract_retained",
+      "credible_failure": "Language API stops issuing the selection cookie or me-state ignores it, omits advertised locales/directions, or accepts invalid xx.",
+      "production_owner": [
+        "apps/player/internal/server/locale.go:loadLocalization/preferredLanguage/automaticLanguage/selectLanguage/saveWebLanguage/apiLanguage/newLocalizedTemplate",
+        "apps/player/internal/server/language_http.go:showLanguage",
+        "packages/localization/catalog.go:Catalog/TranslateSource/PickerHTML",
+        "packages/localization/template.go:TemplateRuntime",
+        "packages/localization/languages.go"
+      ],
+      "non_test_callers": [
+        "Server registers GET/POST /language; registerProductAPI binds PUT /api/v1/me/language and GET /api/v1/me projection; localized app templates bind request headers/cookies/catalog and CSRF callbacks."
+      ],
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_app_or_data_contract",
+          "path": "apps/player/internal/server/locale_test.go",
+          "scenario": "TestLanguagePreferenceIsAvailableThroughAPI",
+          "helper": "packages/servertest/locale_preference_api.go"
+        }
+      ],
+      "coverage_limit": "Existing genuine browser masthead/layout-navigation journeys exercise German/French home geometry, not this locale input matrix. Shared httptest fixtures call actual Player handlers/callbacks but are isolated integration tests, not genuine browser E2E. Actual app API/cookie round trip with token; not a browser persistence/reload or full schema assertion.",
       "history": [
         "ab3bcda8953d28d058fcbd9361a00378c1e0518c Restore enabled quality gates and current browser contracts",
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
-      "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "production_or_support_deletion_unlocked": "None; no isolated tests added.",
+      "risk": "Important locale/data/security boundary absent from existing genuine E2E inputs.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./internal/server",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "review_provenance": "Player owner read complete test/helper, locale/catalog/template/language owners, app routes/callbacks and pertinent history. go-i18n v2.6.1 LocalizeConfig/Localizer and x/text v0.42.0 Matcher types inspected. No child build run.",
+      "history_interpretation": "Recorded original contract preserved; app locale embedding/cookie/request callbacks remain production callers."
     },
     {
       "name": "TestBrowserLanguageIsMatchedAndCanReturnToAutomatic",
@@ -15453,23 +15744,40 @@
       "sha256": "f82960df8f999723b47dc25379354d7a12f4d4dc45b496f816fac065aecd4dc6",
       "path": "apps/player/internal/server/locale_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "Accept-Language fr-CA preference is not matched to maintained French, de-DE manual choice is not normalized, or auto fails to expire the override cookie.",
+      "category": "app_localization_contract_retained",
+      "credible_failure": "Accept-Language fr-CA preference is not matched to maintained French, de-DE manual choice is not normalized, or auto fails to expire the override cookie.",
+      "production_owner": [
+        "apps/player/internal/server/locale.go:loadLocalization/preferredLanguage/automaticLanguage/selectLanguage/saveWebLanguage/apiLanguage/newLocalizedTemplate",
+        "apps/player/internal/server/language_http.go:showLanguage",
+        "packages/localization/catalog.go:Catalog/TranslateSource/PickerHTML",
+        "packages/localization/template.go:TemplateRuntime",
+        "packages/localization/languages.go"
+      ],
+      "non_test_callers": [
+        "Server registers GET/POST /language; registerProductAPI binds PUT /api/v1/me/language and GET /api/v1/me projection; localized app templates bind request headers/cookies/catalog and CSRF callbacks."
+      ],
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_app_or_data_contract",
+          "path": "apps/player/internal/server/locale_test.go",
+          "scenario": "TestBrowserLanguageIsMatchedAndCanReturnToAutomatic",
+          "helper": "packages/servertest/locale_preference_api.go"
+        }
+      ],
+      "coverage_limit": "Existing genuine browser masthead/layout-navigation journeys exercise German/French home geometry, not this locale input matrix. Shared httptest fixtures call actual Player handlers/callbacks but are isolated integration tests, not genuine browser E2E. Exercises three canonical matching/reset cases. Auto reset uses the default request header and expects English; not every weighted-language list.",
       "history": [
         "ab3bcda8953d28d058fcbd9361a00378c1e0518c Restore enabled quality gates and current browser contracts",
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
-      "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "production_or_support_deletion_unlocked": "None; no isolated tests added.",
+      "risk": "Important locale/data/security boundary absent from existing genuine E2E inputs.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./internal/server",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "review_provenance": "Player owner read complete test/helper, locale/catalog/template/language owners, app routes/callbacks and pertinent history. go-i18n v2.6.1 LocalizeConfig/Localizer and x/text v0.42.0 Matcher types inspected. No child build run.",
+      "history_interpretation": "Recorded original contract preserved; app locale embedding/cookie/request callbacks remain production callers."
     },
     {
       "name": "TestLanguageSelectorIsAvailableBeforeSignInAndSupportsRTL",
@@ -15478,23 +15786,40 @@
       "sha256": "2246dc4b23352b2052b84163b2897c8bbf914cad017401774feb12dd937f4a1d",
       "path": "apps/player/internal/server/locale_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "Unauthenticated German/Arabic login lacks the picker, correct response language/RTL or translated sign-in text, leaving a user unable to choose/read login language.",
+      "category": "app_localization_contract_retained",
+      "credible_failure": "Unauthenticated German/Arabic login lacks the picker, correct response language/RTL or translated sign-in text, leaving a user unable to choose/read login language.",
+      "production_owner": [
+        "apps/player/internal/server/locale.go:loadLocalization/preferredLanguage/automaticLanguage/selectLanguage/saveWebLanguage/apiLanguage/newLocalizedTemplate",
+        "apps/player/internal/server/language_http.go:showLanguage",
+        "packages/localization/catalog.go:Catalog/TranslateSource/PickerHTML",
+        "packages/localization/template.go:TemplateRuntime",
+        "packages/localization/languages.go"
+      ],
+      "non_test_callers": [
+        "Server registers GET/POST /language; registerProductAPI binds PUT /api/v1/me/language and GET /api/v1/me projection; localized app templates bind request headers/cookies/catalog and CSRF callbacks."
+      ],
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_app_or_data_contract",
+          "path": "apps/player/internal/server/locale_test.go",
+          "scenario": "TestLanguageSelectorIsAvailableBeforeSignInAndSupportsRTL",
+          "helper": "packages/servertest/locale_preference_login.go"
+        }
+      ],
+      "coverage_limit": "Existing genuine browser masthead/layout-navigation journeys exercise German/French home geometry, not this locale input matrix. Shared httptest fixtures call actual Player handlers/callbacks but are isolated integration tests, not genuine browser E2E. Real handler render with Accept-Language; no browser interaction/layout assertions for Arabic.",
       "history": [
         "ab3bcda8953d28d058fcbd9361a00378c1e0518c Restore enabled quality gates and current browser contracts",
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
-      "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "production_or_support_deletion_unlocked": "None; no isolated tests added.",
+      "risk": "Important locale/data/security boundary absent from existing genuine E2E inputs.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./internal/server",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "review_provenance": "Player owner read complete test/helper, locale/catalog/template/language owners, app routes/callbacks and pertinent history. go-i18n v2.6.1 LocalizeConfig/Localizer and x/text v0.42.0 Matcher types inspected. No child build run.",
+      "history_interpretation": "Recorded original contract preserved; app locale embedding/cookie/request callbacks remain production callers."
     },
     {
       "name": "TestSupportedLanguagesRenderTheLoginSurface",
@@ -15503,23 +15828,40 @@
       "sha256": "00a01861a147b780d0c63ea53b2d060aeee12263ca7a6ef954b8246a0681d6ed",
       "path": "apps/player/internal/server/locale_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "A maintained translated locale routes through the wrong app catalog/language/header or loses its login text/picker option after embedding/template changes.",
+      "category": "app_localization_contract_retained",
+      "credible_failure": "A maintained translated locale routes through the wrong app catalog/language/header or loses its login text/picker option after embedding/template changes.",
+      "production_owner": [
+        "apps/player/internal/server/locale.go:loadLocalization/preferredLanguage/automaticLanguage/selectLanguage/saveWebLanguage/apiLanguage/newLocalizedTemplate",
+        "apps/player/internal/server/language_http.go:showLanguage",
+        "packages/localization/catalog.go:Catalog/TranslateSource/PickerHTML",
+        "packages/localization/template.go:TemplateRuntime",
+        "packages/localization/languages.go"
+      ],
+      "non_test_callers": [
+        "Server registers GET/POST /language; registerProductAPI binds PUT /api/v1/me/language and GET /api/v1/me projection; localized app templates bind request headers/cookies/catalog and CSRF callbacks."
+      ],
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_app_or_data_contract",
+          "path": "apps/player/internal/server/locale_test.go",
+          "scenario": "TestSupportedLanguagesRenderTheLoginSurface",
+          "helper": "packages/servertest/locale_preference_login.go"
+        }
+      ],
+      "coverage_limit": "Existing genuine browser masthead/layout-navigation journeys exercise German/French home geometry, not this locale input matrix. Shared httptest fixtures call actual Player handlers/callbacks but are isolated integration tests, not genuine browser E2E. Eighteen maintained translated locale cases; assertion checks exact tags/directions but only sign-in phrase, not whole catalog quality.",
       "history": [
         "ab3bcda8953d28d058fcbd9361a00378c1e0518c Restore enabled quality gates and current browser contracts",
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
-      "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "production_or_support_deletion_unlocked": "None; no isolated tests added.",
+      "risk": "Important locale/data/security boundary absent from existing genuine E2E inputs.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./internal/server",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "review_provenance": "Player owner read complete test/helper, locale/catalog/template/language owners, app routes/callbacks and pertinent history. go-i18n v2.6.1 LocalizeConfig/Localizer and x/text v0.42.0 Matcher types inspected. No child build run.",
+      "history_interpretation": "Recorded original contract preserved; app locale embedding/cookie/request callbacks remain production callers."
     },
     {
       "name": "TestWebLanguageSelectionUsesTheSharedPreferenceOperation",
@@ -15528,23 +15870,40 @@
       "sha256": "61b498acd5242470192f1038c18fa1d840e24fe2a2c29934d3fa6ffa0dd14829",
       "path": "apps/player/internal/server/locale_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "Web selection loses the exact regional cookie or follows an external Referer return path, creating an open redirect; saved preference is not reflected by login picker.",
+      "category": "app_localization_contract_retained",
+      "credible_failure": "Web selection loses the exact regional cookie or follows an external Referer return path, creating an open redirect; saved preference is not reflected by login picker.",
+      "production_owner": [
+        "apps/player/internal/server/locale.go:loadLocalization/preferredLanguage/automaticLanguage/selectLanguage/saveWebLanguage/apiLanguage/newLocalizedTemplate",
+        "apps/player/internal/server/language_http.go:showLanguage",
+        "packages/localization/catalog.go:Catalog/TranslateSource/PickerHTML",
+        "packages/localization/template.go:TemplateRuntime",
+        "packages/localization/languages.go"
+      ],
+      "non_test_callers": [
+        "Server registers GET/POST /language; registerProductAPI binds PUT /api/v1/me/language and GET /api/v1/me projection; localized app templates bind request headers/cookies/catalog and CSRF callbacks."
+      ],
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_app_or_data_contract",
+          "path": "apps/player/internal/server/locale_test.go",
+          "scenario": "TestWebLanguageSelectionUsesTheSharedPreferenceOperation",
+          "helper": "packages/servertest/locale_preference_web.go"
+        }
+      ],
+      "coverage_limit": "Existing genuine browser masthead/layout-navigation journeys exercise German/French home geometry, not this locale input matrix. Shared httptest fixtures call actual Player handlers/callbacks but are isolated integration tests, not genuine browser E2E. Same-host Referer+query preserved and external-host fallback asserted. Malformed/credential-containing Referers are not exhaustively tested.",
       "history": [
         "ab3bcda8953d28d058fcbd9361a00378c1e0518c Restore enabled quality gates and current browser contracts",
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
-      "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "production_or_support_deletion_unlocked": "None; no isolated tests added.",
+      "risk": "Important locale/data/security boundary absent from existing genuine E2E inputs.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./internal/server",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "review_provenance": "Player owner read complete test/helper, locale/catalog/template/language owners, app routes/callbacks and pertinent history. go-i18n v2.6.1 LocalizeConfig/Localizer and x/text v0.42.0 Matcher types inspected. No child build run.",
+      "history_interpretation": "Recorded original contract preserved; app locale embedding/cookie/request callbacks remain production callers."
     },
     {
       "name": "TestAuthenticatedLanguagePickerCarriesCSRFToken",
@@ -15553,23 +15912,40 @@
       "sha256": "bedf94ac91dddeb75bc5330212c970dec0a5d33b3612973f1121086aab1b6504",
       "path": "apps/player/internal/server/locale_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "Actual localized home/settings picker omits app CSRF token or submits a token from the wrong request binding, so authenticated language changes are rejected.",
+      "category": "app_localization_contract_retained",
+      "credible_failure": "Actual localized home/settings picker omits app CSRF token or submits a token from the wrong request binding, so authenticated language changes are rejected.",
+      "production_owner": [
+        "apps/player/internal/server/locale.go:loadLocalization/preferredLanguage/automaticLanguage/selectLanguage/saveWebLanguage/apiLanguage/newLocalizedTemplate",
+        "apps/player/internal/server/language_http.go:showLanguage",
+        "packages/localization/catalog.go:Catalog/TranslateSource/PickerHTML",
+        "packages/localization/template.go:TemplateRuntime",
+        "packages/localization/languages.go"
+      ],
+      "non_test_callers": [
+        "Server registers GET/POST /language; registerProductAPI binds PUT /api/v1/me/language and GET /api/v1/me projection; localized app templates bind request headers/cookies/catalog and CSRF callbacks."
+      ],
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_app_or_data_contract",
+          "path": "apps/player/internal/server/locale_test.go",
+          "scenario": "TestAuthenticatedLanguagePickerCarriesCSRFToken",
+          "helper": "packages/servertest/locale_preference_web.go"
+        }
+      ],
+      "coverage_limit": "Existing genuine browser masthead/layout-navigation journeys exercise German/French home geometry, not this locale input matrix. Shared httptest fixtures call actual Player handlers/callbacks but are isolated integration tests, not genuine browser E2E. Positive valid-token POST is exercised; invalid-token rejection is independently owned by security tests.",
       "history": [
         "ab3bcda8953d28d058fcbd9361a00378c1e0518c Restore enabled quality gates and current browser contracts",
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
-      "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "production_or_support_deletion_unlocked": "None; no isolated tests added.",
+      "risk": "Important locale/data/security boundary absent from existing genuine E2E inputs.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./internal/server",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "review_provenance": "Player owner read complete test/helper, locale/catalog/template/language owners, app routes/callbacks and pertinent history. go-i18n v2.6.1 LocalizeConfig/Localizer and x/text v0.42.0 Matcher types inspected. No child build run.",
+      "history_interpretation": "Recorded original contract preserved; app locale embedding/cookie/request callbacks remain production callers."
     },
     {
       "name": "TestAutomaticMaintenanceDefersHeavyWorkWhileStreaming",
@@ -28083,6 +28459,7 @@
     "TestProfilePolicyChangeDoesNotPersistBeforeSessionRevocation",
     "TestProfileSnapshotsDoNotAliasStoredIdentityState",
     "TestStepUpReturnsToKnownOwnerPage",
+    "TestSupportedLanguageCoverageIncludesJellyfinLocaleSet",
     "TestUIIconSetIsCompleteAndLocal",
     "TestVersionedApplicationStylesheetIncludesSupporterStyles"
   ],
@@ -28109,10 +28486,11 @@
     "TestProfilePolicyChangeDoesNotPersistBeforeSessionRevocation",
     "TestProfileSnapshotsDoNotAliasStoredIdentityState",
     "TestStepUpReturnsToKnownOwnerPage",
+    "TestSupportedLanguageCoverageIncludesJellyfinLocaleSet",
     "TestUIIconSetIsCompleteAndLocal",
     "TestVersionedApplicationStylesheetIncludesSupporterStyles"
   ],
-  "removal_count": 23,
+  "removal_count": 24,
   "verification": [
     {
       "command": "gofmt -w <five touched retained Go files>",
@@ -28137,6 +28515,10 @@
     {
       "command": "gofmt -w apps/player/internal/server/sessions_internal_test.go; git diff --check",
       "result": "passed; profile rollback replay consolidation; root Go/E2E validation pending, no child builds."
+    },
+    {
+      "command": "gofmt -w apps/player/internal/server/locale_catalog_test.go; git diff --check",
+      "result": "passed; locale inventory replay consolidated; candidate execution delegated root, no child builds."
     }
   ],
   "retention_examples": [
@@ -28149,9 +28531,9 @@
     "TestConfigurationTransactionRejectsSemanticallyInvalidRecoveryWithoutSideEffects"
   ],
   "review_summary": {
-    "semantic_review_complete": 140,
-    "candidate_evidence_complete": 23,
-    "inventory_only_retained_pending_semantic_review": 671,
-    "test_and_boundary_review_pending_full_owner": 3
+    "semantic_review_complete": 160,
+    "candidate_evidence_complete": 24,
+    "inventory_only_retained_pending_semantic_review": 649,
+    "test_and_boundary_review_pending_full_owner": 4
   }
 }
