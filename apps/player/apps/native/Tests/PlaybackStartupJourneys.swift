@@ -57,18 +57,18 @@ struct PlaybackStartupJourneys {
         fixture.delayed = true
         defer { fixture.close() }
         let engine = PlaybackEngine()
-        let finished = Mutex(false)
+        let finished = Mutex<ContinuousClock.Instant?>(nil)
         let task = Task {
-            defer { finished.withLock { $0 = true } }
+            defer { finished.withLock { $0 = .now } }
             try await engine.prepare(fixture.item("a"), client: fixture.client)
         }
         try await wait { fixture.count("/api/v1/items/a/playback") == 1 }
         let start = ContinuousClock.now
         task.cancel()
         try await Task.sleep(for: .milliseconds(100))
-        #expect(finished.withLock { $0 })
+        #expect(finished.withLock { $0 != nil })
         _ = await task.result
-        let elapsed = start.duration(to: .now)
+        let elapsed = start.duration(to: finished.withLock { $0 } ?? .now)
         print("STARTUP cancelled-preparation elapsed=\(elapsed)")
         await fixture.client.close(purgeCache: true)
         engine.stop()

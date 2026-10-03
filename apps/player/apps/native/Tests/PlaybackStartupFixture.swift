@@ -60,7 +60,8 @@ final class PlaybackStartupFixture: @unchecked Sendable {
             }
             let id = path.split(separator: "/").dropFirst(3).first.map(String.init) ?? "movie"
             let preferences = path.hasSuffix("/playback-preferences")
-            let body = preferences ? "{\"playback\":{},\"overridden\":false}" : "{\"media\":{\"duration\":60},\"plan\":{\"allowed\":true,\"mode\":\"direct\",\"reason\":\"direct-preferred\"},\"duration\":60,\"start\":0,\"directAllowed\":true,\"direct\":\"/media/\(id)\",\"directType\":\"video/mp4\"}"
+            let preferencesBody = String(decoding: try! JSONEncoder().encode(JSONValue.object(["playback": PlaybackPreferences().json, "overridden": .bool(false)])), as: UTF8.self)
+            let body = preferences ? preferencesBody : "{\"media\":{\"duration\":60},\"plan\":{\"allowed\":true,\"mode\":\"direct\",\"reason\":\"direct-preferred\"},\"duration\":60,\"start\":0,\"directAllowed\":true,\"direct\":\"/media/\(id)\",\"directType\":\"video/mp4\"}"
             let payload = Data((denied ? "{\"error\":\"denied\"}" : body).utf8)
             let status = denied ? "403 Forbidden" : "200 OK"
             let response = Data("HTTP/1.1 \(status)\r\nContent-Type: application/json\r\nContent-Length: \(payload.count)\r\nConnection: close\r\n\r\n".utf8) + payload
