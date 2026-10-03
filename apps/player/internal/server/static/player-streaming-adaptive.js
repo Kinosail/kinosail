@@ -55,7 +55,7 @@ const useAdaptive = (preference = "auto", resume = false, target = resume ? pend
   cancelNetworkRecovery();
   // A direct source may publish metadata while the adapter is loading. Retain
   // the intended position/play state for the compatible source's metadata too.
-  resumeAfterSourceChange(!resume && (player.autoplay || player.hasAttribute("data-autoplay")), true, target);
+  resumeAfterSourceChange(!resume && networkWantsPlay, true, target);
   delete player.dataset.offline;
   hls?.destroy();
   playbackTimelineOffset = 0;
