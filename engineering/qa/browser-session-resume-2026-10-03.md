@@ -66,6 +66,7 @@ Six expired-session journeys returned 401 and retained `/login`.
 Cookie metadata confirmed separate persistent Secure, HttpOnly, Strict app cookies.
 
 The browser-only checks cover accepted, rejected, unavailable, explicit step-up/switch, and unsafe-return cases.
+All 34 checks per app passed with installed Chrome and Playwright WebKit.
 The retained passkey fixtures return 401 for unauthenticated session checks and declare UTF-8 explicitly.
 The retained held-navigation status check observes DOM mutations before navigation can freeze the document.
 Its assertion still requires the exact success text while the destination remains unavailable.
@@ -82,5 +83,12 @@ Nox image metadata showed revision `21ba0b8`, which includes PR445, and persiste
 Both app containers had zero recorded restarts at the read-only inspection.
 The live database projection was denied by filesystem permissions, and no alternate read was attempted.
 Actual Nox session settings remain unverified; repository defaults are not evidence of live settings.
-The user's exact reopened pathname is also unconfirmed.
+The user later confirmed reopening `https://nox7.duckdns.org:38127` at `/`.
+A credential-free system-curl request with normal certificate verification observed 303 to same-host `/login`, then 200.
+This proves the deployed redirect and trusted TLS, but does not identify why a live session was rejected.
+The actual hostname's accepted-session and cookie-sending evidence remain separate verification boundaries.
 Deployment, exact deployed revision, trusted HTTPS, and the user's Safari journey require separate proof.
+
+Both committed app `make verify-changed` runs passed their focused Go checks.
+Each then stopped at the same 94 preexisting shared-package lint findings.
+No local check was skipped or bypassed; required GitHub CI remains the publication gate.
