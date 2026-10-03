@@ -12,7 +12,7 @@ func CSRFForRequest(request *http.Request) string {
 	if request == nil {
 		return ""
 	}
-	if cookie, _ := request.Cookie("__Host-kinosail_session"); cookie != nil && cookie.Value != "" {
+	if cookie := BrowserSessionCookie(request); cookie != nil && cookie.Value != "" {
 		return CSRFToken(cookie.Value)
 	}
 	return ""

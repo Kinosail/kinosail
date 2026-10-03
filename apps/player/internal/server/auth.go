@@ -112,6 +112,7 @@ func (auth *authentication) serveIdentity(next http.Handler, writer http.Respons
 		auth.denyViewerAccess(writer, request, access)
 		return true
 	}
+	auth.profiles.sessionModule().MigrateBrowserCookie(writer, request)
 	request = request.WithContext(context.WithValue(request.Context(), viewerContextKey{}, profile))
 	auth.audit.Track(next, writer, request)
 	return true
@@ -258,9 +259,9 @@ func (auth *authentication) logout(writer http.ResponseWriter, request *http.Req
 		localizedError(writer, request, "could not end session", http.StatusInternalServerError)
 		return
 	}
-	cookie := sessionCookie("") //nolint:gosec // sessionCookie always sets Secure, HttpOnly, and Strict SameSite.
+	cookie := sessionCookie("", request) //nolint:gosec // sessionCookie always sets Secure, HttpOnly, and Strict SameSite.
 	if publicInternetRequest(request) {
-		cookie = publicSessionCookie("")
+		cookie = publicSessionCookie("", request)
 	}
 	cookie.MaxAge = -1
 	http.SetCookie(writer, cookie)

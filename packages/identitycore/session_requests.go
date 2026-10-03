@@ -16,12 +16,17 @@ var (
 // RequestSessions owns Player's session kinds and HTTP cookie lifecycle.
 type RequestSessions struct {
 	*Sessions
-	token func(*http.Request) string
+	token  func(*http.Request) string
+	source func(*http.Request) string
 }
 
 // NewRequestSessions binds the core session store to Player's token precedence.
-func NewRequestSessions(config SessionConfig, token func(*http.Request) string) *RequestSessions {
-	return &RequestSessions{Sessions: NewSessions(config), token: token}
+func NewRequestSessions(config SessionConfig, token func(*http.Request) string, sources ...func(*http.Request) string) *RequestSessions {
+	source := func(request *http.Request) string { return SessionTokenSource(request, nil) }
+	if len(sources) > 0 && sources[0] != nil {
+		source = sources[0]
+	}
+	return &RequestSessions{Sessions: NewSessions(config), token: token, source: source}
 }
 
 // CreateCompatibility issues one local compatibility session.
@@ -71,7 +76,7 @@ func (sessions *RequestSessions) SignInPublicGrant(writer http.ResponseWriter, r
 	if err != nil {
 		return err
 	}
-	http.SetCookie(writer, PublicSessionCookie(token, time.Now()))
+	http.SetCookie(writer, PublicSessionCookie(token, time.Now(), request))
 	return nil
 }
 
@@ -87,9 +92,9 @@ func (sessions *RequestSessions) signIn(writer http.ResponseWriter, request *htt
 	if err != nil {
 		return err
 	}
-	cookie := SessionCookie(token)
+	cookie := SessionCookie(token, request) //nolint:gosec // SessionCookie always sets Secure, HttpOnly, and Strict SameSite.
 	if public {
-		cookie = PublicSessionCookie(token, time.Now())
+		cookie = PublicSessionCookie(token, time.Now(), request)
 	} else {
 		_, absolute := sessions.config.Timeouts()
 		cookie.MaxAge = int(absolute / time.Second)
@@ -126,7 +131,7 @@ func (sessions *RequestSessions) SignOut(request *http.Request) error {
 	if !valid {
 		return nil
 	}
-	return sessions.core().SignOut(token)
+	return sessions.signOutBrowserTokens(request, token)
 }
 
 func (sessions *RequestSessions) requestToken(request *http.Request) (string, bool) {
