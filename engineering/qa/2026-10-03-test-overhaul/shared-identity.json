@@ -19,16 +19,16 @@
     "baseline_test_lines": 66475,
     "declarations": 1900,
     "decisions": {
-      "R": 1374,
-      "D": 76,
-      "F": 47,
-      "C": 23,
-      "unreviewed": 380
+      "R": 1405,
+      "D": 78,
+      "F": 49,
+      "C": 24,
+      "unreviewed": 344
     },
-    "removed_declarations": 76,
-    "removed_test_lines": 1347,
-    "final_declarations": 1824,
-    "final_test_lines": 65128,
+    "removed_declarations": 78,
+    "removed_test_lines": 1403,
+    "final_declarations": 1822,
+    "final_test_lines": 65072,
     "removed_support_helpers": 6,
     "removed_support_files": 3,
     "removed_support_lines": 141
@@ -860,6 +860,9 @@
     },
     "casting": {
       "semantic_review": "All15 complete; actual receiver protocol failures named; browser presentation and mocked remote media distinguished."
+    },
+    "mediaprobe": {
+      "full_semantic_review": "Full36 baseline declarations, test helpers and all9production owners read; complete app Probe/Enrichment/Embedded adapters, actual populated playback/browser bodies plus frontend fixture setup inspected; git history includes cancellationcheckpoint1813fb49, atomicfakepublication62692271 and authority1f1a81b7. Original baselineevents only; noGo candidate run."
     }
   },
   "test_support_inventory": {
@@ -50532,8 +50535,8 @@
       "owner_group": "mediaprobe",
       "body_sha256": "b7706005296593e170749ea5dd9ec7035dbec24440aa89fe4b89a2722f3bd791",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
+      "decision": "R",
+      "audit_status": "reviewed",
       "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
       "validation_command": "cd packages && go test ./mediaprobe",
       "baseline_event": {
@@ -50542,7 +50545,35 @@
         "Package": "github.com/MikeO7/kinosail/packages/mediaprobe",
         "Test": "TestProbeEnrichmentAndRandomAccessUseOneSharedCache",
         "Elapsed": 0.15
-      }
+      },
+      "credible_failure": "Chapter enrichment must reclassify markers and reuse computed trusted edge keyframes instead of repeated expensive probes.",
+      "remaining_coverage": "ChangedchapterOpeningCredits+visualcredit merge produces2markers/keyframe10.5, repeatedInspect exactonecall.",
+      "history": [
+        "878dc2a63d62880e6d3a5aa395ce25dd40919539 Remove retired artifacts and unused code",
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "auditor": "/root/subtitles_shared/shared_identity",
+      "production_owner": [
+        "packages/mediaprobe/probe.go",
+        "packages/mediaprobe/cache.go",
+        "packages/mediaprobe/command.go",
+        "packages/mediaprobe/parse.go",
+        "packages/mediaprobe/facts.go",
+        "packages/mediaprobe/decorate.go",
+        "packages/mediaprobe/replaygain.go",
+        "packages/mediaprobe/embedded.go",
+        "packages/mediaprobe/embedded_concurrency.go"
+      ],
+      "callers": [
+        "apps/{player,subtitles}/internal/server/probe.go::newMediaProbe and aliases",
+        "apps/{player,subtitles}/internal/server/probe_enrichment.go",
+        "apps/{player,subtitles}/internal/server/embedded_subtitles.go::serveEmbedded bindsvisibility/tool/localizederror",
+        "apps/{player,subtitles}/internal/server/embedded_subtitle_extract.go::embeddedOptions/extractEmbedded",
+        "packages/playerweb/player_projection.go::ApplyMedia"
+      ],
+      "gap": "Actual Player test-instance-playback native/compatible seek and test-instance-production realmusic/audiobook/source/offline play ordinarymedia; no exact subprocesscount, restartedfacts/stalecache/adversefilesystem/probe rejection/track/HDR/embeddedextraction race matrix. player-experience-fixture.ts setContent/fakemedia, player-subtitles-loading.spec.ts route.fulfill captions and player-audio-policy mocked media APIs are frontendfixtures, not mediaprobeE2E. Shellscripts here produce JSON/VTT without realFFprobe/FFmpeg decoding.",
+      "source_read_evidence": "Full36 baseline declarations, test helpers and all9production owners read; complete app Probe/Enrichment/Embedded adapters, actual populated playback/browser bodies plus frontend fixture setup inspected; git history includes cancellationcheckpoint1813fb49, atomicfakepublication62692271 and authority1f1a81b7. Original baselineevents only; noGo candidate run.",
+      "reason": "Chapter enrichment must reclassify markers and reuse computed trusted edge keyframes instead of repeated expensive probes."
     },
     {
       "file": "packages/mediaprobe/behavior_test.go",
@@ -50552,8 +50583,8 @@
       "owner_group": "mediaprobe",
       "body_sha256": "c5febf8e812ac8d3ea011a52cfcebbd290e37fd01a6c6b482b1a39084e0d8410",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
+      "decision": "R",
+      "audit_status": "reviewed",
       "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
       "validation_command": "cd packages && go test ./mediaprobe",
       "baseline_event": {
@@ -50562,7 +50593,35 @@
         "Package": "github.com/MikeO7/kinosail/packages/mediaprobe",
         "Test": "TestProbeConfigurationDurationAndResultValidation",
         "Elapsed": 0
-      }
+      },
+      "credible_failure": "Unsafe result fields can poison durable cache or playback plan even when normal FFprobe passes.",
+      "remaining_coverage": "Distinctfinite/maxduration/bitrate/video/chapter/marker/randomaccess/audio cardinality constraints; privatecachepath/default andcachedDurationecho supplementary.",
+      "history": [
+        "878dc2a63d62880e6d3a5aa395ce25dd40919539 Remove retired artifacts and unused code",
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "auditor": "/root/subtitles_shared/shared_identity",
+      "production_owner": [
+        "packages/mediaprobe/probe.go",
+        "packages/mediaprobe/cache.go",
+        "packages/mediaprobe/command.go",
+        "packages/mediaprobe/parse.go",
+        "packages/mediaprobe/facts.go",
+        "packages/mediaprobe/decorate.go",
+        "packages/mediaprobe/replaygain.go",
+        "packages/mediaprobe/embedded.go",
+        "packages/mediaprobe/embedded_concurrency.go"
+      ],
+      "callers": [
+        "apps/{player,subtitles}/internal/server/probe.go::newMediaProbe and aliases",
+        "apps/{player,subtitles}/internal/server/probe_enrichment.go",
+        "apps/{player,subtitles}/internal/server/embedded_subtitles.go::serveEmbedded bindsvisibility/tool/localizederror",
+        "apps/{player,subtitles}/internal/server/embedded_subtitle_extract.go::embeddedOptions/extractEmbedded",
+        "packages/playerweb/player_projection.go::ApplyMedia"
+      ],
+      "gap": "Actual Player test-instance-playback native/compatible seek and test-instance-production realmusic/audiobook/source/offline play ordinarymedia; no exact subprocesscount, restartedfacts/stalecache/adversefilesystem/probe rejection/track/HDR/embeddedextraction race matrix. player-experience-fixture.ts setContent/fakemedia, player-subtitles-loading.spec.ts route.fulfill captions and player-audio-policy mocked media APIs are frontendfixtures, not mediaprobeE2E. Shellscripts here produce JSON/VTT without realFFprobe/FFmpeg decoding.",
+      "source_read_evidence": "Full36 baseline declarations, test helpers and all9production owners read; complete app Probe/Enrichment/Embedded adapters, actual populated playback/browser bodies plus frontend fixture setup inspected; git history includes cancellationcheckpoint1813fb49, atomicfakepublication62692271 and authority1f1a81b7. Original baselineevents only; noGo candidate run.",
+      "reason": "Unsafe result fields can poison durable cache or playback plan even when normal FFprobe passes."
     },
     {
       "file": "packages/mediaprobe/behavior_test.go",
@@ -50572,8 +50631,8 @@
       "owner_group": "mediaprobe",
       "body_sha256": "6647650beb5e398836f9bec671cb55f9a34b35a9fbc97100bc78389747e526ba",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
+      "decision": "D",
+      "audit_status": "reviewed",
       "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
       "validation_command": "cd packages && go test ./mediaprobe",
       "baseline_event": {
@@ -50582,7 +50641,40 @@
         "Package": "github.com/MikeO7/kinosail/packages/mediaprobe",
         "Test": "TestProbeDurationRunsAndLoadsBoundedResults",
         "Elapsed": 0.1
-      }
+      },
+      "credible_failure": "Ordinary duration73 persisted/reloaded plus missing-executable0 is duplicated by stronger public-owner cache/empty-result tests.",
+      "remaining_coverage": "TestDurationCoalescesAndPersistsSourceFacts exactsame73 restartedDuration+Facts+concurrency+changedsource+count; TestCanceledDurationDoesNotCacheFailure and TestProbeRemainingExecutionAndCancellationEdges keep emptyFacts returning0. Duration is direct Facts.Duration; no separate reachable error policy.",
+      "history": [
+        "878dc2a63d62880e6d3a5aa395ce25dd40919539 Remove retired artifacts and unused code",
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "auditor": "/root/subtitles_shared/shared_identity",
+      "production_owner": [
+        "packages/mediaprobe/probe.go",
+        "packages/mediaprobe/cache.go",
+        "packages/mediaprobe/command.go",
+        "packages/mediaprobe/parse.go",
+        "packages/mediaprobe/facts.go",
+        "packages/mediaprobe/decorate.go",
+        "packages/mediaprobe/replaygain.go",
+        "packages/mediaprobe/embedded.go",
+        "packages/mediaprobe/embedded_concurrency.go"
+      ],
+      "callers": [
+        "apps/{player,subtitles}/internal/server/probe.go::newMediaProbe and aliases",
+        "apps/{player,subtitles}/internal/server/probe_enrichment.go",
+        "apps/{player,subtitles}/internal/server/embedded_subtitles.go::serveEmbedded bindsvisibility/tool/localizederror",
+        "apps/{player,subtitles}/internal/server/embedded_subtitle_extract.go::embeddedOptions/extractEmbedded",
+        "packages/playerweb/player_projection.go::ApplyMedia"
+      ],
+      "gap": "Actual Player test-instance-playback native/compatible seek and test-instance-production realmusic/audiobook/source/offline play ordinarymedia; no exact subprocesscount, restartedfacts/stalecache/adversefilesystem/probe rejection/track/HDR/embeddedextraction race matrix. player-experience-fixture.ts setContent/fakemedia, player-subtitles-loading.spec.ts route.fulfill captions and player-audio-policy mocked media APIs are frontendfixtures, not mediaprobeE2E. Shellscripts here produce JSON/VTT without realFFprobe/FFmpeg decoding.",
+      "source_read_evidence": "Full36 baseline declarations, test helpers and all9production owners read; complete app Probe/Enrichment/Embedded adapters, actual populated playback/browser bodies plus frontend fixture setup inspected; git history includes cancellationcheckpoint1813fb49, atomicfakepublication62692271 and authority1f1a81b7. Original baselineevents only; noGo candidate run.",
+      "reason": "Ordinary duration73 persisted/reloaded plus missing-executable0 is duplicated by stronger public-owner cache/empty-result tests.",
+      "independent_removal_review": {
+        "reviewer": "/root/subtitles_shared/shared_identity",
+        "status": "Full candidate and exact named keeper bodies/owners/callers reviewed before deletion."
+      },
+      "implementation_status": "removed; final validation awaits serial root suite"
     },
     {
       "file": "packages/mediaprobe/behavior_test.go",
@@ -50592,8 +50684,8 @@
       "owner_group": "mediaprobe",
       "body_sha256": "5cec04021c0c21eae93ff899b0e88346e2fa9c45ca901b11fd46a6caca3f279e",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
+      "decision": "R",
+      "audit_status": "reviewed",
       "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
       "validation_command": "cd packages && go test ./mediaprobe",
       "baseline_event": {
@@ -50602,7 +50694,35 @@
         "Package": "github.com/MikeO7/kinosail/packages/mediaprobe",
         "Test": "TestProbeCommandBoundsOutputAndExecutable",
         "Elapsed": 0.02
-      }
+      },
+      "credible_failure": "Probe output growth and canceled subprocess must remain bounded and reject invalid tool paths.",
+      "remaining_coverage": "Boundedwriter overrun exact2byteserror, empty/4097/missing exec, timedslowprocerror. No exactduration bound/hard kill artifact claimed.",
+      "history": [
+        "878dc2a63d62880e6d3a5aa395ce25dd40919539 Remove retired artifacts and unused code",
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "auditor": "/root/subtitles_shared/shared_identity",
+      "production_owner": [
+        "packages/mediaprobe/probe.go",
+        "packages/mediaprobe/cache.go",
+        "packages/mediaprobe/command.go",
+        "packages/mediaprobe/parse.go",
+        "packages/mediaprobe/facts.go",
+        "packages/mediaprobe/decorate.go",
+        "packages/mediaprobe/replaygain.go",
+        "packages/mediaprobe/embedded.go",
+        "packages/mediaprobe/embedded_concurrency.go"
+      ],
+      "callers": [
+        "apps/{player,subtitles}/internal/server/probe.go::newMediaProbe and aliases",
+        "apps/{player,subtitles}/internal/server/probe_enrichment.go",
+        "apps/{player,subtitles}/internal/server/embedded_subtitles.go::serveEmbedded bindsvisibility/tool/localizederror",
+        "apps/{player,subtitles}/internal/server/embedded_subtitle_extract.go::embeddedOptions/extractEmbedded",
+        "packages/playerweb/player_projection.go::ApplyMedia"
+      ],
+      "gap": "Actual Player test-instance-playback native/compatible seek and test-instance-production realmusic/audiobook/source/offline play ordinarymedia; no exact subprocesscount, restartedfacts/stalecache/adversefilesystem/probe rejection/track/HDR/embeddedextraction race matrix. player-experience-fixture.ts setContent/fakemedia, player-subtitles-loading.spec.ts route.fulfill captions and player-audio-policy mocked media APIs are frontendfixtures, not mediaprobeE2E. Shellscripts here produce JSON/VTT without realFFprobe/FFmpeg decoding.",
+      "source_read_evidence": "Full36 baseline declarations, test helpers and all9production owners read; complete app Probe/Enrichment/Embedded adapters, actual populated playback/browser bodies plus frontend fixture setup inspected; git history includes cancellationcheckpoint1813fb49, atomicfakepublication62692271 and authority1f1a81b7. Original baselineevents only; noGo candidate run.",
+      "reason": "Probe output growth and canceled subprocess must remain bounded and reject invalid tool paths."
     },
     {
       "file": "packages/mediaprobe/behavior_test.go",
@@ -50612,8 +50732,8 @@
       "owner_group": "mediaprobe",
       "body_sha256": "57e612cc6ae13f37092cd32334ec96b7c38526ecfdc9156cd7f7369150f87649",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
+      "decision": "R",
+      "audit_status": "reviewed",
       "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
       "validation_command": "cd packages && go test ./mediaprobe",
       "baseline_event": {
@@ -50622,7 +50742,35 @@
         "Package": "github.com/MikeO7/kinosail/packages/mediaprobe",
         "Test": "TestProbeChapterMarkerAndTagNormalization",
         "Elapsed": 0
-      }
+      },
+      "credible_failure": "Unusable chapters and story epilogue must not become skip markers; audio tag numeric normalization must preserve ordering.",
+      "remaining_coverage": "5valid/2badchapters =>4markers, numeric TRACK2/9 and badDisc0, fallbackAudioLabel. Timestamp/comparison echoes supplementary.",
+      "history": [
+        "878dc2a63d62880e6d3a5aa395ce25dd40919539 Remove retired artifacts and unused code",
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "auditor": "/root/subtitles_shared/shared_identity",
+      "production_owner": [
+        "packages/mediaprobe/probe.go",
+        "packages/mediaprobe/cache.go",
+        "packages/mediaprobe/command.go",
+        "packages/mediaprobe/parse.go",
+        "packages/mediaprobe/facts.go",
+        "packages/mediaprobe/decorate.go",
+        "packages/mediaprobe/replaygain.go",
+        "packages/mediaprobe/embedded.go",
+        "packages/mediaprobe/embedded_concurrency.go"
+      ],
+      "callers": [
+        "apps/{player,subtitles}/internal/server/probe.go::newMediaProbe and aliases",
+        "apps/{player,subtitles}/internal/server/probe_enrichment.go",
+        "apps/{player,subtitles}/internal/server/embedded_subtitles.go::serveEmbedded bindsvisibility/tool/localizederror",
+        "apps/{player,subtitles}/internal/server/embedded_subtitle_extract.go::embeddedOptions/extractEmbedded",
+        "packages/playerweb/player_projection.go::ApplyMedia"
+      ],
+      "gap": "Actual Player test-instance-playback native/compatible seek and test-instance-production realmusic/audiobook/source/offline play ordinarymedia; no exact subprocesscount, restartedfacts/stalecache/adversefilesystem/probe rejection/track/HDR/embeddedextraction race matrix. player-experience-fixture.ts setContent/fakemedia, player-subtitles-loading.spec.ts route.fulfill captions and player-audio-policy mocked media APIs are frontendfixtures, not mediaprobeE2E. Shellscripts here produce JSON/VTT without realFFprobe/FFmpeg decoding.",
+      "source_read_evidence": "Full36 baseline declarations, test helpers and all9production owners read; complete app Probe/Enrichment/Embedded adapters, actual populated playback/browser bodies plus frontend fixture setup inspected; git history includes cancellationcheckpoint1813fb49, atomicfakepublication62692271 and authority1f1a81b7. Original baselineevents only; noGo candidate run.",
+      "reason": "Unusable chapters and story epilogue must not become skip markers; audio tag numeric normalization must preserve ordering."
     },
     {
       "file": "packages/mediaprobe/benchmark_test.go",
@@ -50632,12 +50780,40 @@
       "owner_group": "mediaprobe",
       "body_sha256": "c172c9caa020919f0ed739c4f74ab11e7712866fb998545a132a354a4c2750ee",
       "baseline_result": "not_run",
-      "decision": null,
-      "audit_status": "unreviewed",
+      "decision": "C",
+      "audit_status": "reviewed",
       "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
       "validation_command": "cd packages && go test ./mediaprobe",
       "baseline_event": null,
-      "baseline_not_run_reason": "Benchmark is not run by go test without -bench."
+      "baseline_not_run_reason": "Benchmark is not run by go test without -bench.",
+      "credible_failure": "Diagnostic parallel probe-decoration throughput for16audio items, no CI threshold.",
+      "remaining_coverage": "Shellsleep10ms and lastProbed assertion; Benchmark absent from baseline run, not a passing regression gate.",
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "auditor": "/root/subtitles_shared/shared_identity",
+      "production_owner": [
+        "packages/mediaprobe/probe.go",
+        "packages/mediaprobe/cache.go",
+        "packages/mediaprobe/command.go",
+        "packages/mediaprobe/parse.go",
+        "packages/mediaprobe/facts.go",
+        "packages/mediaprobe/decorate.go",
+        "packages/mediaprobe/replaygain.go",
+        "packages/mediaprobe/embedded.go",
+        "packages/mediaprobe/embedded_concurrency.go"
+      ],
+      "callers": [
+        "apps/{player,subtitles}/internal/server/probe.go::newMediaProbe and aliases",
+        "apps/{player,subtitles}/internal/server/probe_enrichment.go",
+        "apps/{player,subtitles}/internal/server/embedded_subtitles.go::serveEmbedded bindsvisibility/tool/localizederror",
+        "apps/{player,subtitles}/internal/server/embedded_subtitle_extract.go::embeddedOptions/extractEmbedded",
+        "packages/playerweb/player_projection.go::ApplyMedia"
+      ],
+      "gap": "Actual Player test-instance-playback native/compatible seek and test-instance-production realmusic/audiobook/source/offline play ordinarymedia; no exact subprocesscount, restartedfacts/stalecache/adversefilesystem/probe rejection/track/HDR/embeddedextraction race matrix. player-experience-fixture.ts setContent/fakemedia, player-subtitles-loading.spec.ts route.fulfill captions and player-audio-policy mocked media APIs are frontendfixtures, not mediaprobeE2E. Shellscripts here produce JSON/VTT without realFFprobe/FFmpeg decoding.",
+      "source_read_evidence": "Full36 baseline declarations, test helpers and all9production owners read; complete app Probe/Enrichment/Embedded adapters, actual populated playback/browser bodies plus frontend fixture setup inspected; git history includes cancellationcheckpoint1813fb49, atomicfakepublication62692271 and authority1f1a81b7. Original baselineevents only; noGo candidate run.",
+      "reason": "Diagnostic parallel probe-decoration throughput for16audio items, no CI threshold.",
+      "implementation_status": "retained unchanged; limitation or diagnostic/consolidation proposal recorded; no new assertion or candidate validation claimed"
     },
     {
       "file": "packages/mediaprobe/cache_test.go",
@@ -50647,8 +50823,8 @@
       "owner_group": "mediaprobe",
       "body_sha256": "3a38c933afffff8f31b472dd77c224da17e20300c72aa92a63e4754c7965c443",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
+      "decision": "R",
+      "audit_status": "reviewed",
       "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
       "validation_command": "cd packages && go test ./mediaprobe",
       "baseline_event": {
@@ -50657,7 +50833,35 @@
         "Package": "github.com/MikeO7/kinosail/packages/mediaprobe",
         "Test": "TestProbeCacheRemovesRestartProbeFromPlaybackPath",
         "Elapsed": 0.14
-      }
+      },
+      "credible_failure": "Restart Inspect must restore original video facts without spawning another FFprobe.",
+      "remaining_coverage": "TwofreshProbeInspect h264 fromsamecache and exactonecall. Duration keepercoversFacts/Duration path; this retains optional-enrichment Inspect entry.",
+      "history": [
+        "6269227117f165cb9c4b1e635b9194171af9f1c9 Stabilize fake FFmpeg fixture publication (#210)",
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "auditor": "/root/subtitles_shared/shared_identity",
+      "production_owner": [
+        "packages/mediaprobe/probe.go",
+        "packages/mediaprobe/cache.go",
+        "packages/mediaprobe/command.go",
+        "packages/mediaprobe/parse.go",
+        "packages/mediaprobe/facts.go",
+        "packages/mediaprobe/decorate.go",
+        "packages/mediaprobe/replaygain.go",
+        "packages/mediaprobe/embedded.go",
+        "packages/mediaprobe/embedded_concurrency.go"
+      ],
+      "callers": [
+        "apps/{player,subtitles}/internal/server/probe.go::newMediaProbe and aliases",
+        "apps/{player,subtitles}/internal/server/probe_enrichment.go",
+        "apps/{player,subtitles}/internal/server/embedded_subtitles.go::serveEmbedded bindsvisibility/tool/localizederror",
+        "apps/{player,subtitles}/internal/server/embedded_subtitle_extract.go::embeddedOptions/extractEmbedded",
+        "packages/playerweb/player_projection.go::ApplyMedia"
+      ],
+      "gap": "Actual Player test-instance-playback native/compatible seek and test-instance-production realmusic/audiobook/source/offline play ordinarymedia; no exact subprocesscount, restartedfacts/stalecache/adversefilesystem/probe rejection/track/HDR/embeddedextraction race matrix. player-experience-fixture.ts setContent/fakemedia, player-subtitles-loading.spec.ts route.fulfill captions and player-audio-policy mocked media APIs are frontendfixtures, not mediaprobeE2E. Shellscripts here produce JSON/VTT without realFFprobe/FFmpeg decoding.",
+      "source_read_evidence": "Full36 baseline declarations, test helpers and all9production owners read; complete app Probe/Enrichment/Embedded adapters, actual populated playback/browser bodies plus frontend fixture setup inspected; git history includes cancellationcheckpoint1813fb49, atomicfakepublication62692271 and authority1f1a81b7. Original baselineevents only; noGo candidate run.",
+      "reason": "Restart Inspect must restore original video facts without spawning another FFprobe."
     },
     {
       "file": "packages/mediaprobe/cache_test.go",
@@ -50667,8 +50871,8 @@
       "owner_group": "mediaprobe",
       "body_sha256": "a9c7ee784393e255ee18a6d4a0c6d724bdfe474ca702a52efe793cbc7dfbbb15",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
+      "decision": "R",
+      "audit_status": "reviewed",
       "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
       "validation_command": "cd packages && go test ./mediaprobe",
       "baseline_event": {
@@ -50677,7 +50881,35 @@
         "Package": "github.com/MikeO7/kinosail/packages/mediaprobe",
         "Test": "TestProbeCoalescesConcurrentRequestsForOneSource",
         "Elapsed": 0.23
-      }
+      },
+      "credible_failure": "Simultaneous Inspect requests must share one expensive probe and correct video fact.",
+      "remaining_coverage": "8goroutines+100msshell allh264 and exactonecall; distinctInspect enrichment entry, notDuration-only.",
+      "history": [
+        "6269227117f165cb9c4b1e635b9194171af9f1c9 Stabilize fake FFmpeg fixture publication (#210)",
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "auditor": "/root/subtitles_shared/shared_identity",
+      "production_owner": [
+        "packages/mediaprobe/probe.go",
+        "packages/mediaprobe/cache.go",
+        "packages/mediaprobe/command.go",
+        "packages/mediaprobe/parse.go",
+        "packages/mediaprobe/facts.go",
+        "packages/mediaprobe/decorate.go",
+        "packages/mediaprobe/replaygain.go",
+        "packages/mediaprobe/embedded.go",
+        "packages/mediaprobe/embedded_concurrency.go"
+      ],
+      "callers": [
+        "apps/{player,subtitles}/internal/server/probe.go::newMediaProbe and aliases",
+        "apps/{player,subtitles}/internal/server/probe_enrichment.go",
+        "apps/{player,subtitles}/internal/server/embedded_subtitles.go::serveEmbedded bindsvisibility/tool/localizederror",
+        "apps/{player,subtitles}/internal/server/embedded_subtitle_extract.go::embeddedOptions/extractEmbedded",
+        "packages/playerweb/player_projection.go::ApplyMedia"
+      ],
+      "gap": "Actual Player test-instance-playback native/compatible seek and test-instance-production realmusic/audiobook/source/offline play ordinarymedia; no exact subprocesscount, restartedfacts/stalecache/adversefilesystem/probe rejection/track/HDR/embeddedextraction race matrix. player-experience-fixture.ts setContent/fakemedia, player-subtitles-loading.spec.ts route.fulfill captions and player-audio-policy mocked media APIs are frontendfixtures, not mediaprobeE2E. Shellscripts here produce JSON/VTT without realFFprobe/FFmpeg decoding.",
+      "source_read_evidence": "Full36 baseline declarations, test helpers and all9production owners read; complete app Probe/Enrichment/Embedded adapters, actual populated playback/browser bodies plus frontend fixture setup inspected; git history includes cancellationcheckpoint1813fb49, atomicfakepublication62692271 and authority1f1a81b7. Original baselineevents only; noGo candidate run.",
+      "reason": "Simultaneous Inspect requests must share one expensive probe and correct video fact."
     },
     {
       "file": "packages/mediaprobe/cache_test.go",
@@ -50687,8 +50919,8 @@
       "owner_group": "mediaprobe",
       "body_sha256": "6811e4015980848e19d4b18568a789a5a14d236bd58c8268dff6b199ffc88e5e",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
+      "decision": "D",
+      "audit_status": "reviewed",
       "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
       "validation_command": "cd packages && go test ./mediaprobe",
       "baseline_event": {
@@ -50697,7 +50929,40 @@
         "Package": "github.com/MikeO7/kinosail/packages/mediaprobe",
         "Test": "TestProbeCacheRejectsStaleMalformedAndOversizedState",
         "Elapsed": 0
-      }
+      },
+      "credible_failure": "All negative diskfixtures use schema1 while current3, so unknown/stale cases fail for unrelatedschema; allzero oversizeddata also failsJSON.",
+      "remaining_coverage": "Delete ineffective matrix; TestOldProbeCacheCannotRetainRejectedFacts isolatesoldschema2 withvalidJSON; TestCachedScanFacts uses actualschema3 changedversion and positives. Honest gap: disk unknownfield-beforeacceptance and oversize-beforeparse bound not independently proved here.",
+      "history": [
+        "6269227117f165cb9c4b1e635b9194171af9f1c9 Stabilize fake FFmpeg fixture publication (#210)",
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "auditor": "/root/subtitles_shared/shared_identity",
+      "production_owner": [
+        "packages/mediaprobe/probe.go",
+        "packages/mediaprobe/cache.go",
+        "packages/mediaprobe/command.go",
+        "packages/mediaprobe/parse.go",
+        "packages/mediaprobe/facts.go",
+        "packages/mediaprobe/decorate.go",
+        "packages/mediaprobe/replaygain.go",
+        "packages/mediaprobe/embedded.go",
+        "packages/mediaprobe/embedded_concurrency.go"
+      ],
+      "callers": [
+        "apps/{player,subtitles}/internal/server/probe.go::newMediaProbe and aliases",
+        "apps/{player,subtitles}/internal/server/probe_enrichment.go",
+        "apps/{player,subtitles}/internal/server/embedded_subtitles.go::serveEmbedded bindsvisibility/tool/localizederror",
+        "apps/{player,subtitles}/internal/server/embedded_subtitle_extract.go::embeddedOptions/extractEmbedded",
+        "packages/playerweb/player_projection.go::ApplyMedia"
+      ],
+      "gap": "Actual Player test-instance-playback native/compatible seek and test-instance-production realmusic/audiobook/source/offline play ordinarymedia; no exact subprocesscount, restartedfacts/stalecache/adversefilesystem/probe rejection/track/HDR/embeddedextraction race matrix. player-experience-fixture.ts setContent/fakemedia, player-subtitles-loading.spec.ts route.fulfill captions and player-audio-policy mocked media APIs are frontendfixtures, not mediaprobeE2E. Shellscripts here produce JSON/VTT without realFFprobe/FFmpeg decoding.",
+      "source_read_evidence": "Full36 baseline declarations, test helpers and all9production owners read; complete app Probe/Enrichment/Embedded adapters, actual populated playback/browser bodies plus frontend fixture setup inspected; git history includes cancellationcheckpoint1813fb49, atomicfakepublication62692271 and authority1f1a81b7. Original baselineevents only; noGo candidate run.",
+      "reason": "All negative diskfixtures use schema1 while current3, so unknown/stale cases fail for unrelatedschema; allzero oversizeddata also failsJSON.",
+      "independent_removal_review": {
+        "reviewer": "/root/subtitles_shared/shared_identity",
+        "status": "Full candidate and exact named keeper bodies/owners/callers reviewed before deletion."
+      },
+      "implementation_status": "removed; final validation awaits serial root suite"
     },
     {
       "file": "packages/mediaprobe/cached_facts_test.go",
@@ -50707,8 +50972,8 @@
       "owner_group": "mediaprobe",
       "body_sha256": "2d55aabcdc15e17fd89bb07957a39f6459f0148fde6ba690916acfee6c5299a0",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
+      "decision": "R",
+      "audit_status": "reviewed",
       "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
       "validation_command": "cd packages && go test ./mediaprobe",
       "baseline_event": {
@@ -50717,7 +50982,34 @@
         "Package": "github.com/MikeO7/kinosail/packages/mediaprobe",
         "Test": "TestCachedFactsNeverLaunchesProbeAndRejectsChangedSources",
         "Elapsed": 0.18
-      }
+      },
+      "credible_failure": "Live cache-only lookup must not start FFprobe or return old facts after replacement/deletion.",
+      "remaining_coverage": "Coldmisszeroexec, warm/restartedh264, changedsourceandremovedmisses, exactlyonepreviousprobe.",
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "auditor": "/root/subtitles_shared/shared_identity",
+      "production_owner": [
+        "packages/mediaprobe/probe.go",
+        "packages/mediaprobe/cache.go",
+        "packages/mediaprobe/command.go",
+        "packages/mediaprobe/parse.go",
+        "packages/mediaprobe/facts.go",
+        "packages/mediaprobe/decorate.go",
+        "packages/mediaprobe/replaygain.go",
+        "packages/mediaprobe/embedded.go",
+        "packages/mediaprobe/embedded_concurrency.go"
+      ],
+      "callers": [
+        "apps/{player,subtitles}/internal/server/probe.go::newMediaProbe and aliases",
+        "apps/{player,subtitles}/internal/server/probe_enrichment.go",
+        "apps/{player,subtitles}/internal/server/embedded_subtitles.go::serveEmbedded bindsvisibility/tool/localizederror",
+        "apps/{player,subtitles}/internal/server/embedded_subtitle_extract.go::embeddedOptions/extractEmbedded",
+        "packages/playerweb/player_projection.go::ApplyMedia"
+      ],
+      "gap": "Actual Player test-instance-playback native/compatible seek and test-instance-production realmusic/audiobook/source/offline play ordinarymedia; no exact subprocesscount, restartedfacts/stalecache/adversefilesystem/probe rejection/track/HDR/embeddedextraction race matrix. player-experience-fixture.ts setContent/fakemedia, player-subtitles-loading.spec.ts route.fulfill captions and player-audio-policy mocked media APIs are frontendfixtures, not mediaprobeE2E. Shellscripts here produce JSON/VTT without realFFprobe/FFmpeg decoding.",
+      "source_read_evidence": "Full36 baseline declarations, test helpers and all9production owners read; complete app Probe/Enrichment/Embedded adapters, actual populated playback/browser bodies plus frontend fixture setup inspected; git history includes cancellationcheckpoint1813fb49, atomicfakepublication62692271 and authority1f1a81b7. Original baselineevents only; noGo candidate run.",
+      "reason": "Live cache-only lookup must not start FFprobe or return old facts after replacement/deletion."
     },
     {
       "file": "packages/mediaprobe/cached_scan_facts_test.go",
@@ -50727,8 +51019,8 @@
       "owner_group": "mediaprobe",
       "body_sha256": "ec1e0d3eaa81e6b274f9ec2296cd2b4a50150ed3499ccfe23e2cb9f9a34feb6f",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
+      "decision": "R",
+      "audit_status": "reviewed",
       "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
       "validation_command": "cd packages && go test ./mediaprobe",
       "baseline_event": {
@@ -50737,7 +51029,34 @@
         "Package": "github.com/MikeO7/kinosail/packages/mediaprobe",
         "Test": "TestCachedScanFactsUsesScanVersionWithoutReadingMedia",
         "Elapsed": 0.2
-      }
+      },
+      "credible_failure": "Background cache-by-scan must remain usable with removed storage while rejecting changed stamp and preserving live-source safety.",
+      "remaining_coverage": "Deletedmedia warm/restartedCachedScanh264, changedsize/date/negative/zero rejected, CachedFactsremoved misses and exactlyoneprobe.",
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "auditor": "/root/subtitles_shared/shared_identity",
+      "production_owner": [
+        "packages/mediaprobe/probe.go",
+        "packages/mediaprobe/cache.go",
+        "packages/mediaprobe/command.go",
+        "packages/mediaprobe/parse.go",
+        "packages/mediaprobe/facts.go",
+        "packages/mediaprobe/decorate.go",
+        "packages/mediaprobe/replaygain.go",
+        "packages/mediaprobe/embedded.go",
+        "packages/mediaprobe/embedded_concurrency.go"
+      ],
+      "callers": [
+        "apps/{player,subtitles}/internal/server/probe.go::newMediaProbe and aliases",
+        "apps/{player,subtitles}/internal/server/probe_enrichment.go",
+        "apps/{player,subtitles}/internal/server/embedded_subtitles.go::serveEmbedded bindsvisibility/tool/localizederror",
+        "apps/{player,subtitles}/internal/server/embedded_subtitle_extract.go::embeddedOptions/extractEmbedded",
+        "packages/playerweb/player_projection.go::ApplyMedia"
+      ],
+      "gap": "Actual Player test-instance-playback native/compatible seek and test-instance-production realmusic/audiobook/source/offline play ordinarymedia; no exact subprocesscount, restartedfacts/stalecache/adversefilesystem/probe rejection/track/HDR/embeddedextraction race matrix. player-experience-fixture.ts setContent/fakemedia, player-subtitles-loading.spec.ts route.fulfill captions and player-audio-policy mocked media APIs are frontendfixtures, not mediaprobeE2E. Shellscripts here produce JSON/VTT without realFFprobe/FFmpeg decoding.",
+      "source_read_evidence": "Full36 baseline declarations, test helpers and all9production owners read; complete app Probe/Enrichment/Embedded adapters, actual populated playback/browser bodies plus frontend fixture setup inspected; git history includes cancellationcheckpoint1813fb49, atomicfakepublication62692271 and authority1f1a81b7. Original baselineevents only; noGo candidate run.",
+      "reason": "Background cache-by-scan must remain usable with removed storage while rejecting changed stamp and preserving live-source safety."
     },
     {
       "file": "packages/mediaprobe/chapter_cache_safety_test.go",
@@ -50747,8 +51066,8 @@
       "owner_group": "mediaprobe",
       "body_sha256": "323c3d10bf565218c61fe8656a4444fbedcebc1691b75fa65d4deb5c7af07817",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
+      "decision": "R",
+      "audit_status": "reviewed",
       "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
       "validation_command": "cd packages && go test ./mediaprobe",
       "baseline_event": {
@@ -50757,7 +51076,34 @@
         "Package": "github.com/MikeO7/kinosail/packages/mediaprobe",
         "Test": "TestCachedProbeReclassifiesStoryChaptersWithoutDecoding",
         "Elapsed": 0.02
-      }
+      },
+      "credible_failure": "Old cached marker classification must not skip story epilogue/post-credit scenes after safer rules change.",
+      "remaining_coverage": "Schema3cache persists old broadmarkers; restartedFacts with unavailableFFprobe retains3chapters and reclassifiescredits exactly120..180.",
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "auditor": "/root/subtitles_shared/shared_identity",
+      "production_owner": [
+        "packages/mediaprobe/probe.go",
+        "packages/mediaprobe/cache.go",
+        "packages/mediaprobe/command.go",
+        "packages/mediaprobe/parse.go",
+        "packages/mediaprobe/facts.go",
+        "packages/mediaprobe/decorate.go",
+        "packages/mediaprobe/replaygain.go",
+        "packages/mediaprobe/embedded.go",
+        "packages/mediaprobe/embedded_concurrency.go"
+      ],
+      "callers": [
+        "apps/{player,subtitles}/internal/server/probe.go::newMediaProbe and aliases",
+        "apps/{player,subtitles}/internal/server/probe_enrichment.go",
+        "apps/{player,subtitles}/internal/server/embedded_subtitles.go::serveEmbedded bindsvisibility/tool/localizederror",
+        "apps/{player,subtitles}/internal/server/embedded_subtitle_extract.go::embeddedOptions/extractEmbedded",
+        "packages/playerweb/player_projection.go::ApplyMedia"
+      ],
+      "gap": "Actual Player test-instance-playback native/compatible seek and test-instance-production realmusic/audiobook/source/offline play ordinarymedia; no exact subprocesscount, restartedfacts/stalecache/adversefilesystem/probe rejection/track/HDR/embeddedextraction race matrix. player-experience-fixture.ts setContent/fakemedia, player-subtitles-loading.spec.ts route.fulfill captions and player-audio-policy mocked media APIs are frontendfixtures, not mediaprobeE2E. Shellscripts here produce JSON/VTT without realFFprobe/FFmpeg decoding.",
+      "source_read_evidence": "Full36 baseline declarations, test helpers and all9production owners read; complete app Probe/Enrichment/Embedded adapters, actual populated playback/browser bodies plus frontend fixture setup inspected; git history includes cancellationcheckpoint1813fb49, atomicfakepublication62692271 and authority1f1a81b7. Original baselineevents only; noGo candidate run.",
+      "reason": "Old cached marker classification must not skip story epilogue/post-credit scenes after safer rules change."
     },
     {
       "file": "packages/mediaprobe/concurrency_test.go",
@@ -50767,8 +51113,8 @@
       "owner_group": "mediaprobe",
       "body_sha256": "8a160ce3ee0fb358055cb360c2c361da22c09ed78adb1f54d3e57296c44ad473",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
+      "decision": "R",
+      "audit_status": "reviewed",
       "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
       "validation_command": "cd packages && go test ./mediaprobe",
       "baseline_event": {
@@ -50777,7 +51123,34 @@
         "Package": "github.com/MikeO7/kinosail/packages/mediaprobe",
         "Test": "TestProbeDecorationUsesAvailableHardware",
         "Elapsed": 0.14
-      }
+      },
+      "credible_failure": "Serial decoration can fail when two independent probes need concurrent progress.",
+      "remaining_coverage": "Two shellprocesses wait until startsfile>=2 beforevalidJSON; bothtitlesProbed; skipsGOMAXPROCS<3. Genuine populatedmedia E2E no independentworkerbarrier.",
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "auditor": "/root/subtitles_shared/shared_identity",
+      "production_owner": [
+        "packages/mediaprobe/probe.go",
+        "packages/mediaprobe/cache.go",
+        "packages/mediaprobe/command.go",
+        "packages/mediaprobe/parse.go",
+        "packages/mediaprobe/facts.go",
+        "packages/mediaprobe/decorate.go",
+        "packages/mediaprobe/replaygain.go",
+        "packages/mediaprobe/embedded.go",
+        "packages/mediaprobe/embedded_concurrency.go"
+      ],
+      "callers": [
+        "apps/{player,subtitles}/internal/server/probe.go::newMediaProbe and aliases",
+        "apps/{player,subtitles}/internal/server/probe_enrichment.go",
+        "apps/{player,subtitles}/internal/server/embedded_subtitles.go::serveEmbedded bindsvisibility/tool/localizederror",
+        "apps/{player,subtitles}/internal/server/embedded_subtitle_extract.go::embeddedOptions/extractEmbedded",
+        "packages/playerweb/player_projection.go::ApplyMedia"
+      ],
+      "gap": "Actual Player test-instance-playback native/compatible seek and test-instance-production realmusic/audiobook/source/offline play ordinarymedia; no exact subprocesscount, restartedfacts/stalecache/adversefilesystem/probe rejection/track/HDR/embeddedextraction race matrix. player-experience-fixture.ts setContent/fakemedia, player-subtitles-loading.spec.ts route.fulfill captions and player-audio-policy mocked media APIs are frontendfixtures, not mediaprobeE2E. Shellscripts here produce JSON/VTT without realFFprobe/FFmpeg decoding.",
+      "source_read_evidence": "Full36 baseline declarations, test helpers and all9production owners read; complete app Probe/Enrichment/Embedded adapters, actual populated playback/browser bodies plus frontend fixture setup inspected; git history includes cancellationcheckpoint1813fb49, atomicfakepublication62692271 and authority1f1a81b7. Original baselineevents only; noGo candidate run.",
+      "reason": "Serial decoration can fail when two independent probes need concurrent progress."
     },
     {
       "file": "packages/mediaprobe/coverage_edges_test.go",
@@ -50787,8 +51160,8 @@
       "owner_group": "mediaprobe",
       "body_sha256": "ce1005c9c8de0a9a535e1d87fdaccfc05b05bfc98a6f048dd81aeead18afc5a8",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
+      "decision": "R",
+      "audit_status": "reviewed",
       "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
       "validation_command": "cd packages && go test ./mediaprobe",
       "baseline_event": {
@@ -50797,7 +51170,35 @@
         "Package": "github.com/MikeO7/kinosail/packages/mediaprobe",
         "Test": "TestProbeRemainingExecutionAndCancellationEdges",
         "Elapsed": 0
-      }
+      },
+      "credible_failure": "Canceled coalesced waiter must escape unfinished owner without poisoned facts.",
+      "remaining_coverage": "Seededpendingcall channel nevercloses, precanceledInspect empty; also boundedexact4bytewrite. Disabledexec/nul/canceledDecorate echoes supplementary.",
+      "history": [
+        "878dc2a63d62880e6d3a5aa395ce25dd40919539 Remove retired artifacts and unused code",
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "auditor": "/root/subtitles_shared/shared_identity",
+      "production_owner": [
+        "packages/mediaprobe/probe.go",
+        "packages/mediaprobe/cache.go",
+        "packages/mediaprobe/command.go",
+        "packages/mediaprobe/parse.go",
+        "packages/mediaprobe/facts.go",
+        "packages/mediaprobe/decorate.go",
+        "packages/mediaprobe/replaygain.go",
+        "packages/mediaprobe/embedded.go",
+        "packages/mediaprobe/embedded_concurrency.go"
+      ],
+      "callers": [
+        "apps/{player,subtitles}/internal/server/probe.go::newMediaProbe and aliases",
+        "apps/{player,subtitles}/internal/server/probe_enrichment.go",
+        "apps/{player,subtitles}/internal/server/embedded_subtitles.go::serveEmbedded bindsvisibility/tool/localizederror",
+        "apps/{player,subtitles}/internal/server/embedded_subtitle_extract.go::embeddedOptions/extractEmbedded",
+        "packages/playerweb/player_projection.go::ApplyMedia"
+      ],
+      "gap": "Actual Player test-instance-playback native/compatible seek and test-instance-production realmusic/audiobook/source/offline play ordinarymedia; no exact subprocesscount, restartedfacts/stalecache/adversefilesystem/probe rejection/track/HDR/embeddedextraction race matrix. player-experience-fixture.ts setContent/fakemedia, player-subtitles-loading.spec.ts route.fulfill captions and player-audio-policy mocked media APIs are frontendfixtures, not mediaprobeE2E. Shellscripts here produce JSON/VTT without realFFprobe/FFmpeg decoding.",
+      "source_read_evidence": "Full36 baseline declarations, test helpers and all9production owners read; complete app Probe/Enrichment/Embedded adapters, actual populated playback/browser bodies plus frontend fixture setup inspected; git history includes cancellationcheckpoint1813fb49, atomicfakepublication62692271 and authority1f1a81b7. Original baselineevents only; noGo candidate run.",
+      "reason": "Canceled coalesced waiter must escape unfinished owner without poisoned facts."
     },
     {
       "file": "packages/mediaprobe/coverage_edges_test.go",
@@ -50807,8 +51208,8 @@
       "owner_group": "mediaprobe",
       "body_sha256": "a3d4253a8d397b119ee7f7c8defd5028b8f01420998d5bfb4ce4469d85d9455b",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
+      "decision": "R",
+      "audit_status": "reviewed",
       "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
       "validation_command": "cd packages && go test ./mediaprobe",
       "baseline_event": {
@@ -50817,7 +51218,35 @@
         "Package": "github.com/MikeO7/kinosail/packages/mediaprobe",
         "Test": "TestProbeRemainingParsingEdges",
         "Elapsed": 0
-      }
+      },
+      "credible_failure": "HLG/DolbyVision/HDR10+ and commentary subtitle facts must not lose safe presentation/picker classifications.",
+      "remaining_coverage": "DistinctvideoSideData transfer/types+bitdepth fallback, commentary role, untitledchapter fallback; malformedprobe/failingprivateexec echoes supplementary.",
+      "history": [
+        "878dc2a63d62880e6d3a5aa395ce25dd40919539 Remove retired artifacts and unused code",
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "auditor": "/root/subtitles_shared/shared_identity",
+      "production_owner": [
+        "packages/mediaprobe/probe.go",
+        "packages/mediaprobe/cache.go",
+        "packages/mediaprobe/command.go",
+        "packages/mediaprobe/parse.go",
+        "packages/mediaprobe/facts.go",
+        "packages/mediaprobe/decorate.go",
+        "packages/mediaprobe/replaygain.go",
+        "packages/mediaprobe/embedded.go",
+        "packages/mediaprobe/embedded_concurrency.go"
+      ],
+      "callers": [
+        "apps/{player,subtitles}/internal/server/probe.go::newMediaProbe and aliases",
+        "apps/{player,subtitles}/internal/server/probe_enrichment.go",
+        "apps/{player,subtitles}/internal/server/embedded_subtitles.go::serveEmbedded bindsvisibility/tool/localizederror",
+        "apps/{player,subtitles}/internal/server/embedded_subtitle_extract.go::embeddedOptions/extractEmbedded",
+        "packages/playerweb/player_projection.go::ApplyMedia"
+      ],
+      "gap": "Actual Player test-instance-playback native/compatible seek and test-instance-production realmusic/audiobook/source/offline play ordinarymedia; no exact subprocesscount, restartedfacts/stalecache/adversefilesystem/probe rejection/track/HDR/embeddedextraction race matrix. player-experience-fixture.ts setContent/fakemedia, player-subtitles-loading.spec.ts route.fulfill captions and player-audio-policy mocked media APIs are frontendfixtures, not mediaprobeE2E. Shellscripts here produce JSON/VTT without realFFprobe/FFmpeg decoding.",
+      "source_read_evidence": "Full36 baseline declarations, test helpers and all9production owners read; complete app Probe/Enrichment/Embedded adapters, actual populated playback/browser bodies plus frontend fixture setup inspected; git history includes cancellationcheckpoint1813fb49, atomicfakepublication62692271 and authority1f1a81b7. Original baselineevents only; noGo candidate run.",
+      "reason": "HLG/DolbyVision/HDR10+ and commentary subtitle facts must not lose safe presentation/picker classifications."
     },
     {
       "file": "packages/mediaprobe/coverage_edges_test.go",
@@ -50827,8 +51256,8 @@
       "owner_group": "mediaprobe",
       "body_sha256": "d46c6e3ccaa659c13ed3c89c03a709fe49b025f5c432c2b3bf9eae07b9466766",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
+      "decision": "R",
+      "audit_status": "reviewed",
       "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
       "validation_command": "cd packages && go test ./mediaprobe",
       "baseline_event": {
@@ -50837,7 +51266,35 @@
         "Package": "github.com/MikeO7/kinosail/packages/mediaprobe",
         "Test": "TestReplayGainRemainingFormats",
         "Elapsed": 0
-      }
+      },
+      "credible_failure": "R128 normalization or unsafe nonfinite/outofrange gain must not cause wrong or excessive volume.",
+      "remaining_coverage": "Standard/r128 trackalbum1/-1 and invalidunits/nonfinite/129/overflow matrix; genuine mediaE2E lacksgain tagging.",
+      "history": [
+        "878dc2a63d62880e6d3a5aa395ce25dd40919539 Remove retired artifacts and unused code",
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "auditor": "/root/subtitles_shared/shared_identity",
+      "production_owner": [
+        "packages/mediaprobe/probe.go",
+        "packages/mediaprobe/cache.go",
+        "packages/mediaprobe/command.go",
+        "packages/mediaprobe/parse.go",
+        "packages/mediaprobe/facts.go",
+        "packages/mediaprobe/decorate.go",
+        "packages/mediaprobe/replaygain.go",
+        "packages/mediaprobe/embedded.go",
+        "packages/mediaprobe/embedded_concurrency.go"
+      ],
+      "callers": [
+        "apps/{player,subtitles}/internal/server/probe.go::newMediaProbe and aliases",
+        "apps/{player,subtitles}/internal/server/probe_enrichment.go",
+        "apps/{player,subtitles}/internal/server/embedded_subtitles.go::serveEmbedded bindsvisibility/tool/localizederror",
+        "apps/{player,subtitles}/internal/server/embedded_subtitle_extract.go::embeddedOptions/extractEmbedded",
+        "packages/playerweb/player_projection.go::ApplyMedia"
+      ],
+      "gap": "Actual Player test-instance-playback native/compatible seek and test-instance-production realmusic/audiobook/source/offline play ordinarymedia; no exact subprocesscount, restartedfacts/stalecache/adversefilesystem/probe rejection/track/HDR/embeddedextraction race matrix. player-experience-fixture.ts setContent/fakemedia, player-subtitles-loading.spec.ts route.fulfill captions and player-audio-policy mocked media APIs are frontendfixtures, not mediaprobeE2E. Shellscripts here produce JSON/VTT without realFFprobe/FFmpeg decoding.",
+      "source_read_evidence": "Full36 baseline declarations, test helpers and all9production owners read; complete app Probe/Enrichment/Embedded adapters, actual populated playback/browser bodies plus frontend fixture setup inspected; git history includes cancellationcheckpoint1813fb49, atomicfakepublication62692271 and authority1f1a81b7. Original baselineevents only; noGo candidate run.",
+      "reason": "R128 normalization or unsafe nonfinite/outofrange gain must not cause wrong or excessive volume."
     },
     {
       "file": "packages/mediaprobe/duration_cache_test.go",
@@ -50847,8 +51304,8 @@
       "owner_group": "mediaprobe",
       "body_sha256": "1aced15d5277679b376dc6d6b6775a8e8383f3f7a15de6973e6022cb191a9db8",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
+      "decision": "R",
+      "audit_status": "reviewed",
       "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
       "validation_command": "cd packages && go test ./mediaprobe",
       "baseline_event": {
@@ -50857,7 +51314,34 @@
         "Package": "github.com/MikeO7/kinosail/packages/mediaprobe",
         "Test": "TestDurationCoalescesAndPersistsSourceFacts",
         "Elapsed": 0.39
-      }
+      },
+      "credible_failure": "Concurrent duration requests/restart must not duplicate probes, and changed source must invalidate cache.",
+      "remaining_coverage": "8Duration callers all73, restartedDuration/Facts reuseh264 and exactone subprocess; changedsource exactsecond.",
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "auditor": "/root/subtitles_shared/shared_identity",
+      "production_owner": [
+        "packages/mediaprobe/probe.go",
+        "packages/mediaprobe/cache.go",
+        "packages/mediaprobe/command.go",
+        "packages/mediaprobe/parse.go",
+        "packages/mediaprobe/facts.go",
+        "packages/mediaprobe/decorate.go",
+        "packages/mediaprobe/replaygain.go",
+        "packages/mediaprobe/embedded.go",
+        "packages/mediaprobe/embedded_concurrency.go"
+      ],
+      "callers": [
+        "apps/{player,subtitles}/internal/server/probe.go::newMediaProbe and aliases",
+        "apps/{player,subtitles}/internal/server/probe_enrichment.go",
+        "apps/{player,subtitles}/internal/server/embedded_subtitles.go::serveEmbedded bindsvisibility/tool/localizederror",
+        "apps/{player,subtitles}/internal/server/embedded_subtitle_extract.go::embeddedOptions/extractEmbedded",
+        "packages/playerweb/player_projection.go::ApplyMedia"
+      ],
+      "gap": "Actual Player test-instance-playback native/compatible seek and test-instance-production realmusic/audiobook/source/offline play ordinarymedia; no exact subprocesscount, restartedfacts/stalecache/adversefilesystem/probe rejection/track/HDR/embeddedextraction race matrix. player-experience-fixture.ts setContent/fakemedia, player-subtitles-loading.spec.ts route.fulfill captions and player-audio-policy mocked media APIs are frontendfixtures, not mediaprobeE2E. Shellscripts here produce JSON/VTT without realFFprobe/FFmpeg decoding.",
+      "source_read_evidence": "Full36 baseline declarations, test helpers and all9production owners read; complete app Probe/Enrichment/Embedded adapters, actual populated playback/browser bodies plus frontend fixture setup inspected; git history includes cancellationcheckpoint1813fb49, atomicfakepublication62692271 and authority1f1a81b7. Original baselineevents only; noGo candidate run.",
+      "reason": "Concurrent duration requests/restart must not duplicate probes, and changed source must invalidate cache."
     },
     {
       "file": "packages/mediaprobe/duration_cache_test.go",
@@ -50867,8 +51351,8 @@
       "owner_group": "mediaprobe",
       "body_sha256": "b3744d236119fbfa99031c82513706e65644bb38042828cfeacd545412e0d91d",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
+      "decision": "R",
+      "audit_status": "reviewed",
       "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
       "validation_command": "cd packages && go test ./mediaprobe",
       "baseline_event": {
@@ -50877,7 +51361,34 @@
         "Package": "github.com/MikeO7/kinosail/packages/mediaprobe",
         "Test": "TestCanceledDurationDoesNotCacheFailure",
         "Elapsed": 0.14
-      }
+      },
+      "credible_failure": "Canceled duration must not cache an empty result that poisons a later valid retry.",
+      "remaining_coverage": "Pre-canceledDuration0 then sameProbe activeDuration73.",
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "auditor": "/root/subtitles_shared/shared_identity",
+      "production_owner": [
+        "packages/mediaprobe/probe.go",
+        "packages/mediaprobe/cache.go",
+        "packages/mediaprobe/command.go",
+        "packages/mediaprobe/parse.go",
+        "packages/mediaprobe/facts.go",
+        "packages/mediaprobe/decorate.go",
+        "packages/mediaprobe/replaygain.go",
+        "packages/mediaprobe/embedded.go",
+        "packages/mediaprobe/embedded_concurrency.go"
+      ],
+      "callers": [
+        "apps/{player,subtitles}/internal/server/probe.go::newMediaProbe and aliases",
+        "apps/{player,subtitles}/internal/server/probe_enrichment.go",
+        "apps/{player,subtitles}/internal/server/embedded_subtitles.go::serveEmbedded bindsvisibility/tool/localizederror",
+        "apps/{player,subtitles}/internal/server/embedded_subtitle_extract.go::embeddedOptions/extractEmbedded",
+        "packages/playerweb/player_projection.go::ApplyMedia"
+      ],
+      "gap": "Actual Player test-instance-playback native/compatible seek and test-instance-production realmusic/audiobook/source/offline play ordinarymedia; no exact subprocesscount, restartedfacts/stalecache/adversefilesystem/probe rejection/track/HDR/embeddedextraction race matrix. player-experience-fixture.ts setContent/fakemedia, player-subtitles-loading.spec.ts route.fulfill captions and player-audio-policy mocked media APIs are frontendfixtures, not mediaprobeE2E. Shellscripts here produce JSON/VTT without realFFprobe/FFmpeg decoding.",
+      "source_read_evidence": "Full36 baseline declarations, test helpers and all9production owners read; complete app Probe/Enrichment/Embedded adapters, actual populated playback/browser bodies plus frontend fixture setup inspected; git history includes cancellationcheckpoint1813fb49, atomicfakepublication62692271 and authority1f1a81b7. Original baselineevents only; noGo candidate run.",
+      "reason": "Canceled duration must not cache an empty result that poisons a later valid retry."
     },
     {
       "file": "packages/mediaprobe/duration_cache_test.go",
@@ -50887,8 +51398,8 @@
       "owner_group": "mediaprobe",
       "body_sha256": "d0e5f8c5ce93cf9a75dc038ee89b003019898ff04404270ac025157df697c5a3",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
+      "decision": "R",
+      "audit_status": "reviewed",
       "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
       "validation_command": "cd packages && go test ./mediaprobe",
       "baseline_event": {
@@ -50897,7 +51408,34 @@
         "Package": "github.com/MikeO7/kinosail/packages/mediaprobe",
         "Test": "TestRejectedProbeOutputDoesNotPoisonCache",
         "Elapsed": 1.2
-      }
+      },
+      "credible_failure": "Malformed/nonfinite/negativegeometry or oversizedstream/chapter facts must not enter memory/disk cache and block recovery.",
+      "remaining_coverage": "Actual shell output rejection yields noCachedFacts/no cachefile then validDuration73 recovery.",
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "auditor": "/root/subtitles_shared/shared_identity",
+      "production_owner": [
+        "packages/mediaprobe/probe.go",
+        "packages/mediaprobe/cache.go",
+        "packages/mediaprobe/command.go",
+        "packages/mediaprobe/parse.go",
+        "packages/mediaprobe/facts.go",
+        "packages/mediaprobe/decorate.go",
+        "packages/mediaprobe/replaygain.go",
+        "packages/mediaprobe/embedded.go",
+        "packages/mediaprobe/embedded_concurrency.go"
+      ],
+      "callers": [
+        "apps/{player,subtitles}/internal/server/probe.go::newMediaProbe and aliases",
+        "apps/{player,subtitles}/internal/server/probe_enrichment.go",
+        "apps/{player,subtitles}/internal/server/embedded_subtitles.go::serveEmbedded bindsvisibility/tool/localizederror",
+        "apps/{player,subtitles}/internal/server/embedded_subtitle_extract.go::embeddedOptions/extractEmbedded",
+        "packages/playerweb/player_projection.go::ApplyMedia"
+      ],
+      "gap": "Actual Player test-instance-playback native/compatible seek and test-instance-production realmusic/audiobook/source/offline play ordinarymedia; no exact subprocesscount, restartedfacts/stalecache/adversefilesystem/probe rejection/track/HDR/embeddedextraction race matrix. player-experience-fixture.ts setContent/fakemedia, player-subtitles-loading.spec.ts route.fulfill captions and player-audio-policy mocked media APIs are frontendfixtures, not mediaprobeE2E. Shellscripts here produce JSON/VTT without realFFprobe/FFmpeg decoding.",
+      "source_read_evidence": "Full36 baseline declarations, test helpers and all9production owners read; complete app Probe/Enrichment/Embedded adapters, actual populated playback/browser bodies plus frontend fixture setup inspected; git history includes cancellationcheckpoint1813fb49, atomicfakepublication62692271 and authority1f1a81b7. Original baselineevents only; noGo candidate run.",
+      "reason": "Malformed/nonfinite/negativegeometry or oversizedstream/chapter facts must not enter memory/disk cache and block recovery."
     },
     {
       "file": "packages/mediaprobe/duration_cache_test.go",
@@ -50907,8 +51445,8 @@
       "owner_group": "mediaprobe",
       "body_sha256": "3e93ff7795c0831a9dd5843543d87fc27d21aa037838533fe80200b399fcaeaa",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
+      "decision": "R",
+      "audit_status": "reviewed",
       "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
       "validation_command": "cd packages && go test ./mediaprobe",
       "baseline_event": {
@@ -50917,7 +51455,34 @@
         "Package": "github.com/MikeO7/kinosail/packages/mediaprobe",
         "Test": "TestOldProbeCacheCannotRetainRejectedFacts",
         "Elapsed": 0.09
-      }
+      },
+      "credible_failure": "Schema2 empty cache must not suppress fresh valid FFprobe facts.",
+      "remaining_coverage": "Actualschema2versioncurrentdiskentry causes freshduration73 from shell.",
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "auditor": "/root/subtitles_shared/shared_identity",
+      "production_owner": [
+        "packages/mediaprobe/probe.go",
+        "packages/mediaprobe/cache.go",
+        "packages/mediaprobe/command.go",
+        "packages/mediaprobe/parse.go",
+        "packages/mediaprobe/facts.go",
+        "packages/mediaprobe/decorate.go",
+        "packages/mediaprobe/replaygain.go",
+        "packages/mediaprobe/embedded.go",
+        "packages/mediaprobe/embedded_concurrency.go"
+      ],
+      "callers": [
+        "apps/{player,subtitles}/internal/server/probe.go::newMediaProbe and aliases",
+        "apps/{player,subtitles}/internal/server/probe_enrichment.go",
+        "apps/{player,subtitles}/internal/server/embedded_subtitles.go::serveEmbedded bindsvisibility/tool/localizederror",
+        "apps/{player,subtitles}/internal/server/embedded_subtitle_extract.go::embeddedOptions/extractEmbedded",
+        "packages/playerweb/player_projection.go::ApplyMedia"
+      ],
+      "gap": "Actual Player test-instance-playback native/compatible seek and test-instance-production realmusic/audiobook/source/offline play ordinarymedia; no exact subprocesscount, restartedfacts/stalecache/adversefilesystem/probe rejection/track/HDR/embeddedextraction race matrix. player-experience-fixture.ts setContent/fakemedia, player-subtitles-loading.spec.ts route.fulfill captions and player-audio-policy mocked media APIs are frontendfixtures, not mediaprobeE2E. Shellscripts here produce JSON/VTT without realFFprobe/FFmpeg decoding.",
+      "source_read_evidence": "Full36 baseline declarations, test helpers and all9production owners read; complete app Probe/Enrichment/Embedded adapters, actual populated playback/browser bodies plus frontend fixture setup inspected; git history includes cancellationcheckpoint1813fb49, atomicfakepublication62692271 and authority1f1a81b7. Original baselineevents only; noGo candidate run.",
+      "reason": "Schema2 empty cache must not suppress fresh valid FFprobe facts."
     },
     {
       "file": "packages/mediaprobe/embedded_concurrency_test.go",
@@ -50927,8 +51492,8 @@
       "owner_group": "mediaprobe",
       "body_sha256": "68105af6aff02afea21e5705f8d8d1254bcec7f996eebda52d6665664a224636",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
+      "decision": "F",
+      "audit_status": "reviewed",
       "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
       "validation_command": "cd packages && go test ./mediaprobe",
       "baseline_event": {
@@ -50937,7 +51502,36 @@
         "Package": "github.com/MikeO7/kinosail/packages/mediaprobe",
         "Test": "TestEmbeddedSharesExtractionAndCanceledWaitersDoNotStopOwner",
         "Elapsed": 0.21
-      }
+      },
+      "credible_failure": "Pre-canceled waiter must return context.Canceled without stopping active owner; duplicate extraction count must remain bounded.",
+      "remaining_coverage": "Owner reachesmarker before canceledwaiter, release then bothsuccess and exactonecall. Second goroutine lacks join latch and may reuse completed diskcache, so inflight-sharing claim limited.",
+      "history": [
+        "1813fb49faeb18303866dbc74610eea6746dd919 test(mediaprobe): allow loaded runners to reach extraction checkpoint",
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "auditor": "/root/subtitles_shared/shared_identity",
+      "production_owner": [
+        "packages/mediaprobe/probe.go",
+        "packages/mediaprobe/cache.go",
+        "packages/mediaprobe/command.go",
+        "packages/mediaprobe/parse.go",
+        "packages/mediaprobe/facts.go",
+        "packages/mediaprobe/decorate.go",
+        "packages/mediaprobe/replaygain.go",
+        "packages/mediaprobe/embedded.go",
+        "packages/mediaprobe/embedded_concurrency.go"
+      ],
+      "callers": [
+        "apps/{player,subtitles}/internal/server/probe.go::newMediaProbe and aliases",
+        "apps/{player,subtitles}/internal/server/probe_enrichment.go",
+        "apps/{player,subtitles}/internal/server/embedded_subtitles.go::serveEmbedded bindsvisibility/tool/localizederror",
+        "apps/{player,subtitles}/internal/server/embedded_subtitle_extract.go::embeddedOptions/extractEmbedded",
+        "packages/playerweb/player_projection.go::ApplyMedia"
+      ],
+      "gap": "Actual Player test-instance-playback native/compatible seek and test-instance-production realmusic/audiobook/source/offline play ordinarymedia; no exact subprocesscount, restartedfacts/stalecache/adversefilesystem/probe rejection/track/HDR/embeddedextraction race matrix. player-experience-fixture.ts setContent/fakemedia, player-subtitles-loading.spec.ts route.fulfill captions and player-audio-policy mocked media APIs are frontendfixtures, not mediaprobeE2E. Shellscripts here produce JSON/VTT without realFFprobe/FFmpeg decoding.",
+      "source_read_evidence": "Full36 baseline declarations, test helpers and all9production owners read; complete app Probe/Enrichment/Embedded adapters, actual populated playback/browser bodies plus frontend fixture setup inspected; git history includes cancellationcheckpoint1813fb49, atomicfakepublication62692271 and authority1f1a81b7. Original baselineevents only; noGo candidate run.",
+      "reason": "Pre-canceled waiter must return context.Canceled without stopping active owner; duplicate extraction count must remain bounded.",
+      "implementation_status": "retained unchanged; limitation or diagnostic/consolidation proposal recorded; no new assertion or candidate validation claimed"
     },
     {
       "file": "packages/mediaprobe/embedded_concurrency_test.go",
@@ -50947,8 +51541,8 @@
       "owner_group": "mediaprobe",
       "body_sha256": "ed998c53a0976d5f6a2960d6fba502f2a97427c777d07b20e2f6a53d7f45ee12",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
+      "decision": "F",
+      "audit_status": "reviewed",
       "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
       "validation_command": "cd packages && go test ./mediaprobe",
       "baseline_event": {
@@ -50957,7 +51551,36 @@
         "Package": "github.com/MikeO7/kinosail/packages/mediaprobe",
         "Test": "TestEmbeddedViewerRetriesCanceledBackgroundOwner",
         "Elapsed": 0.19
-      }
+      },
+      "credible_failure": "Canceled background extraction must not publish cache or poison later sameProbe viewer recovery.",
+      "remaining_coverage": "Ownerreachesmarker then canceledreturns context.Canceled/cacheabsent; viewer succeeds with exactly2calls. Viewer lacks waiterjoin latch, so inherited-cancellation handoff not independently guaranteed.",
+      "history": [
+        "1813fb49faeb18303866dbc74610eea6746dd919 test(mediaprobe): allow loaded runners to reach extraction checkpoint",
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "auditor": "/root/subtitles_shared/shared_identity",
+      "production_owner": [
+        "packages/mediaprobe/probe.go",
+        "packages/mediaprobe/cache.go",
+        "packages/mediaprobe/command.go",
+        "packages/mediaprobe/parse.go",
+        "packages/mediaprobe/facts.go",
+        "packages/mediaprobe/decorate.go",
+        "packages/mediaprobe/replaygain.go",
+        "packages/mediaprobe/embedded.go",
+        "packages/mediaprobe/embedded_concurrency.go"
+      ],
+      "callers": [
+        "apps/{player,subtitles}/internal/server/probe.go::newMediaProbe and aliases",
+        "apps/{player,subtitles}/internal/server/probe_enrichment.go",
+        "apps/{player,subtitles}/internal/server/embedded_subtitles.go::serveEmbedded bindsvisibility/tool/localizederror",
+        "apps/{player,subtitles}/internal/server/embedded_subtitle_extract.go::embeddedOptions/extractEmbedded",
+        "packages/playerweb/player_projection.go::ApplyMedia"
+      ],
+      "gap": "Actual Player test-instance-playback native/compatible seek and test-instance-production realmusic/audiobook/source/offline play ordinarymedia; no exact subprocesscount, restartedfacts/stalecache/adversefilesystem/probe rejection/track/HDR/embeddedextraction race matrix. player-experience-fixture.ts setContent/fakemedia, player-subtitles-loading.spec.ts route.fulfill captions and player-audio-policy mocked media APIs are frontendfixtures, not mediaprobeE2E. Shellscripts here produce JSON/VTT without realFFprobe/FFmpeg decoding.",
+      "source_read_evidence": "Full36 baseline declarations, test helpers and all9production owners read; complete app Probe/Enrichment/Embedded adapters, actual populated playback/browser bodies plus frontend fixture setup inspected; git history includes cancellationcheckpoint1813fb49, atomicfakepublication62692271 and authority1f1a81b7. Original baselineevents only; noGo candidate run.",
+      "reason": "Canceled background extraction must not publish cache or poison later sameProbe viewer recovery.",
+      "implementation_status": "retained unchanged; limitation or diagnostic/consolidation proposal recorded; no new assertion or candidate validation claimed"
     },
     {
       "file": "packages/mediaprobe/embedded_concurrency_test.go",
@@ -50967,8 +51590,8 @@
       "owner_group": "mediaprobe",
       "body_sha256": "adedbfd9ae4a5f615e0d95d21583506899fa6e8bdf9b2dab6c8ff70215dbd7e1",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
+      "decision": "R",
+      "audit_status": "reviewed",
       "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
       "validation_command": "cd packages && go test ./mediaprobe",
       "baseline_event": {
@@ -50977,7 +51600,35 @@
         "Package": "github.com/MikeO7/kinosail/packages/mediaprobe",
         "Test": "TestEmbeddedDoesNotRunPlaybackEnrichment",
         "Elapsed": 0.15
-      }
+      },
+      "credible_failure": "Caption request must not trigger app playback chapter/marker enrichment and block on unrelated lookup.",
+      "remaining_coverage": "Suppliedchapteradapter t.Error on invocation; actualEmbedded returns validshellcaption.",
+      "history": [
+        "1813fb49faeb18303866dbc74610eea6746dd919 test(mediaprobe): allow loaded runners to reach extraction checkpoint",
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "auditor": "/root/subtitles_shared/shared_identity",
+      "production_owner": [
+        "packages/mediaprobe/probe.go",
+        "packages/mediaprobe/cache.go",
+        "packages/mediaprobe/command.go",
+        "packages/mediaprobe/parse.go",
+        "packages/mediaprobe/facts.go",
+        "packages/mediaprobe/decorate.go",
+        "packages/mediaprobe/replaygain.go",
+        "packages/mediaprobe/embedded.go",
+        "packages/mediaprobe/embedded_concurrency.go"
+      ],
+      "callers": [
+        "apps/{player,subtitles}/internal/server/probe.go::newMediaProbe and aliases",
+        "apps/{player,subtitles}/internal/server/probe_enrichment.go",
+        "apps/{player,subtitles}/internal/server/embedded_subtitles.go::serveEmbedded bindsvisibility/tool/localizederror",
+        "apps/{player,subtitles}/internal/server/embedded_subtitle_extract.go::embeddedOptions/extractEmbedded",
+        "packages/playerweb/player_projection.go::ApplyMedia"
+      ],
+      "gap": "Actual Player test-instance-playback native/compatible seek and test-instance-production realmusic/audiobook/source/offline play ordinarymedia; no exact subprocesscount, restartedfacts/stalecache/adversefilesystem/probe rejection/track/HDR/embeddedextraction race matrix. player-experience-fixture.ts setContent/fakemedia, player-subtitles-loading.spec.ts route.fulfill captions and player-audio-policy mocked media APIs are frontendfixtures, not mediaprobeE2E. Shellscripts here produce JSON/VTT without realFFprobe/FFmpeg decoding.",
+      "source_read_evidence": "Full36 baseline declarations, test helpers and all9production owners read; complete app Probe/Enrichment/Embedded adapters, actual populated playback/browser bodies plus frontend fixture setup inspected; git history includes cancellationcheckpoint1813fb49, atomicfakepublication62692271 and authority1f1a81b7. Original baselineevents only; noGo candidate run.",
+      "reason": "Caption request must not trigger app playback chapter/marker enrichment and block on unrelated lookup."
     },
     {
       "file": "packages/mediaprobe/embedded_concurrency_test.go",
@@ -50987,8 +51638,8 @@
       "owner_group": "mediaprobe",
       "body_sha256": "60c0a1bfc5653b53708a9f770c3d65bd8413f30c577872444957325cd6a5e63b",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
+      "decision": "R",
+      "audit_status": "reviewed",
       "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
       "validation_command": "cd packages && go test ./mediaprobe",
       "baseline_event": {
@@ -50997,7 +51648,35 @@
         "Package": "github.com/MikeO7/kinosail/packages/mediaprobe",
         "Test": "TestEmbeddedRejectsChangingSourceBeforeCachePublication",
         "Elapsed": 0.16
-      }
+      },
+      "credible_failure": "Source replacement during extraction must not publish captions for stale file identity.",
+      "remaining_coverage": "Shellrewritesmedia beforeVTT; errorsourcechanged and entirecachedirectory absent.",
+      "history": [
+        "1813fb49faeb18303866dbc74610eea6746dd919 test(mediaprobe): allow loaded runners to reach extraction checkpoint",
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "auditor": "/root/subtitles_shared/shared_identity",
+      "production_owner": [
+        "packages/mediaprobe/probe.go",
+        "packages/mediaprobe/cache.go",
+        "packages/mediaprobe/command.go",
+        "packages/mediaprobe/parse.go",
+        "packages/mediaprobe/facts.go",
+        "packages/mediaprobe/decorate.go",
+        "packages/mediaprobe/replaygain.go",
+        "packages/mediaprobe/embedded.go",
+        "packages/mediaprobe/embedded_concurrency.go"
+      ],
+      "callers": [
+        "apps/{player,subtitles}/internal/server/probe.go::newMediaProbe and aliases",
+        "apps/{player,subtitles}/internal/server/probe_enrichment.go",
+        "apps/{player,subtitles}/internal/server/embedded_subtitles.go::serveEmbedded bindsvisibility/tool/localizederror",
+        "apps/{player,subtitles}/internal/server/embedded_subtitle_extract.go::embeddedOptions/extractEmbedded",
+        "packages/playerweb/player_projection.go::ApplyMedia"
+      ],
+      "gap": "Actual Player test-instance-playback native/compatible seek and test-instance-production realmusic/audiobook/source/offline play ordinarymedia; no exact subprocesscount, restartedfacts/stalecache/adversefilesystem/probe rejection/track/HDR/embeddedextraction race matrix. player-experience-fixture.ts setContent/fakemedia, player-subtitles-loading.spec.ts route.fulfill captions and player-audio-policy mocked media APIs are frontendfixtures, not mediaprobeE2E. Shellscripts here produce JSON/VTT without realFFprobe/FFmpeg decoding.",
+      "source_read_evidence": "Full36 baseline declarations, test helpers and all9production owners read; complete app Probe/Enrichment/Embedded adapters, actual populated playback/browser bodies plus frontend fixture setup inspected; git history includes cancellationcheckpoint1813fb49, atomicfakepublication62692271 and authority1f1a81b7. Original baselineevents only; noGo candidate run.",
+      "reason": "Source replacement during extraction must not publish captions for stale file identity."
     },
     {
       "file": "packages/mediaprobe/embedded_test.go",
@@ -51007,8 +51686,8 @@
       "owner_group": "mediaprobe",
       "body_sha256": "85a915f60a64099df7169be64874d94944505fd7dba6e1e9a42479106f8eb8cd",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
+      "decision": "R",
+      "audit_status": "reviewed",
       "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
       "validation_command": "cd packages && go test ./mediaprobe",
       "baseline_event": {
@@ -51017,7 +51696,34 @@
         "Package": "github.com/MikeO7/kinosail/packages/mediaprobe",
         "Test": "TestEmbeddedSubtitleExtractionCacheAndTimeline",
         "Elapsed": 0.18
-      }
+      },
+      "credible_failure": "Embedded extraction cache repair, reuse and omitted timeline must preserve exact caption bytes without stale validators.",
+      "remaining_coverage": "Real shellWebVTT, in-memory/cache/publicHTTP exactbytes+MIME, mapped1second cue/noLastModified, invalidtoken, emptycache repaired and exact3calls.",
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "auditor": "/root/subtitles_shared/shared_identity",
+      "production_owner": [
+        "packages/mediaprobe/probe.go",
+        "packages/mediaprobe/cache.go",
+        "packages/mediaprobe/command.go",
+        "packages/mediaprobe/parse.go",
+        "packages/mediaprobe/facts.go",
+        "packages/mediaprobe/decorate.go",
+        "packages/mediaprobe/replaygain.go",
+        "packages/mediaprobe/embedded.go",
+        "packages/mediaprobe/embedded_concurrency.go"
+      ],
+      "callers": [
+        "apps/{player,subtitles}/internal/server/probe.go::newMediaProbe and aliases",
+        "apps/{player,subtitles}/internal/server/probe_enrichment.go",
+        "apps/{player,subtitles}/internal/server/embedded_subtitles.go::serveEmbedded bindsvisibility/tool/localizederror",
+        "apps/{player,subtitles}/internal/server/embedded_subtitle_extract.go::embeddedOptions/extractEmbedded",
+        "packages/playerweb/player_projection.go::ApplyMedia"
+      ],
+      "gap": "Actual Player test-instance-playback native/compatible seek and test-instance-production realmusic/audiobook/source/offline play ordinarymedia; no exact subprocesscount, restartedfacts/stalecache/adversefilesystem/probe rejection/track/HDR/embeddedextraction race matrix. player-experience-fixture.ts setContent/fakemedia, player-subtitles-loading.spec.ts route.fulfill captions and player-audio-policy mocked media APIs are frontendfixtures, not mediaprobeE2E. Shellscripts here produce JSON/VTT without realFFprobe/FFmpeg decoding.",
+      "source_read_evidence": "Full36 baseline declarations, test helpers and all9production owners read; complete app Probe/Enrichment/Embedded adapters, actual populated playback/browser bodies plus frontend fixture setup inspected; git history includes cancellationcheckpoint1813fb49, atomicfakepublication62692271 and authority1f1a81b7. Original baselineevents only; noGo candidate run.",
+      "reason": "Embedded extraction cache repair, reuse and omitted timeline must preserve exact caption bytes without stale validators."
     },
     {
       "file": "packages/mediaprobe/embedded_test.go",
@@ -51027,8 +51733,8 @@
       "owner_group": "mediaprobe",
       "body_sha256": "131e421ad0a42c8d559dbb74f093e5a452177ee1150d3fd8c95f22ef5a9d1b23",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
+      "decision": "R",
+      "audit_status": "reviewed",
       "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
       "validation_command": "cd packages && go test ./mediaprobe",
       "baseline_event": {
@@ -51037,7 +51743,34 @@
         "Package": "github.com/MikeO7/kinosail/packages/mediaprobe",
         "Test": "TestEmbeddedSubtitleRejectsUnsupportedStreamsWithoutExtraction",
         "Elapsed": 0.01
-      }
+      },
+      "credible_failure": "Unsupported/image/out-of-range subtitle streams must not run FFmpeg or create cache.",
+      "remaining_coverage": "Negative/PGS/missing/65536 stream matrix ErrUnsupported, callfileabsent and cacheempty.",
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "auditor": "/root/subtitles_shared/shared_identity",
+      "production_owner": [
+        "packages/mediaprobe/probe.go",
+        "packages/mediaprobe/cache.go",
+        "packages/mediaprobe/command.go",
+        "packages/mediaprobe/parse.go",
+        "packages/mediaprobe/facts.go",
+        "packages/mediaprobe/decorate.go",
+        "packages/mediaprobe/replaygain.go",
+        "packages/mediaprobe/embedded.go",
+        "packages/mediaprobe/embedded_concurrency.go"
+      ],
+      "callers": [
+        "apps/{player,subtitles}/internal/server/probe.go::newMediaProbe and aliases",
+        "apps/{player,subtitles}/internal/server/probe_enrichment.go",
+        "apps/{player,subtitles}/internal/server/embedded_subtitles.go::serveEmbedded bindsvisibility/tool/localizederror",
+        "apps/{player,subtitles}/internal/server/embedded_subtitle_extract.go::embeddedOptions/extractEmbedded",
+        "packages/playerweb/player_projection.go::ApplyMedia"
+      ],
+      "gap": "Actual Player test-instance-playback native/compatible seek and test-instance-production realmusic/audiobook/source/offline play ordinarymedia; no exact subprocesscount, restartedfacts/stalecache/adversefilesystem/probe rejection/track/HDR/embeddedextraction race matrix. player-experience-fixture.ts setContent/fakemedia, player-subtitles-loading.spec.ts route.fulfill captions and player-audio-policy mocked media APIs are frontendfixtures, not mediaprobeE2E. Shellscripts here produce JSON/VTT without realFFprobe/FFmpeg decoding.",
+      "source_read_evidence": "Full36 baseline declarations, test helpers and all9production owners read; complete app Probe/Enrichment/Embedded adapters, actual populated playback/browser bodies plus frontend fixture setup inspected; git history includes cancellationcheckpoint1813fb49, atomicfakepublication62692271 and authority1f1a81b7. Original baselineevents only; noGo candidate run.",
+      "reason": "Unsupported/image/out-of-range subtitle streams must not run FFmpeg or create cache."
     },
     {
       "file": "packages/mediaprobe/embedded_test.go",
@@ -51047,8 +51780,8 @@
       "owner_group": "mediaprobe",
       "body_sha256": "1425a7e41968eef8a7b11a9a63989e9086f9c3b8f299c082ea0d768937172353",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
+      "decision": "R",
+      "audit_status": "reviewed",
       "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
       "validation_command": "cd packages && go test ./mediaprobe",
       "baseline_event": {
@@ -51057,7 +51790,34 @@
         "Package": "github.com/MikeO7/kinosail/packages/mediaprobe",
         "Test": "TestEmbeddedHandlerPreservesPlayerHTTPFailuresAndBytes",
         "Elapsed": 0.15
-      }
+      },
+      "credible_failure": "Hidden/malformed/unsupported/token paths must not leak extraction detail; valid captions need exact VTT response.",
+      "remaining_coverage": "Actualregisteredmux404body, unavailable503genericbody, valid200WebVTT/MIME fromshell.",
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "auditor": "/root/subtitles_shared/shared_identity",
+      "production_owner": [
+        "packages/mediaprobe/probe.go",
+        "packages/mediaprobe/cache.go",
+        "packages/mediaprobe/command.go",
+        "packages/mediaprobe/parse.go",
+        "packages/mediaprobe/facts.go",
+        "packages/mediaprobe/decorate.go",
+        "packages/mediaprobe/replaygain.go",
+        "packages/mediaprobe/embedded.go",
+        "packages/mediaprobe/embedded_concurrency.go"
+      ],
+      "callers": [
+        "apps/{player,subtitles}/internal/server/probe.go::newMediaProbe and aliases",
+        "apps/{player,subtitles}/internal/server/probe_enrichment.go",
+        "apps/{player,subtitles}/internal/server/embedded_subtitles.go::serveEmbedded bindsvisibility/tool/localizederror",
+        "apps/{player,subtitles}/internal/server/embedded_subtitle_extract.go::embeddedOptions/extractEmbedded",
+        "packages/playerweb/player_projection.go::ApplyMedia"
+      ],
+      "gap": "Actual Player test-instance-playback native/compatible seek and test-instance-production realmusic/audiobook/source/offline play ordinarymedia; no exact subprocesscount, restartedfacts/stalecache/adversefilesystem/probe rejection/track/HDR/embeddedextraction race matrix. player-experience-fixture.ts setContent/fakemedia, player-subtitles-loading.spec.ts route.fulfill captions and player-audio-policy mocked media APIs are frontendfixtures, not mediaprobeE2E. Shellscripts here produce JSON/VTT without realFFprobe/FFmpeg decoding.",
+      "source_read_evidence": "Full36 baseline declarations, test helpers and all9production owners read; complete app Probe/Enrichment/Embedded adapters, actual populated playback/browser bodies plus frontend fixture setup inspected; git history includes cancellationcheckpoint1813fb49, atomicfakepublication62692271 and authority1f1a81b7. Original baselineevents only; noGo candidate run.",
+      "reason": "Hidden/malformed/unsupported/token paths must not leak extraction detail; valid captions need exact VTT response."
     },
     {
       "file": "packages/mediaprobe/embedded_test.go",
@@ -51067,8 +51827,8 @@
       "owner_group": "mediaprobe",
       "body_sha256": "3e2bc9f732d89d9da4ec25000e3730e1aa05c43708c20b8cdd4572b2b61fd37f",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
+      "decision": "R",
+      "audit_status": "reviewed",
       "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
       "validation_command": "cd packages && go test ./mediaprobe",
       "baseline_event": {
@@ -51077,7 +51837,34 @@
         "Package": "github.com/MikeO7/kinosail/packages/mediaprobe",
         "Test": "TestEmbeddedSubtitleBoundsCancellationAndCleanup",
         "Elapsed": 0.48
-      }
+      },
+      "credible_failure": "Empty/failed/oversized/canceled extraction and cachewrite failure must not publish partial output.",
+      "remaining_coverage": "Shellfailure/16MiB+1/timeout cases absenttarget, invalidexec expliciterror, writetargetdirectory failure leavesexactoriginalentry only.",
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "auditor": "/root/subtitles_shared/shared_identity",
+      "production_owner": [
+        "packages/mediaprobe/probe.go",
+        "packages/mediaprobe/cache.go",
+        "packages/mediaprobe/command.go",
+        "packages/mediaprobe/parse.go",
+        "packages/mediaprobe/facts.go",
+        "packages/mediaprobe/decorate.go",
+        "packages/mediaprobe/replaygain.go",
+        "packages/mediaprobe/embedded.go",
+        "packages/mediaprobe/embedded_concurrency.go"
+      ],
+      "callers": [
+        "apps/{player,subtitles}/internal/server/probe.go::newMediaProbe and aliases",
+        "apps/{player,subtitles}/internal/server/probe_enrichment.go",
+        "apps/{player,subtitles}/internal/server/embedded_subtitles.go::serveEmbedded bindsvisibility/tool/localizederror",
+        "apps/{player,subtitles}/internal/server/embedded_subtitle_extract.go::embeddedOptions/extractEmbedded",
+        "packages/playerweb/player_projection.go::ApplyMedia"
+      ],
+      "gap": "Actual Player test-instance-playback native/compatible seek and test-instance-production realmusic/audiobook/source/offline play ordinarymedia; no exact subprocesscount, restartedfacts/stalecache/adversefilesystem/probe rejection/track/HDR/embeddedextraction race matrix. player-experience-fixture.ts setContent/fakemedia, player-subtitles-loading.spec.ts route.fulfill captions and player-audio-policy mocked media APIs are frontendfixtures, not mediaprobeE2E. Shellscripts here produce JSON/VTT without realFFprobe/FFmpeg decoding.",
+      "source_read_evidence": "Full36 baseline declarations, test helpers and all9production owners read; complete app Probe/Enrichment/Embedded adapters, actual populated playback/browser bodies plus frontend fixture setup inspected; git history includes cancellationcheckpoint1813fb49, atomicfakepublication62692271 and authority1f1a81b7. Original baselineevents only; noGo candidate run.",
+      "reason": "Empty/failed/oversized/canceled extraction and cachewrite failure must not publish partial output."
     },
     {
       "file": "packages/mediaprobe/embedded_test.go",
@@ -51087,8 +51874,8 @@
       "owner_group": "mediaprobe",
       "body_sha256": "70f9deae15a78c9f3d32b8d98cc814609418147ea2eff5f85eb150af7aeb7a19",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
+      "decision": "R",
+      "audit_status": "reviewed",
       "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
       "validation_command": "cd packages && go test ./mediaprobe",
       "baseline_event": {
@@ -51097,7 +51884,34 @@
         "Package": "github.com/MikeO7/kinosail/packages/mediaprobe",
         "Test": "TestEmbeddedSubtitleRepairsUnsafeCacheAndRejectsUnsafeIDs",
         "Elapsed": 0.2
-      }
+      },
+      "credible_failure": "World-readable cache must be repaired safely and unsafe identifiers must not produce traversal cache paths.",
+      "remaining_coverage": "Mode644badcache becomessecureexactVTT; empty/traversal/257byteID returns in-memoryVTT and noPath.",
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "auditor": "/root/subtitles_shared/shared_identity",
+      "production_owner": [
+        "packages/mediaprobe/probe.go",
+        "packages/mediaprobe/cache.go",
+        "packages/mediaprobe/command.go",
+        "packages/mediaprobe/parse.go",
+        "packages/mediaprobe/facts.go",
+        "packages/mediaprobe/decorate.go",
+        "packages/mediaprobe/replaygain.go",
+        "packages/mediaprobe/embedded.go",
+        "packages/mediaprobe/embedded_concurrency.go"
+      ],
+      "callers": [
+        "apps/{player,subtitles}/internal/server/probe.go::newMediaProbe and aliases",
+        "apps/{player,subtitles}/internal/server/probe_enrichment.go",
+        "apps/{player,subtitles}/internal/server/embedded_subtitles.go::serveEmbedded bindsvisibility/tool/localizederror",
+        "apps/{player,subtitles}/internal/server/embedded_subtitle_extract.go::embeddedOptions/extractEmbedded",
+        "packages/playerweb/player_projection.go::ApplyMedia"
+      ],
+      "gap": "Actual Player test-instance-playback native/compatible seek and test-instance-production realmusic/audiobook/source/offline play ordinarymedia; no exact subprocesscount, restartedfacts/stalecache/adversefilesystem/probe rejection/track/HDR/embeddedextraction race matrix. player-experience-fixture.ts setContent/fakemedia, player-subtitles-loading.spec.ts route.fulfill captions and player-audio-policy mocked media APIs are frontendfixtures, not mediaprobeE2E. Shellscripts here produce JSON/VTT without realFFprobe/FFmpeg decoding.",
+      "source_read_evidence": "Full36 baseline declarations, test helpers and all9production owners read; complete app Probe/Enrichment/Embedded adapters, actual populated playback/browser bodies plus frontend fixture setup inspected; git history includes cancellationcheckpoint1813fb49, atomicfakepublication62692271 and authority1f1a81b7. Original baselineevents only; noGo candidate run.",
+      "reason": "World-readable cache must be repaired safely and unsafe identifiers must not produce traversal cache paths."
     },
     {
       "file": "packages/mediaprobe/facts_test.go",
@@ -51107,8 +51921,8 @@
       "owner_group": "mediaprobe",
       "body_sha256": "5c0133677024737388223bdfe34baab3459b08aa217c7e896155e24eca99db56",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
+      "decision": "R",
+      "audit_status": "reviewed",
       "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
       "validation_command": "cd packages && go test ./mediaprobe",
       "baseline_event": {
@@ -51117,7 +51931,34 @@
         "Package": "github.com/MikeO7/kinosail/packages/mediaprobe",
         "Test": "TestFactsReuseMemoryAndDiskWithoutKeyframeAnalysis",
         "Elapsed": 0.18
-      }
+      },
+      "credible_failure": "Background Facts must avoid expensive playback keyframe analysis even with eligible chapters.",
+      "remaining_coverage": "Repeated/restarted120duration+chaptermarkers+RandomAccessnil and exactone shellcall.",
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "auditor": "/root/subtitles_shared/shared_identity",
+      "production_owner": [
+        "packages/mediaprobe/probe.go",
+        "packages/mediaprobe/cache.go",
+        "packages/mediaprobe/command.go",
+        "packages/mediaprobe/parse.go",
+        "packages/mediaprobe/facts.go",
+        "packages/mediaprobe/decorate.go",
+        "packages/mediaprobe/replaygain.go",
+        "packages/mediaprobe/embedded.go",
+        "packages/mediaprobe/embedded_concurrency.go"
+      ],
+      "callers": [
+        "apps/{player,subtitles}/internal/server/probe.go::newMediaProbe and aliases",
+        "apps/{player,subtitles}/internal/server/probe_enrichment.go",
+        "apps/{player,subtitles}/internal/server/embedded_subtitles.go::serveEmbedded bindsvisibility/tool/localizederror",
+        "apps/{player,subtitles}/internal/server/embedded_subtitle_extract.go::embeddedOptions/extractEmbedded",
+        "packages/playerweb/player_projection.go::ApplyMedia"
+      ],
+      "gap": "Actual Player test-instance-playback native/compatible seek and test-instance-production realmusic/audiobook/source/offline play ordinarymedia; no exact subprocesscount, restartedfacts/stalecache/adversefilesystem/probe rejection/track/HDR/embeddedextraction race matrix. player-experience-fixture.ts setContent/fakemedia, player-subtitles-loading.spec.ts route.fulfill captions and player-audio-policy mocked media APIs are frontendfixtures, not mediaprobeE2E. Shellscripts here produce JSON/VTT without realFFprobe/FFmpeg decoding.",
+      "source_read_evidence": "Full36 baseline declarations, test helpers and all9production owners read; complete app Probe/Enrichment/Embedded adapters, actual populated playback/browser bodies plus frontend fixture setup inspected; git history includes cancellationcheckpoint1813fb49, atomicfakepublication62692271 and authority1f1a81b7. Original baselineevents only; noGo candidate run.",
+      "reason": "Background Facts must avoid expensive playback keyframe analysis even with eligible chapters."
     },
     {
       "file": "packages/mediaprobe/media_facts_test.go",
@@ -51127,8 +51968,8 @@
       "owner_group": "mediaprobe",
       "body_sha256": "2877ca525b980b6aa005f4cd65d46d2af259914ac04b4600e9e45f116663b2cd",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
+      "decision": "R",
+      "audit_status": "reviewed",
       "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
       "validation_command": "cd packages && go test ./mediaprobe",
       "baseline_event": {
@@ -51137,7 +51978,34 @@
         "Package": "github.com/MikeO7/kinosail/packages/mediaprobe",
         "Test": "TestMediaFactsPreservesTracksAndAddsExternalSubtitleIdentity",
         "Elapsed": 0
-      }
+      },
+      "credible_failure": "Track source/external subtitle indexes and mutable cached slices must remain distinct across playback decisions.",
+      "remaining_coverage": "Complete expectedfacts includesexternalSourceIndex-1/ExternalIndex0/language/role; modifying copiedaudio/subtitles/keyframes leavescache unchanged.",
+      "history": [
+        "9b6afb604c451c47930d7e077be95b760542fe5b Fix release schemas, security boundaries, and browser fixtures"
+      ],
+      "auditor": "/root/subtitles_shared/shared_identity",
+      "production_owner": [
+        "packages/mediaprobe/probe.go",
+        "packages/mediaprobe/cache.go",
+        "packages/mediaprobe/command.go",
+        "packages/mediaprobe/parse.go",
+        "packages/mediaprobe/facts.go",
+        "packages/mediaprobe/decorate.go",
+        "packages/mediaprobe/replaygain.go",
+        "packages/mediaprobe/embedded.go",
+        "packages/mediaprobe/embedded_concurrency.go"
+      ],
+      "callers": [
+        "apps/{player,subtitles}/internal/server/probe.go::newMediaProbe and aliases",
+        "apps/{player,subtitles}/internal/server/probe_enrichment.go",
+        "apps/{player,subtitles}/internal/server/embedded_subtitles.go::serveEmbedded bindsvisibility/tool/localizederror",
+        "apps/{player,subtitles}/internal/server/embedded_subtitle_extract.go::embeddedOptions/extractEmbedded",
+        "packages/playerweb/player_projection.go::ApplyMedia"
+      ],
+      "gap": "Actual Player test-instance-playback native/compatible seek and test-instance-production realmusic/audiobook/source/offline play ordinarymedia; no exact subprocesscount, restartedfacts/stalecache/adversefilesystem/probe rejection/track/HDR/embeddedextraction race matrix. player-experience-fixture.ts setContent/fakemedia, player-subtitles-loading.spec.ts route.fulfill captions and player-audio-policy mocked media APIs are frontendfixtures, not mediaprobeE2E. Shellscripts here produce JSON/VTT without realFFprobe/FFmpeg decoding.",
+      "source_read_evidence": "Full36 baseline declarations, test helpers and all9production owners read; complete app Probe/Enrichment/Embedded adapters, actual populated playback/browser bodies plus frontend fixture setup inspected; git history includes cancellationcheckpoint1813fb49, atomicfakepublication62692271 and authority1f1a81b7. Original baselineevents only; noGo candidate run.",
+      "reason": "Track source/external subtitle indexes and mutable cached slices must remain distinct across playback decisions."
     },
     {
       "file": "packages/mediaprobe/memory_scan_facts_test.go",
@@ -51147,8 +52015,8 @@
       "owner_group": "mediaprobe",
       "body_sha256": "0f85266e3017c2de6f1bc9d864c6963096a3980dd33c1b9d4701a26dc1335cfd",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
+      "decision": "R",
+      "audit_status": "reviewed",
       "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
       "validation_command": "cd packages && go test ./mediaprobe",
       "baseline_event": {
@@ -51157,7 +52025,34 @@
         "Package": "github.com/MikeO7/kinosail/packages/mediaprobe",
         "Test": "TestMemoryScanFactsDoesNotHydrateFromDiskOrRunProbe",
         "Elapsed": 0.18
-      }
+      },
+      "credible_failure": "Foreground memory scan must not hydrate disk/read unavailable media or start probe, unlike explicit background reader.",
+      "remaining_coverage": "ColdMemorymiss despitewarmdisk; deletedsource warmMemoryhit; explicitCachedScan hydrates; staleversionsrejected and exactlyonecall.",
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "auditor": "/root/subtitles_shared/shared_identity",
+      "production_owner": [
+        "packages/mediaprobe/probe.go",
+        "packages/mediaprobe/cache.go",
+        "packages/mediaprobe/command.go",
+        "packages/mediaprobe/parse.go",
+        "packages/mediaprobe/facts.go",
+        "packages/mediaprobe/decorate.go",
+        "packages/mediaprobe/replaygain.go",
+        "packages/mediaprobe/embedded.go",
+        "packages/mediaprobe/embedded_concurrency.go"
+      ],
+      "callers": [
+        "apps/{player,subtitles}/internal/server/probe.go::newMediaProbe and aliases",
+        "apps/{player,subtitles}/internal/server/probe_enrichment.go",
+        "apps/{player,subtitles}/internal/server/embedded_subtitles.go::serveEmbedded bindsvisibility/tool/localizederror",
+        "apps/{player,subtitles}/internal/server/embedded_subtitle_extract.go::embeddedOptions/extractEmbedded",
+        "packages/playerweb/player_projection.go::ApplyMedia"
+      ],
+      "gap": "Actual Player test-instance-playback native/compatible seek and test-instance-production realmusic/audiobook/source/offline play ordinarymedia; no exact subprocesscount, restartedfacts/stalecache/adversefilesystem/probe rejection/track/HDR/embeddedextraction race matrix. player-experience-fixture.ts setContent/fakemedia, player-subtitles-loading.spec.ts route.fulfill captions and player-audio-policy mocked media APIs are frontendfixtures, not mediaprobeE2E. Shellscripts here produce JSON/VTT without realFFprobe/FFmpeg decoding.",
+      "source_read_evidence": "Full36 baseline declarations, test helpers and all9production owners read; complete app Probe/Enrichment/Embedded adapters, actual populated playback/browser bodies plus frontend fixture setup inspected; git history includes cancellationcheckpoint1813fb49, atomicfakepublication62692271 and authority1f1a81b7. Original baselineevents only; noGo candidate run.",
+      "reason": "Foreground memory scan must not hydrate disk/read unavailable media or start probe, unlike explicit background reader."
     },
     {
       "file": "packages/mediaprobe/probe_test.go",
@@ -51167,8 +52062,8 @@
       "owner_group": "mediaprobe",
       "body_sha256": "e4f0093ee9813b8e612a9ea25e1d7ac0c3fa5a268018aeb993198828e9e6f7ec",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
+      "decision": "R",
+      "audit_status": "reviewed",
       "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
       "validation_command": "cd packages && go test ./mediaprobe",
       "baseline_event": {
@@ -51177,7 +52072,35 @@
         "Package": "github.com/MikeO7/kinosail/packages/mediaprobe",
         "Test": "TestParseProbeSummarizesMediaAndAudioTracks",
         "Elapsed": 0
-      }
+      },
+      "credible_failure": "Multiple audio tracks must show language/title labels and codec instead of misleading picker text.",
+      "remaining_coverage": "HEVC4K summaryduration and twoEAC3/AAC tracklabels ENG/directorcommentary; realmedia ordinaryone-track E2E no suchmatrix.",
+      "history": [
+        "878dc2a63d62880e6d3a5aa395ce25dd40919539 Remove retired artifacts and unused code",
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "auditor": "/root/subtitles_shared/shared_identity",
+      "production_owner": [
+        "packages/mediaprobe/probe.go",
+        "packages/mediaprobe/cache.go",
+        "packages/mediaprobe/command.go",
+        "packages/mediaprobe/parse.go",
+        "packages/mediaprobe/facts.go",
+        "packages/mediaprobe/decorate.go",
+        "packages/mediaprobe/replaygain.go",
+        "packages/mediaprobe/embedded.go",
+        "packages/mediaprobe/embedded_concurrency.go"
+      ],
+      "callers": [
+        "apps/{player,subtitles}/internal/server/probe.go::newMediaProbe and aliases",
+        "apps/{player,subtitles}/internal/server/probe_enrichment.go",
+        "apps/{player,subtitles}/internal/server/embedded_subtitles.go::serveEmbedded bindsvisibility/tool/localizederror",
+        "apps/{player,subtitles}/internal/server/embedded_subtitle_extract.go::embeddedOptions/extractEmbedded",
+        "packages/playerweb/player_projection.go::ApplyMedia"
+      ],
+      "gap": "Actual Player test-instance-playback native/compatible seek and test-instance-production realmusic/audiobook/source/offline play ordinarymedia; no exact subprocesscount, restartedfacts/stalecache/adversefilesystem/probe rejection/track/HDR/embeddedextraction race matrix. player-experience-fixture.ts setContent/fakemedia, player-subtitles-loading.spec.ts route.fulfill captions and player-audio-policy mocked media APIs are frontendfixtures, not mediaprobeE2E. Shellscripts here produce JSON/VTT without realFFprobe/FFmpeg decoding.",
+      "source_read_evidence": "Full36 baseline declarations, test helpers and all9production owners read; complete app Probe/Enrichment/Embedded adapters, actual populated playback/browser bodies plus frontend fixture setup inspected; git history includes cancellationcheckpoint1813fb49, atomicfakepublication62692271 and authority1f1a81b7. Original baselineevents only; noGo candidate run.",
+      "reason": "Multiple audio tracks must show language/title labels and codec instead of misleading picker text."
     },
     {
       "file": "packages/mediaprobe/probe_test.go",
@@ -51187,8 +52110,8 @@
       "owner_group": "mediaprobe",
       "body_sha256": "d17e4914aaf41faebdfb890d9497eb6c1c2211dd01e6597d3b7d5d0545880914",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
+      "decision": "R",
+      "audit_status": "reviewed",
       "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
       "validation_command": "cd packages && go test ./mediaprobe",
       "baseline_event": {
@@ -51197,7 +52120,35 @@
         "Package": "github.com/MikeO7/kinosail/packages/mediaprobe",
         "Test": "TestParseProbeNormalizesPlaybackAndAccessibilityFacts",
         "Elapsed": 0
-      }
+      },
+      "credible_failure": "Probe HDR/source indexes/description/captions/forcedimage facts must drive correct safe playback and accessibility selection.",
+      "remaining_coverage": "Exact Main10/HDR10BT2020/container/bitrate, descriptionAudioSource2 and textcaptionsvsPGSforced.",
+      "history": [
+        "878dc2a63d62880e6d3a5aa395ce25dd40919539 Remove retired artifacts and unused code",
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "auditor": "/root/subtitles_shared/shared_identity",
+      "production_owner": [
+        "packages/mediaprobe/probe.go",
+        "packages/mediaprobe/cache.go",
+        "packages/mediaprobe/command.go",
+        "packages/mediaprobe/parse.go",
+        "packages/mediaprobe/facts.go",
+        "packages/mediaprobe/decorate.go",
+        "packages/mediaprobe/replaygain.go",
+        "packages/mediaprobe/embedded.go",
+        "packages/mediaprobe/embedded_concurrency.go"
+      ],
+      "callers": [
+        "apps/{player,subtitles}/internal/server/probe.go::newMediaProbe and aliases",
+        "apps/{player,subtitles}/internal/server/probe_enrichment.go",
+        "apps/{player,subtitles}/internal/server/embedded_subtitles.go::serveEmbedded bindsvisibility/tool/localizederror",
+        "apps/{player,subtitles}/internal/server/embedded_subtitle_extract.go::embeddedOptions/extractEmbedded",
+        "packages/playerweb/player_projection.go::ApplyMedia"
+      ],
+      "gap": "Actual Player test-instance-playback native/compatible seek and test-instance-production realmusic/audiobook/source/offline play ordinarymedia; no exact subprocesscount, restartedfacts/stalecache/adversefilesystem/probe rejection/track/HDR/embeddedextraction race matrix. player-experience-fixture.ts setContent/fakemedia, player-subtitles-loading.spec.ts route.fulfill captions and player-audio-policy mocked media APIs are frontendfixtures, not mediaprobeE2E. Shellscripts here produce JSON/VTT without realFFprobe/FFmpeg decoding.",
+      "source_read_evidence": "Full36 baseline declarations, test helpers and all9production owners read; complete app Probe/Enrichment/Embedded adapters, actual populated playback/browser bodies plus frontend fixture setup inspected; git history includes cancellationcheckpoint1813fb49, atomicfakepublication62692271 and authority1f1a81b7. Original baselineevents only; noGo candidate run.",
+      "reason": "Probe HDR/source indexes/description/captions/forcedimage facts must drive correct safe playback and accessibility selection."
     },
     {
       "file": "packages/mediaprobe/probe_test.go",
@@ -51207,8 +52158,8 @@
       "owner_group": "mediaprobe",
       "body_sha256": "06ddb1e10bbb6853738f04e8ce26bbad5dffdf6e54790c9f09308be60e02772d",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
+      "decision": "R",
+      "audit_status": "reviewed",
       "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
       "validation_command": "cd packages && go test ./mediaprobe",
       "baseline_event": {
@@ -51217,7 +52168,35 @@
         "Package": "github.com/MikeO7/kinosail/packages/mediaprobe",
         "Test": "TestRandomAccessIntervalsAreBoundedToEligibleMarkerEdges",
         "Elapsed": 0
-      }
+      },
+      "credible_failure": "Keyframe search must ignore unreviewed visual markers and bound/merge trusted edge intervals.",
+      "remaining_coverage": "Exact merged ranges, visualcreditsnone, >64boundarynone and invaliddurationnone.",
+      "history": [
+        "878dc2a63d62880e6d3a5aa395ce25dd40919539 Remove retired artifacts and unused code",
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "auditor": "/root/subtitles_shared/shared_identity",
+      "production_owner": [
+        "packages/mediaprobe/probe.go",
+        "packages/mediaprobe/cache.go",
+        "packages/mediaprobe/command.go",
+        "packages/mediaprobe/parse.go",
+        "packages/mediaprobe/facts.go",
+        "packages/mediaprobe/decorate.go",
+        "packages/mediaprobe/replaygain.go",
+        "packages/mediaprobe/embedded.go",
+        "packages/mediaprobe/embedded_concurrency.go"
+      ],
+      "callers": [
+        "apps/{player,subtitles}/internal/server/probe.go::newMediaProbe and aliases",
+        "apps/{player,subtitles}/internal/server/probe_enrichment.go",
+        "apps/{player,subtitles}/internal/server/embedded_subtitles.go::serveEmbedded bindsvisibility/tool/localizederror",
+        "apps/{player,subtitles}/internal/server/embedded_subtitle_extract.go::embeddedOptions/extractEmbedded",
+        "packages/playerweb/player_projection.go::ApplyMedia"
+      ],
+      "gap": "Actual Player test-instance-playback native/compatible seek and test-instance-production realmusic/audiobook/source/offline play ordinarymedia; no exact subprocesscount, restartedfacts/stalecache/adversefilesystem/probe rejection/track/HDR/embeddedextraction race matrix. player-experience-fixture.ts setContent/fakemedia, player-subtitles-loading.spec.ts route.fulfill captions and player-audio-policy mocked media APIs are frontendfixtures, not mediaprobeE2E. Shellscripts here produce JSON/VTT without realFFprobe/FFmpeg decoding.",
+      "source_read_evidence": "Full36 baseline declarations, test helpers and all9production owners read; complete app Probe/Enrichment/Embedded adapters, actual populated playback/browser bodies plus frontend fixture setup inspected; git history includes cancellationcheckpoint1813fb49, atomicfakepublication62692271 and authority1f1a81b7. Original baselineevents only; noGo candidate run.",
+      "reason": "Keyframe search must ignore unreviewed visual markers and bound/merge trusted edge intervals."
     },
     {
       "file": "packages/mediaprobe/probe_test.go",
@@ -51227,8 +52206,8 @@
       "owner_group": "mediaprobe",
       "body_sha256": "217852aebf1197afb9e3709f8a18de9f26efabaeecbb5ee5a7b43c4c24779be9",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
+      "decision": "R",
+      "audit_status": "reviewed",
       "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
       "validation_command": "cd packages && go test ./mediaprobe",
       "baseline_event": {
@@ -51237,7 +52216,35 @@
         "Package": "github.com/MikeO7/kinosail/packages/mediaprobe",
         "Test": "TestVideoFactsPreserveInterlaceRotationAndDolbyBaseLayer",
         "Elapsed": 0
-      }
+      },
+      "credible_failure": "Interlace/rotation/DolbyVision base compatibility must survive parse and reject impossible persisted video facts.",
+      "remaining_coverage": "TT/-90/profile8/compat1/HDR/10bit, rejected45/361/-361rotations andcompat16.",
+      "history": [
+        "878dc2a63d62880e6d3a5aa395ce25dd40919539 Remove retired artifacts and unused code",
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "auditor": "/root/subtitles_shared/shared_identity",
+      "production_owner": [
+        "packages/mediaprobe/probe.go",
+        "packages/mediaprobe/cache.go",
+        "packages/mediaprobe/command.go",
+        "packages/mediaprobe/parse.go",
+        "packages/mediaprobe/facts.go",
+        "packages/mediaprobe/decorate.go",
+        "packages/mediaprobe/replaygain.go",
+        "packages/mediaprobe/embedded.go",
+        "packages/mediaprobe/embedded_concurrency.go"
+      ],
+      "callers": [
+        "apps/{player,subtitles}/internal/server/probe.go::newMediaProbe and aliases",
+        "apps/{player,subtitles}/internal/server/probe_enrichment.go",
+        "apps/{player,subtitles}/internal/server/embedded_subtitles.go::serveEmbedded bindsvisibility/tool/localizederror",
+        "apps/{player,subtitles}/internal/server/embedded_subtitle_extract.go::embeddedOptions/extractEmbedded",
+        "packages/playerweb/player_projection.go::ApplyMedia"
+      ],
+      "gap": "Actual Player test-instance-playback native/compatible seek and test-instance-production realmusic/audiobook/source/offline play ordinarymedia; no exact subprocesscount, restartedfacts/stalecache/adversefilesystem/probe rejection/track/HDR/embeddedextraction race matrix. player-experience-fixture.ts setContent/fakemedia, player-subtitles-loading.spec.ts route.fulfill captions and player-audio-policy mocked media APIs are frontendfixtures, not mediaprobeE2E. Shellscripts here produce JSON/VTT without realFFprobe/FFmpeg decoding.",
+      "source_read_evidence": "Full36 baseline declarations, test helpers and all9production owners read; complete app Probe/Enrichment/Embedded adapters, actual populated playback/browser bodies plus frontend fixture setup inspected; git history includes cancellationcheckpoint1813fb49, atomicfakepublication62692271 and authority1f1a81b7. Original baselineevents only; noGo candidate run.",
+      "reason": "Interlace/rotation/DolbyVision base compatibility must survive parse and reject impossible persisted video facts."
     },
     {
       "file": "packages/mediashares/failure_test.go",
