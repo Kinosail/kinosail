@@ -6,12 +6,12 @@
   "files": 379,
   "declarations": 954,
   "test_loc": 28832,
-  "reviewed": 702,
-  "pending": 252,
+  "reviewed": 726,
+  "pending": 228,
   "decisions": {
-    "R": 612,
+    "R": 634,
     "D": 62,
-    "F": 27,
+    "F": 29,
     "C": 1
   },
   "verification": [
@@ -1787,136 +1787,178 @@
       "line": 11,
       "test": "TestOwnerSettingsAndOperationsAPIRoutes",
       "baseline_file_sha256": "760d459dc552475e13eddbe253fc0f8dd637172365dd0f5b2d3f5c64d59b2d28",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Actual authenticated owner mutations/settings projection normalize EN/pt-BR/zh-Hans/es-419 and task/library errors; exact operational metrics and JSON not-found shape retained.",
+      "production_owner": "apps/subtitles/internal/server/api_admin.go; apps/subtitles/internal/server/api_settings.go; apps/subtitles/internal/server/settings_subtitles.go; apps/subtitles/internal/server/operations.go",
+      "non_test_callers": "Real New constructs state/auth/probe/adapters and registerAPI installs public handlers; shared API fixtures bind actual app callbacks, not manufactured responses.",
+      "remaining_proof": [
+        {
+          "kind": "retained_actual_app_protocol_or_failure_boundary",
+          "reference": "apps/subtitles/internal/server/api_admin_routes_test.go::TestOwnerSettingsAndOperationsAPIRoutes"
+        }
+      ],
+      "coverage_gap": "Broad status matrix alone does not prove each mutation persisted; final language values, defaults, task JSON and metrics supply independent fields absent genuine normal settings journey.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retain concrete important protocol/negative/storage risk not equivalently covered by genuine E2E",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/api_admin_routes_test.go",
       "line": 40,
       "test": "TestOnboardingSettingsAPIRequiresAnExplicitBoolean",
       "baseline_file_sha256": "760d459dc552475e13eddbe253fc0f8dd637172365dd0f5b2d3f5c64d59b2d28",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Actual onboarding endpoint rejects omitted enabled or unknown fields without changing initial pending=true.",
+      "production_owner": "apps/subtitles/internal/server/api_admin.go; packages/settings/onboarding.go; packages/servertest/api_admin.go",
+      "non_test_callers": "Real New constructs state/auth/probe/adapters and registerAPI installs public handlers; shared API fixtures bind actual app callbacks, not manufactured responses.",
+      "remaining_proof": [
+        {
+          "kind": "retained_actual_app_protocol_or_failure_boundary",
+          "reference": "apps/subtitles/internal/server/api_admin_routes_test.go::TestOnboardingSettingsAPIRequiresAnExplicitBoolean"
+        }
+      ],
+      "coverage_gap": "Normal first-install journey sends valid action and misses ambiguous-body no-state-change guard.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retain concrete important protocol/negative/storage risk not equivalently covered by genuine E2E",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/api_backup_test.go",
       "line": 14,
       "test": "TestAutomaticBackupsFailClosedWithoutEncryptionKey",
       "baseline_file_sha256": "e2ba73292766369c4a65224688768824a25ded5d1ea3af981de98db216ebff2a",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Real app automatic timer reports missing key, creates no backup file and disables API/web setup actions rather than writing unencrypted state.",
+      "production_owner": "apps/subtitles/internal/server/backup_manager.go; packages/backup/{manager.go,manager_write.go}; packages/servertest/backup_api_contract.go",
+      "non_test_callers": "Real New constructs state/auth/probe/adapters and registerAPI installs public handlers; shared API fixtures bind actual app callbacks, not manufactured responses.",
+      "remaining_proof": [
+        {
+          "kind": "retained_actual_app_protocol_or_failure_boundary",
+          "reference": "apps/subtitles/internal/server/api_backup_test.go::TestAutomaticBackupsFailClosedWithoutEncryptionKey"
+        }
+      ],
+      "coverage_gap": "Actual factories bind app backup adapter and workload governor. Genuine happy backup uses configured encryption key and does not inject absent key.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retain concrete important protocol/negative/storage risk not equivalently covered by genuine E2E",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/api_backup_test.go",
       "line": 18,
       "test": "TestOwnerCanRunEncryptedBackupThroughAPIAndWeb",
       "baseline_file_sha256": "e2ba73292766369c4a65224688768824a25ded5d1ea3af981de98db216ebff2a",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Real owner web/API backup+verify creates KINOSAIL-BACKUP-1 envelope file and stable enabled/encrypted/lastVerified fields.",
+      "production_owner": "apps/subtitles/internal/server/backup_manager.go; apps/subtitles/internal/server/api_admin.go; apps/subtitles/internal/backup/backup.go; packages/backup",
+      "non_test_callers": "Real New constructs state/auth/probe/adapters and registerAPI installs public handlers; shared API fixtures bind actual app callbacks, not manufactured responses.",
+      "remaining_proof": [
+        {
+          "kind": "retained_actual_app_protocol_or_failure_boundary",
+          "reference": "apps/subtitles/internal/server/api_backup_test.go::TestOwnerCanRunEncryptedBackupThroughAPIAndWeb"
+        }
+      ],
+      "coverage_gap": "Genuine happy-path UI only observes timestamps. It does not inspect actual encrypted file header or API binding; handler fixture is not genuine E2E.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retain concrete important protocol/negative/storage risk not equivalently covered by genuine E2E",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/api_backup_test.go",
       "line": 31,
       "test": "TestPortableBackupRejectsInvalidLegacySettingsWithoutDeletingSource",
       "baseline_file_sha256": "e2ba73292766369c4a65224688768824a25ded5d1ea3af981de98db216ebff2a",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Invalid empty subtitleLanguages legacy file causes503 rather than gzip archive and source bytes remain exact.",
+      "production_owner": "apps/subtitles/internal/server/settings_actions.go; apps/subtitles/internal/backup/backup.go; apps/subtitles/internal/settingsstate/settings.go; packages/backup/service.go",
+      "non_test_callers": "Real New constructs state/auth/probe/adapters and registerAPI installs public handlers; shared API fixtures bind actual app callbacks, not manufactured responses.",
+      "remaining_proof": [
+        {
+          "kind": "retained_actual_app_protocol_or_failure_boundary",
+          "reference": "apps/subtitles/internal/server/api_backup_test.go::TestPortableBackupRejectsInvalidLegacySettingsWithoutDeletingSource"
+        }
+      ],
+      "coverage_gap": "Genuine backup happy path misses malicious/invalid legacy file plus no-delete migration boundary.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retain concrete important protocol/negative/storage risk not equivalently covered by genuine E2E",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/api_boundary_coverage_test.go",
       "line": 10,
       "test": "TestVersionedAPIRejectsMalformedMutationBodies",
       "baseline_file_sha256": "30ecf1fb10c585132375ddf77dcee767d4c5c9d0b678241af942df742f1f2698",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "F",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Actual45mutation routes reject malformed JSON, unknown field and trailing object instead of reporting success; many registered real setters reach strict decoder.",
+      "production_owner": "apps/subtitles/internal/server/api*.go; packages/apihttp/api.go; packages/httpguard/json.go; packages/catalogapi/media_http_write.go",
+      "non_test_callers": "Real New constructs state/auth/probe/adapters and registerAPI installs public handlers; shared API fixtures bind actual app callbacks, not manufactured responses.",
+      "remaining_proof": [
+        {
+          "kind": "retained_actual_app_protocol_or_failure_boundary",
+          "reference": "apps/subtitles/internal/server/api_boundary_coverage_test.go::TestVersionedAPIRejectsMalformedMutationBodies"
+        }
+      ],
+      "coverage_gap": "Missing playlist/collection/profile IDs and absent passkey challenges can reject for resource/flow guards before JSON. >=400 accepts those false controls; does not prove every route strict decoder or no side effect. Retain real-body admission contract with explicit gap.",
+      "history": "148cf8317def71e026d111f05ce7e802612e983c Remove legacy viewer WireGuard access",
+      "risk": "Retain concrete important protocol/negative/storage risk not equivalently covered by genuine E2E",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server",
+      "repair_status": "Existing fail-closed contract retained; misleading all-route/missing-resource assertion limits recorded. No new isolated code."
     },
     {
       "file": "apps/subtitles/internal/server/api_boundary_coverage_test.go",
       "line": 70,
       "test": "TestVersionedAPIReportsMissingResourcesAcrossCapabilities",
       "baseline_file_sha256": "30ecf1fb10c585132375ddf77dcee767d4c5c9d0b678241af942df742f1f2698",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "F",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Actual21missing capability resources never produce successful response.",
+      "production_owner": "apps/subtitles/internal/server/api*.go; packages/catalogapi/media_http_{read,write}.go; packages/servertest/api_boundaries.go",
+      "non_test_callers": "Real New constructs state/auth/probe/adapters and registerAPI installs public handlers; shared API fixtures bind actual app callbacks, not manufactured responses.",
+      "remaining_proof": [
+        {
+          "kind": "retained_actual_app_protocol_or_failure_boundary",
+          "reference": "apps/subtitles/internal/server/api_boundary_coverage_test.go::TestVersionedAPIReportsMissingResourcesAcrossCapabilities"
+        }
+      ],
+      "coverage_gap": "Several mutations carry nil bodies; only >=400 checked, so malformed-body400 can replace intended resource404. Preserve broad fail-closed transport guard; missing-resource semantics remain weak and no side-effect assertion.",
+      "history": "148cf8317def71e026d111f05ce7e802612e983c Remove legacy viewer WireGuard access",
+      "risk": "Retain concrete important protocol/negative/storage risk not equivalently covered by genuine E2E",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server",
+      "repair_status": "Existing fail-closed contract retained; misleading all-route/missing-resource assertion limits recorded. No new isolated code."
     },
     {
       "file": "apps/subtitles/internal/server/api_boundary_coverage_test.go",
       "line": 74,
       "test": "TestVersionedAPIReadModelsAreReachableThroughOwnerSession",
       "baseline_file_sha256": "30ecf1fb10c585132375ddf77dcee767d4c5c9d0b678241af942df742f1f2698",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Actual owner route registration supplies28read models including API discovery root/history/devices/hardware/configuration/diagnostics/metrics; missing or bad wiring yields non200.",
+      "production_owner": "apps/subtitles/internal/server/api.go; apps/subtitles/internal/server/api_admin.go; apps/subtitles/internal/server/api_product.go; packages/apihttp/register.go",
+      "non_test_callers": "Real New constructs state/auth/probe/adapters and registerAPI installs public handlers; shared API fixtures bind actual app callbacks, not manufactured responses.",
+      "remaining_proof": [
+        {
+          "kind": "retained_actual_app_protocol_or_failure_boundary",
+          "reference": "apps/subtitles/internal/server/api_boundary_coverage_test.go::TestVersionedAPIReadModelsAreReachableThroughOwnerSession"
+        }
+      ],
+      "coverage_gap": "Other keepers assert many detailed responses but existing genuine browser never reads whole public catalog; discovery and administrative endpoint reachability remains independent protocol contract, not semantic content proof.",
+      "history": "148cf8317def71e026d111f05ce7e802612e983c Remove legacy viewer WireGuard access",
+      "risk": "Retain concrete important protocol/negative/storage risk not equivalently covered by genuine E2E",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/api_identity_lifecycle_test.go",
@@ -2033,85 +2075,110 @@
       "line": 15,
       "test": "TestNumericTitleJumpIsSharedByAPIAndWeb",
       "baseline_file_sha256": "a8be3506ebe43fa0950eb94ea9c5f19beff562b27e6e0a6404e39947a2e03785",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Numeric # bucket returns2001 title and excludesAlpha through actual API+web with selected # link.",
+      "production_owner": "apps/subtitles/internal/server/browse.go; apps/subtitles/internal/server/home.go; packages/catalog",
+      "non_test_callers": "Real New constructs state/auth/probe/adapters and registerAPI installs public handlers; shared API fixtures bind actual app callbacks, not manufactured responses.",
+      "remaining_proof": [
+        {
+          "kind": "retained_actual_app_protocol_or_failure_boundary",
+          "reference": "apps/subtitles/internal/server/api_letter_test.go::TestNumericTitleJumpIsSharedByAPIAndWeb"
+        }
+      ],
+      "coverage_gap": "Genuine happy-path uses B/G alphabetic buckets, not numeric # or JSON exclusion.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retain concrete important protocol/negative/storage risk not equivalently covered by genuine E2E",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/api_letter_test.go",
       "line": 35,
       "test": "TestLetterJumpUsesTheActiveLocaleForAccentedTitles",
       "baseline_file_sha256": "a8be3506ebe43fa0950eb94ea9c5f19beff562b27e6e0a6404e39947a2e03785",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Actual en letter=a canonicalizesA, returns orderedAlpha/\u00c5ngstr\u00f6m and2A/1B counts.",
+      "production_owner": "apps/subtitles/internal/server/browse.go; packages/catalog",
+      "non_test_callers": "Real New constructs state/auth/probe/adapters and registerAPI installs public handlers; shared API fixtures bind actual app callbacks, not manufactured responses.",
+      "remaining_proof": [
+        {
+          "kind": "retained_actual_app_protocol_or_failure_boundary",
+          "reference": "apps/subtitles/internal/server/api_letter_test.go::TestLetterJumpUsesTheActiveLocaleForAccentedTitles"
+        }
+      ],
+      "coverage_gap": "Real browser B/G journey misses accented locale normalization and API counts/order.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retain concrete important protocol/negative/storage risk not equivalently covered by genuine E2E",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/api_letter_test.go",
       "line": 60,
       "test": "TestLetterJumpWebSupportsProgressiveMobileNavigation",
       "baseline_file_sha256": "a8be3506ebe43fa0950eb94ea9c5f19beff562b27e6e0a6404e39947a2e03785",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Real rendered app exposes semantic search, title index/dialog/preview and progressive hx-get/swap URLs for three buckets.",
+      "production_owner": "apps/subtitles/internal/server/home.go; apps/subtitles/internal/server/browse.go; packages/catalog",
+      "non_test_callers": "Real New constructs state/auth/probe/adapters and registerAPI installs public handlers; shared API fixtures bind actual app callbacks, not manufactured responses.",
+      "remaining_proof": [
+        {
+          "kind": "retained_actual_app_protocol_or_failure_boundary",
+          "reference": "apps/subtitles/internal/server/api_letter_test.go::TestLetterJumpWebSupportsProgressiveMobileNavigation"
+        }
+      ],
+      "coverage_gap": "Genuine happy-path executes desktop/mobile B/G jump but current true Subtitles CLI root is dashboard, so its classic library journey has not been verified here. Source/template guard alone does not prove focus or runtime gestures.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retain concrete important protocol/negative/storage risk not equivalently covered by genuine E2E",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/api_letter_test.go",
       "line": 85,
       "test": "TestSingleTitleBucketDoesNotRenderAJumpControl",
       "baseline_file_sha256": "a8be3506ebe43fa0950eb94ea9c5f19beff562b27e6e0a6404e39947a2e03785",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Actual singleAlpha library omits redundant title-jump control.",
+      "production_owner": "apps/subtitles/internal/server/home.go; apps/subtitles/internal/server/browse.go",
+      "non_test_callers": "Real New constructs state/auth/probe/adapters and registerAPI installs public handlers; shared API fixtures bind actual app callbacks, not manufactured responses.",
+      "remaining_proof": [
+        {
+          "kind": "retained_actual_app_protocol_or_failure_boundary",
+          "reference": "apps/subtitles/internal/server/api_letter_test.go::TestSingleTitleBucketDoesNotRenderAJumpControl"
+        }
+      ],
+      "coverage_gap": "Genuine happy-path populated library has three buckets, so conditional omission not covered.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retain concrete important protocol/negative/storage risk not equivalently covered by genuine E2E",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/api_openapi_test.go",
       "line": 14,
       "test": "TestOpenAPIDocumentsEveryVersionedRouteExactlyOnce",
       "baseline_file_sha256": "e27ed8fde23d937c9c7bba1a3232090baa0bdbe99ca88ca00ef700d3f4e45f88",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "All explicit public method/path declarations match embedded OpenAPI method/path inventory with duplicate path rejection.",
+      "production_owner": "apps/subtitles/internal/server/api_product.go; apps/subtitles/internal/server/api_openapi.json; apps/subtitles/internal/server/api*.go",
+      "non_test_callers": "Real New constructs state/auth/probe/adapters and registerAPI installs public handlers; shared API fixtures bind actual app callbacks, not manufactured responses.",
+      "remaining_proof": [
+        {
+          "kind": "retained_actual_app_protocol_or_failure_boundary",
+          "reference": "apps/subtitles/internal/server/api_openapi_test.go::TestOpenAPIDocumentsEveryVersionedRouteExactlyOnce"
+        }
+      ],
+      "coverage_gap": "Cheapest generated public API documentation contract; genuine browser checks application behavior, not every external client method/path or duplicate JSON path. Regex cannot discover dynamic constructed registrations; that limit is explicit.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retain concrete important protocol/negative/storage risk not equivalently covered by genuine E2E",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/api_owner_enrollment_test.go",
@@ -2206,187 +2273,242 @@
       "line": 12,
       "test": "TestAPIParityContract",
       "baseline_file_sha256": "d7a93f1dd4668cb9fe1fa3a01714b7034fcbaa30c2fd01c5f8adfb751fda9341",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Eight real handler scenarios cover persisted42s/list/playlist/collection views, marker web/API create/update/remove, profile/settings/key sanitization, backup gzip, automatic next episode, setup MFA-before-admin and repeated setup409.",
+      "production_owner": "apps/subtitles/internal/server/api*.go; apps/subtitles/internal/server/player_playback.go; apps/subtitles/internal/server/marker_admin.go; packages/servertest/api_parity_{scenarios,lifecycle}.go",
+      "non_test_callers": "Real New constructs state/auth/probe/adapters and registerAPI installs public handlers; shared API fixtures bind actual app callbacks, not manufactured responses.",
+      "remaining_proof": [
+        {
+          "kind": "retained_actual_app_protocol_or_failure_boundary",
+          "reference": "apps/subtitles/internal/server/api_parity_test.go::TestAPIParityContract"
+        }
+      ],
+      "coverage_gap": "Shared scenario invokes actual Subtitles New and MFA generator; placeholder media bytes and compatibility-root mode mean isolated integration. Existing true CLI review/browser journey does not execute full external API lifecycle or fail-closed repeated setup.",
+      "history": "148cf8317def71e026d111f05ce7e802612e983c Remove legacy viewer WireGuard access",
+      "risk": "Retain concrete important protocol/negative/storage risk not equivalently covered by genuine E2E",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/api_parity_test.go",
       "line": 22,
       "test": "TestProviderAPIFailuresAreExplicit",
       "baseline_file_sha256": "d7a93f1dd4668cb9fe1fa3a01714b7034fcbaa30c2fd01c5f8adfb751fda9341",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Actual app metadata refresh and valid EN subtitle acquisition with unconfigured upstream return502 rather than success.",
+      "production_owner": "apps/subtitles/internal/server/api_product.go; apps/subtitles/internal/server/subtitle_provider.go; apps/subtitles/internal/server/metadata.go",
+      "non_test_callers": "Real New constructs state/auth/probe/adapters and registerAPI installs public handlers; shared API fixtures bind actual app callbacks, not manufactured responses.",
+      "remaining_proof": [
+        {
+          "kind": "retained_actual_app_protocol_or_failure_boundary",
+          "reference": "apps/subtitles/internal/server/api_parity_test.go::TestProviderAPIFailuresAreExplicit"
+        }
+      ],
+      "coverage_gap": "Metadata502 repeats semantic-failure matrix, but subtitle validEN API provider failure is distinct from invalid-language400 and web-only provider cases. Keep until exact stronger API503/502 projection owner exists.",
+      "history": "148cf8317def71e026d111f05ce7e802612e983c Remove legacy viewer WireGuard access",
+      "risk": "Retain concrete important protocol/negative/storage risk not equivalently covered by genuine E2E",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/api_parity_test.go",
       "line": 46,
       "test": "TestVersionedAPICoversBrowserOnlyCapabilities",
       "baseline_file_sha256": "d7a93f1dd4668cb9fe1fa3a01714b7034fcbaa30c2fd01c5f8adfb751fda9341",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Actual library JSON projects NFO tagline/director/studio plus media container/size/added; served OpenAPI includes once-only12 app capability paths.",
+      "production_owner": "apps/subtitles/internal/server/api_product.go; apps/subtitles/internal/server/api_openapi.json; apps/subtitles/internal/server/browse.go; packages/catalogapi",
+      "non_test_callers": "Real New constructs state/auth/probe/adapters and registerAPI installs public handlers; shared API fixtures bind actual app callbacks, not manufactured responses.",
+      "remaining_proof": [
+        {
+          "kind": "retained_actual_app_protocol_or_failure_boundary",
+          "reference": "apps/subtitles/internal/server/api_parity_test.go::TestVersionedAPICoversBrowserOnlyCapabilities"
+        }
+      ],
+      "coverage_gap": "Detailed media fields guard app client-item adapter absent browser content equivalence. Documentation subset overlaps full route schema keeper but runtime embed/serving projection is separate.",
+      "history": "148cf8317def71e026d111f05ce7e802612e983c Remove legacy viewer WireGuard access",
+      "risk": "Retain concrete important protocol/negative/storage risk not equivalently covered by genuine E2E",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/api_playback_routes_test.go",
       "line": 18,
       "test": "TestPlaybackAPIExposesSelectableAudioSources",
       "baseline_file_sha256": "fbf125ee96e75ad1f1bf072a5256b585a693a7e8fe5cb4b237451a057ee7f8d6",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Actual API maps embedded ENG AAC0 andSPA AC3 1 to proper HLS audio-selection URL.",
+      "production_owner": "apps/subtitles/internal/server/api_product.go::apiAudioSources; packages/servertest/playback_api_contract.go",
+      "non_test_callers": "Real New constructs state/auth/probe/adapters and registerAPI installs public handlers; shared API fixtures bind actual app callbacks, not manufactured responses.",
+      "remaining_proof": [
+        {
+          "kind": "retained_actual_app_protocol_or_failure_boundary",
+          "reference": "apps/subtitles/internal/server/api_playback_routes_test.go::TestPlaybackAPIExposesSelectableAudioSources"
+        }
+      ],
+      "coverage_gap": "Existing live video has no alternate tracks and web audio-selection keeper does not inspect external API fields.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retain concrete important protocol/negative/storage risk not equivalently covered by genuine E2E",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/api_playback_routes_test.go",
       "line": 22,
       "test": "TestPlaybackAPIUsesTheSmallestClientSupportedTransformation",
       "baseline_file_sha256": "fbf125ee96e75ad1f1bf072a5256b585a693a7e8fe5cb4b237451a057ee7f8d6",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Real API HEVC-capable request maps MKV to remux recipe; droppingHEVC maps transcode recipe with discovery bound.",
+      "production_owner": "apps/subtitles/internal/server/api_product.go; apps/subtitles/internal/server/playback_http.go; packages/servertest/playback_api_contract.go",
+      "non_test_callers": "Real New constructs state/auth/probe/adapters and registerAPI installs public handlers; shared API fixtures bind actual app callbacks, not manufactured responses.",
+      "remaining_proof": [
+        {
+          "kind": "retained_actual_app_protocol_or_failure_boundary",
+          "reference": "apps/subtitles/internal/server/api_playback_routes_test.go::TestPlaybackAPIUsesTheSmallestClientSupportedTransformation"
+        }
+      ],
+      "coverage_gap": "Synthetic hardware/process evidence, no real GPU. Shared planner table does not guard actual request\u2192app policy\u2192published recipe URL mapping.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retain concrete important protocol/negative/storage risk not equivalently covered by genuine E2E",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/api_playback_routes_test.go",
       "line": 26,
       "test": "TestPlaybackAPIRejectsInvalidCodecEvidenceBeforeProbingMedia",
       "baseline_file_sha256": "fbf125ee96e75ad1f1bf072a5256b585a693a7e8fe5cb4b237451a057ee7f8d6",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Six codec andtenHDR/audiochannel ambiguity/oversize matrices reject400 and create no fakeFFprobe call file.",
+      "production_owner": "apps/subtitles/internal/server/api_product.go; apps/subtitles/internal/server/playback_http.go; packages/servertest/playback_api_validation_contract.go",
+      "non_test_callers": "Real New constructs state/auth/probe/adapters and registerAPI installs public handlers; shared API fixtures bind actual app callbacks, not manufactured responses.",
+      "remaining_proof": [
+        {
+          "kind": "retained_actual_app_protocol_or_failure_boundary",
+          "reference": "apps/subtitles/internal/server/api_playback_routes_test.go::TestPlaybackAPIRejectsInvalidCodecEvidenceBeforeProbingMedia"
+        }
+      ],
+      "coverage_gap": "Important resource-admission ordering, including double query keys; real browser only sends accepted hints. No claim parser/unit callback is genuine E2E.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retain concrete important protocol/negative/storage risk not equivalently covered by genuine E2E",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/api_playback_routes_test.go",
       "line": 30,
       "test": "TestPlaybackAPIExposesSourceAwareAdaptiveQualities",
       "baseline_file_sha256": "fbf125ee96e75ad1f1bf072a5256b585a693a7e8fe5cb4b237451a057ee7f8d6",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Actual API1080HEVC24fps10Mbps source returns exact five tiers/dimensions/bitrates/FPS.",
+      "production_owner": "apps/subtitles/internal/server/api_playback_response.go; apps/subtitles/internal/server/api_product.go; packages/playback/qualities.go",
+      "non_test_callers": "Real New constructs state/auth/probe/adapters and registerAPI installs public handlers; shared API fixtures bind actual app callbacks, not manufactured responses.",
+      "remaining_proof": [
+        {
+          "kind": "retained_actual_app_protocol_or_failure_boundary",
+          "reference": "apps/subtitles/internal/server/api_playback_routes_test.go::TestPlaybackAPIExposesSourceAwareAdaptiveQualities"
+        }
+      ],
+      "coverage_gap": "Player pure golden helper guards shared policy; this fixture guards app API forwarding/computed projection. Browser fake quality levels supplied directly and normal live quality switch misses exact backend five-tier fields.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retain concrete important protocol/negative/storage risk not equivalently covered by genuine E2E",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/api_playback_routes_test.go",
       "line": 36,
       "test": "TestPlaybackAPIUsesConventionalTierForCroppedVideo",
       "baseline_file_sha256": "fbf125ee96e75ad1f1bf072a5256b585a693a7e8fe5cb4b237451a057ee7f8d6",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Actual API cropped1920x804 source publishes top1080p while preserving actual width/height.",
+      "production_owner": "apps/subtitles/internal/server/api_playback_response.go; apps/subtitles/internal/server/api_product.go; packages/playback/qualities.go",
+      "non_test_callers": "Real New constructs state/auth/probe/adapters and registerAPI installs public handlers; shared API fixtures bind actual app callbacks, not manufactured responses.",
+      "remaining_proof": [
+        {
+          "kind": "retained_actual_app_protocol_or_failure_boundary",
+          "reference": "apps/subtitles/internal/server/api_playback_routes_test.go::TestPlaybackAPIUsesConventionalTierForCroppedVideo"
+        }
+      ],
+      "coverage_gap": "Pure shared cropped planner keeper cannot catch dropped API qualities or wrong published field. Live ordinary clip not cropped.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retain concrete important protocol/negative/storage risk not equivalently covered by genuine E2E",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/api_security_test.go",
       "line": 9,
       "test": "TestVersionedAPIRoutesDefaultToSecure",
       "baseline_file_sha256": "ecf945240dad42b3da6f876acd45258dea60ed660b00d30175c0be29e91ee1ed",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Actual authenticated library JSON works; anonymous/invalid session get401, attempted profile mutation leaves no profile; unknown routes remain JSON404 and wrongmethod405 has GET,HEAD Allow.",
+      "production_owner": "apps/subtitles/internal/server/api.go; apps/subtitles/internal/server/authentication.go; packages/apihttp/api.go; packages/servertest/api_security.go",
+      "non_test_callers": "Real New constructs state/auth/probe/adapters and registerAPI installs public handlers; shared API fixtures bind actual app callbacks, not manufactured responses.",
+      "remaining_proof": [
+        {
+          "kind": "retained_actual_app_protocol_or_failure_boundary",
+          "reference": "apps/subtitles/internal/server/api_security_test.go::TestVersionedAPIRoutesDefaultToSecure"
+        }
+      ],
+      "coverage_gap": "Actual protected app router/auth binding. Shared routing unit tests bypass auth; genuine happy owner path lacks hostile credential/no-side-effect and unknown-method JSON boundary.",
+      "history": "6ead415fd23ddedbe74126bf7b7c5ecb2a2d38bc Add fail-closed API security contract tests",
+      "risk": "Retain concrete important protocol/negative/storage risk not equivalently covered by genuine E2E",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/api_semantic_failures_test.go",
       "line": 12,
       "test": "TestVersionedAPIFailsClosedOnInvalidCapabilityInputs",
       "baseline_file_sha256": "63c21367d305c7bdd009f9dbf7f170e047f27987647f2ea5bf0a0b686a8af49e",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Forty-two app semantic requests exercise negative/huge/session progress, invalidcuration/marker/library/settings/factor/import/backup fields with stable expected4xx/502/503 statuses.",
+      "production_owner": "apps/subtitles/internal/server/api*.go; apps/subtitles/internal/server/settings_*.go; packages/catalogapi; packages/apihttp",
+      "non_test_callers": "Real New constructs state/auth/probe/adapters and registerAPI installs public handlers; shared API fixtures bind actual app callbacks, not manufactured responses.",
+      "remaining_proof": [
+        {
+          "kind": "retained_actual_app_protocol_or_failure_boundary",
+          "reference": "apps/subtitles/internal/server/api_semantic_failures_test.go::TestVersionedAPIFailsClosedOnInvalidCapabilityInputs"
+        }
+      ],
+      "coverage_gap": "Some multi-invalid inputs and missing resource identifiers only prove combined rejection, not independent every field. Important actual input/status bindings retained; no generalized all-side-effects claim, genuine happy journeys miss negative matrix.",
+      "history": "148cf8317def71e026d111f05ce7e802612e983c Remove legacy viewer WireGuard access",
+      "risk": "Retain concrete important protocol/negative/storage risk not equivalently covered by genuine E2E",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/api_semantic_failures_test.go",
       "line": 63,
       "test": "TestVersionedAPISurfacesDurableStateFailures",
       "baseline_file_sha256": "63c21367d305c7bdd009f9dbf7f170e047f27987647f2ea5bf0a0b686a8af49e",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Actual initialized app data directory replaced by regular blocked file; progress/list return500 and curation/settings/profiles/keys/OIDC mutation report4xx instead of success.",
+      "production_owner": "apps/subtitles/internal/server/api*.go; apps/subtitles/internal/server/database.go; packages/catalogapi; packages/servertest/api_durable_state_scenarios.go",
+      "non_test_callers": "Real New constructs state/auth/probe/adapters and registerAPI installs public handlers; shared API fixtures bind actual app callbacks, not manufactured responses.",
+      "remaining_proof": [
+        {
+          "kind": "retained_actual_app_protocol_or_failure_boundary",
+          "reference": "apps/subtitles/internal/server/api_semantic_failures_test.go::TestVersionedAPISurfacesDurableStateFailures"
+        }
+      ],
+      "coverage_gap": "Injects real filesystem persistence failure at actual app boundary. Does not assert full in-memory rollback/restart durability; separate storage keepers needed. Real E2E does not destroy its state directory.",
+      "history": "148cf8317def71e026d111f05ce7e802612e983c Remove legacy viewer WireGuard access",
+      "risk": "Retain concrete important protocol/negative/storage risk not equivalently covered by genuine E2E",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/api_subtitle_settings_test.go",
