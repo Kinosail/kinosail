@@ -8,6 +8,7 @@ import net from 'node:net';
 
 const root = resolve('.');
 const evidence = resolve(process.env.KINOSAIL_TIMEOUT_EVIDENCE);
+if(!['','player','subtitles'].includes(process.env.KINOSAIL_TIMEOUT_APP||'')||!['','ui'].includes(process.env.KINOSAIL_TIMEOUT_PHASE||'')) throw new Error('Unsupported proof selection');
 const state = await mkdtemp(join(tmpdir(), 'kinosail-timeout-synthetic-'));
 const git = (...args) => spawnSync('git', args, {encoding:'utf8'}).stdout.trim();
 const digest = value => createHash('sha256').update(value).digest('hex');
@@ -16,6 +17,7 @@ const receipt = {
   command:'python3 scripts/testing/test-public-timeouts-local.py',
   environment:`${process.platform}/${process.arch}; actual native Go apps; loopback HTTP; persistent Chromium`,
   data:'Disposable synthetic Owners and virtual WebAuthn; no production accounts',
+  selection:{app:process.env.KINOSAIL_TIMEOUT_APP||'both',phase:process.env.KINOSAIL_TIMEOUT_PHASE||'full'},
   boundaries:'Real browser/server persistence and HTTP authorization. Virtual WebAuthn verifies the protocol, not a physical passkey or Safari. No TLS bypass or production writes.',
   results:[], result:'failed',
 };
@@ -241,7 +243,7 @@ try {
     await boundaryChecks(app); await transitionChecks(app); await atomicChecks(app); await legacyChecks(app); await admissionChecks(app); await rollbackChecks(app); await enableMFAConcurrency(app);
   }
   receipt.result='passed';
-} catch(error) { receipt.error=String(error.message).slice(0,700); for(const app of apps) if(app.lastpage&&!app.lastpage.isClosed()) { await app.lastpage.screenshot({path:join(evidence,app.name+'-failure.png')}); receipt.failureUI=(await app.lastpage.locator('main').innerText().catch(()=> '')).slice(0,1500); } }
+} catch(error) { receipt.error=String(error.message).slice(0,700); for(const app of apps) if(app.lastpage&&!app.lastpage.isClosed()) { await app.lastpage.screenshot({path:join(evidence,app.name+'-failure.png')}); receipt.failureUI=(await app.lastpage.locator('body').innerText().catch(()=> '')).slice(0,1500); } }
 finally {
   for(const ctx of viewerContexts) await ctx.close().catch(()=>{});
   if(context) await context.close();

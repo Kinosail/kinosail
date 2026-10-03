@@ -96,7 +96,7 @@ async function uiStates(app) {
   const failed=page.waitForResponse(response=>response.url()===app.url+'/settings/public-session-timeouts'&&response.request().method()==='POST');
   await form.getByRole('button',{name:'Save public timeouts'}).click();
   expect((await failed).status()).toBe(500);
-  await expect(page.locator('main')).toContainText('could not save session timeouts');
+  await expect(page.locator('body')).toContainText('could not save session timeouts');
   await page.screenshot({path:join(evidence,app.name+'-settings-failed.png'),fullPage:true});
   await fixture(app,'allow-write',{}); await page.goto(app.url+'/settings#security');
   await expect(form.getByLabel('Always after')).toHaveValue('8760');

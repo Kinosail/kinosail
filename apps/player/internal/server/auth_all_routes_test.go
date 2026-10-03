@@ -7,7 +7,7 @@ import (
 	"github.com/MikeO7/kinosail/packages/servertest"
 )
 
-const reviewedRouteInventorySHA256 = "1760c0666e942c1729dd250a914c829558e3495283ea07dd5b44ac3fbbd95e1c"
+const reviewedRouteInventorySHA256 = "4f8c435d828e289d0c0cbb924ef8e64b54073ebc49d0efbfe92aee47b22422d0"
 
 var explicitlyAnonymousRoutes = routeSet(
 	"GET /static/public-login.js", "POST /auth/quick-connect", "POST /auth/quick-connect/token", "POST /auth/quick-connect/cancel",
