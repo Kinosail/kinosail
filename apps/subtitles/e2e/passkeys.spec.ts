@@ -12,13 +12,13 @@ async function mockPasskeyPage(page: Page, origin: string, begin: () => BeginRes
 	}
 	await page.route(`${origin}/**`, async (route) => {
 		const url = new URL(route.request().url());
-		if (url.pathname === "/static/passkeys.js") return route.fulfill({ contentType: "text/javascript", body: passkeys });
-		if (url.pathname === "/api/v1/me") return route.fulfill({ json: { csrf: "test-session-csrf" } });
+		if (url.pathname === "/static/passkeys.js") return route.fulfill({ contentType: "text/javascript; charset=utf-8", body: passkeys });
+		if (url.pathname === "/api/v1/me") return body.includes("data-passkey-add") ? route.fulfill({ json: { csrf: "test-session-csrf" } }) : route.fulfill({ status: 401 });
 		if (url.pathname.startsWith("/api/v1/passkeys/register/")) expect(route.request().headers()["x-kinosail-csrf"]).toBe("test-session-csrf");
 		if (url.pathname.endsWith("/begin")) return route.fulfill(begin());
 		if (url.pathname.endsWith("/finish")) return route.fulfill({ status: 204 });
-		if (url.pathname === "/") return route.fulfill({ contentType: "text/html", body: "<h1>Library</h1>" });
-		return route.fulfill({ contentType: "text/html", body });
+		if (url.pathname === "/") return route.fulfill({ contentType: "text/html; charset=utf-8", body: "<h1>Library</h1>" });
+		return route.fulfill({ contentType: "text/html; charset=utf-8", body: `<meta charset="utf-8">${body}` });
 	});
 	await page.addInitScript(() => {
 		(window as typeof window & { passkeyMediations: string[]; passkeySucceeds?: boolean }).passkeyMediations = [];
@@ -87,7 +87,7 @@ test("successful offered enrollment continues to the requested page", async ({ p
 
 test("a passkey origin response sends the browser to the configured address", async ({ page }) => {
 	const origin = await mockPasskeyPage(page, mockOrigin, () => ({ status: 421, headers: { location: "https://media.example:38128/account" } }));
-	await page.route("https://media.example:38128/**", (route) => route.fulfill({ contentType: "text/html", body: "<h1>Ways to sign in</h1>" }));
+	await page.route("https://media.example:38128/**", (route) => route.fulfill({ contentType: "text/html; charset=utf-8", body: "<h1>Ways to sign in</h1>" }));
 	await page.goto(`${origin}/account?mfa=required`, {waitUntil: "commit"});
 	await page.getByRole("button", { name: "Create passkey" }).click();
 	await expect(page).toHaveURL("https://media.example:38128/account");
@@ -101,12 +101,20 @@ test("a verified passkey reports success while the destination is still loading"
 	const destination = new Promise<void>((resolve) => { release = resolve; });
 	await page.route(`${origin}/`, async (route) => {
 		await destination;
-		await route.fulfill({ contentType: "text/html", body: "<h1>Library</h1>" });
+		await route.fulfill({ contentType: "text/html; charset=utf-8", body: "<h1>Library</h1>" });
 	});
-	await page.goto(`${origin}/login`, {waitUntil: "commit"});
+	await page.goto(`${origin}/login`);
+	const reported: string[] = [];
+	await page.exposeFunction("reportPasskeyStatus", (text: string) => reported.push(text));
+	await page.evaluate(() => {
+		const status = document.querySelector("[data-passkey-status]")!;
+		new MutationObserver(() => {
+			(window as typeof window & { reportPasskeyStatus: (text: string) => void }).reportPasskeyStatus(status.textContent ?? "");
+		}).observe(status, { childList: true });
+	});
 	try {
 		await page.getByRole("button", { name: "Sign in with passkey" }).click({ noWaitAfter: true });
-		await expect(page.getByRole("status")).toHaveText("Signed in. Opening your library…");
+		await expect.poll(() => reported.at(-1)).toBe("Signed in. Opening your library…");
 	} finally {
 		release();
 	}
