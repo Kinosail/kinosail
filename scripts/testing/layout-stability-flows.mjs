@@ -66,6 +66,19 @@ export async function measureFlows(browser, options, watchPath, inspectorPath) {
     const failedDisabled=await page.locator('#subtitle-edit-form button[type="submit"]').isDisabled();const qualityRows=await page.locator("#subtitle-quality p").count();const busy=await page.locator("#inspector-status").getAttribute("aria-busy");await page.unroute("**/inspect?*");await page.reload();await page.waitForFunction(()=>!document.querySelector('#subtitle-edit-form button[type="submit"]').disabled);
     results.push({flow:"inspector-refresh-failure-retry",injectedFailure:true,before,after,pendingDisabled,failedDisabled,busy,qualityRows,retryCompleted:true,stable:pendingDisabled&&failedDisabled&&!busy&&qualityRows>0&&JSON.stringify(before)===JSON.stringify(after)});
     await context.close();
+    const editing=await browser.newContext({...options,viewport:{width:390,height:844},ignoreHTTPSErrors:false,reducedMotion:"reduce"});
+    const editor=await editing.newPage();
+    await editor.route("**/inspect?*",async route=>{if(route.request().resourceType()==="fetch"){const response=await route.fetch();await new Promise(r=>setTimeout(r,900));await route.fulfill({response});}else await route.continue();});
+    await editor.goto(inspectorPath,{waitUntil:"commit"});
+    await editor.waitForFunction(()=>document.querySelector("#inspector-status")?.getAttribute("aria-busy")==="true");
+    const file=editor.locator('input[type="file"]');const pendingLocked=await file.isDisabled();
+    const payload={name:"layout-input.srt",mimeType:"application/x-subrip",buffer:Buffer.from("1\n00:00:00,000 --> 00:00:01,000\nSynthetic edit.\n")};
+    if(!pendingLocked)await file.setInputFiles(payload);
+    await editor.waitForTimeout(1500);const preview=editor.locator('#subtitle-edit-form button[type="submit"]');
+    const loadedEnabled=!await preview.isDisabled();
+    if(pendingLocked&&loadedEnabled){await file.focus();await file.setInputFiles(payload);}
+    results.push({flow:"inspector-edit-during-refresh",pendingLocked,loadedEnabled,stable:pendingLocked&&loadedEnabled});
+    await editing.close();
   }
   return results;
 }

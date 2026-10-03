@@ -47,3 +47,5 @@ An encoded fragment can select Connections during initial projection, then switc
 ## Inspector and initial fragment failure analysis
 
 The native inspector already computes a subtitle Review before rendering HTML. Empty quality and cue containers grow after a delayed duplicate API request. Initial known review content must render with the HTML, using escaped values and the same first 40 cues as the interactive view. Preserve no-subtitle content, warnings, pagination, track choice, and later edits. Test request failure and recovery without removing the existing review. Native Subtitles bookmarks also wait for deferred scripts before scrolling; align the first paint to the requested fragment, including closed disclosures and malformed-escape safety.
+
+A source review also found that editing during an inspector refresh invalidates its response and can leave Preview unavailable. Lock only form inputs while that real refresh is pending, using the existing busy-state restoration. Preserve outer operation locks, recover on errors, and re-enable edits after the response. The native browser flow checks this actual pending state before choosing a synthetic local file.

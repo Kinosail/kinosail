@@ -93,10 +93,15 @@
   }
   async function load(initial = false) {
     const ticket = ++revision; if (!initial) status.textContent = "Loading subtitle details…"; status.setAttribute("aria-busy", "true"); apply.disabled = true; prepared = undefined; form.querySelector('button[type="submit"]').disabled = true;
+    const lockRefresh = !busy;
+    if (lockRefresh) setBusy(true, true);
     let result;
     try { result = await request(`/inspect?language=${encodeURIComponent(form.elements.language.value)}`); }
     catch (error) { if (ticket === revision) throw error; return; }
-    finally { if (ticket === revision) status.removeAttribute("aria-busy"); }
+    finally {
+      if (lockRefresh) { setBusy(false); form.querySelector('button[type="submit"]').disabled = true; }
+      if (ticket === revision) status.removeAttribute("aria-busy");
+    }
     if (ticket !== revision) return;
     review = result; form.elements.role.value = review.role === "captions" ? "captions" : "translation"; page = 0; render(); form.querySelector('button[type="submit"]').disabled = false; status.textContent = review.current ? "Current subtitle loaded. Preview a change before saving." : "Choose a subtitle file to begin.";
   }
