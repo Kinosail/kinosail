@@ -86,7 +86,7 @@ type localizedTemplate = *localization.TemplateSet
 func newLocalizedTemplate(name, source string) *localization.TemplateSet {
 	source = strings.ReplaceAll(source, `/static/main.kinosail.bundle.js?v=16-htmx4`, `/static/main.kinosail.bundle.js?v=17-htmx4`)
 	themeSource := fmt.Sprintf("/static/theme.js?v=%x", sha256.Sum256(themeJS))
-	for _, version := range []string{"electric-1", "electric-2"} {
+	for _, version := range []string{"electric-1", "electric-2", "4", "6"} {
 		source = strings.ReplaceAll(source, "/static/theme.js?v="+version, themeSource)
 	}
 	source = stylesheetURL.ReplaceAllString(source, "/static/app.css?v="+applicationCSSVersion)
