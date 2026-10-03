@@ -125,19 +125,6 @@ func TestBrokerExpiresBoundsAndRevokesRequests(t *testing.T) {
 	}
 }
 
-func TestNumericCodeUsesSixDigits(t *testing.T) {
-	t.Parallel()
-	_, connection, err := New(time.Minute).Create(Request{Numeric: true})
-	if err != nil || len(connection.Code) != 6 {
-		t.Fatalf("Create() = %#v, %v", connection, err)
-	}
-	for _, character := range connection.Code {
-		if character < '0' || character > '9' {
-			t.Fatalf("numeric code = %q", connection.Code)
-		}
-	}
-}
-
 func TestBrokerRejectsUnboundedOrAmbiguousInputBeforeCapacity(t *testing.T) { //nolint:cyclop,gocognit // Scores of 16 and 17 remain below the repository ceiling of 22 for the rejection matrix.
 	t.Parallel()
 	broker := New(time.Minute)

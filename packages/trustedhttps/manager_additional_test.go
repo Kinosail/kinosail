@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"net/http"
-	"os"
 	"testing"
 	"time"
 )
@@ -46,39 +45,8 @@ func TestManagerDefaultsAndErrorStateAreFailClosed(t *testing.T) { //nolint:cycl
 	}
 }
 
-func TestPublicOperationsRejectMultipleDependencySetsBeforeSideEffects(t *testing.T) {
-	t.Parallel()
-	directory := t.TempDir()
-	config := Config{Domain: "family", Token: testToken, Address: "192.168.1.10", Terms: true}
-	if _, err := New(config, directory, Dependencies{}, Dependencies{}); err == nil {
-		t.Fatal("New accepted multiple dependency sets")
-	}
-	entries, err := os.ReadDir(directory)
-	if err != nil {
-		t.Fatal(err)
-	}
-	if len(entries) != 0 {
-		t.Fatalf("rejected New created %d file entries", len(entries))
-	}
-	transport := &countingTransport{}
-	dependencies := Dependencies{Client: &http.Client{Transport: transport}}
-	if err = Check(t.Context(), config, dependencies, dependencies); err == nil {
-		t.Fatal("Check accepted multiple dependency sets")
-	}
-	if transport.requests != 0 {
-		t.Fatalf("rejected Check made %d requests", transport.requests)
-	}
-}
-
 type failingTransport struct{}
 
 func (failingTransport) RoundTrip(*http.Request) (*http.Response, error) {
 	return nil, errors.New("network unavailable")
-}
-
-type countingTransport struct{ requests int }
-
-func (transport *countingTransport) RoundTrip(*http.Request) (*http.Response, error) {
-	transport.requests++
-	return nil, errors.New("unexpected request")
 }

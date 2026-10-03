@@ -20,15 +20,15 @@
     "declarations": 1900,
     "decisions": {
       "R": 1350,
-      "D": 67,
+      "D": 75,
       "F": 47,
       "C": 23,
-      "unreviewed": 413
+      "unreviewed": 405
     },
-    "removed_declarations": 67,
-    "removed_test_lines": 1183,
-    "final_declarations": 1833,
-    "final_test_lines": 65292,
+    "removed_declarations": 75,
+    "removed_test_lines": 1318,
+    "final_declarations": 1825,
+    "final_test_lines": 65157,
     "removed_support_helpers": 6,
     "removed_support_files": 3,
     "removed_support_lines": 141
@@ -68971,17 +68971,62 @@
       "owner_group": "quickconnect",
       "body_sha256": "adce0b15b353e06306a5ba641662e6f42c4daa6539b8ade0fdee7206cdfcc74f",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
-      "validation_command": "cd packages && go test ./quickconnect",
+      "decision": "D",
+      "audit_status": "reviewed",
+      "risk": "Delete/consolidate only after parent review and keeper preservation proof.",
+      "validation_command": "go -C packages test ./quickconnect/... -run ^TestApplicationPage$",
       "baseline_event": {
         "Time": "2026-10-03T10:35:30.02049-06:00",
         "Action": "pass",
         "Package": "github.com/MikeO7/kinosail/packages/quickconnect",
         "Test": "TestApplicationPage",
         "Elapsed": 0
-      }
+      },
+      "reviewed": true,
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "sourcechecksum": "adce0b15b353e06306a5ba641662e6f42c4daa6539b8ade0fdee7206cdfcc74f",
+      "declaration_identity": "876b771a7dd0aef5e65957fcee87add0312535e8:packages/quickconnect/http_flow_test.go:111:TestApplicationPage",
+      "source_file_checksum": "0b996423b09fb6036954061b34b5ac270140556c055d3011080d496c6df2e62c",
+      "credible_failure": "Wrong default Page auto-submit/media/render count.",
+      "reason": "Default-page callback smoke is dominated by actual Player automatic approval journey and Subtitles page visit/form journey; Render error is merely ignored and no error-handling contract is asserted.",
+      "production_owner": [
+        "packages/quickconnect/http.go:22#Start",
+        "packages/quickconnect/http.go:51#Poll",
+        "packages/quickconnect/http.go:77#Page",
+        "packages/quickconnect/http.go:99#ApprovePage",
+        "packages/quickconnect/http.go:122#ApproveAPI",
+        "packages/quickconnect/http.go:143#approveRequest",
+        "packages/quickconnect/http.go:201#readStringJSON",
+        "packages/quickconnect/application.go:58#Consume",
+        "packages/quickconnect/application.go:63#ConsumeCompatibility",
+        "packages/quickconnect/application.go:67#consumeSession",
+        "packages/quickconnect/application.go:89#Approve",
+        "packages/quickconnect/application.go:97#RevokeRemote"
+      ],
+      "callers": [
+        "apps/player/internal/server/quick_connect.go:37#application",
+        "apps/player/internal/server/quick_connect.go:52#register",
+        "apps/player/internal/server/quick_connect.go:107#revokeRemote",
+        "apps/subtitles/internal/server/quick_connect.go:37#application",
+        "apps/subtitles/internal/server/quick_connect.go:52#register",
+        "apps/subtitles/internal/server/quick_connect.go:100#revokeRemote"
+      ],
+      "gap": "Actual Player ui-happy-paths.spec.ts:255-289 and Subtitles test-instance.spec.ts:32-44 use real API start/manual or auto form approval/token201, but no replay/revision race/public cookies/expiry/concurrency/capacity/storage fault. Player quick-connect-scan.spec.ts:69-72 fulfills confirmation HTML and mocks camera/decoder: its no-POST result proves frontend navigation only, not server confirmation/issuance.",
+      "remaining_coverage": "apps/player/e2e/ui-happy-paths.spec.ts:255 owner real start/form auto-submit/token; apps/subtitles/e2e/test-instance.spec.ts:32 real default render/manual approval/token; packages/quickconnect/preview_test.go:148 keeps explicit scanned confirmation no-auto-submit.",
+      "command": "go -C packages test ./quickconnect/... -run ^TestApplicationPage$",
+      "command_status": "recommended_not_executed_by_this_auditor",
+      "unlocked_deletion": "None currently approved; inspect recorded test-only seam candidates.",
+      "source_read_evidence": "Full declaration/table/local helper assertions, production owner and relevant caller/dependency blocks, history and actual-versus-fixture browser source inspected.",
+      "history_interpretation": "Introduced in52fc467 initial baseline; actual source/assertions, not initial title, determine decision. No separate behavior-changing history in inventoried file beyond recorded initial/mechanical commits.",
+      "independent_removal_review": {
+        "reviewer": "/root/subtitles_shared/shared_identity",
+        "status": "approved after complete candidate bodies, actual named keeper assertions and relevant production/callers read; no naming-only or fixture-E2E equivalence",
+        "source_packet": "/tmp/kinosail-quick-trusted-audit.json",
+        "source_packet_sha256": "e9ba77fcea163ea0e4648758b75afa5484c387e9f9ef14a45b1d29bc49770806"
+      },
+      "implementation_status": "declaration removed; existing important keeper assertions unchanged; candidate validation awaits serial root run"
     },
     {
       "file": "packages/quickconnect/http_flow_test.go",
@@ -70640,17 +70685,55 @@
       "owner_group": "quickconnect",
       "body_sha256": "b487df120aa7067b11448c2f1d7c79262cb8fbcd5db30d8fa44a45f022a11f77",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
-      "validation_command": "cd packages && go test ./quickconnect",
+      "decision": "D",
+      "audit_status": "reviewed",
+      "risk": "Delete/consolidate only after parent review and keeper preservation proof.",
+      "validation_command": "go -C packages test ./quickconnect/... -run ^TestNumericCodeUsesSixDigits$",
       "baseline_event": {
         "Time": "2026-10-03T10:35:30.02209-06:00",
         "Action": "pass",
         "Package": "github.com/MikeO7/kinosail/packages/quickconnect",
         "Test": "TestNumericCodeUsesSixDigits",
         "Elapsed": 0
-      }
+      },
+      "reviewed": true,
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "sourcechecksum": "b487df120aa7067b11448c2f1d7c79262cb8fbcd5db30d8fa44a45f022a11f77",
+      "declaration_identity": "876b771a7dd0aef5e65957fcee87add0312535e8:packages/quickconnect/quickconnect_test.go:128:TestNumericCodeUsesSixDigits",
+      "source_file_checksum": "b7b30f81772bb5e4373b939f98bc4598d26f384e948d02e60008cb0fb99cb3c4",
+      "credible_failure": "Numeric code fails six ASCII-digit format.",
+      "reason": "Exact format is already asserted after actual public API Start for every accepted transport; private Broker positive invocation adds no independent input or authority contract.",
+      "production_owner": [
+        "packages/quickconnect/quickconnect.go:83#New",
+        "packages/quickconnect/quickconnect.go:94#Create",
+        "packages/quickconnect/quickconnect.go:139#Approve",
+        "packages/quickconnect/quickconnect.go:178#Consume",
+        "packages/quickconnect/quickconnect.go:198#RevokeRemote"
+      ],
+      "callers": [
+        "apps/player/internal/server/quick_connect.go:37#application",
+        "apps/player/internal/server/quick_connect.go:52#register",
+        "apps/player/internal/server/quick_connect.go:107#revokeRemote",
+        "apps/subtitles/internal/server/quick_connect.go:37#application",
+        "apps/subtitles/internal/server/quick_connect.go:52#register",
+        "apps/subtitles/internal/server/quick_connect.go:100#revokeRemote"
+      ],
+      "gap": "Actual Player ui-happy-paths.spec.ts:255-289 and Subtitles test-instance.spec.ts:32-44 use real API start/manual or auto form approval/token201, but no replay/revision race/public cookies/expiry/concurrency/capacity/storage fault. Player quick-connect-scan.spec.ts:69-72 fulfills confirmation HTML and mocks camera/decoder: its no-POST result proves frontend navigation only, not server confirmation/issuance.",
+      "remaining_coverage": "packages/quickconnect/http_start_test.go:34#TestApplicationStartAcceptsPlayerTransports asserts len(code)==6 and Trim(code,\"0123456789\")==\"\" plus secret and actual broker status.",
+      "command": "go -C packages test ./quickconnect/... -run ^TestNumericCodeUsesSixDigits$",
+      "command_status": "recommended_not_executed_by_this_auditor",
+      "unlocked_deletion": "None currently approved; inspect recorded test-only seam candidates.",
+      "source_read_evidence": "Full declaration/table/local helper assertions, production owner and relevant caller/dependency blocks, history and actual-versus-fixture browser source inspected.",
+      "history_interpretation": "Introduced in52fc467 initial baseline; actual source/assertions, not initial title, determine decision. No separate behavior-changing history in inventoried file beyond recorded initial/mechanical commits.",
+      "independent_removal_review": {
+        "reviewer": "/root/subtitles_shared/shared_identity",
+        "status": "approved after complete candidate bodies, actual named keeper assertions and relevant production/callers read; no naming-only or fixture-E2E equivalence",
+        "source_packet": "/tmp/kinosail-quick-trusted-audit.json",
+        "source_packet_sha256": "e9ba77fcea163ea0e4648758b75afa5484c387e9f9ef14a45b1d29bc49770806"
+      },
+      "implementation_status": "declaration removed; existing important keeper assertions unchanged; candidate validation awaits serial root run"
     },
     {
       "file": "packages/quickconnect/quickconnect_test.go",
@@ -83149,17 +83232,57 @@
       "owner_group": "trustedhttps",
       "body_sha256": "18ff6b8a91fe29e6f7e6169fb5d41126a258b9083e2001059f4a6fa872069d90",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
-      "validation_command": "cd packages && go test ./trustedhttps",
+      "decision": "D",
+      "audit_status": "reviewed",
+      "risk": "Delete/consolidate only after parent review and keeper preservation proof.",
+      "validation_command": "go -C packages test ./trustedhttps/... -run ^TestConfigAcceptsLocalHostnameAddress$",
       "baseline_event": {
         "Time": "2026-10-03T10:35:32.556104-06:00",
         "Action": "pass",
         "Package": "github.com/MikeO7/kinosail/packages/trustedhttps",
         "Test": "TestConfigAcceptsLocalHostnameAddress",
         "Elapsed": 0
-      }
+      },
+      "reviewed": true,
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "sourcechecksum": "18ff6b8a91fe29e6f7e6169fb5d41126a258b9083e2001059f4a6fa872069d90",
+      "declaration_identity": "876b771a7dd0aef5e65957fcee87add0312535e8:packages/trustedhttps/config_test.go:38:TestConfigAcceptsLocalHostnameAddress",
+      "source_file_checksum": "8e3cec9992304f4eb43b3249adf9b9b6b5207f062c880e9f67618cce7da354af",
+      "credible_failure": "Configuration rejects local hostname server.nox.",
+      "reason": "Single-field positive normalization is already exercised by actual Player browser Save with server.nox, whose route continues to real server, and enables Jellyfin only after saved config.",
+      "production_owner": [
+        "packages/trustedhttps/config.go:29#NewProviderConfig",
+        "packages/trustedhttps/config.go:43#Parse",
+        "packages/trustedhttps/config.go:99#Encode",
+        "packages/trustedhttps/config.go:122#Validate"
+      ],
+      "callers": [
+        "packages/appcli/command.go:193#TrustedHTTPS",
+        "apps/player/internal/server/settings_trusted_https.go:65#setTrustedHTTPS",
+        "apps/player/internal/server/settings_trusted_https.go:107#validTrustedHTTPSLocked",
+        "apps/player/internal/server/settings_trusted_https_http.go:94#saveTrustedHTTPS",
+        "apps/player/internal/server/settings_trusted_https_http.go:40#apiTestTrustedHTTPS",
+        "apps/subtitles/internal/server/settings_trusted_https.go:45#setTrustedHTTPS",
+        "apps/subtitles/internal/server/settings_trusted_https.go:170#saveTrustedHTTPS",
+        "packages/servertransport/server.go:75#ConfigureCertificates",
+        "packages/owneraccess/runtime_factory.go:72#tunnelCertificate"
+      ],
+      "gap": "Actual browser jellyfin-setup scenarios save/disable DuckDNS config and enable compatibility; Player DNS validate/test and failed Save UI routes are fulfilled mock responses. No real provider DNS update/ACME issuance/retry/cache renewal/private-file fault/SNI certificate switching or owner tunnel A-record exclusion is exercised. Default provider URL and real ACME signature/trust-chain validity not independently claimed by fakeACME helpers.",
+      "remaining_coverage": "apps/player/e2e/jellyfin-setup.spec.ts:106 fills server.nox;143-149 real Save after route.continue, choice enabled; packages/trustedhttps/provider_test.go:73 separately proves resolution to private IPv4 over actual provider HTTP (literal Config does not prove validation).",
+      "command": "go -C packages test ./trustedhttps/... -run ^TestConfigAcceptsLocalHostnameAddress$",
+      "command_status": "recommended_not_executed_by_this_auditor",
+      "unlocked_deletion": "None currently approved; inspect recorded test-only seam candidates.",
+      "source_read_evidence": "Full declaration/table/local helper assertions, production owner and relevant caller/dependency blocks, history and actual-versus-fixture browser source inspected.",
+      "history_interpretation": "Introduced in52fc467 initial baseline; actual source/assertions, not initial title, determine decision. No separate behavior-changing history in inventoried file beyond recorded initial/mechanical commits.",
+      "independent_removal_review": {
+        "reviewer": "/root/subtitles_shared/shared_identity",
+        "status": "approved after complete candidate bodies, actual named keeper assertions and relevant production/callers read; no naming-only or fixture-E2E equivalence",
+        "source_packet": "/tmp/kinosail-quick-trusted-audit.json",
+        "source_packet_sha256": "e9ba77fcea163ea0e4648758b75afa5484c387e9f9ef14a45b1d29bc49770806"
+      },
+      "implementation_status": "declaration removed; existing important keeper assertions unchanged; candidate validation awaits serial root run"
     },
     {
       "file": "packages/trustedhttps/config_test.go",
@@ -84272,17 +84395,68 @@
       "owner_group": "trustedhttps",
       "body_sha256": "624eadcf33be355834327ef38ade25fb53006c7f8d8b42a3745de319485c6827",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
-      "validation_command": "cd packages && go test ./trustedhttps",
+      "decision": "D",
+      "audit_status": "reviewed",
+      "risk": "Delete/consolidate only after parent review and keeper preservation proof.",
+      "validation_command": "go -C packages test ./trustedhttps/... -run ^TestObtainCertificateUsesDefaultDirectory$",
       "baseline_event": {
         "Time": "2026-10-03T10:35:32.457679-06:00",
         "Action": "pass",
         "Package": "github.com/MikeO7/kinosail/packages/trustedhttps",
         "Test": "TestObtainCertificateUsesDefaultDirectory",
         "Elapsed": 0.04
-      }
+      },
+      "reviewed": true,
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "sourcechecksum": "624eadcf33be355834327ef38ade25fb53006c7f8d8b42a3745de319485c6827",
+      "declaration_identity": "876b771a7dd0aef5e65957fcee87add0312535e8:packages/trustedhttps/issuer_edges_test.go:182:TestObtainCertificateUsesDefaultDirectory",
+      "source_file_checksum": "8ff9e568c68c4b46ba329992ad193860efc55c805c116423daae02db77223ef0",
+      "credible_failure": "ACME setup returns an error for unavailable directory, but no requested URL/default is observed.",
+      "reason": "Both cases assert only some error and can pass if account-key setup or any other prerequisite fails. Default case failingTransport accepts every URL; it cannot detect wrong/missing LetsEncryptURL. This title-only default probe is low signal.",
+      "production_owner": [
+        "packages/trustedhttps/issuer.go:33#withResolvedAddress",
+        "packages/trustedhttps/issuer.go:70#obtainCertificate",
+        "packages/trustedhttps/issuer.go:82#issue",
+        "packages/trustedhttps/issuer.go:99#authorizeDNS",
+        "packages/trustedhttps/issuer.go:165#updateDuckDNS",
+        "packages/trustedhttps/issuer.go:199#waitForTXTWith",
+        "packages/trustedhttps/identity.go:41#finalizeCertificateWith",
+        "packages/trustedhttps/identity.go:66#accountKeyWith",
+        "packages/trustedhttps/identity.go:97#encodeIdentityWith",
+        "packages/trustedhttps/identity.go:125#validIdentityLeaf",
+        "packages/trustedhttps/identity.go:129#validCertificateChain",
+        "packages/trustedhttps/provider.go:18#Check",
+        "packages/trustedhttps/provider.go:73#newDNSProvider",
+        "packages/trustedhttps/provider.go:183#providerResponse",
+        "packages/trustedhttps/provider.go:205#defaultHTTPClient"
+      ],
+      "callers": [
+        "packages/appcli/command.go:193#TrustedHTTPS",
+        "apps/player/internal/server/settings_trusted_https.go:65#setTrustedHTTPS",
+        "apps/player/internal/server/settings_trusted_https.go:107#validTrustedHTTPSLocked",
+        "apps/player/internal/server/settings_trusted_https_http.go:94#saveTrustedHTTPS",
+        "apps/player/internal/server/settings_trusted_https_http.go:40#apiTestTrustedHTTPS",
+        "apps/subtitles/internal/server/settings_trusted_https.go:45#setTrustedHTTPS",
+        "apps/subtitles/internal/server/settings_trusted_https.go:170#saveTrustedHTTPS",
+        "packages/servertransport/server.go:75#ConfigureCertificates",
+        "packages/owneraccess/runtime_factory.go:72#tunnelCertificate"
+      ],
+      "gap": "Actual browser jellyfin-setup scenarios save/disable DuckDNS config and enable compatibility; Player DNS validate/test and failed Save UI routes are fulfilled mock responses. No real provider DNS update/ACME issuance/retry/cache renewal/private-file fault/SNI certificate switching or owner tunnel A-record exclusion is exercised. Default provider URL and real ACME signature/trust-chain validity not independently claimed by fakeACME helpers.",
+      "remaining_coverage": "packages/trustedhttps/issuer_test.go:102#TestIssueRejectsACMEAdapterFailures retains meaningful issuer register failure; manager_edges_test.go:25 retains invalid renewed-material rejection (proposed repair for stage specificity). Honest gap: actual obtainCertificate ACME HTTP default directory URL/404 request is not independently asserted. x/crypto/acme/acme.go:219 directoryURL supplies same default when field empty, further weakening deleted fallback probe.",
+      "command": "go -C packages test ./trustedhttps/... -run ^TestObtainCertificateUsesDefaultDirectory$",
+      "command_status": "recommended_not_executed_by_this_auditor",
+      "unlocked_deletion": "None currently approved; inspect recorded test-only seam candidates.",
+      "source_read_evidence": "Full declaration/table/local helper assertions, production owner and relevant caller/dependency blocks, history and actual-versus-fixture browser source inspected.",
+      "history_interpretation": "Introduced in52fc467 initial baseline; actual source/assertions, not initial title, determine decision. No separate behavior-changing history in inventoried file beyond recorded initial/mechanical commits.",
+      "independent_removal_review": {
+        "reviewer": "/root/subtitles_shared/shared_identity",
+        "status": "approved after complete candidate bodies, actual named keeper assertions and relevant production/callers read; no naming-only or fixture-E2E equivalence",
+        "source_packet": "/tmp/kinosail-quick-trusted-audit.json",
+        "source_packet_sha256": "e9ba77fcea163ea0e4648758b75afa5484c387e9f9ef14a45b1d29bc49770806"
+      },
+      "implementation_status": "declaration removed; existing important keeper assertions unchanged; candidate validation awaits serial root run"
     },
     {
       "file": "packages/trustedhttps/issuer_edges_test.go",
@@ -84742,17 +84916,63 @@
       "owner_group": "trustedhttps",
       "body_sha256": "7e988408c845c0fdce9def41c9d150ea232e0246b3918a30e7bcc548b9a19ccd",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
-      "validation_command": "cd packages && go test ./trustedhttps",
+      "decision": "D",
+      "audit_status": "reviewed",
+      "risk": "Delete/consolidate only after parent review and keeper preservation proof.",
+      "validation_command": "go -C packages test ./trustedhttps/... -run ^TestPublicOperationsRejectMultipleDependencySetsBeforeSideEffects$",
       "baseline_event": {
         "Time": "2026-10-03T10:35:32.564291-06:00",
         "Action": "pass",
         "Package": "github.com/MikeO7/kinosail/packages/trustedhttps",
         "Test": "TestPublicOperationsRejectMultipleDependencySetsBeforeSideEffects",
         "Elapsed": 0.01
-      }
+      },
+      "reviewed": true,
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "sourcechecksum": "7e988408c845c0fdce9def41c9d150ea232e0246b3918a30e7bcc548b9a19ccd",
+      "declaration_identity": "876b771a7dd0aef5e65957fcee87add0312535e8:packages/trustedhttps/manager_additional_test.go:49:TestPublicOperationsRejectMultipleDependencySetsBeforeSideEffects",
+      "source_file_checksum": "70bbeca64bee0f16827c4aedffce9677990efa0c6cb4dd3f5d406fcf2f285786",
+      "credible_failure": "Variadic injection seam permits more than one Dependencies argument.",
+      "reason": "All actual appcli, settings Check and owneraccess callers provide no override. Cardinality preserves test-only variadic argument shape; no independent runtime contract needs that invocation.",
+      "production_owner": [
+        "packages/trustedhttps/manager.go:57#New",
+        "packages/trustedhttps/manager.go:101#Run",
+        "packages/trustedhttps/manager.go:118#Certificate",
+        "packages/trustedhttps/manager.go:128#Status",
+        "packages/trustedhttps/manager.go:137#maintain",
+        "packages/trustedhttps/manager.go:187#loadCertificate",
+        "packages/trustedhttps/provider.go:18#Check",
+        "packages/trustedhttps/provider.go:73#newDNSProvider",
+        "packages/trustedhttps/provider.go:183#providerResponse",
+        "packages/trustedhttps/provider.go:205#defaultHTTPClient"
+      ],
+      "callers": [
+        "packages/appcli/command.go:193#TrustedHTTPS",
+        "apps/player/internal/server/settings_trusted_https.go:65#setTrustedHTTPS",
+        "apps/player/internal/server/settings_trusted_https.go:107#validTrustedHTTPSLocked",
+        "apps/player/internal/server/settings_trusted_https_http.go:94#saveTrustedHTTPS",
+        "apps/player/internal/server/settings_trusted_https_http.go:40#apiTestTrustedHTTPS",
+        "apps/subtitles/internal/server/settings_trusted_https.go:45#setTrustedHTTPS",
+        "apps/subtitles/internal/server/settings_trusted_https.go:170#saveTrustedHTTPS",
+        "packages/servertransport/server.go:75#ConfigureCertificates",
+        "packages/owneraccess/runtime_factory.go:72#tunnelCertificate"
+      ],
+      "gap": "Actual browser jellyfin-setup scenarios save/disable DuckDNS config and enable compatibility; Player DNS validate/test and failed Save UI routes are fulfilled mock responses. No real provider DNS update/ACME issuance/retry/cache renewal/private-file fault/SNI certificate switching or owner tunnel A-record exclusion is exercised. Default provider URL and real ACME signature/trust-chain validity not independently claimed by fakeACME helpers.",
+      "remaining_coverage": "packages/appcli/command.go:193-198 Parse->New(config,dataDir) and apps/player/internal/server/settings.go:78 trustedhttps.Check(ctx,config); owneraccess/runtime_factory.go:78 NewTunnelCertificate calls New(config,directory). Keep primary Manager/Check real behavior tests.",
+      "command": "go -C packages test ./trustedhttps/... -run ^TestPublicOperationsRejectMultipleDependencySetsBeforeSideEffects$",
+      "command_status": "recommended_not_executed_by_this_auditor",
+      "unlocked_deletion": "None currently approved; inspect recorded test-only seam candidates.",
+      "source_read_evidence": "Full declaration/table/local helper assertions, production owner and relevant caller/dependency blocks, history and actual-versus-fixture browser source inspected.",
+      "history_interpretation": "Introduced in52fc467 initial baseline; actual source/assertions, not initial title, determine decision. No separate behavior-changing history in inventoried file beyond recorded initial/mechanical commits.",
+      "independent_removal_review": {
+        "reviewer": "/root/subtitles_shared/shared_identity",
+        "status": "approved after complete candidate bodies, actual named keeper assertions and relevant production/callers read; no naming-only or fixture-E2E equivalence",
+        "source_packet": "/tmp/kinosail-quick-trusted-audit.json",
+        "source_packet_sha256": "e9ba77fcea163ea0e4648758b75afa5484c387e9f9ef14a45b1d29bc49770806"
+      },
+      "implementation_status": "declaration removed; existing important keeper assertions unchanged; candidate validation awaits serial root run"
     },
     {
       "file": "packages/trustedhttps/manager_edges_test.go",
@@ -84762,17 +84982,63 @@
       "owner_group": "trustedhttps",
       "body_sha256": "fbe0cbd7cad44313afaa1485642d6f469ecd2b0ba0cc9d7f6149840bb7a61152",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
-      "validation_command": "cd packages && go test ./trustedhttps",
+      "decision": "D",
+      "audit_status": "reviewed",
+      "risk": "Delete/consolidate only after parent review and keeper preservation proof.",
+      "validation_command": "go -C packages test ./trustedhttps/... -run ^TestManagerDefaultDependenciesAndNilReceiver$",
       "baseline_event": {
         "Time": "2026-10-03T10:35:32.49997-06:00",
         "Action": "pass",
         "Package": "github.com/MikeO7/kinosail/packages/trustedhttps",
         "Test": "TestManagerDefaultDependenciesAndNilReceiver",
         "Elapsed": 0
-      }
+      },
+      "reviewed": true,
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "sourcechecksum": "fbe0cbd7cad44313afaa1485642d6f469ecd2b0ba0cc9d7f6149840bb7a61152",
+      "declaration_identity": "876b771a7dd0aef5e65957fcee87add0312535e8:packages/trustedhttps/manager_edges_test.go:13:TestManagerDefaultDependenciesAndNilReceiver",
+      "source_file_checksum": "5dd8f58e007137d27838c7a737bcda6016b08c8dbfd7dde943d9e55d8d5a5e6b",
+      "credible_failure": "Default internal function pointers absent or nil convenience status changes.",
+      "reason": "Non-nil private field inventory and nil receiver smoke have no independently asserted external certificate/issuance result. Actual valid Manager default construction is exercised by tunnel lifecycle; disabled/status contract already has exact keeper.",
+      "production_owner": [
+        "packages/trustedhttps/manager.go:57#New",
+        "packages/trustedhttps/manager.go:101#Run",
+        "packages/trustedhttps/manager.go:118#Certificate",
+        "packages/trustedhttps/manager.go:128#Status",
+        "packages/trustedhttps/manager.go:137#maintain",
+        "packages/trustedhttps/manager.go:187#loadCertificate",
+        "packages/trustedhttps/provider.go:18#Check",
+        "packages/trustedhttps/provider.go:73#newDNSProvider",
+        "packages/trustedhttps/provider.go:183#providerResponse",
+        "packages/trustedhttps/provider.go:205#defaultHTTPClient"
+      ],
+      "callers": [
+        "packages/appcli/command.go:193#TrustedHTTPS",
+        "apps/player/internal/server/settings_trusted_https.go:65#setTrustedHTTPS",
+        "apps/player/internal/server/settings_trusted_https.go:107#validTrustedHTTPSLocked",
+        "apps/player/internal/server/settings_trusted_https_http.go:94#saveTrustedHTTPS",
+        "apps/player/internal/server/settings_trusted_https_http.go:40#apiTestTrustedHTTPS",
+        "apps/subtitles/internal/server/settings_trusted_https.go:45#setTrustedHTTPS",
+        "apps/subtitles/internal/server/settings_trusted_https.go:170#saveTrustedHTTPS",
+        "packages/servertransport/server.go:75#ConfigureCertificates",
+        "packages/owneraccess/runtime_factory.go:72#tunnelCertificate"
+      ],
+      "gap": "Actual browser jellyfin-setup scenarios save/disable DuckDNS config and enable compatibility; Player DNS validate/test and failed Save UI routes are fulfilled mock responses. No real provider DNS update/ACME issuance/retry/cache renewal/private-file fault/SNI certificate switching or owner tunnel A-record exclusion is exercised. Default provider URL and real ACME signature/trust-chain validity not independently claimed by fakeACME helpers.",
+      "remaining_coverage": "packages/trustedhttps/tunnel_test.go:11#TestTunnelCertificateRenewsWithoutPublishingPrivateAddress uses public NewTunnelCertificate->New with real defaults and actual cert result; manager_additional_test.go:12#TestManagerDefaultsAndErrorStateAreFailClosed keeps disabled state/cert policy.",
+      "command": "go -C packages test ./trustedhttps/... -run ^TestManagerDefaultDependenciesAndNilReceiver$",
+      "command_status": "recommended_not_executed_by_this_auditor",
+      "unlocked_deletion": "None currently approved; inspect recorded test-only seam candidates.",
+      "source_read_evidence": "Full declaration/table/local helper assertions, production owner and relevant caller/dependency blocks, history and actual-versus-fixture browser source inspected.",
+      "history_interpretation": "Introduced in52fc467 initial baseline; actual source/assertions, not initial title, determine decision. No separate behavior-changing history in inventoried file beyond recorded initial/mechanical commits.",
+      "independent_removal_review": {
+        "reviewer": "/root/subtitles_shared/shared_identity",
+        "status": "approved after complete candidate bodies, actual named keeper assertions and relevant production/callers read; no naming-only or fixture-E2E equivalence",
+        "source_packet": "/tmp/kinosail-quick-trusted-audit.json",
+        "source_packet_sha256": "e9ba77fcea163ea0e4648758b75afa5484c387e9f9ef14a45b1d29bc49770806"
+      },
+      "implementation_status": "declaration removed; existing important keeper assertions unchanged; candidate validation awaits serial root run"
     },
     {
       "file": "packages/trustedhttps/manager_edges_test.go",
@@ -85212,17 +85478,58 @@
       "owner_group": "trustedhttps",
       "body_sha256": "64126134c5b481b9f71fd3c691b79c49fda7c5a1d2fd971171bf7f21390c52d0",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
-      "validation_command": "cd packages && go test ./trustedhttps",
+      "decision": "D",
+      "audit_status": "reviewed",
+      "risk": "Delete/consolidate only after parent review and keeper preservation proof.",
+      "validation_command": "go -C packages test ./trustedhttps/... -run ^TestCheckAndProviderConstructionRejectInvalidBoundaries$",
       "baseline_event": {
         "Time": "2026-10-03T10:35:32.528031-06:00",
         "Action": "pass",
         "Package": "github.com/MikeO7/kinosail/packages/trustedhttps",
         "Test": "TestCheckAndProviderConstructionRejectInvalidBoundaries",
         "Elapsed": 0
-      }
+      },
+      "reviewed": true,
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "sourcechecksum": "64126134c5b481b9f71fd3c691b79c49fda7c5a1d2fd971171bf7f21390c52d0",
+      "declaration_identity": "876b771a7dd0aef5e65957fcee87add0312535e8:packages/trustedhttps/provider_edges_test.go:15:TestCheckAndProviderConstructionRejectInvalidBoundaries",
+      "source_file_checksum": "c2dc32da9d1471d2053537085783d92aaf4a54ee4ac3b9c27c593ef7802ea668",
+      "credible_failure": "Invalid private provider endpoint/test configuration returns no error.",
+      "reason": "Malformed endpoint overrides are test-only; unsupported provider direct newDNSProvider bypasses config validation. Check invalid Config{Domain:family} can still error from address resolution if config guard removed, with no request counter to isolate admission. Shared public validation and meaningful actual Check HTTP keeper remain.",
+      "production_owner": [
+        "packages/trustedhttps/provider.go:18#Check",
+        "packages/trustedhttps/provider.go:73#newDNSProvider",
+        "packages/trustedhttps/provider.go:183#providerResponse",
+        "packages/trustedhttps/provider.go:205#defaultHTTPClient",
+        "packages/trustedhttps/issuer.go:33#withResolvedAddress"
+      ],
+      "callers": [
+        "packages/appcli/command.go:193#TrustedHTTPS",
+        "apps/player/internal/server/settings_trusted_https.go:65#setTrustedHTTPS",
+        "apps/player/internal/server/settings_trusted_https.go:107#validTrustedHTTPSLocked",
+        "apps/player/internal/server/settings_trusted_https_http.go:94#saveTrustedHTTPS",
+        "apps/player/internal/server/settings_trusted_https_http.go:40#apiTestTrustedHTTPS",
+        "apps/subtitles/internal/server/settings_trusted_https.go:45#setTrustedHTTPS",
+        "apps/subtitles/internal/server/settings_trusted_https.go:170#saveTrustedHTTPS",
+        "packages/servertransport/server.go:75#ConfigureCertificates",
+        "packages/owneraccess/runtime_factory.go:72#tunnelCertificate"
+      ],
+      "gap": "Actual browser jellyfin-setup scenarios save/disable DuckDNS config and enable compatibility; Player DNS validate/test and failed Save UI routes are fulfilled mock responses. No real provider DNS update/ACME issuance/retry/cache renewal/private-file fault/SNI certificate switching or owner tunnel A-record exclusion is exercised. Default provider URL and real ACME signature/trust-chain validity not independently claimed by fakeACME helpers.",
+      "remaining_coverage": "packages/trustedhttps/config_test.go:143#TestProviderConfigRejectsInvalidInput; manager_additional_test.go:12 New invalid HTTPS dependency table; provider_test.go:93#TestCheckUpdatesTheConfiguredAddress actual wire+request count. Honest gap: Check malformed config validation-before-network is not uniquely proved by this weak probe.",
+      "command": "go -C packages test ./trustedhttps/... -run ^TestCheckAndProviderConstructionRejectInvalidBoundaries$",
+      "command_status": "recommended_not_executed_by_this_auditor",
+      "unlocked_deletion": "None currently approved; inspect recorded test-only seam candidates.",
+      "source_read_evidence": "Full declaration/table/local helper assertions, production owner and relevant caller/dependency blocks, history and actual-versus-fixture browser source inspected.",
+      "history_interpretation": "Introduced in52fc467 initial baseline; actual source/assertions, not initial title, determine decision. No separate behavior-changing history in inventoried file beyond recorded initial/mechanical commits.",
+      "independent_removal_review": {
+        "reviewer": "/root/subtitles_shared/shared_identity",
+        "status": "approved after complete candidate bodies, actual named keeper assertions and relevant production/callers read; no naming-only or fixture-E2E equivalence",
+        "source_packet": "/tmp/kinosail-quick-trusted-audit.json",
+        "source_packet_sha256": "e9ba77fcea163ea0e4648758b75afa5484c387e9f9ef14a45b1d29bc49770806"
+      },
+      "implementation_status": "declaration removed; existing important keeper assertions unchanged; candidate validation awaits serial root run"
     },
     {
       "file": "packages/trustedhttps/provider_edges_test.go",
@@ -85397,17 +85704,58 @@
       "owner_group": "trustedhttps",
       "body_sha256": "cce3150c804c66b6a97228d601bd999698b4415ec2d98ab68a4b0b1a009c6fdd",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
-      "validation_command": "cd packages && go test ./trustedhttps",
+      "decision": "D",
+      "audit_status": "reviewed",
+      "risk": "Delete/consolidate only after parent review and keeper preservation proof.",
+      "validation_command": "go -C packages test ./trustedhttps/... -run ^TestDeSECPayloadFailureStopsBeforeRequest$",
       "baseline_event": {
         "Time": "2026-10-03T10:35:32.532757-06:00",
         "Action": "pass",
         "Package": "github.com/MikeO7/kinosail/packages/trustedhttps",
         "Test": "TestDeSECPayloadFailureStopsBeforeRequest",
         "Elapsed": 0
-      }
+      },
+      "reviewed": true,
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "sourcechecksum": "cce3150c804c66b6a97228d601bd999698b4415ec2d98ab68a4b0b1a009c6fdd",
+      "declaration_identity": "876b771a7dd0aef5e65957fcee87add0312535e8:packages/trustedhttps/provider_edges_test.go:101:TestDeSECPayloadFailureStopsBeforeRequest",
+      "source_file_checksum": "c2dc32da9d1471d2053537085783d92aaf4a54ee4ac3b9c27c593ef7802ea668",
+      "credible_failure": "Artificial deSECPayload marshal hook returns error.",
+      "reason": "Concrete payload contains only string/int/string-slice, so production json.Marshal cannot return unsupported-type/value error; marshal hook is assigned only by this test. No request counter despite title. Deletion can unlock removal of deSECProvider.marshal seam and direct json.Marshal(payload) (parent review only).",
+      "production_owner": [
+        "packages/trustedhttps/provider.go:18#Check",
+        "packages/trustedhttps/provider.go:73#newDNSProvider",
+        "packages/trustedhttps/provider.go:183#providerResponse",
+        "packages/trustedhttps/provider.go:205#defaultHTTPClient",
+        "packages/trustedhttps/issuer.go:33#withResolvedAddress"
+      ],
+      "callers": [
+        "packages/appcli/command.go:193#TrustedHTTPS",
+        "apps/player/internal/server/settings_trusted_https.go:65#setTrustedHTTPS",
+        "apps/player/internal/server/settings_trusted_https.go:107#validTrustedHTTPSLocked",
+        "apps/player/internal/server/settings_trusted_https_http.go:94#saveTrustedHTTPS",
+        "apps/player/internal/server/settings_trusted_https_http.go:40#apiTestTrustedHTTPS",
+        "apps/subtitles/internal/server/settings_trusted_https.go:45#setTrustedHTTPS",
+        "apps/subtitles/internal/server/settings_trusted_https.go:170#saveTrustedHTTPS",
+        "packages/servertransport/server.go:75#ConfigureCertificates",
+        "packages/owneraccess/runtime_factory.go:72#tunnelCertificate"
+      ],
+      "gap": "Actual browser jellyfin-setup scenarios save/disable DuckDNS config and enable compatibility; Player DNS validate/test and failed Save UI routes are fulfilled mock responses. No real provider DNS update/ACME issuance/retry/cache renewal/private-file fault/SNI certificate switching or owner tunnel A-record exclusion is exercised. Default provider URL and real ACME signature/trust-chain validity not independently claimed by fakeACME helpers.",
+      "remaining_coverage": "packages/trustedhttps/provider_test.go:45#TestDeSECProviderUpdatesAddressWithPrivateAuthorization and57#TestDeSECProviderManagesTXTWithPrivateAuthorization independently inspect actual decoded payload/header/method/URI. No live production failure contract lost.",
+      "command": "go -C packages test ./trustedhttps/... -run ^TestDeSECPayloadFailureStopsBeforeRequest$",
+      "command_status": "recommended_not_executed_by_this_auditor",
+      "unlocked_deletion": "Remove test-only deSECProvider.marshal field and its closure initialization; json.Marshal(deSECPayload) directly preserves production behavior. Parent review needed.",
+      "source_read_evidence": "Full declaration/table/local helper assertions, production owner and relevant caller/dependency blocks, history and actual-versus-fixture browser source inspected.",
+      "history_interpretation": "Introduced in52fc467 initial baseline; actual source/assertions, not initial title, determine decision. No separate behavior-changing history in inventoried file beyond recorded initial/mechanical commits.",
+      "independent_removal_review": {
+        "reviewer": "/root/subtitles_shared/shared_identity",
+        "status": "approved after complete candidate bodies, actual named keeper assertions and relevant production/callers read; no naming-only or fixture-E2E equivalence",
+        "source_packet": "/tmp/kinosail-quick-trusted-audit.json",
+        "source_packet_sha256": "e9ba77fcea163ea0e4648758b75afa5484c387e9f9ef14a45b1d29bc49770806"
+      },
+      "implementation_status": "declaration removed; existing important keeper assertions unchanged; candidate validation awaits serial root run"
     },
     {
       "file": "packages/trustedhttps/provider_test.go",
