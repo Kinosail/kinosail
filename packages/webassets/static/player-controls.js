@@ -199,16 +199,17 @@ if (controls && player.tagName === "VIDEO") {
   const fullscreen = document.querySelector("[data-player-fullscreen]");
   const fullscreenTarget = nativeControls ? player : stage;
   const elementFullscreen = document.fullscreenEnabled && fullscreenTarget.requestFullscreen;
+  const preferNativeFullscreen = Boolean(player.webkitEnterFullscreen && (nativeControls || navigator.maxTouchPoints > 0));
   const fullscreenSupported = Boolean(elementFullscreen || player.webkitEnterFullscreen);
   if (fullscreen) {
     fullscreen.disabled = !fullscreenSupported;
     fullscreen.title = !fullscreenSupported ? "Fullscreen is unavailable in this browser"
-      : !elementFullscreen && player.dataset.subtitlePickerLimited === "true" ? "Fullscreen uses Safari’s native player and subtitle menu" : "Fullscreen";
+      : (preferNativeFullscreen || !elementFullscreen) && player.dataset.subtitlePickerLimited === "true" ? "Fullscreen uses Safari’s native player and subtitle menu" : "Fullscreen";
   }
   const enterFullscreen = async () => {
     if (document.fullscreenElement) await document.exitFullscreen();
     else if (player.webkitDisplayingFullscreen) player.webkitExitFullscreen?.();
-    else if (player.webkitEnterFullscreen && nativeControls) player.webkitEnterFullscreen();
+    else if (preferNativeFullscreen) player.webkitEnterFullscreen();
     else if (document.fullscreenEnabled && fullscreenTarget.requestFullscreen) await fullscreenTarget.requestFullscreen({navigationUI: "hide"});
     else if (player.webkitEnterFullscreen) player.webkitEnterFullscreen();
   };

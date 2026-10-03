@@ -250,14 +250,14 @@ test.beforeEach(async ({ page }, testInfo) => {
   });
   if (native && testInfo.title.includes("touch native playback")) await page.evaluate(() => Object.defineProperty(navigator, "maxTouchPoints", {configurable: true, value: 1}));
   const playerScript = playerSource;
-  if (testInfo.title.includes("native fullscreen fallback")) await page.evaluate(() => {
-    Object.defineProperty(document, "fullscreenEnabled", {configurable: true, value: false});
+  if (testInfo.title.includes("native fullscreen fallback") || testInfo.title.includes("both fullscreen APIs")) await page.evaluate((both) => {
+    Object.defineProperty(document, "fullscreenEnabled", {configurable: true, value: both});
     const video = document.querySelector("video")!;
     Object.defineProperty(video, "webkitEnterFullscreen", {configurable: true, value: () => {
       const state = window as Window & {nativeFullscreenCalls?: number};
       state.nativeFullscreenCalls = (state.nativeFullscreenCalls || 0) + 1;
     }});
-  });
+  }, testInfo.title.includes("both fullscreen APIs"));
   if (testInfo.title.includes("pending HLS loader")) {
     await page.evaluate(() => {
       const originalAppend = document.head.append.bind(document.head);
