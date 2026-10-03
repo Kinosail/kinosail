@@ -28,8 +28,11 @@
       "file": "apps/player/apps/android/app/src/test/java/com/kinosail/player/core/CastButtonThemeTest.kt",
       "line": 14,
       "subject": "Deleting sole CI-executed Cast theme constructor crash guard moves real failure protection to unexecuted instrumentation",
-      "status": "reported_to_parent",
-      "required_resolution": "Restore existing test or execute equivalent keeper in required automation. Native instrumentation is not genuine Server E2E and is currently absent from Android CI command."
+      "status": "resolved",
+      "required_resolution": "Restore existing test or execute equivalent keeper in required automation. Native instrumentation is not genuine Server E2E and is currently absent from Android CI command.",
+      "resolution": "Exact original CastButtonThemeTest.kt restored at root724a6d721, original frontend692ec488f. Read current file and compared full text to876b771a7 baseline: equal.",
+      "resolution_sha": "724a6d721",
+      "restored_file_sha256": "553a294d5c27da5a3197f0fa467d60001e160ff4b724783162d2deeaa11bbb17"
     }
   ],
   "backend_review": {
