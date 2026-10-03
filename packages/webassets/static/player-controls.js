@@ -150,7 +150,7 @@ if (controls && player.tagName === "VIDEO") {
   controls.querySelectorAll("[data-player-toggle]").forEach((button) => button.addEventListener("click", () => {
     if (!player.paused && !nativeControls) return requestPause();
     requestPlay("control").catch(() => {});
-    if (nativeControls && navigator.maxTouchPoints > 0) enterFullscreen().catch(reportFullscreenFailure);
+    if (navigator.maxTouchPoints > 0 && !document.fullscreenElement && !player.webkitDisplayingFullscreen) enterFullscreen().catch(reportFullscreenFailure);
   }));
   controls.querySelectorAll("[data-player-back]").forEach((button) => button.addEventListener("click", () => { player.currentTime = Math.max(0, player.currentTime - 10); }));
   controls.querySelectorAll("[data-player-forward]").forEach((button) => button.addEventListener("click", () => { player.currentTime = Math.min(player.duration || Infinity, player.currentTime + 10); }));

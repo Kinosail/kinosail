@@ -235,6 +235,14 @@ jobs:
           KINOSAIL_TEST_IMAGE: localhost/kinosail-${{ inputs.app }}:${{ github.sha }}
           KINOSAIL_TEST_IMAGE_READY: "1"
         run: ./scripts/test-container.sh
+      - name: Keep Player fullscreen evidence
+        if: always() && inputs.app == 'player'
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: player-${{ matrix.engine }}-fullscreen-evidence
+          path: ${{ runner.temp }}/player-${{ matrix.engine }}-browser-results*/player-touch-fullscreen-*
+          retention-days: 7
+          if-no-files-found: ignore
       - name: Keep browser failure evidence
         if: failure()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
