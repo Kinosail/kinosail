@@ -15,7 +15,7 @@ import re
 import subprocess
 
 BASE = '876b771a7dd0aef5e65957fcee87add0312535e8'
-UPSTREAM = 'e8eca5f762822b239cf322065a915c87482fb8b0'
+UPSTREAM = '5fc3b76d4b9b1cd9775ce9d913ad2a4f894d1e2c'
 QA = 'engineering/qa/2026-10-03-test-overhaul/'
 SPECS = [('player-backend.json', 'tests', 837), ('subtitles-shared.json', 'declarations_inventory', 954), ('shared-identity.json', 'declarations', 1900)]
 DECL = re.compile(r'^func ((?:Test|Fuzz|Benchmark)\w+)\(', re.M)
@@ -110,6 +110,19 @@ def main():
     upstream_added = {k: b for k, b in pinned.items() if k not in baseline}
     upstream_changed = {k: b for k, b in pinned.items() if k in baseline and b != baseline[k]}
     errors, warnings, changes, counts, expected, normalized, file_hashes = [], [], [], {}, set(), {}, {}
+    provenance_path = pathlib.Path(__file__).with_name('upstream-source-provenance.json')
+    provenance = json.loads(provenance_path.read_text())
+    if (provenance['base_sha'], provenance['pinned_main_sha']) != (BASE, UPSTREAM):
+        errors.append('upstream provenance revision differs from exact verifier pin')
+    for key, observed in [('new_go_declarations', upstream_added), ('changed_go_declarations', upstream_changed)]:
+        named = {(r['file'], r['name']): r['body_sha256'] for r in provenance[key]}
+        if named != {k: sha(b) for k, b in observed.items()}:
+            errors.append('upstream declarations differ from explicitly reviewed provenance: ' + key)
+    for row in provenance['fixture_file_updates'] + provenance['native_and_browser_files'] + provenance['failure_analysis_sources']:
+        pinned_source = blob(UPSTREAM, row['file'])
+        disk = root / row['file']
+        if pinned_source is None or sha(pinned_source) != row['upstream_file_sha256'] or not disk.exists() or sha(disk.read_bytes()) != row['upstream_file_sha256']:
+            errors.append('reviewed upstream fixture/native/browser source absent/changed: ' + row['file'])
     pins = json.loads(pathlib.Path(__file__).with_name('approved-go-body-changes.json').read_text())
     approved = {(r['file'], r['name']): r for r in pins['body_changes']}
     analysis_checks = []
@@ -260,7 +273,7 @@ def main():
         errors.append('checkout changed while verifier was reading; rerun on a stable checkout')
     if final_status:
         errors.append('tracked working tree is dirty; receipt cannot claim exact checkout SHA')
-    result = {'schema': 1, 'base_sha': BASE, 'upstream_sha': UPSTREAM, 'checkout_sha': git('rev-parse', 'HEAD').decode().strip(), 'tracked_status': git('status', '--porcelain', '--untracked-files=no').decode().splitlines(), 'verifier_sha256': sha(pathlib.Path(__file__).read_bytes()), 'approved_changes_sha256': sha(pathlib.Path(__file__).with_name('approved-go-body-changes.json').read_bytes()), 'counts': counts, 'original_declarations': len(normalized), 'actual_declarations': len(actual), 'upstream_added': [{'file': k[0], 'name': k[1], 'body_sha256': sha(b)} for k, b in upstream_added.items()], 'upstream_changed': [{'file': k[0], 'name': k[1], 'body_sha256': sha(b)} for k, b in upstream_changed.items()], 'changed_assertions': changes, 'pre_edit_analysis_checks': analysis_checks, 'upstream_source_preservation': protected, 'verified_keeper_references': resolved, 'stale_keeper_references': warnings, 'errors': errors, 'limits': 'Source integrity only; no builds/tests executed. Name-only proof refs show all physical matches and do not prove semantic equivalence. Named CLI subtests resolve through the existing RunCLI/CLI.Run binding. Free-text gaps and unnamed browser scenarios remain manual review. Four root-maintained docs/container artifact harness files may differ from pinned main and are reported.'}
+    result = {'schema': 1, 'base_sha': BASE, 'upstream_sha': UPSTREAM, 'checkout_sha': git('rev-parse', 'HEAD').decode().strip(), 'tracked_status': git('status', '--porcelain', '--untracked-files=no').decode().splitlines(), 'verifier_sha256': sha(pathlib.Path(__file__).read_bytes()), 'approved_changes_sha256': sha(pathlib.Path(__file__).with_name('approved-go-body-changes.json').read_bytes()), 'upstream_provenance_sha256': sha(provenance_path.read_bytes()), 'counts': counts, 'original_declarations': len(normalized), 'actual_declarations': len(actual), 'upstream_added': [{'file': k[0], 'name': k[1], 'body_sha256': sha(b)} for k, b in upstream_added.items()], 'upstream_changed': [{'file': k[0], 'name': k[1], 'body_sha256': sha(b)} for k, b in upstream_changed.items()], 'changed_assertions': changes, 'pre_edit_analysis_checks': analysis_checks, 'upstream_source_preservation': protected, 'verified_keeper_references': resolved, 'stale_keeper_references': warnings, 'errors': errors, 'limits': 'Source integrity only; no builds/tests executed. Name-only proof refs show all physical matches and do not prove semantic equivalence. Named CLI subtests resolve through the existing RunCLI/CLI.Run binding. Free-text gaps and unnamed browser scenarios remain manual review. Four root-maintained docs/container artifact harness files may differ from pinned main and are reported.'}
     encoded = json.dumps(result, indent=2) + '\n'
     if args.output:
         args.output.write_text(encoded)

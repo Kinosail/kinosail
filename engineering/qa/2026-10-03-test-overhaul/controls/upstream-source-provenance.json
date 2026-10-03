@@ -1,0 +1,186 @@
+{
+  "schema": 1,
+  "base_sha": "876b771a7dd0aef5e65957fcee87add0312535e8",
+  "previous_upstream_sha": "e8eca5f762822b239cf322065a915c87482fb8b0",
+  "pinned_main_sha": "5fc3b76d4b9b1cd9775ce9d913ad2a4f894d1e2c",
+  "merged_prs": [
+    449,
+    450,
+    451,
+    452,
+    454
+  ],
+  "review_status": "Exact upstream source identity preserved; new changes are outside the original876 baseline accounting. Source/diff/fixture/browser/native failure-analysis review only; no fresh runtime execution.",
+  "new_go_declarations": [
+    {
+      "file": "apps/player/internal/server/hls_bandwidth_delivery_test.go",
+      "name": "TestRealBlackIntroHLSBandwidthSurvivesCachedMasterReuse",
+      "body_sha256": "22179b202a6f61d4133768112922ae7b5daca8c6646c7ac2d2f87a4fc1a5c001",
+      "upstream_file_sha256": "6e91e117060039137b2916d13e8a87ee257f65ca2e1dae92cdee0f58afe34df6",
+      "decision": "R",
+      "origin": "upstream change; not added or rewritten by testing overhaul",
+      "reviewed_contract": "Real FFmpeg synthetic black intro/public HTTP covers bounded unfinished master bitrate floor, cached stale master repair without new encoder/fragment changes, completed bandwidth and first-fragment decoding. No physical Apple/Safari proof."
+    },
+    {
+      "file": "packages/identitycore/session_cookie_issuance_boundary_test.go",
+      "name": "TestCookieIssuancePreservesPersistedExpiryAcrossSecondBoundary",
+      "body_sha256": "175cedd1a344d6a7f438fd432e5b6fb35469bc5f34d42745ddcdb9d3e404e03e",
+      "upstream_file_sha256": "f0bd2de5ff6cda8f3fe5efa1b0550385b91e17ce490c30dd5c7856bbd3c50beb",
+      "decision": "R",
+      "origin": "upstream change; not added or rewritten by testing overhaul",
+      "reviewed_contract": "Clock advances during persistence; issued local/public/public-grant cookie expiry must equal stored session expiry and remaining MaxAge, guarding second-boundary lifetime extension missed by ordinary E2E."
+    }
+  ],
+  "changed_go_declarations": [
+    {
+      "file": "apps/player/internal/server/auth_all_routes_test.go",
+      "name": "TestEveryRegisteredRouteHasReviewedAnonymousAccess",
+      "body_sha256": "d34cf4e74f98ac174a8f2cc3a26bc60ded87400a7cbdaa2c0ced1e5bfb8440b4",
+      "upstream_file_sha256": "3909a9c0adb832053f6a5253fd1f7d1d3207c2b5677370ba88c2925ee03ad23f",
+      "decision": "R",
+      "origin": "upstream change; not added or rewritten by testing overhaul",
+      "baseline_body_sha256": "a003582b185610b5d5185a5f8b188e969a1d76edc6108d9332784254ca32a901",
+      "reviewed_contract": "Reviewed route inventory advances478\u2192480; exact POST/DELETE playback-prepare stream-scope entries and route digest pin new actual production registrations. Four companion authorization declarations have unchanged bodies but consume updated fixtures. Player owner independently reviews helper and endpoint ownership."
+    },
+    {
+      "file": "apps/player/internal/server/passkeys_test.go",
+      "name": "TestPasskeyCeremoniesAreLocalAndServerSide",
+      "body_sha256": "6b1611c424a5ec60c0c2b59df03d9fecd4b446c740d2e12541352d35db8a97c3",
+      "upstream_file_sha256": "143799239fee42a34fa79cde23361629663e1068fe6ccde49cf88588ac6908ff",
+      "decision": "R",
+      "origin": "upstream change; not added or rewritten by testing overhaul",
+      "baseline_body_sha256": "ee007905172fbfd1cd1379a31aa77b4a9c924491c8b506ba377799261ec8da63",
+      "reviewed_contract": "Existing actual sign-in/account route requests updated v16 shared passkey script; ordinary asset-version assertion does not prove session recovery by itself."
+    },
+    {
+      "file": "apps/player/internal/server/passkeys_test.go",
+      "name": "TestPasskeyLoginIsAvailableFromSignInPage",
+      "body_sha256": "67388e987b0acc25de2b6790f56400592dee8355d4c10a119a13afc5dc0bb7c6",
+      "upstream_file_sha256": "143799239fee42a34fa79cde23361629663e1068fe6ccde49cf88588ac6908ff",
+      "decision": "R",
+      "origin": "upstream change; not added or rewritten by testing overhaul",
+      "baseline_body_sha256": "50517b7255330a578e6f9345d822cd95a8843cb7fab4ae1b5ae9fcfad8469ddb",
+      "reviewed_contract": "Existing actual sign-in/account route requests updated v16 shared passkey script; ordinary asset-version assertion does not prove session recovery by itself."
+    },
+    {
+      "file": "apps/player/internal/server/trusted_https_test.go",
+      "name": "TestTrustedHTTPSWizardDefaultsToDuckDNSAndSupportsDeSEC",
+      "body_sha256": "d5f10d9e6844b3cd9c03b3bd8e32433fb15b3f81b9837391027813083033b54b",
+      "upstream_file_sha256": "55c4af4e5eae3ba322eaf454c84e4058873826f69e09bf73c51655bc44f25728",
+      "decision": "R",
+      "origin": "upstream change; not added or rewritten by testing overhaul",
+      "baseline_body_sha256": "9defcec32b0cf94068abcff8c214b23f1b996ac94a1a0c5abd489512c71a6f1f",
+      "reviewed_contract": "Theme script assertion follows upstream content-fingerprinted URL prefix instead of obsolete electric-1 version; wizard configuration, actual script requests/transport fields and persisted provider/LAN settings assertions remain. Player owner independently reviews this existing contract."
+    },
+    {
+      "file": "apps/subtitles/internal/server/passkeys_test.go",
+      "name": "TestPasskeyCeremoniesAreLocalAndServerSide",
+      "body_sha256": "950624f0610cc3ca2539f1ba8bf698b354ef03532c3fcb5486826cc33025e1d8",
+      "upstream_file_sha256": "d180c917183db21d7e873f9083e4cdad6a4bf55b2cabad9a8a9012b9df934c74",
+      "decision": "R",
+      "origin": "upstream change; not added or rewritten by testing overhaul",
+      "baseline_body_sha256": "a1c41697c16b29c93fd998e82e5390abda5278b22cfcbb7c9facd458f3796466",
+      "reviewed_contract": "Existing actual sign-in/account route requests updated v16 shared passkey script; ordinary asset-version assertion does not prove session recovery by itself."
+    },
+    {
+      "file": "apps/subtitles/internal/server/passkeys_test.go",
+      "name": "TestPasskeyLoginIsAvailableFromSignInPage",
+      "body_sha256": "67388e987b0acc25de2b6790f56400592dee8355d4c10a119a13afc5dc0bb7c6",
+      "upstream_file_sha256": "d180c917183db21d7e873f9083e4cdad6a4bf55b2cabad9a8a9012b9df934c74",
+      "decision": "R",
+      "origin": "upstream change; not added or rewritten by testing overhaul",
+      "baseline_body_sha256": "50517b7255330a578e6f9345d822cd95a8843cb7fab4ae1b5ae9fcfad8469ddb",
+      "reviewed_contract": "Existing actual sign-in/account route requests updated v16 shared passkey script; ordinary asset-version assertion does not prove session recovery by itself."
+    }
+  ],
+  "fixture_file_updates": [
+    {
+      "file": "apps/player/internal/server/auth_all_routes_test.go",
+      "previous_upstream_file_sha256": "b8f0bfb9b78e45b38baab6d11000b803260e9e8bfecb49f171e5088b60b6b26a",
+      "upstream_file_sha256": "3909a9c0adb832053f6a5253fd1f7d1d3207c2b5677370ba88c2925ee03ad23f",
+      "reviewed_contract": "Pinned full fixture source contains480 reviewed routes, exact route digest and POST/DELETE preparation stream-scope matrix. All five declarations retained; unchanged companion bodies do not imply unchanged fixture semantics."
+    },
+    {
+      "file": "apps/player/internal/server/trusted_https_test.go",
+      "previous_upstream_file_sha256": "16161ce8a489521388e025a0e73ada6edfda4bc62c95ea7b3ef9367fcbe6166d",
+      "upstream_file_sha256": "55c4af4e5eae3ba322eaf454c84e4058873826f69e09bf73c51655bc44f25728",
+      "reviewed_contract": "Existing wizard test changes theme version assertion to content-fingerprinted prefix; all other source in this file preserved."
+    },
+    {
+      "file": "packages/servertest/passkey_cookie_isolation.go",
+      "previous_upstream_file_sha256": "e1f13beaa7f919a49450b6207260cebf271294312fb6309e57379c9a276bf7c8",
+      "upstream_file_sha256": "8fe134033e32bd4addd1afa4ff7b7a171619aba4bd0127e6c1f693723608e5ba",
+      "reviewed_contract": "Actual signed passkey HTTP fixture measures wall-clock login interval, secure/HttpOnly/Strict/host-only/root cookie and expiry/remaining lifetime bounds across persistence second boundary. Controlled handler integration, not genuine browser E2E."
+    }
+  ],
+  "native_and_browser_files": [
+    {
+      "file": "apps/player/apps/native/Tests/PlaybackStartupFixture.swift",
+      "upstream_file_sha256": "99b2a5ec44b98a1b7e64a8f2251c7360dd1d677dc6b0bea9e951ca8a5b71cc29",
+      "classification": "new native test support",
+      "reviewed_contract": "Synthetic bounded loopback HTTP/plan/preference responses and deterministic delay/cancellation ordering; production ServerClient/PlaybackEngine exercised, no real Kinosail server or physical TV.",
+      "execution_status": "unrun by this audit refresh; preserve upstream independent evidence without claiming a new run"
+    },
+    {
+      "file": "apps/player/apps/native/Tests/PlaybackStartupJourneys.swift",
+      "upstream_file_sha256": "fed0f37922675f041967084f9f6cd5ffd06e3104806a53bfe5a226dfac1241f1",
+      "classification": "new isolated native lifecycle checks",
+      "reviewed_contract": "Five deterministic lifecycle regressions: already-cancelled startup preserves active AVPlayer/no reads; terminal403 negotiates once; cancelled waiter returns promptly; speculative background work cannot supersede foreground; late A1 cannot clear A2 in A-B-A.",
+      "execution_status": "unrun by this audit refresh; preserve upstream independent evidence without claiming a new run"
+    },
+    {
+      "file": "apps/player/apps/native/Tests/PlaybackMediaJourneys.swift",
+      "upstream_file_sha256": "0125ec0ec6a98eff48a87e76f9cb0da83c9bed4d69a09b67c56f76218268c7ab",
+      "classification": "new opt-in native decoded-media integration",
+      "reviewed_contract": "Generated bounded H264/AAC MP4 through synthetic loopback plan/media/progress server and actual AVPlayer decode/resume/seek/pause/repeat. Enabled only if /tmp fixture exists; no HEVC/HDR/EAC3/HLS/physical-TV equivalence.",
+      "execution_status": "unrun by this audit refresh; preserve upstream independent evidence without claiming a new run"
+    },
+    {
+      "file": "apps/player/e2e/player-compatible-intent.spec.ts",
+      "upstream_file_sha256": "2e1d6131e744fb640169bfe34f59c621f4e96814a799b7e36869e0d18380f519",
+      "classification": "new browser lifecycle fixture",
+      "reviewed_contract": "Delayed routed synthetic Hls adapter and simulated metadata; real Pause control must remain paused after attachment. Explicit artifact states fixture; does not decode real media.",
+      "execution_status": "unrun by this audit refresh; preserve upstream independent evidence without claiming a new run"
+    },
+    {
+      "file": "apps/player/e2e/test-instance-startup.spec.ts",
+      "upstream_file_sha256": "0e621bc1f8fe768fa9838f43d0159546085d62c31bcf99ec7d28917c70893dc2",
+      "classification": "new genuine application/browser/media journey with targeted fault injection",
+      "reviewed_contract": "Opt-in disposable actual Go Server/real FFmpeg/generated media: setup/auth, resume/warm cache/init continuity, adopted preparation/competing playback/queue/cancel, invalid-input no-cache effects, source/settings/subtitle invalidation and decoded lazy continuation. Conditional burn branch and required environment disclosed; no fresh run here.",
+      "execution_status": "unrun by this audit refresh; preserve upstream independent evidence without claiming a new run"
+    },
+    {
+      "file": "apps/player/e2e/player-native-seek-gap.spec.ts",
+      "upstream_file_sha256": "96c49bdf512d1ab763a7be87885846c0f97b81919d76dc35c7b400f7a3072af9",
+      "classification": "changed browser decoder fixture",
+      "reviewed_contract": "Native scenario injects Apple vendor value to select intended adapter; fake decoder remains a fixture, not physical Safari proof.",
+      "execution_status": "unrun by this audit refresh; preserve upstream independent evidence without claiming a new run"
+    },
+    {
+      "file": "apps/player/e2e/static-sources.ts",
+      "upstream_file_sha256": "63912fbc134bd00ea2f235c7848043faa07d9818f42e6234ad7061019176964e",
+      "classification": "changed shared browser fixture inputs",
+      "reviewed_contract": "Composed script now includes actual playback-capabilities.js; exact new upstream file preserved.",
+      "execution_status": "unrun by this audit refresh; preserve upstream independent evidence without claiming a new run"
+    },
+    {
+      "file": "apps/player/scripts/test-startup-local.py",
+      "upstream_file_sha256": "a045b5059af53bb037e2d8fef312da2122e6f747242bf26dc860fb3e14f1895c",
+      "classification": "new genuine startup runner support",
+      "reviewed_contract": "Builds disposable app/real synthetic codecs, invokes opt-in startup browser journey, samples resources and records revision/diff/binary/media/command/log/checksum artifacts. Preserved, not executed by this audit refresh.",
+      "execution_status": "unrun by this audit refresh; preserve upstream independent evidence without claiming a new run"
+    }
+  ],
+  "failure_analysis_sources": [
+    {
+      "file": "engineering/qa/instant-startup-failure-analysis-2026-10-03.md",
+      "upstream_file_sha256": "3f94d9c9e445fe22a5c3b2f9341a70fdb2e7fb5ac8bd76fd7844c0e453ddec63",
+      "review": "Read full first-written failure analysis and reported upstream controls; runtime reports remain upstream evidence rather than a fresh audit run."
+    },
+    {
+      "file": "engineering/qa/appletv-startup-failure-analysis-2026-10-03.md",
+      "upstream_file_sha256": "caac586359c896d75fea0d7a0d512fe67d21682bd4cbcf024aaaebbd27d2797d",
+      "review": "Read full first-written failure analysis and reported upstream controls; runtime reports remain upstream evidence rather than a fresh audit run."
+    }
+  ]
+}

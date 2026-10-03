@@ -45108,12 +45108,14 @@
     "verify_command": "python3 engineering/qa/2026-10-03-test-overhaul/controls/verify-subtitles-dispositions.py"
   },
   "upstream_preservation_appendix": {
-    "pinned_main_sha": "e8eca5f762822b239cf322065a915c87482fb8b0",
+    "pinned_main_sha": "5fc3b76d4b9b1cd9775ce9d913ad2a4f894d1e2c",
     "audit_base_sha": "876b771a7dd0aef5e65957fcee87add0312535e8",
     "merged_prs": [
       449,
       450,
-      451
+      451,
+      452,
+      454
     ],
     "original_baseline_declarations": 954,
     "subtitles_go_added_declarations": [],
@@ -45173,6 +45175,44 @@
         "classification": "genuine browser plus isolated populated application Server",
         "contract": "Same browser context closes signed-in tab then opens new tab at saved login URL; real /api/v1/me accepts session, no ordinary passkey begin, explicit stepup remains available. No server restart, browser restart or new context."
       }
-    ]
+    ],
+    "previously_pinned_main_sha": "e8eca5f762822b239cf322065a915c87482fb8b0",
+    "exact_global_upstream_provenance": "engineering/qa/2026-10-03-test-overhaul/controls/upstream-source-provenance.json",
+    "new_upstream_refresh": {
+      "source_sha": "5fc3b76d4b9b1cd9775ce9d913ad2a4f894d1e2c",
+      "new_subtitles_Go_declarations": 0,
+      "changed_subtitles_Go_bodies_since_previous_pin": 0,
+      "baseline954_decisions_unchanged": true,
+      "shared_fixture_update": {
+        "file": "packages/servertest/passkey_cookie_isolation.go",
+        "previous_upstream_file_sha256": "e1f13beaa7f919a49450b6207260cebf271294312fb6309e57379c9a276bf7c8",
+        "upstream_file_sha256": "8fe134033e32bd4addd1afa4ff7b7a171619aba4bd0127e6c1f693723608e5ba",
+        "reviewed_contract": "Actual signed passkey HTTP fixture measures wall-clock login interval, secure/HttpOnly/Strict/host-only/root cookie and expiry/remaining lifetime bounds across persistence second boundary. Controlled handler integration, not genuine browser E2E."
+      },
+      "additional_changed_Go_bodies_outside_this_scope": [
+        {
+          "file": "apps/player/internal/server/auth_all_routes_test.go",
+          "name": "TestEveryRegisteredRouteHasReviewedAnonymousAccess",
+          "body_sha256": "d34cf4e74f98ac174a8f2cc3a26bc60ded87400a7cbdaa2c0ced1e5bfb8440b4",
+          "upstream_file_sha256": "3909a9c0adb832053f6a5253fd1f7d1d3207c2b5677370ba88c2925ee03ad23f",
+          "decision": "R",
+          "origin": "upstream change; not added or rewritten by testing overhaul",
+          "baseline_body_sha256": "a003582b185610b5d5185a5f8b188e969a1d76edc6108d9332784254ca32a901",
+          "reviewed_contract": "Reviewed route inventory advances478\u2192480; exact POST/DELETE playback-prepare stream-scope entries and route digest pin new actual production registrations. Four companion authorization declarations have unchanged bodies but consume updated fixtures. Player owner independently reviews helper and endpoint ownership."
+        },
+        {
+          "file": "apps/player/internal/server/trusted_https_test.go",
+          "name": "TestTrustedHTTPSWizardDefaultsToDuckDNSAndSupportsDeSEC",
+          "body_sha256": "d5f10d9e6844b3cd9c03b3bd8e32433fb15b3f81b9837391027813083033b54b",
+          "upstream_file_sha256": "55c4af4e5eae3ba322eaf454c84e4058873826f69e09bf73c51655bc44f25728",
+          "decision": "R",
+          "origin": "upstream change; not added or rewritten by testing overhaul",
+          "baseline_body_sha256": "9defcec32b0cf94068abcff8c214b23f1b996ac94a1a0c5abd489512c71a6f1f",
+          "reviewed_contract": "Theme script assertion follows upstream content-fingerprinted URL prefix instead of obsolete electric-1 version; wizard configuration, actual script requests/transport fields and persisted provider/LAN settings assertions remain. Player owner independently reviews this existing contract."
+        }
+      ],
+      "native_and_browser_upstream_file_receipts": 8,
+      "classification_limit": "New native checks use a synthetic loopback server; decoded-media is opt-in actual AVPlayer integration. Compatible-intent browser test is a delayed adapter fixture. Opt-in startup browser runner uses genuine disposable Go Server and real generated media; this refresh runs none of them."
+    }
   }
 }
