@@ -6,10 +6,10 @@
   "files": 379,
   "declarations": 954,
   "test_loc": 28832,
-  "reviewed": 125,
-  "pending": 829,
+  "reviewed": 138,
+  "pending": 816,
   "decisions": {
-    "R": 95,
+    "R": 108,
     "D": 30,
     "F": 0,
     "C": 0
@@ -1594,68 +1594,104 @@
       "line": 11,
       "test": "TestViewerCanReachAccountSecurityThroughWebAndAPI",
       "baseline_file_sha256": "9a1f5366ae30d9c6a694a50350655f7886da814a857a03252602a363150c8497",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Invalid MFA confirm/disable codes must return400/401 while account routes expose enrollment and web/API OIDC unlink complete. Browser E2E exercises valid MFA/passkey transitions, not rejection matrix.",
+      "production_owner": "apps/subtitles/internal/server/{auth,auth_login,auth_setup,profiles,profiles_http,profiles_storage,profiles_access,profiles_credentials,sessions,mfa}.go; packages/identitycore/{profile_store,profile_state,session_requests,sessions_admin}.go",
+      "non_test_callers": "authentication.register/protect on server routes; Owner Settings/profile web/API handlers; profileStore wired to durable app database and identity modules",
+      "remaining_proof": [
+        {
+          "kind": "real_application_handler_contract",
+          "reference": "apps/subtitles/internal/server/account_boundary_test.go:TestViewerCanReachAccountSecurityThroughWebAndAPI"
+        },
+        {
+          "kind": "genuine_e2e_partial_overlap",
+          "reference": "apps/subtitles/e2e/happy-path.spec.ts:Owner setup/sign-in/Partner Owner creation; does not cover named failure"
+        }
+      ],
+      "coverage_gap": "Retain named security/storage boundary. LibraryAPIFixture creates server.Config without SubtitleApp:true except explicit ViewerHeader test; no claim fixture checks are genuine process E2E or identical app-mode behavior.",
+      "history": "2ff6b76fac2636236f152df062c85ccdf80b0133 Prepare Subtitles launch navigation and provider setup",
+      "risk": "Retained app wiring/security exception; no test or production changes.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/account_boundary_test.go",
       "line": 44,
       "test": "TestViewerHeaderLinksToAccountWithoutOwnerActions",
       "baseline_file_sha256": "9a1f5366ae30d9c6a694a50350655f7886da814a857a03252602a363150c8497",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "A real SubtitleApp:true viewer header must not expose Settings/Supporter administration while retaining Account; populated owner browser journey does not inspect viewer-only navigation.",
+      "production_owner": "apps/subtitles/internal/server/{auth,auth_login,auth_setup,profiles,profiles_http,profiles_storage,profiles_access,profiles_credentials,sessions,mfa}.go; packages/identitycore/{profile_store,profile_state,session_requests,sessions_admin}.go",
+      "non_test_callers": "authentication.register/protect on server routes; Owner Settings/profile web/API handlers; profileStore wired to durable app database and identity modules",
+      "remaining_proof": [
+        {
+          "kind": "real_application_handler_contract",
+          "reference": "apps/subtitles/internal/server/account_boundary_test.go:TestViewerHeaderLinksToAccountWithoutOwnerActions"
+        },
+        {
+          "kind": "genuine_e2e_partial_overlap",
+          "reference": "apps/subtitles/e2e/happy-path.spec.ts:Owner setup/sign-in/Partner Owner creation; does not cover named failure"
+        }
+      ],
+      "coverage_gap": "Retain named security/storage boundary. LibraryAPIFixture creates server.Config without SubtitleApp:true except explicit ViewerHeader test; no claim fixture checks are genuine process E2E or identical app-mode behavior.",
+      "history": "2ff6b76fac2636236f152df062c85ccdf80b0133 Prepare Subtitles launch navigation and provider setup",
+      "risk": "Retained app wiring/security exception; no test or production changes.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/account_boundary_test.go",
       "line": 58,
       "test": "TestAccountSecurityRejectsAnonymousChanges",
       "baseline_file_sha256": "9a1f5366ae30d9c6a694a50350655f7886da814a857a03252602a363150c8497",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Anonymous MFA setup/enable/disable and OIDC/SAML unlink web mutations must redirect before reaching handlers; browser valid owner never sends these anonymous requests.",
+      "production_owner": "apps/subtitles/internal/server/{auth,auth_login,auth_setup,profiles,profiles_http,profiles_storage,profiles_access,profiles_credentials,sessions,mfa}.go; packages/identitycore/{profile_store,profile_state,session_requests,sessions_admin}.go",
+      "non_test_callers": "authentication.register/protect on server routes; Owner Settings/profile web/API handlers; profileStore wired to durable app database and identity modules",
+      "remaining_proof": [
+        {
+          "kind": "real_application_handler_contract",
+          "reference": "packages/servertest/account_boundary.go:AccountSecurityRejectsAnonymousChanges"
+        },
+        {
+          "kind": "genuine_e2e_partial_overlap",
+          "reference": "apps/subtitles/e2e/happy-path.spec.ts:Owner setup/sign-in/Partner Owner creation; does not cover named failure"
+        }
+      ],
+      "coverage_gap": "Retain named security/storage boundary. LibraryAPIFixture creates server.Config without SubtitleApp:true except explicit ViewerHeader test; no claim fixture checks are genuine process E2E or identical app-mode behavior.",
+      "history": "2ff6b76fac2636236f152df062c85ccdf80b0133 Prepare Subtitles launch navigation and provider setup",
+      "risk": "Retained app wiring/security exception; no test or production changes.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/account_boundary_test.go",
       "line": 63,
       "test": "TestPasskeyInventoryAPIRejectsMalformedRemovalWithoutSideEffects",
       "baseline_file_sha256": "9a1f5366ae30d9c6a694a50350655f7886da814a857a03252602a363150c8497",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Malformed passkey fingerprint DELETE must return400 and preserve the exact prior inventory bytes; valid browser passkey registration/removal does not send invalid identifiers.",
+      "production_owner": "apps/subtitles/internal/server/{auth,auth_login,auth_setup,profiles,profiles_http,profiles_storage,profiles_access,profiles_credentials,sessions,mfa}.go; packages/identitycore/{profile_store,profile_state,session_requests,sessions_admin}.go",
+      "non_test_callers": "authentication.register/protect on server routes; Owner Settings/profile web/API handlers; profileStore wired to durable app database and identity modules",
+      "remaining_proof": [
+        {
+          "kind": "real_application_handler_contract",
+          "reference": "packages/servertest/account_boundary.go:PasskeyInventoryRejectsMalformedRemoval"
+        },
+        {
+          "kind": "genuine_e2e_partial_overlap",
+          "reference": "apps/subtitles/e2e/happy-path.spec.ts:Owner setup/sign-in/Partner Owner creation; does not cover named failure"
+        }
+      ],
+      "coverage_gap": "Retain named security/storage boundary. LibraryAPIFixture creates server.Config without SubtitleApp:true except explicit ViewerHeader test; no claim fixture checks are genuine process E2E or identical app-mode behavior.",
+      "history": "2ff6b76fac2636236f152df062c85ccdf80b0133 Prepare Subtitles launch navigation and provider setup",
+      "risk": "Retained app wiring/security exception; no test or production changes.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/agent_playlist_api_test.go",
@@ -2917,34 +2953,52 @@
       "line": 9,
       "test": "TestOwnerCanManageOwnerProfilesThroughWeb",
       "baseline_file_sha256": "22a724e18cccb7dea948fff958b404ac19f83ce78b3c48d84352a71d7b327e42",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Demoting a logged-in second Owner must immediately make existing credential fail to access Settings; happy-path adds Partner Owner but never demotes that active session.",
+      "production_owner": "apps/subtitles/internal/server/{auth,auth_login,auth_setup,profiles,profiles_http,profiles_storage,profiles_access,profiles_credentials,sessions,mfa}.go; packages/identitycore/{profile_store,profile_state,session_requests,sessions_admin}.go",
+      "non_test_callers": "authentication.register/protect on server routes; Owner Settings/profile web/API handlers; profileStore wired to durable app database and identity modules",
+      "remaining_proof": [
+        {
+          "kind": "real_application_handler_contract",
+          "reference": "packages/servertest/auth_owner_contract.go:AssertOwnerCanManageOwnerProfilesThroughWeb"
+        },
+        {
+          "kind": "genuine_e2e_partial_overlap",
+          "reference": "apps/subtitles/e2e/happy-path.spec.ts:Owner setup/sign-in/Partner Owner creation; does not cover named failure"
+        }
+      ],
+      "coverage_gap": "Retain named security/storage boundary. LibraryAPIFixture creates server.Config without SubtitleApp:true except explicit ViewerHeader test; no claim fixture checks are genuine process E2E or identical app-mode behavior.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retained app wiring/security exception; no test or production changes.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/auth_owner_contract_test.go",
       "line": 13,
       "test": "TestAdditionalOwnerPersistsAcrossRestart",
       "baseline_file_sha256": "22a724e18cccb7dea948fff958b404ac19f83ce78b3c48d84352a71d7b327e42",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Second Owner privilege and password must remain valid after recreating the application over durable state; browser keeps one running process.",
+      "production_owner": "apps/subtitles/internal/server/{auth,auth_login,auth_setup,profiles,profiles_http,profiles_storage,profiles_access,profiles_credentials,sessions,mfa}.go; packages/identitycore/{profile_store,profile_state,session_requests,sessions_admin}.go",
+      "non_test_callers": "authentication.register/protect on server routes; Owner Settings/profile web/API handlers; profileStore wired to durable app database and identity modules",
+      "remaining_proof": [
+        {
+          "kind": "real_application_handler_contract",
+          "reference": "packages/servertest/auth_owner_contract.go:AssertAdditionalOwnerPersistsAcrossRestart"
+        },
+        {
+          "kind": "genuine_e2e_partial_overlap",
+          "reference": "apps/subtitles/e2e/happy-path.spec.ts:Owner setup/sign-in/Partner Owner creation; does not cover named failure"
+        }
+      ],
+      "coverage_gap": "Retain named security/storage boundary. LibraryAPIFixture creates server.Config without SubtitleApp:true except explicit ViewerHeader test; no claim fixture checks are genuine process E2E or identical app-mode behavior.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retained app wiring/security exception; no test or production changes.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/auth_policy_internal_test.go",
@@ -3087,119 +3141,182 @@
       "line": 9,
       "test": "TestNewInstallationCreatesOwnerProfile",
       "baseline_file_sha256": "4245bf02236657ed2726602cce0a0726558a0b782c056a59d450e15fb205daef",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "One-year browser cookie lifetime and valid old session after complete handler restart; post-restart owner password-only login denied without authenticator; stored profile lacks plaintext password.",
+      "production_owner": "apps/subtitles/internal/server/{auth,auth_login,auth_setup,profiles,profiles_http,profiles_storage,profiles_access,profiles_credentials,sessions,mfa}.go; packages/identitycore/{profile_store,profile_state,session_requests,sessions_admin}.go",
+      "non_test_callers": "authentication.register/protect on server routes; Owner Settings/profile web/API handlers; profileStore wired to durable app database and identity modules",
+      "remaining_proof": [
+        {
+          "kind": "real_application_handler_contract",
+          "reference": "packages/servertest/auth_session_contract.go:AssertNewInstallationCreatesOwnerProfile; assertOneYearBrowserSessionAfterRestart"
+        },
+        {
+          "kind": "genuine_e2e_partial_overlap",
+          "reference": "apps/subtitles/e2e/happy-path.spec.ts:Owner setup/sign-in/Partner Owner creation; does not cover named failure"
+        }
+      ],
+      "coverage_gap": "Retain named security/storage boundary. LibraryAPIFixture creates server.Config without SubtitleApp:true except explicit ViewerHeader test; no claim fixture checks are genuine process E2E or identical app-mode behavior.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retained app wiring/security exception; no test or production changes.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/auth_test.go",
       "line": 13,
       "test": "TestViewerCanSignOut",
       "baseline_file_sha256": "4245bf02236657ed2726602cce0a0726558a0b782c056a59d450e15fb205daef",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Old copied session cookie must fail after logout and complete handler restart; browser signOut navigates after cookie deletion and never replays old credential.",
+      "production_owner": "apps/subtitles/internal/server/{auth,auth_login,auth_setup,profiles,profiles_http,profiles_storage,profiles_access,profiles_credentials,sessions,mfa}.go; packages/identitycore/{profile_store,profile_state,session_requests,sessions_admin}.go",
+      "non_test_callers": "authentication.register/protect on server routes; Owner Settings/profile web/API handlers; profileStore wired to durable app database and identity modules",
+      "remaining_proof": [
+        {
+          "kind": "real_application_handler_contract",
+          "reference": "packages/servertest/auth_session_contract.go:AssertViewerCanSignOut"
+        },
+        {
+          "kind": "genuine_e2e_partial_overlap",
+          "reference": "apps/subtitles/e2e/happy-path.spec.ts:Owner setup/sign-in/Partner Owner creation; does not cover named failure"
+        }
+      ],
+      "coverage_gap": "Retain named security/storage boundary. LibraryAPIFixture creates server.Config without SubtitleApp:true except explicit ViewerHeader test; no claim fixture checks are genuine process E2E or identical app-mode behavior.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retained app wiring/security exception; no test or production changes.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/auth_test.go",
       "line": 17,
       "test": "TestRepeatedLoginAttemptsAreLimited",
       "baseline_file_sha256": "4245bf02236657ed2726602cce0a0726558a0b782c056a59d450e15fb205daef",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Eleventh wrong-password attempt for one account must return429; happy-path never injects brute-force attempts.",
+      "production_owner": "apps/subtitles/internal/server/{auth,auth_login,auth_setup,profiles,profiles_http,profiles_storage,profiles_access,profiles_credentials,sessions,mfa}.go; packages/identitycore/{profile_store,profile_state,session_requests,sessions_admin}.go",
+      "non_test_callers": "authentication.register/protect on server routes; Owner Settings/profile web/API handlers; profileStore wired to durable app database and identity modules",
+      "remaining_proof": [
+        {
+          "kind": "real_application_handler_contract",
+          "reference": "packages/servertest/auth_session_contract.go:AssertRepeatedLoginAttemptsAreLimited"
+        },
+        {
+          "kind": "genuine_e2e_partial_overlap",
+          "reference": "apps/subtitles/e2e/happy-path.spec.ts:Owner setup/sign-in/Partner Owner creation; does not cover named failure"
+        }
+      ],
+      "coverage_gap": "Retain named security/storage boundary. LibraryAPIFixture creates server.Config without SubtitleApp:true except explicit ViewerHeader test; no claim fixture checks are genuine process E2E or identical app-mode behavior.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retained app wiring/security exception; no test or production changes.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/auth_viewer_contract_test.go",
       "line": 9,
       "test": "TestOwnerCanCreateViewerProfileWithoutGrantingAdministration",
       "baseline_file_sha256": "f410be83371a7660696ec7ff23b1d70019a727b459ef9f48968afece98259b23",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Viewer creation through app web adapter must deny Settings and suppress Rescan/owner utility navigation; happy-path creates a second Owner rather than a viewer.",
+      "production_owner": "apps/subtitles/internal/server/{auth,auth_login,auth_setup,profiles,profiles_http,profiles_storage,profiles_access,profiles_credentials,sessions,mfa}.go; packages/identitycore/{profile_store,profile_state,session_requests,sessions_admin}.go",
+      "non_test_callers": "authentication.register/protect on server routes; Owner Settings/profile web/API handlers; profileStore wired to durable app database and identity modules",
+      "remaining_proof": [
+        {
+          "kind": "real_application_handler_contract",
+          "reference": "packages/servertest/auth_viewer_contract.go:AssertOwnerCanCreateViewerProfileWithoutGrantingAdministration"
+        },
+        {
+          "kind": "genuine_e2e_partial_overlap",
+          "reference": "apps/subtitles/e2e/happy-path.spec.ts:Owner setup/sign-in/Partner Owner creation; does not cover named failure"
+        }
+      ],
+      "coverage_gap": "Retain named security/storage boundary. LibraryAPIFixture creates server.Config without SubtitleApp:true except explicit ViewerHeader test; no claim fixture checks are genuine process E2E or identical app-mode behavior.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retained app wiring/security exception; no test or production changes.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/auth_viewer_contract_test.go",
       "line": 13,
       "test": "TestOwnerCanRemoveViewerAndRevokeSessions",
       "baseline_file_sha256": "f410be83371a7660696ec7ff23b1d70019a727b459ef9f48968afece98259b23",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Removing a viewer must revoke its already-issued cookie; browser happy-path does not delete an active viewer then replay its credential.",
+      "production_owner": "apps/subtitles/internal/server/{auth,auth_login,auth_setup,profiles,profiles_http,profiles_storage,profiles_access,profiles_credentials,sessions,mfa}.go; packages/identitycore/{profile_store,profile_state,session_requests,sessions_admin}.go",
+      "non_test_callers": "authentication.register/protect on server routes; Owner Settings/profile web/API handlers; profileStore wired to durable app database and identity modules",
+      "remaining_proof": [
+        {
+          "kind": "real_application_handler_contract",
+          "reference": "packages/servertest/auth_viewer_contract.go:AssertOwnerCanRemoveViewerAndRevokeSessions"
+        },
+        {
+          "kind": "genuine_e2e_partial_overlap",
+          "reference": "apps/subtitles/e2e/happy-path.spec.ts:Owner setup/sign-in/Partner Owner creation; does not cover named failure"
+        }
+      ],
+      "coverage_gap": "Retain named security/storage boundary. LibraryAPIFixture creates server.Config without SubtitleApp:true except explicit ViewerHeader test; no claim fixture checks are genuine process E2E or identical app-mode behavior.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retained app wiring/security exception; no test or production changes.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/auth_viewer_contract_test.go",
       "line": 17,
       "test": "TestOwnerCanResetViewerPassword",
       "baseline_file_sha256": "f410be83371a7660696ec7ff23b1d70019a727b459ef9f48968afece98259b23",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Reset password through app web adapter must reject old password and accept replacement; browser normal sign-in never exercises credential rotation.",
+      "production_owner": "apps/subtitles/internal/server/{auth,auth_login,auth_setup,profiles,profiles_http,profiles_storage,profiles_access,profiles_credentials,sessions,mfa}.go; packages/identitycore/{profile_store,profile_state,session_requests,sessions_admin}.go",
+      "non_test_callers": "authentication.register/protect on server routes; Owner Settings/profile web/API handlers; profileStore wired to durable app database and identity modules",
+      "remaining_proof": [
+        {
+          "kind": "real_application_handler_contract",
+          "reference": "packages/servertest/auth_viewer_contract.go:AssertOwnerCanResetViewerPassword"
+        },
+        {
+          "kind": "genuine_e2e_partial_overlap",
+          "reference": "apps/subtitles/e2e/happy-path.spec.ts:Owner setup/sign-in/Partner Owner creation; does not cover named failure"
+        }
+      ],
+      "coverage_gap": "Retain named security/storage boundary. LibraryAPIFixture creates server.Config without SubtitleApp:true except explicit ViewerHeader test; no claim fixture checks are genuine process E2E or identical app-mode behavior.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retained app wiring/security exception; no test or production changes.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/auth_viewer_contract_test.go",
       "line": 21,
       "test": "TestOwnerControlsViewerDownloads",
       "baseline_file_sha256": "f410be83371a7660696ec7ff23b1d70019a727b459ef9f48968afece98259b23",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "A viewer denied downloads must receive403; enabling downloads must return correct source bytes/content disposition under same app adapter. Populated owner streaming does not exercise this permission transition.",
+      "production_owner": "apps/subtitles/internal/server/{auth,auth_login,auth_setup,profiles,profiles_http,profiles_storage,profiles_access,profiles_credentials,sessions,mfa}.go; packages/identitycore/{profile_store,profile_state,session_requests,sessions_admin}.go",
+      "non_test_callers": "authentication.register/protect on server routes; Owner Settings/profile web/API handlers; profileStore wired to durable app database and identity modules",
+      "remaining_proof": [
+        {
+          "kind": "real_application_handler_contract",
+          "reference": "packages/servertest/auth_viewer_contract.go:AssertOwnerControlsViewerDownloads"
+        },
+        {
+          "kind": "genuine_e2e_partial_overlap",
+          "reference": "apps/subtitles/e2e/happy-path.spec.ts:Owner setup/sign-in/Partner Owner creation; does not cover named failure"
+        }
+      ],
+      "coverage_gap": "Retain named security/storage boundary. LibraryAPIFixture creates server.Config without SubtitleApp:true except explicit ViewerHeader test; no claim fixture checks are genuine process E2E or identical app-mode behavior.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retained app wiring/security exception; no test or production changes.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/automatic_skip_browser_test.go",
