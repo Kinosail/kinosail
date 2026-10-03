@@ -29,3 +29,9 @@ Use a repeatable host-only HTTP loopback E2E runner with synthetic moving HEVC M
 Record revision/diff/binary hashes, exact commands, fixture metadata, environment, browser trace, server logs and checksums. Measure cold and warm intent-to-first-moving-frame separately from preparation time. Decode fragments spanning the prepared window and lazy continuation with the original init. Verify resume, seek, reload, captions, cancellation, adoption and competing playback. Reject invalid and unauthenticated requests with no cache side effects. Verify source/settings/subtitle invalidation and queue/process/disk bounds.
 
 Physical iPhone, Nox hardware and production networks are separate boundaries; synthetic codec similarity is not equivalent workload proof. Do not claim instant or universal startup.
+
+Independent review found a delayed-attachment failure before its repair:
+an explicit Pause can be overridden by the original autoplay attributes.
+The browser E2E at `9c81a65b4` reproduces the failure with a delayed adapter,
+keyboard activation of the real Pause control, and replacement decoder metadata.
+Current play intent must remain authoritative through attachment.
