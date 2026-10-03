@@ -56,12 +56,7 @@ func newOpenSubtitlesProvider(config OpenSubtitlesConfig) *openSubtitlesProvider
 	}
 	provider := &openSubtitlesProvider{config: config, health: newSubtitleProviderHealthRegistry()}
 	provider.client = localIntegrationHTTPClient(15 * time.Second)
-	provider.client.CheckRedirect = func(request *http.Request, _ []*http.Request) error {
-		if !provider.allowed(request.URL.String()) {
-			return http.ErrUseLastResponse
-		}
-		return nil
-	}
+	provider.client.CheckRedirect = subtitleProviderRedirect(provider.allowed)
 	return provider
 }
 

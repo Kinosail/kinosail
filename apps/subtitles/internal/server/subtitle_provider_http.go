@@ -12,6 +12,24 @@ import (
 	"strings"
 )
 
+var errSubtitleDownloadTooLarge = errors.New("subtitle download is invalid")
+
+func subtitleProviderRedirect(allowed func(string) bool) func(*http.Request, []*http.Request) error {
+	return func(request *http.Request, via []*http.Request) error {
+		endpoint := request.URL.String()
+		if len(via) >= 10 || len(endpoint) > 4096 || request.URL.User != nil {
+			return http.ErrUseLastResponse
+		}
+		if _, err := url.QueryUnescape(request.URL.RawQuery); err != nil {
+			return http.ErrUseLastResponse
+		}
+		if !allowed(endpoint) {
+			return http.ErrUseLastResponse
+		}
+		return nil
+	}
+}
+
 func (provider *subtitleProvider) json(ctx context.Context, endpoint string, target any) error {
 	if err := provider.health.before("SubDL"); err != nil {
 		return err
@@ -77,8 +95,11 @@ func (provider *subtitleProvider) download(ctx context.Context, link string) ([]
 
 func readSubtitle(response *http.Response) ([]byte, error) {
 	data, err := io.ReadAll(io.LimitReader(response.Body, (4<<20)+1))
-	if err != nil || len(data) > 4<<20 || response.StatusCode != http.StatusOK {
+	if err != nil || response.StatusCode != http.StatusOK {
 		return nil, errors.New("subtitle download is invalid")
+	}
+	if len(data) > 4<<20 {
+		return nil, errSubtitleDownloadTooLarge
 	}
 	return data, nil
 }

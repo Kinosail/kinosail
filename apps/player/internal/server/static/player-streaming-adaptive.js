@@ -37,7 +37,7 @@ const useOriginal = (forcePlay = false, retainedTime) => {
   playbackTraceMethod = "direct";
   playbackTrace("source-direct", forcePlay ? "manual-retry" : "selected");
   if (qualityControl && stream) qualityControl.hidden = false;
-  player.src = player.dataset.direct;
+  player.src = direct;
   player.load();
   if (quality) quality.value = "original";
   if (qualityState) qualityState.textContent = "Original";

@@ -11,7 +11,7 @@ if (!Object.hasOwn(player, "currentTime") && mediaTime && mediaDuration) Object.
 });
 // Resume reporting the decoder's time once the requested native HLS seek completes.
 player.addEventListener("seeked", () => { playbackTimelineSeek = undefined; });
-const direct = player.dataset.direct;
+const direct = player.dataset.direct || (player.tagName === "VIDEO" ? player.getAttribute("src") : "");
 let stream = player.dataset.hls || player.dataset.adaptive;
 const expectedDuration = Number(player.dataset.duration);
 const fullDuration = Number.isFinite(expectedDuration) && expectedDuration > 0 && expectedDuration <= 31622400 ? expectedDuration : 0;

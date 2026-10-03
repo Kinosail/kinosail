@@ -94,6 +94,36 @@ class RuntimeContracts(unittest.TestCase):
         source = (WORKFLOWS / 'ci.yml').read_text().split('  web:')[0]
         self.assertIn('python3 scripts/quality/check-dependency-integrity.py --browser-only', source)
 
+    def test_browser_failure_upload_covers_actual_launcher_output(self):
+        workflow = (WORKFLOWS / 'app.yml').read_text()
+        configured = next(line.split('KINOSAIL_E2E_OUTPUT_DIR: ', 1)[1]
+            for line in workflow.splitlines() if 'KINOSAIL_E2E_OUTPUT_DIR: ' in line)
+        upload = workflow.split('- name: Keep browser failure evidence', 1)[1]
+        paths = upload.split('          path: |\n', 1)[1].split('          retention-days:', 1)[0]
+        with tempfile.TemporaryDirectory() as directory:
+            for app in ('player', 'subtitles'):
+                launcher = (ROOT / f'apps/{app}/scripts/test-container.sh').read_text()
+                command = next(line.strip() for line in launcher.splitlines()
+                    if 'KINOSAIL_E2E_OUTPUT_DIR=' in line and 'pnpm --dir e2e test' in line)
+                for engine in ('chromium', 'firefox', 'webkit'):
+                    with self.subTest(app=app, engine=engine):
+                        def expand(value):
+                            return value.replace('${{ runner.temp }}', directory).replace(
+                                '${{ inputs.app }}', app).replace('${{ matrix.engine }}', engine)
+                        base = expand(configured)
+                        env = os.environ | {'KINOSAIL_E2E_OUTPUT_DIR': base, 'project': engine}
+                        result = subprocess.run(['bash', '-c',
+                            'pnpm() { printf "%s" "$KINOSAIL_E2E_OUTPUT_DIR"; }\n' + command],
+                            env=env, capture_output=True, text=True, check=True)
+                        output = Path(result.stdout)
+                        self.assertTrue(output.is_relative_to(directory))
+                        evidence = output / 'failed-journey' / 'trace.zip'
+                        evidence.parent.mkdir(parents=True, exist_ok=True)
+                        evidence.write_bytes(b'failure evidence')
+                        roots = [Path(expand(path.strip())) for path in paths.splitlines() if path.strip()]
+                        self.assertTrue(any(evidence.is_relative_to(root) for root in roots),
+                            f'{app}/{engine} failure evidence at {evidence} is outside upload paths {roots}')
+
 
 if __name__ == '__main__':
     unittest.main()

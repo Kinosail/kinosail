@@ -43,12 +43,12 @@ test("selecting a movie starts moving playback promptly", async ({ page }, testI
 	expect(new Set(frames).size).toBeGreaterThan(1);
 	for (const viewport of [{ width: 1440, height: 900 }, { width: 1024, height: 768 }, { width: 720, height: 450 }, { width: 390, height: 844 }, { width: 320, height: 800 }]) {
 		await page.setViewportSize(viewport);
-		await expect(page.locator("[data-player-controls]")).toHaveClass(/is-idle/);
+		await expect(page.locator("[data-player-controls]")).toBeHidden();
 		await page.screenshot({ path: testInfo.outputPath(`${viewport.width}-playing-player.png`), fullPage: true });
 	}
 });
 
-for (const source of ["direct", "compatible"]) for (const savedPosition of [0, 1]) test(`blocked autoplay leaves one Play control that starts ${source} video from ${savedPosition ? "saved progress" : "the beginning"}`, { tag: source === "compatible" && savedPosition ? ["@smoke"] : [] }, async ({ page, browserName }, testInfo) => {
+for (const source of ["direct", "compatible", "automatic"]) for (const savedPosition of [0, 1]) test(`blocked autoplay leaves one Play control that starts ${source} video from ${savedPosition ? "saved progress" : "the beginning"}`, { tag: ["compatible", "automatic"].includes(source) && savedPosition ? ["@smoke"] : [] }, async ({ page, browserName }, testInfo) => {
 	await page.setViewportSize({ width: 390, height: 844 });
 	// Exercise WebKit's native HLS adapter, as mobile Safari does for automatic compatibility.
 	if (browserName === "webkit") await page.route("**/static/hls.min.js*", (route) => route.fulfill({ contentType: "application/javascript", body: "" }));
@@ -73,7 +73,11 @@ for (const source of ["direct", "compatible"]) for (const savedPosition of [0, 1
 	await page.goto("/?view=movies");
 	let releaseMedia: () => void = () => {};
 	const mediaReady = new Promise<void>((resolve) => { releaseMedia = resolve; });
-	await page.route("**/media/**", async (route) => { await mediaReady; await route.continue(); });
+	await page.route("**/media/**", async (route) => {
+		await mediaReady;
+		if (source === "automatic") return route.fulfill({ status: 206, contentType: "video/mp4", headers: { "Content-Range": "bytes 0-0/1" }, body: "x" });
+		await route.continue();
+	});
 	await page.route("**/hls/**", async (route) => { await mediaReady; await route.continue(); });
 	const movie = page.getByRole("link", { name: /Example Movie/ });
   const watch = (await movie.getAttribute("href"))!;
@@ -92,8 +96,12 @@ for (const source of ["direct", "compatible"]) for (const savedPosition of [0, 1
 	await expect(page.locator(".player-center-control[data-player-toggle]")).toBeHidden();
 	// WebKit waits for document.fonts.ready, which needs the held media load to finish.
 	if (browserName !== "webkit") await page.screenshot({ path: testInfo.outputPath("390-media-pending.png"), fullPage: true });
+	// Deliver a reachable original that the real decoder rejects; compatibility media
+	// still comes from the real server and FFmpeg, with the full preparation UI.
+	if (source === "automatic") await page.locator("video").evaluate((video) => { video.dataset.compatibilityMode = "transcode"; });
 	releaseMedia();
 	await expect(page.locator("[data-player-status]")).toBeHidden();
+	await expect(page.locator("[data-player-status] [data-player-fallback]")).toBeHidden();
 	const readiness = await page.locator("video").evaluate((video: HTMLVideoElement) => {
 		const mediaTime = Object.getOwnPropertyDescriptor(HTMLMediaElement.prototype, "currentTime")!.get!.call(video) as number;
 		let ahead = 0, gap = Infinity;

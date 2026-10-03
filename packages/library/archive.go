@@ -52,13 +52,30 @@ func archiveEntries(ctx context.Context, item Item) []string {
 		for _, file := range archive.File[:min(len(archive.File), archiveEntryLimit)] {
 			entries = append(entries, file.Name)
 		}
-		return entries
+		return uniqueArchiveEntries(entries)
 	}
 	data, err := archiveCommand(ctx, archiveListLimit, "-tf", item.Path)
 	if err != nil {
 		return nil
 	}
 	entries := strings.Split(strings.TrimSpace(string(data)), "\n")
+	return uniqueArchiveEntries(entries)
+}
+
+func uniqueArchiveEntries(entries []string) []string {
+	seen := make(map[string]struct{}, min(len(entries), archiveEntryLimit))
+	for index, entry := range entries {
+		name := CleanArchivePath(entry)
+		if name == "" {
+			continue
+		}
+		if _, duplicate := seen[name]; duplicate {
+			return nil
+		}
+		if index < archiveEntryLimit {
+			seen[name] = struct{}{}
+		}
+	}
 	return entries[:min(len(entries), archiveEntryLimit)]
 }
 
@@ -79,7 +96,8 @@ func ReadArchiveAsset(ctx context.Context, item Item, name string) ([]byte, erro
 		if !found {
 			return nil, errors.New("archive entry not found")
 		}
-		return archiveCommand(ctx, archiveAssetLimit, "-xOf", item.Path, "--", name)
+		pattern := strings.NewReplacer("*", "\\*", "?", "\\?", "[", "\\[", "]", "\\]", "^", "\\^", "$", "\\$").Replace(name)
+		return archiveCommand(ctx, archiveAssetLimit, "-xnOf", item.Path, "--", pattern)
 	}
 	archive, err := zip.OpenReader(item.Path)
 	if err != nil {
@@ -145,7 +163,15 @@ func ReadArchive(files []*zip.File, name string, limit int64) ([]byte, error) {
 	if name == "" || limit <= 0 {
 		return nil, errors.New("archive entry not found")
 	}
-	for _, file := range files[:min(len(files), archiveEntryLimit)] {
+	files = files[:min(len(files), archiveEntryLimit)]
+	entries := make([]string, len(files))
+	for index, file := range files {
+		entries[index] = file.Name
+	}
+	if uniqueArchiveEntries(entries) == nil {
+		return nil, errors.New("archive entry not found")
+	}
+	for _, file := range files {
 		if CleanArchivePath(file.Name) != name || file.UncompressedSize64 > uint64(limit) { //nolint:gosec // Positive limits are validated above.
 			continue
 		}

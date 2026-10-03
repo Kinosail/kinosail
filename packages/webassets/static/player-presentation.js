@@ -51,10 +51,16 @@ const setSettings = (open) => {
   if (!settingsPanel || !settingsButton) return;
   settingsPanel.hidden = !open;
   settingsButton.setAttribute("aria-expanded", String(open));
-  settingsPanel.closest(".media-stage")?.classList.toggle("has-settings", open);
+  settingsPanel.closest(".media-stage,.player-native-options")?.classList.toggle("has-settings", open);
   if (open) settingsPanel.querySelector("input:not([type=hidden]),select,button")?.focus();
 };
 settingsButton?.addEventListener("click", () => setSettings(settingsPanel.hidden));
+document.addEventListener("keydown", (event) => {
+  if (event.defaultPrevented || event.key !== "Escape" || settingsPanel?.hidden !== false || document.querySelector("dialog[open]")) return;
+  event.preventDefault();
+  setSettings(false);
+  settingsButton?.focus();
+});
 document.querySelector("[data-player-settings-close]")?.addEventListener("click", () => { setSettings(false); settingsButton.focus(); });
 const limitedSubtitleTracks = player.dataset.subtitlePickerLimited === "true" ? [...player.querySelectorAll("track[data-subtitle-source]")].map((element) => element.track) : null;
 if (limitedSubtitleTracks) {
@@ -73,14 +79,18 @@ if (theaterButton) {
   const mediaStage = theaterButton.closest(".media-stage");
   const theaterToolbar = mediaStage.querySelector(".player-stage-toolbar");
   let theaterIdle;
+  const hideTheater = () => {
+    clearTimeout(theaterIdle);
+    theaterToolbar.hidden = true;
+    controls?.classList.add("is-idle");
+  };
   const revealTheater = () => {
     clearTimeout(theaterIdle);
     theaterToolbar.hidden = false;
     controls?.classList.remove("is-idle");
     if (mediaStage.classList.contains("is-playing") && !mediaStage.classList.contains("has-settings")) theaterIdle = setTimeout(() => {
-      if (!mediaStage.contains(document.activeElement)) {
-        theaterToolbar.hidden = true;
-        controls?.classList.add("is-idle");
+      if (!mediaStage.contains(document.activeElement) || !document.activeElement.matches(":focus-visible")) {
+        hideTheater();
       }
     }, 2200);
   };
@@ -95,11 +105,29 @@ if (theaterButton) {
   player.addEventListener("playing", () => setTheaterPlaying(true));
   player.addEventListener("timeupdate", () => { if (!player.paused && player.currentTime > 0 && !mediaStage.classList.contains("is-playing")) setTheaterPlaying(true); });
   for (const event of ["pause", "ended", "error"]) player.addEventListener(event, () => setTheaterPlaying(false));
-  mediaStage.addEventListener("pointermove", revealTheater);
-  mediaStage.addEventListener("pointerdown", revealTheater);
+  const controlTarget = (target) => target.closest("button,a,input,select,textarea,label,summary,[role=button],[contenteditable]:not([contenteditable=false]),.player-settings");
+  for (const type of ["pointermove", "pointerdown"]) mediaStage.addEventListener(type, (event) => {
+    if (event.pointerType !== "touch" || controlTarget(event.target)) revealTheater();
+  });
+  let pictureTouch;
+  mediaStage.addEventListener("touchstart", (event) => {
+    pictureTouch = event.touches.length === 1 && !controlTarget(event.target)
+      ? {x: event.touches[0].clientX, y: event.touches[0].clientY, hidden: controls?.classList.contains("is-idle")} : null;
+  }, {passive: true});
+  mediaStage.addEventListener("touchcancel", () => { pictureTouch = null; });
+  mediaStage.addEventListener("touchend", (event) => {
+    const start = pictureTouch;
+    pictureTouch = null;
+    const end = event.changedTouches[0];
+    if (!start || !end || event.touches.length || Math.hypot(end.clientX - start.x, end.clientY - start.y) > 12 ||
+        mediaStage.matches(".is-busy,.has-settings") || player.error) return;
+    // Suppress Safari's compatibility click before changing the touch targets.
+    event.preventDefault();
+    if (start.hidden) revealTheater();
+    else hideTheater();
+  }, {passive: false});
   mediaStage.addEventListener("focusin", revealTheater);
-  theaterButton.addEventListener("focus", () => { clearTimeout(theaterIdle); theaterToolbar.hidden = false; });
-  theaterButton.addEventListener("blur", revealTheater);
+  mediaStage.addEventListener("focusout", () => { if (!controls?.classList.contains("is-idle")) revealTheater(); });
   theaterButton.addEventListener("click", () => { theaterButton.focus(); setTheater(!document.body.classList.contains("player-theater")); });
   document.addEventListener("keydown", (event) => {
     if (event.defaultPrevented || document.querySelector("dialog[open]")) return;

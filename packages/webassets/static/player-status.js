@@ -151,5 +151,6 @@ if (playerStatus) {
     if (!playerStatus.classList.contains("is-recovery")) showPlayerState("error", "Playback unavailable");
   });
   bufferedPercent();
+  if (player.hasAttribute("data-native-controls")) revealPlayControl();
   if (!playbackPreparation && !player.paused && player.readyState >= HTMLMediaElement.HAVE_CURRENT_DATA) hidePlayerState();
 }

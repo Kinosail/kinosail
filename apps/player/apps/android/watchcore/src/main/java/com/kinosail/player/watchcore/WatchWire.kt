@@ -23,6 +23,12 @@ data class WatchPlayer(
     val active get() = state != "idle"
     val playing get() = state == "playing"
 
+    fun seekRequest(position: Double): WatchRequest {
+        checked()
+        require(active && duration > 0 && position.isFinite() && position in 0.0..duration) { INVALID }
+        return WatchRequest(id, itemId, "seek", position).checked()
+    }
+
     fun checked(): WatchPlayer {
         require(WATCH_ID.matches(id) && name.safeText(80) && name.isNotBlank() &&
             title.safeText(256) && subtitle.safeText(128) && position.isFinite() && duration.isFinite() &&

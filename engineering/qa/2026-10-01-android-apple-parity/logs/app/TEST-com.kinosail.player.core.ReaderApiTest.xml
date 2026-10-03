@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.kinosail.player.core.ReaderApiTest" tests="9" skipped="0" failures="0" errors="0" timestamp="2026-10-02T06:27:09.584Z" hostname="MikeOs-MacBook-Pro.local" time="0.027">
+  <properties/>
+  <testcase name="acceptsAComicPageListLargerThanTheDefaultJsonResponseLimit" classname="com.kinosail.player.core.ReaderApiTest" time="0.013"/>
+  <testcase name="readsAndSavesAViewerScopedPosition" classname="com.kinosail.player.core.ReaderApiTest" time="0.001"/>
+  <testcase name="downloadsOnlyBoundedPdfBytesAndDeletesRejectedFiles" classname="com.kinosail.player.core.ReaderApiTest" time="0.003"/>
+  <testcase name="formatSelectionRequiresARecognizedBookAndBoundedPageList" classname="com.kinosail.player.core.ReaderApiTest" time="0.001"/>
+  <testcase name="rejectsUnsafeComicPathsAndMalformedPagesBeforeFetchingAssets" classname="com.kinosail.player.core.ReaderApiTest" time="0.001"/>
+  <testcase name="rejectsMalformedMetadataBeforeFetchingAFile" classname="com.kinosail.player.core.ReaderApiTest" time="0.002"/>
+  <testcase name="rejectsBadPositionsAndConflictingSaveResponses" classname="com.kinosail.player.core.ReaderApiTest" time="0.001"/>
+  <testcase name="validatesTheReaderRouteAndViewerBeforeOpeningAConnection" classname="com.kinosail.player.core.ReaderApiTest" time="0.001"/>
+  <testcase name="readsComicPagesAndSavesTheServerPageNumber" classname="com.kinosail.player.core.ReaderApiTest" time="0.001"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

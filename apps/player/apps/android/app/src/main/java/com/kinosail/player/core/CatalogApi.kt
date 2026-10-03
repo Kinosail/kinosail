@@ -24,11 +24,14 @@ data class CatalogItem(
     val stream: String = "",
     val artist: String = "",
     val album: String = "",
+    val backdrop: String = "",
+    val rating: String = "",
+    val genres: String = "",
 )
 
 data class CatalogPage(val items: List<CatalogItem>, val total: Int, val offset: Int, val limit: Int)
 data class CatalogDetail(val item: CatalogItem, val listed: Boolean)
-internal val LIBRARY_VIEWS = listOf("all" to "All media", "movies" to "Movies", "shows" to "Shows",
+internal val LIBRARY_VIEWS = listOf("all" to "All media", "movies" to "Movies", "shows" to "TV Shows",
     "music" to "Music", "audiobooks" to "Audiobooks", "books" to "Books", "photos" to "Photos",
     "list" to "My List")
 
@@ -39,18 +42,18 @@ class CatalogApi(
     private val api = ServerApi(server, open)
 
     fun list(token: String, viewerId: String, rawQuery: String = "", offset: Int = 0,
-             view: String = "all", sort: String = "title"): CatalogPage {
+             view: String = "all", sort: String = "title", limit: Int = PAGE_SIZE): CatalogPage {
         val query = rawQuery.trim()
         require(query.toByteArray(Charsets.UTF_8).size <= 512 && query.none(Char::isISOControl) &&
-            offset in 0..1_000_000 && (view == "history" || LIBRARY_VIEWS.any { it.first == view }) &&
+            offset in 0..1_000_000 && limit in 1..200 && (view == "history" || LIBRARY_VIEWS.any { it.first == view }) &&
             sort in setOf("title", "added")) { "Invalid library request." }
         val encoded = URLEncoder.encode(query, Charsets.UTF_8.name())
-        val result = api.catalog("/api/v1/library?q=$encoded&view=$view&sort=$sort&offset=$offset&limit=$PAGE_SIZE",
+        val result = api.catalog("/api/v1/library?q=$encoded&view=$view&sort=$sort&offset=$offset&limit=$limit",
             token, viewerId).fields(PAGE_KEYS, setOf("items", "total", "offset", "limit"))
         val total = result.number("total", 0..10_000_000)
         val returnedOffset = result.number("offset", 0..1_000_000)
-        val limit = result.number("limit", 1..200)
-        require(returnedOffset == offset && limit == PAGE_SIZE) { INVALID_RESPONSE }
+        val returnedLimit = result.number("limit", 1..200)
+        require(returnedOffset == offset && returnedLimit == limit) { INVALID_RESPONSE }
         result["view"]?.let { require(result.text("view", 32) == view) { INVALID_RESPONSE } }
         result["sort"]?.let { require(result.text("sort", 32) == sort) { INVALID_RESPONSE } }
         result["query"]?.let { require(result.text("query", 512, empty = true) == query) { INVALID_RESPONSE } }
@@ -94,6 +97,7 @@ class CatalogApi(
         private const val INVALID_RESPONSE = "The Server returned an invalid library page."
         private val ID = Regex("[A-Za-z0-9_-]{1,128}")
         internal val ARTWORK = Regex("/(?:art/[A-Za-z0-9_-]{1,128}(\\?variant=episode)?|episode-art/[A-Za-z0-9_-]{1,128})")
+        internal val BACKDROP = Regex("/backdrop/[A-Za-z0-9_-]{1,128}")
         private val KINDS = setOf("video", "show", "music", "audiobook", "book", "photo")
         private val PAGE_KEYS = setOf("items", "view", "sort", "query", "letter", "total", "offset", "limit", "letters")
         private val ITEM_KEYS = setOf("id", "kind", "title", "sortTitle", "year", "plot", "rating", "tagline",
@@ -108,6 +112,8 @@ class CatalogApi(
             require(kind in KINDS) { INVALID_RESPONSE }
             val artwork = item.text("artwork", 16_384, empty = true)
             require(artwork.isEmpty() || artwork.matches(ARTWORK)) { INVALID_RESPONSE }
+            val backdrop = item.text("backdrop", 256, empty = true)
+            require(backdrop.isEmpty() || backdrop.matches(BACKDROP)) { INVALID_RESPONSE }
             val stream = item.text("stream", 256, empty = true)
             require(stream.isEmpty() || stream == "/media/$id") { INVALID_RESPONSE }
             val showId = item.text("showId", 16, empty = true)
@@ -116,7 +122,8 @@ class CatalogApi(
                 item.text("plot", 10_000, empty = true).replace("\u200B", ""), artwork,
                 item["progress"]?.let(WatchProgress::parse) ?: WatchProgress(), showId,
                 item.optionalNumber("season", 0..100_000), item.optionalNumber("episode", 0..100_000), stream,
-                item.text("artist", 512, empty = true), item.text("album", 512, empty = true))
+                item.text("artist", 512, empty = true), item.text("album", 512, empty = true), backdrop,
+                item.text("rating", 128, empty = true), item.text("genres", 2048, empty = true))
         }
 
         private fun JsonObject.optionalNumber(key: String, range: IntRange): Int =

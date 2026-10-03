@@ -1,0 +1,119 @@
+Printing with useUnmergedTree = 'false'
+Node #634 at (l=0.0, t=0.0, r=2560.0, b=1600.0)px
+ |-Node #642 at (l=150.0, t=104.0, r=2560.0, b=1536.0)px
+   Shape = 'RectangleShape'
+    |-Node #645 at (l=150.0, t=104.0, r=310.0, b=1536.0)px
+    | IsContainer = 'true'
+    | Shape = 'RectangleShape'
+    |  |-Node #646 at (l=150.0, t=112.0, r=310.0, b=1528.0)px
+    |    IsTraversalGroup = 'true'
+    |    [SelectableGroup]
+    |     |-Node #647 at (l=150.0, t=112.0, r=310.0, b=234.0)px
+    |     | Focused = 'false'
+    |     | Role = 'Tab'
+    |     | Selected = 'false'
+    |     | Text = '[Home]'
+    |     | Actions = [ClearTextSubstitution, GetTextLayoutResult, OnClick, RequestFocus, SetTextSubstitution, ShowTextSubstitution]
+    |     | MergeDescendants = 'true'
+    |     |-Node #656 at (l=150.0, t=242.0, r=310.0, b=364.0)px
+    |     | Focused = 'false'
+    |     | Role = 'Tab'
+    |     | Selected = 'true'
+    |     | Text = '[TV Shows]'
+    |     | Actions = [ClearTextSubstitution, GetTextLayoutResult, OnClick, RequestFocus, SetTextSubstitution, ShowTextSubstitution]
+    |     | MergeDescendants = 'true'
+    |     |-Node #665 at (l=150.0, t=372.0, r=310.0, b=494.0)px
+    |     | Focused = 'false'
+    |     | Role = 'Tab'
+    |     | Selected = 'false'
+    |     | Text = '[Movies]'
+    |     | Actions = [ClearTextSubstitution, GetTextLayoutResult, OnClick, RequestFocus, SetTextSubstitution, ShowTextSubstitution]
+    |     | MergeDescendants = 'true'
+    |     |-Node #674 at (l=150.0, t=502.0, r=310.0, b=624.0)px
+    |     | Focused = 'false'
+    |     | Role = 'Tab'
+    |     | Selected = 'false'
+    |     | Text = '[Search]'
+    |     | Actions = [ClearTextSubstitution, GetTextLayoutResult, OnClick, RequestFocus, SetTextSubstitution, ShowTextSubstitution]
+    |     | MergeDescendants = 'true'
+    |     |-Node #683 at (l=150.0, t=632.0, r=310.0, b=754.0)px
+    |       Focused = 'false'
+    |       Role = 'Tab'
+    |       Selected = 'false'
+    |       Text = '[More]'
+    |       Actions = [ClearTextSubstitution, GetTextLayoutResult, OnClick, RequestFocus, SetTextSubstitution, ShowTextSubstitution]
+    |       MergeDescendants = 'true'
+    |-Node #859 at (l=310.0, t=104.0, r=2560.0, b=1536.0)px
+      Shape = 'RectangleShape'
+       |-Node #860 at (l=310.0, t=104.0, r=2560.0, b=1536.0)px
+       | Shape = 'RectangleShape'
+       |-Node #861 at (l=310.0, t=104.0, r=2560.0, b=1536.0)px
+         CollectionInfo = 'CollectionInfo(rowCount=5, columnCount=1)'
+         IsTraversalGroup = 'true'
+         Shape = 'androidx.compose.foundation.VerticalScrollableClipShape@9085453'
+         VerticalScrollAxisRange = 'ScrollAxisRange(value=0.0, maxValue=0.0, reverseScrolling=false)'
+         Actions = [GetScrollViewportLength, IndexForKey, ScrollBy, ScrollByOffset, ScrollToIndex]
+          |-Node #863 at (l=350.0, t=149.0, r=481.0, b=235.0)px
+          | Focused = 'false'
+          | Role = 'Button'
+          | Shape = 'RoundedCornerShape(topStart = CornerSize(size = 50.0%), topEnd = CornerSize(size = 50.0%), bottomEnd = CornerSize(size = 50.0%), bottomStart = CornerSize(size = 50.0%))'
+          | Text = '[Back]'
+          | Actions = [ClearTextSubstitution, GetTextLayoutResult, OnClick, RequestFocus, SetTextSubstitution, ShowTextSubstitution]
+          | MergeDescendants = 'true'
+          |-Node #890 at (l=350.0, t=288.0, r=1348.0, b=849.0)px
+          | Shape = 'RoundedCornerShape(topStart = CornerSize(size = 12.0.dp), topEnd = CornerSize(size = 12.0.dp), bottomEnd = CornerSize(size = 12.0.dp), bottomStart = CornerSize(size = 12.0.dp))'
+          |  |-Node #891 at (l=824.0, t=516.0, r=874.0, b=621.0)px
+          |  | ClearAndSetSemantics = 'true'
+          |  |-Node #927 at (l=350.0, t=288.0, r=1348.0, b=849.0)px
+          |    Shape = 'RectangleShape'
+          |-Node #894 at (l=1412.0, t=341.0, r=1800.0, b=421.0)px
+          | Text = '[Fixture Series]'
+          | Actions = [ClearTextSubstitution, GetTextLayoutResult, SetTextSubstitution, ShowTextSubstitution]
+          |-Node #895 at (l=1412.0, t=445.0, r=2119.0, b=506.0)px
+          | Text = '[2026 · PG · Drama · Adventure · S1 E1]'
+          | Actions = [ClearTextSubstitution, GetTextLayoutResult, SetTextSubstitution, ShowTextSubstitution]
+          |-Node #896 at (l=1412.0, t=530.0, r=1706.0, b=591.0)px
+          | Text = '[Resume at 0:12]'
+          | Actions = [ClearTextSubstitution, GetTextLayoutResult, SetTextSubstitution, ShowTextSubstitution]
+          |-Node #897 at (l=1412.0, t=615.0, r=1764.0, b=676.0)px
+          | Text = '[A synthetic series.]'
+          | Actions = [ClearTextSubstitution, GetTextLayoutResult, SetTextSubstitution, ShowTextSubstitution]
+          |-Node #898 at (l=1412.0, t=705.0, r=1770.0, b=791.0)px
+          | Focused = 'false'
+          | Role = 'Button'
+          | Shape = 'RoundedCornerShape(topStart = CornerSize(size = 50.0%), topEnd = CornerSize(size = 50.0%), bottomEnd = CornerSize(size = 50.0%), bottomStart = CornerSize(size = 50.0%))'
+          | Text = '[Resume · S1 E1]'
+          | Actions = [ClearTextSubstitution, GetTextLayoutResult, OnClick, RequestFocus, SetTextSubstitution, ShowTextSubstitution]
+          | MergeDescendants = 'true'
+          |-Node #902 at (l=350.0, t=897.0, r=543.0, b=961.0)px
+          | Text = '[Seasons]'
+          | Actions = [ClearTextSubstitution, GetTextLayoutResult, SetTextSubstitution, ShowTextSubstitution]
+          |-Node #904 at (l=350.0, t=1009.0, r=814.0, b=1105.0)px
+          | CollectionInfo = 'CollectionInfo(rowCount=1, columnCount=2)'
+          | HorizontalScrollAxisRange = 'ScrollAxisRange(value=0.0, maxValue=0.0, reverseScrolling=false)'
+          | IsTraversalGroup = 'true'
+          | Shape = 'androidx.compose.foundation.HorizontalScrollableClipShape@1b315f'
+          | Actions = [GetScrollViewportLength, IndexForKey, ScrollBy, ScrollByOffset, ScrollToIndex]
+          |  |-Node #906 at (l=350.0, t=1025.0, r=570.0, b=1089.0)px
+          |  | Focused = 'false'
+          |  | Role = 'Checkbox'
+          |  | Selected = 'true'
+          |  | Shape = 'RoundedCornerShape(topStart = CornerSize(size = 8.0.dp), topEnd = CornerSize(size = 8.0.dp), bottomEnd = CornerSize(size = 8.0.dp), bottomStart = CornerSize(size = 8.0.dp))'
+          |  | Text = '[Season 1]'
+          |  | Actions = [ClearTextSubstitution, GetTextLayoutResult, OnClick, RequestFocus, SetTextSubstitution, ShowTextSubstitution]
+          |  | MergeDescendants = 'true'
+          |  |-Node #911 at (l=594.0, t=1025.0, r=814.0, b=1089.0)px
+          |    Focused = 'false'
+          |    Role = 'Checkbox'
+          |    Selected = 'false'
+          |    Shape = 'RoundedCornerShape(topStart = CornerSize(size = 8.0.dp), topEnd = CornerSize(size = 8.0.dp), bottomEnd = CornerSize(size = 8.0.dp), bottomStart = CornerSize(size = 8.0.dp))'
+          |    Text = '[Season 2]'
+          |    Actions = [ClearTextSubstitution, GetTextLayoutResult, OnClick, RequestFocus, SetTextSubstitution, ShowTextSubstitution]
+          |    MergeDescendants = 'true'
+          |-Node #916 at (l=350.0, t=1153.0, r=2520.0, b=1345.0)px
+            ContentDescription = '[First episode]'
+            Focused = 'false'
+            Shape = 'RoundedCornerShape(topStart = CornerSize(size = 12.0.dp), topEnd = CornerSize(size = 12.0.dp), bottomEnd = CornerSize(size = 12.0.dp), bottomStart = CornerSize(size = 12.0.dp))'
+            Text = '[Resume at 0:12, S1 E1 · First episode, A synthetic title for a repeatable Android journey.]'
+            Actions = [ClearTextSubstitution, GetTextLayoutResult, OnClick, RequestFocus, SetTextSubstitution, ShowTextSubstitution]
+            MergeDescendants = 'true'

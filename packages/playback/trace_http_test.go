@@ -28,8 +28,33 @@ func TestTraceHTTPValidatesAndRecordsPlayerEvent(t *testing.T) {
 			setSession = session
 		},
 	})(response, request)
-	if response.Code != http.StatusNoContent || setSession != "session" || !strings.Contains(logs.String(), `"msg":"playback trace"`) || !strings.Contains(logs.String(), `"event":"playing"`) {
+	if response.Code != http.StatusNoContent || setSession != "session" || !strings.Contains(logs.String(), `"level":"INFO"`) || !strings.Contains(logs.String(), `"msg":"playback trace"`) || !strings.Contains(logs.String(), `"event":"playing"`) {
 		t.Fatalf("response = %d; session = %q; log = %s", response.Code, setSession, logs.String())
+	}
+}
+
+func TestTraceHTTPRecordsFullscreenFailureAtWarningLevel(t *testing.T) {
+	for _, name := range []string{"NotAllowedError", "InvalidStateError", "NotSupportedError", "TypeError", "Error"} {
+		t.Run(name, func(t *testing.T) {
+			var logs bytes.Buffer
+			previous := slog.Default()
+			slog.SetDefault(slog.New(slog.NewJSONHandler(&logs, nil)))
+			t.Cleanup(func() { slog.SetDefault(previous) })
+			response := httptest.NewRecorder()
+			TraceHTTP(TraceHTTPConfig{
+				Visible:      func(*http.Request, string) bool { return true },
+				ValidSession: func(value string) bool { return value == "session" },
+				SetSession:   func(*http.Request, string) {},
+			})(response, traceRequest(t, `{"session":"session","event":"error","sequence":1,"detail":"fullscreen:`+name+`:playback-retained"}`))
+			if response.Code != http.StatusNoContent {
+				t.Fatalf("status = %d", response.Code)
+			}
+			for _, field := range []string{`"level":"WARN"`, `"playback_session":"session"`, `"detail":"fullscreen:` + name + `:playback-retained"`} {
+				if !strings.Contains(logs.String(), field) {
+					t.Fatalf("missing %s in %s", field, logs.String())
+				}
+			}
+		})
 	}
 }
 
@@ -106,5 +131,57 @@ func TestTraceHTTPRejectsLogInjectionWithoutEffects(t *testing.T) {
 				}
 			})
 		}
+	}
+}
+
+func TestTraceHTTPRetainsOnlyNamedPlayRejections(t *testing.T) {
+	for _, fixture := range []struct{ event, detail, expected string }{
+		{"play-rejected", "control:NotAllowedError", "control:NotAllowedError"},
+		{"play-rejected", "autoplay-canplay:NotSupportedError", "autoplay-canplay:NotSupportedError"},
+		{"play-rejected", "keyboard:AbortError", "keyboard:AbortError"},
+		{"play-rejected", "media-element:InvalidStateError", "media-element:InvalidStateError"},
+		{"play-rejected", "watch-room:TypeError", "watch-room:TypeError"},
+		{"play-rejected", "media-session:Error", "media-session:Error"},
+		{"play-rejected", "queue-advance:NotAllowedError", "queue-advance:NotAllowedError"},
+		{"play-rejected", "resume-progress:AbortError", "resume-progress:AbortError"},
+		{"play-rejected", "home-assistant:NotSupportedError", "home-assistant:NotSupportedError"},
+		{"play-rejected", "source-change:AbortError", "source-change:AbortError"},
+		{"play-rejected", "offline-source:NotAllowedError", "offline-source:NotAllowedError"},
+		{"play-rejected", "qa_sensitive_marker:NotAllowedError", ""},
+		{"play-rejected", "control:qa_sensitive_marker", ""},
+		{"play-rejected", "control:Error:qa_sensitive_marker", ""},
+		{"play-rejected", ":NotAllowedError", ""},
+		{"playing", "control:NotAllowedError", ""},
+		{"error", "control:NotAllowedError", ""},
+	} {
+		t.Run(fixture.event+"/"+fixture.detail, func(t *testing.T) {
+			var logs bytes.Buffer
+			previous := slog.Default()
+			slog.SetDefault(slog.New(slog.NewJSONHandler(&logs, nil)))
+			t.Cleanup(func() { slog.SetDefault(previous) })
+			body, err := json.Marshal(map[string]any{"session": "session", "event": fixture.event, "sequence": 1, "detail": fixture.detail})
+			if err != nil {
+				t.Fatal(err)
+			}
+			response := httptest.NewRecorder()
+			setSession := false
+			TraceHTTP(TraceHTTPConfig{
+				Visible:      func(*http.Request, string) bool { return true },
+				ValidSession: func(value string) bool { return value == "session" },
+				SetSession:   func(*http.Request, string) { setSession = true },
+			})(response, traceRequest(t, string(body)))
+			if response.Code != http.StatusNoContent || !setSession {
+				t.Fatalf("status=%d sessionSet=%t", response.Code, setSession)
+			}
+			var entry struct {
+				Detail string `json:"detail"`
+			}
+			if err := json.Unmarshal(logs.Bytes(), &entry); err != nil {
+				t.Fatal(err)
+			}
+			if entry.Detail != fixture.expected || strings.Contains(logs.String(), "qa_sensitive_marker") {
+				t.Fatalf("logged detail = %q, want %q", entry.Detail, fixture.expected)
+			}
+		})
 	}
 }

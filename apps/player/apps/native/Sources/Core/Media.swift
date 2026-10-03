@@ -26,6 +26,11 @@ struct WatchProgress: Codable, Hashable, Sendable {
         .object(["seconds": .number(seconds), "watched": .bool(watched), "dismissed": .bool(dismissed),
                  "session": .string(session), "revision": .number(Double(revision))])
     }
+
+    var synchronizationJSON: JSONValue {
+        .object(["seconds": .number(seconds), "watched": .bool(watched),
+                 "session": .string(session), "revision": .number(Double(revision))])
+    }
 }
 
 enum MediaKind: String, Codable, Sendable {

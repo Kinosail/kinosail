@@ -1,0 +1,194 @@
+INSTRUMENTATION_STATUS: class=com.kinosail.player.core.NativeParityJourneyTest
+INSTRUMENTATION_STATUS: current=1
+INSTRUMENTATION_STATUS: id=AndroidJUnitRunner
+INSTRUMENTATION_STATUS: numtests=12
+INSTRUMENTATION_STATUS: stream=
+com.kinosail.player.core.NativeParityJourneyTest:
+INSTRUMENTATION_STATUS: test=catalogGridKeepsPendingFailedEmptyAndLoadedStatesDistinct
+INSTRUMENTATION_STATUS_CODE: 1
+INSTRUMENTATION_STATUS: class=com.kinosail.player.core.NativeParityJourneyTest
+INSTRUMENTATION_STATUS: current=1
+INSTRUMENTATION_STATUS: id=AndroidJUnitRunner
+INSTRUMENTATION_STATUS: numtests=12
+INSTRUMENTATION_STATUS: stream=.
+INSTRUMENTATION_STATUS: test=catalogGridKeepsPendingFailedEmptyAndLoadedStatesDistinct
+INSTRUMENTATION_STATUS_CODE: 0
+INSTRUMENTATION_STATUS: class=com.kinosail.player.core.NativeParityJourneyTest
+INSTRUMENTATION_STATUS: current=2
+INSTRUMENTATION_STATUS: id=AndroidJUnitRunner
+INSTRUMENTATION_STATUS: numtests=12
+INSTRUMENTATION_STATUS: stream=
+INSTRUMENTATION_STATUS: test=populatedNavigationDetailsAndMyList
+INSTRUMENTATION_STATUS_CODE: 1
+INSTRUMENTATION_STATUS: class=com.kinosail.player.core.NativeParityJourneyTest
+INSTRUMENTATION_STATUS: current=2
+INSTRUMENTATION_STATUS: id=AndroidJUnitRunner
+INSTRUMENTATION_STATUS: numtests=12
+INSTRUMENTATION_STATUS: stream=.
+INSTRUMENTATION_STATUS: test=populatedNavigationDetailsAndMyList
+INSTRUMENTATION_STATUS_CODE: 0
+INSTRUMENTATION_STATUS: class=com.kinosail.player.core.NativeParityJourneyTest
+INSTRUMENTATION_STATUS: current=3
+INSTRUMENTATION_STATUS: id=AndroidJUnitRunner
+INSTRUMENTATION_STATUS: numtests=12
+INSTRUMENTATION_STATUS: stream=
+INSTRUMENTATION_STATUS: test=pendingFailureEmptyAndRecoveryKeepTheirOwnState
+INSTRUMENTATION_STATUS_CODE: 1
+INSTRUMENTATION_STATUS: class=com.kinosail.player.core.NativeParityJourneyTest
+INSTRUMENTATION_STATUS: current=3
+INSTRUMENTATION_STATUS: id=AndroidJUnitRunner
+INSTRUMENTATION_STATUS: numtests=12
+INSTRUMENTATION_STATUS: stream=.
+INSTRUMENTATION_STATUS: test=pendingFailureEmptyAndRecoveryKeepTheirOwnState
+INSTRUMENTATION_STATUS_CODE: 0
+INSTRUMENTATION_STATUS: class=com.kinosail.player.core.NativeParityJourneyTest
+INSTRUMENTATION_STATUS: current=4
+INSTRUMENTATION_STATUS: id=AndroidJUnitRunner
+INSTRUMENTATION_STATUS: numtests=12
+INSTRUMENTATION_STATUS: stream=
+INSTRUMENTATION_STATUS: test=playbackChromeHidesTogetherAndReturnsWithInput
+INSTRUMENTATION_STATUS_CODE: 1
+INSTRUMENTATION_STATUS: class=com.kinosail.player.core.NativeParityJourneyTest
+INSTRUMENTATION_STATUS: current=4
+INSTRUMENTATION_STATUS: id=AndroidJUnitRunner
+INSTRUMENTATION_STATUS: numtests=12
+INSTRUMENTATION_STATUS: stream=.
+INSTRUMENTATION_STATUS: test=playbackChromeHidesTogetherAndReturnsWithInput
+INSTRUMENTATION_STATUS_CODE: 0
+INSTRUMENTATION_STATUS: class=com.kinosail.player.core.NativeParityJourneyTest
+INSTRUMENTATION_STATUS: current=5
+INSTRUMENTATION_STATUS: id=AndroidJUnitRunner
+INSTRUMENTATION_STATUS: numtests=12
+INSTRUMENTATION_STATUS: stream=
+INSTRUMENTATION_STATUS: test=seasonsKeepPendingFailedEmptyAndLoadedLayoutsDistinct
+INSTRUMENTATION_STATUS_CODE: 1
+INSTRUMENTATION_STATUS: class=com.kinosail.player.core.NativeParityJourneyTest
+INSTRUMENTATION_STATUS: current=5
+INSTRUMENTATION_STATUS: id=AndroidJUnitRunner
+INSTRUMENTATION_STATUS: numtests=12
+INSTRUMENTATION_STATUS: stream=.
+INSTRUMENTATION_STATUS: test=seasonsKeepPendingFailedEmptyAndLoadedLayoutsDistinct
+INSTRUMENTATION_STATUS_CODE: 0
+INSTRUMENTATION_STATUS: class=com.kinosail.player.core.PlaybackContentAccessibilityTest
+INSTRUMENTATION_STATUS: current=6
+INSTRUMENTATION_STATUS: id=AndroidJUnitRunner
+INSTRUMENTATION_STATUS: numtests=12
+INSTRUMENTATION_STATUS: stream=
+com.kinosail.player.core.PlaybackContentAccessibilityTest:
+INSTRUMENTATION_STATUS: test=playbackErrorPassesAccessibilityChecks
+INSTRUMENTATION_STATUS_CODE: 1
+INSTRUMENTATION_STATUS: class=com.kinosail.player.core.PlaybackContentAccessibilityTest
+INSTRUMENTATION_STATUS: current=6
+INSTRUMENTATION_STATUS: id=AndroidJUnitRunner
+INSTRUMENTATION_STATUS: numtests=12
+INSTRUMENTATION_STATUS: stream=.
+INSTRUMENTATION_STATUS: test=playbackErrorPassesAccessibilityChecks
+INSTRUMENTATION_STATUS_CODE: 0
+INSTRUMENTATION_STATUS: class=com.kinosail.player.core.PlaybackContentAccessibilityTest
+INSTRUMENTATION_STATUS: current=7
+INSTRUMENTATION_STATUS: id=AndroidJUnitRunner
+INSTRUMENTATION_STATUS: numtests=12
+INSTRUMENTATION_STATUS: stream=
+INSTRUMENTATION_STATUS: test=readerErrorsPassAccessibilityChecks
+INSTRUMENTATION_STATUS_CODE: 1
+INSTRUMENTATION_STATUS: class=com.kinosail.player.core.PlaybackContentAccessibilityTest
+INSTRUMENTATION_STATUS: current=7
+INSTRUMENTATION_STATUS: id=AndroidJUnitRunner
+INSTRUMENTATION_STATUS: numtests=12
+INSTRUMENTATION_STATUS: stream=.
+INSTRUMENTATION_STATUS: test=readerErrorsPassAccessibilityChecks
+INSTRUMENTATION_STATUS_CODE: 0
+INSTRUMENTATION_STATUS: class=com.kinosail.player.mobile.CastChooserTest
+INSTRUMENTATION_STATUS: current=8
+INSTRUMENTATION_STATUS: id=AndroidJUnitRunner
+INSTRUMENTATION_STATUS: numtests=12
+INSTRUMENTATION_STATUS: stream=
+com.kinosail.player.mobile.CastChooserTest:
+INSTRUMENTATION_STATUS: test=castChooserOpensUnderPhoneTheme
+INSTRUMENTATION_STATUS_CODE: 1
+INSTRUMENTATION_STATUS: class=com.kinosail.player.mobile.CastChooserTest
+INSTRUMENTATION_STATUS: current=8
+INSTRUMENTATION_STATUS: id=AndroidJUnitRunner
+INSTRUMENTATION_STATUS: numtests=12
+INSTRUMENTATION_STATUS: stream=.
+INSTRUMENTATION_STATUS: test=castChooserOpensUnderPhoneTheme
+INSTRUMENTATION_STATUS_CODE: 0
+INSTRUMENTATION_STATUS: class=com.kinosail.player.mobile.LivePlaybackOverlayTest
+INSTRUMENTATION_STATUS: current=9
+INSTRUMENTATION_STATUS: id=AndroidJUnitRunner
+INSTRUMENTATION_STATUS: numtests=12
+INSTRUMENTATION_STATUS: stream=
+com.kinosail.player.mobile.LivePlaybackOverlayTest:
+INSTRUMENTATION_STATUS: test=pendingAndFailedMediaKeepDismissalAndRetryUsable
+INSTRUMENTATION_STATUS_CODE: 1
+INSTRUMENTATION_STATUS: class=com.kinosail.player.mobile.LivePlaybackOverlayTest
+INSTRUMENTATION_STATUS: current=9
+INSTRUMENTATION_STATUS: id=AndroidJUnitRunner
+INSTRUMENTATION_STATUS: numtests=12
+INSTRUMENTATION_STATUS: stack=org.junit.AssumptionViolatedException: Requires an isolated Server, generated white video and private session seed
+	at org.junit.Assume.assumeTrue(Assume.java:68)
+	at com.kinosail.player.mobile.LivePlaybackOverlayTest.journey(LivePlaybackOverlayTest.kt:105)
+	at com.kinosail.player.mobile.LivePlaybackOverlayTest.pendingAndFailedMediaKeepDismissalAndRetryUsable(LivePlaybackOverlayTest.kt:85)
+
+INSTRUMENTATION_STATUS: stream=
+com.kinosail.player.mobile.LivePlaybackOverlayTest:
+INSTRUMENTATION_STATUS: test=pendingAndFailedMediaKeepDismissalAndRetryUsable
+INSTRUMENTATION_STATUS_CODE: -4
+INSTRUMENTATION_STATUS: class=com.kinosail.player.mobile.LivePlaybackOverlayTest
+INSTRUMENTATION_STATUS: current=10
+INSTRUMENTATION_STATUS: id=AndroidJUnitRunner
+INSTRUMENTATION_STATUS: numtests=12
+INSTRUMENTATION_STATUS: stream=
+INSTRUMENTATION_STATUS: test=decodedLightVideoKeepsItsTitleAndActionsReadable
+INSTRUMENTATION_STATUS_CODE: 1
+INSTRUMENTATION_STATUS: class=com.kinosail.player.mobile.LivePlaybackOverlayTest
+INSTRUMENTATION_STATUS: current=10
+INSTRUMENTATION_STATUS: id=AndroidJUnitRunner
+INSTRUMENTATION_STATUS: numtests=12
+INSTRUMENTATION_STATUS: stack=org.junit.AssumptionViolatedException: Requires an isolated Server, generated white video and private session seed
+	at org.junit.Assume.assumeTrue(Assume.java:68)
+	at com.kinosail.player.mobile.LivePlaybackOverlayTest.journey(LivePlaybackOverlayTest.kt:105)
+	at com.kinosail.player.mobile.LivePlaybackOverlayTest.journey$default(LivePlaybackOverlayTest.kt:101)
+	at com.kinosail.player.mobile.LivePlaybackOverlayTest.decodedLightVideoKeepsItsTitleAndActionsReadable(LivePlaybackOverlayTest.kt:61)
+
+INSTRUMENTATION_STATUS: stream=
+INSTRUMENTATION_STATUS: test=decodedLightVideoKeepsItsTitleAndActionsReadable
+INSTRUMENTATION_STATUS_CODE: -4
+INSTRUMENTATION_STATUS: class=com.kinosail.player.mobile.MobileAccessibilityTest
+INSTRUMENTATION_STATUS: current=11
+INSTRUMENTATION_STATUS: id=AndroidJUnitRunner
+INSTRUMENTATION_STATUS: numtests=12
+INSTRUMENTATION_STATUS: stream=
+com.kinosail.player.mobile.MobileAccessibilityTest:
+INSTRUMENTATION_STATUS: test=setupPassesAccessibilityChecks
+INSTRUMENTATION_STATUS_CODE: 1
+INSTRUMENTATION_STATUS: class=com.kinosail.player.mobile.MobileAccessibilityTest
+INSTRUMENTATION_STATUS: current=11
+INSTRUMENTATION_STATUS: id=AndroidJUnitRunner
+INSTRUMENTATION_STATUS: numtests=12
+INSTRUMENTATION_STATUS: stream=.
+INSTRUMENTATION_STATUS: test=setupPassesAccessibilityChecks
+INSTRUMENTATION_STATUS_CODE: 0
+INSTRUMENTATION_STATUS: class=com.kinosail.player.tv.TvAccessibilityTest
+INSTRUMENTATION_STATUS: current=12
+INSTRUMENTATION_STATUS: id=AndroidJUnitRunner
+INSTRUMENTATION_STATUS: numtests=12
+INSTRUMENTATION_STATUS: stream=
+com.kinosail.player.tv.TvAccessibilityTest:
+INSTRUMENTATION_STATUS: test=setupPassesAccessibilityChecks
+INSTRUMENTATION_STATUS_CODE: 1
+INSTRUMENTATION_STATUS: class=com.kinosail.player.tv.TvAccessibilityTest
+INSTRUMENTATION_STATUS: current=12
+INSTRUMENTATION_STATUS: id=AndroidJUnitRunner
+INSTRUMENTATION_STATUS: numtests=12
+INSTRUMENTATION_STATUS: stream=.
+INSTRUMENTATION_STATUS: test=setupPassesAccessibilityChecks
+INSTRUMENTATION_STATUS_CODE: 0
+INSTRUMENTATION_RESULT: stream=
+
+Time: 62.7
+
+OK (12 tests)
+
+
+INSTRUMENTATION_CODE: -1

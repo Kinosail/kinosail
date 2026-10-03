@@ -1,0 +1,6 @@
+Printing with useUnmergedTree = 'false'
+Node #840 at (l=0.0, t=0.0, r=2560.0, b=1600.0)px
+ |-Node #999 at (l=0.0, t=0.0, r=2560.0, b=1600.0)px
+   Shape = 'RectangleShape'
+    |-Node #1010 at (l=0.0, t=0.0, r=2560.0, b=1600.0)px
+      MergeDescendants = 'true'

@@ -29,15 +29,22 @@ for (const viewport of viewports) {
   });
 }
 
-test('show skip link moves keyboard focus to the main content @smoke', async ({ page }, testInfo) => {
-  await page.goto('/?view=shows');
-  await page.locator('a.show-details[href^="/show/"]').first().click();
-  const skip = page.getByRole('link', { name: 'Skip to content', exact: true });
-  const main = page.getByRole('main');
-  await expect(main).toHaveAttribute('id', 'main');
-  await skip.focus();
-  await skip.press('Enter');
-  await expect(page).toHaveURL(/#main$/);
-  expect(await main.evaluate(element => element === document.activeElement)).toBeTruthy();
-  await page.screenshot({ path: testInfo.outputPath('show-skip-target.png') });
-});
+for (const width of [1440, 390]) {
+  test(`show skip link moves keyboard focus to the main content at ${width}px @smoke`, async ({ page }, testInfo) => {
+    await page.setViewportSize({ width, height: 900 });
+    await page.goto('/?view=shows');
+    await page.locator('a.show-details[href^="/show/"]').first().click();
+    const show = page.url();
+    for (const path of [show, '/account', '/settings', '/offline-downloads']) {
+      if (path !== show) await page.goto(path);
+      const skip = page.getByRole('link', { name: 'Skip to content', exact: true });
+      const main = page.getByRole('main');
+      const target = `#${await main.getAttribute('id')}`;
+      await skip.focus();
+      await skip.press('Enter');
+      await expect.poll(() => new URL(page.url()).hash).toBe(target);
+      await expect(main).toBeFocused();
+      await page.screenshot({ path: testInfo.outputPath(`skip-${new URL(page.url()).pathname.replaceAll('/', '-')}-${width}.png`) });
+    }
+  });
+}

@@ -34,12 +34,7 @@ func newSubSourceProvider(config SubSourceConfig) *subSourceProvider {
 		config.URL = "https://api.subsource.net/api/v1"
 	}
 	provider := &subSourceProvider{config: config, client: localIntegrationHTTPClient(15 * time.Second), health: newSubtitleProviderHealthRegistry()}
-	provider.client.CheckRedirect = func(request *http.Request, _ []*http.Request) error {
-		if !provider.allowed(request.URL.String()) {
-			return http.ErrUseLastResponse
-		}
-		return nil
-	}
+	provider.client.CheckRedirect = subtitleProviderRedirect(provider.allowed)
 	return provider
 }
 
@@ -120,19 +115,19 @@ func (provider *subSourceProvider) download(ctx context.Context, candidate subSo
 	}
 	defer response.Body.Close()
 	data, err := readSubtitle(response)
+	availabilityErr := err
+	if response.StatusCode == http.StatusOK && errors.Is(err, errSubtitleDownloadTooLarge) {
+		availabilityErr = nil
+	}
+	provider.health.observe("SubSource", response, availabilityErr)
 	if err != nil {
-		provider.health.observe("SubSource", response, err)
 		return nil, err
 	}
 	archive, err := zip.NewReader(bytes.NewReader(data), int64(len(data)))
 	if err != nil {
-		err = errors.New("SubSource download is not a ZIP archive")
-		provider.health.observe("SubSource", response, err)
-		return nil, err
+		return nil, errors.New("SubSource download is not a ZIP archive")
 	}
-	data, err = readSubSourceArchive(archive, item)
-	provider.health.observe("SubSource", response, err)
-	return data, err
+	return readSubSourceArchive(archive, item)
 }
 
 func readSubSourceArchive(archive *zip.Reader, item library.Item) ([]byte, error) { //nolint:cyclop,gocognit // Archive selection validates every candidate before reading one bounded subtitle.

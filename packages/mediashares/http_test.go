@@ -125,21 +125,26 @@ func TestRegisteredWebLifecycle(t *testing.T) { //nolint:cyclop,funlen // One ha
 
 func TestAPIMutationsAreStrictAndAtomic(t *testing.T) { //nolint:cyclop // One matrix proves JSON validation and error mapping.
 	t.Parallel()
-	store, state := testStore(t, time.Now(), library.Item{ID: "item", Path: "movie"})
+	store, _ := testStore(t, time.Now(), library.Item{ID: "item", Path: "movie"})
 	for name, body := range map[string]string{
 		"invalid": `{`, "unknown": `{"itemIds":["item"],"expiresInSeconds":3600,"maxDevices":1,"rightsAcknowledged":true,"owner":true}`,
-		"policy": `{"itemIds":[],"expiresInSeconds":3600,"maxDevices":1,"rightsAcknowledged":true}`,
+		"policy":                     `{"itemIds":[],"expiresInSeconds":3600,"maxDevices":1,"rightsAcknowledged":true}`,
+		"ASCII duplicate":            `{"itemIds":["item"],"expiresInSeconds":3600,"maxDevices":0,"MAXDEVICES":1,"rightsAcknowledged":true}`,
+		"Unicode duplicate":          `{"itemIds":["item"],"expiresInSeconds":3600,"maxDevices":0,"maxDeviceſ":1,"rightsAcknowledged":true}`,
+		"escaped Unicode duplicate":  `{"itemIds":["item"],"expiresInSeconds":3600,"maxDevices":0,"maxDevice\u017f":1,"rightsAcknowledged":true}`,
+		"reversed Unicode duplicate": `{"itemIds":["item"],"expiresInSeconds":3600,"maxDeviceſ":0,"maxDevices":1,"rightsAcknowledged":true}`,
 	} {
 		t.Run(name, func(t *testing.T) {
+			store, state := testStore(t, time.Now(), library.Item{ID: "item", Path: "movie"})
 			response := httptest.NewRecorder()
 			store.CreateHTTP(response, httptest.NewRequestWithContext(t.Context(), http.MethodPost, "/", strings.NewReader(body)))
 			if response.Code != http.StatusBadRequest {
-				t.Fatalf("create = %d %q", response.Code, response.Body.String())
+				t.Fatalf("create = %d, want HTTP400", response.Code)
+			}
+			if state.data != nil {
+				t.Fatal("rejected API request persisted share state")
 			}
 		})
-	}
-	if state.data != nil {
-		t.Fatal("invalid API request persisted state")
 	}
 	created := httptest.NewRecorder()
 	store.CreateHTTP(created, httptest.NewRequestWithContext(t.Context(), http.MethodPost, "/", strings.NewReader(`{"itemIds":["item"],"expiresInSeconds":3600,"maxDevices":1,"rightsAcknowledged":true}`)))

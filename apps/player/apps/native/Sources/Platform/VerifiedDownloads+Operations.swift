@@ -114,20 +114,22 @@
       }
     }
 
-    func authorize(_ access: DownloadAuthorization, wifiOnly: Bool? = nil, quota: Int64 = 0) async throws {
+    func authorize(_ access: DownloadAuthorization, wifiOnly: Bool? = nil, quota: Int64 = 0, ifCurrent revision: UUID? = nil) async throws {
       try await ready {
+        if let revision, revision != self.authorizationVersion { return }
         if self.authorization?.scope != access.scope {
           for id in Array(self.jobs.keys) where !id.hasPrefix(access.scope + "/") { self.cancel(id) }
           for id in Array(self.plans.keys) where !id.hasPrefix(access.scope + "/") { self.cancelPlan(id) }
         }
         if let wifiOnly { try self.applyPolicy(scope: access.scope, wifiOnly: wifiOnly, quota: quota) }
-        self.authorization = access
         for id in Set(self.tasks.values.filter { $0.id.hasPrefix(access.scope + "/") && $0.task.originalRequest?.value(forHTTPHeaderField: "Authorization") != access.header }.map(\.id)) {
           self.cancel(id)
           if var job = self.jobs[id], !["paused", "complete"].contains(job.status) {
             job.status = "queued"; job.error = ""; job.retries = 0; job.retryAt = nil; try self.persist(job)
           }
         }
+        self.authorization = access
+        self.authorizationVersion = UUID()
         for id in Set(self.planTasks.values.filter { $0.1.hasPrefix(access.scope + "/") && $0.0.originalRequest?.value(forHTTPHeaderField: "Authorization") != access.header }.map { $0.1 }) { self.cancelPlan(id) }
         for (_, transfer) in self.planTasks where transfer.1.hasPrefix(access.scope + "/") { if transfer.0.state == .suspended { transfer.0.resume() } }
         self.pump()

@@ -6,6 +6,7 @@ import (
 	"errors"
 	"io"
 	"strings"
+	"unicode"
 	"unicode/utf8"
 )
 
@@ -55,10 +56,14 @@ func uniqueValue(d *json.Decoder, depth int) bool {
 		for d.More() {
 			token, err = d.Token()
 			key, ok := token.(string)
-			if err != nil || !ok || keys[strings.ToLower(key)] {
+			if err != nil || !ok {
 				return false
 			}
-			keys[strings.ToLower(key)] = true
+			key = foldJSONKey(key)
+			if keys[key] {
+				return false
+			}
+			keys[key] = true
 			if !uniqueValue(d, depth+1) {
 				return false
 			}
@@ -77,4 +82,14 @@ func uniqueValue(d *json.Decoder, depth int) bool {
 		_, delimiter := token.(json.Delim)
 		return !delimiter
 	}
+}
+
+func foldJSONKey(key string) string {
+	return strings.Map(func(r rune) rune {
+		canonical := r
+		for next := unicode.SimpleFold(r); next != r; next = unicode.SimpleFold(next) {
+			canonical = min(canonical, next)
+		}
+		return unicode.ToLower(canonical)
+	}, key)
 }

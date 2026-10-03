@@ -1,0 +1,73 @@
+Printing with useUnmergedTree = 'false'
+Node #634 at (l=0.0, t=0.0, r=2560.0, b=1600.0)px
+ |-Node #642 at (l=150.0, t=104.0, r=2560.0, b=1536.0)px
+   Shape = 'RectangleShape'
+    |-Node #645 at (l=150.0, t=104.0, r=310.0, b=1536.0)px
+    | IsContainer = 'true'
+    | Shape = 'RectangleShape'
+    |  |-Node #646 at (l=150.0, t=112.0, r=310.0, b=1528.0)px
+    |    IsTraversalGroup = 'true'
+    |    [SelectableGroup]
+    |     |-Node #647 at (l=150.0, t=112.0, r=310.0, b=234.0)px
+    |     | Focused = 'false'
+    |     | Role = 'Tab'
+    |     | Selected = 'false'
+    |     | Text = '[Home]'
+    |     | Actions = [ClearTextSubstitution, GetTextLayoutResult, OnClick, RequestFocus, SetTextSubstitution, ShowTextSubstitution]
+    |     | MergeDescendants = 'true'
+    |     |-Node #656 at (l=150.0, t=242.0, r=310.0, b=364.0)px
+    |     | Focused = 'false'
+    |     | Role = 'Tab'
+    |     | Selected = 'true'
+    |     | Text = '[TV Shows]'
+    |     | Actions = [ClearTextSubstitution, GetTextLayoutResult, OnClick, RequestFocus, SetTextSubstitution, ShowTextSubstitution]
+    |     | MergeDescendants = 'true'
+    |     |-Node #665 at (l=150.0, t=372.0, r=310.0, b=494.0)px
+    |     | Focused = 'false'
+    |     | Role = 'Tab'
+    |     | Selected = 'false'
+    |     | Text = '[Movies]'
+    |     | Actions = [ClearTextSubstitution, GetTextLayoutResult, OnClick, RequestFocus, SetTextSubstitution, ShowTextSubstitution]
+    |     | MergeDescendants = 'true'
+    |     |-Node #674 at (l=150.0, t=502.0, r=310.0, b=624.0)px
+    |     | Focused = 'false'
+    |     | Role = 'Tab'
+    |     | Selected = 'false'
+    |     | Text = '[Search]'
+    |     | Actions = [ClearTextSubstitution, GetTextLayoutResult, OnClick, RequestFocus, SetTextSubstitution, ShowTextSubstitution]
+    |     | MergeDescendants = 'true'
+    |     |-Node #683 at (l=150.0, t=632.0, r=310.0, b=754.0)px
+    |       Focused = 'false'
+    |       Role = 'Tab'
+    |       Selected = 'false'
+    |       Text = '[More]'
+    |       Actions = [ClearTextSubstitution, GetTextLayoutResult, OnClick, RequestFocus, SetTextSubstitution, ShowTextSubstitution]
+    |       MergeDescendants = 'true'
+    |-Node #813 at (l=310.0, t=104.0, r=2560.0, b=1536.0)px
+      Shape = 'RectangleShape'
+       |-Node #814 at (l=310.0, t=104.0, r=2560.0, b=1536.0)px
+       | Shape = 'RectangleShape'
+       |-Node #815 at (l=310.0, t=104.0, r=2560.0, b=1536.0)px
+         CollectionInfo = 'CollectionInfo(rowCount=2, columnCount=1)'
+         IsTraversalGroup = 'true'
+         Shape = 'androidx.compose.foundation.VerticalScrollableClipShape@9085453'
+         VerticalScrollAxisRange = 'ScrollAxisRange(value=0.0, maxValue=0.0, reverseScrolling=false)'
+         Actions = [GetScrollViewportLength, IndexForKey, ScrollBy, ScrollByOffset, ScrollToIndex]
+          |-Node #817 at (l=350.0, t=149.0, r=481.0, b=235.0)px
+          | Focused = 'false'
+          | Role = 'Button'
+          | Shape = 'RoundedCornerShape(topStart = CornerSize(size = 50.0%), topEnd = CornerSize(size = 50.0%), bottomEnd = CornerSize(size = 50.0%), bottomStart = CornerSize(size = 50.0%))'
+          | Text = '[Back]'
+          | Actions = [ClearTextSubstitution, GetTextLayoutResult, OnClick, RequestFocus, SetTextSubstitution, ShowTextSubstitution]
+          | MergeDescendants = 'true'
+          |-Node #841 at (l=350.0, t=288.0, r=1032.0, b=349.0)px
+          | LiveRegion = 'Polite'
+          | Text = '[Could not load this show. Try again.]'
+          | Actions = [ClearTextSubstitution, GetTextLayoutResult, SetTextSubstitution, ShowTextSubstitution]
+          |-Node #842 at (l=350.0, t=354.0, r=555.0, b=440.0)px
+            Focused = 'false'
+            Role = 'Button'
+            Shape = 'RoundedCornerShape(topStart = CornerSize(size = 50.0%), topEnd = CornerSize(size = 50.0%), bottomEnd = CornerSize(size = 50.0%), bottomStart = CornerSize(size = 50.0%))'
+            Text = '[Try again]'
+            Actions = [ClearTextSubstitution, GetTextLayoutResult, OnClick, RequestFocus, SetTextSubstitution, ShowTextSubstitution]
+            MergeDescendants = 'true'
