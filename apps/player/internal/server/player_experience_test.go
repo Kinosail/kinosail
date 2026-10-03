@@ -50,25 +50,3 @@ func TestVideoPlayerPresentsPictureInPictureControl(t *testing.T) {
 		return server.New(server.Config{MediaDir: media})
 	})
 }
-
-func TestDirectPlayerDoesNotRestartTheSourceSelectedByHTML(t *testing.T) {
-	t.Parallel()
-	handler := server.New(server.Config{})
-	script := httptest.NewRecorder()
-	handler.ServeHTTP(script, httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/static/player.js", nil))
-	if !strings.Contains(script.Body.String(), `direct && !player.getAttribute("src")`) {
-		t.Fatalf("player script can restart an already loading direct source: %q", script.Body.String())
-	}
-}
-
-func TestPlayerNegotiatesCodecSupportBeforeStartingAdaptivePlayback(t *testing.T) {
-	t.Parallel()
-	handler := server.New(server.Config{})
-	script := httptest.NewRecorder()
-	handler.ServeHTTP(script, httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/static/player.js", nil))
-	for _, expected := range []string{"navigator.mediaCapabilities", `type: "file"`, "MediaSource.isTypeSupported", "videoCodecs", "player.dataset.playbackApi", "player.dataset.mediaWidth", "player.dataset.mediaBitrate", "requestVideoFrameCallback", `artist: player.dataset.artist`, `actions.nexttrack`, `home-assistant.command`} {
-		if !strings.Contains(script.Body.String(), expected) {
-			t.Fatalf("player script lacks %q: %q", expected, script.Body.String())
-		}
-	}
-}

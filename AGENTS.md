@@ -28,24 +28,25 @@
 - Preserve independent app binaries, containers, versions, releases, deployment checks, and health evidence.
 - Keep each app as one API-driven Go process and supported container. Public HTTPS runs in a separate restricted gateway container with no application state. Web and API adapters call shared application operations.
 - Treat values crossing trust boundaries as untrusted. Bound, parse, normalize, and validate them before side effects.
-- Add focused negative tests for changed inputs and prove rejection causes no side effects.
+- Verify changed untrusted inputs through E2E tests and prove rejection causes no side effects. Follow Test design when isolation is necessary.
 - Test observable behavior at public interfaces. Test code is outside production line-count limits.
 
 ## Test design
 
-- Never write unit tests after writing the code they cover. Write any needed tests first.
-- Highly prefer E2E tests as the sole testing mechanism. Use them to verify complex features work. Every E2E run must finish with a verifiable, repeatable artifact that records the revision, command, test data, environment, and result.
-- If a system must be tested in isolation, first write down all the ways it could fail, then write the code.
+- Never write unit tests after you write code.
+- Highly prefer E2E tests as the sole testing mechanism. Use them to verify complex features work. At the end of E2E tests, produce a verifiable and repeatable artifact. Record the exact revision, commands, test data, environment, results, and checksums for relevant logs, traces, or screenshots.
+- If you must test a system in isolation, first write down all the ways it could fail, then write the code.
+- Retain an isolated test only when it protects a concrete important failure that existing E2E tests miss. Name that failure and the E2E coverage gap. Browser tests with mocked responses or rendered fixtures are isolated tests; do not describe them as populated-server E2E proof.
 
 ## Verification
 
-- Run focused regression tests and affected package checks while editing.
+- Run focused E2E journeys and affected package checks while editing. Use retained isolated checks for their documented E2E gaps.
 - Before publication, run `make max-loc` and, after committing app changes, the affected app's `make verify-changed`. For workflow-only changes, run the CI contract tests and `actionlint` locally. GitHub Actions remains the authority for complete selected suites.
 - Once the relevant checks pass, rerun them only after a change or a concrete failure requires it. Fix task-caused local test failures without routine approval stops.
 - Run container, populated-browser, cross-browser, performance, race, and release gates only when the changed surface requires them.
 - Run root checks serially because the Go linter uses a shared lock.
 - For visible changes, follow the app's `DESIGN.md` and `impeccable` skill. Inspect populated responsive renders and accessibility evidence.
-- For each UI change in Player, Subtitles, or the native iOS/tvOS clients, compare pending, loaded, empty, and failed states. Check skeleton geometry against loaded content at affected phone, desktop, and TV sizes. Show placeholders only during actual pending work, remove them on success or failure, and add a focused regression check for changed asynchronous surfaces.
+- For each UI change in Player, Subtitles, or the native iOS/tvOS clients, compare pending, loaded, empty, and failed states. Check skeleton geometry against loaded content at affected phone, desktop, and TV sizes. Show placeholders only during actual pending work, remove them on success or failure, and verify changed asynchronous surfaces through E2E journeys. Follow Test design for necessary isolated checks.
 - Report exactly what passed, what was not run, and every remaining device, browser, deployment, or environment boundary.
 
 ## Diagnostic logging

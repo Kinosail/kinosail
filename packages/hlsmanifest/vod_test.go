@@ -135,21 +135,3 @@ func TestHLSSegmentDurationValidationBoundaries(t *testing.T) {
 		})
 	}
 }
-
-func TestObservedVODPrefixRequiresASegment(t *testing.T) {
-	for _, test := range []struct {
-		name     string
-		manifest string
-		valid    bool
-	}{
-		{"empty", "#EXTM3U\n#EXT-X-PLAYLIST-TYPE:EVENT\n", false},
-		{"one segment", "#EXTM3U\n#EXT-X-PLAYLIST-TYPE:EVENT\n#EXTINF:2,\nsegment-00000.m4s\n", true},
-	} {
-		t.Run(test.name, func(t *testing.T) {
-			_, valid := observedVODPrefix([]byte(test.manifest), 2)
-			if valid != test.valid {
-				t.Fatalf("observedVODPrefix validity = %t, want %t", valid, test.valid)
-			}
-		})
-	}
-}

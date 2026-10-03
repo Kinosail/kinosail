@@ -52,7 +52,7 @@ export async function auditBetaRoutes(page: Page, testInfo: TestInfo, viewport: 
 		for (const route of routes) {
 			const routeContext = await routeBrowser.newContext({
 				baseURL: process.env.KINOSAIL_E2E_URL ?? "https://127.0.0.1:38127",
-				ignoreHTTPSErrors: true,
+				ignoreHTTPSErrors: false,
 				storageState,
 				viewport,
 			});

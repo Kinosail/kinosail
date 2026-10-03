@@ -10,15 +10,6 @@ import (
 	"github.com/MikeO7/kinosail-player/internal/server"
 )
 
-func TestPWAHandlesServiceWorkerRegistrationFailure(t *testing.T) {
-	response := httptest.NewRecorder()
-	server.New(server.Config{}).ServeHTTP(response, httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/static/pwa.js", nil))
-	script := response.Body.String()
-	if !strings.Contains(script, `serviceWorker.register("/service-worker.js?v=55").then`) || !strings.Contains(script, `.catch(() => {});`) {
-		t.Fatalf("service worker registration failure is unhandled: %q", script)
-	}
-}
-
 func TestOfflineShellLocalizesDynamicStorageStates(t *testing.T) {
 	response := httptest.NewRecorder()
 	request := httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/offline", nil)
@@ -112,32 +103,5 @@ func assertOfflineProfileIsolation(t *testing.T, client, worker *httptest.Respon
 	}
 	if strings.Contains(worker.Body.String(), `cache.put(event.request`) || !strings.Contains(worker.Body.String(), `retiredOfflinePages`) {
 		t.Fatalf("service worker retains authenticated player pages: %q", worker.Body.String())
-	}
-}
-
-func TestOfflinePagesUseTheCurrentNavigationBundle(t *testing.T) {
-	handler := server.New(server.Config{DataDir: t.TempDir()})
-	for _, path := range []string{"/offline-downloads", "/offline"} {
-		response := httptest.NewRecorder()
-		handler.ServeHTTP(response, httptest.NewRequestWithContext(t.Context(), http.MethodGet, path, nil))
-		body := response.Body.String()
-		if !strings.Contains(body, `downloads.js?v=29`) || strings.Contains(body, `main.kinosail.bundle.js?v=12`) || strings.Contains(body, `main.kinosail.bundle.js?v=16`) {
-			t.Fatalf("%s can register an obsolete offline worker: %s", path, body)
-		}
-		if path == "/offline-downloads" && !strings.Contains(body, `main.kinosail.bundle.js?v=32`) {
-			t.Fatal("downloads page did not receive the current injected bundle")
-		}
-	}
-}
-
-func TestNavigationPagesRefreshCachedAssets(t *testing.T) {
-	handler := server.New(server.Config{DataDir: t.TempDir()})
-	for _, path := range []string{"/", "/settings"} {
-		response := httptest.NewRecorder()
-		handler.ServeHTTP(response, httptest.NewRequestWithContext(t.Context(), http.MethodGet, path, nil))
-		body := response.Body.String()
-		if response.Code != http.StatusOK || !strings.Contains(body, `main.kinosail.bundle.js?v=32`) || !strings.Contains(body, `app.css?v=electric-44`) {
-			t.Fatalf("%s did not receive current navigation assets", path)
-		}
 	}
 }

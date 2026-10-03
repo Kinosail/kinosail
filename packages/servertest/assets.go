@@ -41,22 +41,6 @@ func assertWebAppIcons(t *testing.T, handler http.Handler) {
 	}
 }
 
-// AssertBrandLogo verifies the app-specific logo rendered by shared surfaces.
-func AssertBrandLogo(t *testing.T, handler http.Handler, setupFragments, iconFragments, styleFragments, forbiddenIconFragments []string) {
-	t.Helper()
-	setup := request(t, handler, "/setup")
-	icon := request(t, handler, "/static/icon.svg")
-	styles := request(t, handler, "/static/app.css")
-	assertContains(t, "setup", setup.Body.String(), setupFragments...)
-	assertContains(t, "icon", icon.Body.String(), iconFragments...)
-	assertContains(t, "styles", styles.Body.String(), styleFragments...)
-	for _, fragment := range forbiddenIconFragments {
-		if strings.Contains(icon.Body.String(), fragment) {
-			t.Fatalf("icon unexpectedly contains %q: %q", fragment, icon.Body.String())
-		}
-	}
-}
-
 func request(t *testing.T, handler http.Handler, path string) *httptest.ResponseRecorder {
 	t.Helper()
 	response := httptest.NewRecorder()

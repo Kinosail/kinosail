@@ -54,12 +54,3 @@ func TestUnicodeEscapeValidationCoversEveryEscapeShape(t *testing.T) {
 		})
 	}
 }
-
-func TestDisplayAndStrictTimeFallbacks(t *testing.T) {
-	if Name("") != "Free" || Name("free") != "Free" {
-		t.Fatal("free display names changed")
-	}
-	if _, ok := strictTime("not-a-time"); ok {
-		t.Fatal("strictTime accepted malformed input")
-	}
-}

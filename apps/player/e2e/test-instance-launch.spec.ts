@@ -21,8 +21,8 @@ test("real large transfer survives browser restart and plays with the Server dis
   const ranges: string[] = [];
   let context: Awaited<ReturnType<typeof chromium.launchPersistentContext>> | undefined;
   const reopen = async () => {
-    context = await chromium.launchPersistentContext(profile, { baseURL: connection.url, ignoreHTTPSErrors: true,
-      args: ["--allow-insecure-localhost", "--ignore-certificate-errors"], viewport: { width: 1280, height: 800 } });
+    context = await chromium.launchPersistentContext(profile, { baseURL: connection.url, ignoreHTTPSErrors: false,
+      viewport: { width: 1280, height: 800 } });
     await context.addInitScript(() => Object.defineProperty(PublicKeyCredential, "isConditionalMediationAvailable", { value: async () => false }));
     const page = await context.newPage();
     page.on("response", response => {

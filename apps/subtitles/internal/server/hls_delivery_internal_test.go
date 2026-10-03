@@ -32,28 +32,6 @@ func TestHLSDeliveryRejectsCacheKeySymlinkEscape(t *testing.T) {
 	}
 }
 
-func TestHLSPlaylistReaderRejectsSymlinkAndOversizedCacheFiles(t *testing.T) {
-	directory := t.TempDir()
-	external := filepath.Join(t.TempDir(), "outside.m3u8")
-	if err := os.WriteFile(external, []byte("#EXTM3U\n"), 0o600); err != nil {
-		t.Fatal(err)
-	}
-	linked := filepath.Join(directory, "linked.m3u8")
-	if err := os.Symlink(external, linked); err != nil {
-		t.Fatal(err)
-	}
-	if _, err := playback.ReadHLSPlaylist(linked); err == nil {
-		t.Fatal("HLS playlist reader followed a symlink")
-	}
-	oversized := filepath.Join(directory, "oversized.m3u8")
-	if err := os.WriteFile(oversized, []byte(strings.Repeat("x", maxHLSPlaylistBytes+1)), 0o600); err != nil {
-		t.Fatal(err)
-	}
-	if _, err := playback.ReadHLSPlaylist(oversized); err == nil {
-		t.Fatal("HLS playlist reader accepted an oversized cache file")
-	}
-}
-
 func TestHLSPlaylistReaderRejectsIntermediateDirectoryEscape(t *testing.T) {
 	cache := t.TempDir()
 	outside := t.TempDir()

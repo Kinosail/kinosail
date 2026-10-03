@@ -34,6 +34,6 @@ func TestQuickConnectCreationIsRateLimited(t *testing.T) {
 	servertest.AssertQuickConnectCreationIsRateLimited(t, quickConnectFixture())
 }
 
-func TestQuickConnectRejectsInvalidDeviceBeforeCreatingRequest(t *testing.T) {
+func TestQuickConnectRejectsInvalidDevice(t *testing.T) {
 	servertest.AssertQuickConnectRejectsInvalidDeviceBeforeCreatingRequest(t, quickConnectFixture())
 }

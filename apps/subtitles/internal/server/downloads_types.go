@@ -6,5 +6,3 @@ type (
 	downloadJob     = downloads.Job
 	downloadManager struct{ *downloads.Manager }
 )
-
-const downloadQueueCapacity = downloads.QueueCapacity

@@ -1,0 +1,101 @@
+{
+  "schemaVersion": 1,
+  "revision": "836de4c70ce6d34268cd4b6653d80d33b389ad13",
+  "sourceStatus": {
+    "command": [
+      "git",
+      "status",
+      "--porcelain",
+      "--untracked-files=normal"
+    ],
+    "exitCode": 0,
+    "stdout": "",
+    "stderr": ""
+  },
+  "trackedPatchSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "command": [
+    "/opt/homebrew/opt/python@3.14/bin/python3.14",
+    "-c",
+    "print(\"review control: intentional child failure\"); raise SystemExit(7)"
+  ],
+  "workingDirectory": ".",
+  "startedUTC": "2026-10-03T16:59:06.793194+00:00",
+  "environment": {},
+  "platform": {
+    "system": "Darwin",
+    "release": "27.0.0",
+    "machine": "arm64",
+    "python": "3.14.7"
+  },
+  "tools": [
+    {
+      "command": [
+        "go",
+        "version"
+      ],
+      "exitCode": 0,
+      "stdout": "go version go1.27.1 darwin/arm64",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "node",
+        "--version"
+      ],
+      "exitCode": 0,
+      "stdout": "v26.8.2",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "pnpm",
+        "--version"
+      ],
+      "exitCode": 0,
+      "stdout": "12.4.2",
+      "stderr": ""
+    }
+  ],
+  "inputs": {
+    "apps/player/e2e/pnpm-lock.yaml": "b3151e08c2af7e480d7f6f5aeafb2a230e92c9dd5aaf18dfcd787ee71c8ba655",
+    "apps/player/e2e/playwright.config.ts": "0ae9a9cf38e3eda4d43be0e12a0e4f7cd081221ecfd3732879b92215c84eae97",
+    "apps/player/scripts/generate-test-media.sh": "6e1ee7f3746d2cbd5ca23263fd67e2460fcde882a76b1a3cc354b64585e7b34f",
+    "apps/player/scripts/test-container.sh": "7bde08f2841ac1a62fefef6b445aa1b79f0c9f701593cb83d5b25154ab047325",
+    "apps/subtitles/e2e/pnpm-lock.yaml": "b3151e08c2af7e480d7f6f5aeafb2a230e92c9dd5aaf18dfcd787ee71c8ba655",
+    "apps/subtitles/e2e/playwright.config.ts": "9018df5f575f9330e1904b68b832240023726e9354e4856aeb4ab3c5da99ebda",
+    "apps/subtitles/scripts/generate-test-media.sh": "39a4cb408586b5084b2b03c391bfd5678c7e3ea5d4737674e4b1caa8e309a1e2",
+    "apps/subtitles/scripts/test-container.sh": "20ef3b09ce612aec5a7720b42141283a55e6ee1d92d8632cfe252d8bb9d3c2ed"
+  },
+  "testData": "Disposable generated media and UI fixtures; see hashed generators and command log.",
+  "commandExitCode": 7,
+  "finalRevision": {
+    "command": [
+      "git",
+      "rev-parse",
+      "HEAD"
+    ],
+    "exitCode": 0,
+    "stdout": "836de4c70ce6d34268cd4b6653d80d33b389ad13",
+    "stderr": ""
+  },
+  "finalSourceStatus": {
+    "command": [
+      "git",
+      "status",
+      "--porcelain",
+      "--untracked-files=normal"
+    ],
+    "exitCode": 0,
+    "stdout": "",
+    "stderr": ""
+  },
+  "finalTrackedPatchSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "sourceUnchanged": true,
+  "exactRevisionProof": true,
+  "finishedUTC": "2026-10-03T16:59:06.966056+00:00",
+  "exitCode": 7,
+  "result": "failed",
+  "evidence": {
+    "command.log": "03dc07a454e91404f2445f8aa83c52afc232fc8390af9aef163562c39b305af5"
+  }
+}

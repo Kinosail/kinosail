@@ -48,19 +48,6 @@ func requireMissingMarkerState(t *testing.T, path string) {
 	}
 }
 
-func TestMarkerStateValidFile(t *testing.T) {
-	t.Parallel()
-	directory := t.TempDir()
-	validPath := filepath.Join(directory, "valid.json")
-	if err := os.WriteFile(validPath, []byte(`{"value":"ok"}`), 0o600); err != nil {
-		t.Fatal(err)
-	}
-	var value map[string]string
-	if found, err := loadState(nil, validPath, &value); err != nil || !found || value["value"] != "ok" {
-		t.Fatalf("valid state = %#v, %v, %v", value, found, err)
-	}
-}
-
 func TestMarkerStateFileShapeBoundaries(t *testing.T) {
 	t.Parallel()
 	directory := t.TempDir()

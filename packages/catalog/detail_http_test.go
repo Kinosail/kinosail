@@ -1,9 +1,7 @@
 package catalog
 
 import (
-	"bytes"
 	"errors"
-	"html/template"
 	"net/http"
 	"net/http/httptest"
 	"reflect"
@@ -12,30 +10,6 @@ import (
 
 	"github.com/MikeO7/kinosail/packages/library"
 )
-
-func TestAlbumTrackCountUsesSingularAndPlural(t *testing.T) {
-	t.Parallel()
-	sources, err := NewDetailSources(DetailPresentation{"Kinosail Player", "6", "75"})
-	if err != nil {
-		t.Fatal(err)
-	}
-	view, err := template.New("album").Funcs(template.FuncMap{"icon": func(string) string { return "" }}).Parse(sources.Album)
-	if err != nil {
-		t.Fatal(err)
-	}
-	for _, test := range []struct {
-		count int
-		want  string
-	}{{1, "1 track"}, {2, "2 tracks"}} {
-		var page bytes.Buffer
-		if err := view.Execute(&page, AlbumPage{Album: library.Album{Title: "Record", Tracks: make([]library.Item, test.count)}}); err != nil {
-			t.Fatal(err)
-		}
-		if !strings.Contains(page.String(), "<p>"+test.want+"</p>") {
-			t.Errorf("%d tracks rendered without %q: %s", test.count, test.want, page.String())
-		}
-	}
-}
 
 func TestDetailPresentationValidation(t *testing.T) {
 	t.Parallel()

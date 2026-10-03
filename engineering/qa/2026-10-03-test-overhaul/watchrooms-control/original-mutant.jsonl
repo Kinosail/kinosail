@@ -1,0 +1,7 @@
+{"ImportPath":"github.com/MikeO7/kinosail/packages/watchrooms [github.com/MikeO7/kinosail/packages/watchrooms.test]","Action":"build-output","Output":"# github.com/MikeO7/kinosail/packages/watchrooms [github.com/MikeO7/kinosail/packages/watchrooms.test]\n"}
+{"ImportPath":"github.com/MikeO7/kinosail/packages/watchrooms [github.com/MikeO7/kinosail/packages/watchrooms.test]","Action":"build-output","Output":"watchrooms/http.go:197:4: declared and not used: fresh\n"}
+{"ImportPath":"github.com/MikeO7/kinosail/packages/watchrooms [github.com/MikeO7/kinosail/packages/watchrooms.test]","Action":"build-output","Output":"watchrooms/http.go:203:4: declared and not used: event\n"}
+{"ImportPath":"github.com/MikeO7/kinosail/packages/watchrooms [github.com/MikeO7/kinosail/packages/watchrooms.test]","Action":"build-fail"}
+{"Time":"2026-10-03T11:51:58.852918-06:00","Action":"start","Package":"github.com/MikeO7/kinosail/packages/watchrooms"}
+{"Time":"2026-10-03T11:51:58.853025-06:00","Action":"output","Package":"github.com/MikeO7/kinosail/packages/watchrooms","Output":"FAIL\tgithub.com/MikeO7/kinosail/packages/watchrooms [build failed]\n","OutputType":"frame"}
+{"Time":"2026-10-03T11:51:58.853045-06:00","Action":"fail","Package":"github.com/MikeO7/kinosail/packages/watchrooms","Elapsed":0,"FailedBuild":"github.com/MikeO7/kinosail/packages/watchrooms [github.com/MikeO7/kinosail/packages/watchrooms.test]"}

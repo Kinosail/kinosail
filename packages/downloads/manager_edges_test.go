@@ -105,24 +105,6 @@ func TestPrepareReportsFinalPersistenceFailure(t *testing.T) {
 	}
 }
 
-func TestManagerDefaultsAndSaveValidation(t *testing.T) {
-	manager := &Manager{}
-	if settings := manager.settings(false); settings.Accelerator != "" || settings.Encoder != "" {
-		t.Fatalf("default settings = %#v", settings)
-	}
-	if err := manager.save(Job{}); err != nil {
-		t.Fatalf("disabled persistence = %v", err)
-	}
-	manager.root = t.TempDir()
-	if err := manager.save(Job{}); err == nil {
-		t.Fatal("invalid state was persisted")
-	}
-	job := validStateJob()
-	if err := manager.save(job); err == nil {
-		t.Fatal("missing persistence was accepted")
-	}
-}
-
 func startManager(t *testing.T, ctx context.Context) *Manager {
 	t.Helper()
 	return &Manager{

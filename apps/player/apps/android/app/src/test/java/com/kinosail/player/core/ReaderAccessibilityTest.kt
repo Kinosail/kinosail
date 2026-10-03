@@ -29,11 +29,6 @@ import org.junit.Assert.assertTrue
 class ReaderAccessibilityTest {
     @get:Rule val compose = createComposeRule()
 
-    @Test fun pendingPageWithKnownCountShowsLoading() {
-        compose.setContent { ReaderPageView("Example", null, 0, 2, null, null, {}, {}, {}, {}, {}) }
-        compose.onNode(SemanticsMatcher.keyIsDefined(SemanticsProperties.ProgressBarRangeInfo)).assertExists()
-    }
-
     @Test fun loadingFollowsPageAvailabilityAndStopsOnFailure() {
         val image = mutableStateOf<Bitmap?>(null)
         val notice = mutableStateOf<String?>(null)

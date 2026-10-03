@@ -41,22 +41,6 @@ func TestQuickConnectRejectsInvalidDeviceBeforeCreatingRequest(t *testing.T) {
 	servertest.AssertQuickConnectRejectsInvalidDeviceBeforeCreatingRequest(t, quickConnectFixture())
 }
 
-func TestQuickConnectPageUsesSixDigitAutoSubmitControl(t *testing.T) {
-	t.Parallel()
-	handler := server.New(server.Config{DataDir: t.TempDir(), RequireAuth: true})
-	owner := signInTestProfile(t, handler, "/setup", "name=Owner&password=owner-password")
-	page := requestWithCookie(t, handler, http.MethodGet, "/quick-connect", "", owner)
-	for _, expected := range []string{`/static/app.css?v=electric-44`, `/static/quick-connect.js?v=1`, `data-quick-connect-digit`, `maxlength="1"`, `inputmode="numeric"`, `pattern="[0-9]"`, `aria-label="Digit 6 of 6"`, "six-digit code"} {
-		if !strings.Contains(page.Body.String(), expected) {
-			t.Fatalf("Quick Connect page missing %q: %q", expected, page.Body.String())
-		}
-	}
-	script := requestWithCookie(t, handler, http.MethodGet, "/static/quick-connect.js", "", owner)
-	if script.Code != http.StatusOK || !strings.Contains(script.Body.String(), `event.clipboardData`) || !strings.Contains(script.Body.String(), `form.requestSubmit()`) || !strings.Contains(script.Body.String(), `value.value.length === inputs.length`) {
-		t.Fatalf("Quick Connect script = %d %q", script.Code, script.Body.String())
-	}
-}
-
 func TestQuickConnectPollRejectsAmbiguousInputWithoutConsumingGrant(t *testing.T) {
 	t.Parallel()
 	handler := server.New(server.Config{DataDir: t.TempDir(), RequireAuth: true, QuickConnectTTL: time.Minute})

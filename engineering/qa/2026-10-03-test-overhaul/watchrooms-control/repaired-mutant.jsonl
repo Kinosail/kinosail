@@ -1,0 +1,9 @@
+{"Time":"2026-10-03T11:58:13.406985-06:00","Action":"start","Package":"github.com/MikeO7/kinosail/packages/watchrooms"}
+{"Time":"2026-10-03T11:58:13.616353-06:00","Action":"run","Package":"github.com/MikeO7/kinosail/packages/watchrooms","Test":"TestHTTPAccessMonitorClosesInvisibleRoom"}
+{"Time":"2026-10-03T11:58:13.616421-06:00","Action":"output","Package":"github.com/MikeO7/kinosail/packages/watchrooms","Test":"TestHTTPAccessMonitorClosesInvisibleRoom","Output":"=== RUN   TestHTTPAccessMonitorClosesInvisibleRoom\n","OutputType":"frame"}
+{"Time":"2026-10-03T11:58:15.620457-06:00","Action":"output","Package":"github.com/MikeO7/kinosail/packages/watchrooms","Test":"TestHTTPAccessMonitorClosesInvisibleRoom","Output":"    http_lifecycle_test.go:53: server did not close connection before deadline: failed to get reader: context deadline exceeded\n","OutputType":"error"}
+{"Time":"2026-10-03T11:58:15.620577-06:00","Action":"output","Package":"github.com/MikeO7/kinosail/packages/watchrooms","Test":"TestHTTPAccessMonitorClosesInvisibleRoom","Output":"--- FAIL: TestHTTPAccessMonitorClosesInvisibleRoom (2.00s)\n","OutputType":"frame"}
+{"Time":"2026-10-03T11:58:15.620595-06:00","Action":"fail","Package":"github.com/MikeO7/kinosail/packages/watchrooms","Test":"TestHTTPAccessMonitorClosesInvisibleRoom","Elapsed":2}
+{"Time":"2026-10-03T11:58:15.620635-06:00","Action":"output","Package":"github.com/MikeO7/kinosail/packages/watchrooms","Output":"FAIL\n","OutputType":"frame"}
+{"Time":"2026-10-03T11:58:15.621421-06:00","Action":"output","Package":"github.com/MikeO7/kinosail/packages/watchrooms","Output":"FAIL\tgithub.com/MikeO7/kinosail/packages/watchrooms\t2.214s\n","OutputType":"frame"}
+{"Time":"2026-10-03T11:58:15.621473-06:00","Action":"fail","Package":"github.com/MikeO7/kinosail/packages/watchrooms","Elapsed":2.215}

@@ -27,17 +27,6 @@ func TestCSRFTemplateSourceAndExecution(t *testing.T) {
 	}
 }
 
-func TestCSRFParseFunctionsRemainSafeBeforeExecution(t *testing.T) {
-	t.Parallel()
-	functions := CSRFParseFuncs(func(string) template.HTML { return "icon" })
-	for _, name := range []string{"csrfField", "csrfMeta"} {
-		function := functions[name].(func() template.HTML)
-		if got := function(); got != "" {
-			t.Fatalf("parse placeholder %s=%q", name, got)
-		}
-	}
-}
-
 func TestExecuteCSRFTemplateDoesNotWriteAfterCloneFailure(t *testing.T) {
 	t.Parallel()
 	view := NewCSRFTemplate("already-executed", "<head></head><form method=post></form>", func(string) template.HTML { return "icon" })

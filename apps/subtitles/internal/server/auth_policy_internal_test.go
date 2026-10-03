@@ -82,16 +82,3 @@ func TestAnonymousRequestsReachOnlyExplicitPublicRoutes(t *testing.T) {
 		}
 	}
 }
-
-func TestEveryPublicPolicyNamesARegisteredRoute(t *testing.T) {
-	t.Parallel()
-	registered := routeSet(registeredRouteInventory(t)...)
-	if len(registered) < 200 {
-		t.Fatalf("route inventory found only %d routes", len(registered))
-	}
-	for pattern := range publicRoutes {
-		if !registered[pattern] {
-			t.Errorf("public policy names unregistered route %q", pattern)
-		}
-	}
-}

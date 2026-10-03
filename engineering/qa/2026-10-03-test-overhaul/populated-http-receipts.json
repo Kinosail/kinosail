@@ -1,0 +1,96 @@
+{
+  "schema": 1,
+  "reproduce": "local-validation.md and run-populated-local-e2e.py; fresh state/output; sameSHA certified build receipt required",
+  "runs": [
+    {
+      "artifact": ".verification/test-overhaul/player-happy-http-6c9781",
+      "revision": "6c9781e2605dc947c4c09e07bb6edfcc8911d42c",
+      "command": [
+        "python3",
+        "engineering/qa/2026-10-03-test-overhaul/run-populated-local-e2e.py",
+        "/Users/mikeo/Documents/Codex/2026-10-03/task/kinosail",
+        "player",
+        "player-happy-http-state-6c9781",
+        "--setup-in-browser",
+        "happy-path.spec.ts"
+      ],
+      "exactRevisionProof": true,
+      "sourceUnchanged": true,
+      "exitCode": 0,
+      "manifestSHA256": "53eb20d719fabf42c9086b023a3e8f16ffb37f7c0fab58b550cd62baf2680f64",
+      "checksumReceiptSHA256": "91ee2f88f9a34179d0680e46351182d90af19632d30084e6b23c0667a2b09e40",
+      "resultSummary": {
+        "startTime": "2026-10-03T18:31:46.740Z",
+        "duration": 32978.922,
+        "expected": 1,
+        "skipped": 0,
+        "unexpected": 0,
+        "flaky": 0
+      },
+      "environmentReference": "manifest.json environment/toolchain +local-inputs.json exact media/binary/build/fixtures and browser.config.ts",
+      "boundary": "Real native Player Server/database/media with API or browser onboarding on supported localhostHTTP; ignoreHTTPSErrors=false; no certificate bypass flags. Chrome macOS; no strictTLS or physicalSafari claim."
+    },
+    {
+      "artifact": ".verification/test-overhaul/player-ui-http-6c9781",
+      "revision": "6c9781e2605dc947c4c09e07bb6edfcc8911d42c",
+      "command": [
+        "python3",
+        "engineering/qa/2026-10-03-test-overhaul/run-populated-local-e2e.py",
+        "/Users/mikeo/Documents/Codex/2026-10-03/task/kinosail",
+        "player",
+        "player-ui-http-state-6c9781",
+        "ui-happy-paths.spec.ts",
+        "title-jump-first-paint.spec.ts",
+        "--grep",
+        "Dark is the default|populated mobile library|Owner can create and revoke an API key|Quick Connect"
+      ],
+      "exactRevisionProof": true,
+      "sourceUnchanged": true,
+      "exitCode": 0,
+      "manifestSHA256": "273e9fc9223f02b370be941212489833b4aa42f42d9a5beeb63a030757045950",
+      "checksumReceiptSHA256": "ab414d4eff5e8aeb11ac7b3922117df8ba1e1584e744288a330db1d567166ff7",
+      "resultSummary": {
+        "startTime": "2026-10-03T18:33:41.173Z",
+        "duration": 18115.609,
+        "expected": 5,
+        "skipped": 0,
+        "unexpected": 0,
+        "flaky": 0
+      },
+      "environmentReference": "manifest.json environment/toolchain +local-inputs.json exact media/binary/build/fixtures and browser.config.ts",
+      "boundary": "Real native Player Server/database/media with API or browser onboarding on supported localhostHTTP; ignoreHTTPSErrors=false; no certificate bypass flags. Chrome macOS; no strictTLS or physicalSafari claim."
+    },
+    {
+      "artifact": ".verification/test-overhaul/subtitles-ui-http-6c9781",
+      "revision": "6c9781e2605dc947c4c09e07bb6edfcc8911d42c",
+      "command": [
+        "python3",
+        "engineering/qa/2026-10-03-test-overhaul/run-populated-local-e2e.py",
+        "/Users/mikeo/Documents/Codex/2026-10-03/task/kinosail",
+        "subtitles",
+        "subtitles-ui-http-state-6c9781",
+        "subtitle-dashboard.spec.ts",
+        "polish-shell.spec.ts",
+        "subtitle-inspector-layout.spec.ts",
+        "subtitle-history.spec.ts",
+        "--grep",
+        "review starts with sync|administration uses a plain canvas|inspector shell and review states|Subtitle history has clear empty and responsive states"
+      ],
+      "exactRevisionProof": true,
+      "sourceUnchanged": true,
+      "exitCode": 0,
+      "manifestSHA256": "5ed944d473c12c3e709cd7d7d7ef98b0d4cdab2c844ded685a4309dfcf544443",
+      "checksumReceiptSHA256": "ade363f92d858249446cfae7f6a36e88ed870a9a76226716dbe772a8a3eb0849",
+      "resultSummary": {
+        "startTime": "2026-10-03T18:35:55.863Z",
+        "duration": 31718.466,
+        "expected": 17,
+        "skipped": 0,
+        "unexpected": 0,
+        "flaky": 0
+      },
+      "environmentReference": "manifest.json environment/toolchain +local-inputs.json exact media/binary/build/fixtures and browser.config.ts",
+      "boundary": "Supported localhost HTTP; ignoreHTTPSErrors=false; no TLS bypass flags; macOS Chrome. No strictTLS/physicalSafari/native-device proof. Subtitles17 includes3 actual Server journeys and14 exported-template fixture cases."
+    }
+  ]
+}

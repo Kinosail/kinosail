@@ -16,7 +16,7 @@ import (
 
 var routeLoginIP atomic.Uint32
 
-func TestCredentialLoginSuccessResetsOnlyThatAccount(t *testing.T) {
+func TestCredentialLoginSuccessResetsItsAccountLimit(t *testing.T) {
 	t.Parallel()
 	auth := authentication{}
 	for attempt := 0; attempt < 10; attempt++ {
@@ -66,7 +66,7 @@ func TestQuickConnectPollingIsIndependentlyRateLimited(t *testing.T) {
 	}
 }
 
-func TestPublicRequestsHavePerSourceConcurrencyBoundWithoutChangingLAN(t *testing.T) {
+func TestPublicRequestsEnforcePerSourceConcurrencyBound(t *testing.T) {
 	entered := make(chan struct{}, 16)
 	release := make(chan struct{})
 	handler := Remote(publicRequestLimits(http.HandlerFunc(func(writer http.ResponseWriter, _ *http.Request) {

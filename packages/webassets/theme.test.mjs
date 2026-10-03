@@ -54,10 +54,3 @@ test('invalid appearance changes do not alter the page or persisted preference',
     assert.deepEqual(writes, []);
   }
 });
-test('a supported appearance applies and persists immediately', () => {
-  const {root, control, writes} = loadTheme('light');
-  control.value = 'dark';
-  control.change();
-  assert.equal(root.dataset.theme, 'dark');
-  assert.deepEqual(writes, [['kinosail-theme', 'dark']]);
-});

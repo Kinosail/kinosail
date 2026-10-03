@@ -23,7 +23,7 @@ func subtitleReviewFixture(t *testing.T) (*subtitleManager, library.Item, *http.
 	return manager, item, request, data
 }
 
-func TestSubtitleReviewExplainsMatchingHistoryAndExportsOriginal(t *testing.T) {
+func TestSubtitleReviewProjectsMatchingHistorySources(t *testing.T) {
 	t.Parallel()
 	manager, item, request, data := subtitleReviewFixture(t)
 	for _, record := range []subtitleRecord{

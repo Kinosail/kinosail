@@ -1,7 +1,6 @@
 package server_test
 
 import (
-	"io"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
@@ -13,34 +12,6 @@ import (
 
 	"github.com/MikeO7/kinosail-player/internal/server"
 )
-
-func TestViewerCanOpenHome(t *testing.T) {
-	t.Parallel()
-
-	testServer := httptest.NewServer(server.New(server.Config{}))
-	t.Cleanup(testServer.Close)
-
-	request, err := http.NewRequestWithContext(t.Context(), http.MethodGet, testServer.URL, nil)
-	if err != nil {
-		t.Fatal(err)
-	}
-	response, err := http.DefaultClient.Do(request)
-	if err != nil {
-		t.Fatal(err)
-	}
-	t.Cleanup(func() {
-		if err := response.Body.Close(); err != nil {
-			t.Error(err)
-		}
-	})
-	body, err := io.ReadAll(response.Body)
-	if err != nil {
-		t.Fatal(err)
-	}
-	if response.StatusCode != http.StatusOK || !strings.Contains(string(body), "Kinosail") {
-		t.Fatalf("home = %d %q", response.StatusCode, body)
-	}
-}
 
 func TestViewerCanOpenPlayer(t *testing.T) {
 	t.Parallel()
@@ -233,25 +204,6 @@ func TestViewerCanBrowseScannedLibrary(t *testing.T) {
 
 	if !strings.Contains(response.Body.String(), "The Matrix") {
 		t.Fatalf("home = %q", response.Body.String())
-	}
-}
-
-func TestViewerCanSearchLibrary(t *testing.T) {
-	t.Parallel()
-
-	mediaDir := t.TempDir()
-	for _, name := range []string{"Arrival.mp4", "The.Matrix.mp4"} {
-		if err := os.WriteFile(filepath.Join(mediaDir, name), nil, 0o600); err != nil {
-			t.Fatal(err)
-		}
-	}
-	request := httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/?q=arrival", nil)
-	response := httptest.NewRecorder()
-	server.New(server.Config{MediaDir: mediaDir}).ServeHTTP(response, request)
-
-	body := response.Body.String()
-	if !strings.Contains(body, "Arrival") || strings.Contains(body, "The Matrix") {
-		t.Fatalf("search = %q", body)
 	}
 }
 

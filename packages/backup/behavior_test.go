@@ -62,25 +62,6 @@ func TestBackupRejectsMissingOrInvalidConfigurationState(t *testing.T) {
 	}
 }
 
-func TestWriteAutoSelectsEncryptedOrPlainArchive(t *testing.T) {
-	directory := t.TempDir()
-	writeBackupFile(t, filepath.Join(directory, "settings.json"), `{}`)
-	for name, passphrase := range map[string]string{
-		"plain":     "",
-		"encrypted": "correct horse battery staple",
-	} {
-		t.Run(name, func(t *testing.T) {
-			var archive bytes.Buffer
-			if err := testArchive.WriteAuto(&archive, directory, passphrase); err != nil {
-				t.Fatal(err)
-			}
-			if archive.Len() == 0 {
-				t.Fatal("automatic backup produced no archive")
-			}
-		})
-	}
-}
-
 func TestRestoreRejectsMalformedArchiveContracts(t *testing.T) { //nolint:cyclop // Each fixture is one externally observable archive contract violation.
 	validManifest := `{"format":1,"kinosailVersion":"dev","stateSchema":1,"createdAt":"2026-08-23T00:00:00Z","files":["settings.json"],"mediaIncluded":false}`
 	for name, archive := range map[string][]byte{

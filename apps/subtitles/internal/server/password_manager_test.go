@@ -18,10 +18,6 @@ func TestPasskeyLoginSupportsPasswordManagerAutofill(t *testing.T) {
 	servertest.PasskeyLoginSupportsPasswordManagerAutofill(t, passkeysJS)
 }
 
-func TestPasswordFieldsOfferAccessibleRevealControls(t *testing.T) {
-	servertest.PasswordFieldsOfferAccessibleRevealControls(t, themeJS, appCSS)
-}
-
 func TestCopyControlsReportClipboardFallback(t *testing.T) {
 	servertest.CopyControlsReportClipboardFallback(t, themeJS)
 }

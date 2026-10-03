@@ -45,18 +45,30 @@ func TestSubSourceRejectsUnsafeOrAmbiguousResults(t *testing.T) {
 		"too many archive files": func(value *subSourceSubtitle) { value.Files = 101 },
 	} {
 		t.Run(name, func(t *testing.T) {
-			candidate := valid
-			mutate(&candidate)
-			response := subSourceSubtitleResponse{Success: true, Data: []subSourceSubtitle{candidate}}
+			response := subSourceSubtitleResponse{Success: true, Data: []subSourceSubtitle{valid}}
+			response.Pagination.Page, response.Pagination.Pages = 1, 1
 			response.Pagination.Limit, response.Pagination.Total = 50, 1
-			if got := rankSubSourceCandidates(item, movie, "english", response); len(got) != 0 {
+			if got := rankSubSourceCandidates(item, movie, "en", response); len(got) != 1 || got[0].ID != valid.SubtitleID {
+				t.Fatalf("valid candidate control produced %#v", got)
+			}
+			mutate(&response.Data[0])
+			if got := rankSubSourceCandidates(item, movie, "en", response); len(got) != 0 {
 				t.Fatalf("unsafe result produced %d candidates", len(got))
 			}
 		})
 	}
-	response := subSourceSubtitleResponse{Success: true, Data: make([]subSourceSubtitle, 51)}
-	response.Pagination.Limit, response.Pagination.Total = 100, 51
-	if got := rankSubSourceCandidates(item, movie, "english", response); got != nil {
+	response := subSourceSubtitleResponse{Success: true, Data: make([]subSourceSubtitle, 50)}
+	for index := range response.Data {
+		response.Data[index] = valid
+	}
+	response.Pagination.Page, response.Pagination.Pages = 1, 1
+	response.Pagination.Limit, response.Pagination.Total = 100, 50
+	if got := rankSubSourceCandidates(item, movie, "en", response); len(got) == 0 {
+		t.Fatal("maximum-sized valid provider result was rejected")
+	}
+	response.Data = append(response.Data, valid)
+	response.Pagination.Total = 51
+	if got := rankSubSourceCandidates(item, movie, "en", response); got != nil {
 		t.Fatal("oversized provider result was accepted")
 	}
 }
@@ -82,24 +94,6 @@ func TestSubSourceArchiveNeedsOneExactEpisodeSRT(t *testing.T) {
 				t.Fatalf("unexpected result: data=%q error=%v", got, err)
 			}
 		})
-	}
-}
-
-func TestSubSourceRejectsRedirectOutsideConfiguredOrigin(t *testing.T) {
-	t.Parallel()
-	outside := httptest.NewServer(http.HandlerFunc(func(writer http.ResponseWriter, _ *http.Request) {
-		writer.WriteHeader(http.StatusOK)
-	}))
-	defer outside.Close()
-	remote := httptest.NewServer(http.HandlerFunc(func(writer http.ResponseWriter, _ *http.Request) {
-		writer.Header().Set("Location", outside.URL)
-		writer.WriteHeader(http.StatusFound)
-	}))
-	defer remote.Close()
-	provider := newSubSourceProvider(SubSourceConfig{URL: remote.URL, APIKey: "key", PersonalUse: true})
-	_, err := provider.download(context.Background(), subSourceCandidate{ID: 1}, library.Item{})
-	if err == nil {
-		t.Fatal("cross-origin redirect was accepted")
 	}
 }
 

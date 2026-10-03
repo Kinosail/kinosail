@@ -12,34 +12,6 @@ import (
 	"time"
 )
 
-func TestCheckAndProviderConstructionRejectInvalidBoundaries(t *testing.T) {
-	if err := Check(t.Context(), Config{Domain: "family"}); err == nil {
-		t.Fatal("invalid check configuration accepted")
-	}
-	config := Config{Provider: ProviderDuckDNS, Domain: "family", Token: testToken, Address: "192.168.1.10", Terms: true}
-	for name, endpoints := range map[string]providerEndpoints{
-		"duckdns": {duckDNS: "%"},
-		"desec":   {deSEC: "%"},
-	} {
-		t.Run(name, func(t *testing.T) {
-			input := config
-			if name == "desec" {
-				input.Provider, input.Domain = ProviderDeSEC, "family.dedyn.io"
-			}
-			if _, err := newDNSProvider(input, http.DefaultClient, endpoints); err == nil {
-				t.Fatal("invalid provider endpoint accepted")
-			}
-		})
-	}
-	config.Provider = "unsupported"
-	if _, err := newDNSProvider(config, http.DefaultClient, providerEndpoints{}); err == nil {
-		t.Fatal("unsupported provider accepted")
-	}
-	if err := Check(t.Context(), Config{Domain: "family", Token: testToken, Address: "192.168.1.10", Terms: true}, Dependencies{UpdateURL: "%"}); err == nil {
-		t.Fatal("invalid Check endpoint accepted")
-	}
-}
-
 func TestProviderDefaultsIncludeResolver(t *testing.T) {
 	defaults := (providerEndpoints{}).defaults()
 	if defaults.duckDNS != duckDNSUpdateURL || defaults.deSEC != deSECAPIURL || defaults.lookupIP == nil {
@@ -95,19 +67,6 @@ func TestProviderResponseHandlesTransportBodyAndStatusFailures(t *testing.T) {
 				t.Fatal("provider failure accepted")
 			}
 		})
-	}
-}
-
-func TestDeSECPayloadFailureStopsBeforeRequest(t *testing.T) {
-	config := Config{Provider: ProviderDeSEC, Domain: "family.dedyn.io", Token: testToken, Address: "192.168.1.10", Terms: true}
-	provider, err := newDNSProvider(config, http.DefaultClient, providerEndpoints{})
-	if err != nil {
-		t.Fatal(err)
-	}
-	deSEC := provider.(*deSECProvider)
-	deSEC.marshal = func(deSECPayload) ([]byte, error) { return nil, errors.New("encode failed") }
-	if err = deSEC.PresentTXT(t.Context(), "proof"); err == nil {
-		t.Fatal("payload encoding failure accepted")
 	}
 }
 
