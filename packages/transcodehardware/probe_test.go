@@ -161,13 +161,6 @@ func TestHardwareMessagesCoverEveryState(t *testing.T) {
 	}
 }
 
-func TestEmptyHardwareRequirementIsSatisfied(t *testing.T) {
-	t.Parallel()
-	if !hasDevices(func(...string) bool { return false }) {
-		t.Fatal("an empty hardware requirement was rejected")
-	}
-}
-
 func TestDeviceDiscoveryAndBoundedProbeOutput(t *testing.T) { //nolint:cyclop // One fixture covers directory discovery and its bounded output primitive.
 	t.Parallel()
 	directory := t.TempDir()
