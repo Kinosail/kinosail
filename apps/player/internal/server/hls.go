@@ -17,6 +17,7 @@ import (
 )
 
 type hlsJob struct {
+	preparation     *startupEncoding
 	done            chan struct{}
 	err             error
 	cancel          context.CancelCauseFunc
@@ -27,6 +28,7 @@ type hlsJob struct {
 }
 
 type hlsManager struct {
+	startup   *startupPreparation
 	ctx       context.Context
 	cache     string
 	ffmpeg    string
@@ -116,6 +118,9 @@ func (manager *hlsManager) prepare(ctx context.Context, item library.Item, recip
 		options.Cache += ":subtitle=" + sourceVersion(recipe.subtitlePath)
 	}
 	options.Cache += ":" + sourceVersion(item.Path) + ":" + recipe.token() + ":hls=13"
+	if startupActualPlayback(ctx) {
+		manager.startup.playback(key)
+	}
 	if cacheFresh(playlist, item.Path, options.Cache) || seekCacheFresh(filepath.Dir(playlist), item.Path, options.Cache) {
 		return refreshCachedVideoHLSMaster(playlist, facts, recipe, options.Cache)
 	}
@@ -212,7 +217,7 @@ func sourceQuality(facts MediaFacts, maximum int64) PlaybackQuality {
 }
 
 func (manager *hlsManager) encodeVariant(ctx context.Context, item library.Item, root, name, width, videoRate, audioRate string, duration float64, options transcodeSettings, sourceRecipe, recipe hlsRecipe, start float64, startNumber int) error { //nolint:cyclop,funlen // One FFmpeg command is assembled from the validated playback recipe.
-	release, err := manager.workloads.Acquire(ctx, workload.Playback)
+	release, err := manager.workloads.Acquire(ctx, startupWorkClass(ctx))
 	if err != nil {
 		return err
 	}
@@ -223,7 +228,7 @@ func (manager *hlsManager) encodeVariant(ctx context.Context, item library.Item,
 	}
 	playlist := filepath.Join(playlistDirectory, "index.m3u8")
 	input, video := videoArguments(options, width)
-	arguments := []string{"-hide_banner", "-loglevel", "error", "-y"}
+	arguments := startupInputArguments(ctx, []string{"-hide_banner", "-loglevel", "error", "-y"})
 	if startNumber > 0 {
 		arguments = append(arguments, "-avoid_negative_ts", "disabled", "-max_delay", "5000000")
 	}
@@ -272,6 +277,7 @@ func (manager *hlsManager) ensureHLSJob(ctx context.Context, item library.Item, 
 		//nolint:contextcheck // Encoding uses the Server lifecycle so a disconnected request does not destroy shared output.
 		go manager.encode(jobContext, item, job, key, options, recipe, 0, false)
 	}
+	adoptStartupJob(ctx, job)
 	return job, nil
 }
 

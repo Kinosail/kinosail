@@ -120,7 +120,7 @@ func (api apiServices) RegisterFoundationAPI(mux *http.ServeMux) {
 	mux.HandleFunc("GET /api/v1/library", catalogapi.Library(func(request *http.Request) (catalog.Result, error) {
 		return browseLibrary(request, api.index, api.progress, api.lists)
 	}, api.progress.ClientItem))
-	registerMediaAPI(mux, api.index, api.progress, api.lists, api.auth)
+	registerMediaAPI(mux, api.index, api.progress, api.lists, api.auth, api.hls)
 }
 
 func (api apiServices) RegisterDownloadsAPI(mux *http.ServeMux) {

@@ -22,6 +22,7 @@ import (
 var openAPISpec []byte
 
 type apiPlayback struct {
+	Policy                  string            `json:"policy"`
 	Media                   MediaFacts        `json:"media"`
 	Plan                    PlaybackPlan      `json:"plan"`
 	CompatiblePlan          *PlaybackPlan     `json:"compatiblePlan,omitempty"`
@@ -71,6 +72,8 @@ func registerProductAPI(mux *http.ServeMux, api apiServices) {
 	mux.HandleFunc("PUT /api/v1/me/language", apiLanguage)
 	mux.HandleFunc("GET /api/v1/openapi.json", serveOpenAPI)
 	mux.HandleFunc("GET /api/v1/items/{id}/playback", apiPlaybackInfo(api))
+	mux.HandleFunc("POST /api/v1/items/{id}/playback-prepare", api.preparePlayback)
+	mux.HandleFunc("DELETE /api/v1/items/{id}/playback-prepare", api.preparePlayback)
 	mux.HandleFunc("GET /api/v1/items/{id}/watch-progress", sharedplayback.WatchProgressHandler(func(request *http.Request, id string) (float64, float64, bool) {
 		item, found := visibleItem(request, api.index, id)
 		if !found {
@@ -143,6 +146,7 @@ func apiPlaybackInfo(api apiServices) http.HandlerFunc {
 		plan := playbackWithAutomaticSkip(facts, client, policy, intent, media.Markers, api.settings.autoSkip())
 		result := apiPlayback{Plan: plan, Summary: media.Summary, Duration: media.Duration, Start: api.progress.Get(request, item.ID).Seconds, Audio: apiAudioSources(item.ID, media.Audio, canTranscode), Chapters: media.Chapters, Markers: media.Markers, AutoSkip: automaticSkipSelection(media.Markers, api.settings.autoSkip()), Next: autoNext(request, api.settings, api.index, item), ReplayGain: apiReplayGainFor(media.ReplayGain), SubtitleLanguage: api.settings.subtitleLanguage(), SubtitlePickerLimited: api.settings.subtitlePickerLimited()}
 		result.Media = facts
+		result.Policy = api.settings.playbackMode()
 		sharedplayback.ApplyAPIPlaybackTimeline(&result, plan, result.Start, media.Duration, media.Chapters, media.Markers, api.settings.autoSkip(), result.AutoSkip, func() string { return recipeFor(plan).token() })
 		api.applyPlaybackSources(&result, item, media, viewer, facts, client, plan, preferences, canStream, canTranscode)
 		if result.Download != "" {
