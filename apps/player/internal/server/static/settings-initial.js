@@ -6,10 +6,4 @@ if (location.pathname === "/settings") (() => {
   const category = anchors[hash] || "playback";
   document.documentElement.dataset.settingsCategory = category;
   document.documentElement.dataset.settingsLevel = levels[category];
-  if (hash) document.addEventListener("readystatechange", () => {
-    const target = document.getElementById(hash);
-    if (!target) return;
-    for (let ancestor = target; ancestor; ancestor = ancestor.parentElement) if (ancestor instanceof HTMLDetailsElement) ancestor.open = true;
-    target.scrollIntoView({block: "start", behavior: "instant"});
-  }, {once: true});
 })();

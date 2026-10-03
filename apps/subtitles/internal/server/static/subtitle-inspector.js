@@ -80,7 +80,7 @@
     const progress = document.getElementById("cue-page"), previous = document.getElementById("previous-cues"), next = document.getElementById("next-cues");
     cueObserver?.disconnect();
     if ("IntersectionObserver" in window) {
-      previous.style.display = next.style.display = "none";
+      previous.hidden = next.hidden = true;
       progress.textContent = `${Math.min((page + 1) * 40, indexes.length)} of ${indexes.length} cues shown`;
       if (page < pages - 1) {
         cueObserver = new IntersectionObserver(entries => { if (entries.some(entry => entry.isIntersecting)) { page++; renderCues(true); } }, { rootMargin: "400px 0px" });
@@ -88,17 +88,17 @@
       }
     } else {
       progress.textContent = `${indexes.length} cues · page ${page + 1} of ${pages}`;
-      previous.disabled = page === 0; next.disabled = page === pages - 1;
+      previous.hidden = next.hidden = false; previous.disabled = page === 0; next.disabled = page === pages - 1;
     }
   }
-  async function load() {
-    const ticket = ++revision; status.textContent = "Loading subtitle details…"; status.setAttribute("aria-busy", "true"); apply.disabled = true; prepared = undefined;
+  async function load(initial = false) {
+    const ticket = ++revision; if (!initial) status.textContent = "Loading subtitle details…"; status.setAttribute("aria-busy", "true"); apply.disabled = true; prepared = undefined; form.querySelector('button[type="submit"]').disabled = true;
     let result;
     try { result = await request(`/inspect?language=${encodeURIComponent(form.elements.language.value)}`); }
     catch (error) { if (ticket === revision) throw error; return; }
     finally { if (ticket === revision) status.removeAttribute("aria-busy"); }
     if (ticket !== revision) return;
-    review = result; form.elements.role.value = review.role === "captions" ? "captions" : "translation"; page = 0; render(); status.textContent = review.current ? "Current subtitle loaded. Preview a change before saving." : "Choose a subtitle file to begin.";
+    review = result; form.elements.role.value = review.role === "captions" ? "captions" : "translation"; page = 0; render(); form.querySelector('button[type="submit"]').disabled = false; status.textContent = review.current ? "Current subtitle loaded. Preview a change before saving." : "Choose a subtitle file to begin.";
   }
   async function input() {
     const values = { role: form.elements.role.value, language: form.elements.language.value, fingerprint: review.fingerprint, encoding: form.elements.encoding.value, offsetMilliseconds: Math.round(Number(form.elements.offset.value) * 1000), automaticSync: form.elements.automaticSync.checked, removeCredits: form.elements.removeCredits.checked, mergeRepeated: form.elements.mergeRepeated.checked };
@@ -237,6 +237,6 @@
   });
   window.addEventListener("pagehide", () => { pageActive = false; draftRevision++; draftActionRevision++; clearTimeout(draftPoll); wordObserver?.disconnect(); });
   window.addEventListener("pageshow", () => { if (!pageActive) { pageActive = true; loadDraft().catch(showError); } });
-  load().catch(showError);
+  load(true).catch(error => { status.style.minHeight = `${status.getBoundingClientRect().height}px`; showError(error); });
   loadDraft().catch(showError);
 })();

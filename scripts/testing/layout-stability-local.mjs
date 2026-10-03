@@ -8,7 +8,7 @@ const {chromium, webkit, firefox} = require("@playwright/test");
 const AxeBuilder = require("@axe-core/playwright").default;
 const baseURL = process.env.KINOSAIL_E2E_URL, app = process.env.KINOSAIL_LAYOUT_APP, run = process.env.KINOSAIL_LAYOUT_RUN;
 const engine = process.env.KINOSAIL_LAYOUT_BROWSER || "chromium";
-const browser = await ({chromium, webkit, firefox}[engine]).launch(engine === "chromium" ? {channel: "chrome"} : {});
+const browser = await ({chromium, webkit, firefox}[engine]).launch(engine === "chromium" && process.platform === "darwin" ? {channel: "chrome"} : {});
 const context = await browser.newContext({baseURL, ignoreHTTPSErrors: false, reducedMotion: "reduce"});
 const page = await context.newPage();
 await page.goto("/login");
@@ -75,7 +75,7 @@ else {routes=routes.map(path=>path.replace("view=movies","view=library").replace
 async function pageRequestLibrary(){const c=await browser.newContext({baseURL, storageState:auth});try{const r=await c.request.get("/api/v1/subtitle-library?view=library");const d=await r.json();return (d.items?.find(i=>i.title==="Layout Example")||d.items?.[0])?.id;}finally{await c.close();}}
 if(process.env.KINOSAIL_LAYOUT_PATHS)routes=process.env.KINOSAIL_LAYOUT_PATHS.split(",");
 const cases=viewports.flatMap(viewport=>routes.map(path=>({viewport,path,variant:"default"})));
-if(process.env.KINOSAIL_LAYOUT_VARIANTS)for(const path of [app==="player"?"/settings#access":"/settings#provider",`/watch/${item.id}?playback=direct`]){
+if(process.env.KINOSAIL_LAYOUT_VARIANTS)for(const path of [app==="player"?"/settings#access":"/settings#provider",`/watch/${item.id}?playback=direct`,...routes.filter(path=>path.startsWith("/subtitles/inspect/"))]){
   cases.push({viewport:{width:390,height:844},path,variant:"text-200",scale:"200%"});
   cases.push({viewport:{width:390,height:844},path,variant:"motion",motion:"no-preference"});
 }
@@ -136,7 +136,7 @@ try {
       const capture = await cdp.send("Page.captureScreenshot", {format: "png"});
       await writeFile(join(run, name + "-settled.png"), Buffer.from(capture.data, "base64"));
       await cdp.detach();
-    } else await page.screenshot({path: join(run, name + "-settled.png"), fullPage: true});
+    } else await page.screenshot({path: join(run, name + "-settled.png")});
     if(path.startsWith("/watch/")&&viewport.width===390&&!apple){
       const settingsButton=page.getByRole("button",{name:"Settings",exact:true});
       const stage=await page.locator(".media-stage").boundingBox();await page.mouse.move(stage.x+10,stage.y+10);
@@ -148,7 +148,7 @@ try {
     if(traced)await context.tracing.stop({path:join(run,name+"-trace.zip")});
     await context.close();
   }
-  if(process.env.KINOSAIL_LAYOUT_FLOWS)flows=await measureFlows(browser,{baseURL,storageState:auth},`/watch/${item.id}?playback=direct`);
+  if(process.env.KINOSAIL_LAYOUT_FLOWS)flows=await measureFlows(browser,{baseURL,storageState:auth},`/watch/${item.id}?playback=direct`,routes.find(path=>path.startsWith("/subtitles/inspect/")));
 } finally {
   await writeFile(join(run, "measurements.json"), JSON.stringify({revision: process.env.KINOSAIL_TEST_REVISION, app, engine,browserVersion:browser.version(),
     result: "measurement", command: "python3 scripts/testing/test-layout-stability-local.py", data: "Synthetic media and account; delayed real font/bundle/image responses", reports,flows}, null, 2));

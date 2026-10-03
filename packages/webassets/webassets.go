@@ -77,6 +77,9 @@ var (
 	themeControls []byte
 	//go:embed static/player-layout-initial.js
 	playerLayoutInitial []byte
-	themeAppearance     = append(append([]byte(nil), Appearance...), themeControls...)
-	Theme               = append(append([]byte(nil), themeAppearance...), playerLayoutInitial...)
+	//go:embed static/fragment-layout-initial.js
+	fragmentLayoutInitial []byte
+	themeAppearance       = append(append([]byte(nil), Appearance...), themeControls...)
+	themePlayerLayout     = append(append([]byte(nil), themeAppearance...), playerLayoutInitial...)
+	Theme                 = append(append([]byte(nil), themePlayerLayout...), fragmentLayoutInitial...)
 )

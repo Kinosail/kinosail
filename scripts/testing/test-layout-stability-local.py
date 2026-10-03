@@ -6,6 +6,7 @@ import base64
 import hmac
 import json
 import os
+import platform
 from pathlib import Path
 import socket
 import subprocess
@@ -31,13 +32,15 @@ initial_scripts = {name: hashlib.sha256((root / "scripts/testing" / name).read_b
                    for name in ["test-layout-stability-local.py", "layout-stability-local.mjs", "layout-stability-flows.mjs"]}
 settings = {key: value for key, value in os.environ.items() if key.startswith("KINOSAIL_LAYOUT_")}
 def write_receipt():
+    final_revision = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=root, text=True).strip()
     receipt = {"revision": revision, "command": "python3 scripts/testing/test-layout-stability-local.py",
         "diffSHA256": hashlib.sha256(subprocess.check_output(["git", "diff", "HEAD"], cwd=root)).hexdigest(),
         "initialDiffSHA256": initial_diff_hash, "scripts": initial_scripts, "settings": settings,
-        "sourceDrift": initial_diff_hash != hashlib.sha256(subprocess.check_output(["git", "diff", "HEAD"], cwd=root)).hexdigest(),
+        "finalRevision": final_revision,
+        "sourceDrift": final_revision != revision or initial_diff_hash != hashlib.sha256(subprocess.check_output(["git", "diff", "HEAD"], cwd=root)).hexdigest(),
         "results": results, "mediaCommand": generate,
         "browser": os.environ.get("KINOSAIL_LAYOUT_BROWSER", "chromium"),
-        "environment": "macOS ARM64; native Go servers; supported loopback HTTP",
+        "environment": f"{platform.system()} {platform.machine()}; native Go servers; supported loopback HTTP",
         "boundaries": "Synthetic media/account; delayed real responses; no production, container, TLS or physical devices"}
     (run / "receipt.json").write_text(json.dumps(receipt, indent=2) + "\n")
 atexit.register(write_receipt)

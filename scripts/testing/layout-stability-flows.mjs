@@ -1,5 +1,5 @@
 // Real HTMX bodies; only the explicitly labelled transport failure is injected.
-export async function measureFlows(browser, options, watchPath) {
+export async function measureFlows(browser, options, watchPath, inspectorPath) {
   const results = [];
   for (const viewport of [{width:390,height:844},{width:1440,height:900}]) {
     const context = await browser.newContext({...options,viewport,ignoreHTTPSErrors:false,reducedMotion:"reduce"});
@@ -56,5 +56,16 @@ export async function measureFlows(browser, options, watchPath) {
     results.push({flow:"theater-idle-exit",hiddenAfterIdle,visibleAfterExit,before,after,stable:hiddenAfterIdle&&visibleAfterExit&&JSON.stringify(before)===JSON.stringify(after)});
   } else results.push({flow:"theater-idle-exit",result:"native control mode has no Theater"});
   await context.close();
+  if(inspectorPath){
+    const context=await browser.newContext({...options,viewport:{width:390,height:844},ignoreHTTPSErrors:false,reducedMotion:"reduce"});
+    const page=await context.newPage();
+    await page.route("**/inspect?*",async route=>{if(route.request().resourceType()==="fetch"){await new Promise(r=>setTimeout(r,900));await route.abort("failed");}else await route.continue();});
+    await page.goto(inspectorPath,{waitUntil:"commit"});await page.locator(".subtitle-inspector-workspace").waitFor({state:"visible"});
+    const before=await page.locator(".subtitle-inspector-workspace").boundingBox();const pendingDisabled=await page.locator('#subtitle-edit-form button[type="submit"]').isDisabled();await page.waitForTimeout(2000);
+    const after=await page.locator(".subtitle-inspector-workspace").boundingBox();
+    const failedDisabled=await page.locator('#subtitle-edit-form button[type="submit"]').isDisabled();const qualityRows=await page.locator("#subtitle-quality p").count();const busy=await page.locator("#inspector-status").getAttribute("aria-busy");await page.unroute("**/inspect?*");await page.reload();await page.waitForFunction(()=>!document.querySelector('#subtitle-edit-form button[type="submit"]').disabled);
+    results.push({flow:"inspector-refresh-failure-retry",injectedFailure:true,before,after,pendingDisabled,failedDisabled,busy,qualityRows,retryCompleted:true,stable:pendingDisabled&&failedDisabled&&!busy&&qualityRows>0&&JSON.stringify(before)===JSON.stringify(after)});
+    await context.close();
+  }
   return results;
 }
