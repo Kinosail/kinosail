@@ -1,0 +1,143 @@
+{
+  "schema": "kinosail-independent-trivy-cache-artifact-review-v1",
+  "reviewer": "tooling subagent; independent of workflow/recorder author",
+  "decision": "approve one-input cache relocation; fresh CI proof pending",
+  "comparisonBase": "2580a25672529b9a2f2a139a1a645aa154fe202c",
+  "reviewedRootCommit": "cb743761297c72d55133faf6448444995c83f11c",
+  "reviewedFiles": [
+    {
+      "path": ".github/workflows/app.yml",
+      "sha256": "07bed7129a05e77819260d24190d19d856364b7d7d4190034c5ee1f56639d9a0"
+    },
+    {
+      "path": "scripts/ci/e2e-artifact.py",
+      "sha256": "61dfa64b0b675dd67e9e8c31c4e5e99ceecc63eb88d69a4b453a60a06c86d76a"
+    },
+    {
+      "path": "engineering/qa/2026-10-03-test-overhaul/artifact-failure-analysis.md",
+      "sha256": "bc2edc98c1cdb69a736be8a4cddf88b11546fe7153c7628227e1c800eb3ccf7b"
+    },
+    {
+      "path": "engineering/qa/2026-10-03-test-overhaul/ci-e2e-archive-verification-388.json",
+      "sha256": "9548d330fee700d9d8f87d9ea3197f2b56e0186257ff510921e886cc79c78650"
+    }
+  ],
+  "scope": "Read-only workflow diff, pinned upstream action contract, complete current recorder, failure analysis and archive receipt metadata. Evidence file is the only write in reviewer checkout. No builds, scanners, deployments or archive downloads performed.",
+  "workflowFindings": [
+    {
+      "severity": "none",
+      "claim": "Only cache-dir was added to the Trivy step; action pin, image-ref, severity CRITICAL,HIGH, ignore-unfixed true and exit-code 1 are unchanged. No continue-on-error or gate suppression was introduced."
+    },
+    {
+      "severity": "none",
+      "claim": "runner.temp is outside the checkout. Fixed player/subtitles app values and fixed ubuntu-24.04/ubuntu-24.04-arm runner matrix produce distinct cache paths with no platform slash. The path does not overlap E2E output paths."
+    },
+    {
+      "severity": "none",
+      "claim": "System command remains wrapped by e2e-artifact.py, and upload remains if:always(), include-hidden-files:true, if-no-files-found:error. Recorder is byte-for-byte unchanged: captures untracked source status, marks dirty initial state exactRevisionProof:false, compares final source and propagates command failure."
+    }
+  ],
+  "upstreamContract": {
+    "actionPin": "ed142fd0673e97e23eac54620cfb913e5ce36c25",
+    "source": "https://raw.githubusercontent.com/aquasecurity/trivy-action/ed142fd0673e97e23eac54620cfb913e5ce36c25/action.yaml",
+    "independentlyRead": true,
+    "evidence": "cache-dir input defaults to github.workspace/.cache/trivy; restore cache path uses inputs.cache-dir; Run Trivy always sets TRIVY_CACHE_DIR from inputs.cache-dir. Same cache and scanning functionality remain enabled."
+  },
+  "failureAnalysis": "The pre-change analysis explicitly identifies existing untracked .cache/ and requires cache placement outside checkout, unchanged scanner gate and actual rerun; no isolated tests were added.",
+  "receiptAssessment": {
+    "workflowRun": 37153629848,
+    "prHead": "3885906a5508ef497c2775d547f3321ccc69d63d",
+    "testedCheckout": "39204bc9c84961b3e74f4a68a2d28ce25d790bca",
+    "artifactCount": 6,
+    "recordedChecksumMembers": 222,
+    "systemExactRevisionProofFalse": 4,
+    "browserExactRevisionProofTrue": 2,
+    "assessment": "Internally consistent and honest: six E2E commands passed at actual checkout392; all container revision labels match it. Four system manifests retain pre-existing .cache/ dirty status, empty tracked patch and unchanged source. Two browser manifests have clean status. PR388 is identified separately from tested synthetic merge392. Mixed genuine journeys and fixtures, browser loopback HTTP and system HTTPS bypass limitations are stated; no blanket E2E equivalence or physical-device/deployment claim.",
+    "checksumReviewLimit": "I independently checked receipt structure, member counts and manifest metadata. Root recorded ZIP/member checksum verification; I did not independently redownload or rehash the six archives.",
+    "overallWorkflowConclusion": "failure: CodeQL findings policy, being repaired independently by startup owner; no overall green claim",
+    "artifacts": [
+      {
+        "artifactId": 11285092537,
+        "name": "subtitles-ubuntu-24.04-arm-system-e2e-39204bc9c84961b3e74f4a68a2d28ce25d790bca",
+        "recordedChecksumMembers": 2,
+        "exactRevisionProof": false,
+        "sourceStatus": "?? .cache/",
+        "commandExitCode": 0,
+        "browserStats": []
+      },
+      {
+        "artifactId": 11285077824,
+        "name": "player-chromium-e2e-39204bc9c84961b3e74f4a68a2d28ce25d790bca",
+        "recordedChecksumMembers": 163,
+        "exactRevisionProof": true,
+        "sourceStatus": "",
+        "commandExitCode": 0,
+        "browserStats": [
+          {
+            "startTime": "2026-10-03T21:06:17.196Z",
+            "duration": 67379.975,
+            "expected": 63,
+            "skipped": 21,
+            "unexpected": 0,
+            "flaky": 0
+          },
+          {
+            "startTime": "2026-10-03T21:07:33.174Z",
+            "duration": 11943.233999999999,
+            "expected": 2,
+            "skipped": 0,
+            "unexpected": 0,
+            "flaky": 0
+          }
+        ]
+      },
+      {
+        "artifactId": 11284683597,
+        "name": "player-ubuntu-24.04-system-e2e-39204bc9c84961b3e74f4a68a2d28ce25d790bca",
+        "recordedChecksumMembers": 2,
+        "exactRevisionProof": false,
+        "sourceStatus": "?? .cache/",
+        "commandExitCode": 0,
+        "browserStats": []
+      },
+      {
+        "artifactId": 11284274651,
+        "name": "subtitles-chromium-e2e-39204bc9c84961b3e74f4a68a2d28ce25d790bca",
+        "recordedChecksumMembers": 51,
+        "exactRevisionProof": true,
+        "sourceStatus": "",
+        "commandExitCode": 0,
+        "browserStats": [
+          {
+            "startTime": "2026-10-03T21:07:02.890Z",
+            "duration": 52814.217,
+            "expected": 30,
+            "skipped": 0,
+            "unexpected": 0,
+            "flaky": 0
+          }
+        ]
+      },
+      {
+        "artifactId": 11284209457,
+        "name": "player-ubuntu-24.04-arm-system-e2e-39204bc9c84961b3e74f4a68a2d28ce25d790bca",
+        "recordedChecksumMembers": 2,
+        "exactRevisionProof": false,
+        "sourceStatus": "?? .cache/",
+        "commandExitCode": 0,
+        "browserStats": []
+      },
+      {
+        "artifactId": 11284099771,
+        "name": "subtitles-ubuntu-24.04-system-e2e-39204bc9c84961b3e74f4a68a2d28ce25d790bca",
+        "recordedChecksumMembers": 2,
+        "exactRevisionProof": false,
+        "sourceStatus": "?? .cache/",
+        "commandExitCode": 0,
+        "browserStats": []
+      }
+    ]
+  },
+  "remainingValidation": "After CI reruns with this cache input, download all fresh system/browser archives, verify SHA256SUMS and require clean initial/final source status plus exactRevisionProof:true at final tested checkout. This review does not certify the CodeQL repair or overall workflow green.",
+  "validation": "Lightweight read-only Python assertions verified one added workflow line, zero removed lines, unchanged recorder, pinned reviewed blobs, six successful manifests, correct tested revision/image labels, 4 false/2 true clean proofs and 222 internally consistent recorded checksum members."
+}
