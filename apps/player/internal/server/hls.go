@@ -100,7 +100,8 @@ func (manager *hlsManager) prepare(ctx context.Context, item library.Item, recip
 	if manager.cache == "" {
 		return errors.New("compatible playback is not configured")
 	}
-	resolved, sourceErr := playback.ResolveHLSSource(sharedHLSRecipe(recipe), mediaFactsFor(item, manager.probe.facts(ctx, item)), item.Subtitles)
+	facts := mediaFactsFor(item, manager.probe.facts(ctx, item))
+	resolved, sourceErr := playback.ResolveHLSSource(sharedHLSRecipe(recipe), facts, item.Subtitles)
 	if sourceErr != nil {
 		return sourceErr
 	}
@@ -116,7 +117,7 @@ func (manager *hlsManager) prepare(ctx context.Context, item library.Item, recip
 	}
 	options.Cache += ":" + sourceVersion(item.Path) + ":" + recipe.token() + ":hls=13"
 	if cacheFresh(playlist, item.Path, options.Cache) || seekCacheFresh(filepath.Dir(playlist), item.Path, options.Cache) {
-		return nil
+		return refreshCachedVideoHLSMaster(playlist, facts, recipe, options.Cache)
 	}
 	job, err := manager.ensureHLSJob(ctx, item, key, options, recipe)
 	if err != nil {

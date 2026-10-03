@@ -15,6 +15,9 @@ import (
 
 const maximumHLSPlaylistBytes = 1 << 20
 
+// HLSBandwidthPolicyMarker identifies masters with conservative startup demand.
+const HLSBandwidthPolicyMarker = "#KINOSAIL-BANDWIDTH:2"
+
 type AtomicWriter func(string, []byte) error
 
 func PublishVariants(ctx context.Context, source, directory, transcoder, codecs string, qualities []PlaybackQuality, results <-chan error, expected int, independent bool, write AtomicWriter) error { //nolint:cyclop,gocognit // Readiness and worker completion are one bounded coordination loop.
@@ -95,7 +98,7 @@ func WriteMaster(path, transcoder, codecs string, qualities []PlaybackQuality, i
 	if write == nil || len(qualities) == 0 || len(transcoder) > 1024 || strings.ContainsAny(transcoder, "\r\n") || len(codecs) > 1024 || strings.ContainsAny(codecs, "\r\n\"") {
 		return errors.New("HLS master playlist input is invalid")
 	}
-	manifest := []byte("#EXTM3U\n#KINOSAIL-TRANSCODER:" + transcoder + "\n#EXT-X-VERSION:7\n")
+	manifest := []byte("#EXTM3U\n#KINOSAIL-TRANSCODER:" + transcoder + "\n" + HLSBandwidthPolicyMarker + "\n#EXT-X-VERSION:7\n")
 	if independent {
 		manifest = append(manifest, "#EXT-X-INDEPENDENT-SEGMENTS\n"...)
 	}
@@ -132,6 +135,11 @@ func VariantBandwidth(directory string, fallback int64) (int64, int64) {
 	}
 	if duration == 0 {
 		return fallback, fallback * 11 / 10
+	}
+	// An unfinished black intro cannot predict the bitrate of later scenes.
+	// Keep the planned demand until every segment has been produced.
+	if !PlaylistHas(manifest, "#EXT-X-ENDLIST") {
+		return max(fallback, int64(total/duration)), max(fallback*11/10, int64(peak))
 	}
 	return max(1, int64(total/duration)), max(1, int64(peak))
 }

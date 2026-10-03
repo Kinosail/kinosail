@@ -1,7 +1,16 @@
 import {expect, test} from "@playwright/test";
 import {installPlayerExperienceFixture} from "./player-experience-fixture";
 
-installPlayerExperienceFixture(true);
+installPlayerExperienceFixture(true, false, "iPhone", async (page, title) => {
+  if (title !== "touch Play enters native fullscreen in the same gesture without pausing") return;
+  await page.evaluate(() => {
+    Object.defineProperty(navigator, "maxTouchPoints", {configurable: true, value: 1});
+    Object.assign(window, {nativeFullscreenCalls: 0});
+    Object.defineProperty(document.querySelector("video"), "webkitEnterFullscreen", {value: () => {
+      (window as Window & {nativeFullscreenCalls: number}).nativeFullscreenCalls++;
+    }});
+  });
+});
 
 test.use({hasTouch: true});
 
@@ -40,13 +49,6 @@ test("native settings sit below the picture, follow caption changes, and close w
 });
 
 test("touch Play enters native fullscreen in the same gesture without pausing", async ({page}) => {
-  await page.evaluate(() => {
-    Object.defineProperty(navigator, "maxTouchPoints", {configurable: true, value: 1});
-    Object.assign(window, {nativeFullscreenCalls: 0});
-    Object.defineProperty(document.querySelector("video"), "webkitEnterFullscreen", {value: () => {
-      (window as Window & {nativeFullscreenCalls: number}).nativeFullscreenCalls++;
-    }});
-  });
   await page.getByRole("button", {name: "Play", exact: true}).click();
   expect(await page.evaluate(() => (window as Window & {nativeFullscreenCalls: number}).nativeFullscreenCalls)).toBe(1);
   await expect(page.locator("video")).toHaveJSProperty("paused", false);
