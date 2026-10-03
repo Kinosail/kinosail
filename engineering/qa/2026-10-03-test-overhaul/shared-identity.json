@@ -65,6 +65,23 @@
       "status": "passed",
       "command": "git diff --check",
       "exit_code": 0
+    },
+    "watchrooms": {
+      "candidate_sha": "f3d2a1ceba474101ab0a0477d21299e43f741a3a",
+      "command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C packages test -json -count=1 ./watchrooms",
+      "environment": {
+        "os": "macOS-27.0-arm64-arm-64bit-Mach-O",
+        "machine": "arm64",
+        "go": "go version go1.27.1 darwin/arm64",
+        "GOCACHE": "/tmp/kinosail-testing-go-cache"
+      },
+      "status": "pass",
+      "pass": 16,
+      "fail": 0,
+      "skip": 0,
+      "artifact": "engineering/qa/2026-10-03-test-overhaul/watchrooms-control/run-metadata.json",
+      "checksums": "engineering/qa/2026-10-03-test-overhaul/watchrooms-control/checksums.json",
+      "control": "Original mutant false pass; same compiling mutant with repaired existing assertion behavioral red; final restored owner green."
     }
   },
   "e2e_artifact": "Parent-owned integrated revision/run artifact is required before delivery; this ledger contains coverage mapping, not executed E2E proof.",
@@ -97,7 +114,7 @@
       "planned_existing_assertion_repair": "Use raw WebSocket Read to avoid treating JSON decoding failure as closure, require an actual close frame or transport EOF/closed error before the bounded context expires, and reuse the same assertion for invalid drift and revoked-access reads.",
       "control": "Disable only monitorAccess media-visibility predicate in a recorded dirty mutant. Run original TestHTTPAccessMonitorClosesInvisibleRoom (expected false pass), apply existing assertion repair, rerun same mutant (expected red), restore owner exactly and run entire watchrooms package (expected green).",
       "execution_authority": "Root explicitly authorized this bounded serial focused watchrooms run with shared warmGOCACHE on2026-10-03; no broader Go builds/containers.",
-      "execution_status": "original clean baseline passed; compiling original mutant false-passed; same mutant with repaired assertion failed behaviorally; owner restored byte-for-byte; final clean candidate package run pending"
+      "execution_status": "completed: original clean baseline pass; original compiling visibility-disabled mutant false pass; repaired assertion behavioral red on same mutant; restored owner clean candidate f3d2a1ceba474101ab0a0477d21299e43f741a3a all16 pass"
     }
   },
   "owner_groups": {
@@ -56457,7 +56474,15 @@
       ],
       "gap": "Genuine Player apps/player/e2e/test-instance-offline.spec.ts two-browser Watch Together journey verifies valid seek propagation, advancing follower playback and reconnect/drift metrics through the real app. It does not expire/revoke an idle room, saturate queues/capacity, inject forbidden media, stale revisions, invalid drift or actual socket write failures. These real httptest/WebSocket owner-boundary tests use injected Viewer/index/clock state and are not browser E2E.",
       "credible_failure": "Random room identifier collision must retry instead of overwriting an existing room, and metrics must remove expired rooms; missing or stale subscription identities cannot mutate rooms.",
-      "remaining_coverage": "This primary owner declaration remains. Genuine browser complement and limits are explicit in owner_groups.watchrooms."
+      "remaining_coverage": "This primary owner declaration remains. Genuine browser complement and limits are explicit in owner_groups.watchrooms.",
+      "candidate_event": {
+        "Time": "2026-10-03T12:00:13.947277-06:00",
+        "Action": "pass",
+        "Package": "github.com/MikeO7/kinosail/packages/watchrooms",
+        "Test": "TestRoomsRemainingLifecycleEdges",
+        "Elapsed": 0
+      },
+      "candidate_sha": "f3d2a1ceba474101ab0a0477d21299e43f741a3a"
     },
     {
       "file": "packages/watchrooms/http_lifecycle_test.go",
@@ -56498,9 +56523,18 @@
         "failure_analysis": "failure_analysis_first.watchrooms_socket_closure written/committed at c17821cf80093c371666ac577608ec4fff3a44fd before assertion edits",
         "original_blindspot": "Any wsjson.Read error, including the test deadline or JSON decode failure that closes the client itself, passed as peer closure.",
         "change": "Existing assertHTTPConnectionClosed uses raw Conn.Read and requires an EOF/closed transport or close frame while context remains live; existing inline closure reads reuse it. No new isolated declaration.",
-        "status": "implemented; final clean candidate validation pending",
+        "status": "implemented and verified: mutant behavioral red; final clean candidate green",
         "control": "Original assertion passed with visibility revocation deliberately disabled; repaired assertion failed on the same compiling mutant at its2-second deadline."
-      }
+      },
+      "candidate_event": {
+        "Time": "2026-10-03T12:00:11.937236-06:00",
+        "Action": "pass",
+        "Package": "github.com/MikeO7/kinosail/packages/watchrooms",
+        "Test": "TestHTTPConnectionClosesWhenRoomExpires",
+        "Elapsed": 0
+      },
+      "candidate_sha": "f3d2a1ceba474101ab0a0477d21299e43f741a3a",
+      "candidate_body_sha256": "49a8ef126946597f7352fd02fc3716056cf61ecbe842b0e3b75ac10d9179a972"
     },
     {
       "file": "packages/watchrooms/http_lifecycle_test.go",
@@ -56541,9 +56575,18 @@
         "failure_analysis": "failure_analysis_first.watchrooms_socket_closure written/committed at c17821cf80093c371666ac577608ec4fff3a44fd before assertion edits",
         "original_blindspot": "Any wsjson.Read error, including the test deadline or JSON decode failure that closes the client itself, passed as peer closure.",
         "change": "Existing assertHTTPConnectionClosed uses raw Conn.Read and requires an EOF/closed transport or close frame while context remains live; existing inline closure reads reuse it. No new isolated declaration.",
-        "status": "implemented; final clean candidate validation pending",
+        "status": "implemented and verified: mutant behavioral red; final clean candidate green",
         "control": "Original assertion passed with visibility revocation deliberately disabled; repaired assertion failed on the same compiling mutant at its2-second deadline."
-      }
+      },
+      "candidate_event": {
+        "Time": "2026-10-03T12:00:12.940126-06:00",
+        "Action": "pass",
+        "Package": "github.com/MikeO7/kinosail/packages/watchrooms",
+        "Test": "TestHTTPAccessMonitorClosesInvisibleRoom",
+        "Elapsed": 1
+      },
+      "candidate_sha": "f3d2a1ceba474101ab0a0477d21299e43f741a3a",
+      "candidate_body_sha256": "d23c56101944afa18da0fbc21ceed6e5deacff9999cf3805a3d4b0b77c19b72b"
     },
     {
       "file": "packages/watchrooms/http_lifecycle_test.go",
@@ -56579,7 +56622,15 @@
       ],
       "gap": "Genuine Player apps/player/e2e/test-instance-offline.spec.ts two-browser Watch Together journey verifies valid seek propagation, advancing follower playback and reconnect/drift metrics through the real app. It does not expire/revoke an idle room, saturate queues/capacity, inject forbidden media, stale revisions, invalid drift or actual socket write failures. These real httptest/WebSocket owner-boundary tests use injected Viewer/index/clock state and are not browser E2E.",
       "credible_failure": "A real closed WebSocket write must release its subscription event channel/capacity instead of leaking room membership.",
-      "remaining_coverage": "This primary owner declaration remains. Genuine browser complement and limits are explicit in owner_groups.watchrooms."
+      "remaining_coverage": "This primary owner declaration remains. Genuine browser complement and limits are explicit in owner_groups.watchrooms.",
+      "candidate_event": {
+        "Time": "2026-10-03T12:00:12.940826-06:00",
+        "Action": "pass",
+        "Package": "github.com/MikeO7/kinosail/packages/watchrooms",
+        "Test": "TestWriteEventsClosesSubscriptionAfterWriteFailure",
+        "Elapsed": 0
+      },
+      "candidate_sha": "f3d2a1ceba474101ab0a0477d21299e43f741a3a"
     },
     {
       "file": "packages/watchrooms/http_lifecycle_test.go",
@@ -56620,9 +56671,18 @@
         "failure_analysis": "failure_analysis_first.watchrooms_socket_closure written/committed at c17821cf80093c371666ac577608ec4fff3a44fd before assertion edits",
         "original_blindspot": "Any wsjson.Read error, including the test deadline or JSON decode failure that closes the client itself, passed as peer closure.",
         "change": "Existing assertHTTPConnectionClosed uses raw Conn.Read and requires an EOF/closed transport or close frame while context remains live; existing inline closure reads reuse it. No new isolated declaration.",
-        "status": "implemented; final clean candidate validation pending",
+        "status": "implemented and verified: mutant behavioral red; final clean candidate green",
         "control": "Original assertion passed with visibility revocation deliberately disabled; repaired assertion failed on the same compiling mutant at its2-second deadline."
-      }
+      },
+      "candidate_event": {
+        "Time": "2026-10-03T12:00:12.941388-06:00",
+        "Action": "pass",
+        "Package": "github.com/MikeO7/kinosail/packages/watchrooms",
+        "Test": "TestEventDeliveryReauthorizesBeforeSendingHiddenMedia",
+        "Elapsed": 0
+      },
+      "candidate_sha": "f3d2a1ceba474101ab0a0477d21299e43f741a3a",
+      "candidate_body_sha256": "53db9be6904e76b8df1aba8bacaeb6c1a263c9733db407d9df1e3269f7bae806"
     },
     {
       "file": "packages/watchrooms/http_lifecycle_test.go",
@@ -56663,9 +56723,18 @@
         "failure_analysis": "failure_analysis_first.watchrooms_socket_closure written/committed at c17821cf80093c371666ac577608ec4fff3a44fd before assertion edits",
         "original_blindspot": "Any wsjson.Read error, including the test deadline or JSON decode failure that closes the client itself, passed as peer closure.",
         "change": "Existing assertHTTPConnectionClosed uses raw Conn.Read and requires an EOF/closed transport or close frame while context remains live; existing inline closure reads reuse it. No new isolated declaration.",
-        "status": "implemented; final clean candidate validation pending",
+        "status": "implemented and verified: mutant behavioral red; final clean candidate green",
         "control": "Original assertion passed with visibility revocation deliberately disabled; repaired assertion failed on the same compiling mutant at its2-second deadline."
-      }
+      },
+      "candidate_event": {
+        "Time": "2026-10-03T12:00:12.941948-06:00",
+        "Action": "pass",
+        "Package": "github.com/MikeO7/kinosail/packages/watchrooms",
+        "Test": "TestDeniedEventStillRequiresRoomVisibility",
+        "Elapsed": 0
+      },
+      "candidate_sha": "f3d2a1ceba474101ab0a0477d21299e43f741a3a",
+      "candidate_body_sha256": "a6f8ec6521d51a9f2c38cd16e333f9aab34246834040b50b588216f216a925d1"
     },
     {
       "file": "packages/watchrooms/http_test.go",
@@ -56737,7 +56806,15 @@
       ],
       "gap": "Genuine Player apps/player/e2e/test-instance-offline.spec.ts two-browser Watch Together journey verifies valid seek propagation, advancing follower playback and reconnect/drift metrics through the real app. It does not expire/revoke an idle room, saturate queues/capacity, inject forbidden media, stale revisions, invalid drift or actual socket write failures. These real httptest/WebSocket owner-boundary tests use injected Viewer/index/clock state and are not browser E2E.",
       "credible_failure": "Public HTTP create rejects malformed/invisible/unsafe media before allocation; room redirection and player projection cannot join a different item or expose hidden/nonplayable items after snapshot failure.",
-      "remaining_coverage": "This primary owner declaration remains. Genuine browser complement and limits are explicit in owner_groups.watchrooms."
+      "remaining_coverage": "This primary owner declaration remains. Genuine browser complement and limits are explicit in owner_groups.watchrooms.",
+      "candidate_event": {
+        "Time": "2026-10-03T12:00:12.942425-06:00",
+        "Action": "pass",
+        "Package": "github.com/MikeO7/kinosail/packages/watchrooms",
+        "Test": "TestHTTPRoutesValidateCreateRedirectAndPlayerProjection",
+        "Elapsed": 0
+      },
+      "candidate_sha": "f3d2a1ceba474101ab0a0477d21299e43f741a3a"
     },
     {
       "file": "packages/watchrooms/http_test.go",
@@ -56771,7 +56848,15 @@
       ],
       "gap": "Genuine Player apps/player/e2e/test-instance-offline.spec.ts two-browser Watch Together journey verifies valid seek propagation, advancing follower playback and reconnect/drift metrics through the real app. It does not expire/revoke an idle room, saturate queues/capacity, inject forbidden media, stale revisions, invalid drift or actual socket write failures. These real httptest/WebSocket owner-boundary tests use injected Viewer/index/clock state and are not browser E2E.",
       "credible_failure": "Real HTTP room creation maps exhausted Rooms capacity to429 rather than admitting unlimited rooms or returning a misleading success redirect.",
-      "remaining_coverage": "This primary owner declaration remains. Genuine browser complement and limits are explicit in owner_groups.watchrooms."
+      "remaining_coverage": "This primary owner declaration remains. Genuine browser complement and limits are explicit in owner_groups.watchrooms.",
+      "candidate_event": {
+        "Time": "2026-10-03T12:00:12.942458-06:00",
+        "Action": "pass",
+        "Package": "github.com/MikeO7/kinosail/packages/watchrooms",
+        "Test": "TestHTTPCreateReportsRoomCapacity",
+        "Elapsed": 0
+      },
+      "candidate_sha": "f3d2a1ceba474101ab0a0477d21299e43f741a3a"
     },
     {
       "file": "packages/watchrooms/http_test.go",
@@ -56810,9 +56895,18 @@
         "failure_analysis": "failure_analysis_first.watchrooms_socket_closure written/committed at c17821cf80093c371666ac577608ec4fff3a44fd before assertion edits",
         "original_blindspot": "Any wsjson.Read error, including the test deadline or JSON decode failure that closes the client itself, passed as peer closure.",
         "change": "Existing assertHTTPConnectionClosed uses raw Conn.Read and requires an EOF/closed transport or close frame while context remains live; existing inline closure reads reuse it. No new isolated declaration.",
-        "status": "implemented; final clean candidate validation pending",
+        "status": "implemented and verified: mutant behavioral red; final clean candidate green",
         "control": "Original assertion passed with visibility revocation deliberately disabled; repaired assertion failed on the same compiling mutant at its2-second deadline."
-      }
+      },
+      "candidate_event": {
+        "Time": "2026-10-03T12:00:12.943961-06:00",
+        "Action": "pass",
+        "Package": "github.com/MikeO7/kinosail/packages/watchrooms",
+        "Test": "TestHTTPWebSocketPreservesLeaderAndValidationRules",
+        "Elapsed": 0
+      },
+      "candidate_sha": "f3d2a1ceba474101ab0a0477d21299e43f741a3a",
+      "candidate_body_sha256": "577dd250831cc8918ebef94a6a776460dba19046511203b464b346284b14a8e6"
     },
     {
       "file": "packages/watchrooms/http_test.go",
@@ -56851,9 +56945,18 @@
         "failure_analysis": "failure_analysis_first.watchrooms_socket_closure written/committed at c17821cf80093c371666ac577608ec4fff3a44fd before assertion edits",
         "original_blindspot": "Any wsjson.Read error, including the test deadline or JSON decode failure that closes the client itself, passed as peer closure.",
         "change": "Existing assertHTTPConnectionClosed uses raw Conn.Read and requires an EOF/closed transport or close frame while context remains live; existing inline closure reads reuse it. No new isolated declaration.",
-        "status": "implemented; final clean candidate validation pending",
+        "status": "implemented and verified: mutant behavioral red; final clean candidate green",
         "control": "Original assertion passed with visibility revocation deliberately disabled; repaired assertion failed on the same compiling mutant at its2-second deadline."
-      }
+      },
+      "candidate_event": {
+        "Time": "2026-10-03T12:00:13.947069-06:00",
+        "Action": "pass",
+        "Package": "github.com/MikeO7/kinosail/packages/watchrooms",
+        "Test": "TestHTTPJoinAndAccessFailuresCloseConnections",
+        "Elapsed": 1
+      },
+      "candidate_sha": "f3d2a1ceba474101ab0a0477d21299e43f741a3a",
+      "candidate_body_sha256": "bf0aecd34395638c164e0ddf27a0e8142b82843bf68ade23c0e4ce132f0ef1f6"
     },
     {
       "file": "packages/watchrooms/http_test.go",
@@ -56887,7 +56990,15 @@
       ],
       "gap": "Genuine Player apps/player/e2e/test-instance-offline.spec.ts two-browser Watch Together journey verifies valid seek propagation, advancing follower playback and reconnect/drift metrics through the real app. It does not expire/revoke an idle room, saturate queues/capacity, inject forbidden media, stale revisions, invalid drift or actual socket write failures. These real httptest/WebSocket owner-boundary tests use injected Viewer/index/clock state and are not browser E2E.",
       "credible_failure": "Socket event validation must reject invalid action, missing/photo/hidden media and nonfinite/negative/oversized positions before they reach shared coordination.",
-      "remaining_coverage": "This primary owner declaration remains. Genuine browser complement and limits are explicit in owner_groups.watchrooms."
+      "remaining_coverage": "This primary owner declaration remains. Genuine browser complement and limits are explicit in owner_groups.watchrooms.",
+      "candidate_event": {
+        "Time": "2026-10-03T12:00:13.947103-06:00",
+        "Action": "pass",
+        "Package": "github.com/MikeO7/kinosail/packages/watchrooms",
+        "Test": "TestHTTPEventValidationRejectsUntrustedValues",
+        "Elapsed": 0
+      },
+      "candidate_sha": "f3d2a1ceba474101ab0a0477d21299e43f741a3a"
     },
     {
       "file": "packages/watchrooms/watchrooms_test.go",
@@ -56921,7 +57032,15 @@
       ],
       "gap": "Genuine Player apps/player/e2e/test-instance-offline.spec.ts two-browser Watch Together journey verifies valid seek propagation, advancing follower playback and reconnect/drift metrics through the real app. It does not expire/revoke an idle room, saturate queues/capacity, inject forbidden media, stale revisions, invalid drift or actual socket write failures. These real httptest/WebSocket owner-boundary tests use injected Viewer/index/clock state and are not browser E2E.",
       "credible_failure": "Viewer updates must not change leader state or broadcast untrusted state; stale revision and invisible media updates leave the room revision/state unchanged while valid updates preserve shared revision/effective time.",
-      "remaining_coverage": "This primary owner declaration remains. Genuine browser complement and limits are explicit in owner_groups.watchrooms."
+      "remaining_coverage": "This primary owner declaration remains. Genuine browser complement and limits are explicit in owner_groups.watchrooms.",
+      "candidate_event": {
+        "Time": "2026-10-03T12:00:13.947307-06:00",
+        "Action": "pass",
+        "Package": "github.com/MikeO7/kinosail/packages/watchrooms",
+        "Test": "TestRoomsCoordinateLeaderAndViewerState",
+        "Elapsed": 0
+      },
+      "candidate_sha": "f3d2a1ceba474101ab0a0477d21299e43f741a3a"
     },
     {
       "file": "packages/watchrooms/watchrooms_test.go",
@@ -56955,7 +57074,15 @@
       ],
       "gap": "Genuine Player apps/player/e2e/test-instance-offline.spec.ts two-browser Watch Together journey verifies valid seek propagation, advancing follower playback and reconnect/drift metrics through the real app. It does not expire/revoke an idle room, saturate queues/capacity, inject forbidden media, stale revisions, invalid drift or actual socket write failures. These real httptest/WebSocket owner-boundary tests use injected Viewer/index/clock state and are not browser E2E.",
       "credible_failure": "A denied Viewer message must never echo attacker-controlled huge strings, infinity or forged revision into the denial event, and oversized Viewer identities must not be admitted.",
-      "remaining_coverage": "This primary owner declaration remains. Genuine browser complement and limits are explicit in owner_groups.watchrooms."
+      "remaining_coverage": "This primary owner declaration remains. Genuine browser complement and limits are explicit in owner_groups.watchrooms.",
+      "candidate_event": {
+        "Time": "2026-10-03T12:00:13.947299-06:00",
+        "Action": "pass",
+        "Package": "github.com/MikeO7/kinosail/packages/watchrooms",
+        "Test": "TestDeniedUpdateDoesNotEchoUntrustedPayload",
+        "Elapsed": 0
+      },
+      "candidate_sha": "f3d2a1ceba474101ab0a0477d21299e43f741a3a"
     },
     {
       "file": "packages/watchrooms/watchrooms_test.go",
@@ -56989,7 +57116,15 @@
       ],
       "gap": "Genuine Player apps/player/e2e/test-instance-offline.spec.ts two-browser Watch Together journey verifies valid seek propagation, advancing follower playback and reconnect/drift metrics through the real app. It does not expire/revoke an idle room, saturate queues/capacity, inject forbidden media, stale revisions, invalid drift or actual socket write failures. These real httptest/WebSocket owner-boundary tests use injected Viewer/index/clock state and are not browser E2E.",
       "credible_failure": "Bound subscribers and event queues; disconnect slow subscribers, release their capacity, expire rooms and close their event channels instead of retaining unbounded resources.",
-      "remaining_coverage": "This primary owner declaration remains. Genuine browser complement and limits are explicit in owner_groups.watchrooms."
+      "remaining_coverage": "This primary owner declaration remains. Genuine browser complement and limits are explicit in owner_groups.watchrooms.",
+      "candidate_event": {
+        "Time": "2026-10-03T12:00:13.952818-06:00",
+        "Action": "pass",
+        "Package": "github.com/MikeO7/kinosail/packages/watchrooms",
+        "Test": "TestRoomsBoundCapacityQueuesAndExpiry",
+        "Elapsed": 0
+      },
+      "candidate_sha": "f3d2a1ceba474101ab0a0477d21299e43f741a3a"
     },
     {
       "file": "packages/watchrooms/watchrooms_test.go",
@@ -57023,7 +57158,15 @@
       ],
       "gap": "Genuine Player apps/player/e2e/test-instance-offline.spec.ts two-browser Watch Together journey verifies valid seek propagation, advancing follower playback and reconnect/drift metrics through the real app. It does not expire/revoke an idle room, saturate queues/capacity, inject forbidden media, stale revisions, invalid drift or actual socket write failures. These real httptest/WebSocket owner-boundary tests use injected Viewer/index/clock state and are not browser E2E.",
       "credible_failure": "Reject missing/oversized/control-character media and nonfinite/negative/oversized positions before consuming room capacity, while valid rooms reach the actual supported maximum.",
-      "remaining_coverage": "This primary owner declaration remains. Genuine browser complement and limits are explicit in owner_groups.watchrooms."
+      "remaining_coverage": "This primary owner declaration remains. Genuine browser complement and limits are explicit in owner_groups.watchrooms.",
+      "candidate_event": {
+        "Time": "2026-10-03T12:00:13.952885-06:00",
+        "Action": "pass",
+        "Package": "github.com/MikeO7/kinosail/packages/watchrooms",
+        "Test": "TestRoomsRejectInvalidStateWithoutUsingCapacity",
+        "Elapsed": 0.01
+      },
+      "candidate_sha": "f3d2a1ceba474101ab0a0477d21299e43f741a3a"
     },
     {
       "file": "packages/watchrooms/watchrooms_test.go",
@@ -57057,7 +57200,15 @@
       ],
       "gap": "Genuine Player apps/player/e2e/test-instance-offline.spec.ts two-browser Watch Together journey verifies valid seek propagation, advancing follower playback and reconnect/drift metrics through the real app. It does not expire/revoke an idle room, saturate queues/capacity, inject forbidden media, stale revisions, invalid drift or actual socket write failures. These real httptest/WebSocket owner-boundary tests use injected Viewer/index/clock state and are not browser E2E.",
       "credible_failure": "Reject nonfinite/negative/oversized drift without counting it; reconnect keeps active connection count bounded and exposes exactly one valid observation.",
-      "remaining_coverage": "This primary owner declaration remains. Genuine browser complement and limits are explicit in owner_groups.watchrooms."
+      "remaining_coverage": "This primary owner declaration remains. Genuine browser complement and limits are explicit in owner_groups.watchrooms.",
+      "candidate_event": {
+        "Time": "2026-10-03T12:00:13.947315-06:00",
+        "Action": "pass",
+        "Package": "github.com/MikeO7/kinosail/packages/watchrooms",
+        "Test": "TestRoomMetricsTrackReconnectsAndBoundedDrift",
+        "Elapsed": 0
+      },
+      "candidate_sha": "f3d2a1ceba474101ab0a0477d21299e43f741a3a"
     },
     {
       "file": "packages/webassets/styles_test.go",

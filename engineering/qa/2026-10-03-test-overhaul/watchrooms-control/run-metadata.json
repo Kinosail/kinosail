@@ -1,0 +1,86 @@
+{
+  "failure_analysis_sha": "c17821cf80093c371666ac577608ec4fff3a44fd",
+  "environment": {
+    "os": "macOS-27.0-arm64-arm-64bit-Mach-O",
+    "machine": "arm64",
+    "go": "go version go1.27.1 darwin/arm64",
+    "GOCACHE": "/tmp/kinosail-testing-go-cache"
+  },
+  "runs": [
+    {
+      "name": "original-baseline",
+      "command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C packages test -json -count=1 -run '^TestHTTPAccessMonitorClosesInvisibleRoom$' ./watchrooms",
+      "sha": "c17821cf80093c371666ac577608ec4fff3a44fd",
+      "tracked_worktree": "clean",
+      "expected_exit": 0,
+      "actual_exit": 1,
+      "result": "environment_blocked",
+      "reason": "default sandbox denied httptest loopback bind; no product or red-control inference"
+    },
+    {
+      "name": "original-baseline-permitted",
+      "command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C packages test -json -count=1 -run '^TestHTTPAccessMonitorClosesInvisibleRoom$' ./watchrooms",
+      "sha": "c17821cf80093c371666ac577608ec4fff3a44fd",
+      "tracked_worktree": "clean",
+      "execution": "require_escalated allows temporary loopback listener",
+      "actual_exit": 0
+    },
+    {
+      "name": "original-mutant",
+      "command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C packages test -json -count=1 -run '^TestHTTPAccessMonitorClosesInvisibleRoom$' ./watchrooms",
+      "sha": "c17821cf80093c371666ac577608ec4fff3a44fd",
+      "tracked_worktree": "dirty production-only noncompiling mutant",
+      "patch": "visibility-guard-disabled-noncompiling.patch",
+      "actual_exit": 1,
+      "result": "invalid_control_build_failure",
+      "reason": "fresh and event unused; no behavioral red-control inference"
+    },
+    {
+      "name": "original-mutant-compiling",
+      "command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C packages test -json -count=1 -run '^TestHTTPAccessMonitorClosesInvisibleRoom$' ./watchrooms",
+      "sha": "c17821cf80093c371666ac577608ec4fff3a44fd",
+      "tracked_worktree": "dirty production-only compiling mutant",
+      "patch": "visibility-guard-disabled.patch",
+      "actual_exit": 0,
+      "result": "false_pass",
+      "reason": "Disabled visibility-revocation monitor survived the original timeout-as-closure assertion"
+    },
+    {
+      "name": "repaired-mutant",
+      "command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C packages test -json -count=1 -run '^TestHTTPAccessMonitorClosesInvisibleRoom$' ./watchrooms",
+      "sha": "c17821cf80093c371666ac577608ec4fff3a44fd",
+      "tracked_worktree": "dirty compiling production mutant plus existing assertion repair",
+      "patches": [
+        "visibility-guard-disabled.patch",
+        "assertion-repair.patch"
+      ],
+      "actual_exit": 1,
+      "result": "behavioral_red",
+      "terminal_test": "TestHTTPAccessMonitorClosesInvisibleRoom",
+      "reason": "server did not close connection before deadline: context deadline exceeded; repaired assertion detects disabled visibility revocation"
+    },
+    {
+      "name": "final-candidate",
+      "command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C packages test -json -count=1 ./watchrooms",
+      "sha": "f3d2a1ceba474101ab0a0477d21299e43f741a3a",
+      "tracked_worktree": "clean before run",
+      "actual_exit": 0,
+      "result": "pass",
+      "execution": "require_escalated allows temporary loopback listener",
+      "terminal_counts": {
+        "pass": 16,
+        "fail": 0,
+        "skip": 0
+      }
+    }
+  ],
+  "reproduce": [
+    "git checkout c17821cf80093c371666ac577608ec4fff3a44fd",
+    "GOCACHE=/tmp/kinosail-testing-go-cache go -C packages test -json -count=1 -run '^TestHTTPAccessMonitorClosesInvisibleRoom$' ./watchrooms",
+    "git apply visibility-guard-disabled.patch; repeat focused command: original assertion false pass",
+    "git apply assertion-repair.patch; repeat focused command: repaired assertion red",
+    "git restore packages/watchrooms/http.go; git checkout f3d2a1ceba474101ab0a0477d21299e43f741a3a",
+    "GOCACHE=/tmp/kinosail-testing-go-cache go -C packages test -json -count=1 ./watchrooms: all16 pass"
+  ],
+  "limits": "This is focused HTTP/WebSocket owner-boundary validation, not browser E2E. Two intentional environment/build-invalid attempts are explicitly recorded and are not behavioral red evidence. Later ledger-only commits do not claim their exact SHA was run."
+}

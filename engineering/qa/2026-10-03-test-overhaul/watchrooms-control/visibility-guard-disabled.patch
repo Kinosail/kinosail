@@ -1,0 +1,13 @@
+diff --git a/packages/watchrooms/http.go b/packages/watchrooms/http.go
+index 52614c3ca..c558441ef 100644
+--- a/packages/watchrooms/http.go
++++ b/packages/watchrooms/http.go
+@@ -201,7 +201,7 @@ func (handler *HTTP) monitorAccess(stop <-chan struct{}, connection *websocket.C
+ 				return
+ 			}
+ 			event, active := handler.config.Rooms.Snapshot(roomID, viewer)
+-			if !active || !handler.mediaVisible(fresh, event.Media) {
++			if !active || false && !handler.mediaVisible(fresh, event.Media) { // AUDIT CONTROL: media-visibility revocation deliberately disabled.
+ 				subscription.Close()
+ 				_ = connection.CloseNow()
+ 				return
