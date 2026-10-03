@@ -10275,23 +10275,48 @@
       "end_line": 81,
       "sha256": "3787894b31b00a3f44bc9a47147c213846446a3dc493dc4e0e77ddaba162fd40",
       "path": "apps/player/internal/server/download_concurrency_test.go",
-      "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "decision": "D",
+      "review_status": "candidate_evidence_complete",
+      "reason": "Consolidated the exact queue-overflow contract into its canonical downloads.Manager owner. Player wrapper promotes the same Start/List methods and repeats identical capacity+2 attempts, one rejection, capacity+1 job counts; no app-specific wiring assertion.",
+      "category": "duplicate shared owner contract",
+      "credible_failure": "The bounded shared queue admits more than capacity+1 outstanding jobs or publishes the rejected job. The canonical package test independently catches this same failure.",
+      "production_owner": [
+        "packages/downloads/start.go:Manager.reserveJob",
+        "packages/downloads/manager.go:New,work",
+        "apps/player/internal/server/downloads.go:newDownloadManager",
+        "apps/player/internal/server/downloads_config.go:downloadConfiguration"
+      ],
+      "non_test_callers": [
+        "packages/downloads/api.go:apiHandler.StartSelected",
+        "apps/player/internal/server/server.go:New",
+        "apps/player/internal/server/downloads.go:newDownloadManager"
+      ],
+      "remaining_proof": [
+        {
+          "path": "packages/downloads/manager_test.go",
+          "scenario": "TestQueueRejectsOverflowBeforeCreatingAJob",
+          "kind": "isolated canonical owner; not E2E; same 34 attempts/1 rejection/33 jobs with cancellation cleanup"
+        },
+        {
+          "path": "apps/player/internal/server/download_concurrency_test.go",
+          "scenario": "TestOfflineDownloadsReserveCapacityForPlayback",
+          "kind": "isolated application wiring contract retained; real temporary FFmpeg processes verify Background reservation"
+        }
+      ],
+      "coverage_limit": "Existing genuine E2E offline-download journeys do not cover queue saturation. The isolated canonical queue keeper is expressly retained for that important concurrency boundary.",
       "history": [
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
-      "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "production_or_support_deletion_unlocked": "Removed test-only downloadQueueCapacity alias from downloads_types.go (one declaration, no other caller).",
+      "risk": "low with canonical shared test retained; keep app workload admission contract separately",
+      "validation_command": "go test ./packages/downloads -run TestQueueRejectsOverflowBeforeCreatingAJob -count=1; go -C apps/player test ./internal/server -run TestOfflineDownloadsReserveCapacityForPlayback -count=1",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "history_context": "Initial commit 52fc46756 provided both the Player replay and package owner; 878dc2a63 removed retired artifacts without adding a unique Player queue assertion.",
+      "implementation_batch": "player-keyboard-and-download-owner-consolidation",
+      "caller_search_command": "rg -n downloadQueueCapacity apps/player/internal/server",
+      "caller_search_result_before_removal": "Only downloads_types.go declaration and removed download_concurrency_test.go loop/count references; no production caller.",
+      "production_change": "Deleted one dead const alias; no runtime behavior change. downloads.QueueCapacity remains canonical."
     },
     {
       "name": "TestDownloadsBoundaryContract",
@@ -23289,25 +23314,46 @@
       "end_line": 11,
       "sha256": "7677784bb2de3b3411fdd4a197389ff693f198513ff2cb54db24af8e5692096f",
       "path": "apps/player/internal/server/shortcuts_test.go",
-      "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "decision": "D",
+      "review_status": "candidate_evidence_complete",
+      "reason": "The helper pins bundle version 32 and five JavaScript source fragments. Existing genuine browser journeys execute menus, navigation chords, stale dialog handling, and editable input behavior. No independent execution assertion remains in the Go test.",
+      "category": "source recipe and hardcoded asset version",
+      "credible_failure": "Deletion or spelling changes of menu title/key expressions, the exact activeMenu guard, or a hardcoded version string; this does not establish that the event handler executes correctly.",
+      "production_owner": [
+        "packages/webassets/static/shortcuts.js",
+        "apps/player/internal/server/assets.go:mainBundle",
+        "apps/player/internal/server/locale.go:newLocalizedTemplate",
+        "apps/player/internal/server/navigation_shell.go"
+      ],
+      "non_test_callers": [
+        "apps/player/internal/server/server.go:New GET /static/main.kinosail.bundle.js",
+        "application templates rendered via newLocalizedTemplate"
+      ],
+      "remaining_proof": [
+        {
+          "path": "apps/player/e2e/shortcuts.spec.ts",
+          "scenario": "Linear-style navigation shortcuts work on browse and settings pages",
+          "kind": "genuine E2E; real Server login, ? and Ctrl+K menu execution and G M/G T navigation"
+        },
+        {
+          "path": "apps/player/e2e/shortcuts.spec.ts",
+          "scenario": "closed command inputs and active editable fields handle go chords safely",
+          "kind": "genuine E2E; actual closed dialog and editable search behavior"
+        }
+      ],
+      "coverage_limit": "Live journey does not exercise every /offline-downloads and /settings/system shortcut or Ctrl+F focus/select. The removed source grep cannot verify those behaviors and is not treated as equivalent coverage.",
       "history": [
         "507f1d77f96ef90cb40a5b5028daf115dfcec3fc Avoid rendering transient library placeholders on fast requests",
         "b35a79a024cfbce7dc1700aaa33d4b5b6d5fbb3a fix(player): resolve web QA findings",
         "24a54afe3790aafaedc4a54ff3afb2703944d469 Fix offline media profile handshake during downloads"
       ],
-      "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "production_or_support_deletion_unlocked": "packages/servertest.ApplicationPagesExposeSharedKeyboardShortcuts still has Subtitles caller; shared helper removal belongs to shared audit owner.",
+      "risk": "low; exact syntax and version pin removed; genuine browser execution retained",
+      "validation_command": "cd apps/player && npx playwright test e2e/shortcuts.spec.ts with KINOSAIL_TEST_INSTANCE=1; root Player Go/browser gates",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "history_context": "b35a79a02 changed only the asserted bundle version 30 to 31; 507f1d77f later version bump. Source helper has no execution assertions.",
+      "implementation_batch": "player-keyboard-and-download-owner-consolidation"
     },
     {
       "name": "TestWriteShowActionFixtures",
@@ -25574,9 +25620,11 @@
     }
   ],
   "proposed_removals": [
+    "TestApplicationPagesExposeSharedKeyboardShortcuts",
     "TestBrandUsesFoldedPlayLogo",
     "TestDirectPlayerDoesNotRestartTheSourceSelectedByHTML",
     "TestNavigationPagesRefreshCachedAssets",
+    "TestOfflineDownloadQueueRejectsOverflowBeforeCreatingAJob",
     "TestOfflinePagesUseTheCurrentNavigationBundle",
     "TestPWAHandlesServiceWorkerRegistrationFailure",
     "TestPagesUseSharedModernStyles",
@@ -25590,9 +25638,11 @@
   ],
   "semantic_audit_complete": false,
   "implemented_removals": [
+    "TestApplicationPagesExposeSharedKeyboardShortcuts",
     "TestBrandUsesFoldedPlayLogo",
     "TestDirectPlayerDoesNotRestartTheSourceSelectedByHTML",
     "TestNavigationPagesRefreshCachedAssets",
+    "TestOfflineDownloadQueueRejectsOverflowBeforeCreatingAJob",
     "TestOfflinePagesUseTheCurrentNavigationBundle",
     "TestPWAHandlesServiceWorkerRegistrationFailure",
     "TestPagesUseSharedModernStyles",
@@ -25604,7 +25654,7 @@
     "TestUIIconSetIsCompleteAndLocal",
     "TestVersionedApplicationStylesheetIncludesSupporterStyles"
   ],
-  "removal_count": 13,
+  "removal_count": 15,
   "verification": [
     {
       "command": "gofmt -w <five touched retained Go files>",
@@ -25617,6 +25667,10 @@
     {
       "command": "Go/E2E candidate execution",
       "result": "pending root serial validation"
+    },
+    {
+      "command": "gofmt -w apps/player/internal/server/download_concurrency_test.go apps/player/internal/server/downloads_types.go; git diff --check",
+      "result": "passed; second batch; no child Go/E2E execution"
     }
   ],
   "retention_examples": [
