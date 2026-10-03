@@ -124,7 +124,7 @@ test("Legacy supporter honors and masterwork remain visible beside current editi
   test.skip(!fixtureDirectory, "requires the production supporter fixture");
   const supporterPage = await readFile(join(fixtureDirectory!, "supporter-populated-both.html"), "utf8");
   const certificate = await readFile(join(fixtureDirectory!, "supporter-living-certificate.html"), "utf8");
-  const context = await browser.newContext({ baseURL: process.env.KINOSAIL_E2E_URL, ignoreHTTPSErrors: true, serviceWorkers: "block" });
+  const context = await browser.newContext({ baseURL: process.env.KINOSAIL_E2E_URL, ignoreHTTPSErrors: false, serviceWorkers: "block" });
   const page = await context.newPage();
   await login(page);
   await page.route((url) => url.pathname === "/supporter", (route) => route.fulfill({ status: 200, contentType: "text/html", body: supporterPage }));
@@ -150,7 +150,7 @@ test("Supporter badge rendering and share conversion remain responsive", async (
   const fixtureDirectory = process.env.KINOSAIL_UI_FIXTURE_DIR;
   test.skip(!fixtureDirectory, "requires the production certificate fixture");
   const certificate = await readFile(join(fixtureDirectory!, "supporter-certificate.html"), "utf8");
-	const context = await browser.newContext({ baseURL: process.env.KINOSAIL_E2E_URL, ignoreHTTPSErrors: true, serviceWorkers: "block" });
+	const context = await browser.newContext({ baseURL: process.env.KINOSAIL_E2E_URL, ignoreHTTPSErrors: false, serviceWorkers: "block" });
 	const page = await context.newPage();
   await login(page);
   await page.route("**/api/v1/supporter/certificates/living-standard.svg", async (route) => route.fulfill({ status: 200, contentType: "image/svg+xml", body: certificate }));

@@ -9,7 +9,7 @@ const supportedProjects = ["chromium", "firefox", "webkit"];
 if (selectedProject && !supportedProjects.includes(selectedProject)) throw new Error(`Unsupported browser project: ${selectedProject}`);
 const extendedProjects = fullMatrix || selectedProject === "firefox" || selectedProject === "webkit";
 const projects = [
-	{ name: "chromium", use: { ...devices["Desktop Chrome"], ...(channel ? { channel } : {}), launchOptions: { args: ["--allow-insecure-localhost", "--ignore-certificate-errors"] } } },
+	{ name: "chromium", use: { ...devices["Desktop Chrome"], ...(channel ? { channel } : {}) } },
 	...(extendedProjects ? [
     { name: "firefox", use: { ...devices["Desktop Firefox"] } },
     { name: "webkit", use: { ...devices["Desktop Safari"] } },
@@ -33,7 +33,7 @@ export default defineConfig({
   ] : process.env.CI ? [["github"], ["html", { open: "never" }]] : "list",
   use: {
     baseURL: process.env.KINOSAIL_E2E_URL ?? "https://127.0.0.1:38127",
-    ignoreHTTPSErrors: true,
+    ignoreHTTPSErrors: false,
     trace: "retain-on-failure",
     screenshot: "only-on-failure",
     video: process.env.KINOSAIL_E2E_VIDEO === "off" ? "off" : "retain-on-failure",

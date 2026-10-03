@@ -194,7 +194,7 @@ async function auditBetaRoutes(page: Page, testInfo: TestInfo, viewport: typeof 
 	const routeBrowser = await browserType.launch();
 	try {
 		for (const route of routes) {
-			const routeContext = await routeBrowser.newContext({ baseURL: process.env.KINOSAIL_E2E_URL ?? "https://127.0.0.1:38128", ignoreHTTPSErrors: true, storageState, viewport });
+			const routeContext = await routeBrowser.newContext({ baseURL: process.env.KINOSAIL_E2E_URL ?? "https://127.0.0.1:38128", ignoreHTTPSErrors: false, storageState, viewport });
 			const routePage = await routeContext.newPage();
 			try {
 				const response = await routePage.goto(route, { waitUntil: "domcontentloaded" });

@@ -5,6 +5,8 @@ set -euo pipefail
 app="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 repo="$(git -C "$app" rev-parse --show-toplevel)"
 cd "$app"
+# shellcheck source=scripts/ci/test-container-transport.sh
+source "$repo/scripts/ci/test-container-transport.sh"
 case "${KINOSAIL_BROWSER_SMOKE:-}" in
   ""|1) ;;
   *) echo 'unsupported browser smoke mode' >&2; exit 2 ;;
@@ -139,7 +141,7 @@ else
 fi
 grep --quiet h264_v4l2m2m <<<"$encoders"
 grep --quiet hevc_v4l2m2m <<<"$encoders"
-"$engine" "${run[@]}" --rm --entrypoint ffmpeg "$image" -hide_banner -loglevel error -f lavfi -i color=c=blue:s=1280x720:d=12 -c:v ffv1 -f matroska - >"$media_dir/Arrival.mkv"
+"$engine" "${run[@]}" --rm --entrypoint sh "$image" -c 'ffmpeg -hide_banner -loglevel error -f lavfi -i color=c=blue:s=1280x720:d=12 -c:v ffv1 -f matroska /tmp/arrival.mkv && cat /tmp/arrival.mkv' >"$media_dir/Arrival.mkv"
 "$engine" "${run[@]}" --rm --entrypoint ffmpeg "$image" -hide_banner -loglevel error -f lavfi -i testsrc2=size=320x180:rate=24:duration=2 -c:v mpeg2video -f mpegts - >"$media_dir/Transport.ts"
 ln "$media_dir/Arrival.mkv" "$media_dir/Beta.mkv"
 ln "$media_dir/Arrival.mkv" "$media_dir/Gamma.mkv"
@@ -152,25 +154,25 @@ fi
 start_server() {
   local publish="127.0.0.1::38127"
   local auth_url=""
+  local scheme="https"
+  local tls_environment=()
+  if [[ "${KINOSAIL_BROWSER_TEST:-}" == "1" ]]; then
+    scheme="http"
+    tls_environment=(--env KINOSAIL_TLS_ENABLED=false)
+  fi
   if [[ $# -eq 1 ]]; then
     publish="127.0.0.1:$1:38127"
-    auth_url="https://localhost:$1"
+    auth_url="$scheme://localhost:$1"
   fi
-  container="$("$engine" "${run[@]}" --detach --publish "$publish" --env "KINOSAIL_AUTH_URL=$auth_url" --env KINOSAIL_BACKUP_DIR=/backups --env KINOSAIL_BACKUP_KEY=container-test-backup-key --volume "$config_volume:/config" --volume "$cache_volume:/cache" --volume "$backup_volume:/backups" --volume "$media_dir:/media:ro" "$image")"
+  container="$("$engine" "${run[@]}" --detach --publish "$publish" "${tls_environment[@]}" --env "KINOSAIL_AUTH_URL=$auth_url" --env KINOSAIL_BACKUP_DIR=/backups --env KINOSAIL_BACKUP_KEY=container-test-backup-key --volume "$config_volume:/config" --volume "$cache_volume:/cache" --volume "$backup_volume:/backups" --volume "$media_dir:/media:ro" "$image")"
   mapped_port="$("$engine" port "$container" 38127/tcp)"
-  url="https://localhost:${mapped_port##*:}"
-  health_host="${auth_url#https://}"
+  url="$scheme://localhost:${mapped_port##*:}"
+  health_host="${auth_url#*://}"
   if [[ -z "$health_host" ]]; then
     health_host="localhost:38127"
   fi
 
-  health=""
-  for _ in {1..240}; do
-    health="$(curl --fail --silent --insecure --header "Host: $health_host" "$url/healthz" || true)"
-    [[ "$health" == '{"status":"ok"}' ]] && return
-    sleep 0.25
-  done
-  return 1
+  wait_container_test_health "$url" "$health_host"
 }
 
 start_fresh_server() {
@@ -211,10 +213,7 @@ expect_status 421 --header 'Host: attacker.example' "$url/healthz"
 dd if=/dev/zero of="$media_dir/oversized-request" bs=1048577 count=1 2>/dev/null
 expect_status 413 --request POST --header 'Content-Type: application/json' --data-binary "@$media_dir/oversized-request" "$url/api/v1/setup"
 grep --quiet 'Set up your Server.' < <(curl --fail --silent --insecure "$url/setup")
-headers="$(curl --fail --silent --insecure --dump-header - --output /dev/null "$url/healthz")"
-grep -qi '^strict-transport-security: max-age=31536000' <<<"$headers"
-grep -qi "^content-security-policy: default-src 'self'" <<<"$headers"
-grep -qi '^x-content-type-options: nosniff' <<<"$headers"
+assert_container_test_headers "$url"
 
 if [[ "${KINOSAIL_BROWSER_TEST:-}" == "1" ]]; then
   browser_args=()

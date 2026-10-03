@@ -6,7 +6,7 @@ const configuredWorkers = Number(process.env.KINOSAIL_BROWSER_WORKERS ?? 0);
 const selectedProject = process.env.KINOSAIL_BROWSER_PROJECT;
 const artifactDir = process.env.KINOSAIL_E2E_ARTIFACT_DIR;
 const projects = [
-  { name: "chromium", use: { ...devices["Desktop Chrome"], ...(channel ? { channel } : {}), launchOptions: { args: ["--allow-insecure-localhost", "--ignore-certificate-errors"] } } },
+  { name: "chromium", use: { ...devices["Desktop Chrome"], ...(channel ? { channel } : {}) } },
   ...(fullMatrix ? [
     { name: "firefox", use: { ...devices["Desktop Firefox"] } },
     { name: "webkit", use: { ...devices["Desktop Safari"] } },
@@ -30,7 +30,7 @@ export default defineConfig({
   ] : process.env.CI ? [["github"], ["html", { open: "never" }]] : "list",
   use: {
     baseURL: process.env.KINOSAIL_E2E_URL ?? "https://127.0.0.1:38128",
-    ignoreHTTPSErrors: true,
+    ignoreHTTPSErrors: false,
     trace: "retain-on-failure",
     screenshot: "only-on-failure",
     video: process.env.KINOSAIL_E2E_VIDEO === "off" ? "off" : "retain-on-failure",
