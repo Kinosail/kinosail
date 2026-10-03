@@ -6822,22 +6822,33 @@
       "sha256": "4557c54aa1bd6503525d30853b24523b625bce42c8dd23715538fea49596e227",
       "path": "apps/player/internal/server/accessibility_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "Removing semantic main landmark from setup/login/QuickConnect leaves auth pages inaccessible to landmark navigation even if ordinary form fill/approval continues to work.",
+      "category": "retained_asset_protocol_or_accessibility_contract",
+      "credible_failure": "Removing semantic main landmark from setup/login/QuickConnect leaves auth pages inaccessible to landmark navigation even if ordinary form fill/approval continues to work.",
+      "production_owner": [
+        "apps/player/internal/server/profiles_http.go:setup/profileLoginHTML views",
+        "apps/player/internal/server/quick_connect.go:quickConnectView",
+        "packages/quickconnect/page.go:HTML",
+        "packages/servertest/accessibility.go:AccountJourneysExposeMainLandmarks"
+      ],
+      "non_test_callers": [
+        "Actual default auth GET routes render three independently-owned view surfaces."
+      ],
+      "remaining_proof": [
+        "Retain this actual assertion boundary; no complete genuine E2E equivalent exists for the stated failure."
+      ],
+      "coverage_limit": "Existing browser success journeys fill forms and approve codes; they do not assert landmark semantics on all three default unauthenticated surfaces. Browser Go accessibility matrix covers later onboarding/settings/Home/TV, not this exact setup/login/QuickConnect set.",
       "history": [
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
-      "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "production_or_support_deletion_unlocked": "None; retained declaration and its real owner/support.",
+      "risk": "Concrete protocol/configuration/accessibility boundary current genuine E2E misses.",
+      "validation_command": "Root full Player Go suite (includes seed/browser declarations when Chrome installed) and named relevant populated browser journeys; no child build/browser execution.",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "review_provenance": "Player owner read complete declaration/helper and tested rendering/composition, routing/callers and relevant browser scenarios; file history retained from original inventory. CSS source excerpts or script fragments are not claimed as runtime coverage.",
+      "test_limit": "Only <main substring and status200, not count/ARIA landmark or actual assistive technology; app-owned default markup remains distinct from populated authenticated cases."
     },
     {
       "name": "TestViewerCanReachAccountSecurityThroughWebAndAPI",
@@ -7992,23 +8003,33 @@
       "sha256": "50b4443dfd194612754f3835df8e829303746e425de3733e02c45ac13eaee239",
       "path": "apps/player/internal/server/assets_compression_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "Three served CSS/Player/hls bundles must decode exactly to identity bytes with unchanged MIME and immutable versioned cache policy across gzip/case/q/wildcard negotiation; corrupt or truncated compressed deployment assets break playback.",
+      "category": "retained_asset_protocol_or_accessibility_contract",
+      "credible_failure": "Three served CSS/Player/hls bundles must decode exactly to identity bytes with unchanged MIME and immutable versioned cache policy across gzip/case/q/wildcard negotiation; corrupt or truncated compressed deployment assets break playback.",
+      "production_owner": [
+        "apps/player/internal/server/assets_compression.go:compressedAsset/gzipAsset/assetEncoding/encodingWeights/codingWeight",
+        "apps/player/internal/server/assets.go:serveScript/serveAsset/serveStyle/cacheStatic",
+        "apps/player/internal/server/server.go:embedded asset route registrations"
+      ],
+      "non_test_callers": [
+        "Real static text/script/style routes construct compressedAsset once; browser/CDN/cache clients negotiate these actual public assets. Personalized HTML/API/media never use this route."
+      ],
+      "remaining_proof": [
+        "Retain this actual assertion boundary; no complete genuine E2E equivalent exists for the stated failure."
+      ],
+      "coverage_limit": "Normal browser E2E uses its own Accept-Encoding and never compares identity/decompressed bytes or four explicit client negotiation forms. Greater-than50% reduction is an intentional bundle budget rather than identical concatenation.",
       "history": [
         "27dd3685403947aa1cd2903dc2c41d4dfb06edb1 Record speed measurements and harden encoding parsing",
         "0a141f9ce66803d9293952d45a8133caac98e293 Reduce static transfers and large catalog browse allocations"
       ],
-      "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "production_or_support_deletion_unlocked": "None; retained declaration and its real owner/support.",
+      "risk": "Concrete protocol/configuration/accessibility boundary current genuine E2E misses.",
+      "validation_command": "Root full Player Go suite (includes seed/browser declarations when Chrome installed) and named relevant populated browser journeys; no child build/browser execution.",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "review_provenance": "Player owner read complete declaration/helper and tested rendering/composition, routing/callers and relevant browser scenarios; file history retained from original inventory. CSS source excerpts or script fragments are not claimed as runtime coverage.",
+      "test_limit": "Fixture uses actual app ServeMux; not a production process or browser E2E."
     },
     {
       "name": "TestStaticCompressionRespectsExclusionsAndBounds",
@@ -8017,23 +8038,32 @@
       "sha256": "dd32da9f85aea5b111fe637c6049c842c4bc01a4ae317a34606043bbd32781d7",
       "path": "apps/player/internal/server/assets_compression_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "Gzip q=0/exclusion/identity-preference must deliver identity and ordinary one-day cache; API/JPEG/PNG must not enter text compression or expose compressed private payload.",
+      "category": "retained_asset_protocol_or_accessibility_contract",
+      "credible_failure": "Gzip q=0/exclusion/identity-preference must deliver identity and ordinary one-day cache; API/JPEG/PNG must not enter text compression or expose compressed private payload.",
+      "production_owner": [
+        "apps/player/internal/server/assets_compression.go:compressedAsset/gzipAsset/assetEncoding/encodingWeights/codingWeight",
+        "apps/player/internal/server/assets.go:serveScript/serveAsset/serveStyle/cacheStatic",
+        "apps/player/internal/server/server.go:embedded asset route registrations"
+      ],
+      "non_test_callers": [
+        "Real static text/script/style routes construct compressedAsset once; browser/CDN/cache clients negotiate these actual public assets. Personalized HTML/API/media never use this route."
+      ],
+      "remaining_proof": [
+        "Retain this actual assertion boundary; no complete genuine E2E equivalent exists for the stated failure."
+      ],
+      "coverage_limit": "Genuine browser normal gzip negotiation does not request explicit gzip exclusion, identity preference or inspect non-text/API content-encoding policies.",
       "history": [
         "27dd3685403947aa1cd2903dc2c41d4dfb06edb1 Record speed measurements and harden encoding parsing",
         "0a141f9ce66803d9293952d45a8133caac98e293 Reduce static transfers and large catalog browse allocations"
       ],
-      "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "production_or_support_deletion_unlocked": "None; retained declaration and its real owner/support.",
+      "risk": "Concrete protocol/configuration/accessibility boundary current genuine E2E misses.",
+      "validation_command": "Root full Player Go suite (includes seed/browser declarations when Chrome installed) and named relevant populated browser journeys; no child build/browser execution.",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "review_provenance": "Player owner read complete declaration/helper and tested rendering/composition, routing/callers and relevant browser scenarios; file history retained from original inventory. CSS source excerpts or script fragments are not claimed as runtime coverage."
     },
     {
       "name": "TestStaticCompressionRejectsMalformedOrUnacceptableNegotiation",
@@ -8042,23 +8072,32 @@
       "sha256": "1083e7cc4e0c67618d04d955a7a82cc0660f1647115af35510841f4693ddc016",
       "path": "apps/player/internal/server/assets_compression_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "Malformed duplicate/invalid coding weights, excessive header bytes/count or no acceptable encoding must fail400/406 with zero payload and no-store before compressed bytes are served.",
+      "category": "retained_asset_protocol_or_accessibility_contract",
+      "credible_failure": "Malformed duplicate/invalid coding weights, excessive header bytes/count or no acceptable encoding must fail400/406 with zero payload and no-store before compressed bytes are served.",
+      "production_owner": [
+        "apps/player/internal/server/assets_compression.go:compressedAsset/gzipAsset/assetEncoding/encodingWeights/codingWeight",
+        "apps/player/internal/server/assets.go:serveScript/serveAsset/serveStyle/cacheStatic",
+        "apps/player/internal/server/server.go:embedded asset route registrations"
+      ],
+      "non_test_callers": [
+        "Real static text/script/style routes construct compressedAsset once; browser/CDN/cache clients negotiate these actual public assets. Personalized HTML/API/media never use this route."
+      ],
+      "remaining_proof": [
+        "Retain this actual assertion boundary; no complete genuine E2E equivalent exists for the stated failure."
+      ],
+      "coverage_limit": "No real browser emits15 invalid/unacceptable Accept-Encoding matrices, multiple duplicate lines or >4096bytes/>16entries; default browser fetch success misses strict input/response/cache boundaries.",
       "history": [
         "27dd3685403947aa1cd2903dc2c41d4dfb06edb1 Record speed measurements and harden encoding parsing",
         "0a141f9ce66803d9293952d45a8133caac98e293 Reduce static transfers and large catalog browse allocations"
       ],
-      "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "production_or_support_deletion_unlocked": "None; retained declaration and its real owner/support.",
+      "risk": "Concrete protocol/configuration/accessibility boundary current genuine E2E misses.",
+      "validation_command": "Root full Player Go suite (includes seed/browser declarations when Chrome installed) and named relevant populated browser journeys; no child build/browser execution.",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "review_provenance": "Player owner read complete declaration/helper and tested rendering/composition, routing/callers and relevant browser scenarios; file history retained from original inventory. CSS source excerpts or script fragments are not claimed as runtime coverage."
     },
     {
       "name": "TestStaticCompressionHEADAndMultipleHeaderLines",
@@ -8067,23 +8106,33 @@
       "sha256": "3d3551f70a63c605a53797011c89df780157b53da02f5c46b89425d3e3c545ee",
       "path": "apps/player/internal/server/assets_compression_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "HEAD negotiated gzip must preserve content headers and length without body; multiple Accept-Encoding lines must be combined and choose allowed gzip when identity is forbidden.",
+      "category": "retained_asset_protocol_or_accessibility_contract",
+      "credible_failure": "HEAD negotiated gzip must preserve content headers and length without body; multiple Accept-Encoding lines must be combined and choose allowed gzip when identity is forbidden.",
+      "production_owner": [
+        "apps/player/internal/server/assets_compression.go:compressedAsset/gzipAsset/assetEncoding/encodingWeights/codingWeight",
+        "apps/player/internal/server/assets.go:serveScript/serveAsset/serveStyle/cacheStatic",
+        "apps/player/internal/server/server.go:embedded asset route registrations"
+      ],
+      "non_test_callers": [
+        "Real static text/script/style routes construct compressedAsset once; browser/CDN/cache clients negotiate these actual public assets. Personalized HTML/API/media never use this route."
+      ],
+      "remaining_proof": [
+        "Retain this actual assertion boundary; no complete genuine E2E equivalent exists for the stated failure."
+      ],
+      "coverage_limit": "Genuine journeys issue ordinary GET with single browser-generated header, never HEAD and this two-line negotiation.",
       "history": [
         "27dd3685403947aa1cd2903dc2c41d4dfb06edb1 Record speed measurements and harden encoding parsing",
         "0a141f9ce66803d9293952d45a8133caac98e293 Reduce static transfers and large catalog browse allocations"
       ],
-      "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "production_or_support_deletion_unlocked": "None; retained declaration and its real owner/support.",
+      "risk": "Concrete protocol/configuration/accessibility boundary current genuine E2E misses.",
+      "validation_command": "Root full Player Go suite (includes seed/browser declarations when Chrome installed) and named relevant populated browser journeys; no child build/browser execution.",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "review_provenance": "Player owner read complete declaration/helper and tested rendering/composition, routing/callers and relevant browser scenarios; file history retained from original inventory. CSS source excerpts or script fragments are not claimed as runtime coverage.",
+      "test_limit": "Content-Length only required nonempty here, not equality to negotiated GET length; no stronger byte-count guarantee implied."
     },
     {
       "name": "TestLibraryPrioritizesVisibleArtworkWithoutLayoutShift",
@@ -8249,25 +8298,34 @@
       "end_line": 22,
       "sha256": "e423a41b3a6f3d2e1da018aec1b49daa7c0c4ea5ae5d584420f8546e5604aee3",
       "path": "apps/player/internal/server/assets_test.go",
-      "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "decision": "F",
+      "review_status": "semantic_review_complete",
+      "reason": "Accidentally adding hosted-CDN frontend resources to default Home can leak private browsing and fail local/offline use; guard forbids https references on default Home and requires local htmx response marker.",
+      "category": "retained_asset_protocol_or_accessibility_contract",
+      "credible_failure": "Accidentally adding hosted-CDN frontend resources to default Home can leak private browsing and fail local/offline use; guard forbids https references on default Home and requires local htmx response marker.",
+      "production_owner": [
+        "apps/player/internal/server/server.go:homeTemplateSource/appHeader/static htmx route",
+        "apps/player/internal/server/assets.go:embedded htmx/serveScript"
+      ],
+      "non_test_callers": [
+        "Real Home renderer supplies local static links; app ServeMux serves embedded htmx."
+      ],
+      "remaining_proof": [
+        "Retain this actual assertion boundary; no complete genuine E2E equivalent exists for the stated failure."
+      ],
+      "coverage_limit": "Current genuine E2E proves usable normal Home but does not reject externally hosted resources or third-party requests.",
       "history": [
         "98972d7c073d77314c41503002ea27708ce9d69b Fix mobile player control targets and touch auto-hide",
         "38335baa6ffccddbe8cc0ac1fdf37424100a8192 Reconcile launch fixes and retain QA lifecycle and cache regressions",
         "104c7a78665230b7503639dc928b9580272d3e6b Keep Safari gesture recovery usable after queued media events"
       ],
-      "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "production_or_support_deletion_unlocked": "None; retained declaration and its real owner/support.",
+      "risk": "Important concrete boundary current genuine E2E misses; weak source assertion limits explicit.",
+      "validation_command": "Root full Player Go suite (includes seed/browser declarations when Chrome installed) and named relevant populated browser journeys; no child build/browser execution.",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "review_provenance": "Player owner read complete declaration/helper and tested rendering/composition, routing/callers and relevant browser scenarios; file history retained from original inventory. CSS source excerpts or script fragments are not claimed as runtime coverage.",
+      "test_limit": "Broad https substring also rejects benign external links, checks only default Home and htmx fragment without requiring status200; F retained privacy/locality guard rather than complete self-hosting proof."
     },
     {
       "name": "TestLibraryNavigationKeepsEveryDestinationInMainWithCompactOverflow",
@@ -8338,25 +8396,39 @@
       "end_line": 30,
       "sha256": "826c2cc188ac97cd8ed4a556e2a7763a10f91cf44fa84b95398ded4efc49cb10",
       "path": "apps/player/internal/server/assets_test.go",
-      "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "decision": "F",
+      "review_status": "semantic_review_complete",
+      "reason": "Omitting manifest/apple-touch icon/viewport-fit-cover/main script from one of five separately rendered primary surfaces prevents consistent install/offline capability; shared source policy also pins install and infinite-scroll hooks absent in ordinary setup playback assertions.",
+      "category": "retained_asset_protocol_or_accessibility_contract",
+      "credible_failure": "Omitting manifest/apple-touch icon/viewport-fit-cover/main script from one of five separately rendered primary surfaces prevents consistent install/offline capability; shared source policy also pins install and infinite-scroll hooks absent in ordinary setup playback assertions.",
+      "production_owner": [
+        "apps/player/internal/server/server.go:Home/static main bundle routes",
+        "apps/player/internal/server/settings_http.go:settingsHTML/settingsView",
+        "apps/player/internal/server/player.go:playerHTML/playerView",
+        "apps/player/internal/server/profiles_http.go:setupHTML/profileLoginHTML views",
+        "apps/player/internal/server/assets.go:mainBundle/pwaJS",
+        "packages/webassets/static/pwa.js:install lifecycle/bindInfiniteLibrary",
+        "packages/servertest/assets_install_contract.go:PrimaryPagesExposeTheInstallExperience/assertPrimaryPageInstallAssets"
+      ],
+      "non_test_callers": [
+        "Browser renders Home/Settings/watch/setup/login independently and executes composed shared PWA main bundle."
+      ],
+      "remaining_proof": [
+        "Retain this actual assertion boundary; no complete genuine E2E equivalent exists for the stated failure."
+      ],
+      "coverage_limit": "Genuine install/playback/scroll journeys do not assert all five app templates have Apple icon/viewport/manifest hooks, Safari standalone and beforeinstallprompt source policy.",
       "history": [
         "98972d7c073d77314c41503002ea27708ce9d69b Fix mobile player control targets and touch auto-hide",
         "38335baa6ffccddbe8cc0ac1fdf37424100a8192 Reconcile launch fixes and retain QA lifecycle and cache regressions",
         "104c7a78665230b7503639dc928b9580272d3e6b Keep Safari gesture recovery usable after queued media events"
       ],
-      "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "production_or_support_deletion_unlocked": "None; retained declaration and its real owner/support.",
+      "risk": "Important concrete boundary current genuine E2E misses; weak source assertion limits explicit.",
+      "validation_command": "Root full Player Go suite (includes seed/browser declarations when Chrome installed) and named relevant populated browser journeys; no child build/browser execution.",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "review_provenance": "Player owner read complete declaration/helper and tested rendering/composition, routing/callers and relevant browser scenarios; file history retained from original inventory. CSS source excerpts or script fragments are not claimed as runtime coverage.",
+      "test_limit": "Source hook presence only; fixture media zero-byte MP4 does not prove playback; source fragments do not prove install acceptance or infinite scroll cancellation."
     },
     {
       "name": "TestLibraryExposesDiscoverableCommandsAndInputParity",
@@ -8364,25 +8436,37 @@
       "end_line": 34,
       "sha256": "26f7a040bd38ce07455ad5c7d21f10da707e7cb690296e89b568b5d9074488f4",
       "path": "apps/player/internal/server/assets_test.go",
-      "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "decision": "F",
+      "review_status": "semantic_review_complete",
+      "reason": "Removing command dialog/button semantics or platform hint, keyboard-arrow or persisted-back navigation restoration hooks loses accessible/return-to-browse behavior current live Ctrl+K/filter/Enter journeys omit.",
+      "category": "retained_asset_protocol_or_accessibility_contract",
+      "credible_failure": "Removing command dialog/button semantics or platform hint, keyboard-arrow or persisted-back navigation restoration hooks loses accessible/return-to-browse behavior current live Ctrl+K/filter/Enter journeys omit.",
+      "production_owner": [
+        "apps/player/internal/server/server.go:appHeader/appMobileMore/homeTemplateSource",
+        "apps/player/internal/server/assets.go:mainBundle",
+        "packages/webassets/static/pwa-navigation.js:command menu/filter/arrows/browseState pageshow",
+        "packages/webassets/static/shortcuts.js:keyboard destinations",
+        "packages/servertest/assets_navigation_contract.go:LibraryExposesDiscoverableCommandsAndInputParity"
+      ],
+      "non_test_callers": [
+        "Real Home renders command controls; shared navigation/shortcuts execute in actual main bundle."
+      ],
+      "remaining_proof": [
+        "Retain this actual assertion boundary; no complete genuine E2E equivalent exists for the stated failure."
+      ],
+      "coverage_limit": "Frontend auditor found no command ArrowDown/Up, platform hint or sessionStorage/back_forward browser proof. Synthetic mobile-menu pageshow tests only navigation lock reset; Theme ArrowRight is radio navigation. No javascriptEnabled:false context exists for compact Actions default.",
       "history": [
         "98972d7c073d77314c41503002ea27708ce9d69b Fix mobile player control targets and touch auto-hide",
         "38335baa6ffccddbe8cc0ac1fdf37424100a8192 Reconcile launch fixes and retain QA lifecycle and cache regressions",
         "104c7a78665230b7503639dc928b9580272d3e6b Keep Safari gesture recovery usable after queued media events"
       ],
-      "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "production_or_support_deletion_unlocked": "None; retained declaration and its real owner/support.",
+      "risk": "Important concrete boundary current genuine E2E misses; weak source assertion limits explicit.",
+      "validation_command": "Root full Player Go suite (includes seed/browser declarations when Chrome installed) and named relevant populated browser journeys; no child build/browser execution.",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "review_provenance": "Player owner read complete declaration/helper and tested rendering/composition, routing/callers and relevant browser scenarios; file history retained from original inventory. CSS source excerpts or script fragments are not claimed as runtime coverage.",
+      "test_limit": "Broad source fragments can be satisfied by another component in composed bundle and do not prove runtime event/storage behavior; exact CSS recipes retained alongside unique controls/default closed state."
     },
     {
       "name": "TestDesktopRailSeparatesUtilitiesFromAccount",
@@ -8489,25 +8573,42 @@
       "end_line": 80,
       "sha256": "ca4ba0aba1586156345fc8ab311586d8207c2bde09704f4513225db96f0fe903",
       "path": "apps/player/internal/server/assets_test.go",
-      "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "decision": "F",
+      "review_status": "semantic_review_complete",
+      "reason": "Invalid/blocked browser storage must fall back to dark and live system-theme changes must update resolved theme; removing these shared Appearance policies can break startup/private browsing although normal choice/persistence browser journeys pass.",
+      "category": "retained_asset_protocol_or_accessibility_contract",
+      "credible_failure": "Invalid/blocked browser storage must fall back to dark and live system-theme changes must update resolved theme; removing these shared Appearance policies can break startup/private browsing although normal choice/persistence browser journeys pass.",
+      "production_owner": [
+        "apps/player/internal/server/settings_http.go:settingsHTML/settingsView",
+        "apps/player/internal/server/assets.go:themeJS/serveStyle",
+        "packages/webassets/static/appearance.js:storage initialization/applyTheme/bindThemeControls/systemTheme change",
+        "packages/servertest/assets_settings_contract.go:ViewerCanChooseDarkLightOrSystemTheme"
+      ],
+      "non_test_callers": [
+        "Settings exposes theme choice; early shared Appearance script resolves/persists theme and listens for system updates."
+      ],
+      "remaining_proof": [
+        "Retain this actual assertion boundary; no complete genuine E2E equivalent exists for the stated failure."
+      ],
+      "coverage_limit": "Root clean6c9781 actual browser proves normal dark/light/system and persistence/reload; it does not inject blocked/invalid localStorage. Subtitles owner corrected its identical declaration is removed and now relies on this retained Player canonical source guard.",
       "history": [
         "98972d7c073d77314c41503002ea27708ce9d69b Fix mobile player control targets and touch auto-hide",
         "38335baa6ffccddbe8cc0ac1fdf37424100a8192 Reconcile launch fixes and retain QA lifecycle and cache regressions",
         "104c7a78665230b7503639dc928b9580272d3e6b Keep Safari gesture recovery usable after queued media events"
       ],
-      "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "production_or_support_deletion_unlocked": "None; retained declaration and its real owner/support.",
+      "risk": "Important concrete boundary current genuine E2E misses; weak source assertion limits explicit.",
+      "validation_command": "Root full Player Go suite (includes seed/browser declarations when Chrome installed) and named relevant populated browser journeys; no child build/browser execution.",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "review_provenance": "Player owner read complete declaration/helper and tested rendering/composition, routing/callers and relevant browser scenarios; file history retained from original inventory. CSS source excerpts or script fragments are not claimed as runtime coverage.",
+      "test_limit": "Exact source-fragment presence does not execute storage rejection/invalid data or dynamic matchMedia. CSS light selector/default fallback fragments and Settings-only placement also asserted; guard is F with runtime gap.",
+      "e2e_execution_evidence": {
+        "revision": "6c9781e2605dc947c4c09e07bb6edfcc8911d42c",
+        "artifact": ".verification/test-overhaul/player-ui-http-6c9781/manifest.json",
+        "result": "passed normal theme scenarios; source-only exceptional branch limits remain",
+        "execution_owner": "root"
+      }
     },
     {
       "name": "TestSettingsAndSharedPageFamiliesUseSignalLayout",
@@ -8515,25 +8616,36 @@
       "end_line": 84,
       "sha256": "015bd0f968e917e345afec195064c338c33a96817b7fd2a2171be106f5638f6a",
       "path": "apps/player/internal/server/assets_test.go",
-      "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "decision": "F",
+      "review_status": "semantic_review_complete",
+      "reason": "Default Settings sections must remain present without JS and configuration must identify default source; hiding server controls in initial markup makes no-JS access unusable despite normal JS navigation working.",
+      "category": "retained_asset_protocol_or_accessibility_contract",
+      "credible_failure": "Default Settings sections must remain present without JS and configuration must identify default source; hiding server controls in initial markup makes no-JS access unusable despite normal JS navigation working.",
+      "production_owner": [
+        "apps/player/internal/server/settings_http.go:settingsHTML/settingsView/showSettings",
+        "apps/player/internal/server/settings_configuration.go:configurationHTML/configurationView",
+        "apps/player/internal/server/assets.go:serveStyle",
+        "packages/servertest/assets_settings_contract.go:SettingsAndSharedPageFamiliesUseSignalLayout"
+      ],
+      "non_test_callers": [
+        "Actual settings/configuration GET handlers render app-owned template controls and configured source; shared/app CSS composed at static route."
+      ],
+      "remaining_proof": [
+        "Retain this actual assertion boundary; no complete genuine E2E equivalent exists for the stated failure."
+      ],
+      "coverage_limit": "No Player browser context disables JS. Current normal Settings journeys cannot detect initially-hidden sections that JS later unhides or all default source explanations.",
       "history": [
         "98972d7c073d77314c41503002ea27708ce9d69b Fix mobile player control targets and touch auto-hide",
         "38335baa6ffccddbe8cc0ac1fdf37424100a8192 Reconcile launch fixes and retain QA lifecycle and cache regressions",
         "104c7a78665230b7503639dc928b9580272d3e6b Keep Safari gesture recovery usable after queued media events"
       ],
-      "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "production_or_support_deletion_unlocked": "None; retained declaration and its real owner/support.",
+      "risk": "Important concrete boundary current genuine E2E misses; weak source assertion limits explicit.",
+      "validation_command": "Root full Player Go suite (includes seed/browser declarations when Chrome installed) and named relevant populated browser journeys; no child build/browser execution.",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "review_provenance": "Player owner read complete declaration/helper and tested rendering/composition, routing/callers and relevant browser scenarios; file history retained from original inventory. CSS source excerpts or script fragments are not claimed as runtime coverage.",
+      "test_limit": "Negative literal <section hidden is only one hiding form; most additional CSS exact grid/card recipes neither prove geometry nor match final overriding cascade. Unique no-JS/default-source policy remains cheaply guarded."
     },
     {
       "name": "TestHomeIsInstallableAsAWebApp",
@@ -8542,24 +8654,35 @@
       "sha256": "6d53aec5fefc5e60dc128370f5cd18b92ee8a338986c10a069ebba243bbdebaf",
       "path": "apps/player/internal/server/assets_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "Missing/malformed/wrong-size raster icons, manifest identity/scope/display or service-worker allowed-scope/no-cache delivery breaks installation and update capability independently of ordinary playback/Home success.",
+      "category": "retained_asset_protocol_or_accessibility_contract",
+      "credible_failure": "Missing/malformed/wrong-size raster icons, manifest identity/scope/display or service-worker allowed-scope/no-cache delivery breaks installation and update capability independently of ordinary playback/Home success.",
+      "production_owner": [
+        "apps/player/internal/server/assets.go:manifest/icons/serviceWorker embeddings and handlers",
+        "apps/player/internal/server/server.go:PWA/icon routes",
+        "apps/player/internal/server/static/manifest.webmanifest",
+        "packages/servertest/assets.go:AssertInstallableWebApp/assertWebAppIcons/request"
+      ],
+      "non_test_callers": [
+        "Browser install surface consumes the served manifest, four icon files and root worker routes."
+      ],
+      "remaining_proof": [
+        "Retain this actual assertion boundary; no complete genuine E2E equivalent exists for the stated failure."
+      ],
+      "coverage_limit": "Genuine E2E normal Home does not decode all192/512/maskable512/apple180 PNGs, inspect standalone manifest scope/id or assert Worker-Allowed/cache headers.",
       "history": [
         "98972d7c073d77314c41503002ea27708ce9d69b Fix mobile player control targets and touch auto-hide",
         "38335baa6ffccddbe8cc0ac1fdf37424100a8192 Reconcile launch fixes and retain QA lifecycle and cache regressions",
         "104c7a78665230b7503639dc928b9580272d3e6b Keep Safari gesture recovery usable after queued media events"
       ],
-      "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "production_or_support_deletion_unlocked": "None; retained declaration and its real owner/support.",
+      "risk": "Concrete protocol/configuration/accessibility boundary current genuine E2E misses.",
+      "validation_command": "Root full Player Go suite (includes seed/browser declarations when Chrome installed) and named relevant populated browser journeys; no child build/browser execution.",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "review_provenance": "Player owner read complete declaration/helper and tested rendering/composition, routing/callers and relevant browser scenarios; file history retained from original inventory. CSS source excerpts or script fragments are not claimed as runtime coverage.",
+      "test_limit": "SVG color/no-gradient and shell backdrop fragments are source policy; PNG decoding/MIME/dimensions are actual delivered-resource assertions."
     },
     {
       "name": "TestBrandUsesFoldedPlayLogo",
@@ -8603,24 +8726,34 @@
       "sha256": "3cea0ca2c3bc353fba44fef89db27b8c5c56dad2e19467578f5e28fa64dfe612",
       "path": "apps/player/internal/server/assets_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "Dropping server-rendered default dark theme on Home/Settings/Account/ArabicHome causes a pre-script theme flash or wrong no-JS appearance even when Appearance JS later restores dark.",
+      "category": "retained_asset_protocol_or_accessibility_contract",
+      "credible_failure": "Dropping server-rendered default dark theme on Home/Settings/Account/ArabicHome causes a pre-script theme flash or wrong no-JS appearance even when Appearance JS later restores dark.",
+      "production_owner": [
+        "apps/player/internal/server/locale.go:newLocalizedTemplate",
+        "apps/player/internal/server/server.go:homeView",
+        "apps/player/internal/server/settings_http.go:settingsView",
+        "apps/player/internal/server/passkeys.go:accountView"
+      ],
+      "non_test_callers": [
+        "Each app localized template is rendered through newLocalizedTemplate, injecting data-theme=dark before browser scripts."
+      ],
+      "remaining_proof": [
+        "Retain this actual assertion boundary; no complete genuine E2E equivalent exists for the stated failure."
+      ],
+      "coverage_limit": "Normal dark-choice browser assertions run after JS and cannot independently require raw pre-JS HTML on all four route/language cases. Root mobile first-paint journey concerns title-jump/navigation, not no-JS Account/theme contract.",
       "history": [
         "98972d7c073d77314c41503002ea27708ce9d69b Fix mobile player control targets and touch auto-hide",
         "38335baa6ffccddbe8cc0ac1fdf37424100a8192 Reconcile launch fixes and retain QA lifecycle and cache regressions",
         "104c7a78665230b7503639dc928b9580272d3e6b Keep Safari gesture recovery usable after queued media events"
       ],
-      "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "production_or_support_deletion_unlocked": "None; retained declaration and its real owner/support.",
+      "risk": "Concrete protocol/configuration/accessibility boundary current genuine E2E misses.",
+      "validation_command": "Root full Player Go suite (includes seed/browser declarations when Chrome installed) and named relevant populated browser journeys; no child build/browser execution.",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "review_provenance": "Player owner read complete declaration/helper and tested rendering/composition, routing/callers and relevant browser scenarios; file history retained from original inventory. CSS source excerpts or script fragments are not claimed as runtime coverage."
     },
     {
       "name": "TestPlaybackAudioEnhancementsUseAnEffectSpecificCompatibleStream",
@@ -22338,23 +22471,34 @@
       "end_line": 11,
       "sha256": "4e4e40c29d19073d2f7a963f0f9d03c174d02e6b78a67b17eb1eef044702b309",
       "path": "apps/player/internal/server/password_manager_test.go",
-      "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "decision": "F",
+      "review_status": "semantic_review_complete",
+      "reason": "Dropping stable username/new-password/current-password/webauthn autofill semantics on setup, login or Profile management prevents managers from associating/reusing the right credentials while manual browser fills still pass.",
+      "category": "retained_asset_protocol_or_accessibility_contract",
+      "credible_failure": "Dropping stable username/new-password/current-password/webauthn autofill semantics on setup, login or Profile management prevents managers from associating/reusing the right credentials while manual browser fills still pass.",
+      "production_owner": [
+        "apps/player/internal/server/profiles_http.go:setupHTML/profileLoginHTML and localized view bindings",
+        "apps/player/internal/server/settings_http.go:settingsHTML/settingsView/showSettings",
+        "apps/player/internal/server/password_manager.go:ignoreNonPasswordSecretAutofill",
+        "packages/servertest/password_manager.go:PasswordFormsExposeStablePasswordManagerSemantics"
+      ],
+      "non_test_callers": [
+        "Setup/password sign-in and Owner Profile add/reset render these app-owned templates; Settings wrapper adds ignore markers only to autocomplete=off fields."
+      ],
+      "remaining_proof": [
+        "Retain this actual assertion boundary; no complete genuine E2E equivalent exists for the stated failure."
+      ],
+      "coverage_limit": "Real first-install and Profile browser journeys fill fields directly; they do not drive third-party password manager heuristics or assert all autocomplete contracts.",
       "history": [
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
-      "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "production_or_support_deletion_unlocked": "None; retained declaration and its real owner/support.",
+      "risk": "Important concrete boundary current genuine E2E misses; weak source assertion limits explicit.",
+      "validation_command": "Root full Player Go suite (includes seed/browser declarations when Chrome installed) and named relevant populated browser journeys; no child build/browser execution.",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "review_provenance": "Player owner read complete declaration/helper and tested rendering/composition, routing/callers and relevant browser scenarios; file history retained from original inventory. CSS source excerpts or script fragments are not claimed as runtime coverage.",
+      "test_limit": "Raw constants and exact attribute order are checked, not post-transform rendered HTML or a real password manager; identifier/order refactors can fail this guard."
     },
     {
       "name": "TestAuthenticationCodeFieldsUseLocalizedNumericSemantics",
@@ -22362,23 +22506,34 @@
       "end_line": 15,
       "sha256": "1d3ae8ae5c2a3700cd9d69425d75bb6ef81a919df3705af11f11f34af533065d",
       "path": "apps/player/internal/server/password_manager_test.go",
-      "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "decision": "F",
+      "review_status": "semantic_review_complete",
+      "reason": "Restricting authentication-or-recovery inputs to six numeric digits prevents users signing in/disabling MFA with alphanumeric recovery codes; removing MFA numeric input semantics degrades authenticator entry. Existing browser path uses only valid TOTP.",
+      "category": "retained_asset_protocol_or_accessibility_contract",
+      "credible_failure": "Restricting authentication-or-recovery inputs to six numeric digits prevents users signing in/disabling MFA with alphanumeric recovery codes; removing MFA numeric input semantics degrades authenticator entry. Existing browser path uses only valid TOTP.",
+      "production_owner": [
+        "apps/player/internal/server/mfa.go:mfaSetupHTML/mfaSetupView",
+        "apps/player/internal/server/profiles_http.go:profileLoginHTML/profileLoginView",
+        "apps/player/internal/server/passkeys.go:accountHTML/accountView",
+        "packages/servertest/password_manager.go:AuthenticationCodeFieldsUseLocalizedNumericSemantics/assertRecoveryCodeField"
+      ],
+      "non_test_callers": [
+        "MFA enrollment, password login, Account factor-disable render distinct app templates."
+      ],
+      "remaining_proof": [
+        "Retain this actual assertion boundary; no complete genuine E2E equivalent exists for the stated failure."
+      ],
+      "coverage_limit": "Actual setup/authentication E2E fills six-digit TOTP; no recovery-code input capability browser assertion.",
       "history": [
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
-      "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "production_or_support_deletion_unlocked": "None; retained declaration and its real owner/support.",
+      "risk": "Important concrete boundary current genuine E2E misses; weak source assertion limits explicit.",
+      "validation_command": "Root full Player Go suite (includes seed/browser declarations when Chrome installed) and named relevant populated browser journeys; no child build/browser execution.",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "review_provenance": "Player owner read complete declaration/helper and tested rendering/composition, routing/callers and relevant browser scenarios; file history retained from original inventory. CSS source excerpts or script fragments are not claimed as runtime coverage.",
+      "test_limit": "Source templates only, first name=code field lookup, localizable message hooks rather than actual translated/manager interaction."
     },
     {
       "name": "TestNonPasswordSecretsOptOutOfPasswordManagers",
@@ -22386,23 +22541,36 @@
       "end_line": 19,
       "sha256": "f36ba6353522cce0e3334fa93e6ce538ca5b8e6a5b540c402a357a2d5b51b003",
       "path": "apps/player/internal/server/password_manager_test.go",
-      "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "decision": "F",
+      "review_status": "semantic_review_complete",
+      "reason": "Integration/configuration tokens and viewing-import credentials must opt out of password-manager capture/suggestion; losing ignore markers can expose or overwrite a non-account secret while ordinary token forms remain functional.",
+      "category": "retained_asset_protocol_or_accessibility_contract",
+      "credible_failure": "Integration/configuration tokens and viewing-import credentials must opt out of password-manager capture/suggestion; losing ignore markers can expose or overwrite a non-account secret while ordinary token forms remain functional.",
+      "production_owner": [
+        "apps/player/internal/server/password_manager.go:ignoreNonPasswordSecretAutofill",
+        "apps/player/internal/server/settings_configuration.go:configurationHTML/configurationView",
+        "apps/player/internal/server/settings_http.go:settingsHTML/settingsView",
+        "apps/player/internal/server/settings_connection_http.go:onboardingConnectionHTML/onboardingConnectionTemplate",
+        "apps/player/internal/server/viewing_import_http.go:viewingImportOnboardingHTML/viewingImportOnboardingView",
+        "packages/servertest/password_manager.go:NonPasswordSecretsOptOutOfPasswordManagers"
+      ],
+      "non_test_callers": [
+        "Actual configuration, Settings, device onboarding and viewing import views apply marker transformation before localization/rendering."
+      ],
+      "remaining_proof": [
+        "Retain this actual assertion boundary; no complete genuine E2E equivalent exists for the stated failure."
+      ],
+      "coverage_limit": "No genuine E2E runs a third-party password manager on integration secrets. Product templates differ from Subtitles and remain app-owned.",
       "history": [
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
-      "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "production_or_support_deletion_unlocked": "None; retained declaration and its real owner/support.",
+      "risk": "Important concrete boundary current genuine E2E misses; weak source assertion limits explicit.",
+      "validation_command": "Root full Player Go suite (includes seed/browser declarations when Chrome installed) and named relevant populated browser journeys; no child build/browser execution.",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "review_provenance": "Player owner read complete declaration/helper and tested rendering/composition, routing/callers and relevant browser scenarios; file history retained from original inventory. CSS source excerpts or script fragments are not claimed as runtime coverage.",
+      "test_limit": "Counts1/2/1/1 of complete ignore-marker phrase in transformed raw source, not association of each individual field or protection by a specific manager; appended integration forms are outside this test."
     },
     {
       "name": "TestPasskeyLoginSupportsPasswordManagerAutofill",
@@ -24770,24 +24938,34 @@
       "sha256": "175ff8755aad07601bf44288c97583bbbc6723cd35447fb8fa2a32b45d9c62b4",
       "path": "apps/player/internal/server/pwa_registration_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "Spanish language cookie must render Spanish offline storage-unsupported/no-ready/select-profile data attributes, otherwise dynamic download failure text remains English despite localized static page.",
+      "category": "retained_asset_protocol_or_accessibility_contract",
+      "credible_failure": "Spanish language cookie must render Spanish offline storage-unsupported/no-ready/select-profile data attributes, otherwise dynamic download failure text remains English despite localized static page.",
+      "production_owner": [
+        "apps/player/internal/server/assets.go:serveOffline/offlineView",
+        "apps/player/internal/server/static/offline.html:dynamic t data attributes",
+        "apps/player/internal/server/locale.go:newLocalizedTemplate/preferredLanguage/loadLocalization",
+        "packages/localization/template.go:template localization runtime"
+      ],
+      "non_test_callers": [
+        "GET /offline localized template prepares the client-consumed dynamic status messages from actual app catalog."
+      ],
+      "remaining_proof": [
+        "Retain this actual assertion boundary; no complete genuine E2E equivalent exists for the stated failure."
+      ],
+      "coverage_limit": "English routed downloads/worker fixtures and online happy-path E2E do not verify these three Spanish offline attribute values. Catalog completeness alone does not prove embedded attribute localization.",
       "history": [
         "98972d7c073d77314c41503002ea27708ce9d69b Fix mobile player control targets and touch auto-hide",
         "38335baa6ffccddbe8cc0ac1fdf37424100a8192 Reconcile launch fixes and retain QA lifecycle and cache regressions",
         "104c7a78665230b7503639dc928b9580272d3e6b Keep Safari gesture recovery usable after queued media events"
       ],
-      "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "production_or_support_deletion_unlocked": "None; retained declaration and its real owner/support.",
+      "risk": "Concrete protocol/configuration/accessibility boundary current genuine E2E misses.",
+      "validation_command": "Root full Player Go suite (includes seed/browser declarations when Chrome installed) and named relevant populated browser journeys; no child build/browser execution.",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "review_provenance": "Player owner read complete declaration/helper and tested rendering/composition, routing/callers and relevant browser scenarios; file history retained from original inventory. CSS source excerpts or script fragments are not claimed as runtime coverage."
     },
     {
       "name": "TestOfflineDownloadClientAndWorkerExposeLocalPlaybackContract",
@@ -28814,7 +28992,7 @@
       "end_line": 29,
       "sha256": "64948a4bdf3a89bc3392084735a0a399dceb93575b4def363be64ef732540779",
       "path": "apps/player/internal/server/security_fuzz_test.go",
-      "decision": "R",
+      "decision": "F",
       "review_status": "semantic_review_complete",
       "reason": "Any bounded arbitrary JSON that decodes to a valid media-share state must remain valid after expired/orphaned pruning; otherwise cleanup can persist invalid capability/session references.",
       "category": "security_invariant_fuzzer",
@@ -28834,7 +29012,7 @@
           "scenario": "FuzzPersistedMediaShareState"
         }
       ],
-      "coverage_limit": "No genuine E2E generates arbitrary persisted share graphs and invariant-preserving cleanup. Subtitles identical helper replay may be removed against this exact keeper.",
+      "coverage_limit": "Pure shared ValidState\u2192Prune\u2192ValidState invariant has no app callback and no genuine E2E generating persisted graphs. Default empty/invalid/null seeds do not contain a populated valid graph, so baseline seed pass is not graph fuzz coverage; no sustained fuzz run claimed. Subtitles exact replay consolidates against this retained Player invariant owner.",
       "history": [
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
@@ -28843,7 +29021,7 @@
       "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./internal/server",
       "baseline_result": "pass",
       "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
-      "test_limit": "Default go test executes seed corpus only; no sustained fuzz run has been performed in this child.",
+      "test_limit": "F: weak starting corpus; valid populated state requires a32byte secret/32byte hash/consistent references, so generated mutations rarely reach populated invariant. Shared TestStateCollectionAndPruneBoundaries and TestStateValidationClonePruneAndRevokeAll retain explicit expiry/orphan/count tables. No new isolated tests/seeds added.",
       "review_provenance": "Player backend owner read complete test/helper tables, production boundary, request entry/callers and relevant E2E; original path history recorded below."
     },
     {
@@ -33644,7 +33822,8 @@
       "declarations": 79,
       "reviewer": "/root/tooling",
       "scope_manifest": "/tmp/player-tooling-security-slice.json",
-      "body_sha256_matches": true
+      "body_sha256_matches": true,
+      "durable_security_audit_commit": "b87f9d77534d78cae6643777a635d572624b97ff"
     }
   ],
   "retention_examples": [
@@ -33662,9 +33841,9 @@
     "inventory_only_retained_pending_semantic_review": 604,
     "test_and_boundary_review_pending_full_owner": 4,
     "status_counts": {
-      "semantic_review_complete": 278,
+      "semantic_review_complete": 294,
       "candidate_evidence_complete": 33,
-      "inventory_only_retained_pending_semantic_review": 522,
+      "inventory_only_retained_pending_semantic_review": 506,
       "test_and_boundary_review_pending_full_owner": 4
     }
   }
