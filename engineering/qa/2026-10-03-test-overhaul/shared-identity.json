@@ -19,14 +19,14 @@
     "baseline_test_lines": 66475,
     "declarations": 1900,
     "decisions": {
-      "R": 173,
-      "D": 10,
-      "unreviewed": 1717
+      "R": 191,
+      "D": 11,
+      "unreviewed": 1698
     },
-    "removed_declarations": 10,
-    "removed_test_lines": 188,
-    "final_declarations": 1890,
-    "final_test_lines": 66287,
+    "removed_declarations": 11,
+    "removed_test_lines": 207,
+    "final_declarations": 1889,
+    "final_test_lines": 66268,
     "removed_support_helpers": 5,
     "removed_support_files": 2,
     "removed_support_lines": 113
@@ -362,20 +362,63 @@
       "e2e": "Genuine populated test-instance-library.spec.ts traverses every media category and checks stacked recent show artwork; ui-happy-paths creates actual curation state. Those do not test malformed/repeated fragment headers, missing per-episode artwork, equal Added timestamps, mutable history callbacks, or empty-category counts. BenchmarkRecentlyAddedLargeLibrary is unrun in the default baseline and has no automated ns/op or allocation threshold; it remains a manually invoked measurement tool rather than executed E2E proof."
     },
     "identitycore": {
-      "reviewed_scope": "Only redirects.go and its three declarations are reviewed in this group; other identitycore declarations remain explicit unreviewed inventory.",
+      "reviewed_scope": "redirects_test.go three declarations and session_http_test.go four declarations are fully reviewed; remaining identitycore declarations are audited separately or explicit pending.",
       "owners": [
-        "packages/identitycore/redirects.go"
+        "packages/identitycore/redirects.go",
+        "packages/identitycore/session_http.go",
+        "packages/identitycore/sessions.go:LoadSessions/create"
       ],
       "dependencies": [
         "net/url.Parse",
         "url.QueryEscape",
-        "HTTP request URL origin parsing"
+        "HTTP request URL origin parsing",
+        "packages/httpguard/session_cookie.go:BrowserSessionCookie/SessionCookieName",
+        "crypto/sha256",
+        "encoding/hex"
       ],
       "callers": [
         "apps/player/internal/server/auth_login.go",
-        "apps/subtitles/internal/server/auth_login.go"
+        "apps/subtitles/internal/server/auth_login.go",
+        "apps/player/internal/server/session_tokens.go",
+        "apps/subtitles/internal/server/session_tokens.go",
+        "apps/player/internal/server/sessions.go",
+        "apps/subtitles/internal/server/sessions.go",
+        "apps/player/internal/server/observability.go",
+        "apps/subtitles/internal/server/observability_finish.go",
+        "packages/identitycore/session_requests.go",
+        "packages/identitycore/session_cookie_migration.go"
       ],
-      "e2e": "Genuine setup/login and Subtitles happy-path backup step-up flows exercise valid local return paths. No browser journey covers the external/encoded slash/backslash/oversized redirect matrix. App direct aliases/replay tests are redundant with these canonical security owner tests; keep the canonical declarations."
+      "e2e": "Genuine setup/login and Subtitles happy-path backup step-up flows exercise valid local return paths. No browser journey covers the external/encoded slash/backslash/oversized redirect matrix. App direct aliases/replay tests are redundant with these canonical security owner tests; keep the canonical declarations. Actual app cookie-isolation/login/logout journeys retain browser cookie security and app-specific host-only names; they do not inject all simultaneously competing compatibility token sources, invalid legacy hash keys, missing timestamps, or malformed audit path/range matrices."
+    },
+    "downloads": {
+      "reviewed_scope": "Only15 declarations in manager_test.go, transcoding_test.go, copy_original_test.go, copy_video_test.go, reservation_test.go and tracks_test.go are reviewed here. Other downloads tests remain explicitly pending.",
+      "owners": [
+        "packages/downloads/manager.go",
+        "packages/downloads/start.go",
+        "packages/downloads/transcoding.go",
+        "packages/downloads/video_encoding.go",
+        "packages/downloads/tracks.go",
+        "packages/downloads/state.go",
+        "packages/downloads/delivery.go",
+        "packages/downloads/manifest.go"
+      ],
+      "dependencies": [
+        "packages/playback:source-aware encoder recipe",
+        "packages/transcodepolicy:BuildPlan/ValidateSourcePolicy",
+        "packages/workload:Acquire/AcquireEncoding",
+        "os.OpenFile/Rename/Stat and context cancellation"
+      ],
+      "callers": [
+        "apps/player/internal/server/downloads.go",
+        "apps/player/internal/server/downloads_config.go",
+        "apps/player/internal/server/downloads_transcoding.go",
+        "apps/player/internal/server/downloads_http.go",
+        "apps/subtitles/internal/server/downloads.go",
+        "apps/subtitles/internal/server/downloads_config.go",
+        "apps/subtitles/internal/server/downloads_transcoding.go",
+        "apps/subtitles/internal/server/downloads_http.go"
+      ],
+      "e2e": "Actual Player test-instance-library.spec.ts:public test instance exercises every media section and local TMDB metadata prepares720p on the real server, sees ready/save-file, transfers to device, asserts Saved and verified compatibility-check text, and installs a video source at/offline-media before and after disconnect. It does not assert advancing offline playback time or decoded pixels. Actual test-instance-offline.spec.ts:offline download stops before transfer when device storage is full prepares720p on the real server, injects browser storage estimate and asserts no file request after the quota error. The same offline spec also has /__offline-lifecycle-test manually supplied HTML and fake job routes; those are fixture/control tests, not backend proof. TestCompatibleDownloadCopiesVideoWithoutEncoderOptions is a real localFFmpeg decoder integration, not app/browser E2E."
     }
   },
   "test_support_inventory": {
@@ -15925,9 +15968,9 @@
       "owner_group": "downloads",
       "body_sha256": "31da2b3a96ed6bebf8997b25a267dbd8653c8920fa9246fd7e5af85efdd94e38",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Preserve this important distinct failure boundary; no new isolated test added.",
       "validation_command": "cd packages && go test ./downloads",
       "baseline_event": {
         "Time": "2026-10-03T10:35:30.414324-06:00",
@@ -15935,7 +15978,34 @@
         "Package": "github.com/MikeO7/kinosail/packages/downloads",
         "Test": "TestOriginalDownloadCopyIsPrivateAndRejectsInvalidSource",
         "Elapsed": 0.02
-      }
+      },
+      "history": [
+        "375ce3b1e97e37ea9c88cbad262f2644eb4b4582 Stabilize hosted tooling and expand runtime regression coverage"
+      ],
+      "production_owner": [
+        "packages/downloads/manager.go",
+        "packages/downloads/start.go",
+        "packages/downloads/transcoding.go",
+        "packages/downloads/video_encoding.go",
+        "packages/downloads/tracks.go",
+        "packages/downloads/state.go",
+        "packages/downloads/delivery.go",
+        "packages/downloads/manifest.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/downloads.go",
+        "apps/player/internal/server/downloads_config.go",
+        "apps/player/internal/server/downloads_transcoding.go",
+        "apps/player/internal/server/downloads_http.go",
+        "apps/subtitles/internal/server/downloads.go",
+        "apps/subtitles/internal/server/downloads_config.go",
+        "apps/subtitles/internal/server/downloads_transcoding.go",
+        "apps/subtitles/internal/server/downloads_http.go"
+      ],
+      "credible_failure": "Keep exact original media bytes in a0600 output file; reject invalid source/output paths and return context cancellation rather than leaking readable media or writing after cancellation.",
+      "remaining_coverage": "Retained canonical owner proof; actual complementary E2E and fixture limits appear in owner_groups.",
+      "gap": "Actual Player test-instance-library.spec.ts:public test instance exercises every media section and local TMDB metadata prepares720p on the real server, sees ready/save-file, transfers to device, asserts Saved and verified compatibility-check text, and installs a video source at/offline-media before and after disconnect. It does not assert advancing offline playback time or decoded pixels. Actual test-instance-offline.spec.ts:offline download stops before transfer when device storage is full prepares720p on the real server, injects browser storage estimate and asserts no file request after the quota error. The same offline spec also has /__offline-lifecycle-test manually supplied HTML and fake job routes; those are fixture/control tests, not backend proof. TestCompatibleDownloadCopiesVideoWithoutEncoderOptions is a real localFFmpeg decoder integration, not app/browser E2E.",
+      "unlocked_deletion": "None."
     },
     {
       "file": "packages/downloads/copy_video_test.go",
@@ -15945,9 +16015,9 @@
       "owner_group": "downloads",
       "body_sha256": "04bb12e20ae4e1360a27493df0158029b3cca578cb92a2421be4635072d7c07c",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Preserve this important distinct failure boundary; no new isolated test added.",
       "validation_command": "cd packages && go test ./downloads",
       "baseline_event": {
         "Time": "2026-10-03T10:35:26.811078-06:00",
@@ -15955,7 +16025,35 @@
         "Package": "github.com/MikeO7/kinosail/packages/downloads",
         "Test": "TestCompatibleDownloadCopiesVideoWithoutEncoderOptions",
         "Elapsed": 0.2
-      }
+      },
+      "history": [
+        "878dc2a63d62880e6d3a5aa395ce25dd40919539 Remove retired artifacts and unused code",
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "production_owner": [
+        "packages/downloads/manager.go",
+        "packages/downloads/start.go",
+        "packages/downloads/transcoding.go",
+        "packages/downloads/video_encoding.go",
+        "packages/downloads/tracks.go",
+        "packages/downloads/state.go",
+        "packages/downloads/delivery.go",
+        "packages/downloads/manifest.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/downloads.go",
+        "apps/player/internal/server/downloads_config.go",
+        "apps/player/internal/server/downloads_transcoding.go",
+        "apps/player/internal/server/downloads_http.go",
+        "apps/subtitles/internal/server/downloads.go",
+        "apps/subtitles/internal/server/downloads_config.go",
+        "apps/subtitles/internal/server/downloads_transcoding.go",
+        "apps/subtitles/internal/server/downloads_http.go"
+      ],
+      "credible_failure": "Real FFmpeg generates, processes and decodes a compatible copy so applying video encoder-only flags to copied video cannot pass merely because a stub executable exited successfully.",
+      "remaining_coverage": "Retained canonical owner proof; actual complementary E2E and fixture limits appear in owner_groups.",
+      "gap": "Actual Player test-instance-library.spec.ts:public test instance exercises every media section and local TMDB metadata prepares720p on the real server, sees ready/save-file, transfers to device, asserts Saved and verified compatibility-check text, and installs a video source at/offline-media before and after disconnect. It does not assert advancing offline playback time or decoded pixels. Actual test-instance-offline.spec.ts:offline download stops before transfer when device storage is full prepares720p on the real server, injects browser storage estimate and asserts no file request after the quota error. The same offline spec also has /__offline-lifecycle-test manually supplied HTML and fake job routes; those are fixture/control tests, not backend proof. TestCompatibleDownloadCopiesVideoWithoutEncoderOptions is a real localFFmpeg decoder integration, not app/browser E2E.",
+      "unlocked_deletion": "None."
     },
     {
       "file": "packages/downloads/current_access_test.go",
@@ -16285,9 +16383,9 @@
       "owner_group": "downloads",
       "body_sha256": "72d7217c1d878469ac87c3676c4868a751d16ce2ad9de5e0e6830a4d9c682e62",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Preserve this important distinct failure boundary; no new isolated test added.",
       "validation_command": "cd packages && go test ./downloads",
       "baseline_event": {
         "Time": "2026-10-03T10:35:30.462339-06:00",
@@ -16295,7 +16393,35 @@
         "Package": "github.com/MikeO7/kinosail/packages/downloads",
         "Test": "TestOriginalDownloadLifecycle",
         "Elapsed": 0.05
-      }
+      },
+      "history": [
+        "878dc2a63d62880e6d3a5aa395ce25dd40919539 Remove retired artifacts and unused code",
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "production_owner": [
+        "packages/downloads/manager.go",
+        "packages/downloads/start.go",
+        "packages/downloads/transcoding.go",
+        "packages/downloads/video_encoding.go",
+        "packages/downloads/tracks.go",
+        "packages/downloads/state.go",
+        "packages/downloads/delivery.go",
+        "packages/downloads/manifest.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/downloads.go",
+        "apps/player/internal/server/downloads_config.go",
+        "apps/player/internal/server/downloads_transcoding.go",
+        "apps/player/internal/server/downloads_http.go",
+        "apps/subtitles/internal/server/downloads.go",
+        "apps/subtitles/internal/server/downloads_config.go",
+        "apps/subtitles/internal/server/downloads_transcoding.go",
+        "apps/subtitles/internal/server/downloads_http.go"
+      ],
+      "credible_failure": "Protect same-viewer idempotence, exact original bytes/hash, profile isolation, persisted lifecycle, and removal; the browser720p journey does not test concurrent repeated original requests or another viewer access.",
+      "remaining_coverage": "Retained canonical owner proof; actual complementary E2E and fixture limits appear in owner_groups.",
+      "gap": "Actual Player test-instance-library.spec.ts:public test instance exercises every media section and local TMDB metadata prepares720p on the real server, sees ready/save-file, transfers to device, asserts Saved and verified compatibility-check text, and installs a video source at/offline-media before and after disconnect. It does not assert advancing offline playback time or decoded pixels. Actual test-instance-offline.spec.ts:offline download stops before transfer when device storage is full prepares720p on the real server, injects browser storage estimate and asserts no file request after the quota error. The same offline spec also has /__offline-lifecycle-test manually supplied HTML and fake job routes; those are fixture/control tests, not backend proof. TestCompatibleDownloadCopiesVideoWithoutEncoderOptions is a real localFFmpeg decoder integration, not app/browser E2E.",
+      "unlocked_deletion": "None."
     },
     {
       "file": "packages/downloads/manager_test.go",
@@ -16305,9 +16431,9 @@
       "owner_group": "downloads",
       "body_sha256": "e5094b53b3b60a7a71f0a517d287e9dc8abc52a43a065f9873d373e033076544",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Preserve this important distinct failure boundary; no new isolated test added.",
       "validation_command": "cd packages && go test ./downloads",
       "baseline_event": {
         "Time": "2026-10-03T10:35:30.401371-06:00",
@@ -16315,7 +16441,35 @@
         "Package": "github.com/MikeO7/kinosail/packages/downloads",
         "Test": "TestStartRejectsInvalidOrUnavailableRequests",
         "Elapsed": 0.01
-      }
+      },
+      "history": [
+        "878dc2a63d62880e6d3a5aa395ce25dd40919539 Remove retired artifacts and unused code",
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "production_owner": [
+        "packages/downloads/manager.go",
+        "packages/downloads/start.go",
+        "packages/downloads/transcoding.go",
+        "packages/downloads/video_encoding.go",
+        "packages/downloads/tracks.go",
+        "packages/downloads/state.go",
+        "packages/downloads/delivery.go",
+        "packages/downloads/manifest.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/downloads.go",
+        "apps/player/internal/server/downloads_config.go",
+        "apps/player/internal/server/downloads_transcoding.go",
+        "apps/player/internal/server/downloads_http.go",
+        "apps/subtitles/internal/server/downloads.go",
+        "apps/subtitles/internal/server/downloads_config.go",
+        "apps/subtitles/internal/server/downloads_transcoding.go",
+        "apps/subtitles/internal/server/downloads_http.go"
+      ],
+      "credible_failure": "Reject incompatible media-kind/quality pairs and an empty viewer profile before preparing a file; these invalid server inputs are not submitted by the browser720p journey.",
+      "remaining_coverage": "Retained canonical owner proof; actual complementary E2E and fixture limits appear in owner_groups.",
+      "gap": "Actual Player test-instance-library.spec.ts:public test instance exercises every media section and local TMDB metadata prepares720p on the real server, sees ready/save-file, transfers to device, asserts Saved and verified compatibility-check text, and installs a video source at/offline-media before and after disconnect. It does not assert advancing offline playback time or decoded pixels. Actual test-instance-offline.spec.ts:offline download stops before transfer when device storage is full prepares720p on the real server, injects browser storage estimate and asserts no file request after the quota error. The same offline spec also has /__offline-lifecycle-test manually supplied HTML and fake job routes; those are fixture/control tests, not backend proof. TestCompatibleDownloadCopiesVideoWithoutEncoderOptions is a real localFFmpeg decoder integration, not app/browser E2E.",
+      "unlocked_deletion": "None."
     },
     {
       "file": "packages/downloads/manager_test.go",
@@ -16325,9 +16479,9 @@
       "owner_group": "downloads",
       "body_sha256": "304b8c1e7deee4559ac40931f3f07930d5862405e87fe799d223c11246a80e6b",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Preserve this important distinct failure boundary; no new isolated test added.",
       "validation_command": "cd packages && go test ./downloads",
       "baseline_event": {
         "Time": "2026-10-03T10:35:30.39721-06:00",
@@ -16335,7 +16489,35 @@
         "Package": "github.com/MikeO7/kinosail/packages/downloads",
         "Test": "TestStartPreservesMemoryWhenPersistenceFails",
         "Elapsed": 0
-      }
+      },
+      "history": [
+        "878dc2a63d62880e6d3a5aa395ce25dd40919539 Remove retired artifacts and unused code",
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "production_owner": [
+        "packages/downloads/manager.go",
+        "packages/downloads/start.go",
+        "packages/downloads/transcoding.go",
+        "packages/downloads/video_encoding.go",
+        "packages/downloads/tracks.go",
+        "packages/downloads/state.go",
+        "packages/downloads/delivery.go",
+        "packages/downloads/manifest.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/downloads.go",
+        "apps/player/internal/server/downloads_config.go",
+        "apps/player/internal/server/downloads_transcoding.go",
+        "apps/player/internal/server/downloads_http.go",
+        "apps/subtitles/internal/server/downloads.go",
+        "apps/subtitles/internal/server/downloads_config.go",
+        "apps/subtitles/internal/server/downloads_transcoding.go",
+        "apps/subtitles/internal/server/downloads_http.go"
+      ],
+      "credible_failure": "An injected state-storage failure must not leave a phantom job or consume a pending queue slot.",
+      "remaining_coverage": "Retained canonical owner proof; actual complementary E2E and fixture limits appear in owner_groups.",
+      "gap": "Actual Player test-instance-library.spec.ts:public test instance exercises every media section and local TMDB metadata prepares720p on the real server, sees ready/save-file, transfers to device, asserts Saved and verified compatibility-check text, and installs a video source at/offline-media before and after disconnect. It does not assert advancing offline playback time or decoded pixels. Actual test-instance-offline.spec.ts:offline download stops before transfer when device storage is full prepares720p on the real server, injects browser storage estimate and asserts no file request after the quota error. The same offline spec also has /__offline-lifecycle-test manually supplied HTML and fake job routes; those are fixture/control tests, not backend proof. TestCompatibleDownloadCopiesVideoWithoutEncoderOptions is a real localFFmpeg decoder integration, not app/browser E2E.",
+      "unlocked_deletion": "None."
     },
     {
       "file": "packages/downloads/manager_test.go",
@@ -16345,9 +16527,9 @@
       "owner_group": "downloads",
       "body_sha256": "d7f8cff84062cb2c93d38431d544dfd09e2706ec025af10d014d3db87eb8c3b2",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Preserve this important distinct failure boundary; no new isolated test added.",
       "validation_command": "cd packages && go test ./downloads",
       "baseline_event": {
         "Time": "2026-10-03T10:35:29.856162-06:00",
@@ -16355,7 +16537,35 @@
         "Package": "github.com/MikeO7/kinosail/packages/downloads",
         "Test": "TestQueueRejectsOverflowBeforeCreatingAJob",
         "Elapsed": 3.02
-      }
+      },
+      "history": [
+        "878dc2a63d62880e6d3a5aa395ce25dd40919539 Remove retired artifacts and unused code",
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "production_owner": [
+        "packages/downloads/manager.go",
+        "packages/downloads/start.go",
+        "packages/downloads/transcoding.go",
+        "packages/downloads/video_encoding.go",
+        "packages/downloads/tracks.go",
+        "packages/downloads/state.go",
+        "packages/downloads/delivery.go",
+        "packages/downloads/manifest.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/downloads.go",
+        "apps/player/internal/server/downloads_config.go",
+        "apps/player/internal/server/downloads_transcoding.go",
+        "apps/player/internal/server/downloads_http.go",
+        "apps/subtitles/internal/server/downloads.go",
+        "apps/subtitles/internal/server/downloads_config.go",
+        "apps/subtitles/internal/server/downloads_transcoding.go",
+        "apps/subtitles/internal/server/downloads_http.go"
+      ],
+      "credible_failure": "Saturating one active and32 queued jobs must reject overflow before persisting/creating an extra job, avoiding unbounded disk/queue pressure. The app replay can be deleted while this canonical owner test remains.",
+      "remaining_coverage": "Retained canonical owner proof; actual complementary E2E and fixture limits appear in owner_groups.",
+      "gap": "Actual Player test-instance-library.spec.ts:public test instance exercises every media section and local TMDB metadata prepares720p on the real server, sees ready/save-file, transfers to device, asserts Saved and verified compatibility-check text, and installs a video source at/offline-media before and after disconnect. It does not assert advancing offline playback time or decoded pixels. Actual test-instance-offline.spec.ts:offline download stops before transfer when device storage is full prepares720p on the real server, injects browser storage estimate and asserts no file request after the quota error. The same offline spec also has /__offline-lifecycle-test manually supplied HTML and fake job routes; those are fixture/control tests, not backend proof. TestCompatibleDownloadCopiesVideoWithoutEncoderOptions is a real localFFmpeg decoder integration, not app/browser E2E.",
+      "unlocked_deletion": "None."
     },
     {
       "file": "packages/downloads/manager_test.go",
@@ -16365,9 +16575,9 @@
       "owner_group": "downloads",
       "body_sha256": "88df81cc9b04f5f9f1fdb52782db17f87e84c41e94b94c856f96694ee0c96194",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Preserve this important distinct failure boundary; no new isolated test added.",
       "validation_command": "cd packages && go test ./downloads",
       "baseline_event": {
         "Time": "2026-10-03T10:35:30.580399-06:00",
@@ -16375,7 +16585,35 @@
         "Package": "github.com/MikeO7/kinosail/packages/downloads",
         "Test": "TestTranscodeRetriesWithSoftware",
         "Elapsed": 0.18
-      }
+      },
+      "history": [
+        "878dc2a63d62880e6d3a5aa395ce25dd40919539 Remove retired artifacts and unused code",
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "production_owner": [
+        "packages/downloads/manager.go",
+        "packages/downloads/start.go",
+        "packages/downloads/transcoding.go",
+        "packages/downloads/video_encoding.go",
+        "packages/downloads/tracks.go",
+        "packages/downloads/state.go",
+        "packages/downloads/delivery.go",
+        "packages/downloads/manifest.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/downloads.go",
+        "apps/player/internal/server/downloads_config.go",
+        "apps/player/internal/server/downloads_transcoding.go",
+        "apps/player/internal/server/downloads_http.go",
+        "apps/subtitles/internal/server/downloads.go",
+        "apps/subtitles/internal/server/downloads_config.go",
+        "apps/subtitles/internal/server/downloads_transcoding.go",
+        "apps/subtitles/internal/server/downloads_http.go"
+      ],
+      "credible_failure": "After an injected first encoder process failure, prepareTask must retry with software and finish ready; the normal browser transcode does not inject hardware failure.",
+      "remaining_coverage": "Retained canonical owner proof; actual complementary E2E and fixture limits appear in owner_groups.",
+      "gap": "Actual Player test-instance-library.spec.ts:public test instance exercises every media section and local TMDB metadata prepares720p on the real server, sees ready/save-file, transfers to device, asserts Saved and verified compatibility-check text, and installs a video source at/offline-media before and after disconnect. It does not assert advancing offline playback time or decoded pixels. Actual test-instance-offline.spec.ts:offline download stops before transfer when device storage is full prepares720p on the real server, injects browser storage estimate and asserts no file request after the quota error. The same offline spec also has /__offline-lifecycle-test manually supplied HTML and fake job routes; those are fixture/control tests, not backend proof. TestCompatibleDownloadCopiesVideoWithoutEncoderOptions is a real localFFmpeg decoder integration, not app/browser E2E.",
+      "unlocked_deletion": "None."
     },
     {
       "file": "packages/downloads/manager_test.go",
@@ -16385,9 +16623,9 @@
       "owner_group": "downloads",
       "body_sha256": "b3fed6217a73f037a9bcad4ece1a7e559835a4f0598be4125a129651486faec9",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "D",
+      "audit_status": "reviewed",
+      "risk": "No unique important bug detection lost: no-op720p command assertion could not detect a broken encoder argument, while genuine server preparation/transfer and real decoder integration remain.",
       "validation_command": "cd packages && go test ./downloads",
       "baseline_event": {
         "Time": "2026-10-03T10:35:30.435035-06:00",
@@ -16395,7 +16633,43 @@
         "Package": "github.com/MikeO7/kinosail/packages/downloads",
         "Test": "TestEncodeBuildsVideoCommandAndReportsCopyErrors",
         "Elapsed": 0.01
-      }
+      },
+      "history": [
+        "878dc2a63d62880e6d3a5aa395ce25dd40919539 Remove retired artifacts and unused code",
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "production_owner": [
+        "packages/downloads/manager.go",
+        "packages/downloads/start.go",
+        "packages/downloads/transcoding.go",
+        "packages/downloads/video_encoding.go",
+        "packages/downloads/tracks.go",
+        "packages/downloads/state.go",
+        "packages/downloads/delivery.go",
+        "packages/downloads/manifest.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/downloads.go",
+        "apps/player/internal/server/downloads_config.go",
+        "apps/player/internal/server/downloads_transcoding.go",
+        "apps/player/internal/server/downloads_http.go",
+        "apps/subtitles/internal/server/downloads.go",
+        "apps/subtitles/internal/server/downloads_config.go",
+        "apps/subtitles/internal/server/downloads_transcoding.go",
+        "apps/subtitles/internal/server/downloads_http.go"
+      ],
+      "credible_failure": "Runs an uninspected720p command through/usr/bin/true with nonexistent source/output, then checks one missing copy source produces os.IsNotExist.",
+      "reason": "The no-op process ignores every FFmpeg argument and never creates media; nil error cannot show command correctness. Public one-slot reservation lifecycle already passes a valid720p plan, real FFmpeg compatible-copy decoding provides stronger output proof, and actual server720p preparation/transfer covers runtime wiring. Missing copy input is already rejected alongside output-directory/nonregular/cancellation failures by retained canonical tests. Production copy errors propagate generically and no copyFileContext caller branches on os.IsNotExist.",
+      "remaining_coverage": [
+        "packages/downloads/reservation_test.go:TestDownloadsReserveExactlyOneSlot",
+        "packages/downloads/copy_video_test.go:TestCompatibleDownloadCopiesVideoWithoutEncoderOptions",
+        "packages/downloads/copy_original_test.go:TestOriginalDownloadCopyIsPrivateAndRejectsInvalidSource",
+        "packages/downloads/transcoding_test.go:TestCopyAndIntegrityReportFileFailures",
+        "apps/player/e2e/test-instance-library.spec.ts:public test instance exercises every media section and local TMDB metadata",
+        "apps/player/e2e/test-instance-offline.spec.ts:offline download stops before transfer when device storage is full"
+      ],
+      "gap": "The exact os.IsNotExist identity for this redundant missing-input private copy assertion is no longer pinned by that declaration; callers only propagate the failure. Browser720p readiness/checksum/transfer does not prove every encoding argument or advancing offline playback. The real decoder test covers compatible copy only; unsupported source/track and reservation/hardware failure tests remain. No backend proof inferred from /__offline-lifecycle-test fixtures.",
+      "unlocked_deletion": "No production code or shared helper removed."
     },
     {
       "file": "packages/downloads/manifest_api_test.go",
@@ -16640,9 +16914,9 @@
       "owner_group": "downloads",
       "body_sha256": "bcf35483b98afd10c7366acbf3504f6236bc0707bef642c06fe189d04aa5577e",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Preserve this important distinct failure boundary; no new isolated test added.",
       "validation_command": "cd packages && go test ./downloads",
       "baseline_event": {
         "Time": "2026-10-03T10:35:30.299093-06:00",
@@ -16650,7 +16924,35 @@
         "Package": "github.com/MikeO7/kinosail/packages/downloads",
         "Test": "TestDownloadsReserveExactlyOneSlot",
         "Elapsed": 0.42
-      }
+      },
+      "history": [
+        "878dc2a63d62880e6d3a5aa395ce25dd40919539 Remove retired artifacts and unused code",
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "production_owner": [
+        "packages/downloads/manager.go",
+        "packages/downloads/start.go",
+        "packages/downloads/transcoding.go",
+        "packages/downloads/video_encoding.go",
+        "packages/downloads/tracks.go",
+        "packages/downloads/state.go",
+        "packages/downloads/delivery.go",
+        "packages/downloads/manifest.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/downloads.go",
+        "apps/player/internal/server/downloads_config.go",
+        "apps/player/internal/server/downloads_transcoding.go",
+        "apps/player/internal/server/downloads_http.go",
+        "apps/subtitles/internal/server/downloads.go",
+        "apps/subtitles/internal/server/downloads_config.go",
+        "apps/subtitles/internal/server/downloads_transcoding.go",
+        "apps/subtitles/internal/server/downloads_http.go"
+      ],
+      "credible_failure": "Public prepare-to-ready across original/compatible/720p/audio must acquire and release exactly one correct workload reservation; a one-slot governor reveals nested reservation deadlocks and leaked active work.",
+      "remaining_coverage": "Retained canonical owner proof; actual complementary E2E and fixture limits appear in owner_groups.",
+      "gap": "Actual Player test-instance-library.spec.ts:public test instance exercises every media section and local TMDB metadata prepares720p on the real server, sees ready/save-file, transfers to device, asserts Saved and verified compatibility-check text, and installs a video source at/offline-media before and after disconnect. It does not assert advancing offline playback time or decoded pixels. Actual test-instance-offline.spec.ts:offline download stops before transfer when device storage is full prepares720p on the real server, injects browser storage estimate and asserts no file request after the quota error. The same offline spec also has /__offline-lifecycle-test manually supplied HTML and fake job routes; those are fixture/control tests, not backend proof. TestCompatibleDownloadCopiesVideoWithoutEncoderOptions is a real localFFmpeg decoder integration, not app/browser E2E.",
+      "unlocked_deletion": "None."
     },
     {
       "file": "packages/downloads/reservation_test.go",
@@ -16660,9 +16962,9 @@
       "owner_group": "downloads",
       "body_sha256": "d8b8ab61627db81348fffbc2f2deefdfece7c96959a3efe3dc74ff16a35225fb",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Preserve this important distinct failure boundary; no new isolated test added.",
       "validation_command": "cd packages && go test ./downloads",
       "baseline_event": {
         "Time": "2026-10-03T10:35:30.300662-06:00",
@@ -16670,7 +16972,35 @@
         "Package": "github.com/MikeO7/kinosail/packages/downloads",
         "Test": "TestReservationFailureDoesNotRetryOrEncode",
         "Elapsed": 0.01
-      }
+      },
+      "history": [
+        "878dc2a63d62880e6d3a5aa395ce25dd40919539 Remove retired artifacts and unused code",
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "production_owner": [
+        "packages/downloads/manager.go",
+        "packages/downloads/start.go",
+        "packages/downloads/transcoding.go",
+        "packages/downloads/video_encoding.go",
+        "packages/downloads/tracks.go",
+        "packages/downloads/state.go",
+        "packages/downloads/delivery.go",
+        "packages/downloads/manifest.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/downloads.go",
+        "apps/player/internal/server/downloads_config.go",
+        "apps/player/internal/server/downloads_transcoding.go",
+        "apps/player/internal/server/downloads_http.go",
+        "apps/subtitles/internal/server/downloads.go",
+        "apps/subtitles/internal/server/downloads_config.go",
+        "apps/subtitles/internal/server/downloads_transcoding.go",
+        "apps/subtitles/internal/server/downloads_http.go"
+      ],
+      "credible_failure": "An injected failed encoding reservation must not authorize software retry or produce output, preserving workload limits during contention.",
+      "remaining_coverage": "Retained canonical owner proof; actual complementary E2E and fixture limits appear in owner_groups.",
+      "gap": "Actual Player test-instance-library.spec.ts:public test instance exercises every media section and local TMDB metadata prepares720p on the real server, sees ready/save-file, transfers to device, asserts Saved and verified compatibility-check text, and installs a video source at/offline-media before and after disconnect. It does not assert advancing offline playback time or decoded pixels. Actual test-instance-offline.spec.ts:offline download stops before transfer when device storage is full prepares720p on the real server, injects browser storage estimate and asserts no file request after the quota error. The same offline spec also has /__offline-lifecycle-test manually supplied HTML and fake job routes; those are fixture/control tests, not backend proof. TestCompatibleDownloadCopiesVideoWithoutEncoderOptions is a real localFFmpeg decoder integration, not app/browser E2E.",
+      "unlocked_deletion": "None."
     },
     {
       "file": "packages/downloads/reservation_test.go",
@@ -16680,9 +17010,9 @@
       "owner_group": "downloads",
       "body_sha256": "6dcb9e547aad66b8fa4fad986b015b82d53595f2b1885c89b0a18e9d01ad783a",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Preserve this important distinct failure boundary; no new isolated test added.",
       "validation_command": "cd packages && go test ./downloads",
       "baseline_event": {
         "Time": "2026-10-03T10:35:30.301271-06:00",
@@ -16690,7 +17020,35 @@
         "Package": "github.com/MikeO7/kinosail/packages/downloads",
         "Test": "TestInvalidDownloadIsRejectedBeforeInspection",
         "Elapsed": 0
-      }
+      },
+      "history": [
+        "878dc2a63d62880e6d3a5aa395ce25dd40919539 Remove retired artifacts and unused code",
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "production_owner": [
+        "packages/downloads/manager.go",
+        "packages/downloads/start.go",
+        "packages/downloads/transcoding.go",
+        "packages/downloads/video_encoding.go",
+        "packages/downloads/tracks.go",
+        "packages/downloads/state.go",
+        "packages/downloads/delivery.go",
+        "packages/downloads/manifest.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/downloads.go",
+        "apps/player/internal/server/downloads_config.go",
+        "apps/player/internal/server/downloads_transcoding.go",
+        "apps/player/internal/server/downloads_http.go",
+        "apps/subtitles/internal/server/downloads.go",
+        "apps/subtitles/internal/server/downloads_config.go",
+        "apps/subtitles/internal/server/downloads_transcoding.go",
+        "apps/subtitles/internal/server/downloads_http.go"
+      ],
+      "credible_failure": "Reject invalid quality/profile before expensive media inspection and before any jobs/pending state is changed; malformed backend requests are absent from browser happy paths.",
+      "remaining_coverage": "Retained canonical owner proof; actual complementary E2E and fixture limits appear in owner_groups.",
+      "gap": "Actual Player test-instance-library.spec.ts:public test instance exercises every media section and local TMDB metadata prepares720p on the real server, sees ready/save-file, transfers to device, asserts Saved and verified compatibility-check text, and installs a video source at/offline-media before and after disconnect. It does not assert advancing offline playback time or decoded pixels. Actual test-instance-offline.spec.ts:offline download stops before transfer when device storage is full prepares720p on the real server, injects browser storage estimate and asserts no file request after the quota error. The same offline spec also has /__offline-lifecycle-test manually supplied HTML and fake job routes; those are fixture/control tests, not backend proof. TestCompatibleDownloadCopiesVideoWithoutEncoderOptions is a real localFFmpeg decoder integration, not app/browser E2E.",
+      "unlocked_deletion": "None."
     },
     {
       "file": "packages/downloads/resilience_test.go",
@@ -16980,9 +17338,9 @@
       "owner_group": "downloads",
       "body_sha256": "35cbd8ea9ac446d83c0d0a1c667bcd1daee4eda038b8dcb36ccc181a95fd09e2",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Preserve this important distinct failure boundary; no new isolated test added.",
       "validation_command": "cd packages && go test ./downloads",
       "baseline_event": {
         "Time": "2026-10-03T10:35:30.391759-06:00",
@@ -16990,7 +17348,34 @@
         "Package": "github.com/MikeO7/kinosail/packages/downloads",
         "Test": "TestTrackBundlePreservesSelectionAndStyledSidecars",
         "Elapsed": 0
-      }
+      },
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "production_owner": [
+        "packages/downloads/manager.go",
+        "packages/downloads/start.go",
+        "packages/downloads/transcoding.go",
+        "packages/downloads/video_encoding.go",
+        "packages/downloads/tracks.go",
+        "packages/downloads/state.go",
+        "packages/downloads/delivery.go",
+        "packages/downloads/manifest.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/downloads.go",
+        "apps/player/internal/server/downloads_config.go",
+        "apps/player/internal/server/downloads_transcoding.go",
+        "apps/player/internal/server/downloads_http.go",
+        "apps/subtitles/internal/server/downloads.go",
+        "apps/subtitles/internal/server/downloads_config.go",
+        "apps/subtitles/internal/server/downloads_transcoding.go",
+        "apps/subtitles/internal/server/downloads_http.go"
+      ],
+      "credible_failure": "Preserve explicitly selected audio/subtitles, retain styled externalASS inMKV, honor explicit empty arrays and reject duplicate/nonexistent/nil selections; browser fixture media does not cover that matrix.",
+      "remaining_coverage": "Retained canonical owner proof; actual complementary E2E and fixture limits appear in owner_groups.",
+      "gap": "Actual Player test-instance-library.spec.ts:public test instance exercises every media section and local TMDB metadata prepares720p on the real server, sees ready/save-file, transfers to device, asserts Saved and verified compatibility-check text, and installs a video source at/offline-media before and after disconnect. It does not assert advancing offline playback time or decoded pixels. Actual test-instance-offline.spec.ts:offline download stops before transfer when device storage is full prepares720p on the real server, injects browser storage estimate and asserts no file request after the quota error. The same offline spec also has /__offline-lifecycle-test manually supplied HTML and fake job routes; those are fixture/control tests, not backend proof. TestCompatibleDownloadCopiesVideoWithoutEncoderOptions is a real localFFmpeg decoder integration, not app/browser E2E.",
+      "unlocked_deletion": "None."
     },
     {
       "file": "packages/downloads/transcoding_test.go",
@@ -17000,9 +17385,9 @@
       "owner_group": "downloads",
       "body_sha256": "7b818ab93edc801d6c35cc97d0ed01f7c76a004dc6fc59ad17b5bf86fafa2f5b",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Preserve this important distinct failure boundary; no new isolated test added.",
       "validation_command": "cd packages && go test ./downloads",
       "baseline_event": {
         "Time": "2026-10-03T10:35:30.40738-06:00",
@@ -17010,7 +17395,35 @@
         "Package": "github.com/MikeO7/kinosail/packages/downloads",
         "Test": "TestTranscodingPreservesPrimaryAndBuildsSoftwareFallback",
         "Elapsed": 0
-      }
+      },
+      "history": [
+        "878dc2a63d62880e6d3a5aa395ce25dd40919539 Remove retired artifacts and unused code",
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "production_owner": [
+        "packages/downloads/manager.go",
+        "packages/downloads/start.go",
+        "packages/downloads/transcoding.go",
+        "packages/downloads/video_encoding.go",
+        "packages/downloads/tracks.go",
+        "packages/downloads/state.go",
+        "packages/downloads/delivery.go",
+        "packages/downloads/manifest.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/downloads.go",
+        "apps/player/internal/server/downloads_config.go",
+        "apps/player/internal/server/downloads_transcoding.go",
+        "apps/player/internal/server/downloads_http.go",
+        "apps/subtitles/internal/server/downloads.go",
+        "apps/subtitles/internal/server/downloads_config.go",
+        "apps/subtitles/internal/server/downloads_transcoding.go",
+        "apps/subtitles/internal/server/downloads_http.go"
+      ],
+      "credible_failure": "Keep configured hardware settings for the first attempt and resolve the same codec software encoder for fallback; actual E2E does not exercise hardware-to-software policy transition.",
+      "remaining_coverage": "Retained canonical owner proof; actual complementary E2E and fixture limits appear in owner_groups.",
+      "gap": "Actual Player test-instance-library.spec.ts:public test instance exercises every media section and local TMDB metadata prepares720p on the real server, sees ready/save-file, transfers to device, asserts Saved and verified compatibility-check text, and installs a video source at/offline-media before and after disconnect. It does not assert advancing offline playback time or decoded pixels. Actual test-instance-offline.spec.ts:offline download stops before transfer when device storage is full prepares720p on the real server, injects browser storage estimate and asserts no file request after the quota error. The same offline spec also has /__offline-lifecycle-test manually supplied HTML and fake job routes; those are fixture/control tests, not backend proof. TestCompatibleDownloadCopiesVideoWithoutEncoderOptions is a real localFFmpeg decoder integration, not app/browser E2E.",
+      "unlocked_deletion": "None."
     },
     {
       "file": "packages/downloads/transcoding_test.go",
@@ -17020,9 +17433,9 @@
       "owner_group": "downloads",
       "body_sha256": "306ad39d3afedb5c6b85002ff077a681e396cc285a18ab82a3399111367becc0",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Preserve this important distinct failure boundary; no new isolated test added.",
       "validation_command": "cd packages && go test ./downloads",
       "baseline_event": {
         "Time": "2026-10-03T10:35:30.393309-06:00",
@@ -17030,7 +17443,35 @@
         "Package": "github.com/MikeO7/kinosail/packages/downloads",
         "Test": "TestCopyAndIntegrityReportFileFailures",
         "Elapsed": 0
-      }
+      },
+      "history": [
+        "878dc2a63d62880e6d3a5aa395ce25dd40919539 Remove retired artifacts and unused code",
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "production_owner": [
+        "packages/downloads/manager.go",
+        "packages/downloads/start.go",
+        "packages/downloads/transcoding.go",
+        "packages/downloads/video_encoding.go",
+        "packages/downloads/tracks.go",
+        "packages/downloads/state.go",
+        "packages/downloads/delivery.go",
+        "packages/downloads/manifest.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/downloads.go",
+        "apps/player/internal/server/downloads_config.go",
+        "apps/player/internal/server/downloads_transcoding.go",
+        "apps/player/internal/server/downloads_http.go",
+        "apps/subtitles/internal/server/downloads.go",
+        "apps/subtitles/internal/server/downloads_config.go",
+        "apps/subtitles/internal/server/downloads_transcoding.go",
+        "apps/subtitles/internal/server/downloads_http.go"
+      ],
+      "credible_failure": "Propagate output-directory, nonregular input and missing manifest source filesystem failures instead of sealing or marking nonexistent media ready.",
+      "remaining_coverage": "Retained canonical owner proof; actual complementary E2E and fixture limits appear in owner_groups.",
+      "gap": "Actual Player test-instance-library.spec.ts:public test instance exercises every media section and local TMDB metadata prepares720p on the real server, sees ready/save-file, transfers to device, asserts Saved and verified compatibility-check text, and installs a video source at/offline-media before and after disconnect. It does not assert advancing offline playback time or decoded pixels. Actual test-instance-offline.spec.ts:offline download stops before transfer when device storage is full prepares720p on the real server, injects browser storage estimate and asserts no file request after the quota error. The same offline spec also has /__offline-lifecycle-test manually supplied HTML and fake job routes; those are fixture/control tests, not backend proof. TestCompatibleDownloadCopiesVideoWithoutEncoderOptions is a real localFFmpeg decoder integration, not app/browser E2E.",
+      "unlocked_deletion": "None."
     },
     {
       "file": "packages/downloads/transcoding_test.go",
@@ -17040,9 +17481,9 @@
       "owner_group": "downloads",
       "body_sha256": "97cd931d084247794fb3cdb2140523ff2ff124e03a1678dfdd2028c06c4a025a",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Preserve this important distinct failure boundary; no new isolated test added.",
       "validation_command": "cd packages && go test ./downloads",
       "baseline_event": {
         "Time": "2026-10-03T10:35:30.39385-06:00",
@@ -17050,7 +17491,35 @@
         "Package": "github.com/MikeO7/kinosail/packages/downloads",
         "Test": "TestVideoDownloadRejectsMissingInspectionBeforeEncoding",
         "Elapsed": 0
-      }
+      },
+      "history": [
+        "878dc2a63d62880e6d3a5aa395ce25dd40919539 Remove retired artifacts and unused code",
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "production_owner": [
+        "packages/downloads/manager.go",
+        "packages/downloads/start.go",
+        "packages/downloads/transcoding.go",
+        "packages/downloads/video_encoding.go",
+        "packages/downloads/tracks.go",
+        "packages/downloads/state.go",
+        "packages/downloads/delivery.go",
+        "packages/downloads/manifest.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/downloads.go",
+        "apps/player/internal/server/downloads_config.go",
+        "apps/player/internal/server/downloads_transcoding.go",
+        "apps/player/internal/server/downloads_http.go",
+        "apps/subtitles/internal/server/downloads.go",
+        "apps/subtitles/internal/server/downloads_config.go",
+        "apps/subtitles/internal/server/downloads_transcoding.go",
+        "apps/subtitles/internal/server/downloads_http.go"
+      ],
+      "credible_failure": "Reject unknown source facts or Dolby Vision with no supported compatibility layer before launching the encoder or creating output, rather than silently producing invalid video.",
+      "remaining_coverage": "Retained canonical owner proof; actual complementary E2E and fixture limits appear in owner_groups.",
+      "gap": "Actual Player test-instance-library.spec.ts:public test instance exercises every media section and local TMDB metadata prepares720p on the real server, sees ready/save-file, transfers to device, asserts Saved and verified compatibility-check text, and installs a video source at/offline-media before and after disconnect. It does not assert advancing offline playback time or decoded pixels. Actual test-instance-offline.spec.ts:offline download stops before transfer when device storage is full prepares720p on the real server, injects browser storage estimate and asserts no file request after the quota error. The same offline spec also has /__offline-lifecycle-test manually supplied HTML and fake job routes; those are fixture/control tests, not backend proof. TestCompatibleDownloadCopiesVideoWithoutEncoderOptions is a real localFFmpeg decoder integration, not app/browser E2E.",
+      "unlocked_deletion": "None."
     },
     {
       "file": "packages/downloads/web_test.go",
@@ -22698,9 +23167,9 @@
       "owner_group": "identitycore",
       "body_sha256": "d79cb63befabf09b077542901be6aefee272d95302fcfe71165d389bf43b2d1f",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Preserve this important distinct failure boundary; no new isolated test added.",
       "validation_command": "cd packages && go test ./identitycore",
       "baseline_event": {
         "Time": "2026-10-03T10:35:27.611239-06:00",
@@ -22708,7 +23177,31 @@
         "Package": "github.com/MikeO7/kinosail/packages/identitycore",
         "Test": "TestSessionTokenPrecedenceAndSources",
         "Elapsed": 0
-      }
+      },
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "production_owner": [
+        "packages/identitycore/redirects.go",
+        "packages/identitycore/session_http.go",
+        "packages/identitycore/sessions.go:LoadSessions/create"
+      ],
+      "callers": [
+        "apps/player/internal/server/auth_login.go",
+        "apps/subtitles/internal/server/auth_login.go",
+        "apps/player/internal/server/session_tokens.go",
+        "apps/subtitles/internal/server/session_tokens.go",
+        "apps/player/internal/server/sessions.go",
+        "apps/subtitles/internal/server/sessions.go",
+        "apps/player/internal/server/observability.go",
+        "apps/subtitles/internal/server/observability_finish.go",
+        "packages/identitycore/session_requests.go",
+        "packages/identitycore/session_cookie_migration.go"
+      ],
+      "credible_failure": "When multiple credential sources are present, fixed bearer/compatibility/query/browser precedence must prevent a fallback cookie from overriding an explicitly supplied bearer, including empty bearer fail-closed behavior.",
+      "remaining_coverage": "Retained canonical owner proof; actual complementary E2E and fixture limits appear in owner_groups.",
+      "gap": "Genuine setup/login and Subtitles happy-path backup step-up flows exercise valid local return paths. No browser journey covers the external/encoded slash/backslash/oversized redirect matrix. App direct aliases/replay tests are redundant with these canonical security owner tests; keep the canonical declarations. Actual app cookie-isolation/login/logout journeys retain browser cookie security and app-specific host-only names; they do not inject all simultaneously competing compatibility token sources, invalid legacy hash keys, missing timestamps, or malformed audit path/range matrices.",
+      "unlocked_deletion": "None."
     },
     {
       "file": "packages/identitycore/session_http_test.go",
@@ -22718,9 +23211,9 @@
       "owner_group": "identitycore",
       "body_sha256": "64fd3f6306d729bb646eba04c35175e09dc79b43c39597e7accec4a9d7be5376",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Preserve this important distinct failure boundary; no new isolated test added.",
       "validation_command": "cd packages && go test ./identitycore",
       "baseline_event": {
         "Time": "2026-10-03T10:35:27.611062-06:00",
@@ -22728,7 +23221,31 @@
         "Package": "github.com/MikeO7/kinosail/packages/identitycore",
         "Test": "TestMediaBrowserParsingAndSessionKeys",
         "Elapsed": 0
-      }
+      },
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "production_owner": [
+        "packages/identitycore/redirects.go",
+        "packages/identitycore/session_http.go",
+        "packages/identitycore/sessions.go:LoadSessions/create"
+      ],
+      "callers": [
+        "apps/player/internal/server/auth_login.go",
+        "apps/subtitles/internal/server/auth_login.go",
+        "apps/player/internal/server/session_tokens.go",
+        "apps/subtitles/internal/server/session_tokens.go",
+        "apps/player/internal/server/sessions.go",
+        "apps/subtitles/internal/server/sessions.go",
+        "apps/player/internal/server/observability.go",
+        "apps/subtitles/internal/server/observability_finish.go",
+        "packages/identitycore/session_requests.go",
+        "packages/identitycore/session_cookie_migration.go"
+      ],
+      "credible_failure": "Accept case-insensitive compatibility client token fields while hashing raw or invalid-hex session keys and leaving valid persisted hash keys unchanged; browser login has no MediaBrowser credential or malformed persisted-key matrix.",
+      "remaining_coverage": "Retained canonical owner proof; actual complementary E2E and fixture limits appear in owner_groups.",
+      "gap": "Genuine setup/login and Subtitles happy-path backup step-up flows exercise valid local return paths. No browser journey covers the external/encoded slash/backslash/oversized redirect matrix. App direct aliases/replay tests are redundant with these canonical security owner tests; keep the canonical declarations. Actual app cookie-isolation/login/logout journeys retain browser cookie security and app-specific host-only names; they do not inject all simultaneously competing compatibility token sources, invalid legacy hash keys, missing timestamps, or malformed audit path/range matrices.",
+      "unlocked_deletion": "None."
     },
     {
       "file": "packages/identitycore/session_http_test.go",
@@ -22738,9 +23255,9 @@
       "owner_group": "identitycore",
       "body_sha256": "06a3d356e15a8b98e05630d69bd842a3995bf1bb004220296aea05f6a694d48a",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Preserve this important distinct failure boundary; no new isolated test added.",
       "validation_command": "cd packages && go test ./identitycore",
       "baseline_event": {
         "Time": "2026-10-03T10:35:27.611048-06:00",
@@ -22748,7 +23265,31 @@
         "Package": "github.com/MikeO7/kinosail/packages/identitycore",
         "Test": "TestCompatibilityLogPathAndContentRange",
         "Elapsed": 0
-      }
+      },
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "production_owner": [
+        "packages/identitycore/redirects.go",
+        "packages/identitycore/session_http.go",
+        "packages/identitycore/sessions.go:LoadSessions/create"
+      ],
+      "callers": [
+        "apps/player/internal/server/auth_login.go",
+        "apps/subtitles/internal/server/auth_login.go",
+        "apps/player/internal/server/session_tokens.go",
+        "apps/subtitles/internal/server/session_tokens.go",
+        "apps/player/internal/server/sessions.go",
+        "apps/subtitles/internal/server/sessions.go",
+        "apps/player/internal/server/observability.go",
+        "apps/subtitles/internal/server/observability_finish.go",
+        "packages/identitycore/session_requests.go",
+        "packages/identitycore/session_cookie_migration.go"
+      ],
+      "credible_failure": "Bound and redact unmatched compatibility paths so device/private identifiers are not logged, and reject internally inconsistent/oversized Content-Range strings before copying them into audit attributes.",
+      "remaining_coverage": "Retained canonical owner proof; actual complementary E2E and fixture limits appear in owner_groups.",
+      "gap": "Genuine setup/login and Subtitles happy-path backup step-up flows exercise valid local return paths. No browser journey covers the external/encoded slash/backslash/oversized redirect matrix. App direct aliases/replay tests are redundant with these canonical security owner tests; keep the canonical declarations. Actual app cookie-isolation/login/logout journeys retain browser cookie security and app-specific host-only names; they do not inject all simultaneously competing compatibility token sources, invalid legacy hash keys, missing timestamps, or malformed audit path/range matrices.",
+      "unlocked_deletion": "None."
     },
     {
       "file": "packages/identitycore/session_http_test.go",
@@ -22758,9 +23299,9 @@
       "owner_group": "identitycore",
       "body_sha256": "f0d8cd3ad96f5a9c6a66ee7da15e247c57cebbece73d025a9f8cb3c0cf38c801",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Preserve this important distinct failure boundary; no new isolated test added.",
       "validation_command": "cd packages && go test ./identitycore",
       "baseline_event": {
         "Time": "2026-10-03T10:35:27.611034-06:00",
@@ -22768,7 +23309,31 @@
         "Package": "github.com/MikeO7/kinosail/packages/identitycore",
         "Test": "TestSessionNormalizationNamesAndCookies",
         "Elapsed": 0
-      }
+      },
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "production_owner": [
+        "packages/identitycore/redirects.go",
+        "packages/identitycore/session_http.go",
+        "packages/identitycore/sessions.go:LoadSessions/create"
+      ],
+      "callers": [
+        "apps/player/internal/server/auth_login.go",
+        "apps/subtitles/internal/server/auth_login.go",
+        "apps/player/internal/server/session_tokens.go",
+        "apps/subtitles/internal/server/session_tokens.go",
+        "apps/player/internal/server/sessions.go",
+        "apps/subtitles/internal/server/sessions.go",
+        "apps/player/internal/server/observability.go",
+        "apps/subtitles/internal/server/observability_finish.go",
+        "packages/identitycore/session_requests.go",
+        "packages/identitycore/session_cookie_migration.go"
+      ],
+      "credible_failure": "Normalize legacy raw token keys without rehashing already valid keys or losing existing names/timestamps; preserve host-only Secure/HttpOnly/Strict cookies and bounded8-hour public session expiry. Device-name assertions are incidental to the distinct migration and cookie contracts.",
+      "remaining_coverage": "Retained canonical owner proof; actual complementary E2E and fixture limits appear in owner_groups.",
+      "gap": "Genuine setup/login and Subtitles happy-path backup step-up flows exercise valid local return paths. No browser journey covers the external/encoded slash/backslash/oversized redirect matrix. App direct aliases/replay tests are redundant with these canonical security owner tests; keep the canonical declarations. Actual app cookie-isolation/login/logout journeys retain browser cookie security and app-specific host-only names; they do not inject all simultaneously competing compatibility token sources, invalid legacy hash keys, missing timestamps, or malformed audit path/range matrices.",
+      "unlocked_deletion": "None."
     },
     {
       "file": "packages/identitycore/session_requests_test.go",
@@ -49958,6 +50523,9 @@
     ],
     "additional_reviewed_declarations": 41,
     "additional_removals": 2,
-    "additional_subset": "identitycore redirects.go only"
+    "additional_subset": [
+      "identitycore:redirects_test.go+session_http_test.go",
+      "downloads:manager/transcoding/copy_original/copy_video/reservation/tracks_test.go"
+    ]
   }
 }

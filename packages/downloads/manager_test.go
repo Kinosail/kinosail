@@ -149,25 +149,6 @@ func TestTranscodeRetriesWithSoftware(t *testing.T) {
 	}
 }
 
-func TestEncodeBuildsVideoCommandAndReportsCopyErrors(t *testing.T) {
-	t.Parallel()
-	manager := &Manager{
-		ctx: t.Context(), ffmpeg: "/usr/bin/true",
-		inspect: func(context.Context, library.Item) playback.MediaFacts {
-			return playback.MediaFacts{Video: playback.VideoFacts{Codec: "h264", Width: 1280, Height: 720}}
-		},
-		transcoding: func(bool) transcodepolicy.Settings {
-			return transcodepolicy.Settings{Codec: "h264", Accelerator: "none", Encoder: "libx264"}
-		},
-	}
-	if err := manager.encodeSelectedContext(t.Context(), library.Item{Kind: "video", Path: "/media/film.mkv"}, "720p", "/cache/output.mp4", false, nil); err != nil {
-		t.Fatalf("video command = %v", err)
-	}
-	if err := copyFileContext(t.Context(), "/missing", filepath.Join(t.TempDir(), "output")); !os.IsNotExist(err) {
-		t.Fatalf("missing input error = %v", err)
-	}
-}
-
 func persistJSON(path string, value any) error {
 	data, err := json.Marshal(value)
 	if err != nil {
