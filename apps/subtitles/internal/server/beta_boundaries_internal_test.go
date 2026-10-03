@@ -9,14 +9,8 @@ import (
 	"github.com/MikeO7/kinosail/packages/dlna"
 	"github.com/MikeO7/kinosail/packages/library"
 	sharedpasskeys "github.com/MikeO7/kinosail/packages/passkeys"
-	"github.com/MikeO7/kinosail/packages/servertest"
 	"github.com/go-webauthn/webauthn/webauthn"
 )
-
-func TestSecurityClassificationAndMediaLimits(t *testing.T) {
-	contract := servertest.SecurityClassificationAndMediaLimits
-	contract(t, collectionMatches, within)
-}
 
 func TestStrongPublicSessionCookieAndPasskeyInventoryShape(t *testing.T) {
 	t.Parallel()

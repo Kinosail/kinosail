@@ -6,12 +6,12 @@
   "files": 379,
   "declarations": 954,
   "test_loc": 28832,
-  "reviewed": 792,
-  "pending": 162,
+  "reviewed": 834,
+  "pending": 120,
   "decisions": {
-    "R": 692,
-    "D": 64,
-    "F": 35,
+    "R": 724,
+    "D": 66,
+    "F": 43,
     "C": 1
   },
   "verification": [
@@ -3137,51 +3137,66 @@
       "line": 5,
       "test": "TestIdentityAuditPersistsWithoutSecrets",
       "baseline_file_sha256": "2cbd5ca405076dc731a90e65f28ed2611ed95b1e5fac164dddba035d8ee1adfc",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Real profile-create/permissions journal persists across fresh app while omitting password/secret text.",
+      "production_owner": "apps/subtitles/internal/server/{audit.go,audit_classification.go,settings_audit.go}; apps/subtitles/internal/backup/backup.go",
+      "non_test_callers": "Real app New/router/profile/index/state callbacks for application contracts; direct shared forwarders explicitly identified above.",
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_or_actual_app_contract",
+          "reference": "apps/subtitles/internal/server/audit_test.go::TestIdentityAuditPersistsWithoutSecrets"
+        }
+      ],
+      "coverage_gap": "Shared journal methods cannot catch app action/actor/detail and backup inclusion bindings; genuine E2E lacks secret injection and recovery archive inspection.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Keep important security/concurrency/durability or app binding exception; F explicitly preserves useful contract with independent assertion gaps",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/audit_test.go",
       "line": 9,
       "test": "TestOwnerActivityRecordsSettingsDenialsAndPlaybackWithoutSecrets",
       "baseline_file_sha256": "2cbd5ca405076dc731a90e65f28ed2611ed95b1e5fac164dddba035d8ee1adfc",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Actual settings diff, redacted backup key, denied UUID, playback start/complete and NDJSON attachment omit secret values.",
+      "production_owner": "apps/subtitles/internal/server/{audit.go,audit_classification.go,settings_audit.go}; apps/subtitles/internal/backup/backup.go",
+      "non_test_callers": "Real app New/router/profile/index/state callbacks for application contracts; direct shared forwarders explicitly identified above.",
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_or_actual_app_contract",
+          "reference": "apps/subtitles/internal/server/audit_test.go::TestOwnerActivityRecordsSettingsDenialsAndPlaybackWithoutSecrets"
+        }
+      ],
+      "coverage_gap": "Shared journal methods cannot catch app action/actor/detail and backup inclusion bindings; genuine E2E lacks secret injection and recovery archive inspection.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Keep important security/concurrency/durability or app binding exception; F explicitly preserves useful contract with independent assertion gaps",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/audit_test.go",
       "line": 13,
       "test": "TestActivityJournalSurvivesRestartAndRecoveryBackup",
       "baseline_file_sha256": "2cbd5ca405076dc731a90e65f28ed2611ed95b1e5fac164dddba035d8ee1adfc",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Actual settings activity survives fresh app and appears in portable gzip/tar recovery archive.",
+      "production_owner": "apps/subtitles/internal/server/{audit.go,audit_classification.go,settings_audit.go}; apps/subtitles/internal/backup/backup.go",
+      "non_test_callers": "Real app New/router/profile/index/state callbacks for application contracts; direct shared forwarders explicitly identified above.",
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_or_actual_app_contract",
+          "reference": "apps/subtitles/internal/server/audit_test.go::TestActivityJournalSurvivesRestartAndRecoveryBackup"
+        }
+      ],
+      "coverage_gap": "Shared journal methods cannot catch app action/actor/detail and backup inclusion bindings; genuine E2E lacks secret injection and recovery archive inspection.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Keep important security/concurrency/durability or app binding exception; F explicitly preserves useful contract with independent assertion gaps",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/auth_all_routes_test.go",
@@ -3298,17 +3313,22 @@
       "line": 15,
       "test": "TestViewerContentRatingAppliesToBrowseAndMediaRoutes",
       "baseline_file_sha256": "1d4f829f94c1896d181aa5c6b35eb2731def14d8204ff1a283dd7a0e5c262a38",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Owner sees Alien R; Kid bound to family policy sees Bluey PG while Alien browse/watch/media/HLS hide.",
+      "production_owner": "apps/subtitles/internal/server/access.go; packages/identitycore/library_access.go",
+      "non_test_callers": "Real app New/router/profile/index/state callbacks for application contracts; direct shared forwarders explicitly identified above.",
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_or_actual_app_contract",
+          "reference": "apps/subtitles/internal/server/auth_content_rating_test.go::TestViewerContentRatingAppliesToBrowseAndMediaRoutes"
+        }
+      ],
+      "coverage_gap": "Actual NFO/index/profile/router policy projection across content adapters; genuine happy journey lacks denied rating matrix.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Keep important security/concurrency/durability or app binding exception; F explicitly preserves useful contract with independent assertion gaps",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/auth_cookie_routes_test.go",
@@ -4052,34 +4072,48 @@
       "line": 13,
       "test": "TestScheduledBackupRejectsInvalidSubtitleSettingsWithoutPublishingArchive",
       "baseline_file_sha256": "cdaf08547e6f070c9dc261e00811af2d598228b5d174653f22bfacc165c0f737",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Actual backup manager WriteNow must reject invalid subtitle settings, publish no archive and preserve original bytes.",
+      "production_owner": "apps/subtitles/internal/server/backup_manager.go; apps/subtitles/internal/backup/backup.go",
+      "non_test_callers": "Real app New/router/profile/index/state callbacks for application contracts; direct shared forwarders explicitly identified above.",
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_or_actual_app_contract",
+          "reference": "apps/subtitles/internal/server/backup_manager_internal_test.go::TestScheduledBackupRejectsInvalidSubtitleSettingsWithoutPublishingArchive"
+        }
+      ],
+      "coverage_gap": "WriteNow directly invoked: no timer/scheduled-trigger proof. Actual Subtitles validation callback protects data-loss boundary normal E2E misses.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Keep important security/concurrency/durability or app binding exception; F explicitly preserves useful contract with independent assertion gaps",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/beta_boundaries_internal_test.go",
       "line": 19,
       "test": "TestSecurityClassificationAndMediaLimits",
       "baseline_file_sha256": "fdf63978582573d0364284559097bdf3b01f94fb9200b3d2bb9f5d9108f2f614",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "D",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Secret-key classification (including monkey=false), no-room bitrate fallback and collection aliases replay the identical shared helper kept by Player. within is an unused-in-production test-only implementation.",
+      "production_owner": "packages/servertest/policy_boundaries.go; packages/auditjournal/classification.go; packages/playback/bitrate.go",
+      "non_test_callers": "Real app New/router/profile/index/state callbacks for application contracts; direct shared forwarders explicitly identified above.",
+      "remaining_proof": [
+        {
+          "kind": "retained_duplicate_contract",
+          "reference": "apps/player/internal/server/beta_boundaries_internal_test.go::TestSecurityClassificationAndMediaLimits"
+        },
+        {
+          "kind": "retained_duplicate_contract",
+          "reference": "apps/subtitles/internal/server/symlink_security_test.go::TestServingRejectsMediaReplacedBySymlink"
+        }
+      ],
+      "coverage_gap": "No actual application path security is proved by test-only within. Real post-index symlink route guard remains.",
+      "history": "0c5276ff266da231d1eb32bedc967e360b398d82 Resume public access without restarting Server",
+      "risk": "Exact shared replay consolidated; no genuine E2E equivalence claim",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/beta_boundaries_internal_test.go",
@@ -4950,51 +4984,66 @@
       "line": 11,
       "test": "TestInvalidDurableShapesFailApplicationClosed",
       "baseline_file_sha256": "699b2c9e06dd57fc05f52a85755f799a7abfa024ea1a3c67e41521eedef82703",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Nine malformed legacy document shapes must leave actual app health503 rather than initialize usable state.",
+      "production_owner": "apps/subtitles/internal/server/database.go; apps/subtitles/internal/database/database.go",
+      "non_test_callers": "Real app New/router/profile/index/state callbacks for application contracts; direct shared forwarders explicitly identified above.",
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_or_actual_app_contract",
+          "reference": "apps/subtitles/internal/server/durable_file_failures_test.go::TestInvalidDurableShapesFailApplicationClosed"
+        }
+      ],
+      "coverage_gap": "Actual startup composition and migration-before-validation binding; ordinary browser startup has valid documents only.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Keep important security/concurrency/durability or app binding exception; F explicitly preserves useful contract with independent assertion gaps",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/durable_file_failures_test.go",
       "line": 15,
       "test": "TestInvalidDownloadStateFailsApplicationClosed",
       "baseline_file_sha256": "699b2c9e06dd57fc05f52a85755f799a7abfa024ea1a3c67e41521eedef82703",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Persisted download extension traversing ../../outside must fail actual app startup closed.",
+      "production_owner": "apps/subtitles/internal/server/database.go; packages/downloads/state.go",
+      "non_test_callers": "Real app New/router/profile/index/state callbacks for application contracts; direct shared forwarders explicitly identified above.",
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_or_actual_app_contract",
+          "reference": "apps/subtitles/internal/server/durable_file_failures_test.go::TestInvalidDownloadStateFailsApplicationClosed"
+        }
+      ],
+      "coverage_gap": "Legacy migration/application readiness security boundary absent genuine E2E malformed state.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Keep important security/concurrency/durability or app binding exception; F explicitly preserves useful contract with independent assertion gaps",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/durable_file_failures_test.go",
       "line": 21,
       "test": "TestVersionedAPISurfacesIndividualStateFileFailures",
       "baseline_file_sha256": "699b2c9e06dd57fc05f52a85755f799a7abfa024ea1a3c67e41521eedef82703",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "F",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Twenty-one real app mutation routes must reject when SQLite destination is a directory and preserve keep sentinel.",
+      "production_owner": "apps/subtitles/internal/server/database.go; packages/servertest/durable_file_failures.go",
+      "non_test_callers": "Real app New/router/profile/index/state callbacks for application contracts; direct shared forwarders explicitly identified above.",
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_or_actual_app_contract",
+          "reference": "apps/subtitles/internal/server/durable_file_failures_test.go::TestVersionedAPISurfacesIndividualStateFileFailures"
+        }
+      ],
+      "coverage_gap": "Helper blocks same SQLite file for every case, not21 individual JSON state files. Status>=400 plus sentinel does not prove full memory rollback or distinct per-file faults.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Keep important security/concurrency/durability or app binding exception; F explicitly preserves useful contract with independent assertion gaps",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/embedded_subtitles_test.go",
@@ -5067,51 +5116,66 @@
       "line": 16,
       "test": "TestSubtitleProviderRejectsMalformedSearchAndDownloads",
       "baseline_file_sha256": "302f406be3d0da70bb34012db32f7a3988248b5d7b5fbdb372abd48db72ce6b2",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "F",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Actual public fetch route maps malformed/empty provider search to502 across five responses.",
+      "production_owner": "apps/subtitles/internal/server/{subtitle_subdl.go,subtitle_candidate_collection.go,subtitle_candidate.go}",
+      "non_test_callers": "Real app New/router/profile/index/state callbacks for application contracts; direct shared forwarders explicitly identified above.",
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_or_actual_app_contract",
+          "reference": "apps/subtitles/internal/server/external_boundary_test.go::TestSubtitleProviderRejectsMalformedSearchAndDownloads"
+        }
+      ],
+      "coverage_gap": "Every synthetic response lacks Results, so validSubDLResponse rejects before URL/download checks. Untrusted URL and invalid download claims are unproved; preserve route502 contract, stronger acquisition boundaries remain in pipeline.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Keep important security/concurrency/durability or app binding exception; F explicitly preserves useful contract with independent assertion gaps",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/external_boundary_test.go",
       "line": 56,
       "test": "TestExternalProviderActionsRejectInputBeforeNetworkContact",
       "baseline_file_sha256": "302f406be3d0da70bb34012db32f7a3988248b5d7b5fbdb372abd48db72ce6b2",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Unknown query/form input must yield400 for metadata and subtitle actions with zero requests at configured upstream.",
+      "production_owner": "apps/subtitles/internal/server/{metadata.go,subtitles.go}",
+      "non_test_callers": "Real app New/router/profile/index/state callbacks for application contracts; direct shared forwarders explicitly identified above.",
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_or_actual_app_contract",
+          "reference": "apps/subtitles/internal/server/external_boundary_test.go::TestExternalProviderActionsRejectInputBeforeNetworkContact"
+        }
+      ],
+      "coverage_gap": "Real app routing and no-contact count protect privacy/order; genuine E2E happy path lacks invalid-input network sink.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Keep important security/concurrency/durability or app binding exception; F explicitly preserves useful contract with independent assertion gaps",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/external_boundary_test.go",
       "line": 81,
       "test": "TestOIDCRejectsUnsafeOriginsAndInvalidProtocolTransitions",
       "baseline_file_sha256": "302f406be3d0da70bb34012db32f7a3988248b5d7b5fbdb372abd48db72ce6b2",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "App OIDC config/callback must reject unsafe endpoint origins, token exchange503, malformed JWT and missing MFA challenge with exact statuses.",
+      "production_owner": "apps/subtitles/internal/server/oidc.go; packages/federation/oidc.go",
+      "non_test_callers": "Real app New/router/profile/index/state callbacks for application contracts; direct shared forwarders explicitly identified above.",
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_or_actual_app_contract",
+          "reference": "apps/subtitles/internal/server/external_boundary_test.go::TestOIDCRejectsUnsafeOriginsAndInvalidProtocolTransitions"
+        }
+      ],
+      "coverage_gap": "Shared helper passes real app New config; protocol endpoint/callback/profile bindings differ from pure canonical methods. No genuine IdP E2E equivalent.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Keep important security/concurrency/durability or app binding exception; F explicitly preserves useful contract with independent assertion gaps",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/gapless_test.go",
@@ -5805,119 +5869,162 @@
       "line": 16,
       "test": "TestViewerPolicyRestrictsLibrariesRemoteScheduleAndTranscoding",
       "baseline_file_sha256": "69615520d329efc12a79f0c08e53699464fe6fe0a437a6fb70771f7abdfc938c",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "F",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Real Viewer permissions must restrict library, scheduled access and HLS capability at app routes.",
+      "production_owner": "apps/subtitles/internal/server/{access.go,profiles_access.go}",
+      "non_test_callers": "Real app New/router/profile/index/state callbacks for application contracts; direct shared forwarders explicitly identified above.",
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_or_actual_app_contract",
+          "reference": "apps/subtitles/internal/server/identity_permissions_test.go::TestViewerPolicyRestrictsLibrariesRemoteScheduleAndTranscoding"
+        }
+      ],
+      "coverage_gap": "Mutation statuses not asserted and no allowed control between schedule clear and remote check; remote denial can be caused by stale schedule. Other actual access assertions remain meaningful.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Keep important security/concurrency/durability or app binding exception; F explicitly preserves useful contract with independent assertion gaps",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/integration_helpers_internal_test.go",
       "line": 21,
       "test": "TestDecodeExternalJSONRequiresOneBoundedDocument",
       "baseline_file_sha256": "a0b4f6aa149fd4975c978ca2ddf9ca3aa36f7217cd9d39d0be74c60208a8eee5",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "D",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Trailing JSON, read errors, valid JSON above cap and unknown strict fields must fail; this app function is an exact httpguard.DecodeJSON(false) forwarder with no callback.",
+      "production_owner": "apps/subtitles/internal/server/external_json.go; packages/httpguard/json.go",
+      "non_test_callers": "Real app New/router/profile/index/state callbacks for application contracts; direct shared forwarders explicitly identified above.",
+      "remaining_proof": [
+        {
+          "kind": "retained_duplicate_contract",
+          "reference": "packages/httpguard/httpguard_test.go::TestDecodeJSONAcceptsOneBoundedDocument"
+        },
+        {
+          "kind": "retained_duplicate_contract",
+          "reference": "packages/httpguard/httpguard_test.go::TestDecodeJSONRejectsUnsafeExternalDocuments"
+        },
+        {
+          "kind": "retained_duplicate_contract",
+          "reference": "packages/metadata/network_test.go::TestExternalJSONAndAtomicSave"
+        }
+      ],
+      "coverage_gap": "Canonical unsafe-documents oversize uses invalid x bytes; the valid-JSON cap proof is separately retained in metadata network test. No genuine E2E equivalence claimed.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Exact shared replay consolidated; no genuine E2E equivalence claim",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/integration_helpers_internal_test.go",
       "line": 49,
       "test": "TestAtomicFileWriterIsSafeAcrossConcurrentCalls",
       "baseline_file_sha256": "a0b4f6aa149fd4975c978ca2ddf9ca3aa36f7217cd9d39d0be74c60208a8eee5",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Eight simultaneous cache writes must leave exactly one complete uniform1024-byte document and reject a blocked parent.",
+      "production_owner": "packages/privatefile/privatefile.go",
+      "non_test_callers": "Real app New/router/profile/index/state callbacks for application contracts; direct shared forwarders explicitly identified above.",
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_or_actual_app_contract",
+          "reference": "apps/subtitles/internal/server/integration_helpers_internal_test.go::TestAtomicFileWriterIsSafeAcrossConcurrentCalls"
+        }
+      ],
+      "coverage_gap": "Direct shared writer exception: shared serial controls do not prove concurrent temporary-file uniqueness; normal E2E has no competing-writer injection.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Keep important security/concurrency/durability or app binding exception; F explicitly preserves useful contract with independent assertion gaps",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/integration_helpers_internal_test.go",
       "line": 76,
       "test": "TestAtomicJSONWriterIsSafeAcrossConcurrentCalls",
       "baseline_file_sha256": "a0b4f6aa149fd4975c978ca2ddf9ca3aa36f7217cd9d39d0be74c60208a8eee5",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "F",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Eight simultaneous serialized-map writes must leave parseable JSON and an index in0..7.",
+      "production_owner": "packages/privatefile/privatefile.go",
+      "non_test_callers": "Real app New/router/profile/index/state callbacks for application contracts; direct shared forwarders explicitly identified above.",
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_or_actual_app_contract",
+          "reference": "apps/subtitles/internal/server/integration_helpers_internal_test.go::TestAtomicJSONWriterIsSafeAcrossConcurrentCalls"
+        }
+      ],
+      "coverage_gap": "Missing index defaults0, so {} passes; still detects malformed/interleaved JSON and out-of-range state. No race-detector or presence assertion proof.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Keep important security/concurrency/durability or app binding exception; F explicitly preserves useful contract with independent assertion gaps",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/integration_helpers_internal_test.go",
       "line": 96,
       "test": "TestTMDBCacheDiscoveryUsesLiteralPathsAndRegularFiles",
       "baseline_file_sha256": "a0b4f6aa149fd4975c978ca2ddf9ca3aa36f7217cd9d39d0be74c60208a8eee5",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Literal tmdb[home] cache directory must discover a regular metadata file and reject a metadata directory.",
+      "production_owner": "packages/metadata/tmdb_cache.go",
+      "non_test_callers": "Real app New/router/profile/index/state callbacks for application contracts; direct shared forwarders explicitly identified above.",
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_or_actual_app_contract",
+          "reference": "apps/subtitles/internal/server/integration_helpers_internal_test.go::TestTMDBCacheDiscoveryUsesLiteralPathsAndRegularFiles"
+        }
+      ],
+      "coverage_gap": "Pure shared contract hosted in app; shared canonical lacks exact glob-metacharacter path/directory public-discovery matrix, no app callback or E2E equivalence.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Keep important security/concurrency/durability or app binding exception; F explicitly preserves useful contract with independent assertion gaps",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/integration_helpers_internal_test.go",
       "line": 119,
       "test": "TestTMDBCacheRequiresBoundedExactLocalState",
       "baseline_file_sha256": "a0b4f6aa149fd4975c978ca2ddf9ca3aa36f7217cd9d39d0be74c60208a8eee5",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Public TMDB Load accepts Arrival then rejects trailing JSON, outside poster path and201-character title with empty/nonfresh output.",
+      "production_owner": "packages/metadata/tmdb_cache.go",
+      "non_test_callers": "Real app New/router/profile/index/state callbacks for application contracts; direct shared forwarders explicitly identified above.",
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_or_actual_app_contract",
+          "reference": "apps/subtitles/internal/server/integration_helpers_internal_test.go::TestTMDBCacheRequiresBoundedExactLocalState"
+        }
+      ],
+      "coverage_gap": "Public-load matrix differs from private shared validators; genuine E2E has no corrupted persisted-cache injection.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Keep important security/concurrency/durability or app binding exception; F explicitly preserves useful contract with independent assertion gaps",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/integration_helpers_internal_test.go",
       "line": 149,
       "test": "TestMetadataStateAndFormValidation",
       "baseline_file_sha256": "a0b4f6aa149fd4975c978ca2ddf9ca3aa36f7217cd9d39d0be74c60208a8eee5",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Form trim/owner binding accepts valid record while invalid years, empty provider name, empty show-provider value and empty persisted record ID reject.",
+      "production_owner": "packages/metadata/{record.go,form.go}",
+      "non_test_callers": "Real app New/router/profile/index/state callbacks for application contracts; direct shared forwarders explicitly identified above.",
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_or_actual_app_contract",
+          "reference": "apps/subtitles/internal/server/integration_helpers_internal_test.go::TestMetadataStateAndFormValidation"
+        }
+      ],
+      "coverage_gap": "Pure shared exception: retained shared matrix lacks exact empty ShowProviderIDs value; no app-owned callback or genuine E2E claim.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Keep important security/concurrency/durability or app binding exception; F explicitly preserves useful contract with independent assertion gaps",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/jellyfin_audit_internal_test.go",
@@ -7869,68 +7976,88 @@
       "line": 14,
       "test": "TestManagementPageIsPrivateAndDefaultsOff",
       "baseline_file_sha256": "613d82ea80f8cb7aaeacd3a68452b92646117da9e2189dab74bb6f2a50a90059",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Default-off management pages and APIs reject Viewer and remote Owner across ten paths with exact status families.",
+      "production_owner": "apps/subtitles/internal/server/management_access.go",
+      "non_test_callers": "Real app New/router/profile/index/state callbacks for application contracts; direct shared forwarders explicitly identified above.",
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_or_actual_app_contract",
+          "reference": "apps/subtitles/internal/server/management_access_test.go::TestManagementPageIsPrivateAndDefaultsOff"
+        }
+      ],
+      "coverage_gap": "Actual management-owner/public route binding, absent genuine browser default-off/remote matrix.",
+      "history": "5ffb4e0d3eb315ccf7643b2782a495716677fc67 Restore security and subtitle regressions and simplify validation paths",
+      "risk": "Keep important security/concurrency/durability or app binding exception; F explicitly preserves useful contract with independent assertion gaps",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/management_access_test.go",
       "line": 38,
       "test": "TestManagementSessionReplayCannotTouchAppSessionState",
       "baseline_file_sha256": "613d82ea80f8cb7aaeacd3a68452b92646117da9e2189dab74bb6f2a50a90059",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Wrong management device must reject without changing serialized old session or invoking persistence.",
+      "production_owner": "apps/subtitles/internal/server/{management_access.go,profiles_access.go}",
+      "non_test_callers": "Real app New/router/profile/index/state callbacks for application contracts; direct shared forwarders explicitly identified above.",
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_or_actual_app_contract",
+          "reference": "apps/subtitles/internal/server/management_access_test.go::TestManagementSessionReplayCannotTouchAppSessionState"
+        }
+      ],
+      "coverage_gap": "Missing profile also rejects later, but removed device guard would touch/expire old session before profile lookup; immutable state/writes0 detects ordering.",
+      "history": "5ffb4e0d3eb315ccf7643b2782a495716677fc67 Restore security and subtitle regressions and simplify validation paths",
+      "risk": "Keep important security/concurrency/durability or app binding exception; F explicitly preserves useful contract with independent assertion gaps",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/management_access_test.go",
       "line": 65,
       "test": "TestManagementIntegrationsCannotBypassOwnerSession",
       "baseline_file_sha256": "613d82ea80f8cb7aaeacd3a68452b92646117da9e2189dab74bb6f2a50a90059",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "F",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Owner management context plus fake integration token must still reject administration routes without owner session.",
+      "production_owner": "apps/subtitles/internal/server/management_access.go",
+      "non_test_callers": "Real app New/router/profile/index/state callbacks for application contracts; direct shared forwarders explicitly identified above.",
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_or_actual_app_contract",
+          "reference": "apps/subtitles/internal/server/management_access_test.go::TestManagementIntegrationsCannotBypassOwnerSession"
+        }
+      ],
+      "coverage_gap": "Integration tokens are invalid/unconfigured; no valid scoped integration positive control, so cannot prove authorized integration cannot bypass. Actual management denial remains.",
+      "history": "5ffb4e0d3eb315ccf7643b2782a495716677fc67 Restore security and subtitle regressions and simplify validation paths",
+      "risk": "Keep important security/concurrency/durability or app binding exception; F explicitly preserves useful contract with independent assertion gaps",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/management_identity_test.go",
       "line": 9,
       "test": "TestManagementIdentityRequiresBoundSecuredRecentlyAuthenticatedOwner",
       "baseline_file_sha256": "6db3c990d43c5daa0c2885c34f5e1ea9bfc5040d2968300bae7ce7868196ee4e",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Strong bound Owner succeeds; wrong binding, nonowner, API key, unsecured and9-hour-old strong session deny.",
+      "production_owner": "apps/subtitles/internal/server/{management_access.go,profiles_access.go}",
+      "non_test_callers": "Real app New/router/profile/index/state callbacks for application contracts; direct shared forwarders explicitly identified above.",
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_or_actual_app_contract",
+          "reference": "apps/subtitles/internal/server/management_identity_test.go::TestManagementIdentityRequiresBoundSecuredRecentlyAuthenticatedOwner"
+        }
+      ],
+      "coverage_gap": "Real app profile/session/StrongAt identity wiring; genuine E2E lacks stale/replay/API-key matrix.",
+      "history": "375ce3b1e97e37ea9c88cbad262f2644eb4b4582 Stabilize hosted tooling and expand runtime regression coverage",
+      "risk": "Keep important security/concurrency/durability or app binding exception; F explicitly preserves useful contract with independent assertion gaps",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/marker_analysis_api_test.go",
@@ -8246,68 +8373,88 @@
       "line": 11,
       "test": "TestOwnerCreatesClaimsStreamsAndRevokesMediaShare",
       "baseline_file_sha256": "93114d4668be61dbbed2dbf7b04f7dae9011d4921f4164a77be3f1647831eca5",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Actual Owner creates bounded share, guest claims HttpOnly cookie and streams exact bytes, then revoked cookie receives404.",
+      "production_owner": "apps/subtitles/internal/server/{media_shares.go,media_shares_http.go}",
+      "non_test_callers": "Real app New/router/profile/index/state callbacks for application contracts; direct shared forwarders explicitly identified above.",
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_or_actual_app_contract",
+          "reference": "apps/subtitles/internal/server/media_share_test.go::TestOwnerCreatesClaimsStreamsAndRevokesMediaShare"
+        }
+      ],
+      "coverage_gap": "Real index/store/owner/guest/file bindings; no genuine browser share-revocation stream proof.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Keep important security/concurrency/durability or app binding exception; F explicitly preserves useful contract with independent assertion gaps",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/media_share_test.go",
       "line": 47,
       "test": "TestAuthenticatedMediaShareClaimCarriesCSRFToken",
       "baseline_file_sha256": "93114d4668be61dbbed2dbf7b04f7dae9011d4921f4164a77be3f1647831eca5",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "F",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Actual share page supplies token; browser-session cookie claim without CSRF returns403 and same claim with header returns204.",
+      "production_owner": "apps/subtitles/internal/server/media_shares_http.go",
+      "non_test_callers": "Real app New/router/profile/index/state callbacks for application contracts; direct shared forwarders explicitly identified above.",
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_or_actual_app_contract",
+          "reference": "apps/subtitles/internal/server/media_share_test.go::TestAuthenticatedMediaShareClaimCarriesCSRFToken"
+        }
+      ],
+      "coverage_gap": "Synthetic cookie is invalid and unvalidated, so authenticated claim name overstates identity. Still proves app cookie-triggered CSRF binding; source grep does not execute browser JS.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Keep important security/concurrency/durability or app binding exception; F explicitly preserves useful contract with independent assertion gaps",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/media_share_test.go",
       "line": 103,
       "test": "TestMediaShareRejectsUnknownOversizedAndAmbiguousInputWithoutGrant",
       "baseline_file_sha256": "93114d4668be61dbbed2dbf7b04f7dae9011d4921f4164a77be3f1647831eca5",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "F",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Five malformed public create requests must return400 and leave zero shares.",
+      "production_owner": "apps/subtitles/internal/server/media_shares_http.go",
+      "non_test_callers": "Real app New/router/profile/index/state callbacks for application contracts; direct shared forwarders explicitly identified above.",
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_or_actual_app_contract",
+          "reference": "apps/subtitles/internal/server/media_share_test.go::TestMediaShareRejectsUnknownOversizedAndAmbiguousInputWithoutGrant"
+        }
+      ],
+      "coverage_gap": "All fixtures itemIds=missing; missing-item rejection can mask expiry/devices/rights guards. Strict JSON and zero-grant app boundary remain, no independent size/range proof.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Keep important security/concurrency/durability or app binding exception; F explicitly preserves useful contract with independent assertion gaps",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/media_shares_internal_test.go",
       "line": 15,
       "test": "TestMediaShareContract",
       "baseline_file_sha256": "2932fb9b44ec4ee9c5968274b46afc603b4c1d83f210b55349f6a7aee4e89ae7",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "App-bound store must enforce claim device limits, active-item grants, release, range/progress routes and corrupted legacy-state fail-closed.",
+      "production_owner": "apps/subtitles/internal/server/media_shares.go; packages/mediashares/{store.go,http.go}",
+      "non_test_callers": "Real app New/router/profile/index/state callbacks for application contracts; direct shared forwarders explicitly identified above.",
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_or_actual_app_contract",
+          "reference": "apps/subtitles/internal/server/media_shares_internal_test.go::TestMediaShareContract"
+        }
+      ],
+      "coverage_gap": "Shared helper supplied actual index Find/load/persist callbacks. Canonical shared store alone cannot catch app callbacks; genuine E2E lacks corruption/device/range contract.",
+      "history": "878dc2a63d62880e6d3a5aa395ce25dd40919539 Remove retired artifacts and unused code",
+      "risk": "Keep important security/concurrency/durability or app binding exception; F explicitly preserves useful contract with independent assertion gaps",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/media_shares_internal_test.go",
@@ -10665,102 +10812,132 @@
       "line": 9,
       "test": "TestOwnerCanRequireMFAForEveryProfile",
       "baseline_file_sha256": "360e87461deeefda1fac0cabf996e1f6126b7f06d213b8b89bdc60eb83bdf252",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "API policy requires Viewer enrollment and denies prior session routes until owner disables requirement.",
+      "production_owner": "apps/subtitles/internal/server/{auth.go,auth_login.go,profiles_mfa.go}; packages/identitycore/factors.go",
+      "non_test_callers": "Real app New/router/profile/index/state callbacks for application contracts; direct shared forwarders explicitly identified above.",
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_or_actual_app_contract",
+          "reference": "apps/subtitles/internal/server/mfa_policy_contract_test.go::TestOwnerCanRequireMFAForEveryProfile"
+        }
+      ],
+      "coverage_gap": "Actual app ownership/profile/session/persistence callbacks and protocol binding are supplied to shared helper. Genuine setup uses normal valid flow, no complete MFA/recovery/restart or open-app compatibility matrix.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Keep important security/concurrency/durability or app binding exception; F explicitly preserves useful contract with independent assertion gaps",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/mfa_policy_contract_test.go",
       "line": 13,
       "test": "TestOwnerCanRequireMFAThroughWeb",
       "baseline_file_sha256": "360e87461deeefda1fac0cabf996e1f6126b7f06d213b8b89bdc60eb83bdf252",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Web policy uses shared operation and redirects unsecure Viewer to enrollment.",
+      "production_owner": "apps/subtitles/internal/server/{auth.go,auth_login.go,profiles_mfa.go}; packages/identitycore/factors.go",
+      "non_test_callers": "Real app New/router/profile/index/state callbacks for application contracts; direct shared forwarders explicitly identified above.",
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_or_actual_app_contract",
+          "reference": "apps/subtitles/internal/server/mfa_policy_contract_test.go::TestOwnerCanRequireMFAThroughWeb"
+        }
+      ],
+      "coverage_gap": "Actual app ownership/profile/session/persistence callbacks and protocol binding are supplied to shared helper. Genuine setup uses normal valid flow, no complete MFA/recovery/restart or open-app compatibility matrix.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Keep important security/concurrency/durability or app binding exception; F explicitly preserves useful contract with independent assertion gaps",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/mfa_signup_contract_test.go",
       "line": 9,
       "test": "TestSingleOwnerMustEnrollOneAuthenticationFactor",
       "baseline_file_sha256": "7b984c510365dbb7536b3a8805e0ed26e3c02dd6fb63b2532ad8a7775317fa7d",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "First owner enrollment must precede API library authorization, with valid TOTP enabling access.",
+      "production_owner": "apps/subtitles/internal/server/{auth.go,auth_login.go,profiles_mfa.go}; packages/identitycore/factors.go",
+      "non_test_callers": "Real app New/router/profile/index/state callbacks for application contracts; direct shared forwarders explicitly identified above.",
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_or_actual_app_contract",
+          "reference": "apps/subtitles/internal/server/mfa_signup_contract_test.go::TestSingleOwnerMustEnrollOneAuthenticationFactor"
+        }
+      ],
+      "coverage_gap": "Actual app ownership/profile/session/persistence callbacks and protocol binding are supplied to shared helper. Genuine setup uses normal valid flow, no complete MFA/recovery/restart or open-app compatibility matrix.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Keep important security/concurrency/durability or app binding exception; F explicitly preserves useful contract with independent assertion gaps",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/mfa_signup_contract_test.go",
       "line": 13,
       "test": "TestOwnerCanChooseTOTPWhenSigningUpThroughWebAndAPI",
       "baseline_file_sha256": "7b984c510365dbb7536b3a8805e0ed26e3c02dd6fb63b2532ad8a7775317fa7d",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Web/API signup selects TOTP, projects bounded secret/recovery codes and refuses no-code authentication.",
+      "production_owner": "apps/subtitles/internal/server/{auth.go,auth_login.go,profiles_mfa.go}; packages/identitycore/factors.go",
+      "non_test_callers": "Real app New/router/profile/index/state callbacks for application contracts; direct shared forwarders explicitly identified above.",
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_or_actual_app_contract",
+          "reference": "apps/subtitles/internal/server/mfa_signup_contract_test.go::TestOwnerCanChooseTOTPWhenSigningUpThroughWebAndAPI"
+        }
+      ],
+      "coverage_gap": "Actual app ownership/profile/session/persistence callbacks and protocol binding are supplied to shared helper. Genuine setup uses normal valid flow, no complete MFA/recovery/restart or open-app compatibility matrix.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Keep important security/concurrency/durability or app binding exception; F explicitly preserves useful contract with independent assertion gaps",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/mfa_test.go",
       "line": 11,
       "test": "TestTOTPAndOneTimeRecoveryCodesGatePasswordSessions",
       "baseline_file_sha256": "3e0fbe523fc6736394d40361938523a8ae2239901d98ec408a6dcbe82fc02032",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Wrong/missing code denies; valid TOTP works; recovery works once across restart, stores hash rather than plaintext, last factor and Jellyfin password bypass deny.",
+      "production_owner": "apps/subtitles/internal/server/{auth.go,auth_login.go,profiles_mfa.go}; packages/identitycore/factors.go",
+      "non_test_callers": "Real app New/router/profile/index/state callbacks for application contracts; direct shared forwarders explicitly identified above.",
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_or_actual_app_contract",
+          "reference": "apps/subtitles/internal/server/mfa_test.go::TestTOTPAndOneTimeRecoveryCodesGatePasswordSessions"
+        }
+      ],
+      "coverage_gap": "Actual app ownership/profile/session/persistence callbacks and protocol binding are supplied to shared helper. Genuine setup uses normal valid flow, no complete MFA/recovery/restart or open-app compatibility matrix.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Keep important security/concurrency/durability or app binding exception; F explicitly preserves useful contract with independent assertion gaps",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/mfa_test.go",
       "line": 15,
       "test": "TestDefaultMFADoesNotBlockOpenInitialServer",
       "baseline_file_sha256": "3e0fbe523fc6736394d40361938523a8ae2239901d98ec408a6dcbe82fc02032",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "App Config{} with no owner must still allow initial open API library rather than gate enrollment.",
+      "production_owner": "apps/subtitles/internal/server/{auth.go,auth_login.go,profiles_mfa.go}; packages/identitycore/factors.go",
+      "non_test_callers": "Real app New/router/profile/index/state callbacks for application contracts; direct shared forwarders explicitly identified above.",
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_or_actual_app_contract",
+          "reference": "apps/subtitles/internal/server/mfa_test.go::TestDefaultMFADoesNotBlockOpenInitialServer"
+        }
+      ],
+      "coverage_gap": "Actual app ownership/profile/session/persistence callbacks and protocol binding are supplied to shared helper. Genuine setup uses normal valid flow, no complete MFA/recovery/restart or open-app compatibility matrix.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Keep important security/concurrency/durability or app binding exception; F explicitly preserves useful contract with independent assertion gaps",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/music_tags_test.go",
@@ -11294,51 +11471,66 @@
       "line": 9,
       "test": "TestRequestLoggingRecoversPanicsAndRedactsURLs",
       "baseline_file_sha256": "40bd5c0a7c9832d4f063b93f73642993003a1790cb792745a5a8f4069c2cf05c",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "App middleware recovers panic500, retains safe request classification/ID and removes query/path/profile/IP secrets.",
+      "production_owner": "apps/subtitles/internal/server/{observability.go,observability_finish.go}",
+      "non_test_callers": "Real app New/router/profile/index/state callbacks for application contracts; direct shared forwarders explicitly identified above.",
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_or_actual_app_contract",
+          "reference": "apps/subtitles/internal/server/observability_test.go::TestRequestLoggingRecoversPanicsAndRedactsURLs"
+        }
+      ],
+      "coverage_gap": "Intentional injected panic/log attack exercises actual app middleware and audit binding; normal genuine E2E does not observe hostile logs.",
+      "history": "8a237c3f9a187a46f24b338a38bab8900f5489b1 Repair CodeQL coverage and validate offline worker senders",
+      "risk": "Keep important security/concurrency/durability or app binding exception; F explicitly preserves useful contract with independent assertion gaps",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/observability_test.go",
       "line": 13,
       "test": "TestUnknownJellyfinRouteLoggingKeepsOnlySafeRouteSegments",
       "baseline_file_sha256": "40bd5c0a7c9832d4f063b93f73642993003a1790cb792745a5a8f4069c2cf05c",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Unknown Jellyfin route log retains safe route shape while removing concrete ID and query.",
+      "production_owner": "apps/subtitles/internal/server/{observability.go,observability_finish.go}",
+      "non_test_callers": "Real app New/router/profile/index/state callbacks for application contracts; direct shared forwarders explicitly identified above.",
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_or_actual_app_contract",
+          "reference": "apps/subtitles/internal/server/observability_test.go::TestUnknownJellyfinRouteLoggingKeepsOnlySafeRouteSegments"
+        }
+      ],
+      "coverage_gap": "Intentional injected panic/log attack exercises actual app middleware and audit binding; normal genuine E2E does not observe hostile logs.",
+      "history": "8a237c3f9a187a46f24b338a38bab8900f5489b1 Repair CodeQL coverage and validate offline worker senders",
+      "risk": "Keep important security/concurrency/durability or app binding exception; F explicitly preserves useful contract with independent assertion gaps",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/observability_test.go",
       "line": 17,
       "test": "TestRequestLoggingCannotForgeRecords",
       "baseline_file_sha256": "40bd5c0a7c9832d4f063b93f73642993003a1790cb792745a5a8f4069c2cf05c",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "CRLF/ANSI/HTML in method/requestID/panic must produce exactly two valid JSON records without injected ID/query or forged line.",
+      "production_owner": "apps/subtitles/internal/server/{observability.go,observability_finish.go}",
+      "non_test_callers": "Real app New/router/profile/index/state callbacks for application contracts; direct shared forwarders explicitly identified above.",
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_or_actual_app_contract",
+          "reference": "apps/subtitles/internal/server/observability_test.go::TestRequestLoggingCannotForgeRecords"
+        }
+      ],
+      "coverage_gap": "Intentional injected panic/log attack exercises actual app middleware and audit binding; normal genuine E2E does not observe hostile logs.",
+      "history": "8a237c3f9a187a46f24b338a38bab8900f5489b1 Repair CodeQL coverage and validate offline worker senders",
+      "risk": "Keep important security/concurrency/durability or app binding exception; F explicitly preserves useful contract with independent assertion gaps",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/offline_download_test.go",
@@ -12498,34 +12690,44 @@
       "line": 12,
       "test": "TestViewerCannotReachContentOutsideGrantedLibraries",
       "baseline_file_sha256": "89c772c0c379831eb527961640f84766d3bf2ce6ca69e08a574b37bb76e985ca",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Owner-positive hidden item followed by denied Viewer18 read/write adapters must omit hidden content and persist no progress/favorite changes.",
+      "production_owner": "apps/subtitles/internal/server/access.go; packages/identitycore/library_access.go",
+      "non_test_callers": "Real app New/router/profile/index/state callbacks for application contracts; direct shared forwarders explicitly identified above.",
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_or_actual_app_contract",
+          "reference": "apps/subtitles/internal/server/permission_boundaries_test.go::TestViewerCannotReachContentOutsideGrantedLibraries"
+        }
+      ],
+      "coverage_gap": "Grant-after-denial reads prove rejected writes did not persist; genuine E2E lacks cross-adapter unauthorized writes.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Keep important security/concurrency/durability or app binding exception; F explicitly preserves useful contract with independent assertion gaps",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/permission_boundaries_test.go",
       "line": 106,
       "test": "TestViewerCapabilitiesGateEveryContentAdapter",
       "baseline_file_sha256": "89c772c0c379831eb527961640f84766d3bf2ce6ca69e08a574b37bb76e985ca",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "F",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Eight denied capability adapters must return exact denial and public API/Jellyfin projections omit unavailable content.",
+      "production_owner": "apps/subtitles/internal/server/access.go; packages/identitycore/library_access.go",
+      "non_test_callers": "Real app New/router/profile/index/state callbacks for application contracts; direct shared forwarders explicitly identified above.",
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_or_actual_app_contract",
+          "reference": "apps/subtitles/internal/server/permission_boundaries_test.go::TestViewerCapabilitiesGateEveryContentAdapter"
+        }
+      ],
+      "coverage_gap": "Granted matrix checks only !=403, allowing404/500; deny/projection boundary remains meaningful, no successful delivery claim.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Keep important security/concurrency/durability or app binding exception; F explicitly preserves useful contract with independent assertion gaps",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/playback_adapters_test.go",
@@ -13672,51 +13874,66 @@
       "line": 15,
       "test": "TestSubtitleSearchesStartTogether",
       "baseline_file_sha256": "cd5cf0ec40cec90cec34c32d19290ec984d22c586a516fbce9ea12304cb6ac8f",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "All three app-configured subtitle providers must enter the barrier before any is released; serial search times out.",
+      "production_owner": "apps/subtitles/internal/server/subtitle_provider.go",
+      "non_test_callers": "Real app New/router/profile/index/state callbacks for application contracts; direct shared forwarders explicitly identified above.",
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_or_actual_app_contract",
+          "reference": "apps/subtitles/internal/server/provider_resilience_test.go::TestSubtitleSearchesStartTogether"
+        }
+      ],
+      "coverage_gap": "Real configured provider adapter with deterministic network barrier; ordinary E2E success cannot prove concurrent start.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Keep important security/concurrency/durability or app binding exception; F explicitly preserves useful contract with independent assertion gaps",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/provider_resilience_test.go",
       "line": 43,
       "test": "TestOpenSubtitlesLoginDoesNotHoldSessionMutexAcrossNetwork",
       "baseline_file_sha256": "cd5cf0ec40cec90cec34c32d19290ec984d22c586a516fbce9ea12304cb6ac8f",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Blocked login must allow cachedSession and context-cancelled waiter to finish rather than holding session mutex across network.",
+      "production_owner": "apps/subtitles/internal/server/opensubtitles_provider.go",
+      "non_test_callers": "Real app New/router/profile/index/state callbacks for application contracts; direct shared forwarders explicitly identified above.",
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_or_actual_app_contract",
+          "reference": "apps/subtitles/internal/server/provider_resilience_test.go::TestOpenSubtitlesLoginDoesNotHoldSessionMutexAcrossNetwork"
+        }
+      ],
+      "coverage_gap": "Injected stalled HTTP and cancellation boundary; no race run or genuine provider-failure browser equivalent.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Keep important security/concurrency/durability or app binding exception; F explicitly preserves useful contract with independent assertion gaps",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/provider_resilience_test.go",
       "line": 84,
       "test": "TestTemporaryLoginFailureUsesProviderRetryInsteadOfOneHour",
       "baseline_file_sha256": "cd5cf0ec40cec90cec34c32d19290ec984d22c586a516fbce9ea12304cb6ac8f",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Temporary503 login followed by advanced clock2min must permit successful second attempt rather than caching one-hour block.",
+      "production_owner": "apps/subtitles/internal/server/{opensubtitles_provider.go,subtitle_provider_health.go}",
+      "non_test_callers": "Real app New/router/profile/index/state callbacks for application contracts; direct shared forwarders explicitly identified above.",
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_or_actual_app_contract",
+          "reference": "apps/subtitles/internal/server/provider_resilience_test.go::TestTemporaryLoginFailureUsesProviderRetryInsteadOfOneHour"
+        }
+      ],
+      "coverage_gap": "Fake time/network are intentional failure injection; normal genuine E2E lacks transient auth retry.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Keep important security/concurrency/durability or app binding exception; F explicitly preserves useful contract with independent assertion gaps",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/pwa_registration_test.go",
@@ -32340,17 +32557,22 @@
       "line": 14,
       "test": "TestServingRejectsMediaReplacedBySymlink",
       "baseline_file_sha256": "daaa8cb1e6a83a225a7ef22d41254313be0fdbc9b0b86ebaf46016cf9ca74732",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "After real catalog indexing, replacing media path with outside-root symlink must cause actual media GET404.",
+      "production_owner": "apps/subtitles/internal/server/files.go; packages/catalog/files.go; packages/playback/library_http.go",
+      "non_test_callers": "Real app New/router/profile/index/state callbacks for application contracts; direct shared forwarders explicitly identified above.",
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_or_actual_app_contract",
+          "reference": "apps/subtitles/internal/server/symlink_security_test.go::TestServingRejectsMediaReplacedBySymlink"
+        }
+      ],
+      "coverage_gap": "Post-index application Safe callback and route guard catch runtime replacement; pure path validator and normal real-file E2E cannot prove this binding.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Keep important security/concurrency/durability or app binding exception; F explicitly preserves useful contract with independent assertion gaps",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/timeline_test.go",
