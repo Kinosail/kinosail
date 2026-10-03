@@ -1,0 +1,12 @@
+✔ resolves final browser scope and excludes CSS compositions (5.653083ms)
+✔ rejects unresolved dependencies (2.752208ms)
+✔ rejects mixed CSS and JavaScript (3.017333ms)
+✔ rejects circular composition even without a root bundle (2.95375ms)
+ℹ tests 4
+ℹ suites 0
+ℹ pass 4
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 74.238208

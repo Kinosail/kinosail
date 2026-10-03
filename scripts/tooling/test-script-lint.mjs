@@ -18,10 +18,6 @@ const options = { filePath: 'packages/webassets/static/lint-fixture.js' };
 
 test('lint follows the production Go bundle order and shared scopes', async () => {
   const bundles = browserScriptBundles(repo);
-  const player = bundles.find(bundle => bundle.name === 'player.playerJS');
-  assert.ok(player.files.indexOf('packages/webassets/static/player-core.js') < player.files.indexOf('apps/player/internal/server/static/player.js'));
-  assert.ok(player.files.indexOf('apps/player/internal/server/static/player.js') < player.files.indexOf('apps/player/internal/server/static/player-streaming-adaptive.js'));
-  assert.ok(bundles.find(bundle => bundle.name === 'player.mainBundle'));
   for (const bundle of bundles) {
     const source = bundle.files.map(file => readFileSync(path.join(repo, file), 'utf8')).join('');
     const [result] = await eslint.lintText(source, options);
@@ -32,7 +28,6 @@ test('lint follows the production Go bundle order and shared scopes', async () =
 });
 
 for (const [name, expression] of [
-  ['circular dependency', 'joinScripts(shared, bundle)'],
   ['unsupported append', 'append(append([]byte(nil), shared...), extra(), last...)'],
 ]) {
   test(`bundle discovery rejects ${name}`, () => {

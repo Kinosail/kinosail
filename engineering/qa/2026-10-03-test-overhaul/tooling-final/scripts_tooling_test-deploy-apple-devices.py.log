@@ -1,0 +1,20 @@
+iphone: Swift scaffold is build-only; installed device app is unchanged
+.....usage: deploy [-h] --team TEAM --iphone IPHONE --tv TV [--install]
+deploy: error: the following arguments are required: --team, --iphone, --tv
+usage: deploy [-h] --team TEAM --iphone IPHONE --tv TV [--install]
+deploy: error: unrecognized arguments: --unexpected
+usage: deploy [-h] --team TEAM --iphone IPHONE --tv TV [--install]
+deploy: error: team must be ten uppercase alphanumeric characters; devices must differ
+usage: deploy [-h] --team TEAM --iphone IPHONE --tv TV [--install]
+deploy: error: team must be ten uppercase alphanumeric characters; devices must differ
+usage: deploy [-h] --team TEAM --iphone IPHONE --tv TV [--install]
+deploy: error: team must be ten uppercase alphanumeric characters; devices must differ
+usage: deploy [-h] --team TEAM --iphone IPHONE --tv TV [--install]
+deploy: error: argument --iphone: expected a paired CoreDevice UUID or Apple device identifier
+usage: deploy [-h] --team TEAM --iphone IPHONE --tv TV [--install]
+deploy: error: team must be ten uppercase alphanumeric characters; devices must differ
+.......
+----------------------------------------------------------------------
+Ran 12 tests in 0.040s
+
+OK

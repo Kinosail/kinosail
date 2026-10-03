@@ -1,0 +1,18 @@
+✔ CodeQL receives the exact complete script served by the Go bundle (13.096125ms)
+✔ rejects missing source before writing output (6.318083ms)
+✔ rejects directory instead of source before writing output (7.192167ms)
+✔ rejects oversized source before writing output (6.280583ms)
+✔ rejects invalid UTF-8 before writing output (7.243792ms)
+✔ rejects invalid combined syntax before writing output (7.416875ms)
+✔ rejects missing required fragment before writing output (5.765167ms)
+✔ rejects unknown dependency before writing output (5.952792ms)
+✔ rejects too many fragments before writing output (6.027208ms)
+✔ rejects source outside repository before writing output (6.14925ms)
+ℹ tests 10
+ℹ suites 0
+ℹ pass 10
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 136.518541

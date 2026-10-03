@@ -1,0 +1,35 @@
+Traceback (most recent call last):
+  File "/Users/mikeo/Documents/Codex/2026-10-03/task/tooling-audit/scripts/tooling/generate-architecture-explorer.py", line 253, in <module>
+    main()
+    ~~~~^^
+  File "/Users/mikeo/Documents/Codex/2026-10-03/task/tooling-audit/scripts/tooling/generate-architecture-explorer.py", line 210, in main
+    data = json.dumps(build_snapshot(), separators=(",", ":"))
+                      ~~~~~~~~~~~~~~^^
+  File "/Users/mikeo/Documents/Codex/2026-10-03/task/tooling-audit/scripts/tooling/generate-architecture-explorer.py", line 120, in build_snapshot
+    raw_packages = run_go_list()
+  File "/Users/mikeo/Documents/Codex/2026-10-03/task/tooling-audit/scripts/tooling/generate-architecture-explorer.py", line 62, in run_go_list
+    result = subprocess.run(
+        ["go", "list", "-json", "./..."],
+    ...<5 lines>...
+        text=True,
+    )
+  File "/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/subprocess.py", line 578, in run
+    raise CalledProcessError(retcode, process.args,
+                             output=stdout, stderr=stderr)
+subprocess.CalledProcessError: Command '['go', 'list', '-json', './...']' returned non-zero exit status 1.
+Traceback (most recent call last):
+  File "/Users/mikeo/Documents/Codex/2026-10-03/task/tooling-audit/scripts/tooling/test-architecture-explorer.py", line 40, in <module>
+    subprocess.run(
+    ~~~~~~~~~~~~~~^
+        [sys.executable, str(REPO / "scripts/tooling/generate-architecture-explorer.py"), app, "--check"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        cwd=REPO, check=True,
+        ^^^^^^^^^^^^^^^^^^^^^
+        env=os.environ | {"GOOS": "windows", "GOARCH": "386", "CGO_ENABLED": "1"},
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/subprocess.py", line 578, in run
+    raise CalledProcessError(retcode, process.args,
+                             output=stdout, stderr=stderr)
+subprocess.CalledProcessError: Command '['/opt/homebrew/opt/python@3.14/bin/python3.14', '/Users/mikeo/Documents/Codex/2026-10-03/task/tooling-audit/scripts/tooling/generate-architecture-explorer.py', 'player', '--check']' returned non-zero exit status 1.

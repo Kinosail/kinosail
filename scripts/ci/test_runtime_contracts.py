@@ -98,8 +98,9 @@ class RuntimeContracts(unittest.TestCase):
         workflow = (WORKFLOWS / 'app.yml').read_text()
         configured = next(line.split('KINOSAIL_E2E_OUTPUT_DIR: ', 1)[1]
             for line in workflow.splitlines() if 'KINOSAIL_E2E_OUTPUT_DIR: ' in line)
-        upload = workflow.split('- name: Keep browser failure evidence', 1)[1]
-        paths = upload.split('          path: |\n', 1)[1].split('          retention-days:', 1)[0]
+        upload = workflow.split('- name: Keep verifiable E2E artifact', 1)[1]
+        paths = next(line.split('path: ', 1)[1] for line in upload.splitlines()
+                     if line.strip().startswith('path: '))
         with tempfile.TemporaryDirectory() as directory:
             for app in ('player', 'subtitles'):
                 launcher = (ROOT / f'apps/{app}/scripts/test-container.sh').read_text()

@@ -1,0 +1,12 @@
+Nox deployment input and scan-gate tests passed
+Nox deployment 0123456789abcdef0123456789abcdef01234567 is not an ancestor of main aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+Waiting for successful main CI at 0123456789abcdef0123456789abcdef01234567
+Waiting for successful main CI at 0123456789abcdef0123456789abcdef01234567
+Waiting for successful main CI at 0123456789abcdef0123456789abcdef01234567
+Waiting for successful main CI at 0123456789abcdef0123456789abcdef01234567
+jq: parse error: Unfinished JSON term at EOF at line 2, column 0
+Waiting for successful main CI at 0123456789abcdef0123456789abcdef01234567
+No verified player production image for 0123456789abcdef0123456789abcdef01234567
+Nox deployment 0123456789abcdef0123456789abcdef01234567 is no longer current main (aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa)
+Nox image build failed; log: /var/folders/39/bvv1ssmd5l7fc4610c5nh5j80000gn/T//kinosail-player-nox-build-0123456789ab.log
+compiler error
