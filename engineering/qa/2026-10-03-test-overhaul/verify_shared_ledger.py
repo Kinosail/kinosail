@@ -124,6 +124,13 @@ def main():
     assert set(rows) == set(original), "Ledger does not cover exact baseline inventory"
     missing_review_receipts = []
     repaired_bodies = []
+    upstream_body_changes = {(entry["file"], entry["name"]): entry
+                             for entry in ledger.get("preserved_upstream_body_changes", [])}
+    assert len(upstream_body_changes) == len(ledger.get("preserved_upstream_body_changes", []))
+    assert set(upstream_body_changes) <= {
+        ("packages/identitycore/sessions_test.go", "TestActivePublicAndSessionCopies")
+    }, "Unexpected upstream retained-body exception"
+    adapted_upstream_bodies = []
     for key, row in rows.items():
         assert original[key]["body_sha256"] == row["body_sha256"], (key, "baseline body hash")
         assert original[key]["line"] == row["line"], (key, "baseline line")
@@ -141,6 +148,25 @@ def main():
                 expected = row["candidate_body_sha256"]
                 repaired_bodies.append({"file": key[0], "name": key[1],
                                        "validated_candidate_sha": row["candidate_sha"]})
+            if key in upstream_body_changes:
+                change = upstream_body_changes[key]
+                assert not row.get("repair"), (key, "upstream change overlaps assertion repair")
+                assert change["baseline_body_sha256"] == expected
+                baseline_source = git("show", base + ":" + key[0])
+                upstream_source = git("show", change["preserved_at_upstream_main"] + ":" + key[0])
+                pattern = re.compile(r"^func " + re.escape(key[1]) + r"\(", re.MULTILINE)
+                baseline_match, upstream_match = pattern.search(baseline_source), pattern.search(upstream_source)
+                assert baseline_match and upstream_match, key
+                baseline_body = baseline_source[baseline_match.start():declaration_end(baseline_source, baseline_match.start())]
+                upstream_body = upstream_source[upstream_match.start():declaration_end(upstream_source, upstream_match.start())]
+                before = 'activePublic(public, "viewer", now)'
+                after = 'activePublic(public, "viewer", now, DefaultSessionInactive, DefaultSessionAbsolute)'
+                assert baseline_body.count(before) == 1 and baseline_body.replace(before, after, 1) == upstream_body, (key, "upstream change exceeds signature adaptation")
+                expected = change["body_sha256"]
+                assert hashlib.sha256(upstream_body.encode()).hexdigest() == expected
+                adapted_upstream_bodies.append({"file": key[0], "name": key[1],
+                                               "preserved_at_upstream_main": change["preserved_at_upstream_main"],
+                                               "body_sha256": expected})
             assert current[key]["body_sha256"] == expected, (key, "retained assertion changed")
         if row["decision"] is not None:
             for field in ["credible_failure", "production_owner", "callers", "remaining_coverage", "gap"]:
@@ -202,8 +228,9 @@ def main():
         "baseline_sha": base,
         "baseline_files_verified": len(files),
         "baseline_declarations_verified": len(original),
-        "retained_bodies_unchanged": len(current) - len(repaired_bodies),
+        "retained_bodies_unchanged": len(current) - len(repaired_bodies) - len(adapted_upstream_bodies),
         "existing_assertion_repairs_with_prior_failure_analysis": repaired_bodies,
+        "retained_bodies_with_verified_upstream_signature_adaptation": adapted_upstream_bodies,
         "removed_declarations_absent": decisions.get("D", 0),
         "removed_test_lines": source_lines - final_lines,
         "upstream_additions_preserved_unchanged": [{"file": key[0], "name": key[1]}

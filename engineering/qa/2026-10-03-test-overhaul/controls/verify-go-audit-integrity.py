@@ -15,7 +15,7 @@ import re
 import subprocess
 
 BASE = '876b771a7dd0aef5e65957fcee87add0312535e8'
-UPSTREAM = '5fc3b76d4b9b1cd9775ce9d913ad2a4f894d1e2c'
+UPSTREAM = '9d1b158e1a49fd523fb61a3603faafcfa45c1aeb'
 QA = 'engineering/qa/2026-10-03-test-overhaul/'
 SPECS = [('player-backend.json', 'tests', 837), ('subtitles-shared.json', 'declarations_inventory', 954), ('shared-identity.json', 'declarations', 1900)]
 DECL = re.compile(r'^func ((?:Test|Fuzz|Benchmark)\w+)\(', re.M)
@@ -257,6 +257,20 @@ def main():
             resolved.append({'removed': '::'.join(ident), 'keeper': (path + '::' if path else '') + name, 'matches': ['::'.join(k) for k in matches]})
         else:
             warnings.append({'removed': '::'.join(ident), 'stale_keeper': (path + '::' if path else '') + name})
+    exceptions = {}
+    for row in provenance.get('reviewed_source_exceptions', []):
+        receipt = root / row['receipt']
+        reviewed = blob(row['reviewed_commit'], row['file'])
+        receipt_data = json.loads(receipt.read_text()) if receipt.is_file() else {}
+        valid = receipt.is_file() and sha(receipt.read_bytes()) == row['receipt_sha256'] and reviewed is not None and sha(reviewed) == row['approved_file_sha256']
+        valid &= subprocess.run(['git', '-C', str(root), 'merge-base', '--is-ancestor', row['reviewed_commit'], 'HEAD'], capture_output=True).returncode == 0
+        valid &= sha(blob(UPSTREAM, row['file'])) == row['upstream_file_sha256'] and git('rev-parse', row['reviewed_commit'] + ':' + row['file']).decode().strip() == row['reviewed_git_blob']
+        valid &= receipt_data.get('actualUpstreamMain') == UPSTREAM and receipt_data.get('resolvedCommit') == row['reviewed_commit']
+        valid &= receipt_data.get('approval', {}).get('path') == row['file'] and receipt_data.get('approval', {}).get('sha256') == row['approved_file_sha256'] and receipt_data.get('approval', {}).get('gitBlob') == row['reviewed_git_blob']
+        if not valid:
+            errors.append('exact upstream reconciliation review absent/changed: ' + row['file'])
+        else:
+            exceptions[row['file']] = row
     protected = []
     for path in git('diff', '--name-only', BASE, UPSTREAM).decode().splitlines():
         pinned_source = blob(UPSTREAM, path)
@@ -264,8 +278,9 @@ def main():
         if pinned_source is None:
             continue
         same = disk.exists() and sha(disk.read_bytes()) == sha(pinned_source)
-        protected.append({'file': path, 'pinned_sha256': sha(pinned_source), 'preserved_exact': same})
-        if not same and path not in ('apps/player/docs/architecture-explorer/index.html', 'apps/subtitles/docs/architecture-explorer/index.html', 'apps/player/scripts/test-container.sh', 'apps/subtitles/scripts/test-container.sh'):
+        approved_source = exceptions.get(path) if disk.is_file() and sha(disk.read_bytes()) == exceptions.get(path, {}).get('approved_file_sha256') else None
+        protected.append({'file': path, 'pinned_sha256': sha(pinned_source), 'preserved_exact': same, 'exact_reviewed_reconciliation': approved_source})
+        if not same and not approved_source and path not in ('apps/player/docs/architecture-explorer/index.html', 'apps/subtitles/docs/architecture-explorer/index.html', 'apps/player/scripts/test-container.sh', 'apps/subtitles/scripts/test-container.sh'):
             errors.append('upstream source absent/changed: ' + path)
     final_sha = git('rev-parse', 'HEAD').decode().strip()
     final_status = git('status', '--porcelain', '--untracked-files=no').decode().splitlines()
@@ -273,7 +288,7 @@ def main():
         errors.append('checkout changed while verifier was reading; rerun on a stable checkout')
     if final_status:
         errors.append('tracked working tree is dirty; receipt cannot claim exact checkout SHA')
-    result = {'schema': 1, 'base_sha': BASE, 'upstream_sha': UPSTREAM, 'checkout_sha': git('rev-parse', 'HEAD').decode().strip(), 'tracked_status': git('status', '--porcelain', '--untracked-files=no').decode().splitlines(), 'verifier_sha256': sha(pathlib.Path(__file__).read_bytes()), 'approved_changes_sha256': sha(pathlib.Path(__file__).with_name('approved-go-body-changes.json').read_bytes()), 'upstream_provenance_sha256': sha(provenance_path.read_bytes()), 'counts': counts, 'original_declarations': len(normalized), 'actual_declarations': len(actual), 'upstream_added': [{'file': k[0], 'name': k[1], 'body_sha256': sha(b)} for k, b in upstream_added.items()], 'upstream_changed': [{'file': k[0], 'name': k[1], 'body_sha256': sha(b)} for k, b in upstream_changed.items()], 'changed_assertions': changes, 'pre_edit_analysis_checks': analysis_checks, 'upstream_source_preservation': protected, 'verified_keeper_references': resolved, 'stale_keeper_references': warnings, 'errors': errors, 'limits': 'Source integrity only; no builds/tests executed. Name-only proof refs show all physical matches and do not prove semantic equivalence. Named CLI subtests resolve through the existing RunCLI/CLI.Run binding. Free-text gaps and unnamed browser scenarios remain manual review. Four root-maintained docs/container artifact harness files may differ from pinned main and are reported.'}
+    result = {'schema': 1, 'base_sha': BASE, 'upstream_sha': UPSTREAM, 'checkout_sha': git('rev-parse', 'HEAD').decode().strip(), 'tracked_status': git('status', '--porcelain', '--untracked-files=no').decode().splitlines(), 'verifier_sha256': sha(pathlib.Path(__file__).read_bytes()), 'approved_changes_sha256': sha(pathlib.Path(__file__).with_name('approved-go-body-changes.json').read_bytes()), 'upstream_provenance_sha256': sha(provenance_path.read_bytes()), 'counts': counts, 'original_declarations': len(normalized), 'actual_declarations': len(actual), 'upstream_added': [{'file': k[0], 'name': k[1], 'body_sha256': sha(b)} for k, b in upstream_added.items()], 'upstream_changed': [{'file': k[0], 'name': k[1], 'body_sha256': sha(b)} for k, b in upstream_changed.items()], 'changed_assertions': changes, 'pre_edit_analysis_checks': analysis_checks, 'upstream_source_preservation': protected, 'verified_keeper_references': resolved, 'stale_keeper_references': warnings, 'errors': errors, 'limits': 'Source integrity only; no builds/tests executed. Name-only proof refs show all physical matches and do not prove semantic equivalence. Named CLI subtests resolve through the existing RunCLI/CLI.Run binding. Free-text gaps and unnamed browser scenarios remain manual review. Four root-maintained docs/container artifact harness files may differ from pinned main and are reported; workflow reconciliation accepts only independently reviewed exact content and receipt hashes.'}
     encoded = json.dumps(result, indent=2) + '\n'
     if args.output:
         args.output.write_text(encoded)

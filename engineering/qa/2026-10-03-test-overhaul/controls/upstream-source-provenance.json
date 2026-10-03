@@ -1,14 +1,16 @@
 {
   "schema": 1,
   "base_sha": "876b771a7dd0aef5e65957fcee87add0312535e8",
-  "previous_upstream_sha": "e8eca5f762822b239cf322065a915c87482fb8b0",
-  "pinned_main_sha": "5fc3b76d4b9b1cd9775ce9d913ad2a4f894d1e2c",
+  "previous_upstream_sha": "5851175e4fd0f2473172ed80c38e6767c6942d0c",
+  "pinned_main_sha": "9d1b158e1a49fd523fb61a3603faafcfa45c1aeb",
   "merged_prs": [
     449,
     450,
     451,
     452,
-    454
+    454,
+    456,
+    453
   ],
   "review_status": "Exact upstream source identity preserved; new changes are outside the original876 baseline accounting. Source/diff/fixture/browser/native failure-analysis review only; no fresh runtime execution.",
   "new_go_declarations": [
@@ -29,18 +31,38 @@
       "decision": "R",
       "origin": "upstream change; not added or rewritten by testing overhaul",
       "reviewed_contract": "Clock advances during persistence; issued local/public/public-grant cookie expiry must equal stored session expiry and remaining MaxAge, guarding second-boundary lifetime extension missed by ordinary E2E."
+    },
+    {
+      "file": "packages/playback/hls_recipe_enums_test.go",
+      "name": "TestHLSRecipeEnumCacheIdentity",
+      "body_sha256": "fb7216e87eb0dece83c58044bad2599e2cdf2b813035a93bd003f34214a68841",
+      "upstream_file_sha256": "37452c4ee895172df1bb297bf4077ded2e1854e95c3fe2b405cc46a399fa8283",
+      "decision": "R",
+      "origin": "upstream PR456; not added or rewritten by testing overhaul",
+      "reviewed_contract": "Every supported transcode catalog codec crossed with none/text/image/external burn must parse with exact offset and canonical token/cache key, including default h264 spelling. Important cache identity/catalog regression not completely exercised by current genuine codec-subset startup journey.",
+      "execution_status": "source review only; no fresh execution"
+    },
+    {
+      "file": "packages/playback/hls_recipe_enums_test.go",
+      "name": "TestHLSRecipeRejectsUntrustedEnums",
+      "body_sha256": "8100f64115ad9cd6fbe5158b19045dad7de2f412180511a2b151af5c8ad182a2",
+      "upstream_file_sha256": "37452c4ee895172df1bb297bf4077ded2e1854e95c3fe2b405cc46a399fa8283",
+      "decision": "R",
+      "origin": "upstream PR456; not added or rewritten by testing overhaul",
+      "reviewed_contract": "Otherwise-valid recipes reject unsupported, uppercase, empty, separator, encoded, NUL/newline and Unicode codec/burn values at the actual shared recipe parser. Closed enum security boundary retained; public startup negatives can reject at earlier URL guards and are not claimed equivalent.",
+      "execution_status": "source review only; no fresh execution"
     }
   ],
   "changed_go_declarations": [
     {
       "file": "apps/player/internal/server/auth_all_routes_test.go",
       "name": "TestEveryRegisteredRouteHasReviewedAnonymousAccess",
-      "body_sha256": "d34cf4e74f98ac174a8f2cc3a26bc60ded87400a7cbdaa2c0ced1e5bfb8440b4",
-      "upstream_file_sha256": "3909a9c0adb832053f6a5253fd1f7d1d3207c2b5677370ba88c2925ee03ad23f",
+      "body_sha256": "422ca8d22b9ce16a8b5af644196ac2d6ac247a6036533f87adf257e1543cbeb8",
+      "upstream_file_sha256": "b693ec35c909604fbe4ce5a7a8201b2f229959d94e9fe3ba9321526ac377b27a",
       "decision": "R",
       "origin": "upstream change; not added or rewritten by testing overhaul",
       "baseline_body_sha256": "a003582b185610b5d5185a5f8b188e969a1d76edc6108d9332784254ca32a901",
-      "reviewed_contract": "Reviewed route inventory advances478\u2192480; exact POST/DELETE playback-prepare stream-scope entries and route digest pin new actual production registrations. Four companion authorization declarations have unchanged bodies but consume updated fixtures. Player owner independently reviews helper and endpoint ownership."
+      "reviewed_contract": "Actual app route inventory advances480 to484 with new exact digest and four Owner-only routes: POST public timeout Save/reset and PUT/DELETE public timeout API. Actual local/public handler routes remain covered by shared reviewed-anonymous-access contract; companion test bodies are unchanged but consume the revised Owner table. This is controlled Go handler/route inventory proof, not genuine browser equivalence."
     },
     {
       "file": "apps/player/internal/server/passkeys_test.go",
@@ -91,14 +113,54 @@
       "origin": "upstream change; not added or rewritten by testing overhaul",
       "baseline_body_sha256": "50517b7255330a578e6f9345d822cd95a8843cb7fab4ae1b5ae9fcfad8469ddb",
       "reviewed_contract": "Existing actual sign-in/account route requests updated v16 shared passkey script; ordinary asset-version assertion does not prove session recovery by itself."
+    },
+    {
+      "file": "apps/player/internal/server/remote_browser_login_test.go",
+      "name": "TestPublicBrowserQuickConnectEndToEndBoundary",
+      "body_sha256": "4cfee42f0863e555c99059677979eb84e8464509f36ded2625a3d4538c061695",
+      "upstream_file_sha256": "bd54b59f8ed249b2a3895b1a90137648c8b1f0daed2b66715d24b1524fff9912",
+      "decision": "R",
+      "origin": "upstream PR456; not added or rewritten by testing overhaul",
+      "baseline_body_sha256": "72116ad46cec9784a8f2b8a363fbcd3a72c8ec99bb770e4b746c83ae2b24716a",
+      "reviewed_contract": "Actual local/public Go handlers retain pending approval, local-only approval, restricted routes and revocation. Issued eight-hour cookie is now bound to persisted Browser session by measured request interval and secure/HttpOnly/Strict/root/host-only flags instead of assuming a full cap after persistence. Controlled handler integration, not genuine browser E2E; real-clock interval allows any issuance point within that request, while deterministic second-boundary keeper remains."
+    },
+    {
+      "file": "apps/subtitles/internal/server/remote_browser_login_test.go",
+      "name": "TestPublicBrowserQuickConnectEndToEndBoundary",
+      "body_sha256": "ceaa30304e4eabad4a02b6b849b1f4981e227a0a0fe420635ea09b7a2d50ec31",
+      "upstream_file_sha256": "dfe1f12e1b2ed5a0c47f66eadadfccab605092636a17bdfb2fde97350ebf50b8",
+      "decision": "R",
+      "origin": "upstream PR456; not added or rewritten by testing overhaul",
+      "baseline_body_sha256": "c31ee13790f10a6ca7243f50997f01152207e66accf3e98ecf64d7e8ce4a8a6a",
+      "reviewed_contract": "Actual local/public Go handlers retain pending approval, local-only approval, restricted routes and revocation. Issued eight-hour cookie is now bound to persisted Browser session by measured request interval and secure/HttpOnly/Strict/root/host-only flags instead of assuming a full cap after persistence. Controlled handler integration, not genuine browser E2E; real-clock interval allows any issuance point within that request, while deterministic second-boundary keeper remains."
+    },
+    {
+      "file": "apps/subtitles/internal/server/auth_all_routes_test.go",
+      "name": "TestEveryRegisteredRouteHasReviewedAnonymousAccess",
+      "decision": "R",
+      "origin": "upstream PR453; not added or rewritten by testing overhaul",
+      "baseline_body_sha256": "08a85f38eeeb2df78e9f8c240317d2a7c333fdfbacad89418a1c1fcc6bc420ec",
+      "body_sha256": "5c78216810b763bd0806b6e1f8eda35abe8a788f56c71cbf9b1f6109516e8ce3",
+      "upstream_file_sha256": "7e77222d61021ef6fa4c2bcfb94f3a0f3bb75a0fe2a2727c41c7ae25c0a67a2b",
+      "reviewed_contract": "Actual app route inventory advances464 to468 with new exact digest and four Owner-only routes: POST public timeout Save/reset and PUT/DELETE public timeout API. Actual local/public handler routes remain covered by shared reviewed-anonymous-access contract; companion test bodies are unchanged but consume the revised Owner table. This is controlled Go handler/route inventory proof, not genuine browser equivalence."
+    },
+    {
+      "file": "packages/identitycore/sessions_test.go",
+      "name": "TestActivePublicAndSessionCopies",
+      "decision": "R",
+      "origin": "upstream PR453; not added or rewritten by testing overhaul",
+      "baseline_body_sha256": "b1dcab0331c1542387761d9026a57a48982756fe3e7b9a6c68d00a830d056381",
+      "body_sha256": "20f96b02dc2ef5b4a1e287056c40adf0dea2e8227b4e3b708eb6762a7fc29061",
+      "upstream_file_sha256": "f478f089d4c5874ac35d1cf7098126fa44ab0df15d145f76170640dfd4d810ea",
+      "reviewed_contract": "Existing eligible, expired, private and other-profile public-session count and map-copy/nonmutation assertions stay unchanged. Only default inactivity/absolute arguments are added to the refactored activePublic helper. These fixtures are non-Browser, so they do not prove new browser idle/absolute expiration. Actual production activePublic now uses SessionExpired; genuine standalone public-timeout journey exercises browser capacity/expiry but is unrun here."
     }
   ],
   "fixture_file_updates": [
     {
       "file": "apps/player/internal/server/auth_all_routes_test.go",
-      "previous_upstream_file_sha256": "b8f0bfb9b78e45b38baab6d11000b803260e9e8bfecb49f171e5088b60b6b26a",
-      "upstream_file_sha256": "3909a9c0adb832053f6a5253fd1f7d1d3207c2b5677370ba88c2925ee03ad23f",
-      "reviewed_contract": "Pinned full fixture source contains480 reviewed routes, exact route digest and POST/DELETE preparation stream-scope matrix. All five declarations retained; unchanged companion bodies do not imply unchanged fixture semantics."
+      "previous_upstream_file_sha256": "3909a9c0adb832053f6a5253fd1f7d1d3207c2b5677370ba88c2925ee03ad23f",
+      "upstream_file_sha256": "b693ec35c909604fbe4ce5a7a8201b2f229959d94e9fe3ba9321526ac377b27a",
+      "reviewed_contract": "Actual app route inventory advances480 to484 with new exact digest and four Owner-only routes: POST public timeout Save/reset and PUT/DELETE public timeout API. Actual local/public handler routes remain covered by shared reviewed-anonymous-access contract; companion test bodies are unchanged but consume the revised Owner table. This is controlled Go handler/route inventory proof, not genuine browser equivalence."
     },
     {
       "file": "apps/player/internal/server/trusted_https_test.go",
@@ -111,6 +173,52 @@
       "previous_upstream_file_sha256": "e1f13beaa7f919a49450b6207260cebf271294312fb6309e57379c9a276bf7c8",
       "upstream_file_sha256": "8fe134033e32bd4addd1afa4ff7b7a171619aba4bd0127e6c1f693723608e5ba",
       "reviewed_contract": "Actual signed passkey HTTP fixture measures wall-clock login interval, secure/HttpOnly/Strict/host-only/root cookie and expiry/remaining lifetime bounds across persistence second boundary. Controlled handler integration, not genuine browser E2E."
+    },
+    {
+      "file": "packages/servertest/issued_cookie_lifetime.go",
+      "upstream_file_sha256": "0024d7a3bcd08dec58a1f7a049fe22a64ff990b6886e2da57b76e4b1f49b1e39",
+      "reviewed_contract": "New test-only helper locates the persisted Browser session by issued cookie hash, checks exact configured persisted cap and cookie expiry, secure/HttpOnly/Strict/root/host-only flags and positive bounded remaining MaxAge within the captured whole-second request interval. No new top-level test declaration; deterministic injected-clock keeper remains. Does not print cookie value or session token.",
+      "classification": "upstream isolated test support"
+    },
+    {
+      "file": "packages/servertest/auth_session_contract.go",
+      "upstream_file_sha256": "ffdaf940717197028c863cfdf83fbfd7868b3660882bbf9f12bfdfd4548519c5",
+      "reviewed_contract": "Existing one-year browser session helper replaces exact full MaxAge assumption with real request interval plus persisted session/issued-cookie cap and security identity. Real reconstructed handler still accepts the cookie after restart, signout persists denial and existing rate-limit guards remain. Controlled handler integration; not genuine browser E2E.",
+      "classification": "upstream isolated test support",
+      "previous_upstream_file_sha256": "195d704ad11862a6f177a07d357c8dbf569779cd5807af10ce34898ad5860cc7"
+    },
+    {
+      "file": "packages/playback/hls_recipe.go",
+      "upstream_file_sha256": "a3c8e20efcc889f006c489afb389cd91d5e32ecdbd7f0605c2e1fb26ead23162",
+      "reviewed_contract": "Production recipe parser returns server-owned h264/hevc/av1/vp9 and none/text/image/external canonical values rather than validated request strings before token/cache identity. Numeric limits remain. Closed enum/cache boundary, not universal filesystem sink containment proof.",
+      "classification": "upstream production boundary",
+      "previous_upstream_file_sha256": "7909064b7e3360f33a0f546378a08e646eb23ee4db5544660903d27e01a05a4c"
+    },
+    {
+      "file": "apps/subtitles/internal/server/auth_all_routes_test.go",
+      "previous_upstream_file_sha256": "3b8d9ff2af70309327e88f98440f983a0103cbd35a8fb78614292772e2f25db7",
+      "upstream_file_sha256": "7e77222d61021ef6fa4c2bcfb94f3a0f3bb75a0fe2a2727c41c7ae25c0a67a2b",
+      "reviewed_contract": "Actual app route inventory advances464 to468 with new exact digest and four Owner-only routes: POST public timeout Save/reset and PUT/DELETE public timeout API. Actual local/public handler routes remain covered by shared reviewed-anonymous-access contract; companion test bodies are unchanged but consume the revised Owner table. This is controlled Go handler/route inventory proof, not genuine browser equivalence."
+    },
+    {
+      "file": "packages/identitycore/sessions_test.go",
+      "upstream_file_sha256": "f478f089d4c5874ac35d1cf7098126fa44ab0df15d145f76170640dfd4d810ea",
+      "reviewed_contract": "Existing eligible, expired, private and other-profile public-session count and map-copy/nonmutation assertions stay unchanged. Only default inactivity/absolute arguments are added to the refactored activePublic helper. These fixtures are non-Browser, so they do not prove new browser idle/absolute expiration. Actual production activePublic now uses SessionExpired; genuine standalone public-timeout journey exercises browser capacity/expiry but is unrun here.",
+      "classification": "upstream existing test fixture",
+      "previous_upstream_file_sha256": "1f9cf66c555af27d116df4af0d2ce833715c439d0b5febd1a5cc952a821938e0"
+    },
+    {
+      "file": "packages/identitycore/sessions_admin.go",
+      "upstream_file_sha256": "dc47f8166ff708ce52f572811c022c57e83506382ba55d0572653660a5c90786",
+      "reviewed_contract": "Actual activePublic production helper now counts only matching public profile sessions that are not SessionExpired under supplied channel timeout policy. Existing clone/revoke/devices helpers remain; device counts resolve policy per persisted channel. The retained non-Browser table does not cover new browser expiration branches.",
+      "classification": "upstream production timeout boundary",
+      "previous_upstream_file_sha256": "2c869f565dd2b825f52e8e95da1dae92e464bff51e3cbb6fe35f0c8286e197a7"
+    },
+    {
+      "file": "packages/identitycore/session_timeouts.go",
+      "upstream_file_sha256": "808fce8e7aa71911bde64946f9d39ad71dc3f76491487989d55fa48a08ea4096",
+      "reviewed_contract": "Channel-aware timeout selection and old-ceiling clamping before policy changes preserve current issued session deadlines, remove expired sessions and avoid revival/extension when raising. New genuine browser journey uses stopped disposable timestamps and SQLite-failure injection; not executed by this refresh.",
+      "classification": "upstream production timeout boundary"
     }
   ],
   "native_and_browser_files": [
@@ -144,9 +252,9 @@
     },
     {
       "file": "apps/player/e2e/test-instance-startup.spec.ts",
-      "upstream_file_sha256": "0e621bc1f8fe768fa9838f43d0159546085d62c31bcf99ec7d28917c70893dc2",
+      "upstream_file_sha256": "01c799796968869916aa53b8edc99633fccb49b864fb9f356f3d1593f3af4ddd",
       "classification": "new genuine application/browser/media journey with targeted fault injection",
-      "reviewed_contract": "Opt-in disposable actual Go Server/real FFmpeg/generated media: setup/auth, resume/warm cache/init continuity, adopted preparation/competing playback/queue/cancel, invalid-input no-cache effects, source/settings/subtitle invalidation and decoded lazy continuation. Conditional burn branch and required environment disclosed; no fresh run here.",
+      "reviewed_contract": "Opt-in disposable actual Go Server/real FFmpeg/generated media: setup/auth, resume/warm cache/init continuity, adopted preparation/competing playback/queue/cancel, invalid-input no-cache effects, source/settings/subtitle invalidation and decoded lazy continuation. Conditional burn branch and required environment disclosed; no fresh run here. PR456 adds21 public unsupported codec/burn requests requiring400 and unchanged cache inventory, and bounded readiness/request-status evidence on actual first-moving-frame failure before rethrow. Earlier request guards may preempt recipe-parser rejection for some values.",
       "execution_status": "unrun by this audit refresh; preserve upstream independent evidence without claiming a new run"
     },
     {
@@ -165,10 +273,73 @@
     },
     {
       "file": "apps/player/scripts/test-startup-local.py",
-      "upstream_file_sha256": "a045b5059af53bb037e2d8fef312da2122e6f747242bf26dc860fb3e14f1895c",
+      "upstream_file_sha256": "22fd7b58ff95408300bbe9617d1f0e11a95f42e3a0f77d28faccb4333f069a8d",
       "classification": "new genuine startup runner support",
-      "reviewed_contract": "Builds disposable app/real synthetic codecs, invokes opt-in startup browser journey, samples resources and records revision/diff/binary/media/command/log/checksum artifacts. Preserved, not executed by this audit refresh.",
+      "reviewed_contract": "Builds disposable actual Go Server and generated HEVC/PQ/EAC3 plus H264/AAC media; enables real startup browser journey. Preserves exit code, version/media/binary/source/diff/resource/checksum receipt and bounded failure locations/fixed encoder categories without raw failure text in safe receipt upload. Complete logs/config exist locally; safe CI upload stays selective. Source review only; no run or physical/Nox workload proof.",
       "execution_status": "unrun by this audit refresh; preserve upstream independent evidence without claiming a new run"
+    },
+    {
+      "file": "apps/player/e2e/startup-signout.spec.ts",
+      "upstream_file_sha256": "a7fd60ccd7100ed80f2885c1f65cc9439949336b560e6d4e6267065925416eb9",
+      "classification": "new synthetic browser logout/preparation fixture",
+      "reviewed_contract": "Production startup-preparation.js runs against Node-modeled authentication/plan server for pending, active, failed503/retry and prevented-submit/reload cases. Positive preparation controls plus request journal reject modeled post-logout preparation. Artifact explicitly says synthetic; no actual Go auth/session or explicit BFCache persisted-event proof.",
+      "execution_status": "unrun by this audit refresh; source review only"
+    },
+    {
+      "file": "apps/player/e2e/apple-playback.config.ts",
+      "upstream_file_sha256": "0e2b17a240a8c747f264f0145a1c8b1c8c121aea1276e1f7f407ce6414612ec9",
+      "classification": "changed browser runner configuration",
+      "reviewed_contract": "Environment-selected browser channel defaults to chrome; strict TLS ignore-errors=false and production startup spec execution remain. Channel choice does not imply physical Apple/Safari coverage.",
+      "execution_status": "unrun by this audit refresh; source review only"
+    },
+    {
+      "file": "apps/player/internal/server/static/startup-preparation.js",
+      "upstream_file_sha256": "a266aeec8437e8e61cd4390da7ddc115187b46c6ee657fa3916774c96cd16046",
+      "classification": "changed production browser lifecycle",
+      "reviewed_contract": "Capture-phase local logout submit marks signingOut and cancels local timer/controller without authenticated preparation DELETE. Eligibility blocks background followups; persisted pageshow reloads. Failed/prevented logout recovers in fresh document. Browser fixture covers four modeled cases; BFCache path lacks explicit fixture exercise.",
+      "execution_status": "unrun by this audit refresh; source review only"
+    },
+    {
+      "file": "apps/player/e2e/session-timeouts.spec.ts",
+      "upstream_file_sha256": "b7f9470c3a960456df2f951cf82d650fa417c6f909e6fd574ee44fe7d3b0f808",
+      "classification": "changed genuine populated application browser journey",
+      "reviewed_contract": "Requires KINOSAIL_TEST_INSTANCE=1 and actual populated Server/password+TOTP sign-in; responsive settings, private/public default controls, option catalog, accessibility and screenshots. Existing declaration title does not imply a Save action or timeout-expiry boundary; this body only reads controls. No fresh execution.",
+      "execution_status": "source review only; unrun by this refresh"
+    },
+    {
+      "file": "apps/subtitles/e2e/session-timeouts.spec.ts",
+      "upstream_file_sha256": "da57b1023ad6f30ec6e52383c21b09cae3ad5198864ef6a1443881a3429681b6",
+      "classification": "changed genuine populated application browser journey",
+      "reviewed_contract": "Requires KINOSAIL_TEST_INSTANCE=1 and actual populated Server/password+TOTP sign-in; responsive settings, private/public default controls, option catalog, accessibility and screenshots. Existing declaration title does not imply a Save action or timeout-expiry boundary; this body only reads controls. No fresh execution.",
+      "execution_status": "source review only; unrun by this refresh"
+    },
+    {
+      "file": "scripts/testing/public-timeouts-fixture.py",
+      "upstream_file_sha256": "45f7e87c460ef6bd950901b988a3e71c1b3e9dc2a090aaf20fce88a69548dc3e",
+      "classification": "new stopped-disposable-state fault/time helper",
+      "reviewed_contract": "Operates only path-guarded stopped synthetic SQLite config. Controls exact timestamps/legacy state and settings-write rejection trigger; emits safe channel/ceiling projections and stable unrelated-data digests. Fixture injection accelerates time and persistence failure; it is not an actual year elapsed or production-state change.",
+      "execution_status": "source review only; unrun by this refresh"
+    },
+    {
+      "file": "scripts/testing/public-timeouts-journeys.mjs",
+      "upstream_file_sha256": "c775f4a750b183b753785d9a439291991f9002f4acf8c6a3a31f62eafe7ac783",
+      "classification": "new genuine browser/application journeys with targeted injection",
+      "reviewed_contract": "Real Owner UI/API, populated responsive/Axe screenshots, legacy public behavior, ten expired-session admission, SQLite atomic rollback, concurrent MFA/settings, failed Save geometry/recovery, real pre-feature binary downgrade and upgrade preserving data/revocation. Timestamps/failure triggers are applied while disposable Server is stopped. Virtual WebAuthn and loopback HTTP do not prove physical passkey/Safari or deployed TLS.",
+      "execution_status": "source review only; unrun by this refresh"
+    },
+    {
+      "file": "scripts/testing/public-timeouts-local.mjs",
+      "upstream_file_sha256": "18f1331eda03f632ae26b369e40d7b08f125ab44a88700924746e46a50538d4b",
+      "classification": "new genuine browser/application runner",
+      "reviewed_contract": "Starts actual native Player/Subtitles Go binaries and real persistent Chromium on supported loopback HTTP with virtual Owner/Viewer passkeys. Production trusted-proxy channel uses a generated disposable proxy token; strict TLS bypass is disabled. Real HTTP rejects unauthorized/CSRF/invalid policy and exercises channel expiry, ceiling transitions/restart with stopped-state injection. Selective app/ui modes must be disclosed; no run here.",
+      "execution_status": "source review only; unrun by this refresh"
+    },
+    {
+      "file": "scripts/testing/test-public-timeouts-local.py",
+      "upstream_file_sha256": "c239edfe759de221caca9e37131e90c826fd8fa09faf3ad8029071441f4f24e1",
+      "classification": "new genuine E2E orchestration and artifact recorder",
+      "reviewed_contract": "Builds exact current plus pinned e8 pre-feature binaries, or strictly verifies artifact reuse by source cleanliness/change list and binary hashes. Runs actual browser driver; records source/binary revisions, production untracked files, commands, runner/binary checksums and evidence checksums, propagating nonzero result. Does not add unit declarations; no execution here.",
+      "execution_status": "source review only; unrun by this refresh"
     }
   ],
   "failure_analysis_sources": [
@@ -181,6 +352,60 @@
       "file": "engineering/qa/appletv-startup-failure-analysis-2026-10-03.md",
       "upstream_file_sha256": "caac586359c896d75fea0d7a0d512fe67d21682bd4cbcf024aaaebbd27d2797d",
       "review": "Read full first-written failure analysis and reported upstream controls; runtime reports remain upstream evidence rather than a fresh audit run."
+    },
+    {
+      "file": "engineering/qa/startup-cache-boundary-2026-10-03.md",
+      "upstream_file_sha256": "6ce4745aebb4397e0ea9ade7625fa4a44425d92826cb3407a09812dc0f91c8d4",
+      "review": "Read complete upstream enum/cache security, persistence-clock and logout failure analysis and hosted diagnostics/encoder installation followup. Reported controls and green upstream CI remain upstream evidence; no fresh audit run. Analysis and new isolated controls share upstream commit ancestry, so this review does not independently establish editor-time write ordering."
+    },
+    {
+      "file": "engineering/qa/public-session-timeouts/failure-analysis.md",
+      "upstream_file_sha256": "339c5f8c73efb9b5a80b787d15a5df8d5ce2b2152fde40023730ec6af7011e95",
+      "review": "Read complete prior-behavior, authorization, clock/ceiling/data-loss/concurrency/rollback failure inventory and planned real-browser proof. Preserves legacy public issuance and explicit reset/downgrade procedure; no fresh runtime or independent editor-time write-order claim."
     }
-  ]
+  ],
+  "reviewed_source_exceptions": [
+    {
+      "file": ".github/workflows/app.yml",
+      "upstream_file_sha256": "c25224e9e3b6dfbc020cc14864dbe2d2a0c66134684cddeea3ce2b49649f6ad5",
+      "approved_file_sha256": "2b5ac70822428002b3b742c1bc91d8e46bf5c56a18d3afc4b0b131ce9be8f1dc",
+      "reviewed_commit": "fcd139b979fb532ab40ebcf200627945757a85af",
+      "reviewed_git_blob": "c56df3eb515221038ac37cd68eeb9f28f55d79a9",
+      "receipt": "engineering/qa/2026-10-03-test-overhaul/workflow-reconciliation-review-fcd139b.json",
+      "receipt_sha256": "56f349e69816dbd2b1cdf72e3dadc2394743d6d845612055dd2fc76ec7aa8dac",
+      "reviewer": "tooling subagent; independent of merge resolution author",
+      "reason": "Exact workflow bytes equal prior645 reviewed reconciliation and actual main9d workflow equals prior585. Independent new actual-main review preserves unchanged exact startup/gates/recorder/artifacts delta. Only named file/hash/commit/receipt approved; unknown future bytes fail."
+    }
+  ],
+  "latest_source_event": {
+    "from_sha": "5851175e4fd0f2473172ed80c38e6767c6942d0c",
+    "to_sha": "9d1b158e1a49fd523fb61a3603faafcfa45c1aeb",
+    "merged_pr": 453,
+    "changed_body_events": [
+      {
+        "file": "apps/player/internal/server/auth_all_routes_test.go",
+        "name": "TestEveryRegisteredRouteHasReviewedAnonymousAccess",
+        "previous_body_sha256": "d34cf4e74f98ac174a8f2cc3a26bc60ded87400a7cbdaa2c0ced1e5bfb8440b4",
+        "body_sha256": "422ca8d22b9ce16a8b5af644196ac2d6ac247a6036533f87adf257e1543cbeb8",
+        "upstream_file_sha256": "b693ec35c909604fbe4ce5a7a8201b2f229959d94e9fe3ba9321526ac377b27a"
+      },
+      {
+        "file": "apps/subtitles/internal/server/auth_all_routes_test.go",
+        "name": "TestEveryRegisteredRouteHasReviewedAnonymousAccess",
+        "previous_body_sha256": "08a85f38eeeb2df78e9f8c240317d2a7c333fdfbacad89418a1c1fcc6bc420ec",
+        "body_sha256": "5c78216810b763bd0806b6e1f8eda35abe8a788f56c71cbf9b1f6109516e8ce3",
+        "upstream_file_sha256": "7e77222d61021ef6fa4c2bcfb94f3a0f3bb75a0fe2a2727c41c7ae25c0a67a2b"
+      },
+      {
+        "file": "packages/identitycore/sessions_test.go",
+        "name": "TestActivePublicAndSessionCopies",
+        "previous_body_sha256": "b1dcab0331c1542387761d9026a57a48982756fe3e7b9a6c68d00a830d056381",
+        "body_sha256": "20f96b02dc2ef5b4a1e287056c40adf0dea2e8227b4e3b708eb6762a7fc29061",
+        "upstream_file_sha256": "f478f089d4c5874ac35d1cf7098126fa44ab0df15d145f76170640dfd4d810ea"
+      }
+    ],
+    "distinct_upstream_changed_body_total": 10,
+    "upstream_new_declarations": 4,
+    "count_note": "Three body events versus585; Player route declaration was already changed versus original876, so global distinct count rises8 to10."
+  }
 }

@@ -130141,7 +130141,91 @@
         "reviewer": "/root/subtitles_shared/shared_identity",
         "status": "complete original new test, newSessionFixture, create/persist/session cookie owner and actual app construction read; preserve unchanged"
       },
-      "execution": "No execution by this agent; not present in older own isolated clone, must be checked with --require-upstream-additions in reconciled integration."
+      "execution": "Preserved unchanged at actual mergedmain5851175e4. This agent verified Git/current-source hashes only; deterministic issuance execution belongs separate upstream/parent receipts.",
+      "preserved_at_upstream_main": "5851175e4fd0f2473172ed80c38e6767c6942d0c",
+      "source_review_appendix": "engineering/qa/2026-10-03-test-overhaul/shared-upstream-pr456-appendix.json"
+    },
+    {
+      "file": "packages/playback/hls_recipe_enums_test.go",
+      "name": "TestHLSRecipeEnumCacheIdentity",
+      "body_sha256": "fb7216e87eb0dece83c58044bad2599e2cdf2b813035a93bd003f34214a68841",
+      "line": 10,
+      "kind": "Test",
+      "file_sha256": "37452c4ee895172df1bb297bf4077ded2e1854e95c3fe2b405cc46a399fa8283",
+      "file_lines": 59,
+      "decision": "R",
+      "audit_status": "reviewed",
+      "baseline_result": "not_in_pinned_baseline",
+      "execution": "Read-only source review by this agent; no Go, browser, lint, build or CodeQL execution.",
+      "production_owner": [
+        "packages/playback/hls_recipe.go::ParseHLSRecipe/parseRecipeCodec/parseRecipeFields/HLSRecipe.Token/HLSRecipeKey"
+      ],
+      "callers": [
+        "packages/playback/hls_delivery.go::ParseHLSRequest -> PlannedHLSFile -> ParseHLSRecipe",
+        "packages/playback/hls_cache.go::HLSCacheDirectory -> ParseHLSRecipe (cache cleanup/pruning inventory)",
+        "packages/playback/trickplay.go::Trickplay.ServeHTTP -> ParseHLSRecipe",
+        "packages/playback/hls_recipe.go::TimelineFromPlaybackToken -> ParseHLSRecipe",
+        "apps/player/internal/server/startup_http.go::startupSource -> plannedHLSFile -> playback.PlannedHLSFile",
+        "apps/{player,subtitles}/internal/server/hls_plan.go::plannedHLSFile and hlsRecipeKey (actual shared parser/cache identity bindings)"
+      ],
+      "credible_failure": "Closed parser enum catalog omits a supported codec or changes the accepted burn enum, default H264 canonical token or enum-dependent planned cache key; wrong identity may reject an advertised format or reuse a different rendition. Public supported codec catalog supplies four independently owned IDs, crossed with four burn modes; helper checks accepted Codec/Burn/12.3s offset, canonical Token and planned HLSRecipeKey for all16 cases.",
+      "remaining_coverage": "Actual disposable-server startup E2E forces H264 transcode and conditionally external subtitle burn, and checks initialization continuity/adoption/invalidation/cache behavior. It does not exercise HEVC/AV1/VP9 crossed with none/text/image/external burn identities. Existing shared TestHLSRecipeRoundTripAndRoutes uses one HEVC/text recipe; TestHLSRecipeCacheAndTimelineHelpers preserves default legacyH264 plus a plannedHEVC key, not all16 supported enum combinations. Preserved byte-identical at mergedmain5851175e4; reported separately from original1900declarations/102D.",
+      "gap": "These value assertions cannot distinguish server-owned literal strings from equal validated request strings: owner reports pre-change pass. Fresh CodeQL/findings-policy is the required evidence for the29 path-taint repair. This fixture does not decode media or prove every codec/burn implementation works.",
+      "independent_review": {
+        "reviewer": "/root/subtitles_shared/shared_identity",
+        "status": "Complete new body+helper, full shared owner/catalog, sibling tests, actual consumers and complete startup E2E reviewed; preserve unchanged as upstream security regression."
+      },
+      "history": {
+        "introduced_by": "84a50797a9eed6ce911e12a27dfc99dbb204299b",
+        "helper_refactor": "0ff2f0276b9e116950d89e9b84024617e9c89030",
+        "reviewed_pr_head": "b316cc676b837cd5bbb3d2f8a280bd1495944ec2",
+        "preserved_at_main": "5851175e4fd0f2473172ed80c38e6767c6942d0c"
+      },
+      "introduced_by": "84a50797a9eed6ce911e12a27dfc99dbb204299b",
+      "preserved_at_upstream_main": "5851175e4fd0f2473172ed80c38e6767c6942d0c",
+      "source_review_appendix": "engineering/qa/2026-10-03-test-overhaul/shared-upstream-pr456-appendix.json",
+      "authority": "Root explicitly requested preservation of actual mergedPR456 security regression. Authored by upstream startup owner; not a test-overhaul addition or removal."
+    },
+    {
+      "file": "packages/playback/hls_recipe_enums_test.go",
+      "name": "TestHLSRecipeRejectsUntrustedEnums",
+      "body_sha256": "8100f64115ad9cd6fbe5158b19045dad7de2f412180511a2b151af5c8ad182a2",
+      "line": 46,
+      "kind": "Test",
+      "file_sha256": "37452c4ee895172df1bb297bf4077ded2e1854e95c3fe2b405cc46a399fa8283",
+      "file_lines": 59,
+      "decision": "R",
+      "audit_status": "reviewed",
+      "baseline_result": "not_in_pinned_baseline",
+      "execution": "Read-only source review by this agent; no Go, browser, lint, build or CodeQL execution.",
+      "production_owner": [
+        "packages/playback/hls_recipe.go::ParseHLSRecipe/parseRecipeCodec/parseRecipeFields/HLSRecipe.Token/HLSRecipeKey"
+      ],
+      "callers": [
+        "packages/playback/hls_delivery.go::ParseHLSRequest -> PlannedHLSFile -> ParseHLSRecipe",
+        "packages/playback/hls_cache.go::HLSCacheDirectory -> ParseHLSRecipe (cache cleanup/pruning inventory)",
+        "packages/playback/trickplay.go::Trickplay.ServeHTTP -> ParseHLSRecipe",
+        "packages/playback/hls_recipe.go::TimelineFromPlaybackToken -> ParseHLSRecipe",
+        "apps/player/internal/server/startup_http.go::startupSource -> plannedHLSFile -> playback.PlannedHLSFile",
+        "apps/{player,subtitles}/internal/server/hls_plan.go::plannedHLSFile and hlsRecipeKey (actual shared parser/cache identity bindings)"
+      ],
+      "credible_failure": "Shared ParseHLSRecipe accepts an unknown/unsupported/automatic/mixed-case/path-bearing/encoded/control/confusable codec or burn enum. Such an admitted recipe can reach ordinary HLS, cache-directory classification or playback-token consumers as well as startup preparation. Direct otherwise-valid numeric/mode recipe fields isolate12codec and9burn rejection checks at the parser owner.",
+      "remaining_coverage": "Actual startup E2E POSTs the exact same12codec+9burn values and checks400 plus unchanged cache inventory. This is genuine live-server HTTP coverage, not a mocked parser fixture. The direct primary-owner guard also checks parser rejection independent of the startup URL envelope: forward-slash-bearing source is split by PlannedHLSFile, so startupSource can reject its remaining filename instead of the entire literal enum; other non-startup parser consumers are not exercised by that journey. Existing TestParseHLSRecipeRejectsEveryInvalidBoundary covers unknown burn/auto+unknown codecs and broader numeric/structural boundaries, not this complete matrix. Preserved byte-identical at mergedmain5851175e4; reported separately from original1900declarations/102D.",
+      "gap": "Do not claim the21 negative inputs are missing from E2E. HTTP400 does not by itself prove the parser enum predicate rejected the original whole input, and these runtime assertions do not prove static taint identity repair. No fresh runtime execution by this reviewing agent.",
+      "independent_review": {
+        "reviewer": "/root/subtitles_shared/shared_identity",
+        "status": "Complete new body+helper, full shared owner/catalog, sibling tests, actual consumers and complete startup E2E reviewed; preserve unchanged as upstream security regression."
+      },
+      "history": {
+        "introduced_by": "84a50797a9eed6ce911e12a27dfc99dbb204299b",
+        "helper_refactor": "0ff2f0276b9e116950d89e9b84024617e9c89030",
+        "reviewed_pr_head": "b316cc676b837cd5bbb3d2f8a280bd1495944ec2",
+        "preserved_at_main": "5851175e4fd0f2473172ed80c38e6767c6942d0c"
+      },
+      "introduced_by": "84a50797a9eed6ce911e12a27dfc99dbb204299b",
+      "preserved_at_upstream_main": "5851175e4fd0f2473172ed80c38e6767c6942d0c",
+      "source_review_appendix": "engineering/qa/2026-10-03-test-overhaul/shared-upstream-pr456-appendix.json",
+      "authority": "Root explicitly requested preservation of actual mergedPR456 security regression. Authored by upstream startup owner; not a test-overhaul addition or removal."
     }
   ],
   "independent_review_artifact": {
@@ -130221,5 +130305,98 @@
     ],
     "inspection": "Read-only full own-to-root comparison across all530 baseline test files: only these3 files differ, each solely by unused imports.84 changed surviving test files scanned for unreferenced import aliases; no other candidate found after playback repair. This is not a Go lint/typecheck run.",
     "historical_artifact_limit": "shared-ledger-source-integrity.json and shared-ledger-checksums.json remain exact historical source ec6201be3 receipts with1971 removed lines. Their hashes/commands are not rewritten or presented as execution of the reconciled source."
-  }
+  },
+  "preserved_upstream_test_support_changes": [
+    {
+      "file": "packages/servertest/auth_session_contract.go",
+      "file_sha256": "ffdaf940717197028c863cfdf83fbfd7868b3660882bbf9f12bfdfd4548519c5",
+      "file_lines": 103,
+      "introduced_by": "10ed3f1b10e2de65c29acf08b6c0aadd16a3df97",
+      "preserved_at_upstream_main": "5851175e4fd0f2473172ed80c38e6767c6942d0c",
+      "prior_file_sha256": "195d704ad11862a6f177a07d357c8dbf569779cd5807af10ce34898ad5860cc7",
+      "functions": [
+        {
+          "file": "packages/servertest/auth_session_contract.go",
+          "name": "assertOneYearBrowserSessionAfterRestart",
+          "line": 44,
+          "body_sha256": "cf86587d56d5f065fabed1017e91f3df582eaab1b18d40a14174e5a6feba2449"
+        }
+      ],
+      "reason": "Existing live one-year real-handler fixture now binds cookie expiry to persisted session and requestinterval; unchanged restart status retained. Exact configuredlifetime/security attrs preserved; deterministic remaining-lifetime is separately protected by unchanged fixed-clock test.",
+      "source_review_appendix": "engineering/qa/2026-10-03-test-overhaul/shared-upstream-pr456-appendix.json"
+    },
+    {
+      "file": "packages/servertest/issued_cookie_lifetime.go",
+      "file_sha256": "0024d7a3bcd08dec58a1f7a049fe22a64ff990b6886e2da57b76e4b1f49b1e39",
+      "file_lines": 50,
+      "introduced_by": "10ed3f1b10e2de65c29acf08b6c0aadd16a3df97",
+      "preserved_at_upstream_main": "5851175e4fd0f2473172ed80c38e6767c6942d0c",
+      "functions": [
+        {
+          "file": "packages/servertest/issued_cookie_lifetime.go",
+          "name": "AssertIssuedCookieLifetime",
+          "line": 13,
+          "body_sha256": "bd9b56570ddcb2bc8472d6e1e393f4dc974adff5d441df1eb44ed8d99461549d"
+        },
+        {
+          "file": "packages/servertest/issued_cookie_lifetime.go",
+          "name": "assertIssuedCookieClock",
+          "line": 27,
+          "body_sha256": "541fe13818cb8880e790692cb93fe1dabbefc7f32d8f59e99467a926672e1e40"
+        },
+        {
+          "file": "packages/servertest/issued_cookie_lifetime.go",
+          "name": "assertIssuedCookieSecurity",
+          "line": 42,
+          "body_sha256": "4c6d7037de4c95f468d2f2ca2db965eb43405a458b9d97bd85781239aa8db884"
+        }
+      ],
+      "new_Test_declarations": 0,
+      "reason": "New shared support checks durable session identity/exactexpiry, fullconfigured duration/publiccap, requestinterval, positive boundedMaxAge and hostboundSecureHttpOnlyStrict attributes in existing app/session fixtures. No deterministic issuance-clock proof claimed for intervalfixture alone.",
+      "source_review_appendix": "engineering/qa/2026-10-03-test-overhaul/shared-upstream-pr456-appendix.json"
+    }
+  ],
+  "preserved_upstream_metadata": {
+    "actual_upstream_main_sha": "9d1b158e1a49fd523fb61a3603faafcfa45c1aeb",
+    "upstream_pr": 456,
+    "upstream_pr_head": "b316cc676b837cd5bbb3d2f8a280bd1495944ec2",
+    "integration_source_head_at_review": "b1246ed00b76ac9a03fdb4b5d943419249272386",
+    "shared_extra_Test_declarations": 3,
+    "shared_extra_test_files": 2,
+    "shared_extra_test_file_lines": 107,
+    "new_non_test_support_files": 1,
+    "new_non_test_support_file_lines": 50,
+    "baseline_inventory_unchanged": {
+      "declarations": 1900,
+      "removed_declarations": 102,
+      "removed_test_lines": 1975,
+      "remaining_baseline_declarations": 1798
+    },
+    "source_review_appendix": "engineering/qa/2026-10-03-test-overhaul/shared-upstream-pr456-appendix.json",
+    "verifier_change": "Narrow exact-hash/source-diff exception for TestActivePublicAndSessionCopies only; requires original body with one activePublic call argument addition to equal upstream body. Existing WatchTogether approval unchanged. Two enumTests supported by existing addition inventory.",
+    "execution": "Git/Python read-only source/hash reconciliation only; no Go/browser/lint/containers/large artifact downloads under storagehold.",
+    "upstream_pr456_merged_main_sha": "5851175e4fd0f2473172ed80c38e6767c6942d0c",
+    "upstream_pr453_merged_main_sha": "9d1b158e1a49fd523fb61a3603faafcfa45c1aeb",
+    "retained_baseline_signature_adaptations": 1
+  },
+  "preserved_upstream_body_changes": [
+    {
+      "file": "packages/identitycore/sessions_test.go",
+      "name": "TestActivePublicAndSessionCopies",
+      "kind": "Test",
+      "baseline_body_sha256": "b1dcab0331c1542387761d9026a57a48982756fe3e7b9a6c68d00a830d056381",
+      "body_sha256": "20f96b02dc2ef5b4a1e287056c40adf0dea2e8227b4e3b708eb6762a7fc29061",
+      "upstream_line": 255,
+      "introduced_by": "4648622859ca4a1d63aecd2627bd0341e8e06d99",
+      "preserved_at_upstream_main": "9d1b158e1a49fd523fb61a3603faafcfa45c1aeb",
+      "upstream_pr": 453,
+      "approved_scope": "Only activePublic call adds DefaultSessionInactive and DefaultSessionAbsolute; the entire remaining declaration is byte-identical to the original baseline. No fixture or assertion replacement.",
+      "reviewer": "/root/subtitles_shared/shared_identity",
+      "review_status": "Full original/current Test body, sessions.go, sessions_admin.go, session_timeouts.go, production call and exact upstream diff/history read. Root requested narrow signature adaptation preservation.",
+      "credible_failure_preserved": "Public count excludes expired, different-profile and private-channel entries; map snapshots and Profile filtering must not mutate original storage. All assertion statements and expected maps remain identical.",
+      "gap": "Fixture public entries are non-browser; new timeout arguments do not add coverage of idle/absolute expiry for public browser sessions. Owner-specific public-timeout regressions/runtime evidence remain outside this narrow reconciliation.",
+      "source_review_appendix": "engineering/qa/2026-10-03-test-overhaul/shared-upstream-pr456-appendix.json",
+      "execution": "Read-only Git/current-source hash comparison; no Go execution."
+    }
+  ]
 }

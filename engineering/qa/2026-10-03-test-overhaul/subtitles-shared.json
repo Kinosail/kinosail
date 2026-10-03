@@ -45108,14 +45108,16 @@
     "verify_command": "python3 engineering/qa/2026-10-03-test-overhaul/controls/verify-subtitles-dispositions.py"
   },
   "upstream_preservation_appendix": {
-    "pinned_main_sha": "5fc3b76d4b9b1cd9775ce9d913ad2a4f894d1e2c",
+    "pinned_main_sha": "9d1b158e1a49fd523fb61a3603faafcfa45c1aeb",
     "audit_base_sha": "876b771a7dd0aef5e65957fcee87add0312535e8",
     "merged_prs": [
       449,
       450,
       451,
       452,
-      454
+      454,
+      456,
+      453
     ],
     "original_baseline_declarations": 954,
     "subtitles_go_added_declarations": [],
@@ -45143,24 +45145,66 @@
         "review_status": "reviewed upstream change outside original baseline954 accounting",
         "credible_failure": "Account/sign-in ceremony must request current passkey script v16; old v15 would omit new browser-session probe/credential-prompt ordering while account route can still render. Actual app New and account/signin routing remain in the retained test.",
         "coverage_limit": "Literal asset version does not prove recovery. Upstream session-resume.spec.ts routes synthetic HTML/API; genuine test-instance-session-persistence closes/reopens a tab in the same browser context against the isolated populated Server, without server/browser restart. Shared clock injection checks persisted cookie lifetime. No run claimed here."
+      },
+      {
+        "file": "apps/subtitles/internal/server/remote_browser_login_test.go",
+        "name": "TestPublicBrowserQuickConnectEndToEndBoundary",
+        "change_kind": "existing_declaration_updated_by_upstream",
+        "decision": "R",
+        "baseline_body_sha256": "c31ee13790f10a6ca7243f50997f01152207e66accf3e98ecf64d7e8ce4a8a6a",
+        "upstream_body_sha256": "ceaa30304e4eabad4a02b6b849b1f4981e227a0a0fe420635ea09b7a2d50ec31",
+        "upstream_file_sha256": "dfe1f12e1b2ed5a0c47f66eadadfccab605092636a17bdfb2fde97350ebf50b8",
+        "review_status": "reviewed PR456 upstream change outside original baseline954 accounting",
+        "credible_failure": "Actual local/public Go handlers retain pending approval, local-only approval, restricted routes and revocation. Issued eight-hour cookie is now bound to persisted Browser session by measured request interval and secure/HttpOnly/Strict/root/host-only flags instead of assuming a full cap after persistence. Controlled handler integration, not genuine browser E2E; real-clock interval allows any issuance point within that request, while deterministic second-boundary keeper remains.",
+        "coverage_limit": "Controlled public/local Go handler plus persisted-state assertions; no actual remote browser or deterministic injected-clock assertion in this helper. Separate upstream fixed-clock issuance keeper is retained. No new runtime execution."
+      },
+      {
+        "file": "apps/subtitles/internal/server/auth_all_routes_test.go",
+        "name": "TestEveryRegisteredRouteHasReviewedAnonymousAccess",
+        "change_kind": "existing_declaration_updated_by_upstream",
+        "decision": "R",
+        "baseline_body_sha256": "08a85f38eeeb2df78e9f8c240317d2a7c333fdfbacad89418a1c1fcc6bc420ec",
+        "upstream_body_sha256": "5c78216810b763bd0806b6e1f8eda35abe8a788f56c71cbf9b1f6109516e8ce3",
+        "upstream_file_sha256": "7e77222d61021ef6fa4c2bcfb94f3a0f3bb75a0fe2a2727c41c7ae25c0a67a2b",
+        "review_status": "reviewed PR453 upstream change outside original954 accounting",
+        "credible_failure": "Actual app route inventory advances464 to468 with new exact digest and four Owner-only routes: POST public timeout Save/reset and PUT/DELETE public timeout API. Actual local/public handler routes remain covered by shared reviewed-anonymous-access contract; companion test bodies are unchanged but consume the revised Owner table. This is controlled Go handler/route inventory proof, not genuine browser equivalence.",
+        "coverage_limit": "Route inventory/classification uses actual handlers and shared contract. All four new Owner paths must remain denied to anonymous/Viewer/public callers; browser positive settings proof is not exhaustive route authorization. No runtime by this refresh."
       }
     ],
     "baseline_decisions_unchanged": true,
     "new_isolated_tests_added_by_overhaul": 0,
     "upstream_regressions_outside_this_scope": [
       {
-        "file": "packages/identitycore/session_cookie_issuance_boundary_test.go",
-        "name": "TestCookieIssuancePreservesPersistedExpiryAcrossSecondBoundary",
-        "decision": "R",
-        "reviewed_contract": "Persist callback advances controlled clock one second; local/public/public-grant cookie Expires and remaining MaxAge must equal committed session state rather than extending lifetime after disk write. Important exact expiry boundary ordinary E2E misses.",
-        "body_sha256": "175cedd1a344d6a7f438fd432e5b6fb35469bc5f34d42745ddcdb9d3e404e03e"
-      },
-      {
         "file": "apps/player/internal/server/hls_bandwidth_delivery_test.go",
         "name": "TestRealBlackIntroHLSBandwidthSurvivesCachedMasterReuse",
         "decision": "R",
-        "reviewed_contract": "Real FFmpeg synthetic black-intro source and public TCP HTTP exercise unfinished bitrate floor, repair stale cached master three times without reencoding/changing fragments, completed measured bandwidth and decoding delivered first fragment. No physical Apple/Safari proof.",
-        "body_sha256": "22179b202a6f61d4133768112922ae7b5daca8c6646c7ac2d2f87a4fc1a5c001"
+        "reviewed_contract": "Real FFmpeg synthetic black intro/public HTTP covers bounded unfinished master bitrate floor, cached stale master repair without new encoder/fragment changes, completed bandwidth and first-fragment decoding. No physical Apple/Safari proof.",
+        "body_sha256": "22179b202a6f61d4133768112922ae7b5daca8c6646c7ac2d2f87a4fc1a5c001",
+        "upstream_file_sha256": "6e91e117060039137b2916d13e8a87ee257f65ca2e1dae92cdee0f58afe34df6"
+      },
+      {
+        "file": "packages/identitycore/session_cookie_issuance_boundary_test.go",
+        "name": "TestCookieIssuancePreservesPersistedExpiryAcrossSecondBoundary",
+        "decision": "R",
+        "reviewed_contract": "Clock advances during persistence; issued local/public/public-grant cookie expiry must equal stored session expiry and remaining MaxAge, guarding second-boundary lifetime extension missed by ordinary E2E.",
+        "body_sha256": "175cedd1a344d6a7f438fd432e5b6fb35469bc5f34d42745ddcdb9d3e404e03e",
+        "upstream_file_sha256": "f0bd2de5ff6cda8f3fe5efa1b0550385b91e17ce490c30dd5c7856bbd3c50beb"
+      },
+      {
+        "file": "packages/playback/hls_recipe_enums_test.go",
+        "name": "TestHLSRecipeEnumCacheIdentity",
+        "decision": "R",
+        "reviewed_contract": "Every supported transcode catalog codec crossed with none/text/image/external burn must parse with exact offset and canonical token/cache key, including default h264 spelling. Important cache identity/catalog regression not completely exercised by current genuine codec-subset startup journey.",
+        "body_sha256": "fb7216e87eb0dece83c58044bad2599e2cdf2b813035a93bd003f34214a68841",
+        "upstream_file_sha256": "37452c4ee895172df1bb297bf4077ded2e1854e95c3fe2b405cc46a399fa8283"
+      },
+      {
+        "file": "packages/playback/hls_recipe_enums_test.go",
+        "name": "TestHLSRecipeRejectsUntrustedEnums",
+        "decision": "R",
+        "reviewed_contract": "Otherwise-valid recipes reject unsupported, uppercase, empty, separator, encoded, NUL/newline and Unicode codec/burn values at the actual shared recipe parser. Closed enum security boundary retained; public startup negatives can reject at earlier URL guards and are not claimed equivalent.",
+        "body_sha256": "8100f64115ad9cd6fbe5158b19045dad7de2f412180511a2b151af5c8ad182a2",
+        "upstream_file_sha256": "37452c4ee895172df1bb297bf4077ded2e1854e95c3fe2b405cc46a399fa8283"
       }
     ],
     "validation_status": "Read-only source review/hash/inventory, no builds or new test execution.",
@@ -45176,43 +45220,82 @@
         "contract": "Same browser context closes signed-in tab then opens new tab at saved login URL; real /api/v1/me accepts session, no ordinary passkey begin, explicit stepup remains available. No server restart, browser restart or new context."
       }
     ],
-    "previously_pinned_main_sha": "e8eca5f762822b239cf322065a915c87482fb8b0",
+    "previously_pinned_main_sha": "5851175e4fd0f2473172ed80c38e6767c6942d0c",
     "exact_global_upstream_provenance": "engineering/qa/2026-10-03-test-overhaul/controls/upstream-source-provenance.json",
     "new_upstream_refresh": {
-      "source_sha": "5fc3b76d4b9b1cd9775ce9d913ad2a4f894d1e2c",
+      "source_sha": "9d1b158e1a49fd523fb61a3603faafcfa45c1aeb",
+      "previous_source_sha": "5851175e4fd0f2473172ed80c38e6767c6942d0c",
+      "merged_pr": 453,
       "new_subtitles_Go_declarations": 0,
-      "changed_subtitles_Go_bodies_since_previous_pin": 0,
+      "changed_subtitles_Go_bodies_since_previous_pin": 1,
       "baseline954_decisions_unchanged": true,
-      "shared_fixture_update": {
-        "file": "packages/servertest/passkey_cookie_isolation.go",
-        "previous_upstream_file_sha256": "e1f13beaa7f919a49450b6207260cebf271294312fb6309e57379c9a276bf7c8",
-        "upstream_file_sha256": "8fe134033e32bd4addd1afa4ff7b7a171619aba4bd0127e6c1f693723608e5ba",
-        "reviewed_contract": "Actual signed passkey HTTP fixture measures wall-clock login interval, secure/HttpOnly/Strict/host-only/root cookie and expiry/remaining lifetime bounds across persistence second boundary. Controlled handler integration, not genuine browser E2E."
+      "baseline_counts": {
+        "R": 830,
+        "D": 73,
+        "F": 50,
+        "C": 1
       },
-      "additional_changed_Go_bodies_outside_this_scope": [
+      "all_upstream_new_Go_declarations": 4,
+      "all_upstream_changed_Go_bodies": 10,
+      "shared_cookie_fixture_updates": [
         {
-          "file": "apps/player/internal/server/auth_all_routes_test.go",
-          "name": "TestEveryRegisteredRouteHasReviewedAnonymousAccess",
-          "body_sha256": "d34cf4e74f98ac174a8f2cc3a26bc60ded87400a7cbdaa2c0ced1e5bfb8440b4",
-          "upstream_file_sha256": "3909a9c0adb832053f6a5253fd1f7d1d3207c2b5677370ba88c2925ee03ad23f",
-          "decision": "R",
-          "origin": "upstream change; not added or rewritten by testing overhaul",
-          "baseline_body_sha256": "a003582b185610b5d5185a5f8b188e969a1d76edc6108d9332784254ca32a901",
-          "reviewed_contract": "Reviewed route inventory advances478\u2192480; exact POST/DELETE playback-prepare stream-scope entries and route digest pin new actual production registrations. Four companion authorization declarations have unchanged bodies but consume updated fixtures. Player owner independently reviews helper and endpoint ownership."
+          "file": "packages/servertest/issued_cookie_lifetime.go",
+          "upstream_file_sha256": "0024d7a3bcd08dec58a1f7a049fe22a64ff990b6886e2da57b76e4b1f49b1e39",
+          "reviewed_contract": "New test-only helper locates the persisted Browser session by issued cookie hash, checks exact configured persisted cap and cookie expiry, secure/HttpOnly/Strict/root/host-only flags and positive bounded remaining MaxAge within the captured whole-second request interval. No new top-level test declaration; deterministic injected-clock keeper remains. Does not print cookie value or session token.",
+          "classification": "upstream isolated test support"
         },
         {
-          "file": "apps/player/internal/server/trusted_https_test.go",
-          "name": "TestTrustedHTTPSWizardDefaultsToDuckDNSAndSupportsDeSEC",
-          "body_sha256": "d5f10d9e6844b3cd9c03b3bd8e32433fb15b3f81b9837391027813083033b54b",
-          "upstream_file_sha256": "55c4af4e5eae3ba322eaf454c84e4058873826f69e09bf73c51655bc44f25728",
-          "decision": "R",
-          "origin": "upstream change; not added or rewritten by testing overhaul",
-          "baseline_body_sha256": "9defcec32b0cf94068abcff8c214b23f1b996ac94a1a0c5abd489512c71a6f1f",
-          "reviewed_contract": "Theme script assertion follows upstream content-fingerprinted URL prefix instead of obsolete electric-1 version; wizard configuration, actual script requests/transport fields and persisted provider/LAN settings assertions remain. Player owner independently reviews this existing contract."
+          "file": "packages/servertest/auth_session_contract.go",
+          "upstream_file_sha256": "ffdaf940717197028c863cfdf83fbfd7868b3660882bbf9f12bfdfd4548519c5",
+          "reviewed_contract": "Existing one-year browser session helper replaces exact full MaxAge assumption with real request interval plus persisted session/issued-cookie cap and security identity. Real reconstructed handler still accepts the cookie after restart, signout persists denial and existing rate-limit guards remain. Controlled handler integration; not genuine browser E2E.",
+          "classification": "upstream isolated test support",
+          "previous_upstream_file_sha256": "195d704ad11862a6f177a07d357c8dbf569779cd5807af10ce34898ad5860cc7"
         }
       ],
-      "native_and_browser_upstream_file_receipts": 8,
-      "classification_limit": "New native checks use a synthetic loopback server; decoded-media is opt-in actual AVPlayer integration. Compatible-intent browser test is a delayed adapter fixture. Opt-in startup browser runner uses genuine disposable Go Server and real generated media; this refresh runs none of them."
+      "native_and_browser_upstream_file_receipts": 17,
+      "workflow_review": {
+        "file": ".github/workflows/app.yml",
+        "upstream_file_sha256": "c25224e9e3b6dfbc020cc14864dbe2d2a0c66134684cddeea3ce2b49649f6ad5",
+        "approved_file_sha256": "2b5ac70822428002b3b742c1bc91d8e46bf5c56a18d3afc4b0b131ce9be8f1dc",
+        "reviewed_commit": "fcd139b979fb532ab40ebcf200627945757a85af",
+        "reviewed_git_blob": "c56df3eb515221038ac37cd68eeb9f28f55d79a9",
+        "receipt": "engineering/qa/2026-10-03-test-overhaul/workflow-reconciliation-review-fcd139b.json",
+        "receipt_sha256": "56f349e69816dbd2b1cdf72e3dadc2394743d6d845612055dd2fc76ec7aa8dac",
+        "reviewer": "tooling subagent; independent of merge resolution author",
+        "reason": "Exact workflow bytes equal prior645 reviewed reconciliation and actual main9d workflow equals prior585. Independent new actual-main review preserves unchanged exact startup/gates/recorder/artifacts delta. Only named file/hash/commit/receipt approved; unknown future bytes fail."
+      },
+      "classification_limit": "All original954 decisions/hashes unchanged. Four total new Go declarations are separate upstream regressions; no overhaul additions. New public timeout standalone journey uses actual disposable Go Server/Chromium, virtual WebAuthn and stopped SQLite clock/fault injection. Existing populated responsive timeout specs only read controls; neither name nor source identity is a new pass receipt. Source review only.",
+      "latest_source_event": {
+        "from_sha": "5851175e4fd0f2473172ed80c38e6767c6942d0c",
+        "to_sha": "9d1b158e1a49fd523fb61a3603faafcfa45c1aeb",
+        "merged_pr": 453,
+        "changed_body_events": [
+          {
+            "file": "apps/player/internal/server/auth_all_routes_test.go",
+            "name": "TestEveryRegisteredRouteHasReviewedAnonymousAccess",
+            "previous_body_sha256": "d34cf4e74f98ac174a8f2cc3a26bc60ded87400a7cbdaa2c0ced1e5bfb8440b4",
+            "body_sha256": "422ca8d22b9ce16a8b5af644196ac2d6ac247a6036533f87adf257e1543cbeb8",
+            "upstream_file_sha256": "b693ec35c909604fbe4ce5a7a8201b2f229959d94e9fe3ba9321526ac377b27a"
+          },
+          {
+            "file": "apps/subtitles/internal/server/auth_all_routes_test.go",
+            "name": "TestEveryRegisteredRouteHasReviewedAnonymousAccess",
+            "previous_body_sha256": "08a85f38eeeb2df78e9f8c240317d2a7c333fdfbacad89418a1c1fcc6bc420ec",
+            "body_sha256": "5c78216810b763bd0806b6e1f8eda35abe8a788f56c71cbf9b1f6109516e8ce3",
+            "upstream_file_sha256": "7e77222d61021ef6fa4c2bcfb94f3a0f3bb75a0fe2a2727c41c7ae25c0a67a2b"
+          },
+          {
+            "file": "packages/identitycore/sessions_test.go",
+            "name": "TestActivePublicAndSessionCopies",
+            "previous_body_sha256": "b1dcab0331c1542387761d9026a57a48982756fe3e7b9a6c68d00a830d056381",
+            "body_sha256": "20f96b02dc2ef5b4a1e287056c40adf0dea2e8227b4e3b708eb6762a7fc29061",
+            "upstream_file_sha256": "f478f089d4c5874ac35d1cf7098126fa44ab0df15d145f76170640dfd4d810ea"
+          }
+        ],
+        "distinct_upstream_changed_body_total": 10,
+        "upstream_new_declarations": 4,
+        "count_note": "Three body events versus585; Player route declaration was already changed versus original876, so global distinct count rises8 to10."
+      }
     }
   }
 }

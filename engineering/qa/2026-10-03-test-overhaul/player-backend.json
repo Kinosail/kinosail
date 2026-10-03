@@ -51799,6 +51799,38 @@
       "tested_checkout": "66db3a7d176e14cb8777e8a715f94ba7be2c034b",
       "result": "Two prepared genuine search journeys passed first attempt (6194ms/4066ms); all163 archive member checksums verified, both separate HTML reports present, source unchanged and exactRevisionProof true. Overall workflow packages failure is separately recorded; final CI rerun root-owned.",
       "execution_owner": "Root CI/browser artifact; Player child only reads pinned receipt and source facts."
+    },
+    {
+      "kind": "upstream_Player_cookie_lifetime_metadata_refresh",
+      "upstream_main_sha": "5851175e4fd0f2473172ed80c38e6767c6942d0c",
+      "reviewed_integration_sha": "645fda9c7230d62cdf3eee68a0d1664879794b44",
+      "new_changed_Player_declarations_since_previous_appendix": 1,
+      "original_body_hashes_preserved": true,
+      "fixed_clock_keeper_unchanged": true,
+      "updated_body_sha256": "4cfee42f0863e555c99059677979eb84e8464509f36ded2625a3d4538c061695",
+      "updated_file_sha256": "bd54b59f8ed249b2a3895b1a90137648c8b1f0daed2b66715d24b1524fff9912",
+      "helper_sha256": "0024d7a3bcd08dec58a1f7a049fe22a64ff990b6886e2da57b76e4b1f49b1e39",
+      "result": "Complete changed declaration/helper/app adapter/session owner/fixed-clock/browser complement comparison. Preserve exact current source; no product execution. Parent reports merged PR456 all43 CI checks green; final overhaul validation remains root-owned."
+    },
+    {
+      "kind": "upstream_Player_public_timeout_inventory_metadata_refresh",
+      "upstream_main_sha": "9d1b158e1a49fd523fb61a3603faafcfa45c1aeb",
+      "reviewed_integration_sha": "fcd139b979fb532ab40ebcf200627945757a85af",
+      "changed_Player_test_files_since_previous_appendix": [
+        "apps/player/internal/server/auth_all_routes_test.go"
+      ],
+      "original_body_hashes_preserved": true,
+      "new_Player_declarations": 0,
+      "reviewed_route_count": 484,
+      "new_owner_only_routes": [
+        "POST /settings/public-session-timeouts",
+        "POST /settings/public-session-timeouts/reset",
+        "PUT /api/v1/settings/public-session-timeouts",
+        "DELETE /api/v1/settings/public-session-timeouts"
+      ],
+      "updated_body_sha256": "422ca8d22b9ce16a8b5af644196ac2d6ac247a6036533f87adf257e1543cbeb8",
+      "updated_file_sha256": "b693ec35c909604fbe4ce5a7a8201b2f229959d94e9fe3ba9321526ac377b27a",
+      "result": "Complete current inventory/fixture, actual Owner routes, public timeout save/reset operations, scope/MCP classification and shared authorization helper read. All current retained appendix body hashes rechecked; fixed-clock cookie keeper unchanged. No product tests or browser suites run; parent owns final exact-SHA validation."
     }
   ],
   "retention_examples": [
@@ -51815,11 +51847,11 @@
     "candidate_evidence_complete": 60
   },
   "upstream_reconciliation": {
-    "reviewed_upstream_main_sha": "5fc3b76d4b9b1cd9775ce9d913ad2a4f894d1e2c",
+    "reviewed_upstream_main_sha": "9d1b158e1a49fd523fb61a3603faafcfa45c1aeb",
     "comparison_base_sha": "876b771a7dd0aef5e65957fcee87add0312535e8",
-    "declaration_count": 5,
+    "declaration_count": 6,
     "new_declarations": 1,
-    "changed_existing_declarations": 4,
+    "changed_existing_declarations": 5,
     "removed_upstream_declarations": 0,
     "semantic_review_complete": true,
     "rows": [
@@ -51891,7 +51923,7 @@
           }
         ],
         "risk": "Important actual retained-cache media delivery regression; preserve complete test.",
-        "rechecked_at_upstream_main_sha": "5fc3b76d4b9b1cd9775ce9d913ad2a4f894d1e2c"
+        "rechecked_at_upstream_main_sha": "9d1b158e1a49fd523fb61a3603faafcfa45c1aeb"
       },
       {
         "path": "apps/player/internal/server/passkeys_test.go",
@@ -51949,7 +51981,7 @@
           }
         ],
         "risk": "Preserve existing app-specific contract; no new or altered isolated assertion in overhaul.",
-        "rechecked_at_upstream_main_sha": "5fc3b76d4b9b1cd9775ce9d913ad2a4f894d1e2c"
+        "rechecked_at_upstream_main_sha": "9d1b158e1a49fd523fb61a3603faafcfa45c1aeb"
       },
       {
         "path": "apps/player/internal/server/passkeys_test.go",
@@ -52001,72 +52033,117 @@
           }
         ],
         "risk": "Preserve existing app-specific contract; no new or altered isolated assertion in overhaul.",
-        "rechecked_at_upstream_main_sha": "5fc3b76d4b9b1cd9775ce9d913ad2a4f894d1e2c"
+        "rechecked_at_upstream_main_sha": "9d1b158e1a49fd523fb61a3603faafcfa45c1aeb"
       },
       {
         "path": "apps/player/internal/server/auth_all_routes_test.go",
         "name": "TestEveryRegisteredRouteHasReviewedAnonymousAccess",
         "line": 139,
         "end_line": 143,
-        "sha256": "d34cf4e74f98ac174a8f2cc3a26bc60ded87400a7cbdaa2c0ced1e5bfb8440b4",
-        "file_sha256": "3909a9c0adb832053f6a5253fd1f7d1d3207c2b5677370ba88c2925ee03ad23f",
-        "change": "updated_upstream_452",
-        "introduced_change_commit": "22d740f57618ef8fa8e9d5253f43067728e0330d",
+        "sha256": "422ca8d22b9ce16a8b5af644196ac2d6ac247a6036533f87adf257e1543cbeb8",
+        "file_sha256": "b693ec35c909604fbe4ce5a7a8201b2f229959d94e9fe3ba9321526ac377b27a",
+        "change": "updated_upstream_452_and_453",
+        "introduced_change_commit": "f88f44ba6358e9f695689717b8277a2ff3d5675f",
         "original_body_sha256": "a003582b185610b5d5185a5f8b188e969a1d76edc6108d9332784254ca32a901",
         "decision": "R",
         "review_status": "semantic_review_complete",
-        "category": "upstream_startup_and_content_asset_contract_preserved",
-        "credible_failure": "Retain exact current 480-route reviewed inventory/digest and anonymous denial matrix, including newly registered POST and DELETE /api/v1/items/{id}/playback-prepare. Removing global authorization or failing to review/classify either preparation route is an important admission regression ordinary signed-in browser playback misses.",
+        "category": "upstream_startup_public_timeout_route_contract_preserved",
+        "credible_failure": "Retain the exact current 484-route inventory/digest and anonymous denial matrix. New public timeout save/reset web and API routes must remain Owner-only, and API routes must require admin scope and remain MCP-denied; prior startup preparation stream routes remain classified. Global authorization or unreviewed route-admission regressions are important security failures ordinary signed-in happy-path browser settings can miss.",
         "production_owner": [
           "apps/player/internal/server/api_product.go",
           "apps/player/internal/server/startup_http.go",
           "apps/player/internal/server/security.go",
-          "apps/player/internal/server/api_keys.go"
+          "apps/player/internal/server/api_keys.go",
+          "apps/player/internal/server/api_admin.go:registerAdminAPI",
+          "apps/player/internal/server/settings_security_routes.go:registerSecuritySettings",
+          "apps/player/internal/server/settings_sessions.go:saveSessionTimeouts/apiSessionTimeouts",
+          "apps/player/internal/server/settings_public_sessions.go:resetPublicSessionTimeouts",
+          "apps/player/internal/server/settings_sessions_transition.go:updateSessionTimeouts"
         ],
         "non_test_callers": [
-          "server.New -> composed authentication and registered product/onboarding/settings handlers -> actual app adapter and shared owner; startup preparation POST/DELETE use stream API-key scope and remain blocked from MCP"
+          "server.New -> actual composed authentication and registered product/settings handlers. POST /settings/public-session-timeouts and /reset bind auth.owner; PUT and DELETE /api/v1/settings/public-session-timeouts bind api.auth.owner. API scope helper classifies remaining /api/v1 administrative routes as admin; MCP deny map explicitly includes both timeout API mutations. Prior startup POST/DELETE playback-prepare retain stream classification."
         ],
         "remaining_proof": [
           "Retain this existing declaration at its app-owned boundary, with unchanged companion authorization and trusted-HTTPS keepers. No removal or replacement test is introduced by this metadata-only refresh."
         ],
-        "coverage_limit": "The fixture substitutes missing resource IDs and generic {} bodies. Positive Owner/Viewer/key cases in companion matrices establish admission, not successful preparation business behavior. No invalid/revoked/scope/schedule browser equivalence or real background encoding proof is inferred from this all-routes matrix.",
+        "coverage_limit": "Fixture resource IDs are missing and mutation bodies are generic JSON {}. Positive Owner/admin-key cases establish authorization admission rather than successful timeout save/reset or preparation business behavior. Viewer/invalid/revoked/scope denials retain explicit rejection checks. This inventory does not prove recent-auth/CSRF, atomic SQLite policy+session persistence, no extension/resurrection, or actual clock expiry; those require their owner boundaries. No real TLS/JS/browser equivalent is inferred.",
         "history": [
-          "22d740f57618ef8fa8e9d5253f43067728e0330d Prepare bounded exact startup streams while browsing idle titles",
-          "4b7c2e947aaf6ada99e8d007fa468a128e181f2c Define startup preparation failures and synthetic E2E before implementation",
-          "3aeb7d62603addf02b5328888a5a122f5f1ec5b5 Keep merged subtitle guidance and Owner route coverage",
-          "a766afa013dd2af2be50d4310cbbb5d3a2fdfad2 Merge remote-tracking branch 'origin/main' into codex/subtitle-selector-copy"
+          "f88f44ba6358e9f695689717b8277a2ff3d5675f Verify reconciled timeout routes and both app error states",
+          "0dc71741f5d64849df4fb55b89c00e72e9bbe1c7 Merge current main startup and persisted-cookie test repair",
+          "ed624591bec56144eb60dc783637572e3a039ad2 Refresh reviewed timeout route inventory and rollback evidence"
         ],
         "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./internal/server -run '^TestEvery(RegisteredRoute|ProtectedRoute)'",
         "baseline_result": "original_base_body_pass; changed upstream body execution pending root exact-final-SHA suite",
         "source_receipts": [
           {
             "path": "apps/player/internal/server/auth_all_routes_test.go",
-            "revision": "5fc3b76d4b9b1cd9775ce9d913ad2a4f894d1e2c",
-            "sha256": "3909a9c0adb832053f6a5253fd1f7d1d3207c2b5677370ba88c2925ee03ad23f"
+            "revision": "9d1b158e1a49fd523fb61a3603faafcfa45c1aeb",
+            "sha256": "b693ec35c909604fbe4ce5a7a8201b2f229959d94e9fe3ba9321526ac377b27a"
           },
           {
-            "path": "apps/player/internal/server/api_product.go",
-            "revision": "5fc3b76d4b9b1cd9775ce9d913ad2a4f894d1e2c",
-            "sha256": "5c7fadb5fd8e5ed338f92b0165638d2422cfcb2ed3a2a42d199519641d6acbc6"
+            "path": "apps/player/internal/server/api_admin.go",
+            "revision": "9d1b158e1a49fd523fb61a3603faafcfa45c1aeb",
+            "sha256": "260600c127e3dcf25e358dd433313c2bf558a36a32871be0afaeb6febb06e120"
           },
           {
-            "path": "apps/player/internal/server/startup_http.go",
-            "revision": "5fc3b76d4b9b1cd9775ce9d913ad2a4f894d1e2c",
-            "sha256": "af8afd3fe40367e6af007daadd5b0bb94f58403f6f543ca9dc6719486a918107"
+            "path": "apps/player/internal/server/settings_security_routes.go",
+            "revision": "9d1b158e1a49fd523fb61a3603faafcfa45c1aeb",
+            "sha256": "ac8b41e4a9bdca90e4ca34af5dba2b6dcd9b97c59b6d86a73c8f7d58cfb41ac9"
           },
           {
-            "path": "apps/player/internal/server/security.go",
-            "revision": "5fc3b76d4b9b1cd9775ce9d913ad2a4f894d1e2c",
-            "sha256": "c812000aac81ad4a9182aadc0e899b64864e0817dd4db4b8cd10fb964d976d34"
+            "path": "apps/player/internal/server/settings_sessions.go",
+            "revision": "9d1b158e1a49fd523fb61a3603faafcfa45c1aeb",
+            "sha256": "8b652143c6894e92cae3ba8a53ec284dbd76e52ccebae51c387219b9820f93cb"
           },
           {
-            "path": "apps/player/internal/server/api_keys.go",
-            "revision": "5fc3b76d4b9b1cd9775ce9d913ad2a4f894d1e2c",
-            "sha256": "3fae0801a3f673f99029ae53b1cfcb8eec6d0308ee5b78f17f805ae646849baa"
+            "path": "apps/player/internal/server/settings_public_sessions.go",
+            "revision": "9d1b158e1a49fd523fb61a3603faafcfa45c1aeb",
+            "sha256": "8c61bf50c7da328af178ee07e16d4191bd01f5ee8b47aea3d195e5a5e3867a22"
+          },
+          {
+            "path": "apps/player/internal/server/settings_sessions_transition.go",
+            "revision": "9d1b158e1a49fd523fb61a3603faafcfa45c1aeb",
+            "sha256": "2ed184290cfdb1da2f31699d44dde3cd9c591017492a2adf6f8e21132b9a3c34"
+          },
+          {
+            "path": "apps/player/internal/server/auth_route_exercise_test.go",
+            "revision": "9d1b158e1a49fd523fb61a3603faafcfa45c1aeb",
+            "sha256": "d024a2e9d3ad37b9947f50fe0e59859ea630f14e2d82582c2b606c59a2f5561f"
+          },
+          {
+            "path": "apps/player/internal/server/auth_route_scope_binding_test.go",
+            "revision": "9d1b158e1a49fd523fb61a3603faafcfa45c1aeb",
+            "sha256": "a16adca49b9efdf5a4b2667174f1677ab4e5ea35afca74c30a167b523e20553f"
+          },
+          {
+            "path": "apps/player/internal/server/mcp_route_policy.go",
+            "revision": "9d1b158e1a49fd523fb61a3603faafcfa45c1aeb",
+            "sha256": "413a93dc67144617ebee63c01f7e81bca77e9d2f1377f1f23b1865767fe2e1f1"
+          },
+          {
+            "path": "packages/servertest/auth_routes.go",
+            "revision": "9d1b158e1a49fd523fb61a3603faafcfa45c1aeb",
+            "sha256": "d661f19ae81897c266fd64057d897e5e3efa3915d1ce67685f823c628149f74b"
+          },
+          {
+            "path": "packages/servertest/route_authorization_inventory.go",
+            "revision": "9d1b158e1a49fd523fb61a3603faafcfa45c1aeb",
+            "sha256": "b58e925027a96580341e331ca39968c6b953bb60cff23992e174777e3e895f1d"
           }
         ],
         "risk": "Preserve complete current upstream contract; metadata only, no new isolated assertion.",
-        "rechecked_at_upstream_main_sha": "5fc3b76d4b9b1cd9775ce9d913ad2a4f894d1e2c"
+        "rechecked_at_upstream_main_sha": "9d1b158e1a49fd523fb61a3603faafcfa45c1aeb",
+        "previous_upstream_body_versions": [
+          {
+            "revision": "5851175e4fd0f2473172ed80c38e6767c6942d0c",
+            "sha256": "d34cf4e74f98ac174a8f2cc3a26bc60ded87400a7cbdaa2c0ced1e5bfb8440b4",
+            "file_sha256": "3909a9c0adb832053f6a5253fd1f7d1d3207c2b5677370ba88c2925ee03ad23f",
+            "line": 139,
+            "end_line": 143,
+            "reviewed_route_count": 480,
+            "reviewed_inventory_digest": "6c575040fad77d13d2a48597b4a690d7101a190b0cb54255fd346086ca88e5fb"
+          }
+        ]
       },
       {
         "path": "apps/player/internal/server/trusted_https_test.go",
@@ -52131,32 +52208,169 @@
           }
         ],
         "risk": "Preserve complete current upstream contract; metadata only, no new isolated assertion.",
-        "rechecked_at_upstream_main_sha": "5fc3b76d4b9b1cd9775ce9d913ad2a4f894d1e2c"
+        "rechecked_at_upstream_main_sha": "9d1b158e1a49fd523fb61a3603faafcfa45c1aeb"
+      },
+      {
+        "path": "apps/player/internal/server/remote_browser_login_test.go",
+        "name": "TestPublicBrowserQuickConnectEndToEndBoundary",
+        "line": 16,
+        "end_line": 105,
+        "sha256": "4cfee42f0863e555c99059677979eb84e8464509f36ded2625a3d4538c061695",
+        "file_sha256": "bd54b59f8ed249b2a3895b1a90137648c8b1f0daed2b66715d24b1524fff9912",
+        "change": "updated_upstream_456",
+        "introduced_change_commit": "10ed3f1b10e2de65c29acf08b6c0aadd16a3df97",
+        "original_body_sha256": "72116ad46cec9784a8f2b8a363fbcd3a72c8ec99bb770e4b746c83ae2b24716a",
+        "decision": "R",
+        "review_status": "semantic_review_complete",
+        "category": "public_browser_cookie_persisted_expiry_boundary",
+        "credible_failure": "The actual public browser QuickConnect adapter could issue a cookie with an absent/non-browser persisted session, a lifetime beyond its legacy unconfigured-public-settings eight-hour cap, expiry differing from committed state, MaxAge restarted after persistence, or missing host-bound security attributes. The retained app boundary now ties cookie.Value through identitycore.SessionKey to SQLite-backed storedState, brackets the issuance request, and checks the legacy public lifetime in this fixture as well as its existing public-route/revocation restrictions.",
+        "production_owner": [
+          "apps/player/internal/server/quick_connect.go:quickConnectBroker.application/register",
+          "apps/player/internal/server/sessions.go:profileStore.sessionModule",
+          "packages/quickconnect/browser.go:Application.PollBrowser",
+          "packages/identitycore/session_requests.go:SignInPublicGrant/issuedBrowserCookie",
+          "packages/identitycore/sessions.go:Sessions.create",
+          "packages/identitycore/session_http.go:SessionKey"
+        ],
+        "non_test_callers": [
+          "server.New -> registered POST /auth/quick-connect/token -> quickconnect.Application.PollBrowser -> app-bound sessionModule.SignInPublicGrant -> persisted public browser grant -> issuedBrowserCookie from committed ExpiresAt"
+        ],
+        "test_support": [
+          "packages/servertest/issued_cookie_lifetime.go:AssertIssuedCookieLifetime/assertIssuedCookieClock/assertIssuedCookieSecurity",
+          "apps/player/internal/server/profile_id_test.go:storedState loads sessions.json through database.Open/Load"
+        ],
+        "remaining_proof": [
+          {
+            "kind": "retained_app_HTTP_integration",
+            "path": "apps/player/internal/server/remote_browser_login_test.go",
+            "scenario": "TestPublicBrowserQuickConnectEndToEndBoundary",
+            "mapping": "Retain the complete current app-specific public approval, issued-cookie persistence/lifetime, actual public library admission, blocked management routes and revoked permission scenario."
+          },
+          {
+            "kind": "retained_shared_fixed_clock_regression",
+            "path": "packages/identitycore/session_cookie_issuance_boundary_test.go",
+            "scenario": "TestCookieIssuancePreservesPersistedExpiryAcrossSecondBoundary",
+            "mapping": "Existing unchanged shared keeper deterministically advances the injected clock by one second during persistence for local/public/public-grant issuance; the real-clock app scenario does not force this boundary."
+          },
+          {
+            "kind": "genuine_browser_complement_only",
+            "path": "apps/player/e2e/ui-happy-paths.spec.ts",
+            "scenario": "Owner can authorize a waiting device with Quick Connect; Owner can paste a Quick Connect code into the digit fields",
+            "mapping": "Real UI/device grant flows use /api/v1/quick-connect/token and check returned token, not /auth/quick-connect/token public-browser Set-Cookie, persisted expiry or deterministic second-boundary issuance."
+          }
+        ],
+        "coverage_limit": "Despite its EndToEnd name this is an actual app HTTP handler/SQLite integration with httptest recorder and manually assigned tls.ConnectionState; it does not establish a TLS socket, execute public-login JavaScript or prove browser cookie enforcement. Real time brackets issuance but does not deterministically cross a second or inject delayed persistence; the unchanged shared fixed-clock keeper covers that gap. Helper asserts Browser, host-bound attributes and timing, not the persisted Channel/ProfileID/StrongAt fields directly; existing route admission/revocation are separate observations. No eight-hour wait, physical device, red-green control or child execution claimed. Current timeout453 supports saved public lifetimes; this unchanged scenario leaves public settings absent and asserts the legacy eight-hour issuance default, not every configured policy.",
+        "history": [
+          "10ed3f1b10e2de65c29acf08b6c0aadd16a3df97 Stop startup speculation before sign-out and bind fixtures to persisted expiry",
+          "c731f92be24df235fdd0c21bd55b9c4e6669b5e2 Isolate Player and Subtitles browser sign-in cookies",
+          "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+        ],
+        "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./internal/server -run '^TestPublicBrowserQuickConnectEndToEndBoundary$'",
+        "baseline_result": "original_base_body_pass; parent reports merged upstream PR456 all43 checks green; no child execution or exact-final-overhaul receipt claimed",
+        "source_receipts": [
+          {
+            "path": "apps/player/internal/server/remote_browser_login_test.go",
+            "revision": "5851175e4fd0f2473172ed80c38e6767c6942d0c",
+            "sha256": "bd54b59f8ed249b2a3895b1a90137648c8b1f0daed2b66715d24b1524fff9912"
+          },
+          {
+            "path": "packages/servertest/issued_cookie_lifetime.go",
+            "revision": "5851175e4fd0f2473172ed80c38e6767c6942d0c",
+            "sha256": "0024d7a3bcd08dec58a1f7a049fe22a64ff990b6886e2da57b76e4b1f49b1e39"
+          },
+          {
+            "path": "apps/player/internal/server/profile_id_test.go",
+            "revision": "5851175e4fd0f2473172ed80c38e6767c6942d0c",
+            "sha256": "18081183f4946c225574f4a888e37f4236152855ca04a3547ffc526ed27a85d8"
+          },
+          {
+            "path": "apps/player/internal/server/quick_connect.go",
+            "revision": "5851175e4fd0f2473172ed80c38e6767c6942d0c",
+            "sha256": "5723d7ece8239d9abc3d230c99c95c2571711407f74b3b9214a814a3a89374a6"
+          },
+          {
+            "path": "apps/player/internal/server/sessions.go",
+            "revision": "5851175e4fd0f2473172ed80c38e6767c6942d0c",
+            "sha256": "e834682e74b426b6cac3829e00411cc99fd15b97d069cd72773c8e3d1aa1b37a"
+          },
+          {
+            "path": "packages/quickconnect/browser.go",
+            "revision": "5851175e4fd0f2473172ed80c38e6767c6942d0c",
+            "sha256": "0782d437d2b6d1061018f64c823262a8b1305ab04f2f54b8dd9be5ff86c8bb4c"
+          },
+          {
+            "path": "packages/identitycore/session_requests.go",
+            "revision": "5851175e4fd0f2473172ed80c38e6767c6942d0c",
+            "sha256": "6f7c1df5fb7d16b0652095a4061a8aa342f51e527f95a93f9319079a230b85fe"
+          },
+          {
+            "path": "packages/identitycore/sessions.go",
+            "revision": "5851175e4fd0f2473172ed80c38e6767c6942d0c",
+            "sha256": "40651f286e2721bd28a36d93dddba85f0a43a35d0f952ba980079123d8f08b98"
+          },
+          {
+            "path": "packages/identitycore/session_http.go",
+            "revision": "5851175e4fd0f2473172ed80c38e6767c6942d0c",
+            "sha256": "f0fe934ef9662d521ac7a1e9df185fbb997f29361a33bc049b27e8e6e876b8bd"
+          },
+          {
+            "path": "packages/identitycore/session_cookie_issuance_boundary_test.go",
+            "revision": "5851175e4fd0f2473172ed80c38e6767c6942d0c",
+            "sha256": "f0bd2de5ff6cda8f3fe5efa1b0550385b91e17ce490c30dd5c7856bbd3c50beb"
+          },
+          {
+            "path": "apps/player/e2e/ui-happy-paths.spec.ts",
+            "revision": "5851175e4fd0f2473172ed80c38e6767c6942d0c",
+            "sha256": "dc745195e452e6b77238b9096611286d4a7a0dc55329132c8833380893644b8a"
+          }
+        ],
+        "risk": "Preserve the complete current security/lifetime contract; metadata refresh only, no test/fixture/production change.",
+        "review_provenance": "Complete updated declaration, new shared helper, storedState adapter, actual QuickConnect/session ownership chain and unchanged fixed-clock keeper read from exact upstream main. Parent reports independent shared-owner helper review. Existing genuine typed/pasted grant bodies compared; no browser-versus-recorder equivalence claim.",
+        "rechecked_at_upstream_main_sha": "9d1b158e1a49fd523fb61a3603faafcfa45c1aeb",
+        "current_policy_context_receipts": [
+          {
+            "path": "apps/player/internal/server/sessions.go",
+            "revision": "9d1b158e1a49fd523fb61a3603faafcfa45c1aeb",
+            "sha256": "c271445c56b9cf8f2b66d4d3072e140cec8ebe8b3cc23b51cb9fa45e8a792a04"
+          },
+          {
+            "path": "apps/player/internal/server/settings_public_sessions.go",
+            "revision": "9d1b158e1a49fd523fb61a3603faafcfa45c1aeb",
+            "sha256": "8c61bf50c7da328af178ee07e16d4191bd01f5ee8b47aea3d195e5a5e3867a22"
+          },
+          {
+            "path": "packages/identitycore/sessions.go",
+            "revision": "9d1b158e1a49fd523fb61a3603faafcfa45c1aeb",
+            "sha256": "819e4d47846852659794ff62c8c89257c572bb664d1dbc94cb0a3235a784b460"
+          }
+        ]
       }
     ],
     "notes": [
       "Original837 body hashes remain pinned to876b771a7. Upstream449 adds one Player real-media HLS regression;451 changes two passkey bundle assertions;452 changes route-inventory and trusted-HTTPS declarations/fixtures. All are retained.",
-      "Pinned current upstream main5fc3b76d4b9b1cd9775ce9d913ad2a4f894d1e2c includes startup452 and AppleTV454. Only auth_all_routes_test.go and trusted_https_test.go changed in the Player Go test scope since prior reviewed e8eca5f76; AppleTV/native/browser/shared additions are owned by their parallel auditors.",
+      "Previous reviewed upstream main5fc3b76d4b9b1cd9775ce9d913ad2a4f894d1e2c includes startup452 and AppleTV454. Only auth_all_routes_test.go and trusted_https_test.go changed in the Player Go test scope since prior reviewed e8eca5f76; AppleTV/native/browser/shared additions are owned by their parallel auditors.",
       "Upstream450 added shared identitycore TestCookieIssuancePreservesPersistedExpiryAcrossSecondBoundary; no Player declaration named TestPasskeyCookieTracksIssuedSessionLifetime exists.",
       "SmartSearch conditional hold completed: both genuine prepared search journeys passed first attempt at66db3a7d176e14cb8777e8a715f94ba7be2c034b. Wrapper is D after root/frontend independent review; exact receipt/hash is in the declaration row. Original baseline body hash remains unchanged.",
-      "No child Go/browser/native build or deployment; metadata-only update. Root owns exact-final-SHA suites and snapshots."
+      "No child Go/browser/native build or deployment; metadata-only update. Root owns exact-final-SHA suites and snapshots.",
+      "PR456 reconciled upstream main5851175e4fd0f2473172ed80c38e6767c6942d0c changes only the public-browser QuickConnect declaration in this appendix: exact current body uses shared issued-cookie lifetime assertion with persisted session correlation and eight-hour cap. Baseline837 decisions/hashes remain64D/773retained; one new upstream HLS keeper yields774 current declarations. Existing shared fixed-clock issuance regression is unchanged.",
+      "Current453 main9d1b158e1a49fd523fb61a3603faafcfa45c1aeb reconciles public timeouts. Only auth_all_routes_test.go changed in assigned Player Go test scope versus5851175; existing inventory appendix row is refreshed to484 routes without adding a declaration. QuickConnect retained cookie assertion still protects the legacy unsaved-policy eight-hour default. All original837 hashes/decisions remain unchanged; six appendix rows represent one new HLS and five changed original declarations, total current774."
     ],
     "file_updates": [
       {
         "path": "apps/player/internal/server/auth_all_routes_test.go",
-        "revision": "5fc3b76d4b9b1cd9775ce9d913ad2a4f894d1e2c",
-        "sha256": "3909a9c0adb832053f6a5253fd1f7d1d3207c2b5677370ba88c2925ee03ad23f",
+        "revision": "9d1b158e1a49fd523fb61a3603faafcfa45c1aeb",
+        "sha256": "b693ec35c909604fbe4ce5a7a8201b2f229959d94e9fe3ba9321526ac377b27a",
         "baseline_file_sha256": "b8f0bfb9b78e45b38baab6d11000b803260e9e8bfecb49f171e5088b60b6b26a",
-        "previous_reviewed_file_sha256": "b8f0bfb9b78e45b38baab6d11000b803260e9e8bfecb49f171e5088b60b6b26a",
-        "change": "Reviewed route count478\u2192480, digest3a0c5af7dd78f79c461ef03af7eec76422dfab13afa64923ec7830572cc2f43e\u21926c575040fad77d13d2a48597b4a690d7101a190b0cb54255fd346086ca88e5fb; expectedStreamScopeRoutes now includes POST and DELETE playback-prepare. Four companion authorization bodies are unchanged but consume the new inventory/expected-scope fixture.",
+        "previous_reviewed_file_sha256": "3909a9c0adb832053f6a5253fd1f7d1d3207c2b5677370ba88c2925ee03ad23f",
+        "change": "Review history: base count478 became480 for startup452; current453 inventory is484 with digest4f8c435d828e289d0c0cbb924ef8e64b54073ebc49d0efbfe92aee47b22422d0. Four public-timeout save/reset web/API routes added to ownerOnlyRoutes; prior playback-prepare stream scopes unchanged. Four companion test bodies unchanged but consume current inventory and policy fixture.",
         "affected_declarations": [
           {
             "path": "apps/player/internal/server/auth_all_routes_test.go",
             "name": "TestEveryRegisteredRouteHasReviewedAnonymousAccess",
             "line": 139,
             "end_line": 143,
-            "sha256": "d34cf4e74f98ac174a8f2cc3a26bc60ded87400a7cbdaa2c0ced1e5bfb8440b4",
-            "file_sha256": "3909a9c0adb832053f6a5253fd1f7d1d3207c2b5677370ba88c2925ee03ad23f"
+            "sha256": "422ca8d22b9ce16a8b5af644196ac2d6ac247a6036533f87adf257e1543cbeb8",
+            "file_sha256": "b693ec35c909604fbe4ce5a7a8201b2f229959d94e9fe3ba9321526ac377b27a"
           },
           {
             "path": "apps/player/internal/server/auth_all_routes_test.go",
@@ -52164,7 +52378,7 @@
             "line": 145,
             "end_line": 147,
             "sha256": "676ba91135efd8f6680d068192bae7de803cfa72d89f5112762a3d9b218dfac6",
-            "file_sha256": "3909a9c0adb832053f6a5253fd1f7d1d3207c2b5677370ba88c2925ee03ad23f"
+            "file_sha256": "b693ec35c909604fbe4ce5a7a8201b2f229959d94e9fe3ba9321526ac377b27a"
           },
           {
             "path": "apps/player/internal/server/auth_all_routes_test.go",
@@ -52172,7 +52386,7 @@
             "line": 149,
             "end_line": 151,
             "sha256": "ed548fcefd752ebafe3756bfe14c2ca0c8ff2170e30fb1e7f21385626361642e",
-            "file_sha256": "3909a9c0adb832053f6a5253fd1f7d1d3207c2b5677370ba88c2925ee03ad23f"
+            "file_sha256": "b693ec35c909604fbe4ce5a7a8201b2f229959d94e9fe3ba9321526ac377b27a"
           },
           {
             "path": "apps/player/internal/server/auth_all_routes_test.go",
@@ -52180,7 +52394,7 @@
             "line": 153,
             "end_line": 155,
             "sha256": "496cff6b47fb7762f7b57cd1626a46926f30a509f8473321b9bc50dadaa6f516",
-            "file_sha256": "3909a9c0adb832053f6a5253fd1f7d1d3207c2b5677370ba88c2925ee03ad23f"
+            "file_sha256": "b693ec35c909604fbe4ce5a7a8201b2f229959d94e9fe3ba9321526ac377b27a"
           },
           {
             "path": "apps/player/internal/server/auth_all_routes_test.go",
@@ -52188,36 +52402,44 @@
             "line": 157,
             "end_line": 159,
             "sha256": "4171a98539ffd257900189112344d84cfb956eeed7e2af5ca5d3f77be0fd6c9f",
-            "file_sha256": "3909a9c0adb832053f6a5253fd1f7d1d3207c2b5677370ba88c2925ee03ad23f"
+            "file_sha256": "b693ec35c909604fbe4ce5a7a8201b2f229959d94e9fe3ba9321526ac377b27a"
           }
         ],
-        "status": "Retain all five declarations and exact current fixture; root executes complete security matrix.",
+        "status": "Retain all five complete current upstream declarations/fixture; root executes exact-final security matrix. Child performs metadata-only update.",
         "helper_receipts": [
           {
             "path": "packages/servertest/auth_routes.go",
-            "revision": "5fc3b76d4b9b1cd9775ce9d913ad2a4f894d1e2c",
+            "revision": "9d1b158e1a49fd523fb61a3603faafcfa45c1aeb",
             "sha256": "d661f19ae81897c266fd64057d897e5e3efa3915d1ce67685f823c628149f74b"
           },
           {
             "path": "packages/servertest/route_authorization_inventory.go",
-            "revision": "5fc3b76d4b9b1cd9775ce9d913ad2a4f894d1e2c",
+            "revision": "9d1b158e1a49fd523fb61a3603faafcfa45c1aeb",
             "sha256": "b58e925027a96580341e331ca39968c6b953bb60cff23992e174777e3e895f1d"
           },
           {
             "path": "apps/player/internal/server/auth_route_exercise_test.go",
-            "revision": "5fc3b76d4b9b1cd9775ce9d913ad2a4f894d1e2c",
+            "revision": "9d1b158e1a49fd523fb61a3603faafcfa45c1aeb",
             "sha256": "d024a2e9d3ad37b9947f50fe0e59859ea630f14e2d82582c2b606c59a2f5561f"
           },
           {
             "path": "apps/player/internal/server/auth_route_scope_binding_test.go",
-            "revision": "5fc3b76d4b9b1cd9775ce9d913ad2a4f894d1e2c",
+            "revision": "9d1b158e1a49fd523fb61a3603faafcfa45c1aeb",
             "sha256": "a16adca49b9efdf5a4b2667174f1677ab4e5ea35afca74c30a167b523e20553f"
           },
           {
             "path": "apps/player/internal/server/auth_route_fixture_binding_test.go",
-            "revision": "5fc3b76d4b9b1cd9775ce9d913ad2a4f894d1e2c",
+            "revision": "9d1b158e1a49fd523fb61a3603faafcfa45c1aeb",
             "sha256": "f0c0b41f9a6bcaa83769a1d7268559a55ad99aa83241d693adaf3b130eac6021"
           }
+        ],
+        "reviewed_route_count": 484,
+        "reviewed_inventory_digest": "4f8c435d828e289d0c0cbb924ef8e64b54073ebc49d0efbfe92aee47b22422d0",
+        "new_owner_only_routes": [
+          "POST /settings/public-session-timeouts",
+          "POST /settings/public-session-timeouts/reset",
+          "PUT /api/v1/settings/public-session-timeouts",
+          "DELETE /api/v1/settings/public-session-timeouts"
         ]
       },
       {
@@ -52228,10 +52450,41 @@
         "previous_reviewed_file_sha256": "16161ce8a489521388e025a0e73ada6edfda4bc62c95ea7b3ef9367fcbe6166d",
         "change": "One assertion now accepts content-versioned /static/theme.js?v= instead of retired electric-1; all provider/API rejection/redaction checks remain unchanged.",
         "status": "Retain complete current file; actual TLS/DNS/ACME remains an explicit separate proof boundary."
+      },
+      {
+        "path": "apps/player/internal/server/remote_browser_login_test.go",
+        "revision": "5851175e4fd0f2473172ed80c38e6767c6942d0c",
+        "sha256": "bd54b59f8ed249b2a3895b1a90137648c8b1f0daed2b66715d24b1524fff9912",
+        "baseline_file_sha256": "2c630df812aab940adb474f0a00f8670c0d5b721c9669f0cc040ab69d959a4d4",
+        "previous_reviewed_file_sha256": "2c630df812aab940adb474f0a00f8670c0d5b721c9669f0cc040ab69d959a4d4",
+        "change": "PR456 adds time brackets around public browser token issuance and replaces exact MaxAge28800/partial security check with AssertIssuedCookieLifetime bound to the persisted browser session and eight-hour cap. Complete app approval/access/revocation assertions retained.",
+        "affected_declarations": [
+          {
+            "path": "apps/player/internal/server/remote_browser_login_test.go",
+            "name": "TestPublicBrowserQuickConnectEndToEndBoundary",
+            "line": 16,
+            "end_line": 105,
+            "sha256": "4cfee42f0863e555c99059677979eb84e8464509f36ded2625a3d4538c061695",
+            "file_sha256": "bd54b59f8ed249b2a3895b1a90137648c8b1f0daed2b66715d24b1524fff9912"
+          }
+        ],
+        "helper_receipts": [
+          {
+            "path": "packages/servertest/issued_cookie_lifetime.go",
+            "revision": "5851175e4fd0f2473172ed80c38e6767c6942d0c",
+            "sha256": "0024d7a3bcd08dec58a1f7a049fe22a64ff990b6886e2da57b76e4b1f49b1e39"
+          },
+          {
+            "path": "apps/player/internal/server/profile_id_test.go",
+            "revision": "5851175e4fd0f2473172ed80c38e6767c6942d0c",
+            "sha256": "18081183f4946c225574f4a888e37f4236152855ca04a3547ffc526ed27a85d8"
+          }
+        ],
+        "status": "Retain exact current upstream file/body. This child changes metadata only; no fixture edits."
       }
     ],
-    "previous_reviewed_upstream_main_sha": "e8eca5f762822b239cf322065a915c87482fb8b0",
-    "reviewed_integration_sha": "3264b60bcc9766f6c964bb03c9fefcdc7be1d951"
+    "previous_reviewed_upstream_main_sha": "5851175e4fd0f2473172ed80c38e6767c6942d0c",
+    "reviewed_integration_sha": "fcd139b979fb532ab40ebcf200627945757a85af"
   },
   "decision_summary": {
     "R": 716,
@@ -52254,7 +52507,7 @@
     "unreviewed_declarations": 0,
     "source_preserved_C_names": [],
     "new_upstream_retained_declarations": 1,
-    "changed_upstream_retained_declarations": 4
+    "changed_upstream_retained_declarations": 5
   },
   "reproduce": {
     "command": "python3 engineering/qa/2026-10-03-test-overhaul/verify-player-audit.py --checkout <integration-checkout> --revision <exact-reviewed-SHA> --output <artifact-path>",

@@ -1,0 +1,686 @@
+{
+  "schema_version": 1,
+  "task": "Read-only pending PR456 upstream-additions review",
+  "repo": "Kinosail/kinosail",
+  "pr": 456,
+  "pr_head": "b316cc676b837cd5bbb3d2f8a280bd1495944ec2",
+  "review_checkout_head": "96e174cb15836ac864cfeb8e95c4e6c344033c99",
+  "review_checkout_status": [],
+  "state": "Reconciled with actual merged main5851175e4 and exact PR456 finalheadb316cc676; separately preserve upstream shared assertions without changing pinned-baseline decisions.",
+  "source_receipts": [
+    {
+      "path": "packages/playback/hls_recipe_enums_test.go",
+      "revision": "5851175e4fd0f2473172ed80c38e6767c6942d0c",
+      "sha256": "37452c4ee895172df1bb297bf4077ded2e1854e95c3fe2b405cc46a399fa8283",
+      "bytes": 1974,
+      "lines": 59
+    },
+    {
+      "path": "packages/playback/hls_recipe.go",
+      "revision": "5851175e4fd0f2473172ed80c38e6767c6942d0c",
+      "sha256": "a3c8e20efcc889f006c489afb389cd91d5e32ecdbd7f0605c2e1fb26ead23162",
+      "bytes": 11389,
+      "lines": 294
+    },
+    {
+      "path": "packages/playback/hls_recipe_test.go",
+      "revision": "5851175e4fd0f2473172ed80c38e6767c6942d0c",
+      "sha256": "3cd031023a98cecec6f7750a2fe87e8fc74e78d61e042b2f52cc0dbaf7ebcf25",
+      "bytes": 7433,
+      "lines": 146
+    },
+    {
+      "path": "packages/playback/hls_delivery.go",
+      "revision": "5851175e4fd0f2473172ed80c38e6767c6942d0c",
+      "sha256": "3dd1e1ea04a8a707665ca085099a71a215dc61c2f41d9955443d562b97eaf48c",
+      "bytes": 7100,
+      "lines": 161
+    },
+    {
+      "path": "packages/playback/hls_cache.go",
+      "revision": "5851175e4fd0f2473172ed80c38e6767c6942d0c",
+      "sha256": "36e33c4b742f655aca19a6e694cfbc9c7d2324f4b3c9b84fce31f6cf35fbb89f",
+      "bytes": 5660,
+      "lines": 208
+    },
+    {
+      "path": "packages/playback/trickplay.go",
+      "revision": "5851175e4fd0f2473172ed80c38e6767c6942d0c",
+      "sha256": "eb07f968998c3c6894f9768859a2ec8795f7c2a1c9a93ebaa0b7047207116fbe",
+      "bytes": 3933,
+      "lines": 100
+    },
+    {
+      "path": "packages/transcodepolicy/codecs.go",
+      "revision": "5851175e4fd0f2473172ed80c38e6767c6942d0c",
+      "sha256": "27be79f92c97319e75cc970c4ca889e84cd51532f27c7cfc3132617e160ef640",
+      "bytes": 3854,
+      "lines": 114
+    },
+    {
+      "path": "apps/player/internal/server/hls_plan.go",
+      "revision": "5851175e4fd0f2473172ed80c38e6767c6942d0c",
+      "sha256": "5fd624d3a31117e0741d2f47859d077a1f91e85a48d98e3496be83472c52399d",
+      "bytes": 3223,
+      "lines": 62
+    },
+    {
+      "path": "apps/subtitles/internal/server/hls_plan.go",
+      "revision": "5851175e4fd0f2473172ed80c38e6767c6942d0c",
+      "sha256": "fecf0fc142d5342ef9bc9290579c85cfc3e177040d7f0662601c0885289f7452",
+      "bytes": 2935,
+      "lines": 61
+    },
+    {
+      "path": "apps/player/internal/server/startup_http.go",
+      "revision": "5851175e4fd0f2473172ed80c38e6767c6942d0c",
+      "sha256": "af8afd3fe40367e6af007daadd5b0bb94f58403f6f543ca9dc6719486a918107",
+      "bytes": 2696,
+      "lines": 79
+    },
+    {
+      "path": "apps/player/internal/server/startup_preparation.go",
+      "revision": "5851175e4fd0f2473172ed80c38e6767c6942d0c",
+      "sha256": "39266536dcd43e553bbf3e8b48c8f2ada8377ced541ea3ffbbb89274b1deac94",
+      "bytes": 8411,
+      "lines": 291
+    },
+    {
+      "path": "apps/player/e2e/test-instance-startup.spec.ts",
+      "revision": "5851175e4fd0f2473172ed80c38e6767c6942d0c",
+      "sha256": "01c799796968869916aa53b8edc99633fccb49b864fb9f356f3d1593f3af4ddd",
+      "bytes": 20242,
+      "lines": 285
+    },
+    {
+      "path": "engineering/qa/startup-cache-boundary-2026-10-03.md",
+      "revision": "5851175e4fd0f2473172ed80c38e6767c6942d0c",
+      "sha256": "6ce4745aebb4397e0ea9ade7625fa4a44425d92826cb3407a09812dc0f91c8d4",
+      "bytes": 7977,
+      "lines": 91
+    },
+    {
+      "path": "packages/servertest/auth_session_contract.go",
+      "revision": "5851175e4fd0f2473172ed80c38e6767c6942d0c",
+      "sha256": "ffdaf940717197028c863cfdf83fbfd7868b3660882bbf9f12bfdfd4548519c5",
+      "bytes": 4967,
+      "lines": 103
+    },
+    {
+      "path": "packages/servertest/issued_cookie_lifetime.go",
+      "revision": "5851175e4fd0f2473172ed80c38e6767c6942d0c",
+      "sha256": "0024d7a3bcd08dec58a1f7a049fe22a64ff990b6886e2da57b76e4b1f49b1e39",
+      "bytes": 2103,
+      "lines": 50
+    },
+    {
+      "path": "packages/servertest/library_api_fixture.go",
+      "revision": "5851175e4fd0f2473172ed80c38e6767c6942d0c",
+      "sha256": "8dc410fa9feb55215fab4d5c1cb9be64c2c1793de8576ca598245726bc982dd9",
+      "bytes": 514,
+      "lines": 16
+    },
+    {
+      "path": "packages/identitycore/session_requests.go",
+      "revision": "5851175e4fd0f2473172ed80c38e6767c6942d0c",
+      "sha256": "6f7c1df5fb7d16b0652095a4061a8aa342f51e527f95a93f9319079a230b85fe",
+      "bytes": 6489,
+      "lines": 178
+    },
+    {
+      "path": "packages/identitycore/sessions.go",
+      "revision": "5851175e4fd0f2473172ed80c38e6767c6942d0c",
+      "sha256": "40651f286e2721bd28a36d93dddba85f0a43a35d0f952ba980079123d8f08b98",
+      "bytes": 8595,
+      "lines": 282
+    },
+    {
+      "path": "packages/identitycore/session_cookie_issuance_boundary_test.go",
+      "revision": "5851175e4fd0f2473172ed80c38e6767c6942d0c",
+      "sha256": "f0bd2de5ff6cda8f3fe5efa1b0550385b91e17ce490c30dd5c7856bbd3c50beb",
+      "bytes": 1584,
+      "lines": 48
+    },
+    {
+      "path": "apps/player/internal/server/remote_browser_login_test.go",
+      "revision": "5851175e4fd0f2473172ed80c38e6767c6942d0c",
+      "sha256": "bd54b59f8ed249b2a3895b1a90137648c8b1f0daed2b66715d24b1524fff9912",
+      "bytes": 5083,
+      "lines": 105
+    },
+    {
+      "path": "apps/subtitles/internal/server/remote_browser_login_test.go",
+      "revision": "5851175e4fd0f2473172ed80c38e6767c6942d0c",
+      "sha256": "dfe1f12e1b2ed5a0c47f66eadadfccab605092636a17bdfb2fde97350ebf50b8",
+      "bytes": 5089,
+      "lines": 105
+    },
+    {
+      "path": "apps/player/internal/server/api_library_fixture_test.go",
+      "revision": "5851175e4fd0f2473172ed80c38e6767c6942d0c",
+      "sha256": "dee7b0fc222a3219613f25f98c279482047fcb3268d68f5a9f492169aae1660f",
+      "bytes": 641,
+      "lines": 21
+    },
+    {
+      "path": "apps/subtitles/internal/server/api_library_fixture_test.go",
+      "revision": "5851175e4fd0f2473172ed80c38e6767c6942d0c",
+      "sha256": "670b9a09a9ed37faa77c483e5ee33fc8c9a59de0002da4b07ff921bde30ead9c",
+      "bytes": 608,
+      "lines": 21
+    },
+    {
+      "path": "apps/player/internal/server/profile_id_test.go",
+      "revision": "5851175e4fd0f2473172ed80c38e6767c6942d0c",
+      "sha256": "18081183f4946c225574f4a888e37f4236152855ca04a3547ffc526ed27a85d8",
+      "bytes": 819,
+      "lines": 38
+    },
+    {
+      "path": "apps/subtitles/internal/server/profile_id_test.go",
+      "revision": "5851175e4fd0f2473172ed80c38e6767c6942d0c",
+      "sha256": "c972d54f61720708314d975bc87181d4745687e740ccedf58f4ba4ee7b684b44",
+      "bytes": 822,
+      "lines": 38
+    },
+    {
+      "path": "apps/player/internal/server/profile_progress_test.go",
+      "revision": "5851175e4fd0f2473172ed80c38e6767c6942d0c",
+      "sha256": "9d35b91558c52e9b84519d65a94eda4bcf9d8782c395f99e5cdf6442c73b5060",
+      "bytes": 7482,
+      "lines": 155
+    },
+    {
+      "path": "apps/subtitles/internal/server/profile_progress_test.go",
+      "revision": "5851175e4fd0f2473172ed80c38e6767c6942d0c",
+      "sha256": "ec35a1fab6c8f4e7dc5bb74aa5b424ac52b9527611d8c98c53bbae0bed6ad69e",
+      "bytes": 7467,
+      "lines": 155
+    },
+    {
+      "path": "apps/player/internal/server/static/startup-preparation.js",
+      "revision": "5851175e4fd0f2473172ed80c38e6767c6942d0c",
+      "sha256": "a266aeec8437e8e61cd4390da7ddc115187b46c6ee657fa3916774c96cd16046",
+      "bytes": 6730,
+      "lines": 118
+    },
+    {
+      "path": "apps/player/e2e/startup-signout.spec.ts",
+      "revision": "5851175e4fd0f2473172ed80c38e6767c6942d0c",
+      "sha256": "a7fd60ccd7100ed80f2885c1f65cc9439949336b560e6d4e6267065925416eb9",
+      "bytes": 4788,
+      "lines": 67
+    },
+    {
+      "path": "apps/player/scripts/test-startup-local.py",
+      "revision": "5851175e4fd0f2473172ed80c38e6767c6942d0c",
+      "sha256": "22fd7b58ff95408300bbe9617d1f0e11a95f42e3a0f77d28faccb4333f069a8d",
+      "bytes": 9660,
+      "lines": 152
+    },
+    {
+      "path": ".github/workflows/app.yml",
+      "revision": "5851175e4fd0f2473172ed80c38e6767c6942d0c",
+      "sha256": "c25224e9e3b6dfbc020cc14864dbe2d2a0c66134684cddeea3ce2b49649f6ad5",
+      "bytes": 12474,
+      "lines": 303
+    }
+  ],
+  "new_declarations": [
+    {
+      "file": "packages/playback/hls_recipe_enums_test.go",
+      "name": "TestHLSRecipeEnumCacheIdentity",
+      "body_sha256": "fb7216e87eb0dece83c58044bad2599e2cdf2b813035a93bd003f34214a68841",
+      "line": 10,
+      "kind": "Test",
+      "file_sha256": "37452c4ee895172df1bb297bf4077ded2e1854e95c3fe2b405cc46a399fa8283",
+      "file_lines": 59,
+      "decision": "R",
+      "audit_status": "reviewed",
+      "baseline_result": "not_in_pinned_baseline",
+      "execution": "Read-only source review by this agent; no Go, browser, lint, build or CodeQL execution.",
+      "production_owner": [
+        "packages/playback/hls_recipe.go::ParseHLSRecipe/parseRecipeCodec/parseRecipeFields/HLSRecipe.Token/HLSRecipeKey"
+      ],
+      "callers": [
+        "packages/playback/hls_delivery.go::ParseHLSRequest -> PlannedHLSFile -> ParseHLSRecipe",
+        "packages/playback/hls_cache.go::HLSCacheDirectory -> ParseHLSRecipe (cache cleanup/pruning inventory)",
+        "packages/playback/trickplay.go::Trickplay.ServeHTTP -> ParseHLSRecipe",
+        "packages/playback/hls_recipe.go::TimelineFromPlaybackToken -> ParseHLSRecipe",
+        "apps/player/internal/server/startup_http.go::startupSource -> plannedHLSFile -> playback.PlannedHLSFile",
+        "apps/{player,subtitles}/internal/server/hls_plan.go::plannedHLSFile and hlsRecipeKey (actual shared parser/cache identity bindings)"
+      ],
+      "credible_failure": "Closed parser enum catalog omits a supported codec or changes the accepted burn enum, default H264 canonical token or enum-dependent planned cache key; wrong identity may reject an advertised format or reuse a different rendition. Public supported codec catalog supplies four independently owned IDs, crossed with four burn modes; helper checks accepted Codec/Burn/12.3s offset, canonical Token and planned HLSRecipeKey for all16 cases.",
+      "remaining_coverage": "Actual disposable-server startup E2E forces H264 transcode and conditionally external subtitle burn, and checks initialization continuity/adoption/invalidation/cache behavior. It does not exercise HEVC/AV1/VP9 crossed with none/text/image/external burn identities. Existing shared TestHLSRecipeRoundTripAndRoutes uses one HEVC/text recipe; TestHLSRecipeCacheAndTimelineHelpers preserves default legacyH264 plus a plannedHEVC key, not all16 supported enum combinations.",
+      "gap": "These value assertions cannot distinguish server-owned literal strings from equal validated request strings: owner reports pre-change pass. Fresh CodeQL/findings-policy is the required evidence for the29 path-taint repair. This fixture does not decode media or prove every codec/burn implementation works.",
+      "independent_review": {
+        "reviewer": "/root/subtitles_shared/shared_identity",
+        "status": "Complete new body+helper, full shared owner/catalog, sibling tests, actual consumers and complete startup E2E reviewed; preserve unchanged as upstream security regression."
+      },
+      "history": {
+        "introduced_by": "84a50797a9eed6ce911e12a27dfc99dbb204299b",
+        "helper_refactor": "0ff2f0276b9e116950d89e9b84024617e9c89030",
+        "reviewed_pr_head": "b316cc676b837cd5bbb3d2f8a280bd1495944ec2",
+        "preserved_at_main": "5851175e4fd0f2473172ed80c38e6767c6942d0c"
+      }
+    },
+    {
+      "file": "packages/playback/hls_recipe_enums_test.go",
+      "name": "TestHLSRecipeRejectsUntrustedEnums",
+      "body_sha256": "8100f64115ad9cd6fbe5158b19045dad7de2f412180511a2b151af5c8ad182a2",
+      "line": 46,
+      "kind": "Test",
+      "file_sha256": "37452c4ee895172df1bb297bf4077ded2e1854e95c3fe2b405cc46a399fa8283",
+      "file_lines": 59,
+      "decision": "R",
+      "audit_status": "reviewed",
+      "baseline_result": "not_in_pinned_baseline",
+      "execution": "Read-only source review by this agent; no Go, browser, lint, build or CodeQL execution.",
+      "production_owner": [
+        "packages/playback/hls_recipe.go::ParseHLSRecipe/parseRecipeCodec/parseRecipeFields/HLSRecipe.Token/HLSRecipeKey"
+      ],
+      "callers": [
+        "packages/playback/hls_delivery.go::ParseHLSRequest -> PlannedHLSFile -> ParseHLSRecipe",
+        "packages/playback/hls_cache.go::HLSCacheDirectory -> ParseHLSRecipe (cache cleanup/pruning inventory)",
+        "packages/playback/trickplay.go::Trickplay.ServeHTTP -> ParseHLSRecipe",
+        "packages/playback/hls_recipe.go::TimelineFromPlaybackToken -> ParseHLSRecipe",
+        "apps/player/internal/server/startup_http.go::startupSource -> plannedHLSFile -> playback.PlannedHLSFile",
+        "apps/{player,subtitles}/internal/server/hls_plan.go::plannedHLSFile and hlsRecipeKey (actual shared parser/cache identity bindings)"
+      ],
+      "credible_failure": "Shared ParseHLSRecipe accepts an unknown/unsupported/automatic/mixed-case/path-bearing/encoded/control/confusable codec or burn enum. Such an admitted recipe can reach ordinary HLS, cache-directory classification or playback-token consumers as well as startup preparation. Direct otherwise-valid numeric/mode recipe fields isolate12codec and9burn rejection checks at the parser owner.",
+      "remaining_coverage": "Actual startup E2E POSTs the exact same12codec+9burn values and checks400 plus unchanged cache inventory. This is genuine live-server HTTP coverage, not a mocked parser fixture. The direct primary-owner guard also checks parser rejection independent of the startup URL envelope: forward-slash-bearing source is split by PlannedHLSFile, so startupSource can reject its remaining filename instead of the entire literal enum; other non-startup parser consumers are not exercised by that journey. Existing TestParseHLSRecipeRejectsEveryInvalidBoundary covers unknown burn/auto+unknown codecs and broader numeric/structural boundaries, not this complete matrix.",
+      "gap": "Do not claim the21 negative inputs are missing from E2E. HTTP400 does not by itself prove the parser enum predicate rejected the original whole input, and these runtime assertions do not prove static taint identity repair. No fresh runtime execution by this reviewing agent.",
+      "independent_review": {
+        "reviewer": "/root/subtitles_shared/shared_identity",
+        "status": "Complete new body+helper, full shared owner/catalog, sibling tests, actual consumers and complete startup E2E reviewed; preserve unchanged as upstream security regression."
+      },
+      "history": {
+        "introduced_by": "84a50797a9eed6ce911e12a27dfc99dbb204299b",
+        "helper_refactor": "0ff2f0276b9e116950d89e9b84024617e9c89030",
+        "reviewed_pr_head": "b316cc676b837cd5bbb3d2f8a280bd1495944ec2",
+        "preserved_at_main": "5851175e4fd0f2473172ed80c38e6767c6942d0c"
+      }
+    }
+  ],
+  "test_helper": {
+    "file": "packages/playback/hls_recipe_enums_test.go",
+    "name": "checkRecipeEnumIdentity",
+    "line": 23,
+    "body_sha256": "9a58cc275e8db1e8584201a06eaac31ad756b73fd543615c9ea5e2cd05a684b2",
+    "not_a_test_declaration": true
+  },
+  "counts": {
+    "new_test_files": 1,
+    "new_test_file_lines": 59,
+    "new_Test_declarations": 2,
+    "new_test_helpers": 1,
+    "baseline_inventory_declarations": 1900,
+    "baseline_removed_declarations": 102,
+    "baseline_counts_unchanged": true,
+    "new_shared_non_test_support_files": 1,
+    "new_shared_non_test_support_lines": 50
+  },
+  "failure_analysis_first": {
+    "path": "engineering/qa/startup-cache-boundary-2026-10-03.md",
+    "authority": "Startup owner authored upstream security repair and documented failure analysis before production changes; root explicitly ordered unchanged preservation.",
+    "content_reviewed": true,
+    "introduction_commit": "84a50797a9eed6ce911e12a27dfc99dbb204299b",
+    "chronology_limit": "Analysis, new tests and production repair first appear in the same Git commit. Document states analysis/pre-change regression preceded changes; commit topology alone does not independently prove filesystem write order.",
+    "owner_reported_prechange_test_result": "Catalog/cache-identity and invalid-enum regressions passed in0.310s.",
+    "owner_reported_repaired_playback_result": "Playback package passed in1.092s.",
+    "reviewer_executed_those_commands": false,
+    "boundary": "Behavioral tests passed before repair. Server-owned constant taint reduction requires fresh CodeQL and findings policy, preserving existing gates."
+  },
+  "actual_e2e": {
+    "file": "apps/player/e2e/test-instance-startup.spec.ts",
+    "test_title": "bounded startup preparation preserves the exact stream and playback priority",
+    "requires": "KINOSAIL_STARTUP_E2E=1 disposable synthetic-media runner",
+    "negative_enum_cases": 21,
+    "same_cases_as_new_shared_negative_test": true,
+    "proof": "Actual authenticated disposable-server HTTP loopback POSTs, rejects400, cache inventory unchanged; moving frames/init hashes/adoption/invalidation/resource bounds and measurements on same server.",
+    "positive_enum_limit": "Forced H264 transcode; external burn only when KINOSAIL_STARTUP_BURN_SUPPORTED=1. No16-combination supported-codec/burn identity matrix.",
+    "run_by_reviewer": false
+  },
+  "execution": "Read-only git show/grep/history and Python hashes/body inventory only. No Go, lint, application, browser, CodeQL, deployment or cleanup executed.",
+  "next_step": "Tracked shared appendix and upstream-addition metadata are prepared for parent integration. Parent runs ordinary source-only verify_shared_ledger.py with required removalreviews/upstreamadditions against clean integration. Runtime/main CI proof remains independently owned.",
+  "prior_review_receipts": [
+    {
+      "pr_head": "0ff2f0276b9e116950d89e9b84024617e9c89030",
+      "packet_sha256": "ffcf413f96e6e889a9996491dc077c75865eae593e49d80c3b45818c8988dbca",
+      "review": "Complete enum appendix review retained; this refreshed packet also reviews the later cookie fixture and startup sign-out changes."
+    },
+    {
+      "pr_head": "10ed3f1b10e2de65c29acf08b6c0aadd16a3df97",
+      "packet_sha256": "67806f53b848fb6501fbf46022058dcb9aef97c58748662426925139be709b57",
+      "review": "Cookie fixture/support, deterministic keeper and sign-out script/browser fixture reviewed before merge."
+    }
+  ],
+  "ci_status": "No CI or product execution by this reviewer. Parent owns exact finalPR/main runtime, browser, CodeQL and findings-policy receipts.",
+  "shared_test_support_followup": {
+    "introduced_by": "10ed3f1b10e2de65c29acf08b6c0aadd16a3df97",
+    "classification": "Upstream existing live shared assertion repair and one new non-test support file; no new Test/Benchmark/Fuzz declaration. Preserve separately from original audit decisions.",
+    "existing_changed_file": {
+      "path": "packages/servertest/auth_session_contract.go",
+      "revision": "5851175e4fd0f2473172ed80c38e6767c6942d0c",
+      "sha256": "ffdaf940717197028c863cfdf83fbfd7868b3660882bbf9f12bfdfd4548519c5",
+      "bytes": 4967,
+      "lines": 103
+    },
+    "prior_file": {
+      "path": "packages/servertest/auth_session_contract.go",
+      "revision": "0ff2f0276b9e116950d89e9b84024617e9c89030",
+      "sha256": "195d704ad11862a6f177a07d357c8dbf569779cd5807af10ce34898ad5860cc7",
+      "bytes": 5005,
+      "lines": 103
+    },
+    "existing_changed_helper": {
+      "file": "packages/servertest/auth_session_contract.go",
+      "name": "assertOneYearBrowserSessionAfterRestart",
+      "line": 44,
+      "body_sha256": "cf86587d56d5f065fabed1017e91f3df582eaab1b18d40a14174e5a6feba2449"
+    },
+    "prior_helper": {
+      "file": "packages/servertest/auth_session_contract.go",
+      "name": "assertOneYearBrowserSessionAfterRestart",
+      "line": 44,
+      "body_sha256": "d7a580f774b9d93f099b6388a4ce89e4989c02b0e3efbca2898228b26217eb34"
+    },
+    "new_support_file": {
+      "path": "packages/servertest/issued_cookie_lifetime.go",
+      "revision": "5851175e4fd0f2473172ed80c38e6767c6942d0c",
+      "sha256": "0024d7a3bcd08dec58a1f7a049fe22a64ff990b6886e2da57b76e4b1f49b1e39",
+      "bytes": 2103,
+      "lines": 50
+    },
+    "new_helper_functions": [
+      {
+        "file": "packages/servertest/issued_cookie_lifetime.go",
+        "name": "AssertIssuedCookieLifetime",
+        "line": 13,
+        "body_sha256": "bd9b56570ddcb2bc8472d6e1e393f4dc974adff5d441df1eb44ed8d99461549d"
+      },
+      {
+        "file": "packages/servertest/issued_cookie_lifetime.go",
+        "name": "assertIssuedCookieClock",
+        "line": 27,
+        "body_sha256": "541fe13818cb8880e790692cb93fe1dabbefc7f32d8f59e99467a926672e1e40"
+      },
+      {
+        "file": "packages/servertest/issued_cookie_lifetime.go",
+        "name": "assertIssuedCookieSecurity",
+        "line": 42,
+        "body_sha256": "4c6d7037de4c95f468d2f2ca2db965eb43405a458b9d97bd85781239aa8db884"
+      }
+    ],
+    "review_status": "Complete helper bodies, real fixture binding, durable StoredState loader, app sign-in helpers, both QuickConnect caller bodies, production create/issuedBrowserCookie, unchanged deterministic second-crossing keeper and doc read.",
+    "production_owner": [
+      "packages/identitycore/sessions.go::Sessions.create captures Now, stores CreatedAt/ExpiresAt, persists then publishes values",
+      "packages/identitycore/session_requests.go::issuedBrowserCookie derives Expires/MaxAge from committed ExpiresAt after persistence"
+    ],
+    "real_app_bindings": [
+      "apps/{player,subtitles}/internal/server/api_library_fixture_test.go::libraryAPIFixture.NewHandler -> server.New(Config{DataDir,RequireAuth}); SignIn -> signInTestProfile; StoredState -> database.Open+Load",
+      "packages/servertest/auth_session_contract.go::assertOneYearBrowserSessionAfterRestart -> actual authenticatedPUTsettings, real login/TOTP, durable sessions.json load, reconstruct real handler and GETowner home",
+      "apps/{player,subtitles}/internal/server/remote_browser_login_test.go::TestPublicBrowserQuickConnectEndToEndBoundary -> actual local approval/public issuance, exactappcookie selection, durable sessions.json, public route restriction and revoke denial"
+    ],
+    "preserved_assertions": [
+      "Persisted cookie session exists under identitycore.SessionKey(cookie.Value) and Browser=true.",
+      "Session.CreatedAt lies between started.Unix and finished.Unix; ExpiresAt equals CreatedAt+exact configured duration (oneyear or public8h).",
+      "Cookie.Expires.Unix equals persisted Session.ExpiresAt exactly.",
+      "MaxAge positive, no greater than lifetime cap, between committed expiry minus request finish/start seconds.",
+      "Cookie Secure/HttpOnly/Strict SameSite, Path=/, emptyDomain and nonzeroExpires.",
+      "One-year actual handler restart still accepts issued cookie (same unchanged GET/status assertion)."
+    ],
+    "replaced_assertion_limit": "Old real-clock equality MaxAge==full configured seconds fails valid issuance when persistence crosses second; new helper accommodates elapsed requesttime while binding absolute expiry to durable state. Its requestinterval MaxAge range can admit a different issuancepoint within a multi-second request, so it is not a deterministic exact-clock proof.",
+    "deterministic_keeper": {
+      "name": "TestCookieIssuancePreservesPersistedExpiryAcrossSecondBoundary",
+      "file": "packages/identitycore/session_cookie_issuance_boundary_test.go",
+      "current": {
+        "path": "packages/identitycore/session_cookie_issuance_boundary_test.go",
+        "revision": "5851175e4fd0f2473172ed80c38e6767c6942d0c",
+        "sha256": "f0bd2de5ff6cda8f3fe5efa1b0550385b91e17ce490c30dd5c7856bbd3c50beb",
+        "bytes": 1584,
+        "lines": 48
+      },
+      "unchanged_from_previous_pr_head": true,
+      "body": {
+        "body_sha256": "175cedd1a344d6a7f438fd432e5b6fb35469bc5f34d42745ddcdb9d3e404e03e",
+        "line": 11,
+        "kind": "Test"
+      },
+      "important_boundary": "Injected Persist advances fixed clock by exactly1s, then asserts exact cookie expiry ==committed and MaxAge ==committed expiry-current fixed Unix for local/public/publicgrant. Preserves precise remaining-lifetime guard alongside tolerant real-clock fixtures."
+    },
+    "failure_analysis_first": "New doc followup states pre-code analysis: PR450 committed whole-second lifetime vs real-clock assertions; preserve exact persistedexpiry, configuredpubliccap, requestinterval and attributes. It appears in same upstream commit as helper changes; no independent filesystem-order proof by this reviewer.",
+    "execution": "No compilation, tests, lint or browser run by this reviewer. Owner doc reports shared support compile and pre/post four sign-out case runs; not independently executed.",
+    "unchanged_since_reviewed_10ed": {
+      "packages/servertest/auth_session_contract.go": true,
+      "packages/servertest/issued_cookie_lifetime.go": true,
+      "packages/identitycore/session_cookie_issuance_boundary_test.go": true
+    }
+  },
+  "upstream_app_assertion_changes": [
+    {
+      "file": "apps/player/internal/server/remote_browser_login_test.go",
+      "name": "TestPublicBrowserQuickConnectEndToEndBoundary",
+      "prior": {
+        "file": "apps/player/internal/server/remote_browser_login_test.go",
+        "name": "TestPublicBrowserQuickConnectEndToEndBoundary",
+        "line": 14,
+        "body_sha256": "72116ad46cec9784a8f2b8a363fbcd3a72c8ec99bb770e4b746c83ae2b24716a"
+      },
+      "candidate": {
+        "file": "apps/player/internal/server/remote_browser_login_test.go",
+        "name": "TestPublicBrowserQuickConnectEndToEndBoundary",
+        "line": 16,
+        "body_sha256": "4cfee42f0863e555c99059677979eb84e8464509f36ded2625a3d4538c061695"
+      },
+      "scope": "Both are existing retained application Test bodies changed by upstreamPR456 owner, not baseline shared-package declaration additions or testing-overhaul deletions. App-ledger reconciliation belongs to root/app owners."
+    },
+    {
+      "file": "apps/subtitles/internal/server/remote_browser_login_test.go",
+      "name": "TestPublicBrowserQuickConnectEndToEndBoundary",
+      "prior": {
+        "file": "apps/subtitles/internal/server/remote_browser_login_test.go",
+        "name": "TestPublicBrowserQuickConnectEndToEndBoundary",
+        "line": 14,
+        "body_sha256": "c31ee13790f10a6ca7243f50997f01152207e66accf3e98ecf64d7e8ce4a8a6a"
+      },
+      "candidate": {
+        "file": "apps/subtitles/internal/server/remote_browser_login_test.go",
+        "name": "TestPublicBrowserQuickConnectEndToEndBoundary",
+        "line": 16,
+        "body_sha256": "ceaa30304e4eabad4a02b6b849b1f4981e227a0a0fe420635ea09b7a2d50ec31"
+      },
+      "scope": "Both are existing retained application Test bodies changed by upstreamPR456 owner, not baseline shared-package declaration additions or testing-overhaul deletions. App-ledger reconciliation belongs to root/app owners."
+    }
+  ],
+  "startup_signout_followup": {
+    "production_file": {
+      "path": "apps/player/internal/server/static/startup-preparation.js",
+      "revision": "5851175e4fd0f2473172ed80c38e6767c6942d0c",
+      "sha256": "a266aeec8437e8e61cd4390da7ddc115187b46c6ee657fa3916774c96cd16046",
+      "bytes": 6730,
+      "lines": 118
+    },
+    "fixture_file": {
+      "path": "apps/player/e2e/startup-signout.spec.ts",
+      "revision": "5851175e4fd0f2473172ed80c38e6767c6942d0c",
+      "sha256": "a7fd60ccd7100ed80f2885c1f65cc9439949336b560e6d4e6267065925416eb9",
+      "bytes": 4788,
+      "lines": 67
+    },
+    "scenarios": [
+      "pending",
+      "active",
+      "failed",
+      "cancelled"
+    ],
+    "important_failure": "Old document schedules GETplayback/POSTprepare or authenticatedDELETE cancellation after logout revocation, causing401diagnostics/sessionrace. Capture-phase sameorigin/logout submit marks signingOut and cancels local pending/active speculation without authenticated cancellation; freshdocument/reload restores legitimate retries.",
+    "review": "Complete actual script and new browserfixture read; generation invalidation, abortcontroller, eligibility guard and quietcancel all connect to live production prepare sequence.",
+    "coverage_class": "Actual production JavaScript in real Chromium/browser+HTTP navigation fixture, synthetic authentication/modelAPI. This is a fixture browser regression rather than proof of real server authentication. Existing real populated/server startup journeys remain required.",
+    "assertions": "Each scenario reaches Signin page; no journaled API request with authenticated=false. Active case has a positive preparationPOST control; failed and cancelled cases prove recovery by fresh/reloaded document then retry. Receipt includes scenario/result, command, revision, scriptSHA256 and normalizedjournal.",
+    "gaps": [
+      "No independent execution by this reviewer; source-only review.",
+      "pageshow.persisted forcedreload code is present but the new fourcases do not explicitly execute/assert a restored BFCache document.",
+      "The fixture uses actual client script but synthetic cookie-free authstate and modeled API, so it does not prove production server sessionrevocation/cancellation.",
+      "Cancelled same-document submit recovery requires explicitreload/retry as documented."
+    ],
+    "console_policy": "PR change does not relax console401 diagnostics in this reviewed script/spec; root states narrow /api/v1/me loginprobe handling is separate and remains. No other401 suppression proposed."
+  },
+  "merged_main_sha": "5851175e4fd0f2473172ed80c38e6767c6942d0c",
+  "integration_source_head": "b1246ed00b76ac9a03fdb4b5d943419249272386",
+  "integration_working_tree_status": [],
+  "previous_ci_reported_by_root": {
+    "head": "10ed3f1b10e2de65c29acf08b6c0aadd16a3df97",
+    "run": "37155933868",
+    "status": "Root reported ordinary67pass19skip and both Go suites pass; separate startup failed and findings-policy HTTP503. This historical result is not a finalb316 or merged-main result."
+  },
+  "final_runner_and_diagnostic_review": {
+    "comparison_from": "10ed3f1b10e2de65c29acf08b6c0aadd16a3df97",
+    "final_pr_head": "b316cc676b837cd5bbb3d2f8a280bd1495944ec2",
+    "merged_main": "5851175e4fd0f2473172ed80c38e6767c6942d0c",
+    "source_receipts": [
+      {
+        "path": "apps/player/scripts/test-startup-local.py",
+        "revision": "5851175e4fd0f2473172ed80c38e6767c6942d0c",
+        "sha256": "22fd7b58ff95408300bbe9617d1f0e11a95f42e3a0f77d28faccb4333f069a8d",
+        "bytes": 9660,
+        "lines": 152
+      },
+      {
+        "path": "apps/player/e2e/test-instance-startup.spec.ts",
+        "revision": "5851175e4fd0f2473172ed80c38e6767c6942d0c",
+        "sha256": "01c799796968869916aa53b8edc99633fccb49b864fb9f356f3d1593f3af4ddd",
+        "bytes": 20242,
+        "lines": 285
+      },
+      {
+        "path": ".github/workflows/app.yml",
+        "revision": "5851175e4fd0f2473172ed80c38e6767c6942d0c",
+        "sha256": "c25224e9e3b6dfbc020cc14864dbe2d2a0c66134684cddeea3ce2b49649f6ad5",
+        "bytes": 12474,
+        "lines": 303
+      },
+      {
+        "path": "engineering/qa/startup-cache-boundary-2026-10-03.md",
+        "revision": "5851175e4fd0f2473172ed80c38e6767c6942d0c",
+        "sha256": "6ce4745aebb4397e0ea9ade7625fa4a44425d92826cb3407a09812dc0f91c8d4",
+        "bytes": 7977,
+        "lines": 91
+      }
+    ],
+    "read_status": "Complete final runner and failureanalysis doc; full previous startupE2E plus exact final diagnostic delta and workflow codec-install delta reviewed. No runner execution or artifact download.",
+    "changes": [
+      "Moving-frame failure adds numeric readiness/network/errorcode, paused/position, HLS-source boolean, codecMSE capability flags and last16 classified HTTP statuses; rethrows the original error and keeps moving-frame acceptance assertion.",
+      "Runner receipt adds bounded browser failure source basenames/line/column and durations, allowlisted encoder event counts/fixed error categories, actual ffmpeg/ffprobe version firstlines. Raw error text, fullpaths/authconfig remain excluded from hosted safe diagnostics.",
+      "Hosted Chromium installs JellyfinFFmpeg8.1.2-5 Nobleamd64 package with exactSHA256b4e72894ad26c809ed0104805f5415a97be75212b9fcf9d60b89ad25bb3d43e3; sourcepin reviewed, no package downloaded by this reviewer."
+    ],
+    "limits": [
+      "Prior10ed failed cold moving-frame proof cannot be replaced by67passing populated cases; finalb316/mergedmain acceptance belongs parent separate exact-source receipts.",
+      "Runner is synthetic720pHEVC10PQ/EAC3/H264 footage, not physicalclient/Nox/movieproduction load equivalence.",
+      "No fresh local build/browser/Go/CodeQL evidence inferred from source hashes or actual merge."
+    ]
+  },
+  "integration_upstream_files_verified_identical": [
+    {
+      "path": "packages/identitycore/session_cookie_issuance_boundary_test.go",
+      "revision": "5851175e4fd0f2473172ed80c38e6767c6942d0c",
+      "sha256": "f0bd2de5ff6cda8f3fe5efa1b0550385b91e17ce490c30dd5c7856bbd3c50beb",
+      "bytes": 1584,
+      "lines": 48
+    },
+    {
+      "path": "packages/playback/hls_recipe_enums_test.go",
+      "revision": "5851175e4fd0f2473172ed80c38e6767c6942d0c",
+      "sha256": "37452c4ee895172df1bb297bf4077ded2e1854e95c3fe2b405cc46a399fa8283",
+      "bytes": 1974,
+      "lines": 59
+    },
+    {
+      "path": "packages/servertest/auth_session_contract.go",
+      "revision": "5851175e4fd0f2473172ed80c38e6767c6942d0c",
+      "sha256": "ffdaf940717197028c863cfdf83fbfd7868b3660882bbf9f12bfdfd4548519c5",
+      "bytes": 4967,
+      "lines": 103
+    },
+    {
+      "path": "packages/servertest/issued_cookie_lifetime.go",
+      "revision": "5851175e4fd0f2473172ed80c38e6767c6942d0c",
+      "sha256": "0024d7a3bcd08dec58a1f7a049fe22a64ff990b6886e2da57b76e4b1f49b1e39",
+      "bytes": 2103,
+      "lines": 50
+    }
+  ],
+  "baseline_counts_preserved_in_ledger": true,
+  "verifier_source_unchanged": false,
+  "review_checkout_status_before_metadata_commit": [
+    "?? engineering/qa/2026-10-03-test-overhaul/shared-upstream-pr456-appendix.json"
+  ],
+  "latest_upstream_main_sha": "9d1b158e1a49fd523fb61a3603faafcfa45c1aeb",
+  "verifier_change": "Narrow exact-hash/source-diff exception for TestActivePublicAndSessionCopies only; requires original body with one activePublic call argument addition to equal upstream body. Existing WatchTogether approval unchanged. Two enumTests supported by existing addition inventory.",
+  "upstream_timeout_signature_adaptation": {
+    "change": {
+      "file": "packages/identitycore/sessions_test.go",
+      "name": "TestActivePublicAndSessionCopies",
+      "kind": "Test",
+      "baseline_body_sha256": "b1dcab0331c1542387761d9026a57a48982756fe3e7b9a6c68d00a830d056381",
+      "body_sha256": "20f96b02dc2ef5b4a1e287056c40adf0dea2e8227b4e3b708eb6762a7fc29061",
+      "upstream_line": 255,
+      "introduced_by": "4648622859ca4a1d63aecd2627bd0341e8e06d99",
+      "preserved_at_upstream_main": "9d1b158e1a49fd523fb61a3603faafcfa45c1aeb",
+      "upstream_pr": 453,
+      "approved_scope": "Only activePublic call adds DefaultSessionInactive and DefaultSessionAbsolute; the entire remaining declaration is byte-identical to the original baseline. No fixture or assertion replacement.",
+      "reviewer": "/root/subtitles_shared/shared_identity",
+      "review_status": "Full original/current Test body, sessions.go, sessions_admin.go, session_timeouts.go, production call and exact upstream diff/history read. Root requested narrow signature adaptation preservation.",
+      "credible_failure_preserved": "Public count excludes expired, different-profile and private-channel entries; map snapshots and Profile filtering must not mutate original storage. All assertion statements and expected maps remain identical.",
+      "gap": "Fixture public entries are non-browser; new timeout arguments do not add coverage of idle/absolute expiry for public browser sessions. Owner-specific public-timeout regressions/runtime evidence remain outside this narrow reconciliation.",
+      "source_review_appendix": "engineering/qa/2026-10-03-test-overhaul/shared-upstream-pr456-appendix.json",
+      "execution": "Read-only Git/current-source hash comparison; no Go execution."
+    },
+    "source_receipts": [
+      {
+        "path": "packages/identitycore/sessions_test.go",
+        "revision": "9d1b158e1a49fd523fb61a3603faafcfa45c1aeb",
+        "sha256": "f478f089d4c5874ac35d1cf7098126fa44ab0df15d145f76170640dfd4d810ea",
+        "bytes": 13670,
+        "lines": 299
+      },
+      {
+        "path": "packages/identitycore/sessions.go",
+        "revision": "9d1b158e1a49fd523fb61a3603faafcfa45c1aeb",
+        "sha256": "819e4d47846852659794ff62c8c89257c572bb664d1dbc94cb0a3235a784b460",
+        "bytes": 9157,
+        "lines": 291
+      },
+      {
+        "path": "packages/identitycore/sessions_admin.go",
+        "revision": "9d1b158e1a49fd523fb61a3603faafcfa45c1aeb",
+        "sha256": "dc47f8166ff708ce52f572811c022c57e83506382ba55d0572653660a5c90786",
+        "bytes": 3897,
+        "lines": 140
+      },
+      {
+        "path": "packages/identitycore/session_timeouts.go",
+        "revision": "9d1b158e1a49fd523fb61a3603faafcfa45c1aeb",
+        "sha256": "808fce8e7aa71911bde64946f9d39ad71dc3f76491487989d55fa48a08ea4096",
+        "bytes": 1414,
+        "lines": 37
+      }
+    ],
+    "baseline_and_additive_counts_unchanged": true,
+    "owner_chain": "Sessions.create passes channel-specific TimeoutsFor(public) to activePublic; activePublic uses SessionExpired. Non-browser fixture semantics remain expiry-only; new browser limits need separate owner proof.",
+    "source_integrity_limit": "Whole upstream sessions_test.go includes baseline declarations removed by this overhaul; compare retained declaration hash rather than claim current root file is byte-identical to unmodified main."
+  },
+  "incremental_metadata_write_budget": {
+    "authority": "Root authorized bounded4096-byte differing-block metadata writes with original bytes retained in RAM and rollback on failure; avoid full8MiB temp/copy under storage pressure.",
+    "block_size": 4096,
+    "maximum_total_changed_block_bytes": 262144,
+    "ledger_changed_blocks": 1,
+    "ledger_changed_block_bytes": 4096,
+    "ledger_before_sha256": "f9675b2ad7eae185275ccfe9e4f7c65acd3d2bcee10add91370f7cbb1d51c175",
+    "ledger_after_sha256": "fbbce85d8875caa0309bf7429166164f669b22b72ff3896f555bc23f2b46ab79",
+    "appendix_changed_blocks": 3,
+    "appendix_changed_block_bytes": 12288,
+    "total_changed_block_bytes": 16384,
+    "validation": "After-write fsync, exact byte/hash comparison and full JSON parse for both owned metadata files; baseline rows/counts unchanged. Ordinary integrated source verifier belongs to parent after all metadata integration."
+  }
+}
